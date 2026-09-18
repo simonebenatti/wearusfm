@@ -10,9 +10,14 @@ trattato come **compito di verifica, non come dato**. L'elenco completo è in §
 **Rev. 1 (18/09/2026).** Conversione del budget in ore locali, scadenza e quota mensile (§1,
 §10.4, §10.5). Calendario a ritroso e decisioni operative: `docs/piano_operativo_v10.md`.
 
+**Rev. 2 (18/09/2026).** Numeri da `saldo -b`: disponibili ~70.000–90.000 GPU-ora, non
+~50.000 (§1, §10.5). Di conseguenza: passi 7–9 e ladder lanciati in parallelo nelle due
+finestre di inizio mese (§9), 3 seed per rung (§10.2), **vertice a 3–5B da «non si esegue» a
+speculativo e parallelo** (§10.4), asse dei soggetti a due taglie (§10.6).
+
 **Novità rispetto alla v9:**
-- §1 **compute aggiornato a ~50.000 GPU-ora** · **scope corretto** (il cingolo scapolare non
-  è coperto da nessun dataset) · rung a 3–5B **condizionale**
+- §1 **compute aggiornato** (rev. 2: ~70.000–90.000 GPU-ora) · **scope corretto** (il cingolo
+  scapolare non è coperto da nessun dataset) · rung a 3–5B **condizionale**
 - §2 **NinaPro DB9 rimosso** (solo cinematica) · frequenze native corrette · montaggio NinaPro
   riconosciuto come **misto** · dataset di Kaifosh et al. come voce da decidere · **costo in
   soggetti** dell'esclusione di EPN-612 · «zero-shot» → **transfer su dataset mai visto**
@@ -29,8 +34,8 @@ trattato come **compito di verifica, non come dato**. L'elenco completo è in §
   **sostituito** perché non ferma il leakage di fase
 - §8/§11 **confrontabilità con NeuroRVQ corretta**: i loro numeri sono fine-tuning completo
 - §9 passi **1-bis** e **9-bis**, nota sull'avvio
-- §10.4 **default invertito sul vertice** · §10.5 contabilità rifatta · §10.6 **asse dei
-  soggetti**, nuovo
+- §10.4 **vertice condizionale** (rev. 2: speculativo e parallelo) · §10.5 contabilità
+  rifatta · §10.6 **asse dei soggetti**, nuovo
 - §12 questioni chiuse e nuove aperte, più l'**elenco dei fatti da verificare**
 
 ---
@@ -59,8 +64,8 @@ L'HD-EMG è un lusso disponibile in training, non il caso d'uso.
 classe di taglia deployabile via distillazione e silicio dedicato; volontà di superare di
 ordini di grandezza i FM EMG esistenti; evidenza interna, in altri domini, che modelli più
 grandi ricostruiscono meglio i contesti. **La controevidenza è forte e va affrontata nel
-paper, non scoperta in review** (§11). Il rung a 3–5B è **condizionale** (§10.4): con
-~50.000 GPU-ora è pagabile, la domanda è se è informativo.
+paper, non scoperta in review** (§11). Il rung a 3–5B è **condizionale** (§10.4): le GPU-ora
+ci sono; i costi veri sono il tempo di ingegneria e la priorità in coda.
 
 **Licenza e uso.** Il corpus include dataset sotto CC-BY-NC-SA 4.0 (emg2pose, emg2qwerty).
 L'uso è **esclusivamente non commerciale e di ricerca**; i pesi sono strumentali ai numeri
@@ -69,18 +74,22 @@ rilevante, la clausola ShareAlike va riesaminata prima, non dopo. Il deployment 
 citato come motivazione della taglia è **direzione tecnica, non percorso di rilascio di
 questi pesi**.
 
-**Compute.** **~50.000 GPU-ora** su Leonardo (CINECA): circa metà del residuo del progetto
-ISCRA-B `IscrB_WearUsFM` (~797.000 ore locali ≈ 100.000 GPU-ora; sul Booster 1 GPU-ora = 8 ore
-locali, se per GPU si chiedono al più 8 core e un quarto della RAM del nodo). Partizione
-`boost_usr_prod` (4× A100 SXM4 64 GB per nodo). Programma completo stimato fra ~10.000 e
-~28.000 GPU-ora, a seconda dell'MFU e del destino del rung a 3–5B (§10.5): **le GPU-ora non
-sono il vincolo**, e il margine va speso in seed, controlli 2D e asse dei soggetti (§10.6),
-non nel vertice.
+**Compute.** **~70.000–90.000 GPU-ora** su Leonardo (CINECA), progetto ISCRA-B
+`IscrB_WearUsFM`. Da `saldo -b` del 18/09/2026: totale 2.000.000 ore locali (250.000 GPU-ora),
+residuo **794.303 ore locali ≈ 99.300 GPU-ora**; sul Booster 1 GPU-ora = 8 ore locali, se per
+GPU si chiedono al più 8 core e un quarto della RAM del nodo. Chi condivide l'account consuma
+oggi ~5.500 ore locali al giorno e smetterà a breve: la forbice dipende da quando. Partizione
+`boost_usr_prod` (4× A100 SXM4 64 GB per nodo). Programma completo stimato fra ~17.000 e
+~37.000 GPU-ora, a seconda dell'MFU e del vertice (§10.5): **le GPU-ora non sono il vincolo**.
+Il margine va speso prima in seed, controlli 2D e asse dei soggetti (§10.6), poi nel vertice
+speculativo (§10.4).
 
 **Calendario.** Il budget **scade il 7 gennaio 2027** e le ore non spese si perdono. La quota
-mensile dell'account (~164.000 ore locali ≈ 20.500 GPU-ora) fa perdere priorità a chi
-concentra il consumo. **Dopo i dati, il secondo vincolo reale è il tempo**: calendario a
-ritroso e tagli pre-decisi in `docs/piano_operativo_v10.md`.
+mensile dell'account (164.383 ore locali ≈ 20.500 GPU-ora) fa perdere priorità man mano che
+la si consuma, e la priorità piena torna il primo del mese: i lotti grossi si sottomettono
+nelle **finestre di inizio novembre e inizio dicembre**. **Dopo i dati, il secondo vincolo
+reale è il tempo**: calendario a ritroso, finestre e tagli pre-decisi in
+`docs/piano_operativo_v10.md`.
 
 **Vincolo reale.** I dati. Corpus pubblico stimato ~2.200 ore dopo le esclusioni, e
 **nell'ordine di 600 soggetti** (stima, da ricalcolare all'ingest). **Regime data-bound**, e
@@ -1146,6 +1155,14 @@ richieste con latenza umana e il download di emg2qwerty (passo 1); il passo 1-bi
 scaricati il checkpoint e i dataset piccoli; il gate di consistenza del passo 3 su un solo
 dataset a 2 kHz; la chiusura dei **fatti da verificare** di §12.
 
+*Nota sul parallelismo (rev. 2).* Fino al passo 6 il tempo lo decidono sviluppo, accessi e
+revisioni: le GPU-ora non comprano nulla. Dopo, comprano parallelismo. I passi 7, 8, 9 e 9-bis
+si lanciano **in blocco** nella finestra di inizio novembre, ciascuno coi default di lavoro
+degli altri, con una run di conferma a 100M se un default cade. La ladder del passo 10 si
+lancia **tutta insieme** nella finestra di inizio dicembre, dal rung più grande al più
+piccolo. Col WSD il pilot sulle epoche è **una sola run per seed** con rami di decay a 1, 2, 4
+e 8 epoche. Dettagli e date nel piano operativo.
+
 ---
 
 ## 10. Esperimenti, budget dati e ladder
@@ -1229,7 +1246,7 @@ manifest · (3) definire la regola di crescita di N · (4) eseguire.
 > i FLOP misurati o stimati per ogni configurazione.
 
 **Con D = 4 epoche nominali, 2D = 8 epoche sullo stesso corpus, non dati nuovi.**
-**Seed:** 2–3 ai rung bassi.
+**Seed:** 3 per rung, fino a 1B (rev. 2: il budget lo consente).
 
 ### 10.3 Budget dati D
 
@@ -1334,17 +1351,24 @@ layer di attenzione effettivi, rapporto d/L ~40–50: profondo e stretto, diffic
 stabilizzare e poco parallelizzabile. Tenere la profondità al bordo basso e compensare in
 larghezza, o warmup e normalizzazione più aggressivi.
 
-**Riesame del vertice — default invertito rispetto alla v9.** Il rung a 3–5B **non si esegue,
-a meno che il pilot e i primi rung non lo giustifichino**. Con ~50.000 GPU-ora è *pagabile*
-(§10.5); la domanda è se è *informativo*, e i numeri di §10.3 (~1,4 token per parametro a 1B)
-dicono che per default non lo è. Criterio, da congelare prima dei risultati (soglia in §12) —
-es.: il rung a 1B migliora il 300M di più di due errori standard su almeno una metrica
-primaria **del ramo sparso**. Se il criterio non scatta, quel compute va in seed aggiuntivi,
-controlli 2D attorno al flesso e asse dei soggetti (§10.6), che danno molta più risoluzione
-sul risultato che interessa. Decisione da prendere dopo il passo 9, non prima. **Vincolo di
-calendario (§1):** con la scadenza del 7 gennaio 2027 il vertice dovrebbe partire a novembre
-per non finire in coda a bassa priorità a fine dicembre; di fatto richiede una proroga o un
-nuovo progetto.
+**Riesame del vertice — speculativo e parallelo (rev. 2).** Nella v10 il default era «non si
+esegue», per un argomento di informazione per unità di costo: ~1,4 token per parametro a 1B
+(§10.3) dicono che l'esito più probabile è la saturazione. L'esito atteso non cambia; **è
+cambiato il costo**. Il disponibile è ~70.000–90.000 GPU-ora, scade il 7 gennaio 2027, e ciò
+che non si spende si perde: il costo del vertice in GPU-ora è quasi nullo. Restano due costi
+veri: il **tempo di ingegneria** (FSDP a 5B, stabilità di un modello profondo e stretto) e la
+**priorità in coda** (a dicembre, col vertice, l'account supera la quota mensile). Il vertice
+si lancia quindi **insieme alla ladder, non dopo**, a tre condizioni:
+
+1. il rung a 1B gira già sullo **stesso percorso FSDP** (anche se DDP basterebbe, §5.5), così
+   il vertice è solo un cambio di configurazione;
+2. il rung a 1B ha superato il primo 10–20% del training **senza instabilità**;
+3. il lancio avviene **entro il 6 dicembre**; dopo non si lancia più.
+
+**Mai sul cammino critico:** non blocca la ladder né il modello finale, e se diverge si spegne
+senza tentativi di recupero. Seed, controlli 2D attorno al flesso e asse dei soggetti (§10.6)
+hanno comunque la precedenza: danno più risoluzione sul risultato che interessa. Il vertice
+serve a mostrare la saturazione su un ordine di grandezza in più, non a smentirla.
 
 **Quando aumentare K:** solo con una combinazione di — sonde buone prima del bottleneck ma
 peggiori dopo · il backbone più grande non migliora il full-grid HD · latenti saturi o
@@ -1381,7 +1405,7 @@ più linearmente decodificabile al crescere della scala?*
 
 ### 10.5 Contabilità del compute
 
-**Budget: ~50.000 GPU-ora** (§1).
+**Budget: ~70.000–90.000 GPU-ora** (§1).
 
 Stime preliminari: ~2,3·10¹⁰ token latenti per epoca; rung a 5B ~6,9·10²⁰ FLOP per epoca.
 
@@ -1402,31 +1426,34 @@ GPU-ora. A 2D raddoppiano.
 | Blocco | GPU-ora |
 |---|---|
 | Ablation a 30M e calibrazione 30–100M | ~1.500–2.000 |
-| Pilot sulle epoche (100M, 2 seed) | ~1.000 |
-| Asse dei soggetti (100M, 2 seed, §10.6) | ~500–800 |
-| Ladder 30M → 1B con seed, più controlli 2D | ~5.000 |
-| Shakedown e training finale (se a 1B) | ~2.000–3.500 |
-| **Totale senza il vertice** | **~10.000–12.000** |
+| Pilot sulle epoche (100M, 2 seed) | ~1.000 (meno, coi rami di decay del WSD) |
+| Asse dei soggetti (100M e 300M, 2 seed, §10.6) | ~3.000 |
+| Run di conferma e shakedown del percorso FSDP | ~500–1.000 |
+| Ladder 30M → 1B con 3 seed, più controlli 2D | ~10.000 |
+| Training finale separato, se serve (a 1B) | ~1.500–3.000 |
+| **Totale senza il vertice** | **~17.000–21.000** |
 | Vertice a 3–5B, a D e a 2D | ~12.000–16.000 |
-| **Totale col vertice** | **~22.000–28.000** |
+| **Totale col vertice** | **~29.000–37.000** |
 
-La stima «sotto le 20.000» della v9 reggeva solo con MFU ≥ 40% e senza margine. Con 50.000 il
-vertice è pagabile in GPU-ora, ma non entra nel calendario senza proroga; resta condizionale
-per ragioni di informazione e di tempo, non di costo (§10.4). Il
+Anche col vertice si resta sotto metà del disponibile: il resto scade comunque (piano
+operativo, D0). Lanciato in parallelo alla ladder nella finestra di inizio dicembre, il
+vertice entra nel calendario; resta condizionale per ragioni di ingegneria e di priorità in
+coda, non di costo (§10.4). Il
 padding al massimo del batch (§4.6) abbassa l'MFU dello stadio pre-bottleneck: altro motivo
 per misurare il packing al passo 0.
 
-### 10.6 Asse dei soggetti — 100M
+### 10.6 Asse dei soggetti — 100M e 300M
 
 La ladder varia N a D fisso e il pilot varia le epoche: manca l'asse che nel sEMG quasi
 certamente lega, **il numero di soggetti**. Kaifosh et al. ottengono la generalizzazione fra
 persone con dati di migliaia di partecipanti (curve di scaling nel numero di partecipanti:
 **da verificare** sul paper). Il corpus qui ne ha nell'ordine di 600 (§1).
 
-**Esperimento.** A 100M, manifest **sottocampionato per soggetti**: 25 / 50 / 100%,
-stratificato per dataset e per topologia — le quote di §2.8 restano quelle del manifest —
-con 2 seed. Stessa molteplicità di esposizione E: i passi scalano con la frazione. La run al
-100% è quella del pilot (§10.3), non va ripetuta.
+**Esperimento.** A 100M **e a 300M** (rev. 2), manifest **sottocampionato per soggetti**:
+12,5 / 25 / 50 / 100%, stratificato per dataset e per topologia — le quote di §2.8 restano
+quelle del manifest — con 2 seed. Due taglie dicono se l'esponente nei soggetti **dipende da
+N**, che è la domanda vera di una scaling law. Stessa molteplicità di esposizione E: i passi
+scalano con la frazione. A 100M la run al 100% è quella del pilot (§10.3), non va ripetuta.
 
 **Controllo.** La frazione 25% anche **a passi uguali al 100%** (16 epoche nominali), per
 separare «meno soggetti» da «meno passi di ottimizzazione».
@@ -1434,7 +1461,7 @@ separare «meno soggetti» da «meno passi di ottimizzazione».
 **Lettura.** Le metriche del pilot in funzione del numero di soggetti; pendenza in log-log sul
 cross-soggetto **per topologia** e sul transfer su dataset mai visto.
 
-**Perché vale il costo** (sotto le 1.000 GPU-ora, §10.5). Trasforma «saturazione precoce in
+**Perché vale il costo** (~3.000 GPU-ora, §10.5). Trasforma «saturazione precoce in
 N» in «ecco l'esponente nei soggetti»: un risultato azionabile per chi raccoglie dati, e la
 risposta alla domanda che un revisore farà comunque. Quantifica anche il prezzo
 dell'esclusione di EPN-612 (§2.3). Con N ed epoche, è ciò che rende la scaling law di §11 una
@@ -1552,7 +1579,8 @@ dettagli anti-collasso.
   virtuali (§4.6), che retroagisce su `D_c` — **misurabile già al passo 0**
 - Soglie del gate di consistenza al ricampionamento (§7.1), da congelare prima dei risultati
 - Soglia numerica della regola decisionale del pilot (§10.3), da congelare prima dei risultati
-- **Criterio per eseguire il rung a 3–5B (§10.4)**, da congelare prima dei risultati
+- **Condizioni per il lancio speculativo del rung a 3–5B (§10.4)**: confermarle o cambiarle
+  prima della finestra di inizio dicembre
 - Parametri dello schedule WSD e della policy di continuazione (§10.4)
 - Frazioni, stratificazione e controllo a passi uguali dell'asse dei soggetti (§10.6)
 - Dimensione di patch (in ms), finestra di contesto, schedule di masking — con il vincolo dei

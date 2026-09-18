@@ -15,6 +15,8 @@ decisioni che spettano a te e il punto in cui vanno prese.
 - §9 **registro delle decisioni** · §10 **calendario a ritroso con tagli pre-decisi** ·
   §11 **passi −1 … 6** con ruoli, output, criteri di accettazione, condizioni di stop e budget
   · §12 decisioni dopo il passo 6 · §13 cosa fare oggi
+- **Rev. 2 (18/09/2026):** numeri di `saldo -b` e disponibile reale (§5) · **finestre di
+  lancio** e passi 7–9 in parallelo (§10) · vertice speculativo (D13) · D17
 
 **Ruoli.** **TU** = Simone · **AG** = agente principale (Claude Code, sul Mac) ·
 **OPS** = `leonardo-ops` · **LIC** = `license-checker` · **FACT** = `fact-checker` (§6).
@@ -168,10 +170,11 @@ Versioni `cineca-ai` disponibili: 3.0.0, 3.0.1, 4.0.0, 4.1.0, 4.1.1 (default),
 | Voce | Valore |
 |---|---|
 | Account | `IscrB_WearUsFM` |
-| Budget residuo | ~797.000 ore locali ≈ **~100.000 GPU-ora** per l'intero account |
-| Quota del progetto FM | ~50% del residuo ≈ **~50.000 GPU-ora** |
-| Scadenza | 07/01/2027 (**7 gennaio 2027**) |
-| Quota mensile | 164.383 h locali ≈ ~20.500 GPU-ora, per l'intero account |
+| Budget totale | 2.000.000 ore locali = 250.000 GPU-ora, dal 07/01/2026 |
+| Budget residuo (`saldo -b`, 18/09/2026) | **794.303 ore locali ≈ 99.300 GPU-ora**, per l'intero account |
+| Disponibile per il FM | **~70.000–90.000 GPU-ora**: chi condivide l'account smetterà a breve; fino ad allora consuma ~5.500 ore locali al giorno |
+| Scadenza | 07/01/2027 (**7 gennaio 2027**), confermata da `saldo -b` |
+| Quota mensile | 164.383 h locali ≈ ~20.500 GPU-ora, per l'intero account; al 18/09 ne erano consumate 99.394 |
 | Partizione GPU | `boost_usr_prod` — 4× A100 SXM4 64 GB, 32 core Ice Lake, 512 GB RAM |
 
 ### Contabilità e calendario — aggiunta
@@ -188,8 +191,15 @@ Versioni `cineca-ai` disponibili: 3.0.0, 3.0.1, 4.0.0, 4.1.0, 4.1.1 (default),
 - **Scadenza = 111 giorni dal 18/09/2026.** Alla scadenza le ore non spese si perdono. **Il
   vincolo non sono le GPU-ora, è il calendario** (§10). Con qualunque calendario realistico
   una larga parte della quota scadrà inutilizzata: è l'oggetto della decisione D0.
-- Verifica: `saldo -b` (le ultime due colonne sono quota e consumo del mese). Da rifare al
-  passo −1 per confermare data di fine, quota e consumo.
+- **Finestre di lancio.** La priorità piena torna il primo del mese e cala man mano che
+  l'account consuma la quota. I lotti grossi si sottomettono quindi **nei primi due-tre giorni
+  del mese**, e dentro la finestra **prima i job più grandi**, i più sensibili alla coda. Le
+  finestre di questo progetto sono due: **1–3 novembre** e **1–2 dicembre** (§10). Ogni job
+  della finestra si prova prima su `boost_qos_dbg`: un job che muore al terzo minuto si
+  rilancia a finestra già consumata.
+- Verifica: `saldo -b` (le ultime due colonne sono quota e consumo del mese). Fatta il 18/09;
+  OPS la ripete a ogni inizio mese e il giorno prima di ogni finestra, riportando **solo
+  l'output**.
 
 ### QoS verificate
 
@@ -393,15 +403,17 @@ congelare in `docs/decisioni.md` *prima* di lanciare l'esperimento che le usa.
 | **D9** | Manifest: quote per topologia, ruolo Kaifosh, split dei soggetti, target RVQ | passo 4 | 25/10 | **irreversibile lungo la ladder** |
 | **D10** | Patch (ms), contesto (s), schedule di masking | passo 6 | prima di scrivere il modello | modello |
 | **D11** | §5.6 della v10: target JEPA e decoder a query | passo 6 | prima del passo 7 | ablation SSL |
-| D12–D16 | pilot, vertice, WSD, dropout del livello muscolo, asse dei soggetti | dopo il 6 | §12 | — |
+| D12–D17 | pilot, vertice, WSD, dropout del livello muscolo, asse dei soggetti, training finale | dopo il 6 | §12 | finestre di lancio |
 
 ---
 
-## 10. Calendario a ritroso
+## 10. Calendario a ritroso e finestre di lancio
 
 **Proposta: D0 la conferma o la cambia.** Dal 18/09/2026 al 07/01/2027 ci sono 16 settimane
-scarse e `src/` è vuoto. Il calendario qui sotto è quello **senza margine**: ogni slittamento
-fa scattare un taglio già deciso, invece di una discussione a dicembre.
+scarse e `src/` è vuoto. **Fino al passo 6 le GPU-ora non comprano nulla:** il tempo lo
+decidono lo sviluppo, gli accessi ai dataset e le tue firme, e il calendario è senza margine.
+**Dopo il passo 6 il budget compra parallelismo:** i passi 7, 8, 9 e 9-bis partono in blocco
+invece che in fila, e la ladder parte tutta insieme. Il margine che prima non c'era viene da lì.
 
 | Settimane | Date | Traguardo (data limite = fine del periodo) |
 |---|---|---|
@@ -409,16 +421,42 @@ fa scattare un taglio già deciso, invece di una discussione a dicembre.
 | W3 | 05/10 – 11/10 | passo 1-bis chiuso sui dataset aperti · D4 · D5b |
 | W4 | 12/10 – 18/10 | **gate di consistenza superato (D8)** · harness che riproduce NeuroRVQ |
 | W5 | 19/10 – 25/10 | ingest completo · **manifest congelato (D9)** |
-| W6 | 26/10 – 01/11 | modello completo, sanity JEPA su un solo dataset (passo 6) |
-| W7–W8 | 02/11 – 15/11 | ablation a 30M e calibrazione (passi 7–8) |
-| W9–W10 | 16/11 – 29/11 | pilot sulle epoche e asse dei soggetti (passi 9, 9-bis) |
-| W11–W12 | 30/11 – 13/12 | ladder fino a 1B e controlli 2D (passo 10) |
-| W13–W14 | 14/12 – 27/12 | shakedown e training finale (passi 11–12) — periodo festivo, code imprevedibili |
+| W6 | 26/10 – 01/11 | modello completo, sanity JEPA (passo 6) · job della finestra 1 provati su `boost_qos_dbg` · D12, D14, D15, D16 |
+| **Finestra 1** | **dom 01/11 – mar 03/11** | **lancio in blocco dei passi 7, 8, 9 e 9-bis** |
+| W7–W8 | 02/11 – 15/11 | i job girano; analisi man mano che chiudono |
+| W9–W10 | 16/11 – 29/11 | decisioni su obiettivo, architettura ed E · run di conferma a 100M se un default è caduto · shakedown del percorso FSDP a 1B · D17 · job della finestra 2 provati su `dbg` |
+| **Finestra 2** | **mar 01/12 – mer 02/12** | **lancio in blocco della ladder**: tutti i rung, 3 seed, dal più grande al più piccolo |
+| entro il 06/12 | — | vertice speculativo (D13), se le condizioni sono rispettate; dopo non si lancia più |
+| W11–W12 | 30/11 – 13/12 | ladder · controlli 2D dai checkpoint pre-decay, appena si vede il flesso |
+| W13–W14 | 14/12 – 27/12 | code dei 2D · training finale separato solo se D17 lo chiede · valutazione avviata — periodo festivo, code imprevedibili |
 | W15–W16 | 28/12 – 07/01 | valutazione su GPU (passo 13) · **07/01: scadenza** |
 
-Consumo atteso: sotto le 1.000 GPU-ora fino a fine ottobre, ~3.000–4.000 a novembre,
-~8.000–10.000 a dicembre. Dicembre da solo vale circa metà della quota mensile dell'intero
-account: sta in piedi, ma **senza spazio per il vertice a 3–5B**.
+### Le due finestre
+
+**Finestra 1 — 1–3 novembre.** In blocco, coi **default di lavoro** della v10 (obiettivo JEPA
++ ancora fisica, target dal decoder a query, concatenazione, K = 64, encoder locale a 2 layer,
+E = 4): ablation dell'obiettivo SSL e della collocazione dei target JEPA a 30M; ablation dei
+percorsi di identità; calibrazione a 30–100M; pilot sulle epoche a 100M; asse dei soggetti a
+100M e 300M. **Ogni esperimento usa i default degli altri.** Se un default cade, in W9–W10 si
+fa una run di conferma a 100M con le scelte finali; se cade quello dell'obiettivo, si ripete
+il punto E = 4 del pilot e si controlla che la regola D12 dia lo stesso esito. Col WSD il
+pilot è **una sola run per seed**, con rami di decay a 1, 2, 4 e 8 epoche: per questo D14 va
+chiusa prima della finestra.
+
+**Finestra 2 — 1–2 dicembre.** La ladder tutta insieme: 30M, 100M, 300M, 1B, **3 seed per
+rung**, sottomessi **dal più grande al più piccolo**. Il rung a 1B gira sul percorso **FSDP**
+anche se DDP basterebbe: così il vertice, se parte, è solo un cambio di configurazione. I
+controlli 2D partono dai checkpoint pre-decay appena si vede il flesso.
+
+**Regole comuni.** Job da 24 ore in catena con `--dependency`; ogni job provato prima su
+`boost_qos_dbg`; prima i job grandi; `saldo -b` il giorno prima. A novembre la finestra è una
+buona abitudine: il FM da solo resta sotto la quota mensile. **A dicembre è necessaria:** col
+vertice il consumo del mese supera la quota dell'intero account.
+
+Consumo atteso del FM (stima): sotto le 1.000 GPU-ora fino a fine ottobre; ~6.000–7.000 a
+novembre; ~10.000–13.000 a dicembre senza il vertice, ~22.000–29.000 col vertice, contro una
+quota mensile di ~20.500. Totale ~17.000–21.000 senza vertice e ~29.000–37.000 con, contro
+70.000–90.000 disponibili.
 
 ### Tagli pre-decisi
 
@@ -427,10 +465,12 @@ account: sta in piedi, ma **senza spazio per il vertice a 3–5B**.
 | 18/10 | gate di consistenza (passo 3) | D8b: i front-end separati per frequenza diventano il default e si prosegue |
 | 25/10 | accesso a un dataset (NinaPro, CSL-hdemg) | il manifest si congela senza. **NinaPro è il caso sparso, cioè il deployment: l'account va chiesto oggi** |
 | 25/10 | verifiche RVQ complete (passo 1-bis) | l'ancora RVQ esce dal manifest, la run 5 non si fa |
-| 08/11 | modello completo (passo 6) | via le ablation secondarie e quella dei percorsi di identità (resta la concatenazione); ladder 30M / 100M / 300M |
-| 29/11 | pilot chiuso (passo 9) | E = 4 per prior, senza il braccio a 8 epoche; l'asse dei soggetti ha la precedenza sui controlli 2D |
-| 06/12 | ladder avviata (passo 10) | niente rung a 1B: training finale sul migliore fra 100M e 300M |
-| — | — | **il vertice a 3–5B non entra in questo calendario**: richiede la continuità di D0 |
+| 01/11 | modello completo (passo 6) | la finestra 1 slitta. A novembre la quota lo tollera, ma ogni giorno perso esce dall'analisi di W9–W10 |
+| 08/11 | modello completo | via le ablation secondarie e quella dei percorsi di identità (resta la concatenazione) |
+| 15/11 | finestra 1 lanciata | niente run di conferma: la ladder parte coi default di lavoro ed E = 4 per prior |
+| 29/11 | job della finestra 2 provati su `dbg` | **la finestra 2 non si sposta**: si lancia ciò che è pronto, a partire dai rung grandi |
+| 06/12 | condizioni di D13 rispettate | il vertice non si lancia |
+| 06/12 | rung a 1B stabile | modello finale sul migliore fra 100M e 300M |
 
 Il passo 5 (harness e preprint autonomo) **non è sul cammino critico** e non dipende dal
 corpus: è l'uscita garantita anche se il resto slitta. Per questo parte subito (DP).
@@ -440,7 +480,7 @@ corpus: è l'uscita garantita anche se il resto slitta. Per questo parte subito 
 ## 11. Piano passo per passo — fino al passo 6
 
 Budget per passo, da confermare con D1. Totale fino al passo 6: ~500 GPU-ora più l'ingest su
-CPU, cioè meno del 2% della quota.
+CPU, cioè meno dell'1% del disponibile.
 
 | Passo | Budget | In ore locali |
 |---|---|---|
@@ -457,25 +497,26 @@ CPU, cioè meno del 2% della quota.
 - **AG:** mette `docs/fm_emg_reference_v10.md` e questo file nel repo; `git rm` della v9 (resta
   nella history: l'agente non deve poter leggere la versione sbagliata); crea
   `docs/decisioni.md` e `docs/fatti_da_verificare.md`; aggiorna `CLAUDE.md` (§6).
-- **OPS:** `saldo -b`, riportando **solo l'output**. Conferma data di fine, quota mensile,
-  consumo del mese. Se l'account ha budget anche su DCGP (`saldo --dcgp -b`) lo si segna:
-  l'ingest del passo 2 è lavoro da CPU.
+- **OPS:** `saldo -b` è già fatto (18/09, §5). Resta `saldo --dcgp -b`: se l'account ha budget
+  anche su DCGP lo si segna, perché l'ingest del passo 2 è lavoro da CPU.
 - **TU:** D0 e D1.
 
-**D0 — Calendario e continuità.** Fatti: 111 giorni; quota ~50.000 GPU-ora; il programma
-realistico senza vertice ne usa ~10.000–12.000 (v10 §10.5); il resto scade. Opzioni, non
-esclusive: (a) chiedere a CINECA se è possibile una proroga (`superc@cineca.it`; se sia
-concessa per un ISCRA B è **da verificare**); (b) preparare un nuovo ISCRA B per il prossimo
-bando — di norma ce n'è uno a fine anno, con qualche mese di valutazione — usando come
-risultati preliminari il preprint del passo 5 e il pilot; (c) accettare la scadenza e i tagli
-di §10. *Proposta:* l'email per (a) questa settimana, pianificare (b), lavorare come se
-valesse (c).
+**D0 — Calendario e continuità.** Fatti, da `saldo -b` del 18/09: 111 giorni; residuo 794.303
+ore locali ≈ 99.300 GPU-ora, di cui ~70.000–90.000 per il FM; il programma di §10 ne usa
+~17.000–21.000 senza il vertice e ~29.000–37.000 con. **Più di metà del disponibile scade
+comunque.** Precedente: `IscrB_FM-EEG24` è scaduto il 20/02/2026 con il 52% non speso.
+Opzioni, non esclusive: (a) chiedere a CINECA se è possibile una proroga
+(`superc@cineca.it`; se sia concessa per un ISCRA B è **da verificare**); (b) preparare un
+nuovo ISCRA B per il prossimo bando — di norma ce n'è uno a fine anno, con qualche mese di
+valutazione — usando come risultati preliminari il preprint del passo 5 e il pilot; (c)
+accettare la scadenza e i tagli di §10. *Proposta:* l'email per (a) questa settimana,
+pianificare (b), lavorare come se valesse (c).
 
 **D1 — Autonomia e budget.** Confermare o cambiare i budget della tabella qui sopra e le
 regole di §6. *Proposta:* adottarli così.
 
-**Chiuso quando:** v10, piano e registro sono committati; l'output di `saldo -b` è incollato
-sotto D0 in `docs/decisioni.md`.
+**Chiuso quando:** v10, piano e registro sono committati; l'output di `saldo -b` del 18/09 è
+incollato sotto D0 in `docs/decisioni.md`.
 
 ### Passo 0 — Benchmark sintetico del dataloader · W1–W2 · ≤ 20 GPU-ora
 
@@ -688,13 +729,17 @@ collegata; i FLOP sono contati per modulo; il **sanity JEPA su un solo dataset o
 
 ## 12. Dopo il passo 6 — decisioni già in calendario
 
-| ID | Decisione | Prima di | Nota |
+Quattro su sei vanno chiuse **prima della finestra 1**, cioè entro il 1º novembre: i job
+partono in blocco e le ereditano.
+
+| ID | Decisione | Entro | Nota |
 |---|---|---|---|
-| D12 | Soglia della regola decisionale del pilot (v10 §10.3) | passo 9 | da congelare prima dei risultati |
-| D13 | Criterio per il rung a 3–5B (v10 §10.4) | passo 10 | **fuori calendario senza D0**: dovrebbe partire a novembre per non finire in coda a bassa priorità a fine dicembre |
-| D14 | Schedule WSD e policy di continuazione (v10 §10.4) | passo 10 | due checkpoint per rung: pre- e post-decay |
-| D15 | Probabilità del dropout del livello muscolo (v10 §5.2) | passo 7 | *proposta:* 0,4 |
-| D16 | Frazioni e stratificazione dell'asse dei soggetti (v10 §10.6) | passo 9-bis | i manifest al 25 e 50% nascono già al passo 4 |
+| D12 | Soglia della regola decisionale del pilot (v10 §10.3) | finestra 1 | da congelare prima dei risultati |
+| D14 | Schedule WSD e policy di continuazione (v10 §10.4) | finestra 1 | due checkpoint per rung, pre- e post-decay; i rami di decay fanno del pilot una sola run per seed |
+| D15 | Probabilità del dropout del livello muscolo (v10 §5.2) | finestra 1 | *proposta:* 0,4 |
+| D16 | Asse dei soggetti: frazioni, taglie, stratificazione (v10 §10.6) | finestra 1 | *proposta:* 12,5 / 25 / 50 / 100% a 100M e a 300M; i manifest nascono al passo 4 |
+| D17 | Training finale separato, oppure modello finale = rung scelto, eventualmente proseguito a 2D | W9–W10 | *proposta:* coincide col rung, salvo che la ladder indichi una configurazione non ancora addestrata. Toglie una fase intera da dicembre |
+| D13 | **Vertice speculativo a 3–5B** (v10 §10.4, rev. 2) | 06/12 | parte in parallelo alla ladder se: il 1B gira in FSDP, ha superato il primo 10–20% senza instabilità, si è entro il 06/12. Mai sul cammino critico; se diverge si spegne |
 
 ---
 
@@ -704,8 +749,10 @@ collegata; i FLOP sono contati per modulo; il **sanity JEPA su un solo dataset o
 1. Account NinaPro, con accettazione dei termini — **è sul cammino critico**.
 2. Email per CSL-hdemg, con affiliazione.
 3. Email a `superc@cineca.it` sulla possibilità di proroga (D0).
-4. D1: confermare budget per passo e regole di §6. DP: chi porta l'harness.
-5. Aprire un'allocazione da 2 ore quando AG ha pronto il benchmark del passo 0.
+4. Chiedere a chi condivide l'account **la data in cui smette**: decide se il disponibile è
+   70.000 o 90.000 GPU-ora (§5).
+5. D1: confermare budget per passo e regole di §6. DP: chi porta l'harness.
+6. Aprire un'allocazione da 2 ore quando AG ha pronto il benchmark del passo 0.
 
 **AG:** passo −1; poi, in parallelo, passo 0 (codice e test su CPU), lettura del repo NeuroRVQ
 sul Mac (primo punto del passo 1-bis), scheletro dell'harness (passo 5).
