@@ -39,6 +39,12 @@
 - Le allocazioni (`salloc`) le apre solo Simone, mai l'agente di sua iniziativa.
 - Un dataset che non entra nello schema dei metadati si segnala: lo schema non si piega in
   silenzio.
+- I job SLURM scrivono i loro output (log, file di risultato) SEMPRE fuori dalla working
+  tree del repo: `$WORK/wearusfm_runs/`, mai dentro `$WORK/wearusfm/`. Un job che scrive
+  dentro `$WORK/wearusfm/` puo' creare file non tracciati che il prossimo
+  `git push leonardo main` dal Mac rifiuta (tree remoto "sporco"). Un risultato entra nel
+  repo (`results/<passo>/...`) solo quando viene copiato deliberatamente sul Mac e
+  committato da li'.
 
 ## Vincoli non negoziabili
 - Login node: limite di 10 minuti di CPU time. Tutto il resto va in srun o sbatch.
