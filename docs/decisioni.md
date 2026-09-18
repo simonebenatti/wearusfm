@@ -122,6 +122,15 @@ attesa (massimo sui 4 rank) è ≤ 2% e il ritmo a vuoto è ≥ 1,5× il richies
 fredda su `$WORK`. Se fallisce: si spostano sulla GPU gli stadi più cari e si rimisura; solo se
 fallisce ancora, precompute (con la conseguenza su `D_c` scritta nel manifest, v10 §4.6).
 
+**Limiti noti della misura** (dalla revisione indipendente del 18/09/2026, vedi bugfix
+`t_passo_batch_s`): `bench/bench_dataloader.py` misura il tempo di calcolo/lettura dentro i
+worker, ma non il trasferimento del batch assemblato dal worker al processo principale
+(che una vera `DataLoader` paga via shared memory) - ottimistico. È anche completamente
+sincrono, senza sovrapposizione di prefetch - pessimistico. Inoltre un solo pool di worker
+su un nodo altrimenti libero non modella la contesa I/O reale fra i 4 loader dei 4 rank
+GPU dello stesso nodo. Il numero va letto come indicativo dell'ordine di grandezza, non
+come garanzia assoluta a piena scala.
+
 ---
 
 ## D6b — Dataloader: layout del batch
