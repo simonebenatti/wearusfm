@@ -20,6 +20,9 @@
 - $WORK = /leonardo_work/IscrB_WearUsFM
 - $FAST = /leonardo_scratch/fast/IscrB_WearUsFM  (cancellazione automatica a 40 giorni)
 - Repo remoto: $WORK/wearusfm
+- Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
+  procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
+  installare pacchetti o sottomettere job.
 
 ## Vincoli non negoziabili
 - Login node: limite di 10 minuti di CPU time. Tutto il resto va in srun o sbatch.
