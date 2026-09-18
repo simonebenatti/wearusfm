@@ -7,6 +7,9 @@ come contesto a un agente.
 **Convenzione.** «da verificare» marca un fatto riportato a memoria o da fonte secondaria: va
 trattato come **compito di verifica, non come dato**. L'elenco completo è in §12.
 
+**Rev. 1 (18/09/2026).** Conversione del budget in ore locali, scadenza e quota mensile (§1,
+§10.4, §10.5). Calendario a ritroso e decisioni operative: `docs/piano_operativo_v10.md`.
+
 **Novità rispetto alla v9:**
 - §1 **compute aggiornato a ~50.000 GPU-ora** · **scope corretto** (il cingolo scapolare non
   è coperto da nessun dataset) · rung a 3–5B **condizionale**
@@ -66,11 +69,18 @@ rilevante, la clausola ShareAlike va riesaminata prima, non dopo. Il deployment 
 citato come motivazione della taglia è **direzione tecnica, non percorso di rilascio di
 questi pesi**.
 
-**Compute.** **~50.000 GPU-ora** su Leonardo (CINECA), progetto ISCRA-B, account
-`IscrB_WearUsFM`, partizione `boost_usr_prod` (4× A100 SXM4 64 GB per nodo). Programma
-completo stimato fra ~10.000 e ~28.000 GPU-ora, a seconda dell'MFU e del destino del rung a
-3–5B (§10.5): **il compute non è il vincolo**, e il margine va speso in seed, controlli 2D e
-asse dei soggetti (§10.6), non nel vertice.
+**Compute.** **~50.000 GPU-ora** su Leonardo (CINECA): circa metà del residuo del progetto
+ISCRA-B `IscrB_WearUsFM` (~797.000 ore locali ≈ 100.000 GPU-ora; sul Booster 1 GPU-ora = 8 ore
+locali, se per GPU si chiedono al più 8 core e un quarto della RAM del nodo). Partizione
+`boost_usr_prod` (4× A100 SXM4 64 GB per nodo). Programma completo stimato fra ~10.000 e
+~28.000 GPU-ora, a seconda dell'MFU e del destino del rung a 3–5B (§10.5): **le GPU-ora non
+sono il vincolo**, e il margine va speso in seed, controlli 2D e asse dei soggetti (§10.6),
+non nel vertice.
+
+**Calendario.** Il budget **scade il 7 gennaio 2027** e le ore non spese si perdono. La quota
+mensile dell'account (~164.000 ore locali ≈ 20.500 GPU-ora) fa perdere priorità a chi
+concentra il consumo. **Dopo i dati, il secondo vincolo reale è il tempo**: calendario a
+ritroso e tagli pre-decisi in `docs/piano_operativo_v10.md`.
 
 **Vincolo reale.** I dati. Corpus pubblico stimato ~2.200 ore dopo le esclusioni, e
 **nell'ordine di 600 soggetti** (stima, da ricalcolare all'ingest). **Regime data-bound**, e
@@ -1331,7 +1341,10 @@ dicono che per default non lo è. Criterio, da congelare prima dei risultati (so
 es.: il rung a 1B migliora il 300M di più di due errori standard su almeno una metrica
 primaria **del ramo sparso**. Se il criterio non scatta, quel compute va in seed aggiuntivi,
 controlli 2D attorno al flesso e asse dei soggetti (§10.6), che danno molta più risoluzione
-sul risultato che interessa. Decisione da prendere dopo il passo 9, non prima.
+sul risultato che interessa. Decisione da prendere dopo il passo 9, non prima. **Vincolo di
+calendario (§1):** con la scadenza del 7 gennaio 2027 il vertice dovrebbe partire a novembre
+per non finire in coda a bassa priorità a fine dicembre; di fatto richiede una proroga o un
+nuovo progetto.
 
 **Quando aumentare K:** solo con una combinazione di — sonde buone prima del bottleneck ma
 peggiori dopo · il backbone più grande non migliora il full-grid HD · latenti saturi o
@@ -1398,7 +1411,8 @@ GPU-ora. A 2D raddoppiano.
 | **Totale col vertice** | **~22.000–28.000** |
 
 La stima «sotto le 20.000» della v9 reggeva solo con MFU ≥ 40% e senza margine. Con 50.000 il
-vertice è pagabile; resta condizionale per ragioni di informazione, non di costo (§10.4). Il
+vertice è pagabile in GPU-ora, ma non entra nel calendario senza proroga; resta condizionale
+per ragioni di informazione e di tempo, non di costo (§10.4). Il
 padding al massimo del batch (§4.6) abbassa l'MFU dello stadio pre-bottleneck: altro motivo
 per misurare il packing al passo 0.
 
