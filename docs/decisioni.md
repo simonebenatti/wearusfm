@@ -60,6 +60,11 @@ progetto FM sEMG non ha budget DCGP proprio. L'ingest del passo 2 (lavoro da CPU
 pianificato su nodi Booster interi via `sbatch` (32 ore locali/ora), non su DCGP — aggiorna
 piano_operativo_v10.md §11, passo 2, "Dove gira".
 
+`saldo --dcgp -b` del 18/09/2026: nessun budget DCGP disponibile per `IscrB_WearUsFM`. L'unica
+riga è `CNHPC_1526560_0`, scaduta il 30/04/2026 con consumo 0. Conseguenza: l'ingest del passo
+2 gira su nodi Booster interi (32 ore locali/ora, GPU inutilizzate), oppure su
+`lrd_all_serial` per i task seriali leggeri.
+
 ---
 
 ## D1 — Autonomia dell'agente e budget per passo
