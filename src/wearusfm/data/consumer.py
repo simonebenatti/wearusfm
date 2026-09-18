@@ -23,23 +23,35 @@ class AsseMMetrics:
     windows_per_s: float  # throughput a vuoto (senza il floor di t_passo)
 
 
-def compute_asse_m_metrics(fetch_times_s: np.ndarray, t_passo_s: float) -> AsseMMetrics:
-    """`fetch_times_s`: tempo di fetch di un batch, forma (n_rank, n_batch) o (n_batch,).
+def compute_asse_m_metrics(fetch_times_s: np.ndarray, t_passo_s: float, batch_size: int = 1) -> AsseMMetrics:
+    """`fetch_times_s`: tempo di fetch di un BATCH (non di una singola finestra), forma
+    (n_rank, n_batch) o (n_batch,).
+
+    `t_passo_s` e' il ritmo richiesto PER FINESTRA (v. `required_windows_per_s`, che
+    ritorna finestre/s - qui serve il reciproco). La soglia con cui si confronta il
+    tempo di fetch di un batch e' quindi `t_passo_s * batch_size`, non `t_passo_s` da
+    solo: un batch contiene `batch_size` finestre, e il consumatore aspetta finche' non
+    ha ricevuto l'intero batch. Confrontare il tempo-per-batch contro il tempo-per-una-
+    sola-finestra sovrastima sistematicamente l'attesa (bug corretto dopo il primo run
+    reale su Leonardo, dove dava waiting_fraction=0.94 con un dataloader in realta' piu'
+    veloce del richiesto).
 
     Con la barriera fra rank, il tempo di parete per batch e' il massimo sui rank
     (spec §7): un rank lento ferma gli altri. Il tempo di parete non puo' scendere
-    sotto `t_passo_s` (il consumatore non consuma piu' in fretta del modello).
+    sotto la soglia per batch (il consumatore non consuma piu' in fretta del modello).
     """
     arr = np.asarray(fetch_times_s, dtype=np.float64)
     if arr.ndim == 1:
         arr = arr[None, :]
     per_batch_fetch = arr.max(axis=0)  # massimo sui rank, spec §7
+    t_passo_batch_s = t_passo_s * batch_size
 
-    wall = np.maximum(per_batch_fetch, t_passo_s)
-    wait = np.maximum(per_batch_fetch - t_passo_s, 0.0)
+    wall = np.maximum(per_batch_fetch, t_passo_batch_s)
+    wait = np.maximum(per_batch_fetch - t_passo_batch_s, 0.0)
     waiting_fraction = float(wait.sum() / wall.sum()) if wall.sum() > 0 else 0.0
 
-    windows_per_s = float(1.0 / per_batch_fetch.mean()) if per_batch_fetch.mean() > 0 else float("inf")
+    mean_fetch = per_batch_fetch.mean()
+    windows_per_s = float(batch_size / mean_fetch) if mean_fetch > 0 else float("inf")
 
     return AsseMMetrics(
         waiting_fraction=waiting_fraction,

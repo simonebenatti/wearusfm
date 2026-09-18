@@ -146,7 +146,7 @@ def cmd_measure(args: argparse.Namespace) -> None:
                     for k, v in r.items():
                         stage_samples.setdefault(k, []).append(v)
 
-    metrics = compute_asse_m_metrics(np.array(batch_fetch_times), t_passo_s)
+    metrics = compute_asse_m_metrics(np.array(batch_fetch_times), t_passo_s, batch_size=args.batch_size)
     stage_p50 = {k: float(np.percentile(v, 50)) for k, v in stage_samples.items()}
 
     out = {
@@ -203,7 +203,10 @@ def build_parser() -> argparse.ArgumentParser:
     ms.add_argument("--batch-size", type=int, default=64)
     ms.add_argument("--n-workers", type=int, default=8)
     ms.add_argument("--n-params", type=float, default=30e6, help="per il ritmo richiesto, spec §9")
-    ms.add_argument("--t-passo-s", type=float, default=None, help="sovrascrive il ritmo richiesto calcolato")
+    ms.add_argument(
+        "--t-passo-s", type=float, default=None,
+        help="sovrascrive il ritmo richiesto calcolato; e' il tempo per UNA finestra, non per batch",
+    )
     ms.add_argument("--rvq-slab", action="store_true", help="default spento, spec §4")
     ms.add_argument("--seed", type=int, default=0)
     ms.add_argument("--out", default=None, help="results/step0/<braccio>/<configurazione>.json")

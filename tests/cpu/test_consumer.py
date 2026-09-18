@@ -37,3 +37,23 @@ def test_required_windows_per_s_matches_spec_order_of_magnitude():
     assert 60 <= r30m <= 80
     assert 15 <= r100m <= 25
     assert r30m > r100m  # il modello piu' piccolo e' il caso vincolante (piu' richiesta)
+
+
+def test_t_passo_scales_with_batch_size_not_per_window():
+    # bug reale trovato sul primo run Leonardo: confrontare il tempo di un BATCH contro
+    # la soglia di UNA finestra sovrastima l'attesa. Un batch che consegna 64 finestre
+    # in un tempo pari a 64 * t_passo (cioe' esattamente al ritmo richiesto) non deve
+    # segnalare attesa, ne' con batch_size=1 ne' con batch_size=64.
+    t_passo_s = 0.01  # tempo richiesto per UNA finestra
+    batch_size = 64
+    fetch = np.full(50, t_passo_s * batch_size)  # il batch arriva esattamente in tempo
+    m = compute_asse_m_metrics(fetch, t_passo_s, batch_size=batch_size)
+    assert m.waiting_fraction == 0.0
+    assert abs(m.windows_per_s - batch_size / (t_passo_s * batch_size)) < 1e-9
+
+
+def test_windows_per_s_accounts_for_batch_size():
+    fetch = np.full(50, 0.25)  # 0.25s per batch
+    m1 = compute_asse_m_metrics(fetch, t_passo_s=0.01, batch_size=1)
+    m64 = compute_asse_m_metrics(fetch, t_passo_s=0.01, batch_size=64)
+    assert abs(m64.windows_per_s - 64 * m1.windows_per_s) < 1e-6
