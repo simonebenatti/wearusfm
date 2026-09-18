@@ -155,7 +155,8 @@ def cmd_measure(args: argparse.Namespace) -> None:
         "n_batches": args.n_batches,
         "batch_size": args.batch_size,
         "n_workers": args.n_workers,
-        "t_passo_s": t_passo_s,
+        "t_passo_s": t_passo_s,  # tempo richiesto per UNA finestra
+        "t_passo_batch_s": metrics.t_passo_batch_s,  # soglia per batch usata nel confronto
         "n_params": args.n_params,
         "waiting_fraction": metrics.waiting_fraction,
         "p50_wall_s": metrics.p50_wall_s,

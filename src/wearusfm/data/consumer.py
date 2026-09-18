@@ -20,10 +20,11 @@ class AsseMMetrics:
     p50_wall_s: float
     p95_wall_s: float
     p99_wall_s: float
-    windows_per_s: float  # throughput a vuoto (senza il floor di t_passo)
+    windows_per_s: float  # throughput a vuoto (senza il floor della soglia per batch)
+    t_passo_batch_s: float  # soglia per BATCH usata per il confronto (t_passo_s * batch_size)
 
 
-def compute_asse_m_metrics(fetch_times_s: np.ndarray, t_passo_s: float, batch_size: int = 1) -> AsseMMetrics:
+def compute_asse_m_metrics(fetch_times_s: np.ndarray, t_passo_s: float, *, batch_size: int) -> AsseMMetrics:
     """`fetch_times_s`: tempo di fetch di un BATCH (non di una singola finestra), forma
     (n_rank, n_batch) o (n_batch,).
 
@@ -59,6 +60,7 @@ def compute_asse_m_metrics(fetch_times_s: np.ndarray, t_passo_s: float, batch_si
         p95_wall_s=float(np.percentile(wall, 95)),
         p99_wall_s=float(np.percentile(wall, 99)),
         windows_per_s=windows_per_s,
+        t_passo_batch_s=t_passo_batch_s,
     )
 
 
