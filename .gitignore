@@ -1,6 +1,6 @@
-data/
-checkpoints/
-logs/
+/data/
+/checkpoints/
+/logs/
 *.out
 slurm-*.out
 *.npz
@@ -10,3 +10,6 @@ __pycache__/
 .env
 .leonardo_jobid
 .DS_Store
+*.egg-info/
+.pytest_cache/
+build/
