@@ -101,38 +101,35 @@ Regole proposte (piano_operativo_v10.md §6):
 
 ## D2 — Parametri provvisori del benchmark del dataloader (passo 0)
 
-**Stato:** in attesa.
+**Stato:** deciso il 18/09/2026. **Decisione (Simone):** adottata la base proposta, senza
+modifiche.
 
 Riferimento: [`docs/dataloader_bench_spec.md`](dataloader_bench_spec.md) §10.
 
-Base proposta: quote A/B/C 40/35/25, `p_piena` 0,5, classe C pessimistica (solo Hyser),
-contesto 4 s, patch 25 ms, 64 campioni per rank, 8 worker per GPU — un fattore alla volta, non
-un fattoriale completo.
-
-**Decisione:** *da registrare, prima di lanciare il passo 0.*
+Base: quote A/B/C 40/35/25, `p_piena` 0,5, classe C pessimistica (solo Hyser), contesto 4 s,
+patch 25 ms, 64 campioni per rank, 8 worker per GPU — un fattore alla volta, non un
+fattoriale completo. Non vincolante: le scelte vere del manifest sono D9 e D10.
 
 ---
 
 ## D6a — Dataloader: montaggi al volo o precompute
 
-**Stato:** in attesa.
+**Stato:** deciso il 18/09/2026. **Decisione (Simone):** confermata la regola proposta, senza
+modifiche.
 
-Regola proposta: al volo resta il default se, col consumatore del 30M, la frazione di tempo in
+Regola: al volo resta il default se, col consumatore del 30M, la frazione di tempo in
 attesa (massimo sui 4 rank) è ≤ 2% e il ritmo a vuoto è ≥ 1,5× il richiesto, a cache calda e
 fredda su `$WORK`. Se fallisce: si spostano sulla GPU gli stadi più cari e si rimisura; solo se
-fallisce ancora, precompute.
-
-**Decisione:** *da registrare, prima di lanciare il passo 0.*
+fallisce ancora, precompute (con la conseguenza su `D_c` scritta nel manifest, v10 §4.6).
 
 ---
 
 ## D6b — Dataloader: layout del batch
 
-**Stato:** in attesa.
+**Stato:** deciso il 18/09/2026. **Decisione (Simone):** confermata la regola proposta, senza
+modifiche.
 
-Regola proposta: il padding è escluso in partenza se la frazione di token di padding supera il
+Regola: il padding è escluso in partenza se la frazione di token di padding supera il
 50%. Fra i rimanenti vince chi dà più token utili/s nel proxy; a parità entro il 10% vince il
 più semplice, nell'ordine L1 → L3 → L2. Il bucketing per micro-batch (L3) si adotta solo con
 l'assenso esplicito di TU: modifica la regola "mai bucketing" di v10 §2.7.
-
-**Decisione:** *da registrare, prima di lanciare il passo 0.*
