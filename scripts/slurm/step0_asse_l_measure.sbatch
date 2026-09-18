@@ -10,9 +10,9 @@
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step0_asse_l_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step0_asse_l_%j.out
 
-# Passo 0, asse L (layout: padding / packing / bucketing) - PRIMA VALIDAZIONE, scala
-# ridotta (non ancora la misura statistica finale a 500 batch, spec §10): serve prima
-# accertare che il codice giri senza errori su hardware reale (mai testato senza CUDA).
+# Passo 0, asse L (layout: padding / packing / bucketing). Scala statistica piena
+# (spec §10: almeno 500 batch), dopo la prima validazione a scala ridotta (job
+# 58137104, riuscita al primo colpo su tutti e tre gli arm).
 #
 # Output SEMPRE fuori dalla working tree del repo (CLAUDE.md, "Progetto FM sEMG").
 
@@ -27,7 +27,7 @@ source "$WORK/venv_wearusfm/bin/activate"
 RESULTS="$WORK/wearusfm_runs/results/step0/asse_l"
 mkdir -p "$RESULTS" "$WORK/wearusfm_runs/logs"
 
-COMMON="--d-model 384 --n-backbone-layers 10 --batch-size 32 --n-batches 15 --warmup-batches 3"
+COMMON="--d-model 384 --n-backbone-layers 10 --batch-size 32 --n-batches 500 --warmup-batches 50"
 
 for arm in padding packing bucketing; do
   echo "=== asse L: $arm ==="
