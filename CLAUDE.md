@@ -24,6 +24,22 @@
   procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
   installare pacchetti o sottomettere job.
 
+## Progetto FM sEMG
+- Documento di riferimento: `docs/fm_emg_reference_v10.md`. Piano operativo:
+  `docs/piano_operativo_v10.md`. La v9 non e' piu' nel working tree.
+- «da verificare» nel documento di riferimento e' un compito, non un dato: non si usa come
+  premessa. Si verifica (subagent fact-checker o license-checker), si registra in
+  `docs/fatti_da_verificare.md` con URL/percorso e citazione esatta, ed entra nel documento di
+  riferimento solo dopo la firma esplicita di Simone.
+- Ogni richiesta di conferma per un job dichiara il costo stimato in ore locali e in GPU-ora, e
+  quanto resta del budget del passo (vedi `docs/decisioni.md`). Superare il budget di un passo
+  richiede una decisione registrata, non una conferma al volo.
+- Le soglie si congelano prima di guardare: ogni soglia sperimentale si scrive in
+  `docs/decisioni.md` e si committa PRIMA di lanciare l'esperimento che la usa.
+- Le allocazioni (`salloc`) le apre solo Simone, mai l'agente di sua iniziativa.
+- Un dataset che non entra nello schema dei metadati si segnala: lo schema non si piega in
+  silenzio.
+
 ## Vincoli non negoziabili
 - Login node: limite di 10 minuti di CPU time. Tutto il resto va in srun o sbatch.
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
