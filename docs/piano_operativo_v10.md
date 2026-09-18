@@ -15,6 +15,9 @@ decisioni che spettano a te e il punto in cui vanno prese.
 - §9 **registro delle decisioni** · §10 **calendario a ritroso con tagli pre-decisi** ·
   §11 **passi −1 … 6** con ruoli, output, criteri di accettazione, condizioni di stop e budget
   · §12 decisioni dopo il passo 6 · §13 cosa fare oggi
+- **Rev. 3 (18/09/2026):** passo 0 riallineato alla spec riscritta
+  (`docs/dataloader_bench_spec.md`): due assi invece di tre bracci, D6 divisa in D6a e D6b,
+  budget a 40 GPU-ora; D9 con classe di quota per montaggio e pesi dentro la classe
 - **Rev. 2 (18/09/2026):** numeri di `saldo -b` e disponibile reale (§5) · **finestre di
   lancio** e passi 7–9 in parallelo (§10) · vertice speculativo (D13) · D17
 
@@ -374,6 +377,7 @@ dall'agente. Un passo è chiuso quando il file esiste e il numero rispetta la so
 │   ├── piano_operativo_v10.md         ← questo file
 │   ├── decisioni.md                   ← registro: ID, data, decisione, soglie congelate
 │   ├── fatti_da_verificare.md         ← fatto · fonte · citazione · stato
+│   ├── dataloader_bench_spec.md       ← spec del passo 0 (rev. 2)
 │   └── dataset_access.md
 ├── scripts/
 │   └── setup_env.sh
@@ -393,7 +397,7 @@ congelare in `docs/decisioni.md` *prima* di lanciare l'esperimento che le usa.
 | **D0** | Calendario e continuità: proroga, nuovo progetto, o tagli | passo −1 | oggi | tutto il §10 |
 | **D1** | Autonomia dell'agente e budget per passo | passo −1 | oggi | ogni job |
 | **D2** | Parametri provvisori del benchmark (quote, patch, contesto) — non vincolanti | passo 0 | prima di lanciare | passo 0 |
-| **D6** | Dataloader: padding / packing / precompute — regola **prima**, esito dopo | passo 0 | 04/10 | manifest (`D_c`) |
+| **D6** | Dataloader — (a) montaggi al volo o precompute · (b) layout: padding, packing o bucketing per micro-batch. Regole **prima**, esito dopo | passo 0 | 04/10 | manifest (`D_c`); v10 §2.7 se vince il bucketing |
 | **D3** | Dataset di Kaifosh: (a) scaricarlo · (b) ruolo nel manifest | (a) passo 1 · (b) passo 4 | (a) 04/10 · (b) 25/10 | harness, manifest |
 | **D5** | Ancora RVQ: (a) soglie X, Y e criterio V4 **prima** · (b) esito | passo 1-bis | (a) prima di lanciare · (b) 11/10 | run 5, quota di slab nel masking |
 | **D4** | Firma dei fatti verificati → documento v10.1 | passo 1-bis | 11/10 | ingresso dei fatti nel riferimento |
@@ -479,12 +483,12 @@ corpus: è l'uscita garantita anche se il resto slitta. Per questo parte subito 
 
 ## 11. Piano passo per passo — fino al passo 6
 
-Budget per passo, da confermare con D1. Totale fino al passo 6: ~500 GPU-ora più l'ingest su
+Budget per passo, da confermare con D1. Totale fino al passo 6: ~520 GPU-ora più l'ingest su
 CPU, cioè meno dell'1% del disponibile.
 
 | Passo | Budget | In ore locali |
 |---|---|---|
-| 0 | 20 GPU-ora | 160 |
+| 0 | 40 GPU-ora | 320 |
 | 1 | solo `lrd_all_serial` | — |
 | 1-bis | 30 GPU-ora | 240 |
 | 2 | ≤ 100 nodo-ore di CPU | ≤ 3.200 |
@@ -518,45 +522,54 @@ regole di §6. *Proposta:* adottarli così.
 **Chiuso quando:** v10, piano e registro sono committati; l'output di `saldo -b` del 18/09 è
 incollato sotto D0 in `docs/decisioni.md`.
 
-### Passo 0 — Benchmark sintetico del dataloader · W1–W2 · ≤ 20 GPU-ora
+### Passo 0 — Benchmark sintetico del dataloader · W1–W2 · ≤ 40 GPU-ora
 
-Riferimento: v10 §4.6 e §9. Non richiede un byte di EMG reale.
+Riferimento: **`docs/dataloader_bench_spec.md` (rev. 2)**, che prevale su questo riassunto;
+v10 §4.6 e §9. Il contenuto dei dati è casuale, ma si scrive su disco e si rilegge.
 
-- **AG** scrive `src/wearusfm/data/synthetic.py`, le tre collate (padding + maschera,
-  packing, precompute) e `bench/bench_dataloader.py`; i test di logica delle collate vanno in
-  `tests/cpu/` e girano sul Mac.
-- **TU** apre l'allocazione (§5); **AG** lancia con `srun --jobid --overlap`.
-- **Due requisiti di realismo**, senza i quali il numero non vale:
-  1. i campioni sintetici hanno la **frequenza nativa** del dataset che imitano (200, 1000,
-     2000, 2048 Hz): la stessa finestra in secondi ha lunghezze in campioni molto diverse, e
-     la collate deve **raggruppare per frequenza** — il front-end gira una volta per gruppo,
-     poi i token, definiti in ms, si riuniscono;
-  2. nel tempo misurato c'è tutto il lavoro di CPU di v10 §4.6: montage dropout,
-     sottocampionamento HD, montaggi bipolari virtuali, masking su tre scale più quello
-     spaziale.
-- **Kernel varlen di FlashAttention** (fatto da verificare n. 9): controllare se è
-  nell'ambiente. Se non c'è, **mezza giornata al massimo** per provarci; poi il braccio packing
-  usa maschere a blocchi esplicite con SDPA, o si abbandona.
+- **Due assi, non tre bracci.** *Montaggi*: al volo o precompute — lato CPU e I/O, misurato col
+  solo dataloader contro un consumatore simulato. *Layout*: padding + maschera, packing, o
+  bucketing per micro-batch — lato GPU, misurato con un modello proxy.
+- **AG** scrive il generatore sintetico (montaggi interi, frequenza nativa, classe di origine
+  e classe presentata), lo scrittore degli shard, le collate, il consumatore simulato, il
+  proxy e `bench/bench_dataloader.py`; i test di logica vanno in `tests/cpu/` e girano sul Mac.
+- **TU** apre le allocazioni (§5): una per scrivere gli shard, una successiva per misurare,
+  così il primo passaggio è a cache fredda. **AG** lancia con `srun --jobid --overlap`.
+- **Requisiti di realismo** (spec §3–§5): il campione è il **montaggio intero**; la collate
+  **raggruppa per frequenza** e non padda mai il tempo; nel tempo misurato entra tutta la
+  catena, incluse le augmentation di v10 §8 (il time warping è probabilmente lo stadio più
+  caro); I/O vero su `$WORK` e su `$FAST`.
+- **FlashAttention.** L'import è verificato; **precondizione del braccio packing** è una prova
+  forward + backward in bf16 su A100. Il kernel non accetta un bias additivo arbitrario:
+  l'encoder locale si scrive come attenzione sui vicini con `gather`, e il kernel varlen serve
+  solo alla cross-attention del Perceiver (v10 §4.6, §5.4).
 
-**D2 — Parametri provvisori, non vincolanti** (le scelte vere sono D9 e D10). *Proposta:*
-quote sparso 40 / anello 35 / HD 25; patch 25 ms; contesto ∈ {2, 4, 8} s; 8 worker per GPU.
+**D2 — Parametri provvisori, non vincolanti** (le scelte vere sono D9 e D10). *Proposta*, spec
+§10: base con quote A/B/C 40 / 35 / 25, `p_piena` 0,5, classe C pessimistica (solo Hyser),
+contesto 4 s, patch 25 ms, 64 campioni per rank, 8 worker; **un fattore alla volta**, non un
+fattoriale. Il parametro a cui il costo è più sensibile è `p_piena`, non le quote.
 
-**D6 — Regola, da congelare prima di lanciare.** *Proposta:* si sceglie, nell'ordine padding
-→ packing → precompute, il primo braccio che dà almeno **1,5× il ritmo richiesto dal modello
-da 30M** con p95/p50 del tempo per batch ≤ 1,5. Il ritmo richiesto per GPU è circa
+**D6 — Due regole, da congelare prima di lanciare** (spec §9). Il ritmo richiesto per GPU è
 
   `finestre/s ≈ MFU · 312·10¹² / (6 · N · K · contesto/patch)`
 
 cioè ~70 finestre/s a 30M con K = 64, contesto 4 s, patch 25 ms e MFU 40%, e ~20 a 100M:
-**il caso vincolante è il modello piccolo, non il 5B**. Se passa solo il precompute, i
-montaggi virtuali diventano dato fisso e cambia il conteggio di `D_c` (v10 §4.6): va scritto
-nel manifest.
+**il caso vincolante è il modello piccolo, non il 5B**.
+- **D6a — montaggi.** *Proposta:* al volo resta il default se, col consumatore del 30M, la
+  frazione di tempo in attesa (massimo sui 4 rank) è ≤ 2% e il ritmo a vuoto è ≥ 1,5× il
+  richiesto, a cache calda e fredda su `$WORK`. Se fallisce, prima si spostano sulla GPU gli
+  stadi più cari e si rimisura; **solo se fallisce ancora, precompute** — e allora i montaggi
+  virtuali diventano dato fisso e cambia il conteggio di `D_c` (v10 §4.6): va nel manifest.
+- **D6b — layout.** *Proposta:* il padding è escluso in partenza se la frazione di token di
+  padding supera il 50% (la stima analitica con la base è ~80%). Fra i rimanenti vince chi dà
+  più token utili/s nel proxy; a parità entro il 10% vince il più semplice. **Il bucketing per
+  micro-batch si adotta solo col tuo assenso:** modifica il «mai bucketing» di v10 §2.7.
 
-**Chiuso quando:** `results/step0/*.json` contiene, per ogni braccio e ogni punto della
-griglia, finestre/s per GPU e p5/p50/p95 del tempo per batch; `docs/report_step0.md` applica
-la regola D6 e TU firma l'esito.
-**Stop:** se nessun braccio raggiunge il ritmo, non si ottimizza a oltranza: si porta a TU la
-scelta fra spostare il masking su GPU e precomputare.
+**Chiuso quando:** `results/step0/<braccio>/<configurazione>.json` contiene le metriche di
+spec §8 — fra cui frazione di tempo in attesa, tempo per stadio, frazione di padding, token
+utili/s — e `docs/report_step0.md` applica D6a e D6b; TU firma l'esito.
+**Stop:** se al volo non regge nemmeno con gli stadi cari sulla GPU, non si ottimizza a
+oltranza: si passa al precompute e si porta a TU la conseguenza su `D_c`.
 
 ### Passo 1 — Accessi e download · da oggi · solo `lrd_all_serial`
 
@@ -678,7 +691,10 @@ Riferimento: v10 §2.8 e §10.3. **Irreversibile lungo tutta la ladder: firma TU
   dei dati sparsi veri, e lettura del pilot **per topologia**.
 - **(b) Ruolo del dataset di Kaifosh (D3b):** tutto benchmark mai visto, o una parte dei
   soggetti in pretraining. Aggiunge soggetti, non topologie.
-- **(c) Esito di D6:** al volo o precompute, con la conseguenza su `D_c`.
+- **(a-bis) Classe di quota e pesi dentro la classe.** La classe è **del montaggio** (v10
+  §2.8): NinaPro è caso sparso. Dentro la classe va scelto come pesare i dataset — per ore, per
+  soggetti, o uniforme — perché decide quanto spesso il modello vede i dataset piccoli.
+- **(c) Esito di D6a:** al volo o precompute, con la conseguenza su `D_c`.
 - **(d) Split dei soggetti**, congelati col manifest e con seed dichiarato: soggetti di test
   per dataset (split ufficiali dove esistono), più i manifest **sottocampionati per soggetti**
   al 25 e 50% per l'asse di v10 §10.6. Controllare qui la sovrapposizione coi soggetti visti

@@ -15,6 +15,12 @@ trattato come **compito di verifica, non come dato**. L'elenco completo è in §
 finestre di inizio mese (§9), 3 seed per rung (§10.2), **vertice a 3–5B da «non si esegue» a
 speculativo e parallelo** (§10.4), asse dei soggetti a due taglie (§10.6).
 
+**Rev. 3 (18/09/2026).** Dalla revisione della spec del passo 0: il campione è il **montaggio
+intero** e la **classe di quota è del montaggio** (§2.8, §3.4); il benchmark del dataloader ha
+**due assi, non tre bracci** (§4.6); i kernel flash non accettano il bias geometrico: encoder
+locale con attenzione sui vicini (§5.4); Hyser e putEMG con dati raccolti da fonte ufficiale
+(§2.1, §2.2). Spec: `docs/dataloader_bench_spec.md`.
+
 **Novità rispetto alla v9:**
 - §1 **compute aggiornato** (rev. 2: ~70.000–90.000 GPU-ora) · **scope corretto** (il cingolo
   scapolare non è coperto da nessun dataset) · rung a 3–5B **condizionale**
@@ -67,7 +73,8 @@ grandi ricostruiscono meglio i contesti. **La controevidenza è forte e va affro
 paper, non scoperta in review** (§11). Il rung a 3–5B è **condizionale** (§10.4): le GPU-ora
 ci sono; i costi veri sono il tempo di ingegneria e la priorità in coda.
 
-**Licenza e uso.** Il corpus include dataset sotto CC-BY-NC-SA 4.0 (emg2pose, emg2qwerty).
+**Licenza e uso.** Il corpus include dataset sotto CC-BY-NC-SA 4.0 (emg2pose, emg2qwerty) e
+sotto CC BY-NC 4.0 (putEMG).
 L'uso è **esclusivamente non commerciale e di ricerca**; i pesi sono strumentali ai numeri
 del paper e non sono destinati a rilascio pubblico. Se un rilascio dovesse diventare
 rilevante, la clausola ShareAlike va riesaminata prima, non dopo. Il deployment industriale
@@ -109,12 +116,12 @@ collasso o degenerazione della rappresentazione.
 | NinaPro DB2/3/4/6/7/8/10 | ~80–100 h | **mista**: anello a 8 + mirati (§3.4) | Delsys/Cometa, 2 kHz nominali; **DB8 ~1111 Hz, DB10 ~1926 Hz (da verificare)**. DB3/DB7 amputati (anche DB8/DB10: da verificare) |
 | NinaPro DB1 | 100 Hz | sparsa | **inviluppo RMS Otto Bock** → percorso §2.4 |
 | NinaPro DB5 | 200 Hz, 2× Myo | anello | 8-bit, banda ridotta |
-| GRABMyo | 43 sogg., 3 giorni, **2048 Hz**, 16+12 ch | fascia lineare | multi-giorno |
-| putEMG (+ Force) | 44 sogg., 24 ch, **~5120 Hz (da verificare)** | 3 fasce | label di forza |
+| GRABMyo | 43 sogg., 3 giorni, **2048 Hz**, 16+12 ch | anello (fasce su avambraccio e polso) | multi-giorno |
+| putEMG (+ Force) | 44 sogg., 24 ch (3 fasce da 8, a 45°, primo elettrodo sull'ulna), **5120 Hz**, **monopolare** | anello (3 fasce) | label di forza |
 | EPN-612 | 612 sogg., Myo 8 ch @ 200 Hz | anello | **escluso dal pretraining** (§2.3) |
 | CapgMyo | 128 ch @ 1 kHz, 23 sogg. | griglia 2D | HD |
 | CSL-hdemg | 168 ch @ **2048 Hz**, 5 sogg. | griglia 2D | HD |
-| Hyser | HD-sEMG | griglia 2D | il più grande per volume |
+| Hyser | 20 sogg. × 2 sessioni, **256 ch** (4 griglie da 64) @ **2048 Hz** | griglia 2D | il più grande per volume |
 | Camargo 2021 | 22 sogg., 11 muscoli @ 1 kHz | **sparsa anatomica** | **controllo anatomico** (§2.3) |
 | UCI-EMG (Lobov) | 8 ch | anello | **escluso dal pretraining** (§2.3) |
 
@@ -146,7 +153,7 @@ soggetti ma non topologie (§2.6). Accesso, licenza e dimensioni: **da verificar
 | EPN-612 | Zenodo, libero | da verificare | 5,5 GB |
 | CapgMyo | figshare, libero | da verificare | 1,3 GB |
 | CSL-hdemg | **richiesta via email** con affiliazione | da verificare | >2 GB |
-| putEMG | libero via cloud PUT Poznań | da verificare | non indicata |
+| putEMG | libero via cloud PUT Poznań | **CC BY-NC 4.0** (raccolto dalla pagina ufficiale, da firmare) | non indicata |
 | NinaPro DB1–8, DB10 | **account e accettazione dei termini** | da verificare | non indicata |
 | UCI-EMG | UCI ML Repository, libero | da verificare | 17 MB |
 | Camargo 2021 | Mendeley Data, 3 parti, libero | CC BY 4.0 | non indicata |
@@ -260,14 +267,23 @@ su griglie piene (secondo obiettivo da bilanciare, rischio di specializzazione d
 
 Non costa: il bottleneck Perceiver è indipendente da *C*, l'attenzione ai vicini è O(C·k).
 
-**Batching: padding + maschera**, mai bucketing per numero di canali. Alternativa da misurare
-al passo 0: **packing** (§4.6), che conserva la miscela di topologie per batch.
+**Batching: padding + maschera**, mai bucketing per numero di canali **fra batch**.
+Alternative da misurare al passo 0 (§4.6): il **packing**, che conserva la miscela di topologie
+per batch, e il **bucketing per micro-batch con accumulo del gradiente**, che la conserva per
+passo di ottimizzazione. Misurare il secondo non impegna; adottarlo modifica questa regola ed è
+una decisione da prendere coi numeri in mano.
 
 ### 2.8 Quote di campionamento — il caso sparso è prioritario
 
 Il caso sparso **non è il ramo degenere: è il caso di deployment.** Quota **garantita per
 topologia**, non lasciata alle proporzioni naturali del corpus. Le quote fanno parte del
 **manifest**, congelato lungo tutta la ladder (§10.3).
+
+**La classe di quota è del montaggio, non del gruppo di canali.** Un montaggio misto conta per
+ciò che è in deployment: NinaPro (anello a 8 + mirati) è **caso sparso**, come nella v9. Tre
+classi: **A** radi/anatomici (NinaPro, Camargo) · **B** anelli e fasce (bracciali Meta, DB5,
+GRABMyo, putEMG) · **C** griglie HD. Anche i **pesi dentro la classe** (per ore, per soggetti o
+per dataset) sono un parametro del manifest, da fissare al passo 4.
 
 ---
 
@@ -340,6 +356,10 @@ spostamento angolare relativo), gli altri sono mirati su muscoli noti (nessuna s
 identità del muscolo). Un montaggio è un **insieme di gruppi di canali**, ciascuno con la
 propria topologia, geometria e simmetria dichiarata (§4.5). Vale anche per i doppi bracciali
 (DB5, emg2qwerty) e per le fasce multiple (putEMG, GRABMyo).
+
+È un **metadato** per encoding posizionale e simmetrie: **il campione che entra nel modello
+resta il montaggio intero**, con tutti i suoi gruppi. Spezzarlo per gruppo toglierebbe al
+modello proprio la sinergia fra i gruppi. La classe di quota si assegna al montaggio (§2.8).
 
 **Principio: la simmetria è un dato dichiarato nei metadati per montaggio, non
 un'assunzione architetturale.** L'architettura deve essere *symmetry-capable* senza essere
@@ -586,17 +606,26 @@ generato al volo è augmentation stocastica — e questo cambia il conteggio di 
 congelato al passo 4 della roadmap. **Va misurato prima di congelare il manifest.**
 
 **Misurabile senza dati** (§9, passo 0): tensori casuali con la distribuzione di canali che
-il manifest prevede, quote per topologia applicate, throughput con 8 worker per GPU. **Tre
-bracci:** padding + maschera, packing, precompute.
+il manifest prevede, quote per topologia applicate, throughput con 8 worker per GPU. **Due
+assi, non tre bracci** (rev. 3): *montaggi* al volo o precompute — lato CPU e I/O, misurato col
+solo dataloader contro un consumatore simulato — e *layout* padding, packing o bucketing per
+micro-batch — lato GPU, misurato con un modello proxy. Il contenuto è casuale, ma i dati si
+**scrivono su disco nel formato dell'ingest e si rileggono**: senza I/O il precompute non si
+vede. La distribuzione ha frequenza nativa e contesto, non solo canali: una finestra di Hyser
+pesa oltre 150 volte una di DB5. Spec completa: `docs/dataloader_bench_spec.md`.
 
 **Alternativa da misurare: packing.** Invece di padding + maschera, concatenare i token di
 canale di più campioni in un'unica sequenza con attenzione a blocchi (stile NaViT, «Patch n'
 Pack»). Conserva la miscela di topologie in ogni batch — il motivo per cui il bucketing è
 escluso (§2.7) — senza far pagare 256 canali a chi ne ha 8. Con il padding al massimo del
 batch, lo stadio pre-bottleneck lavora su C token per passo temporale contro i K del
-backbone: lo spreco non è trascurabile. Vincolo pratico: il PyTorch 2.2 di `cineca-ai/4.3.0`
-non ha FlexAttention; servono i kernel varlen di FlashAttention (presenza nell'ambiente **da
-verificare**) oppure maschere a blocchi esplicite con SDPA, più lente.
+backbone: con le quote provvisorie circa l'80% dei token pre-bottleneck sarebbe padding.
+Vincolo pratico: il PyTorch 2.2 di `cineca-ai/4.3.0` non ha FlexAttention. `flash_attn` 2.5.5 è
+installato e `flash_attn_varlen_func` si importa; **manca la prova funzionale** su A100. E il
+kernel accetta maschera causale, finestra scorrevole e pendenze ALiBi, **non un bias additivo
+arbitrario**: il bias geometrico di §5.3 non ci passa. Quindi: encoder locale con attenzione
+sui vicini via `gather` (§5.4), dove il packing è gratuito; kernel varlen solo per la
+cross-attention del Perceiver.
 
 ---
 
@@ -685,6 +714,9 @@ sui montaggi con pochi canali.
 
 - **Encoder spaziale locale**: graph transformer o attenzione ai vicini fisici, vicinato
   definito da un **raggio nello spazio metrico**.
+  - **Implementazione (rev. 3):** attenzione sui k vicini raccolti con `gather`, col bias
+    geometrico di §5.3 calcolato sulle loro distanze. I kernel flash non accettano un bias
+    additivo arbitrario (§4.6), e in questa forma i canali variabili non richiedono padding.
   - **Il caso A non è degenere: è il target.** Percorso di prima classe con quota garantita.
   - Su Camargo il vicinato metrico è vuoto: il blocco funziona interamente sull'identità
     anatomica, **a livello muscolo** (§4.5). È il caso che rende leggibile l'ablation di
@@ -1113,7 +1145,8 @@ su montaggi sparsi. Moltiplicatore effettivo onesto: 3–10×.
 0. **Benchmark sintetico del dataloader** (§4.6) — non richiede dati. Tensori casuali con la
    distribuzione di canali prevista, quote per topologia, collate a forma variabile,
    throughput con 8 worker per GPU. Risponde alla domanda precompute-vs-on-the-fly, che
-   retroagisce su `D_c`. Tre bracci: padding + maschera, packing, precompute (§4.6).
+   retroagisce su `D_c`. Due assi: montaggi (al volo / precompute) e layout (padding /
+   packing / bucketing per micro-batch). Spec: `docs/dataloader_bench_spec.md`.
 1. **Scaricamento dataset** secondo l'ordine di priorità di §2.5. Avviare subito le richieste
    che hanno latenza umana (CSL-hdemg via email, account NinaPro) e scaricare presto
    emg2qwerty (repo archiviato).
@@ -1575,8 +1608,11 @@ dettagli anti-collasso.
 - Quote di campionamento per topologia (§2.8) — determinano la media di canali e quindi `D_c`,
   i gradienti al ramo sparso, e la frequenza con cui l'encoder locale vede griglie dense.
   **Ultimo parametro con conseguenze in tre direzioni; da fissare al passo 4**
-- Throughput del dataloader e scelta fra padding, packing e precompute per i montaggi
-  virtuali (§4.6), che retroagisce su `D_c` — **misurabile già al passo 0**
+- Dataloader (§4.6), **misurabile già al passo 0**: montaggi virtuali al volo o precompute,
+  che retroagisce su `D_c`; e layout del batch — padding, packing o bucketing per micro-batch,
+  l'ultimo solo modificando §2.7
+- Pesi di campionamento dentro la classe di quota (§2.8), da fissare al passo 4
+- Frequenza al front-end dei dataset non-HD a 2 kHz: 1 kHz come da §4.1, o nativa
 - Soglie del gate di consistenza al ricampionamento (§7.1), da congelare prima dei risultati
 - Soglia numerica della regola decisionale del pilot (§10.3), da congelare prima dei risultati
 - **Condizioni per il lancio speculativo del rung a 3–5B (§10.4)**: confermarle o cambiarle
@@ -1592,8 +1628,9 @@ dettagli anti-collasso.
 
 **Fatti da verificare** — riportati a memoria o da fonte secondaria; sono compiti, non dati:
 
-1. Frequenze native di NinaPro DB8 (~1111 Hz), DB10 (~1926 Hz) e putEMG (~5120 Hz); presenza
-   di amputati in DB8 e DB10; varianti del montaggio NinaPro (DB6 a 14 elettrodi, DB8 a 16)
+1. Frequenze native di NinaPro DB8 (~1111 Hz) e DB10 (~1926 Hz); presenza di amputati in DB8
+   e DB10; varianti del montaggio NinaPro (DB6 a 14 elettrodi, DB8 a 16); disposizione
+   interna delle fasce di GRABMyo. (putEMG e Hyser: raccolti da fonte ufficiale, da firmare)
 2. Sovrapposizione di soggetti fra i DB NinaPro
 3. Conteggio dei soggetti del corpus (~600) e delle ore dopo la rimozione di DB9
 4. Dal codice del repo NeuroRVQ: banda di filtraggio usata nel pretraining del tokenizer
@@ -1606,5 +1643,6 @@ dettagli anti-collasso.
    accesso, licenza e dimensioni del dataset rilasciato
 8. Orientamento della fascia documentato, dataset per dataset, per tutti gli anelli e le
    fasce (serve alla funzione atlante di §4.5)
-9. Kernel varlen di FlashAttention nell'ambiente `cineca-ai/4.3.0` (§4.6)
+9. `flash_attn_varlen_func` in `cineca-ai/4.3.0`: l'import è verificato, manca la **prova
+   funzionale** forward + backward in bf16 su A100 (§4.6)
 10. MFU reale sul Booster, per sostituire la stima di §10.5
