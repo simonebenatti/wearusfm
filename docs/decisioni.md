@@ -117,6 +117,10 @@ fattoriale completo. Non vincolante: le scelte vere del manifest sono D9 e D10.
 **Stato:** deciso il 18/09/2026. **Decisione (Simone):** confermata la regola proposta, senza
 modifiche.
 
+**Esito applicato e firmato il 21/09/2026: AL VOLO.** waiting_fraction 0,0, margine 3,5-4×
+il richiesto a cache fredda e calda (job 58137579). Dettagli in
+[`docs/report_step0.md`](report_step0.md).
+
 Regola: al volo resta il default se, col consumatore del 30M, la frazione di tempo in
 attesa (massimo sui 4 rank) è ≤ 2% e il ritmo a vuoto è ≥ 1,5× il richiesto, a cache calda e
 fredda su `$WORK`. Se fallisce: si spostano sulla GPU gli stadi più cari e si rimisura; solo se
@@ -137,6 +141,10 @@ come garanzia assoluta a piena scala.
 
 **Stato:** deciso il 18/09/2026. **Decisione (Simone):** confermata la regola proposta, senza
 modifiche.
+
+**Esito applicato e firmato il 21/09/2026: PACKING.** Padding escluso (56,4% > soglia 50%);
+packing batte bucketing del 13% (sopra la soglia di parità del 10%). Dettagli in
+[`docs/report_step0.md`](report_step0.md).
 
 Regola: il padding è escluso in partenza se la frazione di token di padding supera il
 50%. Fra i rimanenti vince chi dà più token utili/s nel proxy; a parità entro il 10% vince il

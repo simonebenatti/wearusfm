@@ -83,6 +83,7 @@ come predizione del costo del modello finale.
 
 - [x] `results/step0/*.json` esiste per ogni braccio/configurazione misurata
 - [x] Questo report applica D6a e D6b
-- [ ] **Firma di Simone** sull'esito (al volo + packing) e sui limiti dichiarati
+- [x] **Firma di Simone** (21/09/2026): esito approvato — al volo + packing, limiti
+  dichiarati letti e accettati.
 
-Se firmato, il passo 0 è chiuso (piano operativo, W1-W2).
+**Passo 0 chiuso il 21/09/2026.**
