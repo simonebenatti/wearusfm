@@ -61,21 +61,16 @@ fetch "https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_metadata.csv" \
       "$RAW/emg2pose_mini/emg2pose_metadata.csv"
 
 echo "=== checkpoint NeuroRVQ (HuggingFace) - copia anche su \$WORK/models/ (CLAUDE.md/piano §3) ==="
+# wget diretto sull'URL /resolve/main/, non huggingface_hub: quella libreria non e'
+# garantita sul Python di sistema del login node (bug trovato in sessione, 21/09/2026 -
+# ModuleNotFoundError con questo stesso script). Path verificati con curl -I (302 verso
+# CDN firmato = file reale) prima di correggere.
 NEURORVQ_DIR="$WORK/data/raw/neurorvq_checkpoint"
-mkdir -p "$NEURORVQ_DIR"
-python3 -c "
-from huggingface_hub import hf_hub_download
-import shutil, pathlib
-dest = pathlib.Path('$NEURORVQ_DIR')
-for fname in ['pretrained_models/tokenizers/NeuroRVQ_EMG_tokenizer_v1.pt',
-              'pretrained_models/foundation_models/NeuroRVQ_EMG_foundation_model_v1.pt']:
-    try:
-        path = hf_hub_download(repo_id='ntinosbarmpas/NeuroRVQ', filename=fname)
-        shutil.copy(path, dest / pathlib.Path(fname).name)
-        print('ok:', fname)
-    except Exception as e:
-        print('FALLITO:', fname, '-', e)
-"
+HF_BASE="https://huggingface.co/ntinosbarmpas/NeuroRVQ/resolve/main"
+fetch "$HF_BASE/pretrained_models/tokenizers/NeuroRVQ_EMG_tokenizer_v1.pt" \
+      "$NEURORVQ_DIR/NeuroRVQ_EMG_tokenizer_v1.pt"
+fetch "$HF_BASE/pretrained_models/foundation_models/NeuroRVQ_EMG_foundation_model_v1.pt" \
+      "$NEURORVQ_DIR/NeuroRVQ_EMG_foundation_model_v1.pt"
 mkdir -p "$WORK/models"
 cp -n "$NEURORVQ_DIR"/*.pt "$WORK/models/" 2>&1 || true
 
