@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WearUsFM Montage Metadata",
+  "description": "Schema dei metadati di sensore per l'ingest (v10 §4.5, §3.6). Vincolante solo dopo la firma di Simone (D7a).",
+  "type": "object",
+  "properties": {
+    "dataset_name": {
+      "type": "string"
+    },
+    "subject_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "day_index": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string"
+          },
+          "topology": {
+            "type": "string",
+            "enum": [
+              "ring",
+              "grid_2d",
+              "sparse"
+            ]
+          },
+          "symmetry": {
+            "type": "string"
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sensor_coords": {
+                  "type": "object",
+                  "properties": {
+                    "channel_index": {
+                      "type": "integer"
+                    },
+                    "grid_row": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "grid_col": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "ring_angle_deg": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "channel_index"
+                  ]
+                },
+                "electrode_type": {
+                  "type": "string"
+                },
+                "native_fs_hz": {
+                  "type": "number"
+                },
+                "effective_band_hz": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "mains_frequency_hz": {
+                  "type": "integer",
+                  "enum": [
+                    50,
+                    60
+                  ]
+                },
+                "raw_or_envelope": {
+                  "type": "string",
+                  "enum": [
+                    "raw",
+                    "envelope"
+                  ]
+                },
+                "anatomical_identity": {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "compartment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sector": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "muscle": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "precision": {
+                      "type": "string",
+                      "enum": [
+                        "muscle",
+                        "compartment",
+                        "sector",
+                        "region",
+                        "unknown"
+                      ]
+                    },
+                    "muscle_ontology_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "soft_compartment_weights": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    },
+                    "nominal": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "precision",
+                    "nominal"
+                  ]
+                },
+                "chirality": {
+                  "type": "string",
+                  "enum": [
+                    "left",
+                    "right",
+                    "unknown"
+                  ]
+                },
+                "anatomical_coords": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "muscle": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "compartment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "side": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "fiber_orientation_deg": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "repositioning": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rotation_deg": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "translation_mm": {
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "type": "number"
+                          },
+                          "minItems": 2,
+                          "maxItems": 2
+                        },
+                        "chirality_flip": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "inter_electrode_distance_mm": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "bipolar_orientation": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "calibration_status": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "absent"
+                  ]
+                },
+                "mvc_reference": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "qc_valid": {
+                  "type": "boolean"
+                },
+                "body_region": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sensor_coords",
+                "electrode_type",
+                "native_fs_hz",
+                "effective_band_hz",
+                "mains_frequency_hz",
+                "raw_or_envelope",
+                "anatomical_identity"
+              ]
+            },
+            "minItems": 1
+          },
+          "band_orientation_deg": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "group_id",
+          "topology",
+          "symmetry",
+          "channels"
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "dataset_name",
+    "subject_id",
+    "session_id",
+    "groups"
+  ]
+}
