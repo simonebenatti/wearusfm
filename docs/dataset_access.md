@@ -4,7 +4,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 
 | Dataset | URL | Registrazione richiesta | Formato file | Dimensione approssimativa |
 |---------|-----|------------------------|--------------|--------------------------|
-| NinaPro DB1-DB10 | https://ninapro.hevs.ch/instructions/DB1.html (DB1 come esempio) | Sì: login "reviewers" con password "rev2019" sul sito ufficiale | MATLAB .mat | non trovata |
+| NinaPro DB1-DB10 | https://ninapro.hevs.ch/instructions/DBn.html (n=1..10) | **Corretto il 21/09/2026: nessuna registrazione.** Verificato scaricando un file reale da DB2 (`https://ninapro.hevs.ch/files/DB2_Preproc/DB2_s1.zip`, >10MB, nessun login incontrato). Le pagine di istruzioni linkano direttamente agli zip per soggetto | ZIP (contenuto .mat) | non trovata |
 | putEMG | https://biolab.put.poznan.pl/putemg-dataset/ | Nessuna: accesso libero via cloud storage (chmura.put.poznan.pl) | HDF5, CSV | non trovata |
 | CapgMyo | https://figshare.com/articles/dataset/Data_from_Gesture_Recognition_by_Instantaneous_Surface_EMG_Images_CapgMyo-DBa/7210397 | Nessuna: accesso libero | MATLAB .mat | 1.31 GB |
 | CSL-hdemg | http://www.csl.uni-bremen.de/CorpusData/download.php?crps=cslhdemg | Sì: richiesta email con informazioni di contatto e affiliazione | ZIP (contenuto non specificato sulla pagina ufficiale) | >2 GB |
@@ -19,7 +19,11 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 ## Note
 
 - **Colonna "Registrazione richiesta"**: "Nessuna" indica download/accesso libero; "Sì" indica che è richiesto login, email, o accordo
-- **NinaPro DB1-DB10**: Le diverse sotto-versioni (DB1-DB10) sono accessibili dallo stesso sito con lo stesso meccanismo di autenticazione (login reviewers)
+- **NinaPro DB1-DB10**: nessuna registrazione necessaria (corretto il 21/09/2026 — la
+  riga precedente di questa tabella, e `docs/fm_emg_reference_v10.md` §2.2, riportavano
+  erroneamente "account e accettazione dei termini"; il nome file cambia per DB e va
+  letto dalla pagina di istruzioni di ciascun DB, non indovinato: vedi
+  `scripts/slurm/download_ninapro.sbatch`)
 - **Hyser e GRABMyo**: Ospitati su PhysioNet, open access con licenza Creative Commons Attribution 4.0
 - **emg2qwerty**: Repository GitHub è archived (read-only) dal 1º agosto 2026
 - **Camargo 2021**: Dataset in 3 parti separate su Mendeley Data; include EMG, IMU, goniometri e dati di motion capture
