@@ -7,7 +7,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | NinaPro DB1-DB10 | https://ninapro.hevs.ch/instructions/DBn.html (n=1..10) | **Corretto il 21/09/2026: nessuna registrazione.** Verificato scaricando un file reale da DB2 (`https://ninapro.hevs.ch/files/DB2_Preproc/DB2_s1.zip`, >10MB, nessun login incontrato). Le pagine di istruzioni linkano direttamente agli zip per soggetto | ZIP (contenuto .mat) | non trovata |
 | putEMG | https://biolab.put.poznan.pl/putemg-dataset/ | Nessuna: accesso libero via cloud storage (chmura.put.poznan.pl) | HDF5, CSV | non trovata |
 | CapgMyo | https://figshare.com/articles/dataset/Data_from_Gesture_Recognition_by_Instantaneous_Surface_EMG_Images_CapgMyo-DBa/7210397 | Nessuna: accesso libero | MATLAB .mat | 1.31 GB |
-| CSL-hdemg | http://www.csl.uni-bremen.de/CorpusData/download.php?crps=cslhdemg | Sì: richiesta email con informazioni di contatto e affiliazione | ZIP (contenuto non specificato sulla pagina ufficiale) | >2 GB |
+| CSL-hdemg | http://www.csl.uni-bremen.de/CorpusData/download.php?crps=cslhdemg | Sì: modulo di registrazione sulla pagina, link di download personali inviati via email | ZIP, spezzato in 5 parti (schema `split`: partaa..partae) da concatenare con `cat` prima di estrarre | **12,9 GB** (verificato scaricando ed estraendo, 22/09/2026) |
 | Hyser (HD-sEMG) | https://physionet.org/content/hd-semg/2.0.0/ | Nessuna: open access PhysioNet | WFDB (.dat, .hea) | 135.2 GB (compressed) / 142.8 GB (uncompressed) |
 | EPN-612 | https://zenodo.org/records/4421500 | Nessuna: accesso libero | ZIP | 5.5 GB |
 | UCI-EMG (Lobov) | https://archive.ics.uci.edu/ml/datasets/EMG+data+for+gestures | Nessuna: accesso libero | Testo (.txt) | 16.9 MB |
@@ -28,4 +28,12 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 - **emg2qwerty**: Repository GitHub è archived (read-only) dal 1º agosto 2026
 - **Camargo 2021**: Dataset in 3 parti separate su Mendeley Data; include EMG, IMU, goniometri e dati di motion capture
 - Informazioni marcate come "non trovata" non sono disponibili sulla pagina ufficiale del dataset/repository
+- **CSL-hdemg**: i 5 file scaricati (`part_a.zip`...`part_e.zip`) NON sono zip
+  indipendenti — è un singolo archivio spezzato con `split` (nomi lato server
+  `partaa`..`partae`, il classico schema a due lettere). `file` sui singoli pezzi
+  segnala "data" o addirittura riconoscimenti bizzarri (es. "DIY-Thermocam raw data")
+  perché il contenuto compresso in mezzo a un archivio ha entropia alta e nessun
+  header riconoscibile — **non è corruzione**. Vanno riuniti con
+  `cat part_a.zip part_b.zip part_c.zip part_d.zip part_e.zip > csl_hdemg.zip`
+  prima di validare o estrarre.
 
