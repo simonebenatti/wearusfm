@@ -2,7 +2,7 @@
 #SBATCH -A IscrB_WearUsFM
 #SBATCH -p lrd_all_serial
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=2
 #SBATCH --time=04:00:00
 #SBATCH -J dl_physionet
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/dl_physionet_%j.out
@@ -20,7 +20,13 @@
 # Fix: il dataset e' mirrorato sul bucket S3 pubblico physionet-open (Open Data on
 # AWS), che risponde velocemente da Leonardo. Niente aws-cli disponibile: si usa
 # scripts/s3_bucket_download.py (solo libreria standard, REST API S3 diretta),
-# paginato e parallelo (8 worker).
+# paginato e parallelo (8 thread Python).
+#
+# --cpus-per-task=2, non 8: il download e' I/O-bound (i thread Python passano quasi
+# tutto il tempo in attesa di rete, non calcolano), non serve un core SLURM dedicato
+# per thread. Con --cpus-per-task=8 il job restava PENDING per QOSMaxCpuPerUserLimit
+# (lrd_all_serial limita a 8 core per utente in totale, e il job emg2pose in parallelo
+# ne occupa gia' 2 - bug trovato il 22/09/2026 dopo 25+ minuti di coda inspiegata).
 
 set -uo pipefail
 cd "$WORK/wearusfm"
