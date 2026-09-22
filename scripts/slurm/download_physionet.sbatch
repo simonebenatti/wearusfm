@@ -9,25 +9,37 @@
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/dl_physionet_%j.out
 #SBATCH --dependency=singleton
 
-# Passo 1 (v10 §2.5): GRABMyo (9,4 GB) e Hyser (143 GB) da PhysioNet, open access.
-# Pattern di download ufficiale PhysioNet (wget -r -N -c -np), riprendibile: se il
-# walltime di 4h non basta per Hyser, risottomettere lo stesso script continua da dove
-# si era fermato grazie a -N -c. --dependency=singleton evita due copie in parallelo
-# dello stesso job (stesso nome, stesso utente) se risottomesso per errore.
+# Passo 1 (v10 §2.5): GRABMyo (9,1 GB) e Hyser (135,2 GB) da PhysioNet, open access.
+#
+# Corretto il 22/09/2026: la prima versione usava `wget -r` (crawling ricorsivo file
+# per file, migliaia di piccoli .dat/.hea WFDB) - troppo lento per il walltime di 4h
+# (GRABMyo da solo avrebbe impiegato ~20h al ritmo osservato, ~130KB/s per l'overhead
+# di migliaia di richieste piccole). PhysioNet offre uno zip unico per l'intero
+# dataset (pagina "Download the ZIP file"), molto piu' veloce: usiamo quello.
+#
+# Riprendibile con wget -c se il walltime non basta; --dependency=singleton evita due
+# copie in parallelo dello stesso job se risottomesso per errore.
 
 set -uo pipefail
 cd "$WORK"
 RAW="$WORK/data/raw"
 
-echo "=== GRABMyo ==="
-mkdir -p "$RAW/grabmyo"
-wget -r -N -c -np -nH --cut-dirs=3 -P "$RAW/grabmyo" \
-  https://physionet.org/files/grabmyo/1.1.0/ 2>&1 | tail -50
+fetch() {
+  local url="$1" dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  if [ -s "$dest" ]; then
+    echo "gia' presente: $dest"
+    return 0
+  fi
+  echo "scarico: $url -> $dest"
+  wget -c --tries=5 --timeout=120 -O "$dest" "$url" && echo "  ok" || echo "  FALLITO: $url"
+}
 
-echo "=== Hyser (HD-sEMG) - il piu' grande, 143 GB: puo' richiedere piu' sottomissioni ==="
-mkdir -p "$RAW/hyser"
-wget -r -N -c -np -nH --cut-dirs=3 -P "$RAW/hyser" \
-  https://physionet.org/files/hd-semg/2.0.0/ 2>&1 | tail -50
+echo "=== GRABMyo (zip unico, 9,1 GB) ==="
+fetch "https://physionet.org/content/grabmyo/get-zip/1.1.0/" "$RAW/grabmyo/grabmyo_1.1.0.zip"
+
+echo "=== Hyser (HD-sEMG, zip unico, 135,2 GB - il piu' grande, probabile piu' sottomissioni) ==="
+fetch "https://physionet.org/content/hd-semg/get-zip/2.0.0/" "$RAW/hyser/hyser_2.0.0.zip"
 
 echo "=== riepilogo ==="
 du -sh "$RAW/grabmyo" "$RAW/hyser" 2>&1
