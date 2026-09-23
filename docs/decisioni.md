@@ -150,3 +150,26 @@ Regola: il padding è escluso in partenza se la frazione di token di padding sup
 50%. Fra i rimanenti vince chi dà più token utili/s nel proxy; a parità entro il 10% vince il
 più semplice, nell'ordine L1 → L3 → L2. Il bucketing per micro-batch (L3) si adotta solo con
 l'assenso esplicito di TU: modifica la regola "mai bucketing" di v10 §2.7.
+
+---
+
+## D3a — Scaricare il dataset di Kaifosh?
+
+**Stato:** deciso il 23/09/2026. **Decisione (Simone): sì.**
+
+Riferimento: [`docs/piano_operativo_v10.md`](piano_operativo_v10.md) tabella §9 (D3), §2.1;
+fatti raccolti in [`docs/fatti_da_verificare.md`](fatti_da_verificare.md) voce 7b.
+
+Fatti verificati (fonte: repo GitHub `facebookresearch/generic-neuromotor-interface`,
+verificato via API GitHub, non solo WebFetch):
+- Accesso: script ufficiale del repo, `python -m
+  generic_neuromotor_interface.scripts.download_data --task discrete_gestures
+  --output-dir ~/emg_data` (anche `--small-subset` per un sottoinsieme di test) — non un
+  semplice URL, richiede clonare il repo Python di Meta ed eseguirlo.
+- **Licenza: CC-BY-NC-4.0** ("The dataset and the code are CC-BY-NC-4.0 licensed") —
+  Non-Commerciale, diversa dal resto del corpus (perlopiù CC BY 4.0 senza restrizioni).
+  Vincolo noto e accettato esplicitamente con questa decisione.
+- Dimensioni: 51,4h train + 6,2h val + 6,4h test, 100 partecipanti (80/10/10), `.hdf5`, 2 kHz.
+
+Il ruolo nel pretraining (solo benchmark mai visto, o anche una parte dei soggetti in
+pretraining) resta una decisione separata, rimandata al passo 4 (**D3b**, non ancora presa).
