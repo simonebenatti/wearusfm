@@ -13,7 +13,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | UCI-EMG (Lobov) | https://archive.ics.uci.edu/ml/datasets/EMG+data+for+gestures | Nessuna: accesso libero | Testo (.txt) | 16.9 MB |
 | GRABMyo | https://physionet.org/content/grabmyo/1.1.0/ | Nessuna: open access PhysioNet | WFDB (.dat, .hea) | 9.1 GB (compressed) / 9.4 GB (uncompressed) |
 | emg2pose | https://github.com/facebookresearch/emg2pose | Nessuna: accesso libero via S3 | HDF5 | **462.824.048.640 byte (~431 GiB)** - Content-Length verificato dalla sorgente S3 e confermato sul file scaricato, 23/09/2026 |
-| emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file); **288 GB** su disco (verificato scaricando, 22/09/2026 - cancellato il 23/09/2026 per liberare quota $WORK, da riscaricare quando serve) |
+| emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file); **308.382.645.571 byte (~287 GB)**, Content-Length verificato dalla sorgente e confermato sul file, 23/09/2026 (ri-scaricato su $SCRATCH dopo la cancellazione del 22/09 per liberare quota $WORK) |
 | Camargo 2021 (Lower Limb Biomechanics) | https://data.mendeley.com/datasets/fcgm3chfff/1 (Part 1); https://data.mendeley.com/datasets/k9kvm5tn3f/1 (Part 2); https://data.mendeley.com/datasets/jj3r5f9pnf/2 (Part 3) | Nessuna: accesso libero (CC BY 4.0) | non trovata | non trovata |
 
 ## Note
@@ -50,4 +50,9 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   `$SCRATCH` (vedi CLAUDE.md), usato ora per Hyser e il completamento di emg2pose invece
   di $WORK. Nessuna richiesta di aumento quota a CINECA inviata per ora (non piu'
   urgente con $SCRATCH disponibile).
+  **Chiusura, 23/09/2026**: tutti e tre i dataset coinvolti sono ora completi e
+  verificati byte-per-byte contro il Content-Length della sorgente: Hyser (143GB,
+  $SCRATCH), emg2pose (462.824.048.640 byte, $SCRATCH), emg2qwerty (308.382.645.571
+  byte, $SCRATCH, ri-scaricato su richiesta di Simone dopo il completamento di
+  emg2pose). GRABMyo resta su $WORK (9.5GB, gia' completo prima della crisi).
 
