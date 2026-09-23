@@ -83,9 +83,12 @@ def test_sparse_group_must_have_no_symmetry():
 
 def test_ninapro_standard_montage_mixed_groups():
     # v10 §2.1/§3.4: montaggio a 12 elettrodi = anello da 8 (D_8) + mirati da 4 (nessuna simmetria)
+    # SECTOR e' riservato al polso (v10 §4.5, "Due cautele"); questo anello e' all'altezza
+    # radio-omerale, quindi REGION (stima via funzione atlante, taxonomy.py) e' la precisione
+    # corretta - non SECTOR.
     ring_group = ChannelGroup(
         group_id="ring", topology=Topology.RING, symmetry="D_8",
-        channels=[_make_channel(i, precision=AnatomicalPrecision.SECTOR, muscle=None) for i in range(8)],
+        channels=[_make_channel(i, precision=AnatomicalPrecision.REGION, muscle=None) for i in range(8)],
     )
     targeted_group = ChannelGroup(
         group_id="targeted", topology=Topology.SPARSE, symmetry="none",
