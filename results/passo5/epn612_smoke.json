@@ -1,0 +1,28 @@
+{
+  "dataset": "epn612",
+  "n_users_requested": 30,
+  "n_users_loaded": 30,
+  "n_windows": 4500,
+  "fs_hz": 200.0,
+  "window_shape": [812, 8],
+  "label_counts": {
+    "fist": 750,
+    "noGesture": 750,
+    "open": 750,
+    "pinch": 750,
+    "waveIn": 750,
+    "waveOut": 750
+  },
+  "split": {
+    "n_train_subjects": 21,
+    "n_val_subjects": 3,
+    "n_test_subjects": 6
+  },
+  "n_train_windows": 3150,
+  "n_val_windows": 450,
+  "n_test_windows": 900,
+  "train_balanced_accuracy": 0.7336507936507936,
+  "val_balanced_accuracy": 0.7422222222222222,
+  "test_balanced_accuracy": 0.6466666666666666,
+  "traps_warnings": []
+}
