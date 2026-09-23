@@ -27,6 +27,11 @@
 # per thread. Con --cpus-per-task=8 il job restava PENDING per QOSMaxCpuPerUserLimit
 # (lrd_all_serial limita a 8 core per utente in totale, e il job emg2pose in parallelo
 # ne occupa gia' 2 - bug trovato il 22/09/2026 dopo 25+ minuti di coda inspiegata).
+#
+# 23/09/2026: Hyser spostato su $SCRATCH (scratch personale, non la quota di progetto
+# $WORK da 1TB condivisa - vedi CLAUDE.md). Il primo tentativo su $WORK e' finito in
+# OSError Disk quota exceeded a 119GB su ~143GB, cancellato. GRABMyo resta su $WORK:
+# e' gia' completo (9.5GB) e piccolo, non serve spostarlo.
 
 set -uo pipefail
 cd "$WORK/wearusfm"
@@ -37,14 +42,16 @@ module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
 
 RAW="$WORK/data/raw"
+RAW_SCRATCH="$SCRATCH/data/raw"
+mkdir -p "$RAW_SCRATCH"
 
 echo "=== GRABMyo (via S3 physionet-open, ~10 GB, migliaia di file WFDB) ==="
 python3 scripts/s3_bucket_download.py --bucket physionet-open --prefix "grabmyo/1.1.0/" \
   --dest "$RAW/grabmyo" --strip-prefix --workers 8
 
-echo "=== Hyser (HD-sEMG, via S3, ~143 GB - probabile piu' sottomissioni) ==="
+echo "=== Hyser (HD-sEMG, via S3, ~143 GB - su \$SCRATCH per evitare la quota di \$WORK) ==="
 python3 scripts/s3_bucket_download.py --bucket physionet-open --prefix "hd-semg/2.0.0/" \
-  --dest "$RAW/hyser" --strip-prefix --workers 8
+  --dest "$RAW_SCRATCH/hyser" --strip-prefix --workers 8
 
 echo "=== riepilogo ==="
-du -sh "$RAW/grabmyo" "$RAW/hyser" 2>&1
+du -sh "$RAW/grabmyo" "$RAW_SCRATCH/hyser" 2>&1

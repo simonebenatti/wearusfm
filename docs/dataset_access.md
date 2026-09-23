@@ -13,7 +13,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | UCI-EMG (Lobov) | https://archive.ics.uci.edu/ml/datasets/EMG+data+for+gestures | Nessuna: accesso libero | Testo (.txt) | 16.9 MB |
 | GRABMyo | https://physionet.org/content/grabmyo/1.1.0/ | Nessuna: open access PhysioNet | WFDB (.dat, .hea) | 9.1 GB (compressed) / 9.4 GB (uncompressed) |
 | emg2pose | https://github.com/facebookresearch/emg2pose | Nessuna: accesso libero via S3 | HDF5 | 431 GB (full dataset) |
-| emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file) |
+| emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file); **288 GB** su disco (verificato scaricando, 22/09/2026 - cancellato il 23/09/2026 per liberare quota $WORK, da riscaricare quando serve) |
 | Camargo 2021 (Lower Limb Biomechanics) | https://data.mendeley.com/datasets/fcgm3chfff/1 (Part 1); https://data.mendeley.com/datasets/k9kvm5tn3f/1 (Part 2); https://data.mendeley.com/datasets/jj3r5f9pnf/2 (Part 3) | Nessuna: accesso libero (CC BY 4.0) | non trovata | non trovata |
 
 ## Note
@@ -36,4 +36,18 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   header riconoscibile — **non è corruzione**. Vanno riuniti con
   `cat part_a.zip part_b.zip part_c.zip part_d.zip part_e.zip > csl_hdemg.zip`
   prima di validare o estrarre.
+- **Quota $WORK esaurita, 22-23/09/2026**: la project quota di IscrB_WearUsFM su $WORK e'
+  1TB soft (condivisa da 11 utenti), non i "100% pieno" mostrati inizialmente da `df -h`
+  (che sulla mount Lustre condivisa riporta numeri sbagliati/in ritardo - usare invece
+  `lfs quota -hp <project-id> $WORK`, vedi CLAUDE.md). Il superamento ha causato due
+  fallimenti reali (`OSError: Disk quota exceeded`): Hyser fermato a 119GB su ~143GB
+  (cancellato, da riscaricare) ed emg2pose fermato a 311GB su 431GB (il messaggio di
+  riepilogo del vecchio script diceva erroneamente "completo": non verificava il
+  risultato, solo un `echo` fisso - corretto in `download_emg2pose_full.sbatch`).
+  Liberato spazio cancellando **emg2qwerty (288GB, riscaricabile da S3)** invece di
+  emg2pose, su richiesta esplicita di Simone (emg2pose ha priorita' piu' alta per il
+  progetto). Soluzione strutturale: scoperto uno scratch personale non condiviso,
+  `$SCRATCH` (vedi CLAUDE.md), usato ora per Hyser e il completamento di emg2pose invece
+  di $WORK. Nessuna richiesta di aumento quota a CINECA inviata per ora (non piu'
+  urgente con $SCRATCH disponibile).
 

@@ -17,8 +17,16 @@
 - Account SLURM: IscrB_WearUsFM
 - Partizione GPU: boost_usr_prod, nodi 4x A100 64GB, 32 core Ice Lake, 512GB RAM
 - QoS: boost_qos_dbg (30 min, max 2 job) per test rapidi; lrd_all_serial (4h) per script seriali
-- $WORK = /leonardo_work/IscrB_WearUsFM
-- $FAST = /leonardo_scratch/fast/IscrB_WearUsFM  (cancellazione automatica a 40 giorni)
+- $WORK = /leonardo_work/IscrB_WearUsFM (project quota 1TB soft, condivisa da 11 utenti -
+  scoperto il 23/09/2026 dopo un EDQUOT reale: usare `lfs quota -hp <project-id> $WORK`, non
+  `df -h`, che sulla mount Lustre condivisa mostra numeri sbagliati/in ritardo)
+- $FAST = /leonardo_scratch/fast/IscrB_WearUsFM  (cancellazione automatica a 40 giorni,
+  quota di progetto 1TB condivisa, quasi sempre piena - non affidabile per download grandi)
+- $SCRATCH ($CINECA_SCRATCH) = /leonardo_scratch/large/userexternal/sbenatti (scoperto il
+  23/09/2026: scratch PERSONALE, non condiviso col progetto, nessuna quota configurata,
+  partizione da 43PB. Cancellazione automatica a 40 giorni come $FAST - usarlo per download
+  grandi in corso (dataset raw) quando $WORK e' vicino alla quota, MAI per dati che devono
+  restare oltre la finestra di addestramento corrente)
 - Repo remoto: $WORK/wearusfm
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
   procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
