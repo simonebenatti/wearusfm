@@ -36,22 +36,25 @@ EMG_CHANNEL_KEYS = tuple(f"ch{i}" for i in range(1, 9))
 
 
 def _load_user(path: Path) -> tuple[list[np.ndarray], list[str], float]:
-    """Un file utente EPN-612: ritorna (finestre, etichette, fs_hz)."""
+    """Un file utente EPN-612: ritorna (finestre, etichette, fs_hz).
+
+    Solo `trainingSamples`: verificato in sessione (23/09/2026) che `testingSamples` non
+    ha `gestureName` - e' un dataset in stile competizione con le etichette di test
+    nascoste, non riusabile per un protocollo supervisionato senza quelle etichette."""
     with open(path) as f:
         data = json.load(f)
     fs_hz = float(data["generalInfo"]["samplingFrequencyInHertz"])
     windows: list[np.ndarray] = []
     labels: list[str] = []
-    for split_key in ("trainingSamples", "testingSamples"):
-        for sample in data.get(split_key, {}).values():
-            emg = sample["emg"]
-            channels = [np.asarray(emg[k], dtype=np.float64) for k in EMG_CHANNEL_KEYS]
-            lengths = {len(c) for c in channels}
-            if len(lengths) != 1:
-                continue  # canali di lunghezza diversa: campione malformato, si scarta
-            window = np.stack(channels, axis=1)  # (T, 8)
-            windows.append(window)
-            labels.append(sample["gestureName"])
+    for sample in data.get("trainingSamples", {}).values():
+        emg = sample["emg"]
+        channels = [np.asarray(emg[k], dtype=np.float64) for k in EMG_CHANNEL_KEYS]
+        lengths = {len(c) for c in channels}
+        if len(lengths) != 1:
+            continue  # canali di lunghezza diversa: campione malformato, si scarta
+        window = np.stack(channels, axis=1)  # (T, 8)
+        windows.append(window)
+        labels.append(sample["gestureName"])
     return windows, labels, fs_hz
 
 

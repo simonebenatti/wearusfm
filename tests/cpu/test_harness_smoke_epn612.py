@@ -19,20 +19,27 @@ GESTURES = ("noGesture", "fist", "waveIn", "waveOut", "open", "pinch")
 
 
 def _make_user_json(n_samples_per_class: int = 3, window_len: int = 996) -> dict:
+    """Riproduce la struttura reale (verificata in sessione, 23/09/2026): solo
+    `trainingSamples` ha `gestureName`, `testingSamples` e' senza etichetta (dataset
+    in stile competizione) - il loader deve ignorarlo, non fallire su di esso."""
     rng = np.random.default_rng(0)
-    training, testing = {}, {}
+    training: dict = {}
     idx = 0
     for gesture in GESTURES:
         for _ in range(n_samples_per_class):
             emg = {f"ch{c}": rng.standard_normal(window_len).tolist() for c in range(1, 9)}
-            sample = {
+            training[f"idx_{idx}"] = {
                 "startPointforGestureExecution": 100,
                 "gestureName": gesture,
                 "emg": emg,
             }
-            target = training if idx % 2 == 0 else testing
-            target[f"idx_{idx}"] = sample
             idx += 1
+    testing = {
+        "idx_unlabeled": {
+            "startPointforGestureExecution": 100,
+            "emg": {f"ch{c}": rng.standard_normal(window_len).tolist() for c in range(1, 9)},
+        }
+    }
     return {
         "generalInfo": {"deviceModel": "Myo Armband", "samplingFrequencyInHertz": 200,
                          "recordingTimeInSeconds": 5},

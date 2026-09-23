@@ -119,7 +119,7 @@ collasso o degenerazione della rappresentazione.
 | GRABMyo | 43 sogg., 3 giorni, **2048 Hz**, 16+12 ch | anello (fasce su avambraccio e polso) | multi-giorno |
 | putEMG (+ Force) | 44 sogg., 24 ch (3 fasce da 8, a 45°, primo elettrodo sull'ulna), **5120 Hz**, **monopolare** | anello (3 fasce) | label di forza |
 | EPN-612 | 612 sogg., Myo 8 ch @ 200 Hz | anello | **escluso dal pretraining** (§2.3) |
-| CapgMyo | 128 ch @ 1 kHz, 23 sogg. | griglia 2D | HD |
+| CapgMyo (DBa) | 128 ch @ 1 kHz, **18 sogg.** (corretto il 23/09/2026 - non 23: verificato contando i file .mat reali del dataset scaricato, DBa specificamente, 1440 file = 18 sogg. × 8 gesti × 10 trial) | griglia 2D | HD |
 | CSL-hdemg | 168 ch @ **2048 Hz**, 5 sogg. | griglia 2D | HD |
 | Hyser | 20 sogg. × 2 sessioni, **256 ch** (4 griglie da 64) @ **2048 Hz** | griglia 2D | il più grande per volume |
 | Camargo 2021 | 25 sogg. (AB06-AB30, corretto il 23/09/2026 - non 22 come riportato da una fonte terza non ufficiale), 11 muscoli @ 1 kHz | **sparsa anatomica** | **controllo anatomico** (§2.3) |
