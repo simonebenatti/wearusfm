@@ -173,3 +173,28 @@ verificato via API GitHub, non solo WebFetch):
 
 Il ruolo nel pretraining (solo benchmark mai visto, o anche una parte dei soggetti in
 pretraining) resta una decisione separata, rimandata al passo 4 (**D3b**, non ancora presa).
+
+---
+
+## Aggiunta corpus — dataset Zhang et al. 2026 (Groningen)
+
+**Stato:** deciso il 23/09/2026. **Decisione (Simone): sì, aggiunto al corpus.**
+
+Dataset non presente nella lista originale di `piano_operativo_v10.md`/`fm_emg_reference_v10.md`
+§2 - scoperta durante la sessione da un paper fornito direttamente da Simone (PDF), non dal
+processo di ricerca dataset standard. Aggiunto a `fm_emg_reference_v10.md` §2.1/§2.2.
+
+Fatti verificati (fonte primaria, non dal solo articolo):
+- Paper: Zhang, Y. et al., *Scientific Data* (2026), DOI
+  [10.1038/s41597-026-08111-4](https://doi.org/10.1038/s41597-026-08111-4), Università di
+  Groningen. L'articolo e' CC BY-NC-ND 4.0, ma **non e' la licenza del dataset**.
+- Dataset: Dataverse.nl, DOI [10.34894/QRGIZQ](https://doi.org/10.34894/QRGIZQ), verificato
+  separatamente dalla pagina ufficiale - **licenza CC BY 4.0**, nessuna registrazione
+  richiesta oltre le norme di citazione.
+- 64 partecipanti, 14 gesti × 10 ripetizioni, mano non dominante; **ogni soggetto registrato
+  sia in modalita' anatomica (8 elettrodi su muscoli specifici) sia in modalita' anello
+  equidistante (8 elettrodi, 40% lunghezza avambraccio dal gomito)** - confronto diretto
+  raro in letteratura, rilevante per l'asse di ricerca sulla topologia del montaggio.
+- 1.245 file CSV/XLSX/TXT; dimensione totale non dichiarata sulla pagina (singoli file
+  sensore ~50-58 MB); il download a pacchetto singolo e' bloccato dalla piattaforma
+  (limite 9.3GB per selezione) - va scaricato via API REST di Dataverse.

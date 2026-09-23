@@ -122,7 +122,8 @@ collasso o degenerazione della rappresentazione.
 | CapgMyo | 128 ch @ 1 kHz, 23 sogg. | griglia 2D | HD |
 | CSL-hdemg | 168 ch @ **2048 Hz**, 5 sogg. | griglia 2D | HD |
 | Hyser | 20 sogg. × 2 sessioni, **256 ch** (4 griglie da 64) @ **2048 Hz** | griglia 2D | il più grande per volume |
-| Camargo 2021 | 22 sogg., 11 muscoli @ 1 kHz | **sparsa anatomica** | **controllo anatomico** (§2.3) |
+| Camargo 2021 | 25 sogg. (AB06-AB30, corretto il 23/09/2026 - non 22 come riportato da una fonte terza non ufficiale), 11 muscoli @ 1 kHz | **sparsa anatomica** | **controllo anatomico** (§2.3) |
+| Zhang et al. 2026 (Groningen) | 64 sogg., 14 gesti × 10 ripetizioni, mano non dominante, 8 ch @ 4 kHz (4x Avanti) + 4 ch @ 2 kHz (1x Quattro) | **mista, appaiata**: anatomica sparsa (8 muscoli mirati) **e** anello equidistante (8 elettrodi, 40% lunghezza avambraccio dal gomito) sullo **stesso soggetto, stessi gesti** | aggiunto il 23/09/2026; confronto diretto sparso-vs-anello raro in letteratura, utile all'asse di ricerca sulla topologia del montaggio (§2.6-§2.8); CSV, licenza dataset CC BY 4.0 (indipendente dalla CC BY-NC-ND dell'articolo) |
 | UCI-EMG (Lobov) | 8 ch | anello | **escluso dal pretraining** (§2.3) |
 
 **NinaPro DB9 rimosso.** Sono i dati cinematici ricalibrati dei 77 soggetti già rilasciati in
@@ -158,6 +159,7 @@ soggetti ma non topologie (§2.6). Accesso, licenza e dimensioni: **da verificar
 | UCI-EMG | UCI ML Repository, libero | da verificare | 17 MB |
 | Camargo 2021 | Mendeley Data, 3 parti, libero | CC BY 4.0 | non indicata |
 | Kaifosh et al. (se adottato, §2.1) | da verificare | da verificare | da verificare |
+| Zhang et al. 2026 (Groningen, anatomico vs equidistante) | Dataverse.nl, libero, nessuna registrazione | CC BY 4.0 (verificata sulla pagina del dataset, indipendente dalla licenza CC BY-NC-ND dell'articolo) | 1.245 file CSV/XLSX/TXT, dimensione totale non dichiarata (singoli file sensore ~50-58 MB) |
 
 **Due avvertenze sulla tabella.** Sulle pagine di istruzioni NinaPro compare una credenziale
 `reviewers`/`rev2019`: è una cortesia per i revisori dei paper, **non la procedura di

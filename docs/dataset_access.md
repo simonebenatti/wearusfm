@@ -16,6 +16,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file); **308.382.645.571 byte (~287 GB)**, Content-Length verificato dalla sorgente e confermato sul file, 23/09/2026 (ri-scaricato su $SCRATCH dopo la cancellazione del 22/09 per liberare quota $WORK) |
 | Camargo 2021 (Lower Limb Biomechanics) | https://data.mendeley.com/datasets/fcgm3chfff/1 (Part 1); https://data.mendeley.com/datasets/k9kvm5tn3f/1 (Part 2); https://data.mendeley.com/datasets/jj3r5f9pnf/2 (Part 3) | Nessuna: accesso libero (CC BY 4.0) | ZIP (contenuto .mat) | **~23.5GB totali** (9.4+9.5+4.6GB), 25 soggetti AB06-AB30, verificato via HEAD request sull'API pubblica Mendeley, 23/09/2026 |
 | Kaifosh et al. "Discrete Gestures" (Meta, Nature 2025) | https://github.com/facebookresearch/generic-neuromotor-interface | Nessuna: accesso libero via S3 diretto (bucket `fb-ctrl-oss`, stesso di emg2pose/emg2qwerty) | HDF5 (tar) | **33.361.018.880 byte (~31 GiB) - scaricato e verificato byte-per-byte, 23/09/2026**; 51,4h train + 6,2h val + 6,4h test, 100 partecipanti (80/10/10), 2 kHz |
+| Zhang et al. 2026 (Groningen, anatomico vs equidistante) | Paper: https://doi.org/10.1038/s41597-026-08111-4 · Dataset: https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QRGIZQ | Nessuna: accesso libero, nessuna registrazione (norme di citazione standard) | CSV (+ XLSX/TXT metadati) | 1.245 file, dimensione totale non dichiarata (file sensore ~50-58MB ciascuno); 64 partecipanti, 14 gesti × 10 ripetizioni, doppia modalita' (anatomica + anello equidistante) sullo stesso soggetto |
 
 ## Note
 
@@ -82,4 +83,10 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   PROPFIND) sia per scaricare i singoli file. Vedi `scripts/slurm/download_putemg.sbatch`,
   che sostituisce lo script del repo per il nostro caso d'uso (solo `emg_gestures`,
   solo HDF5 - niente `emg_force`/CSV/video/depth).
+- **Zhang et al. 2026, aggiunto al corpus il 23/09/2026** (fuori dalla lista originale di
+  piano/riferimento - scoperto da un PDF fornito direttamente da Simone): licenza
+  **dell'articolo** (CC BY-NC-ND 4.0) diversa dalla **licenza del dataset** (CC BY 4.0,
+  verificata sulla pagina Dataverse.nl separata) - sempre controllare la pagina del
+  dataset, non assumere che coincida con quella dell'articolo che lo descrive. Vedi
+  `docs/decisioni.md` per la decisione completa.
 
