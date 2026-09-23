@@ -5,7 +5,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | Dataset | URL | Registrazione richiesta | Formato file | Dimensione approssimativa |
 |---------|-----|------------------------|--------------|--------------------------|
 | NinaPro DB1-DB10 | https://ninapro.hevs.ch/instructions/DBn.html (n=1..10) | **Corretto il 21/09/2026: nessuna registrazione.** Verificato scaricando un file reale da DB2 (`https://ninapro.hevs.ch/files/DB2_Preproc/DB2_s1.zip`, >10MB, nessun login incontrato). Le pagine di istruzioni linkano direttamente agli zip per soggetto | ZIP (contenuto .mat) | non trovata |
-| putEMG | https://biolab.put.poznan.pl/putemg-dataset/ | Nessuna: accesso libero via cloud storage (chmura.put.poznan.pl) | HDF5, CSV | non trovata |
+| putEMG | https://biolab.put.poznan.pl/putemg-dataset/ | Nessuna: accesso libero via cloud storage (chmura.put.poznan.pl), WebDAV pubblico (vedi nota) | HDF5, CSV | 712 record totali (264 emg_gestures + 448 emg_force), 44 partecipanti; cartella Data-HDF5 completa ~30.9GB, sottoinsieme emg_gestures stimato ~11GB |
 | CapgMyo | https://figshare.com/articles/dataset/Data_from_Gesture_Recognition_by_Instantaneous_Surface_EMG_Images_CapgMyo-DBa/7210397 | Nessuna: accesso libero | MATLAB .mat | 1.31 GB |
 | CSL-hdemg | http://www.csl.uni-bremen.de/CorpusData/download.php?crps=cslhdemg | Sì: modulo di registrazione sulla pagina, link di download personali inviati via email | ZIP, spezzato in 5 parti (schema `split`: partaa..partae) da concatenare con `cat` prima di estrarre | **12,9 GB** (verificato scaricando ed estraendo, 22/09/2026) |
 | Hyser (HD-sEMG) | https://physionet.org/content/hd-semg/2.0.0/ | Nessuna: open access PhysioNet | WFDB (.dat, .hea) | 135.2 GB (compressed) / 142.8 GB (uncompressed) |
@@ -55,4 +55,15 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   $SCRATCH), emg2pose (462.824.048.640 byte, $SCRATCH), emg2qwerty (308.382.645.571
   byte, $SCRATCH, ri-scaricato su richiesta di Simone dopo il completamento di
   emg2pose). GRABMyo resta su $WORK (9.5GB, gia' completo prima della crisi).
+- **putEMG, downloader ufficiale rotto, 23/09/2026**: il repo `putemg-downloader`
+  clonato in `$WORK/data/raw/putemg/putemg-downloader/` usa un URL Nextcloud vecchio
+  stile per leggere `records.txt` (`.../s/<token>&files=records.txt`, senza "?" -
+  404 su Nextcloud moderno). Il link di condivisione pubblico
+  (`https://chmura.put.poznan.pl/s/45NY5snj0U4tgQz`) e' comunque valido: fix trovato
+  usando il **WebDAV pubblico standard di Nextcloud**
+  (`https://chmura.put.poznan.pl/public.php/webdav/`, username = token di
+  condivisione, password vuota), che funziona sia per elencare (`records.txt`,
+  PROPFIND) sia per scaricare i singoli file. Vedi `scripts/slurm/download_putemg.sbatch`,
+  che sostituisce lo script del repo per il nostro caso d'uso (solo `emg_gestures`,
+  solo HDF5 - niente `emg_force`/CSV/video/depth).
 
