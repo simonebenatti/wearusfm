@@ -198,3 +198,40 @@ Fatti verificati (fonte primaria, non dal solo articolo):
 - 1.245 file CSV/XLSX/TXT; dimensione totale non dichiarata sulla pagina (singoli file
   sensore ~50-58 MB); il download a pacchetto singolo e' bloccato dalla piattaforma
   (limite 9.3GB per selezione) - va scaricato via API REST di Dataverse.
+
+
+---
+
+## D7a — Firma dello schema dei metadati
+
+**Stato:** deciso il 23/09/2026 (approvazione informale gia' data da Simone in sessione
+precedente - "schema ok" - qui registrata formalmente prima di procedere con l'ingest,
+come richiede la regola generale). **Decisione (Simone): approvato.**
+
+Riferimento: [`docs/piano_operativo_v10.md`](piano_operativo_v10.md) passo 2; schema in
+`src/wearusfm/metadata/schema.py` (303 righe, 8 dataclass, export JSON Schema), test in
+`tests/cpu/test_schema.py`. Copre tutti i campi richiesti da v10 §4.5: gruppi di canali
+con topologia/simmetria del gruppo, identita' anatomica gerarchica con `precision`/pesi
+soft/flag `nominal`, orientamento della fascia (o ignoto), frequenza nativa/banda
+effettiva/frequenza di rete, flag raw/inviluppo, chiralita', calibrazione, validita' per
+canale (QC), identita' del soggetto e sessione/giorno per confronto fra dataset.
+
+Sblocca l'ingest (passo 2): un dataset alla volta, dal piu' piccolo.
+
+---
+
+## D7b — Revisione della tassonomia anatomica
+
+**Stato:** deciso il 23/09/2026. **Decisione (Simone):** prima bozza fatta dall'agente,
+revisione umana di Simone **in sospeso** (non ancora fatta - questa decisione autorizza
+solo il flusso di lavoro, non approva il contenuto).
+
+Riferimento: v10 §4.5 dichiara esplicitamente "la prima bozza di mappatura resta un
+candidato naturale per un agente, con revisione umana obbligatoria" - coerente con
+questa decisione. La bozza (albero regione -> compartimento/settore -> muscolo, funzione
+atlante, ID FMA/UBERON) va in `src/wearusfm/metadata/taxonomy.py`.
+
+**Importante:** finche' la revisione di Simone non e' fatta, la tassonomia resta una
+bozza non vincolante - non entra nel documento di riferimento v10 come "verificato",
+esattamente come per «da verificare». Qualunque ingest che la usa va rifatto se la
+revisione cambia mappature.
