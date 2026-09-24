@@ -222,16 +222,34 @@ Sblocca l'ingest (passo 2): un dataset alla volta, dal piu' piccolo.
 
 ## D7b — Revisione della tassonomia anatomica
 
-**Stato:** deciso il 23/09/2026. **Decisione (Simone):** prima bozza fatta dall'agente,
-revisione umana di Simone **in sospeso** (non ancora fatta - questa decisione autorizza
-solo il flusso di lavoro, non approva il contenuto).
+**Stato:** bozza dell'agente il 23/09/2026, **revisione di Simone completata e firmata
+il 24/09/2026**. **Decisione (Simone): approvata.**
 
 Riferimento: v10 §4.5 dichiara esplicitamente "la prima bozza di mappatura resta un
 candidato naturale per un agente, con revisione umana obbligatoria" - coerente con
 questa decisione. La bozza (albero regione -> compartimento/settore -> muscolo, funzione
-atlante, ID FMA/UBERON) va in `src/wearusfm/metadata/taxonomy.py`.
+atlante, ID FMA/UBERON) e' in `src/wearusfm/metadata/taxonomy.py`.
 
-**Importante:** finche' la revisione di Simone non e' fatta, la tassonomia resta una
-bozza non vincolante - non entra nel documento di riferimento v10 come "verificato",
-esattamente come per «da verificare». Qualunque ingest che la usa va rifatto se la
-revisione cambia mappature.
+**Punto discusso in revisione:** la regione `trunk`/compartimento
+`abdominal_wall_anterolateral`, creata dall'agente per l'obliquo esterno di Camargo (v10
+§4.5 lo classificherebbe erroneamente sotto "arto inferiore, 11 etichette" insieme agli
+altri 10 muscoli veri della gamba). Confermato con Simone: e' un canale EMG reale
+(elettrodo fisico, non un errore di dati - verificato da due fonti indipendenti, fatto
+n. 6 di `docs/fatti_da_verificare.md`), coerente con la ricerca sulla stabilizzazione del
+tronco durante il cammino. La separazione in una regione distinta (invece di forzarlo
+sotto "arto inferiore") resta la modellazione corretta - **approvata**.
+
+**Discusso anche e confermato: Camargo 2021 resta nel corpus** (non solo la tassonomia).
+Simone ha espresso dubbi sulla coerenza di scope (arto inferiore in un corpus altrimenti
+avambraccio/polso, v10 §1), ma ha confermato di tenerlo dopo aver chiarito il suo ruolo
+dichiarato (v10 §2.3, §3.5, §5.4, §10.1): e' l'unico dataset del corpus con vicinato
+metrico realmente vuoto (11 elettrodi sparsi, nessuna struttura spaziale sfruttabile),
+quindi l'unico caso che isola davvero il contributo del percorso di identita' anatomica
+dal percorso geometrico nell'ablation di §10.1. Il costo di tenerlo e' trascurabile
+(dataset piccolo); il costo di toglierlo sarebbe perdere quel test pulito, non un
+risparmio di risorse.
+
+La tassonomia e' ora vincolante: entra nel documento di riferimento v10 come
+"verificato" (non piu' bozza). Gli ID ontologici e la lista muscoli di Camargo restano
+comunque marcati "da verificare"/"raccolto" nel registro dei fatti dove non derivano da
+lettura diretta del paper originale (fatti n. 6 e 14).

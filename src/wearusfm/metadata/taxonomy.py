@@ -1,7 +1,8 @@
 """Tassonomia anatomica condivisa e funzione atlante (v10 §4.5).
 
-BOZZA — revisione umana di Simone non ancora fatta (D7b, docs/decisioni.md). Non vincolante:
-qualunque ingest che la usa va rifatto se la revisione cambia le mappature.
+Revisionata e firmata da Simone il 24/09/2026 (D7b, docs/decisioni.md) - vincolante.
+Punto discusso esplicitamente in revisione: la regione `trunk` per l'obliquo esterno di
+Camargo (v10 §4.5 lo classificherebbe erroneamente sotto "arto inferiore"), confermata.
 
 Albero regione -> compartimento (al polso: settore) -> muscolo, dalla tabella di v10 §4.5.
 Non definisce un tipo parallelo: produce `AnatomicalIdentity` di schema.py.

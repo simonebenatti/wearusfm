@@ -566,8 +566,9 @@ Camargo.
   Flag `nominale` nei metadati; conta per l'asse cross-popolazione di §8.
 
 **Vocabolario.** ID **FMA** o **UBERON** per i muscoli, così l'estensione ad altre regioni non
-richiede di rifare i nomi. Bozza dei compartimenti, **da rivedere** (revisione umana
-obbligatoria):
+richiede di rifare i nomi. Compartimenti **revisionati e firmati da Simone il 24/09/2026**
+(D7b, `docs/decisioni.md`; implementazione in `src/wearusfm/metadata/taxonomy.py`, 27 ID
+FMA/UBERON verificati via OLS4):
 
 | Regione | Compartimento / settore | Muscoli di riferimento |
 |---|---|---|
@@ -578,7 +579,8 @@ obbligatoria):
 | Avambraccio distale | dorsale-radiale, profondi affioranti | APL, EPB |
 | Polso | 4 settori: volare/dorsale × radiale/ulnare | — (tendini e ventri distali) |
 | Braccio | anteriore · posteriore | bicipite, brachiale · tricipite |
-| Arto inferiore (solo Camargo) | livello muscolo, 11 etichette | lista da verificare sul paper |
+| Arto inferiore (solo Camargo) | coscia (anteriore/mediale/posteriore) · gamba (anteriore/posteriore) · glutei | gastrocnemio mediale, tibiale anteriore, soleo, vasto mediale, vasto laterale, retto femorale, bicipite femorale, semitendinoso, gracile, medio gluteo (10 muscoli, verificati dalle colonne del dataset reale + sito del laboratorio, fatto n. 6) |
+| Tronco (solo Camargo) | parete addominale anterolaterale | obliquo esterno destro — **non arto inferiore**: l'11º canale di Camargo è un muscolo del tronco (correzione D7b, non nella bozza originale) |
 
 Ordine attorno all'avambraccio prossimale, partendo dal margine sottocutaneo dell'ulna in
 direzione volare (bozza per la funzione atlante): FCU → palmare lungo / FDS → FCR → pronatore
