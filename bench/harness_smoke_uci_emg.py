@@ -11,9 +11,11 @@ soggetto/serie, colonne [time, channel1..8, class], header presente. Classi: 0=n
 marcato, 1=riposo, 2=pugno, 3=flessione polso, 4=estensione polso, 5=deviazione
 radiale, 6=deviazione ulnare, 7=palmo esteso (non tutti i soggetti).
 
-Frequenza nativa: NON verificata da fonte ufficiale in questa sessione (vedi
-docs/fatti_da_verificare.md) - il finestramento usa un conteggio di CAMPIONI, non una
-durata in secondi, per non fare affidamento su un fs_hz non confermato.
+Frequenza nativa: 1 kHz, verificata dal paper originale degli stessi autori (Lobov et
+al., Sensors 2018, 18(4):1122, DOI 10.3390/s18041122 - docs/fatti_da_verificare.md #15).
+Il finestramento resta a conteggio di CAMPIONI (non a durata in secondi): 200
+campioni/passo 100 corrisponde esattamente ai "200 ms overlapping time windows at a 100
+ms step" del paper originale, a questa frequenza.
 
 Uso:
     python bench/harness_smoke_uci_emg.py --root $WORK/data/raw/uci_emg \\
@@ -128,7 +130,7 @@ def main() -> int:
 
     report = {
         "dataset": "uci_emg",
-        "fs_hz": None,  # NON verificato da fonte ufficiale (docs/fatti_da_verificare.md)
+        "fs_hz": 1000.0,  # verificato, Lobov et al. Sensors 2018 (docs/fatti_da_verificare.md #15)
         "window_samples": args.window_samples,
         "stride_samples": args.stride_samples,
         "n_subjects_requested": args.n_subjects,
