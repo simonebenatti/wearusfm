@@ -1,0 +1,30 @@
+{
+  "dataset": "uci_emg",
+  "fs_hz": 1000.0,
+  "window_samples": 200,
+  "stride_samples": 100,
+  "n_subjects_requested": 36,
+  "n_subjects_loaded": 36,
+  "n_windows": 13413,
+  "label_counts": {
+    "1": 2223,
+    "2": 2140,
+    "3": 2210,
+    "4": 2231,
+    "5": 2239,
+    "6": 2249,
+    "7": 121
+  },
+  "split": {
+    "n_train_subjects": 25,
+    "n_val_subjects": 4,
+    "n_test_subjects": 7
+  },
+  "n_train_windows": 9294,
+  "n_val_windows": 1432,
+  "n_test_windows": 2687,
+  "train_balanced_accuracy": 0.795125655998164,
+  "val_balanced_accuracy": 0.7336920800109827,
+  "test_balanced_accuracy": 0.6890526256538163,
+  "traps_warnings": []
+}
