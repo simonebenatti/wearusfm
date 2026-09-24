@@ -42,8 +42,30 @@ UNMARKED_CLASS = 0
 
 
 def _load_subject_file(path: Path) -> tuple[np.ndarray, np.ndarray]:
-    """Un file .txt: ritorna (samples (T, 8), labels (T,)). Salta l'header."""
-    raw = np.loadtxt(path, skiprows=1)
+    """Un file .txt: ritorna (samples (T, 8), labels (T,)). Salta l'header.
+
+    Legge riga per riga invece di np.loadtxt: verificato in sessione (24/09/2026) che
+    almeno un file del dataset scaricato ha l'ultima riga troncata (manca l'ultimo
+    valore e l'a-capo finale - probabile artefatto del download, non del dataset
+    ufficiale). Una riga col numero di colonne sbagliato viene scartata con un
+    avviso, invece di far fallire il caricamento dell'intero file."""
+    n_cols = 1 + N_CHANNELS + 1  # time + 8 canali + class
+    rows: list[list[float]] = []
+    n_dropped = 0
+    with open(path) as f:
+        next(f)  # header
+        for line in f:
+            parts = line.strip().split("\t")
+            if len(parts) != n_cols:
+                n_dropped += 1
+                continue
+            rows.append([float(p) for p in parts])
+    if not rows:
+        raise ValueError(f"{path}: nessuna riga valida (tutte scartate o file vuoto)")
+    if n_dropped:
+        print(f"  attenzione: {path.name}: scartate {n_dropped} righe malformate "
+              f"(fine file troncata?)", file=sys.stderr)
+    raw = np.array(rows)
     if raw.ndim == 1:
         raw = raw[None, :]
     samples = raw[:, 1 : 1 + N_CHANNELS]

@@ -36,6 +36,31 @@ def test_load_subject_file_parses_columns(tmp_path: Path) -> None:
     assert labels.tolist() == [0, 0, 1, 1, 1]
 
 
+def test_load_subject_file_drops_truncated_last_line(tmp_path: Path) -> None:
+    """Riproduce esattamente il file reale trovato in sessione (24/09/2026,
+    $WORK/data/raw/uci_emg/.../34/1_raw_data_10-51_07.04.16.txt): l'ultima riga manca
+    dell'ultimo valore e dell'a-capo finale - va scartata, non deve far fallire il
+    caricamento delle righe precedenti, valide."""
+    rng = np.random.default_rng(0)
+    f = tmp_path / "1_raw_data.txt"
+    _write_subject_file(f, [0, 0, 1, 1, 1], rng)
+    with open(f, "a") as fh:
+        fh.write("\n5\t0.1\t0.2\t0.3\t0.4\t0.5\t0.6\t0.7")  # manca ch8 e class, niente \n finale
+
+    samples, labels = _load_subject_file(f)
+
+    assert samples.shape == (5, 8)  # la riga troncata e' stata scartata, non le altre 5
+    assert labels.tolist() == [0, 0, 1, 1, 1]
+
+
+def test_load_subject_file_raises_when_all_rows_malformed(tmp_path: Path) -> None:
+    f = tmp_path / "empty.txt"
+    f.write_text("time\tchannel1\n1\t2\n")  # header + una riga con troppe poche colonne
+
+    with pytest.raises(ValueError, match="nessuna riga valida"):
+        _load_subject_file(f)
+
+
 def test_windowize_drops_unmarked_and_mixed_windows() -> None:
     rng = np.random.default_rng(0)
     samples = rng.standard_normal((20, 8))
