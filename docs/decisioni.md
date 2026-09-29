@@ -389,6 +389,16 @@ sono informativi). **Da misurare in 1-bis:** l'ampiezza di emg2pose nelle sue un
 documentata nel codice, quindi va verificato che l'ingresso normalizzato cada nel regime che
 l'encoder congelato ha visto (errore di ricostruzione su emg2pose con e senza normalizzazione).
 
-**Non cambia:** il passo 5 riproduce i numeri pubblicati di NeuroRVQ con **la loro** pipeline
-(nel paper: 20-90 Hz per NeuroRVQ nel confronto downstream); e' una pipeline di valutazione, non
-la vista canonica del tokenizer. La definizione di "banda condivisa" di D8a resta da scrivere.
+**Passo 5 — preprocessing di NeuroRVQ nella valutazione (Simone, 29/09/2026: "si fallo").**
+Il preprocessing dell'harness e' per modello e **separato** dalla vista canonica del tokenizer:
+1. **Replica dei numeri pubblicati** (debug di dati e harness, piano passo 5): pipeline degli
+   autori, cioe' per NeuroRVQ 20-90 Hz nel confronto downstream (paper, pdf pag. 31, testo
+   estratto, da confermare) e il loro split per soggetto 7:1:2 con fine-tuning completo (v10
+   §2.1). La tolleranza si dichiara **prima** del lancio.
+2. **Ri-valutazione sui nostri split** (il confronto valido): NeuroRVQ riceve il **suo**
+   preprocessing (20-90 Hz), non la vista canonica, cosi' non lo si svantaggia. Le regole di
+   protocollo valgono per tutti i modelli: split per soggetto, niente classe "rest" dalle
+   pause, normalizzazione stimata solo sul train.
+Il preprocessing dei nostri modelli nell'harness e' un'altra decisione, non presa qui.
+
+**Non cambia:** la definizione di "banda condivisa" di D8a resta da scrivere.
