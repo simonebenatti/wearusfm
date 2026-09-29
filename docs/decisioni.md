@@ -344,3 +344,39 @@ di persone ora.
 **Non cambia:** l'harness di valutazione (passo 5) prosegue, perche' serve a valutare il
 foundation model stesso e non dipende dal preprint. Resta criterio di chiusura del passo 5
 riprodurre prima i numeri pubblicati di NeuroRVQ entro una tolleranza dichiarata.
+
+
+---
+
+## Bivio di v10 §6.3 — banda della vista canonica del tokenizer: 20-400 Hz
+
+**Stato:** deciso il 29/09/2026. **Decisione (Simone): la banda e' 20-400 Hz, "sicuramente,
+senza dubbi", per i dati campionati ad almeno 1 kHz.**
+
+Riferimento: v10 §6.3 (bivio "20-90 Hz"), piano passo 1-bis punto 1, fatto n. 4 in
+[`docs/fatti_da_verificare.md`](fatti_da_verificare.md).
+
+**Cosa c'era sul tavolo.** La lettura del repo NeuroRVQ (fatto n. 4) non ha chiuso la banda di
+pretraining: il repo non contiene il codice di training. Il codice d'esempio filtra a
+**20-400 Hz** (Butterworth di ordine 3, `filtfilt`, ricampionamento a 1000 Hz); il **20-90 Hz**
+compare solo nel paper, come protocollo del confronto downstream. Nessuna fonte dichiara la
+banda del pretraining.
+
+**Cosa segue dal testo di v10 §6.3** (ramo "altrimenti vale la soluzione sopra"; e' una
+conseguenza del testo, non una scelta nuova di Simone, da confermare quando si scrive v10.1):
+- vista tokenizer canonica per i dataset raw con frequenza nativa >= 1 kHz: passabanda
+  **20-400 Hz** -> resampling polifase a 1000 Hz esatti con lo **stesso taglio anti-alias per
+  tutti** -> normalizzazione attesa dal tokenizer -> griglia di patch da 200 ms;
+- dataset a 200 Hz (DB5, unico nel corpus di pretraining): **ancora RVQ mascherata, nessun
+  upsampling**;
+- **non** si applica la vista simmetrica a 20-90 Hz (cioe' l'ancora RVQ non e' "di banda
+  bassa").
+
+**Normalizzazione.** Il codice d'esempio non normalizza in ingresso all'encoder (fatto n. 4,
+punto b, un'assenza nel codice e non una dichiarazione degli autori). Cosa fornire come
+"normalizzazione attesa" nella vista canonica non e' deciso qui: resta da scrivere con le
+definizioni operative di D5a.
+
+**Non cambia:** il passo 5 riproduce i numeri pubblicati di NeuroRVQ con **la loro** pipeline
+(nel paper: 20-90 Hz per NeuroRVQ nel confronto downstream); e' una pipeline di valutazione, non
+la vista canonica del tokenizer. La definizione di "banda condivisa" di D8a resta da scrivere.
