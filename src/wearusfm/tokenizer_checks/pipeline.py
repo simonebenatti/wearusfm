@@ -170,6 +170,18 @@ def analyze_dataset(runner, name: str, draw: Draw, factor: float, cfg: Config, r
         fracs.append(M.code_stability(out["codes"], codes_noisy))
     frac = np.mean(fracs, axis=0)
     res.update({"v4_noise_floor_rms": floor, "v4_fraction_unchanged": frac.tolist()})
+    # Controlli (NON cambiano la definizione congelata di V4): a rumore zero i codici devono
+    # coincidere (altrimenti l'esecuzione non e' deterministica e V4 non e' interpretabile);
+    # a 0,1 x soglia la frazione deve salire (dose-risposta, solo descrittiva).
+    zero = M.code_stability(out["codes"], run_single(runner, windows, cfg.batch, want_recon=False)["codes"])
+    res["v4_control_zero_noise_min_fraction"] = float(zero.min())
+    if zero.min() < 0.999:
+        raise RuntimeError(f"{name}: controllo V4 fallito, a rumore zero i codici cambiano (min {zero.min():.4f})")
+    nr = np.random.default_rng([cfg.seed, 5])
+    small = windows + nr.normal(scale=0.1 * floor, size=windows.shape).astype(np.float32)
+    res["v4_control_tenth_floor_fraction_unchanged"] = M.code_stability(
+        out["codes"], run_single(runner, small, cfg.batch, want_recon=False)["codes"]
+    ).tolist()
     res["_v3"] = {"codes": out["codes"], "tokens": tokens}
     res["_frac"] = frac
     return res
@@ -265,5 +277,8 @@ def run_all(
     report["v3"] = {"skipped": True} if cfg.skip_v3 else run_v3(per, draws, cfg)
     report["v4"] = run_v4(per)
     report["v4_per_dataset"] = {n: {"noise_floor_rms": r["v4_noise_floor_rms"],
-                                    "fraction_unchanged": r["v4_fraction_unchanged"]} for n, r in per.items()}
+                                    "fraction_unchanged": r["v4_fraction_unchanged"],
+                                    "control_zero_noise_min_fraction": r["v4_control_zero_noise_min_fraction"],
+                                    "control_tenth_floor_fraction_unchanged": r["v4_control_tenth_floor_fraction_unchanged"]}
+                                 for n, r in per.items()}
     return report

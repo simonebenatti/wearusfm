@@ -156,3 +156,32 @@ def test_v3_not_computable_with_fewer_than_three_subjects(tmp_path):
         {"dsA": (discover_sessions(tmp_path / "dsA", "dsA"), ld)},
     )
     assert rep["v3"]["computable"] is False and "meno di 3 soggetti" in rep["v3"]["reason"]
+
+
+def test_v4_controls_reported_and_dose_response(world):
+    em, datasets = world
+    rep = run_all(FakeRunner(), CFG, em, datasets)
+    for name, d in rep["v4_per_dataset"].items():
+        assert d["control_zero_noise_min_fraction"] == 1.0
+        ctrl = np.array(d["control_tenth_floor_fraction_unchanged"])
+        full = np.array(d["fraction_unchanged"])
+        assert ctrl.shape == full.shape == (4, 16)
+        assert ctrl.mean() >= full.mean()  # meno rumore, piu' codici invariati
+
+
+def test_v4_zero_noise_control_stops_a_nondeterministic_runner(world):
+    em, datasets = world
+
+    class Jittery(FakeRunner):
+        calls = 0
+
+        def run(self, x, spatial_idx, want_recon=True):
+            out = super().run(x, spatial_idx, want_recon)
+            if not want_recon:
+                Jittery.calls += 1
+                if Jittery.calls % 2 == 1:  # la ripetizione a rumore zero cambia i codici
+                    out["codes"] = (out["codes"] + 1) % 8192
+            return out
+
+    with pytest.raises(RuntimeError, match="controllo V4 fallito"):
+        run_all(Jittery(), CFG, em, datasets)
