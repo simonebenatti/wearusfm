@@ -253,3 +253,61 @@ La tassonomia e' ora vincolante: entra nel documento di riferimento v10 come
 "verificato" (non piu' bozza). Gli ID ontologici e la lista muscoli di Camargo restano
 comunque marcati "da verificare"/"raccolto" nel registro dei fatti dove non derivano da
 lettura diretta del paper originale (fatti n. 6 e 14).
+
+
+---
+
+## D5a — Soglie dell'ancora RVQ (passo 1-bis), CONGELATE
+
+**Stato:** congelate il 29/09/2026, **prima** di qualunque esecuzione di V1-V4 (verificato:
+non esiste `results/step1bis/`). **Decisione (Simone): adottate le soglie proposte dal piano,
+senza modifiche.**
+
+Riferimento: [`docs/piano_operativo_v10.md`](piano_operativo_v10.md) passo 1-bis; v10 §6.3.
+
+| Verifica | Soglia congelata |
+|---|---|
+| **V2** — errore di ricostruzione | **X = 2**: l'errore di ricostruzione **mediano** su un dataset fuori dai dataset Meta non deve superare il **doppio** di quello su emg2pose |
+| **V3** — dataset-ID dai codici | **Y = 10 punti**: l'accuratezza del dataset-ID dai codici RVQ non deve superare di oltre 10 punti quella ottenuta dalle sole potenze di banda |
+| **V4** — stabilita' per livello RVQ | un livello e' stabile se **almeno il 75%** dei codici non cambia sotto rumore al noise floor, su **tutti** i dataset |
+
+Il piano stesso avverte che sono punti di partenza: contano perche' scritti prima, non perche'
+giusti. **Non si ritoccano dopo aver visto un risultato**; se una soglia si rivela sbagliata si
+apre una nuova decisione, senza riscrivere questa.
+
+**Aperto, da scrivere QUI prima del lancio di 1-bis** (non sono soglie nuove, sono le
+definizioni operative che le rendono misurabili): la metrica di errore di ricostruzione di V2,
+il livello di rumore "al noise floor" di V4 e il baseline delle potenze di banda di V3.
+
+D5b (esito: ancora adottabile, ristretta ad alcuni dataset, o scartata) resta da prendere
+entro l'11/10; con queste soglie e' meccanica, la firma e' di Simone. Se il 25/10 le verifiche
+non sono complete, l'ancora RVQ esce dal manifest (piano §10).
+
+---
+
+## D8a — Soglie del gate di consistenza al ricampionamento (passo 3), CONGELATE
+
+**Stato:** congelate il 29/09/2026, **prima** di qualunque esecuzione del gate (verificato:
+non esiste `results/step3/`). **Decisione (Simone): adottate le soglie proposte dal piano,
+senza modifiche.**
+
+Riferimento: [`docs/piano_operativo_v10.md`](piano_operativo_v10.md) passo 3; v10 §4.2, §7.1.
+E' il primo si'/no scientifico del progetto.
+
+Il gate e' superato solo se valgono **entrambe**:
+
+1. **errore relativo RMS delle feature <= 5%** nella banda condivisa;
+2. **accuratezza del probe A-contro-B <= 55%**, con **intervallo di confidenza al 95% che
+   contiene il 50%**.
+
+Il gate richiede un solo dataset a 2 kHz e si puo' lanciare su emg2qwerty appena esiste il
+front-end, senza aspettare l'ingest completo. Da controllare per primi se fallisce: il fattore
+Δt e l'anti-aliasing **per ciascuna famiglia di base** (indicazione del piano, non una soglia).
+
+**Non decisa qui:** D8b (se il gate fallisce, insistere o ripiegare). Il piano propone una
+settimana per correggere e, se il 18/10 il gate non e' superato, i front-end separati per
+frequenza come default; resta una decisione da prendere, con firma di Simone, al momento.
+
+**Aperto, da scrivere QUI prima del lancio del gate:** la definizione operativa di "banda
+condivisa", le due frequenze confrontate (A e B), e come si costruisce l'intervallo di
+confidenza del probe.
