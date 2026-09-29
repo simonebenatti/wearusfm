@@ -327,9 +327,11 @@ stima di riuscire ad avere finito l'addestramento e capire a che punto si e' ent
 novembre.
 
 **Conseguenze da tenere presenti:**
-- Cade la copertura che il piano attribuiva al preprint: "l'uscita garantita" e il materiale
-  preliminare per la continuita' di D0 (proroga o nuovo ISCRA B). Se a fine novembre i
-  risultati del foundation model non fossero buoni, non c'e' un articolo di ripiego.
+- Il piano attribuiva al preprint il ruolo di "uscita garantita" e di materiale preliminare per
+  la continuita' di D0. **Correzione di Simone (29/09/2026): la proroga si puo' chiedere anche
+  senza un paper e di solito danno 3 mesi** (esperienza di Simone, non verificata con CINECA,
+  coerente con D0). Quindi non dipende dal preprint. Resta comunque l'intenzione di
+  **accelerare**: prima si ha una lettura preliminare, meglio e'.
 - **Cosa ci sara' davvero a fine novembre, dal calendario del piano (§10):** finestra 1
   (01-03/11) lancia le ablation a 30M; W7-W8 i job girano; W9-W10 (16-29/11) decisioni su
   obiettivo, architettura ed E e conferme a 100M. La **ladder completa parte il 01-02/12** e la
