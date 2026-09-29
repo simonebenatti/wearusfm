@@ -65,6 +65,7 @@ def main() -> int:
     p.add_argument("--skip-v3", action="store_true")
     p.add_argument("--device", default="cuda")
     p.add_argument("--smoke", action="store_true", help="prova di collaudo: NON e' il run di D5a")
+    p.add_argument("--save-arrays-dir", type=Path, default=None, help="cartella (fuori dal repo) per codici e token per dataset")
     args = p.parse_args()
 
     t0 = time.time()
@@ -88,7 +89,7 @@ def main() -> int:
             print(f"ATTENZIONE: nessuna sessione in {root}", flush=True)
         datasets[name] = (items, partial(_loader, name))
 
-    report = run_all(runner, cfg, (em_items, em_loader), datasets)
+    report = run_all(runner, cfg, (em_items, em_loader), datasets, save_arrays_dir=args.save_arrays_dir)
     report["provenance"] = {
         "smoke": args.smoke,
         "decision": "docs/decisioni.md, D5a definizioni operative di V1-V4 (congelate 29/09/2026)",

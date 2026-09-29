@@ -44,4 +44,5 @@ python scripts/step1bis_run.py \
   --emg2pose-dir "$EM_DIR" \
   --emg2pose-csv "$WORK/data/raw/emg2pose_mini/emg2pose_metadata.csv" \
   --out "$OUT_DIR/step1bis_${SLURM_JOB_ID}.json" \
+  --save-arrays-dir "$OUT_DIR/arrays_${SLURM_JOB_ID}" \
   "$@"

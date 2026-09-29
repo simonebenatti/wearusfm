@@ -241,6 +241,7 @@ def run_all(
     cfg: Config,
     emg2pose: tuple[list[tuple[str, str, Path]], Loader],
     datasets: dict[str, tuple[list[tuple[str, str, Path]], Loader]],
+    save_arrays_dir: Path | None = None,
 ) -> dict:
     """Esegue V1-V4. Si ferma dopo V1 se V1 non passa (il ripiego richiede una nuova decisione,
     D5a punto 2). Un dataset con fs < 1 kHz o senza dati e' escluso E registrato."""
@@ -271,6 +272,18 @@ def run_all(
             continue
         per[name] = analyze_dataset(runner, name, draws[name], factor, cfg, ref_median)
     report["excluded_datasets"] = excluded
+    if save_arrays_dir is not None:
+        # materiali per analisi successive (es. D5b) senza rifare il run su GPU: NON entrano nel repo
+        save_arrays_dir = Path(save_arrays_dir)
+        save_arrays_dir.mkdir(parents=True, exist_ok=True)
+        for name, r in per.items():
+            np.savez_compressed(
+                save_arrays_dir / f"{name}.npz",
+                codes=r["_v3"]["codes"], tokens=r["_v3"]["tokens"].astype(np.float32),
+                group_subject=np.array(draws[name].group_subject), group_session=np.array(draws[name].group_session),
+                factor=np.float32(factor), fraction_unchanged=r["_frac"],
+            )
+        report["arrays_dir"] = str(save_arrays_dir)
     report["v2"] = {n: {k: v for k, v in _public(r).items() if k.startswith(("v2", "n_", "shortfall", "sessions"))}
                     for n, r in per.items()}
     report["v2_all_pass"] = all(r.get("v2_passes", True) for r in per.values())

@@ -185,3 +185,15 @@ def test_v4_zero_noise_control_stops_a_nondeterministic_runner(world):
 
     with pytest.raises(RuntimeError, match="controllo V4 fallito"):
         run_all(Jittery(), CFG, em, datasets)
+
+
+def test_save_arrays_writes_one_npz_per_dataset(world, tmp_path):
+    em, datasets = world
+    out = tmp_path / "arrays"
+    rep = run_all(FakeRunner(), CFG, em, datasets, save_arrays_dir=out)
+    assert rep["arrays_dir"] == str(out)
+    assert {p.stem for p in out.glob("*.npz")} == {"emg2pose", "dsA", "dsB"}
+    z = np.load(out / "dsA.npz")
+    n_tok = CFG.n_groups * 16 * 16
+    assert z["codes"].shape == (4, 16, n_tok) and z["tokens"].shape == (n_tok, 200)
+    assert len(z["group_subject"]) == CFG.n_groups and z["fraction_unchanged"].shape == (4, 16)
