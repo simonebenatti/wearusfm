@@ -372,10 +372,19 @@ conseguenza del testo, non una scelta nuova di Simone, da confermare quando si s
 - **non** si applica la vista simmetrica a 20-90 Hz (cioe' l'ancora RVQ non e' "di banda
   bassa").
 
-**Normalizzazione.** Il codice d'esempio non normalizza in ingresso all'encoder (fatto n. 4,
-punto b, un'assenza nel codice e non una dichiarazione degli autori). Cosa fornire come
-"normalizzazione attesa" nella vista canonica non e' deciso qui: resta da scrivere con le
-definizioni operative di D5a.
+**Normalizzazione: si' (Simone, 29/09/2026: "usiamo normalizzazione, secondo me e' meglio").**
+Il codice d'esempio non normalizza in ingresso all'encoder (fatto n. 4, punto b, un'assenza nel
+codice e non una dichiarazione degli autori), quindi qui si sceglie di **aggiungerla** nella
+vista canonica. Decisa solo *la scelta di normalizzare*. **Il tipo di normalizzazione NON e'
+ancora deciso**: va scritto con le definizioni operative di D5a, prima del lancio di 1-bis.
+*Proposta di AG, da confermare (non congelata):* un **fattore di scala unico per registrazione**
+(deviazione standard calcolata su tutti i canali insieme), non uno z-score per canale e non per
+finestra. Motivi: il tokenizer stesso standardizza congiuntamente su canali, patch e tempo
+(`std_norm`, `NeuroRVQ.py` righe 571-575) e il transformer usa i rapporti di ampiezza fra canali
+come informazione spaziale; una normalizzazione per finestra cancellerebbe la dinamica (i picchi
+sono informativi). **Da misurare in 1-bis:** l'ampiezza di emg2pose nelle sue unita' non e'
+documentata nel codice, quindi va verificato che l'ingresso normalizzato cada nel regime che
+l'encoder congelato ha visto (errore di ricostruzione su emg2pose con e senza normalizzazione).
 
 **Non cambia:** il passo 5 riproduce i numeri pubblicati di NeuroRVQ con **la loro** pipeline
 (nel paper: 20-90 Hz per NeuroRVQ nel confronto downstream); e' una pipeline di valutazione, non
