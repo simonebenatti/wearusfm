@@ -275,9 +275,9 @@ Il piano stesso avverte che sono punti di partenza: contano perche' scritti prim
 giusti. **Non si ritoccano dopo aver visto un risultato**; se una soglia si rivela sbagliata si
 apre una nuova decisione, senza riscrivere questa.
 
-**Aperto, da scrivere QUI prima del lancio di 1-bis** (non sono soglie nuove, sono le
-definizioni operative che le rendono misurabili): la metrica di errore di ricostruzione di V2,
-il livello di rumore "al noise floor" di V4 e il baseline delle potenze di banda di V3.
+**Definizioni operative** (metrica di errore di ricostruzione di V2, livello di rumore "al
+noise floor" di V4, baseline delle potenze di banda di V3): scritte e congelate nella sezione
+"D5a - Definizioni operative di V1-V4" piu' sotto, il 29/09/2026.
 
 D5b (esito: ancora adottabile, ristretta ad alcuni dataset, o scartata) resta da prendere
 entro l'11/10; con queste soglie e' meccanica, la firma e' di Simone. Se il 25/10 le verifiche
@@ -285,12 +285,16 @@ non sono complete, l'ancora RVQ esce dal manifest (piano §10).
 
 ---
 
-## D5a — Definizioni operative di V1-V4, PROPOSTA (in attesa di firma)
+## D5a — Definizioni operative di V1-V4, CONGELATE
 
-**Stato:** proposta di AG del 29/09/2026, **NON congelata**. Si congela con la firma di Simone e
-un commit, **prima** di lanciare qualunque cosa di 1-bis. Le soglie X = 2, Y = 10 punti e 75% di
-D5a restano come sono. **L'unica soglia nuova e' quella di V1** (punto 2, segnalata): D5a non
-ne aveva una, il piano dice solo "non degradi in modo sostanziale".
+**Stato:** proposta di AG del 29/09/2026, **firmata e congelata da Simone il 29/09/2026 senza
+modifiche** ("firma e congela D5a"), **prima** di qualunque esecuzione di V1-V4 (verificato:
+non esiste `results/step1bis/`). Le soglie X = 2, Y = 10 punti e 75% di D5a restano come sono.
+**L'unica soglia nuova e' quella di V1** (punto 2): D5a non ne aveva una, il piano dice solo
+"non degradi in modo sostanziale"; congelata insieme al resto.
+
+Come per D5a: **non si ritoccano dopo aver visto un risultato**; se una definizione si rivela
+sbagliata si apre una nuova decisione, senza riscrivere questa.
 
 Riferimento: v10 §6.3 (V1-V4), D5a, "Bivio di v10 §6.3" (vista canonica, normalizzazione).
 
@@ -355,7 +359,7 @@ v10 §6.3.
   **>= 75%** (congelata); e' stabile se lo e' su **tutti** i dataset. Nessun livello stabile =
   ancora scartata.
 
-### 6. Da guardare prima di firmare (scelte che possono cambiare l'esito)
+### 6. Scelte firmate da Simone (quelle che possono cambiare l'esito)
 
 1. "registrazione" = sessione (punto 1);
 2. soglia nuova di V1, 1,5 volte (punto 2);
@@ -363,7 +367,7 @@ v10 §6.3.
 4. insieme dei dataset di confronto, in particolare CSL-hdemg e Camargo (punto 1);
 5. 20.000 token per dataset (punto 1).
 
-Costo: le verifiche V1-V4 usano il tokenizer da 144M in sola inferenza su ~10^5 token in tutto:
+Costo (stima di AG, non un impegno): le verifiche V1-V4 usano il tokenizer da 144M in sola inferenza su ~10^5 token in tutto:
 stima **< 2 GPU-ora** (< 16 ore locali) su 30 di budget del passo; la stima definitiva va
 ridata prima di ogni lancio.
 
@@ -462,10 +466,9 @@ codice e non una dichiarazione degli autori), quindi qui si sceglie di **aggiung
 vista canonica.
 **Tipo di normalizzazione, deciso (Simone, 29/09/2026: "accetto la tua proposta. no z score"):**
 un **fattore di scala unico per registrazione** (deviazione standard calcolata su tutti i canali
-insieme), **non** uno z-score per canale e non per finestra. Restano da scrivere con le
-definizioni operative di D5a, prima del lancio di 1-bis, i dettagli che qui non sono fissati:
-la scala di arrivo (varianza unitaria o quella che l'encoder ha visto su emg2pose) e come
-trattare i canali scartati dal QC nel calcolo della deviazione standard. Motivi della scelta
+insieme), **non** uno z-score per canale e non per finestra. I dettagli (scala di arrivo,
+canali scartati dal QC, "registrazione" = sessione) sono fissati e congelati nella sezione "D5a -
+Definizioni operative di V1-V4", punto 1. Motivi della scelta
 (proposti da AG, accettati): il tokenizer stesso standardizza congiuntamente su canali, patch e tempo
 (`std_norm`, `NeuroRVQ.py` righe 571-575) e il transformer usa i rapporti di ampiezza fra canali
 come informazione spaziale; una normalizzazione per finestra cancellerebbe la dinamica (i picchi
