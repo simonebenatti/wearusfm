@@ -15,7 +15,7 @@
 #            --smoke --n-groups 6 --v1-windows 4 --skip-v3 --datasets capgmyo camargo2021 --max-sessions-per-subject 1
 #
 # Il clone di NeuroRVQ (commit 926e770, CC BY-NC 4.0) sta FUORI dal repo, in $SCRATCH/external.
-# L'emg2pose mini si estrae in $SCRATCH (non in $WORK: quota). Gli output vanno fuori dal repo.
+# Gli output vanno fuori dal repo.
 
 set -euo pipefail
 cd "$WORK/wearusfm"
@@ -26,13 +26,15 @@ module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
 
 REPO_DIR="$SCRATCH/external/NeuroRVQ_926e770"
-EM_TAR="$WORK/data/raw/emg2pose_mini/emg2pose_dataset_mini.tar"
-EM_DIR="$SCRATCH/wearusfm_runs/emg2pose_mini"
+# Il riferimento emg2pose e' un sottoinsieme MULTI-UTENTE (extract_emg2pose_reference.sbatch): il mini
+# ha un solo utente e non permette V3. Nessun ripiego silenzioso sul mini.
+EM_DIR="${EMG2POSE_DIR:-$SCRATCH/wearusfm_runs/emg2pose_reference}"
 OUT_DIR="$WORK/wearusfm_runs/results/step1bis"
-mkdir -p "$OUT_DIR" "$WORK/wearusfm_runs/logs" "$EM_DIR"
+mkdir -p "$OUT_DIR" "$WORK/wearusfm_runs/logs"
 
-if [ -z "$(find "$EM_DIR" -name '*.hdf5' -print -quit)" ]; then
-  tar -xf "$EM_TAR" -C "$EM_DIR"
+if [ -z "$(find "$EM_DIR" -name '*.hdf5' -print -quit 2>/dev/null)" ]; then
+  echo "ERRORE: nessun .hdf5 in $EM_DIR (lanciare prima scripts/slurm/extract_emg2pose_reference.sbatch)"
+  exit 1
 fi
 
 python scripts/step1bis_run.py \
