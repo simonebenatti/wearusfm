@@ -285,6 +285,90 @@ non sono complete, l'ancora RVQ esce dal manifest (piano §10).
 
 ---
 
+## D5a — Definizioni operative di V1-V4, PROPOSTA (in attesa di firma)
+
+**Stato:** proposta di AG del 29/09/2026, **NON congelata**. Si congela con la firma di Simone e
+un commit, **prima** di lanciare qualunque cosa di 1-bis. Le soglie X = 2, Y = 10 punti e 75% di
+D5a restano come sono. **L'unica soglia nuova e' quella di V1** (punto 2, segnalata): D5a non
+ne aveva una, il piano dice solo "non degradi in modo sostanziale".
+
+Riferimento: v10 §6.3 (V1-V4), D5a, "Bivio di v10 §6.3" (vista canonica, normalizzazione).
+
+### 1. Dati e preparazione comune
+
+- **Riferimento:** emg2pose (sottoinsieme fisso, seed 0; il checkpoint l'ha visto in
+  pretraining, quindi il riferimento e' ottimistico e il criterio X e' piu' severo di quanto
+  sembri). **Confronto:** CapgMyo, GRABMyo, putEMG, CSL-hdemg, Camargo (tutti gia' ingeriti);
+  Hyser quando sara' ingerito e NinaPro Delsys quando ci sara', ma **non bloccano** l'avvio.
+- **Preparazione:** vista canonica (20-400 Hz, 1000 Hz), poi scala. **"Registrazione" = la
+  sessione di un soggetto** (tutte le prove dello stesso montaggio), **non la singola prova**:
+  una scala per prova cancellerebbe le differenze di ampiezza fra gesti. La deviazione standard
+  si calcola su tutti i canali che passano il QC (i canali scartati non entrano).
+- **Scala di arrivo:** si sceglie **solo su emg2pose**, prima di guardare gli altri dataset:
+  due candidati (varianza unitaria; scala tipica di emg2pose nelle sue unita') e vince quello
+  con l'errore di ricostruzione di V2 piu' basso su emg2pose. Poi si congela.
+- **Unita' di misura: il token** (un canale x una patch da 200 ms). Per dataset: **20.000 token**
+  (= 1.250 campioni da 3,2 s), estratti a caso con seed 0, ripartiti in parti uguali fra i
+  soggetti disponibili, griglia di patch ancorata all'inizio della registrazione.
+
+### 2. V1 - un canale alla volta
+
+Modalita' canale-per-volta con **un solo indice spaziale fisso** (l'indice del primo dei 16
+elettrodi globali), uguale per tutti i canali di tutti i dataset. Su emg2pose-mini si confronta
+l'errore di ricostruzione (metrica di V2) in modalita' multi-canale nativa contro quella
+canale-per-volta, sugli stessi token. ***Soglia NUOVA, proposta:*** V1 passa se l'errore mediano
+in modalita' canale-per-volta e' **<= 1,5 volte** quello multi-canale. Se non passa, il ripiego
+(mappare i canali sui 16 elettrodi, scelta per dataset) richiede una nuova decisione.
+
+### 3. V2 - errore di ricostruzione
+
+Per token, errore quadratico normalizzato **nel dominio standardizzato del tokenizer**
+(`std_norm`, come la sua loss): ||x - x_rec||^2 / ||x||^2, con `x_rec` dal decoder rilasciato.
+Per dataset, **mediana sui token**. Rapporto = mediana(dataset) / mediana(emg2pose); **passa se
+<= X = 2** (congelata). Un dataset sopra soglia esce dall'ancora o l'ancora si scarta, come da
+v10 §6.3.
+
+### 4. V3 - dataset-ID dai codici
+
+- **Campione:** 256 token a caso della stessa sessione; **split per soggetto** (train / validazione
+  / test con soggetti disgiunti dentro ogni dataset), classi bilanciate.
+- **Codici:** istogramma normalizzato dei codici per ciascuna coppia (ramo, livello RVQ), tutti
+  i livelli, concatenati (matrici sparse).
+- **Baseline:** log-potenza media dei 256 token nelle **5 bande del repo NeuroRVQ** (20-60,
+  60-125, 125-200, 200-250, 250-400 Hz; `plotting/plotting_example.py` righe 86-92), stessi
+  campioni e stessi split.
+- **Classificatori:** per **entrambi** i set di feature, regressione logistica L2 e gradient
+  boosting; per ciascun set si riporta il migliore su validazione (una sonda debole
+  sottostimerebbe l'identificabilita').
+- **Metrica:** accuratezza bilanciata sul test, con il caso e l'intervallo di confidenza
+  (bootstrap sui soggetti). **L'ancora si scarta se codici - bande > Y = 10 punti** (congelata).
+
+### 5. V4 - stabilita' per livello RVQ
+
+- **Noise floor per dataset:** RMS mediana dei token nel **10% a energia minore**, nella vista
+  canonica dopo la scala per sessione.
+- **Perturbazione:** rumore gaussiano bianco a media zero, deviazione standard = noise floor,
+  aggiunto **dopo** la vista canonica con la scala di sessione **tenuta fissa**; 3 semi.
+- **Metrica:** per ogni coppia (ramo, livello), frazione di token il cui codice a quel livello
+  **non cambia** (livelli confrontati in modo indipendente, non condizionati ai precedenti).
+- **Regola:** un livello e' stabile su un dataset se in **tutti e 4 i rami** la frazione e'
+  **>= 75%** (congelata); e' stabile se lo e' su **tutti** i dataset. Nessun livello stabile =
+  ancora scartata.
+
+### 6. Da guardare prima di firmare (scelte che possono cambiare l'esito)
+
+1. "registrazione" = sessione (punto 1);
+2. soglia nuova di V1, 1,5 volte (punto 2);
+3. V4 richiede la stabilita' in tutti e 4 i rami (punto 5), non solo in media;
+4. insieme dei dataset di confronto, in particolare CSL-hdemg e Camargo (punto 1);
+5. 20.000 token per dataset (punto 1).
+
+Costo: le verifiche V1-V4 usano il tokenizer da 144M in sola inferenza su ~10^5 token in tutto:
+stima **< 2 GPU-ora** (< 16 ore locali) su 30 di budget del passo; la stima definitiva va
+ridata prima di ogni lancio.
+
+---
+
 ## D8a — Soglie del gate di consistenza al ricampionamento (passo 3), CONGELATE
 
 **Stato:** congelate il 29/09/2026, **prima** di qualunque esecuzione del gate (verificato:
