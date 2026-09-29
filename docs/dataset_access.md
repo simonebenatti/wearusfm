@@ -40,6 +40,22 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   hanno buchi (mancano AB22, AB26, AB29). Il blog e il paper, che dicevano 22, avevano
   ragione. Lezione: un intervallo di ID non e' un numero di soggetti, si contano le
   cartelle.
+- **Camargo 2021, formato .mat illeggibile da Python (29/09/2026)**: i file contengono
+  tabelle MATLAB di tipo MCOS (oggetti). `scipy.io.loadmat` le restituisce come
+  `MatlabOpaque` con i dati veri chiusi in un blob `__function_workspace__`; `h5py`
+  (il file e' MAT v5, non HDF5), `pymatreader` e `mat73` non le decodificano; Octave non
+  e' installato su Leonardo (162 moduli scansionati); l'unico toolbox ufficiale
+  (MoCapTools) e' solo MATLAB. **Soluzione**: conversione una tantum con MATLAB locale
+  (R2023b, `-batch`) tramite `scripts/convert_camargo_mcos_tables.m`, che salva ogni
+  tabella come .mat v7 con due sole variabili (`colnames`, `data`), leggibili da scipy.
+  Solo il sensore `emg` (3147 file, 5,9 GB) passa dal Mac; il resto del dataset non ci
+  serve. Procedura: estrarre i soli `*/emg/*` dagli zip su Leonardo -> rsync sul Mac ->
+  MATLAB -> verifica file per file con Python (colonne attese nell'ordine giusto, nessun
+  NaN, asse temporale `Header` a 1 kHz: tutti e 3147 ok) -> rsync su Leonardo (byte
+  identici) -> `scripts/ingest_camargo.py`. Esito: 22 soggetti, 3147 trial, 20,06 h,
+  11 canali, 0 canali scartati. La colonna `Header` e' il tempo in secondi e NON e' un
+  canale EMG. Se servisse rifare la conversione: le cartelle di staging sul Mac erano
+  `.camargo_emg_staging/` e `.camargo_matlab_scratch/` (escluse da git).
 - **Kaifosh et al. "Discrete Gestures", D3a deciso il 23/09/2026**: licenza
   **CC-BY-NC-4.0** (Non-Commerciale, diversa dal resto del corpus) - vedi
   `docs/decisioni.md` D3a per il testo della decisione. Il comando CLI ufficiale del
