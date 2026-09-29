@@ -13,6 +13,11 @@ file e' ruotato rispetto al nome: `S1_E1_A1.mat` dichiara exercise = 3, `S1_E2_A
 E3: 23 = 52, come i "52 different movements" della pagina ufficiale). L'ingest si fida del NOME
 del file e registra lo scalare interno nel sidecar, senza sollevare.
 
+**Seconda anomalia (30/09/2026, tutti e 10 gli zip letti):** in `s2.zip` lo scalare `subject`
+vale 11 in tutti e tre i file (`S2_E1/E2/E3_A1.mat`); in tutti gli altri soggetti coincide col
+numero nel nome. Nessun altro file dichiara 11, quindi non c'e' collisione. L'ingest si fida del
+NOME del file/zip, e registra lo scalare interno nel sidecar.
+
 Un soggetto = una sessione: i tre esercizi si concatenano lungo il tempo, con offset per
 esercizio nel sidecar; le etichette (`stimulus`, `restimulus`, `repetition`, `rerepetition`)
 vanno in `labels.npz` accanto ai dati e servono all'harness, non al pretraining.
@@ -62,6 +67,7 @@ class ExerciseData:
     labels: dict[str, np.ndarray]  # ciascuna (T,) int16
     laterality: str
     exercise_field_in_file: int  # lo scalare `exercise` letto dal .mat (puo' non coincidere col nome)
+    subject_field_in_file: int  # idem per `subject` (anomalo in s2.zip: 11)
     n_movements: int  # valori distinti non nulli di `restimulus`
 
 
@@ -84,10 +90,9 @@ def _scalar_num(x) -> float:
 
 
 def parse_exercise(mat: dict, subject: int, exercise: int) -> ExerciseData:
-    """Controlla soggetto, frequenza, sensore e forme prima di fidarsene. NON controlla lo scalare
-    `exercise` (anomalo nei dati reali: vedi docstring del modulo): lo registra."""
-    if int(_scalar_num(mat["subject"])) != subject:
-        raise ValueError(f"soggetto nel file {_scalar_num(mat['subject'])}, atteso {subject}")
+    """Controlla frequenza, sensore e forme prima di fidarsene. NON controlla gli scalari `subject`
+    ed `exercise` (anomali nei dati reali: vedi docstring del modulo): li registra. Il soggetto
+    e l'esercizio vengono dal NOME del file, verificato in `load_subject`."""
     if _scalar_num(mat["frequency"]) != NATIVE_FS_HZ:
         raise ValueError(f"frequenza {mat['frequency']} diversa da {NATIVE_FS_HZ}")
     if _scalar_str(mat["sensor"]) != SENSOR_NAME:
@@ -104,7 +109,8 @@ def parse_exercise(mat: dict, subject: int, exercise: int) -> ExerciseData:
     movements = np.unique(labels["restimulus"])
     return ExerciseData(
         exercise, emg, labels, _scalar_str(mat["laterality"]).lower(),
-        exercise_field_in_file=int(_scalar_num(mat["exercise"])), n_movements=int((movements != 0).sum()),
+        exercise_field_in_file=int(_scalar_num(mat["exercise"])),
+        subject_field_in_file=int(_scalar_num(mat["subject"])), n_movements=int((movements != 0).sum()),
     )
 
 
@@ -182,7 +188,8 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int) -> dict:
     for e in exercises:
         trials.append({
             "exercise": e.exercise, "offset": offset, "n_samples": int(e.emg.shape[0]),
-            "exercise_field_in_file": e.exercise_field_in_file, "n_movements": e.n_movements,
+            "exercise_field_in_file": e.exercise_field_in_file, "subject_field_in_file": e.subject_field_in_file,
+            "n_movements": e.n_movements,
         })
         offset += e.emg.shape[0]
 
@@ -211,5 +218,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int) -> dict:
         "movements_per_exercise": [e.n_movements for e in exercises],
         "total_movements": int(sum(e.n_movements for e in exercises)),
         "exercise_field_matches_filename": all(e.exercise_field_in_file == e.exercise for e in exercises),
+        "subject_field_matches_filename": all(e.subject_field_in_file == subject for e in exercises),
+        "subject_field_in_file": sorted({e.subject_field_in_file for e in exercises}),
         "int16_scale": scale, "emg_max_abs": float(np.abs(emg).max()), "memmap_path": str(out_dir / "data_int16.npy"),
     }

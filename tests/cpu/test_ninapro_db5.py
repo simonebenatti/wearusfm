@@ -15,7 +15,7 @@ from wearusfm.ingest.ninapro_db5 import (
 )
 
 
-def _mat_bytes(subject, exercise, n, *, freq=200.0, sensor="Double Myo", lat="r", rng=None):
+def _mat_bytes(subject, exercise, n, *, freq=200.0, sensor="Double Myo", lat="r", rng=None, subject_field=None):
     rng = rng or np.random.default_rng(exercise)
     emg = np.round(rng.normal(scale=8.0, size=(n, N_CHANNELS))).clip(-128, 127).astype(np.float32)
     rest = np.zeros((n, 1), dtype=np.int8)
@@ -25,7 +25,7 @@ def _mat_bytes(subject, exercise, n, *, freq=200.0, sensor="Double Myo", lat="r"
         "emg": emg, "acc": np.zeros((n, 3), np.float32), "glove": np.zeros((n, 22), np.float32),
         "stimulus": rest.copy(), "restimulus": rest.copy(),
         "repetition": np.ones((n, 1), np.int8), "rerepetition": np.ones((n, 1), np.int8),
-        "subject": np.array([[subject]], float), "exercise": np.array([[{1: 3, 2: 1, 3: 2}[exercise]]], float),
+        "subject": np.array([[subject if subject_field is None else subject_field]], float), "exercise": np.array([[{1: 3, 2: 1, 3: 2}[exercise]]], float),
         "frequency": np.array([[freq]], float), "laterality": np.array([lat]), "sensor": np.array([sensor]),
         "age": np.array([[23.0]]), "gender": np.array(["m"]), "height": np.array([[187.0]]),
     }
@@ -96,3 +96,14 @@ def test_ingest_subject_writes_data_labels_and_sidecar(tmp_path):
     assert np.allclose(rec, np.round(rec)) and abs(res["fraction_restimulus_zero"] - 0.5) < 0.01
     assert res["exercise_field_matches_filename"] is False and res["movements_per_exercise"] == [3, 5, 7]
     assert [t["exercise_field_in_file"] for t in meta["trials"]] == [3, 1, 2]
+
+
+def test_subject_scalar_inside_file_can_differ_from_filename(tmp_path):
+    """Anomalia dei dati reali: s2.zip dichiara subject = 11 dentro i file. Si fida del nome."""
+    zip_path = _make_zip(tmp_path / "raw", 2, subject_field=11)
+    res = ingest_subject(zip_path, tmp_path / "out", 2)
+    assert res["subject"] == 2 and res["subject_field_matches_filename"] is False
+    assert res["subject_field_in_file"] == [11]
+    meta = json.loads((tmp_path / "out" / "s02" / "session1" / "metadata.json").read_text())
+    assert {t["subject_field_in_file"] for t in meta["trials"]} == {11}
+    assert meta["montage"]["subject_id"] == "ninapro_db5_s02"

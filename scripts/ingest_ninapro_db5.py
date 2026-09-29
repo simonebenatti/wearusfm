@@ -43,6 +43,8 @@ def main() -> int:
         "dataset": "ninapro_db5", "subjects_processed": wanted, "n_subjects": len(wanted),
         "hours_total": sum(x["hours"] for x in per_subject), "n_channels": 16,
         "n_channels_discarded_total": sum(x["n_channels_discarded"] for x in per_subject),
+        "subjects_with_subject_field_mismatch": [x["subject"] for x in per_subject if not x["subject_field_matches_filename"]],
+        "subjects_with_exercise_field_mismatch": [x["subject"] for x in per_subject if not x["exercise_field_matches_filename"]],
         "per_subject": per_subject, "elapsed_s": time.time() - t0,
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
