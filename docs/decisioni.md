@@ -311,3 +311,34 @@ frequenza come default; resta una decisione da prendere, con firma di Simone, al
 **Aperto, da scrivere QUI prima del lancio del gate:** la definizione operativa di "banda
 condivisa", le due frequenze confrontate (A e B), e come si costruisce l'intervallo di
 confidenza del probe.
+
+
+---
+
+## DP — Preprint autonomo di ri-valutazione: NO per ora
+
+**Stato:** deciso il 29/09/2026. **Decisione (Simone): non si fa per ora.**
+
+Riferimento: [`docs/piano_operativo_v10.md`](piano_operativo_v10.md) §9 (DP) e passo 5. Il piano
+proponeva di farlo, con una persona dedicata fuori dal cammino critico del foundation model.
+
+**Motivazione (Simone):** vuole avere prima qualcosa di preliminare dal foundation model, e
+stima di riuscire ad avere finito l'addestramento e capire a che punto si e' entro fine
+novembre.
+
+**Conseguenze da tenere presenti:**
+- Cade la copertura che il piano attribuiva al preprint: "l'uscita garantita" e il materiale
+  preliminare per la continuita' di D0 (proroga o nuovo ISCRA B). Se a fine novembre i
+  risultati del foundation model non fossero buoni, non c'e' un articolo di ripiego.
+- **Cosa ci sara' davvero a fine novembre, dal calendario del piano (§10):** finestra 1
+  (01-03/11) lancia le ablation a 30M; W7-W8 i job girano; W9-W10 (16-29/11) decisioni su
+  obiettivo, architettura ed E e conferme a 100M. La **ladder completa parte il 01-02/12** e la
+  valutazione finale e' W15-W16 (fino al 07/01). Quindi a fine novembre si avra' una lettura
+  preliminare (ablation e conferme), non i modelli grandi.
+
+**Da riaprire:** a fine novembre (W9-W10), con i risultati preliminari in mano. Nessun impegno
+di persone ora.
+
+**Non cambia:** l'harness di valutazione (passo 5) prosegue, perche' serve a valutare il
+foundation model stesso e non dipende dal preprint. Resta criterio di chiusura del passo 5
+riprodurre prima i numeri pubblicati di NeuroRVQ entro una tolleranza dichiarata.
