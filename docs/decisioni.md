@@ -371,6 +371,17 @@ Costo (stima di AG, non un impegno): le verifiche V1-V4 usano il tokenizer da 14
 stima **< 2 GPU-ora** (< 16 ore locali) su 30 di budget del passo; la stima definitiva va
 ridata prima di ogni lancio.
 
+### 7. Autorizzazione al run vero (Simone, 29/09/2026)
+
+Simone autorizza il run vero di V1-V4 **a condizione che il secondo collaudo (con V3 attiva, i
+controlli di V4 e il riferimento emg2pose multi-utente) sia pulito**: job finito senza errori;
+controllo a rumore zero di V4 = 1,0 su tutti i dataset; V3 calcolabile; nessun dataset escluso
+per errore; V1 passa. Se una condizione fallisce **non si lancia** e si riporta il motivo.
+Parametri del run: 5 dataset ingeriti (capgmyo, grabmyo, putemg, csl_hdemg, camargo2021),
+78 gruppi per dataset, 80 finestre per V1, al piu' 2 sessioni per soggetto, `boost_usr_prod`, 1
+GPU, limite 2 ore (<= 2 GPU-ora = <= 16 ore locali, sui 30 del passo). Il report e' un dato: D5b
+(adottare, restringere o scartare l'ancora RVQ) resta una decisione di Simone.
+
 ---
 
 ## D8a — Soglie del gate di consistenza al ricampionamento (passo 3), CONGELATE
