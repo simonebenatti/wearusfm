@@ -19,12 +19,13 @@ def _mat_bytes(subject, exercise, n, *, freq=200.0, sensor="Double Myo", lat="r"
     rng = rng or np.random.default_rng(exercise)
     emg = np.round(rng.normal(scale=8.0, size=(n, N_CHANNELS))).clip(-128, 127).astype(np.float32)
     rest = np.zeros((n, 1), dtype=np.int8)
-    rest[n // 2 :] = exercise  # meta' riposo, meta' movimento
+    k = {1: 3, 2: 5, 3: 7}[exercise]  # numero di movimenti finto per esercizio
+    rest[n // 2 :, 0] = 1 + np.arange(n - n // 2) % k  # meta' riposo, meta' movimenti 1..k
     d = {
         "emg": emg, "acc": np.zeros((n, 3), np.float32), "glove": np.zeros((n, 22), np.float32),
         "stimulus": rest.copy(), "restimulus": rest.copy(),
         "repetition": np.ones((n, 1), np.int8), "rerepetition": np.ones((n, 1), np.int8),
-        "subject": np.array([[subject]], float), "exercise": np.array([[exercise]], float),
+        "subject": np.array([[subject]], float), "exercise": np.array([[{1: 3, 2: 1, 3: 2}[exercise]]], float),
         "frequency": np.array([[freq]], float), "laterality": np.array([lat]), "sensor": np.array([sensor]),
         "age": np.array([[23.0]]), "gender": np.array(["m"]), "height": np.array([[187.0]]),
     }
@@ -50,6 +51,8 @@ def test_scan_and_load_subject_orders_exercises(tmp_path):
     assert [e.exercise for e in ex] == [1, 2, 3]
     assert ex[0].emg.shape == (450, 16) and ex[0].labels["restimulus"].shape == (450,)
     assert ex[0].laterality == "r"
+    # anomalia dei dati reali: lo scalare interno e' ruotato (E1 -> 3, E2 -> 1, E3 -> 2); il nome vince
+    assert [e.exercise_field_in_file for e in ex] == [3, 1, 2] and [e.n_movements for e in ex] == [3, 5, 7]
 
 
 def test_load_subject_rejects_inconsistencies(tmp_path):
@@ -70,6 +73,8 @@ def test_montage_has_two_rings_of_eight_and_chirality():
     assert all(len(g.channels) == 8 and g.topology.value == "ring" for g in m.groups)
     assert {c.chirality.value for g in m.groups for c in g.channels} == {"left"}
     assert m.groups[1].channels[0].sensor_coords.channel_index == 8
+    assert m.groups[0].channels[0].sensor_coords.ring_angle_deg == 0.0
+    assert m.groups[1].channels[0].sensor_coords.ring_angle_deg == 22.5  # secondo Myo ruotato (fatto n. 19)
 
 
 def test_ingest_subject_writes_data_labels_and_sidecar(tmp_path):
@@ -88,4 +93,6 @@ def test_ingest_subject_writes_data_labels_and_sidecar(tmp_path):
     assert set(lab.files) == {"stimulus", "restimulus", "repetition", "rerepetition"} and len(lab["restimulus"]) == len(data)
     # ricostruzione fedele: i valori 8-bit interi sopravvivono alla quantizzazione
     rec = data.astype(np.float64) / meta["int16_scale"]
-    assert np.allclose(rec, np.round(rec)) and abs(res["rest_fraction_restimulus"] - 0.5) < 0.01
+    assert np.allclose(rec, np.round(rec)) and abs(res["fraction_restimulus_zero"] - 0.5) < 0.01
+    assert res["exercise_field_matches_filename"] is False and res["movements_per_exercise"] == [3, 5, 7]
+    assert [t["exercise_field_in_file"] for t in meta["trials"]] == [3, 1, 2]
