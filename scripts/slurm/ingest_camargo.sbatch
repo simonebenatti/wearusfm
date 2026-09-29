@@ -10,7 +10,8 @@
 
 # Passo 2: ingest Camargo 2021 dal formato convertito con MATLAB
 # (scripts/convert_camargo_mcos_tables.m, conversione verificata 3147/3147 file).
-# Primo lancio: SOLO il soggetto AB06, collaudo prima di lanciare su tutti i 22.
+# Collaudo su AB06 riuscito (job 59010112: 143 trial, 0 canali scartati, 0 assi
+# temporali anomali) - questo lancio copre tutti i 22 soggetti.
 
 set -uo pipefail
 cd "$WORK/wearusfm"
@@ -23,5 +24,4 @@ source "$WORK/venv_wearusfm/bin/activate"
 python3 scripts/ingest_camargo.py \
   --raw-root "$WORK/data/raw/camargo2021_emg_converted" \
   --out-root "$WORK/data/processed/camargo2021" \
-  --subjects 6 \
-  --report "$WORK/wearusfm_runs/results/passo2/camargo_ingest_report_ab06.json"
+  --report "$WORK/wearusfm_runs/results/passo2/camargo_ingest_report.json"
