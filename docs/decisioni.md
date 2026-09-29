@@ -375,11 +375,14 @@ conseguenza del testo, non una scelta nuova di Simone, da confermare quando si s
 **Normalizzazione: si' (Simone, 29/09/2026: "usiamo normalizzazione, secondo me e' meglio").**
 Il codice d'esempio non normalizza in ingresso all'encoder (fatto n. 4, punto b, un'assenza nel
 codice e non una dichiarazione degli autori), quindi qui si sceglie di **aggiungerla** nella
-vista canonica. Decisa solo *la scelta di normalizzare*. **Il tipo di normalizzazione NON e'
-ancora deciso**: va scritto con le definizioni operative di D5a, prima del lancio di 1-bis.
-*Proposta di AG, da confermare (non congelata):* un **fattore di scala unico per registrazione**
-(deviazione standard calcolata su tutti i canali insieme), non uno z-score per canale e non per
-finestra. Motivi: il tokenizer stesso standardizza congiuntamente su canali, patch e tempo
+vista canonica.
+**Tipo di normalizzazione, deciso (Simone, 29/09/2026: "accetto la tua proposta. no z score"):**
+un **fattore di scala unico per registrazione** (deviazione standard calcolata su tutti i canali
+insieme), **non** uno z-score per canale e non per finestra. Restano da scrivere con le
+definizioni operative di D5a, prima del lancio di 1-bis, i dettagli che qui non sono fissati:
+la scala di arrivo (varianza unitaria o quella che l'encoder ha visto su emg2pose) e come
+trattare i canali scartati dal QC nel calcolo della deviazione standard. Motivi della scelta
+(proposti da AG, accettati): il tokenizer stesso standardizza congiuntamente su canali, patch e tempo
 (`std_norm`, `NeuroRVQ.py` righe 571-575) e il transformer usa i rapporti di ampiezza fra canali
 come informazione spaziale; una normalizzazione per finestra cancellerebbe la dinamica (i picchi
 sono informativi). **Da misurare in 1-bis:** l'ampiezza di emg2pose nelle sue unita' non e'
