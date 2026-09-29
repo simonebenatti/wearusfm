@@ -1,0 +1,32 @@
+{
+  "dataset": "kaifosh_discrete_gestures",
+  "n_recordings": 100,
+  "n_users": 100,
+  "hours_total": 63.93759222222219,
+  "n_channels": 16,
+  "n_channels_discarded_total": 0,
+  "n_recordings_time_irregular": 0,
+  "n_gaps_total": 5098,
+  "n_gaps_per_recording": {
+    "min": 0,
+    "median": 0,
+    "max": 617
+  },
+  "official_split_counts": {
+    "test": 10,
+    "train": 80,
+    "val": 10
+  },
+  "emg_max_abs_range": [
+    361.68878173828125,
+    7446.8447265625
+  ],
+  "int16_scale_range": [
+    4.297121959030205,
+    88.47385270344178
+  ],
+  "output_size": "14G (in $SCRATCH/data/processed/kaifosh, non in $WORK)",
+  "job": 59049424,
+  "elapsed_s": 490.66133737564087,
+  "note": "riepilogo aggregato - il report completo con la voce per_recording resta su Leonardo in $WORK/wearusfm_runs/results/passo2/kaifosh_ingest_report_59049424.json. Le posizioni dei buchi dell'asse dei tempi stanno nel metadata.json di ogni registrazione. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026)."
+}
