@@ -83,6 +83,11 @@ class NeuroRVQRunner:
         self.model = model
         self.args = args
 
+    def spatial_index(self, name: str) -> int:
+        """Posizione del canale `name` (es. 'c3') in `ch_names_global` (l'ordine e' quello
+        lessicografico dei byte del repo, non 1..16)."""
+        return int(np.where(self.ch_names_global == name.encode())[0][0])
+
     def _indices(self, spatial_idx: list[int], n_time: int, batch: int):
         names = np.array([self.ch_names_global[i] for i in spatial_idx])
         t_ix, s_ix = self._create_embedding_ix(n_time, MAX_PATCHES, names, self.ch_names_global)

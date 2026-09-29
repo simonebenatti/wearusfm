@@ -4,9 +4,11 @@ import numpy as np
 import pytest
 
 from wearusfm.tokenizer_checks.sessions import (
-    CanonicalSession,
     SessionData,
-    draw_single_channel_samples,
+    allocate_quota,
+    choose_sessions,
+    discover_sessions,
+    draw_from_session,
     load_session,
     qc_valid_from_metadata,
     to_canonical,
@@ -63,26 +65,37 @@ def test_to_canonical_rejects_low_fs():
         to_canonical(_canonical_session(rng, fs=200))
 
 
-def test_draw_samples_round_robin_qc_channels_and_provenance():
+def test_draw_from_session_qc_channels_and_provenance():
     rng = np.random.default_rng(1)
-    sessions = [
-        to_canonical(_canonical_session(rng, subject=f"s{i}", session=f"x{j}"))
-        for i in range(3)
-        for j in range(2)
-    ]
-    x, prov = draw_single_channel_samples(sessions, 12, rng)
-    assert x.shape == (12, 3200)
-    subjects = [p[0] for p in prov]
-    assert {subjects.count(s) for s in ("s0", "s1", "s2")} == {4}  # parti uguali
+    cs = to_canonical(_canonical_session(rng, subject="s0", session="x"))
+    x, prov = draw_from_session(cs, 12, rng)
+    assert x.shape == (12, 3200) and x.dtype == np.float32
     assert all(p[2] != 3 for p in prov)  # il canale 3 e' scartato dal QC
-    # il campione coincide con la finestra dichiarata
     subj, sess, ch, a0 = prov[0]
-    cs = next(c for c in sessions if c.subject == subj and c.session == sess)
     assert np.array_equal(x[0], cs.stream[ch, a0 : a0 + 16].reshape(-1))
 
 
-def test_draw_samples_requires_enough_data():
+def test_draw_from_session_short_session_returns_empty():
     rng = np.random.default_rng(2)
     short = to_canonical(_canonical_session(rng, seconds=1.0, n_trials=1))  # 5 patch < 16
-    with pytest.raises(ValueError, match="almeno 16 patch"):
-        draw_single_channel_samples([short], 4, rng)
+    x, prov = draw_from_session(short, 4, rng)
+    assert x.shape[0] == 0 and prov == []
+
+
+def test_discover_choose_and_allocate(tmp_path):
+    for subj, sess in [("s1", "a"), ("s1", "b"), ("s1", "c"), ("s2", "a"), ("s3", "x/y")]:
+        d = tmp_path / subj / sess
+        d.mkdir(parents=True)
+        (d / "metadata.json").write_text("{}")
+    (tmp_path / "s4").mkdir()
+    (tmp_path / "s4" / "metadata.json").write_text("{}")  # stile CapgMyo: sessione = cartella soggetto
+    found = discover_sessions(tmp_path, "ds")
+    assert {(s, ss) for s, ss, _ in found} == {("s1", "a"), ("s1", "b"), ("s1", "c"), ("s2", "a"), ("s3", "x/y"), ("s4", "s")}
+    rng = np.random.default_rng(0)
+    chosen = choose_sessions(found, 2, rng)
+    assert sum(1 for s, _, _ in chosen if s == "s1") == 2 and len(chosen) == 5
+    quota = allocate_quota(chosen, 40, rng)
+    per_subject = {}
+    for (subj, _), n in quota.items():
+        per_subject[subj] = per_subject.get(subj, 0) + n
+    assert sum(quota.values()) == 40 and set(per_subject.values()) == {10}  # 4 soggetti, parti uguali

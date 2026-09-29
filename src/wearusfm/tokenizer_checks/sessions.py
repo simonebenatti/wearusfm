@@ -83,34 +83,76 @@ def load_session(session_dir: Path, dataset: str, subject: str, session: str) ->
 def to_canonical(s: SessionData) -> CanonicalSession:
     """Vista canonica per prova, scala unica di sessione sui canali che passano il QC, poi
     patch. Solleva ValueError se fs < 1 kHz (dataset non eleggibile)."""
-    views = [bandpass_resample(seg, s.fs) for seg in s.segments]
+    views = [bandpass_resample(seg, s.fs).astype(np.float32) for seg in s.segments]
     scale = session_scale(views, s.qc_valid)
-    patched = [patchify(apply_scale(v, scale)) for v in views if v.shape[0] >= PATCH_SAMPLES]
+    patched = [
+        patchify(apply_scale(v, scale)).astype(np.float32) for v in views if v.shape[0] >= PATCH_SAMPLES
+    ]
     if not patched:
         raise ValueError(f"{s.dataset}/{s.subject}/{s.session}: nessuna prova con almeno una patch")
     return CanonicalSession(s.dataset, s.subject, s.session, np.concatenate(patched, axis=1), s.qc_valid, scale)
 
 
-def draw_single_channel_samples(
-    sessions: list[CanonicalSession], n_samples: int, rng: np.random.Generator
-) -> tuple[np.ndarray, list[tuple[str, str, int, int]]]:
-    """n_samples campioni canale-per-volta da 16 patch, ripartiti in parti uguali fra i
-    soggetti, con sessione, canale QC-valido e inizio (allineato alla griglia) a caso.
-    Ritorna (array (n, 3200), provenienza [(soggetto, sessione, canale, patch_iniziale)])."""
-    by_subject: dict[str, list[CanonicalSession]] = {}
-    for s in sessions:
-        if s.stream.shape[1] >= PATCHES_PER_SAMPLE and s.qc_valid.any():
-            by_subject.setdefault(s.subject, []).append(s)
-    if not by_subject:
-        raise ValueError("nessuna sessione con almeno 16 patch e un canale valido")
+def discover_sessions(root: Path, dataset: str) -> list[tuple[str, str, Path]]:
+    """Le cartelle di sessione sotto `root` (quelle con `metadata.json`), come
+    (soggetto, sessione, percorso). Soggetto = primo livello sotto root; sessione = il resto
+    del percorso (CapgMyo ha la sessione nella cartella del soggetto stesso: sessione 's')."""
+    out = []
+    for meta in sorted(Path(root).rglob("metadata.json")):
+        rel = meta.parent.relative_to(root).parts
+        if not rel:
+            continue
+        out.append((rel[0], "/".join(rel[1:]) or "s", meta.parent))
+    return out
+
+
+def choose_sessions(
+    found: list[tuple[str, str, Path]], max_sessions_per_subject: int, rng: np.random.Generator
+) -> list[tuple[str, str, Path]]:
+    """Al piu' `max_sessions_per_subject` sessioni a caso per soggetto (contiene il tempo di
+    calcolo; D5a non impone di usarle tutte)."""
+    by_subject: dict[str, list] = {}
+    for item in found:
+        by_subject.setdefault(item[0], []).append(item)
+    chosen = []
+    for subj in sorted(by_subject):
+        items = by_subject[subj]
+        pick = rng.permutation(len(items))[:max_sessions_per_subject]
+        chosen.extend(items[i] for i in sorted(pick))
+    return chosen
+
+
+def allocate_quota(
+    sessions: list[tuple[str, str, Path]], n_samples: int, rng: np.random.Generator
+) -> dict[tuple[str, str], int]:
+    """Quota di campioni per (soggetto, sessione): parti uguali fra i soggetti (round-robin),
+    dentro il soggetto la sessione e' a caso."""
+    by_subject: dict[str, list[str]] = {}
+    for subj, sess, _ in sessions:
+        by_subject.setdefault(subj, []).append(sess)
     subjects = sorted(by_subject)
-    out = np.empty((n_samples, PATCHES_PER_SAMPLE * PATCH_SAMPLES))
-    prov = []
+    quota: dict[tuple[str, str], int] = {}
     for i in range(n_samples):
-        subj = subjects[i % len(subjects)]  # round-robin: parti uguali fra i soggetti
-        cs = by_subject[subj][rng.integers(len(by_subject[subj]))]
+        subj = subjects[i % len(subjects)]
+        sess = by_subject[subj][rng.integers(len(by_subject[subj]))]
+        quota[(subj, sess)] = quota.get((subj, sess), 0) + 1
+    return quota
+
+
+def draw_from_session(
+    cs: CanonicalSession, n: int, rng: np.random.Generator
+) -> tuple[np.ndarray, list[tuple[str, str, int, int]]]:
+    """n campioni canale-per-volta da 16 patch: canale QC-valido e inizio (sulla griglia) a
+    caso. Ritorna (array (n, 3200), provenienza [(soggetto, sessione, canale, patch_iniziale)]).
+    Array vuoto se la sessione ha meno di 16 patch o nessun canale valido (il chiamante
+    registra il mancato quota, non lo nasconde)."""
+    if cs.stream.shape[1] < PATCHES_PER_SAMPLE or not cs.qc_valid.any():
+        return np.empty((0, PATCHES_PER_SAMPLE * PATCH_SAMPLES), dtype=np.float32), []
+    out = np.empty((n, PATCHES_PER_SAMPLE * PATCH_SAMPLES), dtype=np.float32)
+    prov = []
+    for i in range(n):
         ch = int(rng.choice(np.flatnonzero(cs.qc_valid)))
         a0 = int(rng.integers(0, cs.stream.shape[1] - PATCHES_PER_SAMPLE + 1))
         out[i] = cs.stream[ch, a0 : a0 + PATCHES_PER_SAMPLE].reshape(-1)
-        prov.append((subj, cs.session, ch, a0))
+        prov.append((cs.subject, cs.session, ch, a0))
     return out, prov
