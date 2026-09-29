@@ -84,6 +84,8 @@ def test_time_axis_report_regular_and_gap():
     t[2000:] += 0.01
     gap = time_axis_report(t)
     assert gap["n_gaps"] == 1 and gap["regular"] is True  # la mediana resta regolare; il buco e' contato
+    assert gap["gaps"] == [{"index": 2000, "dt_s": pytest.approx(0.0105)}] and gap["gaps_truncated"] is False
+    assert ok["gaps"] == []
     assert time_axis_report(np.array([1.0]))["regular"] is False
 
 

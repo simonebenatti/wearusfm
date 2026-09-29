@@ -49,6 +49,7 @@ from wearusfm.metadata.schema import (
 NATIVE_FS_HZ = 2000.0
 N_CHANNELS = 16
 EFFECTIVE_BAND_HZ = (40.0, 850.0)  # passa-alto del dataset 40 Hz, filtro analogico fino a 850 Hz (fatto n. 20)
+MAX_GAPS_LISTED = 10000
 _NAME_RE = re.compile(r"(?:^|/)discrete_gestures_user_(\d+)_dataset_(\d+)\.hdf5$")
 
 
@@ -104,7 +105,12 @@ def time_axis_report(time_s: np.ndarray, fs: float = NATIVE_FS_HZ, *, gap_factor
         return {"n_samples": int(time_s.shape[0]), "regular": False}
     dt = np.diff(time_s)
     nominal = 1.0 / fs
+    gap_idx = np.flatnonzero(dt > gap_factor * nominal)
     return {
+        # posizioni dei buchi (indice del primo campione DOPO il buco, durata in s): servono al
+        # dataloader per non fare finestre a cavallo di un buco (il collaudo ne ha trovati 53 in 0,76 h)
+        "gaps": [{"index": int(i + 1), "dt_s": float(dt[i])} for i in gap_idx[:MAX_GAPS_LISTED]],
+        "gaps_truncated": bool(len(gap_idx) > MAX_GAPS_LISTED),
         "n_samples": int(time_s.shape[0]), "duration_s": float(time_s[-1] - time_s[0]),
         "dt_median_s": float(np.median(dt)), "dt_max_s": float(dt.max()), "dt_min_s": float(dt.min()),
         "n_gaps": int((dt > gap_factor * nominal).sum()), "n_nonmonotonic": int((dt <= 0).sum()),
