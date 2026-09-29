@@ -14,7 +14,7 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
 | GRABMyo | https://physionet.org/content/grabmyo/1.1.0/ | Nessuna: open access PhysioNet | WFDB (.dat, .hea) | 9.1 GB (compressed) / 9.4 GB (uncompressed) |
 | emg2pose | https://github.com/facebookresearch/emg2pose | Nessuna: accesso libero via S3 | HDF5 | **462.824.048.640 byte (~431 GiB)** - Content-Length verificato dalla sorgente S3 e confermato sul file scaricato, 23/09/2026 |
 | emg2qwerty | https://github.com/facebookresearch/emg2qwerty | Nessuna: accesso libero via S3 (repository archived, read-only) | HDF5 | ~346 ore di registrazione (1,136 file); **308.382.645.571 byte (~287 GB)**, Content-Length verificato dalla sorgente e confermato sul file, 23/09/2026 (ri-scaricato su $SCRATCH dopo la cancellazione del 22/09 per liberare quota $WORK) |
-| Camargo 2021 (Lower Limb Biomechanics) | https://data.mendeley.com/datasets/fcgm3chfff/1 (Part 1); https://data.mendeley.com/datasets/k9kvm5tn3f/1 (Part 2); https://data.mendeley.com/datasets/jj3r5f9pnf/2 (Part 3) | Nessuna: accesso libero (CC BY 4.0) | ZIP (contenuto .mat) | **~23.5GB totali** (9.4+9.5+4.6GB), 25 soggetti AB06-AB30, verificato via HEAD request sull'API pubblica Mendeley, 23/09/2026 |
+| Camargo 2021 (Lower Limb Biomechanics) | https://data.mendeley.com/datasets/fcgm3chfff/1 (Part 1); https://data.mendeley.com/datasets/k9kvm5tn3f/1 (Part 2); https://data.mendeley.com/datasets/jj3r5f9pnf/2 (Part 3) | Nessuna: accesso libero (CC BY 4.0) | ZIP (contenuto .mat) | **~23.5GB totali** (9.4+9.5+4.6GB, verificato via HEAD request sull'API pubblica Mendeley, 23/09/2026); **22 soggetti** (contati sulle cartelle reali il 29/09/2026: ID da AB06 ad AB30 con buchi - mancano AB22, AB26, AB29); solo il sensore `emg` ci serve: 3147 file, 20,1 h @ 1 kHz |
 | Kaifosh et al. "Discrete Gestures" (Meta, Nature 2025) | https://github.com/facebookresearch/generic-neuromotor-interface | Nessuna: accesso libero via S3 diretto (bucket `fb-ctrl-oss`, stesso di emg2pose/emg2qwerty) | HDF5 (tar) | **33.361.018.880 byte (~31 GiB) - scaricato e verificato byte-per-byte, 23/09/2026**; 51,4h train + 6,2h val + 6,4h test, 100 partecipanti (80/10/10), 2 kHz |
 | Zhang et al. 2026 (Groningen, anatomico vs equidistante) | Paper: https://doi.org/10.1038/s41597-026-08111-4 · Dataset: https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QRGIZQ | Nessuna: accesso libero, nessuna registrazione (norme di citazione standard) | CSV (+ XLSX/TXT metadati) | **1.245/1.245 file scaricati ed estratti, 37.164.079.967 byte (~37.16GB) - verificato file-per-file contro il manifest, 23/09/2026**; 64 partecipanti, 14 gesti × 10 ripetizioni, doppia modalita' (anatomica + anello equidistante) sullo stesso soggetto |
 
@@ -34,9 +34,12 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   verificando l'API pubblica di Mendeley dal login node di Leonardo (curl, non WebFetch):
   redirect verso bucket S3 `prod-dcd-datasets-public-files-eu-west-1`, confermati con
   richieste HEAD (200 OK, Content-Length reale). Vedi `scripts/slurm/download_camargo.sbatch`.
-  Nota: una fonte terza (blog non ufficiale) riportava 22 soggetti; la verifica diretta
-  sui nomi dei file conferma invece 25 soggetti (AB06-AB30) - sempre preferire la
-  verifica diretta a fonti secondarie.
+  **Soggetti: 22** (verificato il 29/09/2026 contando le cartelle soggetto reali).
+  ERRORE MIO del 23/09/2026, poi corretto: avevo "corretto" il conteggio a 25 deducendolo
+  dall'intervallo di ID nei nomi degli zip (AB06-AB30), che non e' un conteggio - gli ID
+  hanno buchi (mancano AB22, AB26, AB29). Il blog e il paper, che dicevano 22, avevano
+  ragione. Lezione: un intervallo di ID non e' un numero di soggetti, si contano le
+  cartelle.
 - **Kaifosh et al. "Discrete Gestures", D3a deciso il 23/09/2026**: licenza
   **CC-BY-NC-4.0** (Non-Commerciale, diversa dal resto del corpus) - vedi
   `docs/decisioni.md` D3a per il testo della decisione. Il comando CLI ufficiale del

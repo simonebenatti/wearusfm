@@ -15,8 +15,9 @@
 # estraibili da una pagina statica. URL reali trovati verificando l'API pubblica
 # di Mendeley (redirect verso bucket S3 prod-dcd-datasets-public-files), con
 # richieste HEAD confermate 200 OK e Content-Length reale (vedi
-# docs/dataset_access.md). Soggetti AB06-AB30 (25 totali, non 22 come riportato
-# da una fonte terza/blog non ufficiale usata prima della verifica diretta).
+# docs/dataset_access.md). Soggetti: 22 (ID da AB06 ad AB30 con buchi: mancano
+# AB22, AB26, AB29 - contati sulle cartelle reali il 29/09/2026; un commento precedente
+# di questo file diceva "25 totali", errore dedotto dall'intervallo di ID).
 # ~23.5GB totali, $WORK va bene (nessun rischio quota).
 
 set -uo pipefail

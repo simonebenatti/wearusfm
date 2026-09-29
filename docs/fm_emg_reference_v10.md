@@ -122,7 +122,7 @@ collasso o degenerazione della rappresentazione.
 | CapgMyo (DBa) | 128 ch @ 1 kHz, **18 sogg.** (corretto il 23/09/2026 - non 23: verificato contando i file .mat reali del dataset scaricato, DBa specificamente, 1440 file = 18 sogg. × 8 gesti × 10 trial) | griglia 2D | HD |
 | CSL-hdemg | 168 ch @ **2048 Hz**, 5 sogg. | griglia 2D | HD |
 | Hyser | 20 sogg. × 2 sessioni, **256 ch** (4 griglie da 64) @ **2048 Hz** | griglia 2D | il più grande per volume |
-| Camargo 2021 | 25 sogg. (AB06-AB30, corretto il 23/09/2026 - non 22 come riportato da una fonte terza non ufficiale), 11 muscoli @ 1 kHz | **sparsa anatomica** | **controllo anatomico** (§2.3) |
+| Camargo 2021 | 22 sogg. (verificato il 29/09/2026 contando le cartelle soggetto reali: gli ID vanno da AB06 ad AB30 ma con buchi - mancano AB22, AB26, AB29; una "correzione" a 25 del 23/09, dedotta dall'intervallo degli ID nei nomi file, era sbagliata), 11 muscoli @ 1 kHz, 20,1 h | **sparsa anatomica** | **controllo anatomico** (§2.3) |
 | Zhang et al. 2026 (Groningen) | 64 sogg., 14 gesti × 10 ripetizioni, mano non dominante, 8 ch @ 4 kHz (4x Avanti) + 4 ch @ 2 kHz (1x Quattro) | **mista, appaiata**: anatomica sparsa (8 muscoli mirati) **e** anello equidistante (8 elettrodi, 40% lunghezza avambraccio dal gomito) sullo **stesso soggetto, stessi gesti** | aggiunto il 23/09/2026; confronto diretto sparso-vs-anello raro in letteratura, utile all'asse di ricerca sulla topologia del montaggio (§2.6-§2.8); CSV, licenza dataset CC BY 4.0 (indipendente dalla CC BY-NC-ND dell'articolo) |
 | UCI-EMG (Lobov) | 8 ch | anello | **escluso dal pretraining** (§2.3) |
 
