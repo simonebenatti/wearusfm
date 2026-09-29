@@ -242,6 +242,7 @@ def run_all(
     emg2pose: tuple[list[tuple[str, str, Path]], Loader],
     datasets: dict[str, tuple[list[tuple[str, str, Path]], Loader]],
     save_arrays_dir: Path | None = None,
+    on_progress: Callable[[dict], None] | None = None,
 ) -> dict:
     """Esegue V1-V4. Si ferma dopo V1 se V1 non passa (il ripiego richiede una nuova decisione,
     D5a punto 2). Un dataset con fs < 1 kHz o senza dati e' escluso E registrato."""
@@ -254,8 +255,17 @@ def run_all(
     calib = calibrate_scale(runner, ref, native_scale, cfg.batch)
     factor = calib["factor"]
     report: dict = {"config": cfg.__dict__.copy(), "scale_calibration": calib}
+
+    def progress(stage: str) -> None:
+        # report PARZIALE dopo ogni tappa: un timeout non deve perdere tutto il lavoro fatto
+        report["progress"] = stage
+        if on_progress is not None:
+            on_progress(report)
+
+    progress("calibrazione della scala completata")
     v1 = run_v1(runner, em_cs, factor, cfg, rng)
     report["v1"] = v1
+    progress("V1 completata")
     if not v1["passes"]:
         report["stopped"] = "V1 non passa: ripiego (mappare i canali sui 16 elettrodi) richiede una nuova decisione"
         return report
@@ -263,6 +273,8 @@ def run_all(
     draws: dict[str, Draw] = {"emg2pose": ref}
     per["emg2pose"] = analyze_dataset(runner, "emg2pose", ref, factor, cfg, None)
     ref_median = per["emg2pose"]["v2_median_nmse"]
+    report["datasets_done"] = {"emg2pose": _public(per["emg2pose"])}
+    progress("emg2pose completato")
     excluded = {}
     for name, (items, loader) in datasets.items():
         try:
@@ -271,6 +283,8 @@ def run_all(
             excluded[name] = str(e)
             continue
         per[name] = analyze_dataset(runner, name, draws[name], factor, cfg, ref_median)
+        report["datasets_done"][name] = _public(per[name])
+        progress(f"{name} completato")
     report["excluded_datasets"] = excluded
     if save_arrays_dir is not None:
         # materiali per analisi successive (es. D5b) senza rifare il run su GPU: NON entrano nel repo
@@ -289,6 +303,8 @@ def run_all(
     report["v2_all_pass"] = all(r.get("v2_passes", True) for r in per.values())
     report["v3"] = {"skipped": True} if cfg.skip_v3 else run_v3(per, draws, cfg)
     report["v4"] = run_v4(per)
+    report.pop("datasets_done", None)
+    report["progress"] = "completato"
     report["v4_per_dataset"] = {n: {"noise_floor_rms": r["v4_noise_floor_rms"],
                                     "fraction_unchanged": r["v4_fraction_unchanged"],
                                     "control_zero_noise_min_fraction": r["v4_control_zero_noise_min_fraction"],

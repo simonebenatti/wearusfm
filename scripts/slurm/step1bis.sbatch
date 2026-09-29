@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=02:00:00
+#SBATCH --time=06:00:00
 #SBATCH -J step1bis
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step1bis_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step1bis_%j.out

@@ -197,3 +197,14 @@ def test_save_arrays_writes_one_npz_per_dataset(world, tmp_path):
     n_tok = CFG.n_groups * 16 * 16
     assert z["codes"].shape == (4, 16, n_tok) and z["tokens"].shape == (n_tok, 200)
     assert len(z["group_subject"]) == CFG.n_groups and z["fraction_unchanged"].shape == (4, 16)
+
+
+def test_progress_callback_reports_each_stage_and_is_json_serializable(world):
+    em, datasets = world
+    seen = []
+    rep = run_all(FakeRunner(), CFG, em, datasets, on_progress=lambda r: seen.append(json.loads(json.dumps(r))))
+    stages = [r["progress"] for r in seen]
+    assert stages[0].startswith("calibrazione") and "V1 completata" in stages
+    assert "emg2pose completato" in stages and "dsA completato" in stages and "dsB completato" in stages
+    assert "emg2pose" in seen[-1]["datasets_done"] and "datasets_done" not in rep
+    assert rep["progress"] == "completato"
