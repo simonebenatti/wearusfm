@@ -21,7 +21,13 @@ set -uo pipefail
 
 SRC="$WORK/data/raw"
 DST="$SCRATCH/data/raw"
-DATASETS=(camargo2021 camargo2021_emg_only grabmyo putemg capgmyo ninapro kaifosh_discrete_gestures)
+ALL=(camargo2021 camargo2021_emg_only grabmyo putemg capgmyo ninapro kaifosh_discrete_gestures)
+# Senza argomenti: tutti e 7. Con argomenti: solo quelli (per dividere il lavoro in piu' job:
+# il confronto per checksum di 168 GB e' lento, ~0,6 GB/min sul primo run).
+if [ "$#" -gt 0 ]; then DATASETS=("$@"); else DATASETS=("${ALL[@]}"); fi
+for d in "${DATASETS[@]}"; do
+  case " ${ALL[*]} " in *" $d "*) ;; *) echo "RIFIUTATO: $d non e' nell'elenco"; exit 2 ;; esac
+done
 
 ok=0
 bad=0

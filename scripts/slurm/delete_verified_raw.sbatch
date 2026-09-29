@@ -10,9 +10,11 @@
 
 # DA LANCIARE A MANO DA SIMONE (l'agente non esegue cancellazioni definitive).
 # Toglie da $WORK/data/raw gli originali dei 7 dataset GIA' copiati su $SCRATCH, ma SOLO se per
-# ciascuno, al momento del lancio: (1) i checksum di ogni file coincidono con la copia, (2) il
-# numero di file coincide, (3) nessun file della copia e' piu' vecchio di 24 ore (cioe' il
-# rinfresco del purge e' stato fatto: lanciare prima verify_touch_scratch_raw.sbatch).
+# ciascuno, al momento del lancio: (1) ogni file esiste sulla copia con la stessa dimensione
+# (rsync --size-only, veloce), (2) il numero di file coincide, (3) nessun file della copia e'
+# piu' vecchio di 24 ore (cioe' il rinfresco del purge e' stato fatto). Il confronto per
+# CHECKSUM e' quello di verify_touch_scratch_raw.sbatch (lento, ~0,6 GB/min): controllare nel suo
+# log che ogni dataset riporti "CHECKSUM IDENTICI" PRIMA di lanciare questo script.
 # Cosa non e' MAI toccato: csl_hdemg, zhang2026, camargo2021_emg_converted, epn612, uci_emg,
 # emg2pose_mini, neurorvq_checkpoint, e qualunque cartella fuori dall'elenco qui sotto.
 
@@ -32,7 +34,7 @@ for d in "${DATASETS[@]}"; do
   esac
   if [ ! -d "$SRC/$d" ]; then echo "gia' assente in $SRC: $d"; continue; fi
   if [ ! -d "$DST/$d" ]; then echo "COPIA ASSENTE: non cancello $d"; kept=$((kept+1)); continue; fi
-  diff_out=$(rsync -rnc --itemize-changes "$SRC/$d/" "$DST/$d/" 2>&1)
+  diff_out=$(rsync -rn --size-only --itemize-changes "$SRC/$d/" "$DST/$d/" 2>&1)
   if [ -n "$diff_out" ]; then echo "DIFFERENZE: non cancello $d"; echo "$diff_out" | head -10; kept=$((kept+1)); continue; fi
   n_src=$(find "$SRC/$d" -type f | wc -l)
   n_dst=$(find "$DST/$d" -type f | wc -l)
