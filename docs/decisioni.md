@@ -500,3 +500,20 @@ Il preprocessing dell'harness e' per modello e **separato** dalla vista canonica
 Il preprocessing dei nostri modelli nell'harness e' un'altra decisione, non presa qui.
 
 **Non cambia:** la definizione di "banda condivisa" di D8a resta da scrivere.
+
+
+---
+
+## Autorizzazione notturna per gli ingest (Simone, 30/09/2026)
+
+**Decisione (Simone): "ti autorizzo".** L'agente puo' lanciare da solo, mentre Simone dorme, gli
+**ingest gia' scritti e testati** (test su CPU passati e suite completa verde), alle condizioni
+proposte dall'agente e accettate:
+- job **seriali su CPU** (`lrd_all_serial`), **0 GPU**, al piu' **~6 ore locali** ciascuno;
+- **prima un collaudo su un soggetto, poi il pieno**;
+- **dal dataset piu' piccolo** (un dataset alla volta);
+- un ingest che fallisce non si rilancia in cerca di una correzione senza guardare la causa:
+  si legge il log, si corregge il codice sul Mac (test prima), e si rilancia una volta; alla
+  seconda rottura ci si ferma e si riporta.
+Restano fuori da questa autorizzazione: job GPU, cancellazioni di file, firme (D4, D5b, ...) e
+qualunque dataset il cui parser non sia stato scritto e testato.
