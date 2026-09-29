@@ -3,7 +3,7 @@
 #SBATCH -p lrd_all_serial
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=04:00:00
+#SBATCH --time=03:00:00
 #SBATCH -J ingest_kaifosh
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/ingest_kaifosh_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/ingest_kaifosh_%j.out
