@@ -701,3 +701,33 @@ per ogni ramo si usano due rappresentazioni del livello 0, l'istogramma dei codi
 (`quantize_b.layers.0.embedding.weight`, 128 numeri, standardizzati sul solo train), e si prende **l'accuratezza piu' alta** delle due. Stessa sonda e
 stesso split per soggetto di V3; soglia invariata (differenza dalle 5 bande <= 10 punti). Testo completo in `docs/proposta_ancora_rvq.md`, sezione
 «Correzione della regola dei rami». Resta aperto il buco segnalato sopra: cosa succede se le misure non sono pronte entro il 25/10.
+
+---
+
+## D5b — esito della regola dei rami: si predice il livello 0 del RAMO 0 (applicazione meccanica, 30/09/2026)
+
+Regola firmata e corretta prima di qualunque misura (`docs/proposta_ancora_rvq.md`), applicata con `scripts/rvq_branch_probe.py` il 30/09/2026 sul Mac,
+sugli array del run 59048369 copiati da Leonardo (sha256 verificati cluster = Mac). Risultato: `results/step1bis/rvq_branch_probe.json`.
+**Non e' una nuova decisione:** e' l'esito della regola congelata.
+
+**Controlli superati:** codebook del livello 0 estratto dal checkpoint (sha256 verificato) che riproduce il 100% dei codici del run in tutti i rami e
+dataset; V3 congelato riprodotto esattamente (5 bande 0,655, codici 0,964).
+
+Classi accese: camargo2021, capgmyo, emg2pose, grabmyo (312 unita', 60 di test, caso 0,25). 5 bande: **0,482** (IC 95% 0,346-0,623).
+
+| Ramo | Istogramma | Vettore medio | Accuratezza del ramo | Ramo − bande | Esito |
+|---|---|---|---|---|---|
+| 0 | 0,518 | 0,482 | 0,518 | +0,036 | **idoneo** |
+| 1 | 0,857 | 0,750 | 0,857 | +0,375 | escluso |
+| 2 | 0,679 | 0,732 | 0,732 | +0,250 | escluso |
+| 3 | 0,929 | 0,929 | 0,929 | +0,446 | escluso |
+
+**Quindi l'ancora RVQ parte e predice solo il codice del livello 0 del ramo 0**, sui dataset accesi.
+
+Da tenere presente, **senza cambiare l'esito** (la regola usa la stima puntuale, come V3):
+- le stime sono larghe: IC 95% del ramo 0 (istogramma) 0,411-0,641, delle bande 0,346-0,623; con 60 unita' di test il margine dalla soglia (0,064) e'
+  dentro l'incertezza;
+- il ramo 0 e' il meno riconoscibile anche nelle feature continue (0,655 contro 0,988 di tutte le feature insieme: `results/step1bis/continuous_features.json`);
+- **etichette rumorose, dichiarate:** al rumore di V4 il codice del livello 0 del ramo 0 resta uguale nel 46% dei token su emg2pose, 33% su CapgMyo, 36% su
+  Camargo, **11% su GRABMyo** (`RIEPILOGO.md`, V4). La stabilita' non era un criterio di selezione (proposta, punto 3);
+- per i dataset spenti fino a V2 (Kaifosh, NinaPro, Hyser) la regola si **riapplica** come conferma quando si accendono.

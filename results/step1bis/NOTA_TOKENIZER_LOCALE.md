@@ -89,3 +89,37 @@ vicina a se stessa (coseno mediano 0,75-0,99 su emg2pose) che a un token qualunq
 il meno stabile; putEMG (il dataset con il rapporto V2 piu' alto) e' il meno stabile in assoluto. **Non misurato:** se
 queste feature continue identifichino il dataset piu' delle 5 bande (l'equivalente di V3 sulle feature): dallo spettro
 fine si sa che l'identita' del dataset e' gia' nello spettro (0,93).
+
+
+## 5. Feature continue su tutti e 6 i dataset (30/09/2026, `scripts/step1bis_continuous_features.py`, `continuous_features.json`)
+
+Stessi array del run, copiati da Leonardo (sha256 verificati). Controlli: codici ricalcolati su CPU uguali a quelli del run GPU al 99,4-99,7% (tutti i
+livelli, 16 finestre per dataset); V3 congelato riprodotto esattamente; soglia di rumore uguale a quella del run su tutti i dataset.
+
+**(a) Dataset-ID dalle feature continue** (stesso campione, split e sonda di V3, 6 classi, caso 0,167):
+
+| Rappresentazione | Accuratezza bilanciata |
+|---|---|
+| [congelata] 5 bande | 0,655 |
+| [congelata] codici | 0,964 |
+| feature continue, media per ramo (512 numeri) | **0,988** |
+| feature continue, media + deviazione standard | **1,000** |
+| solo ramo 0 / 1 / 2 / 3 (media) | 0,655 / 0,988 / 0,786 / 0,929 |
+
+Le feature continue identificano il dataset **ancora piu' dei codici**: come bersaglio non evitano il problema di V3. Il ramo 0 e' l'unico al livello
+delle 5 bande, come nei codici (sonda per ramo, `rvq_branch_probe.json`).
+
+**(b) Stabilita' delle feature sotto il rumore di V4** (coseno fra la feature del token pulito e dello stesso token rumoroso, mediana per ramo 0/1/2/3,
+200 finestre per dataset; per confronto il coseno fra token diversi e' 0,00-0,20):
+
+| Dataset | Rumore = soglia | 0,1 x soglia |
+|---|---|---|
+| emg2pose | 0,93 / 0,75 / 0,99 / 0,96 | 1,00 / 0,99 / 1,00 / 1,00 |
+| CapgMyo | 0,82 / 0,56 / 0,98 / 0,95 | 1,00 / 0,94 / 1,00 / 1,00 |
+| Camargo | 0,86 / 0,57 / 0,97 / 0,94 | 1,00 / 0,94 / 1,00 / 1,00 |
+| CSL-hdemg | 0,92 / 0,79 / 0,99 / 0,98 | 1,00 / 1,00 / 1,00 / 1,00 |
+| GRABMyo | 0,67 / 0,48 / 0,91 / 0,88 | 0,99 / 0,94 / 1,00 / 1,00 |
+| putEMG | 0,55 / 0,51 / 0,80 / 0,82 | 0,98 / 0,95 / 1,00 / 1,00 |
+
+Le feature restano molto piu' vicine a se stesse che a un token qualunque anche dove i codici cambiano; il ramo 1 e' il meno stabile, GRABMyo e putEMG i
+dataset meno stabili. **Analisi descrittiva, non congelata: non cambia nessun verdetto.**
