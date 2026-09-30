@@ -1,4 +1,4 @@
-"""Ingest dei DB NinaPro a 12 elettrodi (DB2, DB3, DB4): vedi src/wearusfm/ingest/ninapro_std.py.
+"""Ingest dei DB NinaPro a 12 elettrodi (DB2, DB3, DB4, DB7): vedi src/wearusfm/ingest/ninapro_std.py.
 
 Uso: python3 scripts/ingest_ninapro_std.py --db db4 --raw-root <.../ninapro> --out-root <.../ninapro_db4>
        --report <report.json> [--subjects 1 2 ...]
@@ -14,9 +14,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from wearusfm.ingest.ninapro_std import DB2, DB3, DB4, ingest_subject, scan_zips  # noqa: E402
+from wearusfm.ingest.ninapro_std import DB2, DB3, DB4, DB7, ingest_subject, scan_zips  # noqa: E402
 
-CONFIGS = {"db2": DB2, "db3": DB3, "db4": DB4}
+CONFIGS = {"db2": DB2, "db3": DB3, "db4": DB4, "db7": DB7}
 
 
 def main() -> int:

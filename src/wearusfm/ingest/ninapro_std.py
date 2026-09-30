@@ -49,6 +49,10 @@ from wearusfm.metadata.schema import (
 from wearusfm.metadata.taxonomy import identity
 
 _MEMBER_RE = re.compile(r"(?:^|/)S(\d+)_E(\d+)_A1\.mat$")
+# si caricano SOLO queste variabili: i .mat di DB2/DB3/DB7 portano anche acc, gyro, mag, glove, force
+# (fino a 1 GB per file in DB7) che qui non servono
+LOAD_VARS = ["emg", "stimulus", "restimulus", "repetition", "rerepetition", "subject", "exercise",
+             "frequency", "laterality", "sensor"]
 LABEL_FIELDS = ("stimulus", "restimulus", "repetition", "rerepetition")
 # **Anomalie verificate su DB2 (30/09/2026):** in alcuni file le etichette hanno lunghezza diversa da `emg`:
 # s1 E3 `restimulus` 877.072 righe contro 877.073 di emg; s12 `restimulus` e `rerepetition` 875.435 contro
@@ -97,6 +101,17 @@ DB3 = StdDB(
 DB2 = StdDB(
     key="db2", dataset_name="ninapro_db2", n_channels=12, fs_hz=2000.0, electrode_type="Delsys_Trigno_double_differential",
     zip_re=r"^DB2_s(\d+)\.zip$", exercises=(1, 2, 3),
+)
+
+# DB7: 20 intatti + 2 amputati (Subject_21 e Subject_22: mano destra, 50% dell'avambraccio residuo; fonte
+# ufficiale, fatto n. 21) -> anatomia NOMINALE per 21 e 22. Solo 2 esercizi (17 + 23 = 40 movimenti; il
+# soggetto 21 non ha fatto gli ultimi due movimenti funzionali dell'esercizio 2: 38 classi). 12 Delsys Trigno
+# IM in volt; zip `Subject_<N>.zip` con i .mat alla radice, fino a ~1 GB ciascuno (con acc, gyro, mag).
+# L'ORDINE dei 12 canali non e' dichiarato dalla fonte: si assume quello di DB2 (8 anello + FDS, EDC, BB, TB),
+# da verificare. Lo scalare `subject` nei .mat di Subject_22 vale 2 (registrato, non usato).
+DB7 = StdDB(
+    key="db7", dataset_name="ninapro_db7", n_channels=12, fs_hz=2000.0, electrode_type="Delsys_Trigno_IM_double_differential",
+    zip_re=r"^Subject_(\d+)\.zip$", exercises=(1, 2), amputee_subjects=frozenset({21, 22}),
 )
 
 
@@ -177,7 +192,7 @@ def load_subject(zip_path: Path, subject: int, cfg: StdDB) -> list[ExerciseData]
             if int(m.group(1)) != subject:
                 raise ValueError(f"{name}: soggetto {m.group(1)} in {zip_path.name}, atteso {subject}")
             ex = int(m.group(2))
-            found[ex] = parse_exercise(sio.loadmat(io.BytesIO(zf.read(name))), ex, cfg)
+            found[ex] = parse_exercise(sio.loadmat(io.BytesIO(zf.read(name)), variable_names=LOAD_VARS), ex, cfg)
     if set(found) != set(cfg.exercises):
         raise ValueError(f"{zip_path}: esercizi {sorted(found)}, attesi {list(cfg.exercises)}")
     if len({d.laterality for d in found.values()}) != 1:

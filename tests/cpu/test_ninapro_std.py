@@ -212,3 +212,28 @@ def test_longer_label_is_truncated_and_gross_mismatch_raises():
     mat2["restimulus"] = np.zeros((900, 1), np.uint8)  # 10% in meno: oltre l'1%
     with pytest.raises(ValueError, match="lunghezze incompatibili"):
         parse_exercise(mat2, 1, DB4)
+
+
+def test_db7_two_exercises_amputees_21_22_and_big_unused_variables_are_skipped(tmp_path):
+    (tmp_path / "DB7").mkdir()
+    path = tmp_path / "DB7" / "Subject_21.zip"
+    rng = np.random.default_rng(0)
+    with zipfile.ZipFile(path, "w") as zf:
+        for e in (1, 2):
+            buf = io.BytesIO()
+            rest = np.zeros((400, 1), np.int8)
+            rest[200:, 0] = 1
+            sio.savemat(buf, {"emg": rng.normal(scale=2e-5, size=(400, 12)).astype(np.float32),
+                              "acc": np.zeros((400, 36), np.float32), "gyro": np.zeros((400, 36), np.float32),
+                              "mag": np.zeros((400, 36), np.float32), "glove": np.zeros((400, 18), np.float32),
+                              "stimulus": rest, "restimulus": rest, "repetition": rest, "rerepetition": rest,
+                              "subject": np.array([[1]], np.uint8), "exercise": np.array([[e]], np.uint8)})
+            zf.writestr(f"S21_E{e}_A1.mat", buf.getvalue())  # alla radice dello zip, senza cartella
+    from wearusfm.ingest.ninapro_std import DB7
+
+    assert set(scan_zips(tmp_path, DB7)) == {21}
+    res = ingest_subject(path, tmp_path / "out", 21, DB7)
+    meta = json.loads((tmp_path / "out" / "s21" / "session1" / "metadata.json").read_text())
+    assert meta["nominal_anatomy"] is True and [t["exercise"] for t in meta["trials"]] == [1, 2]
+    assert res["subject_field_matches_filename"] is False  # lo scalare interno non coincide: registrato
+    assert all(c["anatomical_identity"]["nominal"] for g in meta["montage"]["groups"] for c in g["channels"])
