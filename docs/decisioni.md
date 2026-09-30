@@ -521,7 +521,7 @@ qualunque dataset il cui parser non sia stato scritto e testato.
 
 ---
 
-## Zhang 2026 — come rappresentare EMG a frequenze miste: PROPOSTA (in attesa di Simone)
+## Zhang 2026 — come rappresentare EMG a frequenze miste: opzione B DECISA (Simone, 30/09/2026)
 
 **Stato:** proposta di AG del 30/09/2026, NON decisa. Non ingerito: serve una scelta di schema (CLAUDE.md: un dataset che
 non entra nello schema si segnala, lo schema non si piega in silenzio).
@@ -551,3 +551,10 @@ Motivo: e' la sola opzione che conserva la simultaneita' senza toccare schema e 
 che l'FM usa. Il rischio va detto: si ricampiona prima del gate D8a. Mitigazione: registrare nel sidecar
 `resampled_from_hz: 4000` per quei canali, cosi' si possono escludere in un'analisi.
 Non e' urgente: pesa poco sull'FM (35 GB su ~700 GB di corpus) e non blocca D9 (25/10).
+
+**Decisione (Simone, 30/09/2026): "sicuramente possiamo ricampionare a 2 kHz, quello e' ok".** Si adotta l'opzione B: i quattro
+canali a 4000 Hz vengono portati a 2000 Hz (polifase, con filtro anti-alias) e si salva un solo array (T, 8) a 2 kHz; il
+CSV grezzo resta in `$SCRATCH`/`$WORK` (nulla si distrugge); nel sidecar `resampled_from_hz: 4000` per quei canali.
+**Restano da fare, prima del parser, i quattro controlli sul dato** elencati sopra (disposizione dei due tassi nelle righe,
+origine dei tempi, canali di `anatomical` contro `random`, virgola decimale): richiedono il cluster.
+
