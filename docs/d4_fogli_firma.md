@@ -91,7 +91,7 @@ Trigno, fino a 49 movimenti. DB4: 10 sani, 12 elettrodi wireless. DB6: 10 sani, 
   system.» · «The sEMG signals are sampled at a rate of 2 kHz.»
 
 **Controllo di AG.** Presenti. **Correzione al registro:** il registro diceva che «Cometa» per DB4 non era nella citazione; invece la pagina Zenodo e la
-pagina HEVS lo scrivono. **Non ricontrollato:** la disposizione «8 + 2 + 2» per DB2, DB3 e DB7 (ho letto il testo solo per DB4). La frequenza di rete
+pagina HEVS lo scrivono. La disposizione «8 + 2 + 2» per DB2, DB3 e DB7 e' stata riletta il 30/09 (dopo la prima stesura di questo foglio): stessa frase di DB4 su tutte e tre le pagine («eight electrodes are equally spaced around the forearm in correspondence to the radio humeral joint; two electrodes are placed on the main activity spots of the flexor digitorum and of the extensor digitorum ...; two electrodes are placed on the main activity spots of the biceps and of the triceps»; su DB7 «sensors» al posto di «electrodes»). La frequenza di rete
 (50 Hz) resta **non verificata**. Le licenze sono gia' decise.
 
 **Se fosse sbagliato:** i montaggi misti (12 o 14 elettrodi) nello schema.
