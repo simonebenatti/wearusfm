@@ -750,3 +750,21 @@ zero di V4 = 1,0 su tutti (lo script si ferma altrimenti); report JSON scritto. 
 **Controllo del run vero (scritto prima):** calibrazione, V1 ed emg2pose devono riprodurre il run 59048369: fattore 21,72, errore mediano di emg2pose
 0,0352 (entro l'1%), rapporto di V1 1,23. Se non tornano, i rapporti V2 dei dataset nuovi non sono confrontabili: nessun dataset si accende e si riporta.
 **Esito:** un dataset con rapporto V2 <= 2 accende l'ancora; sui dataset accesi si riapplica poi la regola dei rami come conferma (CPU, sul Mac).
+
+---
+
+## D5b — conferma della regola dei rami sui dataset nuovi: opzione (b), un dataset alla volta (Simone, 30/09/2026: «scelgo b»)
+
+Chiude il buco della proposta firmata («sui dataset nuovi la si riapplica come conferma», senza dire cosa succede se la conferma non torna). Scritta
+**prima** del run di V2 sui dataset nuovi e prima di qualunque sonda su di essi.
+
+- **Base, che non cambia:** l'esito di oggi. Ancora RVQ sul livello 0 del ramo 0, accesa su camargo2021, capgmyo, emg2pose, grabmyo (piu' emg2qwerty,
+  dato del tokenizer, quando sara' ingerito).
+- **Ogni dataset nuovo con V2 <= 2 si prova DA SOLO**, indipendentemente dagli altri e dall'ordine: classi = le 4 della base + quel dataset; stessa sonda,
+  stessa regola (livello 0 del ramo 0, il piu' alto fra istogramma e vettore medio, meno le 5 bande sulle stesse classi, <= 10 punti). **Se il ramo 0
+  resta idoneo il dataset entra** (ancora accesa); altrimenti resta spento e la base non cambia.
+- Gli altri rami (1-3) non si riprovano: la base li ha esclusi e la regola non li riammette.
+- L'insieme finale (base + tutti i dataset entrati) **non** si riprova tutto insieme: sarebbe l'opzione (a), scartata.
+- Split per soggetto: quello di V3, calcolato come oggi; lo split dei 4 dataset della base deve restare identico a quello di oggi (i nomi dei dataset
+  nuovi vengono dopo in ordine alfabetico; il codice lo verifica e si ferma se non e' cosi').
+- Costo: CPU sul Mac, qualche minuto per dataset, nessun costo di cluster.
