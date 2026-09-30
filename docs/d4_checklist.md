@@ -1,0 +1,46 @@
+# D4 — Checklist di firma dei fatti (aggiornata il 30/09/2026)
+
+Scadenza D4: 11/10/2026. Il registro completo, con fonti e citazioni, è `docs/fatti_da_verificare.md`. Questa pagina
+serve a firmare in fretta: per ogni fatto dice **cosa controllare** e **cosa può cambiare una decisione**.
+Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fonte e essere d'accordo.
+
+## 1. Raccolti da fonte, da firmare
+| # | Fatto | Cosa guardare | Cosa cambierebbe |
+|---|---|---|---|
+| 7b | Kaifosh «Discrete Gestures»: CC-BY-NC-4.0, 100 partecipanti, 2 kHz | README di `facebookresearch/generic-neuromotor-interface` | uso non commerciale: ok per ricerca, non per ridistribuire |
+| 9 | `flash_attn_varlen_func` funziona in bf16 su A100 (job 58134850) | `results/step0/flash_attn_varlen_check_58134850.json` | il Perceiver del piano |
+| 12 | putEMG: 24 elettrodi, 3 fasce da 8, 5120 Hz, CC BY-NC 4.0 | pagina/paper putEMG | montaggio nello schema |
+| 15 | UCI-EMG: 1 kHz | Lobov et al. 2018, Sensors 18(4):1122 | solo harness |
+| 16 | GRABMyo: 28 canali EMG in 4 anelli, U1–U4 non EMG | pagina PhysioNet | schema a 4 gruppi |
+| 17 | putEMG: mappa TRAJ_GT → gesto | `putemg_examples/shallow_learn.py` righe 142–151 | etichette dell'harness |
+| 19 | NinaPro DB5: 2 Myo da 8, secondo ruotato di 22,5° | ninapro.hevs.ch/instructions/DB5.html | anelli di DB5 |
+| 20 | Bracciale Meta sEMG-RD: 16 canali differenziali, 20–850 Hz, 2 kHz | paper emg2qwerty (arXiv 2410.20081) e repo del dataset | banda effettiva, tutti i dataset Meta |
+| 21 | NinaPro DB2/3/4/6/7: 12 o 14 elettrodi Delsys/Cometa, 2 kHz | pagine ufficiali DB2…DB7 | montaggi misti |
+| 22 | DB7: amputati = soggetti 21 e 22; DB6: 16 colonne di cui 2 vuote | pagine DB6 e DB7 | anatomia nominale |
+| 11 | Hyser: 256 canali, 4 griglie 8×8 (ED/EP/FD/FP), 2048 Hz | `readme.txt` del dataset | griglie HD |
+
+## 2. Da guardare con attenzione prima di firmare
+- **Licenze «NoDerivatives»:** NinaPro DB4 e DB5 sono CC BY-ND 4.0. Non ho valutato se l'uso nel corpus
+  (dati ricampionati, quantizzati, usati per addestrare un modello) sia compatibile: è una decisione tua.
+- **DB2 «CC0»:** indicata dal fact-checker come default di Dryad, non come citazione: **non verificata**.
+- **Licenze mancanti:** DB3, DB6, DB7 (nessuna trovata). Hyser ODC-By 1.0 (attribuzione).
+- **Frequenza di rete** (50 o 60 Hz) è assunta in tutti i sidecar dei dataset ingeriti dopo GRABMyo: nessuna fonte
+  la dichiara. Ha effetto solo su notch e augmentation.
+
+## 3. Parziali o aperti
+| # | Stato | Nota |
+|---|---|---|
+| 4 | NeuroRVQ: transformer mescola i canali (sì); normalizzazione in ingresso (assente nel codice d'esempio); **banda di pretraining non trovata** (20–400 Hz nel codice, 20–90 Hz nel paper solo per il downstream) | decisa per progetto la vista a 20–400 Hz (`decisioni.md`) |
+| 5 | licenza del codice NeuroRVQ = CC BY-NC 4.0; **licenza dei pesi e sovrapposizione dei soggetti non verificate** | serve un license-checker sulla scheda HF |
+| 1 | frequenze di DB8 (~1111 Hz) e DB10 (~1926 Hz): **il raw è vuoto** (download mai riuscito) | serve autorizzare il download |
+| 2 | sovrapposizione soggetti fra DB NinaPro | ora calcolabile dagli ingest (DB2/3/4/5/6/7 ingeriti o in coda) |
+| 3 | conteggio soggetti e ore del corpus | ora calcolabile dai report di ingest in `results/passo2/` |
+| 8 | orientamento delle fasce, dataset per dataset | non trovato per i bracciali Meta, DB5 (solo rotazione relativa), DB6, DB7 |
+| 14, 18 | ordine/griglia di CapgMyo e putEMG | assunti nel codice, non verificati |
+| 7a, 10 | curve di scaling di Kaifosh (paywall) e MFU reale sul Booster | non fatti |
+
+## 4. Decisioni che aspettano te (oltre alle firme)
+- **D5b:** esito dell'ancora RVQ, con i dati di `results/step1bis/RIEPILOGO.md` (entro l'11/10).
+- **Zhang 2026:** schema per un CSV con EMG a 2000 Hz e 4000 Hz più ACC/GYRO a ~74–148 Hz.
+- **NinaPro DB8 e DB10:** riscaricare (raw vuoto).
+- **Cancellazione degli originali** già copiati su scratch: un comando (`scripts/slurm/delete_verified_raw.sbatch`).
