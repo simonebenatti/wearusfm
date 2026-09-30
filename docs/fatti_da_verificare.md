@@ -11,6 +11,13 @@ Stati possibili: `raccolto` (un subagent — FACT o LIC — ha trovato e citato 
 `verificato da SB` (Simone ha controllato la fonte di persona ed è d'accordo) oppure
 `non trovato` (nessuna fonte ufficiale lo riporta: resta un compito aperto, non si inferisce).
 
+> **Nota del 30/09/2026 (AG).** Rileggendo le pagine con un controllo di testo per preparare `docs/d4_fogli_firma.md`, ho visto che in piu' righe
+> (19, 20, 21, 22) le «citazioni esatte» sono **rimaneggiate**: la sostanza dei fatti controllati regge, ma le frasi virgolettate non sono quelle
+> delle pagine. **Fanno fede le frasi dei fogli di firma**, lette dalle pagine il 30/09/2026. Correzioni: «Cometa» per DB4 e' scritto sulle pagine;
+> 2048 Hz e le due sessioni di Hyser sono sulla pagina del progetto; «48 elettrodi in 16 coppie» (riga 20) non e' quello che dice la pagina
+> (48 elettrodi, 16 canali bipolari, gli altri per schermatura o massa); la riga 12 non aveva URL ne' citazione (ora nel foglio). Nessuna riga passa
+> a `verificato da SB` finche' Simone non firma.
+
 ---
 
 ## Dalla v10 §12, elenco originale
