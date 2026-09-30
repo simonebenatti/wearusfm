@@ -40,7 +40,8 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | 7a, 10 | curve di scaling di Kaifosh (paywall) e MFU reale sul Booster | non fatti |
 
 ## 4. Decisioni che aspettano te (oltre alle firme)
-- **D5b:** esito dell'ancora RVQ, con i dati di `results/step1bis/RIEPILOGO.md` (entro l'11/10).
+- **D5b:** presa il 30/09: **l'ancora RVQ non si scarta** (deroga consapevole: V3 e V4 non passano). **Restano aperte** la forma (tutti i dataset o ristretta a quelli sotto V2) e quali codici si predicono (nessun livello e' stabile): vedi `decisioni.md`.
+- **Misura del QC** (soglia assoluta contro relativa, 7 ingest): autorizzata il 30/09, parte quando il cluster torna.
 - **Zhang 2026:** schema per un CSV con EMG a 2000 Hz e 4000 Hz più ACC/GYRO a ~74–148 Hz.
 - **NinaPro DB8 e DB10:** riscarico autorizzato il 30/09; parte quando il cluster torna.
 - **Cancellazione degli originali** già copiati su scratch: un comando (`scripts/slurm/delete_verified_raw.sbatch`).
