@@ -1,0 +1,91 @@
+"""Regola dei rami dell'ancora RVQ (D5b, FIRMATA e CORRETTA il 30/09/2026: `docs/proposta_ancora_rvq.md`).
+
+Per ogni ramo, solo livello 0, sulle classi accese: accuratezza della sonda dataset-ID di V3 da due rappresentazioni dell'unita' da 256 token,
+(1) l'istogramma dei codici e (2) la media dei vettori del codebook scelti; si prende la piu' alta. Il ramo e' idoneo se questa accuratezza supera
+quella delle 5 potenze di banda (stesse classi, stesso split) di non piu' di Y = 10 punti (la stessa soglia di V3, `metrics.v3_passes`).
+
+Lo split per soggetto e' quello di V3: si calcola sui 6 dataset del run (`continuous_features.v3_setup`) e POI si restringe alle classi accese, cosi'
+nessun soggetto cambia parte rispetto al run. Solo numpy e scikit-learn: il codebook entra come array (vedi `scripts/rvq_branch_probe.py`).
+"""
+
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+
+import numpy as np
+from scipy import sparse
+
+from wearusfm.tokenizer_checks import metrics as M
+from wearusfm.tokenizer_checks.continuous_features import standardize_with_train, v3_setup
+
+ENABLED_DEFAULT = ("camargo2021", "capgmyo", "emg2pose", "grabmyo")  # D5b ristretta: V2 <= 2 misurato, piu' il riferimento emg2pose
+
+
+def level0_histogram(codes_list: Sequence[np.ndarray], branch: int) -> sparse.csr_matrix:
+    """(n_unita', 8192): frazione dei token dell'unita' per ciascun codice del livello 0 del ramo `branch`. codes_list: array (4, 16, n_token)."""
+    rows, cols, vals = [], [], []
+    for i, codes in enumerate(codes_list):
+        c = np.asarray(codes)[branch, 0]
+        if c.min() < 0 or c.max() >= M.N_CODE:
+            raise ValueError("codice fuori da [0, 8192)")
+        rows.append(np.full(c.shape, i))
+        cols.append(c)
+        vals.append(np.full(c.shape, 1.0 / c.shape[0]))
+    m = sparse.coo_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))), shape=(len(codes_list), M.N_CODE))
+    return m.tocsr()
+
+
+def level0_codebook_mean(codes_list: Sequence[np.ndarray], branch: int, codebook: np.ndarray) -> np.ndarray:
+    """(n_unita', d): media sui token dell'unita' del vettore del codebook scelto al livello 0 del ramo. codebook: (8192, d) del ramo."""
+    if codebook.shape[0] != M.N_CODE:
+        raise ValueError(f"codebook con {codebook.shape[0]} righe, attese {M.N_CODE}")
+    return np.stack([codebook[np.asarray(c)[branch, 0]].mean(axis=0) for c in codes_list]).astype(np.float64)
+
+
+def _probe(x, y, units, part, seed) -> dict:
+    r = M.dataset_id_probe(x, y, units, part, np.random.default_rng([seed, 3, 1]))
+    return {"balanced_accuracy": r.balanced_accuracy, "ci95": list(r.ci95), "chance": r.chance, "model": r.model, "n_test": r.n_test}
+
+
+def branch_probe(
+    per_dataset: Mapping[str, Mapping],
+    codebooks: np.ndarray,
+    enabled: Sequence[str] = ENABLED_DEFAULT,
+    seed: int = 0,
+) -> dict:
+    """Applica la regola dei rami. per_dataset[nome]: `codes` (4,16,n), `tokens` (n,200), `group_subject` (G,), per TUTTI i dataset del run (servono
+    a ricostruire lo split di V3). codebooks: (4, 8192, d), livello 0 dei 4 rami."""
+    codebooks = np.asarray(codebooks)
+    if codebooks.ndim != 3 or codebooks.shape[:2] != (M.N_BRANCHES, M.N_CODE):
+        raise ValueError(f"codebooks forma {codebooks.shape}, attesa (4, 8192, d)")
+    missing = sorted(set(enabled) - set(per_dataset))
+    if missing:
+        raise ValueError(f"classi accese assenti dagli array: {missing}")
+    names, codes_l, tokens_l, y, units, part = v3_setup(per_dataset, seed)
+    keep = np.flatnonzero(np.isin(np.asarray(names)[y], list(enabled)))
+    codes_l = [codes_l[i] for i in keep]
+    tokens_l = [tokens_l[i] for i in keep]
+    y, units, part = y[keep], units[keep], part[keep]
+    for p in ("train", "val", "test"):
+        if len(np.unique(y[part == p])) != len(enabled):
+            raise ValueError(f"la parte {p} non contiene tutte le classi accese")
+
+    bands = _probe(M.band_power_features(tokens_l), y, units, part, seed)
+    out: dict = {
+        "rule": "ramo idoneo se max(acc istogramma, acc vettore medio) - acc 5 bande <= Y (livello 0, stesse classi, split di V3)",
+        "y_points": M.Y_POINTS, "enabled": sorted(enabled), "n_units": int(len(y)), "n_test_units": int((part == "test").sum()),
+        "bands": bands, "branches": {},
+    }
+    for b in range(M.N_BRANCHES):
+        hist = _probe(level0_histogram(codes_l, b), y, units, part, seed)
+        dense = _probe(standardize_with_train(level0_codebook_mean(codes_l, b, codebooks[b]), part), y, units, part, seed)
+        best = "histogram" if hist["balanced_accuracy"] >= dense["balanced_accuracy"] else "codebook_mean"
+        acc = max(hist["balanced_accuracy"], dense["balanced_accuracy"])
+        out["branches"][str(b)] = {
+            "histogram": hist, "codebook_mean": dense, "branch_accuracy": acc, "from": best,
+            "diff_minus_bands": acc - bands["balanced_accuracy"],
+            "eligible": bool(M.v3_passes(acc, bands["balanced_accuracy"])),
+        }
+    out["eligible_branches"] = [int(b) for b, v in out["branches"].items() if v["eligible"]]
+    out["anchor_starts"] = bool(out["eligible_branches"])
+    return out
