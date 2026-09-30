@@ -792,3 +792,15 @@ valore identico in DB4: quasi tutti < 10 ms; 50 ms-1 s: circa 270, natura non ch
    dataset del run di ieri, si riporta prima di qualunque rilancio che li riguardi.
 
 **Poi:** rilancio di V2 sui 7 dataset nuovi con gli stessi parametri (autorizzazione del 30/09), salvando gli array dopo ogni dataset e non solo alla fine.
+
+**Esito della scansione in sola lettura (job 59076768, 01/10/2026, 47 min, CPU; report `$WORK/wearusfm_runs/results/passo2/qc_relative_check_59076768.json`,
+copia sul Mac con sha256 verificato):**
+- **Controllo pulito:** i dataset gia' ingeriti con la regola relativa (NinaPro DB2/3/4/6/7) danno zero canali piatti nuovi.
+- **Canali piatti nuovi:** solo CapgMyo, 3 canali in 3 sessioni su 18 (s06 canale 28, s08 e s11 canale 102; deviazione standard 0,00088-0,00098 volte la
+  mediana, appena sotto la soglia 0,001). **Il freno scatta** (3/18 sessioni > 5%): per CapgMyo non si scrive nulla, ne' canali ne' buchi. **Revisione di
+  Simone richiesta.**
+- **Buchi >= 1 s** (tutti sotto l'1%, frazione massima 0,03%): NinaPro DB4 14 in 5 sessioni (un canale per volta); Hyser 6 in 5 sessioni (un canale, 1,1-1,4 s);
+  CapgMyo s09 canale 40 per 10 prove intere da 1 s; **Camargo ab06/10_09_18 e NinaPro DB3 s03: tutti i canali insieme** (Camargo 1,2 s e 13,2 s; DB3 8,8 s e
+  1,5 s), cioe' pause dell'intera registrazione, non buchi di un canale. Nessun buco negli altri 8 dataset.
+- **Camargo e CapgMyo sono dataset del run del 29/09** (e della base della regola dei rami): segnalato qui come previsto; nessun rilancio che li riguardi.
+- **Prossimo passo (autorizzato):** scrittura dei buchi nei sidecar di Camargo, Hyser, NinaPro DB3 e DB4 (`--apply --only ...`), poi rilancio di V2.
