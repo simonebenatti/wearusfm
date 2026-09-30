@@ -1,0 +1,74 @@
+{
+  "dataset": "ninapro_db2",
+  "n_subjects": 40,
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ],
+  "hours_total": 28.849043750000003,
+  "n_channels": 12,
+  "n_channels_discarded_total": 0,
+  "failed_subjects": {},
+  "movements_per_exercise_all_subjects": [
+    [
+      17,
+      23,
+      9
+    ]
+  ],
+  "subjects_with_subject_field_mismatch": [],
+  "subjects_with_exercise_field_mismatch": [],
+  "n_subjects_with_label_length_adjustments": 18,
+  "label_length_adjustment_range_samples": [
+    -272,
+    3
+  ],
+  "subject_12_adjustment_samples": {
+    "3": {
+      "restimulus": -272,
+      "rerepetition": -272
+    }
+  },
+  "output_size": "4.7G (in $SCRATCH/data/processed/ninapro_db2)",
+  "job": 59051290,
+  "elapsed_s": 350.56689620018005,
+  "note": "riepilogo aggregato; il report completo con per_subject resta su Leonardo in $WORK/wearusfm_runs/results/passo2/ninapro_db2_ingest_report_59051290.json. Anomalia: nell'esercizio 3 di molti soggetti le etichette restimulus e rerepetition hanno lunghezza diversa da emg (da -272 a +3 campioni): l'EMG non si tocca, le etichette corte sono riempite con -1, le lunghe tagliate; la correzione e' nel sidecar di ogni soggetto. Un primo pieno (job 59050859) si era fermato su s12 con il parser precedente. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026)."
+}

@@ -1,0 +1,55 @@
+{
+  "dataset": "ninapro_db7",
+  "n_subjects": 22,
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+  ],
+  "hours_total": 13.38271625,
+  "n_channels": 12,
+  "n_channels_discarded_total": 0,
+  "failed_subjects": {},
+  "movements_per_exercise": {
+    "most_subjects": [
+      17,
+      23
+    ],
+    "21": [
+      17,
+      21
+    ]
+  },
+  "subjects_with_subject_field_mismatch": [
+    18,
+    21,
+    22
+  ],
+  "amputee_subjects_nominal_anatomy": [
+    21,
+    22
+  ],
+  "output_size": "2.2G (in $SCRATCH/data/processed/ninapro_db7)",
+  "job": 59051339,
+  "elapsed_s": 223.22338962554932,
+  "note": "riepilogo aggregato; il report completo con per_subject resta su Leonardo in $WORK/wearusfm_runs/results/passo2/ninapro_db7_ingest_report_59051339.json. Soggetti 21 e 22 amputati (mano destra, 50% dell'avambraccio residuo; fatto n. 22): anatomia nominale. Il soggetto 21 ha 38 classi (non ha fatto gli ultimi due movimenti funzionali dell'esercizio 2). Ordine dei 12 canali assunto come DB2 (da verificare). Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026)."
+}

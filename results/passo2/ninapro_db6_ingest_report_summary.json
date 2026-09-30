@@ -1,0 +1,70 @@
+{
+  "dataset": "ninapro_db6",
+  "n_subjects": 10,
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "n_sessions_total": 100,
+  "hours_total": 19.675429722222223,
+  "n_columns": 16,
+  "discarded_channels_union": [
+    7,
+    8,
+    9
+  ],
+  "subjects_with_field_mismatch": [],
+  "failed_subjects": {},
+  "n_sessions_with_label_length_adjustments": 4,
+  "label_length_adjustment_range_samples": [
+    -9885,
+    7975
+  ],
+  "label_variables_adjusted": [
+    "reobject"
+  ],
+  "output_size": "4.3G (in $SCRATCH/data/processed/ninapro_db6)",
+  "job": 59051338,
+  "elapsed_s": 221.1806321144104,
+  "note": "riepilogo aggregato; il report completo con per_subject resta su Leonardo in $WORK/wearusfm_runs/results/passo2/ninapro_db6_ingest_report_59051338.json. Le colonne 8 e 9 (indici 0-based) hanno deviazione standard zero in tutte le sessioni e sono scartate dal QC; l'assegnazione delle colonne ai 14 elettrodi resta un'assunzione (fatto n. 22). Etichette piu' corte dell'EMG riempite con -1. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026). Le colonne 8 e 9 sono scartate in tutte e 100 le sessioni; la colonna 7 (l'ottavo elettrodo dell'anello, assunzione) solo nella sessione D1_T1 del soggetto 9.",
+  "discarded_channel_index_counts_over_100_sessions": {
+    "8": 100,
+    "9": 100,
+    "7": 1
+  },
+  "channel_7_discarded_only_in": {
+    "9": [
+      "D1_T1"
+    ]
+  },
+  "sessions_with_label_length_adjustments": [
+    {
+      "subject": 3,
+      "session": "D1_T1",
+      "reobject": 1889
+    },
+    {
+      "subject": 4,
+      "session": "D4_T2",
+      "reobject": 3594
+    },
+    {
+      "subject": 9,
+      "session": "D1_T2",
+      "reobject": 7975
+    },
+    {
+      "subject": 9,
+      "session": "D3_T1",
+      "reobject": -9885
+    }
+  ]
+}
