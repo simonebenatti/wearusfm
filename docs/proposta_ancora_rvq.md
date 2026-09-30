@@ -1,6 +1,8 @@
 # Proposta — ancora RVQ ristretta: dove si accende e quali codici si predicono
 
-**Stato: PROPOSTA di AG del 30/09/2026, NON firmata.** Nessuna misura qui descritta parte prima della firma e del commit. Risponde alle due
+**Stato: proposta di AG del 30/09/2026, FIRMATA da Simone il 30/09/2026 (le tre firme in fondo), senza modifiche. Regola CONGELATA col commit
+che registra la firma; nessuna delle misure descritte era stata lanciata prima.** Non si ritocca dopo aver visto un risultato: se si rivela sbagliata
+si apre una nuova decisione. Risponde alle due
 domande aperte di D5b (`docs/decisioni.md`, «D5b — l'ancora RVQ NON si scarta»): (1) su quali dataset, (2) quali codici.
 Decisione gia' presa da Simone il 30/09: l'ancora si **restringe** ai dataset sotto la soglia di V2.
 
@@ -77,9 +79,9 @@ gia' vista (tabella sopra). La regola vale sui dati del run; sui dataset nuovi (
 
 ## Cosa si firma
 
-- [ ] **Dove:** tabella del §1 e regola «acceso solo se del tokenizer o V2 misurato <= 2».
-- [ ] **Cosa:** solo il livello 0.
-- [ ] **Quali rami:** la regola dell'idoneita' (differenza <= 10 punti sulla sonda dataset-ID, un ramo alla volta).
+- [x] **Dove:** tabella del §1 e regola «acceso solo se del tokenizer o V2 misurato <= 2».
+- [x] **Cosa:** solo il livello 0.
+- [x] **Quali rami:** la regola dell'idoneita' (differenza <= 10 punti sulla sonda dataset-ID, un ramo alla volta).
 
 **Ordine dopo la firma** (tutto richiede il cluster per copiare gli array o per la GPU): (1) copiare `arrays_59048369`; (2) sonda per ramo sulle classi
 accese (CPU, minuti); (3) V2 sui 7 dataset nuovi (GPU, < 0,5 GPU-ora), poi rifare (2) sulle classi che si accendono. Scadenza: D9, 25/10.

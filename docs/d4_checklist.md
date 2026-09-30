@@ -40,7 +40,7 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | 7a, 10 | curve di scaling di Kaifosh (paywall) e MFU reale sul Booster | non fatti |
 
 ## 4. Decisioni che aspettano te (oltre alle firme)
-- **D5b:** presa il 30/09: **l'ancora RVQ non si scarta** (deroga consapevole: V3 e V4 non passano) e **si restringe** ai dataset sotto V2. **Resta aperto** quali codici si predicono (nessun livello e' stabile): proposta in `docs/proposta_ancora_rvq.md`, da firmare.
+- **D5b:** presa il 30/09: **l'ancora RVQ non si scarta** (deroga consapevole: V3 e V4 non passano) e **si restringe** ai dataset sotto V2. **Codici firmati il 30/09** (solo livello 0, rami scelti con una regola congelata): `docs/proposta_ancora_rvq.md`. Le misure aspettano il cluster.
 - **Misura del QC** (soglia assoluta contro relativa, 7 ingest): autorizzata il 30/09, parte quando il cluster torna.
 - **Zhang 2026:** schema per un CSV con EMG a 2000 Hz e 4000 Hz più ACC/GYRO a ~74–148 Hz.
 - **NinaPro DB8 e DB10:** riscarico autorizzato il 30/09; parte quando il cluster torna.

@@ -662,3 +662,23 @@ misura di quella proposta parte prima della firma e del commit.
 
 Nota di AG, per il registro: sono **decisioni d'uso**, non verifiche. Lo stato dei fatti n. 5 e n. 21 in `docs/fatti_da_verificare.md` non cambia
 (le licenze restano «non verificate» dove lo erano). AG non ha valutato la compatibilita' legale della clausola ND con l'uso nel corpus.
+
+---
+
+## D5b — proposta dei codici dell'ancora RVQ: FIRMATA e CONGELATA (Simone, 30/09/2026)
+
+Simone firma le **tre cose** di `docs/proposta_ancora_rvq.md` senza modifiche («firmo le tre cose»):
+1. **Dove:** l'ancora e' accesa su CapgMyo, GRABMyo, Camargo (V2 <= 2 misurato) e su emg2pose ed emg2qwerty (dati del tokenizer); **spenta** su
+   putEMG, CSL-hdemg (V2 non passa) e DB5 (200 Hz); **spenta fino a V2** su Kaifosh, NinaPro DB2/3/4/6/7 e Hyser, che si accendono solo se V2 <= 2
+   (stesso riferimento e stessa scala; X = 2 invariata). Vale anche per i dataset futuri. L'estensione del confronto V2 a quei dataset e' autorizzata
+   da questa firma (misura: 1 GPU, stima < 0,5 GPU-ora = < 4 ore locali sui 30 del passo; la stima definitiva si ridichiara prima del lancio).
+2. **Cosa si predice:** solo il **livello 0**.
+3. **Quali rami:** regola di idoneita' **congelata**. Per ogni ramo, solo livello 0, sonda dataset-ID (stessa sonda e stesso split per soggetto di V3)
+   sulle classi accese, contro le 5 potenze di banda sulle **stesse** classi: **idoneo se la differenza e' <= 10 punti**; l'ancora predice il livello 0
+   di tutti i rami idonei, uno per testa. **Se nessun ramo e' idoneo l'ancora RVQ non parte** e si torna da Simone (candidato: il target discreto
+   proprio). La stabilita' **non** e' un criterio di selezione: si riporta e si accetta come rumore di etichetta dichiarato.
+
+**Prima di questa firma non e' stata lanciata nessuna misura** dell'identita' per singolo ramo (verificato: non esiste alcun risultato in `results/`
+per quella misura). Le misure partono quando il cluster torna e gli array del run 59048369 sono copiati: nell'ordine (1) sonda per ramo sulle classi
+accese (CPU), (2) V2 sui dataset non ancora misurati (GPU, dopo conferma con costo), (3) di nuovo (1) sui dataset che si accendono, come conferma.
+Il criterio di D5a (V1-V4) non cambia; l'ablation run 4 contro run 5 resta l'arbitro dell'utilita' dell'ancora. Scadenza D9: 25/10.
