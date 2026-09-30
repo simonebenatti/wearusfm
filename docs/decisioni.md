@@ -641,3 +641,24 @@ dati veri**):
    correzione tocca sessioni di CapgMyo, GRABMyo, putEMG, CSL-hdemg o Camargo usate dal run, lo si dichiara nel RIEPILOGO e si valuta l'effetto
    sui numeri; **nessuna soglia di D5a si riscrive**.
 Costo: due job seriali (misura, poi applicazione), meno di 1 ora ciascuno, zero GPU-ora; lo ridichiaro in chat prima di sottomettere ciascuno.
+
+---
+
+## D5b — forma decisa: ancora RVQ RISTRETTA (Simone, 30/09/2026: «ok restringiamo»)
+
+Risolve il punto 1 rimasto aperto in «D5b — l'ancora RVQ NON si scarta»: l'ancora si **restringe ai dataset sotto la soglia di V2**, non e'
+estesa a tutti. Il punto 2 (quali codici si predicono) resta aperto: **proposta di AG in `docs/proposta_ancora_rvq.md`, NON firmata**; contiene
+anche il trattamento dei dataset mai misurati con V2 (spenti fino alla misura) e una regola di scelta dei rami scritta prima di misurare. Nessuna
+misura di quella proposta parte prima della firma e del commit.
+
+---
+
+## Licenze — decisioni d'uso (Simone, 30/09/2026)
+
+- **NinaPro DB4 e DB5 (CC BY-ND 4.0): si INCLUDONO nel corpus.**
+- **NinaPro DB2 (CC0 indicata ma non verificata), DB3, DB6, DB7 (nessuna licenza trovata): si includono «senza problemi».** Vale la stessa linea
+  gia' presa per DB8 e DB10.
+- **Licenza dei pesi NeuroRVQ (fatto n. 5): «non serve»** verificarla; nessun `license-checker` sulla scheda Hugging Face.
+
+Nota di AG, per il registro: sono **decisioni d'uso**, non verifiche. Lo stato dei fatti n. 5 e n. 21 in `docs/fatti_da_verificare.md` non cambia
+(le licenze restano «non verificate» dove lo erano). AG non ha valutato la compatibilita' legale della clausola ND con l'uso nel corpus.

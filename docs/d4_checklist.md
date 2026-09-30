@@ -20,10 +20,10 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | 11 | Hyser: 256 canali, 4 griglie 8×8 (ED/EP/FD/FP), 2048 Hz | `readme.txt` del dataset | griglie HD |
 
 ## 2. Da guardare con attenzione prima di firmare
-- **Licenze «NoDerivatives»:** NinaPro DB4 e DB5 sono CC BY-ND 4.0. Non ho valutato se l'uso nel corpus
-  (dati ricampionati, quantizzati, usati per addestrare un modello) sia compatibile: è una decisione tua.
-- **DB2 «CC0»:** indicata dal fact-checker come default di Dryad, non come citazione: **non verificata**.
-- **Licenze mancanti:** DB3, DB6, DB7 (nessuna trovata). Hyser ODC-By 1.0 (attribuzione).
+- **Licenze «NoDerivatives»:** NinaPro DB4 e DB5 sono CC BY-ND 4.0. **Decisione di Simone 30/09: si includono.** (AG non ha valutato la
+  compatibilità legale: è una decisione d'uso, non una verifica.)
+- **DB2 «CC0»:** indicata dal fact-checker come default di Dryad, non come citazione: **non verificata**. **Licenze mancanti:** DB3, DB6, DB7
+  (nessuna trovata). **Decisione di Simone 30/09: si includono senza problemi.** Hyser ODC-By 1.0 (attribuzione).
 - **Frequenza di rete** (50 o 60 Hz) è assunta in tutti i sidecar dei dataset ingeriti dopo GRABMyo: nessuna fonte
   la dichiara. Ha effetto solo su notch e augmentation.
 
@@ -31,7 +31,7 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | # | Stato | Nota |
 |---|---|---|
 | 4 | NeuroRVQ: transformer mescola i canali (sì); normalizzazione in ingresso (assente nel codice d'esempio); **banda di pretraining non trovata** (20–400 Hz nel codice, 20–90 Hz nel paper solo per il downstream) | decisa per progetto la vista a 20–400 Hz (`decisioni.md`) |
-| 5 | licenza del codice NeuroRVQ = CC BY-NC 4.0; **licenza dei pesi e sovrapposizione dei soggetti non verificate** | serve un license-checker sulla scheda HF |
+| 5 | licenza del codice NeuroRVQ = CC BY-NC 4.0; **licenza dei pesi e sovrapposizione dei soggetti non verificate** | Simone 30/09: verificare la licenza dei pesi «non serve»; il fatto resta non verificato |
 | 1 | frequenze di DB8 (~1111 Hz) e DB10 (~1926 Hz): **il raw è vuoto** (download mai riuscito) | download **autorizzato da Simone il 30/09** (`decisioni.md`), da fare col cluster; poi verifica su file veri |
 | 2 | sovrapposizione soggetti fra DB NinaPro | **non calcolabile dagli ingest**: gli ID soggetto sono per-database (s01 di DB2 non dice nulla su s01 di DB3); serve una fonte (pagine ufficiali o paper). Correzione del 30/09: prima c'era scritto il contrario |
 | 3 | conteggio soggetti e ore del corpus | ora calcolabile dai report di ingest in `results/passo2/` |
@@ -40,7 +40,7 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | 7a, 10 | curve di scaling di Kaifosh (paywall) e MFU reale sul Booster | non fatti |
 
 ## 4. Decisioni che aspettano te (oltre alle firme)
-- **D5b:** presa il 30/09: **l'ancora RVQ non si scarta** (deroga consapevole: V3 e V4 non passano). **Restano aperte** la forma (tutti i dataset o ristretta a quelli sotto V2) e quali codici si predicono (nessun livello e' stabile): vedi `decisioni.md`.
+- **D5b:** presa il 30/09: **l'ancora RVQ non si scarta** (deroga consapevole: V3 e V4 non passano) e **si restringe** ai dataset sotto V2. **Resta aperto** quali codici si predicono (nessun livello e' stabile): proposta in `docs/proposta_ancora_rvq.md`, da firmare.
 - **Misura del QC** (soglia assoluta contro relativa, 7 ingest): autorizzata il 30/09, parte quando il cluster torna.
 - **Zhang 2026:** schema per un CSV con EMG a 2000 Hz e 4000 Hz più ACC/GYRO a ~74–148 Hz.
 - **NinaPro DB8 e DB10:** riscarico autorizzato il 30/09; parte quando il cluster torna.
