@@ -96,7 +96,7 @@ pagina HEVS lo scrivono. La disposizione «8 + 2 + 2» per DB2, DB3 e DB7 e' sta
 
 **Se fosse sbagliato:** i montaggi misti (12 o 14 elettrodi) nello schema.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 21»), per le frasi mostrategli in chat; fuori dalla firma, perche' non mostrate: ripetizioni di DB3 e DB7, disposizione di DB4, 2 kHz di DB6 (vedi il registro).
 
 ---
 
