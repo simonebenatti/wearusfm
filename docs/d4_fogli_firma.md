@@ -140,7 +140,7 @@ dove si costruiscono `cu_seqlens_q` e `cu_seqlens_k`).
 
 **Se fosse sbagliato:** il Perceiver del piano.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 9»), sul file del risultato; log del job non ricontrollato.
 
 ---
 

@@ -8,7 +8,7 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | # | Fatto | Cosa guardare | Cosa cambierebbe |
 |---|---|---|---|
 | 7b | Kaifosh «Discrete Gestures»: CC-BY-NC-4.0, 100 partecipanti, 2 kHz | README di `facebookresearch/generic-neuromotor-interface` | uso non commerciale: ok per ricerca, non per ridistribuire |
-| 9 | `flash_attn_varlen_func` funziona in bf16 su A100 (job 58134850) | `results/step0/flash_attn_varlen_check_58134850.json` | il Perceiver del piano |
+| 9 | `flash_attn_varlen_func` funziona in bf16 su A100 (job 58134850) — **FIRMATO il 30/09** | `results/step0/flash_attn_varlen_check_58134850.json` | il Perceiver del piano |
 | 12 | putEMG: 24 elettrodi, 3 fasce da 8, 5120 Hz, CC BY-NC 4.0 | pagina/paper putEMG | montaggio nello schema |
 | 15 | UCI-EMG: 1 kHz | Lobov et al. 2018, Sensors 18(4):1122 | solo harness |
 | 16 | GRABMyo: 28 canali EMG in 4 anelli, U1–U4 non EMG | pagina PhysioNet | schema a 4 gruppi |
