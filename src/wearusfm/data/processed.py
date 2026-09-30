@@ -25,9 +25,14 @@ class SessionData:
     qc_valid: np.ndarray  # (C,) bool
 
 
+def qc_flags(meta: dict) -> list:
+    """I flag `qc_valid` del montaggio, nell'ordine di scrittura (gruppi, poi canali): e' anche l'ordine delle colonne. Nessun controllo."""
+    return [ch["qc_valid"] for g in meta["montage"]["groups"] for ch in g["channels"]]
+
+
 def qc_valid_from_metadata(meta: dict, n_columns: int) -> np.ndarray:
-    """I flag `qc_valid` dei canali, nell'ordine di scrittura (gruppi, poi canali): e' anche l'ordine delle colonne."""
-    flags = [ch["qc_valid"] for g in meta["montage"]["groups"] for ch in g["channels"]]
+    """I flag `qc_valid` come array booleano, con il controllo che siano uno per colonna."""
+    flags = qc_flags(meta)
     if len(flags) != n_columns:
         raise ValueError(f"{len(flags)} flag qc_valid per {n_columns} colonne")
     return np.asarray(flags, dtype=bool)
@@ -135,7 +140,7 @@ def validate_session(session_dir: Path) -> list[str]:
     n_ch = arr.shape[-1]
     if "montage" in meta:
         try:
-            flags = [ch["qc_valid"] for g in meta["montage"]["groups"] for ch in g["channels"]]
+            flags = qc_flags(meta)
         except (KeyError, TypeError) as e:
             problems.append(f"montaggio malformato ({type(e).__name__}: {e})")
             flags = None
@@ -170,15 +175,20 @@ def validate_session(session_dir: Path) -> list[str]:
             else:
                 if pos != arr.shape[0]:
                     problems.append(f"le prove coprono {pos} campioni, l'array ne ha {arr.shape[0]}")
+        elif arr.ndim == 2:  # prove dichiarate ma senza posizione: il lettore le fonderebbe in un solo segmento
+            problems.append("array 2D con `trials` senza `offset`/`n_samples` in ogni prova: i confini delle prove non si possono ricostruire")
         elif arr.ndim == 3 and len(trials) != arr.shape[0]:
             problems.append(f"{len(trials)} prove nel sidecar, {arr.shape[0]} nell'array")
 
     labels_path = session_dir / "labels.npz"
     if labels_path.exists() and arr.ndim == 2:
-        with np.load(labels_path) as lab:
-            for k in lab.files:
-                if lab[k].shape[0] != arr.shape[0]:
-                    problems.append(f"labels.npz[{k}] ha {lab[k].shape[0]} righe, l'array {arr.shape[0]}")
+        try:
+            with np.load(labels_path) as lab:
+                for k in lab.files:
+                    if lab[k].shape[0] != arr.shape[0]:
+                        problems.append(f"labels.npz[{k}] ha {lab[k].shape[0]} righe, l'array {arr.shape[0]}")
+        except Exception as e:  # file corrotto: e' un problema da riportare, non un crash
+            problems.append(f"labels.npz illeggibile: {type(e).__name__}: {e}")
     return problems
 
 
@@ -188,7 +198,7 @@ def session_summary(session_dir: Path) -> dict:
     arr = np.load(session_dir / "data_int16.npy", mmap_mode="r")
     fs = float(meta["native_fs_hz"])
     n_samples = int(np.prod(arr.shape[:-1]))
-    flags = [ch["qc_valid"] for g in meta["montage"]["groups"] for ch in g["channels"]]
+    flags = qc_flags(meta)
     return {
         "n_samples": n_samples, "hours": n_samples / fs / 3600, "n_channels": int(arr.shape[-1]),
         "n_channels_valid": int(sum(bool(f) for f in flags)), "fs_hz": fs,

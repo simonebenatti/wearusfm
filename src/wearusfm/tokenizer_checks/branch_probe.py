@@ -16,6 +16,7 @@ import numpy as np
 from scipy import sparse
 
 from wearusfm.tokenizer_checks import metrics as M
+from wearusfm.tokenizer_checks.continuous_features import probe_summary as _probe
 from wearusfm.tokenizer_checks.continuous_features import standardize_with_train, v3_setup
 
 ENABLED_DEFAULT = ("camargo2021", "capgmyo", "emg2pose", "grabmyo")  # D5b ristretta: V2 <= 2 misurato, piu' il riferimento emg2pose
@@ -40,11 +41,6 @@ def level0_codebook_mean(codes_list: Sequence[np.ndarray], branch: int, codebook
     if codebook.shape[0] != M.N_CODE:
         raise ValueError(f"codebook con {codebook.shape[0]} righe, attese {M.N_CODE}")
     return np.stack([codebook[np.asarray(c)[branch, 0]].mean(axis=0) for c in codes_list]).astype(np.float64)
-
-
-def _probe(x, y, units, part, seed) -> dict:
-    r = M.dataset_id_probe(x, y, units, part, np.random.default_rng([seed, 3, 1]))
-    return {"balanced_accuracy": r.balanced_accuracy, "ci95": list(r.ci95), "chance": r.chance, "model": r.model, "n_test": r.n_test}
 
 
 def branch_probe(

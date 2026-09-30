@@ -158,3 +158,20 @@ def test_reconcile_labels_pads_truncates_and_rejects():
         reconcile_labels({"a": np.arange(98_000)}, 100_000, ["a"])  # 2.000 > 1% di 100.000 (= 1.000)
     labels, adj = reconcile_labels({"a": np.arange(99_500)}, 100_000, ["a"])  # 500 dentro l'1%: riempita
     assert adj == {"a": -500} and labels["a"].shape == (100_000,)
+
+
+# --- rilievi dell'ultrareview del 30/09/2026 ------------------------------------------------------------------------------------------
+
+
+def test_corrupt_labels_is_reported_not_raised(tmp_path):
+    d = _write(tmp_path / "c", _data((100, 4)), labels={"stimulus": np.zeros(100, dtype=np.int16)})
+    (d / "labels.npz").write_bytes(b"non uno zip")
+    problems = validate_session(d)
+    assert any("labels.npz illeggibile" in p for p in problems)
+
+
+def test_2d_trials_without_offsets_are_reported(tmp_path):
+    d = _write(tmp_path / "t", _data((100, 4)), trials=[{"gesture": 1}, {"gesture": 2}])
+    assert any("senza `offset`/`n_samples`" in p for p in validate_session(d))
+    # nei layout 3D le prove non hanno offset (una prova = un indice del primo asse): nessun problema
+    assert validate_session(_write(tmp_path / "u", _data((2, 50, 4)), trials=[{"gesture": 1}, {"gesture": 2}])) == []

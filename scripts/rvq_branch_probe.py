@@ -18,7 +18,6 @@ Tutti gli ingressi stanno FUORI dal repo; l'uscita e' un JSON di risultati (defa
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import subprocess
 import sys
@@ -29,29 +28,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.tokenizer_checks import metrics as M  # noqa: E402
+from wearusfm.tokenizer_checks.run_io import CHECKPOINT_SHA256, argv_without_option, load_arrays, sha256_file  # noqa: E402
 
-CHECKPOINT_SHA256 = "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49"
 GUARD_WINDOWS = 8
 GUARD_MIN_MATCH = 0.99
 FROZEN_V3 = {"bands": 0.6547619047619048, "codes": 0.9642857142857143}
-
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for block in iter(lambda: f.read(1 << 24), b""):
-            h.update(block)
-    return h.hexdigest()
-
-
-def load_arrays(arrays_dir: Path) -> dict:
-    out = {}
-    for p in sorted(arrays_dir.glob("*.npz")):
-        z = np.load(p, allow_pickle=False)
-        out[p.stem] = {k: z[k] for k in ("codes", "tokens", "group_subject")}
-    if not out:
-        raise SystemExit(f"nessun .npz in {arrays_dir}")
-    return out
 
 
 def stage_codebooks(args) -> None:
@@ -131,7 +112,8 @@ def main(argv=None) -> int:
     if args.stage == "all":
         if not (args.repo and args.checkpoint):
             ap.error("--stage all richiede --repo e --checkpoint")
-        base = [sys.executable, str(Path(__file__).resolve())] + (list(argv) if argv is not None else sys.argv[1:])
+        raw = list(argv) if argv is not None else sys.argv[1:]
+        base = [sys.executable, str(Path(__file__).resolve())] + argv_without_option(raw, "--stage")
         for stage in ("codebooks", "probe"):
             rc = subprocess.run(base + ["--stage", stage]).returncode
             if rc:

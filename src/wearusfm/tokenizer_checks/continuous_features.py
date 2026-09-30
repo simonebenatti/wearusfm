@@ -75,7 +75,8 @@ def v3_setup(per_dataset: Mapping[str, Mapping], seed: int = 0):
     return names, codes_l, tokens_l, np.array(y), np.array(units), part
 
 
-def _probe(x, y, units, part, seed):
+def probe_summary(x, y, units, part, seed) -> dict:
+    """La sonda dataset-ID di V3 (stesso rng) ridotta a un dizionario serializzabile."""
     r = M.dataset_id_probe(x, y, units, part, np.random.default_rng([seed, 3, 1]))
     return {"balanced_accuracy": r.balanced_accuracy, "ci95": list(r.ci95), "chance": r.chance, "model": r.model, "n_test": r.n_test}
 
@@ -95,15 +96,15 @@ def dataset_id_probe_continuous(
     bands = M.band_power_features(tokens_l)
     out = {
         "datasets": names, "n_samples": int(len(y)), "n_test_units": int((part == "test").sum()),
-        "frozen_bands": _probe(bands, y, units, part, seed),
-        "frozen_codes": _probe(M.code_histogram_features(codes_l), y, units, part, seed),
-        "extra_bands_standardized": _probe(standardize_with_train(bands, part), y, units, part, seed),
-        "extra_continuous_mean": _probe(standardize_with_train(pooled, part), y, units, part, seed),
-        "extra_continuous_mean_std": _probe(standardize_with_train(pooled_sd, part), y, units, part, seed),
+        "frozen_bands": probe_summary(bands, y, units, part, seed),
+        "frozen_codes": probe_summary(M.code_histogram_features(codes_l), y, units, part, seed),
+        "extra_bands_standardized": probe_summary(standardize_with_train(bands, part), y, units, part, seed),
+        "extra_continuous_mean": probe_summary(standardize_with_train(pooled, part), y, units, part, seed),
+        "extra_continuous_mean_std": probe_summary(standardize_with_train(pooled_sd, part), y, units, part, seed),
     }
     for k in range(4):  # un ramo alla volta: quale porta l'identita'
         sl = slice(k * 128, (k + 1) * 128)
-        out[f"extra_continuous_mean_branch{k}"] = _probe(standardize_with_train(pooled[:, sl], part), y, units, part, seed)
+        out[f"extra_continuous_mean_branch{k}"] = probe_summary(standardize_with_train(pooled[:, sl], part), y, units, part, seed)
     return out
 
 
