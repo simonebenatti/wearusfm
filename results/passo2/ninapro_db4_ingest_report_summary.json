@@ -1,0 +1,41 @@
+{
+  "dataset": "ninapro_db4",
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "n_subjects": 10,
+  "hours_total": 7.601954027777779,
+  "n_channels": 12,
+  "n_channels_discarded_total": 0,
+  "subjects_with_subject_field_mismatch": [],
+  "subjects_with_exercise_field_mismatch": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "movements_per_exercise_each_subject": [
+    12,
+    17,
+    23
+  ],
+  "output_size": "1.3G (in $SCRATCH/data/processed/ninapro_db4, non in $WORK)",
+  "job": 59050122,
+  "elapsed_s": 60.33,
+  "note": "riepilogo aggregato dal log del job (le righe per soggetto restano nel log su Leonardo). Anomalia dei dati: lo scalare `exercise` dentro i .mat e' ruotato rispetto al nome (in tutti i soggetti); il numero di movimenti (12, 17, 23) segue il nome. L'ingest si fida del nome. Il numero di movimenti per soggetto e' verificato in locale su tutti e 10 gli zip. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026)."
+}
