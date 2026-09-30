@@ -12,7 +12,8 @@ Per ogni fatto da verificare, riporta:
 - Stato: `raccolto` (hai trovato e citato la fonte) — mai `verificato`, quello lo assegna solo l'utente dopo aver controllato di persona
 
 **Non scrivere nel registro.** Restituisci le righe alla sessione principale, nel formato: fatto · fonte (URL o percorso) · citazione esatta · stato. La
-sessione principale confronta ogni citazione con il testo della pagina, parola per parola, e solo dopo la registra in `docs/fatti_da_verificare.md`.
+sessione principale fa ricontrollare ogni citazione, parola per parola sul testo della pagina, all'agente `quote-verifier` (Opus, con
+`scripts/check_quotes.py`), e solo le citazioni che passano entrano in `docs/fatti_da_verificare.md` come `raccolto` (decisione di Simone, 30/09/2026).
 Motivo (30/09/2026): in quattro righe del registro le «citazioni esatte» erano parafrasi, e due precisazioni erano sbagliate.
 
 Regole sulle citazioni:
