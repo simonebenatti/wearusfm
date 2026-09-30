@@ -160,7 +160,7 @@ def build_montage_metadata(layout: list[tuple[str, int, int]], subject: int, ses
 def ingest_group(group: Group, out_root: Path) -> dict:
     """Un gruppo -> `<out_root>/s<NN>/session<k>_<gruppo>/`. Due passate sui file (picco, poi scrittura)."""
     from wearusfm.ingest.capgmyo import qc_channel_validity
-    from wearusfm.ingest.common import montage_to_dict, validate_montage_dict
+    from wearusfm.ingest.common import montage_to_dict, relative_min_std, validate_montage_dict
 
     peak = np.zeros(N_CHANNELS)
     lengths, layout, valid_votes = [], None, []
@@ -172,7 +172,7 @@ def ingest_group(group: Group, out_root: Path) -> dict:
         elif lay != layout:
             raise ValueError(f"{hea}: ordine dei canali diverso dal resto del gruppo")
         peak = np.maximum(peak, np.abs(x).max(axis=0))
-        min_std = max(1e-12, 1e-3 * float(np.median(x.std(axis=0))))
+        min_std = relative_min_std(x)
         valid_votes.append(qc_channel_validity(x, min_std=min_std))
         lengths.append(x.shape[0])
     if peak.max() <= 0:

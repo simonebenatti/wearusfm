@@ -128,3 +128,33 @@ def test_session_summary(tmp_path):
     c = session_summary(_write(tmp_path / "b", _data((100, 4)), scale=[1, 1, 1, 1], trials=tr))
     assert c["layout"] == "concatenated_trials" and c["scale"] == "per_channel"
     assert session_summary(_write(tmp_path / "c", _data((100, 4)), scale=1.0))["layout"] == "continuous"
+
+
+# --- helper condivisi degli ingest (ingest/common.py) ---------------------------------------------------------------------------
+
+
+def test_relative_min_std_scales_with_units():
+    from wearusfm.ingest.common import relative_min_std
+
+    rng = np.random.default_rng(0)
+    volts, counts = rng.normal(scale=1e-5, size=(500, 4)), rng.normal(scale=1e3, size=(500, 4))
+    assert relative_min_std(volts) == pytest.approx(1e-3 * np.median(volts.std(axis=0)))
+    assert relative_min_std(counts) == pytest.approx(1e-3 * np.median(counts.std(axis=0)))
+    assert relative_min_std(np.zeros((10, 3))) == 1e-12  # tutto piatto: minimo assoluto
+
+
+def test_reconcile_labels_pads_truncates_and_rejects():
+    from wearusfm.ingest.common import LABEL_PAD, reconcile_labels
+
+    mat = {"a": np.arange(100), "b": np.arange(97), "c": np.arange(102), "ignorata": np.arange(5)}
+    labels, adj = reconcile_labels(mat, 100, ["a", "b", "c", "assente"])
+    assert set(labels) == {"a", "b", "c"} and all(v.shape == (100,) and v.dtype == np.int16 for v in labels.values())
+    assert adj == {"b": -3, "c": 2}  # negativo = riempita, positivo = tagliata
+    assert labels["b"][-3:].tolist() == [LABEL_PAD] * 3 and labels["b"][:97].tolist() == list(range(97))
+    assert labels["c"].tolist() == list(range(100))
+    with pytest.raises(ValueError, match="incompatibili"):
+        reconcile_labels({"a": np.arange(90)}, 100, ["a"])  # differenza 10 > max(5, 1%)
+    with pytest.raises(ValueError):
+        reconcile_labels({"a": np.arange(98_000)}, 100_000, ["a"])  # 2.000 > 1% di 100.000 (= 1.000)
+    labels, adj = reconcile_labels({"a": np.arange(99_500)}, 100_000, ["a"])  # 500 dentro l'1%: riempita
+    assert adj == {"a": -500} and labels["a"].shape == (100_000,)

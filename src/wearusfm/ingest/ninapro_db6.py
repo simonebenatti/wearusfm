@@ -33,7 +33,7 @@ from pathlib import Path
 import numpy as np
 import scipy.io as sio
 
-from wearusfm.ingest.ninapro_std import LABEL_PAD, MAX_LEN_DIFF, MAX_LEN_DIFF_FRACTION
+from wearusfm.ingest.common import reconcile_labels, relative_min_std
 from wearusfm.metadata.schema import (
     AnatomicalIdentity,
     AnatomicalPrecision,
@@ -89,23 +89,7 @@ def parse_session(mat: dict, day: int, time: int) -> SessionFile:
     emg = np.asarray(mat["emg"], dtype=np.float64)
     if emg.ndim != 2 or emg.shape[1] != N_COLUMNS:
         raise ValueError(f"forma emg inattesa {emg.shape}, attese {N_COLUMNS} colonne")
-    n = emg.shape[0]
-    tol = max(MAX_LEN_DIFF, int(MAX_LEN_DIFF_FRACTION * n))
-    labels, adjustments = {}, {}
-    for name in LABEL_FIELDS:
-        if name not in mat:
-            continue
-        arr = np.asarray(mat[name]).ravel().astype(np.int16)
-        d = arr.shape[0] - n
-        if abs(d) > tol:
-            raise ValueError(f"lunghezze incompatibili: emg {n}, {name} {arr.shape[0]} (tolleranza {tol})")
-        if d < 0:
-            arr = np.concatenate([arr, np.full(-d, LABEL_PAD, dtype=np.int16)])
-        elif d > 0:
-            arr = arr[:n]
-        if d:
-            adjustments[name] = int(d)
-        labels[name] = arr
+    labels, adjustments = reconcile_labels(mat, emg.shape[0], LABEL_FIELDS)
     f = lambda k: None if _scalar(mat, k) is None else int(_scalar(mat, k))  # noqa: E731
     return SessionFile(day, time, emg, labels, f("daytesting"), f("time"), f("subj"), adjustments)
 
@@ -170,7 +154,7 @@ def ingest_subject(zip_paths: list[Path], out_root: Path, subject: int) -> dict:
     per_session = []
     for s in sessions:
         # soglia di canale piatto relativa (vedi ninapro_std): le colonne vuote hanno deviazione standard 0
-        min_std = max(1e-12, 1e-3 * float(np.median(s.emg.std(axis=0))))
+        min_std = relative_min_std(s.emg)
         valid = qc_channel_validity(s.emg, min_std=min_std)
         quantized, scale = to_int16(s.emg)
         out_dir = out_root / f"s{subject:02d}" / f"D{s.day}_T{s.time}"

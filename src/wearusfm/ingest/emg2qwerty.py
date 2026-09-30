@@ -124,13 +124,13 @@ def ingest_recording(ref: RecordingRef, data: bytes, out_root: Path) -> dict:
     """Una sessione -> `<out_root>/u<utente>/<sessione>/{data_int16.npy, metadata.json, keystrokes.json, prompts.json}`.
     Scala int16 dal MASSIMO assoluto (mai percentili); QC di canale sulla sessione intera."""
     from wearusfm.ingest.capgmyo import qc_channel_validity, to_int16
-    from wearusfm.ingest.common import montage_to_dict, validate_montage_dict
+    from wearusfm.ingest.common import montage_to_dict, relative_min_std, validate_montage_dict
 
     rec = read_recording(data)
     emg, attrs = rec["emg"].astype(np.float64), rec["attrs"]
     user = str(attrs.get("user", "sconosciuto"))
     tax = time_axis_report(rec["time"])
-    min_std = max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+    min_std = relative_min_std(emg)
     valid = qc_channel_validity(emg, min_std=min_std)
     quantized, scale = to_int16(emg)
 

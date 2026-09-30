@@ -116,13 +116,13 @@ def ingest_recording(fileobj, ref: RecordingRef, out_root: Path, meta_row: dict 
     """Una registrazione -> `<out_root>/u<utente>/<stem>/{data_int16.npy, metadata.json}`. Se il CSV non ha la riga,
     l'utente e' 'sconosciuto' e si segnala (non si inventa)."""
     from wearusfm.ingest.capgmyo import qc_channel_validity, to_int16
-    from wearusfm.ingest.common import montage_to_dict, validate_montage_dict
+    from wearusfm.ingest.common import montage_to_dict, relative_min_std, validate_montage_dict
 
     rec = read_recording(fileobj)
     emg = rec["emg"].astype(np.float64)
     user = (meta_row or {}).get("user", "sconosciuto")
     tax = time_axis_report(rec["time"])
-    min_std = max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+    min_std = relative_min_std(emg)
     valid = qc_channel_validity(emg, min_std=min_std)
     quantized, scale = to_int16(emg)
 

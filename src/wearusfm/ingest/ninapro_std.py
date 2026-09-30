@@ -35,6 +35,13 @@ from pathlib import Path
 import numpy as np
 import scipy.io as sio
 
+from wearusfm.ingest.common import (  # noqa: F401  (le costanti sono ri-esportate: erano definite qui)
+    LABEL_PAD,
+    MAX_LEN_DIFF,
+    MAX_LEN_DIFF_FRACTION,
+    reconcile_labels,
+    relative_min_std,
+)
 from wearusfm.metadata.schema import (
     AnatomicalIdentity,
     AnatomicalPrecision,
@@ -61,9 +68,6 @@ LABEL_FIELDS = ("stimulus", "restimulus", "repetition", "rerepetition")
 # che potrebbe essere un'etichetta vera), una piu' lunga si taglia; l'allineamento e' "dall'inizio" (non
 # si sa se sia giusto). Tolleranza: max(5 campioni, 1% della lunghezza di emg); oltre si solleva. Ogni
 # correzione si registra nel sidecar (`label_length_adjustments`, con segno: negativo = riempita).
-MAX_LEN_DIFF = 5
-MAX_LEN_DIFF_FRACTION = 0.01
-LABEL_PAD = -1
 TARGETED = (("FDS", "forearm"), ("EDC", "forearm"), ("BB", "upper_arm"), ("TB", "upper_arm"))
 RING_SIZE = 8
 
@@ -154,23 +158,7 @@ def parse_exercise(mat: dict, exercise: int, cfg: StdDB) -> ExerciseData:
     emg = np.asarray(mat["emg"], dtype=np.float64)
     if emg.ndim != 2 or emg.shape[1] != cfg.n_channels:
         raise ValueError(f"forma emg inattesa {emg.shape}, attese {cfg.n_channels} colonne")
-    n = emg.shape[0]
-    tol = max(MAX_LEN_DIFF, int(MAX_LEN_DIFF_FRACTION * n))
-    labels, adjustments = {}, {}
-    for name in LABEL_FIELDS:
-        if name not in mat:
-            continue
-        arr = np.asarray(mat[name]).ravel().astype(np.int16)
-        d = arr.shape[0] - n
-        if abs(d) > tol:
-            raise ValueError(f"lunghezze incompatibili: emg {n}, {name} {arr.shape[0]} (tolleranza {tol})")
-        if d < 0:
-            arr = np.concatenate([arr, np.full(-d, LABEL_PAD, dtype=np.int16)])
-        elif d > 0:
-            arr = arr[:n]
-        if d:
-            adjustments[name] = int(d)
-        labels[name] = arr
+    labels, adjustments = reconcile_labels(mat, emg.shape[0], LABEL_FIELDS)
     n_mov = int((np.unique(labels["restimulus"]) > 0).sum()) if "restimulus" in labels else None
     lat = _scalar(mat, "laterality")
     ex_f, su_f = _scalar(mat, "exercise"), _scalar(mat, "subject")
@@ -255,7 +243,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
     # soglia di canale piatto RELATIVA (1e-3 x la mediana delle deviazioni standard): i dati sono in
     # unita' diverse (DB4: conteggi ~1e3; DB2/DB3/DB7: volt ~1e-5) e la soglia assoluta di 1e-6 del
     # QC condiviso sarebbe di scala arbitraria; un canale a zero resta scartato (std = 0)
-    min_std = max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+    min_std = relative_min_std(emg)
     channel_valid = qc_channel_validity(emg, min_std=min_std)
     n_discarded = int((~channel_valid).sum())
     quantized, scale = to_int16(emg)

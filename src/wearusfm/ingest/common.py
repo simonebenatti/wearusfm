@@ -7,6 +7,8 @@ verificati). I nuovi usano questa.
 
 from __future__ import annotations
 
+import numpy as np
+
 from wearusfm.metadata.schema import MontageMetadata, export_json_schema
 
 
@@ -60,3 +62,39 @@ def validate_montage_dict(montage_dict: dict) -> None:
     for field in schema["required"]:
         if field not in montage_dict:
             raise ValueError(f"metadati non conformi allo schema: manca {field!r}")
+
+
+# --- pezzi condivisi dagli ingest NinaPro DB2/3/4/6/7, Hyser, emg2qwerty, emg2pose ------------------------------------------------------
+
+MAX_LEN_DIFF = 5
+MAX_LEN_DIFF_FRACTION = 0.01
+LABEL_PAD = -1  # campione di EMG senza etichetta
+
+
+def relative_min_std(emg: np.ndarray) -> float:
+    """Soglia di canale piatto RELATIVA: `1e-3 x` la mediana delle deviazioni standard dei canali (con un minimo assoluto di 1e-12).
+    Serve quando le unita' cambiano da dataset a dataset (conteggi ~1e3 vs volt ~1e-5) e una soglia assoluta non ha senso."""
+    return max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+
+
+def reconcile_labels(mat: dict, n_emg: int, names) -> tuple[dict, dict]:
+    """Etichette per campione (`mat[nome]`) riportate alla lunghezza dell'EMG. L'EMG non si tocca mai: un'etichetta piu' corta si
+    riempie con `LABEL_PAD` in coda, una piu' lunga si taglia in coda; oltre `max(MAX_LEN_DIFF, MAX_LEN_DIFF_FRACTION x n)` campioni
+    di differenza e' un errore (i due file non sono piu' allineati in modo credibile). Ritorna (etichette int16, {nome: differenza})."""
+    tol = max(MAX_LEN_DIFF, int(MAX_LEN_DIFF_FRACTION * n_emg))
+    labels, adjustments = {}, {}
+    for name in names:
+        if name not in mat:
+            continue
+        arr = np.asarray(mat[name]).ravel().astype(np.int16)
+        d = arr.shape[0] - n_emg
+        if abs(d) > tol:
+            raise ValueError(f"lunghezze incompatibili: emg {n_emg}, {name} {arr.shape[0]} (tolleranza {tol})")
+        if d < 0:
+            arr = np.concatenate([arr, np.full(-d, LABEL_PAD, dtype=np.int16)])
+        elif d > 0:
+            arr = arr[:n_emg]
+        if d:
+            adjustments[name] = int(d)
+        labels[name] = arr
+    return labels, adjustments
