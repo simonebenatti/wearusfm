@@ -1,4 +1,5 @@
-"""Lettura delle sessioni ingerite e campionamento dei token per V1-V4 (D5a, congelata).
+"""Campionamento dei token per V1-V4 (D5a, congelata). La LETTURA delle sessioni ingerite e' in `wearusfm.data.processed`
+(qui ri-esportata); il formato e' in `docs/formato_processato.md`.
 
 Layout letto (uguale per CapgMyo, GRABMyo, putEMG, CSL-hdemg, Camargo): una cartella per
 sessione con `data_int16.npy` e `metadata.json`. L'array e' (n_prove, T, C) oppure (T, C)
@@ -18,12 +19,18 @@ puo' contenere prove diverse: e' un dettaglio d'implementazione, non un cambio d
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
+from wearusfm.data.processed import (  # noqa: F401  (ri-esportati: erano definiti qui)
+    SessionData,
+    choose_sessions,
+    discover_sessions,
+    load_session,
+    qc_valid_from_metadata,
+)
 from wearusfm.preprocessing.canonical_view import (
     PATCH_SAMPLES,
     apply_scale,
@@ -35,14 +42,6 @@ from wearusfm.preprocessing.canonical_view import (
 PATCHES_PER_SAMPLE = 16  # 16 patch x 200 ms = 3,2 s per canale
 
 
-@dataclass
-class SessionData:
-    dataset: str
-    subject: str
-    session: str
-    fs: float
-    segments: list[np.ndarray]  # ciascuno (T, C), float64, dati nativi
-    qc_valid: np.ndarray  # (C,) bool
 
 
 @dataclass
@@ -55,37 +54,8 @@ class CanonicalSession:
     scale: float
 
 
-def qc_valid_from_metadata(meta: dict, n_columns: int) -> np.ndarray:
-    """I flag `qc_valid` dei canali, nell'ordine di scrittura (gruppi, poi canali): e' anche
-    l'ordine delle colonne."""
-    flags = [ch["qc_valid"] for g in meta["montage"]["groups"] for ch in g["channels"]]
-    if len(flags) != n_columns:
-        raise ValueError(f"{len(flags)} flag qc_valid per {n_columns} colonne")
-    return np.asarray(flags, dtype=bool)
 
 
-def load_session(session_dir: Path, dataset: str, subject: str, session: str) -> SessionData:
-    meta = json.loads((session_dir / "metadata.json").read_text())
-    arr = np.load(session_dir / "data_int16.npy", mmap_mode="r")
-    scale = meta.get("int16_scale")  # numero (uguale per tutti i canali) o lista (una scala per canale: Hyser)
-    if isinstance(scale, list):
-        scale = np.asarray(scale, dtype=np.float64)
-    if arr.ndim == 3:
-        segs = [np.asarray(a, dtype=np.float64) for a in arr]
-    elif arr.ndim == 2:
-        trials = meta.get("trials")
-        if trials and all("offset" in t and "n_samples" in t for t in trials):
-            # registrazioni concatenate lungo il tempo (Camargo, NinaPro, Hyser): una prova = un segmento, cosi'
-            # il filtro non attraversa le giunture (D5a: "le prove si filtrano e ricampionano una per una")
-            segs = [np.asarray(arr[t["offset"] : t["offset"] + t["n_samples"]], dtype=np.float64) for t in trials]
-        else:
-            segs = [np.asarray(arr, dtype=np.float64)]
-    else:
-        raise ValueError(f"{session_dir}: array a {arr.ndim} dimensioni")
-    if scale is not None and not (np.isscalar(scale) and not scale):
-        segs = [s / scale for s in segs]
-    qc = qc_valid_from_metadata(meta, segs[0].shape[-1])
-    return SessionData(dataset, subject, session, float(meta["native_fs_hz"]), segs, qc)
 
 
 def to_canonical(s: SessionData) -> CanonicalSession:
@@ -101,33 +71,8 @@ def to_canonical(s: SessionData) -> CanonicalSession:
     return CanonicalSession(s.dataset, s.subject, s.session, np.concatenate(patched, axis=1), s.qc_valid, scale)
 
 
-def discover_sessions(root: Path, dataset: str) -> list[tuple[str, str, Path]]:
-    """Le cartelle di sessione sotto `root` (quelle con `metadata.json`), come
-    (soggetto, sessione, percorso). Soggetto = primo livello sotto root; sessione = il resto
-    del percorso (CapgMyo ha la sessione nella cartella del soggetto stesso: sessione 's')."""
-    out = []
-    for meta in sorted(Path(root).rglob("metadata.json")):
-        rel = meta.parent.relative_to(root).parts
-        if not rel:
-            continue
-        out.append((rel[0], "/".join(rel[1:]) or "s", meta.parent))
-    return out
 
 
-def choose_sessions(
-    found: list[tuple[str, str, Path]], max_sessions_per_subject: int, rng: np.random.Generator
-) -> list[tuple[str, str, Path]]:
-    """Al piu' `max_sessions_per_subject` sessioni a caso per soggetto (contiene il tempo di
-    calcolo; D5a non impone di usarle tutte)."""
-    by_subject: dict[str, list] = {}
-    for item in found:
-        by_subject.setdefault(item[0], []).append(item)
-    chosen = []
-    for subj in sorted(by_subject):
-        items = by_subject[subj]
-        pick = rng.permutation(len(items))[:max_sessions_per_subject]
-        chosen.extend(items[i] for i in sorted(pick))
-    return chosen
 
 
 def allocate_quota(
