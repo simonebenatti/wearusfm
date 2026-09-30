@@ -358,6 +358,15 @@ v10 §6.3.
 - **Regola:** un livello e' stabile su un dataset se in **tutti e 4 i rami** la frazione e'
   **>= 75%** (congelata); e' stabile se lo e' su **tutti** i dataset. Nessun livello stabile =
   ancora scartata.
+- **Nota sull'origine di V4 (30/09/2026, su richiesta di Simone):** V4 e' un **criterio del
+  progetto**, non uno standard esterno. Nessun documento del repo cita una fonte di letteratura
+  per la perturbazione a rumore o per la soglia del 75%, e non risulta un benchmark
+  standardizzato equivalente (non verificato in letteratura). Simone dichiara di **non averlo
+  proposto**; nei documenti v10 compare nelle bozze di AG, come controllo di coerenza sul
+  tokenizer. Peso: la perturbazione (rumore bianco al noise floor), il 75% e i controlli
+  (rumore zero = 1,0; dose 0,1x) sono scelte di progetto congelate in D5a il 29/09/2026, prima
+  del run. L'esito di V4 va quindi letto come "il criterio che ci siamo dati", non come un
+  fallimento rispetto a uno standard; la decisione D5b resta di Simone.
 
 ### 6. Scelte firmate da Simone (quelle che possono cambiare l'esito)
 
