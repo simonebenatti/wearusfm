@@ -1,0 +1,56 @@
+{
+  "dataset": "ninapro_db3",
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "n_subjects": 11,
+  "hours_total": 7.625667638888889,
+  "n_channels": 12,
+  "n_channels_discarded_total": 4,
+  "discarded_channels_by_subject": {
+    "6": [
+      8,
+      9
+    ],
+    "7": [
+      8,
+      9
+    ]
+  },
+  "subjects_with_subject_field_mismatch": [],
+  "subjects_with_exercise_field_mismatch": [
+    3
+  ],
+  "movements_per_exercise": {
+    "most_subjects": [
+      17,
+      23,
+      9
+    ],
+    "subject_1": [
+      17,
+      12,
+      9
+    ],
+    "subject_10": [
+      17,
+      23,
+      2
+    ]
+  },
+  "nominal_anatomy": "tutti e 11 i soggetti sono amputati transradiali (fatto n. 21): anatomia nominale",
+  "output_size": "1.3G (in $SCRATCH/data/processed/ninapro_db3, non in $WORK)",
+  "job": 59050443,
+  "elapsed_s": 97.7,
+  "note": "riepilogo aggregato dal log del job (le righe per soggetto restano nel log su Leonardo) e dalla verifica locale sui file reali dei 11 soggetti. I .mat di DB3 non hanno `frequency`, `sensor`, `laterality`: la frequenza (2 kHz) viene dalla documentazione ufficiale (fatto n. 21), non dai dati. Canali scartati dal QC (indici 8 e 9, gli elettrodi mirati su flessore/estensore) nei soggetti 6 e 7. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026)."
+}
