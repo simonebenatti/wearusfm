@@ -72,6 +72,15 @@ DB4 = StdDB(
     zip_re=r"^s(\d+)\.zip$", exercises=(1, 2, 3), sensor_expected="Cometa",
 )
 
+# DB3: 11 amputati transradiali (fatto n. 21) -> anatomia NOMINALE per tutti. Nei .mat mancano
+# `frequency`, `sensor` e `laterality` (solo `subject` ed `exercise`): la frequenza (2 kHz) viene dalla
+# documentazione ufficiale, non dai dati; la lateralita' e' ignota. Zip `s<N>_0.zip` con cartella
+# `DB3_s<N>/` (e talvolta `.DS_Store`); i movimenti per esercizio variano per soggetto (amputati).
+DB3 = StdDB(
+    key="db3", dataset_name="ninapro_db3", n_channels=12, fs_hz=2000.0, electrode_type="Delsys_Trigno_double_differential",
+    zip_re=r"^s(\d+)_0\.zip$", exercises=(1, 2, 3), amputee_subjects=frozenset(range(1, 12)),
+)
+
 
 @dataclass
 class ExerciseData:
@@ -198,7 +207,11 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
         })
         offset += e.emg.shape[0]
 
-    channel_valid = qc_channel_validity(emg)
+    # soglia di canale piatto RELATIVA (1e-3 x la mediana delle deviazioni standard): i dati sono in
+    # unita' diverse (DB4: conteggi ~1e3; DB2/DB3/DB7: volt ~1e-5) e la soglia assoluta di 1e-6 del
+    # QC condiviso sarebbe di scala arbitraria; un canale a zero resta scartato (std = 0)
+    min_std = max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+    channel_valid = qc_channel_validity(emg, min_std=min_std)
     n_discarded = int((~channel_valid).sum())
     quantized, scale = to_int16(emg)
     out_dir = out_root / f"s{subject:02d}" / "session1"

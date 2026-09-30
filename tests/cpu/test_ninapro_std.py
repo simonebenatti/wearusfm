@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import scipy.io as sio
 
-from wearusfm.ingest.ninapro_std import DB4, build_montage_metadata, ingest_subject, load_subject, scan_zips
+from wearusfm.ingest.ninapro_std import DB3, DB4, build_montage_metadata, ingest_subject, load_subject, scan_zips
 
 
 def _mat_bytes(subject, exercise, n, *, freq=2000, sensor="Cometa", lat="r", subject_field=None,
@@ -105,3 +105,50 @@ def test_ingest_subject_writes_everything_and_records_anomalies(tmp_path):
     assert res["movements_per_exercise"] == [3, 5, 7] and res["n_channels_discarded"] == 0
     rec = data.astype(np.float64) / meta["int16_scale"]
     assert abs(rec.std() - 300.0) < 5.0
+
+
+def test_db3_config_volts_amputees_and_wrapper_folder(tmp_path):
+    """DB3: zip s<N>_0.zip con cartella DB3_s<N>/ e .DS_Store, emg in volt, solo `subject`/`exercise`."""
+    (tmp_path / "DB3").mkdir()
+    path = tmp_path / "DB3" / "s3_0.zip"
+    rng = np.random.default_rng(0)
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("DB3_s3/.DS_Store", b"junk")
+        for e in (1, 2, 3):
+            buf = io.BytesIO()
+            emg = rng.normal(scale=2e-5, size=(500, 12)).astype(np.float32)  # volt
+            emg[:, 5] = 0.0  # canale morto
+            rest = np.zeros((500, 1), np.int8)
+            rest[250:, 0] = 1
+            sio.savemat(buf, {"emg": emg, "stimulus": rest, "restimulus": rest, "repetition": np.ones((500, 1), np.int8),
+                              "rerepetition": np.ones((500, 1), np.int8), "subject": np.array([[3]], np.uint8),
+                              "exercise": np.array([[e]], np.uint8)})
+            zf.writestr(f"DB3_s3/S3_E{e}_A1.mat", buf.getvalue())
+    assert set(scan_zips(tmp_path, DB3)) == {3}
+    res = ingest_subject(path, tmp_path / "out", 3, DB3)
+    assert res["discarded_channels"] == [5]  # il canale a zero e' scartato; i canali da 2e-5 V no
+    assert res["exercise_field_matches_filename"] is True and res["subject_field_matches_filename"] is True
+    meta = json.loads((tmp_path / "out" / "s03" / "session1" / "metadata.json").read_text())
+    assert meta["nominal_anatomy"] is True
+    assert all(c["anatomical_identity"]["nominal"] for g in meta["montage"]["groups"] for c in g["channels"])
+    assert meta["montage"]["groups"][0]["channels"][0]["chirality"] == "unknown"  # nessuna `laterality` nei dati
+    flags = [c["qc_valid"] for g in meta["montage"]["groups"] for c in g["channels"]]
+    assert flags.count(False) == 1 and flags[5] is False
+
+
+def test_low_amplitude_volt_channels_are_not_flagged_flat(tmp_path):
+    """Il vecchio limite assoluto (std < 1e-6) avrebbe scartato un canale valido da 0,5 uV in volt."""
+    zp = _make_zip(tmp_path / "raw", 1)
+    with zipfile.ZipFile(zp, "w") as zf:
+        rng = np.random.default_rng(1)
+        for e in (1, 2, 3):
+            buf = io.BytesIO()
+            emg = rng.normal(scale=2e-5, size=(500, 12)).astype(np.float32)
+            emg[:, 3] = rng.normal(scale=5e-7, size=500)  # canale molto quieto ma vivo
+            rest = np.zeros((500, 1), np.int8)
+            sio.savemat(buf, {"emg": emg, "restimulus": rest, "subject": np.array([[1]], np.uint8),
+                              "exercise": np.array([[e]], np.uint8), "frequency": np.array([[2000]], np.uint16),
+                              "sensor": np.array(["Cometa"]), "laterality": np.array(["r"])})
+            zf.writestr(f"s1/S1_E{e}_A1.mat", buf.getvalue())
+    res = ingest_subject(zp, tmp_path / "out", 1, DB4)
+    assert res["discarded_channels"] == []
