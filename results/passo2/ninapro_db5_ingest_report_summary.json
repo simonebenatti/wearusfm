@@ -1,0 +1,54 @@
+{
+  "dataset": "ninapro_db5",
+  "job": 59054445,
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "n_subjects": 10,
+  "hours_total": 8.824048611111111,
+  "n_channels": 16,
+  "n_channels_discarded_total": 0,
+  "subjects_with_subject_field_mismatch": [
+    2
+  ],
+  "subjects_with_exercise_field_mismatch": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "hours_per_subject": {
+    "1": 0.7896,
+    "2": 0.8962,
+    "3": 0.7998,
+    "4": 0.9038,
+    "5": 0.9054,
+    "6": 0.903,
+    "7": 0.9087,
+    "8": 0.9028,
+    "9": 0.9027,
+    "10": 0.9121
+  },
+  "fraction_restimulus_zero_range": [
+    0.589,
+    0.656
+  ],
+  "output_size": "195M (in $WORK/data/processed/ninapro_db5)",
+  "elapsed_s": 13.32177734375,
+  "note": "riepilogo aggregato; il report completo con per_subject resta su Leonardo in $WORK/wearusfm_runs/results/passo2/ninapro_db5_ingest_report_59054445.json (copia sul Mac in ~/wearusfm_local/reports/, sha256 f358a036...cbf3 uguale al cluster). 200 Hz, due Myo (fatto n. 19, firmato il 30/09): fuori dalla vista canonica del tokenizer (< 1 kHz) e con l'ancora RVQ spenta. QC con la soglia ASSOLUTA di 1e-6 (vedi docs/formato_processato.md, regola 2; misura della soglia relativa autorizzata e non ancora fatta). Anomalie dei dati note: lo scalare `exercise` nei .mat e' ruotato rispetto al nome in tutti e 10 i soggetti, lo scalare `subject` non torna nel soggetto 2; l'ingest si fida dei nomi dei file. Due tentativi precedenti si erano fermati su queste anomalie."
+}

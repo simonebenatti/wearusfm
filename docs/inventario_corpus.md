@@ -17,7 +17,9 @@ Generato da `scripts/corpus_inventory.py`. Ore = durata dei dati ingeriti (`hour
 | NinaPro DB4 | 10 | 7.6 | 2000 | 12 | anello 8 + 4 mirati | pretraining |
 | NinaPro DB6 | 10 | 19.7 | 2000 | 16 | anello 8 + 6 distali (+2 vuote) | pretraining |
 | NinaPro DB7 (2 amputati) | 22 | 13.4 | 2000 | 12 | anello 8 + 4 mirati | pretraining |
-| **Totale ingerito** | **325** | **210.3** | | | | |
+| NinaPro DB5 | 10 | 8.8 | 200 | 16 | 2 anelli (Myo) | pretraining (fuori da vista canonica e ancora RVQ) |
+| Hyser | 20 | 20.2 | 2048 | 256 | 4 griglie 8x8 | pretraining |
+| **Totale ingerito** | **355** | **239.3** | | | | |
 
 \* soggetti da documentazione, non da un ingest.
 
@@ -27,10 +29,8 @@ Attenzione: la somma dei soggetti NON e' il numero di persone distinte: la sovra
 
 | Dataset | fs (Hz) | Canali | Topologia | Soggetti | Ore | Fonte della stima | Stato |
 |---|---|---|---|---|---|---|---|
-| NinaPro DB5 | 200 | 16 | 2 anelli (Myo) | 10 | ~8 h | parser pronto; 10 soggetti x ~0,8 h misurati in locale sui file reali | in coda (job 59054445) |
-| Hyser | 2048 | 256 | 4 griglie 8x8 | 20 | n.d. | 76 GB di `*_raw_*`: ore da calcolare a ingest fatto | in coda (job 59054442) |
 | emg2qwerty | 2000 | 32 | 2 anelli (Meta, sx+dx) | n.d. | ~346 h | documentazione (dataset_access.md): ~346 h, 1.136 file | parser scritto |
-| emg2pose | 2000 | 16 | anello (Meta) | 193 | n.d. | 25.253 registrazioni di 193 utenti (CSV di metadati) | parser scritto |
-| Zhang 2026 | 2000 + 4000 | 8 | anatomico vs equidistante | 64 | n.d. | 1.245 file CSV, 35 GB | serve una decisione di schema |
+| emg2pose | 2000 | 16 | anello (Meta) | 193 | n.d. | 25.253 registrazioni di 193 utenti (CSV di metadati) | parser provato su 2 file veri (30/09) |
+| Zhang 2026 | 2000 + 4000 | 8 | anatomico vs equidistante | 64 | n.d. | 1.245 file CSV, 35 GB | schema deciso (B, 30/09); 4 controlli sui dati prima del parser |
 
-Solo harness (fuori dal pretraining): EPN-612 (200 Hz, 8 canali), UCI-EMG (1 kHz, 8 canali). Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB8 e DB10 (raw non scaricato), DB9 (solo cinematica).
+Solo harness (fuori dal pretraining): EPN-612 (200 Hz, 8 canali), UCI-EMG (1 kHz, 8 canali). Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB9 (solo cinematica). DB8 e DB10: raw non scaricato, riscarico autorizzato il 30/09.

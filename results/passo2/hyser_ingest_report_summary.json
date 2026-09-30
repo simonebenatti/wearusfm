@@ -1,0 +1,51 @@
+{
+  "dataset": "hyser",
+  "job": 59054442,
+  "n_subjects": 20,
+  "n_groups": 240,
+  "n_groups_failed": 0,
+  "n_trials_total": 13154,
+  "hours_total": 20.22555555555557,
+  "n_channels": 256,
+  "n_channels_discarded_total": 0,
+  "per_group_type": {
+    "1dof": {
+      "n_groups": 40,
+      "n_trials": 600,
+      "hours": 4.167
+    },
+    "mvc": {
+      "n_groups": 40,
+      "n_trials": 400,
+      "hours": 1.111
+    },
+    "ndof": {
+      "n_groups": 40,
+      "n_trials": 1200,
+      "hours": 8.333
+    },
+    "pr_dynamic": {
+      "n_groups": 40,
+      "n_trials": 8068,
+      "hours": 2.241
+    },
+    "pr_maintenance": {
+      "n_groups": 40,
+      "n_trials": 2686,
+      "hours": 2.984
+    },
+    "random": {
+      "n_groups": 40,
+      "n_trials": 200,
+      "hours": 1.389
+    }
+  },
+  "peak_min_over_channels_range": [
+    0.02899196185171604,
+    0.9887731671333313
+  ],
+  "int16_scale_per_channel": "si' (una scala per canale: i file Hyser hanno guadagni diversi)",
+  "output_size": "72G (in $SCRATCH/data/processed/hyser, non in $WORK)",
+  "elapsed_s": 5131.8197157382965,
+  "note": "riepilogo aggregato; il report completo con per_group resta su Leonardo in $WORK/wearusfm_runs/results/passo2/hyser_ingest_report_59054442.json (copia sul Mac in ~/wearusfm_local/reports/, sha256 d5d59bbe...7432 uguale al cluster). QC per file con soglia relativa, combinato a voto (canale valido se valido in almeno meta' dei file del gruppo): nessun canale scartato. Nessun canale con picco zero (picco minimo per gruppo fra 0,029 e il valore massimo riportato). Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge. Resta da chiarire se i file rilasciati siano gia' filtrati 10-500 Hz (fatto n. 11)."
+}

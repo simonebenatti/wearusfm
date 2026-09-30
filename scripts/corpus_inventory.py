@@ -25,14 +25,14 @@ INGESTED = [
     ("ninapro_db4_ingest_report_summary.json", "NinaPro DB4", 2000, 12, "anello 8 + 4 mirati", "pretraining"),
     ("ninapro_db6_ingest_report_summary.json", "NinaPro DB6", 2000, 16, "anello 8 + 6 distali (+2 vuote)", "pretraining"),
     ("ninapro_db7_ingest_report_summary.json", "NinaPro DB7 (2 amputati)", 2000, 12, "anello 8 + 4 mirati", "pretraining"),
+    ("ninapro_db5_ingest_report_summary.json", "NinaPro DB5", 200, 16, "2 anelli (Myo)", "pretraining (fuori da vista canonica e ancora RVQ)"),
+    ("hyser_ingest_report_summary.json", "Hyser", 2048, 256, "4 griglie 8x8", "pretraining"),
 ]
 # Non ancora ingeriti: soggetti/ore da documentazione o da conteggi sui file, NON da un ingest.
 PENDING = [
-    ("NinaPro DB5", 200, 16, "2 anelli (Myo)", 10, "~8 h", "parser pronto; 10 soggetti x ~0,8 h misurati in locale sui file reali", "in coda (job 59054445)"),
-    ("Hyser", 2048, 256, "4 griglie 8x8", 20, "n.d.", "76 GB di `*_raw_*`: ore da calcolare a ingest fatto", "in coda (job 59054442)"),
     ("emg2qwerty", 2000, 32, "2 anelli (Meta, sx+dx)", "n.d.", "~346 h", "documentazione (dataset_access.md): ~346 h, 1.136 file", "parser scritto"),
-    ("emg2pose", 2000, 16, "anello (Meta)", 193, "n.d.", "25.253 registrazioni di 193 utenti (CSV di metadati)", "parser scritto"),
-    ("Zhang 2026", "2000 + 4000", 8, "anatomico vs equidistante", 64, "n.d.", "1.245 file CSV, 35 GB", "serve una decisione di schema"),
+    ("emg2pose", 2000, 16, "anello (Meta)", 193, "n.d.", "25.253 registrazioni di 193 utenti (CSV di metadati)", "parser provato su 2 file veri (30/09)"),
+    ("Zhang 2026", "2000 + 4000", 8, "anatomico vs equidistante", 64, "n.d.", "1.245 file CSV, 35 GB", "schema deciso (B, 30/09); 4 controlli sui dati prima del parser"),
 ]
 
 # Il riepilogo di putEMG non ha la lista dei soggetti: 44 partecipanti da documentazione (docs/dataset_access.md), non da un ingest
@@ -78,7 +78,7 @@ def main() -> None:
     for name, fs, ch, topo, subj, hours, src, status in PENDING:
         print(f"| {name} | {fs} | {ch} | {topo} | {subj} | {hours} | {src} | {status} |")
     print("\nSolo harness (fuori dal pretraining): EPN-612 (200 Hz, 8 canali), UCI-EMG (1 kHz, 8 canali). "
-          "Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB8 e DB10 (raw non scaricato), DB9 (solo cinematica).")
+          "Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB9 (solo cinematica). DB8 e DB10: raw non scaricato, riscarico autorizzato il 30/09.")
 
 
 if __name__ == "__main__":
