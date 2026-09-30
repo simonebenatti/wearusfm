@@ -164,7 +164,7 @@ Da chiarire. **Non dicono:** se i canali sono monopolari o differenziali, l'orie
 
 **Se fosse sbagliato:** le griglie HD nello schema.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 11, 16, 12»)
 
 ---
 
@@ -181,7 +181,7 @@ F1–F8, F9–F16 (avambraccio), W1–W6, W7–W12 (polso).
 
 **Se fosse sbagliato:** lo schema a 4 gruppi di GRABMyo.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 11, 16, 12»)
 
 ---
 
@@ -206,7 +206,7 @@ completata ora. Questo testo copre la numerazione degli **elettrodi**; il legame
 
 **Se fosse sbagliato:** il montaggio di putEMG nello schema.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 11, 16, 12»)
 
 ---
 
