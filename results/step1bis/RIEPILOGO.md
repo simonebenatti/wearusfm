@@ -94,7 +94,9 @@ sonda di V3. La riproduzione dei due numeri congelati (0,655 e 0,964) coincide e
 Letture, con le cautele del caso:
 1. **L'esito di V3 dipende molto dalla forza della baseline.** Con uno spettro fine al posto delle 5 bande il
    divario scende a 0,035 (0,964 - 0,929). L'identita' del dataset e' quasi tutta gia' nello spettro (differenze
-   di dispositivo e di elettrodi). Le 5 bande sono pero' le ancore continue alternative previste dal piano.
+   di dispositivo e di elettrodi). Le bande spettrali sono pero' le ancore continue GIA' PREVISTE dal piano (v10 §6.3: RMS,
+   forma spettrale, spaziali), accanto alle quali l'ancora RVQ doveva essere la terza: non sono un'alternativa all'RVQ,
+   sono la base su cui l'RVQ si aggiungeva (correzione del 30/09/2026: prima era scritto «alternative»).
    Rafforzare la baseline dopo aver visto il risultato e' asimmetrico (puo' solo ridurre il divario): usarla per
    D5b richiede una nuova decisione registrata, non una lettura silenziosa.
 2. L'identita' sta nei **livelli profondi** (8-15: 0,988) e nel **ramo alto in frequenza** (ramo 3: 0,952);

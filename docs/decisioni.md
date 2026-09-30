@@ -583,3 +583,43 @@ Condizioni di esecuzione (non cambiano l'autorizzazione, dicono come si applica)
 - dopo il download: ingest con il parser NinaPro standard solo dopo aver verificato frequenza e canali sui file veri
   (fatto n. 1 del registro: ~1111 Hz per DB8, ~1926 Hz per DB10, montaggi da verificare) — un dataset che non entra nello
   schema si segnala, non si piega.
+
+---
+
+## D5b — l'ancora RVQ NON si scarta (Simone, 30/09/2026)
+
+**Lettura meccanica delle regole D5a sui dati del run 59048369 (registrata, invariata):** V1 passa (1,23 contro 1,5); V2 passa su CapgMyo,
+GRABMyo e Camargo, non su CSL-hdemg (2,16) e putEMG (2,24); V3 non passa (0,310 contro 0,10); V4 non passa (nessun livello stabile, nemmeno
+il livello 0). Per le regole congelate, V3 e V4 portano a «scartata».
+
+**Decisione di Simone:** «non scartiamo l'RVQ, e' una delle cose che dobbiamo tenere». D5b spetta a lui. E' una **deroga consapevole** alla
+lettura meccanica, presa sapendo che V3 e V4 non passano: **non modifica le soglie di D5a**, che restano congelate, e il loro esito resta
+scritto sopra e in `results/step1bis/RIEPILOGO.md`.
+
+**Aperto (da decidere, non ancora deciso):**
+1. **Forma:** su tutti i dataset, o ristretta a quelli sotto la soglia di V2 (CapgMyo, GRABMyo, Camargo, piu' i dataset Meta)? Il piano
+   prevede gia' l'ancora mascherata per dataset (v10 §4.2, §6.3).
+2. **Quali codici si predicono.** La regola del piano (v10 §6.3, V4) era «solo i livelli stabili su tutti i dataset»: nessuno lo e', quindi
+   la regola non si puo' applicare cosi' com'e'. Serve una **nuova decisione**, con i criteri scritti e committati **prima** di guardare.
+3. **Come si giudica:** l'ablation run 4 contro run 5 (v10 §10.1) resta l'arbitro empirico dell'utilita' dell'ancora.
+
+**Conseguenze:** con D5b firmata le verifiche RVQ del passo 1-bis sono complete (taglio del 25/10 del piano §10 non scatta); il target RVQ
+resta nel manifest (D9 (e)) nella forma da decidere sopra.
+
+**Idea collegata (Simone: «la 2 mi piace»):** un **target discreto proprio** — k-means sulle feature fisiche (potenze di banda, RMS) per
+riavere la multimodalita' (v10 §6.3) senza un tokenizer esterno. **Stato: candidata, non avviata.** Richiede una nuova decisione con criteri
+congelati prima della prova (stabilita' sotto il rumore come V4, controllo dataset-ID come V3). Se stia accanto all'RVQ o lo sostituisca
+**non e' deciso**.
+
+---
+
+## Misura del QC dei canali — autorizzata (Simone, 30/09/2026: «sì, misura il QC quando il cluster torna»)
+
+**Cosa:** contare, in **sola lettura**, quanti canali in piu' avrebbe scartato la soglia di «canale piatto» **relativa** (1e-3 x mediana
+delle std dei canali della registrazione) rispetto a quella **assoluta** attuale, sui **7** ingest con soglia assoluta: CapgMyo, GRABMyo,
+putEMG, CSL-hdemg, Camargo, NinaPro DB5 (dopo il suo ingest) e Kaifosh. Elenco e soglie: `docs/formato_processato.md`, regola 2.
+**Perche':** con soglia assoluta e unita' diverse, «0 canali scartati» (Camargo, Kaifosh) non distingue «tutti buoni» da «test troppo
+permissivo». **Non cambia nessun dato:** se emergono differenze, si correggono solo i flag `qc_valid` nei `metadata.json` (le colonne non
+si tolgono mai), e solo dopo aver riportato i numeri a Simone.
+**Esecuzione:** un job seriale su CPU (`lrd_all_serial`), via `leonardo-ops`, output in `$WORK/wearusfm_runs/` e non nel repo; zero GPU-ora.
+Costo (stima di AG, non un impegno): meno di 1 ora di walltime, circa 0,1-0,3 ore locali; lo ridichiaro in chat prima di sottomettere.
