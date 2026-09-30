@@ -32,8 +32,8 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 |---|---|---|
 | 4 | NeuroRVQ: transformer mescola i canali (sì); normalizzazione in ingresso (assente nel codice d'esempio); **banda di pretraining non trovata** (20–400 Hz nel codice, 20–90 Hz nel paper solo per il downstream) | decisa per progetto la vista a 20–400 Hz (`decisioni.md`) |
 | 5 | licenza del codice NeuroRVQ = CC BY-NC 4.0; **licenza dei pesi e sovrapposizione dei soggetti non verificate** | serve un license-checker sulla scheda HF |
-| 1 | frequenze di DB8 (~1111 Hz) e DB10 (~1926 Hz): **il raw è vuoto** (download mai riuscito) | serve autorizzare il download |
-| 2 | sovrapposizione soggetti fra DB NinaPro | ora calcolabile dagli ingest (DB2/3/4/5/6/7 ingeriti o in coda) |
+| 1 | frequenze di DB8 (~1111 Hz) e DB10 (~1926 Hz): **il raw è vuoto** (download mai riuscito) | download **autorizzato da Simone il 30/09** (`decisioni.md`), da fare col cluster; poi verifica su file veri |
+| 2 | sovrapposizione soggetti fra DB NinaPro | **non calcolabile dagli ingest**: gli ID soggetto sono per-database (s01 di DB2 non dice nulla su s01 di DB3); serve una fonte (pagine ufficiali o paper). Correzione del 30/09: prima c'era scritto il contrario |
 | 3 | conteggio soggetti e ore del corpus | ora calcolabile dai report di ingest in `results/passo2/` |
 | 8 | orientamento delle fasce, dataset per dataset | non trovato per i bracciali Meta, DB5 (solo rotazione relativa), DB6, DB7 |
 | 14, 18 | ordine/griglia di CapgMyo e putEMG | assunti nel codice, non verificati |
@@ -42,5 +42,5 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 ## 4. Decisioni che aspettano te (oltre alle firme)
 - **D5b:** esito dell'ancora RVQ, con i dati di `results/step1bis/RIEPILOGO.md` (entro l'11/10).
 - **Zhang 2026:** schema per un CSV con EMG a 2000 Hz e 4000 Hz più ACC/GYRO a ~74–148 Hz.
-- **NinaPro DB8 e DB10:** riscaricare (raw vuoto).
+- **NinaPro DB8 e DB10:** riscarico autorizzato il 30/09; parte quando il cluster torna.
 - **Cancellazione degli originali** già copiati su scratch: un comando (`scripts/slurm/delete_verified_raw.sbatch`).

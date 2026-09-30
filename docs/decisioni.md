@@ -567,3 +567,19 @@ CSV grezzo resta in `$SCRATCH`/`$WORK` (nulla si distrugge); nel sidecar `resamp
 **Restano da fare, prima del parser, i quattro controlli sul dato** elencati sopra (disposizione dei due tassi nelle righe,
 origine dei tempi, canali di `anatomical` contro `random`, virgola decimale): richiedono il cluster.
 
+
+---
+
+## NinaPro DB8 e DB10 — riscarico autorizzato (Simone, 30/09/2026)
+
+Il raw di DB8 e DB10 e' vuoto (`docs/dataset_access.md`: il download non e' mai riuscito). **Simone autorizza il riscarico**
+e dichiara che il mancato download era legato alle licenze, che la discussione sulle licenze e' gia' stata fatta e che non si
+riapre ("non ce ne preoccupiamo"). Nota di AG, per la cronaca: il registro dice solo «download mai riuscito», non la causa.
+
+Condizioni di esecuzione (non cambiano l'autorizzazione, dicono come si applica):
+- richiede il cluster (i compute node non hanno internet: il download si fa dal login node, via `leonardo-ops`, verso
+  `$SCRATCH`, dove non c'e' quota); prima del lancio si riporta la dimensione da scaricare;
+- se il sito chiede di accettare termini o di creare un account, ci si ferma e si riporta: sono azioni di Simone;
+- dopo il download: ingest con il parser NinaPro standard solo dopo aver verificato frequenza e canali sui file veri
+  (fatto n. 1 del registro: ~1111 Hz per DB8, ~1926 Hz per DB10, montaggi da verificare) — un dataset che non entra nello
+  schema si segnala, non si piega.
