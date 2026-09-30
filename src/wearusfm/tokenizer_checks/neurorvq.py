@@ -121,3 +121,30 @@ class NeuroRVQRunner:
                     std_x.detach().cpu().numpy(), std_xrec.detach().cpu().numpy(), n_ch, n_time
                 )
         return out
+
+    def features(self, x: np.ndarray, spatial_idx: list[int]) -> np.ndarray:
+        """Feature CONTINUE per token, prima della quantizzazione: l'uscita dell'encoder passata per il `encode_task_layer_k` di ciascun
+        ramo (e' quello che entra nel quantizzatore). x: (B, n_ch, n_time*200) come in `run`. Ritorna (4, B*n_ch*n_time, 128) float32,
+        con i token nello stesso ordine di `run` (batch, canale, patch). Non chiama i quantizzatori (in eval aggiornerebbero un buffer)."""
+        torch = self.torch
+        from einops import rearrange
+
+        b, n_ch, length = x.shape
+        if length % PATCH or len(spatial_idx) != n_ch:
+            raise ValueError(f"forma {x.shape} o {len(spatial_idx)} indici spaziali incoerenti")
+        n_time = length // PATCH
+        if n_ch * n_time > MAX_PATCHES:
+            raise ValueError(f"{n_ch * n_time} token > {MAX_PATCHES}")
+        xt = torch.from_numpy(np.ascontiguousarray(x, dtype=np.float32)).to(self.device)
+        t_ix, s_ix = self._indices(spatial_idx, n_time, b)
+        with torch.no_grad():
+            x4 = rearrange(xt, "B N (A T) -> B N A T", T=PATCH).contiguous()
+            enc = self.model.encoder(x4, temporal_embedding_ix=t_ix, spatial_embedding_ix=s_ix, return_patch_tokens=True)
+            feats = [
+                getattr(self.model, f"encode_task_layer_{k + 1}")(enc[k].float()).reshape(-1, 128).detach().cpu().numpy()
+                for k in range(4)
+            ]
+        out = np.stack(feats).astype(np.float32)
+        if out.shape != (4, b * n_ch * n_time, 128):
+            raise ValueError(f"feature con forma inattesa {out.shape}, attesa (4, {b * n_ch * n_time}, 128)")
+        return out
