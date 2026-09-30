@@ -36,7 +36,7 @@ frequenza di rete, unita' fisiche dei valori nei file HDF5. Per emg2pose (arXiv 
 
 **Se fosse sbagliato:** cambia la banda effettiva di tutti i dataset Meta, quindi la vista canonica del tokenizer.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [x] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026 senza i dettagli** («firmo 20 senza dettaglio»): firmati 16 canali differenziali, 2 kHz, 12 bit, 6,6 mV, 20-850 Hz, passa-alto 40 Hz di Kaifosh; non firmati 48 elettrodi, 20 mm, 2,46 µVrms.
 
 ---
 
