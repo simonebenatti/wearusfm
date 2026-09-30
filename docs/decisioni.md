@@ -623,3 +623,21 @@ permissivo». **Non cambia nessun dato:** se emergono differenze, si correggono 
 si tolgono mai), e solo dopo aver riportato i numeri a Simone.
 **Esecuzione:** un job seriale su CPU (`lrd_all_serial`), via `leonardo-ops`, output in `$WORK/wearusfm_runs/` e non nel repo; zero GPU-ora.
 Costo (stima di AG, non un impegno): meno di 1 ora di walltime, circa 0,1-0,3 ore locali; lo ridichiaro in chat prima di sottomettere.
+
+**Aggiornamento (Simone, 30/09/2026, dopo la discussione sui canali morti): «se vedi che sono morti non li usiamo, ma va tutto ovviamente
+documentato».** Quindi e' autorizzata anche la **correzione dei flag**, non solo la misura. Come si applica (strumento
+`scripts/qc_relative_check.py`, testato in locale su dati sintetici; sbatch `scripts/slurm/qc_relative_check.sbatch`; **mai lanciato sui
+dati veri**):
+1. **Misura, sola lettura**, su tutti i dataset processati. I dataset gia' ingeriti con la regola relativa (NinaPro DB2/3/4/6/7, ...) sono il
+   **controllo**: per costruzione devono dare zero canali nuovi; se no, il difetto e' nello strumento e ci si ferma prima di scrivere.
+2. **Applicazione per dataset** (`--apply`) solo se il controllo e' pulito e il **freno di prudenza**, scritto ora, prima di guardare i dati, non
+   scatta: nessuna sessione con piu' del 25% dei canali nuovi piatti, e nuovi canali piatti in non piu' del 5% delle sessioni del dataset. Se il
+   freno scatta, non si scrive nulla e si riporta a Simone.
+3. **Documentazione:** nel sidecar `qc_revisions` (data, regola, colonne aggiunte, riferimento a questa decisione) piu' il backup
+   `metadata.pre_qc_revision.json` (reversibile); nel report `$WORK/wearusfm_runs/results/passo2/qc_relative_check_<job>.json`; riepilogo
+   committato in `results/passo2/` e una riga qui. I dati `data_int16.npy` non si toccano e le colonne non si tolgono mai; dopo ogni
+   scrittura la sessione deve passare `validate_session`, altrimenti il sidecar si ripristina.
+4. **Effetto sul run V1-V4 (job 59048369):** e' stato calcolato coi flag di prima e la scala di sessione usa i soli canali validi. Se la
+   correzione tocca sessioni di CapgMyo, GRABMyo, putEMG, CSL-hdemg o Camargo usate dal run, lo si dichiara nel RIEPILOGO e si valuta l'effetto
+   sui numeri; **nessuna soglia di D5a si riscrive**.
+Costo: due job seriali (misura, poi applicazione), meno di 1 ora ciascuno, zero GPU-ora; lo ridichiaro in chat prima di sottomettere ciascuno.

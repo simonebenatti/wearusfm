@@ -74,7 +74,12 @@ LABEL_PAD = -1  # campione di EMG senza etichetta
 def relative_min_std(emg: np.ndarray) -> float:
     """Soglia di canale piatto RELATIVA: `1e-3 x` la mediana delle deviazioni standard dei canali (con un minimo assoluto di 1e-12).
     Serve quando le unita' cambiano da dataset a dataset (conteggi ~1e3 vs volt ~1e-5) e una soglia assoluta non ha senso."""
-    return max(1e-12, 1e-3 * float(np.median(emg.std(axis=0))))
+    return relative_min_std_from_std(emg.std(axis=0))
+
+
+def relative_min_std_from_std(std: np.ndarray) -> float:
+    """Come `relative_min_std`, ma dalle deviazioni standard dei canali gia' calcolate (serve a chi non puo' tenere i dati in memoria)."""
+    return max(1e-12, 1e-3 * float(np.median(std)))
 
 
 def reconcile_labels(mat: dict, n_emg: int, names) -> tuple[dict, dict]:
