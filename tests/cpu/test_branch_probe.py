@@ -100,3 +100,22 @@ def test_correction_catches_identity_hidden_from_histogram():
     assert M.v3_passes(v["histogram"]["balanced_accuracy"], bands)  # la regola vecchia (solo istogramma) lo avrebbe dato per idoneo
     assert v["codebook_mean"]["balanced_accuracy"] > 0.85 and v["from"] == "codebook_mean"
     assert not v["eligible"] and 2 not in r["eligible_branches"]
+
+
+def test_codebook_mean_rejects_negative_codes():
+    c = np.zeros((4, 16, 3), dtype=np.int32)
+    c[0, 0] = [1, -1, 2]  # -1 prenderebbe in silenzio l'ultima riga del codebook
+    with pytest.raises(ValueError, match="fuori"):
+        B.level0_codebook_mean([c], 0, np.zeros((M.N_CODE, 2)))
+
+
+def test_script_rejects_codebooks_path_without_npz(tmp_path):
+    import importlib.util
+    from pathlib import Path
+
+    spec = importlib.util.spec_from_file_location("rvq_branch_probe", Path(__file__).resolve().parents[2] / "scripts" / "rvq_branch_probe.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    with pytest.raises(SystemExit):
+        mod.main(["--arrays", str(tmp_path), "--stage", "probe", "--codebooks", str(tmp_path / "cb"), "--out", str(tmp_path / "o.json")])
+    assert mod.ENABLED_DEFAULT == B.ENABLED_DEFAULT

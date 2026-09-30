@@ -28,6 +28,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.tokenizer_checks import metrics as M  # noqa: E402
+from wearusfm.tokenizer_checks.branch_probe import ENABLED_DEFAULT  # noqa: E402
 from wearusfm.tokenizer_checks.run_io import CHECKPOINT_SHA256, argv_without_option, load_arrays, sha256_file  # noqa: E402
 
 GUARD_WINDOWS = 8
@@ -82,9 +83,11 @@ def stage_probe(args) -> None:
     print(f"V3 congelato riprodotto: {ok} {frozen}", flush=True)
     if not ok:
         raise SystemExit("gli array non riproducono V3: non sono quelli del run, mi fermo")
-    res = B.branch_probe(per, z["codebooks"], enabled=args.enabled.split(","), seed=args.seed)
+    res = B.branch_probe(per, z["codebooks"], enabled=args.enabled.split(","), seed=args.seed,
+                         setup=(names, codes_l, tokens_l, y, units, part))
     res.update({"reproduces_frozen_v3": frozen, "guard_codebooks": json.loads(str(z["guard"])), "checkpoint_sha256": CHECKPOINT_SHA256,
                 "arrays": str(args.arrays), "decision": "docs/decisioni.md, D5b - correzione della regola dei rami (30/09/2026)"})
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(res, indent=2))
     b = res["bands"]["balanced_accuracy"]
     print(f"\n5 bande: {b:.3f} (caso {res['bands']['chance']:.3f}); soglia: ramo - bande <= {M.Y_POINTS:.2f}")
@@ -102,11 +105,13 @@ def main(argv=None) -> int:
     ap.add_argument("--codebooks", type=Path, default=Path.home() / "wearusfm_local/neurorvq_level0_codebooks.npz")
     ap.add_argument("--out", type=Path, default=ROOT / "results/step1bis/rvq_branch_probe.json")
     ap.add_argument("--overwrite", action="store_true")
-    ap.add_argument("--enabled", default=",".join(("camargo2021", "capgmyo", "emg2pose", "grabmyo")))
+    ap.add_argument("--enabled", default=",".join(ENABLED_DEFAULT))
     ap.add_argument("--stage", choices=("all", "codebooks", "probe"), default="all")
     ap.add_argument("--threads", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args(argv)
+    if args.codebooks.suffix != ".npz":  # np.savez aggiungerebbe .npz e lo stage probe cercherebbe il nome senza
+        ap.error(f"--codebooks deve finire in .npz, ricevuto {args.codebooks}")
     if args.stage in ("all", "probe") and args.out.exists() and not args.overwrite:
         raise SystemExit(f"{args.out} esiste gia': non lo sovrascrivo senza --overwrite")
     if args.stage == "all":

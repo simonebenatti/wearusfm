@@ -40,7 +40,13 @@ def level0_codebook_mean(codes_list: Sequence[np.ndarray], branch: int, codebook
     """(n_unita', d): media sui token dell'unita' del vettore del codebook scelto al livello 0 del ramo. codebook: (8192, d) del ramo."""
     if codebook.shape[0] != M.N_CODE:
         raise ValueError(f"codebook con {codebook.shape[0]} righe, attese {M.N_CODE}")
-    return np.stack([codebook[np.asarray(c)[branch, 0]].mean(axis=0) for c in codes_list]).astype(np.float64)
+    out = []
+    for codes in codes_list:
+        c = np.asarray(codes)[branch, 0]
+        if c.min() < 0 or c.max() >= M.N_CODE:  # un codice negativo indicizzerebbe dalla fine senza errore
+            raise ValueError("codice fuori da [0, 8192)")
+        out.append(codebook[c].mean(axis=0))
+    return np.stack(out).astype(np.float64)
 
 
 def branch_probe(
@@ -48,6 +54,7 @@ def branch_probe(
     codebooks: np.ndarray,
     enabled: Sequence[str] = ENABLED_DEFAULT,
     seed: int = 0,
+    setup: tuple | None = None,
 ) -> dict:
     """Applica la regola dei rami. per_dataset[nome]: `codes` (4,16,n), `tokens` (n,200), `group_subject` (G,), per TUTTI i dataset del run (servono
     a ricostruire lo split di V3). codebooks: (4, 8192, d), livello 0 dei 4 rami."""
@@ -57,7 +64,8 @@ def branch_probe(
     missing = sorted(set(enabled) - set(per_dataset))
     if missing:
         raise ValueError(f"classi accese assenti dagli array: {missing}")
-    names, codes_l, tokens_l, y, units, part = v3_setup(per_dataset, seed)
+    # `setup`: il risultato di v3_setup(per_dataset, seed) gia' calcolato dal chiamante (lo script lo usa anche per riprodurre V3)
+    names, codes_l, tokens_l, y, units, part = setup if setup is not None else v3_setup(per_dataset, seed)
     keep = np.flatnonzero(np.isin(np.asarray(names)[y], list(enabled)))
     codes_l = [codes_l[i] for i in keep]
     tokens_l = [tokens_l[i] for i in keep]
