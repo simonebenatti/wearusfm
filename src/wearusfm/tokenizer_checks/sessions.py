@@ -67,14 +67,22 @@ def qc_valid_from_metadata(meta: dict, n_columns: int) -> np.ndarray:
 def load_session(session_dir: Path, dataset: str, subject: str, session: str) -> SessionData:
     meta = json.loads((session_dir / "metadata.json").read_text())
     arr = np.load(session_dir / "data_int16.npy", mmap_mode="r")
-    scale = meta.get("int16_scale")
+    scale = meta.get("int16_scale")  # numero (uguale per tutti i canali) o lista (una scala per canale: Hyser)
+    if isinstance(scale, list):
+        scale = np.asarray(scale, dtype=np.float64)
     if arr.ndim == 3:
         segs = [np.asarray(a, dtype=np.float64) for a in arr]
     elif arr.ndim == 2:
-        segs = [np.asarray(arr, dtype=np.float64)]
+        trials = meta.get("trials")
+        if trials and all("offset" in t and "n_samples" in t for t in trials):
+            # registrazioni concatenate lungo il tempo (Camargo, NinaPro, Hyser): una prova = un segmento, cosi'
+            # il filtro non attraversa le giunture (D5a: "le prove si filtrano e ricampionano una per una")
+            segs = [np.asarray(arr[t["offset"] : t["offset"] + t["n_samples"]], dtype=np.float64) for t in trials]
+        else:
+            segs = [np.asarray(arr, dtype=np.float64)]
     else:
         raise ValueError(f"{session_dir}: array a {arr.ndim} dimensioni")
-    if scale:
+    if scale is not None and not (np.isscalar(scale) and not scale):
         segs = [s / scale for s in segs]
     qc = qc_valid_from_metadata(meta, segs[0].shape[-1])
     return SessionData(dataset, subject, session, float(meta["native_fs_hz"]), segs, qc)

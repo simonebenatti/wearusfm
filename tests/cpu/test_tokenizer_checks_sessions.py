@@ -99,3 +99,34 @@ def test_discover_choose_and_allocate(tmp_path):
     for (subj, _), n in quota.items():
         per_subject[subj] = per_subject.get(subj, 0) + n
     assert sum(quota.values()) == 40 and set(per_subject.values()) == {10}  # 4 soggetti, parti uguali
+
+
+def test_load_session_applies_per_channel_scale_and_splits_concatenated_trials(tmp_path):
+    """Hyser: `int16_scale` e' una lista (una scala per canale); prove concatenate: un segmento ciascuna."""
+    import json as _json
+
+    rng = np.random.default_rng(0)
+    truth = rng.normal(size=(300, 4)) * np.array([0.01, 1.0, 5.0, 0.1])
+    scale = 32000.0 / np.abs(truth).max(axis=0)
+    codes = np.round(truth * scale).astype(np.int16)
+    d = tmp_path / "s"
+    d.mkdir()
+    np.save(d / "data_int16.npy", codes)
+    chans = [{"qc_valid": True} for _ in range(4)]
+    meta = {"montage": {"groups": [{"channels": chans}]}, "native_fs_hz": 2048, "int16_scale": scale.tolist(),
+            "trials": [{"name": "a", "offset": 0, "n_samples": 100}, {"name": "b", "offset": 100, "n_samples": 200}]}
+    (d / "metadata.json").write_text(_json.dumps(meta))
+    s = load_session(d, "hyser", "s01", "session1_1dof")
+    assert [seg.shape for seg in s.segments] == [(100, 4), (200, 4)]
+    rec = np.concatenate(s.segments)
+    assert np.allclose(rec, truth, atol=(0.6 / scale).max())  # ricostruzione per canale
+
+
+def test_load_session_without_trials_keeps_single_segment(tmp_path):
+    import json as _json
+
+    d = tmp_path / "s"
+    d.mkdir()
+    np.save(d / "data_int16.npy", np.zeros((50, 2), np.int16))
+    (d / "metadata.json").write_text(_json.dumps({"montage": {"groups": [{"channels": [{"qc_valid": True}] * 2}]}, "native_fs_hz": 1000}))
+    assert len(load_session(d, "x", "s", "a").segments) == 1

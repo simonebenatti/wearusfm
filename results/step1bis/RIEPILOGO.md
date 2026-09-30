@@ -63,6 +63,14 @@ monotono con il livello (dai livelli profondi in su e' quasi zero) e sale col ru
 comportamento e' coerente, non e' un difetto dell'esecuzione. Anche su emg2pose, che il tokenizer ha visto
 in addestramento, i codici sono fragili.
 
+## Nota sul caricatore (aggiunta successiva)
+Il run e' stato eseguito con il caricatore delle sessioni di allora, che per i dataset salvati come UNA registrazione
+continua concatenata (Camargo) trattava l'intera sessione come un solo segmento: il filtro passabanda attraversava le
+giunture fra prove. Dal commit che introduce l'ingest di Hyser il caricatore segmenta per prova quando il sidecar ha
+`trials` con `offset` e `n_samples` (come dice il testo congelato di D5a: "le prove si filtrano e ricampionano una per
+una"). L'effetto sui numeri sopra non e' stato misurato; riguarda solo Camargo (le giunture sono poche rispetto ai
+token) e non cambia le soglie.
+
 ## Lettura meccanica delle regole congelate (D5a)
 V2: l'ancora si restringe ai dataset sotto soglia (CapgMyo, GRABMyo, Camargo, piu' emg2pose); V3: **scartata**;
 V4: **scartata**. La firma di D5b e' di Simone.
