@@ -7,12 +7,12 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 ## 1. Raccolti da fonte, da firmare
 | # | Fatto | Cosa guardare | Cosa cambierebbe |
 |---|---|---|---|
-| 7b | Kaifosh «Discrete Gestures»: CC-BY-NC-4.0, 100 partecipanti, 2 kHz | README di `facebookresearch/generic-neuromotor-interface` | uso non commerciale: ok per ricerca, non per ridistribuire |
+| 7b | Kaifosh «Discrete Gestures»: CC-BY-NC-4.0, 100 partecipanti, 2 kHz — **FIRMATO il 30/09** | README di `facebookresearch/generic-neuromotor-interface` | uso non commerciale: ok per ricerca, non per ridistribuire |
 | 9 | `flash_attn_varlen_func` funziona in bf16 su A100 (job 58134850) — **FIRMATO il 30/09** | `results/step0/flash_attn_varlen_check_58134850.json` | il Perceiver del piano |
 | 12 | putEMG: 24 elettrodi, 3 fasce da 8, 5120 Hz, CC BY-NC 4.0 — **FIRMATO il 30/09** | pagina/paper putEMG | montaggio nello schema |
-| 15 | UCI-EMG: 1 kHz | Lobov et al. 2018, Sensors 18(4):1122 | solo harness |
+| 15 | UCI-EMG: 1 kHz — **FIRMATO il 30/09** | Lobov et al. 2018, Sensors 18(4):1122 | solo harness |
 | 16 | GRABMyo: 28 canali EMG in 4 anelli, U1–U4 non EMG — **FIRMATO il 30/09** | pagina PhysioNet | schema a 4 gruppi |
-| 17 | putEMG: mappa TRAJ_GT → gesto | `putemg_examples/shallow_learn.py` righe 142–151 | etichette dell'harness |
+| 17 | putEMG: mappa TRAJ_GT → gesto — **FIRMATO il 30/09** | `putemg_examples/shallow_learn.py` righe 142–151 | etichette dell'harness |
 | 19 | NinaPro DB5: 2 Myo da 8, secondo ruotato di 22,5° — **FIRMATO il 30/09** | ninapro.hevs.ch/instructions/DB5.html | anelli di DB5 |
 | 20 | Bracciale Meta sEMG-RD: 16 canali differenziali, 20–850 Hz, 2 kHz — **FIRMATO il 30/09 (senza i dettagli di PMC12818089)** | paper emg2qwerty (arXiv 2410.20081) e repo del dataset | banda effettiva, tutti i dataset Meta |
 | 21 | NinaPro DB2/3/4/6/7: 12 o 14 elettrodi Delsys/Cometa, 2 kHz — **FIRMATO il 30/09** | pagine ufficiali DB2…DB7 | montaggi misti |

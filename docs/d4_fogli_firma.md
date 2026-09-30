@@ -226,7 +226,7 @@ handwriting, wrist`}» e «`--small-subset` downloads only 3 users per task».
 
 **Se fosse sbagliato:** solo l'uso (non commerciale) e le dimensioni.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 7b, 17, 15»)
 
 ---
 
@@ -239,11 +239,11 @@ handwriting, wrist`}» e «`--small-subset` downloads only 3 users per task».
 **Cosa dice.** `gestures = { 0: "Idle", 1: "Fist", 2: "Flexion", 3: "Extension", 6: "Pinch index", 7: "Pinch middle", 8: "Pinch ring", 9: "Pinch small" }`,
 preceduto dal commento «# defines gestures to be used in shallow learn».
 
-**Controllo di AG.** Coincide, riga 142. Nel registro gli spazi dentro le graffe sono diversi: irrilevante. **Non ricontrollato:** il significato di -1.
+**Controllo di AG.** Coincide, riga 142. Nel registro gli spazi dentro le graffe sono diversi: irrilevante. Il -1 come pausa e' stato riletto il 30/09 in `biolab_utilities/putemg_utilities.py` (`pause_mask = trajectory == -1`). Colonna dell'ingest: `TRAJ_GT`, quella «after processing» consigliata dagli autori.
 
 **Se fosse sbagliato:** solo le etichette dell'harness.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 7b, 17, 15»)
 
 ---
 
@@ -257,7 +257,7 @@ preceduto dal commento «# defines gestures to be used in shallow learn».
 
 **Controllo di AG.** Presente. Solo per l'harness.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 7b, 17, 15»)
 
 ---
 
