@@ -731,3 +731,22 @@ Da tenere presente, **senza cambiare l'esito** (la regola usa la stima puntuale,
 - **etichette rumorose, dichiarate:** al rumore di V4 il codice del livello 0 del ramo 0 resta uguale nel 46% dei token su emg2pose, 33% su CapgMyo, 36% su
   Camargo, **11% su GRABMyo** (`RIEPILOGO.md`, V4). La stabilita' non era un criterio di selezione (proposta, punto 3);
 - per i dataset spenti fino a V2 (Kaifosh, NinaPro, Hyser) la regola si **riapplica** come conferma quando si accendono.
+
+---
+
+## V2 sui dataset nuovi — collaudo e run vero autorizzati (Simone, 30/09/2026: «sì autorizzo collaudo e run vero»)
+
+Applica il punto «Dove» della proposta firmata (`docs/proposta_ancora_rvq.md`): V2 su Kaifosh, NinaPro DB2/3/4/6/7 e Hyser, con lo stesso riferimento
+emg2pose, lo stesso seed e la stessa soglia X = 2. Script invariato (`scripts/slurm/step1bis.sbatch`), dati da `$SCRATCH/data/processed`.
+
+1. **Collaudo** su `boost_qos_dbg` (30 min al massimo, 1 GPU): `--smoke --n-groups 6 --v1-windows 4 --skip-v3 --max-sessions-per-subject 1 --datasets
+   ninapro_db4 ninapro_db6 hyser kaifosh`. Costo previsto 0,1-0,2 GPU-ora (1-1,5 ore locali), massimo 0,5 GPU-ora (4 ore locali).
+2. **Run vero**, solo se il collaudo e' pulito: parametri di D5a (78 gruppi, al piu' 2 sessioni per soggetto, 3 semi), `--datasets kaifosh ninapro_db2
+   ninapro_db3 ninapro_db4 ninapro_db6 ninapro_db7 hyser`, limite 1 h 30. Costo previsto 0,25-0,5 GPU-ora (2-4 ore locali), massimo 1,5 GPU-ora (12 ore
+   locali). Budget del passo 1-bis: 30 GPU-ora, usata finora meno di 1.
+
+**Collaudo pulito (scritto prima di lanciarlo):** job COMPLETED con exit 0; tutti e 4 i dataset analizzati, nessuno escluso per errore; controllo a rumore
+zero di V4 = 1,0 su tutti (lo script si ferma altrimenti); report JSON scritto. Se una condizione fallisce il run vero **non parte** e si riporta il motivo.
+**Controllo del run vero (scritto prima):** calibrazione, V1 ed emg2pose devono riprodurre il run 59048369: fattore 21,72, errore mediano di emg2pose
+0,0352 (entro l'1%), rapporto di V1 1,23. Se non tornano, i rapporti V2 dei dataset nuovi non sono confrontabili: nessun dataset si accende e si riporta.
+**Esito:** un dataset con rapporto V2 <= 2 accende l'ancora; sui dataset accesi si riapplica poi la regola dei rami come conferma (CPU, sul Mac).
