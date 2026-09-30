@@ -119,3 +119,60 @@ def test_script_rejects_codebooks_path_without_npz(tmp_path):
     with pytest.raises(SystemExit):
         mod.main(["--arrays", str(tmp_path), "--stage", "probe", "--codebooks", str(tmp_path / "cb"), "--out", str(tmp_path / "o.json")])
     assert mod.ENABLED_DEFAULT == B.ENABLED_DEFAULT
+
+
+# --- opzione (b): conferma sui dataset nuovi, uno alla volta ---------------------------------------------------------------------------
+
+
+def _new_dataset(rng, identity_in_branch0: bool, n_groups=15, n_subj=5, offset=7000):
+    n = n_groups * 256
+    codes = rng.integers(0, M.N_CODE, size=(4, 16, n)).astype(np.int32)
+    if identity_in_branch0:
+        codes[0, 0] = rng.integers(offset, offset + 50, size=n)
+    return {"codes": codes, "tokens": rng.normal(size=(n, 200)).astype(np.float32),
+            "group_subject": np.array([f"s{g % n_subj}" for g in range(n_groups)])}
+
+
+def _base_without_branch0_identity():
+    per, cb = _run()
+    rng = np.random.default_rng(3)
+    for name in per:  # nella base il ramo 0 non porta identita': idoneo, come nel risultato vero del 30/09
+        per[name]["codes"][0, 0] = rng.integers(0, M.N_CODE, size=per[name]["codes"].shape[-1])
+    return per, cb
+
+
+def test_confirm_logic_with_controlled_probe(monkeypatch):
+    """La logica dell'opzione (b), con una sonda finta dall'esito controllato: classi = base + nuovo, split di v3_setup passato alla sonda, e
+    l'idoneita' del ramo 0 (non degli altri) decide l'ingresso. Su dati senza segnale l'esito della sonda vera dipende dal caso (15 unita' di test):
+    per questo qui la sonda e' finta."""
+    per, cb = _base_without_branch0_identity()
+    seen = {}
+
+    def fake_probe(per_dataset, codebooks, enabled, seed=0, setup=None):
+        seen["enabled"], seen["has_setup"] = list(enabled), setup is not None
+        eligible0 = seen.get("want0", True)
+        br = {str(b): {"eligible": (b == 0 and eligible0) or b == 3, "diff_minus_bands": 0.0} for b in range(4)}  # il ramo 3 idoneo non deve contare
+        return {"enabled": sorted(enabled), "n_units": 1, "n_test_units": 1, "bands": {"balanced_accuracy": 0.5}, "branches": br}
+
+    monkeypatch.setattr(B, "branch_probe", fake_probe)
+    r = B.confirm_new_dataset(per, "kaifosh", _new_dataset(np.random.default_rng(11), identity_in_branch0=False), cb)
+    assert r["enters"] and seen["enabled"] == [*B.ENABLED_DEFAULT, "kaifosh"] and seen["has_setup"]
+    seen["want0"] = False
+    r = B.confirm_new_dataset(per, "kaifosh", _new_dataset(np.random.default_rng(11), identity_in_branch0=False), cb)
+    assert not r["enters"]  # il ramo 3 idoneo non fa entrare: conta solo il ramo 0
+
+
+def test_confirm_with_real_probe_excludes_dataset_recognisable_from_branch0():
+    per, cb = _base_without_branch0_identity()
+    bad = B.confirm_new_dataset(per, "ninapro_db2", _new_dataset(np.random.default_rng(12), identity_in_branch0=True), cb)
+    assert not bad["enters"] and bad["branch0"]["diff_minus_bands"] > M.Y_POINTS
+    assert bad["classes"] == sorted([*B.ENABLED_DEFAULT, "ninapro_db2"])
+
+
+def test_confirm_refuses_if_base_split_would_change():
+    per, cb = _base_without_branch0_identity()
+    # un nome che viene PRIMA dei dataset della base in ordine alfabetico cambierebbe il loro split: deve fermarsi
+    with pytest.raises(ValueError, match="split"):
+        B.confirm_new_dataset(per, "aaa_nuovo", _new_dataset(np.random.default_rng(5), False), cb)
+    with pytest.raises(ValueError, match="gia'"):
+        B.confirm_new_dataset(per, "capgmyo", per["capgmyo"], cb)

@@ -93,3 +93,36 @@ def branch_probe(
     out["eligible_branches"] = [int(b) for b, v in out["branches"].items() if v["eligible"]]
     out["anchor_starts"] = bool(out["eligible_branches"])
     return out
+
+
+BASE_BRANCH = 0  # esito della regola del 30/09/2026 (decisioni.md): si predice solo il livello 0 del ramo 0
+
+
+def confirm_new_dataset(
+    base_per_dataset: Mapping[str, Mapping],
+    new_name: str,
+    new_arrays: Mapping,
+    codebooks: np.ndarray,
+    base_enabled: Sequence[str] = ENABLED_DEFAULT,
+    seed: int = 0,
+) -> dict:
+    """Opzione (b) della conferma (decisioni.md, 30/09/2026): il dataset nuovo entra se, con classi = base accesa + lui, il livello 0 del ramo 0 resta
+    idoneo con la stessa regola. Si prova da solo. Lo split per soggetto dei dataset della base deve restare quello di oggi: se cambia, ValueError."""
+    if new_name in base_per_dataset:
+        raise ValueError(f"{new_name} e' gia' nella base")
+    b_names, _, _, b_y, b_units, b_part = v3_setup(base_per_dataset, seed)
+    per = {**base_per_dataset, new_name: new_arrays}
+    setup = v3_setup(per, seed)
+    n_names, _, _, n_y, n_units, n_part = setup
+
+    def split_of_base(names, y, units, part):
+        return {u: p for u, p, yy in zip(units, part, y) if names[yy] in base_enabled}
+
+    if split_of_base(b_names, b_y, b_units, b_part) != split_of_base(n_names, n_y, n_units, n_part):
+        raise ValueError(f"aggiungendo {new_name} lo split dei dataset della base cambia: mi fermo")
+    r = branch_probe(per, codebooks, enabled=[*base_enabled, new_name], seed=seed, setup=setup)
+    b0 = r["branches"][str(BASE_BRANCH)]
+    return {
+        "dataset": new_name, "enters": bool(b0["eligible"]), "classes": r["enabled"], "n_units": r["n_units"], "n_test_units": r["n_test_units"],
+        "bands": r["bands"], "branch0": b0, "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)",
+    }
