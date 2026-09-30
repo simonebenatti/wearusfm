@@ -9,9 +9,10 @@
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/qc_relative_check_%j.out
 
 # Misura del QC dei canali con la regola RELATIVA di canale piatto (docs/decisioni.md, «Misura del QC dei canali», Simone 30/09/2026).
-# Legge tutti i dataset processati sotto $WORK/data/processed e $SCRATCH/data/processed. I dataset gia' ingeriti con la regola relativa
-# (NinaPro DB2/3/4/6/7, Hyser, ...) funzionano da CONTROLLO: per costruzione devono dare zero canali nuovi; se non e' cosi', il problema e' nello
-# strumento e non nei dati, e ci si ferma prima di applicare qualsiasi cosa.
+# Legge tutti i dataset processati sotto $WORK/data/processed e $SCRATCH/data/processed. I dataset ingeriti con la regola relativa sulla STESSA
+# registrazione intera (NinaPro DB2/3/4/7 e DB6, emg2qwerty, emg2pose) fanno da CONTROLLO: devono dare zero canali nuovi (a meno dell'effetto,
+# trascurabile, della quantizzazione int16); se non e' cosi', il problema e' nello strumento e ci si ferma prima di applicare qualsiasi cosa.
+# Hyser NON e' un controllo: il suo QC e' fatto file per file e combinato a voto, quindi puo' differire legittimamente.
 #
 # Uso: sbatch scripts/slurm/qc_relative_check.sbatch                          (SOLA LETTURA: e' il primo passo)
 #      sbatch scripts/slurm/qc_relative_check.sbatch --only kaifosh --apply   (corregge i flag qc_valid dei sidecar: solo dopo aver visto il report)

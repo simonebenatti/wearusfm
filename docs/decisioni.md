@@ -572,9 +572,11 @@ origine dei tempi, canali di `anatomical` contro `random`, virgola decimale): ri
 
 ## NinaPro DB8 e DB10 — riscarico autorizzato (Simone, 30/09/2026)
 
-Il raw di DB8 e DB10 e' vuoto (`docs/dataset_access.md`: il download non e' mai riuscito). **Simone autorizza il riscarico**
-e dichiara che il mancato download era legato alle licenze, che la discussione sulle licenze e' gia' stata fatta e che non si
-riapre ("non ce ne preoccupiamo"). Nota di AG, per la cronaca: il registro dice solo «download mai riuscito», non la causa.
+Il raw di DB8 e DB10 e' vuoto (`docs/dataset_access.md`: il download non e' mai riuscito). **Simone autorizza il riscarico.** Testo
+di Simone: «Ti do comunque autorizzazione a riscaricare o db8 e db10 che non sono venuti per le licenze abbiamo gia' fatto questo discorso e
+non ce ne preoccupiamo». **Correzione del 30/09/2026 (review):** la versione precedente di questa voce diceva che Simone aveva dichiarato il
+mancato download «legato alle licenze»; la frase si legge piu' naturalmente come «riscarica DB8 e DB10, che non sono venuti; per le licenze il
+discorso e' gia' fatto». La causa del mancato download resta **non nota** (il registro dice solo «download mai riuscito").
 
 Condizioni di esecuzione (non cambiano l'autorizzazione, dicono come si applica):
 - richiede il cluster (i compute node non hanno internet: il download si fa dal login node, via `leonardo-ops`, verso
@@ -603,8 +605,10 @@ scritto sopra e in `results/step1bis/RIEPILOGO.md`.
    la regola non si puo' applicare cosi' com'e'. Serve una **nuova decisione**, con i criteri scritti e committati **prima** di guardare.
 3. **Come si giudica:** l'ablation run 4 contro run 5 (v10 §10.1) resta l'arbitro empirico dell'utilita' dell'ancora.
 
-**Conseguenze:** con D5b firmata le verifiche RVQ del passo 1-bis sono complete (taglio del 25/10 del piano §10 non scatta); il target RVQ
-resta nel manifest (D9 (e)) nella forma da decidere sopra.
+**Conseguenze (lettura di AG, non decisa da Simone):** V1-V4 sono state eseguite, quindi il taglio del 25/10 del piano §10 («se le verifiche
+non sono complete l'ancora esce dal manifest») non dovrebbe scattare; il target RVQ resta nel manifest (D9 (e)) nella forma da decidere.
+**Buco (review del 30/09/2026):** la proposta firmata dopo richiede altre misure (sonda per ramo, V2 sui dataset nuovi); **non e' scritto cosa
+succede se non sono fatte entro il 25/10**. Da decidere.
 
 **Idea collegata (Simone: «la 2 mi piace»):** un **target discreto proprio** — k-means sulle feature fisiche (potenze di banda, RMS) per
 riavere la multimodalita' (v10 §6.3) senza un tokenizer esterno. **Stato: candidata, non avviata.** Richiede una nuova decisione con criteri
@@ -619,7 +623,11 @@ congelati prima della prova (stabilita' sotto il rumore come V4, controllo datas
 delle std dei canali della registrazione) rispetto a quella **assoluta** attuale, sui **7** ingest con soglia assoluta: CapgMyo, GRABMyo,
 putEMG, CSL-hdemg, Camargo, NinaPro DB5 (dopo il suo ingest) e Kaifosh. Elenco e soglie: `docs/formato_processato.md`, regola 2.
 **Perche':** con soglia assoluta e unita' diverse, «0 canali scartati» (Camargo, Kaifosh) non distingue «tutti buoni» da «test troppo
-permissivo». **Non cambia nessun dato:** se emergono differenze, si correggono solo i flag `qc_valid` nei `metadata.json` (le colonne non
+permissivo». **Correzione del 30/09/2026 (review):** la soglia assoluta e' troppo permissiva quando i valori sono **grandi** (Kaifosh: massimo
+assoluto fra 362 e 7447 nelle sue unita', quindi 1e-6 non scarta praticamente nulla) e troppo **severa** quando sono piccoli (volt); in chat AG
+aveva detto il contrario. **Limite della regola relativa:** scarta solo canali piu' di 1000 volte sotto la mediana (in pratica piatti). Un
+elettrodo staccato che raccoglie rumore o rete **non** lo trova, come non lo trova la regola assoluta: la misura risponde a «ci sono canali piatti
+non segnalati?», non a «ci sono canali morti?». **Non cambia nessun dato:** se emergono differenze, si correggono solo i flag `qc_valid` nei `metadata.json` (le colonne non
 si tolgono mai), e solo dopo aver riportato i numeri a Simone.
 **Esecuzione:** un job seriale su CPU (`lrd_all_serial`), via `leonardo-ops`, output in `$WORK/wearusfm_runs/` e non nel repo; zero GPU-ora.
 Costo (stima di AG, non un impegno): meno di 1 ora di walltime, circa 0,1-0,3 ore locali; lo ridichiaro in chat prima di sottomettere.

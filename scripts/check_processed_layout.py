@@ -3,7 +3,8 @@
 
 Cammina sotto ciascuna radice, valida ogni sessione (cartella con `metadata.json`) SENZA leggere i dati (l'array si apre in mmap: solo
 forma e tipo), e scrive un riepilogo JSON per dataset: sessioni, soggetti, ore, canali, layout, problemi. Esce con 1 se c'e' almeno
-un problema. Sola lettura: e' sicuro sul login node (il costo e' un `stat` + la lettura di un JSON per sessione).
+un problema. Sola lettura. Va lanciato con srun o sbatch, non sul login node (limite di 10 minuti di CPU): oltre al JSON e all'header
+dell'array, se c'e' `labels.npz` ne decomprime le etichette per controllarne la lunghezza, e il tempo totale su tutto il corpus non e' misurato.
 
   python scripts/check_processed_layout.py --root kaifosh=$SCRATCH/data/processed/kaifosh --root ... --report out.json
   python scripts/check_processed_layout.py --scan $WORK/data/processed --scan $SCRATCH/data/processed --report out.json
