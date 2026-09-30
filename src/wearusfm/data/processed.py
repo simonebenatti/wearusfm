@@ -9,7 +9,7 @@ radice del dataset: `<soggetto>/<sessione...>/` (il soggetto e' il primo livello
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +23,8 @@ class SessionData:
     fs: float
     segments: list[np.ndarray]  # ciascuno (T, C), float64, dati nativi ricostruiti (codice / scala)
     qc_valid: np.ndarray  # (C,) bool
+    # buchi marcati nel sidecar (`constant_runs`), nelle coordinate dei segmenti: [(segmento, canale, inizio, n_campioni)] (decisioni.md, 01/10/2026)
+    constant_runs: list = field(default_factory=list)
 
 
 def qc_flags(meta: dict) -> list:
@@ -71,7 +73,75 @@ def load_session(session_dir: Path, dataset: str, subject: str, session: str) ->
     if scale is not None and not (np.isscalar(scale) and not scale):
         segs = [s / scale for s in segs]
     qc = qc_valid_from_metadata(meta, segs[0].shape[-1])
-    return SessionData(dataset, subject, session, float(meta["native_fs_hz"]), segs, qc)
+    runs = runs_in_segments(meta.get("constant_runs") or [], arr, meta)
+    return SessionData(dataset, subject, session, float(meta["native_fs_hz"]), segs, qc, runs)
+
+
+# --- buchi di un canale: valore identico per almeno 1 s (docs/decisioni.md, 01/10/2026) ------------------------------------------------
+
+CONSTANT_RUN_MIN_S = 1.0
+
+
+def _constant_runs_2d(arr, min_samples: int, chunk_rows: int = 200_000) -> list[dict]:
+    """Tratti di valore IDENTICO lunghi almeno `min_samples`, per canale, in un array (T, C) anche memmap (letto a blocchi di righe)."""
+    n_rows, n_ch = arr.shape
+    out: list[dict] = []
+    run_start = np.zeros(n_ch, dtype=np.int64)
+    run_val = None
+    for r0 in range(0, n_rows, chunk_rows):
+        x = np.asarray(arr[r0 : r0 + chunk_rows])
+        if run_val is None:
+            run_val = x[0].copy()
+        for c in range(n_ch):
+            col = x[:, c]
+            ends = np.flatnonzero(col[1:] != col[:-1]) + 1 + r0  # dove un tratto finisce e ne comincia un altro
+            if col[0] != run_val[c]:
+                ends = np.concatenate(([r0], ends))
+            if len(ends):
+                starts = np.concatenate(([run_start[c]], ends[:-1]))
+                lens = ends - starts
+                for s, n in zip(starts[lens >= min_samples], lens[lens >= min_samples]):
+                    out.append({"channel": c, "start": int(s), "n_samples": int(n)})
+                run_start[c] = ends[-1]
+            run_val[c] = col[-1]
+    for c in range(n_ch):
+        n = n_rows - int(run_start[c])
+        if n >= min_samples:
+            out.append({"channel": c, "start": int(run_start[c]), "n_samples": n})
+    return sorted(out, key=lambda d: (d["channel"], d["start"]))
+
+
+def constant_runs(arr, min_samples: int) -> list[dict]:
+    """Tratti di valore identico >= `min_samples` campioni. (T, C): voci {channel, start, n_samples} sull'array intero; (n, T, C): con `trial`."""
+    if arr.ndim == 2:
+        return _constant_runs_2d(arr, min_samples)
+    if arr.ndim == 3:
+        return [{"trial": i, **r} for i in range(arr.shape[0]) for r in _constant_runs_2d(arr[i], min_samples)]
+    raise ValueError(f"array a {arr.ndim} dimensioni")
+
+
+def runs_in_segments(entries: list[dict], arr, meta: dict) -> list[tuple[int, int, int, int]]:
+    """Le voci `constant_runs` del sidecar nelle coordinate dei segmenti restituiti da `split_segments`: [(segmento, canale, inizio, n)]. Un tratto
+    su un array 2D concatenato che attraversa il confine fra due prove si divide."""
+    if not entries:
+        return []
+    out = []
+    if arr.ndim == 3:
+        for e in entries:
+            out.append((int(e["trial"]), int(e["channel"]), int(e["start"]), int(e["n_samples"])))
+        return out
+    trials = meta.get("trials")
+    if trials and all("offset" in t and "n_samples" in t for t in trials):
+        bounds = [(int(t["offset"]), int(t["n_samples"])) for t in trials]
+    else:
+        bounds = [(0, int(arr.shape[0]))]
+    for e in entries:
+        s, n = int(e["start"]), int(e["n_samples"])
+        for k, (o, m) in enumerate(bounds):
+            a, b = max(s, o), min(s + n, o + m)
+            if b > a:
+                out.append((k, int(e["channel"]), a - o, b - a))
+    return out
 
 
 def discover_sessions(root: Path, dataset: str) -> list[tuple[str, str, Path]]:
@@ -179,6 +249,19 @@ def validate_session(session_dir: Path) -> list[str]:
             problems.append("array 2D con `trials` senza `offset`/`n_samples` in ogni prova: i confini delle prove non si possono ricostruire")
         elif arr.ndim == 3 and len(trials) != arr.shape[0]:
             problems.append(f"{len(trials)} prove nel sidecar, {arr.shape[0]} nell'array")
+
+    for e in meta.get("constant_runs") or []:
+        try:
+            ch, s, n = int(e["channel"]), int(e["start"]), int(e["n_samples"])
+            length = arr.shape[1] if arr.ndim == 3 else arr.shape[0]
+            bad = not (0 <= ch < n_ch and s >= 0 and n > 0 and s + n <= length)
+            if arr.ndim == 3:
+                bad = bad or not (0 <= int(e["trial"]) < arr.shape[0])
+        except (KeyError, TypeError, ValueError):
+            bad = True
+        if bad:
+            problems.append(f"voce di constant_runs fuori dall'array o malformata: {e}")
+            break
 
     labels_path = session_dir / "labels.npz"
     if labels_path.exists() and arr.ndim == 2:

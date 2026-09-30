@@ -31,11 +31,13 @@ from pathlib import Path
 
 import numpy as np
 
-from wearusfm.data.processed import discover_sessions, qc_valid_from_metadata, read_scale, validate_session
+from wearusfm.data.processed import CONSTANT_RUN_MIN_S, constant_runs, discover_sessions, qc_valid_from_metadata, read_scale, validate_session
 from wearusfm.ingest.common import relative_min_std_from_std
 
 MAX_FRACTION_CHANNELS_IN_SESSION = 0.25  # freno di prudenza (scritto prima di guardare i dati)
 MAX_FRACTION_SESSIONS_WITH_NEW = 0.05
+MAX_FRACTION_RUNS = 0.01  # buchi oltre l'1% del tempo dei canali validi di un dataset: non si scrive, si riporta (decisioni.md, 01/10/2026)
+RUNS_RULE = "buco: canale QC-valido con valore int16 identico per almeno 1 s alla frequenza nativa"
 BACKUP_NAME = "metadata.pre_qc_revision.json"
 RULE = "piatto se std < max(1e-12, 1e-3 x mediana delle std dei canali), std sull'intera sessione nell'unita' del dato"
 DECISION = "Simone 30/09/2026, docs/decisioni.md «Misura del QC dei canali»"
@@ -72,10 +74,18 @@ def analyze_session(session_dir: Path) -> dict:
     valid = qc_valid_from_metadata(meta, arr.shape[-1])
     flat = std < relative_min_std_from_std(std)
     med = float(np.median(std))
+    # buchi (decisioni.md, 01/10/2026): solo sui canali che restano validi anche dopo la regola relativa
+    fs = float(meta["native_fs_hz"])
+    keep = valid & ~flat
+    existing = meta.get("constant_runs") or []
+    runs = [r for r in constant_runs(arr, int(round(CONSTANT_RUN_MIN_S * fs))) if keep[r["channel"]] and r not in existing]
+    samples_per_channel = int(np.prod(arr.shape[:-1]))
     return {
         "n_channels": int(arr.shape[-1]), "currently_invalid": np.flatnonzero(~valid).tolist(),
         "relative_flat": np.flatnonzero(flat).tolist(), "new_flat": np.flatnonzero(flat & valid).tolist(),
         "ratio_min": float(std.min() / med) if med > 0 else 0.0,
+        "new_constant_runs": runs, "constant_runs_s": sum(r["n_samples"] for r in runs) / fs,
+        "valid_channel_s": int(keep.sum()) * samples_per_channel / fs,
     }
 
 
@@ -85,7 +95,14 @@ def summarize(name: str, root: Path, sessions: dict[str, dict]) -> dict:
     worst = max((len(v["new_flat"]) / v["n_channels"] for v in sessions.values()), default=0.0)
     frac_sessions = len(with_new) / n if n else 0.0
     ratios = np.array([v["ratio_min"] for v in sessions.values()]) if n else np.array([0.0])
+    with_runs = {k: v["new_constant_runs"] for k, v in sessions.items() if v.get("new_constant_runs")}
+    runs_s = sum(v.get("constant_runs_s", 0.0) for v in sessions.values())
+    valid_s = sum(v.get("valid_channel_s", 0.0) for v in sessions.values())
+    runs_fraction = runs_s / valid_s if valid_s else 0.0
     return {
+        "n_sessions_with_constant_runs": len(with_runs), "n_constant_runs": sum(len(v) for v in with_runs.values()),
+        "constant_runs_s": runs_s, "constant_runs_fraction_of_valid_time": runs_fraction,
+        "guard_runs_blocks_apply": bool(runs_fraction > MAX_FRACTION_RUNS), "sessions_with_constant_runs": with_runs,
         "root": str(root), "n_sessions": n, "n_sessions_with_new_flat": len(with_new), "n_new_flat_channels": sum(len(v["new_flat"]) for v in with_new.values()),
         "fraction_sessions_with_new_flat": frac_sessions, "worst_session_fraction_new_flat": worst,
         "n_sessions_currently_invalid_channels": sum(1 for v in sessions.values() if v["currently_invalid"]),
@@ -120,6 +137,30 @@ def apply_revision(session_dir: Path, new_flat: list[int], now: str) -> None:
     if problems:
         shutil.copyfile(backup, meta_path)
         raise RuntimeError(f"{session_dir}: dopo la correzione la sessione non e' conforme ({problems}); sidecar ripristinato")
+
+
+def apply_constant_runs(session_dir: Path, runs: list[dict], now: str) -> None:
+    """Aggiunge i buchi al sidecar (`constant_runs`), con backup, voce in `qc_revisions` e verifica; i dati non si toccano."""
+    meta_path, backup = session_dir / "metadata.json", session_dir / BACKUP_NAME
+    original = meta_path.read_text()
+    if not backup.exists():
+        backup.write_text(original)
+    meta = json.loads(original)
+    old = meta.get("constant_runs") or []
+    meta["constant_runs"] = old + [r for r in runs if r not in old]
+    fs = float(meta["native_fs_hz"])
+    meta.setdefault("qc_revisions", []).append({
+        "date": now, "rule": RUNS_RULE, "added_constant_runs": len(meta["constant_runs"]) - len(old),
+        "added_seconds": round(sum(r["n_samples"] for r in runs if r not in old) / fs, 3), "tool": "scripts/qc_relative_check.py",
+        "decision": "Simone 30/09-01/10/2026, docs/decisioni.md «Buchi di un canale»",
+    })
+    tmp = session_dir / "metadata.json.tmp"
+    tmp.write_text(json.dumps(meta, indent=2))
+    os.replace(tmp, meta_path)
+    problems = validate_session(session_dir)
+    if problems:
+        meta_path.write_text(original)
+        raise RuntimeError(f"{session_dir}: dopo l'aggiunta dei buchi la sessione non e' conforme ({problems}); sidecar ripristinato")
 
 
 def main(argv=None) -> int:
@@ -172,7 +213,10 @@ def main(argv=None) -> int:
         print(
             f"{key}: {summ['n_sessions']} sessioni, nuovi canali piatti in {summ['n_sessions_with_new_flat']} sessioni "
             f"({summ['n_new_flat_channels']} canali), peggiore sessione {summ['worst_session_fraction_new_flat']:.0%}, "
-            f"freno={'SCATTA' if summ['guard_blocks_apply'] else 'ok'}, errori di lettura={len(errors)}",
+            f"freno={'SCATTA' if summ['guard_blocks_apply'] else 'ok'}; buchi >= 1 s: {summ['n_constant_runs']} in "
+            f"{summ['n_sessions_with_constant_runs']} sessioni, {summ['constant_runs_s']:.1f} s "
+            f"({summ['constant_runs_fraction_of_valid_time']:.4%} del tempo valido), freno={'SCATTA' if summ['guard_runs_blocks_apply'] else 'ok'}; "
+            f"errori di lettura={len(errors)}",
             flush=True,
         )
         if errors:
@@ -194,6 +238,21 @@ def main(argv=None) -> int:
                     rc = 1
             summ["apply"] = f"applicato a {done} sessioni"
             print(f"  {summ['apply']}", flush=True)
+        if args.apply and summ["n_constant_runs"]:
+            if summ["guard_runs_blocks_apply"] and name not in args.force_dataset:
+                summ["apply_runs"] = "NON APPLICATO: i buchi superano l'1% del tempo valido, serve la revisione di Simone"
+                rc = max(rc, 2)
+            else:
+                done = 0
+                for k, runs in summ["sessions_with_constant_runs"].items():
+                    try:
+                        apply_constant_runs(Path(sessions[k]["_path"]), runs, now)
+                        done += 1
+                    except Exception as e:
+                        errors[k] = f"apply buchi: {e}"
+                        rc = 1
+                summ["apply_runs"] = f"buchi scritti in {done} sessioni"
+            print(f"  {summ['apply_runs']}", flush=True)
         flush_report()
     flush_report()
     return rc

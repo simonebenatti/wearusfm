@@ -52,6 +52,7 @@ class CanonicalSession:
     stream: np.ndarray  # (C, A_totale, 200): prove concatenate lungo le patch, gia' scalate
     qc_valid: np.ndarray
     scale: float
+    bad_patches: np.ndarray | None = None  # (C, A_totale) True = la patch tocca un buco marcato (decisioni.md, 01/10/2026)
 
 
 
@@ -68,7 +69,34 @@ def to_canonical(s: SessionData) -> CanonicalSession:
     ]
     if not patched:
         raise ValueError(f"{s.dataset}/{s.subject}/{s.session}: nessuna prova con almeno una patch")
-    return CanonicalSession(s.dataset, s.subject, s.session, np.concatenate(patched, axis=1), s.qc_valid, scale)
+    stream = np.concatenate(patched, axis=1)
+    return CanonicalSession(s.dataset, s.subject, s.session, stream, s.qc_valid, scale, _bad_patches(s, views, stream.shape[1]))
+
+
+MARGIN_PATCHES = 1  # una patch (200 ms) per lato: il filtro passa-banda sporca i dintorni di un buco
+
+
+def _bad_patches(s: SessionData, views: list, n_patches: int) -> np.ndarray | None:
+    """(C, A_totale): True sulle patch che toccano un buco marcato, piu' MARGIN_PATCHES per lato, sul canale del buco. None se non ci sono buchi."""
+    if not s.constant_runs:
+        return None
+    offsets, off = {}, 0
+    for k, v in enumerate(views):
+        if v.shape[0] >= PATCH_SAMPLES:
+            offsets[k] = (off, v.shape[0] // PATCH_SAMPLES)
+            off += v.shape[0] // PATCH_SAMPLES
+    bad = np.zeros((len(s.qc_valid), n_patches), dtype=bool)
+    for k, ch, start, n in s.constant_runs:
+        if k not in offsets:
+            continue
+        o, a_k = offsets[k]
+        ratio = views[k].shape[0] / s.segments[k].shape[0]  # campioni canonici per campione nativo
+        c0, c1 = int(np.floor(start * ratio)), int(np.ceil((start + n) * ratio))
+        p0 = max(0, c0 // PATCH_SAMPLES - MARGIN_PATCHES)
+        p1 = min(a_k, -(-c1 // PATCH_SAMPLES) + MARGIN_PATCHES)
+        if p1 > p0:
+            bad[ch, o + p0 : o + p1] = True
+    return bad
 
 
 
@@ -104,8 +132,17 @@ def draw_from_session(
     out = np.empty((n, PATCHES_PER_SAMPLE * PATCH_SAMPLES), dtype=np.float32)
     prov = []
     for i in range(n):
-        ch = int(rng.choice(np.flatnonzero(cs.qc_valid)))
-        a0 = int(rng.integers(0, cs.stream.shape[1] - PATCHES_PER_SAMPLE + 1))
+        # senza buchi marcati il ciclo fa un solo giro: stesse chiamate al generatore di prima, stesse finestre (run del 29/09 riproducibile)
+        for _ in range(MAX_DRAW_ATTEMPTS):
+            ch = int(rng.choice(np.flatnonzero(cs.qc_valid)))
+            a0 = int(rng.integers(0, cs.stream.shape[1] - PATCHES_PER_SAMPLE + 1))
+            if cs.bad_patches is None or not cs.bad_patches[ch, a0 : a0 + PATCHES_PER_SAMPLE].any():
+                break
+        else:
+            raise ValueError(f"{cs.dataset}/{cs.subject}/{cs.session}: {MAX_DRAW_ATTEMPTS} estrazioni di fila toccano un buco marcato")
         out[i] = cs.stream[ch, a0 : a0 + PATCHES_PER_SAMPLE].reshape(-1)
         prov.append((cs.subject, cs.session, ch, a0))
     return out, prov
+
+
+MAX_DRAW_ATTEMPTS = 1000

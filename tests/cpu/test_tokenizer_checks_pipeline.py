@@ -208,3 +208,25 @@ def test_progress_callback_reports_each_stage_and_is_json_serializable(world):
     assert "emg2pose completato" in stages and "dsA completato" in stages and "dsB completato" in stages
     assert "emg2pose" in seen[-1]["datasets_done"] and "datasets_done" not in rep
     assert rep["progress"] == "completato"
+
+
+def test_arrays_are_saved_after_each_dataset_even_if_a_later_one_crashes(world, tmp_path, monkeypatch):
+    """01/10/2026: il run vero 59073207 e' crollato al quarto dataset e gli array dei tre gia' fatti sono andati persi (si salvavano solo alla fine).
+    Qui il crollo avviene su dsB, dopo emg2pose e dsA: i loro array devono esserci."""
+    import wearusfm.tokenizer_checks.pipeline as P
+
+    em, datasets = world
+    original = P.analyze_dataset
+
+    def crash_on_dsB(runner, name, *a, **k):
+        if name == "dsB":
+            raise ValueError("crollo simulato")
+        return original(runner, name, *a, **k)
+
+    monkeypatch.setattr(P, "analyze_dataset", crash_on_dsB)
+    out = tmp_path / "arrays"
+    with pytest.raises(ValueError, match="crollo simulato"):
+        P.run_all(FakeRunner(), CFG, em, datasets, save_arrays_dir=out)
+    assert sorted(p.stem for p in out.glob("*.npz")) == ["dsA", "emg2pose"]
+    z = np.load(out / "dsA.npz")
+    assert set(z.files) == {"codes", "tokens", "group_subject", "group_session", "factor", "fraction_unchanged"}

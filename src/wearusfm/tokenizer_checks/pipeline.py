@@ -236,6 +236,20 @@ def _public(d: dict) -> dict:
     return {k: v for k, v in d.items() if not k.startswith("_")}
 
 
+def _save_arrays(save_arrays_dir: Path | None, name: str, r: dict, draw: Draw, factor: float) -> None:
+    """Materiali per analisi successive (es. D5b) senza rifare il run su GPU: NON entrano nel repo."""
+    if save_arrays_dir is None:
+        return
+    save_arrays_dir = Path(save_arrays_dir)
+    save_arrays_dir.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(
+        save_arrays_dir / f"{name}.npz",
+        codes=r["_v3"]["codes"], tokens=r["_v3"]["tokens"].astype(np.float32),
+        group_subject=np.array(draw.group_subject), group_session=np.array(draw.group_session),
+        factor=np.float32(factor), fraction_unchanged=r["_frac"],
+    )
+
+
 def run_all(
     runner,
     cfg: Config,
@@ -272,6 +286,7 @@ def run_all(
     per: dict[str, dict] = {}
     draws: dict[str, Draw] = {"emg2pose": ref}
     per["emg2pose"] = analyze_dataset(runner, "emg2pose", ref, factor, cfg, None)
+    _save_arrays(save_arrays_dir, "emg2pose", per["emg2pose"], ref, factor)
     ref_median = per["emg2pose"]["v2_median_nmse"]
     report["datasets_done"] = {"emg2pose": _public(per["emg2pose"])}
     progress("emg2pose completato")
@@ -283,21 +298,12 @@ def run_all(
             excluded[name] = str(e)
             continue
         per[name] = analyze_dataset(runner, name, draws[name], factor, cfg, ref_median)
+        _save_arrays(save_arrays_dir, name, per[name], draws[name], factor)  # subito: un crollo dopo non perde gli array fatti (01/10/2026)
         report["datasets_done"][name] = _public(per[name])
         progress(f"{name} completato")
     report["excluded_datasets"] = excluded
     if save_arrays_dir is not None:
-        # materiali per analisi successive (es. D5b) senza rifare il run su GPU: NON entrano nel repo
-        save_arrays_dir = Path(save_arrays_dir)
-        save_arrays_dir.mkdir(parents=True, exist_ok=True)
-        for name, r in per.items():
-            np.savez_compressed(
-                save_arrays_dir / f"{name}.npz",
-                codes=r["_v3"]["codes"], tokens=r["_v3"]["tokens"].astype(np.float32),
-                group_subject=np.array(draws[name].group_subject), group_session=np.array(draws[name].group_session),
-                factor=np.float32(factor), fraction_unchanged=r["_frac"],
-            )
-        report["arrays_dir"] = str(save_arrays_dir)
+        report["arrays_dir"] = str(save_arrays_dir)  # gli array sono gia' stati salvati, uno per dataset, appena analizzato
     report["v2"] = {n: {k: v for k, v in _public(r).items() if k.startswith(("v2", "n_", "shortfall", "sessions"))}
                     for n, r in per.items()}
     report["v2_all_pass"] = all(r.get("v2_passes", True) for r in per.values())

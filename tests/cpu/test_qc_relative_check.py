@@ -143,3 +143,54 @@ def test_cli_apply_below_guard_and_only_filter(tmp_path):
     assert list(d) == ["ds"] and d["ds"]["apply"] == "applicato a 1 sessioni"
     other = json.loads((tmp_path / "altro" / "s01" / "a" / "metadata.json").read_text())
     assert "qc_revisions" not in other  # il filtro --only lascia stare gli altri dataset
+
+
+# --- buchi di un canale (decisioni.md, 01/10/2026) -------------------------------------------------------------------------------------
+
+
+def _with_hole(n=20000, c=4, ch=2, start=5000, length=1500, seed=0):
+    x = _signal(n=n, c=c, seed=seed)
+    x[start : start + length, ch] = 0
+    return x
+
+
+def test_constant_runs_detected_on_valid_channels_only(tmp_path):
+    d = _write(tmp_path / "s", _with_hole(), fs=1000.0, qc=(1, 1, 1, 1))
+    r = Q.analyze_session(d)
+    assert r["new_constant_runs"] == [{"channel": 2, "start": 5000, "n_samples": 1500}] and r["constant_runs_s"] == pytest.approx(1.5)
+    d2 = _write(tmp_path / "t", _with_hole(), fs=1000.0, qc=(1, 1, 0, 1))  # canale gia' non valido: il buco non conta
+    assert Q.analyze_session(d2)["new_constant_runs"] == []
+    d3 = _write(tmp_path / "u", _with_hole(length=900), fs=1000.0, qc=(1, 1, 1, 1))  # 0,9 s: sotto la soglia di 1 s
+    assert Q.analyze_session(d3)["new_constant_runs"] == []
+
+
+def test_apply_constant_runs_documents_and_is_idempotent(tmp_path):
+    d = _write(tmp_path / "s", _with_hole(), fs=1000.0, qc=(1, 1, 1, 1))
+    before_data = _sha(d / "data_int16.npy")
+    runs = Q.analyze_session(d)["new_constant_runs"]
+    Q.apply_constant_runs(d, runs, "2026-10-01T10:00:00Z")
+    meta = json.loads((d / "metadata.json").read_text())
+    assert meta["constant_runs"] == runs and meta["qc_revisions"][-1]["added_constant_runs"] == 1
+    assert _sha(d / "data_int16.npy") == before_data and (d / Q.BACKUP_NAME).exists() and validate_session(d) == []
+    assert Q.analyze_session(d)["new_constant_runs"] == []  # gia' marcato: non si riaggiunge
+
+
+def test_cli_runs_guard_blocks_when_holes_exceed_one_percent(tmp_path):
+    for i in range(3):  # 1,5 s su 20 s x 4 canali = 1,9% del tempo valido: oltre l'1%
+        _write(tmp_path / "ds" / f"s{i:02d}" / "a", _with_hole(seed=i), fs=1000.0, qc=(1, 1, 1, 1))
+    rep = tmp_path / "rep.json"
+    r = _run("--scan", tmp_path, "--apply", "--report", rep)
+    d = json.loads(rep.read_text())["datasets"]["ds"]
+    assert r.returncode == 2 and d["guard_runs_blocks_apply"] and "NON APPLICATO" in d["apply_runs"]
+    assert all("constant_runs" not in json.loads(p.read_text()) for p in (tmp_path / "ds").rglob("metadata.json"))
+
+
+def test_cli_writes_runs_when_below_guard(tmp_path):
+    for i in range(3):
+        x = _with_hole(n=200000, seed=i) if i == 0 else _signal(n=200000, seed=i)  # 1,5 s su 3 x 200 s x 4 canali: 0,06%
+        _write(tmp_path / "ds" / f"s{i:02d}" / "a", x, fs=1000.0, qc=(1, 1, 1, 1))
+    rep = tmp_path / "rep.json"
+    r = _run("--scan", tmp_path, "--apply", "--report", rep)
+    assert r.returncode == 0, r.stdout + r.stderr
+    m = json.loads((tmp_path / "ds" / "s00" / "a" / "metadata.json").read_text())
+    assert m["constant_runs"] == [{"channel": 2, "start": 5000, "n_samples": 1500}]
