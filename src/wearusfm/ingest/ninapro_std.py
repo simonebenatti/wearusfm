@@ -50,11 +50,16 @@ from wearusfm.metadata.taxonomy import identity
 
 _MEMBER_RE = re.compile(r"(?:^|/)S(\d+)_E(\d+)_A1\.mat$")
 LABEL_FIELDS = ("stimulus", "restimulus", "repetition", "rerepetition")
-# **Anomalia verificata su DB2 (s1, esercizio 3, 30/09/2026):** `restimulus` ha 877.072 righe contro le
-# 877.073 di `emg` (un campione di differenza). Si tollera fino a MAX_LEN_DIFF campioni: si taglia TUTTO alla
-# lunghezza minima comune (la perdita e' < 0,1 ms x n) e la differenza si registra nel sidecar; oltre la
-# tolleranza si solleva. Non si sa quale dei due array sia sfasato: l'allineamento e' "dall'inizio".
+# **Anomalie verificate su DB2 (30/09/2026):** in alcuni file le etichette hanno lunghezza diversa da `emg`:
+# s1 E3 `restimulus` 877.072 righe contro 877.073 di emg; s12 `restimulus` e `rerepetition` 875.435 contro
+# 875.707 (272 campioni = 136 ms) mentre `stimulus`/`repetition` hanno la lunghezza di emg. L'EMG e' il
+# riferimento e NON si tocca: un'etichetta piu' corta si riempie in coda con -1 ("senza etichetta", mai 0,
+# che potrebbe essere un'etichetta vera), una piu' lunga si taglia; l'allineamento e' "dall'inizio" (non
+# si sa se sia giusto). Tolleranza: max(5 campioni, 1% della lunghezza di emg); oltre si solleva. Ogni
+# correzione si registra nel sidecar (`label_length_adjustments`, con segno: negativo = riempita).
 MAX_LEN_DIFF = 5
+MAX_LEN_DIFF_FRACTION = 0.01
+LABEL_PAD = -1
 TARGETED = (("FDS", "forearm"), ("EDC", "forearm"), ("BB", "upper_arm"), ("TB", "upper_arm"))
 RING_SIZE = 8
 
@@ -103,8 +108,8 @@ class ExerciseData:
     laterality: str
     exercise_field_in_file: int | None
     subject_field_in_file: int | None
-    n_movements: int | None  # valori distinti non nulli di `restimulus`, se presente
-    truncated_samples: int = 0  # campioni tolti per portare emg ed etichette alla stessa lunghezza
+    n_movements: int | None  # valori distinti > 0 di `restimulus` (il riempimento -1 non conta), se presente
+    label_length_adjustments: dict[str, int] = field(default_factory=dict)  # nome -> len(etichetta) - len(emg)
 
 
 def scan_zips(raw_root: Path, cfg: StdDB) -> dict[int, Path]:
@@ -134,27 +139,30 @@ def parse_exercise(mat: dict, exercise: int, cfg: StdDB) -> ExerciseData:
     emg = np.asarray(mat["emg"], dtype=np.float64)
     if emg.ndim != 2 or emg.shape[1] != cfg.n_channels:
         raise ValueError(f"forma emg inattesa {emg.shape}, attese {cfg.n_channels} colonne")
-    labels = {}
+    n = emg.shape[0]
+    tol = max(MAX_LEN_DIFF, int(MAX_LEN_DIFF_FRACTION * n))
+    labels, adjustments = {}, {}
     for name in LABEL_FIELDS:
-        if name in mat:
-            labels[name] = np.asarray(mat[name]).ravel().astype(np.int16)
-    n_common = min([emg.shape[0], *(a.shape[0] for a in labels.values())])
-    diff = emg.shape[0] - n_common
-    diff = max([diff, *(a.shape[0] - n_common for a in labels.values())])
-    if diff > MAX_LEN_DIFF:
-        raise ValueError(
-            f"lunghezze incompatibili: emg {emg.shape[0]}, etichette {({k: v.shape[0] for k, v in labels.items()})}"
-        )
-    truncated = diff
-    emg = emg[:n_common]
-    labels = {k: v[:n_common] for k, v in labels.items()}
-    n_mov = int((np.unique(labels["restimulus"]) != 0).sum()) if "restimulus" in labels else None
+        if name not in mat:
+            continue
+        arr = np.asarray(mat[name]).ravel().astype(np.int16)
+        d = arr.shape[0] - n
+        if abs(d) > tol:
+            raise ValueError(f"lunghezze incompatibili: emg {n}, {name} {arr.shape[0]} (tolleranza {tol})")
+        if d < 0:
+            arr = np.concatenate([arr, np.full(-d, LABEL_PAD, dtype=np.int16)])
+        elif d > 0:
+            arr = arr[:n]
+        if d:
+            adjustments[name] = int(d)
+        labels[name] = arr
+    n_mov = int((np.unique(labels["restimulus"]) > 0).sum()) if "restimulus" in labels else None
     lat = _scalar(mat, "laterality")
     ex_f, su_f = _scalar(mat, "exercise"), _scalar(mat, "subject")
     return ExerciseData(
         exercise, emg, labels, str(lat).strip().lower() if lat is not None else "",
         int(ex_f) if ex_f is not None else None, int(su_f) if su_f is not None else None, n_mov,
-        truncated_samples=truncated,
+        label_length_adjustments=adjustments,
     )
 
 
@@ -225,7 +233,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
         trials.append({
             "exercise": e.exercise, "offset": offset, "n_samples": int(e.emg.shape[0]),
             "exercise_field_in_file": e.exercise_field_in_file, "subject_field_in_file": e.subject_field_in_file,
-            "n_movements": e.n_movements, "truncated_samples": e.truncated_samples,
+            "n_movements": e.n_movements, "label_length_adjustments": e.label_length_adjustments,
         })
         offset += e.emg.shape[0]
 
@@ -256,7 +264,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
         "subject": subject, "n_samples": int(quantized.shape[0]), "hours": quantized.shape[0] / cfg.fs_hz / 3600,
         "n_channels_discarded": n_discarded, "discarded_channels": [int(i) for i in np.flatnonzero(~channel_valid)],
         "movements_per_exercise": [e.n_movements for e in exercises],
-        "truncated_samples_total": int(sum(e.truncated_samples for e in exercises)),
+        "label_length_adjustments": {str(e.exercise): e.label_length_adjustments for e in exercises if e.label_length_adjustments},
         "exercise_field_matches_filename": all(e.exercise_field_in_file == e.exercise for e in exercises),
         "subject_field_matches_filename": all(e.subject_field_in_file == subject for e in exercises),
         "int16_scale": scale, "emg_max_abs": float(np.abs(emg).max()), "memmap_path": str(out_dir / "data_int16.npy"),

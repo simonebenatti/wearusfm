@@ -189,9 +189,26 @@ def _mat_dict(n=300, label_n=None):
     }
 
 
-def test_one_sample_length_mismatch_between_emg_and_labels_is_truncated_and_recorded(tmp_path):
-    """Anomalia dei dati reali (DB2 s1 E3): restimulus ha una riga in meno di emg."""
-    ex = parse_exercise(_mat_dict(n=300, label_n=299), 3, DB4)
-    assert ex.emg.shape[0] == 299 and all(v.shape[0] == 299 for v in ex.labels.values()) and ex.truncated_samples == 1
-    ex2 = parse_exercise(_mat_dict(n=300), 3, DB4)
-    assert ex2.truncated_samples == 0 and ex2.emg.shape[0] == 300
+def test_label_length_mismatches_pad_with_minus_one_and_never_touch_emg():
+    """Anomalie dei dati reali (DB2): etichette piu' corte di emg (1 campione in s1, 272 in s12)."""
+    mat = _mat_dict(n=100_000, label_n=100_000)
+    mat["restimulus"] = np.ones((99_728, 1), np.uint8)  # 272 in meno, come s12 (0,27%: dentro l'1%)
+    mat["rerepetition"] = np.full((99_728, 1), 3, np.uint8)
+    ex = parse_exercise(mat, 3, DB4)
+    assert ex.emg.shape[0] == 100_000 and all(v.shape[0] == 100_000 for v in ex.labels.values())
+    assert ex.label_length_adjustments == {"restimulus": -272, "rerepetition": -272}
+    assert (ex.labels["restimulus"][:99_728] == 1).all() and (ex.labels["restimulus"][99_728:] == -1).all()
+    assert ex.n_movements == 1  # il -1 di riempimento non e' un movimento
+    ok = parse_exercise(_mat_dict(n=300), 3, DB4)
+    assert ok.label_length_adjustments == {} and ok.emg.shape[0] == 300
+
+
+def test_longer_label_is_truncated_and_gross_mismatch_raises():
+    mat = _mat_dict(n=1000)
+    mat["stimulus"] = np.zeros((1003, 1), np.int8)
+    ex = parse_exercise(mat, 1, DB4)
+    assert ex.label_length_adjustments == {"stimulus": 3} and ex.labels["stimulus"].shape[0] == 1000
+    mat2 = _mat_dict(n=1000)
+    mat2["restimulus"] = np.zeros((900, 1), np.uint8)  # 10% in meno: oltre l'1%
+    with pytest.raises(ValueError, match="lunghezze incompatibili"):
+        parse_exercise(mat2, 1, DB4)

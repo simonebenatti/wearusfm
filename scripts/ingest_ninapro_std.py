@@ -38,24 +38,30 @@ def main() -> int:
         raise FileNotFoundError(f"soggetti senza zip: {missing}")
 
     t0 = time.time()
-    per_subject = []
+    per_subject, failed = [], {}
     for s in wanted:
         print(f"{cfg.key} s{s}: ingest in corso...", flush=True)
-        per_subject.append(ingest_subject(zips[s], args.out_root, s, cfg))
+        try:
+            per_subject.append(ingest_subject(zips[s], args.out_root, s, cfg))
+        except Exception as e:  # un soggetto rotto non ferma gli altri: si riportano tutti i fallimenti in un colpo
+            failed[s] = f"{type(e).__name__}: {e}"
+            print(f"  FALLITO s{s}: {failed[s]}", flush=True)
+            continue
         print(f"  fatto: {per_subject[-1]}", flush=True)
     report = {
-        "dataset": cfg.dataset_name, "subjects_processed": wanted, "n_subjects": len(wanted),
+        "dataset": cfg.dataset_name, "subjects_processed": [x["subject"] for x in per_subject], "n_subjects": len(per_subject),
         "hours_total": sum(x["hours"] for x in per_subject), "n_channels": cfg.n_channels,
         "n_channels_discarded_total": sum(x["n_channels_discarded"] for x in per_subject),
         "subjects_with_subject_field_mismatch": [x["subject"] for x in per_subject if not x["subject_field_matches_filename"]],
-        "subjects_with_truncated_samples": {x["subject"]: x["truncated_samples_total"] for x in per_subject if x["truncated_samples_total"]},
+        "subjects_with_label_length_adjustments": {x["subject"]: x["label_length_adjustments"] for x in per_subject if x["label_length_adjustments"]},
+        "failed_subjects": failed,
         "subjects_with_exercise_field_mismatch": [x["subject"] for x in per_subject if not x["exercise_field_matches_filename"]],
         "per_subject": per_subject, "elapsed_s": time.time() - t0,
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2))
     print(json.dumps({k: v for k, v in report.items() if k != "per_subject"}, indent=2))
-    return 0
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
