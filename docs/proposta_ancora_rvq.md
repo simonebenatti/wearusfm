@@ -53,7 +53,9 @@ incluse putEMG e CSL: da rifare sulle classi accese): 5 bande 0,655; **livello 0
 2. **Quali rami: regola congelata prima di misurare.** Per ciascuno dei 4 rami si prende il solo livello 0 e si calcola, sulle classi accese
    (emg2pose, CapgMyo, GRABMyo, Camargo, poi le altre se si accendono), l'accuratezza della sonda dataset-ID (stessa sonda, stesso split per
    soggetto di V3) dagli istogrammi di quei codici, e la si confronta con quella delle 5 potenze di banda **sulle stesse classi**.
-   **Un ramo e' idoneo se la differenza e' <= 10 punti (la stessa Y di D5a).** L'ancora predice il livello 0 di **tutti i rami idonei**, ciascuno con
+   **Un ramo e' idoneo se la differenza e' <= 10 punti (la stessa Y di D5a).**
+   **Correzione approvata da Simone il 30/09/2026, prima di qualunque misura** (vedi «Correzione della regola dei rami» in fondo): l'accuratezza del
+   ramo e' la **piu' alta** fra due rappresentazioni, l'istogramma dei codici e il vettore medio dei codici nel codebook. L'ancora predice il livello 0 di **tutti i rami idonei**, ciascuno con
    la propria testa. **Se nessun ramo e' idoneo**, l'ancora RVQ non parte e si torna da Simone (la strada gia' registrata come candidata e' il target
    discreto proprio, k-means sulle feature fisiche).
 3. **La stabilita' non e' un criterio di selezione**, perche' nessun livello raggiunge il 75% e ogni soglia nuova sarebbe scelta guardando i
@@ -77,10 +79,27 @@ gia' vista (tabella sopra). La regola vale sui dati del run; sui dataset nuovi (
 - **Sovrapposizione soggetti** con quelli visti dal tokenizer (v10 §6.3): emg2pose e emg2qwerty sono suoi dati di addestramento; il limite resta
   da dichiarare se non e' ricostruibile.
 
+## Correzione della regola dei rami (approvata da Simone il 30/09/2026, prima di qualunque misura)
+
+**Difetto trovato in review.** La regola premia il ramo se la sonda **non** riconosce il dataset: una sonda debole rende piu' facile passare. Con un solo
+livello di un solo ramo, ogni unita' ha 256 codici su 8192 possibili: l'istogramma e' quasi vuoto e la sonda puo' non vedere un'identita' che c'e'. E'
+la stessa asimmetria che v10 §6.3 segnala per la sonda sulla velocita' di conduzione («serve il probe piu' forte costruibile»).
+
+**Regola corretta.** Per ogni ramo b (1-4), solo livello 0, due rappresentazioni di ogni unita' da 256 token:
+1. **istogramma**: frazione dei 256 token per ciascuno degli 8192 codici (come in V3, ristretto a quel ramo e a quel livello);
+2. **vettore medio**: media, sui 256 token, del vettore del codebook scelto per ciascun token (128 numeri): `quantize_b.layers.0.embedding.weight[codice]`
+   del checkpoint (sha256 `0d255bcc...dce49`), cioe' il vettore quantizzato che il tokenizer usa davvero. Colonne standardizzate con media e deviazione
+   standard del solo train.
+Stessa sonda di V3 (regressione logistica con C in {0,1; 1; 10} e gradient boosting, si prende il migliore sulla validazione), **stesso split per soggetto
+di V3** (calcolato sui 6 dataset del run, poi ristretto alle classi accese). **Accuratezza del ramo = la piu' alta delle due.** Idoneo se
+accuratezza del ramo − accuratezza delle 5 bande (stesse classi, stesso split) <= 10 punti. Tutto il resto della regola non cambia.
+
 ## Cosa si firma
 
 - [x] **Dove:** tabella del §1 e regola «acceso solo se del tokenizer o V2 misurato <= 2».
 - [x] **Cosa:** solo il livello 0.
+- [x] **Correzione della regola dei rami** (Simone, 30/09/2026: «sì approvo la correzione del punto 7»): accuratezza del ramo = la piu' alta fra
+  istogramma e vettore medio.
 - [x] **Quali rami:** la regola dell'idoneita' (differenza <= 10 punti sulla sonda dataset-ID, un ramo alla volta).
 
 **Ordine dopo la firma** (tutto richiede il cluster per copiare gli array o per la GPU): (1) copiare `arrays_59048369`; (2) sonda per ramo sulle classi

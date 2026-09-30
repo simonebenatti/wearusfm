@@ -690,3 +690,14 @@ Simone firma le **tre cose** di `docs/proposta_ancora_rvq.md` senza modifiche (�
 per quella misura). Le misure partono quando il cluster torna e gli array del run 59048369 sono copiati: nell'ordine (1) sonda per ramo sulle classi
 accese (CPU), (2) V2 sui dataset non ancora misurati (GPU, dopo conferma con costo), (3) di nuovo (1) sui dataset che si accendono, come conferma.
 Il criterio di D5a (V1-V4) non cambia; l'ablation run 4 contro run 5 resta l'arbitro dell'utilita' dell'ancora. Scadenza D9: 25/10.
+
+---
+
+## D5b — correzione della regola dei rami (Simone, 30/09/2026: «sì approvo la correzione del punto 7»)
+
+Emersa dalla review del 30/09/2026: la regola firmata premiava i rami su cui la sonda **non** riconosce il dataset, quindi una sonda debole (istogramma
+di 256 codici su 8192) rendeva piu' facile passare. **Correzione, approvata prima di qualunque misura** (non esiste nessun risultato della sonda per ramo):
+per ogni ramo si usano due rappresentazioni del livello 0, l'istogramma dei codici e la **media dei vettori del codebook** scelti per i 256 token
+(`quantize_b.layers.0.embedding.weight`, 128 numeri, standardizzati sul solo train), e si prende **l'accuratezza piu' alta** delle due. Stessa sonda e
+stesso split per soggetto di V3; soglia invariata (differenza dalle 5 bande <= 10 punti). Testo completo in `docs/proposta_ancora_rvq.md`, sezione
+«Correzione della regola dei rami». Resta aperto il buco segnalato sopra: cosa succede se le misure non sono pronte entro il 25/10.
