@@ -89,11 +89,11 @@ def main() -> int:
             print(f"ATTENZIONE: nessuna sessione in {root}", flush=True)
         datasets[name] = (items, partial(_loader, name))
 
-    partial = args.out.with_name(args.out.stem + ".partial.json")
+    partial_path = args.out.with_name(args.out.stem + ".partial.json")  # NON chiamarla `partial`: nasconderebbe functools.partial (bug del 30/09)
 
     def on_progress(rep: dict) -> None:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        partial.write_text(json.dumps(rep, indent=2))
+        partial_path.write_text(json.dumps(rep, indent=2))
 
     report = run_all(runner, cfg, (em_items, em_loader), datasets,
                      save_arrays_dir=args.save_arrays_dir, on_progress=on_progress)
