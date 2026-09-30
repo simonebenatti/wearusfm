@@ -517,3 +517,37 @@ proposte dall'agente e accettate:
   seconda rottura ci si ferma e si riporta.
 Restano fuori da questa autorizzazione: job GPU, cancellazioni di file, firme (D4, D5b, ...) e
 qualunque dataset il cui parser non sia stato scritto e testato.
+
+
+---
+
+## Zhang 2026 — come rappresentare EMG a frequenze miste: PROPOSTA (in attesa di Simone)
+
+**Stato:** proposta di AG del 30/09/2026, NON decisa. Non ingerito: serve una scelta di schema (CLAUDE.md: un dataset che
+non entra nello schema si segnala, lo schema non si piega in silenzio).
+
+**Cosa si e' visto** (prime cinque righe di un `sensor_data.csv` reale, letto via leonardo-ops il 30/09/2026): 38
+colonne per sequenza; 66 cartelle di soggetti, ciascuna con `anatomical/` e `random/`, ciascuna con `sequence_NN/`
+(`sensor_data.csv` da ~60 MB e `label.csv`). Le righe di intestazione dicono, per colonna: sensore, tipo di segnale, muscolo,
+frequenza, colore/numero. **EMG a due frequenze nello stesso file:** quattro canali a **2000 Hz** (muscoli FDS, PTE, SUP,
+EDC) e quattro a **4000 Hz** (ECR, ECU, FCR, FCU); in piu' 6 canali IMU del polso a ~148 Hz e, per ciascuno dei quattro
+sensori a 4000 Hz, 6 canali IMU a ~74 Hz (ACC/GYRO: non EMG). I numeri di frequenza usano la virgola decimale
+("148,1481 Hz"). Lo schema ha `native_fs_hz` per canale, ma l'array salvato (T, C) ha una sola frequenza.
+
+**Da controllare sul dato prima di scrivere il parser** (cluster irraggiungibile per manutenzione): (1) come sono
+disposti nelle righe i due tassi (righe a 4000 Hz con i canali a 2000 Hz ripetuti o vuoti?); (2) se le colonne condividono
+la stessa origine dei tempi; (3) se `anatomical` e `random` hanno gli stessi 8 canali EMG; (4) se i valori usano la
+virgola decimale.
+
+| Opzione | Cosa fa | Pro | Contro |
+|---|---|---|---|
+| **B. Portare i 4 canali a 4000 Hz a 2000 Hz** (polifase, filtro anti-alias) e salvare UN array (T, 8) a 2 kHz | 8 muscoli simultanei a 2 kHz, come la maggioranza del corpus (Meta, NinaPro) | un solo array, nessuna modifica allo schema ne' al dataloader; la simultaneita' dei muscoli si conserva; l'FM guarda al massimo 400 Hz (vista canonica 20-400 Hz) | si butta la banda 1-2 kHz di quei 4 canali; e' un ricampionamento fatto all'ingest, prima che il gate D8a dica se ricampionare sia lecito |
+| A. Due array per sequenza, uno per frequenza | lossless, ciascun gruppo a frequenza nativa | nessuna perdita | il dataloader deve leggere piu' array come UN campione; cambia il formato del processato e il lettore; oggi non e' previsto |
+| E. Due sessioni separate (4 canali ciascuna) | ogni gruppo e' una sessione a se' | semplice | si perdono le relazioni fra i due gruppi nello stesso istante: e' il valore del dataset (8 muscoli anatomici insieme) |
+| Escludere Zhang | niente | nessun costo | si perde il confronto anatomico contro anello equidistante sugli stessi soggetti (64) |
+
+**Raccomandazione di AG: B**, con il CSV grezzo lasciato in scratch (nulla si distrugge: si potra' rifare a 4000 Hz).
+Motivo: e' la sola opzione che conserva la simultaneita' senza toccare schema e dataloader; la banda persa e' fuori da cio'
+che l'FM usa. Il rischio va detto: si ricampiona prima del gate D8a. Mitigazione: registrare nel sidecar
+`resampled_from_hz: 4000` per quei canali, cosi' si possono escludere in un'analisi.
+Non e' urgente: pesa poco sull'FM (35 GB su ~700 GB di corpus) e non blocca D9 (25/10).
