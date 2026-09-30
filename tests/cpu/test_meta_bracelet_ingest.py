@@ -124,3 +124,21 @@ def test_pose_rejects_wrong_rate_and_channels():
         E2P.read_recording(io.BytesIO(_p_bytes(rate=1000.0)))
     with pytest.raises(ValueError, match="forma emg"):
         E2P.read_recording(io.BytesIO(_p_bytes(ch=8)))
+
+
+def test_emg2pose_scan_tar_skips_macos_metadata_files(tmp_path):
+    """Un tar creato su Mac contiene `._<nome>.hdf5` (metadati, non HDF5): non sono registrazioni."""
+    import tarfile
+
+    from wearusfm.ingest.emg2pose import scan_tar
+
+    tarp = tmp_path / "t.tar"
+    with tarfile.open(tarp, "w") as tf:
+        for nm in ("emg2pose_data/rec-a_left.hdf5", "emg2pose_data/._rec-a_left.hdf5", "__MACOSX/emg2pose_data/rec-b_right.hdf5",
+                   "emg2pose_data/rec-b_right.hdf5", "emg2pose_data/note.txt"):
+            data = b"x"
+            info = tarfile.TarInfo(nm)
+            info.size = len(data)
+            tf.addfile(info, io.BytesIO(data))
+    with tarfile.open(tarp) as tf:
+        assert [r.stem for r in scan_tar(tf)] == ["rec-a_left", "rec-b_right"]

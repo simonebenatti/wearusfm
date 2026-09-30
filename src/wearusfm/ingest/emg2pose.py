@@ -63,8 +63,15 @@ def load_metadata_csv(path: Path) -> dict[str, dict]:
     return out
 
 
+def _is_recording(name: str) -> bool:
+    """Un HDF5 di registrazione, esclusi i file di metadati di macOS (`._<nome>`, `__MACOSX/`) che un tar creato su Mac contiene: non sono
+    HDF5 e verrebbero contati come registrazioni fallite (visto il 30/09/2026 con un tar di prova fatto sul Mac)."""
+    p = Path(name)
+    return p.suffix == ".hdf5" and not p.name.startswith("._") and "__MACOSX" not in p.parts
+
+
 def scan_tar(tf: tarfile.TarFile) -> list[RecordingRef]:
-    refs = [RecordingRef(m.name, Path(m.name).stem) for m in tf.getmembers() if m.isfile() and m.name.endswith(".hdf5")]
+    refs = [RecordingRef(m.name, Path(m.name).stem) for m in tf.getmembers() if m.isfile() and _is_recording(m.name)]
     return sorted(refs, key=lambda r: r.member)
 
 
