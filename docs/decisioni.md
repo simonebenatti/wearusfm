@@ -768,3 +768,27 @@ Chiude il buco della proposta firmata («sui dataset nuovi la si riapplica come 
 - Split per soggetto: quello di V3, calcolato come oggi; lo split dei 4 dataset della base deve restare identico a quello di oggi (i nomi dei dataset
   nuovi vengono dopo in ordine alfabetico; il codice lo verifica e si ferma se non e' cosi').
 - Costo: CPU sul Mac, qualche minuto per dataset, nessun costo di cluster.
+
+---
+
+## Buchi di un canale (valore identico per >= 1 s): marcati ed esclusi, non cancellati (Simone, 30/09-01/10/2026)
+
+**Perche'.** Il run vero di V2 sui dataset nuovi (job 59073207) e' crollato su NinaPro DB4 dopo 14 min 33 s (0,24 GPU-ora): una finestra estratta era
+tutta a valore costante e l'errore di ricostruzione non e' definito. Kaifosh, DB2 e DB3 erano gia' stati misurati (rapporti 1,05, 1,76, 1,93); il
+controllo di confrontabilita' col run di ieri era passato (fattore 21,718, emg2pose 0,0352, V1 1,23). In DB4 (copia sul Mac, hash verificato) ci sono 11
+tratti in cui un canale marcato valido vale **esattamente 0** per 3,75-22,5 s (5 soggetti su 10). Verificato con le etichette, su richiesta di Simone:
+durante ogni tratto gli altri 11 canali registrano normalmente e in vari casi il soggetto sta eseguendo un movimento per tutta la durata (`stimulus`
+diverso da 0). **Non e' riposo: e' un buco di un solo canale** (ipotesi non verificata: pacchetti persi degli elettrodi wireless). Distribuzione dei tratti a
+valore identico in DB4: quasi tutti < 10 ms; 50 ms-1 s: circa 270, natura non chiara, **non toccati**; >= 1 s: 14, tutti a 0.
+
+**Decisione di Simone** («ti autorizzo a tutte e 3, dopo che hai verificato la cosa delle etichette»; etichette verificate il 01/10):
+1. **Regola, scritta prima di applicarla:** un tratto e' un buco se un canale **QC-valido** ha il valore int16 **identico** (differenza zero fra campioni
+   consecutivi) per **almeno 1 secondo** alla frequenza nativa. Non «poco variabile»: identico. Il riposo vero non lo soddisfa.
+2. **Marcare ed escludere, mai cancellare:** i tratti si scrivono nel `metadata.json` della sessione (`constant_runs`, con una voce in `qc_revisions`),
+   il file dei dati non si tocca; le finestre che li toccano (con un margine di una patch da 200 ms per lato, per il transitorio del filtro) non si
+   estraggono, ne' per V2 ne' per l'addestramento.
+3. **Ricerca in tutti i dataset**, nello stesso job della misura del QC (sola lettura, poi scrittura dei soli sidecar). Freno di prudenza, scritto ora: se
+   in un dataset i buchi coprono piu' dell'1% del tempo dei canali validi, per quel dataset non si scrive nulla e si riporta. Se si trovano buchi nei 5
+   dataset del run di ieri, si riporta prima di qualunque rilancio che li riguardi.
+
+**Poi:** rilancio di V2 sui 7 dataset nuovi con gli stessi parametri (autorizzazione del 30/09), salvando gli array dopo ogni dataset e non solo alla fine.
