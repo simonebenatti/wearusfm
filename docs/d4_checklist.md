@@ -13,7 +13,7 @@ Regola: «raccolto» non vuol dire «verificato». Firmare = aver guardato la fo
 | 15 | UCI-EMG: 1 kHz | Lobov et al. 2018, Sensors 18(4):1122 | solo harness |
 | 16 | GRABMyo: 28 canali EMG in 4 anelli, U1–U4 non EMG | pagina PhysioNet | schema a 4 gruppi |
 | 17 | putEMG: mappa TRAJ_GT → gesto | `putemg_examples/shallow_learn.py` righe 142–151 | etichette dell'harness |
-| 19 | NinaPro DB5: 2 Myo da 8, secondo ruotato di 22,5° | ninapro.hevs.ch/instructions/DB5.html | anelli di DB5 |
+| 19 | NinaPro DB5: 2 Myo da 8, secondo ruotato di 22,5° — **FIRMATO il 30/09** | ninapro.hevs.ch/instructions/DB5.html | anelli di DB5 |
 | 20 | Bracciale Meta sEMG-RD: 16 canali differenziali, 20–850 Hz, 2 kHz — **FIRMATO il 30/09 (senza i dettagli di PMC12818089)** | paper emg2qwerty (arXiv 2410.20081) e repo del dataset | banda effettiva, tutti i dataset Meta |
 | 21 | NinaPro DB2/3/4/6/7: 12 o 14 elettrodi Delsys/Cometa, 2 kHz | pagine ufficiali DB2…DB7 | montaggi misti |
 | 22 | DB7: amputati = soggetti 21 e 22; DB6: 16 colonne di cui 2 vuote | pagine DB6 e DB7 | anatomia nominale |

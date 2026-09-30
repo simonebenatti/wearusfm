@@ -61,7 +61,7 @@ hardware del Myo, frequenza di rete.
 
 **Se fosse sbagliato:** gli anelli e la rotazione di DB5 nello schema dei montaggi.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 30/09/2026** («firmo 19»).
 
 ---
 
