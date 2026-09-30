@@ -70,3 +70,22 @@ Curva piatta da x0,5 a x16 su emg2pose e degrado netto sotto x0,25; il minimo ca
 continua a migliorare lentamente verso le scale grandi). Il calibrazione di D5a (scala nativa contro varianza unitaria,
 solo su emg2pose) ha scelto bene, ma la scelta non e' fine: basta stare nel plateau. Il valore esatto del fattore non e'
 critico; **non e' critico neanche per confrontare i dataset** (il rapporto di V2 cambia di poco nel plateau).
+
+## 4. Le feature continue prima della quantizzazione sono molto piu' stabili dei codici
+Stesso rumore di V4 (bianco, deviazione standard = noise floor del dataset; e un controllo a 0,1x). Coseno fra la feature
+(128 dimensioni, uscita della testa dell'encoder, prima del vicino piu' prossimo) del token pulito e quella dello stesso
+token rumoroso; per riferimento, il coseno fra token DIVERSI. Mediana per ramo (0, 1, 2, 3), 200 finestre da 3,2 s per
+dataset. Script: `scripts/step1bis_feature_stability.py`.
+
+| Dataset | Rumore | Coseno pulito-vs-rumoroso (mediana) | 5% piu' basso | Coseno fra token diversi (mediana / 95%) |
+|---|---|---|---|---|
+| emg2pose | = soglia (V4) | 0,927 / 0,748 / 0,990 / 0,965 | 0,477 / 0,269 / 0,789 / 0,646 | 0,007 / 0,005 / 0,061 / 0,069 (95%: 0,23-0,35) |
+| emg2pose | 0,1 x soglia | 0,999 / 0,993 / 1,000 / 1,000 | 0,976 / 0,871 / 0,997 / 0,988 | |
+| CapgMyo | = soglia | 0,819 / 0,564 / 0,983 / 0,954 | 0,377 / 0,193 / 0,772 / 0,658 | 0,007 / -0,005 / 0,078 / 0,052 |
+| putEMG | = soglia | 0,548 / 0,505 / 0,801 / 0,818 | 0,224 / 0,271 / 0,512 / 0,517 | 0,132 / 0,100 / 0,138 / 0,186 (95%: 0,41-0,65) |
+
+Lettura: dove i codici cambiano nel 33-54% dei casi al livello 0, la feature continua dello stesso token resta molto piu'
+vicina a se stessa (coseno mediano 0,75-0,99 su emg2pose) che a un token qualunque (0,0-0,07). Il ramo 1 (>60 Hz) e'
+il meno stabile; putEMG (il dataset con il rapporto V2 piu' alto) e' il meno stabile in assoluto. **Non misurato:** se
+queste feature continue identifichino il dataset piu' delle 5 bande (l'equivalente di V3 sulle feature): dallo spettro
+fine si sa che l'identita' del dataset e' gia' nello spettro (0,93).
