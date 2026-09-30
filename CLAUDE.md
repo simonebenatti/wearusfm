@@ -26,7 +26,17 @@
   23/09/2026: scratch PERSONALE, non condiviso col progetto, nessuna quota configurata,
   partizione da 43PB. Cancellazione automatica a 40 giorni come $FAST - usarlo per download
   grandi in corso (dataset raw) quando $WORK e' vicino alla quota, MAI per dati che devono
-  restare oltre la finestra di addestramento corrente)
+  restare oltre la finestra di addestramento corrente). **Aggiornamento 30/09/2026 (decisione di
+  Simone, 29/09):** $SCRATCH e' il deposito principale dei dati grossi: raw copiato e verificato per
+  checksum (7 dataset, gli originali in $WORK/data/raw restano finche' Simone non lancia
+  `scripts/slurm/delete_verified_raw.sbatch`) e PROCESSATO grande in `$SCRATCH/data/processed/`
+  (Kaifosh, NinaPro DB2/3/4/6/7, Hyser). Il processato piccolo gia' fatto resta in
+  `$WORK/data/processed/`. **La data di modifica va rinfrescata prima del purge: scadenza
+  25/10/2026 (Simone).** `rsync -a` preserva le date vecchie: dopo una copia si rinfresca
+  (vedi `scripts/slurm/verify_touch_scratch_raw.sbatch`). Stato dettagliato per dataset:
+  `docs/dataset_access.md`, sezione "Stato dell'ingest".
+- Manutenzione programmata di Leonardo: 30/09/2026 08:00 - 01/10/2026 08:00 (Booster, DCGP, nodi di
+  login/viz): i job sottomessi restano PENDING fino alla fine. Prossima: DCGP, 15-18/10/2026.
 - Repo remoto: $WORK/wearusfm
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
   procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,

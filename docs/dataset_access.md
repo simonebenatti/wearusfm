@@ -117,3 +117,43 @@ Verifica delle condizioni d'accesso, formato file e dimensione per 11 dataset pu
   ed estratti in `$WORK/data/raw/zhang2026/`. Verificato file-per-file contro il
   manifest: 1245/1245 file, 0 mancanti.
 
+
+## Stato dell'ingest e posizione dei dati (30/09/2026)
+
+Numeri dai report di ingest in `results/passo2/` (riepiloghi aggregati; i report completi restano su Leonardo
+in `$WORK/wearusfm_runs/results/passo2/`). "P" = `$SCRATCH/data/processed/`, "W" = `$WORK/data/processed/`.
+Il raw dei 7 dataset copiati (camargo2021, camargo2021_emg_only, grabmyo, putemg, capgmyo, ninapro,
+kaifosh_discrete_gestures) e' in `$SCRATCH/data/raw/`, verificato per checksum; gli originali in `$WORK/data/raw/`
+sono ancora li' finche' Simone non lancia lo script di cancellazione.
+
+| Dataset | Processato | Stato |
+|---|---|---|
+| CapgMyo-DBa | W/capgmyo | ingerito, 18 soggetti |
+| GRABMyo | W/grabmyo | ingerito |
+| putEMG | W/putemg | ingerito |
+| CSL-hdemg | W/csl_hdemg | ingerito, 168 canali dopo il QC |
+| Camargo 2021 | W/camargo2021 | ingerito, 22 soggetti, 20,1 h |
+| Kaifosh (Discrete Gestures) | P/kaifosh | ingerito: 100 registrazioni, 63,9 h, 0 canali scartati; solo EMG (etichette non lette); 5.098 buchi nell'asse dei tempi registrati nei sidecar |
+| NinaPro DB4 | P/ninapro_db4 | ingerito: 10 soggetti, 7,6 h |
+| NinaPro DB3 | P/ninapro_db3 | ingerito: 11 amputati (anatomia nominale), 7,6 h; 4 canali scartati |
+| NinaPro DB2 | P/ninapro_db2 | ingerito: 40 soggetti, 28,8 h; etichette di lunghezza diversa dall'EMG in 18 soggetti (riempite con -1) |
+| NinaPro DB6 | P/ninapro_db6 | ingerito: 10 soggetti x 10 sessioni (giorno/ora), 19,7 h; colonne 8-9 vuote |
+| NinaPro DB7 | P/ninapro_db7 | ingerito: 22 soggetti (21 e 22 amputati), 13,4 h |
+| NinaPro DB5 | W/ninapro_db5 | parser corretto e verificato in locale sui 10 soggetti; rilancio pieno in coda (job 59054445), parte dopo la manutenzione |
+| NinaPro DB1 | - | non ingerito: 100 Hz, inviluppo RMS, fuori dal front-end (v10 §2.4) |
+| NinaPro DB8, DB10 | - | **raw VUOTO**: le cartelle esistono ma il download non e' mai riuscito (verificato il 30/09/2026 in $WORK e $SCRATCH): da riscaricare (serve un'autorizzazione) |
+| Hyser | P/hyser | collaudo riuscito (soggetto 1); pieno in coda (job 59054442), parte dopo la manutenzione; solo `*_raw_*` (76 GB su 143) |
+| Zhang 2026 | - | **non ingerito, serve una decisione di schema**: un CSV contiene canali EMG a 2000 Hz e altri a 4000 Hz insieme ad ACC/GYRO a ~74-148 Hz; l'array a frequenza unica dello schema non lo contiene |
+| emg2pose | - | da fare: raw = tar da 462 GB in `$SCRATCH/data/raw/emg2pose/`; 25.253 registrazioni, 193 utenti; riferimento a 48 file in `$SCRATCH/wearusfm_runs/emg2pose_reference` |
+| emg2qwerty | - | da fare: raw = tar.gz da 308 GB in `$SCRATCH/data/raw/emg2qwerty/` |
+| EPN-612, UCI-EMG | - | solo harness (non pretraining): raw in `$WORK/data/raw/` |
+
+Anomalie dei dati registrate dai parser (non sono errori dell'ingest; ciascuna e' nei sidecar):
+- NinaPro: lo scalare `exercise` (DB4, DB5) e `subject` (DB5 s2, DB7 s18/21/22) dentro i `.mat` non coincide col nome del
+  file: si usa il NOME. In DB2 e DB6 varie etichette hanno lunghezza diversa dall'EMG: si riempiono con -1 (mai 0) o si
+  tagliano; l'EMG non si tocca.
+- Hyser: guadagno e baseline WFDB diversi in ogni file, ampiezze dei canali con dinamica ~100x: quantizzazione int16 con
+  scala per canale.
+- Licenze: NinaPro DB4 e DB5 sono CC BY-ND 4.0 (NoDerivatives); Hyser ODC-By 1.0. Da valutare in D4 (fatti n. 19-22 in
+  `docs/fatti_da_verificare.md`).
+
