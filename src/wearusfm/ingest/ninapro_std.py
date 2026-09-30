@@ -1,4 +1,4 @@
-"""Ingest dei DB NinaPro "standard" a 12 elettrodi (DB4 ora; DB2, DB3, DB7 con la loro configurazione).
+"""Ingest dei DB NinaPro "standard" a 12 elettrodi (DB4, DB3, DB2; DB7 con la sua configurazione).
 
 Formato verificato su file reali il 30/09/2026 (DB4, s1.zip via leonardo-ops): uno zip per
 soggetto con `s<N>/S<N>_E<m>_A1.mat`, m = 1, 2, 3. Variabili: `emg` (T, 12) single, `stimulus`,
@@ -50,6 +50,11 @@ from wearusfm.metadata.taxonomy import identity
 
 _MEMBER_RE = re.compile(r"(?:^|/)S(\d+)_E(\d+)_A1\.mat$")
 LABEL_FIELDS = ("stimulus", "restimulus", "repetition", "rerepetition")
+# **Anomalia verificata su DB2 (s1, esercizio 3, 30/09/2026):** `restimulus` ha 877.072 righe contro le
+# 877.073 di `emg` (un campione di differenza). Si tollera fino a MAX_LEN_DIFF campioni: si taglia TUTTO alla
+# lunghezza minima comune (la perdita e' < 0,1 ms x n) e la differenza si registra nel sidecar; oltre la
+# tolleranza si solleva. Non si sa quale dei due array sia sfasato: l'allineamento e' "dall'inizio".
+MAX_LEN_DIFF = 5
 TARGETED = (("FDS", "forearm"), ("EDC", "forearm"), ("BB", "upper_arm"), ("TB", "upper_arm"))
 RING_SIZE = 8
 
@@ -81,6 +86,14 @@ DB3 = StdDB(
     zip_re=r"^s(\d+)_0\.zip$", exercises=(1, 2, 3), amputee_subjects=frozenset(range(1, 12)),
 )
 
+# DB2: 40 soggetti intatti, 12 Delsys Trigno (fatto n. 21), 2 kHz; 49 movimenti (17 + 23 + 9, verificato
+# sui file reali). Zip `DB2_s<N>.zip` con cartella `DB2_s<N>/`. Nei .mat solo `subject` ed `exercise`
+# (come DB3): frequenza dalla documentazione, lateralita' ignota. Emg in volt.
+DB2 = StdDB(
+    key="db2", dataset_name="ninapro_db2", n_channels=12, fs_hz=2000.0, electrode_type="Delsys_Trigno_double_differential",
+    zip_re=r"^DB2_s(\d+)\.zip$", exercises=(1, 2, 3),
+)
+
 
 @dataclass
 class ExerciseData:
@@ -91,6 +104,7 @@ class ExerciseData:
     exercise_field_in_file: int | None
     subject_field_in_file: int | None
     n_movements: int | None  # valori distinti non nulli di `restimulus`, se presente
+    truncated_samples: int = 0  # campioni tolti per portare emg ed etichette alla stessa lunghezza
 
 
 def scan_zips(raw_root: Path, cfg: StdDB) -> dict[int, Path]:
@@ -123,16 +137,24 @@ def parse_exercise(mat: dict, exercise: int, cfg: StdDB) -> ExerciseData:
     labels = {}
     for name in LABEL_FIELDS:
         if name in mat:
-            arr = np.asarray(mat[name]).ravel().astype(np.int16)
-            if arr.shape[0] != emg.shape[0]:
-                raise ValueError(f"{name}: {arr.shape[0]} righe contro {emg.shape[0]} di emg")
-            labels[name] = arr
+            labels[name] = np.asarray(mat[name]).ravel().astype(np.int16)
+    n_common = min([emg.shape[0], *(a.shape[0] for a in labels.values())])
+    diff = emg.shape[0] - n_common
+    diff = max([diff, *(a.shape[0] - n_common for a in labels.values())])
+    if diff > MAX_LEN_DIFF:
+        raise ValueError(
+            f"lunghezze incompatibili: emg {emg.shape[0]}, etichette {({k: v.shape[0] for k, v in labels.items()})}"
+        )
+    truncated = diff
+    emg = emg[:n_common]
+    labels = {k: v[:n_common] for k, v in labels.items()}
     n_mov = int((np.unique(labels["restimulus"]) != 0).sum()) if "restimulus" in labels else None
     lat = _scalar(mat, "laterality")
     ex_f, su_f = _scalar(mat, "exercise"), _scalar(mat, "subject")
     return ExerciseData(
         exercise, emg, labels, str(lat).strip().lower() if lat is not None else "",
         int(ex_f) if ex_f is not None else None, int(su_f) if su_f is not None else None, n_mov,
+        truncated_samples=truncated,
     )
 
 
@@ -203,7 +225,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
         trials.append({
             "exercise": e.exercise, "offset": offset, "n_samples": int(e.emg.shape[0]),
             "exercise_field_in_file": e.exercise_field_in_file, "subject_field_in_file": e.subject_field_in_file,
-            "n_movements": e.n_movements,
+            "n_movements": e.n_movements, "truncated_samples": e.truncated_samples,
         })
         offset += e.emg.shape[0]
 
@@ -234,6 +256,7 @@ def ingest_subject(zip_path: Path, out_root: Path, subject: int, cfg: StdDB) -> 
         "subject": subject, "n_samples": int(quantized.shape[0]), "hours": quantized.shape[0] / cfg.fs_hz / 3600,
         "n_channels_discarded": n_discarded, "discarded_channels": [int(i) for i in np.flatnonzero(~channel_valid)],
         "movements_per_exercise": [e.n_movements for e in exercises],
+        "truncated_samples_total": int(sum(e.truncated_samples for e in exercises)),
         "exercise_field_matches_filename": all(e.exercise_field_in_file == e.exercise for e in exercises),
         "subject_field_matches_filename": all(e.subject_field_in_file == subject for e in exercises),
         "int16_scale": scale, "emg_max_abs": float(np.abs(emg).max()), "memmap_path": str(out_dir / "data_int16.npy"),

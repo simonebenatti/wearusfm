@@ -7,7 +7,9 @@ import numpy as np
 import pytest
 import scipy.io as sio
 
-from wearusfm.ingest.ninapro_std import DB3, DB4, build_montage_metadata, ingest_subject, load_subject, scan_zips
+from wearusfm.ingest.ninapro_std import (
+    DB3, DB4, build_montage_metadata, ingest_subject, load_subject, parse_exercise, scan_zips,
+)
 
 
 def _mat_bytes(subject, exercise, n, *, freq=2000, sensor="Cometa", lat="r", subject_field=None,
@@ -62,6 +64,8 @@ def test_load_rejects_inconsistencies(tmp_path):
         load_subject(_make_zip(tmp_path, 4, n_ch=16), 4, DB4)
     with pytest.raises(ValueError, match="soggetto"):
         load_subject(_make_zip(tmp_path, 5), 6, DB4)
+    with pytest.raises(ValueError, match="lunghezze incompatibili"):  # oltre la tolleranza
+        parse_exercise(_mat_dict(n=300, label_n=280), 1, DB4)
 
 
 def test_optional_fields_may_be_absent(tmp_path):
@@ -152,3 +156,42 @@ def test_low_amplitude_volt_channels_are_not_flagged_flat(tmp_path):
             zf.writestr(f"s1/S1_E{e}_A1.mat", buf.getvalue())
     res = ingest_subject(zp, tmp_path / "out", 1, DB4)
     assert res["discarded_channels"] == []
+
+
+def test_db2_zip_naming_and_intact_subjects(tmp_path):
+    (tmp_path / "DB2").mkdir()
+    path = tmp_path / "DB2" / "DB2_s7.zip"
+    rng = np.random.default_rng(0)
+    with zipfile.ZipFile(path, "w") as zf:
+        for e in (1, 2, 3):
+            buf = io.BytesIO()
+            rest = np.zeros((400, 1), np.int8)
+            rest[200:, 0] = 1
+            sio.savemat(buf, {"emg": rng.normal(scale=1e-5, size=(400, 12)).astype(np.float32), "restimulus": rest,
+                              "stimulus": rest, "repetition": rest, "rerepetition": rest,
+                              "subject": np.array([[7]], np.uint8), "exercise": np.array([[e]], np.uint8)})
+            zf.writestr(f"DB2_s7/S7_E{e}_A1.mat", buf.getvalue())
+    from wearusfm.ingest.ninapro_std import DB2
+
+    assert set(scan_zips(tmp_path, DB2)) == {7}
+    res = ingest_subject(path, tmp_path / "out", 7, DB2)
+    meta = json.loads((tmp_path / "out" / "s07" / "session1" / "metadata.json").read_text())
+    assert meta["nominal_anatomy"] is False and res["n_channels_discarded"] == 0
+    assert meta["montage"]["subject_id"] == "ninapro_db2_s07"
+
+
+def _mat_dict(n=300, label_n=None):
+    label_n = n if label_n is None else label_n
+    return {
+        "emg": np.random.default_rng(0).normal(size=(n, 12)).astype(np.float32),
+        "restimulus": np.zeros((label_n, 1), np.uint8), "stimulus": np.zeros((label_n, 1), np.int8),
+        "repetition": np.zeros((label_n, 1), np.int8), "rerepetition": np.zeros((label_n, 1), np.uint8),
+    }
+
+
+def test_one_sample_length_mismatch_between_emg_and_labels_is_truncated_and_recorded(tmp_path):
+    """Anomalia dei dati reali (DB2 s1 E3): restimulus ha una riga in meno di emg."""
+    ex = parse_exercise(_mat_dict(n=300, label_n=299), 3, DB4)
+    assert ex.emg.shape[0] == 299 and all(v.shape[0] == 299 for v in ex.labels.values()) and ex.truncated_samples == 1
+    ex2 = parse_exercise(_mat_dict(n=300), 3, DB4)
+    assert ex2.truncated_samples == 0 and ex2.emg.shape[0] == 300

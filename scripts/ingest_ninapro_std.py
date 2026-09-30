@@ -1,4 +1,4 @@
-"""Ingest dei DB NinaPro a 12 elettrodi (DB3, DB4): vedi src/wearusfm/ingest/ninapro_std.py.
+"""Ingest dei DB NinaPro a 12 elettrodi (DB2, DB3, DB4): vedi src/wearusfm/ingest/ninapro_std.py.
 
 Uso: python3 scripts/ingest_ninapro_std.py --db db4 --raw-root <.../ninapro> --out-root <.../ninapro_db4>
        --report <report.json> [--subjects 1 2 ...]
@@ -14,9 +14,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from wearusfm.ingest.ninapro_std import DB3, DB4, ingest_subject, scan_zips  # noqa: E402
+from wearusfm.ingest.ninapro_std import DB2, DB3, DB4, ingest_subject, scan_zips  # noqa: E402
 
-CONFIGS = {"db3": DB3, "db4": DB4}
+CONFIGS = {"db2": DB2, "db3": DB3, "db4": DB4}
 
 
 def main() -> int:
@@ -48,6 +48,7 @@ def main() -> int:
         "hours_total": sum(x["hours"] for x in per_subject), "n_channels": cfg.n_channels,
         "n_channels_discarded_total": sum(x["n_channels_discarded"] for x in per_subject),
         "subjects_with_subject_field_mismatch": [x["subject"] for x in per_subject if not x["subject_field_matches_filename"]],
+        "subjects_with_truncated_samples": {x["subject"]: x["truncated_samples_total"] for x in per_subject if x["truncated_samples_total"]},
         "subjects_with_exercise_field_mismatch": [x["subject"] for x in per_subject if not x["exercise_field_matches_filename"]],
         "per_subject": per_subject, "elapsed_s": time.time() - t0,
     }
