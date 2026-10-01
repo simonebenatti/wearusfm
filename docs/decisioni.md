@@ -998,12 +998,12 @@ riporta per soggetto.
 
 ---
 
-## NinaPro DB10 (MeganePro): cosa si ingerisce e come (01/10/2026) — proposta di AG, parser scritto
+## NinaPro DB10 (MeganePro): cosa si ingerisce e come (01/10/2026) — MDS2/MDS4 fuori e ingest di MDS1 autorizzato (Simone, 01/10/2026: «sì, MDS2/MDS4 fuori e autorizzo collaudo e pieno di DB10»)
 
 Dati e fonti: `fatti_da_verificare.md`, fatto 10c (citazioni controllate). Ispezione dei file via leonardo-ops (`scripts/inspect_mat.py`, `whosmat`).
 - **MDS1 (esercizio 1, prese):** l'EMG vero, 12 canali Delsys a 1926 Hz (1925,98 dai `ts`), 45 soggetti (30 normodotati, 15 amputati
   transradiali S101-S115), ~56 h. Si ingerisce solo `S<NNN>_ex1.mat`; i `_orig` non contengono EMG.
-- **MDS2 e MDS4: proposta di lasciarli FUORI**, per la regola gia' scritta in v10 §2.4 (un inviluppo non entra nel front-end, come DB1): la fonte dice
+- **MDS2 e MDS4: FUORI** (confermato da Simone), per la regola gia' scritta in v10 §2.4 (un inviluppo non entra nel front-end, come DB1): la fonte dice
   «rectified via a moving root-mean-square with a window length of 300 samples», nei file a 100 Hz, con 2 elettrodi (uno per avambraccio). Sono
   esercizi di immaginazione motoria e puntamento in cui l'EMG era secondario («the sEMG would serve for control analyses»). Da confermare.
 - **Montaggio:** normodotati: anello prossimale D_8 (colonne 1-8, angoli 0-315) e distale D_4 a 45 mm (colonne 9-12, «aligned with the gaps between
