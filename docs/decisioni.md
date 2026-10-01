@@ -615,7 +615,7 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
 - **supinatore (SUP) non e' nella tassonomia firmata D7b**: annotato al livello di **regione** (avambraccio prossimale), senza piegare la tassonomia.
   Per portarlo al livello di muscolo serve aggiungerlo (OLS4: UBERON:0003228 «supinator muscle», FMA:38512 «Supinator») e scegliere il
   compartimento: e' un muscolo profondo dell'avambraccio prossimale dorsale, e nessuno dei compartimenti firmati gli corrisponde davvero. Decisione
-  di Simone;
+  di Simone. **Decisione (Simone, 01/10/2026: «sì autorizzo collaudo e pieno di Zhang, regione va bene»): per ora regione**; ingest autorizzato;
 - abbreviazioni -> tassonomia: PTE = PT (pronatore rotondo), ECR = ECRL (la descrizione del dataset elenca «Extensor Carpi Radialis Longus», non il
   brevis); le altre coincidono. La tabella abbreviazione -> muscolo non e' nella fonte: e' dedotta dai nomi;
 - una sessione per soggetto e modo (sequenze concatenate come prove); canali in ordine S1-S8; lato = opposto alla mano dominante (abstract, verificato:
