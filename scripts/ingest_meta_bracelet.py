@@ -84,9 +84,9 @@ def main() -> int:
             raise SystemExit("--csv e' obbligatorio per emg2pose")
         meta = E2P.load_metadata_csv(args.csv)
         with tarfile.open(args.tar, "r:") as tf:
-            refs = E2P.scan_tar(tf)
-            print(f"{len(refs)} registrazioni nel tar, {len(meta)} righe nel CSV", flush=True)
-            for ref in refs:
+            # una sola passata sul tar, nell'ordine del tar: niente indice completo in anticipo (vedi E2P.iter_recordings)
+            print(f"{len(meta)} righe nel CSV; si scorre il tar e si elabora man mano", flush=True)
+            for ref in E2P.iter_recordings(tf):
                 if args.max_recordings is not None and len(done) >= args.max_recordings:
                     stopped = "max-recordings"
                     break

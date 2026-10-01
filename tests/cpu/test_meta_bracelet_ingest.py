@@ -142,3 +142,71 @@ def test_emg2pose_scan_tar_skips_macos_metadata_files(tmp_path):
             tf.addfile(info, io.BytesIO(data))
     with tarfile.open(tarp) as tf:
         assert [r.stem for r in scan_tar(tf)] == ["rec-a_left", "rec-b_right"]
+
+
+
+def _pose_tar(path, n=3):
+    with tarfile.open(path, "w") as tf:
+        for k in range(n):
+            data = _p_bytes()
+            info = tarfile.TarInfo(f"emg2pose_data/rec-{k}_left.hdf5")
+            info.size = len(data)
+            tf.addfile(info, io.BytesIO(data))
+    with tarfile.open(path) as tf:
+        return [m.offset for m in tf.getmembers()]
+
+
+class _ReadSpy(io.FileIO):
+    """File che ricorda fin dove e' stato letto."""
+
+    max_pos = 0
+
+    def read(self, n=-1):
+        out = super().read(n)
+        self.max_pos = max(self.max_pos, self.tell())
+        return out
+
+    def readinto(self, b):
+        k = super().readinto(b)
+        self.max_pos = max(self.max_pos, self.tell())
+        return k
+
+
+def test_iter_recordings_reads_only_as_far_as_needed(tmp_path):
+    tarp = tmp_path / "e.tar"
+    offsets = _pose_tar(tarp)
+    with _ReadSpy(tarp) as f, tarfile.open(fileobj=f, mode="r:") as tf:
+        assert next(E2P.iter_recordings(tf)).stem == "rec-0_left"
+        assert f.max_pos <= offsets[1]  # l'intestazione della seconda registrazione non e' ancora stata letta
+    with _ReadSpy(tarp) as f, tarfile.open(fileobj=f, mode="r:") as tf:
+        E2P.scan_tar(tf)
+        assert f.max_pos > offsets[2]  # scan_tar legge l'indice intero
+
+
+def test_pose_ingest_script_streams_the_tar(tmp_path, monkeypatch):
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    tarp = tmp_path / "e.tar"
+    _pose_tar(tarp)
+    csvp = tmp_path / "meta.csv"
+    csvp.write_text("session,user,stage,start,end,side,filename,moving_hand,held_out_user,held_out_stage,split,generalization\n"
+                    "s1,u7,st,0,1,left,rec-0_left.hdf5,both,True,False,val,user\n")
+    spec = importlib.util.spec_from_file_location("ingest_meta_bracelet", Path(__file__).resolve().parents[2] / "scripts" / "ingest_meta_bracelet.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    def _no_full_scan(tf):
+        raise AssertionError("l'ingest non deve leggere l'indice intero del tar")
+
+    monkeypatch.setattr(mod.E2P, "scan_tar", _no_full_scan)
+    monkeypatch.setattr(sys, "argv", ["x", "--dataset", "emg2pose", "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(tmp_path / "out"),
+                                      "--report", str(tmp_path / "rep.json"), "--max-recordings", "2"])
+    mod.main()
+    rep = json.loads((tmp_path / "rep.json").read_text())
+    assert rep["n_recordings"] == 2 and rep["stopped"] == "max-recordings"
+    monkeypatch.setattr(sys, "argv", sys.argv[:-2] + ["--skip-existing"])
+    mod.main()
+    rep = json.loads((tmp_path / "rep.json").read_text())
+    assert rep["n_recordings"] == 1 and rep["n_skipped_existing"] == 2  # ripresa: le due gia' fatte si saltano, la terza si fa

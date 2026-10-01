@@ -70,9 +70,17 @@ def _is_recording(name: str) -> bool:
     return p.suffix == ".hdf5" and not p.name.startswith("._") and "__MACOSX" not in p.parts
 
 
+def iter_recordings(tf: tarfile.TarFile):
+    """Le registrazioni nell'ordine del tar, una alla volta, leggendo l'indice SOLO fin dove serve. Per l'ingest: `scan_tar` (getmembers) legge
+    l'intero indice prima di cominciare, e sul tar da 462 GB di emg2pose su Lustre vuol dire scorrere tutto il file (collaudo 59092330,
+    01/10/2026: piu' di 30 minuti senza aver elaborato nulla)."""
+    for m in tf:
+        if m.isfile() and _is_recording(m.name):
+            yield RecordingRef(m.name, Path(m.name).stem)
+
+
 def scan_tar(tf: tarfile.TarFile) -> list[RecordingRef]:
-    refs = [RecordingRef(m.name, Path(m.name).stem) for m in tf.getmembers() if m.isfile() and _is_recording(m.name)]
-    return sorted(refs, key=lambda r: r.member)
+    return sorted(iter_recordings(tf), key=lambda r: r.member)
 
 
 def read_recording(fileobj) -> dict:
