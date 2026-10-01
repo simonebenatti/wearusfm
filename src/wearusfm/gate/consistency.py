@@ -71,7 +71,8 @@ def draw_windows(sessions: Sequence[tuple[str, np.ndarray, Sequence[tuple[int, i
             s = (k - int(n_pos[:i].sum())) * align
             if any(s < e and s + total > b for b, e in avoid):
                 continue
-            out.append(Window(subject, np.asarray(data[s : s + total], dtype=np.float64).T))
+            # copia, non vista: una vista terrebbe in memoria l'intera sessione (job 59086063, 01/10/2026: fuori memoria a 16 GB dopo ~70 s)
+            out.append(Window(subject, np.array(data[s : s + total].T, dtype=np.float64, copy=True)))
             got += 1
     return out
 

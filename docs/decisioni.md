@@ -899,3 +899,6 @@ il percorso dei dati prima del lancio, che non cambiano le definizioni: (1) le f
 restava in memoria in float64, ~30 GB: il job sarebbe stato ucciso); (2) «20 finestre per utente» si conta per soggetto e non per segmento (prima un
 soggetto con piu' segmenti ne avrebbe avute 20 per segmento; su Kaifosh, una registrazione per utente, non cambia nulla). Il gate si lancia con
 `scripts/slurm/gate_d8.sbatch` (CPU seriale, zero GPU-ora).
+Primo lancio (job 59086063, 01/10/2026 10:03): **fuori memoria** dopo 71 s (16 GB), prima di qualunque misura. Causa: ogni finestra era una *vista*
+sulla sessione intera, che restava quindi in memoria (~700 MB in float64 per soggetto). Corretto (le finestre sono copie; test che cattura la versione
+con la vista); picco misurato sul Mac con sessioni di dimensione vera: 2,2 GB con 2 soggetti, 2,4 GB con 5. Rilanciato una volta, stesse definizioni.

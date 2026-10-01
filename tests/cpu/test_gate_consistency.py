@@ -57,6 +57,13 @@ def test_draw_windows_counts_per_subject_not_per_segment():
     assert {int(x.data[0, 0] // 1e6) for x in w if x.subject == "a"} == {0, 1, 2}
 
 
+def test_draw_windows_copies_instead_of_viewing_the_session():
+    """Una finestra che fosse una vista terrebbe viva l'intera sessione: con 100 soggetti di Kaifosh, fuori memoria (job 59086063)."""
+    data = np.arange(60000.0)[:, None].repeat(2, 1)
+    w = G.draw_windows([("s0", data, [])], 3, np.random.default_rng(0))
+    assert all(x.data.base is None and not np.shares_memory(x.data, data) for x in w)
+
+
 def test_features_case_real_frontend_vs_frontend_without_delta_t():
     torch.set_grad_enabled(False)
     windows = G.draw_windows(_sessions(), 4, np.random.default_rng(0))
