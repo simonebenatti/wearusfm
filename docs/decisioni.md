@@ -604,6 +604,13 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
   (602.593 righe = 7 + 602.586): il parser deve riconoscerla, non contarla a priori;
 - rete: acquisizione a Groningen (comitato etico dell'UMCG); 50 Hz per deduzione, non dichiarata.
 
+**Decisione (Simone, 01/10/2026: «sì, vanno bene entrambe le proposte su Zhang»):**
+- modo `random`: **gruppo sparso senza angoli** per tutti i soggetti (non si dichiara un anello che non si puo' ricostruire: fonti in contrasto e
+  ordine ignoto per 32 soggetti); modo `anatomical`: gruppo sparso con gli 8 muscoli dell'intestazione. Se la figura del paper chiarira' l'ordine, si
+  potra' passare all'anello D_8 per i soggetti con ordine noto;
+- etichette: `label.csv` copiato cosi' com'e' nel processato, segnato come **non allineato all'EMG** (tempi sul video, sincronizzazione non
+  dichiarata), non usato finche' la sincronizzazione non e' chiarita.
+
 
 ---
 
