@@ -1079,3 +1079,9 @@ c'e' nulla da scrivere, e il run vero di V2 su Zhang puo' partire. Per emg2qwert
 Nota sul vocabolario: qui «buco» e' un tratto di valore costante >= 1 s su un canale; i «salti dell'asse dei tempi» (emg2qwerty 76 registrazioni,
 emg2pose 1.668) sono un'altra cosa, gia' elencata nei sidecar.
 
+**Esito per Zhang (02/10/2026, applicazione meccanica):** run vero 59108493 (153 s, 1 GPU; report in `results/step1bis/step1bis_59108493.json`, array sul
+Mac in `~/wearusfm_local/reports/step1bis/arrays_59108493/`, sha256 verificati), lanciato dopo la misura dei buchi di Zhang (0 tratti costanti, job
+59099080). **Controlli scritti prima: identici** (fattore 21,718; emg2pose 0,03520; V1 1,231; stesso checkpoint). **V2 di Zhang: 1,55 <= 2, passa.**
+Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello 0 del ramo 0 0,371 contro 0,643 delle 5 bande (differenza -0,27):
+**ENTRA. Ancora RVQ accesa anche su zhang2026.** Resta DB10, dopo la misura dei suoi buchi.
+

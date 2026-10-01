@@ -57,7 +57,7 @@ def test_rows_accounting_split_and_units(tmp_path):
     assert s01.d_c(0.025) == pytest.approx((7200 * 3 - 2000) / 2000 / 0.025) and s01.d_t(0.025) == pytest.approx(7200 / 2000 / 0.025)
     assert by[("ninapro_db2", "s03", "session1")].split == "test" and by[("kaifosh", "u000", "dataset000")].split == "benchmark"
     assert by[("zhang2026", "HG_1", "anatomical")].quota_class == "A" and by[("zhang2026", "HG_1", "random")].quota_class == "B"
-    assert M.rvq_status("ninapro_db8") == "on" and M.rvq_status("zhang2026") == "pending" and M.rvq_status("ninapro_db10") == "pending"
+    assert M.rvq_status("ninapro_db8") == "on" and M.rvq_status("zhang2026") == "on" and M.rvq_status("ninapro_db10") == "pending"
     assert by[("kaifosh", "u000", "dataset000")].rvq == "on" and M.rvq_status("putemg") == "off"
     assert summary["totals"]["pretraining_sessions"] == 5
 

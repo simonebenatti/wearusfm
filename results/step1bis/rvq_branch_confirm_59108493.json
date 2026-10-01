@@ -1,0 +1,98 @@
+{
+  "decision": "docs/decisioni.md, D5b - conferma sui dataset nuovi, opzione (b) (30/09/2026)",
+  "base_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo"
+  ],
+  "new_report": "step1bis_59108493.json",
+  "base_report": "step1bis_59048369.json",
+  "comparability": {
+    "checkpoint_sha256": [
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      true
+    ],
+    "scale_factor": [
+      21.718382449214758,
+      21.718382449214758,
+      true
+    ],
+    "emg2pose_median_nmse": [
+      0.03520336429260397,
+      0.03520336429260397,
+      true
+    ],
+    "v1_ratio": [
+      1.2306812894412003,
+      1.2306812894412003,
+      true
+    ]
+  },
+  "v2_new": {
+    "zhang2026": {
+      "ratio": 1.5544400247536088,
+      "passes": true
+    }
+  },
+  "confirm": {
+    "zhang2026": {
+      "dataset": "zhang2026",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "zhang2026"
+      ],
+      "n_units": 390,
+      "n_test_units": 75,
+      "bands": {
+        "balanced_accuracy": 0.6428571428571428,
+        "ci95": [
+          0.5542678571428571,
+          0.7223443223443223
+        ],
+        "chance": 0.2,
+        "model": "logreg_C1.0",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.37142857142857144,
+          "ci95": [
+            0.2783994963369963,
+            0.479518315018315
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.2857142857142857,
+          "ci95": [
+            0.1902289377289377,
+            0.41473809523809524
+          ],
+          "chance": 0.2,
+          "model": "logreg_C10.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.37142857142857144,
+        "from": "histogram",
+        "diff_minus_bands": -0.27142857142857135,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    }
+  },
+  "final_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo",
+    "zhang2026"
+  ]
+}
