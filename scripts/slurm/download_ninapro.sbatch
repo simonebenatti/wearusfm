@@ -18,10 +18,12 @@
 set -uo pipefail  # non -e: un DB che fallisce non deve fermare gli altri
 cd "$WORK"
 
-DEST="$WORK/data/raw/ninapro"
+# 01/10/2026: destinazione su $SCRATCH ($WORK e' pieno) e lista dei DB come argomenti (default: tutti). Esempio: sbatch ... DB8
+DEST="${NINAPRO_DEST:-$SCRATCH/data/raw/ninapro}"
 BASE="https://ninapro.hevs.ch"
 
-for db in DB1 DB2 DB3 DB4 DB5 DB6 DB7 DB8 DB10; do
+if [ "$#" -gt 0 ]; then DBS=("$@"); else DBS=(DB1 DB2 DB3 DB4 DB5 DB6 DB7 DB8 DB10); fi
+for db in "${DBS[@]}"; do
   out="$DEST/$db"
   mkdir -p "$out"
   echo "=== $db: scraping href .zip da $BASE/instructions/$db.html ==="
@@ -32,8 +34,8 @@ for db in DB1 DB2 DB3 DB4 DB5 DB6 DB7 DB8 DB10; do
     continue
   fi
 
-  # estrae gli href che finiscono in .zip, li rende assoluti rispetto a $BASE
-  echo "$page" | grep -oE 'href="[^"]*\.zip"' | sed -E 's/href="//; s/"$//' | sort -u | while read -r href; do
+  # estrae gli href che finiscono in .zip o .mat (01/10/2026: DB8 linka file .mat singoli, che prima venivano saltati) e li rende assoluti
+  echo "$page" | grep -oE 'href="[^"]*\.(zip|mat)"' | sed -E 's/href="//; s/"$//' | sort -u | while read -r href; do
     # risolve href assoluti, radice-relativi (/...) e relativi (../files/...) rispetto
     # alla pagina delle istruzioni, senza assumere quale forma useranno
     url=$(python3 -c "import urllib.parse,sys; print(urllib.parse.urljoin('$BASE/instructions/$db.html', '$href'))")

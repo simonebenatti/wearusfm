@@ -830,3 +830,22 @@ Da tenere presente, senza cambiare l'esito:
   10 s su un canale): effetto atteso trascurabile, non misurato.
 - **CapgMyo:** 3 canali quasi morti e un buco non scritti (freno scattato): in attesa di Simone.
 - Costo del passo 1-bis oggi: collaudi 0,05 GPU-ora, run fallito 0,24, rilancio 0,41: circa 0,7 GPU-ora; in tutto il passo resta sotto 2 dei 30.
+
+---
+
+## CapgMyo: scrittura forzata (Simone, 01/10/2026: «sì forza capgmyo»)
+
+Il freno era scattato per i canali piatti (3 sessioni su 18 > 5%). Simone autorizza la scrittura: canali **s06/28, s08/102, s11/102** marcati non validi
+(deviazione standard 0,00088-0,00098 volte la mediana) e il buco di **s09 canale 40** (10 prove intere da 1 s). Strumento: `qc_relative_check.py --only
+capgmyo --apply --force-dataset capgmyo`, con backup e `qc_revisions`. CapgMyo e' nella base del run del 29/09: si dichiara, nessun rilancio.
+
+## Download di NinaPro DB8 e DB10: dimensioni e causa del mancato download (01/10/2026)
+
+Condizione della decisione del 30/09: riportare la dimensione prima del lancio e fermarsi se servono termini o account.
+- **DB8:** la pagina ufficiale linka **36 file `.mat`** (12 soggetti x 3 acquisizioni), **25,4 GB** (somma dei Content-Length). Nessuna registrazione.
+  **Causa del mancato download:** `download_ninapro.sbatch` prendeva solo i link `.zip`. Si scarica su `$SCRATCH` ($WORK e' pieno).
+- **DB10 = MeganePro** su Harvard Dataverse (4 DOI dalla pagina ufficiale): MDS1 240 GB (163 GB di video `.mp4`, 77 GB di `.mat`), MDS2 33 GB (33 GB
+  di video, 0,4 GB di `.mat`), MDS4 18 GB (17,5 GB di video, 0,24 GB di `.mat`), MDSInfo (interviste cliniche e test neurocognitivi degli amputati, un
+  file). Termini d'uso del dataset: «This work is licensed under a Creative Commons Attribution 4.0 International License»; nessun file riservato, nessun
+  guestbook: **nessuna condizione da accettare**. **Proposta di AG, da confermare:** scaricare solo i `.mat` (circa 78 GB), non i video e non MDSInfo
+  (dati clinici, non servono al corpus). Quali `.mat` contengano l'EMG (e a che frequenza, fatto n. 1) va verificato sui file.
