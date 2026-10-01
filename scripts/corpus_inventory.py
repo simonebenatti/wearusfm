@@ -30,10 +30,11 @@ INGESTED = [
     ("emg2qwerty_ingest_report_summary.json", "emg2qwerty", 2000, 32, "2 anelli (Meta, sx+dx)", "pretraining"),
     ("ninapro_db8_ingest_report_summary.json", "NinaPro DB8 (2 amputati)", "2000 (banda 0-555)", 16, "2 anelli da 8 (amputati: sparsi)", "pretraining"),
     ("zhang2026_ingest_report_summary.json", "Zhang 2026", "2000 (4 canali da 4000)", 8, "sparso: 8 muscoli / 8 attorno all'avambraccio", "pretraining"),
+    ("emg2pose_ingest_report_summary.json", "emg2pose", 2000, 16, "anello (Meta)", "pretraining"),
+    ("ninapro_db10_ingest_report_summary.json", "NinaPro DB10 (15 amputati)", 1926, 12, "anello 8 + anello 4 (amputati: sparsi)", "pretraining"),
 ]
 # Non ancora ingeriti: soggetti/ore da documentazione o da conteggi sui file, NON da un ingest.
 PENDING = [
-    ("emg2pose", 2000, 16, "anello (Meta)", 193, "n.d.", "25.253 registrazioni di 193 utenti (CSV di metadati)", "parser provato su 2 file veri (30/09)"),
 ]
 
 # Il riepilogo di putEMG non ha la lista dei soggetti: 44 partecipanti da documentazione (docs/dataset_access.md), non da un ingest
@@ -70,8 +71,8 @@ def main() -> None:
     print("\n".join(rows))
     print(f"| **Totale ingerito** | **{tot_s}** | **{tot_h:.1f}** | | | | |\n")
     print("\\* soggetti da documentazione, non da un ingest.\n")
-    print("Attenzione: la somma dei soggetti NON e' il numero di persone distinte: la sovrapposizione fra i DB NinaPro "
-          "(fatto n. 2) non e' verificata, e Kaifosh conta utenti diversi da quelli di emg2pose/emg2qwerty solo per "
+    print("Attenzione: la somma dei soggetti NON e' il numero di persone distinte: fra i DB NinaPro ci sono sovrapposizioni "
+          "(fatto n. 2: un soggetto in comune fra DB4 e DB5, probabilmente 7 fra DB7 e DB8; ID non dichiarati), e Kaifosh conta utenti diversi da quelli di emg2pose/emg2qwerty solo per "
           "costruzione degli identificatori, non per verifica.\n")
     print("## Non ancora ingeriti (stime dichiarate, NON misure)\n")
     print("| Dataset | fs (Hz) | Canali | Topologia | Soggetti | Ore | Fonte della stima | Stato |")
@@ -79,7 +80,7 @@ def main() -> None:
     for name, fs, ch, topo, subj, hours, src, status in PENDING:
         print(f"| {name} | {fs} | {ch} | {topo} | {subj} | {hours} | {src} | {status} |")
     print("\nSolo harness (fuori dal pretraining): EPN-612 (200 Hz, 8 canali), UCI-EMG (1 kHz, 8 canali). "
-          "Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB9 (solo cinematica). DB10 (MeganePro): download dei soli .mat di MDS1/2/4 in corso (01/10/2026), parser da scrivere.")
+          "Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB9 (solo cinematica). DB10 MDS2/MDS4 (inviluppo RMS a 100 Hz).")
 
 
 if __name__ == "__main__":

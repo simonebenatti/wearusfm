@@ -1061,3 +1061,14 @@ prima: tutti identici** (fattore 21,718; errore mediano di emg2pose 0,03520; V1 
 ramo (opzione b, `results/step1bis/rvq_branch_confirm_59104658.json`): livello 0 del ramo 0 0,431 contro 0,723 delle 5 bande sulle stesse classi
 (differenza -0,29): **ENTRA**. **Ancora RVQ accesa anche su ninapro_db8.** Zhang: run vero dopo i suoi buchi; DB10: dopo il suo ingest.
 
+---
+
+## Buchi su Zhang ed emg2qwerty: esito (job 59099080, sola lettura, 01/10/2026)
+
+Autorizzato da Simone il 01/10/2026 («sì parti con DB10 e autorizzo i buchi su Zhang ed emg2qwerty»: autorizzazione alla MISURA; una scrittura nei
+sidecar, se servisse, si chiede a parte). **emg2qwerty:** 1135 sessioni, 0 canali piatti nuovi, 189 tratti costanti per canale in 14 sessioni, 312,5
+canale-secondi (0,0008% del tempo valido dei canali), freni non scattati. **Zhang:** 124 sessioni, 0 canali piatti nuovi, **0 tratti costanti**: non
+c'e' nulla da scrivere, e il run vero di V2 su Zhang puo' partire. Per emg2qwerty la scrittura dei 189 tratti e' da autorizzare.
+Nota sul vocabolario: qui «buco» e' un tratto di valore costante >= 1 s su un canale; i «salti dell'asse dei tempi» (emg2qwerty 76 registrazioni,
+emg2pose 1.668) sono un'altra cosa, gia' elencata nei sidecar.
+

@@ -1,0 +1,34 @@
+{
+  "dataset": "emg2pose",
+  "jobs": [
+    59094585,
+    59094713,
+    59103492
+  ],
+  "n_recordings": 25253,
+  "n_users": 193,
+  "hours_total": 422.68087027777716,
+  "n_channels": 16,
+  "n_channels_discarded_total": 0,
+  "n_recordings_time_irregular": 6,
+  "n_recordings_with_gaps": 1668,
+  "n_gaps_total": 222477,
+  "n_failed": 0,
+  "official_split_counts_recordings": {
+    "val": 1950,
+    "train": 17136,
+    "test": 6167
+  },
+  "recordings_not_in_csv": 0,
+  "int16_scale_range": [
+    4.225544634636364,
+    6387.056260534633
+  ],
+  "emg_max_abs_range": [
+    5.010132789611816,
+    7572.98828125
+  ],
+  "output_size": "92G (in $SCRATCH/data/processed/emg2pose, non in $WORK); 25253 metadata.json",
+  "elapsed_s": 12754.827049255371,
+  "note": "riepilogo di tre job: 59094585 (collaudo, 3 registrazioni), 59094713 (20.278, fermato dal budget di tempo) e 59103492 (le restanti 4.972, --skip-existing); job 59093601 e 59092330 cancellati prima di elaborare (scansione dell'indice del tar, corretta nei commit 6e73759 e 3f374fd). Report completi su Leonardo in $WORK/wearusfm_runs/results/passo2/ e copie sul Mac in ~/wearusfm_local/reports/emg2pose/ (sha256 uguali). \u00abIrregolare\u00bb = passo mediano sbagliato o timestamp che tornano indietro; i buchi dell'asse dei tempi sono contati a parte e listati nei sidecar. Il processato sta su $SCRATCH: rinfresco delle date ogni 21 giorni."
+}
