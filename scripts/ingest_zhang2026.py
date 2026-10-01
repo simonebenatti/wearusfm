@@ -66,6 +66,7 @@ def main(argv=None) -> int:
         "subjects_not_found_in_participants_csv": sorted({r["subject"] for r in done if r["participant_id_in_csv"] is None}),
         "subjects_matched_by_prefix": sorted({r["subject"] for r in done if r["participant_id_in_csv"] not in (None, r["subject"])}),
         "sessions_with_trimmed_samples": {f"{r['subject']}/{r['mode']}": r["trimmed_by_sequence"] for r in done if r["trimmed_by_sequence"]},
+        "sessions_with_excluded_sequences": {f"{r['subject']}/{r['mode']}": r["excluded_sequences"] for r in done if r["excluded_sequences"]},
         "sessions_with_empty_label_files": {f"{r['subject']}/{r['mode']}": r["empty_label_files"] for r in done if r["empty_label_files"]},
         "per_session": done, "elapsed_s": time.time() - t0,
     }

@@ -32,9 +32,14 @@ def _signals(n2, seed):
     return out
 
 
-def _write_seq(d, n2=4000, seed=0, random_mode=False, gap=False):
+def _write_seq(d, n2=4000, seed=0, random_mode=False, gap=False, short4k=0, ragged4k=0):
     d.mkdir(parents=True, exist_ok=True)
     sig = _signals(n2, seed)
+    for k, (_s, kind, _m, fs, *_r) in enumerate(LAYOUT):  # short4k: Avanti piu' corti (come HG_O983O9 seq. 09); ragged4k: uno di 1 campione piu' corto
+        if kind == "EMG" and fs == "4000 Hz":
+            sig[k] = sig[k][: len(sig[k]) - short4k]
+    if ragged4k:
+        sig[5] = sig[5][:-ragged4k]
     header = [list(r) for r in zip(*LAYOUT)]
     if random_mode:
         header[2] = ["NaN"] * len(header[2])  # nel modo random la riga del muscolo e' NaN
@@ -136,3 +141,32 @@ def test_script_collaudo_and_resume(tmp_path):
     assert mod.main(args + ["--skip-existing"]) == 0
     r = json.loads((tmp_path / "r.json").read_text())
     assert r["n_sessions"] == 1 and r["n_skipped_existing"] == 1 and r["stopped"] is None
+
+
+
+def test_sequence_with_inconsistent_durations_is_excluded_not_the_session(tmp_path):
+    raw = tmp_path / "raw"
+    _raw(raw, seqs=(1, 2), modes=("anatomical",))
+    _write_seq(raw / "HG_A468E29" / "anatomical" / "sequence_09", seed=5, short4k=1500)  # 4000 Hz di 0,375 s piu' corti: non il doppio
+    with pytest.raises(Z.SequenceMismatch):
+        Z.read_sequence(raw / "HG_A468E29" / "anatomical" / "sequence_09" / "sensor_data.csv")
+    seqs = Z.scan_raw(raw)["HG_A468E29"]["anatomical"]
+    r = Z.ingest_session("HG_A468E29", "anatomical", seqs, tmp_path / "out", "right", "HG_A468E29")
+    assert r["sequences"] == [1, 2] and list(r["excluded_sequences"]) == ["9"] and r["n_samples"] == 8000
+    meta = json.loads((tmp_path / "out" / "HG_A468E29" / "anatomical" / "metadata.json").read_text())
+    assert [t["sequence"] for t in meta["trials"]] == [1, 2] and "9" in meta["excluded_sequences"]
+    assert sorted(p.name for p in (tmp_path / "out" / "HG_A468E29" / "anatomical" / "labels_video_time").iterdir()) == ["sequence_01.csv", "sequence_02.csv"]
+
+
+def test_one_sample_ragged_channel_is_trimmed_and_reported(tmp_path):
+    _write_seq(tmp_path / "s", ragged4k=1)
+    r = Z.read_sequence(tmp_path / "s" / "sensor_data.csv")
+    assert r["trimmed"] == 1 and r["emg"].shape == (4000, 8)  # 7999 campioni a 4000 Hz -> ceil(7999 / 2) = 4000 a 2000 Hz
+
+
+def test_one_line_header_export_is_refused(tmp_path):
+    d = tmp_path / "s"
+    d.mkdir()
+    (d / "sensor_data.csv").write_text("2000 Hz, 2000 Hz.1,\" 74,0741 Hz\", 4000 Hz\n0.1,0.2,0.3,0.4\n0.1,0.2,0.3,0.4\n")
+    with pytest.raises(ValueError, match="intestazione di 1 righe"):
+        Z.read_sequence(d / "sensor_data.csv")

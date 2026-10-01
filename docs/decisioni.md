@@ -622,6 +622,16 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
   «64 adult participants performed 14 gestures with their non-dominant hand»); tipo di elettrodo dalla frequenza (4000 Hz = Avanti, 2000 Hz = Quattro);
   nessun dato anagrafico nel processato.
 
+**Pieno (job 59094690, 01/10/2026): 121 sessioni su 124, 61 soggetti, 596 sequenze, 24,3 h; 3 sessioni fallite**, lette sui file:
+- **HG_O983O9 anatomical, sequence_09:** canali a 2000 Hz di 309.474 campioni (154,7 s), a 4000 Hz di 503.255-503.256 (125,8 s): gli Avanti non coprono
+  la stessa finestra del Quattro e non si sa come allinearli. Correzione: una sequenza con durate incoerenti si **esclude** (registrata in
+  `excluded_sequences` nel sidecar), le altre della sessione restano; fra canali dello stesso tasso si tollerano 2 campioni di differenza (si taglia).
+  Rilanciata solo questa sessione;
+- **HG_H496O27 e HG_H544X3 (anatomical; sono i due soggetti senza modo `random` e con la riga vuota in `participants.csv`):** esportazione diversa,
+  intestazione di UNA riga con le sole frequenze («2000 Hz, 2000 Hz.1, ...»), senza sensore, muscolo e unita'; in HG_H496O27 l'IMU del Quattro sembra
+  esportata come quaternione (4 colonne a 74 Hz di norma circa 1). Abbinare le colonne a sensori e muscoli richiederebbe di assumere l'ordine degli
+  altri file, e manca la mano dominante: **proposta di AG, da confermare: lasciarli fuori** (~0,4 h su ~25).
+
 
 ---
 

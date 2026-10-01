@@ -61,6 +61,11 @@ MAX_LEN_MISMATCH = 2  # campioni a 2 kHz fra canali a 2000 Hz e canali a 4000 Hz
 _SEQ_RE = re.compile(r"^sequence_(\d+)$")
 
 
+class SequenceMismatch(ValueError):
+    """Sequenza con durate incoerenti fra i canali (es. HG_O983O9 anatomical sequence_09, 01/10/2026: canali a 2000 Hz di 154,7 s e a 4000 Hz di
+    125,8 s): non si sa come allinearli, si esclude la SEQUENZA (registrata nel sidecar), non la sessione."""
+
+
 def _finite(s: str) -> bool:
     try:
         return math.isfinite(float(s.strip().replace(",", ".")))
@@ -118,20 +123,22 @@ def read_sequence(path: Path) -> dict:
     cols = emg_columns(header)
     df = pd.read_csv(path, header=None, skiprows=len(header), usecols=[c["col"] for c in cols], dtype=np.float64, engine="c")
     series = {c["sensor"]: _contiguous(df[c["col"]].to_numpy(), f"{path} S{c['sensor']}") for c in cols}
-    n_raw = {}
+    n_raw, within_trim = {}, 0
     for fs in RAW_FS:
-        lens = {len(series[c["sensor"]]) for c in cols if c["raw_fs_hz"] == fs}
-        if len(lens) != 1:
-            raise ValueError(f"{path}: canali a {fs:g} Hz di lunghezze diverse {sorted(lens)}")
-        n_raw[fs] = lens.pop()
+        lens = sorted({len(series[c["sensor"]]) for c in cols if c["raw_fs_hz"] == fs})
+        if lens[-1] - lens[0] > MAX_LEN_MISMATCH:
+            raise SequenceMismatch(f"{path}: canali a {fs:g} Hz di lunghezze diverse {lens}")
+        n_raw[fs] = lens[0]
+        within_trim = max(within_trim, lens[-1] - lens[0])
     out = {}
     for c in cols:
         x = series[c["sensor"]]
         out[c["sensor"]] = resample_poly(x, 1, 2) if c["raw_fs_hz"] == 4000.0 else x
     n = min(len(v) for v in out.values())
-    trimmed = max(len(v) for v in out.values()) - n
+    trimmed = max(max(len(v) for v in out.values()) - n, within_trim)
     if trimmed > MAX_LEN_MISMATCH:
-        raise ValueError(f"{path}: 2000 Hz {n_raw[2000.0]} campioni contro 4000 Hz {n_raw[4000.0]} (dopo il ricampionamento {trimmed} di differenza)")
+        raise SequenceMismatch(f"{path}: 2000 Hz {n_raw[2000.0]} campioni contro 4000 Hz {n_raw[4000.0]} (dopo il ricampionamento {trimmed} di "
+                               "differenza)")
     emg = np.stack([out[s][:n] for s in range(1, N_EMG + 1)], axis=1)
     return {"emg": emg, "columns": cols, "n_raw": {f"{k:g}": v for k, v in n_raw.items()}, "trimmed": trimmed}
 
@@ -200,9 +207,13 @@ def ingest_session(subject: str, mode: str, seqs: list[tuple[int, Path]], out_ro
     from wearusfm.ingest.capgmyo import qc_channel_validity, to_int16
     from wearusfm.ingest.common import montage_to_dict, validate_montage_dict
 
-    parts, trials, offset, columns = [], [], 0, None
+    parts, trials, offset, columns, excluded = [], [], 0, None, {}
     for num, d in seqs:
-        r = read_sequence(d / "sensor_data.csv")
+        try:
+            r = read_sequence(d / "sensor_data.csv")
+        except SequenceMismatch as e:
+            excluded[num] = str(e)
+            continue
         sig = [(c["sensor"], c["muscle"], c["raw_fs_hz"], c["device"]) for c in r["columns"]]
         if columns is None:
             columns, first_sig = r["columns"], sig
@@ -211,6 +222,9 @@ def ingest_session(subject: str, mode: str, seqs: list[tuple[int, Path]], out_ro
         parts.append(r["emg"])
         trials.append({"sequence": num, "offset": offset, "n_samples": int(r["emg"].shape[0]), "n_raw": r["n_raw"], "trimmed": r["trimmed"]})
         offset += r["emg"].shape[0]
+    if not parts:
+        raise ValueError(f"{subject}/{mode}: tutte le sequenze escluse {excluded}")
+    seqs = [(n, d) for n, d in seqs if n not in excluded]
     emg = np.concatenate(parts, axis=0)
     valid = qc_channel_validity(emg, min_std=relative_min_std(emg))
     quantized, scale = to_int16(emg)
@@ -235,6 +249,7 @@ def ingest_session(subject: str, mode: str, seqs: list[tuple[int, Path]], out_ro
         "unit": "mV", "laterality": {Chirality.LEFT: "l", Chirality.RIGHT: "r"}.get(chir, ""),
         "laterality_source": "lato opposto alla mano dominante di participants.csv (gesti con la mano non dominante)",
         "participant_id_in_csv": participant_id, "n_channels_discarded_by_qc": int((~valid).sum()),
+        "excluded_sequences": {str(k): v for k, v in excluded.items()},
         "labels_dir": "labels_video_time", "labels_time_base": "video", "labels_aligned_to_emg": False,
         "random_sensor_order_note": ("ordine dei sensori nel modo random ignoto per 32 partecipanti (README); nessun angolo dichiarato"
                                      if mode == "random" else None),
@@ -243,5 +258,6 @@ def ingest_session(subject: str, mode: str, seqs: list[tuple[int, Path]], out_ro
     return {"subject": subject, "mode": mode, "n_sequences": len(seqs), "sequences": [n for n, _ in seqs], "n_samples": int(quantized.shape[0]),
             "hours": quantized.shape[0] / GRID_FS_HZ / 3600, "discarded_channels": [int(i) for i in np.flatnonzero(~valid)],
             "trimmed_by_sequence": {t["sequence"]: t["trimmed"] for t in trials if t["trimmed"]}, "laterality": sidecar["laterality"],
+            "excluded_sequences": {str(k): v for k, v in excluded.items()},
             "participant_id_in_csv": participant_id, "labels_copied": len(labels), "empty_label_files": [x["sequence"] for x in labels if x["bytes"] == 0],
             "int16_scale": scale, "emg_max_abs": float(np.abs(emg).max())}
