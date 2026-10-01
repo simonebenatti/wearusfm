@@ -996,3 +996,21 @@ riporta per soggetto.
 - **emg2pose:** collaudo su 3 registrazioni, poi il pieno con `--skip-existing`, riprendibile (budget 2 h 40 min per job, <= 6 ore locali ciascuno;
   stima 1-2 job, ~12 ore locali in tutto, 0 GPU-ora; processato ~100 GB su `$SCRATCH`).
 
+---
+
+## NinaPro DB10 (MeganePro): cosa si ingerisce e come (01/10/2026) — proposta di AG, parser scritto
+
+Dati e fonti: `fatti_da_verificare.md`, fatto 10c (citazioni controllate). Ispezione dei file via leonardo-ops (`scripts/inspect_mat.py`, `whosmat`).
+- **MDS1 (esercizio 1, prese):** l'EMG vero, 12 canali Delsys a 1926 Hz (1925,98 dai `ts`), 45 soggetti (30 normodotati, 15 amputati
+  transradiali S101-S115), ~56 h. Si ingerisce solo `S<NNN>_ex1.mat`; i `_orig` non contengono EMG.
+- **MDS2 e MDS4: proposta di lasciarli FUORI**, per la regola gia' scritta in v10 §2.4 (un inviluppo non entra nel front-end, come DB1): la fonte dice
+  «rectified via a moving root-mean-square with a window length of 300 samples», nei file a 100 Hz, con 2 elettrodi (uno per avambraccio). Sono
+  esercizi di immaginazione motoria e puntamento in cui l'EMG era secondario («the sEMG would serve for control analyses»). Da confermare.
+- **Montaggio:** normodotati: anello prossimale D_8 (colonne 1-8, angoli 0-315) e distale D_4 a 45 mm (colonne 9-12, «aligned with the gaps between
+  electrodes one and two, three and four»: angoli 22,5, 112,5, 202,5, 292,5); S024 (elettrodo 8 assente): anello prossimale con le posizioni 1-7;
+  S039 (7 elettrodi prossimali, spaziatura non dichiarata): sparso; **amputati: sparsi e nominali** (stessa scelta di DB8); lato: destro per i
+  normodotati, ignoto per gli amputati (il lato del moncone e' solo nella Tabella 1, non verificata cella per cella).
+- **Pause:** la registrazione di un soggetto ha decine di pause nell'asse dei tempi (S010: 50, la piu' lunga 166 s): si spezza in segmenti, come prove.
+- Rete 50 Hz (filtro di Hampel a 50 Hz dichiarato; Svizzera e Italia). Un canale con ampiezza molto piu' bassa degli altri (S010, canale 7: 3e-7 V
+  contro 5e-6-5e-5) passa il QC relativo: il report elenca i canali sotto il 5% della mediana come «sospetti», senza scartarli.
+
