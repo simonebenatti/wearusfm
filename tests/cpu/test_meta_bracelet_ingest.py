@@ -176,8 +176,15 @@ def test_iter_recordings_reads_only_as_far_as_needed(tmp_path):
     tarp = tmp_path / "e.tar"
     offsets = _pose_tar(tarp)
     with _ReadSpy(tarp) as f, tarfile.open(fileobj=f, mode="r:") as tf:
-        assert next(E2P.iter_recordings(tf)).stem == "rec-0_left"
+        ref = next(E2P.iter_recordings(tf))
+        assert ref.stem == "rec-0_left"
         assert f.max_pos <= offsets[1]  # l'intestazione della seconda registrazione non e' ancora stata letta
+        assert len(tf.extractfile(ref.info).read()) > 0
+        assert f.max_pos <= offsets[1]  # estrarre col membro non carica l'indice
+    with _ReadSpy(tarp) as f, tarfile.open(fileobj=f, mode="r:") as tf:
+        ref = next(E2P.iter_recordings(tf))
+        tf.extractfile(ref.member)  # col NOME: tarfile carica l'indice intero (il difetto del collaudo 59093601)
+        assert f.max_pos > offsets[2]
     with _ReadSpy(tarp) as f, tarfile.open(fileobj=f, mode="r:") as tf:
         E2P.scan_tar(tf)
         assert f.max_pos > offsets[2]  # scan_tar legge l'indice intero
@@ -201,6 +208,7 @@ def test_pose_ingest_script_streams_the_tar(tmp_path, monkeypatch):
         raise AssertionError("l'ingest non deve leggere l'indice intero del tar")
 
     monkeypatch.setattr(mod.E2P, "scan_tar", _no_full_scan)
+    monkeypatch.setattr(tarfile.TarFile, "_load", _no_full_scan)  # ne' getmembers ne' getmember/extractfile per nome
     monkeypatch.setattr(sys, "argv", ["x", "--dataset", "emg2pose", "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(tmp_path / "out"),
                                       "--report", str(tmp_path / "rep.json"), "--max-recordings", "2"])
     mod.main()

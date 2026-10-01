@@ -99,7 +99,8 @@ def main() -> int:
                     skipped += 1
                     continue
                 try:
-                    done.append(E2P.ingest_recording(tf.extractfile(ref.member), ref, args.out_root, row))
+                    # col membro, non col nome: il nome farebbe caricare l'indice intero del tar (vedi E2P.RecordingRef)
+                    done.append(E2P.ingest_recording(tf.extractfile(ref.info if ref.info is not None else ref.member), ref, args.out_root, row))
                 except Exception as e:
                     failed[ref.stem] = f"{type(e).__name__}: {e}"
                     print(f"  FALLITO {ref.stem}: {failed[ref.stem]}", flush=True)

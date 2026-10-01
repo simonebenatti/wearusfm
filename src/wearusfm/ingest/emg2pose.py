@@ -23,7 +23,7 @@ import io
 import json
 import re
 import tarfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import h5py
@@ -52,6 +52,9 @@ _SAFE_RE = re.compile(r"[^0-9A-Za-z_.@-]")
 class RecordingRef:
     member: str
     stem: str
+    # il membro del tar: si estrae con QUESTO, non col nome. `tf.extractfile(nome)` passa da getmember, che carica l'indice intero del tar (sul tar
+    # da 462 GB di emg2pose: lettura di tutto il file prima della prima registrazione; collaudo 59093601, 01/10/2026)
+    info: tarfile.TarInfo | None = field(default=None, compare=False, repr=False)
 
 
 def load_metadata_csv(path: Path) -> dict[str, dict]:
@@ -76,7 +79,7 @@ def iter_recordings(tf: tarfile.TarFile):
     01/10/2026: piu' di 30 minuti senza aver elaborato nulla)."""
     for m in tf:
         if m.isfile() and _is_recording(m.name):
-            yield RecordingRef(m.name, Path(m.name).stem)
+            yield RecordingRef(m.name, Path(m.name).stem, m)
 
 
 def scan_tar(tf: tarfile.TarFile) -> list[RecordingRef]:
