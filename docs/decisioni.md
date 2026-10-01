@@ -1044,12 +1044,16 @@ Costo: CPU seriale, 1 core, minuti; 0 GPU-ora. Il rinfresco non sostituisce le c
 
 ---
 
-## CapgMyo: canali quasi morti e buco scritti nei sidecar, forzando il freno (Simone, 01/10/2026: «sì applica su CapgMyo»)
+## CapgMyo: seconda applicazione, senza effetto (01/10/2026) — CORREZIONE: la scrittura era gia' stata fatta (sezione «CapgMyo: scrittura forzata»)
 
 Dalla scansione 59076768: 3 canali con deviazione standard 0,00088-0,00098 volte la mediana (s06 canale 28, s08 e s11 canale 102; circa 60 dB sotto gli
 altri) e un buco (s09 canale 40, 10 prove intere da 1 s). Il freno era scattato (3 sessioni su 18 > 5%). Si applica con `--force-dataset capgmyo`:
 copia di sicurezza dei sidecar, dati intatti. CapgMyo e' fra le classi della base della regola dei rami RVQ (misurata il 29/09 con quei canali validi):
 l'effetto atteso sulle misure gia' fatte e' trascurabile (3 canali su 128 in 3 sessioni su 18) e non si rimisura.
+**Correzione (AG, 01/10/2026):** AG aveva riproposto la decisione come «in sospeso» leggendo solo la riga «in attesa di Simone» del run 59078235, senza
+vedere la sezione «CapgMyo: scrittura forzata» (Simone: «sì forza capgmyo»), applicata prima. Il job 59105224 (`--apply --force-dataset capgmyo`)
+ha trovato 0 canali piatti nuovi e 0 buchi nuovi (6 sessioni gia' con canali non validi, 4 copie di sicurezza, 1 sessione con buchi): **non ha
+scritto nulla**. Lo stato dei sidecar resta quello della prima applicazione.
 
 **Esito per NinaPro DB8 (01/10/2026, applicazione meccanica):** run vero 59104658 (163 s, 1 GPU, ~0,05 GPU-ora; report in
 `results/step1bis/step1bis_59104658.json`, array sul Mac in `~/wearusfm_local/reports/step1bis/arrays_59104658/`, sha256 verificati). **Controlli scritti
