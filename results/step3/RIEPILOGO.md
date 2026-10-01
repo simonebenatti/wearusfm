@@ -4,8 +4,8 @@
 il 01/10 «firmo D8: 1a, 2, 3, 4a, 5, 6», filtro a muro firmato il 01/10 «firmo la correzione del filtro, lancia il gate»). Testo delle definizioni:
 `docs/proposta_gate_d8.md`.
 
-File: `gate_59087481.json` (esito completo) e `gate_d8_59087481.out` (log), copiati da Leonardo con sha256 uguali
-(`835912d5...c040` e `c1e9678b...d9c`).
+File: `gate_59087481.json` (esito completo), copiato da Leonardo con sha256 uguale (`835912d5...c040`). Il log (`*.out`, escluso da git) resta
+su Leonardo in `$WORK/wearusfm_runs/logs/gate_d8_59087481.out`, con copia sul Mac in `~/wearusfm_local/reports/step3/` (sha256 `c1e9678b...d9c`).
 
 ## Provenienza e costo
 - Codice `c730b18`; front-end `src/wearusfm/model/frontend.py` all'inizializzazione (patch 25 ms = default di lavoro di D10, contesto 100 ms per
