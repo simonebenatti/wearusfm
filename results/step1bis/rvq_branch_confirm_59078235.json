@@ -1,0 +1,428 @@
+{
+  "decision": "docs/decisioni.md, D5b - conferma sui dataset nuovi, opzione (b) (30/09/2026)",
+  "base_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo"
+  ],
+  "new_report": "step1bis_59078235.json",
+  "base_report": "step1bis_59048369.json",
+  "comparability": {
+    "checkpoint_sha256": [
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      true
+    ],
+    "scale_factor": [
+      21.718382449214758,
+      21.718382449214758,
+      true
+    ],
+    "emg2pose_median_nmse": [
+      0.03520336429260397,
+      0.03520336429260397,
+      true
+    ],
+    "v1_ratio": [
+      1.2306812894412003,
+      1.2306812894412003,
+      true
+    ]
+  },
+  "v2_new": {
+    "kaifosh": {
+      "ratio": 1.0540216377836886,
+      "passes": true
+    },
+    "ninapro_db2": {
+      "ratio": 1.7555282505771546,
+      "passes": true
+    },
+    "ninapro_db3": {
+      "ratio": 1.9304093642269016,
+      "passes": true
+    },
+    "ninapro_db4": {
+      "ratio": 1.6568837605102151,
+      "passes": true
+    },
+    "ninapro_db6": {
+      "ratio": 1.8374476773428872,
+      "passes": true
+    },
+    "ninapro_db7": {
+      "ratio": 1.5125580645655152,
+      "passes": true
+    },
+    "hyser": {
+      "ratio": 1.3617755817945731,
+      "passes": true
+    }
+  },
+  "confirm": {
+    "hyser": {
+      "dataset": "hyser",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "hyser"
+      ],
+      "n_units": 390,
+      "n_test_units": 75,
+      "bands": {
+        "balanced_accuracy": 0.5571428571428572,
+        "ci95": [
+          0.4562671703296703,
+          0.6457163461538461
+        ],
+        "chance": 0.2,
+        "model": "logreg_C1.0",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.41428571428571426,
+          "ci95": [
+            0.32755380036630033,
+            0.5192461215255333
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.3857142857142857,
+          "ci95": [
+            0.2794871794871795,
+            0.5076292016806723
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.41428571428571426,
+        "from": "histogram",
+        "diff_minus_bands": -0.1428571428571429,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "kaifosh": {
+      "dataset": "kaifosh",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "kaifosh"
+      ],
+      "n_units": 390,
+      "n_test_units": 76,
+      "bands": {
+        "balanced_accuracy": 0.657142857142857,
+        "ci95": [
+          0.5757692307692307,
+          0.7390714285714286
+        ],
+        "chance": 0.2,
+        "model": "logreg_C10.0",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.4428571428571429,
+          "ci95": [
+            0.3321071428571428,
+            0.5547733516483516
+          ],
+          "chance": 0.2,
+          "model": "logreg_C10.0",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.32857142857142857,
+          "ci95": [
+            0.22709296218487396,
+            0.43408035714285703
+          ],
+          "chance": 0.2,
+          "model": "logreg_C1.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.4428571428571429,
+        "from": "histogram",
+        "diff_minus_bands": -0.21428571428571414,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "ninapro_db2": {
+      "dataset": "ninapro_db2",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db2"
+      ],
+      "n_units": 390,
+      "n_test_units": 76,
+      "bands": {
+        "balanced_accuracy": 0.6714285714285714,
+        "ci95": [
+          0.5956025641025641,
+          0.7433342490842492
+        ],
+        "chance": 0.2,
+        "model": "logreg_C10.0",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.3714285714285714,
+          "ci95": [
+            0.28632875457875456,
+            0.46429820179820175
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.32857142857142857,
+          "ci95": [
+            0.25464553828524417,
+            0.4158296703296702
+          ],
+          "chance": 0.2,
+          "model": "logreg_C10.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.3714285714285714,
+        "from": "histogram",
+        "diff_minus_bands": -0.3,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "ninapro_db3": {
+      "dataset": "ninapro_db3",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db3"
+      ],
+      "n_units": 390,
+      "n_test_units": 74,
+      "bands": {
+        "balanced_accuracy": 0.6428571428571429,
+        "ci95": [
+          0.5213873626373626,
+          0.7571428571428572
+        ],
+        "chance": 0.2,
+        "model": "logreg_C10.0",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.39999999999999997,
+          "ci95": [
+            0.3127738095238095,
+            0.5012600732600733
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.37142857142857133,
+          "ci95": [
+            0.2697761752136752,
+            0.4821250000000001
+          ],
+          "chance": 0.2,
+          "model": "logreg_C10.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.39999999999999997,
+        "from": "histogram",
+        "diff_minus_bands": -0.24285714285714294,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "ninapro_db4": {
+      "dataset": "ninapro_db4",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db4"
+      ],
+      "n_units": 390,
+      "n_test_units": 75,
+      "bands": {
+        "balanced_accuracy": 0.5428571428571428,
+        "ci95": [
+          0.44998626373626377,
+          0.6381456043956043
+        ],
+        "chance": 0.2,
+        "model": "hist_gb",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.41428571428571426,
+          "ci95": [
+            0.3210565476190476,
+            0.5107326007326006
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.32857142857142857,
+          "ci95": [
+            0.24424244505494502,
+            0.4286126373626373
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.41428571428571426,
+        "from": "histogram",
+        "diff_minus_bands": -0.12857142857142856,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "ninapro_db6": {
+      "dataset": "ninapro_db6",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db6"
+      ],
+      "n_units": 390,
+      "n_test_units": 75,
+      "bands": {
+        "balanced_accuracy": 0.5285714285714286,
+        "ci95": [
+          0.42200892857142863,
+          0.6285714285714286
+        ],
+        "chance": 0.2,
+        "model": "hist_gb",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.42857142857142855,
+          "ci95": [
+            0.33044253663003664,
+            0.5335302197802197
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.32857142857142857,
+          "ci95": [
+            0.24499908424908426,
+            0.43000274725274723
+          ],
+          "chance": 0.2,
+          "model": "logreg_C1.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.42857142857142855,
+        "from": "histogram",
+        "diff_minus_bands": -0.10000000000000003,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    },
+    "ninapro_db7": {
+      "dataset": "ninapro_db7",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db7"
+      ],
+      "n_units": 390,
+      "n_test_units": 74,
+      "bands": {
+        "balanced_accuracy": 0.5571428571428572,
+        "ci95": [
+          0.46673534798534794,
+          0.6538461538461539
+        ],
+        "chance": 0.2,
+        "model": "hist_gb",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.3857142857142857,
+          "ci95": [
+            0.28162149859943975,
+            0.5077061272061272
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.4,
+          "ci95": [
+            0.2628365384615385,
+            0.5307783882783883
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.4,
+        "from": "codebook_mean",
+        "diff_minus_bands": -0.15714285714285714,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    }
+  },
+  "final_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo",
+    "hyser",
+    "kaifosh",
+    "ninapro_db2",
+    "ninapro_db3",
+    "ninapro_db4",
+    "ninapro_db6",
+    "ninapro_db7"
+  ]
+}

@@ -804,3 +804,29 @@ copia sul Mac con sha256 verificato):**
   1,5 s), cioe' pause dell'intera registrazione, non buchi di un canale. Nessun buco negli altri 8 dataset.
 - **Camargo e CapgMyo sono dataset del run del 29/09** (e della base della regola dei rami): segnalato qui come previsto; nessun rilancio che li riguardi.
 - **Prossimo passo (autorizzato):** scrittura dei buchi nei sidecar di Camargo, Hyser, NinaPro DB3 e DB4 (`--apply --only ...`), poi rilancio di V2.
+
+---
+
+## V2 sui dataset nuovi e conferma della regola dei rami: esito (01/10/2026, applicazione meccanica)
+
+**Run** 59078235 (24 min 49 s, 1 GPU, 0,41 GPU-ora, circa 3,3 ore locali), dopo la scrittura dei buchi (job 59077887). Report in
+`results/step1bis/step1bis_59078235.json`; array sul Mac (`~/wearusfm_local/arrays_59078235/`, sha256 verificati). **Confrontabile col run del 29/09:**
+stesso checkpoint, fattore 21,718, errore di emg2pose 0,0352, V1 1,231, tutti identici; l'array di emg2pose ha lo stesso sha256 di quello del 29/09.
+
+**V2 (soglia 2, invariata), tutti passano:** Kaifosh 1,05 · NinaPro DB2 1,76 · DB3 1,93 · DB4 1,66 · DB6 1,84 · DB7 1,51 · Hyser 1,36.
+
+**Conferma, opzione (b)** (`scripts/rvq_branch_confirm.py`, risultato `results/step1bis/rvq_branch_confirm_59078235.json`): ogni dataset provato da solo con
+le 4 classi della base. Livello 0 del ramo 0 contro le 5 bande, stesse classi: Hyser 0,414 contro 0,557 · Kaifosh 0,443/0,657 · DB2 0,371/0,671 · DB3
+0,400/0,643 · DB4 0,414/0,543 · DB6 0,429/0,529 · DB7 0,400/0,557 (caso 0,20). **Tutti entrano** (il ramo 0 riconosce il dataset meno delle 5 bande, da
+-0,10 a -0,30). Split della base invariato (verificato dal codice).
+
+**Ancora RVQ (livello 0, ramo 0) accesa su:** camargo2021, capgmyo, emg2pose, grabmyo, hyser, kaifosh, ninapro_db2, ninapro_db3, ninapro_db4, ninapro_db6,
+ninapro_db7, piu' emg2qwerty quando sara' ingerito. **Spenta su:** putEMG, CSL-hdemg (V2), NinaPro DB5 (200 Hz).
+
+Da tenere presente, senza cambiare l'esito:
+- **Etichette rumorose** (V4, codice del ramo 0 al livello 0 invariato sotto rumore): Kaifosh 0,47 · DB2 0,45 · DB3 0,62 · DB4 0,38 · DB6 0,84 · DB7 0,35 ·
+  Hyser 0,43 (base: emg2pose 0,46, CapgMyo 0,33, Camargo 0,36, GRABMyo 0,11).
+- **Camargo e CapgMyo** della base sono stati misurati il 29/09, prima che i buchi fossero esclusi (Camargo ab06: 158 s su tutti i canali; CapgMyo s09:
+  10 s su un canale): effetto atteso trascurabile, non misurato.
+- **CapgMyo:** 3 canali quasi morti e un buco non scritti (freno scattato): in attesa di Simone.
+- Costo del passo 1-bis oggi: collaudi 0,05 GPU-ora, run fallito 0,24, rilancio 0,41: circa 0,7 GPU-ora; in tutto il passo resta sotto 2 dei 30.

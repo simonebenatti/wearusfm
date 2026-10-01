@@ -102,3 +102,12 @@ Letture, con le cautele del caso:
 2. L'identita' sta nei **livelli profondi** (8-15: 0,988) e nel **ramo alto in frequenza** (ramo 3: 0,952);
    il ramo 0 da solo e' vicino alla baseline (0,690). Coerente con l'ipotesi di v10 §6.3.
 3. Campioni: 78 per dataset, 84 di test; CSL-hdemg ha solo 5 soggetti.
+
+
+## Aggiornamento del 01/10/2026: V2 sui dataset nuovi e regola dei rami
+
+Run 59078235 (`step1bis_59078235.json`), confrontabile col run del 29/09 (fattore, emg2pose, V1 identici). Rapporto V2 (soglia 2): Kaifosh 1,05, NinaPro
+DB2 1,76, DB3 1,93, DB4 1,66, DB6 1,84, DB7 1,51, Hyser 1,36: **passano tutti**. Regola dei rami (firmata e corretta prima delle misure): idoneo solo il
+**livello 0 del ramo 0** (`rvq_branch_probe.json`); confermato su ciascuno dei 7 dataset nuovi provato da solo (`rvq_branch_confirm_59078235.json`).
+L'ancora RVQ predice quindi un codice per patch-canale, sul ramo 0, in 11 dataset (vedi `docs/decisioni.md`). Il primo tentativo (job 59073207) era
+crollato su NinaPro DB4 per tratti a valore costante di un canale: marcati ed esclusi prima del rilancio (decisioni.md, «Buchi di un canale»).
