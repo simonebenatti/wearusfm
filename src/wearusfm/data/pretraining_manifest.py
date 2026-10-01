@@ -23,7 +23,7 @@ CLASS_BY_UNIT = {
 }
 # Ancora RVQ (D5b firmata, docs/decisioni.md): accesa, spenta, o da misurare (dataset nuovi: V2 e conferma del ramo)
 RVQ_ON = {"camargo2021", "capgmyo", "emg2pose", "emg2qwerty", "grabmyo", "hyser", "kaifosh", "ninapro_db2", "ninapro_db3", "ninapro_db4", "ninapro_db6",
-          "ninapro_db7"}
+          "ninapro_db7", "ninapro_db8"}  # DB8: V2 1,46 e ramo 0 confermato (run 59104658, 01/10/2026)
 RVQ_OFF = {"putemg", "csl_hdemg", "ninapro_db5"}
 
 

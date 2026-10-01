@@ -1051,3 +1051,9 @@ altri) e un buco (s09 canale 40, 10 prove intere da 1 s). Il freno era scattato 
 copia di sicurezza dei sidecar, dati intatti. CapgMyo e' fra le classi della base della regola dei rami RVQ (misurata il 29/09 con quei canali validi):
 l'effetto atteso sulle misure gia' fatte e' trascurabile (3 canali su 128 in 3 sessioni su 18) e non si rimisura.
 
+**Esito per NinaPro DB8 (01/10/2026, applicazione meccanica):** run vero 59104658 (163 s, 1 GPU, ~0,05 GPU-ora; report in
+`results/step1bis/step1bis_59104658.json`, array sul Mac in `~/wearusfm_local/reports/step1bis/arrays_59104658/`, sha256 verificati). **Controlli scritti
+prima: tutti identici** (fattore 21,718; errore mediano di emg2pose 0,03520; V1 1,231; stesso checkpoint). **V2 di DB8: 1,46 <= 2, passa.** Conferma del
+ramo (opzione b, `results/step1bis/rvq_branch_confirm_59104658.json`): livello 0 del ramo 0 0,431 contro 0,723 delle 5 bande sulle stesse classi
+(differenza -0,29): **ENTRA**. **Ancora RVQ accesa anche su ninapro_db8.** Zhang: run vero dopo i suoi buchi; DB10: dopo il suo ingest.
+

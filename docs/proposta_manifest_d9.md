@@ -150,7 +150,7 @@ qui vanno nel pretraining. Gli ID degli 8 utenti di test sono a 8 cifre (lo YAML
 ## (e) Target RVQ
 
 Secondo D5b (firmato): ancora RVQ sul **livello 0 del ramo 0**, accesa su camargo2021, capgmyo, emg2pose, emg2qwerty, grabmyo, hyser, kaifosh (se
-resta nel pretraining), ninapro_db2/3/4/6/7; spenta su putEMG, CSL-hdemg, DB5. **I dataset nuovi (DB8, DB10, Zhang) vanno misurati** con la
+resta nel pretraining), ninapro_db2/3/4/6/7 e **ninapro_db8** (V2 1,46, ramo 0 confermato il 01/10, run 59104658); spenta su putEMG, CSL-hdemg, DB5. **Restano da misurare DB10 e Zhang** con la
 regola già firmata (V2 ≤ 2 e conferma del ramo, opzione b): GPU, stima < 0,5 GPU-ora, da confermare col costo prima del lancio.
 
 ## Prima della firma (cosa manca)
