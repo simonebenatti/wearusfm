@@ -630,7 +630,7 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
 - **HG_H496O27 e HG_H544X3 (anatomical; sono i due soggetti senza modo `random` e con la riga vuota in `participants.csv`):** esportazione diversa,
   intestazione di UNA riga con le sole frequenze («2000 Hz, 2000 Hz.1, ...»), senza sensore, muscolo e unita'; in HG_H496O27 l'IMU del Quattro sembra
   esportata come quaternione (4 colonne a 74 Hz di norma circa 1). Abbinare le colonne a sensori e muscoli richiederebbe di assumere l'ordine degli
-  altri file, e manca la mano dominante: **proposta di AG, da confermare: lasciarli fuori** (~0,4 h su ~25).
+  altri file, e manca la mano dominante: **lasciati fuori** (~0,4 h su ~25; Simone, 01/10/2026: «sì, lasciamo fuori i due soggetti di Zhang»).
 
 
 ---
