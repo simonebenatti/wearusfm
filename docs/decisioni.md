@@ -1085,3 +1085,15 @@ Mac in `~/wearusfm_local/reports/step1bis/arrays_59108493/`, sha256 verificati),
 Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello 0 del ramo 0 0,371 contro 0,643 delle 5 bande (differenza -0,27):
 **ENTRA. Ancora RVQ accesa anche su zhang2026.** Resta DB10, dopo la misura dei suoi buchi.
 
+---
+
+## Tre decisioni del 02/10/2026 (Simone: «ok ti do il via», sulla proposta di AG)
+
+1. **emg2pose: le 3.539 registrazioni (58,8 h) del test ufficiale per fasi nuove** (`split = test`, `held_out_stage = True`, di utenti NON tenuti
+   fuori) **escono dal pretraining** e restano per la valutazione, come gli utenti tenuti fuori: il benchmark ufficiale resta pulito. Lo split
+   diventa per sessione oltre che per soggetto (`test_sessions` negli split).
+2. **emg2qwerty: si scrivono nei sidecar i 189 tratti costanti** misurati dal job 59099080 (`qc_relative_check --only emg2qwerty --apply`, copia di
+   sicurezza, dati intatti).
+3. **DB10 ed emg2pose: misura dei tratti costanti**, sola lettura (`qc_relative_check --only ninapro_db10 --only emg2pose`); una scrittura, se serve,
+   si chiede a parte.
+
