@@ -1030,3 +1030,15 @@ emg2pose; ramo: livello 0 del ramo 0 entro 10 punti dalle 5 bande, sulle classi 
 3. **Conferma dei rami** (CPU, `scripts/rvq_branch_confirm.py`) sui dataset con V2 <= 2.
 Budget del passo 1-bis: 30 GPU-ora, usati finora meno di 2.
 
+---
+
+## Dati su $SCRATCH: rinfresco periodico delle date (proposta di AG, 01/10/2026)
+
+**Trovato il 01/10/2026** (scansione in sola lettura delle date su `$SCRATCH`): il tar grezzo di emg2qwerty (308 GB) ha data di modifica 25/08/2021 e
+i 36 `.mat` di NinaPro DB8 date dal 13/08/2019 (`wget` conserva la data del server): se il purge a 40 giorni conta dalla data di modifica (informazione
+di Simone, non verificata), sono **gia' esposti**. Il resto del raw e' del 23-29/09, il processato del 29/09-01/10. Quasi tutto il processato sta su
+`$SCRATCH` ($WORK e' pieno), e un manifest congelato (D9) deve puntare a dati che restano per tutta la ladder.
+**Proposta:** `scripts/slurm/refresh_scratch.sbatch` (solo `touch` di file e cartelle, con conteggio prima e verifica dopo; non cancella nulla) su
+`data/raw`, `data/processed`, `wearusfm_runs` ed `external`: **subito**, poi **ogni 21 giorni** per tutta la durata della ladder (22/10, 12/11, ...).
+Costo: CPU seriale, 1 core, minuti; 0 GPU-ora. Il rinfresco non sostituisce le copie: i dati difficili da riottenere restano anche su $WORK.
+

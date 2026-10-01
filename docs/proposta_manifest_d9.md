@@ -111,14 +111,16 @@ tabella.
 
 **Proposta di AG:**
 - **soggetti di test per dataset**, tenuti fuori dal pretraining: gli split ufficiali dove esistono (emg2pose: colonne `held_out_user` e `split` del CSV dei
-  metadati; Kaifosh: 80/10/10; emg2qwerty: **da verificare**, non e' nelle fonti lette finora); altrove il **20% dei soggetti, almeno 2, arrotondato per eccesso**, stratificato fra amputati e normodotati (DB7, DB8, DB10), con
+  metadati; Kaifosh: 80/10/10; emg2qwerty: gli 8 utenti di test di `config/user/user0-7.yaml`, fatto 10d); altrove il **20% dei soggetti, almeno 2, arrotondato per eccesso**, stratificato fra amputati e normodotati (DB7, DB8, DB10), con
   **seed 0**; in Zhang lo stesso soggetto ha i due modi: si divide per soggetto;
 - **manifest sottocampionati per soggetti** (asse di v10 §10.6, D16): sottoinsiemi annidati del 12,5, 25 e 50% dei soggetti di pretraining, per
   dataset, stesso seed;
 - **due sovrapposizioni note, da dichiarare:** (1) il tokenizer NeuroRVQ è stato addestrato su emg2pose ed emg2qwerty (fatto n. 4, dal paper): i
   loro soggetti di test sono stati visti dal tokenizer, e la valutazione su quei soggetti va segnata; (2) la sovrapposizione di persone fra i DB
-  NinaPro non è verificata (fatto n. 2, «da raccogliere»): uno stesso soggetto potrebbe stare nel test di un DB e nel pretraining di un altro.
-  Proposta: verificare il fatto n. 2 prima della firma; se non si trova, dichiararlo come limite.
+  NinaPro (fatto n. 2, raccolto il 01/10): DB4 e DB5 hanno un soggetto in comune (ID non dichiarato); DB8 riusa probabilmente 5 normodotati e i 2
+  amputati di DB7 (ID non dichiarati); gli ID sono locali a ogni DB. **Proposta:** i soggetti di test di NinaPro si prendono solo dai DB senza
+  sovrapposizioni dichiarate (DB2, DB3, DB6, DB10); **DB4, DB5, DB7 e DB8 restano interi nel pretraining**, cosi' una persona presente in due DB non
+  puo' finire nel test di uno e nel pretraining dell'altro. Gli amputati di test vengono da DB3 e DB10.
 
 ## (e) Target RVQ
 
@@ -131,7 +133,7 @@ regola già firmata (V2 ≤ 2 e conferma del ramo, opzione b): GPU, stima < 0,5 
 1. Ingest completo di **emg2pose** e **DB10**, e la tabella rigenerata con le ore vere.
 2. **Buchi** (tratti costanti) segnati su emg2pose, emg2qwerty, Zhang e DB10 (il campionamento li esclude: cambiano di poco le ore utili).
 3. **V2 e conferma del ramo RVQ** su DB8, DB10 e Zhang (punto e).
-4. **Fatto n. 2** (sovrapposizione NinaPro).
+4. Firma dei fatti n. 2 (sovrapposizione NinaPro) e 10d (split di emg2qwerty), raccolti il 01/10.
 5. **Dove stanno i dati:** quasi tutto il processato è su `$SCRATCH` (purge a 40 giorni). Un manifest congelato deve puntare a dati che restano: serve
    una regola di rinfresco per tutta la durata della ladder, non solo il 25/10.
 6. D10 (lunghezza della patch) cambia `D_t` e `D_c` ma non la composizione del manifest.
