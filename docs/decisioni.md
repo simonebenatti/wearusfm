@@ -1042,3 +1042,12 @@ di Simone, non verificata), sono **gia' esposti**. Il resto del raw e' del 23-29
 `data/raw`, `data/processed`, `wearusfm_runs` ed `external`: **subito**, poi **ogni 21 giorni** per tutta la durata della ladder (22/10, 12/11, ...).
 Costo: CPU seriale, 1 core, minuti; 0 GPU-ora. Il rinfresco non sostituisce le copie: i dati difficili da riottenere restano anche su $WORK.
 
+---
+
+## CapgMyo: canali quasi morti e buco scritti nei sidecar, forzando il freno (Simone, 01/10/2026: «sì applica su CapgMyo»)
+
+Dalla scansione 59076768: 3 canali con deviazione standard 0,00088-0,00098 volte la mediana (s06 canale 28, s08 e s11 canale 102; circa 60 dB sotto gli
+altri) e un buco (s09 canale 40, 10 prove intere da 1 s). Il freno era scattato (3 sessioni su 18 > 5%). Si applica con `--force-dataset capgmyo`:
+copia di sicurezza dei sidecar, dati intatti. CapgMyo e' fra le classi della base della regola dei rami RVQ (misurata il 29/09 con quei canali validi):
+l'effetto atteso sulle misure gia' fatte e' trascurabile (3 canali su 128 in 3 sessioni su 18) e non si rimisura.
+
