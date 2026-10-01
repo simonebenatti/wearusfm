@@ -55,6 +55,11 @@ class SessionRow:
     rvq: str
     sidecar_sha256: str
     weight: float = 0.0
+    # salti dell'asse dei tempi (dal campo time_axis del sidecar, dove c'e'): NON spezzano i segmenti, una finestra puo' attraversarli
+    n_time_gaps: int = 0
+    missing_time_s: float = 0.0  # durata coperta dai timestamp meno durata dei campioni
+    max_gap_s: float = 0.0
+    gaps_truncated: bool = False  # il sidecar elenca al piu' 10.000 salti
 
     @property
     def hours(self) -> float:

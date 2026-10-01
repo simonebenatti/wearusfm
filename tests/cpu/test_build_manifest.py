@@ -15,7 +15,7 @@ BM = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(BM)
 
 
-def _session(d: Path, n: int, c: int, fs: float, qc=None, runs=None, trials=None):
+def _session(d: Path, n: int, c: int, fs: float, qc=None, runs=None, trials=None, time_axis=None):
     d.mkdir(parents=True, exist_ok=True)
     np.save(d / "data_int16.npy", np.zeros((n, c), np.int16))
     chans = [{"qc_valid": True if qc is None else bool(qc[i])} for i in range(c)]
@@ -24,6 +24,8 @@ def _session(d: Path, n: int, c: int, fs: float, qc=None, runs=None, trials=None
         meta["constant_runs"] = runs
     if trials:
         meta["trials"] = trials
+    if time_axis:
+        meta["time_axis"] = time_axis
     (d / "metadata.json").write_text(json.dumps(meta))
 
 
@@ -36,7 +38,9 @@ def _tree(tmp_path):
     _session(a / "ninapro_db2" / "s02" / "session1", 3600, 4, 2000.0)
     _session(a / "ninapro_db2" / "s03" / "session1", 3600, 4, 2000.0)
     # emg2qwerty (classe B) e Zhang (anatomical A, random B) e Kaifosh (benchmark)
-    _session(b / "emg2qwerty" / "u1" / "sessA", 72000, 2, 2000.0)
+    # 72000 campioni a 2 kHz = 36 s di campioni, ma i timestamp coprono 36,5 s: 0,5 s mancanti in 2 salti
+    _session(b / "emg2qwerty" / "u1" / "sessA", 72000, 2, 2000.0,
+             time_axis={"n_gaps": 2, "duration_s": 71999 / 2000.0 + 0.5, "dt_max_s": 0.4005, "gaps_truncated": False})
     _session(b / "zhang2026" / "HG_1" / "anatomical", 4000, 8, 2000.0)
     _session(b / "zhang2026" / "HG_1" / "random", 4000, 8, 2000.0)
     _session(b / "kaifosh" / "u000" / "dataset000", 2000, 16, 2000.0)
@@ -145,3 +149,14 @@ def test_build_is_canonical_even_if_sessions_are_discovered_in_reverse(tmp_path,
     monkeypatch.setattr(BM, "discover_sessions", lambda root, ds: list(reversed(real(root, ds))))
     rows_rev, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
     assert [(r.dataset, r.subject, r.session, r.weight) for r in rows_rev] == [(r.dataset, r.subject, r.session, r.weight) for r in rows]
+
+
+
+def test_time_axis_gaps_are_counted_per_session_and_unit(tmp_path):
+    roots, splits = _tree(tmp_path)
+    rows, summary = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+    r = next(x for x in rows if x.dataset == "emg2qwerty")
+    assert r.n_time_gaps == 2 and r.missing_time_s == pytest.approx(0.5) and r.max_gap_s == pytest.approx(0.4005)
+    g = summary["units"]["emg2qwerty"]["time_gaps"]
+    assert g == {"sessions": 1, "gaps": 2, "missing_s": pytest.approx(0.5), "max_gap_s": pytest.approx(0.4005), "truncated_sessions": 0}
+    assert summary["units"]["ninapro_db2"]["time_gaps"]["sessions"] == 0

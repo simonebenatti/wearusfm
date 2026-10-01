@@ -45,15 +45,29 @@ def session_row(path: Path, dataset: str, subject: str, session: str, splits: di
     unit = M.unit_of(dataset, session)
     if unit not in M.CLASS_BY_UNIT:
         raise KeyError(f"{dataset}/{session}: unita' {unit} senza classe di quota")
-    return M.SessionRow(dataset, subject, session, split, nested, int(n_samples), float(meta["native_fs_hz"]), int(n_channels), int(valid.sum()),
-                        excluded, int(n_segments), unit, M.CLASS_BY_UNIT[unit], M.rvq_status(dataset), hashlib.sha256(raw).hexdigest())
+    fs = float(meta["native_fs_hz"])
+    ta = meta.get("time_axis") or {}
+    n_gaps = int(ta.get("n_gaps") or 0)
+    missing = max(0.0, float(ta["duration_s"]) - (int(n_samples) - 1) / fs) if n_gaps and "duration_s" in ta else 0.0
+    return M.SessionRow(dataset, subject, session, split, nested, int(n_samples), fs, int(n_channels), int(valid.sum()),
+                        excluded, int(n_segments), unit, M.CLASS_BY_UNIT[unit], M.rvq_status(dataset), hashlib.sha256(raw).hexdigest(),
+                        n_time_gaps=n_gaps, missing_time_s=missing, max_gap_s=float(ta.get("dt_max_s") or 0.0) if n_gaps else 0.0,
+                        gaps_truncated=bool(ta.get("gaps_truncated")))
 
 
 def summarize(rows: list[M.SessionRow], alloc: dict, patch_s: float) -> dict:
     units: dict[str, dict] = {}
     for r in rows:
-        u = units.setdefault(r.unit, {"class": r.quota_class, "rvq": r.rvq, "sessions": 0, "subjects": set(), "hours": {}, "d_t": 0.0, "d_c": 0.0})
+        u = units.setdefault(r.unit, {"class": r.quota_class, "rvq": r.rvq, "sessions": 0, "subjects": set(), "hours": {}, "d_t": 0.0, "d_c": 0.0,
+                                      "time_gaps": {"sessions": 0, "gaps": 0, "missing_s": 0.0, "max_gap_s": 0.0, "truncated_sessions": 0}})
         u["sessions"] += 1
+        if r.n_time_gaps:
+            g = u["time_gaps"]
+            g["sessions"] += 1
+            g["gaps"] += r.n_time_gaps
+            g["missing_s"] += r.missing_time_s
+            g["max_gap_s"] = max(g["max_gap_s"], r.max_gap_s)
+            g["truncated_sessions"] += int(r.gaps_truncated)
         u["subjects"].add(r.subject)
         u["hours"][r.split] = u["hours"].get(r.split, 0.0) + r.hours
         if r.split == "pretraining":
@@ -144,6 +158,12 @@ def main(argv=None) -> int:
     t = summary["totals"]
     if summary["subjects_without_sessions"] or summary["test_sessions_not_found"]:
         print(f"ATTENZIONE: soggetti senza sessioni {summary['subjects_without_sessions']}; sessioni di test non trovate {summary['test_sessions_not_found']}")
+    print("\nSalti dell'asse dei tempi (non spezzano i segmenti):")
+    for k, u in sorted(summary["units"].items()):
+        g = u["time_gaps"]
+        if g["sessions"]:
+            print(f"- {k}: {g['sessions']} sessioni, {g['gaps']} salti, {g['missing_s']:.1f} s mancanti in tutto, salto massimo {g['max_gap_s']:.3f} s"
+                  f"{', elenco troncato in ' + str(g['truncated_sessions']) + ' sessioni' if g['truncated_sessions'] else ''}")
     print(f"\nPretraining: {t['pretraining_sessions']} sessioni, {t['pretraining_hours']:.1f} h, D_t {t['d_t'] / 1e6:.1f} M, D_c {t['d_c'] / 1e9:.2f} G; "
           f"somma dei pesi {t['weight_sum']:.4f}; quota non assegnabile {t['unused_quota']}")
     return 0
