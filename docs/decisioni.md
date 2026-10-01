@@ -902,6 +902,8 @@ soggetto con piu' segmenti ne avrebbe avute 20 per segmento; su Kaifosh, una reg
 Primo lancio (job 59086063, 01/10/2026 10:03): **fuori memoria** dopo 71 s (16 GB), prima di qualunque misura. Causa: ogni finestra era una *vista*
 sulla sessione intera, che restava quindi in memoria (~700 MB in float64 per soggetto). Corretto (le finestre sono copie; test che cattura la versione
 con la vista); picco misurato sul Mac con sessioni di dimensione vera: 2,2 GB con 2 soggetti, 2,4 GB con 5. Rilanciato una volta, stesse definizioni.
+**Esito (dato, 01/10/2026, job 59087481): gate SUPERATO** in entrambi i casi con tutti e 3 i semi (errore massimo 0,43% nel caso 200 Hz;
+sonda fra 0,500 e 0,505). Dettagli e note in `results/step3/RIEPILOGO.md`.
 
 ---
 
