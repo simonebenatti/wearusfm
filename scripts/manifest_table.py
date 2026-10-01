@@ -17,6 +17,8 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
 ROOT = Path(__file__).resolve().parent.parent / "results" / "passo2"
 PATCH_S = 0.025
 
@@ -95,34 +97,13 @@ def passes(quota: float, hours_class: float, hours_total: float, epochs: float =
 
 
 def allocate(rows: list[dict], quota: dict[str, float], alpha: float, max_passes: float, hours_total: float, epochs: float = 4.0) -> dict:
-    """Quota di campioni per dataset: dentro ogni classe pesi proporzionali a ore^alpha, con un tetto di `max_passes` passaggi per dataset (con
-    `epochs` epoche di consumo totale); l'eccesso di un dataset al tetto si ridistribuisce agli altri della stessa classe (riempimento iterativo).
-    Se tutta la classe e' al tetto, la quota residua della classe resta inutilizzata e si riporta. Ritorna {chiave: (quota, passaggi)}."""
-    out: dict[str, tuple[float, float]] = {}
-    unused = {}
-    budget = epochs * hours_total  # ore consumate in tutto
-    for cls, q in quota.items():
-        rs = [r for r in rows if r["class"] == cls]
-        cap = {r["key"]: max_passes * r["hours"] / budget for r in rs}  # quota massima per dataset
-        share, free, left = {}, {r["key"]: r for r in rs}, q
-        while free and left > 1e-12:
-            w = {k: r["hours"] ** alpha for k, r in free.items()}
-            s = sum(w.values())
-            over = {k for k in free if left * w[k] / s > cap[k] + 1e-15}
-            if not over:
-                for k in free:
-                    share[k] = left * w[k] / s
-                left = 0.0
-                break
-            for k in over:
-                share[k] = cap[k]
-                left -= cap[k]
-                del free[k]
-        unused[cls] = max(left, 0.0)
-        for r in rs:
-            sh = share.get(r["key"], 0.0)
-            out[r["key"]] = (sh, sh * budget / r["hours"])
-    return {"per_dataset": out, "unused_quota": unused}
+    """Ripartizione per dataset con la funzione del manifest (src/wearusfm/data/pretraining_manifest.py).
+    Ritorna {"per_dataset": {chiave: (quota, passaggi)}, "unused_quota": {classe: quota}}."""
+    from wearusfm.data.pretraining_manifest import allocate as _allocate
+
+    units = {r["key"]: (r["class"], r["hours"]) for r in rows}
+    a = _allocate(units, quota, alpha, max_passes, epochs, hours_total=hours_total)
+    return {"per_dataset": a["per_unit"], "unused_quota": a["unused_quota"]}
 
 
 def main(argv=None) -> int:
