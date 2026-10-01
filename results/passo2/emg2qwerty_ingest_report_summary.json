@@ -1,0 +1,30 @@
+{
+  "dataset": "emg2qwerty",
+  "jobs": [
+    59081795,
+    59082182
+  ],
+  "n_recordings": 1135,
+  "n_users": 108,
+  "hours_total": 346.06979819444405,
+  "n_channels": 32,
+  "n_channels_discarded_total": 0,
+  "n_recordings_time_irregular": 17,
+  "n_gaps_total": 27017,
+  "condition_counts": {
+    "on_keyboard": 1135
+  },
+  "emg_max_abs_range": [
+    102.714111328125,
+    7504.89013671875
+  ],
+  "int16_scale_range": [
+    4.263886534918801,
+    311.5443397818486
+  ],
+  "n_failed": 0,
+  "output_size": "150G (in $SCRATCH/data/processed/emg2qwerty, non in $WORK)",
+  "elapsed_s": 5600.421228885651,
+  "note": "riepilogo aggregato di due job: 59081795 (collaudo, 3 registrazioni, fermato da --max-recordings) e 59082182 (il resto, 1132 registrazioni, --skip-existing: 3 saltate perche' gia' fatte). I report completi con per_recording restano su Leonardo in $WORK/wearusfm_runs/results/passo2/emg2qwerty_ingest_report_<job>.json (copie sul Mac in ~/wearusfm_local/reports/emg2qwerty/, sha256 uguali al cluster: 59081795 1be238af...3c38, 59082182 118e42a8...3090). Sul cluster 1135 metadata.json, 150 GB. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026). Asse dei tempi: \u00abirregolare\u00bb (17) = passo mediano diverso da 0,5 ms o almeno un passo <= 0 (timestamp che tornano indietro); i buchi NON rendono irregolare una registrazione: 76 registrazioni hanno buchi (passo > 1,5 x nominale), 27.017 in tutto, e i primi sono elencati nel campo time_axis del metadata.json di ciascuna. Tutte le 1135 registrazioni hanno condition = on_keyboard.",
+  "n_recordings_with_gaps": 76
+}

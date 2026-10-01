@@ -27,10 +27,11 @@ INGESTED = [
     ("ninapro_db7_ingest_report_summary.json", "NinaPro DB7 (2 amputati)", 2000, 12, "anello 8 + 4 mirati", "pretraining"),
     ("ninapro_db5_ingest_report_summary.json", "NinaPro DB5", 200, 16, "2 anelli (Myo)", "pretraining (fuori da vista canonica e ancora RVQ)"),
     ("hyser_ingest_report_summary.json", "Hyser", 2048, 256, "4 griglie 8x8", "pretraining"),
+    ("emg2qwerty_ingest_report_summary.json", "emg2qwerty", 2000, 32, "2 anelli (Meta, sx+dx)", "pretraining"),
 ]
 # Non ancora ingeriti: soggetti/ore da documentazione o da conteggi sui file, NON da un ingest.
 PENDING = [
-    ("emg2qwerty", 2000, 32, "2 anelli (Meta, sx+dx)", "n.d.", "~346 h", "documentazione (dataset_access.md): ~346 h, 1.136 file", "parser scritto"),
+    ("NinaPro DB8", "2000 (banda 0-555 Hz)", 16, "2 anelli da 8 (amputati: sparsi)", 12, "~9 h", "3 file letti il 01/10/2026 (~0,7 h per soggetto)", "parser scritto, collaudo in corso"),
     ("emg2pose", 2000, 16, "anello (Meta)", 193, "n.d.", "25.253 registrazioni di 193 utenti (CSV di metadati)", "parser provato su 2 file veri (30/09)"),
     ("Zhang 2026", "2000 + 4000", 8, "anatomico vs equidistante", 64, "n.d.", "1.245 file CSV, 35 GB", "schema deciso (B, 30/09); 4 controlli sui dati prima del parser"),
 ]
@@ -60,7 +61,7 @@ def main() -> None:
         tot_h += h
         tot_s += s or 0
         rows.append(f"| {label} | {s if s is not None else 'n.d.'}{mark} | {h:.1f} | {fs} | {ch} | {topo} | {role} |")
-    print("# Inventario del corpus (dai riepiloghi di ingest, 30/09/2026)\n")
+    print("# Inventario del corpus (dai riepiloghi di ingest, 01/10/2026)\n")
     print("Generato da `scripts/corpus_inventory.py`. Ore = durata dei dati ingeriti (`hours_total` dei report), "
           "soggetti = soggetti/utenti distinti del report.\n")
     print("## Ingeriti\n")
