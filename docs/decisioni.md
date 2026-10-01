@@ -874,3 +874,20 @@ Completa D8a (soglie congelate il 29/09) con le tre cose da scrivere prima del l
 - **Pesi:** front-end all'inizializzazione, 3 semi, tutti devono passare. **Costo:** CPU, zero GPU-ora.
 - **Prerequisito:** il front-end a kernel continui di v10 §4.2 non esiste ancora nel codice; va scritto e testato (fattore Δt, anti-aliasing per famiglia)
   prima del gate. Firmato prima di scriverlo e prima di qualunque misura (non esiste `results/step3/`).
+
+### D8a — difetto trovato nel filtro firmato, prima del gate sui dati veri (01/10/2026): proposta di correzione, NON firmata
+
+Una prova di funzionamento dello script del gate su **dati sintetici** (rumore filtrato 20-400 Hz, 6 soggetti finti; nessun dato vero) ha mostrato che
+la frase della proposta firmata «si filtra prima di decimare, quindi A e B hanno esattamente lo stesso contenuto» e' **falsa** col filtro firmato. Un
+Butterworth di ordine 8 con taglio a 90 Hz lascia passare ancora il 39% dell'ampiezza a 100 Hz e il 2% a 150 Hz: decimando a 200 Hz (Nyquist 100 Hz) quel
+contenuto si ripiega sotto (aliasing) e B non ha piu' lo stesso contenuto di A. Il gate misurerebbe un difetto creato dalla prova, non dal front-end.
+Misure sui dati sintetici, front-end seme 0:
+
+| filtro per costruire A | caso 1 kHz | caso 200 Hz |
+|---|---|---|
+| Butterworth ordine 8 (firmato) | 0,84% | 5,7% |
+| passa-basso a muro nel dominio della frequenza (FFT: zero esatto sopra il taglio) | 0,00% | 0,37% |
+
+**Proposta di AG (da firmare):** costruire A con il passa-basso **a muro** (trasformata della finestra con i suoi margini, zero esatto da 450 o 90 Hz in
+su, antitrasformata), poi B = A decimata. Cosi' A non ha contenuto sopra il taglio e B lo stesso contenuto su una griglia diversa, come chiede v10 §7.1.
+Tutto il resto delle definizioni firmate resta com'e'. Il gate sui dati veri **non e' stato lanciato**.
