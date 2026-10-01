@@ -1032,7 +1032,7 @@ Budget del passo 1-bis: 30 GPU-ora, usati finora meno di 2.
 
 ---
 
-## Dati su $SCRATCH: rinfresco periodico delle date (proposta di AG, 01/10/2026)
+## Dati su $SCRATCH: rinfresco periodico delle date (proposta di AG, 01/10/2026; rinfresco subito AUTORIZZATO da Simone: «sì, autorizzo il rinfresco subito su tutto $SCRATCH»)
 
 **Trovato il 01/10/2026** (scansione in sola lettura delle date su `$SCRATCH`): il tar grezzo di emg2qwerty (308 GB) ha data di modifica 25/08/2021 e
 i 36 `.mat` di NinaPro DB8 date dal 13/08/2019 (`wget` conserva la data del server): se il purge a 40 giorni conta dalla data di modifica (informazione
