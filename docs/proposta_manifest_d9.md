@@ -122,6 +122,31 @@ tabella.
   sovrapposizioni dichiarate (DB2, DB3, DB6, DB10); **DB4, DB5, DB7 e DB8 restano interi nel pretraining**, cosi' una persona presente in due DB non
   puo' finire nel test di uno e nel pretraining dell'altro. Gli amputati di test vengono da DB3 e DB10.
 
+**Split proposti, generati** (`scripts/make_splits_draft.py`, seme 0; file `splits/draft/splits_draft.json`, split ufficiali con provenienza in
+`splits/official/`; da rivedere, non congelati):
+
+| Dataset | Soggetti | Pretraining | Test | 12,5% | 25% | 50% | Regola |
+|---|---|---|---|---|---|---|---|
+| camargo2021 | 22 | 17 | 5 | 3 | 5 | 9 | 20%, almeno 2 |
+| capgmyo | 18 | 14 | 4 | 2 | 4 | 7 | 20%, almeno 2 |
+| csl_hdemg | 5 | 3 | **2** | 1 | 1 | 2 | 20%, almeno 2 (= 40%: vedi sotto) |
+| emg2pose | 193 | 158 | 35 | 20 | 40 | 79 | ufficiale (`held_out_user`) |
+| emg2qwerty | 108 | 100 | 8 | 13 | 25 | 50 | ufficiale (user0-7) |
+| grabmyo | 43 | 34 | 9 | 5 | 9 | 17 | 20%, almeno 2 |
+| hyser | 20 | 16 | 4 | 2 | 4 | 8 | 20%, almeno 2 |
+| kaifosh | 100 | 0 | 0 | - | - | - | benchmark (split ufficiale 80/10/10 conservato) |
+| ninapro_db10 | 45 | 36 | 9 (3 amputati) | 5 | 9 | 18 | 20% per gruppo |
+| ninapro_db2 | 40 | 32 | 8 | 4 | 8 | 16 | 20%, almeno 2 |
+| ninapro_db3 | 11 | 8 | 3 | 1 | 2 | 4 | 20%, almeno 2 |
+| ninapro_db4, db5, db7, db8 | 10, 10, 22, 12 | tutti | 0 | | | | sovrapposizione con altri DB (fatto n. 2) |
+| ninapro_db6 | 10 | 8 | 2 | 1 | 2 | 4 | 20%, almeno 2 |
+| putemg | 44 | 35 | 9 | 5 | 9 | 18 | 20%, almeno 2 |
+| zhang2026 | 62 | 49 | 13 | 7 | 13 | 25 | 20%, almeno 2 (i due modi insieme) |
+
+Da decidere: **CSL-hdemg** (5 soggetti) con «almeno 2» manda in test il 40% dei soggetti: alternative 1 solo soggetto di test, o tutto nel pretraining
+(pesa 6 ore). **emg2qwerty:** il modello generico ufficiale usa 96 utenti, non i 100 del paper (4 utenti non sono in nessuna configurazione ufficiale):
+qui vanno nel pretraining. Gli ID degli 8 utenti di test sono a 8 cifre (lo YAML ufficiale perde lo zero iniziale di 05775561).
+
 ## (e) Target RVQ
 
 Secondo D5b (firmato): ancora RVQ sul **livello 0 del ramo 0**, accesa su camargo2021, capgmyo, emg2pose, emg2qwerty, grabmyo, hyser, kaifosh (se
