@@ -916,6 +916,8 @@ Parser `src/wearusfm/ingest/ninapro_db8.py` (opzione A firmata: griglia a 2 kHz,
 - colonne 0-7 = una riga, 8-15 = l'altra (ordine non dichiarato; quale riga sia a 3 o a 5,5 cm dal gomito non e' dichiarato);
 - normodotati: due anelli D_8 (equispaziatura dichiarata per loro); **amputati 11 e 12: due gruppi sparsi senza angoli e anatomia nominale**, perche'
   la fonte dice solo «a similar configuration» con 13 e 12 sensori. Alternativa: anelli D_8 anche per loro, con le colonne mancanti scartate dal QC;
+  **motivazione di Simone (01/10/2026):** «si considera che rispetto ai normodotati dal punto di vista anatomico gli amputati hanno fasce muscolari
+  irregolari, quindi va bene sparso»;
 - rete 50 Hz per deduzione (Regno Unito), non dichiarata.
 Misura sui file (S1 A1 e A3, S11 A1, primi 60 s): la potenza sopra 555 Hz e' fra lo 0,3% e il 3% per canale, non zero. Il report di ingest la
 riporta per soggetto.
