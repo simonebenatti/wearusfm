@@ -611,6 +611,17 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
 - etichette: `label.csv` copiato cosi' com'e' nel processato, segnato come **non allineato all'EMG** (tempi sul video, sincronizzazione non
   dichiarata), non usato finche' la sincronizzazione non e' chiarita.
 
+**Parser scritto (01/10/2026)**, `src/wearusfm/ingest/zhang2026.py`. Scelte di AG da rivedere:
+- **supinatore (SUP) non e' nella tassonomia firmata D7b**: annotato al livello di **regione** (avambraccio prossimale), senza piegare la tassonomia.
+  Per portarlo al livello di muscolo serve aggiungerlo (OLS4: UBERON:0003228 «supinator muscle», FMA:38512 «Supinator») e scegliere il
+  compartimento: e' un muscolo profondo dell'avambraccio prossimale dorsale, e nessuno dei compartimenti firmati gli corrisponde davvero. Decisione
+  di Simone;
+- abbreviazioni -> tassonomia: PTE = PT (pronatore rotondo), ECR = ECRL (la descrizione del dataset elenca «Extensor Carpi Radialis Longus», non il
+  brevis); le altre coincidono. La tabella abbreviazione -> muscolo non e' nella fonte: e' dedotta dai nomi;
+- una sessione per soggetto e modo (sequenze concatenate come prove); canali in ordine S1-S8; lato = opposto alla mano dominante (abstract, verificato:
+  «64 adult participants performed 14 gestures with their non-dominant hand»); tipo di elettrodo dalla frequenza (4000 Hz = Avanti, 2000 Hz = Quattro);
+  nessun dato anagrafico nel processato.
+
 
 ---
 
