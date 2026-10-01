@@ -1014,3 +1014,19 @@ Dati e fonti: `fatti_da_verificare.md`, fatto 10c (citazioni controllate). Ispez
 - Rete 50 Hz (filtro di Hampel a 50 Hz dichiarato; Svizzera e Italia). Un canale con ampiezza molto piu' bassa degli altri (S010, canale 7: 3e-7 V
   contro 5e-6-5e-5) passa il QC relativo: il report elenca i canali sotto il 5% della mediana come «sospetti», senza scartarli.
 
+---
+
+## V2 e conferma dei rami su NinaPro DB8, Zhang e DB10 (Simone, 01/10/2026: «lancia le misure RVQ su DB8, DB10 e Zhang»)
+
+Stessa procedura del run 59078235 (D5b punto «Dove», opzione b), scritta PRIMA dei lanci; soglie invariate (V2: rapporto <= 2 con X = 2 sul riferimento
+emg2pose; ramo: livello 0 del ramo 0 entro 10 punti dalle 5 bande, sulle classi della base piu' il dataset nuovo).
+1. **Collaudo** su `boost_qos_dbg` (30 min, 1 GPU): `--smoke --n-groups 6 --v1-windows 4 --skip-v3 --max-sessions-per-subject 1 --datasets ninapro_db8
+   zhang2026 --processed-root $SCRATCH/data/processed`. Costo previsto 0,1-0,2 GPU-ora, massimo 0,5. **Pulito se:** exit 0, entrambi i dataset analizzati,
+   controllo a rumore zero di V4 = 1,0, report scritto.
+2. **Run vero** (78 gruppi, al piu' 2 sessioni per soggetto, 3 semi), limite 1 h 30, costo previsto 0,2-0,4 GPU-ora, massimo 1,5: **DB8 subito dopo il
+   collaudo; Zhang dopo che i suoi buchi sono stati misurati (job 59099080) e, se ce ne sono, scritti; DB10 dopo il suo ingest.** Il run vero di DB8 e
+   Zhang puo' essere uno solo se Zhang e' pronto. **Controllo del run vero:** fattore 21,72, errore mediano di emg2pose 0,0352 (entro l'1%), V1 1,23;
+   se non tornano, nessun dataset si accende.
+3. **Conferma dei rami** (CPU, `scripts/rvq_branch_confirm.py`) sui dataset con V2 <= 2.
+Budget del passo 1-bis: 30 GPU-ora, usati finora meno di 2.
+
