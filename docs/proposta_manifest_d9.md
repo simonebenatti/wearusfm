@@ -110,8 +110,8 @@ tabella.
 ## (d) Split dei soggetti
 
 **Proposta di AG:**
-- **soggetti di test per dataset**, tenuti fuori dal pretraining: gli split ufficiali dove esistono (emg2qwerty; emg2pose, `held_out_user` del CSV
-  dei metadati); altrove il **20% dei soggetti, almeno 2, arrotondato per eccesso**, stratificato fra amputati e normodotati (DB7, DB8, DB10), con
+- **soggetti di test per dataset**, tenuti fuori dal pretraining: gli split ufficiali dove esistono (emg2pose: colonne `held_out_user` e `split` del CSV dei
+  metadati; Kaifosh: 80/10/10; emg2qwerty: **da verificare**, non e' nelle fonti lette finora); altrove il **20% dei soggetti, almeno 2, arrotondato per eccesso**, stratificato fra amputati e normodotati (DB7, DB8, DB10), con
   **seed 0**; in Zhang lo stesso soggetto ha i due modi: si divide per soggetto;
 - **manifest sottocampionati per soggetti** (asse di v10 §10.6, D16): sottoinsiemi annidati del 12,5, 25 e 50% dei soggetti di pretraining, per
   dataset, stesso seed;
