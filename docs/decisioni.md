@@ -567,6 +567,25 @@ CSV grezzo resta in `$SCRATCH`/`$WORK` (nulla si distrugge); nel sidecar `resamp
 **Restano da fare, prima del parser, i quattro controlli sul dato** elencati sopra (disposizione dei due tassi nelle righe,
 origine dei tempi, canali di `anatomical` contro `random`, virgola decimale): richiedono il cluster.
 
+**I quattro controlli, fatti il 01/10/2026** (`scripts/inspect_zhang_csv.py`, sola lettura via leonardo-ops; soggetti HG_A468E29 e HG_A684H18, una
+sequenza `anatomical` e una `random` ciascuno):
+- **intestazione di 7 righe:** sensore (S1-S8, `NaN` per il polso), tipo (EMG, ACC/GYRO X/Y/Z), muscolo, frequenza, colore o numero, un numero
+  (70786 per i quattro EMG a 2000 Hz e per l'IMU del polso; 73242, 72970, 72978, 72908 per i quattro a 4000 Hz: ipotesi non verificata, numeri di
+  serie dei sensori, e i quattro a 2000 Hz sarebbero un unico sensore a quattro canali), unita' (`mV` per l'EMG, `G`, `deg/s`). Separatore `,`;
+- **(1) disposizione dei due tassi:** ogni colonna e' una serie a se', **contigua dall'inizio del file**: i canali a 4000 Hz riempiono tutte le righe,
+  quelli a 2000 Hz solo la prima meta' e poi sono vuoti (non interlacciati, non ripetuti); le IMU sono ancora piu' corte. Righe di dati: 602.586 per i
+  canali a 4000 Hz e 301.293 per quelli a 2000 Hz (esattamente la meta'); nella sequenza `random`: 527.526 e 263.763;
+- **(2) origine dei tempi:** nel file non c'e' una colonna di tempo. Tutte le colonne cominciano alla prima riga e **durano uguale**: 301.293 / 2000 =
+  602.586 / 4000 = 150,6465 s; le IMU 150,645 s (22.318 righe a 148,1481 Hz) e 150,646 s (11.159 righe a 74,0741 Hz). Lettura (non dichiarata dalla
+  fonte): stessa finestra di registrazione, inizio comune;
+- **(3) `anatomical` contro `random`:** stessi 8 canali EMG (stessi sensori S1-S8, frequenze, colori e numeri di serie); cambia solo la riga del muscolo,
+  che in `random` vale `NaN` (nessun muscolo mirato). La disposizione dei sensori in `random` (anello equidistante, ordine) va presa dalla fonte;
+- **(4) virgola decimale:** solo nelle etichette di frequenza dell'intestazione («148,1481 Hz», campo tra virgolette); i valori usano il punto (0 celle
+  con la virgola, 0 valori non numerici nelle colonne EMG).
+Conseguenza per il parser (opzione B): i canali a 4000 Hz si portano a 2000 Hz (polifase) e risultano lunghi esattamente come quelli a 2000 Hz; si
+allineano campione per campione dall'inizio. Prima del parser restano da prendere dalla fonte la disposizione dei sensori in `random` e il conteggio
+dei soggetti (64 partecipanti dichiarati, 66 cartelle viste il 30/09).
+
 
 ---
 
