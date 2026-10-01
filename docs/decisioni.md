@@ -586,6 +586,24 @@ Conseguenza per il parser (opzione B): i canali a 4000 Hz si portano a 2000 Hz (
 allineano campione per campione dall'inizio. Prima del parser restano da prendere dalla fonte la disposizione dei sensori in `random` e il conteggio
 dei soggetti (64 partecipanti dichiarati, 66 cartelle viste il 30/09).
 
+**Fonte e conteggi, 01/10/2026** (fact-checker sul README e sulla pagina del dataset; il corpo del paper non e' leggibile dagli strumenti automatici;
+citazioni controllate parola per parola sul `README.txt` della copia raw su Leonardo, 9 su 9; conteggi via leonardo-ops):
+- **soggetti: 64**, non 66 (il «66» del 30/09 era sbagliato): 64 cartelle `HG_*` piu' `MANIFEST.TXT`, `participants.csv`, `participants.xlsx`,
+  `README.txt`. HG_H496O27 e HG_H544X3 non hanno `random/`. Sequenze: `anatomical` 5 in 60 soggetti e 4 in 4; `random` 5 in 58, 4 in 3, 3 in 1, 0 in 2;
+  621 `sensor_data.csv`. I numeri delle sequenze vanno da 01 a 10 e non sono consecutivi per soggetto. L'ID HG_M7873Q del CSV corrisponde alla
+  cartella HG_M7873Q0;
+- **hardware:** «The sEMG acquisition system included four Delsys Trigno Avanti sensors and one Delsys Trigno Quattro sensor, along with a base
+  station.» I quattro canali a 4000 Hz sono i 4 Avanti (un elettrodo ciascuno), i quattro a 2000 Hz i 4 elettrodi dell'unico Quattro (l'ipotesi del
+  numero di serie comune e' confermata dalla fonte);
+- **modo `random`, fonti in contrasto:** README «the sensors are equally spaced on the circumference of the forearm»; descrizione del dataset «sEMG
+  sensors were placed randomly around the circumference of the forearm (random mode)»; abstract «8 sensors located in a ring structure around the
+  forearm». E: «Due to a technical issue, the order of the sensors in random mode were is unknown for 32 participants.» La numerazione S1-S8 e' nella
+  figura del paper, non letta;
+- **etichette:** i tempi di `label.csv` sono «counted from the start of the video recording»; nessuna fonte letta dice come allinearli all'EMG;
+- **intestazione:** il README dice «From row 9 onwards the files contain the actual data values.»; nei file letti l'intestazione e' di **7** righe
+  (602.593 righe = 7 + 602.586): il parser deve riconoscerla, non contarla a priori;
+- rete: acquisizione a Groningen (comitato etico dell'UMCG); 50 Hz per deduzione, non dichiarata.
+
 
 ---
 
