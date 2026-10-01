@@ -964,7 +964,7 @@ riporta per soggetto.
 - **DB8, QC** (job 59090748, sola lettura): 0 canali piatti nuovi; 153 buchi in 9 sessioni su 12, 167 s = 0,035% del tempo dei canali validi (guardia: 1%),
   ciascuno simultaneo su tutti i canali validi e lungo 1,03-1,18 s. In s01 il buco finisce esattamente alla fine dell'acquisizione 2 (coda del file
   tenuta ferma); ipotesi, non verificata sulle altre sessioni: stessa origine per tutti. Si scrivono nei sidecar con `--apply` (copia di sicurezza
-  `metadata.pre_qc_revision.json`, dati intatti).
+  `metadata.pre_qc_revision.json`, dati intatti). **Applicato** (job 59092325, 01/10/2026): buchi scritti in 9 sessioni, 9 copie di sicurezza.
 - **emg2pose:** collaudo su 3 registrazioni, poi il pieno con `--skip-existing`, riprendibile (budget 2 h 40 min per job, <= 6 ore locali ciascuno;
   stima 1-2 job, ~12 ore locali in tutto, 0 GPU-ora; processato ~100 GB su `$SCRATCH`).
 
