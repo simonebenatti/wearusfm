@@ -849,3 +849,13 @@ Condizione della decisione del 30/09: riportare la dimensione prima del lancio e
   file). Termini d'uso del dataset: «This work is licensed under a Creative Commons Attribution 4.0 International License»; nessun file riservato, nessun
   guestbook: **nessuna condizione da accettare**. **Proposta di AG, da confermare:** scaricare solo i `.mat` (circa 78 GB), non i video e non MDSInfo
   (dati clinici, non servono al corpus). Quali `.mat` contengano l'EMG (e a che frequenza, fatto n. 1) va verificato sui file.
+
+## DB8 e DB10: decisioni di Simone (01/10/2026)
+
+- **DB8: opzione A** («A per DB8»). I file sono a 2 kHz ma l'EMG e' stato acquisito a 1111 Hz e sovracampionato (pagina ufficiale: «The sEMG signals were
+  sampled at a rate of 1111 Hz, accelerometer and gyroscope data were sampled at 148 Hz, and magnetometer data were sampled at 74 Hz. All signals were
+  upsampled to 2 kHz and post-synchronized.»). Si tiene la griglia a 2 kHz come fornita, **dichiarando nel sidecar la banda effettiva fino a 555 Hz**
+  (Nyquist di 1111 Hz); le ancore spettrali sopra 555 Hz si mascherano per DB8, come per le bande oltre Nyquist (v10 §4.2). Nessun ricampionamento.
+- **DB10: solo i file `.mat`** di MeganePro MDS1, MDS2, MDS4 (circa 78 GB); **non** i video `.mp4` e **non** MDSInfo (interviste cliniche). Destinazione
+  `$SCRATCH`. Quali `.mat` contengano l'EMG e a che frequenza si verifica sui file; se sono tabelle MATLAB si convertono sul Mac con MATLAB (Simone,
+  01/10: «se ti serve matlab per convertirli puoi usare il mac in locale»).
