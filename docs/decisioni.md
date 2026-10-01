@@ -594,7 +594,7 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
   cartella HG_M7873Q0;
 - **hardware:** «The sEMG acquisition system included four Delsys Trigno Avanti sensors and one Delsys Trigno Quattro sensor, along with a base
   station.» I quattro canali a 4000 Hz sono i 4 Avanti (un elettrodo ciascuno), i quattro a 2000 Hz i 4 elettrodi dell'unico Quattro (l'ipotesi del
-  numero di serie comune e' confermata dalla fonte);
+  numero di serie comune e' coerente con la fonte, che dice 4 Avanti e 1 Quattro: il numero di serie in se' non e' dichiarato);
 - **modo `random`, fonti in contrasto:** README «the sensors are equally spaced on the circumference of the forearm»; descrizione del dataset «sEMG
   sensors were placed randomly around the circumference of the forearm (random mode)»; abstract «8 sensors located in a ring structure around the
   forearm». E: «Due to a technical issue, the order of the sensors in random mode were is unknown for 32 participants.» La numerazione S1-S8 e' nella
@@ -624,7 +624,7 @@ citazioni controllate parola per parola sul `README.txt` della copia raw su Leon
 
 **Pieno (job 59094690, 01/10/2026): 121 sessioni su 124, 61 soggetti, 596 sequenze, 24,3 h; 3 sessioni fallite**, lette sui file:
 - **HG_O983O9 anatomical, sequence_09:** canali a 2000 Hz di 309.474 campioni (154,7 s), a 4000 Hz di 503.255-503.256 (125,8 s): gli Avanti non coprono
-  la stessa finestra del Quattro e non si sa come allinearli. Correzione: una sequenza con durate incoerenti si **esclude** (registrata in
+  la stessa finestra del Quattro e non si sa come allinearli. Correzione (**scelta di AG, da firmare**): una sequenza con durate incoerenti si **esclude** (registrata in
   `excluded_sequences` nel sidecar), le altre della sessione restano; fra canali dello stesso tasso si tollerano 2 campioni di differenza (si taglia).
   Rilanciata solo questa sessione;
 - **HG_H496O27 e HG_H544X3 (anatomical; sono i due soggetti senza modo `random` e con la riga vuota in `participants.csv`):** esportazione diversa,
@@ -990,7 +990,7 @@ riporta per soggetto.
 ## DB8: buchi segnati nei sidecar; emg2pose: ingest autorizzato (Simone, 01/10/2026: «sì autorizzo apply su DB8 e collaudo e pieno di emg2pose»)
 
 - **DB8, QC** (job 59090748, sola lettura): 0 canali piatti nuovi; 153 buchi in 9 sessioni su 12, 167 s = 0,035% del tempo dei canali validi (guardia: 1%),
-  ciascuno simultaneo su tutti i canali validi e lungo 1,03-1,18 s. In s01 il buco finisce esattamente alla fine dell'acquisizione 2 (coda del file
+  (153 tratti PER CANALE e 167 CANALE-secondi; in tutto circa 11 eventi simultanei su tutti i canali validi, lunghi 1,03-1,18 s). In s01 il buco finisce esattamente alla fine dell'acquisizione 2 (coda del file
   tenuta ferma); ipotesi, non verificata sulle altre sessioni: stessa origine per tutti. Si scrivono nei sidecar con `--apply` (copia di sicurezza
   `metadata.pre_qc_revision.json`, dati intatti). **Applicato** (job 59092325, 01/10/2026): buchi scritti in 9 sessioni, 9 copie di sicurezza.
 - **emg2pose:** collaudo su 3 registrazioni, poi il pieno con `--skip-existing`, riprendibile (budget 2 h 40 min per job, <= 6 ore locali ciascuno;
@@ -1005,8 +1005,8 @@ Dati e fonti: `fatti_da_verificare.md`, fatto 10c (citazioni controllate). Ispez
   transradiali S101-S115), ~56 h. Si ingerisce solo `S<NNN>_ex1.mat`; i `_orig` non contengono EMG.
 - **MDS2 e MDS4: FUORI** (confermato da Simone), per la regola gia' scritta in v10 §2.4 (un inviluppo non entra nel front-end, come DB1): la fonte dice
   «rectified via a moving root-mean-square with a window length of 300 samples», nei file a 100 Hz, con 2 elettrodi (uno per avambraccio). Sono
-  esercizi di immaginazione motoria e puntamento in cui l'EMG era secondario («the sEMG would serve for control analyses»). Da confermare.
-- **Montaggio:** normodotati: anello prossimale D_8 (colonne 1-8, angoli 0-315) e distale D_4 a 45 mm (colonne 9-12, «aligned with the gaps between
+  esercizi di immaginazione motoria e puntamento in cui l'EMG era secondario («the sEMG would serve for control analyses»).
+- **Montaggio (scelte di AG, nel parser):** normodotati: anello prossimale D_8 (colonne 1-8, angoli 0-315) e distale D_4 a 45 mm (colonne 9-12, «aligned with the gaps between
   electrodes one and two, three and four»: angoli 22,5, 112,5, 202,5, 292,5); S024 (elettrodo 8 assente): anello prossimale con le posizioni 1-7;
   S039 (7 elettrodi prossimali, spaziatura non dichiarata): sparso; **amputati: sparsi e nominali** (stessa scelta di DB8); lato: destro per i
   normodotati, ignoto per gli amputati (il lato del moncone e' solo nella Tabella 1, non verificata cella per cella).
@@ -1062,7 +1062,11 @@ vedere la sezione «CapgMyo: scrittura forzata» (Simone: «sì forza capgmyo»)
 ha trovato 0 canali piatti nuovi e 0 buchi nuovi (6 sessioni gia' con canali non validi, 4 copie di sicurezza, 1 sessione con buchi): **non ha
 scritto nulla**. Lo stato dei sidecar resta quello della prima applicazione.
 
-**Esito per NinaPro DB8 (01/10/2026, applicazione meccanica):** run vero 59104658 (163 s, 1 GPU, ~0,05 GPU-ora; report in
+### V2 e conferma dei rami su DB8 e Zhang: esiti
+
+Collaudo 59103405 (DB8 + Zhang, `--smoke`, 5 min 46 s, ~0,1 GPU-ora = ~0,8 ore locali): pulito.
+
+**Esito per NinaPro DB8 (01/10/2026, applicazione meccanica):** run vero 59104658 (163 s, 1 GPU, ~0,05 GPU-ora = ~0,4 ore locali; report in
 `results/step1bis/step1bis_59104658.json`, array sul Mac in `~/wearusfm_local/reports/step1bis/arrays_59104658/`, sha256 verificati). **Controlli scritti
 prima: tutti identici** (fattore 21,718; errore mediano di emg2pose 0,03520; V1 1,231; stesso checkpoint). **V2 di DB8: 1,46 <= 2, passa.** Conferma del
 ramo (opzione b, `results/step1bis/rvq_branch_confirm_59104658.json`): livello 0 del ramo 0 0,431 contro 0,723 delle 5 bande sulle stesse classi
@@ -1079,7 +1083,7 @@ c'e' nulla da scrivere, e il run vero di V2 su Zhang puo' partire. Per emg2qwert
 Nota sul vocabolario: qui «buco» e' un tratto di valore costante >= 1 s su un canale; i «salti dell'asse dei tempi» (emg2qwerty 76 registrazioni,
 emg2pose 1.668) sono un'altra cosa, gia' elencata nei sidecar.
 
-**Esito per Zhang (02/10/2026, applicazione meccanica):** run vero 59108493 (153 s, 1 GPU; report in `results/step1bis/step1bis_59108493.json`, array sul
+**Esito per Zhang (02/10/2026, applicazione meccanica):** run vero 59108493 (153 s, 1 GPU, ~0,04 GPU-ora = ~0,3 ore locali; report in `results/step1bis/step1bis_59108493.json`, array sul
 Mac in `~/wearusfm_local/reports/step1bis/arrays_59108493/`, sha256 verificati), lanciato dopo la misura dei buchi di Zhang (0 tratti costanti, job
 59099080). **Controlli scritti prima: identici** (fattore 21,718; emg2pose 0,03520; V1 1,231; stesso checkpoint). **V2 di Zhang: 1,55 <= 2, passa.**
 Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello 0 del ramo 0 0,371 contro 0,643 delle 5 bande (differenza -0,27):
@@ -1096,4 +1100,15 @@ Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello
    sicurezza, dati intatti).
 3. **DB10 ed emg2pose: misura dei tratti costanti**, sola lettura (`qc_relative_check --only ninapro_db10 --only emg2pose`); una scrittura, se serve,
    si chiede a parte.
+
+---
+
+## Note dalla review dei documenti (02/10/2026)
+
+- **Cancellazioni:** il 01/10 Simone ha scritto «se devi cancellare files e cose gia copiate e duplicate , ti autorizzo». AG **non** ha cancellato
+  nulla: la cancellazione definitiva di dati e' fuori da cio' che AG fa anche con autorizzazione; gli originali in `$WORK/data/raw` si cancellano solo
+  con `scripts/slurm/delete_verified_raw.sbatch` lanciato da Simone (`dataset_access.md`).
+- **Autorizzazioni di misura e di scrittura:** «autorizzo i buchi su Zhang ed emg2qwerty» (01/10) e' stata letta come misura; la scrittura dei 189
+  tratti di emg2qwerty e' stata autorizzata a parte il 02/10.
+- Le correzioni puntuali segnalate (citazioni, numeri, interpretazioni marcate) sono in questo commit; la bozza D9 si riscrive coi numeri del costruttore.
 

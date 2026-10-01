@@ -1,5 +1,19 @@
 # Proposta — manifest del pretraining (D9, passo 4): BOZZA da firmare entro il 25/10/2026
 
+> **IN REVISIONE (02/10/2026) — non firmare questa versione.** La review indipendente dei documenti ha trovato, e AG ha verificato:
+> 1. le ore, i passaggi e le quote qui sotto contano anche i soggetti di test (~1.011 h), mentre il manifest pesa solo il pretraining (~870 h): con il
+>    tetto di 8 passaggi la classe C non arriva piu' al 5%. Si rifa' tutto coi numeri del costruttore (`scripts/build_manifest.py`) sui dati veri;
+> 2. «Kaifosh: 100 utenti nuovi» non e' verificato: Kaifosh, emg2pose ed emg2qwerty sono dello stesso produttore e gli ID non sono confrontabili
+>    (sovrapposizione ignota, da dichiarare come per NinaPro); idem per gli amputati di DB3 e DB10;
+> 3. emg2pose: le 3.539 registrazioni del test per fasi nuove escono dal pretraining (Simone, 02/10/2026: gia' negli split);
+> 4. il tetto di 8 passaggi e' definito per 4 epoche: nei gradini a 2D i passaggi raddoppiano (16, il «forte decadimento» di v10 §10.3);
+> 5. «origine» contro «presentata»: il piano propone la topologia presentata; la scelta va argomentata anche sul volume D_c (classe C ~23% di D_c);
+> 6. interpretazioni scritte come fatti (anelli degli amputati, Zhang random «e' un anello», soggetti di test «visti» dal tokenizer): vanno marcate;
+> 7. i salti dell'asse dei tempi (emg2pose 1.668 registrazioni, emg2qwerty 76, Kaifosh) non spezzano i segmenti: una finestra puo' attraversarli. Va
+>    deciso come trattarli prima del manifest;
+> 8. elenco dei fatti da firmare incompleto (servono anche 1 DB8, 4, 5, 10b, 10c, 10d); piccoli numeri da correggere.
+
+
 **Stato: bozza di AG del 01/10/2026, NON firmata.** Il manifest è **irreversibile lungo tutta la ladder** (piano, passo 4: «firma TU»). Riferimenti:
 piano operativo §Passo 4 (le cinque scelte), v10 §2.8 (quote, classi del montaggio), v10 §10.3 (D è un manifest; `D_t`, `D_c`). I numeri vengono da
 `scripts/manifest_table.py` sui riepiloghi di ingest in `results/passo2/` e si rigenerano col comando in fondo; **emg2pose e DB10 sono ancora in
