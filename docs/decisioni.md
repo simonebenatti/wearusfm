@@ -859,3 +859,18 @@ Condizione della decisione del 30/09: riportare la dimensione prima del lancio e
 - **DB10: solo i file `.mat`** di MeganePro MDS1, MDS2, MDS4 (circa 78 GB); **non** i video `.mp4` e **non** MDSInfo (interviste cliniche). Destinazione
   `$SCRATCH`. Quali `.mat` contengano l'EMG e a che frequenza si verifica sui file; se sono tabelle MATLAB si convertono sul Mac con MATLAB (Simone,
   01/10: «se ti serve matlab per convertirli puoi usare il mac in locale»).
+
+---
+
+## D8a — definizioni operative del gate di consistenza: FIRMATE e CONGELATE (Simone, 01/10/2026: «firmo D8: 1a, 2, 3, 4a, 5, 6»)
+
+Completa D8a (soglie congelate il 29/09) con le tre cose da scrivere prima del lancio. Testo completo in `docs/proposta_gate_d8.md`.
+- **Dataset:** Kaifosh (2 kHz). **Due casi**, entrambi devono passare: 450 Hz su griglia a 2 kHz contro decimato a 1 kHz; 90 Hz su griglia a 2 kHz contro
+  decimato a 200 Hz; Butterworth ordine 8 a fase zero prima di decimare. **Banda condivisa:** sotto il taglio del caso; patch allineate in tempo fisico.
+- **Errore relativo RMS <= 5% nel totale E in ciascuna delle tre famiglie** di kernel (Fourier, spline, MLP).
+- **Sonda A-contro-B:** finestre di 4 s, 20 per soggetto, media e deviazione standard delle feature per finestra; split per soggetto 60/20/20 con le due
+  versioni di una finestra nella stessa parte; la piu' forte fra regressione logistica e gradient boosting (scelta sulla validazione); intervallo al 95%
+  con bootstrap per soggetto (1000). Passa se <= 0,55 e l'intervallo contiene 0,50.
+- **Pesi:** front-end all'inizializzazione, 3 semi, tutti devono passare. **Costo:** CPU, zero GPU-ora.
+- **Prerequisito:** il front-end a kernel continui di v10 §4.2 non esiste ancora nel codice; va scritto e testato (fattore Δt, anti-aliasing per famiglia)
+  prima del gate. Firmato prima di scriverlo e prima di qualunque misura (non esiste `results/step3/`).

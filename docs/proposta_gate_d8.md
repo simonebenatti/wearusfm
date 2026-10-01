@@ -1,6 +1,7 @@
 # Proposta — gate di consistenza al ricampionamento (D8, passo 3): definizioni operative e prerequisito
 
-**Stato: PROPOSTA di AG del 01/10/2026, NON firmata.** Le soglie sono gia' congelate (D8a, 29/09/2026: errore relativo RMS delle feature <= 5%;
+**Stato: proposta di AG del 01/10/2026, FIRMATA da Simone il 01/10/2026 («firmo D8: 1a, 2, 3, 4a, 5, 6»): dataset Kaifosh, errore <= 5% nel totale e
+in ciascuna famiglia. Definizioni CONGELATE col commit che registra la firma, prima di scrivere il front-end e prima di qualunque misura.** Le soglie sono gia' congelate (D8a, 29/09/2026: errore relativo RMS delle feature <= 5%;
 sonda A-contro-B <= 55% con intervallo al 95% che contiene il 50%). Qui ci sono le tre cose che `decisioni.md` dice di scrivere **prima** del lancio
 (banda condivisa, frequenze A e B, intervallo della sonda) e un prerequisito scoperto oggi. Scadenza del gate: **18/10**.
 
@@ -48,7 +49,7 @@ semi, soglia per famiglia) non vengono dal piano: si firmano o si cambiano adess
 
 ## Cosa si firma
 
-- [ ] dataset (Kaifosh, oppure emg2qwerty)
-- [ ] i due casi e il filtro (punto 2) e la banda condivisa (punto 3)
-- [ ] errore RMS per famiglia e nel totale (punto 4), oppure solo nel totale
-- [ ] la sonda e il suo intervallo (punto 5), i 3 semi (punto 6)
+- [x] dataset: **Kaifosh** (1a)
+- [x] i due casi e il filtro (punto 2) e la banda condivisa (punto 3)
+- [x] errore RMS **per famiglia e nel totale** (4a)
+- [x] la sonda e il suo intervallo (punto 5), i 3 semi (punto 6)
