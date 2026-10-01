@@ -14,15 +14,21 @@ import collections
 import csv
 import itertools
 import json
+import math
 import sys
 from pathlib import Path
 
 
+HEADER_SCAN_ROWS = 50
+
+
 def _num(s: str) -> float | None:
+    """Numero finito (virgola o punto decimale), altrimenti None: «NaN» NON conta come numero (compare nelle intestazioni di Zhang)."""
     try:
-        return float(s.strip().replace(",", "."))
+        v = float(s.strip().replace(",", "."))
     except ValueError:
         return None
+    return v if math.isfinite(v) else None
 
 
 def detect_delimiter(first_line: str) -> str:
@@ -35,13 +41,13 @@ def inspect_file(path: Path, pattern_rows: int) -> dict:
         f.seek(0)
         delim = detect_delimiter(first)
         reader = csv.reader(f, delimiter=delim)
-        header = []
-        for row in reader:  # intestazione: righe prima della prima riga in cui la maggioranza delle celle non vuote e' un numero
-            cells = [c for c in row if c.strip()]
-            if cells and sum(_num(c) is not None for c in cells) > len(cells) / 2:
-                data_first = row
-                break
-            header.append(row)
+        head = [row for _, row in zip(range(HEADER_SCAN_ROWS), reader)]
+        # intestazione = fino all'ultima riga (fra le prime HEADER_SCAN_ROWS) con una cella non vuota che non e' un numero finito: in Zhang ci sono
+        # righe d'intestazione tutte numeriche (numeri di serie) seguite dalla riga delle unita' di misura
+        last_text = max((i for i, row in enumerate(head) if any(c.strip() and _num(c) is None for c in row)), default=-1)
+        header, data_head = head[: last_text + 1], head[last_text + 1 :]
+        data_first = data_head[0] if data_head else []
+        reader = itertools.chain(data_head[1:], reader)
         n_cols = max(len(r) for r in header + [data_first])
         nonempty = [0] * n_cols
         first_idx, last_idx = [None] * n_cols, [None] * n_cols
@@ -94,7 +100,12 @@ def main(argv=None) -> int:
     ap.add_argument("--columns", action="store_true", help="stampa il dettaglio delle colonne di ogni file (default: solo del primo)")
     args = ap.parse_args(argv)
     res = [inspect_file(p, args.pattern_rows) for p in args.paths]
-    out = {"files": [{k: v for k, v in r.items() if k != "columns" or args.columns or i == 0} for i, r in enumerate(res)],
+    def compact(c):
+        return (f"{c['col']:2d} | {' / '.join(c['header'])} | n={c['n_nonempty']} righe {c['first_row']}-{c['last_row']} passi {c['steps_first_rows']} "
+                f"virgola {c['frac_comma']} non numerici {c['n_not_numeric']} es. {c['samples']}")
+
+    out = {"files": [{**{k: v for k, v in r.items() if k != "columns"}, "header_rows": [list(h) for h in zip(*[c["header"] for c in r["columns"]])],
+                      **({"columns": [compact(c) for c in r["columns"]]} if args.columns or i == 0 else {})} for i, r in enumerate(res)],
            "emg_header_comparison": compare_headers(res)}
     print(json.dumps(out, indent=1, ensure_ascii=False))
     return 0

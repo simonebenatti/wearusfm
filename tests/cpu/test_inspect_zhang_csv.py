@@ -10,7 +10,9 @@ _spec.loader.exec_module(IZ)
 
 
 def _csv(path, muscles=("FCR", "FDS")):
-    lines = ["S1;S2;Wrist", "EMG;EMG;ACC X", f"{muscles[0]};{muscles[1]};", "4000 Hz;2000 Hz;148,1481 Hz"]
+    # come Zhang: sensore, tipo, muscolo, frequenza, colore/numero (con NaN), numero di serie (tutto numerico), unita' di misura
+    lines = ["S1;S2;NaN", "EMG;EMG;ACC X", f"{muscles[0]};{muscles[1]};Wrist", "4000 Hz;2000 Hz;148,1481 Hz", "1;blue;NaN", "73242;70786;70786",
+             "mV;mV;G"]
     for i in range(200):
         a = f"{i * 0.5:.1f}".replace(".", ",")
         b = f"{i:.1f}".replace(".", ",") if i % 2 == 0 else ""
@@ -22,9 +24,9 @@ def _csv(path, muscles=("FCR", "FDS")):
 
 def test_layout_rates_origin_and_decimal_comma(tmp_path):
     r = IZ.inspect_file(_csv(tmp_path / "a.csv"), 20000)
-    assert r["delimiter"] == ";" and r["n_header_lines"] == 4 and r["n_data_rows"] == 200 and r["n_cols"] == 3
+    assert r["delimiter"] == ";" and r["n_header_lines"] == 7 and r["n_data_rows"] == 200 and r["n_cols"] == 3
     c4k, c2k, imu = r["columns"]
-    assert c4k["header"] == ["S1", "EMG", "FCR", "4000 Hz"] and c4k["n_nonempty"] == 200 and c4k["steps_first_rows"] == {1: 199}
+    assert c4k["header"] == ["S1", "EMG", "FCR", "4000 Hz", "1", "73242", "mV"] and c4k["n_nonempty"] == 200 and c4k["steps_first_rows"] == {1: 199}
     assert c2k["n_nonempty"] == 100 and c2k["first_row"] == 0 and c2k["last_row"] == 198 and c2k["steps_first_rows"] == {2: 99}
     assert imu["first_row"] == 7 and imu["steps_first_rows"] == {27: 7}
     assert c2k["frac_comma"] == 1.0 and c2k["n_not_numeric"] == 0 and c2k["samples"] == ["0,0", "2,0", "4,0"]
@@ -36,3 +38,12 @@ def test_emg_header_comparison_between_files(tmp_path):
     c = IZ.inspect_file(_csv(tmp_path / "c.csv", muscles=("FCU", "FDS")), 100)
     assert IZ.compare_headers([a, b]) == {"emg_columns_per_file": [2, 2], "all_equal": True}
     assert IZ.compare_headers([a, c])["all_equal"] is False
+
+
+def test_main_prints_compact_columns(tmp_path, capsys):
+    import json
+
+    IZ.main([str(_csv(tmp_path / "a.csv")), str(_csv(tmp_path / "b.csv"))])
+    out = json.loads(capsys.readouterr().out)
+    assert out["files"][0]["header_rows"][2] == ["FCR", "FDS", "Wrist"] and len(out["files"][0]["columns"]) == 3
+    assert "columns" not in out["files"][1] and out["emg_header_comparison"]["all_equal"] is True
