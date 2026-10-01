@@ -37,7 +37,25 @@ def main(argv=None) -> int:
 
     t0 = time.time()
     per_subject, failed, skipped, stopped = [], {}, 0, None
+    def write_report(final: bool) -> dict:
+        report = {
+            "dataset": "ninapro_db10", "subjects_processed": [x["subject"] for x in per_subject], "n_subjects": len(per_subject),
+            "hours_total": sum(x["hours"] for x in per_subject), "n_skipped_existing": skipped, "stopped": stopped if final else "in corso",
+            "discarded_channels_by_subject": {x["subject"]: x["discarded_channels"] for x in per_subject if x["discarded_channels"]},
+            "suspect_low_channels_by_subject": {x["subject"]: x["suspect_low_channels"] for x in per_subject if x["suspect_low_channels"]},
+            "subjects_with_label_length_adjustments": [x["subject"] for x in per_subject if x["label_length_adjustments"]],
+            "failed_subjects": failed, "per_subject": per_subject, "elapsed_s": time.time() - t0,
+        }
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        args.report.write_text(json.dumps(report, indent=2))
+        return report
+
     for s in wanted:
+        # il budget si controlla PRIMA di ogni soggetto (anche dopo un fallimento); il report parziale si riscrive a ogni soggetto, cosi' un job
+        # ucciso da SLURM lascia comunque il report (review del codice, 02/10/2026)
+        if args.time_budget_s is not None and time.time() - t0 > args.time_budget_s:
+            stopped = "time-budget"
+            break
         if args.skip_existing and (args.out_root / f"s{s:03d}" / "ex1" / "metadata.json").exists():
             skipped += 1
             continue
@@ -47,23 +65,13 @@ def main(argv=None) -> int:
         except Exception as e:  # un soggetto rotto non ferma gli altri
             failed[s] = f"{type(e).__name__}: {e}"
             print(f"  FALLITO s{s}: {failed[s]}", flush=True)
+            write_report(False)
             continue
         r = per_subject[-1]
         print(f"  fatto: {r['hours']:.2f} h, {r['n_channels']} canali, {r['n_segments']} segmenti, fs dai ts {r['fs_from_ts_hz']:.2f}, "
               f"scartati {r['discarded_channels']}, sospetti {r['suspect_low_channels']}", flush=True)
-        if args.time_budget_s is not None and time.time() - t0 > args.time_budget_s:
-            stopped = "time-budget"
-            break
-    report = {
-        "dataset": "ninapro_db10", "subjects_processed": [x["subject"] for x in per_subject], "n_subjects": len(per_subject),
-        "hours_total": sum(x["hours"] for x in per_subject), "n_skipped_existing": skipped, "stopped": stopped,
-        "discarded_channels_by_subject": {x["subject"]: x["discarded_channels"] for x in per_subject if x["discarded_channels"]},
-        "suspect_low_channels_by_subject": {x["subject"]: x["suspect_low_channels"] for x in per_subject if x["suspect_low_channels"]},
-        "subjects_with_label_length_adjustments": [x["subject"] for x in per_subject if x["label_length_adjustments"]],
-        "failed_subjects": failed, "per_subject": per_subject, "elapsed_s": time.time() - t0,
-    }
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, indent=2))
+        write_report(False)
+    report = write_report(True)
     print(json.dumps({k: v for k, v in report.items() if k != "per_subject"}, indent=2))
     return 1 if failed else 0
 

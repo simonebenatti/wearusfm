@@ -28,7 +28,7 @@ def test_make_versions_same_content_on_two_grids():
     assert a.shape == (2, 4000) and b.shape == (2, 400) and np.array_equal(a[:, ::10], b)
 
 
-@pytest.mark.parametrize("cutoff, dec", [(450.0, 2), (90.0, 10)])
+@pytest.mark.parametrize("cutoff, dec", list(G.CASES.values()))
 def test_version_a_has_no_content_above_cutoff(cutoff, dec):
     """Correzione firmata il 01/10/2026: nulla sopra il taglio (e quindi sopra la Nyquist di B, 500 o 100 Hz)."""
     x = np.random.default_rng(1).normal(size=(3, 10000))
@@ -77,3 +77,10 @@ def test_features_case_real_frontend_vs_frontend_without_delta_t():
 
     bad = G.features_case(NoDeltaT(seed=0), windows, 450.0, 2)
     assert bad["rel_error"]["total"] > 0.4
+
+
+
+def test_configured_cutoffs_are_below_the_nyquist_of_version_b():
+    """Ogni caso configurato deve tagliare sotto la Nyquist della griglia decimata, altrimenti B non ha lo stesso contenuto di A."""
+    for name, (cutoff, dec) in G.CASES.items():
+        assert cutoff < G.FS_A / dec / 2, name

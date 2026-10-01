@@ -23,8 +23,9 @@ class _Fake:
             {"dataFile": {"id": 2, "filename": "S010_ex1_orig.mat", "filesize": 2500,
                           "checksum": {"type": "MD5", "value": hashlib.md5(CONTENT[2]).hexdigest()}}},
             {"dataFile": {"id": 3, "filename": "S010_ex1.mp4", "filesize": 50, "md5": hashlib.md5(CONTENT[3]).hexdigest()}},
-            {"dataFile": {"id": 4, "filename": "Invalid Gaze.tab", "filesize": 18, "originalFileFormat": "text/csv",
-                          "md5": hashlib.md5(CONTENT[4]).hexdigest()}},
+            {"dataFile": {"id": 4, "filename": "Invalid Gaze.tab", "filesize": 99, "originalFileFormat": "text/csv",
+                          "originalFileName": "Invalid Gaze.csv", "originalFileSize": len(CONTENT[4]),
+                          "md5": hashlib.md5(CONTENT[4]).hexdigest()}},  # .tab d'archivio di 99 byte, originale di 18
         ]
         self.requests = []
         self.corrupt = set()
@@ -101,9 +102,9 @@ def test_time_budget_stops_before_next_file_and_tabular_asks_original(tmp_path, 
     fake, url = fake_server
     r = DD.run(url, [("doi:10.7910/DVN/X", "MDS1")], [".mat"], tmp_path, -1.0, False)
     assert r["stopped"] == "time-budget" and not r["datasets"]["MDS1"]["downloaded"]
-    DD.run(url, [("doi:10.7910/DVN/X", "T")], [".tab"], tmp_path, None, False)
-    assert any(p.endswith("datafile/4?format=original") for p in fake.requests)
-    assert (tmp_path / "T" / "Invalid Gaze.tab").read_bytes() == CONTENT[4]
+    r = DD.run(url, [("doi:10.7910/DVN/X", "T")], [".csv"], tmp_path, None, False)
+    assert any(p.endswith("datafile/4?format=original") for p in fake.requests) and not r["datasets"]["T"]["failed"]
+    assert (tmp_path / "T" / "Invalid Gaze.csv").read_bytes() == CONTENT[4]
 
 
 def test_dry_run_lists_without_downloading(tmp_path, fake_server):

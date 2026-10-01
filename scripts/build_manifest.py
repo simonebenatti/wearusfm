@@ -41,7 +41,7 @@ def session_row(path: Path, dataset: str, subject: str, session: str, splits: di
         n_segments = len(trials) if trials and all("offset" in t for t in trials) else 1
     valid = qc_valid_from_metadata(meta, n_channels)
     excluded = sum(int(r["n_samples"]) for r in meta.get("constant_runs") or [] if valid[int(r["channel"])])
-    split, nested = M.split_of(splits, dataset, subject)
+    split, nested = M.split_of(splits, dataset, subject, session)
     unit = M.unit_of(dataset, session)
     if unit not in M.CLASS_BY_UNIT:
         raise KeyError(f"{dataset}/{session}: unita' {unit} senza classe di quota")
@@ -70,6 +70,7 @@ def summarize(rows: list[M.SessionRow], alloc: dict, patch_s: float) -> dict:
 
 
 def build(roots: list[Path], splits: dict, quota: dict, alpha: float, max_passes: float, patch_ms: float) -> tuple[list[M.SessionRow], dict]:
+    M.check_splits(splits)
     rows = []
     for dataset in sorted(splits["datasets"]):
         where = [r / dataset for r in roots if (r / dataset).is_dir()]
@@ -77,8 +78,28 @@ def build(roots: list[Path], splits: dict, quota: dict, alpha: float, max_passes
             raise FileNotFoundError(f"{dataset}: trovato in {len(where)} radici ({where}), atteso in una")
         for subject, session, path in discover_sessions(where[0], dataset):
             rows.append(session_row(path, dataset, subject, session, splits))
+    rows = M.sort_rows(rows)
     alloc = M.assign_weights(rows, quota, alpha, max_passes)
-    return rows, summarize(rows, alloc, patch_ms / 1000)
+    summary = summarize(rows, alloc, patch_ms / 1000)
+    summary["subjects_without_sessions"] = missing_subjects(splits, rows)
+    unused_test_sessions = {ds: sorted(set(d.get("test_sessions", [])) - {r.session for r in rows if r.dataset == ds})
+                            for ds, d in splits["datasets"].items() if d.get("test_sessions")}
+    summary["test_sessions_not_found"] = {ds: len(v) for ds, v in unused_test_sessions.items() if v}
+    return rows, summary
+
+
+def missing_subjects(splits: dict, rows: list[M.SessionRow]) -> dict[str, list[str]]:
+    """Soggetti presenti negli split ma senza nessuna sessione processata (es. un ingest fallito): non devono sparire in silenzio."""
+    have: dict[str, set] = {}
+    for r in rows:
+        have.setdefault(r.dataset, set()).add(r.subject)
+    out = {}
+    for ds, d in splits["datasets"].items():
+        listed = set(d.get("benchmark", [])) | set(d.get("test", [])) | set(d.get("pretraining", []))
+        miss = sorted(listed - have.get(ds, set()))
+        if miss:
+            out[ds] = miss
+    return out
 
 
 def main(argv=None) -> int:
@@ -94,10 +115,15 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     t0 = time.time()
     splits = json.loads(args.splits.read_text())
+    if args.version != "draft" and splits.get("draft"):
+        raise SystemExit(f"--version {args.version} con split in bozza ({args.splits}): il manifest congelato vuole gli split firmati")
     quota = {k: float(v) for k, v in (x.split("=") for x in args.quota.split(","))}
     rows, summary = build(args.root, splits, quota, args.alpha, args.max_passes, args.patch_ms)
+    if args.version != "draft" and (summary["subjects_without_sessions"] or summary["test_sessions_not_found"]):
+        raise SystemExit(f"soggetti senza sessioni {summary['subjects_without_sessions']} o sessioni di test non trovate "
+                         f"{summary['test_sessions_not_found']}: il manifest congelato non si scrive")
     params = {"version": args.version, "quota": quota, "alpha": args.alpha, "max_passes": args.max_passes, "epochs": 4.0, "patch_ms": args.patch_ms,
-              "splits_file": str(args.splits), "splits_sha256": hashlib.sha256(args.splits.read_bytes()).hexdigest(),
+              "splits_sha256": hashlib.sha256(args.splits.read_bytes()).hexdigest(),  # il percorso no: stesso contenuto, stesso hash
               "classes": M.CLASS_BY_UNIT, "rvq_on": sorted(M.RVQ_ON), "rvq_off": sorted(M.RVQ_OFF)}
     try:
         commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
@@ -116,6 +142,8 @@ def main(argv=None) -> int:
         print(f"| {k} | {u['class']} | {u['rvq']} | {u['sessions']} | {u['subjects']} | {h.get('pretraining', 0):.1f} | {h.get('test', 0):.1f} | "
               f"{h.get('benchmark', 0):.1f} | {u['d_t'] / 1e6:.1f} | {u['d_c'] / 1e9:.2f} | {100 * u['share']:.1f}% | {u['passes']:.1f} |")
     t = summary["totals"]
+    if summary["subjects_without_sessions"] or summary["test_sessions_not_found"]:
+        print(f"ATTENZIONE: soggetti senza sessioni {summary['subjects_without_sessions']}; sessioni di test non trovate {summary['test_sessions_not_found']}")
     print(f"\nPretraining: {t['pretraining_sessions']} sessioni, {t['pretraining_hours']:.1f} h, D_t {t['d_t'] / 1e6:.1f} M, D_c {t['d_c'] / 1e9:.2f} G; "
           f"somma dei pesi {t['weight_sum']:.4f}; quota non assegnabile {t['unused_quota']}")
     return 0

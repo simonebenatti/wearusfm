@@ -32,9 +32,10 @@ def _signals(n2, seed):
     return out
 
 
-def _write_seq(d, n2=4000, seed=0, random_mode=False, gap=False, short4k=0, ragged4k=0):
+def _write_seq(d, n2=4000, seed=0, random_mode=False, gap=False, short4k=0, ragged4k=0, override=None):
     d.mkdir(parents=True, exist_ok=True)
     sig = _signals(n2, seed)
+    sig.update(override or {})
     for k, (_s, kind, _m, fs, *_r) in enumerate(LAYOUT):  # short4k: Avanti piu' corti (come HG_O983O9 seq. 09); ragged4k: uno di 1 campione piu' corto
         if kind == "EMG" and fs == "4000 Hz":
             sig[k] = sig[k][: len(sig[k]) - short4k]
@@ -170,3 +171,18 @@ def test_one_line_header_export_is_refused(tmp_path):
     (d / "sensor_data.csv").write_text("2000 Hz, 2000 Hz.1,\" 74,0741 Hz\", 4000 Hz\n0.1,0.2,0.3,0.4\n0.1,0.2,0.3,0.4\n")
     with pytest.raises(ValueError, match="intestazione di 1 righe"):
         Z.read_sequence(d / "sensor_data.csv")
+
+
+
+def test_resampled_4k_channel_is_sample_aligned_with_2k_channel(tmp_path):
+    """Stesso segnale su un canale a 4000 Hz (S1) e su uno a 2000 Hz (S2): dopo il ricampionamento devono coincidere campione per campione
+    (uno sfasamento anche di 1 campione a 2 kHz si vedrebbe; review del codice, 02/10/2026)."""
+    n2 = 4000
+    t2, t4 = np.arange(n2) / 2000.0, np.arange(2 * n2) / 4000.0
+    f = lambda t: 0.02 * np.sin(2 * np.pi * 37 * t) + 0.01 * np.sin(2 * np.pi * 211 * t + 0.3)  # noqa: E731
+    i_s1 = next(k for k, c in enumerate(LAYOUT) if c[0] == "S1" and c[1] == "EMG")
+    i_s2 = next(k for k, c in enumerate(LAYOUT) if c[0] == "S2" and c[1] == "EMG")
+    _write_seq(tmp_path / "s", n2=n2, override={i_s1: f(t4), i_s2: f(t2)})
+    e = Z.read_sequence(tmp_path / "s" / "sensor_data.csv")["emg"]
+    inner = slice(200, -200)  # bordi: transitorio del filtro di ricampionamento
+    assert np.max(np.abs(e[inner, 0] - e[inner, 1])) < 1e-4  # colonne S1 e S2 (ordine per sensore)

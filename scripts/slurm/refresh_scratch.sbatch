@@ -23,19 +23,27 @@ DEFAULT=(data/raw data/processed wearusfm_runs external)
 if [ "$#" -gt 0 ]; then TARGETS=("$@"); else TARGETS=("${DEFAULT[@]}"); fi
 
 bad=0
+# Elementi da trattare: il bersaglio stesso se e' un file; altrimenti OGNI voce al primo livello, nascoste comprese (review del 02/10/2026: il glob
+# "$t"/* saltava i file nascosti e non toccava un bersaglio che fosse un file). `find -L` segue i link alle cartelle (prima si toccava solo il link).
+report() {  # $1 = voce; conta, tocca, verifica
+  local d="$1" n old oldest still
+  n=$(( $(find -L "$d" -type f 2>/dev/null | wc -l) ))
+  old=$(( $(find -L "$d" -type f -mtime +30 2>/dev/null | wc -l) ))
+  oldest=$(find -L "$d" -type f -printf "%TY-%Tm-%Td\n" 2>/dev/null | sort | head -1)
+  find -L "$d" -exec touch -c {} + 2>/dev/null
+  still=$(( $(find -L "$d" -type f -mtime +0 2>/dev/null | wc -l) ))
+  echo "$d: file=$n piu_vecchi_di_30_giorni_prima=$old data_piu_vecchia_prima=$oldest ancora_vecchi_dopo=$still"
+  [ "$still" -eq 0 ] || bad=$((bad+1))
+}
 for t in "${TARGETS[@]}"; do
   case "$t" in /*|*..*) echo "RIFIUTATO: $t (serve un percorso relativo a \$SCRATCH, senza ..)"; bad=$((bad+1)); continue ;; esac
   [ -e "$t" ] || { echo "MANCANTE: $t"; bad=$((bad+1)); continue; }
-  for d in "$t"/* ; do
-    [ -e "$d" ] || continue
-    n=$(find "$d" -type f | wc -l)
-    old=$(find "$d" -type f -mtime +30 | wc -l)
-    oldest=$(find "$d" -type f -printf "%TY-%Tm-%Td\n" | sort | head -1)
-    find "$d" -exec touch -c -h {} +
-    still=$(find "$d" -type f -mtime +0 | wc -l)
-    echo "$d: file=$n piu_vecchi_di_30_giorni_prima=$old data_piu_vecchia_prima=$oldest ancora_vecchi_dopo=$still"
-    [ "$still" = "0" ] || bad=$((bad+1))
-  done
+  if [ -d "$t" ]; then
+    touch -c "$t"
+    while IFS= read -r -d '' d; do report "$d"; done < <(find "$t" -mindepth 1 -maxdepth 1 -print0)
+  else
+    report "$t"
+  fi
 done
 echo "=== fine: cartelle con problemi = $bad ==="
-[ "$bad" = "0" ]
+[ "$bad" -eq 0 ]

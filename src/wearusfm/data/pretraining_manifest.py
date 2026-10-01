@@ -67,10 +67,25 @@ class SessionRow:
         return (self.n_samples * self.n_valid - self.excluded_channel_samples) / self.fs_hz / patch_s
 
 
-def split_of(splits: dict, dataset: str, subject: str) -> tuple[str, list[str]]:
+def check_splits(splits: dict) -> None:
+    """Le liste di un dataset devono essere disgiunte (un soggetto in test e in pretraining sarebbe un errore silenzioso)."""
+    for ds, d in splits["datasets"].items():
+        seen: dict[str, str] = {}
+        for role in ("benchmark", "test", "pretraining"):
+            for s in d.get(role, []):
+                if s in seen:
+                    raise ValueError(f"{ds}/{s}: sia in {seen[s]} sia in {role}")
+                seen[s] = role
+
+
+def split_of(splits: dict, dataset: str, subject: str, session: str | None = None) -> tuple[str, list[str]]:
+    """Ruolo di una sessione: benchmark, test o pretraining per soggetto; `test_sessions` sposta in test singole sessioni di soggetti di pretraining
+    (emg2pose: le registrazioni del test ufficiale per fasi nuove, decisione di Simone del 02/10/2026)."""
     d = splits["datasets"].get(dataset)
     if d is None:
         raise KeyError(f"{dataset}: nessuno split")
+    if session is not None and session in set(d.get("test_sessions", [])):
+        return "test", []
     if subject in d.get("benchmark", []):
         return "benchmark", []
     if subject in d.get("test", []):
@@ -130,7 +145,13 @@ def assign_weights(rows: list[SessionRow], quota: dict[str, float], alpha: float
     return alloc
 
 
+def sort_rows(rows: list[SessionRow]) -> list[SessionRow]:
+    """Ordine canonico: i pesi (somme in virgola mobile) si calcolano sempre nello stesso ordine, cosi' l'hash non dipende dall'ordine di scoperta."""
+    return sorted(rows, key=lambda r: (r.dataset, r.subject, r.session))
+
+
 def manifest_hash(params: dict, rows: Iterable[SessionRow]) -> str:
-    """sha256 del contenuto canonico (parametri e righe ordinate), indipendente dall'ordine di scoperta delle sessioni."""
+    """sha256 del contenuto canonico (parametri e righe ordinate). Le righe vanno pesate DOPO `sort_rows`: cosi' l'hash non dipende dall'ordine di
+    scoperta delle sessioni (le somme dei pesi dipendono dall'ordine; review del codice, 02/10/2026)."""
     body = {"params": params, "rows": sorted((asdict(r) for r in rows), key=lambda d: (d["dataset"], d["subject"], d["session"]))}
     return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()

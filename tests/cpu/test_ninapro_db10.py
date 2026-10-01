@@ -110,3 +110,18 @@ def test_script_collaudo_resume_and_suspect_channel(tmp_path):
     assert mod.main(args + ["--skip-existing"]) == 0
     r = json.loads((tmp_path / "r.json").read_text())
     assert r["subjects_processed"] == [11] and r["n_skipped_existing"] == 1
+
+
+def test_script_stops_on_budget_before_any_subject_and_writes_report(tmp_path):
+    import importlib.util
+    from pathlib import Path
+
+    d = tmp_path / "raw" / "DB10" / "MDS1"
+    _mat(d / "S010_ex1.mat")
+    spec = importlib.util.spec_from_file_location("ingest_ninapro_db10", Path(__file__).resolve().parents[2] / "scripts" / "ingest_ninapro_db10.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.main(["--raw-root", str(tmp_path / "raw"), "--out-root", str(tmp_path / "out"), "--report", str(tmp_path / "r.json"),
+                     "--time-budget-s", "-1"]) == 0
+    r = json.loads((tmp_path / "r.json").read_text())
+    assert r["stopped"] == "time-budget" and r["n_subjects"] == 0 and not (tmp_path / "out").exists()

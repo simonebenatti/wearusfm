@@ -109,13 +109,14 @@ def allocate(rows: list[dict], quota: dict[str, float], alpha: float, max_passes
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--extra", action="append", default=[], metavar="CHIAVE=ORE", help="ore ipotizzate per un dataset senza riepilogo")
-    ap.add_argument("--without-kaifosh", action="store_true", help="Kaifosh fuori dal pretraining (D3b, opzione benchmark)")
+    ap.add_argument("--with-kaifosh", action="store_true", help="Kaifosh nel pretraining (default: fuori, come nella bozza D9, D3b)")
+    ap.add_argument("--without-kaifosh", action="store_true", help="(default; mantenuto per compatibilita')")
     ap.add_argument("--quota", default=None, help="quote garantite per classe, es. A=0.2,B=0.75,C=0.05: stampa la ripartizione per dataset")
     ap.add_argument("--alpha", type=float, default=0.5, help="pesi dentro la classe proporzionali a ore^alpha")
     ap.add_argument("--max-passes", type=float, default=8.0, help="tetto ai passaggi per dataset (con 4 epoche di consumo totale)")
     args = ap.parse_args(argv)
     extra = {k: float(v) for k, v in (e.split("=", 1) for e in args.extra)}
-    rows, tot = table(extra, not args.without_kaifosh)
+    rows, tot = table(extra, args.with_kaifosh)
     print("| Dataset | Classe | Ore | Soggetti | Canali validi (stima) | D_t (milioni) | D_c (miliardi) | Ruolo proposto | Fonte |")
     print("|---|---|---|---|---|---|---|---|---|")
     for r in rows:
@@ -124,7 +125,7 @@ def main(argv=None) -> int:
         dc = f"{r['d_c'] / 1e9:.2f}" if r["d_c"] is not None else "-"
         print(f"| {r['label']} | {r['class']} | {h} | {r['subjects'] if r['subjects'] is not None else '-'} | {r['channels']:.1f} | {dt} | {dc} | "
               f"{r['role']} | {r['source']} |")
-    print(f"\nTotale nel pretraining{' (senza Kaifosh)' if args.without_kaifosh else ''}: {tot['hours_total']:.1f} h; D_t = {tot['d_t'] / 1e6:.1f} milioni; "
+    print(f"\nTotale nel pretraining{' (senza Kaifosh)' if not args.with_kaifosh else ''}: {tot['hours_total']:.1f} h; D_t = {tot['d_t'] / 1e6:.1f} milioni; "
           f"D_c = {tot['d_c'] / 1e9:.2f} miliardi (patch {PATCH_S * 1000:.0f} ms)")
     for c in "ABC":
         print(f"- classe {c}: {tot['hours_by_class'][c]:.1f} h = {100 * tot['fraction_by_class'][c]:.1f}% delle ore")
@@ -134,7 +135,7 @@ def main(argv=None) -> int:
                                          for q in (0.05, 0.10, 0.20, 0.30, 0.40)))
     if args.quota:
         quota = {k: float(v) for k, v in (x.split("=") for x in args.quota.split(","))}
-        used = [r for r in rows if r["hours"] is not None and (not args.without_kaifosh or r["key"] != "kaifosh")]
+        used = [r for r in rows if r["hours"] is not None and (args.with_kaifosh or r["key"] != "kaifosh")]
         a = allocate(used, quota, args.alpha, args.max_passes, tot["hours_total"])
         print(f"\nRipartizione con quote {quota}, pesi ore^{args.alpha}, tetto {args.max_passes:g} passaggi per dataset:")
         print("| Dataset | Classe | Quota dei campioni | Passaggi |")

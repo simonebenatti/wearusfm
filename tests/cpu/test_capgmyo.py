@@ -125,3 +125,21 @@ def test_build_montage_metadata_shape_and_topology() -> None:
     assert group.channels[0].sensor_coords.grid_col == 0
     assert group.channels[16].sensor_coords.grid_row == 1
     assert group.channels[16].sensor_coords.grid_col == 0
+
+
+def test_to_int16_refuses_non_finite_data():
+    """Un solo NaN darebbe scala 1 e tutti i canali a zero (dati in volt): deve fermarsi."""
+    import numpy as np
+    import pytest
+
+    from wearusfm.ingest.capgmyo import to_int16
+
+    x = np.random.default_rng(0).normal(scale=1e-5, size=(100, 4))
+    q, s = to_int16(x)
+    assert np.abs(q).max() > 30000 and s > 1e8
+    x[10, 2] = np.nan
+    with pytest.raises(ValueError, match="NaN"):
+        to_int16(x)
+    x[10, 2] = np.inf
+    with pytest.raises(ValueError, match="infiniti"):
+        to_int16(x)

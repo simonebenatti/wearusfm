@@ -119,7 +119,12 @@ def to_int16(data: np.ndarray, *, scale: float | None = None) -> tuple[np.ndarra
     informativo in EMG, non vanno tagliati per guadagnare risoluzione sul resto. Ritorna
     (dati_int16, scale): la ricostruzione approssimata e' `dati_int16.astype(float64) /
     scale`.
+
+    Rifiuta dati con NaN o infiniti: con un solo NaN il picco e' NaN, `peak > 0` e' falso, la scala diventa 1 e un EMG in volt
+    (~1e-5) si arrotonda tutto a zero, mentre il QC lascerebbe validi i canali (review del codice, 02/10/2026).
     """
+    if not np.isfinite(data).all():
+        raise ValueError(f"dati non finiti: {int(np.isnan(data).sum())} NaN, {int(np.isinf(data).sum())} infiniti")
     if scale is None:
         peak = np.max(np.abs(data))
         scale = (32000.0 / peak) if peak > 0 else 1.0

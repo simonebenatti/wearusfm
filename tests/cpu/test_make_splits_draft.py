@@ -48,3 +48,12 @@ def test_nested_subsets_are_nested_prefixes():
     n = MS.make(_by(), 0)["zhang2026"]["nested"]
     assert set(n["0.125"]) <= set(n["0.25"]) <= set(n["0.5"])
     assert [len(n[k]) for k in ("0.125", "0.25", "0.5")] == [7, 13, 25]
+
+
+
+def test_emg2pose_stage_held_out_sessions_are_test():
+    users = json.loads((MS.OFFICIAL / "emg2pose_users.json").read_text())
+    by = {"emg2pose": [f"u{u}" for u in users["all_users"]]}
+    r = MS.make(by, 0)["emg2pose"]
+    assert len(r["test_sessions"]) == 3539 and r["test_sessions"] == users["held_out_stage_test_sessions"]
+    assert len(r["test"]) == 35 and "fasi nuove" in r["rule"]

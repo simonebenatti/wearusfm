@@ -74,11 +74,45 @@ def test_weights_follow_quota_and_hours_and_sum_to_one(tmp_path):
 
 
 def test_hash_ignores_discovery_order_and_changes_with_params(tmp_path):
+    import copy
+
     roots, splits = _tree(tmp_path)
     rows, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
     p = {"quota": {"A": 0.3, "B": 0.7}}
-    assert M.manifest_hash(p, rows) == M.manifest_hash(p, list(reversed(rows)))
+    shuffled = copy.deepcopy(rows)[::-1]  # stesse sessioni scoperte in un altro ordine: si ripesano dopo l'ordine canonico
+    M.assign_weights(M.sort_rows(shuffled), {"A": 0.3, "B": 0.7}, 0.5, 8.0)
+    assert M.manifest_hash(p, shuffled) == M.manifest_hash(p, rows)
+    assert [r.weight for r in M.sort_rows(shuffled)] == [r.weight for r in rows]  # pesi identici bit per bit
     assert M.manifest_hash(p, rows) != M.manifest_hash({"quota": {"A": 0.2, "B": 0.8}}, rows)
+
+
+def test_session_level_test_split_and_guards(tmp_path, capsys):
+    roots, splits = _tree(tmp_path)
+    _session(roots[1] / "emg2qwerty" / "u1" / "sessB", 2000, 2, 2000.0)
+    splits["datasets"]["emg2qwerty"]["test_sessions"] = ["sessB", "sessX"]  # sessX non esiste: va segnalata
+    splits["datasets"]["ninapro_db2"]["test"].append("s09")  # soggetto senza sessioni: va segnalato
+    rows, summary = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+    by = {(r.dataset, r.session): r for r in rows}
+    assert by[("emg2qwerty", "sessB")].split == "test" and by[("emg2qwerty", "sessB")].weight == 0.0
+    assert by[("emg2qwerty", "sessA")].split == "pretraining"
+    assert summary["subjects_without_sessions"] == {"ninapro_db2": ["s09"]} and summary["test_sessions_not_found"] == {"emg2qwerty": 1}
+    splits["datasets"]["ninapro_db2"]["test"].append("s01")  # s01 anche in pretraining
+    with pytest.raises(ValueError, match="s01"):
+        BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+
+
+def test_frozen_version_refuses_draft_splits_and_missing_subjects(tmp_path):
+    roots, splits = _tree(tmp_path)
+    sp = tmp_path / "splits.json"
+    base = ["--root", str(roots[0]), "--root", str(roots[1]), "--splits", str(sp), "--out", str(tmp_path / "m.json"), "--quota", "A=0.3,B=0.7"]
+    sp.write_text(json.dumps({**splits, "draft": True}))
+    with pytest.raises(SystemExit, match="bozza"):
+        BM.main(base + ["--version", "manifest-v1"])
+    splits["datasets"]["ninapro_db2"]["test"].append("s09")
+    sp.write_text(json.dumps(splits))
+    with pytest.raises(SystemExit, match="senza sessioni"):
+        BM.main(base + ["--version", "manifest-v1"])
+    BM.main(base)  # in bozza si scrive comunque, con l'avviso
 
 
 def test_missing_subject_or_dataset_root_is_an_error(tmp_path):
@@ -102,3 +136,12 @@ def test_main_writes_gzipped_manifest(tmp_path, capsys):
     assert doc["params"]["version"] == "draft" and len(doc["rows"]) == 7 and len(doc["hash"]) == 64
     assert doc["columns"][:4] == ["dataset", "subject", "session", "split"]
     assert "manifest draft: 7 sessioni" in capsys.readouterr().out
+
+
+def test_build_is_canonical_even_if_sessions_are_discovered_in_reverse(tmp_path, monkeypatch):
+    roots, splits = _tree(tmp_path)
+    rows, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+    real = BM.discover_sessions
+    monkeypatch.setattr(BM, "discover_sessions", lambda root, ds: list(reversed(real(root, ds))))
+    rows_rev, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+    assert [(r.dataset, r.subject, r.session, r.weight) for r in rows_rev] == [(r.dataset, r.subject, r.session, r.weight) for r in rows]

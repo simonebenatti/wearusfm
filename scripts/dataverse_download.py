@@ -46,8 +46,13 @@ def list_files(server: str, doi: str) -> list[dict]:
     for f in d["data"]["latestVersion"]["files"]:
         df = f["dataFile"]
         md5 = df.get("md5") or ((df.get("checksum") or {}).get("value") if (df.get("checksum") or {}).get("type") == "MD5" else None)
-        out.append({"id": df["id"], "filename": df["filename"], "directory": f.get("directoryLabel"), "size": df.get("filesize"),
-                    "md5": md5, "tabular": bool(df.get("originalFileFormat")), "restricted": bool(f.get("restricted"))})
+        tabular = bool(df.get("originalFileFormat"))
+        # per un file tabulare si scarica l'ORIGINALE (?format=original): nome e dimensione sono quelli dell'originale, non del .tab d'archivio
+        # (review del codice, 02/10/2026); se l'API non li da', si usa il .tab e la verifica di dimensione salta
+        name = df.get("originalFileName") if tabular and df.get("originalFileName") else df["filename"]
+        size = df.get("originalFileSize") if tabular else df.get("filesize")
+        out.append({"id": df["id"], "filename": name, "directory": f.get("directoryLabel"), "size": size,
+                    "md5": md5, "tabular": tabular, "restricted": bool(f.get("restricted"))})
     return out
 
 

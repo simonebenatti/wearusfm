@@ -4,7 +4,8 @@ manifest congelato.
 
 Regole proposte:
 - Kaifosh: tutto benchmark (proposta b), nessun soggetto nel pretraining; si conserva lo split ufficiale 80/10/10;
-- split ufficiali dove esistono: emg2qwerty (gli 8 utenti di test di config/user/user0-7.yaml), emg2pose (utenti con held_out_user = True);
+- split ufficiali dove esistono: emg2qwerty (gli 8 utenti di test di config/user/user0-7.yaml), emg2pose (utenti con held_out_user = True, e per
+  sessione le registrazioni del test per fasi nuove: decisione di Simone del 02/10/2026);
 - NinaPro DB4, DB5, DB7, DB8: interi nel pretraining (sovrapposizioni di soggetti dichiarate o probabili, fatto n. 2); i test di NinaPro solo da DB2, DB3,
   DB6, DB10;
 - altrove: il 20% dei soggetti, almeno 2, arrotondato per eccesso, stratificato per gruppo (amputati / normodotati dove il dataset li mescola), con un
@@ -115,6 +116,9 @@ def make(subjects_by_dataset: dict[str, list[str]], seed: int) -> dict:
             rule = f"{int(TEST_FRACTION * 100)}% per gruppo, almeno {MIN_TEST_OVERRIDE.get(ds, MIN_TEST)}, seme {seed}"
         pre = sorted(s for s in subjects if s not in test)
         out[ds] = {"role": "pretraining", "pretraining": pre, "test": sorted(test), "nested": nested(ds, pre, seed), "source": source, "rule": rule}
+        if ds == "emg2pose":  # decisione di Simone del 02/10/2026: fuori dal pretraining anche il test ufficiale per fasi nuove (per sessione)
+            out[ds]["test_sessions"] = json.loads((OFFICIAL / "emg2pose_users.json").read_text())["held_out_stage_test_sessions"]
+            out[ds]["rule"] += " + test per fasi nuove (held_out_stage) per sessione"
     return out
 
 
