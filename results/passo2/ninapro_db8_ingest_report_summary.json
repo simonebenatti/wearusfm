@@ -1,0 +1,557 @@
+{
+  "dataset": "ninapro_db8",
+  "jobs": [
+    59087988,
+    59089180
+  ],
+  "subjects_processed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "n_subjects": 12,
+  "hours_total": 8.497695,
+  "n_channels": 16,
+  "discarded_channels_by_subject": {
+    "11": [
+      13,
+      14,
+      15
+    ],
+    "12": [
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "subjects_with_field_mismatch": [
+    11,
+    12
+  ],
+  "subject_field_in_file_by_subject": {
+    "11": [
+      101
+    ],
+    "12": [
+      102
+    ]
+  },
+  "subjects_with_label_length_adjustments": [],
+  "failed_subjects": {},
+  "output_size": "1.9G (in $SCRATCH/data/processed/ninapro_db8, non in $WORK)",
+  "elapsed_s": 91.46159648895264,
+  "note": "riepilogo di due job: 59087988 (collaudo, soggetti 1 e 11) e 59089180 (gli altri 10). Report completi su Leonardo in $WORK/wearusfm_runs/results/passo2/ninapro_db8_ingest_report_<job>.json (sha256 e1901389...e074 e ff1d1c90...3c97, uguali alle copie lette sul Mac). Opzione A: griglia a 2 kHz come fornita, banda effettiva 0-555,5 Hz, acquisition_fs_hz 1111 nei sidecar. Gli amputati 11 e 12 hanno 3 e 4 colonne EMG a zero, scartate dal QC: coerente coi 13 e 12 sensori del paper. Lo scalare subject nei file degli amputati vale 101 e 102 (ci si fida del nome). La quota di potenza sopra 555,5 Hz e' misurata sui primi 60 s dell'acquisizione 1, per canale valido. Il processato sta su $SCRATCH: rinfrescare la data di modifica prima del purge (25/10/2026).",
+  "per_subject": [
+    {
+      "subject": 1,
+      "n_samples": 5135095,
+      "hours": 0.7132076388888889,
+      "samples_per_acquisition": [
+        2292526,
+        2313470,
+        529099
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        1
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.0043203486758884024,
+        0.003881410357017206,
+        0.006229514888992613,
+        0.029497858032954485,
+        0.006960888276397363,
+        0.015718596415210725,
+        0.009092314411300642,
+        0.011004066002792596,
+        0.007695450556272417,
+        0.010809022082869622,
+        0.018487276159046613,
+        0.008949546147035515,
+        0.0028652792600251512,
+        0.005642476398029476,
+        0.007823237555464862,
+        0.005999523144802248
+      ],
+      "int16_scale": 16476307.182610938,
+      "emg_max_abs": 0.001942182774655521,
+      "power_fraction_above_effective_band_median": 0.007759344055868639
+    },
+    {
+      "subject": 2,
+      "n_samples": 5123442,
+      "hours": 0.7115891666666667,
+      "samples_per_acquisition": [
+        2277978,
+        2319545,
+        525919
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        2
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.010605530348072096,
+        0.005630017295416445,
+        0.007536254276841539,
+        0.021045504959016557,
+        0.02250178592422576,
+        0.01573921924697579,
+        0.007726475383762078,
+        0.0158880015931648,
+        0.006682871368527269,
+        0.005104383057443805,
+        0.013632926846678984,
+        0.007022158755017222,
+        0.025264452618158573,
+        0.007176080567611728,
+        0.0073435438884594155,
+        0.00617968134720563
+      ],
+      "int16_scale": 28252082.994825825,
+      "emg_max_abs": 0.0011326598469167948,
+      "power_fraction_above_effective_band_median": 0.007631364830301808
+    },
+    {
+      "subject": 3,
+      "n_samples": 5101925,
+      "hours": 0.7086006944444445,
+      "samples_per_acquisition": [
+        2269705,
+        2304906,
+        527314
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        3
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.006186426113273472,
+        0.0060409579283784275,
+        0.0037291007635315908,
+        0.01108311557530241,
+        0.011766284121984199,
+        0.010234409366001807,
+        0.004788377808786977,
+        0.00928453742069009,
+        0.009445378655244066,
+        0.006812250400145561,
+        0.00646323541099328,
+        0.007415475663679907,
+        0.016428001769346594,
+        0.00464701978862394,
+        0.008217922734981276,
+        0.005768323289149357
+      ],
+      "int16_scale": 10099063.534865217,
+      "emg_max_abs": 0.0031686106231063604,
+      "power_fraction_above_effective_band_median": 0.007113863031912734
+    },
+    {
+      "subject": 4,
+      "n_samples": 5115298,
+      "hours": 0.7104580555555555,
+      "samples_per_acquisition": [
+        2270542,
+        2318569,
+        526187
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        4
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.006801525395450404,
+        0.0061388679561172515,
+        0.0030330295054312446,
+        0.009762432909011354,
+        0.00895309390622729,
+        0.004257119771466734,
+        0.007932903381406809,
+        0.008847939245784997,
+        0.008700112993865907,
+        0.0032039078615045177,
+        0.003828291588479937,
+        0.005704719602995731,
+        0.005515444022166795,
+        0.005029201796070161,
+        0.006665048179624535,
+        0.003946494588221881
+      ],
+      "int16_scale": 29323175.143726043,
+      "emg_max_abs": 0.0010912870056927204,
+      "power_fraction_above_effective_band_median": 0.005921793779556491
+    },
+    {
+      "subject": 5,
+      "n_samples": 4923750,
+      "hours": 0.6838541666666667,
+      "samples_per_acquisition": [
+        2081529,
+        2316362,
+        525859
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        5
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.008300234504895164,
+        0.011290973377852162,
+        0.005098419302909523,
+        0.008809849212268153,
+        0.01462477267003132,
+        0.012480929103649951,
+        0.005394244764266624,
+        0.009478606681307759,
+        0.006589161579741169,
+        0.00482847260742028,
+        0.005833236642596601,
+        0.007157219835073184,
+        0.01586378623931098,
+        0.006746340717340905,
+        0.008429503294920699,
+        0.008273358771310383
+      ],
+      "int16_scale": 7089554.458138091,
+      "emg_max_abs": 0.004513682797551155,
+      "power_fraction_above_effective_band_median": 0.008286796638102775
+    },
+    {
+      "subject": 6,
+      "n_samples": 5160164,
+      "hours": 0.7166894444444444,
+      "samples_per_acquisition": [
+        2280910,
+        2346802,
+        532452
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        6
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.008418251054325225,
+        0.008321048261856796,
+        0.00901365076715407,
+        0.01238501307273272,
+        0.01017866321477565,
+        0.004428103020353062,
+        0.0063478117049403536,
+        0.008964875381127047,
+        0.006564559136810948,
+        0.008603850073931957,
+        0.0038447077728415865,
+        0.006494695817463246,
+        0.005121540688539372,
+        0.004406742715988112,
+        0.006539034395391793,
+        0.006887031971309373
+      ],
+      "int16_scale": 13267489.005488712,
+      "emg_max_abs": 0.0024119107984006405,
+      "power_fraction_above_effective_band_median": 0.00672579555406016
+    },
+    {
+      "subject": 7,
+      "n_samples": 5104587,
+      "hours": 0.7089704166666667,
+      "samples_per_acquisition": [
+        2263617,
+        2313205,
+        527765
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        7
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.003687341987749336,
+        0.003322538146660386,
+        0.004262840822600286,
+        0.012699919285969839,
+        0.01242857351471138,
+        0.00602778970557062,
+        0.006096129008718268,
+        0.0166160711311535,
+        0.008136138889647726,
+        0.0050189888692579706,
+        0.009491337078016825,
+        0.007634255435296156,
+        0.0073693609133893626,
+        0.006166483005685441,
+        0.007180963758769776,
+        0.00903668379695696
+      ],
+      "int16_scale": 11465338.232722778,
+      "emg_max_abs": 0.002791021019220352,
+      "power_fraction_above_effective_band_median": 0.007275162336079569
+    },
+    {
+      "subject": 8,
+      "n_samples": 5079279,
+      "hours": 0.7054554166666668,
+      "samples_per_acquisition": [
+        2255116,
+        2295890,
+        528273
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        8
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.009005817632267534,
+        0.004385361011513215,
+        0.004978259144238435,
+        0.014804762273272137,
+        0.014737168354920822,
+        0.008038689160559772,
+        0.009506613141399332,
+        0.019130681335097557,
+        0.004486653972239366,
+        0.004933513872628282,
+        0.00971520379925713,
+        0.00953834395300095,
+        0.009170867332509101,
+        0.005664677024203951,
+        0.007891478679686027,
+        0.01014109854269933
+      ],
+      "int16_scale": 48225619.81770865,
+      "emg_max_abs": 0.0006635477184318006,
+      "power_fraction_above_effective_band_median": 0.009088342482388318
+    },
+    {
+      "subject": 9,
+      "n_samples": 5110077,
+      "hours": 0.7097329166666667,
+      "samples_per_acquisition": [
+        2259330,
+        2305578,
+        545169
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        9
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.012097905758387189,
+        0.004801283883628558,
+        0.0024225101126339765,
+        0.01568823919206339,
+        0.015548320140301435,
+        0.007938358659473527,
+        0.005517612132810505,
+        0.015493275250725311,
+        0.005226363833160714,
+        0.004555783223709688,
+        0.009751124899562612,
+        0.007590773044353536,
+        0.007200043546588205,
+        0.0059326143483405085,
+        0.004458600719144887,
+        0.006635037033648509
+      ],
+      "int16_scale": 22717721.233883813,
+      "emg_max_abs": 0.001408591982908547,
+      "power_fraction_above_effective_band_median": 0.006917540290118357
+    },
+    {
+      "subject": 10,
+      "n_samples": 5092972,
+      "hours": 0.7073572222222222,
+      "samples_per_acquisition": [
+        2266217,
+        2305009,
+        521746
+      ],
+      "discarded_channels": [],
+      "subject_field_in_file": [
+        10
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.011478894834429891,
+        0.006403156047387176,
+        0.004363769756733318,
+        0.01441099865211972,
+        0.008139158292879735,
+        0.016556129192125568,
+        0.006533126515321841,
+        0.013706212446231701,
+        0.00389765470865654,
+        0.005017771442095246,
+        0.008492269176086245,
+        0.008377301117865957,
+        0.011306795843456957,
+        0.007760006340018435,
+        0.009944575769954927,
+        0.006396807714149961
+      ],
+      "int16_scale": 7664219.503490414,
+      "emg_max_abs": 0.004175245761871338,
+      "power_fraction_above_effective_band_median": 0.008258229705372846
+    },
+    {
+      "subject": 11,
+      "n_samples": 5141292,
+      "hours": 0.7140683333333334,
+      "samples_per_acquisition": [
+        2276629,
+        2312785,
+        551878
+      ],
+      "discarded_channels": [
+        13,
+        14,
+        15
+      ],
+      "subject_field_in_file": [
+        101
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.020452807308919893,
+        0.020099967748483123,
+        0.005166907568255616,
+        0.00458260598704612,
+        0.004410754675132487,
+        0.008699891953585502,
+        0.011049604746160182,
+        0.014208455804751717,
+        0.00701024903688538,
+        0.006231583207402458,
+        0.005650002910895429,
+        0.006283473980376346,
+        0.009871964985359489,
+        null,
+        null,
+        null
+      ],
+      "int16_scale": 33415481.60046642,
+      "emg_max_abs": 0.0009576399461366236,
+      "power_fraction_above_effective_band_median": 0.00701024903688538
+    },
+    {
+      "subject": 12,
+      "n_samples": 5095523,
+      "hours": 0.7077115277777778,
+      "samples_per_acquisition": [
+        2273001,
+        2293913,
+        528609
+      ],
+      "discarded_channels": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "subject_field_in_file": [
+        102
+      ],
+      "movements_per_acquisition": [
+        9,
+        9,
+        9
+      ],
+      "label_length_adjustments": {},
+      "power_fraction_above_effective_band_first_60s_acq1": [
+        0.004759988931395477,
+        0.005003156380976369,
+        0.004547372440299367,
+        0.004041890568802641,
+        0.0016789151991936943,
+        0.0024521483686541583,
+        0.008062471669540735,
+        0.0017584682563889851,
+        0.0036108253713952633,
+        0.0039021933830629,
+        0.012991009481000002,
+        0.0023485460406748723,
+        null,
+        null,
+        null,
+        null
+      ],
+      "int16_scale": 11436368.901260631,
+      "emg_max_abs": 0.002798090921714902,
+      "power_fraction_above_effective_band_median": 0.00397204197593277
+    }
+  ]
+}

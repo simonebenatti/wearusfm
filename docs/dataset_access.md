@@ -141,7 +141,7 @@ sono ancora li' finche' Simone non lancia lo script di cancellazione.
 | NinaPro DB7 | P/ninapro_db7 | ingerito: 22 soggetti (21 e 22 amputati), 13,4 h |
 | NinaPro DB5 | W/ninapro_db5 | ingerito (job 59054445): 10 soggetti, 8,8 h, 0 canali scartati; 200 Hz, fuori dalla vista canonica e dall'ancora RVQ |
 | NinaPro DB1 | - | non ingerito: 100 Hz, inviluppo RMS, fuori dal front-end (v10 §2.4) |
-| NinaPro DB8 | P/ninapro_db8 | raw scaricato il 01/10/2026 (36 `.mat`, 24 GB, `$SCRATCH/data/raw/ninapro/DB8`); parser scritto (opzione A: griglia 2 kHz, banda effettiva 0-555,5 Hz); collaudo sui soggetti 1 e 11 lanciato il 01/10 (job 59087988), poi il pieno |
+| NinaPro DB8 | P/ninapro_db8 | ingerito (job 59087988 + 59089180, 01/10/2026): 12 soggetti (11 e 12 amputati: anatomia nominale, gruppi sparsi), 8,5 h, opzione A (griglia 2 kHz, banda effettiva 0-555,5 Hz); colonne senza sensore scartate (s11: 13-15, s12: 12-15); 1,9 GB. Raw: 36 `.mat`, 24 GB in `$SCRATCH/data/raw/ninapro/DB8` |
 | NinaPro DB10 | - | raw VUOTO; deciso (01/10/2026): scaricare solo i `.mat` di MeganePro MDS1, MDS2, MDS4 (~78 GB) in `$SCRATCH`; script di download da scrivere |
 | Hyser | P/hyser | ingerito (job 59054442): 20 soggetti, 20,2 h, 256 canali, 0 scartati; solo `*_raw_*`; 72 GB |
 | Zhang 2026 | - | non ingerito: schema deciso (opzione B, Simone 30/09/2026, `decisioni.md`); 4 controlli sui dati prima del parser |
