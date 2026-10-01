@@ -21,7 +21,8 @@ Generato da `scripts/corpus_inventory.py`. Ore = durata dei dati ingeriti (`hour
 | Hyser | 20 | 20.2 | 2048 | 256 | 4 griglie 8x8 | pretraining |
 | emg2qwerty | 108 | 346.1 | 2000 | 32 | 2 anelli (Meta, sx+dx) | pretraining |
 | NinaPro DB8 (2 amputati) | 12 | 8.5 | 2000 (banda 0-555) | 16 | 2 anelli da 8 (amputati: sparsi) | pretraining |
-| **Totale ingerito** | **475** | **593.9** | | | | |
+| Zhang 2026 | 62 | 24.9 | 2000 (4 canali da 4000) | 8 | sparso: 8 muscoli / 8 attorno all'avambraccio | pretraining |
+| **Totale ingerito** | **537** | **618.8** | | | | |
 
 \* soggetti da documentazione, non da un ingest.
 
@@ -32,6 +33,5 @@ Attenzione: la somma dei soggetti NON e' il numero di persone distinte: la sovra
 | Dataset | fs (Hz) | Canali | Topologia | Soggetti | Ore | Fonte della stima | Stato |
 |---|---|---|---|---|---|---|---|
 | emg2pose | 2000 | 16 | anello (Meta) | 193 | n.d. | 25.253 registrazioni di 193 utenti (CSV di metadati) | parser provato su 2 file veri (30/09) |
-| Zhang 2026 | 2000 + 4000 | 8 | anatomico vs equidistante | 64 | n.d. | 1.245 file CSV, 35 GB | schema deciso (B, 30/09); 4 controlli sui dati prima del parser |
 
 Solo harness (fuori dal pretraining): EPN-612 (200 Hz, 8 canali), UCI-EMG (1 kHz, 8 canali). Esclusi: NinaPro DB1 (100 Hz, inviluppo), DB9 (solo cinematica). DB10 (MeganePro): download dei soli .mat di MDS1/2/4 in corso (01/10/2026), parser da scrivere.

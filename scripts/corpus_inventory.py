@@ -29,11 +29,11 @@ INGESTED = [
     ("hyser_ingest_report_summary.json", "Hyser", 2048, 256, "4 griglie 8x8", "pretraining"),
     ("emg2qwerty_ingest_report_summary.json", "emg2qwerty", 2000, 32, "2 anelli (Meta, sx+dx)", "pretraining"),
     ("ninapro_db8_ingest_report_summary.json", "NinaPro DB8 (2 amputati)", "2000 (banda 0-555)", 16, "2 anelli da 8 (amputati: sparsi)", "pretraining"),
+    ("zhang2026_ingest_report_summary.json", "Zhang 2026", "2000 (4 canali da 4000)", 8, "sparso: 8 muscoli / 8 attorno all'avambraccio", "pretraining"),
 ]
 # Non ancora ingeriti: soggetti/ore da documentazione o da conteggi sui file, NON da un ingest.
 PENDING = [
     ("emg2pose", 2000, 16, "anello (Meta)", 193, "n.d.", "25.253 registrazioni di 193 utenti (CSV di metadati)", "parser provato su 2 file veri (30/09)"),
-    ("Zhang 2026", "2000 + 4000", 8, "anatomico vs equidistante", 64, "n.d.", "1.245 file CSV, 35 GB", "schema deciso (B, 30/09); 4 controlli sui dati prima del parser"),
 ]
 
 # Il riepilogo di putEMG non ha la lista dei soggetti: 44 partecipanti da documentazione (docs/dataset_access.md), non da un ingest
