@@ -27,18 +27,24 @@ from wearusfm.tokenizer_checks.run_io import argv_without_option  # noqa: E402
 
 
 def load_windows(root: Path, per_subject: int, seed: int, max_subjects: int | None) -> list:
-    sessions = []
+    """Un soggetto alla volta: si caricano le sue sessioni, si estraggono le finestre e si libera la memoria (Kaifosh intero in float64 sono ~30 GB)."""
+    by_subject: dict[str, list] = {}
     for subj, sess, path in discover_sessions(root, "kaifosh"):
-        s = load_session(path, "kaifosh", subj, sess)
-        if s.fs != G.FS_A:
-            raise SystemExit(f"{path}: frequenza {s.fs}, attesa {G.FS_A}")
-        for k, seg in enumerate(s.segments):
-            avoid = [(st, st + n) for kk, _, st, n in s.constant_runs if kk == k]
-            sessions.append((subj, seg[:, s.qc_valid], avoid))
-    if max_subjects:
-        keep = set(sorted({x[0] for x in sessions})[:max_subjects])
-        sessions = [x for x in sessions if x[0] in keep]
-    return G.draw_windows(sessions, per_subject, np.random.default_rng([seed, 8, 2]))
+        by_subject.setdefault(subj, []).append((sess, path))
+    subjects = sorted(by_subject)[:max_subjects] if max_subjects else sorted(by_subject)
+    rng = np.random.default_rng([seed, 8, 2])
+    windows = []
+    for subj in subjects:
+        sessions = []
+        for sess, path in by_subject[subj]:
+            s = load_session(path, "kaifosh", subj, sess)
+            if s.fs != G.FS_A:
+                raise SystemExit(f"{path}: frequenza {s.fs}, attesa {G.FS_A}")
+            for k, seg in enumerate(s.segments):
+                avoid = [(st, st + n) for kk, _, st, n in s.constant_runs if kk == k]
+                sessions.append((subj, seg[:, s.qc_valid], avoid))
+        windows += G.draw_windows(sessions, per_subject, rng)
+    return windows
 
 
 def stage_features(args) -> None:

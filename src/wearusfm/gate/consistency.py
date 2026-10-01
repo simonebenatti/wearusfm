@@ -1,7 +1,9 @@
 """Gate di consistenza al ricampionamento (D8, passo 3). Definizioni FIRMATE il 01/10/2026: `docs/proposta_gate_d8.md`, `docs/decisioni.md` (D8a).
 
 Per ogni caso (1 kHz: taglio 450 Hz, decimazione 2; 200 Hz: taglio 90 Hz, decimazione 10) e per ogni seme del front-end:
-- A = registrazione a 2 kHz filtrata passa-basso (Butterworth ordine 8, fase zero) e lasciata a 2 kHz; B = A decimata (un campione ogni 2 o 10);
+- A = registrazione a 2 kHz filtrata passa-basso A MURO (zero esatto nel dominio della frequenza dal taglio in su; correzione firmata il 01/10/2026:
+  il Butterworth di ordine 8 della prima firma lasciava contenuto sopra la Nyquist di B, che la decimazione ripiegava) e lasciata a 2 kHz; B = A
+  decimata (un campione ogni 2 o 10);
 - feature del front-end su A e su B, sulle stesse patch in tempo fisico; si confrontano solo le patch della finestra da 4 s, calcolate con un margine
   di 0,5 s per lato (cosi' il contesto del front-end non tocca i bordi);
 - (i) errore relativo RMS ||F_A - F_B|| / ||F_A|| nel totale e per famiglia: tutti <= 5%;
@@ -20,14 +22,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
-from scipy import signal
 
 from wearusfm.tokenizer_checks import metrics as M
 from wearusfm.tokenizer_checks.continuous_features import standardize_with_train
 
 FS_A = 2000.0
 CASES = {"1kHz": (450.0, 2), "200Hz": (90.0, 10)}  # (taglio Hz, fattore di decimazione)
-FILTER_ORDER = 8
 WINDOW_S = 4.0
 MARGIN_S = 0.5
 MAX_REL_ERROR = 0.05
@@ -41,26 +41,34 @@ class Window:
 
 
 def make_versions(x: np.ndarray, cutoff_hz: float, decimation: int) -> tuple[np.ndarray, np.ndarray]:
-    """x (C, n) a 2 kHz -> (A, B): A filtrata e lasciata a 2 kHz, B = A decimata. Si filtra prima di decimare: stesso contenuto."""
-    sos = signal.butter(FILTER_ORDER, cutoff_hz, btype="low", fs=FS_A, output="sos")
-    a = signal.sosfiltfilt(sos, x, axis=-1)
+    """x (C, n) a 2 kHz -> (A, B): A con contenuto esattamente nullo da `cutoff_hz` in su (passa-basso a muro sulla finestra con i margini) e
+    lasciata a 2 kHz; B = A decimata. A non ha nulla sopra la Nyquist di B, quindi la decimazione non ripiega nulla: stesso contenuto."""
+    spec = np.fft.rfft(x, axis=-1)
+    spec[..., np.fft.rfftfreq(x.shape[-1], d=1.0 / FS_A) >= cutoff_hz] = 0.0
+    a = np.fft.irfft(spec, n=x.shape[-1], axis=-1)
     return a, a[..., ::decimation]
 
 
 def draw_windows(sessions: Sequence[tuple[str, np.ndarray, Sequence[tuple[int, int]]]], per_subject: int, rng: np.random.Generator,
                  align: int = 10) -> list[Window]:
-    """Finestre da WINDOW_S piu' MARGIN_S per lato, a caso dentro ogni sessione (soggetto, dati (n, C) a 2 kHz, intervalli da evitare
-    [(inizio, fine)] in campioni). L'inizio e' multiplo di `align` (la decimazione per 10 parte dallo stesso campione)."""
+    """`per_subject` finestre da WINDOW_S piu' MARGIN_S per lato PER SOGGETTO (definizione firmata: 20 per utente), a caso fra tutti i segmenti
+    del soggetto (soggetto, dati (n, C) a 2 kHz, intervalli da evitare [(inizio, fine)] in campioni): ogni posizione ammessa ha la stessa
+    probabilita'. L'inizio e' multiplo di `align` (la decimazione per 10 parte dallo stesso campione)."""
     total = int(round((WINDOW_S + 2 * MARGIN_S) * FS_A))
-    out = []
+    by_subject: dict[str, list] = {}
     for subject, data, avoid in sessions:
-        n = data.shape[0]
-        if n < total:
-            continue
+        if data.shape[0] >= total:
+            by_subject.setdefault(subject, []).append((data, avoid))
+    out = []
+    for subject, entries in by_subject.items():
+        n_pos = np.array([(d.shape[0] - total) // align + 1 for d, _ in entries])
         got, tries = 0, 0
         while got < per_subject and tries < 100 * per_subject:
             tries += 1
-            s = int(rng.integers(0, (n - total) // align + 1)) * align
+            k = int(rng.integers(0, n_pos.sum()))
+            i = int(np.searchsorted(np.cumsum(n_pos), k, side="right"))
+            data, avoid = entries[i]
+            s = (k - int(n_pos[:i].sum())) * align
             if any(s < e and s + total > b for b, e in avoid):
                 continue
             out.append(Window(subject, np.asarray(data[s : s + total], dtype=np.float64).T))

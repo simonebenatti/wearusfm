@@ -866,7 +866,8 @@ Condizione della decisione del 30/09: riportare la dimensione prima del lancio e
 
 Completa D8a (soglie congelate il 29/09) con le tre cose da scrivere prima del lancio. Testo completo in `docs/proposta_gate_d8.md`.
 - **Dataset:** Kaifosh (2 kHz). **Due casi**, entrambi devono passare: 450 Hz su griglia a 2 kHz contro decimato a 1 kHz; 90 Hz su griglia a 2 kHz contro
-  decimato a 200 Hz; Butterworth ordine 8 a fase zero prima di decimare. **Banda condivisa:** sotto il taglio del caso; patch allineate in tempo fisico.
+  decimato a 200 Hz; filtro prima di decimare (Butterworth ordine 8 a fase zero nella prima firma, **sostituito dal passa-basso a muro**: correzione
+  firmata sotto). **Banda condivisa:** sotto il taglio del caso; patch allineate in tempo fisico.
 - **Errore relativo RMS <= 5% nel totale E in ciascuna delle tre famiglie** di kernel (Fourier, spline, MLP).
 - **Sonda A-contro-B:** finestre di 4 s, 20 per soggetto, media e deviazione standard delle feature per finestra; split per soggetto 60/20/20 con le due
   versioni di una finestra nella stessa parte; la piu' forte fra regressione logistica e gradient boosting (scelta sulla validazione); intervallo al 95%
@@ -875,7 +876,7 @@ Completa D8a (soglie congelate il 29/09) con le tre cose da scrivere prima del l
 - **Prerequisito:** il front-end a kernel continui di v10 §4.2 non esiste ancora nel codice; va scritto e testato (fattore Δt, anti-aliasing per famiglia)
   prima del gate. Firmato prima di scriverlo e prima di qualunque misura (non esiste `results/step3/`).
 
-### D8a — difetto trovato nel filtro firmato, prima del gate sui dati veri (01/10/2026): proposta di correzione, NON firmata
+### D8a — difetto trovato nel filtro firmato, prima del gate sui dati veri (01/10/2026): correzione FIRMATA (Simone, 01/10/2026: «firmo la correzione del filtro, lancia il gate»)
 
 Una prova di funzionamento dello script del gate su **dati sintetici** (rumore filtrato 20-400 Hz, 6 soggetti finti; nessun dato vero) ha mostrato che
 la frase della proposta firmata «si filtra prima di decimare, quindi A e B hanno esattamente lo stesso contenuto» e' **falsa** col filtro firmato. Un
@@ -891,3 +892,10 @@ Misure sui dati sintetici, front-end seme 0:
 **Proposta di AG (da firmare):** costruire A con il passa-basso **a muro** (trasformata della finestra con i suoi margini, zero esatto da 450 o 90 Hz in
 su, antitrasformata), poi B = A decimata. Cosi' A non ha contenuto sopra il taglio e B lo stesso contenuto su una griglia diversa, come chiede v10 §7.1.
 Tutto il resto delle definizioni firmate resta com'e'. Il gate sui dati veri **non e' stato lanciato**.
+
+**Firmata da Simone il 01/10/2026** («firmo la correzione del filtro, lancia il gate»), prima di qualunque misura su dati veri: A si costruisce col
+passa-basso a muro (`make_versions` in `src/wearusfm/gate/consistency.py`; test: nulla sopra il taglio). Due correzioni allo script, trovate rileggendo
+il percorso dei dati prima del lancio, che non cambiano le definizioni: (1) le finestre si estraggono un soggetto alla volta (prima tutto Kaifosh
+restava in memoria in float64, ~30 GB: il job sarebbe stato ucciso); (2) «20 finestre per utente» si conta per soggetto e non per segmento (prima un
+soggetto con piu' segmenti ne avrebbe avute 20 per segmento; su Kaifosh, una registrazione per utente, non cambia nulla). Il gate si lancia con
+`scripts/slurm/gate_d8.sbatch` (CPU seriale, zero GPU-ora).

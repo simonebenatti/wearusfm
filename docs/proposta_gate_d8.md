@@ -28,7 +28,9 @@ dell'addestramento, quindi non servono GPU ne' un modello addestrato.
 2. **Due casi, entrambi devono passare:**
    - **caso 1 kHz:** A = registrazione a 2 kHz filtrata passa-basso a **450 Hz** e lasciata a 2 kHz; B = A decimata a **1 kHz** (un campione ogni 2);
    - **caso 200 Hz** (il Myo di DB5): A = filtrata a **90 Hz** e lasciata a 2 kHz; B = A decimata a **200 Hz** (uno ogni 10).
-   Filtro: Butterworth di ordine 8, a fase zero. Si filtra **prima** di decimare, quindi A e B hanno esattamente lo stesso contenuto.
+   Filtro: ~~Butterworth di ordine 8, a fase zero~~ **passa-basso a muro** (FFT della finestra coi margini, zero esatto dal taglio in su; correzione
+   firmata da Simone il 01/10/2026, «firmo la correzione del filtro, lancia il gate»: il Butterworth lasciava contenuto sopra la Nyquist di B, che la
+   decimazione ripiegava; vedi `decisioni.md`). Si filtra **prima** di decimare, quindi A e B hanno esattamente lo stesso contenuto.
 3. **Banda condivisa:** sotto la frequenza di taglio del caso (450 Hz o 90 Hz). A e B contengono solo quella banda per costruzione; le feature si
    confrontano sulle stesse patch in **tempo fisico** (la griglia delle patch parte dallo stesso istante).
 4. **Errore relativo RMS:** ‖F_A − F_B‖ / ‖F_A‖ sulle uscite del front-end, su tutte le patch e tutte le finestre. **Passa se <= 5% nel totale e in

@@ -28,6 +28,17 @@ def test_make_versions_same_content_on_two_grids():
     assert a.shape == (2, 4000) and b.shape == (2, 400) and np.array_equal(a[:, ::10], b)
 
 
+@pytest.mark.parametrize("cutoff, dec", [(450.0, 2), (90.0, 10)])
+def test_version_a_has_no_content_above_cutoff(cutoff, dec):
+    """Correzione firmata il 01/10/2026: nulla sopra il taglio (e quindi sopra la Nyquist di B, 500 o 100 Hz)."""
+    x = np.random.default_rng(1).normal(size=(3, 10000))
+    a, _ = G.make_versions(x, cutoff, dec)
+    spec = np.abs(np.fft.rfft(a, axis=-1)) ** 2
+    f = np.fft.rfftfreq(a.shape[-1], d=1 / 2000.0)
+    assert spec[:, f >= cutoff].sum() / spec.sum() < 1e-20
+    assert spec[:, f < cutoff].sum() > 0
+
+
 def test_draw_windows_alignment_and_avoid():
     s = [("s0", np.zeros((60000, 2)), [(0, 30000)])]  # dopo il buco restano 30000 campioni: c'e' posto per finestre da 10000
     w = G.draw_windows(s, 3, np.random.default_rng(0))
@@ -35,6 +46,15 @@ def test_draw_windows_alignment_and_avoid():
     assert len(w) == 3 and all(x.data.shape == (2, total) for x in w)
     w2 = G.draw_windows([("s0", np.arange(80000.0)[:, None].repeat(2, 1), [(0, 30000)])], 5, np.random.default_rng(1))
     assert all(x.data[0, 0] >= 30000 and x.data[0, 0] % 10 == 0 for x in w2)  # dopo il buco e allineate a 10 campioni
+
+
+def test_draw_windows_counts_per_subject_not_per_segment():
+    """Definizione firmata: 20 finestre per UTENTE. Un soggetto con tre segmenti ne riceve quante uno con un segmento solo, pescate da tutti."""
+    seg = lambda off: np.arange(off, off + 40000.0)[:, None]  # noqa: E731
+    s = [("a", seg(0), []), ("a", seg(1e6), []), ("a", seg(2e6), []), ("b", seg(3e6), [])]
+    w = G.draw_windows(s, 30, np.random.default_rng(0))
+    assert sum(x.subject == "a" for x in w) == 30 and sum(x.subject == "b" for x in w) == 30
+    assert {int(x.data[0, 0] // 1e6) for x in w if x.subject == "a"} == {0, 1, 2}
 
 
 def test_features_case_real_frontend_vs_frontend_without_delta_t():
