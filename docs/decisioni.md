@@ -921,3 +921,13 @@ Parser `src/wearusfm/ingest/ninapro_db8.py` (opzione A firmata: griglia a 2 kHz,
 - rete 50 Hz per deduzione (Regno Unito), non dichiarata.
 Misura sui file (S1 A1 e A3, S11 A1, primi 60 s): la potenza sopra 555 Hz e' fra lo 0,3% e il 3% per canale, non zero. Il report di ingest la
 riporta per soggetto.
+
+## DB8: buchi segnati nei sidecar; emg2pose: ingest autorizzato (Simone, 01/10/2026: «sì autorizzo apply su DB8 e collaudo e pieno di emg2pose»)
+
+- **DB8, QC** (job 59090748, sola lettura): 0 canali piatti nuovi; 153 buchi in 9 sessioni su 12, 167 s = 0,035% del tempo dei canali validi (guardia: 1%),
+  ciascuno simultaneo su tutti i canali validi e lungo 1,03-1,18 s. In s01 il buco finisce esattamente alla fine dell'acquisizione 2 (coda del file
+  tenuta ferma); ipotesi, non verificata sulle altre sessioni: stessa origine per tutti. Si scrivono nei sidecar con `--apply` (copia di sicurezza
+  `metadata.pre_qc_revision.json`, dati intatti).
+- **emg2pose:** collaudo su 3 registrazioni, poi il pieno con `--skip-existing`, riprendibile (budget 2 h 40 min per job, <= 6 ore locali ciascuno;
+  stima 1-2 job, ~12 ore locali in tutto, 0 GPU-ora; processato ~100 GB su `$SCRATCH`).
+
