@@ -27,7 +27,8 @@ def test_deterministic_and_disjoint():
 
 def test_fraction_minimum_and_stratification():
     r = MS.make(_by(), 0)
-    assert len(r["zhang2026"]["test"]) == 13 and len(r["csl_hdemg"]["test"]) == 2  # ceil(0,2 x 62); almeno 2 su 5
+    assert len(r["zhang2026"]["test"]) == 13 and len(r["csl_hdemg"]["test"]) == 1  # ceil(0,2 x 62); CSL: 1 su 5 (decisione di Simone)
+    assert len(MS.make({"hyser": [f"s{i:02d}" for i in range(1, 6)]}, 0)["hyser"]["test"]) == 2  # altrove almeno 2 anche con 5 soggetti
     db10 = r["ninapro_db10"]  # dai 45 attesi, non dai 2 gia' ingeriti
     assert len(db10["pretraining"]) + len(db10["test"]) == 45
     assert len(db10["test"]) == 9

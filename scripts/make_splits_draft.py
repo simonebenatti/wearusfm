@@ -33,6 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OFFICIAL = ROOT / "splits" / "official"
 TEST_FRACTION = 0.2
 MIN_TEST = 2
+MIN_TEST_OVERRIDE = {"csl_hdemg": 1}  # Simone, 01/10/2026: «CSL-hdemg: un solo soggetto di test» (5 soggetti)
 NESTED = (0.125, 0.25, 0.5)
 NINAPRO_ALL_PRETRAINING = ("ninapro_db4", "ninapro_db5", "ninapro_db7", "ninapro_db8")
 BENCHMARK_ONLY = ("kaifosh",)
@@ -64,7 +65,8 @@ def split_random(dataset: str, subjects: list[str], seed: int) -> tuple[list[str
     test = []
     for g in sorted(groups):
         members = groups[g]
-        k = min(len(members) - 1, max(MIN_TEST if len(groups) == 1 else 1, math.ceil(TEST_FRACTION * len(members))))
+        min_test = MIN_TEST_OVERRIDE.get(dataset, MIN_TEST) if len(groups) == 1 else 1
+        k = min(len(members) - 1, max(min_test, math.ceil(TEST_FRACTION * len(members))))
         test += [members[i] for i in sorted(rng.permutation(len(members))[:k])]
     test = sorted(test)
     return sorted(s for s in subjects if s not in test), test
@@ -110,7 +112,7 @@ def make(subjects_by_dataset: dict[str, list[str]], seed: int) -> dict:
             test, rule = [], "tutto nel pretraining (sovrapposizione di soggetti con altri DB, fatto n. 2)"
         else:
             _, test = split_random(ds, subjects, seed)
-            rule = f"{int(TEST_FRACTION * 100)}% per gruppo, almeno {MIN_TEST}, seme {seed}"
+            rule = f"{int(TEST_FRACTION * 100)}% per gruppo, almeno {MIN_TEST_OVERRIDE.get(ds, MIN_TEST)}, seme {seed}"
         pre = sorted(s for s in subjects if s not in test)
         out[ds] = {"role": "pretraining", "pretraining": pre, "test": sorted(test), "nested": nested(ds, pre, seed), "source": source, "rule": rule}
     return out

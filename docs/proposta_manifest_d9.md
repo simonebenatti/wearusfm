@@ -129,7 +129,7 @@ tabella.
 |---|---|---|---|---|---|---|---|
 | camargo2021 | 22 | 17 | 5 | 3 | 5 | 9 | 20%, almeno 2 |
 | capgmyo | 18 | 14 | 4 | 2 | 4 | 7 | 20%, almeno 2 |
-| csl_hdemg | 5 | 3 | **2** | 1 | 1 | 2 | 20%, almeno 2 (= 40%: vedi sotto) |
+| csl_hdemg | 5 | 4 | 1 | 1 | 1 | 2 | 1 soggetto di test (Simone, 01/10/2026) |
 | emg2pose | 193 | 158 | 35 | 20 | 40 | 79 | ufficiale (`held_out_user`) |
 | emg2qwerty | 108 | 100 | 8 | 13 | 25 | 50 | ufficiale (user0-7) |
 | grabmyo | 43 | 34 | 9 | 5 | 9 | 17 | 20%, almeno 2 |
@@ -143,8 +143,8 @@ tabella.
 | putemg | 44 | 35 | 9 | 5 | 9 | 18 | 20%, almeno 2 |
 | zhang2026 | 62 | 49 | 13 | 7 | 13 | 25 | 20%, almeno 2 (i due modi insieme) |
 
-Da decidere: **CSL-hdemg** (5 soggetti) con «almeno 2» manda in test il 40% dei soggetti: alternative 1 solo soggetto di test, o tutto nel pretraining
-(pesa 6 ore). **emg2qwerty:** il modello generico ufficiale usa 96 utenti, non i 100 del paper (4 utenti non sono in nessuna configurazione ufficiale):
+**CSL-hdemg** (5 soggetti): **un solo soggetto di test** (Simone, 01/10/2026: «CSL-hdemg: un solo soggetto di test»; con «almeno 2» sarebbe stato il
+40%). **emg2qwerty:** il modello generico ufficiale usa 96 utenti, non i 100 del paper (4 utenti non sono in nessuna configurazione ufficiale):
 qui vanno nel pretraining. Gli ID degli 8 utenti di test sono a 8 cifre (lo YAML ufficiale perde lo zero iniziale di 05775561).
 
 ## (e) Target RVQ

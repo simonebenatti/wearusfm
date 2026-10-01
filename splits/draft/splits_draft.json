@@ -112,26 +112,26 @@
    "pretraining": [
     "s01",
     "s03",
+    "s04",
     "s05"
    ],
    "test": [
-    "s02",
-    "s04"
+    "s02"
    ],
    "nested": {
     "0.125": [
-     "s05"
+     "s04"
     ],
     "0.25": [
-     "s05"
+     "s04"
     ],
     "0.5": [
-     "s01",
+     "s04",
      "s05"
     ]
    },
    "source": "cartelle del processato",
-   "rule": "20% per gruppo, almeno 2, seme 0"
+   "rule": "20% per gruppo, almeno 1, seme 0"
   },
   "emg2pose": {
    "role": "pretraining",
