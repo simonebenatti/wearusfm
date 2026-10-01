@@ -28,9 +28,20 @@ def test_inspect_reports_variables_scalars_labels_and_band(tmp_path):
     names = {v["name"]: v for v in r["variables"]}
     assert names["emg"]["shape"] == [20000, 4] and r["format"] == "classico"
     assert r["scalars"] == {"subject": [1], "exercise": [2]}
-    assert r["labels"]["stimulus"] == {"length": 20000, "n_distinct": 4, "min": 0, "max": 3}
+    assert r["labels"]["stimulus"] == {"shape": [20000, 1], "length": 20000, "n_distinct": 4, "min": 0, "max": 3}
     assert r["emg"]["n_constant_columns"] == 1 and r["emg"]["duration_s_at_fs"] == 10.0
     frac = r["emg"]["power_fraction_above_555_hz_first_10_s"]
     assert frac[0] < 1e-3 and frac[1] < 1e-3  # filtrato: quasi nulla sopra 555 Hz
     assert 0.35 < frac[2] < 0.55  # bianco: (1000 - 555) / 1000 della potenza
     assert np.isnan(frac[3])  # colonna a zero
+
+
+def test_struct_and_bad_labels_do_not_break_inspection(tmp_path, capsys):
+    p = tmp_path / "m.mat"
+    sio.savemat(p, {"emg": np.ones((100, 3)), "stimulus": np.array([[1, 2], [3, 4]]), "info": {"a": 1, "b": "x"}, "subject": 3})
+    r = IM.inspect(p, "emg", 2000.0, None, 1.0)
+    assert r["labels"]["stimulus"]["shape"] == [2, 2] and r["emg"]["shape"] == [100, 3]
+    assert {v["name"] for v in r["variables"]} >= {"emg", "stimulus", "info", "subject"}
+    IM.main([str(p), "--compact"])
+    out = capsys.readouterr().out
+    assert "FILE" in out and "EMG shape [100, 3]" in out and "info" in out

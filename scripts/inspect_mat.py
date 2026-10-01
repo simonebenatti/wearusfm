@@ -59,17 +59,31 @@ def power_fraction_above(x: np.ndarray, fs: float, above_hz: float) -> np.ndarra
     return np.where(tot > 0, p[f > above_hz].sum(axis=0) / np.where(tot > 0, tot, 1.0), np.nan)
 
 
+def _guard(fn, *a):
+    """Una variabile strana (struct, cell, tabella MATLAB) non deve far fallire l'ispezione delle altre: si riporta l'errore al suo posto."""
+    try:
+        return fn(*a)
+    except Exception as e:  # noqa: BLE001 - e' uno strumento di ispezione
+        return f"ERRORE {type(e).__name__}: {e}"
+
+
+def _label_summary(x) -> dict:
+    x = np.asarray(x)
+    return {"shape": list(x.shape), "length": int(x.size), "n_distinct": int(np.unique(x).size), "min": float(x.min()), "max": float(x.max())}
+
+
 def inspect(path: Path, emg_var: str, fs: float, above_hz: float | None, seconds: float) -> dict:
     variables = list_variables(path)
     small = [v["name"] for v in variables if int(np.prod(v["shape"])) <= MAX_SCALAR_SIZE]
     label_like = [v["name"] for v in variables if v["name"] in ("stimulus", "restimulus", "repetition", "rerepetition")]
     data = load_variables(path, small + label_like + [emg_var])
     out: dict = {"file": str(path), "format": "v7.3 (HDF5)" if is_v73(path) else "classico", "variables": variables,
-                 "scalars": {n: np.asarray(data[n]).ravel().tolist() if data[n].dtype.kind in "biuf" else str(data[n].ravel().tolist())
+                 "scalars": {n: _guard(lambda v: v.ravel().tolist() if v.dtype.kind in "biuf" else str(v.ravel().tolist())[:200], np.asarray(data[n]))
                              for n in small if n in data}}
-    out["labels"] = {n: {"length": int(data[n].size), "n_distinct": int(np.unique(data[n]).size), "min": int(data[n].min()), "max": int(data[n].max())}
-                     for n in label_like if n in data}
-    if emg_var in data:
+    out["labels"] = {n: _guard(_label_summary, data[n]) for n in label_like if n in data}
+    if emg_var in data and np.asarray(data[emg_var]).dtype.kind not in "biuf":
+        out["emg"] = f"variabile {emg_var!r} di tipo {np.asarray(data[emg_var]).dtype} (non numerica): non analizzata"
+    elif emg_var in data:
         emg = np.asarray(data[emg_var], dtype=np.float64)
         out["emg"] = {"shape": list(emg.shape), "std_per_column": emg.std(axis=0).tolist(), "max_abs": float(np.abs(emg).max()),
                       "n_constant_columns": int((emg.std(axis=0) == 0).sum()), "duration_s_at_fs": emg.shape[0] / fs}
@@ -86,8 +100,26 @@ def main(argv=None) -> int:
     ap.add_argument("--fs", type=float, default=2000.0, help="frequenza della griglia del file (per la quota di potenza)")
     ap.add_argument("--above-hz", type=float, default=None)
     ap.add_argument("--seconds", type=float, default=60.0, help="secondi iniziali su cui calcolare lo spettro")
+    ap.add_argument("--compact", action="store_true", help="una riga per variabile, poi scalari, etichette ed EMG in breve")
     args = ap.parse_args(argv)
-    print(json.dumps(inspect(args.path, args.emg_var, args.fs, args.above_hz, args.seconds), indent=1))
+    r = inspect(args.path, args.emg_var, args.fs, args.above_hz, args.seconds)
+    if not args.compact:
+        print(json.dumps(r, indent=1))
+        return 0
+    print(f"FILE {r['file']} ({r['format']})")
+    for v in r["variables"]:
+        print(f"  {v['name']:24s} {str(v['shape']):22s} {v['dtype']}")
+    print("  SCALARI", json.dumps(r["scalars"], ensure_ascii=False)[:600])
+    print("  ETICHETTE", json.dumps(r["labels"], ensure_ascii=False)[:600])
+    e = r.get("emg")
+    if isinstance(e, dict):
+        print(f"  EMG shape {e['shape']} max_abs {e['max_abs']:.4g} colonne costanti {e['n_constant_columns']} durata {e['duration_s_at_fs']:.2f} s a fs")
+        print("  EMG std", [round(x, 6) for x in e["std_per_column"]])
+        for k, v in e.items():
+            if k.startswith("power_fraction"):
+                print(f"  EMG {k}", [None if x != x else round(x, 4) for x in v])
+    else:
+        print("  EMG", e)
     return 0
 
 
