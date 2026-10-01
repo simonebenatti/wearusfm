@@ -905,7 +905,7 @@ con la vista); picco misurato sul Mac con sessioni di dimensione vera: 2,2 GB co
 
 ---
 
-## NinaPro DB8 — parser scritto (01/10/2026): scelte di AG da rivedere
+## NinaPro DB8 — parser scritto (01/10/2026): scelte di AG; gruppi sparsi per gli amputati APPROVATI (Simone, 01/10/2026: «sì autorizzo collaudo e pieno, sparsi va bene»)
 
 Parser `src/wearusfm/ingest/ninapro_db8.py` (opzione A firmata: griglia a 2 kHz, banda effettiva dichiarata 0-555,5 Hz; sidecar con
 `acquisition_fs_hz` = 1111). Fonti verificate parola per parola: `fatti_da_verificare.md`, fatto n. 1 (parte DB8, da firmare). Scelte NON dalla fonte:
