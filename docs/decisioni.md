@@ -1040,7 +1040,14 @@ di Simone, non verificata), sono **gia' esposti**. Il resto del raw e' del 23-29
 `$SCRATCH` ($WORK e' pieno), e un manifest congelato (D9) deve puntare a dati che restano per tutta la ladder.
 **Proposta:** `scripts/slurm/refresh_scratch.sbatch` (solo `touch` di file e cartelle, con conteggio prima e verifica dopo; non cancella nulla) su
 `data/raw`, `data/processed`, `wearusfm_runs` ed `external`: **subito**, poi **ogni 21 giorni** per tutta la durata della ladder (22/10, 12/11, ...).
-Costo: CPU seriale, 1 core, minuti; 0 GPU-ora. Il rinfresco non sostituisce le copie: i dati difficili da riottenere restano anche su $WORK.
+Costo: CPU seriale, 1 core, minuti; 0 GPU-ora. Il rinfresco non sostituisce le copie. **Correzione (review del 01/10):** non e' vero che i dati difficili da riottenere "restano anche su $WORK":
+il raw di emg2qwerty, emg2pose, DB8 e DB10 e quasi tutto il processato stanno SOLO su $SCRATCH (riscaricabili, ma con giorni di lavoro).
+**Primo rinfresco fatto il 01/10/2026:** i 37 file gia' scaduti (tar di emg2qwerty, `.mat` di DB8) toccati subito dal login node; poi il job 59105021
+(34 min 45 s, exit 0) su `data/raw`, `data/processed`, `wearusfm_runs`, `external`: **0 cartelle con problemi, nessun file piu' vecchio di un giorno
+dopo il rinfresco**. Trovati altri file gia' esposti: i **48 file di riferimento di emg2pose per V2** (`wearusfm_runs/emg2pose_reference`) e i 31 di
+`emg2pose_mini`, con date del 21/05/2024 (conservate dall'estrazione). **Prossimo rinfresco: 22/10/2026.** Limiti noti dello script (review del codice):
+non tocca un bersaglio che sia un file, ne' elementi nascosti al primo livello, ne' il contenuto dietro un link a una cartella; da correggere prima del
+prossimo giro.
 
 ---
 
