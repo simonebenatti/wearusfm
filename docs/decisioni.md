@@ -902,3 +902,18 @@ soggetto con piu' segmenti ne avrebbe avute 20 per segmento; su Kaifosh, una reg
 Primo lancio (job 59086063, 01/10/2026 10:03): **fuori memoria** dopo 71 s (16 GB), prima di qualunque misura. Causa: ogni finestra era una *vista*
 sulla sessione intera, che restava quindi in memoria (~700 MB in float64 per soggetto). Corretto (le finestre sono copie; test che cattura la versione
 con la vista); picco misurato sul Mac con sessioni di dimensione vera: 2,2 GB con 2 soggetti, 2,4 GB con 5. Rilanciato una volta, stesse definizioni.
+
+---
+
+## NinaPro DB8 — parser scritto (01/10/2026): scelte di AG da rivedere
+
+Parser `src/wearusfm/ingest/ninapro_db8.py` (opzione A firmata: griglia a 2 kHz, banda effettiva dichiarata 0-555,5 Hz; sidecar con
+`acquisition_fs_hz` = 1111). Fonti verificate parola per parola: `fatti_da_verificare.md`, fatto n. 1 (parte DB8, da firmare). Scelte NON dalla fonte:
+- un soggetto = una sessione, le tre acquisizioni concatenate come prove (`trials` con `acquisition`); il sidecar segna l'acquisizione 3 come test
+  raccomandato dal fornitore;
+- colonne 0-7 = una riga, 8-15 = l'altra (ordine non dichiarato; quale riga sia a 3 o a 5,5 cm dal gomito non e' dichiarato);
+- normodotati: due anelli D_8 (equispaziatura dichiarata per loro); **amputati 11 e 12: due gruppi sparsi senza angoli e anatomia nominale**, perche'
+  la fonte dice solo «a similar configuration» con 13 e 12 sensori. Alternativa: anelli D_8 anche per loro, con le colonne mancanti scartate dal QC;
+- rete 50 Hz per deduzione (Regno Unito), non dichiarata.
+Misura sui file (S1 A1 e A3, S11 A1, primi 60 s): la potenza sopra 555 Hz e' fra lo 0,3% e il 3% per canale, non zero. Il report di ingest la
+riporta per soggetto.
