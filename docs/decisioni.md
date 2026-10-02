@@ -1089,6 +1089,16 @@ Mac in `~/wearusfm_local/reports/step1bis/arrays_59108493/`, sha256 verificati),
 Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello 0 del ramo 0 0,371 contro 0,643 delle 5 bande (differenza -0,27):
 **ENTRA. Ancora RVQ accesa anche su zhang2026.** Resta DB10, dopo la misura dei suoi buchi.
 
+**Esito per DB10 (02/10/2026, applicazione meccanica):** run vero **59183099** (rilancio autorizzato da Simone dopo il fallimento del 59180438;
+20 min 40 s, 1 GPU, ~0,34 GPU-ora = ~2,8 ore locali; report in `results/step1bis/step1bis_59183099.json`, array sul Mac in
+`~/wearusfm_local/reports/step1bis/arrays_59183099/`, sha256 verificati), dopo la misura dei buchi di DB10 (0 tratti costanti, job 59173238).
+**Controlli scritti prima: identici** (fattore 21,718; emg2pose 0,03520; V1 1,231; stesso checkpoint). Nessun dataset escluso (la correzione
+delle prove da 1 campione ha funzionato). **V2 di DB10: 1,84 <= 2, passa** (45 soggetti, 78 gruppi, nessun gruppo mancante). Conferma del ramo
+(`results/step1bis/rvq_branch_confirm_59183099.json`): livello 0 del ramo 0 0,386 contro 0,586 delle 5 bande (differenza -0,20): **ENTRA.
+Ancora RVQ accesa anche su ninapro_db10** (`RVQ_ON` in `src/wearusfm/data/pretraining_manifest.py`). Chiuse le misure RVQ autorizzate il 01/10
+(DB8, Zhang, DB10: entrano tutti e tre). Il report registra il commit d775778 (calcolato alla fine; il job e' partito a 68effc0): fra i due sono
+cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
+
 ---
 
 ## Tre decisioni del 02/10/2026 (Simone: «ok ti do il via», sulla proposta di AG)

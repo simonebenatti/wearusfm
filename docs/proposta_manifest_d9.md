@@ -212,8 +212,8 @@ qui vanno nel pretraining. Gli ID degli 8 utenti di test sono a 8 cifre (lo YAML
 ## (e) Target RVQ
 
 Secondo D5b (firmato): ancora RVQ sul **livello 0 del ramo 0**, accesa su camargo2021, capgmyo, emg2pose, emg2qwerty, grabmyo, hyser, kaifosh (se
-resta nel pretraining), ninapro_db2/3/4/6/7 **ninapro_db8** (V2 1,46, run 59104658) e **zhang2026** (V2 1,55, run 59108493), ramo 0 confermato per entrambi; spenta su putEMG, CSL-hdemg, DB5. **Resta da misurare DB10** con la
-regola già firmata (V2 ≤ 2 e conferma del ramo, opzione b): GPU, stima < 0,5 GPU-ora, da confermare col costo prima del lancio.
+resta nel pretraining), ninapro_db2/3/4/6/7 **ninapro_db8** (V2 1,46, run 59104658) e **zhang2026** (V2 1,55, run 59108493), ramo 0 confermato per entrambi, e **ninapro_db10** (V2 1,84, run 59183099, ramo 0 confermato il 02/10); spenta su putEMG,
+CSL-hdemg, DB5.
 
 ## (f) Salti dell'asse dei tempi (punto 7 della revisione)
 
@@ -241,7 +241,7 @@ spezzano i segmenti ai salti (modifica piccola, con test).
    revisione).
 2. **Buchi** (tratti costanti; il campionamento li esclude): scritti su DB8 (01/10) ed emg2qwerty (189, 02/10); Zhang ne ha 0. **DB10 ed emg2pose
    in misura**, in sola lettura: un'eventuale scrittura si chiede a parte.
-3. **V2 e conferma del ramo RVQ:** DB8 e Zhang entrano (punto e); **DB10 dopo la misura dei suoi buchi**.
+3. ~~**V2 e conferma del ramo RVQ**~~: DB8, Zhang e DB10 entrano (punto e; DB10 il 02/10, run 59183099).
 4. **Fatti:** 1 (DB8), 2, 10b, 10c, 10d, 5 (NeuroRVQ: dataset del tokenizer, soggetti non dichiarati, licenza dei pesi) e 23 (sovrapposizione fra
    i dataset Meta, non dichiarata) firmati il 02/10/2026. **Resta** il 4, parziale (banda del pretraining del tokenizer non trovata): non blocca D9.
 5. **Dove stanno i dati:** quasi tutto il processato è su `$SCRATCH` (purge a 40 giorni). Un manifest congelato deve puntare a dati che restano.

@@ -1,0 +1,98 @@
+{
+  "decision": "docs/decisioni.md, D5b - conferma sui dataset nuovi, opzione (b) (30/09/2026)",
+  "base_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo"
+  ],
+  "new_report": "step1bis_59183099.json",
+  "base_report": "step1bis_59048369.json",
+  "comparability": {
+    "checkpoint_sha256": [
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      "0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49",
+      true
+    ],
+    "scale_factor": [
+      21.718382449214758,
+      21.718382449214758,
+      true
+    ],
+    "emg2pose_median_nmse": [
+      0.03520336429260397,
+      0.03520336429260397,
+      true
+    ],
+    "v1_ratio": [
+      1.2306812894412003,
+      1.2306812894412003,
+      true
+    ]
+  },
+  "v2_new": {
+    "ninapro_db10": {
+      "ratio": 1.836324281898216,
+      "passes": true
+    }
+  },
+  "confirm": {
+    "ninapro_db10": {
+      "dataset": "ninapro_db10",
+      "enters": true,
+      "classes": [
+        "camargo2021",
+        "capgmyo",
+        "emg2pose",
+        "grabmyo",
+        "ninapro_db10"
+      ],
+      "n_units": 390,
+      "n_test_units": 75,
+      "bands": {
+        "balanced_accuracy": 0.5857142857142856,
+        "ci95": [
+          0.48408225108225106,
+          0.6815769230769232
+        ],
+        "chance": 0.2,
+        "model": "hist_gb",
+        "n_test": 70
+      },
+      "branch0": {
+        "histogram": {
+          "balanced_accuracy": 0.38571428571428573,
+          "ci95": [
+            0.2816080586080586,
+            0.49512202380952375
+          ],
+          "chance": 0.2,
+          "model": "logreg_C0.1",
+          "n_test": 70
+        },
+        "codebook_mean": {
+          "balanced_accuracy": 0.3571428571428571,
+          "ci95": [
+            0.24523809523809526,
+            0.46559821428571424
+          ],
+          "chance": 0.2,
+          "model": "logreg_C1.0",
+          "n_test": 70
+        },
+        "branch_accuracy": 0.38571428571428573,
+        "from": "histogram",
+        "diff_minus_bands": -0.1999999999999999,
+        "eligible": true
+      },
+      "rule": "entra se il livello 0 del ramo 0 resta idoneo con classi = base + dataset (opzione b)"
+    }
+  },
+  "final_enabled": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "grabmyo",
+    "ninapro_db10"
+  ]
+}

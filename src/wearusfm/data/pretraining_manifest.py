@@ -24,7 +24,7 @@ CLASS_BY_UNIT = {
 }
 # Ancora RVQ (D5b firmata, docs/decisioni.md): accesa, spenta, o da misurare (dataset nuovi: V2 e conferma del ramo)
 RVQ_ON = {"camargo2021", "capgmyo", "emg2pose", "emg2qwerty", "grabmyo", "hyser", "kaifosh", "ninapro_db2", "ninapro_db3", "ninapro_db4", "ninapro_db6",
-          "ninapro_db7", "ninapro_db8", "zhang2026"}  # DB8 (run 59104658) e Zhang (run 59108493): V2 e ramo 0 confermati
+          "ninapro_db7", "ninapro_db8", "ninapro_db10", "zhang2026"}  # DB8 (run 59104658), Zhang (59108493), DB10 (59183099): V2 e ramo 0 confermati
 RVQ_OFF = {"putemg", "csl_hdemg", "ninapro_db5"}
 # Finestre (s) per la tabella di sensibilita' del tempo inutilizzabile (bozza D9 §f, contesto di D10): NON e' una soglia, nessuna scelta dipende da qui
 WINDOWS_S = (1.0, 2.0, 4.0, 8.0)
