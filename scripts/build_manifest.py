@@ -18,6 +18,7 @@ import json
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
 
@@ -100,15 +101,24 @@ def summarize(rows: list[M.SessionRow], alloc: dict, patch_s: float) -> dict:
                                        "weight_sum": sum(r.weight for r in rows), "unused_quota": alloc["unused_quota"]}}
 
 
-def build(roots: list[Path], splits: dict, quota: dict, alpha: float, max_passes: float, patch_ms: float) -> tuple[list[M.SessionRow], dict]:
+def build(roots: list[Path], splits: dict, quota: dict, alpha: float, max_passes: float, patch_ms: float,
+          io_threads: int = 8) -> tuple[list[M.SessionRow], dict]:
+    """`io_threads`: sidecar e intestazioni letti in parallelo. Il lavoro e' attesa di I/O su Lustre, non CPU (job 59180449, 02/10/2026: TIMEOUT
+    a 1 h leggendo in serie ~27.000 sessioni, senza nessuna riga di log). L'ordine delle righe non cambia: `map` le restituisce in ordine."""
     M.check_splits(splits)
     rows = []
-    for dataset in sorted(splits["datasets"]):
-        where = [r / dataset for r in roots if (r / dataset).is_dir()]
-        if len(where) != 1:
-            raise FileNotFoundError(f"{dataset}: trovato in {len(where)} radici ({where}), atteso in una")
-        for subject, session, path in discover_sessions(where[0], dataset):
-            rows.append(session_row(path, dataset, subject, session, splits))
+    t_start = time.time()
+    with ThreadPoolExecutor(max_workers=max(1, io_threads)) as pool:
+        for dataset in sorted(splits["datasets"]):
+            t0 = time.time()
+            where = [r / dataset for r in roots if (r / dataset).is_dir()]
+            if len(where) != 1:
+                raise FileNotFoundError(f"{dataset}: trovato in {len(where)} radici ({where}), atteso in una")
+            sessions = discover_sessions(where[0], dataset)
+            t1 = time.time()
+            rows.extend(pool.map(lambda s, ds=dataset: session_row(s[2], ds, s[0], s[1], splits), sessions))
+            print(f"[{time.strftime('%H:%M:%S')}] {dataset}: {len(sessions)} sessioni, scoperta {t1 - t0:.0f} s, lettura {time.time() - t1:.0f} s "
+                  f"(totale {time.time() - t_start:.0f} s)", flush=True)
     rows = M.sort_rows(rows)
     alloc = M.assign_weights(rows, quota, alpha, max_passes)
     summary = summarize(rows, alloc, patch_ms / 1000)
@@ -143,13 +153,15 @@ def main(argv=None) -> int:
     ap.add_argument("--max-passes", type=float, default=8.0)
     ap.add_argument("--patch-ms", type=float, default=25.0)
     ap.add_argument("--version", default="draft")
+    ap.add_argument("--io-threads", type=int, default=8, help="letture in parallelo dei sidecar (attesa di I/O, non CPU)")
     args = ap.parse_args(argv)
     t0 = time.time()
+    print(f"[{time.strftime('%H:%M:%S')}] inizio: {len(args.root)} radici, {args.io_threads} thread di lettura", flush=True)
     splits = json.loads(args.splits.read_text())
     if args.version != "draft" and splits.get("draft"):
         raise SystemExit(f"--version {args.version} con split in bozza ({args.splits}): il manifest congelato vuole gli split firmati")
     quota = {k: float(v) for k, v in (x.split("=") for x in args.quota.split(","))}
-    rows, summary = build(args.root, splits, quota, args.alpha, args.max_passes, args.patch_ms)
+    rows, summary = build(args.root, splits, quota, args.alpha, args.max_passes, args.patch_ms, args.io_threads)
     if args.version != "draft" and (summary["subjects_without_sessions"] or summary["test_sessions_not_found"]):
         raise SystemExit(f"soggetti senza sessioni {summary['subjects_without_sessions']} o sessioni di test non trovate "
                          f"{summary['test_sessions_not_found']}: il manifest congelato non si scrive")

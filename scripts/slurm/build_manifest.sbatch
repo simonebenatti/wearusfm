@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH -J build_manifest
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/build_manifest_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/build_manifest_%j.out
@@ -13,6 +13,7 @@
 # Uso: sbatch scripts/slurm/build_manifest.sbatch                                  (bozza con gli split di splits/draft/splits_draft.json)
 #      sbatch scripts/slurm/build_manifest.sbatch --version manifest-v1 --splits <split firmati>   (SOLO dopo la firma di D9)
 # Uscita fuori dal repo: $WORK/wearusfm_runs/results/passo4/manifest_<job>.json.gz
+# Limite 4 h (massimo della coda seriale): il primo run (59180449, 02/10/2026) e' finito in TIMEOUT a 1 h leggendo in serie ~27.000 sessioni.
 
 set -uo pipefail
 cd "$WORK/wearusfm"

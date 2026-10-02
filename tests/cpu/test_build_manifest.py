@@ -3,6 +3,7 @@
 import gzip
 import importlib.util
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
@@ -200,3 +201,12 @@ def test_short_segments_3d_arrays_partial_trials_and_bad_gap_positions(tmp_path)
     assert r.outside_trials_s == pytest.approx(1.0) and r.gaps_out_of_range == 1  # 2000 campioni fuori dalle prove; 9000 oltre la fine
     assert r.short_segments_s == [0.0, 0.0, pytest.approx(2.0), pytest.approx(2.0)]
     assert r.short_segments_gaps_s == [0.0, pytest.approx(2.0), pytest.approx(2.0), pytest.approx(2.0)]  # 1 s + 1 s
+
+
+def test_parallel_reading_gives_identical_rows_and_logs_progress(tmp_path, capsys):
+    roots, splits = _tree(tmp_path)
+    serial, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0, io_threads=1)
+    parallel, _ = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0, io_threads=4)
+    assert [asdict(r) for r in parallel] == [asdict(r) for r in serial]
+    out = capsys.readouterr().out
+    assert "ninapro_db2: 3 sessioni" in out and "emg2qwerty: 1 sessioni" in out  # una riga per dataset, scritta subito (flush)

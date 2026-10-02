@@ -1130,6 +1130,12 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    Nota sulla provenienza della bozza del manifest (job 59180449): e' partita al commit 653c3fe e il push di 68effc0 e' avvenuto mentre girava,
    quindi il `code_commit` che scrive alla fine puo' essere 68effc0; fra i due commit `scripts/build_manifest.py` e `src/wearusfm/data/` sono
    identici (controllato con `git diff --stat`), quindi la provenienza resta valida.
+   **Bozza del manifest (job 59180449): TIMEOUT** a 1 h 03 min (limite 1 h; CPU, 0 GPU-ora): nessun manifest scritto. Il log contiene solo il
+   caricamento dei moduli, perche' lo script stampava tutto alla fine: **dove fosse arrivato non si sa** (un agente ha concluso che il costruttore
+   non fosse partito: il log non lo dimostra). *Ipotesi di AG, non verificata:* la lettura in serie di ~27.000 sessioni su Lustre (sidecar e
+   intestazioni), mentre la misura di emg2pose leggeva gli stessi dati sullo stesso nodo. La stima «pochi minuti» era sbagliata. **Correzioni**
+   (con test): una riga di log per dataset scritta subito, lettura su 8 thread (attesa di I/O; righe identiche a quelle in serie, test), limite
+   4 h. **Non rilanciato**: il rilancio va autorizzato da Simone.
 
 ---
 
