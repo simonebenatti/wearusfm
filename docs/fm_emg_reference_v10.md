@@ -113,7 +113,7 @@ collasso o degenerazione della rappresentazione.
 |---|---|---|---|
 | emg2pose (Meta) | 193 sogg., 370 h, 16 ch @ 2 kHz | anello | + hand pose da mocap |
 | emg2qwerty (Meta) | 108 utenti, 346 h, 2×16 ch @ 2 kHz | anello | bracciali **speculari** |
-| NinaPro DB2/3/4/6/7/8/10 | ~80–100 h | **mista**: anello a 8 + mirati (§3.4) | Delsys/Cometa, 2 kHz nominali; **DB8 ~1111 Hz, DB10 ~1926 Hz (da verificare)**. DB3/DB7 amputati (anche DB8/DB10: da verificare) |
+| NinaPro DB2/3/4/6/7/8/10 | ~80–100 h | **mista**: anello a 8 + mirati (§3.4); DB8 e DB10 solo anelli | Delsys/Cometa, 2 kHz nominali; **DB8: EMG acquisito a 1111 Hz e fornito sovracampionato a 2 kHz** (fatto 1); **DB10: 1926 Hz** (fatto 10c). Amputati: DB3, DB7, **DB8 (soggetti 11-12), DB10 (15 su 45)** (fatti 1 e 10c, firmati il 02/10/2026) |
 | NinaPro DB1 | 100 Hz | sparsa | **inviluppo RMS Otto Bock** → percorso §2.4 |
 | NinaPro DB5 | 200 Hz, 2× Myo | anello | 8-bit, banda ridotta |
 | GRABMyo | 43 sogg., 3 giorni, **2048 Hz**, 16+12 ch | anello (fasce su avambraccio e polso) | multi-giorno |
@@ -134,8 +134,10 @@ conteggio di D (§10.3).
 **Il montaggio NinaPro (Delsys/Cometa) è misto, non sparso puro.** Nel montaggio standard a 12
 elettrodi, 8 sono equispaziati attorno all'avambraccio all'altezza dell'articolazione
 radio-omerale — un anello rado — e gli altri sono mirati su flessore ed estensore superficiale
-delle dita, bicipite e tricipite. Le varianti (DB6 a 14 elettrodi, DB8 a 16: da verificare)
-vanno mappate all'ingest. Conseguenza di schema in §3.4 e §4.5.
+delle dita, bicipite e tricipite. Le varianti vanno mappate all'ingest: DB6 a 14 elettrodi su 16 colonne, 2 vuote (fatto 22); **DB8 a 16 in due righe da 8, senza
+muscoli mirati, 13 e 12 sensori nei due amputati** (fatto 1); **DB10 a 12 in due anelli: 8 equidistanti dall'articolazione
+radio-omerale, 4 circa 45 mm piu' distali allineati agli spazi fra gli elettrodi 1-2, 3-4, ...; 8 soli in S108** (fatto 10c);
+fatti 1 e 10c firmati il 02/10/2026. Conseguenza di schema in §3.4 e §4.5.
 
 **Da decidere: dataset rilasciato con Kaifosh et al. (Nature 2025)** — gesti discreti,
 scrittura, polso; stesso bracciale Meta a 16 canali, 2 kHz. È la **prima colonna della tabella
@@ -1090,8 +1092,8 @@ rumore e channel dropout sui FM EEG.
 3. Cross-soggetto, stesso dataset.
 4. **Transfer su dataset mai visto in pretraining** (encoder congelato + probe; non
    «zero-shot», §2.3) — EPN-612 e UCI-EMG.
-5. **Cross-popolazione: normodotati → amputati. DB3, DB7** (più DB8 e DB10, se la presenza di
-   amputati è confermata: §2.1). Con lo scope ristretto, è la generalizzazione più lontana
+5. **Cross-popolazione: normodotati → amputati. DB3, DB7, DB8 e DB10** (amputati di DB8 e DB10
+   confermati: fatti 1 e 10c, firmati il 02/10/2026). Con lo scope ristretto, è la generalizzazione più lontana
    che il corpus permette di testare: peso relativo aumentato.
 6. **Cross-topologia**: pretraining con HD, valutazione su montaggi sparsi. **Asse portante**
    del paper, ora che cross-regione non è più rivendicato.
@@ -1632,10 +1634,11 @@ dettagli anti-collasso.
 
 **Fatti da verificare** — riportati a memoria o da fonte secondaria; sono compiti, non dati:
 
-1. Frequenze native di NinaPro DB8 (~1111 Hz) e DB10 (~1926 Hz); presenza di amputati in DB8
-   e DB10; varianti del montaggio NinaPro (DB6 a 14 elettrodi, DB8 a 16); disposizione
-   interna delle fasce di GRABMyo. (putEMG e Hyser: raccolti da fonte ufficiale, da firmare)
-2. Sovrapposizione di soggetti fra i DB NinaPro
+1. ~~Frequenze native di NinaPro DB8 e DB10; amputati in DB8 e DB10; montaggio di DB8~~ (firmati il 02/10/2026,
+   fatti 1 e 10c); restano: disposizione interna delle fasce di GRABMyo (DB6: numero di elettrodi firmato nel fatto 22, ordine dei 6
+   distali non dichiarato dalle fonti). (putEMG e Hyser: raccolti da fonte ufficiale, da firmare)
+2. ~~Sovrapposizione di soggetti fra i DB NinaPro~~ (firmato il 02/10/2026, fatto 2: DB4 e DB5 hanno un soggetto in comune, ID non
+   dichiarato; per DB8 la sovrapposizione con DB7 e' probabile, ID non dichiarati; ID locali a ciascun DB)
 3. Conteggio dei soggetti del corpus (~600) e delle ore dopo la rimozione di DB9
 4. Dal codice del repo NeuroRVQ: banda di filtraggio usata nel pretraining del tokenizer
    (20–90 Hz?), normalizzazione attesa in ingresso, e se il transformer mescola canali
