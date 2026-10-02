@@ -1145,6 +1145,10 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    La scrittura (`--apply`) va autorizzata da Simone.
    **Autorizzate da Simone il 02/10/2026** («si»): scrittura su emg2pose, **job 59204293** (`--only emg2pose --apply`, limite 4 h, CPU, 0 GPU-ora),
    e poi la bozza del manifest, **job 59204297**, con `--dependency=afterok:59204293` (parte solo se la scrittura riesce). Repo remoto pulito a 329b119.
+   **Scrittura su emg2pose fatta** (job 59204293, 3 h 40 min, exit 0; report `qc_relative_check_59204293.json`, sha256 aa84bf62... uguale su
+   cluster e Mac): **2.786 tratti costanti scritti in 576 sessioni, 0 errori**, 0 canali piatti nuovi, freni non scattati; copia di sicurezza del
+   sidecar per sessione (`metadata.pre_qc_revision.json`), dati intatti. La bozza del manifest (59204297) e' partita alle 18:03 con il registro
+   di avanzamento per dataset.
 
 ---
 
