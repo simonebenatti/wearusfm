@@ -16,7 +16,9 @@ Cerca:
 4. contraddizioni con `CLAUDE.md` o con decisioni precedenti;
 5. lacune che rendono prematura la firma di D9 (manifest).
 
-Puoi eseguire i test CPU (`python3 -m pytest tests/cpu -q`); il codice GPU non gira. Per ogni rilievo: file:riga, gravita' (alta/media/bassa), cosa
+Puoi eseguire i test CPU (`python3 -m pytest tests/cpu -q`); il codice GPU non gira. **Se leggi il repo come conoscenza di un progetto
+claude.ai** (solo i file, senza storia git e senza esecuzione): al posto di `git log` usa i percorsi elencati sopra e l'elenco qui sotto; scrivi
+nel rapporto che i test non li hai eseguiti e quali file non avevi. Per ogni rilievo: file:riga, gravita' (alta/media/bassa), cosa
 non va, prova (riga di codice, numero a confronto, output di un test), e se e' verificato o solo sospetto. Ordina per gravita'. Rispondi in italiano.
 
 ## Gia' trovato e corretto (non ripeterlo; segnala solo se la correzione e' sbagliata o incompleta)
