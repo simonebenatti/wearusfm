@@ -190,6 +190,8 @@ def analyze_dataset(runner, name: str, draw: Draw, factor: float, cfg: Config, r
 def run_v3(per_dataset: dict[str, dict], draws: dict[str, Draw], cfg: Config) -> dict:
     """Sonda dataset-ID sui codici contro le potenze di banda (D5a punto 4)."""
     names = sorted(per_dataset)
+    if len(names) < 2:  # job 59180438: con il solo emg2pose (dataset nuovo escluso) la sonda crollava invece di dirlo
+        return {"computable": False, "reason": f"servono almeno 2 dataset, analizzati: {names}"}
     codes_list, tokens_list, y, units, ds_subjects = [], [], [], [], {}
     for di, name in enumerate(names):
         d = draws[name]
@@ -291,11 +293,13 @@ def run_all(
     report["datasets_done"] = {"emg2pose": _public(per["emg2pose"])}
     progress("emg2pose completato")
     excluded = {}
+    report["excluded_datasets"] = excluded  # lo stesso dizionario: un'esclusione entra subito nel report parziale (job 59180438, 02/10/2026)
     for name, (items, loader) in datasets.items():
         try:
             draws[name] = draw_groups(items, loader, name, cfg, rng)
         except ValueError as e:
             excluded[name] = str(e)
+            progress(f"{name} escluso")
             continue
         per[name] = analyze_dataset(runner, name, draws[name], factor, cfg, ref_median)
         _save_arrays(save_arrays_dir, name, per[name], draws[name], factor)  # subito: un crollo dopo non perde gli array fatti (01/10/2026)

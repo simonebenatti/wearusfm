@@ -35,7 +35,9 @@ from wearusfm.preprocessing.canonical_view import (
     PATCH_SAMPLES,
     apply_scale,
     bandpass_resample,
+    min_filter_samples,
     patchify,
+    resample_ratio,
     session_scale,
 )
 
@@ -61,8 +63,15 @@ class CanonicalSession:
 
 def to_canonical(s: SessionData) -> CanonicalSession:
     """Vista canonica per prova, scala unica di sessione sui canali che passano il QC, poi
-    patch. Solleva ValueError se fs < 1 kHz (dataset non eleggibile)."""
-    views = [bandpass_resample(seg, s.fs).astype(np.float32) for seg in s.segments]
+    patch. Solleva ValueError se fs < 1 kHz (dataset non eleggibile). Una prova troppo corta per il filtro (DB10: prove da 1 campione fra due
+    pause) diventa una vista vuota: non dava comunque nessuna patch, e gli indici delle prove restano allineati per `_bad_patches`. Le sessioni
+    senza prove cosi' corte danno lo stesso risultato di prima, bit per bit."""
+    resample_ratio(s.fs)  # il controllo di eleggibilita' vale anche se nessuna prova arriva al filtro
+    min_n = min_filter_samples(s.fs)
+    views = [bandpass_resample(seg, s.fs).astype(np.float32) if seg.shape[0] >= min_n else np.empty((0, seg.shape[1]), dtype=np.float32)
+             for seg in s.segments]
+    if not any(v.shape[0] >= PATCH_SAMPLES for v in views):
+        raise ValueError(f"{s.dataset}/{s.subject}/{s.session}: nessuna prova con almeno una patch")
     scale = session_scale(views, s.qc_valid)
     patched = [
         patchify(apply_scale(v, scale)).astype(np.float32) for v in views if v.shape[0] >= PATCH_SAMPLES

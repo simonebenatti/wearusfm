@@ -230,3 +230,15 @@ def test_arrays_are_saved_after_each_dataset_even_if_a_later_one_crashes(world, 
     assert sorted(p.stem for p in out.glob("*.npz")) == ["dsA", "emg2pose"]
     z = np.load(out / "dsA.npz")
     assert set(z.files) == {"codes", "tokens", "group_subject", "group_session", "factor", "fraction_unchanged"}
+
+
+def test_only_new_dataset_excluded_is_reported_not_a_crash(world):
+    """Job 59180438 (02/10/2026): l'unico dataset nuovo escluso lasciava il solo emg2pose, e la sonda V3 crollava con una classe sola; il motivo
+    dell'esclusione andava perso. Ora V3 dice che non e' calcolabile e l'esclusione e' nel report parziale appena succede."""
+    em, datasets = world
+    seen = []
+    rep = run_all(FakeRunner(), CFG, em, {"low": datasets["low"]}, on_progress=lambda r: seen.append(json.loads(json.dumps(r))))
+    assert rep["v3"] == {"computable": False, "reason": "servono almeno 2 dataset, analizzati: ['emg2pose']"}
+    assert "non e' eleggibile" in rep["excluded_datasets"]["low"]
+    first = next(r for r in seen if r["progress"] == "low escluso")
+    assert "non e' eleggibile" in first["excluded_datasets"]["low"]

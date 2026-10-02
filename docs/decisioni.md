@@ -1107,6 +1107,14 @@ Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello
    come da procedura («V2 e conferma dei rami su NinaPro DB8, Zhang e DB10»), sottomessi il 02/10 dal repo remoto pulito al commit 653c3fe:
    **run vero di V2 su DB10, job 59180438** (GPU, 0,05-0,4 GPU-ora stimate, autorizzato da Simone il 01/10) e **prima bozza del manifest, job
    59180449** (CPU seriale, 0 GPU-ora). emg2pose (job 59173239) ancora in corso.
+   **V2 su DB10 (job 59180438): FALLITO** dopo 2 min 39 s (exit 1; 1 GPU, ~0,04 GPU-ora = ~0,35 ore locali). Controlli scritti prima
+   **identici** nel report parziale (fattore 21,718; emg2pose 0,03520; V1 1,231, sha256 del parziale uguale su cluster e Mac). **Causa (verificata):**
+   13 sessioni di DB10 hanno in tutto 18 «prove» da **1 campione** (tratti fra due pause, dall'ingest; le altre prove sono lunghe decine di migliaia
+   di campioni, letto dai sidecar sul cluster); il filtro passa-banda (`sosfiltfilt`) rifiuta un segnale di 21 campioni o meno, il `ValueError`
+   escludeva l'intero DB10, e la sonda V3, rimasta col solo emg2pose, crollava con una classe sola; il motivo dell'esclusione si perdeva perche'
+   finiva nel report solo alla fine. **Correzioni (con test, suite CPU verde):** `to_canonical` scarta prima del filtro solo le prove troppo corte
+   per il filtro (le sessioni che gia' funzionavano danno lo stesso risultato bit per bit); V3 con meno di 2 dataset dice «non calcolabile»;
+   un'esclusione entra subito nel report parziale. **Non rilanciato** (regola del controllo automatico): il rilancio va autorizzato da Simone.
 
 ---
 

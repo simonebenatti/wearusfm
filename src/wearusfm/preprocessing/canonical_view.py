@@ -72,6 +72,16 @@ def bandpass_resample(
     return x
 
 
+def min_filter_samples(fs: float, *, band: tuple[float, float] = BAND_HZ, order: int = FILTER_ORDER) -> int:
+    """Lunghezza minima (campioni nativi) che il filtro zero-phase di `bandpass_resample` accetta: `sosfiltfilt` rifiuta un segnale non piu'
+    lungo della sua imbottitura (3 x i coefficienti efficaci, stessa regola di scipy). Serve a scartare PRIMA i tratti troppo corti, che non
+    darebbero comunque nessuna patch (DB10: prove da 1 campione fra due pause, job 59180438, 02/10/2026)."""
+    hi = min(band[1], fs / 2.0) - 0.5
+    sos = signal.butter(order, [band[0], hi], btype="bandpass", fs=fs, output="sos")
+    ntaps = 2 * sos.shape[0] + 1 - min(int((sos[:, 2] == 0).sum()), int((sos[:, 5] == 0).sum()))
+    return 3 * ntaps + 1
+
+
 def session_scale(chunks: Iterable[np.ndarray], channel_mask: np.ndarray | None = None) -> float:
     """Deviazione standard su TUTTI i canali e tutte le prove di una sessione, in un solo
     numero (decisione: fattore unico per registrazione, non z-score per canale).

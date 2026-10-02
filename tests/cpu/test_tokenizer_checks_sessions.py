@@ -130,3 +130,27 @@ def test_load_session_without_trials_keeps_single_segment(tmp_path):
     np.save(d / "data_int16.npy", np.zeros((50, 2), np.int16))
     (d / "metadata.json").write_text(_json.dumps({"montage": {"groups": [{"channels": [{"qc_valid": True}] * 2}]}, "native_fs_hz": 1000}))
     assert len(load_session(d, "x", "s", "a").segments) == 1
+
+
+def test_min_filter_samples_matches_scipy_padlen():
+    from wearusfm.preprocessing.canonical_view import bandpass_resample, min_filter_samples
+
+    rng = np.random.default_rng(0)
+    for fs in (1000.0, 1926.0, 2000.0, 2048.0, 4000.0):
+        n = min_filter_samples(fs)
+        bandpass_resample(rng.normal(size=(n, 2)), fs)  # la lunghezza minima passa
+        with pytest.raises(ValueError, match="padlen"):
+            bandpass_resample(rng.normal(size=(n - 1, 2)), fs)  # una in meno no: se scipy cambia regola, questo test lo dice
+
+
+def test_to_canonical_ignores_trials_too_short_for_the_filter():
+    """Job 59180438 (02/10/2026): DB10 ha prove da 1 campione fra due pause; il filtro le rifiutava e l'intero dataset usciva da V2."""
+    rng = np.random.default_rng(3)
+    s = _canonical_session(rng, fs=1926, n_trials=2)
+    ref = to_canonical(s)
+    s.segments = [s.segments[0][:1], s.segments[0], s.segments[1][:5], s.segments[1]]  # prove minuscole prima di ciascuna prova vera
+    cs = to_canonical(s)
+    assert cs.scale == ref.scale and np.array_equal(cs.stream, ref.stream)  # stesso risultato, bit per bit
+    s.segments = [s.segments[0][:1]]
+    with pytest.raises(ValueError, match="nessuna prova con almeno una patch"):
+        to_canonical(s)
