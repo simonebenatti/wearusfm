@@ -48,4 +48,5 @@ Dalle review interne del 01-02/10/2026 (commit fra parentesi):
   dataset Meta, tetto rispetto a 2D, origine/presentata, interpretazioni da marcare, salti dell'asse dei tempi, fatti da firmare, numeri piccoli). La
   bozza si riscrive coi numeri del costruttore sui dati veri.
 - **In corso sul cluster:** misura dei tratti costanti di DB10 ed emg2pose; poi V2 su DB10 e prima bozza vera del manifest.
-- **Fatti raccolti ma non firmati:** 1 (DB8), 2, 10b, 10c, 10d.
+- **Fatti 1 (DB8), 2, 10b, 10c, 10d:** firmati da Simone il 02/10/2026 (commit 1a7015f), dopo la stesura di questa pagina; riportati nel
+  documento di riferimento. Restano da firmare, fra quelli citati dalla bozza D9, il 4 e il 5 (NeuroRVQ).

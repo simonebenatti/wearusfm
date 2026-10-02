@@ -11,7 +11,8 @@
 > 6. interpretazioni scritte come fatti (anelli degli amputati, Zhang random «e' un anello», soggetti di test «visti» dal tokenizer): vanno marcate;
 > 7. i salti dell'asse dei tempi (emg2pose 1.668 registrazioni, emg2qwerty 76, Kaifosh) non spezzano i segmenti: una finestra puo' attraversarli. Va
 >    deciso come trattarli prima del manifest;
-> 8. elenco dei fatti da firmare incompleto (servono anche 1 DB8, 4, 5, 10b, 10c, 10d); piccoli numeri da correggere.
+> 8. elenco dei fatti da firmare incompleto (servono anche 1 DB8, 4, 5, 10b, 10c, 10d); piccoli numeri da correggere. Aggiornamento
+>    02/10/2026: 1 (DB8), 2, 10b, 10c, 10d firmati da Simone; restano 4 e 5.
 
 
 **Stato: bozza di AG del 01/10/2026, NON firmata.** Il manifest è **irreversibile lungo tutta la ladder** (piano, passo 4: «firma TU»). Riferimenti:
@@ -172,7 +173,7 @@ regola già firmata (V2 ≤ 2 e conferma del ramo, opzione b): GPU, stima < 0,5 
 1. Ingest completo di **emg2pose** e **DB10**, e la tabella rigenerata con le ore vere.
 2. **Buchi** (tratti costanti) segnati su emg2pose, emg2qwerty, Zhang e DB10 (il campionamento li esclude: cambiano di poco le ore utili).
 3. **V2 e conferma del ramo RVQ** su DB8, DB10 e Zhang (punto e).
-4. Firma dei fatti n. 2 (sovrapposizione NinaPro) e 10d (split di emg2qwerty), raccolti il 01/10.
+4. ~~Firma dei fatti n. 2 (sovrapposizione NinaPro) e 10d (split di emg2qwerty), raccolti il 01/10.~~ Firmati il 02/10/2026 (con 1 DB8, 10b, 10c).
 5. **Dove stanno i dati:** quasi tutto il processato è su `$SCRATCH` (purge a 40 giorni). Un manifest congelato deve puntare a dati che restano: serve
    una regola di rinfresco per tutta la durata della ladder, non solo il 25/10.
 6. D10 (lunghezza della patch) cambia `D_t` e `D_c` ma non la composizione del manifest.
