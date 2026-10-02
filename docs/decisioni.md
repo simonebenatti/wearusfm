@@ -1157,3 +1157,20 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
   tratti di emg2qwerty e' stata autorizzata a parte il 02/10.
 - Le correzioni puntuali segnalate (citazioni, numeri, interpretazioni marcate) sono in questo commit; la bozza D9 si riscrive coi numeri del costruttore.
 
+
+---
+
+## Passo 6: identita' di canale, primo modulo (02/10/2026, proposta di AG, da rivedere)
+
+Codice: `src/wearusfm/model/channel_codes.py` (numpy: geometria relativa, vicini, codici anatomici dai sidecar) e
+`src/wearusfm/model/channel_identity.py` (torch: embedding anatomico gerarchico additivo, concatenazione proiettata), con test sui montaggi veri
+degli adattatori (anello emg2pose, sparso Camargo, griglia CapgMyo, anello piu' mirati NinaPro DB2). Non dipende da D10 ne' da D11.
+**Interpretazioni di AG da confermare:**
+1. il percorso «geometrico relativo» di v10 §5.2 non e' un vettore per canale: per canale entra solo la classe di topologia; gli spostamenti
+   relativi (angolo sugli anelli, riga e colonna sulle griglie, solo dentro lo stesso gruppo) entrano a coppie nell'encoder locale, perche' un
+   angolo assoluto romperebbe la simmetria ciclica (v10 §3.4) e l'orientamento della fascia e' spesso ignoto;
+2. unita': radianti sugli anelli, passi di indice sulle griglie: i sidecar non portano distanze in mm, quindi il bias di §5.3 si apprende per
+   topologia;
+3. dropout del livello muscolo per canale; il valore p e' un parametro obbligatorio senza default (v10: «p ≈ 0,3–0,5, da fissare»);
+4. a parita' di distanza i vicini si scelgono con la geometria relativa (prima lo spostamento angolare positivo), mai con l'indice di colonna:
+   l'uscita e' invariante alle rotazioni dell'anello e alle traslazioni della griglia, ed equivariante alle permutazioni delle colonne (test).
