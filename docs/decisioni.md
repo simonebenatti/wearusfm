@@ -1174,3 +1174,18 @@ degli adattatori (anello emg2pose, sparso Camargo, griglia CapgMyo, anello piu' 
 3. dropout del livello muscolo per canale; il valore p e' un parametro obbligatorio senza default (v10: «p ≈ 0,3–0,5, da fissare»);
 4. a parita' di distanza i vicini si scelgono con la geometria relativa (prima lo spostamento angolare positivo), mai con l'indice di colonna:
    l'uscita e' invariante alle rotazioni dell'anello e alle traslazioni della griglia, ed equivariante alle permutazioni delle colonne (test).
+
+**Encoder spaziale locale** (`src/wearusfm/model/local_encoder.py`, insiemi di attenzione in `channel_codes.attention_sets`; 02/10/2026,
+proposta di AG). Attenzione di ogni canale sulle sue chiavi raccolte con `gather` (v10 §5.4, rev. 3), con il bias di §5.3. **Scelte da
+confermare:**
+5. canali di anello e griglia: se stessi e i k vicini metrici dello stesso gruppo; canali sparsi: tutti gli altri canali validi del montaggio,
+   senza geometria (il «set encoder su identita' anatomica» di v10 §5.4); i canali metrici NON guardano i canali sparsi dello stesso montaggio
+   (la sinergia fra gruppi passa dal Perceiver e dal backbone); i canali scartati dal QC guardano solo se stessi e nessuno li guarda;
+6. distanze in **passi d'elettrodo** del gruppo (anello: angolo / passo angolare minimo; griglia: passi di indice), cosi' il bias ha la stessa
+   scala su anelli da 8 e da 16 e sulle griglie;
+7. bias = componente fissa `-d` (decadimento con la distanza) + basi radiali apprese per testa e topologia, **inizializzate a zero**; sulle
+   griglie basi separate per |riga| e |colonna| (asse delle fibre privilegiato, v10 §3.4); il bias dipende dalla distanza e non dal verso, quindi
+   e' invariante alla riflessione dell'anello (la direzione di propagazione resta nel segnale, non nel bias);
+8. ogni patch temporale e' indipendente nell'encoder locale (attenzione fra canali allo stesso istante); conto dei FLOP per livello incluso.
+Test (torch, in locale): rotazione dell'anello senza effetto, permutazione dei canali equivariante, montaggi impacchettati isolati, canali sparsi
+che vedono tutto il montaggio, canale scartato ignorato, bias iniziale uguale al solo decadimento fisico.

@@ -111,3 +111,19 @@ def test_anatomy_codes_soft_weights_sector_and_errors():
     ch[2]["anatomical_identity"].update(muscle="FCU", region="upper_arm")
     with pytest.raises(ValueError, match="incoerente"):
         CC.anatomy_codes(m)
+
+
+def test_attention_sets_distances_in_electrode_steps_sparse_sets_and_packing():
+    db2 = CC.attention_sets(CC.layout_from_montage(_dict(ninapro_std.build_montage_metadata(ninapro_std.DB2, 1, "right"))), 2)
+    assert db2.index[0].tolist()[:3] == [0, 1, 7] and db2.dist[0, :3].tolist() == pytest.approx([0.0, 1.0, 1.0])  # 45 gradi = 1 passo
+    assert (db2.pair_type[0, 1:3] == CC.PAIR_RING).all() and (db2.index[0, 3:] == -1).all()
+    assert db2.index[8].tolist() == [8, *[j for j in range(12) if j != 8]] and (db2.pair_type[8, 1:] == CC.PAIR_SET).all()
+    ring16 = CC.attention_sets(CC.layout_from_montage(_dict(emg2pose.build_montage_metadata("u1", "s", "left"))), 2)
+    assert ring16.dist[0, 1:3].tolist() == pytest.approx([1.0, 1.0])  # 22,5 gradi = 1 passo anche qui: stessa scala su anelli diversi
+    grid = CC.attention_sets(CC.layout_from_montage(_dict(capgmyo.build_montage_metadata(1))), 4)
+    assert grid.d_row[0].tolist()[1:] == [0.0, 1.0, 1.0, 0.0] and grid.d_col[0].tolist()[1:] == [1.0, 0.0, 1.0, 2.0]
+    bad = CC.attention_sets(CC.layout_from_montage(_dict(emg2pose.build_montage_metadata("u1", "s", "left"), [i != 3 for i in range(16)])), 2)
+    assert bad.index[3].tolist() == [3, -1, -1] and 3 not in bad.index[[i for i in range(16) if i != 3]]
+    packed = CC.pack_attention_sets([db2, ring16])
+    assert packed.index.shape == (28, 12) and packed.index[12, :3].tolist() == [12, 13, 27]  # spostati di 12, larghezza massima
+    assert ((packed.index[:12] < 12) | (packed.index[:12] == -1)).all() and (packed.index[12:][packed.index[12:] >= 0] >= 12).all()

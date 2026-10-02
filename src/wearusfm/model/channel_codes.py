@@ -198,3 +198,91 @@ def anatomy_codes(montage: dict) -> AnatomyCodes:
 
 def _unknown_compartment(comp: str, where: str) -> int:
     raise KeyError(f"{where}: compartimento sconosciuto nei pesi soft {comp!r} (mai etichette inventate)")
+
+
+# --- Insiemi di attenzione dell'encoder locale (v10 §5.3-5.4) ------------------------------------------------------------------------------
+
+PAIR_SELF, PAIR_RING, PAIR_GRID, PAIR_SET = 0, 1, 2, 3  # tipo di coppia (canale, chiave); -1 = posto vuoto
+
+
+@dataclass(frozen=True)
+class AttentionSets:
+    """Per ogni canale (riga) le chiavi dell'attenzione locale (colonne; -1 = vuoto) e la geometria della coppia.
+
+    Colonna 0 = il canale stesso. Canali di anello o griglia: i k vicini metrici (`neighbors`). Canali sparsi: tutti gli altri canali validi del
+    montaggio, senza geometria (v10 §5.4: «set encoder su identita' anatomica», il vicinato metrico e' vuoto). *Scelta di AG, da confermare:* i
+    canali metrici non guardano i canali sparsi dello stesso montaggio (la sinergia fra gruppi passa dal Perceiver e dal backbone); i canali sparsi
+    guardano tutti. Le distanze sono in **passi d'elettrodo** del gruppo (anello: |angolo| / passo angolare minimo; griglia: passi di indice), cosi'
+    la componente fissa del bias ha la stessa scala sulle due topologie."""
+
+    index: np.ndarray  # (C, K)
+    pair_type: np.ndarray  # (C, K)
+    dist: np.ndarray  # (C, K) distanza in passi d'elettrodo, NaN se la coppia non e' metrica
+    d_row: np.ndarray  # (C, K) |spostamento di riga|, NaN fuori dalle griglie
+    d_col: np.ndarray  # (C, K) |spostamento di colonna|, NaN fuori dalle griglie
+
+    @property
+    def n_channels(self) -> int:
+        return int(self.index.shape[0])
+
+
+def _ring_pitch(layout: ChannelLayout, rel: dict) -> np.ndarray:
+    """(C,) passo angolare minimo del gruppo di ogni canale di anello (NaN altrove)."""
+    pitch = np.full(layout.n_channels, np.nan)
+    for g in np.unique(layout.group[layout.topology == TOPOLOGIES.index("ring")]):
+        members = np.flatnonzero(layout.group == g)
+        d = rel["distance"][np.ix_(members, members)]
+        positive = d[d > 10.0 ** -_ROUND]
+        pitch[members] = positive.min() if positive.size else np.nan
+    return pitch
+
+
+def attention_sets(layout: ChannelLayout, k: int) -> AttentionSets:
+    rel = relative_geometry(layout)
+    nb = neighbors(layout, k)
+    pitch = _ring_pitch(layout, rel)
+    sparse = layout.topology == TOPOLOGIES.index("sparse")
+    rows = []
+    for i in range(layout.n_channels):
+        if not layout.qc_valid[i]:
+            keys = [i]
+        elif sparse[i]:
+            keys = [i, *[j for j in range(layout.n_channels) if j != i and layout.qc_valid[j]]]
+        else:
+            keys = [i, *[int(j) for j in nb[i] if j >= 0]]
+        rows.append(keys)
+    width = max(len(r) for r in rows)
+    c = layout.n_channels
+    index = np.full((c, width), -1, dtype=np.int64)
+    pair_type = np.full((c, width), -1, dtype=np.int64)
+    dist, d_row, d_col = (np.full((c, width), np.nan) for _ in range(3))
+    for i, keys in enumerate(rows):
+        for col, j in enumerate(keys):
+            index[i, col] = j
+            if col == 0:
+                pair_type[i, col], dist[i, col] = PAIR_SELF, 0.0
+            elif rel["ring"][i, j]:
+                pair_type[i, col], dist[i, col] = PAIR_RING, rel["distance"][i, j] / pitch[i]
+            elif rel["grid"][i, j]:
+                pair_type[i, col], dist[i, col] = PAIR_GRID, rel["distance"][i, j]
+                d_row[i, col], d_col[i, col] = abs(rel["d_row"][i, j]), abs(rel["d_col"][i, j])
+            else:
+                pair_type[i, col] = PAIR_SET
+    return AttentionSets(index, pair_type, dist, d_row, d_col)
+
+
+def pack_attention_sets(sets: list[AttentionSets]) -> AttentionSets:
+    """Piu' montaggi in una sola sequenza di canali (packing, D6b): indici spostati di quanti canali precedono, larghezza al massimo. Nessuna
+    chiave attraversa due montaggi."""
+    width = max(s.index.shape[1] for s in sets)
+    parts: dict[str, list[np.ndarray]] = {name: [] for name in ("index", "pair_type", "dist", "d_row", "d_col")}
+    offset = 0
+    for s in sets:
+        pad = width - s.index.shape[1]
+        idx = np.where(s.index >= 0, s.index + offset, -1)
+        parts["index"].append(np.pad(idx, ((0, 0), (0, pad)), constant_values=-1))
+        parts["pair_type"].append(np.pad(s.pair_type, ((0, 0), (0, pad)), constant_values=-1))
+        for name in ("dist", "d_row", "d_col"):
+            parts[name].append(np.pad(getattr(s, name), ((0, 0), (0, pad)), constant_values=np.nan))
+        offset += s.n_channels
+    return AttentionSets(**{name: np.concatenate(v, axis=0) for name, v in parts.items()})
