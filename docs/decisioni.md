@@ -1213,3 +1213,15 @@ chiudere il criterio del passo 6.
 scartato, un canale nascosto e uno slab: avanti e indietro, gradienti a tutti i moduli. Del criterio di chiusura del passo 6 («un batch con le tre
 topologie insieme fa forward e backward») manca il decoder a query (D11); conto dei FLOP per modulo presente in encoder locale, Perceiver e backbone
 (manca il front-end).
+
+**Decoder a query e diagnostica del collasso da query** (`src/wearusfm/model/query_decoder.py`; 02/10/2026, proposta di AG). **Scelte da
+confermare:**
+16. query = identita' del canale (anche per i canali nascosti) all'istante t; cross-attention su tutti i P x K latenti del campione con RoPE sul
+    tempo (distanza fra l'istante della query e quello del latente); le chiavi escludono gli istanti non validi per lo studente; piu' livelli
+    aggiornano le query. Serve alle due opzioni di D11 (a e b cambiano dove si leggono i target del teacher, non come predice lo studente);
+17. diagnostica (v10 §7.1 punto 4): le stesse query di sonda valutate su S campioni; rapporto fra varianza fra campioni a query fissa e varianza fra
+    query. Un decoder a cui il contenuto non arriva da' rapporto ~0 (test). **Nessuna soglia ancora:** la soglia d'allarme va scritta qui prima
+    del sanity JEPA (regola delle soglie congelate).
+**Test d'insieme fino al decoder:** identita' -> encoder locale -> Perceiver -> backbone -> decoder su anello, sparso, griglia e misto, con query
+sui canali e sull'istante nascosti: avanti e indietro, gradienti a tutti i moduli. Del passo 6 restano: front-end vero collegato, teste delle
+ancore (RMS, bande, inviluppo, RVQ), ciclo JEPA (studente/teacher EMA), sanity JEPA su un dataset omogeneo, FLOP del front-end.
