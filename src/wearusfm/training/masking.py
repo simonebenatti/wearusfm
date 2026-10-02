@@ -1,5 +1,8 @@
 """Generatore di maschere per lo studente JEPA (passo 6; v10 §6.4; schema della BOZZA D10, non firmata: `docs/proposta_d10.md` §3).
 
+Non e' `wearusfm.data.masking`: quello genera le maschere sintetiche del benchmark del dataloader del passo 0 (test in `tests/cpu/test_masking.py`);
+questo e' il generatore del training (test in `tests/cpu/test_training_masking.py`).
+
 Per un campione (C canali, P patch valide) restituisce `visible` (C, P) e `kind` (C, P): il tipo di maschera di ogni token nascosto, perche' il
 masking di canale e' due compiti diversi da registrare separatamente (v10 §6.4: «senza logging separato la loss aggregata e' dominata dal caso
 facile»), e gli altri tipi pure.
