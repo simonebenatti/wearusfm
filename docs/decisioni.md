@@ -1225,3 +1225,20 @@ confermare:**
 **Test d'insieme fino al decoder:** identita' -> encoder locale -> Perceiver -> backbone -> decoder su anello, sparso, griglia e misto, con query
 sui canali e sull'istante nascosti: avanti e indietro, gradienti a tutti i moduli. Del passo 6 restano: front-end vero collegato, teste delle
 ancore (RMS, bande, inviluppo, RVQ), ciclo JEPA (studente/teacher EMA), sanity JEPA su un dataset omogeneo, FLOP del front-end.
+
+**Front-end collegato e ancore** (`src/wearusfm/model/patch_tokens.py`, `anchor_targets.py`, `anchors.py`; 02/10/2026, proposta di AG). Il
+front-end del gate D8 si applica a ogni campione alla sua frequenza nativa, poi una proiezione alla dimensione del modello; finestre piu' corte
+diventano padding (`patch_valid`, `time_valid`). **Scelte da confermare:**
+18. finestre dei target, centrate sulla patch: log RMS su 25 ms (la patch stessa: dentro i 20-50 ms di v10 e senza guardare le patch vicine,
+    magari visibili); forma spettrale su 200 ms (8 patch, la griglia RVQ; risoluzione 5 Hz); log inviluppo su 500 ms; target assente dove la
+    finestra esce dal segnale;
+19. bande: 5, log-spaziate su 20-450 Hz (20, 37, 70, 130, 242, 450 Hz); una banda e' mascherata se il suo bordo SUPERIORE supera il limite del
+    canale (minimo fra Nyquist e banda dichiarata): regola conservativa, che a DB5 (Myo, 100 Hz) lascia solo 2 bande (la terza, 70-130 Hz,
+    supera i 100 Hz); la frazione di potenza si normalizza sulle bande disponibili;
+20. RVQ: target per (canale, finestra da 200 ms della griglia) solo se la finestra e' tutta nascosta e il dataset ha l'ancora accesa; la testa
+    classifica gli 8192 codici del livello 0 del ramo 0 dalla media delle uscite del decoder alle 8 patch (nessun tipo di query nuovo); i codici
+    li calcola il tokenizer congelato, da collegare su Leonardo (il clone di NeuroRVQ non e' sul Mac);
+21. teste lineari («testa piccola»); il peso complessivo delle ancore (0,1-0,3, v10 §6.2) entra nel ciclo di training.
+**Non ancora fatto:** ancore spaziali a peso ridotto (covarianza a lag zero, coerenza in modulo: v10 §6.3), che sono a coppie di canali.
+**Test d'insieme dal segnale:** bracciale Meta a 2 kHz e Myo a 200 Hz nello stesso batch, front-end vero, tutta la catena fino alle perdite delle
+ancore, gradiente fino ai coefficienti del front-end; DB5 senza finestre RVQ (ancora spenta).
