@@ -1189,3 +1189,15 @@ confermare:**
 8. ogni patch temporale e' indipendente nell'encoder locale (attenzione fra canali allo stesso istante); conto dei FLOP per livello incluso.
 Test (torch, in locale): rotazione dell'anello senza effetto, permutazione dei canali equivariante, montaggi impacchettati isolati, canali sparsi
 che vedono tutto il montaggio, canale scartato ignorato, bias iniziale uguale al solo decadimento fisico.
+
+**Pooling Perceiver** (`src/wearusfm/model/perceiver.py`; 02/10/2026, proposta di AG). **Scelte da confermare:**
+9. fattorizzato **per patch temporale** (il proxy del passo 0 attendeva su tutti i token del campione insieme: semplificazione dichiarata
+   allora): per ogni campione e istante, K latenti appresi e condivisi fanno cross-attention sui token visibili dei canali di quel campione;
+   nessun encoding posizionale sui canali, quindi l'uscita non dipende dall'ordine dei canali;
+10. token nascosti (masking JEPA, canali scartati dal QC) fuori dalle chiavi; dove a un istante non resta nessun token visibile (slab su tutti i
+    canali, il caso dell'ancora RVQ) i latenti restano quelli appresi, senza contenuto: ricostruire l'istante tocca al backbone temporale;
+11. implementazione di riferimento con un ciclo sui campioni impacchettati (offset come `cu_seqlens`); in produzione `flash_attn_varlen_func`
+    sulle sequenze (campione, istante), da provare equivalente su Leonardo prima di usarlo.
+Primo test d'insieme (torch, in locale): identita' di canale -> encoder locale -> Perceiver su un batch con anello (emg2pose), sparso (Camargo),
+griglia (CapgMyo) e misto (NinaPro DB2) impacchettati, avanti e indietro con gradienti a tutti i moduli. Manca il backbone temporale per
+chiudere il criterio del passo 6.
