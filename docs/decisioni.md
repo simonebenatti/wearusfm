@@ -1262,3 +1262,20 @@ confermare:**
 25. rango effettivo (exp dell'entropia dei valori singolari, v10 §7.1 punto 3) come diagnostica, accanto a quella del collasso da query.
 Del passo 6 restano: generatore di maschere (D10), dataloader vero, collegamento del tokenizer RVQ su Leonardo, ancore spaziali, soglie delle
 diagnostiche (da congelare qui prima del sanity), sanity JEPA su un dataset omogeneo.
+
+**Generatore di maschere** (`src/wearusfm/training/masking.py`; 02/10/2026, segue la BOZZA D10 §3, non firmata). **Scelte da confermare con
+D10:**
+26. tre famiglie distinte: maschera temporale = intervallo su **un solo canale**; slab = intervallo su **tutti** i canali, lunghezza multipla di 8
+    patch e inizio sulla griglia (ancora RVQ, solo dove e' accesa); spaziale = canali scelti **per tutta la finestra** (arco contiguo sugli anelli,
+    rettangolo fino a 4 x 4 sulle griglie, canale singolo o gruppo dello stesso compartimento sui montaggi sparsi), al piu' meta' dei canali validi.
+    **Punto aperto:** su una griglia densa la maschera temporale su un canale e' facile (i vicini sono visibili); l'alternativa e' l'intervallo su un
+    gruppo spaziale («tubi», come in V-JEPA);
+27. le quote della tabella D10 sono **attese** sui token nascosti, non vincoli per campione: uno slab copre tutti i canali e da solo puo' superare la
+    sua quota (uno slab lungo da 24 patch e' il 15% di una finestra da 4 s; il primo tentativo di riempire le quote per campione nascondeva l'82%
+    invece del 50%). Si sceglie il tipo con probabilita' proporzionale a quota / dimensione attesa sul campione; una maschera che porterebbe il
+    totale oltre budget x 1,1 si scarta. Misurato su 50 campioni per montaggio (budget 0,5, finestra di 160 patch): nascosto 0,50-0,55; quote
+    realizzate sui token nascosti corta 15-16%, media 12-14%, lunga 8-11%, slab 17-22%, spaziale 42-43% (proposta: 15 / 12,5 / 10 / 22,5 / 40);
+28. la frazione nascosta `ratio` non ha default (regola da congelare prima del sanity JEPA); il generatore restituisce il tipo di ogni token
+    nascosto, per le perdite registrate per tipo (v10 §6.4);
+29. costo: 3-4 ms a campione su 11-16 canali, ~31 ms su una griglia da 128 (circa mille maschere piccole): da vettorizzare se il dataloader lo
+    richiede (Hyser, 256 canali).
