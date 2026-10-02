@@ -1102,6 +1102,11 @@ Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello
 3. **DB10 ed emg2pose: misura dei tratti costanti**, sola lettura (`qc_relative_check --only ninapro_db10 --only emg2pose`); una scrittura, se serve,
    si chiede a parte. Primo tentativo (job 59133397) in **TIMEOUT** a 2 h senza finire emg2pose (25.253 sessioni, 92 GB):
    nessun report, nulla scritto (sola lettura). Rilancio separato: DB10 da solo; emg2pose da solo con 4 h (massimo della coda seriale).
+   **DB10 (job 59173238, 32 min 46 s, exit 0; report `qc_relative_check_59173238.json`, sha256 dec57c08... uguale su cluster e Mac):** 45 sessioni,
+   **0 canali piatti nuovi, 0 tratti costanti** (0,0000% del tempo valido), freni non scattati, 0 errori di lettura: nulla da scrivere. Quindi,
+   come da procedura («V2 e conferma dei rami su NinaPro DB8, Zhang e DB10»), sottomessi il 02/10 dal repo remoto pulito al commit 653c3fe:
+   **run vero di V2 su DB10, job 59180438** (GPU, 0,05-0,4 GPU-ora stimate, autorizzato da Simone il 01/10) e **prima bozza del manifest, job
+   59180449** (CPU seriale, 0 GPU-ora). emg2pose (job 59173239) ancora in corso.
 
 ---
 
