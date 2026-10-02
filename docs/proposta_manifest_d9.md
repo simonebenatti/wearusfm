@@ -169,10 +169,10 @@ tabella.
 - **manifest sottocampionati per soggetti** (asse di v10 §10.6, D16): sottoinsiemi annidati del 12,5, 25 e 50% dei soggetti di pretraining, per
   dataset, stesso seed;
 - **sovrapposizioni da dichiarare** (nessuna si risolve con gli ID):
-  (1) **tokenizer NeuroRVQ.** Dal paper (fatto 4, raccolto ma **non firmato**: appendice E, Tabella 7) il tokenizer è pre-addestrato su emg2pose ed
-  emg2qwerty. Se abbia escluso i loro soggetti di test ufficiali non è noto (fatto 5, non verificato). Finché il fatto 5 resta aperto, la
-  valutazione sui soggetti di test di emg2pose ed emg2qwerty si segna «soggetti forse visti dal tokenizer». La bozza del 01/10 li dava per «visti»,
-  ma era un'interpretazione;
+  (1) **tokenizer NeuroRVQ.** Dal paper (fatto 5, raccolto il 02/10, **da firmare**: appendice E, Tabella 7, e §5.1) il tokenizer è
+  pre-addestrato su emg2pose ed emg2qwerty. Quali soggetti o split abbiano usato **non è dichiarato da nessuna fonte** (paper, repo, scheda HF):
+  la valutazione sui soggetti di test di emg2pose ed emg2qwerty si segna quindi «soggetti forse visti dal tokenizer». La bozza del 01/10 li dava
+  per «visti», ma era un'interpretazione;
   (2) **NinaPro** (fatto 2, firmato il 02/10): DB4 e DB5 hanno un soggetto in comune (ID non dichiarato); per DB8 la sovrapposizione con DB7 è
   probabile (5 normodotati su 10 e i due amputati avevano già partecipato agli esperimenti di Krasoulis et al. 2017, il paper di DB7; ID non
   dichiarati); DB1, DB2 e DB3 sono disgiunti per aritmetica; gli ID sono locali a ogni DB; **per DB6, DB7 (verso gli altri) e DB10 nessuna fonte
