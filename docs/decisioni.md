@@ -1149,6 +1149,18 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    cluster e Mac): **2.786 tratti costanti scritti in 576 sessioni, 0 errori**, 0 canali piatti nuovi, freni non scattati; copia di sicurezza del
    sidecar per sessione (`metadata.pre_qc_revision.json`), dati intatti. La bozza del manifest (59204297) e' partita alle 18:03 con il registro
    di avanzamento per dataset.
+   **Bozza del manifest fatta** (job 59204297, 16 min, exit 0; `manifest_59204297.json.gz`, 1,6 MB, sha256 924a4c8e... uguale su cluster e Mac,
+   copia in `~/wearusfm_local/reports/passo4/`, NON nel repo; hash del contenuto 59e40dbc0831b158; commit registrato 25d1fc4, pushato durante il
+   run: rispetto alla partenza sono cambiati solo `training/masking.py` e i documenti, non il codice del costruttore). Parametri della bozza D9:
+   quote A 20 / B 75 / C 5, alpha 0,5, tetto 8 passaggi a 4 epoche, patch 25 ms. **Risultati:** 27.560 sessioni; **pretraining 822,9 h**
+   (19.034 sessioni), test 210,9 h, benchmark Kaifosh 63,9 h; **D_t 118,5 M, D_c 3,25 G**; per classe pretraining A 90,7 h, B 710,8 h, C 21,3 h;
+   quote realizzate A 20,0%, B 75,0%, C 5,0% (nessuna quota inassegnabile: con il tetto la classe C arriva al 5%, contro il timore del punto 1
+   della revisione della bozza D9); 12 unita' al tetto di 8 passaggi; emg2pose 2,8 ed emg2qwerty 2,7 passaggi. Nessun soggetto senza sessioni,
+   nessuna sessione di test mancante. **Tempo non campionabile** (pretraining): con finestre fisse da 4 s la classe C perde 6,9 h su 21,3
+   (CSL-hdemg e CapgMyo per intero, Hyser l'11%), con 2 s 2,1 h, con 1 s nulla; GRABMyo perde tutto solo a 8 s; la classe A non perde nulla.
+   **Salti dell'asse dei tempi:** emg2pose 222.477 salti in 1.668 sessioni (3.432 s mancanti, massimo 4,1 s), emg2qwerty 27.017 in 76 (562 s,
+   massimo **73,3 s**), Kaifosh 5.098 in 46 (benchmark); spezzare a ogni salto costa a 4 s l'1,2% di emg2pose e lo 0,2% di emg2qwerty (classe B:
+   4,1 h). Nessuna sessione con l'elenco dei salti troncato, nessuna posizione fuori dall'array.
 
 ---
 
