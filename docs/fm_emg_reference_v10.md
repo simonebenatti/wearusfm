@@ -940,9 +940,10 @@ stabile su tutti i dataset, l'ancora si scarta.
   (time warping) si applicano anche al segnale da cui si calcola il target, il rumore no. Un
   montaggio bipolare virtuale è un segnale nuovo: i suoi codici si calcolano online — la rete
   del tokenizer è piccola — o si precomputano se lo sono i montaggi (§4.6).
-- **Soggetti visti dal tokenizer.** Ha visto soggetti di emg2pose ed emg2qwerty: verificare la
-  sovrapposizione con i soggetti di test di §8. Se non è ricostruibile, va dichiarato come
-  limite del braccio RVQ.
+- **Soggetti visti dal tokenizer.** È pre-addestrato su emg2pose ed emg2qwerty; quali soggetti o
+  split abbia usato non è dichiarato da nessuna fonte (fatto 5, firmato il 02/10/2026). La
+  sovrapposizione con i soggetti di test di §8 **non è ricostruibile**: va dichiarata come
+  limite del braccio RVQ (soggetti di test di emg2pose ed emg2qwerty «forse visti dal tokenizer»).
 
 ##### Leakage di fase — il ripiego «solo intra-canale» non basta
 
@@ -1105,8 +1106,11 @@ rumore e channel dropout sui FM EEG.
 - **Normalizzazione stimata solo sul train**, e se per sessione, dai primi N secondi.
 - **Sovrapposizione di soggetti fra DB NinaPro:** da controllare all'ingest, prima di
   definire gli split (§2.1).
-- **Soggetti visti dal tokenizer NeuroRVQ** (emg2pose, emg2qwerty): se si usa l'ancora RVQ,
-  verificare la sovrapposizione coi soggetti di test (§6.3).
+- **Soggetti visti dal tokenizer NeuroRVQ** (emg2pose, emg2qwerty): sovrapposizione coi soggetti
+  di test non ricostruibile (fatto 5, firmato il 02/10/2026), da dichiarare se si usa l'ancora RVQ (§6.3).
+- **Sovrapposizione fra i dataset Meta** (emg2qwerty, emg2pose, Kaifosh): nessuna fonte dichiara
+  partecipanti in comune né dataset disgiunti, e gli ID hanno formati diversi (fatto 23, firmato il
+  02/10/2026): un soggetto di test di uno puo' essere nel pretraining tramite un altro, da dichiarare.
 
 ### Trasformazioni del sensore — test distinti per topologia
 
@@ -1643,8 +1647,10 @@ dettagli anti-collasso.
 4. Dal codice del repo NeuroRVQ: banda di filtraggio usata nel pretraining del tokenizer
    (20–90 Hz?), normalizzazione attesa in ingresso, e se il transformer mescola canali
    diversi
-5. Sovrapposizione fra i soggetti visti dal tokenizer NeuroRVQ e i soggetti di test di §8;
-   licenza del checkpoint
+5. ~~Sovrapposizione fra i soggetti visti dal tokenizer NeuroRVQ e i soggetti di test di §8;
+   licenza del checkpoint~~ (firmato il 02/10/2026, fatto 5: pretraining su emg2pose ed emg2qwerty,
+   soggetti non dichiarati, quindi sovrapposizione non ricostruibile; la scheda dei pesi non
+   dichiara una licenza, nel repo HF dei pesi c'e' un LICENSE CC BY-NC 4.0)
 6. Lista degli 11 muscoli di Camargo 2021
 7. Kaifosh et al.: presenza e forma delle curve di scaling nel numero di partecipanti;
    accesso, licenza e dimensioni del dataset rilasciato
