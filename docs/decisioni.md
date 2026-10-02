@@ -1155,7 +1155,8 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    quote A 20 / B 75 / C 5, alpha 0,5, tetto 8 passaggi a 4 epoche, patch 25 ms. **Risultati:** 27.560 sessioni; **pretraining 822,9 h**
    (19.034 sessioni), test 210,9 h, benchmark Kaifosh 63,9 h; **D_t 118,5 M, D_c 3,25 G**; per classe pretraining A 90,7 h, B 710,8 h, C 21,3 h;
    quote realizzate A 20,0%, B 75,0%, C 5,0% (nessuna quota inassegnabile: con il tetto la classe C arriva al 5%, contro il timore del punto 1
-   della revisione della bozza D9); 12 unita' al tetto di 8 passaggi; emg2pose 2,8 ed emg2qwerty 2,7 passaggi. Nessun soggetto senza sessioni,
+   della revisione della bozza D9); 10 unita' al tetto di 8 passaggi e 5 fra 7,1 e 7,9 (corretto: nel primo resoconto a Simone AG aveva
+   scritto 12, letto a occhio dal log); emg2pose 2,8 ed emg2qwerty 2,7 passaggi, NinaPro DB2 6,0. Nessun soggetto senza sessioni,
    nessuna sessione di test mancante. **Tempo non campionabile** (pretraining): con finestre fisse da 4 s la classe C perde 6,9 h su 21,3
    (CSL-hdemg e CapgMyo per intero, Hyser l'11%), con 2 s 2,1 h, con 1 s nulla; GRABMyo perde tutto solo a 8 s; la classe A non perde nulla.
    **Salti dell'asse dei tempi:** emg2pose 222.477 salti in 1.668 sessioni (3.432 s mancanti, massimo 4,1 s), emg2qwerty 27.017 in 76 (562 s,

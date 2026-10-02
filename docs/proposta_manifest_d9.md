@@ -1,86 +1,86 @@
 # Proposta — manifest del pretraining (D9, passo 4): BOZZA da firmare entro il 25/10/2026
 
-> **IN REVISIONE (02/10/2026) — non firmare questa versione.** La review indipendente dei documenti ha trovato, e AG ha verificato, gli 8 punti
-> qui sotto. **Stato al 02/10 (fra quadre):** il testo e' riscritto per i punti 2-6 e 8; le tabelle (punto 1) e la scelta sui salti (punto 7)
-> aspettano i numeri del costruttore.
+> **Revisione del 02/10/2026 applicata — pronta per la tua lettura e la firma.** La review indipendente dei documenti aveva trovato, e AG aveva
+> verificato, gli 8 punti qui sotto; lo stato di ciascuno e' fra quadre. Le tabelle sono quelle del costruttore sui dati veri (job 59204297).
 > 1. le ore, i passaggi e le quote qui sotto contano anche i soggetti di test (~1.011 h), mentre il manifest pesa solo il pretraining (~870 h): con il
->    tetto di 8 passaggi la classe C non arriva piu' al 5%. Si rifa' tutto coi numeri del costruttore (`scripts/build_manifest.py`) sui dati veri; **[aperto: tabelle ancora del 01/10]**
+>    tetto di 8 passaggi la classe C non arriva piu' al 5%. Si rifa' tutto coi numeri del costruttore (`scripts/build_manifest.py`) sui dati veri; **[risolto: tabelle del costruttore, solo pretraining, job 59204297; la classe C arriva al 5%]**
 > 2. «Kaifosh: 100 utenti nuovi» non e' verificato: Kaifosh, emg2pose ed emg2qwerty sono dello stesso produttore e gli ID non sono confrontabili
->    (sovrapposizione ignota, da dichiarare come per NinaPro); idem per gli amputati di DB3 e DB10; **[riscritto in (b) e (d); fatto 23 da raccogliere]**
+>    (sovrapposizione ignota, da dichiarare come per NinaPro); idem per gli amputati di DB3 e DB10; **[riscritto in (b) e (d); fatto 23 firmato]**
 > 3. emg2pose: le 3.539 registrazioni del test per fasi nuove escono dal pretraining (Simone, 02/10/2026: gia' negli split); **[riscritto in (d)]**
 > 4. il tetto di 8 passaggi e' definito per 4 epoche: nei gradini a 2D i passaggi raddoppiano (16, il «forte decadimento» di v10 §10.3); **[riscritto in (a)]**
 > 5. «origine» contro «presentata»: il piano propone la topologia presentata; la scelta va argomentata anche sul volume D_c (classe C ~23% di D_c); **[riscritto in (a)]**
 > 6. interpretazioni scritte come fatti (anelli degli amputati, Zhang random «e' un anello», soggetti di test «visti» dal tokenizer): vanno marcate; **[marcate in (a-bis) e (d)]**
 > 7. i salti dell'asse dei tempi (emg2pose 1.668 registrazioni, emg2qwerty 76, Kaifosh) non spezzano i segmenti: una finestra puo' attraversarli. Va
->    deciso come trattarli prima del manifest; **[opzioni in (f); decisione di Simone, coi numeri del costruttore]**
+>    deciso come trattarli prima del manifest; **[opzioni e numeri in (f); decisione di Simone]**
 > 8. elenco dei fatti da firmare incompleto (servono anche 1 DB8, 4, 5, 10b, 10c, 10d); piccoli numeri da correggere. Aggiornamento
->    02/10/2026: 1 (DB8), 2, 10b, 10c, 10d, poi 5 e 23 firmati da Simone; resta il 4 (parziale). **[elenco in «Prima della firma»; i piccoli numeri
->    si correggono con le tabelle]**
+>    02/10/2026: 1 (DB8), 2, 10b, 10c, 10d, poi 5 e 23 firmati da Simone; resta il 4 (parziale). **[elenco in «Prima della firma»; numeri corretti
+>    con le tabelle]**
 
 
-**Stato: bozza di AG del 01/10/2026, testo rivisto il 02/10/2026, NON firmata.** Il manifest è **irreversibile lungo tutta la ladder** (piano,
-passo 4: «firma TU»). Riferimenti: piano operativo §Passo 4 (le cinque scelte), v10 §2.8 (quote, classi del montaggio), v10 §10.3 (D è un manifest;
-`D_t`, `D_c`). **I numeri delle tabelle sono ancora quelli del 01/10** (`scripts/manifest_table.py` sui riepiloghi di ingest in `results/passo2/`):
-contano anche i soggetti di test e usano ore ipotetiche per emg2pose (400 h) e DB10 (56 h), i cui ingest sono poi finiti il 01-02/10. **Non vanno
-letti come proposta:** si sostituiscono con l'uscita di `scripts/build_manifest.py` sui dati veri, solo pretraining.
+**Stato: bozza di AG del 01/10/2026, testo rivisto e tabelle rifatte il 02/10/2026, NON firmata.** Il manifest è **irreversibile lungo tutta la
+ladder** (piano, passo 4: «firma TU»). Riferimenti: piano operativo §Passo 4 (le cinque scelte), v10 §2.8 (quote, classi del montaggio), v10 §10.3
+(D è un manifest; `D_t`, `D_c`). **I numeri vengono dal costruttore** (`scripts/build_manifest.py`, job 59204297 del 02/10, bozza con i parametri
+proposti qui; manifest in `~/wearusfm_local/reports/passo4/manifest_59204297.json.gz`, hash del contenuto 59e40dbc0831b158, non nel repo) sui
+sidecar veri, **solo pretraining**: i soggetti e le sessioni di test e il benchmark non contano nelle ore, nelle quote e nei passaggi.
 
 ## Cosa contiene il corpus oggi
 
-Patch di 25 ms (default di lavoro di D10, non deciso). Canali validi = stima (canali dell'array meno gli scartati dal QC). Kaifosh è nella tabella ma
-**fuori dai totali**, perché la proposta (b) lo tiene come benchmark.
+Patch di 25 ms (proposta D10, non firmata). Kaifosh è nella tabella ma **fuori dai totali**, perché la proposta (b) lo tiene come benchmark.
 
-| Dataset | Classe | Ore | Soggetti | Canali validi (stima) | D_t (milioni) | D_c (miliardi) | Ruolo proposto |
-|---|---|---|---|---|---|---|---|
-| NinaPro DB2 | A | 28,8 | 40 | 12 | 4,2 | 0,05 | pretraining |
-| NinaPro DB3 (amputati) | A | 7,6 | 11 | 11,6 | 1,1 | 0,01 | pretraining |
-| NinaPro DB4 | A | 7,6 | 10 | 12 | 1,1 | 0,01 | pretraining |
-| NinaPro DB6 | A | 19,7 | 10 | 14 | 2,8 | 0,04 | pretraining |
-| NinaPro DB7 | A | 13,4 | 22 | 12 | 1,9 | 0,02 | pretraining |
-| Camargo 2021 | A | 20,1 | 22 | 11 | 2,9 | 0,03 | pretraining |
-| Zhang 2026, anatomical | A | 12,6 | 62 | 8 | 1,8 | 0,01 | pretraining |
-| Zhang 2026, random | B | 12,3 | 62 | 8 | 1,8 | 0,01 | pretraining |
-| Kaifosh (Discrete Gestures) | B | 63,9 | 100 | 16 | 9,2 | 0,15 | **benchmark (proposta b)** |
-| emg2qwerty | B | 346,1 | 108 | 32 | 49,8 | 1,59 | pretraining |
-| emg2pose | B | *~400 (ipotesi)* | 193 | 16 | *57,6* | *0,92* | pretraining |
-| GRABMyo | B | 21,3 | 43 | 28 | 3,1 | 0,09 | pretraining |
-| putEMG | B | 21,4 | 44 | 24 | 3,1 | 0,07 | pretraining |
-| NinaPro DB5 (200 Hz) | B | 8,8 | 10 | 16 | 1,3 | 0,02 | pretraining |
-| NinaPro DB8 | B | 8,5 | 12 | 15,4 | 1,2 | 0,02 | pretraining |
-| NinaPro DB10 (MDS1) | B | *~56 (ipotesi)* | 45 | 12 | *8,1* | *0,10* | pretraining |
-| CapgMyo-DBa | C | 0,4 | 18 | 128 | 0,1 | 0,01 | pretraining |
-| CSL-hdemg | C | 6,0 | 5 | 168 | 0,9 | 0,15 | pretraining |
-| Hyser | C | 20,2 | 20 | 256 | 2,9 | 0,75 | pretraining |
+| Dataset | Classe | RVQ | Ore pretraining | Ore test | Soggetti | D_t (milioni) | D_c (miliardi) | Ruolo |
+|---|---|---|---|---|---|---|---|---|
+| NinaPro DB2 | A | accesa | 23,1 | 5,8 | 40 | 3,3 | 0,04 | pretraining |
+| NinaPro DB3 (amputati) | A | accesa | 5,5 | 2,1 | 11 | 0,8 | 0,01 | pretraining |
+| NinaPro DB4 | A | accesa | 7,6 | 0,0 | 10 | 1,1 | 0,01 | pretraining |
+| NinaPro DB6 | A | accesa | 15,7 | 4,0 | 10 | 2,3 | 0,03 | pretraining |
+| NinaPro DB7 | A | accesa | 13,4 | 0,0 | 22 | 1,9 | 0,02 | pretraining |
+| Camargo 2021 | A | accesa | 15,5 | 4,6 | 22 | 2,2 | 0,02 | pretraining |
+| Zhang 2026, anatomical | A | accesa | 10,0 | 2,6 | 62 | 1,4 | 0,01 | pretraining |
+| Zhang 2026, random | B | accesa | 9,7 | 2,6 | 62 | 1,4 | 0,01 | pretraining |
+| Kaifosh (Discrete Gestures) | B | accesa | 63,9 (benchmark) | 0,0 | 100 | 0,0 | 0,00 | **benchmark (proposta b)** |
+| emg2qwerty | B | accesa | 317,1 | 29,0 | 108 | 45,7 | 1,46 | pretraining |
+| emg2pose | B | accesa | 287,8 | 134,9 | 193 | 41,4 | 0,66 | pretraining |
+| GRABMyo | B | accesa | 16,9 | 4,5 | 43 | 2,4 | 0,07 | pretraining |
+| putEMG | B | spenta | 17,0 | 4,4 | 44 | 2,5 | 0,06 | pretraining |
+| NinaPro DB5 (200 Hz) | B | spenta | 8,8 | 0,0 | 10 | 1,3 | 0,02 | pretraining |
+| NinaPro DB8 | B | accesa | 8,5 | 0,0 | 12 | 1,2 | 0,02 | pretraining |
+| NinaPro DB10 (MDS1) | B | accesa | 45,1 | 11,1 | 45 | 6,5 | 0,08 | pretraining |
+| CapgMyo-DBa | C | accesa | 0,3 | 0,1 | 18 | 0,0 | 0,01 | pretraining |
+| CSL-hdemg | C | spenta | 4,8 | 1,2 | 5 | 0,7 | 0,12 | pretraining |
+| Hyser | C | accesa | 16,2 | 4,0 | 20 | 2,3 | 0,60 | pretraining |
 
-**Pretraining (senza Kaifosh): ~1.011 h; `D_t` ≈ 146 milioni di time-patch; `D_c` ≈ 3,9 miliardi di source-channel-patch.** Per classe:
-**A 109,8 h (10,9%) · B ~874 h (86,5%) · C 26,7 h (2,6%).** (La tabella di v10 §10.3, ~9·10⁹ channel-patch, era prima delle esclusioni.)
+**Pretraining: 822,9 h in 19.034 sessioni; `D_t` = 118,5 milioni di time-patch; `D_c` = 3,25 miliardi di source-channel-patch.** Test: 210,9 h
+(emg2pose 134,9 h: i 35 utenti tenuti fuori e le 3.539 sessioni del test per fasi nuove). Benchmark: Kaifosh 63,9 h. Per classe, pretraining:
+**A 90,7 h (11,0%) · B 710,8 h (86,4%) · C 21,3 h (2,6%)**. Nessun soggetto degli split senza sessioni, nessuna sessione di test mancante. (La
+tabella di v10 §10.3, ~9·10⁹ channel-patch, era prima delle esclusioni.)
 
 Fuori dal corpus, con decisione registrata: NinaPro DB1 (inviluppo a 100 Hz), DB9 (solo cinematica), DB10 MDS2/MDS4 (inviluppo RMS a 100 Hz), due
 soggetti di Zhang (esportazione diversa), EPN-612 e UCI-EMG (solo harness).
 
 ## (a) Quote per topologia
 
-**Il problema è la ripetizione.** I dati della classe A sono l'11% delle ore. Con 4 epoche di consumo totale (v10 §10.3), una quota garantita `q`
+**Il problema è la ripetizione.** I dati della classe A sono l'11% delle ore di pretraining. Con 4 epoche di consumo totale (v10 §10.3), una quota garantita `q`
 per una classe di `H_c` ore su `H` totali dà `q · 4 · H / H_c` passaggi sui suoi dati:
 
 | Quota garantita | 5% | 10% | 20% | 30% | 40% |
 |---|---|---|---|---|---|
-| passaggi sulla classe A (110 h) | 1,8 | 3,7 | 7,4 | 11,0 | 14,7 |
-| passaggi sulla classe C (27 h) | 7,6 | 15,2 | 30,3 | 45,5 | 60,7 |
+| passaggi sulla classe A (90,7 h) | 1,8 | 3,6 | 7,3 | 10,9 | 14,5 |
+| passaggi sulla classe C (21,3 h) | 7,7 | 15,4 | 30,9 | 46,3 | 61,7 |
 
-Il 40% del piano porterebbe la classe A a ~15 passaggi: vicino alle ~16 epoche che v10 §10.3 riporta come punto stimato di forte decadimento
+Il 40% del piano porterebbe la classe A a 14,5 passaggi: vicino alle ~16 epoche che v10 §10.3 riporta come punto stimato di forte decadimento
 (Muennighoff et al., **su testo**). La classe C è così piccola, in ore, che anche il 10% la ripeterebbe 15 volte.
 
 **Origine o presentata?** Il piano propone la quota **sulla topologia presentata**, «con un tetto esplicito alla ripetizione dei dati sparsi veri,
 e lettura del pilot per topologia»: i montaggi bipolari virtuali ricavati dalle griglie HD sono campioni «tipo sparso» e riempiono parte della quota
 senza ripetere i dati sparsi veri. La bozza del 01/10 proponeva invece l'origine, con un argomento solo sulle ore (le griglie sono poche ore, quindi
 riempire la quota A con montaggi virtuali ripeterebbe i dati C). L'argomento era incompleto:
-- **sul tempo** la classe C è scarsa (tabella del 01/10: 26,7 h, da rifare): ogni campione virtuale ripete un tratto di tempo di una griglia;
-- **sul volume dei canali** non lo è: con 128-256 canali per griglia, nella tabella del 01/10 la classe C è ~23% di `D_c` (0,91 su 3,9 miliardi).
+- **sul tempo** la classe C è scarsa (21,3 h, il 2,6% del pretraining): ogni campione virtuale ripete un tratto di tempo di una griglia;
+- **sul volume dei canali** non lo è: con 128-256 canali per griglia, la classe C è il 22,1% di `D_c` (0,72 su 3,25 miliardi).
   Con i montaggi al volo (D6a), due passaggi sullo stesso tratto possono presentare coppie di elettrodi diverse: si ripete il tempo, non l'ingresso.
 
 Conseguenza che vale con qualunque numero: se il tetto si conta sul **tempo di origine**, la classe C può dare al massimo `8 · H_C / (4 · H)` dei
 campioni a E = 4 (`H_C` ore della classe C, `H` ore del pretraining), sommando campioni HD e montaggi virtuali. La scelta fra origine e presentata
-sposta solo questa fetta; quanto vale lo dirà il costruttore. *Da dichiarare:* che per il modello un montaggio virtuale da una griglia equivalga a un
+sposta solo questa fetta: **8 × 21,3 / (4 × 822,9) = 5,2%** dei campioni. *Da dichiarare:* che per il modello un montaggio virtuale da una griglia equivalga a un
 montaggio sparso vero non è misurato. È la premessa del piano, e la lettura del pilot per topologia serve anche a controllarla.
 
 **Il tetto e la durata dell'addestramento.** Il tetto di 8 passaggi è definito a E = 4. Il manifest fissa i pesi, non E: con gli stessi pesi i
@@ -93,10 +93,11 @@ passaggi crescono con E. Nel pilot sulle epoche (E ∈ {1, 2, 4, 8}, v10 §10.3)
   tetto dà al massimo `4 · H_c / (4 · H) = H_c / H` dei campioni, cioè la sua quota naturale: **le quote garantite di A e C non potrebbero superare
   le proporzioni del corpus**, e la garanzia di v10 §2.8 resterebbe vuota.
 
-**Proposta di AG (quote da ricalcolare coi numeri del costruttore):** quote garantite **A 20%, B 75%, C 5%** (A e C circa il doppio della loro quota
-naturale), **dichiarate sulla topologia presentata** come nel piano. **Tetto di 8 passaggi per dataset a E = 4, contato sul tempo di origine**,
+**Proposta di AG:** quote garantite **A 20%, B 75%, C 5%** (A e C circa il doppio della loro quota naturale, 11,0% e 2,6%), **dichiarate sulla
+topologia presentata** come nel piano. **Tetto di 8 passaggi per dataset a E = 4, contato sul tempo di origine**,
 lettura (i). Il campionatore registra per ogni campione sia la classe di origine sia quella presentata, così il pilot si legge in tutti e due i modi.
-Con il tetto la classe C potrebbe non arrivare al 5% (punto 1 della revisione). *Alternative:* quota sull'origine (bozza del 01/10); A 30% con tetto
+Con questi numeri le quote si realizzano esattamente: A 20,0%, B 75,0%, C 5,0%, nessuna
+quota inassegnabile (la classe C al tetto potrebbe dare al massimo il 5,2%). *Alternative:* quota sull'origine (bozza del 01/10); A 30% con tetto
 12; quote naturali (nessuna garanzia).
 
 ## (a-bis) Classe del montaggio e pesi dentro la classe
@@ -118,26 +119,28 @@ stessa classe). Risultato:
 
 | Dataset | Classe | Quota dei campioni | Passaggi |
 |---|---|---|---|
-| NinaPro DB2 | A | 4,5% | 6,2 |
-| NinaPro DB3 (amputati) | A | 1,5% | 8,0 |
-| NinaPro DB4 | A | 1,5% | 8,0 |
-| NinaPro DB6 | A | 3,7% | 7,6 |
-| NinaPro DB7 | A | 2,6% | 8,0 |
-| Camargo 2021 | A | 3,7% | 7,5 |
-| Zhang 2026, anatomical | A | 2,5% | 8,0 |
+| NinaPro DB2 | A | 4,2% | 6,0 |
+| NinaPro DB3 (amputati) | A | 1,3% | 8,0 |
+| NinaPro DB4 | A | 1,8% | 8,0 |
+| NinaPro DB6 | A | 3,5% | 7,3 |
+| NinaPro DB7 | A | 3,2% | 7,9 |
+| Camargo 2021 | A | 3,5% | 7,4 |
+| Zhang 2026, anatomical | A | 2,4% | 8,0 |
 | Zhang 2026, random | B | 2,4% | 8,0 |
-| emg2qwerty | B | 24,5% | 2,9 |
-| emg2pose | B | 26,3% | 2,7 |
-| GRABMyo | B | 4,2% | 8,0 |
-| putEMG | B | 4,2% | 8,0 |
-| NinaPro DB5 (200 Hz) | B | 1,7% | 8,0 |
-| NinaPro DB8 | B | 1,7% | 8,0 |
-| NinaPro DB10 (MDS1) | B | 9,9% | 7,1 |
+| emg2qwerty | B | 25,8% | 2,7 |
+| emg2pose | B | 24,6% | 2,8 |
+| GRABMyo | B | 4,1% | 8,0 |
+| putEMG | B | 4,1% | 8,0 |
+| NinaPro DB5 (200 Hz) | B | 2,1% | 8,0 |
+| NinaPro DB8 | B | 2,1% | 8,0 |
+| NinaPro DB10 (MDS1) | B | 9,7% | 7,1 |
 | CapgMyo-DBa | C | 0,1% | 8,0 |
 | CSL-hdemg | C | 1,2% | 8,0 |
-| Hyser | C | 3,7% | 7,4 |
+| Hyser | C | 3,8% | 7,6 |
 
-Conseguenza da vedere: con il tetto, la classe A al 20% è quasi al massimo che può dare (8 × 110 / 4.044 ≈ 21,7%). Se la quota A deve salire, deve
+**10 unità su 18 sono al tetto di 8 passaggi** e altre 5 fra 7,1 e 7,9; emg2qwerty ed emg2pose, che fanno metà dei campioni, restano sotto i 3
+passaggi, NinaPro DB2 a 6,0.
+Conseguenza: con il tetto, la classe A al 20% è quasi al massimo che può dare (8 × 90,7 / (4 × 822,9) = 22,0%). Se la quota A deve salire, deve
 salire anche il tetto.
 
 ## (b) Ruolo di Kaifosh (D3b)
@@ -219,35 +222,45 @@ CSL-hdemg, DB5.
 
 **Cosa sono.** Un salto è un passo fra due timestamp consecutivi più lungo di 1,5 volte il periodo nominale, cioè almeno un campione mancante. Lo
 calcolano gli ingest di emg2qwerty, emg2pose e Kaifosh: `time_axis` nei sidecar, con il numero dei salti e le posizioni dei primi 10.000. Non sono i
-«buchi» del QC, che sono tratti di valore costante. Registrazioni con salti: emg2pose 1.668, emg2qwerty 76; Kaifosh ne ha, ma è benchmark. DB10 è
+«buchi» del QC, che sono tratti di valore costante. **Numeri del costruttore** (tutte le sessioni, job 59204297):
+
+| Dataset | Sessioni con salti | Salti | Tempo mancante | Salto massimo | Elenco troncato |
+|---|---|---|---|---|---|
+| emg2pose | 1.668 su 25.253 | 222.477 | 3.432 s | 4,1 s | 0 sessioni |
+| emg2qwerty | 76 su 1.135 | 27.017 | 562 s | **73,3 s** | 0 |
+| Kaifosh (benchmark) | 46 su 100 | 5.098 | 63 s | 0,1 s | 0 |
+
+Nessuna posizione di salto fuori dall'array. DB10 è
 già spezzato alle pause dei `ts` in fase di ingest, con la stessa soglia (1,5 volte il passo mediano), e le pause diventano `trials`. Il campionamento
 attuale non spezza i segmenti ai salti: una finestra può attraversarne uno, e il modello vede come contigui due tratti che non lo sono.
 
 Opzioni:
-- (i) **spezzare i segmenti a ogni salto elencato nel sidecar**, come i trial: nessuna finestra attraversa un salto. Si perdono solo le finestre a
-  cavallo (tempo da contare col costruttore). È lo scopo per cui le posizioni sono state salvate (commento nell'ingest di Kaifosh: servono «per non
-  fare finestre a cavallo di un buco») ed è quello che si fa già per DB10. Le sessioni con più di 10.000 salti (`gaps_truncated`) non hanno tutte le
-  posizioni nel sidecar: si escludono o si ricalcolano;
+- (i) **spezzare i segmenti a ogni salto elencato nel sidecar**, come i trial: nessuna finestra attraversa un salto. Si perde il tempo nei tratti
+  piu' corti della finestra: con finestre da 4 s l'**1,2% di emg2pose e lo 0,2% di emg2qwerty** (in tutto 4,1 h della classe B su 710,8; 1 s: 2,4 h;
+  8 s: 6,0 h). È lo scopo per cui le posizioni sono state salvate (commento nell'ingest di Kaifosh: servono «per non
+  fare finestre a cavallo di un buco») ed è quello che si fa già per DB10. Nessuna sessione ha l'elenco troncato (oltre 10.000 salti), quindi le
+  posizioni ci sono tutte;
 - (ii) **spezzare solo i salti lunghi**: serve una soglia nuova, da congelare in `decisioni.md` prima di guardare la distribuzione delle durate;
 - (iii) **ignorarli**: nessuna perdita, ma ingressi con discontinuità nascoste.
 
-**Proposta di AG:** (i), senza soglie nuove. Il costruttore conta già, per sessione e per unità, i salti, il tempo mancante e il salto massimo. Il
-numero da guardare prima della firma è il tempo perso con le finestre a cavallo, più le sessioni troncate. Se si firma (i), costruttore e dataloader
-spezzano i segmenti ai salti (modifica piccola, con test).
+**Proposta di AG:** (i), senza soglie nuove. Il costo e' piccolo (sotto l'1,2% dei due dataset coinvolti), e senza spezzare una finestra di
+emg2qwerty potrebbe incollare due tratti distanti 73 s. Se si firma (i), dataloader e costruttore spezzano i segmenti ai salti (modifica piccola,
+con test; il costruttore gia' conta questo caso nella tabella di sensibilita').
 
 ## Prima della firma (cosa manca)
 
-1. ~~Ingest completo di **emg2pose** e **DB10**~~ (finiti il 01-02/10). **Tabelle da rigenerare col costruttore**, solo pretraining (punto 1 della
-   revisione).
-2. **Buchi** (tratti costanti; il campionamento li esclude): scritti su DB8 (01/10) ed emg2qwerty (189, 02/10); Zhang ne ha 0. **DB10 ed emg2pose
-   in misura**, in sola lettura: un'eventuale scrittura si chiede a parte.
+1. ~~Ingest completo di **emg2pose** e **DB10**~~ (finiti il 01-02/10); ~~tabelle dal costruttore~~ (job 59204297, 02/10).
+2. ~~**Buchi**~~ (tratti costanti; il campionamento li esclude): scritti su DB8 (01/10), emg2qwerty (189, 02/10) ed emg2pose (2.786 in 576 sessioni,
+   02/10, job 59204293); Zhang e DB10 ne hanno 0.
 3. ~~**V2 e conferma del ramo RVQ**~~: DB8, Zhang e DB10 entrano (punto e; DB10 il 02/10, run 59183099).
 4. **Fatti:** 1 (DB8), 2, 10b, 10c, 10d, 5 (NeuroRVQ: dataset del tokenizer, soggetti non dichiarati, licenza dei pesi) e 23 (sovrapposizione fra
    i dataset Meta, non dichiarata) firmati il 02/10/2026. **Resta** il 4, parziale (banda del pretraining del tokenizer non trovata): non blocca D9.
 5. **Dove stanno i dati:** quasi tutto il processato è su `$SCRATCH` (purge a 40 giorni). Un manifest congelato deve puntare a dati che restano.
    Rinfresco fatto il 01/10 (job 59105021); la proposta in `decisioni.md` è un rinfresco **ogni 21 giorni per tutta la ladder** (prossimo il
    22/10): **da firmare con D9**, come regola e non come giro singolo.
-6. D10 (lunghezza della patch) cambia `D_t` e `D_c` ma non la composizione del manifest.
+6. **D10** (patch, contesto, masking): la patch cambia `D_t` e `D_c` ma non la composizione del manifest; il contesto decide quanto tempo resta
+   campionabile: **con 4 s fissi la classe C perde 6,9 h su 21,3 e la sua quota del 5% diventa irraggiungibile** (al tetto darebbe al massimo il
+   3,5%); con il contesto variabile da 1 a 4 s proposto in D10 non si perde nulla (`docs/proposta_d10.md`). D9 e D10 vanno firmati insieme.
 7. **Salti dell'asse dei tempi:** scelta in (f).
 
 **Il manifest come file:** `data/_manifests/manifest-v1.json` con una riga per sessione (dataset, soggetto, sessione, percorso, hash del sidecar,
@@ -256,7 +269,7 @@ ricalcolati dallo stesso script (piano: «Chiuso quando»).
 
 ## Cosa si firma
 
-- [ ] (a) quote garantite per classe (numeri dal costruttore), dichiarate sulla topologia presentata; tetto di 8 passaggi per dataset a E = 4,
+- [ ] (a) quote garantite per classe A 20%, B 75%, C 5% (realizzate esattamente con i dati veri), dichiarate sulla topologia presentata; tetto di 8 passaggi per dataset a E = 4,
       contato sul tempo di origine, lettura (i) per E = 8 e 2D
 - [ ] (a-bis) classi del montaggio come sopra (amputati di DB8/DB10 e Zhang random in B: interpretazioni di AG); pesi ∝ ore^0,5 dentro la classe
 - [ ] (b) Kaifosh tutto benchmark, con la sovrapposizione fra i dataset Meta dichiarata
@@ -266,6 +279,7 @@ ricalcolati dallo stesso script (piano: «Chiuso quando»).
 - [ ] (f) salti dell'asse dei tempi: segmenti spezzati a ogni salto del sidecar
 - [ ] rinfresco di `$SCRATCH` ogni 21 giorni per tutta la ladder
 
-Rigenerare i numeri del 01/10 (da sostituire con l'uscita di `scripts/slurm/build_manifest.sbatch`):
+Rigenerare i numeri (CPU seriale, 0 GPU-ora, ~16 minuti; uscita in `$WORK/wearusfm_runs/results/passo4/`, fuori dal repo):
 
-    python3 scripts/manifest_table.py --extra emg2pose=400 --extra ninapro_db10=56 --without-kaifosh --quota A=0.2,B=0.75,C=0.05 --alpha 0.5 --max-passes 8
+    sbatch scripts/slurm/build_manifest.sbatch                    # bozza: split di splits/draft, parametri di questa proposta
+    sbatch scripts/slurm/build_manifest.sbatch --version manifest-v1 --splits <split firmati>   # SOLO dopo la firma

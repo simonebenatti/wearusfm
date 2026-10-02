@@ -1,10 +1,10 @@
 # Proposta — D10: patch, contesto, masking (passo 6): BOZZA da firmare prima di scrivere il modello
 
-**Stato: bozza di AG del 02/10/2026, NON firmata.** D10 va chiusa al passo 6, «prima di scrivere il modello» (piano, §9), e il codice del passo 6
+**Stato: bozza di AG del 02/10/2026, aggiornata la sera del 02/10 coi numeri del costruttore (job 59204297) e col generatore di maschere, NON
+firmata.** D10 va chiusa al passo 6, «prima di scrivere il modello» (piano, §9), e il codice del passo 6
 va finito entro l'01/11. Riferimenti: piano operativo §Passo 6 (proposta di partenza); v10 §4.1-4.2 (front-end in ms), §6.3 (ancore e ancora RVQ),
 §6.4 (masking multiscala), §10.3 (`D_t`); D2 (parametri provvisori del passo 0: contesto 4 s, patch 25 ms, «non vincolanti»); gate D8 (superato
-con patch 25 ms). **Le parti segnate «[numeri dal costruttore]» aspettano la tabella del job 59180449** (tempo perso con finestre da 1, 2, 4 e 8 s,
-per dataset): finché non c'è, quelle proposte sono condizionate.
+con patch 25 ms); bozza del manifest D9 (job 59204297: tempo non campionabile per dataset con finestre da 1, 2, 4 e 8 s).
 
 **Proposta di partenza del piano** (passo 6): «patch 25 ms (coerente con i 3,6·10⁸ time-patch per epoca della v10), contesto 4 s, scale di masking
 di v10 §6.4; se l'ancora RVQ sopravvive, una quota di slab ≥ 200 ms su tutti i canali, allineati alla griglia del tokenizer». L'ancora RVQ è
@@ -57,7 +57,21 @@ passo 0 sono già misurati lì: cambiarla costerebbe un nuovo gate e un nuovo co
 - **Tratti contigui più corti della finestra.** Una finestra non può attraversare il confine di una prova (né, se si firma D9 §f, un salto dell'asse
   dei tempi): il tempo in tratti più corti del contesto non si campiona mai. **Verificato:** CapgMyo ha prove da 1 s esatto (1.440 prove, 0,4 h,
   `WINDOW_SAMPLES = 1000` nell'ingest): con un contesto fisso di 2 s o più, **CapgMyo sparisce tutto** (classe C). DB10 ha 18 prove da 1 campione
-  (job 59180438): trascurabili. Gli altri dataset: **[numeri dal costruttore]**.
+  (job 59180438): trascurabili. **Gli altri dataset** (costruttore, job 59204297; solo pretraining; «a → b» = solo prove → prove spezzate anche ai
+  salti dell'asse dei tempi, D9 §f; i dataset non elencati non perdono nulla a nessuna lunghezza, compresa tutta la classe A):
+
+  | Dataset | Ore pretraining | < 1 s | < 2 s | < 4 s | < 8 s |
+  |---|---|---|---|---|---|
+  | CapgMyo-DBa (C) | 0,3 | 0% | 100% | 100% | 100% |
+  | CSL-hdemg (C) | 4,8 | 0% | 0% | **100%** | 100% |
+  | Hyser (C) | 16,2 | 0% | 11,1% | 11,1% | 25,9% |
+  | GRABMyo (B) | 16,9 | 0% | 0% | 0% | 100% |
+  | emg2pose (B) | 287,8 | 0% → 0,7% | 0% → 0,9% | 0% → 1,2% | 0% → 1,7% |
+  | emg2qwerty (B) | 317,1 | 0% → 0,1% | 0% → 0,1% | 0% → 0,2% | 0% → 0,4% |
+
+  **Con un contesto fisso di 4 s la classe C perde 6,9 h su 21,3** (CSL-hdemg e CapgMyo per intero, Hyser l'11%): le restano 14,4 h, e al tetto di
+  8 passaggi potrebbe dare al massimo il **3,5%** dei campioni, quindi **la quota C del 5% proposta in D9 non sarebbe raggiungibile**. Con 2 s si
+  perdono 2,1 h, con 1 s nulla.
 - **Ancora RVQ:** un target esiste solo per finestre da 200 ms interamente dentro una regione mascherata (v10 §6.3): nessun vincolo ulteriore sul
   contesto.
 - **Costo:** lineare nel contesto per i token, quadratico solo nell'attenzione temporale del backbone (160 passi a 4 s: piccolo). Il packing scelto
@@ -66,7 +80,8 @@ passo 0 sono già misurati lì: cambiarla costerebbe un nuovo gate e un nuovo co
   visto solo finestre da 4 s le vedrà fuori distribuzione.
 
 **Opzioni:**
-- (i) **fisso 4 s** (piano e D2): semplice; perde per intero i dataset con tratti più corti (CapgMyo di sicuro);
+- (i) **fisso 4 s** (piano e D2): semplice; perde CapgMyo e CSL-hdemg per intero e l'11% di Hyser (6,9 h della classe C su 21,3), e rende
+  irraggiungibile la quota C di D9;
 - (ii) **variabile, fino a 4 s**: la finestra è lunga 4 s dove il tratto lo permette, più corta dove il tratto è più corto, **mai sotto una
   lunghezza minima**; il packing (D6b) concatena campioni senza padding, ma è stato misurato solo a contesto fisso; le scale di masking si tagliano sulla finestra (una maschera
   lunga non supera metà finestra). Costo: il conto del ritmo e il proxy del passo 0 vanno ripetuti con lunghezze variabili; la contabilità di `D_t`
@@ -76,8 +91,9 @@ passo 0 sono già misurati lì: cambiarla costerebbe un nuovo gate e un nuovo co
 **Proposta di AG: (ii), con massimo 4 s e minimo 1 s.** La lunghezza minima la fisso adesso, prima di vedere la tabella del costruttore, con un
 argomento che non dipende dai dati: una finestra deve contenere almeno una maschera della scala lunga (500 ms) con altrettanto contesto visibile,
 cioè 1 s = 40 patch = 5 finestre del tokenizer. *Da dichiarare:* che CapgMyo abbia prove da 1 s esatto rende la soglia comoda per CapgMyo; il motivo
-della scelta resta il masking, e una soglia diversa andrebbe argomentata allo stesso modo. Se il costruttore mostra che a 4 s fisso si perde poco
-ovunque tranne CapgMyo, l'alternativa onesta è (i) più l'esclusione dichiarata di CapgMyo dal pretraining: la scelta è tua.
+della scelta resta il masking, e una soglia diversa andrebbe argomentata allo stesso modo. **I numeri del costruttore confermano (ii):** con 1 s
+di minimo non si perde nulla in nessun dataset (salvo i salti, se si spezzano: 2,4 h della classe B), mentre con 4 s fissi si perde un terzo
+della classe C. L'alternativa (i) richiederebbe di abbassare la quota C di D9 o di alzarne il tetto: la scelta è tua.
 
 ## (3) Masking
 
@@ -106,10 +122,18 @@ allineati alla griglia del tokenizer**, e l'ancora RVQ attiva solo lì (v10 §6.
   «non collassa»).
   Non propongo un numero dalla letteratura senza averlo verificato.
 
+**Generatore di maschere scritto** (`src/wearusfm/training/masking.py`, 02/10; dettagli in `docs/decisioni.md`, punti 26-29). Due cose emerse
+scrivendolo, da decidere con la firma:
+- **le quote della tabella sono attese, non vincoli per campione.** Uno slab copre tutti i canali e da solo puo' superare la sua quota (uno slab lungo
+  da 24 patch e' il 15% di una finestra da 4 s). Il generatore sceglie il tipo di maschera con probabilita' proporzionale a quota / dimensione
+  attesa: su 50 campioni per montaggio (budget 0,5) nasconde 0,50-0,55 e realizza corta 15-16%, media 12-14%, lunga 8-11%, slab 17-22%, spaziale
+  42-43% dei token nascosti;
+- **maschera temporale su un canale solo** (interpretazione di AG: la bozza non diceva su quali canali): su una griglia densa e' un compito facile,
+  perche' i vicini allo stesso istante sono visibili. L'alternativa e' l'intervallo su un gruppo spaziale (arco, rettangolo), come i «tubi» di V-JEPA.
+
 ## Cosa misurare prima della firma, e quanto costa
 
-1. **Tabella del costruttore** (job 59180449, in corso; CPU, 0 GPU-ora): tempo perso per dataset con finestre da 1, 2, 4 e 8 s. Decide fra (i) e
-   (ii) del contesto.
+1. ~~**Tabella del costruttore**~~ (job 59204297, 02/10, CPU, 0 GPU-ora): fatta, sopra; sostiene (ii).
 2. **Se si firma il contesto variabile:** ripetere il conto del ritmo e il proxy del passo 0 con lunghezze variabili (dataloader su CPU; proxy su
    GPU in `boost_qos_dbg`, stima < 1 GPU-ora, da confermare col costo prima del lancio). Budget del passo 6: ≤ 100 GPU-ora (piano), usato 0.
 3. **Se la patch cambia da 25 ms:** rifare il gate D8 (CPU, 0 GPU-ora) è una tua decisione.
@@ -118,7 +142,8 @@ allineati alla griglia del tokenizer**, e l'ancora RVQ attiva solo lì (v10 §6.
 ## Cosa si firma
 
 - [ ] (1) patch 25 ms
-- [ ] (2) contesto variabile, massimo 4 s, minimo 1 s, finestre allineate a 200 ms dall'inizio della prova — oppure fisso 4 s con CapgMyo escluso
-      e dichiarato
-- [ ] (3) masking: scale e quote della tabella (60% temporale con tre scale, 40% spaziale), metà del temporale medio-lungo come slab RVQ allineati
-      sui dataset con l'ancora accesa, masking spaziale al più metà dei canali validi, frazione mascherata con regola congelata prima del sanity JEPA
+- [ ] (2) contesto variabile, massimo 4 s, minimo 1 s, finestre allineate a 200 ms dall'inizio della prova — oppure fisso 4 s, perdendo un terzo
+      della classe C e abbassando la quota C di D9
+- [ ] (3) masking: scale e quote della tabella come quote **attese** (60% temporale con tre scale, 40% spaziale), metà del temporale medio-lungo come
+      slab RVQ allineati sui dataset con l'ancora accesa, masking spaziale al più metà dei canali validi, frazione mascherata con regola congelata
+      prima del sanity JEPA; maschera temporale su **un canale** oppure su **un gruppo spaziale** (da scegliere)
