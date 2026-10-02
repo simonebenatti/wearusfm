@@ -108,3 +108,19 @@ def test_wrong_keys_are_rejected_and_flops_are_counted():
         LocalEncoder(DIM, HEADS, 1)(_x(15), g)
     f = LocalEncoder.flops_per_layer(16, 5, 160, 384)
     assert f == 2 * (16 * 160 * 384 * 384 * 4 + 16 * 160 * 5 * 384 * 2 + 16 * 160 * 384 * 1536 * 2)
+
+
+def test_hidden_tokens_are_not_keys_for_the_other_channels():
+    m = montage_to_dict(emg2pose.build_montage_metadata("u1", "s", "left"), [True] * 16)
+    enc, x = _enc(), _x(16)
+    g = sets_to_tensors(_sets(m))
+    vis = torch.ones(16, P, dtype=torch.bool)
+    vis[2] = False  # canale nascosto (masking spaziale)
+    vis[:, 1] = False  # istante nascosto su tutti i canali
+    out = enc(x, g, vis)
+    x2 = x.clone()
+    x2[2] = 10 * torch.randn(P, DIM)
+    x2[:, 1] = 10 * torch.randn(16, DIM)
+    out2 = enc(x2, g, vis)
+    keep = vis.clone()
+    assert torch.allclose(out2[keep], out[keep], atol=1e-5)  # i token visibili non vedono nulla del contenuto nascosto

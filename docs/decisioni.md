@@ -1242,3 +1242,23 @@ diventano padding (`patch_valid`, `time_valid`). **Scelte da confermare:**
 **Non ancora fatto:** ancore spaziali a peso ridotto (covarianza a lag zero, coerenza in modulo: v10 §6.3), che sono a coppie di canali.
 **Test d'insieme dal segnale:** bracciale Meta a 2 kHz e Myo a 200 Hz nello stesso batch, front-end vero, tutta la catena fino alle perdite delle
 ancore, gradiente fino ai coefficienti del front-end; DB5 senza finestre RVQ (ancora spenta).
+
+**Correzione al punto 20 (02/10/2026, trovata scrivendo il ciclo JEPA):** nel commit 09b34b5 una finestra RVQ aveva target se era nascosta per
+quel canale, anche solo per masking di canale. v10 §6.3 lo esclude («solo intervalli temporali mascherati su tutti i canali, mai masking di
+canale»: con i vicini visibili allo stesso istante la fase si ricostruisce). Ora il target RVQ c'e' solo sugli **slab**: finestra nascosta su tutti
+i canali validi del campione (`anchor_targets.rvq_target_windows` e `training/jepa.py`, con test). Nessun run l'aveva usato.
+
+**Modello intero e ciclo JEPA** (`src/wearusfm/model/fm.py`, `src/wearusfm/training/jepa.py`; 02/10/2026, proposta di AG). **Scelte da
+confermare:**
+22. **nessuna fuga del nascosto verso lo studente**, chiusa in tre punti: campioni grezzi delle patch nascoste azzerati prima del front-end (che usa
+    100 ms di contesto per lato: senza, una patch visibile vedeva fino a 100 ms del segnale nascosto); nell'encoder locale un token nascosto non e'
+    chiave per gli altri canali (prima lo era: corretto qui); Perceiver e backbone gia' lo escludevano. Test: cambiare il segnale dentro le regioni
+    nascoste non cambia le predizioni dello studente. Ai bordi di una regione nascosta lo studente vede zeri, come ai bordi del segnale;
+23. teacher = copia EMA dell'intero studente, stop-gradient, vede tutto; target (a) o (b) di D11 come parametro **senza default**; target
+    normalizzati con LayerNorm senza parametri; perdita = errore quadratico medio (alternativa: errore assoluto, come V-JEPA); query = tutti i token
+    nascosti e validi;
+24. perdita totale = JEPA + `anchor_weight` x (RMS + bande + inviluppo + RVQ); `anchor_weight` (v10: 0,1-0,3) e momento EMA **senza default**:
+    li fissa la configurazione del run (D14 per lo schedule);
+25. rango effettivo (exp dell'entropia dei valori singolari, v10 §7.1 punto 3) come diagnostica, accanto a quella del collasso da query.
+Del passo 6 restano: generatore di maschere (D10), dataloader vero, collegamento del tokenizer RVQ su Leonardo, ancore spaziali, soglie delle
+diagnostiche (da congelare qui prima del sanity), sanity JEPA su un dataset omogeneo.

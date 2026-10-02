@@ -76,7 +76,9 @@ class LocalEncoderLayer(nn.Module):
         hidden = int(dim * mlp_ratio)
         self.mlp = nn.Sequential(nn.Linear(dim, hidden), nn.GELU(), nn.Linear(hidden, dim))
 
-    def forward(self, x: torch.Tensor, g: dict[str, torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, g: dict[str, torch.Tensor], visible: torch.Tensor | None = None) -> torch.Tensor:
+        """visible: (C, P) bool o None. Un token nascosto non e' chiave per nessun altro canale (lo studente JEPA non deve vederlo); il canale
+        stesso resta sempre ammesso (la sua uscita, se nascosto, non la usa nessuno: il Perceiver lo esclude)."""
         c, p, d = x.shape
         idx = g["index"]
         empty = idx < 0
@@ -88,6 +90,10 @@ class LocalEncoderLayer(nn.Module):
         scores = torch.einsum("cphd,ckphd->ckph", q, k_g) / math.sqrt(self.head_dim)
         scores = scores + self.bias(g)[:, :, None, :]
         scores = scores.masked_fill(empty[:, :, None, None], float("-inf"))
+        if visible is not None:
+            hidden_key = ~visible[idx.clamp(min=0)]  # (C, K, P)
+            hidden_key[:, 0] = False  # se stesso sempre ammesso
+            scores = scores.masked_fill(hidden_key[..., None], float("-inf"))
         attn = torch.softmax(scores, dim=1)  # la colonna 0 (il canale stesso) non e' mai vuota
         out = torch.einsum("ckph,ckphd->cphd", attn, v_g).reshape(c, p, d)
         x = x + self.out(out)
@@ -99,11 +105,11 @@ class LocalEncoder(nn.Module):
         super().__init__()
         self.layers = nn.ModuleList([LocalEncoderLayer(dim, n_heads, **layer_kwargs) for _ in range(n_layers)])
 
-    def forward(self, x: torch.Tensor, g: dict[str, torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, g: dict[str, torch.Tensor], visible: torch.Tensor | None = None) -> torch.Tensor:
         if g["index"].shape[0] != x.shape[0] or (g["index"][:, 0] != torch.arange(x.shape[0], device=x.device)).any():
             raise ValueError("chiavi incoerenti con i token: la colonna 0 deve essere il canale stesso")
         for layer in self.layers:
-            x = layer(x, g)
+            x = layer(x, g, visible)
         return x
 
     @staticmethod

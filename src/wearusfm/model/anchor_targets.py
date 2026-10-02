@@ -87,12 +87,14 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
 
 
 def rvq_target_windows(visible: np.ndarray, patch_valid: np.ndarray, rvq_on: np.ndarray, *, patch_ms: float = 25.0) -> np.ndarray:
-    """(C, W) True dove la finestra w del tokenizer (patch [8w, 8w+8) a 25 ms) e' tutta valida e tutta nascosta e il canale ha l'ancora accesa.
-    La griglia e' quella della finestra: il dataloader fa cominciare le finestre su multipli di 200 ms dall'inizio della prova (proposta D10)."""
+    """Per UN campione (C, P): (C, W) True dove la finestra w del tokenizer (patch [8w, 8w+8) a 25 ms) e' uno **slab**, cioe' nascosta e valida
+    su TUTTI i canali del campione, e il canale ha l'ancora accesa. v10 §6.3: l'ancora RVQ vale solo sugli intervalli nascosti su tutti i canali,
+    **mai sul masking di canale** (con i vicini visibili allo stesso istante la fase si ricostruirebbe dal ritardo di propagazione). La griglia e'
+    quella della finestra: il dataloader fa cominciare le finestre su multipli di 200 ms dall'inizio della prova (proposta D10)."""
     per = int(round(RVQ_TOKEN_MS / patch_ms))
     if abs(per * patch_ms - RVQ_TOKEN_MS) > 1e-9:
         raise ValueError(f"la patch da {patch_ms} ms non divide i {RVQ_TOKEN_MS} ms del tokenizer")
     c, p = visible.shape
     w = p // per
-    hidden = (~visible[:, : w * per] & patch_valid[:, : w * per]).reshape(c, w, per).all(axis=-1)
-    return hidden & np.asarray(rvq_on, dtype=bool)[:, None]
+    slab = (~visible[:, : w * per] & patch_valid[:, : w * per]).all(axis=0).reshape(w, per).all(axis=-1)  # (W,)
+    return slab[None, :] & np.asarray(rvq_on, dtype=bool)[:, None]

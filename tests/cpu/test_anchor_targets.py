@@ -52,3 +52,9 @@ def test_rvq_windows_only_where_a_whole_grid_window_is_hidden():
     assert not A.rvq_target_windows(vis, valid, on).any()
     with pytest.raises(ValueError, match="non divide"):
         A.rvq_target_windows(vis, valid, on, patch_ms=30.0)
+
+
+def test_rvq_never_on_channel_masking():
+    vis = np.ones((3, 16), dtype=bool)
+    vis[1] = False  # un canale nascosto per intero, gli altri visibili: masking di canale
+    assert not A.rvq_target_windows(vis, np.ones((3, 16), dtype=bool), np.ones(3, dtype=bool)).any()
