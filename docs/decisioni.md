@@ -1097,9 +1097,11 @@ Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello
    fuori) **escono dal pretraining** e restano per la valutazione, come gli utenti tenuti fuori: il benchmark ufficiale resta pulito. Lo split
    diventa per sessione oltre che per soggetto (`test_sessions` negli split).
 2. **emg2qwerty: si scrivono nei sidecar i 189 tratti costanti** misurati dal job 59099080 (`qc_relative_check --only emg2qwerty --apply`, copia di
-   sicurezza, dati intatti).
+   sicurezza, dati intatti). **Fatto** (job 59133395, 1 h 42 min, exit 0): 189 tratti scritti in 14 sessioni, 312,5 canale-secondi
+   (0,0008% del tempo valido), 0 canali piatti nuovi; report copiato con sha256 uguale.
 3. **DB10 ed emg2pose: misura dei tratti costanti**, sola lettura (`qc_relative_check --only ninapro_db10 --only emg2pose`); una scrittura, se serve,
-   si chiede a parte.
+   si chiede a parte. Primo tentativo (job 59133397) in **TIMEOUT** a 2 h senza finire emg2pose (25.253 sessioni, 92 GB):
+   nessun report, nulla scritto (sola lettura). Rilancio separato: DB10 da solo; emg2pose da solo con 4 h (massimo della coda seriale).
 
 ---
 
