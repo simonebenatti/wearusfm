@@ -35,10 +35,12 @@ def session_row(path: Path, dataset: str, subject: str, session: str, splits: di
     shape = np.load(path / "data_int16.npy", mmap_mode="r").shape
     if len(shape) == 3:  # (prove, T, C)
         n_samples, n_channels, n_segments = shape[0] * shape[1], shape[2], shape[0]
+        trials = [{"offset": k * shape[1], "n_samples": shape[1]} for k in range(shape[0])]
     else:
         n_samples, n_channels = shape
         trials = meta.get("trials") or []
-        n_segments = len(trials) if trials and all("offset" in t for t in trials) else 1
+        trials = trials if trials and all("offset" in t for t in trials) else []
+        n_segments = len(trials) or 1
     valid = qc_valid_from_metadata(meta, n_channels)
     excluded = sum(int(r["n_samples"]) for r in meta.get("constant_runs") or [] if valid[int(r["channel"])])
     split, nested = M.split_of(splits, dataset, subject, session)
@@ -49,17 +51,26 @@ def session_row(path: Path, dataset: str, subject: str, session: str, splits: di
     ta = meta.get("time_axis") or {}
     n_gaps = int(ta.get("n_gaps") or 0)
     missing = max(0.0, float(ta["duration_s"]) - (int(n_samples) - 1) / fs) if n_gaps and "duration_s" in ta else 0.0
+    gap_idx = [int(g["index"]) for g in ta.get("gaps") or []]
+    segs = M.segment_lengths(n_samples, trials)
+    segs_gaps = M.segment_lengths(n_samples, trials, gap_idx)
     return M.SessionRow(dataset, subject, session, split, nested, int(n_samples), fs, int(n_channels), int(valid.sum()),
                         excluded, int(n_segments), unit, M.CLASS_BY_UNIT[unit], M.rvq_status(dataset), hashlib.sha256(raw).hexdigest(),
                         n_time_gaps=n_gaps, missing_time_s=missing, max_gap_s=float(ta.get("dt_max_s") or 0.0) if n_gaps else 0.0,
-                        gaps_truncated=bool(ta.get("gaps_truncated")))
+                        gaps_truncated=bool(ta.get("gaps_truncated")), gaps_out_of_range=sum(1 for i in gap_idx if not 0 < i < n_samples),
+                        short_segments_s=M.short_time_s(segs, fs), short_segments_gaps_s=M.short_time_s(segs_gaps, fs),
+                        outside_trials_s=max(0, int(n_samples) - sum(segs)) / fs)
 
 
 def summarize(rows: list[M.SessionRow], alloc: dict, patch_s: float) -> dict:
     units: dict[str, dict] = {}
     for r in rows:
         u = units.setdefault(r.unit, {"class": r.quota_class, "rvq": r.rvq, "sessions": 0, "subjects": set(), "hours": {}, "d_t": 0.0, "d_c": 0.0,
-                                      "time_gaps": {"sessions": 0, "gaps": 0, "missing_s": 0.0, "max_gap_s": 0.0, "truncated_sessions": 0}})
+                                      "time_gaps": {"sessions": 0, "gaps": 0, "missing_s": 0.0, "max_gap_s": 0.0, "truncated_sessions": 0,
+                                                    "out_of_range": 0},
+                                      "short_segments": {"windows_s": list(M.WINDOWS_S), "trials_s": [0.0] * len(M.WINDOWS_S),
+                                                         "trials_and_gaps_s": [0.0] * len(M.WINDOWS_S), "outside_trials_s": 0.0,
+                                                         "pretraining_s": 0.0}})
         u["sessions"] += 1
         if r.n_time_gaps:
             g = u["time_gaps"]
@@ -68,11 +79,17 @@ def summarize(rows: list[M.SessionRow], alloc: dict, patch_s: float) -> dict:
             g["missing_s"] += r.missing_time_s
             g["max_gap_s"] = max(g["max_gap_s"], r.max_gap_s)
             g["truncated_sessions"] += int(r.gaps_truncated)
+            g["out_of_range"] += r.gaps_out_of_range
         u["subjects"].add(r.subject)
         u["hours"][r.split] = u["hours"].get(r.split, 0.0) + r.hours
         if r.split == "pretraining":
             u["d_t"] += r.d_t(patch_s)
             u["d_c"] += r.d_c(patch_s)
+            s = u["short_segments"]  # solo pretraining: e' il tempo che il campionamento perderebbe
+            s["trials_s"] = [a + x for a, x in zip(s["trials_s"], r.short_segments_s)]
+            s["trials_and_gaps_s"] = [a + x for a, x in zip(s["trials_and_gaps_s"], r.short_segments_gaps_s)]
+            s["outside_trials_s"] += r.outside_trials_s
+            s["pretraining_s"] += r.hours * 3600
     for k, u in units.items():
         u["subjects"] = len(u["subjects"])
         share, passes = alloc["per_unit"].get(k, (0.0, 0.0))
@@ -158,12 +175,24 @@ def main(argv=None) -> int:
     t = summary["totals"]
     if summary["subjects_without_sessions"] or summary["test_sessions_not_found"]:
         print(f"ATTENZIONE: soggetti senza sessioni {summary['subjects_without_sessions']}; sessioni di test non trovate {summary['test_sessions_not_found']}")
+    print("\nTempo di pretraining in tratti piu' corti della finestra (non campionabile), solo prove -> prove spezzate anche ai salti dell'asse dei tempi"
+          " (tabella di sensibilita' per D9 §f e per il contesto di D10, nessuna soglia):")
+    print("| Unita' | Ore pretraining | " + " | ".join(f"< {w:g} s" for w in M.WINDOWS_S) + " | Fuori dalle prove |")
+    print("|---|---|" + "---|" * len(M.WINDOWS_S) + "---|")
+    for k, u in sorted(summary["units"].items(), key=lambda t: (t[1]["class"], t[0])):
+        s = u["short_segments"]
+        if s["pretraining_s"] <= 0:
+            continue
+        pct = lambda x: f"{100 * x / s['pretraining_s']:.2f}%"  # noqa: E731
+        cells = [pct(a) if abs(a - g) < 1e-9 else f"{pct(a)} -> {pct(g)}" for a, g in zip(s["trials_s"], s["trials_and_gaps_s"])]
+        print(f"| {k} | {s['pretraining_s'] / 3600:.1f} | " + " | ".join(cells) + f" | {pct(s['outside_trials_s'])} |")
     print("\nSalti dell'asse dei tempi (non spezzano i segmenti):")
     for k, u in sorted(summary["units"].items()):
         g = u["time_gaps"]
         if g["sessions"]:
             print(f"- {k}: {g['sessions']} sessioni, {g['gaps']} salti, {g['missing_s']:.1f} s mancanti in tutto, salto massimo {g['max_gap_s']:.3f} s"
-                  f"{', elenco troncato in ' + str(g['truncated_sessions']) + ' sessioni' if g['truncated_sessions'] else ''}")
+                  f"{', elenco troncato in ' + str(g['truncated_sessions']) + ' sessioni' if g['truncated_sessions'] else ''}"
+                  f"{', ATTENZIONE: ' + str(g['out_of_range']) + ' posizioni fuori dall array' if g['out_of_range'] else ''}")
     print(f"\nPretraining: {t['pretraining_sessions']} sessioni, {t['pretraining_hours']:.1f} h, D_t {t['d_t'] / 1e6:.1f} M, D_c {t['d_c'] / 1e9:.2f} G; "
           f"somma dei pesi {t['weight_sum']:.4f}; quota non assegnabile {t['unused_quota']}")
     return 0

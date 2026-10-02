@@ -8,10 +8,11 @@ buchi) / patch, dopo il QC e prima di ogni augmentation.
 
 from __future__ import annotations
 
+import bisect
 import hashlib
 import json
 from collections.abc import Iterable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 # Classi della bozza D9 (v10 §2.8: la classe e' del montaggio). Unita' di allocazione = dataset, o dataset:modo per Zhang.
 CLASS_BY_UNIT = {
@@ -25,6 +26,8 @@ CLASS_BY_UNIT = {
 RVQ_ON = {"camargo2021", "capgmyo", "emg2pose", "emg2qwerty", "grabmyo", "hyser", "kaifosh", "ninapro_db2", "ninapro_db3", "ninapro_db4", "ninapro_db6",
           "ninapro_db7", "ninapro_db8", "zhang2026"}  # DB8 (run 59104658) e Zhang (run 59108493): V2 e ramo 0 confermati
 RVQ_OFF = {"putemg", "csl_hdemg", "ninapro_db5"}
+# Finestre (s) per la tabella di sensibilita' del tempo inutilizzabile (bozza D9 §f, contesto di D10): NON e' una soglia, nessuna scelta dipende da qui
+WINDOWS_S = (1.0, 2.0, 4.0, 8.0)
 
 
 def unit_of(dataset: str, session: str) -> str:
@@ -55,11 +58,16 @@ class SessionRow:
     rvq: str
     sidecar_sha256: str
     weight: float = 0.0
-    # salti dell'asse dei tempi (dal campo time_axis del sidecar, dove c'e'): NON spezzano i segmenti, una finestra puo' attraversarli
+    # salti dell'asse dei tempi (dal campo time_axis del sidecar, dove c'e'): oggi NON spezzano i segmenti, una finestra puo' attraversarli
     n_time_gaps: int = 0
     missing_time_s: float = 0.0  # durata coperta dai timestamp meno durata dei campioni
     max_gap_s: float = 0.0
     gaps_truncated: bool = False  # il sidecar elenca al piu' 10.000 salti
+    gaps_out_of_range: int = 0  # posizioni di salti fuori dall'array (incoerenza fra sidecar e dati: va guardata)
+    # tempo (s) in tratti contigui piu' corti di ciascuna finestra di WINDOWS_S: solo prove, e prove spezzate anche ai salti elencati
+    short_segments_s: list[float] = field(default_factory=list)
+    short_segments_gaps_s: list[float] = field(default_factory=list)
+    outside_trials_s: float = 0.0  # tempo dell'array fuori da ogni prova (contato in D_t, ma non dentro un tratto)
 
     @property
     def hours(self) -> float:
@@ -70,6 +78,25 @@ class SessionRow:
 
     def d_c(self, patch_s: float) -> float:
         return (self.n_samples * self.n_valid - self.excluded_channel_samples) / self.fs_hz / patch_s
+
+
+def segment_lengths(n_samples: int, trials: list[dict] | None, gap_indices: Iterable[int] = ()) -> list[int]:
+    """Lunghezze (campioni) dei tratti contigui: le prove (`offset`, `n_samples`) se ci sono, altrimenti l'array intero; ogni tratto si spezza agli
+    indici dei salti (indice del primo campione dopo il salto) che cadono strettamente al suo interno."""
+    spans = [(int(t["offset"]), int(t["offset"]) + int(t["n_samples"])) for t in trials] if trials else [(0, int(n_samples))]
+    cuts = sorted(set(int(i) for i in gap_indices))
+    out = []
+    for a, b in spans:
+        inner = cuts[bisect.bisect_right(cuts, a):bisect.bisect_left(cuts, b)]
+        edges = [a, *inner, b]
+        out.extend(e2 - e1 for e1, e2 in zip(edges, edges[1:]))
+    return out
+
+
+def short_time_s(lengths: Iterable[int], fs_hz: float, windows_s: Iterable[float] = WINDOWS_S) -> list[float]:
+    """Per ogni finestra: secondi contenuti in tratti piu' corti della finestra (una finestra non ci sta, quel tempo non si campiona mai)."""
+    lens = [int(n) for n in lengths]
+    return [sum(n for n in lens if n < w * fs_hz) / fs_hz for w in windows_s]
 
 
 def check_splits(splits: dict) -> None:

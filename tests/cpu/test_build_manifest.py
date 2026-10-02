@@ -40,7 +40,8 @@ def _tree(tmp_path):
     # emg2qwerty (classe B) e Zhang (anatomical A, random B) e Kaifosh (benchmark)
     # 72000 campioni a 2 kHz = 36 s di campioni, ma i timestamp coprono 36,5 s: 0,5 s mancanti in 2 salti
     _session(b / "emg2qwerty" / "u1" / "sessA", 72000, 2, 2000.0,
-             time_axis={"n_gaps": 2, "duration_s": 71999 / 2000.0 + 0.5, "dt_max_s": 0.4005, "gaps_truncated": False})
+             time_axis={"n_gaps": 2, "duration_s": 71999 / 2000.0 + 0.5, "dt_max_s": 0.4005, "gaps_truncated": False,
+                        "gaps": [{"index": 1000, "dt_s": 0.1}, {"index": 70000, "dt_s": 0.4005}]})  # tratti di 0,5 s, 34,5 s e 1 s
     _session(b / "zhang2026" / "HG_1" / "anatomical", 4000, 8, 2000.0)
     _session(b / "zhang2026" / "HG_1" / "random", 4000, 8, 2000.0)
     _session(b / "kaifosh" / "u000" / "dataset000", 2000, 16, 2000.0)
@@ -158,5 +159,44 @@ def test_time_axis_gaps_are_counted_per_session_and_unit(tmp_path):
     r = next(x for x in rows if x.dataset == "emg2qwerty")
     assert r.n_time_gaps == 2 and r.missing_time_s == pytest.approx(0.5) and r.max_gap_s == pytest.approx(0.4005)
     g = summary["units"]["emg2qwerty"]["time_gaps"]
-    assert g == {"sessions": 1, "gaps": 2, "missing_s": pytest.approx(0.5), "max_gap_s": pytest.approx(0.4005), "truncated_sessions": 0}
+    assert g == {"sessions": 1, "gaps": 2, "missing_s": pytest.approx(0.5), "max_gap_s": pytest.approx(0.4005), "truncated_sessions": 0,
+                 "out_of_range": 0}
     assert summary["units"]["ninapro_db2"]["time_gaps"]["sessions"] == 0
+
+
+def test_segment_lengths_split_at_gaps_inside_trials_only():
+    trials = [{"offset": 0, "n_samples": 100}, {"offset": 100, "n_samples": 50}]
+    assert M.segment_lengths(150, trials) == [100, 50]
+    assert M.segment_lengths(150, trials, [30, 100, 120, 999]) == [30, 70, 20, 30]  # 100 e' gia' un bordo, 999 e' fuori
+    assert M.segment_lengths(150, [], [30, 30]) == [30, 120] and M.segment_lengths(150, None) == [150]
+    assert M.short_time_s([30, 70, 20, 30], 10.0, (3.0, 7.5)) == [pytest.approx(2.0), pytest.approx(15.0)]  # solo 20 < 30; 30 ci sta
+
+
+def test_short_segments_per_session_and_unit(tmp_path):
+    roots, splits = _tree(tmp_path)
+    rows, summary = BM.build(roots, splits, {"A": 0.3, "B": 0.7}, 0.5, 8.0, 25.0)
+    by = {(r.dataset, r.session): r for r in rows}
+    q = by[("emg2qwerty", "sessA")]  # 36 s senza salti; con i salti: 0,5 s + 34,5 s + 1 s
+    assert q.short_segments_s == [0.0] * 4 and q.short_segments_gaps_s == [pytest.approx(x) for x in (0.5, 1.5, 1.5, 1.5)]
+    assert q.gaps_out_of_range == 0 and q.outside_trials_s == 0.0
+    z = next(r for r in rows if r.unit == "zhang2026:anatomical")
+    assert z.short_segments_s == [0.0, 0.0, pytest.approx(2.0), pytest.approx(2.0)]  # 2 s esatti: ci sta una finestra da 2 s
+    s = summary["units"]["ninapro_db2"]["short_segments"]  # s01 (due prove da 1,8 s) e s02 (1,8 s) in pretraining, s03 in test: non conta
+    assert s["pretraining_s"] == pytest.approx(5.4) and s["trials_s"] == [0.0, pytest.approx(5.4), pytest.approx(5.4), pytest.approx(5.4)]
+    assert summary["units"]["emg2qwerty"]["short_segments"]["trials_and_gaps_s"][0] == pytest.approx(0.5)
+
+
+def test_short_segments_3d_arrays_partial_trials_and_bad_gap_positions(tmp_path):
+    splits = {"datasets": {"ninapro_db2": {"pretraining": ["s01"], "test": []}}}
+    d = tmp_path / "ninapro_db2" / "s01" / "a"
+    d.mkdir(parents=True)
+    np.save(d / "data_int16.npy", np.zeros((3, 1000, 2), np.int16))  # tre prove da 0,5 s
+    (d / "metadata.json").write_text(json.dumps({"montage": {"groups": [{"channels": [{"qc_valid": True}] * 2}]}, "native_fs_hz": 2000.0}))
+    r = BM.session_row(d, "ninapro_db2", "s01", "a", splits)
+    assert r.n_segments == 3 and r.short_segments_s == [pytest.approx(1.5)] * 4 and r.outside_trials_s == 0.0
+    _session(tmp_path / "x", 6000, 2, 2000.0, trials=[{"offset": 0, "n_samples": 4000}],
+             time_axis={"n_gaps": 2, "duration_s": 3.0, "dt_max_s": 0.01, "gaps": [{"index": 2000, "dt_s": 0.01}, {"index": 9000, "dt_s": 0.01}]})
+    r = BM.session_row(tmp_path / "x", "ninapro_db2", "s01", "x", splits)
+    assert r.outside_trials_s == pytest.approx(1.0) and r.gaps_out_of_range == 1  # 2000 campioni fuori dalle prove; 9000 oltre la fine
+    assert r.short_segments_s == [0.0, 0.0, pytest.approx(2.0), pytest.approx(2.0)]
+    assert r.short_segments_gaps_s == [0.0, pytest.approx(2.0), pytest.approx(2.0), pytest.approx(2.0)]  # 1 s + 1 s
