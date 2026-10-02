@@ -18,7 +18,8 @@ passa-banda 20–850 Hz (−3 dB); 20 mm fra i due elettrodi di una coppia; il d
 
 **Dove guardare.**
 - arXiv 2410.20081 (emg2qwerty), sezione «Hardware»: https://arxiv.org/html/2410.20081
-- Articolo sul dispositivo: https://pmc.ncbi.nlm.nih.gov/articles/PMC12818089/
+- Articolo sul dispositivo: https://pmc.ncbi.nlm.nih.gov/articles/PMC12818089/ — **correzione del 02/10/2026:** e' una review di terzi (iScience 2026,
+  fonte secondaria), non un articolo di Meta; i dettagli presi da qui non sono firmati (registro, riga 20)
 - README di Kaifosh: https://github.com/facebookresearch/generic-neuromotor-interface
 
 **Cosa dicono.**

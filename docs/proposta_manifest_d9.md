@@ -144,13 +144,15 @@ salire anche il tetto.
 
 **Proposta di AG: tutto benchmark, nessun soggetto nel pretraining.** Kaifosh aggiunge soggetti, non topologie (piano), alla classe B che ha già
 la gran parte delle ore; usa lo stesso bracciale di emg2pose ed emg2qwerty (fatto 20, firmato). Come benchmark ha uno split ufficiale 80/10/10
-(fatto 7b, firmato) e un risultato pubblicato con cui confrontarsi. Licenza CC-BY-NC in entrambi i casi (D3a). *Alternativa:* gli 80 utenti di
+(fatto 7b, firmato) e un risultato pubblicato con cui confrontarsi. *Pero'* (fatto 23, raccolto): i 300 partecipanti pubblici sono stati scelti a caso
+fra gli utenti di training del paper, quindi i numeri pubblicati, misurati sui partecipanti tenuti fuori dal paper, non sono sullo stesso test
+dello split pubblico (interpretazione di AG). Licenza CC-BY-NC in entrambi i casi (D3a). *Alternativa:* gli 80 utenti di
 train nel pretraining, i 20 di validazione e test come benchmark.
 
 **Correzione (review del 02/10):** la bozza del 01/10 diceva «100 utenti nuovi». Non è verificato. I tre dataset Meta vengono dallo stesso
 produttore, nessuna fonte del registro dice se abbiano partecipanti in comune, e gli ID non sono confrontabili fra i dataset: un utente di test di
-Kaifosh potrebbe essere nel pretraining attraverso emg2pose o emg2qwerty. Il compito è registrato come **fatto 23 (da raccogliere)**. Finché resta
-aperto, il benchmark Kaifosh si dichiara «utenti forse visti nel pretraining (stesso produttore, sovrapposizione ignota)», come per NinaPro; lo
+Kaifosh potrebbe essere nel pretraining attraverso emg2pose o emg2qwerty. Il **fatto 23** (raccolto il 02/10, da firmare) conferma che **nessuna fonte lo dichiara**, in un senso o nell'altro, e che gli ID hanno formati diversi
+nei tre dataset. Quindi il benchmark Kaifosh si dichiara «utenti forse visti nel pretraining (stesso produttore, sovrapposizione ignota)», come per NinaPro; lo
 stesso vale per i soggetti di test di emg2pose ed emg2qwerty rispetto agli altri due dataset.
 
 ## (c) Esito di D6a
@@ -241,7 +243,7 @@ spezzano i segmenti ai salti (modifica piccola, con test).
    in misura**, in sola lettura: un'eventuale scrittura si chiede a parte.
 3. **V2 e conferma del ramo RVQ:** DB8 e Zhang entrano (punto e); **DB10 dopo la misura dei suoi buchi**.
 4. **Fatti:** 1 (DB8), 2, 10b, 10c, 10d firmati il 02/10/2026. **Restano:** 4 e 5 (NeuroRVQ: dataset del tokenizer e sovrapposizione coi soggetti
-   di test), e il nuovo **23** (sovrapposizione fra i dataset Meta, da raccogliere).
+   di test), e il nuovo **23** (sovrapposizione fra i dataset Meta): 5 e 23 raccolti il 02/10, da firmare; il 4 resta parziale (banda del pretraining non trovata).
 5. **Dove stanno i dati:** quasi tutto il processato è su `$SCRATCH` (purge a 40 giorni). Un manifest congelato deve puntare a dati che restano.
    Rinfresco fatto il 01/10 (job 59105021); la proposta in `decisioni.md` è un rinfresco **ogni 21 giorni per tutta la ladder** (prossimo il
    22/10): **da firmare con D9**, come regola e non come giro singolo.
