@@ -1201,3 +1201,15 @@ che vedono tutto il montaggio, canale scartato ignorato, bias iniziale uguale al
 Primo test d'insieme (torch, in locale): identita' di canale -> encoder locale -> Perceiver su un batch con anello (emg2pose), sparso (Camargo),
 griglia (CapgMyo) e misto (NinaPro DB2) impacchettati, avanti e indietro con gradienti a tutti i moduli. Manca il backbone temporale per
 chiudere il criterio del passo 6.
+
+**Backbone temporale** (`src/wearusfm/model/backbone.py`; 02/10/2026, proposta di AG). **Scelte da confermare:**
+12. blocco fattorizzato: attenzione lungo il tempo per ogni latente, poi fra i K latenti per ogni istante, poi MLP (pre-norm, residui);
+13. posizione temporale **relativa** con RoPE sull'indice di patch (la patch e' in ms fissi, D10); nessuna posizione sui latenti (slot appresi);
+14. `time_valid` toglie dalle chiavi temporali il padding delle finestre corte (contesto variabile, proposta D10) e gli istanti tutti nascosti;
+    questi restano query: se le predizioni si leggono dal backbone o da un decoder a query sugli istanti visibili e' D11 (v10 §5.6);
+15. implementazione di riferimento in tensori pieni con padding temporale; in produzione l'attenzione temporale puo' passare a
+    `flash_attn_varlen_func` (RoPE prima del kernel), da provare su Leonardo.
+**Test d'insieme:** identita' -> encoder locale -> Perceiver -> backbone su un batch con anello, sparso, griglia e misto, con un canale
+scartato, un canale nascosto e uno slab: avanti e indietro, gradienti a tutti i moduli. Del criterio di chiusura del passo 6 («un batch con le tre
+topologie insieme fa forward e backward») manca il decoder a query (D11); conto dei FLOP per modulo presente in encoder locale, Perceiver e backbone
+(manca il front-end).
