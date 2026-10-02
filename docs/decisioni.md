@@ -1136,6 +1136,13 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    intestazioni), mentre la misura di emg2pose leggeva gli stessi dati sullo stesso nodo. La stima «pochi minuti» era sbagliata. **Correzioni**
    (con test): una riga di log per dataset scritta subito, lettura su 8 thread (attesa di I/O; righe identiche a quelle in serie, test), limite
    4 h. **Non rilanciato**: il rilancio va autorizzato da Simone.
+   **emg2pose (job 59173239, 3 h 17 min, exit 0; report `qc_relative_check_59173239.json`, sha256 31a44379... uguale su cluster e Mac):**
+   25.253 sessioni, **0 canali piatti nuovi**, **2.786 tratti costanti in 576 sessioni** (79 utenti), 4.044,6 s = 0,0166% del tempo valido, freni
+   non scattati, 0 errori di lettura. **Tutti i tratti sono sui canali 0 e 1** (1.437 e 1.349), durata mediana 1,3 s, massima 5,3 s. Controllo in
+   sola lettura su 12 sessioni a caso (seme 0): **valore esattamente 0** in tutti i 45 tratti guardati e nessun campione a +-32767 sui canali 0-1:
+   sono interruzioni del segnale, non saturazione della quantizzazione int16. *Osservazione, non verificata:* nelle stesse 12 sessioni i canali
+   0 e 1 hanno massimi e minimi quasi identici (es. 1463/1474, -3016/-3008): possibili quasi-duplicati, da controllare con una correlazione.
+   La scrittura (`--apply`) va autorizzata da Simone.
 
 ---
 
