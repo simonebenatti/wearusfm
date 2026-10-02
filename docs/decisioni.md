@@ -1143,6 +1143,8 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
    sono interruzioni del segnale, non saturazione della quantizzazione int16. *Osservazione, non verificata:* nelle stesse 12 sessioni i canali
    0 e 1 hanno massimi e minimi quasi identici (es. 1463/1474, -3016/-3008): possibili quasi-duplicati, da controllare con una correlazione.
    La scrittura (`--apply`) va autorizzata da Simone.
+   **Autorizzate da Simone il 02/10/2026** («si»): scrittura su emg2pose, **job 59204293** (`--only emg2pose --apply`, limite 4 h, CPU, 0 GPU-ora),
+   e poi la bozza del manifest, **job 59204297**, con `--dependency=afterok:59204293` (parte solo se la scrittura riesce). Repo remoto pulito a 329b119.
 
 ---
 
