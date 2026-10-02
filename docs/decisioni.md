@@ -1115,6 +1115,11 @@ Conferma del ramo (`results/step1bis/rvq_branch_confirm_59108493.json`): livello
    finiva nel report solo alla fine. **Correzioni (con test, suite CPU verde):** `to_canonical` scarta prima del filtro solo le prove troppo corte
    per il filtro (le sessioni che gia' funzionavano danno lo stesso risultato bit per bit); V3 con meno di 2 dataset dice «non calcolabile»;
    un'esclusione entra subito nel report parziale. **Non rilanciato** (regola del controllo automatico): il rilancio va autorizzato da Simone.
+   **Rilancio autorizzato da Simone il 02/10/2026** («sì, autorizzo il rilancio di V2 su DB10»): **job 59183099**, stesso comando, limite 1 h 30,
+   costo stimato 0,05-0,4 GPU-ora, sottomesso dal repo remoto pulito al commit 68effc0 (budget del passo 1-bis: 30 GPU-ora, usate circa 2).
+   Nota sulla provenienza della bozza del manifest (job 59180449): e' partita al commit 653c3fe e il push di 68effc0 e' avvenuto mentre girava,
+   quindi il `code_commit` che scrive alla fine puo' essere 68effc0; fra i due commit `scripts/build_manifest.py` e `src/wearusfm/data/` sono
+   identici (controllato con `git diff --stat`), quindi la provenienza resta valida.
 
 ---
 
