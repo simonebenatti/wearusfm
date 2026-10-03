@@ -1337,8 +1337,18 @@ Sui fogli `docs/fogli_firma_d9_d10.md` (preparati da AG il 03/10). **Firmati:**
 14. **congelamento di `manifest-v1` autorizzato**: costruttore con `--version manifest-v1 --splits splits/v1/splits_v1.json` (CPU seriale, ~16 min,
     0 GPU-ora), tag git `manifest-v1`, hash del file in questo registro, `D_t` e `D_c` ricalcolati.
 **Non firmati (03/10):** 12 (masking di D10, compresa la scelta canale singolo / «tubi») e 15-20 (valori del sanity JEPA).
-**Stato:** il job di congelamento aspetta il rinnovo del certificato SSH (scaduto la notte del 03/10: «The agent has no identities»); il push su
-leonardo dei commit dal dataloader in poi pure.
+**`manifest-v1` CONGELATO il 03/10/2026** (decisione 14; job 59253155, 9 min 48 s, exit 0):
+- file: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz` (1.689.911 byte; copia sul Mac in
+  `~/wearusfm_local/reports/passo4/`; NON nel repo); **sha256 del file 9ab0fc5f90889973b55635ba6a2d485699b842d747b9629186d2b309b402d781**
+  (uguale su cluster e Mac);
+- **hash del contenuto b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b** (parametri e righe ordinate, `manifest_hash`);
+- codice: commit e053c02 (tag git **`manifest-v1`**); split `splits/v1/splits_v1.json` (sha256 a18e7565..., uguale a `splits_sha256` nel file);
+- parametri: quote A 20 / B 75 / C 5, alpha 0,5, tetto 8 passaggi a 4 epoche, patch 25 ms;
+- **27.560 sessioni; pretraining 19.034 sessioni, 822,9 h; `D_t` = 118.491.864 time-patch; `D_c` = 3.248.996.413 source-channel-patch**
+  (patch da 25 ms, dopo il QC, prima di ogni augmentation: v10 §10.3); quote realizzate A 20,0 / B 75,0 / C 5,0%, nessuna inassegnabile;
+- verifica: righe e pesi identici, campo per campo e bit per bit, alla bozza del 02/10 (job 59204297); cambiano solo `version` e l'hash degli
+  split; nessun soggetto senza sessioni, nessuna sessione di test mancante.
+Il «consumo realizzato per epoca» (piano, «Chiuso quando») si misura dal dataloader, al primo run.
 
 ## Masking (D10) e valori del sanity JEPA firmati (Simone, 03/10/2026: «firmo 12 (masking) e 15-20 (valori del sanity)»)
 

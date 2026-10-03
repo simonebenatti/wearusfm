@@ -264,7 +264,8 @@ con test; il costruttore gia' conta questo caso nella tabella di sensibilita').
    3,5%); con il contesto variabile da 1 a 4 s proposto in D10 non si perde nulla (`docs/proposta_d10.md`). D9 e D10 vanno firmati insieme.
 7. **Salti dell'asse dei tempi:** scelta in (f).
 
-**Il manifest come file:** `data/_manifests/manifest-v1.json` con una riga per sessione (dataset, soggetto, sessione, percorso, hash del sidecar,
+**Congelato il 03/10/2026** come `manifest_59253155.json.gz` (tag git `manifest-v1`, hash in `docs/decisioni.md`). **Il manifest come
+file** (proposta originale: `data/_manifests/manifest-v1.json`; e' invece fuori dal repo, nei risultati del job) con una riga per sessione (dataset, soggetto, sessione, percorso, hash del sidecar,
 split, classe, peso), le quote e il tetto; tag git `manifest-v1`, hash del file nel registro, `D_t`, `D_c` e consumo realizzato per epoca
 ricalcolati dallo stesso script (piano: «Chiuso quando»).
 
