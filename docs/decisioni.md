@@ -1552,3 +1552,17 @@ revisione e cancellava le successive; test) e il test mancante sull'esclusione d
   quindi una grande componente comune a tutte le query e a tutti i campioni, ed e' il caso che rapporto e rango non vedono (review del modello,
   M2). Siamo dentro il warmup (1.000 passi): conta come evolvono nel sanity vero. Se Simone vuole un terzo allarme su queste varianze, va scritto e
   congelato prima del lancio.
+
+**Misura del ritmo e scale, terzo giro, job 59276700: COMPLETED** (47 min 55 s, `lrd_all_serial`, 8 CPU, **0 GPU-ora**; sha256 `throughput.json`
+ba75b5e5..., `session_scales.json` 29f4404f..., uguali su cluster e Mac; copie in `~/wearusfm_local/reports/passo6/`, sul cluster in
+`results/passo6/loader_59276700/`):
+- **scale col metodo nuovo per tutte le sessioni:** 18.975 su 19.034; **59 errori, tutti emg2pose, «nessun tratto lungo almeno 1 s»**: sessioni
+  senza nessuna finestra estraibile, che il loader salta e conta. Rispetto alle scale di 59264303 sono identiche 18.508 e diverse 467 (442 emg2pose,
+  25 emg2qwerty, le sessioni con tratti corti fra salti; scarto massimo 95%). **Da qui le scale valide sono quelle di 59276700.**
+- **ritmo, 8 processi su tutto il mix del manifest:** senza filtro 6,4-10,0 finestre/s per processo (media 7,5); con il filtro 6,5-8,9 (media
+  7,5). **Sotto la soglia di ~8,5 per processo, scritta prima della misura.** Tempo: apertura della sessione e lettura del blocco 48-60%,
+  target delle ancore 23-25% (erano 55-66%), maschere 16-17%, filtro 10%.
+- **Confronto con il consumo misurato, che non cambia la soglia:** la soglia veniva dalla stima del passo 0 (~68 finestre/s per GPU). Il
+  collaudo 59277074 consuma ~13 finestre/s per GPU (2,4 s per passo col batch 32), e con 6 processi il loader ne da' ~45: su emg2qwerty l'attesa
+  sui dati e' 0,03 s per passo. Al modello del sanity il loader basta con margine ~3,5. Se basti alla soglia del passo 0, o se quella soglia vada
+  sostituita col consumo misurato, **lo decide Simone**. Il filtro costa il ~10%: **la decisione 13 (filtro nel dataloader) regge**.
