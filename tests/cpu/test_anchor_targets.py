@@ -90,3 +90,12 @@ def test_fast_targets_equal_the_reference_also_at_the_edges():
         assert np.allclose(got.log_rms, ref_rms, atol=1e-6) and np.allclose(got.log_env, ref_env, atol=1e-6)  # tutte le patch, anche fuori
         ok = got.spec_valid[:, :, None] & got.band_available[:, None, :]
         assert np.allclose(got.band_shape[ok], ref_shape[ok], atol=1e-3)  # float32 nello spettro
+
+
+def test_rvq_windows_ignore_channels_discarded_by_qc():
+    vis = np.ones((3, 16), dtype=bool)
+    vis[:2, 0:8] = False  # canali 0 e 1 nascosti sulla prima finestra; il canale 2 e' scartato dal QC (le maschere lo lasciano visibile)
+    valid, on = np.ones((3, 16), dtype=bool), np.ones(3, dtype=bool)
+    assert not A.rvq_target_windows(vis, valid, on).any()  # senza QC il canale 2 «visibile» impedisce lo slab
+    w = A.rvq_target_windows(vis, valid, on, qc_valid=np.array([True, True, False]))
+    assert w[:2, 0].all() and not w[2].any() and not w[:, 1].any()

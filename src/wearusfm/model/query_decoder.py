@@ -86,6 +86,17 @@ class QueryDecoder(nn.Module):
         return self.norm(torch.cat(outs, dim=0))
 
 
+def decoder_flops(n_queries: int, n_patches: int, k_latents: int, dim: int, n_layers: int, mlp_ratio: float = 4.0) -> int:
+    """Moltiplicazioni-addizioni x 2 per UN campione: proiezioni (query e uscita sulle query, chiavi e valori sui P x K latenti), punteggi e somme
+    pesate (Q x P x K), MLP sulle query; per livello. Col sanity (Q ~2.560, P = 160, K = 64, d = 384, 2 livelli) e' dello stesso ordine del backbone
+    (review del 03/10: il piano chiede i FLOP per modulo)."""
+    n_kv = n_patches * k_latents
+    proj = n_queries * dim * dim * 2 + n_kv * dim * 2 * dim
+    attn = n_queries * n_kv * dim * 2
+    mlp = n_queries * dim * int(dim * mlp_ratio) * 2
+    return 2 * n_layers * (proj + attn + mlp)
+
+
 def query_collapse_stats(outputs: torch.Tensor) -> dict[str, float]:
     """outputs: (S, Q, d) = le stesse Q query di sonda valutate su S campioni. Varianza fra campioni a query fissa (media sulle query e sulle
     dimensioni) contro varianza fra query a campione fisso; `ratio` = la prima diviso la seconda. Vicino a zero: l'uscita dipende dalla query e non

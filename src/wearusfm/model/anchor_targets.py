@@ -104,15 +104,21 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     return AnchorTargets(log_rms, rows(rms_ok), band_shape, rows(spec_ok) & band_available.any(axis=1)[:, None], band_available, log_env, rows(env_ok))
 
 
-def rvq_target_windows(visible: np.ndarray, patch_valid: np.ndarray, rvq_on: np.ndarray, *, patch_ms: float = 25.0) -> np.ndarray:
+def rvq_target_windows(visible: np.ndarray, patch_valid: np.ndarray, rvq_on: np.ndarray, *, patch_ms: float = 25.0,
+                       qc_valid: np.ndarray | None = None) -> np.ndarray:
     """Per UN campione (C, P): (C, W) True dove la finestra w del tokenizer (patch [8w, 8w+8) a 25 ms) e' uno **slab**, cioe' nascosta e valida
     su TUTTI i canali del campione, e il canale ha l'ancora accesa. v10 §6.3: l'ancora RVQ vale solo sugli intervalli nascosti su tutti i canali,
     **mai sul masking di canale** (con i vicini visibili allo stesso istante la fase si ricostruirebbe dal ritardo di propagazione). La griglia e'
-    quella della finestra: il dataloader fa cominciare le finestre su multipli di 200 ms dall'inizio della prova (proposta D10)."""
+    quella della finestra: il dataloader fa cominciare le finestre su multipli di 200 ms dall'inizio della prova (proposta D10). `qc_valid` (C,):
+    i canali scartati dal QC non contano per lo slab e non hanno target (come in `training.jepa`; review del 03/10: prima la funzione li contava,
+    e con un canale scartato, che le maschere lasciano «visibile», non nasceva nessuno slab)."""
     per = int(round(RVQ_TOKEN_MS / patch_ms))
     if abs(per * patch_ms - RVQ_TOKEN_MS) > 1e-9:
         raise ValueError(f"la patch da {patch_ms} ms non divide i {RVQ_TOKEN_MS} ms del tokenizer")
     c, p = visible.shape
     w = p // per
-    slab = (~visible[:, : w * per] & patch_valid[:, : w * per]).all(axis=0).reshape(w, per).all(axis=-1)  # (W,)
-    return slab[None, :] & np.asarray(rvq_on, dtype=bool)[:, None]
+    ok = np.ones(c, dtype=bool) if qc_valid is None else np.asarray(qc_valid, dtype=bool)
+    if not ok.any():
+        return np.zeros((c, w), dtype=bool)
+    slab = (~visible[ok, : w * per] & patch_valid[ok, : w * per]).all(axis=0).reshape(w, per).all(axis=-1)  # (W,)
+    return slab[None, :] & np.asarray(rvq_on, dtype=bool)[:, None] & ok[:, None]
