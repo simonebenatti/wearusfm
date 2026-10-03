@@ -1,6 +1,7 @@
-# Proposta — manifest del pretraining (D9, passo 4): BOZZA da firmare entro il 25/10/2026
+# Proposta — manifest del pretraining (D9, passo 4): FIRMATA il 03/10/2026
 
-> **Revisione del 02/10/2026 applicata — pronta per la tua lettura e la firma.** La review indipendente dei documenti aveva trovato, e AG aveva
+> **FIRMATA da Simone il 03/10/2026** («firmo 1-11, 13 e 14» sui fogli `docs/fogli_firma_d9_d10.md`, decisioni 1-9 = punti a, a-bis, b, d, e,
+> f e rinfresco di `$SCRATCH`; registrazione in `docs/decisioni.md`). **Revisione del 02/10/2026 applicata.** La review indipendente dei documenti aveva trovato, e AG aveva
 > verificato, gli 8 punti qui sotto; lo stato di ciascuno e' fra quadre. Le tabelle sono quelle del costruttore sui dati veri (job 59204297).
 > 1. le ore, i passaggi e le quote qui sotto contano anche i soggetti di test (~1.011 h), mentre il manifest pesa solo il pretraining (~870 h): con il
 >    tetto di 8 passaggi la classe C non arriva piu' al 5%. Si rifa' tutto coi numeri del costruttore (`scripts/build_manifest.py`) sui dati veri; **[risolto: tabelle del costruttore, solo pretraining, job 59204297; la classe C arriva al 5%]**
@@ -269,15 +270,15 @@ ricalcolati dallo stesso script (piano: «Chiuso quando»).
 
 ## Cosa si firma
 
-- [ ] (a) quote garantite per classe A 20%, B 75%, C 5% (realizzate esattamente con i dati veri), dichiarate sulla topologia presentata; tetto di 8 passaggi per dataset a E = 4,
+- [x] (a) quote garantite per classe A 20%, B 75%, C 5% (realizzate esattamente con i dati veri), dichiarate sulla topologia presentata; tetto di 8 passaggi per dataset a E = 4,
       contato sul tempo di origine, lettura (i) per E = 8 e 2D
-- [ ] (a-bis) classi del montaggio come sopra (amputati di DB8/DB10 e Zhang random in B: interpretazioni di AG); pesi ∝ ore^0,5 dentro la classe
-- [ ] (b) Kaifosh tutto benchmark, con la sovrapposizione fra i dataset Meta dichiarata
-- [ ] (d) split: ufficiali dove esistono (emg2pose anche per sessione), altrimenti 20% (almeno 2), stratificati, seed 0; manifest annidati al
+- [x] (a-bis) classi del montaggio come sopra (amputati di DB8/DB10 e Zhang random in B: interpretazioni di AG); pesi ∝ ore^0,5 dentro la classe
+- [x] (b) Kaifosh tutto benchmark, con la sovrapposizione fra i dataset Meta dichiarata
+- [x] (d) split: ufficiali dove esistono (emg2pose anche per sessione), altrimenti 20% (almeno 2), stratificati, seed 0; manifest annidati al
       12,5/25/50%; sovrapposizioni dichiarate (tokenizer, NinaPro, DB3/DB10, dataset Meta)
-- [ ] (e) ancora RVQ secondo D5b, estesa ai dataset nuovi solo se passano V2 e la conferma del ramo
-- [ ] (f) salti dell'asse dei tempi: segmenti spezzati a ogni salto del sidecar
-- [ ] rinfresco di `$SCRATCH` ogni 21 giorni per tutta la ladder
+- [x] (e) ancora RVQ secondo D5b, estesa ai dataset nuovi solo se passano V2 e la conferma del ramo
+- [x] (f) salti dell'asse dei tempi: segmenti spezzati a ogni salto del sidecar
+- [x] rinfresco di `$SCRATCH` ogni 21 giorni per tutta la ladder
 
 Rigenerare i numeri (CPU seriale, 0 GPU-ora, ~16 minuti; uscita in `$WORK/wearusfm_runs/results/passo4/`, fuori dal repo):
 

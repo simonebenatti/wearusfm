@@ -22,7 +22,7 @@ tetto la classe C potrebbe dare al massimo il 5,2%, la A il 22,0%.
 naturali, nessuna garanzia.
 **Proposta di AG:** (a), con il campionatore che registra per ogni campione sia l'origine sia la topologia presentata.
 **Se sbagliata:** si rifa' il manifest e si rifanno i run della ladder.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 2. Tetto di ripetizione — D9 (a)
 
@@ -32,7 +32,7 @@ nel controllo 2D i dataset al tetto arrivano a 16 passaggi (le ~16 epoche di «f
 **Opzioni:** (i) tetto 8 a E = 4, contato sul tempo di origine, e il pilot misura cosa succede a 16; (ii) tetto 8 al massimo E (4 a E = 4): ma allora
 nessuna classe puo' superare la sua quota naturale e le quote garantite non servono.
 **Proposta di AG:** (i).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 3. Classe degli amputati di DB8/DB10 e di Zhang random — D9 (a-bis)
 
@@ -41,20 +41,20 @@ nessuna classe puo' superare la sua quota naturale e le quote garantite non serv
 (fatto 10c); Zhang random, sensori sulla circonferenza dell'avambraccio, ordine ignoto per 32 partecipanti (fatto 10b).
 **Proposta di AG (interpretazione):** classe B per tutti e tre (anelli con rotazione o ordine ignoti). **Alternativa:** classe A, coerente con i
 metadati «sparsi».
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 4. Pesi dentro la classe — D9 (a-bis)
 
 **Proposta di AG:** pesi proporzionali a ore^0,5, con l'eccedenza di un dataset al tetto ridistribuita agli altri della classe (per ore, emg2pose ed
 emg2qwerty prenderebbero l'86% della classe B; uniforme ripeterebbe i piccoli decine di volte). Risultato nella tabella di D9.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 5. Kaifosh — D9 (b), D3b
 
 **Proposta di AG:** tutto benchmark, nessun soggetto nel pretraining. **Da dichiarare** (fatto 23, firmato): nessuna fonte dice se i tre dataset Meta
 abbiano persone in comune; i 300 partecipanti pubblici di Kaifosh erano utenti di training del paper, quindi i numeri pubblicati non sono sullo
 stesso test dello split pubblico. **Alternativa:** gli 80 utenti di train nel pretraining.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 6. Split dei soggetti — D9 (d)
 
@@ -63,12 +63,12 @@ emg2qwerty gli 8 utenti user0-7; Kaifosh 80/10/10); altrove 20% dei soggetti, al
 solo soggetto di test (gia' deciso il 01/10); **DB4, DB5, DB7, DB8 interi nel pretraining** (sovrapposizioni dichiarate fra DB NinaPro, fatto 2);
 manifest annidati al 12,5 / 25 / 50% dei soggetti. Sovrapposizioni da dichiarare nei risultati: tokenizer NeuroRVQ (fatto 5), NinaPro, DB3/DB10,
 dataset Meta. Test: 210,9 h.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 7. Ancora RVQ nel manifest — D9 (e)
 
 **Proposta di AG:** secondo D5b (gia' firmata): accesa su 15 dataset (DB8, Zhang e DB10 entrati il 01-02/10), spenta su putEMG, CSL-hdemg e DB5.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 8. Salti dell'asse dei tempi — D9 (f)
 
@@ -77,20 +77,20 @@ e incollare tratti lontani.
 **Opzioni:** (i) spezzare a ogni salto: costa l'1,2% di emg2pose e lo 0,2% di emg2qwerty a 4 s; (ii) solo i salti lunghi, con una soglia nuova;
 (iii) ignorarli.
 **Proposta di AG:** (i). E' gia' implementato nel dataloader (`split_at_gaps`).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 9. Rinfresco di `$SCRATCH` — D9, «Prima della firma»
 
 **Si decide:** come tenere vivi i dati per tutta la ladder. Quasi tutto il processato sta su `$SCRATCH` (purge a 40 giorni).
 **Proposta di AG:** rinfresco delle date ogni 21 giorni per tutta la ladder (22/10, 12/11, 03/12, 24/12), col job gia' collaudato (CPU, minuti,
 0 GPU-ora), ogni volta autorizzato da te.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 10. Patch — D10 (1)
 
 **Proposta di AG:** 25 ms (piano). Divide la griglia da 200 ms del tokenizer, sta nella scala corta di masking, e gate D8 e passo 0 sono gia'
 misurati li'. Cambiarla vorrebbe dire rifare il gate.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 11. Contesto — D10 (2)
 
@@ -99,7 +99,7 @@ decisione 1 diventa irraggiungibile (al tetto: 3,5%). Con un minimo di 1 s non s
 **Opzioni:** (i) fisso 4 s (piano e D2); (ii) variabile 1-4 s; (iii) fisso 2 s.
 **Proposta di AG:** (ii), 1-4 s, inizio su multipli di 200 ms dall'inizio della prova. Il minimo di 1 s e' fissato dal masking (una maschera lunga da
 500 ms con altrettanto contesto), non dai dati. Gia' implementato nel dataloader.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 12. Masking — D10 (3)
 
@@ -109,7 +109,7 @@ budget di 0,5; quote realizzate (50 campioni per montaggio) corta 15-16%, media 
 **Da scegliere:** una maschera temporale (non slab) nasconde (a) **un canale solo**, oggi nel codice, oppure (b) **un gruppo spaziale** (arco
 d'anello, rettangolo di griglia, compartimento): sulle griglie dense (a) e' un compito facile, perche' i vicini sono visibili. **Proposta di AG:**
 (b), «tubi» come in V-JEPA; sui montaggi sparsi il gruppo puo' essere un canale solo. Modifica piccola, con test.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 13. Filtraggio — nuova (v10 §4.3)
 
@@ -120,14 +120,14 @@ d'anello, rettangolo di griglia, compartimento): sulle griglie dense (a) e' un c
 **Opzioni:** (a) filtro nel dataloader (gia' implementato); (b) copia filtrata su disco (spazio su `$SCRATCH` e un job CPU, da stimare).
 **Proposta di AG:** (a), **registrata come deviazione da v10**, confermata da una misura del ritmo su Leonardo con sessioni vere (CPU e
 `boost_qos_dbg`, stima < 1 GPU-ora, costo esatto prima del lancio).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 14. Congelamento di `manifest-v1`
 
 **Si fa, dopo le firme 1-9:** gli split in bozza diventano gli split firmati (`splits/v1/`), il costruttore gira con `--version manifest-v1` (CPU
 seriale, ~16 minuti, 0 GPU-ora: rifiuta di partire con split in bozza o soggetti mancanti), tag git `manifest-v1`, hash del file nel registro,
 `D_t` e `D_c` ricalcolati (piano, «Chiuso quando»). Serve la tua autorizzazione al job.
-**Tua decisione:** [ ] autorizzo · [ ] non ancora
+**Tua decisione:** [x] autorizzo · [ ] non ancora — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ---
 
@@ -141,7 +141,7 @@ prima del lancio.
 
 **Proposta di AG:** 0,5, fissa per il sanity e per la finestra 1, senza sceglierla sui risultati (v10 non da' un numero; non propongo un valore
 dalla letteratura senza averlo verificato). Un'ablation sul masking non e' nel piano; se il sanity collassa, la si riapre come decisione nuova.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 16. Soglie d'allarme delle diagnostiche (v10 §7.1)
 
@@ -152,31 +152,31 @@ dalla letteratura senza averlo verificato). Un'ablation sul masking non e' nel p
   valutazioni di fila.
 Le soglie sono mie, non da v10: l'idea e' fermarsi su un collasso evidente, non su un calo. Un allarme ferma il run e si guarda prima di
 continuare.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 17. Dataset del sanity
 
 **Proposta di AG:** emg2qwerty (317 h di pretraining, un solo dispositivo, due anelli da 16 a 2 kHz, ancora RVQ accesa). **Alternativa:** emg2pose
 (un anello, 288 h).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 18. Peso delle ancore e momento EMA
 
 **Proposta di AG:** peso complessivo delle ancore 0,2 (centro dell'intervallo 0,1-0,3 di v10 §6.2); momento EMA del teacher 0,996 costante per il
 sanity (valore di lavoro; lo schedule vero e' D14, prima della finestra 1).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 19. Dropout del livello muscolo (D15, anticipata)
 
 **Proposta:** 0,4, la proposta del piano (§12), cosi' il sanity usa gia' il valore della finestra 1. Su emg2qwerty nessun canale ha il muscolo
 noto, quindi per il sanity non cambia nulla; conta dalla finestra 1.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ### 20. Target JEPA per il sanity (D11)
 
 **Proposta:** (b), uscita del decoder a query del teacher (default di lavoro del piano), con la diagnostica della decisione 16 attiva dal primo
 passo. D11 vera si chiude prima del passo 7: (a) entra comunque fra le ablation della finestra 1.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
 
 ---
 

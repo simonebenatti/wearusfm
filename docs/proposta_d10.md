@@ -1,4 +1,4 @@
-# Proposta — D10: patch, contesto, masking (passo 6): BOZZA da firmare prima di scrivere il modello
+# Proposta — D10: patch, contesto, masking (passo 6): patch e contesto FIRMATI il 03/10/2026, masking aperto
 
 **Stato: bozza di AG del 02/10/2026, aggiornata la sera del 02/10 coi numeri del costruttore (job 59204297) e col generatore di maschere, NON
 firmata.** D10 va chiusa al passo 6, «prima di scrivere il modello» (piano, §9), e il codice del passo 6
@@ -141,9 +141,9 @@ scrivendolo, da decidere con la firma:
 
 ## Cosa si firma
 
-- [ ] (1) patch 25 ms
-- [ ] (2) contesto variabile, massimo 4 s, minimo 1 s, finestre allineate a 200 ms dall'inizio della prova — oppure fisso 4 s, perdendo un terzo
+- [x] (1) patch 25 ms — **firmato il 03/10/2026** (decisione 10 dei fogli)
+- [x] (2) **firmato il 03/10/2026** (decisione 11): contesto variabile, massimo 4 s, minimo 1 s, finestre allineate a 200 ms dall'inizio della prova — oppure fisso 4 s, perdendo un terzo
       della classe C e abbassando la quota C di D9
-- [ ] (3) masking: scale e quote della tabella come quote **attese** (60% temporale con tre scale, 40% spaziale), metà del temporale medio-lungo come
+- [ ] (3) **non ancora firmato** (decisione 12) — masking: scale e quote della tabella come quote **attese** (60% temporale con tre scale, 40% spaziale), metà del temporale medio-lungo come
       slab RVQ allineati sui dataset con l'ancora accesa, masking spaziale al più metà dei canali validi, frazione mascherata con regola congelata
       prima del sanity JEPA; maschera temporale su **un canale** oppure su **un gruppo spaziale** (da scegliere)

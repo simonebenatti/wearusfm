@@ -1310,3 +1310,32 @@ albero sintetico coi montaggi veri e un manifest del costruttore vero, piu' un p
 31. scala di sessione stimata su tratti sparsi (non sull'intera sessione: emg2qwerty ha sessioni da ~18 minuti a 32 canali); da precalcolare con
     un job CPU e salvare accanto al manifest, perche' ogni processo del dataloader non la ricalcoli;
 32. manca ancora: montaggi virtuali e sottocampionamento HD al volo (D6a), misura del ritmo su Leonardo.
+
+---
+
+## D9 firmata, D10 in parte, filtraggio e congelamento del manifest (Simone, 03/10/2026: «firmo 1-11, 13 e 14»)
+
+Sui fogli `docs/fogli_firma_d9_d10.md` (preparati da AG il 03/10). **Firmati:**
+1. **quote per classe A 20%, B 75%, C 5%, dichiarate sulla topologia presentata**; il campionatore registra per ogni campione origine e topologia
+   presentata (D9 a);
+2. **tetto di 8 passaggi per dataset a E = 4, contato sul tempo di origine**; a E = 8 e a 2D i dataset al tetto arrivano a 16 passaggi e il pilot lo
+   misura (D9 a, lettura i);
+3. **amputati di DB8 e DB10 e Zhang random in classe B** (D9 a-bis);
+4. **pesi dentro la classe ∝ ore^0,5**, eccedenza dei dataset al tetto ridistribuita nella classe (D9 a-bis);
+5. **Kaifosh tutto benchmark**, con la sovrapposizione fra i dataset Meta e la natura del suo split pubblico dichiarate (D9 b, D3b);
+6. **split** come in D9 (d): ufficiali dove esistono (emg2pose anche per sessione), altrove 20% (almeno 2) stratificato, seme 0, CSL-hdemg un
+   soggetto di test, DB4/DB5/DB7/DB8 interi nel pretraining, manifest annidati al 12,5/25/50%, sovrapposizioni dichiarate. File firmato:
+   `splits/v1/splits_v1.json` (stesso contenuto di `splits/draft/splits_draft.json`, sha256 cfd1e1f4..., con `draft: false` e la firma);
+7. **ancora RVQ secondo D5b** nel manifest (15 dataset accesi, spenta su putEMG, CSL-hdemg, DB5) (D9 e);
+8. **salti dell'asse dei tempi: segmenti spezzati a ogni salto del sidecar** (D9 f; nel dataloader `split_at_gaps = True`);
+9. **rinfresco di `$SCRATCH` ogni 21 giorni per tutta la ladder** (22/10, 12/11, 03/12, 24/12), ogni giro autorizzato da Simone;
+10. **patch 25 ms** (D10, 1);
+11. **contesto variabile 1-4 s, inizio su multipli di 200 ms dall'inizio della prova** (D10, 2);
+13. **filtraggio nel dataloader** (passa-banda 20-450 Hz adattato alla Nyquist, notch a 50 e 60 Hz, margine 0,5 s dentro il tratto): **deviazione
+    registrata da v10 §4.3** («offline, mai on-the-fly»), da confermare con una misura del ritmo su Leonardo con sessioni vere (costo da dichiarare
+    prima del lancio);
+14. **congelamento di `manifest-v1` autorizzato**: costruttore con `--version manifest-v1 --splits splits/v1/splits_v1.json` (CPU seriale, ~16 min,
+    0 GPU-ora), tag git `manifest-v1`, hash del file in questo registro, `D_t` e `D_c` ricalcolati.
+**Non firmati (03/10):** 12 (masking di D10, compresa la scelta canale singolo / «tubi») e 15-20 (valori del sanity JEPA).
+**Stato:** il job di congelamento aspetta il rinnovo del certificato SSH (scaduto la notte del 03/10: «The agent has no identities»); il push su
+leonardo dei commit dal dataloader in poi pure.
