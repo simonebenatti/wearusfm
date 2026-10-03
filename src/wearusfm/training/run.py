@@ -233,13 +233,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if step % cfg.ckpt_every == 0:
             save()
         if step % 50 == 0 or step == 1:
-            log(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {t_data:.2f} s)")
+            mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
+            log(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {t_data:.2f} s){mem}")
     save()
     metrics.close()
     if reason.startswith("allarme") or reason.startswith("perdita non finita"):
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
-               "device": device}
+               "device": device, "gpu_max_memory_gib": torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None}
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
     log(f"fine: {reason}, passo {step}")
     return summary

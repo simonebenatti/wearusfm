@@ -1418,3 +1418,11 @@ collegato al ciclo).
   cosi' ogni tensore creato senza `device` fa fallire il test come farebbe la GPU; fallisce sul codice vecchio, passa sul nuovo. Due test vecchi
   spegnevano il gradiente per tutto il processo (`set_grad_enabled(False)`), e i moduli torch lanciati insieme fallivano: corretti. Ora gli 11
   moduli torch passano insieme (56 test, `~/.venvs/wearusfm-tok`), piu' 540 della suite senza torch.
+
+**Sanity JEPA job 2: collaudo su GPU ripetuto dopo la correzione** (stessa autorizzazione del 03/10: «se serve il cluster con GPU usalo, ti
+autorizzo»). Stesso `sanity_jepa.sbatch` su `boost_qos_dbg`: 1 GPU, 30 minuti, **costo massimo 0,5 GPU-ora = 4 ore locali**; budget del passo 6:
+usate 0,01 su 100. Scale del job 59264303 (18.980; le 54 sessioni senza tratti lunghi si saltano). Stessa cartella `runs/sanity_0310/`, che non ha
+checkpoint. Scopo: secondi per passo, memoria GPU (ora nel log e in `summary.json`), attese sui dati. **Resta un collaudo.** Il dataloader ha ancora
+i difetti trovati dalla review del 03/10 (i blocchi deformano la distribuzione delle finestre dentro la sessione; manca il margine di 200 ms attorno
+ai tratti costanti), da correggere prima del sanity vero. Il sanity vero ripartira' da zero, non da questo checkpoint. Ancora RVQ spenta.
+Correzioni dello stesso commit: lo sbatch rifiuta un `RUN_DIR` relativo, che dopo il `cd` finirebbe dentro il repo.

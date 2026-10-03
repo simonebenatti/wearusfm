@@ -18,7 +18,9 @@
 
 set -uo pipefail
 MANIFEST="${1:?manifest}"; SCALES="${2:?session_scales.json}"; RUN_DIR="${3:?cartella del run}"; MAX_STEPS="${4:-20000}"
-case "$RUN_DIR" in "$WORK/wearusfm"/*) echo "RUN_DIR dentro il repo: rifiutato"; exit 2;; esac
+case "$RUN_DIR" in /*) ;; *) echo "RUN_DIR relativo (finirebbe dentro il repo dopo il cd): rifiutato"; exit 2;; esac
+case "$RUN_DIR" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*)
+  echo "RUN_DIR dentro il repo: rifiutato"; exit 2;; esac
 cd "$WORK/wearusfm"
 
 module purge
