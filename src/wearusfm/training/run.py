@@ -206,7 +206,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         ema_update(teacher, student, cfg.jepa.ema_momentum)
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
-               "windows": len(batch.signals), **{k: float(v.detach()) for k, v in losses.items()}}
+               "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions, **{k: float(v.detach()) for k, v in losses.items()}}
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
             d = diagnostics(student, teacher, val)
             rec.update({"student_collapse_ratio": d["student_collapse"]["ratio"], "teacher_collapse_ratio": d["teacher_collapse"]["ratio"],

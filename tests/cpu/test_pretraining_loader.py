@@ -138,3 +138,13 @@ def test_filter_removes_mains_and_stays_inside_the_span(tmp_path):
     y = L.read_window(Fake(), None, 1000, 5000, (0, 6000), cfg)
     p50 = lambda z: np.abs(np.fft.rfft(z, axis=-1))[:, int(50 * z.shape[1] / 2000)].mean()  # noqa: E731
     assert y.shape == (12, 4000) and p50(y) < 0.01 * p50(raw[:, 1000:5000])  # rete abbattuta di oltre 40 dB
+
+
+def test_session_without_a_scale_is_skipped_and_counted(tmp_path):
+    root, mpath = _tree(tmp_path)
+    d = root / "ninapro_db2" / "s01" / "session1"
+    np.save(d / "data_int16.npy", np.zeros((18000, 12), dtype=np.int16))  # tutto zero: MAD nullo, la scala non esiste
+    loader = L.PretrainLoader(L.ManifestIndex.load(mpath, [root]), _cfg())
+    b = loader.batch(8, np.random.default_rng(0))
+    assert all(r["dataset"] != "ninapro_db2" for r in b.rows) and "ninapro_db2/s01/session1" in loader.skipped
+    assert "scala di sessione nulla" in loader.skipped["ninapro_db2/s01/session1"]

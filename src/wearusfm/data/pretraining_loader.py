@@ -241,6 +241,7 @@ class PretrainBatch:
     n_patches: list[int]
     rows: list[dict]  # righe del manifest (dataset, unita', classe...) per il logging per topologia
     windows: list[Window]
+    skipped_sessions: int = 0  # sessioni saltate finora da questo processo (scala non calcolabile)
 
 
 class PretrainLoader:
@@ -249,6 +250,7 @@ class PretrainLoader:
         self.scale_cache = scale_cache if scale_cache is not None else {}
         self._open: OrderedDict = OrderedDict()
         self.timings: dict[str, float] = {}  # secondi cumulati per fase (misura del ritmo)
+        self.skipped: dict[str, str] = {}  # sessioni saltate perche' la scala non si calcola (es. MAD nullo): contate, mai in silenzio
 
     def _tick(self, name: str, t0: float) -> float:
         t1 = time.perf_counter()
@@ -275,7 +277,15 @@ class PretrainLoader:
     def sample(self, rng: np.random.Generator) -> tuple[dict, SessionView, Window]:
         for _ in range(self.cfg.max_session_attempts):
             row = self.index.rows[int(rng.choice(len(self.index.rows), p=self.index.weights))]
+            key = f"{row['dataset']}/{row['subject']}/{row['session']}"
+            if key in self.skipped:
+                continue
             view = self.view(row)
+            try:
+                self.scale(row, view, rng)  # la scala di sessione deve esistere: una sessione senza scala si salta e si conta
+            except (ValueError, FloatingPointError) as e:
+                self.skipped[key] = f"{type(e).__name__}: {e}"
+                continue
             win = sample_window(view, self.cfg, rng)
             if win is not None:
                 return row, view, win
@@ -313,7 +323,7 @@ class PretrainLoader:
         packed_codes = CC.AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in
                                          ("region", "compartment_weights", "muscle", "muscle_known", "topology")])
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
-                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins)
+                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped))
 
 
 def to_model_inputs(batch: PretrainBatch):
