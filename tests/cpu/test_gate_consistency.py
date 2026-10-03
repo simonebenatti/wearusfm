@@ -64,8 +64,8 @@ def test_draw_windows_copies_instead_of_viewing_the_session():
     assert all(x.data.base is None and not np.shares_memory(x.data, data) for x in w)
 
 
+@torch.no_grad()  # non globale: i moduli di test successivi allenano (backward)
 def test_features_case_real_frontend_vs_frontend_without_delta_t():
-    torch.set_grad_enabled(False)
     windows = G.draw_windows(_sessions(), 4, np.random.default_rng(0))
     ok = G.features_case(ContinuousKernelFrontEnd(seed=0), windows, 450.0, 2)
     assert ok["rel_error"]["total"] < 0.01 and all(v < 0.01 for v in ok["rel_error"].values())

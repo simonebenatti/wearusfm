@@ -60,28 +60,30 @@ def ema_update(teacher: torch.nn.Module, student: torch.nn.Module, momentum: flo
 def hidden_queries(hidden: torch.Tensor, counts: list[int]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Tutti i token nascosti (canale impacchettato, istante), in ordine di canale e quindi raggruppati per campione; offset delle query."""
     ch, t = torch.nonzero(hidden, as_tuple=True)
-    bounds = torch.cumsum(torch.as_tensor([0, *counts]), 0)
-    per_sample = torch.stack([((ch >= a) & (ch < b)).sum() for a, b in zip(bounds[:-1], bounds[1:])])
-    return ch, t, torch.cat([torch.zeros(1, dtype=torch.long), torch.cumsum(per_sample, 0)])
+    bounds = torch.cumsum(torch.as_tensor([0, *counts], device=hidden.device), 0)
+    return ch, t, torch.searchsorted(ch, bounds)  # ch e' ordinato: l'offset del campione s e' la prima query con canale >= bounds[s]
 
 
 def gather_anchor_targets(targets: list[AnchorTargets], counts: list[int], q_ch: torch.Tensor, q_t: torch.Tensor) -> dict[str, torch.Tensor]:
-    """Dai target per campione (`anchor_targets`, calcolati dal dataloader sul segnale pulito) ai target per query."""
-    offs = np.cumsum([0, *counts])
-    out: dict[str, list] = {k: [] for k in ("log_rms", "rms_valid", "band_shape", "spec_valid", "log_env", "env_valid", "band_available")}
-    for c, t in zip(q_ch.tolist(), q_t.tolist()):
-        s = int(np.searchsorted(offs, c, side="right") - 1)
-        tg, cc = targets[s], c - offs[s]
-        inside = t < tg.log_rms.shape[1]
-        for k in ("log_rms", "log_env"):
-            out[k].append(float(getattr(tg, k)[cc, t]) if inside else 0.0)
-        out["rms_valid"].append(bool(tg.rms_valid[cc, t]) if inside else False)
-        out["env_valid"].append(bool(tg.env_valid[cc, t]) if inside else False)
-        out["spec_valid"].append(bool(tg.spec_valid[cc, t]) if inside else False)
-        out["band_shape"].append(tg.band_shape[cc, t] if inside else np.zeros(tg.band_shape.shape[2]))
-        out["band_available"].append(tg.band_available[cc])
-    res = {k: torch.as_tensor(np.asarray(v)) for k, v in out.items()}
-    return {k: (v.float() if v.is_floating_point() else v) for k, v in res.items()}
+    """Dai target per campione (`anchor_targets`, calcolati dal dataloader sul segnale pulito) ai target per query, sul dispositivo delle query.
+    Una query oltre la fine dei target del suo campione ha valori nulli e non e' valida."""
+    c_tot, n_b = sum(counts), targets[0].band_shape.shape[2]
+    ch, t = q_ch.cpu().numpy(), q_t.cpu().numpy()
+    p = max([tg.log_rms.shape[1] for tg in targets] + [int(t.max()) + 1 if t.size else 1])
+    full = {"log_rms": np.zeros((c_tot, p), np.float32), "log_env": np.zeros((c_tot, p), np.float32),
+            "rms_valid": np.zeros((c_tot, p), bool), "env_valid": np.zeros((c_tot, p), bool), "spec_valid": np.zeros((c_tot, p), bool),
+            "band_shape": np.zeros((c_tot, p, n_b), np.float32)}
+    band_available = np.zeros((c_tot, n_b), bool)
+    a = 0
+    for tg, c in zip(targets, counts):
+        n = tg.log_rms.shape[1]
+        for k, v in full.items():
+            v[a:a + c, :n] = getattr(tg, k)
+        band_available[a:a + c] = tg.band_available
+        a += c
+    out = {k: torch.from_numpy(np.ascontiguousarray(v[ch, t])) for k, v in full.items()}
+    out["band_available"] = torch.from_numpy(band_available[ch])
+    return {k: v.to(q_ch.device) for k, v in out.items()}
 
 
 def effective_rank(x: torch.Tensor) -> float:
@@ -120,17 +122,19 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         c_tot, p = hidden.shape
         w = p // per
         # solo slab: finestre nascoste su TUTTI i canali validi del campione, mai il masking di canale (v10 §6.3)
-        win = torch.zeros(c_tot, w, dtype=torch.bool)
+        dev = hidden.device
+        win = torch.zeros(c_tot, w, dtype=torch.bool, device=dev)
         bounds = np.cumsum([0, *inp.counts])
         for a, b in zip(bounds[:-1], bounds[1:]):
             ok = inp.qc_valid[a:b]
-            slab = hidden[a:b][ok][:, : w * per].all(dim=0).reshape(w, per).all(dim=-1) if bool(ok.any()) else torch.zeros(w, dtype=torch.bool)
+            slab = (hidden[a:b][ok][:, : w * per].all(dim=0).reshape(w, per).all(dim=-1) if bool(ok.any())
+                    else torch.zeros(w, dtype=torch.bool, device=dev))
             win[a:b] = slab[None, :] & ok[:, None]
         win &= rvq_on[:, None]
         wc, ww = torch.nonzero(win, as_tuple=True)
-        index = torch.full((c_tot, p), -1, dtype=torch.long)
-        index[q_ch, q_t] = torch.arange(q_ch.numel())
-        rows = index[wc[:, None], ww[:, None] * per + torch.arange(per)[None, :]]  # (N, 8), tutte query nascoste per costruzione
+        index = torch.full((c_tot, p), -1, dtype=torch.long, device=dev)
+        index[q_ch, q_t] = torch.arange(q_ch.numel(), device=dev)
+        rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste per costruzione
         losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), rvq_codes(wc, ww)) if wc.numel() else h.sum() * 0.0
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total

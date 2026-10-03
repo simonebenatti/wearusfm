@@ -143,13 +143,14 @@ class ContinuousKernelFrontEnd(nn.Module):
         span = float(times.max() - times.min()) if times.numel() else 0.0
         n_fft = 1 << int(math.ceil(math.log2(max(4 * n_ref, 2 * (span + self.patch_s) * self.ref_fs + 1))))
         spec = torch.fft.rfft(k, n=n_fft, dim=1)  # (d, n_bins)
-        freqs = torch.arange(spec.shape[1], dtype=torch.float64) * self.ref_fs / n_fft
+        dev = k.device  # tutto sul dispositivo dei parametri (su GPU un tensore creato senza `device` resta sulla CPU)
+        freqs = torch.arange(spec.shape[1], dtype=torch.float64, device=dev) * self.ref_fs / n_fft
         spec = spec * self._lowpass_response(freqs, fs)[None, :]
-        weights = torch.full((spec.shape[1],), 2.0, dtype=torch.float64)
+        weights = torch.full((spec.shape[1],), 2.0, dtype=torch.float64, device=dev)
         weights[0] = 1.0
         if n_fft % 2 == 0:
             weights[-1] = 1.0
-        u = times.to(torch.float64) - 0.5 / self.ref_fs  # il campione fine i sta all'istante (i + 0,5)/ref_fs
+        u = times.to(device=dev, dtype=torch.float64) - 0.5 / self.ref_fs  # il campione fine i sta all'istante (i + 0,5)/ref_fs
         phase = 2 * math.pi * freqs[None, :] * u[:, None]  # (n_times, n_bins)
         out = (spec.real * weights) @ torch.cos(phase).T - (spec.imag * weights) @ torch.sin(phase).T
         return out / n_fft
@@ -170,11 +171,12 @@ class ContinuousKernelFrontEnd(nn.Module):
         uniq, inv = np.unique(keys, return_inverse=True)
         rel = uniq[:, None] / 1e9 + (np.arange(n_max)[None, :] - m) / fs  # (n_u, n_max) istanti relativi all'inizio della patch
         valid = (rel >= -self.context_s - 1e-12) & (rel < self.patch_s + self.context_s - 1e-12)
+        dev = x.device
         w = self.kernels_at(torch.from_numpy(rel.reshape(-1)), fs).T.reshape(len(uniq), n_max, -1)  # (n_u, n_max, d)
-        w = w * torch.from_numpy(valid)[..., None].to(w.dtype)
+        w = w * torch.from_numpy(valid).to(device=dev, dtype=w.dtype)[..., None]
         idx = starts[:, None] - m + np.arange(n_max)[None, :]
         inside = (idx >= 0) & (idx < n)  # fuori dal segnale: zeri
         idx = np.clip(idx, 0, n - 1)
-        xg = x.to(torch.float64)[..., torch.from_numpy(idx)]  # (B, C, n_patch, n_max)
-        xg = xg * torch.from_numpy(inside).to(xg.dtype)
-        return torch.einsum("bcpj,pjd->bcpd", xg, w[torch.from_numpy(inv)]) / fs  # fattore Δt
+        xg = x.to(torch.float64)[..., torch.from_numpy(idx).to(dev)]  # (B, C, n_patch, n_max)
+        xg = xg * torch.from_numpy(inside).to(device=dev, dtype=xg.dtype)
+        return torch.einsum("bcpj,pjd->bcpd", xg, w[torch.from_numpy(inv).to(dev)]) / fs  # fattore Δt

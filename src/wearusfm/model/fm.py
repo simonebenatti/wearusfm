@@ -75,12 +75,13 @@ def zero_hidden_samples(signals: list[torch.Tensor], fs: list[float], visible: t
         vis = visible[a:a + c]
         a += c
         n = x.shape[-1]
-        p = torch.arange(vis.shape[1])
-        start = torch.ceil(p * patch_s * f - 1e-9).long().clamp(max=n)
-        stop = torch.ceil((p + 1) * patch_s * f - 1e-9).long().clamp(max=n)
+        p = torch.arange(vis.shape[1] + 1, device=x.device)
+        bounds = torch.ceil(p * patch_s * f - 1e-9).long()  # inizio delle patch 0..P (l'ultimo = fine della P-1)
+        # patch di ogni campione; i campioni oltre l'ultima patch (resto finale) restano come sono
+        patch_of = torch.searchsorted(bounds, torch.arange(n, device=x.device), right=True) - 1
+        in_patch = patch_of < vis.shape[1]
         keep = torch.ones(c, n, dtype=torch.bool, device=x.device)
-        for j in torch.nonzero(~vis.all(dim=0)).flatten().tolist():
-            keep[~vis[:, j], start[j]:stop[j]] = False
+        keep[:, in_patch] = vis[:, patch_of[in_patch]]
         out.append(x * keep.to(x.dtype))
     return out
 

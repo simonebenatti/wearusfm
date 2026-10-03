@@ -126,8 +126,9 @@ def diagnostics(student: WearUsFM, teacher: WearUsFM, val: tuple, n_probe: int =
         enc = model.encode(inp, None)
         p = int(enc.key_time_valid.sum(dim=1).min())
         n_ch = min(inp.counts[0], n_probe)
-        probe_t = torch.linspace(0, max(p - 1, 0), steps=n_probe).round().long()
-        probe_q = enc.ids[torch.arange(n_probe) % n_ch]
+        dev = enc.z.device
+        probe_t = torch.linspace(0, max(p - 1, 0), steps=n_probe, device=dev).round().long()
+        probe_q = enc.ids[torch.arange(n_probe, device=dev) % n_ch]
         out[f"{name}_collapse"] = probe_query_collapse(model.decoder, enc.z, probe_q, probe_t, enc.key_time_valid)
         zt = enc.z.mean(dim=2)[enc.key_time_valid]  # (istanti validi, d)
         out[f"{name}_erank"] = effective_rank(zt)
@@ -174,9 +175,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         opt.load_state_dict(state["optimizer"])
         step = int(state["step"])
         monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
-        torch.set_rng_state(state["torch_rng"])
+        torch.set_rng_state(state["torch_rng"].cpu())  # map_location porta anche lo stato casuale sulla GPU: set_rng_state vuole la CPU
         if torch.cuda.is_available() and state.get("cuda_rng") is not None:
-            torch.cuda.set_rng_state_all(state["cuda_rng"])
+            torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
         log(f"ripresa dal passo {step}")
     (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})

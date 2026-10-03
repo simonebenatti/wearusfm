@@ -1401,3 +1401,20 @@ locali**; budget del passo 6: 100 GPU-ora, usate 0 prima di questo job. Preset `
 scale del job 59254061 (le 195 mancanti si calcolano al volo), cartella `$WORK/wearusfm_runs/runs/sanity_0310/`. Misura: secondi per passo, memoria
 GPU, attese sui dati; se regge, il sanity continua dallo stesso checkpoint su `boost_usr_prod`. **Ancora RVQ spenta** (tokenizer non ancora
 collegato al ciclo).
+
+**Esiti dei due job del 03/10 pomeriggio** (letti alle 20:15: la sessione di AG era ferma per il limite d'uso; controllo automatico cancellato):
+- **Rimisura del ritmo, job 59264303** (`lrd_all_serial`, 4 CPU, 5 min 20 s, 0 GPU-ora; sha256 `throughput.json` fb1c94a7..., `session_scales.json`
+  eccecc00..., uguali su cluster e Mac): dataloader a blocchi **5,9-8,0 finestre/s per processo senza filtro, 5,8-8,5 con il filtro**, contro ~8,5
+  richieste: 3-4 volte meglio di 59254061, **ancora sotto** (un processo su quattro alla soglia). La lettura non e' piu' il collo di bottiglia
+  (lettura e filtro 10%): **target delle ancore 55-66% del tempo**, maschera 14-17%. Scale: 141 delle 195 mancanti calcolate col metodo nuovo; **54
+  sessioni di emg2pose non hanno nessun tratto lungo almeno 1 s fra due salti**: nessuna finestra estraibile, il loader le salta e le conta (tempo
+  non campionabile, D9 §f).
+- **Sanity JEPA job 1, 59264349: FALLITO al primo passo dopo 35 s** (exit 1, nessun checkpoint, nessun `STOP`): `RuntimeError: Expected all
+  tensors to be on the same device` nel front-end. Tensori creati senza `device` restavano sulla CPU: bug di AG, i test giravano solo sulla CPU.
+  **Costo: 35 s x 1 GPU = 0,01 GPU-ora**; budget del passo 6: usate 0,01 su 100.
+- **Correzione** (commit di questa registrazione): tensori sul dispositivo del modello nel front-end, in `zero_hidden_samples` (ora vettoriale),
+  `hidden_queries`, `gather_anchor_targets` (ora vettoriale), nel ramo RVQ e nella diagnostica. Alla ripresa lo stato casuale salvato torna sulla
+  CPU: con `map_location` sulla GPU `set_rng_state` falliva (verificato). **Test nuovo:** modello sulla CPU e dispositivo di default MPS (il Mac),
+  cosi' ogni tensore creato senza `device` fa fallire il test come farebbe la GPU; fallisce sul codice vecchio, passa sul nuovo. Due test vecchi
+  spegnevano il gradiente per tutto il processo (`set_grad_enabled(False)`), e i moduli torch lanciati insieme fallivano: corretti. Ora gli 11
+  moduli torch passano insieme (56 test, `~/.venvs/wearusfm-tok`), piu' 540 della suite senza torch.

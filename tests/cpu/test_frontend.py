@@ -21,8 +21,10 @@ def _rel(a, b, s=slice(None)):
 
 @pytest.fixture(scope="module")
 def fe():
+    prev = torch.is_grad_enabled()  # lo stato globale si ripristina: i moduli di test successivi allenano (backward)
     torch.set_grad_enabled(False)
-    return ContinuousKernelFrontEnd(seed=0)
+    yield ContinuousKernelFrontEnd(seed=0)
+    torch.set_grad_enabled(prev)
 
 
 def test_shapes_and_families(fe):
