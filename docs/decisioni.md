@@ -1453,3 +1453,9 @@ conferma»):
 Restano da decidere (rapporto a Simone): il transitorio del filtro ai bordi dei tratti e l'altro braccio di emg2pose (540 registrazioni con la
 mano ferma nel pretraining e quella in movimento nel test, 7,3 h). Sono correzioni minori il ripristino in `qc_relative_check.py` e i test
 mancanti sull'esclusione delle righe di test.
+
+**Misura del ritmo e scale, terzo giro** (stessa autorizzazione del 03/10, «Misura del ritmo del loader: ... vai pure quando sei pront. accetto la
+proposta»): `measure_loader.sbatch` su `lrd_all_serial` con 8 CPU, 30 GB e 3 h (opzioni da riga di comando), **0 GPU-ora**. Ricalcola **tutte**
+le scale col metodo nuovo (solo tratti lunghi): le 18.839 del job 59254061 erano col metodo vecchio. Il seme e' lo stesso, quindi cambiano solo
+le sessioni con tratti corti fra salti. Poi misura il ritmo con la lettura a tessere e i target veloci, su 8 processi come su un nodo GPU (8 CPU
+per GPU). Soglia invariata: ~8,5 finestre/s per processo.
