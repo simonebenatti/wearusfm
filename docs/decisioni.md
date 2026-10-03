@@ -1536,3 +1536,19 @@ revisione e cancellava le successive; test) e il test mancante sull'esclusione d
 10. **Transitorio del filtro ai bordi dei tratti** (decisione 13: margine dentro il tratto). Nella prima patch l'errore rispetto al filtraggio di un
     segnale lungo e' del 45-55%, nei primi 200 ms del 16-20%: riguarda tutte le finestre di CapgMyo e gli inizi di prova e di segmento. Opzioni:
     accettarlo e dichiararlo, oppure togliere dalle perdite delle ancore le patch entro ~100 ms da un bordo.
+
+**Sanity JEPA job 3, collaudo 59277074: RIUSCITO** (COMPLETED, 26 min 18 s, fermato dal limite di tempo dopo 621 passi; nodo lrdn2960;
+`summary.json`, `metrics.jsonl` e log in `~/wearusfm_local/reports/passo6/`, sul cluster in `runs/sanity_0310_c3/`). **Costo 26 min 18 s x 1 GPU =
+0,44 GPU-ora**; budget del passo 6: usate 0,47 su 100.
+- **Ritmo:** 2,4 s per passo col batch da 32, cioe' ~13 finestre/s per GPU. La GPU e' il collo di bottiglia: attesa sui dati 0,03 s per passo
+  dopo il riscaldamento, con 6 processi del dataloader. **Memoria GPU massima 17,9 GiB** su 64.
+- **Perdite** (medie su 50 passi, passo 0, 100, ..., 600): totale 0,90 -> 0,23; JEPA 0,146 -> 0,0033; log-RMS 0,69 -> 0,39; forma spettrale
+  2,55 -> 0,47; inviluppo 0,52 -> 0,26; norma del gradiente 9,3 -> 1,2 (clip a 1). Nessuna perdita non finita. JEPA per tipo di maschera quasi
+  uguale (corta 0,0031, spaziale 0,0030), slab un po' piu' alta (0,0042).
+- **Diagnostiche al passo 500** (soglie firmate, decisione 16): rapporto di collasso studente 0,50, teacher 0,22 (soglia 0,05); rango effettivo
+  studente 82,5, teacher 89,7 (soglia 38,4). **Nessun allarme.**
+- **Da guardare, senza soglia (nessuna soglia si inventa dopo aver guardato):** le varianze assolute delle uscite del decoder sono piccole
+  rispetto alla varianza unitaria data dalla LayerNorm finale: fra campioni 0,008 (studente) e 0,003 (teacher), fra query 0,016. Le uscite hanno
+  quindi una grande componente comune a tutte le query e a tutti i campioni, ed e' il caso che rapporto e rango non vedono (review del modello,
+  M2). Siamo dentro il warmup (1.000 passi): conta come evolvono nel sanity vero. Se Simone vuole un terzo allarme su queste varianze, va scritto e
+  congelato prima del lancio.
