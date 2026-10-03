@@ -1390,3 +1390,14 @@ non finita i job successivi riprendevano ad allenare: ora `train` scrive `STOP` 
 escono subito; (2) lo stato casuale di torch (CPU e GPU) ora sta nel checkpoint; (3) `scripts/slurm/submit_chain.sh` sottomette N job con
 `--dependency=afterok`: un job che fallisce ferma la catena, un'uscita pulita al limite di tempo la fa proseguire. Il limite di `boost_qos_dbg`
 («max 2 job») per una catena va verificato sulla configurazione della QoS.
+
+**QoS `boost_qos_dbg` (letta con `sacctmgr`, 03/10/2026):** MaxWall 30 min, **MaxJobsPU 2 e MaxSubmitPU 2** (anche i job in attesa per dipendenza
+contano): una catena piu' lunga di 2 job li' non entra. Il sanity vero va su `boost_usr_prod` (QoS normale, fino a 24 h); `boost_qos_dbg` per i
+collaudi.
+
+**Sanity JEPA — job 1, collaudo su GPU** (uso del cluster con GPU autorizzato da Simone il 03/10/2026: «se serve il cluster con GPU usalo, ti
+autorizzo»): `scripts/slurm/sanity_jepa.sbatch` su `boost_qos_dbg`, 1 GPU, 30 minuti (si ferma da solo a 26), **costo massimo 0,5 GPU-ora = 4 ore
+locali**; budget del passo 6: 100 GPU-ora, usate 0 prima di questo job. Preset `sanity` (28,2 M parametri, valori firmati), dataloader a blocchi,
+scale del job 59254061 (le 195 mancanti si calcolano al volo), cartella `$WORK/wearusfm_runs/runs/sanity_0310/`. Misura: secondi per passo, memoria
+GPU, attese sui dati; se regge, il sanity continua dallo stesso checkpoint su `boost_usr_prod`. **Ancora RVQ spenta** (tokenizer non ancora
+collegato al ciclo).
