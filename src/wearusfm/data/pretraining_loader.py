@@ -21,6 +21,7 @@ from __future__ import annotations
 import gzip
 import json
 import math
+import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -247,6 +248,12 @@ class PretrainLoader:
         self.index, self.cfg = index, cfg
         self.scale_cache = scale_cache if scale_cache is not None else {}
         self._open: OrderedDict = OrderedDict()
+        self.timings: dict[str, float] = {}  # secondi cumulati per fase (misura del ritmo)
+
+    def _tick(self, name: str, t0: float) -> float:
+        t1 = time.perf_counter()
+        self.timings[name] = self.timings.get(name, 0.0) + (t1 - t0)
+        return t1
 
     def view(self, row: dict) -> SessionView:
         key = (row["dataset"], row["subject"], row["session"])
@@ -275,24 +282,32 @@ class PretrainLoader:
         raise RuntimeError(f"nessuna finestra valida in {self.cfg.max_session_attempts} sessioni estratte")
 
     def batch(self, batch_size: int, rng: np.random.Generator) -> PretrainBatch:
+        t = time.perf_counter()
         picked = [self.sample(rng) for _ in range(batch_size)]
+        t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
         signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins = ([] for _ in range(12))
         for row, view, win in picked:
-            x = read_window(view, win.trial, win.start, win.stop, win.span, self.cfg) / np.float32(self.scale(row, view, rng))
+            s = self.scale(row, view, rng)
+            t = self._tick("scala", t)
+            x = read_window(view, win.trial, win.start, win.stop, win.span, self.cfg) / np.float32(s)
+            t = self._tick("lettura_e_filtro", t)
             layout = CC.layout_from_montage(view.montage)
             code = CC.anatomy_codes(view.montage)
             v, k = MK.generate_mask(layout, code.compartment_weights.argmax(axis=1), win.n_patches, p_max, row["rvq"] == "on", self.cfg.mask, rng)
+            t = self._tick("maschera", t)
             signals.append(x)
             fs.append(view.fs)
             counts.append(layout.n_channels)
             qc.append(view.qc_valid)
             codes.append(code)
             sets.append(CC.attention_sets(layout, self.cfg.k_neighbors))
+            t = self._tick("codici_e_vicini", t)
             vis.append(v)
             kind.append(k)
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms))
+            t = self._tick("target_ancore", t)
             rows.append(row)
             wins.append(win)
         packed_codes = CC.AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in

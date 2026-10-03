@@ -1339,3 +1339,23 @@ Sui fogli `docs/fogli_firma_d9_d10.md` (preparati da AG il 03/10). **Firmati:**
 **Non firmati (03/10):** 12 (masking di D10, compresa la scelta canale singolo / «tubi») e 15-20 (valori del sanity JEPA).
 **Stato:** il job di congelamento aspetta il rinnovo del certificato SSH (scaduto la notte del 03/10: «The agent has no identities»); il push su
 leonardo dei commit dal dataloader in poi pure.
+
+## Masking (D10) e valori del sanity JEPA firmati (Simone, 03/10/2026: «firmo 12 (masking) e 15-20 (valori del sanity)»)
+
+Sui fogli `docs/fogli_firma_d9_d10.md`. **Firmati:**
+12. **masking D10**: quote **attese** sui token nascosti (temporale corta 15%, media 25%, lunga 20%, spaziale 40%), meta' del temporale medio-lungo
+    come slab RVQ allineati sui dataset con l'ancora accesa, spaziale al piu' meta' dei canali validi; **maschera temporale non slab = intervallo su
+    un gruppo spaziale («tubi», proposta b)**: arco d'anello, rettangolo di griglia, canale o compartimento sui montaggi sparsi (implementazione:
+    stesso commit di questa registrazione, `training/masking.py`, con test). **D10 e' firmata per intero** (patch, contesto, masking);
+15. **frazione nascosta 0,5**, fissa per il sanity JEPA e per la finestra 1, non scelta sui risultati; se il sanity collassa si riapre come
+    decisione nuova;
+16. **soglie d'allarme** (valutate ogni 500 passi su un batch fisso di validazione): **collasso da query** se il rapporto varianza fra campioni a
+    query fissa / varianza fra query e' sotto **0,05** per 3 valutazioni di fila; **rango effettivo** delle uscite del backbone (medie per istante)
+    sotto **il 10% della dimensione** del modello per 3 valutazioni di fila. Un allarme ferma il run;
+17. **sanity JEPA su emg2qwerty**;
+18. **peso complessivo delle ancore 0,2; momento EMA del teacher 0,996 costante** per il sanity (lo schedule vero e' D14);
+19. **dropout del livello muscolo 0,4** (D15, anticipata);
+20. **target JEPA (b)** per il sanity (uscita del decoder a query del teacher); D11 vera si chiude prima del passo 7, (a) fra le ablation della
+    finestra 1.
+**Autorizzato anche** (stesso messaggio: «sì, via alla misura con le scale di sessione»): misura del ritmo del dataloader su Leonardo (conferma
+della decisione 13) e calcolo delle scale di sessione di tutte le sessioni di pretraining; CPU seriale, 0 GPU-ora.

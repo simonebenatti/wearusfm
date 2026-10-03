@@ -109,7 +109,7 @@ budget di 0,5; quote realizzate (50 campioni per montaggio) corta 15-16%, media 
 **Da scegliere:** una maschera temporale (non slab) nasconde (a) **un canale solo**, oggi nel codice, oppure (b) **un gruppo spaziale** (arco
 d'anello, rettangolo di griglia, compartimento): sulle griglie dense (a) e' un compito facile, perche' i vicini sono visibili. **Proposta di AG:**
 (b), «tubi» come in V-JEPA; sui montaggi sparsi il gruppo puo' essere un canale solo. Modifica piccola, con test.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 13. Filtraggio — nuova (v10 §4.3)
 
@@ -141,7 +141,7 @@ prima del lancio.
 
 **Proposta di AG:** 0,5, fissa per il sanity e per la finestra 1, senza sceglierla sui risultati (v10 non da' un numero; non propongo un valore
 dalla letteratura senza averlo verificato). Un'ablation sul masking non e' nel piano; se il sanity collassa, la si riapre come decisione nuova.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 16. Soglie d'allarme delle diagnostiche (v10 §7.1)
 
@@ -152,31 +152,31 @@ dalla letteratura senza averlo verificato). Un'ablation sul masking non e' nel p
   valutazioni di fila.
 Le soglie sono mie, non da v10: l'idea e' fermarsi su un collasso evidente, non su un calo. Un allarme ferma il run e si guarda prima di
 continuare.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 17. Dataset del sanity
 
 **Proposta di AG:** emg2qwerty (317 h di pretraining, un solo dispositivo, due anelli da 16 a 2 kHz, ancora RVQ accesa). **Alternativa:** emg2pose
 (un anello, 288 h).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 18. Peso delle ancore e momento EMA
 
 **Proposta di AG:** peso complessivo delle ancore 0,2 (centro dell'intervallo 0,1-0,3 di v10 §6.2); momento EMA del teacher 0,996 costante per il
 sanity (valore di lavoro; lo schedule vero e' D14, prima della finestra 1).
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 19. Dropout del livello muscolo (D15, anticipata)
 
 **Proposta:** 0,4, la proposta del piano (§12), cosi' il sanity usa gia' il valore della finestra 1. Su emg2qwerty nessun canale ha il muscolo
 noto, quindi per il sanity non cambia nulla; conta dalla finestra 1.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ### 20. Target JEPA per il sanity (D11)
 
 **Proposta:** (b), uscita del decoder a query del teacher (default di lavoro del piano), con la diagnostica della decisione 16 attiva dal primo
 passo. D11 vera si chiude prima del passo 7: (a) entra comunque fra le ablation della finestra 1.
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo — *non ancora firmato (03/10)*
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 12 (masking) e 15-20 (valori del sanity)»)
 
 ---
 

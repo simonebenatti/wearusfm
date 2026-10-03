@@ -83,3 +83,20 @@ def test_spec_checks_and_determinism():
     b = M.generate_mask(lay, comp, 80, 80, True, M.MaskSpec.d10_proposal(0.5), np.random.default_rng(7))[1]
     c = M.generate_mask(lay, comp, 80, 80, True, M.MaskSpec.d10_proposal(0.5), np.random.default_rng(8))[1]
     assert np.array_equal(a, b) and not np.array_equal(a, c)
+
+
+def test_temporal_masks_are_tubes_on_spatial_groups():
+    """D10, decisione 12 (03/10/2026): una maschera temporale non slab nasconde un intervallo su un gruppo spaziale."""
+    rng = np.random.default_rng(5)
+    lay, comp = _setup(capgmyo.build_montage_metadata(1))
+    for _ in range(20):
+        rows, t0, t1 = M.draw_tube(lay, comp, np.ones(128, dtype=bool), 160, 4, 12, rng)
+        rc = lay.grid_rc[rows]
+        assert 4 <= t1 - t0 <= 12 and len(rows) == (np.ptp(rc[:, 0]) + 1) * (np.ptp(rc[:, 1]) + 1)  # rettangolo
+    lay, comp = _setup(emg2pose.build_montage_metadata("u1", "s", "left"))
+    for _ in range(20):
+        rows, t0, t1 = M.draw_tube(lay, comp, np.ones(16, dtype=bool), 40, 20, 80, rng)
+        g = sorted(rows.tolist())
+        assert t1 - t0 <= 40 and (np.diff(g + [g[0] + 16]) == 1).sum() >= len(g) - 1  # arco contiguo, al piu' la finestra
+    _, kind = M.generate_mask(lay, comp, 160, 160, False, M.MaskSpec(0.3, 0.0, 1.0, 0.0, 0.0), np.random.default_rng(0))
+    assert ((kind == M.MEDIUM).sum(axis=0) > 1).any()  # a uno stesso istante un tubo copre piu' di un canale

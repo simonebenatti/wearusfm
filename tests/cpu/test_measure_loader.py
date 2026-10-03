@@ -1,0 +1,31 @@
+"""scripts/measure_loader.py lanciato come processo, sull'albero sintetico del test del dataloader: scale di sessione e misura del ritmo."""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from test_pretraining_loader import SIGMA, _tree
+
+SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "measure_loader.py"
+
+
+def test_scales_and_rate_end_to_end(tmp_path):
+    root, mpath = _tree(tmp_path)
+    out = tmp_path / "out"
+    r = subprocess.run([sys.executable, str(SCRIPT), "--manifest", str(mpath), "--root", str(root), "--out-dir", str(out), "--workers", "2",
+                        "--batches", "2", "--batch-size", "3"], capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, r.stderr[-2000:]
+    sc = json.loads((out / "session_scales.json").read_text())
+    assert sc["n_sessions"] == 3 and not sc["errors"] and set(sc["scales"]) == {"emg2pose/u1/sessA", "ninapro_db2/s01/session1", "capgmyo/s01/s"}
+    for key, fs in (("emg2pose/u1/sessA", 2000.0), ("ninapro_db2/s01/session1", 2000.0), ("capgmyo/s01/s", 1000.0)):
+        kept = (min(450.0, 0.45 * fs) - 20.0) / (fs / 2.0)  # rumore bianco filtrato 20-450 Hz: resta questa frazione di potenza
+        assert sc["scales"][key] == pytest.approx(0.6745 * SIGMA * kept ** 0.5, rel=0.1)  # MAD = 0,6745 sigma (meno un poco per i notch)
+    th = json.loads((out / "throughput.json").read_text())
+    assert [run["filter"] for run in th["runs"]] == [None, [20.0, 450.0]]
+    for run in th["runs"]:
+        assert len(run["per_process_windows_per_s"]) == 2 and all(v > 0 for v in run["per_process_windows_per_s"])
+        assert abs(sum(run["stage_fraction"].values()) - 1.0) < 1e-9 and "lettura_e_filtro" in run["stage_fraction"]
+    assert "ritmo, filtro" in r.stdout

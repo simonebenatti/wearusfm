@@ -15,9 +15,9 @@ prima del sanity JEPA):
 - spaziale: 40%: canali singoli, archi contigui sugli anelli, rettangoli sulle griglie, gruppi dello stesso compartimento sui montaggi sparsi; al piu'
   meta' dei canali validi.
 
-*Interpretazioni di AG, da confermare con D10:* una maschera temporale che non e' uno slab nasconde un intervallo su **un solo canale** (punto aperto
-per la firma: su una griglia densa e' un compito facile, i vicini sono visibili; l'alternativa e' l'intervallo su un gruppo spaziale, un arco o un
-rettangolo, come i «tubi» di V-JEPA); uno slab lo
+**D10 firmata il 03/10/2026** (decisione 12): una maschera temporale che non e' uno slab nasconde un intervallo su un **gruppo spaziale** («tubi»,
+come in V-JEPA: arco d'anello, rettangolo di griglia, canale o compartimento sui montaggi sparsi, le stesse forme del masking spaziale), non su un
+canale solo, che sulle griglie dense sarebbe un compito facile; uno slab lo
 nasconde su **tutti** i canali (ancora RVQ, v10 §6.3); una maschera spaziale nasconde i canali scelti **per tutta la finestra**. Le quote si
 riempiono a token nuovi nascosti, con un numero massimo di tentativi; le sovrapposizioni contano una volta sola. I canali scartati dal QC non si
 scelgono e non contano nel budget. Gli slab cominciano su multipli di 8 patch: la finestra comincia su un multiplo di 200 ms dall'inizio della prova
@@ -85,6 +85,15 @@ def _spatial_groups(layout: ChannelLayout, compartment: np.ndarray, valid: np.nd
     return [int(c0)] if rng.random() < 0.5 else [int(m) for m in same]  # canale singolo o gruppo anatomico
 
 
+def draw_tube(layout: ChannelLayout, compartment: np.ndarray, valid: np.ndarray, n_patches: int, lo: int, hi: int,
+              rng: np.random.Generator) -> tuple[np.ndarray, int, int]:
+    """Una maschera temporale «a tubo» (D10, decisione 12): intervallo di lo..hi patch (al piu' n_patches) su un gruppo spaziale."""
+    top = min(hi, n_patches)
+    ln = int(rng.integers(lo, top + 1))
+    t0 = int(rng.integers(0, n_patches - ln + 1))
+    return np.asarray(_spatial_groups(layout, compartment, valid, rng)), t0, t0 + ln
+
+
 def _slab_lengths(lo: int, hi: int, cap: int) -> list[int]:
     lo8 = -(-lo // SLAB_PATCHES) * SLAB_PATCHES  # minimo della scala arrotondato al multiplo di 8 successivo (media: 8; lunga: 24)
     return list(range(lo8, min(hi, cap) + 1, SLAB_PATCHES))
@@ -112,16 +121,17 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
     max_sp = int(np.floor(spec.max_spatial_fraction * n_ch))
     long_cap = n_patches // 2
     probe = np.random.default_rng(rng.integers(2**32))  # stima della dimensione attesa dei gruppi spaziali, senza toccare rng
-    sp_size = np.mean([len(_spatial_groups(layout, compartment, valid, probe)) for _ in range(20)]) * n_patches
+    g_mean = float(np.mean([len(_spatial_groups(layout, compartment, valid, probe)) for _ in range(20)]))
+    sp_size = g_mean * n_patches
 
     # (tipo, dimensione attesa in token, quota)
     lens_med_slab = _slab_lengths(*spec.medium, n_patches)
     lens_long_slab = _slab_lengths(spec.long[0], spec.long[1], long_cap)
     comps = {
-        (SHORT, False): (np.mean(spec.short), spec.share_short),
-        (MEDIUM, False): (np.mean([min(spec.medium[1], n_patches), spec.medium[0]]), spec.share_medium * (1 - slab_frac)),
+        (SHORT, False): (np.mean(spec.short) * g_mean, spec.share_short),  # tubi: intervallo per gruppo spaziale
+        (MEDIUM, False): (np.mean([min(spec.medium[1], n_patches), spec.medium[0]]) * g_mean, spec.share_medium * (1 - slab_frac)),
         (MEDIUM, True): (np.mean(lens_med_slab) * n_ch if lens_med_slab else 0.0, spec.share_medium * slab_frac),
-        (LONG, False): (np.mean([spec.long[0], min(spec.long[1], long_cap)]), spec.share_long * (1 - slab_frac)),
+        (LONG, False): (np.mean([spec.long[0], min(spec.long[1], long_cap)]) * g_mean, spec.share_long * (1 - slab_frac)),
         (LONG, True): (np.mean(lens_long_slab) * n_ch if lens_long_slab else 0.0, spec.share_long * slab_frac),
         (SPATIAL, False): (sp_size, spec.share_spatial),
     }
@@ -141,10 +151,7 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
             ln = int(rng.choice(lens_med_slab if kind_k == MEDIUM else lens_long_slab))
             t0 = int(rng.choice(np.arange(0, n_patches - ln + 1, SLAB_PATCHES)))
             return valid_idx, t0, t0 + ln
-        top = min(hi, long_cap if kind_k == LONG else n_patches)
-        ln = int(rng.integers(lo, top + 1))
-        t0 = int(rng.integers(0, n_patches - ln + 1))
-        return np.array([int(rng.choice(valid_idx))]), t0, t0 + ln
+        return draw_tube(layout, compartment, valid, long_cap if kind_k == LONG else n_patches, lo, hi, rng)
 
     hidden_ch: set[int] = set()
     total, tries = 0, 0
