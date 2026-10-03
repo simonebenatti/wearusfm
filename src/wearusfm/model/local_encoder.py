@@ -5,13 +5,16 @@ padding fra campioni), con il bias geometrico di §5.3.
 **Bias = componente funzionale fissa + componente appresa su una base di distanze** (v10 §5.3):
 - fissa: `-d`, con d in passi d'elettrodo del gruppo (decadimento con la distanza, passa-basso spaziale del volume conduttore, v10 §3.1); non
   appresa, fa da inizializzazione fisicamente sensata;
-- appresa: basi radiali gaussiane sulla distanza, pesi per testa e per topologia, **inizializzati a zero** (all'inizio vale solo la componente
-  fissa). Sulle griglie due basi separate per |riga| e |colonna| (v10 §3.4: «asse fibre privilegiato», isotropia rotta dalla direzione delle
-  fibre; quale dei due assi sia quello delle fibre i sidecar non lo dicono, il modello puo' impararlo);
+- appresa: basi radiali gaussiane sullo **spostamento con segno** (anello: angolare in passi d'elettrodo; griglia: riga e colonna separate),
+  pesi per testa e per topologia, **inizializzati a zero** (all'inizio vale solo la componente fissa, simmetrica). Sulle griglie due basi separate
+  per riga e colonna (v10 §3.4: «asse fibre privilegiato», isotropia rotta dalla direzione delle fibre; quale dei due assi sia quello delle fibre
+  i sidecar non lo dicono, il modello puo' impararlo);
 - per tipo di coppia (se stesso, anello, griglia, insieme senza geometria) uno scalare appreso per testa.
 
-*Scelta di AG, da confermare:* il bias dipende dalla distanza e non dal verso dello spostamento angolare, quindi e' invariante alla riflessione
-dell'anello; la direzione di propagazione resta nel segnale, non nel bias (v10 §3: la velocita' di conduzione non va insegnata).
+**Simmetrie** (v10 §3.4, «symmetry-capable senza essere symmetry-imposing»): lo spostamento e' relativo, quindi ruotare un anello o traslare una
+griglia non cambia il bias (equivarianza); il segno dello spostamento entra nella parte appresa, quindi il verso di propagazione e la riflessione
+dell'anello sono **rappresentabili**, non imposti come invarianze. Correzione della review del 03/10: la prima versione usava solo il modulo, e
+un'onda oraria e una antioraria davano latenti identici.
 
 Forme: token (C, P, d) — C canali (anche di piu' montaggi impacchettati, `pack_attention_sets`), P patch temporali — e chiavi (C, K). Ogni
 patch temporale e' trattata indipendentemente: l'attenzione e' fra canali allo stesso istante.
@@ -23,6 +26,7 @@ import math
 
 import torch
 from torch import nn
+from torch.utils.checkpoint import checkpoint
 
 from wearusfm.model.channel_codes import PAIR_GRID, PAIR_RING, PAIR_SET, AttentionSets
 
@@ -36,16 +40,17 @@ def sets_to_tensors(sets: AttentionSets, device=None) -> dict[str, torch.Tensor]
         "dist": torch.as_tensor(sets.dist, dtype=torch.float32, device=device),
         "d_row": torch.as_tensor(sets.d_row, dtype=torch.float32, device=device),
         "d_col": torch.as_tensor(sets.d_col, dtype=torch.float32, device=device),
+        "d_ring": torch.as_tensor(sets.d_ring, dtype=torch.float32, device=device),
     }
 
 
 class GeometricBias(nn.Module):
     """(C, K) geometria delle coppie -> (C, K, H) bias additivo sui logit."""
 
-    def __init__(self, n_heads: int, *, n_basis: int = 8, max_dist: float = 4.0, fixed_decay: float = 1.0):
+    def __init__(self, n_heads: int, *, n_basis: int = 9, max_dist: float = 4.0, fixed_decay: float = 1.0):
         super().__init__()
-        self.register_buffer("centers", torch.linspace(0.0, max_dist, n_basis))
-        self.width = max_dist / (n_basis - 1)
+        self.register_buffer("centers", torch.linspace(-max_dist, max_dist, n_basis))  # spostamenti con segno, 0 al centro
+        self.width = 2 * max_dist / (n_basis - 1)
         self.fixed_decay = float(fixed_decay)
         self.ring_w = nn.Parameter(torch.zeros(n_basis, n_heads))
         self.row_w = nn.Parameter(torch.zeros(n_basis, n_heads))
@@ -59,7 +64,7 @@ class GeometricBias(nn.Module):
         t = g["pair_type"]
         ring, grid = (t == PAIR_RING)[..., None], (t == PAIR_GRID)[..., None]
         bias = self.type_bias[t.clamp(min=0)]
-        bias = bias + torch.where(ring, self._rbf(g["dist"]) @ self.ring_w, 0.0)
+        bias = bias + torch.where(ring, self._rbf(g["d_ring"]) @ self.ring_w, 0.0)
         bias = bias + torch.where(grid, self._rbf(g["d_row"]) @ self.row_w + self._rbf(g["d_col"]) @ self.col_w, 0.0)
         return bias - self.fixed_decay * torch.nan_to_num(g["dist"], nan=0.0)[..., None]  # componente fissa: 0 dove la coppia non e' metrica
 
@@ -104,12 +109,16 @@ class LocalEncoder(nn.Module):
     def __init__(self, dim: int, n_heads: int, n_layers: int, **layer_kwargs):
         super().__init__()
         self.layers = nn.ModuleList([LocalEncoderLayer(dim, n_heads, **layer_kwargs) for _ in range(n_layers)])
+        self.grad_checkpoint = False
 
     def forward(self, x: torch.Tensor, g: dict[str, torch.Tensor], visible: torch.Tensor | None = None) -> torch.Tensor:
         if g["index"].shape[0] != x.shape[0] or (g["index"][:, 0] != torch.arange(x.shape[0], device=x.device)).any():
             raise ValueError("chiavi incoerenti con i token: la colonna 0 deve essere il canale stesso")
         for layer in self.layers:
-            x = layer(x, g, visible)
+            if self.grad_checkpoint and torch.is_grad_enabled():
+                x = checkpoint(layer, x, g, visible, use_reentrant=False)  # le chiavi raccolte (C, K, P, 2d) si ricalcolano nel backward
+            else:
+                x = layer(x, g, visible)
         return x
 
     @staticmethod

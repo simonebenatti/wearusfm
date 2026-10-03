@@ -479,8 +479,7 @@ class PretrainLoader:
             t = self._tick("target_ancore", t)
             rows.append(row)
             wins.append(win)
-        packed_codes = CC.AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in
-                                         ("region", "compartment_weights", "muscle", "muscle_known", "topology")])
+        packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
                              np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped))
 

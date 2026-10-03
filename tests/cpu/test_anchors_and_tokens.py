@@ -72,8 +72,7 @@ def test_from_signal_to_anchor_losses_on_ring_and_myo():
     tokens, patch_valid, time_valid = tok([torch.as_tensor(s) for s in signals], fs)
     p = tokens.shape[1]
     codes = [CC.anatomy_codes(d) for d in dicts]
-    packed = codes_to_tensors(CC.AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in
-                                                 ("region", "compartment_weights", "muscle", "muscle_known", "topology")]))
+    packed = codes_to_tensors(CC.pack_codes(codes))
     ident, enc = ChannelIdentity(DIM, muscle_dropout=0.4), LocalEncoder(DIM, HEADS, 1)
     pool, bb, dec, heads = PerceiverPooling(DIM, HEADS, K), TemporalBackbone(DIM, HEADS, 1), QueryDecoder(DIM, HEADS, 1), AnchorHeads(DIM)
     ids = ident(packed)

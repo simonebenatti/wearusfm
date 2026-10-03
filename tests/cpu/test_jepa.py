@@ -24,8 +24,7 @@ def _inputs(seed=0):
     dicts = [montage_to_dict(m, [True] * m.n_channels) for m in mont]
     counts = [m.n_channels for m in mont]
     codes = [CC.anatomy_codes(d) for d in dicts]
-    packed = codes_to_tensors(CC.AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in
-                                                 ("region", "compartment_weights", "muscle", "muscle_known", "topology")]))
+    packed = codes_to_tensors(CC.pack_codes(codes))
     sets = sets_to_tensors(CC.pack_attention_sets([CC.attention_sets(CC.layout_from_montage(d), 2) for d in dicts]))
     rng = np.random.default_rng(seed)
     signals = [torch.as_tensor(rng.normal(size=(counts[0], 1600))), torch.as_tensor(rng.normal(size=(counts[1], 800)))]  # 0,8 s: 32 patch

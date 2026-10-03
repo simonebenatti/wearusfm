@@ -17,10 +17,10 @@ produzione l'attenzione temporale puo' passare a `flash_attn_varlen_func` (RoPE 
 
 from __future__ import annotations
 
-import math
-
 import torch
+import torch.nn.functional as F
 from torch import nn
+from torch.utils.checkpoint import checkpoint
 
 
 def rope(x: torch.Tensor, positions: torch.Tensor, base: float = 10000.0) -> torch.Tensor:
@@ -50,14 +50,17 @@ class _Attention(nn.Module):
         q, k, v = self.qkv(h).view(b, length, 3, self.n_heads, self.head_dim).unbind(dim=2)  # (B, L, H, Dh)
         if positions is not None:
             q, k = rope(q, positions), rope(k, positions)
-        scores = torch.einsum("blhd,bmhd->bhlm", q, k) / math.sqrt(self.head_dim)
+        # scaled_dot_product_attention: la matrice d'attenzione non si salva per il backward (review del 03/10: ~1,3 GB per livello col batch
+        # del sanity). Una sequenza senza chiavi valide non ha contenuto: tutte le chiavi ammesse per evitare NaN, poi uscita azzerata.
+        mask, any_valid = None, None
         if key_valid is not None:
-            scores = scores.masked_fill(~key_valid[:, None, None, :], float("-inf"))
-            any_valid = key_valid.any(dim=-1)[:, None, None, None]
-            attn = torch.where(any_valid, torch.softmax(scores, dim=-1), torch.zeros_like(scores))
-        else:
-            attn = torch.softmax(scores, dim=-1)
-        return self.out(torch.einsum("bhlm,bmhd->blhd", attn, v).reshape(b, length, d))
+            any_valid = key_valid.any(dim=-1)  # (B,)
+            mask = (key_valid | ~any_valid[:, None])[:, None, None, :]
+        out = F.scaled_dot_product_attention(q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2), attn_mask=mask)  # (B, H, L, Dh)
+        out = out.transpose(1, 2).reshape(b, length, d)
+        if any_valid is not None:
+            out = out * any_valid[:, None, None].to(out.dtype)
+        return self.out(out)
 
 
 class BackboneBlock(nn.Module):
@@ -83,6 +86,7 @@ class TemporalBackbone(nn.Module):
         super().__init__()
         self.blocks = nn.ModuleList([BackboneBlock(dim, n_heads, **block_kwargs) for _ in range(n_layers)])
         self.norm = nn.LayerNorm(dim)
+        self.grad_checkpoint = False  # activation checkpointing per blocco (v10 §5.5), acceso dal modello
 
     def forward(self, z: torch.Tensor, time_valid: torch.Tensor | None = None, positions: torch.Tensor | None = None) -> torch.Tensor:
         """z: (S, P, K, d) dal Perceiver; time_valid: (S, P) bool o None; positions: (S, P) indici di patch o None (0..P-1)."""
@@ -92,7 +96,10 @@ class TemporalBackbone(nn.Module):
         if positions is None:
             positions = torch.arange(p, device=z.device)[None, :].expand(s, p)
         for block in self.blocks:
-            z = block(z, time_valid, positions)
+            if self.grad_checkpoint and torch.is_grad_enabled():
+                z = checkpoint(block, z, time_valid, positions, use_reentrant=False)
+            else:
+                z = block(z, time_valid, positions)
         return self.norm(z)
 
     @staticmethod

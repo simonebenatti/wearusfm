@@ -48,3 +48,37 @@ def test_no_tensor_is_created_off_the_model_device(tmp_path):
         d = R.diagnostics(student, teacher, (inp, visible, rvq_on), n_probe=4)
     assert all(v.device.type == "cpu" and torch.isfinite(v) for v in losses.values()) and "rvq" in losses
     assert np.isfinite(d["student_erank"]) and np.isfinite(d["teacher_collapse"]["ratio"])
+
+
+def test_decoder_predictions_differ_across_channels_of_a_ring(tmp_path):
+    """Review del 03/10: con identita' uguali per tutti i canali di un anello il decoder dava la stessa predizione per ogni canale allo stesso
+    istante (differenze ~5e-7). Ora le query portano la posizione sul sensore."""
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    idx = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "emg2pose"], np.ones(1), idx.roots)
+    batch = L.PretrainLoader(idx, _cfg()).batch(2, np.random.default_rng(0))
+    inp, visible, _ = L.to_model_inputs(batch)
+    torch.manual_seed(0)
+    model = WearUsFM(FMConfig(dim=16, n_heads=4, k_latents=4, local_layers=1, backbone_layers=1, decoder_layers=1, muscle_dropout=0.0)).eval()
+    with torch.no_grad():
+        enc = model.encode(inp, visible)
+        q_ch = torch.arange(16)
+        out = model.decode(enc, q_ch, torch.full((16,), 5), torch.tensor([0, 16, 16]))
+    d = torch.cdist(out, out) + torch.eye(16) * 1e9
+    assert float(d.min()) > 1e-3 * float(out.std())
+
+
+def test_hidden_samples_are_zeroed_on_the_front_end_grid():
+    """Review del 03/10: in float32 il confine delle patch si spostava di un campione (a 2 kHz il campione 450, primo della patch 18, restava
+    visibile se la patch 18 era nascosta). La griglia deve essere quella del front-end, in float64."""
+    from wearusfm.model.fm import zero_hidden_samples
+
+    for fs in (1000.0, 2000.0, 4000.0, 200.0, 5120.0, 1111.0, 2048.0):
+        n = int(4 * fs)
+        p = int(np.floor(n / fs / 0.025 + 1e-9))
+        for j in range(p):
+            vis = torch.ones(1, p, dtype=torch.bool)
+            vis[0, j] = False
+            out = zero_hidden_samples([torch.ones(1, n)], [fs], vis, [1], 0.025)[0][0]
+            lo, hi = int(np.ceil(j * 0.025 * fs - 1e-9)), int(np.ceil((j + 1) * 0.025 * fs - 1e-9))
+            assert not out[lo:hi].any() and out[:lo].all() and out[hi:].all(), (fs, j)

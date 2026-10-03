@@ -9,11 +9,15 @@
   addestramento. v10 §5.2: «p ≈ 0,3–0,5, da fissare»; qui e' un parametro OBBLIGATORIO, senza valore di default, perche' nessuno lo fissi per
   sbaglio. Il dropout e' per canale (lettura letterale di v10); la variante per campione (tutti i canali di un montaggio insieme) resta possibile.
 
-**Concatenazione** (v10 §5.2, default): [e_anat ; e_topologia] -> proiezione lineare. *Interpretazione di AG, da confermare:* il percorso
-«geometrico relativo» NON entra qui come vettore per canale: un angolo assoluto sull'anello romperebbe la simmetria ciclica (v10 §3.4: encoding
-«puramente relativo»), e l'orientamento della fascia e' spesso ignoto. Per canale entra solo la classe di topologia (anello, griglia, sparso), che
-dice quale struttura relativa vale; gli spostamenti relativi entrano a coppie nell'encoder locale (bias di §5.3 e vicini di §5.4, da
-`channel_codes.relative_geometry` e `channel_codes.neighbors`).
+**Concatenazione** (v10 §5.2, default): [e_anat ; e_topologia ; e_sensore] -> proiezione lineare.
+- e_anat comprende anche il **lato** dell'arto (sinistro, destro, ignoto; v10 §3.6, coordinate anatomiche);
+- e_sensore = posizione nel sistema del sensore (`channel_codes._sensor_pos`: Fourier dell'angolo sull'anello, di riga e colonna sulla griglia,
+  zeri sui canali sparsi) proiettata, piu' l'ordine del gruppo nel montaggio (v10 §3.6, «sistema del sensore»).
+**Correzione della review del 03/10.** La prima versione non dava nessuna posizione per canale («encoding puramente relativo», interpretazione di
+AG mai confermata): i canali di un anello avevano tutti la stessa identita', e il decoder a query, che vede solo i latenti del Perceiver (senza
+canali), dava la stessa predizione per tutti i canali allo stesso istante; su emg2qwerty non distingueva nemmeno la mano sinistra dalla destra.
+La posizione in Fourier rende una rotazione della fascia uno sfasamento: la simmetria ciclica e' rappresentabile senza essere imposta (v10 §3.4).
+Gli spostamenti relativi con segno restano nel bias dell'encoder locale.
 """
 
 from __future__ import annotations
@@ -21,7 +25,8 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from wearusfm.model.channel_codes import COMPARTMENT_KEYS, MUSCLE_KEYS, REGION_KEYS, TOPOLOGIES, AnatomyCodes
+from wearusfm.model.channel_codes import (COMPARTMENT_KEYS, MAX_GROUPS, MUSCLE_KEYS, N_SENSOR_POS, REGION_KEYS, SIDE_KEYS, TOPOLOGIES,
+                                         AnatomyCodes)
 
 
 def codes_to_tensors(codes: AnatomyCodes, device=None) -> dict[str, torch.Tensor]:
@@ -31,6 +36,9 @@ def codes_to_tensors(codes: AnatomyCodes, device=None) -> dict[str, torch.Tensor
         "muscle": torch.as_tensor(codes.muscle, dtype=torch.long, device=device),
         "muscle_known": torch.as_tensor(codes.muscle_known, dtype=torch.bool, device=device),
         "topology": torch.as_tensor(codes.topology, dtype=torch.long, device=device),
+        "side": torch.as_tensor(codes.side, dtype=torch.long, device=device),
+        "group": torch.as_tensor(codes.group, dtype=torch.long, device=device),
+        "sensor_pos": torch.as_tensor(codes.sensor_pos, dtype=torch.float32, device=device),
     }
 
 
@@ -43,24 +51,30 @@ class AnatomicalEmbedding(nn.Module):
         self.region = nn.Embedding(len(REGION_KEYS), dim)
         self.compartment = nn.Embedding(len(COMPARTMENT_KEYS), dim)
         self.muscle = nn.Embedding(len(MUSCLE_KEYS), dim)
+        self.side = nn.Embedding(len(SIDE_KEYS), dim)
 
     def forward(self, region: torch.Tensor, compartment_weights: torch.Tensor, muscle: torch.Tensor, muscle_known: torch.Tensor,
-                generator: torch.Generator | None = None) -> torch.Tensor:
+                generator: torch.Generator | None = None, side: torch.Tensor | None = None) -> torch.Tensor:
         if self.training and self.muscle_dropout > 0.0:
-            drop = (torch.rand(muscle.shape, generator=generator, device=muscle.device) < self.muscle_dropout) & muscle_known
+            dev = generator.device if generator is not None else muscle.device  # il generatore decide il dispositivo dei numeri casuali
+            drop = (torch.rand(muscle.shape, generator=generator, device=dev).to(muscle.device) < self.muscle_dropout) & muscle_known
             muscle = torch.where(drop, torch.zeros_like(muscle), muscle)
-        return self.region(region) + compartment_weights.to(self.compartment.weight.dtype) @ self.compartment.weight + self.muscle(muscle)
+        e = self.region(region) + compartment_weights.to(self.compartment.weight.dtype) @ self.compartment.weight + self.muscle(muscle)
+        return e if side is None else e + self.side(side)
 
 
 class ChannelIdentity(nn.Module):
-    """(C,) codici -> (C, dim): concatenazione [anatomia ; topologia] proiettata (v10 §5.2)."""
+    """(C,) codici -> (C, dim): concatenazione [anatomia ; topologia ; sensore] proiettata (v10 §5.2)."""
 
     def __init__(self, dim: int, *, muscle_dropout: float):
         super().__init__()
         self.anatomy = AnatomicalEmbedding(dim, muscle_dropout=muscle_dropout)
         self.topology = nn.Embedding(len(TOPOLOGIES), dim)
-        self.proj = nn.Linear(2 * dim, dim)
+        self.sensor_pos = nn.Linear(N_SENSOR_POS, dim, bias=False)
+        self.group = nn.Embedding(MAX_GROUPS, dim)
+        self.proj = nn.Linear(3 * dim, dim)
 
     def forward(self, codes: dict[str, torch.Tensor], generator: torch.Generator | None = None) -> torch.Tensor:
-        e_anat = self.anatomy(codes["region"], codes["compartment_weights"], codes["muscle"], codes["muscle_known"], generator)
-        return self.proj(torch.cat([e_anat, self.topology(codes["topology"])], dim=-1))
+        e_anat = self.anatomy(codes["region"], codes["compartment_weights"], codes["muscle"], codes["muscle_known"], generator, codes["side"])
+        e_sensor = self.sensor_pos(codes["sensor_pos"].to(self.sensor_pos.weight.dtype)) + self.group(codes["group"])
+        return self.proj(torch.cat([e_anat, self.topology(codes["topology"]), e_sensor], dim=-1))

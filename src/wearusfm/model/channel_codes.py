@@ -29,6 +29,9 @@ UNK = "<unk>"
 REGION_KEYS = (UNK, *T.REGIONS)
 COMPARTMENT_KEYS = (UNK, *T.COMPARTMENTS)  # comprende i quattro settori del polso
 MUSCLE_KEYS = (UNK, *T.MUSCLES)
+SIDE_KEYS = (UNK, "left", "right")  # lato dell'arto (campo `chirality` del sidecar; v10 §3.6, coordinate anatomiche)
+MAX_GROUPS = 8  # ordine del gruppo nel montaggio (sistema del sensore, v10 §3.6); oltre, l'ultimo indice
+N_SENSOR_POS = 8  # posizione nel sistema del sensore: anello cos/sin(m*angolo), m = 1..4; griglia cos/sin(pi*m*x) per riga e colonna, m = 1, 2
 _ROUND = 9  # cifre per confrontare distanze uguali a meno del rumore di virgola mobile (rotazioni, griglie)
 
 
@@ -136,6 +139,9 @@ class AnatomyCodes:
     muscle: np.ndarray  # (C,)
     muscle_known: np.ndarray  # (C,) bool: dove si applica il dropout del livello muscolo (v10 §5.2)
     topology: np.ndarray  # (C,) indice in TOPOLOGIES
+    side: np.ndarray  # (C,) indice in SIDE_KEYS
+    group: np.ndarray  # (C,) ordine del gruppo nel montaggio, al piu' MAX_GROUPS - 1
+    sensor_pos: np.ndarray  # (C, N_SENSOR_POS) posizione nel sistema del sensore (zeri sui canali sparsi)
 
 
 def _region_from(chain_region: str, field: str | None, where: str) -> int:
@@ -150,8 +156,8 @@ def anatomy_codes(montage: dict) -> AnatomyCodes:
     chiavi di compartimento che nell'albero stanno sotto l'avambraccio prossimale: vale il campo, `taxonomy.py` punto 4) e pesi soft se ci sono;
     ignoto -> tutto ignoto."""
     n_comp = len(COMPARTMENT_KEYS)
-    region, weights, muscle, known, topo = [], [], [], [], []
-    for g in montage["groups"]:
+    region, weights, muscle, known, topo, side, group, pos = [], [], [], [], [], [], [], []
+    for gi, g in enumerate(montage["groups"]):
         for i, c in enumerate(g["channels"]):
             a = c["anatomical_identity"]
             where = f"{g.get('group_id')}[{i}]"
@@ -192,8 +198,44 @@ def anatomy_codes(montage: dict) -> AnatomyCodes:
             muscle.append(m)
             known.append(m != 0)
             topo.append(TOPOLOGIES.index(g["topology"]))
+            side.append(SIDE_KEYS.index(c.get("chirality")) if c.get("chirality") in SIDE_KEYS[1:] else 0)
+            group.append(min(gi, MAX_GROUPS - 1))
+        pos.append(_sensor_pos(g))
     return AnatomyCodes(np.asarray(region, dtype=np.int64), np.asarray(weights, dtype=np.float64).reshape(-1, n_comp),
-                        np.asarray(muscle, dtype=np.int64), np.asarray(known, dtype=bool), np.asarray(topo, dtype=np.int64))
+                        np.asarray(muscle, dtype=np.int64), np.asarray(known, dtype=bool), np.asarray(topo, dtype=np.int64),
+                        np.asarray(side, dtype=np.int64), np.asarray(group, dtype=np.int64),
+                        np.concatenate(pos, axis=0).reshape(-1, N_SENSOR_POS) if pos else np.zeros((0, N_SENSOR_POS)))
+
+
+def _sensor_pos(g: dict) -> np.ndarray:
+    """(C_g, N_SENSOR_POS) posizione di ogni canale nel sistema del sensore del suo gruppo (v10 §3.6). Serve al decoder a query: i latenti del
+    Perceiver non hanno canali, e senza una posizione per canale tutti i canali di un anello avrebbero la stessa query (review del 03/10: su
+    emg2qwerty 32 canali, 1 identita'). Anello: cos/sin(m*angolo), m = 1..4, cosi' una rotazione della fascia e' uno sfasamento (la simmetria
+    ciclica e' rappresentabile, non imposta). Griglia: cos/sin(pi*m*x) con x = indice / indice massimo in [0, 1], per riga e colonna, m = 1, 2
+    (nessun avvolgimento: i bordi della griglia non sono vicini). Sparsi: zeri (l'identita' e' anatomica, v10 §3.5)."""
+    chans = g["channels"]
+    out = np.zeros((len(chans), N_SENSOR_POS))
+    if g["topology"] == "ring":
+        th = np.radians([float(c["sensor_coords"]["ring_angle_deg"]) for c in chans])
+        m = np.arange(1, N_SENSOR_POS // 2 + 1)
+        out[:] = np.concatenate([np.cos(th[:, None] * m), np.sin(th[:, None] * m)], axis=1)
+    elif g["topology"] == "grid_2d":
+        cols = []
+        for key in ("grid_row", "grid_col"):
+            v = np.asarray([float(c["sensor_coords"][key]) for c in chans])
+            x = v / v.max() if v.max() > 0 else np.full_like(v, 0.5)
+            m = np.arange(1, N_SENSOR_POS // 4 + 1)
+            cols += [np.cos(np.pi * x[:, None] * m), np.sin(np.pi * x[:, None] * m)]
+        out[:] = np.concatenate(cols, axis=1)
+    return out
+
+
+CODE_FIELDS = ("region", "compartment_weights", "muscle", "muscle_known", "topology", "side", "group", "sensor_pos")
+
+
+def pack_codes(codes: list[AnatomyCodes]) -> AnatomyCodes:
+    """Piu' montaggi in una sola sequenza di canali (packing), nello stesso ordine di `pack_attention_sets`."""
+    return AnatomyCodes(*[np.concatenate([getattr(c, f) for c in codes]) for f in CODE_FIELDS])
 
 
 def _unknown_compartment(comp: str, where: str) -> int:
@@ -218,8 +260,10 @@ class AttentionSets:
     index: np.ndarray  # (C, K)
     pair_type: np.ndarray  # (C, K)
     dist: np.ndarray  # (C, K) distanza in passi d'elettrodo, NaN se la coppia non e' metrica
-    d_row: np.ndarray  # (C, K) |spostamento di riga|, NaN fuori dalle griglie
-    d_col: np.ndarray  # (C, K) |spostamento di colonna|, NaN fuori dalle griglie
+    d_row: np.ndarray  # (C, K) spostamento di riga CON SEGNO (chiave meno query), NaN fuori dalle griglie
+    d_col: np.ndarray  # (C, K) spostamento di colonna con segno, NaN fuori dalle griglie
+    d_ring: np.ndarray  # (C, K) spostamento angolare con segno in passi d'elettrodo, NaN fuori dagli anelli (review del 03/10: col solo modulo
+    #                     il verso di propagazione non era rappresentabile, e la riflessione dell'anello era un'invarianza imposta)
 
     @property
     def n_channels(self) -> int:
@@ -255,7 +299,7 @@ def attention_sets(layout: ChannelLayout, k: int) -> AttentionSets:
     c = layout.n_channels
     index = np.full((c, width), -1, dtype=np.int64)
     pair_type = np.full((c, width), -1, dtype=np.int64)
-    dist, d_row, d_col = (np.full((c, width), np.nan) for _ in range(3))
+    dist, d_row, d_col, d_ring = (np.full((c, width), np.nan) for _ in range(4))
     for i, keys in enumerate(rows):
         for col, j in enumerate(keys):
             index[i, col] = j
@@ -263,26 +307,27 @@ def attention_sets(layout: ChannelLayout, k: int) -> AttentionSets:
                 pair_type[i, col], dist[i, col] = PAIR_SELF, 0.0
             elif rel["ring"][i, j]:
                 pair_type[i, col], dist[i, col] = PAIR_RING, rel["distance"][i, j] / pitch[i]
+                d_ring[i, col] = rel["d_angle"][i, j] / pitch[i]
             elif rel["grid"][i, j]:
                 pair_type[i, col], dist[i, col] = PAIR_GRID, rel["distance"][i, j]
-                d_row[i, col], d_col[i, col] = abs(rel["d_row"][i, j]), abs(rel["d_col"][i, j])
+                d_row[i, col], d_col[i, col] = rel["d_row"][i, j], rel["d_col"][i, j]
             else:
                 pair_type[i, col] = PAIR_SET
-    return AttentionSets(index, pair_type, dist, d_row, d_col)
+    return AttentionSets(index, pair_type, dist, d_row, d_col, d_ring)
 
 
 def pack_attention_sets(sets: list[AttentionSets]) -> AttentionSets:
     """Piu' montaggi in una sola sequenza di canali (packing, D6b): indici spostati di quanti canali precedono, larghezza al massimo. Nessuna
     chiave attraversa due montaggi."""
     width = max(s.index.shape[1] for s in sets)
-    parts: dict[str, list[np.ndarray]] = {name: [] for name in ("index", "pair_type", "dist", "d_row", "d_col")}
+    parts: dict[str, list[np.ndarray]] = {name: [] for name in ("index", "pair_type", "dist", "d_row", "d_col", "d_ring")}
     offset = 0
     for s in sets:
         pad = width - s.index.shape[1]
         idx = np.where(s.index >= 0, s.index + offset, -1)
         parts["index"].append(np.pad(idx, ((0, 0), (0, pad)), constant_values=-1))
         parts["pair_type"].append(np.pad(s.pair_type, ((0, 0), (0, pad)), constant_values=-1))
-        for name in ("dist", "d_row", "d_col"):
+        for name in ("dist", "d_row", "d_col", "d_ring"):
             parts[name].append(np.pad(getattr(s, name), ((0, 0), (0, pad)), constant_values=np.nan))
         offset += s.n_channels
     return AttentionSets(**{name: np.concatenate(v, axis=0) for name, v in parts.items()})

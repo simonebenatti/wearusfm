@@ -17,6 +17,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+import numpy as np
 import torch
 from torch import nn
 
@@ -41,6 +42,7 @@ class FMConfig:
     patch_ms: float = 25.0  # D10, proposta
     n_bands: int = 5
     rvq_codes: int | None = None  # None = senza testa RVQ
+    grad_checkpoint: bool = False  # activation checkpointing di encoder locale, backbone e decoder (v10 §5.5)
 
 
 @dataclass
@@ -75,8 +77,9 @@ def zero_hidden_samples(signals: list[torch.Tensor], fs: list[float], visible: t
         vis = visible[a:a + c]
         a += c
         n = x.shape[-1]
-        p = torch.arange(vis.shape[1] + 1, device=x.device)
-        bounds = torch.ceil(p * patch_s * f - 1e-9).long()  # inizio delle patch 0..P (l'ultimo = fine della P-1)
+        # inizio delle patch 0..P (l'ultimo = fine della P-1), in float64 con la stessa espressione del front-end (`frontend.py`): in float32
+        # l'1e-9 si perdeva e il confine si spostava di un campione in ~20% delle patch a 2 kHz (un campione nascosto restava visibile)
+        bounds = torch.from_numpy(np.ceil(np.arange(vis.shape[1] + 1) * patch_s * f - 1e-9).astype(np.int64)).to(x.device)
         # patch di ogni campione; i campioni oltre l'ultima patch (resto finale) restano come sono
         patch_of = torch.searchsorted(bounds, torch.arange(n, device=x.device), right=True) - 1
         in_patch = patch_of < vis.shape[1]
@@ -98,6 +101,8 @@ class WearUsFM(nn.Module):
         self.decoder = QueryDecoder(cfg.dim, cfg.n_heads, cfg.decoder_layers)
         self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
+        for m in (self.local, self.backbone, self.decoder):
+            m.grad_checkpoint = cfg.grad_checkpoint
 
     def n_patches(self, inp: ModelInputs) -> int:
         return max(int(math.floor(x.shape[-1] / f / self.tokenizer.patch_s + 1e-9)) for x, f in zip(inp.signals, inp.fs))

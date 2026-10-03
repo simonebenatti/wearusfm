@@ -124,3 +124,23 @@ def test_hidden_tokens_are_not_keys_for_the_other_channels():
     out2 = enc(x2, g, vis)
     keep = vis.clone()
     assert torch.allclose(out2[keep], out[keep], atol=1e-5)  # i token visibili non vedono nulla del contenuto nascosto
+
+
+def test_propagation_direction_is_representable_not_imposed():
+    """Review del 03/10: col solo modulo dello spostamento, un'onda oraria e la sua riflessione davano uscite riflesse identiche (invarianza
+    imposta). Col segno nella parte appresa la riflessione cambia le uscite; con la sola parte fissa (simmetrica) no."""
+    m = montage_to_dict(emg2pose.build_montage_metadata("u1", "s", "left"), [True] * 16)
+    g = sets_to_tensors(_sets(m))
+    x = _x(16)
+    refl = np.array([(-i) % 16 for i in range(16)])  # riflessione dell'anello: canale i -> -i
+    sym = _enc()
+    with torch.no_grad():
+        for layer in sym.layers:  # parte appresa simmetrica nello spostamento: w(-d) = w(d)
+            layer.bias.ring_w.copy_((layer.bias.ring_w + layer.bias.ring_w.flip(0)) / 2)
+    assert torch.allclose(sym(x[refl], g), sym(x, g)[refl], atol=1e-5)  # simmetrico: la riflessione commuta
+    asym = _enc()
+    assert not torch.allclose(asym(x[refl], g), asym(x, g)[refl], atol=1e-3)  # col segno: il verso conta
+    sets = _sets(m)
+    i = 0
+    ring_cols = sets.pair_type[i] == CC.PAIR_RING
+    assert set(np.round(sets.d_ring[i, ring_cols]).astype(int)) == {-2, -1, 1, 2}  # vicini da entrambi i lati, con segno

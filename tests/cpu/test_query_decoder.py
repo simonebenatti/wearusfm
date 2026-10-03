@@ -10,7 +10,7 @@ from wearusfm.ingest import camargo, capgmyo, emg2pose, ninapro_std  # noqa: E40
 from wearusfm.ingest.common import montage_to_dict  # noqa: E402
 from wearusfm.model import channel_codes as CC  # noqa: E402
 from wearusfm.model.backbone import TemporalBackbone  # noqa: E402
-from wearusfm.model.channel_identity import ChannelIdentity  # noqa: E402
+from wearusfm.model.channel_identity import ChannelIdentity, codes_to_tensors  # noqa: E402
 from wearusfm.model.local_encoder import LocalEncoder, sets_to_tensors  # noqa: E402
 from wearusfm.model.perceiver import PerceiverPooling, offsets_from_counts  # noqa: E402
 from wearusfm.model.query_decoder import QueryDecoder, probe_query_collapse, query_collapse_stats  # noqa: E402
@@ -84,8 +84,7 @@ def test_full_chain_to_the_decoder_on_three_topologies():
     counts = [m.n_channels for m in montages]
     dicts = [montage_to_dict(m, [True] * m.n_channels) for m in montages]
     codes = [CC.anatomy_codes(d) for d in dicts]
-    packed = {f: torch.as_tensor(np.concatenate([getattr(c, f) for c in codes])) for f in ("region", "compartment_weights", "muscle",
-                                                                                            "muscle_known", "topology")}
+    packed = codes_to_tensors(CC.pack_codes(codes))
     packed["compartment_weights"] = packed["compartment_weights"].float()
     sets = sets_to_tensors(CC.pack_attention_sets([CC.attention_sets(CC.layout_from_montage(d), 4) for d in dicts]))
     ident, enc = ChannelIdentity(DIM, muscle_dropout=0.4), LocalEncoder(DIM, HEADS, 2)

@@ -16,10 +16,10 @@ Implementazione di riferimento (un ciclo sui campioni); in produzione la cross-a
 
 from __future__ import annotations
 
-import math
-
 import torch
+import torch.nn.functional as F
 from torch import nn
+from torch.utils.checkpoint import checkpoint
 
 from wearusfm.model.backbone import rope
 
@@ -41,10 +41,13 @@ class _CrossBlock(nn.Module):
         q = rope(self.q(self.norm_q(qx)).view(1, nq, self.n_heads, self.head_dim), q_pos[None])[0]
         k, v = self.kv(self.norm_kv(kv_x)).view(-1, 2, self.n_heads, self.head_dim).unbind(dim=1)
         k = rope(k[None], kv_pos[None])[0]
-        scores = torch.einsum("qhd,nhd->hqn", q, k) / math.sqrt(self.head_dim)
-        scores = scores.masked_fill(~kv_valid[None, None, :], float("-inf"))
-        attn = torch.softmax(scores, dim=-1) if bool(kv_valid.any()) else torch.zeros_like(scores)
-        qx = qx + self.out(torch.einsum("hqn,nhd->qhd", attn, v).reshape(nq, d))
+        # scaled_dot_product_attention (la matrice query x latenti, ~630 MB per blocco e finestra, non si salva); nessuna chiave valida: tutte
+        # ammesse e uscita azzerata, senza sincronizzare la GPU per chiederlo
+        any_valid = kv_valid.any()
+        mask = (kv_valid | ~any_valid)[None, None, None, :]
+        out = F.scaled_dot_product_attention(q.transpose(0, 1)[None], k.transpose(0, 1)[None], v.transpose(0, 1)[None], attn_mask=mask)
+        out = out[0].transpose(0, 1).reshape(nq, d) * any_valid.to(q.dtype)
+        qx = qx + self.out(out)
         return qx + self.mlp(self.norm_m(qx))
 
 
@@ -53,13 +56,14 @@ class QueryDecoder(nn.Module):
         super().__init__()
         self.blocks = nn.ModuleList([_CrossBlock(dim, n_heads, mlp_ratio) for _ in range(n_layers)])
         self.norm = nn.LayerNorm(dim)
+        self.grad_checkpoint = False
 
     def forward(self, z: torch.Tensor, queries: torch.Tensor, query_time: torch.Tensor, query_offsets: torch.Tensor,
                 time_valid: torch.Tensor | None = None, positions: torch.Tensor | None = None) -> torch.Tensor:
         """z: (S, P, K, d) dal backbone; queries: (Q_tot, d) identita' dei canali da predire; query_time: (Q_tot,) indice di patch;
         query_offsets: (S+1,) query contigue per campione; time_valid: (S, P) chiavi ammesse; positions: (S, P) indici di patch (default 0..P-1)."""
         s, p, k, d = z.shape
-        off = [int(v) for v in query_offsets]
+        off = query_offsets.tolist() if torch.is_tensor(query_offsets) else [int(v) for v in query_offsets]  # una sola lettura dalla GPU
         if len(off) != s + 1 or off[0] != 0 or off[-1] != queries.shape[0] or any(b < a for a, b in zip(off, off[1:])):
             raise ValueError(f"query_offsets {off} incoerenti con {s} campioni e {queries.shape[0]} query")
         if time_valid is None:
@@ -74,7 +78,10 @@ class QueryDecoder(nn.Module):
             q_pos = query_time[a:b] + (positions[i, 0] if p else 0)  # l'istante della query nella stessa scala delle posizioni dei latenti
             qx = queries[a:b]
             for block in self.blocks:
-                qx = block(qx, q_pos, kv_x, kv_pos, kv_valid)
+                if self.grad_checkpoint and torch.is_grad_enabled():
+                    qx = checkpoint(block, qx, q_pos, kv_x, kv_pos, kv_valid, use_reentrant=False)
+                else:
+                    qx = block(qx, q_pos, kv_x, kv_pos, kv_valid)
             outs.append(qx)
         return self.norm(torch.cat(outs, dim=0))
 

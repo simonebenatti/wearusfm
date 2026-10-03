@@ -9,7 +9,8 @@ valutate ogni 500 passi su un batch fisso; peso delle ancore 0,2 e momento EMA 0
 **Scelte di AG, da confermare (non firmate):** taglia del modello del sanity (~30M parametri, i default di lavoro della finestra 1: K = 64, encoder
 locale a 2 livelli); AdamW con lr 3e-4, warmup lineare di 1.000 passi poi costante (lo schedule vero e' D14), weight decay 0,05, clip del gradiente
 1,0; batch di 32 finestre; batch di validazione per le diagnostiche estratto con un seme fisso dal pretraining (non dal test, che resta intatto);
-**ancora RVQ spenta** finche' il tokenizer congelato non e' collegato al ciclo (su Leonardo).
+**ancora RVQ spenta** finche' il tokenizer congelato non e' collegato al ciclo (su Leonardo). Su GPU: **bf16** (autocast; il front-end resta in
+float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset chiedeva ~190 GB (review del 03/10, job 59276285).
 """
 
 from __future__ import annotations
@@ -52,11 +53,13 @@ class RunConfig:
     ckpt_every: int
     seed: int
     alarm: AlarmRule = field(default_factory=AlarmRule)
+    amp_bf16: bool = True  # autocast bf16, solo su CUDA (v10 §5.5)
 
 
 def sanity_config(max_steps: int = 20000) -> RunConfig:
     return RunConfig(
-        model=FMConfig(dim=384, n_heads=6, k_latents=64, local_layers=2, backbone_layers=8, decoder_layers=2, muscle_dropout=0.4),
+        model=FMConfig(dim=384, n_heads=6, k_latents=64, local_layers=2, backbone_layers=8, decoder_layers=2, muscle_dropout=0.4,
+                       grad_checkpoint=True),
         jepa=JEPAConfig(target="b", anchor_weight=0.2, ema_momentum=0.996),
         loader=L.LoaderConfig(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MK.MaskSpec.d10_proposal(0.5), k_neighbors=8,
                               filter_band_hz=(20.0, 450.0)),
@@ -156,6 +159,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo)."""
     t_start = time.time()
     out_dir.mkdir(parents=True, exist_ok=True)
+    amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cfg.amp_bf16 and str(device).startswith("cuda"))
     stop_file = out_dir / "STOP"
     if stop_file.exists():  # un allarme o una perdita non finita hanno fermato il run: i job successivi della catena non riprendono
         reason = stop_file.read_text().strip()
@@ -169,7 +173,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     step, monitor = 0, AlarmMonitor(cfg.alarm, cfg.model.dim)
     ckpt = out_dir / "checkpoint.pt"
     if ckpt.exists():
-        state = torch.load(ckpt, map_location=device, weights_only=False)
+        state = torch.load(ckpt, map_location="cpu", weights_only=False)  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
         student.load_state_dict(state["student"])
         teacher.load_state_dict(state["teacher"])
         opt.load_state_dict(state["optimizer"])
@@ -207,7 +211,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             g["lr"] = _lr_at(step, cfg)
         student.train()
         opt.zero_grad(set_to_none=True)
-        losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets)
+        with amp:
+            losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
+                                 kinds=torch.as_tensor(batch.kind).to(device))
         if not torch.isfinite(losses["total"]):
             reason = f"perdita non finita al passo {step}"
             break
@@ -219,9 +225,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions, **{k: float(v.detach()) for k, v in losses.items()}}
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
-            d = diagnostics(student, teacher, val)
+            with amp:
+                d = diagnostics(student, teacher, val)
+            # anche le varianze assolute (review del 03/10): rapporto e rango non vedono un'uscita quasi costante, le varianze si'
             rec.update({"student_collapse_ratio": d["student_collapse"]["ratio"], "teacher_collapse_ratio": d["teacher_collapse"]["ratio"],
-                        "student_erank": d["student_erank"], "teacher_erank": d["teacher_erank"]})
+                        "student_erank": d["student_erank"], "teacher_erank": d["teacher_erank"],
+                        "student_var_samples": d["student_collapse"]["var_between_samples"],
+                        "student_var_queries": d["student_collapse"]["var_between_queries"],
+                        "teacher_var_samples": d["teacher_collapse"]["var_between_samples"]})
             alarm = monitor.update(min(d["student_collapse"]["ratio"], d["teacher_collapse"]["ratio"]), d["student_erank"])
             if alarm:
                 rec["alarm"] = alarm

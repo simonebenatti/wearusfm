@@ -26,7 +26,9 @@ import torch.nn.functional as F
 
 from wearusfm.model.anchor_targets import RVQ_TOKEN_MS, AnchorTargets
 from wearusfm.model.anchors import anchor_losses, rvq_loss
+from wearusfm.model.channel_codes import TOPOLOGIES
 from wearusfm.model.fm import ModelInputs, WearUsFM
+from wearusfm.training.masking import KIND_NAMES, VISIBLE
 
 
 @dataclass(frozen=True)
@@ -98,9 +100,10 @@ def effective_rank(x: torch.Tensor) -> float:
 def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
-                generator: torch.Generator | None = None) -> dict[str, torch.Tensor]:
+                generator: torch.Generator | None = None, kinds: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
-    del tokenizer congelato (livello 0 del ramo 0) per quelle finestre."""
+    del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
+    JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4)."""
     enc = student.encode(inp, visible, generator)
     hidden = ~enc.visible & enc.patch_valid & inp.qc_valid[:, None]
     q_ch, q_t, q_off = hidden_queries(hidden, inp.counts)
@@ -112,6 +115,19 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         tgt = enc_t.local[q_ch, q_t] if cfg.target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
         tgt = F.layer_norm(tgt, tgt.shape[-1:])
     losses = {"jepa": F.mse_loss(h, tgt)}
+    if kinds is not None:
+        with torch.no_grad():
+            err = (h.float() - tgt.float()).pow(2).mean(dim=-1)  # (Q,)
+            kq = kinds[q_ch, q_t]
+            for k, name in KIND_NAMES.items():
+                sel = kq == k
+                if k != VISIBLE and bool(sel.any()):
+                    losses[f"jepa_{name}"] = err[sel].mean()
+            tq = inp.codes["topology"][q_ch]
+            for t, name in enumerate(TOPOLOGIES):
+                sel = tq == t
+                if bool(sel.any()):
+                    losses[f"jepa_topo_{name}"] = err[sel].mean()
     anchor_total = h.new_zeros(())
     if anchor_targets is not None:
         for k, v in anchor_losses(student.anchor_heads(h), gather_anchor_targets(anchor_targets, inp.counts, q_ch, q_t)).items():

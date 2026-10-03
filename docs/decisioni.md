@@ -1459,3 +1459,41 @@ proposta»): `measure_loader.sbatch` su `lrd_all_serial` con 8 CPU, 30 GB e 3 h 
 le scale col metodo nuovo (solo tratti lunghi): le 18.839 del job 59254061 erano col metodo vecchio. Il seme e' lo stesso, quindi cambiano solo
 le sessioni con tratti corti fra salti. Poi misura il ritmo con la lettura a tessere e i target veloci, su 8 processi come su un nodo GPU (8 CPU
 per GPU). Soglia invariata: ~8,5 finestre/s per processo.
+
+**Review del 03/10, modello e training (Opus): correzioni** (stessa istruzione di Simone). Quattro rilievi gravi, tutti verificati:
+- **A1, identita' di canale senza posizione.** I canali di un anello avevano tutti la stessa identita' (anatomia ignota piu' topologia; su
+  emg2qwerty 32 canali, 1 identita'). Il decoder a query vede solo i latenti del Perceiver, senza canali, quindi dava la stessa predizione per
+  tutti i canali allo stesso istante (differenze ~5e-7) e non distingueva la mano sinistra dalla destra. Con il target (b) il masking spaziale (40%
+  del budget) non chiedeva mai di predire un canale: il sanity avrebbe potuto «non collassare» senza imparare nulla per canale.
+  **Correzione (scelta di AG, da confermare):** nell'identita' entra anche il **sistema del sensore** (v10 §3.6). Per gli anelli cos/sin(m
+  angolo), m = 1..4, cosi' una rotazione della fascia e' uno sfasamento: simmetria ciclica rappresentabile, non imposta. Per le griglie cos/sin(pi m
+  x) su riga e colonna. Si aggiungono l'ordine del gruppo nel montaggio e il **lato dell'arto** (campo `chirality`). I canali sparsi restano
+  senza posizione: l'identita' e' anatomica. Era la mia «interpretazione da confermare» del passo 6 (encoding solo relativo), che il revisore ha
+  mostrato sbagliata. Test: 32 identita' distinte su emg2qwerty; predizioni del decoder diverse fra canali dello stesso anello.
+- **A2, simmetria imposta nell'encoder locale.** Il bias appreso usava solo |spostamento|, quindi un'onda oraria e la sua riflessione davano latenti
+  identici: il verso di propagazione non era rappresentabile, contro v10 §3.4 («equivarianza, non invarianza»). **Correzione:** la parte appresa del
+  bias lavora sullo **spostamento con segno**: angolare in passi d'elettrodo, riga e colonna. La parte fissa (-distanza) resta simmetrica,
+  all'inizio vale solo lei (pesi a zero). Test: con pesi simmetrici la riflessione commuta, con pesi qualsiasi no.
+- **A3, memoria.** ~6 GB per finestra, quindi job 59276285 fuori memoria. **Correzione:** `scaled_dot_product_attention` nel backbone e nel
+  decoder, che non salva le matrici d'attenzione; **activation checkpointing** per blocco (encoder locale, backbone, decoder); **bf16** in autocast
+  su GPU, col front-end che resta in float64 (v10 §5.5). Misura su CPU in fp32, finestra di emg2qwerty da 4 s: tensori salvati per il backward da
+  4,0 GiB (gia' con SDPA; 6,0 prima) a **0,47 GiB per finestra**, ~15 GB per il batch 32 in fp32, meno in bf16.
+- **A4, il contenuto del segnale pesava ~0,1% del token all'inizializzazione** (il front-end integra, fattore 1/fs: uscite ~1e-3; perdita JEPA
+  iniziale ~1e-10). **Correzione:** un guadagno scalare fisso prima della proiezione dei token, calcolato alla costruzione su rumore 20-450 Hz di
+  varianza unitaria a 2 kHz, con seme fisso, salvato nel checkpoint: uscite ~1, contenuto del token ~0,8 contro bias 0,07, perdita JEPA iniziale
+  ~1,6e-4. Il front-end del gate D8 non cambia.
+- **M1, una fuga del contenuto nascosto:** la griglia delle patch in `zero_hidden_samples` era in float32, e in ~20% dei bordi a 2 kHz il primo
+  campione nascosto restava visibile. Ora e' in float64 con la stessa espressione del front-end (test su 7 frequenze e tutte le patch; fallisce
+  sul codice vecchio).
+- **Minori corretti:** la perdita JEPA si registra anche per tipo di maschera e per topologia (v10 §6.4); nelle diagnostiche si registrano anche le
+  varianze assolute (rapporto e rango non vedono un'uscita quasi costante: le soglie firmate restano quelle); offset delle query letti una volta
+  dalla GPU; ripresa con `map_location="cpu"` (lo `step` di AdamW restava sulla GPU); generatore del dropout su un dispositivo qualsiasi.
+- **Aperti, per Simone:** M3, la perdita e' una media per token, quindi a finestra 1 la classe C (HD) peserebbe il 38% della perdita contro il 5%
+  delle finestre: serve una decisione su come contare le quote nella perdita. Il sanity non ne risente (un dataset). Restano poi le
+  sincronizzazioni residue e il conto dei FLOP del decoder.
+
+**Sanity JEPA job 3: collaudo su GPU dopo le correzioni** (stessa autorizzazione del 03/10). `sanity_jepa.sbatch` su `boost_qos_dbg`, 1 GPU, 30
+minuti, **costo massimo 0,5 GPU-ora = 4 ore locali**; budget del passo 6: usate 0,025 su 100. Scale del job 59264303. Il job 59276700, che le
+ricalcola, e' ancora in corso: per un collaudo bastano. Cartella nuova `runs/sanity_0310_c3/`: il modello e' cambiato. Misura: secondi per
+passo, memoria GPU, attese sui dati, perdite per tipo di maschera. Resta un collaudo: il sanity vero parte dopo l'esito e dopo il rapporto a
+Simone.

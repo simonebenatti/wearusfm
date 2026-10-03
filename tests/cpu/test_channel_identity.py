@@ -80,3 +80,22 @@ def test_channel_identity_concatenates_and_projects_with_gradients():
     assert model.anatomy.muscle.weight.grad is not None and model.topology.weight.grad is not None
     assert not torch.allclose(model.eval()(c)[0], model.eval()(c)[8])  # anello ignoto e muscolo mirato: identita' diverse
     assert len(CC.REGION_KEYS) == len(T.REGIONS) + 1 and np.unique(c["topology"].numpy()).tolist() == [0, 2]
+
+
+def test_ring_channels_and_the_two_hands_have_distinct_identities():
+    """Review del 03/10: su emg2qwerty 32 canali avevano 1 identita' (anatomia ignota, nessuna posizione): il decoder a query dava la stessa
+    predizione per tutti i canali allo stesso istante e non distingueva la mano sinistra dalla destra."""
+    from wearusfm.ingest import emg2qwerty
+
+    torch.manual_seed(0)
+    ident = ChannelIdentity(16, muscle_dropout=0.0).eval()
+    c = _codes(emg2qwerty.build_montage_metadata("u1", "s"))
+    out = ident(c)
+    d = torch.cdist(out, out)
+    assert out.shape[0] == 32 and bool((d + torch.eye(32) * 1e9).min() > 1e-3)  # 32 identita' distinte
+    assert c["side"][:16].tolist() == [1] * 16 and c["side"][16:].tolist() == [2] * 16 and c["group"].tolist() == [0] * 16 + [1] * 16
+    pos = CC.anatomy_codes(montage_to_dict(emg2qwerty.build_montage_metadata("u1", "s"), [True] * 32)).sensor_pos
+    assert np.allclose(pos[1, :4], np.cos(np.arange(1, 5) * 2 * np.pi / 16))  # anello: cos/sin(m * angolo)
+    cm = camargo.build_montage_metadata(1, "d")
+    cam = CC.anatomy_codes(montage_to_dict(cm, [True] * cm.n_channels))
+    assert not cam.sensor_pos.any()  # sparsi: nessuna posizione, l'identita' e' anatomica
