@@ -5,9 +5,14 @@ ciclo di training, non qui.
 - RMS, forma spettrale, inviluppo: regressione (errore quadratico) per query (canale, patch); le bande non disponibili non contano.
 - RVQ (D5b: livello 0 del ramo 0, 8192 codici): classificazione per (canale, finestra da 200 ms interamente nascosta) sulla media delle uscite del
   decoder alle 8 patch della finestra (*scelta di AG, da confermare*: una query per patch, poi la media, cosi' non serve un tipo di query diverso).
+  **Entropia incrociata divisa per ln(8192)** (*scelta di AG del 04/10, da confermare*): all'inizio vale ~1 come le altre ancore (~0,5-2,5), invece
+  di ~9 che dominerebbe il peso complessivo delle ancore (0,2, firmato). Un codice -1 (nessun target: sessione senza codici, oltre la vista
+  canonica) non conta.
 """
 
 from __future__ import annotations
+
+import math
 
 import torch
 import torch.nn.functional as F
@@ -52,4 +57,8 @@ class RVQHead(nn.Module):
 
 
 def rvq_loss(logits: torch.Tensor, codes: torch.Tensor) -> torch.Tensor:
-    return F.cross_entropy(logits, codes) if logits.shape[0] else logits.sum() * 0.0
+    """Entropia incrociata media sui codici validi (>= 0), divisa per ln(numero di codici); zero (con gradiente) se non ce n'e' nessuno."""
+    ok = codes >= 0
+    if not logits.shape[0] or not bool(ok.any()):
+        return logits.sum() * 0.0
+    return F.cross_entropy(logits[ok], codes[ok]) / math.log(logits.shape[-1])

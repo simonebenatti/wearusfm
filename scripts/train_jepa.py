@@ -33,15 +33,20 @@ def main(argv=None) -> int:
     ap.add_argument("--num-workers", type=int, default=0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--datasets", default=None, help="elenco separato da virgole, o 'all'; default: quello del preset (sanity: emg2qwerty)")
+    ap.add_argument("--rvq-codes", type=Path, default=None,
+                    help="radice dei codici RVQ precalcolati (scripts/precompute_rvq_codes.py): accende l'ancora RVQ (D5b); senza, l'ancora e' spenta")
     args = ap.parse_args(argv)
     cfg = R.sanity_config() if args.preset == "sanity" else R.small_config()
+    if args.rvq_codes is not None:
+        cfg = R.with_rvq(cfg, args.rvq_codes)
     if args.max_steps is not None:
         cfg = replace(cfg, max_steps=args.max_steps)
     if args.datasets is not None:
         cfg = replace(cfg, datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
     scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
     print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}, "
-          f"dispositivo {args.device}, {len(scales)} scale di sessione", flush=True)
+          f"dispositivo {args.device}, {len(scales)} scale di sessione, ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}",
+          flush=True)
     summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
                       time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True))
     print(json.dumps(summary), flush=True)

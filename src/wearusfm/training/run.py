@@ -24,6 +24,8 @@ import numpy as np
 import torch
 
 from wearusfm.data import pretraining_loader as L
+from wearusfm.data import rvq_codes as RC
+from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
 from wearusfm.model.query_decoder import probe_query_collapse
 from wearusfm.training import masking as MK
@@ -65,6 +67,11 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
                               filter_band_hz=(20.0, 450.0)),
         datasets=("emg2qwerty",), batch_size=32, lr=3e-4, warmup_steps=1000, weight_decay=0.05, grad_clip=1.0, max_steps=max_steps,
         eval_every=500, ckpt_every=500, seed=0)
+
+
+def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
+    """Ancora RVQ accesa (D5b): testa RVQ da 8192 codici e codici precalcolati dal dataloader."""
+    return replace(cfg, model=replace(cfg.model, rvq_codes=N_RVQ_CODES), loader=replace(cfg.loader, rvq_codes_root=str(codes_root)))
 
 
 def config_to_dict(cfg: RunConfig) -> dict:
@@ -165,6 +172,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         reason = stop_file.read_text().strip()
         log(f"run fermato in precedenza ({reason}): nessun passo")
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
+    if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
+        raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
     torch.manual_seed(cfg.seed)
     index = load_index(manifest, roots, cfg.datasets)
     student = WearUsFM(cfg.model).to(device)
@@ -211,9 +220,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             g["lr"] = _lr_at(step, cfg)
         student.train()
         opt.zero_grad(set_to_none=True)
+        codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
         with amp:
             losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
-                                 kinds=torch.as_tensor(batch.kind).to(device))
+                                 kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                 rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
         if not torch.isfinite(losses["total"]):
             reason = f"perdita non finita al passo {step}"
             break

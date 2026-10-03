@@ -151,7 +151,9 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         index = torch.full((c_tot, p), -1, dtype=torch.long, device=dev)
         index[q_ch, q_t] = torch.arange(q_ch.numel(), device=dev)
         rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste per costruzione
-        losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), rvq_codes(wc, ww)) if wc.numel() else h.sum() * 0.0
+        codes = rvq_codes(wc, ww) if wc.numel() else None
+        losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), codes) if wc.numel() else h.sum() * 0.0
+        losses["rvq_targets"] = (codes >= 0).sum().float() if codes is not None else h.new_zeros(())  # solo per il log: finestre con un codice
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
     return losses

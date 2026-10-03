@@ -1566,3 +1566,25 @@ ba75b5e5..., `session_scales.json` 29f4404f..., uguali su cluster e Mac; copie i
   collaudo 59277074 consuma ~13 finestre/s per GPU (2,4 s per passo col batch 32), e con 6 processi il loader ne da' ~45: su emg2qwerty l'attesa
   sui dati e' 0,03 s per passo. Al modello del sanity il loader basta con margine ~3,5. Se basti alla soglia del passo 0, o se quella soglia vada
   sostituita col consumo misurato, **lo decide Simone**. Il filtro costa il ~10%: **la decisione 13 (filtro nel dataloader) regge**.
+
+## Sanity JEPA vero: via libera (Simone, 04/10/2026: «vai»)
+
+**Lettura di AG, da correggere se sbagliata:** «vai» risponde al punto del 03/10 sera, che proponeva il sanity vero da **10.000 passi** (~6,7
+GPU-ora, un job su `boost_usr_prod`, da zero) e, per l'ancora RVQ (domanda 1), di **collegarla con i codici precalcolati se costa meno di un giorno,
+altrimenti partire senza** registrando la deviazione. Nessun terzo allarme: Simone non l'ha chiesto, quindi valgono le soglie firmate (16) e le
+varianze assolute si registrano soltanto. Le domande 2-10 restano aperte.
+
+**Ancora RVQ collegata** (stima: meno di un giorno, quindi opzione (a)):
+- `src/wearusfm/data/rvq_codes.py` riproduce l'ingresso di V2: vista canonica per prova, identica bit per bit a `to_canonical` (test); stesso
+  checkpoint (sha256 0d255bcc..., controllato all'avvio); fattore 21,718 di tutti i run di V2; un canale alla volta con l'indice spaziale fisso;
+  **blocchi da 16 patch** (i campioni di V2) dall'inizio di ogni prova. Codice = livello 0 del ramo 0 (D5b). Canali scartati dal QC: nessun
+  codice;
+- allineamento: la finestra che comincia k passi da 200 ms dopo l'inizio della prova ha come blocco w la patch canonica k + w (D10, decisione
+  11). Verificato in modo indipendente: un impulso nel blocco nativo p cade nella patch canonica p a 2000, 1926, 1111 e 1000 Hz;
+- il dataloader legge i codici per sessione (`LoaderConfig.rvq_codes_root`); la perdita RVQ conta solo gli slab con un codice (-1 = nessun target);
+- **scelta di AG, da confermare: entropia incrociata divisa per ln(8192)**, cosi' all'inizio vale ~1 come le altre ancore invece di ~9. Il
+  peso complessivo delle ancore resta 0,2 (firmato).
+
+**Job dei codici per emg2qwerty** (`scripts/slurm/precompute_rvq_codes.sbatch`, `boost_usr_prod`, 1 GPU, 8 CPU, limite 2 h): **costo massimo 2
+GPU-ora = 16 ore locali**, atteso ~0,5-1 (la vista canonica sulla CPU domina). Budget del passo 6: usate 0,47 su 100. Riprendibile, uscita in
+`$WORK/wearusfm_runs/results/passo6/rvq_codes/` (~0,4 GB per emg2qwerty). Il sanity vero si lancia dopo, con il costo ridichiarato.

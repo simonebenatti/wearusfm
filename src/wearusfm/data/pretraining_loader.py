@@ -44,6 +44,7 @@ from pathlib import Path
 import numpy as np
 from scipy import signal as sps
 
+from wearusfm.data import rvq_codes as RC
 from wearusfm.data.processed import read_scale
 from wearusfm.model import anchor_targets as AT
 from wearusfm.model import channel_codes as CC
@@ -73,6 +74,8 @@ class LoaderConfig:
     block_s: float | None = 30.0
     windows_per_block: int = 8
     block_pool: int = 16
+    # codici dell'ancora RVQ precalcolati (`data.rvq_codes`, `scripts/precompute_rvq_codes.py`); None = ancora RVQ senza target
+    rvq_codes_root: str | None = None
 
 
 # --- manifest ------------------------------------------------------------------------------------------------------------------------
@@ -344,6 +347,7 @@ class PretrainBatch:
     rows: list[dict]  # righe del manifest (dataset, unita', classe...) per il logging per topologia
     windows: list[Window]
     skipped_sessions: int = 0  # sessioni saltate finora da questo processo (scala non calcolabile)
+    rvq_codes: list | None = None  # (C_s, W_s) codici RVQ per campione (-1 = nessun target), se `rvq_codes_root`
 
 
 class PretrainLoader:
@@ -355,6 +359,7 @@ class PretrainLoader:
         self.skipped: dict[str, str] = {}  # sessioni saltate perche' la scala non si calcola (es. MAD nullo): contate, mai in silenzio
         self._pool: list[Block] = []
         self.blocks_read = 0
+        self.rvq_store = RC.RVQCodeStore(cfg.rvq_codes_root) if cfg.rvq_codes_root else None
 
     def _tick(self, name: str, t0: float) -> float:
         t1 = time.perf_counter()
@@ -452,7 +457,7 @@ class PretrainLoader:
             picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
-        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins = ([] for _ in range(12))
+        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes = ([] for _ in range(13))
         for row, src, win in picked:
             view = src.view if isinstance(src, Block) else src
             s = self.scale(row, view, rng)
@@ -476,12 +481,16 @@ class PretrainLoader:
             kind.append(k)
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms))
+            if self.rvq_store is not None:
+                entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
+                rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))
             t = self._tick("target_ancore", t)
             rows.append(row)
             wins.append(win)
         packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
-                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped))
+                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped),
+                             rvq_codes if self.rvq_store is not None else None)
 
 
 def to_model_inputs(batch: PretrainBatch):

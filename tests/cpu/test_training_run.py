@@ -80,3 +80,34 @@ def test_alarm_writes_a_stop_that_later_jobs_respect(tmp_path):
     assert [r["step"] for r in _lines(out)] == [1, 2]  # nessun passo dopo l'allarme
     state = torch.load(out / "checkpoint.pt", weights_only=False)
     assert "torch_rng" in state and state["torch_rng"].dtype == torch.uint8
+
+
+def test_rvq_anchor_on_trains_with_precomputed_codes_and_needs_both_halves(tmp_path):
+    import numpy as np
+
+    from wearusfm.data import pretraining_loader as L
+    from wearusfm.data import rvq_codes as RC
+    from wearusfm.model.anchors import rvq_loss
+
+    from test_rvq_codes import _session, fake_encode
+
+    root, mpath = _tree(tmp_path)
+    codes_root = tmp_path / "codes"
+    for row in L.ManifestIndex.load(mpath, [root]).rows:
+        s = _session(root, row)
+        trials, _ = RC.canonical_trials(s.segments, s.fs, s.qc_valid)
+        p = RC.code_path(codes_root, row["dataset"], row["subject"], row["session"])
+        p.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(p, **RC.session_codes(trials, s.qc_valid, fake_encode))
+    cfg = R.with_rvq(R.small_config(datasets=None, max_steps=3), codes_root)
+    s = R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None)
+    rec = _lines(tmp_path / "run")
+    assert s["steps"] == 3 and all("rvq" in r and math.isfinite(r["rvq"]) for r in rec)
+    assert sum(r["rvq_targets"] for r in rec) > 0  # gli slab hanno davvero dei codici
+    with pytest.raises(ValueError, match="ancora RVQ a meta'"):
+        from dataclasses import replace
+        R.train(replace(cfg, model=replace(cfg.model, rvq_codes=None)), mpath, [root], tmp_path / "r2", log=lambda m: None)
+    logits = torch.zeros(4, 8192, requires_grad=True)
+    loss = rvq_loss(logits, torch.tensor([3, -1, 5, -1]))
+    assert float(loss.detach()) == pytest.approx(1.0, abs=1e-6)  # uniforme: ln(8192) / ln(8192); i -1 non contano
+    assert float(rvq_loss(logits, torch.tensor([-1, -1, -1, -1])).detach()) == 0.0
