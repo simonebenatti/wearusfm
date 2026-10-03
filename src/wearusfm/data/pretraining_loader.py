@@ -13,11 +13,19 @@ Per ogni campione del batch:
    finestra), stimato su tratti sparsi della sessione e messo in cache (`scale_cache`, da riempire offline con `estimate_session_scale`);
 5. **target delle ancore** sul segnale pulito (`anchor_targets`), **maschera** (`training.masking`), codici di canale e insiemi di attenzione.
 
-**Lettura a blocchi** (`block_s`): ogni processo tiene `block_pool` blocchi in memoria; un blocco e' un tratto contiguo di `block_s` secondi
-(piu' il margine del filtro) dentro un tratto valido di una sessione estratta coi pesi del manifest, che comincia su un inizio di finestra ammesso;
-da ogni blocco si estraggono `windows_per_block` finestre con le stesse regole, poi si sostituisce. Ogni blocco da' sempre lo stesso numero di
-finestre, quindi la probabilita' di ogni sessione per finestra resta quella del manifest; cambia solo che le finestre di un batch vengono da un
-gruppo piu' piccolo di sessioni. Una lettura grande e contigua al posto di una piccola per finestra (Lustre).
+**Lettura a blocchi** (`block_s`): ogni processo tiene `block_pool` blocchi in memoria. Gli inizi di finestra ammessi di ogni tratto sono divisi
+in **tessere fisse** di `block_s` secondi; un blocco e' una tessera di una sessione estratta coi pesi del manifest, scelta con probabilita'
+proporzionale ai suoi inizi ammessi (= la tessera che contiene un inizio estratto uniformemente nella sessione), letta una volta con i dati fino alla
+fine dell'ultima finestra possibile e al margine del filtro. Da ogni blocco si estraggono `windows_per_block` finestre con inizio uniforme nella
+tessera e la stessa lunghezza della lettura diretta, poi si sostituisce. Cosi' **la distribuzione delle finestre e' quella della lettura
+diretta**: la probabilita' di ogni sessione per finestra resta quella del manifest (ogni blocco da' lo stesso numero di finestre) e, dentro la
+sessione, ogni inizio ammesso ha la stessa probabilita'; ogni finestra ha lo stesso margine del filtro della lettura diretta. Cambia solo che le
+finestre di un batch vengono da un gruppo piu' piccolo di sessioni. (La prima versione, 03/10, cominciava il blocco su un inizio estratto e lo
+tagliava alla fine del tratto: copriva poco l'inizio dei tratti e troppo la fine, e dava finestre corte in eccesso; review del 03/10.)
+
+**Tratti costanti** (decisione di Simone del 01/10, `docs/decisioni.md`): una finestra non tocca un tratto costante di un canale valido, **con un
+margine di 200 ms per lato** (`run_margin_s`, per il transitorio del filtro). **Integrita' del manifest:** se la riga ha `sidecar_sha256`, il
+`metadata.json` della sessione deve avere quell'hash (un sidecar cambiato dopo il congelamento cambierebbe QC e tratti costanti senza dirlo).
 
 Montaggi virtuali e sottocampionamento HD al volo (D6a) non ci sono ancora: il montaggio e' quello nativo.
 """
@@ -25,6 +33,7 @@ Montaggi virtuali e sottocampionamento HD al volo (D6a) non ci sono ancora: il m
 from __future__ import annotations
 
 import gzip
+import hashlib
 import json
 import math
 import time
@@ -53,6 +62,7 @@ class LoaderConfig:
     align_ms: float = 200.0  # griglia del tokenizer
     notch_hz: tuple[float, ...] = (50.0, 60.0)  # v10 §4.3: sempre entrambi
     filter_margin_s: float = 0.5
+    run_margin_s: float = 0.2  # margine attorno ai tratti costanti (decisione del 01/10: «un margine di una patch da 200 ms per lato»)
     max_window_attempts: int = 20
     max_session_attempts: int = 20
     scale_chunks: int = 32
@@ -108,10 +118,14 @@ class SessionView:
     qc_valid: np.ndarray
     spans: list[tuple[int | None, int, int, int]]  # (prova se 3D, inizio, fine, ancora della griglia)
     runs: list[tuple[int | None, int, int, int]] = field(default_factory=list)  # (prova se 3D, canale, inizio, fine)
+    cache: dict = field(default_factory=dict)  # inizi accettati per configurazione (calcolati una volta per sessione aperta)
 
     @classmethod
-    def open(cls, path: Path, split_at_gaps: bool) -> "SessionView":
-        meta = json.loads((path / "metadata.json").read_text())
+    def open(cls, path: Path, split_at_gaps: bool, expected_sha256: str | None = None) -> "SessionView":
+        raw = (path / "metadata.json").read_bytes()
+        if expected_sha256 is not None and hashlib.sha256(raw).hexdigest() != expected_sha256:
+            raise ValueError(f"{path}: metadata.json diverso da quello del manifest (sha256): sidecar cambiato dopo il congelamento")
+        meta = json.loads(raw)
         arr = np.load(path / "data_int16.npy", mmap_mode="r")
         qc = np.asarray([c["qc_valid"] for g in meta["montage"]["groups"] for c in g["channels"]], dtype=bool)
         if len(qc) != arr.shape[-1]:
@@ -172,6 +186,11 @@ def read_window(view: SessionView, trial, start: int, stop: int, span: tuple[int
     return y[:, start - a: start - a + (stop - start)]
 
 
+def scale_seed(key: str) -> int:
+    """Seme della stima della scala dalla chiave della sessione (dataset/soggetto/sessione): ogni processo e ogni rilancio danno la stessa scala."""
+    return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "little")
+
+
 def estimate_session_scale(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator) -> float:
     """Mediana dei MAD dei canali validi (v10 §4.3), su `scale_chunks` tratti da `scale_chunk_s` sparsi nella sessione, filtrati come le
     finestre. Un numero per sessione, condiviso dai canali."""
@@ -209,56 +228,90 @@ class Window:
     n_patches: int
 
 
-def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator, region: tuple | None = None) -> Window | None:
-    """Inizio uniforme fra gli inizi ammessi (multipli di `align_ms` dall'ancora della prova, con almeno `min_window_s` prima della fine del
-    tratto); lunghezza = il massimo fino a `max_window_s`, in patch intere. None se dopo `max_window_attempts` ogni finestra tocca un buco.
-    `region` = (prova, inizio, fine): solo finestre dentro quella regione (un blocco), con l'ancora della griglia del suo tratto."""
+def _accepted(view: SessionView, cfg: LoaderConfig, trial, s: int, e: int, anchor: int, ks: np.ndarray) -> np.ndarray:
+    """Gli inizi `ks` la cui finestra (`window_at`) esiste: stessi conti di `window_at`, vettoriali (un test li confronta uno per uno)."""
     fs, patch = view.fs, cfg.patch_ms / 1000.0
+    st = np.maximum(np.round(anchor + ks * (cfg.align_ms / 1000.0 * fs)).astype(np.int64), s)
+    n_patch = np.floor(np.minimum(cfg.max_window_s * fs, e - st) / fs / patch + 1e-9).astype(np.int64)
+    stop = st + np.ceil(n_patch * patch * fs - 1e-9).astype(np.int64)
+    over = stop > e
+    n_patch[over] -= 1
+    stop[over] = st[over] + np.ceil(n_patch[over] * patch * fs - 1e-9).astype(np.int64)
+    ok = n_patch * patch >= cfg.min_window_s - 1e-9
+    m = int(math.ceil(cfg.run_margin_s * fs - 1e-9))
+    for r in view.runs:
+        if r[0] == trial:
+            ok &= ~((r[2] - m < stop) & (r[3] + m > st))
+    return ks[ok]
+
+
+def admissible_starts(view: SessionView, cfg: LoaderConfig) -> list[tuple]:
+    """Per tratto con almeno un inizio accettato: (prova, inizio, fine, ancora, k0, ks). Gli inizi ammessi sono `ancora + k * align` per k da k0,
+    multipli di `align_ms` dall'ancora della prova con almeno `min_window_s` prima della fine del tratto; `ks` sono quelli la cui finestra non
+    tocca un tratto costante (col margine). Estrarre k uniforme fra tutti i `ks` della sessione = la lettura diretta, senza tentativi."""
+    key = (cfg.min_window_s, cfg.max_window_s, cfg.align_ms, cfg.patch_ms, cfg.run_margin_s)
+    if key in view.cache:
+        return view.cache[key]
+    fs = view.fs
     align = cfg.align_ms / 1000.0 * fs
-    min_n, max_n = cfg.min_window_s * fs, cfg.max_window_s * fs
-    cands = []
+    min_n = cfg.min_window_s * fs
+    out = []
     for trial, s, e, anchor in view.spans:
-        if region is not None:
-            if trial != region[0] or region[1] < s or region[2] > e:
-                continue
-            s, e = region[1], region[2]
         k0 = math.ceil((s - anchor) / align - 1e-9)
         k1 = math.floor((e - min_n - anchor) / align + 1e-9)
         if k1 >= k0:
-            cands.append((trial, s, e, anchor, k0, k1 - k0 + 1))
+            ks = _accepted(view, cfg, trial, s, e, anchor, np.arange(k0, k1 + 1, dtype=np.int64))
+            if len(ks):
+                out.append((trial, s, e, anchor, k0, ks))
+    view.cache[key] = out
+    return out
+
+
+def window_at(view: SessionView, cfg: LoaderConfig, cand: tuple, k: int) -> Window | None:
+    """La finestra che comincia all'inizio ammesso k del tratto `cand`: lunghezza = il massimo fino a `max_window_s`, in patch intere. None se
+    tocca un tratto costante di un canale valido (con `run_margin_s` per lato) o se resta piu' corta di `min_window_s`."""
+    trial, s, e, anchor = cand[:4]
+    fs, patch = view.fs, cfg.patch_ms / 1000.0
+    st = max(int(round(anchor + k * cfg.align_ms / 1000.0 * fs)), s)
+    n_patch = int(math.floor(min(cfg.max_window_s * fs, e - st) / fs / patch + 1e-9))
+    stop = st + int(math.ceil(n_patch * patch * fs - 1e-9))
+    if stop > e:
+        n_patch -= 1
+        stop = st + int(math.ceil(n_patch * patch * fs - 1e-9))
+    if n_patch * patch < cfg.min_window_s - 1e-9:
+        return None
+    m = int(math.ceil(cfg.run_margin_s * fs - 1e-9))
+    if any(r[0] == trial and r[2] - m < stop and r[3] + m > st for r in view.runs):
+        return None  # tocca (col margine) un tratto costante su un canale valido
+    return Window(trial, st, stop, (s, e), n_patch)
+
+
+def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator) -> Window | None:
+    """Inizio uniforme fra gli inizi accettati della sessione (`admissible_starts`). None se la sessione non ne ha."""
+    cands = admissible_starts(view, cfg)
     if not cands:
         return None
-    counts = np.array([c[5] for c in cands], dtype=np.float64)
-    for _ in range(cfg.max_window_attempts):
-        trial, s, e, anchor, k0, n = cands[int(rng.choice(len(cands), p=counts / counts.sum()))]
-        st = int(round(anchor + (k0 + int(rng.integers(n))) * align))
-        st = max(st, s)
-        n_patch = int(math.floor(min(max_n, e - st) / fs / patch + 1e-9))
-        if n_patch * patch < cfg.min_window_s - 1e-9:
-            continue
-        stop = st + int(math.ceil(n_patch * patch * fs - 1e-9))
-        if stop > e:
-            n_patch -= 1
-            stop = st + int(math.ceil(n_patch * patch * fs - 1e-9))
-        if any(r[0] == trial and r[2] < stop and r[3] > st for r in view.runs):
-            continue  # tocca un tratto costante su un canale valido
-        span = next((sp[1], sp[2]) for sp in view.spans if sp[0] == trial and sp[1] <= st and stop <= sp[2])
-        return Window(trial, st, stop, span, n_patch)
-    return None
+    counts = np.array([len(c[5]) for c in cands], dtype=np.float64)
+    cand = cands[int(rng.choice(len(cands), p=counts / counts.sum()))]
+    return window_at(view, cfg, cand, int(cand[5][rng.integers(len(cand[5]))]))
 
 
 @dataclass
 class Block:
-    """Un tratto contiguo letto una volta in memoria: dati grezzi in unita' fisiche su [data_lo, data_lo + n), finestre dentro [lo, hi)."""
+    """Gli inizi accettati `ks` di una tessera del tratto `cand`, coi dati grezzi (unita' fisiche) letti una volta su [data_lo, data_lo + n):
+    bastano per ogni finestra che comincia nella tessera, col suo margine del filtro."""
 
     row: dict
     view: SessionView
-    trial: int | None
-    lo: int
-    hi: int
+    cand: tuple  # (prova, inizio, fine, ancora, k0, ks) del tratto
+    ks: np.ndarray
     data_lo: int
     data: np.ndarray
     uses_left: int
+
+    @property
+    def trial(self):
+        return self.cand[0]
 
 
 def read_window_block(block: Block, win: Window, cfg: LoaderConfig) -> np.ndarray:
@@ -313,7 +366,7 @@ class PretrainLoader:
         if key in self._open:
             self._open.move_to_end(key)
             return self._open[key]
-        v = SessionView.open(self.index.path_of(row), self.cfg.split_at_gaps)
+        v = SessionView.open(self.index.path_of(row), self.cfg.split_at_gaps, row.get("sidecar_sha256"))
         self._open[key] = v
         if len(self._open) > self.cfg.open_sessions:
             self._open.popitem(last=False)
@@ -321,11 +374,13 @@ class PretrainLoader:
 
     def scale(self, row: dict, view: SessionView, rng: np.random.Generator) -> float:
         key = f"{row['dataset']}/{row['subject']}/{row['session']}"
-        if key not in self.scale_cache:
-            self.scale_cache[key] = estimate_session_scale(view, self.cfg, rng)
+        if key not in self.scale_cache:  # seme dalla chiave, non dal generatore del processo: la stessa sessione ha la stessa scala ovunque
+            self.scale_cache[key] = estimate_session_scale(view, self.cfg, np.random.default_rng(scale_seed(key)))
         return self.scale_cache[key]
 
-    def sample(self, rng: np.random.Generator) -> tuple[dict, SessionView, Window]:
+    def _session(self, rng: np.random.Generator) -> tuple[dict, SessionView]:
+        """Una sessione estratta coi pesi del manifest, con la scala e almeno un inizio di finestra ammesso; quelle senza scala si saltano e si
+        contano (mai in silenzio)."""
         for _ in range(self.cfg.max_session_attempts):
             row = self.index.rows[int(rng.choice(len(self.index.rows), p=self.index.weights))]
             key = f"{row['dataset']}/{row['subject']}/{row['session']}"
@@ -333,35 +388,61 @@ class PretrainLoader:
                 continue
             view = self.view(row)
             try:
-                self.scale(row, view, rng)  # la scala di sessione deve esistere: una sessione senza scala si salta e si conta
+                self.scale(row, view, rng)
             except (ValueError, FloatingPointError) as e:
                 self.skipped[key] = f"{type(e).__name__}: {e}"
                 continue
+            return row, view
+        raise RuntimeError(f"nessuna sessione con la scala in {self.cfg.max_session_attempts} estrazioni")
+
+    def sample(self, rng: np.random.Generator) -> tuple[dict, SessionView, Window]:
+        for _ in range(self.cfg.max_session_attempts):
+            row, view = self._session(rng)
             win = sample_window(view, self.cfg, rng)
             if win is not None:
                 return row, view, win
+            self.skipped[f"{row['dataset']}/{row['subject']}/{row['session']}"] = "nessun inizio di finestra accettato"
         raise RuntimeError(f"nessuna finestra valida in {self.cfg.max_session_attempts} sessioni estratte")
 
-    def _new_block(self, rng: np.random.Generator) -> Block:
-        row, view, win = self.sample(rng)  # sessione coi pesi del manifest, inizio uniforme fra gli inizi ammessi
-        hi = min(win.span[1], win.start + int(round(self.cfg.block_s * view.fs)))
-        m = int(round(self.cfg.filter_margin_s * view.fs)) if self.cfg.filter_band_hz is not None else 0
-        a, b = max(win.span[0], win.start - m), min(win.span[1], hi + m)
+    def _new_block(self, rng: np.random.Generator) -> Block | None:
+        """La tessera che contiene un inizio estratto uniformemente fra gli inizi accettati della sessione (= tessera con probabilita'
+        proporzionale ai suoi inizi accettati), coi dati fino alla fine dell'ultima finestra possibile piu' il margine del filtro."""
+        row, view = self._session(rng)
+        cands = admissible_starts(view, self.cfg)
+        if not cands:
+            self.skipped[f"{row['dataset']}/{row['subject']}/{row['session']}"] = "nessun inizio di finestra accettato"
+            return None
+        counts = np.array([len(c[5]) for c in cands], dtype=np.float64)
+        cand = cands[int(rng.choice(len(cands), p=counts / counts.sum()))]
+        trial, s, e, anchor, k0, ks = cand
+        per = max(1, int(round(self.cfg.block_s / (self.cfg.align_ms / 1000.0))))  # inizi per tessera (tessere fisse dall'inizio del tratto)
+        tile = (ks - k0) // per
+        tile_ks = ks[tile == tile[rng.integers(len(ks))]]
+        k_lo, k_hi = int(tile_ks[0]), int(tile_ks[-1])
+        fs = view.fs
+        align = self.cfg.align_ms / 1000.0 * fs
+        m = int(round(self.cfg.filter_margin_s * fs)) if self.cfg.filter_band_hz is not None else 0
+        lo = max(int(round(anchor + k_lo * align)), s)
+        hi = min(e, int(round(anchor + k_hi * align)) + int(math.ceil(self.cfg.max_window_s * fs)) + 1)
+        a, b = max(s, lo - m), min(e, hi + m)
         self.blocks_read += 1
-        return Block(row, view, win.trial, win.start, hi, a, view.read(win.trial, a, b), self.cfg.windows_per_block)
+        return Block(row, view, cand, tile_ks, a, view.read(trial, a, b), self.cfg.windows_per_block)
 
     def sample_from_blocks(self, rng: np.random.Generator) -> tuple[dict, Block, Window]:
-        while True:
+        for _ in range(100 * self.cfg.max_session_attempts):
             while len(self._pool) < self.cfg.block_pool:
-                self._pool.append(self._new_block(rng))
+                blk = self._new_block(rng)
+                if blk is not None:
+                    self._pool.append(blk)
             i = int(rng.integers(len(self._pool)))
             blk = self._pool[i]
-            win = sample_window(blk.view, self.cfg, rng, region=(blk.trial, blk.lo, blk.hi))
+            win = window_at(blk.view, self.cfg, blk.cand, int(blk.ks[rng.integers(len(blk.ks))]))  # sempre valida: inizi accettati
             blk.uses_left -= 1
             if win is None or blk.uses_left <= 0:
                 self._pool.pop(i)
             if win is not None:
                 return blk.row, blk, win
+        raise RuntimeError("nessuna finestra valida dai blocchi")
 
     def batch(self, batch_size: int, rng: np.random.Generator) -> PretrainBatch:
         t = time.perf_counter()

@@ -15,7 +15,6 @@ scale di sessione»; conferma della decisione 13, filtro nel dataloader).
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 import time
@@ -51,29 +50,35 @@ def _scale_worker(args) -> tuple[dict, dict, int]:
     for row in rows:
         k = key_of(row)
         try:
-            view = L.SessionView.open(index.path_of(row), cfg.split_at_gaps)
-            seed = int.from_bytes(hashlib.sha256(k.encode()).digest()[:8], "little")
-            scales[k] = L.estimate_session_scale(view, cfg, np.random.default_rng(seed))
+            view = L.SessionView.open(index.path_of(row), cfg.split_at_gaps, row.get("sidecar_sha256"))
+            scales[k] = L.estimate_session_scale(view, cfg, np.random.default_rng(L.scale_seed(k)))  # lo stesso seme del dataloader
         except Exception as e:  # una sessione difettosa si registra, non ferma il calcolo
             errors[k] = f"{type(e).__name__}: {e}"
     return scales, errors, len(rows)
 
 
-def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | None, known: dict | None = None) -> dict:
-    """`known`: scale gia' calcolate (es. da un run precedente): si ricalcolano solo le sessioni che mancano."""
+def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | None, known: dict | None = None,
+                   checkpoint: Path | None = None) -> dict:
+    """`known`: scale gia' calcolate (es. da un run precedente): si ricalcolano solo le sessioni che mancano. `checkpoint`: file riscritto ogni
+    ~500 sessioni con le scale gia' calcolate, cosi' un TIMEOUT non perde la fase (si riprende con `--scales-from`)."""
     known = dict(known or {})
     rows = index.rows[:max_sessions] if max_sessions else index.rows
     reused = sum(1 for r in rows if key_of(r) in known)
     rows = [r for r in rows if key_of(r) not in known]
     chunks = [rows[i::workers * 8] for i in range(workers * 8)]
     t0 = time.time()
-    scales, errors, done = dict(known), {}, 0
+    scales, errors, done, saved = dict(known), {}, 0, 0
     with get_context("spawn").Pool(max(1, workers)) as pool:
         for s, e, n in pool.imap_unordered(_scale_worker, [(None, [str(r) for r in index.roots], c) for c in chunks if c]):
             scales.update(s)
             errors.update(e)
             done += n
             print(f"[{time.strftime('%H:%M:%S')}] scale: {done}/{len(rows)} sessioni, {len(errors)} errori, {time.time() - t0:.0f} s", flush=True)
+            if checkpoint is not None and done - saved >= 500:
+                tmp = checkpoint.with_suffix(".tmp")
+                tmp.write_text(json.dumps({"partial": True, "scales": scales, "errors": errors}))
+                tmp.replace(checkpoint)
+                saved = done
     return {"n_sessions": len(rows) + reused, "reused": reused, "scales": scales, "errors": errors, "elapsed_s": time.time() - t0,
             "method": "mediana dei MAD dei canali validi su 32 tratti da 2 s filtrati (20-450 Hz, notch 50/60), seme dalla chiave della sessione"}
 
@@ -117,17 +122,20 @@ def main(argv=None) -> int:
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--max-sessions", type=int, default=None, help="solo per le prove: limita le sessioni delle scale")
     ap.add_argument("--scales-from", type=Path, default=None, help="session_scales.json di un run precedente: ricalcola solo le mancanti")
+    ap.add_argument("--skip-rate", action="store_true", help="solo le scale, senza la misura del ritmo")
     args = ap.parse_args(argv)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     index = L.ManifestIndex.load(args.manifest, [Path(r) for r in args.root])
     print(f"[{time.strftime('%H:%M:%S')}] manifest {args.manifest}: {len(index.rows)} sessioni di pretraining, {args.workers} processi", flush=True)
     known = json.loads(args.scales_from.read_text())["scales"] if args.scales_from else None
-    sc = compute_scales(index, args.workers, args.max_sessions, known)
+    sc = compute_scales(index, args.workers, args.max_sessions, known, checkpoint=args.out_dir / "session_scales.json")
     sc["manifest"] = str(args.manifest)
     (args.out_dir / "session_scales.json").write_text(json.dumps(sc, indent=1))
     vals = np.array(list(sc["scales"].values()))
     print(f"scale: {len(vals)} calcolate, {len(sc['errors'])} errori, mediana {np.median(vals):.4g}, min {vals.min():.4g}, max {vals.max():.4g}"
           if len(vals) else "scale: nessuna calcolata", flush=True)
+    if args.skip_rate:
+        return 0
     out = {"manifest": str(args.manifest), "batch_size": args.batch_size, "batches_per_process": args.batches, "runs": []}
     for band in (None, FILTER):
         r = measure_rate(args.manifest, args.root, sc["scales"], args.workers, args.batches, args.batch_size, band)

@@ -77,7 +77,7 @@ def test_windows_are_aligned_inside_spans_and_avoid_gaps_and_constant_runs(tmp_p
         w = L.sample_window(view, loader.cfg, rng)
         assert w.start % 400 == 0  # 200 ms a 2 kHz dall'inizio della prova (ancora 0, anche dopo il salto)
         assert not (w.start < GAP_AT < w.stop)  # non attraversa il salto
-        assert not (w.start < RUN[2] and w.stop > RUN[1])  # non tocca il tratto costante
+        assert not (w.start < RUN[2] + 400 and w.stop > RUN[1] - 400)  # non tocca il tratto costante, con 200 ms di margine per lato
         assert 40 <= w.n_patches <= 160 and w.stop - w.start == w.n_patches * 50
     db2 = loader.view(next(r for r in idx.rows if r["dataset"] == "ninapro_db2"))
     for _ in range(100):
@@ -159,9 +159,9 @@ def test_block_reading_reads_once_per_block_and_keeps_session_weights(tmp_path):
     n = 4000
     for _ in range(n):
         row, blk, win = loader.sample_from_blocks(rng)
-        assert blk.lo <= win.start and win.stop <= blk.hi and win.span[0] <= win.start and win.stop <= win.span[1]
+        assert blk.data_lo <= win.start and win.stop <= blk.data_lo + blk.data.shape[1] and win.span[0] <= win.start and win.stop <= win.span[1]
         if row["dataset"] == "emg2pose":
-            assert not (win.start < GAP_AT < win.stop) and not (win.start < RUN[2] and win.stop > RUN[1])
+            assert not (win.start < GAP_AT < win.stop) and not (win.start < RUN[2] + 400 and win.stop > RUN[1] - 400)
         counts[row["dataset"]] = counts.get(row["dataset"], 0) + 1
     assert loader.blocks_read <= n / 8 + loader.cfg.block_pool + 5  # una lettura ogni ~8 finestre, non una per finestra
     for r, w in zip(idx.rows, idx.weights):
@@ -179,8 +179,9 @@ def test_window_from_a_block_equals_the_direct_read(tmp_path):
         direct = L.read_window(blk.view, win.trial, win.start, win.stop, win.span, cfg)
         from_block = L.read_window_block(blk, win, cfg)
         m = int(round(cfg.filter_margin_s * blk.view.fs))
-        if blk.data_lo <= max(win.span[0], win.start - m) and blk.data_lo + blk.data.shape[1] >= min(win.span[1], win.stop + m):
-            assert np.allclose(from_block, direct, atol=1e-5)  # stesso margine: stesso filtro, stesso risultato
+        # il blocco contiene sempre il margine intero della lettura diretta: stesso filtro, stesso risultato, senza eccezioni
+        assert blk.data_lo <= max(win.span[0], win.start - m) and blk.data_lo + blk.data.shape[1] >= min(win.span[1], win.stop + m)
+        assert np.allclose(from_block, direct, atol=1e-5)
 
 
 def test_scale_ignores_tiny_spans_between_close_gaps(tmp_path):
@@ -196,3 +197,49 @@ def test_scale_ignores_tiny_spans_between_close_gaps(tmp_path):
     cfg = _cfg(filter_band_hz=(20.0, 450.0))
     for seed in range(30):
         assert L.estimate_session_scale(view, cfg, np.random.default_rng(seed)) > 0  # prima: ValueError «padlen» quando pescava un tratto minuscolo
+
+
+def test_blocks_give_the_same_window_distribution_as_direct_reads(tmp_path):
+    """Review del 03/10: la prima lettura a blocchi copriva poco l'inizio dei tratti e troppo la fine, e dava finestre corte in eccesso. Con le
+    tessere la distribuzione degli inizi e delle lunghezze dentro la sessione e' quella della lettura diretta."""
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    w = np.asarray([1.0 if r["dataset"] == "emg2pose" else 0.0 for r in idx.rows])
+    idx = L.ManifestIndex([r for r, x in zip(idx.rows, w) if x], np.ones(1), idx.roots)  # solo la sessione di emg2pose (due tratti, un buco)
+    cfg = _cfg(block_s=3.0)  # tessere da 3 s: tratti da 4,5 e 7,5 s, quindi ultime tessere parziali
+    direct, blocks = L.PretrainLoader(idx, cfg), L.PretrainLoader(idx, cfg)
+    view = direct.view(idx.rows[0])
+    rng_d, rng_b = np.random.default_rng(10), np.random.default_rng(11)
+    n = 6000
+    d = [L.sample_window(view, cfg, rng_d) for _ in range(n)]
+    b = [blocks.sample_from_blocks(rng_b)[2] for _ in range(n)]
+    edges = np.arange(0, 24001, 1200)
+    hd, _ = np.histogram([x.start for x in d], edges)
+    hb, _ = np.histogram([x.start for x in b], edges)
+    nz = hd > 0
+    assert set(np.nonzero(hb)[0]) <= set(np.nonzero(hd)[0])  # nessun inizio fuori da quelli ammessi
+    assert np.all(np.abs(hb[nz] - hd[nz]) <= 4 * np.sqrt(hd[nz]) + 10)  # stessa copertura del tempo, a meno del rumore di campionamento
+    short_d = np.mean([x.n_patches < 160 for x in d])
+    short_b = np.mean([x.n_patches < 160 for x in b])
+    assert abs(short_b - short_d) < 0.03  # stessa quota di finestre corte (prima: molte di piu' coi blocchi)
+
+
+def test_vectorized_acceptance_equals_window_at_for_every_start(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    for kw in ({}, {"run_margin_s": 0.2, "max_window_s": 2.5}, {"min_window_s": 0.5, "patch_ms": 20.0}):
+        cfg = _cfg(**kw)
+        loader = L.PretrainLoader(idx, cfg)
+        for row in idx.rows:
+            view = loader.view(row)
+            got = {(c[0], c[1], int(k)) for c in L.admissible_starts(view, cfg) for k in c[5]}
+            fs = view.fs
+            align = cfg.align_ms / 1000.0 * fs
+            want = set()
+            for trial, s, e, anchor in view.spans:
+                k0 = math.ceil((s - anchor) / align - 1e-9)
+                k1 = math.floor((e - cfg.min_window_s * fs - anchor) / align + 1e-9)
+                for k in range(k0, k1 + 1):
+                    if L.window_at(view, cfg, (trial, s, e, anchor), k) is not None:
+                        want.add((trial, s, k))
+            assert got == want and got

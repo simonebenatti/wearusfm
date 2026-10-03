@@ -58,3 +58,35 @@ def test_rvq_never_on_channel_masking():
     vis = np.ones((3, 16), dtype=bool)
     vis[1] = False  # un canale nascosto per intero, gli altri visibili: masking di canale
     assert not A.rvq_target_windows(vis, np.ones((3, 16), dtype=bool), np.ones(3, dtype=bool)).any()
+
+
+def _reference(x, fs, band_limit_hz, patch_ms=25.0):
+    """L'implementazione prima del 03/10/2026 (finestre materializzate, float64): la versione veloce deve dare gli stessi target."""
+    x = np.asarray(x, dtype=np.float64)
+    c, t = x.shape
+    n_patch = int(np.floor(t / fs / (patch_ms / 1000.0) + 1e-9))
+    centers = (np.arange(n_patch) + 0.5) * (patch_ms / 1000.0)  # come nel modulo: lo stesso arrotondamento dei centri
+    limit = np.minimum(np.broadcast_to(np.asarray(band_limit_hz, dtype=np.float64), (c,)), fs / 2.0)
+    edges = np.asarray(A.BAND_EDGES_HZ)
+    avail = edges[None, 1:] <= limit[:, None] + 1e-9
+    seg, _ = A._windows(x, fs, centers, A.RMS_WINDOW_MS)
+    log_rms = np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + A.EPS)
+    seg, _ = A._windows(x, fs, centers, A.SPECTRAL_WINDOW_MS)
+    n = seg.shape[-1]
+    power = np.abs(np.fft.rfft(seg * np.hanning(n), axis=-1)) ** 2
+    freqs = np.fft.rfftfreq(n, 1.0 / fs)
+    bp = np.stack([power[..., (freqs >= lo) & (freqs < hi)].sum(axis=-1) for lo, hi in zip(edges[:-1], edges[1:])], axis=-1) * avail[:, None, :]
+    band_shape = np.log(bp / (bp.sum(axis=-1, keepdims=True) + A.EPS) + A.EPS)
+    seg, _ = A._windows(x, fs, centers, A.ENVELOPE_WINDOW_MS)
+    return log_rms, band_shape, np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + A.EPS)
+
+
+def test_fast_targets_equal_the_reference_also_at_the_edges():
+    rng = np.random.default_rng(3)
+    for c, fs, t, lim in [(4, 2000.0, 8000, 450.0), (3, 1000.0, 1000, 450.0), (5, 200.0, 800, 100.0), (2, 2048.0, 3000, [450.0, 100.0])]:
+        x = rng.normal(size=(c, t)) * np.linspace(0.1, 3.0, t)[None, :]  # ampiezza che cambia: i bordi contano
+        got = A.anchor_targets(x.astype(np.float32), fs, lim)
+        ref_rms, ref_shape, ref_env = _reference(x.astype(np.float32), fs, lim)
+        assert np.allclose(got.log_rms, ref_rms, atol=1e-6) and np.allclose(got.log_env, ref_env, atol=1e-6)  # tutte le patch, anche fuori
+        ok = got.spec_valid[:, :, None] & got.band_available[:, None, :]
+        assert np.allclose(got.band_shape[ok], ref_shape[ok], atol=1e-3)  # float32 nello spettro

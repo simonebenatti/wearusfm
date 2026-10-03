@@ -25,6 +25,7 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
+from scipy import fft as sfft
 
 BAND_EDGES_HZ = tuple(float(v) for v in np.geomspace(20.0, 450.0, 6))  # 20, 37, 70, 130, 242, 450 Hz
 RMS_WINDOW_MS = 25.0
@@ -54,6 +55,21 @@ def _windows(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) -> 
     return x[:, idx], valid
 
 
+def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) -> tuple[np.ndarray, np.ndarray]:
+    """(C, P) RMS sulle stesse finestre di `_windows`, senza materializzarle (somme cumulative dei quadrati): stesso risultato, anche ai bordi
+    (indici tagliati = campione di bordo ripetuto). A 2 kHz la finestra da 500 ms materializzata era il 30-45% del tempo dei target."""
+    c, t = x.shape
+    n = max(1, int(round(win_ms / 1000.0 * fs)))
+    starts = np.round(centers_s * fs - n / 2.0).astype(np.int64)
+    valid = (starts >= 0) & (starts + n <= t)
+    pad_l, pad_r = max(0, int(-starts.min())), max(0, int(starts.max()) + n - t)
+    xp = np.pad(x, ((0, 0), (pad_l, pad_r)), mode="edge") if pad_l or pad_r else x
+    cs = np.zeros((c, xp.shape[1] + 1), dtype=np.float64)
+    np.cumsum(np.square(xp, dtype=np.float64), axis=1, out=cs[:, 1:])
+    s = starts + pad_l
+    return np.sqrt(np.maximum((cs[:, s + n] - cs[:, s]) / n, 0.0)), valid
+
+
 def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ) -> AnchorTargets:
     """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale."""
     x = np.asarray(x, dtype=np.float64)
@@ -67,20 +83,22 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     edges = np.asarray(edges_hz, dtype=np.float64)
     band_available = edges[None, 1:] <= limit[:, None] + 1e-9  # (C, B)
 
-    seg, rms_ok = _windows(x, fs, centers, RMS_WINDOW_MS)
-    log_rms = np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + EPS)
+    rms, rms_ok = _window_rms(x, fs, centers, RMS_WINDOW_MS)
+    log_rms = np.log(rms + EPS)
 
-    seg, spec_ok = _windows(x, fs, centers, SPECTRAL_WINDOW_MS)
+    # spettro in float32 (il segnale e' normalizzato per sessione: la precisione basta), bande come prodotto con una matrice indicatrice
+    seg, spec_ok = _windows(x.astype(np.float32), fs, centers, SPECTRAL_WINDOW_MS)
     n = seg.shape[-1]
-    power = np.abs(np.fft.rfft(seg * np.hanning(n), axis=-1)) ** 2  # (C, P, F)
+    spec = sfft.rfft(seg * np.hanning(n).astype(np.float32), axis=-1)  # (C, P, F); scipy resta in float32 (numpy ~3 volte piu' lento qui)
+    power = spec.real ** 2 + spec.imag ** 2
     freqs = np.fft.rfftfreq(n, 1.0 / fs)
-    band_power = np.stack([power[..., (freqs >= lo) & (freqs < hi)].sum(axis=-1) for lo, hi in zip(edges[:-1], edges[1:])], axis=-1)
-    band_power = band_power * band_available[:, None, :]
+    bands = np.stack([(freqs >= lo) & (freqs < hi) for lo, hi in zip(edges[:-1], edges[1:])], axis=1).astype(power.dtype)  # (F, B)
+    band_power = (power @ bands).astype(np.float64) * band_available[:, None, :]
     total = band_power.sum(axis=-1, keepdims=True)
     band_shape = np.log(band_power / (total + EPS) + EPS)
 
-    seg, env_ok = _windows(x, fs, centers, ENVELOPE_WINDOW_MS)
-    log_env = np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + EPS)
+    env, env_ok = _window_rms(x, fs, centers, ENVELOPE_WINDOW_MS)
+    log_env = np.log(env + EPS)
 
     rows = lambda v: np.broadcast_to(v[None, :], (c, n_patch)).copy()  # noqa: E731
     return AnchorTargets(log_rms, rows(rms_ok), band_shape, rows(spec_ok) & band_available.any(axis=1)[:, None], band_available, log_env, rows(env_ok))

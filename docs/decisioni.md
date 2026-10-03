@@ -1426,3 +1426,30 @@ checkpoint. Scopo: secondi per passo, memoria GPU (ora nel log e in `summary.jso
 i difetti trovati dalla review del 03/10 (i blocchi deformano la distribuzione delle finestre dentro la sessione; manca il margine di 200 ms attorno
 ai tratti costanti), da correggere prima del sanity vero. Il sanity vero ripartira' da zero, non da questo checkpoint. Ancora RVQ spenta.
 Correzioni dello stesso commit: lo sbatch rifiuta un `RUN_DIR` relativo, che dopo il `cd` finirebbe dentro il repo.
+
+**Sanity job 2, 59276285: FALLITO dopo 54 s, memoria GPU esaurita** (`torch.cuda.OutOfMemoryError` nell'attenzione sui latenti, 60,4 GiB allocati
+su 63,4). **Costo 0,015 GPU-ora**; budget del passo 6: usate 0,025 su 100. La review del modello (Opus, 03/10) l'aveva previsto: ~6 GB di
+attivazioni per finestra da 4 s di emg2qwerty in float32 (backbone 3,7, decoder 1,5, encoder locale 0,5), quindi ~190 GB col batch 32. Il preset
+del sanity non entra in una A100 com'e': correzione sotto, nessun rilancio prima.
+
+**Review del 03/10, dati e script: correzioni** (istruzione di Simone: «quando hai finito, se ci sono cose sbagliate correggi senza bisogno della mia
+conferma»):
+- **lettura a blocchi riscritta.** La prima versione cominciava il blocco su un inizio estratto e lo tagliava alla fine del tratto. Su un tratto
+  da 60 s copriva i primi 10 s a 0-0,3 volte la media e gli ultimi 5 s a 1,9-3,5 volte; le finestre corte erano il 21% invece del 4,8%, e sul
+  sanity (emg2qwerty) il 10,9% invece dello 0,2%. Ora gli inizi accettati di ogni tratto sono divisi in tessere fisse di 30 s, e il blocco e' la
+  tessera che contiene un inizio estratto uniformemente nella sessione: **la distribuzione delle finestre e' quella della lettura diretta** (test
+  sugli istogrammi degli inizi e sulla quota di finestre corte). Ogni finestra ha il margine intero del filtro (test senza eccezioni);
+- **margine di 200 ms attorno ai tratti costanti**, come nella regola firmata il 01/10 («ne' per V2 ne' per l'addestramento»): prima il loader
+  controllava solo la sovrapposizione. Gli inizi accettati si calcolano una volta per sessione (vettoriale, test inizio per inizio contro la
+  funzione scalare): niente piu' tentativi a vuoto, e una sessione senza inizi accettati si salta e si conta;
+- **scala di sessione con il seme dalla chiave** anche quando si calcola al volo: prima ogni processo aveva il suo generatore, e la stessa
+  sessione poteva avere scale diverse fra processi e nel batch di validazione;
+- **integrita' del manifest:** il loader controlla che il `metadata.json` di ogni sessione abbia lo `sidecar_sha256` della riga di `manifest-v1`,
+  altrimenti si ferma;
+- **`measure_loader.py`** riscrive `session_scales.json` ogni ~500 sessioni (un TIMEOUT non perde la fase) e ha `--skip-rate`;
+- **target delle ancore 2-3 volte piu' veloci** (erano il 55-66% del tempo del loader): RMS e inviluppo con somme cumulative invece delle finestre
+  materializzate, spettro in float32 con scipy. 32 canali a 2 kHz: da 37 a 11 ms per finestra; 128 canali: da 115 a 55 ms. Stessi target della
+  versione vecchia (test di equivalenza, anche ai bordi).
+Restano da decidere (rapporto a Simone): il transitorio del filtro ai bordi dei tratti e l'altro braccio di emg2pose (540 registrazioni con la
+mano ferma nel pretraining e quella in movimento nel test, 7,3 h). Sono correzioni minori il ripristino in `qc_relative_check.py` e i test
+mancanti sull'esclusione delle righe di test.
