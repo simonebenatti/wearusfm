@@ -243,3 +243,23 @@ def test_vectorized_acceptance_equals_window_at_for_every_start(tmp_path):
                     if L.window_at(view, cfg, (trial, s, e, anchor), k) is not None:
                         want.add((trial, s, k))
             assert got == want and got
+
+
+def test_index_excludes_test_rows_and_filters_nested_subsets(tmp_path):
+    """Review del 03/10: l'albero di prova aveva solo righe di pretraining, quindi l'esclusione di test e benchmark e il filtro `nested` (D16)
+    non erano provati."""
+    root, mpath = _tree(tmp_path)
+    doc = json.loads(gzip.decompress(mpath.read_bytes()))
+    cols = doc["columns"]
+    rows = [dict(zip(cols, r)) for r in doc["rows"]]
+    rows[0]["split"], rows[0]["weight"] = "test", 0.0
+    rows[1]["split"] = "benchmark"
+    rows[2]["nested"] = ["0.5"]
+    doc["rows"] = [[r[c] for c in cols] for r in rows]
+    path = tmp_path / "m2.json.gz"
+    path.write_bytes(gzip.compress(json.dumps(doc).encode()))
+    idx = L.ManifestIndex.load(path, [root])
+    assert [r["dataset"] for r in idx.rows] == [rows[2]["dataset"]]  # test e benchmark esclusi
+    assert [r["dataset"] for r in L.ManifestIndex.load(path, [root], nested="0.5").rows] == [rows[2]["dataset"]]
+    with pytest.raises(ValueError):
+        L.ManifestIndex.load(path, [root], nested="0.25")  # nessuna riga nel sottoinsieme: errore, non un indice vuoto

@@ -11,7 +11,7 @@ Generato da `scripts/corpus_inventory.py`. Ore = durata dei dati ingeriti (`hour
 | putEMG | 44* | 21.4 | 5120 | 24 | 3 anelli | pretraining |
 | CSL-hdemg | 5 | 6.0 | 2048 | 168 | griglia HD | pretraining |
 | Camargo 2021 | 22 | 20.1 | 1000 | 11 | sparso (arto inferiore) | pretraining |
-| Kaifosh (Discrete Gestures) | 100 | 63.9 | 2000 | 16 | anello (Meta) | pretraining |
+| Kaifosh (Discrete Gestures) | 100 | 63.9 | 2000 | 16 | anello (Meta) | benchmark (D9, decisione 5, firmata il 03/10/2026) |
 | NinaPro DB2 | 40 | 28.8 | 2000 | 12 | anello 8 + 4 mirati | pretraining |
 | NinaPro DB3 (amputati) | 11 | 7.6 | 2000 | 12 | anello 8 + 4 mirati | pretraining |
 | NinaPro DB4 | 10 | 7.6 | 2000 | 12 | anello 8 + 4 mirati | pretraining |
@@ -28,7 +28,7 @@ Generato da `scripts/corpus_inventory.py`. Ore = durata dei dati ingeriti (`hour
 
 \* soggetti da documentazione, non da un ingest.
 
-Attenzione: la somma dei soggetti NON e' il numero di persone distinte: fra i DB NinaPro ci sono sovrapposizioni (fatto n. 2: un soggetto in comune fra DB4 e DB5, probabilmente 7 fra DB7 e DB8; ID non dichiarati), e Kaifosh conta utenti diversi da quelli di emg2pose/emg2qwerty solo per costruzione degli identificatori, non per verifica.
+Attenzione: la somma dei soggetti NON e' il numero di persone distinte: fra i DB NinaPro ci sono sovrapposizioni (fatto n. 2: un soggetto in comune fra DB4 e DB5; fra DB7 e DB8 sovrapposizione probabile; ID non dichiarati), e Kaifosh conta utenti diversi da quelli di emg2pose/emg2qwerty solo per costruzione degli identificatori, non per verifica.
 
 ## Non ancora ingeriti (stime dichiarate, NON misure)
 

@@ -1,14 +1,15 @@
 # Proposta — D10: patch, contesto, masking (passo 6): FIRMATA il 03/10/2026
 
-**Stato: bozza di AG del 02/10/2026, aggiornata la sera del 02/10 coi numeri del costruttore (job 59204297) e col generatore di maschere, NON
-firmata.** D10 va chiusa al passo 6, «prima di scrivere il modello» (piano, §9), e il codice del passo 6
+**Stato: bozza di AG del 02/10/2026, aggiornata la sera del 02/10 coi numeri del costruttore (job 59204297) e col generatore di maschere;
+firmata per intero il 03/10/2026 (decisioni 10-12 dei fogli).** D10 va chiusa al passo 6, «prima di scrivere il modello» (piano, §9), e il codice del passo 6
 va finito entro l'01/11. Riferimenti: piano operativo §Passo 6 (proposta di partenza); v10 §4.1-4.2 (front-end in ms), §6.3 (ancore e ancora RVQ),
 §6.4 (masking multiscala), §10.3 (`D_t`); D2 (parametri provvisori del passo 0: contesto 4 s, patch 25 ms, «non vincolanti»); gate D8 (superato
 con patch 25 ms); bozza del manifest D9 (job 59204297: tempo non campionabile per dataset con finestre da 1, 2, 4 e 8 s).
 
 **Proposta di partenza del piano** (passo 6): «patch 25 ms (coerente con i 3,6·10⁸ time-patch per epoca della v10), contesto 4 s, scale di masking
 di v10 §6.4; se l'ancora RVQ sopravvive, una quota di slab ≥ 200 ms su tutti i canali, allineati alla griglia del tokenizer». L'ancora RVQ è
-sopravvissuta (D5b firmata, accesa su 14 dataset; DB10 in misura): il vincolo degli slab vale.
+sopravvissuta (D5b firmata; nel manifest accesa su 15 dataset, 14 nel pretraining perche' Kaifosh e' benchmark; DB10 entrato il 02/10): il vincolo
+degli slab vale.
 
 Cosa si decide qui: **(1)** lunghezza della patch; **(2)** contesto, cioè la lunghezza della finestra vista dal modello; **(3)** lo schema di masking
 (scale, proporzioni, quota degli slab RVQ, frazione mascherata). Non si decide: dove si leggono i target JEPA (D11, v10 §5.6), le finestre dei target
@@ -114,7 +115,7 @@ allineati alla griglia del tokenizer**, e l'ancora RVQ attiva solo lì (v10 §6.
 - **Allineamento degli slab.** La griglia del tokenizer è ancorata all'inizio di ogni prova (`tokenizer_checks/sessions.py`: «la griglia e'
   ancorata all'inizio di ogni prova»). Proposta: **l'inizio di ogni finestra cade su un multiplo di 200 ms dall'inizio della prova**, così gli slab
   si allineano contando patch dentro la finestra. Si perde al più 175 ms di libertà nell'inizio della finestra: irrilevante.
-- **Dataset senza ancora RVQ** (putEMG, CSL-hdemg, DB5, e DB10 se non entra): la quota degli slab torna al masking temporale normale.
+- **Dataset senza ancora RVQ** (putEMG, CSL-hdemg, DB5; DB10 e' entrato il 02/10): la quota degli slab torna al masking temporale normale.
 - **Montaggi con pochi canali** (classe A, 8-12 canali): il masking spaziale non supera metà dei canali validi, così resta qualcosa da cui predire.
   *Interpretazione di AG:* con 8 canali mascherarne 4 è già il compito difficile di v10 §6.4 (sinergia), e oltre resterebbe troppo poco.
 - **Frazione mascherata per campione.** v10 non dà un numero. Proposta: un valore di lavoro nel codice, e **la regola per sceglierlo congelata in

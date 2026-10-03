@@ -97,6 +97,22 @@ def test_apply_revision_restores_sidecar_if_result_is_not_conforming(tmp_path):
     assert "qc_revisions" not in json.loads((d / "metadata.json").read_text())
 
 
+def test_failed_second_revision_restores_the_current_sidecar_not_the_first_backup(tmp_path):
+    """Review del 03/10: se la validazione falliva su una sessione gia' rivista, si ripristinava il backup della PRIMA revisione e si perdevano in
+    silenzio le revisioni successive (es. i `constant_runs`)."""
+    d = _write(tmp_path / "s", _signal(dead=(2, 3), dead_amp=0.3), qc=(1, 1, 1, 1))
+    Q.apply_revision(d, [2], "2026-09-30T12:00:00Z")
+    Q.apply_constant_runs(d, [{"channel": 0, "start": 10, "n_samples": 20}], "2026-10-01T00:00:00Z")
+    current = (d / "metadata.json").read_text()
+    meta = json.loads(current)
+    meta["shape"] = [9, 9]  # da qui la sessione non e' piu' conforme
+    (d / "metadata.json").write_text(json.dumps(meta, indent=2))
+    current = (d / "metadata.json").read_text()
+    with pytest.raises(RuntimeError, match="non e' conforme"):
+        Q.apply_revision(d, [3], "2026-10-02T00:00:00Z")
+    assert (d / "metadata.json").read_text() == current and json.loads(current)["constant_runs"]
+
+
 def _run(*args):
     return subprocess.run([sys.executable, str(SCRIPT), *map(str, args)], capture_output=True, text=True)
 

@@ -46,14 +46,15 @@ metadati «sparsi».
 ### 4. Pesi dentro la classe — D9 (a-bis)
 
 **Proposta di AG:** pesi proporzionali a ore^0,5, con l'eccedenza di un dataset al tetto ridistribuita agli altri della classe (per ore, emg2pose ed
-emg2qwerty prenderebbero l'86% della classe B; uniforme ripeterebbe i piccoli decine di volte). Risultato nella tabella di D9.
+emg2qwerty prenderebbero l'86% della classe B, 85,1% sul solo pretraining; uniforme ripeterebbe i piccoli decine di volte). Risultato nella tabella di D9.
 **Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 5. Kaifosh — D9 (b), D3b
 
 **Proposta di AG:** tutto benchmark, nessun soggetto nel pretraining. **Da dichiarare** (fatto 23, firmato): nessuna fonte dice se i tre dataset Meta
 abbiano persone in comune; i 300 partecipanti pubblici di Kaifosh erano utenti di training del paper, quindi i numeri pubblicati non sono sullo
-stesso test dello split pubblico. **Alternativa:** gli 80 utenti di train nel pretraining.
+stesso test dello split pubblico. *[Nota del 03/10, review: la seconda parte («quindi i numeri pubblicati...») e' un'interpretazione di AG, marcata
+cosi' in `fatti_da_verificare.md` (fatto 23) e in D9; il fatto firmato e' la prima.]* **Alternativa:** gli 80 utenti di train nel pretraining.
 **Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 6. Split dei soggetti — D9 (d)
@@ -68,6 +69,7 @@ dataset Meta. Test: 210,9 h.
 ### 7. Ancora RVQ nel manifest — D9 (e)
 
 **Proposta di AG:** secondo D5b (gia' firmata): accesa su 15 dataset (DB8, Zhang e DB10 entrati il 01-02/10), spenta su putEMG, CSL-hdemg e DB5.
+*[Nota del 03/10, review: dei 15, 14 sono nel pretraining; Kaifosh e' benchmark (decisione 5).]*
 **Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 03/10/2026** («firmo 1-11, 13 e 14»)
 
 ### 8. Salti dell'asse dei tempi — D9 (f)

@@ -286,7 +286,9 @@ topologia**, non lasciata alle proporzioni naturali del corpus. Le quote fanno p
 **La classe di quota è del montaggio, non del gruppo di canali.** Un montaggio misto conta per
 ciò che è in deployment: NinaPro (anello a 8 + mirati) è **caso sparso**, come nella v9. Tre
 classi: **A** radi/anatomici (NinaPro, Camargo) · **B** anelli e fasce (bracciali Meta, DB5,
-GRABMyo, putEMG) · **C** griglie HD. Anche i **pesi dentro la classe** (per ore, per soggetti o
+GRABMyo, putEMG) · **C** griglie HD. **Manifest firmato il 03/10/2026** (D9, decisione 3): DB8 e
+DB10 (anelli, compresi gli amputati) e Zhang random stanno in **B**; i NinaPro anello + mirati
+(DB2, DB3, DB4, DB6, DB7) in A. Anche i **pesi dentro la classe** (per ore, per soggetti o
 per dataset) sono un parametro del manifest, da fissare al passo 4.
 
 ---
@@ -1093,8 +1095,9 @@ rumore e channel dropout sui FM EEG.
 3. Cross-soggetto, stesso dataset.
 4. **Transfer su dataset mai visto in pretraining** (encoder congelato + probe; non
    «zero-shot», §2.3) — EPN-612 e UCI-EMG.
-5. **Cross-popolazione: normodotati → amputati. DB3, DB7, DB8 e DB10** (amputati di DB8 e DB10
-   confermati: fatti 1 e 10c, firmati il 02/10/2026). Con lo scope ristretto, è la generalizzazione più lontana
+5. **Cross-popolazione: normodotati → amputati. Test su DB3 e DB10** (amputati di DB8 e DB10
+   confermati: fatti 1 e 10c, firmati il 02/10/2026). **DB7 e DB8 sono interi nel pretraining**
+   (split firmati il 03/10/2026, D9 decisione 6): i loro amputati non sono un test. Con lo scope ristretto, è la generalizzazione più lontana
    che il corpus permette di testare: peso relativo aumentato.
 6. **Cross-topologia**: pretraining con HD, valutazione su montaggi sparsi. **Asse portante**
    del paper, ora che cross-regione non è più rivendicato.
@@ -1104,8 +1107,9 @@ rumore e channel dropout sui FM EEG.
 - **Niente classe "rest" derivata dalle pause tra gesti.** Label leakage via padding
   documentato da NeuroRVQ su NinaPro DB5.
 - **Normalizzazione stimata solo sul train**, e se per sessione, dai primi N secondi.
-- **Sovrapposizione di soggetti fra DB NinaPro:** da controllare all'ingest, prima di
-  definire gli split (§2.1).
+- **Sovrapposizione di soggetti fra DB NinaPro:** chiusa negli split firmati il 03/10/2026
+  (D9, decisione 6): soggetti di test solo da DB2, DB3, DB6 e DB10, con DB4, DB5, DB7 e DB8 interi
+  nel pretraining. Restano da dichiarare le sovrapposizioni non dichiarate dalle fonti (DB3/DB10).
 - **Soggetti visti dal tokenizer NeuroRVQ** (emg2pose, emg2qwerty): sovrapposizione coi soggetti
   di test non ricostruibile (fatto 5, firmato il 02/10/2026), da dichiarare se si usa l'ancora RVQ (§6.3).
 - **Sovrapposizione fra i dataset Meta** (emg2qwerty, emg2pose, Kaifosh): nessuna fonte dichiara
@@ -1640,7 +1644,8 @@ dettagli anti-collasso.
 
 1. ~~Frequenze native di NinaPro DB8 e DB10; amputati in DB8 e DB10; montaggio di DB8~~ (firmati il 02/10/2026,
    fatti 1 e 10c); restano: disposizione interna delle fasce di GRABMyo (DB6: numero di elettrodi firmato nel fatto 22, ordine dei 6
-   distali non dichiarato dalle fonti). (putEMG e Hyser: raccolti da fonte ufficiale, da firmare)
+   distali non dichiarato dalle fonti). (putEMG e Hyser: firmati il 30/09/2026, fatti 11 e 12, salvo licenze; resta il fatto 18,
+   legame fra numerazione di putEMG e colonne dei file)
 2. ~~Sovrapposizione di soggetti fra i DB NinaPro~~ (firmato il 02/10/2026, fatto 2: DB4 e DB5 hanno un soggetto in comune, ID non
    dichiarato; per DB8 la sovrapposizione con DB7 e' probabile, ID non dichiarati; ID locali a ciascun DB)
 3. Conteggio dei soggetti del corpus (~600) e delle ore dopo la rimozione di DB9

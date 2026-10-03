@@ -25,7 +25,6 @@ import argparse
 import datetime as dt
 import json
 import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -135,7 +134,9 @@ def apply_revision(session_dir: Path, new_flat: list[int], now: str) -> None:
     os.replace(tmp, meta_path)
     problems = validate_session(session_dir)
     if problems:
-        shutil.copyfile(backup, meta_path)
+        # si ripristina il sidecar com'era PRIMA di questa revisione, non il backup della prima (review del 03/10: su una sessione gia' rivista
+        # il backup avrebbe cancellato in silenzio le revisioni e i `constant_runs` scritti dopo)
+        meta_path.write_text(original)
         raise RuntimeError(f"{session_dir}: dopo la correzione la sessione non e' conforme ({problems}); sidecar ripristinato")
 
 

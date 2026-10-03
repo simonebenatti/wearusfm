@@ -9,7 +9,7 @@
 >    (sovrapposizione ignota, da dichiarare come per NinaPro); idem per gli amputati di DB3 e DB10; **[riscritto in (b) e (d); fatto 23 firmato]**
 > 3. emg2pose: le 3.539 registrazioni del test per fasi nuove escono dal pretraining (Simone, 02/10/2026: gia' negli split); **[riscritto in (d)]**
 > 4. il tetto di 8 passaggi e' definito per 4 epoche: nei gradini a 2D i passaggi raddoppiano (16, il «forte decadimento» di v10 §10.3); **[riscritto in (a)]**
-> 5. «origine» contro «presentata»: il piano propone la topologia presentata; la scelta va argomentata anche sul volume D_c (classe C ~23% di D_c); **[riscritto in (a)]**
+> 5. «origine» contro «presentata»: il piano propone la topologia presentata; la scelta va argomentata anche sul volume D_c (classe C ~23% di D_c; 22,1% sul solo pretraining, review del 03/10); **[riscritto in (a)]**
 > 6. interpretazioni scritte come fatti (anelli degli amputati, Zhang random «e' un anello», soggetti di test «visti» dal tokenizer): vanno marcate; **[marcate in (a-bis) e (d)]**
 > 7. i salti dell'asse dei tempi (emg2pose 1.668 registrazioni, emg2qwerty 76, Kaifosh) non spezzano i segmenti: una finestra puo' attraversarli. Va
 >    deciso come trattarli prima del manifest; **[opzioni e numeri in (f); decisione di Simone]**
@@ -18,7 +18,8 @@
 >    con le tabelle]**
 
 
-**Stato: bozza di AG del 01/10/2026, testo rivisto e tabelle rifatte il 02/10/2026, NON firmata.** Il manifest è **irreversibile lungo tutta la
+**Stato: bozza di AG del 01/10/2026, testo rivisto e tabelle rifatte il 02/10/2026, firmata il 03/10/2026 (vedi in testa; congelata come
+`manifest-v1`, job 59253155).** Il manifest è **irreversibile lungo tutta la
 ladder** (piano, passo 4: «firma TU»). Riferimenti: piano operativo §Passo 4 (le cinque scelte), v10 §2.8 (quote, classi del montaggio), v10 §10.3
 (D è un manifest; `D_t`, `D_c`). **I numeri vengono dal costruttore** (`scripts/build_manifest.py`, job 59204297 del 02/10, bozza con i parametri
 proposti qui; manifest in `~/wearusfm_local/reports/passo4/manifest_59204297.json.gz`, hash del contenuto 59e40dbc0831b158, non nel repo) sui
@@ -26,7 +27,7 @@ sidecar veri, **solo pretraining**: i soggetti e le sessioni di test e il benchm
 
 ## Cosa contiene il corpus oggi
 
-Patch di 25 ms (proposta D10, non firmata). Kaifosh è nella tabella ma **fuori dai totali**, perché la proposta (b) lo tiene come benchmark.
+Patch di 25 ms (D10, firmata il 03/10/2026). Kaifosh è nella tabella ma **fuori dai totali**, perché la proposta (b) lo tiene come benchmark.
 
 | Dataset | Classe | RVQ | Ore pretraining | Ore test | Soggetti | D_t (milioni) | D_c (miliardi) | Ruolo |
 |---|---|---|---|---|---|---|---|---|
@@ -114,7 +115,8 @@ anatomical); B = anelli e fasce (bracciali Meta, GRABMyo, putEMG, DB5, DB8, DB10
   «placed randomly around the circumference»; l'ordine dei sensori è ignoto per 32 partecipanti. Nei metadati è sparso. *Interpretazione di AG:* un
   anello con rotazione (e, per 32 soggetti, ordine) sconosciuti, quindi classe B.
 
-**Pesi dentro la classe.** Per ore (α = 1), emg2pose ed emg2qwerty prendono l'86% della classe B; uniforme per dataset (α = 0) ripete i dataset
+**Pesi dentro la classe.** Per ore (α = 1), emg2pose ed emg2qwerty prendono l'86% della classe B (85,1% sul solo pretraining; 86% contava anche i soggetti di test, review
+del 03/10); uniforme per dataset (α = 0) ripete i dataset
 piccoli decine di volte. **Proposta di AG: pesi ∝ ore^0,5 con il tetto di 8 passaggi** (l'eccesso di un dataset al tetto passa agli altri della
 stessa classe). Risultato:
 
@@ -170,7 +172,7 @@ tabella.
 - **soggetti di test per dataset**, tenuti fuori dal pretraining: gli split ufficiali dove esistono (emg2pose: colonne `held_out_user` e `split` del CSV dei
   metadati; Kaifosh: 80/10/10; emg2qwerty: gli 8 utenti di test di `config/user/user0-7.yaml`, fatto 10d); altrove il **20% dei soggetti, almeno 2, arrotondato per eccesso**, stratificato fra amputati e normodotati (DB7, DB8, DB10), con
   **seed 0**; in Zhang lo stesso soggetto ha i due modi: si divide per soggetto;
-- **emg2pose, anche per sessione** (Simone, 02/10/2026): le 3.539 registrazioni (58,8 h) del test ufficiale per fasi nuove (`split = test`,
+- **emg2pose, anche per sessione** (Simone, 02/10/2026): le 3.539 registrazioni (58,6 h di campioni; 58,8 h dai tempi del CSV) del test ufficiale per fasi nuove (`split = test`,
   `held_out_stage = True`, di utenti non tenuti fuori) escono dal pretraining e restano per la valutazione (`test_sessions` negli split);
 - **manifest sottocampionati per soggetti** (asse di v10 §10.6, D16): sottoinsiemi annidati del 12,5, 25 e 50% dei soggetti di pretraining, per
   dataset, stesso seed;
@@ -189,7 +191,7 @@ tabella.
   (3) **dataset Meta**: vedi (b), fatto 23.
 
 **Split proposti, generati** (`scripts/make_splits_draft.py`, seme 0; file `splits/draft/splits_draft.json`, split ufficiali con provenienza in
-`splits/official/`; da rivedere, non congelati):
+`splits/official/`; congelati il 03/10/2026 come `splits/v1/splits_v1.json`, decisione 6):
 
 | Dataset | Soggetti | Pretraining | Test | 12,5% | 25% | 50% | Regola |
 |---|---|---|---|---|---|---|---|
@@ -210,7 +212,8 @@ tabella.
 | zhang2026 | 62 | 49 | 13 | 7 | 13 | 25 | 20%, almeno 2 (i due modi insieme) |
 
 **CSL-hdemg** (5 soggetti): **un solo soggetto di test** (Simone, 01/10/2026: «CSL-hdemg: un solo soggetto di test»; con «almeno 2» sarebbe stato il
-40%). **emg2qwerty:** il modello generico ufficiale usa 96 utenti, non i 100 del paper (4 utenti non sono in nessuna configurazione ufficiale):
+40%). **emg2qwerty:** il modello generico ufficiale usa 96 utenti (conteggio di AG su `splits/official/emg2qwerty_users.json`, annotato nella riga
+del fatto 10d), non i 100 del paper (4 utenti non sono in nessuna configurazione ufficiale):
 qui vanno nel pretraining. Gli ID degli 8 utenti di test sono a 8 cifre (lo YAML ufficiale perde lo zero iniziale di 05775561).
 
 ## (e) Target RVQ
@@ -234,11 +237,14 @@ calcolano gli ingest di emg2qwerty, emg2pose e Kaifosh: `time_axis` nei sidecar,
 Nessuna posizione di salto fuori dall'array. DB10 è
 già spezzato alle pause dei `ts` in fase di ingest, con la stessa soglia (1,5 volte il passo mediano), e le pause diventano `trials`. Il campionamento
 attuale non spezza i segmenti ai salti: una finestra può attraversarne uno, e il modello vede come contigui due tratti che non lo sono.
+**[Stato al 03/10: firmata (i), decisione 8. Il dataloader spezza i segmenti ai salti; il costruttore del manifest no, e `manifest-v1` e' congelato
+cosi'. Le sue ore e i suoi pesi contano anche i tratti piu' corti della finestra minima (1 s): ~2,4 h della classe B su 710,8, che il loader non
+campiona. Effetto sulle quote: ~0,3% della classe B.]**
 
 Opzioni:
 - (i) **spezzare i segmenti a ogni salto elencato nel sidecar**, come i trial: nessuna finestra attraversa un salto. Si perde il tempo nei tratti
   piu' corti della finestra: con finestre da 4 s l'**1,2% di emg2pose e lo 0,2% di emg2qwerty** (in tutto 4,1 h della classe B su 710,8; 1 s: 2,4 h;
-  8 s: 6,0 h). È lo scopo per cui le posizioni sono state salvate (commento nell'ingest di Kaifosh: servono «per non
+  8 s: 6,1 h). È lo scopo per cui le posizioni sono state salvate (commento nell'ingest di Kaifosh: servono «per non
   fare finestre a cavallo di un buco») ed è quello che si fa già per DB10. Nessuna sessione ha l'elenco troncato (oltre 10.000 salti), quindi le
   posizioni ci sono tutte;
 - (ii) **spezzare solo i salti lunghi**: serve una soglia nuova, da congelare in `decisioni.md` prima di guardare la distribuzione delle durate;
@@ -246,7 +252,8 @@ Opzioni:
 
 **Proposta di AG:** (i), senza soglie nuove. Il costo e' piccolo (sotto l'1,2% dei due dataset coinvolti), e senza spezzare una finestra di
 emg2qwerty potrebbe incollare due tratti distanti 73 s. Se si firma (i), dataloader e costruttore spezzano i segmenti ai salti (modifica piccola,
-con test; il costruttore gia' conta questo caso nella tabella di sensibilita').
+con test; il costruttore gia' conta questo caso nella tabella di sensibilita'). **[03/10: fatto solo nel dataloader; il costruttore non e' stato
+cambiato prima del congelamento. Vedi la nota sopra; review del 03/10.]**
 
 ## Prima della firma (cosa manca)
 

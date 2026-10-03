@@ -1103,7 +1103,7 @@ cambiati solo documenti. Budget del passo 1-bis: 30 GPU-ora, usate circa 2,4.
 
 ## Tre decisioni del 02/10/2026 (Simone: «ok ti do il via», sulla proposta di AG)
 
-1. **emg2pose: le 3.539 registrazioni (58,8 h) del test ufficiale per fasi nuove** (`split = test`, `held_out_stage = True`, di utenti NON tenuti
+1. **emg2pose: le 3.539 registrazioni (58,8 h dai tempi del CSV; 58,6 h di campioni nel manifest) del test ufficiale per fasi nuove** (`split = test`, `held_out_stage = True`, di utenti NON tenuti
    fuori) **escono dal pretraining** e restano per la valutazione, come gli utenti tenuti fuori: il benchmark ufficiale resta pulito. Lo split
    diventa per sessione oltre che per soggetto (`test_sessions` negli split).
 2. **emg2qwerty: si scrivono nei sidecar i 189 tratti costanti** misurati dal job 59099080 (`qc_relative_check --only emg2qwerty --apply`, copia di
@@ -1326,7 +1326,8 @@ Sui fogli `docs/fogli_firma_d9_d10.md` (preparati da AG il 03/10). **Firmati:**
 6. **split** come in D9 (d): ufficiali dove esistono (emg2pose anche per sessione), altrove 20% (almeno 2) stratificato, seme 0, CSL-hdemg un
    soggetto di test, DB4/DB5/DB7/DB8 interi nel pretraining, manifest annidati al 12,5/25/50%, sovrapposizioni dichiarate. File firmato:
    `splits/v1/splits_v1.json` (stesso contenuto di `splits/draft/splits_draft.json`, sha256 cfd1e1f4..., con `draft: false` e la firma);
-7. **ancora RVQ secondo D5b** nel manifest (15 dataset accesi, spenta su putEMG, CSL-hdemg, DB5) (D9 e);
+7. **ancora RVQ secondo D5b** nel manifest (15 dataset accesi, 14 nel pretraining perche' Kaifosh e' benchmark; spenta su putEMG, CSL-hdemg, DB5)
+   (D9 e);
 8. **salti dell'asse dei tempi: segmenti spezzati a ogni salto del sidecar** (D9 f; nel dataloader `split_at_gaps = True`);
 9. **rinfresco di `$SCRATCH` ogni 21 giorni per tutta la ladder** (22/10, 12/11, 03/12, 24/12), ogni giro autorizzato da Simone;
 10. **patch 25 ms** (D10, 1);
@@ -1497,3 +1498,41 @@ minuti, **costo massimo 0,5 GPU-ora = 4 ore locali**; budget del passo 6: usate 
 ricalcola, e' ancora in corso: per un collaudo bastano. Cartella nuova `runs/sanity_0310_c3/`: il modello e' cambiato. Misura: secondi per
 passo, memoria GPU, attese sui dati, perdite per tipo di maschera. Resta un collaudo: il sanity vero parte dopo l'esito e dopo il rapporto a
 Simone.
+
+**Review del 03/10, documenti: correzioni.** Firme e frasi tutte verificate alla lettera sulla trascrizione. Manifest, split, QC, numeri di V2 e
+tabelle di D9/D10 tornano col manifest congelato. Corretti, con note datate dentro i testi firmati (il testo firmato non si riscrive):
+- v10: §8 asse 5, test degli amputati su DB3 e DB10 (DB7 e DB8 sono interi nel pretraining, decisione 6); trappola NinaPro chiusa dagli split;
+  §2.8, DB8, DB10 e Zhang random in B; putEMG e Hyser firmati (fatti 11 e 12);
+- D9 e D10: stati «NON firmata» superati; numeri sul solo pretraining (85,1% invece di 86%; 58,6 h di campioni; 22,1% di D_c; 6,1 h); nota che
+  **il costruttore non spezza i segmenti ai salti** (~2,4 h della classe B in tratti sotto 1 s sono nelle ore del manifest ma il loader non li
+  campiona, ~0,3% della classe B); conteggio dei 96 utenti di emg2qwerty marcato come conteggio di AG;
+- fogli: nel foglio 5 la seconda parte della frase sul fatto 23 e' un'interpretazione di AG (nota); decisione 7: 15 dataset accesi, 14 nel
+  pretraining;
+- `inventario_corpus.md` (Kaifosh benchmark; DB7/DB8 «probabile», senza il «7» inventato), `review_esterna.md` (stato aggiornato).
+Corretti anche, dalla review dei dati: il ripristino in `qc_relative_check.py` (su una sessione gia' rivista ripristinava il backup della prima
+revisione e cancellava le successive; test) e il test mancante sull'esclusione delle righe di test e sul filtro `nested`.
+
+**Domande aperte per Simone** (dalle tre review del 03/10; nessuna blocca il collaudo, alcune bloccano il sanity vero o la finestra 1):
+1. **Quote nel tempo o nelle finestre.** Il manifest calcola pesi e passaggi nel tempo; il loader estrae una finestra per estrazione, lunga 1-4 s.
+   CapgMyo (prove da 1 s) avrebbe ~1/4 della quota in tempo. *Proposta di AG:* nel tempo (= nei token, come D_t). Il loader dividerebbe il peso di
+   ogni sessione per la lunghezza media delle sue finestre, calcolata una volta come le scale. Finestra 1, non il sanity.
+2. **Quote nella perdita (M3).** La perdita e' una media per token: a finestra 1 la classe C (HD, 5% delle finestre) peserebbe ~38% della perdita,
+   la A il 7,7% contro il 20%. *Proposta di AG:* la media prima dentro ogni finestra, poi fra le finestre, cosi' la perdita rispetta le quote.
+   Finestra 1.
+3. **Topologia presentata contro origine (decisione 1).** Oggi presentata = origine, perche' i montaggi virtuali (D6a) non ci sono. Con il tetto,
+   la classe C puo' dare al massimo il 5,2%: i montaggi virtuali tolti alla C riducono la C presentata. Da decidere con D6a.
+4. **Ancora RVQ nel sanity.** La decisione 17 sceglieva emg2qwerty anche per l'ancora RVQ accesa; il collaudo gira senza, perche' il tokenizer non
+   e' collegato. Opzioni: (a) collegarlo prima del sanity vero, con i codici precalcolati per sessione sulla griglia da 200 ms; (b) sanity senza
+   RVQ, come deviazione registrata. *Proposta di AG:* (a) se costa meno di un giorno, altrimenti (b).
+5. **Batch di validazione (decisione 16).** Il codice lo estrae dal pretraining con un seme fisso, e per il rapporto di collasso usa il minimo fra
+   studente e teacher. Le soglie restano quelle firmate. Da confermare.
+6. **DB5 nell'harness.** DB5 e' intero nel pretraining (decisione 6), quindi un confronto del nostro FM su DB5 (piano, harness; v10 §11) sarebbe su
+   soggetti visti. Opzioni: dichiararlo, togliere DB5 dal confronto, oppure split proprio di DB5 (ma era intero per la sovrapposizione con DB4).
+7. **Masking a «tubi» (decisione 12).** Firmata come proposta di AG, «(b) tubi»; il messaggio di firma non nomina la scelta. Da confermare.
+8. **D_t congelato = 1,18·10⁸**, un terzo dei 3,6·10⁸ su cui erano pianificati la ladder e il rapporto token/parametri (v10 §10.3, piano). Il
+   conto del compute dei gradini va rifatto prima del passo 7.
+9. **emg2pose, l'altro braccio:** 540 registrazioni hanno il lato in movimento nel test per fasi nuove e il lato fermo nel pretraining (7,3 h). Lo
+   split segue il CSV ufficiale riga per riga. Da dichiarare, o da togliere dal pretraining.
+10. **Transitorio del filtro ai bordi dei tratti** (decisione 13: margine dentro il tratto). Nella prima patch l'errore rispetto al filtraggio di un
+    segnale lungo e' del 45-55%, nei primi 200 ms del 16-20%: riguarda tutte le finestre di CapgMyo e gli inizi di prova e di segmento. Opzioni:
+    accettarlo e dichiararlo, oppure togliere dalle perdite delle ancore le patch entro ~100 ms da un bordo.

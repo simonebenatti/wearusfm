@@ -46,9 +46,7 @@ Dalle review interne del 01-02/10/2026 (commit fra parentesi):
 
 ## Gia' noto e ancora aperto (non e' un rilievo nuovo)
 
-- **Bozza D9 in revisione:** gli 8 punti elencati in testa a `docs/proposta_manifest_d9.md` (ore contate con i soggetti di test, sovrapposizione fra i
-  dataset Meta, tetto rispetto a 2D, origine/presentata, interpretazioni da marcare, salti dell'asse dei tempi, fatti da firmare, numeri piccoli). La
-  bozza si riscrive coi numeri del costruttore sui dati veri.
-- **In corso sul cluster:** misura dei tratti costanti di DB10 ed emg2pose; poi V2 su DB10 e prima bozza vera del manifest.
-- **Fatti 1 (DB8), 2, 10b, 10c, 10d:** firmati da Simone il 02/10/2026 (commit 1a7015f), dopo la stesura di questa pagina; riportati nel
-  documento di riferimento. Restano da firmare, fra quelli citati dalla bozza D9, il 4 e il 5 (NeuroRVQ).
+*Stato aggiornato al 03/10/2026.* D9 e D10 sono firmate (fogli `docs/fogli_firma_d9_d10.md`), `manifest-v1` e' congelato (job 59253155), i fatti
+1 (DB8), 2, 5, 10b, 10c, 10d e 23 sono firmati; resta parziale il 4 (NeuroRVQ). La review interna del 03/10 (tre revisori: modello e training, dati
+e script, documenti) e le correzioni sono in `docs/decisioni.md`; restano aperte, per decisione di Simone, le domande elencate li' (quote nella
+perdita, quote nel tempo o nelle finestre, ancora RVQ nel sanity, DB5 nell'harness).
