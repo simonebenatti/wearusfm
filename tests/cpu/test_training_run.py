@@ -67,3 +67,16 @@ def test_cli_small_preset(tmp_path):
                         str(tmp_path / "cli"), "--max-steps", "2", "--device", "cpu", "--datasets", "all"], capture_output=True, text=True, timeout=600)
     assert r.returncode == 0, r.stderr[-2000:]
     assert json.loads((tmp_path / "cli" / "summary.json").read_text())["steps"] == 2
+
+
+def test_alarm_writes_a_stop_that_later_jobs_respect(tmp_path):
+    root, mpath = _tree(tmp_path)
+    out = tmp_path / "run"
+    cfg = R.small_config(datasets=None, alarm=R.AlarmRule(collapse_ratio_min=1e9, patience=1))  # allarme alla prima valutazione
+    s = R.train(cfg, mpath, [root], out, log=lambda m: None)
+    assert s["stopped"].startswith("allarme") and s["steps"] == 2 and (out / "STOP").exists()
+    s2 = R.train(R.small_config(datasets=None, max_steps=6), mpath, [root], out, log=lambda m: None)
+    assert s2["stopped"].startswith("fermato in precedenza") and s2["steps"] is None
+    assert [r["step"] for r in _lines(out)] == [1, 2]  # nessun passo dopo l'allarme
+    state = torch.load(out / "checkpoint.pt", weights_only=False)
+    assert "torch_rng" in state and state["torch_rng"].dtype == torch.uint8

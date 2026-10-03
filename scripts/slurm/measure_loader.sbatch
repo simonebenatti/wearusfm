@@ -11,11 +11,12 @@
 
 # Scale di sessione per tutte le sessioni di pretraining e misura del ritmo del dataloader (passo 6; autorizzato da Simone il 03/10/2026: «sì, via
 # alla misura con le scale di sessione»; conferma della decisione 13, filtro nel dataloader). CPU, 0 GPU-ora. Solo lettura dei dati.
-# Uso: sbatch scripts/slurm/measure_loader.sbatch <manifest.json.gz>
+# Uso: sbatch scripts/slurm/measure_loader.sbatch <manifest.json.gz> [session_scales.json da riusare]
 # Uscita fuori dal repo: $WORK/wearusfm_runs/results/passo6/loader_<job>/ (session_scales.json, throughput.json)
 
 set -uo pipefail
 MANIFEST="${1:?serve il percorso del manifest}"
+SCALES_FROM="${2:-}"  # facoltativo: session_scales.json di un run precedente (si ricalcolano solo le mancanti)
 cd "$WORK/wearusfm"
 
 module purge
@@ -27,4 +28,4 @@ OUT="$WORK/wearusfm_runs/results/passo6/loader_${SLURM_JOB_ID}"
 mkdir -p "$OUT" "$WORK/wearusfm_runs/logs"
 python3 scripts/measure_loader.py --manifest "$MANIFEST" \
   --root "$WORK/data/processed" --root "$SCRATCH/data/processed" \
-  --out-dir "$OUT" --workers "${SLURM_CPUS_PER_TASK:-4}" --batches 100 --batch-size 8
+  --out-dir "$OUT" --workers "${SLURM_CPUS_PER_TASK:-4}" --batches 100 --batch-size 8 ${SCALES_FROM:+--scales-from "$SCALES_FROM"}

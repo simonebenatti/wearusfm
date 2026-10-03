@@ -155,6 +155,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo)."""
     t_start = time.time()
     out_dir.mkdir(parents=True, exist_ok=True)
+    stop_file = out_dir / "STOP"
+    if stop_file.exists():  # un allarme o una perdita non finita hanno fermato il run: i job successivi della catena non riprendono
+        reason = stop_file.read_text().strip()
+        log(f"run fermato in precedenza ({reason}): nessun passo")
+        return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
     torch.manual_seed(cfg.seed)
     index = load_index(manifest, roots, cfg.datasets)
     student = WearUsFM(cfg.model).to(device)
@@ -169,6 +174,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         opt.load_state_dict(state["optimizer"])
         step = int(state["step"])
         monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
+        torch.set_rng_state(state["torch_rng"])
+        if torch.cuda.is_available() and state.get("cuda_rng") is not None:
+            torch.cuda.set_rng_state_all(state["cuda_rng"])
         log(f"ripresa dal passo {step}")
     (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})
@@ -181,7 +189,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
 
     def save():
         torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
-                    "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg)}, ckpt.with_suffix(".tmp"))
+                    "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
+                    "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None},
+                   ckpt.with_suffix(".tmp"))
         ckpt.with_suffix(".tmp").replace(ckpt)
 
     while step < cfg.max_steps:
@@ -225,6 +235,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             log(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {t_data:.2f} s)")
     save()
     metrics.close()
+    if reason.startswith("allarme") or reason.startswith("perdita non finita"):
+        stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
                "device": device}
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))

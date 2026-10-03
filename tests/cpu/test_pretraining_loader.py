@@ -148,3 +148,51 @@ def test_session_without_a_scale_is_skipped_and_counted(tmp_path):
     b = loader.batch(8, np.random.default_rng(0))
     assert all(r["dataset"] != "ninapro_db2" for r in b.rows) and "ninapro_db2/s01/session1" in loader.skipped
     assert "scala di sessione nulla" in loader.skipped["ninapro_db2/s01/session1"]
+
+
+def test_block_reading_reads_once_per_block_and_keeps_session_weights(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    loader = L.PretrainLoader(idx, _cfg())
+    rng = np.random.default_rng(4)
+    counts = {}
+    n = 4000
+    for _ in range(n):
+        row, blk, win = loader.sample_from_blocks(rng)
+        assert blk.lo <= win.start and win.stop <= blk.hi and win.span[0] <= win.start and win.stop <= win.span[1]
+        if row["dataset"] == "emg2pose":
+            assert not (win.start < GAP_AT < win.stop) and not (win.start < RUN[2] and win.stop > RUN[1])
+        counts[row["dataset"]] = counts.get(row["dataset"], 0) + 1
+    assert loader.blocks_read <= n / 8 + loader.cfg.block_pool + 5  # una lettura ogni ~8 finestre, non una per finestra
+    for r, w in zip(idx.rows, idx.weights):
+        assert counts[r["dataset"]] / n == pytest.approx(w, abs=0.06)  # la probabilita' delle sessioni resta quella del manifest
+
+
+def test_window_from_a_block_equals_the_direct_read(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cfg = _cfg(filter_band_hz=(20.0, 450.0))
+    loader = L.PretrainLoader(idx, cfg)
+    rng = np.random.default_rng(6)
+    for _ in range(20):
+        row, blk, win = loader.sample_from_blocks(rng)
+        direct = L.read_window(blk.view, win.trial, win.start, win.stop, win.span, cfg)
+        from_block = L.read_window_block(blk, win, cfg)
+        m = int(round(cfg.filter_margin_s * blk.view.fs))
+        if blk.data_lo <= max(win.span[0], win.start - m) and blk.data_lo + blk.data.shape[1] >= min(win.span[1], win.stop + m):
+            assert np.allclose(from_block, direct, atol=1e-5)  # stesso margine: stesso filtro, stesso risultato
+
+
+def test_scale_ignores_tiny_spans_between_close_gaps(tmp_path):
+    root, mpath = _tree(tmp_path)
+    meta_path = root / "emg2pose" / "u1" / "sessA" / "metadata.json"
+    meta = json.loads(meta_path.read_text())
+    meta["time_axis"]["gaps"] = [{"index": 9000, "dt_s": 0.01}, {"index": 9005, "dt_s": 0.01}, {"index": 20000, "dt_s": 0.01},
+                                 {"index": 20003, "dt_s": 0.01}]  # tratti di 5 e 3 campioni: il filtro li rifiuterebbe
+    meta["time_axis"]["n_gaps"] = 4
+    meta_path.write_text(json.dumps(meta))
+    view = L.SessionView.open(meta_path.parent, True)
+    assert any(e - s < 10 for _, s, e, _ in view.spans)
+    cfg = _cfg(filter_band_hz=(20.0, 450.0))
+    for seed in range(30):
+        assert L.estimate_session_scale(view, cfg, np.random.default_rng(seed)) > 0  # prima: ValueError «padlen» quando pescava un tratto minuscolo

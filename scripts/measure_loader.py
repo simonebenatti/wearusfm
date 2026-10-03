@@ -59,18 +59,22 @@ def _scale_worker(args) -> tuple[dict, dict, int]:
     return scales, errors, len(rows)
 
 
-def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | None) -> dict:
+def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | None, known: dict | None = None) -> dict:
+    """`known`: scale gia' calcolate (es. da un run precedente): si ricalcolano solo le sessioni che mancano."""
+    known = dict(known or {})
     rows = index.rows[:max_sessions] if max_sessions else index.rows
+    reused = sum(1 for r in rows if key_of(r) in known)
+    rows = [r for r in rows if key_of(r) not in known]
     chunks = [rows[i::workers * 8] for i in range(workers * 8)]
     t0 = time.time()
-    scales, errors, done = {}, {}, 0
-    with get_context("spawn").Pool(workers) as pool:
+    scales, errors, done = dict(known), {}, 0
+    with get_context("spawn").Pool(max(1, workers)) as pool:
         for s, e, n in pool.imap_unordered(_scale_worker, [(None, [str(r) for r in index.roots], c) for c in chunks if c]):
             scales.update(s)
             errors.update(e)
             done += n
             print(f"[{time.strftime('%H:%M:%S')}] scale: {done}/{len(rows)} sessioni, {len(errors)} errori, {time.time() - t0:.0f} s", flush=True)
-    return {"n_sessions": len(rows), "scales": scales, "errors": errors, "elapsed_s": time.time() - t0,
+    return {"n_sessions": len(rows) + reused, "reused": reused, "scales": scales, "errors": errors, "elapsed_s": time.time() - t0,
             "method": "mediana dei MAD dei canali validi su 32 tratti da 2 s filtrati (20-450 Hz, notch 50/60), seme dalla chiave della sessione"}
 
 
@@ -112,11 +116,13 @@ def main(argv=None) -> int:
     ap.add_argument("--batches", type=int, default=100)
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--max-sessions", type=int, default=None, help="solo per le prove: limita le sessioni delle scale")
+    ap.add_argument("--scales-from", type=Path, default=None, help="session_scales.json di un run precedente: ricalcola solo le mancanti")
     args = ap.parse_args(argv)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     index = L.ManifestIndex.load(args.manifest, [Path(r) for r in args.root])
     print(f"[{time.strftime('%H:%M:%S')}] manifest {args.manifest}: {len(index.rows)} sessioni di pretraining, {args.workers} processi", flush=True)
-    sc = compute_scales(index, args.workers, args.max_sessions)
+    known = json.loads(args.scales_from.read_text())["scales"] if args.scales_from else None
+    sc = compute_scales(index, args.workers, args.max_sessions, known)
     sc["manifest"] = str(args.manifest)
     (args.out_dir / "session_scales.json").write_text(json.dumps(sc, indent=1))
     vals = np.array(list(sc["scales"].values()))

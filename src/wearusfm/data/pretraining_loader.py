@@ -13,6 +13,12 @@ Per ogni campione del batch:
    finestra), stimato su tratti sparsi della sessione e messo in cache (`scale_cache`, da riempire offline con `estimate_session_scale`);
 5. **target delle ancore** sul segnale pulito (`anchor_targets`), **maschera** (`training.masking`), codici di canale e insiemi di attenzione.
 
+**Lettura a blocchi** (`block_s`): ogni processo tiene `block_pool` blocchi in memoria; un blocco e' un tratto contiguo di `block_s` secondi
+(piu' il margine del filtro) dentro un tratto valido di una sessione estratta coi pesi del manifest, che comincia su un inizio di finestra ammesso;
+da ogni blocco si estraggono `windows_per_block` finestre con le stesse regole, poi si sostituisce. Ogni blocco da' sempre lo stesso numero di
+finestre, quindi la probabilita' di ogni sessione per finestra resta quella del manifest; cambia solo che le finestre di un batch vengono da un
+gruppo piu' piccolo di sessioni. Una lettura grande e contigua al posto di una piccola per finestra (Lustre).
+
 Montaggi virtuali e sottocampionamento HD al volo (D6a) non ci sono ancora: il montaggio e' quello nativo.
 """
 
@@ -52,6 +58,11 @@ class LoaderConfig:
     scale_chunks: int = 32
     scale_chunk_s: float = 2.0
     open_sessions: int = 64  # sessioni tenute aperte (memmap) per processo
+    # lettura a blocchi (03/10/2026: la misura del job 59254061 dava 1,5-2,4 finestre/s per processo con una lettura piccola per finestra su
+    # Lustre, contro ~8,5 richieste): None = una lettura per finestra (come prima)
+    block_s: float | None = 30.0
+    windows_per_block: int = 8
+    block_pool: int = 16
 
 
 # --- manifest ------------------------------------------------------------------------------------------------------------------------
@@ -165,11 +176,17 @@ def estimate_session_scale(view: SessionView, cfg: LoaderConfig, rng: np.random.
     """Mediana dei MAD dei canali validi (v10 §4.3), su `scale_chunks` tratti da `scale_chunk_s` sparsi nella sessione, filtrati come le
     finestre. Un numero per sessione, condiviso dai canali."""
     n = max(1, int(round(cfg.scale_chunk_s * view.fs)))
-    lengths = np.array([e - s for _, s, e, _ in view.spans], dtype=np.float64)
+    # solo i tratti da cui si estraggono finestre (>= min_window_s): fra due salti ravvicinati restano tratti di pochi campioni, che il filtro
+    # rifiuta (job 59254061: 195 sessioni fallite cosi', «padlen 39»)
+    min_len = cfg.min_window_s * view.fs
+    spans = [sp for sp in view.spans if sp[2] - sp[1] >= min_len]
+    if not spans:
+        raise ValueError(f"{view.path}: nessun tratto lungo almeno {cfg.min_window_s} s")
+    lengths = np.array([e - s for _, s, e, _ in spans], dtype=np.float64)
     pieces = []
     for _ in range(cfg.scale_chunks):
-        i = int(rng.choice(len(view.spans), p=lengths / lengths.sum()))
-        trial, s, e, _ = view.spans[i]
+        i = int(rng.choice(len(spans), p=lengths / lengths.sum()))
+        trial, s, e, _ = spans[i]
         ln = min(n, e - s)
         t0 = int(rng.integers(s, e - ln + 1))
         pieces.append(read_window(view, trial, t0, t0 + ln, (s, e), cfg))
@@ -192,14 +209,19 @@ class Window:
     n_patches: int
 
 
-def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator) -> Window | None:
+def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator, region: tuple | None = None) -> Window | None:
     """Inizio uniforme fra gli inizi ammessi (multipli di `align_ms` dall'ancora della prova, con almeno `min_window_s` prima della fine del
-    tratto); lunghezza = il massimo fino a `max_window_s`, in patch intere. None se dopo `max_window_attempts` ogni finestra tocca un buco."""
+    tratto); lunghezza = il massimo fino a `max_window_s`, in patch intere. None se dopo `max_window_attempts` ogni finestra tocca un buco.
+    `region` = (prova, inizio, fine): solo finestre dentro quella regione (un blocco), con l'ancora della griglia del suo tratto."""
     fs, patch = view.fs, cfg.patch_ms / 1000.0
     align = cfg.align_ms / 1000.0 * fs
     min_n, max_n = cfg.min_window_s * fs, cfg.max_window_s * fs
     cands = []
     for trial, s, e, anchor in view.spans:
+        if region is not None:
+            if trial != region[0] or region[1] < s or region[2] > e:
+                continue
+            s, e = region[1], region[2]
         k0 = math.ceil((s - anchor) / align - 1e-9)
         k1 = math.floor((e - min_n - anchor) / align + 1e-9)
         if k1 >= k0:
@@ -220,8 +242,35 @@ def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator
             stop = st + int(math.ceil(n_patch * patch * fs - 1e-9))
         if any(r[0] == trial and r[2] < stop and r[3] > st for r in view.runs):
             continue  # tocca un tratto costante su un canale valido
-        return Window(trial, st, stop, (s, e), n_patch)
+        span = next((sp[1], sp[2]) for sp in view.spans if sp[0] == trial and sp[1] <= st and stop <= sp[2])
+        return Window(trial, st, stop, span, n_patch)
     return None
+
+
+@dataclass
+class Block:
+    """Un tratto contiguo letto una volta in memoria: dati grezzi in unita' fisiche su [data_lo, data_lo + n), finestre dentro [lo, hi)."""
+
+    row: dict
+    view: SessionView
+    trial: int | None
+    lo: int
+    hi: int
+    data_lo: int
+    data: np.ndarray
+    uses_left: int
+
+
+def read_window_block(block: Block, win: Window, cfg: LoaderConfig) -> np.ndarray:
+    """Come `read_window`, ma dai dati del blocco: margine del filtro dentro il tratto e dentro i dati letti."""
+    a0 = block.data_lo
+    if cfg.filter_band_hz is None:
+        return block.data[:, win.start - a0: win.stop - a0]
+    m = int(round(cfg.filter_margin_s * block.view.fs))
+    a = max(win.span[0], win.start - m, a0)
+    b = min(win.span[1], win.stop + m, a0 + block.data.shape[1])
+    y = _filter(block.data[:, a - a0: b - a0], block.view.fs, cfg.filter_band_hz, cfg.notch_hz)
+    return y[:, win.start - a: win.start - a + (win.stop - win.start)]
 
 
 # --- batch ---------------------------------------------------------------------------------------------------------------------------
@@ -251,6 +300,8 @@ class PretrainLoader:
         self._open: OrderedDict = OrderedDict()
         self.timings: dict[str, float] = {}  # secondi cumulati per fase (misura del ritmo)
         self.skipped: dict[str, str] = {}  # sessioni saltate perche' la scala non si calcola (es. MAD nullo): contate, mai in silenzio
+        self._pool: list[Block] = []
+        self.blocks_read = 0
 
     def _tick(self, name: str, t0: float) -> float:
         t1 = time.perf_counter()
@@ -291,16 +342,43 @@ class PretrainLoader:
                 return row, view, win
         raise RuntimeError(f"nessuna finestra valida in {self.cfg.max_session_attempts} sessioni estratte")
 
+    def _new_block(self, rng: np.random.Generator) -> Block:
+        row, view, win = self.sample(rng)  # sessione coi pesi del manifest, inizio uniforme fra gli inizi ammessi
+        hi = min(win.span[1], win.start + int(round(self.cfg.block_s * view.fs)))
+        m = int(round(self.cfg.filter_margin_s * view.fs)) if self.cfg.filter_band_hz is not None else 0
+        a, b = max(win.span[0], win.start - m), min(win.span[1], hi + m)
+        self.blocks_read += 1
+        return Block(row, view, win.trial, win.start, hi, a, view.read(win.trial, a, b), self.cfg.windows_per_block)
+
+    def sample_from_blocks(self, rng: np.random.Generator) -> tuple[dict, Block, Window]:
+        while True:
+            while len(self._pool) < self.cfg.block_pool:
+                self._pool.append(self._new_block(rng))
+            i = int(rng.integers(len(self._pool)))
+            blk = self._pool[i]
+            win = sample_window(blk.view, self.cfg, rng, region=(blk.trial, blk.lo, blk.hi))
+            blk.uses_left -= 1
+            if win is None or blk.uses_left <= 0:
+                self._pool.pop(i)
+            if win is not None:
+                return blk.row, blk, win
+
     def batch(self, batch_size: int, rng: np.random.Generator) -> PretrainBatch:
         t = time.perf_counter()
-        picked = [self.sample(rng) for _ in range(batch_size)]
+        if self.cfg.block_s is not None:
+            picked = [self.sample_from_blocks(rng) for _ in range(batch_size)]
+        else:
+            picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
         signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins = ([] for _ in range(12))
-        for row, view, win in picked:
+        for row, src, win in picked:
+            view = src.view if isinstance(src, Block) else src
             s = self.scale(row, view, rng)
             t = self._tick("scala", t)
-            x = read_window(view, win.trial, win.start, win.stop, win.span, self.cfg) / np.float32(s)
+            raw = read_window_block(src, win, self.cfg) if isinstance(src, Block) else \
+                read_window(view, win.trial, win.start, win.stop, win.span, self.cfg)
+            x = raw / np.float32(s)
             t = self._tick("lettura_e_filtro", t)
             layout = CC.layout_from_montage(view.montage)
             code = CC.anatomy_codes(view.montage)

@@ -29,3 +29,15 @@ def test_scales_and_rate_end_to_end(tmp_path):
         assert len(run["per_process_windows_per_s"]) == 2 and all(v > 0 for v in run["per_process_windows_per_s"])
         assert abs(sum(run["stage_fraction"].values()) - 1.0) < 1e-9 and "lettura_e_filtro" in run["stage_fraction"]
     assert "ritmo, filtro" in r.stdout
+
+
+def test_scales_from_a_previous_run_are_reused(tmp_path):
+    root, mpath = _tree(tmp_path)
+    prev = tmp_path / "prev.json"
+    prev.write_text(json.dumps({"scales": {"emg2pose/u1/sessA": 123.0}}))
+    out = tmp_path / "out"
+    r = subprocess.run([sys.executable, str(SCRIPT), "--manifest", str(mpath), "--root", str(root), "--out-dir", str(out), "--workers", "1",
+                        "--batches", "1", "--batch-size", "2", "--scales-from", str(prev)], capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, r.stderr[-2000:]
+    sc = json.loads((out / "session_scales.json").read_text())
+    assert sc["reused"] == 1 and sc["scales"]["emg2pose/u1/sessA"] == 123.0 and len(sc["scales"]) == 3

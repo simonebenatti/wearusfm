@@ -1369,3 +1369,24 @@ Sui fogli `docs/fogli_firma_d9_d10.md`. **Firmati:**
     finestra 1.
 **Autorizzato anche** (stesso messaggio: «sì, via alla misura con le scale di sessione»): misura del ritmo del dataloader su Leonardo (conferma
 della decisione 13) e calcolo delle scale di sessione di tutte le sessioni di pretraining; CPU seriale, 0 GPU-ora.
+
+**Misura del ritmo e scale di sessione (job 59254061, 03/10/2026, 1 h 36 min, CPU, 0 GPU-ora; risultati in
+`~/wearusfm_local/reports/passo6/` e su Leonardo in `wearusfm_runs/results/passo6/loader_59254061/`, sha256 verificati):**
+- **scale:** 18.839 su 19.034 sessioni; **195 errori** (194 emg2pose, 1 emg2qwerty), tutti «length of the input vector x must be greater than
+  padlen, which is 39»: con i salti spezzati restano tratti di pochi campioni fra due salti, e la stima della scala a volte ne pescava uno.
+  **Corretto**: la stima usa solo i tratti lunghi almeno `min_window_s` (test). Scale molto diverse fra dataset (es. NinaPro ~3e-6, GRABMyo
+  ~3,5e3) per le unita' di misura diverse nei file: la normalizzazione di sessione le assorbe, e' il suo scopo;
+- **ritmo: NON BASTA.** 1,5-1,8 finestre/s per processo senza filtro, 1,9-2,4 con il filtro, contro ~8,5 richieste (passo 0: ~68 finestre/s per
+  GPU con 8 processi). Il **68% del tempo e' la lettura** delle finestre da `$SCRATCH` (Lustre): letture piccole e sparse, una per finestra. Il
+  filtro non e' il collo di bottiglia (con il filtro non e' piu' lento; la differenza e' nel rumore della cache): **la decisione 13 resta
+  valida per il costo del filtro**, ma il dataloader com'era non reggeva. Il benchmark del passo 0 (240 finestre/s) leggeva shard sintetici
+  contigui, non le sessioni vere;
+- **correzione, proposta di AG: lettura a blocchi** (`LoaderConfig.block_s` = 30 s, `windows_per_block` = 8, `block_pool` = 16): ogni processo
+  legge una volta tratti contigui di 30 s e ne estrae 8 finestre ciascuno; la probabilita' delle sessioni per finestra resta quella del manifest
+  (test), le finestre di un batch vengono da un gruppo piu' piccolo di sessioni. Da rimisurare su Leonardo prima del sanity.
+
+**Catena dei job di training (03/10/2026; problemi trovati da Simone in una chat laterale, verificati da AG):** (1) dopo un allarme o una perdita
+non finita i job successivi riprendevano ad allenare: ora `train` scrive `STOP` nella cartella del run, e i job successivi (Python e lo sbatch)
+escono subito; (2) lo stato casuale di torch (CPU e GPU) ora sta nel checkpoint; (3) `scripts/slurm/submit_chain.sh` sottomette N job con
+`--dependency=afterok`: un job che fallisce ferma la catena, un'uscita pulita al limite di tempo la fa proseguire. Il limite di `boost_qos_dbg`
+(«max 2 job») per una catena va verificato sulla configurazione della QoS.
