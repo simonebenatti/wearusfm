@@ -1296,3 +1296,17 @@ D10:**
     nascosto, per le perdite registrate per tipo (v10 §6.4);
 29. costo: 3-4 ms a campione su 11-16 canali, ~31 ms su una griglia da 128 (circa mille maschere piccole): da vettorizzare se il dataloader lo
     richiede (Hyser, 256 canali).
+
+**Dataloader del pretraining** (`src/wearusfm/data/pretraining_loader.py`; 03/10/2026, proposta di AG). Dal manifest ai batch per il modello:
+sessione estratta coi pesi del manifest; finestra di 1-4 s (proposta D10) con inizio su multipli di 200 ms dall'inizio della prova, dentro una
+prova e, se `split_at_gaps` (proposta D9 §f), dentro un tratto senza salti; finestre che toccano un tratto costante su un canale valido riestratte;
+filtro opzionale (passa-banda, notch 50 e 60 Hz) con 0,5 s di margine dentro il tratto; scala di sessione = mediana dei MAD dei canali validi
+(v10 §4.3) su 32 tratti da 2 s, in cache; target delle ancore, maschere (generatore D10), codici e insiemi di attenzione impacchettati. Test su un
+albero sintetico coi montaggi veri e un manifest del costruttore vero, piu' un passo di training intero dal batch del loader. **Da decidere:**
+30. **filtraggio**: i dati processati NON sono filtrati all'ingest (nessun filtro negli adattatori), mentre v10 §4.3 vuole il filtraggio offline,
+    «mai on-the-fly», per risparmiare CPU. Misura indicativa sul Mac, un processo: 100 ms per batch da 8 senza filtro, 125 ms con il filtro (circa
+    65-80 finestre/s per processo, contro un fabbisogno stimato al passo 0 di ~68 finestre/s per GPU a 30M con 8 processi per GPU). Alternativa:
+    una copia filtrata su disco (spazio e un job CPU). Da rimisurare su Leonardo con sessioni vere;
+31. scala di sessione stimata su tratti sparsi (non sull'intera sessione: emg2qwerty ha sessioni da ~18 minuti a 32 canali); da precalcolare con
+    un job CPU e salvare accanto al manifest, perche' ogni processo del dataloader non la ricalcoli;
+32. manca ancora: montaggi virtuali e sottocampionamento HD al volo (D6a), misura del ritmo su Leonardo.

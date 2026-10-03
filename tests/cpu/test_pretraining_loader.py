@@ -1,0 +1,140 @@
+"""Dataloader del pretraining su un albero sintetico con i montaggi veri degli adattatori e un manifest prodotto dal costruttore vero:
+sessione continua con un salto dell'asse dei tempi e un tratto costante (emg2pose), sessione a prove (NinaPro DB2), array 3D a prove da 1 s (CapgMyo)."""
+
+import gzip
+import importlib.util
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from wearusfm.data import pretraining_loader as L
+from wearusfm.ingest import capgmyo, emg2pose, ninapro_std
+from wearusfm.ingest.common import montage_to_dict
+from wearusfm.training.masking import MaskSpec
+
+_spec = importlib.util.spec_from_file_location("build_manifest", Path(__file__).resolve().parents[2] / "scripts" / "build_manifest.py")
+BM = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(BM)
+
+SIGMA = 3.0  # ampiezza fisica del rumore sintetico
+GAP_AT = 9000
+RUN = (2, 15000, 17000)  # canale, inizio, fine del tratto costante
+
+
+def _write(d: Path, data: np.ndarray, meta: dict):
+    d.mkdir(parents=True, exist_ok=True)
+    np.save(d / "data_int16.npy", data)
+    (d / "metadata.json").write_text(json.dumps(meta))
+
+
+def _tree(tmp_path: Path):
+    rng = np.random.default_rng(0)
+    root = tmp_path / "processed"
+    m = emg2pose.build_montage_metadata("u1", "sessA", "left")
+    x = rng.normal(scale=SIGMA, size=(24000, 16))  # 12 s a 2 kHz
+    x[RUN[1]:RUN[2], RUN[0]] = 0.0
+    _write(root / "emg2pose" / "u1" / "sessA", np.round(x * 1000).astype(np.int16),
+           {"montage": montage_to_dict(m, [True] * 16), "native_fs_hz": 2000.0, "shape": [24000, 16], "int16_scale": 1000.0,
+            "time_axis": {"n_gaps": 1, "gaps": [{"index": GAP_AT, "dt_s": 0.01}], "duration_s": 12.01, "dt_max_s": 0.01},
+            "constant_runs": [{"channel": RUN[0], "start": RUN[1], "n_samples": RUN[2] - RUN[1]}]})
+    m = ninapro_std.build_montage_metadata(ninapro_std.DB2, 1, "right")
+    x = rng.normal(scale=SIGMA, size=(18000, 12))
+    trials = [{"offset": 0, "n_samples": 6000}, {"offset": 6000, "n_samples": 6000}, {"offset": 12000, "n_samples": 6000}]
+    _write(root / "ninapro_db2" / "s01" / "session1", np.round(x * 1000).astype(np.int16),
+           {"montage": montage_to_dict(m, [True] * 12), "native_fs_hz": 2000.0, "shape": [18000, 12], "int16_scale": 1000.0, "trials": trials})
+    m = capgmyo.build_montage_metadata(1)
+    x = rng.normal(scale=SIGMA, size=(10, 1000, 128))
+    _write(root / "capgmyo" / "s01", np.round(x * 1000).astype(np.int16),
+           {"montage": montage_to_dict(m, [True] * 128), "native_fs_hz": 1000.0, "shape": [10, 1000, 128], "int16_scale": 1000.0})
+    splits = {"datasets": {"emg2pose": {"pretraining": ["u1"], "test": []}, "ninapro_db2": {"pretraining": ["s01"], "test": []},
+                           "capgmyo": {"pretraining": ["s01"], "test": []}}}
+    rows, summary = BM.build([root], splits, {"A": 0.3, "B": 0.5, "C": 0.2}, 0.5, 1e9, 25.0)
+    params = {"quota": {"A": 0.3, "B": 0.5, "C": 0.2}}
+    doc = {"params": params, "columns": list(BM.asdict(rows[0]).keys()), "rows": [list(BM.asdict(r).values()) for r in rows]}
+    path = tmp_path / "manifest.json.gz"
+    path.write_bytes(gzip.compress(json.dumps(doc).encode()))
+    return root, path
+
+
+def _cfg(**kw):
+    base = dict(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MaskSpec.d10_proposal(0.5), k_neighbors=4, filter_band_hz=None)
+    base.update(kw)
+    return L.LoaderConfig(**base)
+
+
+def test_windows_are_aligned_inside_spans_and_avoid_gaps_and_constant_runs(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    loader = L.PretrainLoader(idx, _cfg())
+    rng = np.random.default_rng(1)
+    row = next(r for r in idx.rows if r["dataset"] == "emg2pose")
+    view = loader.view(row)
+    assert [(s, e) for _, s, e, _ in view.spans] == [(0, GAP_AT), (GAP_AT, 24000)]  # spezzata al salto
+    for _ in range(300):
+        w = L.sample_window(view, loader.cfg, rng)
+        assert w.start % 400 == 0  # 200 ms a 2 kHz dall'inizio della prova (ancora 0, anche dopo il salto)
+        assert not (w.start < GAP_AT < w.stop)  # non attraversa il salto
+        assert not (w.start < RUN[2] and w.stop > RUN[1])  # non tocca il tratto costante
+        assert 40 <= w.n_patches <= 160 and w.stop - w.start == w.n_patches * 50
+    db2 = loader.view(next(r for r in idx.rows if r["dataset"] == "ninapro_db2"))
+    for _ in range(100):
+        w = L.sample_window(db2, loader.cfg, rng)
+        trial = next(t for t in range(3) if t * 6000 <= w.start < (t + 1) * 6000)
+        assert w.stop <= (trial + 1) * 6000 and (w.start - trial * 6000) % 400 == 0  # dentro la prova, griglia dall'inizio della prova
+    cap = loader.view(next(r for r in idx.rows if r["dataset"] == "capgmyo"))
+    w = L.sample_window(cap, loader.cfg, rng)
+    assert w.trial is not None and w.n_patches == 40 and (w.start, w.stop) == (0, 1000)  # prove da 1 s: contesto variabile, minimo 1 s
+    assert L.sample_window(cap, _cfg(min_window_s=2.0), rng) is None  # con 2 s di minimo CapgMyo non da' finestre (D10)
+    joined = L.PretrainLoader(idx, _cfg(split_at_gaps=False)).view(row)
+    assert [(s, e) for _, s, e, _ in joined.spans] == [(0, 24000)]
+
+
+def test_scale_sampling_and_batch(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    loader = L.PretrainLoader(idx, _cfg())
+    rng = np.random.default_rng(2)
+    row = next(r for r in idx.rows if r["dataset"] == "ninapro_db2")
+    s = loader.scale(row, loader.view(row), rng)
+    assert s == pytest.approx(0.6745 * SIGMA, rel=0.05)  # MAD di una gaussiana = 0,6745 sigma
+    counts = {}
+    for _ in range(3000):
+        r = idx.rows[int(rng.choice(len(idx.rows), p=idx.weights))]
+        counts[r["dataset"]] = counts.get(r["dataset"], 0) + 1
+    for r, w in zip(idx.rows, idx.weights):
+        assert counts[r["dataset"]] / 3000 == pytest.approx(w, abs=0.03)  # campionamento coi pesi del manifest
+    b = loader.batch(6, rng)
+    c_tot = sum(b.counts)
+    p_max = max(b.n_patches)
+    assert b.visible.shape == b.kind.shape == (c_tot, p_max) and b.sets.index.shape[0] == c_tot and len(b.signals) == 6
+    off = np.cumsum([0, *b.counts])
+    for i, (x, n) in enumerate(zip(b.signals, b.n_patches)):
+        assert x.shape[1] == math.ceil(n * 0.025 * b.fs[i] - 1e-9)
+        assert b.visible[off[i]:off[i + 1], n:].all()  # padding visibile, mai nascosto
+        assert b.anchor_targets[i].log_rms.shape == (b.counts[i], n)
+        mad = np.median(np.abs(x - np.median(x, axis=1, keepdims=True)), axis=1)
+        assert np.median(mad) == pytest.approx(1.0, rel=0.25)  # normalizzata con la scala di sessione (stima su tratti sparsi)
+    assert b.rvq_on.all()  # i tre dataset hanno l'ancora accesa
+
+
+def test_filter_removes_mains_and_stays_inside_the_span(tmp_path):
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cfg = _cfg(filter_band_hz=(20.0, 450.0))
+    view = L.PretrainLoader(idx, cfg).view(next(r for r in idx.rows if r["dataset"] == "ninapro_db2"))
+    t = np.arange(6000) / 2000.0
+    hum = 50.0 * np.sin(2 * np.pi * 50.0 * t)
+    raw = view.read(None, 0, 6000) + hum[None, :]
+
+    class Fake:  # stessa sessione, con 50 Hz di rete sommati alla prima prova
+        fs, scale = 2000.0, None
+
+        def read(self, trial, a, b):
+            return raw[:, a:b]
+
+    y = L.read_window(Fake(), None, 1000, 5000, (0, 6000), cfg)
+    p50 = lambda z: np.abs(np.fft.rfft(z, axis=-1))[:, int(50 * z.shape[1] / 2000)].mean()  # noqa: E731
+    assert y.shape == (12, 4000) and p50(y) < 0.01 * p50(raw[:, 1000:5000])  # rete abbattuta di oltre 40 dB
