@@ -1660,3 +1660,8 @@ D_t = 1,18·10⁸.
 dell'originale (ammesso): ogni file dell'originale c'e', stessa dimensione», 140 file identici e freschi, cancellato. Gli altri 6 risultavano gia'
 assenti. Quota letta alla fine del job: 943 GB su 1 TB; su Lustre l'aggiornamento della quota puo' arrivare in ritardo. **Gli originali grezzi dei
 7 dataset ora esistono solo su `$SCRATCH`**: il rinfresco ogni 21 giorni (22/10, 12/11, 03/12, 24/12) e' l'unica protezione dal purge.
+
+**Codici RVQ per emg2qwerty, job 59306259: COMPLETED** (1 h 43 min 54 s, exit 0; log e `index_59306259.json` in `~/wearusfm_local/reports/passo6/`):
+857 sessioni calcolate su 857 da fare, 0 errori. In tutto **1.035 sessioni su 1.035** con i codici, comprese le 178 del job 59303528; nessun file a
+meta'; 150,6 M token; 353 MB in `$WORK/wearusfm_runs/results/passo6/rvq_codes/`. Checkpoint sha256 0d255bcc... e fattore 21,718 come V2. **Costo
+1 h 44 min x 1 GPU = 1,73 GPU-ora**; budget del passo 6: usate 2,63 su 100. Condizione del lancio del sanity vero (almeno il 95%) soddisfatta.
