@@ -1802,3 +1802,9 @@ sanity). Test: il tono a 300 Hz cade nella banda giusta a tutte e due le scale; 
 training con le regole della finestra 1 compaiono `ms_fast` e `ms_slow` e non compare la perdita RVQ. **Costo:** i target salgono da 12 a 46 ms per
 finestra (32 canali, 4 s, 2 kHz, sul Mac), quasi tutto la finestra da 500 ms ricalcolata a ogni patch. Col margine misurato (~45 finestre/s di
 dataloader contro ~13 consumate) basta, ma va ottimizzato prima della finestra 1 (passo di 100 ms con interpolazione, o FFT a passo fisso).
+
+**Replica di NeuroRVQ: script e collaudo** (script `scripts/replicate_neurorvq.py`, job `scripts/slurm/replicate_neurorvq.sbatch`; test su dati
+sintetici con un FM a caso). Collaudo previsto dal foglio firmato: EPN-612, seme 0, 2 epoche, su `boost_qos_dbg`, **costo massimo 0,5 GPU-ora = 4
+ore locali**. Serve a verificare il caricamento del checkpoint pubblico (chiavi mancanti o inattese nel report) e a misurare il tempo per epoca;
+il costo dei run completi (3 semi x 2 dataset x 100 epoche) si ridichiara dopo. Budget del passo 5: <= 300 GPU-ora, usate 0 (gli smoke del 23-24/09
+erano su CPU).
