@@ -1624,3 +1624,35 @@ preparavano viste canoniche (~140 MB a sessione) piu' in fretta di quanto la GPU
 processo principale. **Correzione:** al piu' 5 sessioni in volo (`bounded_map`, test), 3 processi e batch del tokenizer 4.096 (era 1.024).
 **Rilancio** con lo stesso sbatch, limite 3 h: ~857 sessioni rimaste a ~8,5 s, quindi ~2 h attese. **Costo massimo 3 GPU-ora = 24 ore locali.**
 Il sanity vero parte dopo, come registrato sopra.
+
+## Decisioni del 04/10/2026 (Simone: «approvo tutto», sulla lista di 16 proposte di AG)
+
+**Dati e perdita, dalla finestra 1** (nel codice come opzioni spente nel preset del sanity, che resta quello collaudato):
+1. **quote nel tempo (in token):** la probabilita' di una sessione e' il suo peso nel manifest diviso per la lunghezza media delle sue finestre,
+   calcolata una volta come le scale;
+2. **perdita per finestra:** media prima dentro ogni finestra, poi fra le finestre (JEPA e ancore);
+3. **bordi dei tratti:** le patch entro 100 ms dal bordo di un tratto (inizio o fine prova, salto) non hanno target delle ancore; il JEPA resta;
+4. **ritmo del dataloader:** la soglia «~8,5 finestre/s per processo» (stima del passo 0) e' sostituita dalla regola di D6a del piano: **attesa sui
+   dati <= 2% del passo**, col modello vero. Collaudo 59277074: 1,3%;
+5. **batch di validazione** (decisione 16): confermato com'e', cioe' estratto dal pretraining con seme fisso, rapporto di collasso = minimo fra
+   studente e teacher.
+**Scelte di AG ratificate:**
+6. identita' del canale con la posizione nel sistema del sensore, il lato e il gruppo;
+7. spostamenti con segno nel bias dell'encoder locale;
+8. entropia incrociata RVQ divisa per ln(8192);
+9. masking a «tubi», (b) della decisione 12.
+**Da dichiarare nei risultati, manifest invariato:**
+10. **DB5** resta nell'harness, dichiarato «soggetti visti in pretraining»; il confronto pulito con NeuroRVQ e' su EPN-612 e UCI-EMG;
+11. **emg2pose:** 540 registrazioni (7,3 h) hanno il lato fermo nel pretraining e quello in movimento nel test per fasi nuove.
+**Finestra 1:**
+12. **D11:** target dal decoder a query del teacher (b), con la diagnostica del collasso; target dall'encoder locale (a) come braccio di controllo a
+    30M;
+13. **D15:** dropout del livello muscolo 0,4;
+14. **D16:** frazioni 12,5 / 25 / 50 / 100% a 100M e 300M, sui manifest annidati di `manifest-v1`;
+15. **D6a:** montaggi virtuali dalle griglie HD al volo nel dataloader, se l'attesa sui dati resta <= 2%; da implementare prima della finestra 1.
+    Le quote sulla topologia presentata si decidono con i numeri;
+**Operazioni:**
+16. **ninapro su `$WORK`:** nuovo criterio di `delete_verified_raw.sbatch`. Si cancella se ogni file dell'originale e' nella copia con la stessa
+    dimensione, anche se la copia ha file in piu'; il confronto per checksum e' gia' passato. Lo lancia Simone.
+**Restano da preparare** (fogli con i numeri): D12 (soglia della regola del pilot), D14 (WSD e continuazione), conto del compute della ladder con
+D_t = 1,18·10⁸.
