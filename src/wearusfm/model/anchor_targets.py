@@ -70,8 +70,11 @@ def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) 
     return np.sqrt(np.maximum((cs[:, s + n] - cs[:, s]) / n, 0.0)), valid
 
 
-def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ) -> AnchorTargets:
-    """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale."""
+def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ,
+                   guard: tuple[int, int] = (0, 0)) -> AnchorTargets:
+    """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale.
+    guard = (inizio, fine): campioni all'inizio e alla fine di x che stanno entro la zona di bordo di un tratto (transitorio del filtro): le patch
+    che li toccano non hanno target (Simone, 04/10/2026, decisione 3: entro 100 ms dal bordo di un tratto)."""
     x = np.asarray(x, dtype=np.float64)
     c, t = x.shape
     patch_s = patch_ms / 1000.0
@@ -100,6 +103,11 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     env, env_ok = _window_rms(x, fs, centers, ENVELOPE_WINDOW_MS)
     log_env = np.log(env + EPS)
 
+    if guard[0] > 0 or guard[1] > 0:
+        p0 = np.ceil(np.arange(n_patch) * patch_s * fs - 1e-9)  # inizio e fine delle patch (stessa griglia del front-end)
+        p1 = np.ceil((np.arange(n_patch) + 1) * patch_s * fs - 1e-9)
+        clear = (p0 >= guard[0]) & (p1 <= t - guard[1])
+        rms_ok, spec_ok, env_ok = rms_ok & clear, spec_ok & clear, env_ok & clear
     rows = lambda v: np.broadcast_to(v[None, :], (c, n_patch)).copy()  # noqa: E731
     return AnchorTargets(log_rms, rows(rms_ok), band_shape, rows(spec_ok) & band_available.any(axis=1)[:, None], band_available, log_env, rows(env_ok))
 

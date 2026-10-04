@@ -263,3 +263,42 @@ def test_index_excludes_test_rows_and_filters_nested_subsets(tmp_path):
     assert [r["dataset"] for r in L.ManifestIndex.load(path, [root], nested="0.5").rows] == [rows[2]["dataset"]]
     with pytest.raises(ValueError):
         L.ManifestIndex.load(path, [root], nested="0.25")  # nessuna riga nel sottoinsieme: errore, non un indice vuoto
+
+
+def test_time_weighted_quotas_divide_by_the_mean_window_length(tmp_path):
+    """Decisione 1 del 04/10/2026: quote nel tempo. CapgMyo (prove da 1 s) da' finestre da 1 s, emg2pose quasi sempre da 4 s: con le quote nel
+    tempo CapgMyo va estratto ~4 volte piu' spesso di quanto dice il suo peso, cosi' il suo tempo torna quello del manifest."""
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cfg = _cfg(time_weighted=True)
+    base = L.PretrainLoader(idx, _cfg())
+    ws = {f"{r['dataset']}/{r['subject']}/{r['session']}": L.mean_window_s(base.view(r), cfg) for r in idx.rows}
+    by = {k.split("/")[0]: v for k, v in ws.items()}
+    assert by["capgmyo"] == pytest.approx(1.0) and 2.0 < by["emg2pose"] <= 4.0  # tratti da 4,5 e 7,5 s con un tratto costante: spesso piu' corte di 4 s
+    with pytest.raises(ValueError, match="window_seconds"):
+        L.PretrainLoader(idx, cfg, None, {})
+    loader = L.PretrainLoader(idx, cfg, None, ws)
+    expect = idx.weights / np.array([ws[f"{r['dataset']}/{r['subject']}/{r['session']}"] for r in idx.rows])
+    assert np.allclose(loader.probs, expect / expect.sum())
+    rng = np.random.default_rng(5)
+    secs = {}
+    for _ in range(3000):
+        row, blk, win = loader.sample_from_blocks(rng)
+        secs[row["dataset"]] = secs.get(row["dataset"], 0.0) + win.n_patches * 0.025
+    tot = sum(secs.values())
+    for r, w in zip(idx.rows, idx.weights):
+        assert secs[r["dataset"]] / tot == pytest.approx(w, abs=0.05)  # il tempo realizzato e' quello del manifest
+    assert L.PretrainLoader(idx, _cfg(), None, {}).probs is idx.weights  # spento: com'era
+
+
+def test_anchor_targets_skip_patches_near_segment_edges(tmp_path):
+    """Decisione 3 del 04/10/2026: entro 100 ms dal bordo di un tratto il filtro ha un transitorio, le ancore non hanno target."""
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    idx = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "capgmyo"], np.ones(1), idx.roots)  # prove da 1 s: ogni finestra tocca i bordi
+    b0 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0))).batch(2, np.random.default_rng(0))
+    b1 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0), anchor_edge_guard_s=0.1)).batch(2, np.random.default_rng(0))
+    for t0, t1 in zip(b0.anchor_targets, b1.anchor_targets):
+        assert t0.rms_valid[:, 4:36].all() and t0.rms_valid[:, :4].all()  # senza zona di bordo: tutte le patch hanno il target RMS
+        assert not t1.rms_valid[:, :4].any() and not t1.rms_valid[:, 36:].any() and t1.rms_valid[:, 4:36].all()  # 100 ms = 4 patch per lato
+        assert np.array_equal(t0.log_rms, t1.log_rms)  # cambiano le maschere, non i valori

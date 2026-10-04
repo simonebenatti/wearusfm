@@ -111,3 +111,35 @@ def test_rvq_anchor_on_trains_with_precomputed_codes_and_needs_both_halves(tmp_p
     loss = rvq_loss(logits, torch.tensor([3, -1, 5, -1]))
     assert float(loss.detach()) == pytest.approx(1.0, abs=1e-6)  # uniforme: ln(8192) / ln(8192); i -1 non contano
     assert float(rvq_loss(logits, torch.tensor([-1, -1, -1, -1])).detach()) == 0.0
+
+
+def test_loss_per_window_averages_inside_each_window_first():
+    """Decisione 2 del 04/10/2026: con la media per token una finestra con molti token (es. HD) pesa di piu'; per finestra pesano uguale."""
+    from wearusfm.model.anchors import masked_mean
+
+    num = torch.tensor([1.0, 1.0, 1.0, 5.0])  # campione 0: tre query con errore 1; campione 1: una query con errore 5
+    den = torch.ones(4)
+    s = torch.tensor([0, 0, 0, 1])
+    assert float(masked_mean(num, den)) == pytest.approx(2.0)  # per token: (1+1+1+5)/4
+    assert float(masked_mean(num, den, s, 2)) == pytest.approx(3.0)  # per finestra: (1 + 5)/2
+    assert float(masked_mean(num, torch.tensor([1.0, 1.0, 1.0, 0.0]), s, 3)) == pytest.approx(1.0)  # campioni senza elementi validi: esclusi
+
+
+def test_window1_rules_train_end_to_end(tmp_path):
+    import numpy as np
+
+    from wearusfm.data import pretraining_loader as L
+
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cfg = R.with_window1_rules(R.small_config(datasets=None, max_steps=2))
+    assert cfg.jepa.loss_per_window and cfg.loader.time_weighted and cfg.loader.anchor_edge_guard_s == 0.1
+    from dataclasses import replace
+
+    base = L.PretrainLoader(idx, replace(cfg.loader, time_weighted=False))  # solo per aprire le sessioni
+    ws = {f"{r['dataset']}/{r['subject']}/{r['session']}": L.mean_window_s(base.view(r), cfg.loader) for r in idx.rows}
+    s = R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None, window_s=ws)
+    assert s["steps"] == 2 and all(math.isfinite(r["total"]) for r in _lines(tmp_path / "run"))
+    sanity = R.sanity_config()
+    assert not sanity.jepa.loss_per_window and not sanity.loader.time_weighted and sanity.loader.anchor_edge_guard_s == 0.0  # sanity invariato
+    assert np.isfinite(list(ws.values())).all()

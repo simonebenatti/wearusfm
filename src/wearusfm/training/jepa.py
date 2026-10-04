@@ -25,7 +25,7 @@ import torch
 import torch.nn.functional as F
 
 from wearusfm.model.anchor_targets import RVQ_TOKEN_MS, AnchorTargets
-from wearusfm.model.anchors import anchor_losses, rvq_loss
+from wearusfm.model.anchors import anchor_losses, masked_mean, rvq_loss
 from wearusfm.model.channel_codes import TOPOLOGIES
 from wearusfm.model.fm import ModelInputs, WearUsFM
 from wearusfm.training.masking import KIND_NAMES, VISIBLE
@@ -36,6 +36,9 @@ class JEPAConfig:
     target: str  # "a" | "b" (D11)
     anchor_weight: float  # v10 §6.2: 0,1-0,3
     ema_momentum: float
+    # media della perdita prima dentro ogni finestra, poi fra le finestre (Simone, 04/10/2026, decisione 2; dalla finestra 1). False = media per
+    # token, com'era nel sanity collaudato
+    loss_per_window: bool = False
 
     def __post_init__(self) -> None:
         if self.target not in ("a", "b"):
@@ -114,7 +117,12 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         enc_t = teacher.encode(inp, None)
         tgt = enc_t.local[q_ch, q_t] if cfg.target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
         tgt = F.layer_norm(tgt, tgt.shape[-1:])
-    losses = {"jepa": F.mse_loss(h, tgt)}
+    s_q = None
+    if cfg.loss_per_window:
+        s_q = torch.searchsorted(q_off, torch.arange(q_ch.numel(), device=q_ch.device), right=True) - 1  # campione di ogni query
+    n_s = len(inp.counts)
+    err_q = (h - tgt).pow(2).mean(dim=-1)
+    losses = {"jepa": masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt)}
     if kinds is not None:
         with torch.no_grad():
             err = (h.float() - tgt.float()).pow(2).mean(dim=-1)  # (Q,)
@@ -130,7 +138,7 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
                     losses[f"jepa_topo_{name}"] = err[sel].mean()
     anchor_total = h.new_zeros(())
     if anchor_targets is not None:
-        for k, v in anchor_losses(student.anchor_heads(h), gather_anchor_targets(anchor_targets, inp.counts, q_ch, q_t)).items():
+        for k, v in anchor_losses(student.anchor_heads(h), gather_anchor_targets(anchor_targets, inp.counts, q_ch, q_t), s_q, n_s).items():
             losses[k] = v
             anchor_total = anchor_total + v
     if student.rvq_head is not None and rvq_on is not None and rvq_codes is not None:
@@ -152,7 +160,8 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         index[q_ch, q_t] = torch.arange(q_ch.numel(), device=dev)
         rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste per costruzione
         codes = rvq_codes(wc, ww) if wc.numel() else None
-        losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), codes) if wc.numel() else h.sum() * 0.0
+        s_w = (torch.searchsorted(torch.as_tensor(bounds, device=wc.device), wc, right=True) - 1) if cfg.loss_per_window else None
+        losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), codes, s_w, n_s) if wc.numel() else h.sum() * 0.0
         losses["rvq_targets"] = (codes >= 0).sum().float() if codes is not None else h.new_zeros(())  # solo per il log: finestre con un codice
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total

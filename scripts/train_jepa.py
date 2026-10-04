@@ -35,10 +35,16 @@ def main(argv=None) -> int:
     ap.add_argument("--datasets", default=None, help="elenco separato da virgole, o 'all'; default: quello del preset (sanity: emg2qwerty)")
     ap.add_argument("--rvq-codes", type=Path, default=None,
                     help="radice dei codici RVQ precalcolati (scripts/precompute_rvq_codes.py): accende l'ancora RVQ (D5b); senza, l'ancora e' spenta")
+    ap.add_argument("--window1-rules", action="store_true",
+                    help="decisioni del 04/10/2026: quote nel tempo, perdita per finestra, ancore lontane dai bordi (serve --window-seconds)")
+    ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py (lunghezza media delle finestre per sessione)")
     args = ap.parse_args(argv)
     cfg = R.sanity_config() if args.preset == "sanity" else R.small_config()
     if args.rvq_codes is not None:
         cfg = R.with_rvq(cfg, args.rvq_codes)
+    if args.window1_rules:
+        cfg = R.with_window1_rules(cfg)
+    window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
     if args.max_steps is not None:
         cfg = replace(cfg, max_steps=args.max_steps)
     if args.datasets is not None:
@@ -48,7 +54,7 @@ def main(argv=None) -> int:
           f"dispositivo {args.device}, {len(scales)} scale di sessione, ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}",
           flush=True)
     summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
-                      time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True))
+                      time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s)
     print(json.dumps(summary), flush=True)
     return 0
 

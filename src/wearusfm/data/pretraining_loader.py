@@ -76,6 +76,20 @@ class LoaderConfig:
     block_pool: int = 16
     # codici dell'ancora RVQ precalcolati (`data.rvq_codes`, `scripts/precompute_rvq_codes.py`); None = ancora RVQ senza target
     rvq_codes_root: str | None = None
+    # patch entro questo tempo dal bordo di un tratto (inizio o fine prova, salto) senza target delle ancore: transitorio del filtro (Simone,
+    # 04/10/2026, decisione 3: 0,1 s dalla finestra 1). 0 = nessuna zona di bordo, com'era nel sanity collaudato
+    anchor_edge_guard_s: float = 0.0
+    # quote nel tempo (Simone, 04/10/2026, decisione 1; dalla finestra 1): la probabilita' di una sessione e' il suo peso nel manifest diviso per la
+    # lunghezza media delle sue finestre (`mean_window_s`, calcolata una volta per sessione, `scripts/window_seconds.py`). False = una finestra per
+    # estrazione pesata, com'era nel sanity collaudato
+    time_weighted: bool = False
+
+
+def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
+    """La configurazione firmata il 03/10/2026 (D9 decisione 8, D10 decisioni 10-12, sanity decisione 15, filtro decisione 13), comune al sanity,
+    alla misura del ritmo e al calcolo delle lunghezze delle finestre. Le opzioni della finestra 1 (decisioni del 04/10) restano spente."""
+    return LoaderConfig(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MK.MaskSpec.d10_proposal(0.5), k_neighbors=8,
+                        filter_band_hz=filter_band_hz)
 
 
 # --- manifest ------------------------------------------------------------------------------------------------------------------------
@@ -231,8 +245,9 @@ class Window:
     n_patches: int
 
 
-def _accepted(view: SessionView, cfg: LoaderConfig, trial, s: int, e: int, anchor: int, ks: np.ndarray) -> np.ndarray:
-    """Gli inizi `ks` la cui finestra (`window_at`) esiste: stessi conti di `window_at`, vettoriali (un test li confronta uno per uno)."""
+def _accepted(view: SessionView, cfg: LoaderConfig, trial, s: int, e: int, anchor: int, ks: np.ndarray, *, lengths: bool = False):
+    """Gli inizi `ks` la cui finestra (`window_at`) esiste: stessi conti di `window_at`, vettoriali (un test li confronta uno per uno). Con
+    `lengths`, anche il numero di patch di ciascuna finestra accettata."""
     fs, patch = view.fs, cfg.patch_ms / 1000.0
     st = np.maximum(np.round(anchor + ks * (cfg.align_ms / 1000.0 * fs)).astype(np.int64), s)
     n_patch = np.floor(np.minimum(cfg.max_window_s * fs, e - st) / fs / patch + 1e-9).astype(np.int64)
@@ -245,7 +260,18 @@ def _accepted(view: SessionView, cfg: LoaderConfig, trial, s: int, e: int, ancho
     for r in view.runs:
         if r[0] == trial:
             ok &= ~((r[2] - m < stop) & (r[3] + m > st))
-    return ks[ok]
+    return (ks[ok], n_patch[ok]) if lengths else ks[ok]
+
+
+def mean_window_s(view: SessionView, cfg: LoaderConfig) -> float | None:
+    """Lunghezza media (s) delle finestre della sessione con l'inizio uniforme fra gli inizi accettati, cioe' quella che il dataloader estrae
+    (lettura diretta e a blocchi danno la stessa distribuzione). None se la sessione non ha inizi accettati. Serve alle quote nel tempo."""
+    tot, n = 0.0, 0
+    for trial, s, e, anchor, k0, ks in admissible_starts(view, cfg):
+        _, n_patch = _accepted(view, cfg, trial, s, e, anchor, ks, lengths=True)
+        tot += float(n_patch.sum()) * cfg.patch_ms / 1000.0
+        n += len(n_patch)
+    return tot / n if n else None
 
 
 def admissible_starts(view: SessionView, cfg: LoaderConfig) -> list[tuple]:
@@ -350,9 +376,25 @@ class PretrainBatch:
     rvq_codes: list | None = None  # (C_s, W_s) codici RVQ per campione (-1 = nessun target), se `rvq_codes_root`
 
 
+def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
+    """Probabilita' delle sessioni per le quote nel tempo: peso del manifest / lunghezza media delle finestre, normalizzate. Una sessione con peso
+    positivo senza lunghezza nota e' un errore (le quote non si realizzerebbero in silenzio); una sessione senza finestre (None) ha probabilita' 0."""
+    keys = [f"{r['dataset']}/{r['subject']}/{r['session']}" for r in index.rows]
+    missing = [k for k, w in zip(keys, index.weights) if w > 0 and k not in window_s]
+    if missing:
+        raise ValueError(f"{len(missing)} sessioni senza lunghezza media delle finestre (es. {missing[0]}): serve scripts/window_seconds.py")
+    p = np.array([w / window_s[k] if window_s[k] else 0.0 for k, w in zip(keys, index.weights)], dtype=np.float64)
+    if p.sum() <= 0:
+        raise ValueError("nessuna sessione con finestre")
+    return p / p.sum()
+
+
 class PretrainLoader:
-    def __init__(self, index: ManifestIndex, cfg: LoaderConfig, scale_cache: dict | None = None):
+    def __init__(self, index: ManifestIndex, cfg: LoaderConfig, scale_cache: dict | None = None, window_s: dict | None = None):
         self.index, self.cfg = index, cfg
+        self.probs = index.weights
+        if cfg.time_weighted:
+            self.probs = time_weighted_probs(index, window_s or {})
         self.scale_cache = scale_cache if scale_cache is not None else {}
         self._open: OrderedDict = OrderedDict()
         self.timings: dict[str, float] = {}  # secondi cumulati per fase (misura del ritmo)
@@ -387,7 +429,7 @@ class PretrainLoader:
         """Una sessione estratta coi pesi del manifest, con la scala e almeno un inizio di finestra ammesso; quelle senza scala si saltano e si
         contano (mai in silenzio)."""
         for _ in range(self.cfg.max_session_attempts):
-            row = self.index.rows[int(rng.choice(len(self.index.rows), p=self.index.weights))]
+            row = self.index.rows[int(rng.choice(len(self.index.rows), p=self.probs))]
             key = f"{row['dataset']}/{row['subject']}/{row['session']}"
             if key in self.skipped:
                 continue
@@ -480,7 +522,9 @@ class PretrainLoader:
             vis.append(v)
             kind.append(k)
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
-            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms))
+            g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
+            guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
+            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms, guard=guard))
             if self.rvq_store is not None:
                 entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
                 rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))

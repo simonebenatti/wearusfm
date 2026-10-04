@@ -26,16 +26,14 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.data import pretraining_loader as L  # noqa: E402
-from wearusfm.training.masking import MaskSpec  # noqa: E402
 
 FILTER = (20.0, 450.0)
 REQUIRED_PER_PROCESS = 68.0 / 8  # passo 0: ~68 finestre/s per GPU, 8 processi per GPU
 
 
 def signed_config(filter_band) -> L.LoaderConfig:
-    """La configurazione firmata il 03/10/2026 (D9 decisione 8, D10 decisioni 10-12, sanity decisione 15)."""
-    return L.LoaderConfig(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MaskSpec.d10_proposal(0.5), k_neighbors=8,
-                          filter_band_hz=filter_band)
+    """La configurazione firmata il 03/10/2026 (`pretraining_loader.signed_config`)."""
+    return L.signed_config(filter_band)
 
 
 def key_of(row: dict) -> str:

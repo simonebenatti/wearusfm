@@ -28,7 +28,6 @@ from wearusfm.data import rvq_codes as RC
 from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
 from wearusfm.model.query_decoder import probe_query_collapse
-from wearusfm.training import masking as MK
 from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, make_teacher, jepa_losses
 
 
@@ -63,10 +62,16 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
         model=FMConfig(dim=384, n_heads=6, k_latents=64, local_layers=2, backbone_layers=8, decoder_layers=2, muscle_dropout=0.4,
                        grad_checkpoint=True),
         jepa=JEPAConfig(target="b", anchor_weight=0.2, ema_momentum=0.996),
-        loader=L.LoaderConfig(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MK.MaskSpec.d10_proposal(0.5), k_neighbors=8,
-                              filter_band_hz=(20.0, 450.0)),
+        loader=L.signed_config((20.0, 450.0)),
         datasets=("emg2qwerty",), batch_size=32, lr=3e-4, warmup_steps=1000, weight_decay=0.05, grad_clip=1.0, max_steps=max_steps,
         eval_every=500, ckpt_every=500, seed=0)
+
+
+def with_window1_rules(cfg: RunConfig) -> RunConfig:
+    """Le decisioni del 04/10/2026 (Simone: «approvo tutto»), dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target
+    delle ancore entro 100 ms dal bordo di un tratto (3). Il preset del sanity resta quello collaudato."""
+    return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True),
+                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1))
 
 
 def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
@@ -94,13 +99,13 @@ def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | No
 class BatchStream(torch.utils.data.IterableDataset):
     """Batch del dataloader nei processi di torch: un `PretrainLoader` e un generatore per processo (seme = seme del run, processo, ripresa)."""
 
-    def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict):
-        self.index, self.cfg, self.batch_size, self.seed, self.scales = index, cfg, batch_size, seed, scales
+    def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict, window_s: dict | None = None):
+        self.index, self.cfg, self.batch_size, self.seed, self.scales, self.window_s = index, cfg, batch_size, seed, scales, window_s
 
     def __iter__(self):
         info = torch.utils.data.get_worker_info()
         wid = info.id if info is not None else 0
-        loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales))
+        loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales), self.window_s)
         rng = np.random.default_rng([self.seed, wid])
         while True:
             yield loader.batch(self.batch_size, rng)
@@ -161,7 +166,7 @@ def _to_device(inp, visible, rvq_on, device):
 
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
-          num_workers: int = 0, time_limit_s: float | None = None, log=print) -> dict:
+          num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo)."""
     t_start = time.time()
@@ -194,9 +199,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         log(f"ripresa dal passo {step}")
     (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})
-    val_loader = L.PretrainLoader(index, cfg.loader, dict(scales))
+    val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
     val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
-    stream = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, cfg.batch_size, cfg.seed * 1000 + step, scales), batch_size=None,
+    stream = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, cfg.batch_size, cfg.seed * 1000 + step, scales, window_s), batch_size=None,
                                          num_workers=num_workers, persistent_workers=num_workers > 0)
     metrics = (out_dir / "metrics.jsonl").open("a")
     reason, it = "max_steps", iter(stream)
