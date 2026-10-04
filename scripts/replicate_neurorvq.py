@@ -116,7 +116,16 @@ class PaperHead:
         return self.mod(x)
 
 
-def run_seed(xn: np.ndarray, fs: float, y: np.ndarray, subjects: np.ndarray, seed: int, args, log) -> dict:
+def to_device_1k(xn: np.ndarray, fs: float, device: str, chunk: int = 4096):
+    """Tutte le finestre ricampionate a 1 kHz una volta sola, in float16 sul dispositivo (EPN-612: ~7 GB): niente ricampionamento a ogni batch
+    (collaudo 59336240: 177 s per epoca col ricampionamento sulla CPU)."""
+    import torch
+
+    parts = [torch.from_numpy(resample_1k(xn[i:i + chunk], fs)).to(torch.float16).to(device) for i in range(0, len(xn), chunk)]
+    return torch.cat(parts)
+
+
+def run_seed(xr, y: np.ndarray, subjects: np.ndarray, seed: int, args, log) -> dict:
     import torch
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score, f1_score
@@ -129,8 +138,8 @@ def run_seed(xn: np.ndarray, fs: float, y: np.ndarray, subjects: np.ndarray, see
     split = split_subjects(subjects, (0.7, 0.1, 0.2), seed=seed)
     masks = masks_from_split(subjects, split)
     fm, cfg, missing, unexpected = build_model(args.checkpoint, dev)
-    n_ch = xn.shape[1]
-    n_time = resample_1k(xn[:1], fs).shape[-1] // 200
+    n_ch = xr.shape[1]
+    n_time = xr.shape[-1] // 200
     names = np.array([f"c{i + 1}".encode() for i in range(n_ch)])
     t_ix, s_ix = create_embedding_ix(n_time, cfg["n_patches"], names, ch_names_global)
     n_cls = int(y.max()) + 1
@@ -143,7 +152,7 @@ def run_seed(xn: np.ndarray, fs: float, y: np.ndarray, subjects: np.ndarray, see
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=str(dev).startswith("cuda"))
 
     def forward(idx, train: bool):
-        x = torch.from_numpy(resample_1k(xn[idx], fs)).to(dev).view(len(idx), n_ch, n_time, 200)
+        x = xr[torch.as_tensor(idx, device=xr.device)].float().view(len(idx), n_ch, n_time, 200)
         with amp:
             flat, _ = fm(x, t_ix.to(dev), s_ix.to(dev))  # indici (1, N) come nel loro modulo di fine-tuning
             return head(flat.float(), n_time)
@@ -153,8 +162,8 @@ def run_seed(xn: np.ndarray, fs: float, y: np.ndarray, subjects: np.ndarray, see
         idx_all = np.flatnonzero(masks[which])
         preds = []
         with torch.no_grad():
-            for i in range(0, len(idx_all), args.batch):
-                preds.append(forward(idx_all[i:i + args.batch], False).argmax(dim=-1).cpu().numpy())
+            for i in range(0, len(idx_all), args.eval_batch):
+                preds.append(forward(idx_all[i:i + args.eval_batch], False).argmax(dim=-1).cpu().numpy())
         p = np.concatenate(preds)
         return float(accuracy_score(y[idx_all], p)), float(f1_score(y[idx_all], p, average="macro"))
 
@@ -173,10 +182,14 @@ def run_seed(xn: np.ndarray, fs: float, y: np.ndarray, subjects: np.ndarray, see
             loss.backward()
             opt.step()
             step += 1
-        va, te = evaluate("val"), evaluate("test")
+        va = evaluate("val")
+        improved = not curve or va[0] > max(r["val_acc"] for r in curve)
+        # il test si valuta solo quando la validazione migliora (e all'ultima epoca): il modello scelto e' lo stesso, il costo no
+        te = evaluate("test") if improved or ep == args.epochs - 1 else (None, None)
         curve.append({"epoch": ep + 1, "val_acc": va[0], "test_acc": te[0], "test_f1": te[1], "loss": float(loss.detach())})
-        log(f"seme {seed} epoca {ep + 1}: val {va[0]:.4f}, test {te[0]:.4f}, perdita {float(loss.detach()):.4f}, {time.time() - t0:.0f} s")
-    best = max(curve, key=lambda r: (r["val_acc"], -r["epoch"]))
+        log(f"seme {seed} epoca {ep + 1}: val {va[0]:.4f}, test {te[0] if te[0] is None else round(te[0], 4)}, perdita "
+            f"{float(loss.detach()):.4f}, {time.time() - t0:.0f} s")
+    best = max(curve, key=lambda r: (r["val_acc"], -r["epoch"]))  # la prima epoca col massimo: e' quella in cui il test e' stato valutato
     return {"seed": seed, "subjects": {k: len(getattr(split, k)) for k in ("train", "val", "test")},
             "windows": {k: int(m.sum()) for k, m in masks.items()}, "missing_keys": missing, "unexpected_keys": unexpected,
             "best_epoch": best["epoch"], "test_acc_best_val": best["test_acc"], "test_f1_best_val": best["test_f1"],
@@ -191,6 +204,7 @@ def main(argv=None) -> int:
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--batch", type=int, default=128)
+    ap.add_argument("--eval-batch", type=int, default=512)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--max-users", type=int, default=None, help="solo per il collaudo")
     ap.add_argument("--device", default="cuda")
@@ -208,9 +222,10 @@ def main(argv=None) -> int:
     classes = sorted(set(lab.tolist()))
     y = np.array([classes.index(v) for v in lab.tolist()], dtype=np.int64)
     log(f"{args.dataset}: {len(w)} finestre, {len(set(subj))} soggetti, {len(classes)} classi, fs {fs} Hz, {w.shape[1] / fs:.1f} s")
-    xn = preprocess_native(w, fs)
+    xr = to_device_1k(preprocess_native(w, fs), fs, args.device)
     del w
-    runs = [run_seed(xn, fs, y, subj, s, args, log) for s in args.seeds]
+    log(f"dati a 1 kHz sul dispositivo: {tuple(xr.shape)}, {xr.element_size() * xr.nelement() / 2**30:.1f} GiB")
+    runs = [run_seed(xr, y, subj, s, args, log) for s in args.seeds]
     accs = np.array([r["test_acc_best_val"] for r in runs]) * 100
     lo, hi = TOLERANCE[args.dataset]
     report = {"dataset": args.dataset, "classes": classes, "published_acc": PUBLISHED[args.dataset], "tolerance": [lo, hi],

@@ -40,9 +40,16 @@ def load_epn_user(path: Path) -> tuple[list[np.ndarray], list[str], float]:
     return windows, labels, fs_hz
 
 
-def load_epn612(roots: list[Path], n_users: int | None = None, seed: int = 0) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+def fix_length(w: np.ndarray, n: int) -> np.ndarray:
+    """(T, C) -> (n, C): taglia le piu' lunghe e completa con zeri le piu' corte, come `fix_length` del codice di NeuroRVQ
+    (`third_party/neurorvq/preprocessing/preprocessing_emg_example.py`)."""
+    return w[:n] if len(w) >= n else np.pad(w, ((0, n - len(w)), (0, 0)))
+
+
+def load_epn612(roots: list[Path], n_users: int | None = None, seed: int = 0, window_s: float | None = 5.0) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
     """Tutti gli utenti delle cartelle `roots` (es. trainingJSON e testingJSON), o `n_users` estratti con `seed`. Ritorna (finestre (N, T, 8),
-    etichette (N,), soggetti (N,), fs). Le finestre di lunghezza diversa si tagliano alla piu' corta."""
+    etichette (N,), soggetti (N,), fs). Lunghezza fissa `window_s` (5 s, come nel paper: i campioni di EPN-612 non hanno tutti la stessa
+    lunghezza), con `fix_length`; None = taglio alla piu' corta (com'era: il collaudo 59336240 ha mostrato che porta tutto a 2,4 s)."""
     user_files = [(root.name, p, p / f"{p.name}.json") for root in roots for p in sorted(root.glob("user*")) if (p / f"{p.name}.json").exists()]
     if not user_files:
         raise FileNotFoundError(f"nessun user*/user*.json sotto {roots}")
@@ -58,8 +65,9 @@ def load_epn612(roots: list[Path], n_users: int | None = None, seed: int = 0) ->
         subjects += [f"{folder}/{user_dir.name}"] * len(w)
     if len(fs_seen) != 1:
         raise ValueError(f"frequenza non uniforme fra utenti: {fs_seen}")
-    n = min(len(w) for w in windows)
-    return np.stack([w[:n] for w in windows]), np.array(labels), np.array(subjects), fs_seen.pop()
+    fs = fs_seen.pop()
+    n = min(len(w) for w in windows) if window_s is None else int(round(window_s * fs))
+    return np.stack([fix_length(w, n) for w in windows]), np.array(labels), np.array(subjects), fs
 
 
 def load_uci_file(path: Path) -> tuple[np.ndarray, np.ndarray]:

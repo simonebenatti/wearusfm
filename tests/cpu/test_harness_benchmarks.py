@@ -36,3 +36,13 @@ def test_uci_windows_one_second_no_overlap_classes_1_to_6(tmp_path):
     (d / "1_raw_data.txt").write_text("\n".join(rows) + "\n")
     w, y, s, fs = B.load_uci_emg(tmp_path)
     assert fs == 1000.0 and w.shape == (4, 1000, 8) and sorted(y.tolist()) == [1, 1, 2, 2] and set(s) == {"01"}  # niente 0 e niente 7
+
+
+def test_epn_windows_have_a_fixed_five_second_length(tmp_path):
+    """Collaudo 59336240: col taglio alla finestra piu' corta tutto diventava 2,4 s. Ora 5 s fissi, come nel paper, con fix_length."""
+    tr = tmp_path / "trainingJSON"
+    _epn_user(tr, "user1", t=996)
+    _epn_user(tr, "user2", t=1003)
+    w, _, _, fs = B.load_epn612([tr])
+    assert w.shape[1] == 1000 and fs == 200.0
+    assert B.fix_length(np.ones((996, 8)), 1000)[996:].sum() == 0  # completata con zeri
