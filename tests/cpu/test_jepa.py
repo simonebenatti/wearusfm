@@ -68,15 +68,16 @@ def test_jepa_losses_both_targets_with_anchors_and_rvq(target):
     vis = _visible(inp)
     tg = [AT.anchor_targets(x.numpy(), f, lim) for x, f, lim in zip(inp.signals, FS, (850.0, 500.0))]
     rvq_on = torch.tensor([True] * 16 + [True] * 11)
-    seen = {}
+    seen = []
 
     def codes(c, w):
-        seen["n"] = int(c.numel())
+        seen.append(int(c.numel()))
         return (c * 7 + w) % 32
 
     losses = jepa_losses(student, teacher, inp, vis, JEPAConfig(target, 0.2, 0.99), anchor_targets=tg, rvq_on=rvq_on, rvq_codes=codes)
     assert {"jepa", "log_rms", "band_shape", "log_env", "rvq", "total"} <= set(losses) and all(torch.isfinite(v) for v in losses.values())
-    assert seen["n"] == 27  # lo slab copre la finestra 1 di tutti i 27 canali
+    assert seen[0] == 27  # lo slab copre la finestra 1 di tutti i 27 canali (la seconda chiamata e' la diagnostica sul masking di canale)
+    assert {"rvq_acc", "rvq_channel", "rvq_channel_acc"} <= set(losses) and not losses["rvq_channel"].requires_grad
     expected = losses["jepa"] + 0.2 * (losses["log_rms"] + losses["band_shape"] + losses["log_env"] + losses["rvq"])
     assert torch.allclose(losses["total"], expected)
     losses["total"].backward()

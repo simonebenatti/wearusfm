@@ -15,7 +15,8 @@
 # checkpoint.pt nella stessa cartella; catena: scripts/slurm/submit_chain.sh (afterok); un file STOP nel RUN_DIR ferma i job successivi.
 # Uso: sbatch scripts/slurm/sanity_jepa.sbatch <manifest.json.gz> <session_scales.json> <run_dir> [passi massimi]
 #   Variabili facoltative (sbatch --export=ALL,...): TIME_LIMIT_S (default 1560, per i 30 min di boost_qos_dbg; il run salva e si ferma prima),
-#   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b). Run lungo su boost_usr_prod, esempio:
+#   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b), EXTRA_ARGS (altre opzioni di train_jepa.py, es. --init-from,
+#   --warmup-steps, --rvq-targets per una diagnostica). Run lungo su boost_usr_prod, esempio:
 #   sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500,RVQ_CODES=<dir> scripts/slurm/sanity_jepa.sbatch <m> <s> <run_dir> 10000
 # Uscita fuori dal repo: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json): $WORK/wearusfm_runs/runs/ o, per il sanity vero
 # con $WORK saturo, $SCRATCH/wearusfm_runs/runs/ (Simone, 04/10/2026: «vai con la 2»).
@@ -37,4 +38,4 @@ if [ -f "$RUN_DIR/STOP" ]; then echo "STOP in $RUN_DIR: $(cat "$RUN_DIR/STOP")";
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 python3 scripts/train_jepa.py --preset sanity --manifest "$MANIFEST" --root "$WORK/data/processed" --root "$SCRATCH/data/processed" \
   --scales "$SCALES" --out-dir "$RUN_DIR" --max-steps "$MAX_STEPS" --num-workers 6 --time-limit-s "${TIME_LIMIT_S:-1560}" \
-  ${RVQ_CODES:+--rvq-codes "$RVQ_CODES"}
+  ${RVQ_CODES:+--rvq-codes "$RVQ_CODES"} ${EXTRA_ARGS:-}

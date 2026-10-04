@@ -39,10 +39,16 @@ class JEPAConfig:
     # media della perdita prima dentro ogni finestra, poi fra le finestre (Simone, 04/10/2026, decisione 2; dalla finestra 1). False = media per
     # token, com'era nel sanity collaudato
     loss_per_window: bool = False
+    # finestre dell'ancora RVQ: "slab" (nascoste su tutti i canali, v10 §6.3, l'unico uso ammesso nel training) oppure "channel", SOLO DIAGNOSTICA
+    # (Simone, 04/10/2026: «sì, fai la prova con la maschera per canale»): nascoste su quel canale ma non su tutti, con dei vicini visibili. In
+    # tutti e due i casi si registra anche l'altra perdita, senza gradiente, e l'accuratezza top-1
+    rvq_targets: str = "slab"
 
     def __post_init__(self) -> None:
         if self.target not in ("a", "b"):
             raise ValueError(f"target {self.target!r}: 'a' o 'b' (D11)")
+        if self.rvq_targets not in ("slab", "channel"):
+            raise ValueError(f"rvq_targets {self.rvq_targets!r}: 'slab' o 'channel' (diagnostica)")
         if not 0.0 <= self.ema_momentum < 1.0:
             raise ValueError("ema_momentum in [0, 1)")
 
@@ -155,14 +161,30 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
                     else torch.zeros(w, dtype=torch.bool, device=dev))
             win[a:b] = slab[None, :] & ok[:, None]
         win &= rvq_on[:, None]
-        wc, ww = torch.nonzero(win, as_tuple=True)
+        # finestre nascoste su un canale ma non slab (dei vicini visibili): solo per la diagnostica (vedi JEPAConfig.rvq_targets)
+        chan = hidden[:, : w * per].reshape(c_tot, w, per).all(dim=-1) & inp.qc_valid[:, None] & rvq_on[:, None] & ~win
         index = torch.full((c_tot, p), -1, dtype=torch.long, device=dev)
         index[q_ch, q_t] = torch.arange(q_ch.numel(), device=dev)
-        rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste per costruzione
-        codes = rvq_codes(wc, ww) if wc.numel() else None
-        s_w = (torch.searchsorted(torch.as_tensor(bounds, device=wc.device), wc, right=True) - 1) if cfg.loss_per_window else None
-        losses["rvq"] = rvq_loss(student.rvq_head(h[rows]), codes, s_w, n_s) if wc.numel() else h.sum() * 0.0
-        losses["rvq_targets"] = (codes >= 0).sum().float() if codes is not None else h.new_zeros(())  # solo per il log: finestre con un codice
+        bounds_t = torch.as_tensor(bounds, device=dev)
+
+        def rvq_on_windows(sel: torch.Tensor):
+            wc, ww = torch.nonzero(sel, as_tuple=True)
+            if not wc.numel():
+                return h.sum() * 0.0, h.new_zeros(()), h.new_zeros(())
+            rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste
+            codes = rvq_codes(wc, ww)
+            logits = student.rvq_head(h[rows])
+            s_w = (torch.searchsorted(bounds_t, wc, right=True) - 1) if cfg.loss_per_window else None
+            ok = codes >= 0
+            acc = (logits.argmax(dim=-1) == codes)[ok].float().mean() if bool(ok.any()) else h.new_zeros(())
+            return rvq_loss(logits, codes, s_w, n_s), ok.sum().float(), acc.detach()
+
+        main_sel, other_sel = (win, chan) if cfg.rvq_targets == "slab" else (chan, win)
+        losses["rvq"], losses["rvq_targets"], losses["rvq_acc"] = rvq_on_windows(main_sel)
+        with torch.no_grad():  # l'altra scelta, solo per il log
+            other = "rvq_channel" if cfg.rvq_targets == "slab" else "rvq_slab"
+            o_loss, o_n, o_acc = rvq_on_windows(other_sel)
+            losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
     return losses

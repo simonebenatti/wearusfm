@@ -166,7 +166,8 @@ def _to_device(inp, visible, rvq_on, device):
 
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
-          num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None) -> dict:
+          num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
+          init_from: Path | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo)."""
     t_start = time.time()
@@ -197,6 +198,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if torch.cuda.is_available() and state.get("cuda_rng") is not None:
             torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
         log(f"ripresa dal passo {step}")
+    elif init_from is not None:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero: es. una diagnostica sul modello del sanity
+        state = torch.load(init_from, map_location="cpu", weights_only=False)
+        student.load_state_dict(state["student"])
+        teacher.load_state_dict(state["teacher"])
+        log(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
     (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})
     val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)

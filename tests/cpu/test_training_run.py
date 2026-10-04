@@ -143,3 +143,17 @@ def test_window1_rules_train_end_to_end(tmp_path):
     sanity = R.sanity_config()
     assert not sanity.jepa.loss_per_window and not sanity.loader.time_weighted and sanity.loader.anchor_edge_guard_s == 0.0  # sanity invariato
     assert np.isfinite(list(ws.values())).all()
+
+
+def test_init_from_another_run_takes_weights_but_restarts_steps(tmp_path):
+    root, mpath = _tree(tmp_path)
+    R.train(R.small_config(datasets=None, max_steps=2), mpath, [root], tmp_path / "a", log=lambda m: None)
+    src = torch.load(tmp_path / "a" / "checkpoint.pt", weights_only=False)
+    from dataclasses import replace
+
+    cfg = R.small_config(datasets=None, max_steps=1)
+    cfg = replace(cfg, jepa=replace(cfg.jepa, rvq_targets="channel"), lr=0.0)  # lr nullo: i pesi restano quelli caricati
+    s = R.train(cfg, mpath, [root], tmp_path / "b", log=lambda m: None, init_from=tmp_path / "a" / "checkpoint.pt")
+    dst = torch.load(tmp_path / "b" / "checkpoint.pt", weights_only=False)
+    assert s["steps"] == 1 and dst["step"] == 1
+    assert all(torch.equal(src["student"][k], dst["student"][k]) for k in src["student"])

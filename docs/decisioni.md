@@ -1668,3 +1668,18 @@ meta'; 150,6 M token; 353 MB in `$WORK/wearusfm_runs/results/passo6/rvq_codes/`.
 **Sanity JEPA vero sottomesso: job 59318048** (04/10/2026 13:20, comando registrato sopra, commit 4a742cc; `boost_usr_prod`, QoS normal, limite 9 h;
 cartella `$SCRATCH/wearusfm_runs/runs/sanity_0410`; ancora RVQ accesa con i codici del job 59306259). In coda per priorita'. Il controllo
 automatico non e' scattato fra le 11:22 e le 13:16, quindi il lancio e' stato fatto a mano, con gli stessi controlli.
+
+**L'ancora RVQ nel sanity non impara** (04/10/2026, passo ~3.950 di 59318048). La perdita RVQ, normalizzata, e' scesa da 0,995 a 0,986 nei primi
+500 passi e poi e' rimasta li'. Su 100 sessioni di codici di emg2qwerty (17,9 M codici, 7.296 su 8.192 usati), **l'entropia della sola frequenza dei
+codici e' 0,982**, cioe' la perdita di una testa che predice solo quanto e' frequente ogni codice. La testa non ha imparato nemmeno quella. Il
+codice della patch successiva e' uguale nello 0,02% dei casi (caso); quello di un canale vicino alla stessa patch nel 18%. *Interpretazione di AG:*
+il codice descrive la forma d'onda istantanea di quei 200 ms, e sugli slab (nascosti su tutti i canali) prevederla dal contesto equivale a prevedere
+la forma d'onda (v10 §6.1). C'e' poi il rumore delle etichette noto da D5b.
+
+**Diagnostica autorizzata da Simone** («sì, fai la prova con la maschera per canale, poi vediamo come va»): partendo dai pesi del sanity
+(`--init-from` del suo checkpoint, che si legge e non si tocca), ~600 passi in cui la testa RVQ impara sulle finestre **nascoste su un canale ma
+non slab**, con dei vicini visibili (`--rvq-targets channel`, **solo diagnostica**: v10 §6.3 lo esclude dal training). Si registrano la perdita e
+l'accuratezza top-1 su quelle finestre e, senza gradiente, sugli slab. Confronti scritti prima: entropia della frequenza 0,982; un canale vicino ha
+lo stesso codice nel 18% dei casi. **Lettura:** se sulle finestre di canale la perdita scende chiaramente sotto 0,982, l'informazione c'e' e il
+problema sono gli slab; se resta li', sono i codici. Job: `sanity_jepa.sbatch` su `boost_qos_dbg`, 1 GPU, 30 min, **costo massimo 0,5 GPU-ora = 4
+ore locali**; budget del passo 6: usate 2,63, piu' il sanity in corso (~7). Cartella `$SCRATCH/wearusfm_runs/runs/rvq_diag_channel_0410`.
