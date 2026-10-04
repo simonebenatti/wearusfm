@@ -157,3 +157,54 @@ def test_init_from_another_run_takes_weights_but_restarts_steps(tmp_path):
     dst = torch.load(tmp_path / "b" / "checkpoint.pt", weights_only=False)
     assert s["steps"] == 1 and dst["step"] == 1
     assert all(torch.equal(src["student"][k], dst["student"][k]) for k in src["student"])
+
+
+def test_anchor_candidates_extract_and_probe_end_to_end(tmp_path, monkeypatch):
+    """Il percorso del confronto dei target candidati (scripts/anchor_candidates.py), fase di estrazione, con un finto tokenizer sull'albero di
+    prova. Le sonde sono in test_anchor_candidates.py (senza torch: nel venv di torch sklearn va in conflitto con OpenMP)."""
+    import importlib.util
+
+    import numpy as np
+
+    from wearusfm.data import pretraining_loader as L
+    from wearusfm.data import rvq_codes as RC
+    from wearusfm.tokenizer_checks import neurorvq as NR
+
+    from test_rvq_codes import _session, fake_encode
+
+    spec = importlib.util.spec_from_file_location("anchor_candidates_script", Path(__file__).resolve().parents[2] / "scripts" / "anchor_candidates.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    root, mpath = _tree(tmp_path)
+    codes_root = tmp_path / "codes"
+    for row in L.ManifestIndex.load(mpath, [root]).rows:
+        s = _session(root, row)
+        trials, scale = RC.canonical_trials(s.segments, s.fs, s.qc_valid)
+        p = RC.code_path(codes_root, row["dataset"], row["subject"], row["session"])
+        p.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(p, scale=np.float64(scale), **RC.session_codes(trials, s.qc_valid, fake_encode))
+    R.train(R.with_rvq(R.small_config(datasets=None, max_steps=1), codes_root), mpath, [root], tmp_path / "run", log=lambda m: None)
+    tok = tmp_path / "tok.pt"
+    torch.save({"quantize_1.layers.0.embedding.weight": torch.randn(8192, 128)}, tok)
+
+    class FakeRunner:
+        def __init__(self, *a, **k):
+            pass
+
+        def features(self, x, idx):
+            b, _, n = x.shape
+            t = n // 200
+            return np.tile(x.reshape(b * t, 200)[:, :128][None], (4, 1, 1)).astype(np.float32)
+
+    monkeypatch.setattr(NR, "NeuroRVQRunner", FakeRunner)
+    scales = tmp_path / "scales.json"
+    scales.write_text(json.dumps({"scales": {}}))
+    out = tmp_path / "units.npz"
+    assert mod.main(["extract", "--manifest", str(mpath), "--root", str(root), "--scales", str(scales), "--rvq-codes", str(codes_root),
+                     "--checkpoint", str(tmp_path / "run" / "checkpoint.pt"), "--repo-dir", str(tmp_path), "--tokenizer-checkpoint", str(tok),
+                     "--out", str(out), "--dataset", "emg2pose", "--n-users", "1", "--windows-per-user", "4", "--batch", "2",
+                     "--device", "cpu", "--keep", "1.0"]) == 0
+    z = np.load(out)
+    n = len(z["code"])
+    assert n > 0 and z["V"].shape == (n, 16) and z["c16"].shape == (n, 16) and z["ms"].shape == (n, 48) and z["nrvq"].shape == (n, 128)
+    assert z["h_mask"].any() and (z["code"] >= 0).all()

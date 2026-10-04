@@ -1748,3 +1748,12 @@ sanity 59318048, col suo checkpoint finale; budget del passo 6: usate ~3,1, piu'
   punti sopra la classe piu' frequente** (64 gruppi). Fra i prevedibili, si propone a Simone quello che aggiunge di piu' alle ancore attuali, cioe'
   con l'R² piu' basso quando lo si predice da (B). Le varianti RVQ (a, b) meritano un braccio di ablation a 30M solo se passano la stessa soglia. Se
   nessun candidato passa, le ancore restano quelle attuali.
+**Aggiornamento prima del lancio** (Simone, 04/10/2026: «intanto testiamo comunque le 5 opzioni che mi hai dato prima»): si aggiunge l'opzione 3,
+**(g) tempo-frequenza a piu' scale**: log della potenza in 6 bande su ognuno dei 4 sottoblocchi da 50 ms e in 24 bande su 500 ms centrati sul blocco;
+la scala da 200 ms e' gia' la (c). Le cinque opzioni proposte sono quindi c, d, g, e, f, piu' le due varianti RVQ (a, b). **Stessa regola e stesse
+soglie.** Per «intanto», il test si lancia **subito sull'ultimo checkpoint del sanity** (passo ~6.000), non su quello finale, e si ripete sul finale
+quando il sanity chiude. Due job:
+- estrazione: `anchor_candidates.sbatch` su `boost_qos_dbg`, 1 GPU, 30 min, **costo massimo 0,5 GPU-ora = 4 ore locali**; si tiene il 15% delle
+  unita', a caso con seme fisso, per la dimensione del file;
+- sonde: `anchor_candidates_probe.sbatch` su `lrd_all_serial`, CPU, **0 GPU-ora**, in dipendenza `afterok`.
+Uscite in `$SCRATCH/wearusfm_runs/anchor_candidates/`. Budget del passo 6: usate ~3,1, piu' il sanity (~7).
