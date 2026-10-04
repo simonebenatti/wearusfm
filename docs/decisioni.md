@@ -1665,3 +1665,6 @@ assenti. Quota letta alla fine del job: 943 GB su 1 TB; su Lustre l'aggiornament
 857 sessioni calcolate su 857 da fare, 0 errori. In tutto **1.035 sessioni su 1.035** con i codici, comprese le 178 del job 59303528; nessun file a
 meta'; 150,6 M token; 353 MB in `$WORK/wearusfm_runs/results/passo6/rvq_codes/`. Checkpoint sha256 0d255bcc... e fattore 21,718 come V2. **Costo
 1 h 44 min x 1 GPU = 1,73 GPU-ora**; budget del passo 6: usate 2,63 su 100. Condizione del lancio del sanity vero (almeno il 95%) soddisfatta.
+**Sanity JEPA vero sottomesso: job 59318048** (04/10/2026 13:20, comando registrato sopra, commit 4a742cc; `boost_usr_prod`, QoS normal, limite 9 h;
+cartella `$SCRATCH/wearusfm_runs/runs/sanity_0410`; ancora RVQ accesa con i codici del job 59306259). In coda per priorita'. Il controllo
+automatico non e' scattato fra le 11:22 e le 13:16, quindi il lancio e' stato fatto a mano, con gli stessi controlli.
