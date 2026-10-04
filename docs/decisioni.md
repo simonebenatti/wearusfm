@@ -1718,3 +1718,13 @@ approvo.» Sul foglio `docs/foglio_replica_neurorvq.md`:
   l'attribuzione originali), non piu' solo nel clone su `$SCRATCH`. Coerente con le decisioni d'uso sulle licenze del 30/09;
 - tutto il resto come proposto: 3 split casuali per soggetto, Tab. 13 per il fine-tuning, testa del paper (concatenazione sui canali, media sul
   tempo), epoca con la miglior accuratezza di validazione, **tolleranza EPN-612 [92,65; 96,65] e UCI-EMG [87,23; 91,63]** sulla media dei 3 split.
+
+## Ancora RVQ: tolta dalla finestra 1 (Simone, 04/10/2026: «accetto quello che proponi su ancora RVQ e finestra 1»)
+
+Sulla proposta di AG dopo le due misure (sanity e diagnostica 59328078: la testa RVQ non va oltre la frequenza dei codici, ne' sugli slab ne' coi
+vicini visibili):
+1. **la configurazione di default della finestra 1 non ha l'ancora RVQ.** Il sanity in corso la tiene fino alla fine, come lanciato. Per D5b il
+   confronto con/senza RVQ era l'arbitro dell'utilita' dell'ancora: con il target attuale, che non si impara, non si fa;
+2. **prima di decidere se un target diverso merita un braccio di ablation a 30M** (vettore del codebook in regressione, oppure codici raggruppati),
+   un **test sulla CPU**: le rappresentazioni delle patch **visibili** del modello del sanity bastano a leggere il codice? Protocollo e soglie si
+   scrivono qui e si congelano prima di lanciare il test (job CPU, 0 GPU-ora).
