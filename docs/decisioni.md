@@ -1808,3 +1808,13 @@ sintetici con un FM a caso). Collaudo previsto dal foglio firmato: EPN-612, seme
 ore locali**. Serve a verificare il caricamento del checkpoint pubblico (chiavi mancanti o inattese nel report) e a misurare il tempo per epoca;
 il costo dei run completi (3 semi x 2 dataset x 100 epoche) si ridichiara dopo. Budget del passo 5: <= 300 GPU-ora, usate 0 (gli smoke del 23-24/09
 erano su CPU).
+**Collaudo 1 della replica, 59336240: COMPLETED** (10 min 27 s, **0,17 GPU-ora**; budget del passo 5: usate 0,17 su 300).
+- **Checkpoint pubblico caricato:** mancano solo le 8 chiavi `fc_norm_1..4`, usate dal percorso RVQ e non dalla classificazione; ci sono 131
+  chiavi in piu', le teste del loro pretraining (`mask_token`, `norm_pre`, `head_pre_*`...).
+- EPN-612: 91.800 finestre, 612 soggetti (split col seme 0: 428 / 61 / 123), 6 classi. Accuratezza di test dopo 2 epoche ~46%: non e' un
+  risultato, sono 2 epoche su 100.
+- **Due problemi trovati, corretti nel commit 493f616:** (1) il loader tagliava tutti i campioni alla lunghezza del piu' corto (2,4 s): ora 5 s
+  fissi con `fix_length`, come il loro codice e il paper; (2) 177 s per epoca col ricampionamento sulla CPU a ogni batch, cioe' ~10 ore per seme
+  coi campioni da 5 s. Ora i dati a 1 kHz stanno sulla GPU in float16 e il test si valuta solo quando la validazione migliora.
+**Collaudo 2** (stessa autorizzazione; `boost_qos_dbg`, 30 min, **massimo 0,5 GPU-ora**): EPN-612 a 5 s, seme 0, 3 epoche, per misurare il tempo
+per epoca e ridichiarare il costo dei run completi.
