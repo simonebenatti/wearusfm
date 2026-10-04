@@ -1761,3 +1761,29 @@ Uscite in `$SCRATCH/wearusfm_runs/anchor_candidates/`. Budget del passo 6: usate
 `$SCRATCH/wearusfm_runs/anchor_candidates/units_ckpt_latest.npz`. **Costo 0,37 GPU-ora.** Sonde: il job 59331741 e' stato cancellato dal sistema
 dopo 28 s («container_p_join: open failed for /scratch_local/tmpfs/59331741/.ns», guasto del nodo login08, non del codice); risottomesso come
 **59333079**, uguale (CPU, 0 GPU-ora).
+**Esito del confronto dei target candidati** (sonde 59333079, 9 min 40 s, CPU, 0 GPU-ora; report in `~/wearusfm_local/reports/passo6/anchor_candidates/`;
+checkpoint del sanity al passo 5.850). 100.000 unita' di addestramento e 30.000 di test; 59.502 e 19.763 nascoste. Regressione: R²; gruppi e
+famiglie: accuratezza (classe piu' frequente).
+
+| Target | V visibili | H nascoste | R inizializzazione | B ancore attuali | Prevedibile |
+|---|---|---|---|---|---|
+| a gruppi RVQ (64) | 4,2% (4,1%) | 3,8% (3,9%) | 3,0% | 4,2% | no |
+| b vettore del codebook | 0,000 | 0,000 | 0,000 | 0,000 | no |
+| e feature continue NeuroRVQ, ramo 0 | 0,006 | 0,004 | 0,000 | 0,005 | no |
+| c 16 bande | 0,752 | **0,559** | 0,267 | 0,782 | si' |
+| d frequenza media e mediana | 0,741 | **0,505** | 0,251 | 0,869 | si' |
+| g multi-scala (50 + 500 ms) | 0,692 | **0,529** | 0,263 | **0,646** | si' |
+| f famiglie spettrali (64) | 23,4% (2,3%) | 12,6% (2,3%) | 4,7% | 30,3% | si', al limite (+10,3 punti) |
+
+**Lettura secondo la regola congelata:**
+- **(a), (b) ed (e), cioe' tutto cio' che viene da NeuroRVQ, non sono leggibili nemmeno dalle patch visibili.** Per la regola scritta prima il
+  percorso RVQ si chiude, anche per le finestre successive: nessun braccio di ablation. *Cautela di AG:* per (a) e (b) l'allineamento e' provato
+  dai test (impulso); per (e) le feature si calcolano sul blocco canonico da 16 patch preprocessato da solo. Un errore di allineamento darebbe
+  anch'esso R² ~0, e non e' escluso da un test dedicato.
+- **I quattro candidati spettrali sono prevedibili dalle patch nascoste.** Il modello del sanity ha imparato il contenuto in frequenza: V vale
+  ~0,75 contro ~0,26 del modello all'inizializzazione.
+- **Fra i prevedibili, quello che aggiunge di piu' alle ancore attuali** (R² piu' basso da B) e' **(g) multi-scala**: 0,646, cioe' ~35% della
+  sua varianza non e' gia' nelle ancore attuali. Le 16 bande (0,78) e i momenti (0,87) sono quasi gia' contenuti nelle 5 bande e nel log-RMS. Le
+  famiglie spettrali si leggono meglio dalle ancore attuali (30,3%) che dal modello (23,4%). **Proposta per la regola: (g).** La decisione e' di
+  Simone.
+- Da ripetere sul checkpoint finale del sanity (prevista; stesso protocollo).
