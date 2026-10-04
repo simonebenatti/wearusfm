@@ -1604,3 +1604,10 @@ scripts/slurm/sanity_jepa.sbatch <manifest_59253155.json.gz> <loader_59276700/se
 - **Costo:** ~2,4-2,5 s per passo, quindi **~7 GPU-ora attese, massimo 9 GPU-ora** (limite del job 9 h; il run salva e si ferma a 8 h 45 min). Ore
   locali: ~56 attese, massimo 72. Budget del passo 6: usate 0,47 su 100, piu' al massimo 2 per i codici.
 - Se non finisce dentro il job (non atteso), riprende dal checkpoint con un secondo job, da ridichiarare.
+
+**Spazio su `$WORK`: originali verificati tolti da Simone** (04/10/2026, lanciati da Simone dal suo terminale; l'agente non esegue cancellazioni
+definitive). Prima ha controllato i log di `verify_touch_scratch_raw`: «CHECKSUM IDENTICI» per tutti e 7 i dataset (camargo2021 5 file,
+camargo2021_emg_only 3.147, grabmyo 30.716, putemg 298, capgmyo 1.458, ninapro 140, kaifosh_discrete_gestures 2). Poi ha lanciato il rinfresco delle
+date delle copie su `$SCRATCH` (`refresh_scratch.sbatch` sui 7 dataset, **job 59303661**), senza il quale lo script di cancellazione rifiuta copie
+piu' vecchie di 24 ore, e la cancellazione con dipendenza `afterok` (`delete_verified_raw.sbatch`, **job 59303674**). Lo script ricontrolla per ogni
+dataset presenza, dimensioni, numero di file e freschezza della copia prima di cancellare. CPU, 0 GPU-ora. Esito e quota: sotto, quando chiusi.
