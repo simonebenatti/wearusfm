@@ -1823,3 +1823,29 @@ per epoca e ridichiarare il costo dei run completi.
 epoche e un seme: la pipeline e' giusta, e le finestre a 5 s erano la differenza (il collaudo 1, a 2,4 s per errore, era al 46%). **Tempo: 373 s
 per epoca**, quindi 100 epoche fanno ~10,4 h per seme. **Costo dei run completi, ridichiarato:** EPN-612 3 semi ~31 GPU-ora, UCI-EMG ~1, **totale
 ~32 GPU-ora** (~256 ore locali), contro i 4-6 stimati nel foglio: si lancia solo col via di Simone.
+
+## Sanity JEPA vero, job 59318048: COMPLETED, nessun allarme (04/10/2026)
+
+10.000 passi in 7 h 13 min 51 s (13:17-20:31), exit 0, 31,5 M parametri (con la testa RVQ), memoria GPU massima 18,0 GiB. **Costo 7,23
+GPU-ora**; budget del passo 6: usate ~10,7 su 100 (collaudi 0,47, codici RVQ 2,16, diagnostica RVQ 0,44, estrazione dei target 0,37, sanity 7,23).
+**Diagnostiche** (soglie firmate: rapporto 0,05, rango 38,4), studente / teacher:
+
+| Passo | Rapporto di collasso | Rango effettivo | Varianza fra campioni |
+|---|---|---|---|
+| 500 | 0,43 / 0,22 | 86 / 91 | 0,006 / 0,003 |
+| 2.000 | 0,64 / 0,65 | 111 / 109 | 0,013 / 0,012 |
+| 4.000 | 0,77 / 0,75 | 129 / 128 | 0,019 / 0,018 |
+| 6.000 | 0,82 / 0,82 | 136 / 136 | 0,021 / 0,022 |
+| 8.000 | 0,82 / 0,85 | 146 / 139 | 0,022 / 0,024 |
+| 10.000 | **0,86 / 0,88** | **147 / 145** | **0,024 / 0,027** |
+
+Minimo dello studente in tutto il run: rapporto 0,43, rango 86. Le varianze assolute, il caso che rapporto e rango non vedono, sono cresciute di
+~4 volte: le uscite dipendono sempre piu' dal contenuto.
+**Perdite** (medie su 500 passi, inizio -> fine): totale 0,55 -> 0,31; log-RMS 0,49 -> 0,18; forma spettrale 0,73 -> 0,29; inviluppo 0,34 -> 0,08;
+JEPA ~0,005-0,007 dopo il passo 1.000; norma del gradiente 3,1 -> 0,41. RVQ 0,995 -> 0,984: non scende sotto l'entropia della frequenza dei codici
+(0,982), come gia' misurato. **Attese sui dati:** 0,06-0,10 s per passo fino al passo 8.000, poi 0,2-0,8 s negli ultimi 1.500 passi. *Interpretazione
+di AG, da verificare:* in quegli stessi minuti giravano gli altri job sugli stessi dischi (estrazione dei target, collaudi della replica, che
+leggono EPN-612). Le scale e la lettura non sono cambiate.
+**Lettura:** il criterio del passo 6, «il sanity JEPA su un solo dataset omogeneo non collassa», e' soddisfatto, con tutti gli indicatori in
+crescita fino alla fine. Gli altri criteri del «Chiuso quando» sono gia' coperti da test: tre topologie in avanti e indietro, equivarianza, diagnostica
+del collasso, FLOP per modulo. **La chiusura del passo 6 la firma Simone.**
