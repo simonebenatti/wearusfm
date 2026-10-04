@@ -1656,3 +1656,7 @@ Il sanity vero parte dopo, come registrato sopra.
     dimensione, anche se la copia ha file in piu'; il confronto per checksum e' gia' passato. Lo lancia Simone.
 **Restano da preparare** (fogli con i numeri): D12 (soglia della regola del pilot), D14 (WSD e continuazione), conto del compute della ladder con
 D_t = 1,18·10⁸.
+**ninapro tolto da `$WORK`** (job 59310213 lanciato da Simone, COMPLETED in 4 s, criterio del punto 16): «la copia ha 279 file in piu'
+dell'originale (ammesso): ogni file dell'originale c'e', stessa dimensione», 140 file identici e freschi, cancellato. Gli altri 6 risultavano gia'
+assenti. Quota letta alla fine del job: 943 GB su 1 TB; su Lustre l'aggiornamento della quota puo' arrivare in ritardo. **Gli originali grezzi dei
+7 dataset ora esistono solo su `$SCRATCH`**: il rinfresco ogni 21 giorni (22/10, 12/11, 03/12, 24/12) e' l'unica protezione dal purge.
