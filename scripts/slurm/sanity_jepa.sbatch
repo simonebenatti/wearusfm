@@ -14,7 +14,11 @@
 # Sanity JEPA (passo 6): preset `sanity` su emg2qwerty, valori firmati il 03/10/2026. 1 GPU, 30 min (0,5 GPU-ora per job). Riprende da
 # checkpoint.pt nella stessa cartella; catena: scripts/slurm/submit_chain.sh (afterok); un file STOP nel RUN_DIR ferma i job successivi.
 # Uso: sbatch scripts/slurm/sanity_jepa.sbatch <manifest.json.gz> <session_scales.json> <run_dir> [passi massimi]
-# Uscita fuori dal repo: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json), sotto $WORK/wearusfm_runs/runs/.
+#   Variabili facoltative (sbatch --export=ALL,...): TIME_LIMIT_S (default 1560, per i 30 min di boost_qos_dbg; il run salva e si ferma prima),
+#   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b). Run lungo su boost_usr_prod, esempio:
+#   sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500,RVQ_CODES=<dir> scripts/slurm/sanity_jepa.sbatch <m> <s> <run_dir> 10000
+# Uscita fuori dal repo: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json): $WORK/wearusfm_runs/runs/ o, per il sanity vero
+# con $WORK saturo, $SCRATCH/wearusfm_runs/runs/ (Simone, 04/10/2026: «vai con la 2»).
 
 set -uo pipefail
 MANIFEST="${1:?manifest}"; SCALES="${2:?session_scales.json}"; RUN_DIR="${3:?cartella del run}"; MAX_STEPS="${4:-20000}"
@@ -32,4 +36,5 @@ mkdir -p "$RUN_DIR" "$WORK/wearusfm_runs/logs"
 if [ -f "$RUN_DIR/STOP" ]; then echo "STOP in $RUN_DIR: $(cat "$RUN_DIR/STOP")"; exit 0; fi
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 python3 scripts/train_jepa.py --preset sanity --manifest "$MANIFEST" --root "$WORK/data/processed" --root "$SCRATCH/data/processed" \
-  --scales "$SCALES" --out-dir "$RUN_DIR" --max-steps "$MAX_STEPS" --num-workers 6 --time-limit-s 1560
+  --scales "$SCALES" --out-dir "$RUN_DIR" --max-steps "$MAX_STEPS" --num-workers 6 --time-limit-s "${TIME_LIMIT_S:-1560}" \
+  ${RVQ_CODES:+--rvq-codes "$RVQ_CODES"}

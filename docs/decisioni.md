@@ -1588,3 +1588,19 @@ varianze assolute si registrano soltanto. Le domande 2-10 restano aperte.
 **Job dei codici per emg2qwerty** (`scripts/slurm/precompute_rvq_codes.sbatch`, `boost_usr_prod`, 1 GPU, 8 CPU, limite 2 h): **costo massimo 2
 GPU-ora = 16 ore locali**, atteso ~0,5-1 (la vista canonica sulla CPU domina). Budget del passo 6: usate 0,47 su 100. Riprendibile, uscita in
 `$WORK/wearusfm_runs/results/passo6/rvq_codes/` (~0,4 GB per emg2qwerty). Il sanity vero si lancia dopo, con il costo ridichiarato.
+
+**`$WORK` saturo** (letto il 04/10 con `lfs quota`: 1T usato su 1T di quota del progetto, **grazia in scadenza fra ~12 ore**; dopo, ogni scrittura su
+`$WORK` fallisce, per tutti gli utenti del progetto). **Decisione di Simone (04/10/2026: «vai con la 2»): la cartella del sanity vero va su
+`$SCRATCH/wearusfm_runs/runs/`**: fuori dal repo, senza quota, cancellazione automatica a 40 giorni, che per un sanity non pesa. E' un'eccezione per il
+sanity alla regola «uscite in `$WORK/wearusfm_runs/`»: lo spirito della regola, mai dentro il repo, resta. Liberare spazio su `$WORK` (per esempio
+con `delete_verified_raw.sbatch`, cancellazione definitiva) resta a Simone.
+
+**Sanity JEPA vero, registrato prima del lancio.** Si lancia quando il job dei codici RVQ 59303528 e' finito con i codici di almeno il 95% delle
+sessioni di emg2qwerty:
+`sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500,RVQ_CODES=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/rvq_codes
+scripts/slurm/sanity_jepa.sbatch <manifest_59253155.json.gz> <loader_59276700/session_scales.json> $SCRATCH/wearusfm_runs/runs/sanity_0410 10000`.
+- Preset `sanity` (valori firmati 15-20) con l'**ancora RVQ accesa**; scale di sessione del job 59276700; **10.000 passi**, cioe' ~1,1 passaggi su
+  emg2qwerty. Soglie d'allarme firmate (16), valutate ogni 500 passi; nessuna soglia nuova.
+- **Costo:** ~2,4-2,5 s per passo, quindi **~7 GPU-ora attese, massimo 9 GPU-ora** (limite del job 9 h; il run salva e si ferma a 8 h 45 min). Ore
+  locali: ~56 attese, massimo 72. Budget del passo 6: usate 0,47 su 100, piu' al massimo 2 per i codici.
+- Se non finisce dentro il job (non atteso), riprende dal checkpoint con un secondo job, da ridichiarare.
