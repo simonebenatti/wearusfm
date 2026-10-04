@@ -1707,3 +1707,14 @@ problema non sono gli slab ma **i codici come target per questo modello**: non s
 rappresentare; (2) 8.192 classi quasi equiprobabili e rumorose (D5b: su emg2pose il codice resta uguale solo nel 46% dei casi) sono un target
 troppo fine per una testa lineare in poche centinaia di passi. Le opzioni (togliere l'ancora, cambiarne il target, provarla solo in una fase) vanno
 a Simone (04/10: «poi vediamo se ha senso provare a modificare l'RVQ, a toglierlo o a capire se si puo finetunare in qualche modo, in coda o in testa»).
+
+## Replica di NeuroRVQ: foglio firmato con due correzioni (Simone, 04/10/2026)
+
+«ok firmo. pero 1) [...] No, teniamo tutto dato che come abbiamo gia deciso non ci interessano le licenze 2) teniamo 20-400Hz di banda. Per il resto
+approvo.» Sul foglio `docs/foglio_replica_neurorvq.md`:
+- **banda 20-400 Hz** (come il codice d'esempio di NeuroRVQ: Butterworth di ordine 3 a fase zero, taglio alto min(400, fs/2) - 0,5 Hz), non i 20-90
+  Hz del paper: scostamento dichiarato nei risultati;
+- **il codice di NeuroRVQ che serve alla replica entra nel repo** (`third_party/neurorvq/`, dal commit 926e770, con la licenza CC BY-NC 4.0 e
+  l'attribuzione originali), non piu' solo nel clone su `$SCRATCH`. Coerente con le decisioni d'uso sulle licenze del 30/09;
+- tutto il resto come proposto: 3 split casuali per soggetto, Tab. 13 per il fine-tuning, testa del paper (concatenazione sui canali, media sul
+  tempo), epoca con la miglior accuratezza di validazione, **tolleranza EPN-612 [92,65; 96,65] e UCI-EMG [87,23; 91,63]** sulla media dei 3 split.

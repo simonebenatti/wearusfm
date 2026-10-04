@@ -1,4 +1,4 @@
-# Foglio di firma — replica dei numeri di NeuroRVQ (passo 5; bozza di AG del 04/10/2026, NON firmato)
+# Foglio di firma — replica dei numeri di NeuroRVQ (passo 5; bozza di AG del 04/10/2026; FIRMATO da Simone il 04/10/2026 con due correzioni)
 
 **Perche'.** Il passo 5 si chiude quando «si riproducono i numeri pubblicati di NeuroRVQ sulla loro pipeline, entro una tolleranza dichiarata»
 (piano); la tolleranza si dichiara **prima** del lancio (Simone, 29/09). Il fact-checker (fatto 24, `fatti_da_verificare.md`, raccolto il 04/10) ha
@@ -12,7 +12,7 @@ Discrete Gestures dopo.
 |---|---|---|
 | Modello | checkpoint pubblico `NeuroRVQ_EMG_foundation_model_v1.pt` (gia' su Leonardo) | Tab. 13 da' dimensione 40, lo yml 200: si usa il checkpoint pubblico com'e' |
 | Frequenza | ricampionamento a 1000 Hz | `resample_poly` (EPN-612 200 -> 1000 Hz; UCI-EMG e' gia' a 1 kHz, fatto 15) |
-| Filtro | passa-banda 20-90 Hz | Butterworth di ordine 3 a fase zero, come il loro codice d'esempio (che pero' usa 20-400 Hz: conflitto dichiarato) |
+| Filtro | passa-banda 20-90 Hz | **Correzione di Simone: 20-400 Hz**, come il loro codice d'esempio (Butterworth di ordine 3, fase zero, taglio alto min(400, fs/2) - 0,5 Hz: a 200 Hz, EPN-612, diventa 99,5 Hz). Scostamento dichiarato dal 20-90 Hz del paper |
 | Normalizzazione | nessuna dichiarata per NeuroRVQ | nessuna |
 | Finestre | EPN-612 5 s; UCI-EMG 1 s | EPN-612: i campioni da 5 s etichettati del dataset; UCI-EMG: finestre da 1 s **senza sovrapposizione** dentro un tratto con una sola etichetta, classi **1-6** (interpretazione di «6-class»: la 7, palmo esteso, non e' stata eseguita da tutti i soggetti e la 0 non e' marcata, secondo la descrizione dei file letta il 23/09, `bench/harness_smoke_uci_emg.py`; non e' un fatto firmato) |
 | Canali | — | gli 8 canali sugli elettrodi c1..c8 del modello |
@@ -35,4 +35,4 @@ Budget del passo 5: <= 300 GPU-ora.
 **Il nostro FM sugli stessi dati** (metrica P2 di D12): stesse finestre e stessi split, preprocessing **suo** (quello del pretraining,
 `harness/fm_features.py`), encoder congelato e sonda lineare (`harness/probe.py`); il fine-tuning completo e' il secondo regime, dopo.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [ ] firmo · [x] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 04/10/2026** («ok firmo. pero [...] 2) teniamo 20-400Hz di banda. Per il resto approvo.»). Correzioni: (1) banda 20-400 Hz invece di 20-90 Hz; (2) il codice di NeuroRVQ che serve alla replica si tiene nel repo («teniamo tutto dato che come abbiamo gia deciso non ci interessano le licenze»; licenze, decisioni d'uso del 30/09), con l'attribuzione e la licenza originali.
