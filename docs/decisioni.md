@@ -1787,3 +1787,13 @@ famiglie: accuratezza (classe piu' frequente).
   famiglie spettrali si leggono meglio dalle ancore attuali (30,3%) che dal modello (23,4%). **Proposta per la regola: (g).** La decisione e' di
   Simone.
 - Da ripetere sul checkpoint finale del sanity (prevista; stesso protocollo).
+
+## Ancora multi-scala nella finestra 1 (Simone, 04/10/2026: «ok per l'ancora multi-scala nella finestra 1»)
+
+Esito del confronto dei target candidati, secondo la regola congelata. Dalla finestra 1 **si aggiunge alle ancore attuali** (log-RMS, forma in 5
+bande, inviluppo) la **magnitudine tempo-frequenza a due scale**: log della potenza in **6 bande** su una finestra da **50 ms** e in **24 bande** su
+una finestra da **500 ms**. Le bande sono log-spaziate fra 20 e 450 Hz; quelle oltre il limite del canale non contano, come per le 5 bande. Il peso
+complessivo delle ancore resta 0,2 (firmato).
+*Dettaglio d'implementazione di AG:* le ancore sono per patch da 25 ms, quindi le due finestre sono **centrate sulla patch**. Nel test erano i
+4 sottoblocchi da 50 ms e i 500 ms centrati su un blocco da 200 ms: stesse scale, diversa granularita'. Vale anche qui la zona di bordo da 100 ms
+(decisione 3). Nel sanity e' spenta. **L'ancora RVQ non c'e'** (decisione del 04/10).
