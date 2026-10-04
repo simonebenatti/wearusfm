@@ -1728,3 +1728,23 @@ vicini visibili):
 2. **prima di decidere se un target diverso merita un braccio di ablation a 30M** (vettore del codebook in regressione, oppure codici raggruppati),
    un **test sulla CPU**: le rappresentazioni delle patch **visibili** del modello del sanity bastano a leggere il codice? Protocollo e soglie si
    scrivono qui e si congelano prima di lanciare il test (job CPU, 0 GPU-ora).
+
+## Ancore in frequenza: confronto dei target candidati (Simone, 04/10/2026: «benissimo accetto la tua proposta, cosi vediamo se c'e qualcosa di meglio»)
+
+**Protocollo e soglie, congelati prima del test** (job su `boost_qos_dbg`, 1 GPU, 30 min, **costo massimo 0,5 GPU-ora**; si lancia dopo la fine del
+sanity 59318048, col suo checkpoint finale; budget del passo 6: usate ~3,1, piu' il sanity ~7):
+- **Dati:** sessioni di pretraining di emg2qwerty, 40 utenti divisi per utente in 30 di addestramento e 10 di test (seme 0); finestre da 4 s, filtro e
+  scala del dataloader; unita' = (canale, blocco da 200 ms della griglia della prova). Al piu' 100.000 unita' di addestramento e 30.000 di test.
+- **Rappresentazioni** del modello del sanity (teacher): (V) uscite del decoder a query sulle patch **visibili**, mediate sulle 8 patch del blocco;
+  (H) uscite del decoder sulle patch **nascoste** dalle maschere D10, solo blocchi nascosti per intero su quel canale. Confronto: (B) i target delle
+  ancore attuali dello stesso blocco (log-RMS e 5 bande); (R) lo stesso modello all'inizializzazione.
+- **Target candidati** per unita': (a) gruppo del codice RVQ (k-means a 64 sui vettori del codebook del livello 0 del ramo 0); (b) vettore del codebook
+  del codice (128 numeri); (c) log della potenza in **16 bande** log-spaziate fra 20 e 450 Hz sul blocco; (d) frequenza media e mediana del blocco;
+  (e) feature continue dell'encoder di NeuroRVQ prima della quantizzazione, ramo 0 (128 numeri); (f) famiglia spettrale (k-means a 64 sulle
+  16 bande, adattato sulle unita' di addestramento).
+- **Sonde lineari** addestrate sugli utenti di addestramento e lette sugli utenti di test: regressione ridge (R², media sulle componenti) per b, c, d,
+  e; regressione logistica per a, f (accuratezza contro la classe piu' frequente).
+- **Regola:** un target e' **prevedibile** se dalle rappresentazioni (H) raggiunge **R² >= 0,3** (regressione) o un'accuratezza di almeno **10
+  punti sopra la classe piu' frequente** (64 gruppi). Fra i prevedibili, si propone a Simone quello che aggiunge di piu' alle ancore attuali, cioe'
+  con l'R² piu' basso quando lo si predice da (B). Le varianti RVQ (a, b) meritano un braccio di ablation a 30M solo se passano la stessa soglia. Se
+  nessun candidato passa, le ancore restano quelle attuali.
