@@ -18,16 +18,23 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+from wearusfm.model.anchor_targets import MS_SCALES
+
 N_RVQ_CODES = 8192
 
 
 class AnchorHeads(nn.Module):
-    def __init__(self, dim: int, n_bands: int = 5):
+    def __init__(self, dim: int, n_bands: int = 5, *, multiscale: bool = False):
         super().__init__()
         self.rms, self.bands, self.env = nn.Linear(dim, 1), nn.Linear(dim, n_bands), nn.Linear(dim, 1)
+        # ancora multi-scala (Simone, 04/10/2026, dalla finestra 1): una testa lineare per scala
+        self.ms = nn.ModuleDict({name: nn.Linear(dim, nb) for name, _, nb in MS_SCALES}) if multiscale else None
 
     def forward(self, h: torch.Tensor) -> dict[str, torch.Tensor]:
-        return {"log_rms": self.rms(h)[..., 0], "band_shape": self.bands(h), "log_env": self.env(h)[..., 0]}
+        out = {"log_rms": self.rms(h)[..., 0], "band_shape": self.bands(h), "log_env": self.env(h)[..., 0]}
+        if self.ms is not None:
+            out.update({name: head(h) for name, head in self.ms.items()})
+        return out
 
 
 def masked_mean(num: torch.Tensor, den: torch.Tensor, sample_index: torch.Tensor | None = None, n_samples: int | None = None) -> torch.Tensor:
@@ -55,6 +62,11 @@ def anchor_losses(pred: dict[str, torch.Tensor], target: dict[str, torch.Tensor]
     m = target["spec_valid"][:, None] & target["band_available"]
     err = (pred["band_shape"] - target["band_shape"]) ** 2
     out["band_shape"] = masked_mean((err * m).sum(dim=-1), m.sum(dim=-1), sample_index, n_samples)
+    for name, _, _ in MS_SCALES:  # ancora multi-scala, se c'e': finestra valida e bande disponibili
+        if name in pred and name in target:
+            m = target[name + "_valid"][:, None] & target[name + "_available"]
+            err = (pred[name] - target[name]) ** 2
+            out[name] = masked_mean((err * m).sum(dim=-1), m.sum(dim=-1), sample_index, n_samples)
     return out
 
 

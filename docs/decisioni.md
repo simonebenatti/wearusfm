@@ -1797,3 +1797,8 @@ complessivo delle ancore resta 0,2 (firmato).
 *Dettaglio d'implementazione di AG:* le ancore sono per patch da 25 ms, quindi le due finestre sono **centrate sulla patch**. Nel test erano i
 4 sottoblocchi da 50 ms e i 500 ms centrati su un blocco da 200 ms: stesse scale, diversa granularita'. Vale anche qui la zona di bordo da 100 ms
 (decisione 3). Nel sanity e' spenta. **L'ancora RVQ non c'e'** (decisione del 04/10).
+**Implementata** (commit di questa nota; opzione `multiscale_anchor` del modello e del dataloader, accesa da `with_window1_rules`, spenta nel
+sanity). Test: il tono a 300 Hz cade nella banda giusta a tutte e due le scale; a 200 Hz le bande alte non ci sono; la zona di bordo vale; in un
+training con le regole della finestra 1 compaiono `ms_fast` e `ms_slow` e non compare la perdita RVQ. **Costo:** i target salgono da 12 a 46 ms per
+finestra (32 canali, 4 s, 2 kHz, sul Mac), quasi tutto la finestra da 500 ms ricalcolata a ogni patch. Col margine misurato (~45 finestre/s di
+dataloader contro ~13 consumate) basta, ma va ottimizzato prima della finestra 1 (passo di 100 ms con interpolazione, o FFT a passo fisso).

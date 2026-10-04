@@ -83,6 +83,7 @@ class LoaderConfig:
     # lunghezza media delle sue finestre (`mean_window_s`, calcolata una volta per sessione, `scripts/window_seconds.py`). False = una finestra per
     # estrazione pesata, com'era nel sanity collaudato
     time_weighted: bool = False
+    multiscale_anchor: bool = False  # target dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
@@ -524,7 +525,8 @@ class PretrainLoader:
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
-            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms, guard=guard))
+            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms, guard=guard,
+                                             multiscale=self.cfg.multiscale_anchor))
             if self.rvq_store is not None:
                 entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
                 rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))

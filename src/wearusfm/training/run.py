@@ -68,10 +68,11 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
 
 
 def with_window1_rules(cfg: RunConfig) -> RunConfig:
-    """Le decisioni del 04/10/2026 (Simone: «approvo tutto»), dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target
-    delle ancore entro 100 ms dal bordo di un tratto (3). Il preset del sanity resta quello collaudato."""
-    return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True),
-                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1))
+    """Le decisioni del 04/10/2026, dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target delle ancore entro 100 ms dal
+    bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»). Il preset del sanity resta quello
+    collaudato. L'ancora RVQ non c'e' (decisione del 04/10): `with_rvq` non va applicato."""
+    return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True), model=replace(cfg.model, multiscale_anchor=True),
+                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1, multiscale_anchor=True))
 
 
 def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
@@ -178,6 +179,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         reason = stop_file.read_text().strip()
         log(f"run fermato in precedenza ({reason}): nessun passo")
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
+    if cfg.loader.multiscale_anchor != cfg.model.multiscale_anchor:
+        raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
     torch.manual_seed(cfg.seed)

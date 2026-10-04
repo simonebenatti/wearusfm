@@ -140,6 +140,8 @@ def test_window1_rules_train_end_to_end(tmp_path):
     ws = {f"{r['dataset']}/{r['subject']}/{r['session']}": L.mean_window_s(base.view(r), cfg.loader) for r in idx.rows}
     s = R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None, window_s=ws)
     assert s["steps"] == 2 and all(math.isfinite(r["total"]) for r in _lines(tmp_path / "run"))
+    assert all("ms_fast" in r and "ms_slow" in r for r in _lines(tmp_path / "run"))  # ancora multi-scala accesa nella finestra 1
+    assert "rvq" not in _lines(tmp_path / "run")[0]  # e niente RVQ
     sanity = R.sanity_config()
     assert not sanity.jepa.loss_per_window and not sanity.loader.time_weighted and sanity.loader.anchor_edge_guard_s == 0.0  # sanity invariato
     assert np.isfinite(list(ws.values())).all()

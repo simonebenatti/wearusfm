@@ -99,3 +99,22 @@ def test_rvq_windows_ignore_channels_discarded_by_qc():
     assert not A.rvq_target_windows(vis, valid, on).any()  # senza QC il canale 2 «visibile» impedisce lo slab
     w = A.rvq_target_windows(vis, valid, on, qc_valid=np.array([True, True, False]))
     assert w[:2, 0].all() and not w[2].any() and not w[:, 1].any()
+
+
+def test_multiscale_anchor_targets_scales_bands_and_masks():
+    """Ancora multi-scala (Simone, 04/10/2026): 6 bande a 50 ms e 24 bande a 500 ms, centrate sulla patch; bande oltre il limite non disponibili."""
+    fs = 2000.0
+    t = np.arange(8000) / fs
+    x = np.sin(2 * np.pi * 300 * t)[None, :] * np.ones((2, 1))
+    tg = A.anchor_targets(x, fs, 450.0, multiscale=True)
+    assert tg.ms_fast.shape == (2, 160, 6) and tg.ms_slow.shape == (2, 160, 24)
+    e24 = np.geomspace(20.0, 450.0, 25)
+    k = int(np.searchsorted(e24, 300.0) - 1)
+    assert int(np.argmax(tg.ms_slow[0, 80])) == k and int(np.argmax(tg.ms_fast[0, 80])) == 5  # 300 Hz: banda 265-450 della scala rapida
+    assert tg.ms_slow_valid[:, 10:150].all() and not tg.ms_slow_valid[:, :5].any()  # 500 ms: niente target vicino ai bordi della finestra
+    assert tg.ms_fast_available.all() and tg.ms_slow_available.all()
+    low = A.anchor_targets(np.random.default_rng(0).normal(size=(2, 800)), 200.0, 100.0, multiscale=True)
+    assert not low.ms_fast_available[:, -1].any() and low.ms_fast_available[:, 0].all()  # a 200 Hz le bande alte non ci sono
+    g = A.anchor_targets(x, fs, 450.0, multiscale=True, guard=(200, 0))
+    assert not g.ms_fast_valid[:, :4].any()  # la zona di bordo vale anche per la multi-scala
+    assert A.anchor_targets(x, fs, 450.0).ms_fast is None  # spenta: nessun target

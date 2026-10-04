@@ -33,6 +33,9 @@ SPECTRAL_WINDOW_MS = 200.0
 ENVELOPE_WINDOW_MS = 500.0
 RVQ_TOKEN_MS = 200.0
 EPS = 1e-8
+# ancora multi-scala (Simone, 04/10/2026, dalla finestra 1): log della potenza in bande log-spaziate fra 20 e 450 Hz su due finestre centrate sulla
+# patch, scelta dal confronto dei target candidati (decisioni.md)
+MS_SCALES = (("ms_fast", 50.0, 6), ("ms_slow", 500.0, 24))  # (nome, finestra in ms, bande)
 
 
 @dataclass(frozen=True)
@@ -44,6 +47,13 @@ class AnchorTargets:
     band_available: np.ndarray  # (C, B): banda sotto il limite del canale
     log_env: np.ndarray  # (C, P)
     env_valid: np.ndarray  # (C, P)
+    # ancora multi-scala, solo se richiesta: per scala (C, P, B) log-potenze, (C, P) finestra valida, (C, B) banda disponibile
+    ms_fast: np.ndarray | None = None
+    ms_fast_valid: np.ndarray | None = None
+    ms_fast_available: np.ndarray | None = None
+    ms_slow: np.ndarray | None = None
+    ms_slow_valid: np.ndarray | None = None
+    ms_slow_available: np.ndarray | None = None
 
 
 def _windows(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) -> tuple[np.ndarray, np.ndarray]:
@@ -70,8 +80,22 @@ def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) 
     return np.sqrt(np.maximum((cs[:, s + n] - cs[:, s]) / n, 0.0)), valid
 
 
+def _band_logpower(x32: np.ndarray, fs: float, centers: np.ndarray, win_ms: float, n_bands: int, limit: np.ndarray):
+    """Log della potenza in `n_bands` bande log-spaziate fra 20 e 450 Hz su finestre di `win_ms` centrate: ((C, P, B), (P,) finestra dentro il
+    segnale, (C, B) banda disponibile = sotto il limite del canale e con almeno una frequenza a questa risoluzione)."""
+    seg, ok = _windows(x32, fs, centers, win_ms)
+    n = seg.shape[-1]
+    spec = sfft.rfft(seg * np.hanning(n).astype(np.float32), axis=-1)
+    power = spec.real ** 2 + spec.imag ** 2
+    freqs = np.fft.rfftfreq(n, 1.0 / fs)
+    edges = np.geomspace(20.0, 450.0, n_bands + 1)
+    bands = np.stack([(freqs >= lo) & (freqs < hi) for lo, hi in zip(edges[:-1], edges[1:])], axis=1).astype(power.dtype)  # (F, B)
+    avail = (edges[None, 1:] <= limit[:, None] + 1e-9) & (bands.sum(axis=0) > 0)[None, :]
+    return np.log((power @ bands).astype(np.float64) + EPS), ok, avail
+
+
 def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ,
-                   guard: tuple[int, int] = (0, 0)) -> AnchorTargets:
+                   guard: tuple[int, int] = (0, 0), multiscale: bool = False) -> AnchorTargets:
     """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale.
     guard = (inizio, fine): campioni all'inizio e alla fine di x che stanno entro la zona di bordo di un tratto (transitorio del filtro): le patch
     che li toccano non hanno target (Simone, 04/10/2026, decisione 3: entro 100 ms dal bordo di un tratto)."""
@@ -103,13 +127,23 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     env, env_ok = _window_rms(x, fs, centers, ENVELOPE_WINDOW_MS)
     log_env = np.log(env + EPS)
 
+    ms = {}
+    if multiscale:
+        x32 = x.astype(np.float32)
+        for name, win_ms, nb in MS_SCALES:
+            ms[name], ms[name + "_valid"], ms[name + "_available"] = _band_logpower(x32, fs, centers, win_ms, nb, limit)
+    clear = np.ones(n_patch, dtype=bool)
     if guard[0] > 0 or guard[1] > 0:
         p0 = np.ceil(np.arange(n_patch) * patch_s * fs - 1e-9)  # inizio e fine delle patch (stessa griglia del front-end)
         p1 = np.ceil((np.arange(n_patch) + 1) * patch_s * fs - 1e-9)
         clear = (p0 >= guard[0]) & (p1 <= t - guard[1])
         rms_ok, spec_ok, env_ok = rms_ok & clear, spec_ok & clear, env_ok & clear
     rows = lambda v: np.broadcast_to(v[None, :], (c, n_patch)).copy()  # noqa: E731
-    return AnchorTargets(log_rms, rows(rms_ok), band_shape, rows(spec_ok) & band_available.any(axis=1)[:, None], band_available, log_env, rows(env_ok))
+    for name, _, _ in MS_SCALES:
+        if name in ms:
+            ms[name + "_valid"] = rows(ms[name + "_valid"] & clear) & ms[name + "_available"].any(axis=1)[:, None]
+    return AnchorTargets(log_rms, rows(rms_ok), band_shape, rows(spec_ok) & band_available.any(axis=1)[:, None], band_available, log_env,
+                         rows(env_ok), **ms)
 
 
 def rvq_target_windows(visible: np.ndarray, patch_valid: np.ndarray, rvq_on: np.ndarray, *, patch_ms: float = 25.0,

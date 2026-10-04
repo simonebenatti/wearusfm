@@ -43,6 +43,7 @@ class FMConfig:
     n_bands: int = 5
     rvq_codes: int | None = None  # None = senza testa RVQ
     grad_checkpoint: bool = False  # activation checkpointing di encoder locale, backbone e decoder (v10 §5.5)
+    multiscale_anchor: bool = False  # teste dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
 
 
 @dataclass
@@ -99,7 +100,7 @@ class WearUsFM(nn.Module):
         self.pool = PerceiverPooling(cfg.dim, cfg.n_heads, cfg.k_latents)
         self.backbone = TemporalBackbone(cfg.dim, cfg.n_heads, cfg.backbone_layers)
         self.decoder = QueryDecoder(cfg.dim, cfg.n_heads, cfg.decoder_layers)
-        self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands)
+        self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands, multiscale=cfg.multiscale_anchor)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
         for m in (self.local, self.backbone, self.decoder):
             m.grad_checkpoint = cfg.grad_checkpoint

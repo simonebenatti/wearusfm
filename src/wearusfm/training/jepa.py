@@ -24,7 +24,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from wearusfm.model.anchor_targets import RVQ_TOKEN_MS, AnchorTargets
+from wearusfm.model.anchor_targets import MS_SCALES, RVQ_TOKEN_MS, AnchorTargets
 from wearusfm.model.anchors import anchor_losses, masked_mean, rvq_loss
 from wearusfm.model.channel_codes import TOPOLOGIES
 from wearusfm.model.fm import ModelInputs, WearUsFM
@@ -84,16 +84,22 @@ def gather_anchor_targets(targets: list[AnchorTargets], counts: list[int], q_ch:
     full = {"log_rms": np.zeros((c_tot, p), np.float32), "log_env": np.zeros((c_tot, p), np.float32),
             "rms_valid": np.zeros((c_tot, p), bool), "env_valid": np.zeros((c_tot, p), bool), "spec_valid": np.zeros((c_tot, p), bool),
             "band_shape": np.zeros((c_tot, p, n_b), np.float32)}
-    band_available = np.zeros((c_tot, n_b), bool)
+    per_ch = {"band_available": np.zeros((c_tot, n_b), bool)}
+    for name, _, nb in MS_SCALES:  # ancora multi-scala, se i target ci sono
+        if getattr(targets[0], name) is not None:
+            full[name] = np.zeros((c_tot, p, nb), np.float32)
+            full[name + "_valid"] = np.zeros((c_tot, p), bool)
+            per_ch[name + "_available"] = np.zeros((c_tot, nb), bool)
     a = 0
     for tg, c in zip(targets, counts):
         n = tg.log_rms.shape[1]
         for k, v in full.items():
             v[a:a + c, :n] = getattr(tg, k)
-        band_available[a:a + c] = tg.band_available
+        for k, v in per_ch.items():
+            v[a:a + c] = getattr(tg, k)
         a += c
     out = {k: torch.from_numpy(np.ascontiguousarray(v[ch, t])) for k, v in full.items()}
-    out["band_available"] = torch.from_numpy(band_available[ch])
+    out.update({k: torch.from_numpy(np.ascontiguousarray(v[ch])) for k, v in per_ch.items()})
     return {k: v.to(q_ch.device) for k, v in out.items()}
 
 
