@@ -1696,3 +1696,14 @@ Sui fogli `docs/fogli_firma_finestra1.md`, senza correzioni:
   fino all'80% di 2D, poi decay. Pilot con un run per seed (stabile fino a 6,4 epoche, decay fino a 8) e rami di decay da 0,8, 1,6 e 3,2 epoche
   per E = 1, 2, 4: ~9,4 epoche per seed. Teacher EMA costante 0,996; AdamW, weight decay 0,05, clip 1,0, batch 32 al 30M (i rung maggiori dalla
   calibrazione).
+
+**Diagnostica RVQ sul masking di canale, job 59328078: COMPLETED** (26 min 15 s, 628 passi dai pesi del sanity al passo 4.000; **costo 0,44
+GPU-ora**; budget del passo 6: usate ~3,1 su 100 piu' il sanity in corso). Sulle finestre nascoste su un canale ma non slab (~5.800 per passo, con dei
+vicini visibili allo stesso istante) la perdita RVQ resta **0,983** dal primo all'ultimo blocco di 100 passi; l'accuratezza top-1 resta ~0,05%. Sugli
+slab, senza gradiente: 0,983-0,984, ~0,05%. Riferimenti scritti prima: entropia della sola frequenza dei codici 0,982; caso 1/7.000 ≈ 0,014%;
+codice piu' frequente 0,03%. **Lettura, secondo la regola scritta prima:** la perdita non scende sotto 0,982 nemmeno coi vicini visibili, quindi il
+problema non sono gli slab ma **i codici come target per questo modello**: non sono prevedibili dalle sue rappresentazioni oltre la loro frequenza.
+*Interpretazioni di AG, da verificare:* (1) il codice descrive la forma d'onda fine di 200 ms, che JEPA e ancore (ampiezza, spettro) non chiedono di
+rappresentare; (2) 8.192 classi quasi equiprobabili e rumorose (D5b: su emg2pose il codice resta uguale solo nel 46% dei casi) sono un target
+troppo fine per una testa lineare in poche centinaia di passi. Le opzioni (togliere l'ancora, cambiarne il target, provarla solo in una fase) vanno
+a Simone (04/10: «poi vediamo se ha senso provare a modificare l'RVQ, a toglierlo o a capire se si puo finetunare in qualche modo, in coda o in testa»).
