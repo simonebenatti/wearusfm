@@ -11,7 +11,8 @@
 # DA LANCIARE A MANO DA SIMONE (l'agente non esegue cancellazioni definitive).
 # Toglie da $WORK/data/raw gli originali dei 7 dataset GIA' copiati su $SCRATCH, ma SOLO se per
 # ciascuno, al momento del lancio: (1) ogni file esiste sulla copia con la stessa dimensione
-# (rsync --size-only, veloce), (2) il numero di file coincide, (3) nessun file della copia e'
+# (rsync --size-only, veloce), (2) la copia ha almeno i file dell'originale (puo' averne di piu': ninapro su $SCRATCH contiene anche DB scaricati
+# direttamente li'; criterio approvato da Simone il 04/10/2026, «approvo tutto», punto 16; prima il numero doveva coincidere), (3) nessun file della copia e'
 # piu' vecchio di 24 ore (cioe' il rinfresco del purge e' stato fatto). Il confronto per
 # CHECKSUM e' quello di verify_touch_scratch_raw.sbatch (lento, ~0,6 GB/min): controllare nel suo
 # log che ogni dataset riporti "CHECKSUM IDENTICI" PRIMA di lanciare questo script.
@@ -38,7 +39,8 @@ for d in "${DATASETS[@]}"; do
   if [ -n "$diff_out" ]; then echo "DIFFERENZE: non cancello $d"; echo "$diff_out" | head -10; kept=$((kept+1)); continue; fi
   n_src=$(find "$SRC/$d" -type f | wc -l)
   n_dst=$(find "$DST/$d" -type f | wc -l)
-  if [ "$n_src" != "$n_dst" ]; then echo "NUMERO FILE DIVERSO ($n_src vs $n_dst): non cancello $d"; kept=$((kept+1)); continue; fi
+  if [ "$n_src" -gt "$n_dst" ]; then echo "COPIA CON MENO FILE ($n_src vs $n_dst): non cancello $d"; kept=$((kept+1)); continue; fi
+  [ "$n_src" -lt "$n_dst" ] && echo "la copia ha $((n_dst - n_src)) file in piu' dell'originale (ammesso): ogni file dell'originale c'e', stessa dimensione"
   old=$(find "$DST/$d" -type f -mtime +0 | wc -l)
   if [ "$old" != "0" ]; then echo "COPIA NON RINFRESCATA ($old file vecchi): non cancello $d"; kept=$((kept+1)); continue; fi
   echo "verifiche superate ($n_src file identici e freschi): cancello $SRC/$d"
