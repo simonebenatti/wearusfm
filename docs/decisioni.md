@@ -1683,3 +1683,16 @@ l'accuratezza top-1 su quelle finestre e, senza gradiente, sugli slab. Confronti
 lo stesso codice nel 18% dei casi. **Lettura:** se sulle finestre di canale la perdita scende chiaramente sotto 0,982, l'informazione c'e' e il
 problema sono gli slab; se resta li', sono i codici. Job: `sanity_jepa.sbatch` su `boost_qos_dbg`, 1 GPU, 30 min, **costo massimo 0,5 GPU-ora = 4
 ore locali**; budget del passo 6: usate 2,63, piu' il sanity in corso (~7). Cartella `$SCRATCH/wearusfm_runs/runs/rvq_diag_channel_0410`.
+
+## D12 e D14 firmate (Simone, 04/10/2026: «firmo D12 e D14»)
+
+Sui fogli `docs/fogli_firma_finestra1.md`, senza correzioni:
+- **D12, regola del pilot sulle epoche:** metriche primarie P1 (cross-soggetto sul ramo sparso, sonda lineare, accuratezza bilanciata sui soggetti di
+  test della classe A) e P2 (transfer su EPN-612 e UCI-EMG, media dei due); errore standard per bootstrap sui soggetti di test (1.000), combinato
+  sui 2 seed. **E = 4**, salvo che su almeno una metrica primaria Δ₄→₈ superi 2 errori standard **e** Δ₄→₈ >= 0,25·Δ₂→₄: allora **E = 8**.
+  E = 1 e 2 si riportano, non si scelgono. Prerequisiti prima della finestra 1: harness del passo 5 (P2) e sonda cross-soggetto (P1).
+- **D14, schedule WSD:** warmup lineare sul 2% dei passi a D (almeno 1.000); fase stabile al picco scelto dalla calibrazione a 30-100M; **decay
+  lineare a zero sul 20% finale**; checkpoint pre-decay (80% di D) e post-decay (D). La continuazione a 2D riparte dal pre-decay, prosegue stabile
+  fino all'80% di 2D, poi decay. Pilot con un run per seed (stabile fino a 6,4 epoche, decay fino a 8) e rami di decay da 0,8, 1,6 e 3,2 epoche
+  per E = 1, 2, 4: ~9,4 epoche per seed. Teacher EMA costante 0,996; AdamW, weight decay 0,05, clip 1,0, batch 32 al 30M (i rung maggiori dalla
+  calibrazione).

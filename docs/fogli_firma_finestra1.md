@@ -1,4 +1,4 @@
-# Fogli di firma per la finestra 1 — D12, D14 e conto del compute (bozza di AG del 04/10/2026, NON firmati)
+# Fogli di firma per la finestra 1 — D12, D14 e conto del compute (bozza di AG del 04/10/2026; D12 e D14 FIRMATE da Simone il 04/10/2026)
 
 Decisioni da chiudere **prima della finestra 1** (01-03/11; piano §12: «quattro su sei vanno chiuse prima della finestra 1»). D15 e D16 sono gia'
 firmate il 04/10 («approvo tutto», punti 13 e 14). Ogni foglio: cosa si decide, numeri, opzioni, proposta, conseguenza se sbagliata. Le stime di
@@ -70,7 +70,7 @@ calendario di AG per le prossime settimane.
 **Se sbagliata:** con E troppo basso la ladder sottostima la capacita' utile; con E troppo alto spende il doppio. In tutti e due i casi il controllo
 2D (D14) rileva in parte l'errore.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 04/10/2026** («firmo D12 e D14»)
 
 ---
 
@@ -99,4 +99,4 @@ continuazione: «warmup -> lunga fase stabile -> decay separato».
 continuazione. Il 20% e' un valore di lavoro, non misurato: la calibrazione della finestra 1 puo' confrontare 10% e 20% a 30M (~63 GPU-ora per
 punto).
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 04/10/2026** («firmo D12 e D14»)
