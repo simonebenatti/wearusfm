@@ -1757,3 +1757,7 @@ quando il sanity chiude. Due job:
   unita', a caso con seme fisso, per la dimensione del file;
 - sonde: `anchor_candidates_probe.sbatch` su `lrd_all_serial`, CPU, **0 GPU-ora**, in dipendenza `afterok`.
 Uscite in `$SCRATCH/wearusfm_runs/anchor_candidates/`. Budget del passo 6: usate ~3,1, piu' il sanity (~7).
+**Estrazione 59331712: COMPLETED** (22 min 11 s; checkpoint del sanity al passo 5.850): 191.482 unita', di cui 79.265 nascoste; 613 MB in
+`$SCRATCH/wearusfm_runs/anchor_candidates/units_ckpt_latest.npz`. **Costo 0,37 GPU-ora.** Sonde: il job 59331741 e' stato cancellato dal sistema
+dopo 28 s («container_p_join: open failed for /scratch_local/tmpfs/59331741/.ns», guasto del nodo login08, non del codice); risottomesso come
+**59333079**, uguale (CPU, 0 GPU-ora).
