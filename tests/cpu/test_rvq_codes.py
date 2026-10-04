@@ -110,3 +110,31 @@ def test_loader_batch_carries_codes_only_with_a_code_root(tmp_path):
         assert c.shape[1] == n // 8
         assert (c >= 0).any() == (row["rvq"] == "on")  # nessun codice dove l'ancora e' spenta
     assert json.dumps(L.LoaderConfig.__dataclass_fields__["rvq_codes_root"].default) == "null"
+
+
+def test_bounded_map_keeps_order_and_limits_results_in_flight():
+    """Job 59303528: con `imap_unordered` le viste canoniche si accumulavano nel processo principale fino a esaurire la memoria."""
+    import importlib.util
+    import threading
+    import time
+    from multiprocessing.dummy import Pool
+    from pathlib import Path
+
+    spec = importlib.util.spec_from_file_location("precompute_rvq_codes", Path(__file__).resolve().parents[2] / "scripts" / "precompute_rvq_codes.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    started, lock = [], threading.Lock()
+
+    def work(i):
+        with lock:
+            started.append(i)
+        return i * i
+
+    with Pool(4) as pool:
+        out = []
+        for r in mod.bounded_map(pool, work, range(20), 3):
+            time.sleep(0.01)
+            with lock:
+                assert len(started) - len(out) <= 4  # al piu' 3 in volo piu' quello in mano al consumatore
+            out.append(r)
+    assert out == [i * i for i in range(20)]

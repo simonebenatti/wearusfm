@@ -53,6 +53,23 @@ def _prepare(args):
         return key, None, None, None, f"{type(e).__name__}: {e}"
 
 
+def bounded_map(pool, fn, items, max_pending: int):
+    """Come `pool.imap`, ma con al piu' `max_pending` risultati in volo: i processi di lavoro non corrono avanti al consumatore. Con `imap_unordered`
+    le viste canoniche (~140 MB a sessione di emg2qwerty) si accumulavano nel processo principale piu' in fretta della GPU: job 59303528, memoria
+    esaurita (120 GB) dopo 175 sessioni."""
+    pending, it = [], iter(items)
+    for item in it:
+        pending.append(pool.apply_async(fn, (item,)))
+        if len(pending) >= max_pending:
+            break
+    while pending:
+        res = pending.pop(0).get()
+        nxt = next(it, None)
+        if nxt is not None:
+            pending.append(pool.apply_async(fn, (nxt,)))
+        yield res
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--manifest", type=Path, required=True)
@@ -62,8 +79,8 @@ def main(argv=None) -> int:
     ap.add_argument("--checkpoint", type=Path, required=True)
     ap.add_argument("--out-dir", type=Path, required=True)
     ap.add_argument("--factor", type=float, default=RC.V2_SCALE_FACTOR)
-    ap.add_argument("--batch", type=int, default=1024)
-    ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--batch", type=int, default=4096)
+    ap.add_argument("--workers", type=int, default=3, help="processi per la vista canonica (la GPU e' il collo di bottiglia: ~8,5 s a sessione)")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--max-sessions", type=int, default=None, help="solo per il collaudo")
     ap.add_argument("--time-limit-s", type=float, default=None, help="smette di prendere sessioni nuove dopo questo tempo (riprendibile)")
@@ -91,7 +108,7 @@ def main(argv=None) -> int:
 
     written, errors, n_tok, stopped = 0, {}, 0, False
     with get_context("spawn").Pool(max(1, args.workers)) as pool:
-        for key, trials, qc, scale, err in pool.imap_unordered(_prepare, [(r, str(index.path_of(r))) for r in todo]):
+        for key, trials, qc, scale, err in bounded_map(pool, _prepare, [(r, str(index.path_of(r))) for r in todo], args.workers + 2):
             if err is not None:
                 errors["/".join(key)] = err
                 continue

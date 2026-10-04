@@ -1611,3 +1611,16 @@ camargo2021_emg_only 3.147, grabmyo 30.716, putemg 298, capgmyo 1.458, ninapro 1
 date delle copie su `$SCRATCH` (`refresh_scratch.sbatch` sui 7 dataset, **job 59303661**), senza il quale lo script di cancellazione rifiuta copie
 piu' vecchie di 24 ore, e la cancellazione con dipendenza `afterok` (`delete_verified_raw.sbatch`, **job 59303674**). Lo script ricontrolla per ogni
 dataset presenza, dimensioni, numero di file e freschezza della copia prima di cancellare. CPU, 0 GPU-ora. Esito e quota: sotto, quando chiusi.
+**Esito della pulizia** (log copiati in `~/wearusfm_local/reports/`): rinfresco 59303661 COMPLETED in 8 min 23 s, nessun file rimasto vecchio;
+cancellazione 59303674 COMPLETED in 45 s: **tolti 6 dataset** (camargo2021, camargo2021_emg_only, grabmyo, putemg, capgmyo,
+kaifosh_discrete_gestures). **Conservato ninapro**: «NUMERO FILE DIVERSO (140 vs 419)». La copia su `$SCRATCH` ha piu' file dell'originale, perche' ci
+sono stati scaricati direttamente altri DB. Lo script vuole lo stesso numero e quindi non cancella, come da progetto. Togliere anche gli originali
+di ninapro, accettando una copia che li contiene tutti (rsync non segnala file mancanti o diversi), sarebbe un cambio del criterio di
+cancellazione: lo decide Simone. **Quota di `$WORK` dopo: 942,9 GB su 1 TB, grazia chiusa.**
+
+**Codici RVQ, job 59303528: FALLITO per memoria** (OUT_OF_MEMORY dopo 25 min 36 s; MaxRSS ~120 GB su 120). Scritte 178 sessioni su 1.035, che il
+rilancio salta, nessun file a meta'. **Costo 0,43 GPU-ora**; budget del passo 6: usate 0,90 su 100. **Causa:** con `imap_unordered` i 6 processi
+preparavano viste canoniche (~140 MB a sessione) piu' in fretta di quanto la GPU le consumasse (~8,5 s a sessione), e i risultati si accumulavano nel
+processo principale. **Correzione:** al piu' 5 sessioni in volo (`bounded_map`, test), 3 processi e batch del tokenizer 4.096 (era 1.024).
+**Rilancio** con lo stesso sbatch, limite 3 h: ~857 sessioni rimaste a ~8,5 s, quindi ~2 h attese. **Costo massimo 3 GPU-ora = 24 ore locali.**
+Il sanity vero parte dopo, come registrato sopra.
