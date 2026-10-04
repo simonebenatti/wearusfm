@@ -1818,3 +1818,8 @@ erano su CPU).
   coi campioni da 5 s. Ora i dati a 1 kHz stanno sulla GPU in float16 e il test si valuta solo quando la validazione migliora.
 **Collaudo 2** (stessa autorizzazione; `boost_qos_dbg`, 30 min, **massimo 0,5 GPU-ora**): EPN-612 a 5 s, seme 0, 3 epoche, per misurare il tempo
 per epoca e ridichiarare il costo dei run completi.
+**Collaudo 2 della replica, 59336887: COMPLETED** (24 min 33 s, **0,41 GPU-ora**; budget del passo 5: usate 0,58 su 300). EPN-612 a 5 s, seme 0,
+3 epoche: test **88,6% -> 90,2% -> 92,75%**; la migliore in validazione e' la 3 (93,4%). E' gia' dentro la tolleranza ([92,65; 96,65]) con 3
+epoche e un seme: la pipeline e' giusta, e le finestre a 5 s erano la differenza (il collaudo 1, a 2,4 s per errore, era al 46%). **Tempo: 373 s
+per epoca**, quindi 100 epoche fanno ~10,4 h per seme. **Costo dei run completi, ridichiarato:** EPN-612 3 semi ~31 GPU-ora, UCI-EMG ~1, **totale
+~32 GPU-ora** (~256 ore locali), contro i 4-6 stimati nel foglio: si lancia solo col via di Simone.
