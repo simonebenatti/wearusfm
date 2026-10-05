@@ -1849,3 +1849,23 @@ leggono EPN-612). Le scale e la lettura non sono cambiate.
 **Lettura:** il criterio del passo 6, «il sanity JEPA su un solo dataset omogeneo non collassa», e' soddisfatto, con tutti gli indicatori in
 crescita fino alla fine. Gli altri criteri del «Chiuso quando» sono gia' coperti da test: tre topologie in avanti e indietro, equivarianza, diagnostica
 del collasso, FLOP per modulo. **La chiusura del passo 6 la firma Simone.**
+
+**Confronto dei target candidati ripetuto sul checkpoint finale del sanity** (passo 10.000; previsto dal protocollo, stesse unita' e stessa regola).
+Estrazione **59340042: COMPLETED** (16 min 0 s, 1 GPU, **0,27 GPU-ora**); sonde **59340045: COMPLETED** (9 min 20 s, CPU, 0 GPU-ora). Report
+`report_ckpt_final.json` in `~/wearusfm_local/reports/passo6/anchor_candidates/`. Budget del passo 6: usate ~11,0 su 100. Unita' identiche al
+passo 5.850 (191.482; 100.000 / 30.000; nascoste 59.502 / 19.763), quindi R e B identici; cambiano solo V e H.
+
+| Target | V 5.850 -> finale | H 5.850 -> finale | B ancore attuali | Prevedibile |
+|---|---|---|---|---|
+| a gruppi RVQ (64) | 4,2% -> 4,3% (4,1%) | 3,8% -> 3,8% (3,9%) | 4,2% | no |
+| b vettore del codebook | 0,000 -> 0,001 | 0,000 -> 0,000 | 0,000 | no |
+| e feature continue NeuroRVQ, ramo 0 | 0,006 -> 0,007 | 0,004 -> 0,005 | 0,005 | no |
+| c 16 bande | 0,752 -> 0,779 | 0,559 -> **0,583** | 0,782 | si' |
+| d frequenza media e mediana | 0,741 -> 0,785 | 0,505 -> **0,530** | 0,869 | si' |
+| g multi-scala (50 + 500 ms) | 0,692 -> 0,717 | 0,529 -> **0,551** | **0,646** | si' |
+| f famiglie spettrali (64) | 23,4% -> 26,0% (2,3%) | 12,6% -> 13,9% (2,3%) | 30,3% | si' (+11,6 punti) |
+
+**Lettura:** l'esito non cambia. I candidati spettrali salgono di ~0,02-0,04 di R² negli ultimi ~4.000 passi (il modello continuava a imparare il
+contenuto in frequenza, coerente con le diagnostiche); quelli di NeuroRVQ restano a zero. (g) resta quello che aggiunge di piu' alle ancore attuali
+(B fisso a 0,646): la scelta firmata dell'ancora multi-scala nella finestra 1 e' confermata. Le famiglie spettrali passano ora piu' chiaramente la
+soglia (+11,6 punti), ma restano piu' leggibili dalle ancore attuali (30,3%) che dal modello (26,0%).
