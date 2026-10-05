@@ -1905,3 +1905,13 @@ presentata = griglia, quindi quote invariate; scala bipolare della sua derivazio
 dell'uguaglianza); posizioni nel sistema della griglia d'origine (`grid_extent`); nelle metriche per passo, finestre per classe e quante
 virtuali; scale bipolari precalcolabili con `scripts/measure_loader.py --bipolar-scales`. Misura sul Mac (sessione sintetica tipo Hyser, 256
 canali a 2048 Hz, un processo): griglia intera 3,4 finestre/s, montaggio virtuale 36,6, con p = 0,5 5,7.
+
+## P1 (D12): sonda cross-soggetto scritta, protocollo da firmare (05/10/2026)
+
+Protocollo proposto da AG in `docs/foglio_p1_cross_soggetto.md`: NinaPro DB2, DB3, DB6 (i soli della classe A con soggetti di test ed etichette
+allineate all'EMG); `restimulus` senza riposo; finestre da 1 s senza sovrapposizione; sonda addestrata sui soggetti di pretraining (C sul 10% di
+loro), letta sui soggetti di test degli split v1; P1 = media pesata per i soggetti di test (8, 3, 2), errore standard per bootstrap stratificato.
+Codice: `harness/p1_cross_subject.py`, `scripts/probe_p1.py` (fasi extract su GPU e probe su CPU), job `probe_p1.sbatch` e `probe_p1_probe.sbatch`;
+`linear_probe` ora restituisce anche le predizioni di test. Verificato sui dati processati di Leonardo (05/10, sola lettura): DB2 e DB3 numerano
+i movimenti 1-49 attraverso i tre esercizi, DB6 le prese fino a 11, riempimento -1 in coda a DB2 E3. *Sul Mac:* sklearn caricato prima di torch
+manda in segmentation fault le operazioni di torch a piu' thread (venv del tokenizer): lo script carica torch per primo, il test anche.

@@ -11,7 +11,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -32,6 +32,7 @@ class ProbeResult:
     n_val: int
     n_test: int
     n_test_subjects: int
+    test_pred: np.ndarray | None = field(default=None, repr=False)  # predizioni sul test (per gli errori standard aggregati, es. P1)
 
 
 def bootstrap_bacc_se(y_true: np.ndarray, y_pred: np.ndarray, subjects: np.ndarray, n_boot: int = 1000, seed: int = 0) -> float:
@@ -69,7 +70,7 @@ def linear_probe(x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_
         test_bacc_se=bootstrap_bacc_se(np.asarray(y_test), pred, np.asarray(test_subjects), n_boot, seed),
         val_bacc=float(scores[best]),
         train_bacc=float(balanced_accuracy_score(y_train, model.predict(xt))),
-        c=float(best), n_train=len(xt), n_val=len(xv), n_test=len(xs), n_test_subjects=int(len(np.unique(test_subjects))),
+        c=float(best), n_train=len(xt), n_val=len(xv), n_test=len(xs), n_test_subjects=int(len(np.unique(test_subjects))), test_pred=pred,
     )
 
 
