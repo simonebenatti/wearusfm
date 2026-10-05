@@ -1992,3 +1992,12 @@ la metrica ha margine per distinguere i modelli del pilot. *Non confrontabile* c
 delle sonde ci sono avvisi di convergenza di lbfgs (max_iter 3000) per alcuni C: da dichiarare; la C scelta per P1 e' forte (0,001-0,01).
 **Costi:** P1 + P2 0,92 GPU-ora (dichiarati al piu' 1,5). Budget del passo 5: **~31,2 su 300** (collaudi 0,58, UCI 0,10, EPN-612 29,6, P1 e
 P2 0,92).
+
+## Passo 5 chiuso (Simone, 05/10/2026: «ok, firmo»)
+
+Firmata la chiusura del passo 5: replica di NeuroRVQ **riuscita su EPN-612** (95,39%, tolleranza [92,65; 96,65]) e **non riuscita su UCI-EMG**
+(78,66% dopo la correzione delle unita', dichiarata: 662 finestre, scelta delle finestre mia dove il paper tace); harness P1 e P2 provato sui dati
+veri col modello del sanity. Consuntivo: **~31,2 GPU-ora su 300**.
+**Subito dopo** (stesso messaggio, «Poi lancia il job di 1 e verifica capgmyo e csl»): (1) `window_seconds.sbatch` sul manifest v1 (lunghezza media
+delle finestre per le quote nel tempo; CPU, **0 GPU-ora**); (2) verifica col fact-checker della derivazione dei canali di CapgMyo e CSL-hdemg
+(monopolari o gia' differenziali; scale bipolari del 05/10), e di Hyser per confronto.
