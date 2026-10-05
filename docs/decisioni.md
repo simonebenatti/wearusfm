@@ -1963,3 +1963,13 @@ da 5 s, due ritagli da 4 s); da misurare al primo lancio, che chiede la conferma
    esplicitamente.
 **Sottomessi** (05/10/2026, repo a 6ff2e57): P1 estrazione **59412499**, sonde **59412507** (afterok); P2 estrazione **59412516**, sonde
 **59412535** (afterok); scale bipolari **59412542**.
+**Scale bipolari, 59412542: COMPLETED** (18 min 3 s, CPU, 0 GPU-ora): **904 scale bipolari** (226 sessioni di classe C x 4), **nessun errore**
+bipolare; i 59 errori sono sessioni di emg2pose senza tratti da 1 s, gia' saltate dal dataloader. File completo (19.879 scale) in
+`$WORK/wearusfm_runs/results/passo6/loader_59412542/session_scales.json`: e' quello da usare dalla finestra 1. Rapporto scala bipolare /
+monopolare (mediana per sessione): **Hyser 0,25-0,41** (vicini molto correlati: la bipolare e' piu' piccola, come atteso con un riferimento
+comune); **CSL-hdemg 1,17-1,35** e **CapgMyo 0,87-1,59** (vicini poco correlati; per CapgMyo lungo le righe oltre 1,41 = sqrt(2), cioe' vicini
+correlati negativamente). *Da verificare (fatto da aprire):* se i canali di CapgMyo e CSL-hdemg siano gia' differenziali; in quel caso la
+«bipolare» virtuale sarebbe un doppio differenziale. Conferma comunque la scelta della scala per derivazione: con quella monopolare l'ampiezza
+cambierebbe di un fattore 0,25-1,6 a seconda del dataset.
+**P1, estrazione 59412499: COMPLETED** (13 min 42 s, **0,23 GPU-ora**): DB2 46.452 finestre (28 / 4 / 8 soggetti), DB3 13.681 (7 / 1 / 3), DB6
+42.044 (7 / 1 / 2). Sonde 59412507 in corso.
