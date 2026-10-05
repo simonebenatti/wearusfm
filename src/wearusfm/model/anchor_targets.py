@@ -36,6 +36,10 @@ EPS = 1e-8
 # ancora multi-scala (Simone, 04/10/2026, dalla finestra 1): log della potenza in bande log-spaziate fra 20 e 450 Hz su due finestre centrate sulla
 # patch, scelta dal confronto dei target candidati (decisioni.md)
 MS_SCALES = (("ms_fast", 50.0, 6), ("ms_slow", 500.0, 24))  # (nome, finestra in ms, bande)
+# passo fra le finestre di una scala (default: la patch). La scala lenta ha una finestra da 500 ms ogni 100 ms (4 patch), assegnata alle 4 patch
+# che la circondano: al piu' 37,5 ms dal loro centro, il 7,5% della finestra. Centrata su ogni patch costava ~32 ms per finestra di dati (2 kHz, 32
+# canali, 4 s, sul Mac), quasi tutto FFT; nel confronto dei target candidati la finestra da 500 ms era centrata su blocchi da 200 ms.
+MS_HOP_MS = {"ms_slow": 100.0}
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,14 @@ def _band_logpower(x32: np.ndarray, fs: float, centers: np.ndarray, win_ms: floa
     return np.log((power @ bands).astype(np.float64) + EPS), ok, avail
 
 
+def _hop_patches(name: str, patch_ms: float) -> int:
+    hop_ms = MS_HOP_MS.get(name, patch_ms)
+    per = int(round(hop_ms / patch_ms))
+    if per < 1 or abs(per * patch_ms - hop_ms) > 1e-9:
+        raise ValueError(f"la patch da {patch_ms} ms non divide il passo da {hop_ms} ms di {name}")
+    return per
+
+
 def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ,
                    guard: tuple[int, int] = (0, 0), multiscale: bool = False) -> AnchorTargets:
     """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale.
@@ -131,7 +143,10 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     if multiscale:
         x32 = x.astype(np.float32)
         for name, win_ms, nb in MS_SCALES:
-            ms[name], ms[name + "_valid"], ms[name + "_available"] = _band_logpower(x32, fs, centers, win_ms, nb, limit)
+            per = _hop_patches(name, patch_ms)
+            hop_centers = (np.arange(-(-n_patch // per)) * per + per / 2.0) * patch_s  # per = 1: i centri delle patch
+            v, ok, ms[name + "_available"] = _band_logpower(x32, fs, hop_centers, win_ms, nb, limit)
+            ms[name], ms[name + "_valid"] = np.repeat(v, per, axis=1)[:, :n_patch], np.repeat(ok, per)[:n_patch]
     clear = np.ones(n_patch, dtype=bool)
     if guard[0] > 0 or guard[1] > 0:
         p0 = np.ceil(np.arange(n_patch) * patch_s * fs - 1e-9)  # inizio e fine delle patch (stessa griglia del front-end)

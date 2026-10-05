@@ -118,3 +118,21 @@ def test_multiscale_anchor_targets_scales_bands_and_masks():
     g = A.anchor_targets(x, fs, 450.0, multiscale=True, guard=(200, 0))
     assert not g.ms_fast_valid[:, :4].any()  # la zona di bordo vale anche per la multi-scala
     assert A.anchor_targets(x, fs, 450.0).ms_fast is None  # spenta: nessun target
+
+
+def test_multiscale_slow_scale_one_window_every_100_ms():
+    """La scala lenta: una finestra da 500 ms ogni 4 patch, centrata sul gruppo e assegnata alle sue 4 patch; la rapida resta per patch."""
+    fs = 2000.0
+    x = np.random.default_rng(1).normal(size=(3, 8000))
+    tg = A.anchor_targets(x, fs, 450.0, multiscale=True)
+    groups = tg.ms_slow.reshape(3, 40, 4, 24)
+    assert np.array_equal(groups, np.repeat(groups[:, :, :1], 4, axis=2))  # costante dentro il gruppo
+    limit = np.full(3, 450.0)
+    ref, ok, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(40) * 4 + 2.0) * 0.025, 500.0, 24, limit)
+    assert np.allclose(groups[:, :, 0], ref) and np.array_equal(tg.ms_slow_valid[0].reshape(40, 4)[:, 0], ok)
+    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 50.0, 6, limit)
+    assert np.allclose(tg.ms_fast, fast)
+    odd = A.anchor_targets(x[:, :7950], fs, 450.0, multiscale=True)  # 159 patch: l'ultimo gruppo e' incompleto
+    assert odd.ms_slow.shape == (3, 159, 24) and odd.ms_slow_valid.shape == (3, 159)
+    with pytest.raises(ValueError):
+        A.anchor_targets(x, fs, 450.0, multiscale=True, patch_ms=30.0)

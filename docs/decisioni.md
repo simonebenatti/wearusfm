@@ -1885,3 +1885,13 @@ GPU-ora = ~256 ore locali**. Budget del passo 5: usate 0,58 su 300, dopo i run ~
   costa minuti).
 Uscite in `$WORK/wearusfm_runs/results/passo5/replica_neurorvq/`, un JSON per job; la media sui 3 semi di EPN-612 si calcola dai tre JSON. La
 riuscita si giudica sulla media dei 3 split col modello della miglior epoca di validazione, come da foglio.
+**Sottomessi** (05/10/2026): EPN-612 semi 0, 1, 2 = **59363702, 59363704, 59363705**; UCI-EMG = **59363706**. Repo remoto a c2f4bc2, pulito.
+
+## Ancora multi-scala: la scala lenta ogni 100 ms (05/10/2026; dettaglio d'implementazione di AG)
+
+Il costo dei target saliva da 12 a 52 ms per finestra (2 kHz, 32 canali, 4 s, sul Mac), di cui ~32 la finestra da 500 ms ricalcolata a ogni patch
+da 25 ms, quasi tutto FFT (5.120 FFT da 1.000 punti per finestra di dati). Ora la scala lenta ha **una finestra da 500 ms ogni 100 ms** (4 patch),
+centrata sul gruppo di 4 patch e assegnata a tutte e 4: ogni patch riceve lo spettro di una finestra il cui centro dista al piu' 37,5 ms dal suo,
+il 7,5% della finestra. La scala rapida (50 ms) resta per patch. **Costo: 52 -> 20 ms per finestra** (1 kHz e 16 canali: 12 -> 7 ms). Non cambia
+la decisione firmata (24 bande su 500 ms): cambia il centraggio, che era un dettaglio mio, e resta piu' fine di quello del test dei candidati
+(500 ms centrati su blocchi da 200 ms). Test: dentro un gruppo il target e' costante e coincide col calcolo diretto sulla finestra del gruppo.
