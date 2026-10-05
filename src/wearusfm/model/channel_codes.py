@@ -221,9 +221,11 @@ def _sensor_pos(g: dict) -> np.ndarray:
         out[:] = np.concatenate([np.cos(th[:, None] * m), np.sin(th[:, None] * m)], axis=1)
     elif g["topology"] == "grid_2d":
         cols = []
-        for key in ("grid_row", "grid_col"):
+        ext = g.get("grid_extent")  # montaggio virtuale (`data.virtual_montage`): indici massimi della griglia d'origine, stesse posizioni
+        for k, key in enumerate(("grid_row", "grid_col")):
             v = np.asarray([float(c["sensor_coords"][key]) for c in chans])
-            x = v / v.max() if v.max() > 0 else np.full_like(v, 0.5)
+            top = float(ext[k]) if ext else v.max()
+            x = v / top if top > 0 else np.full_like(v, 0.5)
             m = np.arange(1, N_SENSOR_POS // 4 + 1)
             cols += [np.cos(np.pi * x[:, None] * m), np.sin(np.pi * x[:, None] * m)]
         out[:] = np.concatenate(cols, axis=1)

@@ -302,3 +302,33 @@ def test_anchor_targets_skip_patches_near_segment_edges(tmp_path):
         assert t0.rms_valid[:, 4:36].all() and t0.rms_valid[:, :4].all()  # senza zona di bordo: tutte le patch hanno il target RMS
         assert not t1.rms_valid[:, :4].any() and not t1.rms_valid[:, 36:].any() and t1.rms_valid[:, 4:36].all()  # 100 ms = 4 patch per lato
         assert np.array_equal(t0.log_rms, t1.log_rms)  # cambiano le maschere, non i valori
+
+
+def test_virtual_montages_from_hd_grids(tmp_path):
+    """D6a: con `virtual` i campioni della classe C si presentano come sottogriglie (<= 32 canali), registrate; la bipolare ha la scala della
+    sua derivazione; spento, nulla cambia."""
+    from wearusfm.data import virtual_montage as VM
+
+    root, mpath = _tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cap = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "capgmyo"], np.ones(1), idx.roots)
+    assert cap.rows[0]["quota_class"] == "C"
+    off = L.PretrainLoader(cap, _cfg(block_s=None)).batch(4, np.random.default_rng(0))
+    assert off.counts == [128] * 4 and off.presented == ["full"] * 4
+    loader = L.PretrainLoader(cap, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0)))
+    rng = np.random.default_rng(1)
+    kinds = set()
+    for _ in range(6):
+        b = loader.batch(4, rng)
+        assert all(c <= 32 for c in b.counts) and "full" not in b.presented
+        assert b.qc_valid.shape[0] == sum(b.counts) and b.visible.shape[0] == sum(b.counts)
+        for x, tg, c in zip(b.signals, b.anchor_targets, b.counts):
+            assert x.shape[0] == c and tg.log_rms.shape[0] == c
+            mad = np.median(np.abs(x - np.median(x, axis=1, keepdims=True)), axis=1)
+            assert np.median(mad) == pytest.approx(1.0, rel=0.3)  # normalizzata: anche la bipolare (scala della sua derivazione)
+        kinds |= {p.split()[0] for p in b.presented}
+    assert kinds == {"mono", "bip"}
+    assert any("|bip:" in k for k in loader.scale_cache)
+    ninapro = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "ninapro_db2"], np.ones(1), idx.roots)
+    nb = L.PretrainLoader(ninapro, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0))).batch(3, np.random.default_rng(0))
+    assert nb.presented == ["full"] * 3 and nb.counts == [12] * 3  # classe A: mai virtuale

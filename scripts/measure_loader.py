@@ -26,6 +26,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.data import pretraining_loader as L  # noqa: E402
+from wearusfm.data import virtual_montage as VM  # noqa: E402
 
 FILTER = (20.0, 450.0)
 REQUIRED_PER_PROCESS = 68.0 / 8  # passo 0: ~68 finestre/s per GPU, 8 processi per GPU
@@ -40,29 +41,47 @@ def key_of(row: dict) -> str:
     return f"{row['dataset']}/{row['subject']}/{row['session']}"
 
 
+def scale_keys(row: dict, bipolar: bool) -> list[tuple[str, tuple[str, int] | None]]:
+    """Le chiavi delle scale di una sessione: la sua e, con `bipolar`, quelle delle derivazioni bipolari dei montaggi virtuali (D6a) per le
+    classi a cui si applicano, una per asse e passo (`PretrainLoader.scale`: chiave `sessione|bip:asse:passo`)."""
+    k = key_of(row)
+    out: list[tuple[str, tuple[str, int] | None]] = [(k, None)]
+    spec = VM.VirtualSpec()
+    if bipolar and row.get("quota_class") in spec.classes:
+        out += [(f"{k}|{VM.bipolar_scale_key(a, st)}", (a, st)) for a in VM.AXES for st in spec.strides]
+    return out
+
+
 def _scale_worker(args) -> tuple[dict, dict, int]:
-    manifest, roots, rows = args
+    manifest, roots, tasks = args
+    rows = [r for r, _ in tasks]
     index = L.ManifestIndex(rows, np.ones(len(rows)) / len(rows), [Path(r) for r in roots])
     cfg = signed_config(FILTER)
     scales, errors = {}, {}
-    for row in rows:
-        k = key_of(row)
+    for row, keys in tasks:
         try:
             view = L.SessionView.open(index.path_of(row), cfg.split_at_gaps, row.get("sidecar_sha256"))
-            scales[k] = L.estimate_session_scale(view, cfg, np.random.default_rng(L.scale_seed(k)))  # lo stesso seme del dataloader
-        except Exception as e:  # una sessione difettosa si registra, non ferma il calcolo
-            errors[k] = f"{type(e).__name__}: {e}"
-    return scales, errors, len(rows)
+        except Exception as e:
+            errors[key_of(row)] = f"{type(e).__name__}: {e}"
+            continue
+        for k, deriv in keys:
+            try:  # lo stesso seme del dataloader; la bipolare sulle coppie di tutte le griglie della sessione
+                pairs = VM.all_pairs(view.montage, *deriv) if deriv else None
+                scales[k] = L.estimate_session_scale(view, cfg, np.random.default_rng(L.scale_seed(k)), pairs)
+            except Exception as e:  # una sessione difettosa si registra, non ferma il calcolo
+                errors[k] = f"{type(e).__name__}: {e}"
+    return scales, errors, len(tasks)
 
 
 def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | None, known: dict | None = None,
-                   checkpoint: Path | None = None) -> dict:
+                   checkpoint: Path | None = None, bipolar: bool = False) -> dict:
     """`known`: scale gia' calcolate (es. da un run precedente): si ricalcolano solo le sessioni che mancano. `checkpoint`: file riscritto ogni
     ~500 sessioni con le scale gia' calcolate, cosi' un TIMEOUT non perde la fase (si riprende con `--scales-from`)."""
     known = dict(known or {})
     rows = index.rows[:max_sessions] if max_sessions else index.rows
-    reused = sum(1 for r in rows if key_of(r) in known)
-    rows = [r for r in rows if key_of(r) not in known]
+    tasks = [(r, [kd for kd in scale_keys(r, bipolar) if kd[0] not in known]) for r in rows]
+    reused = sum(1 for _, keys in tasks if not keys)
+    rows = [t for t in tasks if t[1]]  # sessioni con almeno una scala da calcolare
     chunks = [rows[i::workers * 8] for i in range(workers * 8)]
     t0 = time.time()
     scales, errors, done, saved = dict(known), {}, 0, 0
@@ -121,12 +140,14 @@ def main(argv=None) -> int:
     ap.add_argument("--max-sessions", type=int, default=None, help="solo per le prove: limita le sessioni delle scale")
     ap.add_argument("--scales-from", type=Path, default=None, help="session_scales.json di un run precedente: ricalcola solo le mancanti")
     ap.add_argument("--skip-rate", action="store_true", help="solo le scale, senza la misura del ritmo")
+    ap.add_argument("--bipolar-scales", action="store_true", help="anche le scale delle derivazioni bipolari dei montaggi virtuali (D6a)")
     args = ap.parse_args(argv)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     index = L.ManifestIndex.load(args.manifest, [Path(r) for r in args.root])
     print(f"[{time.strftime('%H:%M:%S')}] manifest {args.manifest}: {len(index.rows)} sessioni di pretraining, {args.workers} processi", flush=True)
     known = json.loads(args.scales_from.read_text())["scales"] if args.scales_from else None
-    sc = compute_scales(index, args.workers, args.max_sessions, known, checkpoint=args.out_dir / "session_scales.json")
+    sc = compute_scales(index, args.workers, args.max_sessions, known, checkpoint=args.out_dir / "session_scales.json",
+                        bipolar=args.bipolar_scales)
     sc["manifest"] = str(args.manifest)
     (args.out_dir / "session_scales.json").write_text(json.dumps(sc, indent=1))
     vals = np.array(list(sc["scales"].values()))

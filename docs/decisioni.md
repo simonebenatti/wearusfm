@@ -1895,3 +1895,13 @@ centrata sul gruppo di 4 patch e assegnata a tutte e 4: ogni patch riceve lo spe
 il 7,5% della finestra. La scala rapida (50 ms) resta per patch. **Costo: 52 -> 20 ms per finestra** (1 kHz e 16 canali: 12 -> 7 ms). Non cambia
 la decisione firmata (24 bande su 500 ms): cambia il centraggio, che era un dettaglio mio, e resta piu' fine di quello del test dei candidati
 (500 ms centrati su blocchi da 200 ms). Test: dentro un gruppo il target e' costante e coincide col calcolo diretto sulla finestra del gruppo.
+
+## D6a: montaggi virtuali implementati, spenti, foglio da firmare (05/10/2026)
+
+Decisione 15 del 04/10. Parametri proposti da AG in `docs/foglio_d6a_montaggi_virtuali.md` (da firmare): classe C, p = 0,5; sottogriglie di una
+griglia (4x8, 8x4, 4x4 elettrodi, passo 1 o 2), meta' monopolari e meta' bipolari (compagno meno elettrodo, lungo righe o colonne); topologia
+presentata = griglia, quindi quote invariate; scala bipolare della sua derivazione. Codice: `data/virtual_montage.py`, `LoaderConfig.virtual`
+(None = spento, com'e' nel sanity e nelle regole attuali della finestra 1); il montaggio si applica **prima del filtro** (lineare: test
+dell'uguaglianza); posizioni nel sistema della griglia d'origine (`grid_extent`); nelle metriche per passo, finestre per classe e quante
+virtuali; scale bipolari precalcolabili con `scripts/measure_loader.py --bipolar-scales`. Misura sul Mac (sessione sintetica tipo Hyser, 256
+canali a 2048 Hz, un processo): griglia intera 3,4 finestre/s, montaggio virtuale 36,6, con p = 0,5 5,7.

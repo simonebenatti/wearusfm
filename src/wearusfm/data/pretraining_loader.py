@@ -45,6 +45,7 @@ import numpy as np
 from scipy import signal as sps
 
 from wearusfm.data import rvq_codes as RC
+from wearusfm.data import virtual_montage as VM
 from wearusfm.data.processed import read_scale
 from wearusfm.model import anchor_targets as AT
 from wearusfm.model import channel_codes as CC
@@ -84,6 +85,8 @@ class LoaderConfig:
     # estrazione pesata, com'era nel sanity collaudato
     time_weighted: bool = False
     multiscale_anchor: bool = False  # target dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
+    # montaggi virtuali dalle griglie HD (D6a, decisione 15 del 04/10; `data.virtual_montage`, parametri da firmare). None = griglie intere
+    virtual: VM.VirtualSpec | None = None
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
@@ -194,13 +197,18 @@ def _filter(x: np.ndarray, fs: float, band: tuple[float, float], notch: tuple[fl
     return sps.sosfiltfilt(sos, x, axis=-1).astype(np.float32)
 
 
-def read_window(view: SessionView, trial, start: int, stop: int, span: tuple[int, int], cfg: LoaderConfig) -> np.ndarray:
-    """La finestra [start, stop) filtrata (se richiesto) con un margine dentro il tratto `span`, poi tagliata."""
+def _virtual(x: np.ndarray, vm) -> np.ndarray:
+    return x if vm is None else VM.apply(x, vm)
+
+
+def read_window(view: SessionView, trial, start: int, stop: int, span: tuple[int, int], cfg: LoaderConfig, vm=None) -> np.ndarray:
+    """La finestra [start, stop) filtrata (se richiesto) con un margine dentro il tratto `span`, poi tagliata. `vm`: montaggio virtuale, applicato
+    prima del filtro (lineare: stesso risultato, filtrando solo i canali che servono)."""
     if cfg.filter_band_hz is None:
-        return view.read(trial, start, stop)
+        return _virtual(view.read(trial, start, stop), vm)
     m = int(round(cfg.filter_margin_s * view.fs))
     a, b = max(span[0], start - m), min(span[1], stop + m)
-    y = _filter(view.read(trial, a, b), view.fs, cfg.filter_band_hz, cfg.notch_hz)
+    y = _filter(_virtual(view.read(trial, a, b), vm), view.fs, cfg.filter_band_hz, cfg.notch_hz)
     return y[:, start - a: start - a + (stop - start)]
 
 
@@ -209,9 +217,11 @@ def scale_seed(key: str) -> int:
     return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "little")
 
 
-def estimate_session_scale(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator) -> float:
+def estimate_session_scale(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator, pairs: tuple[np.ndarray, np.ndarray] | None = None
+                           ) -> float:
     """Mediana dei MAD dei canali validi (v10 §4.3), su `scale_chunks` tratti da `scale_chunk_s` sparsi nella sessione, filtrati come le
-    finestre. Un numero per sessione, condiviso dai canali."""
+    finestre. Un numero per sessione, condiviso dai canali. `pairs` = (elettrodi, compagni): la scala della derivazione bipolare «compagno meno
+    elettrodo» sulle coppie valide (montaggi virtuali, `data.virtual_montage`), sugli stessi tratti."""
     n = max(1, int(round(cfg.scale_chunk_s * view.fs)))
     # solo i tratti da cui si estraggono finestre (>= min_window_s): fra due salti ravvicinati restano tratti di pochi campioni, che il filtro
     # rifiuta (job 59254061: 195 sessioni fallite cosi', «padlen 39»)
@@ -227,7 +237,13 @@ def estimate_session_scale(view: SessionView, cfg: LoaderConfig, rng: np.random.
         ln = min(n, e - s)
         t0 = int(rng.integers(s, e - ln + 1))
         pieces.append(read_window(view, trial, t0, t0 + ln, (s, e), cfg))
-    x = np.concatenate(pieces, axis=1)[view.qc_valid]
+    x = np.concatenate(pieces, axis=1)
+    if pairs is None:
+        x = x[view.qc_valid]
+    else:
+        a, b = pairs
+        ok = view.qc_valid[a] & view.qc_valid[b]
+        x = x[b[ok]] - x[a[ok]]
     mad = np.median(np.abs(x - np.median(x, axis=1, keepdims=True)), axis=1)
     scale = float(np.median(mad))
     if not np.isfinite(scale) or scale <= 0:
@@ -344,15 +360,15 @@ class Block:
         return self.cand[0]
 
 
-def read_window_block(block: Block, win: Window, cfg: LoaderConfig) -> np.ndarray:
+def read_window_block(block: Block, win: Window, cfg: LoaderConfig, vm=None) -> np.ndarray:
     """Come `read_window`, ma dai dati del blocco: margine del filtro dentro il tratto e dentro i dati letti."""
     a0 = block.data_lo
     if cfg.filter_band_hz is None:
-        return block.data[:, win.start - a0: win.stop - a0]
+        return _virtual(block.data[:, win.start - a0: win.stop - a0], vm)
     m = int(round(cfg.filter_margin_s * block.view.fs))
     a = max(win.span[0], win.start - m, a0)
     b = min(win.span[1], win.stop + m, a0 + block.data.shape[1])
-    y = _filter(block.data[:, a - a0: b - a0], block.view.fs, cfg.filter_band_hz, cfg.notch_hz)
+    y = _filter(_virtual(block.data[:, a - a0: b - a0], vm), block.view.fs, cfg.filter_band_hz, cfg.notch_hz)
     return y[:, win.start - a: win.start - a + (win.stop - win.start)]
 
 
@@ -375,6 +391,7 @@ class PretrainBatch:
     windows: list[Window]
     skipped_sessions: int = 0  # sessioni saltate finora da questo processo (scala non calcolabile)
     rvq_codes: list | None = None  # (C_s, W_s) codici RVQ per campione (-1 = nessun target), se `rvq_codes_root`
+    presented: list[str] | None = None  # topologia presentata per campione ("full" o il montaggio virtuale; D9 decisione 1: si registra)
 
 
 def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
@@ -420,10 +437,15 @@ class PretrainLoader:
             self._open.popitem(last=False)
         return v
 
-    def scale(self, row: dict, view: SessionView, rng: np.random.Generator) -> float:
+    def scale(self, row: dict, view: SessionView, rng: np.random.Generator, vm: VM.VirtualMontage | None = None) -> float:
+        """Scala di sessione; con un montaggio virtuale bipolare, quella della sua derivazione (chiave `sessione|bip:asse:passo`)."""
         key = f"{row['dataset']}/{row['subject']}/{row['session']}"
+        pairs = None
+        if vm is not None and vm.scale_key is not None:
+            key = f"{key}|{vm.scale_key}"
+            pairs = VM.all_pairs(view.montage, vm.axis, vm.stride)
         if key not in self.scale_cache:  # seme dalla chiave, non dal generatore del processo: la stessa sessione ha la stessa scala ovunque
-            self.scale_cache[key] = estimate_session_scale(view, self.cfg, np.random.default_rng(scale_seed(key)))
+            self.scale_cache[key] = estimate_session_scale(view, self.cfg, np.random.default_rng(scale_seed(key)), pairs)
         return self.scale_cache[key]
 
     def _session(self, rng: np.random.Generator) -> tuple[dict, SessionView]:
@@ -500,23 +522,30 @@ class PretrainLoader:
             picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
-        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes = ([] for _ in range(13))
+        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented = ([] for _ in range(14))
         for row, src, win in picked:
             view = src.view if isinstance(src, Block) else src
-            s = self.scale(row, view, rng)
+            vm = None
+            # montaggio virtuale (D6a): mai con i codici RVQ precalcolati, che sono per i canali d'origine
+            if self.cfg.virtual is not None and row.get("quota_class") in self.cfg.virtual.classes and \
+                    not (self.rvq_store is not None and row["rvq"] == "on"):
+                vm = VM.draw(view.montage, view.qc_valid, self.cfg.virtual, rng)
+            s = self.scale(row, view, rng, vm)
             t = self._tick("scala", t)
-            raw = read_window_block(src, win, self.cfg) if isinstance(src, Block) else \
-                read_window(view, win.trial, win.start, win.stop, win.span, self.cfg)
+            raw = read_window_block(src, win, self.cfg, vm) if isinstance(src, Block) else \
+                read_window(view, win.trial, win.start, win.stop, win.span, self.cfg, vm)
             x = raw / np.float32(s)
+            montage = view.montage if vm is None else vm.montage
+            qc_valid = view.qc_valid if vm is None else vm.qc_valid
             t = self._tick("lettura_e_filtro", t)
-            layout = CC.layout_from_montage(view.montage)
-            code = CC.anatomy_codes(view.montage)
+            layout = CC.layout_from_montage(montage)
+            code = CC.anatomy_codes(montage)
             v, k = MK.generate_mask(layout, code.compartment_weights.argmax(axis=1), win.n_patches, p_max, row["rvq"] == "on", self.cfg.mask, rng)
             t = self._tick("maschera", t)
             signals.append(x)
             fs.append(view.fs)
             counts.append(layout.n_channels)
-            qc.append(view.qc_valid)
+            qc.append(qc_valid)
             codes.append(code)
             sets.append(CC.attention_sets(layout, self.cfg.k_neighbors))
             t = self._tick("codici_e_vicini", t)
@@ -525,18 +554,19 @@ class PretrainLoader:
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
-            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz(), patch_ms=self.cfg.patch_ms, guard=guard,
-                                             multiscale=self.cfg.multiscale_anchor))
+            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz() if vm is None else VM.band_limit_hz(montage, view.fs),
+                                             patch_ms=self.cfg.patch_ms, guard=guard, multiscale=self.cfg.multiscale_anchor))
             if self.rvq_store is not None:
                 entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
                 rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))
             t = self._tick("target_ancore", t)
             rows.append(row)
             wins.append(win)
+            presented.append("full" if vm is None else vm.label)
         packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
                              np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped),
-                             rvq_codes if self.rvq_store is not None else None)
+                             rvq_codes if self.rvq_store is not None else None, presented)
 
 
 def to_model_inputs(batch: PretrainBatch):

@@ -249,6 +249,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions, **{k: float(v.detach()) for k, v in losses.items()}}
+        # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
+        rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
+        rec["virtual"] = sum(p != "full" for p in batch.presented or [])
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
             with amp:
                 d = diagnostics(student, teacher, val)
