@@ -2001,3 +2001,21 @@ veri col modello del sanity. Consuntivo: **~31,2 GPU-ora su 300**.
 **Subito dopo** (stesso messaggio, «Poi lancia il job di 1 e verifica capgmyo e csl»): (1) `window_seconds.sbatch` sul manifest v1 (lunghezza media
 delle finestre per le quote nel tempo; CPU, **0 GPU-ora**); (2) verifica col fact-checker della derivazione dei canali di CapgMyo e CSL-hdemg
 (monopolari o gia' differenziali; scale bipolari del 05/10), e di Hyser per confronto.
+
+## Derivazione dei canali di CSL-hdemg, CapgMyo e Hyser (05/10/2026; fatti 25-27 raccolti, da firmare)
+
+**window_seconds 59425316** sottomesso (CPU, 0 GPU-ora), in corso. **Verifica** (fact-checker + README di CSL letto dallo zip su Leonardo):
+- **CSL-hdemg (fatto 25): gia' bipolare**, catena lungo l'avambraccio (canale i = elettrodo i meno elettrodo i+1, da prossimale a distale; nel
+  nostro montaggio lungo le righe). La «bipolare» virtuale di D6a qui e' un **doppio differenziale**: lungo le righe come gli elettrodi Delsys
+  «double differential» di NinaPro DB2/DB3, lungo le colonne una differenza fra strisce vicine.
+- **CapgMyo (fatto 26): «differential electrode array»**, coppie e riferimento non dichiarati: stessa conseguenza. In piu', **il codice degli
+  autori usa 16 righe x 8 colonne** mentre il nostro ingest assume 8 x 16 con `divmod(idx, 16)` (fatto 14 ancora aperto). *Lettura di AG:* se
+  il codice degli autori riflette la disposizione fisica (8 moduli da 8 x 2 attorno all'avambraccio), da noi le due colonne di ogni modulo stanno
+  una dopo l'altra sulla stessa riga: i vicini lungo l'avambraccio sono giusti tranne al salto 7 -> 8, quelli attorno all'avambraccio no. Peso di
+  CapgMyo nel manifest: 0,08% dei campioni. Il rapporto delle scale misurato (indice +1: 0,87; indice +16: 1,47) e' coerente con questa lettura,
+  ma non la prova.
+- **Hyser (fatto 27):** derivazione **non dichiarata** dalle fonti lette (Quattrocento, OT Bioelettronica); il rapporto 0,25-0,41 e' coerente con
+  monopolari a riferimento comune, ma non e' una fonte.
+**Da decidere (Simone):** (1) se la bipolare virtuale resta su tutte le griglie (doppio differenziale su CSL e CapgMyo, da dichiarare) o solo su
+Hyser; (2) cosa fare della griglia di CapgMyo (togliere CapgMyo dai montaggi virtuali e dichiarare la geometria incerta, oppure correggerla, che
+cambia i sidecar e quindi lo sha256 nel manifest congelato).
