@@ -21,6 +21,10 @@ EPN_FS = 200.0
 UCI_FS = 1000.0
 UCI_CHANNELS = 8
 UCI_UNMARKED = 0
+# i file di UCI-EMG salvano i codici a 8 bit del Myo moltiplicati per 1e-5 (verificato il 05/10/2026 sui file su Leonardo: valori multipli di
+# 1e-5, massimo |x| = 0,00128 = 128e-5), mentre EPN-612, stesso bracciale, salva i codici come sono (deviazione standard 1-4). Senza conversione
+# NeuroRVQ vedeva UCI ~1e4-1e5 volte piu' piccolo di EPN: il run 59363706 non partiva (2 semi su 3 al caso, perdita ferma a ln 6)
+UCI_TO_MYO_CODES = 1e5
 
 
 def load_epn_user(path: Path) -> tuple[list[np.ndarray], list[str], float]:
@@ -91,6 +95,15 @@ def load_uci_file(path: Path) -> tuple[np.ndarray, np.ndarray]:
     return raw[:, 1:1 + UCI_CHANNELS], raw[:, 1 + UCI_CHANNELS].astype(np.int64)
 
 
+def to_myo_codes(samples: np.ndarray, where: str = "") -> np.ndarray:
+    """Valori di un file UCI-EMG -> codici a 8 bit del Myo (le stesse unita' di EPN-612). Errore se i valori non sono multipli di 1e-5: l'ipotesi
+    sul formato non varrebbe."""
+    codes = samples * UCI_TO_MYO_CODES
+    if not np.allclose(codes, np.round(codes), atol=1e-6):
+        raise ValueError(f"{where}: valori non multipli di 1e-5, non sono codici del Myo per 1e-5")
+    return np.round(codes)
+
+
 def windowize(samples: np.ndarray, labels: np.ndarray, *, window_samples: int, stride_samples: int,
               classes: tuple[int, ...] | None = None) -> tuple[list[np.ndarray], list[int]]:
     """Finestre di lunghezza fissa con un'etichetta sola (v10 §8: niente etichette ambigue, niente riposo dalle pause): una finestra a cavallo di
@@ -106,8 +119,9 @@ def windowize(samples: np.ndarray, labels: np.ndarray, *, window_samples: int, s
 
 
 def load_uci_emg(root: Path, *, window_s: float = 1.0, stride_s: float = 1.0, classes: tuple[int, ...] | None = (1, 2, 3, 4, 5, 6),
-                 n_subjects: int | None = None, seed: int = 0) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
-    """Ritorna (finestre (N, T, 8), etichette (N,), soggetti (N,), fs). Default: finestre da 1 s senza sovrapposizione, classi 1-6 (foglio)."""
+                 n_subjects: int | None = None, seed: int = 0, myo_codes: bool = True) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    """Ritorna (finestre (N, T, 8), etichette (N,), soggetti (N,), fs). Default: finestre da 1 s senza sovrapposizione, classi 1-6 (foglio);
+    `myo_codes`: segnale nei codici del Myo, come EPN-612 (`to_myo_codes`)."""
     subject_dirs = sorted(p for p in root.rglob("*") if p.is_dir() and p.name.isdigit())
     if not subject_dirs:
         raise FileNotFoundError(f"nessuna cartella soggetto sotto {root}")
@@ -119,6 +133,8 @@ def load_uci_emg(root: Path, *, window_s: float = 1.0, stride_s: float = 1.0, cl
     for d in subject_dirs:
         for f in sorted(d.glob("*.txt")):
             samples, labels = load_uci_file(f)
+            if myo_codes:
+                samples = to_myo_codes(samples, str(f))
             w, y = windowize(samples, labels, window_samples=w_n, stride_samples=s_n, classes=classes)
             ws += w
             ys += y

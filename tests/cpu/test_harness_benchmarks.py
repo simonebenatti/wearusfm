@@ -46,3 +46,22 @@ def test_epn_windows_have_a_fixed_five_second_length(tmp_path):
     w, _, _, fs = B.load_epn612([tr])
     assert w.shape[1] == 1000 and fs == 200.0
     assert B.fix_length(np.ones((996, 8)), 1000)[996:].sum() == 0  # completata con zeri
+
+
+def test_uci_values_are_converted_to_myo_codes(tmp_path):
+    """I file UCI-EMG salvano i codici del Myo per 1e-5 (05/10): si riportano alle unita' di EPN-612; valori non multipli di 1e-5 = errore."""
+    import pytest
+
+    d = tmp_path / "EMG_data" / "01"
+    d.mkdir(parents=True)
+    lab = np.repeat([1, 2], 1000)
+    rows = ["time\tch1\tch2\tch3\tch4\tch5\tch6\tch7\tch8\tclass"]
+    rows += ["\t".join([str(i)] + ["3e-05", "-0.00128"] + ["1e-05"] * 6 + [str(int(c))]) for i, c in enumerate(lab)]
+    (d / "1_raw_data.txt").write_text("\n".join(rows) + "\n")
+    w, _, _, _ = B.load_uci_emg(tmp_path)
+    assert w[0, 0, :3].tolist() == [3.0, -128.0, 1.0]
+    raw, _, _, _ = B.load_uci_emg(tmp_path, myo_codes=False)
+    assert raw[0, 0, 0] == pytest.approx(3e-05)
+    (d / "1_raw_data.txt").write_text("\n".join(rows[:1] + [r.replace("3e-05", "1.5e-05") for r in rows[1:]]) + "\n")
+    with pytest.raises(ValueError):
+        B.load_uci_emg(tmp_path)

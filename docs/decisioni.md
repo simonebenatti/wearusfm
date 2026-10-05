@@ -1915,3 +1915,18 @@ Codice: `harness/p1_cross_subject.py`, `scripts/probe_p1.py` (fasi extract su GP
 `linear_probe` ora restituisce anche le predizioni di test. Verificato sui dati processati di Leonardo (05/10, sola lettura): DB2 e DB3 numerano
 i movimenti 1-49 attraverso i tre esercizi, DB6 le prese fino a 11, riempimento -1 in coda a DB2 E3. *Sul Mac:* sklearn caricato prima di torch
 manda in segmentation fault le operazioni di torch a piu' thread (venv del tokenizer): lo script carica torch per primo, il test anche.
+
+## Replica di NeuroRVQ, UCI-EMG: run 59363706 non valido (errore di unita' nei dati), corretto e rilanciato (05/10/2026)
+
+**59363706: COMPLETED** (3 min 2 s, **0,05 GPU-ora**), media sui 3 semi **41,0%**, FUORI tolleranza ([87,23; 91,63]): seme 0 16,5%, seme 2 19,5%
+(al caso: perdita ferma a ln 6), seme 1 **87,0%** (si sblocca solo dopo ~60 epoche). 662 finestre da 1 s, 36 soggetti.
+**Causa, trovata cercando errori di dati come vuole il foglio:** i file di UCI-EMG salvano i **codici a 8 bit del Myo moltiplicati per 1e-5**
+(valori multipli di 1e-5, massimo |x| = 0,00128 = 128e-5; letti su Leonardo il 05/10), mentre EPN-612, stesso bracciale, li salva come sono
+(deviazione standard 1-4 per canale). Senza normalizzazione (foglio), NeuroRVQ vedeva UCI ~1e4-1e5 volte piu' piccolo di EPN e del suo
+pretraining: l'ottimizzazione non partiva.
+**Correzione** (`harness/benchmarks.py`, `to_myo_codes`): UCI-EMG si legge **nei codici del Myo** (x 1e5), le stesse unita' di EPN-612; errore
+se i valori non sono multipli di 1e-5. **Non e' una normalizzazione** (nessuna statistica dei dati, una costante del formato) e non cerca
+parametri: riporta i due dataset dello stesso bracciale alle stesse unita'. **Da dichiarare** nella replica come scelta sul formato dei dati. La
+sonda sul nostro FM (P2) non cambia: la scala per soggetto assorbe la costante.
+**Rilancio:** UCI-EMG, 3 semi, stessa configurazione (stima ~0,05 GPU-ora, dentro i ~32 autorizzati per i run completi). Le 662 finestre (~4 passi
+per epoca a batch 128) restano come da foglio; se anche coi codici i semi si sbloccano tardi, si riporta.
