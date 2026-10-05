@@ -30,6 +30,10 @@ class VirtualSpec:
     shapes: tuple[tuple[int, int], ...] = ((4, 8), (8, 4), (4, 4))  # righe x colonne di elettrodi (<= 32 canali, v10 §2.7)
     strides: tuple[int, ...] = (1, 2)  # passo fra gli elettrodi, in passi della griglia
     classes: tuple[str, ...] = ("C",)  # classi di quota del manifest a cui si applica
+    # correzioni di Simone al foglio (05/10/2026, «si a 1 e 2»): CapgMyo fuori finche' la geometria della griglia non e' corretta (16x8, fatti
+    # 14 e 26); CSL-hdemg e' gia' bipolare (fatto 25): solo sottogriglie, una «bipolare» virtuale sarebbe un doppio differenziale
+    exclude_datasets: tuple[str, ...] = ("capgmyo",)
+    no_bipolar_datasets: tuple[str, ...] = ("csl_hdemg",)
 
 
 @dataclass(frozen=True)

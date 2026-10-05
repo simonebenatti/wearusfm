@@ -38,7 +38,7 @@ import json
 import math
 import time
 from collections import OrderedDict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import numpy as np
@@ -527,9 +527,12 @@ class PretrainLoader:
             view = src.view if isinstance(src, Block) else src
             vm = None
             # montaggio virtuale (D6a): mai con i codici RVQ precalcolati, che sono per i canali d'origine
-            if self.cfg.virtual is not None and row.get("quota_class") in self.cfg.virtual.classes and \
+            spec = self.cfg.virtual
+            if spec is not None and row.get("quota_class") in spec.classes and row["dataset"] not in spec.exclude_datasets and \
                     not (self.rvq_store is not None and row["rvq"] == "on"):
-                vm = VM.draw(view.montage, view.qc_valid, self.cfg.virtual, rng)
+                if row["dataset"] in spec.no_bipolar_datasets:
+                    spec = replace(spec, p_bipolar=0.0)
+                vm = VM.draw(view.montage, view.qc_valid, spec, rng)
             s = self.scale(row, view, rng, vm)
             t = self._tick("scala", t)
             raw = read_window_block(src, win, self.cfg, vm) if isinstance(src, Block) else \

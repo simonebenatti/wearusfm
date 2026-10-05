@@ -315,7 +315,7 @@ def test_virtual_montages_from_hd_grids(tmp_path):
     assert cap.rows[0]["quota_class"] == "C"
     off = L.PretrainLoader(cap, _cfg(block_s=None)).batch(4, np.random.default_rng(0))
     assert off.counts == [128] * 4 and off.presented == ["full"] * 4
-    loader = L.PretrainLoader(cap, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0)))
+    loader = L.PretrainLoader(cap, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0, exclude_datasets=())))
     rng = np.random.default_rng(1)
     kinds = set()
     for _ in range(6):
@@ -332,3 +332,8 @@ def test_virtual_montages_from_hd_grids(tmp_path):
     ninapro = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "ninapro_db2"], np.ones(1), idx.roots)
     nb = L.PretrainLoader(ninapro, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0))).batch(3, np.random.default_rng(0))
     assert nb.presented == ["full"] * 3 and nb.counts == [12] * 3  # classe A: mai virtuale
+    ex = L.PretrainLoader(cap, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0))).batch(3, np.random.default_rng(0))
+    assert ex.presented == ["full"] * 3  # CapgMyo escluso di default (geometria da correggere, fatti 14 e 26)
+    nob = L.PretrainLoader(cap, _cfg(block_s=None, virtual=VM.VirtualSpec(p=1.0, exclude_datasets=(), no_bipolar_datasets=("capgmyo",))))
+    r = np.random.default_rng(3)
+    assert all(p.startswith("mono") for _ in range(5) for p in nob.batch(4, r).presented)  # dataset gia' bipolare: solo sottogriglie

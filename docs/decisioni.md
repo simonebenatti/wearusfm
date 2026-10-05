@@ -2019,3 +2019,6 @@ delle finestre per le quote nel tempo; CPU, **0 GPU-ora**); (2) verifica col fac
 **Da decidere (Simone):** (1) se la bipolare virtuale resta su tutte le griglie (doppio differenziale su CSL e CapgMyo, da dichiarare) o solo su
 Hyser; (2) cosa fare della griglia di CapgMyo (togliere CapgMyo dai montaggi virtuali e dichiarare la geometria incerta, oppure correggerla, che
 cambia i sidecar e quindi lo sha256 nel manifest congelato).
+**Decise** (Simone, 05/10/2026: «si a 1 e 2»): niente bipolari virtuali su CSL-hdemg; CapgMyo fuori dai montaggi virtuali finche' la geometria
+non e' corretta. CapgMyo monopolare con riferimento comune (fatto 26, firmato da Simone). In codice (`VirtualSpec`, default) e nel foglio D6a;
+test. La correzione della griglia di CapgMyo (16 x 8, cambia i sidecar e lo sha256 nel manifest) resta da fare, quando Simone lo decide.

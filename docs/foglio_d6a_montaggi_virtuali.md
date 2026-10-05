@@ -37,3 +37,7 @@ finestra 1. **Scale bipolari:** se non sono precalcolate, ogni processo del data
 classe C x 4 = 904 scale; **job CPU su `lrd_all_serial`, 0 GPU-ora**), da lanciare con la tua conferma.
 
 **Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 05/10/2026** («accetto tutti e 4, firma compresa»)
+
+**Correzioni di Simone del 05/10/2026** («si a 1 e 2», dopo i fatti 25-27): (1) **niente bipolari virtuali su CSL-hdemg**, gia' bipolare
+(README): solo sottogriglie; (2) **CapgMyo fuori dai montaggi virtuali** finche' la geometria della griglia (16 x 8, fatti 14 e 26) non e'
+corretta. Hyser (monopolare, paper TNSRE 2021) resta com'era. Codice: `VirtualSpec.exclude_datasets`, `no_bipolar_datasets`.
