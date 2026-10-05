@@ -1930,3 +1930,11 @@ parametri: riporta i due dataset dello stesso bracciale alle stesse unita'. **Da
 sonda sul nostro FM (P2) non cambia: la scala per soggetto assorbe la costante.
 **Rilancio:** UCI-EMG, 3 semi, stessa configurazione (stima ~0,05 GPU-ora, dentro i ~32 autorizzati per i run completi). Le 662 finestre (~4 passi
 per epoca a batch 128) restano come da foglio; se anche coi codici i semi si sbloccano tardi, si riporta.
+**Rilancio UCI-EMG, 59368048: COMPLETED** (3 min 0 s, **0,05 GPU-ora**; budget del passo 5: usate ~0,68 su 300 piu' i 3 run di EPN-612 in corso).
+Coi codici del Myo l'addestramento parte per tutti i semi (dall'epoca 1 val 57-65%), ma la media sui 3 semi col modello della miglior epoca di
+validazione e' **78,66% (± 7,6)**: **FUORI tolleranza** ([87,23; 91,63]). Per seme: 83,5 / 82,6 / 69,9 (miglior epoca 14, 15, 19); all'ultima
+epoca 86,5 / 83,5 / 74,8 (media 81,6). La perdita va a ~0 entro l'epoca 20-30: memorizza. 662 finestre in tutto: test ~120-133 finestre (7
+soggetti), validazione ~70-90 (4 soggetti), quindi la scelta dell'epoca e' rumorosa e il numero per seme varia di ~15 punti.
+**Lettura secondo il foglio:** l'errore di dati trovato (unita') e' corretto; non ne vedo altri nell'harness. La differenza (~11 punti) si
+dichiara. *Interpretazione di AG, non verificabile:* le finestre da 1 s senza sovrapposizione erano una mia scelta dove il paper tace; con un
+passo piu' corto le finestre sarebbero di piu', ma cambiarlo ora, dopo aver visto il numero, sarebbe cercare i parametri: decide Simone.
