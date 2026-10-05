@@ -1,4 +1,4 @@
-# Foglio di firma — D6a, montaggi virtuali dalle griglie HD (bozza di AG del 05/10/2026; da firmare)
+# Foglio di firma — D6a, montaggi virtuali dalle griglie HD (bozza di AG del 05/10/2026; FIRMATO da Simone il 05/10/2026)
 
 **Perche'.** Decisione 15 del 04/10 (Simone): «montaggi virtuali dalle griglie HD al volo nel dataloader, se l'attesa sui dati resta <= 2%; da
 implementare prima della finestra 1. Le quote sulla topologia presentata si decidono con i numeri». v10 §2.7: il sottocampionamento a montaggi
@@ -6,7 +6,8 @@ virtuali (<= 32 canali) e' **augmentation stocastica, non riduzione obbligatoria
 nessuna parte: sono qui sotto, marcati come proposta.
 
 **Implementato e spento** (`src/wearusfm/data/virtual_montage.py`, opzione `LoaderConfig.virtual`, None di default; test in
-`tests/cpu/test_virtual_montage.py` e `test_pretraining_loader.py`). Con la firma si accende nelle regole della finestra 1.
+`tests/cpu/test_virtual_montage.py` e `test_pretraining_loader.py`). Con la firma si accende nelle regole della finestra 1. **Acceso** in
+`training.run.with_window1_rules` dopo la firma (05/10); il sanity resta senza.
 
 | Punto | Proposta di AG | Alternativa |
 |---|---|---|
@@ -35,4 +36,4 @@ finestra 1. **Scale bipolari:** se non sono precalcolate, ogni processo del data
 4 scale, sessione sintetica tipo Hyser). Proposta: precalcolarle con `scripts/measure_loader.py --bipolar-scales --scales-from <scale attuali> --skip-rate` (226 sessioni di
 classe C x 4 = 904 scale; **job CPU su `lrd_all_serial`, 0 GPU-ora**), da lanciare con la tua conferma.
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 05/10/2026** («accetto tutti e 4, firma compresa»)

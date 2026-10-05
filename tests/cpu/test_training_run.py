@@ -134,6 +134,7 @@ def test_window1_rules_train_end_to_end(tmp_path):
     idx = L.ManifestIndex.load(mpath, [root])
     cfg = R.with_window1_rules(R.small_config(datasets=None, max_steps=2))
     assert cfg.jepa.loss_per_window and cfg.loader.time_weighted and cfg.loader.anchor_edge_guard_s == 0.1
+    assert cfg.loader.virtual is not None and cfg.loader.virtual.p == 0.5 and cfg.loader.virtual.classes == ("C",)  # D6a, firmato il 05/10
     from dataclasses import replace
 
     base = L.PretrainLoader(idx, replace(cfg.loader, time_weighted=False))  # solo per aprire le sessioni
@@ -144,6 +145,7 @@ def test_window1_rules_train_end_to_end(tmp_path):
     assert "rvq" not in _lines(tmp_path / "run")[0]  # e niente RVQ
     sanity = R.sanity_config()
     assert not sanity.jepa.loss_per_window and not sanity.loader.time_weighted and sanity.loader.anchor_edge_guard_s == 0.0  # sanity invariato
+    assert sanity.loader.virtual is None
     assert np.isfinite(list(ws.values())).all()
 
 

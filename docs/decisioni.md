@@ -1946,3 +1946,18 @@ replica (foglio firmato il 04/10), ingresso e feature come P1. *Scelta di AG, da
 split; SE = radice della media dei quadrati degli SE di bootstrap degli split (i test si sovrappongono, la media non riduce l'errore); P2 = media
 dei due dataset, SE = radice della somma dei quadrati / 2. Costo stimato dell'estrazione: <= 1 GPU-ora per checkpoint (EPN-612: 91.800 finestre
 da 5 s, due ritagli da 4 s); da misurare al primo lancio, che chiede la conferma di Simone.
+
+## D6a e P1 firmati; collaudi di P1 e P2 e scale bipolari (Simone, 05/10/2026: «accetto tutti e 4, firma compresa»)
+
+1. **D6a firmato** senza correzioni (`docs/foglio_d6a_montaggi_virtuali.md`): montaggi virtuali **accesi in `with_window1_rules`**
+   (`VirtualSpec()`: classe C, p = 0,5, meta' bipolari; test); il sanity resta senza.
+2. **P1 firmato** senza correzioni (`docs/foglio_p1_cross_soggetto.md`).
+3. **Collaudo di P1 e P2 sul checkpoint finale del sanity** (`$SCRATCH/wearusfm_runs/runs/sanity_0410`), sui dati veri: P1 estrazione su
+   `boost_qos_dbg`, **al piu' 0,5 GPU-ora = 4 ore locali**; P2 estrazione su `boost_usr_prod` con limite 1 h, **al piu' 1 GPU-ora = 8 ore
+   locali**; sonde su `lrd_all_serial` in dipendenza, 0 GPU-ora. Budget del passo 5: usate ~0,68 su 300 piu' i 3 run di EPN-612 in corso
+   (~31). Uscite in `$SCRATCH/wearusfm_runs/p1_sanity_0410/` e `p2_sanity_0410/`.
+4. **Scale bipolari** dei montaggi virtuali: `measure_loader.sbatch <manifest> <loader_59276700/session_scales.json> --bipolar-scales
+   --skip-rate` (CPU, **0 GPU-ora**); lo sbatch ora passa gli argomenti in piu' allo script.
+5. **UCI-EMG:** «accetto tutti e 4» sul punto che offriva due strade (dichiarare la replica non riuscita, oppure una variante delle finestre
+   dichiarata a posteriori). Si dichiara non riuscita (78,66%, registrato sopra); la variante **non si lancia** finche' Simone non la sceglie
+   esplicitamente.

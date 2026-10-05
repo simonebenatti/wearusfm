@@ -1,4 +1,4 @@
-# Foglio di firma — P1, sonda cross-soggetto sul ramo sparso (bozza di AG del 05/10/2026; da firmare)
+# Foglio di firma — P1, sonda cross-soggetto sul ramo sparso (bozza di AG del 05/10/2026; FIRMATO da Simone il 05/10/2026)
 
 **Perche'.** D12 (firmata il 04/10) usa due metriche primarie per scegliere E dal pilot; P1 e' definita solo a grandi linee: «sonda lineare
 sull'encoder congelato, accuratezza bilanciata sui soggetti di test della classe A (split firmati)». Per un numero servono dataset, etichette,
@@ -25,4 +25,4 @@ Estrazione su `boost_qos_dbg`, **al piu' 0,5 GPU-ora = 4 ore locali** per checkp
 2, 4, 8}, 2 seed, checkpoint pre- e post-decay) sono ~16 valutazioni, **<= 8 GPU-ora**. **Proposta:** un primo lancio sul checkpoint finale del
 sanity, come collaudo sui dati veri (<= 0,5 GPU-ora, budget del passo 5: usate 0,58 + i run della replica in corso, ~32).
 
-**Tua decisione:** [ ] firmo · [ ] firmo con correzione · [ ] non firmo
+**Tua decisione:** [x] firmo · [ ] firmo con correzione · [ ] non firmo — **FIRMATO da Simone il 05/10/2026** («accetto tutti e 4, firma compresa»)

@@ -25,6 +25,7 @@ import torch
 
 from wearusfm.data import pretraining_loader as L
 from wearusfm.data import rvq_codes as RC
+from wearusfm.data import virtual_montage as VM
 from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
 from wearusfm.model.query_decoder import probe_query_collapse
@@ -69,10 +70,11 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
 
 def with_window1_rules(cfg: RunConfig) -> RunConfig:
     """Le decisioni del 04/10/2026, dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target delle ancore entro 100 ms dal
-    bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»). Il preset del sanity resta quello
-    collaudato. L'ancora RVQ non c'e' (decisione del 04/10): `with_rvq` non va applicato."""
+    bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»); montaggi virtuali dalle griglie
+    HD coi parametri del foglio D6a (firmato il 05/10/2026). Il preset del sanity resta quello collaudato. L'ancora RVQ non c'e' (decisione del
+    04/10): `with_rvq` non va applicato."""
     return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True), model=replace(cfg.model, multiscale_anchor=True),
-                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1, multiscale_anchor=True))
+                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1, multiscale_anchor=True, virtual=VM.VirtualSpec()))
 
 
 def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
