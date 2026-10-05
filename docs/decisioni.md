@@ -1869,3 +1869,19 @@ passo 5.850 (191.482; 100.000 / 30.000; nascoste 59.502 / 19.763), quindi R e B 
 contenuto in frequenza, coerente con le diagnostiche); quelli di NeuroRVQ restano a zero. (g) resta quello che aggiunge di piu' alle ancore attuali
 (B fisso a 0,646): la scelta firmata dell'ancora multi-scala nella finestra 1 e' confermata. Le famiglie spettrali passano ora piu' chiaramente la
 soglia (+11,6 punti), ma restano piu' leggibili dalle ancore attuali (30,3%) che dal modello (26,0%).
+
+## Passo 6 chiuso (Simone, 05/10/2026: «firmo passo 6»)
+
+Firmata la chiusura del passo 6 sulla base del sanity 59318048 e dei test elencati sopra. Consuntivo: **~11,0 GPU-ora su 100**. Restano da fare
+prima della finestra 1, fuori dal criterio del passo: ottimizzare i target multi-scala, i montaggi virtuali D6a, la sonda P1 fra soggetti (D12).
+
+## Replica di NeuroRVQ: run completi (Simone, 05/10/2026: «parti con la run completa di replica rvq sulle gpu»)
+
+Protocollo e tolleranza del foglio firmato il 04/10 (`docs/foglio_replica_neurorvq.md`), invariati; costo dichiarato dopo il collaudo 2: **~32
+GPU-ora = ~256 ore locali**. Budget del passo 5: usate 0,58 su 300, dopo i run ~33.
+- **EPN-612:** 3 job da 1 GPU, uno per seme (0, 1, 2), in parallelo su `boost_usr_prod`, limite **14 h** (stima ~10,4 h per seme col tempo per
+  epoca del collaudo 2; il limite non e' il costo, che e' il tempo reale);
+- **UCI-EMG:** 1 job da 1 GPU coi 3 semi in fila, limite 4 h (stima ~1 GPU-ora, nessun collaudo sulla GPU: se il percorso UCI ha un errore
+  costa minuti).
+Uscite in `$WORK/wearusfm_runs/results/passo5/replica_neurorvq/`, un JSON per job; la media sui 3 semi di EPN-612 si calcola dai tre JSON. La
+riuscita si giudica sulla media dei 3 split col modello della miglior epoca di validazione, come da foglio.
