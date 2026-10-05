@@ -1938,3 +1938,11 @@ soggetti), validazione ~70-90 (4 soggetti), quindi la scelta dell'epoca e' rumor
 **Lettura secondo il foglio:** l'errore di dati trovato (unita') e' corretto; non ne vedo altri nell'harness. La differenza (~11 punti) si
 dichiara. *Interpretazione di AG, non verificabile:* le finestre da 1 s senza sovrapposizione erano una mia scelta dove il paper tace; con un
 passo piu' corto le finestre sarebbero di piu', ma cambiarlo ora, dopo aver visto il numero, sarebbe cercare i parametri: decide Simone.
+
+## P2 (D12): sonda del nostro FM su EPN-612 e UCI-EMG scritta (05/10/2026)
+
+`scripts/probe_p2.py` (fasi extract su GPU e probe su CPU; job `probe_p2.sbatch` e `probe_p2_probe.sbatch`): stesse finestre e stessi split della
+replica (foglio firmato il 04/10), ingresso e feature come P1. *Scelta di AG, da dichiarare:* per dataset, media dell'accuratezza bilanciata sui 3
+split; SE = radice della media dei quadrati degli SE di bootstrap degli split (i test si sovrappongono, la media non riduce l'errore); P2 = media
+dei due dataset, SE = radice della somma dei quadrati / 2. Costo stimato dell'estrazione: <= 1 GPU-ora per checkpoint (EPN-612: 91.800 finestre
+da 5 s, due ritagli da 4 s); da misurare al primo lancio, che chiede la conferma di Simone.
