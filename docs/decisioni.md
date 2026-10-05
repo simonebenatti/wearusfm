@@ -1973,3 +1973,22 @@ correlati negativamente). *Da verificare (fatto da aprire):* se i canali di Capg
 cambierebbe di un fattore 0,25-1,6 a seconda del dataset.
 **P1, estrazione 59412499: COMPLETED** (13 min 42 s, **0,23 GPU-ora**): DB2 46.452 finestre (28 / 4 / 8 soggetti), DB3 13.681 (7 / 1 / 3), DB6
 42.044 (7 / 1 / 2). Sonde 59412507 in corso.
+
+## Replica di NeuroRVQ su EPN-612: RIUSCITA; collaudi di P1 e P2 sul modello del sanity (05/10/2026)
+
+**EPN-612, 59363702 / 59363704 / 59363705: COMPLETED** (9 h 50 min, 9 h 54 min, 9 h 53 min: **29,6 GPU-ora**). Test col modello della miglior
+epoca di validazione: **94,32 / 95,28 / 96,56** (epoche 56, 67, 75), **media 95,39**, pubblicato 94,65 ± 2,0: **DENTRO** la tolleranza ([92,65;
+96,65]). All'ultima epoca 94,31 / 95,50 / 96,57. Da dichiarare: banda 20-400 Hz (correzione di Simone al 20-90 del paper), split per soggetto
+nostri (semi 0, 1, 2). Con UCI-EMG fuori (78,66%, registrato sopra): **la replica riesce su uno dei due dataset**; la chiusura del passo 5 la
+firma Simone.
+**P1, sonde 59412507: COMPLETED** (22 min, CPU). Sul modello del sanity (31M, 10.000 passi solo su emg2qwerty, nessun dato sparso visto):
+DB2 **18,4% ± 2,4** (49 classi, caso 2%; train 37,7%), DB3 **3,1% ± 0,6** (49 classi, ~al caso; train 19,3%), DB6 **38,5% ± 3,7** (7 classi, caso
+14,3%). **P1 = 17,97 ± 1,73** (pesata per soggetti di test; a pesi uguali 20,0). Nessuna finestra tolta per classi assenti dal train.
+**P2, estrazione 59412516: COMPLETED** (41 min 19 s, **0,69 GPU-ora**); sonde 59412535 (33 min, CPU): EPN-612 **83,88 ± 0,89** (split 83,3 /
+83,9 / 84,5), UCI-EMG **84,60 ± 4,64** (88,0 / 86,2 / 79,7). **P2 = 84,24 ± 2,36.**
+**Lettura (AG):** e' un collaudo della pipeline, non un risultato: il modello del sanity ha visto un solo dataset ad anello. P2 mostra gia' un
+transfer sensato a encoder congelato; P1, il ramo sparso, e' basso (DB3 al caso), coerente col fatto che il sanity non ha visto montaggi sparsi:
+la metrica ha margine per distinguere i modelli del pilot. *Non confrontabile* con NeuroRVQ (fine-tuning completo contro sonda lineare). Nei log
+delle sonde ci sono avvisi di convergenza di lbfgs (max_iter 3000) per alcuni C: da dichiarare; la C scelta per P1 e' forte (0,001-0,01).
+**Costi:** P1 + P2 0,92 GPU-ora (dichiarati al piu' 1,5). Budget del passo 5: **~31,2 su 300** (collaudi 0,58, UCI 0,10, EPN-612 29,6, P1 e
+P2 0,92).
