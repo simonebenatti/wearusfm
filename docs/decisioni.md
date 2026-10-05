@@ -1961,3 +1961,5 @@ da 5 s, due ritagli da 4 s); da misurare al primo lancio, che chiede la conferma
 5. **UCI-EMG:** «accetto tutti e 4» sul punto che offriva due strade (dichiarare la replica non riuscita, oppure una variante delle finestre
    dichiarata a posteriori). Si dichiara non riuscita (78,66%, registrato sopra); la variante **non si lancia** finche' Simone non la sceglie
    esplicitamente.
+**Sottomessi** (05/10/2026, repo a 6ff2e57): P1 estrazione **59412499**, sonde **59412507** (afterok); P2 estrazione **59412516**, sonde
+**59412535** (afterok); scale bipolari **59412542**.
