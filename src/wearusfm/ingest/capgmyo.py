@@ -32,8 +32,12 @@ from wearusfm.metadata.schema import (
 )
 
 N_CHANNELS = 128
-GRID_ROWS = 8  # da verificare (fatti_da_verificare.md): non confermato da fonte ufficiale
-GRID_COLS = 16  # idem
+# griglia 16 righe x 8 colonne, canale i (base zero) -> riga i // 8, colonna i % 8 (Simone, 07/10/2026, opzione A; fatti 14 e 26: codice degli
+# autori Answeror/srep `reshape(..., 16, 8)`, diagnostica sui segnali di GPT in `docs/capgmyo_grid_diagnostic.md`). Prima era 8 x 16 con
+# `divmod(i, 16)`: sidecar riscritti da `scripts/fix_capgmyo_grid.py`. Righe attorno all'avambraccio (8 moduli x 2), colonne lungo
+# l'avambraccio (lettura di AG da Du 2017); verso prossimale/distale non dichiarato
+GRID_ROWS = 16
+GRID_COLS = 8
 NATIVE_FS_HZ = 1000.0
 WINDOW_SAMPLES = 1000  # un trial = 1s a 1kHz
 N_GESTURES = 8
@@ -132,13 +136,18 @@ def to_int16(data: np.ndarray, *, scale: float | None = None) -> tuple[np.ndarra
     return quantized, scale
 
 
+def grid_position(idx: int) -> tuple[int, int]:
+    """Colonna i del file (base zero) -> (riga, colonna) della griglia 16 x 8."""
+    return divmod(idx, GRID_COLS)
+
+
 def build_montage_metadata(subject: int, session_id: str = "s1") -> MontageMetadata:
     """v10 §3.4: griglia 2D, traslazione lungo gli assi, asse fibre privilegiato.
     Nessuna identita' anatomica per canale: HD senza mappatura muscolo-per-muscolo
     (v10 §4.5, "restano a mano poche decine di canali" - CapgMyo non e' fra questi)."""
     channels = []
     for idx in range(N_CHANNELS):
-        row, col = divmod(idx, GRID_COLS)
+        row, col = grid_position(idx)
         channels.append(ChannelMetadata(
             sensor_coords=SensorCoordinates(channel_index=idx, grid_row=row, grid_col=col),
             electrode_type="dry_electrode_array",

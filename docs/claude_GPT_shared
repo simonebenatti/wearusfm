@@ -49,6 +49,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Due regressioni eseguite sul trainer originale prima della patch fallivano: gradiente NaN rilevato solo come loss non finita al passo successivo e checkpoint sovrascritto durante lo stop per loss. Dopo: 64 test passati, 1 saltato (secondo dispositivo MPS non disponibile), includendo trainer, JEPA, Perceiver, dataloader e maschere. CPU macOS, Python 3.11.14, torch 2.14.0, numpy 2.3.5; nessun job/test CUDA o training su dati reali.
 - Attivita' iniziata sulla base 32cf58b; preservato il commit 4232246 di Claude che durante la sessione ha aggiunto solo il proprio riepilogo nel registro. Perceiver lasciato invariato; documentata la correzione in `docs/decisioni.md`.
 
+### 2026-10-07 | Claude | Griglia di CapgMyo 16x8 (opzione A di Simone) | Checkout di base: ec3914d
+
+- Letti il registro e il commit di GPT ec3914d. Corretto `ingest/capgmyo.py`: griglia 16x8, canale i -> riga i//8, colonna i%8 (`grid_position`), come la diagnostica di GPT.
+- Creati `scripts/fix_capgmyo_grid.py` e `scripts/slurm/fix_capgmyo_grid.sbatch`: riscrivono solo `grid_row`/`grid_col` dei sidecar di CapgMyo (backup prima), producono il manifest v1.1 (cambia solo lo sha256 di CapgMyo) e le scale senza le bipolari di CapgMyo da ricalcolare.
+- Test nuovi in `tests/cpu/test_fix_capgmyo_grid.py`; aggiornati alla 16x8 i test dei vicini (`test_channel_codes.py`) e dei montaggi virtuali. Suite CPU: 605 passati, 16 saltati. Registrato in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -90,3 +96,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Si preserva l'ultimo checkpoint gia' salvato, non si ricostruisce uno stato intermedio: eventuali passi validi successivi a quel checkpoint restano soltanto nelle metriche. STOP impedisce la ripresa automatica; una ripartenza richiede analisi del guasto e una decisione esplicita.
 - La fault injection dimostra il difetto e la protezione, non dimostra che i training ordinari precedenti abbiano avuto gradienti non finiti. La patch non convalida/ripara checkpoint storici e non intercetta ogni possibile errore numerico successivo all'optimizer. Verifica CUDA ancora non eseguita.
 - Perceiver ancora originale: P0 non confermato dalle prove sul grafo completo, P2 di pulizia numerica distinto da questa correzione del trainer. La voce di Claude sul test non tracciato descriveva lo stato iniziale; il test viene incluso nella pubblicazione di questa correzione.
+
+### 2026-10-07 | Claude | Griglia di CapgMyo 16x8 | Checkout di base: ec3914d
+
+- Dopo il job, il manifest v1 viene rifiutato dal dataloader per CapgMyo (sha256 dei sidecar cambiato): tutti i run successivi devono usare `results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz`.
+- CapgMyo resta escluso dai montaggi virtuali (`VirtualSpec.exclude_datasets`) finche' sidecar e scale bipolari non sono aggiornati su Leonardo; poi va tolto con un commit separato.
+- Verso prossimale/distale della griglia non dichiarato da nessuna fonte; l'asse (righe attorno, colonne lungo l'avambraccio) e' una lettura da Du 2017.

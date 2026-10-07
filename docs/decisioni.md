@@ -2063,3 +2063,17 @@ inclusi i dieci nuovi casi e le regressioni di trainer, JEPA, Perceiver, dataloa
 Questa verifica non prova contaminazioni nei run ordinari passati e non certifica backend CUDA non eseguiti, checkpoint storici o ogni
 possibile overflow durante l'update dell'optimizer. Il Perceiver non e' modificato: il P0 originario non confermato resta distinto dal P2
 di pulizia numerica e da questa protezione del trainer.
+
+## Griglia di CapgMyo corretta a 16 x 8 (Simone, 07/10/2026: opzione A)
+
+Esiti gia' registrati da GPT nel registro condiviso: **window_seconds 59425316 COMPLETED** (18 min, 0 GPU-ora, 19.034 sessioni, nessun errore;
+`results/passo6/window_seconds_59425316.json`); diagnostica della griglia di CapgMyo (`docs/capgmyo_grid_diagnostic.md`): 16 x 8 con riga =
+i // 8 preferita in 72/72 prove. **Opzione A:** `ingest/capgmyo.py` ora da' 16 x 8 (`grid_position`); `scripts/fix_capgmyo_grid.py` riscrive SOLO
+`grid_row`/`grid_col` dei 14 sidecar di CapgMyo (backup prima), scrive il **manifest v1.1** (cambia solo lo sha256 dei sidecar di CapgMyo:
+pesi, split e sessioni uguali; `params.revision`) e le scale senza le bipolari di CapgMyo, da ricalcolare con `measure_loader.sbatch`. Dopo il
+job il manifest v1 viene rifiutato per CapgMyo (sha256 diverso): **dalla finestra 1 si usa il v1.1**. Test: riscrittura, manifest accettato dal
+dataloader, vecchio rifiutato, rilancio senza effetti; test dei vicini e dei montaggi aggiornati alla 16 x 8. CapgMyo resta escluso dai montaggi
+virtuali finche' il job non ha girato; poi si toglie l'esclusione. Asse: righe attorno all'avambraccio, colonne lungo (lettura di AG da Du
+2017); verso prossimale/distale non dichiarato e non necessario al modello.
+Job: `fix_capgmyo_grid.sbatch` (CPU, 0 GPU-ora), poi `measure_loader.sbatch <manifest v1.1> <scale senza bipolari CapgMyo> --bipolar-scales
+--skip-rate` in dipendenza (CPU, 0 GPU-ora).

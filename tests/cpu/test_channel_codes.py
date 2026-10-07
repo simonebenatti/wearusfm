@@ -34,11 +34,11 @@ def test_neighbors_ring_grid_sparse():
     for i in range(16):
         assert set(nb[i]) == {(i + 1) % 16, (i - 1) % 16}
     assert nb[0, 0] == 1  # a parita' di distanza, prima lo spostamento angolare positivo
-    grid = CC.layout_from_montage(_dict(capgmyo.build_montage_metadata(1)))  # 8 x 16
+    grid = CC.layout_from_montage(_dict(capgmyo.build_montage_metadata(1)))  # 16 x 8 (fatti 14 e 26, 07/10/2026)
     nb = CC.neighbors(grid, 4)
-    i = 2 * 16 + 5  # riga 2, colonna 5: interno
-    assert sorted(nb[i]) == sorted([1 * 16 + 5, 3 * 16 + 5, 2 * 16 + 4, 2 * 16 + 6])
-    assert set(nb[0]) == {1, 16, 17, 2}  # all'angolo: i due lati, la diagonale, poi (0,2) prima di (2,0) a parita' di distanza
+    i = 2 * 8 + 5  # riga 2, colonna 5: interno
+    assert sorted(nb[i]) == sorted([1 * 8 + 5, 3 * 8 + 5, 2 * 8 + 4, 2 * 8 + 6])
+    assert set(nb[0]) == {1, 8, 9, 2}  # all'angolo: i due lati, la diagonale, poi (0,2) prima di (2,0) a parita' di distanza
     sparse = CC.layout_from_montage(_dict(camargo.build_montage_metadata(1, "d")))
     assert (CC.neighbors(sparse, 3) == -1).all()  # v10 §5.4: su Camargo il vicinato metrico e' vuoto
 

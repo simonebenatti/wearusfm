@@ -36,7 +36,7 @@ def test_monopolar_subgrid_keeps_the_original_coordinates_and_positions():
         assert np.allclose(CC.anatomy_codes(vm.montage).sensor_pos, full)  # stessa posizione nel sistema del sensore della griglia intera
         layout = CC.layout_from_montage(vm.montage)
         assert (layout.topology == CC.TOPOLOGIES.index("grid_2d")).all()
-    assert {"mono 4x8 s1", "mono 8x4 s1", "mono 4x4 s2", "mono 4x8 s2"} <= seen
+    assert {"mono 4x8 s1", "mono 8x4 s1", "mono 4x4 s2", "mono 8x4 s2"} <= seen  # griglia 16 x 8: 4x8 ogni 2 non ci sta
 
 
 def test_bipolar_pairs_sign_midpoint_band_and_qc():
@@ -59,7 +59,7 @@ def test_bipolar_pairs_sign_midpoint_band_and_qc():
         assert np.array_equal(vm.qc_valid, (vm.a != 17) & (vm.b != 17))
         assert [c["qc_valid"] for c in ch] == vm.qc_valid.tolist()
     a, b = VM.all_pairs(m, "row", 1)
-    assert len(a) == 7 * 16 and len(VM.all_pairs(m, "col", 2)[0]) == 8 * 14
+    assert len(a) == 15 * 8 and len(VM.all_pairs(m, "col", 2)[0]) == 16 * 6
 
 
 def test_presented_whole_when_p_is_zero_or_without_grids():

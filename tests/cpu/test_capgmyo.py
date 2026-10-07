@@ -123,8 +123,9 @@ def test_build_montage_metadata_shape_and_topology() -> None:
     assert group.topology.value == "grid_2d"
     assert group.channels[0].sensor_coords.grid_row == 0
     assert group.channels[0].sensor_coords.grid_col == 0
-    assert group.channels[16].sensor_coords.grid_row == 1
-    assert group.channels[16].sensor_coords.grid_col == 0
+    assert group.channels[8].sensor_coords.grid_row == 1  # 16 x 8: canali 1-8 sulla prima riga (fatti 14 e 26, 07/10/2026)
+    assert group.channels[8].sensor_coords.grid_col == 0
+    assert group.channels[127].sensor_coords.grid_row == 15 and group.channels[127].sensor_coords.grid_col == 7
 
 
 def test_to_int16_refuses_non_finite_data():
