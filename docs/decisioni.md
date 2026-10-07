@@ -2096,3 +2096,22 @@ pretraining + 4 di test), 18 sidecar corretti, 18 righe del manifest v1.1, 56 sc
 file `results/passo6/loader_59623700/session_scales.json`, **da usare dalla finestra 1**. Collaudo della finestra 1: **59624004** (la prima
 sottomissione con `afterok` su un job gia' finito e' stata rifiutata da SLURM; rilanciata senza dipendenza). CapgMyo resta escluso dai montaggi
 virtuali per questo collaudo: l'esclusione si toglie dopo, per non cambiare il codice mentre il job e' in coda.
+
+**Esito del collaudo 59624004 (07/10/2026, letto dopo la fine del job):** COMPLETED, exit 0:0, 26 min 17 s, fermato dal limite di tempo al
+passo **625** su 2000; preset `sanity` da **28,3 M** parametri (non 31 M come scritto sopra). **Costo: ~0,44 GPU-ora**; passo 6: **~11,4 su 100**.
+Riassunto, criteri e configurazione in `results/passo6/w1_collaudo_59624004.json`; metriche complete sul Mac
+(`~/wearusfm_local/reports/w1_collaudo_0710/`), checkpoint su Leonardo nella cartella del run.
+- **(1) superato:** nessun errore, 0 passi con valori non finiti, nessuno stop numerico; memoria GPU massima 37,6 GiB su 64 (27-28 GiB fino al
+  passo ~400, poi un salto: probabilmente una finestra lunga di griglia intera, non verificato).
+- **(2) NON superato: attesa sui dati 3,59% del passo** dopo i primi 50 (2,455 s per passo). L'attesa e' periodica: un passo ogni 3 esatti, 0,24 s
+  in media, 0,55 s al massimo; gli altri passi zero. 6 processi del dataloader su 8 CPU per GPU: la produzione e' di poco (~4%) sotto il consumo
+  della GPU. Primo passo 12,2 s (7,8 s di dati). Come fissato: si riporta e si misurano le fasi del dataloader con le regole della finestra 1,
+  nessuna modifica al volo. Proposta (da confermare): misura per fasi con `scripts/measure_loader.py` su `lrd_all_serial`, 0 GPU-ora, dopo aver
+  verificato che lo script attivi le stesse regole della finestra 1.
+- **(3) superato:** 20.000 finestre: A 19,9%, B 72,6%, C 7,5% (riportate, non giudicate: le quote sono nel tempo); **711 virtuali** su 1.508 di
+  classe C (0,47; CapgMyo escluso dai montaggi in questo collaudo). Nessuna sessione saltata.
+- **Da guardare (fuori dai criteri):** le perdite dell'ancora multi-scala dominano il totale. Medie dei passi 615-625: `ms_fast` 4,44, `ms_slow`
+  3,56, contro `log_rms` 0,83, `log_env` 0,66, `band_shape` 0,66, JEPA 0,04; totale ~ JEPA + 0,2 x somma delle ancore (2,07). All'inizio
+  `ms_slow` era ~93 (passi 1-10) e ~28 al passo 216, poi e' sceso. Lettura di AG, non misurata: i target multi-scala sono log-potenze non
+  standardizzate per banda; perdita grande non vuol dire per forza gradiente grande. Da proporre come foglio separato prima della finestra 1.
+- La perdita JEPA scende da 0,87 (passo 50) a 0,03-0,04 (passi 600-625); su 625 passi con warmup di 1000 non dice nulla sul collasso.

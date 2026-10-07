@@ -60,6 +60,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Lanciati con l'ok di Simone: `fix_capgmyo_grid` 59623698 (18 sidecar corretti, manifest v1.1) e `measure_loader` 59623700 (scale bipolari di CapgMyo ricalcolate), entrambi COMPLETED, CPU.
 - Lanciato il collaudo della finestra 1 (59624004, `boost_qos_dbg`, <= 0,5 GPU-ora): tutte le regole della finestra 1, tutti i dataset, manifest v1.1, scale nuove, maschere LONG e protezione numerica di GPT. Criteri fissati prima in `docs/decisioni.md`.
 
+### 2026-10-07 | Claude | Esito del collaudo della finestra 1 (59624004) | Codice eseguito: 5809152
+
+- Letto l'esito su Leonardo (sola lettura) e copiati sul Mac log, `metrics.jsonl`, `config.json`, `summary.json`. Job COMPLETED, exit 0:0, 26 min 17 s, fermato dal limite di tempo al passo 625 su 2000; ~0,44 GPU-ora (passo 6: ~11,4 su 100).
+- Criteri fissati prima in `docs/decisioni.md`: (1) superato, nessun valore non finito, memoria GPU massima 37,6 GiB; (2) **non superato**, attesa sui dati 3,59% del passo contro il 2%; (3) superato, A 19,9% / B 72,6% / C 7,5% delle finestre, 711 virtuali su 1.508 di classe C.
+- Riassunto con criteri, medie delle perdite e configurazione in `results/passo6/w1_collaudo_59624004.json`; esito registrato in `docs/decisioni.md`. Metriche complete fuori Git in `~/wearusfm_local/reports/w1_collaudo_0710/`. Nessuna modifica al codice.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -112,3 +118,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Il manifest v1 ora e' rifiutato per CapgMyo: usare `results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz` e `results/passo6/loader_59623700/session_scales.json`.
 - CapgMyo ancora escluso dai montaggi virtuali: l'esclusione si toglie dopo il collaudo, per non cambiare codice con un job in coda. Non pushare modifiche al codice mentre 59624004 e' in coda.
+
+### 2026-10-07 | Claude | Esito del collaudo della finestra 1 (59624004) | Codice eseguito: 5809152
+
+- Attesa sui dati sopra soglia (3,59%): periodica, un passo ogni 3, 0,24 s in media; con 6 processi su 8 CPU per GPU il dataloader produce ~4% meno di quanto consuma la GPU. Da misurare per fasi con le regole della finestra 1 (proposta: `measure_loader.py` su CPU, da confermare); nessuna modifica fatta.
+- Le perdite dell'ancora multi-scala dominano il totale (passi 615-625: `ms_fast` 4,4 e `ms_slow` 3,6 contro 0,7-0,8 delle altre ancore e 0,04 della JEPA). Ipotesi non misurata: target multi-scala non standardizzati per banda.
+- CapgMyo e' ancora escluso dai montaggi virtuali: l'esclusione va tolta con un commit separato, ora che il collaudo e' finito. Nel registro di `decisioni.md` il preset sanity era indicato da 31 M: sono 28,3 M (corretto nell'esito).
+- Il collaudo e' di 625 passi, dentro il warmup (1000): non dice nulla su collasso o qualita' della rappresentazione.

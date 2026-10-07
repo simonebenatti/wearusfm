@@ -1,0 +1,225 @@
+{
+ "job": 59624004,
+ "run_dir": "$SCRATCH/wearusfm_runs/runs/w1_collaudo_0710",
+ "code_commit": "5809152",
+ "manifest": "results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz",
+ "scales": "results/passo6/loader_59623700/session_scales.json",
+ "window_seconds": "results/passo6/window_seconds_59425316.json",
+ "slurm": {
+  "state": "COMPLETED",
+  "exit": "0:0",
+  "elapsed": "00:26:17",
+  "gpus": 1,
+  "gpu_hours": 0.44,
+  "num_workers": 6,
+  "cpus_per_task": 8
+ },
+ "summary": {
+  "stopped": "limite di tempo",
+  "steps": 625,
+  "elapsed_s": 1561.8552470207214,
+  "parameters": 28348361,
+  "device": "cuda",
+  "gpu_max_memory_gib": 37.6068434715271
+ },
+ "criteria": {
+  "1_no_errors_numeric_stop_oom": {
+   "nonfinite_steps": 0,
+   "gpu_max_memory_gib": 37.61,
+   "pass": true
+  },
+  "2_data_wait_le_2pct_after_step50": {
+   "value_pct": 3.586,
+   "mean_step_s": 2.455,
+   "steps_with_wait_gt_10ms": 210,
+   "period_steps": 3,
+   "mean_wait_s_when_waiting": 0.24,
+   "max_wait_s": 0.547,
+   "pass": false
+  },
+  "3_all_classes_and_virtual": {
+   "windows": 20000,
+   "classes_windows": {
+    "A": 3978,
+    "B": 14514,
+    "C": 1508
+   },
+   "classes_pct": {
+    "A": 19.89,
+    "B": 72.57,
+    "C": 7.54
+   },
+   "virtual": 711,
+   "virtual_over_C": 0.471,
+   "pass": true
+  }
+ },
+ "loss_means": {
+  "steps_1_10": {
+   "total": 29.2692,
+   "jepa": 0.0228,
+   "log_rms": 1.1808,
+   "log_env": 2.0654,
+   "band_shape": 5.9242,
+   "ms_fast": 43.524,
+   "ms_slow": 93.5375,
+   "grad_norm": 64.4181
+  },
+  "steps_300_310": {
+   "total": 3.1763,
+   "jepa": 0.1127,
+   "log_rms": 1.0035,
+   "log_env": 0.8323,
+   "band_shape": 0.6724,
+   "ms_fast": 5.217,
+   "ms_slow": 7.593,
+   "grad_norm": 4.4958
+  },
+  "steps_500_510": {
+   "total": 1.7879,
+   "jepa": 0.043,
+   "log_rms": 0.7217,
+   "log_env": 0.5785,
+   "band_shape": 0.5258,
+   "ms_fast": 3.7072,
+   "ms_slow": 3.191,
+   "grad_norm": 3.6451
+  },
+  "steps_615_625": {
+   "total": 2.0692,
+   "jepa": 0.0396,
+   "log_rms": 0.8287,
+   "log_env": 0.6579,
+   "band_shape": 0.6621,
+   "ms_fast": 4.4438,
+   "ms_slow": 3.5556,
+   "grad_norm": 4.6805
+  }
+ },
+ "first_step": {
+  "t_step_s": 12.16,
+  "t_data_s": 7.81
+ },
+ "skipped_sessions": 0,
+ "config": {
+  "model": {
+   "dim": 384,
+   "n_heads": 6,
+   "k_latents": 64,
+   "local_layers": 2,
+   "backbone_layers": 8,
+   "decoder_layers": 2,
+   "muscle_dropout": 0.4,
+   "patch_ms": 25.0,
+   "n_bands": 5,
+   "rvq_codes": null,
+   "grad_checkpoint": true,
+   "multiscale_anchor": true
+  },
+  "jepa": {
+   "target": "b",
+   "anchor_weight": 0.2,
+   "ema_momentum": 0.996,
+   "loss_per_window": true,
+   "rvq_targets": "slab"
+  },
+  "loader": {
+   "min_window_s": 1.0,
+   "max_window_s": 4.0,
+   "split_at_gaps": true,
+   "mask": {
+    "ratio": 0.5,
+    "share_short": 0.15,
+    "share_medium": 0.25,
+    "share_long": 0.2,
+    "share_spatial": 0.4,
+    "short": [
+     1,
+     2
+    ],
+    "medium": [
+     4,
+     12
+    ],
+    "long": [
+     20,
+     80
+    ],
+    "slab_fraction": 0.5,
+    "max_spatial_fraction": 0.5
+   },
+   "k_neighbors": 8,
+   "filter_band_hz": [
+    20.0,
+    450.0
+   ],
+   "patch_ms": 25.0,
+   "align_ms": 200.0,
+   "notch_hz": [
+    50.0,
+    60.0
+   ],
+   "filter_margin_s": 0.5,
+   "run_margin_s": 0.2,
+   "max_window_attempts": 20,
+   "max_session_attempts": 20,
+   "scale_chunks": 32,
+   "scale_chunk_s": 2.0,
+   "open_sessions": 64,
+   "block_s": 30.0,
+   "windows_per_block": 8,
+   "block_pool": 16,
+   "rvq_codes_root": null,
+   "anchor_edge_guard_s": 0.1,
+   "time_weighted": true,
+   "multiscale_anchor": true,
+   "virtual": {
+    "p": 0.5,
+    "p_bipolar": 0.5,
+    "shapes": [
+     [
+      4,
+      8
+     ],
+     [
+      8,
+      4
+     ],
+     [
+      4,
+      4
+     ]
+    ],
+    "strides": [
+     1,
+     2
+    ],
+    "classes": [
+     "C"
+    ],
+    "exclude_datasets": [
+     "capgmyo"
+    ],
+    "no_bipolar_datasets": [
+     "csl_hdemg"
+    ]
+   }
+  },
+  "datasets": null,
+  "batch_size": 32,
+  "lr": 0.0003,
+  "warmup_steps": 1000,
+  "weight_decay": 0.05,
+  "grad_clip": 1.0,
+  "max_steps": 2000,
+  "eval_every": 500,
+  "ckpt_every": 500,
+  "seed": 0,
+  "alarm": {
+   "collapse_ratio_min": 0.05,
+   "erank_fraction_min": 0.1,
+   "patience": 3
+  },
+  "amp_bf16": true
+ }
+}
