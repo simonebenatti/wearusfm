@@ -2077,3 +2077,16 @@ virtuali finche' il job non ha girato; poi si toglie l'esclusione. Asse: righe a
 2017); verso prossimale/distale non dichiarato e non necessario al modello.
 Job: `fix_capgmyo_grid.sbatch` (CPU, 0 GPU-ora), poi `measure_loader.sbatch <manifest v1.1> <scale senza bipolari CapgMyo> --bipolar-scales
 --skip-rate` in dipendenza (CPU, 0 GPU-ora).
+
+## Collaudo della configurazione della finestra 1 (Simone, 07/10/2026: «si va bene. intanto facciamo questa»)
+
+**Cosa:** la prima corsa con tutte le regole della finestra 1 insieme (`--window1-rules`: quote nel tempo, perdita per finestra, zona di bordo
+da 100 ms, ancora multi-scala, montaggi virtuali D6a corretti), maschere LONG corrette (91a6d28), protezione dai gradienti non finiti (ec3914d),
+**manifest v1.1**, scale di `measure_loader` del job 59623700 (con le bipolari di CapgMyo nuove), `window_seconds_59425316.json`, **tutti i
+dataset**. Modello: preset `sanity` (31 M), solo per collaudare la pipeline. `sanity_jepa.sbatch` su `boost_qos_dbg`, 1 GPU, 30 min: **al piu'
+0,5 GPU-ora = 4 ore locali**; budget del passo 6 (lavori della finestra 1 provati su `boost_qos_dbg`, piano W6): usate ~11,0 su 100. Cartella
+`$SCRATCH/wearusfm_runs/runs/w1_collaudo_0710`. In dipendenza `afterok` dal job delle scale.
+**Criteri, fissati prima di guardare:** (1) nessun errore, nessuno stop numerico, nessun OOM; (2) **attesa sui dati <= 2% del passo** (regola di
+D6a), misurata dopo i primi 50 passi come somma di `t_data_s` / somma di `t_step_s`; (3) nelle metriche compaiono tutte e tre le classi di quota
+e finestre virtuali (`virtual` > 0). Le frazioni realizzate per classe si riportano, non si giudicano: le quote sono nel tempo, non nelle finestre.
+Se (2) fallisce si riporta e si guardano le fasi del dataloader, senza cambiare nulla al volo.
