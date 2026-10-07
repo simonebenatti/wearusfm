@@ -36,6 +36,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Replica esatta dei vecchi conteggi sull'anello 16 canali, solo LONG: prima/seconda meta' = 3200/0, 6399/0, 12792/0 per 1/2/4 s. Dopo = 1583/1721, 3344/3235, 6908/6371: la seconda meta' e' raggiunta in tutte le 24 configurazioni.
 - Test del generatore: 18 passati. Prodotti e ispezionati due grafici prima/dopo e report JSON con hash/commit in `/Users/simonebenatti/wearusfm_local/reports/long_mask_20261007/`; dettagli in `docs/long_mask_replication.md`. Prova esclusivamente locale CPU, senza dati di segnali o training.
 
+### 2026-10-07 | Claude | Riallineamento e riepilogo del 05/10 | Codice esaminato: 32cf58b
+
+- Letti questo registro e i commit di GPT 4a2d6f4, 28674c9, 91a6d28, 32cf58b (job window_seconds, griglia CapgMyo, maschere LONG). Nessuna modifica al codice in questa voce.
+- Riepilogo del lavoro del 05/10 (commit da f8ad992 ad a3eda50, dettagli in `docs/decisioni.md`): passo 6 chiuso (sanity 59318048); passo 5 chiuso, replica di NeuroRVQ riuscita su EPN-612 (95,39%) e non su UCI-EMG (78,66%, dopo la correzione delle unita' Myo x 1e-5); P1 e P2 scritti e collaudati sul modello del sanity (P1 = 17,97, P2 = 84,24); target multi-scala da 52 a 20 ms per finestra; D6a (montaggi virtuali) implementato e acceso nelle regole della finestra 1, con le correzioni firmate (niente bipolari su CSL-hdemg, CapgMyo escluso); 904 scale bipolari (job 59412542); fatti 25-27 (derivazione di CSL, CapgMyo, Hyser).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -63,3 +68,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Confermato l'azzeramento dei token LONG nella seconda meta' con il vecchio codice in tutte le configurazioni. Con la correzione la seconda meta' e' campionabile e i limiti di durata restano rispettati.
 - Nei grafici si vede l'unione di piu' tubi: puo' essere piu' lunga di meta' finestra. Posizioni iniziali uniformi non implicano copertura uniforme dei token; centro e bordi hanno probabilita' diverse per costruzione.
 - Le quote realizzate nel mix D10 risentono di sovrapposizioni/rifiuti e dell'etichetta separata degli slab: non e' imposta una divisione 50/50 tra meta'. Stessi semi non rendono identiche tutte le proposte fra versioni. Il confronto misura il comportamento delle maschere, non la qualita' dell'apprendimento.
+
+### 2026-10-07 | Claude | Riallineamento | Codice esaminato: 32cf58b
+
+- Il subagent leonardo-ops si e' fermato per il limite settimanale del modello che usa (Haiku, fino al 09/10 alle 4): letture e lanci su Leonardo vanno fatti forzando un altro modello o aspettando. Nessun job lanciato oggi.
+- La correzione LONG di GPT (91a6d28) vale per i run futuri: il sanity 59318048 e i collaudi P1/P2 sul suo checkpoint sono stati fatti con le maschere LONG solo nella prima meta' della finestra. Da dichiarare; non cambia la chiusura del passo 6 (il criterio era il non-collasso).
+- `docs/decisioni.md` riporta ancora window_seconds 59425316 «in corso» e la geometria di CapgMyo come aperta: aggiornare con l'esito di GPT (16x8 C, riga = i//8) quando Simone decide la correzione dei sidecar.
+- Nel checkout c'e' un file non tracciato, `tests/cpu/test_training_numerical_safety.py` (di GPT, presumo): non l'ho toccato ne' committato.
