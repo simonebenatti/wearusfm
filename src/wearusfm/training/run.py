@@ -28,6 +28,9 @@ from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
+from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.spectral_step1 import READOUT_VERSION
+from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
 from wearusfm.model.query_decoder import probe_query_collapse
 from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, make_teacher, jepa_losses
 
@@ -56,6 +59,11 @@ class RunConfig:
     seed: int
     alarm: AlarmRule = field(default_factory=AlarmRule)
     amp_bf16: bool = True  # autocast bf16, solo su CUDA (v10 §5.5)
+    target_version: str = TARGET_VERSION
+    readout_version: str = READOUT_VERSION
+    keep_calibration: str | None = None
+    keep_calibration_sha256: str | None = None
+    keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
 
 
 def sanity_config(max_steps: int = 20000) -> RunConfig:
@@ -80,6 +88,12 @@ def with_window1_rules(cfg: RunConfig) -> RunConfig:
 def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
     """Ancora RVQ accesa (D5b): testa RVQ da 8192 codici e codici precalcolati dal dataloader."""
     return replace(cfg, model=replace(cfg.model, rvq_codes=N_RVQ_CODES), loader=replace(cfg.loader, rvq_codes_root=str(codes_root)))
+
+
+def with_spectral_keep(cfg: RunConfig, calibration: str | Path, weight: float) -> RunConfig:
+    """Both A (weight=0) and B instantiate the SAME head, preserving encoder initialization."""
+    return replace(cfg, model=replace(cfg.model, keep_readout=True), jepa=replace(cfg.jepa, keep_weight=weight),
+                   keep_calibration=str(calibration), keep_calibration_sha256=sha256_file(calibration))
 
 
 def config_to_dict(cfg: RunConfig) -> dict:
@@ -175,6 +189,33 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
     il passo difettoso non aggiorna optimizer/EMA e non viene contato."""
     t_start = time.time()
+    if cfg.target_version != TARGET_VERSION:
+        raise ValueError("target_version incompatible with this code")
+    if cfg.readout_version != READOUT_VERSION:
+        raise ValueError("readout_version incompatible with this code")
+    if cfg.keep_grad_every < 0:
+        raise ValueError("keep_grad_every must be nonnegative")
+    if cfg.model.keep_readout and torch.device(device).type not in ("cpu", "cuda"):
+        raise ValueError("Step 1 supports CPU/CUDA only")
+    if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
+        raise ValueError("keep requires a registered head and multiscale targets")
+    ckpt = out_dir / "checkpoint.pt"
+    resume_state = torch.load(ckpt, map_location="cpu", weights_only=False) if ckpt.exists() else None
+    if resume_state is not None and cfg.loader.multiscale_anchor:
+        previous = resume_state.get("config", {})
+        if previous.get("target_version") != cfg.target_version:
+            raise ValueError("PSD target definition changed: use a NEW run directory, not resume")
+    if resume_state is not None and (cfg.model.keep_readout or resume_state.get("config", {}).get("model", {}).get("keep_readout")):
+        previous = resume_state["config"]
+        if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa")):
+            raise ValueError("Step 1 resume identity changed: use a NEW run directory")
+    calibration = None
+    if cfg.model.keep_readout:
+        if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
+            raise ValueError("missing/changed keep calibration file")
+        calibration = read_calibration(cfg.keep_calibration, calibration_signature(cfg, manifest, scales, window_s))
+        if init_from is not None:
+            raise ValueError("Step 1 warm-start not enabled: use paired NEW runs (no unchecked strict=False)")
     out_dir.mkdir(parents=True, exist_ok=True)
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cfg.amp_bf16 and str(device).startswith("cuda"))
     stop_file = out_dir / "STOP"
@@ -189,12 +230,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     torch.manual_seed(cfg.seed)
     index = load_index(manifest, roots, cfg.datasets)
     student = WearUsFM(cfg.model).to(device)
+    if calibration is not None and resume_state is None:
+        student.spectral_keep.fit_target_stats(calibration[0], calibration[1])
     teacher = make_teacher(student).to(device)
     opt = torch.optim.AdamW(student.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
     step, monitor = 0, AlarmMonitor(cfg.alarm, cfg.model.dim)
     ckpt = out_dir / "checkpoint.pt"
     if ckpt.exists():
-        state = torch.load(ckpt, map_location="cpu", weights_only=False)  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
+        state = resume_state  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
         student.load_state_dict(state["student"])
         teacher.load_state_dict(state["teacher"])
         opt.load_state_dict(state["optimizer"])
@@ -247,6 +290,16 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             reason = f"perdita non finita al passo {step}"
             numerical_failure = True
             break
+        if cfg.jepa.keep_weight > 0 and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
+            # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance.
+            shared = [p for name, p in student.named_parameters() if p.requires_grad and
+                      name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
+            components = {"jepa": losses["jepa"], "keep": cfg.jepa.keep_weight * losses["keep"]}
+            components["anchors"] = losses["total"] - components["jepa"] - components["keep"]
+            for name, component in components.items():
+                grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
+                squares = [g.detach().float().square().sum() for g in grads if g is not None]
+                losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
         losses["total"].backward()
         gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)
         # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.

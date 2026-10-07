@@ -28,6 +28,7 @@ from wearusfm.model.local_encoder import LocalEncoder
 from wearusfm.model.patch_tokens import PatchTokenizer
 from wearusfm.model.perceiver import PerceiverPooling, offsets_from_counts
 from wearusfm.model.query_decoder import QueryDecoder
+from wearusfm.model.spectral_step1 import SpectralKeepHead
 
 
 @dataclass(frozen=True)
@@ -44,6 +45,7 @@ class FMConfig:
     rvq_codes: int | None = None  # None = senza testa RVQ
     grad_checkpoint: bool = False  # activation checkpointing di encoder locale, backbone e decoder (v10 §5.5)
     multiscale_anchor: bool = False  # teste dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
+    keep_readout: bool = False  # Step 1 experimental shared-readout supervision
 
 
 @dataclass
@@ -102,6 +104,7 @@ class WearUsFM(nn.Module):
         self.decoder = QueryDecoder(cfg.dim, cfg.n_heads, cfg.decoder_layers)
         self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands, multiscale=cfg.multiscale_anchor)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
+        self.spectral_keep = SpectralKeepHead(2 * cfg.dim) if cfg.keep_readout else None
         for m in (self.local, self.backbone, self.decoder):
             m.grad_checkpoint = cfg.grad_checkpoint
 

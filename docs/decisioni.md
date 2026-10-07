@@ -2115,3 +2115,56 @@ Riassunto, criteri e configurazione in `results/passo6/w1_collaudo_59624004.json
   `ms_slow` era ~93 (passi 1-10) e ~28 al passo 216, poi e' sceso. Lettura di AG, non misurata: i target multi-scala sono log-potenze non
   standardizzate per banda; perdita grande non vuol dire per forza gradiente grande. Da proporre come foglio separato prima della finestra 1.
 - La perdita JEPA scende da 0,87 (passo 50) a 0,03-0,04 (passi 600-625); su 625 passi con warmup di 1000 non dice nulla sul collasso.
+
+## PSD fisica e Step 1 sperimentale (07/10/2026, GPT; richiesta di Simone)
+
+Simone: «inizia con la correzione della PSD, poi vai al passo 1 e riproviamo»; approvati tramite domanda esplicita entrambi i collaudi sotto.
+Base `3685255`, checkout canonico Mac condiviso. README_STEP1 allegato usato come proposta, non come prova di esecuzione: il pacchetto di
+codice citato nel README non era allegato. Implementazione integrata e testata qui; le ulteriori scelte restano sperimentali.
+
+**PSD multiscala:** Hann simmetrica, detrend=False, nfft=N. Densita' = |rFFT(x*w)|^2/(fs*sum(w^2)), raddoppio dei bin positivi esclusi DC
+e Nyquist quando N pari; potenza di banda = somma densita' * fs/N. Log(potenza+1e-8). Riscontro indipendente con periodogram SciPy,
+N pari/dispari e float32/64, Parseval comprensivo di DC/Nyquist, guadagno, tono 160 Hz a 1/2 kHz, bande mancanti e bordi.
+Non cambiano 50 ms/6 bande/hop25 ms e 500 ms/24 bande/hop100 ms, bande20-450, RMS/env/forma5bande, guard o preprocessing.
+Versione target `step1_psd_power_shape_energy_v1`; resume di vecchi run multiscala vietato prima di scrivere output.
+
+**Step 1:** pooling comune P1/P2 [backbone medio su tempo valido/latenti; locale medio nel tempo per canale, poi sui canali QC-validi],
+2d coordinate, supporto per conteggi eterogenei e padding; vista mascherata rifiutata. Readout `p1p2_qc_equal_channel_v1`: rigenerare cache.
+Target globali: media potenze LINEARI nel tempo per canale, poi canali equiponderati, banda comune; forma log(P_b/sum P_b) ed energia
+log(sum P_b+eps), 32 coordinate (6+1+24+1). Silenzio: forma esclusa, energia al floor. Se un canale QC-valido non ha finestre, scala esclusa.
+Testa lineare sullo student non mascherato con gradiente verso encoder; SmoothL1 float32 su statistiche del solo train; media prima fra
+coordinate di ciascuna famiglia, poi famiglie disponibili e campioni. Parametri/buffer registrati prima di teacher/optimizer, un solo update,
+forward extra con RNG CPU/CUDA isolato. MPS non supportato. Default keep_weight=0, keep_readout=False; niente warm-start non verificato.
+Per futuri bracci A/B usare la testa in entrambi con calibrazione identica (A=0, B>0), stesso seed: inizializzazione testata identica.
+
+**Sonde preparate, non ancora eseguite su corpus reale:** scripts/spectral_step1.py split/calibrate/extract/probe. ID soggetti qualificati,
+scaler sul train, alpha sulla validation, test una volta per protocollo; R2 negativi mantenuti, target costanti/mancanti non valutabili.
+Si misurano backbone/locale/concatenazione; nessun bootstrap per soggetto implementato. Split della ridge su soggetti del PRETRAINING:
+l'encoder puo' averli osservati senza etichette, quindi non chiamare il risultato generalizzazione dell'encoder a soggetti mai visti.
+P1/P2 sul test downstream e un confronto A/B scientifico sono successivi, non inclusi nel collaudo autorizzato. Keep 0,05 e' solo un'ipotesi.
+Le 32 coordinate non provano conservazione della dinamica; il guard centrato non certifica l'intero supporto lento rispetto ai transitori.
+
+### Collaudi autorizzati: protocollo congelato PRIMA del lancio
+
+Verifica locale completa: **720 test CPU passati, 1 saltato (MPS)**. Cinque casi downloader bloccati dalla bind localhost nel sandbox
+sono stati rieseguiti con permesso e superati; non erano regressioni di codice. Le prove CUDA restano quelle da fare sotto.
+
+Costo massimo approvato da Simone: **1 GPU-ora =8 ore locali**, piu' **1 core-ora CPU (0 GPU-ora)**. Budget passo6: ~11,4/100 usate,
+~88,6 residue prima; al massimo ~12,4/100 e ~87,6 residue dopo. Nessun cambio al dataloader/quote/CapgMyo virtuale.
+Usare manifest v1.1 e scale59623700/durate59425316; nessun resume dei run storici. Codice e criteri committati prima di sottomettere.
+
+1. **Replica PSD finestra1:** sanity 28,3M, tutti i dataset, RVQ spento, keep spenta, seed0, massimo2000step e1560s, 1GPU/8CPU/30min
+   boost_qos_dbg, directory NUOVA `$SCRATCH/wearusfm_runs/runs/w1_psd_0710`. <=0,5GPU-ora. Stessi criteri precedenti: nessun errore/OOM/
+   stop numerico; attesa sui dati <=2% dopo50step; tutte le classi A/B/C e virtual>0. Quote riportate, non giudicate. Non confrontare
+   direttamente magnitudine loss con vecchia definizione target. Se la soglia dati fallisce si registra, senza ottimizzare al volo.
+2. **Calibrazione CPU:** lrd_all_serial 1CPU/1h <=1core-ora, emg2qwerty, split soggetti seed0 (circa80/10/10 entro pretraining), 100
+   finestre per soggetto train; cartella NUOVA `$WORK/wearusfm_runs/results/passo6/step1_0710`. Scales/durate e impostazioni W1 identiche
+   al braccio smoke. NPZ con y/valid/subject/split, provenienza, versioni/hash di manifest/split/subset/preprocessing/commit. Non scegliere
+   soggetti o finestre sul test P1/P2. Le statistiche non si ricalcolano al resume.
+3. **Step1 smoke:** sanity con keep_readout=True, emg2qwerty, RVQ spento, seed0, keep_weight=0,05, gradnorm condivise ogni100step;
+   massimo200step/1200s poi resume massimo201step/90s nella STESSA allocazione1GPU/8CPU/30min, <=0,5GPU-ora; cartella NUOVA
+   `$SCRATCH/wearusfm_runs/runs/step1_smoke_0710`. Prima controlli small su CUDA/bf16/checkpointing: loss/grads finite, encoder riceve
+   gradienti, teacher no-grad, RNG CPU/CUDA invariato anche dopo backward, buffer EMA identici. Criteri run: nessun errore/OOM/stop numerico,
+   keep e target validi presenti, gradienti condivisi finiti, checkpoint/statistiche/versioni coerenti al resume. Nessuna soglia post hoc
+   su loss/P1/P2; throughput/GPU memoria/costo si riportano. L'attesa inferiore nel braccio keep puo' dipendere dalla GPU piu' lenta, non
+   dimostra un loader migliorato. Queste prove sono funzionali, non qualita' dell'apprendimento o non-collasso a regime.

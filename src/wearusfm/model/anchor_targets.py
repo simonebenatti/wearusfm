@@ -27,6 +27,8 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import fft as sfft
 
+from wearusfm.model.spectral_targets import hann_periodogram
+
 BAND_EDGES_HZ = tuple(float(v) for v in np.geomspace(20.0, 450.0, 6))  # 20, 37, 70, 130, 242, 450 Hz
 RMS_WINDOW_MS = 25.0
 SPECTRAL_WINDOW_MS = 200.0
@@ -89,13 +91,11 @@ def _band_logpower(x32: np.ndarray, fs: float, centers: np.ndarray, win_ms: floa
     segnale, (C, B) banda disponibile = sotto il limite del canale e con almeno una frequenza a questa risoluzione)."""
     seg, ok = _windows(x32, fs, centers, win_ms)
     n = seg.shape[-1]
-    spec = sfft.rfft(seg * np.hanning(n).astype(np.float32), axis=-1)
-    power = spec.real ** 2 + spec.imag ** 2
-    freqs = np.fft.rfftfreq(n, 1.0 / fs)
+    power, freqs = hann_periodogram(seg, fs)
     edges = np.geomspace(20.0, 450.0, n_bands + 1)
     bands = np.stack([(freqs >= lo) & (freqs < hi) for lo, hi in zip(edges[:-1], edges[1:])], axis=1).astype(power.dtype)  # (F, B)
     avail = (edges[None, 1:] <= limit[:, None] + 1e-9) & (bands.sum(axis=0) > 0)[None, :]
-    return np.log((power @ bands).astype(np.float64) + EPS), ok, avail
+    return np.log((power @ bands).astype(np.float64) * (fs / n) + EPS), ok, avail
 
 
 def _hop_patches(name: str, patch_ms: float) -> int:

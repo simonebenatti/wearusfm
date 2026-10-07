@@ -17,6 +17,7 @@ errore quadratico medio come perdita (l'errore assoluto e' l'alternativa usata i
 from __future__ import annotations
 
 import copy
+import math
 from dataclasses import dataclass
 from typing import Callable
 
@@ -28,6 +29,7 @@ from wearusfm.model.anchor_targets import MS_SCALES, RVQ_TOKEN_MS, AnchorTargets
 from wearusfm.model.anchors import anchor_losses, masked_mean, rvq_loss
 from wearusfm.model.channel_codes import TOPOLOGIES
 from wearusfm.model.fm import ModelInputs, WearUsFM
+from wearusfm.model.spectral_step1 import keep_objective
 from wearusfm.training.masking import KIND_NAMES, VISIBLE
 
 
@@ -43,8 +45,11 @@ class JEPAConfig:
     # (Simone, 04/10/2026: «sì, fai la prova con la maschera per canale»): nascoste su quel canale ma non su tutti, con dei vicini visibili. In
     # tutti e due i casi si registra anche l'altra perdita, senza gradiente, e l'accuratezza top-1
     rvq_targets: str = "slab"
+    keep_weight: float = 0.0
 
     def __post_init__(self) -> None:
+        if not math.isfinite(self.keep_weight) or self.keep_weight < 0:
+            raise ValueError("keep_weight must be finite and nonnegative")
         if self.target not in ("a", "b"):
             raise ValueError(f"target {self.target!r}: 'a' o 'b' (D11)")
         if self.rvq_targets not in ("slab", "channel"):
@@ -193,6 +198,12 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
             losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
+    if cfg.keep_weight > 0:
+        if anchor_targets is None:
+            raise ValueError("keep loss requires multiscale targets")
+        losses["keep"], metrics = keep_objective(student, inp, anchor_targets)
+        losses.update(metrics)
+        losses["total"] = losses["total"] + cfg.keep_weight * losses["keep"]
     return losses
 
 

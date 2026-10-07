@@ -26,6 +26,7 @@ from wearusfm.model import channel_codes as CC
 from wearusfm.model.channel_identity import codes_to_tensors
 from wearusfm.model.fm import ModelInputs, WearUsFM
 from wearusfm.model.local_encoder import sets_to_tensors
+from wearusfm.model.spectral_step1 import pool_p1p2
 
 
 def myo8_montage(dataset: str, fs: float, side: str = "unknown", mains_hz: int = 50) -> dict:
@@ -94,12 +95,7 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
                               torch.as_tensor(layout.qc_valid).repeat(n).to(device))
             with amp:
                 enc = model.encode(inp, None)
-            tv = enc.key_time_valid.float()  # (n, P)
-            z = (enc.z.float().mean(dim=2) * tv[..., None]).sum(dim=1) / tv.sum(dim=1, keepdim=True).clamp(min=1)  # (n, d)
-            pv = enc.patch_valid.float()  # (n*C, P)
-            loc = (enc.local.float() * pv[..., None]).sum(dim=1) / pv.sum(dim=1, keepdim=True).clamp(min=1)  # (n*C, d)
-            loc = loc.view(n, c, -1).mean(dim=1)
-            feats[i:i + n] += torch.cat([z, loc], dim=1).cpu().numpy() / len(crops)
+            feats[i:i + n] += pool_p1p2(enc, inp.counts, inp.qc_valid).cpu().numpy() / len(crops)
     return feats
 
 

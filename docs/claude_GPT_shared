@@ -66,6 +66,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Criteri fissati prima in `docs/decisioni.md`: (1) superato, nessun valore non finito, memoria GPU massima 37,6 GiB; (2) **non superato**, attesa sui dati 3,59% del passo contro il 2%; (3) superato, A 19,9% / B 72,6% / C 7,5% delle finestre, 711 virtuali su 1.508 di classe C.
 - Riassunto con criteri, medie delle perdite e configurazione in `results/passo6/w1_collaudo_59624004.json`; esito registrato in `docs/decisioni.md`. Metriche complete fuori Git in `~/wearusfm_local/reports/w1_collaudo_0710/`. Nessuna modifica al codice.
 
+
+### 2026-10-07 | GPT | PSD fisica e Step 1 | Checkout di base: 3685255
+
+- Implementata la PSD monolaterale con normalizzazione fs/Hann e integrazione per banda, solo nelle ancore multiscala. Invariati RMS, forma a cinque bande, inviluppo, finestre, hop, filtri e guard. Target `step1_psd_power_shape_energy_v1`; i vecchi run multiscala non si possono riprendere con questa definizione.
+- Integrato lo Step 1 sperimentale, spento per default: pooling P1/P2 unico e differenziabile, QC e padding, 32 target globali forma/energia, testa lineare, statistiche train-only salvate nel checkpoint, SmoothL1 e quattro famiglie a peso uguale. Il percorso student completo e' distinto dalla JEPA mascherata; un solo optimizer/EMA. RNG aggiuntivo isolato su CPU/CUDA.
+- Aggiunti strumenti split/calibrate/extract/probe, con hash reali di checkpoint/manifest/subset/split e sonde backbone/locale/concatenazione. Ridge sceglie alpha solo sulla validation, non tronca R2 negativi e rifiuta soggetti condivisi. Resume rifiutato con configurazione/calibrazione/versione diversa; warm-start Step 1 non abilitato.
+- Superati 53 test CPU selezionati di regressione e 14 test mirati finali (insiemi sovrapposti), incluse CLI, modello reale small, backward con checkpointing, optimizer/EMA e ripresa. Suite CPU completa: 720 test passati, 1 saltato (MPS); cinque test localhost inizialmente bloccati dal sandbox e poi passati con permesso (6 casi del file rieseguiti, uno gia' passato). Sintassi bash e diff verificati. Preparati i launcher dei collaudi autorizzati da Simone: <=1 GPU-ora complessiva piu' <=1 core-ora per calibrazione CPU. Nessun nuovo job lanciato al momento di questa voce.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -125,3 +133,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Le perdite dell'ancora multi-scala dominano il totale (passi 615-625: `ms_fast` 4,4 e `ms_slow` 3,6 contro 0,7-0,8 delle altre ancore e 0,04 della JEPA). Ipotesi non misurata: target multi-scala non standardizzati per banda.
 - CapgMyo e' ancora escluso dai montaggi virtuali: l'esclusione va tolta con un commit separato, ora che il collaudo e' finito. Nel registro di `decisioni.md` il preset sanity era indicato da 31 M: sono 28,3 M (corretto nell'esito).
 - Il collaudo e' di 625 passi, dentro il warmup (1000): non dice nulla su collasso o qualita' della rappresentazione.
+
+### 2026-10-07 | GPT | PSD fisica e Step 1 | Checkout di base: 3685255
+
+- Le log-potenze precedenti erano somme |FFT|^2 senza normalizzazione: il cambio corregge un fattore numerico dipendente da fs/N, non dimostra che le loss o i gradienti siano ora bilanciati. Registrate norme pesate JEPA/ancore/keep sui parametri condivisi per il collaudo.
+- Il readout ora esclude canali QC non validi: rigenerare le cache P1/P2, non riutilizzare feature storiche nel nuovo confronto. Target/cache precedenti restano storici. Le potenze sono nelle unita' del segnale normalizzato al quadrato, non volt al quadrato.
+- Le 32 coordinate descrivono spettro medio, non dinamica temporale. La banda e' quella comune ai canali validi; se un canale non ha finestre la scala del campione e' esclusa. Il guard attuale sulla patch centrale non certifica il supporto intero da 500 ms rispetto ai transitori del filtro: non modificato insieme alla PSD.
+- Lo split dello strumento spettrale separa i soggetti della ridge dentro il PRETRAINING; l'encoder puo' averli gia' visti senza etichette. Non e' evidenza di generalizzazione dell'encoder a soggetti nuovi. P1/P2 restano prove separate. MPS esplicitamente escluso dalla keep.
+- Peso keep 0,05 soltanto ipotesi per smoke test, non validato; non avviato il confronto scientifico A/B con semi accoppiati. CUDA/bf16, apprendimento, P1/P2 e prestazioni restano da verificare. Nessun fix del dataloader/virtual CapgMyo in questo intervento.

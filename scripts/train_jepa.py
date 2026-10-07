@@ -40,6 +40,10 @@ def main(argv=None) -> int:
     ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py (lunghezza media delle finestre per sessione)")
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
+    ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
+    ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
+    ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
     ap.add_argument("--rvq-targets", choices=["slab", "channel"], default=None,
                     help="finestre dell'ancora RVQ; 'channel' e' SOLO DIAGNOSTICA (v10 §6.3: nel training mai sul masking di canale)")
     args = ap.parse_args(argv)
@@ -58,6 +62,13 @@ def main(argv=None) -> int:
     if args.datasets is not None:
         cfg = replace(cfg, datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
     scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
+    if args.seed is not None:
+        cfg = replace(cfg, seed=args.seed)
+    cfg = replace(cfg, keep_grad_every=args.keep_grad_every)
+    if args.keep_calibration is not None:
+        cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
+    elif args.keep_weight != 0:
+        ap.error("--keep-weight requires --keep-calibration")
     print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}, "
           f"dispositivo {args.device}, {len(scales)} scale di sessione, ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}",
           flush=True)
