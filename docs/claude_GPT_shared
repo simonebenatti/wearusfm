@@ -1,0 +1,24 @@
+# Registro condiviso Claude / GPT
+
+Registro cronologico di coordinamento per Simone. Ogni agente legge questo file prima di lavorare e, a fine attivita', aggiunge una voce in entrambe le sezioni senza cancellare lo storico. Ogni voce indica data, agente e commit di riferimento, distinguendo lavoro svolto, problemi aperti e verifiche non eseguite. Scritture e operazioni Git sul checkout condiviso si eseguono un agente alla volta.
+
+Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
+
+## 1) Cosa ho fatto
+
+### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
+
+- Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
+- Scopo: calcolare la durata media delle finestre utilizzabili per sessione sul manifest v1, per il campionamento con probabilita' proporzionale a peso del manifest / durata media; non e' un training o una valutazione delle accuratezze.
+- Esito SLURM: COMPLETED, exit code 0:0; 05/10/2026 dalle 18:38:27 alle 18:56:33, durata 18 min 06 s, 4 CPU, nessuna GPU (0 GPU-ora).
+- Output verificato: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json`; input dichiarato: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz`.
+- Elaborate 19.034 sessioni di 17 dataset, zero errori; 18.972 sessioni con finestre e 62 senza. Durate medie per dataset: CapgMyo 1,000 s; CSL-hdemg 1,991 s; GrabMyo 2,850 s; Hyser 3,061 s; Camargo 3,793 s; emg2pose 3,884 s; emg2qwerty 3,990 s; NinaPro 3,949-3,996 s; putEMG 3,984 s; Zhang 3,969 s. Sono medie per sessione, non pesate dalle quote del manifest.
+
+## 2) Problemi trovati
+
+### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
+
+- Nessun errore di elaborazione registrato. Le 62 sessioni senza finestre appartengono tutte a emg2pose; sono riportate con `null`, non come eccezioni, e il dataloader assegna loro probabilita' zero.
+- Il JSON registra il percorso del manifest, ma non il suo hash, il commit di esecuzione o una firma della configurazione delle finestre. Non ho verificato il commit effettivo del job ne' ricalcolato l'artefatto: il commit indicato sopra identifica il codice locale letto oggi.
+- La nota in `docs/decisioni.md` descrive ancora il job come "in corso". Il registro riporta l'esito osservato senza modificare decisioni firmate o protocolli sperimentali.
+- L'uso di questo JSON nel prossimo training va verificato passando `--window-seconds` con il percorso corretto; non ho avviato training, test CUDA o misure delle quote realizzate.
