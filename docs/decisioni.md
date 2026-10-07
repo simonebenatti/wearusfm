@@ -2090,3 +2090,9 @@ dataset**. Modello: preset `sanity` (31 M), solo per collaudare la pipeline. `sa
 D6a), misurata dopo i primi 50 passi come somma di `t_data_s` / somma di `t_step_s`; (3) nelle metriche compaiono tutte e tre le classi di quota
 e finestre virtuali (`virtual` > 0). Le frazioni realizzate per classe si riportano, non si giudicano: le quote sono nel tempo, non nelle finestre.
 Se (2) fallisce si riporta e si guardano le fasi del dataloader, senza cambiare nulla al volo.
+**Esiti e lancio (07/10/2026):** `fix_capgmyo_grid` **59623698 COMPLETED** (10 s): **18 sessioni** di CapgMyo (tutte le righe del manifest: 14 di
+pretraining + 4 di test), 18 sidecar corretti, 18 righe del manifest v1.1, 56 scale bipolari tolte; backup in
+`results/passo6/capgmyo_grid_fix/backup/`. Scale: `measure_loader` **59623700 COMPLETED** (16 s): 19.879 scale, i soliti 59 errori di emg2pose;
+file `results/passo6/loader_59623700/session_scales.json`, **da usare dalla finestra 1**. Collaudo della finestra 1: **59624004** (la prima
+sottomissione con `afterok` su un job gia' finito e' stata rifiutata da SLURM; rilanciata senza dipendenza). CapgMyo resta escluso dai montaggi
+virtuali per questo collaudo: l'esclusione si toglie dopo, per non cambiare il codice mentre il job e' in coda.

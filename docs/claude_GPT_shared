@@ -55,6 +55,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Creati `scripts/fix_capgmyo_grid.py` e `scripts/slurm/fix_capgmyo_grid.sbatch`: riscrivono solo `grid_row`/`grid_col` dei sidecar di CapgMyo (backup prima), producono il manifest v1.1 (cambia solo lo sha256 di CapgMyo) e le scale senza le bipolari di CapgMyo da ricalcolare.
 - Test nuovi in `tests/cpu/test_fix_capgmyo_grid.py`; aggiornati alla 16x8 i test dei vicini (`test_channel_codes.py`) e dei montaggi virtuali. Suite CPU: 605 passati, 16 saltati. Registrato in `docs/decisioni.md`.
 
+### 2026-10-07 | Claude | Correzione CapgMyo su Leonardo e collaudo della finestra 1 | Codice: 5809152
+
+- Lanciati con l'ok di Simone: `fix_capgmyo_grid` 59623698 (18 sidecar corretti, manifest v1.1) e `measure_loader` 59623700 (scale bipolari di CapgMyo ricalcolate), entrambi COMPLETED, CPU.
+- Lanciato il collaudo della finestra 1 (59624004, `boost_qos_dbg`, <= 0,5 GPU-ora): tutte le regole della finestra 1, tutti i dataset, manifest v1.1, scale nuove, maschere LONG e protezione numerica di GPT. Criteri fissati prima in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -102,3 +107,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Dopo il job, il manifest v1 viene rifiutato dal dataloader per CapgMyo (sha256 dei sidecar cambiato): tutti i run successivi devono usare `results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz`.
 - CapgMyo resta escluso dai montaggi virtuali (`VirtualSpec.exclude_datasets`) finche' sidecar e scale bipolari non sono aggiornati su Leonardo; poi va tolto con un commit separato.
 - Verso prossimale/distale della griglia non dichiarato da nessuna fonte; l'asse (righe attorno, colonne lungo l'avambraccio) e' una lettura da Du 2017.
+
+### 2026-10-07 | Claude | Correzione CapgMyo su Leonardo e collaudo della finestra 1 | Codice: 5809152
+
+- Il manifest v1 ora e' rifiutato per CapgMyo: usare `results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz` e `results/passo6/loader_59623700/session_scales.json`.
+- CapgMyo ancora escluso dai montaggi virtuali: l'esclusione si toglie dopo il collaudo, per non cambiare codice con un job in coda. Non pushare modifiche al codice mentre 59624004 e' in coda.
