@@ -2038,3 +2038,28 @@ Verifica locale CPU: otto regressioni riproducevano il difetto prima della corre
 Esito finale: **31 test passati** fra masking e dataloader, inclusi durata dei singoli tubi, seconda meta' campionabile, raggiungimento
 deterministico dell'ultima patch valida, padding, QC, slab e determinismo. Il vecchio test di durata misurava distanze fra indici True,
 non lunghezze di intervalli: sostituito. Nessun training eseguito; le misure/checkpoint precedenti restano riferiti al generatore precedente.
+
+## Protezione dai gradienti non finiti nel trainer (07/10/2026, GPT; richiesta di Simone)
+
+Correzione di sicurezza, senza cambiamenti a modello, loss, learning rate, soglia di clipping o decisioni sperimentali firmate.
+Base pubblicata `4232246` (il codice del trainer e' quello di `32cf58b`; 4232246 aggiunge soltanto il registro di Claude).
+Prima il controllo della loss non proteggeva da gradienti NaN/Inf: il clipping li lasciava passare all'optimizer e all'EMA, e lo stop
+alla loss del passo successivo salvava uno stato contaminato. Riprodotto localmente iniettando un gradiente NaN con loss finita.
+
+Ora la norma totale restituita da `clip_grad_norm_` deve essere finita prima di chiamare optimizer ed EMA. Il controllo e' esplicito
+(`torch.isfinite(gnorm)`), non un'eccezione non gestita da `error_if_nonfinite=True`: permette di registrare la causa dello stop.
+Se la norma non e' finita si scartano i gradienti, non si incrementa il passo, non si registrano metriche di un update non eseguito,
+si scrivono `STOP` e `summary.json` e si conserva il checkpoint gia' salvato. La stessa conservazione vale per loss non finita.
+Lo stop numerico non riscrive il checkpoint con lo stato RNG avanzato nel passo fallito. Se il primo passo fallisce non crea un checkpoint;
+se ci sono passi validi dopo l'ultimo salvataggio, questi non sono recuperabili da quel checkpoint. STOP blocca comunque i job concatenati.
+Salvataggi periodici, fine normale, limite di tempo e allarmi conservano il comportamento precedente.
+
+Test di fault injection sul trainer reale con modello/dati sintetici minuscoli: NaN, +Inf e -Inf nel backward, con loss finita, al primo passo,
+alla ripresa e dopo un passo valido non ancora salvato. Verificati student/teacher/momenti invariati sul passo difettoso, chiamate a optimizer
+ed EMA assenti, contatore/metriche coerenti, checkpoint identico byte per byte e STOP rispettato. Anche lo stop per loss non finita preserva
+il checkpoint. Due regressioni selezionate fallivano prima della patch; esito finale: **64 test passati, 1 saltato (MPS non disponibile)**,
+inclusi i dieci nuovi casi e le regressioni di trainer, JEPA, Perceiver, dataloader e masking. CPU macOS, torch 2.14.0; nessun job HPC.
+
+Questa verifica non prova contaminazioni nei run ordinari passati e non certifica backend CUDA non eseguiti, checkpoint storici o ogni
+possibile overflow durante l'update dell'optimizer. Il Perceiver non e' modificato: il P0 originario non confermato resta distinto dal P2
+di pulizia numerica e da questa protezione del trainer.

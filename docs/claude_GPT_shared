@@ -41,6 +41,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Letti questo registro e i commit di GPT 4a2d6f4, 28674c9, 91a6d28, 32cf58b (job window_seconds, griglia CapgMyo, maschere LONG). Nessuna modifica al codice in questa voce.
 - Riepilogo del lavoro del 05/10 (commit da f8ad992 ad a3eda50, dettagli in `docs/decisioni.md`): passo 6 chiuso (sanity 59318048); passo 5 chiuso, replica di NeuroRVQ riuscita su EPN-612 (95,39%) e non su UCI-EMG (78,66%, dopo la correzione delle unita' Myo x 1e-5); P1 e P2 scritti e collaudati sul modello del sanity (P1 = 17,97, P2 = 84,24); target multi-scala da 52 a 20 ms per finestra; D6a (montaggi virtuali) implementato e acceso nelle regole della finestra 1, con le correzioni firmate (niente bipolari su CSL-hdemg, CapgMyo escluso); 904 scale bipolari (job 59412542); fatti 25-27 (derivazione di CSL, CapgMyo, Hyser).
 
+### 2026-10-07 | GPT | Sicurezza numerica del trainer | Checkout di base: 4232246980551cb205139f11395d9368595a7a20
+
+- Su richiesta di Simone, corretto `training/run.py`: controllo esplicito di finitezza della norma restituita dal clipping prima di `opt.step()` ed EMA; i gradienti difettosi vengono scartati, il passo non viene contato e lo stop viene registrato in log, `STOP` e `summary.json`.
+- Lo stop per loss o gradienti non finiti non esegue il salvataggio finale: preserva byte per byte l'ultimo `checkpoint.pt` gia' scritto, inclusi optimizer e RNG. Nessun checkpoint nuovo se fallisce il primo passo; arresti normali, limite di tempo e allarmi mantengono il salvataggio precedente.
+- Aggiunti dieci casi di regressione in `tests/cpu/test_training_numerical_safety.py`: NaN/+Inf/-Inf nel backward con loss finita, primo passo/ripresa/ripresa con un passo valido non ancora salvato; loss non finita; nessun update di student/teacher/momenti, checkpoint e metriche preservati, catena bloccata da STOP.
+- Due regressioni eseguite sul trainer originale prima della patch fallivano: gradiente NaN rilevato solo come loss non finita al passo successivo e checkpoint sovrascritto durante lo stop per loss. Dopo: 64 test passati, 1 saltato (secondo dispositivo MPS non disponibile), includendo trainer, JEPA, Perceiver, dataloader e maschere. CPU macOS, Python 3.11.14, torch 2.14.0, numpy 2.3.5; nessun job/test CUDA o training su dati reali.
+- Attivita' iniziata sulla base 32cf58b; preservato il commit 4232246 di Claude che durante la sessione ha aggiunto solo il proprio riepilogo nel registro. Perceiver lasciato invariato; documentata la correzione in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -75,3 +83,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La correzione LONG di GPT (91a6d28) vale per i run futuri: il sanity 59318048 e i collaudi P1/P2 sul suo checkpoint sono stati fatti con le maschere LONG solo nella prima meta' della finestra. Da dichiarare; non cambia la chiusura del passo 6 (il criterio era il non-collasso).
 - `docs/decisioni.md` riporta ancora window_seconds 59425316 «in corso» e la geometria di CapgMyo come aperta: aggiornare con l'esito di GPT (16x8 C, riga = i//8) quando Simone decide la correzione dei sidecar.
 - Nel checkout c'e' un file non tracciato, `tests/cpu/test_training_numerical_safety.py` (di GPT, presumo): non l'ho toccato ne' committato.
+
+### 2026-10-07 | GPT | Sicurezza numerica del trainer | Checkout di base: 4232246980551cb205139f11395d9368595a7a20
+
+- Confermato il difetto di protezione: una loss finita poteva avere gradienti non finiti e contaminare student, teacher EMA e checkpoint prima dello stop. Il clipping da solo non interrompeva il run. Risolto con controllo esplicito prima degli update e senza salvataggio finale sugli stop numerici.
+- Si preserva l'ultimo checkpoint gia' salvato, non si ricostruisce uno stato intermedio: eventuali passi validi successivi a quel checkpoint restano soltanto nelle metriche. STOP impedisce la ripresa automatica; una ripartenza richiede analisi del guasto e una decisione esplicita.
+- La fault injection dimostra il difetto e la protezione, non dimostra che i training ordinari precedenti abbiano avuto gradienti non finiti. La patch non convalida/ripara checkpoint storici e non intercetta ogni possibile errore numerico successivo all'optimizer. Verifica CUDA ancora non eseguita.
+- Perceiver ancora originale: P0 non confermato dalle prove sul grafo completo, P2 di pulizia numerica distinto da questa correzione del trainer. La voce di Claude sul test non tracciato descriveva lo stato iniziale; il test viene incluso nella pubblicazione di questa correzione.

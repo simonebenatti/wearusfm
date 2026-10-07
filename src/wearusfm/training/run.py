@@ -172,12 +172,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
           init_from: Path | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
-    `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo)."""
+    `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
+    il passo difettoso non aggiorna optimizer/EMA e non viene contato."""
     t_start = time.time()
     out_dir.mkdir(parents=True, exist_ok=True)
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cfg.amp_bf16 and str(device).startswith("cuda"))
     stop_file = out_dir / "STOP"
-    if stop_file.exists():  # un allarme o una perdita non finita hanno fermato il run: i job successivi della catena non riprendono
+    if stop_file.exists():  # un allarme o uno stop numerico hanno fermato il run: i job successivi della catena non riprendono
         reason = stop_file.read_text().strip()
         log(f"run fermato in precedenza ({reason}): nessun passo")
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
@@ -216,6 +217,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                          num_workers=num_workers, persistent_workers=num_workers > 0)
     metrics = (out_dir / "metrics.jsonl").open("a")
     reason, it = "max_steps", iter(stream)
+    numerical_failure = False
 
     def save():
         torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
@@ -243,9 +245,16 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                  rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
         if not torch.isfinite(losses["total"]):
             reason = f"perdita non finita al passo {step}"
+            numerical_failure = True
             break
         losses["total"].backward()
         gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)
+        # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.
+        if not torch.isfinite(gnorm):
+            reason = f"gradienti non finiti al passo {step} (norma: {float(gnorm)})"
+            numerical_failure = True
+            opt.zero_grad(set_to_none=True)
+            break  # niente optimizer, EMA, incremento del passo o metriche di un aggiornamento non eseguito
         opt.step()
         ema_update(teacher, student, cfg.jepa.ema_momentum)
         step += 1
@@ -276,9 +285,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
             log(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {t_data:.2f} s){mem}")
-    save()
+    if not numerical_failure:
+        save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
     metrics.close()
-    if reason.startswith("allarme") or reason.startswith("perdita non finita"):
+    if reason.startswith("allarme") or numerical_failure:
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
                "device": device, "gpu_max_memory_gib": torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None}
@@ -296,4 +306,3 @@ def small_config(**overrides) -> RunConfig:
 
 def count_parameters(cfg: FMConfig) -> int:
     return sum(p.numel() for p in WearUsFM(cfg).parameters())
-
