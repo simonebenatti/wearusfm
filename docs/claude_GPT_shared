@@ -14,6 +14,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Output verificato: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json`; input dichiarato: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz`.
 - Elaborate 19.034 sessioni di 17 dataset, zero errori; 18.972 sessioni con finestre e 62 senza. Durate medie per dataset: CapgMyo 1,000 s; CSL-hdemg 1,991 s; GrabMyo 2,850 s; Hyser 3,061 s; Camargo 3,793 s; emg2pose 3,884 s; emg2qwerty 3,990 s; NinaPro 3,949-3,996 s; putEMG 3,984 s; Zhang 3,969 s. Sono medie per sessione, non pesate dalle quote del manifest.
 
+### 2026-10-07 | GPT | Diagnostica CapgMyo locale | Checkout di base: 4a2d6f4094ea70f2cea11bb8be2d6b5949b3f601
+
+- Creato `scripts/check_capgmyo_grid.py`: confronto di otto mappature (cinque grafi distinti), mappe RMS, correlazioni dei vicini/inviluppi, sensibilita' al modo comune e cross-correlazioni a +/-3 ms. Nessuna modifica agli input.
+- Copiati in locale da Leonardo soltanto 72 MAT originali: soggetti 001/007/013, tutti gli 8 gesti, trial 001/005/009. Calcoli eseguiti sul Mac; nessun job SLURM o training.
+- Esaminato il percorso loader/preprocessing/reshape degli autori, repository Answeror/srep al commit 1726e9ed09ffdf70b4c2f33f2baee01efe9394d6: 16x8 C, senza permutazione intermedia nel percorso esaminato. Con colonna MAT i a base zero: riga=i//8, colonna=i%8.
+- La 16x8 C e' prima sulle metriche aggregate dei cinque grafi e supera la vecchia 8x16 C in 72/72 trial per correlazione assoluta, anche dopo rimozione diagnostica del modo comune. Pearson media dei vicini: 0.5205 contro 0.3951; dopo CMR: 0.4775 contro 0.3443.
+- Test locali finali: 24 passati includendo i test esistenti CapgMyo. Su richiesta di Simone aggiunti esempi temporali dei canali 33-40, a scala comune, posizione sulla griglia e RMS. Controllati gli output grafici. Dettagli e limiti in `docs/capgmyo_grid_diagnostic.md`, riepilogo aggregato in `results/capgmyo_grid_20261007/summary.json`; dati e report completo in `/Users/simonebenatti/wearusfm_local/reports/capgmyo_grid_20261007_signals/`, fuori Git.
+- Rieseguita la diagnostica dopo l'aggiunta dei grafici: metriche e hash dei 72 input identici alla prima esecuzione. Il codice eseguito era nuovo/non committato: SHA256 script 78635b782ebe871f6bd9a152378f1988696991f4e7b68c12f9273af087e341a2. Il commit sopra identifica il checkout di base, non il commit di pubblicazione del nuovo script.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -22,3 +31,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il JSON registra il percorso del manifest, ma non il suo hash, il commit di esecuzione o una firma della configurazione delle finestre. Non ho verificato il commit effettivo del job ne' ricalcolato l'artefatto: il commit indicato sopra identifica il codice locale letto oggi.
 - La nota in `docs/decisioni.md` descrive ancora il job come "in corso". Il registro riporta l'esito osservato senza modificare decisioni firmate o protocolli sperimentali.
 - L'uso di questo JSON nel prossimo training va verificato passando `--window-seconds` con il percorso corretto; non ho avviato training, test CUDA o misure delle quote realizzate.
+
+### 2026-10-07 | GPT | Diagnostica CapgMyo locale | Checkout di base: 4a2d6f4094ea70f2cea11bb8be2d6b5949b3f601
+
+- Rimangono sconosciuti verso prossimale/distale, lato anatomico e avvolgimento: riflessioni/trasposizioni globali conservano le adiacenze. Il confronto stabilisce una preferenza di mappatura software, non una calibrazione anatomica.
+- Tre soggetti non sono l'intero dataset. Risultati descrittivi senza p-value o soglia anatomica; riferimento comune/crosstalk possono influenzare le correlazioni, e il massimo selezionato tra ritardi e' ottimisticamente distorto.
+- Vecchia geometria 8x16 in ingestione/sidecar lasciata invariata: correggerla richiede un intervento separato e valutazione degli effetti sui manifest congelati. Nessun array processato o punto firmato delle decisioni modificato.
+- Lo script non sovrascrive output non vuoti e mantiene dati/grafici fuori dal repository. Le figure richiedono gesto 1/trial 1 nel campione; con selezioni diverse usare `--no-plots`.
