@@ -23,6 +23,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Test locali finali: 24 passati includendo i test esistenti CapgMyo. Su richiesta di Simone aggiunti esempi temporali dei canali 33-40, a scala comune, posizione sulla griglia e RMS. Controllati gli output grafici. Dettagli e limiti in `docs/capgmyo_grid_diagnostic.md`, riepilogo aggregato in `results/capgmyo_grid_20261007/summary.json`; dati e report completo in `/Users/simonebenatti/wearusfm_local/reports/capgmyo_grid_20261007_signals/`, fuori Git.
 - Rieseguita la diagnostica dopo l'aggiunta dei grafici: metriche e hash dei 72 input identici alla prima esecuzione. Il codice eseguito era nuovo/non committato: SHA256 script 78635b782ebe871f6bd9a152378f1988696991f4e7b68c12f9273af087e341a2. Il commit sopra identifica il checkout di base, non il commit di pubblicazione del nuovo script.
 
+### 2026-10-07 | GPT | Correzione maschere LONG | Checkout di base: 28674c9f3c931af606b479ce4911ae14d77f9a49
+
+- Corretto `training/masking.py`: il limite di meta' finestra si applica alla durata del singolo tubo LONG, mentre la posizione viene estratta sull'intera finestra valida. Durate, quote attese, gruppi spaziali e slab restano quelli della D10 firmata.
+- Riprodotto il difetto con otto test prima della correzione; verificati finestre da 40/41/80/160 patch, anelli/griglie, durata dei singoli intervalli, seconda meta', ultima patch, padding e canali QC esclusi. Esito finale: 31 test CPU passati fra `test_training_masking.py` e `test_pretraining_loader.py`.
+- Sostituito il vecchio controllo errato sulle lunghezze delle run con controlli sulle singole proposte; aggiunto controllo deterministico dei bordi. Review indipendente completata. Spiegazione registrata in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -38,3 +44,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Tre soggetti non sono l'intero dataset. Risultati descrittivi senza p-value o soglia anatomica; riferimento comune/crosstalk possono influenzare le correlazioni, e il massimo selezionato tra ritardi e' ottimisticamente distorto.
 - Vecchia geometria 8x16 in ingestione/sidecar lasciata invariata: correggerla richiede un intervento separato e valutazione degli effetti sui manifest congelati. Nessun array processato o punto firmato delle decisioni modificato.
 - Lo script non sovrascrive output non vuoti e mantiene dati/grafici fuori dal repository. Le figure richiedono gesto 1/trial 1 nel campione; con selezioni diverse usare `--no-plots`.
+
+### 2026-10-07 | GPT | Correzione maschere LONG | Checkout di base: 28674c9f3c931af606b479ce4911ae14d77f9a49
+
+- I tubi LONG erano confinati nella prima meta' della finestra: `long_cap` veniva passato come lunghezza totale a `draw_tube`. Con finestre da 1 s tutte le proposte LONG partivano da zero. Risolto separando limite di durata e dominio della posizione.
+- Il test precedente calcolava la distanza fra token True consecutivi, non la durata della maschera, e non intercettava il difetto. I nuovi controlli misurano il singolo tubo: unioni di tubi sovrapposti possono legittimamente superare meta' finestra.
+- La correzione vale per le nuove maschere; checkpoint e risultati precedenti conservano il bias del codice con cui sono stati prodotti. Le maschere a seme fisso cambiano. Nessun training o job HPC rilanciato; la verifica di questa correzione e' locale CPU.

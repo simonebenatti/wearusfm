@@ -151,7 +151,10 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
             ln = int(rng.choice(lens_med_slab if kind_k == MEDIUM else lens_long_slab))
             t0 = int(rng.choice(np.arange(0, n_patches - ln + 1, SLAB_PATCHES)))
             return valid_idx, t0, t0 + ln
-        return draw_tube(layout, compartment, valid, long_cap if kind_k == LONG else n_patches, lo, hi, rng)
+        # Il tetto LONG limita la durata, non la porzione di finestra campionabile.
+        if kind_k == LONG:
+            hi = min(hi, long_cap)
+        return draw_tube(layout, compartment, valid, n_patches, lo, hi, rng)
 
     hidden_ch: set[int] = set()
     total, tries = 0, 0

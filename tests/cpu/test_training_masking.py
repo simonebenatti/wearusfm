@@ -68,9 +68,57 @@ def test_short_never_alone_padding_and_invalid_channels_untouched():
     only_short = M.MaskSpec(0.3, 1.0, 0.0, 0.0, 0.0)
     _, k2 = M.generate_mask(lay, comp, 40, 40, True, only_short, np.random.default_rng(0))
     assert not (k2 == M.SHORT).any()  # le corte non restano mai da sole
-    long_cap = M.generate_mask(lay, comp, 40, 40, False, M.MaskSpec(0.5, 0.0, 0.0, 1.0, 0.0), np.random.default_rng(0))[1]
-    runs = [np.diff(np.flatnonzero(np.r_[0, row == M.LONG, 0])) for row in long_cap]
-    assert max((r[0::2].max() if len(r) else 0) for r in runs) <= 20  # al piu' meta' finestra
+
+
+@pytest.mark.parametrize("n_patches", [40, 41, 80, 160])
+@pytest.mark.parametrize("topology", ["ring", "grid"])
+def test_long_tubes_span_the_full_window_with_capped_duration(n_patches, topology, monkeypatch):
+    """Il tetto di meta' finestra limita ogni tubo, non le sue possibili posizioni."""
+    montage = (emg2pose.build_montage_metadata("u1", "s", "left") if topology == "ring"
+               else capgmyo.build_montage_metadata(1))
+    lay, comp = _setup(montage, [i != 5 for i in range(montage.n_channels)])
+    spec = M.MaskSpec(0.5, 0.0, 0.0, 1.0, 0.0)
+    intervals = []
+    original_draw = M.draw_tube
+
+    def record_draw(*args, **kwargs):
+        rows, t0, t1 = original_draw(*args, **kwargs)
+        intervals.append((t0, t1))
+        assert 5 not in rows
+        return rows, t0, t1
+
+    monkeypatch.setattr(M, "draw_tube", record_draw)
+    covered = np.zeros(n_patches, dtype=bool)
+    for seed in range(4):
+        visible, kind = M.generate_mask(lay, comp, n_patches, n_patches + 16, False, spec, np.random.default_rng(seed))
+        assert np.array_equal(visible, kind == M.VISIBLE)
+        assert (kind[:, n_patches:] == M.VISIBLE).all()
+        assert (kind[5] == M.VISIBLE).all()
+        assert np.isin(kind, [M.VISIBLE, M.LONG]).all()
+        covered |= (kind[:, :n_patches] == M.LONG).any(axis=0)
+
+    # Le unioni di tubi sovrapposti possono essere piu' lunghe del singolo tubo.
+    assert intervals
+    assert all(20 <= t1 - t0 <= min(80, n_patches // 2) for t0, t1 in intervals)
+    assert all(0 <= t0 < t1 <= n_patches for t0, t1 in intervals)
+    assert any(t0 > 0 for t0, _ in intervals)
+    assert covered[n_patches // 2:].any()
+
+
+@pytest.mark.parametrize("n_patches", [40, 41, 80, 160])
+def test_long_tubes_can_end_at_the_last_valid_patch(n_patches):
+    # Forza l'estremo superiore: la raggiungibilita' del bordo non dipende dal seme.
+    class UpperBoundRng(np.random.Generator):
+        def integers(self, low, high=None, **kwargs):
+            return (low if high is None else high) - 1
+
+    lay, comp = _setup(emg2pose.build_montage_metadata("u1", "s", "left"))
+    _, kind = M.generate_mask(lay, comp, n_patches, n_patches + 16, False,
+                             M.MaskSpec(0.5, 0.0, 0.0, 1.0, 0.0), UpperBoundRng(np.random.PCG64(0)))
+    cap = min(80, n_patches // 2)
+    assert (kind[:, n_patches - 1] == M.LONG).any()
+    assert (kind[:, :n_patches - cap] == M.VISIBLE).all()
+    assert (kind[:, n_patches:] == M.VISIBLE).all()
 
 
 def test_spec_checks_and_determinism():

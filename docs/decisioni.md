@@ -2022,3 +2022,19 @@ cambia i sidecar e quindi lo sha256 nel manifest congelato).
 **Decise** (Simone, 05/10/2026: «si a 1 e 2»): niente bipolari virtuali su CSL-hdemg; CapgMyo fuori dai montaggi virtuali finche' la geometria
 non e' corretta. CapgMyo monopolare con riferimento comune (fatto 26, firmato da Simone). In codice (`VirtualSpec`, default) e nel foglio D6a;
 test. La correzione della griglia di CapgMyo (16 x 8, cambia i sidecar e lo sha256 nel manifest) resta da fare, quando Simone lo decide.
+
+## Correzione della posizione delle maschere LONG (07/10/2026, GPT; richiesta di Simone)
+
+Correzione d'implementazione della D10 gia' firmata, sul checkout di base `28674c9`.
+`training/masking.py` passava meta' della finestra a `draw_tube` come se fosse l'intera finestra: il limite di durata LONG diventava anche
+un limite alla posizione. Tutti i tubi LONG non-slab terminavano nella prima meta'; con 40 patch (1 s) la durata minima di 20 patch
+costringeva ogni LONG a cominciare da zero. Gli slab usavano gia' l'intera finestra per la posizione.
+
+Ora la durata del singolo tubo resta nell'intervallo `20..min(80, P//2)` e l'inizio si estrae uniformemente fra `0` e `P - durata`,
+estremi inclusi, sull'intera finestra valida. Restano le scale, le quote attese, i gruppi spaziali e il budget firmati; le sovrapposizioni
+possono ancora formare unioni piu' lunghe del singolo tubo. Il cambiamento delle posizioni modifica le maschere realizzate anche a seme fisso.
+
+Verifica locale CPU: otto regressioni riproducevano il difetto prima della correzione (anello/griglia, P=40/41/80/160).
+Esito finale: **31 test passati** fra masking e dataloader, inclusi durata dei singoli tubi, seconda meta' campionabile, raggiungimento
+deterministico dell'ultima patch valida, padding, QC, slab e determinismo. Il vecchio test di durata misurava distanze fra indici True,
+non lunghezze di intervalli: sostituito. Nessun training eseguito; le misure/checkpoint precedenti restano riferiti al generatore precedente.
