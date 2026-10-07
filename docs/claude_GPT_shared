@@ -29,6 +29,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Riprodotto il difetto con otto test prima della correzione; verificati finestre da 40/41/80/160 patch, anelli/griglie, durata dei singoli intervalli, seconda meta', ultima patch, padding e canali QC esclusi. Esito finale: 31 test CPU passati fra `test_training_masking.py` e `test_pretraining_loader.py`.
 - Sostituito il vecchio controllo errato sulle lunghezze delle run con controlli sulle singole proposte; aggiunto controllo deterministico dei bordi. Review indipendente completata. Spiegazione registrata in `docs/decisioni.md`.
 
+### 2026-10-07 | GPT | Replica locale LONG prima/dopo | Codice corretto: 91a6d28112f30a13b3b12458ab436b6ca1a2005d
+
+- Su scelta esplicita di Simone, ripetuto in locale il confronto delle maschere: vecchio modulo dal commit 28674c9 caricato in memoria, modulo corretto da 91a6d28, stessi semi 0-9 e configurazioni. Nessun cambio del checkout storico.
+- Creato `scripts/check_long_mask_positions.py`: finestre da 40/41/80/160 patch, anello/griglia, solo LONG e D10 completa con RVQ spento/acceso. Generate 480 maschere su 24 configurazioni; controllati durata del singolo tubo, padding, visible/kind e tetto del budget.
+- Replica esatta dei vecchi conteggi sull'anello 16 canali, solo LONG: prima/seconda meta' = 3200/0, 6399/0, 12792/0 per 1/2/4 s. Dopo = 1583/1721, 3344/3235, 6908/6371: la seconda meta' e' raggiunta in tutte le 24 configurazioni.
+- Test del generatore: 18 passati. Prodotti e ispezionati due grafici prima/dopo e report JSON con hash/commit in `/Users/simonebenatti/wearusfm_local/reports/long_mask_20261007/`; dettagli in `docs/long_mask_replication.md`. Prova esclusivamente locale CPU, senza dati di segnali o training.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -50,3 +57,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - I tubi LONG erano confinati nella prima meta' della finestra: `long_cap` veniva passato come lunghezza totale a `draw_tube`. Con finestre da 1 s tutte le proposte LONG partivano da zero. Risolto separando limite di durata e dominio della posizione.
 - Il test precedente calcolava la distanza fra token True consecutivi, non la durata della maschera, e non intercettava il difetto. I nuovi controlli misurano il singolo tubo: unioni di tubi sovrapposti possono legittimamente superare meta' finestra.
 - La correzione vale per le nuove maschere; checkpoint e risultati precedenti conservano il bias del codice con cui sono stati prodotti. Le maschere a seme fisso cambiano. Nessun training o job HPC rilanciato; la verifica di questa correzione e' locale CPU.
+
+### 2026-10-07 | GPT | Replica locale LONG prima/dopo | Codice corretto: 91a6d28112f30a13b3b12458ab436b6ca1a2005d
+
+- Confermato l'azzeramento dei token LONG nella seconda meta' con il vecchio codice in tutte le configurazioni. Con la correzione la seconda meta' e' campionabile e i limiti di durata restano rispettati.
+- Nei grafici si vede l'unione di piu' tubi: puo' essere piu' lunga di meta' finestra. Posizioni iniziali uniformi non implicano copertura uniforme dei token; centro e bordi hanno probabilita' diverse per costruzione.
+- Le quote realizzate nel mix D10 risentono di sovrapposizioni/rifiuti e dell'etichetta separata degli slab: non e' imposta una divisione 50/50 tra meta'. Stessi semi non rendono identiche tutte le proposte fra versioni. Il confronto misura il comportamento delle maschere, non la qualita' dell'apprendimento.
