@@ -111,6 +111,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   report/log sul Mac si sono bloccati; gli artefatti sono stati verificati su Leonardo e nessuna feature/checkpoint e' stata scaricata.
 - Simone ha autorizzato il successivo collaudo CUDA mirato del Perceiver entro0,1GPUh. Preparati script e launcher: float32/bf16,
   righe parzialmente e totalmente nascoste, confronto diretto contro activation checkpointing; massimo5min/0,0834GPUh. Non ancora lanciato.
+- Collaudo Perceiver59720752 COMPLETED0:0 in13s, costo0,00361GPUh. Su A10064GB, float32/bf16: output/loss/gradienti finiti, gradiente
+  input completamente nascosto zero, forward/backward con checkpointing identici (differenze massime0,0). Tutti i criteri PASS, nessun retry.
+  Esito in `results/passo6/perceiver_cuda_20261008.json`.
 
 ## 2) Problemi trovati
 
@@ -215,3 +218,5 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il launcher ridge e' stato corretto da40G a30G: `lrd_all_serial` impone MaxTRES memoria30800M; il job riuscito ha usato l'override30G.
 - Due sessioni SSH di copia report/log sul Mac si sono bloccate; artefatti e hash verificati in place, nessuna feature/checkpoint scaricata.
 - Autorizzato ma non ancora lanciato un unico collaudo CUDA della patch Perceiver: massimo5min/0,0834GPUh, nessun training o dato reale.
+- Il collaudo59720752 ha superato tutti i criteri in float32/bf16 con checkpointing, costo0,00361GPUh. Questo chiude la bonifica numerica P2
+  CPU+CUDA, non dimostra qualita' dell'apprendimento e non autorizza ancora il confronto A/B.

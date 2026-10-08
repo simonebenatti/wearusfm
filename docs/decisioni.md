@@ -2272,3 +2272,10 @@ inizializzazione/input con forward/backward diretto e ricomputato tramite activa
 gradiente input esattamente zero sulle regioni interamente nascoste e nonzero su quelle visibili, equivalenza forward/backward entro tolleranze
 prespecificate (2e-5 float32,2e-2 bf16). Job A100,4CPU,20G, massimo5min =0,0834GPUh, entro il tetto autorizzato0,1GPUh. Solo test funzionale,
 nessun training/checkpoint/dato reale; esito da registrare senza rilanci o correzioni al volo.
+
+**Esito CUDA:** job59720752 **COMPLETED0:0**,13s,A10064GB,4CPU,20G, MaxRSS~1,03GiB; costo0,00361GPUh entro0,1 autorizzate.
+Torch2.2, float32 e autocastbf16: output/loss/tutti i gradienti finiti, gradiente degli input completamente nascosti esattamente zero,
+forward e backward con activation checkpointing identici al percorso diretto; differenze massime output/input-grad/parameter-grad tutte0,0.
+Tutti i criteri prespecificati PASS, nessun retry. Log SHA256 `52d057adac4cf99ea752552944ee6dcefacd85935f2face38981b35628b251a4`;
+riepilogo `results/passo6/perceiver_cuda_20261008.json`. La bonifica P2 e' quindi verificata CPU+CUDA; non e' una misura di qualita' del
+training. Budget passo6 circa12,575/100GPUh usate e87,425residue.

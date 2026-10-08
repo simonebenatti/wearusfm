@@ -1,0 +1,66 @@
+{
+  "recorded_on": "2026-10-08",
+  "execution_commit": "ffc21d60429a8e9473bccc5bc324096455ac343a",
+  "verification_source": "Read-only Leonardo validation by leonardo-ops",
+  "job": {
+    "id": 59720752,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 13,
+    "cpus": 4,
+    "gpus": 1,
+    "requested_memory": "20G",
+    "max_rss_kib": 1079032,
+    "gpu": "NVIDIA A100-SXM-64GB",
+    "gpu_hours": 0.0036111111,
+    "authorized_gpu_hours_max": 0.1,
+    "within_authorized_limit": true,
+    "log": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/perceiver_cuda_59720752.out",
+    "log_sha256": "52d057adac4cf99ea752552944ee6dcefacd85935f2face38981b35628b251a4"
+  },
+  "environment": {
+    "torch": "2.2.0a0+git6c8c5ad",
+    "device": "NVIDIA A100-SXM-64GB"
+  },
+  "protocol": {
+    "dimension": 384,
+    "heads": 6,
+    "latents": 64,
+    "dtypes": ["float32", "bfloat16"],
+    "partially_hidden_sample": true,
+    "fully_hidden_sample": true,
+    "activation_checkpoint_recomputation": true
+  },
+  "results": {
+    "perceiver_safe_scores_cuda": "passed",
+    "float32": {
+      "output_finite": true,
+      "loss_finite": true,
+      "all_gradients_finite": true,
+      "fully_hidden_input_gradient_zero": true,
+      "checkpoint_forward_matches": true,
+      "checkpoint_backward_matches": true,
+      "max_output_abs_diff": 0.0,
+      "max_input_grad_abs_diff": 0.0,
+      "max_parameter_grad_abs_diff": 0.0
+    },
+    "bfloat16": {
+      "output_finite": true,
+      "loss_finite": true,
+      "all_gradients_finite": true,
+      "fully_hidden_input_gradient_zero": true,
+      "checkpoint_forward_matches": true,
+      "checkpoint_backward_matches": true,
+      "max_output_abs_diff": 0.0,
+      "max_input_grad_abs_diff": 0.0,
+      "max_parameter_grad_abs_diff": 0.0
+    },
+    "all_prespecified_criteria_passed": true,
+    "retries": 0
+  },
+  "interpretation": "P0 remains unsubstantiated. The safe_scores P2 cleanup is now validated on CPU and CUDA for the fully masked edge case; this is a functional numerical check, not a training-quality result.",
+  "step6_budget_after_job": {
+    "gpu_hours_used_approx": 12.5753,
+    "gpu_hours_remaining_approx": 87.4247
+  }
+}
