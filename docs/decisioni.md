@@ -2323,3 +2323,12 @@ ottimizzazione o P1/P2 downstream. Budgetpasso6 residuo attuale87,4247GPUh, resi
 Si esegue il commit di sola documentazione che registra questa approvazione (codice e criteri invariati). Nessunpush neppure di docs
 durante la campagna, per non cambiare expectedcommit/source_commit; jobID/status da registrare temporaneamente fuori Git.
 Tutti i lanci via leonardo-ops, senza salloc. Al momento di questa registrazione nessun jobA/B ancora sottomesso.
+
+**Correzione preflight QoS, prima di qualsiasi training:** la prima sbatchA_seed0 conboost_qos_bprod e' stata respinta esplicitamente
+`QOSMinCpuNotSatisfied`, senza jobID; coda vuota, nessuna GPUh consumata, altri3run non tentati. Il controllo precedente aveva omesso
+MinTRES: bprod impone65nodi/2080CPU/260GPU e non ammette1GPU. Si usa boost_qos_lprod (gia' associata all'account, senza MinTRES),
+IDENTICHE risorse1GPU/8CPU/100G e capA4h/B6h; anche extract45min inlprod. Questo e' un adeguamento operativo entro l'autorizzazione
+acquisita, non un retry di training, cambio scientifico o aumento di costo. DefaultQoS del launcher corretto prima dei job; nuovo commit
+expected per la campagna, senza modificare trainer/target/criteri/semi. La precedente dichiarazione di compatibilita'bprod e' rettificata.
+Preflight lprod completo da leonardo-ops: associazioneaccount confermata, MinTRES vuoto; `sbatch --test-only` accetta siaA4h siaB6h.
+Gli ID del test non sono job reali; squeue resta vuota. SintassiBash del launcher corretto e diff verificati prima del commit/lancio.

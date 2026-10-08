@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A IscrB_WearUsFM
 #SBATCH -p boost_usr_prod
-#SBATCH --qos=boost_qos_bprod
+#SBATCH --qos=boost_qos_lprod
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8

@@ -16,6 +16,16 @@ non modificare/pushare il checkout, nemmeno solo docs, fino alla fine della
 campagna: il wrapper verifica l'HEAD anche alla fine e le cache devono avere
 la stessa source_commit. JobID e status intermedi si archiviano fuori Git.
 
+Correzione operativa08/10, PRIMA di un job accettato: la prima richiesta
+con boost_qos_bprod e' stata respinta (`QOSMinCpuNotSatisfied`), senza
+jobID/allocazione. Il preflight precedente aveva omesso MinTRES: bprod
+richiede almeno65nodi/2080CPU/260GPU. Si usa boost_qos_lprod, associata
+all'account e senza quel minimo, mantenendo1GPU/8CPU/100G e cap4h/6h.
+Questa correzione NON cambia codice scientifico, criteri, costi autorizzati
+o numero di run. Launcher aggiornato prima del lancio; anche l'estrazione
+da45min deve usare override `--qos=boost_qos_lprod`. Le descrizioni bprod
+piu' sotto sono lo stato della proposta iniziale, superato da questa verifica.
+
 ## Domanda e confronto
 
 La supervisione diretta del readout condiviso aumenta la leggibilita' della

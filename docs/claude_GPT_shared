@@ -139,6 +139,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Budget residuo87,4247GPUh, minimo64,4247dopo cap. Leonardo-ops incaricato del preflight/sincronizzazione e lancio dei4training;
   qui ancora nessuna sottomissione, da verificare tramiteSLURM senza confondere PENDING con RUNNING.
 
+### 2026-10-08 | GPT | Correzione QoS prima del primo A/B | Base: 5e3bd84f92fcb57d76611646344e6bbd15f83a06
+
+- Prima sbatch respinta daSlurm conQOSMinCpuNotSatisfied, nessunID/allocazione e coda vuota. Corretto solo il defaultQoS del launcher
+  da boost_qos_bprod a boost_qos_lprod, a risorse/tempi/costo e codice scientifico invariati; nessun retry di training.
+- Il nuovo commit operativo diventa expectedcommit della campagna. Anche le estrazioni45min useranno override lprod. Non si modificano
+  criteri, lambda0,05, semi0/1, endpoint4.000update o tetti23GPUh+40CPU approvati. Preflight lprod completo e `sbatch --test-only`
+  A4h/B6h accettati senza allocazioni; sintassiBash/diff verificati prima del commit/lancio.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -263,3 +271,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - L'approvazione dei23GPUh+40core-oraCPU autorizza solo la tranche congelata. Non usare risparmi di costo per retry o P1/P2 non approvati.
 - Incompletezza/STOP/mismatch degli hash impedisce le estrazioni; nessuna prosecuzione automatica di checkpoint parziali. SLURM mantiene
   i training anche senza Mac/chat aperti; stato effettivo (in coda/in esecuzione) e ID da verificare dopo la sottomissione.
+
+### 2026-10-08 | GPT | Preflight QoS iniziale incompleto | Base: 5e3bd84f92fcb57d76611646344e6bbd15f83a06
+
+- Il controllo iniziale bprod aveva verificato massimi ma non MinTRES: quellaQoS richiede almeno65nodi/2080CPU/260GPU. La conclusione
+  «compatibile con1GPU» era sbagliata; il rifiuto prima dell'allocazione ha evitato consumo. Lprod, gia' consentita all'account, mantiene
+  le risorse approvate. Nessuna modifica/retry alle componenti scientifiche; dichiarare QoS effettiva negli artefatti di sottomissione.
