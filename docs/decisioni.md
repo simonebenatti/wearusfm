@@ -2264,3 +2264,11 @@ poi l'attenzione viene azzerata. Il forward resta invariato; il gradiente verso 
 Aggiunte regressioni float32/float64 per un istante interamente nascosto e per tutti gli istanti nascosti. Suite CPU:723test unici passati,
 1skipMPS; cinque casi localhost inizialmente bloccati dal sandbox, poi i6casi del file superati (uno duplicato). Nessun test CUDA della patch:
 il collaudo frozen e' stato eseguito sul commit precedente7655356 e senza masking, quindi resta separato e valido.
+
+**Collaudo CUDA autorizzato (Simone, 08/10/2026):** dopo la chiusura frozen, Simone ha chiesto di provare il Perceiver e poi lavorare
+sull'A/B. Protocollo congelato prima del lancio: `scripts/check_perceiver_cuda.py`, Perceiver di taglia produzione d384/H6/K64, due campioni
+impacchettati, un istante interamente nascosto nel primo e tutti gli istanti nascosti nel secondo; float32 e autocastbf16. Confronto stessa
+inizializzazione/input con forward/backward diretto e ricomputato tramite activation checkpointing. Criteri: output/loss/gradienti finiti,
+gradiente input esattamente zero sulle regioni interamente nascoste e nonzero su quelle visibili, equivalenza forward/backward entro tolleranze
+prespecificate (2e-5 float32,2e-2 bf16). Job A100,4CPU,20G, massimo5min =0,0834GPUh, entro il tetto autorizzato0,1GPUh. Solo test funzionale,
+nessun training/checkpoint/dato reale; esito da registrare senza rilanci o correzioni al volo.

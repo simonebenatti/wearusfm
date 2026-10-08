@@ -109,6 +109,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   723passati,1skipMPS; i test localhost bloccati dal sandbox sono passati col permesso. Nessun test CUDA della patch.
 - Corretto a30G il launcher ridge dopo il rifiuto iniziale della richiesta40G, superiore al limite QoS30800M. Due tentativi di copia
   report/log sul Mac si sono bloccati; gli artefatti sono stati verificati su Leonardo e nessuna feature/checkpoint e' stata scaricata.
+- Simone ha autorizzato il successivo collaudo CUDA mirato del Perceiver entro0,1GPUh. Preparati script e launcher: float32/bf16,
+  righe parzialmente e totalmente nascoste, confronto diretto contro activation checkpointing; massimo5min/0,0834GPUh. Non ancora lanciato.
 
 ## 2) Problemi trovati
 
@@ -212,3 +214,4 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   723passati,1skipMPS; i test localhost bloccati dal sandbox sono passati col permesso. Nessun test CUDA della patch.
 - Il launcher ridge e' stato corretto da40G a30G: `lrd_all_serial` impone MaxTRES memoria30800M; il job riuscito ha usato l'override30G.
 - Due sessioni SSH di copia report/log sul Mac si sono bloccate; artefatti e hash verificati in place, nessuna feature/checkpoint scaricata.
+- Autorizzato ma non ancora lanciato un unico collaudo CUDA della patch Perceiver: massimo5min/0,0834GPUh, nessun training o dato reale.
