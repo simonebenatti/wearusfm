@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=40G
+#SBATCH --mem=30G
 #SBATCH --time=01:00:00
 #SBATCH -J step1_probe
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step1_probe_%j.out

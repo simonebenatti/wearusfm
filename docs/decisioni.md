@@ -2240,3 +2240,27 @@ gradienti dell'ingresso e di tutti i parametri risultano finiti; sui token nasco
 **P0 non confermato**, eventuale bonifica come **P2**. I collaudi CUDA gia' conclusi hanno inoltre avuto gradienti finiti, ma non sostituiscono
 una regressione CUDA dedicata al caso tutto mascherato. La sonda frozen proposta usa `visible=None`, quindi non attraversa questo ramo e non
 dipende dalla scelta di applicare o meno `safe_scores`.
+
+### Esito della prima sonda spettrale frozen (08/10/2026)
+
+Job estrazione59703237 e ridge59703306 entrambi **COMPLETED0:0**; afterok rispettato. Estrazione29min43s,0,4953GPUh; ridge18sCPU;
+circa4,00core-ora totali, entro0,5GPUh+8core-ora autorizzate. 10.000righe (X10000x768 float32),32/32coordinate finite e valutabili,
+split8000/1000/1000 e soggetti80/10/10 senza sovrapposizioni. Tutta la provenance e gli hash sono coerenti.
+
+R2 macro backbone: forma fast0,8526, energia fast0,9160, forma slow0,7895, energia slow0,9158. Locale:0,7848/0,8905/0,7385/0,9011.
+Concatenato P1/P2: **0,8634/0,9142/0,7975/0,9154**; e' il migliore sulle due forme. R2 negativi per soggetto mantenuti; nessun bootstrap.
+Criteri tecnici prespecificati tutti superati. Questa e' la baseline del checkpoint storico, non effetto della keep ne' generalizzazione a
+soggetti mai visti dal pretraining. Riepilogo machine-readable: `results/passo6/step1_frozen_probe_20261008.json`.
+
+Il report remoto (SHA256 `c946cad5dada1a8976066faa322aad6d4ea413268148801159567ec520826f8b`) e le feature (SHA256
+`d2896bf5cc26302306cfa14b3a41f6c8711b51ccd48aedb7b71e9747d7e4ea9a`) sono stati verificati su Leonardo. Due tentativi indipendenti di
+copia del solo report/log sul Mac si sono bloccati senza output; nessun file parziale e nessun checkpoint/NPZ scaricato. Budget passo6 ora
+circa12,57/100GPUh usate e87,43residue.
+
+### Bonifica P2 del Perceiver preparata localmente dopo la sonda
+
+Applicato `safe_scores` soltanto alle righe senza alcuna chiave visibile: prima della softmax gli score di quelle righe diventano finiti,
+poi l'attenzione viene azzerata. Il forward resta invariato; il gradiente verso input/query/chiavi della riga vuota e' zero senza nodi NaN.
+Aggiunte regressioni float32/float64 per un istante interamente nascosto e per tutti gli istanti nascosti. Suite CPU:723test unici passati,
+1skipMPS; cinque casi localhost inizialmente bloccati dal sandbox, poi i6casi del file superati (uno duplicato). Nessun test CUDA della patch:
+il collaudo frozen e' stato eseguito sul commit precedente7655356 e senza masking, quindi resta separato e valido.

@@ -1,0 +1,113 @@
+{
+  "recorded_on": "2026-10-08",
+  "protocol_commit": "8a4b49c",
+  "execution_commit": "765535619e799d1721406cf5726e37e6f80acec0",
+  "verification_source": "Read-only Leonardo validation by leonardo-ops after both jobs completed",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/sanity_0410/checkpoint.pt",
+    "which": "teacher",
+    "steps": 10000,
+    "sha256": "fa7b5a7ae8cd6c2c13ef1fe42fa79e07e370d2831fd2782f2a0a1d768fb7cc96"
+  },
+  "jobs": {
+    "extract": {
+      "id": 59703237,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 1783,
+      "cpus": 8,
+      "gpus": 1,
+      "requested_memory": "100G",
+      "max_rss_kib": 37519984,
+      "gpu_hours": 0.4952777778,
+      "features_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/step1_probe_sanity_0410_0810/features.npz",
+      "features_bytes": 29819174,
+      "features_sha256": "d2896bf5cc26302306cfa14b3a41f6c8711b51ccd48aedb7b71e9747d7e4ea9a"
+    },
+    "probe": {
+      "id": 59703306,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "dependency": "afterok:59703237",
+      "dependency_respected": true,
+      "elapsed_seconds": 18,
+      "cpus": 8,
+      "gpus": 0,
+      "requested_memory": "30G",
+      "max_rss_kib": 925148,
+      "report_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_probe_sanity_0410_0810/report.json",
+      "report_bytes": 146921,
+      "report_sha256": "c946cad5dada1a8976066faa322aad6d4ea413268148801159567ec520826f8b"
+    }
+  },
+  "cost": {
+    "gpu_hours": 0.4952777778,
+    "cpu_core_hours_total": 4.0022222222,
+    "authorized_gpu_hours_max": 0.5,
+    "authorized_cpu_core_hours_max": 8.0,
+    "within_authorized_limits": true,
+    "step6_gpu_hours_used_approx": 12.5717,
+    "step6_gpu_hours_remaining_approx": 87.4283
+  },
+  "data": {
+    "dataset": "emg2qwerty",
+    "rows": 10000,
+    "features_shape": [10000, 768],
+    "features_dtype": "float32",
+    "targets_shape": [10000, 32],
+    "all_features_finite": true,
+    "all_observed_targets_finite": true,
+    "all_32_coordinates_valid_for_all_rows": true,
+    "rows_by_split": {"train": 8000, "val": 1000, "test": 1000},
+    "subjects_by_split": {"train": 80, "val": 10, "test": 10},
+    "rows_per_subject": 100,
+    "subject_overlap": false,
+    "target_version": "step1_psd_power_shape_energy_v1",
+    "readout_version": "p1p2_qc_equal_channel_v1",
+    "split_sha256": "e064a1102bb4a7dd1b01a70caefa8fa2c58d8c9c751bafeafe6bd2892fff7a30",
+    "manifest_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "subset_sha256": "9ba2ddbab3b18558b64f6c3bea186e1e90d49d5e89dca308a26af4df940890d2"
+  },
+  "r2_macro": {
+    "backbone": {
+      "fast_shape": 0.8526492616,
+      "fast_energy": 0.9159826373,
+      "slow_shape": 0.7894911993,
+      "slow_energy": 0.9158100572
+    },
+    "local": {
+      "fast_shape": 0.7847761609,
+      "fast_energy": 0.8905291165,
+      "slow_shape": 0.7385458628,
+      "slow_energy": 0.9010724126
+    },
+    "p1p2": {
+      "fast_shape": 0.8634051871,
+      "fast_energy": 0.9141914491,
+      "slow_shape": 0.7975171049,
+      "slow_energy": 0.9153817883
+    }
+  },
+  "report_validation": {
+    "views": ["backbone", "local", "p1p2"],
+    "coordinates_ok_per_view": 32,
+    "all_reported_numbers_finite": true,
+    "reported_numeric_values_checked": 2577,
+    "negative_per_subject_r2_preserved": {"backbone": 99, "local": 126, "p1p2": 82},
+    "negative_aggregate_coordinate_r2": 0,
+    "bootstrap": "not_performed",
+    "all_prespecified_validity_criteria_passed": true
+  },
+  "interpretation": [
+    "The concatenated p1p2 view has the highest macro R2 for fast and slow spectral shape in this baseline.",
+    "Energy is strongly linearly readable in all three views, but energy alone does not establish preservation of spectral shape.",
+    "This is a frozen baseline on a checkpoint trained before the keep objective; it is not evidence that keep improves embeddings.",
+    "The split is among pretraining subjects, so this is not encoder generalization to subjects never seen during pretraining.",
+    "The checkpoint used the historical training code; the subsequent safe_scores cleanup is separate and does not affect this unmasked extraction."
+  ],
+  "local_archive": {
+    "report_or_logs_copied": false,
+    "reason": "Two independent SSH transfer sessions blocked without output; remote artifacts and hashes were verified in place. No partial local file remained.",
+    "features_or_checkpoint_downloaded": false
+  }
+}

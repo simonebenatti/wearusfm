@@ -99,6 +99,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Simone ha autorizzato esplicitamente estrazione GPU e ridge CPU della prima sonda frozen proposta, entro0,5GPUh piu'8core-oraCPU.
 - Il Perceiver resta invariato in questi job; la bonifica P2 `safe_scores` verra' affrontata dopo la sonda e prima del confronto A/B.
 
+### 2026-10-08 | GPT | Esito sonda frozen e bonifica Perceiver P2 | Esecuzione: 7655356
+
+- Extract59703237 e ridge59703306 COMPLETED0:0; afterok rispettato. Costo0,4953GPUh e circa4,00core-oraCPU. 10.000righe finite,
+  32/32coordinate, soggetti80/10/10 disgiunti; tutti i criteri tecnici superati.
+- R2 macro P1/P2: forma fast0,8634, energia fast0,9142, forma slow0,7975, energia slow0,9154. Il concatenato e' migliore di backbone e
+  locale sulle due forme; e' una baseline, non effetto della keep. Dettagli in `results/passo6/step1_frozen_probe_20261008.json`.
+- Preparata dopo il completamento una patch locale P2 `safe_scores` del Perceiver con regressioni sulle righe tutte mascherate. Suite CPU:
+  723passati,1skipMPS; i test localhost bloccati dal sandbox sono passati col permesso. Nessun test CUDA della patch.
+- Corretto a30G il launcher ridge dopo il rifiuto iniziale della richiesta40G, superiore al limite QoS30800M. Due tentativi di copia
+  report/log sul Mac si sono bloccati; gli artefatti sono stati verificati su Leonardo e nessuna feature/checkpoint e' stata scaricata.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -190,3 +201,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Autorizzazione consumabile soltanto per i due job descritti nel protocollo congelato: estrazione teacher frozen e ridge dipendente.
   Non autorizza patch/training del Perceiver, nuovi checkpoint, semi aggiuntivi, A/B o altre allocazioni.
+
+### 2026-10-08 | GPT | Esito sonda frozen e bonifica Perceiver P2 | Esecuzione: 7655356
+
+- Extract59703237 e ridge59703306 COMPLETED0:0; afterok rispettato. Costo0,4953GPUh e circa4,00core-oraCPU. 10.000righe finite,
+  32/32coordinate, soggetti80/10/10 disgiunti; tutti i criteri tecnici superati.
+- R2 macro P1/P2: forma fast0,8634, energia fast0,9142, forma slow0,7975, energia slow0,9154. Il concatenato e' migliore di backbone e
+  locale sulle due forme; e' una baseline, non effetto della keep. Dettagli in `results/passo6/step1_frozen_probe_20261008.json`.
+- Preparata dopo il completamento una patch locale P2 `safe_scores` del Perceiver con regressioni sulle righe tutte mascherate. Suite CPU:
+  723passati,1skipMPS; i test localhost bloccati dal sandbox sono passati col permesso. Nessun test CUDA della patch.
+- Il launcher ridge e' stato corretto da40G a30G: `lrd_all_serial` impone MaxTRES memoria30800M; il job riuscito ha usato l'override30G.
+- Due sessioni SSH di copia report/log sul Mac si sono bloccate; artefatti e hash verificati in place, nessuna feature/checkpoint scaricata.

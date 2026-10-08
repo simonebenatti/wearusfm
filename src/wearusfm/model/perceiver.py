@@ -57,7 +57,14 @@ class PerceiverPooling(nn.Module):
             vis = visible[a:b].T[:, None, None, :]  # (P, 1, 1, C_s)
             scores = scores.masked_fill(~vis, float("-inf"))
             any_vis = vis.any(dim=-1, keepdim=True)
-            attn = torch.where(any_vis, torch.softmax(scores, dim=-1), torch.zeros_like(scores))  # istante tutto nascosto: nessun contenuto
+            # Evita softmax(-inf, ..., -inf): torch.where sull'output nasconde i
+            # NaN nel forward, ma lascia comunque un nodo softmax non finito nel
+            # grafo. Per le sole righe vuote usiamo score finiti; dopo la softmax
+            # l'attenzione viene azzerata, quindi il forward resta invariato e il
+            # gradiente verso token/query della riga vuota e' esattamente zero.
+            safe_scores = torch.where(any_vis, scores, torch.zeros_like(scores))
+            attn = torch.softmax(safe_scores, dim=-1)
+            attn = torch.where(any_vis, attn, torch.zeros_like(attn))  # istante tutto nascosto: nessun contenuto
             outs.append(torch.einsum("phkc,cphd->pkhd", attn, v).reshape(p, self.k_latents, d))
         lat = self.latents + self.out(torch.stack(outs))  # (S, P, K, d)
         return lat + self.mlp(self.norm_mlp(lat))

@@ -94,3 +94,23 @@ scientifico richiedera' i bracci A/B accoppiati e nuove sonde frozen.
 
 Il lancio richiede approvazione esplicita di questi tetti. Le uscite restano
 fuori Git; nel repository entra poi soltanto il riepilogo verificato.
+
+## Esito dell'8 ottobre 2026
+
+Simone ha autorizzato i due job entro i tetti sopra. Estrazione `59703237` e
+ridge `59703306` sono entrambe `COMPLETED 0:0`; la dipendenza `afterok` e' stata
+rispettata. Costo: 0,4953 GPU-ora e circa 4,00 core-ora CPU.
+
+Le 10.000 righe e tutte le 32 coordinate sono finite e valutabili; split
+8000/1000/1000, soggetti 80/10/10 senza sovrapposizioni. R2 macro:
+
+| vista | fast shape | fast energy | slow shape | slow energy |
+|---|---:|---:|---:|---:|
+| backbone | 0,8526 | 0,9160 | 0,7895 | 0,9158 |
+| local | 0,7848 | 0,8905 | 0,7385 | 0,9011 |
+| p1p2 | **0,8634** | 0,9142 | **0,7975** | 0,9154 |
+
+Il concatenato P1/P2 e' il migliore sulle due famiglie di forma in questa
+baseline. Non e' ancora un miglioramento causato dalla keep: servira' il
+confronto A/B. Dettagli, provenance e hash in
+`results/passo6/step1_frozen_probe_20261008.json`.

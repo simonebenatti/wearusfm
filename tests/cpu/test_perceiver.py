@@ -60,6 +60,32 @@ def test_hidden_tokens_do_not_count_and_a_fully_hidden_instant_gives_the_learned
     assert torch.allclose(out[0, 2], empty, atol=1e-6)
 
 
+@pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
+def test_fully_hidden_instant_has_finite_backward_and_zero_input_gradient(dtype):
+    m = _model().to(dtype=dtype)
+    x = _x(10).to(dtype=dtype).requires_grad_()
+    vis = torch.ones(10, P, dtype=torch.bool)
+    vis[:, 2] = False
+    out = m(x, offsets_from_counts([10]), vis)
+    out.square().mean().backward()
+    assert torch.isfinite(out).all()
+    assert x.grad is not None and torch.isfinite(x.grad).all()
+    assert torch.count_nonzero(x.grad[:, 2]) == 0
+    assert torch.count_nonzero(x.grad[:, [0, 1, 3, 4]]) > 0
+    assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters())
+
+
+def test_all_instants_hidden_keep_finite_parameter_gradients_and_ignore_input():
+    m = _model()
+    x = _x(10).requires_grad_()
+    vis = torch.zeros(10, P, dtype=torch.bool)
+    out = m(x, offsets_from_counts([10]), vis)
+    out.square().mean().backward()
+    assert torch.isfinite(out).all()
+    assert x.grad is not None and torch.count_nonzero(x.grad) == 0
+    assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters())
+
+
 def test_bad_offsets_are_rejected_and_flops_counted():
     m = _model()
     for bad in ([0, 5, 5, 10], [1, 10], [0, 9]):
