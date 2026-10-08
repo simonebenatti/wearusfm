@@ -94,6 +94,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Controlli Leonardo solo lettura tramite leonardo-ops: checkpoint presente (SHA256 `fa7b5a7ae8cd6c2c13ef1fe42fa79e07e370d2831fd2782f2a0a1d768fb7cc96`),
   split/manifest/scale/durate presenti e coerenti, nessun job in coda. Nessuna scrittura remota o allocazione.
 
+### 2026-10-08 | GPT | Autorizzazione sonda frozen | Protocollo: 8a4b49c
+
+- Simone ha autorizzato esplicitamente estrazione GPU e ridge CPU della prima sonda frozen proposta, entro0,5GPUh piu'8core-oraCPU.
+- Il Perceiver resta invariato in questi job; la bonifica P2 `safe_scores` verra' affrontata dopo la sonda e prima del confronto A/B.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -180,3 +185,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Su domanda di Simone riesaminato il Perceiver senza modificarlo: la softmax di una riga tutta a `-inf` ha NaN intermedi e gradienti NaN se isolata,
   ma nel grafo completo locale output/loss e tutti i gradienti sono finiti, con gradiente zero sui token nascosti. Resta **P0 non confermato / P2 di
   pulizia numerica**; `safe_scores` non e' implementato. La sonda frozen senza masking non esercita quel ramo.
+
+### 2026-10-08 | GPT | Autorizzazione sonda frozen | Protocollo: 8a4b49c
+
+- Autorizzazione consumabile soltanto per i due job descritti nel protocollo congelato: estrazione teacher frozen e ridge dipendente.
+  Non autorizza patch/training del Perceiver, nuovi checkpoint, semi aggiuntivi, A/B o altre allocazioni.

@@ -2212,7 +2212,7 @@ Passaggio di consegne completo: `docs/handoff_step1_20261008.txt`. Nuova chat su
 Archiviazione conclusa: 9 copie verificate SHA256 contro Leonardo; indice in `handoff_20261008/verification.json`, header/provenienza
 in `handoff_20261008/calibration/header_provenance.json` sotto la directory locale indicata sopra. Repo remoto pulito, nessun job in coda.
 
-## Prima sonda spettrale frozen proposta (08/10/2026, GPT; in attesa di autorizzazione HPC)
+## Prima sonda spettrale frozen (08/10/2026, GPT; protocollo congelato e job autorizzati)
 
 Su richiesta di Simone di proseguire con lo Step 1, preparato il protocollo della prima misura ancora mancante in
 `docs/step1_frozen_spectral_probe.md`. Baseline proposta: teacher EMA finale di `sanity_0410`, 10.000 passi, SHA256 verificato su Leonardo
@@ -2226,6 +2226,10 @@ Preparati `scripts/slurm/spectral_step1_extract.sbatch` (1A100,8CPU,30min, tetto
 Criteri di validita' congelabili: provenienza completa, soggetti disgiunti,10.000righe finite,32coordinate valutabili salvo indisponibilita'
 fisica registrata, tre viste/quattro famiglie/dettaglio coordinate completi e nessuna scelta sul test. Budget passo6 dopo il massimo GPU
 sarebbe circa12,6/100usate e87,4residue. **Nessun job sottomesso:** tetti e protocollo richiedono approvazione esplicita di Simone.
+
+**Autorizzazione (Simone, 08/10/2026):** «ok allora parti con quello che hai proposto, poi sistemiamo il perceiver». Autorizzati quindi
+l'estrazione frozen e il job ridge in dipendenza entro i tetti sopra: massimo0,5GPUh (=4ore locali) piu' massimo8core-oraCPU. Il Perceiver
+resta invariato per questa misura; la bonifica P2 `safe_scores` viene affrontata dopo, prima del futuro training A/B.
 
 ### Stato Perceiver riesaminato durante la preparazione
 
