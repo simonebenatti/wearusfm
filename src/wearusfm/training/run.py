@@ -64,6 +64,7 @@ class RunConfig:
     keep_calibration: str | None = None
     keep_calibration_sha256: str | None = None
     keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
+    pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
 
 
 def sanity_config(max_steps: int = 20000) -> RunConfig:
@@ -200,6 +201,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
         raise ValueError("keep requires a registered head and multiscale targets")
     ckpt = out_dir / "checkpoint.pt"
+    if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
+        raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
     resume_state = torch.load(ckpt, map_location="cpu", weights_only=False) if ckpt.exists() else None
     if resume_state is not None and cfg.loader.multiscale_anchor:
         previous = resume_state.get("config", {})
@@ -252,6 +255,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         student.load_state_dict(state["student"])
         teacher.load_state_dict(state["teacher"])
         log(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
+    if cfg.pairing_audit:
+        from wearusfm.training.pairing import state_sha256
+        (out_dir / "pairing.json").write_text(json.dumps({
+            "student_initial_sha256": state_sha256(student.state_dict()),
+            "teacher_initial_sha256": state_sha256(teacher.state_dict()),
+            "seed": cfg.seed, "num_workers": num_workers, "resume": False,
+        }, indent=2))
     (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})
     val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
@@ -276,6 +286,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         t0 = time.time()
         batch = next(it)
         t_data = time.time() - t0
+        if cfg.pairing_audit:
+            from wearusfm.training.pairing import batch_sha256
+            batch_hash = batch_sha256(batch)  # CPU data BEFORE any conversion/device transfer
         inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
         for g in opt.param_groups:
             g["lr"] = _lr_at(step, cfg)
@@ -316,6 +329,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
         rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
         rec["virtual"] = sum(p != "full" for p in batch.presented or [])
+        if cfg.pairing_audit:
+            rec["batch_sha256"] = batch_hash
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
             with amp:
                 d = diagnostics(student, teacher, val)

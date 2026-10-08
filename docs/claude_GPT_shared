@@ -115,6 +115,21 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   input completamente nascosto zero, forward/backward con checkpointing identici (differenze massime0,0). Tutti i criteri PASS, nessun retry.
   Esito in `results/passo6/perceiver_cuda_20261008.json`.
 
+### 2026-10-08 | GPT | Preparazione pilota A/B Step 1 | Base: 8bc8c6461efa039cdf011bd6bafd3cf87e86a86f
+
+- Su «procedi» preparato `docs/step1_ab_pilot.md`:4.000update, semi0/1, Akeep0/Bkeep0,05, testa/calibrazione identiche, emg2qwerty;
+  pilota con warmup1000 poi lr costante, non4epoche/WSD. EndpointteacherEMA e vista primariaP1P2; forme separate dalle energie.
+- Aggiunti wrapper/launcher train e compare, audit opzionale degli stati iniziali e di TUTTI i batch/target/maschere, rifiuto resume/warm-start
+  e gate sull'endpoint/STOP/finitezza. Bootstrap accoppiato per soggetto2000draw, seed20261008, due modelli non resamplati come soggetti.
+  Ridge ora registra statistiche sufficienti n/media/M2/SSE e hash fisico cache; confronto verifica provenance e target controNPZ.
+- Fissati criteri pratici prima dei nuoviA/B: delta forma>=0,02, CI95%lower>0, entrambi semi positivi, forme medie non peggiori e nessuna
+  famiglia/seme<-0,01. Solo segnale promettente per successiviP1/P2, non adozione o generalizzazione dell'encoder a soggetti mai visti.
+- Tetto proposto23GPUh+40core-oraCPU, atteso16-18GPUh; residuo minimo64,4247GPUh. Risorse/QoS verificate read-only da leonardo-ops,
+  coda vuota/remoto pulito8bc8c64. Nessun job/allocazione/copia remota. P1/P2 successivi separati, non inclusi nell'autorizzazione da chiedere.
+- Verifica finale:738test CPU unici passati,1skipMPS;5casi downloader bloccati dalla bindlocalhost del sandbox poi superati con permesso
+  (6casi nel file,1duplicato). Dopo l'ultimo refactoraudit/compare,19test mirati passati; sintassiBash/CLI/diff verificati. Nessuna nuova
+  provaCUDA del trainer/audit o training reale: tali controlli saranno verificati anche sugli artefatti della campagna, dopo approvazione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -220,3 +235,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Autorizzato ma non ancora lanciato un unico collaudo CUDA della patch Perceiver: massimo5min/0,0834GPUh, nessun training o dato reale.
 - Il collaudo59720752 ha superato tutti i criteri in float32/bf16 con checkpointing, costo0,00361GPUh. Questo chiude la bonifica numerica P2
   CPU+CUDA, non dimostra qualita' dell'apprendimento e non autorizza ancora il confronto A/B.
+
+### 2026-10-08 | GPT | Limiti e guardie del pilota A/B | Base: 8bc8c6461efa039cdf011bd6bafd3cf87e86a86f
+
+- Il resume ordinario ricrea lo stream worker da seed/step; timecap diversi inA/B non garantiscono stessi crop perupdate. Per questo pilota:
+  run continui, stessoendpoint, fingerprintdi ogni batch e niente resume automatico. Non e' una correzione della ripresa generale.
+- Il benchmarkA e' un proxy multi-dataset, B ha soltanto200step di smoke: stima16-18GPUh non una durata misurata a regime. Cap23GPUh+40CPU
+  da approvare esplicitamente; se non arriva a4.000step la coppia e' incompleta, niente checkpoint parziale/test come esito scientifico.
+- PooledR2 non si ricostruisce mediandoR2per-soggetto: servono statistiche sufficienti, ora salvate; soggetti localmente costanti inclusi.
+  Bootstrap10soggetti condizionato su2modelli, non tutta l'incertezza di training. Nessuna esclusione post-hoc di coordinate sfavorevoli.
+- Stessa ridge-test gia' osservata sul checkpoint storico; i nuovi criteri sono proposti PRIMA dei nuoviA/B, non una conferma indipendente.
+  La sonda e' dentro pretraining; keep fisica puo' supervisionare anche soggetti ridge-test. Nessuna conclusione di generalizzazione o task.
+- P1/P2 nuovi non eseguiti e non inclusi nel cap di questa tranche; guardia-2pp e' pratica, non prova statistica di non-inferiorita'.
+  Dataloader3,394%, guard supporto500ms, dinamica temporale e CapgMyo virtuale non risolti qui. Nessuna nuova bonificaPerceiver necessaria.

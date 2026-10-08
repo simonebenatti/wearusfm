@@ -2279,3 +2279,37 @@ forward e backward con activation checkpointing identici al percorso diretto; di
 Tutti i criteri prespecificati PASS, nessun retry. Log SHA256 `52d057adac4cf99ea752552944ee6dcefacd85935f2face38981b35628b251a4`;
 riepilogo `results/passo6/perceiver_cuda_20261008.json`. La bonifica P2 e' quindi verificata CPU+CUDA; non e' una misura di qualita' del
 training. Budget passo6 circa12,575/100GPUh usate e87,425residue.
+
+## Proposta A/B Step 1 accoppiata (08/10/2026, GPT; NON ancora autorizzata)
+
+Simone: «procedi» dopo la proposta di congelare il protocollo A/B; preparazione completata su base8bc8c64. Riletto anche il confronto
+originario nella chat precedente: A=JEPA/ancorePSD normalizzate, B=stessa base+supervisione diretta del readoutP1P2. Nessun nuovo training
+o job avviato. Protocollo completo `docs/step1_ab_pilot.md`, ID `step1_ab_4000_v1`; script `scripts/step1_ab.py`, launcher train/compare.
+
+**Scelte da approvare, fissate prima dei nuovi risultati:**4.000update per braccio, semi0/1 accoppiati, Akeep0/Bkeep0,05, testa in entrambi,
+emg2qwerty, stessa calibrazioneSHA4640dfc e splitSHAe064a11, batch32/worker6/RVQoff, warmup1000 poi lr3e-4 costante (pilota, NON WSD/D14
+o4epocheD12). Unico checkpointteacherEMA finale; nessun warm-start/resume, ricerca di lambda o prosecuzione automatica. Audit opzionale
+nel trainer, spento per default: hash iniziali e ogni batch completo, senza consumare RNG; l'audit rifiuta run gia' esistenti e il wrapper
+fallisce se non completa4.000update, seSTOP o stati finali non finiti. Nessun cambiamento a perdita/optimizer/preprocessing ordinari.
+
+**Endpoint e criteri:** vista primariaP1P2, media equiponderataR2 formafast/slow, differenzaB-A mediata sui2semi. Ridge train-only, alpha
+validation-only, test frozen10soggetti identico in4cache nuove, tutte32coordinate valutabili; bootstrap2000subject-draw seed20261008
+accoppiato fra bracci E semi, ricostruzioneR2pooled da n/media/M2/SSE. «Promettente per P1/P2» soltanto se delta>=0,02, CI95%lower>0,
+entrambi i semi positivi, nessuna forma peggiora nella media e nessuna famiglia/seme perde>0,01R2. Energie separate, altre viste descrittive,
+negativi mantenuti. CI condizionato su due modelli; split della sonda dentro pretraining, NON soggetti mai visti dall'encoder. Soglie pratiche
+proposte ora, dopo la baseline storica ma PRIMA dei nuoviA/B; non chiamare questo una conferma indipendente o una vittoria downstream.
+
+**Costo da autorizzare:** atteso16-18GPUh=128-144ore locali GPU (A stimato dal PSD multi-dataset2,457s/step, B smoke51-200=3,95684s/step,
+estrazioni da29min43s; non ETA). Massimo23GPUh=184ore locali GPU piu'40core-oraCPU:2A*4h+2B*6h+4extract*45min,4ridge8CPU*1h+
+1compare8CPU*1h. Budgetpasso6 ora~12,5753/100usate/87,4247residue; dopo cap~35,5753usate/**64,4247residue**. QoSboost_qos_bprodMax24h
+e partizione boost_usr_prod verificate read-only da leonardo-ops; dbg30min non adatta. CPUlrd_all_serial30G. Nessunretry o seme aggiuntivo.
+**Non autorizzato finche' Simone non approva questi tetti.** Commit esatto di esecuzione e autorizzazione si registrano prima dei lanci.
+
+P1/P2 e' una tranche successiva solo se promettente, NON inclusa nei23GPUh. Guardia pratica proposta: delta medioB-A non inferiore a-2pp
+separatamente perP1 eP2, senza chiamarla equivalenza statistica; nuovi cache/provenance/paired-report da preparare prima dell'approvazione
+successiva. Cap stimato ulteriore6GPUh+128core-oraCPU, non autorizzato ora. Dataloader/guard500ms/CapgMyo virtuale/dinamica restano separati.
+
+Verifica locale finale:738test CPU unici passati,1skipMPS. Cinque casi downloader bloccati dal sandboxlocalhost poi superati nel file
+rieseguito con permesso (6casi,1duplicato); dopo ultimo refactoraudit/compare19test mirati passati. SintassiBash, CLI e diff verificati.
+Audit reale small su3update dimostra init/batch/maschere identici e RNG/stati invariati rispetto al trainer senza audit; comparatore provato
+su cache sintetiche, drift/mismatch rifiutati. Nessun training/auditCUDA nuovo, risultatoA/B o jobHPC: quello richiede l'approvazione sopra.

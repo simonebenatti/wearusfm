@@ -59,7 +59,15 @@ def spectral_probe(x, y, valid, subject, split, alphas=(.1, 1., 10., 100.)):
         row.update(alpha=float(alpha), r2=r2(y[c, j], prediction), status="ok", per_subject={})
         for s in sorted(set(subject[c].tolist())):
             sub = subject[c] == s
-            row["per_subject"][s] = {"n": int(sub.sum()), "r2": r2(y[c, j][sub], prediction[sub])}
+            target, pred = y[c, j][sub], prediction[sub]
+            row["per_subject"][s] = {
+                "n": int(sub.sum()), "r2": r2(target, pred),
+                # Sufficient statistics for a paired SUBJECT bootstrap of pooled R2.
+                # Averaging subject R2 is a different estimand, and may discard constants.
+                "target_mean": float(target.mean()),
+                "target_m2": float(np.square(target-target.mean()).sum()),
+                "sse": float(np.square(target-pred).sum()),
+            }
         if row["r2"] is None:
             row["status"] = "constant_test"
         rows.append(row)

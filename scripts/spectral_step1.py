@@ -97,6 +97,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     out = output_path(args.out)
     if args.command == "probe":
+        feature_hash = sha256_file(args.data)
         with np.load(args.data, allow_pickle=False) as data:
             x, y, mask, subjects, split = (data[k] for k in ("X", "y", "valid", "subject", "split"))
             meta = json.loads(str(data["metadata_json"].item()))
@@ -108,8 +109,11 @@ def main(argv=None):
         d = x.shape[1]//2
         if x.ndim != 2 or x.shape[1] != 2*d or d == 0:
             raise ValueError("probe features must have even positive dimension (2d)")
-        report = {"metadata": meta, "views": {name: spectral_probe(f, y, mask, subjects, split)
+        report = {"metadata": meta, "features_sha256": feature_hash,
+                  "views": {name: spectral_probe(f, y, mask, subjects, split)
                    for name, f in (("backbone", x[:, :d]), ("local", x[:, d:]), ("p1p2", x))}}
+        if sha256_file(args.data) != feature_hash:
+            raise ValueError("feature cache changed during ridge evaluation")
         out.write_text(json.dumps(report, indent=2, allow_nan=False))
         return 0
     cfg = replace(R.with_window1_rules(R.sanity_config()), datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
