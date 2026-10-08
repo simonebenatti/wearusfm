@@ -84,6 +84,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Archiviate copie di log/config/summary/metrics fuori Git in /Users/simonebenatti/Documents/ChatGPT/FM per EMG/handoff_20261008/; nessun checkpoint/NPZ scaricato. Ricontrollati localmente 625 record PSD e 201 smoke: numeri tutti finiti, attesa PSD e711virtuali confermati, keep valida su32campioni ogni passo. Contesto permanente in docs/handoff_step1_20261008.txt; valori delle norme pesate ai passi1/101/201 nel JSON, senza conclusioni di qualita'.
 - Archiviazione conclusa: 9 copie verificate SHA256 contro Leonardo, verifica complessiva in verification.json e header/provenienza calibrazione in calibration/header_provenance.json nella directory locale sopra. Nessun job ancora attivo/in coda; repository remoto verificato pulito.
 
+### 2026-10-08 | GPT | Preparazione prima sonda spettrale frozen | Base: 0b30b492bb7596a46a59bb1b601c1e6d7fd71b1b
+
+- Mostrati e riletti gli esiti dei tre job conclusi PSD59638875, calibrazione59638890 e smoke59641613 dagli archivi locali verificati; nessun rilancio.
+- Preparato `docs/step1_frozen_spectral_probe.md`: baseline sul teacher EMA finale `sanity_0410` a10.000passi, emg2qwerty, split congelato80/10/10,
+  100finestre per soggetto, target corretti e readout QC-aware; ridge per backbone/locale/concatenazione con scaler train-only e alpha scelto solo su validation.
+- Preparati launcher separati `spectral_step1_extract.sbatch` e `spectral_step1_probe.sbatch`, con output nuovi fuori Git e controlli su SHA256.
+  Test mirati:7passati; sintassi bash verificata. Il primo tentativo col Python Anaconda privo di torch e' stato scartato, poi usato l'ambiente locale corretto.
+- Controlli Leonardo solo lettura tramite leonardo-ops: checkpoint presente (SHA256 `fa7b5a7ae8cd6c2c13ef1fe42fa79e07e370d2831fd2782f2a0a1d768fb7cc96`),
+  split/manifest/scale/durate presenti e coerenti, nessun job in coda. Nessuna scrittura remota o allocazione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -159,3 +169,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La calibrazione e' train-only, ma lo split train/val/test dello strumento riguarda la ridge dentro il pretraining: l'encoder puo' aver visto tutti quei soggetti senza etichette. Non chiamare il risultato generalizzazione a soggetti mai visti. Rigenerare cache P1/P2 col readout QC-aware.
 - Il summary.json finale dello smoke copre soltanto il resume: per memoria/durata dell'intero job usare anche log e accounting (picco 29,472 GiB, 14 min 19 s). Calib richiesta con1CPU ma accounting2CPU/billing: costo effettivo0,5428h CPU, ancora entro1h autorizzata.
 - Guard dei transitori sull'intera finestra lenta e rimozione dell'esclusione CapgMyo virtuale rimangono interventi separati. Non riprendere vecchi run cambiando target; non usare strict=False generico. Nuovi job/semi/training A/B richiedono nuova stima e autorizzazione.
+
+### 2026-10-08 | GPT | Preparazione prima sonda spettrale frozen | Base: 0b30b492bb7596a46a59bb1b601c1e6d7fd71b1b
+
+- La sonda proposta e' una baseline descrittiva sul checkpoint storico `sanity_0410`: non misura ancora l'effetto della keep e non e' un A/B.
+  Lo split e' interno ai soggetti del pretraining, quindi non dimostra generalizzazione dell'encoder a soggetti mai visti.
+- Il checkpoint PSD recente da625passi resta una diagnostica secondaria perche' e' ancora nel warm-up; non va mescolato alla baseline primaria.
+- Nessuna soglia di qualita' viene inventata dopo i risultati. Il protocollo fissa soltanto criteri di validita' dell'artefatto e produce R2 descrittivi,
+  senza bootstrap. Tetto proposto:0,5GPUh piu'8core-ora CPU; **nessun job e' autorizzato o sottomesso finche' Simone non approva esplicitamente**.
+- Su domanda di Simone riesaminato il Perceiver senza modificarlo: la softmax di una riga tutta a `-inf` ha NaN intermedi e gradienti NaN se isolata,
+  ma nel grafo completo locale output/loss e tutti i gradienti sono finiti, con gradiente zero sui token nascosti. Resta **P0 non confermato / P2 di
+  pulizia numerica**; `safe_scores` non e' implementato. La sonda frozen senza masking non esercita quel ramo.

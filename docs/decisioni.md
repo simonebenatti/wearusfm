@@ -2211,3 +2211,28 @@ Sono descrittive, non misure di allineamento fra gradienti o generalizzazione; k
 Passaggio di consegne completo: `docs/handoff_step1_20261008.txt`. Nuova chat sullo stesso checkout, vecchia conservata per studio.
 Archiviazione conclusa: 9 copie verificate SHA256 contro Leonardo; indice in `handoff_20261008/verification.json`, header/provenienza
 in `handoff_20261008/calibration/header_provenance.json` sotto la directory locale indicata sopra. Repo remoto pulito, nessun job in coda.
+
+## Prima sonda spettrale frozen proposta (08/10/2026, GPT; in attesa di autorizzazione HPC)
+
+Su richiesta di Simone di proseguire con lo Step 1, preparato il protocollo della prima misura ancora mancante in
+`docs/step1_frozen_spectral_probe.md`. Baseline proposta: teacher EMA finale di `sanity_0410`, 10.000 passi, SHA256 verificato su Leonardo
+`fa7b5a7ae8cd6c2c13ef1fe42fa79e07e370d2831fd2782f2a0a1d768fb7cc96`. Si usa emg2qwerty,100finestre per ciascuno dei100soggetti,
+split gia' congelato80/10/10 seed0 (SHA256 `e064a1102bb4a7dd1b01a70caefa8fa2c58d8c9c751bafeafe6bd2892fff7a30`), teacher frozen,
+readout QC-aware backbone/locale/concatenazione e ridge per le32coordinate; scaler solo train, alpha {0,1;1;10;100} solo validation,
+test letto una volta, R2 negativi mantenuti. Questa sonda crea una baseline descrittiva: nessuna soglia di qualita' o confronto A/B.
+
+Preparati `scripts/slurm/spectral_step1_extract.sbatch` (1A100,8CPU,30min, tetto0,5GPUh=4ore locali) e
+`scripts/slurm/spectral_step1_probe.sbatch` (8CPU,1h,0GPUh, tetto8core-ora), con output nuovi fuori Git e guardie sugli hash.
+Criteri di validita' congelabili: provenienza completa, soggetti disgiunti,10.000righe finite,32coordinate valutabili salvo indisponibilita'
+fisica registrata, tre viste/quattro famiglie/dettaglio coordinate completi e nessuna scelta sul test. Budget passo6 dopo il massimo GPU
+sarebbe circa12,6/100usate e87,4residue. **Nessun job sottomesso:** tetti e protocollo richiedono approvazione esplicita di Simone.
+
+### Stato Perceiver riesaminato durante la preparazione
+
+Il codice resta quello originale in `model/perceiver.py`: score delle chiavi nascoste a `-inf`, softmax calcolata su tutte le righe e
+selezione finale con `torch.where`; nessuna patch `safe_scores`. Diagnostica locale mirata con torch2.14 su un istante interamente nascosto:
+la softmax intermedia isolata contiene NaN e il suo gradiente isolato e' NaN, ma nel grafo completo del `PerceiverPooling` output/loss,
+gradienti dell'ingresso e di tutti i parametri risultano finiti; sui token nascosti il gradiente e' zero. Questo conferma la classificazione:
+**P0 non confermato**, eventuale bonifica come **P2**. I collaudi CUDA gia' conclusi hanno inoltre avuto gradienti finiti, ma non sostituiscono
+una regressione CUDA dedicata al caso tutto mascherato. La sonda frozen proposta usa `visible=None`, quindi non attraversa questo ramo e non
+dipende dalla scelta di applicare o meno `safe_scores`.
