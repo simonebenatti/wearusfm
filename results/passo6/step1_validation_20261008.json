@@ -1,0 +1,52 @@
+{
+  "recorded_on": "2026-10-08",
+  "executed_commit": "0e8ba050553c04530a46e8964eca80438916dacd",
+  "verification_source": "Read-only Leonardo checks reported by leonardo-ops; final numerical/checkpoint audit completed. Archived metrics independently rechecked locally on 2026-10-08.",
+  "local_archive": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/handoff_20261008",
+  "target_version": "step1_psd_power_shape_energy_v1",
+  "readout_version": "p1p2_qc_equal_channel_v1",
+  "local_tests": {"passed_unique": 720, "skipped": 1, "skip_reason": "MPS unavailable", "localhost_tests_rerun_with_permission": 6},
+  "psd": {
+    "job_id": 59638875, "state": "COMPLETED", "exit_code": "0:0", "elapsed_seconds": 1576,
+    "steps": 625, "max_steps": 2000, "stop_reason": "normal internal time limit", "stop_file": false,
+    "all_numeric_metrics_finite": true, "oom": false, "peak_gpu_gib": 37.607, "mean_step_seconds": 2.457,
+    "windows": 20000, "classes": {"A": 3978, "B": 14514, "C": 1508}, "virtual_windows": 711, "skipped_sessions": 0,
+    "data_wait_after_first_50": {"wait_seconds": 47.952, "step_seconds": 1412.955, "percent_reported": 3.394, "threshold_percent": 2.0},
+    "criteria": {"numerical_and_memory": true, "data_wait": false, "classes_and_virtual": true},
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1_psd_0710",
+    "log": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/sanity_jepa_59638875.out"
+  },
+  "calibration": {
+    "job_id": 59638890, "state": "COMPLETED", "exit_code": "0:0", "elapsed_seconds": 977,
+    "shape": [8000, 32], "dtype": "float32", "all_coordinates_valid_finite": true,
+    "split_seed": 0, "subjects": {"train": 80, "val": 10, "test": 10}, "windows_per_train_subject": 100,
+    "train_only_verified": true, "provenance_verified": true, "requested_cpu": 1, "accounted_cpu": 2,
+    "file": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_0710/calibration.npz",
+    "sha256": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89",
+    "split_sha256": "e064a1102bb4a7dd1b01a70caefa8fa2c58d8c9c751bafeafe6bd2892fff7a30",
+    "log": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step1_calibrate_59638890.out"
+  },
+  "smoke": {
+    "job_id": 59641613, "state": "COMPLETED", "exit_code": "0:0", "elapsed_seconds": 859,
+    "dataset": "emg2qwerty", "seed": 0, "keep_weight": 0.05, "rvq": false,
+    "initial_steps": 200, "resume_from": 200, "final_steps": 201, "stop_file": false,
+    "cuda_bf16_checkpointing_checks_passed": true, "cpu_cuda_rng_preserved": true,
+    "encoder_gradients_nonzero": true, "teacher_no_grad": true, "active_targets": 32,
+    "all_numeric_metrics_finite": true, "student_teacher_optimizer_tensors_finite": true,
+    "statistics_match_calibration": true, "student_teacher_buffers_equal": true,
+    "peak_gpu_gib_full_job": 29.472, "final_summary_covers_resume_only": true,
+    "keep_valid_samples_every_record": 32, "last_keep_loss": 0.7578648328781128,
+    "weighted_shared_encoder_gradient_norms": [
+      {"step": 1, "jepa": 0.1582525372505188, "anchors": 32.49197769165039, "keep": 0.6465944051742554},
+      {"step": 101, "jepa": 2.6864583492279053, "anchors": 4.550262451171875, "keep": 0.07891365140676498},
+      {"step": 201, "jepa": 1.3613231182098389, "anchors": 1.8057416677474976, "keep": 0.03872274234890938}
+    ],
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_smoke_0710",
+    "log": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/step1_smoke_59641613.out"
+  },
+  "cost": {"gpu_hours_total": 0.6764, "gpu_local_hours_equivalent": 5.411, "cpu_local_hours": 0.5428,
+           "authorized_gpu_hours_max": 1.0, "authorized_cpu_hours_max": 1.0,
+           "step6_gpu_hours_used_approx": 12.1, "step6_gpu_hours_remaining_approx": 87.9},
+  "not_demonstrated": ["embedding quality improvement", "spectral frozen probe performance on real corpus", "paired scientific A/B", "P1/P2 improvement", "temporal dynamics preservation", "non-collapse beyond warmup", "dataloader wait <=2%"],
+  "next": ["freeze and authorize spectral probe protocol", "freeze and authorize paired A/B protocol", "regenerate P1/P2 feature caches", "profile real W1 loader separately"]
+}

@@ -74,6 +74,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Aggiunti strumenti split/calibrate/extract/probe, con hash reali di checkpoint/manifest/subset/split e sonde backbone/locale/concatenazione. Ridge sceglie alpha solo sulla validation, non tronca R2 negativi e rifiuta soggetti condivisi. Resume rifiutato con configurazione/calibrazione/versione diversa; warm-start Step 1 non abilitato.
 - Superati 53 test CPU selezionati di regressione e 14 test mirati finali (insiemi sovrapposti), incluse CLI, modello reale small, backward con checkpointing, optimizer/EMA e ripresa. Suite CPU completa: 720 test passati, 1 saltato (MPS); cinque test localhost inizialmente bloccati dal sandbox e poi passati con permesso (6 casi del file rieseguiti, uno gia' passato). Sintassi bash e diff verificati. Preparati i launcher dei collaudi autorizzati da Simone: <=1 GPU-ora complessiva piu' <=1 core-ora per calibrazione CPU. Nessun nuovo job lanciato al momento di questa voce.
 
+### 2026-10-08 | GPT | Chiusura collaudi PSD / Step 1 | Codice eseguito: 0e8ba050553c04530a46e8964eca80438916dacd
+
+- Registrati gli esiti finali verificati da leonardo-ops: PSD 59638875, calibrazione CPU 59638890 e smoke Step 1 59641613 tutti COMPLETED, exit 0:0. Nessuna modifica al codice durante i run; nessun rilancio.
+- PSD: 625 passi, 26 min 16 s, nessun STOP/nonfinite/OOM, picco 37,607 GiB, 20.000 finestre (A=3978, B=14514, C=1508), 711 virtuali e zero sessioni saltate. Criteri 1 e 3 superati; attesa dati 3,394% dopo i primi 50 passi, criterio 2 non superato.
+- Calibrazione: 8000x32 float32, 80 soggetti train x 100 finestre, split seed0 80/10/10; tutte coordinate valide/finite, nessun val/test, provenienza coerente. Smoke: CUDA/bf16/checkpointing e RNG verificati, 200 passi piu' resume 200->201, gradienti encoder non nulli, teacher no-grad, 32 target attivi, stati student/teacher/optimizer finiti e statistiche coerenti col NPZ.
+- Costo effettivo totale 0,6764 GPU-ora (5,411 ore locali) piu' 0,5428 ore locali CPU, entro i tetti approvati. Budget passo 6 aggiornato a circa 12,1/100 GPU-ora usate, 87,9 residue. Esiti e percorsi in decisioni.md e results/passo6/step1_validation_20261008.json.
+- Preparato il passaggio di consegne a una nuova chat sulla stessa copia canonica. Questa chat va conservata intatta per studio; non archiviare/cancellare e non duplicare/spostare codice, dati o allegati originali.
+- Archiviate copie di log/config/summary/metrics fuori Git in /Users/simonebenatti/Documents/ChatGPT/FM per EMG/handoff_20261008/; nessun checkpoint/NPZ scaricato. Ricontrollati localmente 625 record PSD e 201 smoke: numeri tutti finiti, attesa PSD e711virtuali confermati, keep valida su32campioni ogni passo. Contesto permanente in docs/handoff_step1_20261008.txt; valori delle norme pesate ai passi1/101/201 nel JSON, senza conclusioni di qualita'.
+- Archiviazione conclusa: 9 copie verificate SHA256 contro Leonardo, verifica complessiva in verification.json e header/provenienza calibrazione in calibration/header_provenance.json nella directory locale sopra. Nessun job ancora attivo/in coda; repository remoto verificato pulito.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -141,3 +151,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Le 32 coordinate descrivono spettro medio, non dinamica temporale. La banda e' quella comune ai canali validi; se un canale non ha finestre la scala del campione e' esclusa. Il guard attuale sulla patch centrale non certifica il supporto intero da 500 ms rispetto ai transitori del filtro: non modificato insieme alla PSD.
 - Lo split dello strumento spettrale separa i soggetti della ridge dentro il PRETRAINING; l'encoder puo' averli gia' visti senza etichette. Non e' evidenza di generalizzazione dell'encoder a soggetti nuovi. P1/P2 restano prove separate. MPS esplicitamente escluso dalla keep.
 - Peso keep 0,05 soltanto ipotesi per smoke test, non validato; non avviato il confronto scientifico A/B con semi accoppiati. CUDA/bf16, apprendimento, P1/P2 e prestazioni restano da verificare. Nessun fix del dataloader/virtual CapgMyo in questo intervento.
+
+### 2026-10-08 | GPT | Chiusura collaudi PSD / Step 1 | Codice eseguito: 0e8ba050553c04530a46e8964eca80438916dacd
+
+- Dataloader ancora sopra soglia: 47,952 s di attesa / 1412,955 s di passo = 3,394% > 2%. Il calo dal 3,59% storico non chiude il problema. Profilare con regole W1 reali; nessuna ottimizzazione fatta qui.
+- Il successo dei collaudi dimostra integrazione/sicurezza operativa, non miglioramento di embedding/P1/P2 o non-collasso a regime. Sonde frozen su corpus reale e confronto A/B ancora da fare; peso keep0,05 non validato, no bootstrap spettrale e no test di dinamica temporale.
+- La calibrazione e' train-only, ma lo split train/val/test dello strumento riguarda la ridge dentro il pretraining: l'encoder puo' aver visto tutti quei soggetti senza etichette. Non chiamare il risultato generalizzazione a soggetti mai visti. Rigenerare cache P1/P2 col readout QC-aware.
+- Il summary.json finale dello smoke copre soltanto il resume: per memoria/durata dell'intero job usare anche log e accounting (picco 29,472 GiB, 14 min 19 s). Calib richiesta con1CPU ma accounting2CPU/billing: costo effettivo0,5428h CPU, ancora entro1h autorizzata.
+- Guard dei transitori sull'intera finestra lenta e rimozione dell'esclusione CapgMyo virtuale rimangono interventi separati. Non riprendere vecchi run cambiando target; non usare strict=False generico. Nuovi job/semi/training A/B richiedono nuova stima e autorizzazione.

@@ -2168,3 +2168,46 @@ Usare manifest v1.1 e scale59623700/durate59425316; nessun resume dei run storic
    keep e target validi presenti, gradienti condivisi finiti, checkpoint/statistiche/versioni coerenti al resume. Nessuna soglia post hoc
    su loss/P1/P2; throughput/GPU memoria/costo si riportano. L'attesa inferiore nel braccio keep puo' dipendere dalla GPU piu' lenta, non
    dimostra un loader migliorato. Queste prove sono funzionali, non qualita' dell'apprendimento o non-collasso a regime.
+
+### Esiti conclusivi dei collaudi PSD / Step 1 (registrati 08/10/2026, GPT)
+
+Codice eseguito per tutti i job: `0e8ba050553c04530a46e8964eca80438916dacd`. Esiti verificati sul cluster da leonardo-ops e comunicati
+in questa chat; nessuna modifica al codice durante i run. Riepilogo machine-readable: `results/passo6/step1_validation_20261008.json`.
+Le voci pre-lancio sopra e nel registro restano storiche: questa voce chiude le verifiche CUDA allora ancora da eseguire, NON quelle di qualita'.
+
+- **PSD 59638875: COMPLETED, exit0:0**, 26min16s, 625passi consecutivi su2000, fine normale al limite interno1560s, nessunSTOP/errori/OOM;
+  loss e grad_norm tutte finite. Picco37,607GiB, tempo medio2,457s/passo. 20.000finestre: A3978/B14514/C1508, 711virtuali, zero sessioni
+  saltate. Criteri1 e3 superati. **Criterio2 NON superato:** dopo50step, sum(t_data)=47,952s, sum(t_step)=1412,955s => **3,394% >2%**.
+  Non ottimizzato il loader; non confrontare direttamente le magnitudini loss con i vecchi target non normalizzati.
+- **Calib59638890: COMPLETED, exit0:0**, 16min17s. Split seed0:80train/10val/10test;100finestre per ciascun soggetto train =>8000x32,
+  float32, tutte coordinate valide/finite, nessun val/test. Versioni/commit/manifest/split/scale/durate/loader coerenti.
+  SHA256NPZ:`4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89`;
+  SHA256split:`e064a1102bb4a7dd1b01a70caefa8fa2c58d8c9c751bafeafe6bd2892fff7a30`.
+  Richiesta1CPU ma accounting2CPU/billing; costo effettivo0,5428ore localiCPU, entro il tetto1ora autorizzato.
+- **Smoke59641613: COMPLETED, exit0:0**, 14min19s. CUDA/bf16/activation checkpointing su torch2.2 verificati; RNGCPU/CUDA preservato
+  anche dopo backward, encoder riceve gradienti e teacher no-grad. 200passi poi resume da200 a201 nella stessa allocazione; nessunSTOP.
+  Keep attiva, gradienti encoder non nulli, 32target attivi; tutte metriche e tensori student/teacher/optimizer finiti, statistiche coerenti
+  colNPZ e buffer student/teacher identici. Picco completo29,472GiB dai log; summary finale copre SOLTANTO resume, non l'intero job.
+
+**Costo effettivo:** PSD~0,438GPUh + smoke~0,239GPUh = **0,6764GPUh** (5,411ore locali), piu'0,5428ore localiCPU, entro1GPUh+1hCPU.
+Budget passo6: circa**12,1/100GPUh usate,87,9residue** (consumo precedente11,4 arrotondato). Nessun nuovo training/seme/job autorizzato da questa registrazione.
+
+Percorsi completi:
+- RunPSD:`/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1_psd_0710/`.
+- RunSmoke:`/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_smoke_0710/`.
+- Split/calib:`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_0710/{splits.json,calibration.npz}`.
+- Log:`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/{sanity_jepa_59638875.out,step1_calibrate_59638890.out,step1_smoke_59641613.out}`.
+
+**Passaggio di consegne:** usare sempre `/Users/simonebenatti/dev/wearusfm`, checkout unico condiviso conClaude; la vecchia chat resta
+intatta per studio. Log/metriche gia' archiviati fuori Git. Prossimo lavoro: esaminare gradienti/loss e proporre prima sonda
+frozen su checkpoint scelto e poi protocollo A/B accoppiato, con nuova stima/autorizzazione e soglie predefinite. P1/P2 e miglioramento
+embedding NON ancora verificati. Dataloader3,394% resta aperto; profiling separato e aderenteW1, non assumere vecchio measure_loader
+equivalente. Guard completo500ms, dinamica e CapgMyo virtuale restano aperti. Rigenerare featurecache; non riprendere vecchi target/run.
+
+Log/config/summary/metrics archiviati localmente fuori Git in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/handoff_20261008/`;
+nessun checkpoint/NPZ scaricato. Ricontrollati625recordPSD e201smoke tutti finiti, attesa e conteggi coerenti. Norme PESATE sui parametri
+encoder comuni ai passi1/101/201: JEPA0,158253/2,686458/1,361323; ancore32,491978/4,550262/1,805742; keep0,646594/0,078914/0,038723.
+Sono descrittive, non misure di allineamento fra gradienti o generalizzazione; keep finale0,757865 non valida lambda0,05.
+Passaggio di consegne completo: `docs/handoff_step1_20261008.txt`. Nuova chat sullo stesso checkout, vecchia conservata per studio.
+Archiviazione conclusa: 9 copie verificate SHA256 contro Leonardo; indice in `handoff_20261008/verification.json`, header/provenienza
+in `handoff_20261008/calibration/header_provenance.json` sotto la directory locale indicata sopra. Repo remoto pulito, nessun job in coda.

@@ -1,0 +1,172 @@
+WEARUSFM — PASSAGGIO DI CONSEGNE, 8 OTTOBRE 2026
+
+STATO E REGOLE
+La chat precedente va conservata intatta per studio, senza archiviarla o cancellarla.
+Nuova chat richiesta da Simone; trasferire contesto e riferimenti, NON duplicare o
+spostare fisicamente il checkout o gli allegati. Copia unica GPT/Claude:
+/Users/simonebenatti/dev/wearusfm
+Repository: https://github.com/simonebenatti/wearusfm
+Il progetto Codex "FM per EMG" ha un'altra directory di contenitore: non confonderla
+con il checkout canonico. Modificare sempre e soltanto la copia /dev/wearusfm.
+
+Leggere CLAUDE.md, docs/claude_GPT_shared, docs/decisioni.md, il riferimento v10 e
+il piano operativo. Scritture e Git serializzati fra GPT e Claude; preservare
+modifiche altrui. Aggiornare ENTRAMBE le sezioni del registro senza cancellare storia.
+Modifiche locali -> test -> commit -> origin/main e git push leonardo main, stesso
+commit; no editing remoto, no force push. Dati/feature/checkpoint sempre fuori Git.
+Ogni operazione HPC tramite leonardo-ops. Niente salloc da parte dell'agente; nuovi
+job/semi/training richiedono costo, budget residuo e autorizzazione esplicita.
+Soglie/criteri scritti e committati PRIMA degli esperimenti.
+
+CODICE
+Commit eseguito nei tre job: 0e8ba050553c04530a46e8964eca80438916dacd (0e8ba05).
+Il commit di questa consegna aggiunge SOLO documentazione/esiti; non cambia codice.
+Per il suo hash leggere git log -1, evitando un hash autoreferenziale nel file.
+Locale e origin puliti/allineati a 0e8ba05 prima di questa registrazione; Leonardo
+verificato identico e pulito. Verificare l'ultimo commit documentale al nuovo avvio.
+
+CONTESTO PRECEDENTE
+- CapgMyo corretto a 16x8 C: canale i -> riga i//8, colonna i%8. Diagnostica locale
+  su 72 MAT e percorso degli autori coerenti; orientamento anatomico assoluto NON
+  determinato dai segnali single-ended/RMS. Claude ha corretto18 sidecar (job59623698)
+  e scale (59623700): usare manifest v1.1, non v1. CapgMyo virtuale ancora escluso.
+- LONG: commit91a6d28 separa limite durata del singolo tubo e dominio di posizione
+  sull'intera finestra. Vecchi checkpoint conservano il bias della prima meta'.
+- Perceiver ancora originale: P0 non confermato, eventuale safe_scores come P2.
+  Non sostenere che safe_scores sia stata applicata. NaN intermedi non bastavano
+  a dimostrare gradienti NaN nel grafo completo.
+- Trainer protetto in ec3914d: dopo backward/clipping, gnorm finita prima di
+  optimizer/EMA; STOP numerico senza update, preserva ultimo checkpoint salvato.
+- Collaudo Claude59624004:625step,0,44GPUh,37,6GiB, nessun errore; attesa dati3,59%
+  >2%, A/B/C e711virtuali presenti. Le loss multiscala grandi non dimostravano da
+  sole gradienti dominanti. Le due questioni PSD e loader vanno tenute separate.
+
+ALLEGATI DISPONIBILI, NON SPOSTATI
+/Users/simonebenatti/Downloads/README_STEP1.md
+/Users/simonebenatti/Downloads/WearUsFM_Proposta_Embedding_EMG_3_Step (1).docx
+/Users/simonebenatti/Downloads/WearUsFM_Review_Tecnica_2026-10-06.docx
+Il README citava un pacchetto/test di riferimento, ma il pacchetto non era allegato:
+non attribuire a quel pacchetto le nostre verifiche. Implementazione fatta qui.
+In questa sessione SOLO Step1, non Step2/3 della proposta.
+
+PSD CORRETTA
+Nuovo spectral_targets.py: Hann simmetrica, detrend=False, nfft=N.
+PSD = |rFFT(x*w)|^2 / (fs*sum(w^2)); raddoppio bin positivi eccetto DC e Nyquist
+quando N pari; potenza banda = sum(PSD nella banda)*fs/N; log(P+1e-8).
+Unita': segnale normalizzato loader al quadrato, non V^2. Corregge fattore fs/N/Hann.
+Solo ancore multiscala modificate: fast50ms/6bande/hop25ms, slow500ms/24/hop100ms,
+20-450Hz, replica lenta su4patch. RMS/env/forma5bande, guard, filtri invariati.
+TARGET_VERSION=step1_psd_power_shape_energy_v1. Nuove directory per nuovi target,
+vietato resume dei vecchi run multiscala. Non confrontare loss assolute prima/dopo.
+Non e' stata standardizzata tutta la vecchia loss per-query del decoder.
+
+STEP1 INTEGRATO, SPENTO PER DEFAULT
+- pool_p1p2(enc,counts,qc_valid): [backbone medio tempo/latenti, locale medio tempo
+  per canale poi canali QC equiponderati], outputSx2d. Differenziabile, padding e
+  canali eterogenei, esclude QC-bad, rifiuta vista mascherata/supporto vuoto.
+  Funzione condivisa fra keep training e fm_features/P1P2.
+  READOUT_VERSION=p1p2_qc_equal_channel_v1: rigenerare le cache delle feature.
+- global_spectral_targets: media potenze LINEARI sui tempi validi per canale, poi
+  canali validi equiponderati; banda comune; se un canale manca di finestre valide,
+  scala del campione esclusa. Energia=sumP, forma=log(P/E), logenergia=log(E+eps).
+  32coordinate:6formaFast+1energiaFast+24formaSlow+1energiaSlow. Silenzio: forma
+  mascherata, energia al floor. Bande mancanti mascherate, mai osservazioni zero.
+- SpectralKeepHead Linear(2d,32), statistiche mean/std/active/fitted come buffer,
+  fit SOLO train; registrata prima di teacher/optimizer. Resume ricarica, no refit.
+- keep_objective usa student.encode(inp,None) con gradiente, non teacher no_grad;
+  percorso extra separato da JEPA masked. SmoothL1 float32 standardizzata, media
+  per famiglia disponibile e campione (24bande non pesano4x). Unico backward/opt/EMA.
+  CPU/CUDA RNG preservato anche dopo backward/checkpointing; MPS non supportato.
+- keep_readout=False, keep_weight=0 default. Per futuro A/B testa in ENTRAMBI,
+  stessa calibrazione/seed/inizializzazione, Aweight0 e B>0. Pairing iniziale testato.
+  Peso0,05 solo smoke, NON validato. B costa encoderforward/backward aggiuntivo.
+- Resume rifiuta calibrazione/versioni/config diversa. Warm-start Step1 NON abilitato;
+  niente strict=False indiscriminato. shared_grad_{jepa,anchors,keep}: norme pesate
+  prima del clipping su parametri encoder comuni, diagnostica non secondo update.
+
+SONDE PRONTE, NON ESEGUITE SU CORPUS REALE
+scripts/spectral_step1.py: split/calibrate/extract/probe; harness/spectral_probe.py.
+Ridge backbone/locale/concat; scaler fit train, alpha val, test dopo selezione,
+soggetti disgiunti/qualificati per dataset, R2 negativi mantenuti, costanti/mancanti
+non valutabili, no bootstrap. Hash reali checkpoint/manifest/split/subset/preprocess.
+Checkpoint hash prima/dopo caricamento, rifiuto cambiamento. NPZ allow_pickle=False.
+Diagnostica su crop loader nativi1-4s, non cache P1/P2 di finestre lunghe.
+Split della RIDGE dentro PRETRAINING: encoder puo' aver visto tutti quei soggetti
+senza etichette. NON equivale a generalizzazione encoder su soggetti mai visti.
+32target descrivono SPETTRO MEDIO, non dinamica temporale/ordine delle attivazioni.
+
+TEST E JOB CONCLUSI — NON RILANCIARE
+720 testCPU passati,1skipMPS;5localhost bloccati dal sandbox poi passati con permesso
+(6test file rieseguiti,1duplicato). PSD SciPy pari/dispari, Parseval, gain/fs, QC,
+mask/padding/silenzio, real small backward/teacher/RNG/optimizer/EMA/checkpoint/resume,
+CLI e no leakage. PyTorch locale2.14; CUDA Leonardo2.2, buildCUDA12.1, A10064GB.
+
+PSD59638875: COMPLETED0:0,26m16s,625step consecutivi su2000, fine interna1560s,
+nessunSTOP/nonfinite/OOM,37,607GiB,2,457s/step. 20kfinestre A3978/B14514/C1508,
+711virtuali,0sessioni saltate. Criteri1e3 PASS; dopo50step47,952s/1412,955s=3,394%
+attesa>2% FAIL. Problema loader NON risolto. PSD prima/nuova non coppia scientificaAB.
+
+Calib59638890: COMPLETED0:0,16m17s, splitseed0 80train/10val/10test,80*100=8000x32
+float32 tutti target validi/finiti, solo train, provenienza validata.
+CalibSHA256:4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89
+SplitSHA256:e064a1102bb4a7dd1b01a70caefa8fa2c58d8c9c751bafeafe6bd2892fff7a30
+Richiesta1CPU, accounting2CPU/billing, costo0,5428hCPU entro tetto1.
+
+Smoke59641613: COMPLETED0:0,14m19s, emg2qwerty,keepweight0,05,RVQoff,seed0,
+200step piu'resume200->201 nella stessa allocazione. CUDA/bf16/checkpointing/RNG PASS,
+gradienti encoder nonzero/teacher no-grad,32target attivi, stati model/optimizer
+finiti, stats coerenti NPZ e buffer student/teacher identici. Picco29,472GiB intero
+job; summary.json finale copre SOLO resume (~21s), usare log/accounting per totale.
+Metriche archiviate confermano201record consecutivi tutti finiti e32keep_samples.
+Norme PESATE encoder comune (step1/101/201):
+  JEPA:    0,158253 / 2,686458 / 1,361323
+  ancore: 32,491978 / 4,550262 / 1,805742
+  keep:    0,646594 / 0,078914 / 0,038723
+Keep finale0,757865: descrittivo, NON evidenza di miglioramento generalizzazione.
+
+COSTO
+Autorizzati1GPUh+1hCPU SOLO per questi collaudi. Effettivo0,6764GPUh=5,411orelocali
+piu'0,5428oreCPU. Passo6:~12,1/100GPUh usate,~87,9residue (precedente11,4 arrotondato).
+Nessun'altra allocazione/run/seme/scientifico A/B e' automaticamente autorizzato.
+
+ARTEFATTI E PATH
+Esiti committati: results/passo6/step1_validation_20261008.json; registro e decisioni.
+Archive locale log/config/summary/metrics (no checkpoint/NPZ):
+/Users/simonebenatti/Documents/ChatGPT/FM per EMG/handoff_20261008/
+Nove copie verificate SHA256 contro Leonardo; indice/verifiche in verification.json,
+header e provenienza della calibrazione in calibration/header_provenance.json.
+
+WORK=/leonardo_work/IscrB_WearUsFM
+SCRATCH=/leonardo_scratch/large/userexternal/sbenatti
+Repo remoto=$WORK/wearusfm
+Input sotto$WORK/wearusfm_runs/results/passo6/:
+  capgmyo_grid_fix/manifest_v1_1.json.gz
+  loader_59623700/session_scales.json
+  window_seconds_59425316.json (chiave JSON window_s, NON window_seconds)
+Run sotto$SCRATCH/wearusfm_runs/runs/: w1_psd_0710 e step1_smoke_0710.
+Calib/split sotto$WORK/wearusfm_runs/results/passo6/step1_0710/.
+Log sotto$WORK/wearusfm_runs/logs/: sanity_jepa_59638875.out,
+step1_calibrate_59638890.out, step1_smoke_59641613.out.
+Run storici diversi: w1_collaudo_0710 e sanity_0410. Non usare per resume nuovo target.
+Vecchio sanity31,49M conRVQ, nuovo W1~28,35M senzaRVQ, nuovo keep~28,37M.
+
+COSA FARE DOPO (PROPOSTE, NON NUOVI LANCI AUTORIZZATI)
+1. Leggere questi file e verificare Git/collaborazione Claude; esiti gia' registrati,
+   non duplicare la registrazione o rilanciare gli smoke.
+2. Esaminare gradienti/loss archiviate e proporre baseline frozen su checkpoint scelto,
+   target PSD corretti, stesso readout e stesso protocollo, forma separata da energia.
+3. Congelare eventuale lambda e protocollo A/B accoppiato: stessi seed/init/calib/data/
+   update/scheduler, soglie e budget prima del lancio; chiedere autorizzazione.
+4. Rifittare nuove sonde frozen su teacherEMA e P1/P2 con cache nuove, non valutare
+   generalizzazione soltanto dalla loss della testa allenata.
+5. Dataloader profilato separatamente con W1 VERA. measure_loader.py precedente non
+   e' automaticamente equivalente (cfg/tempo/virtual/ms/worker/fasi diverse).
+6. Guard supporto completo500ms rispetto ai transitori, sonde di dinamica, banda
+   comune/multidataset e CapgMyo virtuale ancora aperti e separati.
+7. Verificare conservazione/purge scratch: documento segnalava scadenza25/10/2026,
+   non considerare checkpoint/data scratch un archivio permanente.
+
+CONCLUSIONE
+PSD/Step1 implementati e collaudati CPU+CUDA, non miglioramento embedding/P1/P2.
+Nuova chat: prima sola lettura e proposta del prossimo esperimento; niente modifiche
+o spese HPC automaticamente. Vecchia chat conservata per studio.
