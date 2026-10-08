@@ -2313,3 +2313,13 @@ Verifica locale finale:738test CPU unici passati,1skipMPS. Cinque casi downloade
 rieseguito con permesso (6casi,1duplicato); dopo ultimo refactoraudit/compare19test mirati passati. SintassiBash, CLI e diff verificati.
 Audit reale small su3update dimostra init/batch/maschere identici e RNG/stati invariati rispetto al trainer senza audit; comparatore provato
 su cache sintetiche, drift/mismatch rifiutati. Nessun training/auditCUDA nuovo, risultatoA/B o jobHPC: quello richiede l'approvazione sopra.
+
+### Autorizzazione A/B acquisita prima dei lanci (08/10/2026)
+
+Simone: «sono partiti? autorizzo», in risposta ai tetti23GPUh (184ore locali GPU) piu'40core-oraCPU. Approvato il protocollo
+`step1_ab_4000_v1` gia' congelato nel commitb0ec17d5d9b5f804ffa8986aafc9881861e519f2:4trainingA/B*semi0/1,4.000update ciascuno,
+poi4extract SOLO dopo audit valido di tutte le coppie,4ridge e1compare entro i cap indicati. Nessunretry/resume/seme aggiuntivo,
+ottimizzazione o P1/P2 downstream. Budgetpasso6 residuo attuale87,4247GPUh, residuo minimo dopo il cap64,4247GPUh.
+Si esegue il commit di sola documentazione che registra questa approvazione (codice e criteri invariati). Nessunpush neppure di docs
+durante la campagna, per non cambiare expectedcommit/source_commit; jobID/status da registrare temporaneamente fuori Git.
+Tutti i lanci via leonardo-ops, senza salloc. Al momento di questa registrazione nessun jobA/B ancora sottomesso.

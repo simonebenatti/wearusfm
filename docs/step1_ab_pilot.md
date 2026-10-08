@@ -6,6 +6,16 @@ o sottomesso da questo documento.** Il codice e i criteri devono essere
 committati, e il costo approvato, prima dei run. ID protocollo:
 `step1_ab_4000_v1`; commit di esecuzione da fissare all'approvazione.
 
+Aggiornamento08/10/2026: Simone ha autorizzato esplicitamente il pilota
+(«sono partiti? autorizzo»), entro23GPUh=184ore locali GPU piu'40core-oraCPU.
+Autorizzati i4training, le4estrazioni dopo audit valido, le4ridge e il confronto
+descritti sotto; nessunretry, resume, seme aggiuntivo o P1/P2 downstream.
+Codice/criteri congelati nel commitb0ec17d; il commit di sola documentazione
+che registra questa approvazione sara' l'expectedcommit dei lanci. Da allora
+non modificare/pushare il checkout, nemmeno solo docs, fino alla fine della
+campagna: il wrapper verifica l'HEAD anche alla fine e le cache devono avere
+la stessa source_commit. JobID e status intermedi si archiviano fuori Git.
+
 ## Domanda e confronto
 
 La supervisione diretta del readout condiviso aumenta la leggibilita' della

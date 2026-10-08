@@ -130,6 +130,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   (6casi nel file,1duplicato). Dopo l'ultimo refactoraudit/compare,19test mirati passati; sintassiBash/CLI/diff verificati. Nessuna nuova
   provaCUDA del trainer/audit o training reale: tali controlli saranno verificati anche sugli artefatti della campagna, dopo approvazione.
 
+### 2026-10-08 | GPT | Autorizzazione pilota A/B | Protocollo congelato: b0ec17d5d9b5f804ffa8986aafc9881861e519f2
+
+- Simone ha approvato («sono partiti? autorizzo») i cap23GPUh=184ore locali GPU+40core-oraCPU. Registrazione prima di ogni lancio;
+  codice e criteri invariati.4training a4.000update,4extract dopo audit valido,4ridge e1compare; nessunresume/retry/seme extra/P1P2.
+- Il commit che pubblica questa approvazione diventa l'expectedcommit della campagna. NON editare/pushare il checkout durante i run,
+  nemmeno solo docs: il controlloHEAD finale e la provenance richiedono source_commit unico. JobID/status fuori Git fino alla fine.
+- Budget residuo87,4247GPUh, minimo64,4247dopo cap. Leonardo-ops incaricato del preflight/sincronizzazione e lancio dei4training;
+  qui ancora nessuna sottomissione, da verificare tramiteSLURM senza confondere PENDING con RUNNING.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -248,3 +257,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   La sonda e' dentro pretraining; keep fisica puo' supervisionare anche soggetti ridge-test. Nessuna conclusione di generalizzazione o task.
 - P1/P2 nuovi non eseguiti e non inclusi nel cap di questa tranche; guardia-2pp e' pratica, non prova statistica di non-inferiorita'.
   Dataloader3,394%, guard supporto500ms, dinamica temporale e CapgMyo virtuale non risolti qui. Nessuna nuova bonificaPerceiver necessaria.
+
+### 2026-10-08 | GPT | Confini dell'autorizzazione A/B | Protocollo congelato: b0ec17d5d9b5f804ffa8986aafc9881861e519f2
+
+- L'approvazione dei23GPUh+40core-oraCPU autorizza solo la tranche congelata. Non usare risparmi di costo per retry o P1/P2 non approvati.
+- Incompletezza/STOP/mismatch degli hash impedisce le estrazioni; nessuna prosecuzione automatica di checkpoint parziali. SLURM mantiene
+  i training anche senza Mac/chat aperti; stato effettivo (in coda/in esecuzione) e ID da verificare dopo la sottomissione.
