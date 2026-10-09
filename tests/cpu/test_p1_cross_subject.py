@@ -108,7 +108,7 @@ def test_probe_p1_script_end_to_end(tmp_path):
     model = WearUsFM(cfg)
     torch.save({"config": {"model": asdict(cfg)}, "teacher": model.state_dict(), "student": model.state_dict()}, tmp_path / "ckpt.pt")
     base = [sys.executable, str(SCRIPT), "--checkpoint", str(tmp_path / "ckpt.pt"), "--root", str(root), "--splits", str(tmp_path / "splits.json"),
-            "--datasets", "ninapro_db2", "--device", "cpu", "--batch", "8"]
+            "--datasets", "ninapro_db2", "--device", "cpu", "--batch", "8", "--audit-inputs"]
     r = subprocess.run(base + ["--out", str(tmp_path / "all.json")], capture_output=True, text=True, timeout=900)
     assert r.returncode == 0, r.stderr[-3000:]
     rep = json.loads((tmp_path / "all.json").read_text())
@@ -118,6 +118,8 @@ def test_probe_p1_script_end_to_end(tmp_path):
     assert rep["p1"] == pytest.approx(d["test_bacc"]) and rep["p1_se"] >= 0.0
     r1 = subprocess.run(base + ["--stage", "extract", "--features", str(tmp_path / "f")], capture_output=True, text=True, timeout=900)
     assert r1.returncode == 0, r1.stderr[-3000:]
+    with np.load(tmp_path / "f/ninapro_db2.npz") as z:
+        assert len(z["input_sha256"].item()) == 64
     r2 = subprocess.run(base + ["--stage", "probe", "--features", str(tmp_path / "f"), "--out", str(tmp_path / "two.json")],
                         capture_output=True, text=True, timeout=900)
     assert r2.returncode == 0, r2.stderr[-3000:]

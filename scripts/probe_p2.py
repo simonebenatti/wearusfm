@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import benchmarks as B  # noqa: E402
 from wearusfm.harness.splits import masks_from_split, split_subjects  # noqa: E402
+from wearusfm.harness.downstream_ab import fingerprint, subject_counts  # noqa: E402
 
 DATASETS = ("epn612", "uci_emg")
 SPLIT_SEEDS = (0, 1, 2)
@@ -48,7 +49,8 @@ def probe_dataset(x: np.ndarray, labels: np.ndarray, subjects: np.ndarray, seeds
         m = masks_from_split(subjects.tolist(), split_subjects(subjects.tolist(), (0.7, 0.1, 0.2), seed=s))
         r = linear_probe(x[m["train"]], y[m["train"]], x[m["val"]], y[m["val"]], x[m["test"]], y[m["test"]], subjects[m["test"]], seed=seed)
         runs.append({"split_seed": s, "test_bacc": r.test_bacc, "test_bacc_se": r.test_bacc_se, "val_bacc": r.val_bacc, "train_bacc": r.train_bacc,
-                     "c": r.c, "n_train": r.n_train, "n_val": r.n_val, "n_test": r.n_test, "n_test_subjects": r.n_test_subjects})
+                     "c": r.c, "n_train": r.n_train, "n_val": r.n_val, "n_test": r.n_test, "n_test_subjects": r.n_test_subjects,
+                     "paired_counts": subject_counts(y[m["test"]], r.test_pred, subjects[m["test"]])})
     b = np.array([r["test_bacc"] for r in runs])
     se = np.array([r["test_bacc_se"] for r in runs])
     return {"classes": [str(c) for c in classes], "test_bacc": float(b.mean()), "test_bacc_se": float(np.sqrt((se ** 2).mean())), "splits": runs}
@@ -69,6 +71,7 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", choices=["all", "extract", "probe"], default="all")
     ap.add_argument("--features", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
@@ -94,11 +97,13 @@ def main(argv=None) -> int:
         else:
             w, labels, subjects, fs = load_windows(ds, args)
             log(f"{ds}: {len(w)} finestre, {len(set(subjects.tolist()))} soggetti, {w.shape[1] / fs:.1f} s a {fs} Hz")
+            input_hash = fingerprint(w, labels, subjects, fs, FF.myo8_montage(ds, fs)) if args.audit_inputs else None
             x = FF.extract_features(model, w, fs, FF.myo8_montage(ds, fs), subjects, batch=args.batch, device=args.device)
             del w
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
-                np.savez(npz, x=x, y=labels, s=subjects)
+                extra = {"input_sha256": np.asarray(input_hash)} if args.audit_inputs else {}
+                np.savez(npz, x=x, y=labels, s=subjects, **extra)
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue

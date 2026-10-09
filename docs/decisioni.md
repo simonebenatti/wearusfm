@@ -2332,3 +2332,27 @@ acquisita, non un retry di training, cambio scientifico o aumento di costo. Defa
 expected per la campagna, senza modificare trainer/target/criteri/semi. La precedente dichiarazione di compatibilita'bprod e' rettificata.
 Preflight lprod completo da leonardo-ops: associazioneaccount confermata, MinTRES vuoto; `sbatch --test-only` accetta siaA4h siaB6h.
 Gli ID del test non sono job reali; squeue resta vuota. SintassiBash del launcher corretto e diff verificati prima del commit/lancio.
+
+## Esito A/B Step1 e autorizzazione downstream P1/P2 (09/10/2026)
+
+Training59726054/55/56/58 e frozen59766817-25 tutti COMPLETED0:0 al commit69fa2da. Quattro endpointteacher4000,
+stati iniziali e8000batch accoppiati identici, metriche finite, nessun allarme. FormaP1P2 deltaB-A+0,0525109691R2,
+seed0+0,0608487903/seed1+0,0441731480, CI95%[0,0446510973;0,1240582165]; tutti5gate superati.
+Forma fastA0,8503571/B0,9071707; slowA0,7817578/B0,8299661. Energie migliorano entrambe.
+Esito promettente per la verifica downstream; nessuna conclusione di miglioramento dei task.
+Costo reale16,7847GPUh (training15,2558+extract1,5289),0,1311core-oraCPU. Passo6 circa29,36/100GPUh usate,
+70,64residue. Artefatti esterni in step1_ab_0810; SHAcomparison e checkpoint fissati nel nuovo wrapper.
+
+Simone autorizza «procedi», «lancia quando sei pronto», «riparti». Protocollo `docs/step1_downstream_ab.md`,
+IDstep1_downstream_4000_v1:8estrazioni nuove+8probe, stessi4teacher, stessi split/seedsonda, nessuntraining.
+Cap6GPUh=48ore localiGPU+128core-oraCPU, residuo minimo64,64GPUh. Confronto finale dentro l'ottavo probe
+(dipendente dagli altri7), senza costo autorizzato aggiuntivo. Nessunretry/seme/tuning automatico.
+Guardia congelata PRIMA delle misure: delta medioB-A>=-2punti percentuali, separatamenteP1 eP2, non test
+statistico di non-inferiorita'. Conteggi pooledperclasse/soggetto; bootstrap accoppiato1000seed20261009;
+P1stratificato per dataset, P2SEsplitRMS senza riduzione per3split sovrapposti, CI descrittivo normale.
+Incertezza condizionata ai2modelli; dettagli e limiti nel protocollo. Hashinput effettivi/cache/report,
+provenance e soggetti identici richiesti. Cache storiche non riusate. Commit e push identico prima dei lanci;
+checkout congelato fino alla chiusura; jobID/status fuoriGit. Nuovo codice aggiunge audit/statistiche,
+riusa encoder/preprocessing/sonde firmate. Preflight remoto read-only passato, nessunjob attivo.
+Verifica locale pre-lancio:23testCPU unici passati; P1/P2 completi sintetici conaudit, readout/sonda, pairing/counts,
+bootstrap/aggregazione, wrapper/cache/provenienza e confronto finale. Bash/CLI/diffcheck passati. Nessun nuovo testCUDA.

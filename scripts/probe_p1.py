@@ -12,6 +12,7 @@ poi `--stage probe --features DIR` (CPU: sonde ed errori standard). `--stage all
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -22,6 +23,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import p1_cross_subject as P1  # noqa: E402
+from wearusfm.harness.downstream_ab import fingerprint, subject_counts  # noqa: E402
 
 
 def _root_of(roots: list[Path], dataset: str, subject: str) -> Path:
@@ -36,6 +38,7 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
     from wearusfm.harness import fm_features as FF
 
     out = {}
+    digest = hashlib.sha256()
     for role, subjects in roles.items():
         xs, ys, ss = [], [], []
         for s in subjects:
@@ -45,11 +48,14 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
                     log(f"  {dataset}/{s}/{sess.name}: nessuna finestra")
                     continue
                 key = np.full(len(sw.windows), f"{s}/{sw.session}")  # chiave della scala: la sessione, come nel pretraining
+                if args.audit_inputs:
+                    digest.update(fingerprint(role, s, sw.session, sw.windows, sw.labels, sw.fs, sw.montage, key).encode())
                 xs.append(FF.extract_features(model, sw.windows, sw.fs, sw.montage, key, batch=args.batch, device=args.device))
                 ys.append(sw.labels)
                 ss.append(np.full(len(sw.windows), s))
         out[role] = (np.concatenate(xs), np.concatenate(ys), np.concatenate(ss))
         log(f"  {dataset} {role}: {len(subjects)} soggetti, {len(out[role][1])} finestre")
+    args.input_sha256 = digest.hexdigest() if args.audit_inputs else None
     return out
 
 
@@ -70,6 +76,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=None, help="report JSON (fasi probe e all)")
     ap.add_argument("--stage", choices=["all", "extract", "probe"], default="all")
     ap.add_argument("--features", type=Path, default=None, help="cartella delle feature per dataset (necessaria con extract e probe)")
+    ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
@@ -103,7 +110,8 @@ def main(argv=None) -> int:
             f = dataset_features(model, args.root, ds, roles, args, log)
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
-                np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)})
+                extra = {"input_sha256": np.asarray(args.input_sha256)} if args.audit_inputs else {}
+                np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)}, **extra)
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue
@@ -115,6 +123,7 @@ def main(argv=None) -> int:
             "subjects": roles, "test_bacc": res.test_bacc, "test_bacc_se": res.test_bacc_se, "val_bacc": res.val_bacc, "train_bacc": res.train_bacc,
             "c": res.c, "n_train": res.n_train, "n_val": res.n_val, "n_test": res.n_test, "n_classes": int(len(np.unique(yt))),
             "dropped_val_windows": int((~mv).sum()), "dropped_test_windows": int((~ms).sum()),
+            "paired_counts": subject_counts(ys[ms], res.test_pred, ss[ms]),
         }
         log(f"{ds}: accuratezza bilanciata di test {100 * res.test_bacc:.2f} ± {100 * res.test_bacc_se:.2f} (validazione "
             f"{100 * res.val_bacc:.2f}, C {res.c}, {len(np.unique(yt))} classi)")

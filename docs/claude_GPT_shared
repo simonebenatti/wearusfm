@@ -147,6 +147,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   criteri, lambda0,05, semi0/1, endpoint4.000update o tetti23GPUh+40CPU approvati. Preflight lprod completo e `sbatch --test-only`
   A4h/B6h accettati senza allocazioni; sintassiBash/diff verificati prima del commit/lancio.
 
+### 2026-10-09 | GPT | Esito A/B e preparazione P1/P2 | Base: 69fa2da8757b322ea74875b4e9d104a89bbf6d5d
+
+- Quattro training4000update e9jobfrozen completati0:0; audit degli8000batch e stati iniziali PASS. Deltaforma+0,05251R2,
+  CI95%[0,04465;0,12406], entrambi semi positivi e tutti5gate superati. Costo16,7847GPUh+0,1311core-oraCPU.
+- Su «procedi/lancia quando sei pronto/riparti» preparata tranche downstream, cap6GPUh+128core-oraCPU, protocollo
+  docs/step1_downstream_ab.md. Riutilizzate sonde P1/P2; aggiunti fingerprint input, provenienza, conteggi per soggetto/classe,
+  confronto accoppiato e launcher. Il confronto finale usa l'allocazione dell'ultimo probe, dopo gli altri7.
+- Richiesta esplicita di Simone: aggiornare sempre questo registro e committare. Pubblicazione prima dei lanci, poi freeze.
+  Preflight remoto clean/inputSHA/path validi e nessunjob attivo. Nessun nuovo job sottomesso al momento della preparazione.
+- Verifica locale:23testCPU unici passati, incluse sondeP1/P2 complete sintetiche conaudit, pooling, bootstrap/conteggi,
+  provenienza, cache modificate e confronto finale. SintassiBash,CLI,diffcheck passati. Nessun nuovo testCUDA prima dei lanci.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -277,3 +289,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il controllo iniziale bprod aveva verificato massimi ma non MinTRES: quellaQoS richiede almeno65nodi/2080CPU/260GPU. La conclusione
   «compatibile con1GPU» era sbagliata; il rifiuto prima dell'allocazione ha evitato consumo. Lprod, gia' consentita all'account, mantiene
   le risorse approvate. Nessuna modifica/retry alle componenti scientifiche; dichiarare QoS effettiva negli artefatti di sottomissione.
+
+### 2026-10-09 | GPT | Limiti downstream | Base: 69fa2da8757b322ea74875b4e9d104a89bbf6d5d
+
+- Successo spettrale non ancora successoP1/P2. Guardia pratica-2pp gia' proposta, applicata separatamente ai task;
+  non prova statistica di non-inferiorita'. P2split sovrapposti: SE deldeltaRMS, nessuna divisione per sqrt(3).
+- Nuovo commit di valutazione distinto da training; nientepush durante i job. JobID/status fuoriGit fino alla fine.
+  Nessuntraining/retry/tuning aggiuntivo autorizzato. Loader3,394%, supporto500ms, dinamica e CapgMyo separati.

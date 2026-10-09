@@ -57,7 +57,7 @@ def test_probe_p2_end_to_end(tmp_path):
     model = WearUsFM(cfg)
     torch.save({"config": {"model": asdict(cfg)}, "teacher": model.state_dict(), "student": model.state_dict()}, tmp_path / "ckpt.pt")
     base = [sys.executable, str(SCRIPT), "--checkpoint", str(tmp_path / "ckpt.pt"), "--epn-root", str(tmp_path / "epn" / "trainingJSON"),
-            "--uci-root", str(tmp_path / "uci"), "--device", "cpu", "--batch", "8"]
+            "--uci-root", str(tmp_path / "uci"), "--device", "cpu", "--batch", "8", "--audit-inputs"]
     r = subprocess.run(base + ["--out", str(tmp_path / "all.json")], capture_output=True, text=True, timeout=900)
     assert r.returncode == 0, r.stderr[-3000:]
     rep = json.loads((tmp_path / "all.json").read_text())
@@ -71,6 +71,9 @@ def test_probe_p2_end_to_end(tmp_path):
     feat = tmp_path / "f"
     r1 = subprocess.run(base + ["--stage", "extract", "--features", str(feat)], capture_output=True, text=True, timeout=900)
     assert r1.returncode == 0, r1.stderr[-3000:]
+    for ds in ("epn612", "uci_emg"):
+        with np.load(feat / f"{ds}.npz") as z:
+            assert len(z["input_sha256"].item()) == 64
     r2 = subprocess.run(base + ["--stage", "probe", "--features", str(feat), "--out", str(tmp_path / "two.json")], capture_output=True, text=True,
                         timeout=900)
     assert r2.returncode == 0, r2.stderr[-3000:]
