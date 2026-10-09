@@ -159,7 +159,8 @@ def test_block_reading_reads_once_per_block_and_keeps_session_weights(tmp_path):
     n = 4000
     for _ in range(n):
         row, blk, win = loader.sample_from_blocks(rng)
-        assert blk.data_lo <= win.start and win.stop <= blk.data_lo + blk.data.shape[1] and win.span[0] <= win.start and win.stop <= win.span[1]
+        assert blk.data_lo <= win.start and win.stop <= blk.data_hi and win.span[0] <= win.start and win.stop <= win.span[1]
+        assert blk.data is None or blk.data.shape[1] == blk.data_hi - blk.data_lo  # dati letti al primo uso (ripresa a secco)
         if row["dataset"] == "emg2pose":
             assert not (win.start < GAP_AT < win.stop) and not (win.start < RUN[2] + 400 and win.stop > RUN[1] - 400)
         counts[row["dataset"]] = counts.get(row["dataset"], 0) + 1

@@ -199,6 +199,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `scripts/train_jepa.py`: `--distributed`, `--ddp-local-mean-collaudo`, `--batch-size` (globale). `scripts/slurm/train_ddp.sbatch`: un nodo, 4 GPU, torchrun, `CODE_DIR`; non lanciato (preventivo e via di Simone prima).
 - Test `tests/cpu/test_training_ddp.py` (6, DDP `gloo` a 2 processi sulla CPU, piu' torchrun vero): pesi e teacher uguali fra processi gia' al primo forward anche con pesi perturbati su un processo prima della sincronizzazione (il test fallisce togliendo il broadcast del teacher: verificato), batch globale, un solo scrittore, checkpoint con i generatori di ogni processo, ripresa, ripresa con un numero diverso di processi rifiutata, NaN su un solo processo che ferma tutti allo stesso passo col checkpoint valido conservato, limite di tempo coordinato, CLI sotto torchrun. Suite CPU: 776 passati prima dell'ultimo test (771 + 5 della riconciliazione); con questo 777 attesi.
 
+### 2026-10-09 | Claude | Correzioni del deploy richieste da GPT (P1, P1, P2) | Base: 7ed8b59
+
+- Fatte da un agente in parallelo su richiesta di Simone, rilette e completate da me. **P1, stato sotto lock:** `reconcile` prende il lock prima di leggere; `Registry.transition` scrive solo col lock in mano, dallo stato e dalla storia su disco e lungo una tabella di transizioni ammesse (`TRANSIZIONI`; `sottomesso` e `duplicato` finali), altrimenti `RuntimeError` senza scrivere. **P1, verifiche del checkout:** in `lib_code_dir.sh` e `campaign_checkout.sbatch` ogni comando git, mkdir, find e chmod ha l'uscita controllata; un errore (anche con stdout vuoto) ferma il job senza il messaggio "pronto"; alla fine del checkout si verifica che nessun file del codice sia scrivibile. **P2, ledger:** `flock` esclusivo sul file in append, intestazione solo se vuoto sotto lock.
+- Aggiunte mie sui due casi lasciati aperti dall'agente: `lib_code_dir.sh` rifiuta un checkout di campagna ancora scrivibile (rimasto a meta' da un job di checkout fallito); `--riconcilia` tratta come ambigua una sottomissione rimasta `in_sottomissione` col lock libero (es. Ctrl-C durante ssh).
+- Test: deploy e sottomissioni da 19 a 35 (16 nuovi: interleaving reale di due riconciliazioni, transizioni rifiutate, 6 processi sul ledger, errori simulati di git/chmod/find con strumenti finti nel PATH, chmod che "riesce" lasciando un file scrivibile, `.git` come CODE_DIR, checkout a meta', sottomissione interrotta). Prima delle correzioni 10 dei nuovi fallivano.
+
+### 2026-10-09 | Claude | Ripresa esatta dello stream dei dati (contratto, punto 4) | Base: 7ed8b59
+
+- `pretraining_loader.batch_stream`: il batch di indice b ha lo stesso contenuto in un run continuo e in uno ripreso a qualunque passo (stessi worker, processi e segmento). Stato (generatore, pool, sessioni saltate) per segmento di `RunConfig.stream_segment` passi (1.200) e per classe b mod W; alla ripresa si rigiocano a secco (`batch(..., dry=True)`: stesse estrazioni, nessuna lettura) i batch gia' consumati del segmento corrente. Blocchi con dati letti al primo uso. Il trainer controlla a ogni passo indice del batch = passo; checkpoint con lo stato dello stream (worker, segmento, processi), ripresa con valori diversi rifiutata.
+- Trovato e corretto un secondo motivo di divergenza: creare l'iteratore del DataLoader estrae un seme dal generatore globale di torch, quindi nei run ripresi il dropout del muscolo si spostava (pesi diversi di ~1e-4 pur con batch identici). Ora il DataLoader ha un generatore proprio.
+- Test `tests/cpu/test_stream_resume.py` (5): ripresa a 7 passi diversi dentro e sul bordo dei segmenti con 1 e 3 worker; cache delle scale piena o vuota; stream diverso per un altro processo DDP; batch a secco con le stesse estrazioni, lo stesso pool e le stesse sessioni scartate del batch reale (con una sessione a scala nulla e montaggi virtuali); training continuo contro interrotto e ripreso: stessi batch e **stessi pesi bit per bit**. Un test esistente del dataloader aggiornato alla lettura pigra dei blocchi. Suite CPU completa: **798 passati**, 0 falliti (777 + 16 del deploy + 5 della ripresa).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -375,3 +387,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La ripresa sotto DDP ripristina pesi, ottimizzatore e generatori di ogni processo, ma lo stream dei dati riparte come oggi (seme dal passo): la ripresa esatta dei batch (contratto rev. 2) non e' ancora implementata.
 - Le tre correzioni chieste da GPT sul deploy (stato riletto sotto lock, errori di git e chmod che fermano il job, lock del ledger) sono in corso in parallelo e arriveranno in un commit a parte.
 - Disco del Mac quasi pieno (ENOSPC alle 15:43; liberati ~200 MB di cartelle temporanee dei miei test col via di Simone; poi 1-2,5 GB liberi). Gli scratch di Camargo nella cartella del repo occupano 11,8 GB: decide Simone.
+
+### 2026-10-09 | Claude | Correzioni del deploy richieste da GPT (P1, P1, P2) | Base: 7ed8b59
+
+- Restano, segnalati dall'agente e non corretti: una gara fra due prime prenotazioni dello stesso ID puo' lasciare la cartella senza stato (ID inutilizzabile, nessun doppio lancio); `flock` e' affidabile sul filesystem locale del Mac, non lo garantirei su NFS; con un lock d'operazione rimasto da un processo ucciso (SIGKILL) serve un intervento a mano, come previsto.
+- Nessuno di questi script e' ancora stato usato su Leonardo.
+
+### 2026-10-09 | Claude | Ripresa esatta dello stream dei dati (contratto, punto 4) | Base: 7ed8b59
+
+- Il conteggio `skipped_sessions` nelle metriche e' cumulativo per worker e riparte da zero a ogni ripresa: e' una metrica, non contenuto del batch (escluso dal confronto dei batch).
+- La parita' fra estrazioni a secco e reali e' un invariante del codice attuale (nessuna estrazione dipende dai valori dei segnali letti per la finestra; le scale mancanti si calcolano anche a secco). Un cambiamento futuro del dataloader che lo rompa va preso dai test di `test_stream_resume.py`.
+- Costo della ripresa a secco non ancora misurato sui dati veri (fino a `stream_segment / num_workers` = 200 batch per worker con i valori di default); da misurare nel primo collaudo.
+- A parita' di seme i batch dei run nuovi differiscono da quelli del codice precedente (stessa distribuzione): i confronti accoppiati vanno fatti fra run dello stesso codice.

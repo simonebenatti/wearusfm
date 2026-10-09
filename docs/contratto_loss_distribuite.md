@@ -99,6 +99,12 @@ L'accumulo si implementa solo se la misura della memoria del 300M lo rende neces
   - effetti: il pool si svuota a ogni confine di segmento (perdita di letture trascurabile con S/W ~ 200 batch per worker); a parita' di seme
     i batch dei run nuovi differiscono da quelli del codice attuale (stessa distribuzione): i confronti accoppiati si fanno sempre fra run
     dello stesso codice.
+  - **Implementato** (09/10/2026, `pretraining_loader.batch_stream`, `RunConfig.stream_segment` = 1.200): lo stato e' per (segmento,
+    classe c = b mod W) invece che per worker, perche' alla ripresa da `start` il worker w produce la classe (start + w) mod W, non w; i
+    blocchi leggono i dati al primo uso, cosi' il pool si ricostruisce a secco senza letture; il trainer verifica a ogni passo che l'indice
+    del batch sia il passo; il DataLoader ha un generatore proprio (creare l'iteratore estrae un seme, e dal generatore globale sposterebbe
+    il dropout nei run ripresi). Prove: `tests/cpu/test_stream_resume.py`, con sessioni scartate, montaggi virtuali, scale in cache o no,
+    1 e 3 worker, interruzioni dentro e sul bordo dei segmenti, e il training ripreso uguale bit per bit a quello continuo (batch e pesi).
 - **Arresto coordinato:** loss o gradienti non finiti, allarme, limite di tempo e STOP decisi in modo che tutti i processi si fermino allo
   stesso aggiornamento (un `all_reduce` del flag); checkpoint scritto solo dal processo 0, dopo una barriera.
 

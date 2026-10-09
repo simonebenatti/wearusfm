@@ -66,6 +66,8 @@ class RunConfig:
     keep_calibration_sha256: str | None = None
     keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
     pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
+    # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
+    stream_segment: int = 1200
 
 
 def sanity_config(max_steps: int = 20000) -> RunConfig:
@@ -116,22 +118,21 @@ def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | No
 
 
 class BatchStream(torch.utils.data.IterableDataset):
-    """Batch del dataloader nei processi di torch: un `PretrainLoader` e un generatore per worker (seme = seme del run, worker, ripresa; con
-    piu' processi DDP anche il processo, `rank`)."""
+    """Batch del dataloader nei processi di torch: un `PretrainLoader` per worker e lo stream di `pretraining_loader.batch_stream`, che da'
+    al batch di indice b (= il passo che lo consuma) lo stesso contenuto in un run continuo e in uno ripreso da `start` (a parita' di worker,
+    processi e segmento). Con DDP ogni processo (`rank`) ha il suo stream."""
 
     def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict, window_s: dict | None = None,
-                 rank: int | None = None):
+                 rank: int | None = None, start: int = 0, segment: int = 1200):
         self.index, self.cfg, self.batch_size, self.seed, self.scales, self.window_s = index, cfg, batch_size, seed, scales, window_s
-        self.rank = rank
+        self.rank, self.start, self.segment = rank, start, segment
 
     def __iter__(self):
         info = torch.utils.data.get_worker_info()
-        wid = info.id if info is not None else 0
+        wid, n = (info.id, info.num_workers) if info is not None else (0, 1)
         loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales), self.window_s)
-        # un processo solo: lo stream di sempre; con DDP ogni processo ha il suo
-        rng = np.random.default_rng([self.seed, wid] if self.rank is None else [self.seed, self.rank, wid])
-        while True:
-            yield loader.batch(self.batch_size, rng)
+        yield from L.batch_stream(loader, self.batch_size, seed=self.seed, start=self.start, worker=wid, n_workers=n, segment=self.segment,
+                                  rank=self.rank)
 
 
 # --- allarmi e diagnostiche -----------------------------------------------------------------------------------------------------------
@@ -308,6 +309,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         previous = resume_state["config"]
         if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa")):
             raise ValueError("Step 1 resume identity changed: use a NEW run directory")
+    stream = {"num_workers": num_workers, "segment": cfg.stream_segment, "world_size": ctx.world_size}
+    if resume_state is not None and resume_state.get("stream") is not None and resume_state["stream"] != stream:
+        raise ValueError(f"ripresa con uno stream diverso ({stream}) da quello del checkpoint ({resume_state['stream']}): la sequenza dei batch "
+                         "non sarebbe la stessa (contratto, punto 4). Stessi worker, processi e segmento, oppure un run nuovo")
     if resume_state is not None and int(resume_state.get("world_size", 1)) != ctx.world_size:
         raise ValueError(f"ripresa con {ctx.world_size} processi da un checkpoint di {resume_state.get('world_size', 1)}: non prevista "
                          "(nessuna ripresa elastica, contratto punto 4)")
@@ -384,11 +389,16 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if ctx.is_main:  # diagnostiche solo sul processo 0
         val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
         val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
-    stream = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, per_process, cfg.seed * 1000 + step, scales, window_s,
-                                                     rank=ctx.rank if ctx.active else None),
-                                         batch_size=None, num_workers=num_workers, persistent_workers=num_workers > 0)
+    if resume_state is not None and resume_state.get("stream") is None:
+        say("checkpoint senza lo stato dello stream (codice precedente al 09/10/2026): la ripresa non ripete la sequenza dei batch")
+    data = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, per_process, cfg.seed, scales, window_s,
+                                                   rank=ctx.rank if ctx.active else None, start=step, segment=cfg.stream_segment),
+                                       batch_size=None, num_workers=num_workers, persistent_workers=num_workers > 0,
+                                       # un generatore proprio: creare l'iteratore estrae un seme, e dal generatore globale sposterebbe il
+                                       # dropout del muscolo nei run ripresi (lo stream usa i suoi semi espliciti, non questo)
+                                       generator=torch.Generator().manual_seed(cfg.seed))
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
-    reason, it = "max_steps", iter(stream)
+    reason, it = "max_steps", iter(data)
     numerical_failure = False
 
     def save():
@@ -403,7 +413,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
                         "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
                         "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
-                        **extra},
+                        "stream": stream, **extra},
                        ckpt.with_suffix(".tmp"))
             ckpt.with_suffix(".tmp").replace(ckpt)
         if ctx.active:
@@ -417,6 +427,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         t0 = time.time()
         batch = next(it)
         t_data = time.time() - t0
+        if batch.index != step:  # l'ordine dei worker del DataLoader deve ricomporre la sequenza degli indici
+            raise RuntimeError(f"batch di indice {batch.index} al passo {step}: stream fuori sequenza")
         if cfg.pairing_audit:
             from wearusfm.training.pairing import batch_sha256
             batch_hash = batch_sha256(batch)  # CPU data BEFORE any conversion/device transfer

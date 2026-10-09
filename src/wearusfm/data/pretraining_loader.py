@@ -344,31 +344,39 @@ def sample_window(view: SessionView, cfg: LoaderConfig, rng: np.random.Generator
 
 @dataclass
 class Block:
-    """Gli inizi accettati `ks` di una tessera del tratto `cand`, coi dati grezzi (unita' fisiche) letti una volta su [data_lo, data_lo + n):
-    bastano per ogni finestra che comincia nella tessera, col suo margine del filtro."""
+    """Gli inizi accettati `ks` di una tessera del tratto `cand`, coi dati grezzi (unita' fisiche) su [data_lo, data_hi): bastano per ogni
+    finestra che comincia nella tessera, col suo margine del filtro. I dati si leggono una volta, al primo uso (`load`): cosi' il pool si puo'
+    ricostruire senza letture rigiocando a secco le estrazioni (ripresa esatta dello stream, `batch_stream`)."""
 
     row: dict
     view: SessionView
     cand: tuple  # (prova, inizio, fine, ancora, k0, ks) del tratto
     ks: np.ndarray
     data_lo: int
-    data: np.ndarray
+    data_hi: int
     uses_left: int
+    data: np.ndarray | None = None
 
     @property
     def trial(self):
         return self.cand[0]
 
+    def load(self) -> np.ndarray:
+        if self.data is None:
+            self.data = self.view.read(self.trial, self.data_lo, self.data_hi)
+        return self.data
+
 
 def read_window_block(block: Block, win: Window, cfg: LoaderConfig, vm=None) -> np.ndarray:
     """Come `read_window`, ma dai dati del blocco: margine del filtro dentro il tratto e dentro i dati letti."""
     a0 = block.data_lo
+    data = block.load()
     if cfg.filter_band_hz is None:
-        return _virtual(block.data[:, win.start - a0: win.stop - a0], vm)
+        return _virtual(data[:, win.start - a0: win.stop - a0], vm)
     m = int(round(cfg.filter_margin_s * block.view.fs))
     a = max(win.span[0], win.start - m, a0)
-    b = min(win.span[1], win.stop + m, a0 + block.data.shape[1])
-    y = _filter(_virtual(block.data[:, a - a0: b - a0], vm), block.view.fs, cfg.filter_band_hz, cfg.notch_hz)
+    b = min(win.span[1], win.stop + m, a0 + data.shape[1])
+    y = _filter(_virtual(data[:, a - a0: b - a0], vm), block.view.fs, cfg.filter_band_hz, cfg.notch_hz)
     return y[:, win.start - a: win.start - a + (win.stop - win.start)]
 
 
@@ -392,6 +400,7 @@ class PretrainBatch:
     skipped_sessions: int = 0  # sessioni saltate finora da questo processo (scala non calcolabile)
     rvq_codes: list | None = None  # (C_s, W_s) codici RVQ per campione (-1 = nessun target), se `rvq_codes_root`
     presented: list[str] | None = None  # topologia presentata per campione ("full" o il montaggio virtuale; D9 decisione 1: si registra)
+    index: int | None = None  # indice globale del batch nello stream (`batch_stream`): il passo del training che lo consuma
 
 
 def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
@@ -417,9 +426,21 @@ class PretrainLoader:
         self._open: OrderedDict = OrderedDict()
         self.timings: dict[str, float] = {}  # secondi cumulati per fase (misura del ritmo)
         self.skipped: dict[str, str] = {}  # sessioni saltate perche' la scala non si calcola (es. MAD nullo): contate, mai in silenzio
+        self.skipped_ever: dict[str, str] = {}  # le stesse, cumulative: `skipped` si azzera con lo stato dello stream, questo no
         self._pool: list[Block] = []
         self.blocks_read = 0
         self.rvq_store = RC.RVQCodeStore(cfg.rvq_codes_root) if cfg.rvq_codes_root else None
+
+    def reset_stream_state(self) -> None:
+        """Lo stato che porta da un batch all'altro e che influisce sulle estrazioni: pool di blocchi e sessioni saltate. Si azzera all'inizio
+        di ogni segmento dello stream (`batch_stream`); le cache (sessioni aperte, scale, inizi ammessi) restano: i loro valori non dipendono
+        dalla storia, solo i tempi."""
+        self._pool = []
+        self.skipped = {}
+
+    def _skip(self, key: str, why: str) -> None:
+        self.skipped[key] = why
+        self.skipped_ever[key] = why
 
     def _tick(self, name: str, t0: float) -> float:
         t1 = time.perf_counter()
@@ -460,7 +481,7 @@ class PretrainLoader:
             try:
                 self.scale(row, view, rng)
             except (ValueError, FloatingPointError) as e:
-                self.skipped[key] = f"{type(e).__name__}: {e}"
+                self._skip(key, f"{type(e).__name__}: {e}")
                 continue
             return row, view
         raise RuntimeError(f"nessuna sessione con la scala in {self.cfg.max_session_attempts} estrazioni")
@@ -471,7 +492,7 @@ class PretrainLoader:
             win = sample_window(view, self.cfg, rng)
             if win is not None:
                 return row, view, win
-            self.skipped[f"{row['dataset']}/{row['subject']}/{row['session']}"] = "nessun inizio di finestra accettato"
+            self._skip(f"{row['dataset']}/{row['subject']}/{row['session']}", "nessun inizio di finestra accettato")
         raise RuntimeError(f"nessuna finestra valida in {self.cfg.max_session_attempts} sessioni estratte")
 
     def _new_block(self, rng: np.random.Generator) -> Block | None:
@@ -480,7 +501,7 @@ class PretrainLoader:
         row, view = self._session(rng)
         cands = admissible_starts(view, self.cfg)
         if not cands:
-            self.skipped[f"{row['dataset']}/{row['subject']}/{row['session']}"] = "nessun inizio di finestra accettato"
+            self._skip(f"{row['dataset']}/{row['subject']}/{row['session']}", "nessun inizio di finestra accettato")
             return None
         counts = np.array([len(c[5]) for c in cands], dtype=np.float64)
         cand = cands[int(rng.choice(len(cands), p=counts / counts.sum()))]
@@ -496,7 +517,7 @@ class PretrainLoader:
         hi = min(e, int(round(anchor + k_hi * align)) + int(math.ceil(self.cfg.max_window_s * fs)) + 1)
         a, b = max(s, lo - m), min(e, hi + m)
         self.blocks_read += 1
-        return Block(row, view, cand, tile_ks, a, view.read(trial, a, b), self.cfg.windows_per_block)
+        return Block(row, view, cand, tile_ks, a, b, self.cfg.windows_per_block)
 
     def sample_from_blocks(self, rng: np.random.Generator) -> tuple[dict, Block, Window]:
         for _ in range(100 * self.cfg.max_session_attempts):
@@ -514,7 +535,11 @@ class PretrainLoader:
                 return blk.row, blk, win
         raise RuntimeError("nessuna finestra valida dai blocchi")
 
-    def batch(self, batch_size: int, rng: np.random.Generator) -> PretrainBatch:
+    def batch(self, batch_size: int, rng: np.random.Generator, *, dry: bool = False) -> PretrainBatch | None:
+        """Un batch di `batch_size` finestre. `dry`: solo le estrazioni casuali, nello stesso ordine e con gli stessi effetti sullo stato (pool,
+        sessioni saltate, scale mancanti), senza leggere i segnali ne' calcolare filtro, target, vicini e codici RVQ; ritorna None. Serve a
+        ricostruire lo stato dello stream alla ripresa (`batch_stream`). Invariante (provato dai test): nessuna estrazione dipende dai valori
+        dei segnali letti per la finestra; le scale mancanti si calcolano anche a secco (leggono i dati, con un seme proprio)."""
         t = time.perf_counter()
         if self.cfg.block_s is not None:
             picked = [self.sample_from_blocks(rng) for _ in range(batch_size)]
@@ -535,6 +560,12 @@ class PretrainLoader:
                 vm = VM.draw(view.montage, view.qc_valid, spec, rng)
             s = self.scale(row, view, rng, vm)
             t = self._tick("scala", t)
+            if dry:
+                montage = view.montage if vm is None else vm.montage
+                layout = CC.layout_from_montage(montage)
+                code = CC.anatomy_codes(montage)
+                MK.generate_mask(layout, code.compartment_weights.argmax(axis=1), win.n_patches, p_max, row["rvq"] == "on", self.cfg.mask, rng)
+                continue
             raw = read_window_block(src, win, self.cfg, vm) if isinstance(src, Block) else \
                 read_window(view, win.trial, win.start, win.stop, win.span, self.cfg, vm)
             x = raw / np.float32(s)
@@ -566,10 +597,49 @@ class PretrainLoader:
             rows.append(row)
             wins.append(win)
             presented.append("full" if vm is None else vm.label)
+        if dry:
+            return None
         packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
-                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped),
+                             np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped_ever),
                              rvq_codes if self.rvq_store is not None else None, presented)
+
+
+def batch_stream(loader: PretrainLoader, batch_size: int, *, seed: int, start: int = 0, worker: int = 0, n_workers: int = 1,
+                 segment: int = 1200, rank: int | None = None):
+    """Batch con un indice globale b, da `start` in poi, che dipendono solo da (seme, processo DDP, b): la stessa sequenza in un run continuo
+    e in uno interrotto e ripreso a qualunque passo, a parita' di numero di worker e di processi (contratto delle loss, punto 4; decisione del
+    09/10/2026).
+    - Il worker `worker` di `n_workers` produce b = start + worker, start + worker + n_workers, ... (l'ordine a turno del DataLoader di torch
+      ricompone la sequenza b = start, start + 1, ...). La classe c = b mod n_workers non dipende da `start`.
+    - Lo stato che influisce sulle estrazioni (generatore, pool di blocchi, sessioni saltate) e' per (segmento g = b div `segment`, classe c):
+      all'inizio di ogni segmento il generatore riparte da `default_rng([seme, (processo,) g, c])` e lo stato si azzera.
+    - Alla ripresa (start > 0) i batch della classe c gia' consumati nel segmento corrente si rigiocano a secco (`batch(..., dry=True)`):
+      stesse estrazioni, nessuna lettura dei segnali.
+    Il costo: il pool si svuota a ogni segmento (con `segment` / `n_workers` batch per segmento e per worker, poche letture perse)."""
+    if n_workers < 1 or not 0 <= worker < n_workers or segment < 1 or start < 0:
+        raise ValueError("batch_stream: n_workers >= 1, 0 <= worker < n_workers, segment >= 1, start >= 0")
+    c = (start + worker) % n_workers
+    b = start + worker
+
+    def fresh(g: int) -> np.random.Generator:
+        loader.reset_stream_state()
+        return np.random.default_rng([seed, g, c] if rank is None else [seed, rank, g, c])
+
+    g = b // segment
+    rng = fresh(g)
+    r = g * segment + (c - g * segment) % n_workers  # primo indice della classe c nel segmento
+    while r < b:  # ricostruzione a secco dello stato fino a b
+        loader.batch(batch_size, rng, dry=True)
+        r += n_workers
+    while True:
+        if b // segment != g:
+            g = b // segment
+            rng = fresh(g)
+        out = loader.batch(batch_size, rng)
+        out.index = b
+        yield out
+        b += n_workers
 
 
 def to_model_inputs(batch: PretrainBatch):
