@@ -4,12 +4,14 @@ riconciliazione degli ambigui. Il login node e' simulato da un finto `ssh` che r
 import datetime as dt
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
-_spec = importlib.util.spec_from_file_location("submit_job", Path(__file__).resolve().parents[2] / "scripts" / "submit_job.py")
+SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "submit_job.py"
+_spec = importlib.util.spec_from_file_location("submit_job", SCRIPT)
 S = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(S)
 
@@ -199,3 +201,118 @@ def test_script_passed_on_stdin(env, tmp_path):
     bad.write_text("non uno script")
     with pytest.raises(SystemExit):
         run("stdin", "--id", "camp_02", "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0", "--script-stdin", str(bad))
+
+
+def test_reconcile_rereads_state_under_lock(env, monkeypatch):
+    """Review GPT (P1): un'altra riconciliazione, in un processo separato, chiude il job a `sottomesso` subito prima che questa prenda il
+    lock. Lo stato va riletto sotto lock: niente copia vecchia che lo riporta ad `assente` (e quindi risottomettibile)."""
+    run, state, n_calls, tmp = env
+    t0 = dt.datetime(2026, 10, 9, 16, 0, tzinfo=dt.timezone.utc)
+    clock = [t0]
+    monkeypatch.setattr(S, "_clock", lambda: clock[0])
+    run("drop", *BASE, *SB)
+    clock[0] = t0 + dt.timedelta(minutes=11)
+    run("none", "--riconcilia", "prova_01")  # primo controllo d'assenza valido
+    clock[0] = t0 + dt.timedelta(minutes=22)  # con la copia vecchia questo controllo basterebbe per `assente`
+    original = S.Registry.lock
+
+    def other_process_first(self, job_id):
+        monkeypatch.setattr(S.Registry, "lock", original)  # una volta sola
+        other = subprocess.run([sys.executable, str(SCRIPT), "--registro", str(tmp / "jobs"), "--ssh",
+                                f"{sys.executable} {tmp / 'fake_ssh.py'} found {tmp / 'calls.txt'}", "--riconcilia", job_id],
+                               capture_output=True, text=True, timeout=60)
+        assert other.returncode == 0, other.stdout + other.stderr
+        original(self, job_id)
+
+    monkeypatch.setattr(S.Registry, "lock", other_process_first)
+    assert run("none", "--riconcilia", "prova_01") == 0
+    s = state("prova_01")
+    assert s["stato"] == "sottomesso" and s["job_slurm"] == 12345
+    assert [h["stato"] for h in s["storia"]][-2:] == ["ambiguo", "sottomesso"] and len(s["controlli_assenza"]) == 1
+    with pytest.raises(SystemExit):
+        run("ok", *BASE, "--dopo-assenza-verificata", *SB)
+    assert not (tmp / "jobs" / "prova_01" / "operazione.lock").exists()
+
+
+def test_transition_only_under_lock_from_the_state_on_disk(tmp_path):
+    reg = S.Registry(tmp_path / "jobs")
+    reg.dir("j1").mkdir()
+    with pytest.raises(RuntimeError):  # senza lock d'operazione nessuna scrittura
+        reg.transition("j1", {"id": "j1"}, "prenotato")
+    assert reg.read("j1") is None
+    reg.lock("j1")
+    s = reg.transition("j1", {"id": "j1"}, "prenotato")
+    s = reg.transition("j1", s, "in_sottomissione")
+    stale = dict(s)
+    s = reg.transition("j1", s, "ambiguo")
+    with pytest.raises(RuntimeError):  # copia vecchia: lo stato su disco e' gia' andato avanti
+        reg.transition("j1", stale, "sottomesso", job_slurm=1)
+    with pytest.raises(RuntimeError):  # transizione non prevista
+        reg.transition("j1", s, "prenotato_di_nuovo")
+    reg.release("j1")
+    assert [h["stato"] for h in reg.read("j1")["storia"]] == ["prenotato", "in_sottomissione", "ambiguo"]
+
+
+LEDGER_CHILD = r'''
+import importlib.util, pathlib, sys, time
+script, root, name, n, rows = sys.argv[1], pathlib.Path(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
+spec = importlib.util.spec_from_file_location("submit_job", script)
+S = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(S)
+reg = S.Registry(root)
+ledger, sync = reg.root / "ledger.tsv", root.parent / "sync"
+original_open = pathlib.Path.open
+
+def open_when_all_ready(self, *a, **k):
+    # prima apertura del ledger: aspetta che tutti i processi siano arrivati qui, cosi' i primi writer si sovrappongono davvero
+    if self == ledger and not (sync / name).exists():
+        (sync / name).touch()
+        deadline = time.monotonic() + 30
+        while len(list(sync.iterdir())) < n and time.monotonic() < deadline:
+            time.sleep(0.002)
+    return original_open(self, *a, **k)
+
+pathlib.Path.open = open_when_all_ready
+for i in range(rows):
+    reg.ledger({"id": name, "stato": f"riga_{i}", "agente": "claude", "sbatch": ["sbatch", "x.sbatch"]})
+'''
+
+
+def test_ledger_shared_by_concurrent_processes(tmp_path):
+    """Review GPT (P2): il ledger e' condiviso da tutti i job e i lock per job non lo serializzano. Piu' processi che scrivono insieme,
+    anche come primi writer: una sola intestazione, nessuna riga persa o spezzata."""
+    child = tmp_path / "ledger_child.py"
+    child.write_text(LEDGER_CHILD)
+    (tmp_path / "sync").mkdir()
+    n, rows = 6, 40
+    procs = [subprocess.Popen([sys.executable, str(child), str(SCRIPT), str(tmp_path / "jobs"), f"job_{k}", str(n), str(rows)],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for k in range(n)]
+    for p in procs:
+        out, err = p.communicate(timeout=120)
+        assert p.returncode == 0, out + err
+    lines = (tmp_path / "jobs" / "ledger.tsv").read_text().splitlines()
+    assert lines[0] == "\t".join(S.LEDGER_COLUMNS)
+    assert sum(ln.startswith("quando\tid\t") for ln in lines) == 1
+    body = [ln.split("\t") for ln in lines[1:]]
+    assert len(body) == n * rows and all(len(r) == len(S.LEDGER_COLUMNS) for r in body)
+    for k in range(n):
+        assert [r[4] for r in body if r[1] == f"job_{k}"] == [f"riga_{i}" for i in range(rows)]
+
+
+def test_interrupted_submission_is_reconciled_as_ambiguous(env, monkeypatch):
+    run, state, _, _ = env
+
+    def interrupted(*a, **k):  # Ctrl-C mentre ssh aspetta la risposta di sbatch
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(S, "run_remote", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        run("ok", *BASE, *SB)
+    assert state("prova_01")["stato"] == "in_sottomissione"
+    with pytest.raises(SystemExit):  # non si risottomette
+        run("ok", *BASE, "--dopo-rifiuto", *SB)
+    monkeypatch.undo()
+    assert run("found", "--riconcilia", "prova_01") == 0
+    s = state("prova_01")
+    assert s["stato"] == "sottomesso" and s["job_slurm"] == 12345
+    assert [h["stato"] for h in s["storia"]][-2:] == ["ambiguo", "sottomesso"]

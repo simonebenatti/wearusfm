@@ -17,6 +17,11 @@ puo' essere in ritardo. Si registra un controllo d'assenza; lo stato passa ad `a
 10 minuti dopo il tentativo di sottomissione e l'ultimo almeno 10 minuti dopo il primo. Da `assente` si risottomette solo con
 `--dopo-assenza-verificata` (flag distinto da `--dopo-rifiuto`). Nessuna cancellazione automatica di prenotazioni.
 
+Concorrenza (review GPT del 09/10/2026): ogni transizione avviene sotto il lock d'operazione del job e parte dallo stato riletto sotto quel
+lock; `Registry.transition` lo verifica (stato e lunghezza della storia uguali a quelli su disco, transizione prevista da `TRANSIZIONI`) e
+altrimenti non scrive. La riconciliazione prende il lock PRIMA di leggere lo stato. Il ledger, condiviso fra tutti i job, ha un lock suo
+(`flock` esclusivo sul file aperto in append), distinto dai lock per job: intestazione solo se il file e' vuoto sotto quel lock.
+
   python3 scripts/submit_job.py --id ID --agente claude --campagna NOME --gpu-ore 0.5 [--dopo ID_PRECEDENTE] -- <argomenti di sbatch>
   python3 scripts/submit_job.py --id ID ... --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=...,CAMPAIGN_SHA=...
   python3 scripts/submit_job.py --riconcilia ID
@@ -27,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fcntl
 import hashlib
 import json
 import os
@@ -41,6 +47,16 @@ JOBID_RE = re.compile(r"^(\d+)(;[\w.-]+)?$")
 DEFAULT_DIR = Path.home() / "wearusfm_local" / "jobs"
 LEDGER_COLUMNS = ("quando", "id", "agente", "campagna", "stato", "job_slurm", "gpu_ore_stimate", "codice_sha", "comando")
 ABSENCE_DELAY = dt.timedelta(minutes=10)  # primo controllo vuoto non prima di 10 min dal tentativo; ultimo almeno 10 min dopo il primo
+# stato su disco (None = nessuno stato ancora) -> stati ammessi dopo; `sottomesso` e `duplicato` sono finali
+TRANSIZIONI = {
+    None: {"prenotato"},
+    "rifiutato": {"prenotato_di_nuovo"},
+    "assente": {"prenotato_di_nuovo"},
+    "prenotato": {"in_sottomissione"},
+    "prenotato_di_nuovo": {"in_sottomissione"},
+    "in_sottomissione": {"sottomesso", "rifiutato", "ambiguo"},
+    "ambiguo": {"sottomesso", "duplicato", "assente", "ambiguo"},
+}
 _clock = dt.datetime.now  # sostituibile nelle prove
 
 
@@ -56,6 +72,7 @@ class Registry:
     def __init__(self, root: Path):
         self.root = root
         self.root.mkdir(parents=True, exist_ok=True)
+        self._held: set[str] = set()  # job di cui questo processo tiene il lock d'operazione
 
     def dir(self, job_id: str) -> Path:
         if not ID_RE.match(job_id):
@@ -73,25 +90,45 @@ class Registry:
         tmp.replace(p)
 
     def transition(self, job_id: str, state: dict, new: str, **fields) -> dict:
-        state = {**state, **fields, "stato": new}
-        state.setdefault("storia", []).append({"quando": now(), "stato": new, **{k: v for k, v in fields.items() if k != "storia"}})
+        """`state` -> `new`, solo col lock d'operazione del job in mano e solo se `state` e' ancora lo stato su disco (riletto qui: stesso
+        stato, storia della stessa lunghezza) e la transizione e' in `TRANSIZIONI`. Altrimenti RuntimeError e nessuna scrittura: una copia
+        vecchia non sovrascrive mai quello che un altro processo ha registrato."""
+        if job_id not in self._held:
+            raise RuntimeError(f"{job_id}: transizione a {new!r} senza il lock d'operazione")
+        on_disk = self.read(job_id) or {}
+        current = on_disk.get("stato")
+        if current != state.get("stato") or len(on_disk.get("storia", [])) != len(state.get("storia", [])):
+            raise RuntimeError(f"{job_id}: lo stato su disco ({current!r}) non e' quello da cui parte la transizione "
+                               f"({state.get('stato')!r}): nessuna scrittura")
+        if new not in TRANSIZIONI.get(current, ()):
+            raise RuntimeError(f"{job_id}: transizione {current!r} -> {new!r} non prevista: nessuna scrittura")
+        entry = {"quando": now(), "stato": new, **{k: v for k, v in fields.items() if k != "storia"}}
+        state = {**state, **fields, "stato": new, "storia": [*state.get("storia", []), entry]}
         self.write(job_id, state)
         if new not in ("in_sottomissione",):
             self.ledger(state)
         return state
 
     def ledger(self, s: dict) -> None:
+        """Una riga nel riepilogo condiviso da tutti i job. Lock proprio del ledger (`flock` esclusivo sul file aperto in append), distinto
+        dal lock per job: intestazione solo se il file e' vuoto sotto il lock, intestazione e riga in una sola scrittura."""
         p = self.root / "ledger.tsv"
-        new = not p.exists()
         with p.open("a") as f:
-            if new:
-                f.write("\t".join(LEDGER_COLUMNS) + "\n")
-            row = [now(), s["id"], s.get("agente", ""), s.get("campagna", ""), s["stato"], str(s.get("job_slurm") or ""),
-                   str(s.get("gpu_ore_stimate", "")), s.get("codice_sha") or "", " ".join(s.get("sbatch", []))]
-            f.write("\t".join(x.replace("\t", " ").replace("\n", " ") for x in row) + "\n")
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            try:
+                row = [now(), s["id"], s.get("agente", ""), s.get("campagna", ""), s["stato"], str(s.get("job_slurm") or ""),
+                       str(s.get("gpu_ore_stimate", "")), s.get("codice_sha") or "", " ".join(s.get("sbatch", []))]
+                text = "\t".join(x.replace("\t", " ").replace("\n", " ") for x in row) + "\n"
+                if os.fstat(f.fileno()).st_size == 0:
+                    text = "\t".join(LEDGER_COLUMNS) + "\n" + text
+                f.write(text)
+                f.flush()
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
     def lock(self, job_id: str) -> None:
-        """Lock d'operazione (O_EXCL): due processi non fanno mai la stessa transizione; uno interrotto lascia il lock, da guardare a mano."""
+        """Lock d'operazione (O_EXCL): due processi non fanno mai la stessa transizione; uno interrotto lascia il lock, da guardare a mano.
+        Lo stato si legge DOPO averlo preso (`reserve`, `reconcile`), mai prima."""
         lock = self.dir(job_id) / "operazione.lock"
         try:
             fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
@@ -99,10 +136,11 @@ class Registry:
             os.close(fd)
         except FileExistsError:
             raise SystemExit(f"{job_id}: un'altra operazione e' in corso (o e' stata interrotta): guardare {lock}, non rilanciare alla cieca")
+        self._held.add(job_id)
 
     def reserve(self, job_id: str, *, after_reject: bool = False, after_absence: bool = False) -> dict | None:
-        """La prenotazione: mkdir atomico. Se la cartella c'e' gia', si prosegue solo da `rifiutato` con `after_reject` o da `assente` con
-        `after_absence`; tutto il resto si rifiuta."""
+        """La prenotazione: mkdir atomico, poi il lock d'operazione. Se la cartella c'e' gia', lo stato letto sotto lock decide: si prosegue
+        solo da `rifiutato` con `after_reject` o da `assente` con `after_absence`; tutto il resto si rifiuta."""
         d = self.dir(job_id)
         try:
             d.mkdir()
@@ -123,6 +161,7 @@ class Registry:
         raise SystemExit(f"{job_id}: gia' prenotato, stato {current!r}. {hint}")
 
     def release(self, job_id: str) -> None:
+        self._held.discard(job_id)
         (self.dir(job_id) / "operazione.lock").unlink(missing_ok=True)
 
 
@@ -163,7 +202,7 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
     if args.gpu_ore is None or args.gpu_ore < 0:
         raise SystemExit("--gpu-ore (stima dichiarata) e' obbligatorio")
     dep = []
-    if args.dopo:
+    if args.dopo:  # lettura senza lock di un ALTRO job: basta perche' `sottomesso` e' finale (TRANSIZIONI) e qui non si scrive
         prev = reg.read(args.dopo)
         if not prev or prev.get("stato") != "sottomesso" or not prev.get("job_slurm"):
             raise SystemExit(f"--dopo {args.dopo}: non e' un job sottomesso con ID SLURM noto")
@@ -173,7 +212,7 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
         script_text = args.script_stdin.read_text()
         if not script_text.startswith("#!"):
             raise SystemExit(f"{args.script_stdin}: non sembra uno script di sbatch")
-    previous = reg.reserve(args.id, after_reject=args.dopo_rifiuto, after_absence=args.dopo_assenza_verificata)
+    previous = reg.reserve(args.id, after_reject=args.dopo_rifiuto, after_absence=args.dopo_assenza_verificata)  # letto sotto lock
     try:
         full = ["sbatch", "--parsable", f"--job-name={args.id}", f"--comment=wearusfm:{args.id}", *dep, *sbatch_args]
         base = previous or {"id": args.id, "creato": now()}
@@ -210,14 +249,21 @@ def _query_jobs(ssh: list[str], remote: str, job_id: str, timeout: float) -> tup
 
 
 def reconcile(reg: Registry, job_id: str, ssh: list[str], timeout: float) -> int:
-    state = reg.read(job_id)
-    if state is None:
+    """Lock PRIMA di leggere: stato, storia e controlli d'assenza si rileggono sotto il lock, cosi' una riconciliazione concorrente gia'
+    chiusa (per esempio a `sottomesso`) non viene sovrascritta da una copia letta prima (review GPT del 09/10/2026)."""
+    if not reg.dir(job_id).is_dir():
         raise SystemExit(f"{job_id}: nessuna prenotazione")
-    if state["stato"] != "ambiguo":
-        print(f"{job_id}: stato {state['stato']}, niente da riconciliare")
-        return 0
     reg.lock(job_id)
     try:
+        state = reg.read(job_id)
+        if state is None:
+            raise SystemExit(f"{job_id}: nessuna prenotazione")
+        if state["stato"] == "in_sottomissione":
+            # il lock e' libero, quindi chi sottometteva non c'e' piu' (per esempio un Ctrl-C durante ssh): l'esito non si sa, come un ambiguo
+            state = reg.transition(job_id, state, "ambiguo", nota="sottomissione interrotta senza esito: trattata come ambigua")
+        if state["stato"] != "ambiguo":
+            print(f"{job_id}: stato {state['stato']}, niente da riconciliare")
+            return 0
         attempt = max(_parse_time(h["quando"]) for h in state.get("storia", []) if h["stato"] == "in_sottomissione")
         since = (attempt - dt.timedelta(days=1)).date().isoformat()  # margine: l'orologio del cluster puo' non coincidere col Mac
         q = shlex.quote(job_id)
