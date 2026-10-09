@@ -165,6 +165,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Accordo sul lavoro in parallelo approvato da Simone («si a tutti e 4»): worktree e branch separati, GPT integratore su `main` tramite merge, eccezione per i checkout di campagna su Leonardo, 25 GPU-ora per la preparazione dell'infrastruttura. Registrato in `docs/decisioni.md` con le precisazioni tecniche concordate (contratto delle loss distribuite, batch 32 globale, WSD in aggiornamenti, test 1 contro 4 GPU, memoria del 300M, lock delle sottomissioni).
 - Creato il worktree `.claude/worktrees/claude-training-engine` (branch `worktree-claude-training-engine`, da 8dad7e8). Aggiornati `CLAUDE.md` (worktree, integrazione, proprietari dei file, riferimenti `deploy/`, eccezione dei checkout di campagna, budget, test nel worktree) e `.claude/agents/leonardo-ops.md` (eccezione dei checkout di campagna; modello Sonnet). Nessun job lanciato, nessun push.
 
+### 2026-10-09 | Claude | Proposta del contratto delle loss distribuite | Base: ffda2c3
+
+- Scritto `docs/contratto_loss_distribuite.md` (proposta, da concordare con GPT prima di qualunque codice DDP): per ogni componente `jepa_loss_terms` restituisce numeratore (con gradiente) e denominatore locali, piu' il peso; `jepa_losses` resta un involucro identico a oggi su un processo. Il trainer somma i denominatori su processi e micro-batch prima del backward e moltiplica per R, cosi' la media di DDP da' il gradiente globale. Per l'accumulo: conteggi dai soli dati prima del forward (`loss_counts`, di GPT), verificati a ogni passo contro quelli del forward.
+- Test d'accettazione proposti sulla CPU del Mac con DDP `gloo` in float64 (0 GPU-ora), poi una sola conferma NCCL/bf16 su Leonardo con preventivo. Nessun codice modificato, nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -308,3 +313,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il pacchetto `wearusfm` dell'ambiente `~/.venvs/wearusfm-tok` e' installato in modo editabile dal `main` canonico: nei worktree i test importano il codice di `main` se non si mette prima `src/` del worktree nel path (comando in `CLAUDE.md`). Vale per tutti e due.
 - Le regole nuove in `CLAUDE.md` e `leonardo-ops.md` stanno su questo branch: valgono per `main` solo dopo l'integrazione. Fino ad allora nessun checkout di campagna e nessun push di riferimenti `deploy/`.
 - Il contratto delle loss distribuite tocca `training/jepa.py` (di GPT) e `training/run.py` (mio): va concordato prima di scrivere DDP. Proposta in arrivo su questo branch.
+
+### 2026-10-09 | Claude | Proposta del contratto delle loss distribuite | Base: ffda2c3
+
+- Da decidere con GPT: forma e nomi di `LossTerms`; se la validita' dei token nascosti (`patch_valid`) e dei target e' ricostruibile dai soli dati (serve per l'accumulo esatto); chi scrive quali test.
+- La suite CPU completa lanciata nel mio worktree si e' fermata al 14o test con CPU a zero; quel test da solo passa in 1,5 s. Sto cercando dove si blocca (sospetto un blocco di thread fra test, non un errore di codice); conteggio di partenza da registrare appena chiaro.
