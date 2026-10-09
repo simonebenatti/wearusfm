@@ -20,13 +20,16 @@
 #   sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500,RVQ_CODES=<dir> scripts/slurm/sanity_jepa.sbatch <m> <s> <run_dir> 10000
 # Uscita fuori dal repo: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json): $WORK/wearusfm_runs/runs/ o, per il sanity vero
 # con $WORK saturo, $SCRATCH/wearusfm_runs/runs/ (Simone, 04/10/2026: «vai con la 2»).
+# Codice congelato (09/10/2026, CLAUDE.md «Checkout di campagna»): --export=ALL,CODE_DIR=$WORK/wearusfm_campaigns/<nome>,EXPECTED_SHA=<sha>;
+# senza, il repo canonico come prima. Vedi scripts/slurm/lib_code_dir.sh.
 
 set -uo pipefail
 MANIFEST="${1:?manifest}"; SCALES="${2:?session_scales.json}"; RUN_DIR="${3:?cartella del run}"; MAX_STEPS="${4:-20000}"
 case "$RUN_DIR" in /*) ;; *) echo "RUN_DIR relativo (finirebbe dentro il repo dopo il cd): rifiutato"; exit 2;; esac
-case "$RUN_DIR" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*)
-  echo "RUN_DIR dentro il repo: rifiutato"; exit 2;; esac
-cd "$WORK/wearusfm"
+case "$RUN_DIR" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
+  "$WORK/wearusfm_campaigns"|"$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*)
+  echo "RUN_DIR dentro il codice: rifiutato"; exit 2;; esac
+source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
 
 module purge
 module load profile/deeplrn

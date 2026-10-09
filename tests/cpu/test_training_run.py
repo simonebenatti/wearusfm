@@ -43,6 +43,15 @@ def test_time_limit_stops_and_saves(tmp_path):
     assert s["stopped"] == "limite di tempo" and s["steps"] == 0 and (tmp_path / "r" / "checkpoint.pt").exists()
 
 
+def test_summary_records_code_provenance(tmp_path, monkeypatch):
+    root, mpath = _tree(tmp_path)
+    monkeypatch.setenv("WEARUSFM_CODE_DIR", "/w/wearusfm_campaigns/c1")
+    monkeypatch.setenv("WEARUSFM_CODE_SHA", "a" * 40)
+    R.train(R.small_config(datasets=None), mpath, [root], tmp_path / "r", time_limit_s=0.0, log=lambda m: None)
+    code = json.loads((tmp_path / "r" / "summary.json").read_text())["code"]
+    assert code == {"dir": "/w/wearusfm_campaigns/c1", "sha": "a" * 40}
+
+
 def test_alarm_rule_and_dataset_filter(tmp_path):
     mon = R.AlarmMonitor(R.AlarmRule(), dim=100)
     assert mon.update(0.01, 50) is None and mon.update(0.01, 50) is None and "collasso" in mon.update(0.01, 50)  # 3 di fila

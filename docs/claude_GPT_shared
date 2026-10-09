@@ -170,6 +170,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Scritto `docs/contratto_loss_distribuite.md` (proposta, da concordare con GPT prima di qualunque codice DDP): per ogni componente `jepa_loss_terms` restituisce numeratore (con gradiente) e denominatore locali, piu' il peso; `jepa_losses` resta un involucro identico a oggi su un processo. Il trainer somma i denominatori su processi e micro-batch prima del backward e moltiplica per R, cosi' la media di DDP da' il gradiente globale. Per l'accumulo: conteggi dai soli dati prima del forward (`loss_counts`, di GPT), verificati a ogni passo contro quelli del forward.
 - Test d'accettazione proposti sulla CPU del Mac con DDP `gloo` in float64 (0 GPU-ora), poi una sola conferma NCCL/bf16 su Leonardo con preventivo. Nessun codice modificato, nessun job.
 
+### 2026-10-09 | Claude | Deploy di campagna, launcher con CODE_DIR, sottomissione con lock | Base: c333b9d
+
+- `scripts/slurm/campaign_checkout.sbatch`: crea `$WORK/wearusfm_campaigns/<nome>` come worktree staccato del canonico a uno SHA gia' pubblicato (riferimento `deploy/<nome>`), lo blocca (`worktree lock`) e lo mette in sola lettura; si rifiuta se la cartella esiste, se lo SHA non e' completo o non e' pubblicato, o se il nome non e' valido. Si passa a `sbatch` su stdin, quindi non serve che sia gia' nel canonico. Job CPU su `lrd_all_serial`, 0 GPU-ora.
+- `scripts/slurm/lib_code_dir.sh` (`code_dir_setup`): ogni launcher verifica `CODE_DIR`, lo SHA atteso (obbligatorio per un checkout di campagna) e il checkout pulito; poi fa `cd`, mette `CODE_DIR/src` in testa a `PYTHONPATH` ed esporta `WEARUSFM_CODE_DIR` e `WEARUSFM_CODE_SHA`. Portati su questa libreria `sanity_jepa.sbatch` (che ora rifiuta anche un `RUN_DIR` dentro i checkout di campagna) e `measure_loader.sbatch`; `training/run.py` scrive cartella e SHA del codice in `summary.json`. Gli altri launcher del training li porto quando servono; quelli dell'harness sono di GPT.
+- `scripts/submit_job.py`: prenotazione con `mkdir` atomico in `~/wearusfm_local/jobs/<id>/`, lock d'operazione, stati persistenti (prenotato, in_sottomissione, sottomesso, rifiutato, ambiguo, assente, duplicato); `--job-name` = ID logico e `--comment=wearusfm:<id>` imposti dallo script; `--dopo` per le dipendenze, `--riconcilia` per gli ambigui via `sacct`/`squeue`, `--script-stdin` per gli script locali (sha256 registrato); riepilogo in `ledger.tsv`. Mai un rilancio automatico: un ambiguo o un sottomesso non si risottomettono, un rifiutato o un assente solo con `--dopo-rifiuto`.
+- Test nuovi: `tests/cpu/test_campaign_deploy.py` (5, bash e git su un $WORK finto), `tests/cpu/test_submit_job.py` (9, finto ssh), un test della provenienza in `test_training_run.py`. Suite CPU completa: 751 passati prima, **766 passati dopo** (+15, nessun fallito). In `CLAUDE.md`: comando dei test con `OMP_NUM_THREADS=1` e indicazioni dei tre strumenti. Nessun job, nessun push.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -318,3 +325,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Da decidere con GPT: forma e nomi di `LossTerms`; se la validita' dei token nascosti (`patch_valid`) e dei target e' ricostruibile dai soli dati (serve per l'accumulo esatto); chi scrive quali test.
 - La suite CPU completa lanciata nel mio worktree si e' fermata al 14o test con CPU a zero; quel test da solo passa in 1,5 s. Sto cercando dove si blocca (sospetto un blocco di thread fra test, non un errore di codice); conteggio di partenza da registrare appena chiaro.
+
+### 2026-10-09 | Claude | Deploy di campagna, launcher con CODE_DIR, sottomissione con lock | Base: c333b9d
+
+- Causa del blocco della suite trovata: l'ambiente `~/.venvs/wearusfm-tok` prende torch dal venv e numpy/scipy/sklearn da Anaconda, e le due OpenMP si scontrano (blocco con CPU a zero, oppure abort dentro sklearn). Con `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1`, come gia' faceva GPT, la suite passa tutta: 751 su 751. Scritto in `CLAUDE.md`. I conteggi che avevo riportato il 05-07/10 (605 passati, 16 saltati) erano con `python3` di Anaconda, quindi senza i test che richiedono torch.
+- La riconciliazione dei job ambigui cerca il nome del job (= ID logico) con `sacct --name`. Il campo `--comment` potrebbe non essere conservato dall'accounting di Leonardo (dipende da `AccountingStoreFlags`): non verificato.
+- Il primo uso reale (checkout di campagna e un launcher con `CODE_DIR`) richiede l'integrazione di questo branch, il push di un riferimento `deploy/<nome>`, un preventivo (job CPU, 0 GPU-ora) e il via di Simone.
+- `sanity_jepa.sbatch` e `measure_loader.sbatch` ora richiedono `scripts/slurm/lib_code_dir.sh` nel codice usato: sul canonico funzionano solo dopo l'integrazione e il push di questo branch su `main`.

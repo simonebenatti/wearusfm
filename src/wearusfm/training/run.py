@@ -16,6 +16,7 @@ float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
@@ -359,7 +360,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if reason.startswith("allarme") or numerical_failure:
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
-               "device": device, "gpu_max_memory_gib": torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None}
+               "device": device, "gpu_max_memory_gib": torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None,
+               # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
+               "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")}}
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
     log(f"fine: {reason}, passo {step}")
     return summary

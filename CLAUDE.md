@@ -63,8 +63,9 @@
   modifica. Ogni launcher riceve `CODE_DIR`, verifica lo SHA atteso e che il checkout sia pulito, e importa codice e configurazioni da
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
-  stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca). Finche' non esiste, vale
-  la procedura attuale via leonardo-ops.
+  stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Lo esegue leonardo-ops dal Mac. Checkout di campagna:
+  `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
@@ -104,8 +105,9 @@
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
 - tests/cpu/ contiene test leggeri di sintassi e logica, quelli girano in locale, con l'ambiente
   `~/.venvs/wearusfm-tok` (torch 2.14, Python 3.11). Il pacchetto e' installato in modo editabile dal `main` canonico: in un worktree
-  i test vanno lanciati mettendo prima `src/` del worktree nel path, per esempio
-  `~/.venvs/wearusfm-tok/bin/python -c "import sys; sys.path.insert(0, 'src'); import pytest; sys.exit(pytest.main(['-q', 'tests/cpu']))"`.
+  i test vanno lanciati mettendo prima `src/` del worktree nel path, e sempre con `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1` (l'ambiente
+  mescola torch del venv e numpy/scipy/sklearn di Anaconda: con piu' thread la suite si blocca o va in abort dentro sklearn), per esempio
+  `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python -c "import sys; sys.path.insert(0, 'src'); import pytest; sys.exit(pytest.main(['-q', 'tests/cpu']))"`.
 - Tutto il resto passa da srun su Leonardo.
 - Se esiste .leonardo_jobid c'e' un'allocazione interattiva attiva:
   srun --jobid=$(cat .leonardo_jobid) --overlap bash -lc 'source scripts/setup_env.sh && <cmd>'

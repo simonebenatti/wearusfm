@@ -19,7 +19,8 @@ set -uo pipefail
 MANIFEST="${1:?serve il percorso del manifest}"; shift
 SCALES_FROM="${1:-}"  # facoltativo: session_scales.json di un run precedente (si ricalcolano solo le mancanti)
 [ $# -gt 0 ] && shift
-cd "$WORK/wearusfm"
+# codice congelato (09/10/2026): CODE_DIR / EXPECTED_SHA facoltativi, vedi scripts/slurm/lib_code_dir.sh
+source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
 
 module purge
 module load profile/deeplrn
