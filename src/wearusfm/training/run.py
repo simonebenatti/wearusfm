@@ -116,16 +116,20 @@ def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | No
 
 
 class BatchStream(torch.utils.data.IterableDataset):
-    """Batch del dataloader nei processi di torch: un `PretrainLoader` e un generatore per processo (seme = seme del run, processo, ripresa)."""
+    """Batch del dataloader nei processi di torch: un `PretrainLoader` e un generatore per worker (seme = seme del run, worker, ripresa; con
+    piu' processi DDP anche il processo, `rank`)."""
 
-    def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict, window_s: dict | None = None):
+    def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict, window_s: dict | None = None,
+                 rank: int | None = None):
         self.index, self.cfg, self.batch_size, self.seed, self.scales, self.window_s = index, cfg, batch_size, seed, scales, window_s
+        self.rank = rank
 
     def __iter__(self):
         info = torch.utils.data.get_worker_info()
         wid = info.id if info is not None else 0
         loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales), self.window_s)
-        rng = np.random.default_rng([self.seed, wid])
+        # un processo solo: lo stream di sempre; con DDP ogni processo ha il suo
+        rng = np.random.default_rng([self.seed, wid] if self.rank is None else [self.seed, self.rank, wid])
         while True:
             yield loader.batch(self.batch_size, rng)
 
@@ -170,6 +174,76 @@ def diagnostics(student: WearUsFM, teacher: WearUsFM, val: tuple, n_probe: int =
     return out
 
 
+# --- piu' processi (DDP) -------------------------------------------------------------------------------------------------------------
+# Decisione del 09/10/2026 (`docs/decisioni.md`, «Lavoro in parallelo»; `docs/contratto_loss_distribuite.md`): un processo per GPU, batch
+# globale = `batch_size` finestre divise fra i processi, un solo aggiornamento per passo. Con un processo solo nulla cambia: nessuna
+# operazione collettiva. **Provvisorio:** finche' il contratto delle loss (somme e conteggi per componente, `training/jepa.py`) non c'e', la
+# perdita di ogni processo e' la sua media locale e DDP media i gradienti: NON e' la media del batch globale quando i denominatori differiscono
+# fra processi. Per questo DDP si rifiuta, salvo che lo chieda esplicitamente una prova (`ddp_local_mean_for_tests`).
+
+
+@dataclass(frozen=True)
+class DistContext:
+    """Il processo dentro un training DDP. `world_size` = 1: il percorso di sempre."""
+    rank: int = 0
+    world_size: int = 1
+    local_rank: int = 0
+
+    @property
+    def active(self) -> bool:
+        return self.world_size > 1
+
+    @property
+    def is_main(self) -> bool:
+        return self.rank == 0
+
+
+def dist_from_env() -> DistContext:
+    """Dalle variabili di torchrun (RANK, WORLD_SIZE, LOCAL_RANK); senza, un processo solo."""
+    return DistContext(int(os.environ.get("RANK", 0)), int(os.environ.get("WORLD_SIZE", 1)), int(os.environ.get("LOCAL_RANK", 0)))
+
+
+class _Objective(torch.nn.Module):
+    """Lo studente dentro un modulo il cui forward calcola le loss: DDP sincronizza i gradienti solo attraverso il forward del modulo che
+    avvolge, mentre `jepa_losses` chiama `encode`, `decode` e le teste dello studente. Il teacher resta fuori: nessun gradiente, nessuna
+    sincronizzazione dei buffer."""
+
+    def __init__(self, student: WearUsFM):
+        super().__init__()
+        self.student = student
+
+    def forward(self, compute):
+        return compute(self.student)
+
+
+def _any_flag(ctx: DistContext, device, *flags: bool) -> list[bool]:
+    """Ogni decisione di arresto vale per tutti i processi: basta che un processo la prenda (MAX)."""
+    if not ctx.active:
+        return [bool(f) for f in flags]
+    t = torch.tensor([1.0 if f else 0.0 for f in flags], device=device)
+    torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+    return [bool(v > 0) for v in t.tolist()]
+
+
+def _merge_records(parts: list[dict]) -> dict:
+    """Il record di un passo dai record dei processi. Finestre, classi, montaggi virtuali e sessioni saltate si sommano; l'attesa sui dati e'
+    la massima (il passo aspetta il processo piu' lento), con la media a parte; la durata del passo e' la massima. Le loss sono la media delle
+    medie locali dei processi che le hanno (PROVVISORIO, vedi sopra: col contratto diventano somme / conteggi globali)."""
+    out = dict(parts[0])
+    out["windows"] = sum(p["windows"] for p in parts)
+    out["skipped_sessions"] = sum(p["skipped_sessions"] for p in parts)
+    out["virtual"] = sum(p["virtual"] for p in parts)
+    out["classes"] = {c: sum(p["classes"][c] for p in parts) for c in parts[0]["classes"]}
+    out["t_data_s"] = max(p["t_data_s"] for p in parts)
+    out["t_data_s_mean"] = sum(p["t_data_s"] for p in parts) / len(parts)
+    out["t_step_s"] = max(p["t_step_s"] for p in parts)
+    for k in {k for p in parts for k in p.get("_losses", {})}:
+        vals = [p["_losses"][k] for p in parts if k in p.get("_losses", {})]
+        out[k] = sum(vals) / len(vals)
+    out.pop("_losses", None)
+    return out
+
+
 # --- ciclo ---------------------------------------------------------------------------------------------------------------------------
 
 def _lr_at(step: int, cfg: RunConfig) -> float:
@@ -186,11 +260,16 @@ def _to_device(inp, visible, rvq_on, device):
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
-          init_from: Path | None = None) -> dict:
+          init_from: Path | None = None, dist: DistContext | None = None, ddp_local_mean_for_tests: bool = False) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
-    il passo difettoso non aggiorna optimizer/EMA e non viene contato."""
+    il passo difettoso non aggiorna optimizer/EMA e non viene contato.
+    Con `dist` attivo (DDP, un processo per GPU, gruppo gia' inizializzato): `cfg.batch_size` e' il batch GLOBALE, diviso fra i processi;
+    file, log e diagnostiche solo dal processo 0; ogni decisione di arresto vale per tutti; checkpoint col generatore casuale di ogni processo.
+    Vedi la sezione «piu' processi» sopra per il limite provvisorio sulle loss."""
     t_start = time.time()
+    ctx = dist or DistContext()
+    say = log if ctx.is_main else (lambda m: None)
     if cfg.target_version != TARGET_VERSION:
         raise ValueError("target_version incompatible with this code")
     if cfg.readout_version != READOUT_VERSION:
@@ -201,6 +280,22 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("Step 1 supports CPU/CUDA only")
     if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
         raise ValueError("keep requires a registered head and multiscale targets")
+    if ctx.active:
+        if not torch.distributed.is_initialized():
+            raise ValueError("DDP: il gruppo dei processi va inizializzato prima (scripts/train_jepa.py --distributed)")
+        if (torch.distributed.get_rank(), torch.distributed.get_world_size()) != (ctx.rank, ctx.world_size):
+            raise ValueError("DDP: rank e world_size diversi da quelli del gruppo dei processi")
+        if cfg.batch_size % ctx.world_size:
+            raise ValueError(f"DDP: batch globale {cfg.batch_size} non divisibile per {ctx.world_size} processi")
+        if not ddp_local_mean_for_tests:
+            raise NotImplementedError("DDP: manca il contratto delle loss distribuite (somme e conteggi per componente in training/jepa.py, "
+                                      "docs/contratto_loss_distribuite.md): la media locale non e' la media del batch globale")
+        if cfg.pairing_audit or cfg.keep_grad_every:
+            raise NotImplementedError("DDP: pairing_audit e keep_grad_every non ancora supportati (contratto, punto 4)")
+        if str(device).startswith("cuda"):
+            device = f"cuda:{ctx.local_rank}"
+            torch.cuda.set_device(ctx.local_rank)
+    per_process = cfg.batch_size // ctx.world_size
     ckpt = out_dir / "checkpoint.pt"
     if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
         raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
@@ -213,6 +308,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         previous = resume_state["config"]
         if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa")):
             raise ValueError("Step 1 resume identity changed: use a NEW run directory")
+    if resume_state is not None and int(resume_state.get("world_size", 1)) != ctx.world_size:
+        raise ValueError(f"ripresa con {ctx.world_size} processi da un checkpoint di {resume_state.get('world_size', 1)}: non prevista "
+                         "(nessuna ripresa elastica, contratto punto 4)")
     calibration = None
     if cfg.model.keep_readout:
         if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
@@ -225,13 +323,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     stop_file = out_dir / "STOP"
     if stop_file.exists():  # un allarme o uno stop numerico hanno fermato il run: i job successivi della catena non riprendono
         reason = stop_file.read_text().strip()
-        log(f"run fermato in precedenza ({reason}): nessun passo")
+        say(f"run fermato in precedenza ({reason}): nessun passo")
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
     if cfg.loader.multiscale_anchor != cfg.model.multiscale_anchor:
         raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
-    torch.manual_seed(cfg.seed)
+    torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
     index = load_index(manifest, roots, cfg.datasets)
     student = WearUsFM(cfg.model).to(device)
     if calibration is not None and resume_state is None:
@@ -239,23 +337,39 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     teacher = make_teacher(student).to(device)
     opt = torch.optim.AdamW(student.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
     step, monitor = 0, AlarmMonitor(cfg.alarm, cfg.model.dim)
-    ckpt = out_dir / "checkpoint.pt"
-    if ckpt.exists():
+    if resume_state is not None:
         state = resume_state  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
         student.load_state_dict(state["student"])
         teacher.load_state_dict(state["teacher"])
         opt.load_state_dict(state["optimizer"])
         step = int(state["step"])
         monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
-        torch.set_rng_state(state["torch_rng"].cpu())  # map_location porta anche lo stato casuale sulla GPU: set_rng_state vuole la CPU
-        if torch.cuda.is_available() and state.get("cuda_rng") is not None:
-            torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
-        log(f"ripresa dal passo {step}")
-    elif init_from is not None:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero: es. una diagnostica sul modello del sanity
-        state = torch.load(init_from, map_location="cpu", weights_only=False)
-        student.load_state_dict(state["student"])
-        teacher.load_state_dict(state["teacher"])
-        log(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
+        if ctx.active:  # il generatore di questo processo
+            mine = state["rank_rng"][ctx.rank]
+            torch.set_rng_state(mine["torch_rng"].cpu())
+            if mine.get("cuda_rng") is not None and str(device).startswith("cuda"):
+                torch.cuda.set_rng_state(mine["cuda_rng"].cpu(), torch.device(device))
+        else:
+            torch.set_rng_state(state["torch_rng"].cpu())  # map_location porta anche lo stato casuale sulla GPU: set_rng_state vuole la CPU
+            if torch.cuda.is_available() and state.get("cuda_rng") is not None:
+                torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
+        say(f"ripresa dal passo {step}")
+    else:
+        if init_from is not None:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero: es. una diagnostica sul sanity
+            state = torch.load(init_from, map_location="cpu", weights_only=False)
+            student.load_state_dict(state["student"])
+            teacher.load_state_dict(state["teacher"])
+            say(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
+        if ctx.active:  # dropout del muscolo: un generatore diverso per processo (i dati sono gia' diversi)
+            torch.manual_seed(cfg.seed * 1_000_003 + ctx.rank + 1)
+    model = None
+    if ctx.active:
+        from torch.nn.parallel import DistributedDataParallel
+        # find_unused_parameters: teste senza target in un passo, testa keep del braccio A, testa RVQ spenta (contratto, punto 4)
+        model = DistributedDataParallel(_Objective(student), device_ids=[ctx.local_rank] if str(device).startswith("cuda") else None,
+                                        find_unused_parameters=True)
+        for t in teacher.state_dict().values():  # il teacher del processo 0 su tutti (lo studente lo allinea DDP)
+            torch.distributed.broadcast(t, src=0)
     if cfg.pairing_audit:
         from wearusfm.training.pairing import state_sha256
         (out_dir / "pairing.json").write_text(json.dumps({
@@ -263,25 +377,41 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             "teacher_initial_sha256": state_sha256(teacher.state_dict()),
             "seed": cfg.seed, "num_workers": num_workers, "resume": False,
         }, indent=2))
-    (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
+    if ctx.is_main:
+        (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
     scales = dict(scales or {})
-    val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
-    val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
-    stream = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, cfg.batch_size, cfg.seed * 1000 + step, scales, window_s), batch_size=None,
-                                         num_workers=num_workers, persistent_workers=num_workers > 0)
-    metrics = (out_dir / "metrics.jsonl").open("a")
+    val = None
+    if ctx.is_main:  # diagnostiche solo sul processo 0
+        val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+        val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
+    stream = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, per_process, cfg.seed * 1000 + step, scales, window_s,
+                                                     rank=ctx.rank if ctx.active else None),
+                                         batch_size=None, num_workers=num_workers, persistent_workers=num_workers > 0)
+    metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
     reason, it = "max_steps", iter(stream)
     numerical_failure = False
 
     def save():
-        torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
-                    "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
-                    "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None},
-                   ckpt.with_suffix(".tmp"))
-        ckpt.with_suffix(".tmp").replace(ckpt)
+        extra = {}
+        if ctx.active:  # tutti i processi partecipano; scrive solo il processo 0
+            mine = {"torch_rng": torch.get_rng_state(),
+                    "cuda_rng": torch.cuda.get_rng_state(torch.device(device)) if str(device).startswith("cuda") else None}
+            rank_rng = [None] * ctx.world_size
+            torch.distributed.all_gather_object(rank_rng, mine)
+            extra = {"rank_rng": rank_rng, "world_size": ctx.world_size}
+        if ctx.is_main:
+            torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
+                        "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
+                        "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+                        **extra},
+                       ckpt.with_suffix(".tmp"))
+            ckpt.with_suffix(".tmp").replace(ckpt)
+        if ctx.active:
+            torch.distributed.barrier()
 
     while step < cfg.max_steps:
-        if time_limit_s is not None and time.time() - t_start > time_limit_s:
+        out_of_time, = _any_flag(ctx, device, time_limit_s is not None and time.time() - t_start > time_limit_s)
+        if out_of_time:
             reason = "limite di tempo"
             break
         t0 = time.time()
@@ -296,11 +426,16 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         student.train()
         opt.zero_grad(set_to_none=True)
         codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
+
+        def compute(m):
+            return jepa_losses(m, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
+                               kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                               rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+
         with amp:
-            losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
-                                 kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                                 rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
-        if not torch.isfinite(losses["total"]):
+            losses = model(compute) if model is not None else compute(student)
+        bad_loss, = _any_flag(ctx, device, not bool(torch.isfinite(losses["total"])))
+        if bad_loss:  # anche se e' un altro processo: nessuno fa il backward
             reason = f"perdita non finita al passo {step}"
             numerical_failure = True
             break
@@ -314,8 +449,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
                 squares = [g.detach().float().square().sum() for g in grads if g is not None]
                 losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
-        losses["total"].backward()
-        gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)
+        losses["total"].backward()  # con DDP: i gradienti si mediano fra i processi qui
+        gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la media
         # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.
         if not torch.isfinite(gnorm):
             reason = f"gradienti non finiti al passo {step} (norma: {float(gnorm)})"
@@ -326,45 +461,70 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         ema_update(teacher, student, cfg.jepa.ema_momentum)
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
-               "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions, **{k: float(v.detach()) for k, v in losses.items()}}
+               "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
+        loss_values = {k: float(v.detach()) for k, v in losses.items()}
+        if not ctx.active:
+            rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
         # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
         rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
         rec["virtual"] = sum(p != "full" for p in batch.presented or [])
+        if ctx.active:  # il record del passo dai record di tutti i processi, sul processo 0
+            parts = [None] * ctx.world_size if ctx.is_main else None
+            torch.distributed.gather_object({**rec, "_losses": loss_values}, parts, dst=0)
+            rec = _merge_records(parts) if ctx.is_main else {**rec, **loss_values}
         if cfg.pairing_audit:
             rec["batch_sha256"] = batch_hash
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
-            with amp:
-                d = diagnostics(student, teacher, val)
-            # anche le varianze assolute (review del 03/10): rapporto e rango non vedono un'uscita quasi costante, le varianze si'
-            rec.update({"student_collapse_ratio": d["student_collapse"]["ratio"], "teacher_collapse_ratio": d["teacher_collapse"]["ratio"],
-                        "student_erank": d["student_erank"], "teacher_erank": d["teacher_erank"],
-                        "student_var_samples": d["student_collapse"]["var_between_samples"],
-                        "student_var_queries": d["student_collapse"]["var_between_queries"],
-                        "teacher_var_samples": d["teacher_collapse"]["var_between_samples"]})
-            alarm = monitor.update(min(d["student_collapse"]["ratio"], d["teacher_collapse"]["ratio"]), d["student_erank"])
+            alarm = None
+            if ctx.is_main:
+                with amp:
+                    d = diagnostics(student, teacher, val)
+                # anche le varianze assolute (review del 03/10): rapporto e rango non vedono un'uscita quasi costante, le varianze si'
+                rec.update({"student_collapse_ratio": d["student_collapse"]["ratio"], "teacher_collapse_ratio": d["teacher_collapse"]["ratio"],
+                            "student_erank": d["student_erank"], "teacher_erank": d["teacher_erank"],
+                            "student_var_samples": d["student_collapse"]["var_between_samples"],
+                            "student_var_queries": d["student_collapse"]["var_between_queries"],
+                            "teacher_var_samples": d["teacher_collapse"]["var_between_samples"]})
+                alarm = monitor.update(min(d["student_collapse"]["ratio"], d["teacher_collapse"]["ratio"]), d["student_erank"])
+            if ctx.active:  # la decisione del processo 0 vale per tutti
+                box = [alarm]
+                torch.distributed.broadcast_object_list(box, src=0)
+                alarm = box[0]
             if alarm:
-                rec["alarm"] = alarm
-                metrics.write(json.dumps(rec) + "\n")
+                if ctx.is_main:
+                    rec["alarm"] = alarm
+                    metrics.write(json.dumps(rec) + "\n")
                 reason = "allarme: " + alarm
                 break
-        metrics.write(json.dumps(rec) + "\n")
-        metrics.flush()
+        if ctx.is_main:
+            metrics.write(json.dumps(rec) + "\n")
+            metrics.flush()
         if step % cfg.ckpt_every == 0:
             save()
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
-            log(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {t_data:.2f} s){mem}")
+            say(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
     if not numerical_failure:
         save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
-    metrics.close()
-    if reason.startswith("allarme") or numerical_failure:
+    if metrics is not None:
+        metrics.close()
+    if ctx.is_main and (reason.startswith("allarme") or numerical_failure):
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
+    gpu_mem = torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None
+    if ctx.active and gpu_mem is not None:  # la memoria massima fra i processi
+        t = torch.tensor([gpu_mem], device=device)
+        torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+        gpu_mem = float(t.item())
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
-               "device": device, "gpu_max_memory_gib": torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None,
+               "device": device, "gpu_max_memory_gib": gpu_mem,
                # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
                "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")}}
-    (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
-    log(f"fine: {reason}, passo {step}")
+    if ctx.active:
+        summary.update({"world_size": ctx.world_size, "batch_per_process": per_process,
+                        "ddp_loss": "media locale per processo, SOLO collaudo dell'impianto" if ddp_local_mean_for_tests else "contratto"})
+    if ctx.is_main:
+        (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
+    say(f"fine: {reason}, passo {step}")
     return summary
 
 

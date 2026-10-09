@@ -40,13 +40,26 @@ def main(argv=None) -> int:
     ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py (lunghezza media delle finestre per sessione)")
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
+    ap.add_argument("--batch-size", type=int, default=None, help="batch GLOBALE in finestre (con --distributed diviso fra i processi)")
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
     ap.add_argument("--rvq-targets", choices=["slab", "channel"], default=None,
                     help="finestre dell'ancora RVQ; 'channel' e' SOLO DIAGNOSTICA (v10 §6.3: nel training mai sul masking di canale)")
+    ap.add_argument("--distributed", action="store_true",
+                    help="DDP sotto torchrun, un processo per GPU (RANK/WORLD_SIZE/LOCAL_RANK dall'ambiente); il batch del preset e' GLOBALE")
+    ap.add_argument("--ddp-local-mean-collaudo", action="store_true",
+                    help="SOLO collaudi dell'impianto DDP (memoria, ritmo, arresti): perdita = media locale per processo, NON la media del batch "
+                         "globale; registrato nel summary. Il training vero aspetta il contratto delle loss (docs/contratto_loss_distribuite.md)")
     args = ap.parse_args(argv)
+    ctx = None
+    if args.distributed:
+        ctx = R.dist_from_env()
+        torch.distributed.init_process_group("nccl" if args.device.startswith("cuda") else "gloo")  # env:// da torchrun
+    elif args.ddp_local_mean_collaudo:
+        ap.error("--ddp-local-mean-collaudo vale solo con --distributed")
+    main_process = ctx is None or ctx.is_main
     cfg = R.sanity_config() if args.preset == "sanity" else R.small_config()
     if args.rvq_codes is not None:
         cfg = R.with_rvq(cfg, args.rvq_codes)
@@ -55,6 +68,8 @@ def main(argv=None) -> int:
     window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
     if args.warmup_steps is not None:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)
+    if args.batch_size is not None:
+        cfg = replace(cfg, batch_size=args.batch_size)
     if args.rvq_targets is not None:
         cfg = replace(cfg, jepa=replace(cfg.jepa, rvq_targets=args.rvq_targets))
     if args.max_steps is not None:
@@ -69,12 +84,19 @@ def main(argv=None) -> int:
         cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
     elif args.keep_weight != 0:
         ap.error("--keep-weight requires --keep-calibration")
-    print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}, "
-          f"dispositivo {args.device}, {len(scales)} scale di sessione, ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}",
-          flush=True)
-    summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
-                      time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s, init_from=args.init_from)
-    print(json.dumps(summary), flush=True)
+    if main_process:
+        print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}"
+              + (f" globale su {ctx.world_size} processi" if ctx else "") + f", dispositivo {args.device}, {len(scales)} scale di sessione, "
+              f"ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}", flush=True)
+    try:
+        summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
+                          time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s, init_from=args.init_from,
+                          dist=ctx, ddp_local_mean_for_tests=args.ddp_local_mean_collaudo)
+        if main_process:
+            print(json.dumps(summary), flush=True)
+    finally:
+        if ctx is not None:
+            torch.distributed.destroy_process_group()
     return 0
 
 

@@ -192,6 +192,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Aggiornate entrambe le sezioni di questo registro. Solo documentazione: nessun push, nuovo job, nuovo worktree GPT o modifica
   al codice scientifico; worktree di Claude non modificato. Review del contratto con Astra, non collaudo DDP/CUDA/deployment.
 
+### 2026-10-09 | Claude | Impianto DDP del ciclo di training (senza il contratto delle loss) | Base: e7d70eb
+
+- `training/run.py`: `DistContext` e `dist_from_env` (torchrun); lo studente dentro un modulo `_Objective` il cui forward calcola le loss, avvolto da `DistributedDataParallel` (`find_unused_parameters=True`); teacher fuori da DDP e allineato al processo 0 con un broadcast esplicito dopo la sincronizzazione dello studente. `cfg.batch_size` = batch GLOBALE, diviso fra i processi; uno stream di dati per processo; un generatore del dropout per processo, salvato nel checkpoint (`rank_rng`, `world_size`); ripresa solo con lo stesso numero di processi. Arresti coordinati (`all_reduce` MAX): limite di tempo, perdita non finita su un qualunque processo (nessuno fa il backward), allarme deciso dal processo 0 e trasmesso. File, log e diagnostiche solo dal processo 0; record del passo dai record di tutti i processi (finestre, classi e virtuali sommati, attesa sui dati massima e media, memoria GPU massima).
+- **DDP rifiutato** finche' manca il contratto delle loss (`jepa_loss_terms`): la perdita per processo oggi e' la media locale. Solo per i collaudi dell'impianto c'e' `--ddp-local-mean-collaudo` (registrato nel summary). Rifiutati anche `pairing_audit` e `keep_grad_every` sotto DDP (percorsi appositi da fare). Il percorso a un processo e' invariato: stessi campi, stesso ordine nei record.
+- `scripts/train_jepa.py`: `--distributed`, `--ddp-local-mean-collaudo`, `--batch-size` (globale). `scripts/slurm/train_ddp.sbatch`: un nodo, 4 GPU, torchrun, `CODE_DIR`; non lanciato (preventivo e via di Simone prima).
+- Test `tests/cpu/test_training_ddp.py` (6, DDP `gloo` a 2 processi sulla CPU, piu' torchrun vero): pesi e teacher uguali fra processi gia' al primo forward anche con pesi perturbati su un processo prima della sincronizzazione (il test fallisce togliendo il broadcast del teacher: verificato), batch globale, un solo scrittore, checkpoint con i generatori di ogni processo, ripresa, ripresa con un numero diverso di processi rifiutata, NaN su un solo processo che ferma tutti allo stesso passo col checkpoint valido conservato, limite di tempo coordinato, CLI sotto torchrun. Suite CPU: 776 passati prima dell'ultimo test (771 + 5 della riconciliazione); con questo 777 attesi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -360,3 +367,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   criteri di resume prima del lavoro distribuito. Il cap25GPUh non autorizza job/retry indistinti; costi CPU da approvare separatamente.
 - Nessun push main su Leonardo mentre il checkout e' usato da job pendenti/attivi; nessuna conversione in corsa di P1/P2 a CODE_DIR.
   Stato/ID transitori restano fuori Git. Questo aggiornamento del registro non attribuisce nuova provenienza ai job gia' lanciati.
+
+### 2026-10-09 | Claude | Impianto DDP del ciclo di training (senza il contratto delle loss) | Base: e7d70eb
+
+- Sulla review di GPT (main 4a8d710) per la parte DDP: il teacher si allinea dopo lo studente (broadcast esplicito, provato al primo forward); la diagnostica sul processo 0 gira in eval e senza gradiente sul modulo non avvolto, quindi non attiva gli hook di DDP; il modello non usa generatori casuali fuori dall'inizializzazione (unica casualita' in training: il dropout del muscolo, spento in eval), quindi la diagnostica non sposta gli stati casuali. Le tolleranze CPU/GPU dei test d'equivalenza vanno fissate prima, quando ci sara' il contratto.
+- Le metriche delle loss sotto DDP sono la media delle medie locali (provvisorio, scritto nel codice); diventano somme / conteggi globali col contratto.
+- La ripresa sotto DDP ripristina pesi, ottimizzatore e generatori di ogni processo, ma lo stream dei dati riparte come oggi (seme dal passo): la ripresa esatta dei batch (contratto rev. 2) non e' ancora implementata.
+- Le tre correzioni chieste da GPT sul deploy (stato riletto sotto lock, errori di git e chmod che fermano il job, lock del ledger) sono in corso in parallelo e arriveranno in un commit a parte.
+- Disco del Mac quasi pieno (ENOSPC alle 15:43; liberati ~200 MB di cartelle temporanee dei miei test col via di Simone; poi 1-2,5 GB liberi). Gli scratch di Camargo nella cartella del repo occupano 11,8 GB: decide Simone.
