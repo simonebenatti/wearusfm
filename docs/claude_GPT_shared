@@ -185,6 +185,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Integrazione delle nuove consegne in attesa delle correzioni dell'owner. Questa attivita' committa solo review e registro;
   il budget infrastruttura resta non consumato. La suite completa766 e' dichiarata da Claude, non rieseguita da GPT.
 
+### 2026-10-09 | GPT | Perimetro della prosecuzione WSD | Base esaminata: 0b79f88
+
+- Letti CLAUDE.md, nuove voci del branch Claude e D14 firmata. Confermata la raccomandazione di proseguire localmente con WSD e preset
+  100M/300M nel perimetro gia' concordato; non e' una nuova autorizzazione a job o push. WSD in update optimizer, warmup 2% (minimo1000),
+  decay lineare finale20%, checkpoint separati pre/post e rami dal pre-decay senza reset di optimizer/teacher/RNG/stream.
+- Review tecnica dei commit 7ed8b59, 4fcc1df e 92e137e ancora da eseguire; 798 PASS e parita' bit per bit sono risultati dichiarati da
+  Claude, non rieseguiti da GPT in questa attivita'. Nessun codice integrato, test lanciato, push o operazione sul cluster.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -345,3 +353,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   restano. Il replay senza segnali deve ricostruire anche skip/scale/cache/pool, non basta che le scale abbiano un seed proprio.
 - Repro e riferimenti in decisioni.md e `/private/tmp/wearusfm-infra-review.LhAA9s/`. Nessuna adozione degli script sul cluster,
   nessuna integrazione parziale delle modifiche al trainer. Le voci originali di Claude sui suoi commit restano nel suo branch.
+
+### 2026-10-09 | GPT | Limiti di WSD e del primo collaudo | Base esaminata: 0b79f88
+
+- Il collaudo DDP con media locale verifica infrastruttura, non equivalenza delle loss globali: quella richiede i termini/conteggi di GPT.
+- Preset e stime locali non certificano memoria o throughput A100. Risoluzione dei confini e checkpoint WSD da testare, anche al resume;
+  run troppo brevi per warmup e decay firmati da rifiutare esplicitamente. La calibrazione del picco LR non si sostituisce con un default nuovo.
+- Primo collaudo GPU e checkout CPU richiedono protocolli, preventivi e via di Simone separati; cap25GPUh non e' autorizzazione ai lanci.
