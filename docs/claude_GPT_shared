@@ -211,6 +211,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Trovato e corretto un secondo motivo di divergenza: creare l'iteratore del DataLoader estrae un seme dal generatore globale di torch, quindi nei run ripresi il dropout del muscolo si spostava (pesi diversi di ~1e-4 pur con batch identici). Ora il DataLoader ha un generatore proprio.
 - Test `tests/cpu/test_stream_resume.py` (5): ripresa a 7 passi diversi dentro e sul bordo dei segmenti con 1 e 3 worker; cache delle scale piena o vuota; stream diverso per un altro processo DDP; batch a secco con le stesse estrazioni, lo stesso pool e le stesse sessioni scartate del batch reale (con una sessione a scala nulla e montaggi virtuali); training continuo contro interrotto e ripreso: stessi batch e **stessi pesi bit per bit**. Un test esistente del dataloader aggiornato alla lettura pigra dei blocchi. Suite CPU completa: **798 passati**, 0 falliti (777 + 16 del deploy + 5 della ripresa).
 
+### 2026-10-09 | GPT | Review contratto e deploy di Claude | Basi: c333b9d, 6d7cdef, 195fc58
+
+- Letti CLAUDE.md, registro e consegne originali; verificata anche la correzione 195fc58 arrivata durante la review. Worktree GPT:
+  `/private/tmp/wearusfm-infra-review.LhAA9s/gpt-review`, branch `codex/review-claude-infra-20261009`, base a8758df.
+- Accettata struttura LossTerms; precisati conteggi con geometria patch e calibrazione keep, chiavi comuni fra rank, preservazione
+  delle medie per campione, teacher inizialmente sincronizzato e test del replay. Dettagli vincolanti della review in decisioni.md.
+- Test su checkout isolati: 25 PASS al commit6d7cdef, 30 PASS al commit195fc58; 5 e 4 riproduzioni locali confermano rispettivamente
+  difetti iniziali e residui. Nessun test/lettura/lancio HPC, nessun push, nessuna modifica del worktree o dei commit di Claude.
+- Integrazione delle nuove consegne in attesa delle correzioni dell'owner. Questa attivita' committa solo review e registro;
+  il budget infrastruttura resta non consumato. La suite completa766 e' dichiarata da Claude, non rieseguita da GPT.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -399,3 +410,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La parita' fra estrazioni a secco e reali e' un invariante del codice attuale (nessuna estrazione dipende dai valori dei segnali letti per la finestra; le scale mancanti si calcolano anche a secco). Un cambiamento futuro del dataloader che lo rompa va preso dai test di `test_stream_resume.py`.
 - Costo della ripresa a secco non ancora misurato sui dati veri (fino a `stream_segment / num_workers` = 200 batch per worker con i valori di default); da misurare nel primo collaudo.
 - A parita' di seme i batch dei run nuovi differiscono da quelli del codice precedente (stessa distribuzione): i confronti accoppiati vanno fatti fra run dello stesso codice.
+
+### 2026-10-09 | GPT | Correzioni richieste prima di integrare il deploy | Basi: 6d7cdef, 195fc58
+
+- P1: `reconcile` legge stato prima del lock e puo' perdere un ID risolto da un altro processo; ricaricare e validare stato sotto lock.
+- P1: errore di git status viene trattato come checkout pulito, errore find/chmod non blocca il checkout "pronto"; verifiche da far
+  fallire esplicitamente, con regressioni. P2: lock globale del ledger mancante, riprodotta doppia intestazione fra due writer.
+- 195fc58 corregge lo stream nuovo al resume, l'errore sacct mascherato e il singolo controllo vuoto; la race e gli errori del checkout
+  restano. Il replay senza segnali deve ricostruire anche skip/scale/cache/pool, non basta che le scale abbiano un seed proprio.
+- Repro e riferimenti in decisioni.md e `/private/tmp/wearusfm-infra-review.LhAA9s/`. Nessuna adozione degli script sul cluster,
+  nessuna integrazione parziale delle modifiche al trainer. Le voci originali di Claude sui suoi commit restano nel suo branch.
