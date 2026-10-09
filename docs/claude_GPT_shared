@@ -159,6 +159,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Verifica locale:23testCPU unici passati, incluse sondeP1/P2 complete sintetiche conaudit, pooling, bootstrap/conteggi,
   provenienza, cache modificate e confronto finale. SintassiBash,CLI,diffcheck passati. Nessun nuovo testCUDA prima dei lanci.
 
+### 2026-10-09 | Claude | Analisi del progetto, accordo sul lavoro in parallelo, worktree | Base: 8dad7e8
+
+- Letti questo registro e i commit di GPT da 0e8ba05 a 8dad7e8 (PSD, Step 1, sonda frozen, Perceiver, A/B e P1/P2 downstream). Su richiesta di Simone, analisi completa dei punti aperti: training multi-GPU e preset 100M/300M assenti, WSD (D14) non implementato, bracci delle ablation della finestra 1 non implementati, dataloader sopra il 2%, mancanza della baseline con encoder casuale, peso JEPA/ancore, endpoint quasi circolare dell'A/B spettrale, sonde di v10 §7 mancanti, spline del front-end (cieche sopra ~350 Hz, ridondanti con Fourier sotto, 24 kernel su 20 funzioni di base: misura locale).
+- Accordo sul lavoro in parallelo approvato da Simone («si a tutti e 4»): worktree e branch separati, GPT integratore su `main` tramite merge, eccezione per i checkout di campagna su Leonardo, 25 GPU-ora per la preparazione dell'infrastruttura. Registrato in `docs/decisioni.md` con le precisazioni tecniche concordate (contratto delle loss distribuite, batch 32 globale, WSD in aggiornamenti, test 1 contro 4 GPU, memoria del 300M, lock delle sottomissioni).
+- Creato il worktree `.claude/worktrees/claude-training-engine` (branch `worktree-claude-training-engine`, da 8dad7e8). Aggiornati `CLAUDE.md` (worktree, integrazione, proprietari dei file, riferimenti `deploy/`, eccezione dei checkout di campagna, budget, test nel worktree) e `.claude/agents/leonardo-ops.md` (eccezione dei checkout di campagna; modello Sonnet). Nessun job lanciato, nessun push.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -296,3 +302,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   non prova statistica di non-inferiorita'. P2split sovrapposti: SE deldeltaRMS, nessuna divisione per sqrt(3).
 - Nuovo commit di valutazione distinto da training; nientepush durante i job. JobID/status fuoriGit fino alla fine.
   Nessuntraining/retry/tuning aggiuntivo autorizzato. Loader3,394%, supporto500ms, dinamica e CapgMyo separati.
+
+### 2026-10-09 | Claude | Analisi del progetto, accordo sul lavoro in parallelo, worktree | Base: 8dad7e8
+
+- Il pacchetto `wearusfm` dell'ambiente `~/.venvs/wearusfm-tok` e' installato in modo editabile dal `main` canonico: nei worktree i test importano il codice di `main` se non si mette prima `src/` del worktree nel path (comando in `CLAUDE.md`). Vale per tutti e due.
+- Le regole nuove in `CLAUDE.md` e `leonardo-ops.md` stanno su questo branch: valgono per `main` solo dopo l'integrazione. Fino ad allora nessun checkout di campagna e nessun push di riferimenti `deploy/`.
+- Il contratto delle loss distribuite tocca `training/jepa.py` (di GPT) e `training/run.py` (mio): va concordato prima di scrivere DDP. Proposta in arrivo su questo branch.

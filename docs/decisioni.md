@@ -2356,3 +2356,43 @@ checkout congelato fino alla chiusura; jobID/status fuoriGit. Nuovo codice aggiu
 riusa encoder/preprocessing/sonde firmate. Preflight remoto read-only passato, nessunjob attivo.
 Verifica locale pre-lancio:23testCPU unici passati; P1/P2 completi sintetici conaudit, readout/sonda, pairing/counts,
 bootstrap/aggregazione, wrapper/cache/provenienza e confronto finale. Bash/CLI/diffcheck passati. Nessun nuovo testCUDA.
+
+## Lavoro in parallelo Claude / GPT: worktree, integrazione, deploy di campagna, budget (Simone, 09/10/2026: «si a tutti e 4»)
+
+Sulla proposta di GPT (divisione del lavoro) e due giri di review incrociata Claude / GPT. **Approvati:**
+1. **Worktree locali su branch separati**; `main` resta nella cartella canonica come punto d'integrazione; **GPT integratore unico** tramite
+   merge, senza squash o riscritture (restano gli SHA originali); review di Claude prima del deploy quando un'integrazione cambia la sua parte.
+   Divisione: **Claude** = motore di training (multi-GPU, WSD, checkpoint e ripresa, preset 100M/300M, dataloader e misura per fasi, deploy e
+   sottomissioni); **GPT** = obiettivi, valutazione, integrazione (A/B, baseline con encoder casuale, sonde fisiche e stratificate, confronto
+   JEPA / ancore, zona di bordo dei target). Proprietari dei file e regole in `CLAUDE.md`.
+2. **Eccezione di deploy su Leonardo:** checkout di campagna congelati, solo da commit gia' pubblicati (branch o tag `deploy/<nome>`, che non
+   toccano il working tree di `$WORK/wearusfm`), con procedura versionata eseguita da un job CPU su `lrd_all_serial`; nessuna modifica del
+   codice sul cluster; un checkout usato da job in coda o in esecuzione non si tocca; i launcher verificano `CODE_DIR`, SHA atteso e
+   checkout pulito, e importano codice e configurazioni da `CODE_DIR`. Aggiornati `CLAUDE.md` e `.claude/agents/leonardo-ops.md` (che vietava
+   ogni checkout remoto; passato anche da Haiku a Sonnet, dopo l'esaurimento del limite settimanale di Haiku del 07/10).
+3. **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora**, separato dal budget della finestra 1 e da quello del passo 6.
+   Non e' un'autorizzazione ai lanci: ogni prova si presenta con preventivo, si lancia col via di Simone, consuntivo qui.
+4. **Avvio:** worktree di Claude creato (`.claude/worktrees/claude-training-engine`, branch `worktree-claude-training-engine`, da 8dad7e8),
+   poi il contratto delle loss distribuite da concordare con GPT.
+
+**Precisazioni tecniche concordate** (da rispettare nell'implementazione, prima di qualunque prova):
+- **Contratto delle loss.** `masked_mean` fa la media dentro ogni finestra e poi fra le finestre con almeno un elemento valido: con piu' GPU,
+  la media dei gradienti per GPU non coincide con quella del batch globale. Per ogni componente (JEPA e ciascuna ancora, conteggi distinti,
+  pesi delle ancore invariati) si espongono la **somma delle medie per finestra** e il **numero di finestre valide**; il denominatore copre
+  **tutte le GPU e tutti i micro-batch dello stesso aggiornamento**. Con `loss_per_window=False` resta il comportamento attuale. Le riduzioni
+  in `jepa.py` restano di GPT; l'interfaccia si concorda e si congela prima.
+- **Batch 32 = 32 finestre globali** per aggiornamento (es. 4 GPU x 8, o 4 GPU x 4 x 2 accumuli), non 32 per GPU. Clipping, passo
+  dell'optimizer ed EMA una sola volta per aggiornamento; **WSD contato in aggiornamenti dell'optimizer**, non in micro-batch.
+- **Test d'accettazione DDP:** 1 GPU senza accumulo contro 4 GPU (anche con accumulo) sullo stesso batch globale: loss, gradienti, pesi ed
+  EMA entro tolleranze dichiarate prima; maschere eterogenee, una GPU senza target validi, parametri inutilizzati, arresto coordinato,
+  ripresa dello stream. La diagnostica dei gradienti con `torch.autograd.grad` (`run.py`) non e' compatibile col normale funzionamento di
+  DDP: percorso apposito.
+- **Memoria:** DDP replica il modello; il primo test del 300M deve arrivare almeno al primo aggiornamento AdamW (stati dell'optimizer
+  creati). Se non entra nemmeno col micro-batch minimo, si rivede il perimetro (oggi: DDP su un nodo, 4 GPU; FSDP e multinodo fuori).
+- **Sottomissioni:** prenotazione con lock (`mkdir` atomico sul Mac) e stato persistente (prenotato -> in sottomissione -> sottomesso con
+  ID, oppure ambiguo); ID logico nel `--comment`; uno stato ambiguo si riconcilia con `sacct`, mai cancellazione del lock e rilancio alla cieca.
+- **Dataloader:** il profilo per fasi si raccoglie gia' nelle prime prove; l'ottimizzazione dopo.
+- **Calendario:** prima lista dei job della finestra 1 entro il 14/10 (GPT i bracci scientifici, Claude costo e fattibilita' per job),
+  congelamento con la firma di Simone entro il 25/10. Tappe di Claude: ~14/10 deploy di campagna, launcher con `CODE_DIR`, sottomissione con
+  lock, DDP su 4 GPU con test d'equivalenza; ~20/10 WSD e preset 100M/300M con memoria e throughput misurati; ~25/10 dataloader sotto il 2%
+  se la misura lo permette; 26-31/10 prove su `dbg` dei job della finestra 1.
