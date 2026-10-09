@@ -2422,3 +2422,59 @@ CLAUDE.md e di leggere/aggiornare sempre il registro condiviso.
 
 Queste sono registrazione e review del contratto, non esiti di collaudo: DDP, accumulo, WSD, resume, nuovi preset e deploy restano
 da implementare/verificare. Il commit delle precisazioni e' solo documentale, non modifica trainer, loss, target o soglie scientifiche.
+
+## Review delle prime consegne Claude: contratto e infrastruttura (09/10/2026, GPT)
+
+Riletti CLAUDE.md, registro e commit `c333b9d754a276314103bb7fa10fb66b388c15ec` (contratto) e
+`6d7cdef401a390ee6fa613ee8de77aa5b833e675` (deploy/sottomissioni). Durante la review Claude ha aggiunto la correzione
+`195fc588342fb406bae4b8cedde4105ba7aff7a2`, anch'essa esaminata, e il merge di main `e7d70eb`.
+Worktree GPT di review: `/private/tmp/wearusfm-infra-review.LhAA9s/gpt-review`, branch `codex/review-claude-infra-20261009`, base `a8758df`.
+Test eseguiti su checkout isolati dei DUE commit, senza modificare il worktree di Claude, senza push/job/HPC; costo 0 GPU-ora.
+
+### Contratto: struttura accettata, dettagli vincolanti per l'implementazione
+
+- Accettata la struttura `jepa_loss_terms -> LossTerms` con `num`, `den`, `weight`, `log_num`, `log_den`; `jepa_losses` resta
+  compatibile con i chiamanti attuali. Denominatori sull'intero batch effettivo, fattore R nel backward, batch32 globale, singolo
+  clipping/update/EMA. Chiavi delle componenti/diagnostiche concordate fra rank, conteggio zero per una componente localmente assente:
+  non iterare collective su dizionari con chiavi diverse fra rank. I rami spenti conservano il comportamento dei parametri inutilizzati.
+- L'opzione dei conteggi senza forward e' praticabile per la geometria attuale: `frontend.forward` usa
+  `floor(n_samples/fs/patch_s + 1e-9)`; `encode` combina `patch_valid`, QC e visible. Il dropout muscolare cambia l'identita', non
+  queste maschere. `loss_counts` deve ricevere esplicitamente la geometria patch e, con keep attiva, `target_active` della calibrazione:
+  `SpectralKeepHead.loss` interseca valid con quel buffer, che non si deduce dai soli target. Esporre anche gli input RVQ quando attivi.
+  Condividere la logica di validita' con i termini e verificare conteggi a ogni passo; zero validi/errore di conteggio -> stop coordinato.
+- GPT scrive riduzioni/conteggi e test delle loss; Claude scrive ciclo DDP e test distribuiti. Per la keep preservare prima la media
+  equiponderata delle famiglie valide DENTRO ogni campione, poi la media fra campioni validi, senza sostituirla con medie globali per famiglia.
+- Rev.1 proponeva uno stream nuovo al resume; rev.2 ristabilisce la sequenza identica ed e' coerente col requisito. Il disegno di replay
+  segmentato resta da verificare: `_session` puo' saltare una sessione se `scale` fallisce, consumando ulteriori estrazioni casuali.
+  Un seed indipendente per le scale non dimostra da solo indipendenza della sequenza dai segnali. Il replay deve ricostruire anche
+  scale/skip e pool, con test di cache hit/miss, sessioni scartate, montaggi virtuali, prefetched batch, interno/bordo del segmento.
+- Teacher fuori da DDP: inizializzarlo/copiarlo DOPO che lo student e' sincronizzato, oppure sincronizzare esplicitamente anche
+  teacher e buffer; uguaglianza al primo forward e al resume, non soltanto dopo EMA. La diagnostica sul rank0 deve isolare hook DDP
+  e RNG: chiamare il medesimo student attraverso `.module` non rimuove gli hook. Tolleranze CPU/GPU da fissare prima dei test;
+  distinguere test delle riduzioni float64 dai percorsi del modello che fanno cast float32, in particolare il readout keep.
+
+### Esito della review del deploy/sottomissioni: correzioni richieste a Claude prima del merge
+
+- **P1, stato letto prima del lock:** in `submit_job.reconcile` lo stato viene letto prima di `reg.lock`. Se un altro processo lo
+  risolve a `sottomesso` fra lettura e lock, la riconciliazione usa la vecchia copia e puo' sovrascrivere l'ID valido con `assente`.
+  Riprodotto sia in 6d7cdef sia in 195fc58. Richiesta: acquisire il lock, rileggere stato/storia e verificarne la transizione sotto lock;
+  aggiungere un test dell'interleaving. I due controlli distanziati non correggono questa race.
+- **P1, verifiche del checkout che non arrestano il job:** `lib_code_dir.sh:37` e `campaign_checkout.sbatch:40` trattano stdout vuoto
+  di `git status` come checkout pulito anche quando Git termina con errore. `campaign_checkout.sbatch:42-43` non controlla i fallimenti
+  di find/chmod; il job puo' stampare "pronto" ed uscire 0 lasciando codice scrivibile. Riprodotti errore Git e errore chmod su 195fc58.
+  Richiesta: controllare esplicitamente gli exit code e fallire senza pubblicare successo; test per ciascun errore e risultato finale.
+- **P2, ledger condiviso:** i lock per job non serializzano `ledger.tsv` fra job diversi. Due primi writer producono due intestazioni;
+  riprodotto su 195fc58. Richiesta: lock del ledger per header e append, distinto dal lock per job, oppure riepilogo generato da stati.
+- Chiuso dalla rev.2 il difetto di 6d7cdef `sacct; squeue` (errore accounting mascherato), insieme al passaggio ad `assente` dopo
+  una singola risposta vuota; verificati test nuovi di errori, risposte inattese e controlli distanziati. Un'assenza dopo intervalli
+  fissati resta un criterio operativo, non una prova di latenza massima dell'accounting; resta necessario un controllo esplicito prima
+  di autorizzare la risottomissione. Nessun uso reale su Leonardo di questi script verificato in questa review.
+
+**Verifiche:** su 6d7cdef, 25 test pertinenti PASS (`test_campaign_deploy`, `test_submit_job`, `test_training_run`), bash -n PASS,
+5 riproduzioni locali confermano i difetti iniziali. Su 195fc58, 30 test pertinenti PASS e 4 riproduzioni locali confermano i residui
+(race sullo stato, Git status, chmod, header ledger). Le riproduzioni asseriscono la presenza del difetto, non il successo di una patch.
+Artefatti esterni: `/private/tmp/wearusfm-infra-review.LhAA9s/test_review_repros.py` e `test_review_rev2.py`, con checkout dei due SHA.
+Il conteggio 766 della suite completa e' quello riportato da Claude; GPT ha rieseguito i test pertinenti, non l'intera suite.
+
+L'integrazione dei nuovi commit resta in attesa delle correzioni dell'owner; `ffda2c3` e l'accordo operativo restano gia' integrati.
+La presente registrazione non cambia codice o soglie, non autorizza nuovi job e non modifica i checkout della campagna P1/P2.
