@@ -1,6 +1,6 @@
 # Registro condiviso Claude / GPT
 
-Registro cronologico di coordinamento per Simone. Ogni agente legge questo file prima di lavorare e, a fine attivita', aggiunge una voce in entrambe le sezioni senza cancellare lo storico. Ogni voce indica data, agente e commit di riferimento, distinguendo lavoro svolto, problemi aperti e verifiche non eseguite. Scritture e operazioni Git sul checkout condiviso si eseguono un agente alla volta.
+Registro cronologico di coordinamento per Simone. Ogni agente legge questo file prima di lavorare e, a fine attivita', aggiunge una voce in entrambe le sezioni senza cancellare lo storico. Ogni voce indica data, agente e commit di riferimento, distinguendo lavoro svolto, problemi aperti e verifiche non eseguite. Dal 09/10/2026 ogni agente scrive nel proprio worktree/branch; GPT integra un ramo alla volta su main canonico, conservando commit e voci testualmente. Un solo writer per checkout/file condiviso; anche gli append possono creare conflitti, da risolvere senza perdere le voci.
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
@@ -183,6 +183,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `scripts/submit_job.py`, riconciliazione riscritta: `sacct` e `squeue` in due chiamate separate (prima erano un solo comando, e l'uscita era solo quella di `squeue`: un errore di `sacct` passava inosservato); ogni riga deve essere leggibile e avere come nome l'ID logico, altrimenti lo stato resta `ambiguo` e non si registra nulla. Una risposta vuota e' solo un **controllo d'assenza**: lo stato passa ad `assente` con almeno due controlli vuoti, il primo almeno 10 minuti dopo il tentativo e l'ultimo almeno 10 minuti dopo il primo. Da `assente` si risottomette solo con un flag distinto, `--dopo-assenza-verificata`; `--dopo-rifiuto` vale solo per i rifiuti espliciti di `sbatch`. Un `duplicato` non si risottomette mai. Test: 9 -> 14 (job trovato in accounting o solo in coda, duplicati, tre risposte non affidabili, controlli d'assenza nel tempo con orologio simulato).
 - `docs/contratto_loss_distribuite.md`, revisione 2, punto 4: la ripresa deve dare **gli stessi batch** del run continuo (stesso numero di processi e worker). Disegno proposto: stato di ogni worker funzione di (seme, processo, worker, segmento di S passi), pool azzerato a ogni segmento, ricostruzione alla ripresa rigiocando a secco le estrazioni del segmento corrente; test sugli hash di tutti i batch, continuo contro interrotto. Da concordare con GPT prima di implementarlo. Nessun job, nessun push.
 
+### 2026-10-09 | GPT | Integrazione accordo operativo Claude/GPT | Base: ffda2c3dad22bbfbf72a5758a830523246a5efae
+
+- Letti registro, CLAUDE.md e commit di Claude ffda2c3 nel suo worktree. Su richiesta di Simone, ritirata soltanto la bozza GPT
+  sovrapposta e integrato il commit di Claude su main locale tramite merge fast-forward: SHA e voci originali conservati.
+- Registrata la conferma di Simone in decisioni.md; precisati contratto keep/rami opzionali, denominatori dell'accumulo, resume,
+  costo/limite del deploy CPU e preflight dei ref. Allineata l'eccezione sbatch nelle regole dei test; preservati Sonnet e import src.
+- Aggiornate entrambe le sezioni di questo registro. Solo documentazione: nessun push, nuovo job, nuovo worktree GPT o modifica
+  al codice scientifico; worktree di Claude non modificato. Review del contratto con Astra, non collaudo DDP/CUDA/deployment.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -344,3 +353,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Errore mio nel commit 6d7cdef, ora corretto: in `--riconcilia` una sola risposta vuota portava ad `assente`, e da li' bastava `--dopo-rifiuto` per risottomettere: con l'accounting in ritardo sarebbe stato un doppio lancio. In piu' `sacct; squeue` in un solo comando nascondeva un errore di `sacct`. Il 6d7cdef non e' stato usato (nessun job sottomesso con lo script).
 - Anche con la correzione resta un rischio residuo: un accounting in ritardo di oltre 10-20 minuti. Il controllo d'assenza guarda sia `sacct` sia `squeue` (che mostra i job in coda e in esecuzione senza passare dall'accounting), quindi un job vivo dovrebbe comparire comunque; non verificato su Leonardo.
 - La ripresa esatta dei batch non c'e' ancora: oggi, anche su una GPU, la ripresa apre uno stream nuovo (seme dal passo) e perde lo stato dei worker (pool di blocchi). Il sanity 59318048 (10.000 passi in un solo job) e i training dell'A/B (senza resume per protocollo) sono run continui, quindi non ne sono toccati.
+
+### 2026-10-09 | GPT | Limiti dell'integrazione operativa | Base: ffda2c3dad22bbfbf72a5758a830523246a5efae
+
+- Accordo ora integrato localmente; non certifica infrastruttura implementata. Congelare firma delle loss, conteggi dei validi e
+  criteri di resume prima del lavoro distribuito. Il cap25GPUh non autorizza job/retry indistinti; costi CPU da approvare separatamente.
+- Nessun push main su Leonardo mentre il checkout e' usato da job pendenti/attivi; nessuna conversione in corsa di P1/P2 a CODE_DIR.
+  Stato/ID transitori restano fuori Git. Questo aggiornamento del registro non attribuisce nuova provenienza ai job gia' lanciati.
