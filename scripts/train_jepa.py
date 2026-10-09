@@ -47,6 +47,15 @@ def main(argv=None) -> int:
     ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
     ap.add_argument("--rvq-targets", choices=["slab", "channel"], default=None,
                     help="finestre dell'ancora RVQ; 'channel' e' SOLO DIAGNOSTICA (v10 §6.3: nel training mai sul masking di canale)")
+    ap.add_argument("--schedule", choices=["constant", "wsd"], default="constant",
+                    help="learning rate: 'constant' (warmup poi costante, il sanity) o 'wsd' (D14: warmup, stabile, decay lineare a zero)")
+    ap.add_argument("--total-steps", type=int, default=None, help="wsd: aggiornamenti totali del run (fine del decay); max_steps = questo")
+    ap.add_argument("--steps-at-d", type=int, default=None,
+                    help="wsd: aggiornamenti a D, per il warmup di D14 (2%%, almeno 1.000); uguale in tutti i rami. In alternativa --warmup-steps")
+    ap.add_argument("--decay-fraction", type=float, default=0.2, help="wsd: frazione finale di decay (D14: 0,2)")
+    ap.add_argument("--keep-checkpoints", default="", help="wsd: passi della fase stabile, separati da virgole, di cui tenere il checkpoint")
+    ap.add_argument("--branch-from", type=Path, default=None,
+                    help="un ramo (pilot sulle epoche, continuazione a 2D): stato completo da un checkpoint della fase stabile, --out-dir nuova")
     ap.add_argument("--distributed", action="store_true",
                     help="DDP sotto torchrun, un processo per GPU (RANK/WORLD_SIZE/LOCAL_RANK dall'ambiente); il batch del preset e' GLOBALE")
     ap.add_argument("--ddp-local-mean-collaudo", action="store_true",
@@ -70,6 +79,16 @@ def main(argv=None) -> int:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)
     if args.batch_size is not None:
         cfg = replace(cfg, batch_size=args.batch_size)
+    if args.schedule == "wsd":
+        if args.total_steps is None:
+            ap.error("--schedule wsd richiede --total-steps")
+        if (args.steps_at_d is None) == (args.warmup_steps is None):
+            ap.error("--schedule wsd: il warmup da --steps-at-d (D14) oppure da --warmup-steps, uno dei due")
+        warmup = R.wsd_warmup_steps(args.steps_at_d) if args.steps_at_d is not None else args.warmup_steps
+        keep = tuple(int(x) for x in args.keep_checkpoints.split(",") if x.strip())
+        cfg = R.with_wsd(cfg, args.total_steps, warmup_steps=warmup, keep_checkpoints=keep, decay_fraction=args.decay_fraction)
+    elif args.total_steps is not None or args.steps_at_d is not None or args.keep_checkpoints:
+        ap.error("--total-steps, --steps-at-d e --keep-checkpoints valgono con --schedule wsd")
     if args.rvq_targets is not None:
         cfg = replace(cfg, jepa=replace(cfg.jepa, rvq_targets=args.rvq_targets))
     if args.max_steps is not None:
@@ -91,7 +110,7 @@ def main(argv=None) -> int:
     try:
         summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
                           time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s, init_from=args.init_from,
-                          dist=ctx, ddp_local_mean_for_tests=args.ddp_local_mean_collaudo)
+                          dist=ctx, ddp_local_mean_for_tests=args.ddp_local_mean_collaudo, branch_from=args.branch_from)
         if main_process:
             print(json.dumps(summary), flush=True)
     finally:

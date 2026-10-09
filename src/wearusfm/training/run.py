@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import time
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
@@ -44,6 +45,36 @@ class AlarmRule:
 
 
 @dataclass(frozen=True)
+class Schedule:
+    """Forma del learning rate, in aggiornamenti dell'optimizer (decisione del 09/10/2026: mai in micro-batch). Il warmup lineare e' sempre
+    `RunConfig.warmup_steps`.
+    - "constant": warmup e poi il picco fino alla fine (il sanity e il pilota A/B, come sono stati collaudati);
+    - "wsd" (D14, firmata il 04/10/2026): warmup, fase stabile al picco, **decay lineare a zero sul `decay_fraction` finale** di
+      `total_steps`. Il decay comincia all'aggiornamento `decay_start` = total_steps - round(decay_fraction * total_steps); lì si salva il
+      checkpoint pre-decay. `keep_checkpoints`: passi della fase stabile in cui tenere una copia del checkpoint, da cui partono i rami di
+      decay del pilot sulle epoche e la continuazione a 2D (`train(..., branch_from=...)`)."""
+    kind: str = "constant"
+    total_steps: int | None = None
+    decay_fraction: float = 0.2
+    keep_checkpoints: tuple[int, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.kind not in ("constant", "wsd"):
+            raise ValueError(f"schedule {self.kind!r}: 'constant' o 'wsd'")
+        if self.kind == "wsd":
+            if not self.total_steps or self.total_steps < 1 or not 0.0 < self.decay_fraction <= 1.0:
+                raise ValueError("wsd: servono total_steps >= 1 e 0 < decay_fraction <= 1")
+            if any(not 0 < s <= self.decay_start for s in self.keep_checkpoints):
+                raise ValueError(f"wsd: i checkpoint da tenere stanno nella fase stabile (0, {self.decay_start}]: {self.keep_checkpoints}")
+        elif self.total_steps is not None or self.keep_checkpoints:
+            raise ValueError("constant: total_steps e keep_checkpoints valgono solo per 'wsd'")
+
+    @property
+    def decay_start(self) -> int | None:
+        return None if self.kind != "wsd" else self.total_steps - int(round(self.decay_fraction * self.total_steps))
+
+
+@dataclass(frozen=True)
 class RunConfig:
     model: FMConfig
     jepa: JEPAConfig
@@ -68,6 +99,23 @@ class RunConfig:
     pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
     # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
     stream_segment: int = 1200
+    schedule: Schedule = field(default_factory=Schedule)
+
+
+def wsd_warmup_steps(steps_at_d: int) -> int:
+    """D14: warmup lineare sul 2% dei passi a D, almeno 1.000. Nel pilot e nella continuazione a 2D il warmup resta quello di D per tutti i
+    rami: si calcola una volta e si passa esplicito."""
+    return max(1000, int(round(0.02 * steps_at_d)))
+
+
+def with_wsd(cfg: RunConfig, total_steps: int, *, warmup_steps: int, keep_checkpoints: tuple[int, ...] = (),
+             decay_fraction: float = 0.2) -> RunConfig:
+    """Lo schedule WSD di D14 su `total_steps` aggiornamenti; il run finisce li' (`max_steps` = `total_steps`). Checkpoint con nome:
+    `checkpoint_predecay.pt` (a `decay_start`), `checkpoint_postdecay.pt` (a `total_steps`), `checkpoint_step<N>.pt` (fase stabile)."""
+    out = replace(cfg, warmup_steps=warmup_steps, max_steps=total_steps,
+                  schedule=Schedule("wsd", total_steps, decay_fraction, tuple(sorted(set(keep_checkpoints)))))
+    _check_wsd(out)
+    return out
 
 
 def sanity_config(max_steps: int = 20000) -> RunConfig:
@@ -247,8 +295,47 @@ def _merge_records(parts: list[dict]) -> dict:
 
 # --- ciclo ---------------------------------------------------------------------------------------------------------------------------
 
+def _check_wsd(cfg: RunConfig) -> None:
+    """Un run WSD troppo corto per la forma firmata si rifiuta: il decay non comincia prima della fine del warmup e ha almeno un passo."""
+    s = cfg.schedule
+    if cfg.max_steps > s.total_steps:
+        raise ValueError(f"wsd: max_steps {cfg.max_steps} oltre total_steps {s.total_steps} (dopo il decay il learning rate e' 0)")
+    if s.total_steps - s.decay_start < 1:
+        raise ValueError(f"wsd: total_steps {s.total_steps} troppo corto, nessun passo di decay con decay_fraction {s.decay_fraction}")
+    if s.decay_start < cfg.warmup_steps:
+        raise ValueError(f"wsd: il decay comincerebbe (passo {s.decay_start}) prima della fine del warmup ({cfg.warmup_steps} passi): "
+                         "run troppo corto per lo schedule di D14")
+
+
+def _check_branch(cfg: RunConfig, state: dict, source: Path) -> None:
+    """Un ramo (pilot sulle epoche, continuazione a 2D; D14) e' identico a un run fatto da zero con lo schedule nuovo solo se: tutto il resto
+    della configurazione e' uguale (stesso warmup e stesso picco compresi), il checkpoint e' della fase stabile del run d'origine e cade
+    anche nella fase stabile del ramo, e lo stream dei dati del checkpoint e' ripetibile."""
+    old, new = state.get("config", {}), config_to_dict(cfg)
+    differ = sorted(k for k in set(old) | set(new) if k not in ("schedule", "max_steps") and old.get(k) != new.get(k))
+    if differ:
+        raise ValueError(f"ramo da {source}: configurazione diversa dall'origine in {differ}; cambiano solo schedule e max_steps")
+    step = int(state["step"])
+    src = Schedule(**{**old["schedule"], "keep_checkpoints": tuple(old["schedule"].get("keep_checkpoints", ()))}) if old.get("schedule") \
+        else Schedule()
+    if src.kind == "wsd" and step > src.decay_start:
+        raise ValueError(f"ramo da {source}: il checkpoint (passo {step}) e' dentro il decay dell'origine (da {src.decay_start})")
+    if cfg.schedule.kind != "wsd" or step > cfg.schedule.decay_start:
+        raise ValueError(f"ramo da {source}: serve uno schedule wsd il cui decay cominci dopo il passo {step} del checkpoint")
+    if state.get("stream") is None:
+        raise ValueError(f"ramo da {source}: checkpoint senza lo stato dello stream, la sequenza dei batch non si ripete")
+
+
 def _lr_at(step: int, cfg: RunConfig) -> float:
-    return cfg.lr * min(1.0, (step + 1) / max(1, cfg.warmup_steps))
+    """Learning rate dell'aggiornamento `step` (0 = il primo). Warmup lineare; con "wsd", dall'aggiornamento `decay_start` il fattore scende
+    linearmente: 1 - (step - decay_start) / passi di decay, cioe' 1 al primo aggiornamento del decay e 1 / passi di decay all'ultimo (dopo,
+    a `total_steps`, sarebbe 0: il run finisce li')."""
+    lr = cfg.lr * min(1.0, (step + 1) / max(1, cfg.warmup_steps))
+    s = cfg.schedule
+    if s.kind == "wsd" and step >= s.decay_start:
+        n_decay = s.total_steps - s.decay_start
+        lr *= max(0.0, 1.0 - (step - s.decay_start) / max(1, n_decay))
+    return lr
 
 
 def _to_device(inp, visible, rvq_on, device):
@@ -261,7 +348,8 @@ def _to_device(inp, visible, rvq_on, device):
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
-          init_from: Path | None = None, dist: DistContext | None = None, ddp_local_mean_for_tests: bool = False) -> dict:
+          init_from: Path | None = None, dist: DistContext | None = None, ddp_local_mean_for_tests: bool = False,
+          branch_from: Path | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
     il passo difettoso non aggiorna optimizer/EMA e non viene contato.
@@ -300,7 +388,20 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     ckpt = out_dir / "checkpoint.pt"
     if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
         raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
+    if cfg.schedule.kind == "wsd":
+        _check_wsd(cfg)
     resume_state = torch.load(ckpt, map_location="cpu", weights_only=False) if ckpt.exists() else None
+    default_schedule = json.loads(json.dumps(asdict(Schedule()), default=list))  # i checkpoint di prima del WSD: schedule costante
+    if resume_state is not None and resume_state.get("config", {}).get("schedule", default_schedule) != config_to_dict(cfg)["schedule"]:
+        raise ValueError("ripresa con uno schedule diverso da quello del checkpoint: per cambiarlo si fa un ramo in una cartella nuova "
+                         "(branch_from)")
+    branch = None
+    if resume_state is None and branch_from is not None:  # un ramo: lo stato completo di un checkpoint della fase stabile, cartella nuova
+        if init_from is not None or cfg.pairing_audit:
+            raise ValueError("branch_from esclude init_from e pairing_audit")
+        resume_state = torch.load(branch_from, map_location="cpu", weights_only=False)
+        _check_branch(cfg, resume_state, branch_from)
+        branch = {"from": str(branch_from), "sha256": sha256_file(branch_from), "step": int(resume_state["step"])}
     if resume_state is not None and cfg.loader.multiscale_anchor:
         previous = resume_state.get("config", {})
         if previous.get("target_version") != cfg.target_version:
@@ -358,7 +459,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             torch.set_rng_state(state["torch_rng"].cpu())  # map_location porta anche lo stato casuale sulla GPU: set_rng_state vuole la CPU
             if torch.cuda.is_available() and state.get("cuda_rng") is not None:
                 torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
-        say(f"ripresa dal passo {step}")
+        say(f"ramo da {branch['from']} al passo {step}" if branch else f"ripresa dal passo {step}")
     else:
         if init_from is not None:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero: es. una diagnostica sul sanity
             state = torch.load(init_from, map_location="cpu", weights_only=False)
@@ -384,6 +485,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         }, indent=2))
     if ctx.is_main:
         (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
+        if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
+            (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
     scales = dict(scales or {})
     val = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
@@ -401,7 +504,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     reason, it = "max_steps", iter(data)
     numerical_failure = False
 
-    def save():
+    def save(names: tuple[str, ...] = ()):
+        """checkpoint.pt (la ripresa) e, se `names`, copie con nome che restano (pre-decay e fase stabile dello schedule WSD)."""
         extra = {}
         if ctx.active:  # tutti i processi partecipano; scrive solo il processo 0
             mine = {"torch_rng": torch.get_rng_state(),
@@ -416,6 +520,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                         "stream": stream, **extra},
                        ckpt.with_suffix(".tmp"))
             ckpt.with_suffix(".tmp").replace(ckpt)
+            for name in names:
+                tmp = out_dir / (name + ".tmp")
+                shutil.copyfile(ckpt, tmp)
+                tmp.replace(out_dir / name)
         if ctx.active:
             torch.distributed.barrier()
 
@@ -511,8 +619,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if ctx.is_main:
             metrics.write(json.dumps(rec) + "\n")
             metrics.flush()
-        if step % cfg.ckpt_every == 0:
-            save()
+        names = ()
+        if cfg.schedule.kind == "wsd":  # D14: il checkpoint pre-decay e quelli della fase stabile da cui partono i rami
+            names = (("checkpoint_predecay.pt",) if step == cfg.schedule.decay_start else ()) + \
+                    ((f"checkpoint_step{step:07d}.pt",) if step in cfg.schedule.keep_checkpoints else ()) + \
+                    (("checkpoint_postdecay.pt",) if step == cfg.schedule.total_steps else ())
+        if step % cfg.ckpt_every == 0 or names:
+            save(names)
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
             say(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
