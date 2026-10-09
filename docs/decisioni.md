@@ -2478,3 +2478,11 @@ Il conteggio 766 della suite completa e' quello riportato da Claude; GPT ha ries
 
 L'integrazione dei nuovi commit resta in attesa delle correzioni dell'owner; `ffda2c3` e l'accordo operativo restano gia' integrati.
 La presente registrazione non cambia codice o soglie, non autorizza nuovi job e non modifica i checkout della campagna P1/P2.
+
+## Warmup del WSD nei rami: D = 4 epoche (Simone, 09/10/2026: «si D=4 epoche»)
+
+D14 fissa il warmup al 2% dei passi a D (almeno 1.000). Nel pilot sulle epoche (un run a 8 epoche, rami di decay a 1, 2 e 4) e nella
+continuazione a 2D il warmup deve essere lo stesso per tutti i rami, altrimenti un ramo non coincide con un run fatto da zero (provato bit
+per bit sulla CPU, `tests/cpu/test_training_wsd.py`). **Deciso: D = 4 epoche per tutti i rami di un rung**, cioe' `--steps-at-d` = passi di
+4 epoche (al 30M con batch 32: ~92.600 -> warmup 1.852, come nei fogli firmati). Implementazione: `training/run.py` (`Schedule`, `with_wsd`,
+`wsd_warmup_steps`, `branch_from`), commit 56bc7e6 sul branch di Claude.

@@ -23,7 +23,8 @@ from wearusfm.training import run as R  # noqa: E402
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--preset", choices=["sanity", "small"], required=True)
+    ap.add_argument("--preset", choices=["sanity", "small", "30m", "100m", "300m"], required=True,
+                    help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER: proposta da firmare)")
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--root", type=Path, action="append", required=True)
     ap.add_argument("--scales", type=Path, default=None, help="session_scales.json di scripts/measure_loader.py (senza: calcolate al volo)")
@@ -69,7 +70,7 @@ def main(argv=None) -> int:
     elif args.ddp_local_mean_collaudo:
         ap.error("--ddp-local-mean-collaudo vale solo con --distributed")
     main_process = ctx is None or ctx.is_main
-    cfg = R.sanity_config() if args.preset == "sanity" else R.small_config()
+    cfg = {"sanity": R.sanity_config, "small": R.small_config}.get(args.preset, lambda: R.ladder_config(args.preset))()
     if args.rvq_codes is not None:
         cfg = R.with_rvq(cfg, args.rvq_codes)
     if args.window1_rules:

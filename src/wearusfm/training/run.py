@@ -128,6 +128,27 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
         eval_every=500, ckpt_every=500, seed=0)
 
 
+# Rung della ladder (v10 §10.4: «larghezza condivisa scalata ovunque; profondita' scalata soprattutto nel backbone; K fisso»). PROPOSTA di
+# Claude del 09/10/2026, DA FIRMARE: la larghezza e' quella della tabella di v10 (640, 896; teste da 64), la profondita' del backbone quella
+# che centra il nominale con i nostri blocchi, che hanno due attenzioni (tempo e latenti) piu' l'MLP, ~16 d^2 parametri invece dei ~12 d^2
+# di un blocco standard: 12 blocchi a 640 ~ 16 standard, 18 a 896 ~ 24 standard, cioe' il bordo basso dei layer di v10. Il 30M e' il preset
+# del sanity. Conteggi (con l'ancora multi-scala): 30M 28,3 M; 100M 104,8 M; 300M 292,0 M. Ripartizione backbone / encoder locale /
+# Perceiver: 67/13/6%, 75/9/5%, 79/10/3% (v10 prescrive 75-85 / 8-15 / 5-10: il Perceiver resta sotto a 300M perche' i suoi blocchi sono
+# fissi). Il resto della configurazione (picco del learning rate, batch) e' quello del sanity finche' la calibrazione della finestra 1 non lo
+# fissa (D14: «il batch dei rung maggiori lo fissa la calibrazione»).
+LADDER = {
+    "30m": dict(dim=384, n_heads=6, local_layers=2, backbone_layers=8, decoder_layers=2),
+    "100m": dict(dim=640, n_heads=10, local_layers=2, backbone_layers=12, decoder_layers=2),
+    "300m": dict(dim=896, n_heads=14, local_layers=3, backbone_layers=18, decoder_layers=2),
+}
+
+
+def ladder_config(rung: str, max_steps: int = 20000) -> RunConfig:
+    """Il preset del sanity con l'architettura del rung `rung` (LADDER); stesse regole di dati, maschere, ancore e ottimizzatore."""
+    base = sanity_config(max_steps)
+    return replace(base, model=replace(base.model, **LADDER[rung]))
+
+
 def with_window1_rules(cfg: RunConfig) -> RunConfig:
     """Le decisioni del 04/10/2026, dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target delle ancore entro 100 ms dal
     bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»); montaggi virtuali dalle griglie

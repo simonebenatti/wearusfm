@@ -31,6 +31,22 @@ def test_scales_and_rate_end_to_end(tmp_path):
     assert "ritmo, filtro" in r.stdout
 
 
+def test_rate_with_the_window1_training_configuration(tmp_path):
+    pytest.importorskip("torch")  # la configurazione viene da training.run, la stessa del training
+    root, mpath = _tree(tmp_path)
+    ws = tmp_path / "ws.json"
+    ws.write_text(json.dumps({"window_s": {"emg2pose/u1/sessA": 3.9, "ninapro_db2/s01/session1": 3.0, "capgmyo/s01/s": 1.0}}))
+    out = tmp_path / "out"
+    base = [sys.executable, str(SCRIPT), "--manifest", str(mpath), "--root", str(root), "--out-dir", str(out), "--workers", "2",
+            "--batches", "2", "--batch-size", "3"]
+    r = subprocess.run(base + ["--window1-rules", "--window-seconds", str(ws)], capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, r.stderr[-2000:]
+    run, = json.loads((out / "throughput.json").read_text())["runs"]  # solo col filtro, con le regole della finestra 1
+    assert run["filter"] == [20.0, 450.0] and run["window1_rules"] and run["stage_seconds"]["target_ancore"] > 0
+    bad = subprocess.run(base + ["--window1-rules"], capture_output=True, text=True, timeout=600)
+    assert bad.returncode != 0 and "--window-seconds" in bad.stderr
+
+
 def test_scales_from_a_previous_run_are_reused(tmp_path):
     root, mpath = _tree(tmp_path)
     prev = tmp_path / "prev.json"

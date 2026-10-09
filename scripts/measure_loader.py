@@ -8,6 +8,9 @@ scale di sessione»; conferma della decisione 13, filtro nel dataloader).
 2. **Ritmo**: `--workers` processi indipendenti producono `--batches` batch da `--batch-size` con la configurazione firmata (finestre 1-4 s, salti
    spezzati, maschere D10 a «tubi», frazione 0,5) e le scale appena calcolate, con il filtro e senza; finestre al secondo per processo e secondi
    per fase. Il passo 0 stimava ~68 finestre/s per GPU a 30M con 8 processi per GPU: servono ~9 finestre/s per processo. Uscita: `throughput.json`.
+   Con `--window1-rules` (e `--window-seconds`) il ritmo si misura con la STESSA configurazione del dataloader del training della finestra 1
+   (`training.run.with_window1_rules`: quote nel tempo, zona di bordo, ancora multi-scala, montaggi virtuali D6a), solo col filtro: e' la
+   misura per fasi chiesta dopo i collaudi del 07-08/10 (attesa sui dati 3,4-3,6% > 2%).
 
   python3 scripts/measure_loader.py --manifest manifest.json.gz --root $WORK/data/processed --root $SCRATCH/data/processed --out-dir DIR
 """
@@ -100,9 +103,15 @@ def compute_scales(index: L.ManifestIndex, workers: int, max_sessions: int | Non
             "method": "mediana dei MAD dei canali validi su 32 tratti da 2 s filtrati (20-450 Hz, notch 50/60), seme dalla chiave della sessione"}
 
 
+def window1_config() -> L.LoaderConfig:
+    """La configurazione del dataloader dei run con `--window1-rules` di scripts/train_jepa.py (la stessa funzione, non una copia)."""
+    from wearusfm.training import run as R
+    return R.with_window1_rules(R.sanity_config()).loader
+
+
 def _rate_worker(args) -> dict:
-    manifest, roots, scales, filter_band, batches, batch_size, seed = args
-    loader = L.PretrainLoader(L.ManifestIndex.load(Path(manifest), [Path(r) for r in roots]), signed_config(filter_band), dict(scales))
+    manifest, roots, scales, cfg, window_s, batches, batch_size, seed = args
+    loader = L.PretrainLoader(L.ManifestIndex.load(Path(manifest), [Path(r) for r in roots]), cfg, dict(scales), window_s)
     rng = np.random.default_rng(seed)
     loader.batch(batch_size, rng)  # apertura delle prime sessioni fuori dalla misura
     loader.timings.clear()
@@ -115,16 +124,19 @@ def _rate_worker(args) -> dict:
     return {"windows": n_windows, "elapsed_s": elapsed, "windows_per_s": n_windows / elapsed, "timings_s": loader.timings}
 
 
-def measure_rate(manifest: Path, roots: list[str], scales: dict, workers: int, batches: int, batch_size: int, filter_band) -> dict:
+def measure_rate(manifest: Path, roots: list[str], scales: dict, workers: int, batches: int, batch_size: int, filter_band,
+                 cfg: L.LoaderConfig | None = None, window_s: dict | None = None) -> dict:
+    cfg = cfg if cfg is not None else signed_config(filter_band)
     with get_context("spawn").Pool(workers) as pool:
-        res = pool.map(_rate_worker, [(str(manifest), roots, scales, filter_band, batches, batch_size, 1000 + i) for i in range(workers)])
+        res = pool.map(_rate_worker, [(str(manifest), roots, scales, cfg, window_s, batches, batch_size, 1000 + i) for i in range(workers)])
     rates = [r["windows_per_s"] for r in res]
     stages: dict[str, float] = {}
     for r in res:
         for k, v in r["timings_s"].items():
             stages[k] = stages.get(k, 0.0) + v
     total = sum(stages.values()) or 1.0
-    return {"filter": filter_band, "workers": workers, "per_process_windows_per_s": rates, "min_per_process": min(rates),
+    return {"filter": filter_band, "window1_rules": cfg.multiscale_anchor, "workers": workers, "per_process_windows_per_s": rates,
+            "min_per_process": min(rates), "stage_seconds": dict(sorted(stages.items())),
             "required_per_process": REQUIRED_PER_PROCESS, "passes": min(rates) >= REQUIRED_PER_PROCESS,
             "stage_fraction": {k: v / total for k, v in sorted(stages.items())}}
 
@@ -141,7 +153,11 @@ def main(argv=None) -> int:
     ap.add_argument("--scales-from", type=Path, default=None, help="session_scales.json di un run precedente: ricalcola solo le mancanti")
     ap.add_argument("--skip-rate", action="store_true", help="solo le scale, senza la misura del ritmo")
     ap.add_argument("--bipolar-scales", action="store_true", help="anche le scale delle derivazioni bipolari dei montaggi virtuali (D6a)")
+    ap.add_argument("--window1-rules", action="store_true", help="ritmo con la configurazione del training della finestra 1 (serve --window-seconds)")
+    ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py, per le quote nel tempo")
     args = ap.parse_args(argv)
+    if args.window1_rules and args.window_seconds is None:
+        ap.error("--window1-rules richiede --window-seconds")
     args.out_dir.mkdir(parents=True, exist_ok=True)
     index = L.ManifestIndex.load(args.manifest, [Path(r) for r in args.root])
     print(f"[{time.strftime('%H:%M:%S')}] manifest {args.manifest}: {len(index.rows)} sessioni di pretraining, {args.workers} processi", flush=True)
@@ -156,8 +172,12 @@ def main(argv=None) -> int:
     if args.skip_rate:
         return 0
     out = {"manifest": str(args.manifest), "batch_size": args.batch_size, "batches_per_process": args.batches, "runs": []}
-    for band in (None, FILTER):
-        r = measure_rate(args.manifest, args.root, sc["scales"], args.workers, args.batches, args.batch_size, band)
+    if args.window1_rules:
+        cfg, window_s, bands = window1_config(), json.loads(args.window_seconds.read_text())["window_s"], (FILTER,)
+    else:
+        cfg, window_s, bands = None, None, (None, FILTER)
+    for band in bands:
+        r = measure_rate(args.manifest, args.root, sc["scales"], args.workers, args.batches, args.batch_size, band, cfg, window_s)
         out["runs"].append(r)
         print(f"ritmo, filtro {band}: finestre/s per processo {[round(v, 1) for v in r['per_process_windows_per_s']]} "
               f"(servono {REQUIRED_PER_PROCESS:.1f}: {'OK' if r['passes'] else 'NON BASTA'}); fasi "

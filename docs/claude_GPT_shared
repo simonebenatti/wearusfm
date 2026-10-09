@@ -237,6 +237,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Review tecnica dei commit 7ed8b59, 4fcc1df e 92e137e ancora da eseguire; 798 PASS e parita' bit per bit sono risultati dichiarati da
   Claude, non rieseguiti da GPT in questa attivita'. Nessun codice integrato, test lanciato, push o operazione sul cluster.
 
+### 2026-10-09 | Claude | Preset dei rung 100M e 300M; misura del dataloader con le regole della finestra 1 | Base: 36b83cc
+
+- Decisione di Simone registrata in `docs/decisioni.md`: warmup del WSD con D = 4 epoche per tutti i rami di un rung («si D=4 epoche»).
+- `training/run.py`: `LADDER` e `ladder_config(rung)`, **proposta da firmare**. Con la larghezza della tabella di v10 §10.4 (640, 896; teste da 64; K = 64) la profondita' di v10 dava 131-157 M e 360-420 M: i nostri blocchi del backbone hanno due attenzioni (tempo e latenti) piu' l'MLP, ~16 d^2 parametri invece dei ~12 d^2 di un blocco standard. Proposta: 30M = il sanity (d 384, locale 2, backbone 8: 28,3 M); **100M = d 640, locale 2, backbone 12: 104,8 M**; **300M = d 896, locale 3, backbone 18: 292,0 M** (12 e 18 blocchi equivalgono a ~16 e ~24 blocchi standard, il bordo basso di v10). Ripartizione backbone / locale / Perceiver: 67/13/6%, 75/9/5%, 79/10/3% (v10: 75-85 / 8-15 / 5-10). Resto della configurazione (picco del learning rate, batch) quello del sanity finche' la calibrazione non lo fissa. `scripts/train_jepa.py --preset 30m|100m|300m`.
+- `scripts/measure_loader.py --window1-rules --window-seconds`: il ritmo e le fasi del dataloader con la stessa configurazione del training della finestra 1 (presa da `training.run.with_window1_rules`, non copiata), solo col filtro; secondi per fase nel JSON. E' la misura per fasi chiesta dopo i collaudi del 07-08/10.
+- Test: `tests/cpu/test_ladder_presets.py` (4: conteggi entro il 10% del nominale, teste da 64 e K fisso, ripartizione, resto della configurazione uguale al sanity, 30M = sanity); un test nuovo in `test_measure_loader.py`. Suite CPU completa: **812 passati**, 0 falliti.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -449,3 +456,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Preset e stime locali non certificano memoria o throughput A100. Risoluzione dei confini e checkpoint WSD da testare, anche al resume;
   run troppo brevi per warmup e decay firmati da rifiutare esplicitamente. La calibrazione del picco LR non si sostituisce con un default nuovo.
 - Primo collaudo GPU e checkout CPU richiedono protocolli, preventivi e via di Simone separati; cap25GPUh non e' autorizzazione ai lanci.
+
+### 2026-10-09 | Claude | Preset dei rung 100M e 300M; misura del dataloader con le regole della finestra 1 | Base: 36b83cc
+
+- La tabella di v10 §10.4 e i preset proposti non coincidono in profondita': v10 contava blocchi standard. La scelta (seguire la larghezza e centrare il nominale con la profondita') va firmata da Simone; l'alternativa e' tenere i layer di v10 e accettare rung da ~145 M e ~395 M.
+- Il Perceiver resta sotto il 5% prescritto da v10 a 300M (3%) perche' i suoi blocchi (1 cross + 1 latente) sono fissi per costruzione; il decoder (2 blocchi, 5-13%) non e' nella ripartizione di v10.
+- Memoria: solo la parte statica e' stimabile in locale (parametri, gradienti, AdamW, teacher e buffer di DDP, ~24 byte per parametro: 0,7 / 2,5 / 7,0 GB). Le attivazioni dominano e vanno misurate su A100 (al 30M, 32 finestre su una GPU: 27-28 GiB tipici, 37,6 GiB di picco). *Stima grossolana mia, non verificata:* al 300M con 8 finestre per GPU 30-45 GiB tipici e picchi vicini ai 64 GiB; se non entra serve l'accumulo (contratto delle loss).
+- `measure_loader.py` con `--window1-rules` importa `training.run` (quindi torch) per prendere la configurazione: sul nodo CPU il venv ce l'ha, ma non e' piu' uno script senza torch.
