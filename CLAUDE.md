@@ -28,6 +28,8 @@
 - **Riferimenti di deploy:** per creare un checkout di campagna si pubblica un branch o tag `deploy/<nome>` (`git push leonardo
   deploy/<nome>`): non tocca il working tree di `$WORK/wearusfm`, quindi non disturba una campagna in corso. Mai pushare il riferimento
   attualmente estratto in un checkout usato da job in coda o in esecuzione.
+  Prima del primo push di deploy verificare ref/configurazione/hook: nessun automatismo deve aggiornare checkout attivi; eseguire
+  da SHA completo in un checkout detached nuovo, non dal nome mobile di un branch. La campagna corrente non si converte in corsa.
 - Non fare push su origin a meno che non te lo chieda esplicitamente.
 - Se un push verso leonardo viene rifiutato il tree remoto e' sporco:
   fermati e segnalalo, non forzare.
@@ -67,6 +69,7 @@
   la procedura attuale via leonardo-ops.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
+  Anche i job CPU di deployment richiedono risorse, durata massima e costo CPU approvati: 0 GPU-ora non significa costo nullo.
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
   procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
   installare pacchetti o sottomettere job.
@@ -106,11 +109,12 @@
   `~/.venvs/wearusfm-tok` (torch 2.14, Python 3.11). Il pacchetto e' installato in modo editabile dal `main` canonico: in un worktree
   i test vanno lanciati mettendo prima `src/` del worktree nel path, per esempio
   `~/.venvs/wearusfm-tok/bin/python -c "import sys; sys.path.insert(0, 'src'); import pytest; sys.exit(pytest.main(['-q', 'tests/cpu']))"`.
-- Tutto il resto passa da srun su Leonardo.
+- Le altre prove passano da srun su Leonardo, o da sbatch nelle eccezioni autorizzate sotto.
 - Se esiste .leonardo_jobid c'e' un'allocazione interattiva attiva:
   srun --jobid=$(cat .leonardo_jobid) --overlap bash -lc 'source scripts/setup_env.sh && <cmd>'
 - Se non esiste, chiedi prima di allocare. Non fare salloc di tua iniziativa: costa budget.
-- sbatch solo per run lunghe e job array.
+- sbatch per run lunghe e job array; eccezioni: deployment CPU dell'accordo 09/10 e collaudi infrastrutturali su dbg, sempre con
+  protocollo, risorse/costo e autorizzazione di Simone. Il cap di 25 GPU-ora non autorizza lanci o retry indistinti.
 
 ## Dati
 - Dati da wearable: non devono mai finire in un commit. Verifica `git status` prima di ogni push.

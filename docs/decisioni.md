@@ -2396,3 +2396,29 @@ Sulla proposta di GPT (divisione del lavoro) e due giri di review incrociata Cla
   congelamento con la firma di Simone entro il 25/10. Tappe di Claude: ~14/10 deploy di campagna, launcher con `CODE_DIR`, sottomissione con
   lock, DDP su 4 GPU con test d'equivalenza; ~20/10 WSD e preset 100M/300M con memoria e throughput misurati; ~25/10 dataloader sotto il 2%
   se la misura lo permette; 26-31/10 prove su `dbg` dei job della finestra 1.
+
+### Integrazione dell'accordo e precisazioni GPT (09/10/2026)
+
+Simone in questa chat: «va bene, allora io direi di farvi partire, devi committare qualcosa mentre aspetti ?» e poi
+«va bene, allora committa l'accordo operativo e cosi lui puo partire». Ha inoltre richiesto di verificare l'aggiornamento di
+CLAUDE.md e di leggere/aggiornare sempre il registro condiviso.
+
+- Individuato il commit di Claude `ffda2c3dad22bbfbf72a5758a830523246a5efae` nel worktree gia' creato. Integrato su main locale
+  mediante merge fast-forward, preservando SHA, contenuto e voci del registro. Ritirata soltanto la bozza GPT non committata
+  sovrapposta. Nessun push remoto, nuovo job o modifica del worktree di Claude; il checkout della campagna P1/P2 resta invariato.
+- Il contratto di riduzione include anche le componenti keep e ogni ramo opzionale attivo, con pesi/medie interne invariati.
+  I conteggi devono riflettere le stesse maschere di validita' realmente usate nella loss, non approssimazioni dei validi. Rendere
+  disponibili i denominatori dell'intero batch effettivo senza conservare tutti i grafi dei micro-batch. Firma/struttura dei risultati,
+  trattamento dei conteggi zero e compatibilita' con i chiamanti single-GPU si concordano prima dell'implementazione.
+- Precisare il test di resume prima di implementarlo: obiettivo di medesima sequenza di campioni/crop/maschere a world size e worker
+  invariati, con stati RNG/stream/prefetch gestiti e confronto continuo contro interrotto/ripreso entro tolleranze prespecificate.
+  Nessun requisito di ripresa elastica con world size diverso; una ripresa soltanto stocastica non equivale al requisito e va segnalata.
+- Il tetto separato 25 GPU-ora equivale a 200 ore locali GPU secondo la conversione gia' usata nel progetto. Consumo iniziale della
+  nuova voce: zero; nessun riaddebito dell'A/B. Preventivo e limite CPU separati anche per il deploy; nessun lancio autorizzato da
+  questa sola registrazione. Il budget scientifico W1 e l'adozione della keep rimangono decisioni distinte.
+- Preflight del deploy: verificare che ref/configurazione/hook non aggiornino checkout attivi, risolvere lo SHA e creare un checkout
+  detached nuovo; nessuna conversione in corsa della campagna P1/P2. Allineata l'eccezione sbatch CPU/dbg nelle regole dei test.
+  Preservati il modello Sonnet dell'ops di Claude e le istruzioni per importare src del worktree nei test locali.
+
+Queste sono registrazione e review del contratto, non esiti di collaudo: DDP, accumulo, WSD, resume, nuovi preset e deploy restano
+da implementare/verificare. Il commit delle precisazioni e' solo documentale, non modifica trainer, loss, target o soglie scientifiche.

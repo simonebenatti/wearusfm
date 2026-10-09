@@ -1,6 +1,6 @@
 # Registro condiviso Claude / GPT
 
-Registro cronologico di coordinamento per Simone. Ogni agente legge questo file prima di lavorare e, a fine attivita', aggiunge una voce in entrambe le sezioni senza cancellare lo storico. Ogni voce indica data, agente e commit di riferimento, distinguendo lavoro svolto, problemi aperti e verifiche non eseguite. Scritture e operazioni Git sul checkout condiviso si eseguono un agente alla volta.
+Registro cronologico di coordinamento per Simone. Ogni agente legge questo file prima di lavorare e, a fine attivita', aggiunge una voce in entrambe le sezioni senza cancellare lo storico. Ogni voce indica data, agente e commit di riferimento, distinguendo lavoro svolto, problemi aperti e verifiche non eseguite. Dal 09/10/2026 ogni agente scrive nel proprio worktree/branch; GPT integra un ramo alla volta su main canonico, conservando commit e voci testualmente. Un solo writer per checkout/file condiviso; anche gli append possono creare conflitti, da risolvere senza perdere le voci.
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
@@ -165,6 +165,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Accordo sul lavoro in parallelo approvato da Simone («si a tutti e 4»): worktree e branch separati, GPT integratore su `main` tramite merge, eccezione per i checkout di campagna su Leonardo, 25 GPU-ora per la preparazione dell'infrastruttura. Registrato in `docs/decisioni.md` con le precisazioni tecniche concordate (contratto delle loss distribuite, batch 32 globale, WSD in aggiornamenti, test 1 contro 4 GPU, memoria del 300M, lock delle sottomissioni).
 - Creato il worktree `.claude/worktrees/claude-training-engine` (branch `worktree-claude-training-engine`, da 8dad7e8). Aggiornati `CLAUDE.md` (worktree, integrazione, proprietari dei file, riferimenti `deploy/`, eccezione dei checkout di campagna, budget, test nel worktree) e `.claude/agents/leonardo-ops.md` (eccezione dei checkout di campagna; modello Sonnet). Nessun job lanciato, nessun push.
 
+### 2026-10-09 | GPT | Integrazione accordo operativo Claude/GPT | Base: ffda2c3dad22bbfbf72a5758a830523246a5efae
+
+- Letti registro, CLAUDE.md e commit di Claude ffda2c3 nel suo worktree. Su richiesta di Simone, ritirata soltanto la bozza GPT
+  sovrapposta e integrato il commit di Claude su main locale tramite merge fast-forward: SHA e voci originali conservati.
+- Registrata la conferma di Simone in decisioni.md; precisati contratto keep/rami opzionali, denominatori dell'accumulo, resume,
+  costo/limite del deploy CPU e preflight dei ref. Allineata l'eccezione sbatch nelle regole dei test; preservati Sonnet e import src.
+- Aggiornate entrambe le sezioni di questo registro. Solo documentazione: nessun push, nuovo job, nuovo worktree GPT o modifica
+  al codice scientifico; worktree di Claude non modificato. Review del contratto con Astra, non collaudo DDP/CUDA/deployment.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -308,3 +317,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il pacchetto `wearusfm` dell'ambiente `~/.venvs/wearusfm-tok` e' installato in modo editabile dal `main` canonico: nei worktree i test importano il codice di `main` se non si mette prima `src/` del worktree nel path (comando in `CLAUDE.md`). Vale per tutti e due.
 - Le regole nuove in `CLAUDE.md` e `leonardo-ops.md` stanno su questo branch: valgono per `main` solo dopo l'integrazione. Fino ad allora nessun checkout di campagna e nessun push di riferimenti `deploy/`.
 - Il contratto delle loss distribuite tocca `training/jepa.py` (di GPT) e `training/run.py` (mio): va concordato prima di scrivere DDP. Proposta in arrivo su questo branch.
+
+### 2026-10-09 | GPT | Limiti dell'integrazione operativa | Base: ffda2c3dad22bbfbf72a5758a830523246a5efae
+
+- Accordo ora integrato localmente; non certifica infrastruttura implementata. Congelare firma delle loss, conteggi dei validi e
+  criteri di resume prima del lavoro distribuito. Il cap25GPUh non autorizza job/retry indistinti; costi CPU da approvare separatamente.
+- Nessun push main su Leonardo mentre il checkout e' usato da job pendenti/attivi; nessuna conversione in corsa di P1/P2 a CODE_DIR.
+  Stato/ID transitori restano fuori Git. Questo aggiornamento del registro non attribuisce nuova provenienza ai job gia' lanciati.
