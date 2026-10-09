@@ -2486,3 +2486,18 @@ continuazione a 2D il warmup deve essere lo stesso per tutti i rami, altrimenti 
 per bit sulla CPU, `tests/cpu/test_training_wsd.py`). **Deciso: D = 4 epoche per tutti i rami di un rung**, cioe' `--steps-at-d` = passi di
 4 epoche (al 30M con batch 32: ~92.600 -> warmup 1.852, come nei fogli firmati). Implementazione: `training/run.py` (`Schedule`, `with_wsd`,
 `wsd_warmup_steps`, `branch_from`), commit 56bc7e6 sul branch di Claude.
+
+## Preset dei rung della ladder: FIRMATI (Simone, 09/10/2026: «firmo i preset»)
+
+`training.run.LADDER` (commit 772b991 sul branch di Claude). Larghezza della tabella di v10 §10.4, teste da 64, K = 64; profondita' del backbone
+che centra il nominale coi nostri blocchi (due attenzioni, tempo e latenti, piu' l'MLP: ~16 d^2 parametri invece dei ~12 d^2 di un blocco
+standard, quindi 12 e 18 blocchi ~ 16 e 24 blocchi standard, il bordo basso di v10):
+
+| Rung | d | Encoder locale | Backbone | Decoder | Parametri | Backbone / locale / Perceiver |
+|---|---|---|---|---|---|---|
+| 30M (= sanity) | 384 | 2 | 8 | 2 | 28,3 M | 67 / 13 / 6% |
+| 100M | 640 | 2 | 12 | 2 | 104,8 M | 75 / 9 / 5% |
+| 300M | 896 | 3 | 18 | 2 | 292,0 M | 79 / 10 / 3% |
+
+Da dichiarare: al 300M il Perceiver (blocchi fissi per costruzione) resta sotto il 5% di v10. Picco del learning rate e batch dei rung maggiori:
+dalla calibrazione della finestra 1 (D14), oggi quelli del sanity. Il preset 1B non e' definito (finestra 2, FSDP fuori dal perimetro iniziale).

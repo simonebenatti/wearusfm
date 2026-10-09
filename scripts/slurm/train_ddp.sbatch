@@ -39,6 +39,15 @@ if [ -f "$RUN_DIR/STOP" ]; then echo "STOP in $RUN_DIR: $(cat "$RUN_DIR/STOP")";
 NGPU=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 # 8 CPU per GPU: 6 worker del dataloader per processo, come il sanity a 1 GPU
-torchrun --standalone --nproc_per_node="$NGPU" scripts/train_jepa.py --preset sanity --manifest "$MANIFEST" \
-  --root "$WORK/data/processed" --root "$SCRATCH/data/processed" --scales "$SCALES" --out-dir "$RUN_DIR" --max-steps "$MAX_STEPS" \
-  --num-workers 6 --time-limit-s "${TIME_LIMIT_S:-1500}" --distributed ${EXTRA_ARGS:-}
+COMMON=(scripts/train_jepa.py --preset "${PRESET:-sanity}" --manifest "$MANIFEST" --root "$WORK/data/processed" --root "$SCRATCH/data/processed"
+        --scales "$SCALES" --out-dir "$RUN_DIR" --num-workers 6 --distributed)
+torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$MAX_STEPS" --time-limit-s "${TIME_LIMIT_S:-1500}" ${EXTRA_ARGS:-}
+rc=$?
+# RESUME_TO (facoltativo, collaudi): ripresa nella stessa allocazione fino a quel passo, dal checkpoint appena scritto (stessi processi,
+# worker e segmento: lo stream riprende la stessa sequenza)
+if [ "$rc" -eq 0 ] && [ -n "${RESUME_TO:-}" ]; then
+  echo "ripresa fino al passo $RESUME_TO"
+  torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$RESUME_TO" --time-limit-s "${RESUME_TIME_LIMIT_S:-300}" ${EXTRA_ARGS:-}
+  rc=$?
+fi
+exit $rc

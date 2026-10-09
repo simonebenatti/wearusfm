@@ -128,8 +128,8 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
         eval_every=500, ckpt_every=500, seed=0)
 
 
-# Rung della ladder (v10 §10.4: «larghezza condivisa scalata ovunque; profondita' scalata soprattutto nel backbone; K fisso»). PROPOSTA di
-# Claude del 09/10/2026, DA FIRMARE: la larghezza e' quella della tabella di v10 (640, 896; teste da 64), la profondita' del backbone quella
+# Rung della ladder (v10 §10.4: «larghezza condivisa scalata ovunque; profondita' scalata soprattutto nel backbone; K fisso»). FIRMATI da
+# Simone il 09/10/2026 («firmo i preset»): la larghezza e' quella della tabella di v10 (640, 896; teste da 64), la profondita' del backbone quella
 # che centra il nominale con i nostri blocchi, che hanno due attenzioni (tempo e latenti) piu' l'MLP, ~16 d^2 parametri invece dei ~12 d^2
 # di un blocco standard: 12 blocchi a 640 ~ 16 standard, 18 a 896 ~ 24 standard, cioe' il bordo basso dei layer di v10. Il 30M e' il preset
 # del sanity. Conteggi (con l'ancora multi-scala): 30M 28,3 M; 100M 104,8 M; 300M 292,0 M. Ripartizione backbone / encoder locale /

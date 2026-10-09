@@ -1,4 +1,4 @@
-"""Preset dei rung della ladder (`training.run.LADDER`, proposta del 09/10/2026 da firmare; v10 §10.4): conteggi vicini al nominale,
+"""Preset dei rung della ladder (`training.run.LADDER`, firmati da Simone il 09/10/2026; v10 §10.4): conteggi vicini al nominale,
 larghezza scalata ovunque con teste da 64, ripartizione fra i moduli, resto della configurazione uguale al sanity."""
 
 import pytest

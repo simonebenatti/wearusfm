@@ -24,7 +24,7 @@ from wearusfm.training import run as R  # noqa: E402
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--preset", choices=["sanity", "small", "30m", "100m", "300m"], required=True,
-                    help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER: proposta da firmare)")
+                    help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER, firmati il 09/10/2026)")
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--root", type=Path, action="append", required=True)
     ap.add_argument("--scales", type=Path, default=None, help="session_scales.json di scripts/measure_loader.py (senza: calcolate al volo)")

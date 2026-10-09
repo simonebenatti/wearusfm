@@ -244,6 +244,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `scripts/measure_loader.py --window1-rules --window-seconds`: il ritmo e le fasi del dataloader con la stessa configurazione del training della finestra 1 (presa da `training.run.with_window1_rules`, non copiata), solo col filtro; secondi per fase nel JSON. E' la misura per fasi chiesta dopo i collaudi del 07-08/10.
 - Test: `tests/cpu/test_ladder_presets.py` (4: conteggi entro il 10% del nominale, teste da 64 e K fisso, ripartizione, resto della configurazione uguale al sanity, 30M = sanity); un test nuovo in `test_measure_loader.py`. Suite CPU completa: **812 passati**, 0 falliti.
 
+### 2026-10-09 | Claude | Preset firmati; protocollo del primo collaudo GPU dell'infrastruttura | Base: 772b991
+
+- Simone: «firmo i preset». Registrato in `docs/decisioni.md`; commenti del codice e della CLI aggiornati (da «proposta» a «firmati»).
+- Scritto `docs/collaudo_infra_gpu_1.md` (protocollo **da approvare**, nessun job autorizzato): 4 job con ID logici per `submit_job.py` (checkout di campagna; misura per fasi del dataloader con le regole della finestra 1; DDP a 4 GPU sul 30M con media locale, 300 passi e ripresa a 330 nella stessa allocazione; sonda della memoria dei rung 30M/100M/300M con 4 e 8 finestre per GPU sul caso peggiore). Costo massimo **2,5 GPU-ora (20 ore locali) + 8,2 core-ora CPU** sul tetto infrastruttura di 25. Criteri fissati prima: superato/non superato per checkout e DDP, descrittivo per il dataloader, regola «sta in memoria se riservata + buffer DDP <= 60 GiB» per la sonda. Due strade per il codice da far scegliere a Simone: dopo l'integrazione di GPT, oppure subito con un riferimento `deploy/` del branch di Claude.
+- Nuovi: `scripts/probe_memory.py` (+ `scripts/slurm/probe_memory.sbatch`): aggiornamenti completi (forward, backward, clip, AdamW, EMA) sullo stesso batch del caso peggiore, memoria massima allocata e riservata, OOM registrato e caso successivo, report scritto a ogni caso; `train_ddp.sbatch` con `PRESET` e la fase di ripresa `RESUME_TO` nella stessa allocazione. Test `tests/cpu/test_probe_memory.py` (1, sulla CPU con la griglia di CapgMyo dei dati di prova). Suite CPU completa: **813 passati**, 0 falliti.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -463,3 +469,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il Perceiver resta sotto il 5% prescritto da v10 a 300M (3%) perche' i suoi blocchi (1 cross + 1 latente) sono fissi per costruzione; il decoder (2 blocchi, 5-13%) non e' nella ripartizione di v10.
 - Memoria: solo la parte statica e' stimabile in locale (parametri, gradienti, AdamW, teacher e buffer di DDP, ~24 byte per parametro: 0,7 / 2,5 / 7,0 GB). Le attivazioni dominano e vanno misurate su A100 (al 30M, 32 finestre su una GPU: 27-28 GiB tipici, 37,6 GiB di picco). *Stima grossolana mia, non verificata:* al 300M con 8 finestre per GPU 30-45 GiB tipici e picchi vicini ai 64 GiB; se non entra serve l'accumulo (contratto delle loss).
 - `measure_loader.py` con `--window1-rules` importa `training.run` (quindi torch) per prendere la configurazione: sul nodo CPU il venv ce l'ha, ma non e' piu' uno script senza torch.
+
+### 2026-10-09 | Claude | Preset firmati; protocollo del primo collaudo GPU dell'infrastruttura | Base: 772b991
+
+- Nessuno dei nuovi launcher (`train_ddp.sbatch` con la ripresa, `probe_memory.sbatch`) e' stato eseguito su Leonardo: solo `bash -n` e la sonda sulla CPU. La sonda su CUDA (bf16, `torch.cuda.OutOfMemoryError`, statistiche della memoria) e' provata solo dal collaudo stesso.
+- La sonda misura il caso peggiore su un batch fisso di Hyser: il picco del training vero dipende anche dalla distribuzione delle finestre, quindi la regola dei 60 GiB e' prudente ma non una garanzia per ogni passo.
+- Il collaudo DDP usa `--ddp-local-mean-collaudo`: le loss registrate sono medie di medie locali, non i valori del training vero.
+- Il codice del branch di Claude non ha ancora la review tecnica di GPT (7ed8b59, 4fcc1df, 92e137e, 56bc7e6, 772b991 e quest'ultimo): la strada (b) del protocollo lo userebbe senza review.
