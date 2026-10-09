@@ -1,5 +1,7 @@
 # Contratto delle loss distribuite (DDP e accumulo) — proposta di Claude del 09/10/2026, da concordare con GPT
 
+*Revisione 2 (09/10/2026, sulla review di GPT):* la ripresa continua la stessa sequenza di batch invece di aprire uno stream nuovo (punto 4).
+
 **Perche'.** Decisione del 09/10/2026 (`docs/decisioni.md`, «Lavoro in parallelo Claude / GPT»): prima di scrivere DDP si concorda come le
 loss espongono numeratori e denominatori, cosi' che 1 GPU e N GPU (con o senza accumulo) diano **lo stesso aggiornamento** sullo stesso batch
 globale. Proprietari: le riduzioni in `training/jepa.py` e `model/anchors.py` sono di GPT; il ciclo in `training/run.py` e' di Claude. Questo
@@ -76,9 +78,27 @@ L'accumulo si implementa solo se la misura della memoria del 300M lo rende neces
 - **Diagnostica dei gradienti per componente** (`keep_grad_every`, `torch.autograd.grad`): non compatibile col normale funzionamento di DDP.
   Proposta: sotto DDP si calcola sul processo 0, sul modulo non avvolto, in un forward separato sul suo micro-batch e senza sincronizzazione;
   e' una misura descrittiva locale, e si registra come tale.
-- **Casualita':** ogni processo ha il suo stream di dati (`rng = [seme, processo, worker, passo di ripresa]`) e il suo seme per il dropout
-  del muscolo. Garanzia sulla ripresa: lo stream e' una funzione deterministica di quei quattro numeri; **non** e' la continuazione esatta
-  dello stream interrotto (oggi non lo e' neppure su una GPU: si campiona con reinserimento).
+- **Ripresa: la stessa sequenza, non uno stream nuovo** (correzione del 09/10 sulla review di GPT; la versione precedente di questo punto
+  proponeva uno stream nuovo alla ripresa, contro l'accordo). Requisito: a numero di processi e di worker invariati, dopo una ripresa i batch
+  (sessioni, ritagli, montaggi virtuali, maschere) sono **identici** a quelli di un run continuo, per un'interruzione a qualunque passo.
+  Oggi non e' cosi' neppure su una GPU: alla ripresa lo stream riparte da un seme nuovo, e ogni worker porta con se' uno stato (generatore,
+  pool di blocchi gia' letti, sessioni scartate). Disegno proposto (dataloader, Claude):
+  - il batch di indice b del processo r lo produce il worker w = b mod W; lo stato del worker dipende solo da (seme, r, w, segmento g = b div S),
+    con S passi per segmento (multiplo di W, es. 1.200): a ogni inizio di segmento il worker riparte con `default_rng([seme, r, w, g])` e il
+    pool vuoto;
+  - alla ripresa al passo s, ogni worker ricostruisce il suo stato **rigiocando a secco** i batch del segmento corrente fino a s: le stesse
+    estrazioni casuali (sessioni, tessere, inizi, montaggi, maschere) senza leggere i segnali ne' calcolare filtro e target. Costo: al piu'
+    S/W batch per worker, da misurare (stima: secondi);
+  - invariante, sorvegliato da un test: nessuna estrazione casuale dipende dai valori dei segnali letti (oggi vero: le scale hanno un seme
+    proprio, i target non hanno casualita');
+  - nel checkpoint si registrano W, il numero di processi e S; una ripresa con valori diversi si rifiuta (nessuna ripresa elastica);
+  - il dropout del muscolo ha un generatore per processo, salvato nel checkpoint con gli altri stati casuali di ogni processo;
+  - test d'accettazione: gli hash di tutti i batch (`training.pairing.batch_sha256`) di un run continuo coincidono con quelli di un run
+    interrotto e ripreso, con interruzioni dentro un segmento e sul confine, a 1 e a 2 processi; stati del modello uguali entro le tolleranze
+    del punto 5;
+  - effetti: il pool si svuota a ogni confine di segmento (perdita di letture trascurabile con S/W ~ 200 batch per worker); a parita' di seme
+    i batch dei run nuovi differiscono da quelli del codice attuale (stessa distribuzione): i confronti accoppiati si fanno sempre fra run
+    dello stesso codice.
 - **Arresto coordinato:** loss o gradienti non finiti, allarme, limite di tempo e STOP decisi in modo che tutti i processi si fermino allo
   stesso aggiornamento (un `all_reduce` del flag); checkpoint scritto solo dal processo 0, dopo una barriera.
 
@@ -95,7 +115,7 @@ conferma su Leonardo con NCCL e bf16, su `boost_qos_dbg` (preventivo a parte).
    lenta valida.
 3. `loss_per_window=False`: stesso confronto (il comportamento del sanity deve restare riproducibile).
 4. Parametri inutilizzati (braccio A della keep), arresto coordinato su NaN iniettato in un solo processo, ripresa da checkpoint con N
-   processi.
+   processi: stessa sequenza di batch e stessi stati del run continuo (punto 4, «Ripresa»).
 5. Il percorso a un processo senza DDP resta bit per bit quello di oggi (i test attuali passano invariati).
 
 **Da concordare con GPT:** forma e nomi di `LossTerms`; se l'opzione (a) e' praticabile (validita' ricostruibile dai dati); chi scrive i

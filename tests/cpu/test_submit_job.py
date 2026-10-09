@@ -1,6 +1,7 @@
 """`scripts/submit_job.py` (decisione del 09/10/2026): prenotazione con lock prima di sbatch, stati persistenti, nessun rilancio alla cieca,
 riconciliazione degli ambigui. Il login node e' simulato da un finto `ssh` che registra le chiamate."""
 
+import datetime as dt
 import importlib.util
 import json
 import sys
@@ -30,12 +31,22 @@ elif mode == "hang":
     time.sleep(5)
 elif mode == "garbage":
     print("Submitted batch job 12345")
-elif mode == "found":
-    print("12345|PENDING")
-elif mode == "none":
-    pass
-elif mode == "two":
-    print("12345|PENDING"); print("12346|PENDING")
+else:  # riconciliazione: sacct e squeue arrivano in due chiamate separate
+    import re
+    name = re.search(r"--name=(\S+)", remote).group(1)
+    acct, queue = remote.startswith("sacct"), remote.startswith("squeue")
+    if mode == "found":
+        print(f"12345|{name}|PENDING")
+    elif mode == "queue_only" and queue:
+        print(f"12345|{name}|PENDING")
+    elif mode == "two" and acct:
+        print(f"12345|{name}|PENDING"); print(f"12346|{name}|RUNNING")
+    elif mode == "acct_fail" and acct:
+        print("sacct: error: slurmdbd non raggiungibile", file=sys.stderr); sys.exit(1)
+    elif mode == "acct_garbage" and acct:
+        print("qualcosa di inatteso")
+    elif mode == "other_name" and acct:
+        print("12345|un_altro_job|PENDING")
 '''
 
 
@@ -98,21 +109,53 @@ def test_ambiguous_is_never_resubmitted(env, mode, timeout):
     assert n_calls() == 1
 
 
-def test_reconcile_found_none_and_duplicates(env):
-    run, state, n_calls, _ = env
+def test_reconcile_finds_the_job_in_accounting_or_queue(env):
+    run, state, _, _ = env
     run("drop", *BASE, *SB)
     assert run("found", "--riconcilia", "prova_01") == 0
     s = state("prova_01")
     assert s["stato"] == "sottomesso" and s["job_slurm"] == 12345 and s["riconciliato"]
     second = ["--id", "prova_02", "--agente", "gpt", "--campagna", "infra", "--gpu-ore", "0"]
     run("drop", *second, *SB)
-    assert run("none", "--riconcilia", "prova_02") == 3 and state("prova_02")["stato"] == "assente"
-    with pytest.raises(SystemExit):  # assente: si risottomette solo con il permesso esplicito
-        run("ok", *second, *SB)
-    assert run("ok", *second, "--dopo-rifiuto", *SB) == 0
-    third = ["--id", "prova_03", "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0"]
-    run("drop", *third, *SB)
-    assert run("two", "--riconcilia", "prova_03") == 3 and state("prova_03")["job_slurm_tutti"] == [12345, 12346]
+    assert run("queue_only", "--riconcilia", "prova_02") == 0 and state("prova_02")["job_slurm"] == 12345
+
+
+def test_reconcile_duplicates_are_never_resubmitted(env):
+    run, state, n_calls, _ = env
+    run("drop", *BASE, *SB)
+    assert run("two", "--riconcilia", "prova_01") == 3 and state("prova_01")["job_slurm_tutti"] == [12345, 12346]
+    for extra in ([], ["--dopo-rifiuto"], ["--dopo-assenza-verificata"]):
+        with pytest.raises(SystemExit):
+            run("ok", *BASE, *extra, *SB)
+
+
+@pytest.mark.parametrize("mode", ["acct_fail", "acct_garbage", "other_name"])
+def test_unreliable_accounting_changes_nothing(env, mode):
+    run, state, _, _ = env
+    run("drop", *BASE, *SB)
+    assert run(mode, "--riconcilia", "prova_01") == 3
+    s = state("prova_01")
+    assert s["stato"] == "ambiguo" and "controlli_assenza" not in s  # nessuna conclusione da una risposta non affidabile
+    with pytest.raises(SystemExit):
+        run("ok", *BASE, "--dopo-assenza-verificata", *SB)
+
+
+def test_empty_answers_need_two_spaced_checks(env, monkeypatch):
+    run, state, n_calls, _ = env
+    t0 = dt.datetime(2026, 10, 9, 16, 0, tzinfo=dt.timezone.utc)
+    clock = [t0]
+    monkeypatch.setattr(S, "_clock", lambda: clock[0])
+    run("drop", *BASE, *SB)  # tentativo a t0, risposta persa
+    for minutes, expected in ((1, "ambiguo"), (11, "ambiguo"), (15, "ambiguo"), (22, "assente")):
+        clock[0] = t0 + dt.timedelta(minutes=minutes)
+        run("none", "--riconcilia", "prova_01")
+        assert state("prova_01")["stato"] == expected, minutes
+    # 1 min: troppo presto; 11: un solo controllo valido; 15: due, ma a 4 min; 22: due validi a 11 min l'uno dall'altro
+    assert len(state("prova_01")["controlli_assenza"]) == 4
+    with pytest.raises(SystemExit):  # --dopo-rifiuto non basta per un assente
+        run("ok", *BASE, "--dopo-rifiuto", *SB)
+    assert run("ok", *BASE, "--dopo-assenza-verificata", *SB) == 0
+    assert state("prova_01")["stato"] == "sottomesso"
 
 
 def test_dependency_and_input_checks(env):

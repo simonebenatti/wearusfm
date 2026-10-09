@@ -9,10 +9,13 @@ Ogni job ha un **ID logico** (es. `w1_ddp_prova_01`), unico per sempre. Lo stato
                                   -> rifiutato  (sbatch ha risposto con un errore esplicito: nessun job creato)
                                   -> ambiguo    (connessione caduta, timeout, risposta illeggibile: il job PUO' esistere)
 
-Un ID gia' usato non si risottomette: `sottomesso` e `ambiguo` mai; `rifiutato` solo con `--dopo-rifiuto` (per esempio dopo aver corretto
-la QoS). Un `ambiguo` si chiarisce con `--riconcilia <id>`: cerca su SLURM i job col nome = ID logico (lo script lo impone con `--job-name`
-e lo ripete in `--comment`). Uno trovato -> `sottomesso`; nessuno -> `assente` (si puo' risottomettere solo con `--dopo-rifiuto`, dopo aver
-guardato); piu' d'uno -> `duplicato`, da guardare a mano. Nessuna cancellazione automatica di prenotazioni.
+Un ID gia' usato non si risottomette: `sottomesso`, `ambiguo` e `duplicato` mai; `rifiutato` solo con `--dopo-rifiuto` (per esempio dopo
+aver corretto la QoS). Un `ambiguo` si chiarisce con `--riconcilia <id>`: interroga `sacct` e `squeue` SEPARATAMENTE (ognuno deve uscire con
+0 e ogni riga deve essere leggibile e avere come nome l'ID logico, che lo script impone con `--job-name` e ripete in `--comment`; altrimenti lo
+stato resta `ambiguo`). Uno trovato -> `sottomesso`; piu' d'uno -> `duplicato`, da guardare a mano. **Una risposta vuota non basta**: l'accounting
+puo' essere in ritardo. Si registra un controllo d'assenza; lo stato passa ad `assente` solo con almeno due controlli vuoti, il primo almeno
+10 minuti dopo il tentativo di sottomissione e l'ultimo almeno 10 minuti dopo il primo. Da `assente` si risottomette solo con
+`--dopo-assenza-verificata` (flag distinto da `--dopo-rifiuto`). Nessuna cancellazione automatica di prenotazioni.
 
   python3 scripts/submit_job.py --id ID --agente claude --campagna NOME --gpu-ore 0.5 [--dopo ID_PRECEDENTE] -- <argomenti di sbatch>
   python3 scripts/submit_job.py --id ID ... --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=...,CAMPAIGN_SHA=...
@@ -37,10 +40,16 @@ ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 JOBID_RE = re.compile(r"^(\d+)(;[\w.-]+)?$")
 DEFAULT_DIR = Path.home() / "wearusfm_local" / "jobs"
 LEDGER_COLUMNS = ("quando", "id", "agente", "campagna", "stato", "job_slurm", "gpu_ore_stimate", "codice_sha", "comando")
+ABSENCE_DELAY = dt.timedelta(minutes=10)  # primo controllo vuoto non prima di 10 min dal tentativo; ultimo almeno 10 min dopo il primo
+_clock = dt.datetime.now  # sostituibile nelle prove
 
 
 def now() -> str:
-    return dt.datetime.now().astimezone().isoformat(timespec="seconds")
+    return _clock().astimezone().isoformat(timespec="seconds")
+
+
+def _parse_time(s: str) -> dt.datetime:
+    return dt.datetime.fromisoformat(s)
 
 
 class Registry:
@@ -81,32 +90,37 @@ class Registry:
                    str(s.get("gpu_ore_stimate", "")), s.get("codice_sha") or "", " ".join(s.get("sbatch", []))]
             f.write("\t".join(x.replace("\t", " ").replace("\n", " ") for x in row) + "\n")
 
-    def reserve(self, job_id: str, *, allow_after_reject: bool) -> dict | None:
-        """La prenotazione: mkdir atomico. Se la cartella c'e' gia', si puo' proseguire solo da `rifiutato`/`assente` con il permesso esplicito;
-        un lock d'operazione (O_EXCL) impedisce che due processi facciano la stessa transizione."""
-        d = self.dir(job_id)
-        try:
-            d.mkdir()
-            fresh = True
-        except FileExistsError:
-            fresh = False
-        lock = d / "operazione.lock"
+    def lock(self, job_id: str) -> None:
+        """Lock d'operazione (O_EXCL): due processi non fanno mai la stessa transizione; uno interrotto lascia il lock, da guardare a mano."""
+        lock = self.dir(job_id) / "operazione.lock"
         try:
             fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
             os.write(fd, f"{os.getpid()} {now()}\n".encode())
             os.close(fd)
         except FileExistsError:
             raise SystemExit(f"{job_id}: un'altra operazione e' in corso (o e' stata interrotta): guardare {lock}, non rilanciare alla cieca")
+
+    def reserve(self, job_id: str, *, after_reject: bool = False, after_absence: bool = False) -> dict | None:
+        """La prenotazione: mkdir atomico. Se la cartella c'e' gia', si prosegue solo da `rifiutato` con `after_reject` o da `assente` con
+        `after_absence`; tutto il resto si rifiuta."""
+        d = self.dir(job_id)
+        try:
+            d.mkdir()
+            fresh = True
+        except FileExistsError:
+            fresh = False
+        self.lock(job_id)
         if fresh:
             return None
         state = self.read(job_id)
         current = state["stato"] if state else "sconosciuto"
-        if current in ("rifiutato", "assente") and allow_after_reject:
+        if (current == "rifiutato" and after_reject) or (current == "assente" and after_absence):
             return state
         self.release(job_id)
-        raise SystemExit(f"{job_id}: gia' prenotato, stato {current!r}. "
-                         + ("Si risottomette solo con --dopo-rifiuto." if current in ("rifiutato", "assente") else
-                            "Non si risottomette: per un ambiguo usare --riconcilia." if current == "ambiguo" else "Usare un ID nuovo."))
+        hint = {"rifiutato": "Si risottomette solo con --dopo-rifiuto.",
+                "assente": "Si risottomette solo con --dopo-assenza-verificata.",
+                "ambiguo": "Non si risottomette: usare --riconcilia."}.get(current, "Usare un ID nuovo.")
+        raise SystemExit(f"{job_id}: gia' prenotato, stato {current!r}. {hint}")
 
     def release(self, job_id: str) -> None:
         (self.dir(job_id) / "operazione.lock").unlink(missing_ok=True)
@@ -159,7 +173,7 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
         script_text = args.script_stdin.read_text()
         if not script_text.startswith("#!"):
             raise SystemExit(f"{args.script_stdin}: non sembra uno script di sbatch")
-    previous = reg.reserve(args.id, allow_after_reject=args.dopo_rifiuto)
+    previous = reg.reserve(args.id, after_reject=args.dopo_rifiuto, after_absence=args.dopo_assenza_verificata)
     try:
         full = ["sbatch", "--parsable", f"--job-name={args.id}", f"--comment=wearusfm:{args.id}", *dep, *sbatch_args]
         base = previous or {"id": args.id, "creato": now()}
@@ -178,42 +192,58 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
     return 0 if outcome == "sottomesso" else 3
 
 
+def _query_jobs(ssh: list[str], remote: str, job_id: str, timeout: float) -> tuple[set[int] | None, str]:
+    """ID dei job col nome = `job_id`, da una riga `JobID|JobName|State` per job; None se la risposta non e' affidabile (uscita diversa da
+    0, timeout, una riga illeggibile o con un altro nome): in quel caso nulla si deduce."""
+    code, out, err = run_remote(ssh, remote, timeout)
+    if code != 0:
+        return None, f"uscita {code}: {err.strip()[-300:]}"
+    ids = set()
+    for ln in out.splitlines():
+        if not ln.strip():
+            continue
+        parts = ln.strip().split("|")
+        if len(parts) < 3 or not parts[0].isdigit() or parts[1] != job_id:
+            return None, f"riga inattesa: {ln.strip()[:200]!r}"
+        ids.add(int(parts[0]))
+    return ids, ""
+
+
 def reconcile(reg: Registry, job_id: str, ssh: list[str], timeout: float) -> int:
     state = reg.read(job_id)
     if state is None:
         raise SystemExit(f"{job_id}: nessuna prenotazione")
-    if state["stato"] not in ("ambiguo", "assente"):
+    if state["stato"] != "ambiguo":
         print(f"{job_id}: stato {state['stato']}, niente da riconciliare")
         return 0
-    reg.reserve(job_id, allow_after_reject=True) if state["stato"] == "assente" else _lock_only(reg, job_id)
+    reg.lock(job_id)
     try:
-        since = state.get("creato", now())[:10]
-        remote = (f"sacct -X -n -P -S {shlex.quote(since)} --name={shlex.quote(job_id)} --format=JobID,State; "
-                  f"squeue -h --name={shlex.quote(job_id)} -o '%i|%T'")
-        code, out, err = run_remote(ssh, remote, timeout)
-        if code != 0:
-            print(f"{job_id}: riconciliazione non riuscita (uscita {code}), stato invariato\n{err.strip()[-500:]}")
+        attempt = max(_parse_time(h["quando"]) for h in state.get("storia", []) if h["stato"] == "in_sottomissione")
+        since = (attempt - dt.timedelta(days=1)).date().isoformat()  # margine: l'orologio del cluster puo' non coincidere col Mac
+        q = shlex.quote(job_id)
+        found_acct, why_acct = _query_jobs(ssh, f"sacct -X -n -P -S {since} --name={q} --format=JobID,JobName,State", job_id, timeout)
+        found_queue, why_queue = _query_jobs(ssh, f"squeue -h --name={q} -o '%i|%j|%T'", job_id, timeout)
+        if found_acct is None or found_queue is None:
+            print(f"{job_id}: riconciliazione non affidabile, stato invariato (ambiguo). sacct: {why_acct or 'ok'}; squeue: {why_queue or 'ok'}")
             return 3
-        ids = sorted({int(ln.split("|")[0]) for ln in out.splitlines() if ln.strip() and ln.split("|")[0].isdigit()})
+        ids = sorted(found_acct | found_queue)
         if len(ids) == 1:
             state = reg.transition(job_id, state, "sottomesso", job_slurm=ids[0], riconciliato=True)
-        elif not ids:
-            state = reg.transition(job_id, state, "assente", riconciliato=True)
-        else:
+        elif len(ids) > 1:
             state = reg.transition(job_id, state, "duplicato", job_slurm_tutti=ids, riconciliato=True)
+        else:  # risposta vuota: un controllo d'assenza, non ancora una prova
+            checks = [*state.get("controlli_assenza", []), now()]
+            times = [_parse_time(c) for c in checks]
+            valid = [t for t in times if t - attempt >= ABSENCE_DELAY]
+            confirmed = len(valid) >= 2 and valid[-1] - valid[0] >= ABSENCE_DELAY
+            state = reg.transition(job_id, state, "assente" if confirmed else "ambiguo", controlli_assenza=checks, riconciliato=True)
+            if not confirmed:
+                print(f"{job_id}: nessun job trovato, ma un controllo vuoto non basta (accounting in ritardo?). Controlli validi: {len(valid)}; "
+                      f"servono 2, il primo >= 10 min dal tentativo, l'ultimo >= 10 min dopo il primo. Stato: ambiguo")
     finally:
         reg.release(job_id)
     print(f"{job_id}: {state['stato']}" + (f", job {state.get('job_slurm')}" if state.get("job_slurm") else ""))
     return 0 if state["stato"] == "sottomesso" else 3
-
-
-def _lock_only(reg: Registry, job_id: str) -> None:
-    lock = reg.dir(job_id) / "operazione.lock"
-    try:
-        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        os.close(fd)
-    except FileExistsError:
-        raise SystemExit(f"{job_id}: un'altra operazione e' in corso: guardare {lock}")
 
 
 def main(argv=None) -> int:
@@ -224,7 +254,9 @@ def main(argv=None) -> int:
     ap.add_argument("--gpu-ore", type=float, default=None, help="stima dichiarata nel preventivo (0 per i job CPU)")
     ap.add_argument("--dopo", help="ID logico di un job gia' sottomesso: dipendenza afterok")
     ap.add_argument("--script-stdin", type=Path, help="script locale da passare a sbatch su stdin (es. campaign_checkout.sbatch)")
-    ap.add_argument("--dopo-rifiuto", action="store_true", help="risottomette un ID rifiutato o assente (dopo aver guardato)")
+    ap.add_argument("--dopo-rifiuto", action="store_true", help="risottomette un ID rifiutato da sbatch (dopo aver corretto la causa)")
+    ap.add_argument("--dopo-assenza-verificata", action="store_true",
+                    help="risottomette un ID in stato 'assente' (due controlli vuoti distanziati, vedi sopra)")
     ap.add_argument("--riconcilia", metavar="ID")
     ap.add_argument("--stato", nargs="?", const="", metavar="ID")
     ap.add_argument("--registro", type=Path, default=DEFAULT_DIR)
