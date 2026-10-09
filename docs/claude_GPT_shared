@@ -229,6 +229,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `scripts/train_jepa.py`: `--schedule wsd`, `--total-steps`, `--steps-at-d` (warmup di D14) o `--warmup-steps`, `--decay-fraction`, `--keep-checkpoints`, `--branch-from`.
 - Test `tests/cpu/test_training_wsd.py` (9): curva del learning rate e warmup di D14 (92.600 passi a D -> 1.852, come nei fogli); run troppo corti; checkpoint pre, post e stabili; **continuazione a 2D dal pre-decay identica bit per bit al run lungo fatto da zero; ramo del pilot dalla copia stabile identico bit per bit al run corto fatto da zero**; ripresa interrotta prima del decay, esattamente al suo inizio e dentro il decay identica bit per bit al run continuo (anche i checkpoint pre e post); rifiuti; CLI con ramo. Suite CPU completa: **807 passati**, 0 falliti (798 + 9).
 
+### 2026-10-09 | GPT | Perimetro della prosecuzione WSD | Base esaminata: 0b79f88
+
+- Letti CLAUDE.md, nuove voci del branch Claude e D14 firmata. Confermata la raccomandazione di proseguire localmente con WSD e preset
+  100M/300M nel perimetro gia' concordato; non e' una nuova autorizzazione a job o push. WSD in update optimizer, warmup 2% (minimo1000),
+  decay lineare finale20%, checkpoint separati pre/post e rami dal pre-decay senza reset di optimizer/teacher/RNG/stream.
+- Review tecnica dei commit 7ed8b59, 4fcc1df e 92e137e ancora da eseguire; 798 PASS e parita' bit per bit sono risultati dichiarati da
+  Claude, non rieseguiti da GPT in questa attivita'. Nessun codice integrato, test lanciato, push o operazione sul cluster.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -434,3 +442,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il fattore del decay e' 1 al primo aggiornamento del decay e 1/n all'ultimo (il learning rate tocca 0 solo dopo l'ultimo): e' la mia lettura di «decay lineare a zero», da confermare se GPT o Simone intendevano altro.
 - I checkpoint con nome sono copie intere (al 30M ~450 MB l'una, al 300M ~4,5 GB stimati): il pilot con 3 copie stabili, pre e post per seme va messo su $SCRATCH, non su $WORK.
 - Provato solo sulla CPU col preset minuscolo; nessun run su Leonardo. Il picco del learning rate resta quello della configurazione (3e-4 del sanity): la calibrazione della finestra 1 lo fissa.
+
+### 2026-10-09 | GPT | Limiti di WSD e del primo collaudo | Base esaminata: 0b79f88
+
+- Il collaudo DDP con media locale verifica infrastruttura, non equivalenza delle loss globali: quella richiede i termini/conteggi di GPT.
+- Preset e stime locali non certificano memoria o throughput A100. Risoluzione dei confini e checkpoint WSD da testare, anche al resume;
+  run troppo brevi per warmup e decay firmati da rifiutare esplicitamente. La calibrazione del picco LR non si sostituisce con un default nuovo.
+- Primo collaudo GPU e checkout CPU richiedono protocolli, preventivi e via di Simone separati; cap25GPUh non e' autorizzazione ai lanci.
