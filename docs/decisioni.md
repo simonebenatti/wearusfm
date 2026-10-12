@@ -2577,3 +2577,11 @@ loss del contratto e ripresa nella stessa allocazione, sonda della memoria dei r
 minimo dopo il collaudo 22,5. *Mia lettura, da correggere se sbagliata:* «intanto che aspettiamo» (la review di GPT del commit 16f5a5d)
 indica la strada (b) del protocollo, cioe' il codice del branch di Claude pubblicato con `deploy/collaudo-infra-1`, senza la review di GPT;
 nessun push su `main`. SHA del checkout, ID SLURM ed esiti si registrano qui al lancio e alla fine.
+**Lancio (12/10/2026):** ref `deploy/collaudo-infra-1` pubblicato su leonardo a `cd335c9740702e10e0823973f386a92bc0ef7eec` (35 file di codice e
+documenti rispetto al `main` di leonardo `8dad7e8`, nessun dato; `main` di leonardo invariato). Checkout `infra1_checkout` **60150574**:
+COMPLETED 0:0, 11 s, «checkout di campagna pronto», 423 file in sola lettura. **Incidente senza costo:** alla prima sottomissione i tre
+launcher sono stati rifiutati da sbatch («Unable to open file»): sbatch legge lo script al momento della sottomissione, e i launcher stavano
+nel checkout non ancora creato; nessun job creato. Verificato il checkout dal log, risottomessi senza dipendenza con `--dopo-rifiuto`, come
+previsto dal protocollo, stessi comandi e costi: `infra1_loader` **60150682**, `infra1_ddp` **60150683**, `infra1_memory` **60150685**, tutti
+RUNNING. *Per i prossimi lanci da un checkout di campagna:* sottomettere i launcher solo dopo che il job di checkout e' finito (oppure passarli
+su stdin quando non hanno argomenti). Esiti e consuntivo da registrare alla fine.
