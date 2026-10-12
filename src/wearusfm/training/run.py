@@ -15,10 +15,12 @@ float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
 import time
+from contextlib import nullcontext
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 
@@ -34,7 +36,7 @@ from wearusfm.model.spectral_targets import TARGET_VERSION
 from wearusfm.model.spectral_step1 import READOUT_VERSION
 from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
 from wearusfm.model.query_decoder import probe_query_collapse
-from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, make_teacher, jepa_losses
+from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, jepa_loss_terms, jepa_losses, loss_counts, make_teacher
 
 
 @dataclass(frozen=True)
@@ -100,6 +102,9 @@ class RunConfig:
     # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
     stream_segment: int = 1200
     schedule: Schedule = field(default_factory=Schedule)
+    # micro-batch per processo e per aggiornamento (accumulo dei gradienti, contratto delle loss): il batch del processo si divide in
+    # `accum_steps` parti contigue (`pretraining_loader.split_batch`); un solo clipping, optimizer ed EMA per aggiornamento
+    accum_steps: int = 1
 
 
 def wsd_warmup_steps(steps_at_d: int) -> int:
@@ -246,10 +251,9 @@ def diagnostics(student: WearUsFM, teacher: WearUsFM, val: tuple, n_probe: int =
 
 # --- piu' processi (DDP) -------------------------------------------------------------------------------------------------------------
 # Decisione del 09/10/2026 (`docs/decisioni.md`, «Lavoro in parallelo»; `docs/contratto_loss_distribuite.md`): un processo per GPU, batch
-# globale = `batch_size` finestre divise fra i processi, un solo aggiornamento per passo. Con un processo solo nulla cambia: nessuna
-# operazione collettiva. **Provvisorio:** finche' il contratto delle loss (somme e conteggi per componente, `training/jepa.py`) non c'e', la
-# perdita di ogni processo e' la sua media locale e DDP media i gradienti: NON e' la media del batch globale quando i denominatori differiscono
-# fra processi. Per questo DDP si rifiuta, salvo che lo chieda esplicitamente una prova (`ddp_local_mean_for_tests`).
+# globale = `batch_size` finestre divise fra i processi, un solo aggiornamento per passo. Con un processo solo e senza accumulo nulla cambia
+# (`jepa_losses`, nessuna operazione collettiva). Con DDP o con l'accumulo le loss seguono il contratto (`_accumulate_terms`): numeratori
+# locali e denominatori globali sommati su processi e micro-batch prima di ogni backward, metriche come somme / conteggi globali.
 
 
 @dataclass(frozen=True)
@@ -275,7 +279,7 @@ def dist_from_env() -> DistContext:
 
 class _Objective(torch.nn.Module):
     """Lo studente dentro un modulo il cui forward calcola le loss: DDP sincronizza i gradienti solo attraverso il forward del modulo che
-    avvolge, mentre `jepa_losses` chiama `encode`, `decode` e le teste dello studente. Il teacher resta fuori: nessun gradiente, nessuna
+    avvolge, mentre `jepa_loss_terms` chiama `encode`, `decode` e le teste dello studente. Il teacher resta fuori: nessun gradiente, nessuna
     sincronizzazione dei buffer."""
 
     def __init__(self, student: WearUsFM):
@@ -297,8 +301,8 @@ def _any_flag(ctx: DistContext, device, *flags: bool) -> list[bool]:
 
 def _merge_records(parts: list[dict]) -> dict:
     """Il record di un passo dai record dei processi. Finestre, classi, montaggi virtuali e sessioni saltate si sommano; l'attesa sui dati e'
-    la massima (il passo aspetta il processo piu' lento), con la media a parte; la durata del passo e' la massima. Le loss sono la media delle
-    medie locali dei processi che le hanno (PROVVISORIO, vedi sopra: col contratto diventano somme / conteggi globali)."""
+    la massima (il passo aspetta il processo piu' lento), con la media a parte; la durata del passo e' la massima. Le loss non passano di qui:
+    sono somme e conteggi globali (`_accumulate_terms`)."""
     out = dict(parts[0])
     out["windows"] = sum(p["windows"] for p in parts)
     out["skipped_sessions"] = sum(p["skipped_sessions"] for p in parts)
@@ -307,11 +311,115 @@ def _merge_records(parts: list[dict]) -> dict:
     out["t_data_s"] = max(p["t_data_s"] for p in parts)
     out["t_data_s_mean"] = sum(p["t_data_s"] for p in parts) / len(parts)
     out["t_step_s"] = max(p["t_step_s"] for p in parts)
-    for k in {k for p in parts for k in p.get("_losses", {})}:
-        vals = [p["_losses"][k] for p in parts if k in p.get("_losses", {})]
-        out[k] = sum(vals) / len(vals)
-    out.pop("_losses", None)
     return out
+
+
+# --- loss col contratto (DDP e accumulo) -----------------------------------------------------------------------------------------------
+
+@dataclass
+class _Micro:
+    """Un micro-batch sul dispositivo: ingressi del modello e argomenti delle loss."""
+
+    inp: object
+    visible: torch.Tensor
+    kinds: torch.Tensor
+    anchor_targets: list
+    rvq_on: torch.Tensor | None
+    rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
+
+
+def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
+    """Come il percorso a un processo; `dtype` solo per i test d'equivalenza sulla CPU (segnali in float64 per un modello in float64)."""
+    inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
+    if dtype is not None:
+        inp.signals = [x.to(dtype) for x in inp.signals]
+    codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
+    return _Micro(inp, visible, torch.as_tensor(batch.kind).to(device), batch.anchor_targets, rvq_on if codes_t is not None else None,
+                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+
+
+def _keys_hash(*dicts) -> float:
+    """Un numero per l'insieme delle chiavi (48 bit: esatto in float64), da confrontare fra processi con un solo all_reduce."""
+    text = "|".join(",".join(sorted(d)) for d in dicts)
+    return float(int.from_bytes(hashlib.sha256(text.encode()).digest()[:6], "little"))
+
+
+def _all_max(ctx: DistContext, device, values: list[float]) -> list[float]:
+    if not ctx.active:
+        return list(values)
+    t = torch.tensor(values, dtype=torch.float64, device=device)
+    torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+    return t.tolist()
+
+
+def _keys_differ(ctx: DistContext, device, h: float) -> bool:
+    """Vero su TUTTI i processi se almeno uno ha un insieme di chiavi diverso (max(h) != min(h))."""
+    mx, mn = _all_max(ctx, device, [h, -h])
+    return mx != h or -mn != h
+
+
+def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp):
+    """Forward e backward di un aggiornamento col contratto delle loss distribuite (DDP e/o accumulo; `docs/contratto_loss_distribuite.md`,
+    consegna di GPT del 12/10/2026). Prima di ogni backward: conteggi `loss_counts` di tutti i micro-batch, sommati e ridotti fra i processi
+    (denominatori globali D_c). Per micro-batch: forward (`no_sync` su tutti tranne l'ultimo), confronto dei conteggi del forward coi
+    precalcolati, chiavi uguali fra micro-batch e processi, perdita finita; poi backward di `backward_loss(D, R)`: DDP media sui processi e il
+    gradiente e' quello della media sul batch globale, senza dividere per i micro-batch. Ogni controllo vale per tutti i processi (un
+    all_reduce). Ritorna (motivo d'arresto o None, metriche): le metriche sono somme e conteggi globali (numeratori, diagnostiche, contatori)."""
+    keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 else None
+    pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
+                       keep_target_active=keep_active) for m in micros]
+    keys = sorted(pre[0])
+    if any(sorted(p) != keys for p in pre):
+        raise RuntimeError(f"componenti delle loss diverse fra i micro-batch: {[sorted(p) for p in pre]}")
+    if _keys_differ(ctx, device, _keys_hash(keys)):
+        return "componenti delle loss diverse fra i processi", {}
+    den = torch.stack([sum(p[k] for p in pre) for k in keys]).to(device=device, dtype=torch.int64)
+    if ctx.active:
+        torch.distributed.all_reduce(den)
+    global_den = dict(zip(keys, den))
+    if int(global_den["jepa"]) == 0:
+        return "nessun target JEPA nel batch globale", {}
+    sums: dict[tuple[str, str], torch.Tensor] = {}
+    weight, first_hash = {}, None
+    for i, m in enumerate(micros):
+        last = i == len(micros) - 1
+        with nullcontext() if model is None or last else model.no_sync():
+
+            def compute(s, m=m):
+                return jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
+                                       rvq_codes=m.rvq_codes, kinds=m.kinds)
+
+            with amp:
+                terms = model(compute) if model is not None else compute(student)
+            loss = terms.backward_loss(global_den, world_size=ctx.world_size)
+            h = _keys_hash(terms.num, terms.log_num, terms.log_den, terms.log_sum)
+            first_hash = h if first_hash is None else first_hash
+            mismatch = sorted(terms.den) != keys or any(not torch.equal(terms.den[k], pre[i][k].to(terms.den[k].device)) for k in keys)
+            flags = _all_max(ctx, device, [float(mismatch), float(not bool(torch.isfinite(loss))), float(h != first_hash), h, -h])
+            if flags[0]:
+                return "conteggi del forward diversi da quelli precalcolati", {}
+            if flags[1]:
+                return "perdita non finita", {}
+            if flags[2] or flags[3] != h or -flags[4] != h:
+                return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
+            loss.backward()
+        weight = terms.weight
+        for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):
+            for k, v in d.items():
+                sums[group, k] = sums.get((group, k), 0) + v.detach().to(torch.float64)
+    names = sorted(sums)
+    vec = torch.stack([sums[n].reshape(()) for n in names]).to(device)
+    if ctx.active:
+        torch.distributed.all_reduce(vec)
+    red = dict(zip(names, vec.tolist()))
+    out = {k: red["num", k] / max(int(global_den[k]), 1) for k in keys}
+    out["total"] = sum(weight[k] * out[k] for k in keys)
+    diag = {k: red["log_num", k] / red["log_den", k] for (g, k) in names if g == "log_num" and red.get(("log_den", k), 0) > 0}
+    diag.update({k: red["log_sum", k] for (g, k) in names if g == "log_sum"})
+    if set(diag) & set(out):
+        raise RuntimeError(f"diagnostiche con lo stesso nome di una componente: {sorted(set(diag) & set(out))}")
+    out.update(diag)
+    return None, out
 
 
 # --- ciclo ---------------------------------------------------------------------------------------------------------------------------
@@ -332,7 +440,7 @@ def _check_branch(cfg: RunConfig, state: dict, source: Path) -> None:
     """Un ramo (pilot sulle epoche, continuazione a 2D; D14) e' identico a un run fatto da zero con lo schedule nuovo solo se: tutto il resto
     della configurazione e' uguale (stesso warmup e stesso picco compresi), il checkpoint e' della fase stabile del run d'origine e cade
     anche nella fase stabile del ramo, e lo stream dei dati del checkpoint e' ripetibile."""
-    old, new = state.get("config", {}), config_to_dict(cfg)
+    old, new = {"accum_steps": 1, **state.get("config", {})}, config_to_dict(cfg)  # checkpoint di prima dell'accumulo: un micro-batch
     differ = sorted(k for k in set(old) | set(new) if k not in ("schedule", "max_steps") and old.get(k) != new.get(k))
     if differ:
         raise ValueError(f"ramo da {source}: configurazione diversa dall'origine in {differ}; cambiano solo schedule e max_steps")
@@ -369,14 +477,13 @@ def _to_device(inp, visible, rvq_on, device):
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
-          init_from: Path | None = None, dist: DistContext | None = None, ddp_local_mean_for_tests: bool = False,
-          branch_from: Path | None = None) -> dict:
+          init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
     il passo difettoso non aggiorna optimizer/EMA e non viene contato.
     Con `dist` attivo (DDP, un processo per GPU, gruppo gia' inizializzato): `cfg.batch_size` e' il batch GLOBALE, diviso fra i processi;
     file, log e diagnostiche solo dal processo 0; ogni decisione di arresto vale per tutti; checkpoint col generatore casuale di ogni processo.
-    Vedi la sezione «piu' processi» sopra per il limite provvisorio sulle loss."""
+    Con DDP o `cfg.accum_steps` > 1 le loss seguono il contratto delle loss distribuite (`_accumulate_terms`)."""
     t_start = time.time()
     ctx = dist or DistContext()
     say = log if ctx.is_main else (lambda m: None)
@@ -397,15 +504,17 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             raise ValueError("DDP: rank e world_size diversi da quelli del gruppo dei processi")
         if cfg.batch_size % ctx.world_size:
             raise ValueError(f"DDP: batch globale {cfg.batch_size} non divisibile per {ctx.world_size} processi")
-        if not ddp_local_mean_for_tests:
-            raise NotImplementedError("DDP: manca il contratto delle loss distribuite (somme e conteggi per componente in training/jepa.py, "
-                                      "docs/contratto_loss_distribuite.md): la media locale non e' la media del batch globale")
         if cfg.pairing_audit or cfg.keep_grad_every:
             raise NotImplementedError("DDP: pairing_audit e keep_grad_every non ancora supportati (contratto, punto 4)")
         if str(device).startswith("cuda"):
             device = f"cuda:{ctx.local_rank}"
             torch.cuda.set_device(ctx.local_rank)
     per_process = cfg.batch_size // ctx.world_size
+    if cfg.accum_steps < 1 or per_process % cfg.accum_steps:
+        raise ValueError(f"accumulo: {per_process} finestre per processo non divisibili in {cfg.accum_steps} micro-batch")
+    if cfg.accum_steps > 1 and (cfg.pairing_audit or cfg.keep_grad_every):
+        raise NotImplementedError("accumulo: pairing_audit e keep_grad_every non supportati")
+    use_terms = ctx.active or cfg.accum_steps > 1  # il contratto delle loss; altrimenti il percorso di sempre, bit per bit
     ckpt = out_dir / "checkpoint.pt"
     if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
         raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
@@ -561,37 +670,41 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if cfg.pairing_audit:
             from wearusfm.training.pairing import batch_sha256
             batch_hash = batch_sha256(batch)  # CPU data BEFORE any conversion/device transfer
-        inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
         for g in opt.param_groups:
             g["lr"] = _lr_at(step, cfg)
         student.train()
         opt.zero_grad(set_to_none=True)
-        codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
-
-        def compute(m):
-            return jepa_losses(m, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
-                               kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                               rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
-
-        with amp:
-            losses = model(compute) if model is not None else compute(student)
-        bad_loss, = _any_flag(ctx, device, not bool(torch.isfinite(losses["total"])))
-        if bad_loss:  # anche se e' un altro processo: nessuno fa il backward
-            reason = f"perdita non finita al passo {step}"
-            numerical_failure = True
-            break
-        if cfg.jepa.keep_weight > 0 and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
-            # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance.
-            shared = [p for name, p in student.named_parameters() if p.requires_grad and
-                      name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
-            components = {"jepa": losses["jepa"], "keep": cfg.jepa.keep_weight * losses["keep"]}
-            components["anchors"] = losses["total"] - components["jepa"] - components["keep"]
-            for name, component in components.items():
-                grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
-                squares = [g.detach().float().square().sum() for g in grads if g is not None]
-                losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
-        losses["total"].backward()  # con DDP: i gradienti si mediano fra i processi qui
-        gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la media
+        if use_terms:  # DDP e/o accumulo: il contratto delle loss distribuite
+            micros = [_prepare(mb, device) for mb in L.split_batch(batch, cfg.accum_steps)]
+            failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp)
+            if failure is not None:  # deciso insieme da tutti i processi, prima del backward che l'avrebbe usato
+                reason = f"{failure} al passo {step}"
+                numerical_failure = True
+                break
+        else:  # un processo senza accumulo: il percorso di sempre
+            inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
+            codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
+            with amp:
+                losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
+                                     kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                     rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+            if not bool(torch.isfinite(losses["total"])):
+                reason = f"perdita non finita al passo {step}"
+                numerical_failure = True
+                break
+            if cfg.jepa.keep_weight > 0 and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
+                # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance.
+                shared = [p for name, p in student.named_parameters() if p.requires_grad and
+                          name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
+                components = {"jepa": losses["jepa"], "keep": cfg.jepa.keep_weight * losses["keep"]}
+                components["anchors"] = losses["total"] - components["jepa"] - components["keep"]
+                for name, component in components.items():
+                    grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
+                    squares = [g.detach().float().square().sum() for g in grads if g is not None]
+                    losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
+            losses["total"].backward()
+            loss_values = {k: float(v.detach()) for k, v in losses.items()}
+        gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la riduzione
         # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.
         if not torch.isfinite(gnorm):
             reason = f"gradienti non finiti al passo {step} (norma: {float(gnorm)})"
@@ -603,7 +716,6 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
-        loss_values = {k: float(v.detach()) for k, v in losses.items()}
         if not ctx.active:
             rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
         # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
@@ -611,8 +723,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         rec["virtual"] = sum(p != "full" for p in batch.presented or [])
         if ctx.active:  # il record del passo dai record di tutti i processi, sul processo 0
             parts = [None] * ctx.world_size if ctx.is_main else None
-            torch.distributed.gather_object({**rec, "_losses": loss_values}, parts, dst=0)
-            rec = _merge_records(parts) if ctx.is_main else {**rec, **loss_values}
+            torch.distributed.gather_object(rec, parts, dst=0)
+            rec = {**(_merge_records(parts) if ctx.is_main else rec), **loss_values}  # loss: gia' globali, uguali su ogni processo
         if cfg.pairing_audit:
             rec["batch_sha256"] = batch_hash
         if step % cfg.eval_every == 0 or step == cfg.max_steps:
@@ -666,8 +778,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
                "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")}}
     if ctx.active:
-        summary.update({"world_size": ctx.world_size, "batch_per_process": per_process,
-                        "ddp_loss": "media locale per processo, SOLO collaudo dell'impianto" if ddp_local_mean_for_tests else "contratto"})
+        summary.update({"world_size": ctx.world_size, "batch_per_process": per_process})
+    if use_terms:
+        summary.update({"accum_steps": cfg.accum_steps, "micro_batch": per_process // cfg.accum_steps,
+                        "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"})
     if ctx.is_main:
         (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
     say(f"fine: {reason}, passo {step}")

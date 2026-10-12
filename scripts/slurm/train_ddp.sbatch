@@ -15,8 +15,8 @@
 # Training DDP su un nodo (decisione del 09/10/2026: DDP su un nodo, 4 GPU; FSDP e piu' nodi fuori dal perimetro iniziale). torchrun lancia un
 # processo per GPU; il batch del preset e' GLOBALE (sanity: 32 = 4 x 8). Costo: 4 GPU per la durata del job (30 min su boost_qos_dbg = 2
 # GPU-ora). Ogni lancio va presentato con preventivo e autorizzato da Simone (budget «preparazione dell'infrastruttura», 25 GPU-ora).
-# Finche' il contratto delle loss distribuite non c'e' (docs/contratto_loss_distribuite.md), train_jepa.py rifiuta DDP: per i SOLI collaudi
-# dell'impianto (memoria, ritmo, arresti) si passa EXTRA_ARGS="--ddp-local-mean-collaudo", e il summary lo registra.
+# Le loss seguono il contratto delle loss distribuite (docs/contratto_loss_distribuite.md: numeratori locali, conteggi globali); accumulo con
+# EXTRA_ARGS="--accum-steps K".
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>[,EXTRA_ARGS=...][,TIME_LIMIT_S=...] scripts/slurm/train_ddp.sbatch \
 #        <manifest.json.gz> <session_scales.json> <run_dir> [passi massimi]
 # Uscita fuori dal codice: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json).
@@ -41,13 +41,13 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 # 8 CPU per GPU: 6 worker del dataloader per processo, come il sanity a 1 GPU
 COMMON=(scripts/train_jepa.py --preset "${PRESET:-sanity}" --manifest "$MANIFEST" --root "$WORK/data/processed" --root "$SCRATCH/data/processed"
         --scales "$SCALES" --out-dir "$RUN_DIR" --num-workers 6 --distributed)
-torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$MAX_STEPS" --time-limit-s "${TIME_LIMIT_S:-1500}" ${EXTRA_ARGS:-}
+torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$MAX_STEPS" --time-limit-s "${TIME_LIMIT_S:-1200}" ${EXTRA_ARGS:-}
 rc=$?
 # RESUME_TO (facoltativo, collaudi): ripresa nella stessa allocazione fino a quel passo, dal checkpoint appena scritto (stessi processi,
 # worker e segmento: lo stream riprende la stessa sequenza)
 if [ "$rc" -eq 0 ] && [ -n "${RESUME_TO:-}" ]; then
   echo "ripresa fino al passo $RESUME_TO"
-  torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$RESUME_TO" --time-limit-s "${RESUME_TIME_LIMIT_S:-300}" ${EXTRA_ARGS:-}
+  torchrun --standalone --nproc_per_node="$NGPU" "${COMMON[@]}" --max-steps "$RESUME_TO" --time-limit-s "${RESUME_TIME_LIMIT_S:-240}" ${EXTRA_ARGS:-}
   rc=$?
 fi
 exit $rc

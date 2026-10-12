@@ -4,8 +4,13 @@
 dataloader con le regole della finestra 1, memoria dei rung firmati. **E' un collaudo dell'infrastruttura, non un risultato scientifico.**
 Budget: «preparazione dell'infrastruttura della finestra 1», 25 GPU-ora (decisione del 09/10/2026), consumo finora 0.
 
-**Cosa NON prova** (da non leggere nei risultati): l'equivalenza delle loss fra 1 e 4 GPU (serve il contratto delle loss di GPT: qui DDP
-gira con `--ddp-local-mean-collaudo`, media locale per processo); il ritmo DDP dei rung 100M e 300M (qui solo la loro memoria su una GPU);
+**Aggiornamento del 12/10/2026:** il contratto delle loss distribuite e' collegato al trainer (GPT `5030a19`, Claude: vedi il registro), quindi
+il collaudo DDP usa le loss vere (numeratori locali, conteggi globali), non piu' la media locale per processo; l'opzione
+`--ddp-local-mean-collaudo` non esiste piu'. Margini del walltime corretti sulla review di GPT (avvio e checkpoint).
+
+**Cosa NON prova** (da non leggere nei risultati): l'equivalenza numerica delle loss fra 1 e 4 GPU con NCCL e bf16 (provata sulla CPU in
+float64 con `gloo`; la conferma su GPU richiede di misurare prima il rumore del bf16 fra due run identici, protocollo a parte); il ritmo DDP
+dei rung 100M e 300M (qui solo la loro memoria su una GPU);
 piu' nodi e FSDP; la testa keep dello Step 1; la qualita' dell'apprendimento.
 
 ## Codice
@@ -25,7 +30,7 @@ Sottomissioni con `scripts/submit_job.py` (ID logici sotto, `--dopo` per le dipe
 |---|---|---|---|---|
 | `infra1_checkout` | `campaign_checkout.sbatch` su stdin, `CAMPAIGN=collaudo-infra-1` | `lrd_all_serial`, 1 CPU, 2 GB | 10 min | 0 GPU-ora, 0,17 core-ora |
 | `infra1_loader` | `measure_loader.sbatch` con `--window1-rules --window-seconds <59425316> --scales-from <59623700> --workers 8 --batches 100 --batch-size 8` (8 CPU = la quota di una GPU, 8 finestre = il batch per GPU di DDP) | `lrd_all_serial`, 8 CPU, 24 GB | 1 h | 0 GPU-ora, 8 core-ora |
-| `infra1_ddp` | `train_ddp.sbatch`, preset `sanity` (30M), `EXTRA_ARGS="--window1-rules --window-seconds <59425316> --datasets all --ddp-local-mean-collaudo"`, 300 passi poi `RESUME_TO=330` nella stessa allocazione; manifest v1.1, scale 59623700; cartella nuova su `$SCRATCH` | `boost_qos_dbg`, 1 nodo, 4 GPU, 32 CPU, 480 GB | 30 min | **2 GPU-ora (16 ore locali)** |
+| `infra1_ddp` | `train_ddp.sbatch`, preset `sanity` (30M), `EXTRA_ARGS="--window1-rules --window-seconds <59425316> --datasets all"`, 300 passi poi `RESUME_TO=330` nella stessa allocazione, con `TIME_LIMIT_S=1200` e `RESUME_TIME_LIMIT_S=240` (24 min di training su 30: 6 min per avvii, letture iniziali e checkpoint); manifest v1.1, scale 59623700; cartella nuova su `$SCRATCH` | `boost_qos_dbg`, 1 nodo, 4 GPU, 32 CPU, 480 GB | 30 min | **2 GPU-ora (16 ore locali)** |
 | `infra1_memory` | `probe_memory.sbatch`: rung 30M, 100M, 300M x 4 e 8 finestre per GPU, Hyser a 4 s, 2 aggiornamenti | `boost_qos_dbg`, 1 GPU, 8 CPU, 100 GB | 30 min | **0,5 GPU-ora (4 ore locali)** |
 
 **Totale massimo: 2,5 GPU-ora (20 ore locali) + 8,2 core-ora CPU.** Budget infrastruttura: 25 -> almeno 22,5 GPU-ora residue. I tre job dopo il
@@ -41,7 +46,8 @@ maschera, codici e vicini, target delle ancore) con la configurazione del traini
 
 **`infra1_ddp`** — superato se tutti veri:
 1. uscita 0 delle due fasi; nessuno STOP, nessun valore non finito, nessun OOM;
-2. `summary.json`: `world_size` 4, `batch_per_process` 8, `ddp_loss` = media locale «SOLO collaudo», codice = SHA atteso;
+2. `summary.json`: `world_size` 4, `batch_per_process` 8, `accum_steps` 1, `loss_reduction` = contratto, codice = SHA atteso; nessun arresto
+   per conteggi diversi dai precalcolati, chiavi diverse fra processi o JEPA vuota;
 3. la seconda fase riprende dal passo 300 e arriva a 330 senza errori di stream (indice del batch = passo a ogni passo, verificato dal trainer)
    ne' di configurazione;
 4. `metrics.jsonl` con un solo record per passo da 1 a 330, `windows` = 32 per passo.

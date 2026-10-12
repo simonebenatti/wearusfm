@@ -59,16 +59,13 @@ def main(argv=None) -> int:
                     help="un ramo (pilot sulle epoche, continuazione a 2D): stato completo da un checkpoint della fase stabile, --out-dir nuova")
     ap.add_argument("--distributed", action="store_true",
                     help="DDP sotto torchrun, un processo per GPU (RANK/WORLD_SIZE/LOCAL_RANK dall'ambiente); il batch del preset e' GLOBALE")
-    ap.add_argument("--ddp-local-mean-collaudo", action="store_true",
-                    help="SOLO collaudi dell'impianto DDP (memoria, ritmo, arresti): perdita = media locale per processo, NON la media del batch "
-                         "globale; registrato nel summary. Il training vero aspetta il contratto delle loss (docs/contratto_loss_distribuite.md)")
+    ap.add_argument("--accum-steps", type=int, default=None,
+                    help="micro-batch per processo e per aggiornamento (accumulo dei gradienti; loss col contratto delle loss distribuite)")
     args = ap.parse_args(argv)
     ctx = None
     if args.distributed:
         ctx = R.dist_from_env()
         torch.distributed.init_process_group("nccl" if args.device.startswith("cuda") else "gloo")  # env:// da torchrun
-    elif args.ddp_local_mean_collaudo:
-        ap.error("--ddp-local-mean-collaudo vale solo con --distributed")
     main_process = ctx is None or ctx.is_main
     cfg = {"sanity": R.sanity_config, "small": R.small_config}.get(args.preset, lambda: R.ladder_config(args.preset))()
     if args.rvq_codes is not None:
@@ -80,6 +77,8 @@ def main(argv=None) -> int:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)
     if args.batch_size is not None:
         cfg = replace(cfg, batch_size=args.batch_size)
+    if args.accum_steps is not None:
+        cfg = replace(cfg, accum_steps=args.accum_steps)
     if args.schedule == "wsd":
         if args.total_steps is None:
             ap.error("--schedule wsd richiede --total-steps")
@@ -111,7 +110,7 @@ def main(argv=None) -> int:
     try:
         summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
                           time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s, init_from=args.init_from,
-                          dist=ctx, ddp_local_mean_for_tests=args.ddp_local_mean_collaudo, branch_from=args.branch_from)
+                          dist=ctx, branch_from=args.branch_from)
         if main_process:
             print(json.dumps(summary), flush=True)
     finally:

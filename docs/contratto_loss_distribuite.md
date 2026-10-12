@@ -161,3 +161,36 @@ no_sync per accumulo dove opportuno, diagnostiche globali e arresto coordinato. 
 finche' questa integrazione e i test distribuiti non sono completati. Test global-batch contro micro-batch sul modello CPU float64:
 rtol e atol 1e-10 per loss/gradienti/pesi/EMA; keep/readout e diagnostiche che fanno cast float32 hanno tolleranze float32, non 1e-10.
 NCCL/bf16, prestazioni e memoria restano da collaudare con protocollo e autorizzazione separati.
+
+## 7. Integrazione nel trainer (Claude, 12/10/2026)
+
+`training/run.py`, sulla consegna GPT `5030a19`. La guardia che rifiutava il DDP vero e' tolta, e con lei il ramo provvisorio della media
+locale (`ddp_local_mean_for_tests`, `--ddp-local-mean-collaudo`): i test distribuiti sotto passano.
+
+- **Percorsi.** Un processo senza accumulo: `jepa_losses`, il percorso di sempre (verificato bit per bit contro `run.py` precedente: pesi,
+  teacher, RNG, metriche e ordine dei campi). DDP e/o `RunConfig.accum_steps` > 1 (`--accum-steps`): `_accumulate_terms`.
+- **Micro-batch.** `pretraining_loader.split_batch`: il batch del processo in `accum_steps` parti di campioni contigui, canali reimpacchettati
+  (vicini spostati, patch fino al massimo della parte). Lo stream non dipende dall'accumulo: le estrazioni sono quelle del batch intero.
+- **Prima di ogni backward:** `loss_counts` (con `model_cfg` = student.cfg e, con la keep, il buffer `target_active` della testa) per tutti i
+  micro-batch; stesse chiavi su micro-batch (altrimenti errore) e processi (hash delle chiavi, MAX e MIN in un all_reduce); conteggi
+  sommati e ridotti (int64, all_reduce SUM): D_c. Se D_jepa = 0 nel batch globale: arresto coordinato.
+- **Per micro-batch:** forward dentro il modulo DDP (`no_sync` su tutti tranne l'ultimo), `backward_loss(D, world_size=R)`; prima del
+  backward un solo all_reduce MAX di: conteggi del forward diversi dai precalcolati, perdita non finita, chiavi delle diagnostiche diverse da
+  quelle del primo micro-batch o fra processi. Qualunque flag: tutti i processi si fermano allo stesso aggiornamento, senza backward, senza
+  sovrascrivere l'ultimo checkpoint, con STOP.
+- **Un aggiornamento:** un clipping, un `optimizer.step`, una EMA, WSD indicizzato dagli aggiornamenti (invariato).
+- **Metriche:** un all_reduce SUM (float64) dei numeratori staccati, `log_num`, `log_den`, `log_sum` sommati sui micro-batch; nel record:
+  componente = num / max(D, 1), `total` = somma pesata, diagnostica = log_num / log_den solo se log_den > 0 (come `jepa_losses`, che omette
+  le selezioni vuote), contatori `log_sum` sommati. Nessuna media di medie.
+- **Test** (CPU, `gloo`, float64): `tests/cpu/test_ddp_equivalence.py` — lo stesso batch globale a 1 processo col percorso di sempre, a 1
+  processo con 2 e 4 micro-batch, a 2 processi con 1 e 2 micro-batch, a 4 processi con una finestra ciascuno: loss per componente e
+  totale, gradienti dopo la riduzione, pesi dopo clipping e AdamW, teacher dopo l'EMA entro 1e-10; processi uguali bit per bit; per token e
+  per finestra, ancora singola e multi-scala con montaggi virtuali; un processo intero senza target RMS. Le diagnostiche per tipo di maschera
+  e topologia (calcolate in float32 in `jepa.py`) entro 1e-5 relativo. Il test fallisce se si usano i denominatori locali (verificato).
+  Inoltre arresti coordinati per conteggi sbagliati e JEPA vuota, split, accumulo su un processo attraverso `train()` con ripresa bit per
+  bit; in `tests/cpu/test_training_ddp.py` il ciclo completo a 2 processi con e senza accumulo, ripresa, NaN e conteggi sbagliati su un solo
+  processo.
+- **Non provato:** NCCL e bf16 su GPU (protocollo a parte, tolleranza da fissare dopo il rumore del bf16 fra due run identici); RVQ e keep
+  attraverso il trainer DDP (i termini e i conteggi li ha provati GPT; il trainer passa `rvq_codes` e `target_active`, ma nessun test
+  distribuito li esercita: la keep richiede un file di calibrazione, l'ancora RVQ e' spenta nella finestra 1); `pairing_audit` e
+  `keep_grad_every` restano rifiutati con DDP e con l'accumulo.

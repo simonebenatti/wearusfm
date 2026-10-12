@@ -605,6 +605,33 @@ class PretrainLoader:
                              rvq_codes if self.rvq_store is not None else None, presented)
 
 
+def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
+    """Il batch in `parts` micro-batch di campioni contigui (accumulo dei gradienti, contratto delle loss): stessi campioni, maschere e target,
+    canali reimpacchettati (indici dei vicini spostati, patch fino al massimo del micro-batch). Le estrazioni casuali sono quelle del batch
+    intero, quindi lo stream non dipende dal numero di micro-batch."""
+    n = len(batch.signals)
+    if parts < 1 or n % parts:
+        raise ValueError(f"{n} finestre non divisibili in {parts} micro-batch")
+    if parts == 1:
+        return [batch]
+    bounds = np.cumsum([0, *batch.counts])
+    size = n // parts
+    out = []
+    for i in range(parts):
+        s0, s1 = i * size, (i + 1) * size
+        a, b = int(bounds[s0]), int(bounds[s1])
+        p = max(batch.n_patches[s0:s1])
+        sets = CC.AttentionSets(**{f: getattr(batch.sets, f)[a:b] for f in ("index", "pair_type", "dist", "d_row", "d_col", "d_ring")})
+        sets = replace(sets, index=np.where(sets.index >= 0, sets.index - a, -1))
+        codes = CC.AnatomyCodes(*[getattr(batch.codes, f)[a:b] for f in CC.CODE_FIELDS])
+        out.append(replace(batch, signals=batch.signals[s0:s1], fs=batch.fs[s0:s1], counts=batch.counts[s0:s1], qc_valid=batch.qc_valid[a:b],
+                           codes=codes, sets=sets, visible=batch.visible[a:b, :p], kind=batch.kind[a:b, :p], rvq_on=batch.rvq_on[a:b],
+                           anchor_targets=batch.anchor_targets[s0:s1], n_patches=batch.n_patches[s0:s1], rows=batch.rows[s0:s1],
+                           windows=batch.windows[s0:s1], rvq_codes=batch.rvq_codes[s0:s1] if batch.rvq_codes is not None else None,
+                           presented=batch.presented[s0:s1] if batch.presented is not None else None))
+    return out
+
+
 def batch_stream(loader: PretrainLoader, batch_size: int, *, seed: int, start: int = 0, worker: int = 0, n_workers: int = 1,
                  segment: int = 1200, rank: int | None = None):
     """Batch con un indice globale b, da `start` in poi, che dipendono solo da (seme, processo DDP, b): la stessa sequenza in un run continuo

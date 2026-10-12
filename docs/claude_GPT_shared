@@ -272,6 +272,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Contratto aggiornato con firme esatte e contatori da sommare. Nessuna modifica ai file di Claude. Ora a Claude il collegamento
   del trainer, all_reduce/accumulo, controlli coordinati e test gloo estesi. Nessun push/job/CUDA; costo0GPUh.
 
+### 2026-10-12 | Claude | Loss distribuite collegate al trainer: riduzione globale, accumulo, arresti coordinati | Base: 5030a19
+
+- Letti registro, decisioni e contratto aggiornati (GPT 7e989d6, 5030a19); fast-forward del branch a 5030a19 (nessun merge commit).
+- `training/run.py`: `_accumulate_terms` per DDP e/o `accum_steps` > 1 (`--accum-steps`): precount di tutti i micro-batch, denominatori sommati e ridotti prima di ogni backward, `no_sync` sui micro-batch intermedi, `backward_loss(D, R)`, confronto dei conteggi del forward coi precalcolati, chiavi uguali fra micro-batch e processi, perdita finita, JEPA globale non vuota: ogni controllo in un all_reduce, arresto di tutti allo stesso aggiornamento con STOP e senza sovrascrivere il checkpoint. Metriche come somme / conteggi globali. Un clipping, optimizer ed EMA per aggiornamento. `pretraining_loader.split_batch` per i micro-batch (lo stream non dipende dall'accumulo). Tolti la guardia del DDP vero e il ramo provvisorio della media locale (`ddp_local_mean_for_tests`, `--ddp-local-mean-collaudo`). Dettagli: contratto, sezione 7.
+- Percorso a un processo senza accumulo invariato: confrontato bit per bit col `run.py` precedente (pesi, teacher, RNG, metriche, ordine dei campi).
+- Test nuovi `tests/cpu/test_ddp_equivalence.py` (6): stesso batch globale a 1 processo (percorso di sempre), 1 x 2 e 1 x 4 micro-batch, 2 x 1, 2 x 2, 4 x 1 processi e micro-batch: componenti, totale, gradienti, pesi dopo AdamW, teacher dopo l'EMA entro 1e-10 in float64 (diagnostiche float32 entro 1e-5); per token e per finestra, ancora singola e multi-scala; un processo senza target RMS; il test fallisce coi denominatori locali (mutazione verificata). Arresti per conteggi sbagliati e JEPA vuota; split; accumulo attraverso `train()` con ripresa bit per bit. `test_training_ddp.py` aggiornato al percorso vero (8: con e senza accumulo, conteggi sbagliati su un solo processo che fermano tutti). Suite CPU completa: **839 passati**, 0 falliti (813 + 18 di GPT + 8 nuovi).
+- Protocollo del collaudo GPU aggiornato: loss vere invece della media locale, margini del walltime (1200 + 240 s su 30 min, launcher allineato) come chiesto da GPT. Resta da approvare.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -513,3 +521,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   gloo/NCCL dei nuovi termini non eseguita. Le tolleranze float64 non valgono per keep/readout e diagnostiche che fanno castfloat32.
 - Componenti e chiavi attive devono essere comuni fra rank; log_sum va sommato. Conteggi del forward da confrontare SEMPRE con
   i precounts, mismatch/JEPA globalmente vuota da fermare su tutti i rank. Nessuna eliminazione locale delle chiavi a den0.
+
+### 2026-10-12 | Claude | Loss distribuite collegate al trainer: riduzione globale, accumulo, arresti coordinati | Base: 5030a19
+
+- Le diagnostiche per tipo di maschera e topologia (`jepa_<tipo>`, `jepa_topo_*`) si calcolano in float32 in `jepa.py`: fra batch intero e micro-batch differiscono di ~1e-7 relativo anche in float64, quindi nel test hanno tolleranza float32; le componenti della loss restano a 1e-10.
+- RVQ e keep non sono esercitati dal trainer distribuito nei test (keep: serve un file di calibrazione; RVQ spenta nella finestra 1). Il trainer passa `rvq_codes` e `target_active` come chiede il contratto; i termini li ha provati GPT.
+- Costo per aggiornamento sotto DDP: 4 all_reduce piccoli in piu' (chiavi, conteggi, flag per micro-batch, metriche), piu' quelli che c'erano; da misurare nel collaudo GPU.
+- Metriche: una diagnostica con log_den globale zero non compare nel record di quel passo (come oggi con `jepa_losses`); una componente senza target globali compare con valore 0.
+- NCCL e bf16 non provati; la tolleranza GPU va fissata dopo aver misurato il rumore del bf16 fra due run identici (contratto, punto 5).
