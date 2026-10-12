@@ -250,6 +250,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Scritto `docs/collaudo_infra_gpu_1.md` (protocollo **da approvare**, nessun job autorizzato): 4 job con ID logici per `submit_job.py` (checkout di campagna; misura per fasi del dataloader con le regole della finestra 1; DDP a 4 GPU sul 30M con media locale, 300 passi e ripresa a 330 nella stessa allocazione; sonda della memoria dei rung 30M/100M/300M con 4 e 8 finestre per GPU sul caso peggiore). Costo massimo **2,5 GPU-ora (20 ore locali) + 8,2 core-ora CPU** sul tetto infrastruttura di 25. Criteri fissati prima: superato/non superato per checkout e DDP, descrittivo per il dataloader, regola «sta in memoria se riservata + buffer DDP <= 60 GiB» per la sonda. Due strade per il codice da far scegliere a Simone: dopo l'integrazione di GPT, oppure subito con un riferimento `deploy/` del branch di Claude.
 - Nuovi: `scripts/probe_memory.py` (+ `scripts/slurm/probe_memory.sbatch`): aggiornamenti completi (forward, backward, clip, AdamW, EMA) sullo stesso batch del caso peggiore, memoria massima allocata e riservata, OOM registrato e caso successivo, report scritto a ogni caso; `train_ddp.sbatch` con `PRESET` e la fase di ripresa `RESUME_TO` nella stessa allocazione. Test `tests/cpu/test_probe_memory.py` (1, sulla CPU con la griglia di CapgMyo dei dati di prova). Suite CPU completa: **813 passati**, 0 falliti.
 
+### 2026-10-12 | GPT | Review e integrazione delle sei consegne Claude | Snapshot: 1a65a1d
+
+- Letti CLAUDE.md, registro, contratto, protocollo e codice delle sei consegne, incluse le dipendenze del deploy. Accettata l'integrazione
+  locale con fast-forward, conservando gli SHA e le voci di Claude testualmente; nessuna modifica al suo worktree, nessun push/job.
+- 98 test pertinenti unici verificati dopo il retry autorizzato dei test DDP bloccati dal sandbox localhost; altri2 controlli CPU:
+  ripresa con DataLoader reale a3worker e DDP a2processi, student/teacher/RNG finali identici bit per bit. Bash-n e diff-check PASS.
+  Suite completa813 non rieseguita da GPT. Dettagli, snapshot e script di accettazione in decisioni.md.
+- Chiusi i3difetti del deploy della review precedente; vero DDP ancora bloccato dalle loss globali, prossima consegna di GPT.
+- Su richiesta di Simone aggiunto SOLO `/Users/simonebenatti/dev/wearusfm` alle writable_roots di `~/.codex/config.toml` (fuori Git);
+  TOML verificato e tutte le altre impostazioni invariate. Permessi attivi di questa chat non confermati aggiornati; nessuna estensione
+  di rete/full-access o autorizzazione a nuovi job. Preferenza: niente riconferme per lavoro locale gia' approvato, nel rispetto del sandbox.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -476,3 +488,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La sonda misura il caso peggiore su un batch fisso di Hyser: il picco del training vero dipende anche dalla distribuzione delle finestre, quindi la regola dei 60 GiB e' prudente ma non una garanzia per ogni passo.
 - Il collaudo DDP usa `--ddp-local-mean-collaudo`: le loss registrate sono medie di medie locali, non i valori del training vero.
 - Il codice del branch di Claude non ha ancora la review tecnica di GPT (7ed8b59, 4fcc1df, 92e137e, 56bc7e6, 772b991 e quest'ultimo): la strada (b) del protocollo lo userebbe senza review.
+
+### 2026-10-12 | GPT | Limiti dopo l'integrazione infrastrutturale | Snapshot: 1a65a1d
+
+- Review CPU chiusa, non collaudo NCCL/CUDA ne' equivalenza delle loss globali. WSD: ultimo update a lr_picco/n_decay, zero al confine
+  dopo l'ultimo update; stream nuovo diverso dal codice storico, checkpoint storici senza garanzia di replay.
+- Protocollo GPU resta da autorizzare; predisporre margine nel walltime per startup/checkpoint e report associati allo SHA verificato.
+  Sonda Hyser su una GPU non e' throughput dei rung grandi in DDP. I limiti noti di prenotazione/lock non autorizzano retry automatici.
+- Budget infrastruttura invariato (0 GPUh usate da questa attivita'). Picco LR e batch dei rung grandi invariati fino alla calibrazione.

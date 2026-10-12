@@ -2501,3 +2501,39 @@ standard, quindi 12 e 18 blocchi ~ 16 e 24 blocchi standard, il bordo basso di v
 
 Da dichiarare: al 300M il Perceiver (blocchi fissi per costruzione) resta sotto il 5% di v10. Picco del learning rate e batch dei rung maggiori:
 dalla calibrazione della finestra 1 (D14), oggi quelli del sanity. Il preset 1B non e' definito (finestra 2, FSDP fuori dal perimetro iniziale).
+
+## Review e integrazione locale delle consegne Claude (GPT, 12/10/2026)
+
+Su «tocca a te», priorita' al punto 0: esaminati insieme i commit `7ed8b59`, `4fcc1df`, `92e137e`, `56bc7e6`, `772b991`, `1a65a1d`,
+incluse le dipendenze c333b9d/6d7cdef/195fc58 e i merge intermedi. Snapshot verificato:
+`1a65a1d2b3744d09826da0239bc2c7224ff5a4aa`, checkout GPT isolato `/private/tmp/wearusfm-review-20261012.6LElAx/candidate`.
+Integrazione locale con fast-forward: SHA originali conservati, nessuna riscrittura o modifica del worktree di Claude.
+
+**Verifiche GPT:** 98 test pertinenti unici verificati (deploy/sottomissioni, trainer e sicurezza numerica, DDP, replay, WSD, preset,
+loader e sonda della memoria), piu' 2 controlli aggiuntivi esterni di accettazione. Il primo giro nel sandbox: 93 PASS e 5 errori di
+connessione localhost; il file DDP rieseguito col permesso necessario: 6/6 PASS (un caso gia' passato nel primo giro, non contato due volte).
+I due controlli aggiuntivi: training continuo/ripreso con DataLoader reale a 3 worker, segmento non multiplo dei worker; training DDP a
+2 processi continuo/ripreso. Student, teacher e RNG finali identici bit per bit. Script riproducibile:
+`/private/tmp/wearusfm-review-20261012.6LElAx/test_review_extra.py`. Bash -n sui 6 launcher/libreria e git diff --check PASS.
+La suite completa 813 rimane il conteggio dichiarato da Claude: GPT ha rieseguito il sottoinsieme pertinente, non tutta la suite.
+
+**Esito:** chiusi i tre difetti della review precedente: stato riletto sotto lock e transizioni controllate, errori Git/find/chmod
+espliciti e sola lettura verificata, lock proprio del ledger. DDP di collaudo, ripresa esatta nelle condizioni provate, WSD e preset
+accettati per l'integrazione locale. Il vero training DDP resta rifiutato finche' GPT non consegna somme/conteggi e Claude non collega
+riduzione globale e accumulo. Le interfacce del contratto restano quelle concordate nella review del 09/10.
+
+**Limiti da conservare:**
+- Cambia lo stream rispetto al codice storico: confronti accoppiati solo fra run del medesimo codice; checkpoint storici senza stream
+  non garantiscono una continuazione esatta. Test di equivalenza delle loss globali e NCCL/bf16 ancora da fare.
+- WSD discreto: pre-decay dopo 80% degli update; primo update del decay al picco, ultimo a lr_picco/n_decay, valore zero al confine D
+  dopo l'ultimo update. Questa convenzione e' esplicita nel codice/test di Claude; non descrivere l'ultimo update applicato come lr=0.
+- Restano i limiti operativi del submitter gia' dichiarati da Claude (prenotazione iniziale che puo' lasciare un ID orfano, lock da
+  recuperare manualmente dopo SIGKILL, ledger su filesystem locale). Non autorizzano rilanci automatici.
+- `collaudo_infra_gpu_1.md` e' integrato come PROPOSTA: 2,5 GPUh + 8,2 core-ora CPU, non come autorizzazione. Usare uno SHA completo
+  revisionato e preflight dei ref/hook. Prima del lancio fissare comandi/input/risorse esatti e margine per i due torchrun rispetto al
+  walltime (i default 1500+300 secondi non lasciano margine per startup/checkpoint). Nessun job/push fatto in questa attivita'.
+- Sonda memoria: Hyser fisso su una GPU e stima dei bucket, non misura DDP/throughput 100M/300M o garanzia per tutti i dataset.
+  Associare report a log/SHA del checkout; qualunque OOM, risultato non finito o caso mancante non certifica fattibilita'.
+
+Budget infrastruttura non consumato da questa review (0 GPUh). Picco LR 3e-4 e batch globale32 anche ai rung grandi, come richiesto da
+Simone, finche' la calibrazione della finestra 1 li fissa. Prossima consegna GPT: `jepa_loss_terms` / `loss_counts` con regressioni CPU.
