@@ -62,3 +62,34 @@ ora: un rung **sta** con b finestre per GPU se `max_reserved_gib + ddp_buckets_g
 
 Esiti, costi effettivi (da `sacct`) e consuntivo del budget in `docs/decisioni.md` e nel registro condiviso; log e JSON copiati sul Mac
 fuori dal repo, il riepilogo in `results/`. Nessun rilancio automatico: un job fallito si guarda e si ripropone.
+
+## Comandi esatti (fissati prima del lancio, 12/10/2026)
+
+Autorizzazione di Simone del 12/10/2026 (in `docs/decisioni.md`). Strada (b): codice = il commit che contiene questa sezione (`<SHA>`, 40
+caratteri, registrato in `decisioni.md` al lancio), branch di Claude non ancora rivisto da GPT. Dal Mac, nella radice del worktree di Claude.
+
+    M=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz   # manifest v1.1 (1.704.849 byte)
+    S=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json       # scale 59623700 (2.234.011 byte)
+    W=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json             # durate 59425316 (2.156.652 byte)
+    C=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/collaudo-infra-1
+    RUN=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/infra1_ddp_1210                 # cartella nuova
+    PROBE=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra1/probe_memory_1210.json
+
+    git push leonardo <SHA>:refs/heads/deploy/collaudo-infra-1
+    python3 scripts/submit_job.py --id infra1_checkout --agente claude --campagna collaudo-infra-1 --gpu-ore 0 \
+      --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=collaudo-infra-1,CAMPAIGN_SHA=<SHA>
+    python3 scripts/submit_job.py --id infra1_loader --agente claude --campagna collaudo-infra-1 --gpu-ore 0 --dopo infra1_checkout -- \
+      --cpus-per-task=8 --time=01:00:00 --export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA> \
+      $C/scripts/slurm/measure_loader.sbatch $M $S --window1-rules --window-seconds $W
+    python3 scripts/submit_job.py --id infra1_ddp --agente claude --campagna collaudo-infra-1 --gpu-ore 2 --dopo infra1_checkout -- \
+      "--export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA>,RESUME_TO=330,TIME_LIMIT_S=1200,RESUME_TIME_LIMIT_S=240,EXTRA_ARGS=--window1-rules --window-seconds $W --datasets all" \
+      $C/scripts/slurm/train_ddp.sbatch $M $S $RUN 300
+    python3 scripts/submit_job.py --id infra1_memory --agente claude --campagna collaudo-infra-1 --gpu-ore 0.5 --dopo infra1_checkout -- \
+      --export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA> $C/scripts/slurm/probe_memory.sbatch $M $S $W $PROBE
+
+Preflight in sola lettura (12/10/2026, leonardo-ops): coda vuota; nel canonico solo `main` e il tag `manifest-v1`, nessun ref `deploy/`, nessun
+worktree, `$WORK/wearusfm_campaigns` assente; hook solo `.sample`; config locale senza `hooksPath`, `receive.denyCurrentBranch =
+updateInstead` (agisce solo sul branch estratto, `main`: il ref di deploy non tocca il working tree); input presenti con le date attese.
+Non verificati dal login node: sha256 degli input e quota Lustre (comandi non ammessi a leonardo-ops); il checkout aggiunge ~6 MB.
+Se una dipendenza `afterok` viene rifiutata da SLURM perche' il checkout e' gia' finito (successo del 07/10), lo si verifica dal log e si
+risottomette quel job senza dipendenza con `--dopo-rifiuto`: adeguamento operativo, stessi costi e comandi.

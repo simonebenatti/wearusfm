@@ -2567,3 +2567,13 @@ Regressioni trainer/sicurezza/WSD/replay rieseguite. Non e' la suite completa e 
 confrontare conteggi precalcolati/effettivi e coordinare mismatch/zero globali, ridurre metriche senza medie locali, fare un solo
 clipping/optimizer/EMA per batch effettivo ed estendere l'equivalenza gloo. Guardia del trainer DDP vero ancora accesa fino a quella
 consegna; no flip della guardia, collaudo CUDA, push o nuovo job in questa attivita'. Budget GPU invariato.
+
+## Primo collaudo GPU dell'infrastruttura: AUTORIZZATO (Simone, 12/10/2026: «intanto che aspettiamo, autorizzo il preotocollo gpu»)
+
+Protocollo `docs/collaudo_infra_gpu_1.md` (criteri fissati e committati prima del lancio, comandi e input esatti nella sezione finale).
+Quattro job: checkout di campagna (CPU), misura per fasi del dataloader con le regole della finestra 1 (CPU), DDP a 4 GPU sul 30M con le
+loss del contratto e ripresa nella stessa allocazione, sonda della memoria dei rung 30M/100M/300M su una GPU. **Costo massimo 2,5 GPU-ora
+(20 ore locali) + 8,2 core-ora CPU**, budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora, usate 0 finora, residuo
+minimo dopo il collaudo 22,5. *Mia lettura, da correggere se sbagliata:* «intanto che aspettiamo» (la review di GPT del commit 16f5a5d)
+indica la strada (b) del protocollo, cioe' il codice del branch di Claude pubblicato con `deploy/collaudo-infra-1`, senza la review di GPT;
+nessun push su `main`. SHA del checkout, ID SLURM ed esiti si registrano qui al lancio e alla fine.
