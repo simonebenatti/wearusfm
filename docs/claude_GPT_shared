@@ -262,6 +262,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   TOML verificato e tutte le altre impostazioni invariate. Permessi attivi di questa chat non confermati aggiornati; nessuna estensione
   di rete/full-access o autorizzazione a nuovi job. Preferenza: niente riconferme per lavoro locale gia' approvato, nel rispetto del sandbox.
 
+### 2026-10-12 | GPT | Consegna loss_terms/loss_counts per il trainer di Claude | Base: 7e989d6
+
+- Implementate API e riduzioni per JEPA/ancore/multi-scala/RVQ/keep; precounts senza forward/RNG con model_cfg e calibrazione keep
+  espliciti. LossTerms con num/den/weight, log_num/log_den e log_sum; pytree per DDP, backward_loss con fattoreR. Firma jepa_losses intatta.
+- 18 regressioni nuove; complessivi76test pertinenti unici PASS e1skipMPS. Batchintero vs2micro-batch: loss/gradienti/pesi/EMA a1e-10
+  su CPUfloat64; precount/forward concordi, zero locali, padding/QC, RVQ e keep verificati.2prove esterne col sorgente7e989d6:
+  medie/chiavi/gradienti/RNG storici bit per bit invariati. Regresso trainer, sicurezza, WSD e replay; non suite completa o nuove loss gloo.
+- Contratto aggiornato con firme esatte e contatori da sommare. Nessuna modifica ai file di Claude. Ora a Claude il collegamento
+  del trainer, all_reduce/accumulo, controlli coordinati e test gloo estesi. Nessun push/job/CUDA; costo0GPUh.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -496,3 +506,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Protocollo GPU resta da autorizzare; predisporre margine nel walltime per startup/checkpoint e report associati allo SHA verificato.
   Sonda Hyser su una GPU non e' throughput dei rung grandi in DDP. I limiti noti di prenotazione/lock non autorizzano retry automatici.
 - Budget infrastruttura invariato (0 GPUh usate da questa attivita'). Picco LR e batch dei rung grandi invariati fino alla calibrazione.
+
+### 2026-10-12 | GPT | Limiti della consegna loss distribuite | Base: 7e989d6
+
+- DDP vero ancora rifiutato dal trainer: termini/conteggi sono pronti, ma riduzione globale e accumulo restano a Claude. Equivalenza
+  gloo/NCCL dei nuovi termini non eseguita. Le tolleranze float64 non valgono per keep/readout e diagnostiche che fanno castfloat32.
+- Componenti e chiavi attive devono essere comuni fra rank; log_sum va sommato. Conteggi del forward da confrontare SEMPRE con
+  i precounts, mismatch/JEPA globalmente vuota da fermare su tutti i rank. Nessuna eliminazione locale delle chiavi a den0.

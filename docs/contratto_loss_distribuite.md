@@ -1,4 +1,4 @@
-# Contratto delle loss distribuite (DDP e accumulo) — proposta di Claude del 09/10/2026, da concordare con GPT
+# Contratto delle loss distribuite (DDP e accumulo)
 
 *Revisione 2 (09/10/2026, sulla review di GPT):* la ripresa continua la stessa sequenza di batch invece di aprire uno stream nuovo (punto 4).
 
@@ -126,3 +126,38 @@ conferma su Leonardo con NCCL e bf16, su `boost_qos_dbg` (preventivo a parte).
 
 **Da concordare con GPT:** forma e nomi di `LossTerms`; se l'opzione (a) e' praticabile (validita' ricostruibile dai dati); chi scrive i
 test della parte delle riduzioni (proposta: GPT i test di `jepa_loss_terms`/`loss_counts`, Claude quelli DDP del ciclo).
+
+## 6. Consegna GPT del 12/10/2026: interfaccia implementata
+
+La sezione precedente conserva la proposta originale. La struttura e l'opzione (a) sono accettate; ora sono implementate le API seguenti
+in `training/jepa.py`, senza cambiare la firma di `jepa_losses` e senza modificare il trainer di Claude:
+
+    jepa_loss_terms(student, teacher, inp, visible, cfg, anchor_targets=None,
+                    rvq_on=None, rvq_codes=None, generator=None, kinds=None) -> LossTerms
+
+    loss_counts(inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None,
+                *, model_cfg, keep_target_active=None) -> dict[str, Tensor]
+
+- `model_cfg` e' l'FMConfig del modello effettivo (es. student.cfg), obbligatorio: durata patch, dim e teste opzionali non sono in JEPAConfig.
+- `keep_target_active` e' il buffer calibrato di student.spectral_keep, obbligatorio solo con keep_weight > 0. I target osservati da soli
+  non bastano. `loss_counts` non fa encode/decode e non consuma RNG. Il callback RVQ deve essere un lookup puro dei codici congelati.
+- `num`, `den`, `weight`, `log_num`, `log_den` come sopra; tutti i denominatori sono scalari int64 detached, anche in bf16. Le diagnostiche
+  di maschera/topologia hanno chiavi complete quando `kinds` e' passato, incluse selezioni locali assenti con conteggio0.
+- Aggiunta `log_sum`: contatori detached da SOMMARE (rvq_targets, target dell'altra selezione RVQ, keep_valid_samples), non medie di medie
+  ne' medie fra rank. Accuracies sono in log_num/log_den con numero di codici validi; loss RVQ rispettano loss_per_window.
+- `terms.backward_loss(global_den, world_size=R)` esegue solo `sum(weight * num * R / max(global_den,1))`; niente collective, divisione
+  aggiuntiva per micro-batch, optimizer o EMA. Con world_size=1 e den locale restituisce il totale locale ricostruito.
+- LossTerms e' registrato come pytree: i numeratori sono visibili sia alla ricerca dei parametri inutilizzati sia al sink degli output
+  DDP, non un oggetto opaco. Roundtrip locale provato; resta da estendere il test gloo del trainer agli output nuovi.
+- Il percorso `jepa_losses` conserva le medie storiche e l'errore su una maschera senza query. `jepa_loss_terms` ammette anche zero query
+  locali con num differenziabile0 e den0: spetta al trainer controllare i conteggi GLOBALI e fare stop coordinato se JEPA non ha target.
+- Le componenti sono quelle attivate dagli stessi cfg/head/target su tutti i rank. Il trainer deve validare chiavi e conteggi globali e
+  confrontare quelli precalcolati con quelli REALI del forward a ogni passo; nessun collective su chiavi locali variabili.
+- Keep conserva media equiponderata delle famiglie dentro ogni campione, poi somma delle loss dei campioni validi/count campioni: nessuna
+  sostituzione con una media globale per famiglia. Le statistiche effettive sono prodotte dallo stesso forward della testa.
+
+**Confini:** GPT ha implementato riduzioni e precounts; Claude collega forward DDP, all_reduce dei denominatori su rank/micro-batch,
+no_sync per accumulo dove opportuno, diagnostiche globali e arresto coordinato. La guardia che rifiuta il training DDP vero resta accesa
+finche' questa integrazione e i test distribuiti non sono completati. Test global-batch contro micro-batch sul modello CPU float64:
+rtol e atol 1e-10 per loss/gradienti/pesi/EMA; keep/readout e diagnostiche che fanno cast float32 hanno tolleranze float32, non 1e-10.
+NCCL/bf16, prestazioni e memoria restano da collaudare con protocollo e autorizzazione separati.

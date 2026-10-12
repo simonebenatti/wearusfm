@@ -18,18 +18,19 @@ from __future__ import annotations
 
 import copy
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+from torch.utils._pytree import register_pytree_node
 
 from wearusfm.model.anchor_targets import MS_SCALES, RVQ_TOKEN_MS, AnchorTargets
-from wearusfm.model.anchors import anchor_losses, masked_mean, rvq_loss
+from wearusfm.model.anchors import anchor_losses, anchor_loss_terms, masked_mean, masked_sum_count, rvq_loss, rvq_loss_terms
 from wearusfm.model.channel_codes import TOPOLOGIES
-from wearusfm.model.fm import ModelInputs, WearUsFM
-from wearusfm.model.spectral_step1 import keep_objective
+from wearusfm.model.fm import FMConfig, ModelInputs, WearUsFM
+from wearusfm.model.spectral_step1 import global_spectral_targets, keep_objective, keep_objective_terms
 from wearusfm.training.masking import KIND_NAMES, VISIBLE
 
 
@@ -117,17 +118,147 @@ def effective_rank(x: torch.Tensor) -> float:
     return float(torch.exp(-(p * p.log()).sum()))
 
 
+@dataclass
+class LossTerms:
+    """Local additive statistics. The trainer reduces counts over ALL ranks/micro-batches before any backward.
+
+    log_num/log_den are detached mean statistics; log_sum holds additive counters (never average target/sample counts across ranks).
+    No collective, optimizer update, or EMA is performed here.
+    """
+    num: dict[str, torch.Tensor] = field(default_factory=dict)
+    den: dict[str, torch.Tensor] = field(default_factory=dict)
+    weight: dict[str, float] = field(default_factory=dict)
+    log_num: dict[str, torch.Tensor] = field(default_factory=dict)
+    log_den: dict[str, torch.Tensor] = field(default_factory=dict)
+    log_sum: dict[str, torch.Tensor] = field(default_factory=dict)
+
+    def backward_loss(self, global_den: dict[str, torch.Tensor] | None = None, *, world_size: int = 1) -> torch.Tensor:
+        """R * local numerator / global count: compensates DDP's gradient average, with no extra micro-batch divisor."""
+        den = self.den if global_den is None else global_den
+        if not self.num or set(den) != set(self.num) or set(self.weight) != set(self.num) or world_size < 1:
+            raise ValueError("inconsistent component keys or world_size")
+        return sum(self.weight[k] * n * world_size / den[k].clamp(min=1) for k, n in self.num.items())
+
+
+# DDP finds tensors in dataclasses, but its unused-output sink also FLATTENS the output via pytree. Register the container so its
+# differentiable numerators pass through that sink rather than treating LossTerms as an opaque, non-tensor leaf.
+register_pytree_node(LossTerms,
+                    lambda t: ([t.num, t.den, t.weight, t.log_num, t.log_den, t.log_sum], None),
+                    lambda values, context: LossTerms(*values))
+
+
+def _sample_index(q_ch: torch.Tensor, counts: list[int]) -> torch.Tensor:
+    bounds = torch.as_tensor(np.cumsum([0, *counts]), device=q_ch.device)
+    return torch.searchsorted(bounds, q_ch, right=True) - 1
+
+
+def _rvq_selections(hidden: torch.Tensor, inp: ModelInputs, rvq_on: torch.Tensor, patch_ms: float):
+    per = int(round(RVQ_TOKEN_MS / patch_ms))
+    if per < 1:
+        raise ValueError("RVQ token shorter than patch")
+    c_tot, p = hidden.shape
+    w = p // per
+    win = torch.zeros(c_tot, w, dtype=torch.bool, device=hidden.device)
+    bounds = np.cumsum([0, *inp.counts])
+    for a, b in zip(bounds[:-1], bounds[1:]):
+        ok = inp.qc_valid[a:b]
+        slab = (hidden[a:b][ok][:, :w * per].all(dim=0).reshape(w, per).all(dim=-1) if bool(ok.any())
+                else torch.zeros(w, dtype=torch.bool, device=hidden.device))
+        win[a:b] = slab[None, :] & ok[:, None]
+    win &= rvq_on[:, None]
+    chan = hidden[:, :w * per].reshape(c_tot, w, per).all(dim=-1) & inp.qc_valid[:, None] & rvq_on[:, None] & ~win
+    return per, win, chan
+
+
+def _valid_count(per_query: torch.Tensor, sample_index: torch.Tensor | None, n_samples: int) -> torch.Tensor:
+    counts = per_query.to(torch.int64)
+    if sample_index is None:
+        return counts.sum().detach()
+    return (counts.new_zeros(n_samples).index_add(0, sample_index, counts) > 0).sum().detach()
+
+
+def _keep_valid(anchor_targets, inp: ModelInputs, target_active: torch.Tensor) -> torch.Tensor:
+    if target_active.shape != (32,) or target_active.dtype != torch.bool:
+        raise ValueError("keep_target_active must be the calibrated boolean 32-vector")
+    _, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
+    return torch.as_tensor(valid, device=inp.qc_valid.device) & target_active.to(inp.qc_valid.device)
+
+
+def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
+                anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
+                rvq_codes: Callable | None = None, *, model_cfg: FMConfig,
+                keep_target_active: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    """Detached int64 counts from geometry/targets, WITHOUT encode/decode or RNG consumption.
+
+    model_cfg is mandatory: JEPAConfig has no patch duration, latent width, or optional-head geometry. For keep, supply the calibrated
+    target_active buffer, not a guess based only on observed targets. Same active components on all ranks are the trainer's responsibility.
+    rvq_codes is a pure lookup into frozen codes (as in the current loader); the callback must not draw randomness.
+    """
+    if len(inp.signals) != len(inp.counts) or len(inp.fs) != len(inp.counts) or not inp.counts:
+        raise ValueError("inconsistent sample geometry")
+    patch_s = model_cfg.patch_ms / 1000.0
+    if not math.isfinite(patch_s) or patch_s <= 0 or any(not math.isfinite(f) or f <= 0 for f in inp.fs) or \
+            any(c <= 0 or x.shape[0] != c for x, c in zip(inp.signals, inp.counts)):
+        raise ValueError("invalid sample/patch geometry")
+    if inp.qc_valid.shape != (sum(inp.counts),) or inp.qc_valid.dtype != torch.bool:
+        raise ValueError("QC geometry/dtype does not match packed channels")
+    lengths = [int(math.floor(x.shape[-1] / f / patch_s + 1e-9)) for x, f in zip(inp.signals, inp.fs)]
+    if min(lengths) < 1 or visible.shape != (sum(inp.counts), max(lengths)) or visible.dtype != torch.bool:
+        raise ValueError("visible shape/dtype does not match patch geometry")
+    n_ch = torch.repeat_interleave(torch.as_tensor(lengths, device=visible.device), torch.as_tensor(inp.counts, device=visible.device))
+    patch_valid = torch.arange(max(lengths), device=visible.device)[None, :] < n_ch[:, None]
+    hidden = ~visible & patch_valid & inp.qc_valid[:, None]
+    ch, qt, _ = hidden_queries(hidden, inp.counts)
+    sq = _sample_index(ch, inp.counts) if cfg.loss_per_window else None
+    ns = len(inp.counts)
+    out = {"jepa": _valid_count(torch.ones_like(ch), sq, ns) if cfg.loss_per_window else ch.new_tensor(ch.numel() * model_cfg.dim)}
+    if anchor_targets is not None:
+        tg = gather_anchor_targets(anchor_targets, inp.counts, ch, qt)
+        masks = {"log_rms": tg["rms_valid"], "log_env": tg["env_valid"],
+                 "band_shape": (tg["spec_valid"][:, None] & tg["band_available"]).sum(-1)}
+        if model_cfg.multiscale_anchor:
+            masks.update({name: (tg[name + "_valid"][:, None] & tg[name + "_available"]).sum(-1)
+                          for name, _, _ in MS_SCALES if name in tg})
+        out.update({name: _valid_count(mask, sq, ns) for name, mask in masks.items()})
+    if model_cfg.rvq_codes and rvq_on is not None and rvq_codes is not None:
+        _, slab, channel = _rvq_selections(hidden, inp, rvq_on, model_cfg.patch_ms)
+        wc, ww = torch.nonzero(slab if cfg.rvq_targets == "slab" else channel, as_tuple=True)
+        valid = rvq_codes(wc, ww) >= 0 if wc.numel() else wc.new_zeros(0, dtype=torch.bool)
+        sw = _sample_index(wc, inp.counts) if cfg.loss_per_window else None
+        out["rvq"] = _valid_count(valid, sw, ns)
+    if cfg.keep_weight > 0:
+        if anchor_targets is None or keep_target_active is None or not model_cfg.keep_readout:
+            raise ValueError("keep counts require targets, head geometry and calibrated target_active")
+        out["keep"] = _keep_valid(anchor_targets, inp, keep_target_active).any(1).sum().detach()
+    return out
+
+
+def jepa_loss_terms(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
+                    anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
+                    rvq_codes: Callable | None = None, generator: torch.Generator | None = None,
+                    kinds: torch.Tensor | None = None) -> LossTerms:
+    terms = LossTerms()
+    _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms)
+    return terms
+
+
 def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
                 generator: torch.Generator | None = None, kinds: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    """Backward-compatible single-process API: historical means, keys and RNG ordering unchanged."""
+    return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds)
+
+
+def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None, generator=None, kinds=None,
+                  terms: LossTerms | None = None):
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4)."""
     enc = student.encode(inp, visible, generator)
     hidden = ~enc.visible & enc.patch_valid & inp.qc_valid[:, None]
     q_ch, q_t, q_off = hidden_queries(hidden, inp.counts)
-    if q_ch.numel() == 0:
+    if q_ch.numel() == 0 and terms is None:
         raise ValueError("nessun token nascosto: la maschera non chiede nessuna predizione")
     h = student.decode(enc, q_ch, q_t, q_off)
     with torch.no_grad():
@@ -139,7 +270,12 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
         s_q = torch.searchsorted(q_off, torch.arange(q_ch.numel(), device=q_ch.device), right=True) - 1  # campione di ogni query
     n_s = len(inp.counts)
     err_q = (h - tgt).pow(2).mean(dim=-1)
-    losses = {"jepa": masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt)}
+    losses = {"jepa": (masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt))
+              if q_ch.numel() else h.sum() * 0.0}
+    if terms is not None:
+        terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
+                                              else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))
+        terms.weight["jepa"] = 1.0
     if kinds is not None:
         with torch.no_grad():
             err = (h.float() - tgt.float()).pow(2).mean(dim=-1)  # (Q,)
@@ -153,34 +289,41 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
                 sel = tq == t
                 if bool(sel.any()):
                     losses[f"jepa_topo_{name}"] = err[sel].mean()
+            if terms is not None:
+                selections = {f"jepa_{name}": kq == k for k, name in KIND_NAMES.items() if k != VISIBLE}
+                selections.update({f"jepa_topo_{name}": tq == t for t, name in enumerate(TOPOLOGIES)})
+                for name, sel in selections.items():
+                    terms.log_num[name], terms.log_den[name] = err[sel].sum().detach(), sel.sum().detach()
     anchor_total = h.new_zeros(())
     if anchor_targets is not None:
-        for k, v in anchor_losses(student.anchor_heads(h), gather_anchor_targets(anchor_targets, inp.counts, q_ch, q_t), s_q, n_s).items():
+        pred, target = student.anchor_heads(h), gather_anchor_targets(anchor_targets, inp.counts, q_ch, q_t)
+        for k, v in anchor_losses(pred, target, s_q, n_s).items():
             losses[k] = v
             anchor_total = anchor_total + v
+        if terms is not None:
+            for k, (num, den) in anchor_loss_terms(pred, target, s_q, n_s).items():
+                terms.num[k], terms.den[k], terms.weight[k] = num, den, cfg.anchor_weight
     if student.rvq_head is not None and rvq_on is not None and rvq_codes is not None:
-        per = int(round(RVQ_TOKEN_MS / student.cfg.patch_ms))
+        per, win, chan = _rvq_selections(hidden, inp, rvq_on, student.cfg.patch_ms)
         c_tot, p = hidden.shape
         w = p // per
-        # solo slab: finestre nascoste su TUTTI i canali validi del campione, mai il masking di canale (v10 §6.3)
         dev = hidden.device
-        win = torch.zeros(c_tot, w, dtype=torch.bool, device=dev)
         bounds = np.cumsum([0, *inp.counts])
-        for a, b in zip(bounds[:-1], bounds[1:]):
-            ok = inp.qc_valid[a:b]
-            slab = (hidden[a:b][ok][:, : w * per].all(dim=0).reshape(w, per).all(dim=-1) if bool(ok.any())
-                    else torch.zeros(w, dtype=torch.bool, device=dev))
-            win[a:b] = slab[None, :] & ok[:, None]
-        win &= rvq_on[:, None]
-        # finestre nascoste su un canale ma non slab (dei vicini visibili): solo per la diagnostica (vedi JEPAConfig.rvq_targets)
-        chan = hidden[:, : w * per].reshape(c_tot, w, per).all(dim=-1) & inp.qc_valid[:, None] & rvq_on[:, None] & ~win
         index = torch.full((c_tot, p), -1, dtype=torch.long, device=dev)
         index[q_ch, q_t] = torch.arange(q_ch.numel(), device=dev)
         bounds_t = torch.as_tensor(bounds, device=dev)
 
-        def rvq_on_windows(sel: torch.Tensor):
+        def rvq_on_windows(sel: torch.Tensor, name: str):
             wc, ww = torch.nonzero(sel, as_tuple=True)
             if not wc.numel():
+                if terms is not None:
+                    zero, count = h.sum() * 0.0, q_ch.new_zeros(())
+                    if name == "rvq":
+                        terms.num[name], terms.den[name], terms.weight[name] = zero, count, cfg.anchor_weight
+                    else:
+                        terms.log_num[name], terms.log_den[name] = zero.detach(), count
+                    terms.log_num[name + "_acc"], terms.log_den[name + "_acc"] = zero.detach(), count
+                    terms.log_sum[name + "_targets"] = count
                 return h.sum() * 0.0, h.new_zeros(()), h.new_zeros(())
             rows = index[wc[:, None], ww[:, None] * per + torch.arange(per, device=dev)[None, :]]  # (N, 8), tutte query nascoste
             codes = rvq_codes(wc, ww)
@@ -188,20 +331,36 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
             s_w = (torch.searchsorted(bounds_t, wc, right=True) - 1) if cfg.loss_per_window else None
             ok = codes >= 0
             acc = (logits.argmax(dim=-1) == codes)[ok].float().mean() if bool(ok.any()) else h.new_zeros(())
+            if terms is not None:
+                num, den = rvq_loss_terms(logits, codes, s_w, n_s)
+                if name == "rvq":
+                    terms.num[name], terms.den[name], terms.weight[name] = num, den, cfg.anchor_weight
+                else:
+                    terms.log_num[name], terms.log_den[name] = num.detach(), den
+                terms.log_num[name + "_acc"] = (logits.argmax(-1)[ok] == codes[ok]).sum().detach()
+                terms.log_den[name + "_acc"] = ok.sum().detach()
+                terms.log_sum[name + "_targets"] = ok.sum().detach()
             return rvq_loss(logits, codes, s_w, n_s), ok.sum().float(), acc.detach()
 
         main_sel, other_sel = (win, chan) if cfg.rvq_targets == "slab" else (chan, win)
-        losses["rvq"], losses["rvq_targets"], losses["rvq_acc"] = rvq_on_windows(main_sel)
+        losses["rvq"], losses["rvq_targets"], losses["rvq_acc"] = rvq_on_windows(main_sel, "rvq")
         with torch.no_grad():  # l'altra scelta, solo per il log
             other = "rvq_channel" if cfg.rvq_targets == "slab" else "rvq_slab"
-            o_loss, o_n, o_acc = rvq_on_windows(other_sel)
+            o_loss, o_n, o_acc = rvq_on_windows(other_sel, other)
             losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
     if cfg.keep_weight > 0:
         if anchor_targets is None:
             raise ValueError("keep loss requires multiscale targets")
-        losses["keep"], metrics = keep_objective(student, inp, anchor_targets)
+        if terms is not None:
+            losses["keep"], metrics, num, den, log_num, log_den = keep_objective_terms(student, inp, anchor_targets)
+            terms.num["keep"], terms.den["keep"], terms.weight["keep"] = num, den, cfg.keep_weight
+            terms.log_sum["keep_valid_samples"] = den
+            terms.log_num.update(log_num)
+            terms.log_den.update(log_den)
+        else:
+            losses["keep"], metrics = keep_objective(student, inp, anchor_targets)
         losses.update(metrics)
         losses["total"] = losses["total"] + cfg.keep_weight * losses["keep"]
     return losses

@@ -115,6 +115,10 @@ class SpectralKeepHead(nn.Module):
         return self.linear(features)
 
     def loss(self, prediction, y, valid):
+        return self.loss_terms(prediction, y, valid)[:2]
+
+    def loss_terms(self, prediction, y, valid):
+        """Historical mean/metrics plus additive sample and family statistics. Family averaging stays WITHIN each sample."""
         if not bool(self.stats_fitted):
             raise ValueError("fit target statistics on TRAIN before using keep loss")
         y = torch.as_tensor(y, dtype=torch.float32, device=prediction.device)
@@ -122,22 +126,33 @@ class SpectralKeepHead(nn.Module):
         standardized = torch.where(valid, (y-self.target_mean)/self.target_std, 0.)
         error = F.smooth_l1_loss(prediction.float(), standardized, reduction="none")
         error = torch.where(valid, error, 0.)
-        per_family, present, metrics = [], [], {}
+        per_family, present, metrics, log_num, log_den = [], [], {}, {}, {}
         for name, cols in FAMILIES.items():
             count = valid[:, cols].sum(1)
             v = error[:, cols].sum(1)/count.clamp(min=1)
             per_family.append(v)
             present.append(count > 0)
             metrics["keep_"+name] = v[count > 0].mean().detach() if bool((count > 0).any()) else prediction.new_zeros(())
+            log_num["keep_"+name] = v[count > 0].sum().detach()
+            log_den["keep_"+name] = (count > 0).sum().detach()
         present = torch.stack(present, dim=1)
         per_sample = torch.stack(per_family, dim=1).sum(1)/present.sum(1).clamp(min=1)
         ok = present.any(dim=1)
         loss = per_sample[ok].mean() if bool(ok.any()) else prediction.sum()*0.
         metrics["keep_valid_samples"] = ok.sum().float()
-        return loss, metrics
+        num = per_sample[ok].sum() if bool(ok.any()) else prediction.sum()*0.
+        return loss, metrics, num, ok.sum().detach(), log_num, log_den
 
 
 def keep_objective(student, inp, anchor_targets, *, target_version=TARGET_VERSION):
+    return _keep_objective(student, inp, anchor_targets, target_version=target_version)
+
+
+def keep_objective_terms(student, inp, anchor_targets, *, target_version=TARGET_VERSION):
+    return _keep_objective(student, inp, anchor_targets, target_version=target_version, terms=True)
+
+
+def _keep_objective(student, inp, anchor_targets, *, target_version=TARGET_VERSION, terms=False):
     if any(x.device.type not in ("cpu", "cuda") for x in inp.signals):
         raise ValueError("Step 1 supports CPU/CUDA only (RNG pairing not validated on MPS)")
     if target_version != TARGET_VERSION or student.spectral_keep is None:
@@ -148,4 +163,4 @@ def keep_objective(student, inp, anchor_targets, *, target_version=TARGET_VERSIO
     with torch.random.fork_rng(devices=devices):
         enc = student.encode(inp, None)
         prediction = student.spectral_keep(pool_p1p2(enc, inp.counts, inp.qc_valid))
-    return student.spectral_keep.loss(prediction, y, valid)
+    return student.spectral_keep.loss_terms(prediction, y, valid) if terms else student.spectral_keep.loss(prediction, y, valid)

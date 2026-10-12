@@ -180,3 +180,52 @@ def test_paired_a_b_same_initialization(tmp_path):
 def test_invalid_keep_weight(weight):
     with pytest.raises(ValueError,match="keep_weight"):
         JEPAConfig("b",.2,.99,keep_weight=weight)
+
+
+@pytest.mark.parametrize('missing', [False, True])
+def test_keep_additive_counts_use_calibration_and_preserve_nested_family_means(tmp_path, missing):
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts, jepa_losses
+    root, manifest, cfg, batch, y, valid = _setup(tmp_path)
+    student = WearUsFM(cfg.model).eval()
+    student.spectral_keep.fit_target_stats(y, valid)
+    # Only energy coordinates remain calibrated/active, regardless of shape target observations.
+    student.spectral_keep.target_active[:] = False
+    student.spectral_keep.target_active[[6, 31]] = True
+    if missing:
+        for tg in batch.anchor_targets:
+            tg.ms_fast_valid[:] = False
+            tg.ms_slow_valid[:] = False
+    teacher = make_teacher(student)
+    inp, visible, _ = L.to_model_inputs(batch)
+    jepa = replace(cfg.jepa, keep_weight=.05)
+    counts = loss_counts(inp, visible, jepa, batch.anchor_targets, model_cfg=cfg.model,
+                         keep_target_active=student.spectral_keep.target_active)
+    old = jepa_losses(student, teacher, inp, visible, jepa, batch.anchor_targets)
+    terms = jepa_loss_terms(student, teacher, inp, visible, jepa, batch.anchor_targets)
+    assert torch.equal(counts['keep'], terms.den['keep'])
+    assert terms.log_den['keep_fast_shape'] == terms.log_den['keep_slow_shape'] == 0
+    assert terms.log_sum['keep_valid_samples'] == terms.den['keep']
+    torch.testing.assert_close(terms.num['keep'] / terms.den['keep'].clamp(min=1), old['keep'])
+    torch.testing.assert_close(terms.backward_loss(), old['total'])
+    if missing:
+        assert terms.den['keep'] == 0 and terms.num['keep'] == 0 and terms.num['keep'].requires_grad
+
+
+def test_keep_additive_statistics_do_not_average_families_across_samples():
+    head = SpectralKeepHead(4)
+    head.fit_target_stats(np.repeat(np.arange(4)[:, None], 32, axis=1), np.ones((4, 32), bool))
+    valid = torch.zeros(4, 32, dtype=torch.bool)
+    valid[0, :6] = True
+    valid[1] = True
+    valid[2, 31] = True  # fourth sample has no observations
+    y = head.target_mean.repeat(4, 1)
+    pred = torch.ones(4, 32, requires_grad=True)
+    with torch.no_grad():
+        pred[0, :6] = 3.
+        pred[2, 31] = 2.
+    mean, _, num, den, _, _ = head.loss_terms(pred, y, valid)
+    assert den == 3
+    assert float(mean.detach()) == pytest.approx((2.5 + .5 + 1.5) / 3)
+    pieces = [head.loss_terms(pred[i:i+1], y[i:i+1], valid[i:i+1]) for i in range(4)]
+    torch.testing.assert_close(sum(p[2] for p in pieces) / sum(p[3] for p in pieces), mean)
+    assert pieces[-1][2].requires_grad and pieces[-1][3] == 0

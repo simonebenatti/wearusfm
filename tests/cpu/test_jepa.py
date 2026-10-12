@@ -110,3 +110,149 @@ def test_effective_rank_and_config_checks():
         JEPAConfig("a", 0.2, 1.0)
     with pytest.raises(TypeError):
         JEPAConfig("a", 0.2)  # niente default per il momento EMA
+
+
+def _heterogeneous_targets(inp):
+    targets = [AT.anchor_targets(x.numpy(), f, lim, multiscale=True)
+               for x, f, lim in zip(inp.signals, inp.fs, (850.0, 100.0))]
+    targets[0].rms_valid[:] = False  # one shard has no targets for this component
+    targets[1].band_available[:, -2:] = False
+    return targets
+
+
+@pytest.mark.parametrize("per_window", [False, True])
+@pytest.mark.parametrize("target", ["a", "b"])
+@pytest.mark.parametrize("rvq_selection", ["slab", "channel"])
+def test_additive_terms_match_legacy_and_precounts(per_window, target, rvq_selection):
+    from dataclasses import replace
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    torch.manual_seed(7)
+    model_cfg = replace(CFG, multiscale_anchor=True)
+    student = WearUsFM(model_cfg).eval()
+    teacher = make_teacher(student)
+    inp = _inputs()
+    inp.signals[1] = inp.signals[1][:, :300]  # 12 real patches, 32 packed: slow targets absent
+    inp.qc_valid[3] = False
+    visible = _visible(inp)
+    tg = _heterogeneous_targets(inp)
+    rvq_on = torch.ones(sum(inp.counts), dtype=torch.bool)
+    codes = lambda ch, w: torch.where(ch % 4 == 0, -1, (ch + w) % 32)
+    cfg = JEPAConfig(target, .2, .99, loss_per_window=per_window, rvq_targets=rvq_selection)
+    kwargs = dict(anchor_targets=tg, rvq_on=rvq_on, rvq_codes=codes, kinds=(~visible).long())
+    rng = torch.get_rng_state().clone()
+    counts = loss_counts(inp, visible, cfg, tg, rvq_on, codes, model_cfg=model_cfg)
+    assert torch.equal(rng, torch.get_rng_state())
+    old = jepa_losses(student, teacher, inp, visible, cfg, **kwargs)
+    terms = jepa_loss_terms(student, teacher, inp, visible, cfg, **kwargs)
+    assert set(counts) == set(terms.num) == set(terms.den) == set(terms.weight)
+    for k in counts:
+        assert counts[k].dtype == terms.den[k].dtype == torch.int64
+        assert torch.equal(counts[k], terms.den[k]), k
+        torch.testing.assert_close(terms.num[k] / terms.den[k].clamp(min=1), old[k], rtol=2e-6, atol=1e-7)
+    torch.testing.assert_close(terms.backward_loss(), old['total'], rtol=2e-6, atol=1e-7)
+    assert any(v == 0 for v in terms.log_den.values())  # fixed keys for locally absent diagnostic selections
+    assert all(not v.requires_grad for v in [*terms.den.values(), *terms.log_num.values(), *terms.log_den.values(), *terms.log_sum.values()])
+    terms.backward_loss().backward()
+    assert all(p.grad is None or torch.isfinite(p.grad).all() for p in student.parameters())
+    assert all(p.grad is None for p in teacher.parameters())
+
+
+def _one_sample(inp, s):
+    a, b = sum(inp.counts[:s]), sum(inp.counts[:s+1])
+    sets = {k: v[a:b].clone() for k, v in inp.sets.items()}
+    sets['index'] = torch.where(sets['index'] >= 0, sets['index'] - a, sets['index'])
+    return ModelInputs([inp.signals[s]], [inp.fs[s]], {k: v[a:b].clone() for k, v in inp.codes.items()},
+                       sets, [inp.counts[s]], inp.qc_valid[a:b].clone())
+
+
+@pytest.mark.parametrize("per_window", [False, True])
+def test_global_batch_equals_microbatches_loss_gradients_optimizer_and_ema(per_window):
+    import copy
+    from dataclasses import replace
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    torch.manual_seed(8)
+    model_cfg = replace(CFG, rvq_codes=None, multiscale_anchor=True, muscle_dropout=0.)
+    full = WearUsFM(model_cfg).double().eval()
+    split = copy.deepcopy(full)
+    tf, ts = make_teacher(full), make_teacher(split)
+    inp, visible = _inputs(), _visible(_inputs())
+    inp.signals[1] = inp.signals[1][:, :300]
+    tg = _heterogeneous_targets(inp)
+    cfg = JEPAConfig('b', .2, .99, loss_per_window=per_window)
+    whole = jepa_loss_terms(full, tf, inp, visible, cfg, tg)
+    pieces = []
+    a = 0
+    for s, c in enumerate(inp.counts):
+        one = _one_sample(inp, s)
+        n = split.n_patches(one)
+        v = visible[a:a+c, :n]
+        piece = jepa_loss_terms(split, ts, one, v, cfg, [tg[s]])
+        precount = loss_counts(one, v, cfg, [tg[s]], model_cfg=model_cfg)
+        assert all(torch.equal(piece.den[k], precount[k]) for k in piece.den)
+        pieces.append(piece)
+        a += c
+    assert pieces[0].den['log_rms'] == 0 and pieces[1].den['log_rms'] > 0
+    global_den = {k: sum(p.den[k] for p in pieces) for k in whole.den}
+    assert all(torch.equal(global_den[k], whole.den[k]) for k in global_den)
+    # Simulate DDP's average of R=2 ranks; equivalent to sequential accumulation over two micro-batches without dividing by k again.
+    part_losses = [p.backward_loss(global_den, world_size=2) / 2 for p in pieces]
+    torch.testing.assert_close(sum(part_losses), whole.backward_loss(), rtol=1e-10, atol=1e-10)
+    whole.backward_loss().backward()
+    for loss in part_losses:
+        loss.backward()
+    for (name, p), (_, q) in zip(full.named_parameters(), split.named_parameters()):
+        assert (p.grad is None) == (q.grad is None), name
+        if p.grad is not None:
+            torch.testing.assert_close(p.grad, q.grad, rtol=1e-10, atol=1e-10, msg=name)
+    for model, teacher in ((full, tf), (split, ts)):
+        opt = torch.optim.AdamW(model.parameters(), lr=3e-4)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.)
+        opt.step()
+        ema_update(teacher, model, .99)
+    for a, b in ((full, split), (tf, ts)):
+        for k, v in a.state_dict().items():
+            torch.testing.assert_close(v, b.state_dict()[k], rtol=1e-10, atol=1e-10, msg=k)
+
+
+def test_empty_local_hidden_selection_is_a_zero_term_not_a_legacy_nan():
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    student = WearUsFM(CFG).eval()
+    teacher = make_teacher(student)
+    inp = _inputs()
+    visible = torch.ones(sum(inp.counts), 32, dtype=torch.bool)
+    cfg = JEPAConfig('b', .2, .99, loss_per_window=True)
+    with pytest.raises(ValueError, match='nessun token nascosto'):
+        jepa_losses(student, teacher, inp, visible, cfg)
+    terms = jepa_loss_terms(student, teacher, inp, visible, cfg)
+    assert terms.den['jepa'] == loss_counts(inp, visible, cfg, model_cfg=CFG)['jepa'] == 0
+    assert terms.backward_loss() == 0 and torch.isfinite(terms.backward_loss())
+    terms.backward_loss().backward()
+    assert all(p.grad is None or torch.isfinite(p.grad).all() for p in student.parameters())
+
+
+def test_counts_require_geometry_and_keep_calibration_and_validate_component_keys():
+    from dataclasses import replace
+    from wearusfm.training.jepa import LossTerms, loss_counts
+    inp, visible = _inputs(), _visible(_inputs())
+    cfg = JEPAConfig('b', .2, .99)
+    with pytest.raises(TypeError):
+        loss_counts(inp, visible, cfg)
+    with pytest.raises(ValueError, match='geometry'):
+        loss_counts(inp, visible[:, :-1], cfg, model_cfg=CFG)
+    with pytest.raises(ValueError, match='calibrated'):
+        loss_counts(inp, visible, replace(cfg, keep_weight=.05), _heterogeneous_targets(inp), model_cfg=replace(CFG, keep_readout=True))
+    with pytest.raises(ValueError, match='component keys'):
+        LossTerms({'jepa': torch.tensor(1.)}, {'jepa': torch.tensor(1)}, {'jepa': 1.}).backward_loss({})
+
+
+def test_loss_terms_pytree_roundtrip_exposes_differentiable_outputs_to_ddp():
+    from torch.utils._pytree import tree_flatten, tree_unflatten
+    from wearusfm.training.jepa import LossTerms
+    p = torch.tensor(2., requires_grad=True)
+    terms = LossTerms({'jepa': p.square()}, {'jepa': torch.tensor(2)}, {'jepa': 1.})
+    leaves, spec = tree_flatten(terms)
+    assert any(x is terms.num['jepa'] for x in leaves)
+    restored = tree_unflatten(leaves, spec)
+    assert isinstance(restored, LossTerms) and restored.num['jepa'] is terms.num['jepa']
+    restored.backward_loss().backward()
+    assert p.grad == 2.

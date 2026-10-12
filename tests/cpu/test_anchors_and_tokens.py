@@ -58,6 +58,22 @@ def test_anchor_losses_ignore_what_has_no_target():
         rvq(torch.randn(2, 7, DIM))
 
 
+@pytest.mark.parametrize('per_window', [False, True])
+def test_additive_reduction_empty_shards_and_large_integer_counts(per_window):
+    from wearusfm.model.anchors import masked_mean, masked_sum_count
+    num = torch.tensor([2., 0., 9., 4.], dtype=torch.float64, requires_grad=True)
+    den = torch.tensor([2, 0, 3, 1])
+    si = torch.tensor([0, 0, 1, 1]) if per_window else None
+    n, d = masked_sum_count(num, den, si, 2)
+    torch.testing.assert_close(n / d, masked_mean(num, den, si, 2), rtol=1e-10, atol=1e-10)
+    assert d.dtype == torch.int64 and not d.requires_grad
+    z, dz = masked_sum_count(num[:0], den[:0], si[:0] if si is not None else None, 2)
+    assert z == dz == 0 and z.requires_grad
+    # No float/bf16 count rounding in denominator aggregation.
+    _, count = masked_sum_count(torch.zeros(2, dtype=torch.bfloat16), torch.tensor([65537, 65539]))
+    assert count.item() == 131076
+
+
 def test_from_signal_to_anchor_losses_on_ring_and_myo():
     """Dal segnale vero al gradiente: due montaggi a frequenze diverse (bracciale Meta a 2 kHz, Myo di DB5 a 200 Hz), front-end vero, identita',
     encoder locale, Perceiver, backbone, decoder, teste delle ancore; uno slab sulla griglia del tokenizer."""

@@ -2537,3 +2537,33 @@ riduzione globale e accumulo. Le interfacce del contratto restano quelle concord
 
 Budget infrastruttura non consumato da questa review (0 GPUh). Picco LR 3e-4 e batch globale32 anche ai rung grandi, come richiesto da
 Simone, finche' la calibrazione della finestra 1 li fissa. Prossima consegna GPT: `jepa_loss_terms` / `loss_counts` con regressioni CPU.
+
+## Consegna GPT: termini e conteggi delle loss (12/10/2026)
+
+Implementati `jepa_loss_terms` e `loss_counts` senza modificare training/run.py, dataloader o launcher di Claude. Interfaccia esatta,
+riduzione dei contatori e confini di ownership documentati nella sezione6 di `contratto_loss_distribuite.md`.
+
+- Numeratori additivi e conteggi int64 detached per JEPA, RMS/inviluppo/bande, multi-scala, RVQ e keep; media prima dentro ogni finestra
+  dove firmata, non media delle medie locali. Keep conserva le famiglie equiponderate dentro ogni campione.
+- Conteggi senza forward da FMConfig, geometria/QC, maschere, target e buffer keep calibrato. Se manca geometria/calibrazione, rifiuto;
+  nessun consumo RNG nei conteggi. Selezioni RVQ condivise fra precount e forward; codici forniti mediante lookup puro.
+- LossTerms espone num/den/weight e diagnostiche detached log_num/log_den, con log_sum per contatori additivi. Container registrato
+  come pytree per il percorso DDP. backward_loss calcola R*num/D, non fa collective o update e non divide di nuovo per i micro-batch.
+- Il chiamante storico jepa_losses conserva firma, chiavi, medie, RNG e ValueError senza query; i termini nuovi ammettono anche zero
+  query locali, con num0 differenziabile/den0. L'assenza di target GLOBALI richiede stop coordinato nel trainer.
+
+Verifiche: 18 regressioni nuove nei3file CPU esistenti; 76 test pertinenti unici PASS complessivi, 1 skip MPS. Compresi confronto
+batch globale vs2micro-batch sul modello completo float64 (rtol/atol1e-10 per loss, gradienti, pesi dopo AdamW/clipping, teacher dopoEMA),
+precounts contro conteggi del forward con padding/QC/maschere eterogenee, un pezzo senza target RMS, scala lenta assente, targeta/b,
+RVQ slab/channel e codici mancanti, keep con target_active e famiglie/validita' disomogenee, assenza locale di query/target,
+contatori interi oltre la precisione bf16 e roundtrip pytree.
+
+Inoltre2test esterni contro il sorgente JEPA congelato al commit7e989d6: loss/chiavi, gradienti e RNG bit per bit invariati con
+loss_per_window False/True (train mode, dropout attivo, ancore multi-scala/RVQ e diagnostiche). Artefatti:
+`/private/tmp/wearusfm-review-20261012.6LElAx/legacy_jepa.py` e `test_legacy_loss_compat.py`.
+Regressioni trainer/sicurezza/WSD/replay rieseguite. Non e' la suite completa e non e' il test gloo/NCCL delle nuove loss.
+
+**Passaggio a Claude:** ora puo' collegare il modulo DDP ai termini, sommare denominatori su rank e micro-batch prima del backward,
+confrontare conteggi precalcolati/effettivi e coordinare mismatch/zero globali, ridurre metriche senza medie locali, fare un solo
+clipping/optimizer/EMA per batch effettivo ed estendere l'equivalenza gloo. Guardia del trainer DDP vero ancora accesa fino a quella
+consegna; no flip della guardia, collaudo CUDA, push o nuovo job in questa attivita'. Budget GPU invariato.

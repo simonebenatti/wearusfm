@@ -50,6 +50,45 @@ def masked_mean(num: torch.Tensor, den: torch.Tensor, sample_index: torch.Tensor
     return (s_num[ok] / s_den[ok]).mean() if bool(ok.any()) else num.sum() * 0.0
 
 
+def masked_sum_count(num: torch.Tensor, den: torch.Tensor, sample_index: torch.Tensor | None = None,
+                     n_samples: int | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    """Additive loss statistics, not a mean of local means. Counts stay int64, including under bf16 autocast.
+
+    Per-window mode sums the mean WITHIN each valid sample and counts those samples. An empty selection keeps a differentiable zero.
+    The historical masked_mean remains unchanged for the single-process trainer.
+    """
+    count = den.to(torch.int64)
+    if sample_index is None:
+        return num.sum(), count.sum().detach()
+    if n_samples is None:
+        raise ValueError("n_samples required with sample_index")
+    s_num = num.new_zeros(n_samples).index_add(0, sample_index, num)
+    s_den = count.new_zeros(n_samples).index_add(0, sample_index, count)
+    ok = s_den > 0
+    return (s_num[ok] / s_den[ok]).sum(), ok.sum().detach()
+
+
+def anchor_loss_terms(pred: dict[str, torch.Tensor], target: dict[str, torch.Tensor],
+                      sample_index: torch.Tensor | None = None, n_samples: int | None = None) -> dict[str, tuple]:
+    out = {}
+    for name, mask in (("log_rms", target["rms_valid"]), ("log_env", target["env_valid"])):
+        out[name] = masked_sum_count((pred[name] - target[name]).square() * mask, mask, sample_index, n_samples)
+    for name, mask in [("band_shape", target["spec_valid"][:, None] & target["band_available"])] + [
+            (name, target[name + "_valid"][:, None] & target[name + "_available"])
+            for name, _, _ in MS_SCALES if name in pred and name in target]:
+        out[name] = masked_sum_count(((pred[name] - target[name]).square() * mask).sum(-1), mask.sum(-1), sample_index, n_samples)
+    return out
+
+
+def rvq_loss_terms(logits: torch.Tensor, codes: torch.Tensor, sample_index: torch.Tensor | None = None,
+                   n_samples: int | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    ok = codes >= 0
+    if not logits.shape[0] or not bool(ok.any()):
+        return logits.sum() * 0.0, ok.new_zeros((), dtype=torch.int64)
+    ce = F.cross_entropy(logits, codes.clamp(min=0), reduction="none") / math.log(logits.shape[-1])
+    return masked_sum_count(ce * ok, ok, sample_index, n_samples)
+
+
 def anchor_losses(pred: dict[str, torch.Tensor], target: dict[str, torch.Tensor], sample_index: torch.Tensor | None = None,
                   n_samples: int | None = None) -> dict[str, torch.Tensor]:
     """pred/target per query: log_rms (Q,), band_shape (Q, B), log_env (Q,); maschere rms_valid, spec_valid (Q,), band_available (Q, B),
