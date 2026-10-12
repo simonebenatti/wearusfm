@@ -2585,3 +2585,25 @@ nel checkout non ancora creato; nessun job creato. Verificato il checkout dal lo
 previsto dal protocollo, stessi comandi e costi: `infra1_loader` **60150682**, `infra1_ddp` **60150683**, `infra1_memory` **60150685**, tutti
 RUNNING. *Per i prossimi lanci da un checkout di campagna:* sottomettere i launcher solo dopo che il job di checkout e' finito (oppure passarli
 su stdin quando non hanno argomenti). Esiti e consuntivo da registrare alla fine.
+
+**Esito del collaudo GPU dell'infrastruttura (12/10/2026, letto dopo la fine dei job; criteri fissati prima):** tutti COMPLETED 0:0.
+- `infra1_ddp` 60150683 (5 min 3 s): **superato**, 4 criteri su 4: nessun errore, stop, valore non finito o OOM; `world_size` 4,
+  `batch_per_process` 8, `accum_steps` 1, loss col contratto, codice `cd335c9`; ripresa dal passo 300 fino a 330; un record per passo da 1
+  a 330 con 32 finestre. **0,73 s/passo** (mediana dopo il passo 50; media 0,74 senza il passo 301) per 32 finestre su 4 GPU, contro 2,46 s (media) su una GPU nel collaudo
+  59624004 (stessa configurazione): ×3,3. Memoria massima 9,7 GiB per GPU. Classi A/B/C 1.924/7.730/906 finestre, 422 virtuali.
+  **Attesa sui dati 7,2% (regola di D6a: 2%, non rispettata; si riporta):** 6,9 s su 15,4 vengono dal solo passo 301, il primo dopo la
+  ripresa (avvio dei worker e ricostruzione a secco dello stream); senza quel passo 4,1%, mediana 25 ms per passo, costante: e'
+  il trasferimento del batch dal worker al processo principale, non la produzione delle finestre (sotto). Da ottimizzare; nessuna modifica
+  al volo.
+- `infra1_memory` 60150685 (1 min 32 s), A100 64 GB, caso peggiore (Hyser 256 canali, finestre da 4 s, 160 patch), dopo 2 aggiornamenti
+  AdamW: memoria riservata + bucket DDP **30M 10,1 / 19,8 GiB, 100M 17,5 / 31,7 GiB, 300M 28,1 / 50,4 GiB** con 4 / 8 finestre per GPU.
+  **Tutti e sei i casi stanno sotto i 60 GiB:** la finestra 1 non richiede l'accumulo neppure al 300M con 8 finestre per GPU. Secondi per
+  passo nel caso peggiore su una GPU: 0,8 / 1,6, 1,5 / 2,9, 2,8 / 5,5.
+- `infra1_loader` 60150682 (2 min 25 s, 8 CPU): con le regole della finestra 1, **6,5-8,7 finestre/s per processo**; fasi: lettura e filtro
+  37%, target delle ancore 37%, maschera 17%, sessione e finestra 7%, codici e vicini 1%. Con 6 worker per GPU (~44 finestre/s) contro le ~11
+  richieste dal passo DDP misurato: la produzione basta in media.
+- Checkout 60150574 gia' registrato sopra. Riepilogo: `results/infra/collaudo_infra_gpu_1_1210.json`.
+**Costo reale (sacct):** 0,362 GPU-ora (DDP 0,337, memoria 0,026) = 2,9 ore locali; 0,33 core-ora CPU. Budget «preparazione
+dell'infrastruttura»: **usate 0,36 su 25, residuo 24,64**. Nota: DDP avvisa che con le regole della finestra 1 (RVQ e keep spente) non ci
+sono parametri inutilizzati: `find_unused_parameters=True` costa un attraversamento del grafo in piu' per passo, da togliere quando le
+teste opzionali sono spente (ottimizzazione da fare, non fatta al volo).

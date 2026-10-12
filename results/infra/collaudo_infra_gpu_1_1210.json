@@ -1,0 +1,202 @@
+{
+ "ddp": {
+  "1_no_errori_stop_nonfiniti_oom": true,
+  "2_summary": true,
+  "3_ripresa_300_330": true,
+  "4_record_1_330_windows_32": true,
+  "superato": true,
+  "summary": {
+   "stopped": "max_steps",
+   "steps": 330,
+   "elapsed_s": 36.66679286956787,
+   "parameters": 28348361,
+   "device": "cuda:0",
+   "gpu_max_memory_gib": 9.62269401550293,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/collaudo-infra-1",
+    "sha": "cd335c9740702e10e0823973f386a92bc0ef7eec"
+   },
+   "world_size": 4,
+   "batch_per_process": 8,
+   "accum_steps": 1,
+   "micro_batch": 8,
+   "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"
+  },
+  "s_per_passo_mediana": 0.7320835590362549,
+  "attesa_dati_dopo_50_pct": 7.236374272869785,
+  "regola_D6a_2pct": false,
+  "virtual_tot": 422,
+  "classi_tot": {
+   "A": 1924,
+   "B": 7730,
+   "C": 906
+  },
+  "loss_passi_1_10": {
+   "total": 6.028901119102956,
+   "jepa": 0.01522433923673816
+  },
+  "loss_ultimi_10": {
+   "total": 1.9968122749216852,
+   "jepa": 0.07079832227900625
+  }
+ },
+ "memoria": {
+  "gpu": "NVIDIA A100-SXM-64GB",
+  "casi_attesi": 6,
+  "casi": [
+   {
+    "rung": "30m",
+    "per_gpu": 4,
+    "oom": false,
+    "allocata_gib": 9.334604263305664,
+    "riservata_gib": 10.00390625,
+    "con_bucket_ddp_gib": 10.109512124210596,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     2.1397111415863037,
+     0.8184876441955566
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   },
+   {
+    "rung": "30m",
+    "per_gpu": 8,
+    "oom": false,
+    "allocata_gib": 18.11651849746704,
+    "riservata_gib": 19.7109375,
+    "con_bucket_ddp_gib": 19.816543374210596,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     1.6298446655273438,
+     1.5961806774139404
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   },
+   {
+    "rung": "100m",
+    "per_gpu": 4,
+    "oom": false,
+    "allocata_gib": 15.72217082977295,
+    "riservata_gib": 17.095703125,
+    "con_bucket_ddp_gib": 17.48611903563142,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     1.499800205230713,
+     1.4820492267608643
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   },
+   {
+    "rung": "100m",
+    "per_gpu": 8,
+    "oom": false,
+    "allocata_gib": 29.488633155822754,
+    "riservata_gib": 31.30078125,
+    "con_bucket_ddp_gib": 31.69119716063142,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     2.9330923557281494,
+     2.9229230880737305
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   },
+   {
+    "rung": "300m",
+    "per_gpu": 4,
+    "oom": false,
+    "allocata_gib": 24.456969261169434,
+    "riservata_gib": 27.01953125,
+    "con_bucket_ddp_gib": 28.107427518814802,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     2.76315975189209,
+     2.759056568145752
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   },
+   {
+    "rung": "300m",
+    "per_gpu": 8,
+    "oom": false,
+    "allocata_gib": 43.999821186065674,
+    "riservata_gib": 49.3203125,
+    "con_bucket_ddp_gib": 50.4082087688148,
+    "sta_entro_60": true,
+    "s_per_passo": [
+     5.458782911300659,
+     5.449448823928833
+    ],
+    "canali": [
+     256
+    ],
+    "patch": [
+     160
+    ]
+   }
+  ]
+ },
+ "dataloader": [
+  {
+   "filter": [
+    20.0,
+    450.0
+   ],
+   "window1_rules": true,
+   "workers": 8,
+   "per_process_windows_per_s": [
+    7.662803583002367,
+    7.039594534582492,
+    8.730731118785775,
+    7.51486475741672,
+    6.647398891567701,
+    6.526106614739949,
+    7.431950696451057,
+    7.239357269014406
+   ],
+   "min_per_process": 6.526106614739949,
+   "stage_seconds": {
+    "codici_e_vicini": 12.604519668966532,
+    "lettura_e_filtro": 321.40913135092705,
+    "maschera": 152.55664003361017,
+    "scala": 0.9608395891264081,
+    "sessione_e_finestra": 61.257850657217205,
+    "target_ancore": 325.9948639832437
+   },
+   "required_per_process": 8.5,
+   "passes": false,
+   "stage_fraction": {
+    "codici_e_vicini": 0.014408724780334222,
+    "lettura_e_filtro": 0.3674154856471029,
+    "maschera": 0.1743935268766205,
+    "scala": 0.0010983737231858325,
+    "sessione_e_finestra": 0.07002627104687031,
+    "target_ancore": 0.3726576179258862
+   }
+  }
+ ]
+}
