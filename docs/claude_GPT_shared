@@ -280,6 +280,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Test nuovi `tests/cpu/test_ddp_equivalence.py` (6): stesso batch globale a 1 processo (percorso di sempre), 1 x 2 e 1 x 4 micro-batch, 2 x 1, 2 x 2, 4 x 1 processi e micro-batch: componenti, totale, gradienti, pesi dopo AdamW, teacher dopo l'EMA entro 1e-10 in float64 (diagnostiche float32 entro 1e-5); per token e per finestra, ancora singola e multi-scala; un processo senza target RMS; il test fallisce coi denominatori locali (mutazione verificata). Arresti per conteggi sbagliati e JEPA vuota; split; accumulo attraverso `train()` con ripresa bit per bit. `test_training_ddp.py` aggiornato al percorso vero (8: con e senza accumulo, conteggi sbagliati su un solo processo che fermano tutti). Suite CPU completa: **839 passati**, 0 falliti (813 + 18 di GPT + 8 nuovi).
 - Protocollo del collaudo GPU aggiornato: loss vere invece della media locale, margini del walltime (1200 + 240 s su 30 min, launcher allineato) come chiesto da GPT. Resta da approvare.
 
+### 2026-10-12 | Claude | Primo collaudo GPU dell'infrastruttura: lanciato e superato | Base: 16f5a5d, checkout cd335c9
+
+- Simone: «intanto che aspettiamo, autorizzo il preotocollo gpu». Letto come strada (b): `deploy/collaudo-infra-1` a `cd335c9` (branch di Claude, senza la review di GPT; `main` di leonardo invariato). Preflight in sola lettura, comandi e input esatti committati prima del lancio. Checkout 60150574 pronto; i tre launcher rifiutati alla prima sottomissione perche' sbatch legge lo script quando si sottomette e il checkout non esisteva ancora (nessun job creato), risottomessi senza dipendenza con `--dopo-rifiuto` come previsto: loader 60150682, DDP 60150683, memoria 60150685, tutti COMPLETED 0:0.
+- **DDP a 4 GPU, 30M, regole della finestra 1, loss del contratto: superato** (4 criteri su 4, ripresa 300 -> 330 compresa). 0,73 s/passo per 32 finestre contro 2,46 s su una GPU (×3,3); 9,7 GiB per GPU. **Memoria**, caso peggiore (Hyser 256 canali, 4 s): riservata + bucket DDP 30M 10,1/19,8, 100M 17,5/31,7, 300M 28,1/50,4 GiB con 4/8 finestre per GPU, tutti sotto 60: niente accumulo nella finestra 1. **Dataloader** finestra 1: 6,5-8,7 finestre/s per processo; lettura e filtro 37%, target delle ancore 37%, maschere 17%.
+- Costo 0,362 GPU-ora (2,9 ore locali) + 0,33 core-ora CPU; budget infrastruttura: 24,64 su 25 residue. Dettagli in `decisioni.md`, riepilogo in `results/infra/collaudo_infra_gpu_1_1210.json`.
+
+### 2026-10-12 | Claude | Costo per passo del braccio B (keep 0,05) dell'A/B Step 1 | Base: 9d7f67a
+
+- Su richiesta di Simone. Dai `metrics.jsonl` dei 4 training A/B (copiati in sola lettura): calcolo (passo meno attesa sui dati) mediana A 2,45 s, B 3,88-3,89 s: **×1,59, +1,44 s per passo, tutto calcolo**. L'attesa sui dati e' la stessa (0,12 s) tranne B seme 1 (0,59 s di media, rallentamenti di lettura: la mezz'ora in piu' di quel run). Diagnostica dei gradienti (`keep_grad_every` 500): 8 passi da ~8,5 s, trascurabile.
+- Causa, dal codice: `_keep_objective` fa un **secondo forward completo dello studente sull'ingresso non mascherato** (`student.encode(inp, None)`), con gradiente, oltre a quello mascherato del JEPA. Misura locale (CPU, 1 thread, sanity 28M, finestra 1, 8 finestre emg2pose, stessi batch): passo A 64,0 s, B 110,1 s (×1,72); la keep da sola 42,8 dei 46,1 s in piu': target spettrali 0,005 s (16 ms anche con 128 canali), forward non mascherato e testa 12,2 s, backward 30,6 s (~2,5 volte il forward, per il ricalcolo dell'activation checkpointing).
+- *Stima, non misurata* (la misura senza checkpointing e' stata uccisa dal sistema per memoria sul Mac): spegnere il checkpointing solo nel passaggio della keep risparmierebbe al piu' il ricalcolo, ~12 dei 46 s: B da ×1,59 a circa ×1,45 su GPU, con memoria in piu' da misurare. Il resto del costo e' dell'obiettivo stesso; ridurlo davvero (keep su una parte delle finestre, ogni k passi, readout dal passaggio mascherato) cambia la definizione: decisione di GPT e Simone, non un'ottimizzazione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -529,3 +541,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Costo per aggiornamento sotto DDP: 4 all_reduce piccoli in piu' (chiavi, conteggi, flag per micro-batch, metriche), piu' quelli che c'erano; da misurare nel collaudo GPU.
 - Metriche: una diagnostica con log_den globale zero non compare nel record di quel passo (come oggi con `jepa_losses`); una componente senza target globali compare con valore 0.
 - NCCL e bf16 non provati; la tolleranza GPU va fissata dopo aver misurato il rumore del bf16 fra due run identici (contratto, punto 5).
+
+### 2026-10-12 | Claude | Primo collaudo GPU dell'infrastruttura: lanciato e superato | Base: 16f5a5d, checkout cd335c9
+
+- Il codice del collaudo non ha la review di GPT (strada b, lettura di Claude dell'autorizzazione): la review di 16f5a5d e cd335c9 resta da fare prima dell'integrazione.
+- Attesa sui dati 7,2% contro la regola del 2% di D6a: 6,9 s su 15,4 dal solo passo 301 (primo dopo la ripresa); senza 4,1%, mediana 25 ms per passo costante. La produzione dei worker basta (~4 volte il necessario): sembra il trasferimento dei batch fra processi; da misurare e ottimizzare (per esempio meno oggetti Python nel batch, pin_memory), non toccato.
+- `find_unused_parameters=True` con la finestra 1 non trova parametri inutilizzati (avviso di DDP): costo di un attraversamento del grafo per passo; da accendere solo con teste opzionali (RVQ, keep).
+- NCCL e bf16: il collaudo prova che il percorso gira, non l'equivalenza numerica su GPU (protocollo a parte).
+- La memoria e' misurata su un batch fisso del caso peggiore e su una GPU; non certifica ogni passo del training vero ne' il ritmo DDP di 100M e 300M.
+
+### 2026-10-12 | Claude | Costo per passo del braccio B (keep 0,05) dell'A/B Step 1 | Base: 9d7f67a
+
+- Il risparmio senza checkpointing e' una stima dai pezzi misurati, non una misura: sul Mac (18 GB di RAM) il processo e' stato ucciso per memoria e il sistema ha scritto 6 GB di swap; il disco e' sceso a 1,8 GB liberi. Va misurato su Leonardo se serve.
+- Numeri locali su CPU a un thread: rapporti indicativi, non tempi GPU. Il rapporto locale (×1,72) e' coerente con quello misurato su GPU (×1,59).
