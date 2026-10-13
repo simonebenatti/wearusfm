@@ -313,6 +313,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Miei: loader (`band_limit` ed `edge_guard` nel batch, anche nei micro-batch), trainer (calibrazione dei rami con generatore proprio; `freeze_encoder` con caricamento controllato da `init_from` ed EMA solo sui rami; ripresa dei checkpoint di prima dei campi nuovi), CLI.
 - Test: `tests/cpu/test_spectral_branches.py` (22), compresa l'equivalenza del contratto delle loss con i rami (1 x 2 micro-batch e 2 processi DDP gloo = batch intero entro 1e-10); suite CPU completa 864 passati (842 + 22). Nessun job, nessuna prova CUDA.
 
+### 2026-10-13 | Claude | Protocollo del test 2A dello step 2 (da approvare): statistiche spettrali accanto all'embedding, solo CPU | Base: 2ba67a7
+
+- Su richiesta di Simone («parti dal protocollo del test 2A»): `docs/step2a_stats_probe.md` (ID `step2a_stats_v1`), soglie in `docs/decisioni.md`, codice `scripts/step2a.py` + `scripts/slurm/step2a_stats.sbatch` / `step2a_probe.sbatch`, test `tests/cpu/test_step2a.py` (10). Nessun job.
+- Disegno: embedding dei teacher B_seed0/B_seed1 dalle TUE cache della tranche `step1_downstream_4000_v1` (lette, mai riscritte; provenienza e hash ricontrollati); statistiche (32 target dello Step 1 + 32 indicatori) calcolate una volta per task sulla CPU con `--feature-set stats --audit-inputs`, accettate solo se l'hash degli ingressi e le etichette/soggetti coincidono riga per riga; varianti M, MS (per teacher), S, K; sonde ufficiali invariate; confronto MS-M con `compare_reports` (braccio A = M, B = MS), senza la tua guardia -2 punti, che resta dell'A/B dello Step 1.
+- Criteri: utile se delta >= +1 punto, limite inferiore > 0 e positivo con tutti e due i teacher; non dannoso se >= -1; positivo = utile in un task e non dannoso nei due. Costo: 0 GPU-ora, tetto 132 core-ora CPU (stima ~75).
+- Controllo in sola lettura su Leonardo (13/10, via leonardo-ops): cache e provenienze presenti, commit di valutazione `8dad7e8`, hash dei checkpoint come in `step1_downstream.py`; tempi da sacct (sonde P1 39-43 min, P2 48-53); `$WORK` all'86%.
+- **Per te:** il 2A riusa `step1_downstream.py` (costanti, `check_source`) e `downstream_ab.compare_reports`; aggiunge `--feature-set` alle sonde (gia' nella consegna dei rami). Va rivisto insieme a quella consegna prima di qualunque deploy.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -596,3 +604,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `freeze_encoder` (diagnostica a encoder congelato) per ora solo a un processo e senza accumulo; il training congiunto con i rami passa invece da DDP e accumulo (provato).
 - Il test 2A con `feature_set` "stats"/"mask" non usa la GPU (target dello Step 1 sulle finestre), ma lo script carica comunque il modello: per non ricalcolare l'embedding dei teacher dell'A/B si potrebbero concatenare le cache gia' estratte; decisione con GPT, che ha il protocollo P1/P2.
 - Ownership: le modifiche ai file di GPT sono il minimo per usare il readout comune nelle sonde e per agganciare la loss; vanno riviste da GPT prima di qualunque deploy.
+
+### 2026-10-13 | Claude | Protocollo del test 2A dello step 2 (da approvare): statistiche spettrali accanto all'embedding, solo CPU | Base: 2ba67a7
+
+- P1 di partenza basso (~0,18; DB3 ~0,03 con 49 classi): gli encoder hanno visto solo emg2qwerty. Un guadagno delle statistiche in P1 puo' dire soprattutto che l'encoder trasferisce poco a NinaPro; scritto nella lettura del protocollo.
+- Tolto il controllo «embedding + indicatori» del pacchetto: con sonde per dataset gli indicatori sono costanti (stessa fs e banda per tutte le finestre di un dataset), quindi coinciderebbe con M; resta K (soli indicatori, atteso al livello del caso) e il conteggio delle maschere diverse per dataset.
+- La sonda rifatta su M deve riprodurre il report downstream: controllo descrittivo, non un criterio (se differisse, il confronto resta accoppiato fra due sonde nuove sulle stesse feature, e lo si riporta).
+- Il primo controllo su Leonardo e' fallito per ssh (`Permission denied (publickey)`); dopo il rinnovo dell'accesso da parte di Simone e' andato a buon fine. leonardo-ops non esegue `python3 -c` sul login node: i JSON sono stati copiati con `tail` e letti sul Mac.

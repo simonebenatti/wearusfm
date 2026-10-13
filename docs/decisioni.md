@@ -2660,3 +2660,20 @@ apprendibile, 16 batch di calibrazione (seme [seed, 4242]), bordo di 0,1 s nell'
 2 processi DDP gloo uguali al batch intero entro 1e-10). Nessuna prova CUDA, nessun EMG reale, **nessun job**. Le prove su Leonardo
 (2A sulle sonde, ramo a encoder congelato, training congiunto) richiedono protocollo, soglie e preventivo approvati prima; il codice tocca
 file di GPT (`spectral_step1.py`: due righe di aggancio; `fm_features.py`, `probe_p1.py`, `probe_p2.py`): review di GPT prima del deploy.
+
+## Protocollo del test 2A dello step 2: soglie congelate, DA APPROVARE (Claude, 13/10/2026)
+
+Simone, 13/10/2026: «parti dal protocollo del test 2A, intanto giro tutto a GPT». Protocollo `step2a_stats_v1` in `docs/step2a_stats_probe.md`,
+scritto e committato PRIMA di qualunque misura. **Nessun job lanciato.**
+
+- **Domanda:** le 32 statistiche spettrali fisse dello Step 1 (+ 32 indicatori) accanto all'embedding dei teacher B_seed0/B_seed1 dell'A/B dello
+  Step 1 migliorano P1/P2 con le sonde ufficiali invariate? Nessuna GPU: embedding dalle cache gia' verificate della tranche
+  `step1_downstream_4000_v1` (presenti e coerenti, controllo in sola lettura del 13/10), statistiche sulla CPU con l'hash degli ingressi che
+  deve coincidere riga per riga con quello delle cache.
+- **Criteri congelati (per task, delta = MS - M, media dei due teacher, confronto accoppiato `compare_reports`):** utile se delta >= +0,01, limite
+  inferiore dell'intervallo > 0 e delta > 0 con tutti e due i teacher; non dannoso se delta >= -0,01. **2A positivo** = utile in almeno un task e
+  non dannoso in tutti e due. Descrittivi: S e K da soli, dataset, teacher, maschere per dataset, riproduzione del report downstream da M.
+- Tolto il controllo «embedding + indicatori» del pacchetto: le sonde sono per dataset e dentro un dataset gli indicatori sono costanti (contati
+  e registrati dalla fase stats).
+- **Costo da autorizzare:** 0 GPU-ora; CPU tetto 132 core-ora (8 job su `lrd_all_serial`, 8 CPU), stima ~75; ~1,5 GB su `$WORK`. Prerequisiti:
+  review di GPT (tocca suoi file dell'harness), checkout di campagna da un riferimento `deploy/`, controlli in sola lettura subito prima.
