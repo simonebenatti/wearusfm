@@ -15,13 +15,14 @@ float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
 import shutil
 import time
 from contextlib import nullcontext
-from dataclasses import asdict, dataclass, field, replace
+from dataclasses import asdict, dataclass, field, fields, is_dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -207,6 +208,67 @@ class BatchStream(torch.utils.data.IterableDataset):
         loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales), self.window_s)
         yield from L.batch_stream(loader, self.batch_size, seed=self.seed, start=self.start, worker=wid, n_workers=n, segment=self.segment,
                                   rank=self.rank)
+
+
+class _Shared:
+    """Un array grande in viaggio dal worker al processo principale come tensore torch, cioe' in memoria condivisa invece che copiato
+    dentro il pickle (collaudo GPU del 12/10/2026: ~25 ms per passo di sola ricezione, due terzi per i target delle ancore)."""
+
+    __slots__ = ("t",)
+
+    def __init__(self, t: torch.Tensor):
+        self.t = t
+
+
+SHARED_MIN_BYTES = 64 * 1024
+
+
+def _to_shared(x):
+    """Nel worker (`collate_fn` del DataLoader): gli array numpy numerici da almeno `SHARED_MIN_BYTES` diventano `_Shared`, ovunque nel
+    batch (segnali, target delle ancore, maschere...). Stessi valori, stesso dtype e forma; il resto resta com'e'."""
+    if isinstance(x, np.ndarray):
+        return _Shared(torch.from_numpy(np.ascontiguousarray(x))) if x.dtype.kind in "biuf" and x.nbytes >= SHARED_MIN_BYTES else x
+    if isinstance(x, list):
+        return [_to_shared(v) for v in x]
+    if isinstance(x, tuple):
+        return tuple(_to_shared(v) for v in x)
+    if isinstance(x, dict):
+        return {k: _to_shared(v) for k, v in x.items()}
+    if is_dataclass(x) and not isinstance(x, type):
+        y = copy.copy(x)  # niente __init__/__post_init__ di nuovo: si sostituiscono solo i campi
+        for f in fields(x):
+            object.__setattr__(y, f.name, _to_shared(getattr(x, f.name)))
+        return y
+    return x
+
+
+def _from_shared(x):
+    """Nel processo principale: l'inverso esatto di `_to_shared` (array numpy che condividono la memoria dei tensori ricevuti)."""
+    if isinstance(x, _Shared):
+        return x.t.numpy()
+    if isinstance(x, list):
+        return [_from_shared(v) for v in x]
+    if isinstance(x, tuple):
+        return tuple(_from_shared(v) for v in x)
+    if isinstance(x, dict):
+        return {k: _from_shared(v) for k, v in x.items()}
+    if is_dataclass(x) and not isinstance(x, type):
+        y = copy.copy(x)
+        for f in fields(x):
+            object.__setattr__(y, f.name, _from_shared(getattr(x, f.name)))
+        return y
+    return x
+
+
+def _ddp_wrap(student: WearUsFM, cfg: RunConfig, ctx: DistContext, device):
+    """Lo studente in DDP. `find_unused_parameters` solo se il modello ha teste che in un passo possono restare fuori dal grafo: la testa
+    RVQ (chiamata solo se ci sono finestre RVQ) e la testa keep (mai chiamata col peso 0, braccio A). Le teste delle ancore restano sempre
+    nel grafo (senza target la perdita e' uno zero derivabile). Senza quelle teste il flag costa un attraversamento del grafo per passo per
+    niente (avviso di DDP nel collaudo del 12/10/2026); un parametro inutilizzato con il flag spento fa fermare DDP con un errore."""
+    from torch.nn.parallel import DistributedDataParallel
+    unused = bool(cfg.model.rvq_codes) or bool(cfg.model.keep_readout)
+    return DistributedDataParallel(_Objective(student), device_ids=[ctx.local_rank] if str(device).startswith("cuda") else None,
+                                   find_unused_parameters=unused)
 
 
 # --- allarmi e diagnostiche -----------------------------------------------------------------------------------------------------------
@@ -600,10 +662,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             torch.manual_seed(cfg.seed * 1_000_003 + ctx.rank + 1)
     model = None
     if ctx.active:
-        from torch.nn.parallel import DistributedDataParallel
-        # find_unused_parameters: teste senza target in un passo, testa keep del braccio A, testa RVQ spenta (contratto, punto 4)
-        model = DistributedDataParallel(_Objective(student), device_ids=[ctx.local_rank] if str(device).startswith("cuda") else None,
-                                        find_unused_parameters=True)
+        model = _ddp_wrap(student, cfg, ctx, device)
         for t in teacher.state_dict().values():  # il teacher del processo 0 su tutti (lo studente lo allinea DDP)
             torch.distributed.broadcast(t, src=0)
     if cfg.pairing_audit:
@@ -629,7 +688,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                        batch_size=None, num_workers=num_workers, persistent_workers=num_workers > 0,
                                        # un generatore proprio: creare l'iteratore estrae un seme, e dal generatore globale sposterebbe il
                                        # dropout del muscolo nei run ripresi (lo stream usa i suoi semi espliciti, non questo)
-                                       generator=torch.Generator().manual_seed(cfg.seed))
+                                       generator=torch.Generator().manual_seed(cfg.seed),
+                                       # con i worker, gli array grandi viaggiano in memoria condivisa (`_to_shared` / `_from_shared`)
+                                       collate_fn=_to_shared if num_workers > 0 else None)
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
     reason, it = "max_steps", iter(data)
     numerical_failure = False
@@ -663,7 +724,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             reason = "limite di tempo"
             break
         t0 = time.time()
-        batch = next(it)
+        batch = _from_shared(next(it)) if num_workers > 0 else next(it)
         t_data = time.time() - t0
         if batch.index != step:  # l'ordine dei worker del DataLoader deve ricomporre la sequenza degli indici
             raise RuntimeError(f"batch di indice {batch.index} al passo {step}: stream fuori sequenza")

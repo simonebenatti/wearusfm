@@ -112,3 +112,41 @@ def test_training_resumed_equals_continuous(tmp_path, monkeypatch):
             assert torch.equal(a[part][k], b[part][k]), (part, k)  # stessi batch, stessi generatori: stessi pesi
     with pytest.raises(ValueError, match="stream diverso"):  # ripresa con un altro segmento: rifiutata
         R.train(replace(cfg, max_steps=8, stream_segment=5), mpath, [root], tmp_path / "b", log=lambda m: None)
+
+
+def _has_shared(x) -> bool:
+    if isinstance(x, R._Shared):
+        return True
+    if isinstance(x, (list, tuple)):
+        return any(_has_shared(v) for v in x)
+    if isinstance(x, dict):
+        return any(_has_shared(v) for v in x.values())
+    if hasattr(x, "__dataclass_fields__"):
+        return any(_has_shared(getattr(x, f)) for f in x.__dataclass_fields__)
+    return False
+
+
+def test_batches_through_shared_memory_are_identical(tmp_path):
+    """Con i worker gli array grandi viaggiano in memoria condivisa (collaudo del 12/10/2026): stessi batch, bit per bit, del pickle."""
+    idx, cfg = _setup(tmp_path)
+    ds = R.BatchStream(idx, cfg, 2, 7, {}, segment=4)
+    plain = torch.utils.data.DataLoader(ds, batch_size=None, num_workers=2)
+    shared = torch.utils.data.DataLoader(ds, batch_size=None, num_workers=2, collate_fn=R._to_shared)
+    it_p, it_s = iter(plain), iter(shared)
+    for _ in range(6):
+        raw = next(it_s)
+        assert _has_shared(raw)  # il passaggio in memoria condivisa e' davvero attivo
+        got, ref = R._from_shared(raw), next(it_p)
+        assert not _has_shared(got) and _hash(got) == _hash(ref) and got.index == ref.index
+        assert all(isinstance(x, np.ndarray) for x in got.signals)
+
+
+def test_training_with_workers_resumed_equals_continuous(tmp_path):
+    root, mpath = _tree(tmp_path)
+    cfg = replace(R.small_config(datasets=None, max_steps=6), stream_segment=4, ckpt_every=100)
+    R.train(cfg, mpath, [root], tmp_path / "a", log=lambda m: None, num_workers=2)
+    R.train(replace(cfg, max_steps=3), mpath, [root], tmp_path / "b", log=lambda m: None, num_workers=2)
+    R.train(cfg, mpath, [root], tmp_path / "b", log=lambda m: None, num_workers=2)
+    a, b = (torch.load(tmp_path / d / "checkpoint.pt", weights_only=False) for d in ("a", "b"))
+    for part in ("student", "teacher"):
+        assert all(torch.equal(a[part][k], b[part][k]) for k in a[part]), part

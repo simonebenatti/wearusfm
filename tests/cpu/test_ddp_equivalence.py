@@ -81,11 +81,10 @@ def _reference(cfg, init, batch):
 
 def _worker(rank, world, store, cfg, init, batch, accums, out):
     import torch.distributed as dist
-    from torch.nn.parallel import DistributedDataParallel
     dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world)
     try:
         mine = L.split_batch(batch, world)[rank]  # campioni contigui: il processo r ha la sua parte del batch globale
-        wrap = lambda s: DistributedDataParallel(R._Objective(s), find_unused_parameters=True)  # noqa: E731
+        wrap = lambda s: R._ddp_wrap(s, cfg, R.DistContext(rank, world, rank), "cpu")  # come il trainer (anche find_unused_parameters)  # noqa: E731
         res = {k: _update(cfg, init, mine, k, R.DistContext(rank, world, rank), wrap) for k in accums}
         torch.save(res, Path(out) / f"rank{rank}.pt")
     finally:

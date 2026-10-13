@@ -180,3 +180,18 @@ def test_cli_under_torchrun_two_processes(tmp_path):
     s = json.loads((out / "summary.json").read_text())
     assert s["steps"] == 2 and s["world_size"] == 2 and s["accum_steps"] == 2 and s["loss_reduction"].startswith("contratto")
     assert r.stdout.count("preset small") == 1  # stampa solo il processo 0
+
+
+def test_find_unused_parameters_only_with_optional_heads(tmp_path):
+    import torch.distributed as dist
+    from wearusfm.model.fm import WearUsFM
+    dist.init_process_group("gloo", init_method=f"file://{tmp_path / 'store'}", rank=0, world_size=1)
+    try:
+        base = R.small_config()
+        for model_cfg, expected in ((base.model, False), (replace(base.model, keep_readout=True), True),
+                                    (replace(base.model, rvq_codes=32), True)):
+            cfg = replace(base, model=model_cfg)
+            wrapped = R._ddp_wrap(WearUsFM(model_cfg), cfg, R.DistContext(), "cpu")
+            assert wrapped.find_unused_parameters is expected, model_cfg
+    finally:
+        dist.destroy_process_group()
