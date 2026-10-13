@@ -285,6 +285,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Solo registro di review su branch GPT: nessuna modifica al codice/branch Claude, nessun merge/push/job. Il controllo dell'implementazione
   resta a Claude. Preparazioni precedenti non committate nel worktree GPT lasciate invariate.
 
+### 2026-10-13 | GPT | Review del protocollo e wrapper Step 2A | Snapshot: a4ffc2e1f2674334f1785c448b4700869c3cb628
+
+- Review su copia congelata del commit, con controllo statistico indipendente. Il worktree di Claude contiene correzioni successive non
+  committate: non incluse in questa review. Riutilizzo delle cache B e calcolo CPU delle statistiche coerenti con la domanda esplorativa;
+  sonde, media dei teacher e bootstrap accoppiato rispettano il protocollo dichiarato. Filtro/scala/ritagli confrontati col codice 8dad7e8.
+- Verifica locale: 49 test passati, 1 DDP escluso (step2a, probe_p2, p1_cross_subject, downstream_ab, spectral_branches); bash -n dei due
+  launcher superato. Nessuna suite completa, prova su dati reali, accesso al cluster o job. Tetto degli otto job: 132 core-ora, aritmetica corretta.
+- Riproduzioni esterne in /private/tmp/wearusfm-step2a-review.wz8Ict/review_repros.py: cache accettata con commit di estrazione/training
+  estranei; argv della sonda B_seed1 etichettato col checkpoint B_seed0. Ulteriore riproduzione CPU: maschere diverse a fs/banda identiche.
+- Esito: tre correzioni P2 e una precisazione scientifica nella sezione 2 prima di chiudere la review. Solo registro aggiornato sul branch
+  GPT; nessuna modifica al codice di Claude, integrazione, push o autorizzazione di budget/lancio implicita.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -543,3 +555,19 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   ai rami: stesso keep_weight non garantisce stessa supervisione/gradiente raw. Confronto Gabor/wavelet cambia frequenze, larghezze,
   normalizzazione, supporto e conv vsFFT: scelta fra DUE BANCHI, non superiorita' della famiglia wavelet. R2 spettrale non dimostra P1/P2.
   Limite lento<48Hz su P1 resta esplicito; non allungare P1 perdendone la comparabilita'.
+
+### 2026-10-13 | GPT | Correzioni prima del test 2A | Snapshot: a4ffc2e
+
+- P2, scripts/step2a.py:147-150: la costanza degli indicatori e' solo registrata. Fs e banda costanti non bastano: i target disattivano le
+  coordinate di forma con energia <= EPS. Stessi fs200, 200 campioni, 8 canali QC-validi, limite100Hz, guard20: segnale casuale17 coordinate
+  presenti, finestra nulla2. Se una maschera varia, fermare la catena prima delle sonde/esito oppure prevedere M+K; K al caso da solo non
+  esclude un contributo degli indicatori condizionato a M. La prima opzione conserva gli otto job e il tetto proposto.
+- P2, scripts/step2a.py:85-86: _downstream non verifica identity.source_commit/training_commit, sebbene il protocollo riusi precisamente
+  le cache storiche 8dad7e8. Riprodotta accettazione con questi due campi alterati. Congelare anche tali SHA: hash delle finestre grezze e
+  hash fisico contro il manifest corrente non certificano che filtro/scala/readout siano quelli dell'estrazione storica.
+- P2, scripts/step2a.py:101-103: _probe_argv passa sempre B_seed0/checkpoint.pt, anche per M/MS di B_seed1. Le sonde leggono le cache
+  corrette (non e' un errore nelle accuratezze), ma report.checkpoint contraddice la provenienza allegata. Passare il teacher del braccio
+  per M/MS; mantenere separato il checkpoint caricato solo per estrarre S/K. Aggiungere un'asserzione nel test end-to-end.
+- docs/step2a_stats_probe.md:59: un guadagno con la sonda lineare non prova informazione assente nell'embedding; puo' renderla piu'
+  accessibile alla sonda. Scrivere "migliora la sonda lineare rispetto a M su questi teacher/task". "Non dannoso" resta una guardia pratica
+  sulla stima puntuale, non non-inferiorita' statistica; intervallo P2 descrittivo e due confronti senza correzione gia' dichiarati.
