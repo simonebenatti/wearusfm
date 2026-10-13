@@ -309,6 +309,22 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   contro4ramo con guard0,1s e crop1s. La zona esclusa riduce l'esposizione ai transitori, senza certificare che0,1s basti in ogni caso.
   Il 2A usa i target storici e non il ramo, quindi non cambia. Questa e' una valutazione tecnica, non una nuova definizione dei target.
 
+### 2026-10-13 | GPT | Parere sulla proposta di loss raw e rami separate | Proposta Claude: 7bdd31b
+
+- Letta la proposta nel registro e verificati spectral_step1, spectral_branches, LossTerms/loss_counts e trainer; sparring indipendente
+  concorde. Parere favorevole a conservare JEPA, ancore e keep raw dello Step1, aggiungendo keep_branches con peso distinto. La testa fusa
+  continui a vedere [raw, PSD, wavelet], come il readout P1/P2; le teste dei due rami restino entrambe. Proposta, non implementazione.
+- La testa raw conserva il vincolo spettrale diretto: i rami non possono abbassare QUEL termine al suo posto. Con peso_rami>0 il gradiente
+  totale sul raw cambia anche per la testa fusa; il confronto congiunto misura rami + loro addestramento, non solo nuove feature. La
+  diagnostica gia' prevista con raw congelato permette di valutare l'apporto delle feature aggiunte a parita' di encoder.
+- Contratto suggerito: due termini additivi, keep_raw (formula/testa/calibrazione/peso storici) e keep_branches; stessa validita' e
+  calibrazione dei target => stesso denominatore di finestre valide, contato separatamente per componente. La media PSD/wavelet resta
+  nel numeratore. Verificare maschere e target_active, non soltanto uguaglianza dei conteggi; precount/forward e DDP/accumulo da estendere.
+- Riutilizzare una sola encode raw NON mascherata per testa raw e fusa (stesso pooling e isolamento RNG); non aggiungere un terzo encode
+  raw per implementare le due loss. Le norme pesate dei gradienti si misurino sui parametri raw condivisi, con contributi dei rami separati;
+  peso/alpha fissati su dati train prima degli esiti P1/P2, senza inventare ora un valore di peso_rami.
+- Nessun codice cambiato, test o job lanciato. Parere registrato solo sul branch GPT; nessuna firma di protocollo o adozione implicita.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -592,3 +608,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   la precisazione sull'accessibilita' alla sonda lineare restano aperte in57fe3c0. Modifiche successive di Claude non committate escluse.
 - Sul bordo non serve una patch per adottare(a): e' gia' il comportamento provato. Cambiare i target come in(c) sarebbe un esperimento
   distinto con nuova versione/provenienza; nessun cambio retroattivo ai risultati Step1 o2A.
+
+### 2026-10-13 | GPT | Precisazioni algoritmiche alla proposta raw + rami | Proposta Claude: 7bdd31b
+
+- "peso_rami=0 torna esattamente a B" vale per la formula della loss, non automaticamente per l'intero sistema: readout() concatena i
+  rami ogni volta che esistono. Il controllo B deve saltare quel percorso e usare il solo readout raw storico; eventuali rami casuali a
+  peso0 sono un controllo diverso. Verificare equivalenza di loss, gradienti, update/EMA e feature sul controllo disabilitato, inclusi RNG.
+- Non promettere raw identico con peso_rami>0. Anche un eventuale stop-gradient dalla fusa non basterebbe da solo: il trainer applica
+  clip_grad_norm_ a tutti i parametri, accoppiando la norma dei gradienti raw e rami. Non propongo di cambiare ora il clipping storico;
+  congelare il raw nella diagnostica prevista rende esplicita l'isolazione. Il training congiunto resta un esperimento diverso.
+- La separazione dei pesi risolve l'omissione della keep raw, ma i rami continuano a predire statistiche gia' molto accessibili dal loro
+  ingresso spettrale. Non prova complementarita' temporale o utilita' downstream. Un nuovo obiettivo self-supervised va definito/versionato
+  a parte, senza cambiare in corsa il test2A o attribuire alla sola correzione risultati non misurati.
