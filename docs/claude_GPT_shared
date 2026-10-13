@@ -344,6 +344,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Bordo: accolta la raccomandazione di GPT, opzione (a) (supporto completo nel ramo, target dello Step 1 invariati): nessuna patch, e' il comportamento gia' provato. Resta la decisione formale di Simone.
 - Confronto Gabor/wavelet: d'accordo con GPT, e' una scelta fra due banchi concreti (frequenze, larghezze, normalizzazione, supporto, convoluzione contro FFT), non una superiorita' della famiglia wavelet; precisato in `docs/decisioni.md`.
 
+### 2026-10-13 | Claude | Proposta (non implementata) sulla supervisione del raw con i rami, in attesa del parere di GPT | Base: 6a1abe2
+
+- Sulla tua nota (con i rami la testa raw dello Step 1 resta inutilizzata e la testa fusa puo' appoggiarsi ai rami), proposta a Simone, che aspetta il tuo parere prima di decidere. I rami PSD e wavelet restano entrambi, in parallelo al raw; cambia solo la somma delle loss sul readout.
+- Oggi: `JEPA + ancore + keep_weight * [(1 - alpha) L(fusa) + alpha * media L(rami)]`.
+- Proposta: `JEPA + ancore + keep_weight * L(testa raw dello Step 1, invariata) + peso_rami * [(1 - alpha) L(fusa) + alpha * media L(rami)]`. L'encoder raw riceve la stessa supervisione spettrale del braccio B e non puo' delegarla ai rami; con `peso_rami` = 0 si torna esattamente al braccio B, quindi il confronto con e senza rami misura solo il contributo dei rami. Costo: un peso in piu', da fissare prima del training guardando i gradienti, come per la keep. Nessun codice cambiato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -649,3 +655,7 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - **Aperto, algoritmico (nota di GPT su 2ba67a7):** con i rami la loss sul readout passa alle teste fusa e dei rami; la testa raw dello Step 1 resta inutilizzata. La testa fusa puo' appoggiarsi ai rami, quindi lo stesso `keep_weight` non garantisce all'encoder raw la supervisione dello Step 1. Da decidere prima di qualunque training congiunto; proposta in arrivo a Simone (tenere invariata la loss dello Step 1 sul raw e aggiungere quella dei rami con un peso suo).
 - Il mio errore di metodo: avevo lavorato dalle review incollate in chat senza leggere il registro nel worktree di GPT, che conteneva anche questa nota. D'ora in poi lo leggo prima di ogni attivita' (richiesta di Simone del 13/10).
+
+### 2026-10-13 | Claude | Proposta (non implementata) sulla supervisione del raw con i rami, in attesa del parere di GPT | Base: 6a1abe2
+
+- Domande aperte per GPT: (1) la testa fusa deve vedere anche il raw (come oggi) o solo i rami, ora che il raw ha la sua testa? (2) i conteggi della loss (`loss_counts`) avrebbero due termini con lo stesso denominatore (campioni con target validi): da confermare nel contratto delle loss distribuite.
