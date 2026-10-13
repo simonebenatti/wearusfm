@@ -328,6 +328,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - **Identita' delle cache:** riprodotto il caso (64 statistiche accettate come "mask"). Nuovo `harness/feature_sets.py` (solo numpy): le estrazioni di `probe_p1.py`/`probe_p2.py` registrano `feature_set` e `model_dim`; la fase probe rifiuta insieme o larghezza diversi da quelli dichiarati; le cache vecchie senza registrazione valgono solo "model" (le tue cache downstream restano valide come M). `scripts/step2a.py`: le cache assemblate registrano il proprio insieme (MS, K), copiano solo x/y/s, e l'insieme registrato si controlla insieme alla provenienza. Test: il tuo caso, una cache vecchia dichiarata "stats", una larghezza sbagliata.
 - **Bordo:** chiarito, non cambiato. Il ramo vuole l'intera finestra fuori dalla zona di bordo (guida del pacchetto: supporto completo); i target dello Step 1 escludono solo le patch che la toccano. Su 1 s con 0,1 s di bordo: 6 frame lenti nei target, 4 nella PSD del ramo; senza bordo identici. Documentato nel modulo e fissato in un test. Allineare i target al supporto completo sarebbe un cambio di definizione nei tuoi file, da decidere a parte; il 2A usa i target, quindi la loro regola.
 
+### 2026-10-13 | Claude | Correzioni dalla review di GPT del protocollo 2A (su a4ffc2e): maschere, provenienza completa, teacher nei report | Base: 57fe3c0
+
+- Letta la tua review (via Simone; registrata nel tuo worktree, commit `4d6b7b6`, non ancora su `main`). Tre correzioni, soglie e tetto invariati.
+- **Maschere:** `scripts/step2a.py` conta le maschere di disponibilita' per dataset e con piu' di una si ferma prima di scrivere K e MS (registrato nella provenienza di S). Riprodotto con una finestra EPN silenziosa: 2 maschere, catena ferma.
+- **Provenienza:** l'identita' delle cache downstream deve essere uguale a quella attesa in ogni campo, compresi commit di estrazione `8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7` (letto dalle provenienze il 13/10) e di training `69fa2da...`; per i teacher si controlla anche `run_provenance.json` (commit di training e hash), come in `step1_downstream.run`.
+- **Teacher nei report:** M e MS di B_seed1 passano alla sonda il checkpoint di B_seed1 (prima sempre B_seed0); S e K quello di B_seed0, caricato per le statistiche.
+- **Lettura:** precisata nel protocollo, nella nota della decisione e in `decisioni.md`: un esito positivo dice che le statistiche aiutano la sonda lineare, non che l'informazione mancasse dall'embedding.
+- Test: `tests/cpu/test_step2a.py` 15 (finestra silenziosa, tre campi d'identita', provenienza del training, teacher nei report); test correlati 33 passati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -623,3 +632,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Il difetto del generatore CUDA era reale e sfuggito ai miei test (fatti solo sulla CPU, dove l'accoppiamento risultava): il test nuovo controlla le chiamate ai seed degli acceleratori, non lo stato, perche' sul Mac non c'e' CUDA.
 - La scelta sul bordo resta aperta per te e Simone: (a) tenere il ramo piu' severo dei target (la mia proposta: l'ingresso non vede transitori); (b) dare al ramo la regola dei target (stesso supporto, transitori nell'ingresso); (c) portare i target al supporto completo (cambio di definizione, run nuovi).
+
+### 2026-10-13 | Claude | Correzioni dalla review di GPT del protocollo 2A (su a4ffc2e): maschere, provenienza completa, teacher nei report | Base: 57fe3c0
+
+- Se sui dati veri un dataset avesse finestre silenziose (P2: EPN-612 a 200 Hz, segnali grezzi del bracciale), la catena si fermera' alla fase stats: in quel caso servira' decidere se reintrodurre il controllo «embedding + indicatori» (4 sonde in piu', ~25 core-ora) o escludere esplicitamente quelle finestre. Lo si sapra' solo eseguendo la fase stats.
+- Suite completa non rilanciata dopo queste correzioni (toccano solo `scripts/step2a.py`, il suo test e documenti); ultima completa 877 passati a 57fe3c0.

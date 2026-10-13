@@ -19,6 +19,10 @@ debole (non impossibile: un ramo puo' imparare cose che le 32 medie non contengo
   `scripts/step1_downstream.py`). Presenti, commit di valutazione `8dad7e8`, hash dei checkpoint corrispondenti; P1: DB2 33.427/5.117/7.908,
   DB3 8.610/1.224/3.847, DB6 30.036/3.925/8.083 finestre train/val/test; P2: EPN-612 91.800, UCI-EMG 662. Si leggono, non si riscrivono.
   Si usano i teacher B perche' lo step 2 estende la configurazione dello Step 1 con la keep; i teacher A restano fuori (eventuale tranche a parte).
+  **Provenienza ricontrollata per intero** (review GPT del 13/10): identita' della cache uguale a quella attesa in ogni campo (protocollo,
+  commit di estrazione `8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7`, commit di training `69fa2da8757b322ea74875b4e9d104a89bbf6d5d`, checkpoint,
+  braccio, task, teacher, seme della sonda, split) e hash dei file; per i checkpoint, `run_provenance.json` (commit di training e hash) e
+  l'hash del file dove si carica.
 - **Statistiche (S):** per ogni finestra, i 32 target globali dello Step 1 (forma e energia, 50 ms e 500 ms; `global_spectral_targets` sulle
   ancore multiscala) calcolati sullo stesso ingresso delle feature: stesso filtro, stessa scala per soggetto o sessione, stessi ritagli, bordo
   di 0,1 s ai due lati come nel pretraining. Mancanti = 0, piu' 32 indicatori di presenza: 64 colonne. Nessun valore stimato sui dati.
@@ -39,9 +43,14 @@ debole (non impossibile: un ramo puo' imparare cose che le 32 medie non contengo
 | S | statistiche (64) | nuova, una per task (non dipende dal modello) |
 | K | soli indicatori (32) | nuova, una per task: controllo |
 
-Non c'e' M + indicatori (il controllo `raw_plus_mask` del pacchetto): le sonde sono per dataset, e dentro un dataset fs e banda sono le stesse per
-tutte le finestre, quindi gli indicatori sono costanti e M + indicatori coinciderebbe con M. La fase stats conta le maschere diverse per dataset
-e lo registra; K lo verifica sulle accuratezze (atteso: livello del caso).
+Non c'e' M + indicatori (il controllo `raw_plus_mask` del pacchetto): le sonde sono per dataset, e con una sola maschera di disponibilita' per
+dataset M + indicatori coinciderebbe con M. Stessa fs e banda non lo garantiscono: una finestra silenziosa perde le forme e tiene le energie
+(review GPT del 13/10, riprodotto: 17 coordinate presenti contro 2 cambiando solo il segnale). Quindi **la fase stats conta le maschere diverse
+per dataset e, se in un dataset ce n'e' piu' di una, si ferma prima di scrivere le varianti** (registrato nella provenienza di S): il controllo
+omesso servirebbe, e si decide prima di proseguire. K resta come controllo descrittivo (atteso: livello del caso).
+
+Ogni report attribuisce il teacher giusto: M e MS di un teacher portano il percorso del suo checkpoint, S e K quello di B_seed0 caricato per
+estrarre le statistiche (le sonde in fase probe non caricano il checkpoint).
 
 Sonde **invariate**, come firmate e come nella tranche downstream: encoder congelato, scaler solo sul train, regressione logistica bilanciata, C in
 {0,001; 0,01; 0,1; 1; 10; 100} scelto sulla validation, `max_iter` 3000, seme 0; P1 su NinaPro DB2/DB3/DB6 (finestre da 1 s, split v1 con
@@ -61,7 +70,8 @@ usato (`harness.downstream_ab.compare_reports`, braccio «A» = M, «B» = MS): 
 Descrittivi, senza soglie: S e K da soli, delta per dataset e per teacher, maschere diverse per dataset, riproduzione del report downstream da
 parte della sonda rifatta su M (attesa identica: stesse feature, stesso codice delle sonde).
 
-**Lettura.** Positivo: l'informazione spettrale esplicita e' utile e non gia' contenuta nell'embedding -> si prepara il protocollo dei rami a
+**Lettura.** Positivo: aggiungere le statistiche aiuta questa sonda lineare; **non dimostra che quell'informazione fosse assente
+dall'embedding** (potrebbe esserci in una forma che una sonda lineare non legge, review GPT del 13/10) -> si prepara il protocollo dei rami a
 encoder congelato (step 2C), con preventivo. Negativo: lo si registra; decidere se provare comunque i rami spetta a Simone. In nessun caso e'
 adozione automatica. Limiti: incertezza condizionata ai due teacher; due task senza correzione per confronti multipli; encoder allenati solo su
 emg2qwerty (P1 di partenza basso, ~0,18: un guadagno in P1 puo' dire soprattutto che l'encoder trasferisce poco a NinaPro); le 32 statistiche
@@ -98,8 +108,9 @@ minuti, P2 48-53, piu' ~10% per le 64 colonne in piu'), non ETA di coda.
 
 ## Verifica locale prima del congelamento
 
-`tests/cpu/test_step2a.py` (11): P2 da capo a fondo su dati sintetici con le sonde vere (statistiche, varianti, sonde, provenienze); cache con
-insieme di feature o larghezza diversi da quelli dichiarati rifiutate (il caso riprodotto da GPT); rifiuto di
-cache su finestre diverse, di provenienze cambiate e di cache modificate dopo; regola di decisione su sei casi; confronto accoppiato e controlli
-descrittivi. `tests/cpu/test_spectral_branches.py::test_feature_sets_of_the_2a_diagnostic`: le statistiche sono quelle dello Step 1 sullo stesso
+`tests/cpu/test_step2a.py` (15): P2 da capo a fondo su dati sintetici con le sonde vere (statistiche, varianti, sonde, provenienze, teacher
+giusto nei report); cache con insieme di feature o larghezza diversi da quelli dichiarati rifiutate (il caso riprodotto da GPT); una finestra
+silenziosa cambia la maschera e ferma la catena prima delle varianti; rifiuto di cache su finestre diverse, di provenienze cambiate (checkpoint,
+commit di estrazione, commit di training, provenienza del training del teacher) e di cache modificate dopo; regola di decisione su sei casi;
+confronto accoppiato e controlli descrittivi. `tests/cpu/test_spectral_branches.py::test_feature_sets_of_the_2a_diagnostic`: le statistiche sono quelle dello Step 1 sullo stesso
 ingresso. Nessuna misura sui task reali prima dell'approvazione.

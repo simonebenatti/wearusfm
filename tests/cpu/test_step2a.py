@@ -33,6 +33,8 @@ def _setup(tmp_path, monkeypatch, epn_users=10):
         m = WearUsFM(cfg)
         torch.save({"config": {"model": asdict(cfg)}, "teacher": m.state_dict(), "student": m.state_dict()}, ckpt)
         monkeypatch.setitem(S2.SD.CHECKPOINTS, arm, S2.sha256_file(ckpt))
+        (ckpt.parent / "run_provenance.json").write_text(json.dumps({"source_commit": S2.SD.TRAIN_COMMIT,
+                                                                     "checkpoint_sha256": S2.SD.CHECKPOINTS[arm]}))
     monkeypatch.setattr(S2.SD, "check_source", lambda _: None)
     monkeypatch.setattr(S2, "DOWN_DIM", 32)
     return SimpleNamespace(expected_commit="test", task="p2", runs_root=tmp_path / "runs", downstream_root=tmp_path / "down",
@@ -48,7 +50,7 @@ def _downstream(args, tmp_path, epn_root=None):
                 "--epn-root", str(epn_root or args.epn_root[0]), "--uci-root", str(args.uci_root), "--audit-inputs", "--device", "cpu",
                 "--batch", "8"]
         assert S2.probe_p2.main(argv) == 0
-        identity = {"protocol": S2.SD.PROTOCOL, "source_commit": "downstream", "training_commit": S2.SD.TRAIN_COMMIT,
+        identity = {"protocol": S2.SD.PROTOCOL, "source_commit": S2.DOWNSTREAM_COMMIT, "training_commit": S2.SD.TRAIN_COMMIT,
                     "checkpoint_sha256": S2.SD.CHECKPOINTS[arm], "arm": arm, "task": "p2", "which": "teacher", "probe_seed": 0,
                     "split_sha256": S2.SD.SPLIT_SHA}
         (folder / "provenance.json").write_text(json.dumps({"identity": identity, "cache": S2.inventory(folder, "p2", 32)}))
@@ -74,6 +76,7 @@ def test_p2_stats_variants_and_probes_end_to_end(tmp_path, monkeypatch):
             S2.probe(SimpleNamespace(**{**vars(args), "variant": variant, "arm": arm}))
             report = json.loads(S2._report_path(args, "p2", variant, arm).read_text())
             assert report["feature_set"] == S2.VARIANTS[variant] and report["provenance"]["identity"]["variant"] == variant
+            assert Path(report["checkpoint"]).parent.name == (arm or S2.STATS_ARM)  # il teacher giusto nel report (review GPT)
             assert 0 <= report["p2"] <= 1
     with pytest.raises(ValueError, match="braccio"):
         S2.probe(SimpleNamespace(**{**vars(args), "variant": "S", "arm": "B_seed0"}))
@@ -117,14 +120,41 @@ def test_stats_refuse_caches_of_other_windows(tmp_path, monkeypatch):
     assert not (args.eval_root / "p2" / "B_seed0" / "MS").exists()
 
 
-def test_downstream_identity_is_checked(tmp_path, monkeypatch):
+def test_silent_window_changes_the_mask_and_stops_the_chain(tmp_path, monkeypatch):
+    """Review GPT del 13/10: stessa fs e banda non bastano per maschere costanti (una finestra silenziosa perde le forme e tiene le energie).
+    Con piu' di una maschera in un dataset la fase stats si ferma prima di scrivere le varianti, e lo registra."""
+    args = _setup(tmp_path, monkeypatch)
+    path = args.epn_root[0] / "user1" / "user1.json"
+    data = json.loads(path.read_text())
+    sample = data["trainingSamples"]["idx_5"]
+    sample["emg"] = {ch: [0] * len(v) for ch, v in sample["emg"].items()}
+    path.write_text(json.dumps(data))
+    _downstream(args, tmp_path)
+    with pytest.raises(ValueError, match="maschere di disponibilita' non costanti"):
+        S2.stats(args)
+    assert json.loads((args.eval_root / "p2" / "S" / "provenance.json").read_text())["mask_patterns"]["epn612"] == 2
+    assert not (args.eval_root / "p2" / "K").exists() and not (args.eval_root / "p2" / "B_seed0" / "MS").exists()
+
+
+@pytest.mark.parametrize("field", ["checkpoint_sha256", "source_commit", "training_commit"])
+def test_downstream_identity_is_checked(tmp_path, monkeypatch, field):
+    """Provenienza completa delle cache storiche, commit di estrazione e di training compresi (review GPT del 13/10)."""
     args = _setup(tmp_path, monkeypatch)
     _downstream(args, tmp_path)
     meta_path = args.downstream_root / "p2" / "B_seed1" / "provenance.json"
     meta = json.loads(meta_path.read_text())
-    meta["identity"]["checkpoint_sha256"] = "altro"
+    meta["identity"][field] = "altro"
     meta_path.write_text(json.dumps(meta))
     with pytest.raises(ValueError, match="provenienza"):
+        S2.stats(args)
+
+
+def test_training_provenance_of_the_teacher_is_checked(tmp_path, monkeypatch):
+    args = _setup(tmp_path, monkeypatch)
+    _downstream(args, tmp_path)
+    prov = args.runs_root / "B_seed0" / "run_provenance.json"
+    prov.write_text(json.dumps({"source_commit": "altro", "checkpoint_sha256": S2.SD.CHECKPOINTS["B_seed0"]}))
+    with pytest.raises(ValueError, match="provenienza del training"):
         S2.stats(args)
 
 

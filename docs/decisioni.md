@@ -2677,3 +2677,10 @@ scritto e committato PRIMA di qualunque misura. **Nessun job lanciato.**
   e registrati dalla fase stats).
 - **Costo da autorizzare:** 0 GPU-ora; CPU tetto 132 core-ora (8 job su `lrd_all_serial`, 8 CPU), stima ~75; ~1,5 GB su `$WORK`. Prerequisiti:
   review di GPT (tocca suoi file dell'harness), checkout di campagna da un riferimento `deploy/`, controlli in sola lettura subito prima.
+
+**Aggiornamento dopo la review di GPT del protocollo 2A (13/10/2026; soglie invariate, nessuna misura fatta):** (1) con piu' di una maschera di
+disponibilita' in un dataset (una finestra silenziosa basta: GPT ha riprodotto 17 coordinate contro 2) la fase stats si ferma prima delle varianti,
+cosi' l'omissione di «embedding + indicatori» resta senza ambiguita' e il tetto resta 132 core-ora; (2) provenienza delle cache storiche
+ricontrollata per intero, commit di estrazione `8dad7e8...` e di training `69fa2da...` compresi, e quella del training dei teacher; (3) i report
+di B_seed1 portavano il checkpoint di B_seed0: ora ogni report ha il suo teacher. Lettura precisata: un esito positivo dice che aggiungere le
+statistiche aiuta la sonda lineare, non che quell'informazione mancasse dall'embedding.

@@ -7,9 +7,10 @@ con le sonde P1/P2 ufficiali (`probe_p1.py`, `probe_p2.py`) e il confronto accop
 statistiche non dipendono dal modello e si calcolano una volta per task sulla CPU, con l'hash degli ingressi realmente letti: devono coincidere
 riga per riga con le cache degli embedding (stesso `input_sha256`, stesse etichette e soggetti nello stesso ordine), o la catena si ferma.
 Varianti: M (embedding, cache downstream: la sonda rifatta deve riprodurre il report downstream) e MS (M + statistiche) per ciascun teacher B;
-S (statistiche) e K (soli indicatori di disponibilita') una volta per task. M + indicatori non c'e': le sonde sono per dataset e dentro un dataset
-fs e banda sono le stesse per tutte le finestre, quindi gli indicatori sono costanti (la fase stats conta le maschere diverse per dataset e lo
-registra). Tutto fuori da Git, in cartelle nuove.
+S (statistiche) e K (soli indicatori di disponibilita') una volta per task. M + indicatori non c'e': le sonde sono per dataset, e con una sola
+maschera di disponibilita' per dataset coinciderebbe con M. Stessa fs e banda non lo garantiscono (una finestra silenziosa perde le forme):
+la fase stats conta le maschere per dataset e con piu' di una si ferma prima di scrivere le varianti. La provenienza delle cache downstream si
+ricontrolla per intero (commit di estrazione e di training compresi), come quella dei checkpoint. Tutto fuori da Git, in cartelle nuove.
 
   stats   --task T                      statistiche (CPU) -> EVAL/T/S, poi EVAL/T/K e, per B_seed0 e B_seed1, EVAL/T/<arm>/MS
   probe   --task T --variant V [--arm]  sonda ufficiale -> EVAL/T/<arm>/<V>.json oppure EVAL/T/<V>.json
@@ -35,6 +36,7 @@ from wearusfm.harness.feature_sets import cache_record  # noqa: E402
 from wearusfm.training.spectral_calibration import sha256_file  # noqa: E402
 
 PROTOCOL = "step2a_stats_v1"
+DOWNSTREAM_COMMIT = "8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7"  # commit di estrazione delle cache downstream (provenance.json, letto il 13/10)
 ARMS = ("B_seed0", "B_seed1")
 STATS_ARM = "B_seed0"  # checkpoint caricato (sulla CPU) dalle sonde in estrazione; le statistiche non lo usano
 DOWN_DIM = 768  # embedding dei teacher dell'A/B (2 x 384)
@@ -87,12 +89,14 @@ def _identity(commit: str, task: str, variant: str, arm: str | None) -> dict:
 
 
 def _downstream(args, task: str, arm: str) -> tuple[Path, dict]:
-    """La cache degli embedding della tranche downstream, con la sua provenienza ricontrollata (identita' e hash dei file)."""
+    """La cache degli embedding della tranche downstream, con la sua provenienza ricontrollata: identita' completa (protocollo, commit di
+    estrazione e di training, checkpoint, braccio, task, split, teacher, seme) e hash dei file."""
     folder = args.downstream_root / task / arm
     meta = json.loads((folder / "provenance.json").read_text())
-    ident = meta["identity"]
-    if (ident.get("protocol"), ident.get("checkpoint_sha256"), ident.get("arm"), ident.get("task"), ident.get("split_sha256"),
-            ident.get("which"), ident.get("probe_seed")) != (SD.PROTOCOL, SD.CHECKPOINTS[arm], arm, task, SD.SPLIT_SHA, "teacher", 0):
+    expected = {"protocol": SD.PROTOCOL, "source_commit": DOWNSTREAM_COMMIT, "training_commit": SD.TRAIN_COMMIT,
+                "checkpoint_sha256": SD.CHECKPOINTS[arm], "arm": arm, "task": task, "which": "teacher", "probe_seed": 0,
+                "split_sha256": SD.SPLIT_SHA}
+    if meta["identity"] != expected:
         raise ValueError(f"cache downstream {folder}: provenienza diversa da quella congelata")
     if inventory(folder, task, DOWN_DIM) != meta["cache"]:
         raise ValueError(f"cache downstream {folder}: file cambiati dopo l'estrazione")
@@ -107,8 +111,20 @@ def _report_path(args, task: str, variant: str, arm: str | None) -> Path:
     return args.eval_root / task / arm / f"{variant}.json" if arm else args.eval_root / task / f"{variant}.json"
 
 
-def _probe_argv(args, task: str, folder: Path, stage: str, variant: str) -> list[str]:
-    argv = ["--checkpoint", str(args.runs_root / STATS_ARM / "checkpoint.pt"), "--features", str(folder), "--stage", stage,
+def _checkpoint(args, arm: str) -> Path:
+    """Il checkpoint di un teacher B con la provenienza del suo training (come `step1_downstream.run`); l'hash del file si controlla dove il
+    file si carica (fase stats)."""
+    ckpt = args.runs_root / arm / "checkpoint.pt"
+    prov = json.loads((ckpt.parent / "run_provenance.json").read_text())
+    if prov.get("source_commit") != SD.TRAIN_COMMIT or prov.get("checkpoint_sha256") != SD.CHECKPOINTS[arm]:
+        raise ValueError(f"{ckpt}: provenienza del training diversa da quella congelata")
+    return ckpt
+
+
+def _probe_argv(args, task: str, folder: Path, stage: str, variant: str, arm: str | None) -> list[str]:
+    """Il checkpoint passato alla sonda e' quello del teacher della variante (M, MS), o quello caricato per le statistiche (S, K): la sonda lo
+    scrive nel report; in fase probe non lo carica."""
+    argv = ["--checkpoint", str(_checkpoint(args, arm or STATS_ARM)), "--features", str(folder), "--stage", stage,
             "--which", "teacher", "--seed", "0", "--feature-set", VARIANTS[variant]]
     if task == "p1":
         if not args.root:
@@ -138,15 +154,14 @@ def stats(args) -> None:
     SD.check_source(args.expected_commit)
     commit = args.expected_commit
     task = args.task
-    ckpt = args.runs_root / STATS_ARM / "checkpoint.pt"
-    if sha256_file(ckpt) != SD.CHECKPOINTS[STATS_ARM]:
+    if sha256_file(_checkpoint(args, STATS_ARM)) != SD.CHECKPOINTS[STATS_ARM]:
         raise ValueError("checkpoint diverso dal teacher congelato")
     sources = {arm: _downstream(args, task, arm) for arm in ARMS}  # prima di calcolare qualunque cosa
     s_folder = output_path(_folder(args, task, "S", None))
     k_folder = output_path(_folder(args, task, "K", None))
     ms_folders = {arm: output_path(_folder(args, task, "MS", arm)) for arm in ARMS}
     runner = probe_p1 if task == "p1" else probe_p2
-    if runner.main(_probe_argv(args, task, s_folder, "extract", "S") + ["--audit-inputs", "--batch", "64", "--device", "cpu"]) != 0:
+    if runner.main(_probe_argv(args, task, s_folder, "extract", "S", None) + ["--audit-inputs", "--batch", "64", "--device", "cpu"]) != 0:
         raise ValueError("estrazione delle statistiche fallita")
     SD.check_source(commit)
     inv_s = inventory(s_folder, task, 64)
@@ -157,10 +172,15 @@ def stats(args) -> None:
             if str(z["feature_set"]) != "stats" or int(z["model_dim"]) != 0:
                 raise ValueError("la cache delle statistiche non e' registrata come 'stats'")
             stats_arrays[ds] = _arrays(z, prefixes)
-    # maschere di disponibilita' diverse per dataset (1 = costanti: M + indicatori sarebbe uguale a M)
+    # maschere di disponibilita' diverse per dataset. Il protocollo omette M + indicatori perche' con una sola maschera per dataset coinciderebbe
+    # con M; stessa fs e banda non bastano a garantirlo (una finestra silenziosa perde le forme e tiene le energie: review GPT del 13/10), quindi
+    # con piu' di una maschera in un dataset la catena si ferma qui, prima di scrivere le varianti (registrato nella provenienza di S)
     patterns = {ds: int(len(np.unique(np.concatenate([a[p + "x"][:, 32:] for p in prefixes]), axis=0))) for ds, a in stats_arrays.items()}
     (s_folder / "provenance.json").write_text(json.dumps({"identity": _identity(commit, task, "S", None), "cache": inv_s,
                                                          "mask_patterns": patterns}, indent=2, allow_nan=False))
+    if any(n != 1 for n in patterns.values()):
+        raise ValueError(f"{task}: maschere di disponibilita' non costanti dentro un dataset {patterns}: senza il controllo «embedding + "
+                         "indicatori» il protocollo non vale; serve una decisione prima di proseguire")
     hashes = {ds: inv_s[ds]["input_sha256"] for ds in inv_s}
     _write_variant(k_folder, {ds: {**a, **{p + "x": a[p + "x"][:, 32:] for p in prefixes}} for ds, a in stats_arrays.items()}, hashes, "K")
     (k_folder / "provenance.json").write_text(json.dumps({"identity": _identity(commit, task, "K", None), "source": inv_s,
@@ -210,7 +230,7 @@ def probe(args) -> None:
     folder, meta = _variant_meta(args, task, variant, arm)
     report_path = output_path(_report_path(args, task, variant, arm))
     runner = probe_p1 if task == "p1" else probe_p2
-    if runner.main(_probe_argv(args, task, folder, "probe", variant) + ["--out", str(report_path)]) != 0:
+    if runner.main(_probe_argv(args, task, folder, "probe", variant, arm) + ["--out", str(report_path)]) != 0:
         raise ValueError("sonda fallita")
     SD.check_source(args.expected_commit)
     if _variant_meta(args, task, variant, arm)[1]["cache"] != meta["cache"]:
@@ -234,8 +254,9 @@ def decide(with_stats: dict) -> dict:
                      "delta_stats_by_teacher": s["delta_by_model_seed"], "useful": useful, "not_harmful": bool(s["delta"] >= HARM_DELTA)}
     out["positive"] = any(out[t]["useful"] for t in ("p1", "p2")) and all(out[t]["not_harmful"] for t in ("p1", "p2"))
     out["thresholds"] = {"useful_delta": USEFUL_DELTA, "harm_delta": HARM_DELTA}
-    out["note"] = ("Esito informativo per decidere se allenare i rami spettrali (step 2B-3), non adozione automatica. Incertezza condizionata "
-                   "ai due teacher B; due task, nessuna correzione per confronti multipli.")
+    out["note"] = ("Un esito positivo dice che aggiungere le statistiche aiuta questa sonda lineare, non che quell'informazione mancasse "
+                   "dall'embedding. Esito informativo per decidere se allenare i rami spettrali (step 2B-3), non adozione automatica. "
+                   "Incertezza condizionata ai due teacher B; due task, nessuna correzione per confronti multipli.")
     return out
 
 
