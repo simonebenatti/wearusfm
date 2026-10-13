@@ -358,6 +358,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Trainer: `keep_active` anche con solo `branch_weight`; `branch_weight` senza rami rifiutato; `freeze_encoder` richiede `branch_weight` > 0 e `keep_weight` 0 (solo il termine dei rami); `keep_grad_every` con componenti `keep` e `keep_branches` separate sui parametri raw condivisi; ripresa dei checkpoint senza `branch_weight` (vale 0). CLI `--branch-weight`.
 - Test: keep raw identica allo Step 1 e un solo encode; rifiuto di teste con calibrazione diversa; totale = ... + keep_weight keep + branch_weight keep_branches e conteggi; con `branch_weight` 0 studente, teacher e metriche del raw bit per bit come nel modello senza rami per 2 passi; DDP gloo e accumulo con i due termini uguali al batch intero entro 1e-10; trainer congiunto con i gradienti separati; encoder congelato. Suite CPU completa: 884 passati.
 
+### 2026-10-13 | Claude | Protocollo dei rami a encoder raw congelato (step 2C), proposta da approvare | Base: 3dba14c
+
+- Su richiesta di Simone, con la tua sequenza in quattro punti: `docs/step2c_frozen_branches.md` (ID `step2c_frozen_branches_v1`), criteri in `docs/decisioni.md`. Nessun job, nessun codice nuovo: il wrapper dopo l'accordo sul disegno.
+- Letto prima il registro e le tue bozze NON committate nel tuo worktree (`step1_random_downstream.md`, `step1_downstream_results_20261012.md`, `tokenizer_wavelet_proposal.md`, `finestra1_job_plan.md`): il controllo encoder casuale e' tuo (`step1_random_downstream_4000_v1`) e il 2C lo usa solo come contesto descrittivo, senza duplicarlo.
+- Disegno: teacher B_seed0/B_seed1 congelati; un training per teacher con PSD + wavelet (solo termine dei rami); contributi per sottrazione di colonne in sonda; controllo coi rami al passo 0 (`checkpoint_init.pt`); M dalle tue cache downstream (raw congelato = teacher B) + uscite dei soli rami estratte sulla CPU, concatenate solo con hash degli ingressi e pesi raw verificati; sonde e confronto accoppiato come nel 2A.
+- Criteri: primario R+PW contro R (utile >= +1 punto, CI > 0, entrambi i teacher; non dannoso >= -1); secondari R+PW contro R+S del tuo 2A e contro il passo 0. Tetto 3 GPU-ora + 192 core-ora (stima ~1,5 + ~125).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -672,3 +679,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Il percorso Step 1 in float64 (`keep_objective` di `spectral_step1`) fallirebbe: `pool_p1p2` restituisce float32 e la testa e' in float64. Non tocca i run (float32/bf16) e non l'ho cambiato nel tuo file; in `readout_objectives` z si porta al tipo della testa (nessuna conversione in float32, quindi bit per bit lo Step 1), cosi' l'equivalenza DDP in float64 copre anche la keep raw.
 - Restano aperti: valore di `branch_weight` (e alpha) da fissare prima dei run dai gradienti pesati; protocollo della diagnostica a raw congelato; obiettivo self-supervised dei rami (le statistiche sono molto accessibili dai loro ingressi).
+
+### 2026-10-13 | Claude | Protocollo dei rami a encoder raw congelato (step 2C), proposta da approvare | Base: 3dba14c
+
+- Scelte aperte per te e Simone: (1) un training per teacher con i due rami e contributi per sottrazione (misura il ramo allenato insieme all'altro) o tre training separati (~3 volte il costo GPU); (2) iperparametri dei rami fissati senza misure (lr 1e-3, warmup 100, 3.000 aggiornamenti) o breve collaudo su dbg della curva di loss; (3) solo B (coerente col 2A e con lo step 2) o anche A (che proponi come riferimento di lavoro della finestra 1).
+- Il secondario «meglio delle statistiche fisse» dipende dal tuo 2A concluso: se il 2A non e' disponibile, quel confronto si rimanda, il primario no.
+- Le stime di tempo del training a raw congelato sono dedotte (dati ~0,7 s/passo con 6 worker dal collaudo, forward raw senza gradiente), non misurate: il collaudo su dbg del punto (2) le misurerebbe.

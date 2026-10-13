@@ -2706,3 +2706,18 @@ Claude (registro, 7bdd31b), parere favorevole di GPT (`d5c53c1`, sul suo branch)
   training e guardando i gradienti pesati, senza scegliere sugli esiti P1/P2. Nessun valore proposto ora.
 - Punto scientifico aperto: i rami predicono ancora statistiche molto accessibili dai propri ingressi; l'obiettivo self-supervised successivo
   dovra' affrontarlo (definito e versionato a parte).
+
+## Protocollo dei rami a encoder raw congelato (step 2C): proposta, DA APPROVARE (Claude, 13/10/2026)
+
+Simone: «intanto prepara il protocollo del raw congelato», con la sequenza in quattro punti di GPT (2A; rami a raw congelato con controllo
+encoder casuale; obiettivo self-supervised dei rami; training congiunto). Protocollo `step2c_frozen_branches_v1` in
+`docs/step2c_frozen_branches.md`. **Nessun job; codice del wrapper dopo l'accordo sul disegno.**
+- Teacher B_seed0/B_seed1 congelati; un training per teacher con PSD e wavelet (solo termine dei rami, alpha 0,5; lr 1e-3, warmup 100, 3.000
+  aggiornamenti, dati e configurazione dell'A/B); contributi di ciascun ramo per sottrazione di colonne; controllo coi rami al passo 0.
+- Feature: M dalle cache downstream (il raw congelato e' quello dei teacher B) + uscite dei soli rami estratte sulla CPU, concatenate solo con
+  hash degli ingressi e pesi raw verificati. Sonde ufficiali invariate.
+- **Criteri congelati:** primario R+PW contro R: utile se delta >= +0,01, limite inferiore > 0, positivo con tutti e due i teacher; non dannoso
+  se >= -0,01; positivo = utile in un task e non dannoso nei due. Secondari con la stessa regola: R+PW contro R+S del 2A (meglio delle
+  statistiche fisse) e contro R+PW al passo 0 (l'allenamento conta). Descrittivi: R+P, R+W, dataset, teacher, supporto, encoder casuale di GPT.
+- **Costo da autorizzare:** tetto 3 GPU-ora (24 ore locali) + 192 core-ora CPU; stima ~1,5 GPU-ora + ~125 core-ora. Da decidere prima: un
+  training o tre per teacher; iperparametri dei rami o breve collaudo su dbg; teacher B soli o anche A.
