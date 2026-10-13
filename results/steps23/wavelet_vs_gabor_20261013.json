@@ -1,0 +1,125 @@
+{
+ "copertura": {
+  "gabor": {
+   "fast": {
+    "somma_min_su_mediana": 1.665721960364408e-08,
+    "somma_max_su_mediana": 8.295402526855469,
+    "frazione_20_450_sotto_10pct_della_mediana": 0.2824074074074074,
+    "frazione_20_450_sotto_50pct_della_mediana": 0.42592592592592593,
+    "miglior_filtro_min_su_mediana": 1.6648755263304338e-08
+   },
+   "slow": {
+    "somma_min_su_mediana": 3.4123985859224604e-09,
+    "somma_max_su_mediana": 1.081526517868042,
+    "frazione_20_450_sotto_10pct_della_mediana": 0.23148148148148148,
+    "frazione_20_450_sotto_50pct_della_mediana": 0.28703703703703703,
+    "miglior_filtro_min_su_mediana": 5.26598675776313e-09
+   }
+  },
+  "wavelet": {
+   "fast": {
+    "somma_min_su_mediana": 0.396915078163147,
+    "somma_max_su_mediana": 1.1932883262634277,
+    "frazione_20_450_sotto_10pct_della_mediana": 0.0,
+    "frazione_20_450_sotto_50pct_della_mediana": 0.037037037037037035,
+    "miglior_filtro_min_su_mediana": 0.49168452620506287
+   },
+   "slow": {
+    "somma_min_su_mediana": 0.4531538188457489,
+    "somma_max_su_mediana": 1.073651909828186,
+    "frazione_20_450_sotto_10pct_della_mediana": 0.0,
+    "frazione_20_450_sotto_50pct_della_mediana": 0.004629629629629629,
+    "miglior_filtro_min_su_mediana": 0.5696771740913391
+   }
+  }
+ },
+ "leggibilita_target_R2_test": {
+  "gabor": {
+   "forma_fast": 0.9559071398081392,
+   "energia_fast": -0.3184295454791177,
+   "forma_slow": 0.9269866330690335,
+   "energia_slow": -0.0005027025223627302,
+   "alpha": 1,
+   "r2_min_coordinata_forma_fast": 0.8937732239732695
+  },
+  "wavelet": {
+   "forma_fast": 0.9932608038581514,
+   "energia_fast": -0.13664910214268766,
+   "forma_slow": 0.9864139106957989,
+   "energia_slow": 0.4602120977890781,
+   "alpha": 1,
+   "r2_min_coordinata_forma_fast": 0.98195443420931
+  },
+  "psd": {
+   "forma_fast": 0.999631337437128,
+   "energia_fast": -0.04279084013169099,
+   "forma_slow": 0.9984525341229835,
+   "energia_slow": 0.7153132777329524,
+   "alpha": 0.001,
+   "r2_min_coordinata_forma_fast": 0.9988278552374086
+  }
+ },
+ "localizzazione_temporale_fast": {
+  "gabor": {
+   "60Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 4
+   },
+   "120Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 4
+   },
+   "250Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 2
+   }
+  },
+  "wavelet": {
+   "60Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 2
+   },
+   "120Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 2
+   },
+   "250Hz": {
+    "frame_sopra_meta_del_picco": 2,
+    "frame_sopra_10pct": 2
+   }
+  }
+ },
+ "costo": {
+  "gabor": {
+   "ms_per_finestra_16ch_4s_2kHz": 101.39952500030631,
+   "frazione_frame_validi": {
+    "fast": 0.9125,
+    "slow": 0.8
+   },
+   "raggio_ms_comune": 149.5
+  },
+  "wavelet": {
+   "ms_per_finestra_16ch_4s_2kHz": 51.88005819945829,
+   "frazione_frame_validi": {
+    "fast": 0.9729166666666667,
+    "slow": 0.8145833333333333
+   },
+   "raggio_ms_slow_min_max": [
+    18.5,
+    359.0
+   ],
+   "raggio_ms_fast_min_max": [
+    5.5,
+    73.5
+   ]
+  },
+  "psd": {
+   "ms_per_finestra_16ch_4s_2kHz": 3.5908168007154018,
+   "frazione_frame_validi": {
+    "fast": 0.9875,
+    "slow": 0.9
+   }
+  }
+ },
+ "note": "EMG sintetico (spettro di Shwedyk piu' un picco casuale, inviluppo sinusoidale), 240 finestre 4 canali 4 s a 2 kHz; ridge 160/40/40, alpha sulla validation. Controllo software, non una prova su EMG reale."
+}

@@ -106,6 +106,24 @@ class RunConfig:
     # micro-batch per processo e per aggiornamento (accumulo dei gradienti, contratto delle loss): il batch del processo si divide in
     # `accum_steps` parti contigue (`pretraining_loader.split_batch`); un solo clipping, optimizer ed EMA per aggiornamento
     accum_steps: int = 1
+    # rami spettrali (`FMConfig.spectral_branches`): batch del training, con un generatore proprio, per le statistiche d'ingresso dei rami; si
+    # calibrano una volta all'inizio di un run nuovo, poi stanno nel checkpoint
+    branch_calibration_batches: int = 16
+    # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e teste, con la sola
+    # loss sul readout
+    freeze_encoder: bool = False
+
+
+# campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
+_LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False}
+BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5}
+
+
+def _config_with_defaults(d: dict) -> dict:
+    out = {**_LATER_DEFAULTS, **d}
+    if isinstance(out.get("model"), dict):
+        out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
+    return out
 
 
 def wsd_warmup_steps(steps_at_d: int) -> int:
@@ -173,6 +191,14 @@ def with_spectral_keep(cfg: RunConfig, calibration: str | Path, weight: float) -
     """Both A (weight=0) and B instantiate the SAME head, preserving encoder initialization."""
     return replace(cfg, model=replace(cfg.model, keep_readout=True), jepa=replace(cfg.jepa, keep_weight=weight),
                    keep_calibration=str(calibration), keep_calibration_sha256=sha256_file(calibration))
+
+
+def with_spectral_branches(cfg: RunConfig, kinds: tuple[str, ...], *, wavelet_learnable: bool = False, alpha: float = 0.5,
+                           freeze_encoder: bool = False, calibration_batches: int = 16) -> RunConfig:
+    """Rami spettrali (step 2-3, Simone 13/10/2026) sopra una configurazione con la testa dello Step 1 (`with_spectral_keep`): stessi target e
+    calibrazione; con keep_weight > 0 la loss sul readout passa alle teste dei rami. `freeze_encoder` = la diagnostica a encoder congelato."""
+    return replace(cfg, model=replace(cfg.model, spectral_branches=tuple(kinds), wavelet_learnable=wavelet_learnable, branch_alpha=alpha),
+                   freeze_encoder=freeze_encoder, branch_calibration_batches=calibration_batches)
 
 
 def config_to_dict(cfg: RunConfig) -> dict:
@@ -502,7 +528,7 @@ def _check_branch(cfg: RunConfig, state: dict, source: Path) -> None:
     """Un ramo (pilot sulle epoche, continuazione a 2D; D14) e' identico a un run fatto da zero con lo schedule nuovo solo se: tutto il resto
     della configurazione e' uguale (stesso warmup e stesso picco compresi), il checkpoint e' della fase stabile del run d'origine e cade
     anche nella fase stabile del ramo, e lo stream dei dati del checkpoint e' ripetibile."""
-    old, new = {"accum_steps": 1, **state.get("config", {})}, config_to_dict(cfg)  # checkpoint di prima dell'accumulo: un micro-batch
+    old, new = _config_with_defaults(state.get("config", {})), config_to_dict(cfg)  # checkpoint di prima dell'accumulo: un micro-batch
     differ = sorted(k for k in set(old) | set(new) if k not in ("schedule", "max_steps") and old.get(k) != new.get(k))
     if differ:
         raise ValueError(f"ramo da {source}: configurazione diversa dall'origine in {differ}; cambiano solo schedule e max_steps")
@@ -537,6 +563,51 @@ def _to_device(inp, visible, rvq_on, device):
     return inp, visible.to(device), rvq_on.to(device)
 
 
+BRANCH_CALIBRATION_SEED = 4242
+
+
+def _calibrate_branches(student: WearUsFM, cfg: RunConfig, index, scales: dict | None, window_s: dict | None, device) -> dict:
+    """Statistiche d'ingresso dei rami spettrali da `branch_calibration_batches` batch del training (il corpus del pretraining), con un
+    generatore proprio: lo stream dei batch del training non cambia. Uguali su tutti i processi (stesso seme). Ritorna la provenienza."""
+    from wearusfm.training.pairing import state_sha256
+
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales or {}), window_s)
+    rng = np.random.default_rng([cfg.seed, BRANCH_CALIBRATION_SEED])
+    per_batch = min(cfg.batch_size, 32)
+
+    def batches():
+        for _ in range(cfg.branch_calibration_batches):
+            yield _to_device(*L.to_model_inputs(loader.batch(per_batch, rng)), device)[0]
+
+    frames = student.spectral_branches.calibrate(batches())
+    return {"batches": cfg.branch_calibration_batches, "windows_per_batch": per_batch, "seed": [cfg.seed, BRANCH_CALIBRATION_SEED],
+            "valid_frames": frames, "stats_sha256": state_sha256(dict(student.spectral_branches.named_buffers()))}
+
+
+def _load_frozen_encoder(student: WearUsFM, cfg: RunConfig, init_from: Path | None) -> dict:
+    """`freeze_encoder`: l'encoder raw dal TEACHER (EMA, quello delle sonde P1/P2) di `init_from`, un modello senza rami con la stessa
+    configurazione (a parte rami, testa dello Step 1 e activation checkpointing). Rami e teste restano nuovi; la testa dello Step 1 si ricalibra.
+    Ogni altra chiave deve caricarsi esattamente."""
+    from wearusfm.model.spectral_branches import BRANCH_PREFIXES
+
+    if init_from is None:
+        raise ValueError("freeze_encoder: serve init_from (il checkpoint dell'encoder da congelare)")
+    state = torch.load(init_from, map_location="cpu", weights_only=False)
+    src = _config_with_defaults(state.get("config", {})).get("model", {})
+    if src.get("spectral_branches"):
+        raise ValueError("freeze_encoder: init_from ha gia' dei rami spettrali; si parte da un encoder senza rami")
+    mine = config_to_dict(cfg)["model"]
+    skip = set(BRANCH_MODEL_FIELDS) | {"keep_readout", "grad_checkpoint"}
+    differ = sorted(k for k in set(src) | set(mine) if k not in skip and src.get(k) != mine.get(k))
+    if differ:
+        raise ValueError(f"freeze_encoder: configurazione del modello diversa da init_from in {differ}")
+    missing, unexpected = student.load_state_dict(state["teacher"], strict=False)
+    bad = [k for k in missing if not k.startswith(BRANCH_PREFIXES + ("spectral_keep.",))] + list(unexpected)
+    if bad:
+        raise ValueError(f"freeze_encoder: chiavi non caricate da init_from: {bad[:5]}")
+    return {"init_from": str(init_from), "sha256": sha256_file(init_from), "step": int(state["step"]), "weights": "teacher"}
+
+
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
           init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None) -> dict:
@@ -559,6 +630,15 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("Step 1 supports CPU/CUDA only")
     if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
         raise ValueError("keep requires a registered head and multiscale targets")
+    if cfg.model.spectral_branches and not cfg.loader.multiscale_anchor:
+        raise ValueError("rami spettrali: servono i target multiscala dello Step 1 (loader.multiscale_anchor)")
+    if cfg.branch_calibration_batches < 1:
+        raise ValueError("branch_calibration_batches almeno 1")
+    if cfg.freeze_encoder:
+        if not cfg.model.spectral_branches or cfg.jepa.keep_weight <= 0:
+            raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches e keep_weight > 0")
+        if ctx.active or cfg.accum_steps > 1 or cfg.keep_grad_every or cfg.pairing_audit or branch_from is not None:
+            raise NotImplementedError("freeze_encoder: un processo, senza accumulo, keep_grad_every, pairing_audit o branch_from")
     if ctx.active:
         if not torch.distributed.is_initialized():
             raise ValueError("DDP: il gruppo dei processi va inizializzato prima (scripts/train_jepa.py --distributed)")
@@ -599,8 +679,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if previous.get("target_version") != cfg.target_version:
             raise ValueError("PSD target definition changed: use a NEW run directory, not resume")
     if resume_state is not None and (cfg.model.keep_readout or resume_state.get("config", {}).get("model", {}).get("keep_readout")):
-        previous = resume_state["config"]
-        if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa")):
+        previous = _config_with_defaults(resume_state["config"])
+        if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa",
+                                                                       "branch_calibration_batches", "freeze_encoder")):
             raise ValueError("Step 1 resume identity changed: use a NEW run directory")
     stream = {"num_workers": num_workers, "segment": cfg.stream_segment, "world_size": ctx.world_size}
     if resume_state is not None and resume_state.get("stream") is not None and resume_state["stream"] != stream:
@@ -614,7 +695,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
             raise ValueError("missing/changed keep calibration file")
         calibration = read_calibration(cfg.keep_calibration, calibration_signature(cfg, manifest, scales, window_s))
-        if init_from is not None:
+        if init_from is not None and not cfg.freeze_encoder:  # freeze_encoder: caricamento controllato chiave per chiave (_load_frozen_encoder)
             raise ValueError("Step 1 warm-start not enabled: use paired NEW runs (no unchecked strict=False)")
     out_dir.mkdir(parents=True, exist_ok=True)
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cfg.amp_bf16 and str(device).startswith("cuda"))
@@ -630,10 +711,21 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
     index = load_index(manifest, roots, cfg.datasets)
     student = WearUsFM(cfg.model).to(device)
+    frozen_init = branch_calibration = None
+    if cfg.freeze_encoder and resume_state is None:
+        frozen_init = _load_frozen_encoder(student, cfg, init_from)
     if calibration is not None and resume_state is None:
         student.spectral_keep.fit_target_stats(calibration[0], calibration[1])
+        for head in student.branch_heads.values() if student.branch_heads is not None else ():
+            head.fit_target_stats(calibration[0], calibration[1])  # stessi target per tutte le teste
+    if student.spectral_branches is not None and resume_state is None:
+        branch_calibration = _calibrate_branches(student, cfg, index, scales, window_s, device)
+    if cfg.freeze_encoder:
+        from wearusfm.model.spectral_branches import freeze_raw
+        freeze_raw(student)
     teacher = make_teacher(student).to(device)
-    opt = torch.optim.AdamW(student.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+    # i parametri che si allenano (senza rami, tutti: la lista di sempre)
+    opt = torch.optim.AdamW([p for p in student.parameters() if p.requires_grad], lr=cfg.lr, weight_decay=cfg.weight_decay)
     step, monitor = 0, AlarmMonitor(cfg.alarm, cfg.model.dim)
     if resume_state is not None:
         state = resume_state  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
@@ -653,7 +745,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
         say(f"ramo da {branch['from']} al passo {step}" if branch else f"ripresa dal passo {step}")
     else:
-        if init_from is not None:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero: es. una diagnostica sul sanity
+        if init_from is not None and not cfg.freeze_encoder:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero
             state = torch.load(init_from, map_location="cpu", weights_only=False)
             student.load_state_dict(state["student"])
             teacher.load_state_dict(state["teacher"])
@@ -676,6 +768,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
         if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
             (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
+        if frozen_init is not None or branch_calibration is not None:  # rami spettrali: encoder congelato e calibrazione (solo all'inizio)
+            (out_dir / "spectral_branches.json").write_text(json.dumps({"frozen_init": frozen_init, "calibration": branch_calibration}, indent=1))
     scales = dict(scales or {})
     val = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
@@ -746,9 +840,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
             codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
             with amp:
-                losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
-                                     kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                                     rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+                if cfg.freeze_encoder:  # diagnostica dei rami: solo la loss sul readout, encoder congelato
+                    from wearusfm.model.spectral_branches import branch_keep_objective
+                    keep, keep_metrics = branch_keep_objective(student, inp, batch.anchor_targets)
+                    losses = {"total": keep, "keep": keep, **keep_metrics}
+                else:
+                    losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
+                                         kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                         rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
             if not bool(torch.isfinite(losses["total"])):
                 reason = f"perdita non finita al passo {step}"
                 numerical_failure = True
@@ -773,7 +872,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             opt.zero_grad(set_to_none=True)
             break  # niente optimizer, EMA, incremento del passo o metriche di un aggiornamento non eseguito
         opt.step()
-        ema_update(teacher, student, cfg.jepa.ema_momentum)
+        if cfg.freeze_encoder:  # EMA solo su rami e teste: il raw del teacher resta quello di init_from bit per bit (m a + (1 - m) a != a)
+            for name in ("spectral_branches", "branch_heads"):
+                ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
+        else:
+            ema_update(teacher, student, cfg.jepa.ema_momentum)
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
@@ -822,7 +925,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             save(names)
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
-            say(f"passo {step}: totale {rec['total']:.4f}, jepa {rec['jepa']:.4f}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
+            part = f"keep {rec['keep']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # encoder congelato: solo la loss sul readout
+            say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
     if not numerical_failure:
         save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
     if metrics is not None:
@@ -843,6 +947,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if use_terms:
         summary.update({"accum_steps": cfg.accum_steps, "micro_batch": per_process // cfg.accum_steps,
                         "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"})
+    if cfg.model.spectral_branches:
+        prov = out_dir / "spectral_branches.json"
+        summary["spectral_branches"] = {"kinds": list(cfg.model.spectral_branches), "freeze_encoder": cfg.freeze_encoder,
+                                        "trainable_parameters": sum(p.numel() for p in student.parameters() if p.requires_grad),
+                                        **(json.loads(prov.read_text()) if prov.exists() else {})}
     if ctx.is_main:
         (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
     say(f"fine: {reason}, passo {step}")

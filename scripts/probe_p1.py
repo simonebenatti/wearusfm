@@ -50,7 +50,8 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
                 key = np.full(len(sw.windows), f"{s}/{sw.session}")  # chiave della scala: la sessione, come nel pretraining
                 if args.audit_inputs:
                     digest.update(fingerprint(role, s, sw.session, sw.windows, sw.labels, sw.fs, sw.montage, key).encode())
-                xs.append(FF.extract_features(model, sw.windows, sw.fs, sw.montage, key, batch=args.batch, device=args.device))
+                xs.append(FF.extract_features(model, sw.windows, sw.fs, sw.montage, key, batch=args.batch, device=args.device,
+                                              feature_set=args.feature_set))
                 ys.append(sw.labels)
                 ss.append(np.full(len(sw.windows), s))
         out[role] = (np.concatenate(xs), np.concatenate(ys), np.concatenate(ss))
@@ -77,6 +78,8 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", choices=["all", "extract", "probe"], default="all")
     ap.add_argument("--features", type=Path, default=None, help="cartella delle feature per dataset (necessaria con extract e probe)")
     ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
+    ap.add_argument("--feature-set", choices=["model", "stats", "model+stats", "mask", "model+mask"], default="model",
+                    help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default) o le varianti del test 2A dello step 2")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
@@ -98,7 +101,7 @@ def main(argv=None) -> int:
     # verificato il 05/10, venv del tokenizer)
     from wearusfm.harness.probe import linear_probe
     report = {"checkpoint": str(args.checkpoint), "which": args.which, "window_s": args.window_s, "val_frac": args.val_frac, "seed": args.seed,
-              "splits": str(args.splits), "datasets": {}}
+              "splits": str(args.splits), "feature_set": args.feature_set, "datasets": {}}
     parts = []
     for ds in args.datasets:
         roles = P1.subject_roles(splits, ds, args.val_frac, args.seed)

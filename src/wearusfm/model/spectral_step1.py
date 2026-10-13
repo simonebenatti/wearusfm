@@ -157,6 +157,9 @@ def _keep_objective(student, inp, anchor_targets, *, target_version=TARGET_VERSI
         raise ValueError("Step 1 supports CPU/CUDA only (RNG pairing not validated on MPS)")
     if target_version != TARGET_VERSION or student.spectral_keep is None:
         raise ValueError("incompatible keep target version or missing head")
+    if getattr(student, "spectral_branches", None) is not None:  # rami spettrali (step 2-3, Claude 13/10/2026): la loss passa alle loro teste
+        from wearusfm.model.spectral_branches import branch_keep_objective
+        return branch_keep_objective(student, inp, anchor_targets, terms=terms)
     y, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
     # Additional dropout must not change the RNG stream of the paired JEPA run.
     devices = sorted({x.device.index for x in inp.signals if x.is_cuda})

@@ -2607,3 +2607,56 @@ su stdin quando non hanno argomenti). Esiti e consuntivo da registrare alla fine
 dell'infrastruttura»: **usate 0,36 su 25, residuo 24,64**. Nota: DDP avvisa che con le regole della finestra 1 (RVQ e keep spente) non ci
 sono parametri inutilizzati: `find_unused_parameters=True` costa un attraversamento del grafo in piu' per passo, da togliere quando le
 teste opzionali sono spente (ottimizzazione da fare, non fatta al volo).
+
+## Rami spettrali in parallelo al raw: step 2 (PSD) e step 3 (wavelet) implementati (Claude, 13/10/2026; richiesta di Simone)
+
+Simone, 13/10/2026: «qua dobbiamo fare una roba algorirtmica. secondo me il tokenizer sui dati raw non basta da solo» (lo Step 1 della proposta
+risultava gia' integrato da GPT, 07-09/10); poi, col pacchetto `WearUsFM_Step2_Step3_Codice_e_Test.zip` (sha256
+`e994af3f5f414494fbba7cea9e22b0935f95f778417853d7f4a706d221b2453c`, usato come riferimento, non copiato): «contrariamente a quello che c'e nella
+guida devi farli entrambi come rami, non solo lo step 3 in alternativa, lo voglio in paralello allo step 2 e magari invece di gabor valuta se
+usare un banco wavelet».
+
+**Valutazione Gabor contro wavelet (prima di scrivere il ramo; `scripts/eval_wavelet_vs_gabor.py`, `results/steps23/wavelet_vs_gabor_20261013.json`;
+EMG sintetico, controllo software).** Il Gabor del pacchetto (centri 40-330 Hz, sigma_f = max(4 Hz, f/12), kernel comune di ~300 ms) lascia
+sotto il 10% della risposta mediana il 28% della banda 20-450 Hz nella scala da 6 filtri e il 23% in quella da 24 (frequenze viste da nessun
+filtro, sotto 40 e sopra 330 Hz e fra i filtri). Il banco wavelet: 0% (somma delle risposte fra 0,40 e 1,19 della mediana). Leggibilita'
+lineare dei 32 target dello Step 1 dalle log-energie medie (ridge, test separato): forma fast/slow R2 **0,956/0,927 Gabor, 0,993/0,986
+wavelet**, 0,9996/0,998 PSD. Costo per finestra (16 canali, 4 s, 2 kHz, CPU 1 thread): Gabor 101 ms, wavelet 52 ms, PSD 3,6 ms. Risoluzione
+temporale nella scala veloce: equivalente (2 frame sopra meta' del picco per un burst di 20 ms). **Scelto il banco wavelet.**
+
+**Cosa c'e' (codice: `model/spectral_branches.py`; modello, trainer, loader, estrazione).**
+- Due rami affiancati al raw (`FMConfig.spectral_branches = ("psd", "wavelet")`, spenti per default): frontend alla fs nativa -> log-potenze
+  standardizzate (statistiche del training, congelate) + disponibilita' -> encoder per scala (50 ms ogni 25 ms, 6 bande; 500 ms ogni 100 ms,
+  24 bande: proiezione, due convoluzioni temporali, media e deviazione sui frame validi) -> media sui canali validi -> 128 numeri per ramo.
+  Embedding P1/P2 = [readout raw dello Step 1 (2d), z_psd, z_wavelet] (`readout`, lo stesso nella loss e nelle sonde).
+- PSD: la stessa PSD, le stesse finestre, bande e disponibilita' dei target dello Step 1 (test d'uguaglianza a 200, 1000, 1500, 2000, 2048 Hz).
+- Wavelet: Morlet analitiche a Q costante, una per banda dei target (centro geometrico), banda a -3 dB uguale alla banda del target,
+  normalizzate a banda equivalente di rumore = larghezza della banda (su rumore bianco energia = potenza di banda, provato), filtraggio nel
+  dominio della frequenza, supporto +-3 sigma_t per filtro (da 5 ms a 73 ms nella scala veloce, da 18 a 359 ms nella lenta). Variante con
+  centri (+-4%) e larghezze (0,8-1,2) apprendibili come nel pacchetto (`wavelet_learnable`), spenta.
+- Loss sul readout con i rami (sostituisce quella dello Step 1, che resta per i modelli senza rami): per campione (1 - alpha) testa sul fuso +
+  alpha media delle teste dei singoli rami (alpha 0,5), stessi 32 target e stessa calibrazione; peso complessivo `keep_weight`, confrontabile col
+  controllo dello Step 1. I rami vedono solo la vista completa: mai la JEPA mascherata.
+- Dentro `WearUsFM` (non un wrapper come nel pacchetto): teacher/EMA, checkpoint, DDP, accumulo e caricamento nelle sonde funzionano senza
+  casi speciali. Rami e teste nascono dopo tutto il resto e con un generatore a parte: l'encoder raw e il generatore globale sono quelli del
+  modello senza rami (confronti accoppiati, provato).
+- Trainer: statistiche d'ingresso dei rami da `branch_calibration_batches` (16) batch del training con un generatore proprio, all'inizio di un
+  run nuovo (provenienza in `spectral_branches.json` e nel summary); diagnostica a encoder congelato (`freeze_encoder`, step 2C del pacchetto):
+  encoder raw dal teacher di `init_from` (controllo chiave per chiave), si allenano solo rami e teste con la sola loss sul readout, EMA solo su
+  di loro (il raw del teacher resta bit per bit quello di partenza); per ora un processo senza accumulo. CLI: `--spectral-branches psd,wavelet`,
+  `--wavelet-learnable`, `--branch-alpha`, `--branch-calibration-batches`, `--freeze-encoder`.
+- Test preliminare 2A (nessun training): `extract_features(..., feature_set=...)` e `--feature-set` in `probe_p1.py`/`probe_p2.py`: "model",
+  "stats" (32 statistiche dello Step 1, 0 se mancanti, + 32 indicatori), "model+stats", e i controlli "mask", "model+mask".
+- Differenze volute dal pacchetto: una coordinata mai vista nella calibrazione resta fuori (il pacchetto si fermava con un errore: a meta'
+  training ferma il run); un ritaglio senza frame validi da' i flag di presenza spenti (il pacchetto: errore).
+
+**Limite da tenere presente:** con finestre da 1 s (P1, `window_s` 1,0) e il bordo di 0,1 s, le wavelet lente sotto ~48 Hz non hanno frame
+validi (serve ~1,2 s di supporto alla banda piu' bassa): in P1 il ramo wavelet lento vede solo le bande sopra ~48 Hz; la PSD lenta si'.
+
+**Scelte nuove, non firmate:** dimensioni 128/48, alpha 0,5, banda e normalizzazione delle wavelet, supporto 3 sigma, limiti della variante
+apprendibile, 16 batch di calibrazione (seme [seed, 4242]), bordo di 0,1 s nell'estrazione, zero + indicatore per le statistiche mancanti.
+
+**Verifiche:** 22 test nuovi (`tests/cpu/test_spectral_branches.py`; suite CPU completa 864 passati), compreso il contratto delle loss con i rami (1 processo x 2 micro-batch e
+2 processi DDP gloo uguali al batch intero entro 1e-10). Nessuna prova CUDA, nessun EMG reale, **nessun job**. Le prove su Leonardo
+(2A sulle sonde, ramo a encoder congelato, training congiunto) richiedono protocollo, soglie e preventivo approvati prima; il codice tocca
+file di GPT (`spectral_step1.py`: due righe di aggancio; `fm_features.py`, `probe_p1.py`, `probe_p2.py`): review di GPT prima del deploy.

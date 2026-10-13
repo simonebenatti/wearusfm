@@ -28,6 +28,7 @@ from wearusfm.model.local_encoder import LocalEncoder
 from wearusfm.model.patch_tokens import PatchTokenizer
 from wearusfm.model.perceiver import PerceiverPooling, offsets_from_counts
 from wearusfm.model.query_decoder import QueryDecoder
+from wearusfm.model.spectral_branches import BRANCH_KINDS, SpectralBranches, branch_heads
 from wearusfm.model.spectral_step1 import SpectralKeepHead
 
 
@@ -46,6 +47,26 @@ class FMConfig:
     grad_checkpoint: bool = False  # activation checkpointing di encoder locale, backbone e decoder (v10 §5.5)
     multiscale_anchor: bool = False  # teste dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
     keep_readout: bool = False  # Step 1 experimental shared-readout supervision
+    # rami spettrali continui in parallelo al raw (step 2 e 3; Simone, 13/10/2026), `model/spectral_branches.py`: "psd" e/o "wavelet", vuoto =
+    # nessuno (il modello di sempre, stessi parametri). L'embedding P1/P2 diventa [readout raw, rami]; la loss sul readout (keep_weight) passa
+    # alle teste dei rami: (1 - branch_alpha) testa fusa + branch_alpha media delle teste dei rami
+    spectral_branches: tuple[str, ...] = ()
+    branch_dim: int = 128
+    branch_hidden: int = 48
+    wavelet_learnable: bool = False  # centri e larghezze del banco wavelet apprendibili (entro limiti); dopo un confronto favorevole col fisso
+    branch_alpha: float = 0.5
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "spectral_branches", tuple(self.spectral_branches))  # da JSON (checkpoint) arriva una lista
+        if self.spectral_branches:
+            if len(set(self.spectral_branches)) != len(self.spectral_branches) or not set(self.spectral_branches) <= set(BRANCH_KINDS):
+                raise ValueError(f"rami spettrali {self.spectral_branches}: distinti, fra {BRANCH_KINDS}")
+            if not self.keep_readout:
+                raise ValueError("i rami spettrali vogliono keep_readout (calibrazione dei target dello Step 1 e conteggi della loss)")
+            if not 0.0 < self.branch_alpha <= 1.0 or self.branch_dim < 1 or self.branch_hidden < 1:
+                raise ValueError("rami spettrali: branch_alpha in (0, 1], dimensioni positive")
+        if self.wavelet_learnable and "wavelet" not in self.spectral_branches:
+            raise ValueError("wavelet_learnable senza il ramo wavelet")
 
 
 @dataclass
@@ -60,6 +81,10 @@ class ModelInputs:
     sets: dict[str, torch.Tensor]
     counts: list[int]
     qc_valid: torch.Tensor  # (C_tot,) bool
+    # solo per i rami spettrali (`spectral_branches`), che li richiedono: per campione il limite superiore della banda per canale in Hz (C_s,)
+    # e i campioni (inizio, fine) nelle zone di bordo del tratto (transitori del filtro, `anchor_edge_guard_s`), senza supporto valido
+    band_limit: list | None = None
+    edge_guard: list | None = None
 
 
 @dataclass
@@ -105,6 +130,14 @@ class WearUsFM(nn.Module):
         self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands, multiscale=cfg.multiscale_anchor)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
         self.spectral_keep = SpectralKeepHead(2 * cfg.dim) if cfg.keep_readout else None
+        self.spectral_branches = self.branch_heads = None
+        if cfg.spectral_branches:
+            # dopo tutti gli altri moduli e con un generatore a parte: l'encoder raw nasce uguale e il generatore globale (dropout del muscolo)
+            # resta quello del modello senza rami, cosi' i confronti con e senza rami sono accoppiati
+            with torch.random.fork_rng(devices=[]):
+                torch.manual_seed((torch.initial_seed() + 7919) % 2 ** 63)
+                self.spectral_branches = SpectralBranches(cfg.spectral_branches, cfg.branch_dim, cfg.branch_hidden, cfg.wavelet_learnable)
+                self.branch_heads = branch_heads(2 * cfg.dim, cfg.spectral_branches, cfg.branch_dim)
         for m in (self.local, self.backbone, self.decoder):
             m.grad_checkpoint = cfg.grad_checkpoint
 

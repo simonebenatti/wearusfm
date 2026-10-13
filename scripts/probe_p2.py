@@ -72,6 +72,8 @@ def main(argv=None) -> int:
     ap.add_argument("--features", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
+    ap.add_argument("--feature-set", choices=["model", "stats", "model+stats", "mask", "model+mask"], default="model",
+                    help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default) o le varianti del test 2A dello step 2")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
@@ -88,7 +90,7 @@ def main(argv=None) -> int:
 
         model = FF.load_model(args.checkpoint, args.device, args.which)
         log(f"modello {args.checkpoint} ({args.which})")
-    report = {"checkpoint": str(args.checkpoint), "which": args.which, "split_seeds": args.split_seeds, "datasets": {}}
+    report = {"checkpoint": str(args.checkpoint), "which": args.which, "split_seeds": args.split_seeds, "feature_set": args.feature_set, "datasets": {}}
     for ds in args.datasets:
         npz = args.features / f"{ds}.npz" if args.features is not None else None
         if args.stage == "probe":
@@ -98,7 +100,8 @@ def main(argv=None) -> int:
             w, labels, subjects, fs = load_windows(ds, args)
             log(f"{ds}: {len(w)} finestre, {len(set(subjects.tolist()))} soggetti, {w.shape[1] / fs:.1f} s a {fs} Hz")
             input_hash = fingerprint(w, labels, subjects, fs, FF.myo8_montage(ds, fs)) if args.audit_inputs else None
-            x = FF.extract_features(model, w, fs, FF.myo8_montage(ds, fs), subjects, batch=args.batch, device=args.device)
+            x = FF.extract_features(model, w, fs, FF.myo8_montage(ds, fs), subjects, batch=args.batch, device=args.device,
+                                   feature_set=args.feature_set)
             del w
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)

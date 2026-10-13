@@ -401,6 +401,10 @@ class PretrainBatch:
     rvq_codes: list | None = None  # (C_s, W_s) codici RVQ per campione (-1 = nessun target), se `rvq_codes_root`
     presented: list[str] | None = None  # topologia presentata per campione ("full" o il montaggio virtuale; D9 decisione 1: si registra)
     index: int | None = None  # indice globale del batch nello stream (`batch_stream`): il passo del training che lo consuma
+    # per i rami spettrali (`model.spectral_branches`): per campione il limite superiore di banda per canale (lo stesso dei target delle ancore) e
+    # i campioni (inizio, fine) entro `anchor_edge_guard_s` dal bordo del tratto
+    band_limit: list | None = None
+    edge_guard: list | None = None
 
 
 def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
@@ -547,7 +551,7 @@ class PretrainLoader:
             picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
-        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented = ([] for _ in range(14))
+        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards = ([] for _ in range(16))
         for row, src, win in picked:
             view = src.view if isinstance(src, Block) else src
             vm = None
@@ -588,8 +592,10 @@ class PretrainLoader:
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
-            targets.append(AT.anchor_targets(x, view.fs, view.band_limit_hz() if vm is None else VM.band_limit_hz(montage, view.fs),
-                                             patch_ms=self.cfg.patch_ms, guard=guard, multiscale=self.cfg.multiscale_anchor))
+            limit = view.band_limit_hz() if vm is None else VM.band_limit_hz(montage, view.fs)
+            targets.append(AT.anchor_targets(x, view.fs, limit, patch_ms=self.cfg.patch_ms, guard=guard, multiscale=self.cfg.multiscale_anchor))
+            limits.append(np.broadcast_to(np.asarray(limit, dtype=np.float64), (layout.n_channels,)).copy())
+            guards.append(guard)
             if self.rvq_store is not None:
                 entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
                 rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))
@@ -602,7 +608,7 @@ class PretrainLoader:
         packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
                              np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped_ever),
-                             rvq_codes if self.rvq_store is not None else None, presented)
+                             rvq_codes if self.rvq_store is not None else None, presented, band_limit=limits, edge_guard=guards)
 
 
 def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
@@ -628,7 +634,9 @@ def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
                            codes=codes, sets=sets, visible=batch.visible[a:b, :p], kind=batch.kind[a:b, :p], rvq_on=batch.rvq_on[a:b],
                            anchor_targets=batch.anchor_targets[s0:s1], n_patches=batch.n_patches[s0:s1], rows=batch.rows[s0:s1],
                            windows=batch.windows[s0:s1], rvq_codes=batch.rvq_codes[s0:s1] if batch.rvq_codes is not None else None,
-                           presented=batch.presented[s0:s1] if batch.presented is not None else None))
+                           presented=batch.presented[s0:s1] if batch.presented is not None else None,
+                           band_limit=batch.band_limit[s0:s1] if batch.band_limit is not None else None,
+                           edge_guard=batch.edge_guard[s0:s1] if batch.edge_guard is not None else None))
     return out
 
 
@@ -678,5 +686,5 @@ def to_model_inputs(batch: PretrainBatch):
     from wearusfm.model.local_encoder import sets_to_tensors
 
     inp = ModelInputs([torch.as_tensor(x) for x in batch.signals], list(batch.fs), codes_to_tensors(batch.codes), sets_to_tensors(batch.sets),
-                      list(batch.counts), torch.as_tensor(batch.qc_valid))
+                      list(batch.counts), torch.as_tensor(batch.qc_valid), band_limit=batch.band_limit, edge_guard=batch.edge_guard)
     return inp, torch.as_tensor(batch.visible), torch.as_tensor(batch.rvq_on)
