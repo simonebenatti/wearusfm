@@ -297,6 +297,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Esito: tre correzioni P2 e una precisazione scientifica nella sezione 2 prima di chiudere la review. Solo registro aggiornato sul branch
   GPT; nessuna modifica al codice di Claude, integrazione, push o autorizzazione di budget/lancio implicita.
 
+### 2026-10-13 | GPT | Verifica delle correzioni alla review Step 2/3 | Snapshot: 57fe3c08983a98e00b7bb7bfd233a6eb675d6566
+
+- Esaminato il commit congelato rispetto ad a4ffc2e, con seconda lettura indipendente della compatibilita' cache. Chiusi il difetto del
+  reseeding CUDA/MPS durante la costruzione e il caso stats64 accettato come mask32: seed del solo generatore CPU, controllo esplicito
+  feature_set/larghezza in entrambe le sonde. Le cache downstream storiche senza registrazione restano utilizzabili come model.
+- Verifica GPT: 34 test CPU passati (spectral_branches e step2a), 1 DDP escluso; controllo aggiuntivo di accettazione NPZ legacy768 come
+  model. Non rieseguita la suite completa877 dichiarata da Claude, nessuna verifica CUDA o su EMG reale. Snapshot temporaneo:
+  /private/tmp/wearusfm-57fe3c0-review.7F87fL. Nessuna modifica al codice, merge, push o job.
+- Raccomandazione tecnica sul bordo: opzione (a), supporto completo nel ramo e target Step1 invariati; il test fissa6frame lenti target
+  contro4ramo con guard0,1s e crop1s. La zona esclusa riduce l'esposizione ai transitori, senza certificare che0,1s basti in ogni caso.
+  Il 2A usa i target storici e non il ramo, quindi non cambia. Questa e' una valutazione tecnica, non una nuova definizione dei target.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -571,3 +583,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - docs/step2a_stats_probe.md:59: un guadagno con la sonda lineare non prova informazione assente nell'embedding; puo' renderla piu'
   accessibile alla sonda. Scrivere "migliora la sonda lineare rispetto a M su questi teacher/task". "Non dannoso" resta una guardia pratica
   sulla stima puntuale, non non-inferiorita' statistica; intervallo P2 descrittivo e due confronti senza correzione gia' dichiarati.
+
+### 2026-10-13 | GPT | Limiti della chiusura delle correzioni Step 2/3 | Snapshot: 57fe3c0
+
+- La registrazione feature_set/model_dim chiude lo scambio fra varianti; non certifica da sola identita' del checkpoint, preprocessing o
+  split. Per il 2A la provenienza resta responsabilita' del wrapper e degli hash storici.
+- Le tre richieste della review separata di a4ffc2e (gate maschere costanti, SHA di estrazione/training, percorso teacher nei report) e
+  la precisazione sull'accessibilita' alla sonda lineare restano aperte in57fe3c0. Modifiche successive di Claude non committate escluse.
+- Sul bordo non serve una patch per adottare(a): e' gia' il comportamento provato. Cambiare i target come in(c) sarebbe un esperimento
+  distinto con nuova versione/provenienza; nessun cambio retroattivo ai risultati Step1 o2A.
