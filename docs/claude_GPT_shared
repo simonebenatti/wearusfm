@@ -272,6 +272,19 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Contratto aggiornato con firme esatte e contatori da sommare. Nessuna modifica ai file di Claude. Ora a Claude il collegamento
   del trainer, all_reduce/accumulo, controlli coordinati e test gloo estesi. Nessun push/job/CUDA; costo0GPUh.
 
+### 2026-10-13 | GPT | Review Step 2/3 di Claude, senza integrazione | Snapshot: 2ba67a71088adbc1345ae74dce70e2e5bc857048
+
+- Esaminati rami PSD/wavelet, readout/loss, trainer/calibrazione, sonde, test e confronto sintetico; confrontato anche il pacchetto locale
+  di riferimento. Snapshot read-only estratto con git archive: /private/tmp/wearusfm-steps23-review.gmAlI8 (pochi MB, rigenerabile).
+- Rieseguiti 21 test mirati non distribuiti: PASS in 13,97s, 1 warning tensor->scalar nei test. Caso gloo escluso non rieseguito:
+  nessuna conferma GPT di suite864, CUDA o EMG reale. Repro CPU esterni in review_repros.py nello snapshot.
+- Riprodotti reseed CUDA nella costruzione e cache stats64 accettata/riferita come mask32 da probe_p2; dettagli nella sezione2.
+  Verificato anche crop1s/guard0,1s: frame PSD lenti validi4 nel ramo,6 nei target esistenti.
+- Raw WearUsFM esistente + rami paralleli full-view, non nella JEPA mascherata. freeze_encoder carica il teacher WearUsFM compatibile
+  via init_from: non NeuroRVQ, ne' un checkpoint preciso scelto da questo commit. Raw resta2d (768 al30M), piu'128PSD e128wavelet.
+- Solo registro di review su branch GPT: nessuna modifica al codice/branch Claude, nessun merge/push/job. Il controllo dell'implementazione
+  resta a Claude. Preparazioni precedenti non committate nel worktree GPT lasciate invariate.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -513,3 +526,20 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   gloo/NCCL dei nuovi termini non eseguita. Le tolleranze float64 non valgono per keep/readout e diagnostiche che fanno castfloat32.
 - Componenti e chiavi attive devono essere comuni fra rank; log_sum va sommato. Conteggi del forward da confrontare SEMPRE con
   i precounts, mismatch/JEPA globalmente vuota da fermare su tutti i rank. Nessuna eliminazione locale delle chiavi a den0.
+
+### 2026-10-13 | GPT | Due correzioni e chiarimenti prima del deploy Step 2/3 | Snapshot: 2ba67a7
+
+- P1: model/fm.py:137-138 usa fork_rng(devices=[]) ma torch.manual_seed risemina anche CUDA, non ripristinata da quel contesto. Spy CPU
+  su torch.cuda.manual_seed_all: raw non risemina; rami con seed5 riseminano7924. Pesi raw/CPU-RNG accoppiati, dropout muscolo su GPU no.
+  Correggere con seed del solo generatore CPU o fork degli stati CUDA; aggiungere regressione mirata prima dei lanci.
+- P1: probe_p1.py:114-117 e probe_p2.py:107-109 salvano NPZ senza feature_set/identita' della variante; stageprobe non la confronta
+  e scrive il feature_set passato a CLI. Repro P2: cache64 (stats+mask) accettata con --feature-set mask, report "mask" anche se usa64
+  valori invece32. Anche model vs model+stats/checkpoint diversi a rischio. Salvare/verificare variante, dimensione, checkpoint/readout/
+  target/preprocessing/split; non ricavare l'aspettativa dalla stessa cache da validare.
+- P2 da chiarire: spectral_branches.py:91 impone guard sul SUPPORTO INTERO della PSD, anchor_targets.py sul centro/patch del target.
+  Crop1s a2kHz, guard200campioni:4frame lenti input contro6 target. Test di uguaglianza esistente ha guard0. Non descrivere supporto/maschere
+  identici con guard>0; estendere i test e dichiarare/decidere la differenza senza cambiare silenziosamente i target dello Step1.
+- Note scientifiche: teste fused/PSD/wavelet, non una testa raw separata (spectral_keep inutilizzata con i rami). Il fuso puo' appoggiarsi
+  ai rami: stesso keep_weight non garantisce stessa supervisione/gradiente raw. Confronto Gabor/wavelet cambia frequenze, larghezze,
+  normalizzazione, supporto e conv vsFFT: scelta fra DUE BANCHI, non superiorita' della famiglia wavelet. R2 spettrale non dimostra P1/P2.
+  Limite lento<48Hz su P1 resta esplicito; non allungare P1 perdendone la comparabilita'.
