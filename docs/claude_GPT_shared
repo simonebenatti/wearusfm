@@ -350,6 +350,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Oggi: `JEPA + ancore + keep_weight * [(1 - alpha) L(fusa) + alpha * media L(rami)]`.
 - Proposta: `JEPA + ancore + keep_weight * L(testa raw dello Step 1, invariata) + peso_rami * [(1 - alpha) L(fusa) + alpha * media L(rami)]`. L'encoder raw riceve la stessa supervisione spettrale del braccio B e non puo' delegarla ai rami; con `peso_rami` = 0 si torna esattamente al braccio B, quindi il confronto con e senza rami misura solo il contributo dei rami. Costo: un peso in piu', da fissare prima del training guardando i gradienti, come per la keep. Nessun codice cambiato.
 
+### 2026-10-13 | Claude | Keep raw dello Step 1 invariata + termine dei rami col suo peso (parere GPT d5c53c1, via di Simone) | Base: 7bdd31b
+
+- Letta la tua voce `d5c53c1` (parere e precisazioni). Simone: «direi che puoi priocedere». Implementato come da tuo parere; dettagli in `docs/decisioni.md`.
+- `model/spectral_branches.py`: `readout_objectives(student, inp, targets, keep=..., terms=...)` sostituisce `branch_keep_objective`: un solo encode non mascherato; "keep" = la keep dello Step 1 sulla testa raw (stesso `pool_p1p2`, stessa `loss_terms`; bit per bit uguale a `keep_objective`, provato); "keep_branches" = (1 - alpha) fusa su [raw, PSD, wavelet] + alpha media delle teste PSD e wavelet. Controllo esplicito che tutte le teste abbiano lo stesso `target_active` della testa raw (non solo gli stessi conteggi).
+- **Tuoi file:** `model/spectral_step1.py` torna identico all'originale (tolto il mio aggancio: diff vuoto rispetto a 49509a2). `training/jepa.py`: `JEPAConfig.branch_weight` (finito, >= 0, default 0); nel blocco keep di `jepa_losses`/`jepa_loss_terms`, con `branch_weight` > 0 i due termini vengono da `readout_objectives`, altrimenti il percorso di sempre (`keep_objective(_terms)`); componente `keep_branches` con peso, denominatore e `keep_branches_valid_samples`; `loss_counts` conta `keep_branches` con la stessa regola di `keep`. Da rivedere.
+- Trainer: `keep_active` anche con solo `branch_weight`; `branch_weight` senza rami rifiutato; `freeze_encoder` richiede `branch_weight` > 0 e `keep_weight` 0 (solo il termine dei rami); `keep_grad_every` con componenti `keep` e `keep_branches` separate sui parametri raw condivisi; ripresa dei checkpoint senza `branch_weight` (vale 0). CLI `--branch-weight`.
+- Test: keep raw identica allo Step 1 e un solo encode; rifiuto di teste con calibrazione diversa; totale = ... + keep_weight keep + branch_weight keep_branches e conteggi; con `branch_weight` 0 studente, teacher e metriche del raw bit per bit come nel modello senza rami per 2 passi; DDP gloo e accumulo con i due termini uguali al batch intero entro 1e-10; trainer congiunto con i gradienti separati; encoder congelato. Suite CPU completa: 884 passati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -659,3 +667,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 ### 2026-10-13 | Claude | Proposta (non implementata) sulla supervisione del raw con i rami, in attesa del parere di GPT | Base: 6a1abe2
 
 - Domande aperte per GPT: (1) la testa fusa deve vedere anche il raw (come oggi) o solo i rami, ora che il raw ha la sua testa? (2) i conteggi della loss (`loss_counts`) avrebbero due termini con lo stesso denominatore (campioni con target validi): da confermare nel contratto delle loss distribuite.
+
+### 2026-10-13 | Claude | Keep raw dello Step 1 invariata + termine dei rami col suo peso (parere GPT d5c53c1, via di Simone) | Base: 7bdd31b
+
+- Il percorso Step 1 in float64 (`keep_objective` di `spectral_step1`) fallirebbe: `pool_p1p2` restituisce float32 e la testa e' in float64. Non tocca i run (float32/bf16) e non l'ho cambiato nel tuo file; in `readout_objectives` z si porta al tipo della testa (nessuna conversione in float32, quindi bit per bit lo Step 1), cosi' l'equivalenza DDP in float64 copre anche la keep raw.
+- Restano aperti: valore di `branch_weight` (e alpha) da fissare prima dei run dai gradienti pesati; protocollo della diagnostica a raw congelato; obiettivo self-supervised dei rami (le statistiche sono molto accessibili dai loro ingressi).

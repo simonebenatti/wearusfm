@@ -47,10 +47,15 @@ class JEPAConfig:
     # tutti e due i casi si registra anche l'altra perdita, senza gradiente, e l'accuratezza top-1
     rvq_targets: str = "slab"
     keep_weight: float = 0.0
+    # rami spettrali (Claude 13/10/2026, parere GPT d5c53c1): peso del termine dei rami sul readout, separato da keep_weight (che resta la keep
+    # dello Step 1 sulla sola testa raw); 0 = nessun termine dei rami
+    branch_weight: float = 0.0
 
     def __post_init__(self) -> None:
         if not math.isfinite(self.keep_weight) or self.keep_weight < 0:
             raise ValueError("keep_weight must be finite and nonnegative")
+        if not math.isfinite(self.branch_weight) or self.branch_weight < 0:
+            raise ValueError("branch_weight must be finite and nonnegative")
         if self.target not in ("a", "b"):
             raise ValueError(f"target {self.target!r}: 'a' o 'b' (D11)")
         if self.rvq_targets not in ("slab", "channel"):
@@ -230,6 +235,10 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
         if anchor_targets is None or keep_target_active is None or not model_cfg.keep_readout:
             raise ValueError("keep counts require targets, head geometry and calibrated target_active")
         out["keep"] = _keep_valid(anchor_targets, inp, keep_target_active).any(1).sum().detach()
+    if cfg.branch_weight > 0:  # stessi target, maschere e calibrazione della keep: stesso conteggio, contato come componente a se'
+        if anchor_targets is None or keep_target_active is None or not model_cfg.spectral_branches:
+            raise ValueError("branch counts require targets, spectral branches and calibrated target_active")
+        out["keep_branches"] = _keep_valid(anchor_targets, inp, keep_target_active).any(1).sum().detach()
     return out
 
 
@@ -350,19 +359,28 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
             losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
     losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
-    if cfg.keep_weight > 0:
+    if cfg.keep_weight > 0 or cfg.branch_weight > 0:
         if anchor_targets is None:
             raise ValueError("keep loss requires multiscale targets")
-        if terms is not None:
-            losses["keep"], metrics, num, den, log_num, log_den = keep_objective_terms(student, inp, anchor_targets)
-            terms.num["keep"], terms.den["keep"], terms.weight["keep"] = num, den, cfg.keep_weight
-            terms.log_sum["keep_valid_samples"] = den
-            terms.log_num.update(log_num)
-            terms.log_den.update(log_den)
+        if cfg.branch_weight > 0:  # rami spettrali: keep raw dello Step 1 e termine dei rami dallo stesso encode (spectral_branches)
+            from wearusfm.model.spectral_branches import readout_objectives
+            parts = readout_objectives(student, inp, anchor_targets, keep=cfg.keep_weight > 0, terms=terms is not None)
         else:
-            losses["keep"], metrics = keep_objective(student, inp, anchor_targets)
-        losses.update(metrics)
-        losses["total"] = losses["total"] + cfg.keep_weight * losses["keep"]
+            parts = {"keep": keep_objective_terms(student, inp, anchor_targets) if terms is not None
+                     else keep_objective(student, inp, anchor_targets)}
+        for name, weight in (("keep", cfg.keep_weight), ("keep_branches", cfg.branch_weight)):
+            if name not in parts:
+                continue
+            if terms is not None:
+                losses[name], metrics, num, den, log_num, log_den = parts[name]
+                terms.num[name], terms.den[name], terms.weight[name] = num, den, weight
+                terms.log_sum[name + "_valid_samples"] = den
+                terms.log_num.update(log_num)
+                terms.log_den.update(log_den)
+            else:
+                losses[name], metrics = parts[name]
+            losses.update(metrics)
+            losses["total"] = losses["total"] + weight * losses[name]
     return losses
 
 

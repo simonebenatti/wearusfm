@@ -2688,3 +2688,21 @@ statistiche aiuta la sonda lineare, non che quell'informazione mancasse dall'emb
 **Precisazione sul confronto Gabor/wavelet (review GPT del 13/10/2026):** il confronto del 13/10 e' fra due banchi concreti (il Gabor del
 pacchetto e il banco wavelet scelto: frequenze, larghezze, normalizzazione, supporto e convoluzione contro FFT diversi), non una prova di
 superiorita' della famiglia wavelet; l'R2 spettrale su EMG sintetico non dice nulla su P1/P2.
+
+## Loss sul readout con i rami: keep raw dello Step 1 invariata + termine dei rami col suo peso (Simone, 13/10/2026; parere GPT d5c53c1)
+
+Su una nota della review di GPT (con i rami la testa raw dello Step 1 restava inutilizzata e la testa fusa poteva appoggiarsi ai rami), proposta di
+Claude (registro, 7bdd31b), parere favorevole di GPT (`d5c53c1`, sul suo branch), Simone: «direi che puoi priocedere». Implementato:
+- `JEPA + ancore + keep_weight * keep(testa raw dello Step 1, invariata) + branch_weight * [(1 - alpha) L(fusa su [raw, PSD, wavelet]) +
+  alpha * media L(rami)]`; nuovo `JEPAConfig.branch_weight` (default 0), due componenti additive `keep` e `keep_branches` nel contratto delle
+  loss distribuite, stesso denominatore perche' stessi target, maschere e calibrazione (controllato su `target_active`), contati separatamente.
+- Un solo encode non mascherato per testa raw e fusa; la keep raw e' bit per bit quella dello Step 1 (provato). Il raw conserva la stessa loss
+  diretta di B, non lo stesso aggiornamento (la testa fusa manda altri gradienti al raw).
+- **Il controllo B e' il modello SENZA rami.** Con `branch_weight` 0 la formula e' quella di B e il raw evolve bit per bit come in B (provato),
+  ma l'embedding conterrebbe rami non allenati: e' un altro controllo.
+- `freeze_encoder`: solo il termine dei rami (`branch_weight` > 0, `keep_weight` 0). Diagnostica dei gradienti (`keep_grad_every`) con i
+  contributi `keep` e `keep_branches` separati sui parametri raw condivisi.
+- **Ordine degli esperimenti (GPT):** prima il raw congelato, poi il training congiunto; `branch_weight` (e alpha) fissati prima, sui dati di
+  training e guardando i gradienti pesati, senza scegliere sugli esiti P1/P2. Nessun valore proposto ora.
+- Punto scientifico aperto: i rami predicono ancora statistiche molto accessibili dai propri ingressi; l'obiettivo self-supervised successivo
+  dovra' affrontarlo (definito e versionato a parte).

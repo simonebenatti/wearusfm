@@ -109,8 +109,8 @@ class RunConfig:
     # rami spettrali (`FMConfig.spectral_branches`): batch del training, con un generatore proprio, per le statistiche d'ingresso dei rami; si
     # calibrano una volta all'inizio di un run nuovo, poi stanno nel checkpoint
     branch_calibration_batches: int = 16
-    # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e teste, con la sola
-    # loss sul readout
+    # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e loro teste, col solo
+    # termine dei rami sul readout (`jepa.branch_weight` > 0, `jepa.keep_weight` = 0)
     freeze_encoder: bool = False
 
 
@@ -123,6 +123,8 @@ def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
+    if isinstance(out.get("jepa"), dict):
+        out["jepa"] = {"branch_weight": 0.0, **out["jepa"]}
     return out
 
 
@@ -193,12 +195,14 @@ def with_spectral_keep(cfg: RunConfig, calibration: str | Path, weight: float) -
                    keep_calibration=str(calibration), keep_calibration_sha256=sha256_file(calibration))
 
 
-def with_spectral_branches(cfg: RunConfig, kinds: tuple[str, ...], *, wavelet_learnable: bool = False, alpha: float = 0.5,
-                           freeze_encoder: bool = False, calibration_batches: int = 16) -> RunConfig:
+def with_spectral_branches(cfg: RunConfig, kinds: tuple[str, ...], *, weight: float = 0.0, wavelet_learnable: bool = False,
+                           alpha: float = 0.5, freeze_encoder: bool = False, calibration_batches: int = 16) -> RunConfig:
     """Rami spettrali (step 2-3, Simone 13/10/2026) sopra una configurazione con la testa dello Step 1 (`with_spectral_keep`): stessi target e
-    calibrazione; con keep_weight > 0 la loss sul readout passa alle teste dei rami. `freeze_encoder` = la diagnostica a encoder congelato."""
+    calibrazione. La keep dello Step 1 sulla testa raw resta com'e' (`keep_weight`); il termine dei rami ha il suo peso (`weight` ->
+    `jepa.branch_weight`; parere GPT d5c53c1). Il controllo B e' il modello SENZA rami (con rami a peso 0 l'embedding conterrebbe rami non
+    allenati: e' un altro controllo). `freeze_encoder` = la diagnostica a encoder congelato (solo il termine dei rami)."""
     return replace(cfg, model=replace(cfg.model, spectral_branches=tuple(kinds), wavelet_learnable=wavelet_learnable, branch_alpha=alpha),
-                   freeze_encoder=freeze_encoder, branch_calibration_batches=calibration_batches)
+                   jepa=replace(cfg.jepa, branch_weight=weight), freeze_encoder=freeze_encoder, branch_calibration_batches=calibration_batches)
 
 
 def config_to_dict(cfg: RunConfig) -> dict:
@@ -453,7 +457,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     precalcolati, chiavi uguali fra micro-batch e processi, perdita finita; poi backward di `backward_loss(D, R)`: DDP media sui processi e il
     gradiente e' quello della media sul batch globale, senza dividere per i micro-batch. Ogni controllo vale per tutti i processi (un
     all_reduce). Ritorna (motivo d'arresto o None, metriche): le metriche sono somme e conteggi globali (numeratori, diagnostiche, contatori)."""
-    keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 else None
+    keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0 else None
     pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
                        keep_target_active=keep_active) for m in micros]
     keys = sorted(pre[0])
@@ -632,11 +636,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("keep requires a registered head and multiscale targets")
     if cfg.model.spectral_branches and not cfg.loader.multiscale_anchor:
         raise ValueError("rami spettrali: servono i target multiscala dello Step 1 (loader.multiscale_anchor)")
+    if cfg.jepa.branch_weight > 0 and not cfg.model.spectral_branches:
+        raise ValueError("branch_weight > 0 senza rami spettrali")
     if cfg.branch_calibration_batches < 1:
         raise ValueError("branch_calibration_batches almeno 1")
     if cfg.freeze_encoder:
-        if not cfg.model.spectral_branches or cfg.jepa.keep_weight <= 0:
-            raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches e keep_weight > 0")
+        if not cfg.model.spectral_branches or cfg.jepa.branch_weight <= 0 or cfg.jepa.keep_weight != 0:
+            raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches, branch_weight > 0 e keep_weight 0 "
+                             "(la testa raw e' congelata)")
         if ctx.active or cfg.accum_steps > 1 or cfg.keep_grad_every or cfg.pairing_audit or branch_from is not None:
             raise NotImplementedError("freeze_encoder: un processo, senza accumulo, keep_grad_every, pairing_audit o branch_from")
     if ctx.active:
@@ -840,10 +847,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
             codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
             with amp:
-                if cfg.freeze_encoder:  # diagnostica dei rami: solo la loss sul readout, encoder congelato
-                    from wearusfm.model.spectral_branches import branch_keep_objective
-                    keep, keep_metrics = branch_keep_objective(student, inp, batch.anchor_targets)
-                    losses = {"total": keep, "keep": keep, **keep_metrics}
+                if cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
+                    from wearusfm.model.spectral_branches import readout_objectives
+                    kb, kb_metrics = readout_objectives(student, inp, batch.anchor_targets, keep=False)["keep_branches"]
+                    losses = {"total": kb, "keep_branches": kb, **kb_metrics}
                 else:
                     losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
                                          kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
@@ -852,12 +859,19 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 reason = f"perdita non finita al passo {step}"
                 numerical_failure = True
                 break
-            if cfg.jepa.keep_weight > 0 and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
-                # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance.
+            if (cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0) and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
+                # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance. Con i rami il loro termine e'
+                # una componente a se' (parere GPT d5c53c1: contributi dei rami separati, sui parametri raw condivisi)
                 shared = [p for name, p in student.named_parameters() if p.requires_grad and
                           name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
-                components = {"jepa": losses["jepa"], "keep": cfg.jepa.keep_weight * losses["keep"]}
-                components["anchors"] = losses["total"] - components["jepa"] - components["keep"]
+                components = {"jepa": losses["jepa"]}
+                for part, weight in (("keep", cfg.jepa.keep_weight), ("keep_branches", cfg.jepa.branch_weight)):
+                    if weight > 0:
+                        components[part] = weight * losses[part]
+                anchors = losses["total"]
+                for value in list(components.values()):  # in ordine, come (totale - jepa) - keep dello Step 1
+                    anchors = anchors - value
+                components["anchors"] = anchors
                 for name, component in components.items():
                     grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
                     squares = [g.detach().float().square().sum() for g in grads if g is not None]
@@ -925,7 +939,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             save(names)
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
-            part = f"keep {rec['keep']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # encoder congelato: solo la loss sul readout
+            part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo il termine dei rami
             say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
     if not numerical_failure:
         save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito

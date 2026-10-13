@@ -47,11 +47,14 @@ def main(argv=None) -> int:
     ap.add_argument("--spectral-branches", default=None,
                     help="rami spettrali in parallelo al raw (step 2-3): 'psd', 'wavelet' o 'psd,wavelet'; servono --keep-calibration e le regole "
                          "della finestra 1 (target multiscala)")
+    ap.add_argument("--branch-weight", type=float, default=0.0,
+                    help="peso del termine dei rami sul readout (la keep raw dello Step 1 resta --keep-weight); da fissare prima dai gradienti")
     ap.add_argument("--wavelet-learnable", action="store_true", help="centri e larghezze del banco wavelet apprendibili (entro limiti)")
     ap.add_argument("--branch-alpha", type=float, default=0.5, help="loss sul readout: (1 - alpha) testa fusa + alpha media delle teste dei rami")
     ap.add_argument("--branch-calibration-batches", type=int, default=16, help="batch del training per le statistiche d'ingresso dei rami")
     ap.add_argument("--freeze-encoder", action="store_true",
-                    help="diagnostica dei rami: encoder raw congelato dal teacher di --init-from, si allenano solo rami e teste (keep-weight > 0)")
+                    help="diagnostica dei rami: encoder raw congelato dal teacher di --init-from, si allenano solo rami e loro teste "
+                         "(--branch-weight > 0, --keep-weight 0)")
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
     ap.add_argument("--rvq-targets", choices=["slab", "channel"], default=None,
@@ -115,10 +118,10 @@ def main(argv=None) -> int:
         if args.keep_calibration is None:
             ap.error("--spectral-branches richiede --keep-calibration (target e teste dello Step 1)")
         cfg = R.with_spectral_branches(cfg, tuple(k.strip() for k in args.spectral_branches.split(",") if k.strip()),
-                                       wavelet_learnable=args.wavelet_learnable, alpha=args.branch_alpha, freeze_encoder=args.freeze_encoder,
-                                       calibration_batches=args.branch_calibration_batches)
-    elif args.wavelet_learnable or args.freeze_encoder:
-        ap.error("--wavelet-learnable e --freeze-encoder valgono con --spectral-branches")
+                                       weight=args.branch_weight, wavelet_learnable=args.wavelet_learnable, alpha=args.branch_alpha,
+                                       freeze_encoder=args.freeze_encoder, calibration_batches=args.branch_calibration_batches)
+    elif args.wavelet_learnable or args.freeze_encoder or args.branch_weight != 0:
+        ap.error("--branch-weight, --wavelet-learnable e --freeze-encoder valgono con --spectral-branches")
     if main_process:
         print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}"
               + (f" globale su {ctx.world_size} processi" if ctx else "") + f", dispositivo {args.device}, {len(scales)} scale di sessione, "

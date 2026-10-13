@@ -48,8 +48,9 @@ class FMConfig:
     multiscale_anchor: bool = False  # teste dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
     keep_readout: bool = False  # Step 1 experimental shared-readout supervision
     # rami spettrali continui in parallelo al raw (step 2 e 3; Simone, 13/10/2026), `model/spectral_branches.py`: "psd" e/o "wavelet", vuoto =
-    # nessuno (il modello di sempre, stessi parametri). L'embedding P1/P2 diventa [readout raw, rami]; la loss sul readout (keep_weight) passa
-    # alle teste dei rami: (1 - branch_alpha) testa fusa + branch_alpha media delle teste dei rami
+    # nessuno (il modello di sempre, stessi parametri). L'embedding P1/P2 diventa [readout raw, rami]. Sul readout: la keep dello Step 1 sulla testa
+    # raw resta (JEPAConfig.keep_weight); il termine dei rami, (1 - branch_alpha) testa fusa + branch_alpha media delle teste dei rami, ha il suo
+    # peso (JEPAConfig.branch_weight; parere GPT d5c53c1)
     spectral_branches: tuple[str, ...] = ()
     branch_dim: int = 128
     branch_hidden: int = 48

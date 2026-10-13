@@ -236,30 +236,72 @@ def _branch_model(tmp_path, kinds=("psd", "wavelet"), learnable=False, alpha=0.5
     return s, inp, visible, batch
 
 
-def test_objective_combines_heads_and_reaches_encoder_and_branches(tmp_path):
+def test_raw_keep_unchanged_and_branch_term_from_one_encode(tmp_path, monkeypatch):
+    """Parere GPT d5c53c1: la keep dello Step 1 sulla testa raw resta identica anche col modello coi rami; il termine dei rami e' (1 - alpha)
+    testa fusa + alpha media delle teste dei rami; un solo encode non mascherato per entrambi; RNG globale intatto."""
     s, inp, _, batch = _branch_model(tmp_path, alpha=0.3)
+    ref_loss, ref_met = keep_objective(s, inp, batch.anchor_targets)  # Step 1, invariato (nessun aggancio ai rami)
+    calls = []
+    encode = s.encode
+    monkeypatch.setattr(s, "encode", lambda *a, **k: (calls.append(1), encode(*a, **k))[1])
     rng = torch.get_rng_state().clone()
-    loss, met = keep_objective(s, inp, batch.anchor_targets)  # l'aggancio dello Step 1 passa alle teste dei rami
-    assert torch.equal(torch.get_rng_state(), rng)
-    assert float(loss.detach()) == pytest.approx(0.7 * float(met["keep_fused"]) + 0.3 * (float(met["keep_psd"]) + float(met["keep_wavelet"])) / 2,
-                                                 rel=1e-6)
-    lt, _, num, den, log_num, log_den = SB.branch_keep_objective(s, inp, batch.anchor_targets, terms=True)
-    assert float(num / den) == pytest.approx(float(lt), rel=1e-6) and int(den) == int(met["keep_valid_samples"])
-    assert {"keep_fused", "keep_psd_slow_shape", "keep_wavelet_fast_energy"} <= set(log_num) and set(log_num) == set(log_den)
-    loss.backward()
-    for name in ("tokenizer", "backbone", "spectral_branches", "branch_heads"):
+    parts = SB.readout_objectives(s, inp, batch.anchor_targets, keep=True)
+    assert calls == [1] and torch.equal(torch.get_rng_state(), rng)
+    (keep, keep_met), (kb, kb_met) = parts["keep"], parts["keep_branches"]
+    assert torch.equal(keep, ref_loss) and all(torch.equal(keep_met[k], ref_met[k]) for k in ref_met)
+    assert float(kb.detach()) == pytest.approx(0.7 * float(kb_met["keep_fused"]) + 0.3 * (float(kb_met["keep_psd"]) +
+                                                                                           float(kb_met["keep_wavelet"])) / 2, rel=1e-6)
+    lt, _, num, den, log_num, log_den = SB.readout_objectives(s, inp, batch.anchor_targets, keep=False, terms=True)["keep_branches"]
+    assert float((num / den).detach()) == pytest.approx(float(lt.detach()), rel=1e-6)
+    assert int(den) == int(kb_met["keep_branches_valid_samples"])
+    assert {"keep_fused", "keep_fused_fast_shape", "keep_psd_slow_shape", "keep_wavelet_fast_energy"} <= set(log_num)
+    assert set(log_num) == set(log_den) and not set(log_num) & set(ref_met)  # nessuna collisione coi nomi della keep raw
+    (keep + kb).backward()
+    for name in ("tokenizer", "backbone", "spectral_keep", "spectral_branches", "branch_heads"):
         grads = [p.grad for p in getattr(s, name).parameters() if p.grad is not None]
         assert grads and sum(float(g.abs().sum()) for g in grads) > 0, name
-    assert s.spectral_keep.linear.weight.grad is None  # la testa dello Step 1 resta fuori con i rami
     assert all(p.grad is None for p in s.spectral_branches.branches["wavelet"].frontend.parameters())  # filtri fissi
+
+
+def test_heads_with_different_calibration_are_refused(tmp_path):
+    s, inp, _, batch = _branch_model(tmp_path)
+    with torch.no_grad():
+        s.branch_heads["psd"].target_active[0] = ~s.branch_heads["psd"].target_active[0]
+    with pytest.raises(ValueError, match="target_active"):
+        SB.readout_objectives(s, inp, batch.anchor_targets, keep=True)
+
+
+def test_jepa_losses_two_additive_terms_and_counts(tmp_path):
+    """jepa_losses: totale = JEPA + ancore + keep_weight keep + branch_weight keep_branches; `loss_counts` conta le due componenti."""
+    from wearusfm.training.jepa import JEPAConfig, jepa_loss_terms, jepa_losses, loss_counts, make_teacher
+
+    s, inp, visible, batch = _branch_model(tmp_path)
+    teacher = make_teacher(s)
+    base = JEPAConfig("b", .2, .99, loss_per_window=True)
+    torch.manual_seed(3)
+    plain = jepa_losses(s, teacher, inp, visible, replace(base, keep_weight=.05), anchor_targets=batch.anchor_targets)
+    torch.manual_seed(3)
+    both = jepa_losses(s, teacher, inp, visible, replace(base, keep_weight=.05, branch_weight=.2), anchor_targets=batch.anchor_targets)
+    assert torch.equal(plain["keep"], both["keep"])
+    torch.testing.assert_close(both["total"], plain["total"] + .2 * both["keep_branches"])
+    cfg = replace(base, keep_weight=.05, branch_weight=.2)
+    counts = loss_counts(inp, visible, cfg, batch.anchor_targets, model_cfg=s.cfg, keep_target_active=s.spectral_keep.target_active)
+    torch.manual_seed(3)
+    terms = jepa_loss_terms(s, teacher, inp, visible, cfg, anchor_targets=batch.anchor_targets)
+    assert torch.equal(counts["keep_branches"], counts["keep"]) and all(torch.equal(terms.den[k], counts[k]) for k in ("keep", "keep_branches"))
+    assert terms.weight["keep_branches"] == .2 and terms.weight["keep"] == .05
+    with pytest.raises(ValueError, match="branch_weight"):
+        JEPAConfig("b", .2, .99, branch_weight=-1.)
 
 
 def test_frozen_encoder_trains_only_branches(tmp_path):
     s, inp, _, batch = _branch_model(tmp_path, learnable=True)
     SB.freeze_raw(s)
     s.train()
-    l1, _ = SB.branch_keep_objective(s, inp, batch.anchor_targets)
-    l2, _ = SB.branch_keep_objective(s, inp, batch.anchor_targets)
+    with pytest.raises(ValueError, match="congelato"):
+        SB.readout_objectives(s, inp, batch.anchor_targets, keep=True)
+    l1, _ = SB.readout_objectives(s, inp, batch.anchor_targets, keep=False)["keep_branches"]
+    l2, _ = SB.readout_objectives(s, inp, batch.anchor_targets, keep=False)["keep_branches"]
     assert torch.equal(l1, l2)  # encode in eval: niente dropout del muscolo
     l1.backward()
     for name, p in s.named_parameters():
@@ -283,16 +325,18 @@ def _branch_cfg(tmp_path, **kw):
     root, manifest, cfg, _, y, m = _setup(tmp_path)
     cal = tmp_path / "cal.npz"
     _calibration(cal, cfg, manifest, y, m)
-    return root, manifest, R.with_spectral_branches(R.with_spectral_keep(cfg, cal, kw.pop("weight", 0.05)), ("psd", "wavelet"),
-                                                    calibration_batches=2, **kw)
+    return root, manifest, R.with_spectral_branches(R.with_spectral_keep(cfg, cal, kw.pop("keep", 0.05)), ("psd", "wavelet"),
+                                                    weight=kw.pop("weight", 0.05), calibration_batches=2, **kw)
 
 
 def test_trainer_joint_branches_checkpoint_and_resume(tmp_path):
     root, manifest, cfg = _branch_cfg(tmp_path)
     out = tmp_path / "run"
-    assert R.train(cfg, manifest, [root], out, log=lambda _: None)["steps"] == 1
+    assert R.train(replace(cfg, keep_grad_every=1), manifest, [root], out, log=lambda _: None)["steps"] == 1
+    cfg = replace(cfg, keep_grad_every=1)
     rec = json.loads((out / "metrics.jsonl").read_text().splitlines()[0])
-    assert rec["keep"] > 0 and rec["keep_psd"] > 0 and rec["keep_wavelet"] > 0 and rec["jepa"] > 0
+    assert rec["keep"] > 0 and rec["keep_branches"] > 0 and rec["keep_psd"] > 0 and rec["keep_wavelet"] > 0 and rec["jepa"] > 0
+    assert all(rec["shared_grad_" + k] > 0 for k in ("jepa", "keep", "keep_branches", "anchors"))  # contributi separati sul raw
     state = torch.load(out / "checkpoint.pt", weights_only=False)
     assert state["student"]["spectral_branches.branches.psd.stats_ready"] and state["teacher"]["spectral_branches.branches.wavelet.stats_ready"]
     prov = json.loads((out / "spectral_branches.json").read_text())
@@ -304,6 +348,25 @@ def test_trainer_joint_branches_checkpoint_and_resume(tmp_path):
                        stats)  # la ripresa non ricalibra
     with pytest.raises(ValueError, match="identity changed"):
         R.train(replace(cfg, model=replace(cfg.model, branch_alpha=0.2)), manifest, [root], out, log=lambda _: None)
+
+
+def test_branches_at_weight_zero_leave_the_raw_training_of_b_unchanged(tmp_path):
+    """Parere GPT d5c53c1: con branch_weight 0 la formula della loss e' quella di B; l'encoder raw (pesi, teacher, metriche) evolve bit per bit
+    come nel modello senza rami. Il controllo B resta pero' il modello SENZA rami: questo, con rami non allenati nell'embedding, e' un altro
+    controllo."""
+    root, manifest, cfg = _branch_cfg(tmp_path, weight=0.0)
+    plain = replace(cfg, model=replace(cfg.model, spectral_branches=()))
+    states, recs = [], []
+    for name, c in (("b", plain), ("rami0", cfg)):
+        out = tmp_path / name
+        R.train(replace(c, max_steps=2), manifest, [root], out, log=lambda _: None)
+        states.append(torch.load(out / "checkpoint.pt", weights_only=False))
+        recs.append([json.loads(x) for x in (out / "metrics.jsonl").read_text().splitlines()])
+    for part in ("student", "teacher"):
+        assert all(torch.equal(states[1][part][k], v) for k, v in states[0][part].items()), part
+    for a, b in zip(*recs):
+        assert all(a[k] == b[k] for k in ("total", "jepa", "keep", "grad_norm"))
+        assert "keep_branches" not in b
 
 
 def test_branches_off_trainer_unchanged_by_new_fields(tmp_path):
@@ -319,14 +382,17 @@ def test_branches_off_trainer_unchanged_by_new_fields(tmp_path):
         state["config"].pop(k)
     for k in R.BRANCH_MODEL_FIELDS:
         state["config"]["model"].pop(k)
+    state["config"]["jepa"].pop("branch_weight")
     torch.save(state, out / "checkpoint.pt")
     assert R.train(replace(cfg, max_steps=2), manifest, [root], out, log=lambda _: None)["steps"] == 2
 
 
 def test_trainer_frozen_encoder_then_p1p2_features(tmp_path):
-    root, manifest, cfg_b = _branch_cfg(tmp_path, freeze_encoder=True)
-    src_cfg = R.with_spectral_keep(replace(cfg_b, model=replace(cfg_b.model, spectral_branches=()), freeze_encoder=False),
-                                   cfg_b.keep_calibration, 0.0)
+    root, manifest, cfg_b = _branch_cfg(tmp_path, freeze_encoder=True, keep=0.0)
+    src_cfg = R.with_spectral_keep(replace(cfg_b, model=replace(cfg_b.model, spectral_branches=()), freeze_encoder=False,
+                                           jepa=replace(cfg_b.jepa, branch_weight=0.0)), cfg_b.keep_calibration, 0.0)
+    with pytest.raises(ValueError, match="keep_weight 0"):
+        R.train(replace(cfg_b, jepa=replace(cfg_b.jepa, keep_weight=0.05)), manifest, [root], tmp_path / "kw", log=lambda _: None)
     src = tmp_path / "src"
     R.train(src_cfg, manifest, [root], src, log=lambda _: None)
     with pytest.raises(ValueError, match="init_from"):
@@ -385,7 +451,7 @@ def test_branches_one_process_accumulation_and_ddp_equal_the_global_batch(tmp_pa
 
     cfg = _config(True, True)
     cfg = replace(cfg, model=replace(cfg.model, keep_readout=True, spectral_branches=("psd", "wavelet")),
-                  jepa=replace(cfg.jepa, keep_weight=0.05))
+                  jepa=replace(cfg.jepa, keep_weight=0.05, branch_weight=0.05))
     batch = _global_batch(tmp_path, cfg)
     torch.manual_seed(0)
     model = WearUsFM(cfg.model).double()

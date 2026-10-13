@@ -6,7 +6,8 @@ wavelet». La guida del pacchetto voleva lo step 3 come frontend ALTERNATIVO all
 Embedding P1/P2 = [readout raw dello Step 1 (2d), z_psd, z_wavelet] (`readout`). Ogni ramo: frontend alla fs nativa -> log-potenze per (canale,
 frame, banda), standardizzate con statistiche del training + disponibilita' -> piccolo encoder temporale per scala (50 ms ogni 25 ms, 500 ms ogni
 100 ms) -> media sui canali validi -> `out_dim` numeri. Nessuna quantizzazione. **I rami vedono solo la vista completa** (loss sul readout e
-downstream): mai la vista mascherata della JEPA, ne' le sue chiavi.
+downstream): mai la vista mascherata della JEPA, ne' le sue chiavi. Loss sul readout (`readout_objectives`): la keep dello Step 1 sulla sola testa
+raw resta invariata (`keep_weight`), e il termine dei rami (testa fusa + teste dei singoli rami) si aggiunge col suo peso (`branch_weight`).
 
 **Banco wavelet invece del Gabor del pacchetto** (valutazione nel registro condiviso, 13/10/2026): wavelet di Morlet analitiche a Q costante, una
 per banda dei target (6 e 24 bande log-spaziate su 20-450 Hz, centro geometrico della banda), banda a -3 dB uguale alla banda dei target,
@@ -387,20 +388,31 @@ def freeze_raw(model) -> None:
     model.raw_frozen = True
 
 
-def branch_keep_objective(student, inp, anchor_targets, *, terms: bool = False):
-    """La loss sul readout con i rami (sostituisce quella dello Step 1, che resta per i modelli senza rami): per campione
-    (1 - alpha) L(testa fusa) + alpha * media sui rami di L(testa del ramo), ciascuna la Smooth L1 a quattro famiglie dello Step 1 sugli stessi
-    target e la stessa validita'. Stessa forma di ritorno di `spectral_step1.keep_objective` / `keep_objective_terms`: il peso complessivo resta
-    `keep_weight`, confrontabile col controllo dello Step 1. Le metriche `keep_<famiglia>` sono quelle della testa fusa (il readout P1/P2); quelle
-    di ogni ramo si chiamano `keep_<ramo>_<famiglia>`. Con l'encoder congelato (`freeze_raw`) l'encode e' in eval e senza gradiente."""
+def readout_objectives(student, inp, anchor_targets, *, keep: bool, terms: bool = False) -> dict:
+    """Le loss sul readout di un modello con i rami, da UN solo encode non mascherato dello studente (proposta del 13/10/2026, parere di GPT
+    `d5c53c1`: due termini additivi, nessun encode in piu' per testa):
+    - "keep" (se `keep`): la loss dello Step 1 sulla sola testa raw (`spectral_keep` su `pool_p1p2`), identica a `spectral_step1.keep_objective`,
+      pesata da `keep_weight`. L'encoder raw conserva cosi' il vincolo spettrale diretto del braccio B, che i rami non possono soddisfare al suo
+      posto (non lo stesso aggiornamento: anche la testa fusa manda gradienti al raw);
+    - "keep_branches": per campione (1 - alpha) L(testa fusa su [raw, PSD, wavelet]) + alpha * media sui rami di L(testa del ramo), pesata da
+      `branch_weight`.
+    Stessi target, maschere e calibrazione per tutte le teste (controllato su `target_active`): stesso denominatore. Ogni valore ha la forma di
+    ritorno di `keep_objective` (o di `keep_objective_terms` con `terms`). Metriche del termine dei rami: `keep_<testa>` e
+    `keep_<testa>_<famiglia>` per fused, psd, wavelet, e `keep_branches_valid_samples`. Con l'encoder congelato (`freeze_raw`) l'encode e' in
+    eval e senza gradiente, e la testa raw non si usa."""
     from contextlib import nullcontext
 
     from wearusfm.model.spectral_step1 import global_spectral_targets, pool_p1p2
 
     if any(x.device.type not in ("cpu", "cuda") for x in inp.signals):
         raise ValueError("rami spettrali: solo CPU/CUDA, come lo Step 1")
-    y, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
     frozen = bool(getattr(student, "raw_frozen", False))
+    if keep and frozen:
+        raise ValueError("encoder congelato: la keep raw non allena nulla, solo il termine dei rami")
+    ref = student.spectral_keep.target_active
+    if any(not torch.equal(h.target_active, ref) for h in student.branch_heads.values()):
+        raise ValueError("teste del readout calibrate su target diversi (target_active): stessa calibrazione per tutte")
+    y, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
     devices = sorted({x.device.index for x in inp.signals if x.is_cuda})
     with torch.random.fork_rng(devices=devices):  # come lo Step 1: il passaggio in piu' non sposta il generatore della JEPA
         was = student.training
@@ -411,24 +423,25 @@ def branch_keep_objective(student, inp, anchor_targets, *, terms: bool = False):
                 z = pool_p1p2(student.encode(inp, None), inp.counts, inp.qc_valid)
         finally:
             student.train(was)
+    out = {}
+    if keep:  # come _keep_objective dello Step 1, sullo stesso z (al tipo della testa: in float32 nessuna conversione, bit per bit lo Step 1)
+        prediction = student.spectral_keep(z.to(student.spectral_keep.linear.weight.dtype))
+        out["keep"] = student.spectral_keep.loss_terms(prediction, y, valid) if terms else student.spectral_keep.loss(prediction, y, valid)
     zb = student.spectral_branches(inp)
     heads = student.branch_heads
     dt = heads["fused"].linear.weight.dtype  # pool_p1p2 restituisce float32; un modello in float64 (test d'equivalenza) resta in float64
     res = {"fused": heads["fused"].loss_terms(heads["fused"](torch.cat([z.to(dt), *[v.to(dt) for v in zb.values()]], -1)), y, valid)}
     res.update({k: heads[k].loss_terms(heads[k](v), y, valid) for k, v in zb.items()})
     den = res["fused"][3]
-    if any(not torch.equal(res[k][3], den) for k in zb):
-        raise ValueError("teste dei rami calibrate su target diversi (target_active): stessa calibrazione per tutte")
     alpha = float(student.cfg.branch_alpha)
     num = (1.0 - alpha) * res["fused"][2] + alpha * torch.stack([res[k][2] for k in zb]).mean()
     loss = num / den.clamp(min=1)
-    metrics = dict(res["fused"][1])
-    log_num, log_den = dict(res["fused"][4]), dict(res["fused"][5])
+    metrics, log_num, log_den = {"keep_branches_valid_samples": res["fused"][1]["keep_valid_samples"]}, {}, {}
     for k, r in res.items():
         metrics["keep_" + k] = r[0].detach()
         log_num["keep_" + k], log_den["keep_" + k] = r[2].detach(), r[3].detach()
-        if k != "fused":
-            metrics.update({"keep_" + k + m[len("keep"):]: v for m, v in r[1].items() if m != "keep_valid_samples"})
-            log_num.update({"keep_" + k + m[len("keep"):]: v for m, v in r[4].items()})
-            log_den.update({"keep_" + k + m[len("keep"):]: v for m, v in r[5].items()})
-    return (loss, metrics, num, den, log_num, log_den) if terms else (loss, metrics)
+        metrics.update({"keep_" + k + m[len("keep"):]: v for m, v in r[1].items() if m != "keep_valid_samples"})
+        log_num.update({"keep_" + k + m[len("keep"):]: v for m, v in r[4].items()})
+        log_den.update({"keep_" + k + m[len("keep"):]: v for m, v in r[5].items()})
+    out["keep_branches"] = (loss, metrics, num, den, log_num, log_den) if terms else (loss, metrics)
+    return out
