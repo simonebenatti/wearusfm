@@ -51,6 +51,20 @@ def test_psd_frontend_equals_step1_targets(fs):
         np.testing.assert_array_equal(valid[:, :p].any(1), ref_av & ref_ok[:p].any())  # disponibilita' delle bande come i target
 
 
+def test_branch_support_near_edges_is_stricter_than_the_targets():
+    """Review GPT del 13/10: vicino ai bordi del tratto il ramo e i target non hanno lo stesso supporto. I target dello Step 1 escludono solo le
+    patch che toccano la zona di bordo (la finestra da 500 ms centrata su una patch valida puo' entrarci); il ramo vuole l'INTERA finestra fuori
+    (guida del pacchetto: supporto completo). Finestra da 1 s con 0,1 s di bordo: 6 frame lenti nei target, 4 nel ramo; senza bordo, uguali."""
+    fs = 2000.0
+    x = _noise(2, 1.0, fs)
+    for guard, n_targets, n_branch in (((0, 0), 6, 6), ((200, 200), 6, 4)):
+        tg = AT.anchor_targets(x, fs, 450.0, guard=guard, multiscale=True)
+        slow_ok = tg.ms_slow_valid[0]  # per patch, ogni frame lento ripetuto sulle sue 4 patch
+        frames = {p // 4 for p in np.flatnonzero(slow_ok)}
+        _, valid = SB.PSDFrontend()(torch.from_numpy(x), fs, np.full(2, 450.0), guard)["slow"]
+        assert len(frames) == n_targets and int(valid[0].any(-1).sum()) == n_branch
+
+
 def test_wavelet_energy_is_band_power_for_white_noise_and_tone_gain():
     """Rumore bianco: energia di ogni filtro = PSD * larghezza della banda (normalizzazione a banda equivalente di rumore); la PSD da' PSD *
     (bin nella banda) * fs / n, quantizzata dalla risoluzione della finestra (a 50 ms un bin ogni 20 Hz). Sinusoide di ampiezza 1 al centro di
@@ -198,6 +212,16 @@ def test_config_rules_and_pairing_with_the_model_without_branches():
     assert all(torch.equal(states[0][k], states[1][k]) for k in states[0])  # stesso encoder raw
     assert torch.equal(rngs[0], rngs[1])  # stesso generatore dopo: dropout del muscolo accoppiato
     assert {k.split(".")[0] for k in set(states[1]) - set(states[0])} == {"spectral_branches", "branch_heads"}
+
+
+def test_branch_init_does_not_reseed_accelerators(monkeypatch):
+    """Review GPT del 13/10: l'inizializzazione dei rami non deve toccare i generatori CUDA/MPS (fork_rng(devices=[]) ripristina solo la CPU),
+    altrimenti sulla GPU il dropout del modello con i rami non e' piu' accoppiato a quello senza."""
+    calls = []
+    for mod, name in ((torch.cuda, "manual_seed_all"), (torch.cuda, "manual_seed"), (torch.mps, "manual_seed")):
+        monkeypatch.setattr(mod, name, lambda *a, _n=name, **k: calls.append(_n))
+    WearUsFM(replace(R.small_config().model, keep_readout=True, spectral_branches=("psd", "wavelet")))
+    assert calls == []
 
 
 def _branch_model(tmp_path, kinds=("psd", "wavelet"), learnable=False, alpha=0.5):

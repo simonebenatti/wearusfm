@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import p1_cross_subject as P1  # noqa: E402
 from wearusfm.harness.downstream_ab import fingerprint, subject_counts  # noqa: E402
+from wearusfm.harness.feature_sets import FEATURE_SETS, cache_record, check_cache  # noqa: E402
 
 
 def _root_of(roots: list[Path], dataset: str, subject: str) -> Path:
@@ -78,7 +79,7 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", choices=["all", "extract", "probe"], default="all")
     ap.add_argument("--features", type=Path, default=None, help="cartella delle feature per dataset (necessaria con extract e probe)")
     ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
-    ap.add_argument("--feature-set", choices=["model", "stats", "model+stats", "mask", "model+mask"], default="model",
+    ap.add_argument("--feature-set", choices=list(FEATURE_SETS), default="model",
                     help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default) o le varianti del test 2A dello step 2")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
@@ -109,12 +110,14 @@ def main(argv=None) -> int:
         if args.stage == "probe":
             with np.load(npz) as z:
                 f = {r: (z[f"{r}_x"], z[f"{r}_y"], z[f"{r}_s"]) for r in ("train", "val", "test")}
+                check_cache(z, args.feature_set, f["train"][0].shape[1])  # l'insieme di feature della cache e' quello dichiarato
         else:
             f = dataset_features(model, args.root, ds, roles, args, log)
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(args.input_sha256)} if args.audit_inputs else {}
-                np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)}, **extra)
+                np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)}, **extra,
+                         **cache_record(args.feature_set, FF.model_width(model)))
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue

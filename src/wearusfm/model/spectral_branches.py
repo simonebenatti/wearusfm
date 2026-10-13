@@ -17,6 +17,12 @@ pacchetto (40-330 Hz, sigma_f = max(4 Hz, f/12), kernel comune di ~300 ms) lasci
 
 Le energie dei filtri si sovrappongono: non sono le potenze disgiunte dei target e non si sommano in una potenza totale. I target restano quelli
 PSD fissi dello Step 1 (`spectral_step1.global_spectral_targets`), mai le energie del banco corrente.
+
+**Supporto vicino ai bordi (diverso dai target, voluto):** un frame del ramo vale solo se l'INTERA finestra (piu' il raggio del filtro) sta fuori
+dalla zona di bordo del tratto (guida del pacchetto: supporto completo, niente campioni di transitorio nell'ingresso). I target dello Step 1
+escludono invece solo le patch che toccano la zona di bordo, e la finestra lenta centrata su una patch valida puo' entrarci. Lontano dai bordi
+coincidono (stesse finestre, provato); su una finestra da 1 s con 0,1 s di bordo i target hanno 6 frame lenti, la PSD del ramo 4 (review GPT
+del 13/10/2026). Allineare i target al supporto completo sarebbe un cambio di definizione dei target (file di GPT), da decidere a parte.
 """
 
 from __future__ import annotations

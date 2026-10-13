@@ -321,6 +321,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Controllo in sola lettura su Leonardo (13/10, via leonardo-ops): cache e provenienze presenti, commit di valutazione `8dad7e8`, hash dei checkpoint come in `step1_downstream.py`; tempi da sacct (sonde P1 39-43 min, P2 48-53); `$WORK` all'86%.
 - **Per te:** il 2A riusa `step1_downstream.py` (costanti, `check_source`) e `downstream_ab.compare_reports`; aggiunge `--feature-set` alle sonde (gia' nella consegna dei rami). Va rivisto insieme a quella consegna prima di qualunque deploy.
 
+### 2026-10-13 | Claude | Correzioni dalla review di GPT su 2ba67a7: generatore CUDA, identita' delle cache P1/P2, bordo | Base: a4ffc2e
+
+- Review di GPT (via Simone, 13/10): tre punti, tutti verificati.
+- **Generatore CUDA:** confermato (`torch.manual_seed` semina tutti i dispositivi; `fork_rng(devices=[])` ripristina solo la CPU). `model/fm.py`: i rami si inizializzano con `torch.random.default_generator.manual_seed` dentro `fork_rng(devices=[])`, quindi CUDA/MPS restano intatti e il dropout su GPU resta accoppiato. Test: nessuna chiamata ai seed di CUDA/MPS durante la costruzione (verificato che il test avrebbe colto il difetto).
+- **Identita' delle cache:** riprodotto il caso (64 statistiche accettate come "mask"). Nuovo `harness/feature_sets.py` (solo numpy): le estrazioni di `probe_p1.py`/`probe_p2.py` registrano `feature_set` e `model_dim`; la fase probe rifiuta insieme o larghezza diversi da quelli dichiarati; le cache vecchie senza registrazione valgono solo "model" (le tue cache downstream restano valide come M). `scripts/step2a.py`: le cache assemblate registrano il proprio insieme (MS, K), copiano solo x/y/s, e l'insieme registrato si controlla insieme alla provenienza. Test: il tuo caso, una cache vecchia dichiarata "stats", una larghezza sbagliata.
+- **Bordo:** chiarito, non cambiato. Il ramo vuole l'intera finestra fuori dalla zona di bordo (guida del pacchetto: supporto completo); i target dello Step 1 escludono solo le patch che la toccano. Su 1 s con 0,1 s di bordo: 6 frame lenti nei target, 4 nella PSD del ramo; senza bordo identici. Documentato nel modulo e fissato in un test. Allineare i target al supporto completo sarebbe un cambio di definizione nei tuoi file, da decidere a parte; il 2A usa i target, quindi la loro regola.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -611,3 +618,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Tolto il controllo «embedding + indicatori» del pacchetto: con sonde per dataset gli indicatori sono costanti (stessa fs e banda per tutte le finestre di un dataset), quindi coinciderebbe con M; resta K (soli indicatori, atteso al livello del caso) e il conteggio delle maschere diverse per dataset.
 - La sonda rifatta su M deve riprodurre il report downstream: controllo descrittivo, non un criterio (se differisse, il confronto resta accoppiato fra due sonde nuove sulle stesse feature, e lo si riporta).
 - Il primo controllo su Leonardo e' fallito per ssh (`Permission denied (publickey)`); dopo il rinnovo dell'accesso da parte di Simone e' andato a buon fine. leonardo-ops non esegue `python3 -c` sul login node: i JSON sono stati copiati con `tail` e letti sul Mac.
+
+### 2026-10-13 | Claude | Correzioni dalla review di GPT su 2ba67a7: generatore CUDA, identita' delle cache P1/P2, bordo | Base: a4ffc2e
+
+- Il difetto del generatore CUDA era reale e sfuggito ai miei test (fatti solo sulla CPU, dove l'accoppiamento risultava): il test nuovo controlla le chiamate ai seed degli acceleratori, non lo stato, perche' sul Mac non c'e' CUDA.
+- La scelta sul bordo resta aperta per te e Simone: (a) tenere il ramo piu' severo dei target (la mia proposta: l'ingresso non vede transitori); (b) dare al ramo la regola dei target (stesso supporto, transitori nell'ingresso); (c) portare i target al supporto completo (cambio di definizione, run nuovi).

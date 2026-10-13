@@ -24,6 +24,11 @@ debole (non impossibile: un ramo puo' imparare cose che le 32 medie non contengo
   di 0,1 s ai due lati come nel pretraining. Mancanti = 0, piu' 32 indicatori di presenza: 64 colonne. Nessun valore stimato sui dati.
 - **Allineamento:** la fase stats registra l'hash degli ingressi realmente letti (`--audit-inputs`). Deve coincidere con quello delle cache
   degli embedding, e devono coincidere etichette, soggetti e ordine di ogni ruolo; altrimenti la catena si ferma senza scrivere varianti.
+- **Identita' delle cache (review GPT del 13/10):** ogni cache nuova registra l'insieme di feature e le colonne dell'embedding
+  (`harness/feature_sets.py`); la sonda rifiuta una cache il cui insieme o la cui larghezza non e' quello dichiarato. Le cache della tranche
+  downstream, senza registrazione, valgono solo come "model".
+- **Supporto:** le statistiche sono i target dello Step 1, con la loro regola di bordo (si escludono le patch che toccano la zona di bordo;
+  su 1 s, 6 frame lenti). Il ramo PSD dei rami spettrali e' piu' severo (finestra intera fuori dal bordo: 4 frame), ma non entra nel 2A.
 
 ## Varianti e sonde
 
@@ -93,7 +98,8 @@ minuti, P2 48-53, piu' ~10% per le 64 colonne in piu'), non ETA di coda.
 
 ## Verifica locale prima del congelamento
 
-`tests/cpu/test_step2a.py` (10): P2 da capo a fondo su dati sintetici con le sonde vere (statistiche, varianti, sonde, provenienze); rifiuto di
+`tests/cpu/test_step2a.py` (11): P2 da capo a fondo su dati sintetici con le sonde vere (statistiche, varianti, sonde, provenienze); cache con
+insieme di feature o larghezza diversi da quelli dichiarati rifiutate (il caso riprodotto da GPT); rifiuto di
 cache su finestre diverse, di provenienze cambiate e di cache modificate dopo; regola di decisione su sei casi; confronto accoppiato e controlli
 descrittivi. `tests/cpu/test_spectral_branches.py::test_feature_sets_of_the_2a_diagnostic`: le statistiche sono quelle dello Step 1 sullo stesso
 ingresso. Nessuna misura sui task reali prima dell'approvazione.

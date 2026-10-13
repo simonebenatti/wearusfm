@@ -19,6 +19,7 @@ import numpy as np
 import torch
 
 from wearusfm.data import pretraining_loader as L
+from wearusfm.harness.feature_sets import FEATURE_SETS
 from wearusfm.ingest.common import montage_to_dict
 from wearusfm.metadata.schema import (AnatomicalIdentity, AnatomicalPrecision, ChannelGroup, ChannelMetadata, Chirality, MontageMetadata,
                                       RawOrEnvelope, SensorCoordinates, Topology)
@@ -79,8 +80,12 @@ def band_limit_hz(montage: dict, fs: float) -> np.ndarray:
 # Insiemi di feature (test preliminare dello step 2, «2A»: Simone 13/10/2026): l'embedding del modello ("model"), le 32 statistiche spettrali
 # fisse dello Step 1 con la loro maschera ("stats"), la concatenazione, e i controlli con la sola maschera di disponibilita' (una banda
 # assente puo' identificare dispositivo o dataset senza dire nulla del segnale). Le statistiche mancanti valgono 0 accanto alla maschera:
-# nessun valore stimato, quindi nessuna stima che possa vedere validazione o test.
-FEATURE_SETS = ("model", "stats", "model+stats", "mask", "model+mask")
+# nessun valore stimato, quindi nessuna stima che possa vedere validazione o test. Nomi e colonne in `feature_sets` (anche per la fase probe).
+
+
+def model_width(model: WearUsFM) -> int:
+    """Colonne dell'embedding del modello (`spectral_branches.readout`): 2d piu' i rami spettrali."""
+    return 2 * model.cfg.dim + model.cfg.branch_dim * len(model.cfg.spectral_branches)
 
 
 def spectral_stats(x: np.ndarray, fs: float, limit: np.ndarray, qc_valid: np.ndarray, guard: int) -> tuple[np.ndarray, np.ndarray]:
@@ -115,8 +120,7 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
         raise ValueError(f"{windows.shape[2]} canali per un montaggio da {c}")
     scales = subject_scales(windows, np.asarray(subjects), fs, band, scale_windows)
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=str(device).startswith("cuda"))
-    feats = np.zeros((len(windows), 2 * model.cfg.dim + model.cfg.branch_dim * len(model.cfg.spectral_branches)), dtype=np.float32) \
-        if use_model else None
+    feats = np.zeros((len(windows), model_width(model)), dtype=np.float32) if use_model else None
     stat_sum, stat_n = np.zeros((len(windows), 32)), np.zeros((len(windows), 32))
     limit, g = band_limit_hz(montage, fs), int(round(edge_guard_s * fs))
     crops = _crops(windows.shape[1], fs, crop_s)

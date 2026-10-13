@@ -134,8 +134,10 @@ class WearUsFM(nn.Module):
         if cfg.spectral_branches:
             # dopo tutti gli altri moduli e con un generatore a parte: l'encoder raw nasce uguale e il generatore globale (dropout del muscolo)
             # resta quello del modello senza rami, cosi' i confronti con e senza rami sono accoppiati
+            # solo il generatore CPU (il modello nasce sulla CPU): torch.manual_seed riseminerebbe anche CUDA, che fork_rng(devices=[]) non
+            # ripristina, e il dropout su GPU non resterebbe accoppiato (review GPT del 13/10/2026)
             with torch.random.fork_rng(devices=[]):
-                torch.manual_seed((torch.initial_seed() + 7919) % 2 ** 63)
+                torch.random.default_generator.manual_seed((torch.initial_seed() + 7919) % 2 ** 63)
                 self.spectral_branches = SpectralBranches(cfg.spectral_branches, cfg.branch_dim, cfg.branch_hidden, cfg.wavelet_learnable)
                 self.branch_heads = branch_heads(2 * cfg.dim, cfg.spectral_branches, cfg.branch_dim)
         for m in (self.local, self.backbone, self.decoder):

@@ -31,6 +31,7 @@ import probe_p2  # noqa: E402
 import step1_downstream as SD  # noqa: E402
 from spectral_step1 import output_path  # noqa: E402
 from wearusfm.harness.downstream_ab import compare_reports, fingerprint  # noqa: E402
+from wearusfm.harness.feature_sets import cache_record  # noqa: E402
 from wearusfm.training.spectral_calibration import sha256_file  # noqa: E402
 
 PROTOCOL = "step2a_stats_v1"
@@ -63,13 +64,21 @@ def inventory(folder: Path, task: str, dim: int) -> dict:
                 seen.update(names)
                 rows[prefix] = {"n": len(y), "labels_subjects_sha256": fingerprint(y, s), "subjects": sorted(names)}
             out[ds] = {"sha256": sha256_file(path), "input_sha256": str(z["input_sha256"].item()), "rows": rows}
+            if "feature_set" in z.files:  # le cache della tranche downstream non lo registrano (sono embedding)
+                out[ds]["feature_set"] = str(z["feature_set"])
+                out[ds]["model_dim"] = int(z["model_dim"])
     return out
 
 
+def _arrays(z, prefixes) -> dict:
+    """Solo i dati di una cache (x, y, s per ruolo), senza hash e insieme di feature registrati."""
+    return {p + k: z[p + k] for p in prefixes for k in "xys"}
+
+
 def _paired(a: dict, b: dict) -> bool:
-    """La parte di due inventari che deve coincidere fra varianti: tutto tranne l'hash fisico del file."""
-    return set(a) == set(b) and all({k: v for k, v in a[ds].items() if k != "sha256"} == {k: v for k, v in b[ds].items() if k != "sha256"}
-                                    for ds in a)
+    """La parte di due inventari che deve coincidere fra varianti: ingressi e righe (non l'hash fisico ne' l'insieme di feature)."""
+    keep = ("input_sha256", "rows")
+    return set(a) == set(b) and all({k: a[ds][k] for k in keep} == {k: b[ds][k] for k in keep} for ds in a)
 
 
 def _identity(commit: str, task: str, variant: str, arm: str | None) -> dict:
@@ -116,11 +125,13 @@ def _probe_argv(args, task: str, folder: Path, stage: str, variant: str) -> list
     return argv
 
 
-def _write_variant(folder: Path, parts: dict, input_hash: dict) -> None:
-    """Una cache nel formato delle sonde (`probe_p1`: train_/val_/test_x,y,s; `probe_p2`: x,y,s), con l'hash degli ingressi."""
+def _write_variant(folder: Path, parts: dict, input_hash: dict, variant: str) -> None:
+    """Una cache nel formato delle sonde (`probe_p1`: train_/val_/test_x,y,s; `probe_p2`: x,y,s), con l'hash degli ingressi e l'insieme di
+    feature registrato (verificato dalla fase probe)."""
     folder.mkdir(parents=True)
     for ds, arrays in parts.items():
-        np.savez(folder / f"{ds}.npz", **arrays, input_sha256=np.asarray(input_hash[ds]))
+        np.savez(folder / f"{ds}.npz", **arrays, input_sha256=np.asarray(input_hash[ds]),
+                 **cache_record(VARIANTS[variant], DOWN_DIM if variant in PER_ARM else 0))
 
 
 def stats(args) -> None:
@@ -143,13 +154,15 @@ def stats(args) -> None:
     stats_arrays = {}
     for ds in SD.DATASETS[task]:
         with np.load(s_folder / f"{ds}.npz", allow_pickle=False) as z:
-            stats_arrays[ds] = {k: z[k] for k in z.files if k != "input_sha256"}
+            if str(z["feature_set"]) != "stats" or int(z["model_dim"]) != 0:
+                raise ValueError("la cache delle statistiche non e' registrata come 'stats'")
+            stats_arrays[ds] = _arrays(z, prefixes)
     # maschere di disponibilita' diverse per dataset (1 = costanti: M + indicatori sarebbe uguale a M)
     patterns = {ds: int(len(np.unique(np.concatenate([a[p + "x"][:, 32:] for p in prefixes]), axis=0))) for ds, a in stats_arrays.items()}
     (s_folder / "provenance.json").write_text(json.dumps({"identity": _identity(commit, task, "S", None), "cache": inv_s,
                                                          "mask_patterns": patterns}, indent=2, allow_nan=False))
     hashes = {ds: inv_s[ds]["input_sha256"] for ds in inv_s}
-    _write_variant(k_folder, {ds: {**a, **{p + "x": a[p + "x"][:, 32:] for p in prefixes}} for ds, a in stats_arrays.items()}, hashes)
+    _write_variant(k_folder, {ds: {**a, **{p + "x": a[p + "x"][:, 32:] for p in prefixes}} for ds, a in stats_arrays.items()}, hashes, "K")
     (k_folder / "provenance.json").write_text(json.dumps({"identity": _identity(commit, task, "K", None), "source": inv_s,
                                                          "cache": inventory(k_folder, task, 32)}, indent=2, allow_nan=False))
     for arm, (down, meta) in sources.items():
@@ -158,13 +171,13 @@ def stats(args) -> None:
         ms = {}
         for ds in SD.DATASETS[task]:
             with np.load(down / f"{ds}.npz", allow_pickle=False) as z:
-                m = {k: z[k] for k in z.files if k != "input_sha256"}
+                m = _arrays(z, prefixes)
             a = stats_arrays[ds]
             for p in prefixes:
                 if not (np.array_equal(m[p + "y"], a[p + "y"]) and np.array_equal(m[p + "s"], a[p + "s"])):
                     raise ValueError(f"{task}/{arm}/{ds}: righe non allineate")
             ms[ds] = {**m, **{p + "x": np.concatenate([m[p + "x"], a[p + "x"]], 1) for p in prefixes}}
-        _write_variant(ms_folders[arm], ms, hashes)
+        _write_variant(ms_folders[arm], ms, hashes, "MS")
         (ms_folders[arm] / "provenance.json").write_text(json.dumps({
             "identity": _identity(commit, task, "MS", arm), "downstream": meta, "stats": inv_s,
             "cache": inventory(ms_folders[arm], task, DOWN_DIM + 64)}, indent=2, allow_nan=False))
@@ -181,8 +194,11 @@ def _variant_meta(args, task: str, variant: str, arm: str | None) -> tuple[Path,
         return folder, {"identity": _identity(commit, task, "M", arm), "downstream": meta, "cache": meta["cache"]}
     folder = _folder(args, task, variant, arm)
     meta = json.loads((folder / "provenance.json").read_text())
-    if meta["identity"] != _identity(commit, task, variant, arm) or inventory(folder, task, DIMS.get(variant, DOWN_DIM + 64)) != meta["cache"]:
+    inv = inventory(folder, task, DIMS.get(variant, DOWN_DIM + 64))
+    if meta["identity"] != _identity(commit, task, variant, arm) or inv != meta["cache"]:
         raise ValueError(f"{folder}: provenienza o cache cambiate")
+    if any(v.get("feature_set") != VARIANTS[variant] for v in inv.values()):
+        raise ValueError(f"{folder}: insieme di feature registrato diverso da {VARIANTS[variant]!r}")
     if variant == "MS" and inventory(_downstream(args, task, arm)[0], task, DOWN_DIM) != meta["downstream"]["cache"]:
         raise ValueError(f"{folder}: la cache downstream d'origine e' cambiata")
     return folder, meta

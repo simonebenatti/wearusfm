@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import benchmarks as B  # noqa: E402
 from wearusfm.harness.splits import masks_from_split, split_subjects  # noqa: E402
 from wearusfm.harness.downstream_ab import fingerprint, subject_counts  # noqa: E402
+from wearusfm.harness.feature_sets import FEATURE_SETS, cache_record, check_cache  # noqa: E402
 
 DATASETS = ("epn612", "uci_emg")
 SPLIT_SEEDS = (0, 1, 2)
@@ -72,7 +73,7 @@ def main(argv=None) -> int:
     ap.add_argument("--features", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
-    ap.add_argument("--feature-set", choices=["model", "stats", "model+stats", "mask", "model+mask"], default="model",
+    ap.add_argument("--feature-set", choices=list(FEATURE_SETS), default="model",
                     help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default) o le varianti del test 2A dello step 2")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
@@ -96,6 +97,7 @@ def main(argv=None) -> int:
         if args.stage == "probe":
             with np.load(npz) as z:
                 x, labels, subjects = z["x"], z["y"], z["s"]
+                check_cache(z, args.feature_set, x.shape[1])  # l'insieme di feature della cache e' quello dichiarato
         else:
             w, labels, subjects, fs = load_windows(ds, args)
             log(f"{ds}: {len(w)} finestre, {len(set(subjects.tolist()))} soggetti, {w.shape[1] / fs:.1f} s a {fs} Hz")
@@ -106,7 +108,7 @@ def main(argv=None) -> int:
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(input_hash)} if args.audit_inputs else {}
-                np.savez(npz, x=x, y=labels, s=subjects, **extra)
+                np.savez(npz, x=x, y=labels, s=subjects, **extra, **cache_record(args.feature_set, FF.model_width(model)))
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue

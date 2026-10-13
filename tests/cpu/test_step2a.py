@@ -83,6 +83,30 @@ def test_p2_stats_variants_and_probes_end_to_end(tmp_path, monkeypatch):
         S2._variant_meta(args, "p2", "MS", "B_seed0")
 
 
+def test_probe_checks_the_feature_set_of_the_cache(tmp_path, monkeypatch):
+    """Review GPT del 13/10: una cache di 64 statistiche dichiarata «mask» (32) veniva accettata. Ora la cache registra insieme e larghezza
+    dell'embedding e la sonda li verifica; una cache senza registrazione (tranche downstream) vale solo come embedding."""
+    args = _setup(tmp_path, monkeypatch)
+    feat = tmp_path / "f"
+    base = ["--checkpoint", str(args.runs_root / "B_seed0" / "checkpoint.pt"), "--epn-root", str(args.epn_root[0]), "--uci-root",
+            str(args.uci_root), "--device", "cpu", "--batch", "8", "--features", str(feat)]
+    assert S2.probe_p2.main(base + ["--stage", "extract", "--feature-set", "stats"]) == 0
+    with np.load(feat / "epn612.npz") as z:
+        assert str(z["feature_set"]) == "stats" and int(z["model_dim"]) == 0 and z["x"].shape[1] == 64
+    with pytest.raises(ValueError, match="estratta come 'stats'"):
+        S2.probe_p2.main(base + ["--stage", "probe", "--feature-set", "mask", "--out", str(tmp_path / "bad.json")])
+    assert S2.probe_p2.main(base + ["--stage", "probe", "--feature-set", "stats", "--out", str(tmp_path / "ok.json")]) == 0
+    for ds in S2.SD.DATASETS["p2"]:  # come una cache scritta prima della registrazione
+        with np.load(feat / f"{ds}.npz") as z:
+            np.savez(feat / f"{ds}.npz", **{k: z[k] for k in ("x", "y", "s")})
+    with pytest.raises(ValueError, match="estratta come 'model'"):
+        S2.probe_p2.main(base + ["--stage", "probe", "--feature-set", "stats", "--out", str(tmp_path / "old.json")])
+    with np.load(feat / "epn612.npz") as z:  # e una larghezza che non torna con quella registrata
+        np.savez(feat / "epn612.npz", x=z["x"][:, :40], y=z["y"], s=z["s"], feature_set=np.asarray("stats"), model_dim=np.asarray(0))
+    with pytest.raises(ValueError, match="40 colonne"):
+        S2.probe_p2.main(base + ["--stage", "probe", "--feature-set", "stats", "--out", str(tmp_path / "w.json")])
+
+
 def test_stats_refuse_caches_of_other_windows(tmp_path, monkeypatch):
     """Embedding estratti su finestre diverse (un utente EPN in meno): l'hash degli ingressi non coincide e niente viene concatenato."""
     args = _setup(tmp_path, monkeypatch)
