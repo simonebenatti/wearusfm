@@ -337,6 +337,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - **Lettura:** precisata nel protocollo, nella nota della decisione e in `decisioni.md`: un esito positivo dice che le statistiche aiutano la sonda lineare, non che l'informazione mancasse dall'embedding.
 - Test: `tests/cpu/test_step2a.py` 15 (finestra silenziosa, tre campi d'identita', provenienza del training, teacher nei report); test correlati 33 passati.
 
+### 2026-10-13 | Claude | Lettura delle voci di GPT nel suo worktree (422acb9, 4d6b7b6, 9708281) e stato dei punti | Base: 6861907
+
+- Lette le tre voci nuove di GPT (review dei rami su 2ba67a7, review del 2A su a4ffc2e, verifica delle correzioni su 57fe3c0), sul suo branch e non ancora su `main`. Nessuna modifica al suo worktree.
+- Stato: reseed CUDA e identita' delle cache chiusi in 57fe3c0 (verificati da GPT); le tre correzioni del 2A (maschere, SHA di estrazione/training, teacher nei report) e la precisazione sull'accessibilita' alla sonda lineare chiuse dopo, in 6861907, non ancora viste da GPT.
+- Bordo: accolta la raccomandazione di GPT, opzione (a) (supporto completo nel ramo, target dello Step 1 invariati): nessuna patch, e' il comportamento gia' provato. Resta la decisione formale di Simone.
+- Confronto Gabor/wavelet: d'accordo con GPT, e' una scelta fra due banchi concreti (frequenze, larghezze, normalizzazione, supporto, convoluzione contro FFT), non una superiorita' della famiglia wavelet; precisato in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -637,3 +644,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Se sui dati veri un dataset avesse finestre silenziose (P2: EPN-612 a 200 Hz, segnali grezzi del bracciale), la catena si fermera' alla fase stats: in quel caso servira' decidere se reintrodurre il controllo «embedding + indicatori» (4 sonde in piu', ~25 core-ora) o escludere esplicitamente quelle finestre. Lo si sapra' solo eseguendo la fase stats.
 - Suite completa non rilanciata dopo queste correzioni (toccano solo `scripts/step2a.py`, il suo test e documenti); ultima completa 877 passati a 57fe3c0.
+
+### 2026-10-13 | Claude | Lettura delle voci di GPT nel suo worktree (422acb9, 4d6b7b6, 9708281) e stato dei punti | Base: 6861907
+
+- **Aperto, algoritmico (nota di GPT su 2ba67a7):** con i rami la loss sul readout passa alle teste fusa e dei rami; la testa raw dello Step 1 resta inutilizzata. La testa fusa puo' appoggiarsi ai rami, quindi lo stesso `keep_weight` non garantisce all'encoder raw la supervisione dello Step 1. Da decidere prima di qualunque training congiunto; proposta in arrivo a Simone (tenere invariata la loss dello Step 1 sul raw e aggiungere quella dei rami con un peso suo).
+- Il mio errore di metodo: avevo lavorato dalle review incollate in chat senza leggere il registro nel worktree di GPT, che conteneva anche questa nota. D'ora in poi lo leggo prima di ogni attivita' (richiesta di Simone del 13/10).

@@ -2684,3 +2684,7 @@ cosi' l'omissione di «embedding + indicatori» resta senza ambiguita' e il tett
 ricontrollata per intero, commit di estrazione `8dad7e8...` e di training `69fa2da...` compresi, e quella del training dei teacher; (3) i report
 di B_seed1 portavano il checkpoint di B_seed0: ora ogni report ha il suo teacher. Lettura precisata: un esito positivo dice che aggiungere le
 statistiche aiuta la sonda lineare, non che quell'informazione mancasse dall'embedding.
+
+**Precisazione sul confronto Gabor/wavelet (review GPT del 13/10/2026):** il confronto del 13/10 e' fra due banchi concreti (il Gabor del
+pacchetto e il banco wavelet scelto: frequenze, larghezze, normalizzazione, supporto e convoluzione contro FFT diversi), non una prova di
+superiorita' della famiglia wavelet; l'R2 spettrale su EMG sintetico non dice nulla su P1/P2.
