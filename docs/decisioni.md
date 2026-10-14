@@ -2806,3 +2806,16 @@ utente sulla QoS `normal` di `lrd_all_serial`), e lo script si e' fermato da sol
 (`QOSMaxCpuPerUserLimit`: 8 CPU per utente), gli altri in attesa: la catena e' **seriale** (come la tranche downstream del 09/10, sonde una
 dopo l'altra). Stima seriale ~34 h di calendario. Inoltre le varianti RPW/RPW0 hanno 1.024 colonne invece di 768: se il tempo della sonda
 cresce con le colonne (non misurato), due sonde P1 possono avvicinarsi alle 2 h del job. Decisione a Simone su come proseguire.
+
+### Step 2C: estrazioni e sonde sui nodi GPU (Simone, 14/10/2026)
+
+Simone: «opzione 2, vai su GPU» e, alla domanda sulle estrazioni, «Anche le estrazioni su GPU». La partizione CPU e' seriale per utente (10
+job in coda, 8 CPU in esecuzione): ~34 h. Sui nodi GPU ogni job prende un quarto di nodo (1 A100, 8 CPU, 60 GB, `boost_qos_lprod`) e gira in
+parallelo; la GPU resta inattiva (estrazione dei rami e sonde sklearn sulla CPU), stessi launcher e stesso checkout `1c94852`, cambia solo la
+partizione. Si annullano i 9 job CPU ancora in attesa (7 estrazioni, le 2 sonde di P1/A_seed0); l'estrazione P1 di A_seed0 gia' partita
+(60491778) resta e le sue sonde ne dipendono. Sottomissione con `scripts/slurm/step2c_gpu_chain.sh` (`KEEP=p1_A_seed0`): 7 estrazioni
+`step2c_gextract_*`, 16 job di sonda `step2c_gprobe_*`, confronto nell'ultimo, senza il 2A.
+**Costo:** tempi massimi estrazioni P1 1,5 h, P2 3 h; sonde (due varianti) P1 2,5 h (RPW,RPW0) e 2 h (RP,RW), P2 3 h e 2,5 h, l'ultima col
+confronto 3,5 h: **tetto 57 GPU-ora (456 ore locali)**, stima ~38 (estrazioni ~8, sonde ~30). Budget del passo 6: ~33,08 usate prima del 2C
+secondo la bozza di GPT (da riconciliare), piu' 2,91 del 2C finora e il tetto di 3 della baseline casuale di GPT: anche nel caso peggiore
+~96 su 100. CPU: l'estrazione 60491778 (al piu' 1,5 h x 8 CPU = 12 core-ora).

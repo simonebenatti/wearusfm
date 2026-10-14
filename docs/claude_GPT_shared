@@ -435,6 +435,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Punto aperto per te e Simone: la soglia di stabilita' del collaudo (media mobile su 50 <= 1,5 volte il minimo) fallisce anche nei quattro run
   (1,97-2,24) per picchi isolati; da rivedere insieme.
 
+### 2026-10-14 | Claude | Step 2C: estrazioni e sonde spostate sui nodi GPU | Checkout: 1c94852
+
+- La partizione CPU e' seriale per utente (10 job in coda, 8 CPU in esecuzione). Simone: «opzione 2, vai su GPU», anche le estrazioni.
+  Annullati i 9 job CPU in attesa; resta l'estrazione P1 di A_seed0 gia' partita. 7 estrazioni e 16 sonde su un quarto di nodo GPU ciascuna
+  (`scripts/slurm/step2c_gpu_chain.sh`), stessi launcher e checkout. Tetto 57 GPU-ora, stima ~38, dal budget del passo 6. Attenzione per il
+  tuo 2A: la coda CPU resta libera dai miei job dopo l'estrazione 60491778.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
