@@ -13,7 +13,7 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | Primari 2A/2C conclusi negativi; resta il secondario rami contro MS |
-| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | r2 fallito, nessun risultato valido; SHA prescritti invariati |
+| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | Diagnosi fe_gain isolata; correzione e 38 testCPU PASS; r3 reale da verificare, SHA prescritti invariati |
 | 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Parte in parallelo alla baseline; nessun deploy di main non revisionato |
 | 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Monitor implementato; review/regola da chiudere prima del prossimo collaudo |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Screening locale/backbone non isola da solo il Perceiver; niente congiunto con la loss attuale |
@@ -514,6 +514,24 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   in attesa come da suo ultimo registro; nessuna nuova estrazione o modifica di file altrui. Documento non equivale a job accodati.
 - Aggiornato decisioni.md con il riferimento, senza cambiare protocolli/budget. Solo file documentali, nessun job, merge o push.
 
+### 2026-10-14 | GPT | Punto 2: diagnosi sul cluster e correzione del buffer storico | Base c4a0302; diagnosiClaude977e767
+
+- Simone: «diagnosi della baseline (2) e review del trainer/monitor (3-4). PROCEDI!». Review trainer e monitor delegate in parallelo
+  a due agenti read-only; nessuna modifica ai file di Claude. Ops ha riconciliato la diagnostica gia' avviata da Claude, senza duplicarla.
+- JobClaude60561493COMPLETED0:0 in48s, checkout60561424, codice977e767; cinque processi nuovi per ogni seme, Torch2.2.0a0+git6c8c5ad
+  suXeon8358. ab_replica e gpt_like_env8_sklearn_first MATCH esatto dei quattro hash iniziali A/Bstudent/teacher per entrambi i semi.
+  Nelle altre varianti l'unico tensore diverso e' tokenizer.fe_gain; tutti i parametri identici. Thread1 da solo non basta.
+- Rapporto in results/passo6/diag_initial_20261014.json; SHAremoto c0ca4dad0e1332e20a61897f149f6f03337b4a120f58fb0abbe1f7f47867d02a,
+  SHAlocale fdb157062ce6fc76aa420b137720b75cafba1bf9990237453eb7b4f507e3f0eb (solo newline finale aggiunto). Nessun checkpoint/dato copiato.
+- Corretto harness/random_encoder.py: ripristina il SOLO guadagno fisso dal riferimento hash-verificato, oltre ai quattro bufferkeep.
+  Guadagno registrato, non ottimizzato, mai ricalibrato nel training; EMA copia i buffer. OGNI parametro ricreato dal seed; nessun load
+  di state_dict appreso. Controllati forma/dtype/finitezza/positivita' del guadagno; SHA COMPLETO iniziale sempre identico ai due prescritti.
+- 38CPUtestPASS (random_encoder/downstream_ab/p1_cross_subject/probe_p2), inclusi due semi con arrotondamento diverso e rifiuto di cinque
+  drift del buffer. Fix non ancora eseguito nei nuovi extract reali: non dichiarare gate cluster o sonde riusciti dalla sola prova locale.
+- Protocollo r3 registrato prima dei job: nuovo checkout/output, quattro extractP1cap28min/P2cap60min; due gruppiCPUcap3h55 con stesse
+  quattro sonde e timeout2h/seme. Incluso perfino il diagnosticoClaude, cumulativoGPU massimo2,979722 entro3; CPU totale inferiore64coreh.
+  Preflight in corso viaOps; nessuna submitr3 ancora avvenuta in questo commit. Non usare il worktree con bozze come checkout di campagna.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -907,3 +925,12 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   del prossimo collaudo resta prospettica. Il solo budget infrastruttura residuo non autorizza testGPU non ancora protocollati.
 - Nel registroClaude12585fd c'e' un'attesa sulle sonde separate: nessuna autorizzazione implicita a ripartire da una richiesta di
   documentazione. I file harness che serviranno non sono assegnati a due writer; il passaggio esclusivo si delimita prima del codice.
+
+### 2026-10-14 | GPT | Punto 2: causa dimostrata e limiti della correzione
+
+- Il precedente fixthread era incompleto: la diagnosi reale esclude differenze dei parametri e individua il buffer fe_gain, con effetti
+  dell'ambiente numerico/import. Non equivale a dimostrare quale libreria o istruzione sia la causa ultima dei diversi arrotondamenti.
+- Si recupera un buffer IMMUTABILE storico, non una feature o un peso appreso. L'hash dell'intero stato rimane il criterio esatto;
+  la whitelist non permette di recuperare altri parametri dal teacher finale, né di accettare differenze piccole con una tolleranza.
+- R3 usa nuovi ID/checkout/output dopo una causa isolata e una correzione testata, non un retry identico. Budget di2A/infrastruttura
+  non toccati. Se il gate fallisce ancora, stop e nuova analisi, senza sottomissioni duplicate o allentamento della provenienza.

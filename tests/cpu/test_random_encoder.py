@@ -82,6 +82,52 @@ def test_two_seeds_are_paired_deterministically_and_distinct(tmp_path):
 
 
 @pytest.mark.parametrize("seed", [0, 1])
+def test_historical_fixed_gain_is_restored_without_learned_parameters(tmp_path, monkeypatch, seed):
+    from wearusfm.model.patch_tokens import PatchTokenizer
+
+    path, checksum, initial = _reference(tmp_path, seed)
+    saved = torch.load(path, weights_only=False)["teacher"]
+    calibrate = PatchTokenizer._calibrate_gain
+    calculated = []
+
+    def other_runtime_gain(self, *args, **kwargs):
+        value = calibrate(self, *args, **kwargs) + 1e-9
+        calculated.append(value)
+        return value
+
+    monkeypatch.setattr(PatchTokenizer, "_calibrate_gain", other_runtime_gain)
+    rng = torch.get_rng_state().clone()
+    model, _ = initial_teacher(path, reference_sha256=checksum, seed=seed, initial_sha256=initial)
+    assert calculated[0] != float(saved["tokenizer.fe_gain"])
+    assert torch.equal(model.tokenizer.fe_gain, saved["tokenizer.fe_gain"])
+    assert state_sha256(model.state_dict()) == initial
+    assert torch.equal(torch.get_rng_state(), rng)
+    # Every reference parameter was deliberately changed by _reference.
+    assert all(not torch.equal(p, saved[name]) for name, p in model.named_parameters())
+
+
+@pytest.mark.parametrize("drift", ["value", "shape", "dtype", "nan", "zero"])
+def test_restoring_gain_does_not_relax_the_initial_state_gate(tmp_path, drift):
+    path, _, initial = _reference(tmp_path)
+    state = torch.load(path, weights_only=False)
+    gain = state["teacher"]["tokenizer.fe_gain"]
+    if drift == "value":
+        gain = gain + 1e-9
+    elif drift == "shape":
+        gain = gain.reshape(1)
+    elif drift == "dtype":
+        gain = gain.float()
+    elif drift == "nan":
+        gain = gain.new_tensor(float("nan"))
+    else:
+        gain = gain.new_zeros(())
+    state["teacher"]["tokenizer.fe_gain"] = gain
+    torch.save(state, path)
+    with pytest.raises(ValueError):
+        initial_teacher(path, reference_sha256=sha256_file(path), seed=0, initial_sha256=initial)
+
+
+@pytest.mark.parametrize("seed", [0, 1])
 def test_reconstruction_matches_one_thread_history_and_restores_parallelism(tmp_path, seed):
     previous = torch.get_num_threads()
     try:

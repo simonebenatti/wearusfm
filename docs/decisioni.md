@@ -2668,3 +2668,19 @@ Tranche immediata: GPT diagnosi/test baseline e review; Claude protocolloGPU/dat
 Sonde separate ancora in attesa come da registroClaude12585fd; nessun lancio implicito. SCRATCH entro22/10 coordinato daClaude.
 Un writer per file, passaggio harness limitato ed esclusivo prima delle modifiche, ledger/submitter comuni. Firma finale di default,
 configurazioni e budget resta di Simone; la numerazione non altera soglie, budget, autorizzazioni di job o campagne gia' congelate.
+
+### Punto 2: guadagno fisso storico e prosecuzione r3 (GPT, 14/10/2026)
+
+Richiesta corrente di Simone: «diagnosi della baseline (2) e review del trainer/monitor (3-4). PROCEDI!». Diagnosi di supportoClaude
+60561493, codice977e767, conclusa in48s: entrambe le inizializzazioni ritrovate esattamente con ab_replica/sklearn_first; unico tensore
+discordante nelle altre varianti tokenizer.fe_gain, nessun parametro. Risultato aggregato in results/passo6/diag_initial_20261014.json.
+
+La ricostruzione recupera dal riferimento protetto per hash il SOLO guadagno fisso non appreso del tokenizer, oltre ai quattro buffer
+keep gia' previsti. Ogni parametro da seed, goldenSHA completi invariati, nessun caricamento di state_dict appreso o tolleranza.
+38testCPUpertinentiPASS; nuovo gate reale ancora da osservare. Questa e' una correzione della ricostruzione tecnica, non dell'esperimento.
+
+Prosecuzione del controllo gia' autorizzato con checkout/output/IDr3 nuovi dopo preflight: 2extractP1cap28min, 2extractP2cap60min,
+1GPU/8CPU/100GiB ciascuno; 2groupCPUcap3h55, 8CPU/30GiB, quattro probe identici e timeout2h/seme. afterok come da protocollo.
+MassimoGPUr3=2,933333h; sommando r1+r2(119s) E diagnosticaClaude(48s): **2,979722GPUh entro3autorizzate**. GroupCPU62,6667coreh,
+checkoutCPU2x10min=0,3333coreh, piccoli consuntivi precedenti: complessivo<64coreh. Nessuna submitr3 prima di questo commit.
+Riferimento operativo docs/step1_random_downstream.md; nessun nuovo training, budget aggiuntivo, soglia o cambio delle sonde.

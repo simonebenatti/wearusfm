@@ -11,8 +11,10 @@ Due inizializzazioni, seed modello 0 e 1, identiche a quelle dei quattro run gia
 Architettura completa identica, inclusa la testa keep non usata dal readout; **zero update**, nessun optimizer,
 forward di training o EMA. Non caricare state_dict appresi nel nuovo modello.
 
-`initial_teacher` legge dal checkpoint A finale, verificato prima e dopo per SHA, SOLO la configurazione
-e quattro buffer immutabili di calibrazione della testa keep. I pesi della testa e dell'encoder sono
+`initial_teacher` legge dal checkpoint A finale, verificato prima e dopo per SHA, SOLO la configurazione,
+quattro buffer immutabili di calibrazione della testa keep e il guadagno fisso `tokenizer.fe_gain`.
+Quest'ultimo viene calcolato una volta alla costruzione, non e' un parametro ottimizzato e l'EMA lo copia senza modificarlo.
+I pesi della testa e dell'encoder sono
 ricreati dal seed; il buffer non entra nel pooling P1/P2. Il controllo SHA sull'INTERO stato ricostruito
 dimostra che tutti i valori coincidono con il teacher prima del primo update, compresi quei buffer:
 
@@ -26,7 +28,8 @@ quelli congelati in `scripts/step1_downstream.py`. Il nuovo `.pt` e' un artefatt
 marcato `untrained_random_encoder`, privo di student/optimizer per impedirne il resume come training.
 CPU RNG ripristinato dopo costruzione; CUDA RNG non toccato.
 La costruzione avviene con un thread CPU, come `step1_ab_train.sbatch` storico: il guadagno fisso del tokenizer e' sensibile
-all'ordine delle riduzioni float64. Si ripristina poi il numero di thread precedente per l'estrazione. Lo SHA completo resta obbligatorio.
+all'ambiente numerico oltre che all'ordine delle riduzioni float64. Il guadagno viene ripristinato dal valore storico verificato,
+non ricalcolato con una tolleranza. Si ripristina poi il numero di thread precedente per l'estrazione. Lo SHA completo resta obbligatorio.
 
 ## Estrazione e sonde
 
@@ -55,16 +58,16 @@ senza tuning su test. UCI-EMG e DB3 non esclusi.
 ## Risorse e dipendenze autorizzate
 
 Quattro extract (P1/P2 × seed0/1) e quattro probe CPU. Dal14/10, per il limite di dieci sottomissioni CPU per utente,
-le quattro sonde sono raggruppate in **due job da quattro ore**, uno P1 e uno P2: stessa sonda e stessi report,
+le quattro sonde sono raggruppate in **due job**, uno P1 e uno P2 (cap r3: 3 h 55 min): stessa sonda e stessi report,
 due ore massime per seme tramite GNU timeout. Il job P1 dipende da entrambi gli extract P1; il job P2 dipende
 da entrambi gli extract P2 e dal job P1, e il suo ultimo probe esegue anche il confronto. Stesso `submit_job.py` sotto lock,
 ID logico distinto per task/seed/stage; nessuna submit diretta fuori meccanismo comune.
 
 | Fase | Risorse/job | Walltime/job | Numero | Tetto |
 |---|---|---|---:|---|
-| Extract P1 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 29 min (override dopo il fix) | 2 | 0,9667 GPUh |
+| Extract P1 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 28 min (override r3) | 2 | 0,9333 GPUh |
 | Extract P2 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 1 h | 2 | 2 GPUh |
-| Probe raggruppati per task + confronto nell'ultimo | 8 CPU, 30 GB, lrd_all_serial | 4 h (2 h per seed) | 2 | 64 core-ora CPU |
+| Probe raggruppati per task + confronto nell'ultimo | 8 CPU, 30 GB, lrd_all_serial | 3 h 55 min (timeout 2 h per seed invariato) | 2 | 62,6667 core-ora CPU |
 
 Tetto complessivo **3 GPUh = 24 ore locali GPU + 64 core-ora CPU**. Primo tentativo del14/10 fermato correttamente dal gate
 iniziale, senza feature:65s totali =0,018056 GPUh. Dopo la correzione dell'ambiente di costruzione, cap nuovi extract
@@ -97,3 +100,33 @@ storico. Riprodotto sulla CPU per entrambi i semi: l'unica differenza e' `tokeni
 Ripristinato il contesto di costruzione storico; poi thread e RNG vengono ripristinati. Nessun parametro appreso caricato, nessuna
 tolleranza o sostituzione degli SHA. Nuovo ref/checkout/output `step1-random-20261014-r2` / `step1_random_20261014_r2`;
 verifica locale della correzione prima della sottomissione, cap ridotti per rispettare il budget cumulativo. Nessun ritocco scientifico.
+
+### Diagnosi residua e ricostruzione del buffer storico (14/10/2026)
+
+Anche r2 e' fallito: il solo thread CPU non ricostruiva il buffer sul cluster. La diagnostica di Claude60561493, checkout977e767,
+ha confrontato cinque processi nuovi per ciascuno dei due semi. Le varianti `ab_replica` e `gpt_like_env8_sklearn_first` ritrovano
+esattamente i quattro SHA iniziali A/B student/teacher; le altre no. L'UNICO tensore diverso e' `tokenizer.fe_gain`, non un peso appreso.
+Runtime Torch2.2.0a0+git6c8c5ad, Xeon8358. Non si attribuisce il risultato al solo numero di thread o alla CPU login/Booster.
+
+La correzione recupera solo quel buffer immutabile dal checkpoint di riferimento protetto per hash, oltre alle quattro statistiche
+keep gia' previste. Il modello continua a ricreare OGNI parametro dal seed e a verificare lo SHA dell'INTERO stato prima delle feature.
+Schema del buffer (forma/dtype), finitezza e positivita' obbligatori; drift del valore o di qualunque parametro non puo' superare lo SHA
+iniziale. Nessun caricamento di state_dict appreso, cambio di SHA, tolleranza o cambio dell'esperimento/probe.
+Test nuovi: entrambi i semi con arrotondamento simulato diverso, nessun parametro appreso importato; rifiuto di cinque tipi di drift.
+La correzione locale non equivale ancora al passaggio del gate nei nuovi extract reali: quello si registra separatamente.
+
+### Tranche r3 dopo diagnosi e correzione verificata (14/10/2026)
+
+Prosecuzione del controllo gia' autorizzato, richiesta corrente di Simone: «diagnosi della baseline (2) e review del trainer/monitor
+(3-4). PROCEDI!». Nessuna nuova analisi/sonda o cambio di soglia. Checkout/output NUOVI `step1-random-20261014-r3` /
+`step1_random_20261014_r3`; codice dal commit che pubblica questa correzione. Ledger e preflight freschi obbligatori, nessun retry cieco.
+
+Consuntivi prima del r3: r1 65 s, r2 54 s = 119 s = 0,033056 GPUh. Diagnosi separata di Claude, autorizzata tramite lui: 48 s =
+0,013333 GPUh. Contandola conservativamente nello stesso cap: 167 s gia' consumati. Quattro nuovi extract con i cap della tabella
+(2x28min +2x60min = 176min) portano il massimo cumulativo a **2,979722 GPUh**, entro3; nessun aumento del budget richiesto.
+Le quattro sonde restano identiche, raggruppate in due job3h55 (timeout per seme7200s invariato): massimo62,6667coreh; checkoutCPU
+nuovo, cap reale2CPUx10min=0,3333coreh, piu' piccoli consuntivi precedenti: totale inferiore64coreh. Riserva di coda/timeout, non tuning.
+
+Si sottomettono sotto lock il checkout, quattro extract e due gruppi afterok; P1group dopo i due extractP1, P2group dopo i due extractP2
+e P1group, ultimo probe con confronto. Una risposta ambigua si riconcilia. Il gate completo e la nuova provenienza vengono verificati
+prima di dichiarare la baseline tecnicamente valida; sonde/risultati non si dichiarano finiti dalla sola sottomissione.

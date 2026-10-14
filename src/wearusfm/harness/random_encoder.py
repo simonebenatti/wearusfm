@@ -10,16 +10,20 @@ from wearusfm.training.spectral_calibration import sha256_file
 # These are fixed calibration buffers, not optimized parameters. The full state
 # hash below proves that even these equal their values before the first update.
 CALIBRATION_BUFFERS = ("target_mean", "target_std", "target_active", "stats_fitted")
+FRONTEND_GAIN_BUFFER = "tokenizer.fe_gain"
 
 
 def initial_teacher(reference, *, reference_sha256, seed, initial_sha256):
     """Return a CPU, frozen initial model and config from a hash-checked template.
 
     Only architecture and immutable calibration buffers are read from the
-    trained checkpoint. No state_dict load, optimizer, forward or EMA update.
-    Historical training constructed the model with one CPU thread. The
-    tokenizer's fixed float64 gain depends on reduction order, so reproduce
-    that environment, then restore inference parallelism and CPU RNG.
+    trained checkpoint: four keep statistics and the fixed front-end gain.
+    No state_dict load, optimized parameter, optimizer or EMA update is reused.
+    Historical training constructed the model with one CPU thread. Recreate
+    its parameters there, then restore inference parallelism and CPU RNG.
+    Gain recalibration also depends on the numerical import/runtime state:
+    restore this immutable scalar verbatim before checking the FULL initial
+    state hash, rather than accepting a tolerance or changing the golden hash.
     Do not touch CUDA RNG or initialize CUDA.
     """
     if sha256_file(reference) != reference_sha256:
@@ -36,6 +40,18 @@ def initial_teacher(reference, *, reference_sha256, seed, initial_sha256):
             model = WearUsFM(FMConfig(**cfg["model"]))
     finally:
         torch.set_num_threads(threads)
+    # Registered, non-trainable buffer: computed once during construction,
+    # never optimized/recalibrated by training; EMA copies student buffers.
+    # Diagnostic 60561493 isolated this scalar as the sole runtime-dependent
+    # difference for BOTH historical seeds. All parameters still come from RNG.
+    gain = state["teacher"][FRONTEND_GAIN_BUFFER]
+    target_gain = model.tokenizer.fe_gain
+    if not isinstance(gain, torch.Tensor) or gain.shape != target_gain.shape or gain.dtype != target_gain.dtype:
+        raise ValueError("fixed front-end gain buffer schema changed")
+    if not bool(torch.isfinite(gain)) or not bool(gain > 0):
+        raise ValueError("fixed front-end gain buffer must be finite and positive")
+    with torch.no_grad():
+        target_gain.copy_(gain)
     if model.spectral_keep is not None:
         with torch.no_grad():
             for name in CALIBRATION_BUFFERS:
