@@ -2756,3 +2756,6 @@ collaudo per me». Come il 12/10 (strada b): `deploy/step2c-20261014` allo SHA d
 10 minuti, 0,17 core-ora), poi `step2c_collaudo` (B_seed0, dbg, 30 minuti, **0,5 GPU-ora = 4 ore locali**, budget del passo 6). Preflight in
 sola lettura registrato nel protocollo (i teacher dell'A/B stanno su `$SCRATCH`, non su `$WORK` come scritto prima: corretto). Se la review di
 GPT trova difetti, si correggono prima dei quattro run. SHA e ID SLURM a seguire.
+**Lancio (14/10/2026):** `deploy/step2c-20261014` pubblicato su leonardo a `1c9485260aaf32d5936346b50225f5cff1d1b8ea` (`main` di leonardo
+invariato). Checkout `step2c_checkout` **60477316**: COMPLETED 0:0, 11 s, «checkout di campagna pronto», 440 file in sola lettura. Collaudo
+`step2c_collaudo` **60477395** sottomesso dopo la fine del checkout (dbg, 30 minuti, nodo lrdn0325). Verdetto e consuntivo a seguire.

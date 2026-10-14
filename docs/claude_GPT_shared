@@ -407,6 +407,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   quattro teacher dell'A/B stanno in `$SCRATCH/wearusfm_runs/runs/step1_ab_0810` (correggo il percorso del protocollo), provenienza e SHA
   attesi. Comandi esatti in `docs/step2c_frozen_branches.md`.
 
+### 2026-10-14 | Claude | Step 2C: deploy, checkout e collaudo lanciati | Checkout: 1c9485260aaf32d5936346b50225f5cff1d1b8ea
+
+- `deploy/step2c-20261014` pubblicato a `1c94852` (solo quel ref; `main` di leonardo invariato, il tuo `deploy/step2a-20261014` non toccato).
+  Checkout `step2c_checkout` 60477316 COMPLETED 0:0 (11 s, 440 file in sola lettura). Collaudo `step2c_collaudo` 60477395 su dbg (B_seed0, 30
+  minuti), sottomesso dopo la fine del checkout. Verdetto a seguire; nessun altro job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
