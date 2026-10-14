@@ -21,14 +21,26 @@ GPU=(-p boost_usr_prod --qos=boost_qos_lprod --gres=gpu:1 --cpus-per-task=8 --me
 LAST=""
 N=0
 
-sub() {  # submit_job.py con gli argomenti dati; LAST = ID SLURM del job sottomesso
+sub() {  # sub <ID logico> <argomenti di submit_job.py>; LAST = ID SLURM del job. Riprendibile: un ID gia' sottomesso si riusa (non si
+  # risottomette), uno rifiutato da sbatch si risottomette con --dopo-rifiuto (stato letto dal registro di submit_job.py)
+  local id="$1"; shift
+  local st extra=()
+  st=$(python3 scripts/submit_job.py --stato "$id" | cut -f2,3)
+  case "$st" in
+    sottomesso*) LAST="${st#*$'\t'}"; echo "$id: gia' sottomesso, job $LAST (riusato)"; return 0;;
+    rifiutato*) extra=(--dopo-rifiuto);;
+    None*) ;;
+    *) echo "STOP: $id in stato $st"; exit 1;;
+  esac
   if [ "${DRY:-0}" = "1" ]; then
     N=$((N + 1)); LAST="DRY$N"
-    echo "python3 scripts/submit_job.py $*"
+    echo "python3 scripts/submit_job.py --id $id ${extra[*]+${extra[*]}} $*"
     return 0
   fi
   local out
-  if ! out=$(python3 scripts/submit_job.py "$@" 2>&1); then echo "$out"; echo "STOP: submit_job.py uscito con errore"; exit 1; fi
+  if ! out=$(python3 scripts/submit_job.py --id "$id" ${extra[@]+"${extra[@]}"} "$@" 2>&1); then
+    echo "$out"; echo "STOP: submit_job.py uscito con errore"; exit 1
+  fi
   echo "$out"
   case "$out" in
     *": sottomesso, job "*) LAST="${out##*job }";;
@@ -42,11 +54,11 @@ extract_id() {  # ID logico dell'estrazione di cui dipendono le sonde di <task>_
 
 EXT_FINAL=""
 for T in p1 p2; do
-  TIME=01:30:00
+  TIME=03:00:00  # P1: ~54 min per modello misurati sulla CPU di lrd_all_serial (60491778), due modelli
   if [ "$T" = p2 ]; then TIME=03:00:00; fi
   for A in B_seed0 B_seed1 A_seed0 A_seed1; do  # prima la famiglia B
     case "$KEEP" in *" ${T}_$A "*) continue;; esac
-    sub --id "step2c_gextract_${T}_$A" --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 -- "${GPU[@]}" --time=$TIME --export="$EXP" \
+    sub "step2c_gextract_${T}_$A" --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 -- "${GPU[@]}" --time=$TIME --export="$EXP" \
       "$C/scripts/slurm/step2c_extract.sbatch" "$T" "$A" "$RUNS" "$BR" "$DOWN" "$EVAL"
     if [ "$T" = p2 ] && [ "$A" = B_seed1 ]; then EXT_FINAL="$LAST"; fi
   done
@@ -61,7 +73,7 @@ for T in p1 p2; do
       if [ "$T" = p2 ]; then
         if [ "$V" = main ]; then TIME=03:00:00; else TIME=02:30:00; fi
       fi
-      sub --id "step2c_gprobe_${T}_${A}_$V" --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 --dopo "$(extract_id "${T}_$A")" -- \
+      sub "step2c_gprobe_${T}_${A}_$V" --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 --dopo "$(extract_id "${T}_$A")" -- \
         "${GPU[@]}" --time=$TIME --export="$EXP" "$C/scripts/slurm/step2c_probe.sbatch" "$T" "$A" "$VARS" "$RUNS" "$BR" "$DOWN" "$EVAL"
       DEPS="$DEPS:$LAST"
     done
@@ -69,7 +81,7 @@ for T in p1 p2; do
 done
 FINAL_EXP="$EXP,COMPARE=1"
 if [ -n "${STEP2A:-}" ]; then FINAL_EXP="$FINAL_EXP,STEP2A=$STEP2A"; fi
-sub --id step2c_gprobe_p2_B_seed1_main --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 -- "${GPU[@]}" --time=03:30:00 \
+sub step2c_gprobe_p2_B_seed1_main --agente claude --campagna "$CAMPAIGN" --gpu-ore 1 -- "${GPU[@]}" --time=03:30:00 \
   --dependency="afterok:$EXT_FINAL$DEPS" --export="$FINAL_EXP" "$C/scripts/slurm/step2c_probe.sbatch" p2 B_seed1 RPW,RPW0 \
   "$RUNS" "$BR" "$DOWN" "$EVAL"
 echo "catena sottomessa sui nodi GPU (confronto nell'ultimo job)"

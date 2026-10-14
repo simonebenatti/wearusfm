@@ -2819,3 +2819,10 @@ partizione. Si annullano i 9 job CPU ancora in attesa (7 estrazioni, le 2 sonde 
 confronto 3,5 h: **tetto 57 GPU-ora (456 ore locali)**, stima ~38 (estrazioni ~8, sonde ~30). Budget del passo 6: ~33,08 usate prima del 2C
 secondo la bozza di GPT (da riconciliare), piu' 2,91 del 2C finora e il tetto di 3 della baseline casuale di GPT: anche nel caso peggiore
 ~96 su 100. CPU: l'estrazione 60491778 (al piu' 1,5 h x 8 CPU = 12 core-ora).
+**Catena su GPU, prima tornata (14/10/2026):** Simone ha annullato dal suo terminale i 9 job CPU in attesa (il permesso di `scancel` era
+negato all'agente). L'estrazione CPU P1/A_seed0 60491778 e' finita in **TIMEOUT** dopo 1 h 33 min: ~54 min per modello sulla CPU di
+`lrd_all_serial` (modello allenato completo, passo 0 a 2 dataset su 3), quindi le sue sonde sono state rifiutate da sbatch («Job dependency
+problem»). Sottomessi 11 job: 7 estrazioni GPU `step2c_gextract_*` 60505198-60505204 (partite alle 14:42; P1 con 1,5 h, a rischio se la CPU
+dei nodi GPU e' lenta come quella di `lrd_all_serial`) e le 4 sonde P1 di B 60505205-60505208. Lo script, ora riprendibile (riusa gli ID gia'
+sottomessi, risottomette i rifiutati con `--dopo-rifiuto`; estrazioni P1 nuove con 3 h), completera' la catena dopo che Simone avra' tolto la
+cartella parziale `step2c_1410/p1/A_seed0` (un'estrazione vuole cartelle nuove).
