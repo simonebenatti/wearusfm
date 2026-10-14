@@ -112,10 +112,21 @@ class RunConfig:
     # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e loro teste, col solo
     # termine dei rami sul readout (`jepa.branch_weight` > 0, `jepa.keep_weight` = 0)
     freeze_encoder: bool = False
+    # diagnostiche della stabilita' (GPT e Claude, 14/10/2026, dopo il collaudo dello step 2C; Simone: «implementa i punti 1 e 2»). Non cambiano
+    # il training (RNG, pesi e metriche del passo restano bit per bit quelli di un run senza):
+    # - ogni `fixed_eval_every` aggiornamenti (0 = spenta), e al passo 0 di un run nuovo, le loss del training su un insieme FISSO di
+    #   `fixed_eval_batches` batch del training (generatore proprio), senza gradiente e in eval, in `fixed_eval.jsonl`: una salita li' e'
+    #   regressione del modello, non composizione dei batch;
+    # - `log_batch_origin`: in `metrics.jsonl` l'origine di ogni finestra ("origin": [sessione, trial, inizio]; le sessioni, nell'ordine del
+    #   manifest, in `origin_sessions.json`), per legare le oscillazioni della loss ai dati.
+    fixed_eval_every: int = 0
+    fixed_eval_batches: int = 8
+    log_batch_origin: bool = False
 
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
-_LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False}
+_LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
+                   "log_batch_origin": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5}
 
 
@@ -396,6 +407,8 @@ def _merge_records(parts: list[dict]) -> dict:
     la massima (il passo aspetta il processo piu' lento), con la media a parte; la durata del passo e' la massima. Le loss non passano di qui:
     sono somme e conteggi globali (`_accumulate_terms`)."""
     out = dict(parts[0])
+    if "origin" in parts[0]:  # le finestre di tutti i processi, nell'ordine dei rank
+        out["origin"] = [o for p in parts for o in p["origin"]]
     out["windows"] = sum(p["windows"] for p in parts)
     out["skipped_sessions"] = sum(p["skipped_sessions"] for p in parts)
     out["virtual"] = sum(p["virtual"] for p in parts)
@@ -568,6 +581,64 @@ def _to_device(inp, visible, rvq_on, device):
 
 
 BRANCH_CALIBRATION_SEED = 4242
+FIXED_EVAL_SEED = 5151
+
+
+def _session_key(row: dict) -> str:
+    return f"{row['dataset']}/{row['subject']}/{row['session']}"
+
+
+def _write_or_check(path: Path, obj, what: str) -> None:
+    """Scrive `obj` (JSON) in un run nuovo; alla ripresa deve coincidere con quello gia' scritto."""
+    if path.exists():
+        if json.loads(path.read_text()) != obj:
+            raise ValueError(f"{what} diverso da quello del run ({path}): per cambiarlo serve un run nuovo")
+        return
+    path.write_text(json.dumps(obj))
+
+
+def _fixed_eval_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
+    """L'insieme fisso della diagnostica di stabilita': `fixed_eval_batches` batch del training (stessa distribuzione) da un generatore proprio,
+    come il batch delle diagnostiche (lo stream dei batch del training non cambia), e la sua identita': sessione, trial, inizio e fine di ogni
+    finestra."""
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+    rng = np.random.default_rng([cfg.seed, FIXED_EVAL_SEED])
+    batches = [loader.batch(min(cfg.batch_size, 32), rng) for _ in range(cfg.fixed_eval_batches)]
+    windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
+               for b in batches for r, w in zip(b.rows, b.windows)]
+    return batches, {"seed": [cfg.seed, FIXED_EVAL_SEED], "windows": windows}
+
+
+def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
+    """Le loss del training sull'insieme fisso, medie sui batch: la stessa funzione del passo (`readout_objectives` a encoder congelato,
+    altrimenti `jepa_losses`), senza gradiente, studente e teacher in eval (niente dropout del muscolo: valori ripetibili). Lo stato casuale
+    di CPU e GPU torna quello di prima e i modi train/eval pure: il training prosegue bit per bit come senza questa diagnostica."""
+    sums, n = {}, 0
+    modes = (student.training, teacher.training)
+    student.eval()
+    teacher.eval()
+    devices = [torch.cuda.current_device()] if str(device).startswith("cuda") else []
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad(), amp:
+            for b in batches:
+                inp, visible, rvq_on = _to_device(*L.to_model_inputs(b), device)
+                if cfg.freeze_encoder:
+                    from wearusfm.model.spectral_branches import readout_objectives
+                    kb, met = readout_objectives(student, inp, b.anchor_targets, keep=False)["keep_branches"]
+                    losses = {"keep_branches": kb, **met}
+                else:
+                    codes_t = torch.from_numpy(RC.pack_codes(b.rvq_codes)).to(device) if b.rvq_codes is not None else None
+                    losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
+                                         kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                         rvq_codes=(lambda c, w, t=codes_t: t[c, w]) if codes_t is not None else None)
+                for k, v in losses.items():
+                    if torch.is_tensor(v) and v.numel() == 1:
+                        sums[k] = sums.get(k, 0.0) + float(v)
+                n += 1
+    finally:
+        student.train(modes[0])
+        teacher.train(modes[1])
+    return {"batches": n, **{k: v / n for k, v in sums.items()}}
 
 
 def _calibrate_branches(student: WearUsFM, cfg: RunConfig, index, scales: dict | None, window_s: dict | None, device) -> dict:
@@ -640,6 +711,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("branch_weight > 0 senza rami spettrali")
     if cfg.branch_calibration_batches < 1:
         raise ValueError("branch_calibration_batches almeno 1")
+    if cfg.fixed_eval_every < 0 or cfg.fixed_eval_batches < 1:
+        raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
     if cfg.freeze_encoder:
         if not cfg.model.spectral_branches or cfg.jepa.branch_weight <= 0 or cfg.jepa.keep_weight != 0:
             raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches, branch_weight > 0 e keep_weight 0 "
@@ -799,6 +872,16 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if ctx.is_main:  # diagnostiche solo sul processo 0
         val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
         val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
+    fixed = None  # diagnostiche della stabilita' (RunConfig.fixed_eval_every, log_batch_origin), solo sul processo 0 per i file
+    if ctx.is_main and cfg.fixed_eval_every:
+        fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
+        _write_or_check(out_dir / "fixed_eval_set.json", ident, "insieme fisso della diagnostica di stabilita'")
+    session_pos = {}
+    if cfg.log_batch_origin:
+        keys = [_session_key(r) for r in index.rows]
+        session_pos = {k: i for i, k in reversed(list(enumerate(keys)))}  # la prima posizione di ogni sessione
+        if ctx.is_main:
+            _write_or_check(out_dir / "origin_sessions.json", keys, "elenco delle sessioni dell'origine dei batch")
     if resume_state is not None and resume_state.get("stream") is None:
         say("checkpoint senza lo stato dello stream (codice precedente al 09/10/2026): la ripresa non ripete la sequenza dei batch")
     data = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, per_process, cfg.seed, scales, window_s,
@@ -810,6 +893,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                        # con i worker, gli array grandi viaggiano in memoria condivisa (`_to_shared` / `_from_shared`)
                                        collate_fn=_to_shared if num_workers > 0 else None)
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
+    fixed_log = (out_dir / "fixed_eval.jsonl").open("a") if fixed is not None else None
+
+    def fixed_eval(at_step: int) -> None:
+        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
+        fixed_log.flush()
+
+    if fixed is not None and resume_state is None:  # il punto di partenza della curva
+        fixed_eval(0)
     reason, it = "max_steps", iter(data)
     numerical_failure = False
 
@@ -913,6 +1004,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
         rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
         rec["virtual"] = sum(p != "full" for p in batch.presented or [])
+        if cfg.log_batch_origin:  # [sessione (posizione in origin_sessions.json), trial, inizio] per finestra
+            rec["origin"] = [[session_pos[_session_key(r)], None if w.trial is None else int(w.trial), int(w.start)]
+                             for r, w in zip(batch.rows, batch.windows)]
         if ctx.active:  # il record del passo dai record di tutti i processi, sul processo 0
             parts = [None] * ctx.world_size if ctx.is_main else None
             torch.distributed.gather_object(rec, parts, dst=0)
@@ -944,6 +1038,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if ctx.is_main:
             metrics.write(json.dumps(rec) + "\n")
             metrics.flush()
+        if fixed is not None and step % cfg.fixed_eval_every == 0:
+            fixed_eval(step)
         names = ()
         if cfg.schedule.kind == "wsd":  # D14: il checkpoint pre-decay e quelli della fase stabile da cui partono i rami
             names = (("checkpoint_predecay.pt",) if step == cfg.schedule.decay_start else ()) + \
@@ -959,6 +1055,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
     if metrics is not None:
         metrics.close()
+    if fixed_log is not None:
+        fixed_log.close()
     if ctx.is_main and (reason.startswith("allarme") or numerical_failure):
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     gpu_mem = torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None

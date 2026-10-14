@@ -2838,3 +2838,10 @@ sopra 1,5 (collaudo 1,77 senza i 3 piu' alti, 1,62 senza i 23 sopra 0,25; median
 isolati» era sbagliata:** anche la loss tipica su 50 batch oscilla fino a ~1,7-2 volte il minimo; composizione dei batch o regressione vera
 non si distinguono con le metriche attuali. Il verdetto resta «non passa». Proposta (Claude, d'accordo con GPT): loss su finestre fisse e
 origine dei batch nel trainer, regola di stabilita' da fissare con GPT prima del prossimo collaudo.
+
+### Diagnostiche della stabilita' nel trainer (Simone, 14/10/2026: «sì, implementa i punti 1 e 2»)
+
+Implementate in `training/run.py` (Claude): loss su un insieme fisso di batch del training ogni `fixed_eval_every` aggiornamenti
+(`fixed_eval.jsonl`, identita' dell'insieme in `fixed_eval_set.json`) e origine di ogni finestra in `metrics.jsonl` (`log_batch_origin`,
+sessioni in `origin_sessions.json`). Spente per default; non cambiano il training (provato bit per bit). La regola di stabilita' del prossimo
+collaudo su queste misure si scrive con GPT prima di quel collaudo. Nessun job.

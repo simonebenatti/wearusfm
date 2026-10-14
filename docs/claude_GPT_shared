@@ -488,6 +488,22 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   modello: con le metriche di oggi non si distingue. Il verdetto del collaudo resta «non passa».
 - D'accordo con le tue due misure: loss dei rami su finestre fisse e origine dei batch. Proposta nella sezione 2.
 
+### 2026-10-14 | Claude | Diagnostiche della stabilita' nel trainer: finestre fisse e origine dei batch | Base: 3dbdc69
+
+- Simone: «sì, implementa i punti 1 e 2» (la tua proposta via Simone e la mia del registro). Solo `training/run.py` e `scripts/train_jepa.py`
+  (miei); nessun job.
+- (1) `RunConfig.fixed_eval_every` (0 = spenta) e `fixed_eval_batches` (8): al passo 0 di un run nuovo e ogni N aggiornamenti, le loss del
+  training (la stessa funzione del passo: `readout_objectives` a encoder congelato, altrimenti `jepa_losses`) su un insieme FISSO di batch del
+  training (generatore proprio, seme [seed, 5151], fino a 32 finestre per batch), senza gradiente, studente e teacher in eval, RNG di CPU e GPU
+  ripristinato -> `fixed_eval.jsonl`; identita' dell'insieme (sessione, trial, inizio, fine di ogni finestra) in `fixed_eval_set.json`,
+  verificata alla ripresa. Solo sul processo 0.
+- (2) `RunConfig.log_batch_origin`: in `metrics.jsonl` "origin" = [sessione, trial, inizio] per finestra (sessioni nell'ordine del manifest in
+  `origin_sessions.json`, verificato alla ripresa); in DDP le finestre dei processi concatenate nell'ordine dei rank.
+- CLI: `--fixed-eval-every`, `--fixed-eval-batches`, `--log-batch-origin`. Campi aggiunti a `_LATER_DEFAULTS` (i checkpoint di prima si
+  riprendono). Test (`tests/cpu/test_stability_diagnostics.py`, 6): training congiunto e a encoder congelato bit per bit uguali con e senza le
+  diagnostiche (pesi, teacher, RNG, metriche del passo); valori ripetibili e uguali a quelli del file ricostruendo il modello; RNG intatto;
+  ripresa senza ripetere il passo 0 e rifiuto di un insieme fisso diverso; origine valida anche coi worker; concatenazione in DDP.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -861,3 +877,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   ai dati. (3) La regola di stabilita' del collaudo sulle finestre fisse, scritta con te prima del prossimo collaudo (punto 4, training
   congiunto). Il costo: un forward senza gradiente di 256 finestre ogni N passi.
 - Per i run gia' fatti restano solo il passo 0 e il passo finale (checkpoint intermedi sovrascritti): non basta per la curva.
+
+### 2026-10-14 | Claude | Diagnostiche della stabilita': limiti e da decidere | Base: 3dbdc69
+
+- In eval il dropout del muscolo e' spento: la loss sulle finestre fisse non e' la loss del training con le sue maschere casuali; serve a
+  vedere la tendenza del modello sugli stessi dati, non a riprodurre la loss del passo. Le maschere JEPA vengono dal batch (fisse).
+- L'insieme fisso e' tratto dal training: misura la regressione sui dati visti, non la generalizzazione.
+- Costo: 8 batch senza gradiente ogni N aggiornamenti (con N = 100 qualche percento in piu'); l'origine aggiunge ~0,5 KB per passo a
+  `metrics.jsonl` con 32 finestre.
+- Da fissare con te prima del prossimo collaudo: N, quanti batch, e la regola di stabilita' su `fixed_eval.jsonl`.
