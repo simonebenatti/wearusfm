@@ -346,6 +346,33 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Archivio e riproduzioni locali rigenerabili: /private/tmp/wearusfm-jepa-branches-review.OiST6p (review_frozen_weight.py,
   review_calibration.py). Aggiornato soltanto questo registro nel worktree GPT; bozze preesistenti non tracciate lasciate intatte.
 
+### 2026-10-14 | GPT | Via al 2A e preflight remoto ripristinato | Codice congelato: 3dba14c1176f9ac525aee0e851590ca7db4b4c39
+
+- Simone, dopo il blocco SSH: "ripristinato, vai". Autorizzata la prosecuzione del solo step2a_stats_v1: otto job CPU, tetto132 core-ora,
+  zero GPU, piu' checkout CPU1 core/2GiB/10min (massimo0,167 core-ora). Nessun training2C, variante aggiuntiva o retry autorizzato.
+- Preflight fresco di leonardo-ops del14/10 alle09:41:56 CEST: accesso riuscito; coda vuota, nessun job2A in sacct o registro locale;
+  canonico remoto8dad7e8 pulito, receive.denyCurrentBranch=updateInstead e nessun hook eseguibile. Ref deploy, checkout e output2A assenti.
+  Cache/provenienze P1/P2 dei due teacher coerenti; SHA fisici checkpoint verificati; dati DB2/3/6, EPN e UCI presenti; quota870,8G/1T.
+- Destinazione prevista: deploy/step2a-20261014, checkout $WORK/wearusfm_campaigns/step2a-20261014 e risultati esterni al codice in
+  $WORK/wearusfm_runs/results/passo6/step2a_20261014. Pubblicazione del solo ref di deploy, senza toccare main/origin o checkout attivi.
+  Sottomissione con prenotazione e registro comuni, dipendenze afterok; COMPARE=0 salvo ultimo job. ID e verifica finale a seguire.
+- Su domanda di Simone, ricontrollata anche la baseline encoder casuale: assegnata a GPT, NON conclusa. Protocollo, wrapper, modulo,
+  launcher e test restano bozze non tracciate nel worktree GPT; il protocollo stesso dice "nessun job lanciato" e il registro comune non
+  contiene lanci random. Nessun risultato da consegnare. Questo controllo separato non e' incluso negli otto job2A ne' nel loro tetto.
+
+### 2026-10-14 | GPT | Completamento della preparazione baseline encoder casuale | Protocollo: step1_random_downstream_4000_v1
+
+- Dopo il chiarimento sul lavoro rimasto incompleto, Simone: "eh, allora muoviti e completalo". Comunicato tetto3 GPU-ora+64 core-ora
+  CPU, piu' checkout CPU1core/2GiB/10min (0,1667 core-ora), separati dal 2A. Congelato il protocollo e registrato il via in decisioni.md.
+- Verificati wrapper, ricostruzione iniziale, sonde e launcher: nessun parametro appreso caricato; configurazione e quattro buffer
+  immutabili letti dal checkpoint di riferimento, intero stato verificato contro lo SHA del teacher prima del primo update. Due seed;
+  zero update/optimizer/EMA. Stato casuale CPU ripristinato, nessun reseed CUDA. Output distinto, senza possibilita' di resume training.
+- Encoder/sonde byte-identici alla campagna storica8dad7e8; filtro/pooling verificati via AST. Hash ingressi, etichette e soggetti
+  accoppiati; report appresi protetti dal checksum della comparison originale. Confronto Random->A/B descrittivo, nessuna soglia nuova.
+- 29 test CPU PASS (random_encoder, downstream_ab, p1_cross_subject, probe_p2), bash -n dei launcher PASS; review indipendente senza
+  blocker. Nessun training o modifica al codice di Claude. Preparati quattro extract GPU e quattro probe CPU, ultimo con confronto.
+  Risultati reali e ID SLURM non ancora disponibili a questa voce: il controllo NON e' dichiarato concluso prima delle sonde.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -659,3 +686,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Blocco operativo 2A: autenticazione SSH rifiutata il14/10. Prima del deploy servono accesso ripristinato e preflight remoto fresco
   (coda/accounting, ref/hook, checkout/output, input e quota); nessun lancio o retry alla cieca. Non modificare soglie o aggiungere
   controlli dopo i risultati: se il gate delle maschere ferma le statistiche, registrare l'esito e concordare il protocollo successivo.
+
+### 2026-10-14 | GPT | Ripristino accesso e limiti del lancio 2A | Codice congelato: 3dba14c
+
+- Blocco SSH precedente chiuso dal preflight fresco delle09:41:56 CEST. Restano valide le soglie e il gate sulle maschere; nessuna
+  adozione automatica dei rami in base ai risultati. Le due note di review del trainer/calibrazione restano a Claude e non sono eseguite
+  dal 2A, che riusa gli embedding storici e calcola statistiche fisse. Non incluso il successivo protocollo2C di b8aacd0.
+
+### 2026-10-14 | GPT | Limiti della baseline casuale prima del lancio
+
+- La preparazione era rimasta ferma e non committata durante il passaggio alle review: responsabilita' GPT, non errore tecnico
+  dimostrato del controllo. Ora validata, ma i test sintetici non sostituiscono le sonde P1/P2 reali.
+- Il codice richiede checkout pulito allo SHA atteso; non usare il worktree locale con bozze estranee. P2 extract richiede override1h;
+  ultimo probe deve dipendere dal proprio extract e dagli altri tre probe. Nessun riuso di output esistenti o retry automatico.

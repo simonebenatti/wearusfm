@@ -2567,3 +2567,15 @@ Regressioni trainer/sicurezza/WSD/replay rieseguite. Non e' la suite completa e 
 confrontare conteggi precalcolati/effettivi e coordinare mismatch/zero globali, ridurre metriche senza medie locali, fare un solo
 clipping/optimizer/EMA per batch effettivo ed estendere l'equivalenza gloo. Guardia del trainer DDP vero ancora accesa fino a quella
 consegna; no flip della guardia, collaudo CUDA, push o nuovo job in questa attivita'. Budget GPU invariato.
+
+## Baseline encoder casuale: via al completamento (14/10/2026)
+
+Simone, chiarito che la preparazione GPT non era ancora committata o eseguita: «eh, allora muoviti e completalo».
+Protocollo congelato `step1_random_downstream_4000_v1`, in `docs/step1_random_downstream.md`: due inizializzazioni storiche,
+zero aggiornamenti, stato iniziale ricostruito e verificato per SHA; identiche finestre, encoder, preprocessing e sonde del downstream.
+Confronti descrittivi accoppiati Random→A e Random→B, nessuna nuova soglia di adozione. Nessun peso appreso trasferito nel controllo.
+
+Tetto comunicato: **3 GPU-ora + 64 core-ora CPU**, dal passo6, separato dal 2A e dall'infrastruttura. Checkout CPU aggiuntivo:
+1 core,2GiB,10min, massimo0,1667 core-ora. Quattro extract GPU e quattro probe CPU, ultimo probe con confronto; dipendenze afterok,
+nessun retry automatico, nessuna modifica al protocollo dopo gli esiti. Preflight fresco e registro comune obbligatori.
+29 test CPU e review indipendente superati; nessuna misura reale disponibile al congelamento.
