@@ -325,6 +325,27 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   peso/alpha fissati su dati train prima degli esiti P1/P2, senza inventare ora un valore di peso_rami.
 - Nessun codice cambiato, test o job lanciato. Parere registrato solo sul branch GPT; nessuna firma di protocollo o adozione implicita.
 
+### 2026-10-14 | GPT | Review loss raw/rami e chiusura correzioni 2A | Snapshot: 3dba14c1176f9ac525aee0e851590ca7db4b4c39
+
+- Letti main (ancora 5030a19), CLAUDE.md e le nuove voci del registro Claude. Review su archivio congelato del commit; il successivo
+  b8aacd0 contiene il protocollo 2C, non incluso in questa approvazione. Nessuna modifica al codice di Claude, merge o push.
+- In jepa.py la separazione keep/keep_branches, pesi, numeratori e conteggi e' coerente col contratto. Un solo encode raw non mascherato;
+  spectral_step1.py e' invariato rispetto a 5030a19. I test coprono keep raw storica e percorso raw a branch_weight=0 bit per bit.
+- Verifiche GPT: 56 test mirati PASS (spectral_branches, jepa, spectral_step1, esclusi i due casi selezionati da "ddp"); poi il test
+  test_branches_one_process_accumulation_and_ddp_equal_the_global_batch PASS separatamente (gloo CPU, due processi e accumulo).
+  L'errore iniziale di sandbox su torch_shm_manager non era un difetto del codice; la riesecuzione autorizzata passa. Non rieseguita
+  tutta la suite884, nessuna prova CUDA/NCCL o su EMG reale. Due riproduzioni aggiuntive confermano i punti della sezione2.
+- Chiuse le tre richieste 2A in 6861907, presente nello snapshot: stop con maschere non costanti prima delle cache K/MS; verifica di
+  tutta l'identita' storica, compresi commit estrazione/training e provenienza checkpoint; teacher corretto nei report B_seed1.
+  Corretta anche la lettura scientifica (utilita' per la sonda lineare, non prova di informazione assente). test_step2a.py: 15 PASS.
+- Simone ha affidato il 2A a GPT ("il 2A quindi lo lascio a te"). Restano invariati protocollo step2a_stats_v1, soglie, otto job CPU,
+  tetto132 core-ora e0 GPU-ora; eventuale checkout CPU separato:1 core,2GiB,10min massimo (0,167 core-ora). Non include 2C o nuovi training.
+- Preflight tramite leonardo-ops: al14/10 nessuna voce/stato/lock2A nel registro locale. Il controllo remoto fresco fallisce per
+  Permission denied (publickey,gssapi-keyex,gssapi-with-mic). Non pubblicati deploy, creati checkout o sottomessi job da GPT.
+  La fotografia remota del13/10 (cache/provenienze presenti, coda vuota, quota~870,8G/1T) non sostituisce un nuovo controllo prima del lancio.
+- Archivio e riproduzioni locali rigenerabili: /private/tmp/wearusfm-jepa-branches-review.OiST6p (review_frozen_weight.py,
+  review_calibration.py). Aggiornato soltanto questo registro nel worktree GPT; bozze preesistenti non tracciate lasciate intatte.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -620,3 +641,21 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La separazione dei pesi risolve l'omissione della keep raw, ma i rami continuano a predire statistiche gia' molto accessibili dal loro
   ingresso spettrale. Non prova complementarita' temporale o utilita' downstream. Un nuovo obiettivo self-supervised va definito/versionato
   a parte, senza cambiare in corsa il test2A o attribuire alla sola correzione risultati non misurati.
+
+### 2026-10-14 | GPT | Due punti nel percorso rami; 2A non bloccato dal codice | Snapshot: 3dba14c
+
+- P2, training/run.py:850-853: con freeze_encoder il totale e' kb, senza moltiplicazione per cfg.jepa.branch_weight. Il parametro e'
+  accettato e registrato, ma non controlla il backward. Riproduzione sul trainer reale con dati sintetici, seed e checkpoint identici:
+  branch_weight0,01 e1 danno entrambi total=keep_branches=0,8846452832221985 e grad_norm=0,22516082227230072. Applicare il peso al
+  totale nel percorso frozen, con test che confronti totale e gradienti prima del clipping; in alternativa dichiarare esplicitamente
+  peso fisso1 e rifiutare valori diversi in questa modalita'. Non ignorare silenziosamente il nuovo parametro. Non riguarda il 2A.
+- P2, model/spectral_branches.py:412-414, guardia da completare: uguaglianza di target_active garantisce gli stessi target validi e
+  conteggi, NON l'intera calibrazione. Con target_active identico ma target_mean della testa PSD spostato di100, readout_objectives
+  accetta il modello e la loss passa da0,4588731 a3357,3672. Il trainer fresco calibra normalmente le teste insieme: non e' evidenza di
+  calibrazione errata nei run ordinari. Per garantire il contratto dichiarato, verificare anche target_mean/target_std/stats_fitted
+  in preparazione/caricamento e aggiungere test di rifiuto delle divergenze (non serve ripetere il controllo costoso a ogni passo).
+- Esito: jepa.py e il contratto additivo verificati nei casi testati; prima del training frozen correggere il peso e completare la
+  guardia di calibrazione. Il 2A non usa questo trainer ne' i rami allenati: la sua review e' chiusa, senza richiedere queste patch.
+- Blocco operativo 2A: autenticazione SSH rifiutata il14/10. Prima del deploy servono accesso ripristinato e preflight remoto fresco
+  (coda/accounting, ref/hook, checkout/output, input e quota); nessun lancio o retry alla cieca. Non modificare soglie o aggiungere
+  controlli dopo i risultati: se il gate delle maschere ferma le statistiche, registrare l'esito e concordare il protocollo successivo.
