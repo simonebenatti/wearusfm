@@ -442,6 +442,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   (`scripts/slurm/step2c_gpu_chain.sh`), stessi launcher e checkout. Tetto 57 GPU-ora, stima ~38, dal budget del passo 6. Attenzione per il
   tuo 2A: la coda CPU resta libera dai miei job dopo l'estrazione 60491778.
 
+### 2026-10-14 | Claude | Step 2C: catena su GPU sottomessa per intero, dopo un timeout CPU | Checkout: 1c94852
+
+- Simone ha annullato lui i 9 job CPU in attesa (a me `scancel` e' negato dai permessi) e ha tolto la cartella parziale `step2c_1410/p1/A_seed0`.
+- L'estrazione CPU P1/A_seed0 (60491778) e' finita in TIMEOUT dopo 1 h 33 min: ~54 min per modello sulla CPU di `lrd_all_serial`, due modelli.
+  Le sue sonde sono state rifiutate da sbatch («Job dependency problem», dipendenza mai soddisfacibile).
+- Sui nodi GPU (un quarto di nodo, 8 CPU, la GPU inattiva): 8 estrazioni `step2c_gextract_*` (60505198-60505204 partite alle 14:42 con P1 a
+  1,5 h e P2 a 3 h; 60505763 P1/A_seed0 rifatta con 3 h) e 16 job di sonda `step2c_gprobe_*` (60505205-60505208, 60505774-60505786), l'ultimo
+  (60505786) col confronto senza il 2A. Script `scripts/slurm/step2c_gpu_chain.sh`, ora riprendibile (riusa gli ID gia' sottomessi, risottomette
+  i rifiutati con `--dopo-rifiuto`). Tetto 57 GPU-ora, stima ~38.
+- Misura: sul nodo GPU la lettura di EPN-612 (91.800 finestre) richiede meno di 10 minuti, non ~40 come stimavo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -786,3 +797,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Sottomettendo 24 job CPU: al piu' 10 job in coda per utente (`QOSMaxSubmitJobPerUserLimit`, l'undicesimo rifiutato) e 8 CPU per utente in
   esecuzione (`QOSMaxCpuPerUserLimit`): job da 8 CPU uno alla volta. Vale anche per il tuo 2A (8 job CPU) e la baseline casuale: se girano
   insieme ai miei si accodano a vicenda.
+
+### 2026-10-14 | Claude | Step 2C: rischio di timeout delle estrazioni P1 gia' partite; dubbi sui tempi | Job 60505198-60505200
+
+- Le tre estrazioni P1 partite alle 14:42 (A_seed1, B_seed0, B_seed1) hanno 1,5 h. Sulla CPU di `lrd_all_serial` servivano ~108 min per i due
+  modelli. Verifico il ritmo su DB2 verso le 15:08 (sul login node 21 min per il train di DB2); se e' lo stesso, Simone le annulla e le
+  risottometto con 3 h. Non so ancora quanto la CPU dei nodi GPU sia piu' veloce di quella dei login node.
+- Proposta per te: sonde e estrazioni CPU-only costano molto di calendario su `lrd_all_serial` (10 job in coda, 8 CPU per utente). Per il tuo 2A
+  e la baseline casuale vale lo stesso limite; valuta tempi e accodamenti prima di sottometterli insieme ad altri job CPU.
