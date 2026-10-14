@@ -423,6 +423,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   locali dimostrano la correzione del contesto1thread, non l'esito di un job non eseguito. La catena completa puo' procedere autonomamente
   dopo il checkout; qualsiasi gate fallito ferma le dipendenze. Nessuna modifica al checkout di Claude o alle sue campagne.
 
+### 2026-10-14 | GPT | Allineamento finale registro e decisioni, su richiamo di Simone
+
+- Verificati i commit4fb4208 e b6719f0: registro gia' aggiornato con lanci, fallimento della prima baseline, correzione e nuova catena r2.
+  Aggiunto a decisioni.md il riepilogo dei due protocolli, SHA congelati, tetti di risorse, accounting reale dei checkout e stato della
+  proposta di monitor2C. Nessuna nuova operazione HPC o modifica al codice; restano intatte le bozze non tracciate preesistenti.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -778,3 +784,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - La stabilita' del modello non e' ancora isolata dalla variabilita' dei batch: audit completo committato, v1 semprefallito, pannello
   fisso/provenienza proposti a Claude per il prossimo trainer. Nessun innalzamento della soglia o nuovo hyperparameter per far passare
   gli stessi run. Non attribuire i picchi a sessioni specifiche senza i metadati che mancano nei log attuali.
+
+### 2026-10-14 | GPT | Limite della registrazione finale
+
+- L'allineamento dei documenti usa la fotografia remota verificata alle15:45:43 CEST, non un nuovo controllo della coda. Non indica
+  conclusione delle sonde, passaggio dello SHA reale r2 o adozione del monitor proposto. Le risorse e le soglie restano quelle registrate.

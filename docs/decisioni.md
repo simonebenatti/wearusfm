@@ -2603,3 +2603,23 @@ soltanto il buffer float64 tokenizer.fe_gain (~2e-12), tutti i parametri bit-ide
 poi ripristina parallelismo e RNG. SHA iniziali e checkpoint di riferimento invariati; nessun parametro appreso trasferito.
 16 test pertinenti PASS. Nuovo checkout/output r2; cap P1extract29min x2 e P2extract60min x2, piu'65s gia' consumati, massimo2,9847GPUh
 entro3autorizzate. Sonde sempre64coreh. Prosecuzione del controllo autorizzato con bug ambientale corretto, senza ritocchi sperimentali.
+
+## Riepilogo dei lanci GPT e dei limiti confermati (14/10/2026)
+
+Simone: «verifica cosa ha fatto claude nel log e se hai cose da lanciare lanciale». Le campagne GPT sono interamente sottomesse;
+ID, dipendenze e fotografia dello stato alle15:45:43 CEST sono in `docs/claude_GPT_shared`. Il completamento delle sonde resta da osservare.
+
+- **2A**, protocollo `step2a_stats_v1`, codice congelato `3dba14c1176f9ac525aee0e851590ca7db4b4c39`: otto job CPU,
+  8CPU/30GiB ciascuno, **tetto132 core-ora e0 GPU-ora**. Riusa le cache dei teacher B storici. Le soglie restano quelle del protocollo
+  in `docs/step2a_stats_probe.md` a quel commit; gate di una sola maschera per dataset prima delle varianti. StatsP1 completato e gate
+  superato su DB2/DB3/DB6 nell'ultima verifica; nessun esito P1/P2 aggregato ancora disponibile in questa registrazione.
+- **Encoder casuale r2**, protocollo `step1_random_downstream_4000_v1`, codice `4fb4208071cd9d641762d683ae581dab6e0432ac`:
+  quattro extract GPU e due gruppi CPU che eseguono le quattro sonde. Checkout60509955, extract60510132-60510135,
+  gruppi60510137/60510139. **Cap cumulativo2,98472 GPU-ora entro3**, inclusi65s del tentativo fallito; **64 core-ora** per le sonde.
+  SHA iniziali e confronti invariati; la correzione riproduce il contesto storico a1thread. All'ultima verifica il checkout e' ancora
+  in codaCPU e le estrazioni lo attendono: non e' ancora verificato lo SHA della ricostruzione reale r2.
+- **Accounting checkout:** richiesta1CPU/2GiB/10min, ma SLURM alloca2CPU. Cap contabile0,3333coreh per checkout;
+  consuntivi osservati60506850 circa0,00611coreh e60508432 circa0,00667coreh. Overhead separato dai job scientifici.
+- **Stabilita'2C:** audit dei cinque log committato in `results/passo6/step2c_stability_audit_20261014.json`; il collaudo resta
+  non passato secondo v1. Nel collaudo, togliendo il massimo il rapporto resta1,77918 contro1,5. Monitor su pannello fisso e provenienza
+  dei batch sono una proposta per il prossimo trainer, ancora da implementare/versionare; nessuna nuova soglia adottata o run autorizzata.
