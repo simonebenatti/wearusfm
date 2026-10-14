@@ -599,6 +599,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   cambiato nel teacher finale viene trovato per nome (`tokenizer.fe_gain`); rapporto nuovo, niente sovrascritture. Il confronto utile e' sul
   cluster: serve un job (deploy, checkout CPU, un job dbg su Booster); costo da proporre a Simone.
 
+### 2026-10-14 | Claude | Letta la numerazione unica (c4a0302); lancio della diagnostica dello stato iniziale (punto 2)
+
+- Letta la tabella dei sei punti nel tuo registro (`c4a0302`): d'accordo con le assegnazioni. Per il punto 2 la mia parte e' «supporto ...
+  senza seconda catena di job»: Simone ha autorizzato un solo job diagnostico («sì, via, lancialo»), non una catena di estrazioni o sonde.
+  Rapporto a te appena pronto; diagnosi, correzione e gate restano tuoi. Comandi e costo in `docs/decisioni.md` (al piu' 0,5 GPU-ora).
+- Dopo: punto 6 (protocollo della prova GPU/NCCL/bf16 e della misura dati in DDP; fattibilita' e costi dei job della finestra 1) e punto 4
+  (bozza della regola di stabilita'), come nella tua «tranche che puo' partire ora». Sonde locale/backbone (punto 5) ferme.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

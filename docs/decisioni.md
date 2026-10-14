@@ -2878,3 +2878,21 @@ iniziale nel registro). 3. Integrazione su `main` dei commit del branch di Claud
 (implementato, `5f62444`): review GPT e regola prima del prossimo collaudo. 5. Validare l'obiettivo: bilanciamento dei gradienti, sonde
 temporali e fisiche, prima/dopo il bottleneck. 6. Chiudere la finestra 1: ablation, calibrazione LR/batch/K, attesa sui dati <= 2%,
 equivalenza NCCL/bf16, configurazioni, budget, piano dei job. Scadenza: rinfresco di `$SCRATCH` entro il 22/10.
+
+### Diagnostica dello stato iniziale per la baseline casuale (Simone, 14/10/2026: «sì, via, lancialo»)
+
+Punto 2 della numerazione unica (baseline casuale, di GPT; Claude in supporto). Un solo job diagnostico, non una seconda catena della baseline:
+`scripts/diagnose_initial_state.py` (commit `7d11afc`) su un nodo Booster in dbg, come il training dell'A/B e gli extract r2. Comandi:
+
+    git push leonardo <SHA>:refs/heads/deploy/diag-initial-20261014
+    python3 scripts/submit_job.py --id diag_initial_checkout --agente claude --campagna diag-initial-20261014 --gpu-ore 0 \
+      --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=diag-initial-20261014,CAMPAIGN_SHA=<SHA>
+    # dopo COMPLETED e «checkout di campagna pronto»:
+    python3 scripts/submit_job.py --id diag_initial_run --agente claude --campagna diag-initial-20261014 --gpu-ore 0.5 -- \
+      --export=ALL,CODE_DIR=$WORK/wearusfm_campaigns/diag-initial-20261014,EXPECTED_SHA=<SHA> \
+      $WORK/wearusfm_campaigns/diag-initial-20261014/scripts/slurm/diagnose_initial_state.sbatch \
+      /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_ab_0810 \
+      /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/diag_initial_20261014/report.json
+
+Costo: checkout 1 CPU 10 min (0,17 core-ora; SLURM ne alloca 2); diagnostica 1 A100 su dbg, 30 min: **al piu' 0,5 GPU-ora (4 ore locali)**,
+stima 5-10 min. Sola lettura dei run dell'A/B; rapporto in una cartella nuova. <SHA> = il commit che pubblica questi comandi.
