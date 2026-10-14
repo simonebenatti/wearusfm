@@ -830,11 +830,6 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if resume_state is not None and int(resume_state.get("world_size", 1)) != ctx.world_size:
         raise ValueError(f"ripresa con {ctx.world_size} processi da un checkpoint di {resume_state.get('world_size', 1)}: non prevista "
                          "(nessuna ripresa elastica, contratto punto 4)")
-    data_signature = json.loads(json.dumps(calibration_signature(cfg, manifest, scales, window_s)))  # registrata in ogni checkpoint
-    if resume_state is not None:
-        if branch is None:  # un ramo ha la sua guardia (_check_branch: cambiano solo schedule e max_steps)
-            _check_resume_recipe(cfg, resume_state)
-        _check_data_signature(resume_state, data_signature, say)
     calibration = None
     if cfg.model.keep_readout:
         if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
@@ -849,6 +844,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         reason = stop_file.read_text().strip()
         say(f"run fermato in precedenza ({reason}): nessun passo")
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
+    # ricetta e dati della ripresa (review GPT del 14/10/2026): dopo lo STOP, che vince su tutto, e prima di creare modelli o scrivere file
+    data_signature = json.loads(json.dumps(calibration_signature(cfg, manifest, scales, window_s)))  # registrata in ogni checkpoint
+    if resume_state is not None:
+        if branch is None:  # un ramo ha la sua guardia (_check_branch: cambiano solo schedule e max_steps)
+            _check_resume_recipe(cfg, resume_state)
+        _check_data_signature(resume_state, data_signature, say)
     if cfg.loader.multiscale_anchor != cfg.model.multiscale_anchor:
         raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):

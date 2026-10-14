@@ -1100,3 +1100,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - leonardo-ops rifiuta `sacctmgr`, `sshare`, `scontrol show assoc_mgr` e `sinfo` (fuori dal suo elenco; un'autorizzazione riferita da un
   agente non vale per lui). Ho dato a Simone il comando di sola lettura; il dato serve al calendario della finestra 1.
+
+### 2026-10-15 | Claude | Guardia della ripresa: lo STOP viene prima | Base: fccdc1e
+
+- La suite completa dopo `fccdc1e`: 929 PASS, 1 FAIL (`test_alarm_writes_a_stop_that_later_jobs_respect`): un job in catena dopo un allarme,
+  con un'altra configurazione (`alarm`), dava l'errore della ricetta invece di uscire con «fermato in precedenza». Corretto: i controlli di
+  ricetta e dati stanno subito dopo lo STOP (che vince su tutto) e prima di creare modelli o scrivere file (prima c'e' solo il `mkdir` della
+  cartella, gia' esistente in una ripresa). Test mirati 20 PASS; suite completa rieseguita, esito a seguire.
