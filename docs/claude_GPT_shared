@@ -429,6 +429,20 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   Aggiunto a decisioni.md il riepilogo dei due protocolli, SHA congelati, tetti di risorse, accounting reale dei checkout e stato della
   proposta di monitor2C. Nessuna nuova operazione HPC o modifica al codice; restano intatte le bozze non tracciate preesistenti.
 
+### 2026-10-14 | GPT | Stato dello schema JEPA e priorita' critiche
+
+- Confrontato lo schema di Simone col codice Claude3dbdc69 e main5030a19. Catena raw implementata; DDP4GPU30M collaudato,
+  WSD/ripresa esatti disponibili, memoria100M/300M misurata. Gli ultimi sviluppi sono sui branch/deploy e ancora da integrare su main.
+- Correzioni allo schema: Fourier/spline/MLP, proiezione direttamente aD384/640/896; PerceiverC->K64, backbone(B,P,K,D).
+  Teacher/studente sono copie complete; multiscala sulle ancore, query sulla griglia25ms. P1/P2 stesso readout2D;
+  PSD/wavelet paralleli alla vista completa/readout, spenti per default. Nessuna modifica architetturale in questa verifica.
+- Snapshot remoto readonly16:46 CEST:2AstatsP1/P2 eP1S/KCOMPLETED, P1B0RUNNING, altre sonde in attesa; sonde2C ancora attive,
+  nessun confronto finale2A/2C osservato. Claude concorda su monitor a finestre fisse e provenienza dei batch.
+- Tutti gli extract casuali r2FAILED ancora sullo SHA iniziale; gruppi cancellati, nessun risultato casuale. Il fixthread riprodotto
+  localmente non e' sufficiente sul cluster; serve diagnosi tensor-per-tensor. Nessun nuovo lancio o allentamento del gate.
+- Priorita': baseline casuale e chiusura2A/2C; monitor prima del congiunto; gradienti/obiettivi e sonde fisiche/pre-postbottleneck;
+  bracci mancanti, calibrazioneLR/batch/K, verificaattesa dati<=2%, lista/config/budget finestra1 e integrazione revisionata.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -789,3 +803,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - L'allineamento dei documenti usa la fotografia remota verificata alle15:45:43 CEST, non un nuovo controllo della coda. Non indica
   conclusione delle sonde, passaggio dello SHA reale r2 o adozione del monitor proposto. Le risorse e le soglie restano quelle registrate.
+
+### 2026-10-14 | GPT | Limiti di prontezza dello schema JEPA
+
+- La baseline r2 non passa sul cluster: i testCPU del fixthread non certificano i due SHA reali. Serve localizzare i tensori/buffer
+  discordanti conservando gli hash iniziali prescritti; nessun risultato casuale disponibile.
+- Il fallimento di stabilita' osservato riguarda i rami con raw congelato. I log non separano deriva e composizione dei batch;
+  monitor prospettico/provenienza ancora da implementare. Nessuna nuova soglia adottata.
+- Lista finestra1 ancora bozza non tracciata/non firmata: waveform/soli target espliciti, percorsi identita'/gating e sonde richieste
+  non risultano pronti. Memoria dei rung non equivale a collaudo lungo della configurazione finale. IPC ottimizzato,<=2% inDDP ancora
+  da confermare suGPU. Main ancora5030a19; le campagne congelate non vanno aggiornate in corsa.

@@ -2623,3 +2623,11 @@ ID, dipendenze e fotografia dello stato alle15:45:43 CEST sono in `docs/claude_G
 - **Stabilita'2C:** audit dei cinque log committato in `results/passo6/step2c_stability_audit_20261014.json`; il collaudo resta
   non passato secondo v1. Nel collaudo, togliendo il massimo il rapporto resta1,77918 contro1,5. Monitor su pannello fisso e provenienza
   dei batch sono una proposta per il prossimo trainer, ancora da implementare/versionare; nessuna nuova soglia adottata o run autorizzata.
+
+### Aggiornamento della baseline e della prontezza (14/10/2026, verifica16:46 CEST)
+
+I quattro extract casuali r2 sono FAILED sullo stesso gate SHA iniziale; le sonde dipendenti sono cancellate. La correzione locale
+dei thread non ha ancora ricostruito lo stato atteso sul cluster. Non esiste un risultato del controllo casuale e non si allentano
+gli SHA o si scelgono nuovi valori iniziali. La causa residua richiede diagnosi dei tensori/buffer; nessun rilancio in questa verifica.
+2A e sonde2C ancora in corso, senza confronto finale osservato. La scelta del default resta aperta. Il monitor di stabilita' su
+pannello fisso resta proposto, da implementare prima del training congiunto e congelare prima dei nuovi esiti.
