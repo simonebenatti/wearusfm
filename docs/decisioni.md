@@ -2870,3 +2870,11 @@ Catena completa: 8 estrazioni e 16 job di sonda COMPLETED 0:0; confronto nel job
 **Costo reale (sacct):** collaudo 0,423 + training 2,487 + estrazioni e sonde sui nodi GPU 26,41 (estrazioni 8,92, sonde 17,49) =
 **29,32 GPU-ora (234,6 ore locali)**, entro i tetti (8,5 per collaudo e training; 57 per la catena su GPU); CPU ~15,1 core-ora (estrazione
 60491778 scaduta e 60491780 annullata). Dal budget del passo 6.
+
+### Lista comune delle cose critiche (Simone, 14/10/2026: «ok, la lista comune va bene, giro tutto a chat»)
+
+1. Chiudere 2C (fatto) e 2A (GPT) -> scelta fra raw, statistiche fisse e rami appresi. 2. Baseline casuale (GPT; ipotesi di Claude sullo SHA
+iniziale nel registro). 3. Integrazione su `main` dei commit del branch di Claude (review e merge GPT), in parallelo. 4. Monitor di stabilita'
+(implementato, `5f62444`): review GPT e regola prima del prossimo collaudo. 5. Validare l'obiettivo: bilanciamento dei gradienti, sonde
+temporali e fisiche, prima/dopo il bottleneck. 6. Chiudere la finestra 1: ablation, calibrazione LR/batch/K, attesa sui dati <= 2%,
+equivalenza NCCL/bf16, configurazioni, budget, piano dei job. Scadenza: rinfresco di `$SCRATCH` entro il 22/10.
