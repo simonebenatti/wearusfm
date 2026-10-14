@@ -2831,3 +2831,5 @@ riusato gli 11 job gia' sottomessi e sottomesso i 13 mancanti: `step2c_gextract_
 (`step2c_gprobe_p1_A_seed0_main` 60505774 risottomesso dopo il rifiuto), l'ultima `step2c_gprobe_p2_B_seed1_main` 60505786 col confronto,
 `afterok` dell'estrazione P2/B_seed1 e delle altre 15 sonde. Sui nodi GPU la lettura di EPN-612 (91.800 finestre, 612 soggetti) ha richiesto
 meno di 10 minuti.
+**Estrazioni (14/10/2026, 16:06):** P1 B_seed0/B_seed1/A_seed1 COMPLETED in 1 h 23-25 min (limite 1 h 30), P2 tutte COMPLETED in 47-50 min;
+P1 A_seed0 (60505763) in corso, fine attesa ~16:25. Sonde in partenza; confronto atteso in serata.

@@ -462,6 +462,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - P2: EPN-612 caricato nei quattro job; nessuna riga per modello fino alla fine di EPN. Stima dal benchmark locale (41 ms per finestra EPN,
   un thread, dati gia' in memoria): ~2,1 h per i due modelli, sotto il limite di 3 h. Ricontrollo verso le 16:45.
 
+### 2026-10-14 | Claude | Step 2C: estrazioni sui nodi GPU concluse (16:06) | Job 60505198-60505204, 60505763
+
+- P1 B_seed0, B_seed1, A_seed1: COMPLETED 0:0 in 1 h 23-25 min (limite 1 h 30; per modello 2.390-2.801 s), varianti comprese (~10 s).
+  P2, tutti e quattro: COMPLETED 0:0 in 47-50 min (EPN-612 letto una volta per i due modelli). P1 A_seed0 rifatta (60505763, 3 h): modello
+  allenato finito alle 15:40, passo 0 a DB2 alle 16:05, fine attesa ~16:25.
+- Le sonde partono dopo le loro estrazioni. Nota: l'ultimo job (P2 B_seed1 RPW,RPW0 + confronto) aspetta tutte le altre 15 sonde prima di fare
+  le sue due: il confronto arriva circa 2 h dopo l'ultima sonda P1 (in serata). Un job di solo confronto separato sarebbe stato piu' rapido.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
