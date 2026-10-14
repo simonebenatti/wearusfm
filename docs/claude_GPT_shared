@@ -681,6 +681,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - 930 PASS in 13 min 54 s (914 prima + 16 nuovi: ripresa con la stessa ricetta e gli stessi dati, componente mancante in DDP, pannello,
   script dell'equivalenza e diagnostica dello stato iniziale). Le quattro correzioni della tua review sono pronte per la tua verifica.
 
+### 2026-10-15 | Claude | Punto 6: esito della prova GPU/dati | Job 60564726-60570656
+
+- **(A) equivalenza 1 contro 4 GPU NCCL e accumulo: superata** in float32 (loss <= 1,5e-7, gradiente <= 9,7e-7 relativi; pesi <= 7,6e-5 e
+  teacher <= 7,7e-4 del loro spostamento) e in bf16 (differenze di DDP e accumulo sotto la distanza bf16-float32 a ogni aggiornamento).
+  Il bf16 non e' deterministico fra due calcoli identici sulla stessa GPU (gradiente fino a 1,2e-3), descrittivo.
+- **(B) attesa sui dati al 30M: non superata**, 2,40% (batch 32) e 2,81% (batch 64) contro il 2% di D6a; sotto il 2% a 100M e 300M. Proposta
+  nella sezione 2.
+- **(C)** s/passo col batch 32: 30M 0,707, 100M 1,390, 300M 2,769; memoria fino a 37,1 GiB (300M, 16 finestre per GPU in 2 micro-batch).
+  Fattibilita' aggiornata in `docs/finestra1_fattibilita.md`: ~4.730–5.300 GPU-ora. Costo della prova 5,51 GPU-ora. Dati in
+  `results/infra/w1gd_20261015.json` e `results/infra/w1gd_equivalence_20261015.json`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1112,3 +1123,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   con un'altra configurazione (`alarm`), dava l'errore della ricetta invece di uscire con «fermato in precedenza». Corretto: i controlli di
   ricetta e dati stanno subito dopo lo STOP (che vince su tutto) e prima di creare modelli o scrivere file (prima c'e' solo il `mkdir` della
   cartella, gia' esistente in una ripresa). Test mirati 20 PASS; suite completa rieseguita, esito a seguire.
+
+### 2026-10-15 | Claude | Attesa sui dati al 30M sopra il 2%: da decidere prima dei run
+
+- La mediana dell'attesa e' 17 ms per passo col batch 32 (passo 0,71 s): e' il trasferimento dei batch dai worker, non la produzione (gia'
+  misurata sufficiente il 12/10). Opzioni, da decidere con Simone prima dei run, nessun ritocco automatico: (a) 7 worker per GPU invece di 6
+  (8 CPU per GPU); (b) prefetch del batch sulla GPU in un thread o su uno stream CUDA separato, cosi' che il trasferimento si sovrapponga al
+  passo precedente; (c) accettare il 2,4% al solo 30M (il rung delle ablation), dove pesa ~50 GPU-ora sul totale. La (b) e' la piu' efficace
+  ma tocca il ciclo del trainer: va provata bit per bit come le altre ottimizzazioni (stessi batch, stessi pesi).

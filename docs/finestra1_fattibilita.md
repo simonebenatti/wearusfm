@@ -59,3 +59,12 @@ Contro il budget: il piano stima ~6.000–7.000 GPU-ora del FM a novembre e ~70.
 5. Launcher (miei): catena DDP da 24 h con ripresa e tempi per rung; tronco e rami del WSD (`branch_from`); catena di valutazione dei
    checkpoint sui nodi GPU; sottomissione in blocco con `submit_job.py` e dipendenze; ciascuno collaudato su dbg entro il 31/10.
 6. Lettura del tetto di nodi dell'account e delle QoS (sopra).
+
+## Aggiornamento con le misure della prova `w1_gpu_dati_v1` (15/10/2026)
+
+s/passo misurati in DDP a 4 GPU col batch 32: **30M 0,707; 100M 1,390; 300M 2,769** (le stime erano 0,73 / ~1,32 / ~2,51). GPU-ora per
+epoca: **18,2 / 35,8 / 71,2**. Il batch 64 costa per finestra quanto il 32 (nessun risparmio di throughput dal batch piu' grande).
+Totale ricalcolato coi bracci della bozza di GPT: ablation ~2.040, pilot ~670, asse soggetti ~1.320 (100M ~250, 300M ~1.070), esposizione
+~290 (solo 100M) – ~860 (100M e 300M), calibrazione ~180, valutazione ~200, prove ~30: **~4.730–5.300 GPU-ora**. Memoria: 300M a 8
+finestre per GPU 28,7 GiB, a 16 (in 2 micro-batch) 37,1 GiB: nessun limite. Attesa sui dati al 30M 2,4-2,8% (sopra il 2% di D6a), sotto
+il 2% a 100M e 300M.

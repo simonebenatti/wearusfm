@@ -2914,3 +2914,18 @@ batch fissi (`scripts/ddp_equivalence.py`, test CPU entro 1e-10); (B) attesa sui
 sui gradienti quasi nulli), loss e gradienti entro 1e-5. Sette job da 4 GPU su dbg, **tetto 14 GPU-ora (112 ore locali)**, stima ~8, dal
 budget «preparazione dell'infrastruttura» (25, usate 0,36). Tetto di nodi dell'account: leonardo-ops non esegue `sacctmgr`/`sshare` (fuori
 dal suo elenco); comando di sola lettura dato a Simone.
+
+**Esito della prova GPU/dati `w1_gpu_dati_v1` (15/10/2026, criteri congelati prima; letti dopo la fine dei job).** Otto job COMPLETED 0:0
+(checkout 60564394; (B)/(C) dal checkout `977e767`, (A) dal checkout `d7e2509`). Riepilogo in `results/infra/w1gd_20261015.json`.
+- **(A) equivalenza 1 contro 4 GPU: SUPERATA** in float32 e in bf16 (8 aggiornamenti, 32 finestre, preset 30M, regole della finestra 1).
+  Float32: loss <= 1,5e-7 e gradiente <= 9,7e-7 relativi, pesi <= 7,6e-5 e teacher <= 7,7e-4 del loro spostamento (soglie 1e-5, 1e-5,
+  1e-2). Bf16: accumulo e DDP restano sotto la distanza bf16-float32 a ogni aggiornamento (gradiente <= 3,4e-3 contro 5,9-6,4e-3). La
+  ripetizione identica del riferimento bf16 non e' bit per bit (gradiente fino a 1,2e-3: kernel GPU non deterministici), descrittivo.
+- **(B) attesa sui dati al 30M: NON SUPERATA** (soglia 2%, D6a): 2,40% col batch 32 (mediana 17 ms per passo) e 2,81% col batch 64 (35 ms).
+  Migliora rispetto al 12/10 (7,2%, 4,1% senza il primo passo dopo la ripresa) ma resta sopra. A 100M 1,24% e 1,73%, a 300M 0,69% e
+  0,72%. Come da protocollo: nessuna accensione automatica dei montaggi virtuali, profilo per fasi e proposta da decidere prima dei run.
+- **(C) s/passo (mediana dopo il 50) e memoria per GPU, DDP a 4 GPU, regole della finestra 1, tutti i dataset:** 30M 0,707 (batch 32) e
+  1,366 (64), 10,0 e 19,3 GiB; 100M 1,390 e 2,692, 17,4 e 32,1 GiB; 300M 2,769 e 5,467 (64 con 2 micro-batch), 28,7 e 37,1 GiB. Il
+  costo per finestra non scende raddoppiando il batch (~22 ms/finestra al 30M, ~43 al 100M, ~86 al 300M).
+**Costo reale (sacct):** 82,6 minuti di nodo intero = **5,51 GPU-ora (44,1 ore locali)**, entro il tetto di 14; budget «preparazione
+dell'infrastruttura»: 0,36 + 5,51 = 5,87 usate su 25 (la diagnostica dello stato iniziale, 0,013, e' nel passo 6).

@@ -1,0 +1,116 @@
+{
+ "protocol": "w1_gpu_dati_v1",
+ "recorded_on": "2026-10-15",
+ "jobs": {
+  "w1gd_checkout": 60564394,
+  "w1gd_data_b32": 60564726,
+  "w1gd_data_b64": 60564727,
+  "w1gd_tp_100m_b32": 60565932,
+  "w1gd_tp_100m_b64": 60565952,
+  "w1gd_tp_300m_b32": 60566829,
+  "w1gd_tp_300m_b64": 60566851,
+  "w1gd_equiv": 60570656
+ },
+ "A_equivalence_passed": {
+  "fp32": true,
+  "bf16": true,
+  "all": true
+ },
+ "B_C_runs": {
+  "data_b32": {
+   "steps": 600,
+   "median_step_s": 0.7073,
+   "mean_step_s": 0.7144,
+   "data_wait_fraction": 0.024,
+   "median_data_wait_s": 0.0168,
+   "gpu_max_memory_gib": 9.97,
+   "windows_per_step": 32,
+   "batch_per_process": 8,
+   "accum_steps": 1,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  },
+  "data_b64": {
+   "steps": 600,
+   "median_step_s": 1.366,
+   "mean_step_s": 1.3866,
+   "data_wait_fraction": 0.02806,
+   "median_data_wait_s": 0.0354,
+   "gpu_max_memory_gib": 19.31,
+   "windows_per_step": 64,
+   "batch_per_process": 16,
+   "accum_steps": 1,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  },
+  "tp_100m_b32": {
+   "steps": 300,
+   "median_step_s": 1.39,
+   "mean_step_s": 1.4058,
+   "data_wait_fraction": 0.01236,
+   "median_data_wait_s": 0.0167,
+   "gpu_max_memory_gib": 17.36,
+   "windows_per_step": 32,
+   "batch_per_process": 8,
+   "accum_steps": 1,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  },
+  "tp_100m_b64": {
+   "steps": 300,
+   "median_step_s": 2.6925,
+   "mean_step_s": 2.7328,
+   "data_wait_fraction": 0.01726,
+   "median_data_wait_s": 0.0425,
+   "gpu_max_memory_gib": 32.1,
+   "windows_per_step": 64,
+   "batch_per_process": 16,
+   "accum_steps": 1,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  },
+  "tp_300m_b32": {
+   "steps": 300,
+   "median_step_s": 2.769,
+   "mean_step_s": 2.7879,
+   "data_wait_fraction": 0.0069,
+   "median_data_wait_s": 0.0185,
+   "gpu_max_memory_gib": 28.65,
+   "windows_per_step": 32,
+   "batch_per_process": 8,
+   "accum_steps": 1,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  },
+  "tp_300m_b64": {
+   "steps": 200,
+   "median_step_s": 5.4666,
+   "mean_step_s": 5.5408,
+   "data_wait_fraction": 0.00723,
+   "median_data_wait_s": 0.0365,
+   "gpu_max_memory_gib": 37.09,
+   "windows_per_step": 64,
+   "batch_per_process": 16,
+   "accum_steps": 2,
+   "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014",
+    "sha": "977e7672805537ed92d84b3f66299748d6b2d89e"
+   }
+  }
+ },
+ "B_data_wait_passed": false,
+ "cost": {
+  "gpu_hours": 5.51,
+  "local_hours": 44.1
+ }
+}
