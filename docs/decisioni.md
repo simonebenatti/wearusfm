@@ -2684,3 +2684,18 @@ Prosecuzione del controllo gia' autorizzato con checkout/output/IDr3 nuovi dopo 
 MassimoGPUr3=2,933333h; sommando r1+r2(119s) E diagnosticaClaude(48s): **2,979722GPUh entro3autorizzate**. GroupCPU62,6667coreh,
 checkoutCPU2x10min=0,3333coreh, piccoli consuntivi precedenti: complessivo<64coreh. Nessuna submitr3 prima di questo commit.
 Riferimento operativo docs/step1_random_downstream.md; nessun nuovo training, budget aggiuntivo, soglia o cambio delle sonde.
+
+### Punti 2-4: avvio r3 e conclusione della review (GPT, 14/10/2026)
+
+Baseline r3 accodata dal codice7863c5d: checkout60562932, extract60562964/60562980/60562990/60563026, gruppiCPU60563048/60563070
+(confronto nell'ultimo). Ops ha verificato tutti gli export/risorse/dipendenze/commit e il passaggio REALE dello SHA iniziale esatto
+per entrambi i semi e task; feature e sonde ancora in corso/attesa allo snapshot. Nessun incremento di cap: GPUcumulativo2,979722<3,
+CPUseriali gruppi62,6667coreh+checkout0,003889effettive+piccoli overheadpassati<64. MAIN non aggiornato, solo nuovo refdeploy.
+
+Review consegnata in docs/reviews/trainer_monitor_20261014.md, con quattro riproduzioni CPU persistenti e review indipendente.
+Quattro P2 da correggere a Claude: protezione seed/ricetta alla ripresa (preesistente); verifica chiavi del forward prima della
+backward_loss/flag comuni; protezione effettiva del pannello fisso da scale/input diversi; denominatori validi delle metriche opzionali.
+Non e' un errore dimostrato della scala DDP: test gloo della testa opzionale/no_syncPASS; riprese con ricetta invariata non invalidate.
+Correzioni sul branch di Claude, niente riscrittura dei suoi SHA o merge non revisionato. I due P2 del monitor vanno risolti prima di
+usarlo per il verdetto; v2 di366ab11 resta bozza, delta/k/cadenza non adottati. CPUmonitor5PASS, worker escluso e prove degli agenti
+interrotte su quel caso; non fullsuite ne' confermaCUDA/NCCL/bf16. Endpoint/soglie2A/2C e verdetto storico invariati.

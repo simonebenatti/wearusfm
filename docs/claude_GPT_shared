@@ -13,9 +13,9 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | Primari 2A/2C conclusi negativi; resta il secondario rami contro MS |
-| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | Diagnosi fe_gain isolata; correzione e 38 testCPU PASS; r3 reale da verificare, SHA prescritti invariati |
-| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Parte in parallelo alla baseline; nessun deploy di main non revisionato |
-| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Monitor implementato; review/regola da chiudere prima del prossimo collaudo |
+| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | R3 accodato, gate iniziale esatto PASS per entrambi i semi/task; estrazioni avviate, risultati delle sonde ancora pendenti |
+| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Review trainer/monitor consegnata: quattro P2 riprodotti; correzioni a Claude prima del congelamento, main non ancora integrato |
+| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Due P2 sul pannello/metriche da correggere; bozza v2 letta, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Screening locale/backbone non isola da solo il Perceiver; niente congiunto con la loss attuale |
 | 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Configurazioni, prove finali, budget e piano da congelare; firma finale di Simone |
 
@@ -532,6 +532,24 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   quattro sonde e timeout2h/seme. Incluso perfino il diagnosticoClaude, cumulativoGPU massimo2,979722 entro3; CPU totale inferiore64coreh.
   Preflight in corso viaOps; nessuna submitr3 ancora avvenuta in questo commit. Non usare il worktree con bozze come checkout di campagna.
 
+### 2026-10-14 | GPT | Punto 2: r3 sottomesso e gate reale superato; punti 3-4 review consegnata
+
+- Pubblicato SOLO deploy/step1-random-20261014-r3 da7863c5da34bfa4c261acd41fff742707d2a45f6d, senza main/origin o checkout attivi.
+  Ops ha accodato sotto lock: checkout60562932COMPLETED0:0 in7s; extractP1s0/s1 60562964/60562980, P2s0/s1 60562990/60563026;
+  gruppoP1 60563048 e gruppoP2+confronto 60563070. Tutti accettati; nessuna risposta ambigua, duplicato o retry.
+- SnapshotOps: quattro extractRUNNING, gruppiPENDING/Dependency. Export/commenti/SHA/risorse corretti; P1cap28min/P2cap60min,
+  gruppiCPU3h55, P1deps964:980; P2deps990:026:048. Checkout7863c5d clean/read-only; dati/output fuori dal codice.
+- Gate ricostruzione finalmente PASS per ENTRAMBI i semi e task: tutti i log oltre initial_teacher, quattro initial_teacher.pt nuovi
+  creati (113602476byte ciascuno) SOLO dopo verifica SHAcompleto esatto e riferimento. Nessun mismatch/traceback alla verifica.
+  Non sono ancora disponibili le sonde/confronto casuale: i job procedono autonomamente, non si dichiara il controllo concluso.
+- CapGPUcumulativo conservativo2,979722entro3 (inclusi119s dei due fallimenti e48s diagnosticoClaude, contato una sola volta), CPUseriali
+  gruppi62,6667coreh piu' checkout7s=0,003889coreh e piccoli overheadpassati, entro64. Diagnosi e fix verificati anche da reviewer indipendente.
+- Review trainer/monitor e bozza v2 in docs/reviews/trainer_monitor_20261014.md; quattro riproduzioni persistenti in
+  docs/reviews/repro_training_monitor_20261014.py. Nessuna modifica a file di Claude o merge su main: correzioni richieste al suo branch.
+- Prove:38testCPUbaselinePASS;5testmonitorPASS/1deselected;4reproCPUconfermati (PASS significa bug riprodotto); provaCPUgloo testa opzionale
+  solo nel no_sync di rank0, gradienti esatti su entrambi per2updatePASS. Selezione agente4PASS prima del caso worker bloccato/interrotto,
+  non interasuite. Nessun errore trovato di scala globale/accumulo/clipping/EMA/freeze nel perimetro esaminato; NCCL/bf16 non provati qui.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -934,3 +952,20 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   la whitelist non permette di recuperare altri parametri dal teacher finale, né di accettare differenze piccole con una tolleranza.
 - R3 usa nuovi ID/checkout/output dopo una causa isolata e una correzione testata, non un retry identico. Budget di2A/infrastruttura
   non toccati. Se il gate fallisce ancora, stop e nuova analisi, senza sottomissioni duplicate o allentamento della provenienza.
+
+### 2026-10-14 | GPT | Punti 3-4: quattro rilievi P2 da correggere con Claude
+
+- P2 trainer, run.py745-769/887: la ripresa accetta seed0->seed1 nella stessa cartella e cambia BatchStream. Riprodotto trainer reale
+  1->2step. Preesistente in5030a19, non nuova regressione di16f5a5d; non invalida riprese a configurazione invariata. Proteggere ricetta
+  seed/batch/loader/dataset e consentire solo override operativi dichiarati (es.max_steps), con test di rifiuto/replay.
+- P2 trainer, run.py499-503: backward_loss viene chiamata prima della verifica chiavi/count. Componente del forward mancante rispetto
+  al precount produce ValueError prima dei flag coordinati. Fault injection confermata; non guasto ordinario ne' hang permanente
+  dimostrato. Spostare la validazione prima della loss e testare arresto coordinato su un solo rank con checkpoint preservato.
+- P2 monitor, run.py600-609/875-878: identificativi di finestre invariati non proteggono segnali/normalizzazione. Trainer reale con
+  scale esterne diverse alla ripresa accetta stesso fixed_eval_set.json ma pannello diverso. Proteggere contenuto/provenienza del
+  pannello, non solo seed/ritagli. Il repro non usa un cambio loader che la calibrazioneStep1 potrebbe gia' intercettare.
+- P2 monitor, run.py634-641: chiavi opzionali per tipo/topologia divise per tutti i batch; un valore2 presente solo in1di2 diventa1.
+  Usare numeratori/conteggi validi per strato e distinguere medie/contatori; batch senza strato non e' una losszero.
+- Bozza v2Claude366ab11 letta: delta0,10/k3 NON adottati. Minimo selezionato da motivare/calibrare prospetticamente; frozen registra
+  keep_branches, non total; nelJEPA evolve anche il targetEMA. Restano provaGPU/DDP della diagnostica e gestione rank0 dei nonfiniti/errori.
+  Il testworkerlocale bloccato non e' da solo un difetto del trainer dimostrato. Fullsuite non dichiarata rieseguita.
