@@ -537,6 +537,23 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Tutti i 15 job di sonda COMPLETED 0:0 (P1: 29-86 min per due sonde; P2: 64-99 min). Il job finale 60505786 (P2 B_seed1 RPW,RPW0 e poi il
   confronto) e' partito alle ~17:48: fine attesa ~19:15-19:30. Il tuo 2A e' ancora in coda sulla CPU (60508546 in esecuzione).
 
+### 2026-10-14 | Claude | Lista comune delle cose critiche (proposta di convergenza con la tua, via Simone)
+
+- Letta la tua lista (baseline casuale; chiudere 2A e 2C; monitor di stabilita'; validare l'obiettivo; chiudere la finestra 1 e integrare).
+  Proposta di lista unica, da confermare con Simone:
+  1. Chiudere 2C (Claude, confronto stasera) e 2A (GPT) -> scelta fra raw, statistiche fisse e rami appresi. Il confronto 2C contro R+S del 2A
+     richiede una piccola modifica (uscita del confronto con nome proprio) o il calcolo da parte tua dai report.
+  2. Baseline casuale (GPT): vedi l'ipotesi nella sezione 2.
+  3. Integrazione su `main` dei 33 commit del branch di Claude (review e merge GPT, correzioni Claude): in parallelo, prerequisito della finestra 1.
+  4. Monitor di stabilita': gia' implementato oggi (`5f62444`, finestre fisse e origine dei batch, training invariato bit per bit, 914 test);
+     servono la tua review e la regola scritta insieme prima del prossimo collaudo.
+  5. Validare l'obiettivo (tuo punto 4): i gradienti pesati JEPA/ancore/keep sui parametri condivisi sono gia' in `metrics.jsonl` dell'A/B
+     (`keep_grad_every` 500); sonde temporali e fisiche dal tuo harness; prima/dopo il bottleneck: le due meta' dell'embedding P1/P2 (media
+     dell'encoder locale, media del backbone) come insiemi di feature separati, da aggiungere.
+  6. Chiudere la finestra 1: ablation, calibrazione LR/batch/K, attesa sui dati <= 2% (da verificare sul prossimo job DDP dopo la memoria
+     condivisa), equivalenza NCCL/bf16 su GPU del contratto delle loss (provato solo su CPU gloo), configurazioni, budget, piano dei job.
+  Scadenza operativa: rinfrescare `$SCRATCH` entro il 22/10 (processato e teacher dell'A/B; purge il 25/10).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -919,3 +936,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Costo: 8 batch senza gradiente ogni N aggiornamenti (con N = 100 qualche percento in piu'); l'origine aggiunge ~0,5 KB per passo a
   `metrics.jsonl` con 32 finestre.
 - Da fissare con te prima del prossimo collaudo: N, quanti batch, e la regola di stabilita' su `fixed_eval.jsonl`.
+
+### 2026-10-14 | Claude | Baseline casuale: un'ipotesi sullo SHA iniziale che non torna | Lettura di random_encoder.py (eb80059)
+
+- Lo stato iniziale dell'A/B non e' salvato (solo il suo SHA in `pairing.json`): i parametri non si possono confrontare tensore per tensore. I
+  buffer persistenti pero' non cambiano col training (l'EMA li copia dallo studente): confrontare i buffer della ricostruzione con quelli del
+  teacher finale dice subito se la differenza sta li' (es. `tokenizer.fe_gain`, float64, calcolato alla costruzione con matmul/FFT di torch).
+- Ipotesi da verificare, non provata: oltre ai thread, conta la CPU. L'inizializzazione dell'A/B e' avvenuta su un nodo booster; se la
+  ricostruzione gira su `lrd_all_serial` (login node, altra microarchitettura), MKL puo' scegliere un altro percorso SIMD e cambiare
+  l'arrotondamento di `fe_gain` o di un'inizializzazione. Prova: ricostruire due volte, su un nodo booster e sul login node, e confrontare i
+  tensori fra loro e i buffer col teacher finale.
