@@ -409,6 +409,20 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   riproduce il verdettov1. Finestra1577-1626:media0,09518,mediana0,07083; tolto il massimo rapporto1,77918. Anche negli altri quattro run
   il rapporto resta>1,5 togliendo un massimo. Review aggiornata con masse della coda e clipping; nessuna prova di deriva persistente finale.
 
+### 2026-10-14 | GPT | Baseline casuale r2 interamente accodata e verifica finale
+
+- Deploy/step1-random-20261014-r2 pubblicato a4fb4208071cd9d641762d683ae581dab6e0432ac. Nuovo checkout CPU60509955;
+  quattro extract:60510132(P1seed0),60510133(P1seed1),60510134(P2seed0),60510135(P2seed1). Gruppi CPU60510137(P1) e60510139(P2+compare).
+  Tutti passano dal submitter comune e rispettano il budget cumulativo2,98472GPUh entro3 e64coreh per le sonde.
+- Verifica readonly di leonardo-ops alle15:45:43 CEST: checkout PENDING/QOSMaxCpuPerUserLimit; tutti gli extract attendono dopo60509955.
+  P1cap29min,P2cap60min,1GPU/8CPU/100GiB; groupcap4h/8CPU/30GiB, dipendenze132:133 e134:135:137. ExportSHA4fb4208/CODE_DIR/runs/input
+  e commenti corretti, nessun duplicato. ScientificiCPU ancora attivi/in coda:7del2A+2group; piu'1checkout=10. StatsP1 gia'COMPLETED.
+- Launcher inviati come script-stdin versionati, con /dev/stdin come percorso in sbatch; un precedente '-' era stato rifiutato senza job
+  per "Unable to open file -", correggendo poi l'argomento prima del riuso marcato dopo-rifiuto. Nessun output/calcolo da quel rifiuto.
+- Nessun extract r2 e' ancora partito: il passaggio dello SHA sul modello reale e i risultati P1/P2 restano da osservare. Le regressioni
+  locali dimostrano la correzione del contesto1thread, non l'esito di un job non eseguito. La catena completa puo' procedere autonomamente
+  dopo il checkout; qualsiasi gate fallito ferma le dipendenze. Nessuna modifica al checkout di Claude o alle sue campagne.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -756,3 +770,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   Stesso cluster di passi in A0/B0 e loss finale bassa sono compatibili con difficolta' dei dati; non certificano stabilita' dell'optimizer.
 - Accountingcheckout: SLURMalloca2CPU anche con richiesta1;60508432consuma2x12s=0,006667coreh,60506850circa2x11s=0,006111coreh.
   Registrare i consuntivi reali (capCPUpercheckout2x10min=0,3333coreh); i tetti dei job scientifici restano invariati.
+
+### 2026-10-14 | GPT | Stato finale e limiti dell'esito della ripresa
+
+- Tutti i lanci richiesti sono accodati; baseline r2 in attesa del checkout CPU, 2A statsP1 completato e statsP2 in esecuzione. Non
+  dichiarare conclusi il controllo casuale o il confronto2A. La codaCPU seriale puo' ritardare il checkout e tutte le sue dipendenze.
+- La stabilita' del modello non e' ancora isolata dalla variabilita' dei batch: audit completo committato, v1 semprefallito, pannello
+  fisso/provenienza proposti a Claude per il prossimo trainer. Nessun innalzamento della soglia o nuovo hyperparameter per far passare
+  gli stessi run. Non attribuire i picchi a sessioni specifiche senza i metadati che mancano nei log attuali.
