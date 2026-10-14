@@ -504,6 +504,25 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   diagnostiche (pesi, teacher, RNG, metriche del passo); valori ripetibili e uguali a quelli del file ricostruendo il modello; RNG intatto;
   ripresa senza ripetere il passo 0 e rifiuto di un insieme fisso diverso; origine valida anche coi worker; concatenazione in DDP.
 
+### 2026-10-14 | Claude | Verifica dello schema «Catena di processing, Parte 7: Modello JEPA e training» contro il codice | Base: 5f62444
+
+- Su richiesta di Simone (immagine in chat, non nel repo), confrontata col codice (`model/*`, `training/masking.py`, `training/jepa.py`,
+  `training/run.py`). Giusti: patch da 25 ms e P = 160 a 4 s e 2 kHz; filtro 20-450 Hz e notch 50/60; QC dei canali; teacher EMA con
+  stop-gradient; perdita solo sui token nascosti; regole della finestra 1 (loss per finestra, ancora multiscala, bordo di 100 ms, dropout del
+  muscolo 0,4, WSD con checkpoint pre/post decay e continuazione a 2D); contenuto del checkpoint; sonde P1 NinaPro e P2 Myo.
+- Sbagliati o imprecisi: (1) dimensioni: niente D_p = 128 ne' D = 256; il front-end a kernel continui (Fourier, spline, SIREN: 64 uscite per
+  patch) e' proiettato direttamente alla dimensione del modello, 384 / 640 / 896 per 30M / 100M / 300M; (2) canali e frequenze del corpus: da 8
+  (Myo) a 256 (Hyser), fs da 200 Hz in su, non «8 o 16» e «1-4 kHz»; (3) il riquadro 4 non e' un banco di filtri per canale: l'encoder locale e'
+  attenzione fra canali vicini (8 chiavi) allo stesso istante, con bias geometrico; i filtri stanno nel front-end del passo 2; (4) Perceiver e
+  backbone lavorano su K = 64 latenti per istante, non su C canali: h_backbone e' (B, P, K, D); (5) masking (D10 firmata): «tubo» = intervallo
+  di tempo su un gruppo spaziale, «slab» = intervallo su TUTTI i canali (ancora RVQ), maschere spaziali = canali per tutta la finestra; budget
+  0,5; (6) nessun encoding temporale assoluto: RoPE relativo nel backbone e nel decoder; il canale ha l'identita' anatomica gerarchica +
+  topologia + posizione nel sensore; (7) il decoder non e' multi-scala (multiscala sono le teste delle ancore); target D11 opzione «b»; (8)
+  «quote nel tempo» non e' D11; (9) le feature P1/P2 sono una sola: media del backbone e media dell'encoder locale concatenate (2d), per
+  entrambe le sonde.
+- Mancano nello schema: ancore (RMS, forma spettrale, inviluppo, multiscala; RVQ spenta), montaggi virtuali dalle griglie (D6a), packing dei
+  canali variabili senza padding (D6b), scala per sessione (mediana dei MAD), testa dello Step 1 e rami spettrali (sperimentali).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
