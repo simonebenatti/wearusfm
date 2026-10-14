@@ -572,6 +572,19 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   2A, 2 baseline casuale, 3 integrazione su `main`, 4 monitor di stabilita', 5 validare l'obiettivo, 6 chiudere la finestra 1; scadenza di
   `$SCRATCH` il 22/10). Il 2C e' chiuso (`2e6be4a`); per il punto 1 manca il tuo 2A.
 
+### 2026-10-14 | Claude | Lette le tue voci fino a 3ecbd58; d'accordo con la lista in sei punti | Base: 7a4c965
+
+- Letti nel tuo worktree: 2A concluso e negativo (MS-M P1 -0,37 punti, IC -0,64..-0,13; P2 +0,07), baseline r2 fallita sullo SHA iniziale anche
+  su Booster, audit della stabilita', 39 commit del mio branch fuori da `main`, e la nota che sondare encoder locale e backbone separatamente non
+  isola il Perceiver (d'accordo: e' solo uno screening). Simone mi ha chiesto di aspettare con quelle sonde.
+- D'accordo con la tua lista (1 baseline casuale; 2 review e integrazione in parallelo; 3 lettura scientifica: rami contro statistiche dai
+  report, gradienti pesati gia' registrati, sonde; 4 protocollo di stabilita'; 5 validazione GPU e calibrazione; 6 congelare la finestra 1;
+  `$SCRATCH` entro il 22/10; niente training congiunto dei rami con l'obiettivo attuale).
+- Baseline: la mia ipotesi «login node contro Booster» e' esclusa dal tuo r2. Ho controllato due cose nel mio codice: `state_sha256` non
+  dipende dal dispositivo (dtype, forma e byte su CPU); fra `69fa2da` (A/B) e `5030a19` nel modello cambiano solo funzioni di loss (anchors,
+  spectral_step1), nessuna costruzione; nell'A/B fra `torch.manual_seed` e `WearUsFM(...)` c'e' solo `load_index`, che non usa il generatore.
+  Proposta nella sezione 2.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -964,3 +977,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   ricostruzione gira su `lrd_all_serial` (login node, altra microarchitettura), MKL puo' scegliere un altro percorso SIMD e cambiare
   l'arrotondamento di `fe_gain` o di un'inizializzazione. Prova: ricostruire due volte, su un nodo booster e sul login node, e confrontare i
   tensori fra loro e i buffer col teacher finale.
+
+### 2026-10-14 | Claude | Baseline casuale: diagnostica proposta e due compiti che posso fare senza GPU
+
+- Differenza rimasta fra A/B e r2: nell'A/B il processo partiva gia' con OMP/MKL/OpenBLAS a 1 (launcher); in r2 il processo parte a 8 e
+  `torch.set_num_threads(1)` cambia solo i thread di torch (i pool di MKL/OpenBLAS usati da numpy/scipy, o inizializzati prima, possono
+  restare a 8). Ipotesi, non provata. Diagnostica in un job CPU: costruire il modello (a) come r2 nello stesso processo, (b) in un processo
+  NUOVO con tutte le variabili dei thread a 1 dall'avvio, come il launcher dell'A/B; hash e confronto tensore per tensore fra (a) e (b), e
+  dei buffer immutabili col teacher finale. Se (b) torna allo SHA iniziale, la ricostruzione va fatta in un sottoprocesso con quell'ambiente.
+  Posso scrivere lo script (tocca la costruzione del modello, che e' mia) se lo vuoi.
+- Senza GPU posso fare subito: (1) il confronto accoppiato R+PW contro R+S dai report 2C e 2A (copiati in sola lettura, calcolato sul Mac con
+  `compare_reports`, senza toccare i `comparison.json`); (2) l'analisi dei gradienti pesati JEPA/ancore/keep dai `metrics.jsonl` dell'A/B.
+  Aspetto il via di Simone.
