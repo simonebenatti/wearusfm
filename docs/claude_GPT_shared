@@ -4,6 +4,45 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
+## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
+
+Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
+si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
+assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
+
+| N. | Punto unico | GPT | Claude | Stato / consegna |
+|---|---|---|---|---|
+| 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | Primari 2A/2C conclusi negativi; resta il secondario rami contro MS |
+| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | r2 fallito, nessun risultato valido; SHA prescritti invariati |
+| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Parte in parallelo alla baseline; nessun deploy di main non revisionato |
+| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Monitor implementato; review/regola da chiudere prima del prossimo collaudo |
+| 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Screening locale/backbone non isola da solo il Perceiver; niente congiunto con la loss attuale |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Configurazioni, prove finali, budget e piano da congelare; firma finale di Simone |
+
+### Tranche che puo' partire ora in parallelo
+
+- **GPT:** diagnosi e test locali della baseline (punto 2), con review del trainer distribuito e del monitor (punti 3/4) in parallelo
+  per quanto possibile; confronto secondario dai report a seguire (punto 1). Non un quinto training dei rami.
+- **Claude:** prepara il protocollo della prova GPU/NCCL/bf16 e della misura dati in DDP (punto 6), la bozza della regola di stabilita'
+  (punto 4) e la fattibilita'/costi dei job della finestra 1 (punto 6). Risponde ai rilievi di review sul proprio branch (punto 3).
+- **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
+  registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
+  per revocarla o lanciare estrazioni implicitamente.
+- **Prossimi job, distinti dal lavoro locale:** baseline corretta solo dopo diagnosi e gate verificati, entro i limiti gia' autorizzati;
+  collaudo DDP di Claude solo con protocollo/risorse/costo congelati e via applicabile. Nessun nuovo job sottomesso da questo accordo.
+- **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
+  Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
+
+### Confini anti-conflitto e registrazione
+
+- Un writer per checkout e per file. Claude resta proprietario di trainer/dataloader/launcher training; GPT di loss/target/harness.
+  Il passaggio temporaneo a Claude dei file per le sole feature locale/backbone sara' delimitato con elenco e punto di base prima
+  delle modifiche; GPT non li modifica contemporaneamente. Nessuna delega generale dell'harness.
+- Ciascuno aggiorna le due sezioni del registro sul proprio branch e committa; GPT integra le voci testualmente. Claude legge questo
+  blocco dal worktree GPT e lo riporta senza rinumerarlo. Non si editano il checkout dell'altro o una campagna congelata.
+- Un solo responsabile di lancio per campagna: GPT baseline/valutazione, Claude infrastruttura. Submitter e ledger comuni restano
+  obbligatori; nessun lancio duplicato o retry cieco. La lista non modifica budget, soglie o endpoint scientifici.
+
 ## 1) Cosa ho fatto
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -467,6 +506,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Confermata scadenza operativaSCRATCH22/10, purge25/10 daCLAUDE.md/decisioni. Nessun nuovo job, merge o push; bozze preesistenti preservate.
   Subagent non disponibili per crediti: fotografia root in sola lettura, con approvazione runtimeSSH gia' esistente.
 
+### 2026-10-14 | GPT | Numerazione unica e responsabilita' operative | Base GPT3ecbd58; Claude12585fd
+
+- Su richiesta di Simone inserito in apertura del registro il riferimento unico: 1 confronti2A/2C, 2 baselinecasuale, 3 integrazione,
+  4 stabilita', 5 obiettivo, 6 finestra1. Ruoli, consegne, tranche parallela, proprietari dei file e responsabilita' di lancio espliciti.
+- Lavoro immediato GPT: baseline e review; Claude: protocollo GPU/dati, bozza della regola e fattibilita'. Sonde locale/backbone ancora
+  in attesa come da suo ultimo registro; nessuna nuova estrazione o modifica di file altrui. Documento non equivale a job accodati.
+- Aggiornato decisioni.md con il riferimento, senza cambiare protocolli/budget. Solo file documentali, nessun job, merge o push.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -851,3 +898,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   distinte dai testCPU di non-interferenza; confermaGPU e confronto1vs4 con NCCL/bf16 restano da fare con protocollo separato.
 - La baseline non ha salvato i parametri iniziali, solo l'hash: confronto tensor-per-tensor con l'iniziale non disponibile. I buffer
   non appresi del teacher finale sono diagnostici, non autorizzano a copiare pesi appresi o ad allentare gli SHA prescritti.
+
+### 2026-10-14 | GPT | Limiti della numerazione unica e dell'avvio parallelo
+
+- Le precedenti numerazioni GPT e Claude erano diverse: questo non indicava cambi di incarico. Da ora fa fede il blocco di apertura;
+  non si rinumerano le note storiche e non si chiamano P1/P2 i punti della lista, per non confonderli con le sonde.
+- Due confronti primari negativi non chiudono da soli baseline, validazione dell'obiettivo o secondario rami-statistiche. La regola
+  del prossimo collaudo resta prospettica. Il solo budget infrastruttura residuo non autorizza testGPU non ancora protocollati.
+- Nel registroClaude12585fd c'e' un'attesa sulle sonde separate: nessuna autorizzazione implicita a ripartire da una richiesta di
+  documentazione. I file harness che serviranno non sono assegnati a due writer; il passaggio esclusivo si delimita prima del codice.

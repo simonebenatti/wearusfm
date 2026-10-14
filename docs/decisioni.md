@@ -2655,3 +2655,16 @@ JEPA/ancore/keep gia' presenti nelle metricheA/B: da analizzare. Sonde separate 
 Baselinecasuale r2FAILED sul gate, gruppi cancellati: nessun risultato valido; **0,015GPUh r2, cumulativo0,033056 conr1**. Gia' suBooster
 con1GPU, non su loginCPU: differenze numeriche dei buffer restano da diagnosticare. SHA e assenza di pesi appresi restano vincolanti.
 Main5030a19; Claude7a4c965 ha39commit non integrati allo snapshot. Nessun nuovo job/merge/push in questa riconciliazione.
+
+### Numerazione unica e ripartizione del lavoro (Simone, 14/10/2026)
+
+Richiesta: «usiamo una numerazione unica e mettiamola nel file condiviso», con specchietto aggiornato e tranche parallela.
+Riferimento operativo: blocco «Coordinamento attivo: numerazione unica dei sei punti critici» in apertura di docs/claude_GPT_shared:
+1 confronti2A/2C (GPT per il secondario, Claude per i report2C); 2 baselinecasuale (GPT); 3 review/integrazione (GPT, correzioniClaude);
+4 stabilita' (regola condivisa, reviewGPT, trainer/testClaude); 5 obiettivo (gradienti/sonde fisiche e temporali/propostaSSL GPT,
+screening locale-backbone Claude); 6 finestra1 (scienza/piano/reviewGPT, fattibilita'/GPU/dataloader/calibrazione/launcherClaude).
+
+Tranche immediata: GPT diagnosi/test baseline e review; Claude protocolloGPU/dati, bozza della regola di stabilita' e fattibilita'.
+Sonde separate ancora in attesa come da registroClaude12585fd; nessun lancio implicito. SCRATCH entro22/10 coordinato daClaude.
+Un writer per file, passaggio harness limitato ed esclusivo prima delle modifiche, ledger/submitter comuni. Firma finale di default,
+configurazioni e budget resta di Simone; la numerazione non altera soglie, budget, autorizzazioni di job o campagne gia' congelate.
