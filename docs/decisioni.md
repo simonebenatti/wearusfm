@@ -2833,3 +2833,8 @@ riusato gli 11 job gia' sottomessi e sottomesso i 13 mancanti: `step2c_gextract_
 meno di 10 minuti.
 **Estrazioni (14/10/2026, 16:06):** P1 B_seed0/B_seed1/A_seed1 COMPLETED in 1 h 23-25 min (limite 1 h 30), P2 tutte COMPLETED in 47-50 min;
 P1 A_seed0 (60505763) in corso, fine attesa ~16:25. Sonde in partenza; confronto atteso in serata.
+**Stabilita' del collaudo, nota di GPT (14/10/2026, via Simone) e verifica di Claude:** togliendo i batch piu' alti il rapporto resta
+sopra 1,5 (collaudo 1,77 senza i 3 piu' alti, 1,62 senza i 23 sopra 0,25; mediana mobile su 50 1,66; run 1,80-1,98). **La lettura «picchi
+isolati» era sbagliata:** anche la loss tipica su 50 batch oscilla fino a ~1,7-2 volte il minimo; composizione dei batch o regressione vera
+non si distinguono con le metriche attuali. Il verdetto resta «non passa». Proposta (Claude, d'accordo con GPT): loss su finestre fisse e
+origine dei batch nel trainer, regola di stabilita' da fissare con GPT prima del prossimo collaudo.
