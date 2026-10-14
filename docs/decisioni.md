@@ -2783,3 +2783,19 @@ restano quelli congelati. Run: `step2c_train_<teacher>`, 1 A100, 1 h ciascuno (a
 checkout `1c94852`: **4 GPU-ora (32 ore locali)**. La catena CPU (8 estrazioni, 16 sonde, tetto 432 core-ora, gia' nel preventivo
 dell'opzione 1) si sottomette a run finiti, dopo la review di GPT se chiede correzioni. Comandi in `docs/step2c_frozen_branches.md`.
 **Lancio dei run (14/10/2026):** `step2c_train_A_seed0` **60486353**, `A_seed1` **60486358**, `B_seed0` **60486365** (tre RUNNING subito), `B_seed1` **60486381** (in coda per priorita'). Esiti a seguire.
+
+**Esito dei quattro run (14/10/2026):** tutti COMPLETED 0:0 in 37 min 10-30 s, 3.000 aggiornamenti (`max_steps`), **encoder identico bit per
+bit al teacher d'origine** (265 tensori, studente e teacher, finale e passo 0), nessun errore nei log, 0,69-0,70 s/passo. Loss dei rami
+(primi 100 -> ultimi 100): A_seed0 0,247 -> 0,090, A_seed1 0,259 -> 0,075, B_seed0 0,235 -> 0,069, B_seed1 0,247 -> 0,065. Il passo 0 di
+B_seed0 ha lo stesso SHA di quello del collaudo (`6d4f9e68...`): controllo al passo 0 deterministico. *Descrittivo:* testa fusa negli ultimi
+100 aggiornamenti A 0,084 / 0,066 contro B 0,044 / 0,046 (le teste dei soli rami 0,083-0,096 in tutti); picchi di singoli batch piu' frequenti
+con i teacher A (65 e 61 batch sopra 0,25 dopo i primi 100, clip dei gradienti nel 21% e 19% degli aggiornamenti) che con B (24 e 30; 5% e
+6%); la media mobile su 50 supera 1,5 volte il minimo in tutti e quattro (1,97-2,24), come nel collaudo. Riepilogo
+`results/passo6/step2c_runs_20261014.json`. **Costo reale (sacct):** 2,487 GPU-ora (19,9 ore locali); con il collaudo 2,91 GPU-ora dal
+budget del passo 6. Punto aperto (Simone: «dopo sistemeremo la cosa della stabilità... magari sentendo chatgpt»): la soglia di stabilita'
+del collaudo, da rivedere con GPT.
+**Catena CPU (14/10/2026):** review di GPT non ancora arrivata (nessun commit nuovo nel suo worktree), quindi sottomessa come previsto
+dall'opzione 1 con `scripts/slurm/step2c_cpu_chain.sh` dallo stesso checkout `1c94852`: 8 estrazioni, 16 job di sonda `afterok` della loro
+estrazione, confronto nell'ultimo (P2, B_seed1) `afterok` di tutto il resto, senza il 2A (non ancora lanciato: secondario rimandato).
+L'ultimo job ha 3 h invece di 2,5 (due sonde P2 piu' il confronto): tetto CPU 436 core-ora invece di 432. Se la review chiede correzioni al
+codice di estrazione, sonde o confronto, i job ancora in coda si fermano e si rifanno da un deploy nuovo.

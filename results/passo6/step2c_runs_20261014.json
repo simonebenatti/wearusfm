@@ -1,0 +1,366 @@
+{
+ "recorded_on": "2026-10-14",
+ "protocol": "step2c_frozen_branches_v1",
+ "phase": "training dei rami",
+ "checkout": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+ "runs": {
+  "A_seed0": {
+   "job": 60486353,
+   "elapsed": "00:37:30",
+   "provenance": {
+    "protocol": "step2c_frozen_branches_v1",
+    "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+    "arm": "A_seed0",
+    "collaudo": false,
+    "source_checkpoint_sha256": "26ee7e440b01c77b35b9cf198110a4341e267340d377ca32feb80ae6b475b611",
+    "input_sha256": {
+     "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+     "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+     "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+     "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+    },
+    "time_limit_s": 3300.0,
+    "steps": 3000,
+    "stopped": "max_steps",
+    "complete": true,
+    "encoder_identical": true,
+    "checkpoint_sha256": "54aa333ae3a078015879fdeccb161baf415b39d52c1bc2df27af214475426fa6",
+    "init_checkpoint_sha256": "b3c7dfcfd7e342f4ec391797c1cb8a3468771b700a94b67d9cc0ed2ad5a25bf0",
+    "raw_check": {
+     "final": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     },
+     "init": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     }
+    }
+   }
+  },
+  "A_seed1": {
+   "job": 60486358,
+   "elapsed": "00:37:10",
+   "provenance": {
+    "protocol": "step2c_frozen_branches_v1",
+    "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+    "arm": "A_seed1",
+    "collaudo": false,
+    "source_checkpoint_sha256": "b72a122ea24d01af2830de7f1c76dbcfd7810991e75f9ba015ca5e93bdeeb4d2",
+    "input_sha256": {
+     "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+     "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+     "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+     "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+    },
+    "time_limit_s": 3300.0,
+    "steps": 3000,
+    "stopped": "max_steps",
+    "complete": true,
+    "encoder_identical": true,
+    "checkpoint_sha256": "4b963929acfddfe2e61af6c0f1920d86ae159e8ebf2474c7f75a1b65841c2eb7",
+    "init_checkpoint_sha256": "5f21e866f3bf3aac4eaab2da4cf69822ed22210b610bc87e85e7bb403397814a",
+    "raw_check": {
+     "final": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     },
+     "init": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     }
+    }
+   }
+  },
+  "B_seed0": {
+   "job": 60486365,
+   "elapsed": "00:37:18",
+   "provenance": {
+    "protocol": "step2c_frozen_branches_v1",
+    "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+    "arm": "B_seed0",
+    "collaudo": false,
+    "source_checkpoint_sha256": "b264df4b75f7047980212ab068fe524148e71dbdef442d4e75e95648f841d3cd",
+    "input_sha256": {
+     "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+     "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+     "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+     "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+    },
+    "time_limit_s": 3300.0,
+    "steps": 3000,
+    "stopped": "max_steps",
+    "complete": true,
+    "encoder_identical": true,
+    "checkpoint_sha256": "7d45049efc1af79003ba4d34f8d2ab26aea4aeed3ce7acbab1861b5a2413bcb8",
+    "init_checkpoint_sha256": "6d4f9e68fbd59be28ed2fd79eff6b9e833294e1344fe70c174a01e9de5dd6cc8",
+    "raw_check": {
+     "final": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     },
+     "init": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     }
+    }
+   }
+  },
+  "B_seed1": {
+   "job": 60486381,
+   "elapsed": "00:37:16",
+   "provenance": {
+    "protocol": "step2c_frozen_branches_v1",
+    "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+    "arm": "B_seed1",
+    "collaudo": false,
+    "source_checkpoint_sha256": "27b3a819c35f798992b2bcddf7f48998be03d9dc4bc113b79e5170c199577a29",
+    "input_sha256": {
+     "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+     "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+     "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+     "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+    },
+    "time_limit_s": 3300.0,
+    "steps": 3000,
+    "stopped": "max_steps",
+    "complete": true,
+    "encoder_identical": true,
+    "checkpoint_sha256": "1c4016ac79e5567b74fc73a8ee8f8396ffedb0a62b6feea9f254e76c1c575865",
+    "init_checkpoint_sha256": "30d447364966d70d6fb548aa59939aaed69d93f94b5bd096dfbff8eb40380a0d",
+    "raw_check": {
+     "final": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     },
+     "init": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+     }
+    }
+   }
+  }
+ },
+ "descriptive": {
+  "A_seed0": {
+   "steps": 3000,
+   "stopped": "max_steps",
+   "complete": true,
+   "encoder_identical": true,
+   "raw_final": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "raw_init": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "source_ok": "26ee7e440b01c77b35b9cf198110a4341e267340d377ca32feb80ae6b475b611",
+   "checkpoint_sha256": "54aa333ae3a078015879fdeccb161baf415b39d52c1bc2df27af214475426fa6",
+   "init_sha256": "b3c7dfcfd7e342f4ec391797c1cb8a3468771b700a94b67d9cc0ed2ad5a25bf0",
+   "log_errors": 0,
+   "loss_first_100": 0.2474,
+   "loss_last_100": 0.0898,
+   "heads_last_100": {
+    "keep_fused": 0.0841,
+    "keep_psd": 0.0957,
+    "keep_wavelet": 0.0953
+   },
+   "batches_over_0_25_after_100": 65,
+   "max_batch_loss": 1.002,
+   "max_rise_ma50": 2.238,
+   "ma200_every_500": [
+    0.1902,
+    0.0954,
+    0.0854,
+    0.0919,
+    0.0743,
+    0.0793
+   ],
+   "grad_clipped_fraction": 0.2093,
+   "median_step_s": 0.695
+  },
+  "A_seed1": {
+   "steps": 3000,
+   "stopped": "max_steps",
+   "complete": true,
+   "encoder_identical": true,
+   "raw_final": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "raw_init": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "source_ok": "b72a122ea24d01af2830de7f1c76dbcfd7810991e75f9ba015ca5e93bdeeb4d2",
+   "checkpoint_sha256": "4b963929acfddfe2e61af6c0f1920d86ae159e8ebf2474c7f75a1b65841c2eb7",
+   "init_sha256": "5f21e866f3bf3aac4eaab2da4cf69822ed22210b610bc87e85e7bb403397814a",
+   "log_errors": 0,
+   "loss_first_100": 0.259,
+   "loss_last_100": 0.0745,
+   "heads_last_100": {
+    "keep_fused": 0.0657,
+    "keep_psd": 0.0838,
+    "keep_wavelet": 0.083
+   },
+   "batches_over_0_25_after_100": 61,
+   "max_batch_loss": 1.257,
+   "max_rise_ma50": 2.108,
+   "ma200_every_500": [
+    0.1898,
+    0.106,
+    0.0846,
+    0.0719,
+    0.0776,
+    0.0743
+   ],
+   "grad_clipped_fraction": 0.188,
+   "median_step_s": 0.689
+  },
+  "B_seed0": {
+   "steps": 3000,
+   "stopped": "max_steps",
+   "complete": true,
+   "encoder_identical": true,
+   "raw_final": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "raw_init": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "source_ok": "b264df4b75f7047980212ab068fe524148e71dbdef442d4e75e95648f841d3cd",
+   "checkpoint_sha256": "7d45049efc1af79003ba4d34f8d2ab26aea4aeed3ce7acbab1861b5a2413bcb8",
+   "init_sha256": "6d4f9e68fbd59be28ed2fd79eff6b9e833294e1344fe70c174a01e9de5dd6cc8",
+   "log_errors": 0,
+   "loss_first_100": 0.2347,
+   "loss_last_100": 0.0687,
+   "heads_last_100": {
+    "keep_fused": 0.0436,
+    "keep_psd": 0.0932,
+    "keep_wavelet": 0.0941
+   },
+   "batches_over_0_25_after_100": 24,
+   "max_batch_loss": 0.702,
+   "max_rise_ma50": 1.974,
+   "ma200_every_500": [
+    0.1691,
+    0.0762,
+    0.0678,
+    0.0688,
+    0.0583,
+    0.0626
+   ],
+   "grad_clipped_fraction": 0.049,
+   "median_step_s": 0.691
+  },
+  "B_seed1": {
+   "steps": 3000,
+   "stopped": "max_steps",
+   "complete": true,
+   "encoder_identical": true,
+   "raw_final": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "raw_init": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "source_ok": "27b3a819c35f798992b2bcddf7f48998be03d9dc4bc113b79e5170c199577a29",
+   "checkpoint_sha256": "1c4016ac79e5567b74fc73a8ee8f8396ffedb0a62b6feea9f254e76c1c575865",
+   "init_sha256": "30d447364966d70d6fb548aa59939aaed69d93f94b5bd096dfbff8eb40380a0d",
+   "log_errors": 0,
+   "loss_first_100": 0.2469,
+   "loss_last_100": 0.0647,
+   "heads_last_100": {
+    "keep_fused": 0.0463,
+    "keep_psd": 0.0832,
+    "keep_wavelet": 0.0828
+   },
+   "batches_over_0_25_after_100": 30,
+   "max_batch_loss": 0.88,
+   "max_rise_ma50": 1.976,
+   "ma200_every_500": [
+    0.1733,
+    0.0887,
+    0.0717,
+    0.0609,
+    0.0669,
+    0.063
+   ],
+   "grad_clipped_fraction": 0.057,
+   "median_step_s": 0.698
+  }
+ },
+ "cost": {
+  "gpu_hours": 2.487,
+  "local_hours": 19.9
+ }
+}

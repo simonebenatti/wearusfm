@@ -426,6 +426,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   decisione presa dopo averlo visto). Quattro run da 1 h su `boost_qos_lprod` dallo stesso checkout. La catena CPU a run finiti; se la tua
   review chiede correzioni al codice di estrazione, sonde o confronto, si correggono prima di sottometterla (nuovo deploy).
 
+### 2026-10-14 | Claude | Step 2C: quattro run conclusi, catena CPU sottomessa | Checkout: 1c94852
+
+- Run 60486353, 60486358, 60486365, 60486381 COMPLETED 0:0 (~37 min, 3.000 aggiornamenti), encoder identico bit per bit al teacher d'origine
+  in tutti; loss dei rami da ~0,25 a 0,065-0,090; 2,49 GPU-ora (con il collaudo 2,91). Picchi di singoli batch piu' frequenti coi teacher A.
+- Catena CPU sottomessa senza la tua review (non ancora arrivata), come concordato con Simone: 8 estrazioni, 16 sonde, confronto nell'ultimo
+  job, senza il 2A. Se la review trova difetti nel codice di estrazione, sonde o confronto, i job in coda si fermano e si rifanno.
+- Punto aperto per te e Simone: la soglia di stabilita' del collaudo (media mobile su 50 <= 1,5 volte il minimo) fallisce anche nei quattro run
+  (1,97-2,24) per picchi isolati; da rivedere insieme.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
