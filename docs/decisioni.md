@@ -2773,3 +2773,12 @@ primi 100 -> 0,056 negli ultimi 100, rapporto 0,24 contro <= 0,9); tempo si' (0,
 divergenza; la soglia su 50 aggiornamenti non distingue le due cose quando la loss e' piccola. Come previsto dal protocollo ci si ferma: nessun
 run, nessun ritocco degli iperparametri, decisione a Simone. Riepilogo `results/passo6/step2c_collaudo_20261014.json`.
 **Costo reale (sacct):** 0,423 GPU-ora (3,4 ore locali) + checkout 11 s su 1 CPU; dal budget del passo 6.
+
+### Step 2C: si procede coi quattro run nonostante il collaudo (Simone, 14/10/2026)
+
+Simone: «vai con l'opzione 1, lancia i quattro run», sulla proposta di Claude: lanciare i quattro run con gli iperparametri invariati,
+registrando che il collaudo non e' passato per la sola stabilita' (picchi isolati di singoli batch, lettura di Claude) e che si procede per
+decisione di Simone. **Decisione presa dopo aver visto il collaudo**, non un criterio congelato prima; le soglie e i criteri del confronto P1/P2
+restano quelli congelati. Run: `step2c_train_<teacher>`, 1 A100, 1 h ciascuno (allocazione misurata dal collaudo), `boost_qos_lprod`, dal
+checkout `1c94852`: **4 GPU-ora (32 ore locali)**. La catena CPU (8 estrazioni, 16 sonde, tetto 432 core-ora, gia' nel preventivo
+dell'opzione 1) si sottomette a run finiti, dopo la review di GPT se chiede correzioni. Comandi in `docs/step2c_frozen_branches.md`.

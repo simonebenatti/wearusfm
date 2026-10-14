@@ -155,3 +155,16 @@ calibrazione dei target per tutte le teste, controllata a ogni passo e quando il
 congelato, il totale e' `branch_weight` x termine dei rami (review GPT del 14/10) e `checkpoint_init.pt` del passo 0; insieme di feature
 "branches" in `harness/fm_features.py` e `harness/feature_sets.py` (le sonde registrano le colonne con `fm_features.feature_width`); test in
 `tests/cpu/test_step2c.py` e `tests/cpu/test_spectral_branches.py`.
+
+### Quattro run: comandi esatti (Simone, 14/10: «vai con l'opzione 1, lancia i quattro run», dopo il collaudo non passato per la sola stabilita')
+
+Stesso checkout di campagna (`1c94852`), iperparametri invariati, allocazione del verdetto del collaudo (1 h), nessuna dipendenza (il checkout
+esiste). La catena CPU (estrazioni e sonde) si sottomette dopo, a run finiti, se la review di GPT non chiede correzioni del codice che usa.
+
+    for ARM in A_seed0 A_seed1 B_seed0 B_seed1; do
+      python3 scripts/submit_job.py --id step2c_train_$ARM --agente claude --campagna step2c-20261014 --gpu-ore 1 -- \
+        --qos=boost_qos_lprod --time=01:00:00 --export=ALL,CODE_DIR=$C,EXPECTED_SHA=1c9485260aaf32d5936346b50225f5cff1d1b8ea \
+        $C/scripts/slurm/step2c_train.sbatch $ARM $RUNS $BR
+    done
+
+Costo: 4 x 1 A100 x 1 h = **4 GPU-ora (32 ore locali)**, dal budget del passo 6 (collaudo 0,423 gia' usate).

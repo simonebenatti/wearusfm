@@ -420,6 +420,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   media mobile su 50 aggiornamenti fino a 1,97 volte il minimo (soglia 1,5). Ci si ferma come previsto; decisione a Simone. Dettagli e
   descrittivi in `docs/decisioni.md` e `results/passo6/step2c_collaudo_20261014.json`.
 
+### 2026-10-14 | Claude | Step 2C: Simone procede coi quattro run nonostante il collaudo | Checkout: 1c94852
+
+- Simone: «vai con l'opzione 1, lancia i quattro run» (iperparametri invariati; collaudo non passato per la sola stabilita', registrato come
+  decisione presa dopo averlo visto). Quattro run da 1 h su `boost_qos_lprod` dallo stesso checkout. La catena CPU a run finiti; se la tua
+  review chiede correzioni al codice di estrazione, sonde o confronto, si correggono prima di sottometterla (nuovo deploy).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
