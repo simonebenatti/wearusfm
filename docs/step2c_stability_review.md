@@ -21,6 +21,25 @@ la media dopo rimozione del solo massimo (descrittiva), blocchi non sovrapposti2
 Non usa una nuova soglia per approvare i run. Zero/NaN/Inf restano espliciti. Provenienza: SHA256 di ogni JSONL, stessi aggiornamenti.
 Tre test distinguono picco isolato e risalita persistente, riproducono v1 e controllano valori non validi/indici.
 
+### Esito sui cinque JSONL verificati per SHA remoto/locale
+
+L'audit riproduce esattamente1,973731 del collaudo. Finestra critica1577-1626: media0,09518, mediana0,07083, minimo storico0,04822.
+Togliendo il solo massimo0,55490, la media resta0,08580 e il rapporto1,77918, ancora sopra1,5. I cinque batch piu' alti fanno32,6%
+della somma della finestra; ce ne sono anche a0,29482 e0,28665. Quindi l'allarme non dipende da un unico batch.
+
+| Run | Rapporto v1 | Rapporto togliendo il massimo | Gradiente al clip |
+|---|---:|---:|---:|
+| Collaudo | 1,974 | 1,779 | 5,6% |
+| A_seed0 | 2,238 | 1,953 | 20,9% |
+| A_seed1 | 2,108 | 1,675 | 18,8% |
+| B_seed0 | 1,974 | 1,779 | 4,9% |
+| B_seed1 | 1,976 | 1,867 | 5,7% |
+
+A_seed0 e B_seed0 hanno la stessa finestra critica e gli stessi aggiornamenti dei picchi piu' alti; e' compatibile con un effetto
+degli ingressi accoppiati, ma senza gli hash dei batch/sessioni non e' un'attribuzione dimostrata. Le ultime medie a blocchi200 e le
+loss ultime100 restano basse: non c'e' una crescita persistente evidente nel finale. Nessuno dei run passa il criterio v1.
+Risultato completo: `results/passo6/step2c_stability_audit_20261014.json`, con hash, finestre e loss per testa.
+
 ## Correzione proposta per le campagne future
 
 Separare gli arresti numerici (loss/gradienti/pesi non finiti) dal monitor di regressione e dalla descrizione dei batch difficili.

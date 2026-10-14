@@ -17,7 +17,10 @@ def initial_teacher(reference, *, reference_sha256, seed, initial_sha256):
 
     Only architecture and immutable calibration buffers are read from the
     trained checkpoint. No state_dict load, optimizer, forward or EMA update.
-    Restore the caller's CPU RNG; do not touch CUDA RNG or initialize CUDA.
+    Historical training constructed the model with one CPU thread. The
+    tokenizer's fixed float64 gain depends on reduction order, so reproduce
+    that environment, then restore inference parallelism and CPU RNG.
+    Do not touch CUDA RNG or initialize CUDA.
     """
     if sha256_file(reference) != reference_sha256:
         raise ValueError("reference checkpoint changed")
@@ -25,9 +28,14 @@ def initial_teacher(reference, *, reference_sha256, seed, initial_sha256):
     cfg = state["config"]
     if cfg["seed"] != seed or set(cfg["model"]) != {f.name for f in fields(FMConfig)}:
         raise ValueError("initialization seed or model schema changed")
-    with torch.random.fork_rng(devices=[]):
-        torch.random.default_generator.manual_seed(seed)
-        model = WearUsFM(FMConfig(**cfg["model"]))
+    threads = torch.get_num_threads()
+    try:
+        torch.set_num_threads(1)
+        with torch.random.fork_rng(devices=[]):
+            torch.random.default_generator.manual_seed(seed)
+            model = WearUsFM(FMConfig(**cfg["model"]))
+    finally:
+        torch.set_num_threads(threads)
     if model.spectral_keep is not None:
         with torch.no_grad():
             for name in CALIBRATION_BUFFERS:

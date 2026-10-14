@@ -390,6 +390,25 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   con SHA dei log. Tre regressioni CPU PASS, inclusi picco singolo, risalita persistente e riferimento zero/nonfiniti; review indipendente.
   Pannello fisso e provenienza dei batch proposti per i prossimi run; nessun cambio al trainer di Claude o agli esperimenti in corso.
 
+### 2026-10-14 | GPT | 2A in coda; audit dei cinque run; correzione del gate della baseline
+
+- 2A interamente sottomesso e verificato da leonardo-ops:60508542(P1stats, RUNNING),60508543(P2stats),60508545/546(P1M/MS),
+  60508547/548(P2M/MS),60508550(P1S/K),60508551(P2S/K+confronto). Caps132coreh,8CPU/30GiB,0GPU; dipendenze dopo le stats e ultimo
+  dopo543:545:546:547:548:550. Primo statsP1 rifiutato per dipendenza dal checkout gia' concluso; nessun job creato, corretto l'argomento
+  (checkout verificato READY) prima di riusare il solo ID rifiutato. Nessun retry di elaborazione, nessun output precedente sovrascritto.
+- Baselinead9b pubblicata su deploy dedicato; checkout60508432COMPLETED/READY12s. Quattro extract60508592/596/597/598 falliti subito
+  sullo SHA iniziale;60508599/601 sonde cancellate dalle dipendenze, senza consumo. Tentata cancellazione dei P2 dopo i P1: SSHscancel
+  ha dato timeout; riconciliazione sola lettura conferma P2 partiti prima della cancellazione e falliti sul medesimo gate, nessun file.
+- Gate rispettato: nessuna baseline appresa/casuale valutata e nessun hash allentato. Costo65s=0,018056GPUh. Causa riprodotta da review
+  indipendente: training storicoOMP/MKL/OpenBLAS1, launcher nuovo8; solo tokenizer.fe_gain varia di~2e-12 per la riduzione float64.
+  initial_teacher ora costruisce con1thread e ripristina il numero precedente in finally; tutti i parametri e lo SHA restano quelli
+  iniziali prescritti. Due nuove regressioni per semi0/1 e ripristino RNG/thread su successo/errore;16testCPU pertinenti PASS.
+- Correzione committata prima del nuovo deploy/r2. Cap nuovi GPU P1=29min x2,P2=60min x2: massimo cumulato2,9847GPUh entro3; sonde
+  64coreh in due gruppi. Nessun tuning scientifico. ID successivi e prova dello SHA reale prima di dichiarare baseline valida a seguire.
+- Cinque JSONL/summary/provenienze2C copiati senza checkpoint e verificatiSHA dal subagent. Audit in results/passo6/step2c_stability_audit_20261014.json
+  riproduce il verdettov1. Finestra1577-1626:media0,09518,mediana0,07083; tolto il massimo rapporto1,77918. Anche negli altri quattro run
+  il rapporto resta>1,5 togliendo un massimo. Review aggiornata con masse della coda e clipping; nessuna prova di deriva persistente finale.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -726,3 +745,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   fisso e allarme persistente, non soltanto alzare1,5 o usare mediane che nascondono la coda. Tolleranza/cadenza da fissare prima dei run.
 - CPUQOSmax10 vale anche ai lanciGPT:2A8+baseline4probe non si accodano tutti insieme. Due gruppi da4h rispettano10 dopo il checkout,
   con identico costo64coreh; non contare come pronti job non accettati. CostiGPU del passo6 da riconciliare col nuovo tettoClaude57GPUh.
+
+### 2026-10-14 | GPT | Gate baseline e risalita nella finestra critica2C
+
+- Il training storico costruiva il tokenizer con1thread; il controllo casuale con8non ricreava bit per bit il guadagno fisso del front-end.
+  Corretto l'ambiente di costruzione, non il modello o il valore atteso. I test precedenti con tutto a1thread non simulavano il launcher.
+  Nessuna feature prodotta dai quattro fallimenti; non attribuire loro alcun risultato downstream.
+- Nel collaudo il massimo da solo non spiega MA50: i cinque valori maggiori sono32,6% della massa e senza il massimo il rapporto resta
+  1,78. Nei run A0/A1/B0/B1 i rapporti senza massimo sono1,95/1,68/1,78/1,87. La causa per sessione rimane non verificabile dai log attuali.
+  Stesso cluster di passi in A0/B0 e loss finale bassa sono compatibili con difficolta' dei dati; non certificano stabilita' dell'optimizer.
+- Accountingcheckout: SLURMalloca2CPU anche con richiesta1;60508432consuma2x12s=0,006667coreh,60506850circa2x11s=0,006111coreh.
+  Registrare i consuntivi reali (capCPUpercheckout2x10min=0,3333coreh); i tetti dei job scientifici restano invariati.

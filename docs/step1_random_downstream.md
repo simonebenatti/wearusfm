@@ -25,6 +25,8 @@ I pairing A/B sono identici per seed, recuperati e verificati sul cluster. Check
 quelli congelati in `scripts/step1_downstream.py`. Il nuovo `.pt` e' un artefatto di sola inferenza,
 marcato `untrained_random_encoder`, privo di student/optimizer per impedirne il resume come training.
 CPU RNG ripristinato dopo costruzione; CUDA RNG non toccato.
+La costruzione avviene con un thread CPU, come `step1_ab_train.sbatch` storico: il guadagno fisso del tokenizer e' sensibile
+all'ordine delle riduzioni float64. Si ripristina poi il numero di thread precedente per l'estrazione. Lo SHA completo resta obbligatorio.
 
 ## Estrazione e sonde
 
@@ -60,11 +62,13 @@ ID logico distinto per task/seed/stage; nessuna submit diretta fuori meccanismo 
 
 | Fase | Risorse/job | Walltime/job | Numero | Tetto |
 |---|---|---|---:|---|
-| Extract P1 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 30 min | 2 | 1 GPUh |
+| Extract P1 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 29 min (override dopo il fix) | 2 | 0,9667 GPUh |
 | Extract P2 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 1 h | 2 | 2 GPUh |
 | Probe raggruppati per task + confronto nell'ultimo | 8 CPU, 30 GB, lrd_all_serial | 4 h (2 h per seed) | 2 | 64 core-ora CPU |
 
-Totale massimo **3 GPUh = 24 ore locali GPU + 64 core-ora CPU**; atteso dalle durate appena misurate
+Tetto complessivo **3 GPUh = 24 ore locali GPU + 64 core-ora CPU**. Primo tentativo del14/10 fermato correttamente dal gate
+iniziale, senza feature:65s totali =0,018056 GPUh. Dopo la correzione dell'ambiente di costruzione, cap nuovi extract
+2 x29min +2 x60min =2,9667 GPUh, cumulato massimo2,9847 GPUh (entro3). Atteso dalle durate appena misurate
 circa 1,86 GPUh + 24,27 core-ora CPU, escluso eventuale overhead di ricostruzione/hash.
 Ultima stima locale del budget passo 6 dopo A/B downstream (12/10): ~33,08/100 GPUh; residuo ~66,92,
 minimo ~63,92 dopo questo cap. Non e' un consuntivo aggiornato: prima del lancio ricontrollare il registro comune.
@@ -85,3 +89,11 @@ ID, stati e consuntivi del lancio sono registrati separatamente in `docs/claude_
 Sintassi dei due launcher valida; review indipendente senza blocker. Il confronto byte/AST con il codice storico passa.
 Nessuna misura downstream dell'encoder casuale disponibile al congelamento del protocollo. Non sono state aggiunte soglie
 o varianti dopo aver guardato risultati; il confronto resta descrittivo Random→A e Random→B.
+
+### Correzione della ricostruzione (14/10/2026)
+
+I quattro primi extract sono falliti prima delle feature per SHA iniziale diverso: il launcher usava otto thread, contro uno nel training
+storico. Riprodotto sulla CPU per entrambi i semi: l'unica differenza e' `tokenizer.fe_gain` (circa2e-12), tutti i parametri identici.
+Ripristinato il contesto di costruzione storico; poi thread e RNG vengono ripristinati. Nessun parametro appreso caricato, nessuna
+tolleranza o sostituzione degli SHA. Nuovo ref/checkout/output `step1-random-20261014-r2` / `step1_random_20261014_r2`;
+verifica locale della correzione prima della sottomissione, cap ridotti per rispettare il budget cumulativo. Nessun ritocco scientifico.

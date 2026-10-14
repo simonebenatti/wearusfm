@@ -81,6 +81,26 @@ def test_two_seeds_are_paired_deterministically_and_distinct(tmp_path):
     assert hashes[0] != hashes[1]
 
 
+@pytest.mark.parametrize("seed", [0, 1])
+def test_reconstruction_matches_one_thread_history_and_restores_parallelism(tmp_path, seed):
+    previous = torch.get_num_threads()
+    try:
+        torch.set_num_threads(1)
+        path, checksum, initial = _reference(tmp_path, seed)
+        torch.set_num_threads(2)
+        rng = torch.get_rng_state().clone()
+        model, _ = initial_teacher(path, reference_sha256=checksum, seed=seed, initial_sha256=initial)
+        assert state_sha256(model.state_dict()) == initial
+        assert torch.get_num_threads() == 2
+        assert torch.equal(torch.get_rng_state(), rng)
+        with pytest.raises(ValueError, match="INITIAL"):
+            initial_teacher(path, reference_sha256=checksum, seed=seed, initial_sha256="a"*64)
+        assert torch.get_num_threads() == 2
+        assert torch.equal(torch.get_rng_state(), rng)
+    finally:
+        torch.set_num_threads(previous)
+
+
 def test_random_comparison_reuses_estimator_without_adoption_guard():
     from test_downstream_ab import _reports
     reports = _reports()

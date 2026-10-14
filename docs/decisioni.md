@@ -2594,3 +2594,12 @@ fedelmente: collaudo60477395 non passato. Audit locale dei log e review in docs/
 del collaudo o modifica degli endpoint P1/P2. Il criterio su batch differenti non distingue da solo deriva e difficolta' degli ingressi.
 Monitor prospettico proposto su pannello fisso, piu' provenienza dei batch al trainer: parametri da congelare prima del prossimo run,
 non una nuova soglia scelta per approvare questi risultati. Nessun ulteriore job HPC richiesto dall'audit locale.
+
+### Baseline casuale: ricostruzione dell'ambiente storico dopo il gate fallito (14/10/2026)
+
+Il primo tentativo si ferma prima delle feature: quattro extract FAILED per SHA iniziale diverso; sonde cancellate dalle dipendenze.
+Costi65s totali =0,018056 GPUh. Diagnosi CPU riprodotta per entrambi i semi: il training storico costruiva con1thread; con2/8 cambia
+soltanto il buffer float64 tokenizer.fe_gain (~2e-12), tutti i parametri bit-identici. Ora la costruzione usa temporaneamente1thread,
+poi ripristina parallelismo e RNG. SHA iniziali e checkpoint di riferimento invariati; nessun parametro appreso trasferito.
+16 test pertinenti PASS. Nuovo checkout/output r2; cap P1extract29min x2 e P2extract60min x2, piu'65s gia' consumati, massimo2,9847GPUh
+entro3autorizzate. Sonde sempre64coreh. Prosecuzione del controllo autorizzato con bug ambientale corretto, senza ritocchi sperimentali.
