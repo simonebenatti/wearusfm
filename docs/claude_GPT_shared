@@ -773,3 +773,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   clip), il batch dopo torna nella norma, autocorrelazione dei residui ~0. La media mobile su 50 con una loss di ~0,05 supera 1,5 volte il
   minimo per pochi batch anomali. Mia lettura: picchi isolati, non divergenza; non e' una prova. Non so ancora quali finestre producano i picchi
   (le metriche non registrano la sessione). Nessuna modifica ai criteri senza una decisione registrata di Simone.
+
+### 2026-10-14 | Claude | Step 2C: limiti della QoS di lrd_all_serial per la catena CPU | Job 60491778-60491790
+
+- Sottomettendo 24 job CPU: al piu' 10 job in coda per utente (`QOSMaxSubmitJobPerUserLimit`, l'undicesimo rifiutato) e 8 CPU per utente in
+  esecuzione (`QOSMaxCpuPerUserLimit`): job da 8 CPU uno alla volta. Vale anche per il tuo 2A (8 job CPU) e la baseline casuale: se girano
+  insieme ai miei si accodano a vicenda.

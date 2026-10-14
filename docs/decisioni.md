@@ -2799,3 +2799,10 @@ dall'opzione 1 con `scripts/slurm/step2c_cpu_chain.sh` dallo stesso checkout `1c
 estrazione, confronto nell'ultimo (P2, B_seed1) `afterok` di tutto il resto, senza il 2A (non ancora lanciato: secondario rimandato).
 L'ultimo job ha 3 h invece di 2,5 (due sonde P2 piu' il confronto): tetto CPU 436 core-ora invece di 432. Se la review chiede correzioni al
 codice di estrazione, sonde o confronto, i job ancora in coda si fermano e si rifanno da un deploy nuovo.
+**Catena CPU fermata a meta' (14/10/2026), nessun retry:** sottomessi 10 job, le 8 estrazioni (`step2c_extract_<task>_<teacher>`
+60491778, 60491780, 60491781, 60491783, 60491784, 60491785, 60491786, 60491787) e le sonde `step2c_probe_p1_A_seed0_main` 60491789 e `_rami`
+60491790; l'undicesimo (`step2c_probe_p1_A_seed1_main`) **rifiutato da sbatch: `QOSMaxSubmitJobPerUserLimit`** (al piu' 10 job in coda per
+utente sulla QoS `normal` di `lrd_all_serial`), e lo script si e' fermato da solo. In coda un solo job alla volta in esecuzione
+(`QOSMaxCpuPerUserLimit`: 8 CPU per utente), gli altri in attesa: la catena e' **seriale** (come la tranche downstream del 09/10, sonde una
+dopo l'altra). Stima seriale ~34 h di calendario. Inoltre le varianti RPW/RPW0 hanno 1.024 colonne invece di 768: se il tempo della sonda
+cresce con le colonne (non misurato), due sonde P1 possono avvicinarsi alle 2 h del job. Decisione a Simone su come proseguire.
