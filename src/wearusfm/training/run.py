@@ -496,17 +496,22 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
 
             with amp:
                 terms = model(compute) if model is not None else compute(student)
-            loss = terms.backward_loss(global_den, world_size=ctx.world_size)
+            # struttura, conteggi e finitezza verificati e decisi insieme da tutti i processi PRIMA di costruire la perdita: una chiave
+            # mancante su un processo farebbe sollevare `backward_loss` prima dello stop coordinato (review GPT del 14/10/2026). La
+            # perdita e' una combinazione lineare dei numeratori coi pesi (finiti) e i denominatori globali: e' finita se lo sono loro
             h = _keys_hash(terms.num, terms.log_num, terms.log_den, terms.log_sum)
             first_hash = h if first_hash is None else first_hash
-            mismatch = sorted(terms.den) != keys or any(not torch.equal(terms.den[k], pre[i][k].to(terms.den[k].device)) for k in keys)
-            flags = _all_max(ctx, device, [float(mismatch), float(not bool(torch.isfinite(loss))), float(h != first_hash), h, -h])
+            mismatch = sorted(terms.den) != keys or sorted(terms.num) != keys or sorted(terms.weight) != keys or \
+                any(not torch.equal(terms.den[k], pre[i][k].to(terms.den[k].device)) for k in keys)
+            finite = mismatch or all(bool(torch.isfinite(v).all()) for v in terms.num.values())
+            flags = _all_max(ctx, device, [float(mismatch), float(not finite), float(h != first_hash), h, -h])
             if flags[0]:
                 return "conteggi del forward diversi da quelli precalcolati", {}
             if flags[1]:
                 return "perdita non finita", {}
             if flags[2] or flags[3] != h or -flags[4] != h:
                 return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
+            loss = terms.backward_loss(global_den, world_size=ctx.world_size)
             loss.backward()
         weight = terms.weight
         for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):
@@ -539,6 +544,31 @@ def _check_wsd(cfg: RunConfig) -> None:
     if s.decay_start < cfg.warmup_steps:
         raise ValueError(f"wsd: il decay comincerebbe (passo {s.decay_start}) prima della fine del warmup ({cfg.warmup_steps} passi): "
                          "run troppo corto per lo schedule di D14")
+
+
+# variazioni ammesse alla ripresa dallo stesso checkpoint (review GPT del 14/10/2026): estendere il run, registrare l'origine dei batch (solo
+# log) e il percorso del file di calibrazione (il suo SHA resta nella ricetta). Tutto il resto -- seme, batch, accumulo, loader, dataset,
+# ottimizzazione, modello, loss, diagnostiche che leggono dati -- deve coincidere: per cambiarlo serve un run nuovo o un ramo (`branch_from`)
+RESUME_OPERATIONAL = ("max_steps", "log_batch_origin", "keep_calibration")
+
+
+def _check_resume_recipe(cfg: RunConfig, state: dict) -> None:
+    old, new = _config_with_defaults(state.get("config", {})), config_to_dict(cfg)
+    differ = sorted(k for k in set(old) | set(new) if k not in RESUME_OPERATIONAL and old.get(k) != new.get(k))
+    if differ:
+        raise ValueError(f"ripresa con una ricetta diversa da quella del checkpoint in {differ}: alla ripresa cambiano solo "
+                         f"{list(RESUME_OPERATIONAL)}; per il resto un run nuovo o un ramo (branch_from)")
+
+
+def _check_data_signature(state: dict, signature: dict, say) -> None:
+    """Gli ingressi dello stream (manifest, scale, durate, loader, dataset) uguali a quelli del checkpoint; un checkpoint di prima del 15/10
+    non li registra e si riprende con un avviso."""
+    old = state.get("data_signature")
+    if old is None:
+        say("checkpoint senza la firma dei dati (codice precedente al 15/10/2026): manifest, scale e durate non verificabili alla ripresa")
+    elif old != signature:
+        changed = sorted(k for k in set(old) | set(signature) if old.get(k) != signature.get(k))
+        raise ValueError(f"ripresa con dati diversi da quelli del checkpoint in {changed}: run nuovo")
 
 
 def _check_branch(cfg: RunConfig, state: dict, source: Path) -> None:
@@ -600,45 +630,75 @@ def _write_or_check(path: Path, obj, what: str) -> None:
 def _fixed_eval_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
     """L'insieme fisso della diagnostica di stabilita': `fixed_eval_batches` batch del training (stessa distribuzione) da un generatore proprio,
     come il batch delle diagnostiche (lo stream dei batch del training non cambia), e la sua identita': sessione, trial, inizio e fine di ogni
-    finestra."""
+    finestra e l'hash del CONTENUTO di ogni batch (segnali normalizzati, fs, QC, maschere, target: `pairing.batch_sha256`), cosi' che scale,
+    dati o preprocessing diversi alla ripresa cambino l'identita' anche a finestre uguali (review GPT del 14/10/2026)."""
+    from wearusfm.training.pairing import batch_sha256
+
     loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
     rng = np.random.default_rng([cfg.seed, FIXED_EVAL_SEED])
     batches = [loader.batch(min(cfg.batch_size, 32), rng) for _ in range(cfg.fixed_eval_batches)]
     windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
                for b in batches for r, w in zip(b.rows, b.windows)]
-    return batches, {"seed": [cfg.seed, FIXED_EVAL_SEED], "windows": windows}
+    return batches, {"seed": [cfg.seed, FIXED_EVAL_SEED], "windows": windows, "batch_sha256": [batch_sha256(b) for b in batches]}
+
+
+def _pool_terms(parts: list[dict], weight: dict[str, float]) -> dict:
+    """Le metriche di piu' batch con numeratori e conteggi, come il contratto delle loss distribuite (review GPT del 14/10/2026): componente
+    = somma dei numeratori / somma dei conteggi (assente se nessun batch ha quel target), totale = somma pesata delle componenti, diagnostiche
+    = somma di log_num / somma di log_den sui soli batch dove lo strato c'e' (un batch senza quello strato non e' una loss zero), contatori
+    (log_sum) sommati. `parts`: per batch, dizionari num, den, log_num, log_den, log_sum di valori float."""
+    tot = {g: {} for g in ("num", "den", "log_num", "log_den", "log_sum")}
+    for p in parts:
+        for g in tot:
+            for k, v in p.get(g, {}).items():
+                tot[g][k] = tot[g].get(k, 0.0) + float(v)
+    out = {k: tot["num"][k] / tot["den"][k] for k in tot["num"] if tot["den"].get(k, 0.0) > 0}
+    out["total"] = sum(weight[k] * v for k, v in out.items() if k in weight)
+    diag = {k: tot["log_num"][k] / tot["log_den"][k] for k in tot["log_num"] if tot["log_den"].get(k, 0.0) > 0}
+    diag.update(tot["log_sum"])
+    diag.update({f"{k}_count": v for k, v in tot["den"].items()})
+    if set(diag) & set(out):
+        raise RuntimeError(f"diagnostiche con lo stesso nome di una componente: {sorted(set(diag) & set(out))}")
+    return {**out, **diag}
 
 
 def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
-    """Le loss del training sull'insieme fisso, medie sui batch: la stessa funzione del passo (`readout_objectives` a encoder congelato,
-    altrimenti `jepa_losses`), senza gradiente, studente e teacher in eval (niente dropout del muscolo: valori ripetibili). Lo stato casuale
-    di CPU e GPU torna quello di prima e i modi train/eval pure: il training prosegue bit per bit come senza questa diagnostica."""
-    sums, n = {}, 0
+    """Le loss del training sull'insieme fisso, con numeratori e conteggi di tutti i batch (`_pool_terms`): la stessa funzione del passo
+    (`readout_objectives` a encoder congelato, totale = branch_weight x termine dei rami; altrimenti `jepa_loss_terms`, totale = somma pesata
+    delle componenti), senza gradiente, studente e teacher in eval (niente dropout del muscolo: valori ripetibili). Lo stato casuale di CPU e
+    GPU torna quello di prima e i modi train/eval pure: il training prosegue bit per bit come senza questa diagnostica."""
+    parts, weight = [], {}
     modes = (student.training, teacher.training)
     student.eval()
     teacher.eval()
     devices = [torch.cuda.current_device()] if str(device).startswith("cuda") else []
+
+    def values(d):
+        return {k: float(v.detach()) for k, v in d.items()}
+
     try:
         with torch.random.fork_rng(devices=devices), torch.no_grad(), amp:
             for b in batches:
                 inp, visible, rvq_on = _to_device(*L.to_model_inputs(b), device)
                 if cfg.freeze_encoder:
                     from wearusfm.model.spectral_branches import readout_objectives
-                    kb, met = readout_objectives(student, inp, b.anchor_targets, keep=False)["keep_branches"]
-                    losses = {"keep_branches": kb, **met}
+                    _, _, num, den, log_num, log_den = readout_objectives(student, inp, b.anchor_targets, keep=False,
+                                                                          terms=True)["keep_branches"]
+                    parts.append({"num": {"keep_branches": float(num)}, "den": {"keep_branches": float(den)},
+                                  "log_num": values(log_num), "log_den": values(log_den)})
+                    weight = {"keep_branches": cfg.jepa.branch_weight}
                 else:
                     codes_t = torch.from_numpy(RC.pack_codes(b.rvq_codes)).to(device) if b.rvq_codes is not None else None
-                    losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
-                                         kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                                         rvq_codes=(lambda c, w, t=codes_t: t[c, w]) if codes_t is not None else None)
-                for k, v in losses.items():
-                    if torch.is_tensor(v) and v.numel() == 1:
-                        sums[k] = sums.get(k, 0.0) + float(v)
-                n += 1
+                    t = jepa_loss_terms(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
+                                        kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                        rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None)
+                    parts.append({"num": values(t.num), "den": values(t.den), "log_num": values(t.log_num), "log_den": values(t.log_den),
+                                  "log_sum": values(t.log_sum)})
+                    weight = dict(t.weight)
     finally:
         student.train(modes[0])
         teacher.train(modes[1])
-    return {"batches": n, **{k: v / n for k, v in sums.items()}}
+    return {"batches": len(parts), **_pool_terms(parts, weight)}
 
 
 def _calibrate_branches(student: WearUsFM, cfg: RunConfig, index, scales: dict | None, window_s: dict | None, device) -> dict:
@@ -770,6 +830,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if resume_state is not None and int(resume_state.get("world_size", 1)) != ctx.world_size:
         raise ValueError(f"ripresa con {ctx.world_size} processi da un checkpoint di {resume_state.get('world_size', 1)}: non prevista "
                          "(nessuna ripresa elastica, contratto punto 4)")
+    data_signature = json.loads(json.dumps(calibration_signature(cfg, manifest, scales, window_s)))  # registrata in ogni checkpoint
+    if resume_state is not None:
+        if branch is None:  # un ramo ha la sua guardia (_check_branch: cambiano solo schedule e max_steps)
+            _check_resume_recipe(cfg, resume_state)
+        _check_data_signature(resume_state, data_signature, say)
     calibration = None
     if cfg.model.keep_readout:
         if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
@@ -851,7 +916,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         return {"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
                 "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
                 "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
-                "stream": stream, **extra}
+                "stream": stream, "data_signature": data_signature, **extra}
 
     init_sha = None
     if cfg.freeze_encoder and resume_state is None:  # un processo solo (controllato sopra)

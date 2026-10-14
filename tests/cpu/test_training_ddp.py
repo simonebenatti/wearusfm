@@ -26,7 +26,8 @@ def _state_hash(module) -> str:
     return h.hexdigest()
 
 
-def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, time_limit_s, perturb_rank, accum, bad_count_rank):
+def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, time_limit_s, perturb_rank, accum, bad_count_rank,
+            drop_key_rank=-1):
     import torch.distributed as dist
     dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world)
     try:
@@ -74,6 +75,19 @@ def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, 
                 return out_
 
             R.loss_counts = wrong
+        if drop_key_rank == rank:  # dal terzo aggiornamento una componente manca nel forward ma non nei conteggi precalcolati, solo qui
+            terms_fn2, calls_d = R.jepa_loss_terms, {"n": 0}
+
+            def dropped(*a, **k):
+                out_ = terms_fn2(*a, **k)
+                calls_d["n"] += 1
+                if calls_d["n"] > 2 * accum:
+                    k_ = next(k_ for k_ in out_.num if k_ != "jepa")
+                    for d in (out_.num, out_.den, out_.weight):
+                        d.pop(k_)
+                return out_
+
+            R.jepa_loss_terms = dropped
         cfg = replace(R.small_config(datasets=None, max_steps=max_steps), batch_size=4, accum_steps=accum)
         summary = R.train(cfg, Path(mpath), [Path(root)], Path(out), log=lambda m: None, dist=R.DistContext(rank, world, rank),
                           time_limit_s=time_limit_s)
@@ -89,12 +103,13 @@ def _data(tmp_path):
     return _tree(tmp_path)
 
 
-def _run(tmp_path, tag, out, *, world=2, max_steps=4, nan_rank=-1, time_limit_s=None, perturb_rank=-1, accum=1, bad_count_rank=-1):
+def _run(tmp_path, tag, out, *, world=2, max_steps=4, nan_rank=-1, time_limit_s=None, perturb_rank=-1, accum=1, bad_count_rank=-1,
+         drop_key_rank=-1):
     root, mpath = _data(tmp_path)
     results = tmp_path / f"res_{tag}"
     results.mkdir()
     mp.spawn(_worker, args=(world, str(tmp_path / f"store_{tag}"), str(root), str(mpath), str(out), str(results), max_steps, nan_rank,
-                            time_limit_s, perturb_rank, accum, bad_count_rank), nprocs=world, join=True)
+                            time_limit_s, perturb_rank, accum, bad_count_rank, drop_key_rank), nprocs=world, join=True)
     return [json.loads((results / f"rank{r}.json").read_text()) for r in range(world)]
 
 
@@ -195,3 +210,15 @@ def test_find_unused_parameters_only_with_optional_heads(tmp_path):
             assert wrapped.find_unused_parameters is expected, model_cfg
     finally:
         dist.destroy_process_group()
+
+
+@pytest.mark.parametrize("accum", [1, 2])
+def test_ddp_missing_component_on_one_process_stops_all_before_the_loss(tmp_path, accum):
+    """Review GPT del 14/10: una componente che manca nel forward di un solo processo faceva sollevare `backward_loss` prima dello stop
+    coordinato. Ora tutti i processi si fermano insieme, allo stesso passo e con la stessa ragione; il checkpoint resta quello valido."""
+    out = tmp_path / "run"
+    res = _run(tmp_path, f"k{accum}", out, drop_key_rank=1, accum=accum)
+    assert {r["summary"]["stopped"] for r in res} == {"conteggi del forward diversi da quelli precalcolati al passo 2"}
+    assert (out / "STOP").read_text().startswith("conteggi del forward diversi")
+    assert [r["step"] for r in _lines(out)] == [1, 2]
+    assert torch.load(out / "checkpoint.pt", weights_only=False)["step"] == 2  # l'ultimo checkpoint valido, non sovrascritto
