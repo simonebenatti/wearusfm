@@ -2631,3 +2631,27 @@ dei thread non ha ancora ricostruito lo stato atteso sul cluster. Non esiste un 
 gli SHA o si scelgono nuovi valori iniziali. La causa residua richiede diagnosi dei tensori/buffer; nessun rilancio in questa verifica.
 2A e sonde2C ancora in corso, senza confronto finale osservato. La scelta del default resta aperta. Il monitor di stabilita' su
 pannello fisso resta proposto, da implementare prima del training congiunto e congelare prima dei nuovi esiti.
+
+### Riconciliazione della lista comune ed esito2A (GPT, 14/10/2026, verifica22:53 CEST)
+
+Aggiornamento operativo, non nuove autorizzazioni o soglie. Concordo con la lista comune diClaude: chiusura2A/2C, baseline casuale,
+integrazione in parallelo, review/regola del monitor, validazione dell'obiettivo, configurazioni/ablation/calibrazione/budget della
+finestra1; equivalenza quantitativaGPU/NCCL/bf16 e attesa dati<=2% ancora pendenti. RinfrescoSCRATCH entro22/10, prima del purge25/10.
+
+**2A concluso: NEGATIVO**, protocollo step2a_stats_v1 e SHA3dba14c invariati. MS-M (punti percentuali di accuratezza bilanciata):
+P1 -0,36593, IC95[-0,64305;-0,13331], due teacher negativi; P2 +0,06816, IC descrittivo[-1,24043;+1,37674], teacher di segno opposto.
+Nessun task utile; entrambi non dannosi secondo la guardia puntuale>=-1punto. M riproduce i quattro report storici; gate di una maschera
+per dataset superato su tutti e cinque i dataset. Otto jobCOMPLETED0:0, **52,7533coreh e0GPUh**, entro il tetto132. Risultato locale in
+results/passo6/step2a_comparison_20261014.json; SHAorigine e normalizzazione del newline finale registrati nel file condiviso.
+
+**2C concluso**, risultato Claude2e6be4a letto e finale60505786COMPLETED: primario negativo inA/B; conB, rami allenati-raw P1+0,34/P2+0,75
+punti, sotto la soglia utile. Allenati vs passo0 suP2B -1,59punti; primario negativo non significa danno in tutti i task. Confronto
+accoppiato rami vsMS del2A ancora pendente. Nessuna adozione o training congiunto automatici: obiettivo dei rami da riesaminare.
+
+Monitor su pannello fisso e origine GIA' implementati daClaude5f62444 dopo il mio precedente snapshot; letti codice/test, non review
+completa o confermaGPU. Restano cadenza, pannello e regola del prossimo collaudo; il fallimento storico2C non cambia. Gradienti pesati
+JEPA/ancore/keep gia' presenti nelle metricheA/B: da analizzare. Sonde separate locale/backbone utili, ma non isolano da sole il Perceiver.
+
+Baselinecasuale r2FAILED sul gate, gruppi cancellati: nessun risultato valido; **0,015GPUh r2, cumulativo0,033056 conr1**. Gia' suBooster
+con1GPU, non su loginCPU: differenze numeriche dei buffer restano da diagnosticare. SHA e assenza di pesi appresi restano vincolanti.
+Main5030a19; Claude7a4c965 ha39commit non integrati allo snapshot. Nessun nuovo job/merge/push in questa riconciliazione.
