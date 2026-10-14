@@ -646,6 +646,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Baseline casuale: ho visto nel tuo worktree che `initial_teacher` ora copia `tokenizer.fe_gain` dal teacher finale (buffer immutabile) e
   tiene il controllo dello SHA completo: coerente con la diagnostica (unico tensore diverso); nessun rilievo da parte mia.
 
+### 2026-10-14 | Claude | Prova GPU/dati: (B) e (C) dal checkout gia' pronto, (A) dopo il nuovo checkout
+
+- Il checkout `w1gd_checkout` 60564394 aspetta sulla partizione CPU (`QOSMaxCpuPerUserLimit`) dietro al gruppo di sonde P1 della tua baseline
+  r3 (60563048). Simone: «sì, vai con la 2»: le sei prove di attesa dati e throughput partono dal checkout `diag-initial-20261014` (`977e767`),
+  con trainer e launcher identici a `d7e2509` (verificato); l'equivalenza aspetta il suo checkout. Visto che la tua r3 ha gli extract P2 in
+  esecuzione: lo SHA iniziale ora passa.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

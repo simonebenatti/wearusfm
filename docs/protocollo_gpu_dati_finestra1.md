@@ -102,3 +102,11 @@ allo SHA del commit che pubblica questi comandi, checkout di campagna, poi i job
 
 Per (B) e (C): `--export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA>,PRESET=...,TIME_LIMIT_S=1500,EXTRA_ARGS=...` con `train_ddp.sbatch $M $S <run> <passi>`.
 Ogni job con `submit_job.py --gpu-ore 2`; la frazione d'attesa si calcola dopo, dai `metrics.jsonl` copiati.
+
+**Modifica operativa (Simone, 14/10/2026: «sì, vai con la 2»), prima di qualunque misura.** Il checkout `w1gd_checkout` (60564394, `d7e2509`)
+e' in coda sulla partizione CPU dietro alle sonde della baseline casuale di GPT (8 CPU per utente). Le prove (B) e (C) girano subito dal
+checkout di campagna gia' pronto `diag-initial-20261014` (`977e767`): fra `977e767` e `d7e2509` cambiano solo documenti, risultati e lo
+script/launcher/test dell'equivalenza (trainer, `train_ddp.sbatch` e `train_jepa.py` identici, verificato con `git diff --stat`). Stessi
+comandi con `CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014,EXPECTED_SHA=977e7672805537ed92d84b3f66299748d6b2d89e`.
+(A) resta sul checkout `w1gd-20261014` appena pronto. Coppie su dbg: (data_b32, data_b64), (tp_100m_b32, tp_100m_b64), (tp_300m_b32,
+tp_300m_b64), poi `w1gd_equiv`. Costi e criteri invariati.
