@@ -373,6 +373,23 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   blocker. Nessun training o modifica al codice di Claude. Preparati quattro extract GPU e quattro probe CPU, ultimo con confronto.
   Risultati reali e ID SLURM non ancora disponibili a questa voce: il controllo NON e' dichiarato concluso prima delle sonde.
 
+### 2026-10-14 | GPT | Ripresa dei lanci e lettura aggiornata del log Claude
+
+- Simone: "verifica cosa ha fatto claude nel log e se hai cose da lanciare lanciale", poi review della stabilita'. Letti CLAUDE.md, main
+  (5030a19), registro e commit Claude fino a bfb37f8. Le due correzioni di review sono presenti in4b28424: peso frozen e calibrazione
+  completa. Quattro training2C conclusi; la catena di valutazione e' gia' interamente sottomessa suGPU (via di Simone, tetto57GPUh):
+  niente doppioni GPT. Lo stato riportato nel precedente riepilogo era superato dalle nuove voci di Claude.
+- Riconciliazione tramite leonardo-ops: nessuna submission2A/random precedente, ref2A pubblicato esatto. Il blocco era il prompt sandbox
+  interno per scrivere il registro comune, rimasto pendente per ore. Eccezione operativa: il turno principale ha eseguito il medesimo
+  submitter revisionato con escalation visibile, poi restituito le operazioni al subagent. Prefisso del solo submitter approvato e salvato.
+  Nessuna modifica al percorso comune o aggiramento del sandbox. Checkout2A sottomesso:60506850. AltriID e verifica a seguire.
+- Per accodare insieme2A e baseline con il limiteCPU10, aggiunto step1_random_probe_group.sbatch: due job da4h, due sonde ciascuno
+  con limite individuale2h; stesse quattro sonde e stesso confronto, tetto64coreh invariato. Versionato prima di usarlo; bash -n PASS.
+- Review indipendente della stabilita': v1 implementato fedelmente; il singolo massimo non spiega da solo la media50 critica. Aggiunto
+  audit offline (harness/training_stability.py e scripts/audit_training_stability.py), finestre critiche/blocchi/code/gradienti descrittivi,
+  con SHA dei log. Tre regressioni CPU PASS, inclusi picco singolo, risalita persistente e riferimento zero/nonfiniti; review indipendente.
+  Pannello fisso e provenienza dei batch proposti per i prossimi run; nessun cambio al trainer di Claude o agli esperimenti in corso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -699,3 +716,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   dimostrato del controllo. Ora validata, ma i test sintetici non sostituiscono le sonde P1/P2 reali.
 - Il codice richiede checkout pulito allo SHA atteso; non usare il worktree locale con bozze estranee. P2 extract richiede override1h;
   ultimo probe deve dipendere dal proprio extract e dagli altri tre probe. Nessun riuso di output esistenti o retry automatico.
+
+### 2026-10-14 | GPT | Stabilita' v1 e limiti operativi delle sottomissioni
+
+- La frase "picchi isolati" e' una lettura possibile, non una causa verificata. Nel collaudo, un unico massimo0,555 con49batch0,05
+  porterebbe MA50 a0,0601, non0,0952: controllare gli altri batch della finestra critica. I log attuali non registrano sessioni/ritagli.
+  Encoder intatto e loss finale in calo non bastano a certificare stabilita'. Collaudo storico resta non passato; dettagli nella review.
+- MA50/minimo storico e' sensibile al minimo selezionato e ai molti confronti sovrapposti. Correggere il monitor prospettico con pannello
+  fisso e allarme persistente, non soltanto alzare1,5 o usare mediane che nascondono la coda. Tolleranza/cadenza da fissare prima dei run.
+- CPUQOSmax10 vale anche ai lanciGPT:2A8+baseline4probe non si accodano tutti insieme. Due gruppi da4h rispettano10 dopo il checkout,
+  con identico costo64coreh; non contare come pronti job non accettati. CostiGPU del passo6 da riconciliare col nuovo tettoClaude57GPUh.

@@ -2579,3 +2579,18 @@ Tetto comunicato: **3 GPU-ora + 64 core-ora CPU**, dal passo6, separato dal 2A e
 1 core,2GiB,10min, massimo0,1667 core-ora. Quattro extract GPU e quattro probe CPU, ultimo probe con confronto; dipendenze afterok,
 nessun retry automatico, nessuna modifica al protocollo dopo gli esiti. Preflight fresco e registro comune obbligatori.
 29 test CPU e review indipendente superati; nessuna misura reale disponibile al congelamento.
+
+### Sottomissioni CPU della baseline casuale (14/10/2026)
+
+Per il limite effettivo di dieci sottomissioni su lrd_all_serial, le quattro sonde della baseline vengono raggruppate per task in due
+job da4h (8CPU,30GiB), con limite2h per ogni seme. Ciascuna usa lo stesso launcher, le stesse feature e la stessa sonda; il confronto
+resta dopo tutte e quattro. Tetto invariato64 core-ora, quattro extract invariati3 GPU-ora. Questo e' un adattamento della coda nel
+completamento autorizzato da Simone; nessun cambiamento al disegno o alle soglie, nessun retry o GPU aggiuntiva per le sonde.
+
+### Stabilita' Step2C: audit senza cambio retroattivo dei criteri (14/10/2026)
+
+Richiesta di Simone: verificare il log, lanciare il pendente e sistemare il problema della stabilita'. Il criterio v1 e' implementato
+fedelmente: collaudo60477395 non passato. Audit locale dei log e review in docs/step2c_stability_review.md; nessuna riclassificazione
+del collaudo o modifica degli endpoint P1/P2. Il criterio su batch differenti non distingue da solo deriva e difficolta' degli ingressi.
+Monitor prospettico proposto su pannello fisso, piu' provenienza dei batch al trainer: parametri da congelare prima del prossimo run,
+non una nuova soglia scelta per approvare questi risultati. Nessun ulteriore job HPC richiesto dall'audit locale.

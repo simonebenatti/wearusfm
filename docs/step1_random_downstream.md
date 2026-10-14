@@ -52,15 +52,17 @@ senza tuning su test. UCI-EMG e DB3 non esclusi.
 
 ## Risorse e dipendenze autorizzate
 
-Quattro extract (P1/P2 × seed0/1) e quattro probe CPU. Ultimo probe esegue anche il confronto,
-con `afterok` sul proprio extract E sugli altri tre probe. Stesso `submit_job.py` sotto lock,
+Quattro extract (P1/P2 × seed0/1) e quattro probe CPU. Dal14/10, per il limite di dieci sottomissioni CPU per utente,
+le quattro sonde sono raggruppate in **due job da quattro ore**, uno P1 e uno P2: stessa sonda e stessi report,
+due ore massime per seme tramite GNU timeout. Il job P1 dipende da entrambi gli extract P1; il job P2 dipende
+da entrambi gli extract P2 e dal job P1, e il suo ultimo probe esegue anche il confronto. Stesso `submit_job.py` sotto lock,
 ID logico distinto per task/seed/stage; nessuna submit diretta fuori meccanismo comune.
 
 | Fase | Risorse/job | Walltime/job | Numero | Tetto |
 |---|---|---|---:|---|
 | Extract P1 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 30 min | 2 | 1 GPUh |
 | Extract P2 | 1 A100, 8 CPU, 100 GB, boost_qos_lprod | 1 h | 2 | 2 GPUh |
-| Probe + confronto nell'ultimo | 8 CPU, 30 GB, lrd_all_serial | 2 h | 4 | 64 core-ora CPU |
+| Probe raggruppati per task + confronto nell'ultimo | 8 CPU, 30 GB, lrd_all_serial | 4 h (2 h per seed) | 2 | 64 core-ora CPU |
 
 Totale massimo **3 GPUh = 24 ore locali GPU + 64 core-ora CPU**; atteso dalle durate appena misurate
 circa 1,86 GPUh + 24,27 core-ora CPU, escluso eventuale overhead di ricostruzione/hash.
@@ -69,7 +71,9 @@ minimo ~63,92 dopo questo cap. Non e' un consuntivo aggiornato: prima del lancio
 Budget infrastruttura 25 GPUh separato e non utilizzato dalla baseline.
 
 Codice da un nuovo checkout congelato `CODE_DIR`, full SHA pulito e read-only. I due launcher sono
-`step1_random_extract.sbatch` e `step1_random_probe.sbatch`; P2 richiede override walltime 1 h.
+`step1_random_extract.sbatch` e `step1_random_probe.sbatch`; il raggruppamento usa `step1_random_probe_group.sbatch`.
+P2 extract richiede override walltime 1 h. I due gruppi CPU piu' gli otto job2A rispettano il limite di dieci;
+prima di accodarli verificare che il checkout e gli eventuali altri job CPU non occupino ancora uno slot.
 Se occorre creare un checkout di campagna: prima job CPU `campaign_checkout.sbatch`, 1 CPU/2 GB/10 min,
 **ulteriore cap 0,1667 core-ora CPU**, da includere nel preventivo autorizzato (totale CPU 64,1667).
 Prima del deploy verificare hook/ref, disponibilita' dati/quote/scratch e i limiti QoS effettivi tramite OPS.
