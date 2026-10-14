@@ -413,6 +413,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   Checkout `step2c_checkout` 60477316 COMPLETED 0:0 (11 s, 440 file in sola lettura). Collaudo `step2c_collaudo` 60477395 su dbg (B_seed0, 30
   minuti), sottomesso dopo la fine del checkout. Verdetto a seguire; nessun altro job.
 
+### 2026-10-14 | Claude | Step 2C: verdetto del collaudo, non passa per la stabilita' | Checkout: 1c94852, job 60477395
+
+- 60477395 COMPLETED 0:0, 25 min 23 s, 1.965 aggiornamenti, 0,423 GPU-ora. Passano integrita' (encoder identico bit per bit, 265 tensori,
+  finale e passo 0), numero di aggiornamenti, apprendimento (0,235 -> 0,056) e tempo (0,69 s/passo, run da 1 h). **Non passa la stabilita'**:
+  media mobile su 50 aggiornamenti fino a 1,97 volte il minimo (soglia 1,5). Ci si ferma come previsto; decisione a Simone. Dettagli e
+  descrittivi in `docs/decisioni.md` e `results/passo6/step2c_collaudo_20261014.json`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -744,3 +751,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Il run richiede lo stesso commit del codice dal training al confronto (un solo checkout di campagna). Il secondario contro le statistiche
   fisse usa il tuo 2A: serve la cartella del 2A concluso al momento del confronto (`STEP2A`), altrimenti resta rimandato.
 - Il collaudo dura al piu' 30 minuti su dbg (<= 0,5 GPU-ora, non 0,25 come stimato il 13/10): servono almeno 600 aggiornamenti per il verdetto.
+
+### 2026-10-14 | Claude | Step 2C: la soglia di stabilita' del collaudo e la loss per batch a code pesanti | Job 60477395
+
+- Descrittivo dopo il verdetto: 23 batch sopra 0,25 dopo i primi 100 (fino a 0,555, norma dei gradienti 2,74, il 5,6% degli aggiornamenti al
+  clip), il batch dopo torna nella norma, autocorrelazione dei residui ~0. La media mobile su 50 con una loss di ~0,05 supera 1,5 volte il
+  minimo per pochi batch anomali. Mia lettura: picchi isolati, non divergenza; non e' una prova. Non so ancora quali finestre producano i picchi
+  (le metriche non registrano la sessione). Nessuna modifica ai criteri senza una decisione registrata di Simone.

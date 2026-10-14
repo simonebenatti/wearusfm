@@ -1,0 +1,133 @@
+{
+ "recorded_on": "2026-10-14",
+ "protocol": "step2c_frozen_branches_v1",
+ "phase": "collaudo",
+ "job": {
+  "id": 60477395,
+  "logical_id": "step2c_collaudo",
+  "state": "COMPLETED",
+  "exit": "0:0",
+  "elapsed": "00:25:23",
+  "alloc": "1 A100, 8 CPU, 100 GB, boost_qos_dbg"
+ },
+ "checkout": {
+  "job": 60477316,
+  "deploy_ref": "deploy/step2c-20261014",
+  "sha": "1c9485260aaf32d5936346b50225f5cff1d1b8ea"
+ },
+ "run_provenance": {
+  "protocol": "step2c_frozen_branches_v1",
+  "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+  "arm": "B_seed0",
+  "collaudo": true,
+  "source_checkpoint_sha256": "b264df4b75f7047980212ab068fe524148e71dbdef442d4e75e95648f841d3cd",
+  "input_sha256": {
+   "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+   "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+   "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+   "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+  },
+  "time_limit_s": 1500.0,
+  "steps": 1965,
+  "stopped": "limite di tempo",
+  "complete": false,
+  "encoder_identical": true,
+  "checkpoint_sha256": "f3586303a659faf411aa60dc4399f7d2dc3ff1462468be4ecab31bcf0417a770",
+  "init_checkpoint_sha256": "6d4f9e68fbd59be28ed2fd79eff6b9e833294e1344fe70c174a01e9de5dd6cc8",
+  "raw_check": {
+   "final": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   },
+   "init": {
+    "encoder_tensors": 265,
+    "student": true,
+    "student_step1_head_identical": true,
+    "teacher": true,
+    "teacher_step1_head_identical": true,
+    "encoder_identical": true
+   }
+  },
+  "collaudo_verdict": {
+   "updates": 1965,
+   "criteria": {
+    "min_updates": 600,
+    "window": 100,
+    "learn_ratio": 0.9,
+    "smooth": 50,
+    "max_rise": 1.5,
+    "margin": 1.25,
+    "slack_s": 600,
+    "max_run_h": 2.0
+   },
+   "median_step_s": 0.691185474395752,
+   "median_data_s": 0.045929908752441406,
+   "startup_s": 89.63540053367615,
+   "run_allocation_h": 1.0,
+   "time_ok": true,
+   "integrity": true,
+   "enough_updates": true,
+   "loss_first": 0.23473708763718604,
+   "loss_last": 0.055545897111296656,
+   "learned": true,
+   "max_rise": 1.9737311507339579,
+   "stable": false,
+   "passed": false
+  }
+ },
+ "descriptive_not_criteria": {
+  "note": "Analisi descrittiva di Claude dopo il verdetto; non cambia il verdetto congelato.",
+  "max_rise_window_start": 1577,
+  "max_rise_window_mean": 0.0952,
+  "running_min_window_start": 1211,
+  "running_min_mean": 0.0482,
+  "windows_over_1_5": "137 su 1816 (prima 471, ultima 1734)",
+  "moving_average_200_every_200": [
+   0.1691,
+   0.092,
+   0.0819,
+   0.0701,
+   0.0783,
+   0.0678,
+   0.0596,
+   0.0701,
+   0.0647
+  ],
+  "residual_autocorrelation_after_600_lags_1_5_20_50": [
+   0.084,
+   0.048,
+   -0.013,
+   0.013
+  ],
+  "batches_over_0_25_after_100": 23,
+  "median_loss_of_the_next_batch": 0.0723,
+  "loss_grad_norm_correlation": 0.516,
+  "grad_norm_clipped_fraction": 0.056,
+  "grad_norm_max": 2.74,
+  "grad_norm_max_update": 1578,
+  "loss_update_1578": 0.555,
+  "heads_first_100_last_100": {
+   "fused": [
+    0.185,
+    0.0423
+   ],
+   "psd": [
+    0.2891,
+    0.0686
+   ],
+   "wavelet": [
+    0.2797,
+    0.0691
+   ]
+  }
+ },
+ "cost": {
+  "gpu_hours": 0.423,
+  "local_hours": 3.39,
+  "checkout_core_hours": 0.006
+ }
+}

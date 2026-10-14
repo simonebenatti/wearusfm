@@ -2759,3 +2759,17 @@ GPT trova difetti, si correggono prima dei quattro run. SHA e ID SLURM a seguire
 **Lancio (14/10/2026):** `deploy/step2c-20261014` pubblicato su leonardo a `1c9485260aaf32d5936346b50225f5cff1d1b8ea` (`main` di leonardo
 invariato). Checkout `step2c_checkout` **60477316**: COMPLETED 0:0, 11 s, «checkout di campagna pronto», 440 file in sola lettura. Collaudo
 `step2c_collaudo` **60477395** sottomesso dopo la fine del checkout (dbg, 30 minuti, nodo lrdn0325). Verdetto e consuntivo a seguire.
+
+**Verdetto del collaudo (14/10/2026, letto dopo la fine del job; criteri congelati): NON PASSA, per la sola stabilita'.** `step2c_collaudo`
+60477395 COMPLETED 0:0 in 25 min 23 s; 1.965 aggiornamenti al limite di tempo. Integrita' si' (encoder del teacher identico bit per bit in
+studente e teacher, finale e passo 0, 265 tensori; nessuno STOP); aggiornamenti sufficienti si'; apprendimento si' (loss dei rami 0,235 nei
+primi 100 -> 0,056 negli ultimi 100, rapporto 0,24 contro <= 0,9); tempo si' (0,69 s/passo di mediana, avvio 90 s: allocazione dei run 1 h);
+**stabilita' no: media mobile su 50 aggiornamenti fino a 1,97 volte il minimo raggiunto (soglia 1,5)**, finestra dall'aggiornamento 1577
+(media 0,095) contro il minimo 0,048 della finestra dal 1211; 137 finestre su 1.816 oltre 1,5, dalla 471 alla 1734.
+*Descrittivo, dopo il verdetto (non cambia il verdetto):* la loss per batch ha code pesanti: 23 batch sopra 0,25 dopo i primi 100 (massimo
+0,555 al 1578, con la norma dei gradienti massima 2,74; il 5,6% degli aggiornamenti tocca il clip a 1,0); il batch successivo torna nella norma
+(mediana 0,072); autocorrelazione dei residui dopo il 600 circa 0 (0,08, 0,05, -0,01, 0,01 ai ritardi 1, 5, 20, 50); media mobile su 200
+0,169, 0,092, 0,082, 0,070, 0,078, 0,068, 0,060, 0,070, 0,065. *Mia lettura, da verificare:* picchi isolati di singoli batch, non una
+divergenza; la soglia su 50 aggiornamenti non distingue le due cose quando la loss e' piccola. Come previsto dal protocollo ci si ferma: nessun
+run, nessun ritocco degli iperparametri, decisione a Simone. Riepilogo `results/passo6/step2c_collaudo_20261014.json`.
+**Costo reale (sacct):** 0,423 GPU-ora (3,4 ore locali) + checkout 11 s su 1 CPU; dal budget del passo 6.
