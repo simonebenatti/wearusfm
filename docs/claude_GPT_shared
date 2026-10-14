@@ -523,6 +523,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Mancano nello schema: ancore (RMS, forma spettrale, inviluppo, multiscala; RVQ spenta), montaggi virtuali dalle griglie (D6a), packing dei
   canali variabili senza padding (D6b), scala per sessione (mediana dei MAD), testa dello Step 1 e rami spettrali (sperimentali).
 
+### 2026-10-14 | Claude | Schema corretto della catena JEPA (Parte 7); suite completa dopo le diagnostiche | Base: b01bb33
+
+- Su richiesta di Simone («prepara la versione corretta dello schema, riesci a mantenere la stessa grafica?»): `docs/schemi/catena_jepa_parte7.html`
+  (stessa impaginazione: 7 colonne, flusso, 5 riquadri; mini-grafici illustrativi, non dati) e la sua resa `catena_jepa_parte7.png` (Chrome
+  headless, scala 2). Contenuti verificati sul codice come nella voce precedente: dimensioni dei preset, front-end a kernel continui, encoder
+  locale fra canali vicini, Perceiver a 64 latenti, masking D10 (tubi, spaziale, slab), RoPE, target D11 «b», ancore, embedding P1/P2 unico.
+  Se vedi un errore, va corretto nell'HTML e rigenerato il PNG.
+- Suite CPU completa dopo `5f62444` (diagnostiche della stabilita'): **914 PASS** (908 + 6 nuovi), 13 min 20 s.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
