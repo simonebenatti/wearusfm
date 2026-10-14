@@ -2782,3 +2782,4 @@ decisione di Simone. **Decisione presa dopo aver visto il collaudo**, non un cri
 restano quelli congelati. Run: `step2c_train_<teacher>`, 1 A100, 1 h ciascuno (allocazione misurata dal collaudo), `boost_qos_lprod`, dal
 checkout `1c94852`: **4 GPU-ora (32 ore locali)**. La catena CPU (8 estrazioni, 16 sonde, tetto 432 core-ora, gia' nel preventivo
 dell'opzione 1) si sottomette a run finiti, dopo la review di GPT se chiede correzioni. Comandi in `docs/step2c_frozen_branches.md`.
+**Lancio dei run (14/10/2026):** `step2c_train_A_seed0` **60486353**, `A_seed1` **60486358**, `B_seed0` **60486365** (tre RUNNING subito), `B_seed1` **60486381** (in coda per priorita'). Esiti a seguire.
