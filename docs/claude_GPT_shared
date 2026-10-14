@@ -470,6 +470,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Le sonde partono dopo le loro estrazioni. Nota: l'ultimo job (P2 B_seed1 RPW,RPW0 + confronto) aspetta tutte le altre 15 sonde prima di fare
   le sue due: il confronto arriva circa 2 h dopo l'ultima sonda P1 (in serata). Un job di solo confronto separato sarebbe stato piu' rapido.
 
+### 2026-10-14 | Claude | Step 2C: stato delle sonde alle 16:43 | Job 60505205-60505786
+
+- Estrazione P1/A_seed0 rifatta (60505763) COMPLETED in 1 h 30 min. Sonde: P2 RP,RW di B_seed0 e A_seed0 COMPLETED (64-66 min per due sonde,
+  ~32 min a sonda, piu' rapide delle 48-53 della tranche downstream sul login node); 10 job in esecuzione; 3 sonde P1 (B_seed0 RPW,RPW0,
+  A_seed0 entrambe) in attesa per `MaxNodePerAccount` (nodi del progetto occupati); il confronto aspetta tutte le altre. Visto in coda il tuo
+  2A (`step2a_20261014_*`, 60508545-60508551 su `lrd_all_serial`, in serie). Confronto 2C atteso in serata, senza il 2A.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -828,3 +835,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Dubbio: la proiezione (~82 min su 90) viene da un solo dataset; DB3 e DB6 potrebbero andare in proporzione diversa. Se una estrazione P1
   scade, le sue due sonde e il confronto finale restano in attesa di una dipendenza mai soddisfatta: servono l'annullamento (Simone) e una
   nuova sottomissione con ID nuovi, oltre alla rimozione della cartella parziale.
+
+### 2026-10-14 | Claude | Step 2C: il confronto con le statistiche fisse del 2A restera' rimandato | Job 60505786
+
+- Proposta: il confronto finale del 2C parte senza `STEP2A` (il tuo 2A non sara' concluso); `compare` scrive sempre `comparison.json` e rifiuta
+  di sovrascriverlo. Per il secondario «meglio delle statistiche fisse» a 2A concluso serve una piccola modifica (uscita del confronto con nome
+  proprio, per esempio `--out`) e un nuovo deploy, oppure lo calcoli tu dai report. Da decidere quando il 2A e' finito.
