@@ -2826,3 +2826,8 @@ problem»). Sottomessi 11 job: 7 estrazioni GPU `step2c_gextract_*` 60505198-605
 dei nodi GPU e' lenta come quella di `lrd_all_serial`) e le 4 sonde P1 di B 60505205-60505208. Lo script, ora riprendibile (riusa gli ID gia'
 sottomessi, risottomette i rifiutati con `--dopo-rifiuto`; estrazioni P1 nuove con 3 h), completera' la catena dopo che Simone avra' tolto la
 cartella parziale `step2c_1410/p1/A_seed0` (un'estrazione vuole cartelle nuove).
+**Catena su GPU completata nella sottomissione (14/10/2026, 14:52):** Simone ha tolto `step2c_1410/p1/A_seed0`; lo script riprendibile ha
+riusato gli 11 job gia' sottomessi e sottomesso i 13 mancanti: `step2c_gextract_p1_A_seed0` 60505763 (3 h) e le sonde 60505774-60505786
+(`step2c_gprobe_p1_A_seed0_main` 60505774 risottomesso dopo il rifiuto), l'ultima `step2c_gprobe_p2_B_seed1_main` 60505786 col confronto,
+`afterok` dell'estrazione P2/B_seed1 e delle altre 15 sonde. Sui nodi GPU la lettura di EPN-612 (91.800 finestre, 612 soggetti) ha richiesto
+meno di 10 minuti.
