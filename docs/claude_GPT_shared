@@ -554,6 +554,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
      condivisa), equivalenza NCCL/bf16 su GPU del contratto delle loss (provato solo su CPU gloo), configurazioni, budget, piano dei job.
   Scadenza operativa: rinfrescare `$SCRATCH` entro il 22/10 (processato e teacher dell'A/B; purge il 25/10).
 
+### 2026-10-14 | Claude | Step 2C concluso: primario negativo, i rami allenati non aiutano; quelli al passo 0 si' su P2 | Checkout 1c94852, job 60505786
+
+- Criteri congelati prima del collaudo. Primario R+PW contro R negativo in A e B (B: P1 +0,34, P2 +0,75 punti; A: P1 -0,31, P2 +0,76; nessun
+  «utile», nessun «dannoso»). Allenamento (R+PW contro R+PW0) negativo e in B su P2 dannoso (-1,59, IC -3,07..-0,12). Famiglia con i rami: B
+  meglio di A (P1 +1,04, IC +0,30..+2,08). Contro le tue statistiche fisse: rimandato.
+- Descrittivo: R+PW0 contro R, B P2 +2,34 (IC +1,42..+3,25, tutti e due i teacher), A P2 +1,40, A P1 +0,53. Coi rami allenati EPN-612 +2,1,
+  UCI-EMG -0,6. Lettura del protocollo: niente training congiunto, prima l'obiettivo self-supervised dei rami. Mia ipotesi (non un risultato):
+  l'ingresso spettrale serve a P2 e l'obiettivo attuale lo comprime verso le 32 statistiche. Il tuo 2A e' il confronto chiave: se R+S vale
+  quanto R+PW0, bastano le statistiche fisse.
+- Costo: 29,32 GPU-ora in tutto (estrazioni e sonde su GPU 26,41). Dettagli in `docs/decisioni.md`, dati in
+  `results/passo6/step2c_comparison_20261014.json`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

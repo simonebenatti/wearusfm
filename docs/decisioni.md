@@ -2845,3 +2845,28 @@ Implementate in `training/run.py` (Claude): loss su un insieme fisso di batch de
 (`fixed_eval.jsonl`, identita' dell'insieme in `fixed_eval_set.json`) e origine di ogni finestra in `metrics.jsonl` (`log_batch_origin`,
 sessioni in `origin_sessions.json`). Spente per default; non cambiano il training (provato bit per bit). La regola di stabilita' del prossimo
 collaudo su queste misure si scrive con GPT prima di quel collaudo. Nessun job.
+
+### Esito dello step 2C (14/10/2026, letto dopo la fine della catena; criteri congelati il 14/10 prima del collaudo)
+
+Catena completa: 8 estrazioni e 16 job di sonda COMPLETED 0:0; confronto nel job 60505786 (checkout `1c94852`). Riepilogo completo in
+`results/passo6/step2c_comparison_20261014.json`. Delta = accuratezza bilanciata della variante - riferimento, media dei due teacher, in punti.
+- **Primario, R+PW contro R: NEGATIVO per tutte e due le famiglie** (nessun task «utile»; non dannoso in nessuno).
+  B: P1 +0,34 (IC -0,04..+0,73; teacher +0,37, +0,31), P2 +0,75 (IC -0,76..+2,26; +0,89, +0,60). A: P1 -0,31 (IC -0,80..+0,18), P2 +0,76
+  (IC -0,77..+2,29).
+- **Secondario, l'allenamento conta (R+PW contro R+PW0): negativo**; l'allenamento dei rami **peggiora**: B P2 -1,59 (IC -3,07..-0,12, tutti e
+  due i teacher negativi: «dannoso» per la regola), A P1 -0,84 (IC -1,38..-0,39).
+- **Secondario, quale famiglia con i rami: «B»** (P1 +1,04, IC +0,30..+2,08, tutti e due i teacher positivi; P2 +0,81 non dannoso). Sul solo
+  raw B - A: P1 +0,38, P2 +0,82, nessuno «utile».
+- Secondario contro le statistiche fisse del 2A: rimandato (2A non concluso).
+- *Descrittivo (non pre-registrato come test):* i rami NON allenati (passo 0) aggiungono piu' di quelli allenati: R+PW0 contro R, B P2 +2,34 (IC
+  +1,42..+3,25; +1,79, +2,88), A P2 +1,40 (IC +0,21..+2,59), A P1 +0,53 (IC +0,22..+0,91); B P1 -0,10. Per dataset, coi rami allenati: EPN-612
+  +2,13 in tutte e due le famiglie, UCI-EMG -0,6, NinaPro entro +-0,5. Contributi dei singoli rami (R+P, R+W) tutti sotto 1 punto.
+- **Lettura secondo il protocollo:** negativo -> i rami cosi' allenati (target dello Step 1 sul readout) non aggiungono informazione utile alla
+  sonda lineare: prima l'obiettivo self-supervised dei rami (punto 3), nessun training congiunto. *Ipotesi di Claude, da verificare, non un
+  risultato:* l'ingresso spettrale dei rami porta informazione utile a P2 (il passo 0 e' una proiezione casuale delle log-potenze calibrate),
+  e l'obiettivo attuale la comprime verso le 32 statistiche dello Step 1, perdendone una parte. Il 2A (statistiche fisse) dira' se basta
+  l'ingresso spettrale senza rami. Incertezza condizionata ai due teacher per famiglia; P2 con intervallo descrittivo; piu' confronti senza
+  correzione.
+**Costo reale (sacct):** collaudo 0,423 + training 2,487 + estrazioni e sonde sui nodi GPU 26,41 (estrazioni 8,92, sonde 17,49) =
+**29,32 GPU-ora (234,6 ore locali)**, entro i tetti (8,5 per collaudo e training; 57 per la catena su GPU); CPU ~15,1 core-ora (estrazione
+60491778 scaduta e 60491780 annullata). Dal budget del passo 6.
