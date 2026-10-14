@@ -619,6 +619,22 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   restituisce lo stato (file temporaneo); in alternativa importare scipy.signal e sklearn prima di torch nel tuo wrapper, come la variante che
   passa. Il gate sullo SHA resta com'e'. Rapporto completo in `results/passo6/diag_initial_state_20261014.json`.
 
+### 2026-10-14 | Claude | Punti 6 e 4: protocollo GPU/dati, bozza della regola di stabilita', fattibilita' della finestra 1 (da rivedere)
+
+- Simone: «protocollo GPU/dati (6), bozza della regola di stabilità (4) e fattibilità dei job (6)». Tre documenti, nessun job:
+  - `docs/protocollo_gpu_dati_finestra1.md` (`w1_gpu_dati_v1`): (A) equivalenza 1 contro 4 GPU NCCL e accumulo, float32 (TF32 spento) e bf16,
+    su 8 batch globali FISSI (il DDP ha uno stream per processo: i training non sono confrontabili passo per passo); criteri congelati:
+    float32 entro 1e-5 relativo, bf16 con errore del DDP non superiore a quello del bf16 contro float32 e loss entro l'1%; script nuovo da
+    scrivere dopo l'accordo. (B) attesa sui dati <= 2% (D6a) al 30M, batch 32 e 64. (C) s/passo e memoria a 100M/300M, batch 32 e 64.
+    Tetto 14 GPU-ora (stima ~8) dal budget dell'infrastruttura.
+  - `docs/regola_stabilita_bozza.md`: v2 sul pannello fisso (8 x 32 finestre, cadenza 100 nei collaudi e 500 nei run lunghi); allarme su
+    valore non finito o regressione persistente L_t > (1 + δ) m_t per k valutazioni consecutive, proposta δ = 0,10, k = 3; apprendimento
+    L_fine <= 0,9 L_0 nei collaudi; nei run lunghi l'allarme avvisa e non ferma. δ e k a priori: proposta di un collaudo di sola
+    calibrazione se vuoi numeri. Da rivedere e congelare con te.
+  - `docs/finestra1_fattibilita.md`: sui bracci della tua bozza, ~4.600–5.200 GPU-ora (ablation 30M ~2.100, asse soggetti ~1.210, pilot
+    ~640, esposizione 270–790, calibrazione ~180 segnaposto, valutazione ~200): nel budget di novembre; il limite e' il calendario (~1.100–1.250
+    nodo-ore: con 4 nodi ~12 giorni, nessun margine sul 15/11). Base: 0,73 s/passo misurati al 30M, 100M/300M stimati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1030,3 +1046,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   (cambia l'ordine in cui vengono caricate e quali simboli si legano prima, ipotesi). Per la baseline basta riprodurre il contesto; capirne il
   meccanismo servirebbe a rendere il calcolo di `fe_gain` indipendente dall'ambiente in futuro (es. calcolarlo una volta e fissarlo come
   costante nel codice), da decidere separatamente.
+
+### 2026-10-14 | Claude | Finestra 1: vincoli di calendario da verificare
+
+- Tetto di nodi dell'account: il 14/10 sonde 2C in coda per `MaxNodePerAccount`. Va letto (`sacctmgr`/`sshare`, non ammessi oggi a
+  leonardo-ops) prima di firmare il calendario.
+- Valutazione dei ~60 checkpoint: la coda CPU per utente e' seriale; va fatta sui nodi GPU (come il 2C) o con un'altra soluzione.
+- Bracci della tua bozza non implementati (soli target espliciti, waveform MSE, identita' solo geometria e gating, bottleneck a 2 blocchi):
+  proprietari e date da concordare, collaudo entro il 31/10. Manifest annidati per soggetto (D16) da verificare.
