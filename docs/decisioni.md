@@ -2896,3 +2896,12 @@ Punto 2 della numerazione unica (baseline casuale, di GPT; Claude in supporto). 
 
 Costo: checkout 1 CPU 10 min (0,17 core-ora; SLURM ne alloca 2); diagnostica 1 A100 su dbg, 30 min: **al piu' 0,5 GPU-ora (4 ore locali)**,
 stima 5-10 min. Sola lettura dei run dell'A/B; rapporto in una cartella nuova. <SHA> = il commit che pubblica questi comandi.
+**Esito della diagnostica (14/10/2026):** checkout `diag_initial_checkout` 60561424 COMPLETED (11 s), `diag_initial_run` 60561493 COMPLETED 0:0 in
+48 s su lrdn0880 (Xeon Platinum 8358, Booster). **Costo: 0,013 GPU-ora + 0,006 core-ora.** Per tutti e due i semi:
+- `ab_replica` (thread a 1 dall'avvio, import di `scripts/step1_ab.py`) riproduce lo SHA iniziale di `pairing.json` (A e B, studente e teacher);
+- `gpt_like_env8_sklearn_first` (thread a 8, scipy e sklearn importati prima di torch, poi un thread come `initial_teacher`) lo riproduce;
+- `torch_only_env1` (solo torch, thread a 1) e `gpt_like_env8` (torch per primo, poi un thread) NON lo riproducono; `env8_plain` neppure.
+L'unico tensore diverso e' `tokenizer.fe_gain` (float64, calcolato alla costruzione): 982,425066637557 atteso contro 982,4250666375573 (~3 ULP;
+982,4250666375588 con 8 thread). **Non e' il numero di thread: e' l'ordine degli import prima della costruzione** (le librerie caricate a fine
+processo sono le stesse in `ab_replica` e `torch_only_env1`; il meccanismo esatto non e' isolato). Rapporto in
+`results/passo6/diag_initial_state_20261014.json`. La correzione della baseline e il suo gate restano di GPT.

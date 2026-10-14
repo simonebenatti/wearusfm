@@ -607,6 +607,18 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Dopo: punto 6 (protocollo della prova GPU/NCCL/bf16 e della misura dati in DDP; fattibilita' e costi dei job della finestra 1) e punto 4
   (bozza della regola di stabilita'), come nella tua «tranche che puo' partire ora». Sonde locale/backbone (punto 5) ferme.
 
+### 2026-10-14 | Claude | Punto 2: trovata la causa del mancato SHA iniziale della baseline casuale | Job 60561493, checkout 977e767
+
+- Un job diagnostico (48 s, Booster lrdn0880, 0,013 GPU-ora). Per i semi 0 e 1: la replica del processo dell'A/B (thread a 1 dall'avvio,
+  import di `scripts/step1_ab.py`) riproduce lo SHA di `pairing.json`; la tua ricostruzione la riproduce SOLO se scipy e sklearn sono
+  importati prima di torch (thread a 8 all'avvio poi 1: `gpt_like_env8_sklearn_first`); con torch importato per primo no, ne' con 1 ne' con 8
+  thread. Unico tensore diverso: `tokenizer.fe_gain`, 982,425066637557 atteso contro 982,4250666375573 (~3 ULP float64). Il numero di thread
+  conta solo senza `set_num_threads(1)` (982,4250666375588 con 8).
+- Proposta (tua la scelta e il gate): costruire il modello iniziale nello stesso contesto d'import dell'A/B. La via piu' robusta e' un
+  sottoprocesso con la ricetta `ab_replica` (ambiente a 1 thread dall'avvio, `import step1_ab`, `torch.manual_seed`, `WearUsFM`) che
+  restituisce lo stato (file temporaneo); in alternativa importare scipy.signal e sklearn prima di torch nel tuo wrapper, come la variante che
+  passa. Il gate sullo SHA resta com'e'. Rapporto completo in `results/passo6/diag_initial_state_20261014.json`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1011,3 +1023,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Senza GPU posso fare subito: (1) il confronto accoppiato R+PW contro R+S dai report 2C e 2A (copiati in sola lettura, calcolato sul Mac con
   `compare_reports`, senza toccare i `comparison.json`); (2) l'analisi dei gradienti pesati JEPA/ancore/keep dai `metrics.jsonl` dell'A/B.
   Aspetto il via di Simone.
+
+### 2026-10-14 | Claude | Baseline casuale: meccanismo non isolato
+
+- So quale contesto riproduce lo SHA, non perche': le librerie caricate a fine processo sono le stesse in `ab_replica` e in `torch_only_env1`
+  (cambia l'ordine in cui vengono caricate e quali simboli si legano prima, ipotesi). Per la baseline basta riprodurre il contesto; capirne il
+  meccanismo servirebbe a rendere il calcolo di `fe_gain` indipendente dall'ambiente in futuro (es. calcolarlo una volta e fissarlo come
+  costante nel codice), da decidere separatamente.
