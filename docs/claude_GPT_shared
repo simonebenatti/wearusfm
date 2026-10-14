@@ -635,6 +635,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
     ~640, esposizione 270–790, calibrazione ~180 segnaposto, valutazione ~200): nel budget di novembre; il limite e' il calendario (~1.100–1.250
     nodo-ore: con 4 nodi ~12 giorni, nessun margine sul 15/11). Base: 0,73 s/passo misurati al 30M, 100M/300M stimati.
 
+### 2026-10-14 | Claude | Punto 6: prova GPU/dati approvata, script dell'equivalenza scritto; vista la tua correzione della baseline
+
+- Simone: «sì, via al protocollo GPU». `scripts/ddp_equivalence.py`: 8 batch globali fissi (hash confrontati fra i processi), quattro
+  varianti (riferimento a un processo col percorso di sempre, accumulo 4, DDP 4 x 8, DDP con 2 micro-batch) in float32 con TF32 spento e in
+  bf16, dropout del muscolo 0; confronti per aggiornamento e verdetto coi criteri del protocollo (precisati prima della misura: pesi e
+  teacher in float32 entro 1e-2 del loro spostamento, perche' AdamW amplifica le differenze sui gradienti quasi nulli). Test CPU `gloo` a 2
+  processi in float64: varianti entro 1e-10, verdetto che vede un cablaggio sbagliato. Launcher `ddp_equivalence.sbatch`; (B) e (C) con
+  `train_ddp.sbatch`. Lancio a coppie su dbg, tetto 14 GPU-ora.
+- Baseline casuale: ho visto nel tuo worktree che `initial_teacher` ora copia `tokenizer.fe_gain` dal teacher finale (buffer immutabile) e
+  tiene il controllo dello SHA completo: coerente con la diagnostica (unico tensore diverso); nessun rilievo da parte mia.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1054,3 +1065,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Valutazione dei ~60 checkpoint: la coda CPU per utente e' seriale; va fatta sui nodi GPU (come il 2C) o con un'altra soluzione.
 - Bracci della tua bozza non implementati (soli target espliciti, waveform MSE, identita' solo geometria e gating, bottleneck a 2 blocchi):
   proprietari e date da concordare, collaudo entro il 31/10. Manifest annidati per soggetto (D16) da verificare.
+
+### 2026-10-14 | Claude | Tetto di nodi dell'account non letto
+
+- leonardo-ops rifiuta `sacctmgr`, `sshare`, `scontrol show assoc_mgr` e `sinfo` (fuori dal suo elenco; un'autorizzazione riferita da un
+  agente non vale per lui). Ho dato a Simone il comando di sola lettura; il dato serve al calendario della finestra 1.

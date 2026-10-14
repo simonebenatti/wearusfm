@@ -32,11 +32,13 @@ confrontano due training. Si confrontano **gli stessi batch globali** calcolati 
   sullo stesso processo (rumore del bf16 fra due calcoli identici, descrittivo).
 - **Quantita' confrontate**, per aggiornamento: loss totale e per componente; gradiente dopo la riduzione (norma L2 relativa della differenza,
   coseno); pesi dopo clipping e AdamW; teacher dopo l'EMA (norma relativa della differenza).
-- **Criteri (congelati):**
-  - float32: ogni differenza relativa fra 2, 3, 4 e il riferimento <= 1e-5 in tutti gli 8 aggiornamenti (restano solo l'ordine delle riduzioni
-    NCCL e i kernel non deterministici);
-  - bf16: per ogni quantita' e aggiornamento, ||variante bf16 - riferimento bf16|| <= ||riferimento bf16 - riferimento float32|| (il DDP e
-    l'accumulo non aggiungono piu' errore del bf16 stesso), e loss totale entro l'1% relativo;
+- **Criteri (congelati; precisati il 14/10 scrivendo lo script, prima di qualunque misura):**
+  - float32: loss totale e gradiente ridotto entro 1e-5 relativo al riferimento in tutti gli 8 aggiornamenti (restano solo l'ordine delle
+    riduzioni NCCL e i kernel non deterministici); pesi e teacher entro **1e-2 del loro spostamento** dallo stato iniziale (controllo del
+    cablaggio di optimizer ed EMA: AdamW normalizza per elemento e amplifica le differenze minime sui gradienti quasi nulli, quindi 1e-5 sui
+    pesi non sarebbe una soglia numerica sensata; un errore di cablaggio, es. un learning rate doppio, sposta i pesi di ordine 1);
+  - bf16: loss totale entro l'1% relativo; gradiente, pesi e teacher: distanza dal riferimento bf16 <= distanza fra riferimento bf16 e
+    riferimento float32 allo stesso aggiornamento (il DDP e l'accumulo non aggiungono piu' errore del bf16 stesso);
   - **superata** se valgono tutti; altrimenti si ferma la finestra 1 su DDP finche' non e' capita la differenza (nessuna tolleranza allargata
     dopo la misura).
 - Test CPU dello script prima del lancio: `gloo` a 2 processi in float64 entro 1e-10 (stesso confronto del contratto).
@@ -76,3 +78,27 @@ finestra 1» (25 GPU-ora, usate 0,36). dbg ammette 2 job alla volta: si sottomet
 
 `scripts/ddp_equivalence.py` (riusa `_accumulate_terms`, `_ddp_wrap` e la costruzione del trainer; nessuna modifica a `train()`), il suo test
 CPU `gloo`, e il launcher `scripts/slurm/ddp_equivalence.sbatch`. Per (B) e (C) bastano il trainer e `train_ddp.sbatch` esistenti.
+
+## Comandi (Simone, 14/10/2026: «sì, via al protocollo GPU»)
+
+Codice: `scripts/ddp_equivalence.py` (test CPU `tests/cpu/test_ddp_equivalence_script.py`: `gloo` a 2 processi in float64, varianti entro
+1e-10), `scripts/slurm/ddp_equivalence.sbatch`; per (B) e (C) `scripts/slurm/train_ddp.sbatch`. Riferimento di deploy `deploy/w1gd-20261014`
+allo SHA del commit che pubblica questi comandi, checkout di campagna, poi i job in coppie (dbg ammette 2 job per utente), via leonardo-ops.
+
+    C=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1gd-20261014
+    M=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz
+    S=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json
+    W=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json
+    RUN=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1gd_1410      # cartelle nuove dei run (B) e (C)
+    OUT=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1gd_1410             # rapporto di (A)
+
+    w1gd_equiv:       ddp_equivalence.sbatch $M $S $W $OUT/equivalence.json
+    w1gd_data_b32:    PRESET=sanity, EXTRA_ARGS="--window1-rules --window-seconds $W --datasets all --batch-size 32", 600 passi, $RUN/data_b32
+    w1gd_data_b64:    come sopra con --batch-size 64, $RUN/data_b64
+    w1gd_tp_100m_b32: PRESET=100m, --batch-size 32, 300 passi, $RUN/tp_100m_b32
+    w1gd_tp_100m_b64: PRESET=100m, --batch-size 64, 300 passi, $RUN/tp_100m_b64
+    w1gd_tp_300m_b32: PRESET=300m, --batch-size 32, 300 passi, $RUN/tp_300m_b32
+    w1gd_tp_300m_b64: PRESET=300m, --batch-size 64 --accum-steps 2, 200 passi, $RUN/tp_300m_b64
+
+Per (B) e (C): `--export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA>,PRESET=...,TIME_LIMIT_S=1500,EXTRA_ARGS=...` con `train_ddp.sbatch $M $S <run> <passi>`.
+Ogni job con `submit_job.py --gpu-ore 2`; la frazione d'attesa si calcola dopo, dai `metrics.jsonl` copiati.

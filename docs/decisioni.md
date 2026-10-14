@@ -2905,3 +2905,12 @@ L'unico tensore diverso e' `tokenizer.fe_gain` (float64, calcolato alla costruzi
 982,4250666375588 con 8 thread). **Non e' il numero di thread: e' l'ordine degli import prima della costruzione** (le librerie caricate a fine
 processo sono le stesse in `ab_replica` e `torch_only_env1`; il meccanismo esatto non e' isolato). Rapporto in
 `results/passo6/diag_initial_state_20261014.json`. La correzione della baseline e il suo gate restano di GPT.
+
+### Prova GPU/dati della finestra 1 approvata (Simone, 14/10/2026: «sì, via al protocollo GPU e leggi il tetto di nodi»)
+
+Protocollo `w1_gpu_dati_v1` (`docs/protocollo_gpu_dati_finestra1.md`): (A) equivalenza 1 contro 4 GPU NCCL e accumulo in float32 e bf16 su 8
+batch fissi (`scripts/ddp_equivalence.py`, test CPU entro 1e-10); (B) attesa sui dati al 30M, batch 32 e 64; (C) s/passo e memoria a 100M e
+300M. Criteri precisati prima di qualunque misura: in float32 pesi e teacher entro 1e-2 del loro spostamento (AdamW amplifica le differenze
+sui gradienti quasi nulli), loss e gradienti entro 1e-5. Sette job da 4 GPU su dbg, **tetto 14 GPU-ora (112 ore locali)**, stima ~8, dal
+budget «preparazione dell'infrastruttura» (25, usate 0,36). Tetto di nodi dell'account: leonardo-ops non esegue `sacctmgr`/`sshare` (fuori
+dal suo elenco); comando di sola lettura dato a Simone.
