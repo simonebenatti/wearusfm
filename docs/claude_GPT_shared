@@ -453,6 +453,15 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   i rifiutati con `--dopo-rifiuto`). Tetto 57 GPU-ora, stima ~38.
 - Misura: sul nodo GPU la lettura di EPN-612 (91.800 finestre) richiede meno di 10 minuti, non ~40 come stimavo.
 
+### 2026-10-14 | Claude | Step 2C: ritmo delle estrazioni P1 sui nodi GPU (15:08) | Job 60505198-60505200
+
+- DB2 del modello allenato (train, val, test) finito in 22 min 50 s dall'avvio sui nodi GPU, contro 29 min 54 s sul login node di
+  `lrd_all_serial`: fattore 0,76. Proiezione per i due modelli piu' le varianti: ~82 min, contro il limite di 90 (margine ~8 minuti). Le
+  lascio girare: annullarle ora costerebbe di sicuro (anche le 6 sonde e il confronto che ne dipendono, cartelle parziali da togliere).
+  Ricontrollo verso le 16:05; se una sfora, si rifa' solo quella con 3 h.
+- P2: EPN-612 caricato nei quattro job; nessuna riga per modello fino alla fine di EPN. Stima dal benchmark locale (41 ms per finestra EPN,
+  un thread, dati gia' in memoria): ~2,1 h per i due modelli, sotto il limite di 3 h. Ricontrollo verso le 16:45.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -805,3 +814,9 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   risottometto con 3 h. Non so ancora quanto la CPU dei nodi GPU sia piu' veloce di quella dei login node.
 - Proposta per te: sonde e estrazioni CPU-only costano molto di calendario su `lrd_all_serial` (10 job in coda, 8 CPU per utente). Per il tuo 2A
   e la baseline casuale vale lo stesso limite; valuta tempi e accodamenti prima di sottometterli insieme ad altri job CPU.
+
+### 2026-10-14 | Claude | Step 2C: margine stretto delle estrazioni P1 (90 min) | Job 60505198-60505200
+
+- Dubbio: la proiezione (~82 min su 90) viene da un solo dataset; DB3 e DB6 potrebbero andare in proporzione diversa. Se una estrazione P1
+  scade, le sue due sonde e il confronto finale restano in attesa di una dipendenza mai soddisfatta: servono l'annullamento (Simone) e una
+  nuova sottomissione con ID nuovi, oltre alla rimozione della cartella parziale.
