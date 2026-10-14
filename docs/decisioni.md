@@ -2721,3 +2721,29 @@ encoder casuale; obiettivo self-supervised dei rami; training congiunto). Protoc
   statistiche fisse) e contro R+PW al passo 0 (l'allenamento conta). Descrittivi: R+P, R+W, dataset, teacher, supporto, encoder casuale di GPT.
 - **Costo da autorizzare:** tetto 3 GPU-ora (24 ore locali) + 192 core-ora CPU; stima ~1,5 GPU-ora + ~125 core-ora. Da decidere prima: un
   training o tre per teacher; iperparametri dei rami o breve collaudo su dbg; teacher B soli o anche A.
+
+## Step 2C approvato: tre scelte di Simone, collaudo su dbg, teacher A e B, criteri congelati (Claude, 14/10/2026)
+
+Simone, sul disegno di `step2c_frozen_branches_v1`: «per questa mi piace la tua proposta, direi di procedere», e sulle tre scelte aperte:
+«1) Quanti training: uno per teacher con i due rami, contributi per sottrazione», «2) un breve collaudo su dbg della curva di loss, circa
+0,25 GPU-ora, che misurerebbe anche i tempi», «3) [...] Io proverei entrambe le soluzioni e valutiamo quale è la migliore, non abbiamo problemi
+di ore sulla GPU», poi «se hai tutto vai pure». GPT (via Simone): il controllo con encoder casuale e' pronto; review indipendente del codice del
+2C prima del lancio. Protocollo aggiornato in `docs/step2c_frozen_branches.md`, codice in `scripts/step2c.py`. **Nessun job lanciato.**
+- **Teacher:** A_seed0, A_seed1, B_seed0, B_seed1 congelati, un training per teacher (PSD + wavelet, solo termine dei rami con peso 1, alpha
+  0,5, lr 1e-3, warmup 100, costante, weight decay 0,05, clip 1,0, 3.000 aggiornamenti, dati e configurazione del braccio dell'A/B). Encoder del
+  run (finale e passo 0) uguale bit per bit al teacher d'origine, o niente estrazione.
+- **Collaudo congelato (prima di guardarlo):** B_seed0 su dbg, 30 minuti. Passa se: integrita' (nessuno STOP, encoder intatto, passo 0
+  salvato); almeno 600 aggiornamenti; media della loss dei rami sugli ultimi 100 aggiornamenti <= 0,9 x quella dei primi 100; loss finita e media
+  mobile su 50 aggiornamenti, dopo i primi 100, mai oltre 1,5 volte il minimo fin li'; allocazione dei run = (avvio + 3.000 x mediana s/passo) x
+  1,25 + 10 min, al quarto d'ora, al piu' 2 ore. Non passa -> stop e nuova decisione, nessun ritocco automatico degli iperparametri.
+- **Criteri congelati:** regola del 2A (utile: delta >= +0,01, limite inferiore > 0, delta > 0 con i due teacher; non dannoso: >= -0,01;
+  positivo: utile in un task e non dannoso nei due). Primario per famiglia (A e B separatamente): R+PW contro R. Secondari: R+PW contro R+PW0
+  (per famiglia); R+PW contro R+S del 2A (solo B; rimandato se il 2A non e' concluso, report verificato per hash nel confronto del 2A); quale
+  famiglia: R+PW di B contro R+PW di A accoppiati per seme, «B» se la regola vale su B - A, «A» se vale su A - B, altrimenti nessuna differenza
+  oltre le soglie. Descrittivi: R+P, R+W, R+PW0 contro R, A/B sul solo raw, loss, supporto, encoder casuale di GPT.
+- **Review GPT del 14/10 sul codice dei rami (3dba14c), corrette:** a encoder congelato il totale ora e' `branch_weight` x termine dei rami (prima
+  il peso non entrava nel backward); le teste del readout devono avere la stessa calibrazione dei target della testa raw (`stats_fitted`,
+  `target_active`, `target_mean`, `target_std`), controllata a ogni passo e quando il trainer prepara o riprende un modello.
+- **Costo da autorizzare (in due tempi):** collaudo <= 0,5 GPU-ora (4 ore locali); poi quattro training <= 2 h ciascuno, 8 estrazioni e 16
+  sonde CPU. Tetto complessivo 8,5 GPU-ora (68 ore locali GPU) + 432 core-ora CPU; stima ~4,5 GPU-ora + ~270 core-ora. Disco ~15 GB su
+  `$WORK`. Dal budget del passo 6.

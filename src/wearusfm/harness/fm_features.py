@@ -19,7 +19,7 @@ import numpy as np
 import torch
 
 from wearusfm.data import pretraining_loader as L
-from wearusfm.harness.feature_sets import FEATURE_SETS
+from wearusfm.harness.feature_sets import FEATURE_SETS, uses_model
 from wearusfm.ingest.common import montage_to_dict
 from wearusfm.metadata.schema import (AnatomicalIdentity, AnatomicalPrecision, ChannelGroup, ChannelMetadata, Chirality, MontageMetadata,
                                       RawOrEnvelope, SensorCoordinates, Topology)
@@ -88,6 +88,14 @@ def model_width(model: WearUsFM) -> int:
     return 2 * model.cfg.dim + model.cfg.branch_dim * len(model.cfg.spectral_branches)
 
 
+def feature_width(model: WearUsFM, feature_set: str) -> int:
+    """Colonne del modello in un insieme di feature (`feature_sets.cache_record`): l'embedding ("model..."), le sole uscite dei rami
+    ("branches"), nessuna (statistiche, maschera)."""
+    if feature_set == "branches":
+        return model.cfg.branch_dim * len(model.cfg.spectral_branches)
+    return model_width(model) if uses_model(feature_set) else 0
+
+
 def spectral_stats(x: np.ndarray, fs: float, limit: np.ndarray, qc_valid: np.ndarray, guard: int) -> tuple[np.ndarray, np.ndarray]:
     """(32,) e maschera (32,): i target globali dello Step 1 (`global_spectral_targets` sulle ancore multiscala) di un ritaglio gia' filtrato e
     scalato (C, T), con le zone di bordo del pretraining."""
@@ -106,12 +114,17 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
     """windows: (N, T, C) alla frequenza `fs`, canali nell'ordine del montaggio. Ritorna (N, D) float32. Con `feature_set` "model" (default):
     D = 2d, piu' i rami spettrali del modello se ne ha (`spectral_branches.readout`, lo stesso readout della loss del training); le altre
     varianti in `FEATURE_SETS`: "stats" = 32 statistiche (0 se mancanti) + 32 indicatori, "mask" = i soli 32 indicatori, "model+..." le
-    concatenano all'embedding. Con due ritagli: media delle statistiche dove valgono, indicatore se valgono in almeno uno.
+    concatenano all'embedding; "branches" = le sole uscite dei rami (le colonne dopo le prime 2d dell'embedding, calcolate allo stesso modo),
+    senza l'encode raw (step 2C: la parte raw e' gia' estratta dal teacher d'origine congelato). Con due ritagli: media delle statistiche dove
+    valgono, indicatore se valgono in almeno uno.
     Ogni ritaglio, filtrato da solo, ha i transitori del filtro a tutti e due i bordi: `edge_guard_s` li esclude dal supporto dei rami e delle
     statistiche (come `anchor_edge_guard_s` del pretraining)."""
     if feature_set not in FEATURE_SETS:
         raise ValueError(f"feature_set {feature_set!r}: uno di {FEATURE_SETS}")
-    use_model, use_stats = feature_set.startswith("model"), feature_set != "model"
+    use_model, use_stats = uses_model(feature_set), feature_set not in ("model", "branches")
+    branches_only = feature_set == "branches"
+    if branches_only and getattr(model, "spectral_branches", None) is None:
+        raise ValueError("feature_set 'branches': il modello non ha rami spettrali")
     model.eval()
     layout, code = CC.layout_from_montage(montage), CC.anatomy_codes(montage)
     sets = CC.attention_sets(layout, k_neighbors)
@@ -120,7 +133,7 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
         raise ValueError(f"{windows.shape[2]} canali per un montaggio da {c}")
     scales = subject_scales(windows, np.asarray(subjects), fs, band, scale_windows)
     amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=str(device).startswith("cuda"))
-    feats = np.zeros((len(windows), model_width(model)), dtype=np.float32) if use_model else None
+    feats = np.zeros((len(windows), feature_width(model, feature_set)), dtype=np.float32) if use_model else None
     stat_sum, stat_n = np.zeros((len(windows), 32)), np.zeros((len(windows), 32))
     limit, g = band_limit_hz(montage, fs), int(round(edge_guard_s * fs))
     crops = _crops(windows.shape[1], fs, crop_s)
@@ -141,7 +154,10 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
                               {k: v.to(device) for k, v in sets_to_tensors(CC.pack_attention_sets([sets] * n)).items()}, [c] * n,
                               torch.as_tensor(layout.qc_valid).repeat(n).to(device), band_limit=[limit] * n, edge_guard=[(g, g)] * n)
             with amp:
-                z = readout(model, model.encode(inp, None), inp)
+                if branches_only:  # come le colonne dei rami in `readout`, senza l'encode raw
+                    z = torch.cat([v.float() for v in model.spectral_branches(inp).values()], -1)
+                else:
+                    z = readout(model, model.encode(inp, None), inp)
             feats[i:i + n] += z.float().cpu().numpy() / len(crops)
     if not use_stats:
         return feats

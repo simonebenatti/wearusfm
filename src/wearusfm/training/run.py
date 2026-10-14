@@ -759,6 +759,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             say(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
         if ctx.active:  # dropout del muscolo: un generatore diverso per processo (i dati sono gia' diversi)
             torch.manual_seed(cfg.seed * 1_000_003 + ctx.rank + 1)
+    if student.branch_heads is not None:  # calibrazione dei target uguale per tutte le teste, anche in un checkpoint ripreso
+        from wearusfm.model.spectral_branches import check_head_calibration
+        check_head_calibration(student)
     model = None
     if ctx.active:
         model = _ddp_wrap(student, cfg, ctx, device)
@@ -771,12 +774,26 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             "teacher_initial_sha256": state_sha256(teacher.state_dict()),
             "seed": cfg.seed, "num_workers": num_workers, "resume": False,
         }, indent=2))
+    def payload(extra: dict) -> dict:
+        return {"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
+                "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
+                "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+                "stream": stream, **extra}
+
+    init_sha = None
+    if cfg.freeze_encoder and resume_state is None:  # un processo solo (controllato sopra)
+        # step 2C: il controllo «rami non allenati» e' lo stesso modello al passo 0, rami calibrati e teste mai allenate
+        init_ckpt = out_dir / "checkpoint_init.pt"
+        torch.save(payload({}), init_ckpt.with_suffix(".tmp"))
+        init_ckpt.with_suffix(".tmp").replace(init_ckpt)
+        init_sha = sha256_file(init_ckpt)
     if ctx.is_main:
         (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
         if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
             (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
         if frozen_init is not None or branch_calibration is not None:  # rami spettrali: encoder congelato e calibrazione (solo all'inizio)
-            (out_dir / "spectral_branches.json").write_text(json.dumps({"frozen_init": frozen_init, "calibration": branch_calibration}, indent=1))
+            (out_dir / "spectral_branches.json").write_text(json.dumps({"frozen_init": frozen_init, "calibration": branch_calibration,
+                                                                        "init_checkpoint_sha256": init_sha}, indent=1))
     scales = dict(scales or {})
     val = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
@@ -806,11 +823,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             torch.distributed.all_gather_object(rank_rng, mine)
             extra = {"rank_rng": rank_rng, "world_size": ctx.world_size}
         if ctx.is_main:
-            torch.save({"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
-                        "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
-                        "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
-                        "stream": stream, **extra},
-                       ckpt.with_suffix(".tmp"))
+            torch.save(payload(extra), ckpt.with_suffix(".tmp"))
             ckpt.with_suffix(".tmp").replace(ckpt)
             for name in names:
                 tmp = out_dir / (name + ".tmp")
@@ -850,7 +863,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 if cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
                     from wearusfm.model.spectral_branches import readout_objectives
                     kb, kb_metrics = readout_objectives(student, inp, batch.anchor_targets, keep=False)["keep_branches"]
-                    losses = {"total": kb, "keep_branches": kb, **kb_metrics}
+                    # col suo peso, come nel training congiunto (review GPT del 14/10: senza, branch_weight non controllava il backward)
+                    losses = {"total": cfg.jepa.branch_weight * kb, "keep_branches": kb, **kb_metrics}
                 else:
                     losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
                                          kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,

@@ -365,6 +365,38 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Disegno: teacher B_seed0/B_seed1 congelati; un training per teacher con PSD + wavelet (solo termine dei rami); contributi per sottrazione di colonne in sonda; controllo coi rami al passo 0 (`checkpoint_init.pt`); M dalle tue cache downstream (raw congelato = teacher B) + uscite dei soli rami estratte sulla CPU, concatenate solo con hash degli ingressi e pesi raw verificati; sonde e confronto accoppiato come nel 2A.
 - Criteri: primario R+PW contro R (utile >= +1 punto, CI > 0, entrambi i teacher; non dannoso >= -1); secondari R+PW contro R+S del tuo 2A e contro il passo 0. Tetto 3 GPU-ora + 192 core-ora (stima ~1,5 + ~125).
 
+### 2026-10-14 | Claude | Step 2C: correzioni della tua review, wrapper, collaudo e criteri (A e B), da rivedere | Base: b8aacd0
+
+- Letti prima main (fermo a 5030a19) e le tue voci nel tuo worktree fino a `eb80059` (review di 3dba14c con i due P2, via e preflight del 2A,
+  baseline encoder casuale congelata). Simone: «per questa mi piace la tua proposta, direi di procedere»; scelte: un training per teacher con i
+  due rami e contributi per sottrazione, breve collaudo su dbg della loss e dei tempi, teacher A e B («proverei entrambe le soluzioni e valutiamo
+  quale è la migliore»). Ha detto che farai una review indipendente prima del lancio. Nessun job, deploy o push.
+- **I tuoi due P2 su 3dba14c, corretti.** (1) `training/run.py`: a encoder congelato il totale e' `branch_weight` x termine dei rami; test sul
+  trainer reale: con 0,01 e 1 stessa `keep_branches`, totale e norma dei gradienti (prima del clipping) in rapporto 0,01. (2)
+  `model/spectral_branches.check_head_calibration`: `stats_fitted`, `target_active`, `target_mean`, `target_std` di ogni testa dei rami uguali
+  bit per bit a quelli della testa raw; sostituisce il controllo del solo `target_active` in `readout_objectives` (stesse sincronizzazioni: un
+  confronto per testa) e si ripete quando il trainer prepara o riprende un modello. Test: ogni campo spostato rifiutato (media +100 compresa),
+  checkpoint ripreso con la media di una testa spostata rifiutato.
+- **Trainer:** a encoder congelato, `checkpoint_init.pt` al passo 0 (rami calibrati, teste mai allenate: il controllo «rami non allenati») col suo
+  hash in `spectral_branches.json`; il salvataggio usa lo stesso contenuto di `checkpoint.pt`.
+- **Tuoi file, da rivedere:** insieme di feature "branches" (le sole colonne dei rami dell'embedding, senza encode raw): `harness/feature_sets.py`
+  (`uses_model`, `cache_record` registra le colonne dei rami), `harness/fm_features.py` (`feature_width`, ramo "branches" in `extract_features`),
+  `scripts/probe_p1.py` e `probe_p2.py` (una riga: `cache_record(..., FF.feature_width(model, args.feature_set))` al posto di `model_width`;
+  per gli insiemi gia' esistenti il valore registrato non cambia). Test: colonne identiche a quelle dell'embedding completo, encode raw mai
+  chiamato.
+- **`scripts/step2c.py`** (train, extract, probe, compare) e launcher `scripts/slurm/step2c_{train,extract,probe}.sbatch`. Train: ingressi
+  dell'A/B per hash, teacher d'origine per hash e provenienza, configurazione del braccio dell'A/B con encoder congelato; a fine run l'encoder
+  (studente e teacher, finale e passo 0) uguale bit per bit al teacher d'origine, o niente estrazione; collaudo in `collaudo/` col verdetto
+  congelato. Extract: uscite dei rami allenati e al passo 0 sulla CPU (su P2 finestre lette una volta per i due modelli: cache identiche a quelle
+  di `probe_p2 --feature-set branches`, provato); varianti RP, RW, RPW, RPW0 concatenate alle tue cache downstream solo con hash degli ingressi e
+  righe uguali. Probe: sonde ufficiali. Compare: R = report downstream verificato per provenienza e per hash nel suo `comparison.json`; R+S del
+  2A verificato per hash nel `comparison.json` del 2A e per finestre. Test end-to-end P2: l'embedding completo del run allenato, encode compreso,
+  coincide bit per bit con la variante RPW.
+- **Criteri congelati in `docs/decisioni.md`** (regola del 2A): primario R+PW contro R per famiglia; secondari R+PW contro R+PW0, contro R+S del
+  2A (solo B) e B contro A con i rami (simmetrico). Collaudo: >= 600 aggiornamenti, ultimi 100 <= 0,9 x primi 100, media mobile su 50 mai oltre
+  1,5 volte il minimo, allocazione dei run misurata al piu' 2 h.
+- Tetto 8,5 GPU-ora + 432 core-ora CPU (stima ~4,5 + ~270), disco ~15 GB su `$WORK`. Suite CPU completa: 908 PASS (884 prima, 24 nuovi).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -685,3 +717,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Scelte aperte per te e Simone: (1) un training per teacher con i due rami e contributi per sottrazione (misura il ramo allenato insieme all'altro) o tre training separati (~3 volte il costo GPU); (2) iperparametri dei rami fissati senza misure (lr 1e-3, warmup 100, 3.000 aggiornamenti) o breve collaudo su dbg della curva di loss; (3) solo B (coerente col 2A e con lo step 2) o anche A (che proponi come riferimento di lavoro della finestra 1).
 - Il secondario «meglio delle statistiche fisse» dipende dal tuo 2A concluso: se il 2A non e' disponibile, quel confronto si rimanda, il primario no.
 - Le stime di tempo del training a raw congelato sono dedotte (dati ~0,7 s/passo con 6 worker dal collaudo, forward raw senza gradiente), non misurate: il collaudo su dbg del punto (2) le misurerebbe.
+
+### 2026-10-14 | Claude | Step 2C: punti da guardare nella review | Base: b8aacd0
+
+- `step2c.py` dipende dai percorsi e dagli SHA congelati di `step1_ab.py` (ingressi del training) e `step1_downstream.py` (teacher, tranche
+  downstream) e dal formato delle cache delle tue sonde. La lettura unica di P2 (`_extract_p2`) replica `probe_p2 --stage extract`: se cambi
+  `probe_p2`, il test d'uguaglianza la segnala.
+- Estrazione delle uscite dei rami sulla CPU piu' cara delle statistiche del 2A: misura locale (un thread) 16,6 ms per finestra P1 e 41,2 ms per
+  finestra EPN, contro 3-4 ms. Tempi massimi P1 1,5 h e P2 3 h; il collaudo su dbg non le misura (sono job CPU).
+- Il run richiede lo stesso commit del codice dal training al confronto (un solo checkout di campagna). Il secondario contro le statistiche
+  fisse usa il tuo 2A: serve la cartella del 2A concluso al momento del confronto (`STEP2A`), altrimenti resta rimandato.
+- Il collaudo dura al piu' 30 minuti su dbg (<= 0,5 GPU-ora, non 0,25 come stimato il 13/10): servono almeno 600 aggiornamenti per il verdetto.

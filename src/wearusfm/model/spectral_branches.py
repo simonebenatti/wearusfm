@@ -369,6 +369,21 @@ def branch_heads(raw_dim: int, kinds, out_dim: int) -> nn.ModuleDict:
     return nn.ModuleDict({"fused": SpectralKeepHead(raw_dim + out_dim * len(kinds)), **{k: SpectralKeepHead(out_dim) for k in kinds}})
 
 
+def check_head_calibration(model) -> None:
+    """Le teste del readout (raw e rami) con la STESSA calibrazione dei target: statistiche stimate, coordinate attive, medie e deviazioni,
+    uguali bit per bit a quelle della testa raw. Review GPT del 14/10/2026: `target_active` uguale garantisce gli stessi conteggi, non la stessa
+    standardizzazione (con la media di una testa spostata la loss cambiava senza errori). Un confronto per testa (una sincronizzazione, come il
+    solo `target_active`); si chiama a ogni passo e quando il trainer prepara o riprende un modello."""
+    def signature(h):
+        return torch.cat([h.stats_fitted.reshape(1).double(), h.target_active.double(), h.target_mean.double(), h.target_std.double()])
+
+    ref = signature(model.spectral_keep)
+    bad = [k for k, h in model.branch_heads.items() if not torch.equal(signature(h), ref)]
+    if bad:
+        raise ValueError(f"teste del readout {bad} con una calibrazione dei target diversa dalla testa raw (stats_fitted, target_active, "
+                         "target_mean, target_std): stessa calibrazione per tutte")
+
+
 def readout(model, enc, inp) -> torch.Tensor:
     """L'embedding P1/P2 (sonde e loss sul readout): il readout raw dello Step 1 (`pool_p1p2`, 2d) seguito dai rami spettrali del modello,
     nell'ordine di `FMConfig.spectral_branches`; senza rami e' `pool_p1p2`. `enc` dalla vista COMPLETA (encode senza maschera)."""
@@ -396,7 +411,7 @@ def readout_objectives(student, inp, anchor_targets, *, keep: bool, terms: bool 
       posto (non lo stesso aggiornamento: anche la testa fusa manda gradienti al raw);
     - "keep_branches": per campione (1 - alpha) L(testa fusa su [raw, PSD, wavelet]) + alpha * media sui rami di L(testa del ramo), pesata da
       `branch_weight`.
-    Stessi target, maschere e calibrazione per tutte le teste (controllato su `target_active`): stesso denominatore. Ogni valore ha la forma di
+    Stessi target, maschere e calibrazione per tutte le teste (`check_head_calibration`): stesso denominatore. Ogni valore ha la forma di
     ritorno di `keep_objective` (o di `keep_objective_terms` con `terms`). Metriche del termine dei rami: `keep_<testa>` e
     `keep_<testa>_<famiglia>` per fused, psd, wavelet, e `keep_branches_valid_samples`. Con l'encoder congelato (`freeze_raw`) l'encode e' in
     eval e senza gradiente, e la testa raw non si usa."""
@@ -409,9 +424,7 @@ def readout_objectives(student, inp, anchor_targets, *, keep: bool, terms: bool 
     frozen = bool(getattr(student, "raw_frozen", False))
     if keep and frozen:
         raise ValueError("encoder congelato: la keep raw non allena nulla, solo il termine dei rami")
-    ref = student.spectral_keep.target_active
-    if any(not torch.equal(h.target_active, ref) for h in student.branch_heads.values()):
-        raise ValueError("teste del readout calibrate su target diversi (target_active): stessa calibrazione per tutte")
+    check_head_calibration(student)
     y, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
     devices = sorted({x.device.index for x in inp.signals if x.is_cuda})
     with torch.random.fork_rng(devices=devices):  # come lo Step 1: il passaggio in piu' non sposta il generatore della JEPA

@@ -74,7 +74,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--audit-inputs", action="store_true", help="fingerprint actual ordered extraction inputs")
     ap.add_argument("--feature-set", choices=list(FEATURE_SETS), default="model",
-                    help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default) o le varianti del test 2A dello step 2")
+                    help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default), le varianti del test 2A dello "
+                         "step 2 o le sole uscite dei rami (step 2C)")
     args = ap.parse_args(argv)
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
@@ -108,7 +109,7 @@ def main(argv=None) -> int:
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(input_hash)} if args.audit_inputs else {}
-                np.savez(npz, x=x, y=labels, s=subjects, **extra, **cache_record(args.feature_set, FF.model_width(model)))
+                np.savez(npz, x=x, y=labels, s=subjects, **extra, **cache_record(args.feature_set, FF.feature_width(model, args.feature_set)))
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue

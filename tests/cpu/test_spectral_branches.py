@@ -263,12 +263,34 @@ def test_raw_keep_unchanged_and_branch_term_from_one_encode(tmp_path, monkeypatc
     assert all(p.grad is None for p in s.spectral_branches.branches["wavelet"].frontend.parameters())  # filtri fissi
 
 
-def test_heads_with_different_calibration_are_refused(tmp_path):
+@pytest.mark.parametrize("field", ["target_active", "target_mean", "target_std", "stats_fitted"])
+def test_heads_with_different_calibration_are_refused(tmp_path, field):
+    """Review GPT del 14/10: non basta lo stesso `target_active` (con la media di una testa spostata di 100 la loss cambiava senza errori)."""
     s, inp, _, batch = _branch_model(tmp_path)
+    SB.check_head_calibration(s)
+    h = s.branch_heads["psd"]
     with torch.no_grad():
-        s.branch_heads["psd"].target_active[0] = ~s.branch_heads["psd"].target_active[0]
-    with pytest.raises(ValueError, match="target_active"):
+        if field == "target_active":
+            h.target_active[0] = ~h.target_active[0]
+        elif field == "target_mean":
+            h.target_mean[3] += 100.0
+        elif field == "target_std":
+            h.target_std[5] *= 2.0
+        else:
+            h.stats_fitted.fill_(False)
+    with pytest.raises(ValueError, match="calibrazione dei target diversa"):
         SB.readout_objectives(s, inp, batch.anchor_targets, keep=True)
+
+
+def test_trainer_refuses_a_checkpoint_with_heads_of_other_calibration(tmp_path):
+    root, manifest, cfg = _branch_cfg(tmp_path)
+    out = tmp_path / "run"
+    R.train(cfg, manifest, [root], out, log=lambda _: None)
+    state = torch.load(out / "checkpoint.pt", weights_only=False)
+    state["student"]["branch_heads.wavelet.target_mean"] += 100.0
+    torch.save(state, out / "checkpoint.pt")
+    with pytest.raises(ValueError, match="calibrazione dei target diversa"):
+        R.train(replace(cfg, max_steps=2), manifest, [root], out, log=lambda _: None)
 
 
 def test_jepa_losses_two_additive_terms_and_counts(tmp_path):
@@ -409,13 +431,79 @@ def test_trainer_frozen_encoder_then_p1p2_features(tmp_path):
     trainable = sum(p.numel() for p in fresh.parameters() if p.requires_grad)
     assert summary["spectral_branches"]["trainable_parameters"] == trainable
     assert trainable == sum(p.numel() for n, p in fresh.named_parameters() if n.startswith(SB.BRANCH_PREFIXES) and not n.endswith("_logits"))
-    prov = json.loads((out / "spectral_branches.json").read_text())["frozen_init"]
+    branches = json.loads((out / "spectral_branches.json").read_text())
+    prov = branches["frozen_init"]
     assert prov["weights"] == "teacher" and prov["step"] == 1
+    # step 2C: il controllo «rami non allenati» e' lo stesso modello al passo 0 (rami calibrati, teste mai allenate), col suo hash
+    init = torch.load(out / "checkpoint_init.pt", weights_only=False)
+    assert init["step"] == 0 and branches["init_checkpoint_sha256"] == R.sha256_file(out / "checkpoint_init.pt")
+    assert all(torch.equal(init["teacher"][k], source[k]) for k in raw)
+    assert all(torch.equal(init["teacher"][k], state["teacher"][k]) for k in init["teacher"] if k.startswith("spectral_branches.") and
+               not k.endswith(("weight", "bias")))  # stesse statistiche d'ingresso dei rami
+    assert not torch.equal(init["teacher"]["branch_heads.fused.linear.weight"], state["teacher"]["branch_heads.fused.linear.weight"])
     model = FF.load_model(str(out / "checkpoint.pt"))
     fs = 1000.0
     windows = np.random.default_rng(0).standard_normal((3, int(1.5 * fs), 8)).astype(np.float32)
     feats = FF.extract_features(model, windows, fs, FF.myo8_montage("x", fs), np.array(["a", "a", "b"]))
     assert feats.shape == (3, 2 * model.cfg.dim + 2 * model.cfg.branch_dim) and np.isfinite(feats).all()
+
+
+def test_frozen_branch_weight_scales_the_total_and_the_gradients(tmp_path):
+    """Review GPT del 14/10: a encoder congelato `branch_weight` non entrava nel totale (0,01 e 1 davano la stessa loss e la stessa norma dei
+    gradienti). Ora il totale e' branch_weight x termine dei rami, come nel training congiunto; la norma (prima del clipping) scala uguale."""
+    root, manifest, cfg_b = _branch_cfg(tmp_path, freeze_encoder=True, keep=0.0)
+    src_cfg = R.with_spectral_keep(replace(cfg_b, model=replace(cfg_b.model, spectral_branches=()), freeze_encoder=False,
+                                           jepa=replace(cfg_b.jepa, branch_weight=0.0)), cfg_b.keep_calibration, 0.0)
+    src = tmp_path / "src"
+    R.train(src_cfg, manifest, [root], src, log=lambda _: None)
+    recs = {}
+    for w in (1.0, 0.01):
+        out = tmp_path / f"w{w}"
+        R.train(replace(cfg_b, jepa=replace(cfg_b.jepa, branch_weight=w)), manifest, [root], out, log=lambda _: None,
+                init_from=src / "checkpoint.pt")
+        recs[w] = json.loads((out / "metrics.jsonl").read_text().splitlines()[0])
+    assert recs[1.0]["keep_branches"] == recs[0.01]["keep_branches"]  # stesso modello e stesso batch al primo passo
+    assert recs[1.0]["total"] == recs[1.0]["keep_branches"]
+    assert recs[0.01]["total"] == pytest.approx(0.01 * recs[0.01]["keep_branches"], rel=1e-6)
+    assert recs[0.01]["grad_norm"] == pytest.approx(0.01 * recs[1.0]["grad_norm"], rel=1e-4)
+
+
+class _OpenCache(dict):
+    """Una cache aperta come da np.load, per `check_cache`: le chiavi in `files`."""
+
+    @property
+    def files(self):
+        return list(self)
+
+
+def test_branches_feature_set_is_the_branch_columns_without_the_raw_encode(tmp_path, monkeypatch):
+    """Step 2C: con l'encoder congelato la parte raw e' gia' estratta dal teacher d'origine; "branches" sono le colonne dei rami
+    dell'embedding, calcolate allo stesso modo, senza encode raw."""
+    from wearusfm.harness.feature_sets import cache_record, check_cache
+
+    s, *_ = _branch_model(tmp_path)
+    fs = 2000.0
+    windows = np.random.default_rng(2).standard_normal((4, int(1.2 * fs), 8)).astype(np.float32)
+    subjects, montage = np.array(["a", "a", "b", "b"]), FF.myo8_montage("x", fs)
+    full = FF.extract_features(s, windows, fs, montage, subjects, feature_set="model")
+
+    def no_encode(*a, **k):
+        raise AssertionError("encode raw non previsto")
+
+    monkeypatch.setattr(s, "encode", no_encode)
+    branches = FF.extract_features(s, windows, fs, montage, subjects, feature_set="branches")
+    np.testing.assert_array_equal(branches, full[:, 2 * s.cfg.dim:])
+    assert FF.feature_width(s, "branches") == 2 * s.cfg.branch_dim and FF.feature_width(s, "stats") == 0
+    record = cache_record("branches", FF.feature_width(s, "branches"))
+    assert str(record["feature_set"]) == "branches" and int(record["model_dim"]) == 256
+    check_cache(_OpenCache(record), "branches", 256)
+    with pytest.raises(ValueError, match="attese 256"):
+        check_cache(_OpenCache(record), "branches", 255)
+    with pytest.raises(ValueError, match="estratta come 'branches'"):
+        check_cache(_OpenCache(record), "model", 256)
+    plain = WearUsFM(replace(s.cfg, spectral_branches=()))
+    with pytest.raises(ValueError, match="rami spettrali"):
+        FF.extract_features(plain, windows, fs, montage, subjects, feature_set="branches")
 
 
 def test_feature_sets_of_the_2a_diagnostic():
@@ -428,7 +516,7 @@ def test_feature_sets_of_the_2a_diagnostic():
     windows = rng.standard_normal((4, int(1.0 * fs), 8)).astype(np.float32)
     subjects = np.array(["a", "a", "b", "b"])
     montage = FF.myo8_montage("x", fs)
-    f = {s: FF.extract_features(model, windows, fs, montage, subjects, feature_set=s) for s in FF.FEATURE_SETS}
+    f = {s: FF.extract_features(model, windows, fs, montage, subjects, feature_set=s) for s in FF.FEATURE_SETS if s != "branches"}
     d = 2 * cfg.dim
     assert f["model"].shape == (4, d) and f["stats"].shape == (4, 64) and f["mask"].shape == (4, 32)
     np.testing.assert_array_equal(f["model+stats"], np.concatenate([f["model"], f["stats"]], 1))
