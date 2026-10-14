@@ -111,9 +111,9 @@ due ritagli), contro 3-4 ms delle statistiche del 2A; finestre: P1 ~102 mila, P2
 usate secondo la bozza di GPT; da riconciliare col consuntivo, e col controllo con encoder casuale di GPT, tetto suo 3 GPU-ora). Disco ~15 GB
 su `$WORK` (varianti ~3 GB per teacher, uscite dei rami 0,4 GB, checkpoint ~0,45 GB per run).
 
-## Sequenza di lancio (dopo review di GPT e via di Simone)
+## Sequenza di lancio (i quattro run e la catena CPU: dopo il verdetto del collaudo e un nuovo via di Simone)
 
-Percorsi: A/B `$WORK/wearusfm_runs/runs/step1_ab_0810`, tranche downstream `$WORK/wearusfm_runs/results/passo6/step1_downstream_0910`; nuovi:
+Percorsi: A/B `$SCRATCH/wearusfm_runs/runs/step1_ab_0810`, tranche downstream `$WORK/wearusfm_runs/results/passo6/step1_downstream_0910`; nuovi:
 runs dei rami `$WORK/wearusfm_runs/runs/step2c_<data>`, valutazione `$WORK/wearusfm_runs/results/passo6/step2c_<data>`. Riferimento di deploy
 `deploy/step2c-<data>` allo SHA rivisto, checkout di campagna, `scripts/submit_job.py` con dipendenze `afterok`.
 1. Collaudo: `step2c_train.sbatch B_seed0 <runs A/B> <runs rami> collaudo` (`--qos=boost_qos_dbg --time=00:30:00`). Verdetto -> Simone.
@@ -121,6 +121,32 @@ runs dei rami `$WORK/wearusfm_runs/runs/step2c_<data>`, valutazione `$WORK/wearu
 3. Per teacher e task, `afterok` del suo training: `step2c_extract.sbatch <task> <teacher> ...` (P2 `--time=03:00:00`).
 4. Per teacher e task, `afterok` della sua estrazione: `step2c_probe.sbatch <task> <teacher> RPW,RPW0 ...` e `... RP,RW ...` (P2
    `--time=02:30:00`); l'ultimo con `COMPARE=1` (e `STEP2A=<cartella del 2A>` se concluso), `afterok` di tutti gli altri.
+
+### Collaudo: comandi esatti (Simone, 14/10: «via al collaudo per me», senza aspettare la review di GPT, che arriva in giornata)
+
+Come il collaudo dell'infrastruttura del 12/10 (strada b): riferimento `deploy/step2c-20261014` allo SHA del commit che pubblica questi comandi
+(branch di Claude, senza integrazione; `main` di leonardo invariato), checkout di campagna, poi il collaudo. Il launcher del collaudo si
+sottomette **solo dopo** che il job di checkout e' finito (sbatch legge lo script quando si sottomette; incidente del 12/10). Via leonardo-ops.
+
+    C=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step2c-20261014
+    RUNS=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_ab_0810       # teacher dell'A/B (sola lettura)
+    BR=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/runs/step2c_1410                         # runs dei rami (nuova)
+
+    git push leonardo <SHA>:refs/heads/deploy/step2c-20261014
+    python3 scripts/submit_job.py --id step2c_checkout --agente claude --campagna step2c-20261014 --gpu-ore 0 \
+      --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=step2c-20261014,CAMPAIGN_SHA=<SHA>
+    # dopo COMPLETED del checkout e «checkout di campagna pronto» nel log:
+    python3 scripts/submit_job.py --id step2c_collaudo --agente claude --campagna step2c-20261014 --gpu-ore 0.5 -- \
+      --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=$C,EXPECTED_SHA=<SHA> \
+      $C/scripts/slurm/step2c_train.sbatch B_seed0 $RUNS $BR collaudo
+
+Costo: checkout 1 CPU, 2 GB, 10 minuti (0,17 core-ora); collaudo 1 A100 su dbg, 30 minuti (**0,5 GPU-ora = 4 ore locali**), dal budget del
+passo 6. Preflight in sola lettura (14/10, leonardo-ops): coda vuota, nessun job dal 13/10; nel canonico `main`, `deploy/collaudo-infra-1`,
+`deploy/step2a-20261014` (di GPT, senza checkout ancora) e il tag `manifest-v1`; hook solo `.sample`, `receive.denyCurrentBranch =
+updateInstead` (agisce solo su `main`, estratto); `$WORK/wearusfm_campaigns` contiene solo `collaudo-infra-1`; i quattro teacher in `RUNS`
+col `run_provenance.json` atteso (commit `69fa2da`, SHA dei checkpoint uguali a quelli di `step1_downstream.py`); manifest, scale, durate e
+calibrazione presenti; emg2qwerty processato su `$SCRATCH`; `BR` e la valutazione `step2c_1410` assenti. Non verificati dal login node: stato
+git del canonico e quota Lustre (comandi non ammessi a leonardo-ops); hash degli ingressi e dei teacher li verifica il job.
 
 ## Codice
 

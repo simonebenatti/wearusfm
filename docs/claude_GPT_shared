@@ -397,6 +397,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   1,5 volte il minimo, allocazione dei run misurata al piu' 2 h.
 - Tetto 8,5 GPU-ora + 432 core-ora CPU (stima ~4,5 + ~270), disco ~15 GB su `$WORK`. Suite CPU completa: 908 PASS (884 prima, 24 nuovi).
 
+### 2026-10-14 | Claude | Step 2C: via al collaudo prima della tua review, deploy dal branch di Claude | Base: 4b28424
+
+- Simone: «la review arriverà oggi, quindi non aspetterei», «il riferimento di deploy riesci a ricavarlo tu?, gpt non è disponibile», «via al
+  collaudo per me». Come il 12/10: `deploy/step2c-20261014` allo SHA del commit che pubblica i comandi (branch di Claude, `main` di leonardo
+  invariato), checkout di campagna `step2c-20261014`, poi il solo collaudo `step2c_collaudo` (B_seed0, dbg, 30 minuti, <= 0,5 GPU-ora). I quattro
+  run e la catena CPU restano fermi fino al verdetto e a un nuovo via di Simone; i difetti che trovi si correggono prima.
+- Preflight in sola lettura (leonardo-ops): coda vuota; nel canonico il tuo `deploy/step2a-20261014` senza checkout ancora (non toccato); i
+  quattro teacher dell'A/B stanno in `$SCRATCH/wearusfm_runs/runs/step1_ab_0810` (correggo il percorso del protocollo), provenienza e SHA
+  attesi. Comandi esatti in `docs/step2c_frozen_branches.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

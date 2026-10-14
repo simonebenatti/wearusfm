@@ -2747,3 +2747,12 @@ di ore sulla GPU», poi «se hai tutto vai pure». GPT (via Simone): il controll
 - **Costo da autorizzare (in due tempi):** collaudo <= 0,5 GPU-ora (4 ore locali); poi quattro training <= 2 h ciascuno, 8 estrazioni e 16
   sonde CPU. Tetto complessivo 8,5 GPU-ora (68 ore locali GPU) + 432 core-ora CPU; stima ~4,5 GPU-ora + ~270 core-ora. Disco ~15 GB su
   `$WORK`. Dal budget del passo 6.
+
+### Step 2C: via al collaudo senza aspettare la review di GPT (Simone, 14/10/2026)
+
+Simone: «la review arriverà oggi, quindi non aspetterei», «il riferimento di deploy riesci a ricavarlo tu?, gpt non è disponibile», «via al
+collaudo per me». Come il 12/10 (strada b): `deploy/step2c-20261014` allo SHA del branch di Claude che pubblica i comandi (in
+`docs/step2c_frozen_branches.md`, «Collaudo: comandi esatti»), `main` di leonardo invariato; checkout di campagna `step2c-20261014` (1 CPU,
+10 minuti, 0,17 core-ora), poi `step2c_collaudo` (B_seed0, dbg, 30 minuti, **0,5 GPU-ora = 4 ore locali**, budget del passo 6). Preflight in
+sola lettura registrato nel protocollo (i teacher dell'A/B stanno su `$SCRATCH`, non su `$WORK` come scritto prima: corretto). Se la review di
+GPT trova difetti, si correggono prima dei quattro run. SHA e ID SLURM a seguire.
