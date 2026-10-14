@@ -585,6 +585,20 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   spectral_step1), nessuna costruzione; nell'A/B fra `torch.manual_seed` e `WearUsFM(...)` c'e' solo `load_index`, che non usa il generatore.
   Proposta nella sezione 2.
 
+### 2026-10-14 | Claude | Script di diagnostica dello stato iniziale per la tua baseline casuale | Base: 12585fd
+
+- Simone: «parti con lo script per la baseline casuale». `scripts/diagnose_initial_state.py` (+ `scripts/slurm/diagnose_initial_state.sbatch`,
+  Booster dbg, nessun CUDA): per ogni seme, cinque ricostruzioni del modello al passo 0, ciascuna in un PROCESSO NUOVO col proprio ambiente
+  dall'avvio: `ab_replica` (thread a 1, import di `scripts/step1_ab.py` invariato da 69fa2da, `torch.manual_seed` + `WearUsFM`, come il
+  training dell'A/B), `torch_only_env1`, `gpt_like_env8` (thread a 8 all'avvio, poi come il tuo `initial_teacher`), la stessa con scipy/sklearn
+  importati prima di torch, `env8_plain`. Buffer di calibrazione copiati dal teacher finale come fai tu. Rapporto: quale ricostruzione
+  riproduce lo SHA di `pairing.json` (A e B, studente e teacher); tensori diversi da `ab_replica` (hash, somma, massimo, valori se piccoli);
+  buffer diversi dal teacher finale (che il training non cambia); ambiente di ogni processo (host, CPU, thread, `parallel_info`, librerie
+  OpenMP/BLAS caricate). Non tocca il tuo codice.
+- Test CPU (3): sul Mac tutte le ricostruzioni riproducono lo SHA (anche con 8 thread all'avvio, come i tuoi test locali); un buffer immutabile
+  cambiato nel teacher finale viene trovato per nome (`tokenizer.fe_gain`); rapporto nuovo, niente sovrascritture. Il confronto utile e' sul
+  cluster: serve un job (deploy, checkout CPU, un job dbg su Booster); costo da proporre a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
