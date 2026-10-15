@@ -100,6 +100,20 @@ def test_inconsistent_plans_produce_no_commands(change, message):
         W.plan_jobs(plan)
 
 
+def test_continuation_to_2d_starts_from_the_predecay_checkpoint():
+    """D14: la continuazione a 2D riparte dal pre-decay di un run a D (80% di D, non fra i keep_checkpoints) e decade sul 20% finale di
+    2D; parte dopo il job del tronco che arriva al pre-decay."""
+    plan = _plan(runs=[{"id": "R30", "preset": "100m", "seed": 0, "batch_size": 32, "accum_steps": 1, "steps_at_d": 4 * E,
+                        "total_steps": 4 * E, "keep_checkpoints": [], "args": ""},
+                       {"id": "R30-2D", "branch_of": "R30", "from_step": round(3.2 * E), "total_steps": 8 * E}])
+    result = W.plan_jobs(plan)
+    trunk, cont = result["runs"]
+    assert trunk["decay_start"] == round(3.2 * E) and cont["decay_start"] == round(6.4 * E)
+    first = _parsed(next(c for c in result["commands"] if "R30-2D-j01" in c))
+    assert first["export"]["BRANCH_FROM"] == "/R/R30/checkpoint_predecay.pt" and first["dopo"] == "R30-j02"
+    assert cont["warmup_steps"] == trunk["warmup_steps"] == 1852  # stesso warmup di D: identico a un run a 2D da zero
+
+
 def test_branch_from_a_step_inside_the_trunk_decay_is_refused():
     plan = _plan()
     plan["runs"][0]["keep_checkpoints"].append(round(7 * E))  # nel decay del tronco (da 6,4 epoche): il trainer lo rifiuterebbe

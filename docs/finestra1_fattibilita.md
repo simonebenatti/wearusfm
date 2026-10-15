@@ -71,3 +71,7 @@ il 2% a 100M e 300M.
 
 Col prefetch (prova `w1_prefetch_v1`, 15/10/2026) il 30M scende a 0,701 s/passo (mediana, batch 32; media 0,706 contro 0,714) e l'attesa
 sui dati a 0,67%: la stima della finestra 1 non cambia in modo apprezzabile (~1% sulle ablation al 30M).
+
+**Passi per epoca dal corpus (15/10/2026, `docs/manifest_annidati_d16.md`):** 24.528 col batch 32 (finestra media 3,77 s) invece di ~23.150:
+D = 4 epoche = 98.112 passi. I costi dei run a D salgono del ~6%: la stima della finestra 1 diventa **~5.000–5.600 GPU-ora** (da ~4.730–5.300).
+Asse dei soggetti: le frazioni reali delle ore sono 13,8 / 26,1 / 51,0% (passi per epoca 3.412 / 6.403 / 12.478).

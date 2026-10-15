@@ -5,7 +5,8 @@ Ogni run del piano e' una catena di job su un nodo (DDP a 4 GPU, `scripts/slurm/
 job riprende dal checkpoint della cartella del run e si ferma da solo `margin_min` minuti prima della fine del job (`TIME_LIMIT_S`); un
 allarme o un errore numerico scrivono STOP e i job successivi escono subito; un run completo fa uscire subito i job di scorta. Un ramo
 (`branch_of`, D14: rami di decay del pilot sulle epoche, continuazione a 2D) parte dal checkpoint con nome della fase stabile del tronco
-(`checkpoint_step<N>.pt`) e dipende dal job del tronco che lo ha sicuramente scritto, con la stima pessimista dei passi per job
+(`checkpoint_step<N>.pt`), o dal pre-decay (`checkpoint_predecay.pt`) per la continuazione a 2D quando parte dall'inizio del decay del
+tronco, e dipende dal job del tronco che lo ha sicuramente scritto, con la stima pessimista dei passi per job
 (s/passo x `slack`); se il checkpoint non c'e' ancora il primo job del ramo esce con 3 e la catena del ramo si ferma.
 
 Le regole di D14 si controllano col codice del trainer prima di generare i comandi (`with_wsd`, `wsd_warmup_steps`, `_check_wsd`, fase
@@ -87,8 +88,9 @@ def resolve(plan: dict) -> list[dict]:
                 raise ValueError(f"ramo {r['id']}: il tronco {r['branch_of']} deve essere un tronco elencato prima")
             trunk = by_id[r["branch_of"]]
             run = {**{k: trunk[k] for k in TRUNK_KEYS - {"id", "total_steps", "keep_checkpoints"}}, **r, "keep_checkpoints": []}
-            if r["from_step"] not in trunk["keep_checkpoints"]:
-                raise ValueError(f"ramo {r['id']}: il passo {r['from_step']} non e' fra i keep_checkpoints del tronco {trunk['id']}")
+            if r["from_step"] not in trunk["keep_checkpoints"] and r["from_step"] != trunk["schedule"].decay_start:
+                raise ValueError(f"ramo {r['id']}: il passo {r['from_step']} non e' fra i keep_checkpoints del tronco {trunk['id']} ne' il suo "
+                                 f"pre-decay ({trunk['schedule'].decay_start})")
             if r["from_step"] > trunk["schedule"].decay_start:
                 raise ValueError(f"ramo {r['id']}: il passo {r['from_step']} e' nel decay del tronco (da {trunk['schedule'].decay_start})")
         else:
@@ -139,7 +141,8 @@ def plan_jobs(plan: dict) -> dict:
             trunk = next(r for r in out_runs if r["id"] == run["branch_of"])
             k = min(max(1, math.ceil(run["from_step"] / trunk["steps_per_job_pessimistic"])), trunk["jobs_needed"])
             after = jobs_of[trunk["id"]][k - 1]
-            branch_from = f"{plan['run_root']}/{trunk['id']}/checkpoint_step{run['from_step']:07d}.pt"
+            name = f"checkpoint_step{run['from_step']:07d}.pt" if run["from_step"] in trunk["keep_checkpoints"] else "checkpoint_predecay.pt"
+            branch_from = f"{plan['run_root']}/{trunk['id']}/{name}"  # continuazione a 2D (D14): dal pre-decay
         extra = (f"{plan['common_args']} --window-seconds {plan['window_seconds']} --batch-size {run['batch_size']} "
                  f"--accum-steps {run['accum_steps']} --seed {run['seed']} --schedule wsd --total-steps {run['total_steps']} "
                  f"--steps-at-d {run['steps_at_d']}")

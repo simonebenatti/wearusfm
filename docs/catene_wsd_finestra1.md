@@ -12,7 +12,8 @@ Simone, 15/10/2026: «sì, vai coi launcher delle catene WSD». Punto 6 della nu
 - **Job di scorta** (`spare_jobs`): se il run e' gia' completo (`summary.json` con `stopped` = `max_steps` e almeno i passi chiesti) il job
   esce subito con 0, senza caricare modello e dati.
 - **Rami del WSD** (D14: rami di decay del pilot sulle epoche, continuazione a 2D): `BRANCH_FROM` = checkpoint con nome della fase stabile
-  del tronco (`checkpoint_step<N>.pt`, da `--keep-checkpoints`). Il primo job del ramo dipende dal job del tronco che ha sicuramente scritto
+  del tronco (`checkpoint_step<N>.pt`, da `--keep-checkpoints`) oppure, per la continuazione a 2D, il pre-decay (`checkpoint_predecay.pt`,
+  quando il ramo parte dall'inizio del decay del tronco: 80% di D, decay sul 20% finale di 2D, stesso warmup). Il primo job del ramo dipende dal job del tronco che ha sicuramente scritto
   quel checkpoint, con la stima pessimista dei passi per job (s/passo x `slack`); se il checkpoint non c'e' ancora esce con 3 e la catena del
   ramo si ferma (non parte mai da zero). Dopo il primo salvataggio il ramo riprende dalla propria cartella. Il trainer accetta un ramo solo se
   cambiano soltanto schedule e max_steps e il checkpoint sta nella fase stabile di tronco e ramo (`_check_branch`, gia' provato bit per bit
@@ -70,3 +71,9 @@ core-ora). Dal budget «preparazione dell'infrastruttura» (usate 7,71 su 25).
 
 Precisazione prima di qualunque risultato (15/10/2026): l'origine del ramo il trainer la scrive in `branch.json` nella cartella del
 ramo, non in `summary.json`; il criterio 2 e' lo stesso.
+
+## Dopo il collaudo (15/10/2026)
+
+Collaudo `w1_catena_v1` superato (`results/infra/w1cat_20261015.json`, `docs/decisioni.md`). Aggiunta al pianificatore la continuazione a 2D
+dal pre-decay (test `test_continuation_to_2d_starts_from_the_predecay_checkpoint`). I piani veri della finestra 1 useranno i passi per epoca
+dal corpus (24.528 col batch 32, `docs/manifest_annidati_d16.md`) e, per l'asse dei soggetti, `--nested` negli `args` dei run.

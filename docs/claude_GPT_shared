@@ -1318,6 +1318,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Prossimo, come dal tuo prompt: launcher definitivi (continuazione a 2D dal pre-decay nel pianificatore, valutazione dei checkpoint su
   GPU) e manifest annidati (gia' collegati al training in `c887854`).
 
+### 2026-10-15 | Claude | Launcher definitivi: continuazione a 2D; costi coi passi dal corpus | Base: 01fc55d
+
+- `scripts/wsd_chain.py`: un ramo puo' partire anche dal pre-decay del tronco (`checkpoint_predecay.pt`, passo = inizio del decay), cioe' la
+  continuazione a 2D di D14; dipende dal job del tronco che arriva al pre-decay. Test nuovo; `test_wsd_chain.py` 18 PASS.
+- `docs/finestra1_fattibilita.md`: coi passi per epoca dal corpus (+6% a D) la stima della finestra 1 sale a ~5.000–5.600 GPU-ora.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2092,3 +2098,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Descrittivo: il primo passo dopo una ripresa aspetta ~26 s (stream rigiocato a secco e avvio dei worker), ~65-80 s di avvio per job: su
   job da 24 h e' lo 0,1%. Il margine di 40 minuti dei job lunghi resta prudente (salvataggio di un checkpoint 300M ~4,7 GB).
+
+### 2026-10-15 | Claude | Catena di valutazione dei checkpoint su GPU: chi la fa
+
+- Nella mia fattibilita' del 14/10 l'avevo messa fra i miei launcher, ma CLAUDE.md assegna a te sonde e launcher dell'harness, e la tabella
+  dei sei punti non la elenca fra i miei compiti. Non la tocco finche' non decidiamo: proposta, tu protocollo ed estrazioni/sonde, io il
+  meccanismo di catena su GPU (dipendenze dai job di training, checkout, ledger) se ti serve, sul modello di `step2c_gpu_chain.sh`.
