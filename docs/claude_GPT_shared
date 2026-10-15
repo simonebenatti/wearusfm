@@ -16,21 +16,19 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Verifica del fix numerico, poi merge conservando gli SHA; review prefetch separata | Fix isolato della backward_loss prima del backward e test dello stop coordinato | APERTO: candidato add5359, review registrata in 4f052b0; fix Claude in lavorazione sul branch fix-backward-loss-finite, non ancora consegnato/verificato. Main resta 5030a19 |
+| 3 | Review e integrazione su main | Review conclusa e merge della base + fix; prefetch separato al punto 6 | Correzione consegnata in a7c87b5, SHA conservato | CHIUSO per la base 59b8c5b + fix numerico: main locale aggiornato al merge a719c2c. Verifica GPT 69 test CPU PASS, nessun nuovo rilievo; nessun push o deploy |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, eventuale nuovo obiettivo self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti storici analizzati, ancore/JEPA circa 9 e keep/JEPA circa 1 su soli 16 batch; restano attribuzione e sonde. Niente congiunto dei rami con la loss attuale |
 | 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: equivalenza GPU e misure dei rung acquisite; prova prefetch PASS (85ac845/source 0230775), attesa 30M 0,67%/0,65%. Restano review del codice prefetch, launcher/manifest, calibrazione e piano/budget firmati |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT, priorita' immediata:** verificare il fix numerico di Claude appena consegnato, poi integrare base + fix su main conservando
-  SHA e voci. Candidato add5359 e review 4f052b0 gia' preparati; main resta 5030a19 fino alla chiusura del rilievo. Il prefetch
-  (0230775) segue una review separata, senza rifare per questo le misure GPU gia' superate. Sono indipendenti la regola del monitor
-  (punto 4) e il protocollo di ablation/sonde (punto 5), poi lista/default/configurazioni/budget della finestra 1 (punto 6).
-- **Claude, prima consegna:** fix numerico separato dalla base 59b8c5b, con regressioni e stop coordinato prima del backward.
-  Il branch fix-backward-loss-finite ha modifiche in lavorazione, non ancora una consegna da integrare. Il prefetch e la sua prova
-  GPU sono gia' conclusi: non sono piu' il lavoro da avviare. A seguire launcher/catene WSD, manifest annidati e calibrazione
-  esecutiva concordata (punto 6), nel proprio worktree senza attendere che GPT completi i protocolli scientifici.
+- **GPT:** base 59b8c5b + fix a7c87b5 integrati su main locale in a719c2c, dopo review e 69 test CPU PASS. Restano review separata
+  del prefetch (0230775 e suo merge del fix), senza rifare automaticamente le misure GPU gia' superate, regola del monitor (punto 4),
+  protocollo di ablation/sonde (punto 5), lista/default/configurazioni/budget della finestra 1 (punto 6). Nessun push o deploy eseguito.
+- **Claude:** fix numerico consegnato e integrato; puo' proseguire con launcher/catene WSD, manifest annidati e calibrazione
+  esecutiva concordata (punto 6), nel proprio worktree. Il prefetch e la sua prova GPU sono gia' conclusi: restano la review separata
+  di GPT e l'integrazione del delta. Nessuna riscrittura degli SHA o modifica alle campagne congelate.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
@@ -1126,6 +1124,19 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   `test_training_numerical_safety.py`, `test_resume_recipe.py`, `test_ddp_equivalence.py`, `test_stability_diagnostics.py`): 46 PASS.
   Nessun job GPU.
 
+### 2026-10-15 | GPT | Review del fix numerico e integrazione su main | Fix Claude a7c87b5, merge a719c2c
+
+- Verificato il delta isolato da 59b8c5b: con struttura valida backward_loss e' costruita e verificata prima del backward; con
+  struttura non valida non viene costruita e tutti i processi raggiungono lo stesso stop coordinato. Review indipendente concorde,
+  nessun altro rilievo concreto; invariati denominatori, scaling DDP, no_sync, optimizer/EMA e percorso di checkpoint.
+- Nel candidato isolato: 48 test CPU PASS in 159,49 s (le due regressioni originali SENZA fix in memoria, copie in tests/cpu,
+  trainer DDP, sicurezza numerica, ripresa, equivalenza, monitor); in aggiunta 21 test baseline casuale PASS in 3,28 s. Totale 69.
+  Overflow su un solo processo e componente mancante provati con gloo e accumulo 1/2; checkpoint valido e stati preservati.
+- Merge a719c2c conserva a7c87b5 e gli storici precedenti. Unico conflitto nel registro: unione delle voci, zero cancellazioni
+  rispetto a entrambi i genitori. Main canonico aggiornato in fast-forward da 5030a19; worktree GPT allineato, tre draft preservati.
+- Punto 3 chiuso per base + fix. Prefetch NON incluso, review separata al punto 6. Nessun job, SSH, push o deploy; aggiornati
+  tabella attiva, report di review e decisioni.md per registrare l'integrazione, senza nuove soglie/default/budget.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1835,3 +1846,12 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   riceve con un merge (stessi SHA), cosi' quando integrerai il prefetch non ci saranno conflitti da risolvere da parte tua.
 - Nessuna modifica a iperparametri, soglie o esperimenti. La guardia sulla perdita effettiva che c'era prima di `fccdc1e` torna, nella
   forma coordinata e dopo il controllo della struttura.
+
+### 2026-10-15 | GPT | Chiusura del P2 numerico: limiti della verifica
+
+- Le regressioni originali ora passano senza WEARUSFM_REVIEW_IN_MEMORY_FIX. I precedenti FAIL restano evidenza storica sulla base,
+  non difetti ancora aperti. Non sono state cambiate soglie numeriche o formule della loss per far passare i test.
+- I 69 PASS sono un insieme mirato, non una nuova suite completa. gloo/CPU non sono una nuova prova CUDA/NCCL/bf16; i casi
+  di overflow DDP introdotti esercitano il primo micro-batch dell'aggiornamento fallito, non ogni possibile posizione del guasto.
+- La suite 946 PASS riferita da Claude riguarda il suo ramo con prefetch, non il candidato verificato qui. Prefetch e campagne
+  congelate rimangono fuori da questa integrazione locale; nessuna autorizzazione implicita a nuovi job o push.

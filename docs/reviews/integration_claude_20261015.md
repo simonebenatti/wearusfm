@@ -1,5 +1,27 @@
 # Review finale per l'integrazione di Claude (15/10/2026)
 
+## Stato aggiornato: P2 chiuso e base integrata
+
+Correzione dell'autore `a7c87b5`, isolata dalla base `59b8c5b`, accettata dopo
+review indipendente e verifica locale. Merge `a719c2c` conservando gli SHA;
+main locale aggiornato da `5030a19`. Nessun push, deploy o nuovo job.
+Il prefetch non e' incluso e resta un delta da rivedere separatamente.
+
+Verifiche GPT sul candidato con il fix:
+
+- **48 PASS in 159,49 s**: due regressioni originali senza monkeypatch in
+  memoria, copie in `tests/cpu`, trainer DDP, sicurezza numerica, ripresa,
+  equivalenza e monitor. Overflow su un solo rank e chiavi mancanti coperti
+  con gloo e accumulo 1/2; ultimo checkpoint e stati preservati.
+- **21 PASS in 3,28 s**: baseline dell'encoder casuale. Totale **69 PASS**.
+- Codice del trainer e nuovi test identici alla consegna di Claude; unico
+  conflitto nel registro, risolto senza cancellare voci di nessun genitore.
+- Nessuna nuova esecuzione della suite completa o su CUDA/NCCL/bf16.
+
+Le sezioni successive conservano la review iniziale e la riproduzione del
+difetto sulla base precedente. I due FAIL descritti sotto sono storici:
+con il fix committato i test passano senza `WEARUSFM_REVIEW_IN_MEMORY_FIX`.
+
 Fonti: main `5030a19`, base Claude congelata `59b8c5b`, valutazioni GPT `5a25a5c`.
 Candidato isolato `add5359` (merge dei due rami, nessuno squash/rebase).
 Il prefetch che Claude sta sviluppando non e' incluso. Main non e' aggiornato.

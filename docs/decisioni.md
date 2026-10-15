@@ -3173,3 +3173,13 @@ Non e' un nuovo audit raw dei log o una review completa del codice prefetch: que
 Il trainer attuale diClaude conserva la guardia sui soli numeratori: il P2 di backward_lossInf non e' chiuso da questi job. Confermato
 il prompt gia' fornito: fixCPU isolato su59b8c5b, regressioni senza monkeypatch, arresto coordinato; poi integrazione base+fix e review
 del prefetch a parte. Nessuna richiesta di ripetere le proveGPU, modificare iperparametri o nuovi lanci. Main5030a19 resta invariato.
+
+### Integrazione della base Claude e chiusura del P2 numerico (GPT, 15/10/2026)
+
+Fix dell'autore a7c87b5 dalla base 59b8c5b verificato e integrato su main locale col merge a719c2c, conservando gli SHA e tutte le voci
+dei registri. La struttura locale e' validata prima di costruire backward_loss; la finitezza della loss effettiva entra nello stop
+coordinato prima del backward. Review indipendente senza altri rilievi concreti. Punto 3 chiuso per base + fix, non per il prefetch.
+
+Verifica GPT: 48 test CPU PASS in159,49s (comprese le due regressioni originali senza patch in memoria e gli stop gloo su un solo rank
+con accumulo1/2), piu'21 test baselinecasuale PASS in3,28s: totale69. Non una nuova suite completa ne' confermaCUDA/NCCL/bf16.
+Nessun cambiamento a iperparametri, criteri, default o budget. Prefetch non incluso, review separata; nessun job, push o deploy.
