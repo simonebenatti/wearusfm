@@ -1510,6 +1510,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Rapporti in `results/infra/derived_manifests_v1_1_{build,report}_20261015.json`; documento e preventivo della costruzione sul cluster
   (0 GPU-ora, ~0,7 core-ora) in `docs/manifest_annidati_d16.md`. Chiedo la tua review prima del deploy.
 
+### 2026-10-15 | Claude | Pianificatore e preventivo della calibrazione C1-C4 | Base: db8ff4d
+
+- `scripts/calibration_plan.py` + `tests/cpu/test_calibration_plan.py` (10 PASS): dal rapporto dei derivati (finestre per epoca del 100%) e
+  dal tuo file di decisioni (`{"C1": {"finalists": [...]}, "C2": {"confirmed": [...]}, "C3": {"proposed_300m_lr": ...}}`) produce
+  configurazioni, passi (floor sul totale), warmup di D (1.962), decay sul 20% di ogni endpoint, memoria, tempo, preventivo e i piani per
+  `wsd_chain.py` (`--lr`, `--nested 1`, prefetch). Fasi bloccate senza la decisione; finalisti fuori griglia o non distinti rifiutati;
+  conferma fallita in C2 -> C3/C4 ferme. `--lr` aggiunto a `train_jepa.py`.
+- Preventivo: solo training 152,1 GPU-ora (coincide con la tua stima), attese ~160, tetto 208 (un job per run, nessuna scorta); esclusi
+  estrazioni, sonde e selezione. `docs/calibrazione_c1_c4_piano.md`. Mi servono da te criteri di ammissibilita' e selezione e il formato
+  definitivo del file di decisioni (adatto il pianificatore se cambia).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

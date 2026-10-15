@@ -3350,3 +3350,9 @@ esatte, al 25% 20 / 75,0254 / 4,9746 (residuo di C a B), passaggi massimi 8,0000
 49.926 / 98.094 passi (floor sul totale). Il v1.1 campiona 20,008 / 74,990 / 5,002 perche' pesa anche le 62 sessioni senza finestre (0,47 h).
 Dettagli e preventivo della costruzione sul cluster (0 GPU-ora, ~0,7 core-ora) in `docs/manifest_annidati_d16.md`; da lanciare dopo la
 review di GPT e col via di Simone.
+
+**Calibrazione C1-C4: pianificatore e preventivo (15/10/2026; accordo GPT-Claude, sezione «Calibrazione»).** `scripts/calibration_plan.py`:
+finalisti come decisioni esplicite di GPT (fasi bloccate senza la decisione, conferma fallita che ferma C3/C4, nessuna scelta dalla training
+loss), passi col floor dal derivato al 100%, warmup di D (1.962 passi) in tutte le fasi, decay sul 20% di ogni endpoint; `--lr` aggiunto al
+comando di training. Preventivo: **solo training 152,1 GPU-ora; attese ~160, tetto 208** (8 run, un job ciascuno), esclusi estrazioni,
+sonde e selezione (GPT). Dettagli in `docs/calibrazione_c1_c4_piano.md`. Nessun lancio: servono i criteri di GPT e il via di Simone.

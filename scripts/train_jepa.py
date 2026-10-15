@@ -44,6 +44,7 @@ def main(argv=None) -> int:
     ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py (lunghezza media delle finestre per sessione)")
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
+    ap.add_argument("--lr", type=float, default=None, help="learning rate di picco (calibrazione C1-C4); default quello del preset (3e-4)")
     ap.add_argument("--batch-size", type=int, default=None, help="batch GLOBALE in finestre (con --distributed diviso fra i processi)")
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
@@ -102,6 +103,10 @@ def main(argv=None) -> int:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)
     if args.batch_size is not None:
         cfg = replace(cfg, batch_size=args.batch_size)
+    if args.lr is not None:
+        if not args.lr > 0:
+            ap.error("--lr deve essere positivo")
+        cfg = replace(cfg, lr=args.lr)
     if args.accum_steps is not None:
         cfg = replace(cfg, accum_steps=args.accum_steps)
     if args.schedule == "wsd":
