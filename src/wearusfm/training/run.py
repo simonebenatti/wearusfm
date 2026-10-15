@@ -19,8 +19,11 @@ import copy
 import hashlib
 import json
 import os
+import queue
 import shutil
+import threading
 import time
+import weakref
 from contextlib import nullcontext
 from dataclasses import asdict, dataclass, field, fields, is_dataclass, replace
 from pathlib import Path
@@ -122,11 +125,17 @@ class RunConfig:
     fixed_eval_every: int = 0
     fixed_eval_batches: int = 8
     log_batch_origin: bool = False
+    # prefetch (Simone, 15/10/2026: «vai con la 1, il prefetch sulla GPU», dopo l'attesa sui dati al 30M sopra il 2% di D6a): il batch
+    # successivo preso dal DataLoader, preparato e copiato sul dispositivo in un thread (`_Prefetcher`) mentre gira il passo corrente. Non
+    # cambia il training: stessi batch, stessi valori, stesso ordine. `prefetch_audit` (verifica): a fine passo gli ingressi sul dispositivo
+    # confrontati bit per bit con quelli preparati di nuovo dal batch sulla CPU; costa una copia all'indietro per passo
+    prefetch: bool = False
+    prefetch_audit: bool = False
 
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
-                   "log_batch_origin": False}
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5}
 
 
@@ -431,6 +440,7 @@ class _Micro:
     anchor_targets: list
     rvq_on: torch.Tensor | None
     rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
+    codes: torch.Tensor | None = None  # i codici impacchettati dietro `rvq_codes`
 
 
 def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
@@ -440,7 +450,92 @@ def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -
         inp.signals = [x.to(dtype) for x in inp.signals]
     codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
     return _Micro(inp, visible, torch.as_tensor(batch.kind).to(device), batch.anchor_targets, rvq_on if codes_t is not None else None,
-                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None, codes_t)
+
+
+def _stage(batch: L.PretrainBatch, accum_steps: int, device) -> list[_Micro]:
+    """Il batch sul dispositivo, in `accum_steps` micro-batch (uno senza accumulo: il batch intero)."""
+    return [_prepare(mb, device) for mb in L.split_batch(batch, accum_steps)]
+
+
+def _micro_tensors(micros: list[_Micro]) -> list[torch.Tensor]:
+    """I tensori dei micro-batch sul dispositivo, in un ordine fisso (i target delle ancore restano sulla CPU)."""
+    out = []
+    for m in micros:
+        out += [*m.inp.signals, *m.inp.codes.values(), *m.inp.sets.values(), m.inp.qc_valid, m.visible, m.kinds]
+        out += [t for t in (m.rvq_on, m.codes) if t is not None]
+    return out
+
+
+def _micro_digest(micros: list[_Micro]) -> str:
+    """SHA-256 di tipo, forma e byte dei tensori dei micro-batch (`RunConfig.prefetch_audit`)."""
+    h = hashlib.sha256()
+    for t in _micro_tensors(micros):
+        h.update(f"{t.dtype}{tuple(t.shape)}".encode())
+        h.update(t.detach().reshape(-1).cpu().view(torch.uint8).numpy().tobytes())
+    return h.hexdigest()
+
+
+class _Prefetcher:
+    """Il batch successivo pronto mentre gira il passo corrente (`RunConfig.prefetch`). Un thread fa quello che il ciclo faceva all'inizio del
+    passo -- `next` del DataLoader, ricostruzione dalla memoria condivisa, micro-batch e copia sul dispositivo (su CUDA in uno stream proprio)
+    -- e consegna (batch, micro-batch) nell'ordine dello stream, uno avanti. Nel thread non c'e' alcuna estrazione casuale (lo stream ha i suoi
+    generatori; preparazione e copia sono deterministiche): cambia solo quando i dati sono pronti, non quali sono.
+    Su CUDA lo stream del passo aspetta l'evento della copia e i tensori si registrano su quello stream (`record_stream`), cosi' l'allocatore
+    non riusa la loro memoria per la copia successiva finche' il passo li usa. Un'eccezione del thread si rilancia al passo che aspettava il
+    batch."""
+
+    def __init__(self, fetch, stage, device):
+        self._device = torch.device(device)
+        stream = torch.cuda.Stream(device=self._device) if self._device.type == "cuda" else None
+        self._queue, self._stop = queue.Queue(maxsize=1), threading.Event()
+        # il thread non tiene riferimenti al prefetcher: se il ciclo esce con un'eccezione, la raccolta del prefetcher lo ferma
+        self._thread = threading.Thread(target=_Prefetcher._run, args=(fetch, stage, self._device, stream, self._queue, self._stop),
+                                        name="wearusfm-prefetch", daemon=True)
+        weakref.finalize(self, self._stop.set)
+        self._thread.start()
+
+    @staticmethod
+    def _run(fetch, stage, device, stream, q, stop):
+        def put(item):
+            while not stop.is_set():
+                try:
+                    q.put(item, timeout=0.1)
+                    return
+                except queue.Full:
+                    pass
+
+        try:
+            if stream is not None:
+                torch.cuda.set_device(device)  # il dispositivo corrente e' per thread
+            while not stop.is_set():
+                batch = fetch()
+                if stream is None:
+                    put((batch, stage(batch), None))
+                    continue
+                with torch.cuda.stream(stream):
+                    micros = stage(batch)
+                    ready = torch.cuda.Event()
+                    ready.record(stream)
+                put((batch, micros, ready))
+        except BaseException as e:  # noqa: BLE001 -- consegnata al ciclo, che la rilancia
+            put(e)
+
+    def next(self):
+        item = self._queue.get()
+        if isinstance(item, BaseException):
+            raise item
+        batch, micros, ready = item
+        if ready is not None:
+            main = torch.cuda.current_stream(self._device)
+            main.wait_event(ready)
+            for t in _micro_tensors(micros):
+                t.record_stream(main)
+        return batch, micros
+
+    def close(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=60)
 
 
 def _keys_hash(*dicts) -> float:
@@ -547,9 +642,10 @@ def _check_wsd(cfg: RunConfig) -> None:
 
 
 # variazioni ammesse alla ripresa dallo stesso checkpoint (review GPT del 14/10/2026): estendere il run, registrare l'origine dei batch (solo
-# log) e il percorso del file di calibrazione (il suo SHA resta nella ricetta). Tutto il resto -- seme, batch, accumulo, loader, dataset,
+# log), il prefetch e la sua verifica (cambiano solo quando arrivano i dati) e il percorso del file di calibrazione (il suo SHA resta nella
+# ricetta). Tutto il resto -- seme, batch, accumulo, loader, dataset,
 # ottimizzazione, modello, loss, diagnostiche che leggono dati -- deve coincidere: per cambiarlo serve un run nuovo o un ramo (`branch_from`)
-RESUME_OPERATIONAL = ("max_steps", "log_batch_origin", "keep_calibration")
+RESUME_OPERATIONAL = ("max_steps", "log_batch_origin", "keep_calibration", "prefetch", "prefetch_audit")
 
 
 def _check_resume_recipe(cfg: RunConfig, state: dict) -> None:
@@ -970,6 +1066,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     reason, it = "max_steps", iter(data)
     numerical_failure = False
 
+    def fetch():
+        return _from_shared(next(it)) if num_workers > 0 else next(it)
+
+    prefetcher = _Prefetcher(fetch, lambda b: _stage(b, cfg.accum_steps, device), device) if cfg.prefetch else None
+    audited = 0
+
     def save(names: tuple[str, ...] = ()):
         """checkpoint.pt (la ripresa) e, se `names`, copie con nome che restano (pre-decay e fase stabile dello schedule WSD)."""
         extra = {}
@@ -995,7 +1097,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             reason = "limite di tempo"
             break
         t0 = time.time()
-        batch = _from_shared(next(it)) if num_workers > 0 else next(it)
+        # col prefetch il batch e' gia' sul dispositivo e `t_data` e' l'attesa che resta; senza, preparazione e copia stanno nel passo
+        batch, micros = prefetcher.next() if prefetcher is not None else (fetch(), None)
         t_data = time.time() - t0
         if batch.index != step:  # l'ordine dei worker del DataLoader deve ricomporre la sequenza degli indici
             raise RuntimeError(f"batch di indice {batch.index} al passo {step}: stream fuori sequenza")
@@ -1006,26 +1109,25 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             g["lr"] = _lr_at(step, cfg)
         student.train()
         opt.zero_grad(set_to_none=True)
+        if micros is None:
+            micros = _stage(batch, cfg.accum_steps, device)
         if use_terms:  # DDP e/o accumulo: il contratto delle loss distribuite
-            micros = [_prepare(mb, device) for mb in L.split_batch(batch, cfg.accum_steps)]
             failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp)
             if failure is not None:  # deciso insieme da tutti i processi, prima del backward che l'avrebbe usato
                 reason = f"{failure} al passo {step}"
                 numerical_failure = True
                 break
-        else:  # un processo senza accumulo: il percorso di sempre
-            inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
-            codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
+        else:  # un processo senza accumulo: il percorso di sempre, sul micro-batch unico (il batch intero)
+            m = micros[0]
             with amp:
                 if cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
                     from wearusfm.model.spectral_branches import readout_objectives
-                    kb, kb_metrics = readout_objectives(student, inp, batch.anchor_targets, keep=False)["keep_branches"]
+                    kb, kb_metrics = readout_objectives(student, m.inp, batch.anchor_targets, keep=False)["keep_branches"]
                     # col suo peso, come nel training congiunto (review GPT del 14/10: senza, branch_weight non controllava il backward)
                     losses = {"total": cfg.jepa.branch_weight * kb, "keep_branches": kb, **kb_metrics}
                 else:
-                    losses = jepa_losses(student, teacher, inp, visible, cfg.jepa, anchor_targets=batch.anchor_targets,
-                                         kinds=torch.as_tensor(batch.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                                         rvq_codes=(lambda c, w: codes_t[c, w]) if codes_t is not None else None)
+                    losses = jepa_losses(student, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=batch.anchor_targets, kinds=m.kinds,
+                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes)
             if not bool(torch.isfinite(losses["total"])):
                 reason = f"perdita non finita al passo {step}"
                 numerical_failure = True
@@ -1062,6 +1164,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
         else:
             ema_update(teacher, student, cfg.jepa.ema_momentum)
+        if cfg.prefetch_audit:  # gli ingressi del passo, a fine passo, uguali bit per bit a quelli preparati di nuovo dal batch sulla CPU
+            differ, = _any_flag(ctx, device, _micro_digest(micros) != _micro_digest(_stage(batch, cfg.accum_steps, "cpu")))
+            if differ:  # su tutti i processi; come un errore numerico: nessun checkpoint e STOP per la catena
+                reason = f"verifica del prefetch: ingressi sul dispositivo diversi dal batch al passo {step}"
+                numerical_failure = True
+                break
+            audited += 1
         step += 1
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
@@ -1117,6 +1226,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
             part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo il termine dei rami
             say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
+    if prefetcher is not None:
+        prefetcher.close()
     if not numerical_failure:
         save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
     if metrics is not None:
@@ -1136,6 +1247,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")}}
     if ctx.active:
         summary.update({"world_size": ctx.world_size, "batch_per_process": per_process})
+    if cfg.prefetch or cfg.prefetch_audit:
+        summary.update({"prefetch": cfg.prefetch, "prefetch_audit_steps": audited if cfg.prefetch_audit else None})
     if use_terms:
         summary.update({"accum_steps": cfg.accum_steps, "micro_batch": per_process // cfg.accum_steps,
                         "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"})

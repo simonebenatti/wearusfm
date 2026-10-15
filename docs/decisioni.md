@@ -2929,3 +2929,12 @@ dal suo elenco); comando di sola lettura dato a Simone.
   costo per finestra non scende raddoppiando il batch (~22 ms/finestra al 30M, ~43 al 100M, ~86 al 300M).
 **Costo reale (sacct):** 82,6 minuti di nodo intero = **5,51 GPU-ora (44,1 ore locali)**, entro il tetto di 14; budget «preparazione
 dell'infrastruttura»: 0,36 + 5,51 = 5,87 usate su 25 (la diagnostica dello stato iniziale, 0,013, e' nel passo 6).
+
+**Prefetch del batch (15/10/2026, Simone: «vai con la 1, il prefetch sulla GPU, poi appena lanciata guarda cosa ha fatto gpt»; nota di
+Simone: «quei 17 ms sono nell'handoff CPU dai worker. Il prefetch deve anticipare anche quel lavoro, non soltanto la copia sulla GPU»).**
+Protocollo `w1_prefetch_v1` in `docs/protocollo_gpu_dati_finestra1.md`. Un thread anticipa di un batch la ricezione dai worker, la
+ricostruzione dalla memoria condivisa, i micro-batch e la copia sul dispositivo (stream CUDA proprio); training bit per bit uguale sulla CPU
+(test). Criteri congelati prima del lancio: verifica degli ingressi bit per bit su GPU per 200 aggiornamenti (30M, batch 64, 2 micro-batch);
+attesa sui dati al 30M <= 2% (D6a) col batch 32 e 64; tempo totale (media di `t_step_s`, passi 51-600) <= 1,01 x quello di `w1gd`
+(vincolo di GPT del 15/10: non spostare l'attesa fuori dal cronometro). 3 job da 4 GPU su dbg, **tetto 6 GPU-ora (48 ore locali)**, stima ~2, dal budget
+«preparazione dell'infrastruttura» (usate 5,87 su 25).
