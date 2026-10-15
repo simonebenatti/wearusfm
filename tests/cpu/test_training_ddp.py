@@ -27,7 +27,7 @@ def _state_hash(module) -> str:
 
 
 def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, time_limit_s, perturb_rank, accum, bad_count_rank,
-            drop_key_rank=-1, prefetch=False):
+            drop_key_rank=-1, prefetch=False, overflow_rank=-1):
     import torch.distributed as dist
     dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world)
     try:
@@ -88,6 +88,17 @@ def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, 
                 return out_
 
             R.jepa_loss_terms = dropped
+        if overflow_rank == rank:  # dal terzo aggiornamento il numeratore JEPA vale il massimo del float32, solo qui: finito, ma
+            terms_fn3, calls_o = R.jepa_loss_terms, {"n": 0}  # backward_loss (peso 1 x numeratore x 2 processi) va in overflow
+
+            def overflowing(*a, **k):
+                out_ = terms_fn3(*a, **k)
+                calls_o["n"] += 1
+                if calls_o["n"] > 2 * accum:
+                    out_.num["jepa"] = out_.num["jepa"] * 0 + torch.finfo(torch.float32).max
+                return out_
+
+            R.jepa_loss_terms = overflowing
         cfg = replace(R.small_config(datasets=None, max_steps=max_steps), batch_size=4, accum_steps=accum, prefetch=prefetch,
                       prefetch_audit=prefetch)
         summary = R.train(cfg, Path(mpath), [Path(root)], Path(out), log=lambda m: None, dist=R.DistContext(rank, world, rank),
@@ -105,12 +116,13 @@ def _data(tmp_path):
 
 
 def _run(tmp_path, tag, out, *, world=2, max_steps=4, nan_rank=-1, time_limit_s=None, perturb_rank=-1, accum=1, bad_count_rank=-1,
-         drop_key_rank=-1, prefetch=False):
+         drop_key_rank=-1, prefetch=False, overflow_rank=-1):
     root, mpath = _data(tmp_path)
     results = tmp_path / f"res_{tag}"
     results.mkdir()
     mp.spawn(_worker, args=(world, str(tmp_path / f"store_{tag}"), str(root), str(mpath), str(out), str(results), max_steps, nan_rank,
-                            time_limit_s, perturb_rank, accum, bad_count_rank, drop_key_rank, prefetch), nprocs=world, join=True)
+                            time_limit_s, perturb_rank, accum, bad_count_rank, drop_key_rank, prefetch, overflow_rank),
+             nprocs=world, join=True)
     return [json.loads((results / f"rank{r}.json").read_text()) for r in range(world)]
 
 
@@ -236,3 +248,27 @@ def test_ddp_prefetch_leaves_the_training_unchanged(tmp_path, accum):
         [{k: v for k, v in r.items() if k not in timing} for r in _lines(tmp_path / "plain")]
     s = json.loads((tmp_path / "pre" / "summary.json").read_text())
     assert s["steps"] == 4 and s["prefetch"] is True and s["prefetch_audit_steps"] == 4
+
+
+def _dict_hash(state) -> str:  # come `_state_hash`, da uno state_dict salvato
+    h = hashlib.sha256()
+    for k, v in sorted(state.items()):
+        h.update(k.encode())
+        h.update(v.detach().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()
+
+
+@pytest.mark.parametrize("accum", [1, 2])
+def test_ddp_overflowing_loss_on_one_process_stops_all_before_backward(tmp_path, accum):
+    """Review GPT del 15/10 (4f052b0): numeratori finiti ma perdita del backward infinita per overflow del prodotto per il numero di
+    processi, su un solo processo. Tutti si fermano allo stesso passo prima del backward, nessun aggiornamento a meta'; il checkpoint resta
+    l'ultimo valido e coincide coi pesi finali."""
+    out = tmp_path / "run"
+    res = _run(tmp_path, f"o{accum}", out, overflow_rank=1, accum=accum)
+    assert {r["summary"]["stopped"] for r in res} == {"perdita non finita al passo 2"}
+    assert {r["summary"]["steps"] for r in res} == {2}
+    assert res[0]["student"] == res[1]["student"] and res[0]["teacher"] == res[1]["teacher"]
+    assert (out / "STOP").read_text().startswith("perdita non finita al passo 2")
+    assert [r["step"] for r in _lines(out)] == [1, 2]
+    state = torch.load(out / "checkpoint.pt", weights_only=False)
+    assert state["step"] == 2 and _dict_hash(state["student"]) == res[0]["student"] and _dict_hash(state["teacher"]) == res[0]["teacher"]
