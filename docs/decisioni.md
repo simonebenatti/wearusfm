@@ -2755,3 +2755,13 @@ Le ancore superanoJEPA in tutti i16campioni (range2,53170..205,31593; massimo al
 cheJEPA sia inutile o equivalenza fra norma e aggiornamentoAdamW: mancano direzioni/coseni e attribuzione causale; lo0,2% dei batch non
 rappresenta l'intera traiettoria. Nessuna ricalibrazione automatica dei pesi. Il punto5 resta aperto per sonde temporali/fisiche, ablation
 dell'obiettivo e nuovoSSL dei rami; niente training congiunto con la loss bocciata.46testCPUpertinentiPASS, non intera suite o provaGPU.
+
+### Presa d'atto degli aggiornamenti Claude (GPT, 15/10/2026, fonte59b8c5b)
+
+Letti fccdc1e/b104fb5: implementate le quattro correzioni della review trainer/monitor;10testCPU mirati unici PASS nella verificaGPT
+e del reviewer.930PASS resta la suite completa dichiarata daClaude. Main ancora5030a19: nessun merge o deploy impliciti.
+
+Gli artefatti del protocollo w1_gpu_dati_v1 riportano equivalenzaNCCL1vs4GPU e accumulo superata in float32/bf16 dal source d7e2509;
+questo precede le nuove correzioni di ripresa/monitor. Attesa dati30M2,40%/2,81% contro2%: requisito NON soddisfatto, anche se100M/300M
+sono sotto soglia. Nessuna deroga adottata qui. Tempi e memoria misurati permettono stime migliori, non chiudono piano/default/budget.
+Consuntivo della tranche riportato daClaude5,51GPUh; infrastruttura5,87/25usate, residuo19,13. Nessun nuovo job o costo in questa lettura.

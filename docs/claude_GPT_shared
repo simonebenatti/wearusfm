@@ -14,10 +14,10 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Review trainer/monitor consegnata: quattro P2 riprodotti; correzioni a Claude prima del congelamento, main non ancora integrato |
-| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Due P2 sul pannello/metriche da correggere; bozza v2 letta, nessuna nuova soglia adottata |
+| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Quattro P2 affrontati da fccdc1e+b104fb5, letti da GPT e 10 test CPU mirati unici PASS; suite930PASS di Claude, integrazione ancora pendente |
+| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Configurazioni, prove finali, budget e piano da congelare; firma finale di Simone |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Equivalenza GPU superata sul codice di campagna; attesa dati30M2,40-2,81% ancora oltre2%, 100M/300M sotto. Configurazioni/piano/budget da firmare |
 
 ### Tranche che puo' partire ora in parallelo
 
@@ -583,6 +583,22 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Test finali analisi:46PASS CPU locale. Rilievi del trainer restano assegnati aClaude; main non integrato, tre draft preesistenti
   preservati. Registro nelle due sezioni e decisioni aggiornati; sonde temporali/fisiche e nuovo obiettivoSSL ancora da fare.
 
+### 2026-10-15 | GPT | Letti gli ultimi aggiornamenti Claude, punti 3-4 e 6 | Fonte: 59b8c5b
+
+- Alla domanda di Simone «hai visto cosa ha fatto claude?» letti il suo registro, decisioni, fattibilita', artefattiGPU e i diff
+  fccdc1e/b104fb5. Nessuna modifica al worktree diClaude o nuovo accesso al cluster/job.
+- Le quattro correzioni richieste sono implementate: ricetta/firma dei dati alla ripresa; struttura delle loss prima di backward_loss
+  e dello stop coordinato; hash del contenuto del pannello fisso; aggregazione delle metriche mediante numeratori/conteggi validi.
+  b104fb5 sposta le nuove guardie dopo loSTOP. Checkpoint storici senza data_signature sono ammessi con avviso esplicito, non verificati
+  retroattivamente. Nuovi testDDP sul componente mancante presenti, non rieseguiti da GPT in questa lettura.
+- GPT:9test di test_resume_recipe.py PASS; reviewer:3PASS (pannello, metriche, STOP), di cui2duplicati. **10testCPU unici PASS**,
+  non suite completa.930PASS e' la suite completa registrata daClaude59b659e, non una mia nuova esecuzione.
+- Artefatti di59b8c5b: equivalenza1vs4GPU/accumulo PASS in float32 e bf16, source d7e2509. Misure dati/throughput source977e767.
+  Attesa30M2,40%/2,81% NON passa2%;100M1,24%/1,73%,300M0,69%/0,72%. Batch32:0,707/1,390/2,769s per update sui tre rung.
+  Costo della tranche5,51GPUh, infrastruttura dichiarata5,87/25usate; stima finestra1~4730-5300GPUh non ancora budget firmato.
+- Main canonico ancora5030a19, ramoClaude50commit avanti allo snapshot. Nessun merge/push o riapprovazione automatica del monitor,
+  del dataloader o della finestra1. Lettura e verifiche riportate nelle due sezioni, senza riscrivere le voci diClaude.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1023,3 +1039,14 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Copia locale iniziale fermata dal gateSHA durante il trasferimento ancora incompleto; nessun output scientifico prodotto. Verifiche
   definitive solo dopo copia byte-identica confermata daOps. Il precedente trasferimento sotto approvazione e' stato interrotto:
   completamento con accessoSSHgia'approvato, nessuna nuova sottomissione, modifica remota o download di checkpoint/NPZ.
+
+### 2026-10-15 | GPT | Limiti della verifica degli ultimi aggiornamenti Claude
+
+- Il dato2,40-2,81% non e' <=2%: sogliaD6a non allentata. Ottimizzazione/deroga proposta daClaude resta da decidere prima dei run,
+  non introdotta da questa richiesta di stato. Il costo/calendario della finestra1 resta una stima sulla bozza dei bracci.
+- L'equivalenzaGPU d7e2509 precede fccdc1e/b104fb5: conferma il nucleoDDP/accumulo, non esercita automaticamente le nuove guardie
+  di ripresa/monitor. Le verifiche odierne di queste ultime sono CPU e mirate; niente nuova fullsuite o provaCUDA dichiarata.
+- "STOP vince su tutto" e' piu' ampio del codice: le nuove guardie sono dopoSTOP, alcune vecchie guardie restano prima. Nel caso
+  riprodotto STOP+alarm il test passa e il run non riparte; nessuna regressione ulteriore dimostrata da questa distinzione.
+- Nessun nuovo rilievo bloccante emerso dall'ispezione mirata; non e' una review completa dei50commit o il loro merge. Regola del
+  prossimo collaudo ancora da congelare; non cambia il fallimento storico del2C ne' autorizza training congiunto dei rami.
