@@ -1,0 +1,105 @@
+{
+ "protocol": "w1_valutazione_v1",
+ "recorded_on": "2026-10-15",
+ "code_sha": "51f5826e3223c15f30130b8cd41bd5fb741ec5de",
+ "plan": "results/infra/w1val_plan_20261015.json",
+ "jobs": {
+  "w1val_checkout": [
+   60664574,
+   "COMPLETED",
+   "0:0",
+   "00:00:11"
+  ],
+  "w1cat-T-j03-guard-fce07c81": [
+   60664584,
+   "COMPLETED",
+   "0:0",
+   "00:00:10"
+  ],
+  "w1cat-B-j02-guard-7116cabb": [
+   60664585,
+   "FAILED",
+   "3:0",
+   "00:00:08"
+  ],
+  "w1val-T-ext": [
+   60664586,
+   "COMPLETED",
+   "0:0",
+   "00:00:02"
+  ],
+  "w1val-T-p1": [
+   60664588,
+   "COMPLETED",
+   "0:0",
+   "00:00:03"
+  ],
+  "w1val-T-p2": [
+   60664590,
+   "COMPLETED",
+   "0:0",
+   "00:00:03"
+  ],
+  "w1val-T-cmp": [
+   60664599,
+   "COMPLETED",
+   "0:0",
+   "00:00:03"
+  ],
+  "w1val-B-ext": "non sottomesso (limite 0 alla prima chiamata, bloccato alla seconda)"
+ },
+ "criteria": {
+  "1_positive": {
+   "passed": true,
+   "guard_without_afterok": true,
+   "guard_report": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T",
+    "checkpoint": "checkpoint_postdecay.pt",
+    "ok": true,
+    "problems": [],
+    "steps": 1400,
+    "stopped": "max_steps",
+    "size": 454073464,
+    "sha256": "15262e1069c3969644595d20f0f4974d2f1948369cc9eb2a39e4f3c98459c069"
+   },
+   "order": "guardia 20:46:27-20:46:37 -> estrazione 20:46:39-41 -> sonde 20:46:43-46 -> confronto 20:46:53-56",
+   "compare_output": {
+    "job": "60664599",
+    "inputs": 2,
+    "code_sha": "51f5826e3223c15f30130b8cd41bd5fb741ec5de",
+    "time": "2026-10-15T18:46:55Z"
+   }
+  },
+  "2_negative": {
+   "passed": true,
+   "guard_exit": "3:0",
+   "guard_report": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B",
+    "checkpoint": "checkpoint_postdecay.pt",
+    "ok": false,
+    "problems": [
+     "SHA-256 71af16a20b596c4261f8ddfa7bb847bb6b5f09bb0b4f50c608284f4a058e5d06 diverso da quello atteso 0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "steps": 1375,
+    "stopped": "max_steps",
+    "size": 454073464,
+    "sha256": "71af16a20b596c4261f8ddfa7bb847bb6b5f09bb0b4f50c608284f4a058e5d06"
+   },
+   "call1": "w1val-B-ext in attesa (coda collaudo_blocco al limite di 0 job)",
+   "call2": "w1val-B-ext bloccato (dipende da ['w1cat-B-j02-guard-7116cabb'], bloccati o falliti)"
+  },
+  "3_rerun_no_duplicates": {
+   "passed": true,
+   "call2": "6 nodi gia' sottomessi, nessuna sottomissione"
+  }
+ },
+ "passed": true,
+ "checkpoint_sha256": {
+  "w1cat-T/checkpoint_postdecay.pt": "15262e1069c3969644595d20f0f4974d2f1948369cc9eb2a39e4f3c98459c069",
+  "w1cat-B/checkpoint_postdecay.pt": "71af16a20b596c4261f8ddfa7bb847bb6b5f09bb0b4f50c608284f4a058e5d06"
+ },
+ "cost": {
+  "cpu_seconds": 40,
+  "gpu_hours": 0
+ }
+}

@@ -1603,6 +1603,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   `w1cat` e nodi fittizi miei (`scripts/slurm/chain_dummy.sbatch`, test in `test_evaluation_chain.py`: 25 PASS) al posto dei tuoi launcher.
   Criteri congelati in `docs/catena_valutazione_finestra1.md`; 0 GPU-ora, tetto ~1 core-ora. Non tocca i tuoi file ne' C1-C4.
 
+### 2026-10-15 | Claude | Collaudo della catena di valutazione sul cluster superato | Codice: 51f5826e3223c15f30130b8cd41bd5fb741ec5de
+
+- `w1_valutazione_v1` superato (`results/infra/w1val_20261015.json`): guardia del tronco senza afterok (sacct: training finito bene) e
+  `ok`; estrazione -> sonde -> confronto fittizi in ordine, tutti COMPLETED; guardia del ramo con SHA sbagliato FAILED 3:0 e nodo a valle
+  bloccato senza entrare in coda; nessun doppione alla seconda chiamata. 7 job CPU, 40 s, 0 GPU-ora.
+- Guardie e catena sono collaudate sul cluster con nodi fittizi: per usarle con i tuoi launcher mi serve il contratto definitivo del piano
+  (adatto lo schema `eval-plan-v0`). SHA dei post-decay di `w1cat`: tronco 15262e10..., ramo 71af16a2....
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2461,3 +2469,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Nei piani dei run va lo SHA del file sul cluster (la firma dei dati della ripresa usa quello), non quello della costruzione locale: stesso
   contenuto, byte diversi.
+
+### 2026-10-15 | Claude | Catena di valutazione: nessun problema aperto dal collaudo
+
+- Una nota d'uso: una guardia fallita lascia il nodo a valle «bloccato» nel piano; se il nodo era gia' in coda in afterok resterebbe in
+  coda con una dipendenza mai soddisfatta (va cancellato a mano da Simone). Nei piani reali conviene che le guardie siano gia' finite
+  quando si sottomettono le valutazioni (seconda chiamata), oppure accettare quel caso raro.

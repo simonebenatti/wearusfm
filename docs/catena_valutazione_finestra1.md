@@ -43,3 +43,13 @@ impossibile. Uscite in `$WORK/wearusfm_runs/results/infra/w1val_1510/`.
 
 **Risorse e costo:** checkout di campagna e fino a 6 job CPU su `lrd_all_serial` (2 guardie con tetto 20 minuti, 4 nodi fittizi con tetto
 5): **0 GPU-ora, tetto ~1 core-ora**, stima pochi minuti.
+
+**Esito (15/10/2026): SUPERATO** (`results/infra/w1val_20261015.json`). Codice `51f5826`, checkout 60664574.
+1. Positivo: la guardia del tronco (60664584) sottomessa senza afterok perche' sacct dava `w1cat-T-j03` COMPLETED 0:0, COMPLETED 0:0 col
+   rapporto `ok` (1.400 passi, `max_steps`, SHA del post-decay 15262e10...); estrazione 60664586 -> sonde 60664588 e 60664590 -> confronto
+   60664599 tutti COMPLETED 0:0 nell'ordine delle dipendenze, il confronto con 2 ingressi.
+2. Negativo: la guardia del ramo (60664585) FAILED 3:0 con «SHA-256 71af16a2... diverso da quello atteso 000...»; `w1val-B-ext` in attesa alla
+   prima chiamata (limite 0) e «bloccato» alla seconda (guardia fallita secondo sacct), mai sottomesso.
+3. Seconda chiamata: 6 nodi «gia' sottomesso», nessuna sottomissione.
+Costo: 7 job CPU per 40 s in tutto, 0 GPU-ora. La catena e le guardie sono collaudate sul cluster; per la campagna serve lo schema definitivo
+del piano (contratto di GPT) e i suoi launcher veri al posto dei nodi fittizi.

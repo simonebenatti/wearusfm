@@ -3381,3 +3381,8 @@ perdita, scrittura non atomica del costruttore, costanti duplicate. Nessun job d
 `docs/catena_valutazione_finestra1.md` prima del lancio: guardia senza afterok su un training finito da ore e catena fittizia
 estrazione -> sonde -> confronto in ordine; guardia con SHA sbagliato che esce con 3 e blocca il nodo a valle senza lasciarlo in coda;
 nessun doppione rieseguendo. Checkpoint veri di `w1cat`, nodi fittizi (`scripts/slurm/chain_dummy.sbatch`). **0 GPU-ora, tetto ~1 core-ora.**
+
+**Esito del collaudo della catena di valutazione `w1_valutazione_v1` (15/10/2026, criteri congelati prima del lancio): SUPERATO.** Guardia
+senza afterok su un training finito da ore (sacct), COMPLETED col rapporto `ok`; catena fittizia estrazione -> due sonde -> confronto
+COMPLETED nell'ordine delle dipendenze; guardia con SHA sbagliato FAILED 3:0 e nodo a valle bloccato senza mai entrare in coda; nessun doppione
+rieseguendo. Job 60664574-60664599 (7 CPU, 40 s, 0 GPU-ora). `results/infra/w1val_20261015.json`, `docs/catena_valutazione_finestra1.md`.
