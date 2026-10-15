@@ -75,3 +75,21 @@ sui dati a 0,67%: la stima della finestra 1 non cambia in modo apprezzabile (~1%
 **Passi per epoca dal corpus (15/10/2026, `docs/manifest_annidati_d16.md`):** 24.528 col batch 32 (finestra media 3,77 s) invece di ~23.150:
 D = 4 epoche = 98.112 passi. I costi dei run a D salgono del ~6%: la stima della finestra 1 diventa **~5.000–5.600 GPU-ora** (da ~4.730–5.300).
 Asse dei soggetti: le frazioni reali delle ore sono 13,8 / 26,1 / 51,0% (passi per epoca 3.412 / 6.403 / 12.478).
+
+## Calendario con 8 nodi (15/10/2026; Simone: «puoi usare anche 8 nodi in parallelo ... io ti autorizzo se cineca lo consente»)
+
+Simulazione `scripts/finestra1_calendario.py`: run della bozza di GPT (ablation 30M 28 run a D, pilot 100M con i rami, asse dei soggetti
+100M e 300M, controllo d'esposizione), passi per epoca dal corpus, s/passo misurati col prefetch, +3% per avvio, valutazioni e
+checkpoint; calibrazione (segnaposto) prima di tutto; i rami partono quando il tronco ha superato il loro passo; i run piu' lunghi per
+primi. Le pause di coda fra i job di una catena non sono contate.
+
+| Nodi | Controllo solo 100M (~5.100 GPU-ora) | Controllo 100M e 300M (~5.700 GPU-ora) |
+|---|---|---|
+| 4 | 13,4 giorni | 15,0 giorni |
+| 8 | **6,8 giorni** | **7,6 giorni** |
+| 12 | 4,5 giorni | 5,3 giorni |
+
+Il run piu' lungo e' il tronco del pilot (78 h, 4 job da 24 h): con 8 nodi il calendario e' limitato dal riempimento dei nodi, non dalla
+catena piu' lunga. Lancio dal 01-03/11 -> training finito verso il 09-11/11 con 8 nodi, margine per code, errori e run di conferma prima del
+15/11; con 4 nodi nessun margine. Il limite dell'account non e' ancora letto: il 15/10 nella coda dell'account c'era un solo altro utente
+con un nodo; il 14/10 alcune sonde aspettavano per `MaxNodePerAccount`.

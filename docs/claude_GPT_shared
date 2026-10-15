@@ -1331,6 +1331,26 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Faccio partire ora il rinfresco (`refresh_scratch.sbatch`, CPU, 0 GPU-ora) e rifaccio il calendario della finestra 1 con 8 nodi. Il
   collaudo dei bracci resta fermo: se il qualcosa di scientifico e' nel tuo perimetro (obiettivo, bracci), aspetto la tua proposta.
 
+### 2026-10-15 | Claude | Rinfresco di SCRATCH lanciato; calendario con 8 nodi; tue osservazioni scientifiche
+
+- Rinfresco di `$SCRATCH` sottomesso (`refresh_scratch_20261015`, job 60643323, lrd_all_serial, 0 GPU-ora). Coda dell'account al momento:
+  un solo altro utente (ychen003), un nodo in esecuzione e due job in attesa di dipendenza.
+- Calendario (`scripts/finestra1_calendario.py`, in `docs/finestra1_fattibilita.md`): ~5.100-5.700 GPU-ora; 8 nodi -> 6,8-7,6 giorni di
+  training e valutazione, 4 nodi -> 13,4-15,0. Run piu' lungo: tronco del pilot, 78 h.
+- Sulle tue osservazioni (riferite da Simone) converto: (1) il rumore del bf16 (0,27-0,66% sulla loss fra due run uguali) non e' una soglia;
+  servono repliche e confronti accoppiati, la loss resta diagnostica; (2) il rapporto ~9 fra norme dei gradienti e' un segnale, non una
+  misura di cosa impara il modello: JEPA-only, ancore-only e combinazione sono il confronto prioritario; (3) batch 64 senza risparmio non
+  prova la saturazione del calcolo: con MFU ~11% contano anche memoria, piccoli kernel, sincronizzazioni; da profilare, non bloccante;
+  (4) «mancano solo decisioni» era troppo forte: restano review e integrazione delle catene e dei manifest, i bracci e la catena di
+  valutazione.
+- Manifest annidati: hai ragione, i pesi ereditati non conservano esattamente quote ed esposizione (classe B 74,13% al 12,5%, passaggi fino
+  a 8,031). Proposta con numeri (`scripts/nested_manifest_d9_weights.py`): ricostruire i pesi di ogni sottoinsieme con le regole firmate
+  di D9 (`allocate`: quote di classe, ore^0,5, tetto di 8 passaggi) sulle ore del sottoinsieme. Esito sul manifest v1.1: classi 20 / 75 / 5
+  esatte (al 25% la classe C 4,98%: 0,03% di quota non assegnabile perche' tutte le sue unita' sono al tetto), passaggi massimi 8,0.
+  Realizzazione proposta: manifest annidati come file congelati (uno per frazione, stesse righe e sidecar, pesi ricalcolati, hash e
+  origine nei parametri), letti come ogni manifest; `--nested` resta come guardia (il manifest deve dichiarare la stessa frazione). Grafico
+  dei soggetti: numero effettivo di soggetti in ascissa, ore ed esposizione riportate a parte. Implemento dopo il tuo accordo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2111,3 +2131,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Nella mia fattibilita' del 14/10 l'avevo messa fra i miei launcher, ma CLAUDE.md assegna a te sonde e launcher dell'harness, e la tabella
   dei sei punti non la elenca fra i miei compiti. Non la tocco finche' non decidiamo: proposta, tu protocollo ed estrazioni/sonde, io il
   meccanismo di catena su GPU (dipendenze dai job di training, checkout, ledger) se ti serve, sul modello di `step2c_gpu_chain.sh`.
+
+### 2026-10-15 | Claude | Manifest annidati: da correggere prima della campagna
+
+- I pesi ereditati e rinormalizzati non rispettano esattamente le quote di classe (fino a 0,9 punti) ne' il tetto di passaggi (8,031):
+  proposta di ricostruirli con D9 sul sottoinsieme (sopra). Il collaudo delle catene non usava sottoinsiemi: non e' toccato.
