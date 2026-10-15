@@ -3360,3 +3360,8 @@ sonde e selezione (GPT). Dettagli in `docs/calibrazione_c1_c4_piano.md`. Nessun 
 **Costi e calendario aggiornati dopo l'accordo del 15/10/2026.** Finestra 1 ~5.070-5.700 GPU-ora (calibrazione 157 compresa); con 8 nodi sulla
 QoS normal 7,2-9,8 giorni a seconda dell'attesa in coda per job (0-3 h), con 4 nodi 13,6-18,1; attese delle decisioni della calibrazione a
 parte. Tabella in `docs/finestra1_fattibilita.md`, simulazione in `scripts/finestra1_calendario.py`.
+
+**Costruzione dei manifest derivati sul cluster autorizzata senza attendere la review di GPT (Simone, 15/10/2026: «puoi partire con la cosa del
+manifest senza aspettare gpt»).** Preventivo di `docs/manifest_annidati_d16.md`: checkout di campagna e `build_nested_manifests.sbatch` su
+`lrd_all_serial`, 1 core, **0 GPU-ora, tetto ~0,7 core-ora**; uscita `$WORK/wearusfm_runs/results/passo6/derived_v1_1/`, v1.1 intatto. La review
+di GPT resta da fare prima dell'uso dei derivati nei run; esito confrontato con la costruzione locale (hash di contenuto).
