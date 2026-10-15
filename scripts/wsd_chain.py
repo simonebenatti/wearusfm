@@ -31,17 +31,22 @@ Uso: python scripts/wsd_chain.py piano.json [--commands comandi.txt] [--json pre
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import math
+import re
 import shlex
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
 TRUNK_KEYS = {"id", "preset", "seed", "batch_size", "accum_steps", "steps_at_d", "total_steps", "keep_checkpoints", "args"}
 BRANCH_KEYS = {"id", "branch_of", "from_step", "total_steps"}
-# opzioni del trainer che il pianificatore imposta e controlla (D14, batch, semi): negli argomenti liberi falserebbero i controlli
-PLANNER_FLAGS = ("--schedule", "--total-steps", "--steps-at-d", "--warmup-steps", "--decay-fraction", "--keep-checkpoints", "--max-steps",
-                 "--batch-size", "--accum-steps", "--seed", "--window-seconds", "--time-limit-s", "--branch-from")
+# opzioni del trainer che impostano il pianificatore (D14, batch, semi) o il launcher (preset, dati, uscite, processi): negli argomenti liberi
+# falserebbero i controlli o il run pianificato. Si confrontano le destinazioni di argparse, dopo aver risolto le abbreviazioni come lui.
+PLANNER_DESTS = ("schedule", "total_steps", "steps_at_d", "warmup_steps", "decay_fraction", "keep_checkpoints", "max_steps", "batch_size",
+                 "accum_steps", "seed", "window_seconds", "time_limit_s", "branch_from")
+LAUNCHER_DESTS = ("preset", "manifest", "root", "scales", "out_dir", "num_workers", "distributed")
 PLAN_KEYS = {"campaign", "agent", "code_dir", "expected_sha", "manifest", "scales", "window_seconds", "run_root", "slurm", "margin_min",
              "startup_min", "slack", "spare_jobs", "gpus", "s_per_step", "ckpt_gb", "common_args", "runs"}
 
@@ -65,6 +70,33 @@ def _schedule(preset: str, total_steps: int, steps_at_d: int, keep: tuple[int, .
     return R.with_wsd(base, total_steps, warmup_steps=R.wsd_warmup_steps(steps_at_d), keep_checkpoints=keep).schedule
 
 
+def _trainer_parser():
+    spec = importlib.util.spec_from_file_location("train_jepa_options", ROOT / "scripts" / "train_jepa.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.build_parser()
+
+
+def free_arg_dests(text: str, parser) -> set[str]:
+    """Le destinazioni del trainer toccate dagli argomenti liberi `text`, spezzati come li spezza la shell del launcher (`${EXTRA_ARGS}`),
+    con le abbreviazioni delle opzioni lunghe risolte come argparse (`--batch` -> `--batch-size`). Opzioni sconosciute, ambigue o brevi e
+    `--` sono errori: argparse le rifiuterebbe nel job o le interpreterebbe in modo diverso."""
+    options = {o: a.dest for a in parser._actions for o in a.option_strings}
+    dests = set()
+    for tok in text.split():
+        if not tok.startswith("-") or re.fullmatch(r"-\.?\d.*", tok):
+            continue  # valore (anche un numero negativo)
+        name = tok.split("=", 1)[0]
+        if name in options:
+            dests.add(options[name])
+            continue
+        hits = sorted(o for o in options if name.startswith("--") and len(name) > 2 and o.startswith(name))
+        if len(hits) != 1:
+            raise ValueError(f"opzione {tok!r}: " + (f"ambigua fra {hits}" if hits else "sconosciuta al trainer"))
+        dests.add(options[hits[0]])
+    return dests
+
+
 def _warmup(steps_at_d: int) -> int:
     from wearusfm.training import run as R
 
@@ -80,10 +112,15 @@ def resolve(plan: dict) -> list[dict]:
         raise ValueError("expected_sha: serve lo SHA completo (40 caratteri)")
     if plan["slack"] < 1 or plan["spare_jobs"] < 0 or plan["margin_min"] < 0 or plan["startup_min"] < 0:
         raise ValueError("slack >= 1, spare_jobs, margin_min e startup_min >= 0")
+    parser = _trainer_parser()
     for where, text in [("common_args", plan["common_args"])] + [(r["id"], r.get("args", "")) for r in plan["runs"]]:
-        bad = sorted({t.split("=")[0] for t in text.split()} & set(PLANNER_FLAGS))
+        try:
+            bad = sorted(free_arg_dests(text, parser) & set(PLANNER_DESTS + LAUNCHER_DESTS))
+        except ValueError as e:
+            raise ValueError(f"{where}: {e}") from None
         if bad:
-            raise ValueError(f"{where}: {bad} li imposta il pianificatore (schedule, batch, semi): non negli argomenti liberi")
+            raise ValueError(f"{where}: {bad} li impostano il pianificatore (schedule, batch, semi) o il launcher (preset, dati, uscite): "
+                             "non negli argomenti liberi")
     by_id, out = {}, []
     for r in plan["runs"]:
         if r["id"] in by_id:

@@ -30,7 +30,10 @@ piu' la tabella del preventivo (job, durata, dipendenze, GPU-ora attese e tetto,
 comandi li esegue leonardo-ops dopo l'autorizzazione. Prima di generare i comandi controlla, col codice del trainer: D14 (`with_wsd`,
 `wsd_warmup_steps`, `_check_wsd`), checkpoint dei rami fra quelli tenuti dal tronco e nella fase stabile di tronco e ramo, campi ereditati
 dal tronco, s/passo misurato per ogni coppia preset/batch, niente virgole negli argomenti (sbatch `--export` le usa come separatore: i
-`--keep-checkpoints` si separano con `:`), SHA completo.
+`--keep-checkpoints` si separano con `:`), SHA completo. Gli argomenti liberi (`common_args`, `args` dei run) non possono toccare le opzioni
+che impostano il pianificatore (schedule, passi, warmup, decay, checkpoint, batch, accumulo, seme, finestre, tempo, ramo) o il launcher
+(preset, manifest, radici, scale, cartella d'uscita, worker, DDP): il controllo usa il parser vero di `train_jepa.py` e risolve le
+abbreviazioni come argparse (`--batch 64` e' `--batch-size`); opzioni sconosciute o ambigue sono errori (review GPT di 5d7ced6).
 
 Esempio (pilot a 100M, un seme, 23.150 passi per epoca provvisori; s/passo misurato col prefetch 1,39):
 

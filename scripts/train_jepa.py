@@ -21,7 +21,8 @@ import torch  # noqa: E402
 from wearusfm.training import run as R  # noqa: E402
 
 
-def main(argv=None) -> int:
+def build_parser() -> argparse.ArgumentParser:
+    """Il parser delle opzioni (usato anche da scripts/wsd_chain.py per controllare gli argomenti liberi dei piani)."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--preset", choices=["sanity", "small", "30m", "100m", "300m"], required=True,
                     help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER, firmati il 09/10/2026)")
@@ -87,6 +88,11 @@ def main(argv=None) -> int:
                     help="DDP sotto torchrun, un processo per GPU (RANK/WORLD_SIZE/LOCAL_RANK dall'ambiente); il batch del preset e' GLOBALE")
     ap.add_argument("--accum-steps", type=int, default=None,
                     help="micro-batch per processo e per aggiornamento (accumulo dei gradienti; loss col contratto delle loss distribuite)")
+    return ap
+
+
+def main(argv=None) -> int:
+    ap = build_parser()
     args = ap.parse_args(argv)
     ctx = None
     if args.distributed:

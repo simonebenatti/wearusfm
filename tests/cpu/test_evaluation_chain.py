@@ -72,7 +72,18 @@ def test_guard_is_inserted_and_order_respects_dependencies():
     (lambda p: p["nodes"][3].update(after=[]), "un confronto dipende"),
     (lambda p: p["nodes"][1].update(expected_sha="abc"), "SHA completo"),
     (lambda p: p["nodes"][1].update(exports={"X": "a,b"}), "export"),
-    (lambda p: p["nodes"][1].update(sbatch=["--dependency=afterok:1"]), "dipendenze li impongono"),
+    (lambda p: p["nodes"][1].update(sbatch=["--dependency=afterok:1"]), "li impongono catena e submitter"),
+    # regressioni della review GPT di 5d7ced6: export che riscrive CODE_DIR/EXPECTED_SHA, abbreviazioni accettate da sbatch, opzioni fuori elenco
+    (lambda p: p["nodes"][1].update(sbatch=["--export=ALL,CODE_DIR=/OTHER,EXPECTED_SHA=" + "b" * 40]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["--exp=ALL,CODE_DIR=/OTHER"]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["--dep=afterok:1"]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["-dafterok:1"]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["--array=0-7"]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["--export-file=/tmp/e"]), "li impongono catena e submitter"),
+    (lambda p: p["nodes"][1].update(sbatch=["--part=boost_usr_prod"]), "non ammessa"),
+    (lambda p: p["nodes"][1].update(sbatch=["--chdir=/C"]), "non ammessa"),
+    (lambda p: p["nodes"][1].update(sbatch=["--time=01:00:00", "-t", "02:00:00"]), "ripetuta"),
+    (lambda p: p["nodes"][1].update(sbatch=["--time=01:00:00", "-p"]), "manca il valore"),
     (lambda p: p["nodes"][1].update(outputs=["/leonardo_work/IscrB_WearUsFM/wearusfm/out.json"]), "dentro il codice"),
     (lambda p: p["nodes"][2].update(outputs=[f"{OUT}/A-p1.json"]), "gia' prodotta"),
     (lambda p: (p["nodes"][1].update(after=["A-ext", "A-cmp"])), "circolari"),
@@ -113,12 +124,47 @@ def test_ambiguous_states_block_downstream_without_resubmission():
 
 def test_queue_limits_hold_back_the_rest():
     plan = _plan()
-    plan["limits"] = {"normal": 2}
+    plan["limits"] = {"normal": 3}
     rows = EC.schedule(plan, FakeRegistry({"W1-A-j04": "sottomesso"}).read, {"normal": 0})
     st = {r["id"]: r["status"] for r in rows}
-    assert st["A-ext"] == "sottomesso ora" and st["A-p1"] == "sottomesso ora" and st["A-p2"] == "in attesa"
+    guard = next(r["id"] for r in rows if r["kind"] == "guard")
+    # la guardia (lrd_all_serial, QoS di default normal) conta anche lei per "normal"
+    assert st[guard] == st["A-ext"] == st["A-p1"] == "sottomesso ora" and st["A-p2"] == "in attesa"
     assert st["A-cmp"] == "in attesa"  # la sua sonda A-p2 non e' ancora sottomessa
-    assert {r["status"] for r in EC.schedule(plan, FakeRegistry({"W1-A-j04": "sottomesso"}).read, {"normal": 2})} - {"sottomesso ora"} == {"in attesa"}
+    assert {r["status"] for r in EC.schedule(plan, FakeRegistry({"W1-A-j04": "sottomesso"}).read, {"normal": 3})} - {"sottomesso ora"} == {"in attesa"}
+
+
+def test_queue_limits_count_partition_and_qos_of_each_node(tmp_path):
+    """Regressione della review GPT di 5d7ced6: un nodo conta per `queue`, per la partizione e per la QoS effettive."""
+    serial = _node("serial-probe", "probe", queue="lrd_all_serial")
+    gpu = _node("gpu-extract", "extract", queue="normal")
+    serial["sbatch"] = ["--partition=lrd_all_serial", "--qos=normal"]
+    gpu["sbatch"] = ["--partition=boost_usr_prod", "--qos=normal"]
+    plan = {"schema": "eval-plan-v0", "campaign": "repro", "agent": "claude", "limits": {"normal": 1}, "nodes": [serial, gpu]}
+    ssh, state = _cluster(tmp_path)
+    p = tmp_path / "plan.json"
+    p.write_text(json.dumps(plan))
+    assert EC.main([str(p), "--submit", "--registro", str(tmp_path / "jobs"), "--ssh", ssh]) == 0
+    calls = _sbatch_calls(state)
+    assert len(calls) == 1 and "--qos=normal" in calls[0]
+    assert EC.node_labels(serial) == {"lrd_all_serial", "normal"} and EC.node_labels(gpu) == {"normal", "boost_usr_prod"}
+    gpu["sbatch"] = ["-p", "boost_usr_prod", "-q", "boost_qos_dbg"]  # forma breve, valore nell'elemento successivo
+    assert EC.node_labels(gpu) == {"normal", "boost_usr_prod", "boost_qos_dbg"}
+    plan["limits"] = {"boost_usr_prod": 1}  # solo i nodi GPU: la sonda seriale non conta
+    assert [r["status"] for r in EC.schedule(plan, FakeRegistry().read, {"boost_usr_prod": 0})] == ["sottomesso ora"] * 2
+
+
+def test_queue_labels_come_from_the_launcher_header_at_the_expected_sha():
+    import subprocess
+
+    head = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+    n = _node("g", "probe", queue="mia_etichetta")
+    n.update(expected_sha=head, launcher="scripts/slurm/check_checkpoint.sbatch", sbatch=[])
+    assert EC.node_labels(n) == {"mia_etichetta", "lrd_all_serial", "normal"}  # -p dell'intestazione, QoS di default
+    n["sbatch"] = ["--qos=boost_qos_dbg"]  # l'opzione del nodo vince sull'intestazione, come in sbatch
+    assert EC.node_labels(n) == {"mia_etichetta", "lrd_all_serial", "boost_qos_dbg"}
+    n.update(expected_sha="c" * 40, sbatch=[])  # SHA assente qui: solo le etichette dichiarate
+    assert EC.node_labels(n) == {"mia_etichetta"}
 
 
 CLUSTER = r"""
@@ -215,8 +261,9 @@ def test_queue_limits_use_live_counts_when_submitting(tmp_path):
     p = tmp_path / "plan.json"
     p.write_text(json.dumps(plan))
     assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
-    # 3 job dell'utente gia' in coda sulla QoS normal: nessun nodo "normal" sottomesso, solo la guardia (lrd_all_serial, senza limite)
-    assert len(_sbatch_calls(state)) == 2
+    # 3 job dell'utente gia' in coda sulla QoS normal: nessun nodo sottomesso, nemmeno la guardia (lrd_all_serial, QoS di default normal);
+    # l'unico sbatch e' quello del training
+    assert len(_sbatch_calls(state)) == 1
     ssh2, state2 = _cluster(tmp_path / "y" if (tmp_path / "y").mkdir() is None else tmp_path, squeue_fail=True)
     reg2 = tmp_path / "y" / "jobs"
     _train(S, reg2, ssh2)

@@ -8,10 +8,12 @@ sotto e' PROVVISORIO (`eval-plan-v0`) finche' GPT non pubblica `docs/evaluation_
 Piano (JSON):
   schema: "eval-plan-v0"; campaign; agent
   guard: {code_dir, expected_sha, report_root}   checkout e cartella dei rapporti delle guardie dei checkpoint
-  limits: {coda: massimo di job in coda e in esecuzione}   facoltativo; la coda e' una partizione o una QoS (es. "normal", "lrd_all_serial")
+  limits: {coda: massimo di job in coda e in esecuzione}   facoltativo; la coda e' una partizione o una QoS (es. "normal", "lrd_all_serial"):
+    un nodo conta per `queue`, per la partizione e per la QoS effettive (opzioni del nodo, intestazione del launcher, QoS di default)
   nodes: lista di
     {id, kind: extract | probe | compare, after: [ID logici di nodi o di job di training], queue, gpu_hours,
-     code_dir, expected_sha (40 caratteri), launcher (percorso nel checkout), args: [...], exports: {CHIAVE: valore}, sbatch: [...],
+     code_dir, expected_sha (40 caratteri), launcher (percorso nel checkout), args: [...], exports: {CHIAVE: valore},
+     sbatch: [...] (elenco chiuso di opzioni per intero, `SBATCH_OPTIONS`; mai nome, commento, dipendenze, export o array),
      inputs: [...], outputs: [...],
      checkpoint: {run_dir, name, training_job, min_steps, sha256}   facoltativo: il checkpoint che il nodo valuta}
   `training_job` e' l'ultimo job della catena di training (scorta compresa): la guardia controlla che il run sia completo.
@@ -37,18 +39,33 @@ Uso: python scripts/evaluation_chain.py piano.json                       dry-run
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import importlib.util
 import json
 import re
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "eval-plan-v0"
 KINDS = ("extract", "probe", "compare", "guard")
-FORBIDDEN_SBATCH = ("--job-name", "-J", "--comment", "--dependency", "-d")
+# nome, commento, dipendenze ed export li impongono catena e submitter; un array moltiplicherebbe i job contati come uno
+FORBIDDEN_SBATCH = ("--job-name", "-J", "--comment", "--dependency", "-d", "--export", "--export-file", "--array", "-a", "--wrap")
+# opzioni ammesse in `sbatch` di un nodo, scritte per intero: sbatch accetta le abbreviazioni delle opzioni lunghe (`--exp=`, `--dep=`),
+# quindi un elenco chiuso. Il valore va dopo "=" (opzioni lunghe) o nell'elemento successivo.
+SBATCH_OPTIONS = {"--time": "--time", "-t": "--time", "--partition": "--partition", "-p": "--partition", "--qos": "--qos", "-q": "--qos",
+                  "--nodes": "--nodes", "-N": "--nodes", "--ntasks": "--ntasks", "-n": "--ntasks", "--ntasks-per-node": "--ntasks-per-node",
+                  "--cpus-per-task": "--cpus-per-task", "-c": "--cpus-per-task", "--mem": "--mem", "--mem-per-cpu": "--mem-per-cpu",
+                  "--gres": "--gres", "--gpus": "--gpus", "--gpus-per-node": "--gpus-per-node", "--output": "--output", "-o": "--output",
+                  "--error": "--error", "-e": "--error", "--constraint": "--constraint", "-C": "--constraint"}
+SBATCH_FLAGS = ("--exclusive",)
+# QoS che SLURM assegna a un job senza --qos, per partizione: nei limiti conta come quella esplicita (squeue la riporta). sacct del
+# 15/10/2026 su job con launcher senza QoS: lrd_all_serial 60664574/84/86 -> normal; boost_usr_prod 59306259 (rvq_codes), 59412516
+# (probe_p2) -> normal. Quindi su Leonardo un limite "normal" conta anche i job seriali; per i soli nodi GPU si usa "boost_usr_prod".
+DEFAULT_QOS = {"lrd_all_serial": "normal", "boost_usr_prod": "normal"}
 RUNNING = {"PENDING", "RUNNING", "REQUEUED", "RESIZING", "SUSPENDED", "CONFIGURING", "COMPLETING", "REQUEUE_HOLD", "REQUEUE_FED", "SIGNALING",
            "STAGE_OUT"}
 
@@ -58,6 +75,67 @@ def _submitter():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def sbatch_options(opts) -> dict[str, str]:
+    """Le opzioni sbatch di un nodo coi nomi per intero ({"--partition": "boost_usr_prod", "--exclusive": ""}); errore su opzioni vietate,
+    fuori elenco, ripetute o senza valore."""
+    out, opts, i = {}, [str(o) for o in opts], 0
+    while i < len(opts):
+        a = opts[i]
+        name, eq, val = a.partition("=") if a.startswith("--") else (a, "", "")
+        if name in SBATCH_FLAGS and not eq:
+            key, val = name, ""
+        elif name in SBATCH_OPTIONS:
+            key = SBATCH_OPTIONS[name]
+            if not eq:
+                if i + 1 >= len(opts) or opts[i + 1].startswith("-"):
+                    raise ValueError(f"opzione sbatch {a}: manca il valore")
+                i, val = i + 1, opts[i + 1]
+        elif (name.startswith("--") and len(name) > 2 and any(f.startswith(name) for f in FORBIDDEN_SBATCH if f.startswith("--"))) or \
+                (not name.startswith("--") and name[:2] in FORBIDDEN_SBATCH):
+            raise ValueError(f"opzione sbatch {a}: nome, commento, dipendenze, export e array li impongono catena e submitter")
+        else:
+            raise ValueError(f"opzione sbatch {a} non ammessa (ammesse, per intero: {sorted(set(SBATCH_OPTIONS.values()) | set(SBATCH_FLAGS))})")
+        if key in out:
+            raise ValueError(f"opzione sbatch {key} ripetuta")
+        out[key] = val
+        i += 1
+    return out
+
+
+@functools.lru_cache(maxsize=None)
+def launcher_header(sha: str, launcher: str) -> tuple[tuple[str, str], ...]:
+    """Partizione e QoS dell'intestazione #SBATCH del launcher allo SHA atteso, dal repository locale (vuota se non leggibile: SHA o file non
+    presenti qui). sbatch legge le direttive fino al primo comando."""
+    try:
+        text = subprocess.run(["git", "-C", str(ROOT), "show", f"{sha}:{launcher}"], capture_output=True, text=True, check=True,
+                              timeout=30).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ()
+    found = {}
+    for line in text.splitlines()[1:]:
+        line = line.strip()
+        if line and not line.startswith("#"):
+            break
+        if not line.startswith("#SBATCH"):
+            continue
+        toks = shlex.split(line[len("#SBATCH"):], comments=True)
+        for k, t in enumerate(toks):
+            name, eq, val = t.partition("=") if t.startswith("--") else (t, "", "")
+            if name in ("-p", "--partition", "-q", "--qos"):
+                found[SBATCH_OPTIONS[name]] = val if eq else (toks[k + 1] if k + 1 < len(toks) else "")
+    return tuple(sorted(found.items()))
+
+
+def node_labels(n: dict) -> set[str]:
+    """Le etichette di coda del nodo per i limiti: `queue`, la partizione e la QoS effettive (opzioni del nodo, altrimenti l'intestazione del
+    launcher allo SHA atteso; senza QoS, quella di default della partizione). Un job conta per tutte: squeue riporta partizione e QoS."""
+    opts = sbatch_options(n.get("sbatch", []))
+    head = dict(launcher_header(n["expected_sha"], n["launcher"]))
+    part = opts.get("--partition") or head.get("--partition") or (n.get("queue") if n.get("queue") in DEFAULT_QOS else None)
+    qos = opts.get("--qos") or head.get("--qos") or DEFAULT_QOS.get(part)
+    return {x for x in (n.get("queue"), part, qos) if x}
 
 
 def _inside_code(path: str) -> bool:
@@ -110,8 +188,10 @@ def validate(plan: dict) -> list[dict]:
         for k, v in n.get("exports", {}).items():
             if k in ("CODE_DIR", "EXPECTED_SHA") or "," in f"{k}={v}":
                 raise ValueError(f"{n['id']}: export {k} non ammesso (CODE_DIR/EXPECTED_SHA li mette la catena; niente virgole)")
-        if any(a.split("=")[0] in FORBIDDEN_SBATCH for a in n.get("sbatch", [])):
-            raise ValueError(f"{n['id']}: nome, commento e dipendenze li impongono catena e submitter")
+        try:
+            sbatch_options(n.get("sbatch", []))
+        except ValueError as e:
+            raise ValueError(f"{n['id']}: {e}") from None
         for o in n.get("outputs", []):
             if not o.startswith("/") or _inside_code(o):
                 raise ValueError(f"{n['id']}: uscita {o} relativa o dentro il codice")
@@ -193,11 +273,12 @@ def schedule(plan: dict, read_state, queue_counts: dict | None = None, slurm_sta
                 s, why = "bloccato", f"dipende da {blocked}, bloccati o falliti"
             elif pending:
                 s, why = "in attesa", f"dipendenze non ancora sottomesse o di stato SLURM sconosciuto: {pending}"
-            elif n.get("queue") in limits and used.get(n["queue"], 0) >= limits[n["queue"]]:
-                s, why = "in attesa", f"coda {n['queue']} al limite di {limits[n['queue']]} job"
+            elif full := sorted(q for q in node_labels(n) if q in limits and used.get(q, 0) >= limits[q]):
+                s, why = "in attesa", "; ".join(f"coda {q} al limite di {limits[q]} job" for q in full)
             else:
                 s = "sottomesso ora"
-                used[n.get("queue")] = used.get(n.get("queue"), 0) + 1
+                for q in node_labels(n):
+                    used[q] = used.get(q, 0) + 1
                 if done:
                     why = f"senza afterok su {done}: gia' finiti bene secondo sacct"
                 elif slurm_state is None and after:

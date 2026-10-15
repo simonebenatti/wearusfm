@@ -15,7 +15,12 @@ harness, estrazioni, sonde, confronti e i loro launcher, e scrive il piano di va
   dipendenze diventano un solo `afterok:a:b` (`submit_job.py` accetta ora piu' `--dopo`).
 - **Stato dal ledger del submitter:** `sottomesso` si salta; `ambiguo`, `duplicato`, `rifiutato`, `assente` bloccano il nodo e cio' che ne
   dipende (si chiariscono col submitter); dipendenze non ancora sottomesse -> il nodo aspetta la prossima chiamata (rieseguibile, nessun
-  doppione). `limits` per coda ferma le sottomissioni al massimo indicato contando i job gia' in coda.
+  doppione). `limits` per coda ferma le sottomissioni al massimo indicato contando i job gia' in coda. Un nodo conta per la sua `queue`, per
+  la partizione e per la QoS effettive (opzioni del nodo, altrimenti l'intestazione `#SBATCH` del launcher allo SHA atteso, altrimenti la QoS
+  di default della partizione: `normal` sia su `lrd_all_serial` sia su `boost_usr_prod`, verificato con sacct il 15/10). Quindi un limite
+  `normal` conta anche guardie e job seriali; per limitare i soli nodi GPU si usa `boost_usr_prod`.
+- **Opzioni sbatch dei nodi:** elenco chiuso, scritte per intero (sbatch accetta abbreviazioni come `--exp=` o `--dep=`); mai nome, commento,
+  dipendenze, export o array, che impongono catena e submitter (un `--export` riscriverebbe CODE_DIR ed EXPECTED_SHA). Review GPT di 5d7ced6.
 - **Default dry-run** (stato e comandi nell'ordine); `--submit` sottomette tramite `submit_job.py` (da leonardo-ops). Nessuna scrittura nei
   checkout: uscite assolute e fuori dal codice; `CODE_DIR` e SHA completo per ogni nodo.
 

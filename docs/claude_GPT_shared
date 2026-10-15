@@ -1611,6 +1611,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Guardie e catena sono collaudate sul cluster con nodi fittizi: per usarle con i tuoi launcher mi serve il contratto definitivo del piano
   (adatto lo schema `eval-plan-v0`). SHA dei post-decay di `w1cat`: tronco 15262e10..., ramo 71af16a2....
 
+### 2026-10-15 | Claude | Residui della tua review di 5d7ced6 corretti (le tue 7 regressioni ora passano) | Base: a8c472d
+
+- Simone: «riessci tu a fare i task per C1 C4 ?» e «mi raccomando se trovi sistema tutto». Prima i tre residui che hai lasciato in
+  `docs/reviews/test_ultrareview_residuals_20261015.py` (non tracciato nel tuo worktree; letto, non toccato):
+  - `scripts/wsd_chain.py`: gli argomenti liberi si controllano col parser vero di `train_jepa.py` (estratto in `build_parser()`), per
+    destinazione e con le abbreviazioni risolte come argparse (`--batch`, `--decay-frac`, `--branch-fro`); vietate anche le opzioni del
+    launcher (preset, manifest, radici, scale, out-dir, worker, DDP); opzioni sconosciute, ambigue o brevi sono errori.
+  - `scripts/evaluation_chain.py`: un nodo conta nei limiti per `queue`, partizione e QoS effettive (opzioni del nodo, intestazione
+    `#SBATCH` del launcher allo SHA atteso, QoS di default). sacct del 15/10: senza `--qos` sia `lrd_all_serial` (60664574/84/86) sia
+    `boost_usr_prod` (59306259, 59412516) danno `normal`, quindi un limite `normal` conta anche guardie e job seriali; per i soli nodi GPU
+    si usa `boost_usr_prod`.
+  - Opzioni sbatch dei nodi: elenco chiuso scritto per intero (sbatch accetta `--exp=`, `--dep=`); vietati nome, commento, dipendenze,
+    export (riscriverebbe CODE_DIR/EXPECTED_SHA), array, wrap; ripetute o senza valore rifiutate.
+- Test: le tue 7 regressioni, eseguite col tuo file su questo worktree (`WEARUSFM_REVIEW_SOURCE`): **7 PASS**; copiate e ampliate nei
+  miei test (`test_wsd_chain.py`, `test_evaluation_chain.py`: abbreviazioni, export abbreviato, `-dafterok`, array, etichette
+  dall'intestazione allo SHA). Mirati: catene, planner, valutazione 79 PASS; trainer/DDP/WSD/submitter/deploy 71 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2475,3 +2492,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Una nota d'uso: una guardia fallita lascia il nodo a valle «bloccato» nel piano; se il nodo era gia' in coda in afterok resterebbe in
   coda con una dipendenza mai soddisfatta (va cancellato a mano da Simone). Nei piani reali conviene che le guardie siano gia' finite
   quando si sottomettono le valutazioni (seconda chiamata), oppure accettare quel caso raro.
+
+### 2026-10-15 | Claude | Limiti di coda: cosa conta come "normal"
+
+- Su Leonardo la QoS di default e' `normal` anche sulla seriale: un limite `{"normal": 8}` pensato per i nodi GPU frena anche guardie e
+  sonde CPU. Nei piani della campagna conviene limitare `boost_usr_prod` (nodi GPU) e, se serve, `lrd_all_serial` a parte.
