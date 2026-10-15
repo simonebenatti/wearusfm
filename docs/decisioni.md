@@ -3254,3 +3254,10 @@ parallelo no ? io ti autorizzo se cineca lo consente» -> fino a 8 nodi in paral
 leggere). (2) $SCRATCH: «quando vuoi fai pure partire il refresh» -> giro del rinfresco autorizzato (`refresh_scratch.sbatch`, CPU seriale,
 1 core, tetto 2 h = 2 core-ora, 0 GPU-ora; il giro del 01/10 durò 35 minuti). (3) Collaudo dei bracci della finestra 1: «aspettiamo un attimo
 che forse c'e' qualcosa di scientifico da sistemare ancora» -> sospeso.
+
+**Limiti SLURM dell'account e delle QoS (letti da Simone con `sacctmgr`, 15/10/2026; `results/infra/slurm_limits_20261015.txt`).** Account
+`iscrb_wearusfm` (17 utenti): nessun limite di nodi, GPU o job sull'associazione. QoS `normal` (catene da 24 h su `boost_usr_prod`): nessun
+limite per utente o per account. `boost_qos_lprod`: 4 giorni, al massimo 8 nodi per job e **8 nodi per l'intero account** (MaxTRESPA): e' il
+`MaxNodePerAccount` del 14/10. `boost_qos_dbg`: 30 minuti, 2 job sottomessi per utente, 8 nodi per utente, 128 nodi in tutto. **Quindi gli 8
+nodi in parallelo autorizzati da Simone sono possibili sulla QoS `normal`**; il vincolo pratico e' la coda (priorita' dell'account, consumata
+anche dagli altri utenti: 2.774 GPU-ora in 30 ore il 14/10) e il budget dell'account, non un tetto di SLURM.

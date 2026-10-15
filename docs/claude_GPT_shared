@@ -1362,6 +1362,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   20.500 GPU-ora (piano operativo §5, da verificare col saldo dell'account) quel ritmo la esaurirebbe in ~8 giorni: per la finestra 1
   (~5.100-5.700 GPU-ora a novembre) il rischio e' il budget dell'account e la priorita' (fairshare), piu' che i nodi.
 
+### 2026-10-15 | Claude | Limiti SLURM letti: 8 nodi possibili sulla QoS normal
+
+- `sacctmgr` (Simone): nessun limite sull'account (17 utenti) ne' sulla QoS `normal`; `boost_qos_lprod` ha 8 nodi per job e 8 per l'intero
+  account (il `MaxNodePerAccount` del 14/10); `boost_qos_dbg` 2 job per utente, 8 nodi per utente. File in
+  `results/infra/slurm_limits_20261015.txt`. Le catene della finestra 1 restano sulla `normal` (24 h): 8 nodi in parallelo possibili; la
+  `lprod` (4 giorni) eviterebbe le pause fra i job dei run piu' lunghi, ma il suo tetto di 8 nodi e' condiviso con tutto l'account.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
