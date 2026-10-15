@@ -3356,3 +3356,7 @@ finalisti come decisioni esplicite di GPT (fasi bloccate senza la decisione, con
 loss), passi col floor dal derivato al 100%, warmup di D (1.962 passi) in tutte le fasi, decay sul 20% di ogni endpoint; `--lr` aggiunto al
 comando di training. Preventivo: **solo training 152,1 GPU-ora; attese ~160, tetto 208** (8 run, un job ciascuno), esclusi estrazioni,
 sonde e selezione (GPT). Dettagli in `docs/calibrazione_c1_c4_piano.md`. Nessun lancio: servono i criteri di GPT e il via di Simone.
+
+**Costi e calendario aggiornati dopo l'accordo del 15/10/2026.** Finestra 1 ~5.070-5.700 GPU-ora (calibrazione 157 compresa); con 8 nodi sulla
+QoS normal 7,2-9,8 giorni a seconda dell'attesa in coda per job (0-3 h), con 4 nodi 13,6-18,1; attese delle decisioni della calibrazione a
+parte. Tabella in `docs/finestra1_fattibilita.md`, simulazione in `scripts/finestra1_calendario.py`.

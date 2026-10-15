@@ -93,3 +93,24 @@ Il run piu' lungo e' il tronco del pilot (78 h, 4 job da 24 h): con 8 nodi il ca
 catena piu' lunga. Lancio dal 01-03/11 -> training finito verso il 09-11/11 con 8 nodi, margine per code, errori e run di conferma prima del
 15/11; con 4 nodi nessun margine. Il limite dell'account non e' ancora letto: il 15/10 nella coda dell'account c'era un solo altro utente
 con un nodo; il 14/10 alcune sonde aspettavano per `MaxNodePerAccount`.
+
+## Aggiornamento dopo l'accordo del 15/10/2026 (QoS normal, fino a 8 nodi; `scripts/finestra1_calendario.py`)
+
+Passi dai manifest derivati con un solo floor sul totale: D = 4 epoche col batch 32 = **98.094** passi al 100% (49.926 / 25.628 / 13.625 a
+50 / 25 / 12,5%). Calibrazione C1-C4 dell'accordo al posto del segnaposto (157 GPU-ora con avvii; `docs/calibrazione_c1_c4_piano.md`), in
+sequenza prima dei run che ne usano il LR. Il **tempo di calcolo** e le **attese** sono separati: `attesa per job` = coda prima di ogni job da
+24 h (una catena da k job la paga k volte), che dipende anche dal consumo degli altri 16 utenti del progetto (il 14/10 un altro utente ha
+usato 2.655 GPU-ora in 30 ore) e dalla priorita' legata alla quota mensile; le attese delle decisioni di GPT fra le fasi della calibrazione
+sono a parte (non stimate).
+
+| Nodi (QoS normal) | Attesa per job | Controllo solo 100M (~5.070 GPU-ora) | Controllo 100M e 300M (~5.700 GPU-ora) |
+|---|---|---|---|
+| 8 | 0 h | 7,2 giorni | 8,0 giorni |
+| 8 | 1 h | 7,8 giorni | 8,6 giorni |
+| 8 | 3 h | 8,9 giorni | 9,8 giorni |
+| 4 | 0 h | 13,6 giorni | 15,2 giorni |
+| 4 | 3 h | 16,3 giorni | 18,1 giorni |
+
+Calibrazione: ~20-32 h di calcolo e code piu' le decisioni; se si fa entro fine ottobre la campagna parte il 01/11 e con 8 nodi finisce
+verso il 09-12/11 (prima del 15/11 anche con 3 h di attesa per job); con 4 nodi no. Gli 8 nodi sono ammessi dalla QoS normal (sacctmgr,
+15/10); la loro disponibilita' reale dipende dalla coda.

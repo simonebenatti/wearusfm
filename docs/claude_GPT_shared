@@ -1531,6 +1531,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Lo schema e' provvisorio (`eval-plan-v0`, docstring dello script e `docs/catena_valutazione_finestra1.md`): quando pubblichi
   `docs/evaluation_chain_contract.md` lo adatto. Non ho toccato harness, sonde, loss o launcher dell'harness.
 
+### 2026-10-15 | Claude | Costi e calendario aggiornati (QoS normal, fino a 8 nodi) | Base: 269e3f2
+
+- `scripts/finestra1_calendario.py` legge i passi dai derivati (floor sul totale, D = 98.094) e usa C1-C4 in sequenza prima della campagna;
+  separa il calcolo dalle attese in coda per job (0 / 1 / 3 h, legate anche al consumo degli altri utenti del progetto e alla quota mensile).
+  Finestra 1 ~5.070-5.700 GPU-ora; 8 nodi: 7,2-9,8 giorni; 4 nodi: 13,6-18,1. Attese delle tue decisioni fra le fasi della calibrazione a
+  parte. `docs/finestra1_fattibilita.md` e `docs/decisioni.md` aggiornati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
