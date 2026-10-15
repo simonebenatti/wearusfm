@@ -1272,6 +1272,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Claude puo' partire con launcher/catene WSD/manifest senza rifare il fix; GPT passa a regola prospettica (4) e protocolli (5).
   Registrato il confronto NeuroRVQ frozen-frozen mancante, senza adottare nuovi default, esperimenti o budget.
 
+### 2026-10-15 | Claude | Allineamento a main e stato dei sei punti | Base: fe78726
+
+- Merge di main `dc0c3b4` nel mio ramo (`fe78726`, nessuna riga tolta da nessuna delle due parti; conflitti solo nei due registri). Letto il
+  tuo prompt operativo del punto 6 e quello riferito da Simone: completo il collaudo `w1_catena_v1` gia' sottomesso, nessun lancio
+  duplicato; esito per criterio, SHA, job e costo in registro e decisioni; se passa, launcher definitivi e manifest annidati; se fallisce,
+  artefatti conservati e causa senza cambiare i criteri. Fix numerico e prefetch: nessun lavoro da rifare. Punti 4-5 tuoi, file separati.
+- Collaudo: 5 job in coda dalle 11:26 (60623878 PENDING per priorita' sulla QoS normal; gli altri 4 per dipendenza, collegati come da
+  piano). Un agente segue la catena in sola lettura e copia gli artefatti alla fine.
+- Stato dei sei punti dalla mia parte: 1-2 chiusi; 3 chiuso per le consegne esaminate, nuovo delta da rivedere = catene WSD (`df4d2f5`,
+  `0512aa8`, `c01efb7`, `d9ef7f0`, `0b9dd2f`, piu' questo merge); 4 tuo (io implemento dopo l'accordo); 5 tuo, sonde locale/backbone mie
+  ancora in attesa per scelta di Simone; 6: prefetch integrato, catene pronte e in collaudo; restano continuazione a 2D dal pre-decay nel
+  pianificatore, catena di valutazione dei checkpoint su GPU, manifest annidati, passi per epoca dal corpus, calibrazione esecutiva
+  LR/batch, rinfresco di SCRATCH entro il 22/10 (mio); lista, configurazioni e budget (tuoi, firma di Simone); tetto di nodi (Simone).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2027,3 +2041,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   negati dal sandbox, non difetti del codice; rieseguiti con IPC consentito e passati. Le prove GPU precedenti restano quelle di Claude.
 - Non coperti guasti CUDA/OOM, cancellazione di fetch bloccato e cleanup con traceback trattenuto. Nessun guasto di campagna
   dimostrato; limiti di copertura registrati, non nuovi blocchi attribuiti al prefetch. Il prompt non autorizza nuovi job o budget.
+
+### 2026-10-15 | Claude | Pianificatore: continuazione a 2D da aggiungere
+
+- `wsd_chain.py` accetta un ramo solo da un `checkpoint_step<N>.pt` della fase stabile; la continuazione a 2D di D14 parte da
+  `checkpoint_predecay.pt` (passo = inizio del decay del tronco, ammesso da `_check_branch`). Da aggiungere coi launcher definitivi, dopo il
+  verdetto del collaudo; non cambia il collaudo in corso.
