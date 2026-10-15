@@ -21,3 +21,25 @@ harness, estrazioni, sonde, confronti e i loro launcher, e scrive il piano di va
 
 Test: `tests/cpu/test_evaluation_chain.py` (piani sintetici, submitter vero con login node finto: validazione, guardie, ordine e dipendenze
 multiple, attesa del training, blocco su stati ambigui, limiti di coda, sottomissione rieseguibile senza doppioni, guardia del checkpoint).
+
+## Collaudo sul cluster `w1_valutazione_v1` (15/10/2026; Simone: «va bene procedi»)
+
+Scopo: provare sul cluster guardia e catena (GPT: «guardie e catena di valutazione non risultano collaudate sul cluster»), coi checkpoint veri
+del collaudo delle catene (`w1cat`, finiti stamattina) e nodi fittizi (`scripts/slurm/chain_dummy.sbatch`: controlla gli ingressi e scrive un
+JSON, nessun calcolo) al posto di estrazioni, sonde e confronti di GPT. Nessun file di GPT toccato.
+
+**Piano:** caso positivo sul checkpoint post-decay del tronco (`w1cat-T`, ultimo job della catena `w1cat-T-j03`, passi minimi 1.400):
+guardia -> estrazione fittizia -> due sonde fittizie -> confronto fittizio. Caso negativo sul post-decay del ramo (`w1cat-B`, `w1cat-B-j02`)
+con SHA-256 volutamente sbagliato; il nodo a valle sta in una coda di comodo con limite 0, cosi' non resta mai in coda con una dipendenza
+impossibile. Uscite in `$WORK/wearusfm_runs/results/infra/w1val_1510/`.
+
+**Criteri (congelati qui, prima del lancio):**
+1. Positivo: la guardia T e' sottomessa SENZA afterok (sacct: `w1cat-T-j03` COMPLETED 0:0 da ore: la correzione del rilievo 2), finisce
+   COMPLETED 0:0 col rapporto `ok`; estrazione, due sonde e confronto sono sottomessi nella stessa chiamata con afterok sui predecessori e
+   finiscono COMPLETED 0:0 nell'ordine delle dipendenze; uscite presenti, quella del confronto con 2 ingressi.
+2. Negativo: la guardia B finisce FAILED con codice 3 e il rapporto riporta lo SHA diverso; il nodo a valle non e' sottomesso alla prima
+   chiamata; alla seconda risulta «bloccato» (guardia fallita secondo sacct) e nulla viene sottomesso.
+3. Rieseguendo la catena dopo la fine: nessuna sottomissione in piu'.
+
+**Risorse e costo:** checkout di campagna e fino a 6 job CPU su `lrd_all_serial` (2 guardie con tetto 20 minuti, 4 nodi fittizi con tetto
+5): **0 GPU-ora, tetto ~1 core-ora**, stima pochi minuti.

@@ -3376,3 +3376,8 @@ con test (dettaglio nel registro condiviso): i tre di gravita' normale erano nel
 afterok su job gia' dimenticati da SLURM, guardie condivise fra requisiti diversi); gli altri: limiti di coda senza conteggi reali, loader
 rigido negli strumenti, stati del ledger non previsti, argomenti liberi che alteravano lo schedule nel pianificatore, etichette dei LR con
 perdita, scrittura non atomica del costruttore, costanti duplicate. Nessun job da rifare: catena e guardie non erano ancora state usate.
+
+**Collaudo della catena di valutazione sul cluster `w1_valutazione_v1` (15/10/2026; Simone: «va bene procedi»).** Criteri congelati in
+`docs/catena_valutazione_finestra1.md` prima del lancio: guardia senza afterok su un training finito da ore e catena fittizia
+estrazione -> sonde -> confronto in ordine; guardia con SHA sbagliato che esce con 3 e blocca il nodo a valle senza lasciarlo in coda;
+nessun doppione rieseguendo. Checkpoint veri di `w1cat`, nodi fittizi (`scripts/slurm/chain_dummy.sbatch`). **0 GPU-ora, tetto ~1 core-ora.**

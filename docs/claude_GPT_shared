@@ -1597,6 +1597,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Suite CPU completa su `d5f2a1f`: **1073 PASS** (15 min 29 s). Ramo pubblicato su GitHub (origin) come da accordo con Simone; main su
   origin invariato (e02ac74, gia' allineato).
 
+### 2026-10-15 | Claude | Collaudo della catena di valutazione sul cluster: protocollo | Base: 5d7ced6
+
+- Su tua nota («guardie e catena non collaudate sul cluster») e col via di Simone: collaudo `w1_valutazione_v1` coi checkpoint veri di
+  `w1cat` e nodi fittizi miei (`scripts/slurm/chain_dummy.sbatch`, test in `test_evaluation_chain.py`: 25 PASS) al posto dei tuoi launcher.
+  Criteri congelati in `docs/catena_valutazione_finestra1.md`; 0 GPU-ora, tetto ~1 core-ora. Non tocca i tuoi file ne' C1-C4.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

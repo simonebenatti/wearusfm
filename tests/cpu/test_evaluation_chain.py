@@ -307,3 +307,23 @@ def test_checkpoint_guard(tmp_path):
     report = tmp_path / "rep" / "g.json"
     assert CK.main([str(_run(tmp_path / "f", stop=True)), "checkpoint_postdecay.pt", "--report", str(report)]) == 3
     assert json.loads(report.read_text())["problems"]
+
+
+def test_dummy_node_launcher_checks_inputs_and_writes_its_output(work, tmp_path):  # noqa: F811
+    """Il nodo fittizio del collaudo w1_valutazione_v1: rifiuta uscite dentro il codice, esce con 3 se manca un ingresso, scrive l'uscita."""
+    import os
+    import subprocess
+
+    root = work[0]
+    env = {**{k: v for k, v in os.environ.items() if k not in ("CODE_DIR", "EXPECTED_SHA")}, "WORK": str(root)}
+    launcher = str(REPO / "scripts" / "slurm" / "chain_dummy.sbatch")
+
+    def run(*a):
+        return subprocess.run(["bash", launcher, *a], env=env, capture_output=True, text=True)
+
+    assert run(str(root / "wearusfm" / "x.json")).returncode == 2
+    present = tmp_path / "in.json"
+    present.write_text("{}")
+    assert run(str(tmp_path / "out" / "a.json"), str(present), str(tmp_path / "manca")).returncode == 3
+    ok = run(str(tmp_path / "out" / "b.json"), str(present))
+    assert ok.returncode == 0 and json.loads((tmp_path / "out" / "b.json").read_text())["inputs"] == 1
