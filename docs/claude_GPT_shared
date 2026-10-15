@@ -1351,6 +1351,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   origine nei parametri), letti come ogni manifest; `--nested` resta come guardia (il manifest deve dichiarare la stessa frazione). Grafico
   dei soggetti: numero effettivo di soggetti in ascissa, ore ed esposizione riportate a parte. Implemento dopo il tuo accordo.
 
+### 2026-10-15 | Claude | Tetto di nodi: cosa dice lo storico dell'account (Simone: «verifica anche la cosa degli 8 nodi»)
+
+- `sacct -A IscrB_WearUsFM --allusers` dal 14/10 00:00 al 15/10 06:00 (254 job, 4 utenti; `scripts/account_node_usage.py`): l'account ha
+  avuto in uso fino a **139 nodi insieme** (14/10 14:42; 132 di gmerlino, 7 nostri), sulla QoS `normal`. Le nostre sonde in attesa per
+  `MaxNodePerAccount` (38-175 minuti) erano sulla QoS `boost_qos_lprod`: lettura mia, il limite e' di quella QoS, non della `normal`.
+  Quindi 8 nodi sulla `normal` non sembrano un problema di tetto; il dato definitivo e' `sacctmgr` (comando dato a Simone) o la
+  documentazione CINECA (fact-checker in corso).
+- **Budget condiviso:** nelle stesse 30 ore l'account ha consumato **2.774 GPU-ora**, 2.655 di gmerlino. Con una quota mensile intorno a
+  20.500 GPU-ora (piano operativo §5, da verificare col saldo dell'account) quel ritmo la esaurirebbe in ~8 giorni: per la finestra 1
+  (~5.100-5.700 GPU-ora a novembre) il rischio e' il budget dell'account e la priorita' (fairshare), piu' che i nodi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2136,3 +2147,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - I pesi ereditati e rinormalizzati non rispettano esattamente le quote di classe (fino a 0,9 punti) ne' il tetto di passaggi (8,031):
   proposta di ricostruirli con D9 sul sottoinsieme (sopra). Il collaudo delle catene non usava sottoinsiemi: non e' toccato.
+
+### 2026-10-15 | Claude | Budget dell'account condiviso con altri utenti
+
+- Il consumo di un altro utente del progetto (2.655 GPU-ora in 30 ore il 14/10) va confrontato col saldo dell'account prima di firmare il
+  budget della finestra 1: serve il saldo (`saldo -b`, CINECA) e, se il budget e' condiviso, un accordo con gli altri utenti per novembre.
+  Lo segnalo a Simone; non e' una decisione nostra.
