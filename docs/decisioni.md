@@ -3247,3 +3247,21 @@ le sessioni senza finestre. Non e' una tolleranza o una deroga firmata al tetto8
 Calendario8nodi6,8-7,6giorni e costo~5.100-5.700GPUh restano scenario/stima: non comprendono attese di coda, cap account e disponibilita'
 non verificati. Riferimento30M a due semi gia' nella bozza: nessun run aggiuntivo deciso. Coseni e sonde intermedie sono proposte utili,
 non sostituti delle ablation. Nessuna nuova soglia, campagna, autorizzazione di spesa o modifica del default adottata qui.
+
+### Preparazione della prossima tranche e assegnazioni (15/10/2026)
+
+Simone: «decidiamo e preparami il prompt per Claude e il tuo». Specifica concreta e prompt in
+`docs/accordo_operativo_finestra1_20261015.md`: Claude implementa manifest/planner/orchestrazione; GPT mantiene loss, protocolli,
+sonde/launcher dell'harness, criteri e review. Per W1 un solo submitter, Claude, dai piani revisionati da GPT.
+
+Regola proposta per rendere fattibile il nested al25%: tentare20/75/5 con D9; se C satura, conservare A20% e assegnare il residuo a B
+rispettando tutti i cap. Se A o B non hanno capacita', fermare la costruzione. Ore delle sessioni campionabili, righe escluse a peso0,
+quote/passaggi finali verificati nel sampler e provenienza versionata; floor unico dell'endpoint. Estensione esplicita da verificare nel
+report prima di congelare i nuovi derivati; nessuna modifica retroattiva a v1.1 o firma attribuita a Simone su quote non ancora misurate.
+
+Griglia da preparare/preventivare: batch32; 30M LR1e-4/3e-4/1e-3 a1epoca seme0, due finalisti ripetuti seme1; due LR100M a0,5epoche;
+conferma300M a0,25. Otto run, circa156,7GPUh di training con3% di margine alle misure attuali, valutazione esclusa. Budget W1 da chiudere,
+non voce del residuo infrastruttura. Fold interni P1 e selezione da protocollo GPT prima del lancio; niente test ufficiale per scegliere.
+
+Aggiornamento dai logClaude fba794f: SCRATCH60643323 chiuso,151.833file,0problemi, prossimo12/11; limiti sacctmgr compatibili con8nodi normal.
+Nessun nuovo accesso cluster, lancio o budget approvato in questa attivita'. I nuovi prompt avviano preparazione e verifiche locali.
