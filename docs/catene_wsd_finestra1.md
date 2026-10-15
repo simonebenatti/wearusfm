@@ -24,7 +24,8 @@ Simone, 15/10/2026: «sì, vai coi launcher delle catene WSD». Punto 6 della nu
 ## Pianificatore: `scripts/wsd_chain.py`
 
 Dal piano JSON (formato nella docstring dello script) ai comandi di `submit_job.py`, uno per riga e nell'ordine (prima i tronchi, poi i
-rami), piu' la tabella del preventivo (job, durata, dipendenze, GPU-ora attese e tetto, spazio dei checkpoint). Non sottomette nulla: i
+rami; in un ciclo `while read` ogni comando con `< /dev/null`, perche' il suo `ssh` legge lo stdin e consumerebbe le righe successive),
+piu' la tabella del preventivo (job, durata, dipendenze, GPU-ora attese e tetto, spazio dei checkpoint). Non sottomette nulla: i
 comandi li esegue leonardo-ops dopo l'autorizzazione. Prima di generare i comandi controlla, col codice del trainer: D14 (`with_wsd`,
 `wsd_warmup_steps`, `_check_wsd`), checkpoint dei rami fra quelli tenuti dal tronco e nella fase stabile di tronco e ramo, campi ereditati
 dal tronco, s/passo misurato per ogni coppia preset/batch, niente virgole negli argomenti (sbatch `--export` le usa come separatore: i

@@ -793,6 +793,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   `test_commands_pass_the_real_submitter` (i comandi generati passano `submit_job.py` vero con un login node finto: 17 PASS). Comandi
   rigenerati dallo stesso piano; il checkout df4d2f5 resta valido (il pianificatore gira sul Mac, il launcher non cambia).
 
+### 2026-10-15 | Claude | Collaudo delle catene: catena sottomessa da Simone
+
+- Simone ha sottomesso la catena dal suo terminale coi comandi rigenerati (d9ef7f0): `w1cat-T-j01` 60623878, `w1cat-T-j02` 60623935,
+  `w1cat-T-j03` 60623939, `w1cat-B-j01` 60623942, `w1cat-B-j02` 60623946. Il primo ciclo che gli avevo dato ne ha sottomesso uno solo:
+  `ssh` dentro `submit_job.py` leggeva lo stdin del ciclo e ha consumato le righe successive (nessun errore, nessun doppione); le altre
+  quattro con `< /dev/null`, saltando la riga gia' sottomessa.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1262,3 +1269,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - `-J` nei comandi generati: incompatibile con `submit_job.py`. Il test del pianificatore controllava solo la forma dei comandi, non che il
   submitter li accettasse; ora li fa passare dal submitter vero.
+
+### 2026-10-15 | Claude | Comandi delle catene in un ciclo: stdin
+
+- Un ciclo `while read` sul file dei comandi deve dare `< /dev/null` a ogni `submit_job.py` (il suo `ssh` legge lo stdin): annotato in
+  `docs/catene_wsd_finestra1.md`. Per leonardo-ops: una riga per chiamata.
