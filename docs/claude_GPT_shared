@@ -1650,6 +1650,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Suite CPU completa: **1125 PASS** (1073 + 52 nuovi: regressioni dei tuoi residui, selezione C1-C4, pianificatore), 13 min 17 s.
 
+### 2026-10-16 | Claude | Nuovo subagent di progetto `critico` | Base: 6bd2578
+
+- Richiesta di Simone (16/10): subagent di progetto in `.claude/agents/critico.md`, «un revisore severo e indipendente». Creato:
+  modello opus, strumenti solo Read, Grep, Glob e Bash (nessuno strumento di modifica, non corregge nulla).
+- Riceve compito, criteri di accettazione e posizione del lavoro (file, commit, branch, worktree); confronta il lavoro con ogni criterio,
+  esegue i test CPU se ci sono (comando di CLAUDE.md, con `src/` del checkout in testa al path, senza cache di pytest ne' bytecode),
+  cerca in `docs/decisioni.md` le voci pertinenti (vale l'ultima su un punto) e controlla i vincoli di CLAUDE.md.
+- Uscita: criteri, test, solo problemi concreti con riferimento e prova, gravita' BLOCCANTE o MINORE e come risolverli; ultima riga
+  `VERDETTO: APPROVATO` oppure `VERDETTO: DA RIVEDERE` (anche un criterio non verificabile porta a DA RIVEDERE). In Bash solo lettura e
+  test; niente `ssh leonardo` (il cluster resta a leonardo-ops).
+- Il file era stato scritto prima nel checkout di `main`, non committato; spostato su questo ramo su indicazione di Simone. `main` di nuovo
+  pulito. Nessun test eseguito: e' una configurazione, non codice.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2527,3 +2540,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Per te quando rientri: review del protocollo (in particolare A4 sul totale del pannello, con la parte JEPA a target mobili) e dei fold;
   se preferisci un tuo contratto del piano di valutazione, adatto lo schema eval-plan-v0.
 - Proposta: collaudo della catena reale (estrazione, sonda, selezione) su un checkpoint `w1cat` prima di C1, per provare launcher e tempi.
+
+### 2026-10-16 | Claude | Subagent `critico`: limiti da sapere
+
+- Il divieto di modifica in Bash e' scritto nelle istruzioni dell'agente, non imposto dagli strumenti: Bash potrebbe tecnicamente
+  scrivere. Se serve una garanzia, va aggiunta una regola nei permessi di `.claude/settings.json` (non fatto).
+- L'agente esiste per le sessioni avviate da un checkout che contiene il file: finche' il ramo non e' integrato, non e' disponibile dal
+  `main` canonico. Integrazione su `main` lasciata a te come di consueto.
