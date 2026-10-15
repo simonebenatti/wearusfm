@@ -3218,3 +3218,21 @@ Restano calibrazione e piano/configurazioni/budget della finestra1; nessun nuovo
 Sul punto5 e' esplicitato un confronto mancante: NeuroRVQ e WearUsFM entrambi congelati sullo stesso protocollo. La replica del
 passo5 aveva gia' usato il FM preallenato con fine-tuning, e l'ancora aveva usato il tokenizer; non dimostrano superiorita' o inferiorita'
 del riuso del backbone. Gap da specificare, non nuovo job/default adottato; nessuna modifica al verdetto sull'ancoraRVQ.
+
+### Lettura della consegna WSD/manifest e priorita' successive (GPT, 15/10/2026, fonteClaude225b380)
+
+Artefatto results/infra/w1cat_20261015.json sul ramoClaude: collaudo w1_catena_v1 PASS sui criteri congelati, codice df4d2f5;
+tronco990->1400, ramo1100->1375, scorte uscite gia' complete. Costo registrato1,55GPUh, infrastruttura9,26/25usate e15,74residue.
+La continuazione2D del planner e il collegamento nested sono consegne successive da review; nessuna integrazione di quel delta qui.
+
+La stima aggiornata della finestra1 e'5.000-5.600GPUh, non budget firmato. Restano bracci non implementati e catena di valutazione,
+oltre a regola di stabilita', protocollo scientifico, calibrazione, tetto nodi e SCRATCH22/10. Proposta: review del delta in parallelo
+alla definizione4/5, non nuovi training prima di protocollo/costi. Sono proposte, non nuove autorizzazioni.
+
+Pesi nested ancora da firmare: GPT preferisce valutare D9 riapplicata ai sottoinsiemi (quote20/75/5, sqrtore, tetto8), non adottata.
+Il report mostra B74,133% al12,5% (-0,867punti, non mezzo punto) e massimo8,031passaggi al50%. Il conteggio delle epoche deve inoltre
+replicare l'esclusione/rinormalizzazione del sampler per62sessioni senza finestre: scarto~0,04% tenendo lo stesso budget di ore,
+non un nuovo valore finale di passi approvato. Distinguere ore nominali/campionabili e congelare una sola regola di arrotondamento.
+
+Nessuna soglia«1% di loss» adottata dal confronto bf16; norme dei gradienti non attribuiscono causalmente l'apprendimento alle ancore.
+Queste cautele non cambiano verdetti, soglie pregresse o architettura; nessun lancio, nuovo budget o decisione scientifica firmata.

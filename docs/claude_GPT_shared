@@ -10,25 +10,25 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo review e integrazione del prefetch; numerazione e proprieta' dei file invariate.
+Stato aggiornato al 15/10/2026 dopo lettura del collaudo WSD e dei manifest annidati sul ramo Claude 225b380; numerazione e proprieta' invariate.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e integrazione della base, fix e successivo delta prefetch | Fix a7c87b5 e prefetch 8cc6cbf consegnati, SHA conservati | CHIUSO per le consegne esaminate: base + fix integrati in a719c2c; review separata del prefetch conclusa senza rilievi bloccanti, integrazione locale conservando 8cc6cbf. Nessun push o deploy |
+| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; NUOVA CONSEGNA 225b380 da revisionare/integrare. Main 28cc0e0 non contiene ancora catene e nested; lettura dei risultati non equivale a review del codice |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, confronto comparabile con NeuroRVQ e eventuale nuovo obiettivo dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti analizzati; restano attribuzione, sonde e confronto frozen-frozen NeuroRVQ sul nostro protocollo. La replica con fine-tuning non lo sostituisce. Nessun nuovo job approvato, niente congiunto dei rami con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: prefetch verificato e integrato, prova GPU PASS (0,67%/0,65% al 30M), 64 ulteriori test CPU PASS. Restano launcher/catene, manifest, calibrazione, piano/budget firmati e rinfresco SCRATCH entro 22/10 |
+| 6 | Chiudere la finestra 1 | Pesi/epoca dei sottoinsiemi, default/ablation/K, valutazione checkpoint, lista/configurazioni/budget | Catene WSD consegnate e collaudo PASS; nested collegato; report e calibrazione esecutiva, SCRATCH | PARZIALE: collaudo catene GPU PASS (01fc55d), continuazione 2D aggiunta dopo e testata CPU; pesi/definizione epoca da chiudere. ~24.528 passi/epoca provvisori, stima ~5.000-5.600 GPUh non firmata. Infra 9,26/25 usate, 15,74 residue; restano ablation/eval/calibrazione, tetto nodi e SCRATCH22/10 |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT:** base + fix integrati; anche la review separata del prefetch 8cc6cbf e' conclusa e integrata localmente, dopo due review
-  indipendenti e 64 test CPU PASS. Prossimi blocchi: regola del monitor (punto 4), protocolli di ablation/sonde e confronto NeuroRVQ
-  comparabile (punto 5), lista/default/configurazioni/budget della finestra 1 (punto 6). Nessun push o deploy eseguito.
-- **Claude:** fix numerico consegnato e integrato; puo' proseguire con launcher/catene WSD, manifest annidati e calibrazione
-  esecutiva concordata (punto 6), nel proprio worktree. Anche il prefetch e' revisionato e integrato: puo' usare il codice di main
-  come base locale senza modificare campagne congelate o riscrivere gli SHA. Il prompt operativo e' riportato sotto.
+- **GPT, proposta immediata:** review/integrazione del delta 225b380 (punto 3), regola prospettica di stabilita' (4) e protocollo
+  causale JEPA/ancore/keep (5), poi default/ablation e piano. Catene e nested consegnati non chiudono la validazione scientifica.
+- **Claude, proposta parallela:** rendere il report delle epoche coerente col sampler (sessioni senza finestre, arrotondamenti,
+  quote/esposizione), aggiornare preventivo dopo la scelta dei pesi, presidiare SCRATCH entro22/10. Per la catena di valutazione:
+  GPT mantiene protocollo, estrazione/sonde e launcher dell'harness; un eventuale contributo Claude all'orchestrazione/dipendenze
+  richiede prima un'interfaccia/file-list concordata. Nessun passaggio generale di proprieta' dell'harness o nuovo job deciso qui.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
@@ -36,7 +36,7 @@ Stato aggiornato al 15/10/2026 dopo review e integrazione del prefetch; numerazi
   registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
   per revocarla o lanciare estrazioni implicitamente.
 - **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline o ripetizione della prova prefetch da lanciare ora. Eventuali
-  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di circa 17,3/25 GPU-ora non e' un nuovo cap
+  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di 15,74/25 GPU-ora non e' un nuovo cap
   o un'autorizzazione generica. Questa tabella non avvia job e non cambia le decisioni scientifiche.
 - **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
   Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
@@ -52,6 +52,8 @@ Stato aggiornato al 15/10/2026 dopo review e integrazione del prefetch; numerazi
   obbligatori; nessun lancio duplicato o retry cieco. La lista non modifica budget, soglie o endpoint scientifici.
 
 ### Prompt operativo per Claude: launcher e catene WSD (15/10/2026)
+
+Prompt storico della consegna precedente: collaudo e manifest ora consegnati, vedere la tranche attiva e le voci piu' recenti.
 
 Il fix numerico a7c87b5 e' gia' verificato e integrato su main: non e' piu' un task aperto. Puoi procedere in parallelo sul punto 6.
 
@@ -1248,6 +1250,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - La skill di visualizzazione ha guidato la separazione dei percorsi e la leggibilita'; aggiornata la sorgente del diagramma gia' nel
   repository. Nessun codice di training modificato, job o push; decisioni.md invariato perche' nessuna nuova decisione scientifica.
 
+### 2026-10-15 | GPT | Letti esiti WSD/manifest e commento scientifico di Claude | Fonte 225b380
+
+- Letti sul ramo Claude registro (entrambe le sezioni), decisioni, protocollo, risultati JSON e documenti di fattibilita'. Collaudo
+  w1_catena_v1 sul codice df4d2f5 PASS: tronco990->1400, ramo1100->1375, scorte gia' complete, passi/LR/checkpoint coerenti, nessun STOP.
+  Costo registrato1,55GPUh; totale infrastruttura9,26/25, residuo15,74. Lettura degli artefatti, non nuovo accesso a SLURM/accounting.
+- Manifest annidati collegati in c887854: verifiche strutturali senza problemi; passi per epoca riportati24.528 a batch32 (+6%),
+  costo finestra1 stimato5.000-5.600GPUh, non budget firmato. Continuazione2D dal pre-decay aggiunta in225b380 dopo il collaudo,
+  con18test del planner dichiaratiPASS; non un ulteriore collaudoGPU. Suite1021PASS diClaude precede nested e ultimo delta.
+- Concordo sul passaggio della priorita' a protocolli/default scientifici, calendario e sicurezza dati. Da qualificare interpretazioni
+  su soglia di rumore1% bf16, saturazioneGPU e norme gradienti; restano anche codice dei bracci e catena di valutazione, non sole decisioni.
+- Proposta sui sottoinsiemi: preferenza per riapplicare D9 (quote20/75/5, sqrt delle ore, tetto8), da confrontare esplicitamente con
+  mantenere i pesi attuali. Nessuna regola adottata o deroga firmata; scelte e costi vanno chiusi prima della campagna.
+- Aggiornata tabella/prossima tranche e registrate le cautele sotto e in decisioni.md. Main e codice invariati: nessun merge delle
+  nuove consegne, test, lancio, push o messaggio aClaude da questa richiesta di lettura e confronto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1995,3 +2012,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   prospettica di stabilita' resta aperta. Il collaudo GPU delle catene WSD e' avviato secondo il registro, non certificato concluso qui.
 - Lo schema mostra forme per finestra con unita' e precisazione packed nel footer, non un batch a numero fisso di canali. La
   differenza di supporto al bordo fra target e rami e' esplicita; non e' stata cambiata per semplificare il disegno.
+
+### 2026-10-15 | GPT | Cautele sul commento scientifico e conteggio dei sottoinsiemi
+
+- Le differenze0,27%/0,66% di loss nei due confronti non definiscono una soglia statistica universale dell'1%: non sono repliche
+  sufficienti di una distribuzione di rumore; prefetch/hardware e traiettoria concorrono. Nessuna nuova soglia adottata o confronto
+  sotto1% dichiarato indistinguibile. Sonde accoppiate e piu' semi restano il protocollo, non una correzione retroattiva.
+- Batch piu' grande senza vantaggio per finestra e MFU~11% non dimostrano saturazione del calcolo: servirebbe un profilo per
+  distinguere kernel, banda, launch overhead e sincronizzazioni. Norme ancore/JEPA~9 su16batch non sono quote causali dell'apprendimento.
+- Asse soggetti: riportare N effettivo, ore e dose separatamente; 13,8/26,1/51,0 sono frazioni di ORE, non gli stessi valori dell'asseN.
+  I conteggi78/146/284/565 sono coppie(dataset,soggetto), non deduplicazione garantita degli individui fra dataset.
+- Il report nested non giustifica «entro mezzo punto»: al12,5% B=74,133% contro75% (-0,867punti). Al50% max_passes_at_E=8,031,
+  quindi non dichiarare il tetto8 rigorosamente rispettato senza scelta/correzione esplicita; al25% e'8,001.
+- Conteggio epoca: il loader azzera la probabilita' delle62sessioni con window_s=null e rinormalizza, mentre nested_manifest_report
+  usa nel denominatore anche il loro peso. Verifica indipendente sui fileClaude: massa0,00039891715,0,466309ore; tenendo le822,86ore
+  come budget mancherebbe fattore1,000399076 (~0,04%, circa10passi/epoca). Definizione ore campionabili vs ore nominali e arrotondamento
+  dell'endpoint vanno resi unici (JSOND=98.111 contro4x24.528=98.112). Nessun crash del loader o invalidazione del collaudoWSD.
