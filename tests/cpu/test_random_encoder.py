@@ -206,11 +206,56 @@ def test_wrapper_reuses_frozen_probe_and_rejects_changed_cache(tmp_path, monkeyp
         cli.run(args)
 
 
-def test_pipeline_is_still_historical_except_unused_loss_code(monkeypatch):
+def test_pipeline_guard_accepts_historical_sources_and_rejects_changed_encoder(tmp_path, monkeypatch):
+    """The closed campaign runs from its frozen checkout, not a later merged model.
+
+    Keep the production guard strict: new branch/probe code must NOT silently
+    be accepted as the historical inference pipeline after integration.
+    """
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
     import step1_random_downstream as cli
+
+    historical = {path: cli.subprocess.check_output(["git", "show", f"{cli.EVAL_COMMIT}:{path}"], cwd=cli.ROOT)
+                  for path in cli.SAME_FILES + list(cli.SAME_FUNCTIONS)}
+    for path, source in historical.items():
+        dest = tmp_path / path
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(source)
+
+    def frozen_source(command, **kwargs):
+        assert command[:2] == ["git", "show"]
+        commit, path = command[2].split(":", 1)
+        assert commit == cli.EVAL_COMMIT
+        return historical[path]
+
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(cli.subprocess, "check_output", frozen_source)
     monkeypatch.setattr(cli.old, "check_source", lambda _: None)
     cli.check_pipeline("test")
+    changed = tmp_path / "src/wearusfm/model/fm.py"
+    changed.write_bytes(changed.read_bytes() + b"\n# a later encoder revision\n")
+    with pytest.raises(ValueError, match="historical encoder/probe changed"):
+        cli.check_pipeline("test")
+
+
+def test_pipeline_guard_rejects_changed_historical_pooling_function(tmp_path, monkeypatch):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import step1_random_downstream as cli
+
+    path = "src/wearusfm/model/spectral_step1.py"
+    original = b"def pool_p1p2(enc, inp):\n    return enc\n"
+    dest = tmp_path / path
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(original)
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(cli, "SAME_FILES", [])
+    monkeypatch.setattr(cli, "SAME_FUNCTIONS", {path: ("pool_p1p2",)})
+    monkeypatch.setattr(cli.subprocess, "check_output", lambda *a, **k: original)
+    monkeypatch.setattr(cli.old, "check_source", lambda _: None)
+    cli.check_pipeline("test")
+    dest.write_bytes(b"def pool_p1p2(enc, inp):\n    return inp\n")
+    with pytest.raises(ValueError, match="historical inference function changed"):
+        cli.check_pipeline("test")
 
 
 def test_pairing_inventory_checks_real_inputs_not_feature_hash():

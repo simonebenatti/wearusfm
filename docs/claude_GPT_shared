@@ -14,15 +14,16 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Quattro P2 affrontati da fccdc1e+b104fb5, letti da GPT e 10 test CPU mirati unici PASS; suite930PASS di Claude, integrazione ancora pendente |
+| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Candidato add5359 pronto con entrambi gli storici; nuovo P2 nella finitezza della backward_loss, 2reproFAIL/2PASS con fix solo in memoria. Main5030a19 invariato finche' Claude chiude il delta separato |
 | 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
 | 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Simone conferma Claude al lavoro sul prefetch; attesa30M2,40-2,81% ancora oltre2% fino a nuova misura. EquivalenzaGPU gia' superata; configurazioni/piano/budget da firmare |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT, priorita' immediata:** completare review e integrazione della baseClaude **59b8c5b** (punto3), preservandoSHA/voci. Non serve
-  aspettare il prefetch. In parallelo sono indipendenti la definizione della regola del monitor (punto4) e il protocollo scientifico
+- **GPT, priorita' immediata:** candidato di integrazioneClaude **59b8c5b** + GPT5a25a5c preparato inadd5359, preservandoSHA/voci.
+  Review finale trova un P2 sulla loss effettivaInf con gradienti finiti: main resta5030a19 finche' Claude consegna il fix separato.
+  Il prefetch non serve per chiudere questa guardia. In parallelo sono indipendenti la definizione della regola del monitor (punto4) e il protocollo scientifico
   di ablationJEPA/ancore/keep e sonde temporali/fisiche (punto5), poi lista/default/configurazioni/budget della finestra1 (punto6).
 - **Claude, gia' in corso secondo Simone:** prefetch per il trasferimento dei batch al30M (punto6), solo nel suo trainer/dataloader.
   Test di equivalenza di batch/RNG/aggiornamenti e di ripresa con un batch in volo; misura del tempo totale e della vera attesa residua.
@@ -1038,6 +1039,43 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Nessun nuovo job, modifica del trainer o merge eseguiti da questa pianificazione. Proposta operativa registrata nelle due sezioni
   e in decisioni, senza toccare i tre draft preesistenti o adottare default/budget. SCRATCH resta coordinato daClaude entro22/10.
 
+### 2026-10-15 | GPT | Review finale e candidato di integrazione della base59b8c5b
+
+- Su «procedi col tuo punto2» creato checkout isolato codex/integrate-claude-20261015 dal source59b8c5b. Merge vero con il ramoGPT5a25a5c,
+  candidatoadd5359, senza squash/rebase. Conflitti SOLO nei due registri, risolti per unione: rispetto a entrambi i genitori zero righe
+  rimosse dai registri al commit di merge. Tutti i50commitClaude e19commitGPT da5030a19 conservati; nessun prefetch incluso.
+- Review indipendenti: trainer/EMA/ripresa e loss/rami/sonde/provenienza; root su loader/launcher e risoluzione. Nessun altro difetto
+  concreto emerso nel perimetro, ma una regressioneP2 di sicurezza numerica resta da chiudere prima di aggiornaremain (sezione2).
+- Riproduzione persistente in docs/reviews/repro_backward_loss_overflow_20261015.py: due test con aspettative sane FALLISCONO sulla
+  base. Con WEARUSFM_REVIEW_IN_MEMORY_FIX=1, stessa guardia minima soltanto in memoria:2PASS. Root ha confermato entrambi gli esiti.
+  run.py non modificato. Review, patch proposta e comandi in docs/reviews/integration_claude_20261015.md.
+- SuiteCPU del candidato avviata; primi errori/fallimenti da distinguere fra ambiente e codice, non dichiarataPASS. Sintassi dei
+  launcher modificati verificata con bash-n. Test/repro soloCPU e segnali sintetici; nessun SSH/job/GPU/push.
+- Main canonico ancora5030a19 pulito. Il candidato resta sul branchGPT per consentire la correzione dell'autore senza includere il
+  prefetch in sviluppo. Le tre bozze preesistenti non fanno parte del merge. Non viene marcata completata l'integrazione su main.
+
+### 2026-10-15 | GPT | Ripresa dopo interruzione Internet: stato reale e test della baseline
+
+- Alla richiesta di Simone verificati tutti i checkout/processi: main sempre5030a19, candidatoadd5359 e lavori di review presenti.
+  Nessun lavoro perso o jobGPU pendente daGPT. Claude nel frattempo e' a9f227c4 con il prefetch; quel delta NON e' stato integrato.
+- Suite generale fermata conCtrlC dopo623PASS/1SKIP/6FAIL/5ERROR in727s: cinqueFAIL/cinqueERROR legati a socketlocalhost/memoria
+  condivisa negati dal sandbox, un caso worker in attesa. Rerun dei sei file interessati avviato fuori sandbox, non una nuova suiteGPU.
+- UnFAIL reale di integrazione era nel test GPT della pipelinecasuale: pretendeva che il nuovo checkout fosse quello storico, ma
+  fm/probe hanno ora i rami. La guardia di produzione rifiuta correttamente tale sorgente. Test riformulato: snapshotstorico passa,
+  cambiamenti di encoder/pooling vengono rifiutati;21PASS. Nessun allentamento di check_pipeline o degliSHA, nessun nuovo baselinejob.
+- Il P2 della backward_lossInf resta distinto:2FAIL intenzionali sull'originale,2PASS con guardia solo in memoria, confermati anche
+  dal root. Serve il delta dell'autore prima di aggiornaremain. Review e passaggio di consegne vengono committati sul ramoGPT.
+
+### 2026-10-15 | GPT | Verifiche locali del candidato concluse; main ancora in attesa del fix
+
+- Rerun fuori sandbox dei sei file conIPC/worker/localhost: **65PASS in187,67s** (dataverse, equivalenzaDDP, script equivalenza,
+  rami spettrali, ripresa stream, trainerDDP). Sono testCPU sul Mac, non jobLeonardo e non una nuova confermaNCCL/bf16.
+- TestGPT baselineaggiornati21PASS; regressioni numeriche2FAIL sulla base e2PASS solo con fix in memoria. Tutti i problemi osservati
+  nella prima suite generale spiegati/riprovati; suite generale completa del candidato NON dichiarata rieseguita o passata.
+- Preparazione del merge/risoluzione dei registri completata. Il punto3 resta APERTO: run.py non modificato per rispettare la
+  proprieta' diClaude; guardia effettiva della backward_loss da correggere con delta separato. Nessuna modifica/push a main canonico.
+- Report/regressioni e testGPT committati sul candidato, da riportare in fast-forward nel worktreeGPT senza includere i tre draft.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1694,3 +1732,26 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - I17ms dichiarati riguardano l'handoffCPU; ridurre soloH2D non dimostra di aver rimosso quella causa. Attesa<=2% ancora non superata.
 - Punto5non chiuso dal vantaggio sul casuale: entrambiA/B hanno ancore, quindi attribuzioneJEPA/ancore resta da provare. Nessun
   training congiunto dei rami a partire dal2Cnegativo. Il piano scientifico/ablation e' da congelare, non nuovo insieme di job autorizzati.
+
+### 2026-10-15 | GPT | P2 residuo del trainer: controllare la loss effettiva prima del backward
+
+- Source59b8c5b, run.py506-515 (da fccdc1e): numeratori finiti non garantiscono finitezza della backward_loss in floatingpoint.
+  Il prodotto puo' andare in overflow prima della divisione; i gradienti possono restare finiti, quindi clipping non intercetta tutto.
+- Trainer/modello/calibrazione veri, dati sinteticiCPU, batch4/accum2, keep_weight20 e bias finito1e37: lossInf nei due backward,
+  numeratori finiti, grad_norm79,54 finita; optimizer/EMA eseguiti e checkpoint salvato, nessunoSTOP, totale registrato~2e38finito.
+  Caso limite, NON misura dei jobrealie NON scelta proposta di questi iperparametri. I risultati precedenti non sono invalidati da cio'.
+- Guardiaminima proposta aClaude: verifica strutturale prima di backward_loss; calcola loss solo se struttura locale valida; includi
+  isfinite(loss) nei flag dello stop coordinato PRIMA di backward. Non ripristinare il vecchio errore sulle chiavi mancanti in un rank.
+  Due regressioni falliscono sull'originale e passano con patch in memoria; guardia non applicata ai file diClaude.
+- Integrazione main sospesa per questo rilievo, non per la soglia dati2%. Correzione da consegnare come delta separato dal prefetch,
+  secondo proprieta' del trainer e accordo di review; nessuna riscrittura degliSHA dell'autore. Suite generale ancora in corso.
+
+### 2026-10-15 | GPT | Limiti della verifica interrotta e della correzione al test storico
+
+- I fallimenti da sandbox non sono difetti del codice e non si contano come testPASS. Il rerun locale conIPC consentito li distingue;
+  la suite completa930PASS resta il risultato precedente diClaude, non la mia esecuzione generale del candidato.
+- La baselinecasuale resta riproducibile dal checkout congelato7863c5d; il nuovo checkout non e' autorizzato a sostituirne encoder e
+  sonde. Correggere l'assunzione del test corrente non autorizza sorgenti nuovi o cambia il reportRandom/A/B gia' chiuso.
+
+- RerunIPC terminato65PASS: i precedenti errori di permesso non sono rilievi controClaude. Resta invece riprodotto il P2 numerico,
+  indipendente dal sandbox o dall'interruzione Internet. Non confondere candidato di merge con aggiornamento gia' effettuato su main.

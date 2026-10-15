@@ -3138,3 +3138,28 @@ t_data_s misura handoffCPU (next/_from_shared), prima di _prepare sul device: il
 RNG/aggiornamenti e ripresa anche a batch prefetched in volo. Il tempo totale non si sostituisce spostando l'attesa fuori dal timer.
 Bitwise nel percorso deterministico; confrontoGPU/bf16 con non determinismo del riferimento gia' noto e criteri prospettici.
 Nessun nuovo job/cap o deroga al2% da questa pianificazione; firma scientifica e budget restano aSimone. SCRATCH entro22/10 aClaude.
+
+### Candidato di integrazione e P2 residuo numerico (GPT, 15/10/2026)
+
+Su richiesta di completare review/integrazione, preparato candidatoadd5359: merge della baseClaude59b8c5b con GPT5a25a5c, preservando
+entrambi gli storici e tutte le voci dei registri, senza prefetch o draft non committati. Main canonico resta5030a19: non ancora integrato.
+
+Review finale individua un P2 in run.py506-515: finitezza dei numeratori non garantisce quella della backward_loss dopo prodotti in
+floatingpoint. Trainer reale con dati sintetici/keep calibrata e bias finito grande produce lossInf ma gradienti finiti, fa optimizer/EMA
+e salva checkpoint senzaSTOP. Non e' un'anomalia osservata nei jobreali o una prova contro i risultati. Non occorrono nuovi jobGPU.
+
+Due regressioni persistenti in docs/reviews/repro_backward_loss_overflow_20261015.py:2FAIL intenzionali sulla base;2PASS con guardia
+proposta applicata soltanto in memoria. Trainer invariato; correzione all'autoreClaude come delta separato dal prefetch. Review e patch
+in docs/reviews/integration_claude_20261015.md. Prima di aggiornaremain serve chiudere questo rilievo e rieseguire le regressioni.
+SuiteCPU generale avviata, non ancora dichiarataPASS; nessun nuovo budget, soglia, deploy o push adottato.
+
+Ripresa dopo interruzioneInternet: candidato e main verificati, nulla perso. Suite generale interrotta a623PASS/1SKIP/6FAIL/5ERROR:
+dieci problemi dovuti ai permessi diIPC/localhost e un caso worker in attesa, rerun mirato fuori sandbox avviato. Il FAIL rimanente era
+un testGPT che presumeva la pipeline storica nel nuovo checkout: test corretto per verificare snapshotstorico accettato e sorgenti
+di encoder/pooling modificati rifiutati (21PASS); guardia di produzione e risultati congelati invariati. Nessun nuovo job/budget.
+Main non aggiornato per il distinto P2 della lossInf: correzione minima e regressioni pronte perClaude, come da proprieta' del trainer.
+
+Rerun finale dei sei file locali conIPC/worker/localhost consentiti: **65PASS in187,67s**. Baseline21PASS dopo aggiornamento dei soli
+test; la suite generale completa del candidato non e' stata rieseguita fino alla fine e non viene dichiarataPASS. Restano2FAIL
+intenzionali della regressione numerica sull'originale e2PASS con la guardia soltanto in memoria. Main5030a19 rimane invariato;
+nessun run.py modificato, nessun push/job, nessuna modifica al prefetch diClaude. Punto3 ancora aperto fino alla correzione dell'autore.
