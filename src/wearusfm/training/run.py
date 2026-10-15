@@ -32,6 +32,7 @@ import numpy as np
 import torch
 
 from wearusfm.data import pretraining_loader as L
+from wearusfm.data import pretraining_manifest as PM
 from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.model.anchors import N_RVQ_CODES
@@ -235,12 +236,10 @@ def config_to_dict(cfg: RunConfig) -> dict:
 
 # --- dati ----------------------------------------------------------------------------------------------------------------------------
 
-NESTED_FRACTIONS = ("0.125", "0.25", "0.5", "1")  # D16; "1" = il derivato al 100% (accordo del 15/10/2026)
-
-
-def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None, nested: str | None = None) -> L.ManifestIndex:
-    if nested is not None and nested not in NESTED_FRACTIONS:
-        raise ValueError(f"nested {nested!r}: una di {NESTED_FRACTIONS} (D16) o None")
+def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None, nested: str | None = "*") -> L.ManifestIndex:
+    """`nested`: la frazione D16 che il manifest deve dichiarare (None = non derivato); "*" (default, strumenti) accetta quella dichiarata."""
+    if nested not in (None, "*") and nested not in PM.DERIVED_FRACTIONS:
+        raise ValueError(f"nested {nested!r}: una di {PM.DERIVED_FRACTIONS} (D16) o None")
     idx = L.ManifestIndex.load(manifest, roots, nested)
     if datasets is not None:
         keep = [i for i, r in enumerate(idx.rows) if r["dataset"] in datasets]
@@ -880,8 +879,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("branch_calibration_batches almeno 1")
     if cfg.fixed_eval_every < 0 or cfg.fixed_eval_batches < 1:
         raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
-    if cfg.nested is not None and cfg.nested not in NESTED_FRACTIONS:
-        raise ValueError(f"nested {cfg.nested!r}: una di {NESTED_FRACTIONS} (D16) o None")
+    if cfg.nested == "*":  # nel training la frazione e' sempre esplicita: None o una di DERIVED_FRACTIONS (load_index la valida)
+        raise ValueError("nested '*': nel training la frazione D16 va dichiarata (None o una delle frazioni)")
     if cfg.freeze_encoder:
         if not cfg.model.spectral_branches or cfg.jepa.branch_weight <= 0 or cfg.jepa.keep_weight != 0:
             raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches, branch_weight > 0 e keep_weight 0 "

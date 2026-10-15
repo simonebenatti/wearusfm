@@ -192,8 +192,8 @@ def manifest_hash(params: dict, rows: Iterable[SessionRow]) -> str:
 
 # --- manifest derivati e annidati per soggetto (D16) ---------------------------------------------------------------------------------------
 
-NESTED_FRACTIONS = ("0.125", "0.25", "0.5")
-DERIVED_FRACTIONS = NESTED_FRACTIONS + ("1",)  # "1": il derivato al 100%, stessa regola sul corpus intero (accordo del 15/10/2026)
+SUBSET_FRACTIONS = ("0.125", "0.25", "0.5")
+DERIVED_FRACTIONS = SUBSET_FRACTIONS + ("1",)  # "1": il derivato al 100%, stessa regola sul corpus intero (accordo del 15/10/2026)
 # campi della configurazione del loader da cui dipendono le durate medie delle finestre (`pretraining_loader.mean_window_s`)
 WINDOW_CONFIG_FIELDS = ("min_window_s", "max_window_s", "align_ms", "patch_ms", "run_margin_s", "split_at_gaps")
 DERIVED_RULE = ("base temporale: ore delle sessioni campionabili secondo window_s congelato (valore positivo; null = nessuna finestra, peso 0); "

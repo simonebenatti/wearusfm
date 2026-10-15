@@ -147,14 +147,16 @@ def main(argv=None) -> int:
     if failed:
         print(f"VERIFICHE FALLITE: {failed}: nessun file scritto")
         return 1
-    args.out_dir.mkdir(parents=True, exist_ok=True)
     base = args.manifest.name.removesuffix(".gz").removesuffix(".json")
-    for f, d in out.items():
-        path = args.out_dir / f"{base}_nested_{f}.json.gz"
-        data = gzip.compress(json.dumps(d, separators=(",", ":"), default=list).encode(), mtime=0)  # mtime fisso: stessi byte a ogni costruzione
-        if path.exists() and path.read_bytes() != data:
-            print(f"{path} esiste con un contenuto diverso: non lo sovrascrivo")
-            return 1
+    # mtime fisso: stessi byte a ogni costruzione. Tutti i conflitti si controllano PRIMA di scrivere: niente insiemi misti (ultrareview 15/10)
+    files = {f: (args.out_dir / f"{base}_nested_{f}.json.gz", gzip.compress(json.dumps(d, separators=(",", ":"), default=list).encode(), mtime=0))
+             for f, d in out.items()}
+    conflicts = [str(p) for p, data in files.values() if p.exists() and p.read_bytes() != data]
+    if conflicts:
+        print(f"{conflicts} esistono con un contenuto diverso: non sovrascrivo e non scrivo nulla")
+        return 1
+    args.out_dir.mkdir(parents=True, exist_ok=True)
+    for f, (path, data) in files.items():
         path.write_bytes(data)
         report["fractions"][f]["file"] = path.name
         report["fractions"][f]["file_sha256"] = hashlib.sha256(data).hexdigest()

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from test_submit_job import FAKE
+from test_campaign_deploy import work  # noqa: F401 -- $WORK finto col repo canonico
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -121,24 +121,164 @@ def test_queue_limits_hold_back_the_rest():
     assert {r["status"] for r in EC.schedule(plan, FakeRegistry({"W1-A-j04": "sottomesso"}).read, {"normal": 2})} - {"sottomesso ora"} == {"in attesa"}
 
 
-def test_submit_with_the_real_submitter_is_idempotent(tmp_path, capsys):
-    fake = tmp_path / "fake_ssh.py"
-    fake.write_text(FAKE)
-    calls = tmp_path / "calls.txt"
-    ssh = f"{sys.executable} {fake} ok {calls}"
-    reg = tmp_path / "jobs"
-    S = EC._submitter()
+CLUSTER = r"""
+import json, pathlib, sys
+state, remote = pathlib.Path(sys.argv[1]), sys.argv[2]
+st = json.loads(state.read_text())
+st["calls"].append(remote)
+if remote.startswith("sbatch"):
+    st["next"] += 1
+    print(st["next"])
+elif remote.startswith("sacct"):
+    if st.get("sacct_fail"):
+        print("slurmdbd non raggiungibile", file=sys.stderr); state.write_text(json.dumps(st)); sys.exit(1)
+    ids = remote.split("-j ")[1].split()[0].split(",")
+    for j in ids:
+        if j in st["jobs"]:
+            print(f"{j}|{st['jobs'][j]}")
+elif remote.startswith("squeue"):
+    if st.get("squeue_fail"):
+        print("errore", file=sys.stderr); state.write_text(json.dumps(st)); sys.exit(1)
+    for line in st["queue"]:
+        print(line)
+state.write_text(json.dumps(st))
+"""
+
+
+def _cluster(tmp_path, **st):
+    fake = tmp_path / "cluster.py"
+    fake.write_text(CLUSTER)
+    state = tmp_path / "cluster.json"
+    state.write_text(json.dumps({"calls": [], "next": 1000, "jobs": {}, "queue": [], **st}))
+    return f"{sys.executable} {fake} {state}", state
+
+
+def _sbatch_calls(state):
+    return [c for c in json.loads(state.read_text())["calls"] if c.startswith("sbatch")]
+
+
+def _train(S, reg, ssh):
     assert S.main(["--registro", str(reg), "--ssh", ssh, "--id", "W1-A-j04", "--agente", "claude", "--campagna", "w1", "--gpu-ore", "96",
                    "--", "--export=ALL,CODE_DIR=/C,EXPECTED_SHA=" + SHA, "/C/scripts/slurm/train_ddp.sbatch"]) == 0
+
+
+def test_submit_with_the_real_submitter_is_idempotent(tmp_path, capsys):
+    ssh, state = _cluster(tmp_path, jobs={"1001": "RUNNING|0:0"})
+    reg = tmp_path / "jobs"
+    S = EC._submitter()
+    _train(S, reg, ssh)
     p = tmp_path / "plan.json"
     p.write_text(json.dumps(_plan()))
-    assert EC.main([str(p), "--registro", str(reg)]) == 0 and len(calls.read_text().splitlines()) == 1  # dry-run: nessuna sottomissione
+    assert EC.main([str(p), "--registro", str(reg)]) == 0 and len(_sbatch_calls(state)) == 1  # dry-run: nessuna sottomissione
     assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
-    remote = calls.read_text().splitlines()
-    assert len(remote) == 6 and "--dependency=afterok:12345:12345" in remote[-1]  # training + guardia + 4 nodi
+    calls = _sbatch_calls(state)
+    assert len(calls) == 6 and "--dependency=afterok:1001" in calls[1]  # training in esecuzione: afterok
+    assert "--dependency=afterok:1004:1005" in calls[-1]  # il confronto dopo le due sonde
     assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
-    assert len(calls.read_text().splitlines()) == 6  # rieseguita: nessun doppione
+    assert len(_sbatch_calls(state)) == 6  # rieseguita: nessun doppione
     assert "gia' sottomesso" in capsys.readouterr().out
+
+
+def test_finished_predecessors_get_no_afterok_and_failed_ones_block(tmp_path):
+    """Ultrareview del 15/10: SLURM dimentica i job finiti (MinJobAge) e rifiuterebbe afterok su un ID sconosciuto. Il predecessore finito
+    bene (sacct) non entra nella dipendenza; uno finito male blocca; uno che sacct non conosce fa aspettare."""
+    S = EC._submitter()
+    for training, expect in (("COMPLETED|0:0", "senza"), ("FAILED|1:0", "bloccato"), ("COMPLETED|3:0", "bloccato"), (None, "in attesa")):
+        d = tmp_path / str(len(list(tmp_path.iterdir())))
+        d.mkdir()
+        ssh, state = _cluster(d, jobs={} if training is None else {"1001": training})
+        reg = d / "jobs"
+        _train(S, reg, ssh)
+        p = d / "plan.json"
+        p.write_text(json.dumps(_plan()))
+        assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
+        calls = _sbatch_calls(state)
+        if expect == "senza":
+            assert len(calls) == 6 and "--dependency" not in calls[1]  # la guardia parte subito
+        else:
+            assert len(calls) == 1  # solo il training: nulla sottomesso
+    ssh, state = _cluster(tmp_path / "x" if (tmp_path / "x").mkdir() is None else tmp_path, sacct_fail=True)
+    reg = tmp_path / "x" / "jobs"
+    _train(S, reg, ssh)
+    p = tmp_path / "x" / "plan.json"
+    p.write_text(json.dumps(_plan()))
+    assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 1 and len(_sbatch_calls(state)) == 1
+
+
+def test_queue_limits_use_live_counts_when_submitting(tmp_path):
+    S = EC._submitter()
+    plan = _plan()
+    plan["limits"] = {"normal": 3}
+    ssh, state = _cluster(tmp_path, jobs={"1001": "RUNNING|0:0"}, queue=["boost_usr_prod|normal", "boost_usr_prod|normal", "lrd_all_serial|normal"])
+    reg = tmp_path / "jobs"
+    _train(S, reg, ssh)
+    p = tmp_path / "plan.json"
+    p.write_text(json.dumps(plan))
+    assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
+    # 3 job dell'utente gia' in coda sulla QoS normal: nessun nodo "normal" sottomesso, solo la guardia (lrd_all_serial, senza limite)
+    assert len(_sbatch_calls(state)) == 2
+    ssh2, state2 = _cluster(tmp_path / "y" if (tmp_path / "y").mkdir() is None else tmp_path, squeue_fail=True)
+    reg2 = tmp_path / "y" / "jobs"
+    _train(S, reg2, ssh2)
+    assert EC.main([str(p), "--submit", "--registro", str(reg2), "--ssh", ssh2]) == 1 and len(_sbatch_calls(state2)) == 1
+
+
+def test_any_other_ledger_state_or_a_stateless_reservation_blocks(tmp_path):
+    plan = _plan()
+    guard = next(n["id"] for n in EC.validate(plan) if n["kind"] == "guard")
+    rows = {r["id"]: r for r in EC.schedule(plan, FakeRegistry({"W1-A-j04": "sottomesso", guard: "prenotato_di_nuovo"}).read)}
+    assert rows[guard]["status"] == "bloccato" and rows["A-ext"]["status"] == "bloccato"
+    S = EC._submitter()
+    reg = S.Registry(tmp_path / "jobs")
+    (tmp_path / "jobs" / guard).mkdir(parents=True)  # prenotazione rimasta senza state.json
+    read = EC._ledger_reader(reg)
+    assert read(guard) == {"stato": "prenotazione senza stato"} and read("mai_visto") is None
+
+
+def test_a_refusal_by_the_submitter_stops_the_call_cleanly(tmp_path, monkeypatch, capsys):
+    real = EC._submitter()
+
+    class Refusing:
+        Registry, DEFAULT_DIR, run_remote = real.Registry, real.DEFAULT_DIR, real.run_remote
+
+        @staticmethod
+        def main(argv):
+            raise SystemExit("prova: gia' prenotato")
+
+    monkeypatch.setattr(EC, "_submitter", lambda: Refusing)
+    ssh, state = _cluster(tmp_path, jobs={"1001": "RUNNING|0:0"})
+    reg = tmp_path / "jobs"
+    _train(real, reg, ssh)
+    p = tmp_path / "plan.json"
+    p.write_text(json.dumps(_plan()))
+    assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 1
+    assert "rifiutato dal submitter" in capsys.readouterr().out
+
+
+def test_guards_differ_when_requirements_differ():
+    plan = _plan()
+    ck = dict(plan["nodes"][0]["checkpoint"], sha256="b" * 64)
+    plan["nodes"].append(_node("A-ext-sha", "extract", checkpoint=ck))
+    guards = [n for n in EC.validate(plan) if n["kind"] == "guard"]
+    assert len(guards) == 2 and sum("--sha256" in g["args"] for g in guards) == 1
+
+
+def test_guard_launcher_uses_the_venv_python(work, tmp_path):  # noqa: F811
+    import os
+    import subprocess
+
+    root = work[0]
+    venv = root / "venv_wearusfm" / "bin"
+    venv.mkdir(parents=True)
+    fakebin = root / "venvpy"
+    fakebin.mkdir()
+    (fakebin / "python3").write_text("#!/bin/sh\necho VENV_PYTHON \"$@\"\n")
+    (fakebin / "python3").chmod(0o755)
+    (venv / "activate").write_text(f"export PATH={fakebin}:$PATH\n")
+    env = {k: v for k, v in os.environ.items() if k not in ("CODE_DIR", "EXPECTED_SHA")}
+    r = subprocess.run(["bash", str(REPO / "scripts" / "slurm" / "check_checkpoint.sbatch"), "/R/run", "checkpoint.pt", f"{root}/out/g.json"],
+                       env={**env, "WORK": str(root)}, capture_output=True, text=True)
+    assert "VENV_PYTHON scripts/check_checkpoint.py /R/run checkpoint.pt" in r.stdout, r.stdout + r.stderr
 
 
 # --- guardia del checkpoint ----------------------------------------------------------------------------------------------------------

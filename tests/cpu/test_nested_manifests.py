@@ -226,7 +226,13 @@ def test_builder_checks_writes_deterministic_files_and_never_overwrites(tmp_path
     first = (out / files[0]).read_bytes()
     assert BN.main([str(src), str(ws), str(out)]) == 0 and (out / files[0]).read_bytes() == first
     (out / files[0]).write_bytes(b"altro")
-    assert BN.main([str(src), str(ws), str(out)]) == 1 and "non lo sovrascrivo" in capsys.readouterr().out
+    assert BN.main([str(src), str(ws), str(out)]) == 1 and "non sovrascrivo" in capsys.readouterr().out
+    # un conflitto su una frazione successiva: nessun file scritto, nemmeno quelli delle frazioni precedenti (ultrareview del 15/10)
+    out3 = tmp_path / "out3"
+    out3.mkdir()
+    (out3 / "m_nested_0.5.json.gz").write_bytes(b"vecchio")
+    assert BN.main([str(src), str(ws), str(out3)]) == 1
+    assert sorted(p.name for p in out3.iterdir()) == ["m_nested_0.5.json.gz"]
     missing = tmp_path / "ws_missing.json"
     data = json.loads(ws.read_text())
     del data["window_s"][M.session_key("a1", "a1s0", "x")]
@@ -260,6 +266,10 @@ def test_loader_and_trainer_guard_the_declared_fraction_and_resume_refuses_anoth
         L.ManifestIndex.load(full, [root], "0.25")
     with pytest.raises(ValueError, match="dichiara la frazione"):
         L.ManifestIndex.load(n025, [root], None)
+    # gli strumenti che indicizzano o misurano (default "*") accettano la frazione dichiarata; il training no (ultrareview del 15/10)
+    assert len(L.ManifestIndex.load(n025, [root]).rows) == 1 and len(R.load_index(n025, [root], None).rows) == 1
+    with pytest.raises(ValueError, match="va dichiarata"):
+        R.train(replace(R.small_config(datasets=None, max_steps=1), nested="*"), n025, [root], tmp_path / "star", log=lambda _: None)
     cfg = replace(R.small_config(datasets=None, max_steps=2), nested="0.25", log_batch_origin=True)
     out = tmp_path / "run"
     R.train(cfg, n025, [root], out, log=lambda _: None)

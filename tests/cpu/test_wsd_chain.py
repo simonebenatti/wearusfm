@@ -90,6 +90,8 @@ def test_pilot_trunk_and_branches_become_chained_jobs():
     (lambda p: p["runs"][0].update(args="--datasets a,b"), "virgola"),
     (lambda p: p.update(expected_sha="abc"), "40 caratteri"),
     (lambda p: p.update(extra=1), "campi sconosciuti"),
+    (lambda p: p["runs"][0].update(args="--decay-fraction 0.1"), "li imposta il pianificatore"),
+    (lambda p: p.update(common_args="--window1-rules --batch-size=64"), "li imposta il pianificatore"),
     (lambda p: p["runs"][0].update(total_steps=50000), "fase stabile"),
     (lambda p: (p["runs"][0].update(total_steps=1000, keep_checkpoints=[]), p.update(runs=p["runs"][:1])), "prima della fine del warmup"),
 ])

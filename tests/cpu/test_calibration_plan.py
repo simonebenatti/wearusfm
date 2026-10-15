@@ -45,6 +45,12 @@ def test_full_plan_steps_warmup_decay_and_estimate():
     assert r["totals"]["gpu_hours_expected"] <= r["totals"]["gpu_hours_max"]
 
 
+def test_lr_tags_are_lossless():
+    r = CP.plan(REPORT, {**DEC, "C3": {"proposed_300m_lr": 2.5e-4}})
+    c4 = next(x for x in r["runs"] if x["phase"] == "C4")
+    assert c4["id"] == "W1CAL-C4-300M-lr0p00025-s0" and CP._lr_tag(2.5e-4) != CP._lr_tag(2e-4) and CP._lr_tag(1e-4) == "0p0001"
+
+
 def test_failed_confirmation_stops_c3_and_c4_without_substitution():
     r = CP.plan(REPORT, {"C1": {"finalists": [3e-4, 1e-3]}, "C2": {"confirmed": [3e-4]}})
     assert {x["phase"] for x in r["runs"]} == {"C1", "C2"} and "nessuna sostituzione" in r["blocked"]["C3"]

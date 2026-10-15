@@ -8,20 +8,27 @@ sotto e' PROVVISORIO (`eval-plan-v0`) finche' GPT non pubblica `docs/evaluation_
 Piano (JSON):
   schema: "eval-plan-v0"; campaign; agent
   guard: {code_dir, expected_sha, report_root}   checkout e cartella dei rapporti delle guardie dei checkpoint
-  limits: {coda: massimo di job in coda e in esecuzione}   facoltativo, per etichetta di coda (es. "normal", "lrd_all_serial")
+  limits: {coda: massimo di job in coda e in esecuzione}   facoltativo; la coda e' una partizione o una QoS (es. "normal", "lrd_all_serial")
   nodes: lista di
     {id, kind: extract | probe | compare, after: [ID logici di nodi o di job di training], queue, gpu_hours,
      code_dir, expected_sha (40 caratteri), launcher (percorso nel checkout), args: [...], exports: {CHIAVE: valore}, sbatch: [...],
      inputs: [...], outputs: [...],
      checkpoint: {run_dir, name, training_job, min_steps, sha256}   facoltativo: il checkpoint che il nodo valuta}
+  `training_job` e' l'ultimo job della catena di training (scorta compresa): la guardia controlla che il run sia completo.
 
-Regole: un nodo con `checkpoint` dipende da una guardia (`scripts/slurm/check_checkpoint.sbatch`, una per checkpoint) che dipende dal job
-di training che lo pubblica e verifica run finito, niente STOP, checkpoint presente e, se dichiarato, il suo SHA-256: se la guardia fallisce
-la valutazione non parte mai. Un nodo che legge l'uscita di un altro nodo deve dipenderne direttamente (il confronto parte solo con tutti
-gli output richiesti). Nessuna scrittura nei checkout: uscite assolute e fuori dal codice. Stato dal ledger del submitter: `sottomesso` si
-salta; `ambiguo`, `duplicato`, `rifiutato`, `assente` bloccano il nodo e tutto cio' che ne dipende (si chiarisce col submitter, a mano); un
-nodo con dipendenze non ancora sottomesse aspetta la prossima chiamata (lo script e' rieseguibile). `limits` ferma le sottomissioni di una
-coda al massimo indicato, contando i job gia' in coda.
+Regole:
+- Un nodo con `checkpoint` dipende da una guardia (`scripts/slurm/check_checkpoint.sbatch`) che dipende dal job di training e verifica run
+  finito, niente STOP, checkpoint presente, passi minimi e, se dichiarato, SHA-256; se fallisce la valutazione non parte mai. Una guardia per
+  checkpoint E requisiti (passi minimi, SHA): nodi con requisiti diversi hanno guardie diverse.
+- Un nodo che legge l'uscita di un altro nodo deve dipenderne direttamente (il confronto parte solo con tutti gli output richiesti).
+- Stato dal ledger del submitter: mai prenotato -> sottomettibile; `sottomesso` -> si salta; qualunque altro stato, o una prenotazione senza
+  stato, blocca il nodo e cio' che ne dipende (si chiarisce col submitter, a mano; mai rilancio automatico).
+- Con `--submit` lo stato SLURM dei predecessori gia' sottomessi si legge con `sacct`: finito bene -> nessun afterok (SLURM puo' aver gia'
+  dimenticato il job e rifiuterebbe la dipendenza); in coda o in esecuzione -> afterok; finito male -> nodo bloccato; sconosciuto -> il nodo
+  aspetta. Nel dry-run lo stato SLURM non si legge (afterok su tutti, indicato).
+- `limits` conta i job gia' in coda: con `--submit` i conteggi si leggono da `squeue --me` (o da `--queue-counts`); senza conteggi non si
+  sottomette.
+- Rieseguibile: le dipendenze non ancora sottomesse fanno aspettare il nodo fino alla prossima chiamata. Uscite assolute e fuori dal codice.
 
 Uso: python scripts/evaluation_chain.py piano.json                       dry-run: stato e comandi nell'ordine
      python scripts/evaluation_chain.py piano.json --submit [--ssh "ssh leonardo"] [--registro DIR]   sottomette (via leonardo-ops)
@@ -42,7 +49,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "eval-plan-v0"
 KINDS = ("extract", "probe", "compare", "guard")
 FORBIDDEN_SBATCH = ("--job-name", "-J", "--comment", "--dependency", "-d")
-BLOCKING = ("ambiguo", "duplicato", "rifiutato", "assente", "prenotato", "in_sottomissione")
+RUNNING = {"PENDING", "RUNNING", "REQUEUED", "RESIZING", "SUSPENDED", "CONFIGURING", "COMPLETING", "REQUEUE_HOLD", "REQUEUE_FED", "SIGNALING",
+           "STAGE_OUT"}
 
 
 def _submitter():
@@ -57,14 +65,14 @@ def _inside_code(path: str) -> bool:
 
 
 def expand(plan: dict) -> list[dict]:
-    """I nodi del piano piu' una guardia per ogni checkpoint valutato; i nodi con checkpoint dipendono dalla guardia al posto del training."""
+    """I nodi del piano piu' una guardia per ogni (checkpoint, requisiti); i nodi con checkpoint dipendono dalla guardia al posto del training."""
     nodes, guards = [], {}
     g = plan.get("guard") or {}
     for n in plan["nodes"]:
         n = dict(n)
         ck = n.get("checkpoint")
         if ck:
-            key = f"{ck['run_dir']}/{ck['name']}"
+            key = json.dumps([ck["run_dir"], ck["name"], ck.get("min_steps"), ck.get("sha256")])
             gid = f"{ck['training_job']}-guard-{hashlib.sha1(key.encode()).hexdigest()[:8]}"
             if gid not in guards:
                 args = [ck["run_dir"], ck["name"], f"{g['report_root']}/{gid}.json"]
@@ -74,7 +82,7 @@ def expand(plan: dict) -> list[dict]:
                     args += ["--sha256", ck["sha256"]]
                 guards[gid] = {"id": gid, "kind": "guard", "after": [ck["training_job"]], "queue": "lrd_all_serial", "gpu_hours": 0,
                                "code_dir": g["code_dir"], "expected_sha": g["expected_sha"], "launcher": "scripts/slurm/check_checkpoint.sbatch",
-                               "args": args, "exports": {}, "sbatch": [], "inputs": [key], "outputs": [args[2]]}
+                               "args": args, "exports": {}, "sbatch": [], "inputs": [f"{ck['run_dir']}/{ck['name']}"], "outputs": [args[2]]}
             n["after"] = [a for a in n.get("after", []) if a != ck["training_job"]] + [gid]
         nodes.append(n)
     return list(guards.values()) + nodes
@@ -135,17 +143,19 @@ def validate(plan: dict) -> list[dict]:
     return order
 
 
-def command(plan: dict, n: dict) -> list[str]:
-    """Gli argomenti di submit_job.py per il nodo (dopo `python3 scripts/submit_job.py`)."""
+def command(plan: dict, n: dict, after: list[str] | None = None) -> list[str]:
+    """Gli argomenti di submit_job.py per il nodo (dopo `python3 scripts/submit_job.py`); `after` = le dipendenze da mettere in afterok."""
     exports = [f"CODE_DIR={n['code_dir']}", f"EXPECTED_SHA={n['expected_sha']}"] + [f"{k}={v}" for k, v in n.get("exports", {}).items()]
     argv = ["--id", n["id"], "--agente", plan.get("agent", "claude"), "--campagna", plan["campaign"], "--gpu-ore", f"{n.get('gpu_hours', 0):g}"]
-    for d in n.get("after", []):
+    for d in (n.get("after", []) if after is None else after):
         argv += ["--dopo", d]
     return argv + ["--", "--export=ALL," + ",".join(exports), *n.get("sbatch", []), f"{n['code_dir']}/{n['launcher']}", *n.get("args", [])]
 
 
-def schedule(plan: dict, read_state, queue_counts: dict | None = None) -> list[dict]:
-    """Per ogni nodo, nell'ordine: gia' sottomesso / bloccato / in attesa / da sottomettere (entro i limiti di coda), col comando."""
+def schedule(plan: dict, read_state, queue_counts: dict | None = None, slurm_state=None) -> list[dict]:
+    """Per ogni nodo, nell'ordine: gia' sottomesso / bloccato / in attesa / da sottomettere (entro i limiti di coda), col comando.
+    `read_state(id)`: lo stato del ledger (None = mai prenotato). `slurm_state(id)`: per un job gia' sottomesso, "finito" / "in corso" /
+    "fallito" / "sconosciuto"; None nel dry-run (afterok su tutto)."""
     order = validate(plan)
     node_ids = {n["id"] for n in order}
     limits = plan.get("limits", {})
@@ -154,30 +164,98 @@ def schedule(plan: dict, read_state, queue_counts: dict | None = None) -> list[d
     out = []
     for n in order:
         st = (read_state(n["id"]) or {}).get("stato")
-        why = ""
+        why, after = "", list(n.get("after", []))
         if st == "sottomesso":
             s = "gia' sottomesso"
-        elif st in BLOCKING:
+        elif st is not None:
             s, why = "bloccato", f"stato {st} nel ledger: si chiarisce col submitter (--riconcilia, --stato), mai rilancio automatico"
         else:
-            dep_states = {}
+            blocked, pending, done = [], [], []
             for d in n.get("after", []):
-                dep_states[d] = status[d] if d in node_ids else ("gia' sottomesso" if (read_state(d) or {}).get("stato") == "sottomesso"
-                                                                  else (read_state(d) or {}).get("stato") or "non sottomesso")
-            blocked = [d for d, v in dep_states.items() if v == "bloccato" or v in BLOCKING]
-            pending = [d for d, v in dep_states.items() if v not in ("gia' sottomesso", "sottomesso ora")]
+                if d in node_ids and status[d] == "sottomesso ora":
+                    continue  # sottomesso in questa stessa chiamata: in coda, afterok
+                dst = status[d] if d in node_ids else ("gia' sottomesso" if (read_state(d) or {}).get("stato") == "sottomesso"
+                                                       else (read_state(d) or {}).get("stato") or "non sottomesso")
+                if dst == "bloccato" or dst not in ("gia' sottomesso", "non sottomesso", "in attesa"):
+                    blocked.append(d)
+                elif dst != "gia' sottomesso":
+                    pending.append(d)
+                elif slurm_state is not None:
+                    js = slurm_state(d)
+                    if js == "finito":
+                        done.append(d)
+                    elif js == "fallito":
+                        blocked.append(d)
+                    elif js != "in corso":
+                        pending.append(d)
+            after = [d for d in n.get("after", []) if d not in done]
             if blocked:
-                s, why = "bloccato", f"dipende da {blocked}, bloccati"
+                s, why = "bloccato", f"dipende da {blocked}, bloccati o falliti"
             elif pending:
-                s, why = "in attesa", f"dipendenze non ancora sottomesse: {pending}"
+                s, why = "in attesa", f"dipendenze non ancora sottomesse o di stato SLURM sconosciuto: {pending}"
             elif n.get("queue") in limits and used.get(n["queue"], 0) >= limits[n["queue"]]:
                 s, why = "in attesa", f"coda {n['queue']} al limite di {limits[n['queue']]} job"
             else:
                 s = "sottomesso ora"
                 used[n.get("queue")] = used.get(n.get("queue"), 0) + 1
+                if done:
+                    why = f"senza afterok su {done}: gia' finiti bene secondo sacct"
+                elif slurm_state is None and after:
+                    why = "afterok su tutte le dipendenze (dry-run: stato SLURM non letto)"
         status[n["id"]] = s
-        out.append({"id": n["id"], "kind": n["kind"], "status": s, "why": why, "after": n.get("after", []), "command": command(plan, n)})
+        out.append({"id": n["id"], "kind": n["kind"], "status": s, "why": why, "after": after, "command": command(plan, n, after)})
     return out
+
+
+def _ledger_reader(reg):
+    """Stato del ledger; una prenotazione senza stato (cartella senza state.json) e' uno stato a se', bloccante."""
+    def read(i):
+        s = reg.read(i)
+        if s is None and (reg.root / i).exists():
+            return {"stato": "prenotazione senza stato"}
+        return s
+    return read
+
+
+def slurm_states(S, ssh: list[str], read_state, ids: list[str], timeout: float = 120.0) -> dict[str, str]:
+    """Stato SLURM dei job gia' sottomessi `ids` (ID logici) da `sacct`. Errore se sacct non risponde in modo leggibile."""
+    slurm = {i: str((read_state(i) or {}).get("job_slurm")) for i in ids if (read_state(i) or {}).get("job_slurm")}
+    if not slurm:
+        return {}
+    code, out, err = S.run_remote(ssh, f"sacct -X -n -P --format=JobID,State,ExitCode -j {','.join(sorted(set(slurm.values())))}", timeout)
+    if code != 0:
+        raise RuntimeError(f"sacct non leggibile (uscita {code}): {err.strip()[-300:]}")
+    rows = {}
+    for line in out.splitlines():
+        parts = line.strip().split("|")
+        if len(parts) != 3:
+            raise RuntimeError(f"riga di sacct illeggibile: {line!r}")
+        rows[parts[0]] = (parts[1].split()[0], parts[2])
+    res = {}
+    for i, j in slurm.items():
+        if j not in rows:
+            res[i] = "sconosciuto"
+        else:
+            state, exit_code = rows[j]
+            res[i] = "finito" if state == "COMPLETED" and exit_code == "0:0" else "in corso" if state in RUNNING else "fallito"
+    return res
+
+
+def live_queue_counts(S, ssh: list[str], labels: list[str], timeout: float = 120.0) -> dict[str, int]:
+    """Job dell'utente in coda e in esecuzione per etichetta (partizione o QoS), da `squeue --me`."""
+    code, out, err = S.run_remote(ssh, "squeue --me -h -o '%P|%q'", timeout)
+    if code != 0:
+        raise RuntimeError(f"squeue non leggibile (uscita {code}): {err.strip()[-300:]}")
+    counts = {lab: 0 for lab in labels}
+    for line in out.splitlines():
+        if not line.strip():
+            continue
+        parts = line.strip().split("|")
+        if len(parts) != 2:
+            raise RuntimeError(f"riga di squeue illeggibile: {line!r}")
+        for lab in labels:
+            counts[lab] += lab in parts
+    return counts
 
 
 def main(argv=None) -> int:
@@ -186,23 +264,40 @@ def main(argv=None) -> int:
     ap.add_argument("--submit", action="store_true", help="sottomette i nodi pronti (senza: dry-run)")
     ap.add_argument("--registro", type=Path, default=None, help="cartella del ledger del submitter (default quella di submit_job.py)")
     ap.add_argument("--ssh", default="ssh leonardo")
-    ap.add_argument("--queue-counts", type=Path, help="JSON {coda: job gia' in coda e in esecuzione} letto da squeue (per i limiti)")
+    ap.add_argument("--queue-counts", type=Path, help="JSON {coda: job gia' in coda e in esecuzione}; con --submit, senza, si legge squeue --me")
     args = ap.parse_args(argv)
     S = _submitter()
     reg = S.Registry(args.registro or S.DEFAULT_DIR)
+    read_state = _ledger_reader(reg)
     plan = json.loads(args.plan.read_text())
+    order = validate(plan)
+    ssh = shlex.split(args.ssh)
     counts = json.loads(args.queue_counts.read_text()) if args.queue_counts else None
-    rows = schedule(plan, reg.read, counts)
+    slurm_state = None
+    if args.submit:
+        try:
+            if plan.get("limits") and counts is None:
+                counts = live_queue_counts(S, ssh, sorted(plan["limits"]))
+            deps = sorted({d for n in order for d in n.get("after", []) if (read_state(d) or {}).get("stato") == "sottomesso"})
+            known = slurm_states(S, ssh, read_state, deps)
+            slurm_state = lambda i: known.get(i, "sconosciuto")  # noqa: E731
+        except RuntimeError as e:
+            print(f"stato del cluster non leggibile, nessuna sottomissione: {e}")
+            return 1
+    rows = schedule(plan, read_state, counts, slurm_state)
     failed = 0
     for r in rows:
-        line = f"{r['status']:16s} {r['kind']:8s} {r['id']}" + (f"  ({r['why']})" if r["why"] else "")
-        print(line)
+        print(f"{r['status']:16s} {r['kind']:8s} {r['id']}" + (f"  ({r['why']})" if r["why"] else ""))
         if r["status"] != "sottomesso ora":
             continue
         print("    python3 scripts/submit_job.py " + " ".join(shlex.quote(x) for x in r["command"]))
         if args.submit:
             extra = ["--registro", str(args.registro)] if args.registro else []
-            code = S.main([*extra, "--ssh", args.ssh, *r["command"]])
+            try:
+                code = S.main([*extra, "--ssh", args.ssh, *r["command"]])
+            except SystemExit as e:  # il submitter rifiuta (prenotazione esistente, dipendenza non valida): ci si ferma con un messaggio
+                code, msg = 3, str(e)
+                print(f"    {r['id']}: rifiutato dal submitter: {msg}")
             if code != 0:  # un esito diverso da `sottomesso` ferma la chiamata: il resto aspetta il chiarimento
                 print(f"    {r['id']}: non sottomesso (uscita {code}); mi fermo")
                 failed = 1

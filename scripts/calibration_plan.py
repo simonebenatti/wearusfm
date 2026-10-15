@@ -58,7 +58,8 @@ def _wsd_chain():
 
 
 def _lr_tag(lr: float) -> str:
-    return f"{lr:.0e}".replace("e-0", "e-").replace("e+0", "e")
+    """Etichetta del LR negli ID e nelle cartelle, senza perdita (`repr` del float): 0.00025 -> '0p00025', 1e-4 -> '0p0001'."""
+    return repr(float(lr)).replace(".", "p").replace("-", "m").replace("+", "")
 
 
 def resolve_phases(decisions: dict | None) -> dict:
@@ -117,6 +118,8 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
         p = {**copy.deepcopy(base), "campaign": f"{base['campaign']}-{name.lower()}", "runs": runs,
              "s_per_step": {f"{spec['preset']}/{BATCH}": S_PER_STEP[spec["preset"]]}, "ckpt_gb": {spec["preset"]: CKPT_GB[spec["preset"]]},
              "common_args": "--window1-rules --datasets all --prefetch"}
+        if len({r["id"] for r in runs}) != len(runs):
+            raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)
         plans[name] = p
         for run, lr in zip(jobs["runs"], info["lrs"]):

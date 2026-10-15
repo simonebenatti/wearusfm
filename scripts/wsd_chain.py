@@ -39,6 +39,9 @@ from pathlib import Path
 
 TRUNK_KEYS = {"id", "preset", "seed", "batch_size", "accum_steps", "steps_at_d", "total_steps", "keep_checkpoints", "args"}
 BRANCH_KEYS = {"id", "branch_of", "from_step", "total_steps"}
+# opzioni del trainer che il pianificatore imposta e controlla (D14, batch, semi): negli argomenti liberi falserebbero i controlli
+PLANNER_FLAGS = ("--schedule", "--total-steps", "--steps-at-d", "--warmup-steps", "--decay-fraction", "--keep-checkpoints", "--max-steps",
+                 "--batch-size", "--accum-steps", "--seed", "--window-seconds", "--time-limit-s", "--branch-from")
 PLAN_KEYS = {"campaign", "agent", "code_dir", "expected_sha", "manifest", "scales", "window_seconds", "run_root", "slurm", "margin_min",
              "startup_min", "slack", "spare_jobs", "gpus", "s_per_step", "ckpt_gb", "common_args", "runs"}
 
@@ -77,6 +80,10 @@ def resolve(plan: dict) -> list[dict]:
         raise ValueError("expected_sha: serve lo SHA completo (40 caratteri)")
     if plan["slack"] < 1 or plan["spare_jobs"] < 0 or plan["margin_min"] < 0 or plan["startup_min"] < 0:
         raise ValueError("slack >= 1, spare_jobs, margin_min e startup_min >= 0")
+    for where, text in [("common_args", plan["common_args"])] + [(r["id"], r.get("args", "")) for r in plan["runs"]]:
+        bad = sorted({t.split("=")[0] for t in text.split()} & set(PLANNER_FLAGS))
+        if bad:
+            raise ValueError(f"{where}: {bad} li imposta il pianificatore (schedule, batch, semi): non negli argomenti liberi")
     by_id, out = {}, []
     for r in plan["runs"]:
         if r["id"] in by_id:

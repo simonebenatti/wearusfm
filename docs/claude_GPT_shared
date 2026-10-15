@@ -1564,6 +1564,34 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   origin). Controllati prima: working tree pulito, nessun file di dati (solo codice, documenti e riepiloghi JSON dei risultati). Leonardo
   invariato (main lo pubblica solo l'integratore). Ramo locale `review-base-w1` (= main) creato per la ultrareview di Simone, non pubblicato.
 
+### 2026-10-15 | Claude | Ultrareview della tranche (cloud, lanciata da Simone): 10 rilievi verificati e corretti | Base: cbb40ad
+
+- Simone ha lanciato `/code-review ultra` sul mio ramo contro `review-base-w1` (= main e02ac74; 44 file). 10 rilievi, tutti verificati sul
+  codice e corretti, ciascuno con un test:
+  1. (normale) la guardia dei checkpoint usava il python3 di sistema, che non regge `from __future__ import annotations` (gia' annotato il
+     01/10 in `download_db10.sbatch`): ogni guardia sarebbe fallita e nessuna valutazione sarebbe partita. Ora modules + venv come gli
+     altri launcher (test con un venv finto).
+  2. (normale) `evaluation_chain` metteva afterok anche su predecessori finiti da tempo: SLURM li dimentica (MinJobAge) e rifiuta la
+     dipendenza -> nodo `rifiutato` e catena bloccata. Ora con `--submit` legge lo stato da `sacct`: finito bene -> niente afterok; in coda
+     o in esecuzione -> afterok; finito male -> bloccato; sconosciuto -> aspetta; sacct illeggibile -> nessuna sottomissione.
+  3. (normale) guardie condivise anche fra nodi con requisiti diversi (SHA, passi minimi): ora una guardia per checkpoint E requisiti.
+  4. `limits` contava solo la singola chiamata: con `--submit` i conteggi si leggono da `squeue --me` (o `--queue-counts`); se illeggibili,
+     nessuna sottomissione.
+  5. il loader rifiutava i derivati negli strumenti senza `--nested` (misura del loader, sonda di memoria, equivalenza DDP...): ora il
+     default "*" accetta la frazione dichiarata; il training passa sempre la sua (anche None) e la guardia resta nei due sensi; "*" nel
+     training e' rifiutato.
+  6. stati del ledger non previsti (`prenotato_di_nuovo`, prenotazione senza stato) passavano per sottomettibili e un `SystemExit` del
+     submitter usciva dal ciclo: ora ogni stato diverso da mai-prenotato/sottomesso blocca, e il rifiuto del submitter ferma la chiamata
+     con un messaggio.
+  7. `wsd_chain` non controllava gli argomenti liberi: ora `--decay-fraction`, `--keep-checkpoints`, `--batch-size`, `--seed` e le altre
+     opzioni che imposta il pianificatore sono rifiutate in `args`/`common_args`.
+  8. l'etichetta del LR della calibrazione perdeva cifre (2,5e-4 -> `2e-4`): ora senza perdita (`0p00025`) e ID unici verificati.
+  9. il costruttore dei derivati poteva lasciare un insieme misto se una frazione successiva era in conflitto: ora controlla tutti i
+     conflitti prima di scrivere qualunque file.
+  10. liste delle frazioni duplicate (con lo stesso nome e contenuti diversi): ora una sola, `pretraining_manifest.DERIVED_FRACTIONS`
+     (sottoinsiemi in `SUBSET_FRACTIONS`), usata da trainer e CLI.
+- Test dei moduli toccati: 100 PASS. Le guardie e la catena non sono state ancora usate sul cluster: nessun job da rifare.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

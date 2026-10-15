@@ -3370,3 +3370,9 @@ di GPT resta da fare prima dell'uso dei derivati nei run; esito confrontato con 
 verifiche superate, hash di contenuto identici alla costruzione locale; file in `$WORK/wearusfm_runs/results/passo6/derived_v1_1/` (SHA dei
 file: 0,125 a622978f..., 0,25 90ce5564..., 0,5 5968179b..., 1 6d6d8167...). Consuntivo: 48 s di CPU in due job, 0 GPU-ora. Uso nei run dopo
 la review di GPT.
+
+**Ultrareview della tranche (15/10/2026, lanciata da Simone contro `review-base-w1` = main e02ac74).** 10 rilievi, tutti verificati e corretti
+con test (dettaglio nel registro condiviso): i tre di gravita' normale erano nella catena di valutazione (guardia col python di sistema,
+afterok su job gia' dimenticati da SLURM, guardie condivise fra requisiti diversi); gli altri: limiti di coda senza conteggi reali, loader
+rigido negli strumenti, stati del ledger non previsti, argomenti liberi che alteravano lo schedule nel pianificatore, etichette dei LR con
+perdita, scrittura non atomica del costruttore, costanti duplicate. Nessun job da rifare: catena e guardie non erano ancora state usate.
