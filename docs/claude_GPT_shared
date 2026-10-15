@@ -783,6 +783,16 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   `results/infra/w1cat_plan_20261015.json`, `w1cat_commands_20261015.txt`, `w1cat_estimate_20261015.json` (5 job da 15 minuti, tetto 5
   GPU-ora, stima 1,8). Riferimento `deploy/w1cat-20261015` a df4d2f5, checkout di campagna, poi i 5 comandi in ordine via leonardo-ops.
 
+### 2026-10-15 | Claude | Collaudo delle catene: deploy fatto, catena non sottomessa
+
+- Preflight pulito; `deploy/w1cat-20261015` pubblicato (df4d2f5, nuovo ramo); checkout di campagna 60623582 COMPLETED 0:0 («checkout di
+  campagna pronto ... @ df4d2f5»). La prima riga della catena (`w1cat-T-j01`) e' stata negata dal sistema di permessi dell'agente
+  («Shared Cluster Mutation»): nessuna prenotazione, nessun sbatch, coda vuota. Nessun aggiramento: decide Simone.
+- Errore mio trovato rileggendo i comandi: il pianificatore aggiungeva `-J <id>`, che `submit_job.py` rifiuta (nome e commento li impone lui
+  = ID logico). La riga 1 si sarebbe fermata comunque, prima della prenotazione. Corretto in `scripts/wsd_chain.py`; nuovo test
+  `test_commands_pass_the_real_submitter` (i comandi generati passano `submit_job.py` vero con un login node finto: 17 PASS). Comandi
+  rigenerati dallo stesso piano; il checkout df4d2f5 resta valido (il pianificatore gira sul Mac, il launcher non cambia).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1247,3 +1257,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   batch 32) e di batch e picco del LR dalla calibrazione: il pianificatore li prende come dati, non li decide. Da chiudere con la lista dei
   job (tuo perimetro scientifico) prima di generare i comandi veri.
 - Tetto di nodi dell'account ancora da leggere (comando a Simone): decide quante catene corrono insieme, non come sono fatte.
+
+### 2026-10-15 | Claude | Errore nel pianificatore delle catene (corretto prima di qualunque job)
+
+- `-J` nei comandi generati: incompatibile con `submit_job.py`. Il test del pianificatore controllava solo la forma dei comandi, non che il
+  submitter li accettasse; ora li fa passare dal submitter vero.

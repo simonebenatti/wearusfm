@@ -157,7 +157,7 @@ def plan_jobs(plan: dict) -> dict:
             dep = after if i == 0 else ids[i - 1]
             cmd = ["python3", "scripts/submit_job.py", "--id", jid, "--agente", plan["agent"], "--campagna", plan["campaign"],
                    "--gpu-ore", f"{gpus * run_wall / 3600:g}"] + (["--dopo", dep] if dep else []) + \
-                  ["--", export, f"--qos={plan['slurm']['qos']}", f"--time={_hms(run_wall)}", "-J", jid,
+                  ["--", export, f"--qos={plan['slurm']['qos']}", f"--time={_hms(run_wall)}",  # nome e commento li impone submit_job.py
                    f"{plan['code_dir']}/scripts/slurm/train_ddp.sbatch", plan["manifest"], plan["scales"], run_dir, str(run["total_steps"])]
             commands.append(" ".join(shlex.quote(c) for c in cmd))
         s = run["schedule"]

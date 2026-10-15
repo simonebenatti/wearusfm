@@ -8,6 +8,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -42,7 +43,7 @@ def _parsed(command: str) -> dict:
     head, tail = tok[:sep], tok[sep + 1:]
     exports = dict(item.split("=", 1) for item in tail[0].removeprefix("--export=ALL,").split(","))
     return {"id": head[head.index("--id") + 1], "dopo": head[head.index("--dopo") + 1] if "--dopo" in head else None,
-            "gpu_ore": float(head[head.index("--gpu-ore") + 1]), "export": exports, "sbatch": tail[1:5], "script_args": tail[5:]}
+            "gpu_ore": float(head[head.index("--gpu-ore") + 1]), "export": exports, "sbatch": tail[1:3], "script_args": tail[3:]}
 
 
 def test_pilot_trunk_and_branches_become_chained_jobs():
@@ -105,6 +106,26 @@ def test_branch_from_a_step_inside_the_trunk_decay_is_refused():
     plan["runs"][1].update(from_step=round(7 * E), total_steps=round(9 * E))
     with pytest.raises(ValueError):
         W.plan_jobs(plan)
+
+
+def test_commands_pass_the_real_submitter(tmp_path):
+    """I comandi generati, uno per uno nell'ordine, passano i controlli di `submit_job.py` (nome e commento li impone lui, dipendenze da
+    job gia' sottomessi) e arrivano a sbatch con QoS, durata, export e dipendenza afterok; login node finto (`test_submit_job.FAKE`)."""
+    from test_submit_job import FAKE, S
+
+    fake = tmp_path / "fake_ssh.py"
+    fake.write_text(FAKE)
+    calls = tmp_path / "calls.txt"
+    result = W.plan_jobs(_plan())
+    for command in result["commands"]:
+        argv = shlex.split(command)
+        assert argv[:2] == ["python3", "scripts/submit_job.py"]
+        assert S.main(["--registro", str(tmp_path / "jobs"), "--ssh", f"{sys.executable} {fake} ok {calls}", *argv[2:]]) == 0
+    remote = calls.read_text().splitlines()
+    assert len(remote) == len(result["commands"]) == result["totals"]["jobs"]
+    assert all("--qos=normal" in r and "--export=ALL,CODE_DIR=/C," in r and "train_ddp.sbatch" in r for r in remote)
+    assert "--dependency" not in remote[0] and all("--dependency=afterok:12345" in r for r in remote[1:])
+    assert "--job-name=P100-s0-E1-j01" in next(r for r in remote if "P100-s0-E1-j01" in r)
 
 
 def test_cli_writes_commands_and_estimate(tmp_path, capsys):
