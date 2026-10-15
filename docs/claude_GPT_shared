@@ -10,33 +10,36 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
+Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' dei file invariate.
+
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Candidato add5359 pronto con entrambi gli storici; nuovo P2 nella finitezza della backward_loss, 2reproFAIL/2PASS con fix solo in memoria. Main5030a19 invariato finche' Claude chiude il delta separato |
-| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
-| 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Prova prefetch PASS fonte85ac845/source0230775:30M0,67%/0,65%, audit200/200, tempi nei limiti. Review del codice separata ancora pendente; launcher/manifest/configurazioni/piano/budget non chiusi |
+| 3 | Review e integrazione su main | Verifica del fix numerico, poi merge conservando gli SHA; review prefetch separata | Fix isolato della backward_loss prima del backward e test dello stop coordinato | APERTO: candidato add5359, review registrata in 4f052b0; fix Claude in lavorazione sul branch fix-backward-loss-finite, non ancora consegnato/verificato. Main resta 5030a19 |
+| 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
+| 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, eventuale nuovo obiettivo self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti storici analizzati, ancore/JEPA circa 9 e keep/JEPA circa 1 su soli 16 batch; restano attribuzione e sonde. Niente congiunto dei rami con la loss attuale |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: equivalenza GPU e misure dei rung acquisite; prova prefetch PASS (85ac845/source 0230775), attesa 30M 0,67%/0,65%. Restano review del codice prefetch, launcher/manifest, calibrazione e piano/budget firmati |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT, priorita' immediata:** candidato di integrazioneClaude **59b8c5b** + GPT5a25a5c preparato inadd5359, preservandoSHA/voci.
-  Review finale trova un P2 sulla loss effettivaInf con gradienti finiti: main resta5030a19 finche' Claude consegna il fix separato.
-  Il prefetch non serve per chiudere questa guardia. In parallelo sono indipendenti la definizione della regola del monitor (punto4) e il protocollo scientifico
-  di ablationJEPA/ancore/keep e sonde temporali/fisiche (punto5), poi lista/default/configurazioni/budget della finestra1 (punto6).
-- **Claude, gia' in corso secondo Simone:** prefetch per il trasferimento dei batch al30M (punto6), solo nel suo trainer/dataloader.
-  Test di equivalenza di batch/RNG/aggiornamenti e di ripresa con un batch in volo; misura del tempo totale e della vera attesa residua.
-  Il delta rispetto a59b8c5b resta separato per una successiva review, senza riscritture della base. A seguire launcher/cateneWSD,
-  manifest annidati e prove esecutive della calibrazione concordata (punto6); eventuali correzioni dalla review (punto3).
+- **GPT, priorita' immediata:** verificare il fix numerico di Claude appena consegnato, poi integrare base + fix su main conservando
+  SHA e voci. Candidato add5359 e review 4f052b0 gia' preparati; main resta 5030a19 fino alla chiusura del rilievo. Il prefetch
+  (0230775) segue una review separata, senza rifare per questo le misure GPU gia' superate. Sono indipendenti la regola del monitor
+  (punto 4) e il protocollo di ablation/sonde (punto 5), poi lista/default/configurazioni/budget della finestra 1 (punto 6).
+- **Claude, prima consegna:** fix numerico separato dalla base 59b8c5b, con regressioni e stop coordinato prima del backward.
+  Il branch fix-backward-loss-finite ha modifiche in lavorazione, non ancora una consegna da integrare. Il prefetch e la sua prova
+  GPU sono gia' conclusi: non sono piu' il lavoro da avviare. A seguire launcher/catene WSD, manifest annidati e calibrazione
+  esecutiva concordata (punto 6), nel proprio worktree senza attendere che GPT completi i protocolli scientifici.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
 - **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
   registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
   per revocarla o lanciare estrazioni implicitamente.
-- **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline da lanciare. ProvaGPU del prefetch solo con protocollo, costi e
-  autorizzazione applicabili gia' registrati; questa ripartizione non crea un nuovo cap ne' usa liberamente il residuo infrastruttura.
+- **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline o ripetizione della prova prefetch da lanciare ora. Eventuali
+  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di circa 17,3/25 GPU-ora non e' un nuovo cap
+  o un'autorizzazione generica. Questa tabella non avvia job e non cambia le decisioni scientifiche.
 - **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
   Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
 
@@ -1088,6 +1091,16 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Nessuna nuova richiesta di ripetere i job prefetch o i confronti scientifici. Claude puo' proseguire con launcher/cateneWSD e manifest,
   oltre al rinfrescoSCRATCH entro22/10. Main ancora5030a19 e P3 non chiuso dal PASS della prova dati.
 
+### 2026-10-15 | GPT | Aggiornata la tabella unica dei sei punti | Base c5d1cfd, esiti Claude 85ac845
+
+- Aggiornati soltanto tabella e tranche operativa: punti 1/2 chiusi; 3 aperto per il fix numerico; 4 regola prospettica da congelare;
+  5 analisi gradienti finita ma attribuzione/sonde aperte; 6 prova prefetch superata ma preparazione della finestra ancora parziale.
+- Verificati i riferimenti locali: main 5030a19; ramo della consegna Claude 85ac845; suo checkout ora sul branch isolato
+  fix-backward-loss-finite dalla base 59b8c5b, con modifiche non committate. Nessuna ispezione o modifica del suo lavoro in corso.
+- Rimossa dall'assegnazione attiva la vecchia richiesta di sviluppare/provare il prefetch, gia' conclusa. Restano review separata
+  del codice, launcher/catene WSD, manifest, calibrazione e piano/budget della finestra. SCRATCH entro il 22/10 resta da verificare.
+- Nessun nuovo job, test, merge su main o decisione scientifica/budget; decisioni.md non richiede modifiche. Preservati storico e draft.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1774,3 +1787,10 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   Le differenze della metrica di parete tra nodi sono descrittive: la causa "nodi diversi" non e' isolata da questi confronti.
 - Il PASS dei criteri protocollati non richiede quella spiegazione causale e non chiude il diverso contratto di sicurezza della lossInf.
   Nessuna adozione implicita di nuovi obiettivi, regola del monitor o budget della finestra1 da questa conferma.
+
+### 2026-10-15 | GPT | Limiti dell'aggiornamento della tabella unica
+
+- Il fix numerico in lavorazione non e' ancora verificato o integrato: il punto 3 non viene chiuso per la sola presenza di modifiche.
+  Il PASS prefetch chiude la misura del requisito dati al 30M nelle configurazioni provate, non tutta la finestra 1 o la review del codice.
+- WSD e nucleo DDP sono gia' implementati: il lavoro residuo riguarda uso nelle catene/launcher di campagna e configurazioni,
+  non riscrivere il motore. Nessun rilancio dei punti 1/2, nessuna riapertura retroattiva delle soglie di stabilita'.
