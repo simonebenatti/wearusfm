@@ -80,3 +80,39 @@ ricalcolarlo; quello del suo contenuto e' 52549ef8.... Innocuo per training e fi
 il manifest congelato, i file annidati registrano entrambi. **Prossimi passi:** review di GPT del codice; poi costruzione sul cluster da un
 checkout di campagna (job CPU da autorizzare) e confronto degli hash di contenuto con quelli locali (i byte compressi possono cambiare con la
 versione di zlib, il contenuto no).
+
+## Allineamento all'accordo del 15/10/2026 (`docs/accordo_operativo_finestra1_20261015.md`, main e02ac74)
+
+La sezione precedente (residuo ad A e B, ore nominali, conferma bit per bit del 100%) e' superata. **Regola** (`pretraining_manifest.DERIVED_RULE`):
+base temporale sulle ore campionabili secondo window_s congelato (`window_seconds_59425316.json`, calcolato con `signed_config`, la stessa
+configurazione delle finestre del training della finestra 1: verificato dal costruttore); righe senza finestre (null) a peso 0, ore nominali,
+campionabili ed escluse distinte; D9 su quelle ore; se C non raggiunge il 5% perche' tutte le sue unita' sono al tetto, A resta al 20% e il
+solo residuo di C va a B (stessi pesi, stesso tetto); A o B senza capacita': errore esplicito. Verifiche dopo le trasformazioni del sampler
+(normalizzazione, probabilita' peso / durata, quote nel tempo; coerenti col codice del loader). Endpoint a E epoche con un solo floor sul
+totale; dose effettiva riportata. Derivato anche al 100% (`--nested 1`); v1.1 intatto.
+
+**Rapporti finali dal commit pulito `56cea75`** (`results/infra/derived_manifests_v1_1_build_20261015.json`, `..._report_20261015.json`;
+ingressi: v1.1 SHA del file 853f35ac..., window_s e660e324...). Tutte le verifiche superate.
+
+| Manifest | Soggetti | Sessioni | Ore campionabili | Classi A / B / C dopo il sampler | Passaggi max | Passi a 4 epoche, batch 32 (floor) | Hash del contenuto |
+|---|---|---|---|---|---|---|---|
+| v1.1 (genitore) | 565 | 19.034 | 822,39 | 20,0080 / 74,9900 / 5,0020 | 7,9987 | 98.094 | b3b4a3cb... dichiarato, 52549ef8... ricalcolato |
+| derivato 12,5% | 78 | 2.519 | 113,62 | 20,0000 / 75,0000 / 5,0000 | 8,0000 | 13.625 | 80a214fd... |
+| derivato 25% | 146 | 4.947 | 214,99 | 20,0000 / 75,0254 / 4,9746 | 8,0000 | 25.628 | 13d3dce8... |
+| derivato 50% | 284 | 9.493 | 419,33 | 20,0000 / 75,0000 / 5,0000 | 8,0000 | 49.926 | 52ec61f0... |
+| derivato 100% | 565 | 19.034 | 822,39 | 20,0000 / 75,0000 / 5,0000 | 8,0000 | 98.094 | 167923c3... |
+
+**Differenze del derivato al 100% dal v1.1** (spiegate dai numeri nel rapporto): le 62 sessioni di emg2pose con window_s null (0,47 h) hanno
+nel v1.1 peso 0,000399; il sampler da' loro probabilita' 0 e ridistribuisce quella massa con un fattore comune, quindi il v1.1 campiona A
+20,008% / B 74,990% / C 5,002%. Il derivato le porta a peso 0 e rifa D9 sulle ore campionabili: 20 / 75 / 5 esatti; gli altri pesi cambiano
+al massimo di 1,3e-5. Endpoint uguale (98.094 passi a 4 epoche col batch 32: dose effettiva 3,99997 epoche). Il residuo del 25% (0,0254% da C
+a B) coincide con la stima dell'accordo (A 20%, B 75,02535%, C 4,97465%).
+
+**Prossimo:** review di GPT; poi costruzione sul cluster da un checkout di campagna (preventivo sotto) e confronto degli hash di contenuto con
+questi (i byte compressi possono cambiare con zlib, il contenuto no).
+
+**Preventivo della costruzione sul cluster (da autorizzare dopo la review).** Riferimento di deploy allo SHA del commit rivisto, checkout di
+campagna su `lrd_all_serial` (1 CPU, 10 min, ~0,2 core-ora), poi `scripts/slurm/build_nested_manifests.sbatch` su `lrd_all_serial` (1 CPU,
+4 GB, tetto 30 min = 0,5 core-ora; stima 2-5 min) con ingressi `$WORK/wearusfm_runs/results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz` e
+`.../passo6/window_seconds_59425316.json`, uscita `$WORK/wearusfm_runs/results/passo6/derived_v1_1/` (fuori dal codice). **0 GPU-ora; tetto
+complessivo ~0,7 core-ora.**

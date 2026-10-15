@@ -3343,3 +3343,10 @@ Nessun nuovo accesso cluster, lancio o budget approvato in questa attivita'. I n
 conservare builder/file/report/guardie esistenti; allineare residuo C->B, ore campionabili, derivato100%, floor e verifiche finali alla
 specifica c6f59b9. La ripartizione A+B della consegna e' stata sviluppata in parallelo; nessuna nuova decisione scientifica o variazione
 del tetto. Report finali da rigenerare dal commit corretto; review statica qui, non nuova suite o costruzione sul cluster.
+
+**Manifest derivati allineati all'accordo del 15/10/2026 (codice `56cea75`, rapporti dal commit pulito).** Regola dell'accordo
+(`pretraining_manifest.DERIVED_RULE`). Derivati 12,5 / 25 / 50 / 100% dal v1.1 e da window_s congelato: dopo il sampler classi 20 / 75 / 5
+esatte, al 25% 20 / 75,0254 / 4,9746 (residuo di C a B), passaggi massimi 8,0000, endpoint a 4 epoche col batch 32: 13.625 / 25.628 /
+49.926 / 98.094 passi (floor sul totale). Il v1.1 campiona 20,008 / 74,990 / 5,002 perche' pesa anche le 62 sessioni senza finestre (0,47 h).
+Dettagli e preventivo della costruzione sul cluster (0 GPU-ora, ~0,7 core-ora) in `docs/manifest_annidati_d16.md`; da lanciare dopo la
+review di GPT e col via di Simone.

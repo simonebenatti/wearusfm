@@ -1,0 +1,506 @@
+{
+ "window_seconds": {
+  "path": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/window_seconds_59425316.json",
+  "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+ },
+ "params": {
+  "batch": 32,
+  "epochs": 4.0
+ },
+ "manifests": {
+  "genitore": {
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/manifest_v1_1.json.gz",
+   "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+   "hash": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+   "mass": 0.9999999999999983,
+   "classes": {
+    "A": 0.2000798152698322,
+    "B": 0.7499002309127086,
+    "C": 0.05001995381745806
+   },
+   "max_passes": 7.9986572555237165,
+   "hours_samplable": 822.3938563894599,
+   "mean_window_s": 3.77264811160648,
+   "windows_per_epoch": 784758.5556399418,
+   "steps_at_epochs": 98094,
+   "effective_epochs": 3.9999665851877895,
+   "sessions": 19034,
+   "subjects": 565,
+   "per_unit": {
+    "camargo2021": {
+     "share": 0.03464219777504087,
+     "passes": 7.356769853938844
+    },
+    "capgmyo": {
+     "share": 0.0007564718312366836,
+     "passes": 7.99865725552371
+    },
+    "csl_hdemg": {
+     "share": 0.011748277707616857,
+     "passes": 7.998657255523715
+    },
+    "emg2pose": {
+     "share": 0.24587711348791097,
+     "passes": 2.815281049471899
+    },
+    "emg2qwerty": {
+     "share": 0.2585203157266816,
+     "passes": 2.681942764287348
+    },
+    "grabmyo": {
+     "share": 0.04099131735513781,
+     "passes": 7.99865725552371
+    },
+    "hyser": {
+     "share": 0.03751520427860452,
+     "passes": 7.6228121664810224
+    },
+    "ninapro_db10": {
+     "share": 0.0974754809298648,
+     "passes": 7.112934284297847
+    },
+    "ninapro_db2": {
+     "share": 0.04227333203033268,
+     "passes": 6.028734051120934
+    },
+    "ninapro_db3": {
+     "share": 0.01335562500210089,
+     "passes": 7.9986572555237085
+    },
+    "ninapro_db4": {
+     "share": 0.018484277414046877,
+     "passes": 7.998657255523709
+    },
+    "ninapro_db5": {
+     "share": 0.021455820680685224,
+     "passes": 7.998657255523708
+    },
+    "ninapro_db6": {
+     "share": 0.03488367155114804,
+     "passes": 7.305844394616787
+    },
+    "ninapro_db7": {
+     "share": 0.03219945447959161,
+     "passes": 7.914875589806581
+    },
+    "ninapro_db8": {
+     "share": 0.02066228645766689,
+     "passes": 7.9986572555237085
+    },
+    "putemg": {
+     "share": 0.041406768983167856,
+     "passes": 7.9986572555237165
+    },
+    "zhang2026:anatomical": {
+     "share": 0.02424125701757124,
+     "passes": 7.998657255523707
+    },
+    "zhang2026:random": {
+     "share": 0.02351112729159354,
+     "passes": 7.998657255523709
+    }
+   }
+  },
+  "0.125": {
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/derived_final/manifest_v1_1_nested_0.125.json.gz",
+   "file_sha256": "750379795cac0158316f7844e8be2e8c03fcea5425bbb75c9a811f6c58404b32",
+   "hash": "80a214fd372eab1256e89ce74e81f69f391f7ebff84dec5825242012409b5d12",
+   "mass": 1.0000000000000024,
+   "classes": {
+    "A": 0.20000000000000012,
+    "B": 0.7499999999999999,
+    "C": 0.05000000000000003
+   },
+   "max_passes": 8.0,
+   "hours_samplable": 113.62017546180917,
+   "mean_window_s": 3.7525282546143504,
+   "windows_per_epoch": 109001.8792422256,
+   "steps_at_epochs": 13625,
+   "effective_epochs": 3.9999310381715008,
+   "sessions": 2519,
+   "subjects": 78,
+   "per_unit": {
+    "camargo2021": {
+     "share": 0.03736329389195975,
+     "passes": 6.167126867839574
+    },
+    "capgmyo": {
+     "share": 0.0007823336702975507,
+     "passes": 7.999999999999999
+    },
+    "csl_hdemg": {
+     "share": 0.021240359148578504,
+     "passes": 8.0
+    },
+    "emg2pose": {
+     "share": 0.23377112679622583,
+     "passes": 2.824750066947731
+    },
+    "emg2qwerty": {
+     "share": 0.2527827326250504,
+     "passes": 2.612302664864256
+    },
+    "grabmyo": {
+     "share": 0.04363955004628526,
+     "passes": 8.0
+    },
+    "hyser": {
+     "share": 0.027977307181123973,
+     "passes": 6.278223334590955
+    },
+    "ninapro_db10": {
+     "share": 0.09503423241381012,
+     "passes": 6.948496234417188
+    },
+    "ninapro_db2": {
+     "share": 0.03820139738025516,
+     "passes": 6.031825782142429
+    },
+    "ninapro_db3": {
+     "share": 0.009750811283171098,
+     "passes": 7.999999999999998
+    },
+    "ninapro_db4": {
+     "share": 0.02676559558464039,
+     "passes": 7.999999999999999
+    },
+    "ninapro_db5": {
+     "share": 0.03180044571781801,
+     "passes": 7.9999999999999964
+    },
+    "ninapro_db6": {
+     "share": 0.031731705300162276,
+     "passes": 7.26163852375475
+    },
+    "ninapro_db7": {
+     "share": 0.030239956221400348,
+     "passes": 7.61985804294993
+    },
+    "ninapro_db8": {
+     "share": 0.02504254234770083,
+     "passes": 7.999999999999997
+    },
+    "putemg": {
+     "share": 0.04281761073392889,
+     "passes": 8.0
+    },
+    "zhang2026:anatomical": {
+     "share": 0.025947240338411073,
+     "passes": 7.999999999999997
+    },
+    "zhang2026:random": {
+     "share": 0.025111759319180405,
+     "passes": 7.999999999999997
+    }
+   },
+   "derived_hours": {
+    "hours_nominal": 113.62017546180917,
+    "hours_samplable": 113.62017546180917,
+    "hours_excluded": 0.0,
+    "sessions_excluded": 0
+   },
+   "residual_c_to_b": 0.0
+  },
+  "0.25": {
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/derived_final/manifest_v1_1_nested_0.25.json.gz",
+   "file_sha256": "64ea73b6fa159e411f4560a899e7c6e5f90b68d52ebce5c3047e6e93791411fa",
+   "hash": "13d3dce870facf716e49b75f637ce096c4d4b7de8fedb9b2fe04b9d8514d0b35",
+   "mass": 0.9999999999999997,
+   "classes": {
+    "A": 0.20000000000000007,
+    "B": 0.7502535125481374,
+    "C": 0.04974648745186189
+   },
+   "max_passes": 8.000000000000007,
+   "hours_samplable": 214.990053525874,
+   "mean_window_s": 3.774913047652938,
+   "windows_per_epoch": 205028.34977201943,
+   "steps_at_epochs": 25628,
+   "effective_epochs": 3.9999151381353015,
+   "sessions": 4947,
+   "subjects": 146,
+   "per_unit": {
+    "camargo2021": {
+     "share": 0.035334375589316326,
+     "passes": 6.87193913083178
+    },
+    "capgmyo": {
+     "share": 0.00082691164015354,
+     "passes": 8.000000000000002
+    },
+    "csl_hdemg": {
+     "share": 0.011225325515084306,
+     "passes": 8.000000000000004
+    },
+    "emg2pose": {
+     "share": 0.24646015926563314,
+     "passes": 2.8141978871987745
+    },
+    "emg2qwerty": {
+     "share": 0.2586159820914613,
+     "passes": 2.6819211012207664
+    },
+    "grabmyo": {
+     "share": 0.04151354843458319,
+     "passes": 8.000000000000002
+    },
+    "hyser": {
+     "share": 0.03769425029662404,
+     "passes": 8.000000000000007
+    },
+    "ninapro_db10": {
+     "share": 0.09477513411216115,
+     "passes": 7.318245085923054
+    },
+    "ninapro_db2": {
+     "share": 0.04036287059145454,
+     "passes": 6.015817872159423
+    },
+    "ninapro_db3": {
+     "share": 0.01189996137670357,
+     "passes": 8.000000000000002
+    },
+    "ninapro_db4": {
+     "share": 0.02121933696034855,
+     "passes": 8.000000000000004
+    },
+    "ninapro_db5": {
+     "share": 0.024152047570773275,
+     "passes": 8.000000000000004
+    },
+    "ninapro_db6": {
+     "share": 0.033467392897110954,
+     "passes": 7.2552911134195615
+    },
+    "ninapro_db7": {
+     "share": 0.03191584574232531,
+     "passes": 7.607997614605568
+    },
+    "ninapro_db8": {
+     "share": 0.019901929760343558,
+     "passes": 8.000000000000004
+    },
+    "putemg": {
+     "share": 0.040734701033513565,
+     "passes": 8.000000000000005
+    },
+    "zhang2026:anatomical": {
+     "share": 0.025800216842740805,
+     "passes": 8.000000000000002
+    },
+    "zhang2026:random": {
+     "share": 0.0241000102796683,
+     "passes": 8.000000000000004
+    }
+   },
+   "derived_hours": {
+    "hours_nominal": 214.990053525874,
+    "hours_samplable": 214.990053525874,
+    "hours_excluded": 0.0,
+    "sessions_excluded": 0
+   },
+   "residual_c_to_b": 0.00025351254813815033
+  },
+  "0.5": {
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/derived_final/manifest_v1_1_nested_0.5.json.gz",
+   "file_sha256": "169bed4880c54ac2b1513995bf2d8aaf0fdcc76d2320778f9b3aa272991097f4",
+   "hash": "52ec61f05808469be456aba6966be0bc8f13b65b95261146bdf2656754dd697b",
+   "mass": 1.000000000000002,
+   "classes": {
+    "A": 0.19999999999999976,
+    "B": 0.7499999999999988,
+    "C": 0.04999999999999993
+   },
+   "max_passes": 8.000000000000014,
+   "hours_samplable": 419.3281891571484,
+   "mean_window_s": 3.7795235431653382,
+   "windows_per_epoch": 399410.5245608458,
+   "steps_at_epochs": 49926,
+   "effective_epochs": 3.9999747171324684,
+   "sessions": 9493,
+   "subjects": 284,
+   "per_unit": {
+    "camargo2021": {
+     "share": 0.035398899461670956,
+     "passes": 7.399264715759508
+    },
+    "capgmyo": {
+     "share": 0.0007419274905806978,
+     "passes": 8.000000000000004
+    },
+    "csl_hdemg": {
+     "share": 0.011518424291265332,
+     "passes": 8.000000000000004
+    },
+    "emg2pose": {
+     "share": 0.2442897610115315,
+     "passes": 2.8418793865256315
+    },
+    "emg2qwerty": {
+     "share": 0.26163056551647007,
+     "passes": 2.6535203743778357
+    },
+    "grabmyo": {
+     "share": 0.040203195895841544,
+     "passes": 7.999999999999998
+    },
+    "hyser": {
+     "share": 0.037739648218153905,
+     "passes": 7.82408487925381
+    },
+    "ninapro_db10": {
+     "share": 0.09665684681037913,
+     "passes": 7.182543803853929
+    },
+    "ninapro_db2": {
+     "share": 0.04240353879791272,
+     "passes": 6.176980393352289
+    },
+    "ninapro_db3": {
+     "share": 0.01297277838058251,
+     "passes": 8.000000000000002
+    },
+    "ninapro_db4": {
+     "share": 0.018129649406199384,
+     "passes": 8.000000000000004
+    },
+    "ninapro_db5": {
+     "share": 0.02106724307432193,
+     "passes": 8.000000000000002
+    },
+    "ninapro_db6": {
+     "share": 0.03482519684122456,
+     "passes": 7.521158572559842
+    },
+    "ninapro_db7": {
+     "share": 0.03154197279204754,
+     "passes": 8.000000000000005
+    },
+    "ninapro_db8": {
+     "share": 0.020358657937654987,
+     "passes": 8.000000000000005
+    },
+    "putemg": {
+     "share": 0.0417705177196933,
+     "passes": 8.000000000000014
+    },
+    "zhang2026:anatomical": {
+     "share": 0.02472796432036208,
+     "passes": 8.000000000000004
+    },
+    "zhang2026:random": {
+     "share": 0.024023212034106286,
+     "passes": 8.000000000000002
+    }
+   },
+   "derived_hours": {
+    "hours_nominal": 419.3281891571484,
+    "hours_samplable": 419.3281891571484,
+    "hours_excluded": 0.0,
+    "sessions_excluded": 0
+   },
+   "residual_c_to_b": 0.0
+  },
+  "1": {
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/derived_final/manifest_v1_1_nested_1.json.gz",
+   "file_sha256": "12a445d97a542b995ec3aca5830b26744c2280ca4801589036105e7511173a64",
+   "hash": "167923c337ccf604a605b4c1b2e2ec3375f4c2831b387c73f164c02d4fd8c2ad",
+   "mass": 1.0000000000000018,
+   "classes": {
+    "A": 0.20000000000000018,
+    "B": 0.7500000000000016,
+    "C": 0.05000000000000001
+   },
+   "max_passes": 7.99999999999997,
+   "hours_samplable": 822.3938563894599,
+   "mean_window_s": 3.7726556900192567,
+   "windows_per_epoch": 784756.9792373349,
+   "steps_at_epochs": 98094,
+   "effective_epochs": 3.99997462023293,
+   "sessions": 19034,
+   "subjects": 565,
+   "per_unit": {
+    "camargo2021": {
+     "share": 0.03462073151676004,
+     "passes": 7.352211184687465
+    },
+    "capgmyo": {
+     "share": 0.0007565988210976534,
+     "passes": 7.99999999999995
+    },
+    "csl_hdemg": {
+     "share": 0.011750249905511233,
+     "passes": 7.99999999999995
+    },
+    "emg2pose": {
+     "share": 0.24602567021285984,
+     "passes": 2.816982016782713
+    },
+    "emg2qwerty": {
+     "share": 0.25846684120868985,
+     "passes": 2.6813880086728865
+    },
+    "grabmyo": {
+     "share": 0.04099819861822914,
+     "passes": 7.9999999999999565
+    },
+    "hyser": {
+     "share": 0.037493151273391125,
+     "passes": 7.61833115885543
+    },
+    "ninapro_db10": {
+     "share": 0.09745531828096758,
+     "passes": 7.111462985103063
+    },
+    "ninapro_db2": {
+     "share": 0.04224713709115338,
+     "passes": 6.0249983077051095
+    },
+    "ninapro_db3": {
+     "share": 0.013357867027371562,
+     "passes": 7.999999999999951
+    },
+    "ninapro_db4": {
+     "share": 0.018487380392534655,
+     "passes": 7.9999999999999485
+    },
+    "ninapro_db5": {
+     "share": 0.021459422495812678,
+     "passes": 7.999999999999952
+    },
+    "ninapro_db6": {
+     "share": 0.03486205566210534,
+     "passes": 7.301317281650317
+    },
+    "ninapro_db7": {
+     "share": 0.03217950188273708,
+     "passes": 7.909971086784727
+    },
+    "ninapro_db8": {
+     "share": 0.020665755061223867,
+     "passes": 7.99999999999995
+    },
+    "putemg": {
+     "share": 0.04141371998863734,
+     "passes": 7.99999999999997
+    },
+    "zhang2026:anatomical": {
+     "share": 0.024245326427338117,
+     "passes": 7.999999999999951
+    },
+    "zhang2026:random": {
+     "share": 0.023515074133581195,
+     "passes": 7.9999999999999485
+    }
+   },
+   "derived_hours": {
+    "hours_nominal": 822.8601656950157,
+    "hours_samplable": 822.3938563894601,
+    "hours_excluded": 0.46630930555555555,
+    "sessions_excluded": 62
+   },
+   "residual_c_to_b": 0.0
+  }
+ },
+ "problems": []
+}

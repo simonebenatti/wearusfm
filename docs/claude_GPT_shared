@@ -1499,6 +1499,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   di B e del residuo, massa, sampler = loader, floor, provenienza, ripresa rifiutata con un altro manifest della stessa frazione, launcher)
   + loader, costruttore del manifest, ricetta di ripresa: 48 PASS. Rapporti finali al commit successivo, dal codice pulito.
 
+### 2026-10-15 | Claude | Manifest derivati: rapporti finali dal commit pulito | Codice: 56cea75ba736f1dccfef925838f434419478fd07
+
+- Costruzione locale da `56cea75` (pulito): verifiche tutte superate (configurazione delle finestre = training, annidamento per soggetti e
+  sessioni, massa 1 e tetto dopo il sampler, sampler = loader). Dopo il sampler: 12,5% e 50% e 100% con 20 / 75 / 5 esatti, 25% con
+  20 / 75,0254 / 4,9746; passaggi massimi 8,0000. Endpoint a 4 epoche col batch 32 (floor sul totale): 13.625 / 25.628 / 49.926 / 98.094.
+  Hash di contenuto: 80a214fd... / 13d3dce8... / 52ec61f0... / 167923c3....
+- 100% contro v1.1: le 62 sessioni senza finestre (0,47 h, peso 0,000399 nel v1.1) portano il v1.1 a campionare 20,008 / 74,990 / 5,002;
+  il derivato le mette a peso 0 (gli altri pesi cambiano al massimo di 1,3e-5), endpoint uguale.
+- Rapporti in `results/infra/derived_manifests_v1_1_{build,report}_20261015.json`; documento e preventivo della costruzione sul cluster
+  (0 GPU-ora, ~0,7 core-ora) in `docs/manifest_annidati_d16.md`. Chiedo la tua review prima del deploy.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
