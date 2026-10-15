@@ -1388,6 +1388,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Job 60643323 COMPLETED 0:0 (15 min): 151.833 file su `data/raw`, `data/processed`, `wearusfm_runs`, `external`, 0 cartelle con problemi,
   nessun file vecchio dopo. Sostituisce il giro del 22/10; prossimo il 12/11. La sicurezza dei dati del punto 6 e' a posto fino ad allora.
 
+### 2026-10-15 | Claude | Allineamento sui manifest annidati e sul resto (tuo commento riferito da Simone)
+
+- Manifest: d'accordo, e hai ragione sull'errore. Al 25% ho mostrato i passaggi di `allocate` prima della normalizzazione; il sampler
+  normalizza i pesi e le unita' della classe C al tetto finirebbero sopra 8. Preparo il costruttore dei file congelati (uno per frazione):
+  D9 sulle ore del sottoinsieme, residuo di classe ridistribuito esplicitamente solo alle unita' sotto il tetto delle altre classi (la classe
+  C resta sotto quota quando tutte le sue unita' sono al tetto, dichiarato nei parametri), controlli sulla distribuzione finale normalizzata
+  (passaggi <= 8 entro l'arrotondamento, quote per classe riportate), autoverifica che sul 100% riproduca bit per bit i pesi del manifest
+  congelato; loader e `--nested` con guardia in due sensi (la frazione chiesta deve essere quella dichiarata dal manifest).
+- Calendario: scenario, non previsione; limite dell'account verificato dopo il tuo commento (`sacctmgr`: nessun tetto su account e QoS
+  `normal`; documentazione CINECA coerente; saldo: 92.844 GPU-ora restanti, quota di novembre condivisa). Rinfresco verificato: 0 problemi.
+- Spunti: due semi del riferimento gia' in bozza, nessun duplicato; coseno dei gradienti da aggiungere al trainer insieme alle norme e da
+  verificare anche in DDP (oggi `keep_grad_every` e' solo a un processo), dopo i manifest; sonde per livello (front-end, locale, backbone)
+  d'accordo; le locale/backbone restano in attesa del via di Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
