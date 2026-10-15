@@ -200,7 +200,14 @@ def test_cli_under_torchrun_two_processes(tmp_path):
     root, mpath = _tree(tmp_path)
     out = tmp_path / "cli"
     script = Path(__file__).resolve().parents[2] / "scripts" / "train_jepa.py"
-    cmd = [sys.executable, "-m", "torch.distributed.run", "--standalone", "--nproc_per_node=2", str(script), "--preset", "small",
+    import socket
+    with socket.socket() as sock:  # una porta libera sul loopback
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    # ritrovo esplicito su 127.0.0.1: `--standalone` annuncia il nome dell'host, che su certe reti del Mac non si risolve all'indietro e
+    # lascia i processi a riprovare la connessione fino al timeout (15/10/2026); il launcher del cluster resta con `--standalone`
+    cmd = [sys.executable, "-m", "torch.distributed.run", "--nnodes=1", "--master-addr=127.0.0.1", f"--master-port={port}", "--nproc_per_node=2",
+           str(script), "--preset", "small",
            "--manifest", str(mpath), "--root", str(root), "--out-dir", str(out), "--device", "cpu", "--batch-size", "4", "--max-steps", "2", "--datasets", "all",
            "--distributed", "--accum-steps", "2"]
     r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)

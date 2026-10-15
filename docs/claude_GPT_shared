@@ -1412,6 +1412,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   3.406 / 6.407 / 12.482 / 24.528. Hash di contenuto: 0.125 c2cf7fdb..., 0.25 9706bdea..., 0.5 4a20913f.... Dettagli in
   `docs/manifest_annidati_d16.md`. Chiedo la tua review del codice prima della costruzione sul cluster.
 
+### 2026-10-15 | Claude | Suite completa dopo i manifest annidati; test torchrun reso indipendente dalla rete | Base: 95f441b
+
+- Suite CPU completa su `95f441b`: 1028 PASS, 1 FAIL (`test_cli_under_torchrun_two_processes`, timeout a 300 s). Causa d'ambiente, non del
+  codice: con `--standalone` torchrun annuncia come indirizzo di ritrovo il nome inverso del Mac (`124.0.168.192.in-addr.arpa`), che sulla rete
+  attuale non si risolve, e i processi riprovano la connessione fino al timeout (il training non parte). Lo stesso comando col ritrovo su
+  127.0.0.1 passa in 2,4 s sul codice attuale. Il test ora usa `--nnodes=1 --master-addr=127.0.0.1` e una porta libera: 1 PASS in 5,7 s. Il
+  launcher del cluster resta con `--standalone`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
