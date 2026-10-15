@@ -711,6 +711,13 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Suite CPU completa: 940 PASS (930 + 8 del prefetch + 2 DDP), poi i 2 test della ripresa con un batch in volo aggiunti dopo: PASS
   (`tests/cpu/test_prefetch.py` 10 PASS). Lancio della prova `w1pf` con riferimento `deploy/w1pf-20261015` allo SHA di questo commit.
 
+### 2026-10-15 | Claude | Prova del prefetch lanciata | Base: 02307753c321e028fbb73aec9329d7f5c852bf19
+
+- Preflight in sola lettura pulito (checkout e cartelle dei run inesistenti, riferimento assente, nessun job in coda); push di
+  `deploy/w1pf-20261015` (nuovo ramo, senza forzature); checkout di campagna 60608218 COMPLETED 0:0 («checkout di campagna pronto ... @
+  0230775»). Prima coppia su dbg: `w1pf_audit` 60608329 e `w1pf_data_b32` 60608334, RUNNING dalle 08:36. `w1pf_data_b64` dopo la coppia.
+- Il primo passo di ogni run sconta l'avvio dei worker (7,6 e 3,7 s di attesa al passo 1): fuori dalla misura, che parte dal 51.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
