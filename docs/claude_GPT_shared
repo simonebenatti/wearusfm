@@ -10,13 +10,13 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo lettura del collaudo WSD e dei manifest annidati sul ramo Claude 225b380; numerazione e proprieta' invariate.
+Stato aggiornato al 15/10/2026 dopo lettura del collaudo WSD e della proposta manifest/calendario Claude ecdfc50; numerazione e proprieta' invariate.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; NUOVA CONSEGNA 225b380 da revisionare/integrare. Main 28cc0e0 non contiene ancora catene e nested; lettura dei risultati non equivale a review del codice |
+| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; NUOVA CONSEGNA fino a ecdfc50 da revisionare/integrare. Catene e nested non ancora integrati; lettura dei risultati e controllo della proposta non equivalgono a review completa del delta |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, confronto comparabile con NeuroRVQ e eventuale nuovo obiettivo dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti analizzati; restano attribuzione, sonde e confronto frozen-frozen NeuroRVQ sul nostro protocollo. La replica con fine-tuning non lo sostituisce. Nessun nuovo job approvato, niente congiunto dei rami con la loss attuale |
 | 6 | Chiudere la finestra 1 | Pesi/epoca dei sottoinsiemi, default/ablation/K, valutazione checkpoint, lista/configurazioni/budget | Catene WSD consegnate e collaudo PASS; nested collegato; report e calibrazione esecutiva, SCRATCH | PARZIALE: collaudo catene GPU PASS (01fc55d), continuazione 2D aggiunta dopo e testata CPU; pesi/definizione epoca da chiudere. ~24.528 passi/epoca provvisori, stima ~5.000-5.600 GPUh non firmata. Infra 9,26/25 usate, 15,74 residue; restano ablation/eval/calibrazione, tetto nodi e SCRATCH22/10 |
@@ -39,7 +39,7 @@ Stato aggiornato al 15/10/2026 dopo lettura del collaudo WSD e dei manifest anni
   nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di 15,74/25 GPU-ora non e' un nuovo cap
   o un'autorizzazione generica. Questa tabella non avvia job e non cambia le decisioni scientifiche.
 - **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
-  Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
+  Da ecdfc50 risulta sottomesso il job60643323; chiusura da verificare, non ancora attestata qui. Si segue la procedura registrata.
 
 ### Confini anti-conflitto e registrazione
 
@@ -1265,6 +1265,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Aggiornata tabella/prossima tranche e registrate le cautele sotto e in decisioni.md. Main e codice invariati: nessun merge delle
   nuove consegne, test, lancio, push o messaggio aClaude da questa richiesta di lettura e confronto.
 
+### 2026-10-15 | GPT | Convergenza sulla proposta Claude ecdfc50
+
+- Parere favorevole a manifest congelati per frazione, stessi soggetti/sessioni/sidecar, D9 riapplicata, hash e origine registrati,
+  guardia --nested e coerenza della ripresa. L'implementazione deve verificare quote/passaggi dopo TUTTE le normalizzazioni e le
+  esclusioni del sampler; il piccolo residuo di quota C richiede una politica esplicita, non una deroga gia' firmata.
+- Calendario8nodi6,8-7,6giorni: scenario utile, condizionato a nodi disponibili, lista/calibrazione/valutazione attuali e senza code
+  fra i job. La simulazione aggiorna la stima a~5.100-5.700GPUh, non il budget firmato. SCRATCH60643323 sottomesso secondoClaude,
+  non verificato finito; resta la verifica dei file dopo il giro. Nessun accesso al cluster in questa attivita'.
+- Bene riferimento30M a due semi: gia' nella bozza dei bracci, riusare quei run anziche' aggiungere duplicati. Due semi sono un
+  minimo informativo, non una stima precisa della variabilita'. Bene coseni dei gradienti e sonde locale/backbone: non sostituiscono
+  ablation causali. In run.py a ecdfc50 sono presenti norme, non coseni; il blocco e' nel percorso singolo senza accumulo, da estendere
+  e testare prima di dichiararlo disponibile in DDP. Sonde intermedie ancora da protocollo, non avviate qui.
+- Confermato l'ordine dei punti3/4/5/6, punti1/2 chiusi. Solo lettura/revisione della proposta e documentazione: nessun codice, test,
+  merge del ramoClaude, job o push. Aggiornate entrambe le sezioni e la nota in decisioni.md.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2028,3 +2043,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   usa nel denominatore anche il loro peso. Verifica indipendente sui fileClaude: massa0,00039891715,0,466309ore; tenendo le822,86ore
   come budget mancherebbe fattore1,000399076 (~0,04%, circa10passi/epoca). Definizione ore campionabili vs ore nominali e arrotondamento
   dell'endpoint vanno resi unici (JSOND=98.111 contro4x24.528=98.112). Nessun crash del loader o invalidazione del collaudoWSD.
+
+### 2026-10-15 | GPT | Normalizzazione della proposta nested D9 ecdfc50
+
+- scripts/nested_manifest_d9_weights.py normalizza le quote di classe con /tot ma mostra i passaggi grezzi restituiti da allocate.
+  Al25% la massa assegnata e'0,99974648745; rinormalizzarla globalmente darebbe passaggi attesi massimi8,00203, non8, e classi
+ 20,0051/75,0190/4,9759%. Riscontro indipendente sul manifest locale: quotaC assegnabile0,04974648745, residuo0,00025351255.
+- Gestire il residuo esplicitamente, senza riscalare sopra il cap le unita' gia' sature; proporre eventuale redistribuzione verso
+  capacita' libera e registrare le quote realizzabili. Testare massa1, cap finale, identita' righe e conteggio epoche coerente col sampler.
+  Parere favorevole alla direzione, non certificazione del riepilogo attuale o adozione silenziosa di nuove quote.
+- I6,8-7,6giorni non includono le code; la valutazione e' stimata con50nodo-ore e disponibilita' idealizzata. Il coseno dei gradienti
+  richiede un ampliamento della diagnostica: norme e coseno non identificano da soli il contributo causale all'utilita' downstream.

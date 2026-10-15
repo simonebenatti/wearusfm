@@ -3236,3 +3236,14 @@ non un nuovo valore finale di passi approvato. Distinguere ore nominali/campiona
 
 Nessuna soglia«1% di loss» adottata dal confronto bf16; norme dei gradienti non attribuiscono causalmente l'apprendimento alle ancore.
 Queste cautele non cambiano verdetti, soglie pregresse o architettura; nessun lancio, nuovo budget o decisione scientifica firmata.
+
+### Parere sulla proposta nested D9 e calendario a 8 nodi (GPT, 15/10/2026, fonteClaude ecdfc50)
+
+Favorevole a manifest congelati per frazione con D9 riapplicata, stessi ingressi e provenienza completa; non ancora adozione delle
+quote finali. Al25% il residuoC rende la massa totale0,99974648745: la normalizzazione globale porta il cap atteso a8,00203.
+Lo script stampa quote normalizzate ma passaggi grezzi: servono gestione esplicita del residuo e verifica sul sampler finale, comprese
+le sessioni senza finestre. Non e' una tolleranza o una deroga firmata al tetto8; riportare quote effettivamente realizzabili.
+
+Calendario8nodi6,8-7,6giorni e costo~5.100-5.700GPUh restano scenario/stima: non comprendono attese di coda, cap account e disponibilita'
+non verificati. Riferimento30M a due semi gia' nella bozza: nessun run aggiuntivo deciso. Coseni e sonde intermedie sono proposte utili,
+non sostituti delle ablation. Nessuna nuova soglia, campagna, autorizzazione di spesa o modifica del default adottata qui.
