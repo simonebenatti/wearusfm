@@ -9,10 +9,10 @@
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/build_nested_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/build_nested_%j.out
 
-# Manifest annidati per soggetto (D16) come file congelati, dal manifest congelato (GPT e Claude, 15/10/2026): uno per frazione, pesi rifatti
-# con D9 sul sottoinsieme e residuo gestito senza superare il tetto (scripts/build_nested_manifests.py, che si ferma senza scrivere se
-# un'autoverifica fallisce), poi il rapporto sulla distribuzione campionata (scripts/nested_manifest_report.py, uscita 1 se una verifica
-# fallisce). CPU seriale, 1 core, minuti; 0 GPU-ora. Uscita fuori dal codice; un file gia' presente con contenuto diverso non si sovrascrive.
+# Manifest derivati per l'asse dei soggetti (D16) come file congelati, dal manifest congelato e dalle durate delle finestre congelate (accordo
+# GPT-Claude del 15/10/2026): 12,5 / 25 / 50% e derivato al 100%, base sulle ore campionabili, D9 sul sottoinsieme, residuo di C solo a B
+# (scripts/build_nested_manifests.py, che si ferma senza scrivere se una verifica fallisce), poi il rapporto sulla distribuzione campionata
+# (scripts/nested_manifest_report.py, uscita 1 se una verifica fallisce). CPU seriale, 1 core, minuti; 0 GPU-ora. Uscita fuori dal codice; un file gia' presente con contenuto diverso non si sovrascrive.
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> scripts/slurm/build_nested_manifests.sbatch \
 #        <manifest.json.gz> <cartella di uscita> <window_seconds.json>
 
@@ -30,5 +30,5 @@ module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
 
 mkdir -p "$OUT"
-python scripts/build_nested_manifests.py "$MANIFEST" "$OUT" || exit $?
+python scripts/build_nested_manifests.py "$MANIFEST" "$WS" "$OUT" || exit $?
 python scripts/nested_manifest_report.py "$WS" "$MANIFEST" "$OUT"/*_nested_*.json.gz --json "$OUT/report.json"

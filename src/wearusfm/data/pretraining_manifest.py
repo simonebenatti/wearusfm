@@ -11,6 +11,7 @@ from __future__ import annotations
 import bisect
 import hashlib
 import json
+import math
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 
@@ -189,92 +190,171 @@ def manifest_hash(params: dict, rows: Iterable[SessionRow]) -> str:
     return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-# --- manifest annidati per soggetto (D16) --------------------------------------------------------------------------------------------------
+# --- manifest derivati e annidati per soggetto (D16) ---------------------------------------------------------------------------------------
 
 NESTED_FRACTIONS = ("0.125", "0.25", "0.5")
-NESTED_RULE = ("regole di D9 rifatte sulle ore del sottoinsieme (allocate: quote di classe, ore^alpha, tetto di passaggi); la quota che una "
-               "classe non puo' assegnare perche' tutte le sue unita' sono al tetto va alle unita' sotto il tetto delle altre classi, in "
-               "proporzione alla loro quota, senza superare il tetto; nessun peso di un'unita' al tetto aumenta (GPT e Claude, 15/10/2026)")
+DERIVED_FRACTIONS = NESTED_FRACTIONS + ("1",)  # "1": il derivato al 100%, stessa regola sul corpus intero (accordo del 15/10/2026)
+# campi della configurazione del loader da cui dipendono le durate medie delle finestre (`pretraining_loader.mean_window_s`)
+WINDOW_CONFIG_FIELDS = ("min_window_s", "max_window_s", "align_ms", "patch_ms", "run_margin_s", "split_at_gaps")
+DERIVED_RULE = ("base temporale: ore delle sessioni campionabili secondo window_s congelato (valore positivo; null = nessuna finestra, peso 0); "
+                "D9 su quelle ore (pesi nella classe proporzionali a ore^alpha, tetto di max_passes passaggi a epochs epoche); se la classe C "
+                "non raggiunge la sua quota perche' tutte le sue unita' sono al tetto, A resta alla sua quota e il solo residuo di C va a B, "
+                "riallocato con gli stessi pesi e lo stesso tetto; A o B senza capacita': errore esplicito; nessun fattore comune sui pesi "
+                "(accordo GPT-Claude del 15/10/2026, docs/accordo_operativo_finestra1_20261015.md)")
 
 
-def assign_weights_nested(rows: list[SessionRow], quota: dict[str, float], alpha: float, max_passes: float, epochs: float = 4.0) -> dict:
-    """Come `assign_weights`, piu' la gestione esplicita del residuo: con `allocate` una classe le cui unita' sono tutte al tetto lascia quota
-    non assegnata, e la normalizzazione del loader la spalmerebbe anche sulle unita' al tetto, oltre `max_passes`. Qui il residuo va alle
-    unita' sotto il tetto (di qualunque classe), in proporzione alla loro quota, fino al tetto; le quote finali sommano a 1, quindi la
-    distribuzione campionata e' esattamente quella dei pesi. Senza residuo il risultato e' quello di `assign_weights` (stesse operazioni).
-    Ritorna {"per_unit": {unita': (quota, passaggi)}, "residual": {classe: quota ridistribuita}, "receivers": [unita']}."""
-    pre = [r for r in rows if r.split == "pretraining"]
-    units: dict[str, tuple[str, float]] = {}
-    for r in pre:
-        c, h = units.get(r.unit, (r.quota_class, 0.0))
-        units[r.unit] = (c, h + r.hours)
-    alloc = allocate(units, quota, alpha, max_passes, epochs)
-    share = {u: s for u, (s, _) in alloc["per_unit"].items()}
-    residual = {c: q for c, q in alloc["unused_quota"].items() if q > 1e-15}
-    budget = epochs * sum(h for _, h in units.values())
-    cap = {u: max_passes * h / budget for u, (_, h) in units.items()}
-    left, receivers = sum(residual.values()), set()
-    while left > 1e-15:
-        free = {u: share[u] for u in share if share[u] < cap[u] - 1e-15}
-        if not free:
-            raise ValueError(f"quota residua {left:.3g} non assegnabile: tutte le unita' sono al tetto di {max_passes} passaggi")
-        total = sum(free.values())
-        given = 0.0
-        for u, s in free.items():
-            add = min(left * s / total, cap[u] - s)
-            share[u] += add
-            given += add
-            receivers.add(u)
-        left -= given
+def session_key(dataset: str, subject: str, session: str) -> str:
+    return f"{dataset}/{subject}/{session}"
+
+
+def samplable_seconds(rows: list[SessionRow], window_s: dict) -> dict[str, bool]:
+    """Per ogni riga di pretraining: campionabile (durata media delle finestre positiva e finita) o no (null dichiarato da
+    `scripts/window_seconds.py`: nessuna finestra). Chiave mancante, valore non numerico, non finito, zero o negativo: errore di input."""
+    out = {}
     for r in rows:
         if r.split != "pretraining":
+            continue
+        k = session_key(r.dataset, r.subject, r.session)
+        if k not in window_s:
+            raise ValueError(f"{k}: chiave assente da window_s (errore di input: serve la durata, anche null, per ogni sessione di pretraining)")
+        v = window_s[k]
+        if v is None:
+            out[k] = False
+            continue
+        if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v <= 0:
+            raise ValueError(f"{k}: durata media delle finestre {v!r} non valida (positiva e finita, oppure null)")
+        out[k] = True
+    return out
+
+
+def allocate_c_to_b(units: dict[str, tuple[str, float]], quota: dict[str, float], alpha: float, max_passes: float, epochs: float) -> dict:
+    """`allocate` con la regola del residuo dell'accordo: A e B devono raggiungere la loro quota (altrimenti errore); la quota che C non puo'
+    assegnare va a B, riallocata con gli stessi pesi e lo stesso tetto (se B non la assorbe: errore). Senza residuo e' `allocate`."""
+    eps = 1e-12
+    first = allocate(units, quota, alpha, max_passes, epochs)
+    unused = first["unused_quota"]
+    for cls in ("A", "B"):
+        if unused.get(cls, 0.0) > eps:
+            raise ValueError(f"la classe {cls} non sostiene la quota {quota[cls]}: {unused[cls]:.6g} non assegnabile col tetto di {max_passes} passaggi")
+    others = sorted(c for c, q in unused.items() if q > eps and c not in ("A", "B", "C"))
+    if others:
+        raise ValueError(f"quota non assegnabile nelle classi {others}: la regola prevede solo il residuo di C")
+    residual = unused.get("C", 0.0)
+    if residual <= eps:
+        return {**first, "residual_c_to_b": 0.0}
+    second = allocate(units, {**quota, "B": quota["B"] + residual, "C": quota["C"] - residual}, alpha, max_passes, epochs)
+    if second["unused_quota"].get("B", 0.0) > eps:
+        raise ValueError(f"la classe B non assorbe il residuo di C ({residual:.6g}) col tetto di {max_passes} passaggi")
+    return {**second, "residual_c_to_b": residual}
+
+
+def assign_weights_derived(rows: list[SessionRow], window_s: dict, quota: dict[str, float], alpha: float, max_passes: float,
+                           epochs: float = 4.0) -> dict:
+    """Pesi dei manifest derivati (`DERIVED_RULE`): base temporale = ore campionabili; righe di pretraining non campionabili, test e benchmark
+    a peso 0. Senza sessioni escluse e senza residuo, stesse operazioni e stessi pesi di `assign_weights` (test). Ritorna l'allocazione per
+    unita' (quota, passaggi sulle ore campionabili), il residuo C->B e le ore nominali/campionabili/escluse."""
+    ok = samplable_seconds(rows, window_s)
+    units: dict[str, tuple[str, float]] = {}
+    nominal = excluded = 0.0
+    n_excluded = 0
+    for r in rows:
+        if r.split != "pretraining":
+            continue
+        nominal += r.hours
+        if not ok[session_key(r.dataset, r.subject, r.session)]:
+            excluded += r.hours
+            n_excluded += 1
+            continue
+        c, h = units.get(r.unit, (r.quota_class, 0.0))
+        units[r.unit] = (c, h + r.hours)
+    alloc = allocate_c_to_b(units, quota, alpha, max_passes, epochs)
+    for r in rows:
+        if r.split != "pretraining" or not ok[session_key(r.dataset, r.subject, r.session)]:
             r.weight = 0.0
             continue
-        r.weight = share[r.unit] * r.hours / units[r.unit][1]
-    return {"per_unit": {u: (share[u], share[u] * budget / units[u][1]) for u in units}, "residual": residual, "receivers": sorted(receivers)}
+        share, _ = alloc["per_unit"][r.unit]
+        r.weight = share * r.hours / units[r.unit][1]
+    return {"per_unit": alloc["per_unit"], "residual_c_to_b": alloc["residual_c_to_b"], "hours_nominal": nominal,
+            "hours_samplable": nominal - excluded, "hours_excluded": excluded, "sessions_excluded": n_excluded}
 
 
-def sampled_distribution(rows: list[SessionRow], epochs: float = 4.0) -> dict:
-    """La distribuzione che campiona il loader (pesi normalizzati sulle righe di pretraining, `ManifestIndex.load`): quote per unita' e per
-    classe, passaggi per unita' a `epochs` epoche, ore, soggetti e sessioni. I controlli dei manifest si fanno su questa, non sui conti
-    intermedi di `allocate`."""
+def time_shares(rows: list[SessionRow], window_s: dict) -> list[float]:
+    """Le trasformazioni del sampler sui pesi (stessa aritmetica di `ManifestIndex.load` e `pretraining_loader.time_weighted_probs`, che i test
+    confrontano): normalizzazione sulle righe di pretraining, probabilita' di estrazione = peso / durata media (0 senza finestre), di nuovo
+    normalizzate; quota nel tempo della sessione = probabilita' x durata, normalizzata. Ritorna la quota nel tempo di ogni riga di pretraining."""
     pre = [r for r in rows if r.split == "pretraining"]
-    total_w = sum(r.weight for r in pre)
-    hours = sum(r.hours for r in pre)
+    w = [r.weight for r in pre]
+    total = sum(w)
+    p = []
+    for r, x in zip(pre, w):
+        d = window_s.get(session_key(r.dataset, r.subject, r.session))
+        p.append((x / total) / d if d else 0.0)
+    sp = sum(p)
+    p = [x / sp for x in p]
+    t = [x * (window_s.get(session_key(r.dataset, r.subject, r.session)) or 0.0) for r, x in zip(pre, p)]
+    st = sum(t)
+    return [x / st for x in t]
+
+
+def sampled_distribution(rows: list[SessionRow], window_s: dict, epochs: float = 4.0, batch: int = 32) -> dict:
+    """Massa, quote per classe e per unita', passaggi attesi per unita' (sulle ore campionabili) e endpoint, DOPO le trasformazioni del
+    sampler (`time_shares`). Endpoint: passi a E epoche = floor(E x finestre per epoca / batch), con un solo floor sul totale, cosi' la dose
+    non supera l'esposizione nominale; dose effettiva = passi x batch / finestre per epoca."""
+    pre = [r for r in rows if r.split == "pretraining"]
+    t = time_shares(rows, window_s)
     units: dict[str, dict] = {}
-    for r in pre:
-        u = units.setdefault(r.unit, {"class": r.quota_class, "w": 0.0, "hours": 0.0})
-        u["w"] += r.weight / total_w
+    hours = 0.0
+    inv_window = 0.0  # finestre per secondo di tempo campionato: somma delle quote nel tempo / durata
+    for r, x in zip(pre, t):
+        d = window_s.get(session_key(r.dataset, r.subject, r.session))
+        if not d:
+            continue
+        hours += r.hours
+        inv_window += x / d
+        u = units.setdefault(r.unit, {"class": r.quota_class, "share": 0.0, "hours": 0.0})
+        u["share"] += x
         u["hours"] += r.hours
     classes: dict[str, float] = {}
     for u in units.values():
-        classes[u["class"]] = classes.get(u["class"], 0.0) + u["w"]
-    passes = {k: u["w"] * epochs * hours / u["hours"] for k, u in units.items() if u["hours"] > 0}
-    return {"classes": classes, "shares": {k: u["w"] for k, u in units.items()}, "passes": passes, "max_passes": max(passes.values()),
-            "hours": hours, "sessions": len(pre), "subjects": len({(r.dataset, r.subject) for r in pre}), "weight_sum": total_w}
+        classes[u["class"]] = classes.get(u["class"], 0.0) + u["share"]
+    passes = {k: u["share"] * epochs * hours / u["hours"] for k, u in units.items()}
+    windows_per_epoch = hours * 3600.0 * inv_window
+    steps = math.floor(epochs * windows_per_epoch / batch)
+    return {"mass": sum(t), "classes": dict(sorted(classes.items())), "shares": {k: units[k]["share"] for k in sorted(units)},
+            "passes": {k: passes[k] for k in sorted(passes)}, "max_passes": max(passes.values()), "hours_samplable": hours,
+            "mean_window_s": 1.0 / inv_window, "windows_per_epoch": windows_per_epoch, "batch": batch, "epochs": epochs,
+            "steps_at_epochs": steps, "effective_epochs": steps * batch / windows_per_epoch,
+            "sessions": len(pre), "subjects": len({(r.dataset, r.subject) for r in pre})}
 
 
-def nested_manifest(doc: dict, fraction: str, source_sha256: str, code_commit: str = "", source_content_hash: str | None = None) -> dict:
-    """Il manifest annidato di `fraction` dal manifest congelato `doc` (D16): le sessioni di pretraining dei soggetti del sottoinsieme
-    (`nested` della riga, dagli split firmati), pesate con `assign_weights_nested`; test e benchmark invariati (peso 0); le altre sessioni di
-    pretraining fuori. Parametri del manifest d'origine piu' frazione, origine, regola e residuo; hash come `manifest_hash`."""
-    if fraction not in NESTED_FRACTIONS:
-        raise ValueError(f"frazione {fraction!r}: una di {NESTED_FRACTIONS}")
+def derived_manifest(doc: dict, fraction: str, window_s: dict, inputs: dict, code_commit: str = "") -> dict:
+    """Il manifest derivato di `fraction` (D16; "1" = corpus intero) dal manifest congelato `doc`: sessioni di pretraining dei soggetti del
+    sottoinsieme firmato (`nested` della riga; tutte per "1"), pesate con `assign_weights_derived`; test e benchmark invariati (peso 0); le
+    altre sessioni di pretraining fuori. `inputs`: provenienza (SHA del genitore, hash dichiarato e di contenuto, window_s, configurazione
+    delle finestre). Le verifiche di massa, quote e tetto si fanno sulla distribuzione campionata (`sampled_distribution`)."""
+    if fraction not in DERIVED_FRACTIONS:
+        raise ValueError(f"frazione {fraction!r}: una di {DERIVED_FRACTIONS}")
     if doc["params"].get("nested"):
-        raise ValueError("il manifest d'origine e' gia' annidato")
+        raise ValueError("il manifest d'origine e' gia' derivato")
     rows = [SessionRow(**dict(zip(doc["columns"], r))) for r in doc["rows"]]
-    keep = sort_rows([r for r in rows if r.split != "pretraining" or fraction in r.nested])
+    keep = sort_rows([r for r in rows if r.split != "pretraining" or fraction == "1" or fraction in r.nested])
     p = doc["params"]
-    alloc = assign_weights_nested(keep, p["quota"], p["alpha"], p["max_passes"], p.get("epochs", 4.0))
-    params = {**p, "nested": fraction, "nested_rule": NESTED_RULE,
-              "nested_residual": {"per_class": alloc["residual"], "receivers": alloc["receivers"]},
-              "derived_from": {"file_sha256": source_sha256, "hash": doc.get("hash"), "content_hash": source_content_hash,
-                               "version": p.get("version"), "revision": p.get("revision", {}).get("version")}}
-    dist = sampled_distribution(keep, p.get("epochs", 4.0))
-    if dist["max_passes"] > p["max_passes"] * (1 + 1e-9):
-        raise ValueError(f"frazione {fraction}: {dist['max_passes']:.6f} passaggi nella distribuzione campionata, oltre il tetto {p['max_passes']}")
-    summary = {"sampled": {"classes": dist["classes"], "max_passes": dist["max_passes"], "hours": dist["hours"], "sessions": dist["sessions"],
-                           "subjects": dist["subjects"], "weight_sum": dist["weight_sum"]},
-               "per_unit": {u: {"share": dist["shares"][u], "passes": dist["passes"][u]} for u in sorted(dist["shares"])}}
+    out = assign_weights_derived(keep, window_s, p["quota"], p["alpha"], p["max_passes"], p.get("epochs", 4.0))
+    dist = sampled_distribution(keep, window_s, p.get("epochs", 4.0))
+    eps = 1e-9
+    weights = [r.weight for r in keep]
+    if not all(math.isfinite(w) and w >= 0 for w in weights):
+        raise ValueError(f"frazione {fraction}: pesi non finiti o negativi")
+    if abs(dist["mass"] - 1.0) > eps or dist["max_passes"] > p["max_passes"] * (1 + eps):
+        raise ValueError(f"frazione {fraction}: massa {dist['mass']} o passaggi {dist['max_passes']:.6f} fuori dai limiti dopo il sampler")
+    if abs(dist["classes"].get("A", 0.0) - p["quota"]["A"]) > 1e-9:
+        raise ValueError(f"frazione {fraction}: quota di A {dist['classes'].get('A')} dopo il sampler, attesa {p['quota']['A']}")
+    params = {**p, "nested": fraction, "derived_rule": DERIVED_RULE, "derived_inputs": inputs,
+              "derived_hours": {k: out[k] for k in ("hours_nominal", "hours_samplable", "hours_excluded", "sessions_excluded")},
+              "residual_c_to_b": out["residual_c_to_b"],
+              "virtual_montages": "D6a: le quote sono della classe d'origine; i montaggi virtuali delle griglie HD restano in classe C"}
+    summary = {"sampled": {k: dist[k] for k in ("mass", "classes", "max_passes", "hours_samplable", "mean_window_s", "windows_per_epoch",
+                                                 "sessions", "subjects")},
+               "per_unit": {u: {"share": dist["shares"][u], "passes": dist["passes"][u]} for u in dist["shares"]}}
     return {"params": params, "hash": manifest_hash(params, keep), "code_commit": code_commit, "created_s": None, "summary": summary,
             "columns": list(asdict(keep[0]).keys()) if keep else [], "rows": [list(asdict(r).values()) for r in keep]}

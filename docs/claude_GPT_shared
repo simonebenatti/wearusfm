@@ -1485,6 +1485,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   Non richiesto di riscrivere firma dati/resume, guardia nested o builder. Planner/calendario/evaluation restano i successivi taskClaude;
   coseni e sonde intermedie restano GPT come nell'accordo. Nessun merge di codice, test, job o push eseguito qui.
 
+### 2026-10-15 | Claude | Manifest derivati allineati all'accordo (codice) | Base: e72dd1e
+
+- Da `95f441b`, conservati costruttore, report, guardie e test; allineati all'accordo (`docs/accordo_operativo_finestra1_20261015.md`):
+  `pretraining_manifest.samplable_seconds` (chiave mancante = errore di input; null = nessuna finestra, peso 0; zero, negativo, non finito,
+  non numerico = errore), `allocate_c_to_b` (A e B alla loro quota o errore; il solo residuo di C a B, riallocato con gli stessi pesi e
+  tetto; B che non lo assorbe = errore; nessun fattore comune), `assign_weights_derived` (base sulle ore campionabili, ore nominali /
+  campionabili / escluse distinte; senza esclusioni ne' residuo = `assign_weights` bit per bit, test), `time_shares` e
+  `sampled_distribution` (le trasformazioni del sampler, verificate contro `ManifestIndex.load` + `time_weighted_probs`; endpoint con un
+  solo floor sul totale e dose effettiva), `derived_manifest` (anche il derivato al 100%, frazione "1"; v1.1 intatto). Costruttore: ingressi
+  manifest + window_s, configurazione delle finestre del training verificata uguale a quella di window_s, confronto del 100% col genitore
+  spiegato dai numeri. Loader e `--nested` accettano "1". Test: `test_nested_manifests.py` (13: durate, pesi, capacita' insufficiente di A,
+  di B e del residuo, massa, sampler = loader, floor, provenienza, ripresa rifiutata con un altro manifest della stessa frazione, launcher)
+  + loader, costruttore del manifest, ricetta di ripresa: 48 PASS. Rapporti finali al commit successivo, dal codice pulito.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

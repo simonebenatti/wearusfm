@@ -1,16 +1,12 @@
-"""Rapporto sui manifest dell'asse dei soggetti (D16): il manifest completo e i manifest annidati come file (`scripts/build_nested_manifests.py`).
-Per ogni file, sulla distribuzione che campiona davvero il loader (pesi normalizzati sulle righe di pretraining, `ManifestIndex.load`):
-soggetti, sessioni e ore; quote per classe e per unita'; passaggi per unita' a E epoche; passi per epoca dal corpus. Verifiche: frazione
-dichiarata, sottoinsiemi annidati per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100: nessuna sessione che nel completo e' di test o
-benchmark), righe di test e benchmark identiche al completo, ogni soggetto con tutte le sue sessioni di pretraining o con nessuna, passaggi
-entro il tetto, provenienza (SHA dei file e del manifest d'origine).
+"""Rapporto sui manifest dell'asse dei soggetti (D16): il genitore (v1.1) e i derivati come file (`scripts/build_nested_manifests.py`).
+Per ogni file, sulla distribuzione che campiona davvero il loader (`pretraining_manifest.sampled_distribution`: normalizzazione dei pesi,
+probabilita' peso / durata delle finestre, quote nel tempo): massa, quote per classe e per unita', passaggi attesi per unita' a E epoche, ore
+campionabili ed escluse, endpoint a E epoche col floor sul totale e dose effettiva. Verifiche sui derivati: frazione dichiarata, pesi finiti e
+non negativi, massa 1, quota di A, tetto; annidamento per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100); il derivato al 100% con le stesse
+sessioni di pretraining del genitore; righe di test e benchmark identiche al genitore (test per soggetto o per sessione, come emg2pose);
+ogni soggetto con tutte le sue sessioni di pretraining o con nessuna; provenienza (SHA del genitore e di window_s).
 
-Passi per epoca: un'epoca consuma le ore di pretraining del manifest (D_t, v10 §10.3); il loader estrae le sessioni con probabilita'
-proporzionale a peso / durata media delle finestre della sessione (`window_seconds`), quindi il tempo consumato da ogni sessione e'
-proporzionale al peso e le finestre per epoca sono ore x 3600 x somma_i(peso_i / durata_i). Accanto, la vecchia stima con finestre da 4 s.
-
-Uso: python scripts/nested_manifest_report.py window_seconds.json manifest_completo.json.gz [manifest_annidati...] [--batch 32] [--epochs 4]
-     [--json uscita.json]
+Uso: python scripts/nested_manifest_report.py window_seconds.json genitore.json.gz derivati... [--batch 32] [--epochs 4] [--json uscita.json]
 """
 
 from __future__ import annotations
@@ -19,122 +15,124 @@ import argparse
 import gzip
 import hashlib
 import json
+import math
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
-def _key(r: dict) -> str:
-    return f"{r['dataset']}/{r['subject']}/{r['session']}"
+from wearusfm.data import pretraining_manifest as M  # noqa: E402
+
+ORDER = M.DERIVED_FRACTIONS
 
 
 def _load(path: Path) -> dict:
     raw = path.read_bytes()
-    return {"doc": json.loads(gzip.decompress(raw) if path.suffix == ".gz" else raw), "sha256": hashlib.sha256(raw).hexdigest()}
+    doc = json.loads(gzip.decompress(raw) if path.suffix == ".gz" else raw)
+    rows = [M.SessionRow(**dict(zip(doc["columns"], r))) for r in doc["rows"]]
+    return {"doc": doc, "rows": rows, "sha256": hashlib.sha256(raw).hexdigest(), "path": str(path)}
 
 
-def stats(doc: dict, ws: dict, batch: int, epochs: float) -> dict:
-    rows = [dict(zip(doc["columns"], r)) for r in doc["rows"]]
-    pre = [r for r in rows if r["split"] == "pretraining"]
-    for r in pre:
-        r["hours"] = r["n_samples"] / r["fs_hz"] / 3600.0
-    w = sum(r["weight"] for r in pre)
-    hours = sum(r["hours"] for r in pre)
-    units: dict[str, dict] = {}
-    for r in pre:
-        u = units.setdefault(r["unit"], {"class": r["quota_class"], "subjects": set(), "sessions": 0, "hours": 0.0, "share": 0.0})
-        u["subjects"].add(r["subject"])
-        u["sessions"] += 1
-        u["hours"] += r["hours"]
-        u["share"] += r["weight"] / w
-    classes: dict[str, float] = {}
-    per_unit = {}
-    for name, u in sorted(units.items()):
-        classes[u["class"]] = classes.get(u["class"], 0.0) + u["share"]
-        per_unit[name] = {"class": u["class"], "subjects": len(u["subjects"]), "sessions": u["sessions"], "hours": round(u["hours"], 3),
-                          "share": u["share"], "passes_at_E": u["share"] * epochs * hours / u["hours"]}
-    weighted = [r for r in pre if r["weight"] > 0]
-    missing = sum(1 for r in weighted if not ws.get(_key(r)))
-    windows_per_hour = sum(r["weight"] / w / ws[_key(r)] for r in weighted if ws.get(_key(r))) * 3600.0
-    steps = hours * windows_per_hour / batch
-    return {"nested": doc.get("params", {}).get("nested"), "subjects": len({(r["dataset"], r["subject"]) for r in pre}), "sessions": len(pre),
-            "hours": hours, "classes": dict(sorted(classes.items())), "max_passes_at_E": max(u["passes_at_E"] for u in per_unit.values()),
-            "steps_per_epoch": round(steps), "steps_at_E": round(epochs * steps), "steps_per_epoch_4s_windows": round(hours * 3600 / 4 / batch),
-            "mean_window_s": 3600 / windows_per_hour, "sessions_without_window_seconds": missing, "units": per_unit,
-            "_subjects": {(r["dataset"], r["subject"]) for r in pre}, "_keys": {_key(r) for r in pre},
-            "_other_rows": sorted(json.dumps(r, sort_keys=True) for r in rows if r["split"] != "pretraining")}
+def _keys(rows) -> set:
+    return {M.session_key(r.dataset, r.subject, r.session) for r in rows if r.split == "pretraining"}
 
 
-def report(window_seconds: Path, manifests: list[Path], batch: int = 32, epochs: float = 4.0) -> dict:
-    ws = json.loads(window_seconds.read_text())["window_s"]
-    loaded = {str(p): _load(p) for p in manifests}
-    problems, out = [], {}
-    full_rows = None
-    for path, x in loaded.items():
-        doc = x["doc"]
-        label = doc.get("params", {}).get("nested") or "1"
-        if label in out:
-            problems.append(f"due manifest per la frazione {label}")
-        s = stats(doc, ws, batch, epochs)
-        max_passes = doc["params"].get("max_passes", 8.0)
-        if s["max_passes_at_E"] > max_passes * (1 + 1e-9):
-            problems.append(f"frazione {label}: {s['max_passes_at_E']:.6f} passaggi nella distribuzione campionata, oltre il tetto {max_passes}")
-        if label == "1":
-            full_rows = [dict(zip(doc["columns"], r)) for r in doc["rows"] if r[doc["columns"].index("split")] == "pretraining"]
-        s["file"] = path
-        s["file_sha256"] = x["sha256"]
-        s["derived_from"] = doc["params"].get("derived_from")
-        out[label] = s
-    order = [f for f in ("0.125", "0.25", "0.5", "1") if f in out]
+def report(window_seconds: Path, parent: Path, derived: list[Path], batch: int = 32, epochs: float = 4.0) -> dict:
+    wraw = window_seconds.read_bytes()
+    ws = json.loads(wraw)["window_s"]
+    ws_sha = hashlib.sha256(wraw).hexdigest()
+    par = _load(parent)
+    problems = []
+    if par["doc"]["params"].get("nested"):
+        problems.append(f"{parent}: il genitore dichiara la frazione {par['doc']['params']['nested']}")
+    out = {"genitore": None}
+    files = {}
+    for path in derived:
+        x = _load(path)
+        f = x["doc"]["params"].get("nested")
+        if f not in ORDER:
+            problems.append(f"{path}: frazione dichiarata {f!r} non fra {ORDER}")
+            continue
+        if f in files:
+            problems.append(f"due derivati per la frazione {f}")
+        files[f] = x
+    order = [f for f in ORDER if f in files]
+    for label, x in [("genitore", par)] + [(f, files[f]) for f in order]:
+        d = M.sampled_distribution(x["rows"], ws, epochs, batch)
+        weights = [r.weight for r in x["rows"]]
+        info = {"file": x["path"], "file_sha256": x["sha256"], "hash": x["doc"].get("hash"), "mass": d["mass"], "classes": d["classes"],
+                "max_passes": d["max_passes"], "hours_samplable": d["hours_samplable"], "mean_window_s": d["mean_window_s"],
+                "windows_per_epoch": d["windows_per_epoch"], "steps_at_epochs": d["steps_at_epochs"], "effective_epochs": d["effective_epochs"],
+                "sessions": d["sessions"], "subjects": d["subjects"], "per_unit": {u: {"share": d["shares"][u], "passes": d["passes"][u]}
+                                                                                  for u in d["shares"]}}
+        if label != "genitore":
+            p = x["doc"]["params"]
+            info.update({"derived_hours": p.get("derived_hours"), "residual_c_to_b": p.get("residual_c_to_b")})
+            if not all(math.isfinite(w) and w >= 0 for w in weights):
+                problems.append(f"frazione {label}: pesi non finiti o negativi")
+            if abs(d["mass"] - 1) > 1e-9:
+                problems.append(f"frazione {label}: massa {d['mass']} dopo il sampler")
+            if abs(d["classes"].get("A", 0.0) - p["quota"]["A"]) > 1e-9:
+                problems.append(f"frazione {label}: quota di A {d['classes'].get('A')} dopo il sampler")
+            if d["max_passes"] > p["max_passes"] * (1 + 1e-9):
+                problems.append(f"frazione {label}: {d['max_passes']:.6f} passaggi dopo il sampler, oltre il tetto {p['max_passes']}")
+            inp = p.get("derived_inputs", {})
+            if inp.get("parent_file_sha256") != par["sha256"]:
+                problems.append(f"frazione {label}: costruita da {inp.get('parent_file_sha256')}, non dal genitore dato ({par['sha256']})")
+            if inp.get("window_seconds_sha256") != ws_sha:
+                problems.append(f"frazione {label}: window_s {inp.get('window_seconds_sha256')}, non quello dato ({ws_sha})")
+            others = sorted(json.dumps(r.__dict__, sort_keys=True, default=list) for r in x["rows"] if r.split != "pretraining")
+            if others != sorted(json.dumps(r.__dict__, sort_keys=True, default=list) for r in par["rows"] if r.split != "pretraining"):
+                problems.append(f"frazione {label}: righe di test/benchmark diverse dal genitore")
+        out[label] = info
+    keys = {f: _keys(files[f]["rows"]) for f in order}
+    subjects = {f: {(r.dataset, r.subject) for r in files[f]["rows"] if r.split == "pretraining"} for f in order}
     for a, b in zip(order, order[1:]):
-        if not out[a]["_subjects"] <= out[b]["_subjects"] or not out[a]["_keys"] <= out[b]["_keys"]:
+        if not subjects[a] <= subjects[b] or not keys[a] <= keys[b]:
             problems.append(f"il sottoinsieme {a} non e' contenuto in {b}")
-    if full_rows is not None:  # test e benchmark sono per soggetto o per sessione (emg2pose: test ufficiale per sessione, 02/10/2026): il
-        # controllo e' per sessione, cioe' il contenimento delle chiavi di pretraining in quelle del manifest completo (sopra) e righe di
-        # test/benchmark identiche a quelle del completo
-        sha_full = next(x["sha256"] for x in loaded.values() if not x["doc"]["params"].get("nested"))
-        by_subject: dict[tuple, set] = {}
-        for r in full_rows:
-            by_subject.setdefault((r["dataset"], r["subject"]), set()).add(_key(r))
-        for f in order[:-1]:
-            partial = sorted(f"{d}/{s}" for d, s in out[f]["_subjects"] if not by_subject.get((d, s), set()) <= out[f]["_keys"])
-            if partial:
-                problems.append(f"frazione {f}: soggetti con solo una parte delle sessioni: {partial[:3]}")
-            if out[f]["_other_rows"] != out["1"]["_other_rows"]:
-                problems.append(f"frazione {f}: righe di test/benchmark diverse da quelle del manifest completo")
-            origin = (out[f]["derived_from"] or {}).get("file_sha256")
-            if origin != sha_full:
-                problems.append(f"frazione {f}: costruita da {origin}, non dal manifest completo dato ({sha_full})")
-    for s in out.values():
-        for k in [k for k in s if k.startswith("_")]:
-            del s[k]
-    return {"window_seconds": {"path": str(window_seconds), "sha256": hashlib.sha256(window_seconds.read_bytes()).hexdigest()},
-            "params": {"batch": batch, "epochs": epochs}, "fractions": {f: out[f] for f in order}, "problems": problems}
+    pkeys = _keys(par["rows"])
+    if "1" in keys and keys["1"] != pkeys:
+        problems.append("il derivato al 100% non ha le stesse sessioni di pretraining del genitore")
+    by_subject: dict[tuple, set] = {}
+    for r in par["rows"]:
+        if r.split == "pretraining":
+            by_subject.setdefault((r.dataset, r.subject), set()).add(M.session_key(r.dataset, r.subject, r.session))
+    for f in order:
+        partial = sorted(f"{d}/{s}" for d, s in subjects[f] if not by_subject.get((d, s), set()) <= keys[f])
+        if partial:
+            problems.append(f"frazione {f}: soggetti con solo una parte delle sessioni: {partial[:3]}")
+        if not keys[f] <= pkeys:
+            problems.append(f"frazione {f}: sessioni di pretraining che nel genitore non lo sono")
+    return {"window_seconds": {"path": str(window_seconds), "sha256": ws_sha}, "params": {"batch": batch, "epochs": epochs},
+            "manifests": out, "problems": problems}
 
 
 def table(rep: dict) -> str:
-    lines = ["| Frazione | Soggetti | Sessioni | Ore | Classi A / B / C | Passaggi max a E | Passi per epoca | (finestre da 4 s) |",
+    lines = ["| Manifest | Soggetti | Sessioni | Ore campionabili | Classi A / B / C | Passaggi max | Passi a E (floor) | Epoche effettive |",
              "|---|---|---|---|---|---|---|---|"]
-    for f, r in rep["fractions"].items():
-        cls = " / ".join(f"{100 * r['classes'][k]:.2f}" for k in ("A", "B", "C") if k in r["classes"])
-        lines.append(f"| {f} | {r['subjects']} | {r['sessions']} | {r['hours']:.2f} | {cls} | {r['max_passes_at_E']:.6f} | {r['steps_per_epoch']} | "
-                     f"{r['steps_per_epoch_4s_windows']} |")
+    for f, r in rep["manifests"].items():
+        cls = " / ".join(f"{100 * r['classes'][k]:.4f}" for k in ("A", "B", "C") if k in r["classes"])
+        lines.append(f"| {f} | {r['subjects']} | {r['sessions']} | {r['hours_samplable']:.2f} | {cls} | {r['max_passes']:.6f} | "
+                     f"{r['steps_at_epochs']} | {r['effective_epochs']:.6f} |")
     return "\n".join(lines)
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("window_seconds", type=Path)
-    ap.add_argument("manifests", type=Path, nargs="+")
+    ap.add_argument("parent", type=Path)
+    ap.add_argument("derived", type=Path, nargs="+")
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--epochs", type=float, default=4.0)
     ap.add_argument("--json", type=Path)
     args = ap.parse_args(argv)
-    rep = report(args.window_seconds, args.manifests, args.batch, args.epochs)
+    rep = report(args.window_seconds, args.parent, args.derived, args.batch, args.epochs)
     print(table(rep))
     for p in rep["problems"]:
         print("PROBLEMA:", p)
     if args.json:
-        args.json.write_text(json.dumps(rep, indent=1))
+        args.json.write_text(json.dumps(rep, indent=1, default=str))
     return 1 if rep["problems"] else 0
 
 

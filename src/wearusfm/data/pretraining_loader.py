@@ -118,7 +118,7 @@ class ManifestIndex:
         cols = doc["columns"]
         rows = [dict(zip(cols, r)) for r in doc["rows"]]
         rows = [r for r in rows if r["split"] == "pretraining"]
-        if declared is not None and any(declared not in r["nested"] for r in rows):
+        if declared not in (None, "1") and any(declared not in r["nested"] for r in rows):  # "1": il derivato al 100%, tutte le sessioni
             raise ValueError(f"{manifest_path}: righe di pretraining fuori dal sottoinsieme {declared} che il manifest dichiara")
         w = np.asarray([r["weight"] for r in rows], dtype=np.float64)
         if not len(rows) or w.sum() <= 0:

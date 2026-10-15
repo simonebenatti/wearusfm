@@ -131,9 +131,9 @@ class RunConfig:
     # confrontati bit per bit con quelli preparati di nuovo dal batch sulla CPU; costa una copia all'indietro per passo
     prefetch: bool = False
     prefetch_audit: bool = False
-    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' = la frazione che il manifest deve dichiarare. Per una
-    # frazione si allena sul suo manifest annidato (`scripts/build_nested_manifests.py`: soggetti del sottoinsieme firmato in
-    # `splits/v1/splits_v1.json`, pesi rifatti con D9 sul sottoinsieme); None = manifest completo. Guardia in due sensi nel loader
+    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' / '1' = la frazione che il manifest derivato deve dichiarare
+    # (`scripts/build_nested_manifests.py`: soggetti del sottoinsieme firmato in `splits/v1/splits_v1.json`, base sulle ore campionabili,
+    # D9 sul sottoinsieme; '1' = il derivato al 100%); None = un manifest non derivato (v1.1). Guardia in due sensi nel loader
     nested: str | None = None
 
 
@@ -235,7 +235,7 @@ def config_to_dict(cfg: RunConfig) -> dict:
 
 # --- dati ----------------------------------------------------------------------------------------------------------------------------
 
-NESTED_FRACTIONS = ("0.125", "0.25", "0.5")  # D16
+NESTED_FRACTIONS = ("0.125", "0.25", "0.5", "1")  # D16; "1" = il derivato al 100% (accordo del 15/10/2026)
 
 
 def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None, nested: str | None = None) -> L.ManifestIndex:
