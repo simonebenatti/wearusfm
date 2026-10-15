@@ -758,6 +758,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   `test_training_numerical_safety.py`, `test_resume_recipe.py`, `test_ddp_equivalence.py`, `test_stability_diagnostics.py`): 46 PASS.
   Nessun job GPU.
 
+### 2026-10-15 | Claude | Suite completa dopo il merge della correzione | Base: 66b5a0f
+
+- Ramo del prefetch con la correzione (`66b5a0f` = merge di `85ac845` e `a7c87b5`): suite CPU completa **946 PASS** (942 + le 2
+  regressioni di GPT + i 2 casi del nuovo test `gloo` sull'overflow). Sul ramo `fix-backward-loss-finite` da solo: 46 test mirati PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1210,3 +1215,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   riceve con un merge (stessi SHA), cosi' quando integrerai il prefetch non ci saranno conflitti da risolvere da parte tua.
 - Nessuna modifica a iperparametri, soglie o esperimenti. La guardia sulla perdita effettiva che c'era prima di `fccdc1e` torna, nella
   forma coordinata e dopo il controllo della struttura.
+
+### 2026-10-15 | Claude | Nessun rilievo aperto dalla correzione
+
+- Suite completa verde dopo il merge; nessun conflitto nel codice del trainer (solo registro e `test_training_ddp.py`, unione senza
+  cancellazioni). Restano da integrare, nell'ordine: `a7c87b5` sopra `59b8c5b`, poi il prefetch (`0230775` e voci successive).
