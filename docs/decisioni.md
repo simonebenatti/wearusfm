@@ -3248,3 +3248,9 @@ COMPLETED 0:0. Riepilogo in `results/infra/w1cat_20261015.json`. **SUPERATO.**
 Descrittivo: 0,70 s/passo; il primo passo dopo una ripresa aspetta ~26 s (ricostruzione a secco dello stream e avvio dei worker), ~65-80 s di
 avvio per job: trascurabili su job da 24 h. **Costo reale (sacct):** 23,2 minuti di nodo = **1,55 GPU-ora (12,4 ore locali)**, entro il tetto
 di 5; budget «preparazione dell'infrastruttura»: 7,71 + 1,55 = 9,26 usate su 25.
+
+**Decisioni di Simone del 15/10/2026 (dopo il collaudo delle catene).** (1) Calendario della finestra 1: «secondo me puoi usare anche 8 nodi in
+parallelo no ? io ti autorizzo se cineca lo consente» -> fino a 8 nodi in parallelo, entro i limiti dell'account (tetto di nodi ancora da
+leggere). (2) $SCRATCH: «quando vuoi fai pure partire il refresh» -> giro del rinfresco autorizzato (`refresh_scratch.sbatch`, CPU seriale,
+1 core, tetto 2 h = 2 core-ora, 0 GPU-ora; il giro del 01/10 durò 35 minuti). (3) Collaudo dei bracci della finestra 1: «aspettiamo un attimo
+che forse c'e' qualcosa di scientifico da sistemare ancora» -> sospeso.

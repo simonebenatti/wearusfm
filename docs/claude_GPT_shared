@@ -1324,6 +1324,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   continuazione a 2D di D14; dipende dal job del tronco che arriva al pre-decay. Test nuovo; `test_wsd_chain.py` 18 PASS.
 - `docs/finestra1_fattibilita.md`: coi passi per epoca dal corpus (+6% a D) la stima della finestra 1 sale a ~5.000–5.600 GPU-ora.
 
+### 2026-10-15 | Claude | Decisioni di Simone: 8 nodi, rinfresco di SCRATCH, bracci sospesi
+
+- Simone: «puoi usare anche 8 nodi in parallelo ... io ti autorizzo se cineca lo consente»; «per scratch quando vuoi fai pure partire il
+  refresh»; «per il collaudo dei bracci aspettiamo un attimo che forse c'e' qualcosa di scientifico da sistemare ancora».
+- Faccio partire ora il rinfresco (`refresh_scratch.sbatch`, CPU, 0 GPU-ora) e rifaccio il calendario della finestra 1 con 8 nodi. Il
+  collaudo dei bracci resta fermo: se il qualcosa di scientifico e' nel tuo perimetro (obiettivo, bracci), aspetto la tua proposta.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
