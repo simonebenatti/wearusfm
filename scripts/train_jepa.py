@@ -34,6 +34,8 @@ def main(argv=None) -> int:
     ap.add_argument("--num-workers", type=int, default=0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--datasets", default=None, help="elenco separato da virgole, o 'all'; default: quello del preset (sanity: emg2qwerty)")
+    ap.add_argument("--nested", choices=["0.125", "0.25", "0.5"], default=None,
+                    help="asse dei soggetti (D16): solo i soggetti del manifest annidato di quella frazione; default tutto il pretraining")
     ap.add_argument("--rvq-codes", type=Path, default=None,
                     help="radice dei codici RVQ precalcolati (scripts/precompute_rvq_codes.py): accende l'ancora RVQ (D5b); senza, l'ancora e' spenta")
     ap.add_argument("--window1-rules", action="store_true",
@@ -122,7 +124,7 @@ def main(argv=None) -> int:
         cfg = replace(cfg, seed=args.seed)
     cfg = replace(cfg, keep_grad_every=args.keep_grad_every, fixed_eval_every=args.fixed_eval_every,
                   fixed_eval_batches=args.fixed_eval_batches, log_batch_origin=args.log_batch_origin, prefetch=args.prefetch,
-                  prefetch_audit=args.prefetch_audit)
+                  prefetch_audit=args.prefetch_audit, nested=args.nested)
     if args.keep_calibration is not None:
         cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
     elif args.keep_weight != 0:

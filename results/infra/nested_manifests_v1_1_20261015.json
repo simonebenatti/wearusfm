@@ -1,0 +1,874 @@
+{
+ "inputs": {
+  "manifest": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/manifest_v1_1.json.gz",
+  "manifest_file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+  "manifest_hash": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+  "manifest_version": "manifest-v1",
+  "revision": "v1.1",
+  "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+  "window_seconds": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/window_seconds_59425316.json",
+  "window_seconds_sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+  "window_seconds_manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz"
+ },
+ "params": {
+  "batch": 32,
+  "epochs": 4.0,
+  "quota": {
+   "A": 0.2,
+   "B": 0.75,
+   "C": 0.05
+  },
+  "max_passes": 8.0
+ },
+ "fractions": {
+  "0.125": {
+   "subjects": 78,
+   "sessions": 2519,
+   "hours": 113.62,
+   "time_patches_per_epoch": 16361305,
+   "steps_per_epoch": 3412,
+   "steps_at_E": 13647,
+   "steps_per_epoch_4s_windows": 3196,
+   "mean_window_s": 3.7466,
+   "sessions_without_window_seconds": 0,
+   "classes": {
+    "A": {
+     "share": 0.20391,
+     "share_full": 0.20001,
+     "hours": 12.96
+    },
+    "B": {
+     "share": 0.74133,
+     "share_full": 0.75,
+     "hours": 97.38
+    },
+    "C": {
+     "share": 0.05474,
+     "share_full": 0.05,
+     "hours": 3.28
+    }
+   },
+   "max_share_shift": 0.01837,
+   "max_passes_at_E": 7.821,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.75,
+     "hours_fraction_of_full": 0.1778,
+     "share": 0.04358,
+     "share_full": 0.03463,
+     "passes_at_E": 7.193
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 0.04,
+     "hours_fraction_of_full": 0.1429,
+     "share": 0.00076,
+     "share_full": 0.00076,
+     "passes_at_E": 7.821
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 1,
+     "sessions": 5,
+     "hours": 1.21,
+     "hours_fraction_of_full": 0.2497,
+     "share": 0.02077,
+     "share_full": 0.01174,
+     "passes_at_E": 7.821
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 20,
+     "sessions": 2252,
+     "hours": 37.61,
+     "hours_fraction_of_full": 0.1307,
+     "share": 0.22781,
+     "share_full": 0.24618,
+     "passes_at_E": 2.753
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 13,
+     "sessions": 145,
+     "hours": 43.98,
+     "hours_fraction_of_full": 0.1387,
+     "share": 0.25376,
+     "share_full": 0.25842,
+     "passes_at_E": 2.622
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 15,
+     "hours": 2.48,
+     "hours_fraction_of_full": 0.1471,
+     "share": 0.04266,
+     "share_full": 0.04097,
+     "passes_at_E": 7.821
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 24,
+     "hours": 2.03,
+     "hours_fraction_of_full": 0.1251,
+     "share": 0.03321,
+     "share_full": 0.0375,
+     "passes_at_E": 7.454
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 6.22,
+     "hours_fraction_of_full": 0.1379,
+     "share": 0.09512,
+     "share_full": 0.09744,
+     "passes_at_E": 6.955
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 2.88,
+     "hours_fraction_of_full": 0.1248,
+     "share": 0.03733,
+     "share_full": 0.04226,
+     "passes_at_E": 5.895
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 1,
+     "sessions": 1,
+     "hours": 0.55,
+     "hours_fraction_of_full": 0.1009,
+     "share": 0.00953,
+     "share_full": 0.01335,
+     "passes_at_E": 7.821
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.52,
+     "hours_fraction_of_full": 0.2,
+     "share": 0.02617,
+     "share_full": 0.01848,
+     "passes_at_E": 7.821
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.81,
+     "hours_fraction_of_full": 0.2047,
+     "share": 0.03109,
+     "share_full": 0.02145,
+     "passes_at_E": 7.821
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 1,
+     "sessions": 10,
+     "hours": 1.99,
+     "hours_fraction_of_full": 0.1264,
+     "share": 0.03122,
+     "share_full": 0.03487,
+     "passes_at_E": 7.144
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 1.8,
+     "hours_fraction_of_full": 0.1348,
+     "share": 0.03071,
+     "share_full": 0.03219,
+     "passes_at_E": 7.739
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.42,
+     "hours_fraction_of_full": 0.1674,
+     "share": 0.02448,
+     "share_full": 0.02065,
+     "passes_at_E": 7.821
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 30,
+     "hours": 2.43,
+     "hours_fraction_of_full": 0.1428,
+     "share": 0.04186,
+     "share_full": 0.04139,
+     "passes_at_E": 7.821
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 1.47,
+     "hours_fraction_of_full": 0.1479,
+     "share": 0.02537,
+     "share_full": 0.02423,
+     "passes_at_E": 7.821
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 1.43,
+     "hours_fraction_of_full": 0.1475,
+     "share": 0.02455,
+     "share_full": 0.0235,
+     "passes_at_E": 7.821
+    }
+   }
+  },
+  "0.25": {
+   "subjects": 146,
+   "sessions": 4947,
+   "hours": 214.99,
+   "time_patches_per_epoch": 30958568,
+   "steps_per_epoch": 6403,
+   "steps_at_E": 25611,
+   "steps_per_epoch_4s_windows": 6047,
+   "mean_window_s": 3.7775,
+   "sessions_without_window_seconds": 0,
+   "classes": {
+    "A": {
+     "share": 0.20414,
+     "share_full": 0.20001,
+     "hours": 24.1
+    },
+    "B": {
+     "share": 0.74786,
+     "share_full": 0.75,
+     "hours": 185.55
+    },
+    "C": {
+     "share": 0.04799,
+     "share_full": 0.05,
+     "hours": 5.35
+    }
+   },
+   "max_share_shift": 0.0053,
+   "max_passes_at_E": 8.001,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 4.42,
+     "hours_fraction_of_full": 0.2855,
+     "share": 0.03784,
+     "share_full": 0.03463,
+     "passes_at_E": 7.359
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 0.09,
+     "hours_fraction_of_full": 0.2857,
+     "share": 0.00083,
+     "share_full": 0.00076,
+     "passes_at_E": 8.001
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 1,
+     "sessions": 5,
+     "hours": 1.21,
+     "hours_fraction_of_full": 0.2497,
+     "share": 0.01123,
+     "share_full": 0.01174,
+     "passes_at_E": 8.001
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 40,
+     "sessions": 4458,
+     "hours": 75.31,
+     "hours_fraction_of_full": 0.2617,
+     "share": 0.24662,
+     "share_full": 0.24618,
+     "passes_at_E": 2.816
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 25,
+     "sessions": 266,
+     "hours": 82.93,
+     "hours_fraction_of_full": 0.2615,
+     "share": 0.25869,
+     "share_full": 0.25842,
+     "passes_at_E": 2.683
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 27,
+     "hours": 4.46,
+     "hours_fraction_of_full": 0.2647,
+     "share": 0.04152,
+     "share_full": 0.04097,
+     "passes_at_E": 8.001
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 48,
+     "hours": 4.05,
+     "hours_fraction_of_full": 0.2503,
+     "share": 0.03593,
+     "share_full": 0.0375,
+     "passes_at_E": 7.625
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 9,
+     "hours": 11.14,
+     "hours_fraction_of_full": 0.247,
+     "share": 0.09214,
+     "share_full": 0.09744,
+     "passes_at_E": 7.115
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 8,
+     "hours": 5.77,
+     "hours_fraction_of_full": 0.2501,
+     "share": 0.04046,
+     "share_full": 0.04226,
+     "passes_at_E": 6.03
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.28,
+     "hours_fraction_of_full": 0.2329,
+     "share": 0.0119,
+     "share_full": 0.01335,
+     "passes_at_E": 8.001
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.28,
+     "hours_fraction_of_full": 0.3001,
+     "share": 0.02122,
+     "share_full": 0.01848,
+     "passes_at_E": 8.001
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.6,
+     "hours_fraction_of_full": 0.2942,
+     "share": 0.02415,
+     "share_full": 0.02145,
+     "passes_at_E": 8.001
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 20,
+     "hours": 3.97,
+     "hours_fraction_of_full": 0.2526,
+     "share": 0.03371,
+     "share_full": 0.03487,
+     "passes_at_E": 7.308
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 6,
+     "sessions": 6,
+     "hours": 3.61,
+     "hours_fraction_of_full": 0.2696,
+     "share": 0.03321,
+     "share_full": 0.03219,
+     "passes_at_E": 7.917
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.14,
+     "hours_fraction_of_full": 0.2518,
+     "share": 0.0199,
+     "share_full": 0.02065,
+     "passes_at_E": 8.001
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 54,
+     "hours": 4.38,
+     "hours_fraction_of_full": 0.2571,
+     "share": 0.04074,
+     "share_full": 0.04139,
+     "passes_at_E": 8.001
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 13,
+     "sessions": 13,
+     "hours": 2.77,
+     "hours_fraction_of_full": 0.2782,
+     "share": 0.0258,
+     "share_full": 0.02423,
+     "passes_at_E": 8.001
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 13,
+     "sessions": 13,
+     "hours": 2.59,
+     "hours_fraction_of_full": 0.2679,
+     "share": 0.0241,
+     "share_full": 0.0235,
+     "passes_at_E": 8.001
+    }
+   }
+  },
+  "0.5": {
+   "subjects": 284,
+   "sessions": 9493,
+   "hours": 419.33,
+   "time_patches_per_epoch": 60383259,
+   "steps_per_epoch": 12478,
+   "steps_at_E": 49912,
+   "steps_per_epoch_4s_windows": 11794,
+   "mean_window_s": 3.7806,
+   "sessions_without_window_seconds": 0,
+   "classes": {
+    "A": {
+     "share": 0.19822,
+     "share_full": 0.20001,
+     "hours": 45.61
+    },
+    "B": {
+     "share": 0.75256,
+     "share_full": 0.75,
+     "hours": 363.05
+    },
+    "C": {
+     "share": 0.04922,
+     "share_full": 0.05,
+     "hours": 10.67
+    }
+   },
+   "max_share_shift": 0.00707,
+   "max_passes_at_E": 8.031,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 9,
+     "sessions": 9,
+     "hours": 8.02,
+     "hours_fraction_of_full": 0.518,
+     "share": 0.03534,
+     "share_full": 0.03463,
+     "passes_at_E": 7.386
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 0.16,
+     "hours_fraction_of_full": 0.5,
+     "share": 0.00074,
+     "share_full": 0.00076,
+     "passes_at_E": 8.031
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 10,
+     "hours": 2.42,
+     "hours_fraction_of_full": 0.4998,
+     "share": 0.01156,
+     "share_full": 0.01174,
+     "passes_at_E": 8.031
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 79,
+     "sessions": 8536,
+     "hours": 144.18,
+     "hours_fraction_of_full": 0.501,
+     "share": 0.24297,
+     "share_full": 0.24618,
+     "passes_at_E": 2.827
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 50,
+     "sessions": 521,
+     "hours": 165.38,
+     "hours_fraction_of_full": 0.5215,
+     "share": 0.26549,
+     "share_full": 0.25842,
+     "passes_at_E": 2.693
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 17,
+     "sessions": 51,
+     "hours": 8.43,
+     "hours_fraction_of_full": 0.5,
+     "share": 0.04036,
+     "share_full": 0.04097,
+     "passes_at_E": 8.031
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 8,
+     "sessions": 96,
+     "hours": 8.09,
+     "hours_fraction_of_full": 0.4997,
+     "share": 0.03692,
+     "share_full": 0.0375,
+     "passes_at_E": 7.653
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 18,
+     "sessions": 18,
+     "hours": 22.57,
+     "hours_fraction_of_full": 0.5007,
+     "share": 0.0961,
+     "share_full": 0.09744,
+     "passes_at_E": 7.141
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 16,
+     "sessions": 16,
+     "hours": 11.51,
+     "hours_fraction_of_full": 0.4992,
+     "share": 0.04155,
+     "share_full": 0.04226,
+     "passes_at_E": 6.053
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 2.72,
+     "hours_fraction_of_full": 0.4952,
+     "share": 0.01302,
+     "share_full": 0.01335,
+     "passes_at_E": 8.031
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 3.8,
+     "hours_fraction_of_full": 0.5,
+     "share": 0.0182,
+     "share_full": 0.01848,
+     "passes_at_E": 8.031
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 4.42,
+     "hours_fraction_of_full": 0.5006,
+     "share": 0.02115,
+     "share_full": 0.02145,
+     "passes_at_E": 8.031
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 40,
+     "hours": 7.77,
+     "hours_fraction_of_full": 0.4945,
+     "share": 0.03396,
+     "share_full": 0.03487,
+     "passes_at_E": 7.335
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 11,
+     "sessions": 11,
+     "hours": 6.61,
+     "hours_fraction_of_full": 0.4942,
+     "share": 0.03133,
+     "share_full": 0.03219,
+     "passes_at_E": 7.947
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 6,
+     "sessions": 6,
+     "hours": 4.27,
+     "hours_fraction_of_full": 0.5023,
+     "share": 0.02044,
+     "share_full": 0.02065,
+     "passes_at_E": 8.031
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 18,
+     "sessions": 108,
+     "hours": 8.76,
+     "hours_fraction_of_full": 0.5143,
+     "share": 0.04193,
+     "share_full": 0.04139,
+     "passes_at_E": 8.031
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 25,
+     "sessions": 25,
+     "hours": 5.18,
+     "hours_fraction_of_full": 0.52,
+     "share": 0.02482,
+     "share_full": 0.02423,
+     "passes_at_E": 8.031
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 25,
+     "sessions": 25,
+     "hours": 5.04,
+     "hours_fraction_of_full": 0.5209,
+     "share": 0.02412,
+     "share_full": 0.0235,
+     "passes_at_E": 8.031
+    }
+   }
+  },
+  "1": {
+   "subjects": 565,
+   "sessions": 19034,
+   "hours": 822.86,
+   "time_patches_per_epoch": 118491864,
+   "steps_per_epoch": 24528,
+   "steps_at_E": 98111,
+   "steps_per_epoch_4s_windows": 23143,
+   "mean_window_s": 3.7742,
+   "sessions_without_window_seconds": 62,
+   "classes": {
+    "A": {
+     "share": 0.20001,
+     "share_full": 0.20001,
+     "hours": 90.71
+    },
+    "B": {
+     "share": 0.75,
+     "share_full": 0.75,
+     "hours": 710.82
+    },
+    "C": {
+     "share": 0.05,
+     "share_full": 0.05,
+     "hours": 21.33
+    }
+   },
+   "max_share_shift": 0.0,
+   "max_passes_at_E": 8.0,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 17,
+     "sessions": 17,
+     "hours": 15.49,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.03463,
+     "share_full": 0.03463,
+     "passes_at_E": 7.358
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 14,
+     "sessions": 14,
+     "hours": 0.31,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.00076,
+     "share_full": 0.00076,
+     "passes_at_E": 8.0
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 20,
+     "hours": 4.83,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.01174,
+     "share_full": 0.01174,
+     "passes_at_E": 8.0
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 158,
+     "sessions": 17136,
+     "hours": 287.77,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.24618,
+     "share_full": 0.24618,
+     "passes_at_E": 2.816
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 100,
+     "sessions": 1035,
+     "hours": 317.09,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.25842,
+     "share_full": 0.25842,
+     "passes_at_E": 2.682
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 34,
+     "sessions": 102,
+     "hours": 16.86,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.04097,
+     "share_full": 0.04097,
+     "passes_at_E": 8.0
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 16,
+     "sessions": 192,
+     "hours": 16.19,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.0375,
+     "share_full": 0.0375,
+     "passes_at_E": 7.624
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 36,
+     "sessions": 36,
+     "hours": 45.08,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.09744,
+     "share_full": 0.09744,
+     "passes_at_E": 7.114
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 32,
+     "sessions": 32,
+     "hours": 23.07,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.04226,
+     "share_full": 0.04226,
+     "passes_at_E": 6.03
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 8,
+     "hours": 5.49,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.01335,
+     "share_full": 0.01335,
+     "passes_at_E": 8.0
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 10,
+     "sessions": 10,
+     "hours": 7.6,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.01848,
+     "share_full": 0.01848,
+     "passes_at_E": 8.0
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 10,
+     "sessions": 10,
+     "hours": 8.82,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.02145,
+     "share_full": 0.02145,
+     "passes_at_E": 8.0
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 80,
+     "hours": 15.71,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.03487,
+     "share_full": 0.03487,
+     "passes_at_E": 7.307
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 22,
+     "sessions": 22,
+     "hours": 13.38,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.03219,
+     "share_full": 0.03219,
+     "passes_at_E": 7.916
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 12,
+     "sessions": 12,
+     "hours": 8.5,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.02065,
+     "share_full": 0.02065,
+     "passes_at_E": 8.0
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 35,
+     "sessions": 210,
+     "hours": 17.03,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.04139,
+     "share_full": 0.04139,
+     "passes_at_E": 8.0
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 49,
+     "sessions": 49,
+     "hours": 9.97,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.02423,
+     "share_full": 0.02423,
+     "passes_at_E": 8.0
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 49,
+     "sessions": 49,
+     "hours": 9.67,
+     "hours_fraction_of_full": 1.0,
+     "share": 0.0235,
+     "share_full": 0.0235,
+     "passes_at_E": 8.0
+    }
+   }
+  }
+ },
+ "problems": []
+}

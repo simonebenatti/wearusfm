@@ -131,11 +131,15 @@ class RunConfig:
     # confrontati bit per bit con quelli preparati di nuovo dal batch sulla CPU; costa una copia all'indietro per passo
     prefetch: bool = False
     prefetch_audit: bool = False
+    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' = solo le sessioni dei soggetti del manifest annidato di quella
+    # frazione (`nested` delle righe, da `splits/v1/splits_v1.json`: prefissi di una permutazione per dataset, soggetti di test esclusi);
+    # None = tutto il pretraining. Pesi delle sessioni: quelli del manifest completo, rinormalizzati sul sottoinsieme
+    nested: str | None = None
 
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
-                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False}
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5}
 
 
@@ -231,8 +235,13 @@ def config_to_dict(cfg: RunConfig) -> dict:
 
 # --- dati ----------------------------------------------------------------------------------------------------------------------------
 
-def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None) -> L.ManifestIndex:
-    idx = L.ManifestIndex.load(manifest, roots)
+NESTED_FRACTIONS = ("0.125", "0.25", "0.5")  # D16
+
+
+def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None, nested: str | None = None) -> L.ManifestIndex:
+    if nested is not None and nested not in NESTED_FRACTIONS:
+        raise ValueError(f"nested {nested!r}: una di {NESTED_FRACTIONS} (D16) o None")
+    idx = L.ManifestIndex.load(manifest, roots, nested)
     if datasets is not None:
         keep = [i for i, r in enumerate(idx.rows) if r["dataset"] in datasets]
         if not keep:
@@ -871,6 +880,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("branch_calibration_batches almeno 1")
     if cfg.fixed_eval_every < 0 or cfg.fixed_eval_batches < 1:
         raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
+    if cfg.nested is not None and cfg.nested not in NESTED_FRACTIONS:
+        raise ValueError(f"nested {cfg.nested!r}: una di {NESTED_FRACTIONS} (D16) o None")
     if cfg.freeze_encoder:
         if not cfg.model.spectral_branches or cfg.jepa.branch_weight <= 0 or cfg.jepa.keep_weight != 0:
             raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches, branch_weight > 0 e keep_weight 0 "
@@ -953,7 +964,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
     torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
-    index = load_index(manifest, roots, cfg.datasets)
+    index = load_index(manifest, roots, cfg.datasets, cfg.nested)
     student = WearUsFM(cfg.model).to(device)
     frozen_init = branch_calibration = None
     if cfg.freeze_encoder and resume_state is None:

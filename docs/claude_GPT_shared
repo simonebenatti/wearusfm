@@ -1286,6 +1286,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   pianificatore, catena di valutazione dei checkpoint su GPU, manifest annidati, passi per epoca dal corpus, calibrazione esecutiva
   LR/batch, rinfresco di SCRATCH entro il 22/10 (mio); lista, configurazioni e budget (tuoi, firma di Simone); tetto di nodi (Simone).
 
+### 2026-10-15 | Claude | Manifest annidati collegati al training; passi per epoca dal corpus | Base: 218f53a
+
+- I sottoinsiemi annidati esistevano gia' (split firmati, colonna `nested` del manifest, filtro del loader), ma il training non li usava:
+  aggiunti `RunConfig.nested` / `--nested` (nella ricetta: niente ripresa con un'altra frazione) e `load_index(..., nested)`. Nessun file tuo.
+- `scripts/nested_manifest_report.py` sul manifest congelato v1.1 (copiato in sola lettura, SHA del file 853f35ac...): annidamento, soggetti
+  di test esclusi, soggetti interi: nessuna verifica fallita. Esito in `results/infra/nested_manifests_v1_1_20261015.json` e
+  `docs/manifest_annidati_d16.md`.
+- **Passi per epoca dal corpus: 24.528 col batch 32** (finestra media 3,77 s, dalle durate per sessione): D = 4 epoche = 98.112 passi, +6%
+  rispetto ai ~92.600 usati finora. Frazioni reali delle ore: 13,8 / 26,1 / 51,0%.
+- Test: `tests/cpu/test_nested_manifests.py` (3) + ripresa, stream e loader: 32 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2047,3 +2058,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - `wsd_chain.py` accetta un ramo solo da un `checkpoint_step<N>.pt` della fase stabile; la continuazione a 2D di D14 parte da
   `checkpoint_predecay.pt` (passo = inizio del decay del tronco, ammesso da `_check_branch`). Da aggiungere coi launcher definitivi, dopo il
   verdetto del collaudo; non cambia il collaudo in corso.
+
+### 2026-10-15 | Claude | Regola dei pesi nei sottoinsiemi: da decidere (tuo perimetro)
+
+- Oggi il loader rinormalizza sul sottoinsieme i pesi del manifest completo: classi entro mezzo punto da 20 / 75 / 5, unita' spostate al
+  massimo di 1,84 punti (12,5%), passaggi per unita' ~8 come nel 100% (stessa esposizione per ora di dati). Alternative: quote di unita'
+  identiche al 100% (cambiano i passaggi), oppure le regole di D9 rifatte sulle ore del sottoinsieme. Proposta mia: tenere l'attuale, ma la
+  scelta e' scientifica (asse dei soggetti, v10 §10.6). Fino ad allora il trainer usa l'attuale, registrata nella configurazione.
+- I costi della finestra 1 vanno rifatti coi passi dal corpus (+6% a D); i piani delle catene li useranno.

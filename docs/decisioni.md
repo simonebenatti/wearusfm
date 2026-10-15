@@ -3227,3 +3227,11 @@ Restano calibrazione e piano/configurazioni/budget della finestra1; nessun nuovo
 Sul punto5 e' esplicitato un confronto mancante: NeuroRVQ e WearUsFM entrambi congelati sullo stesso protocollo. La replica del
 passo5 aveva gia' usato il FM preallenato con fine-tuning, e l'ancora aveva usato il tokenizer; non dimostrano superiorita' o inferiorita'
 del riuso del backbone. Gap da specificare, non nuovo job/default adottato; nessuna modifica al verdetto sull'ancoraRVQ.
+
+**Manifest annidati (D16) collegati al training e passi per epoca dal corpus (15/10/2026; Simone: «se non rompe niente tra voi 2 puoi
+iniziare coi manifest annidati»).** Dettagli in `docs/manifest_annidati_d16.md`. `RunConfig.nested` / `--nested` (0,125 / 0,25 / 0,5) allena sui
+soggetti del sottoinsieme firmato in `splits_v1.json`; `scripts/nested_manifest_report.py` verifica annidamento ed esclusione dei test sul
+manifest congelato v1.1 (nessuna verifica fallita; `results/infra/nested_manifests_v1_1_20261015.json`). **Passi per epoca dal corpus: 24.528
+col batch 32** (finestra media 3,77 s), non ~23.150: D = 4 epoche = 98.112 passi (+6% sui costi a D). Nei sottoinsiemi, con i pesi del
+manifest completo rinormalizzati (la regola attuale del loader), classi entro mezzo punto da 20 / 75 / 5 e passaggi per unita' ~8 come nel
+100%. **Da decidere (GPT, Simone):** la regola dei pesi nei sottoinsiemi (attuale; quote di unita' identiche; D9 rifatta sul sottoinsieme).
