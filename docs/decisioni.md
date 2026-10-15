@@ -3284,3 +3284,10 @@ e le catene ancora in corso perdono priorita'. Utile un accordo con gli altri ut
 `external`, 151.833 file toccati, nessun file piu' vecchio di 30 giorni prima del giro (il piu' vecchio era del 01/10, il giro precedente),
 **0 cartelle con problemi, nessun file piu' vecchio di un giorno dopo**. Costo: 15 minuti di un core. Prossimo giro del calendario firmato:
 12/11/2026 (28 giorni dopo, entro i 40 del purge).
+
+**Manifest annidati come file congelati (15/10/2026, accordo GPT e Claude riferito da Simone).** Regola: D9 rifatta sulle ore del
+sottoinsieme; il residuo di una classe con tutte le unita' al tetto va alle unita' sotto il tetto delle altre classi, in proporzione alla
+quota, senza superare il tetto; controlli sulla distribuzione campionata. Costruzione locale dal v1.1: quote 20 / 75 / 5 esatte al 12,5% e al
+50%, al 25% classe C 4,97% (residuo 0,0254% ad A e B), passaggi massimi 8,000000 ovunque; pesi del 100% riprodotti bit per bit. Il campo
+`hash` del v1.1 e' rimasto quello di v1 (contenuto: 52549ef8...), segnalato. Dettagli in `docs/manifest_annidati_d16.md`. Prossimi: review di
+GPT, poi costruzione sul cluster (job CPU da autorizzare).

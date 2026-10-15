@@ -35,7 +35,8 @@ def main(argv=None) -> int:
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--datasets", default=None, help="elenco separato da virgole, o 'all'; default: quello del preset (sanity: emg2qwerty)")
     ap.add_argument("--nested", choices=["0.125", "0.25", "0.5"], default=None,
-                    help="asse dei soggetti (D16): solo i soggetti del manifest annidato di quella frazione; default tutto il pretraining")
+                    help="asse dei soggetti (D16): la frazione dichiarata dal manifest annidato passato con --manifest "
+                         "(scripts/build_nested_manifests.py); default manifest completo")
     ap.add_argument("--rvq-codes", type=Path, default=None,
                     help="radice dei codici RVQ precalcolati (scripts/precompute_rvq_codes.py): accende l'ancora RVQ (D5b); senza, l'ancora e' spenta")
     ap.add_argument("--window1-rules", action="store_true",

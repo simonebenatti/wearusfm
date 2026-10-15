@@ -131,9 +131,9 @@ class RunConfig:
     # confrontati bit per bit con quelli preparati di nuovo dal batch sulla CPU; costa una copia all'indietro per passo
     prefetch: bool = False
     prefetch_audit: bool = False
-    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' = solo le sessioni dei soggetti del manifest annidato di quella
-    # frazione (`nested` delle righe, da `splits/v1/splits_v1.json`: prefissi di una permutazione per dataset, soggetti di test esclusi);
-    # None = tutto il pretraining. Pesi delle sessioni: quelli del manifest completo, rinormalizzati sul sottoinsieme
+    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' = la frazione che il manifest deve dichiarare. Per una
+    # frazione si allena sul suo manifest annidato (`scripts/build_nested_manifests.py`: soggetti del sottoinsieme firmato in
+    # `splits/v1/splits_v1.json`, pesi rifatti con D9 sul sottoinsieme); None = manifest completo. Guardia in due sensi nel loader
     nested: str | None = None
 
 

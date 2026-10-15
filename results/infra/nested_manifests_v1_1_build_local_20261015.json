@@ -1,0 +1,86 @@
+{
+ "source": {
+  "path": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/manifest_v1_1.json.gz",
+  "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+  "hash": {
+   "declared": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+   "recomputed": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+   "equal": false
+  }
+ },
+ "code_commit": "b889c4b00bfed55d7c3a4c15ebbdd8bd6ff0e7a3",
+ "checks": {
+  "full_weights_reproduced_bitwise": true,
+  "nested_subjects": true,
+  "within_cap": true
+ },
+ "fractions": {
+  "0.125": {
+   "hash": "c2cf7fdbc51eff7bfb3b5c3d5cc9e597a48136a5537e89d94eeac1a8a2a758d8",
+   "classes": {
+    "A": 0.1999999999999996,
+    "C": 0.04999999999999989,
+    "B": 0.7499999999999978
+   },
+   "max_passes": 7.99999999999998,
+   "hours": 113.62017546180917,
+   "sessions": 2519,
+   "subjects": 78,
+   "weight_sum": 1.0000000000000022,
+   "residual": {
+    "per_class": {},
+    "receivers": []
+   },
+   "file": "manifest_v1_1_nested_0.125.json.gz",
+   "file_sha256": "d285461fb2a88925da7e654bab5dd9bac7a8e5106c0d6eb37be3b4f3484f66a4"
+  },
+  "0.25": {
+   "hash": "9706bdea836ed9c7aa67ddc4958f038f704a602e5d4241a7251450ea09d65953",
+   "classes": {
+    "A": 0.20004828773264036,
+    "C": 0.049746487451861915,
+    "B": 0.7502052248154992
+   },
+   "max_passes": 8.000000000000016,
+   "hours": 214.990053525874,
+   "sessions": 4947,
+   "subjects": 146,
+   "weight_sum": 0.999999999999999,
+   "residual": {
+    "per_class": {
+     "C": 0.00025351254813815033
+    },
+    "receivers": [
+     "camargo2021",
+     "emg2pose",
+     "emg2qwerty",
+     "ninapro_db10",
+     "ninapro_db2",
+     "ninapro_db6",
+     "ninapro_db7"
+    ]
+   },
+   "file": "manifest_v1_1_nested_0.25.json.gz",
+   "file_sha256": "4fdf013310d3b0ad76f334baecf45732c3075e7745b22e76208f4823d42e06cf"
+  },
+  "0.5": {
+   "hash": "4a20913f5adcf6fcae76282e6051329405d68b7629fc5fbc500b053b08392aaa",
+   "classes": {
+    "A": 0.19999999999999937,
+    "C": 0.04999999999999985,
+    "B": 0.7499999999999973
+   },
+   "max_passes": 8.000000000000009,
+   "hours": 419.3281891571484,
+   "sessions": 9493,
+   "subjects": 284,
+   "weight_sum": 1.000000000000003,
+   "residual": {
+    "per_class": {},
+    "receivers": []
+   },
+   "file": "manifest_v1_1_nested_0.5.json.gz",
+   "file_sha256": "2e689de1daa22faa3ade879c28ee9d6e4c376ab17422d62f37443f2bafcf1702"
+  }
+ }
+}

@@ -1,0 +1,695 @@
+{
+ "window_seconds": {
+  "path": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/window_seconds_59425316.json",
+  "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+ },
+ "params": {
+  "batch": 32,
+  "epochs": 4.0
+ },
+ "fractions": {
+  "0.125": {
+   "nested": "0.125",
+   "subjects": 78,
+   "sessions": 2519,
+   "hours": 113.62017546180917,
+   "classes": {
+    "A": 0.1999999999999996,
+    "B": 0.7499999999999978,
+    "C": 0.04999999999999989
+   },
+   "max_passes_at_E": 7.99999999999998,
+   "steps_per_epoch": 3406,
+   "steps_at_E": 13625,
+   "steps_per_epoch_4s_windows": 3196,
+   "mean_window_s": 3.752528254614358,
+   "sessions_without_window_seconds": 0,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.753,
+     "share": 0.03736329389195965,
+     "passes_at_E": 6.167126867839559
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 0.044,
+     "share": 0.0007823336702975487,
+     "passes_at_E": 7.999999999999978
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 1,
+     "sessions": 5,
+     "hours": 1.207,
+     "share": 0.02124035914857844,
+     "passes_at_E": 7.999999999999976
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 20,
+     "sessions": 2252,
+     "hours": 37.612,
+     "share": 0.23377112679622522,
+     "passes_at_E": 2.8247500669477232
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 13,
+     "sessions": 145,
+     "hours": 43.978,
+     "share": 0.25278273262504974,
+     "passes_at_E": 2.612302664864249
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 15,
+     "hours": 2.479,
+     "share": 0.04363955004628512,
+     "passes_at_E": 7.999999999999974
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 24,
+     "hours": 2.025,
+     "share": 0.027977307181123897,
+     "passes_at_E": 6.278223334590937
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 6.216,
+     "share": 0.09503423241380989,
+     "passes_at_E": 6.9484962344171715
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 2.878,
+     "share": 0.038201397380255055,
+     "passes_at_E": 6.031825782142413
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 1,
+     "sessions": 1,
+     "hours": 0.554,
+     "share": 0.009750811283171073,
+     "passes_at_E": 7.99999999999998
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.521,
+     "share": 0.026765595584640322,
+     "passes_at_E": 7.999999999999978
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.807,
+     "share": 0.031800445717817934,
+     "passes_at_E": 7.999999999999978
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 1,
+     "sessions": 10,
+     "hours": 1.986,
+     "share": 0.0317317053001622,
+     "passes_at_E": 7.2616385237547325
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 1.804,
+     "share": 0.03023995622140027,
+     "passes_at_E": 7.61985804294991
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.423,
+     "share": 0.025042542347700765,
+     "passes_at_E": 7.999999999999978
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 30,
+     "hours": 2.432,
+     "share": 0.042817610733928785,
+     "passes_at_E": 7.99999999999998
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 1.474,
+     "share": 0.025947240338411007,
+     "passes_at_E": 7.999999999999977
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 1.427,
+     "share": 0.025111759319180346,
+     "passes_at_E": 7.999999999999979
+    }
+   },
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/nested_out/manifest_v1_1_nested_0.125.json.gz",
+   "file_sha256": "d285461fb2a88925da7e654bab5dd9bac7a8e5106c0d6eb37be3b4f3484f66a4",
+   "derived_from": {
+    "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "hash": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+    "content_hash": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+    "version": "manifest-v1",
+    "revision": "v1.1"
+   }
+  },
+  "0.25": {
+   "nested": "0.25",
+   "subjects": 146,
+   "sessions": 4947,
+   "hours": 214.990053525874,
+   "classes": {
+    "A": 0.20004828773264036,
+    "B": 0.7502052248154992,
+    "C": 0.049746487451861915
+   },
+   "max_passes_at_E": 8.000000000000016,
+   "steps_per_epoch": 6407,
+   "steps_at_E": 25629,
+   "steps_per_epoch_4s_windows": 6047,
+   "mean_window_s": 3.7749130133413775,
+   "sessions_without_window_seconds": 0,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 4.422,
+     "share": 0.035346469514876924,
+     "passes_at_E": 6.874291195044579
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 0.089,
+     "share": 0.0008269116401535407,
+     "passes_at_E": 8.000000000000009
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 1,
+     "sessions": 5,
+     "hours": 1.207,
+     "share": 0.011225325515084313,
+     "passes_at_E": 8.000000000000009
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 40,
+     "sessions": 4458,
+     "hours": 75.313,
+     "share": 0.2464403193440343,
+     "passes_at_E": 2.8139713456530253
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 25,
+     "sessions": 266,
+     "hours": 82.925,
+     "share": 0.25859516363210283,
+     "passes_at_E": 2.6817052078912167
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 27,
+     "hours": 4.463,
+     "share": 0.04151354843458324,
+     "passes_at_E": 8.00000000000001
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 48,
+     "hours": 4.052,
+     "share": 0.037694250296624064,
+     "passes_at_E": 8.000000000000012
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 9,
+     "hours": 11.137,
+     "share": 0.09476750476048013,
+     "passes_at_E": 7.317655970793105
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 8,
+     "hours": 5.77,
+     "share": 0.04037668562410202,
+     "passes_at_E": 6.017876911050547
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 2,
+     "hours": 1.279,
+     "share": 0.011899961376703579,
+     "passes_at_E": 8.000000000000007
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.281,
+     "share": 0.02121933696034856,
+     "passes_at_E": 8.000000000000007
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.596,
+     "share": 0.024152047570773293,
+     "passes_at_E": 8.000000000000009
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 2,
+     "sessions": 20,
+     "hours": 3.967,
+     "share": 0.03347884780898231,
+     "passes_at_E": 7.2577743878282
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 6,
+     "sessions": 6,
+     "hours": 3.608,
+     "share": 0.03192676960488616,
+     "passes_at_E": 7.610601610156125
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 3,
+     "sessions": 3,
+     "hours": 2.139,
+     "share": 0.01990192976034357,
+     "passes_at_E": 8.000000000000009
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 9,
+     "sessions": 54,
+     "hours": 4.379,
+     "share": 0.04073470103351363,
+     "passes_at_E": 8.000000000000016
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 13,
+     "sessions": 13,
+     "hours": 2.773,
+     "share": 0.025800216842740815,
+     "passes_at_E": 8.000000000000007
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 13,
+     "sessions": 13,
+     "hours": 2.591,
+     "share": 0.02410001027966832,
+     "passes_at_E": 8.000000000000009
+    }
+   },
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/nested_out/manifest_v1_1_nested_0.25.json.gz",
+   "file_sha256": "4fdf013310d3b0ad76f334baecf45732c3075e7745b22e76208f4823d42e06cf",
+   "derived_from": {
+    "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "hash": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+    "content_hash": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+    "version": "manifest-v1",
+    "revision": "v1.1"
+   }
+  },
+  "0.5": {
+   "nested": "0.5",
+   "subjects": 284,
+   "sessions": 9493,
+   "hours": 419.3281891571484,
+   "classes": {
+    "A": 0.19999999999999937,
+    "B": 0.7499999999999973,
+    "C": 0.04999999999999985
+   },
+   "max_passes_at_E": 8.000000000000009,
+   "steps_per_epoch": 12482,
+   "steps_at_E": 49926,
+   "steps_per_epoch_4s_windows": 11794,
+   "mean_window_s": 3.779523543165344,
+   "sessions_without_window_seconds": 0,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 9,
+     "sessions": 9,
+     "hours": 8.024,
+     "share": 0.035398899461670894,
+     "passes_at_E": 7.399264715759495
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 7,
+     "sessions": 7,
+     "hours": 0.156,
+     "share": 0.0007419274905806964,
+     "passes_at_E": 7.9999999999999885
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 2,
+     "sessions": 10,
+     "hours": 2.415,
+     "share": 0.011518424291265313,
+     "passes_at_E": 7.999999999999991
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 79,
+     "sessions": 8536,
+     "hours": 144.183,
+     "share": 0.24428976101153105,
+     "passes_at_E": 2.841879386525626
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 50,
+     "sessions": 521,
+     "hours": 165.379,
+     "share": 0.26163056551646957,
+     "passes_at_E": 2.6535203743778304
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 17,
+     "sessions": 51,
+     "hours": 8.429,
+     "share": 0.04020319589584146,
+     "passes_at_E": 7.999999999999983
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 8,
+     "sessions": 96,
+     "hours": 8.091,
+     "share": 0.03773964821815384,
+     "passes_at_E": 7.824084879253797
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 18,
+     "sessions": 18,
+     "hours": 22.572,
+     "share": 0.09665684681037898,
+     "passes_at_E": 7.182543803853917
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 16,
+     "sessions": 16,
+     "hours": 11.514,
+     "share": 0.04240353879791264,
+     "passes_at_E": 6.176980393352278
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 4,
+     "hours": 2.72,
+     "share": 0.012972778380582488,
+     "passes_at_E": 7.9999999999999885
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 3.801,
+     "share": 0.018129649406199353,
+     "passes_at_E": 7.9999999999999885
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 5,
+     "sessions": 5,
+     "hours": 4.417,
+     "share": 0.021067243074321895,
+     "passes_at_E": 7.9999999999999885
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 4,
+     "sessions": 40,
+     "hours": 7.766,
+     "share": 0.03482519684122448,
+     "passes_at_E": 7.521158572559826
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 11,
+     "sessions": 11,
+     "hours": 6.613,
+     "share": 0.03154197279204748,
+     "passes_at_E": 7.999999999999989
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 6,
+     "sessions": 6,
+     "hours": 4.268,
+     "share": 0.02035865793765495,
+     "passes_at_E": 7.99999999999999
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 18,
+     "sessions": 108,
+     "hours": 8.758,
+     "share": 0.04177051771969326,
+     "passes_at_E": 8.000000000000009
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 25,
+     "sessions": 25,
+     "hours": 5.185,
+     "share": 0.024727964320362027,
+     "passes_at_E": 7.999999999999987
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 25,
+     "sessions": 25,
+     "hours": 5.037,
+     "share": 0.02402321203410624,
+     "passes_at_E": 7.999999999999988
+    }
+   },
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/nested_out/manifest_v1_1_nested_0.5.json.gz",
+   "file_sha256": "2e689de1daa22faa3ade879c28ee9d6e4c376ab17422d62f37443f2bafcf1702",
+   "derived_from": {
+    "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "hash": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+    "content_hash": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+    "version": "manifest-v1",
+    "revision": "v1.1"
+   }
+  },
+  "1": {
+   "nested": null,
+   "subjects": 565,
+   "sessions": 19034,
+   "hours": 822.8601656950157,
+   "classes": {
+    "A": 0.19999999999999882,
+    "B": 0.7499999999999958,
+    "C": 0.049999999999999704
+   },
+   "max_passes_at_E": 7.999999999999914,
+   "steps_per_epoch": 24528,
+   "steps_at_E": 98111,
+   "steps_per_epoch_4s_windows": 23143,
+   "mean_window_s": 3.7741536862415397,
+   "sessions_without_window_seconds": 62,
+   "units": {
+    "camargo2021": {
+     "class": "A",
+     "subjects": 17,
+     "sessions": 17,
+     "hours": 15.49,
+     "share": 0.03462837840820815,
+     "passes_at_E": 7.358004843983848
+    },
+    "capgmyo": {
+     "class": "C",
+     "subjects": 14,
+     "sessions": 14,
+     "hours": 0.311,
+     "share": 0.0007561700616491312,
+     "passes_at_E": 7.9999999999999
+    },
+    "csl_hdemg": {
+     "class": "C",
+     "subjects": 4,
+     "sessions": 20,
+     "hours": 4.832,
+     "share": 0.011743591118147314,
+     "passes_at_E": 7.999999999999903
+    },
+    "emg2pose": {
+     "class": "B",
+     "subjects": 158,
+     "sessions": 17136,
+     "hours": 287.767,
+     "share": 0.2461779460411216,
+     "passes_at_E": 2.8157536541800896
+    },
+    "emg2qwerty": {
+     "class": "B",
+     "subjects": 100,
+     "sessions": 1035,
+     "hours": 317.092,
+     "share": 0.25841718753891674,
+     "passes_at_E": 2.682392985332853
+    },
+    "grabmyo": {
+     "class": "B",
+     "subjects": 34,
+     "sessions": 102,
+     "hours": 16.858,
+     "share": 0.040974965215612384,
+     "passes_at_E": 7.999999999999914
+    },
+    "hyser": {
+     "class": "C",
+     "subjects": 16,
+     "sessions": 192,
+     "hours": 16.189,
+     "share": 0.03750023882020326,
+     "passes_at_E": 7.624091817377741
+    },
+    "ninapro_db10": {
+     "class": "B",
+     "subjects": 36,
+     "sessions": 36,
+     "hours": 45.08,
+     "share": 0.0974365962887426,
+     "passes_at_E": 7.114128341364505
+    },
+    "ninapro_db2": {
+     "class": "A",
+     "subjects": 32,
+     "sessions": 32,
+     "hours": 23.066,
+     "share": 0.04225646847316573,
+     "passes_at_E": 6.029746102154872
+    },
+    "ninapro_db3": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 8,
+     "hours": 5.493,
+     "share": 0.013350297214228344,
+     "passes_at_E": 7.9999999999999005
+    },
+    "ninapro_db4": {
+     "class": "A",
+     "subjects": 10,
+     "sessions": 10,
+     "hours": 7.602,
+     "share": 0.01847690371876688,
+     "passes_at_E": 7.999999999999898
+    },
+    "ninapro_db5": {
+     "class": "B",
+     "subjects": 10,
+     "sessions": 10,
+     "hours": 8.824,
+     "share": 0.02144726158583192,
+     "passes_at_E": 7.999999999999899
+    },
+    "ninapro_db6": {
+     "class": "A",
+     "subjects": 8,
+     "sessions": 80,
+     "hours": 15.707,
+     "share": 0.03486975585628455,
+     "passes_at_E": 7.307070835742011
+    },
+    "ninapro_db7": {
+     "class": "A",
+     "subjects": 22,
+     "sessions": 22,
+     "hours": 13.383,
+     "share": 0.03218660956495437,
+     "passes_at_E": 7.916204269751033
+    },
+    "ninapro_db8": {
+     "class": "B",
+     "subjects": 12,
+     "sessions": 12,
+     "hours": 8.498,
+     "share": 0.020654043917224873,
+     "passes_at_E": 7.999999999999901
+    },
+    "putemg": {
+     "class": "B",
+     "subjects": 35,
+     "sessions": 210,
+     "hours": 17.029,
+     "share": 0.04139025111286267,
+     "passes_at_E": 7.999999999999913
+    },
+    "zhang2026:anatomical": {
+     "class": "A",
+     "subjects": 49,
+     "sessions": 49,
+     "hours": 9.97,
+     "share": 0.02423158676439079,
+     "passes_at_E": 7.9999999999999005
+    },
+    "zhang2026:random": {
+     "class": "B",
+     "subjects": 49,
+     "sessions": 49,
+     "hours": 9.669,
+     "share": 0.023501748299683062,
+     "passes_at_E": 7.9999999999999
+    }
+   },
+   "file": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/3c3916aa-29dc-4e1a-8d1f-239194b22fb1/scratchpad/manifest/manifest_v1_1.json.gz",
+   "file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+   "derived_from": null
+  }
+ },
+ "problems": []
+}

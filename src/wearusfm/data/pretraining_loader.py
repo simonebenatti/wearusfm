@@ -106,11 +106,20 @@ class ManifestIndex:
 
     @classmethod
     def load(cls, manifest_path: Path, roots: list[Path], nested: str | None = None) -> "ManifestIndex":
-        """`nested`: '0.125' / '0.25' / '0.5' per i manifest sottocampionati per soggetti (D16); None = tutto il pretraining."""
+        """`nested` (D16): la frazione dei soggetti che il manifest deve dichiarare (`params.nested`, '0.125' / '0.25' / '0.5'), None per il
+        manifest completo. I manifest annidati sono file a parte, coi pesi rifatti sul sottoinsieme (`scripts/build_nested_manifests.py`; GPT
+        e Claude, 15/10/2026): i pesi del manifest completo rinormalizzati su un sottoinsieme non conservano quote ed esposizione, quindi qui
+        non si filtra piu' per frazione, si controlla che manifest e frazione chiesta coincidano."""
         doc = json.loads((gzip.open if str(manifest_path).endswith(".gz") else open)(manifest_path, "rb").read())
+        declared = doc.get("params", {}).get("nested")
+        if declared != nested:
+            raise ValueError(f"{manifest_path}: il manifest dichiara la frazione dei soggetti {declared!r}, chiesta {nested!r} (D16: per una "
+                             "frazione si usa il suo manifest annidato, scripts/build_nested_manifests.py)")
         cols = doc["columns"]
         rows = [dict(zip(cols, r)) for r in doc["rows"]]
-        rows = [r for r in rows if r["split"] == "pretraining" and (nested is None or nested in r["nested"])]
+        rows = [r for r in rows if r["split"] == "pretraining"]
+        if declared is not None and any(declared not in r["nested"] for r in rows):
+            raise ValueError(f"{manifest_path}: righe di pretraining fuori dal sottoinsieme {declared} che il manifest dichiara")
         w = np.asarray([r["weight"] for r in rows], dtype=np.float64)
         if not len(rows) or w.sum() <= 0:
             raise ValueError("nessuna riga di pretraining con peso positivo")

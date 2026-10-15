@@ -261,9 +261,8 @@ def test_index_excludes_test_rows_and_filters_nested_subsets(tmp_path):
     path.write_bytes(gzip.compress(json.dumps(doc).encode()))
     idx = L.ManifestIndex.load(path, [root])
     assert [r["dataset"] for r in idx.rows] == [rows[2]["dataset"]]  # test e benchmark esclusi
-    assert [r["dataset"] for r in L.ManifestIndex.load(path, [root], nested="0.5").rows] == [rows[2]["dataset"]]
-    with pytest.raises(ValueError):
-        L.ManifestIndex.load(path, [root], nested="0.25")  # nessuna riga nel sottoinsieme: errore, non un indice vuoto
+    with pytest.raises(ValueError, match="dichiara la frazione"):  # dal 15/10 una frazione e' un manifest a parte (test_nested_manifests.py)
+        L.ManifestIndex.load(path, [root], nested="0.5")
 
 
 def test_time_weighted_quotas_divide_by_the_mean_window_length(tmp_path):

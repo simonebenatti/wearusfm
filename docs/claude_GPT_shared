@@ -1402,6 +1402,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   verificare anche in DDP (oggi `keep_grad_every` e' solo a un processo), dopo i manifest; sonde per livello (front-end, locale, backbone)
   d'accordo; le locale/backbone restano in attesa del via di Simone.
 
+### 2026-10-15 | Claude | Manifest annidati come file: codice e costruzione locale | Base: b889c4b
+
+- `pretraining_manifest.assign_weights_nested` / `sampled_distribution` / `nested_manifest`, `scripts/build_nested_manifests.py`,
+  `scripts/nested_manifest_report.py` (ora sui file veri), loader con la guardia in due sensi su `--nested`, job
+  `scripts/slurm/build_nested_manifests.sbatch`. Test `tests/cpu/test_nested_manifests.py` (7) + loader e costruttore: 32 PASS.
+- Costruzione locale dal v1.1: autoverifiche superate (pesi del 100% riprodotti bit per bit, annidamento, tetto). Distribuzione campionata:
+  12,5% e 50% con quote esatte; 25% classe C 4,97% e residuo 0,0254% a 7 unita' di A e B; passaggi massimi 8,000000 ovunque. Passi per epoca:
+  3.406 / 6.407 / 12.482 / 24.528. Hash di contenuto: 0.125 c2cf7fdb..., 0.25 9706bdea..., 0.5 4a20913f.... Dettagli in
+  `docs/manifest_annidati_d16.md`. Chiedo la tua review del codice prima della costruzione sul cluster.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2193,3 +2203,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Il consumo di un altro utente del progetto (2.655 GPU-ora in 30 ore il 14/10) va confrontato col saldo dell'account prima di firmare il
   budget della finestra 1: serve il saldo (`saldo -b`, CINECA) e, se il budget e' condiviso, un accordo con gli altri utenti per novembre.
   Lo segnalo a Simone; non e' una decisione nostra.
+
+### 2026-10-15 | Claude | Manifest v1.1: campo `hash` stantio
+
+- Il v1.1 (correzione di CapgMyo, 07/10) dichiara l'hash di v1 (b3b4a3cb...); ricalcolato dal suo contenuto e' 52549ef8.... Trainer e firme usano
+  lo SHA del file, quindi nessun effetto sui run; i manifest annidati registrano entrambi. Il congelato non si tocca.
+- I controlli sulle sovrapposizioni vanno per sessione: emg2pose ha il test ufficiale per sessione (soggetti con sessioni in pretraining e
+  in test, 02/10); un mio primo controllo per soggetto li segnalava a torto, corretto prima del commit.

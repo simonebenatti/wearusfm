@@ -48,3 +48,35 @@ La regola dei pesi nei sottoinsiemi. Alternative: (a) **quella attuale** (esposi
 punto); (b) quote di unita' identiche al 100% (cambiano i passaggi per unita' quando un dataset piccolo conserva piu' ore della frazione);
 (c) le regole di D9 rifatte sulle ore del sottoinsieme (pesi ∝ ore^0,5 nella classe, tetto di 8 passaggi). Finche' non si decide, il trainer
 usa la (a) ed e' scritto nella configurazione (`RunConfig.nested`).
+
+## Dopo la review di GPT (15/10/2026): manifest annidati come file, pesi rifatti con D9
+
+GPT: i pesi ereditati e rinormalizzati non conservano quote ed esposizione (classe B 74,13% al 12,5%, passaggi fino a 8,031), e nel mio
+primo conto del 25% i passaggi erano quelli di `allocate` prima della normalizzazione del sampler (8,00203 dopo). La tabella e la regola
+«attuale» qui sopra sono superate. Concordato: un file per frazione, stessi soggetti e sessioni, pesi D9 ricalcolati, residuo esplicito,
+controlli sulla distribuzione campionata, provenienza registrata.
+
+**Codice.** `pretraining_manifest.assign_weights_nested` (D9 sulle ore del sottoinsieme; la quota che una classe non puo' assegnare perche'
+tutte le sue unita' sono al tetto va alle unita' sotto il tetto delle altre classi, in proporzione alla loro quota, senza superare il tetto;
+nessuna unita' al tetto cresce; senza residuo identico a `assign_weights`), `sampled_distribution` (la distribuzione del loader),
+`nested_manifest` (file annidato: sessioni di pretraining del sottoinsieme, test e benchmark invariati, parametri con frazione, regola,
+residuo e origine). `scripts/build_nested_manifests.py` (autoverifiche prima di scrivere: pesi del 100% riprodotti bit per bit, sottoinsiemi
+annidati, passaggi entro il tetto; file deterministici; nessuna sovrascrittura di un file diverso). Loader: con `--nested` il manifest deve
+dichiarare la stessa frazione, senza non deve essere annidato (il filtro sui pesi ereditati non esiste piu'). `scripts/nested_manifest_report.py`
+ora legge i file veri. Job per il cluster: `scripts/slurm/build_nested_manifests.sbatch` (CPU, minuti). Test: `tests/cpu/test_nested_manifests.py`.
+
+**Esito della costruzione locale** dal manifest v1.1 copiato (`results/infra/nested_manifests_v1_1_build_local_20261015.json`,
+`..._report_local_20261015.json`): autoverifiche superate, nessun problema nel rapporto.
+
+| Frazione | Soggetti | Sessioni | Ore | Classi A / B / C (campionate) | Residuo | Passaggi max | Passi per epoca, batch 32 |
+|---|---|---|---|---|---|---|---|
+| 12,5% | 78 | 2.519 | 113,6 | 20,00 / 75,00 / 5,00 | — | 8,000000 | 3.406 |
+| 25% | 146 | 4.947 | 215,0 | 20,00 / 75,02 / 4,97 | C 0,0254% a 7 unita' di A e B | 8,000000 | 6.407 |
+| 50% | 284 | 9.493 | 419,3 | 20,00 / 75,00 / 5,00 | — | 8,000000 | 12.482 |
+| 100% | 565 | 19.034 | 822,9 | 20,00 / 75,00 / 5,00 | — | 8,000000 | 24.528 |
+
+**Trovato in passando:** il manifest v1.1 (correzione di CapgMyo del 07/10) ha conservato il campo `hash` di v1 (b3b4a3cb...) invece di
+ricalcolarlo; quello del suo contenuto e' 52549ef8.... Innocuo per training e firme (usano lo SHA del file), ma il campo e' stantio; non tocco
+il manifest congelato, i file annidati registrano entrambi. **Prossimi passi:** review di GPT del codice; poi costruzione sul cluster da un
+checkout di campagna (job CPU da autorizzare) e confronto degli hash di contenuto con quelli locali (i byte compressi possono cambiare con la
+versione di zlib, il contenuto no).
