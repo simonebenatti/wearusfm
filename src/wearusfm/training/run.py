@@ -496,14 +496,17 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
 
             with amp:
                 terms = model(compute) if model is not None else compute(student)
-            # struttura, conteggi e finitezza verificati e decisi insieme da tutti i processi PRIMA di costruire la perdita: una chiave
-            # mancante su un processo farebbe sollevare `backward_loss` prima dello stop coordinato (review GPT del 14/10/2026). La
-            # perdita e' una combinazione lineare dei numeratori coi pesi (finiti) e i denominatori globali: e' finita se lo sono loro
+            # struttura, conteggi e finitezza verificati e decisi insieme da tutti i processi PRIMA del backward. La perdita si costruisce
+            # solo con una struttura valida: una chiave mancante su un processo farebbe sollevare `backward_loss` prima dello stop
+            # coordinato (review GPT del 14/10/2026). La sua finitezza entra negli stessi flag: numeratori finiti non bastano, perche' il
+            # prodotto per il peso e per il numero di processi puo' andare in overflow prima della divisione per i conteggi, con gradienti
+            # finiti che il controllo della norma non vede (review GPT del 15/10/2026, 4f052b0)
             h = _keys_hash(terms.num, terms.log_num, terms.log_den, terms.log_sum)
             first_hash = h if first_hash is None else first_hash
             mismatch = sorted(terms.den) != keys or sorted(terms.num) != keys or sorted(terms.weight) != keys or \
                 any(not torch.equal(terms.den[k], pre[i][k].to(terms.den[k].device)) for k in keys)
-            finite = mismatch or all(bool(torch.isfinite(v).all()) for v in terms.num.values())
+            loss = None if mismatch else terms.backward_loss(global_den, world_size=ctx.world_size)
+            finite = mismatch or (all(bool(torch.isfinite(v).all()) for v in terms.num.values()) and bool(torch.isfinite(loss).all()))
             flags = _all_max(ctx, device, [float(mismatch), float(not finite), float(h != first_hash), h, -h])
             if flags[0]:
                 return "conteggi del forward diversi da quelli precalcolati", {}
@@ -511,7 +514,6 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
                 return "perdita non finita", {}
             if flags[2] or flags[3] != h or -flags[4] != h:
                 return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
-            loss = terms.backward_loss(global_den, world_size=ctx.world_size)
             loss.backward()
         weight = terms.weight
         for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):

@@ -692,6 +692,22 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   Fattibilita' aggiornata in `docs/finestra1_fattibilita.md`: ~4.730–5.300 GPU-ora. Costo della prova 5,51 GPU-ora. Dati in
   `results/infra/w1gd_20261015.json` e `results/infra/w1gd_equivalence_20261015.json`.
 
+### 2026-10-15 | Claude | Correzione: finitezza della perdita del backward (review GPT 4f052b0) | Base: 59b8c5b
+
+- Ramo `fix-backward-loss-finite`, un commit su `59b8c5b`, separato dal prefetch (nessuna riscrittura di SHA). In `_accumulate_terms`:
+  controllo locale della struttura (chiavi e conteggi) come prima; con struttura valida si costruisce `backward_loss` e la sua finitezza
+  entra negli stessi flag coordinati (`_all_max`) PRIMA del `backward`; con struttura non valida la perdita non si costruisce e il processo
+  arriva allo stop coordinato. Perdita non finita su qualunque processo: niente backward del micro-batch, optimizer, EMA o incremento del
+  passo; STOP e ultimo checkpoint preservati (il ciclo del trainer era gia' cosi').
+- Test: le tue due regressioni (`docs/reviews/repro_backward_loss_overflow_20261015.py`) eseguite dal file originale SENZA
+  `WEARUSFM_REVIEW_IN_MEMORY_FIX`: 2 PASS; riprese testualmente, senza la monkeypatch, in `tests/cpu/test_backward_loss_finite.py`. Nuovo
+  `test_ddp_overflowing_loss_on_one_process_stops_all_before_backward` (`gloo`, 2 processi, accumulo 1 e 2): dal terzo aggiornamento, solo
+  sul processo 1, il numeratore JEPA vale il massimo del float32 (finito) e `backward_loss` (peso 1 x numeratore x 2 processi) va in
+  overflow; entrambi si fermano con «perdita non finita al passo 2», pesi uguali, STOP scritto, checkpoint del passo 2 uguale ai pesi
+  finali. Test mirati (regressioni, `test_training_ddp.py` compresa la componente mancante su un solo processo,
+  `test_training_numerical_safety.py`, `test_resume_recipe.py`, `test_ddp_equivalence.py`, `test_stability_diagnostics.py`): 46 PASS.
+  Nessun job GPU.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1131,3 +1147,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   (8 CPU per GPU); (b) prefetch del batch sulla GPU in un thread o su uno stream CUDA separato, cosi' che il trasferimento si sovrapponga al
   passo precedente; (c) accettare il 2,4% al solo 30M (il rung delle ablation), dove pesa ~50 GPU-ora sul totale. La (b) e' la piu' efficace
   ma tocca il ciclo del trainer: va provata bit per bit come le altre ottimizzazioni (stessi batch, stessi pesi).
+
+### 2026-10-15 | Claude | Consegna della correzione della perdita del backward
+
+- Da integrare come delta di `59b8c5b`: ramo `fix-backward-loss-finite`. Il ramo del prefetch (`worktree-claude-training-engine`) lo
+  riceve con un merge (stessi SHA), cosi' quando integrerai il prefetch non ci saranno conflitti da risolvere da parte tua.
+- Nessuna modifica a iperparametri, soglie o esperimenti. La guardia sulla perdita effettiva che c'era prima di `fccdc1e` torna, nella
+  forma coordinata e dopo il controllo della struttura.
