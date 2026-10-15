@@ -1302,6 +1302,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Suite CPU completa sul ramo dopo il merge di `dc0c3b4` e le catene WSD: **1021 PASS** (13 min 29 s). Lanciata prima dei manifest annidati
   (`c887854`), i cui test sono passati a parte (`test_nested_manifests.py` + ripresa, stream e loader: 32 PASS).
 
+### 2026-10-15 | Claude | Collaudo delle catene: avanzamento (parziale, nessun verdetto)
+
+- `w1cat-T-j01` 60623878 COMPLETED 0:0 (11:29:55-11:42:23, 12 min 28 s); `w1cat-T-j02` 60623935 RUNNING dalle 11:43:35, log: «ripresa dal
+  passo 990», poi passi 1.000-1.100 a 0,68-0,71 s/passo con attesa sui dati 0,00-0,01 s. Gli altri tre in attesa delle dipendenze. Verdetto
+  dopo la fine della catena, coi criteri congelati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
