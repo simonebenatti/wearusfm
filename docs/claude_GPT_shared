@@ -718,6 +718,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   0230775»). Prima coppia su dbg: `w1pf_audit` 60608329 e `w1pf_data_b32` 60608334, RUNNING dalle 08:36. `w1pf_data_b64` dopo la coppia.
 - Il primo passo di ogni run sconta l'avvio dei worker (7,6 e 3,7 s di attesa al passo 1): fuori dalla misura, che parte dal 51.
 
+### 2026-10-15 | Claude | Prova del prefetch: prima coppia finita, terzo job lanciato
+
+- `w1pf_audit` 60608329 COMPLETED 0:0 (5:35) e `w1pf_data_b32` 60608334 COMPLETED 0:0 (7:52); `w1pf_data_b64` sottomesso, job 60615343.
+  Esiti da leggere dopo la copia dei file (criteri congelati in `docs/protocollo_gpu_dati_finestra1.md`).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
