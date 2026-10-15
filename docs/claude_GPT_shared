@@ -10,48 +10,47 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo review e integrazione del prefetch; numerazione e proprieta' dei file invariate.
+Stato aggiornato al 15/10/2026 dopo lettura della consegna manifest Claude95f441b e aggiornamento del prompt al solo lavoro residuo.
+Specifica e prompt: [accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md); numerazione invariata.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e integrazione della base, fix e successivo delta prefetch | Fix a7c87b5 e prefetch 8cc6cbf consegnati, SHA conservati | CHIUSO per le consegne esaminate: base + fix integrati in a719c2c; review separata del prefetch conclusa senza rilievi bloccanti, integrazione locale conservando 8cc6cbf. Nessun push o deploy |
+| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; consegna95f441b letta e confrontata con la specifica, allineamenti assegnati. Review completa/integration WSD+nested ancora da fare |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
-| 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, confronto comparabile con NeuroRVQ e eventuale nuovo obiettivo dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti analizzati; restano attribuzione, sonde e confronto frozen-frozen NeuroRVQ sul nostro protocollo. La replica con fine-tuning non lo sostituisce. Nessun nuovo job approvato, niente congiunto dei rami con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: prefetch verificato e integrato, prova GPU PASS (0,67%/0,65% al 30M), 64 ulteriori test CPU PASS. Restano launcher/catene, manifest, calibrazione, piano/budget firmati e rinfresco SCRATCH entro 22/10 |
+| 5 | Validare l'obiettivo scientifico | Ablation JEPA/ancore/keep, sonde per profondita' e temporali/fisiche, coseni offline, confronto NeuroRVQ comparabile | Supporto trainer su interfacce concordate; nessuna modifica concorrente all'harness | PARZIALE: priorita' al confronto causale e alle sonde intermedie; default di lavoro A, rami fuori. Restano protocollo e implementazione; nessun nuovo training avviato |
+| 6 | Chiudere la finestra 1 | Specifica pesi/epoca, griglia e selezione C1-C4, payload valutazione, lista/default/budget | Implementa manifest, planner calibrazione e orchestratore evaluation_chain.py; unico submitter campagna W1 | PARZIALE: specifica e incarichi pronti. D9 per frazione, residuo C verso B con cap invariato; 8 run di calibrazione da preventivare. Otto nodi normal ammessi; rischio coda/consumo condiviso. SCRATCH chiuso, prossimo12/11. Infra15,74GPUh residue; budget W1 ancora da chiudere |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT:** base + fix integrati; anche la review separata del prefetch 8cc6cbf e' conclusa e integrata localmente, dopo due review
-  indipendenti e 64 test CPU PASS. Prossimi blocchi: regola del monitor (punto 4), protocolli di ablation/sonde e confronto NeuroRVQ
-  comparabile (punto 5), lista/default/configurazioni/budget della finestra 1 (punto 6). Nessun push o deploy eseguito.
-- **Claude:** fix numerico consegnato e integrato; puo' proseguire con launcher/catene WSD, manifest annidati e calibrazione
-  esecutiva concordata (punto 6), nel proprio worktree. Anche il prefetch e' revisionato e integrato: puo' usare il codice di main
-  come base locale senza modificare campagne congelate o riscrivere gli SHA. Il prompt operativo e' riportato sotto.
+- **GPT:** pubblica per primo lo schema del piano di valutazione; review/integrazione WSD/nested (3), regola prospettica (4), protocollo
+  causale e sonde intermedie (5), fold/criteri della calibrazione e payload di valutazione (6). Prompt completo nell'accordo operativo.
+- **Claude:** conserva la base manifest95f441b; completa residuo solo verso B, ore campionabili, derivato100%, floor e report finali.
+  Poi planner C1-C4, preventivi e orchestratore nei nuovi file assegnati. Payload reali e criteri arrivano da GPT; sonde e coseni restano GPT.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
-- **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
-  registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
-  per revocarla o lanciare estrazioni implicitamente.
+- **Sonde per profondita' (punto 5):** in questa tranche implementazione e protocollo GPT, insieme agli altri file dell'harness.
+  Nessuna nuova estrazione lanciata: i prompt definiscono preparazione e verifiche prima della tranche GPU.
 - **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline o ripetizione della prova prefetch da lanciare ora. Eventuali
-  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di circa 17,3/25 GPU-ora non e' un nuovo cap
+  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di 15,74/25 GPU-ora non e' un nuovo cap
   o un'autorizzazione generica. Questa tabella non avvia job e non cambia le decisioni scientifiche.
-- **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
-  Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
+- **Sicurezza dei dati:** rinfresco chiuso in fba794f, job60643323 COMPLETED0:0, 151.833 file e nessun problema; sostituisce il22/10.
+  Prossimo giro12/11. Letti i risultati registrati da Claude, nessun nuovo accesso al cluster in questa attivita'.
 
 ### Confini anti-conflitto e registrazione
 
-- Un writer per checkout e per file. Claude resta proprietario di trainer/dataloader/launcher training; GPT di loss/target/harness.
-  Il passaggio temporaneo a Claude dei file per le sole feature locale/backbone sara' delimitato con elenco e punto di base prima
-  delle modifiche; GPT non li modifica contemporaneamente. Nessuna delega generale dell'harness.
+- Un writer per checkout e per file. Claude resta proprietario di trainer/dataloader/launcher training e del nuovo orchestratore
+  scripts/evaluation_chain.py con il suo test; GPT di loss/target/harness, sonde intermedie e launcher di valutazione.
 - Ciascuno aggiorna le due sezioni del registro sul proprio branch e committa; GPT integra le voci testualmente. Claude legge questo
   blocco dal worktree GPT e lo riporta senza rinumerarlo. Non si editano il checkout dell'altro o una campagna congelata.
-- Un solo responsabile di lancio per campagna: GPT baseline/valutazione, Claude infrastruttura. Submitter e ledger comuni restano
-  obbligatori; nessun lancio duplicato o retry cieco. La lista non modifica budget, soglie o endpoint scientifici.
+- Un solo responsabile di lancio per campagna: per la nuova W1 Claude sottomette training e valutazione dai piani/payload revisionati.
+  Le campagne precedenti conservano i loro responsabili. Submitter e ledger comuni obbligatori; nessun lancio duplicato o retry cieco.
 
 ### Prompt operativo per Claude: launcher e catene WSD (15/10/2026)
+
+Prompt storico della consegna precedente: collaudo e manifest ora consegnati, vedere la tranche attiva e le voci piu' recenti.
 
 Il fix numerico a7c87b5 e' gia' verificato e integrato su main: non e' piu' un task aperto. Puoi procedere in parallelo sul punto 6.
 
@@ -1420,6 +1419,72 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   127.0.0.1 passa in 2,4 s sul codice attuale. Il test ora usa `--nnodes=1 --master-addr=127.0.0.1` e una porta libera: 1 PASS in 5,7 s. Il
   launcher del cluster resta con `--standalone`.
 
+### 2026-10-15 | GPT | Schema della catena di processing aggiornato | Codice di riferimento dc0c3b4
+
+- Aggiornati docs/schemi/catena_jepa_parte7.html e il PNG: mascheramento prima del front-end, identita' nel tokenizer, locale
+  geometrico e forme corrette; student e teacher ora sono due percorsi completi paralleli, collegati dall'EMA dei pesi.
+- Aggiunti readout completo senza decoder e rami PSD/wavelet paralleli al raw, testa keep raw separata, loss fusa/per ramo, dimensioni
+  2D e 2D+256, distinzione fra base e opzioni sperimentali e stato negativo di 2A/primario2C. Non e' un nuovo default.
+- Aggiornati DDP/accumulo/prefetch, WSD/ripresa, guardie numeriche e pannello fisso; corretti packing senza padding di canali ma
+  con padding temporale, locale sui montaggi sparsi e Perceiver C->K che non sempre riduce il numero di token. Bordo lento dichiarato.
+- Verifica dei contenuti sul codice e controllo indipendente dell'architettura. Rendering Chrome headless a scala2: PNG3200x3364,
+  QA DOM1600x1682, zero contenitori con overflow; immagine aperta e ispezionata. Mini-grafici solo illustrativi, nessun dato reale.
+- La skill di visualizzazione ha guidato la separazione dei percorsi e la leggibilita'; aggiornata la sorgente del diagramma gia' nel
+  repository. Nessun codice di training modificato, job o push; decisioni.md invariato perche' nessuna nuova decisione scientifica.
+
+### 2026-10-15 | GPT | Letti esiti WSD/manifest e commento scientifico di Claude | Fonte 225b380
+
+- Letti sul ramo Claude registro (entrambe le sezioni), decisioni, protocollo, risultati JSON e documenti di fattibilita'. Collaudo
+  w1_catena_v1 sul codice df4d2f5 PASS: tronco990->1400, ramo1100->1375, scorte gia' complete, passi/LR/checkpoint coerenti, nessun STOP.
+  Costo registrato1,55GPUh; totale infrastruttura9,26/25, residuo15,74. Lettura degli artefatti, non nuovo accesso a SLURM/accounting.
+- Manifest annidati collegati in c887854: verifiche strutturali senza problemi; passi per epoca riportati24.528 a batch32 (+6%),
+  costo finestra1 stimato5.000-5.600GPUh, non budget firmato. Continuazione2D dal pre-decay aggiunta in225b380 dopo il collaudo,
+  con18test del planner dichiaratiPASS; non un ulteriore collaudoGPU. Suite1021PASS diClaude precede nested e ultimo delta.
+- Concordo sul passaggio della priorita' a protocolli/default scientifici, calendario e sicurezza dati. Da qualificare interpretazioni
+  su soglia di rumore1% bf16, saturazioneGPU e norme gradienti; restano anche codice dei bracci e catena di valutazione, non sole decisioni.
+- Proposta sui sottoinsiemi: preferenza per riapplicare D9 (quote20/75/5, sqrt delle ore, tetto8), da confrontare esplicitamente con
+  mantenere i pesi attuali. Nessuna regola adottata o deroga firmata; scelte e costi vanno chiusi prima della campagna.
+- Aggiornata tabella/prossima tranche e registrate le cautele sotto e in decisioni.md. Main e codice invariati: nessun merge delle
+  nuove consegne, test, lancio, push o messaggio aClaude da questa richiesta di lettura e confronto.
+
+### 2026-10-15 | GPT | Convergenza sulla proposta Claude ecdfc50
+
+- Parere favorevole a manifest congelati per frazione, stessi soggetti/sessioni/sidecar, D9 riapplicata, hash e origine registrati,
+  guardia --nested e coerenza della ripresa. L'implementazione deve verificare quote/passaggi dopo TUTTE le normalizzazioni e le
+  esclusioni del sampler; il piccolo residuo di quota C richiede una politica esplicita, non una deroga gia' firmata.
+- Calendario8nodi6,8-7,6giorni: scenario utile, condizionato a nodi disponibili, lista/calibrazione/valutazione attuali e senza code
+  fra i job. La simulazione aggiorna la stima a~5.100-5.700GPUh, non il budget firmato. SCRATCH60643323 sottomesso secondoClaude,
+  non verificato finito; resta la verifica dei file dopo il giro. Nessun accesso al cluster in questa attivita'.
+- Bene riferimento30M a due semi: gia' nella bozza dei bracci, riusare quei run anziche' aggiungere duplicati. Due semi sono un
+  minimo informativo, non una stima precisa della variabilita'. Bene coseni dei gradienti e sonde locale/backbone: non sostituiscono
+  ablation causali. In run.py a ecdfc50 sono presenti norme, non coseni; il blocco e' nel percorso singolo senza accumulo, da estendere
+  e testare prima di dichiararlo disponibile in DDP. Sonde intermedie ancora da protocollo, non avviate qui.
+- Confermato l'ordine dei punti3/4/5/6, punti1/2 chiusi. Solo lettura/revisione della proposta e documentazione: nessun codice, test,
+  merge del ramoClaude, job o push. Aggiornate entrambe le sezioni e la nota in decisioni.md.
+
+### 2026-10-15 | GPT | Specifica e prompt per la tranche successiva | Fonte Claude fba794f
+
+- Su richiesta di Simone preparati i due prompt in docs/accordo_operativo_finestra1_20261015.md. Claude: manifest, planner calibrazione,
+  orchestrazione valutazione e preventivi; GPT: contratto valutazione, review/integrazione, stabilita', obiettivi, sonde e selezione LR.
+- Reso concreto il caso quota C insufficiente: A20%, residuo a B entro capacita', stessa allocazione sqrt(ore), cap8; verifica finale
+  sul sampler, ore delle sessioni campionabili ed endpoint con floor unico. Estensione da verificare nel report prima del congelamento.
+- Griglia di preparazione: 30M tre LR a1epoca + due finalisti seme1; 100M due finalisti a0,5epoche; 300M una conferma a0,25.
+  Batch32, warmup D14 riferito a D4; stima training+3% circa156,7GPUh/1.254ore locali, prima di sonde e manifest aggiornati.
+  Voce W1, non budget infrastruttura. Criteri e fold prima di misurare; test ufficiali esclusi dalla scelta del LR.
+- Letti anche limiti/saldo in fba794f: 8nodi normal ammessi; consumo condiviso e code restano il rischio. SCRATCH chiuso e prossimo12/11.
+- Aggiornate tabella6punti, entrambe le sezioni e decisioni. Nessuna nuova campagna avviata, nessun codice di Claude integrato qui;
+  i prompt sono pronti da usare per le consegne locali.
+
+### 2026-10-15 | GPT | Prompt Claude aggiornato sul lavoro residuo dei manifest | Fonte95f441b
+
+- Letti commit, registro, codice, test e report. Gia' consegnati costruttore/file locali, gestione residuo senza riscalare unità sature,
+  provenienza, report, guardie bidirezionali nested e launcher CPU. Claude dichiara32PASS; non rieseguiti in questa review statica.
+- Aggiornato accordo_operativo_finestra1_20261015.md per conservare questi blocchi e chiedere soltanto gli allineamenti a c6f59b9:
+  C->B, base campionabile con window_s, derivato100%, floor dell'endpoint, guardie e rigenerazione report da commit pulito.
+- La ripartizione precedente A+B e' una scelta implementata in parallelo alla specifica C->B, non una nuova ricorrenza dell'errore8,002.
+  Non richiesto di riscrivere firma dati/resume, guardia nested o builder. Planner/calendario/evaluation restano i successivi taskClaude;
+  coseni e sonde intermedie restano GPT come nell'accordo. Nessun merge di codice, test, job o push eseguito qui.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2218,3 +2283,58 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   lo SHA del file, quindi nessun effetto sui run; i manifest annidati registrano entrambi. Il congelato non si tocca.
 - I controlli sulle sovrapposizioni vanno per sessione: emg2pose ha il test ufficiale per sessione (soggetti con sessioni in pretraining e
   in test, 02/10); un mio primo controllo per soggetto li segnalava a torto, corretto prima del commit.
+
+### 2026-10-15 | GPT | Limiti e lettura dello schema aggiornato
+
+- Il vecchio flusso lineare decoder->teacher/student era fuorviante: il teacher possiede un proprio encoder/decoder completo e
+  non e' alimentato dall'uscita dello student. L'EMA aggiorna i pesi; il suo output e' stop-grad nella loss.
+- PSD/wavelet e keep sono implementati ma sperimentali; 2A/2C negativi non equivalgono ad assenza assoluta di effetto. La regola
+  prospettica di stabilita' resta aperta. Il collaudo GPU delle catene WSD e' avviato secondo il registro, non certificato concluso qui.
+- Lo schema mostra forme per finestra con unita' e precisazione packed nel footer, non un batch a numero fisso di canali. La
+  differenza di supporto al bordo fra target e rami e' esplicita; non e' stata cambiata per semplificare il disegno.
+
+### 2026-10-15 | GPT | Cautele sul commento scientifico e conteggio dei sottoinsiemi
+
+- Le differenze0,27%/0,66% di loss nei due confronti non definiscono una soglia statistica universale dell'1%: non sono repliche
+  sufficienti di una distribuzione di rumore; prefetch/hardware e traiettoria concorrono. Nessuna nuova soglia adottata o confronto
+  sotto1% dichiarato indistinguibile. Sonde accoppiate e piu' semi restano il protocollo, non una correzione retroattiva.
+- Batch piu' grande senza vantaggio per finestra e MFU~11% non dimostrano saturazione del calcolo: servirebbe un profilo per
+  distinguere kernel, banda, launch overhead e sincronizzazioni. Norme ancore/JEPA~9 su16batch non sono quote causali dell'apprendimento.
+- Asse soggetti: riportare N effettivo, ore e dose separatamente; 13,8/26,1/51,0 sono frazioni di ORE, non gli stessi valori dell'asseN.
+  I conteggi78/146/284/565 sono coppie(dataset,soggetto), non deduplicazione garantita degli individui fra dataset.
+- Il report nested non giustifica «entro mezzo punto»: al12,5% B=74,133% contro75% (-0,867punti). Al50% max_passes_at_E=8,031,
+  quindi non dichiarare il tetto8 rigorosamente rispettato senza scelta/correzione esplicita; al25% e'8,001.
+- Conteggio epoca: il loader azzera la probabilita' delle62sessioni con window_s=null e rinormalizza, mentre nested_manifest_report
+  usa nel denominatore anche il loro peso. Verifica indipendente sui fileClaude: massa0,00039891715,0,466309ore; tenendo le822,86ore
+  come budget mancherebbe fattore1,000399076 (~0,04%, circa10passi/epoca). Definizione ore campionabili vs ore nominali e arrotondamento
+  dell'endpoint vanno resi unici (JSOND=98.111 contro4x24.528=98.112). Nessun crash del loader o invalidazione del collaudoWSD.
+
+### 2026-10-15 | GPT | Normalizzazione della proposta nested D9 ecdfc50
+
+- scripts/nested_manifest_d9_weights.py normalizza le quote di classe con /tot ma mostra i passaggi grezzi restituiti da allocate.
+  Al25% la massa assegnata e'0,99974648745; rinormalizzarla globalmente darebbe passaggi attesi massimi8,00203, non8, e classi
+ 20,0051/75,0190/4,9759%. Riscontro indipendente sul manifest locale: quotaC assegnabile0,04974648745, residuo0,00025351255.
+- Gestire il residuo esplicitamente, senza riscalare sopra il cap le unita' gia' sature; proporre eventuale redistribuzione verso
+  capacita' libera e registrare le quote realizzabili. Testare massa1, cap finale, identita' righe e conteggio epoche coerente col sampler.
+  Parere favorevole alla direzione, non certificazione del riepilogo attuale o adozione silenziosa di nuove quote.
+- I6,8-7,6giorni non includono le code; la valutazione e' stimata con50nodo-ore e disponibilita' idealizzata. Il coseno dei gradienti
+  richiede un ampliamento della diagnostica: norme e coseno non identificano da soli il contributo causale all'utilita' downstream.
+
+### 2026-10-15 | GPT | Limiti della specifica operativa della prossima tranche
+
+- Il residuo C verso B e la base delle ore campionabili sono espliciti nel nuovo accordo; il report finale deve dimostrare cap e quote,
+  incluse le differenze rispetto a v1.1. La proposta non autorizza correzioni silenziose ai manifest congelati o reinterpretazioni di D9.
+- La griglia breve seleziona candidati LR; una sola prova300M non dimostra l'ottimo e i pilot non sostituiscono i due semi a durata piena.
+  Sonde finali P1/P2 e pannello di stabilita' non vanno riusati come validation indistinta per scegliere iperparametri.
+- Il nuovo orchestratore appartiene a Claude, i payload all'harness GPT; la separazione evita due writer e due submitter W1.
+  La stima157GPUh esclude valutazione/collaudi e va aggiornata prima del lancio. Nessun nuovo budget o soglia firmato in questo scambio.
+
+### 2026-10-15 | GPT | Delta manifest95f441b rispetto alla specifica c6f59b9
+
+- Residuo attuale verso A+B: al25% il report riporta A20,0048288%; la specifica mantiene A20 e assegna il residuo a B entro capacità.
+- Il builder non riceve window_s; sampled_distribution normalizza tutti i pesi e il report omette le durate null solo nel conteggio
+  finestre. Sul completo restano le62sessioni non campionabili: il report non verifica ancora la distribuzione finale del sampler.
+- Il report usa round; la specifica chiede floor unico dell'endpoint. L'obbligo di riprodurre bitwise v1.1 al100% va limitato al caso
+  senza esclusioni; il nuovo derivato100% deve invece dichiarare le differenze previste e conservare il vecchio congelato.
+- Aggiungere regressioni per input non finiti/negativi e durate mancanti rispetto a null dichiarate. I report locali riportano code_commit
+  b889c4b (base precedente alla consegna): rigenerare quelli finali da commit pulito per una provenienza eseguibile. Non un errore nei dati raw.

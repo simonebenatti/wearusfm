@@ -3291,3 +3291,55 @@ quota, senza superare il tetto; controlli sulla distribuzione campionata. Costru
 50%, al 25% classe C 4,97% (residuo 0,0254% ad A e B), passaggi massimi 8,000000 ovunque; pesi del 100% riprodotti bit per bit. Il campo
 `hash` del v1.1 e' rimasto quello di v1 (contenuto: 52549ef8...), segnalato. Dettagli in `docs/manifest_annidati_d16.md`. Prossimi: review di
 GPT, poi costruzione sul cluster (job CPU da autorizzare).
+
+### Lettura della consegna WSD/manifest e priorita' successive (GPT, 15/10/2026, fonteClaude225b380)
+
+Artefatto results/infra/w1cat_20261015.json sul ramoClaude: collaudo w1_catena_v1 PASS sui criteri congelati, codice df4d2f5;
+tronco990->1400, ramo1100->1375, scorte uscite gia' complete. Costo registrato1,55GPUh, infrastruttura9,26/25usate e15,74residue.
+La continuazione2D del planner e il collegamento nested sono consegne successive da review; nessuna integrazione di quel delta qui.
+
+La stima aggiornata della finestra1 e'5.000-5.600GPUh, non budget firmato. Restano bracci non implementati e catena di valutazione,
+oltre a regola di stabilita', protocollo scientifico, calibrazione, tetto nodi e SCRATCH22/10. Proposta: review del delta in parallelo
+alla definizione4/5, non nuovi training prima di protocollo/costi. Sono proposte, non nuove autorizzazioni.
+
+Pesi nested ancora da firmare: GPT preferisce valutare D9 riapplicata ai sottoinsiemi (quote20/75/5, sqrtore, tetto8), non adottata.
+Il report mostra B74,133% al12,5% (-0,867punti, non mezzo punto) e massimo8,031passaggi al50%. Il conteggio delle epoche deve inoltre
+replicare l'esclusione/rinormalizzazione del sampler per62sessioni senza finestre: scarto~0,04% tenendo lo stesso budget di ore,
+non un nuovo valore finale di passi approvato. Distinguere ore nominali/campionabili e congelare una sola regola di arrotondamento.
+
+Nessuna soglia«1% di loss» adottata dal confronto bf16; norme dei gradienti non attribuiscono causalmente l'apprendimento alle ancore.
+Queste cautele non cambiano verdetti, soglie pregresse o architettura; nessun lancio, nuovo budget o decisione scientifica firmata.
+
+### Parere sulla proposta nested D9 e calendario a 8 nodi (GPT, 15/10/2026, fonteClaude ecdfc50)
+
+Favorevole a manifest congelati per frazione con D9 riapplicata, stessi ingressi e provenienza completa; non ancora adozione delle
+quote finali. Al25% il residuoC rende la massa totale0,99974648745: la normalizzazione globale porta il cap atteso a8,00203.
+Lo script stampa quote normalizzate ma passaggi grezzi: servono gestione esplicita del residuo e verifica sul sampler finale, comprese
+le sessioni senza finestre. Non e' una tolleranza o una deroga firmata al tetto8; riportare quote effettivamente realizzabili.
+
+Calendario8nodi6,8-7,6giorni e costo~5.100-5.700GPUh restano scenario/stima: non comprendono attese di coda, cap account e disponibilita'
+non verificati. Riferimento30M a due semi gia' nella bozza: nessun run aggiuntivo deciso. Coseni e sonde intermedie sono proposte utili,
+non sostituti delle ablation. Nessuna nuova soglia, campagna, autorizzazione di spesa o modifica del default adottata qui.
+
+### Preparazione della prossima tranche e assegnazioni (15/10/2026)
+
+Simone: «decidiamo e preparami il prompt per Claude e il tuo». Specifica concreta e prompt in
+`docs/accordo_operativo_finestra1_20261015.md`: Claude implementa manifest/planner/orchestrazione; GPT mantiene loss, protocolli,
+sonde/launcher dell'harness, criteri e review. Per W1 un solo submitter, Claude, dai piani revisionati da GPT.
+
+Regola proposta per rendere fattibile il nested al25%: tentare20/75/5 con D9; se C satura, conservare A20% e assegnare il residuo a B
+rispettando tutti i cap. Se A o B non hanno capacita', fermare la costruzione. Ore delle sessioni campionabili, righe escluse a peso0,
+quote/passaggi finali verificati nel sampler e provenienza versionata; floor unico dell'endpoint. Estensione esplicita da verificare nel
+report prima di congelare i nuovi derivati; nessuna modifica retroattiva a v1.1 o firma attribuita a Simone su quote non ancora misurate.
+
+Griglia da preparare/preventivare: batch32; 30M LR1e-4/3e-4/1e-3 a1epoca seme0, due finalisti ripetuti seme1; due LR100M a0,5epoche;
+conferma300M a0,25. Otto run, circa156,7GPUh di training con3% di margine alle misure attuali, valutazione esclusa. Budget W1 da chiudere,
+non voce del residuo infrastruttura. Fold interni P1 e selezione da protocollo GPT prima del lancio; niente test ufficiale per scegliere.
+
+Aggiornamento dai logClaude fba794f: SCRATCH60643323 chiuso,151.833file,0problemi, prossimo12/11; limiti sacctmgr compatibili con8nodi normal.
+Nessun nuovo accesso cluster, lancio o budget approvato in questa attivita'. I nuovi prompt avviano preparazione e verifiche locali.
+
+**Aggiornamento sul manifest consegnato95f441b (15/10/2026).** Su richiesta di Simone il promptClaude e' stato ristretto al lavoro residuo:
+conservare builder/file/report/guardie esistenti; allineare residuo C->B, ore campionabili, derivato100%, floor e verifiche finali alla
+specifica c6f59b9. La ripartizione A+B della consegna e' stata sviluppata in parallelo; nessuna nuova decisione scientifica o variazione
+del tetto. Report finali da rigenerare dal commit corretto; review statica qui, non nuova suite o costruzione sul cluster.
