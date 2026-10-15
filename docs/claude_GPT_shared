@@ -21,8 +21,8 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT:** diagnosi e test locali della baseline (punto 2), con review del trainer distribuito e del monitor (punti 3/4) in parallelo
-  per quanto possibile; confronto secondario dai report a seguire (punto 1). Non un quinto training dei rami.
+- **GPT:** baseline (punto 2) gia' accodata dopo gate esatto; review trainer/monitor (punti 3/4) consegnata, con quattro P2 a Claude.
+  Ora chiude il confronto secondario dai report (punto 1) e l'analisi dei gradienti storici (punto 5), senza nuovi job GPU.
 - **Claude:** prepara il protocollo della prova GPU/NCCL/bf16 e della misura dati in DDP (punto 6), la bozza della regola di stabilita'
   (punto 4) e la fattibilita'/costi dei job della finestra 1 (punto 6). Risponde ai rilievi di review sul proprio branch (punto 3).
 - **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
@@ -550,6 +550,19 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   solo nel no_sync di rank0, gradienti esatti su entrambi per2updatePASS. Selezione agente4PASS prima del caso worker bloccato/interrotto,
   non interasuite. Nessun errore trovato di scala globale/accumulo/clipping/EMA/freeze nel perimetro esaminato; NCCL/bf16 non provati qui.
 
+### 2026-10-15 | GPT | Tranche parallela punti 1 e 5: analisi locali riproducibili
+
+- Su richiesta di Simone prendo il confronto secondario RPW-MS sui due teacherB e i gradienti pesati dell'A/B, mentre Claude corregge
+  i quattro P2 nel suo trainer. Nessun edit concorrente di run.py, merge, nuovo job o cambio di soglia/budget.
+- Nuovo scripts/compare_step2_closed_reports.py: otto report chiusi, hash contro i rispettivi comparison.json, identita' dei teacher,
+  ingressi/righe/split accoppiati. Riusa compare_reports byte-identico ai due SHA di campagna,1000bootstrap/seed20261009 e regola
+  +1/-1punto del2C; rimuove la guardia -2punti specificaStep1. Output nuovo, non sovrascrive gli esiti primari2A/2C.
+- Nuovo scripts/analyze_step1_gradients.py: componenti shared_grad_* gia' pesate, otto osservazioni/semeB agli indici0,500,...3500
+  (log1,501,...3501). Verifica provenienza/configurazione/export del trainer69fa2da; A non strumentato per keep_weight0.
+- Test pertinenti:45PASS, CPU locale. Review indipendenteC1: orientamento, estimatore e criteri corretti; reviewC5: norme prima del
+  clipping e offset del passo confermati. Sono prove del codice di analisi, NON nuovi risultati sperimentali: copie piccole in corso
+  viaOps, nessun NPZ/checkpoint/dato grezzo scaricato. I tre draft preesistenti non committati restano intatti.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -969,3 +982,12 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Bozza v2Claude366ab11 letta: delta0,10/k3 NON adottati. Minimo selezionato da motivare/calibrare prospetticamente; frozen registra
   keep_branches, non total; nelJEPA evolve anche il targetEMA. Restano provaGPU/DDP della diagnostica e gestione rank0 dei nonfiniti/errori.
   Il testworkerlocale bloccato non e' da solo un difetto del trainer dimostrato. Fullsuite non dichiarata rieseguita.
+
+### 2026-10-15 | GPT | Limiti delle analisi parallele punti 1 e 5
+
+- RPW-MS e' un secondario gia' previsto dal2C, non un nuovo primario: niente promozione dei rami o modifica dei verdetti storici.
+  Gli intervalli si ricalcolano dai conteggi accoppiati, non sottraendo due intervalli; P2 resta descrittivo, solo due teacher.
+- Le norme pesate non si sommano come quote e non determinano la direzione o l'aggiornamentoAdamW; il clipping e' successivo.
+  Otto batch/semeB sono lo0,2% dei4000, non una prova di dominanza a ogni update. A non ha queste diagnostiche per scelta del codice.
+- La copia dei report/export deve terminare e superare i gate prima di dichiarare esiti. Sonde fisiche/temporali e obiettivoSSL dei
+  rami restano lavoro del punto5; questa tranche non chiude tutta la validazione e non autorizza altri training.
