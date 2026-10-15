@@ -110,3 +110,54 @@ script/launcher/test dell'equivalenza (trainer, `train_ddp.sbatch` e `train_jepa
 comandi con `CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014,EXPECTED_SHA=977e7672805537ed92d84b3f66299748d6b2d89e`.
 (A) resta sul checkout `w1gd-20261014` appena pronto. Coppie su dbg: (data_b32, data_b64), (tp_100m_b32, tp_100m_b64), (tp_300m_b32,
 tp_300m_b64), poi `w1gd_equiv`. Costi e criteri invariati.
+
+## Prefetch del batch (`w1_prefetch_v1`, 15/10/2026)
+
+**Origine.** (B) non superata al 30M (2,40% e 2,81% contro il 2% di D6a). Simone, 15/10/2026: «vai con la 1, il prefetch sulla GPU»; e
+poi: «quei 17 ms sono nell'handoff CPU dai worker. Il prefetch deve anticipare anche quel lavoro, non soltanto la copia sulla GPU». E' cosi':
+`t_data_s` misura `next()` del DataLoader e la ricostruzione dalla memoria condivisa (`_from_shared`); la copia sul dispositivo stava gia'
+fuori, dentro il passo.
+
+**Codice.** `RunConfig.prefetch` (`--prefetch`): un thread (`_Prefetcher` in `training/run.py`) fa, un batch avanti e nell'ordine dello
+stream, tutto quello che il ciclo faceva all'inizio del passo: `next()` del DataLoader (la ricezione dai worker), `_from_shared`, micro-batch
+(`split_batch`), tensori e copia sul dispositivo su uno stream CUDA proprio; il passo aspetta l'evento della copia e i tensori si registrano
+sul suo stream (`record_stream`). Nel thread nessuna estrazione casuale. `t_data_s` diventa l'attesa che resta. `RunConfig.prefetch_audit`
+(`--prefetch-audit`, solo verifica): a fine passo gli ingressi sul dispositivo uguali bit per bit (SHA-256) a quelli preparati di nuovo dal
+batch sulla CPU, su tutti i processi; altrimenti il run si ferma come per un errore numerico (nessun checkpoint, STOP). Entrambi ammessi alla
+ripresa (non cambiano il training). Test CPU: `tests/cpu/test_prefetch.py` (training bit per bit uguale con e senza, a un processo, con
+worker, con accumulo, coi codici RVQ, alla ripresa e alla ripresa di un run col prefetch fermato con un batch gia' preparato; la verifica
+ferma il run su ingressi cambiati nel thread; un errore del thread arriva al ciclo) e `test_ddp_prefetch_leaves_the_training_unchanged` (2 processi `gloo`, accumulo 1 e 2).
+
+**Prove su GPU** (criteri congelati qui, prima del lancio):
+- `w1pf_audit`: preset 30M, regole della finestra 1, tutti i dataset, batch globale 64 con `--accum-steps 2` (due micro-batch per processo:
+  piu' tensori in volo per passo), `--prefetch --prefetch-audit`, 200 aggiornamenti. **Criterio:** `stopped` = `max_steps`, 200 passi,
+  `prefetch_audit_steps` = 200 (ingressi uguali bit per bit su tutti e 4 i processi a ogni passo).
+- `w1pf_data_b32`, `w1pf_data_b64`: come `w1gd_data_b32` e `w1gd_data_b64` con `--prefetch`, 600 aggiornamenti, cartelle nuove.
+  **Criterio (D6a, gia' congelato):** frazione d'attesa (somma di `t_data_s` / somma di `t_step_s`, aggiornamenti 51-600) <= 2% in tutti e
+  due i bracci.
+- **Tempo totale** (GPT, 15/10/2026: il miglioramento si verifica sul tempo totale, non spostando l'attesa fuori dal cronometro; `t_step_s`
+  parte prima della consegna del batch e comprende quindi l'attesa e ogni rallentamento del passo dovuto al thread). **Criterio:** media di
+  `t_step_s` sugli aggiornamenti 51-600 <= 1,01 x quella di `w1gd` (0,7144 s col batch 32, 1,3866 s col 64, `results/infra/w1gd_20261015.json`),
+  cioe' <= 0,7215 e <= 1,4005 s. Descrittivo anche `elapsed_s` / passi del `summary.json`.
+- **Superata** se valgono tutti e tre: (B) superata col prefetch, i launcher della finestra 1 passano `--prefetch`, montaggi virtuali nel
+  default come da D15/D6a. Altrimenti: verifica non superata -> niente prefetch finche' la causa non e' capita; attesa sopra il 2% o tempo
+  totale peggiore -> profilo per fasi e proposta, nessun ritocco automatico.
+- Descrittivo: s/passo mediano contro `w1gd` (0,707 e 1,366), memoria, loss dei primi passi contro i run `w1gd` (stesso seme e stessi batch;
+  il bf16 non e' deterministico, quindi non bit per bit).
+
+**Risorse e costo.** 3 job da 4 GPU su `boost_qos_dbg`, 30 min ciascuno: **tetto 6 GPU-ora (48 ore locali)**, stima ~2 GPU-ora (8 + 8 +
+15 min, dai tempi di `w1gd`); checkout di campagna su `lrd_all_serial`, 1 CPU, 10 min (0,17 core-ora). Dal budget «preparazione
+dell'infrastruttura» (usate 5,87 su 25; dopo il tetto al massimo 11,87).
+
+**Comandi.** Riferimento di deploy `deploy/w1pf-20261015` allo SHA del commit che pubblica questi comandi, checkout di campagna, poi le
+coppie su dbg (`w1pf_audit`, `w1pf_data_b32`) e (`w1pf_data_b64`), via leonardo-ops con `submit_job.py --gpu-ore 2`.
+
+    C=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1pf-20261015
+    M, S, W come in `w1gd`
+    RUN=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1pf_1510
+
+    w1pf_audit:    PRESET=sanity, EXTRA_ARGS="--window1-rules --window-seconds $W --datasets all --batch-size 64 --accum-steps 2 --prefetch
+                   --prefetch-audit", 200 passi, $RUN/audit_b64a2
+    w1pf_data_b32: PRESET=sanity, EXTRA_ARGS="--window1-rules --window-seconds $W --datasets all --batch-size 32 --prefetch", 600 passi,
+                   $RUN/data_b32
+    w1pf_data_b64: come sopra con --batch-size 64, $RUN/data_b64

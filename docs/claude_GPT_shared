@@ -10,25 +10,25 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' dei file invariate.
+Stato aggiornato al 15/10/2026 dopo review e integrazione del prefetch; numerazione e proprieta' dei file invariate.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review conclusa e merge della base + fix; prefetch separato al punto 6 | Correzione consegnata in a7c87b5, SHA conservato | CHIUSO per la base 59b8c5b + fix numerico: main locale aggiornato al merge a719c2c. Verifica GPT 69 test CPU PASS, nessun nuovo rilievo; nessun push o deploy |
+| 3 | Review e integrazione su main | Review e integrazione della base, fix e successivo delta prefetch | Fix a7c87b5 e prefetch 8cc6cbf consegnati, SHA conservati | CHIUSO per le consegne esaminate: base + fix integrati in a719c2c; review separata del prefetch conclusa senza rilievi bloccanti, integrazione locale conservando 8cc6cbf. Nessun push o deploy |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
-| 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, eventuale nuovo obiettivo self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti storici analizzati, ancore/JEPA circa 9 e keep/JEPA circa 1 su soli 16 batch; restano attribuzione e sonde. Niente congiunto dei rami con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: equivalenza GPU e misure dei rung acquisite; prova prefetch PASS (85ac845/source 0230775), attesa 30M 0,67%/0,65%. Restano review del codice prefetch, launcher/manifest, calibrazione e piano/budget firmati |
+| 5 | Validare l'obiettivo scientifico | Protocollo di ablation JEPA/ancore/keep, sonde temporali/fisiche, confronto comparabile con NeuroRVQ e eventuale nuovo obiettivo dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione concordata | PARZIALE: gradienti analizzati; restano attribuzione, sonde e confronto frozen-frozen NeuroRVQ sul nostro protocollo. La replica con fine-tuning non lo sostituisce. Nessun nuovo job approvato, niente congiunto dei rami con la loss attuale |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista/configurazioni dei job e budget da sottoporre a Simone | Launcher/catene WSD, manifest annidati, calibrazione esecutiva LR/batch e sicurezza dati | PARZIALE: prefetch verificato e integrato, prova GPU PASS (0,67%/0,65% al 30M), 64 ulteriori test CPU PASS. Restano launcher/catene, manifest, calibrazione, piano/budget firmati e rinfresco SCRATCH entro 22/10 |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT:** base 59b8c5b + fix a7c87b5 integrati su main locale in a719c2c, dopo review e 69 test CPU PASS. Restano review separata
-  del prefetch (0230775 e suo merge del fix), senza rifare automaticamente le misure GPU gia' superate, regola del monitor (punto 4),
-  protocollo di ablation/sonde (punto 5), lista/default/configurazioni/budget della finestra 1 (punto 6). Nessun push o deploy eseguito.
+- **GPT:** base + fix integrati; anche la review separata del prefetch 8cc6cbf e' conclusa e integrata localmente, dopo due review
+  indipendenti e 64 test CPU PASS. Prossimi blocchi: regola del monitor (punto 4), protocolli di ablation/sonde e confronto NeuroRVQ
+  comparabile (punto 5), lista/default/configurazioni/budget della finestra 1 (punto 6). Nessun push o deploy eseguito.
 - **Claude:** fix numerico consegnato e integrato; puo' proseguire con launcher/catene WSD, manifest annidati e calibrazione
-  esecutiva concordata (punto 6), nel proprio worktree. Il prefetch e la sua prova GPU sono gia' conclusi: restano la review separata
-  di GPT e l'integrazione del delta. Nessuna riscrittura degli SHA o modifica alle campagne congelate.
+  esecutiva concordata (punto 6), nel proprio worktree. Anche il prefetch e' revisionato e integrato: puo' usare il codice di main
+  come base locale senza modificare campagne congelate o riscrivere gli SHA. Il prompt operativo e' riportato sotto.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
@@ -50,6 +50,26 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   blocco dal worktree GPT e lo riporta senza rinumerarlo. Non si editano il checkout dell'altro o una campagna congelata.
 - Un solo responsabile di lancio per campagna: GPT baseline/valutazione, Claude infrastruttura. Submitter e ledger comuni restano
   obbligatori; nessun lancio duplicato o retry cieco. La lista non modifica budget, soglie o endpoint scientifici.
+
+### Prompt operativo per Claude: launcher e catene WSD (15/10/2026)
+
+Il fix numerico a7c87b5 e' gia' verificato e integrato su main: non e' piu' un task aperto. Puoi procedere in parallelo sul punto 6.
+
+1. Leggi CLAUDE.md e questo registro aggiornati; allinea il tuo ramo con un merge di main, senza rebase/squash. Lavora solo nel tuo
+   worktree e sui file di tua competenza. Le nuove modifiche a loss/target/harness richiedono un passaggio esplicito, non sono parte di questo task.
+2. Prepara launcher di campagna su un nodo/4 GPU con CODE_DIR, SHA atteso e checkout pulito, submitter/lock/ledger comuni e --prefetch
+   dal codice revisionato. Non modificare i checkout delle campagne esistenti.
+3. Prepara e testa localmente le catene WSD: ripresa nelle allocazioni da 24 h senza cambiare schedule/stream/RNG, checkpoint stabile,
+   pre/post decay, rami di decay per seme e continuazione a 2D; STOP blocca la catena, nessun retry cieco. Rispetta D14 gia' firmata.
+4. Prepara manifest annidati e provenienza riproducibile (soggetti/sessioni, split, hash e quote concordate), con verifica degli ingressi
+   e nessun uso dei test per scegliere configurazioni. Aggiungi alla lista job fattibilita', risorse, tempi e costi dalle misure esistenti.
+5. LR/batch restano quelli gia' concordati finche' la calibrazione li fissa; non decidere autonomamente K, default, ablation o budget.
+   Coordina il rinfresco SCRATCH entro il 22/10 con la procedura e il perimetro gia' autorizzati, verificandone l'esito.
+6. Consegna commit separati con test, aggiorna entrambe le sezioni del registro e decisioni.md se necessario. Questo prompt avvia
+   sviluppo/test locali, non autorizza nuovi job, allocazioni o training; nessuna ulteriore conferma per i normali passi locali del task.
+
+GPT ha completato la review/integrazione del prefetch; prosegue con regola prospettica di stabilita' (4) e protocolli scientifici (5). Nessuna attesa
+reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione del prefetch sono registrati nelle voci cronologiche.
 
 ## 1) Cosa ho fatto
 
@@ -1108,6 +1128,56 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
 - Interpretazione indipendente concorde: accessibilita' lineare e trasferimento, non prova di nuova informazione nel segnale o di
   impossibilita' del training congiunto. Nessun esperimento, modifica algoritmica o nuova decisione/default/budget; solo chiarimento.
 
+### 2026-10-15 | Claude | Prefetch del batch nel trainer e prova su GPU | Simone: «vai con la 1, il prefetch sulla GPU»
+
+- `RunConfig.prefetch` (`--prefetch`, `_Prefetcher` in `training/run.py`): un thread anticipa di un batch tutto il lavoro che il ciclo faceva
+  all'inizio del passo -- `next()` del DataLoader (ricezione dai worker), `_from_shared`, `split_batch`, tensori e copia sul dispositivo su uno
+  stream CUDA proprio (evento + `record_stream` sullo stream del passo). Nessuna estrazione casuale nel thread; `t_data_s` diventa l'attesa che
+  resta. Il percorso a un processo usa ora anche lui i micro-batch di `_prepare` (stessi tensori di prima). `_Micro` ha un campo `codes`.
+- `RunConfig.prefetch_audit` (`--prefetch-audit`): a fine passo SHA-256 degli ingressi sul dispositivo contro quelli preparati di nuovo dal
+  batch sulla CPU, deciso su tutti i processi; diverso -> stop come un errore numerico. Prefetch e verifica ammessi alla ripresa
+  (`RESUME_OPERATIONAL`).
+- Test: `tests/cpu/test_prefetch.py` (8) e il caso DDP in `test_training_ddp.py` (2): training bit per bit uguale con e senza prefetch (un
+  processo, worker, accumulo, RVQ, ripresa; DDP con accumulo 1 e 2). Protocollo `w1_prefetch_v1` con criteri e preventivo (tetto 6 GPU-ora)
+  in `docs/protocollo_gpu_dati_finestra1.md`. Da rivedere da te quando integri: tocca il ciclo del trainer, non il contratto delle loss.
+- Letti i tuoi vincoli (5a25a5c): handoff CPU anticipato (si'); ripresa con un batch in volo: test aggiunto (run col prefetch fermato al passo
+  3 col batch 3 gia' preparato, ripresa = continuo, con 0 e 2 worker); tempo totale: criterio congelato prima del lancio (media di
+  `t_step_s` <= 1,01 x `w1gd`, che parte prima della consegna del batch); su GPU nessuna uguaglianza bit per bit dichiarata per la
+  traiettoria bf16, solo per gli ingressi (`prefetch_audit`). Delta separato da 59b8c5b, nessuna riscrittura.
+- Suite CPU completa: 940 PASS (930 + 8 del prefetch + 2 DDP), poi i 2 test della ripresa con un batch in volo aggiunti dopo: PASS
+  (`tests/cpu/test_prefetch.py` 10 PASS). Lancio della prova `w1pf` con riferimento `deploy/w1pf-20261015` allo SHA di questo commit.
+
+### 2026-10-15 | Claude | Prova del prefetch lanciata | Base: 02307753c321e028fbb73aec9329d7f5c852bf19
+
+- Preflight in sola lettura pulito (checkout e cartelle dei run inesistenti, riferimento assente, nessun job in coda); push di
+  `deploy/w1pf-20261015` (nuovo ramo, senza forzature); checkout di campagna 60608218 COMPLETED 0:0 («checkout di campagna pronto ... @
+  0230775»). Prima coppia su dbg: `w1pf_audit` 60608329 e `w1pf_data_b32` 60608334, RUNNING dalle 08:36. `w1pf_data_b64` dopo la coppia.
+- Il primo passo di ogni run sconta l'avvio dei worker (7,6 e 3,7 s di attesa al passo 1): fuori dalla misura, che parte dal 51.
+
+### 2026-10-15 | Claude | Prova del prefetch: prima coppia finita, terzo job lanciato
+
+- `w1pf_audit` 60608329 COMPLETED 0:0 (5:35) e `w1pf_data_b32` 60608334 COMPLETED 0:0 (7:52); `w1pf_data_b64` sottomesso, job 60615343.
+  Esiti da leggere dopo la copia dei file (criteri congelati in `docs/protocollo_gpu_dati_finestra1.md`).
+
+### 2026-10-15 | Claude | Prova del prefetch: verifica degli ingressi e batch 32 (parziale, batch 64 in corso)
+
+- `w1pf_audit` (60608329): **superata**, `stopped` = `max_steps`, 200 passi, `prefetch_audit_steps` = 200: ingressi sul dispositivo uguali
+  bit per bit al batch a fine passo, su 4 processi, 2 micro-batch per processo, nessuno STOP. Memoria max 14,1 GiB.
+- `w1pf_data_b32` (60608334): attesa sui dati **0,67%** (era 2,40%; mediana 4,4 ms contro 17, p95 7,3 ms, massimo 11 ms); media di
+  `t_step_s` 0,7057 s contro il limite 0,7215 (w1gd 0,7144): **superati** entrambi i criteri del braccio. Descrittivo: tempo di parete per
+  passo (`elapsed_s` / passi, con avvio, valutazioni e checkpoint) 0,755 s contro 0,746 di w1gd (+1,2%, non un criterio; da tenere
+  d'occhio). Stessi batch di w1gd a ogni passo (finestre e classi uguali); loss totale entro 1,1e-7 relativo al passo 1 e 6,6e-6 nei primi
+  10, poi la deriva del bf16 non deterministico (mediana 0,27% su 600 passi).
+- Verdetto complessivo solo dopo `w1pf_data_b64` (60615343).
+
+### 2026-10-15 | Claude | Prova del prefetch superata | Codice: 02307753c321e028fbb73aec9329d7f5c852bf19
+
+- Tutti i criteri congelati superati (`results/infra/w1pf_20261015.json`): verifica degli ingressi 200/200 passi; attesa al 30M 0,67% (batch
+  32) e 0,65% (batch 64) contro il 2% di D6a (erano 2,40% e 2,81%); tempo totale (media `t_step_s`) -1,2% e -2,2% rispetto a w1gd, nei
+  limiti. Il +1,2% del tempo di parete col batch 32 non si ripete col 64 (-2,1%): variazione fra nodi, descrittivo.
+- Costo 1,84 GPU-ora (tetto 6); infrastruttura 7,71/25. Come da protocollo, i launcher della finestra 1 passeranno `--prefetch`.
+- Per l'integrazione: il prefetch e' il delta `0230775` sopra la base 59b8c5b (piu' voci del registro), da rivedere a parte come concordato.
+
 ### 2026-10-15 | Claude | Correzione: finitezza della perdita del backward (review GPT 4f052b0) | Base: 59b8c5b
 
 - Ramo `fix-backward-loss-finite`, un commit su `59b8c5b`, separato dal prefetch (nessuna riscrittura di SHA). In `_accumulate_terms`:
@@ -1136,6 +1206,34 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   rispetto a entrambi i genitori. Main canonico aggiornato in fast-forward da 5030a19; worktree GPT allineato, tre draft preservati.
 - Punto 3 chiuso per base + fix. Prefetch NON incluso, review separata al punto 6. Nessun job, SSH, push o deploy; aggiornati
   tabella attiva, report di review e decisioni.md per registrare l'integrazione, senza nuove soglie/default/budget.
+### 2026-10-15 | Claude | Suite completa dopo il merge della correzione | Base: 66b5a0f
+
+- Ramo del prefetch con la correzione (`66b5a0f` = merge di `85ac845` e `a7c87b5`): suite CPU completa **946 PASS** (942 + le 2
+  regressioni di GPT + i 2 casi del nuovo test `gloo` sull'overflow). Sul ramo `fix-backward-loss-finite` da solo: 46 test mirati PASS.
+
+### 2026-10-15 | GPT | Chiarimento sul ruolo dei pesi NeuroRVQ | Fonti: piano v10 e decisioni del 04-05/10
+
+- I pesi pubblici non sono stati ignorati: il tokenizer congelato e' stato usato nel percorso di target RVQ, e il foundation model
+  pubblico nella replica downstream (scripts/replicate_neurorvq.py e foglio firmato). La replica con fine-tuning ha dato EPN-612 95,39%
+  entro tolleranza e UCI-EMG 78,66% fuori tolleranza. Non e' un confronto frozen-frozen con le nostre sonde.
+- WearUsFM e' invece una propria architettura, allenata da inizializzazione casuale; i teacher congelati di 2A/2C sono nostri checkpoint
+  su emg2qwerty. Usare NeuroRVQ come backbone/inizializzazione cambierebbe il disegno e richiederebbe adattamento, non un caricamento
+  diretto dei pesi nei nostri moduli. Non e' dimostrato che partire da zero sia superiore al riuso di un encoder preallenato.
+- Verificato anche il repository ufficiale degli autori (https://github.com/KonstantinosBarmpas/NeuroRVQ), che distingue tokenizer
+  ed EMG foundation model e pubblica entrambi. Nessun checkpoint scaricato, modello sostituito o nuovo esperimento lanciato.
+
+### 2026-10-15 | GPT | Review separata del prefetch e nuova tranche parallela | Codice Claude 8cc6cbf, base GPT e8b2d78
+
+- Due review indipendenti di CUDA/allocatore/lifecycle e replay/RNG/WSD senza rilievi bloccanti. Candidato di merge conserva il
+  codice Claude identico; conflitti soltanto nei due registri, risolti unendo le voci senza cancellare contenuti dei genitori.
+- Suite mirata CPU sul candidato: 58 PASS in 376,99 s (prefetch, DDP, ripresa stream, WSD, sicurezza della backward_loss,
+  ricetta e pannello). Aggiunti 6 controlli persistenti in docs/reviews/repro_prefetch_wsd_20261015.py: ripresa WSD a 7/8/9,
+  rami stable/decay/continuazione e ripresa DDP con accumulo 1/2, confrontando anche optimizer e RNG di tutti i processi: tutti PASS.
+  Totale 64 test CPU, non nuova fullsuite. I due casi DDP supplementari sono stati rieseguiti con IPC consentito (27,96 s).
+- Integrato localmente il delta di 8cc6cbf conservando SHA e voci; nessuna nuova prova GPU, SSH, push o deploy. Prova GPU storica
+  0230775 gia' PASS: nessuna richiesta di ripeterla. Aggiornati report di review, decisioni.md e tabella, con prompt per Claude.
+- Claude puo' partire con launcher/catene WSD/manifest senza rifare il fix; GPT passa a regola prospettica (4) e protocolli (5).
+  Registrato il confronto NeuroRVQ frozen-frozen mancante, senza adottare nuovi default, esperimenti o budget.
 
 ## 2) Problemi trovati
 
@@ -1840,6 +1938,12 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
 - Negativo significa mancato raggiungimento dei criteri prospettici in questo pilot (emg2qwerty, due teacher per famiglia, P2 descrittivo),
   non equivalenza dei modelli, inutilita' generale delle wavelet o validazione dell'intera architettura raw.
 
+### 2026-10-15 | Claude | Precisazione sull'attesa dei 17 ms
+
+- Nella proposta di stamattina ho scritto «copiare il batch sulla GPU»: impreciso. Come nota Simone, i 17 ms sono l'handoff CPU dai worker:
+  `t_data_s` misura `next()` del DataLoader e `_from_shared`, mentre la copia sul dispositivo stava gia' dentro il passo. Il prefetch
+  anticipa entrambe le cose; la copia sulla GPU e' l'ultimo pezzo, non il principale.
+
 ### 2026-10-15 | Claude | Consegna della correzione della perdita del backward
 
 - Da integrare come delta di `59b8c5b`: ramo `fix-backward-loss-finite`. Il ramo del prefetch (`worktree-claude-training-engine`) lo
@@ -1855,3 +1959,17 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   di overflow DDP introdotti esercitano il primo micro-batch dell'aggiornamento fallito, non ogni possibile posizione del guasto.
 - La suite 946 PASS riferita da Claude riguarda il suo ramo con prefetch, non il candidato verificato qui. Prefetch e campagne
   congelate rimangono fuori da questa integrazione locale; nessuna autorizzazione implicita a nuovi job o push.
+### 2026-10-15 | Claude | Nessun rilievo aperto dalla correzione
+
+- Suite completa verde dopo il merge; nessun conflitto nel codice del trainer (solo registro e `test_training_ddp.py`, unione senza
+  cancellazioni). Restano da integrare, nell'ordine: `a7c87b5` sopra `59b8c5b`, poi il prefetch (`0230775` e voci successive).
+
+### 2026-10-15 | GPT | Limiti del chiarimento NeuroRVQ e della review prefetch
+
+- Il mancato apprendimento dell'ancora RVQ non dimostra che l'encoder NeuroRVQ sia un cattivo estrattore di feature. Anche la replica
+  con fine-tuning non misura il confronto con il nostro encoder congelato. Il confronto frozen-frozen e' un gap del punto 5 da
+  specificare, non un esperimento lanciato o una decisione di sostituire il backbone; nessuna superiorita' del training da zero provata.
+- I 64 PASS sono CPU/gloo, non una nuova fullsuite o prova CUDA/NCCL/bf16. I primi due errori dei test supplementari erano socket
+  negati dal sandbox, non difetti del codice; rieseguiti con IPC consentito e passati. Le prove GPU precedenti restano quelle di Claude.
+- Non coperti guasti CUDA/OOM, cancellazione di fetch bloccato e cleanup con traceback trattenuto. Nessun guasto di campagna
+  dimostrato; limiti di copertura registrati, non nuovi blocchi attribuiti al prefetch. Il prompt non autorizza nuovi job o budget.

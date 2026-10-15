@@ -1,0 +1,88 @@
+{
+ "protocol": "w1_prefetch_v1",
+ "recorded_on": "2026-10-15",
+ "code_sha": "02307753c321e028fbb73aec9329d7f5c852bf19",
+ "jobs": {
+  "w1pf_checkout": 60608218,
+  "w1pf_audit": 60608329,
+  "w1pf_data_b32": 60608334,
+  "w1pf_data_b64": 60615343
+ },
+ "criteria": {
+  "audit": "stopped=max_steps, 200 passi, prefetch_audit_steps=200",
+  "data_wait": "somma t_data_s / somma t_step_s, passi 51-600, <= 0.02 (D6a)",
+  "total_time": "media t_step_s, passi 51-600, <= 1.01 x w1gd (0.7144 batch 32, 1.3866 batch 64)"
+ },
+ "audit": {
+  "stopped": "max_steps",
+  "steps": 200,
+  "prefetch_audit_steps": 200,
+  "stop_file": false,
+  "passed": true,
+  "gpu_max_memory_gib": 14.06206226348877,
+  "code": {
+   "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1pf-20261015",
+   "sha": "02307753c321e028fbb73aec9329d7f5c852bf19"
+  }
+ },
+ "data_b32": {
+  "steps": 600,
+  "stopped": "max_steps",
+  "prefetch": true,
+  "data_wait_fraction": 0.00673,
+  "median_data_wait_s": 0.0044,
+  "p95_data_wait_s": 0.0073,
+  "max_data_wait_s": 0.011,
+  "mean_step_s": 0.7057,
+  "median_step_s": 0.7009,
+  "elapsed_per_step_s": 0.755,
+  "gpu_max_memory_gib": 9.97,
+  "wait_passed": true,
+  "total_time_passed": true,
+  "total_time_limit_s": 0.7215,
+  "code": {
+   "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1pf-20261015",
+   "sha": "02307753c321e028fbb73aec9329d7f5c852bf19"
+  },
+  "vs_w1gd": {
+   "elapsed_per_step_s": 0.7463,
+   "total_rel_diff_step1": 1.1227820251414337e-07,
+   "total_rel_diff_max_first10": 6.622476929303526e-06,
+   "total_rel_diff_median_all": 0.002704706173563565,
+   "same_windows_classes": true
+  }
+ },
+ "data_b64": {
+  "steps": 600,
+  "stopped": "max_steps",
+  "prefetch": true,
+  "data_wait_fraction": 0.00649,
+  "median_data_wait_s": 0.0085,
+  "p95_data_wait_s": 0.0125,
+  "max_data_wait_s": 0.021,
+  "mean_step_s": 1.3567,
+  "median_step_s": 1.3395,
+  "elapsed_per_step_s": 1.3873,
+  "gpu_max_memory_gib": 19.34,
+  "wait_passed": true,
+  "total_time_passed": true,
+  "total_time_limit_s": 1.4005,
+  "code": {
+   "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1pf-20261015",
+   "sha": "02307753c321e028fbb73aec9329d7f5c852bf19"
+  },
+  "vs_w1gd": {
+   "elapsed_per_step_s": 1.4171,
+   "total_rel_diff_step1": 8.645390191434139e-08,
+   "total_rel_diff_max_first10": 5.960806890747953e-06,
+   "total_rel_diff_median_all": 0.00656096371363383,
+   "same_windows_classes": true
+  }
+ },
+ "passed": true,
+ "cost": {
+  "node_minutes": 27.67,
+  "gpu_hours": 1.84,
+  "local_hours": 14.8
+ }
+}

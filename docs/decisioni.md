@@ -3183,3 +3183,38 @@ coordinato prima del backward. Review indipendente senza altri rilievi concreti.
 Verifica GPT: 48 test CPU PASS in159,49s (comprese le due regressioni originali senza patch in memoria e gli stop gloo su un solo rank
 con accumulo1/2), piu'21 test baselinecasuale PASS in3,28s: totale69. Non una nuova suite completa ne' confermaCUDA/NCCL/bf16.
 Nessun cambiamento a iperparametri, criteri, default o budget. Prefetch non incluso, review separata; nessun job, push o deploy.
+
+**Prefetch del batch (15/10/2026, Simone: «vai con la 1, il prefetch sulla GPU, poi appena lanciata guarda cosa ha fatto gpt»; nota di
+Simone: «quei 17 ms sono nell'handoff CPU dai worker. Il prefetch deve anticipare anche quel lavoro, non soltanto la copia sulla GPU»).**
+Protocollo `w1_prefetch_v1` in `docs/protocollo_gpu_dati_finestra1.md`. Un thread anticipa di un batch la ricezione dai worker, la
+ricostruzione dalla memoria condivisa, i micro-batch e la copia sul dispositivo (stream CUDA proprio); training bit per bit uguale sulla CPU
+(test). Criteri congelati prima del lancio: verifica degli ingressi bit per bit su GPU per 200 aggiornamenti (30M, batch 64, 2 micro-batch);
+attesa sui dati al 30M <= 2% (D6a) col batch 32 e 64; tempo totale (media di `t_step_s`, passi 51-600) <= 1,01 x quello di `w1gd`
+(vincolo di GPT del 15/10: non spostare l'attesa fuori dal cronometro). 3 job da 4 GPU su dbg, **tetto 6 GPU-ora (48 ore locali)**, stima ~2, dal budget
+«preparazione dell'infrastruttura» (usate 5,87 su 25).
+
+**Esito della prova del prefetch `w1_prefetch_v1` (15/10/2026, criteri congelati prima del lancio; letti dopo la fine dei job).** Quattro
+job COMPLETED 0:0 (checkout 60608218, `w1pf_audit` 60608329, `w1pf_data_b32` 60608334, `w1pf_data_b64` 60615343), codice `0230775`.
+Riepilogo in `results/infra/w1pf_20261015.json`. **SUPERATA.**
+- Verifica degli ingressi: 200 passi su 200, ingressi sul dispositivo uguali bit per bit al batch su 4 processi con 2 micro-batch.
+- Attesa sui dati al 30M: **0,67%** col batch 32 (era 2,40%; mediana 4,4 ms contro 17) e **0,65%** col 64 (era 2,81%; mediana 8,5 ms
+  contro 35), sotto il 2% di D6a.
+- Tempo totale: media di `t_step_s` 0,7057 s (limite 0,7215; w1gd 0,7144) e 1,3567 s (limite 1,4005; w1gd 1,3866): -1,2% e -2,2%.
+  Descrittivo, tempo di parete per passo (con avvio, valutazioni e checkpoint): +1,2% col 32, -2,1% col 64; stessi batch di w1gd a ogni
+  passo, loss entro 1e-7 relativo al passo 1 e 6,6e-6 nei primi 10 passi, poi la deriva del bf16.
+Conseguenze, come da protocollo: (B) superata col prefetch; i launcher della finestra 1 passano `--prefetch`; montaggi virtuali nel default
+come da D15/D6a. **Costo reale (sacct):** 27,7 minuti di nodo = **1,84 GPU-ora (14,8 ore locali)**, entro il tetto di 6; budget
+«preparazione dell'infrastruttura»: 5,87 + 1,84 = 7,71 usate su 25.
+
+### Review e integrazione separata del prefetch (GPT, 15/10/2026)
+
+Accettato il delta Claude 8cc6cbf (prefetch0230775 + fix a7c87b5 via merge66b5a0f), con SHA conservati e registri uniti senza perdita
+di voci. Due review indipendenti senza rilievi bloccanti; 58 test CPU PASS in376,99s e 6 controlli supplementari PASS su WSD con
+prefetch e ripresa DDP, includendo optimizer/RNG: totale64. I due controlli DDP supplementari, inizialmente bloccati dai socket del
+sandbox, passati con IPC consentito. Non una nuova fullsuite o provaGPU. Report in docs/reviews/integration_claude_20261015.md.
+
+Punto6: eliminata l'attesa della review del prefetch; Claude puo' preparare launcher/cateneWSD/manifest dal main locale integrato.
+Restano calibrazione e piano/configurazioni/budget della finestra1; nessun nuovo lancio o cap autorizzato. GPT passa ai protocolli4/5.
+Sul punto5 e' esplicitato un confronto mancante: NeuroRVQ e WearUsFM entrambi congelati sullo stesso protocollo. La replica del
+passo5 aveva gia' usato il FM preallenato con fine-tuning, e l'ancora aveva usato il tokenizer; non dimostrano superiorita' o inferiorita'
+del riuso del backbone. Gap da specificare, non nuovo job/default adottato; nessuna modifica al verdetto sull'ancoraRVQ.

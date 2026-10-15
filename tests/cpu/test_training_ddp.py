@@ -27,7 +27,7 @@ def _state_hash(module) -> str:
 
 
 def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, time_limit_s, perturb_rank, accum, bad_count_rank,
-            drop_key_rank=-1, overflow_rank=-1):
+            drop_key_rank=-1, prefetch=False, overflow_rank=-1):
     import torch.distributed as dist
     dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world)
     try:
@@ -99,7 +99,8 @@ def _worker(rank, world, store, root, mpath, out, results, max_steps, nan_rank, 
                 return out_
 
             R.jepa_loss_terms = overflowing
-        cfg = replace(R.small_config(datasets=None, max_steps=max_steps), batch_size=4, accum_steps=accum)
+        cfg = replace(R.small_config(datasets=None, max_steps=max_steps), batch_size=4, accum_steps=accum, prefetch=prefetch,
+                      prefetch_audit=prefetch)
         summary = R.train(cfg, Path(mpath), [Path(root)], Path(out), log=lambda m: None, dist=R.DistContext(rank, world, rank),
                           time_limit_s=time_limit_s)
         Path(results, f"rank{rank}.json").write_text(json.dumps({
@@ -115,12 +116,13 @@ def _data(tmp_path):
 
 
 def _run(tmp_path, tag, out, *, world=2, max_steps=4, nan_rank=-1, time_limit_s=None, perturb_rank=-1, accum=1, bad_count_rank=-1,
-         drop_key_rank=-1, overflow_rank=-1):
+         drop_key_rank=-1, prefetch=False, overflow_rank=-1):
     root, mpath = _data(tmp_path)
     results = tmp_path / f"res_{tag}"
     results.mkdir()
     mp.spawn(_worker, args=(world, str(tmp_path / f"store_{tag}"), str(root), str(mpath), str(out), str(results), max_steps, nan_rank,
-                            time_limit_s, perturb_rank, accum, bad_count_rank, drop_key_rank, overflow_rank), nprocs=world, join=True)
+                            time_limit_s, perturb_rank, accum, bad_count_rank, drop_key_rank, prefetch, overflow_rank),
+             nprocs=world, join=True)
     return [json.loads((results / f"rank{r}.json").read_text()) for r in range(world)]
 
 
@@ -233,6 +235,19 @@ def test_ddp_missing_component_on_one_process_stops_all_before_the_loss(tmp_path
     assert (out / "STOP").read_text().startswith("conteggi del forward diversi")
     assert [r["step"] for r in _lines(out)] == [1, 2]
     assert torch.load(out / "checkpoint.pt", weights_only=False)["step"] == 2  # l'ultimo checkpoint valido, non sovrascritto
+
+
+@pytest.mark.parametrize("accum", [1, 2])
+def test_ddp_prefetch_leaves_the_training_unchanged(tmp_path, accum):
+    """Prefetch (15/10/2026) con la verifica degli ingressi su ogni processo: stessi pesi, teacher e record del passo del run senza."""
+    plain = _run(tmp_path, "plain", tmp_path / "plain", accum=accum)
+    pre = _run(tmp_path, "pre", tmp_path / "pre", accum=accum, prefetch=True)
+    assert [(r["student"], r["teacher"]) for r in pre] == [(r["student"], r["teacher"]) for r in plain]
+    timing = ("t_data_s", "t_data_s_mean", "t_step_s")
+    assert [{k: v for k, v in r.items() if k not in timing} for r in _lines(tmp_path / "pre")] == \
+        [{k: v for k, v in r.items() if k not in timing} for r in _lines(tmp_path / "plain")]
+    s = json.loads((tmp_path / "pre" / "summary.json").read_text())
+    assert s["steps"] == 4 and s["prefetch"] is True and s["prefetch_audit_steps"] == 4
 
 
 def _dict_hash(state) -> str:  # come `_state_hash`, da uno state_dict salvato

@@ -62,6 +62,10 @@ def main(argv=None) -> int:
     ap.add_argument("--fixed-eval-batches", type=int, default=8, help="batch dell'insieme fisso (fino a 32 finestre ciascuno)")
     ap.add_argument("--log-batch-origin", action="store_true",
                     help="in metrics.jsonl l'origine di ogni finestra (sessione, trial, inizio); sessioni in origin_sessions.json")
+    ap.add_argument("--prefetch", action="store_true",
+                    help="il batch successivo preso, preparato e copiato sul dispositivo in un thread mentre gira il passo (stessi batch)")
+    ap.add_argument("--prefetch-audit", action="store_true",
+                    help="verifica: a fine passo gli ingressi sul dispositivo uguali bit per bit a quelli preparati dal batch sulla CPU")
     ap.add_argument("--rvq-targets", choices=["slab", "channel"], default=None,
                     help="finestre dell'ancora RVQ; 'channel' e' SOLO DIAGNOSTICA (v10 §6.3: nel training mai sul masking di canale)")
     ap.add_argument("--schedule", choices=["constant", "wsd"], default="constant",
@@ -115,7 +119,8 @@ def main(argv=None) -> int:
     if args.seed is not None:
         cfg = replace(cfg, seed=args.seed)
     cfg = replace(cfg, keep_grad_every=args.keep_grad_every, fixed_eval_every=args.fixed_eval_every,
-                  fixed_eval_batches=args.fixed_eval_batches, log_batch_origin=args.log_batch_origin)
+                  fixed_eval_batches=args.fixed_eval_batches, log_batch_origin=args.log_batch_origin, prefetch=args.prefetch,
+                  prefetch_audit=args.prefetch_audit)
     if args.keep_calibration is not None:
         cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
     elif args.keep_weight != 0:

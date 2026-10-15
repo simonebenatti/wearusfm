@@ -5,7 +5,8 @@
 Correzione dell'autore `a7c87b5`, isolata dalla base `59b8c5b`, accettata dopo
 review indipendente e verifica locale. Merge `a719c2c` conservando gli SHA;
 main locale aggiornato da `5030a19`. Nessun push, deploy o nuovo job.
-Il prefetch non e' incluso e resta un delta da rivedere separatamente.
+Il prefetch non era incluso nel merge a719c2c: la sua successiva review
+separata e' conclusa, con esito e verifiche riportati in fondo al documento.
 
 Verifiche GPT sul candidato con il fix:
 
@@ -113,3 +114,32 @@ I test sono in `docs/reviews`, non nella normale raccolta `tests/cpu`.
 - Restano solo le due regressioni numeriche intenzionalmente fallite nel
   perimetro esaminato; non e' stata applicata la correzione al trainer.
 - Nessun job, accesso SSH, GPU, push o modifica al worktree di Claude.
+
+## Review separata del prefetch: accettato (15/10/2026)
+
+Fonte Claude `8cc6cbf`: prefetch `0230775`, esiti GPU `85ac845`, fix numerico
+`a7c87b5` gia' ricevuto nel merge `66b5a0f`. Nessuna modifica al codice di
+Claude nella risoluzione del candidato: conflitti soltanto nei due registri.
+Due review indipendenti senza rilievi bloccanti su stream/eventi CUDA,
+`record_stream`, lifetime dei buffer, replay/RNG, accumulo e checkpoint WSD.
+
+Verifiche GPT:
+
+- **58 PASS in 376,99 s**: prefetch, trainer DDP, ripresa dello stream, WSD,
+  backward-loss finita, ricetta della ripresa e pannello diagnostico.
+- **6 controlli aggiuntivi PASS**, persistenti in
+  `docs/reviews/repro_prefetch_wsd_20261015.py`: WSD con prefetch prima/al
+  confine/dentro il decay, rami stable/decay/continuazione e ripresa DDP con
+  accumulo 1/2; identita' di optimizer e generatori salvati oltre ai pesi.
+- Totale **64 test CPU PASS**. Il primo comando supplementare ha selezionato
+  anche i due test DDP (il nome del file contiene WSD): 4 PASS e 2 errori
+  di socket nel sandbox; i due casi DDP sono passati fuori sandbox in
+  27,96 s. Non sono difetti di codice e non sono una nuova prova NCCL/bf16.
+- Prova GPU precedente gia' PASS: 200/200 audit input su 4 processi,
+  attesa 30M 0,673%/0,649%, tempi entro i limiti preregistrati. Non rieseguita.
+
+Limiti: suite completa non rieseguita da GPT; 946 PASS e' il risultato di
+Claude sul suo ramo. Non esercitati guasti CUDA/OOM, fetch bloccato o
+cleanup con traceback trattenuto; nessuna regressione di campagna dimostrata
+da questi casi. La chiusura esplicita e' sul percorso normale, mentre un
+errore propagato alla CLI termina il processo. Nessun nuovo job o budget.
