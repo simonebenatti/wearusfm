@@ -3278,3 +3278,9 @@ locali = **20.548 GPU-ora**; consumate in ottobre al 15/10: 5.548 (27%). **Lettu
 ~5.100-5.700 GPU-ora, poi la ladder ~13.000), ma la finestra 1 vale il 25-28% della quota di novembre, condivisa da 17 utenti: lanciata all'inizio
 del mese parte con la priorita' piena; se gli altri consumano come il 14/10 (~2.200 GPU-ora al giorno) la quota di novembre finisce in ~9 giorni
 e le catene ancora in corso perdono priorita'. Utile un accordo con gli altri utenti del progetto per la prima meta' di novembre.
+
+**Rinfresco di $SCRATCH del 15/10/2026 (al posto del giro del 22/10; Simone: «quando vuoi fai pure partire il refresh»).** Job 60643323
+(`refresh_scratch_20261015`), COMPLETED 0:0 in 15 min 9 s (15:20-15:35): 32 cartelle di `data/raw`, `data/processed`, `wearusfm_runs`,
+`external`, 151.833 file toccati, nessun file piu' vecchio di 30 giorni prima del giro (il piu' vecchio era del 01/10, il giro precedente),
+**0 cartelle con problemi, nessun file piu' vecchio di un giorno dopo**. Costo: 15 minuti di un core. Prossimo giro del calendario firmato:
+12/11/2026 (28 giorni dopo, entro i 40 del purge).
