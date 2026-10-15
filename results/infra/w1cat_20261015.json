@@ -1,0 +1,104 @@
+{
+ "protocol": "w1_catena_v1",
+ "recorded_on": "2026-10-15",
+ "code_sha": "df4d2f5c48909c1d5f23af9ece09860ff9948e44",
+ "plan": "results/infra/w1cat_plan_20261015.json",
+ "commands": "results/infra/w1cat_commands_20261015.txt (rigenerati in d9ef7f0)",
+ "jobs": {
+  "w1cat_checkout": {
+   "id": 60623582,
+   "state": "COMPLETED",
+   "elapsed": "00:00:12"
+  },
+  "w1cat-T-j01": {
+   "id": 60623878,
+   "state": "COMPLETED",
+   "elapsed": "00:12:28",
+   "start": "11:29:55",
+   "end": "11:42:23",
+   "log": "fine: limite di tempo, passo 990"
+  },
+  "w1cat-T-j02": {
+   "id": 60623935,
+   "state": "COMPLETED",
+   "elapsed": "00:06:03",
+   "start": "11:43:35",
+   "end": "11:49:38",
+   "log": "ripresa dal passo 990 ... fine: max_steps, passo 1400"
+  },
+  "w1cat-T-j03": {
+   "id": 60623939,
+   "state": "COMPLETED",
+   "elapsed": "00:00:07",
+   "log": "run gia' completo (... 1400 passi): niente da fare"
+  },
+  "w1cat-B-j01": {
+   "id": 60623942,
+   "state": "COMPLETED",
+   "elapsed": "00:04:26",
+   "start": "11:58:03",
+   "end": "12:02:29",
+   "log": "ramo da .../w1cat-T/checkpoint_step0001100.pt al passo 1100 ... fine: max_steps, passo 1375"
+  },
+  "w1cat-B-j02": {
+   "id": 60623946,
+   "state": "COMPLETED",
+   "elapsed": "00:00:07",
+   "log": "run gia' completo"
+  }
+ },
+ "criteria": {
+  "1_trunk": {
+   "passed": true,
+   "j01_stopped": "limite di tempo (passo 990)",
+   "j02": "ripresa dal 990, max_steps a 1400",
+   "spare": "gia' completo senza torchrun (7 s)",
+   "steps_1_1400_no_gaps_no_duplicates": true,
+   "lr_equals_lr_at": true,
+   "decay_start": 1120,
+   "files": [
+    "checkpoint_step0001100.pt",
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ]
+  },
+  "2_branch": {
+   "passed": true,
+   "after": "w1cat-T-j02 (inizio 11:58:03, dopo la fine del j02 alle 11:49:38)",
+   "branch_json": {
+    "step": 1100,
+    "sha256": "69acf7eaba734b56dce51351c34c86c2b820dac333cfe373996c7d4b05c12cc7"
+   },
+   "steps_1101_1375": true,
+   "lr_equals_lr_at": true,
+   "spare": "gia' completo"
+  },
+  "3_no_stop_no_failures": {
+   "passed": true
+  }
+ },
+ "passed": true,
+ "descriptive": {
+  "median_s_per_step": {
+   "trunk": 0.698,
+   "branch": 0.706
+  },
+  "first_step_after_resume_s": 28.31,
+  "first_step_after_resume_data_wait_s": 26.41,
+  "first_step_of_branch_s": 31.47,
+  "overhead_per_job_s": {
+   "T-j01": 65,
+   "T-j02": 80,
+   "B-j01": 76
+  },
+  "note": "attesa del primo passo dopo una ripresa: ricostruzione a secco dello stream fino a un segmento per worker e avvio dei worker; trascurabile su job da 24 h"
+ },
+ "cost": {
+  "node_minutes": 23.18,
+  "gpu_hours": 1.55,
+  "local_hours": 12.4,
+  "infra_budget_used_after": 9.26,
+  "infra_budget": 25
+ }
+}

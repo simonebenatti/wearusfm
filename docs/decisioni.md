@@ -3235,3 +3235,16 @@ manifest congelato v1.1 (nessuna verifica fallita; `results/infra/nested_manifes
 col batch 32** (finestra media 3,77 s), non ~23.150: D = 4 epoche = 98.112 passi (+6% sui costi a D). Nei sottoinsiemi, con i pesi del
 manifest completo rinormalizzati (la regola attuale del loader), classi entro mezzo punto da 20 / 75 / 5 e passaggi per unita' ~8 come nel
 100%. **Da decidere (GPT, Simone):** la regola dei pesi nei sottoinsiemi (attuale; quote di unita' identiche; D9 rifatta sul sottoinsieme).
+
+**Esito del collaudo delle catene WSD `w1_catena_v1` (15/10/2026, criteri congelati in `docs/catene_wsd_finestra1.md` prima del lancio;
+letti dopo la fine della catena).** Codice `df4d2f5`, checkout 60623582; job 60623878, 60623935, 60623939, 60623942, 60623946, tutti
+COMPLETED 0:0. Riepilogo in `results/infra/w1cat_20261015.json`. **SUPERATO.**
+1. Tronco: il job 1 si ferma al limite di tempo al passo 990; il job 2 riprende dal 990 e chiude a 1.400 (`max_steps`); il job di scorta esce
+   in 7 s con «gia' completo». Passi 1-1.400 senza buchi ne' duplicati, `lr` di ogni passo uguale allo schedule, presenti
+   `checkpoint_step0001100.pt`, `checkpoint_predecay.pt` (1.120) e `checkpoint_postdecay.pt` (1.400).
+2. Ramo: parte dopo il job 2 del tronco, `branch.json` con passo 1.100 e SHA-256 del checkpoint d'origine, passi 1.101-1.375, `lr` uguale
+   allo schedule del ramo, job di scorta «gia' completo».
+3. Nessuno STOP, nessun job FAILED o TIMEOUT.
+Descrittivo: 0,70 s/passo; il primo passo dopo una ripresa aspetta ~26 s (ricostruzione a secco dello stream e avvio dei worker), ~65-80 s di
+avvio per job: trascurabili su job da 24 h. **Costo reale (sacct):** 23,2 minuti di nodo = **1,55 GPU-ora (12,4 ore locali)**, entro il tetto
+di 5; budget «preparazione dell'infrastruttura»: 7,71 + 1,55 = 9,26 usate su 25.

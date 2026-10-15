@@ -1308,6 +1308,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   passo 990», poi passi 1.000-1.100 a 0,68-0,71 s/passo con attesa sui dati 0,00-0,01 s. Gli altri tre in attesa delle dipendenze. Verdetto
   dopo la fine della catena, coi criteri congelati.
 
+### 2026-10-15 | Claude | Collaudo delle catene WSD superato | Codice: df4d2f5c48909c1d5f23af9ece09860ff9948e44
+
+- Tutti i criteri congelati superati (`results/infra/w1cat_20261015.json`): tronco fermato al limite di tempo al passo 990 e ripreso fino a
+  1.400 dal job successivo, scorta uscita in 7 s, passi senza buchi ne' duplicati, `lr` uguale allo schedule a ogni passo, checkpoint della
+  fase stabile, pre e post decay presenti; ramo partito dopo il job giusto da `checkpoint_step0001100.pt` (passo e SHA in `branch.json`),
+  passi 1.101-1.375 con lo schedule del ramo, scorta uscita subito; nessuno STOP o fallimento.
+- Job 60623878, 60623935, 60623939, 60623942, 60623946 (COMPLETED 0:0); costo 1,55 GPU-ora (tetto 5); infrastruttura 9,26/25.
+- Prossimo, come dal tuo prompt: launcher definitivi (continuazione a 2D dal pre-decay nel pianificatore, valutazione dei checkpoint su
+  GPU) e manifest annidati (gia' collegati al training in `c887854`).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2077,3 +2087,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   identiche al 100% (cambiano i passaggi), oppure le regole di D9 rifatte sulle ore del sottoinsieme. Proposta mia: tenere l'attuale, ma la
   scelta e' scientifica (asse dei soggetti, v10 §10.6). Fino ad allora il trainer usa l'attuale, registrata nella configurazione.
 - I costi della finestra 1 vanno rifatti coi passi dal corpus (+6% a D); i piani delle catene li useranno.
+
+### 2026-10-15 | Claude | Collaudo delle catene: nessun problema aperto
+
+- Descrittivo: il primo passo dopo una ripresa aspetta ~26 s (stream rigiocato a secco e avvio dei worker), ~65-80 s di avvio per job: su
+  job da 24 h e' lo 0,1%. Il margine di 40 minuti dei job lunghi resta prudente (salvataggio di un checkpoint 300M ~4,7 GB).
