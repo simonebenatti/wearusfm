@@ -4,6 +4,51 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
+## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
+
+Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
+si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
+assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
+
+| N. | Punto unico | GPT | Claude | Stato / consegna |
+|---|---|---|---|---|
+| 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
+| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
+| 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Quattro P2 affrontati da fccdc1e+b104fb5, letti da GPT e 10 test CPU mirati unici PASS; suite930PASS di Claude, integrazione ancora pendente |
+| 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
+| 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Simone conferma Claude al lavoro sul prefetch; attesa30M2,40-2,81% ancora oltre2% fino a nuova misura. EquivalenzaGPU gia' superata; configurazioni/piano/budget da firmare |
+
+### Tranche che puo' partire ora in parallelo
+
+- **GPT, priorita' immediata:** completare review e integrazione della baseClaude **59b8c5b** (punto3), preservandoSHA/voci. Non serve
+  aspettare il prefetch. In parallelo sono indipendenti la definizione della regola del monitor (punto4) e il protocollo scientifico
+  di ablationJEPA/ancore/keep e sonde temporali/fisiche (punto5), poi lista/default/configurazioni/budget della finestra1 (punto6).
+- **Claude, gia' in corso secondo Simone:** prefetch per il trasferimento dei batch al30M (punto6), solo nel suo trainer/dataloader.
+  Test di equivalenza di batch/RNG/aggiornamenti e di ripresa con un batch in volo; misura del tempo totale e della vera attesa residua.
+  Il delta rispetto a59b8c5b resta separato per una successiva review, senza riscritture della base. A seguire launcher/cateneWSD,
+  manifest annidati e prove esecutive della calibrazione concordata (punto6); eventuali correzioni dalla review (punto3).
+- **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
+  implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
+  il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
+- **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
+  registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
+  per revocarla o lanciare estrazioni implicitamente.
+- **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline da lanciare. ProvaGPU del prefetch solo con protocollo, costi e
+  autorizzazione applicabili gia' registrati; questa ripartizione non crea un nuovo cap ne' usa liberamente il residuo infrastruttura.
+- **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
+  Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
+
+### Confini anti-conflitto e registrazione
+
+- Un writer per checkout e per file. Claude resta proprietario di trainer/dataloader/launcher training; GPT di loss/target/harness.
+  Il passaggio temporaneo a Claude dei file per le sole feature locale/backbone sara' delimitato con elenco e punto di base prima
+  delle modifiche; GPT non li modifica contemporaneamente. Nessuna delega generale dell'harness.
+- Ciascuno aggiorna le due sezioni del registro sul proprio branch e committa; GPT integra le voci testualmente. Claude legge questo
+  blocco dal worktree GPT e lo riporta senza rinumerarlo. Non si editano il checkout dell'altro o una campagna congelata.
+- Un solo responsabile di lancio per campagna: GPT baseline/valutazione, Claude infrastruttura. Submitter e ledger comuni restano
+  obbligatori; nessun lancio duplicato o retry cieco. La lista non modifica budget, soglie o endpoint scientifici.
+
 ## 1) Cosa ho fatto
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -691,6 +736,307 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - **(C)** s/passo col batch 32: 30M 0,707, 100M 1,390, 300M 2,769; memoria fino a 37,1 GiB (300M, 16 finestre per GPU in 2 micro-batch).
   Fattibilita' aggiornata in `docs/finestra1_fattibilita.md`: ~4.730–5.300 GPU-ora. Costo della prova 5,51 GPU-ora. Dati in
   `results/infra/w1gd_20261015.json` e `results/infra/w1gd_equivalence_20261015.json`.
+### 2026-10-13 | GPT | Review Step 2/3 di Claude, senza integrazione | Snapshot: 2ba67a71088adbc1345ae74dce70e2e5bc857048
+
+- Esaminati rami PSD/wavelet, readout/loss, trainer/calibrazione, sonde, test e confronto sintetico; confrontato anche il pacchetto locale
+  di riferimento. Snapshot read-only estratto con git archive: /private/tmp/wearusfm-steps23-review.gmAlI8 (pochi MB, rigenerabile).
+- Rieseguiti 21 test mirati non distribuiti: PASS in 13,97s, 1 warning tensor->scalar nei test. Caso gloo escluso non rieseguito:
+  nessuna conferma GPT di suite864, CUDA o EMG reale. Repro CPU esterni in review_repros.py nello snapshot.
+- Riprodotti reseed CUDA nella costruzione e cache stats64 accettata/riferita come mask32 da probe_p2; dettagli nella sezione2.
+  Verificato anche crop1s/guard0,1s: frame PSD lenti validi4 nel ramo,6 nei target esistenti.
+- Raw WearUsFM esistente + rami paralleli full-view, non nella JEPA mascherata. freeze_encoder carica il teacher WearUsFM compatibile
+  via init_from: non NeuroRVQ, ne' un checkpoint preciso scelto da questo commit. Raw resta2d (768 al30M), piu'128PSD e128wavelet.
+- Solo registro di review su branch GPT: nessuna modifica al codice/branch Claude, nessun merge/push/job. Il controllo dell'implementazione
+  resta a Claude. Preparazioni precedenti non committate nel worktree GPT lasciate invariate.
+
+### 2026-10-13 | GPT | Review del protocollo e wrapper Step 2A | Snapshot: a4ffc2e1f2674334f1785c448b4700869c3cb628
+
+- Review su copia congelata del commit, con controllo statistico indipendente. Il worktree di Claude contiene correzioni successive non
+  committate: non incluse in questa review. Riutilizzo delle cache B e calcolo CPU delle statistiche coerenti con la domanda esplorativa;
+  sonde, media dei teacher e bootstrap accoppiato rispettano il protocollo dichiarato. Filtro/scala/ritagli confrontati col codice 8dad7e8.
+- Verifica locale: 49 test passati, 1 DDP escluso (step2a, probe_p2, p1_cross_subject, downstream_ab, spectral_branches); bash -n dei due
+  launcher superato. Nessuna suite completa, prova su dati reali, accesso al cluster o job. Tetto degli otto job: 132 core-ora, aritmetica corretta.
+- Riproduzioni esterne in /private/tmp/wearusfm-step2a-review.wz8Ict/review_repros.py: cache accettata con commit di estrazione/training
+  estranei; argv della sonda B_seed1 etichettato col checkpoint B_seed0. Ulteriore riproduzione CPU: maschere diverse a fs/banda identiche.
+- Esito: tre correzioni P2 e una precisazione scientifica nella sezione 2 prima di chiudere la review. Solo registro aggiornato sul branch
+  GPT; nessuna modifica al codice di Claude, integrazione, push o autorizzazione di budget/lancio implicita.
+
+### 2026-10-13 | GPT | Verifica delle correzioni alla review Step 2/3 | Snapshot: 57fe3c08983a98e00b7bb7bfd233a6eb675d6566
+
+- Esaminato il commit congelato rispetto ad a4ffc2e, con seconda lettura indipendente della compatibilita' cache. Chiusi il difetto del
+  reseeding CUDA/MPS durante la costruzione e il caso stats64 accettato come mask32: seed del solo generatore CPU, controllo esplicito
+  feature_set/larghezza in entrambe le sonde. Le cache downstream storiche senza registrazione restano utilizzabili come model.
+- Verifica GPT: 34 test CPU passati (spectral_branches e step2a), 1 DDP escluso; controllo aggiuntivo di accettazione NPZ legacy768 come
+  model. Non rieseguita la suite completa877 dichiarata da Claude, nessuna verifica CUDA o su EMG reale. Snapshot temporaneo:
+  /private/tmp/wearusfm-57fe3c0-review.7F87fL. Nessuna modifica al codice, merge, push o job.
+- Raccomandazione tecnica sul bordo: opzione (a), supporto completo nel ramo e target Step1 invariati; il test fissa6frame lenti target
+  contro4ramo con guard0,1s e crop1s. La zona esclusa riduce l'esposizione ai transitori, senza certificare che0,1s basti in ogni caso.
+  Il 2A usa i target storici e non il ramo, quindi non cambia. Questa e' una valutazione tecnica, non una nuova definizione dei target.
+
+### 2026-10-13 | GPT | Parere sulla proposta di loss raw e rami separate | Proposta Claude: 7bdd31b
+
+- Letta la proposta nel registro e verificati spectral_step1, spectral_branches, LossTerms/loss_counts e trainer; sparring indipendente
+  concorde. Parere favorevole a conservare JEPA, ancore e keep raw dello Step1, aggiungendo keep_branches con peso distinto. La testa fusa
+  continui a vedere [raw, PSD, wavelet], come il readout P1/P2; le teste dei due rami restino entrambe. Proposta, non implementazione.
+- La testa raw conserva il vincolo spettrale diretto: i rami non possono abbassare QUEL termine al suo posto. Con peso_rami>0 il gradiente
+  totale sul raw cambia anche per la testa fusa; il confronto congiunto misura rami + loro addestramento, non solo nuove feature. La
+  diagnostica gia' prevista con raw congelato permette di valutare l'apporto delle feature aggiunte a parita' di encoder.
+- Contratto suggerito: due termini additivi, keep_raw (formula/testa/calibrazione/peso storici) e keep_branches; stessa validita' e
+  calibrazione dei target => stesso denominatore di finestre valide, contato separatamente per componente. La media PSD/wavelet resta
+  nel numeratore. Verificare maschere e target_active, non soltanto uguaglianza dei conteggi; precount/forward e DDP/accumulo da estendere.
+- Riutilizzare una sola encode raw NON mascherata per testa raw e fusa (stesso pooling e isolamento RNG); non aggiungere un terzo encode
+  raw per implementare le due loss. Le norme pesate dei gradienti si misurino sui parametri raw condivisi, con contributi dei rami separati;
+  peso/alpha fissati su dati train prima degli esiti P1/P2, senza inventare ora un valore di peso_rami.
+- Nessun codice cambiato, test o job lanciato. Parere registrato solo sul branch GPT; nessuna firma di protocollo o adozione implicita.
+
+### 2026-10-14 | GPT | Review loss raw/rami e chiusura correzioni 2A | Snapshot: 3dba14c1176f9ac525aee0e851590ca7db4b4c39
+
+- Letti main (ancora 5030a19), CLAUDE.md e le nuove voci del registro Claude. Review su archivio congelato del commit; il successivo
+  b8aacd0 contiene il protocollo 2C, non incluso in questa approvazione. Nessuna modifica al codice di Claude, merge o push.
+- In jepa.py la separazione keep/keep_branches, pesi, numeratori e conteggi e' coerente col contratto. Un solo encode raw non mascherato;
+  spectral_step1.py e' invariato rispetto a 5030a19. I test coprono keep raw storica e percorso raw a branch_weight=0 bit per bit.
+- Verifiche GPT: 56 test mirati PASS (spectral_branches, jepa, spectral_step1, esclusi i due casi selezionati da "ddp"); poi il test
+  test_branches_one_process_accumulation_and_ddp_equal_the_global_batch PASS separatamente (gloo CPU, due processi e accumulo).
+  L'errore iniziale di sandbox su torch_shm_manager non era un difetto del codice; la riesecuzione autorizzata passa. Non rieseguita
+  tutta la suite884, nessuna prova CUDA/NCCL o su EMG reale. Due riproduzioni aggiuntive confermano i punti della sezione2.
+- Chiuse le tre richieste 2A in 6861907, presente nello snapshot: stop con maschere non costanti prima delle cache K/MS; verifica di
+  tutta l'identita' storica, compresi commit estrazione/training e provenienza checkpoint; teacher corretto nei report B_seed1.
+  Corretta anche la lettura scientifica (utilita' per la sonda lineare, non prova di informazione assente). test_step2a.py: 15 PASS.
+- Simone ha affidato il 2A a GPT ("il 2A quindi lo lascio a te"). Restano invariati protocollo step2a_stats_v1, soglie, otto job CPU,
+  tetto132 core-ora e0 GPU-ora; eventuale checkout CPU separato:1 core,2GiB,10min massimo (0,167 core-ora). Non include 2C o nuovi training.
+- Preflight tramite leonardo-ops: al14/10 nessuna voce/stato/lock2A nel registro locale. Il controllo remoto fresco fallisce per
+  Permission denied (publickey,gssapi-keyex,gssapi-with-mic). Non pubblicati deploy, creati checkout o sottomessi job da GPT.
+  La fotografia remota del13/10 (cache/provenienze presenti, coda vuota, quota~870,8G/1T) non sostituisce un nuovo controllo prima del lancio.
+- Archivio e riproduzioni locali rigenerabili: /private/tmp/wearusfm-jepa-branches-review.OiST6p (review_frozen_weight.py,
+  review_calibration.py). Aggiornato soltanto questo registro nel worktree GPT; bozze preesistenti non tracciate lasciate intatte.
+
+### 2026-10-14 | GPT | Via al 2A e preflight remoto ripristinato | Codice congelato: 3dba14c1176f9ac525aee0e851590ca7db4b4c39
+
+- Simone, dopo il blocco SSH: "ripristinato, vai". Autorizzata la prosecuzione del solo step2a_stats_v1: otto job CPU, tetto132 core-ora,
+  zero GPU, piu' checkout CPU1 core/2GiB/10min (massimo0,167 core-ora). Nessun training2C, variante aggiuntiva o retry autorizzato.
+- Preflight fresco di leonardo-ops del14/10 alle09:41:56 CEST: accesso riuscito; coda vuota, nessun job2A in sacct o registro locale;
+  canonico remoto8dad7e8 pulito, receive.denyCurrentBranch=updateInstead e nessun hook eseguibile. Ref deploy, checkout e output2A assenti.
+  Cache/provenienze P1/P2 dei due teacher coerenti; SHA fisici checkpoint verificati; dati DB2/3/6, EPN e UCI presenti; quota870,8G/1T.
+- Destinazione prevista: deploy/step2a-20261014, checkout $WORK/wearusfm_campaigns/step2a-20261014 e risultati esterni al codice in
+  $WORK/wearusfm_runs/results/passo6/step2a_20261014. Pubblicazione del solo ref di deploy, senza toccare main/origin o checkout attivi.
+  Sottomissione con prenotazione e registro comuni, dipendenze afterok; COMPARE=0 salvo ultimo job. ID e verifica finale a seguire.
+- Su domanda di Simone, ricontrollata anche la baseline encoder casuale: assegnata a GPT, NON conclusa. Protocollo, wrapper, modulo,
+  launcher e test restano bozze non tracciate nel worktree GPT; il protocollo stesso dice "nessun job lanciato" e il registro comune non
+  contiene lanci random. Nessun risultato da consegnare. Questo controllo separato non e' incluso negli otto job2A ne' nel loro tetto.
+
+### 2026-10-14 | GPT | Completamento della preparazione baseline encoder casuale | Protocollo: step1_random_downstream_4000_v1
+
+- Dopo il chiarimento sul lavoro rimasto incompleto, Simone: "eh, allora muoviti e completalo". Comunicato tetto3 GPU-ora+64 core-ora
+  CPU, piu' checkout CPU1core/2GiB/10min (0,1667 core-ora), separati dal 2A. Congelato il protocollo e registrato il via in decisioni.md.
+- Verificati wrapper, ricostruzione iniziale, sonde e launcher: nessun parametro appreso caricato; configurazione e quattro buffer
+  immutabili letti dal checkpoint di riferimento, intero stato verificato contro lo SHA del teacher prima del primo update. Due seed;
+  zero update/optimizer/EMA. Stato casuale CPU ripristinato, nessun reseed CUDA. Output distinto, senza possibilita' di resume training.
+- Encoder/sonde byte-identici alla campagna storica8dad7e8; filtro/pooling verificati via AST. Hash ingressi, etichette e soggetti
+  accoppiati; report appresi protetti dal checksum della comparison originale. Confronto Random->A/B descrittivo, nessuna soglia nuova.
+- 29 test CPU PASS (random_encoder, downstream_ab, p1_cross_subject, probe_p2), bash -n dei launcher PASS; review indipendente senza
+  blocker. Nessun training o modifica al codice di Claude. Preparati quattro extract GPU e quattro probe CPU, ultimo con confronto.
+  Risultati reali e ID SLURM non ancora disponibili a questa voce: il controllo NON e' dichiarato concluso prima delle sonde.
+
+### 2026-10-14 | GPT | Ripresa dei lanci e lettura aggiornata del log Claude
+
+- Simone: "verifica cosa ha fatto claude nel log e se hai cose da lanciare lanciale", poi review della stabilita'. Letti CLAUDE.md, main
+  (5030a19), registro e commit Claude fino a bfb37f8. Le due correzioni di review sono presenti in4b28424: peso frozen e calibrazione
+  completa. Quattro training2C conclusi; la catena di valutazione e' gia' interamente sottomessa suGPU (via di Simone, tetto57GPUh):
+  niente doppioni GPT. Lo stato riportato nel precedente riepilogo era superato dalle nuove voci di Claude.
+- Riconciliazione tramite leonardo-ops: nessuna submission2A/random precedente, ref2A pubblicato esatto. Il blocco era il prompt sandbox
+  interno per scrivere il registro comune, rimasto pendente per ore. Eccezione operativa: il turno principale ha eseguito il medesimo
+  submitter revisionato con escalation visibile, poi restituito le operazioni al subagent. Prefisso del solo submitter approvato e salvato.
+  Nessuna modifica al percorso comune o aggiramento del sandbox. Checkout2A sottomesso:60506850. AltriID e verifica a seguire.
+- Per accodare insieme2A e baseline con il limiteCPU10, aggiunto step1_random_probe_group.sbatch: due job da4h, due sonde ciascuno
+  con limite individuale2h; stesse quattro sonde e stesso confronto, tetto64coreh invariato. Versionato prima di usarlo; bash -n PASS.
+- Review indipendente della stabilita': v1 implementato fedelmente; il singolo massimo non spiega da solo la media50 critica. Aggiunto
+  audit offline (harness/training_stability.py e scripts/audit_training_stability.py), finestre critiche/blocchi/code/gradienti descrittivi,
+  con SHA dei log. Tre regressioni CPU PASS, inclusi picco singolo, risalita persistente e riferimento zero/nonfiniti; review indipendente.
+  Pannello fisso e provenienza dei batch proposti per i prossimi run; nessun cambio al trainer di Claude o agli esperimenti in corso.
+
+### 2026-10-14 | GPT | 2A in coda; audit dei cinque run; correzione del gate della baseline
+
+- 2A interamente sottomesso e verificato da leonardo-ops:60508542(P1stats, RUNNING),60508543(P2stats),60508545/546(P1M/MS),
+  60508547/548(P2M/MS),60508550(P1S/K),60508551(P2S/K+confronto). Caps132coreh,8CPU/30GiB,0GPU; dipendenze dopo le stats e ultimo
+  dopo543:545:546:547:548:550. Primo statsP1 rifiutato per dipendenza dal checkout gia' concluso; nessun job creato, corretto l'argomento
+  (checkout verificato READY) prima di riusare il solo ID rifiutato. Nessun retry di elaborazione, nessun output precedente sovrascritto.
+- Baselinead9b pubblicata su deploy dedicato; checkout60508432COMPLETED/READY12s. Quattro extract60508592/596/597/598 falliti subito
+  sullo SHA iniziale;60508599/601 sonde cancellate dalle dipendenze, senza consumo. Tentata cancellazione dei P2 dopo i P1: SSHscancel
+  ha dato timeout; riconciliazione sola lettura conferma P2 partiti prima della cancellazione e falliti sul medesimo gate, nessun file.
+- Gate rispettato: nessuna baseline appresa/casuale valutata e nessun hash allentato. Costo65s=0,018056GPUh. Causa riprodotta da review
+  indipendente: training storicoOMP/MKL/OpenBLAS1, launcher nuovo8; solo tokenizer.fe_gain varia di~2e-12 per la riduzione float64.
+  initial_teacher ora costruisce con1thread e ripristina il numero precedente in finally; tutti i parametri e lo SHA restano quelli
+  iniziali prescritti. Due nuove regressioni per semi0/1 e ripristino RNG/thread su successo/errore;16testCPU pertinenti PASS.
+- Correzione committata prima del nuovo deploy/r2. Cap nuovi GPU P1=29min x2,P2=60min x2: massimo cumulato2,9847GPUh entro3; sonde
+  64coreh in due gruppi. Nessun tuning scientifico. ID successivi e prova dello SHA reale prima di dichiarare baseline valida a seguire.
+- Cinque JSONL/summary/provenienze2C copiati senza checkpoint e verificatiSHA dal subagent. Audit in results/passo6/step2c_stability_audit_20261014.json
+  riproduce il verdettov1. Finestra1577-1626:media0,09518,mediana0,07083; tolto il massimo rapporto1,77918. Anche negli altri quattro run
+  il rapporto resta>1,5 togliendo un massimo. Review aggiornata con masse della coda e clipping; nessuna prova di deriva persistente finale.
+
+### 2026-10-14 | GPT | Baseline casuale r2 interamente accodata e verifica finale
+
+- Deploy/step1-random-20261014-r2 pubblicato a4fb4208071cd9d641762d683ae581dab6e0432ac. Nuovo checkout CPU60509955;
+  quattro extract:60510132(P1seed0),60510133(P1seed1),60510134(P2seed0),60510135(P2seed1). Gruppi CPU60510137(P1) e60510139(P2+compare).
+  Tutti passano dal submitter comune e rispettano il budget cumulativo2,98472GPUh entro3 e64coreh per le sonde.
+- Verifica readonly di leonardo-ops alle15:45:43 CEST: checkout PENDING/QOSMaxCpuPerUserLimit; tutti gli extract attendono dopo60509955.
+  P1cap29min,P2cap60min,1GPU/8CPU/100GiB; groupcap4h/8CPU/30GiB, dipendenze132:133 e134:135:137. ExportSHA4fb4208/CODE_DIR/runs/input
+  e commenti corretti, nessun duplicato. ScientificiCPU ancora attivi/in coda:7del2A+2group; piu'1checkout=10. StatsP1 gia'COMPLETED.
+- Launcher inviati come script-stdin versionati, con /dev/stdin come percorso in sbatch; un precedente '-' era stato rifiutato senza job
+  per "Unable to open file -", correggendo poi l'argomento prima del riuso marcato dopo-rifiuto. Nessun output/calcolo da quel rifiuto.
+- Nessun extract r2 e' ancora partito: il passaggio dello SHA sul modello reale e i risultati P1/P2 restano da osservare. Le regressioni
+  locali dimostrano la correzione del contesto1thread, non l'esito di un job non eseguito. La catena completa puo' procedere autonomamente
+  dopo il checkout; qualsiasi gate fallito ferma le dipendenze. Nessuna modifica al checkout di Claude o alle sue campagne.
+
+### 2026-10-14 | GPT | Allineamento finale registro e decisioni, su richiamo di Simone
+
+- Verificati i commit4fb4208 e b6719f0: registro gia' aggiornato con lanci, fallimento della prima baseline, correzione e nuova catena r2.
+  Aggiunto a decisioni.md il riepilogo dei due protocolli, SHA congelati, tetti di risorse, accounting reale dei checkout e stato della
+  proposta di monitor2C. Nessuna nuova operazione HPC o modifica al codice; restano intatte le bozze non tracciate preesistenti.
+
+### 2026-10-14 | GPT | Stato dello schema JEPA e priorita' critiche
+
+- Confrontato lo schema di Simone col codice Claude3dbdc69 e main5030a19. Catena raw implementata; DDP4GPU30M collaudato,
+  WSD/ripresa esatti disponibili, memoria100M/300M misurata. Gli ultimi sviluppi sono sui branch/deploy e ancora da integrare su main.
+- Correzioni allo schema: Fourier/spline/MLP, proiezione direttamente aD384/640/896; PerceiverC->K64, backbone(B,P,K,D).
+  Teacher/studente sono copie complete; multiscala sulle ancore, query sulla griglia25ms. P1/P2 stesso readout2D;
+  PSD/wavelet paralleli alla vista completa/readout, spenti per default. Nessuna modifica architetturale in questa verifica.
+- Snapshot remoto readonly16:46 CEST:2AstatsP1/P2 eP1S/KCOMPLETED, P1B0RUNNING, altre sonde in attesa; sonde2C ancora attive,
+  nessun confronto finale2A/2C osservato. Claude concorda su monitor a finestre fisse e provenienza dei batch.
+- Tutti gli extract casuali r2FAILED ancora sullo SHA iniziale; gruppi cancellati, nessun risultato casuale. Il fixthread riprodotto
+  localmente non e' sufficiente sul cluster; serve diagnosi tensor-per-tensor. Nessun nuovo lancio o allentamento del gate.
+- Priorita': baseline casuale e chiusura2A/2C; monitor prima del congiunto; gradienti/obiettivi e sonde fisiche/pre-postbottleneck;
+  bracci mancanti, calibrazioneLR/batch/K, verificaattesa dati<=2%, lista/config/budget finestra1 e integrazione revisionata.
+
+### 2026-10-14 | GPT | Lista comune riconciliata e 2A concluso | Verifica remota22:53 CEST; Claude7a4c965
+
+- Concordo con i sei punti della lista comune, con integrazione/review in parallelo. Lo schema corretto di Claude45187a8 risolve le
+  dimensioni, layout, encoder locale, masking/RoPE, decoder e readout dell'immagine iniziale; nessuna nuova architettura approvata.
+- Correggo il mio stato precedente: diagnostiche su pannello fisso e origine dei batch GIA' implementate in5f62444, lette nel codice
+  e nei sei testCPU. Suite914PASS dichiarata da Claude; non rieseguita qui. Restano review completa e regola/cadenza da congelare prima
+  del prossimo collaudo; non certificano retroattivamente la stabilita' dei run2C.
+- 2A: otto job60508542/543/545/546/547/548/550/551 COMPLETED0:0. Decisione NEGATIVA secondo il protocollo congelato: MS-M suP1
+  -0,36593 punti (IC95 -0,64305..-0,13331), suP2 +0,06816 (IC descrittivo -1,24043..+1,37674). Nessun task utile; entrambi non dannosi
+  secondo la guardia puntuale>=-1punto. Ricalcolate decisione e guardie dal JSON; M riproduce i quattro report storici, una sola maschera
+  per ciascuno dei cinque dataset. Consuntivo scientifico52,7533coreh e0GPUh, entro132; checkout separato gia' registrato.
+- Salvato results/passo6/step2a_comparison_20261014.json. Origine remota SHA2561d5f0787d98a6f4d5636ab489fc32655c808bf3ade92c656e12403cf30260252;
+  copia locale con newline finale normalizzato, SHA256da2f3d82bf81a79254337e2f0abb6968be954e2cf46a03bfbc8f6e3d3871240d, stesso JSON.
+- 2C: finale60505786COMPLETED0:0; letti risultato aggregato e note Claude2e6be4a. Primario negativo inA/B: conB, rami allenati-raw
+  P1+0,34punti/P2+0,75, sotto la soglia utile. L'allenamento peggiora P2B rispetto ai rami al passo0 (-1,59punti). Confronto accoppiato
+  dei rami conMS del2A ancora da calcolare dai report, senza sovrascrivere comparison.json o inventare IC sottraendo quelli esistenti.
+- Baselinecasuale r2: quattro extract60510132-135FAILED1:0, gruppi60510137/139CANCELLED; nessun risultato. Consuntivo r2=54s=0,015GPUh,
+  cumulativo con r1=0,033056GPUh. Gli extract r2 gia' richiedono1GPU suBooster: l'ipotesi login-node vsBooster non e' il contesto di questi
+  fallimenti. Confrontare buffer immutabili col teacher finale resta una diagnostica utile, non una causa provata.
+- Main5030a19; allo snapshot Claude7a4c965 ci sono39commit non raggiungibili da main, non piu'33. CollaudoGPU funzionale DDP passato;
+  equivalenza quantitativa1vs4GPU/NCCL/bf16 ancora distinta e pendente. Dati<=2%, LR/batch/K, ablation, sonde e piano/budget restano aperti.
+- Confermata scadenza operativaSCRATCH22/10, purge25/10 daCLAUDE.md/decisioni. Nessun nuovo job, merge o push; bozze preesistenti preservate.
+  Subagent non disponibili per crediti: fotografia root in sola lettura, con approvazione runtimeSSH gia' esistente.
+
+### 2026-10-14 | GPT | Numerazione unica e responsabilita' operative | Base GPT3ecbd58; Claude12585fd
+
+- Su richiesta di Simone inserito in apertura del registro il riferimento unico: 1 confronti2A/2C, 2 baselinecasuale, 3 integrazione,
+  4 stabilita', 5 obiettivo, 6 finestra1. Ruoli, consegne, tranche parallela, proprietari dei file e responsabilita' di lancio espliciti.
+- Lavoro immediato GPT: baseline e review; Claude: protocollo GPU/dati, bozza della regola e fattibilita'. Sonde locale/backbone ancora
+  in attesa come da suo ultimo registro; nessuna nuova estrazione o modifica di file altrui. Documento non equivale a job accodati.
+- Aggiornato decisioni.md con il riferimento, senza cambiare protocolli/budget. Solo file documentali, nessun job, merge o push.
+
+### 2026-10-14 | GPT | Punto 2: diagnosi sul cluster e correzione del buffer storico | Base c4a0302; diagnosiClaude977e767
+
+- Simone: «diagnosi della baseline (2) e review del trainer/monitor (3-4). PROCEDI!». Review trainer e monitor delegate in parallelo
+  a due agenti read-only; nessuna modifica ai file di Claude. Ops ha riconciliato la diagnostica gia' avviata da Claude, senza duplicarla.
+- JobClaude60561493COMPLETED0:0 in48s, checkout60561424, codice977e767; cinque processi nuovi per ogni seme, Torch2.2.0a0+git6c8c5ad
+  suXeon8358. ab_replica e gpt_like_env8_sklearn_first MATCH esatto dei quattro hash iniziali A/Bstudent/teacher per entrambi i semi.
+  Nelle altre varianti l'unico tensore diverso e' tokenizer.fe_gain; tutti i parametri identici. Thread1 da solo non basta.
+- Rapporto in results/passo6/diag_initial_20261014.json; SHAremoto c0ca4dad0e1332e20a61897f149f6f03337b4a120f58fb0abbe1f7f47867d02a,
+  SHAlocale fdb157062ce6fc76aa420b137720b75cafba1bf9990237453eb7b4f507e3f0eb (solo newline finale aggiunto). Nessun checkpoint/dato copiato.
+- Corretto harness/random_encoder.py: ripristina il SOLO guadagno fisso dal riferimento hash-verificato, oltre ai quattro bufferkeep.
+  Guadagno registrato, non ottimizzato, mai ricalibrato nel training; EMA copia i buffer. OGNI parametro ricreato dal seed; nessun load
+  di state_dict appreso. Controllati forma/dtype/finitezza/positivita' del guadagno; SHA COMPLETO iniziale sempre identico ai due prescritti.
+- 38CPUtestPASS (random_encoder/downstream_ab/p1_cross_subject/probe_p2), inclusi due semi con arrotondamento diverso e rifiuto di cinque
+  drift del buffer. Fix non ancora eseguito nei nuovi extract reali: non dichiarare gate cluster o sonde riusciti dalla sola prova locale.
+- Protocollo r3 registrato prima dei job: nuovo checkout/output, quattro extractP1cap28min/P2cap60min; due gruppiCPUcap3h55 con stesse
+  quattro sonde e timeout2h/seme. Incluso perfino il diagnosticoClaude, cumulativoGPU massimo2,979722 entro3; CPU totale inferiore64coreh.
+  Preflight in corso viaOps; nessuna submitr3 ancora avvenuta in questo commit. Non usare il worktree con bozze come checkout di campagna.
+
+### 2026-10-14 | GPT | Punto 2: r3 sottomesso e gate reale superato; punti 3-4 review consegnata
+
+- Pubblicato SOLO deploy/step1-random-20261014-r3 da7863c5da34bfa4c261acd41fff742707d2a45f6d, senza main/origin o checkout attivi.
+  Ops ha accodato sotto lock: checkout60562932COMPLETED0:0 in7s; extractP1s0/s1 60562964/60562980, P2s0/s1 60562990/60563026;
+  gruppoP1 60563048 e gruppoP2+confronto 60563070. Tutti accettati; nessuna risposta ambigua, duplicato o retry.
+- SnapshotOps: quattro extractRUNNING, gruppiPENDING/Dependency. Export/commenti/SHA/risorse corretti; P1cap28min/P2cap60min,
+  gruppiCPU3h55, P1deps964:980; P2deps990:026:048. Checkout7863c5d clean/read-only; dati/output fuori dal codice.
+- Gate ricostruzione finalmente PASS per ENTRAMBI i semi e task: tutti i log oltre initial_teacher, quattro initial_teacher.pt nuovi
+  creati (113602476byte ciascuno) SOLO dopo verifica SHAcompleto esatto e riferimento. Nessun mismatch/traceback alla verifica.
+  Non sono ancora disponibili le sonde/confronto casuale: i job procedono autonomamente, non si dichiara il controllo concluso.
+- CapGPUcumulativo conservativo2,979722entro3 (inclusi119s dei due fallimenti e48s diagnosticoClaude, contato una sola volta), CPUseriali
+  gruppi62,6667coreh piu' checkout7s=0,003889coreh e piccoli overheadpassati, entro64. Diagnosi e fix verificati anche da reviewer indipendente.
+- Review trainer/monitor e bozza v2 in docs/reviews/trainer_monitor_20261014.md; quattro riproduzioni persistenti in
+  docs/reviews/repro_training_monitor_20261014.py. Nessuna modifica a file di Claude o merge su main: correzioni richieste al suo branch.
+- Prove:38testCPUbaselinePASS;5testmonitorPASS/1deselected;4reproCPUconfermati (PASS significa bug riprodotto); provaCPUgloo testa opzionale
+  solo nel no_sync di rank0, gradienti esatti su entrambi per2updatePASS. Selezione agente4PASS prima del caso worker bloccato/interrotto,
+  non interasuite. Nessun errore trovato di scala globale/accumulo/clipping/EMA/freeze nel perimetro esaminato; NCCL/bf16 non provati qui.
+
+### 2026-10-15 | GPT | Tranche parallela punti 1 e 5: analisi locali riproducibili
+
+- Su richiesta di Simone prendo il confronto secondario RPW-MS sui due teacherB e i gradienti pesati dell'A/B, mentre Claude corregge
+  i quattro P2 nel suo trainer. Nessun edit concorrente di run.py, merge, nuovo job o cambio di soglia/budget.
+- Nuovo scripts/compare_step2_closed_reports.py: otto report chiusi, hash contro i rispettivi comparison.json, identita' dei teacher,
+  ingressi/righe/split accoppiati. Riusa compare_reports byte-identico ai due SHA di campagna,1000bootstrap/seed20261009 e regola
+  +1/-1punto del2C; rimuove la guardia -2punti specificaStep1. Output nuovo, non sovrascrive gli esiti primari2A/2C.
+- Nuovo scripts/analyze_step1_gradients.py: componenti shared_grad_* gia' pesate, otto osservazioni/semeB agli indici0,500,...3500
+  (log1,501,...3501). Verifica provenienza/configurazione/export del trainer69fa2da; A non strumentato per keep_weight0.
+- Test pertinenti:45PASS, CPU locale. Review indipendenteC1: orientamento, estimatore e criteri corretti; reviewC5: norme prima del
+  clipping e offset del passo confermati. Sono prove del codice di analisi, NON nuovi risultati sperimentali: copie piccole in corso
+  viaOps, nessun NPZ/checkpoint/dato grezzo scaricato. I tre draft preesistenti non committati restano intatti.
+
+### 2026-10-15 | GPT | Punti 1 e 2 chiusi, analisi dei gradienti del punto 5 consegnata
+
+- C1: replay locale effettivo dal codicec1c7a97, input completi e verificati byte-identici daOps. RPW-MS B0/B1: P1+0,708805punti,
+  IC95[+0,309728;+1,257906]; P2+0,677052, ICdescrittivo[-0,823076;+2,177180]. Entrambi semi positivi, entrambi sotto+1punto:
+  secondarioNEGATIVO, primari2A/2C invariati, nessun training congiunto/adattamento delle soglie. NuovoJSON
+  results/passo6/step2c_vs_step2a_20261015.json; nessuna riscrittura dei report remoti o dei comparison chiusi.
+- C5: export sparsi verificati di tutti e4i run storici69fa2da. A0/A1 senza componenti per design; B0/B1 otto osservazioni ciascuno,
+  log1,501,...3501. Ancore/JEPA mediane8,74922 e9,68113; keep/JEPA1,27580 e0,96037. Pooled16batch: mediane8,96895/1,14472,
+  ancore/JEPA range2,53170..205,31593. Norme gia' pesate0,2/0,05, preclip; clipping totale in12/16campioni, non frequenza su4000step.
+  Tutto finito. NuovoJSON results/passo6/step1_weighted_gradients_20261015.json. Nessun parametro/peso/iperparametro cambiato.
+- C2: arrivato e archiviato byte-identico il confronto finale r3, source7863c5d, SHA256
+  dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119. Tutti i7jobCOMPLETED0:0, ultimo60563070 concluso alle02:39:45CEST;
+  snapshotOps15/10 07:29:38, zeroSTOP. Entrambi goldenSHA iniziali esatti invariati. B-random: P1+2,30152punti,
+  IC95[+1,08155;+3,60891]; P2+7,51249, ICdescrittivo[+4,31532;+10,70966]. A-random: P1+1,91900 eP2+6,68940punti.
+  Tutti i delta aggregati positivi per entrambi i semi. NuovoJSON results/passo6/step1_random_downstream_20261015.json.
+- ConsuntivoR3: extract6643s=1,845278GPUh; gruppiCPU+checkout23,17722coreh (37,93944 includendoCPU negli extractGPU).
+  Sommando119s fallimenti e48s diagnosiClaude, GPUcumulative conservative1,891667<3gia'autorizzate; nessuna nuova allocazione.
+- Test finali analisi:46PASS CPU locale. Rilievi del trainer restano assegnati aClaude; main non integrato, tre draft preesistenti
+  preservati. Registro nelle due sezioni e decisioni aggiornati; sonde temporali/fisiche e nuovo obiettivoSSL ancora da fare.
+
+### 2026-10-15 | GPT | Letti gli ultimi aggiornamenti Claude, punti 3-4 e 6 | Fonte: 59b8c5b
+
+- Alla domanda di Simone «hai visto cosa ha fatto claude?» letti il suo registro, decisioni, fattibilita', artefattiGPU e i diff
+  fccdc1e/b104fb5. Nessuna modifica al worktree diClaude o nuovo accesso al cluster/job.
+- Le quattro correzioni richieste sono implementate: ricetta/firma dei dati alla ripresa; struttura delle loss prima di backward_loss
+  e dello stop coordinato; hash del contenuto del pannello fisso; aggregazione delle metriche mediante numeratori/conteggi validi.
+  b104fb5 sposta le nuove guardie dopo loSTOP. Checkpoint storici senza data_signature sono ammessi con avviso esplicito, non verificati
+  retroattivamente. Nuovi testDDP sul componente mancante presenti, non rieseguiti da GPT in questa lettura.
+- GPT:9test di test_resume_recipe.py PASS; reviewer:3PASS (pannello, metriche, STOP), di cui2duplicati. **10testCPU unici PASS**,
+  non suite completa.930PASS e' la suite completa registrata daClaude59b659e, non una mia nuova esecuzione.
+- Artefatti di59b8c5b: equivalenza1vs4GPU/accumulo PASS in float32 e bf16, source d7e2509. Misure dati/throughput source977e767.
+  Attesa30M2,40%/2,81% NON passa2%;100M1,24%/1,73%,300M0,69%/0,72%. Batch32:0,707/1,390/2,769s per update sui tre rung.
+  Costo della tranche5,51GPUh, infrastruttura dichiarata5,87/25usate; stima finestra1~4730-5300GPUh non ancora budget firmato.
+- Main canonico ancora5030a19, ramoClaude50commit avanti allo snapshot. Nessun merge/push o riapprovazione automatica del monitor,
+  del dataloader o della finestra1. Lettura e verifiche riportate nelle due sezioni, senza riscrivere le voci diClaude.
+
+### 2026-10-15 | GPT | Prossima tranche parallela e aggiornamento dei sei punti
+
+- Simone conferma cheClaude sta gia' lavorando al prefetch del30M: non gli assegno un lavoro duplicato. GPT non e' bloccato:
+  priorita' review/integrazione del source59b8c5b, indipendente dalle modifiche successive diClaude. Nessuna modifica concorrente a run.py.
+- Tabella e tranche in apertura aggiornate:1/2chiusi;3review/mergeGPT;4regolaGPT+implementazioneClaude dopo accordo;5ablation/sondeGPT,
+  con analisi gradienti gia'conclusa e sonde locale/backbone ancora in attesa;6prefetch/launcher/proveClaude e perimetro scientificoGPT.
+- Letto il ciclo del source59b8c5b: t_data_s misura next(it)+_from_shared e termina PRIMA di _prepare(...,device). Il prefetch deve
+  anticipare anche questo handoffCPU, non limitarsi a una copiaH2D non bloccante o spostare la stessa attesa fuori dal cronometro.
+  Il miglioramento va verificato su tempo totale, stessi dati/RNG e ripresa, non sul solo nome di una metrica.
+- La modifica va testata bit per bit nel percorso deterministico; il bf16GPU ha gia' mostrato non determinismo del riferimento:
+  criteri di confrontoGPU da esplicitare prima, senza dichiarare uguaglianza bitwise non misurata o rilassare soglie dopo gli esiti.
+- Nessun nuovo job, modifica del trainer o merge eseguiti da questa pianificazione. Proposta operativa registrata nelle due sezioni
+  e in decisioni, senza toccare i tre draft preesistenti o adottare default/budget. SCRATCH resta coordinato daClaude entro22/10.
 
 ## 2) Problemi trovati
 
@@ -1131,3 +1477,220 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   (8 CPU per GPU); (b) prefetch del batch sulla GPU in un thread o su uno stream CUDA separato, cosi' che il trasferimento si sovrapponga al
   passo precedente; (c) accettare il 2,4% al solo 30M (il rung delle ablation), dove pesa ~50 GPU-ora sul totale. La (b) e' la piu' efficace
   ma tocca il ciclo del trainer: va provata bit per bit come le altre ottimizzazioni (stessi batch, stessi pesi).
+### 2026-10-13 | GPT | Due correzioni e chiarimenti prima del deploy Step 2/3 | Snapshot: 2ba67a7
+
+- P1: model/fm.py:137-138 usa fork_rng(devices=[]) ma torch.manual_seed risemina anche CUDA, non ripristinata da quel contesto. Spy CPU
+  su torch.cuda.manual_seed_all: raw non risemina; rami con seed5 riseminano7924. Pesi raw/CPU-RNG accoppiati, dropout muscolo su GPU no.
+  Correggere con seed del solo generatore CPU o fork degli stati CUDA; aggiungere regressione mirata prima dei lanci.
+- P1: probe_p1.py:114-117 e probe_p2.py:107-109 salvano NPZ senza feature_set/identita' della variante; stageprobe non la confronta
+  e scrive il feature_set passato a CLI. Repro P2: cache64 (stats+mask) accettata con --feature-set mask, report "mask" anche se usa64
+  valori invece32. Anche model vs model+stats/checkpoint diversi a rischio. Salvare/verificare variante, dimensione, checkpoint/readout/
+  target/preprocessing/split; non ricavare l'aspettativa dalla stessa cache da validare.
+- P2 da chiarire: spectral_branches.py:91 impone guard sul SUPPORTO INTERO della PSD, anchor_targets.py sul centro/patch del target.
+  Crop1s a2kHz, guard200campioni:4frame lenti input contro6 target. Test di uguaglianza esistente ha guard0. Non descrivere supporto/maschere
+  identici con guard>0; estendere i test e dichiarare/decidere la differenza senza cambiare silenziosamente i target dello Step1.
+- Note scientifiche: teste fused/PSD/wavelet, non una testa raw separata (spectral_keep inutilizzata con i rami). Il fuso puo' appoggiarsi
+  ai rami: stesso keep_weight non garantisce stessa supervisione/gradiente raw. Confronto Gabor/wavelet cambia frequenze, larghezze,
+  normalizzazione, supporto e conv vsFFT: scelta fra DUE BANCHI, non superiorita' della famiglia wavelet. R2 spettrale non dimostra P1/P2.
+  Limite lento<48Hz su P1 resta esplicito; non allungare P1 perdendone la comparabilita'.
+
+### 2026-10-13 | GPT | Correzioni prima del test 2A | Snapshot: a4ffc2e
+
+- P2, scripts/step2a.py:147-150: la costanza degli indicatori e' solo registrata. Fs e banda costanti non bastano: i target disattivano le
+  coordinate di forma con energia <= EPS. Stessi fs200, 200 campioni, 8 canali QC-validi, limite100Hz, guard20: segnale casuale17 coordinate
+  presenti, finestra nulla2. Se una maschera varia, fermare la catena prima delle sonde/esito oppure prevedere M+K; K al caso da solo non
+  esclude un contributo degli indicatori condizionato a M. La prima opzione conserva gli otto job e il tetto proposto.
+- P2, scripts/step2a.py:85-86: _downstream non verifica identity.source_commit/training_commit, sebbene il protocollo riusi precisamente
+  le cache storiche 8dad7e8. Riprodotta accettazione con questi due campi alterati. Congelare anche tali SHA: hash delle finestre grezze e
+  hash fisico contro il manifest corrente non certificano che filtro/scala/readout siano quelli dell'estrazione storica.
+- P2, scripts/step2a.py:101-103: _probe_argv passa sempre B_seed0/checkpoint.pt, anche per M/MS di B_seed1. Le sonde leggono le cache
+  corrette (non e' un errore nelle accuratezze), ma report.checkpoint contraddice la provenienza allegata. Passare il teacher del braccio
+  per M/MS; mantenere separato il checkpoint caricato solo per estrarre S/K. Aggiungere un'asserzione nel test end-to-end.
+- docs/step2a_stats_probe.md:59: un guadagno con la sonda lineare non prova informazione assente nell'embedding; puo' renderla piu'
+  accessibile alla sonda. Scrivere "migliora la sonda lineare rispetto a M su questi teacher/task". "Non dannoso" resta una guardia pratica
+  sulla stima puntuale, non non-inferiorita' statistica; intervallo P2 descrittivo e due confronti senza correzione gia' dichiarati.
+
+### 2026-10-13 | GPT | Limiti della chiusura delle correzioni Step 2/3 | Snapshot: 57fe3c0
+
+- La registrazione feature_set/model_dim chiude lo scambio fra varianti; non certifica da sola identita' del checkpoint, preprocessing o
+  split. Per il 2A la provenienza resta responsabilita' del wrapper e degli hash storici.
+- Le tre richieste della review separata di a4ffc2e (gate maschere costanti, SHA di estrazione/training, percorso teacher nei report) e
+  la precisazione sull'accessibilita' alla sonda lineare restano aperte in57fe3c0. Modifiche successive di Claude non committate escluse.
+- Sul bordo non serve una patch per adottare(a): e' gia' il comportamento provato. Cambiare i target come in(c) sarebbe un esperimento
+  distinto con nuova versione/provenienza; nessun cambio retroattivo ai risultati Step1 o2A.
+
+### 2026-10-13 | GPT | Precisazioni algoritmiche alla proposta raw + rami | Proposta Claude: 7bdd31b
+
+- "peso_rami=0 torna esattamente a B" vale per la formula della loss, non automaticamente per l'intero sistema: readout() concatena i
+  rami ogni volta che esistono. Il controllo B deve saltare quel percorso e usare il solo readout raw storico; eventuali rami casuali a
+  peso0 sono un controllo diverso. Verificare equivalenza di loss, gradienti, update/EMA e feature sul controllo disabilitato, inclusi RNG.
+- Non promettere raw identico con peso_rami>0. Anche un eventuale stop-gradient dalla fusa non basterebbe da solo: il trainer applica
+  clip_grad_norm_ a tutti i parametri, accoppiando la norma dei gradienti raw e rami. Non propongo di cambiare ora il clipping storico;
+  congelare il raw nella diagnostica prevista rende esplicita l'isolazione. Il training congiunto resta un esperimento diverso.
+- La separazione dei pesi risolve l'omissione della keep raw, ma i rami continuano a predire statistiche gia' molto accessibili dal loro
+  ingresso spettrale. Non prova complementarita' temporale o utilita' downstream. Un nuovo obiettivo self-supervised va definito/versionato
+  a parte, senza cambiare in corsa il test2A o attribuire alla sola correzione risultati non misurati.
+
+### 2026-10-14 | GPT | Due punti nel percorso rami; 2A non bloccato dal codice | Snapshot: 3dba14c
+
+- P2, training/run.py:850-853: con freeze_encoder il totale e' kb, senza moltiplicazione per cfg.jepa.branch_weight. Il parametro e'
+  accettato e registrato, ma non controlla il backward. Riproduzione sul trainer reale con dati sintetici, seed e checkpoint identici:
+  branch_weight0,01 e1 danno entrambi total=keep_branches=0,8846452832221985 e grad_norm=0,22516082227230072. Applicare il peso al
+  totale nel percorso frozen, con test che confronti totale e gradienti prima del clipping; in alternativa dichiarare esplicitamente
+  peso fisso1 e rifiutare valori diversi in questa modalita'. Non ignorare silenziosamente il nuovo parametro. Non riguarda il 2A.
+- P2, model/spectral_branches.py:412-414, guardia da completare: uguaglianza di target_active garantisce gli stessi target validi e
+  conteggi, NON l'intera calibrazione. Con target_active identico ma target_mean della testa PSD spostato di100, readout_objectives
+  accetta il modello e la loss passa da0,4588731 a3357,3672. Il trainer fresco calibra normalmente le teste insieme: non e' evidenza di
+  calibrazione errata nei run ordinari. Per garantire il contratto dichiarato, verificare anche target_mean/target_std/stats_fitted
+  in preparazione/caricamento e aggiungere test di rifiuto delle divergenze (non serve ripetere il controllo costoso a ogni passo).
+- Esito: jepa.py e il contratto additivo verificati nei casi testati; prima del training frozen correggere il peso e completare la
+  guardia di calibrazione. Il 2A non usa questo trainer ne' i rami allenati: la sua review e' chiusa, senza richiedere queste patch.
+- Blocco operativo 2A: autenticazione SSH rifiutata il14/10. Prima del deploy servono accesso ripristinato e preflight remoto fresco
+  (coda/accounting, ref/hook, checkout/output, input e quota); nessun lancio o retry alla cieca. Non modificare soglie o aggiungere
+  controlli dopo i risultati: se il gate delle maschere ferma le statistiche, registrare l'esito e concordare il protocollo successivo.
+
+### 2026-10-14 | GPT | Ripristino accesso e limiti del lancio 2A | Codice congelato: 3dba14c
+
+- Blocco SSH precedente chiuso dal preflight fresco delle09:41:56 CEST. Restano valide le soglie e il gate sulle maschere; nessuna
+  adozione automatica dei rami in base ai risultati. Le due note di review del trainer/calibrazione restano a Claude e non sono eseguite
+  dal 2A, che riusa gli embedding storici e calcola statistiche fisse. Non incluso il successivo protocollo2C di b8aacd0.
+
+### 2026-10-14 | GPT | Limiti della baseline casuale prima del lancio
+
+- La preparazione era rimasta ferma e non committata durante il passaggio alle review: responsabilita' GPT, non errore tecnico
+  dimostrato del controllo. Ora validata, ma i test sintetici non sostituiscono le sonde P1/P2 reali.
+- Il codice richiede checkout pulito allo SHA atteso; non usare il worktree locale con bozze estranee. P2 extract richiede override1h;
+  ultimo probe deve dipendere dal proprio extract e dagli altri tre probe. Nessun riuso di output esistenti o retry automatico.
+
+### 2026-10-14 | GPT | Stabilita' v1 e limiti operativi delle sottomissioni
+
+- La frase "picchi isolati" e' una lettura possibile, non una causa verificata. Nel collaudo, un unico massimo0,555 con49batch0,05
+  porterebbe MA50 a0,0601, non0,0952: controllare gli altri batch della finestra critica. I log attuali non registrano sessioni/ritagli.
+  Encoder intatto e loss finale in calo non bastano a certificare stabilita'. Collaudo storico resta non passato; dettagli nella review.
+- MA50/minimo storico e' sensibile al minimo selezionato e ai molti confronti sovrapposti. Correggere il monitor prospettico con pannello
+  fisso e allarme persistente, non soltanto alzare1,5 o usare mediane che nascondono la coda. Tolleranza/cadenza da fissare prima dei run.
+- CPUQOSmax10 vale anche ai lanciGPT:2A8+baseline4probe non si accodano tutti insieme. Due gruppi da4h rispettano10 dopo il checkout,
+  con identico costo64coreh; non contare come pronti job non accettati. CostiGPU del passo6 da riconciliare col nuovo tettoClaude57GPUh.
+
+### 2026-10-14 | GPT | Gate baseline e risalita nella finestra critica2C
+
+- Il training storico costruiva il tokenizer con1thread; il controllo casuale con8non ricreava bit per bit il guadagno fisso del front-end.
+  Corretto l'ambiente di costruzione, non il modello o il valore atteso. I test precedenti con tutto a1thread non simulavano il launcher.
+  Nessuna feature prodotta dai quattro fallimenti; non attribuire loro alcun risultato downstream.
+- Nel collaudo il massimo da solo non spiega MA50: i cinque valori maggiori sono32,6% della massa e senza il massimo il rapporto resta
+  1,78. Nei run A0/A1/B0/B1 i rapporti senza massimo sono1,95/1,68/1,78/1,87. La causa per sessione rimane non verificabile dai log attuali.
+  Stesso cluster di passi in A0/B0 e loss finale bassa sono compatibili con difficolta' dei dati; non certificano stabilita' dell'optimizer.
+- Accountingcheckout: SLURMalloca2CPU anche con richiesta1;60508432consuma2x12s=0,006667coreh,60506850circa2x11s=0,006111coreh.
+  Registrare i consuntivi reali (capCPUpercheckout2x10min=0,3333coreh); i tetti dei job scientifici restano invariati.
+
+### 2026-10-14 | GPT | Stato finale e limiti dell'esito della ripresa
+
+- Tutti i lanci richiesti sono accodati; baseline r2 in attesa del checkout CPU, 2A statsP1 completato e statsP2 in esecuzione. Non
+  dichiarare conclusi il controllo casuale o il confronto2A. La codaCPU seriale puo' ritardare il checkout e tutte le sue dipendenze.
+- La stabilita' del modello non e' ancora isolata dalla variabilita' dei batch: audit completo committato, v1 semprefallito, pannello
+  fisso/provenienza proposti a Claude per il prossimo trainer. Nessun innalzamento della soglia o nuovo hyperparameter per far passare
+  gli stessi run. Non attribuire i picchi a sessioni specifiche senza i metadati che mancano nei log attuali.
+
+### 2026-10-14 | GPT | Limite della registrazione finale
+
+- L'allineamento dei documenti usa la fotografia remota verificata alle15:45:43 CEST, non un nuovo controllo della coda. Non indica
+  conclusione delle sonde, passaggio dello SHA reale r2 o adozione del monitor proposto. Le risorse e le soglie restano quelle registrate.
+
+### 2026-10-14 | GPT | Limiti di prontezza dello schema JEPA
+
+- La baseline r2 non passa sul cluster: i testCPU del fixthread non certificano i due SHA reali. Serve localizzare i tensori/buffer
+  discordanti conservando gli hash iniziali prescritti; nessun risultato casuale disponibile.
+- Il fallimento di stabilita' osservato riguarda i rami con raw congelato. I log non separano deriva e composizione dei batch;
+  monitor prospettico/provenienza ancora da implementare. Nessuna nuova soglia adottata.
+- Lista finestra1 ancora bozza non tracciata/non firmata: waveform/soli target espliciti, percorsi identita'/gating e sonde richieste
+  non risultano pronti. Memoria dei rung non equivale a collaudo lungo della configurazione finale. IPC ottimizzato,<=2% inDDP ancora
+  da confermare suGPU. Main ancora5030a19; le campagne congelate non vanno aggiornate in corsa.
+
+### 2026-10-14 | GPT | Precisazioni sulla lista comune e sugli esiti2A/2C
+
+- Le voci precedenti "monitor da implementare", "2A/2C in corso" e "baseline in coda" sono superate: monitor implementato daClaude,
+  confronti primari2A/2C conclusi negativi, baseline fallita sul gate. Negativo non significa prova di assenza d'informazione o danno
+  in tutti i task: sul primario2C entrambi i task sono non dannosi secondo la guardia puntuale; il dannoP2B riguarda allenati vs passo0.
+- Nessuna promozione dei rami o training congiunto discende da questi esiti. Prima capire/riformulare l'obiettivo dei rami; 2A non sostiene
+  l'aggiunta delle32statistiche medie su questi due teacher/task. Encoder allenati solo suemg2qwerty, non giudizio su un FM full-corpus.
+- Sondare separatamente encoder locale e backbone e' un primo screening prima/dopo, ma NON isola l'effetto del Perceiver: dopo il
+  bottleneck cambiano anche attenzione temporale e pooling. Per attribuire un limite aK servono sonde/allineamento e ablation dedicate.
+- Gradienti pesati gia' registrati nell'A/B: da analizzare, non da reinstrumentare. Review del monitor e soglie prospettiche restano
+  distinte dai testCPU di non-interferenza; confermaGPU e confronto1vs4 con NCCL/bf16 restano da fare con protocollo separato.
+- La baseline non ha salvato i parametri iniziali, solo l'hash: confronto tensor-per-tensor con l'iniziale non disponibile. I buffer
+  non appresi del teacher finale sono diagnostici, non autorizzano a copiare pesi appresi o ad allentare gli SHA prescritti.
+
+### 2026-10-14 | GPT | Limiti della numerazione unica e dell'avvio parallelo
+
+- Le precedenti numerazioni GPT e Claude erano diverse: questo non indicava cambi di incarico. Da ora fa fede il blocco di apertura;
+  non si rinumerano le note storiche e non si chiamano P1/P2 i punti della lista, per non confonderli con le sonde.
+- Due confronti primari negativi non chiudono da soli baseline, validazione dell'obiettivo o secondario rami-statistiche. La regola
+  del prossimo collaudo resta prospettica. Il solo budget infrastruttura residuo non autorizza testGPU non ancora protocollati.
+- Nel registroClaude12585fd c'e' un'attesa sulle sonde separate: nessuna autorizzazione implicita a ripartire da una richiesta di
+  documentazione. I file harness che serviranno non sono assegnati a due writer; il passaggio esclusivo si delimita prima del codice.
+
+### 2026-10-14 | GPT | Punto 2: causa dimostrata e limiti della correzione
+
+- Il precedente fixthread era incompleto: la diagnosi reale esclude differenze dei parametri e individua il buffer fe_gain, con effetti
+  dell'ambiente numerico/import. Non equivale a dimostrare quale libreria o istruzione sia la causa ultima dei diversi arrotondamenti.
+- Si recupera un buffer IMMUTABILE storico, non una feature o un peso appreso. L'hash dell'intero stato rimane il criterio esatto;
+  la whitelist non permette di recuperare altri parametri dal teacher finale, né di accettare differenze piccole con una tolleranza.
+- R3 usa nuovi ID/checkout/output dopo una causa isolata e una correzione testata, non un retry identico. Budget di2A/infrastruttura
+  non toccati. Se il gate fallisce ancora, stop e nuova analisi, senza sottomissioni duplicate o allentamento della provenienza.
+
+### 2026-10-14 | GPT | Punti 3-4: quattro rilievi P2 da correggere con Claude
+
+- P2 trainer, run.py745-769/887: la ripresa accetta seed0->seed1 nella stessa cartella e cambia BatchStream. Riprodotto trainer reale
+  1->2step. Preesistente in5030a19, non nuova regressione di16f5a5d; non invalida riprese a configurazione invariata. Proteggere ricetta
+  seed/batch/loader/dataset e consentire solo override operativi dichiarati (es.max_steps), con test di rifiuto/replay.
+- P2 trainer, run.py499-503: backward_loss viene chiamata prima della verifica chiavi/count. Componente del forward mancante rispetto
+  al precount produce ValueError prima dei flag coordinati. Fault injection confermata; non guasto ordinario ne' hang permanente
+  dimostrato. Spostare la validazione prima della loss e testare arresto coordinato su un solo rank con checkpoint preservato.
+- P2 monitor, run.py600-609/875-878: identificativi di finestre invariati non proteggono segnali/normalizzazione. Trainer reale con
+  scale esterne diverse alla ripresa accetta stesso fixed_eval_set.json ma pannello diverso. Proteggere contenuto/provenienza del
+  pannello, non solo seed/ritagli. Il repro non usa un cambio loader che la calibrazioneStep1 potrebbe gia' intercettare.
+- P2 monitor, run.py634-641: chiavi opzionali per tipo/topologia divise per tutti i batch; un valore2 presente solo in1di2 diventa1.
+  Usare numeratori/conteggi validi per strato e distinguere medie/contatori; batch senza strato non e' una losszero.
+- Bozza v2Claude366ab11 letta: delta0,10/k3 NON adottati. Minimo selezionato da motivare/calibrare prospetticamente; frozen registra
+  keep_branches, non total; nelJEPA evolve anche il targetEMA. Restano provaGPU/DDP della diagnostica e gestione rank0 dei nonfiniti/errori.
+  Il testworkerlocale bloccato non e' da solo un difetto del trainer dimostrato. Fullsuite non dichiarata rieseguita.
+
+### 2026-10-15 | GPT | Limiti delle analisi parallele punti 1 e 5
+
+- RPW-MS e' un secondario gia' previsto dal2C, non un nuovo primario: niente promozione dei rami o modifica dei verdetti storici.
+  Gli intervalli si ricalcolano dai conteggi accoppiati, non sottraendo due intervalli; P2 resta descrittivo, solo due teacher.
+- Le norme pesate non si sommano come quote e non determinano la direzione o l'aggiornamentoAdamW; il clipping e' successivo.
+  Otto batch/semeB sono lo0,2% dei4000, non una prova di dominanza a ogni update. A non ha queste diagnostiche per scelta del codice.
+- La copia dei report/export deve terminare e superare i gate prima di dichiarare esiti. Sonde fisiche/temporali e obiettivoSSL dei
+  rami restano lavoro del punto5; questa tranche non chiude tutta la validazione e non autorizza altri training.
+
+### 2026-10-15 | GPT | Lettura e limiti dei risultati punti 1, 2 e 5
+
+- P1 RPW-MS ha un intervallo positivo ma effetto medio sotto il punto predefinito: non chiamarlo "nessun effetto", non promuoverlo
+  cambiando la soglia dopo averlo visto. Secondario e confronti multipli restano distinti dal primario negativo.
+- Il controllo casuale dimostra un vantaggio aggregato dell'apprendimento in questo pilot, NON della solaJEPA o della keep: le ancore
+  erano attive sia inA sia inB. DB3 resta debole: B2,588% contro casuale3,572%; delta-0,984punti, intervallo attraversa0.
+- Nei16batch registrati le ancore hanno norma maggiore diJEPA; otto batch/seme e norme senza coseni non stabiliscono il contributo
+  causale ai pesi/sonde. Non dividere0,2per9 automaticamente, non affermare cheJEPA e' inutile. Restano ablation e sonde scientifiche.
+- Copia locale iniziale fermata dal gateSHA durante il trasferimento ancora incompleto; nessun output scientifico prodotto. Verifiche
+  definitive solo dopo copia byte-identica confermata daOps. Il precedente trasferimento sotto approvazione e' stato interrotto:
+  completamento con accessoSSHgia'approvato, nessuna nuova sottomissione, modifica remota o download di checkpoint/NPZ.
+
+### 2026-10-15 | GPT | Limiti della verifica degli ultimi aggiornamenti Claude
+
+- Il dato2,40-2,81% non e' <=2%: sogliaD6a non allentata. Ottimizzazione/deroga proposta daClaude resta da decidere prima dei run,
+  non introdotta da questa richiesta di stato. Il costo/calendario della finestra1 resta una stima sulla bozza dei bracci.
+- L'equivalenzaGPU d7e2509 precede fccdc1e/b104fb5: conferma il nucleoDDP/accumulo, non esercita automaticamente le nuove guardie
+  di ripresa/monitor. Le verifiche odierne di queste ultime sono CPU e mirate; niente nuova fullsuite o provaCUDA dichiarata.
+- "STOP vince su tutto" e' piu' ampio del codice: le nuove guardie sono dopoSTOP, alcune vecchie guardie restano prima. Nel caso
+  riprodotto STOP+alarm il test passa e il run non riparte; nessuna regressione ulteriore dimostrata da questa distinzione.
+- Nessun nuovo rilievo bloccante emerso dall'ispezione mirata; non e' una review completa dei50commit o il loro merge. Regola del
+  prossimo collaudo ancora da congelare; non cambia il fallimento storico del2C ne' autorizza training congiunto dei rami.
+
+### 2026-10-15 | GPT | Vincoli della nuova tranche parallela
+
+- Integrare la base59b8c5b non significa aver revisionato il prefetch ancora in sviluppo; integrare quel delta richiede review/test
+  separati. Viceversa Claude non deve attendere il merge per lavorare nel suo worktree. Nessun blocco globale diHEAD.
+- I17ms dichiarati riguardano l'handoffCPU; ridurre soloH2D non dimostra di aver rimosso quella causa. Attesa<=2% ancora non superata.
+- Punto5non chiuso dal vantaggio sul casuale: entrambiA/B hanno ancore, quindi attribuzioneJEPA/ancore resta da provare. Nessun
+  training congiunto dei rami a partire dal2Cnegativo. Il piano scientifico/ablation e' da congelare, non nuovo insieme di job autorizzati.
