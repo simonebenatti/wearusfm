@@ -734,6 +734,14 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   10, poi la deriva del bf16 non deterministico (mediana 0,27% su 600 passi).
 - Verdetto complessivo solo dopo `w1pf_data_b64` (60615343).
 
+### 2026-10-15 | Claude | Prova del prefetch superata | Codice: 02307753c321e028fbb73aec9329d7f5c852bf19
+
+- Tutti i criteri congelati superati (`results/infra/w1pf_20261015.json`): verifica degli ingressi 200/200 passi; attesa al 30M 0,67% (batch
+  32) e 0,65% (batch 64) contro il 2% di D6a (erano 2,40% e 2,81%); tempo totale (media `t_step_s`) -1,2% e -2,2% rispetto a w1gd, nei
+  limiti. Il +1,2% del tempo di parete col batch 32 non si ripete col 64 (-2,1%): variazione fra nodi, descrittivo.
+- Costo 1,84 GPU-ora (tetto 6); infrastruttura 7,71/25. Come da protocollo, i launcher della finestra 1 passeranno `--prefetch`.
+- Per l'integrazione: il prefetch e' il delta `0230775` sopra la base 59b8c5b (piu' voci del registro), da rivedere a parte come concordato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

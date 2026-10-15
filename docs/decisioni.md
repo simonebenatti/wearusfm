@@ -2938,3 +2938,16 @@ ricostruzione dalla memoria condivisa, i micro-batch e la copia sul dispositivo 
 attesa sui dati al 30M <= 2% (D6a) col batch 32 e 64; tempo totale (media di `t_step_s`, passi 51-600) <= 1,01 x quello di `w1gd`
 (vincolo di GPT del 15/10: non spostare l'attesa fuori dal cronometro). 3 job da 4 GPU su dbg, **tetto 6 GPU-ora (48 ore locali)**, stima ~2, dal budget
 «preparazione dell'infrastruttura» (usate 5,87 su 25).
+
+**Esito della prova del prefetch `w1_prefetch_v1` (15/10/2026, criteri congelati prima del lancio; letti dopo la fine dei job).** Quattro
+job COMPLETED 0:0 (checkout 60608218, `w1pf_audit` 60608329, `w1pf_data_b32` 60608334, `w1pf_data_b64` 60615343), codice `0230775`.
+Riepilogo in `results/infra/w1pf_20261015.json`. **SUPERATA.**
+- Verifica degli ingressi: 200 passi su 200, ingressi sul dispositivo uguali bit per bit al batch su 4 processi con 2 micro-batch.
+- Attesa sui dati al 30M: **0,67%** col batch 32 (era 2,40%; mediana 4,4 ms contro 17) e **0,65%** col 64 (era 2,81%; mediana 8,5 ms
+  contro 35), sotto il 2% di D6a.
+- Tempo totale: media di `t_step_s` 0,7057 s (limite 0,7215; w1gd 0,7144) e 1,3567 s (limite 1,4005; w1gd 1,3866): -1,2% e -2,2%.
+  Descrittivo, tempo di parete per passo (con avvio, valutazioni e checkpoint): +1,2% col 32, -2,1% col 64; stessi batch di w1gd a ogni
+  passo, loss entro 1e-7 relativo al passo 1 e 6,6e-6 nei primi 10 passi, poi la deriva del bf16.
+Conseguenze, come da protocollo: (B) superata col prefetch; i launcher della finestra 1 passano `--prefetch`; montaggi virtuali nel default
+come da D15/D6a. **Costo reale (sacct):** 27,7 minuti di nodo = **1,84 GPU-ora (14,8 ore locali)**, entro il tetto di 6; budget
+«preparazione dell'infrastruttura»: 5,87 + 1,84 = 7,71 usate su 25.

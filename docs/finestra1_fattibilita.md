@@ -68,3 +68,6 @@ Totale ricalcolato coi bracci della bozza di GPT: ablation ~2.040, pilot ~670, a
 ~290 (solo 100M) – ~860 (100M e 300M), calibrazione ~180, valutazione ~200, prove ~30: **~4.730–5.300 GPU-ora**. Memoria: 300M a 8
 finestre per GPU 28,7 GiB, a 16 (in 2 micro-batch) 37,1 GiB: nessun limite. Attesa sui dati al 30M 2,4-2,8% (sopra il 2% di D6a), sotto
 il 2% a 100M e 300M.
+
+Col prefetch (prova `w1_prefetch_v1`, 15/10/2026) il 30M scende a 0,701 s/passo (mediana, batch 32; media 0,706 contro 0,714) e l'attesa
+sui dati a 0,67%: la stima della finestra 1 non cambia in modo apprezzabile (~1% sulle ablation al 30M).
