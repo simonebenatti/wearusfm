@@ -2951,3 +2951,12 @@ Riepilogo in `results/infra/w1pf_20261015.json`. **SUPERATA.**
 Conseguenze, come da protocollo: (B) superata col prefetch; i launcher della finestra 1 passano `--prefetch`; montaggi virtuali nel default
 come da D15/D6a. **Costo reale (sacct):** 27,7 minuti di nodo = **1,84 GPU-ora (14,8 ore locali)**, entro il tetto di 6; budget
 «preparazione dell'infrastruttura»: 5,87 + 1,84 = 7,71 usate su 25.
+
+**Catene WSD della finestra 1: launcher e pianificatore (15/10/2026, Simone: «sì, vai coi launcher delle catene WSD»).** Dettagli in
+`docs/catene_wsd_finestra1.md`. `scripts/slurm/train_ddp.sbatch` vale anche per i job lunghi (`--qos=normal --time=...` davanti allo script):
+`BRANCH_FROM` per i rami del WSD (il primo job del ramo esce con 3 se il checkpoint del tronco non c'e' ancora), uscita immediata dei job di
+scorta su un run completo. `scripts/wsd_chain.py`: dal piano JSON ai comandi di `submit_job.py` con le dipendenze e al preventivo, coi
+controlli di D14 fatti dal codice del trainer. `--keep-checkpoints` accetta anche `:` (sbatch `--export` separa sulle virgole). Test CPU
+`tests/cpu/test_wsd_chain.py`. **Collaudo proposto `w1_catena_v1`** (criteri congelati nel documento, prima di qualunque lancio): 30M, tronco
+di 1.400 passi in 2 job da 15 minuti + 1 di scorta, ramo da 1.100 a 1.375 + 1 di scorta, QoS `normal`; **tetto 5 GPU-ora (40 ore locali)**,
+stima ~1,8; dal budget «preparazione dell'infrastruttura» (usate 7,71 su 25). Da autorizzare.

@@ -763,6 +763,20 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - Ramo del prefetch con la correzione (`66b5a0f` = merge di `85ac845` e `a7c87b5`): suite CPU completa **946 PASS** (942 + le 2
   regressioni di GPT + i 2 casi del nuovo test `gloo` sull'overflow). Sul ramo `fix-backward-loss-finite` da solo: 46 test mirati PASS.
 
+### 2026-10-15 | Claude | Launcher delle catene WSD (punto 6) | Base: 8cc6cbf
+
+- `train_ddp.sbatch` anche per i job lunghi: `BRANCH_FROM` (ramo del WSD dal checkpoint con nome della fase stabile; se manca il job esce con
+  3 e la catena del ramo si ferma, mai partenza da zero; dopo il primo salvataggio il ramo riprende dalla sua cartella), job di scorta che
+  escono subito su un run completo (`summary.json` con `max_steps` e i passi chiesti). `--qos/--time` dai comandi generati.
+- `scripts/wsd_chain.py`: piano JSON -> comandi di `submit_job.py` (una catena `--dopo` per run; il primo job di un ramo dopo il job del
+  tronco che ha sicuramente scritto il checkpoint, con s/passo x slack) e preventivo (job, durata, GPU-ora attese e tetto, spazio dei
+  checkpoint). Controlli di D14 col codice del trainer (`with_wsd`, warmup, fase stabile di tronco e ramo, campi ereditati), niente
+  virgole negli export (`--keep-checkpoints` con `:`), s/passo misurato obbligatorio. I run di un solo job (i rami) chiedono solo il tempo
+  necessario. Esempio pilot 100M un seme: 343 GPU-ora attese, tetto 620.
+- Test `tests/cpu/test_wsd_chain.py` (16: pianificatore, piani incoerenti rifiutati, launcher con bash e torchrun finto) + deploy e WSD:
+  42 PASS. Documento `docs/catene_wsd_finestra1.md` con il collaudo proposto `w1_catena_v1` (criteri congelati, tetto 5 GPU-ora), da
+  autorizzare. Da rivedere da te: nessun file tuo toccato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1220,3 +1234,10 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 - Suite completa verde dopo il merge; nessun conflitto nel codice del trainer (solo registro e `test_training_ddp.py`, unione senza
   cancellazioni). Restano da integrare, nell'ordine: `a7c87b5` sopra `59b8c5b`, poi il prefetch (`0230775` e voci successive).
+
+### 2026-10-15 | Claude | Catene WSD: ingressi aperti
+
+- I piani della finestra 1 hanno bisogno dei passi per epoca ricalcolati da manifest, quote e durate correnti (le stime usano ~23.150 col
+  batch 32) e di batch e picco del LR dalla calibrazione: il pianificatore li prende come dati, non li decide. Da chiudere con la lista dei
+  job (tuo perimetro scientifico) prima di generare i comandi veri.
+- Tetto di nodi dell'account ancora da leggere (comando a Simone): decide quante catene corrono insieme, non come sono fatte.

@@ -74,7 +74,9 @@ def main(argv=None) -> int:
     ap.add_argument("--steps-at-d", type=int, default=None,
                     help="wsd: aggiornamenti a D, per il warmup di D14 (2%%, almeno 1.000); uguale in tutti i rami. In alternativa --warmup-steps")
     ap.add_argument("--decay-fraction", type=float, default=0.2, help="wsd: frazione finale di decay (D14: 0,2)")
-    ap.add_argument("--keep-checkpoints", default="", help="wsd: passi della fase stabile, separati da virgole, di cui tenere il checkpoint")
+    ap.add_argument("--keep-checkpoints", default="",
+                    help="wsd: passi della fase stabile di cui tenere il checkpoint, separati da virgole o da ':' (nelle catene: sbatch --export "
+                         "usa le virgole come separatore)")
     ap.add_argument("--branch-from", type=Path, default=None,
                     help="un ramo (pilot sulle epoche, continuazione a 2D): stato completo da un checkpoint della fase stabile, --out-dir nuova")
     ap.add_argument("--distributed", action="store_true",
@@ -105,7 +107,7 @@ def main(argv=None) -> int:
         if (args.steps_at_d is None) == (args.warmup_steps is None):
             ap.error("--schedule wsd: il warmup da --steps-at-d (D14) oppure da --warmup-steps, uno dei due")
         warmup = R.wsd_warmup_steps(args.steps_at_d) if args.steps_at_d is not None else args.warmup_steps
-        keep = tuple(int(x) for x in args.keep_checkpoints.split(",") if x.strip())
+        keep = tuple(int(x) for x in args.keep_checkpoints.replace(":", ",").split(",") if x.strip())
         cfg = R.with_wsd(cfg, args.total_steps, warmup_steps=warmup, keep_checkpoints=keep, decay_fraction=args.decay_fraction)
     elif args.total_steps is not None or args.steps_at_d is not None or args.keep_checkpoints:
         ap.error("--total-steps, --steps-at-d e --keep-checkpoints valgono con --schedule wsd")
