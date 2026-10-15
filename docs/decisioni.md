@@ -3386,3 +3386,13 @@ nessun doppione rieseguendo. Checkpoint veri di `w1cat`, nodi fittizi (`scripts/
 senza afterok su un training finito da ore (sacct), COMPLETED col rapporto `ok`; catena fittizia estrazione -> due sonde -> confronto
 COMPLETED nell'ordine delle dipendenze; guardia con SHA sbagliato FAILED 3:0 e nodo a valle bloccato senza mai entrare in coda; nessun doppione
 rieseguendo. Job 60664574-60664599 (7 CPU, 40 s, 0 GPU-ora). `results/infra/w1val_20261015.json`, `docs/catena_valutazione_finestra1.md`.
+
+**Calibrazione C1-C4: protocollo di ammissibilita' e selezione PROPOSTO (15/10/2026), da firmare prima di C1.** Simone: «come al solito chat
+gpt si è mangiato tutti i token , riessci tu a fare i task per C1 C4 ?», «mi raccomando se trovi sistema tutto». Proposta di Claude al posto
+di GPT (accordo del 15/10, punto 5), in `docs/calibrazione_c1_c4_selezione.md`: validation interna sui soli soggetti di pretraining P1
+(DB2/DB3/DB6, 4 fold di soggetti, seme 20261015, sonda e feature della P1, S fuori fold coi pesi della P1); ammissibilita' A1 completo,
+A2 numerico, A3 non-collasso (soglie firmate, decisione 16), **A4 pannello fisso ogni 500 passi: mai 3 valutazioni consecutive oltre 1,10
+volte il minimo, L finale <= 0,9 L_0 (soglie nuove, da firmare)**; selezione per S con confronto accoppiato, **parita' entro 1 SE al LR piu'
+basso (da firmare)**; C3 con un solo LR ammissibile: continuare segnalandolo oppure fermarsi (**da decidere**). Preventivo C1-C4 ~163
+GPU-ora attese, tetto 214,5 (1.716 ore locali), CPU ~199 core-ora; C1 ~61 / 79,5. Il budget della finestra 1 non e' ancora fissato: serve
+una decisione prima di C1. Nessun job lanciato.

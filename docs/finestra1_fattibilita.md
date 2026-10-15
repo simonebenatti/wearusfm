@@ -114,3 +114,11 @@ sono a parte (non stimate).
 Calibrazione: ~20-32 h di calcolo e code piu' le decisioni; se si fa entro fine ottobre la campagna parte il 01/11 e con 8 nodi finisce
 verso il 09-12/11 (prima del 15/11 anche con 3 h di attesa per job); con 4 nodi no. Gli 8 nodi sono ammessi dalla QoS normal (sacctmgr,
 15/10); la loro disponibilita' reale dipende dalla coda.
+
+## Calibrazione C1-C4 con la valutazione (15/10/2026)
+
+Dal pianificatore (`scripts/calibration_plan.py`, `docs/calibrazione_c1_c4_selezione.md`): training 160,2 GPU-ora attese / 208,0 tetto;
+estrazioni per la selezione 2,6 / 6,5 (1 GPU per checkpoint: 30 min al 30M, 1 h al 100M, 2 h al 300M di tetto); sonde e selezione su CPU
+seriale fino a ~199 core-ora. **Totale ~163 / 214,5 GPU-ora.** Calendario: C1 in un'ondata (3 nodi, ~5 h) piu' valutazione (~1,5 h), poi
+decisione e via di Simone per ogni fase: ~4 ondate da ~6-7 h di calcolo piu' code e decisioni, 2-3 giorni. La lista completa dei job della
+finestra 1 (nucleo prioritario, altri bracci, parti mancanti) dipende dai bracci scientifici del punto 5, non decisi qui.

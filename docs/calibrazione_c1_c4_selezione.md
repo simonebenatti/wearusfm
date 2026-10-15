@@ -1,0 +1,109 @@
+# Calibrazione C1-C4: ammissibilita', validation interna e selezione (proposta da congelare prima di C1)
+
+**Stato: PROPOSTA di Claude del 15/10/2026, da firmare da Simone prima del lancio di C1; GPT la rivede quando rientra.** L'accordo del
+15/10/2026 (`docs/accordo_operativo_finestra1_20261015.md`, «Calibrazione» e prompt GPT punto 5) assegna questo protocollo a GPT. Simone:
+«come al solito chat gpt si è mangiato tutti i token , riessci tu a fare i task per C1 C4 ?» e «mi raccomando se trovi sistema tutto».
+Nessun file dell'harness e' stato modificato: il codice nuovo sta in file nuovi che usano l'harness in sola lettura.
+
+Le soglie qui sotto si congelano **prima di guardare** (CLAUDE.md): dopo la firma si registrano in `docs/decisioni.md` e si committano prima
+di C1; un cambio dopo C1 e' una decisione nuova, mai una correzione silenziosa. Le parti marcate *interpretazione* sono letture mie
+dell'accordo, da confermare.
+
+## Gia' fissato dall'accordo (non si decide qui)
+
+Obiettivo A (JEPA target b + ancore 0,2; keep e rami spenti), batch globale 32, un nodo/4 GPU, prefetch, manifest derivato al 100%, WSD D14
+con warmup da D = 4 epoche (1.962 passi) e decay sul 20% finale di ogni endpoint; griglia C1 30M 1e-4 / 3e-4 / 1e-3, 1 epoca, seme 0; C2 i due
+finalisti, seme 1; C3 100M, 0,5 epoche; C4 300M, 0,25 epoche, il LR proposto. Selezione con validation interna alle partizioni train delle
+sonde P1; nessun test ufficiale P1/P2 e nessun benchmark P2; il pannello fisso del trainer e' diagnostica di stabilita', non validation.
+Se 3e-4 e' stabile e' fra i finalisti con la migliore alternativa stabile; se no, le due alternative solo se entrambe ammissibili. Meno di
+due candidati, una conferma fallita o C4 instabile: ci si ferma e si registra, senza sostituire LR ne' allargare la griglia. La training loss
+non sceglie mai.
+
+## Validation interna (`scripts/calibration_probe.py`)
+
+- **Soggetti:** solo quelli di pretraining di NinaPro DB2, DB3, DB6 negli split firmati (32, 8, 8): sono le partizioni train della P1.
+  I soggetti di test (8, 3, 2) non si aprono mai: l'estrazione riceve solo i soggetti di pretraining e verifica che coincidano; il codice
+  rifiuta uno split con un soggetto in entrambi. Dei test si usano solo i **conteggi**, per i pesi dei dataset.
+- **Feature e sonda:** quelle della P1, dallo stesso codice: `probe_p1.dataset_features` (teacher del checkpoint post-decay, feature
+  "model", finestre da 1 s, scala per sessione) e `harness.probe.linear_probe` (logistica bilanciata, C sulla griglia fissa scelto sui
+  soggetti di validazione, normalizzazione stimata sul train).
+- **Fold:** per dataset i soggetti (ordinati) si permutano col seme 20261015 e si distribuiscono a turno in **K = 4 fold** (DB2 8 per fold,
+  DB3 e DB6 2). Per il fold k: valutazione sui suoi soggetti; C scelto su `val_frac` = 0,1 dei rimanenti (per eccesso, almeno 1; seme
+  [20261015, k]); train sugli altri (DB2 21, DB3 e DB6 5). Ogni soggetto e' predetto una volta da una sonda che non l'ha visto. Stessi fold
+  per tutti i candidati: confronto accoppiato.
+- **Metrica S:** per dataset l'accuratezza bilanciata delle predizioni fuori fold (classi assenti dal train del fold tolte e contate);
+  S = media pesata coi pesi della P1 ("subjects", proporzionali ai soggetti di test: 8/13, 3/13, 2/13); errore standard per bootstrap sui
+  soggetti, stratificato per dataset (1.000, seme 0). *Interpretazione:* uso i pesi della P1 perche' S stimi la stessa quantita' della P1
+  ufficiale su soggetti mai visti dalla sonda.
+- **Descrittivi, non criteri:** rango effettivo e colonne costanti delle feature.
+
+## Ammissibilita' di un run (`scripts/calibration_select.py`; tutte)
+
+| | Criterio | Origine della soglia |
+|---|---|---|
+| A1 | Completo: nessuno STOP, `summary.json` con `stopped = max_steps` e i passi pianificati; la sonda viene dal suo `checkpoint_postdecay.pt` | regola della guardia, gia' in uso |
+| A2 | Ogni valore numerico di `metrics.jsonl` e `fixed_eval.jsonl` finito | gia' in uso (un non finito ferma il run) |
+| A3 | Non-collasso: nessun allarme nel run; all'ultima valutazione (passo finale) rapporto di collasso min(studente, teacher) >= 0,05 e rango effettivo dello studente >= 10% della dimensione | **firmate**, decisione 16 (`AlarmRule`) |
+| A4 | Stabilita' sul pannello fisso (8 x 32 finestre, ogni **500** passi dal passo 0, senza buchi): mai **3** valutazioni consecutive con L_t > **1,10** x min_{s<=t} L_s; L all'ultima valutazione <= **0,9** x L_0 (L = loss totale) | **nuove, da firmare** (bozza v2 del 14/10, `docs/regola_stabilita_bozza.md`) |
+
+- A4 richiede il pannello acceso nei run di calibrazione: il pianificatore aggiunge `--fixed-eval-every 500` (8 forward senza gradiente ogni
+  500 passi, sotto l'1%). Tre valutazioni consecutive = 1.500 aggiornamenti di regressione persistente; una o due sopra soglia si
+  registrano senza escludere.
+- *Interpretazione:* «stabile» dell'accordo = ammissibile secondo A1-A4.
+- Limiti noti: il pannello misura la regressione sui dati di training, non la generalizzazione; la parte JEPA ha target mobili (teacher
+  EMA), quindi la soglia sta sulla loss totale, dominata dalle ancore.
+
+## Selezione (solo S; confronto accoppiato sui soggetti)
+
+Per due LR, Delta = S(a) - S(b) e il suo errore standard da un bootstrap accoppiato (stesso ricampionamento dei soggetti per i due
+candidati; finestre, etichette e soggetti identici, controllato). **|Delta| <= 1 SE = parita' e vince il LR piu' basso.** *Interpretazione e
+motivo:* nella scala da 30M a 300M il LR ottimo tende a scendere con la taglia; a parita' il LR piu' basso e' la scelta prudente per C3/C4.
+
+- **C1:** se 3e-4 e' ammissibile: finalisti 3e-4 e la migliore fra le alternative ammissibili (se sono due, confronto accoppiato); se
+  nessuna alternativa e' ammissibile, stop. Se 3e-4 non e' ammissibile: 1e-4 e 1e-3 solo se entrambi ammissibili, altrimenti stop.
+- **C2:** confermati = i finalisti ammissibili al seme 1. Se uno manca, C3 e C4 si fermano (gia' nel pianificatore). S al seme 1 e il
+  confronto si registrano, un'inversione dell'ordine non e' un fallimento.
+- **C3:** LR proposto per il 300M = il migliore fra i due LR ammissibili al 100M; nessuno ammissibile = stop. **Da decidere (Simone):** se
+  solo uno e' ammissibile propongo di continuare con quello, segnalandolo (l'accordo elenca come stop solo i casi di C1, C2 e C4);
+  l'alternativa e' fermarsi.
+- **C4:** superata se ammissibile. Un solo punto al 300M non dimostra l'ottimo del rung (accordo): il LR della campagna resta una decisione
+  di Simone sui risultati di C1-C4.
+
+Le decisioni vanno nel file del pianificatore (`scripts/calibration_plan.py --decisions`) col comando `calibration_select.py merge`, che
+rifiuta fasi riscritte o fuori sequenza e un LR per il 300M che non sia uno dei due di C3: `{"C1": {"finalists": [...]} | {"stop": ...},
+"C2": {"confirmed": [...]}, "C3": {"proposed_300m_lr": lr} | {"stop": ...}, "C4": {"lr": lr, "passed": bool}}`.
+
+## Catena di valutazione di una fase (`calibration_plan.py --out`, file `valutazione_<fase>.json`, schema eval-plan-v0)
+
+Per ogni run: guardia del checkpoint post-decay (passi pianificati) -> estrazione (`scripts/slurm/calibration_extract.sbatch`, 1 GPU,
+`boost_usr_prod`/`normal`, tetto 30 min al 30M, 1 h al 100M, 2 h al 300M) -> sonda a fold (`calibration_probe.sbatch`, `lrd_all_serial`, 8
+core, tetto 3 h); poi la selezione della fase (`calibration_select.sbatch`, 2 core, 30 min) dopo tutte le sonde. Limiti: 8 job GPU, 8 seriali.
+Feature su `$SCRATCH`, rapporti e decisioni in `$WORK/wearusfm_runs/results/`; la decisione entra nel repo solo dopo la copia sul Mac, il
+`merge` e il commit, e la fase successiva parte solo col via di Simone.
+
+## Preventivo (dal pianificatore; stime delle valutazioni da rivedere con le prime misure)
+
+| Fase | Training GPU-ora attese / tetto | Valutazione GPU-ora attese / tetto | CPU tetto (core-ora) |
+|---|---|---|---|
+| C1 (3 run, 30M) | 60,3 / 78,0 | 0,6 / 1,5 | 74 |
+| C2 (2 run, 30M) | 40,2 / 52,0 | 0,4 / 1,0 | 50 |
+| C3 (2 run, 100M) | 39,8 / 52,0 | 0,8 / 2,0 | 50 |
+| C4 (1 run, 300M) | 19,9 / 26,0 | 0,8 / 2,0 | 25 |
+| **Totale** | **160,2 / 208,0** | **2,6 / 6,5** | **199** |
+
+Totale **~163 GPU-ora attese, tetto 214,5** (1.716 ore locali); C1 da sola **~61 attese, tetto 79,5** (636 ore locali). Voce della
+finestra 1: il budget della finestra 1 non e' ancora fissato, quindi serve una decisione di Simone sul budget prima di C1 (non il residuo
+infrastruttura). Basi delle stime di valutazione: estrazione P1 al 30M 13:42 per 61 soggetti, sonde P1 22 min a 8 core
+(`docs/step1_downstream_ab.md`); qui 48 soggetti e 4 fold.
+
+## Prima di C1
+
+1. Firma di Simone su A4 (delta, k, apprendimento, cadenza), sulla regola di parita' e sul caso «un solo LR ammissibile in C3».
+2. Deploy di un commit con questi file (`deploy/<nome>`) e checkout di campagna (job CPU), percorsi del manifest derivato al 100% sul cluster
+   (SHA del file del cluster), scale e `window_seconds`.
+3. Facoltativo, consigliato: collaudo della catena reale (estrazione, sonda, selezione) su un checkpoint gia' esistente (`w1cat`), per
+   provare launcher e tempi sul cluster prima di spendere le GPU-ora di C1 (il collaudo controlla la meccanica, non l'ammissibilita').
+
+Test: `tests/cpu/test_calibration_selection.py` (fold, sonda sintetica, estrazione che apre solo i soggetti di pretraining, ammissibilita',
+regole di C1-C4 con parita', unione delle decisioni, launcher), `tests/cpu/test_calibration_plan.py` (stop, pannello, piani di
+valutazione validati dall'orchestratore).

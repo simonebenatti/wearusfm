@@ -1628,6 +1628,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   miei test (`test_wsd_chain.py`, `test_evaluation_chain.py`: abbreviazioni, export abbreviato, `-dafterok`, array, etichette
   dall'intestazione allo SHA). Mirati: catene, planner, valutazione 79 PASS; trainer/DDP/WSD/submitter/deploy 71 PASS.
 
+### 2026-10-15 | Claude | C1-C4 al posto tuo: protocollo di selezione (da firmare), sonda a fold, selezione, piano di valutazione reale | Base: 717417d
+
+- Simone: «come al solito chat gpt si è mangiato tutti i token , riessci tu a fare i task per C1 C4 ?». Fatto il tuo punto 5 per la
+  calibrazione, in file NUOVI (nessun file dell'harness toccato; l'harness e' usato in sola lettura):
+  - `docs/calibrazione_c1_c4_selezione.md`: protocollo **proposto, da firmare da Simone prima di C1**; rivedilo quando rientri.
+  - `scripts/calibration_probe.py`: validation interna sui soli soggetti di pretraining P1 (DB2/DB3/DB6 32/8/8; i test non si aprono,
+    controllato), stessa estrazione (`probe_p1.dataset_features`) e stessa sonda (`linear_probe`) della P1, 4 fold di soggetti col seme
+    20261015, C sul 10% dei rimanenti; S = accuratezza bilanciata fuori fold, pesi della P1 (conteggi dei test), SE bootstrap; predizioni
+    fuori fold in npz per i confronti accoppiati.
+  - `scripts/calibration_select.py`: ammissibilita' A1 completo, A2 numerico, A3 non-collasso (decisione 16 firmata), A4 pannello (bozza v2:
+    500 passi, 3 consecutive oltre 1,10 x minimo, finale <= 0,9 L0; **soglie nuove**); regole di C1-C4 dell'accordo; parita' entro 1 SE
+    accoppiato al LR piu' basso; `merge` delle decisioni con i controlli del pianificatore.
+  - Launcher `calibration_extract.sbatch` (1 GPU), `calibration_probe.sbatch`, `calibration_select.sbatch` (CPU), con CODE_DIR e uscite
+    fuori dal codice. `calibration_plan.py` scrive `valutazione_<fase>.json` (eval-plan-v0, validato dall'orchestratore), accende il pannello
+    (`--fixed-eval-every 500`), accetta stop/esito C4.
+- Test: `test_calibration_selection.py` 23 PASS (nuovo), `test_calibration_plan.py` 16 PASS; con catene e valutazione 107 PASS.
+- Preventivo C1-C4 con la valutazione ~163 GPU-ora attese, tetto 214,5; C1 ~61 / 79,5. Nessun job lanciato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2497,3 +2515,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Su Leonardo la QoS di default e' `normal` anche sulla seriale: un limite `{"normal": 8}` pensato per i nodi GPU frena anche guardie e
   sonde CPU. Nei piani della campagna conviene limitare `boost_usr_prod` (nodi GPU) e, se serve, `lrd_all_serial` a parte.
+
+### 2026-10-15 | Claude | C1-C4: cosa resta da decidere prima del lancio
+
+- Da firmare (Simone): soglie di A4, regola di parita' al LR piu' basso, caso di C3 con un solo LR ammissibile (continuare o fermarsi),
+  budget della finestra 1 (la calibrazione non sta nel residuo infrastruttura).
+- Per te quando rientri: review del protocollo (in particolare A4 sul totale del pannello, con la parte JEPA a target mobili) e dei fold;
+  se preferisci un tuo contratto del piano di valutazione, adatto lo schema eval-plan-v0.
+- Proposta: collaudo della catena reale (estrazione, sonda, selezione) su un checkpoint `w1cat` prima di C1, per provare launcher e tempi.

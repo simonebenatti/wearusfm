@@ -36,3 +36,12 @@ decisioni e delle code, ~2-3 giorni prima della campagna (con 8 nodi C1 entra in
 
 Uso: `python scripts/calibration_plan.py results/infra/derived_manifests_v1_1_build_20261015.json [--decisions decisioni.json]
 [--campaign campagna.json] [--out cartella]`; senza `--campaign` e' un dry-run con percorsi segnaposto.
+
+## Aggiornamento del 15/10/2026: selezione, valutazione e preventivo completo
+
+Con GPT senza token, Simone: «riessci tu a fare i task per C1 C4 ?». Protocollo di ammissibilita' e selezione (proposta da firmare prima di
+C1), validation interna e catena di valutazione in `docs/calibrazione_c1_c4_selezione.md`. Il pianificatore ora: accende il pannello fisso
+nei run (`--fixed-eval-every 500`, serve al criterio di stabilita' A4); accetta «stop» per C1 e C3 e l'esito di C4; rifiuta un LR per il 300M
+che non sia uno dei due di C3; con `--out` e una campagna con "eval" scrive anche `valutazione_<fase>.json` per `scripts/evaluation_chain.py`.
+Preventivo con la valutazione: **~163 GPU-ora attese, tetto 214,5** (training 160,2 / 208,0; valutazione 2,6 / 6,5) e CPU fino a ~199
+core-ora; C1 da sola ~61 / 79,5.
