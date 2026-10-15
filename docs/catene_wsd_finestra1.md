@@ -58,7 +58,7 @@ dipendenza, job di scorta, ramo dal checkpoint con nome dopo il job giusto del t
    scorta esce con «gia' completo» senza torchrun. `metrics.jsonl` con i passi 1-1.400 senza buchi ne' duplicati; `lr` di ogni passo
    uguale a `_lr_at` dello schedule (warmup, fase stabile, decay); presenti `checkpoint_step0001100.pt`, `checkpoint_predecay.pt` (1.120),
    `checkpoint_postdecay.pt` (1.400).
-2. Ramo: parte dopo il job 2 del tronco, `summary.json` con l'origine (passo 1.100 e SHA-256 del checkpoint), passi 1.101-1.375, `lr` uguale
+2. Ramo: parte dopo il job 2 del tronco, `branch.json` con l'origine (passo 1.100 e SHA-256 del checkpoint), passi 1.101-1.375, `lr` uguale
    a `_lr_at` del ramo; job di scorta «gia' completo».
 3. Nessuno STOP, nessun job FAILED/TIMEOUT.
 Descrittivo: tempi di avvio e di ripresa, s/passo. L'uguaglianza ramo = run da zero e' provata sulla CPU, non su GPU (bf16).
@@ -66,3 +66,6 @@ Descrittivo: tempi di avvio e di ripresa, s/passo. L'uguaglianza ramo = run da z
 **Risorse e costo:** 5 job da un nodo (4 GPU) da 15 minuti su `boost_usr_prod`, QoS `normal`: **tetto 5 GPU-ora (40 ore locali)**, stima
 ~2 GPU-ora (tronco ~17 minuti di passi piu' due avvii, ramo ~5 minuti, scorte ~1 minuto); checkpoint di campagna su `lrd_all_serial` (0,17
 core-ora). Dal budget «preparazione dell'infrastruttura» (usate 7,71 su 25).
+
+Precisazione prima di qualunque risultato (15/10/2026): l'origine del ramo il trainer la scrive in `branch.json` nella cartella del
+ramo, non in `summary.json`; il criterio 2 e' lo stesso.
