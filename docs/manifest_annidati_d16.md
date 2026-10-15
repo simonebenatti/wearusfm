@@ -116,3 +116,11 @@ campagna su `lrd_all_serial` (1 CPU, 10 min, ~0,2 core-ora), poi `scripts/slurm/
 4 GB, tetto 30 min = 0,5 core-ora; stima 2-5 min) con ingressi `$WORK/wearusfm_runs/results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz` e
 `.../passo6/window_seconds_59425316.json`, uscita `$WORK/wearusfm_runs/results/passo6/derived_v1_1/` (fuori dal codice). **0 GPU-ora; tetto
 complessivo ~0,7 core-ora.**
+
+**Costruiti sul cluster (15/10/2026, via di Simone senza attendere la review di GPT).** Deploy `deploy/derived-20261015` a `11f868b`, checkout
+60661456 (COMPLETED 0:0, 18 s), costruzione 60661475 (COMPLETED 0:0, 30 s) da checkout pulito: verifiche tutte superate, nessun problema nel
+rapporto; **hash di contenuto identici alla costruzione locale** per le quattro frazioni (80a214fd... / 13d3dce8... / 52ec61f0... / 167923c3...).
+I byte compressi differiscono (campo `code_commit` 11f868b invece di 56cea75, compressione): l'identita' da usare e' lo SHA del file sul cluster.
+File in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/`: `manifest_v1_1_nested_0.125.json.gz` (a622978f...),
+`_0.25` (90ce5564...), `_0.5` (5968179b...), `_1` (6d6d8167...); rapporti in `results/infra/derived_manifests_v1_1_{build,report}_cluster_20261015.json`.
+Costo: due job CPU da 18 e 30 s, 0 GPU-ora. Da rivedere da GPT prima dell'uso nei run.

@@ -1550,6 +1550,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   0 GPU-ora) dallo SHA corrente del mio ramo (codice dei derivati di `56cea75`, poi solo documenti e il pianificatore). I derivati restano da
   rivedere da te prima di entrare nei run della finestra 1.
 
+### 2026-10-15 | Claude | Manifest derivati costruiti sul cluster | Codice: 11f868b8ad8a949381a5cbb8519733e7dbc538bf
+
+- Deploy `deploy/derived-20261015`, checkout 60661456 e costruzione 60661475 COMPLETED 0:0 (18 e 30 s): verifiche superate, rapporto senza
+  problemi, hash di contenuto identici a quelli locali per 0,125 / 0,25 / 0,5 / 1. File in `$WORK/.../results/passo6/derived_v1_1/` con SHA
+  a622978f... / 90ce5564... / 5968179b... / 6d6d8167... (i byte differiscono da quelli locali per `code_commit` e compressione; il contenuto no).
+  Rapporti in `results/infra/derived_manifests_v1_1_{build,report}_cluster_20261015.json`. Restano da rivedere da te prima dell'uso nei run.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2403,3 +2410,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   senza esclusioni; il nuovo derivato100% deve invece dichiarare le differenze previste e conservare il vecchio congelato.
 - Aggiungere regressioni per input non finiti/negativi e durate mancanti rispetto a null dichiarate. I report locali riportano code_commit
   b889c4b (base precedente alla consegna): rigenerare quelli finali da commit pulito per una provenienza eseguibile. Non un errore nei dati raw.
+
+### 2026-10-15 | Claude | Manifest derivati sul cluster: identita' da usare
+
+- Nei piani dei run va lo SHA del file sul cluster (la firma dei dati della ripresa usa quello), non quello della costruzione locale: stesso
+  contenuto, byte diversi.

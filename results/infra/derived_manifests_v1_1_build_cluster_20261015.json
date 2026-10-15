@@ -1,0 +1,191 @@
+{
+ "inputs": {
+  "parent_file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+  "parent_hash_declared": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+  "parent_hash_content": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+  "parent_version": "manifest-v1",
+  "parent_revision": "v1.1",
+  "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+  "window_seconds_sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+  "window_seconds_manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz",
+  "window_config": {
+   "min_window_s": 1.0,
+   "max_window_s": 4.0,
+   "align_ms": 200.0,
+   "patch_ms": 25.0,
+   "run_margin_s": 0.2,
+   "split_at_gaps": true
+  }
+ },
+ "parent_hash": {
+  "declared": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+  "recomputed": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c"
+ },
+ "code": {
+  "sha": "11f868b8ad8a949381a5cbb8519733e7dbc538bf",
+  "clean": true,
+  "source": "launcher (lib_code_dir.sh: checkout di campagna pulito)"
+ },
+ "window_config": {
+  "fields": {
+   "min_window_s": 1.0,
+   "max_window_s": 4.0,
+   "align_ms": 200.0,
+   "patch_ms": 25.0,
+   "run_margin_s": 0.2,
+   "split_at_gaps": true
+  },
+  "same_as_training": true,
+  "training": {
+   "min_window_s": 1.0,
+   "max_window_s": 4.0,
+   "align_ms": 200.0,
+   "patch_ms": 25.0,
+   "run_margin_s": 0.2,
+   "split_at_gaps": true
+  }
+ },
+ "checks": {
+  "window_config_same_as_training": true,
+  "nested_subjects_and_sessions": true,
+  "within_cap_after_sampler": true,
+  "mass_one_after_sampler": true,
+  "sampler_matches_loader": true
+ },
+ "batch": 32,
+ "fractions": {
+  "0.125": {
+   "hash": "80a214fd372eab1256e89ce74e81f69f391f7ebff84dec5825242012409b5d12",
+   "hours_nominal": 113.62017546180917,
+   "hours_samplable": 113.62017546180917,
+   "hours_excluded": 0.0,
+   "sessions_excluded": 0,
+   "residual_c_to_b": 0.0,
+   "classes": {
+    "A": 0.20000000000000012,
+    "B": 0.7499999999999999,
+    "C": 0.05000000000000003
+   },
+   "max_passes": 8.0,
+   "mean_window_s": 3.7525282546143504,
+   "windows_per_epoch": 109001.8792422256,
+   "steps_at_4_epochs": 13625,
+   "effective_epochs": 3.9999310381715008,
+   "sessions": 2519,
+   "subjects": 78,
+   "file": "manifest_v1_1_nested_0.125.json.gz",
+   "file_sha256": "a622978ff3cbc5b35696309b4e250a37b88507ce8df3455ee780b35157669b24"
+  },
+  "0.25": {
+   "hash": "13d3dce870facf716e49b75f637ce096c4d4b7de8fedb9b2fe04b9d8514d0b35",
+   "hours_nominal": 214.990053525874,
+   "hours_samplable": 214.990053525874,
+   "hours_excluded": 0.0,
+   "sessions_excluded": 0,
+   "residual_c_to_b": 0.00025351254813815033,
+   "classes": {
+    "A": 0.20000000000000007,
+    "B": 0.7502535125481374,
+    "C": 0.04974648745186189
+   },
+   "max_passes": 8.000000000000007,
+   "mean_window_s": 3.774913047652938,
+   "windows_per_epoch": 205028.34977201943,
+   "steps_at_4_epochs": 25628,
+   "effective_epochs": 3.9999151381353015,
+   "sessions": 4947,
+   "subjects": 146,
+   "file": "manifest_v1_1_nested_0.25.json.gz",
+   "file_sha256": "90ce5564e4ec799434043ae59e6e32cd303357a0f60550d67fc34f9d6b48fafe"
+  },
+  "0.5": {
+   "hash": "52ec61f05808469be456aba6966be0bc8f13b65b95261146bdf2656754dd697b",
+   "hours_nominal": 419.3281891571484,
+   "hours_samplable": 419.3281891571484,
+   "hours_excluded": 0.0,
+   "sessions_excluded": 0,
+   "residual_c_to_b": 0.0,
+   "classes": {
+    "A": 0.19999999999999976,
+    "B": 0.7499999999999988,
+    "C": 0.04999999999999993
+   },
+   "max_passes": 8.000000000000014,
+   "mean_window_s": 3.7795235431653382,
+   "windows_per_epoch": 399410.5245608458,
+   "steps_at_4_epochs": 49926,
+   "effective_epochs": 3.9999747171324684,
+   "sessions": 9493,
+   "subjects": 284,
+   "file": "manifest_v1_1_nested_0.5.json.gz",
+   "file_sha256": "5968179b78305cdd2509b74eab120a3235bf9adc3c5968063011582bac488530"
+  },
+  "1": {
+   "hash": "167923c337ccf604a605b4c1b2e2ec3375f4c2831b387c73f164c02d4fd8c2ad",
+   "hours_nominal": 822.8601656950157,
+   "hours_samplable": 822.3938563894601,
+   "hours_excluded": 0.46630930555555555,
+   "sessions_excluded": 62,
+   "residual_c_to_b": 0.0,
+   "classes": {
+    "A": 0.20000000000000018,
+    "B": 0.7500000000000016,
+    "C": 0.05000000000000001
+   },
+   "max_passes": 7.99999999999997,
+   "mean_window_s": 3.7726556900192567,
+   "windows_per_epoch": 784756.9792373349,
+   "steps_at_4_epochs": 98094,
+   "effective_epochs": 3.99997462023293,
+   "sessions": 19034,
+   "subjects": 565,
+   "file": "manifest_v1_1_nested_1.json.gz",
+   "file_sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+  }
+ },
+ "derived_100_vs_parent": {
+  "sessions_excluded": 62,
+  "hours_excluded": 0.46630930555555555,
+  "parent_weight_of_excluded": 0.00039891715076134074,
+  "max_abs_weight_change": 1.3303983165649794e-05,
+  "parent_after_sampler": {
+   "classes": {
+    "A": 0.2000798152698322,
+    "B": 0.7499002309127086,
+    "C": 0.05001995381745806
+   },
+   "max_passes": 7.9986572555237165,
+   "steps_at_epochs": 98094
+  },
+  "derived_after_sampler": {
+   "classes": {
+    "A": 0.20000000000000018,
+    "B": 0.7500000000000016,
+    "C": 0.05000000000000001
+   },
+   "max_passes": 7.99999999999997,
+   "steps_at_epochs": 98094
+  },
+  "unit_share_change": {
+   "camargo2021": -2.1466258280831985e-05,
+   "capgmyo": 1.269898609698077e-07,
+   "csl_hdemg": 1.972197894375624e-06,
+   "emg2pose": 0.00014855672494887284,
+   "emg2qwerty": -5.34745179917584e-05,
+   "grabmyo": 6.881263091333689e-06,
+   "hyser": -2.2053005213393262e-05,
+   "ninapro_db10": -2.016264889721786e-05,
+   "ninapro_db2": -2.619493917929705e-05,
+   "ninapro_db3": 2.2420252706722293e-06,
+   "ninapro_db4": 3.1029784877782685e-06,
+   "ninapro_db5": 3.6018151274540278e-06,
+   "ninapro_db6": -2.1615889042703174e-05,
+   "ninapro_db7": -1.995259685453471e-05,
+   "ninapro_db8": 3.468603556978228e-06,
+   "putemg": 6.951005469484073e-06,
+   "zhang2026:anatomical": 4.069409766879056e-06,
+   "zhang2026:random": 3.946841987654409e-06
+  },
+  "explanation": "il v1.1 assegna peso (0.000398917) anche alle 62 sessioni con window_s null; il sampler da' loro probabilita' 0 e ridistribuisce quella massa su tutte le altre con un fattore comune, quindi dopo il sampler le classi del v1.1 sono A 20.0080% / B 74.9900% / C 5.0020% (passaggi massimi 7.9987). Il derivato porta quelle sessioni a peso 0 e rifa D9 sulle ore campionabili: dopo il sampler A 20.0000% / B 75.0000% / C 5.0000% (passaggi massimi 8.0000); i pesi delle altre sessioni cambiano al massimo di 1.33e-05."
+ }
+}

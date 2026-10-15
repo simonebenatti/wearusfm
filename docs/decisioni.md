@@ -3365,3 +3365,8 @@ parte. Tabella in `docs/finestra1_fattibilita.md`, simulazione in `scripts/fines
 manifest senza aspettare gpt»).** Preventivo di `docs/manifest_annidati_d16.md`: checkout di campagna e `build_nested_manifests.sbatch` su
 `lrd_all_serial`, 1 core, **0 GPU-ora, tetto ~0,7 core-ora**; uscita `$WORK/wearusfm_runs/results/passo6/derived_v1_1/`, v1.1 intatto. La review
 di GPT resta da fare prima dell'uso dei derivati nei run; esito confrontato con la costruzione locale (hash di contenuto).
+
+**Manifest derivati costruiti sul cluster (15/10/2026).** Checkout 60661456 e costruzione 60661475 COMPLETED 0:0 da `11f868b` (checkout pulito),
+verifiche superate, hash di contenuto identici alla costruzione locale; file in `$WORK/wearusfm_runs/results/passo6/derived_v1_1/` (SHA dei
+file: 0,125 a622978f..., 0,25 90ce5564..., 0,5 5968179b..., 1 6d6d8167...). Consuntivo: 48 s di CPU in due job, 0 GPU-ora. Uso nei run dopo
+la review di GPT.
