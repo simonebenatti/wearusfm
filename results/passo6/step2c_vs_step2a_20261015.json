@@ -1,0 +1,245 @@
+{
+  "analysis": "step2c_secondary_RPW_vs_fixed_stats_B_v1",
+  "endpoint": "RPW - MS; two paired Step 1 family-B teachers",
+  "thresholds": {
+    "useful_delta": 0.01,
+    "harm_delta": -0.01
+  },
+  "decision": {
+    "tasks": {
+      "p1": {
+        "useful": false,
+        "not_harmful": true
+      },
+      "p2": {
+        "useful": false,
+        "not_harmful": true
+      }
+    },
+    "positive": false
+  },
+  "paired": {
+    "bootstrap_seed": 20261009,
+    "n_boot": 1000,
+    "tasks": {
+      "p1": {
+        "A": 0.17893959024985606,
+        "B": 0.18602763812511175,
+        "delta": 0.007088047875255697,
+        "delta_by_model_seed": [
+          0.007963598209888926,
+          0.006212497540622469
+        ],
+        "paired_subject_se": 0.002537774506826068,
+        "ci95": [
+          0.003097283615476527,
+          0.012579055755171218
+        ],
+        "datasets": {
+          "ninapro_db2": {
+            "A": 0.18690020502344068,
+            "B": 0.19527422277525391,
+            "delta": 0.008374017751813262,
+            "delta_by_model_seed": [
+              0.01050736173585004,
+              0.006240673767776483
+            ],
+            "ci95": [
+              0.002085463035764304,
+              0.017233463383717437
+            ],
+            "paired_subject_se": 0.004017437925139301
+          },
+          "ninapro_db3": {
+            "A": 0.02417489350480396,
+            "B": 0.0262211875428873,
+            "delta": 0.002046294038083341,
+            "delta_by_model_seed": [
+              0.004353164879796052,
+              -0.00026057680362936986
+            ],
+            "ci95": [
+              0.0019613159505612737,
+              0.004009094916154346
+            ],
+            "paired_subject_se": 0.0005326505792953116
+          },
+          "ninapro_db6": {
+            "A": 0.3792441762730957,
+            "B": 0.3887509753978797,
+            "delta": 0.009506799124783971,
+            "delta_by_model_seed": [
+              0.003204194101183777,
+              0.015809404148384165
+            ],
+            "ci95": [
+              0.0034403572043428254,
+              0.015533257540215284
+            ],
+            "paired_subject_se": 0.004340581363810748
+          }
+        }
+      },
+      "p2": {
+        "A": 0.8067418187421871,
+        "B": 0.8135123377223858,
+        "delta": 0.006770518980198786,
+        "delta_by_model_seed": [
+          0.010825220740647751,
+          0.0027158172197498205
+        ],
+        "paired_subject_se": 0.0076537142020448945,
+        "ci95": [
+          -0.008230760855809207,
+          0.021771798816206778
+        ],
+        "datasets": {
+          "epn612": {
+            "A": 0.8216350496838302,
+            "B": 0.8391779584462511,
+            "delta": 0.017542908762420966,
+            "delta_by_model_seed": [
+              0.017362240289069592,
+              0.017723577235772336
+            ],
+            "paired_subject_se": 0.0022230758305056813,
+            "ci95": [
+              0.01318568013462983,
+              0.021900137390212102
+            ],
+            "splits": [
+              {
+                "A": 0.8186720867208672,
+                "B": 0.836151761517615,
+                "delta": 0.01747967479674789,
+                "delta_by_model_seed": [
+                  0.015772357723577102,
+                  0.01918699186991868
+                ],
+                "ci95": [
+                  0.013603658536585354,
+                  0.021681571815718215
+                ],
+                "paired_subject_se": 0.002105832961939108
+              },
+              {
+                "A": 0.8180758807588075,
+                "B": 0.835609756097561,
+                "delta": 0.017533875338753446,
+                "delta_by_model_seed": [
+                  0.017018970189702,
+                  0.018048780487804894
+                ],
+                "ci95": [
+                  0.013386856368563791,
+                  0.022034552845528455
+                ],
+                "paired_subject_se": 0.00225722006381323
+              },
+              {
+                "A": 0.8281571815718157,
+                "B": 0.8457723577235773,
+                "delta": 0.017615176151761558,
+                "delta_by_model_seed": [
+                  0.01929539295392968,
+                  0.015934959349593436
+                ],
+                "ci95": [
+                  0.012870596205962098,
+                  0.02205962059620587
+                ],
+                "paired_subject_se": 0.002301439454877172
+              }
+            ]
+          },
+          "uci_emg": {
+            "A": 0.7918485878005441,
+            "B": 0.7878467169985207,
+            "delta": -0.004001870802023392,
+            "delta_by_model_seed": [
+              0.004288201192225912,
+              -0.012291942796272695
+            ],
+            "paired_subject_se": 0.015145141075544866,
+            "ci95": [
+              -0.033686347310091326,
+              0.025682605706044543
+            ],
+            "splits": [
+              {
+                "A": 0.8377897766484723,
+                "B": 0.838660282953761,
+                "delta": 0.0008705063052888429,
+                "delta_by_model_seed": [
+                  0.015543635108852372,
+                  -0.013802622498274686
+                ],
+                "ci95": [
+                  -0.01459001068376069,
+                  0.01814212206875254
+                ],
+                "paired_subject_se": 0.008862558208836413
+              },
+              {
+                "A": 0.8049948102579683,
+                "B": 0.795561504772031,
+                "delta": -0.009433305485937182,
+                "delta_by_model_seed": [
+                  0.002339181286549752,
+                  -0.021205792258424117
+                ],
+                "ci95": [
+                  -0.05834730220759634,
+                  0.02868729743908519
+                ],
+                "paired_subject_se": 0.022616475506221246
+              },
+              {
+                "A": 0.7327611764951918,
+                "B": 0.72931836326977,
+                "delta": -0.003442813225421837,
+                "delta_by_model_seed": [
+                  -0.005018212818724388,
+                  -0.0018674136321192858
+                ],
+                "ci95": [
+                  -0.022666425770866593,
+                  0.015873015873015872
+                ],
+                "paired_subject_se": 0.009903332381877818
+              }
+            ]
+          }
+        }
+      }
+    },
+    "uncertainty": "Conditional on the two trained models. P1 percentile subject bootstrap; P2 descriptive normal interval from RMS split paired SE, no independence assumption between splits."
+  },
+  "source_campaigns": {
+    "step2a": {
+      "protocol": "step2a_stats_v1",
+      "source_commit": "3dba14c1176f9ac525aee0e851590ca7db4b4c39"
+    },
+    "step2c": {
+      "protocol": "step2c_frozen_branches_v1",
+      "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea"
+    }
+  },
+  "analysis_script_sha256": "f9bb7cd5d70eaa36c994e83030ef46a42c312b0c089cfa74627db81ad8d1be80",
+  "comparison_sha256": {
+    "step2a": "1d5f0787d98a6f4d5636ab489fc32655c808bf3ade92c656e12403cf30260252",
+    "step2c": "e25721caacf5f3e6ae652f5450795f0771b5551e985764b8153497d7511f5373"
+  },
+  "report_sha256": {
+    "step2a/p1/B_seed0/MS": "cce30e5ed443092f7bd2d85075a933a8dfd6baff7b9893d881fef85fe8c3b0f9",
+    "step2a/p1/B_seed1/MS": "18bd554925bc6cd141908090c539663d3254d3dfe8d0d8b63c4200fbeced48bc",
+    "step2a/p2/B_seed0/MS": "ad89d93c6ac8f51a198ec20082660fd48ebedd79464f952288c3c8537ae6a6a7",
+    "step2a/p2/B_seed1/MS": "95f939ab931ff3194c7234ecdb3d5daf73458b28b795ef0324457028a08b5f4c",
+    "step2c/p1/B_seed0/RPW": "85f2d8e6921f0561ae2161d44422b3f2fb4afd89d9012c072dccbd9d152f6891",
+    "step2c/p1/B_seed1/RPW": "05ba7573cd6630bb9bb8ef01b08f534f96f84dd3603ad1fb0712b7c0fd277f4d",
+    "step2c/p2/B_seed0/RPW": "8f9e6d250adf6efb886c2a34a8d8be5a0cedf393a531496d2e0bcd255bc516fe",
+    "step2c/p2/B_seed1/RPW": "3a55d1b097e6e6e2cc7c2f1b9cbb714d118f5387386f55f79e0ba5fb9dee24c0"
+  },
+  "scope": "Closed report replay: input/row/split identities and per-subject counts checked; NPZ caches not reopened.",
+  "note": "Secondary endpoint pre-specified by 2C; no primary verdict changed, no automatic adoption. Two teachers only; P2 interval descriptive; multiple comparisons without correction."
+}

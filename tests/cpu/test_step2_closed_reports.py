@@ -36,6 +36,7 @@ def _fixture(tmp_path):
                 identity = {"protocol": protocol, "source_commit": source, "task": task, "arm": arm,
                             "variant": variant, "which": "teacher", "probe_seed": 0, "split_sha256": "same-split"}
                 identity["source_checkpoint_sha256"] = C.CHECKPOINTS[arm]
+                identity["stats_checkpoint_sha256"] = C.CHECKPOINTS["B_seed0"]
                 report = {task: score, "datasets": data, "feature_set": features,
                           "provenance": {"identity": identity, "cache": cache}}
                 if campaign == "step2a":
@@ -92,6 +93,21 @@ def test_rejects_closed_report_or_pairing_drift(tmp_path, field):
         manifest["report_sha256"]["p1/B_seed0/RPW"] = digest
     _write(manifest_path, manifest)
     with pytest.raises(ValueError):
+        C.replay(roots, n_boot=5)
+
+
+def test_stats_checkpoint_is_not_the_raw_teacher_identity_for_seed1(tmp_path):
+    roots = _fixture(tmp_path)
+    # Stats extraction always uses B0, but B1's embedding must still be B1.
+    report_path = roots["step2a"] / "p1/B_seed1/MS.json"
+    report = json.loads(report_path.read_text())
+    report["provenance"]["downstream"]["identity"]["checkpoint_sha256"] = C.CHECKPOINTS["B_seed0"]
+    digest = _write(report_path, report)
+    manifest_path = roots["step2a"] / "comparison.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["report_sha256"]["p1/B_seed1/MS"] = digest
+    _write(manifest_path, manifest)
+    with pytest.raises(ValueError, match="different source teacher"):
         C.replay(roots, n_boot=5)
 
 

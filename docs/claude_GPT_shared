@@ -12,11 +12,11 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
-| 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | Primari 2A/2C conclusi negativi; resta il secondario rami contro MS |
-| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | R3 accodato, gate iniziale esatto PASS per entrambi i semi/task; estrazioni avviate, risultati delle sonde ancora pendenti |
+| 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
+| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
 | 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Review trainer/monitor consegnata: quattro P2 riprodotti; correzioni a Claude prima del congelamento, main non ancora integrato |
 | 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Due P2 sul pannello/metriche da correggere; bozza v2 letta, nessuna nuova soglia adottata |
-| 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Screening locale/backbone non isola da solo il Perceiver; niente congiunto con la loss attuale |
+| 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
 | 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Configurazioni, prove finali, budget e piano da congelare; firma finale di Simone |
 
 ### Tranche che puo' partire ora in parallelo
@@ -563,6 +563,26 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   clipping e offset del passo confermati. Sono prove del codice di analisi, NON nuovi risultati sperimentali: copie piccole in corso
   viaOps, nessun NPZ/checkpoint/dato grezzo scaricato. I tre draft preesistenti non committati restano intatti.
 
+### 2026-10-15 | GPT | Punti 1 e 2 chiusi, analisi dei gradienti del punto 5 consegnata
+
+- C1: replay locale effettivo dal codicec1c7a97, input completi e verificati byte-identici daOps. RPW-MS B0/B1: P1+0,708805punti,
+  IC95[+0,309728;+1,257906]; P2+0,677052, ICdescrittivo[-0,823076;+2,177180]. Entrambi semi positivi, entrambi sotto+1punto:
+  secondarioNEGATIVO, primari2A/2C invariati, nessun training congiunto/adattamento delle soglie. NuovoJSON
+  results/passo6/step2c_vs_step2a_20261015.json; nessuna riscrittura dei report remoti o dei comparison chiusi.
+- C5: export sparsi verificati di tutti e4i run storici69fa2da. A0/A1 senza componenti per design; B0/B1 otto osservazioni ciascuno,
+  log1,501,...3501. Ancore/JEPA mediane8,74922 e9,68113; keep/JEPA1,27580 e0,96037. Pooled16batch: mediane8,96895/1,14472,
+  ancore/JEPA range2,53170..205,31593. Norme gia' pesate0,2/0,05, preclip; clipping totale in12/16campioni, non frequenza su4000step.
+  Tutto finito. NuovoJSON results/passo6/step1_weighted_gradients_20261015.json. Nessun parametro/peso/iperparametro cambiato.
+- C2: arrivato e archiviato byte-identico il confronto finale r3, source7863c5d, SHA256
+  dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119. Tutti i7jobCOMPLETED0:0, ultimo60563070 concluso alle02:39:45CEST;
+  snapshotOps15/10 07:29:38, zeroSTOP. Entrambi goldenSHA iniziali esatti invariati. B-random: P1+2,30152punti,
+  IC95[+1,08155;+3,60891]; P2+7,51249, ICdescrittivo[+4,31532;+10,70966]. A-random: P1+1,91900 eP2+6,68940punti.
+  Tutti i delta aggregati positivi per entrambi i semi. NuovoJSON results/passo6/step1_random_downstream_20261015.json.
+- ConsuntivoR3: extract6643s=1,845278GPUh; gruppiCPU+checkout23,17722coreh (37,93944 includendoCPU negli extractGPU).
+  Sommando119s fallimenti e48s diagnosiClaude, GPUcumulative conservative1,891667<3gia'autorizzate; nessuna nuova allocazione.
+- Test finali analisi:46PASS CPU locale. Rilievi del trainer restano assegnati aClaude; main non integrato, tre draft preesistenti
+  preservati. Registro nelle due sezioni e decisioni aggiornati; sonde temporali/fisiche e nuovo obiettivoSSL ancora da fare.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -991,3 +1011,15 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   Otto batch/semeB sono lo0,2% dei4000, non una prova di dominanza a ogni update. A non ha queste diagnostiche per scelta del codice.
 - La copia dei report/export deve terminare e superare i gate prima di dichiarare esiti. Sonde fisiche/temporali e obiettivoSSL dei
   rami restano lavoro del punto5; questa tranche non chiude tutta la validazione e non autorizza altri training.
+
+### 2026-10-15 | GPT | Lettura e limiti dei risultati punti 1, 2 e 5
+
+- P1 RPW-MS ha un intervallo positivo ma effetto medio sotto il punto predefinito: non chiamarlo "nessun effetto", non promuoverlo
+  cambiando la soglia dopo averlo visto. Secondario e confronti multipli restano distinti dal primario negativo.
+- Il controllo casuale dimostra un vantaggio aggregato dell'apprendimento in questo pilot, NON della solaJEPA o della keep: le ancore
+  erano attive sia inA sia inB. DB3 resta debole: B2,588% contro casuale3,572%; delta-0,984punti, intervallo attraversa0.
+- Nei16batch registrati le ancore hanno norma maggiore diJEPA; otto batch/seme e norme senza coseni non stabiliscono il contributo
+  causale ai pesi/sonde. Non dividere0,2per9 automaticamente, non affermare cheJEPA e' inutile. Restano ablation e sonde scientifiche.
+- Copia locale iniziale fermata dal gateSHA durante il trasferimento ancora incompleto; nessun output scientifico prodotto. Verifiche
+  definitive solo dopo copia byte-identica confermata daOps. Il precedente trasferimento sotto approvazione e' stato interrotto:
+  completamento con accessoSSHgia'approvato, nessuna nuova sottomissione, modifica remota o download di checkpoint/NPZ.

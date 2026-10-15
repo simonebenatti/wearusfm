@@ -2699,3 +2699,59 @@ Non e' un errore dimostrato della scala DDP: test gloo della testa opzionale/no_
 Correzioni sul branch di Claude, niente riscrittura dei suoi SHA o merge non revisionato. I due P2 del monitor vanno risolti prima di
 usarlo per il verdetto; v2 di366ab11 resta bozza, delta/k/cadenza non adottati. CPUmonitor5PASS, worker escluso e prove degli agenti
 interrotte su quel caso; non fullsuite ne' confermaCUDA/NCCL/bf16. Endpoint/soglie2A/2C e verdetto storico invariati.
+
+### Punto 1 chiuso: secondario rami contro statistiche fisse (GPT, 15/10/2026)
+
+Ricalcolato sul Mac il secondario GIA' previsto dal2C: RPW (raw+rami allenati) meno MS (raw+statistiche fisse2A), teacherB_seed0/B_seed1,
+report e sonde invariati. Otto report e due comparison copiati byte-identici e verificatiSHA256 controLeonardo; replay dal codicec1c7a97,
+compare_reports ufficiale identico ai dueSHA di campagna,1000bootstrap/seed20261009. Output nuovo results/passo6/step2c_vs_step2a_20261015.json;
+nessuna sovrascrittura dei comparison storici o riapertura delle cacheNPZ. Accoppiamento ingressi/righe/split/teacher verificato dai report,
+conteggi per soggetto/classe ricontrollati dall'estimatore. Nessun job/0GPU-ora aggiuntive.
+
+| Task | Delta RPW-MS, punti | Intervallo95%, punti | Due teacher positivi | Utile secondo +1punto |
+|---|---|---|---|---|
+| P1 | +0,708805 | [+0,309728; +1,257906] | si' | NO: stima sotto1 |
+| P2 | +0,677052 | [-0,823076; +2,177180], descrittivo | si' | NO: stima sotto1 e intervallo include0 |
+
+Secondario **NEGATIVO**, entrambi non dannosi secondo la guardia puntuale>=-1punto. P1 ha un intervallo positivo, ma non raggiunge la
+soglia pratica: non significa identita' delle rappresentazioni ne' assenza di ogni guadagno. P2 resta descrittivo, due teacher e confronti
+multipli senza correzione. Primari2A/2C invariati negativi: nessuna adozione/training congiunto con l'obiettivo attuale o cambio delle soglie.
+
+### Punto 2 chiuso: controllo dell'encoder casuale r3 (GPT, 15/10/2026)
+
+Confronto finale step1_random_downstream_4000_v1, source7863c5da34bfa4c261acd41fff742707d2a45f6d, goldenSHA completi invariati per
+semi0/1. Encoder iniziali ricostruiti senza pesi appresi; unico recupero aggiuntivo il buffer IMMUTABILE fe_gain storico, gia' documentato
+e protetto dall'hash esatto. Stesse sonde, finestre, split, scaler train-only e confronto accoppiato del protocollo; nessuna nuova soglia.
+Tutti i7job COMPLETED0:0; ultimo60563070 concluso15/10 02:39:45CEST, zeroSTOP. Finale in
+results/passo6/step1_random_downstream_20261015.json, byte-identico al remotoSHA256
+dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119.
+
+| Famiglia | P1 allenato-casuale, punti (IC95%) | P2 allenato-casuale, punti (IC descrittivo95%) |
+|---|---|---|
+| A | +1,91900 [+0,83175; +3,20508] | +6,68940 [+4,00294; +9,37585] |
+| B | +2,30152 [+1,08155; +3,60891] | +7,51249 [+4,31532; +10,70966] |
+
+Casuale: P1 15,95837%, P2 73,09354%; B allenato:18,25989%/80,60603%. Delta aggregati positivi in entrambi i semi, ma DB3 resta
+molto debole (B2,58827%, casuale3,57211%; delta-0,98383punti con intervallo che include0). Il pilot apprende rappresentazioni utili
+rispetto all'inizializzazione, non prova che la solaJEPA causi il guadagno: A eB hanno entrambi le ancore. Due inizializzazioni,
+incertezza condizionata e P2 descrittivo; nessuna proclamazione di default/guadagno su corpus completo.
+
+ConsuntivoR3 verificato daOps:1,845278GPUh;23,17722corehCPUseriale incluso checkout (37,93944 contando ancheCPU nei jobGPU).
+Con119s dei tentativi precedenti e48s del diagnosticoClaude, GPUcumulative conservative1,891667<3gia'autorizzate. Nessun nuovo job.
+
+### Punto 5: norme dei gradienti pesati nell'A/B (GPT, 15/10/2026)
+
+Analisi descrittiva dal codicec1c7a97 dei log storici69fa2da, export verificati daOps:4000record/run ma solo8diagnostiche/semeB;
+A non le registra perche' keep_weight0. Output results/passo6/step1_weighted_gradients_20261015.json. Su tokenizer/identity/local/pool/backbone,
+prima del clipping, le norme includono GIA' i pesi delle loss (ancore0,2, keep0,05):
+
+| Rapporto di norme | Mediana B_seed0 | Mediana B_seed1 | Mediana pooled16batch |
+|---|---|---|---|
+| Ancore / JEPA | 8,74922 | 9,68113 | 8,96895 |
+| Keep / JEPA | 1,27580 | 0,96037 | 1,14472 |
+
+Le ancore superanoJEPA in tutti i16campioni (range2,53170..205,31593; massimo all'inizializzazione). Clipping della norma totale in
+12/16diagnostiche, non tasso stimato su4000step. Tutti i valori finiti. Segnale concreto di forte pressione ausiliaria, NON dimostrazione
+cheJEPA sia inutile o equivalenza fra norma e aggiornamentoAdamW: mancano direzioni/coseni e attribuzione causale; lo0,2% dei batch non
+rappresenta l'intera traiettoria. Nessuna ricalibrazione automatica dei pesi. Il punto5 resta aperto per sonde temporali/fisiche, ablation
+dell'obiettivo e nuovoSSL dei rami; niente training congiunto con la loss bocciata.46testCPUpertinentiPASS, non intera suite o provaGPU.
