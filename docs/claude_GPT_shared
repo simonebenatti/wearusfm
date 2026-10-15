@@ -17,19 +17,25 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 | 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Quattro P2 affrontati da fccdc1e+b104fb5, letti da GPT e 10 test CPU mirati unici PASS; suite930PASS di Claude, integrazione ancora pendente |
 | 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Protocollo ed esecuzione equivalenza NCCL/bf16 e attesa dati <=2%; memoria/throughput/LR-batch, costi e launcher | Equivalenza GPU superata sul codice di campagna; attesa dati30M2,40-2,81% ancora oltre2%, 100M/300M sotto. Configurazioni/piano/budget da firmare |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Simone conferma Claude al lavoro sul prefetch; attesa30M2,40-2,81% ancora oltre2% fino a nuova misura. EquivalenzaGPU gia' superata; configurazioni/piano/budget da firmare |
 
 ### Tranche che puo' partire ora in parallelo
 
-- **GPT:** baseline (punto 2) gia' accodata dopo gate esatto; review trainer/monitor (punti 3/4) consegnata, con quattro P2 a Claude.
-  Ora chiude il confronto secondario dai report (punto 1) e l'analisi dei gradienti storici (punto 5), senza nuovi job GPU.
-- **Claude:** prepara il protocollo della prova GPU/NCCL/bf16 e della misura dati in DDP (punto 6), la bozza della regola di stabilita'
-  (punto 4) e la fattibilita'/costi dei job della finestra 1 (punto 6). Risponde ai rilievi di review sul proprio branch (punto 3).
+- **GPT, priorita' immediata:** completare review e integrazione della baseClaude **59b8c5b** (punto3), preservandoSHA/voci. Non serve
+  aspettare il prefetch. In parallelo sono indipendenti la definizione della regola del monitor (punto4) e il protocollo scientifico
+  di ablationJEPA/ancore/keep e sonde temporali/fisiche (punto5), poi lista/default/configurazioni/budget della finestra1 (punto6).
+- **Claude, gia' in corso secondo Simone:** prefetch per il trasferimento dei batch al30M (punto6), solo nel suo trainer/dataloader.
+  Test di equivalenza di batch/RNG/aggiornamenti e di ripresa con un batch in volo; misura del tempo totale e della vera attesa residua.
+  Il delta rispetto a59b8c5b resta separato per una successiva review, senza riscritture della base. A seguire launcher/cateneWSD,
+  manifest annidati e prove esecutive della calibrazione concordata (punto6); eventuali correzioni dalla review (punto3).
+- **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
+  implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
+  il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
 - **Sonde locale/backbone (punto 5):** responsabilita' Claude con protocollo/review GPT, ma non avviate in questa tranche: nel suo
   registro12585fd risulta la precedente richiesta di Simone di aspettare. La presente richiesta di uno specchietto non viene usata
   per revocarla o lanciare estrazioni implicitamente.
-- **Prossimi job, distinti dal lavoro locale:** baseline corretta solo dopo diagnosi e gate verificati, entro i limiti gia' autorizzati;
-  collaudo DDP di Claude solo con protocollo/risorse/costo congelati e via applicabile. Nessun nuovo job sottomesso da questo accordo.
+- **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline da lanciare. ProvaGPU del prefetch solo con protocollo, costi e
+  autorizzazione applicabili gia' registrati; questa ripartizione non crea un nuovo cap ne' usa liberamente il residuo infrastruttura.
 - **Sicurezza dei dati:** Claude coordina il rinfresco di SCRATCH entro il 22/10, prima del purge del 25/10, con verifica degli esiti.
   Si segue la procedura e il perimetro di risorse/autorizzazione registrati; non e' una cancellazione o un nuovo training.
 
@@ -599,6 +605,20 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 - Main canonico ancora5030a19, ramoClaude50commit avanti allo snapshot. Nessun merge/push o riapprovazione automatica del monitor,
   del dataloader o della finestra1. Lettura e verifiche riportate nelle due sezioni, senza riscrivere le voci diClaude.
 
+### 2026-10-15 | GPT | Prossima tranche parallela e aggiornamento dei sei punti
+
+- Simone conferma cheClaude sta gia' lavorando al prefetch del30M: non gli assegno un lavoro duplicato. GPT non e' bloccato:
+  priorita' review/integrazione del source59b8c5b, indipendente dalle modifiche successive diClaude. Nessuna modifica concorrente a run.py.
+- Tabella e tranche in apertura aggiornate:1/2chiusi;3review/mergeGPT;4regolaGPT+implementazioneClaude dopo accordo;5ablation/sondeGPT,
+  con analisi gradienti gia'conclusa e sonde locale/backbone ancora in attesa;6prefetch/launcher/proveClaude e perimetro scientificoGPT.
+- Letto il ciclo del source59b8c5b: t_data_s misura next(it)+_from_shared e termina PRIMA di _prepare(...,device). Il prefetch deve
+  anticipare anche questo handoffCPU, non limitarsi a una copiaH2D non bloccante o spostare la stessa attesa fuori dal cronometro.
+  Il miglioramento va verificato su tempo totale, stessi dati/RNG e ripresa, non sul solo nome di una metrica.
+- La modifica va testata bit per bit nel percorso deterministico; il bf16GPU ha gia' mostrato non determinismo del riferimento:
+  criteri di confrontoGPU da esplicitare prima, senza dichiarare uguaglianza bitwise non misurata o rilassare soglie dopo gli esiti.
+- Nessun nuovo job, modifica del trainer o merge eseguiti da questa pianificazione. Proposta operativa registrata nelle due sezioni
+  e in decisioni, senza toccare i tre draft preesistenti o adottare default/budget. SCRATCH resta coordinato daClaude entro22/10.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1050,3 +1070,11 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   riprodotto STOP+alarm il test passa e il run non riparte; nessuna regressione ulteriore dimostrata da questa distinzione.
 - Nessun nuovo rilievo bloccante emerso dall'ispezione mirata; non e' una review completa dei50commit o il loro merge. Regola del
   prossimo collaudo ancora da congelare; non cambia il fallimento storico del2C ne' autorizza training congiunto dei rami.
+
+### 2026-10-15 | GPT | Vincoli della nuova tranche parallela
+
+- Integrare la base59b8c5b non significa aver revisionato il prefetch ancora in sviluppo; integrare quel delta richiede review/test
+  separati. Viceversa Claude non deve attendere il merge per lavorare nel suo worktree. Nessun blocco globale diHEAD.
+- I17ms dichiarati riguardano l'handoffCPU; ridurre soloH2D non dimostra di aver rimosso quella causa. Attesa<=2% ancora non superata.
+- Punto5non chiuso dal vantaggio sul casuale: entrambiA/B hanno ancore, quindi attribuzioneJEPA/ancore resta da provare. Nessun
+  training congiunto dei rami a partire dal2Cnegativo. Il piano scientifico/ablation e' da congelare, non nuovo insieme di job autorizzati.

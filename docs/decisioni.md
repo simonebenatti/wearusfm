@@ -2765,3 +2765,15 @@ Gli artefatti del protocollo w1_gpu_dati_v1 riportano equivalenzaNCCL1vs4GPU e a
 questo precede le nuove correzioni di ripresa/monitor. Attesa dati30M2,40%/2,81% contro2%: requisito NON soddisfatto, anche se100M/300M
 sono sotto soglia. Nessuna deroga adottata qui. Tempi e memoria misurati permettono stime migliori, non chiudono piano/default/budget.
 Consuntivo della tranche riportato daClaude5,51GPUh; infrastruttura5,87/25usate, residuo19,13. Nessun nuovo job o costo in questa lettura.
+
+### Prossima tranche parallela, senza attesa reciproca (15/10/2026)
+
+Simone confermaClaude gia' al lavoro sul prefetch del30M (punto6). GPT prende come base fissa di review/integrazione59b8c5b (punto3):
+le modifiche successive del trainer restano un delta separato, senza editor concorrenti o riscrittura degliSHA. Regola del monitor4 e
+protocolli di ablation/sonde5 possono essere definiti daGPT senza attendere il dataloader. Punti1/2chiusi;6richiede ancora launcher,
+manifest annidati, passi da corpus, calibrazioneLR/batch/K, lista/configurazioni e budget firmati. Numerazione e ruoli nel registro comune.
+
+t_data_s misura handoffCPU (next/_from_shared), prima di _prepare sul device: il prefetch deve sovrapporre quel lavoro, con stesso stream,
+RNG/aggiornamenti e ripresa anche a batch prefetched in volo. Il tempo totale non si sostituisce spostando l'attesa fuori dal timer.
+Bitwise nel percorso deterministico; confrontoGPU/bf16 con non determinismo del riferimento gia' noto e criteri prospettici.
+Nessun nuovo job/cap o deroga al2% da questa pianificazione; firma scientifica e budget restano aSimone. SCRATCH entro22/10 aClaude.
