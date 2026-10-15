@@ -1,0 +1,601 @@
+{
+ "protocol": "diagnose_initial_state_v1",
+ "variants": {
+  "ab_replica": {
+   "threads": "1",
+   "imports": "step1_ab",
+   "seeding": "manual_seed",
+   "set_threads_1": false
+  },
+  "torch_only_env1": {
+   "threads": "1",
+   "imports": "torch",
+   "seeding": "manual_seed",
+   "set_threads_1": false
+  },
+  "gpt_like_env8": {
+   "threads": "8",
+   "imports": "torch",
+   "seeding": "default_generator",
+   "set_threads_1": true
+  },
+  "gpt_like_env8_sklearn_first": {
+   "threads": "8",
+   "imports": "sklearn_first",
+   "seeding": "default_generator",
+   "set_threads_1": true
+  },
+  "env8_plain": {
+   "threads": "8",
+   "imports": "torch",
+   "seeding": "manual_seed",
+   "set_threads_1": false
+  }
+ },
+ "seeds": {
+  "0": {
+   "reference": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_ab_0810/B_seed0/checkpoint.pt",
+   "pairing_initial_sha256": {
+    "A_student": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0",
+    "A_teacher": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0",
+    "B_student": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0",
+    "B_teacher": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0"
+   },
+   "variants": {
+    "ab_replica": {
+     "sha256": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0",
+     "matches": [
+      "A_student",
+      "A_teacher",
+      "B_student",
+      "B_teacher"
+     ],
+     "buffers_differing_from_final_teacher": {},
+     "tensors_differing_from_ab_replica": null,
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 1,
+      "env": {
+       "OMP_NUM_THREADS": "1",
+       "MKL_NUM_THREADS": "1",
+       "OPENBLAS_NUM_THREADS": "1",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 1\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 1\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 1\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 1\n\tMKL_NUM_THREADS : 1\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "torch_only_env1": {
+     "sha256": "dc2a06e695a5d9075da467acd652c5f37ebcc70575f36e3c64152aaf9182748b",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375573
+       ],
+       "variant_sum": 982.4250666375573
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375573
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 1,
+      "env": {
+       "OMP_NUM_THREADS": "1",
+       "MKL_NUM_THREADS": "1",
+       "OPENBLAS_NUM_THREADS": "1",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 1\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 1\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 1\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 1\n\tMKL_NUM_THREADS : 1\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "gpt_like_env8": {
+     "sha256": "dc2a06e695a5d9075da467acd652c5f37ebcc70575f36e3c64152aaf9182748b",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375573
+       ],
+       "variant_sum": 982.4250666375573
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375573
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "gpt_like_env8_sklearn_first": {
+     "sha256": "fe4cfe34930e4f0836ab8107bf203f0e0ce95db8cfa0cdf1aaa239bcf9dacdb0",
+     "matches": [
+      "A_student",
+      "A_teacher",
+      "B_student",
+      "B_teacher"
+     ],
+     "buffers_differing_from_final_teacher": {},
+     "tensors_differing_from_ab_replica": {},
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "_middle_term_computer.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp-a34b3233.so.1.0.0",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "env8_plain": {
+     "sha256": "5cba9c91a01d6419df79d8ccffb601338370b3bc4c3e1ee0b9d4e0318d268637",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375588
+       ],
+       "variant_sum": 982.4250666375588
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375588
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375588
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375588
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    }
+   }
+  },
+  "1": {
+   "reference": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/step1_ab_0810/B_seed1/checkpoint.pt",
+   "pairing_initial_sha256": {
+    "A_student": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446",
+    "A_teacher": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446",
+    "B_student": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446",
+    "B_teacher": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446"
+   },
+   "variants": {
+    "ab_replica": {
+     "sha256": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446",
+     "matches": [
+      "A_student",
+      "A_teacher",
+      "B_student",
+      "B_teacher"
+     ],
+     "buffers_differing_from_final_teacher": {},
+     "tensors_differing_from_ab_replica": null,
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 1,
+      "env": {
+       "OMP_NUM_THREADS": "1",
+       "MKL_NUM_THREADS": "1",
+       "OPENBLAS_NUM_THREADS": "1",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 1\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 1\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 1\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 1\n\tMKL_NUM_THREADS : 1\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "torch_only_env1": {
+     "sha256": "b76761ae5ac53456322cf68c3ff7c2641f3def758d43b92ac312764a73a4343d",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375573
+       ],
+       "variant_sum": 982.4250666375573
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375573
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 1,
+      "env": {
+       "OMP_NUM_THREADS": "1",
+       "MKL_NUM_THREADS": "1",
+       "OPENBLAS_NUM_THREADS": "1",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 1\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 1\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 1\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 1\n\tMKL_NUM_THREADS : 1\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "gpt_like_env8": {
+     "sha256": "b76761ae5ac53456322cf68c3ff7c2641f3def758d43b92ac312764a73a4343d",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375573
+       ],
+       "variant_sum": 982.4250666375573
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375573
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375573
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "gpt_like_env8_sklearn_first": {
+     "sha256": "f02883fd0cc0ac8d744ee7ae9036b7b1346c16c686f08a6de3a714c1d3570446",
+     "matches": [
+      "A_student",
+      "A_teacher",
+      "B_student",
+      "B_teacher"
+     ],
+     "buffers_differing_from_final_teacher": {},
+     "tensors_differing_from_ab_replica": {},
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "_middle_term_computer.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp-a34b3233.so.1.0.0",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    },
+    "env8_plain": {
+     "sha256": "ad24eb2680f523ba84c1b5767884954bca2655fb6777a0256d1f45ea3bc6f696",
+     "matches": [],
+     "buffers_differing_from_final_teacher": {
+      "tokenizer.fe_gain": {
+       "variant": [
+        982.4250666375588
+       ],
+       "variant_sum": 982.4250666375588
+      }
+     },
+     "tensors_differing_from_ab_replica": {
+      "tokenizer.fe_gain": {
+       "sum": [
+        982.425066637557,
+        982.4250666375588
+       ],
+       "absmax": [
+        982.425066637557,
+        982.4250666375588
+       ],
+       "values": [
+        [
+         982.425066637557
+        ],
+        [
+         982.4250666375588
+        ]
+       ]
+      }
+     },
+     "environment": {
+      "host": "lrdn0880.leonardo.local",
+      "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "torch_threads": 8,
+      "env": {
+       "OMP_NUM_THREADS": "8",
+       "MKL_NUM_THREADS": "8",
+       "OPENBLAS_NUM_THREADS": "8",
+       "MKL_THREADING_LAYER": null
+      },
+      "parallel_info": "ATen/Parallel:\n\tat::get_num_threads() : 8\n\tat::get_num_interop_threads() : 32\nOpenMP 201511 (a.k.a. OpenMP 4.5)\n\tomp_get_max_threads() : 8\nIntel(R) oneAPI Math Kernel Library Version 2023.2-Product Build 20230613 for Intel(R) 64 architecture applications\n\tmkl_get_max_threads() : 8\nIntel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)\nstd::thread::hardware_concurrency() : 32\nEnvironment variables:\n\tOMP_NUM_THREADS : 8\n\tMKL_NUM_THREADS : 8\nATen parallel backend: OpenMP\n",
+      "libraries": [
+       "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+       "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+       "_fblas.cpython-311-x86_64-linux-gnu.so",
+       "cython_blas.cpython-311-x86_64-linux-gnu.so",
+       "libcublas.so.12.1.0.26",
+       "libcublasLt.so.12.1.0.26",
+       "libgomp.so.1.0.0",
+       "libmkl_avx512.so.2",
+       "libmkl_core.so.2",
+       "libmkl_gnu_thread.so.2",
+       "libmkl_intel_lp64.so.2",
+       "libmkl_vml_avx512.so.2",
+       "libomp.so",
+       "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+       "libopenblasp-r0-23e5df77.3.21.dev.so"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

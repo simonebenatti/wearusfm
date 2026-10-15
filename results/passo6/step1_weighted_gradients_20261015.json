@@ -1,0 +1,491 @@
+{
+  "analysis": "step1_weighted_shared_gradients_descriptive_v1",
+  "training_source": {
+    "commit": "69fa2da8757b322ea74875b4e9d104a89bbf6d5d",
+    "path": "src/wearusfm/training/run.py",
+    "sha256": "e5aaafe7440464bcfc17a2e95845fae1e8b2f05d534a87088619bb1ac754d20e",
+    "gradient_lines": [
+      306,
+      315
+    ],
+    "optimizer_and_log_lines": [
+      316,
+      328
+    ]
+  },
+  "export_manifest_sha256": "f5620f76f9a6dc2611cff820085697c608c9e10beb0a1880627e06661a079660",
+  "runs": {
+    "A_seed0": {
+      "weights": {
+        "jepa": 1.0,
+        "anchors": 0.2,
+        "keep": 0.0
+      },
+      "provenance": {
+        "metrics_full_sha256_reported_by_exporter": "b05a87bd7fd99a966c91f9ebcb8cf96725ee337ec36a27db821b05fec1344cc5",
+        "metrics_full_lines_reported_by_exporter": 4000,
+        "sparse_export_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sparse_export_lines": 0,
+        "config_sha256": "d674d6f2f4a9292abc4a192df08b8d8ec5ce1709d67225c7c8328cdff1de92f3",
+        "run_provenance_sha256": "61d06ff598cf7bd0176fa881f2467091ed9b4e169f7dcc364111030f9cf6143c",
+        "source_commit": "69fa2da8757b322ea74875b4e9d104a89bbf6d5d",
+        "checkpoint_sha256": "26ee7e440b01c77b35b9cf198110a4341e267340d377ca32feb80ae6b475b611"
+      },
+      "status": "excluded_by_design",
+      "diagnostic_count": 0,
+      "reason": "The historical diagnostic requires keep_weight > 0; A has weight zero. No A component norms were recorded."
+    },
+    "A_seed1": {
+      "weights": {
+        "jepa": 1.0,
+        "anchors": 0.2,
+        "keep": 0.0
+      },
+      "provenance": {
+        "metrics_full_sha256_reported_by_exporter": "28a35e1040df2d7ddcf6c9dbbdfadf7188bb3f2acf81e6b7aa45b7ab96781520",
+        "metrics_full_lines_reported_by_exporter": 4000,
+        "sparse_export_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sparse_export_lines": 0,
+        "config_sha256": "0575809c042d4e9c1604d5e2ceb87810305ea02a22eb934da7ef95b062bd98a5",
+        "run_provenance_sha256": "0c086cc458ed718104211815946cf2c028f2832bb6320f3ed333f78bbeb8eb7b",
+        "source_commit": "69fa2da8757b322ea74875b4e9d104a89bbf6d5d",
+        "checkpoint_sha256": "b72a122ea24d01af2830de7f1c76dbcfd7810991e75f9ba015ca5e93bdeeb4d2"
+      },
+      "status": "excluded_by_design",
+      "diagnostic_count": 0,
+      "reason": "The historical diagnostic requires keep_weight > 0; A has weight zero. No A component norms were recorded."
+    },
+    "B_seed0": {
+      "weights": {
+        "jepa": 1.0,
+        "anchors": 0.2,
+        "keep": 0.05
+      },
+      "provenance": {
+        "metrics_full_sha256_reported_by_exporter": "fc301129c473ee414ca6bb72a31388d8f3b9e010dac154c700bbe7196b9f5de0",
+        "metrics_full_lines_reported_by_exporter": 4000,
+        "sparse_export_sha256": "efe4729fb0a1bc9782fdb617e204fcaeb83a0c6c13e6d2b0a7f77cba16e2e59f",
+        "sparse_export_lines": 8,
+        "config_sha256": "b2c9ecf8ef5a6c83213721b1888df5c7951c105913a48a7d0af158a66836d8c6",
+        "run_provenance_sha256": "bfa96a348e77a6b4ed87d46874aa5ee9f27ea4d1735e614a83c2e502f51085eb",
+        "source_commit": "69fa2da8757b322ea74875b4e9d104a89bbf6d5d",
+        "checkpoint_sha256": "b264df4b75f7047980212ab068fe524148e71dbdef442d4e75e95648f841d3cd"
+      },
+      "status": "complete_sparse_diagnostics",
+      "diagnostic_count": 8,
+      "finite_nonnegative": true,
+      "coverage": {
+        "logged_updates": 4000,
+        "sampled_update_indices": [
+          0,
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500
+        ],
+        "fraction": 0.002
+      },
+      "norms_and_ratios": {
+        "shared_grad_jepa": {
+          "n": 8,
+          "median": 0.06564101949334145,
+          "min": 0.02598179318010807,
+          "max": 0.29256290197372437
+        },
+        "shared_grad_anchors": {
+          "n": 8,
+          "median": 0.5570961534976959,
+          "min": 0.39475712180137634,
+          "max": 32.49191665649414
+        },
+        "shared_grad_keep": {
+          "n": 8,
+          "median": 0.08850108459591866,
+          "min": 0.021590782329440117,
+          "max": 0.6465944051742554
+        },
+        "anchors_over_jepa": {
+          "n": 8,
+          "median": 8.749218731241731,
+          "min": 3.170857619126105,
+          "max": 205.31592926195248
+        },
+        "keep_over_jepa": {
+          "n": 8,
+          "median": 1.2757958320928307,
+          "min": 0.6142568409892366,
+          "max": 4.085820253616764
+        },
+        "grad_norm_all_parameters": {
+          "n": 8,
+          "median": 1.1520622751581102,
+          "min": 0.6643106190978748,
+          "max": 37.8042856188902
+        }
+      },
+      "clipping_at_diagnostic_samples": {
+        "threshold": 1.0,
+        "count": 5,
+        "fraction": 0.625,
+        "log_steps": [
+          1,
+          501,
+          1001,
+          1501,
+          2501
+        ]
+      },
+      "samples": [
+        {
+          "log_step": 1,
+          "update_index": 0,
+          "shared_grad_jepa": 0.1582532674074173,
+          "shared_grad_anchors": 32.49191665649414,
+          "shared_grad_keep": 0.6465944051742554,
+          "grad_norm_all_parameters": 37.8042856188902,
+          "anchors_over_jepa": 205.31592926195248,
+          "keep_over_jepa": 4.085820253616764,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 501,
+          "update_index": 500,
+          "shared_grad_jepa": 0.29256290197372437,
+          "shared_grad_anchors": 0.9276753067970276,
+          "shared_grad_keep": 0.17970876395702362,
+          "grad_norm_all_parameters": 2.0579710029163505,
+          "anchors_over_jepa": 3.170857619126105,
+          "keep_over_jepa": 0.6142568409892366,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 1001,
+          "update_index": 1000,
+          "shared_grad_jepa": 0.08760073035955429,
+          "shared_grad_anchors": 0.5938204526901245,
+          "shared_grad_keep": 0.15900643169879913,
+          "grad_norm_all_parameters": 1.1694595743699272,
+          "anchors_over_jepa": 6.778715773861795,
+          "keep_over_jepa": 1.8151267808631562,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 1501,
+          "update_index": 1500,
+          "shared_grad_jepa": 0.060639478266239166,
+          "shared_grad_anchors": 0.5203718543052673,
+          "shared_grad_keep": 0.07745964080095291,
+          "grad_norm_all_parameters": 1.1346649759462932,
+          "anchors_over_jepa": 8.581403883795991,
+          "keep_over_jepa": 1.2773797370232045,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 2001,
+          "update_index": 2000,
+          "shared_grad_jepa": 0.07064256072044373,
+          "shared_grad_anchors": 0.4967411160469055,
+          "shared_grad_keep": 0.09001359343528748,
+          "grad_norm_all_parameters": 0.8281752103678308,
+          "anchors_over_jepa": 7.031754100940317,
+          "keep_over_jepa": 1.2742119271624568,
+          "all_parameter_gradient_clipped": false
+        },
+        {
+          "log_step": 2501,
+          "update_index": 2500,
+          "shared_grad_jepa": 0.060107067227363586,
+          "shared_grad_anchors": 0.6693371534347534,
+          "shared_grad_keep": 0.0379147008061409,
+          "grad_norm_all_parameters": 1.2717590648607977,
+          "anchors_over_jepa": 11.135747996203007,
+          "keep_over_jepa": 0.6307860715067517,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 3001,
+          "update_index": 3000,
+          "shared_grad_jepa": 0.04427000507712364,
+          "shared_grad_anchors": 0.39475712180137634,
+          "shared_grad_keep": 0.08698857575654984,
+          "grad_norm_all_parameters": 0.6643106190978748,
+          "anchors_over_jepa": 8.917033578687471,
+          "keep_over_jepa": 1.9649551791332605,
+          "all_parameter_gradient_clipped": false
+        },
+        {
+          "log_step": 3501,
+          "update_index": 3500,
+          "shared_grad_jepa": 0.02598179318010807,
+          "shared_grad_anchors": 0.4707205295562744,
+          "shared_grad_keep": 0.021590782329440117,
+          "grad_norm_all_parameters": 0.7674841112409334,
+          "anchors_over_jepa": 18.117322630243354,
+          "keep_over_jepa": 0.8309966205862281,
+          "all_parameter_gradient_clipped": false
+        }
+      ]
+    },
+    "B_seed1": {
+      "weights": {
+        "jepa": 1.0,
+        "anchors": 0.2,
+        "keep": 0.05
+      },
+      "provenance": {
+        "metrics_full_sha256_reported_by_exporter": "2e9f21ffcc7ae36e31fbd2c58dc685f964d5128596235b1f00174ada6373a972",
+        "metrics_full_lines_reported_by_exporter": 4000,
+        "sparse_export_sha256": "b1baa2d2af796d8dca37801ba707d9c8370aa8cdc73554adbc706ac30275e681",
+        "sparse_export_lines": 8,
+        "config_sha256": "281af13fc23ca9c091bcea2e80e2eb0b32d55d18eacffc593a3874da9f923e7a",
+        "run_provenance_sha256": "2fa80c82ef7fb5556f2f0e201f6521798d92e26511c0b074c832e0fe3fc69704",
+        "source_commit": "69fa2da8757b322ea74875b4e9d104a89bbf6d5d",
+        "checkpoint_sha256": "27b3a819c35f798992b2bcddf7f48998be03d9dc4bc113b79e5170c199577a29"
+      },
+      "status": "complete_sparse_diagnostics",
+      "diagnostic_count": 8,
+      "finite_nonnegative": true,
+      "coverage": {
+        "logged_updates": 4000,
+        "sampled_update_indices": [
+          0,
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500
+        ],
+        "fraction": 0.002
+      },
+      "norms_and_ratios": {
+        "shared_grad_jepa": {
+          "n": 8,
+          "median": 0.07126900181174278,
+          "min": 0.04662347584962845,
+          "max": 0.34246891736984253
+        },
+        "shared_grad_anchors": {
+          "n": 8,
+          "median": 0.7460270524024963,
+          "min": 0.4726801812648773,
+          "max": 35.71499252319336
+        },
+        "shared_grad_keep": {
+          "n": 8,
+          "median": 0.059913186356425285,
+          "min": 0.04139299690723419,
+          "max": 0.2779615819454193
+        },
+        "anchors_over_jepa": {
+          "n": 8,
+          "median": 9.681134064976364,
+          "min": 2.53169819037798,
+          "max": 153.72564082747084
+        },
+        "keep_over_jepa": {
+          "n": 8,
+          "median": 0.9603676945176104,
+          "min": 0.13339698990980173,
+          "max": 1.6547521517424564
+        },
+        "grad_norm_all_parameters": {
+          "n": 8,
+          "median": 1.3317235841827353,
+          "min": 0.9058068476559249,
+          "max": 40.84819694387441
+        }
+      },
+      "clipping_at_diagnostic_samples": {
+        "threshold": 1.0,
+        "count": 7,
+        "fraction": 0.875,
+        "log_steps": [
+          1,
+          501,
+          1001,
+          1501,
+          2501,
+          3001,
+          3501
+        ]
+      },
+      "samples": [
+        {
+          "log_step": 1,
+          "update_index": 0,
+          "shared_grad_jepa": 0.23232944309711456,
+          "shared_grad_anchors": 35.71499252319336,
+          "shared_grad_keep": 0.2779615819454193,
+          "grad_norm_all_parameters": 40.84819694387441,
+          "anchors_over_jepa": 153.72564082747084,
+          "keep_over_jepa": 1.1964113469218378,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 501,
+          "update_index": 500,
+          "shared_grad_jepa": 0.34246891736984253,
+          "shared_grad_anchors": 0.8670279383659363,
+          "shared_grad_keep": 0.0456843227148056,
+          "grad_norm_all_parameters": 1.4266306837484228,
+          "anchors_over_jepa": 2.53169819037798,
+          "keep_over_jepa": 0.13339698990980173,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 1001,
+          "update_index": 1000,
+          "shared_grad_jepa": 0.07424146682024002,
+          "shared_grad_anchors": 0.6697226762771606,
+          "shared_grad_keep": 0.08114786446094513,
+          "grad_norm_all_parameters": 1.236816484617048,
+          "anchors_over_jepa": 9.020870747324432,
+          "keep_over_jepa": 1.0930261474686038,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 1501,
+          "update_index": 1500,
+          "shared_grad_jepa": 0.04921408370137215,
+          "shared_grad_anchors": 0.5437384843826294,
+          "shared_grad_keep": 0.0814371109008789,
+          "grad_norm_all_parameters": 1.0926728263507564,
+          "anchors_over_jepa": 11.048432551990587,
+          "keep_over_jepa": 1.6547521517424564,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 2001,
+          "update_index": 2000,
+          "shared_grad_jepa": 0.06829653680324554,
+          "shared_grad_anchors": 0.4726801812648773,
+          "shared_grad_keep": 0.05652967467904091,
+          "grad_norm_all_parameters": 0.9058068476559249,
+          "anchors_over_jepa": 6.920997804421833,
+          "keep_over_jepa": 0.827709241566617,
+          "all_parameter_gradient_clipped": false
+        },
+        {
+          "log_step": 2501,
+          "update_index": 2500,
+          "shared_grad_jepa": 0.06415718793869019,
+          "shared_grad_anchors": 0.5459809899330139,
+          "shared_grad_keep": 0.04139299690723419,
+          "grad_norm_all_parameters": 1.6855152695322009,
+          "anchors_over_jepa": 8.510051756862593,
+          "keep_over_jepa": 0.6451809725013216,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 3001,
+          "update_index": 3000,
+          "shared_grad_jepa": 0.08027095347642899,
+          "shared_grad_anchors": 0.8301138281822205,
+          "shared_grad_keep": 0.05135071650147438,
+          "grad_norm_all_parameters": 1.2228026889354817,
+          "anchors_over_jepa": 10.341397382628296,
+          "keep_over_jepa": 0.6397172859863084,
+          "all_parameter_gradient_clipped": true
+        },
+        {
+          "log_step": 3501,
+          "update_index": 3500,
+          "shared_grad_jepa": 0.04662347584962845,
+          "shared_grad_anchors": 0.822331428527832,
+          "shared_grad_keep": 0.06329669803380966,
+          "grad_norm_all_parameters": 1.9324533751093749,
+          "anchors_over_jepa": 17.637711765206912,
+          "keep_over_jepa": 1.357614310823934,
+          "all_parameter_gradient_clipped": true
+        }
+      ]
+    }
+  },
+  "pooled_B_descriptive": {
+    "norms_and_ratios": {
+      "shared_grad_jepa": {
+        "n": 16,
+        "median": 0.06946954876184464,
+        "min": 0.02598179318010807,
+        "max": 0.34246891736984253
+      },
+      "shared_grad_anchors": {
+        "n": 16,
+        "median": 0.631578803062439,
+        "min": 0.39475712180137634,
+        "max": 35.71499252319336
+      },
+      "shared_grad_keep": {
+        "n": 16,
+        "median": 0.07930375263094902,
+        "min": 0.021590782329440117,
+        "max": 0.6465944051742554
+      },
+      "anchors_over_jepa": {
+        "n": 16,
+        "median": 8.968952163005952,
+        "min": 2.53169819037798,
+        "max": 205.31592926195248
+      },
+      "keep_over_jepa": {
+        "n": 16,
+        "median": 1.144718747195221,
+        "min": 0.13339698990980173,
+        "max": 4.085820253616764
+      },
+      "grad_norm_all_parameters": {
+        "n": 16,
+        "median": 1.2298095867762648,
+        "min": 0.6643106190978748,
+        "max": 40.84819694387441
+      }
+    },
+    "clipping_at_diagnostic_samples": {
+      "threshold": 1.0,
+      "count": 12,
+      "fraction": 0.75,
+      "log_steps": [
+        1,
+        501,
+        1001,
+        1501,
+        2501,
+        1,
+        501,
+        1001,
+        1501,
+        2501,
+        3001,
+        3501
+      ]
+    }
+  },
+  "conventions": {
+    "shared_parameters": [
+      "tokenizer",
+      "identity",
+      "local",
+      "pool",
+      "backbone"
+    ],
+    "jepa": "norm(grad(jepa_loss))",
+    "anchors": "norm(grad((total - jepa) - keep_weight * keep_loss)); anchor_weight already included",
+    "keep": "norm(grad(keep_weight * keep_loss)); do not multiply by keep_weight again",
+    "step": "log step 501 reports update index 500; norms measured before backward/clipping/optimizer.step",
+    "grad_norm": "Pre-clipping norm of ALL trainable parameters, as returned by clip_grad_norm_"
+  },
+  "limits": [
+    "Only eight batches per B seed (0.2% of its 4000 updates); no A component-gradient observations.",
+    "Norms do not add; ratios are not percentage contributions or evidence about gradient alignment/conflict.",
+    "The shared-encoder norms exclude the decoder and prediction heads; grad_norm includes them.",
+    "Clipping rates here describe diagnostic samples only, not all 4000 updates.",
+    "Pre-clipping gradient norms do not determine AdamW parameter updates, moments, or weight decay.",
+    "Sparse measurements cannot establish dominance at every update, causal effects, or downstream utility.",
+    "Full-log hashes/counts are reported by the read-only exporter; only sparse exports and metadata are local."
+  ]
+}
