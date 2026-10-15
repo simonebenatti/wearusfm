@@ -22,7 +22,7 @@ lock; `Registry.transition` lo verifica (stato e lunghezza della storia uguali a
 altrimenti non scrive. La riconciliazione prende il lock PRIMA di leggere lo stato. Il ledger, condiviso fra tutti i job, ha un lock suo
 (`flock` esclusivo sul file aperto in append), distinto dai lock per job: intestazione solo se il file e' vuoto sotto quel lock.
 
-  python3 scripts/submit_job.py --id ID --agente claude --campagna NOME --gpu-ore 0.5 [--dopo ID_PRECEDENTE] -- <argomenti di sbatch>
+  python3 scripts/submit_job.py --id ID --agente claude --campagna NOME --gpu-ore 0.5 [--dopo ID_PRECEDENTE ...] -- <argomenti di sbatch>
   python3 scripts/submit_job.py --id ID ... --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=...,CAMPAIGN_SHA=...
   python3 scripts/submit_job.py --riconcilia ID
   python3 scripts/submit_job.py --stato [ID]
@@ -202,11 +202,14 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
     if args.gpu_ore is None or args.gpu_ore < 0:
         raise SystemExit("--gpu-ore (stima dichiarata) e' obbligatorio")
     dep = []
-    if args.dopo:  # lettura senza lock di un ALTRO job: basta perche' `sottomesso` e' finale (TRANSIZIONI) e qui non si scrive
-        prev = reg.read(args.dopo)
-        if not prev or prev.get("stato") != "sottomesso" or not prev.get("job_slurm"):
-            raise SystemExit(f"--dopo {args.dopo}: non e' un job sottomesso con ID SLURM noto")
-        dep = [f"--dependency=afterok:{prev['job_slurm']}"]
+    if args.dopo:  # lettura senza lock di ALTRI job: basta perche' `sottomesso` e' finale (TRANSIZIONI) e qui non si scrive
+        slurm_ids = []
+        for d in args.dopo:  # piu' --dopo (catena di valutazione, 15/10/2026): afterok su tutti
+            prev = reg.read(d)
+            if not prev or prev.get("stato") != "sottomesso" or not prev.get("job_slurm"):
+                raise SystemExit(f"--dopo {d}: non e' un job sottomesso con ID SLURM noto")
+            slurm_ids.append(str(prev["job_slurm"]))
+        dep = [f"--dependency=afterok:{':'.join(slurm_ids)}"]
     script_text = None
     if args.script_stdin:  # lo script locale (versionato) va a sbatch su stdin: non serve che esista sul cluster
         script_text = args.script_stdin.read_text()
@@ -217,7 +220,8 @@ def submit(reg: Registry, args, ssh: list[str]) -> int:
         full = ["sbatch", "--parsable", f"--job-name={args.id}", f"--comment=wearusfm:{args.id}", *dep, *sbatch_args]
         base = previous or {"id": args.id, "creato": now()}
         state = {**base, "id": args.id, "agente": args.agente, "campagna": args.campagna, "gpu_ore_stimate": args.gpu_ore,
-                 "codice_sha": code_sha_from(sbatch_args), "sbatch": full, "dopo": args.dopo,
+                 "codice_sha": code_sha_from(sbatch_args), "sbatch": full,
+                 "dopo": args.dopo[0] if args.dopo and len(args.dopo) == 1 else args.dopo,
                  "script_stdin": str(args.script_stdin) if args.script_stdin else None,
                  "script_stdin_sha256": hashlib.sha256(script_text.encode()).hexdigest() if script_text is not None else None}
         state = reg.transition(args.id, state, "prenotato" if previous is None else "prenotato_di_nuovo")
@@ -298,7 +302,7 @@ def main(argv=None) -> int:
     ap.add_argument("--agente", choices=("claude", "gpt", "simone"))
     ap.add_argument("--campagna")
     ap.add_argument("--gpu-ore", type=float, default=None, help="stima dichiarata nel preventivo (0 per i job CPU)")
-    ap.add_argument("--dopo", help="ID logico di un job gia' sottomesso: dipendenza afterok")
+    ap.add_argument("--dopo", action="append", help="ID logico di un job gia' sottomesso: dipendenza afterok (ripetibile: afterok su tutti)")
     ap.add_argument("--script-stdin", type=Path, help="script locale da passare a sbatch su stdin (es. campaign_checkout.sbatch)")
     ap.add_argument("--dopo-rifiuto", action="store_true", help="risottomette un ID rifiutato da sbatch (dopo aver corretto la causa)")
     ap.add_argument("--dopo-assenza-verificata", action="store_true",

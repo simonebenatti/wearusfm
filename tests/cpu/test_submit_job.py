@@ -316,3 +316,15 @@ def test_interrupted_submission_is_reconciled_as_ambiguous(env, monkeypatch):
     s = state("prova_01")
     assert s["stato"] == "sottomesso" and s["job_slurm"] == 12345
     assert [h["stato"] for h in s["storia"]][-2:] == ["ambiguo", "sottomesso"]
+
+
+def test_several_dependencies_become_one_afterok(env):
+    """Catena di valutazione (15/10/2026): un confronto dopo piu' sonde -> --dependency=afterok:a:b con gli ID SLURM di tutti."""
+    run, state, n_calls, tmp = env
+    for i in ("dep_a", "dep_b"):
+        assert run("ok", "--id", i, "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0", *SB) == 0
+    assert run("ok", "--id", "dopo_due", "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0", "--dopo", "dep_a", "--dopo", "dep_b", *SB) == 0
+    remote = (tmp / "calls.txt").read_text().splitlines()[-1]
+    assert "--dependency=afterok:12345:12345" in remote and state("dopo_due")["dopo"] == ["dep_a", "dep_b"]
+    with pytest.raises(SystemExit, match="mai_visto"):
+        run("ok", "--id", "dopo_tre", "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0", "--dopo", "dep_a", "--dopo", "mai_visto", *SB)
