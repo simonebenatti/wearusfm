@@ -3261,3 +3261,12 @@ limite per utente o per account. `boost_qos_lprod`: 4 giorni, al massimo 8 nodi 
 `MaxNodePerAccount` del 14/10. `boost_qos_dbg`: 30 minuti, 2 job sottomessi per utente, 8 nodi per utente, 128 nodi in tutto. **Quindi gli 8
 nodi in parallelo autorizzati da Simone sono possibili sulla QoS `normal`**; il vincolo pratico e' la coda (priorita' dell'account, consumata
 anche dagli altri utenti: 2.774 GPU-ora in 30 ore il 14/10) e il budget dell'account, non un tetto di SLURM.
+
+**Documentazione CINECA sui limiti della Booster (fact-checker, 15/10/2026; citazioni raccolte, non ancora riverificate con
+`check_quotes.py`).** https://docs.hpc.cineca.it/hpc/leonardo.html, tabella Booster: `normal` «Max = 64 nodes» per job, «24:00:00», nessun
+limite per utente; `boost_qos_lprod` «Max = 8 nodes», «4-00:00:00», «Max resources per Project Account.»; `boost_qos_dbg` «Max = 8 nodes»,
+«00:30:00», «Max 2 job running and/or pending per User Account.»: coerente con `sacctmgr`. https://docs.hpc.cineca.it/hpc/hpc_intro.html,
+«Budget Linearization»: «To each Project Account is assigned a monthly quota (MQ) calculated as:» «MQ = TB/NM»; «As the budget is consumed,
+submitted jobs progressively lose priority until the monthly quota is exhausted.» **Conseguenza per la finestra 1:** gli 8 nodi sono
+ammessi; la velocita' della coda dipende dalla quota mensile del progetto, condivisa da 17 utenti (il 14/10 un altro utente ha consumato
+2.655 GPU-ora in 30 ore). Serve il saldo del progetto (`saldo -b`) prima di firmare il calendario.

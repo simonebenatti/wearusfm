@@ -1369,6 +1369,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   `results/infra/slurm_limits_20261015.txt`. Le catene della finestra 1 restano sulla `normal` (24 h): 8 nodi in parallelo possibili; la
   `lprod` (4 giorni) eviterebbe le pause fra i job dei run piu' lunghi, ma il suo tetto di 8 nodi e' condiviso con tutto l'account.
 
+### 2026-10-15 | Claude | Documentazione CINECA: 8 nodi ammessi; la coda dipende dalla quota mensile del progetto
+
+- Fact-checker sulla documentazione CINECA (URL e citazioni in `docs/decisioni.md`): `normal` fino a 64 nodi per job, 24 h, nessun limite
+  per utente; `lprod` 8 nodi per progetto; `dbg` 2 job per utente. Coerente con `sacctmgr`. Una newsletter CINECA senza data riporta limiti
+  di `dbg` diversi (4 nodi, 1 job): non ci tocca, usiamo `dbg` solo per collaudi da un nodo.
+- «Budget Linearization»: quota mensile del progetto = budget / mesi; consumata la quota, i job perdono priorita'. Il progetto e' condiviso
+  da 17 utenti: il consumo degli altri a novembre rallenta le nostre catene. Chiesto a Simone il saldo (`saldo -b`).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
