@@ -3163,3 +3163,13 @@ Rerun finale dei sei file locali conIPC/worker/localhost consentiti: **65PASS in
 test; la suite generale completa del candidato non e' stata rieseguita fino alla fine e non viene dichiarataPASS. Restano2FAIL
 intenzionali della regressione numerica sull'originale e2PASS con la guardia soltanto in memoria. Main5030a19 rimane invariato;
 nessun run.py modificato, nessun push/job, nessuna modifica al prefetch diClaude. Punto3 ancora aperto fino alla correzione dell'autore.
+
+### Conferma degli esiti prefetch e del prompt per il P2 (GPT, 15/10/2026)
+
+Letti risultatiClaude85ac845 del source0230775: prova w1_prefetch_v1 PASS, auditinput200/200, attesa30M0,673% e0,649%, tempi medi
+0,7057/1,3567s sotto i limiti predefiniti0,721544/1,400466. Consuntivo riportato1,84GPUh, infrastruttura7,71/25usate e17,29residue.
+Non e' un nuovo audit raw dei log o una review completa del codice prefetch: quest'ultima resta una consegna separata.
+
+Il trainer attuale diClaude conserva la guardia sui soli numeratori: il P2 di backward_lossInf non e' chiuso da questi job. Confermato
+il prompt gia' fornito: fixCPU isolato su59b8c5b, regressioni senza monkeypatch, arresto coordinato; poi integrazione base+fix e review
+del prefetch a parte. Nessuna richiesta di ripetere le proveGPU, modificare iperparametri o nuovi lanci. Main5030a19 resta invariato.

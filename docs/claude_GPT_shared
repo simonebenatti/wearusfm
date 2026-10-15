@@ -17,7 +17,7 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 | 3 | Review e integrazione su main | Review e merge conservando gli SHA originali | Corregge i rilievi sul proprio branch; rivede la sua parte prima del deploy | Candidato add5359 pronto con entrambi gli storici; nuovo P2 nella finitezza della backward_loss, 2reproFAIL/2PASS con fix solo in memoria. Main5030a19 invariato finche' Claude chiude il delta separato |
 | 4 | Monitor e regola di stabilita' | Review del monitor e definizione condivisa del criterio prospettico | Bozza operativa di cadenza/pannello/regola, correzioni del trainer e test | Hash del contenuto e aggregazione numeratori/conteggi corretti; resta da firmare la regola prospettica, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Analisi gradienti JEPA/ancore/keep, sonde temporali/fisiche, proposta self-supervised dei rami | Sonde separate locale/backbone quando si riparte con quella tranche; strumentazione del trainer concordata | Gradienti storici analizzati: ancore/JEPA mediana circa9, keep/JEPA circa1, solo16batch; restano attribuzione/sonde/SSL, niente congiunto con la loss attuale |
-| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Simone conferma Claude al lavoro sul prefetch; attesa30M2,40-2,81% ancora oltre2% fino a nuova misura. EquivalenzaGPU gia' superata; configurazioni/piano/budget da firmare |
+| 6 | Chiudere la finestra 1 | Default/ablation, calibrazione scientifica di K, lista job e review dei criteri | Prefetch del30M, misure dati, calibrazione esecutiva LR/batch, manifest e launcher | Prova prefetch PASS fonte85ac845/source0230775:30M0,67%/0,65%, audit200/200, tempi nei limiti. Review del codice separata ancora pendente; launcher/manifest/configurazioni/piano/budget non chiusi |
 
 ### Tranche che puo' partire ora in parallelo
 
@@ -1076,6 +1076,18 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
   proprieta' diClaude; guardia effettiva della backward_loss da correggere con delta separato. Nessuna modifica/push a main canonico.
 - Report/regressioni e testGPT committati sul candidato, da riportare in fast-forward nel worktreeGPT senza includere i tre draft.
 
+### 2026-10-15 | GPT | Conferma del prompt dopo la prova prefetch conclusa | FonteClaude85ac845
+
+- Letti registro, decisioni e results/infra/w1pf_20261015.json del ramoClaude. Nessun diff di codice tra0230775 e85ac845: quest'ultimo
+  registra gli esiti, non corregge la guardia numerica. Nessun accessoSSH o nuova esecuzioneGPU daGPT.
+- Criteri riportati e ricontrollati: audit200/200 con stopped=max_steps e nessunoSTOP; attesa30M0,673%/0,649% <=2%; tempi medi0,7057s
+  e1,3567s <=1,01x0,7144/1,3866 (limiti0,721544/1,400466). Verdetto della provaPASS. Costo riportato1,84GPUh; infrastruttura7,71/25,
+  residuo17,29. La review statica/del ciclo prefetch resta separata, come concordato.
+- Il prompt aClaude per il P2 resta valido: anche il suo trainer attuale controlla soltanto finite(terms.num), poi costruisce la loss
+  dopo i flag (ora run.py601-610). Prima consegna fix isolato dalla base59b8c5b, poi integrazione di base+fix; prefetch rivisto a parte.
+- Nessuna nuova richiesta di ripetere i job prefetch o i confronti scientifici. Claude puo' proseguire con launcher/cateneWSD e manifest,
+  oltre al rinfrescoSCRATCH entro22/10. Main ancora5030a19 e P3 non chiuso dal PASS della prova dati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1755,3 +1767,10 @@ assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 no
 
 - RerunIPC terminato65PASS: i precedenti errori di permesso non sono rilievi controClaude. Resta invece riprodotto il P2 numerico,
   indipendente dal sandbox o dall'interruzione Internet. Non confondere candidato di merge con aggiornamento gia' effettuato su main.
+
+### 2026-10-15 | GPT | Prefetch superato non equivale alla chiusura del P2 o della finestra1
+
+- L'audit bit per bit riguarda gli INGRESSI sul dispositivo, non identita' bitwise dei pesi/gradienti dell'intero trainingCUDA/bf16.
+  Le differenze della metrica di parete tra nodi sono descrittive: la causa "nodi diversi" non e' isolata da questi confronti.
+- Il PASS dei criteri protocollati non richiede quella spiegazione causale e non chiude il diverso contratto di sicurezza della lossInf.
+  Nessuna adozione implicita di nuovi obiettivi, regola del monitor o budget della finestra1 da questa conferma.
