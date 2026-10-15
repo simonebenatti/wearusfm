@@ -1,288 +1,115 @@
 <!doctype html>
-<html lang="it">
-<head>
-<meta charset="utf-8">
-<title>Catena JEPA, parte 7</title>
-<meta name="viewport" content="width=1600">
-<!-- Versione corretta dello schema «WearUsFM – Catena di processing (Parte 7)», verificata sul codice del branch
-     worktree-claude-training-engine (14/10/2026): model/*.py, training/masking.py, training/jepa.py, training/run.py. -->
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=1600">
+<title>WearUsFM — catena di processing aggiornata al 15 ottobre 2026</title>
+<!-- Diagramma del codice integrato dc0c3b4. Figure illustrative, non dati reali.
+     Aggiornare questa sorgente e rigenerare il PNG, non ritoccare il raster. -->
 <style>
-  :root {
-    --ink: #1d2433; --muted: #4a5568;
-    --c0: #e8f2fc; --b0: #9cc5ec; --c1: #ebf6ea; --b1: #a6d4a3; --c2: #fdf6dc; --b2: #efcf73; --c3: #f1ecfa; --b3: #c3b2e8;
-    --c4: #fdecee; --b4: #eea5ae; --c5: #e9f6ec; --b5: #98cfa5; --c6: #e8f0fb; --b6: #a6c2ea;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #ffffff; color: var(--ink); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-  .page { width: 1600px; height: 1112px; padding: 12px 14px; position: relative; }
-  h1 { margin: 0; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: -0.3px; }
-  .sub { text-align: center; font-size: 19px; margin: 2px 0 10px; color: #2d3748; }
-  .sub small { font-size: 13px; color: var(--muted); }
-  .cols { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 590px; }
-  .col { border-radius: 12px; border: 1.5px solid; padding: 8px 9px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
-  .col h2 { margin: 0 0 2px; font-size: 18px; text-align: center; line-height: 1.15; font-weight: 800; }
-  .box { background: rgba(255,255,255,.7); border: 1.5px solid; border-radius: 9px; padding: 5px 7px; font-size: 13.5px; line-height: 1.3; text-align: center; }
-  .box b { font-size: 14px; }
-  .t { font-size: 13.5px; line-height: 1.34; }
-  .t.c { text-align: center; }
-  .m { font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif; font-style: italic; font-size: 15px; }
-  .m sup { font-size: 10px; }
-  .eq { text-align: center; font-size: 14px; }
-  .small { font-size: 12.2px; color: var(--muted); line-height: 1.3; }
-  .arrow { text-align: center; font-size: 18px; line-height: 1; color: #333; }
-  ul { margin: 0; padding-left: 15px; } li { margin: 1px 0; }
-  .flow { margin-top: 10px; border: 1.5px solid #c9b98f; border-radius: 16px; height: 200px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; background: #fffdf8; }
-  .fbox { border-radius: 12px; border: 2px solid; padding: 8px 8px; text-align: center; font-size: 12.5px; line-height: 1.3; }
-  .fbox b { font-size: 16px; display: block; margin-bottom: 2px; }
-  .farrow { font-size: 22px; color: #333; }
-  .bottom { display: grid; grid-template-columns: 1fr 1fr 1.15fr 1.15fr 1.05fr; gap: 8px; margin-top: 10px; height: 205px; }
-  .bp { border-radius: 12px; padding: 8px 10px; font-size: 13.2px; line-height: 1.32; overflow: hidden; }
-  .bp h3 { margin: 0 0 4px; font-size: 15px; }
-  .tag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 6px; background: #fff3c4; border: 1px solid #e6c65a; margin-left: 3px; }
-  .new { color: #b42318; font-weight: 700; }
-  svg { display: block; margin: 0 auto; flex-shrink: 0; }
-  .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 3px -1px 6px; }
-</style>
-</head>
-<body>
-<div class="page">
-  <h1>WearUsFM – Catena di processing (Parte 7: Modello JEPA e training)</h1>
-  <div class="sub">Con dimensioni dei dati, tensori e principali iperparametri <small>· versione corretta, verificata sul codice (14/10/2026)</small></div>
+:root{--ink:#1d293b;--muted:#4b5a70;--line:#c4d2e2;--blue:#e9f2fd;--green:#edf7ed;--purple:#f1ebfb;--pink:#ffedf0;--yellow:#fff5dc;--teal:#e9f6f4}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:"Helvetica Neue",Arial,sans-serif}.page{width:1600px;padding:20px}
+h1{font-size:30px;text-align:center;letter-spacing:-.5px;margin:0}.subtitle{text-align:center;font-size:16px;color:var(--muted);margin:6px 0 12px}
+.legend{text-align:center;font-size:13px;color:var(--muted);margin-bottom:15px}.legend span{display:inline-block;width:23px;border-top:2px dashed #b48745;margin:0 5px 3px 22px}
+.cols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.col{border:1px solid var(--line);border-radius:12px;padding:12px 10px;min-height:530px;display:flex;flex-direction:column;gap:10px}
+h2{font-size:18px;line-height:1.2;text-align:center;margin:0 0 3px;min-height:43px}.box{background:#ffffffb0;border:1px solid #ffffffc0;border-radius:8px;padding:8px 6px;text-align:center;font-size:14px;line-height:1.4}.box strong{font-size:15px}
+.body{font-size:14px;line-height:1.45}.small{font-size:12.5px;color:var(--muted);line-height:1.4}.center{text-align:center}.dim{text-align:center;font:18px Georgia,serif}.down{text-align:center;font-size:22px;line-height:1;color:#65748b}.note{font-size:12.5px;line-height:1.4;border-top:1px solid #00000012;padding-top:9px;margin-top:auto}
+svg{display:block;max-width:100%;margin:0 auto}.panel{border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-top:12px}.panel h3{font-size:18px;margin:0 0 11px}.panel h3 small{font-size:13px;font-weight:400;color:var(--muted)}
+.dual{display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:15px}.paths{display:flex;flex-direction:column;gap:7px}.path{display:grid;grid-template-columns:125px 1fr 140px 110px;gap:8px}.path>div{border:1px solid #c2d2e5;border-radius:8px;background:white;padding:9px 6px;text-align:center;font-size:13px;line-height:1.4}.path .student{background:#dfeafd}.path .teacher{background:#fceab9}.ema{font-size:13px;text-align:center;color:var(--muted);padding-left:125px}.loss{background:white;border:1px solid #bdccdf;border-radius:9px;padding:12px;font-size:14px;line-height:1.55}.loss>b{font-size:16px}
+.readout{background:#fffcf5;border-color:#d8c39a}.readout-grid{display:grid;grid-template-columns:125px minmax(0,1fr) 295px;gap:13px}.source{display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.5;border-right:1px solid #e5d7bd}.lanes{display:flex;flex-direction:column;gap:8px}.lane{display:grid;grid-template-columns:125px 1fr 130px;gap:8px;align-items:center;border-radius:8px;padding:8px 10px;font-size:13.5px;line-height:1.4}.lane.raw{background:#e8f0fc}.lane.optional{border:1px dashed #b48745}.lane .out{text-align:center;font:17px Georgia,serif}.fusion{background:#fff6e2;border:1px dashed #b48745;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.45}.fusion>b{font-size:16px}.objectives{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;margin-top:10px;padding-top:9px;border-top:1px solid #e5d7bd;font-size:13px;line-height:1.5}.status{font-size:12.6px;margin-top:8px;color:#665438}
+.bottom{display:grid;grid-template-columns:.95fr 1.2fr 1.2fr 1.15fr;gap:10px;margin-top:12px}.bottom>div{border:1px solid var(--line);border-radius:10px;padding:12px}.bottom h3{font-size:16px;margin:0 0 7px}.bottom ul{margin:0;padding-left:16px;font-size:13px;line-height:1.5}.bottom li+li{margin-top:3px}table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.6}td,th{text-align:left;padding:2px 3px;border-bottom:1px solid #0000000c}.footer{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:11px;font-size:11.8px;line-height:1.4;color:var(--muted)}
+@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body><main class="page">
+<h1>WearUsFM — Catena di processing, modello JEPA e training</h1>
+<p class="subtitle">Codice integrato <b>dc0c3b4</b> · 15/10/2026 · dimensioni, flussi e stato delle estensioni</p>
+<div class="legend">Percorso principale a linea continua <span></span> Tratteggio: opzioni sperimentali, non promosse a default</div>
 
-  <div class="cols">
-    <!-- 0 -->
-    <div class="col" style="background:var(--c0);border-color:var(--b0)">
-      <h2>0. Dati raw<br>(finestra)</h2>
-      <div class="t c"><b>sEMG multicanale</b><br><span class="m">x ∈ ℝ<sup>C×T</sup></span></div>
-      <svg id="raw" width="190" height="150"></svg>
-      <div class="t">
-        <b>C = 8 … 256</b> canali<br><span class="small">(bracciali Myo 8; griglie HD fino a 256, es. Hyser)</span><br>
-        <b>fs</b> = nativa del dataset<br><span class="small">(da 200 Hz, Myo, a 2 kHz e oltre)</span><br>
-        <b>Durata finestra: 1–4 s</b><br><span class="small">(inizio su multipli di 200 ms dalla prova)</span><br>
-        <span class="m">T = fs × durata</span><br>es. 2 kHz, 4 s → T = 8 000
-      </div>
-    </div>
-    <!-- 1 -->
-    <div class="col" style="background:var(--c1);border-color:var(--b1)">
-      <h2>1. Preprocessing</h2>
-      <div class="box" style="border-color:var(--b1)"><b>Passa-banda 20–450 Hz</b><br><span class="small">(adattato alla Nyquist)</span></div>
-      <div class="box" style="border-color:var(--b1)"><b>Notch 50 e 60 Hz</b><br><span class="small">(sempre entrambi)</span></div>
-      <div class="box" style="border-color:var(--b1)"><b>Scala per sessione</b><br><span class="small">un numero: mediana dei MAD dei canali</span></div>
-      <div class="box" style="border-color:var(--b1)"><b>Canali QC</b> (qc_valid)<br><span class="small">esclusi da chiavi, maschere e perdite</span></div>
-      <div class="box" style="border-color:var(--b1)"><b>Montaggi virtuali</b> <span class="new">(D6a)</span><br><span class="small">dalle griglie HD (classe C, p = 0,5): sotto-griglie 4×8, 8×4, 4×4, anche bipolari</span></div>
-      <div class="arrow">↓</div>
-      <div class="eq"><span class="m">x′ ∈ ℝ<sup>C×T</sup></span><br><span class="small">stessa forma (o il montaggio virtuale)</span></div>
-    </div>
-    <!-- 2 -->
-    <div class="col" style="background:var(--c2);border-color:var(--b2)">
-      <h2>2. Tokenizzazione<br>a patch</h2>
-      <div class="t c">Patch da <b>25 ms</b>, non sovrapposte<br>(passo = 25 ms)</div>
-      <svg id="patch" width="190" height="62"></svg>
-      <div class="t c">Numero di patch:<br><span class="m">P = ⌊T / (fs × 0,025)⌋</span><br>es. 4 s → <b>P = 160</b></div>
-      <div class="box" style="border-color:#e59aa3;background:#fde7ea"><b>Front-end a kernel continui</b><br>
-        <span class="small">24 Fourier + 24 spline + 16 SIREN = <b>64</b> uscite per patch; stessi pesi a ogni fs (fattore Δt, anti-aliasing); contesto ±100 ms</span></div>
-      <div class="arrow">↓ proiezione lineare</div>
-      <div class="eq"><span class="m">token ∈ ℝ<sup>C×P×D</sup></span><br>
-        <b>D</b> = 384 · 640 · 896<br><span class="small">(preset 30M · 100M · 300M; nessun D<sub>p</sub> separato)</span></div>
-    </div>
-    <!-- 3 -->
-    <div class="col" style="background:var(--c3);border-color:var(--b3)">
-      <h2>3. Identità di canale<br>e mascheramento</h2>
-      <div class="box" style="border-color:var(--b3)"><b>Identità di canale</b> (sommata al token)<br>
-        <span class="small">anatomia gerarchica (regione, compartimenti, muscolo) + lato + topologia + posizione nel sensore</span></div>
-      <div class="box" style="border-color:var(--b3)"><b>Tempo:</b> nessun encoding assoluto<br><span class="small">RoPE relativo nel backbone e nel decoder; patch nascoste azzerate prima del front-end</span></div>
-      <div class="box" style="border-color:var(--b3)"><b>Masking (D10, firmata)</b>: 50% dei token<br>
-        <span class="small"><b>tubi</b>: intervallo su un gruppo di canali vicini · <b>spaziale</b>: canali per tutta la finestra · <b>slab</b>: intervallo su <u>tutti</u> i canali</span></div>
-      <svg id="mask" width="196" height="118"></svg>
-      <div class="legend small" style="text-align:center"><span style="background:#bfdbfe"></span>visibile<span style="background:#f28b95"></span>tubo<span style="background:#f6ad55"></span>spaziale<br><span style="background:#f7e27b"></span>slab (solo con l'ancora RVQ: spento nella finestra 1)</div>
-      
-    </div>
-    <!-- 4 -->
-    <div class="col" style="background:var(--c4);border-color:var(--b4)">
-      <h2>4. Encoder locale<br>(fra canali vicini)</h2>
-      <div class="box" style="border-color:var(--b4)"><b>Attenzione fra canali</b><br><span class="small">allo stesso istante, ogni canale sui suoi 8 vicini</span></div>
-      <div class="box" style="border-color:var(--b4)"><b>Bias geometrico</b><br><span class="small">−distanza + basi apprese sullo spostamento con segno (anello, griglia)</span></div>
-      <div class="box" style="border-color:var(--b4)"><b>Canali QC e token nascosti</b><br><span class="small">fuori dalle chiavi</span></div>
-      <div class="arrow">↓</div>
-      <div class="eq"><span class="m">h<sub>local</sub> ∈ ℝ<sup>C×P×D</sup></span><br><span class="small">2 · 2 · 3 livelli (30M · 100M · 300M)</span></div>
-      <div class="small" style="text-align:center">Feature locali (esempio)</div>
-      <svg id="hloc" width="190" height="96"></svg>
-      <div class="small" style="text-align:center">P patch (tempo) →</div>
-    </div>
-    <!-- 5 -->
-    <div class="col" style="background:var(--c5);border-color:var(--b5)">
-      <h2>5. Perceiver /<br>Backbone</h2>
-      <div class="box" style="border-color:var(--b5)"><b>Perceiver</b>: K = 64 latenti<br><span class="small">per istante, cross-attention sui token visibili dei canali (C → K)</span></div>
-      <div class="box" style="border-color:var(--b5)"><b>Backbone temporale</b><br><span class="small">blocchi: tempo (RoPE) → latenti → MLP<br>8 · 12 · 18 blocchi</span></div>
-      <div class="arrow">↓</div>
-      <div class="eq"><span class="m">h<sub>backbone</sub> ∈ ℝ<sup>P×K×D</sup></span><br><span class="small">i canali sono compressi nei K latenti</span></div>
-      <div class="small" style="text-align:center">Rappresentazioni contestuali (esempio)</div>
-      <svg id="hbb" width="190" height="96"></svg>
-      <div class="small" style="text-align:center">P patch (tempo) →</div>
-    </div>
-    <!-- 6 -->
-    <div class="col" style="background:var(--c6);border-color:var(--b6)">
-      <h2>6. Decoder a query<br>(teacher e student)</h2>
-      <div class="box" style="border-color:var(--b6)"><b>Query</b> = identità del canale all'istante t<br><span class="small">una per token nascosto (canale, istante)</span></div>
-      <div class="box" style="border-color:var(--b6)"><b>Cross-attention</b> su tutti i latenti P×K<br><span class="small">del campione, RoPE sul tempo; 2 livelli</span></div>
-      <div class="box" style="border-color:var(--b6)"><b>Teste delle ancore</b><br><span class="small">dalle stesse uscite: RMS, forma spettrale (5 bande), inviluppo; multiscala 50 e 500 ms</span></div>
-      <div class="arrow">↓</div>
-      <div class="eq"><span class="m">ŷ ∈ ℝ<sup>N<sub>nasc</sub>×D</sup></span></div>
-      <div class="small" style="text-align:center">Target del teacher (D11 «b»): il suo decoder sull'ingresso completo, stesse query</div>
-      <svg id="dec" width="196" height="84"></svg>
-    </div>
-  </div>
+<section class="cols" aria-label="Le sette fasi del percorso raw">
+<article class="col" style="background:var(--blue)"><h2>0. Dati raw<br>e montaggio</h2>
+<div class="dim">x<sub>s</sub> ∈ ℝ<sup>Cₛ × Tₛ</sup></div><svg id="raw" width="185" height="116" role="img" aria-label="Tracce EMG illustrative"></svg>
+<div class="body"><b>C = 8 … 256</b> canali<br>Bracciali, elettrodi sparsi e griglie ad alta densità.</div>
+<div class="body"><b>fs nativa</b> del dataset<br>Da 200 Hz a 2 kHz e oltre.<br>Nessun ricampionamento globale a una fs unica.</div>
+<div class="body"><b>Pretraining: finestre 1–4 s</b><br>4 s a 2 kHz → 8.000 campioni per canale.</div>
+<div class="note">Ogni finestra porta geometria, identità dei canali, fs e validità QC.</div></article>
 
-  <div class="flow">
-    <div class="fbox" style="border-color:#bbb;width:205px;background:#fff">
-      <b style="font-size:17px">Input (token)</b>
-      <span class="m">token ∈ ℝ<sup>C<sub>tot</sub>×P×D</sup></span><br>
-      <span class="small">canali di più campioni impacchettati, senza padding (D6b); B = 32 finestre (30M)</span>
-    </div>
-    <div class="farrow">→</div>
-    <div class="fbox" style="border-color:#7dbf6b;background:#cfeec4;width:150px"><b>Encoder<br>locale</b>(fra canali vicini)<br><span class="m">ℝ<sup>C×P×D</sup></span></div>
-    <div class="farrow">→</div>
-    <div class="fbox" style="border-color:#a78bdb;background:#e2d6f6;width:160px"><b>Perceiver<br>+ backbone</b>(C → K = 64)<br><span class="m">ℝ<sup>P×K×D</sup></span></div>
-    <div class="farrow">→</div>
-    <div class="fbox" style="border-color:#7aa7e0;background:#dce9fa;width:160px"><b>Decoder<br>a query</b>(token nascosti)<br>+ teste delle ancore</div>
-    <div class="farrow">→</div>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div class="fbox" style="border-color:#e2b93b;background:#fbe7a6;width:150px;padding:5px"><b style="font-size:15px">Teacher (EMA)</b><span class="small">momento 0,996, vede tutto, stop-grad</span></div>
-      <div class="fbox" style="border-color:#e07a85;background:#f8c9cf;width:150px;padding:5px"><b style="font-size:15px">Student</b><span class="small">vede il contesto (maschera)</span></div>
-    </div>
-    <div class="farrow">→</div>
-    <div class="fbox" style="border-color:#999;background:#e7e7e7;width:225px"><b>Perdita</b>
-      <span style="font-size:12px"><b style="display:inline;font-size:12.5px">JEPA</b>: MSE fra predizione e target del teacher (normalizzato), solo token nascosti<br>+ 0,2 × <b style="display:inline;font-size:12.5px">ancore</b> (multiscala)<br><span class="small">media per finestra, poi fra finestre</span></span></div>
-    <div class="farrow">→</div>
-    <div class="fbox" style="border-color:#ccc;background:#fff;text-align:left;width:255px;font-size:12px">
-      <b style="text-align:center">Output training</b>
-      <ul>
-        <li>loss totale, JEPA, ancore per scala</li>
-        <li>loss per tipo di maschera (corta, media, lunga, spaziale)</li>
-        <li>diagnostiche: collasso, varianze, rango effettivo, collasso da query</li>
-        <li>checkpoint: studente, teacher EMA, optimizer, RNG, config, stato dello stream</li>
-        <li>metrics.jsonl (passo, loss, lr, tempi)</li>
-      </ul>
-    </div>
-  </div>
+<article class="col" style="background:var(--green)"><h2>1. Preprocessing<br>e vista del segnale</h2>
+<div class="box"><strong>Passa-banda 20–450 Hz</strong><br>adattato alla Nyquist<br>+ notch 50 e 60 Hz.</div>
+<div class="box"><strong>Scala per sessione</strong><br>Un solo scalare: mediana<br>dei MAD dei canali.</div>
+<div class="box"><strong>QC dei canali</strong><br>I non validi non sono chiavi<br>né target delle loss.</div>
+<div class="box"><strong>Montaggi virtuali — D6a</strong><br>Sottogriglie e derivazioni bipolari, dove abilitate.</div>
+<div class="dim">x′<sub>s</sub> ∈ ℝ<sup>Cₛ × Tₛ</sup></div>
+<div class="note">Packing dei canali fra finestre; le fs possono differire. Padding solo temporale, con maschere di validità.</div></article>
 
-  <div class="bottom">
-    <div class="bp" style="background:#fdf1df;border:1.5px solid #efc98a">
-      <h3>Dimensioni (preset)</h3>
-      <ul>
-        <li>B = 32 finestre (30M, sanity)</li>
-        <li>C = 8 … 256 canali</li>
-        <li>fs nativa (es. 2 kHz)</li>
-        <li>finestra 1–4 s; T = 8 000 a 4 s, 2 kHz</li>
-        <li>P = 160 patch (4 s, 25 ms)</li>
-        <li>D = 384 · 640 · 896; K = 64 latenti</li>
-        <li>parametri: 28,3 M · 104,8 M · 292,0 M</li>
-      </ul>
-    </div>
-    <div class="bp" style="background:#fde8ea;border:1.5px solid #eea5ae">
-      <h3>Mascheramento (D10)</h3>
-      <ul>
-        <li>budget: 50% dei token validi</li>
-        <li>tubi su gruppi spaziali: corti 1–2 patch (15%), medi 4–12 (25%), lunghi 20–80 (20%)</li>
-        <li>spaziale 40%: canali per tutta la finestra, al più metà</li>
-        <li>slab su tutti i canali solo con l'ancora RVQ</li>
-      </ul>
-    </div>
-    <div class="bp" style="background:#e8f1fc;border:1.5px solid #a6c2ea">
-      <h3>Training (finestra 1)</h3>
-      <ul>
-        <li>loss per finestra; quote nel tempo (04/10)</li>
-        <li>ancora multiscala; niente target entro 100 ms dal bordo</li>
-        <li>montaggi virtuali dalle griglie (D6a); RVQ spenta</li>
-        <li>dropout del muscolo 0,4 (D15); bf16</li>
-        <li>schedule (D14): warmup, stabile, decay lineare a zero</li>
-        <li>checkpoint pre/post decay + continuazione a 2D</li>
-      </ul>
-    </div>
-    <div class="bp" style="background:#efeafb;border:1.5px solid #c3b2e8">
-      <h3>Output del modello (inferenza)</h3>
-      <ul>
-        <li>token per canale e istante: <span class="m">h<sub>local</sub></span> (C×P×D), latenti <span class="m">h<sub>backbone</sub></span> (P×K×D)</li>
-        <li><b>embedding P1/P2</b> (uno solo): [media del backbone su istanti e latenti ; media dell'encoder locale su canali e istanti] = 2D</li>
-        <li>usato da P1 (NinaPro DB2/3/6, cross-soggetto) e P2 (EPN-612, UCI-EMG)</li>
-      </ul>
-    </div>
-    <div class="bp" style="background:#eaf6ea;border:1.5px solid #a6d4a3">
-      <h3>Note</h3>
-      <ul>
-        <li>canali variabili impacchettati (D6b)</li>
-        <li>canali QC esclusi tramite qc_valid</li>
-        <li>teacher = EMA dello studente (stop-grad)</li>
-        <li>solo i token nascosti entrano nella perdita JEPA</li>
-        <li>sperimentale, fuori dalla base: testa dello Step 1 (keep), rami PSD/wavelet sul readout</li>
-      </ul>
-    </div>
-  </div>
-</div>
+<article class="col" style="background:var(--yellow)"><h2>2. Due viste<br>e maschere — D10</h2>
+<div class="box"><strong>Student: contesto visibile</strong><br>~50% dei token validi nascosti.<br>Campioni azzerati <b>prima del front-end</b>.</div>
+<div class="box"><strong>Teacher: vista completa</strong><br>Stessa finestra, senza maschera.<br>EMA, nessun gradiente.</div>
+<svg id="mask" width="185" height="92" role="img" aria-label="Tubi temporali e masking spaziale illustrativi"></svg>
+<div class="small"><b>Tubi:</b> intervalli su canali vicini.<br><b>Spaziale:</b> canali per tutta la finestra.<br><b>Slab:</b> intervallo su tutti i canali, solo con RVQ (qui spenta).</div>
+<div class="note">Il contenuto nascosto non entra nelle chiavi visibili di locale, Perceiver e backbone.</div></article>
 
+<article class="col" style="background:var(--purple)"><h2>3. Tokenizzazione<br>e identità di canale</h2>
+<div class="box"><strong>Patch da 25 ms</strong><br>Passo 25 ms, senza overlap.<br>4 s → <b>P = 160</b> patch.</div>
+<div class="box"><strong>Kernel continui</strong><br>24 Fourier + 24 spline<br>+ 16 SIREN = <b>64 uscite</b>.<br>Contesto ±100 ms; fattore Δt.</div>
+<div class="down">↓ guadagno fisso + proiezione</div><div class="dim">token: Cₛ × Pₛ × D</div>
+<div class="box"><strong>+ identità anatomica</strong><br>Regione, compartimenti, muscolo, lato, topologia e posizione.</div>
+<div class="note">D = 384 / 640 / 896.<br>Nessun D<sub>p</sub> = 128 separato;<br>nessuna posizione temporale assoluta.</div></article>
+
+<article class="col" style="background:var(--pink)"><h2>4. Encoder locale<br>fra canali</h2>
+<div class="box"><strong>Attenzione allo stesso t</strong><br>Anelli/griglie: sé stesso<br>+ fino a 8 vicini.<br>Sparsi: tutti i canali validi.</div>
+<div class="box"><strong>Bias geometrico</strong><br>Distanze e spostamenti<br>fra gli elettrodi.</div>
+<div class="dim">h<sub>locale</sub>: Cₛ × Pₛ × D</div><svg id="local" width="185" height="103" role="img" aria-label="Mappa illustrativa delle feature locali"></svg>
+<div class="small center">Identità dei canali ancora esplicita.</div>
+<div class="note">2 / 2 / 3 livelli nei preset<br>30M / 100M / 300M.<br>Nessuna attenzione tra finestre diverse.</div></article>
+
+<article class="col" style="background:var(--teal)"><h2>5. Perceiver<br>e backbone</h2>
+<div class="box"><strong>Cross-attention Cₛ → K</strong><br><b>K = 64 latenti per istante</b>,<br>appresi e condivisi.<br>Non sono canali fisici.</div>
+<div class="box"><strong>Backbone temporale</strong><br>Tempo con <b>RoPE</b><br>→ latenti → MLP.<br>8 / 12 / 18 blocchi.</div>
+<div class="dim">z: Pₛ × K × D</div><svg id="latent" width="185" height="103" role="img" aria-label="Mappa illustrativa dei latenti"></svg>
+<div class="note">Mappa canali variabili su K latenti. Non sempre riduce il numero di token: C può essere minore di K.</div></article>
+
+<article class="col" style="background:var(--blue)"><h2>6. Decoder a query<br>e teste delle ancore</h2>
+<div class="box"><strong>Query (canale, istante)</strong><br>Identità del canale + tempo<br>delle patch da predire.</div>
+<div class="box"><strong>Cross-attention su Pₛ × K</strong><br>2 livelli; RoPE temporale.<br>Le query leggono i latenti del proprio campione.</div>
+<div class="dim">h<sub>query</sub>: Qₛ × D</div>
+<div class="box"><strong>Teste delle ancore</strong><br>RMS · forma a 5 bande<br>· inviluppo · multiscala<br>50 ms / 500 ms.</div>
+<div class="note">D11 «b»: decoder del teacher completo, alle stesse query dello student.<br>Il decoder non è multiscala.</div></article>
+</section>
+
+<section class="panel" style="background:#f5f9ff" aria-label="Student e teacher paralleli">
+<h3>Training JEPA: due percorsi paralleli <small>· il teacher non è a valle dello student · Q = query delle patch nascoste</small></h3>
+<div class="dual"><div class="paths">
+<div class="path"><div class="student"><b>STUDENT</b><br>vista mascherata</div><div>Tokenizer + identità → encoder locale<br>→ Perceiver + backbone → decoder alle query Q</div><div><b>Predizione ŷ<sub>S</sub></b><br>Q × D</div><div>→ loss<br>con gradiente</div></div>
+<div class="ema">↓ aggiornamento dei pesi, non passaggio di dati: θ<sub>T</sub> ← 0,996 θ<sub>T</sub> + 0,004 θ<sub>S</sub></div>
+<div class="path"><div class="teacher"><b>TEACHER EMA</b><br>vista completa</div><div>Proprio tokenizer + identità → encoder locale<br>→ Perceiver + backbone → decoder alle stesse Q</div><div><b>Target ŷ<sub>T</sub>, D11 «b»</b><br>Q × D</div><div>→ stop-grad<br>LayerNorm target</div></div>
+<div class="small center">Ancore: teste sul decoder dello student; target dal segnale completo, non dal teacher.</div>
+</div><div class="loss"><b>L<sub>base</sub> = L<sub>JEPA</sub> + 0,2 L<sub>ancore</sub></b><br>MSE verso il target normalizzato, sulle sole query nascoste, esistenti e QC valide.<br>Prima media per finestra, poi fra finestre.<br><span class="small">DDP/accumulo: numeratori locali e denominatori globali; non media delle medie dei processi.</span></div></div>
+</section>
+
+<section class="panel readout" aria-label="Raw e rami spettrali paralleli">
+<h3>Readout completo: raw, PSD e wavelet in parallelo <small>· per sonde e loss opzionali, non nelle chiavi JEPA mascherate</small></h3>
+<div class="readout-grid"><div class="source"><div><b>Stesso segnale x′</b><br>vista completa<br>preprocessata<br>→</div></div><div class="lanes">
+<div class="lane raw"><div><b>RAW →</b></div><div>Encoder completo, <b>senza decoder</b> → medie di backbone e locale.<br><span class="small">In training keep/rami: forward student aggiuntivo, condiviso tra le teste.</span></div><div class="out">R ∈ ℝ<sup>2D</sup><br><span class="small">768 nel 30M</span></div></div>
+<div class="lane optional"><div><b>PSD →</b><br><span class="small">opzionale</span></div><div>Log-potenze per banda e tempo, scale 50 / 500 ms<br>→ piccolo encoder temporale → pooling sui canali.</div><div class="out">P ∈ ℝ<sup>128</sup></div></div>
+<div class="lane optional"><div><b>WAVELET →</b><br><span class="small">opzionale</span></div><div>Banco Morlet, energie tempo-frequenza<br>→ piccolo encoder temporale → pooling sui canali.</div><div class="out">W ∈ ℝ<sup>128</sup></div></div>
+</div><div class="fusion"><b>Embedding P1/P2</b><br>Base: <b>R</b>, un vettore per finestra.<br>Se abilitati: <b>[R, P, W]</b><br>= 2D + 256 → 1.024 nel 30M.<br><br><b>Keep raw:</b> testa su R → 32 target.<br><b>Rami:</b> testa fusa + una testa per ramo.<br>La testa raw resta separata: non è sostituita dalla fusione.</div></div>
+<div class="objectives"><div><b>L = L<sub>base</sub> + λ<sub>keep</sub>L<sub>raw</sub> + λ<sub>rami</sub>L<sub>rami</sub></b><br>L<sub>rami</sub> = (1−α)L<sub>fusa</sub> + α · media(L<sub>PSD</sub>, L<sub>W</sub>), α = 0,5.<br>Stessi 32 target e calibrazione train-only per tutte le teste.</div><div><b>Step 1:</b> A senza keep; B con λ<sub>keep</sub> = 0,05 nel pilot.<br><b>2A:</b> R + 32 statistiche fisse + 32 indicatori, nessun training del modello.<br><b>2C:</b> raw congelato; si allena solo L<sub>rami</sub>. Congiunto non avviato con questa loss.</div></div>
+<div class="status"><b>Stato:</b> 2A e primario 2C negativi secondo i criteri preregistrati. Keep e rami sono estensioni sperimentali, non default adottati; obiettivo dei rami da riesaminare.</div>
+</section>
+
+<section class="bottom" aria-label="Preset, training, diagnostica e valutazione">
+<div style="background:var(--yellow)"><h3>Dimensioni dei preset</h3><table><thead><tr><th>Rung</th><th>D</th><th>Locale / BB</th></tr></thead><tbody><tr><td>30M</td><td>384</td><td>2 / 8</td></tr><tr><td>100M</td><td>640</td><td>2 / 12</td></tr><tr><td>300M</td><td>896</td><td>3 / 18</td></tr></tbody></table><div class="small" style="margin-top:7px">K = 64; decoder = 2 livelli.<br>Batch globale sanity = 32; LR/batch maggiori da calibrare.</div></div>
+<div style="background:var(--blue)"><h3>Training e ripresa</h3><ul><li>DDP 1 nodo / 4 GPU, bf16; accumulo disponibile.</li><li>Prefetch integrato: input verificati, attesa 30M &lt; 2% nei collaudi.</li><li>WSD: warmup → stabile → decay lineare, ultimo 20%.</li><li>Checkpoint pre/post decay, rami e continuazione a 2D; stream, optimizer, RNG.</li></ul></div>
+<div style="background:var(--green)"><h3>Sicurezza e diagnostica</h3><ul><li>Loss finita prima del backward; gradienti finiti prima dell’update.</li><li>Stop coordinato, ultimo checkpoint valido preservato.</li><li>Collasso da query, varianza, rango; loss per maschera/topologia.</li><li>Pannello fisso con hash; nuova regola di stabilità ancora da congelare.</li></ul></div>
+<div style="background:var(--purple)"><h3>Valutazione e punti aperti</h3><ul><li>P1: NinaPro DB2/3/6; P2: EPN-612 e UCI-EMG.</li><li>Encoder congelato e sonda lineare; split per soggetto, selezione sul validation.</li><li>Baseline casuale completata; il raw qui non è NeuroRVQ.</li><li>Restano attribuzione JEPA/ancore/keep e sonde temporali/fisiche.</li></ul></div>
+</section>
+<footer class="footer"><div><b>Notazione:</b> le colonne mostrano una finestra. Nel batch: token/locale = C<sub>tot</sub> × P<sub>max</sub> × D; backbone = B × P<sub>max</sub> × K × D; decoder = Q<sub>tot</sub> × D. Niente padding di canali; padding temporale con validità. P1/P2 leggono il teacher completo senza decoder.</div><div><b>Bordi:</b> il guard di 100 ms esclude la patch target, non l’intero supporto lento da 500 ms; i rami richiedono invece supporto completo. Ancora RVQ spenta. Catene WSD: collaudo GPU avviato, esito non certificato da questo schema.</div></footer>
+</main>
 <script>
-  // mini-grafici deterministici (nessun dato reale: solo illustrazione)
-  const NS = "http://www.w3.org/2000/svg";
-  function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
-  function el(svg, tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; }
-  function wave(svg, y0, amp, color, seed, x0, w, n) {
-    const r = rnd(seed); let d = "";
-    for (let i = 0; i <= n; i++) {
-      const x = x0 + w * i / n, env = 0.4 + 0.6 * Math.abs(Math.sin(i / n * Math.PI * 2.3 + seed));
-      const y = y0 + (r() - 0.5) * 2 * amp * env;
-      d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
-    }
-    el(svg, "path", { d, stroke: color, "stroke-width": 1, fill: "none" });
-  }
-  const raw = document.getElementById("raw");
-  [["Ch 1", "#3b7dd8", 18], ["Ch 2", "#3b7dd8", 42], ["Ch 3", "#f0a030", 70], ["Ch C", "#8a63d2", 128]].forEach(([lab, c, y], i) => {
-    el(raw, "text", { x: 0, y: y + 4, "font-size": 10 }).textContent = lab;
-    wave(raw, y, 9, c, 11 + 7 * i, 30, 158, 170);
-  });
-  el(raw, "text", { x: 6, y: 100, "font-size": 12 }).textContent = "⋮";
-  wave(raw, 98, 9, "#3aa35a", 53, 30, 158, 170);
-
-  const patch = document.getElementById("patch");
-  wave(patch, 34, 15, "#3b7dd8", 77, 4, 182, 150);
-  el(patch, "rect", { x: 66, y: 12, width: 24, height: 44, fill: "#f8b4c0", "fill-opacity": .45, stroke: "#d64563", "stroke-width": 1.5 });
-  el(patch, "text", { x: 62, y: 9, "font-size": 10 }).textContent = "25 ms";
-
-  const mask = document.getElementById("mask");
-  const rows = 8, colsN = 24, cw = 6.6, ch = 11, ox = 30, oy = 4;
-  for (let r = 0; r < rows; r++) {
-    el(mask, "text", { x: 14, y: oy + r * ch + 9, "font-size": 9 }).textContent = r === rows - 1 ? "C" : (r < 4 ? String(r + 1) : (r === 4 ? "⋮" : ""));
-    for (let c = 0; c < colsN; c++) {
-      let f = "#bfdbfe";
-      if (r >= 1 && r <= 3 && c >= 4 && c <= 9) f = "#f28b95";          // tubo su un gruppo di canali vicini
-      if (r === 5) f = "#f6ad55";                                       // spaziale: un canale per tutta la finestra
-      if (r >= 6 && c >= 13 && c <= 16) f = "#f28b95";                  // un altro tubo
-      if (c >= 19 && c <= 22) f = "#f7e27b";                            // slab: tutti i canali
-      el(mask, "rect", { x: ox + c * cw, y: oy + r * ch, width: cw - 0.8, height: ch - 0.8, fill: f });
-    }
-  }
-  el(mask, "text", { x: ox, y: oy + rows * ch + 12, "font-size": 9.5 }).textContent = "patch temporali (P) →";
-  el(mask, "text", { x: 9, y: oy + 6.2 * ch, "font-size": 9, "text-anchor": "middle", transform: `rotate(-90 9 ${oy + 6.2 * ch})` }).textContent = "canali";
-
-  function heat(svg, nr, nc, seed, x0, y0, w, h, labels) {
-    const r = rnd(seed), cw2 = w / nc, ch2 = h / nr;
-    for (let i = 0; i < nr; i++) for (let j = 0; j < nc; j++) {
-      const v = 0.5 + 0.35 * Math.sin(j / 3 + i * 1.7 + seed) + (r() - 0.5) * 0.5;
-      const t = Math.max(0, Math.min(1, v));
-      const col = t < 0.5 ? `rgb(${Math.round(40 + 120 * t)},${Math.round(90 + 250 * t)},${Math.round(200 - 40 * t)})`
-                          : `rgb(${Math.round(150 + 200 * (t - .5))},${Math.round(215 - 230 * (t - .5))},${Math.round(180 - 300 * (t - .5))})`;
-      el(svg, "rect", { x: x0 + j * cw2, y: y0 + i * ch2, width: cw2 + .2, height: ch2 + .2, fill: col });
-    }
-    (labels || []).forEach(([txt, i]) => { el(svg, "text", { x: 0, y: y0 + i * ch2 + ch2 * 0.8, "font-size": 9 }).textContent = txt; });
-  }
-  heat(document.getElementById("hloc"), 6, 30, 3, 30, 2, 158, 90, [["Ch 1", 0], ["Ch 2", 1], ["Ch 3", 2], ["⋮", 3.6], ["Ch C", 5]]);
-  heat(document.getElementById("hbb"), 6, 30, 9, 30, 2, 158, 90, [["lat 1", 0], ["lat 2", 1], ["lat 3", 2], ["⋮", 3.6], ["lat K", 5]]);
-  const dec = document.getElementById("dec");
-  heat(dec, 3, 22, 21, 62, 2, 132, 36, []);
-  heat(dec, 3, 22, 22, 62, 44, 132, 36, []);
-  el(dec, "text", { x: 0, y: 23, "font-size": 10 }).textContent = "Target";
-  el(dec, "text", { x: 0, y: 34, "font-size": 9 }).textContent = "(teacher)";
-  el(dec, "text", { x: 0, y: 65, "font-size": 10 }).textContent = "Predizione";
-  el(dec, "text", { x: 0, y: 76, "font-size": 9 }).textContent = "(student)";
-</script>
-</body>
-</html>
+const NS="http://www.w3.org/2000/svg";
+function add(s,t,a){const n=document.createElementNS(NS,t);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);s.append(n);return n}
+function rand(seed){let s=seed;return()=>((s=s*16807%2147483647)/2147483647)}
+const raw=document.getElementById("raw");["#3779c3","#d79b30","#3e9769","#8865bc"].forEach((color,k)=>{const r=rand(41+k*9);let d="";for(let i=0;i<160;i++){const x=28+i*.97,y=16+k*28+(r()-.5)*17*(.45+.55*Math.abs(Math.sin(i/12+k)));d+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)}add(raw,"path",{d,fill:"none",stroke:color,"stroke-width":1.1});add(raw,"text",{x:0,y:20+k*28,"font-size":10.5,fill:"#4b5a70"}).textContent=k===3?"C":"Ch"+(k+1)});
+const mask=document.getElementById("mask");for(let r=0;r<6;r++)for(let c=0;c<20;c++){let f="#bed6f0";if(r>=1&&r<=3&&c>=3&&c<=9)f="#e79aa5";if(r===4)f="#e8b16c";add(mask,"rect",{x:8+c*8.5,y:4+r*12,width:7.5,height:10.5,fill:f})}add(mask,"text",{x:8,y:87,"font-size":10.5,fill:"#4b5a70"}).textContent="patch nel tempo →";
+function heat(id,seed,label){const s=document.getElementById(id),r=rand(seed);for(let i=0;i<6;i++)for(let j=0;j<25;j++){const v=Math.max(0,Math.min(1,.5+.3*Math.sin(j/3+i*1.4)+(r()-.5)*.4));add(s,"rect",{x:25+j*6.3,y:4+i*13,width:6.5,height:13.2,fill:`hsl(${215-v*170} 49% ${44+v*20}%)`})}add(s,"text",{x:0,y:17,"font-size":10,fill:"#4b5a70"}).textContent=label;add(s,"text",{x:25,y:99,"font-size":10.5,fill:"#4b5a70"}).textContent="patch nel tempo →"}
+heat("local",17,"Ch");heat("latent",83,"Lat");
+document.body.dataset.qaHeight=document.querySelector(".page").scrollHeight;
+document.body.dataset.qaWidth=document.querySelector(".page").scrollWidth;
+document.body.dataset.qaOverflow=Array.from(document.querySelectorAll(".col,.path>div,.fusion,.bottom>div")).filter(e=>e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1).length;
+</script></body></html>

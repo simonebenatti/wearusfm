@@ -1235,6 +1235,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Claude puo' partire con launcher/catene WSD/manifest senza rifare il fix; GPT passa a regola prospettica (4) e protocolli (5).
   Registrato il confronto NeuroRVQ frozen-frozen mancante, senza adottare nuovi default, esperimenti o budget.
 
+### 2026-10-15 | GPT | Schema della catena di processing aggiornato | Codice di riferimento dc0c3b4
+
+- Aggiornati docs/schemi/catena_jepa_parte7.html e il PNG: mascheramento prima del front-end, identita' nel tokenizer, locale
+  geometrico e forme corrette; student e teacher ora sono due percorsi completi paralleli, collegati dall'EMA dei pesi.
+- Aggiunti readout completo senza decoder e rami PSD/wavelet paralleli al raw, testa keep raw separata, loss fusa/per ramo, dimensioni
+  2D e 2D+256, distinzione fra base e opzioni sperimentali e stato negativo di 2A/primario2C. Non e' un nuovo default.
+- Aggiornati DDP/accumulo/prefetch, WSD/ripresa, guardie numeriche e pannello fisso; corretti packing senza padding di canali ma
+  con padding temporale, locale sui montaggi sparsi e Perceiver C->K che non sempre riduce il numero di token. Bordo lento dichiarato.
+- Verifica dei contenuti sul codice e controllo indipendente dell'architettura. Rendering Chrome headless a scala2: PNG3200x3364,
+  QA DOM1600x1682, zero contenitori con overflow; immagine aperta e ispezionata. Mini-grafici solo illustrativi, nessun dato reale.
+- La skill di visualizzazione ha guidato la separazione dei percorsi e la leggibilita'; aggiornata la sorgente del diagramma gia' nel
+  repository. Nessun codice di training modificato, job o push; decisioni.md invariato perche' nessuna nuova decisione scientifica.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1973,3 +1986,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   negati dal sandbox, non difetti del codice; rieseguiti con IPC consentito e passati. Le prove GPU precedenti restano quelle di Claude.
 - Non coperti guasti CUDA/OOM, cancellazione di fetch bloccato e cleanup con traceback trattenuto. Nessun guasto di campagna
   dimostrato; limiti di copertura registrati, non nuovi blocchi attribuiti al prefetch. Il prompt non autorizza nuovi job o budget.
+
+### 2026-10-15 | GPT | Limiti e lettura dello schema aggiornato
+
+- Il vecchio flusso lineare decoder->teacher/student era fuorviante: il teacher possiede un proprio encoder/decoder completo e
+  non e' alimentato dall'uscita dello student. L'EMA aggiorna i pesi; il suo output e' stop-grad nella loss.
+- PSD/wavelet e keep sono implementati ma sperimentali; 2A/2C negativi non equivalgono ad assenza assoluta di effetto. La regola
+  prospettica di stabilita' resta aperta. Il collaudo GPU delle catene WSD e' avviato secondo il registro, non certificato concluso qui.
+- Lo schema mostra forme per finestra con unita' e precisazione packed nel footer, non un batch a numero fisso di canali. La
+  differenza di supporto al bordo fra target e rami e' esplicita; non e' stata cambiata per semplificare il disegno.
