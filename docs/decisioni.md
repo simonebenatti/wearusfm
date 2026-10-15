@@ -3270,3 +3270,11 @@ limite per utente; `boost_qos_lprod` «Max = 8 nodes», «4-00:00:00», «Max re
 submitted jobs progressively lose priority until the monthly quota is exhausted.» **Conseguenza per la finestra 1:** gli 8 nodi sono
 ammessi; la velocita' della coda dipende dalla quota mensile del progetto, condivisa da 17 utenti (il 14/10 un altro utente ha consumato
 2.655 GPU-ora in 30 ore). Serve il saldo del progetto (`saldo -b`) prima di firmare il calendario.
+
+**Saldo del progetto (`saldo -b`, letto da Simone il 15/10/2026; riga del progetto in `results/infra/saldo_20261015.txt`; 1 GPU-ora = 8 ore
+locali sulla Booster, come nei consuntivi).** IscrB_WearUsFM, 07/01/2026-07/01/2027: budget 2.000.000 ore locali = **250.000 GPU-ora**;
+consumate 1.257.249 = 157.156 GPU-ora (62,9%, col 77% del tempo passato); **restano 92.844 GPU-ora per 2,8 mesi**. Quota mensile 164.383 ore
+locali = **20.548 GPU-ora**; consumate in ottobre al 15/10: 5.548 (27%). **Lettura per la finestra 1:** il budget restante basta (finestra 1
+~5.100-5.700 GPU-ora, poi la ladder ~13.000), ma la finestra 1 vale il 25-28% della quota di novembre, condivisa da 17 utenti: lanciata all'inizio
+del mese parte con la priorita' piena; se gli altri consumano come il 14/10 (~2.200 GPU-ora al giorno) la quota di novembre finisce in ~9 giorni
+e le catene ancora in corso perdono priorita'. Utile un accordo con gli altri utenti del progetto per la prima meta' di novembre.
