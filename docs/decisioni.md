@@ -3265,3 +3265,8 @@ non voce del residuo infrastruttura. Fold interni P1 e selezione da protocollo G
 
 Aggiornamento dai logClaude fba794f: SCRATCH60643323 chiuso,151.833file,0problemi, prossimo12/11; limiti sacctmgr compatibili con8nodi normal.
 Nessun nuovo accesso cluster, lancio o budget approvato in questa attivita'. I nuovi prompt avviano preparazione e verifiche locali.
+
+**Aggiornamento sul manifest consegnato95f441b (15/10/2026).** Su richiesta di Simone il promptClaude e' stato ristretto al lavoro residuo:
+conservare builder/file/report/guardie esistenti; allineare residuo C->B, ore campionabili, derivato100%, floor e verifiche finali alla
+specifica c6f59b9. La ripartizione A+B della consegna e' stata sviluppata in parallelo; nessuna nuova decisione scientifica o variazione
+del tetto. Report finali da rigenerare dal commit corretto; review statica qui, non nuova suite o costruzione sul cluster.

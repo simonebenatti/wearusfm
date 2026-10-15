@@ -1,7 +1,7 @@
 # Finestra 1: incarichi e specifica della prossima tranche
 
 15/10/2026. Risposta alla richiesta di Simone: «decidiamo e preparami il prompt per Claude e il tuo».
-Fonti: consegna Claude fino a `fba794f`, review GPT `d4eeadf`, D9/D14/D6a e lista dei sei punti nel registro.
+Fonti: consegna Claude fino a `95f441b`, review GPT `d4eeadf`, accordo `c6f59b9`, D9/D14/D6a e lista dei sei punti nel registro.
 Questa specifica permette di sviluppare e verificare in parallelo. Il preventivo completo e i protocolli precedono i lanci;
 non costituisce l'autorizzazione della campagna da circa 5.100–5.700 GPU-ora.
 
@@ -80,13 +80,32 @@ Ordine di grandezza provvisorio con 24.528 passi/epoca e i throughput misurati: 
   Prima versione dei coseni: analisi di checkpoint su pannello fisso in uno script separato, con norme pesate e casi a norma zero;
   non richiede di rendere subito disponibile la diagnostica online nel trainer DDP.
 
-## Prompt per Claude
+## Consegna manifest già disponibile: 95f441b
+
+Claude ha già implementato costruttore e file deterministici per 12,5/25/50%, provenienza del genitore, gestione del residuo senza
+rialzare le unità sature, report sui file, guardia bidirezionale `--nested` e launcher CPU. Ha costruito i tre file localmente e
+registrato 32 test mirati PASS; questa lettura GPT è statica, non una nuova esecuzione della suite. Costruzione cluster ancora da fare.
+
+Restano differenze rispetto all'accordo c6f59b9, sviluppato in parallelo: il residuo oggi va ad A e B; l'allocazione usa ancora ore
+nominali senza `window_s`; il report usa `round`; il controllo sul 100% impone di riprodurre i vecchi pesi. Queste parti vanno allineate
+alla specifica sopra. Il meccanismo di firma dati della ripresa esiste già: estenderne i test al nuovo formato, senza duplicarlo.
+Il vecchio campo `hash` di v1.1 è stantio, ma lo SHA del file identifica il genitore: conservarlo e documentare entrambi gli hash.
+
+## Prompt per Claude aggiornato dopo 95f441b
 
 Leggi CLAUDE.md, entrambe le sezioni del registro e questo accordo; allinea il tuo ramo con un merge di main preservando gli SHA.
 Procedi nel tuo worktree senza ulteriori attese per lo sviluppo locale:
 
-1. Implementa i manifest derivati secondo la regola sopra, incluso residuo C→B con cap invariato. Correggi il report delle epoche,
-   aggiungi le verifiche CPU e consegna report leggibile con quote/passaggi finali, differenze da v1.1 e provenienza.
+1. Parti dal tuo 95f441b, conservando costruttore, report, guardie e test già consegnati. Completa soltanto gli allineamenti:
+   - residuo C verso B, A invariata al20%, sqrt(ore)/cap8 e rifiuto esplicito di capacità insufficiente;
+   - `window_s` e configurazione congelati come input del costruttore; righe non campionabili a peso0, ore nominali/campionabili/escluse
+     distinte, hash degli input nei derivati; produci anche il derivato100% senza sovrascrivere v1.1;
+   - sostituisci l'obbligo bitwise dei pesi del100% con un confronto spiegato delle differenze previste; conserva il test di equivalenza
+     nel caso senza esclusioni o residui; usa floor una volta sull'endpoint totale e riporta la dose effettiva;
+   - testa valori finiti, pesi non negativi, massa1, durate mancanti/null/zero/negative, quote/cap dopo le trasformazioni del sampler
+     e rifiuto di resume con manifest diverso. Distingui una durata null dichiarata da una chiave mancante, che è un errore di input.
+   Rigenera i report finali da un commit pulito: quelli locali attuali riportano la base b889c4b, precedente al commit del costruttore.
+   Riporta SHA, hash semantici, differenze dal genitore e preventivo del job CPU già predisposto. La review finale precede il deploy.
 2. Prepara il planner della calibrazione C1–C4, con finalisti come dipendenze di decisione esplicite: dry-run, configurazioni, passi,
    checkpoint, memoria, tempo, preventivo e tetto. Non scegliere i finalisti automaticamente dalla training loss.
 3. Prepara l'orchestratore della valutazione nei soli file assegnati, testandolo con piani sintetici e submitter simulato; GPT fornisce
@@ -101,7 +120,8 @@ Procedi nel tuo worktree senza ulteriori attese per lo sviluppo locale:
 Leggi CLAUDE.md, entrambe le sezioni del registro e questo accordo. Lavora nel worktree GPT; mantieni la numerazione 1–6.
 
 1. Pubblica per primo il contratto del piano di valutazione, coerente con l'interfaccia sopra, per sbloccare Claude. Poi rivedi e integra
-   per merge le consegne WSD/nested fino a fba794f, preservando gli SHA; rimanda i fix del trainer/dataloader a Claude con regressioni precise.
+   per merge le consegne WSD/nested fino a95f441b e i successivi allineamenti, preservando gli SHA; rimanda i fix del trainer/dataloader
+   a Claude con regressioni precise.
 2. Chiudi il protocollo prospettico di stabilità sul pannello fisso: cadenza, riferimento, persistenza, condizioni di stop e componenti;
    implementa il valutatore e test sintetici significativi. Il verdetto storico 2C resta quello registrato.
 3. Rendi eseguibili i confronti prioritari JEPA-only, ancore-only attuali, combinazione e keep separata, con semi/dati/esposizione

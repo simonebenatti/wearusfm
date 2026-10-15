@@ -10,14 +10,14 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo consegna Claude fba794f e richiesta di Simone di decidere i prossimi incarichi.
+Stato aggiornato al 15/10/2026 dopo lettura della consegna manifest Claude95f441b e aggiornamento del prompt al solo lavoro residuo.
 Specifica e prompt: [accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md); numerazione invariata.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; consegne fino a fba794f e successivi fix nested da revisionare/integrare. Review completa del delta ancora da fare |
+| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; consegna95f441b letta e confrontata con la specifica, allineamenti assegnati. Review completa/integration WSD+nested ancora da fare |
 | 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
 | 5 | Validare l'obiettivo scientifico | Ablation JEPA/ancore/keep, sonde per profondita' e temporali/fisiche, coseni offline, confronto NeuroRVQ comparabile | Supporto trainer su interfacce concordate; nessuna modifica concorrente all'harness | PARZIALE: priorita' al confronto causale e alle sonde intermedie; default di lavoro A, rami fuori. Restano protocollo e implementazione; nessun nuovo training avviato |
 | 6 | Chiudere la finestra 1 | Specifica pesi/epoca, griglia e selezione C1-C4, payload valutazione, lista/default/budget | Implementa manifest, planner calibrazione e orchestratore evaluation_chain.py; unico submitter campagna W1 | PARZIALE: specifica e incarichi pronti. D9 per frazione, residuo C verso B con cap invariato; 8 run di calibrazione da preventivare. Otto nodi normal ammessi; rischio coda/consumo condiviso. SCRATCH chiuso, prossimo12/11. Infra15,74GPUh residue; budget W1 ancora da chiudere |
@@ -26,8 +26,8 @@ Specifica e prompt: [accordo_operativo_finestra1_20261015.md](accordo_operativo_
 
 - **GPT:** pubblica per primo lo schema del piano di valutazione; review/integrazione WSD/nested (3), regola prospettica (4), protocollo
   causale e sonde intermedie (5), fold/criteri della calibrazione e payload di valutazione (6). Prompt completo nell'accordo operativo.
-- **Claude:** implementa manifest e report con la regola esplicita del residuo C; prepara planner C1-C4, preventivi e orchestratore
-  della valutazione nei nuovi file assegnati. Sviluppo locale parallelo con piani sintetici; payload reali e criteri arrivano da GPT.
+- **Claude:** conserva la base manifest95f441b; completa residuo solo verso B, ore campionabili, derivato100%, floor e report finali.
+  Poi planner C1-C4, preventivi e orchestratore nei nuovi file assegnati. Payload reali e criteri arrivano da GPT; sonde e coseni restano GPT.
 - **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
   implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
   il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
@@ -1290,6 +1290,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Aggiornate tabella6punti, entrambe le sezioni e decisioni. Nessuna nuova campagna avviata, nessun codice di Claude integrato qui;
   i prompt sono pronti da usare per le consegne locali.
 
+### 2026-10-15 | GPT | Prompt Claude aggiornato sul lavoro residuo dei manifest | Fonte95f441b
+
+- Letti commit, registro, codice, test e report. Gia' consegnati costruttore/file locali, gestione residuo senza riscalare unità sature,
+  provenienza, report, guardie bidirezionali nested e launcher CPU. Claude dichiara32PASS; non rieseguiti in questa review statica.
+- Aggiornato accordo_operativo_finestra1_20261015.md per conservare questi blocchi e chiedere soltanto gli allineamenti a c6f59b9:
+  C->B, base campionabile con window_s, derivato100%, floor dell'endpoint, guardie e rigenerazione report da commit pulito.
+- La ripartizione precedente A+B e' una scelta implementata in parallelo alla specifica C->B, non una nuova ricorrenza dell'errore8,002.
+  Non richiesto di riscrivere firma dati/resume, guardia nested o builder. Planner/calendario/evaluation restano i successivi taskClaude;
+  coseni e sonde intermedie restano GPT come nell'accordo. Nessun merge di codice, test, job o push eseguito qui.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2073,3 +2083,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   Sonde finali P1/P2 e pannello di stabilita' non vanno riusati come validation indistinta per scegliere iperparametri.
 - Il nuovo orchestratore appartiene a Claude, i payload all'harness GPT; la separazione evita due writer e due submitter W1.
   La stima157GPUh esclude valutazione/collaudi e va aggiornata prima del lancio. Nessun nuovo budget o soglia firmato in questo scambio.
+
+### 2026-10-15 | GPT | Delta manifest95f441b rispetto alla specifica c6f59b9
+
+- Residuo attuale verso A+B: al25% il report riporta A20,0048288%; la specifica mantiene A20 e assegna il residuo a B entro capacità.
+- Il builder non riceve window_s; sampled_distribution normalizza tutti i pesi e il report omette le durate null solo nel conteggio
+  finestre. Sul completo restano le62sessioni non campionabili: il report non verifica ancora la distribuzione finale del sampler.
+- Il report usa round; la specifica chiede floor unico dell'endpoint. L'obbligo di riprodurre bitwise v1.1 al100% va limitato al caso
+  senza esclusioni; il nuovo derivato100% deve invece dichiarare le differenze previste e conservare il vecchio congelato.
+- Aggiungere regressioni per input non finiti/negativi e durate mancanti rispetto a null dichiarate. I report locali riportano code_commit
+  b889c4b (base precedente alla consegna): rigenerare quelli finali da commit pulito per una provenienza eseguibile. Non un errore nei dati raw.
