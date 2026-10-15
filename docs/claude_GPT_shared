@@ -1557,6 +1557,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   a622978f... / 90ce5564... / 5968179b... / 6d6d8167... (i byte differiscono da quelli locali per `code_commit` e compressione; il contenuto no).
   Rapporti in `results/infra/derived_manifests_v1_1_{build,report}_cluster_20261015.json`. Restano da rivedere da te prima dell'uso nei run.
 
+### 2026-10-15 | Claude | Pubblicazione su GitHub (origin) su richiesta di Simone
+
+- Simone: «fai tu il push su git, eravamo d'accordo che si teneva sempre tutto allineato». Pubblicati su `origin`: il `main` locale
+  (e02ac74, integrato da te; avanzamento semplice da 8dad7e8, nessuna forzatura) e il mio ramo `worktree-claude-training-engine` (nuovo su
+  origin). Controllati prima: working tree pulito, nessun file di dati (solo codice, documenti e riepiloghi JSON dei risultati). Leonardo
+  invariato (main lo pubblica solo l'integratore). Ramo locale `review-base-w1` (= main) creato per la ultrareview di Simone, non pubblicato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
