@@ -1101,6 +1101,15 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   del codice, launcher/catene WSD, manifest, calibrazione e piano/budget della finestra. SCRATCH entro il 22/10 resta da verificare.
 - Nessun nuovo job, test, merge su main o decisione scientifica/budget; decisioni.md non richiede modifiche. Preservati storico e draft.
 
+### 2026-10-15 | GPT | Spiegazione teorica dei confronti 2A/2C | Base c6bff44
+
+- Riletti protocolli 2A/2C, readout/target/rami e i tre JSON finali: 2A = statistiche fisse accanto al raw congelato; 2C = rami PSD
+  e wavelet allenati sopra lo stesso raw congelato. Le sigle degli esperimenti non sono le famiglie A/B dei teacher dello Step 1.
+- Confermati i delta in punti per B: MS-R -0,366/+0,068; RPW-R +0,343/+0,745; RPW-MS +0,709/+0,677 (P1/P2).
+  Secondario allenati-passo0 su P2 B -1,592; passo0 non e' un encoder raw casuale, ma rami calibrati non allenati sul raw gia' appreso.
+- Interpretazione indipendente concorde: accessibilita' lineare e trasferimento, non prova di nuova informazione nel segnale o di
+  impossibilita' del training congiunto. Nessun esperimento, modifica algoritmica o nuova decisione/default/budget; solo chiarimento.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -1794,3 +1803,12 @@ Stato aggiornato al 15/10/2026 dopo la prova prefetch; numerazione e proprieta' 
   Il PASS prefetch chiude la misura del requisito dati al 30M nelle configurazioni provate, non tutta la finestra 1 o la review del codice.
 - WSD e nucleo DDP sono gia' implementati: il lavoro residuo riguarda uso nelle catene/launcher di campagna e configurazioni,
   non riscrivere il motore. Nessun rilancio dei punti 1/2, nessuna riapertura retroattiva delle soglie di stabilita'.
+
+### 2026-10-15 | GPT | Limiti teorici da mantenere nella lettura di 2A/2C
+
+- I target spettrali sono gia' self-supervised in senso ampio (nessuna etichetta di gesto); il nuovo obiettivo richiesto dovrebbe
+  essere diverso dalla regressione delle stesse 32 statistiche gia' leggibili dagli ingressi, non soltanto rinominato SSL.
+- Perdita di dettagli temporali durante il training e' un'ipotesi compatibile con i risultati, non un meccanismo dimostrato.
+  Trasformazioni deterministiche possono aiutare rispetto all'embedding compresso o alla sonda lineare, non creare informazione dal raw.
+- Negativo significa mancato raggiungimento dei criteri prospettici in questo pilot (emg2qwerty, due teacher per famiglia, P2 descrittivo),
+  non equivalenza dei modelli, inutilita' generale delle wavelet o validazione dell'intera architettura raw.
