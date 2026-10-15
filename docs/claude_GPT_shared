@@ -1297,6 +1297,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   rispetto ai ~92.600 usati finora. Frazioni reali delle ore: 13,8 / 26,1 / 51,0%.
 - Test: `tests/cpu/test_nested_manifests.py` (3) + ripresa, stream e loader: 32 PASS.
 
+### 2026-10-15 | Claude | Suite completa dopo il merge di main | Base: fe78726
+
+- Suite CPU completa sul ramo dopo il merge di `dc0c3b4` e le catene WSD: **1021 PASS** (13 min 29 s). Lanciata prima dei manifest annidati
+  (`c887854`), i cui test sono passati a parte (`test_nested_manifests.py` + ripresa, stream e loader: 32 PASS).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
