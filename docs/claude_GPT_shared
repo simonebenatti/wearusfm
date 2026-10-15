@@ -723,6 +723,17 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 - `w1pf_audit` 60608329 COMPLETED 0:0 (5:35) e `w1pf_data_b32` 60608334 COMPLETED 0:0 (7:52); `w1pf_data_b64` sottomesso, job 60615343.
   Esiti da leggere dopo la copia dei file (criteri congelati in `docs/protocollo_gpu_dati_finestra1.md`).
 
+### 2026-10-15 | Claude | Prova del prefetch: verifica degli ingressi e batch 32 (parziale, batch 64 in corso)
+
+- `w1pf_audit` (60608329): **superata**, `stopped` = `max_steps`, 200 passi, `prefetch_audit_steps` = 200: ingressi sul dispositivo uguali
+  bit per bit al batch a fine passo, su 4 processi, 2 micro-batch per processo, nessuno STOP. Memoria max 14,1 GiB.
+- `w1pf_data_b32` (60608334): attesa sui dati **0,67%** (era 2,40%; mediana 4,4 ms contro 17, p95 7,3 ms, massimo 11 ms); media di
+  `t_step_s` 0,7057 s contro il limite 0,7215 (w1gd 0,7144): **superati** entrambi i criteri del braccio. Descrittivo: tempo di parete per
+  passo (`elapsed_s` / passi, con avvio, valutazioni e checkpoint) 0,755 s contro 0,746 di w1gd (+1,2%, non un criterio; da tenere
+  d'occhio). Stessi batch di w1gd a ogni passo (finestre e classi uguali); loss totale entro 1,1e-7 relativo al passo 1 e 6,6e-6 nei primi
+  10, poi la deriva del bf16 non deterministico (mediana 0,27% su 600 passi).
+- Verdetto complessivo solo dopo `w1pf_data_b64` (60615343).
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
