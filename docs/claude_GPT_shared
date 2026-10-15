@@ -777,6 +777,12 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
   42 PASS. Documento `docs/catene_wsd_finestra1.md` con il collaudo proposto `w1_catena_v1` (criteri congelati, tetto 5 GPU-ora), da
   autorizzare. Da rivedere da te: nessun file tuo toccato.
 
+### 2026-10-15 | Claude | Collaudo delle catene WSD `w1_catena_v1`: lancio | Codice: df4d2f5c48909c1d5f23af9ece09860ff9948e44
+
+- Simone, 15/10/2026: «sì, lancia il collaudo». Piano, comandi e preventivo generati da `scripts/wsd_chain.py` e committati prima del lancio:
+  `results/infra/w1cat_plan_20261015.json`, `w1cat_commands_20261015.txt`, `w1cat_estimate_20261015.json` (5 job da 15 minuti, tetto 5
+  GPU-ora, stima 1,8). Riferimento `deploy/w1cat-20261015` a df4d2f5, checkout di campagna, poi i 5 comandi in ordine via leonardo-ops.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79

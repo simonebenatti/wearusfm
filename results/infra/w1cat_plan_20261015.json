@@ -1,0 +1,24 @@
+{
+ "campaign": "w1cat-20261015",
+ "agent": "claude",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cat-20261015",
+ "expected_sha": "df4d2f5c48909c1d5f23af9ece09860ff9948e44",
+ "manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/capgmyo_grid_fix/manifest_v1_1.json.gz",
+ "scales": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+ "window_seconds": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+ "run_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510",
+ "slurm": {"qos": "normal", "time": "00:15:00"},
+ "margin_min": 3,
+ "startup_min": 2,
+ "slack": 1.15,
+ "spare_jobs": 1,
+ "gpus": 4,
+ "s_per_step": {"sanity/32": 0.71},
+ "ckpt_gb": {"sanity": 0.45},
+ "common_args": "--window1-rules --datasets all --prefetch",
+ "runs": [
+  {"id": "w1cat-T", "preset": "sanity", "seed": 0, "batch_size": 32, "accum_steps": 1, "steps_at_d": 1250, "total_steps": 1400,
+   "keep_checkpoints": [1100], "args": ""},
+  {"id": "w1cat-B", "branch_of": "w1cat-T", "from_step": 1100, "total_steps": 1375}
+ ]
+}
