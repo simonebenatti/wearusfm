@@ -51,6 +51,8 @@ def _features(tmp_path, splits, signal=2.0, seed=0, name="feat", ckpt="/R/run/ch
         x = (signal * centers[y] + rng.normal(size=(len(y), 16))).astype(np.float32)
         np.savez(out / f"{ds}.npz", x=x, y=y, s=s, subjects=np.asarray(subs), input_sha256=np.asarray("i" * 64),
                  checkpoint=np.asarray(ckpt), checkpoint_sha256=np.asarray("c" * 64), encoder_dim=np.asarray(384),
+                 splits_sha256=np.asarray(CP._sha256(tmp_path / "splits.json")),
+                 extraction_recipe=np.asarray(json.dumps(CP.EXTRACTION_RECIPE, sort_keys=True)),
                  protocol=np.asarray(CP.PROTOCOL), **_cache(16))
     return out
 
@@ -93,7 +95,8 @@ def test_probe_stage_scores_out_of_fold_on_pretraining_subjects_only(tmp_path):
     bad = json.loads(sp.read_text())
     bad["datasets"]["ninapro_db3"]["pretraining"] = bad["datasets"]["ninapro_db3"]["pretraining"][:-1]  # feature di altri soggetti
     sp.write_text(json.dumps(bad))
-    with pytest.raises(ValueError, match="altri soggetti"):
+    # Il nuovo gate degli split intercetta il cambio gia' sul primo dataset.
+    with pytest.raises(ValueError, match="SHA-256 degli split|altri soggetti"):
         CP.main(["--stage", "probe", "--features", str(feat), "--splits", str(sp), "--out", str(tmp_path / "x.json")])
 
 
@@ -137,6 +140,7 @@ STEPS = 2000
 def _run(tmp_path, name, *, stop=False, stopped="max_steps", steps=STEPS, nan_at=None, alarm=False, erank_last=100.0, panel=None):
     d = tmp_path / name
     d.mkdir()
+    (d / CS.CHECKPOINT).write_bytes(b"synthetic checkpoint")
     (d / "summary.json").write_text(json.dumps({"stopped": stopped, "steps": steps, "elapsed_s": 1.0, "code": {"sha": "x"}}))
     if stop:
         (d / "STOP").write_text("allarme")
@@ -160,18 +164,22 @@ def _run(tmp_path, name, *, stop=False, stopped="max_steps", steps=STEPS, nan_at
 def _report(tmp_path, name, run_dir, quality, seed=0):
     """Rapporto di sonda con predizioni fuori fold: frazione `quality` di predizioni giuste per soggetto (stesse finestre per tutti)."""
     rng = np.random.default_rng(seed)
+    from wearusfm.harness.downstream_ab import fingerprint
     oof, per = {}, {}
     for ds in DATASETS:
         subs = [f"S{i:02d}" for i in range(N_PRE[ds])]
         y = np.tile(np.arange(1, 5), 10 * len(subs))
         s = np.repeat(subs, 40)
         pred = np.where(rng.random(len(y)) < quality, y, (y % 4) + 1)
-        oof.update({f"{ds}_y": y, f"{ds}_pred": pred, f"{ds}_s": s})
-        per[ds] = {"s": float(np.mean(pred == y))}
+        rows = np.arange(len(y), dtype=np.int64)
+        oof.update({f"{ds}_y": y, f"{ds}_pred": pred, f"{ds}_s": s, f"{ds}_row": rows})
+        per[ds] = {"s": float(np.mean(pred == y)), "input_sha256": "a" * 64, "oof_rows_sha256": fingerprint(rows)}
     path = tmp_path / f"{name}.oof.npz"
     np.savez(path, datasets=np.asarray(DATASETS), **oof)
     w = {"ninapro_db2": 4 / 9, "ninapro_db3": 3 / 9, "ninapro_db6": 2 / 9}
-    rep = {"protocol": CS.PROTOCOL, "checkpoint": str(run_dir / "checkpoint_postdecay.pt"), "checkpoint_sha256": "c" * 64, "model_dim": 384,
+    rep = {"protocol": CS.PROTOCOL, "checkpoint": str(run_dir / CS.CHECKPOINT), "checkpoint_sha256": CS._sha256(run_dir / CS.CHECKPOINT), "model_dim": 384,
+           "splits_sha256": "d" * 64, "k_folds": CP.K_FOLDS, "fold_seed": CP.FOLD_SEED, "val_frac": CP.VAL_FRAC,
+           "probe_seed": 0, "feature_set": CP.FEATURE_SET, "window_s": CP.WINDOW_S, "extraction_recipe": CP.EXTRACTION_RECIPE,
            "weights": w, "S": sum(w[d] * per[d]["s"] for d in DATASETS), "S_se": 0.01, "datasets": per, "oof": str(path),
            "oof_sha256": CS._sha256(path)}
     p = tmp_path / f"{name}.json"
@@ -218,6 +226,7 @@ def test_checkpoint_path_of_the_probe_is_compared_robustly(tmp_path):
     lr, rd, rp, steps = _cand(tmp_path, 3e-4, 0.8)
     (rd / "checkpoint_postdecay.pt").write_bytes(b"ckpt")
     rep = json.loads(rp.read_text())
+    rep["checkpoint_sha256"] = CS._sha256(rd / CS.CHECKPOINT)
     link = tmp_path / "collegamento"
     link.symlink_to(rd, target_is_directory=True)
     for ckpt in (f"{rd}//checkpoint_postdecay.pt", f"{rd}/./checkpoint_postdecay.pt", str(link / "checkpoint_postdecay.pt")):
