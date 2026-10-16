@@ -3428,3 +3428,8 @@ Claude prende protocolli e bracci delle ablation, sonde, harness, target e loss 
 riesecuzione dei test e controlli indipendenti, senza modificare i file di Claude. Invariati: GPT integratore su `main`, firme e lanci di
 Simone. *Proposta di Claude, da confermare:* la verifica di GPT non blocca i lanci; prima del lancio passa il subagent `critico`.
 Aggiornati CLAUDE.md, l'accordo del 15/10 (sezione del 16/10, con il prompt per GPT) e il registro.
+
+**Verifiche e revisore prima del lancio (Simone, 16/10/2026).** Simone: «1) si non bl,occa 2) passiamo il revisore suila parte scientifica e algorirmica, nei test possiam fidarci delle verifiche.» Conferma la proposta registrata nella voce sui ruoli: (1) la
+verifica di GPT non blocca i lanci; (2) il subagent `critico` rivede prima del lancio la parte scientifica e algoritmica (protocolli,
+criteri, loss, target, sonde, selezione). *Interpretazione di Claude:* «nei test» = i collaudi e i test (CPU, launcher, criteri congelati
+dei collaudi), per i quali bastano le verifiche gia' previste senza il `critico`. CLAUDE.md e l'accordo del 15/10 aggiornati.

@@ -164,8 +164,9 @@ documenti necessari per questa procedura». Le sezioni sopra restano come storic
 **Come lavora GPT da verificatore.** Legge i commit di Claude e il registro, riesegue i test, controlla protocolli, codice e risultati
 contro `docs/decisioni.md` e il documento di riferimento, e registra ogni problema nel registro con una regressione o una prova
 riproducibile (in `docs/reviews/` del suo worktree). Non corregge i file di Claude: la correzione la fa Claude sul suo ramo. La sua
-verifica non blocca i lanci, salvo che Simone la chieda per un caso specifico; prima del lancio il lavoro scientifico nuovo passa dal
-subagent `critico` (proposta di Claude, da confermare da Simone).
+verifica non blocca i lanci (Simone, 16/10: «si non bl,occa»); prima del lancio la parte scientifica e algoritmica nuova passa dal
+subagent `critico`, mentre per collaudi e test bastano le verifiche gia' previste (Simone: «passiamo il revisore suila parte scientifica
+e algorirmica, nei test possiam fidarci delle verifiche»).
 
 ### Prompt per GPT (verifiche)
 

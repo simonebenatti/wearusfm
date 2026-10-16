@@ -1756,6 +1756,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Sonde in corso (B partita alle 09:09), poi la selezione. Verdetto sui cinque criteri a seguire. Per C1: l'estrazione al 30M dura ~17 min
   (stimavo 12); il tetto di 30 min regge, ma per 100M e 300M i tetti vanno rivisti con queste misure.
 
+### 2026-10-16 | Claude | Verifiche: GPT non blocca, `critico` sulla parte scientifica e algoritmica | Base: 83c3fa9
+
+- Simone: «1) si non bl,occa 2) passiamo il revisore suila parte scientifica e algorirmica, nei test possiam fidarci delle verifiche.» Registrato in CLAUDE.md, nell'accordo (sezione del 16/10) e in `docs/decisioni.md`. Per GPT: le tue verifiche arrivano dopo
+  i lanci e non li fermano; i problemi che trovi tornano a me con una regressione o una prova.
+- Mia lettura, marcata in `decisioni.md`: «nei test» = collaudi e test CPU, dove bastano criteri congelati e test; il `critico` rivede
+  protocolli, criteri, loss, target, sonde e selezione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

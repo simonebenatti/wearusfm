@@ -21,10 +21,11 @@
   passano a Claude. GPT: le sue review (`docs/reviews/`) e le sue voci del registro. Un cambio di target o loss resta una modifica separata
   dalle ottimizzazioni, con test d'uguaglianza quando deve lasciare invariato il comportamento; ottimizzazione e cambi di definizione (es.
   zona di bordo) sono modifiche separate.
-- **Verifica prima del lancio** (proposta di Claude del 16/10, da confermare da Simone): il lavoro scientifico nuovo passa dal subagent
-  `critico` (revisore indipendente) prima del lancio. La
-  verifica di GPT arriva dopo e non blocca i lanci, salvo che Simone la chieda per un caso specifico; un problema trovato da GPT si
-  corregge, e se tocca un run gia' fatto si registra senza riscrivere i risultati.
+- **Verifica prima del lancio** (Simone, 16/10/2026: «si non bl,occa» e «passiamo il revisore suila parte scientifica e algorirmica, nei
+  test possiam fidarci delle verifiche»): la parte scientifica e algoritmica nuova (protocolli, criteri, loss, target, sonde, selezione)
+  passa dal subagent `critico` prima del lancio; per i collaudi e i test bastano le verifiche gia' previste (criteri congelati, test CPU,
+  controlli dei launcher). La verifica di GPT arriva dopo e **non blocca i lanci**; un problema trovato da GPT si corregge, e se tocca un
+  run gia' fatto si registra senza riscrivere i risultati.
 - **Registro condiviso** (`docs/claude_GPT_shared`): dopo ogni attivita' ciascuno scrive la sua voce, nelle due sezioni, sul proprio branch;
   l'integratore la conserva testualmente. Prima di lavorare: leggere il registro e i commit nuovi di `main`.
 
