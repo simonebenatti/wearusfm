@@ -10,13 +10,22 @@
   suo. Si modificano SOLO i file del proprio worktree; dati e checkpoint restano nelle directory esterne di sempre.
 - **Integratore unico su `main`: GPT**, tramite merge (niente squash, rebase o riscrittura dei commit dell'altro: restano gli SHA
   originali). Se un commit non va, torna al suo autore con una nota e si corregge sul suo branch. Quando un'integrazione cambia il
-  comportamento della parte di Claude, Claude la rivede prima del deploy.
-- **Proprietari dei file.** Claude: `training/run.py`, il comando di training, il dataloader (`data/`), i launcher del training, il
-  meccanismo di deploy e di sottomissione. GPT: `harness/`, le sonde, i moduli dei target e delle loss (`model/anchor_targets.py`,
-  `model/spectral_targets.py`, `training/jepa.py` e le riduzioni delle loss), i launcher dell'harness. Le interfacce condivise (configurazione
-  del modello, formato del checkpoint, uscite dell'encoder, contratto delle loss distribuite) si concordano prima. Un'ottimizzazione dei
-  target fatta da Claude deve essere equivalente all'originale (test d'uguaglianza), con review di GPT e passaggio esclusivo temporaneo del
-  file; ottimizzazione e cambi di definizione (es. zona di bordo) sono modifiche separate.
+  comportamento del codice di Claude, Claude la rivede prima del deploy.
+- **Ruoli dal 16/10/2026** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli facciamo fare
+  le verifiche»). **Claude fa la parte scientifica e tecnica:** protocolli e bracci delle ablation, sonde, harness, target e loss, analisi,
+  piani e preventivi, oltre a trainer, dataloader, launcher, deploy e sottomissioni. **GPT fa le verifiche:** review del codice e dei
+  protocolli di Claude, riesecuzione dei test, controlli indipendenti delle analisi e dei risultati; segnala i problemi nel registro con una
+  regressione o una prova, e la correzione la fa Claude sul suo ramo. GPT resta integratore su `main`. Le firme restano di Simone.
+- **Proprietari dei file.** Claude: tutto il codice e i documenti di lavoro, compresi `harness/`, le sonde, i moduli dei target e delle loss
+  (`model/anchor_targets.py`, `model/spectral_targets.py`, `training/jepa.py` e le riduzioni delle loss) e i loro launcher, che dal 16/10
+  passano a Claude. GPT: le sue review (`docs/reviews/`) e le sue voci del registro. Un cambio di target o loss resta una modifica separata
+  dalle ottimizzazioni, con test d'uguaglianza quando deve lasciare invariato il comportamento; ottimizzazione e cambi di definizione (es.
+  zona di bordo) sono modifiche separate.
+- **Verifica prima del lancio** (Simone, 16/10/2026: «si non bl,occa» e «passiamo il revisore suila parte scientifica e algorirmica, nei
+  test possiam fidarci delle verifiche»): la parte scientifica e algoritmica nuova (protocolli, criteri, loss, target, sonde, selezione)
+  passa dal subagent `critico` prima del lancio; per i collaudi e i test bastano le verifiche gia' previste (criteri congelati, test CPU,
+  controlli dei launcher). La verifica di GPT arriva dopo e **non blocca i lanci**; un problema trovato da GPT si corregge, e se tocca un
+  run gia' fatto si registra senza riscrivere i risultati.
 - **Registro condiviso** (`docs/claude_GPT_shared`): dopo ogni attivita' ciascuno scrive la sua voce, nelle due sezioni, sul proprio branch;
   l'integratore la conserva testualmente. Prima di lavorare: leggere il registro e i commit nuovi di `main`.
 

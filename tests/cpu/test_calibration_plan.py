@@ -18,7 +18,9 @@ CP = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(CP)
 
 WPE = 784756.9792373349  # finestre per epoca del derivato al 100% (rapporto del 15/10)
-REPORT = {"fractions": {"1": {"windows_per_epoch": WPE, "hash": "h", "file_sha256": "f", "file": "m_nested_1.json.gz"}}}
+SHA_100 = "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"  # file del derivato al 100% costruito sul cluster
+REPORT = {"fractions": {"1": {"windows_per_epoch": WPE, "hash": "h", "file_sha256": SHA_100, "file": "m_nested_1.json.gz"}},
+          "code": {"sha": "11f868b8ad8a949381a5cbb8519733e7dbc538bf", "source": "launcher (lib_code_dir.sh: checkout di campagna pulito)"}}
 DEC = {"C1": {"finalists": [3e-4, 1e-3]}, "C2": {"confirmed": [3e-4, 1e-3]}, "C3": {"proposed_300m_lr": 3e-4}}
 
 
@@ -78,6 +80,7 @@ def test_plans_feed_the_chain_planner_with_lr_and_the_derived_manifest(tmp_path)
             extra = next(t for t in shlex.split(cmd) if t.startswith("--export=")).split("EXTRA_ARGS=", 1)[1].split()
             assert "--lr" in extra and extra[extra.index("--nested") + 1] == "1" and "--prefetch" in extra
             assert extra[extra.index("--fixed-eval-every") + 1] == "500"  # il pannello del criterio di stabilita' A4
+            assert extra[extra.index("--manifest-sha256") + 1] == SHA_100  # il training verifica il file del piano
     assert CP.main([str(_write(tmp_path / "rep.json", REPORT)), "--decisions", str(_write(tmp_path / "dec.json", DEC)), "--out",
                     str(tmp_path / "out")]) == 0
     assert sorted(p.name for p in (tmp_path / "out").iterdir()) == ["calibrazione_C1.json", "calibrazione_C2.json", "calibrazione_C3.json",
@@ -119,7 +122,7 @@ def test_stops_block_the_following_phases():
 def test_evaluation_plans_feed_the_evaluation_chain():
     EC = _load("evaluation_chain")
     camp = {"campaign": "w1cal", "agent": "claude", "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal", "expected_sha": "a" * 40,
-            "manifest": "/M/m.json.gz", "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/leonardo_scratch/R",
+            "manifest": "/M/m_nested_1.json.gz", "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/leonardo_scratch/R",
             "eval": {"features_root": "/leonardo_scratch/F", "results_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal"}}
     r = CP.plan(REPORT, DEC, camp)
     assert "eval" not in r["plans"]["C1"]  # il piano dei training resta quello di wsd_chain.py
@@ -145,3 +148,18 @@ def _load(name):
     m = importlib.util.module_from_spec(s)
     s.loader.exec_module(m)
     return m
+
+
+def test_the_plan_is_bound_to_the_cluster_build_report():
+    """Rilievo 5 del critico (16/10): lo SHA del file viene dal rapporto della costruzione sul cluster; senza, o con un manifest che il
+    rapporto non descrive, nessun piano."""
+    bad = {**REPORT, "fractions": {"1": {**REPORT["fractions"]["1"], "file_sha256": None}}}
+    with pytest.raises(ValueError, match="costruzione sul cluster"):
+        CP.plan(bad)
+    local = {**REPORT, "code": {"sha": "56cea75", "clean": True, "source": "git"}}  # come il rapporto della costruzione sul Mac
+    with pytest.raises(ValueError, match="launcher sul cluster"):
+        CP.plan(local)
+    camp = {"campaign": "w1cal", "agent": "claude", "code_dir": "/C", "expected_sha": "a" * 40, "manifest": "/M/altro.json.gz",
+            "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/R"}
+    with pytest.raises(ValueError, match="il rapporto descrive"):
+        CP.plan(REPORT, None, camp)

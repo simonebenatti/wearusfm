@@ -141,3 +141,38 @@ Leggi CLAUDE.md, entrambe le sezioni del registro e questo accordo. Lavora nel w
 - Otto nodi sulla QoS normal ammessi secondo l'output sacctmgr in fba794f. Disponibilità e attesa dipendono anche dal consumo del progetto.
 - Saldo riportato: circa92.844 GPU-ora restanti; quota mensile circa20.548 condivisa. Non è il budget assegnato alla nostra campagna.
 - Punti1/2 della lista comune chiusi; punti3–6 attivi. Questi prompt preparano consegne verificabili e un'unica tranche da preventivare.
+
+## Aggiornamento del 16/10/2026: la parte scientifica passa a Claude, GPT fa le verifiche
+
+Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli facciamo fare le verifiche, modifica i
+documenti necessari per questa procedura». Le sezioni sopra restano come storico; da oggi valgono queste assegnazioni (CLAUDE.md,
+«Lavoro in parallelo Claude / GPT»).
+
+| Compito (numerazione dei sei punti) | Prima | Da oggi |
+|---|---|---|
+| 2. Regola prospettica di stabilita' (collaudi e run lunghi) | GPT | Claude; per la calibrazione A4 e' gia' firmato (16/10) |
+| 3. Confronti JEPA-only, ancore-only, combinazione, keep separata | GPT | Claude (in corso: JEPA puro e ancore-only) |
+| 4. Coseni/norme, sonde per profondita', controlli di collasso, encoder casuale | GPT | Claude |
+| 5. C1-C4: fold, selezione, valutazione | GPT | Claude (fatto il 15-16/10, `docs/calibrazione_c1_c4_selezione.md`) |
+| Contratto del piano di valutazione | GPT | Claude: vale lo schema `eval-plan-v0` di `scripts/evaluation_chain.py` |
+| Lista dei bracci e protocolli della finestra 1 (bozza GPT del 12/10) | GPT | Claude la aggiorna e la porta alla firma di Simone |
+| `harness/`, sonde, target e loss (`training/jepa.py`, `model/anchor_targets.py`, `model/spectral_targets.py`) e loro launcher | GPT | Claude |
+| Review, riesecuzione dei test, controlli indipendenti di analisi e risultati | in parte | **GPT** |
+| Integrazione su `main` | GPT | GPT (invariato) |
+| Firme di default, soglie, budget e lanci | Simone | Simone (invariato) |
+
+**Come lavora GPT da verificatore.** Legge i commit di Claude e il registro, riesegue i test, controlla protocolli, codice e risultati
+contro `docs/decisioni.md` e il documento di riferimento, e registra ogni problema nel registro con una regressione o una prova
+riproducibile (in `docs/reviews/` del suo worktree). Non corregge i file di Claude: la correzione la fa Claude sul suo ramo. La sua
+verifica non blocca i lanci (Simone, 16/10: «si non bl,occa»); prima del lancio la parte scientifica e algoritmica nuova passa dal
+subagent `critico`, mentre per collaudi e test bastano le verifiche gia' previste (Simone: «passiamo il revisore suila parte scientifica
+e algorirmica, nei test possiam fidarci delle verifiche»).
+
+### Prompt per GPT (verifiche)
+
+Leggi CLAUDE.md (sezione «Lavoro in parallelo Claude / GPT», ruoli dal 16/10), il registro condiviso e i commit nuovi del ramo di Claude.
+Il tuo compito e' verificare, non sviluppare: (1) riesegui la suite CPU sul ramo di Claude e i test dei file toccati; (2) controlla
+protocolli, criteri congelati, codice e risultati contro `docs/decisioni.md`, l'accordo del 15/10 e questo aggiornamento; (3) per ogni
+problema scrivi nel registro gravita', riferimento (file:riga o commit) e una regressione o una prova riproducibile; (4) non modificare i
+file di Claude e non lanciare job. Priorita': il collaudo `w1_selezione_v1`, la selezione C1-C4, i bracci JEPA puro e ancore-only quando
+arrivano. Continua l'integrazione su `main` come prima.

@@ -1,0 +1,182 @@
+{
+ "schema": "eval-plan-v0",
+ "campaign": "w1sel-20261016",
+ "agent": "claude",
+ "guard": {
+  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+  "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+  "report_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/guards"
+ },
+ "limits": {
+  "boost_qos_dbg": 2,
+  "lrd_all_serial": 8
+ },
+ "nodes": [
+  {
+   "id": "w1sel-T-ext",
+   "kind": "extract",
+   "after": [],
+   "queue": "boost_usr_prod",
+   "gpu_hours": 0.5,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+   "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+   "launcher": "scripts/slurm/calibration_extract.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T/checkpoint_postdecay.pt",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--qos=boost_qos_dbg",
+    "--time=00:30:00"
+   ],
+   "inputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T/checkpoint_postdecay.pt"
+   ],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db2.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db3.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db6.npz"
+   ],
+   "checkpoint": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T",
+    "name": "checkpoint_postdecay.pt",
+    "training_job": "w1cat-T-j03",
+    "min_steps": 1400,
+    "sha256": "15262e1069c3969644595d20f0f4974d2f1948369cc9eb2a39e4f3c98459c069"
+   }
+  },
+  {
+   "id": "w1sel-T-probe",
+   "kind": "probe",
+   "after": [
+    "w1sel-T-ext"
+   ],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+   "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+   "launcher": "scripts/slurm/calibration_probe.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.json"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:00:00"
+   ],
+   "inputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db2.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db3.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/T/ninapro_db6.npz"
+   ],
+   "outputs": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.oof.npz"
+   ]
+  },
+  {
+   "id": "w1sel-B-ext",
+   "kind": "extract",
+   "after": [],
+   "queue": "boost_usr_prod",
+   "gpu_hours": 0.5,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+   "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+   "launcher": "scripts/slurm/calibration_extract.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B/checkpoint_postdecay.pt",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--qos=boost_qos_dbg",
+    "--time=00:30:00"
+   ],
+   "inputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B/checkpoint_postdecay.pt"
+   ],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db2.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db3.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db6.npz"
+   ],
+   "checkpoint": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B",
+    "name": "checkpoint_postdecay.pt",
+    "training_job": "w1cat-B-j02",
+    "min_steps": 1375,
+    "sha256": "71af16a20b596c4261f8ddfa7bb847bb6b5f09bb0b4f50c608284f4a058e5d06"
+   }
+  },
+  {
+   "id": "w1sel-B-probe",
+   "kind": "probe",
+   "after": [
+    "w1sel-B-ext"
+   ],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+   "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+   "launcher": "scripts/slurm/calibration_probe.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.json"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:00:00"
+   ],
+   "inputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db2.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db3.npz",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1sel_1610/features/B/ninapro_db6.npz"
+   ],
+   "outputs": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.oof.npz"
+   ]
+  },
+  {
+   "id": "w1sel-select",
+   "kind": "compare",
+   "after": [
+    "w1sel-T-probe",
+    "w1sel-B-probe"
+   ],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016",
+   "expected_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+   "launcher": "scripts/slurm/calibration_select.sbatch",
+   "args": [
+    "collaudo",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/decisione_collaudo.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/registro_collaudo.json",
+    "w1cat-T",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.json",
+    "1400",
+    "w1cat-B",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.json",
+    "1375"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=00:30:00"
+   ],
+   "inputs": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.oof.npz"
+   ],
+   "outputs": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/decisione_collaudo.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/registro_collaudo.json"
+   ]
+  }
+ ]
+}

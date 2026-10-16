@@ -22,7 +22,8 @@ Piano di valutazione (`--out` con una campagna che ha "eval"): per fase pronta `
 `scripts/evaluation_chain.py`): per ogni run guardia del checkpoint post-decay -> estrazione (1 GPU) -> sonda a fold (CPU), poi la selezione
 della fase (CPU) dopo tutte le sonde.
 
-Uso: python scripts/calibration_plan.py rapporto_dei_manifest_derivati.json [--decisions decisioni.json] [--campaign campagna.json]
+Uso (il rapporto e' quello della costruzione sul cluster, results/infra/derived_manifests_v1_1_build_cluster_20261015.json):
+     python scripts/calibration_plan.py rapporto_dei_manifest_derivati.json [--decisions decisioni.json] [--campaign campagna.json]
      [--out cartella]   -> tabella e preventivo; con --out i piani per wsd_chain.py delle fasi pronte e il riepilogo JSON
 """
 
@@ -57,11 +58,15 @@ DRY_CAMPAIGN = {"campaign": "w1-calibrazione-DRYRUN", "agent": "claude", "code_d
                 "spare_jobs": 0, "gpus": 4}
 DRY_EVAL = {"features_root": "<FEATURES_ROOT>", "results_root": "<RESULTS_ROOT>"}
 P1_DATASETS = ("ninapro_db2", "ninapro_db3", "ninapro_db6")
-# valutazione: tetti dei nodi (l'estrazione P1 al 30M ha richiesto 13:42 per tutti i 61 soggetti, docs/step1_downstream_ab.md; qui solo i 48
-# di pretraining; le sonde P1 22 min con 8 core, qui 4 fold) e stime, da rivedere con le prime misure
-EXTRACT_TIME = {"sanity": "00:30:00", "100m": "01:00:00", "300m": "02:00:00"}
-EXTRACT_EXPECTED_H = {"sanity": 0.2, "100m": 0.4, "300m": 0.8}
-PROBE_TIME, PROBE_CORES, PROBE_EXPECTED_H = "03:00:00", 8, 1.2
+# valutazione: misure del collaudo w1_selezione_v1 (16/10/2026) al 30M: estrazione 17:51 e 16:34 (~10 min di CPU, il resto GPU e I/O), sonda
+# 1 h 44 e 1 h 51 a 8 core. 100M e 300M: STIME, estrazione scalata coi parametri sulla parte GPU, sonda con la larghezza delle feature (2d:
+# 768 / 1280 / 1792). Sulla seriale (tetto 4 h) la sonda del 300M (~4,2 h) non ci sta: prima di C4 va spostata su un nodo GPU o divisa per
+# dataset (registro, 16/10). Le sonde girano una alla volta per il limite di core per utente della seriale.
+EXTRACT_TIME = {"sanity": "00:30:00", "100m": "01:30:00", "300m": "03:00:00"}
+EXTRACT_EXPECTED_H = {"sanity": 0.3, "100m": 0.65, "300m": 1.5}
+PROBE_CORES = 8
+PROBE_TIME = {"sanity": "03:00:00", "100m": "04:00:00", "300m": "04:00:00"}
+PROBE_EXPECTED_H = {"sanity": 1.8, "100m": 3.0, "300m": 4.2}
 SELECT_TIME, SELECT_CORES = "00:30:00", 2
 EVAL_LIMITS = {"boost_usr_prod": 8, "lrd_all_serial": 8}
 
@@ -147,7 +152,7 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                       "checkpoint": {"run_dir": run["run_dir"], "name": "checkpoint_postdecay.pt", "training_job": run["job_ids"][-1],
                                      "min_steps": run["total_steps"], "sha256": None}})
         nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "lrd_all_serial", "gpu_hours": 0, **code,
-                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME}"],
+                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME[spec['preset']]}"],
                       "inputs": npzs, "outputs": [rep, oof]})
         cands += [repr(float(lr)), run["run_dir"], rep, str(run["total_steps"])]
         probe_outs += [rep, oof]
@@ -160,8 +165,9 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
             "estimate": {"gpu_hours_expected": round(n_runs * EXTRACT_EXPECTED_H[spec["preset"]], 2),
                          "gpu_hours_max": round(n_runs * _hours(EXTRACT_TIME[spec["preset"]]), 2),
-                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H, 1),
-                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME) + SELECT_CORES * _hours(SELECT_TIME)
+                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H[spec["preset"]], 1),
+                         "probe_fits_the_cap": PROBE_EXPECTED_H[spec["preset"]] <= _hours(PROBE_TIME[spec["preset"]]),
+                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME[spec["preset"]]) + SELECT_CORES * _hours(SELECT_TIME)
                                                      + n_runs * _hours("00:20:00"), 1)}}
 
 
@@ -170,6 +176,13 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
 
     frac = build_report["fractions"]["1"]
     wpe = frac["windows_per_epoch"]
+    # il rapporto della costruzione SUL CLUSTER: lo SHA del file e' quello che il training verifica (--manifest-sha256) e che entra nella
+    # firma dei dati; quello della costruzione locale e' di un file che sul cluster non esiste (review del critico, 16/10/2026)
+    if not str((build_report.get("code") or {}).get("source", "")).startswith("launcher"):
+        raise ValueError("rapporto dei manifest derivati non costruito da un launcher sul cluster (code.source): serve quello della costruzione "
+                         "sul cluster, results/infra/derived_manifests_v1_1_build_cluster_20261015.json")
+    if not (isinstance(frac.get("file_sha256"), str) and len(frac["file_sha256"]) == 64):
+        raise ValueError("rapporto dei manifest derivati senza file_sha256 del derivato al 100%: serve il rapporto della costruzione sul cluster")
     steps_at_d = math.floor(4.0 * wpe / BATCH)
     warmup = R.wsd_warmup_steps(steps_at_d)
     phases = resolve_phases(decisions)
@@ -177,6 +190,8 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
     base = {**DRY_CAMPAIGN, **(campaign or {})}
     ev = {**DRY_EVAL, **base.pop("eval", {})}
     dry = campaign is None
+    if not dry and Path(base["manifest"]).name != frac.get("file"):
+        raise ValueError(f"manifest della campagna {base['manifest']}: il rapporto descrive {frac.get('file')}")
     panel = _select().PANEL_EVERY
     rows, plans, blocked, evals = [], {}, {}, {}
     for name, spec in PHASES.items():
@@ -190,7 +205,7 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
                  "args": f"--lr {lr:g} --nested 1"} for lr in info["lrs"]]
         p = {**copy.deepcopy(base), "campaign": f"{base['campaign']}-{name.lower()}", "runs": runs,
              "s_per_step": {f"{spec['preset']}/{BATCH}": S_PER_STEP[spec["preset"]]}, "ckpt_gb": {spec["preset"]: CKPT_GB[spec["preset"]]},
-             "common_args": f"--window1-rules --datasets all --prefetch --fixed-eval-every {panel}"}
+             "common_args": f"--window1-rules --datasets all --prefetch --fixed-eval-every {panel} --manifest-sha256 {frac['file_sha256']}"}
         if len({r["id"] for r in runs}) != len(runs):
             raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)

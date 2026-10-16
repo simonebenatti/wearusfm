@@ -4,9 +4,9 @@ sessioni dei soggetti del sottoinsieme firmato, base temporale sulle ore campion
 residuo di C solo verso B con A alla sua quota (`pretraining_manifest.DERIVED_RULE`), provenienza degli ingressi nei parametri. Il v1.1 non si
 tocca.
 
-Prima di scrivere, sui derivati: pesi finiti e non negativi, massa 1, quota di A e tetto di passaggi dopo le trasformazioni del sampler
-(`sampled_distribution`, che replica `ManifestIndex.load` + `time_weighted_probs`: la coerenza col loader vero e' verificata qui sul derivato al
-100%), sottoinsiemi annidati, configurazione delle finestre del training uguale a quella con cui `window_s` e' stato calcolato. Confronto del
+Prima di scrivere, sui derivati (`pretraining_manifest.derived_checks`): durate valide, pesi finiti e non negativi, peso 0 senza finestre,
+somma 1 dei pesi, quote di A, B (+ residuo) e C (- residuo) e tetto di passaggi dopo le trasformazioni del sampler (`sampled_distribution`,
+che replica `ManifestIndex.load` + `time_weighted_probs`: la coerenza col loader vero e' verificata qui sul derivato al 100%), sottoinsiemi annidati, configurazione delle finestre del training uguale a quella con cui `window_s` e' stato calcolato. Confronto del
 derivato al 100% col v1.1: sessioni escluse, ore, quote per unita' e passaggi del v1.1 dopo il sampler; spiega le differenze. Una verifica
 fallita: nessun file scritto, uscita 1.
 
@@ -96,7 +96,8 @@ def build(manifest: Path, window_seconds: Path, batch: int = 32) -> tuple[dict, 
     checks = {"window_config_same_as_training": wcfg["same_as_training"],
               "nested_subjects_and_sessions": all(subjects[a] <= subjects[b] and keys[a] <= keys[b] for a, b in zip(order, order[1:])),
               "within_cap_after_sampler": all(d["max_passes"] <= doc["params"]["max_passes"] * (1 + 1e-9) for d in dists.values()),
-              "mass_one_after_sampler": all(abs(d["mass"] - 1) < 1e-9 for d in dists.values()),
+              # pesi, somma 1, quote A / B + residuo / C - residuo dopo il sampler (prima era la massa, vera per costruzione; critico 16/10)
+              "derived_checks": all(not M.derived_checks(rows_of[f], ws, doc["params"], out[f]["params"]["residual_c_to_b"]) for f in out),
               "sampler_matches_loader": bool(max(abs(a - b) for a, b in zip(shares_loader, shares_ours)) < 1e-12)}
     # confronto col genitore: il v1.1 pesa anche le sessioni senza finestre, e il sampler ne ridistribuisce la massa su tutte le altre
     pdist = M.sampled_distribution(parent, ws, doc["params"].get("epochs", 4.0), batch)
@@ -148,7 +149,8 @@ def main(argv=None) -> int:
         print(f"VERIFICHE FALLITE: {failed}: nessun file scritto")
         return 1
     base = args.manifest.name.removesuffix(".gz").removesuffix(".json")
-    # mtime fisso: stessi byte a ogni costruzione. Tutti i conflitti si controllano PRIMA di scrivere: niente insiemi misti (ultrareview 15/10)
+    # mtime fisso e allocazione in ordine fisso (`pretraining_manifest.allocate`, corretta il 16/10: prima il 25% dipendeva da
+    # PYTHONHASHSEED): stessi byte a ogni costruzione con lo stesso codice. Tutti i conflitti si controllano PRIMA di scrivere: niente insiemi misti (ultrareview 15/10)
     files = {f: (args.out_dir / f"{base}_nested_{f}.json.gz", gzip.compress(json.dumps(d, separators=(",", ":"), default=list).encode(), mtime=0))
              for f, d in out.items()}
     conflicts = [str(p) for p, data in files.values() if p.exists() and p.read_bytes() != data]

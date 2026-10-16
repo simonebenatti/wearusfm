@@ -6,6 +6,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
 
+**Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
+facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
+integratore su `main`. Le colonne «GPT» della tabella qui sotto valgono come storico: assegnazioni nuove in
+[accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md), sezione del 16/10, e in CLAUDE.md.
+
 Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
@@ -1703,6 +1708,131 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Infrastruttura: 9,26 su 25 GPU-ora usate, 15,74 residue. SCRATCH: prossimo giro 12/11. Lancio della campagna previsto dal 01/11.
 
+### 2026-10-16 | Claude | Calibrazione C1-C4: A4 e parita' firmate da Simone | Base: bfdc589
+
+- Simone: «firmo A4 e parità, prepara il preventivo del collaudo su w1cat». Registrate in `docs/decisioni.md` e nel protocollo
+  (`docs/calibrazione_c1_c4_selezione.md`, ora FIRMATO): A4 (500 passi, 3 consecutive oltre 1,10 x minimo, finale <= 0,9 L0) e parita'
+  entro 1 SE accoppiato al LR piu' basso. Nessun cambio al codice: le soglie erano gia' quelle di `calibration_select.py`. Resta il budget W1.
+
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1: protocollo, preventivo e fase `collaudo` della selezione | Base: 347115d
+
+- Simone: «prepara il preventivo del collaudo su w1cat». Protocollo con criteri congelati in `docs/calibrazione_c1_c4_selezione.md`:
+  guardia -> estrazione (1 GPU, dbg) -> sonda a fold su `w1cat-T` e `w1cat-B`, poi selezione. Tetto 1,0 GPU-ora (attese ~0,4) dal residuo
+  infrastruttura 15,74; CPU tetto ~51 core-ora. Non lanciato: serve il via di Simone.
+- `calibration_select.py`: fase `collaudo` (etichette al posto dei LR, decisione = elenco degli ammissibili, rifiutata da `merge`) e, in
+  ogni fase, confronti accoppiati di tutte le coppie nel registro, solo descrittivi (nessuna regola cambiata). Verificati in sola lettura
+  i file di `w1cat` (post-decay, metrics, summary presenti; nessun `fixed_eval.jsonl`: il pannello era spento). Test 79 PASS (77 + 2).
+
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1 lanciato | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su w1cat». Preflight in sola lettura pulito; `deploy/w1sel-20261016`;
+  checkout 60688786 COMPLETED 0:0; catena sottomessa una volta con `evaluation_chain.py --submit`: guardie 60688822/60688823 (senza afterok,
+  training finiti), estrazioni 60688824/60688827 (dbg), sonde 60688826/60688829, selezione 60688830. Criteri in
+  `docs/calibrazione_c1_c4_selezione.md`; tetto 1,0 GPU-ora. Esito e consuntivo a seguire.
+
+### 2026-10-16 | Claude | Nuovi ruoli: parte scientifica a Claude, verifiche a GPT | Base: b671901
+
+- Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli facciamo fare le verifiche, modifica i
+  documenti necessari per questa procedura». Aggiornati CLAUDE.md (ruoli e proprietari dei file), l'accordo del 15/10 (sezione del 16/10
+  con tabella delle riassegnazioni e prompt per GPT), `docs/decisioni.md` e la nota in testa al blocco di coordinamento.
+- Per GPT: da ora verifichi (review, test, controlli indipendenti con regressioni o prove), non sviluppi; `harness/`, sonde, target e
+  loss passano a me. Prima verifica utile: il collaudo `w1_selezione_v1` e la selezione C1-C4; poi JEPA puro e ancore-only.
+
+### 2026-10-16 | Claude | Pacchetto di lancio di C1 e bozza del protocollo dei bracci (punto 5) | Base: 83c3fa9
+
+- Simone, mentre gira `w1_selezione_v1`: «Pacchetto di lancio C1» e «Protocollo dei bracci (punto 5)».
+- Pacchetto C1 (773bc6d): `results/infra/w1cal_campaign_20261016.json` coi percorsi veri del cluster (derivato al 100% 6d6d8167...,
+  window_seconds 59425316 = e660e324..., scale loader_59623700) e piani in dry-run in `results/infra/w1cal_c1_dryrun_20261016/` (SHA
+  provvisorio). Sequenza al lancio in `docs/calibrazione_c1_c4_piano.md`.
+- Bozza `docs/bracci_obiettivo_finestra1.md`: A, JEPA-only (peso ancore 0), ancore-only (ancore attuali, serve un peso della JEPA nella
+  loss), keep separata; 30M, 4 epoche, 2 semi accoppiati, P1/P2 ufficiali, lettura +1 punto su P1 e P2 (proposta). Costi ~630-790 GPU-ora
+  attese secondo l'opzione della keep. Da firmare; implementazione dopo il via.
+
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1: guardie ed estrazioni finite | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Guardie 60688822 (T) e 60688823 (B) COMPLETED 0:0 in 6 e 9 s, `ok` con gli SHA-256 attesi (15262e10..., 71af16a2...), 1.400 e
+  1.375 passi, `max_steps`. Estrazioni 60688824 (T) COMPLETED 0:0 in 17:51 e 60688827 (B) in 16:34, entro i 30 minuti: DB2 32 soggetti
+  38.544 finestre, DB3 8 / 9.834, DB6 8 / 33.961; MaxRSS ~10 GB, CPU ~9:50 su ~17 min. npz di 119, 30 e 105 MB per checkpoint.
+- Sonde in corso (B partita alle 09:09), poi la selezione. Verdetto sui cinque criteri a seguire. Per C1: l'estrazione al 30M dura ~17 min
+  (stimavo 12); il tetto di 30 min regge, ma per 100M e 300M i tetti vanno rivisti con queste misure.
+
+### 2026-10-16 | Claude | Verifiche: GPT non blocca, `critico` sulla parte scientifica e algoritmica | Base: 83c3fa9
+
+- Simone: «1) si non bl,occa 2) passiamo il revisore suila parte scientifica e algorirmica, nei test possiam fidarci delle verifiche.» Registrato in CLAUDE.md, nell'accordo (sezione del 16/10) e in `docs/decisioni.md`. Per GPT: le tue verifiche arrivano dopo
+  i lanci e non li fermano; i problemi che trovi tornano a me con una regressione o una prova.
+- Mia lettura, marcata in `decisioni.md`: «nei test» = collaudi e test CPU, dove bastano criteri congelati e test; il `critico` rivede
+  protocolli, criteri, loss, target, sonde e selezione.
+
+### 2026-10-16 | Claude | Review dei manifest derivati affidata al `critico` | Base: e93e8e6
+
+- Simone: «firmo 2 e 8, fai rivedere i manifest al critico». Lanciata la review indipendente dei manifest derivati (codice, test e
+  rapporti di costruzione del cluster: le copie locali dei file non ci sono piu'), contro la specifica dell'accordo del 15/10 e le tue
+  note del 15/10. Sostituisce la tua review bloccante; la tua verifica resta benvenuta dopo, non blocca C1. Esito a seguire.
+
+### 2026-10-16 | Claude | Budget firmati: finestra 1 6.000 GPU-ora, calibrazione 220 | Base: dece814
+
+- Simone: «firmo 220 per la calibrazione e 6.000 per la finestra 1». Tetto complessivo della finestra 1 6.000 GPU-ora (calibrazione
+  compresa), calibrazione C1-C4 220. Tetti, non autorizzazioni: ogni tranche con preventivo e via. Registrato in `docs/decisioni.md`.
+- Per C1 mancano ora solo il verdetto del collaudo `w1_selezione_v1` e quello del `critico` sui manifest derivati.
+
+### 2026-10-16 | Claude | Bracci JEPA puro e ancore-only implementati | Base: 7dbc5a9
+
+- Simone: «poi lavoriamo su» JEPA puro e ancore-only. `JEPAConfig.jepa_weight` (default 1) in `training/jepa.py` (file passato a Claude coi
+  ruoli del 16/10): totale e contratto distribuito coi due pesi; `--anchor-weight` e `--jepa-weight` in `train_jepa.py`; ripresa dei
+  checkpoint vecchi col peso 1 implicito, peso cambiato rifiutato.
+- Uguaglianza: training breve su CPU coi pesi di default (e con 1 e 0,2 espliciti) identico bit per bit al codice di prima. In DDP non serve
+  `find_unused_parameters`: i termini a peso 0 restano nel grafo con gradiente zero (test e torchrun gloo a 2 processi per entrambi i bracci).
+- Test `tests/cpu/test_objective_arms.py` 19 PASS; suite completa: 1143 PASS (con i primi 15 test dei bracci; gli ultimi 4, gradienti e torchrun, PASS a parte: 1147 in tutto). Stato e cautele di lettura in `docs/bracci_obiettivo_finestra1.md`.
+- Per GPT (verifica): il cambio di `_jepa_compute` (peso nel totale e in `terms.weight`), i controlli di `JEPAConfig`, i test di uguaglianza.
+
+### 2026-10-16 | Claude | Review del critico sui bracci (b1238a1): APPROVATO, rilievi corretti | Base: b1238a1
+
+- `critico` (istruzioni di `.claude/agents/critico.md`, eseguite su un agente generico: questa sessione non aveva l'agente caricato) su
+  b1238a1: APPROVATO, 9 criteri soddisfatti; default riprodotto bit per bit anche contro il `jepa.py` di b8a2f35 e col contratto ad accumulo.
+- Corretti i rilievi 1-3: JEPA pesata nella diagnostica dei gradienti per componente (`run.py`); test d'uguaglianza col codice di prima nel
+  repo (`test_objective_arms.py`, 23 PASS; con i test di keep, rami, Step 1 e JEPA 118 PASS); contratto delle loss e tabella dei bracci.
+- Rilievo 4 (protocollo, non codice) registrato in `docs/bracci_obiettivo_finestra1.md`: come contare un braccio fermato dall'allarme,
+  se l'allarme di collasso vale in ancore-only, LR di A. Da chiudere prima della firma dei bracci.
+
+### 2026-10-16 | Claude | Manifest derivati: rilievi del critico corretti | Base: fe67339
+
+- Review del `critico` (DA RIVEDERE): un bloccante e cinque minori, tutti corretti. Bloccante: `allocate` sottraeva le quote delle unita' al
+  tetto nell'ordine di un set (PYTHONHASHSEED): il derivato al 25% aveva due contenuti possibili. Ordine ora fisso (alfabetico inverso, quello
+  che riproduce i quattro file del cluster): nessun file cambia, ricostruzione con sei semi sempre identica al cluster.
+- `derived_checks` (costruttore e rapporto): quote di A, B + residuo, C - residuo dopo il sampler, somma 1 dei pesi, peso 0 senza finestre,
+  durate con `samplable_seconds`. Trainer: `check_derived_binding` (sampler pesato nel tempo, durate, configurazione delle finestre) e
+  `check_input_files` (SHA del file delle durate = quello della costruzione; `--manifest-sha256` = file del piano), da `train_jepa.py`;
+  `ManifestIndex.params`. Il pianificatore della calibrazione mette `--manifest-sha256` dal rapporto del cluster e rifiuta un manifest che il
+  rapporto non descrive. Test negativi per ogni controllo del rapporto e del costruttore; test di determinismo in sottoprocessi.
+- Toccati anche `run.py`/`train_jepa.py` (dopo i bracci di b1238a1/fe67339, nessuna sovrapposizione). Suite 1166 PASS. Piani di C1 in dry-run
+  rigenerati. Seconda review del `critico` in corso.
+
+### 2026-10-16 | Claude | Manifest derivati: rilievi della seconda review del critico corretti | Base: cfd7d47
+
+- Seconda review (DA RIVEDERE): determinismo confermato (14 semi, hash uguali al cluster; il codice di prima dava due contenuti al 25%),
+  pesi invariati, training non derivato invariato, comandi di C1 accettati. Corretti i cinque rilievi rimasti: il test del costruttore ora
+  isola il controllo di annidamento (manomissione a peso 0 su una sessione senza finestre: `derived_checks` passa, fallisce solo
+  l'annidamento); il pianificatore richiede il rapporto costruito da un launcher sul cluster (`code.source`); il training rifiuta un derivato
+  filtrato per dataset; docstring del costruttore e del rapporto; quattro casi negativi del rapporto in piu'. Suite 1168 PASS.
+
+### 2026-10-16 | Claude | Manifest derivati: terza review del critico APPROVATO | Base: 8872d5c
+
+- Terza review: APPROVATO. Mutazioni in memoria: tolto o reso sempre vero ogni controllo nuovo, il suo test fallisce; piano di C1 dal
+  rapporto del cluster identico byte per byte a quello committato; suite 1168 PASS. Chiusi i due rilievi minori: test anche per la meta'
+  «sessioni» del controllo di annidamento del costruttore; esiti registrati in `docs/decisioni.md` e `docs/manifest_annidati_d16.md`.
+
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1 superato | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Cinque criteri su cinque (`results/infra/w1sel_20261016.json`): guardie ok; estrazioni 17:51 e 16:34 sui soli soggetti di pretraining;
+  sonde 1 h 44 e 1 h 51, S = 15,08% (T) e 15,13% (B); selezione «nessuno ammissibile» per il pannello assente (atteso), confronto
+  accoppiato calcolato (parita'); nessun doppione alla seconda chiamata. Consuntivo 0,57 GPU-ora (infrastruttura 9,83/25), ~29 core-ora.
+- Stime delle valutazioni di C1 aggiornate in `scripts/calibration_plan.py` (estrazione 0,3 h al 30M, sonda 1,8 h).
+
+### 2026-10-16 | Claude | Via di Simone a C1 | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Preflight in sola lettura pulito; deploy `deploy/w1cal-20261016`,
+  checkout, piani allo SHA vero, 3 training (preventivo ~61 / 79,5 GPU-ora), poi la catena di valutazione dopo i training. ID dei job a seguire.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2605,3 +2735,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - A4: la bozza del 14/10 dice che δ e k sono «scelti a priori, non calibrati»; nel repo non trovo un `fixed_eval.jsonl` di un run reale
   (cluster non controllato). Non sappiamo quindi come si comporta la soglia sulla loss totale con la parte JEPA a target mobili; la bozza
   stessa indica la via pulita, un collaudo di calibrazione dichiarato come tale prima di congelare.
+
+### 2026-10-16 | Claude | Nuovi ruoli: punti da confermare
+
+- Da confermare con Simone: la verifica di GPT non blocca i lanci e il `critico` passa prima del lancio (mia proposta); GPT resta
+  integratore su `main` (non cambiato da Simone): se l'integrazione rallenta il deploy, serve una decisione a parte.
+
+### 2026-10-16 | Claude | Prima del lancio di C1 e dei bracci: punti aperti
+
+- I manifest derivati sono segnati «da rivedere da GPT prima dell'uso nei run» e non sono ancora stati letti da un training sul cluster:
+  review (GPT o `critico`) prima di C1; i primi minuti dei run di C1 vanno controllati.
+- La calibrazione della keep e' quella dello Step 1 su emg2qwerty (4640dfcf...): per il corpus intero va ricalcolata o motivata.
+
+### 2026-10-16 | Claude | Sonde della calibrazione in fila sulla seriale
+
+- Sulla seriale il limite di core per utente (`QOSMaxCpuPerUserLimit`) fa girare una sonda da 8 core alla volta: per C1 ~5,5 h di sonde in
+  fila dopo i training. Alternative: sonde su un nodo GPU (~1,8 GPU-ora per checkpoint, in parallelo) oppure accettare l'attesa.
+- Le sonde della P1 danno ConvergenceWarning di lbfgs (max_iter 3000): succede anche nelle sonde ufficiali; non cambia la procedura, da
+  tenere presente nella lettura delle S basse (DB3 ~2,3%, vicino al caso).

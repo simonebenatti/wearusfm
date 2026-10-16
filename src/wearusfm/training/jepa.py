@@ -12,6 +12,11 @@ errore quadratico medio come perdita (l'errore assoluto e' l'alternativa usata i
 
 **Ancore** (v10 §6.2-6.3): RMS, forma spettrale, inviluppo e, dove c'e', RVQ, dalle stesse uscite del decoder dello studente; peso complessivo
 `anchor_weight` (v10: 0,1-0,3), senza default. Momento EMA senza default (lo schedule e' della configurazione del run, D14).
+
+**Bracci dell'obiettivo** (W1-OBJ, accordo del 15/10/2026; Simone 16/10): totale = `jepa_weight` x JEPA + `anchor_weight` x ancore (+ keep e
+rami). `jepa_weight` = 1 e' l'obiettivo di sempre (stesso grafo, bit per bit); `anchor_weight` = 0 e' il JEPA puro; `jepa_weight` = 0 sono le
+ancore attuali da sole: stesso masking, stesso decoder dello studente (che le ancore allenano), teacher EMA aggiornato come sempre. Una
+perdita a peso 0 si calcola e si registra lo stesso, senza contare nel gradiente.
 """
 
 from __future__ import annotations
@@ -50,8 +55,16 @@ class JEPAConfig:
     # rami spettrali (Claude 13/10/2026, parere GPT d5c53c1): peso del termine dei rami sul readout, separato da keep_weight (che resta la keep
     # dello Step 1 sulla sola testa raw); 0 = nessun termine dei rami
     branch_weight: float = 0.0
+    # peso della perdita JEPA (16/10/2026, braccio ancore-only di W1-OBJ): 1 = l'obiettivo di sempre, 0 = sole ancore
+    jepa_weight: float = 1.0
 
     def __post_init__(self) -> None:
+        for name in ("jepa_weight", "anchor_weight"):
+            v = getattr(self, name)
+            if not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0:
+                raise ValueError(f"{name} must be finite and nonnegative")
+        if self.jepa_weight == 0 and self.anchor_weight == 0 and self.keep_weight == 0 and self.branch_weight == 0:
+            raise ValueError("jepa_weight, anchor_weight, keep_weight e branch_weight tutti a zero: nessuna perdita da allenare")
         if not math.isfinite(self.keep_weight) or self.keep_weight < 0:
             raise ValueError("keep_weight must be finite and nonnegative")
         if not math.isfinite(self.branch_weight) or self.branch_weight < 0:
@@ -284,7 +297,7 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
     if terms is not None:
         terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
                                               else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))
-        terms.weight["jepa"] = 1.0
+        terms.weight["jepa"] = cfg.jepa_weight
     if kinds is not None:
         with torch.no_grad():
             err = (h.float() - tgt.float()).pow(2).mean(dim=-1)  # (Q,)
@@ -358,7 +371,10 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
             o_loss, o_n, o_acc = rvq_on_windows(other_sel, other)
             losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
-    losses["total"] = losses["jepa"] + cfg.anchor_weight * anchor_total
+    if cfg.jepa_weight == 0 and anchor_targets is None and cfg.keep_weight == 0 and cfg.branch_weight == 0:
+        raise ValueError("jepa_weight = 0 senza target delle ancore: nessuna perdita da allenare")
+    # col peso 1 la JEPA entra com'era (stesso grafo, bit per bit); con un altro peso si moltiplica
+    losses["total"] = (losses["jepa"] if cfg.jepa_weight == 1.0 else cfg.jepa_weight * losses["jepa"]) + cfg.anchor_weight * anchor_total
     if cfg.keep_weight > 0 or cfg.branch_weight > 0:
         if anchor_targets is None:
             raise ValueError("keep loss requires multiscale targets")

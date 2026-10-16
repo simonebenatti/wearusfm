@@ -1,8 +1,8 @@
 """Rapporto sui manifest dell'asse dei soggetti (D16): il genitore (v1.1) e i derivati come file (`scripts/build_nested_manifests.py`).
 Per ogni file, sulla distribuzione che campiona davvero il loader (`pretraining_manifest.sampled_distribution`: normalizzazione dei pesi,
 probabilita' peso / durata delle finestre, quote nel tempo): massa, quote per classe e per unita', passaggi attesi per unita' a E epoche, ore
-campionabili ed escluse, endpoint a E epoche col floor sul totale e dose effettiva. Verifiche sui derivati: frazione dichiarata, pesi finiti e
-non negativi, massa 1, quota di A, tetto; annidamento per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100); il derivato al 100% con le stesse
+campionabili ed escluse, endpoint a E epoche col floor sul totale e dose effettiva. Verifiche sui derivati: frazione dichiarata, le stesse del
+costruttore (`pretraining_manifest.derived_checks`: durate, pesi, somma 1, quote di A, B + residuo e C - residuo, tetto); annidamento per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100); il derivato al 100% con le stesse
 sessioni di pretraining del genitore; righe di test e benchmark identiche al genitore (test per soggetto o per sessione, come emg2pose);
 ogni soggetto con tutte le sue sessioni di pretraining o con nessuna; provenienza (SHA del genitore e di window_s).
 
@@ -15,7 +15,6 @@ import argparse
 import gzip
 import hashlib
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -60,7 +59,6 @@ def report(window_seconds: Path, parent: Path, derived: list[Path], batch: int =
     order = [f for f in ORDER if f in files]
     for label, x in [("genitore", par)] + [(f, files[f]) for f in order]:
         d = M.sampled_distribution(x["rows"], ws, epochs, batch)
-        weights = [r.weight for r in x["rows"]]
         info = {"file": x["path"], "file_sha256": x["sha256"], "hash": x["doc"].get("hash"), "mass": d["mass"], "classes": d["classes"],
                 "max_passes": d["max_passes"], "hours_samplable": d["hours_samplable"], "mean_window_s": d["mean_window_s"],
                 "windows_per_epoch": d["windows_per_epoch"], "steps_at_epochs": d["steps_at_epochs"], "effective_epochs": d["effective_epochs"],
@@ -69,14 +67,9 @@ def report(window_seconds: Path, parent: Path, derived: list[Path], batch: int =
         if label != "genitore":
             p = x["doc"]["params"]
             info.update({"derived_hours": p.get("derived_hours"), "residual_c_to_b": p.get("residual_c_to_b")})
-            if not all(math.isfinite(w) and w >= 0 for w in weights):
-                problems.append(f"frazione {label}: pesi non finiti o negativi")
-            if abs(d["mass"] - 1) > 1e-9:
-                problems.append(f"frazione {label}: massa {d['mass']} dopo il sampler")
-            if abs(d["classes"].get("A", 0.0) - p["quota"]["A"]) > 1e-9:
-                problems.append(f"frazione {label}: quota di A {d['classes'].get('A')} dopo il sampler")
-            if d["max_passes"] > p["max_passes"] * (1 + 1e-9):
-                problems.append(f"frazione {label}: {d['max_passes']:.6f} passaggi dopo il sampler, oltre il tetto {p['max_passes']}")
+            # le stesse verifiche del costruttore, sul file: durate (chiave mancante = problema, non rinormalizzazione silenziosa), pesi,
+            # somma 1, quote A / B + residuo / C - residuo e tetto dopo il sampler (review del critico, 16/10/2026)
+            problems += [f"frazione {label}: {e}" for e in M.derived_checks(x["rows"], ws, p, p.get("residual_c_to_b") or 0.0)]
             inp = p.get("derived_inputs", {})
             if inp.get("parent_file_sha256") != par["sha256"]:
                 problems.append(f"frazione {label}: costruita da {inp.get('parent_file_sha256')}, non dal genitore dato ({par['sha256']})")

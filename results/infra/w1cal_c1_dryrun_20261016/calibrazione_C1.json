@@ -1,0 +1,61 @@
+{
+ "campaign": "w1cal-c1",
+ "agent": "claude",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+ "expected_sha": "b671901284262a7e625c9d27ec15cdba4557c15e",
+ "manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+ "scales": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+ "window_seconds": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+ "run_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal",
+ "slurm": {
+  "qos": "normal",
+  "time": "24:00:00"
+ },
+ "margin_min": 40,
+ "startup_min": 15,
+ "slack": 1.15,
+ "spare_jobs": 0,
+ "gpus": 4,
+ "runs": [
+  {
+   "id": "W1CAL-C1-30M-lr0p0001-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 24523,
+   "keep_checkpoints": [],
+   "args": "--lr 0.0001 --nested 1"
+  },
+  {
+   "id": "W1CAL-C1-30M-lr0p0003-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 24523,
+   "keep_checkpoints": [],
+   "args": "--lr 0.0003 --nested 1"
+  },
+  {
+   "id": "W1CAL-C1-30M-lr0p001-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 24523,
+   "keep_checkpoints": [],
+   "args": "--lr 0.001 --nested 1"
+  }
+ ],
+ "s_per_step": {
+  "sanity/32": 0.7
+ },
+ "ckpt_gb": {
+  "sanity": 0.45
+ },
+ "common_args": "--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+}

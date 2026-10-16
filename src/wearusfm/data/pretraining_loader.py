@@ -103,6 +103,7 @@ class ManifestIndex:
     rows: list[dict]  # solo pretraining
     weights: np.ndarray  # normalizzati
     roots: list[Path]
+    params: dict = field(default_factory=dict)  # `params` del manifest (per un derivato: frazione, regola, ingressi della costruzione)
 
     @classmethod
     def load(cls, manifest_path: Path, roots: list[Path], nested: str | None = "*") -> "ManifestIndex":
@@ -124,7 +125,7 @@ class ManifestIndex:
         w = np.asarray([r["weight"] for r in rows], dtype=np.float64)
         if not len(rows) or w.sum() <= 0:
             raise ValueError("nessuna riga di pretraining con peso positivo")
-        return cls(rows, w / w.sum(), [Path(p) for p in roots])
+        return cls(rows, w / w.sum(), [Path(p) for p in roots], doc.get("params", {}))
 
     def path_of(self, row: dict) -> Path:
         for root in self.roots:

@@ -3403,3 +3403,79 @@ una decisione prima di C1. Nessun job lanciato.
 alla fase successiva»). `scripts/calibration_select.py` e `docs/calibrazione_c1_c4_selezione.md` aggiornati; restano da firmare A4 e la regola
 di parita'. Nella stessa correzione (nessuna soglia cambiata): A1 confronta il checkpoint della sonda con quello del run come file e non come
 stringa (una barra finale in `run_root` avrebbe reso inammissibili tutti i run).
+
+**Calibrazione C1-C4: A4 e regola di parita' FIRMATE (Simone, 16/10/2026).** Simone: «firmo A4 e parità, prepara il preventivo del collaudo
+su w1cat». Congelate prima di qualunque run di C1 (`docs/calibrazione_c1_c4_selezione.md`, `scripts/calibration_select.py`): **A4** pannello
+fisso (8 x 32 finestre) ogni 500 passi dal passo 0 senza buchi, run inammissibile con 3 valutazioni consecutive in cui la loss totale supera
+1,10 volte il minimo raggiunto, o con loss all'ultima valutazione oltre 0,9 volte quella del passo 0; **parita'**: differenza accoppiata di S
+entro 1 errore standard -> vince il LR piu' basso. Insieme allo stop di C3 con un solo ammissibile (16/10) il protocollo di selezione e'
+completo. Resta da decidere il budget della finestra 1 prima del lancio di C1. Un cambio di queste soglie dopo C1 e' una decisione nuova.
+
+**Collaudo della catena reale `w1_selezione_v1`: protocollo e preventivo (16/10/2026), da autorizzare.** Simone: «firmo A4 e parità,
+prepara il preventivo del collaudo su w1cat». Estrazione, sonda a fold e selezione (fase `collaudo`) sui post-decay `w1cat-T` e `w1cat-B`;
+criteri congelati in `docs/calibrazione_c1_c4_selezione.md` prima del lancio (esito atteso della selezione: nessuno ammissibile, pannello
+assente in `w1cat`). **GPU attese ~0,4 GPU-ora (3,2 ore locali), tetto 1,0 (8 ore locali)** sul budget infrastruttura (residuo 15,74 su 25,
+dopo il tetto almeno 14,74); CPU attese ~20 core-ora, tetto ~51. Nessun job lanciato.
+
+**Collaudo `w1_selezione_v1` autorizzato e lanciato (16/10/2026).** Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su
+w1cat». Deploy `deploy/w1sel-20261016` (7cf4f08), checkout 60688786 (CPU, 12 s), catena 60688822-60688830 (7 job; tetto 1,0 GPU-ora sul
+budget infrastruttura, residuo prima del collaudo 15,74 su 25). Consuntivo all'esito.
+
+**Ruoli dal 16/10/2026: la parte scientifica passa a Claude, GPT fa le verifiche (Simone).** Simone: «sì a questo punto esautoriamo gpt
+dalla parte scientifica perché è troppo lento e gli facciamo fare le verifiche, modifica i documenti necessari per questa procedura».
+Claude prende protocolli e bracci delle ablation, sonde, harness, target e loss (`training/jepa.py`, `model/anchor_targets.py`,
+`model/spectral_targets.py`), regola di stabilita', contratto di valutazione e lista dei job della finestra 1; GPT fa review,
+riesecuzione dei test e controlli indipendenti, senza modificare i file di Claude. Invariati: GPT integratore su `main`, firme e lanci di
+Simone. *Proposta di Claude, da confermare:* la verifica di GPT non blocca i lanci; prima del lancio passa il subagent `critico`.
+Aggiornati CLAUDE.md, l'accordo del 15/10 (sezione del 16/10, con il prompt per GPT) e il registro.
+
+**Verifiche e revisore prima del lancio (Simone, 16/10/2026).** Simone: «1) si non bl,occa 2) passiamo il revisore suila parte scientifica e algorirmica, nei test possiam fidarci delle verifiche.» Conferma la proposta registrata nella voce sui ruoli: (1) la
+verifica di GPT non blocca i lanci; (2) il subagent `critico` rivede prima del lancio la parte scientifica e algoritmica (protocolli,
+criteri, loss, target, sonde, selezione). *Interpretazione di Claude:* «nei test» = i collaudi e i test (CPU, launcher, criteri congelati
+dei collaudi), per i quali bastano le verifiche gia' previste senza il `critico`. CLAUDE.md e l'accordo del 15/10 aggiornati.
+
+**Manifest derivati: review del `critico` prima del primo uso nei run (Simone, 16/10/2026).** Simone: «firmo 2 e 8, fai rivedere i
+manifest al critico». (2) I manifest derivati (frazioni 12,5/25/50/100%, costruiti sul cluster dal job 60661475, codice 11f868b), segnati
+nel registro «da rivedere da GPT prima dell'uso nei run», li rivede il subagent `critico` al posto di GPT, prima di C1; l'esito si
+registra qui. (8) Conferma la regola gia' registrata nella voce «Verifiche e revisore prima del lancio» dello stesso giorno: `critico`
+prima del lancio sulla parte scientifica e algoritmica, verifica di GPT non bloccante.
+
+**Budget della finestra 1 e della calibrazione FIRMATI (Simone, 16/10/2026).** Simone: «firmo 220 per la calibrazione e 6.000 per la
+finestra 1».
+- **Finestra 1: tetto complessivo 6.000 GPU-ora (48.000 ore locali), calibrazione compresa.** Base: stima del calendario del 15/10
+  5.070-5.700 GPU-ora; piano operativo ~6.000-7.000 del FM a novembre; saldo dell'account al 15/10 ~92.844 GPU-ora, quota mensile ~20.548
+  condivisa con gli altri utenti. E' un tetto, non un'autorizzazione: ogni tranche arriva con protocollo, preventivo e via di Simone, e il
+  superamento del tetto (o di quello di una voce) richiede una decisione registrata. Ripartizione del resto (~5.780) con la lista dei job,
+  dopo le firme sui bracci (`docs/bracci_obiettivo_finestra1.md`).
+- **Calibrazione C1-C4: 220 GPU-ora (1.760 ore locali)**, voce della finestra 1. Preventivo: ~163 attese, tetto 214,5 (training 160,2 /
+  208,0; valutazione 2,6 / 6,5), piu' il margine per i tetti delle valutazioni a 100M e 300M da rivedere dopo il collaudo `w1_selezione_v1`.
+  Consuntivo per fase qui sotto. Separata dal budget «preparazione dell'infrastruttura» (25 GPU-ora, residuo 15,74 prima del collaudo).
+- Consumato sulla finestra 1 finora: 0 GPU-ora.
+
+**Manifest derivati: review del `critico` (16/10/2026) DA RIVEDERE, rilievi corretti.** Bloccante: il derivato al 25% non era
+deterministico (ordine di un set in `allocate`, PYTHONHASHSEED): ora ordine fisso, scelto fra quelli fissi perche' riproduce i quattro file
+costruiti sul cluster il 15/10, che restano validi (ricostruiti con sei semi: 80a214fd / 13d3dce8 / 52ec61f0 / 167923c3). Minori: verifiche
+dopo il sampler complete (A, B + residuo, C - residuo, somma dei pesi, durate); il training rifiuta un derivato senza sampler pesato nel
+tempo, con durate o configurazione delle finestre diverse da quelle della costruzione, o con un file diverso da quello del piano
+(`--manifest-sha256`); test negativi; rapporto del cluster in pianificatore e documenti; identita' di un derivato documentata
+(`docs/manifest_annidati_d16.md`). Nessuna soglia ne' regola dei pesi cambiata. Suite 1166 PASS. Seconda review del `critico` a seguire.
+
+**Manifest derivati: review del `critico` CHIUSA, APPROVATO (16/10/2026).** Seconda review su cfd7d47: DA RIVEDERE (determinismo
+confermato con 14 semi e hash uguali al cluster; pesi e training non derivato invariati; comandi di C1 accettati), cinque rilievi su test e
+dettagli corretti in 8872d5c (test che isola l'annidamento, pianificatore legato al rapporto costruito sul cluster, rifiuto di un derivato
+filtrato per dataset, docstring, quattro casi negativi). Terza review su 8872d5c: **APPROVATO**, con due rilievi minori chiusi subito (test
+anche per la meta' «sessioni» dell'annidamento; questa registrazione). I file del cluster in `derived_v1_1/` restano quelli del 15/10; il
+training ne verifica identita' e durate all'avvio. Per C1 i manifest sono pronti.
+
+**Esito del collaudo `w1_selezione_v1` (16/10/2026, criteri congelati prima del lancio): SUPERATO.** Guardie, estrazioni (17:51 e 16:34),
+sonde (1 h 44 e 1 h 51) e selezione COMPLETED 0:0; solo soggetti di pretraining; decisione «nessuno ammissibile» per il pannello assente,
+come atteso; confronto accoppiato calcolato sui dati veri; nessun doppione rieseguendo. Job 60688786-60688830. **Consuntivo 0,57 GPU-ora**
+sul budget «preparazione dell'infrastruttura»: 9,83 usate su 25, residuo 15,17. Stime delle valutazioni di C1 aggiornate (estrazione 0,3 h,
+sonda 1,8 h a 8 core; sonde in fila per il limite di core per utente). `results/infra/w1sel_20261016.json`.
+
+**Calibrazione C1 AUTORIZZATA (Simone, 16/10/2026).** Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Verificato
+prima del lancio: protocollo e regole firmati (A4, parita', stop di C3), review del `critico` su calibrazione, bracci e manifest derivati
+(APPROVATO), collaudo `w1_selezione_v1` superato, budget firmati. Codice `72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec` (deploy
+`deploy/w1cal-20261016`, checkout `wearusfm_campaigns/w1cal-20261016`). 3 run da 24.523 passi (LR 1e-4, 3e-4, 1e-3, seme 0, 30M, un nodo
+4 GPU, QoS normal, un job da 6 h 30 ciascuno), poi la catena di valutazione con le sonde sulla CPU seriale. **Preventivo C1: ~61 GPU-ora
+attese, tetto 79,5 (636 ore locali)**, sul budget della calibrazione (220, finora 0 usate): dopo il tetto ne restano almeno 140,5.

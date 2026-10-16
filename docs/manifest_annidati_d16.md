@@ -79,7 +79,8 @@ ora legge i file veri. Job per il cluster: `scripts/slurm/build_nested_manifests
 ricalcolarlo; quello del suo contenuto e' 52549ef8.... Innocuo per training e firme (usano lo SHA del file), ma il campo e' stantio; non tocco
 il manifest congelato, i file annidati registrano entrambi. **Prossimi passi:** review di GPT del codice; poi costruzione sul cluster da un
 checkout di campagna (job CPU da autorizzare) e confronto degli hash di contenuto con quelli locali (i byte compressi possono cambiare con la
-versione di zlib, il contenuto no).
+versione di zlib; il contenuto doveva restare uguale, ma fino al 16/10 il 25% dipendeva da PYTHONHASHSEED: vedi la review del critico in
+fondo).
 
 ## Allineamento all'accordo del 15/10/2026 (`docs/accordo_operativo_finestra1_20261015.md`, main e02ac74)
 
@@ -109,7 +110,7 @@ al massimo di 1,3e-5. Endpoint uguale (98.094 passi a 4 epoche col batch 32: dos
 a B) coincide con la stima dell'accordo (A 20%, B 75,02535%, C 4,97465%).
 
 **Prossimo:** review di GPT; poi costruzione sul cluster da un checkout di campagna (preventivo sotto) e confronto degli hash di contenuto con
-questi (i byte compressi possono cambiare con zlib, il contenuto no).
+questi (i byte compressi possono cambiare con zlib; il contenuto, corretto il 16/10, non dipende piu' da PYTHONHASHSEED).
 
 **Preventivo della costruzione sul cluster (da autorizzare dopo la review).** Riferimento di deploy allo SHA del commit rivisto, checkout di
 campagna su `lrd_all_serial` (1 CPU, 10 min, ~0,2 core-ora), poi `scripts/slurm/build_nested_manifests.sbatch` su `lrd_all_serial` (1 CPU,
@@ -124,3 +125,33 @@ I byte compressi differiscono (campo `code_commit` 11f868b invece di 56cea75, co
 File in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/`: `manifest_v1_1_nested_0.125.json.gz` (a622978f...),
 `_0.25` (90ce5564...), `_0.5` (5968179b...), `_1` (6d6d8167...); rapporti in `results/infra/derived_manifests_v1_1_{build,report}_cluster_20261015.json`.
 Costo: due job CPU da 18 e 30 s, 0 GPU-ora. Da rivedere da GPT prima dell'uso nei run.
+
+## Review del `critico` (16/10/2026; Simone: «fai rivedere i manifest al critico»): DA RIVEDERE, corretta
+
+Un rilievo bloccante e cinque minori, tutti corretti nello stesso commit; 7 criteri della specifica soddisfatti nei valori.
+1. **Bloccante, determinismo:** in `allocate` le unita' oltre il tetto erano un `set` e l'ordine delle sottrazioni dipendeva da
+   PYTHONHASHSEED: con piu' unita' al tetto nella stessa iterazione la quota residua cambiava all'ultima cifra e il derivato al **25%** aveva
+   due contenuti possibili (13d3dce8... o 8b967c6b...). Ora l'ordine e' fisso (alfabetico inverso): fra gli ordini fissi e' quello che
+   riproduce tutti e quattro i derivati costruiti sul cluster il 15/10, quindi **nessun file cambia**. Ricostruiti localmente con sei valori
+   di PYTHONHASHSEED: sempre 80a214fd / 13d3dce8 / 52ec61f0 / 167923c3, verifiche tutte superate. Il 100% di C1 non era toccato. Test con
+   sottoprocessi a PYTHONHASHSEED diversi su un caso che col codice di prima dava 3 risultati su 8 semi.
+2. Verifiche dopo il sampler (`derived_checks`, usate da costruttore e rapporto): oltre ad A anche B = quota + residuo e C = quota - residuo,
+   somma 1 dei pesi di pretraining prima della normalizzazione, peso 0 sulle righe senza finestre; la massa dopo il sampler (vera per
+   costruzione) e' tolta; il rapporto controlla le durate con `samplable_seconds` (una chiave mancante e' un problema, non una rinormalizzazione).
+3. Il training lega un derivato al suo sampler e alle sue durate: rifiuta un derivato senza sampler pesato nel tempo, senza durate, con una
+   configurazione delle finestre diversa da quella della costruzione o filtrato per dataset (con un derivato serve `--datasets all`); `train_jepa.py` verifica che lo SHA del file delle durate sia quello
+   registrato nel derivato e, con `--manifest-sha256` (lo mette il pianificatore della calibrazione dal rapporto del cluster), che il file del
+   manifest sia quello del piano.
+4. Test negativi per ogni controllo di annidamento e identita' del rapporto (file manomessi) e per il controllo del costruttore.
+5. Pianificatore e documenti puntano al rapporto della costruzione **sul cluster** (`derived_manifests_v1_1_build_cluster_20261015.json`):
+   quello locale ha lo SHA di un file che sul cluster non esiste; il pianificatore rifiuta un rapporto non costruito da un launcher sul cluster
+   (`code.source`) e un manifest che il rapporto non descrive.
+6. **Identita' di un derivato:** `params.nested` + `params.derived_inputs` (genitore, durate, configurazione delle finestre) + SHA del file.
+   I campi `params.version` e `params.revision` sono ereditati dal genitore (v1 / v1.1) e non descrivono il derivato; non si rinominano ora
+   perche' cambierebbero gli hash dei file gia' costruiti.
+Da controllare prima di C1 sul cluster: che i file in `derived_v1_1/` e `window_seconds_59425316.json` abbiano ancora gli SHA registrati;
+ora lo fa il job di training stesso all'avvio (punto 3), prima del primo passo.
+**Seconda review (16/10, cfd7d47): DA RIVEDERE** — determinismo confermato (14 semi), pesi e training non derivato invariati, comandi di C1
+accettati; cinque rilievi su test e dettagli, corretti in 8872d5c. **Terza review (8872d5c): APPROVATO** — ogni controllo rotto in memoria
+fa fallire il suo test; il piano di C1 dal rapporto del cluster coincide byte per byte con quello committato. I due rilievi minori della
+terza (meta' «sessioni» del controllo di annidamento del costruttore senza test; esiti non registrati) sono chiusi nel commit successivo.
