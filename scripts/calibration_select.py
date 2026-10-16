@@ -24,8 +24,15 @@ Selezione (S fuori fold; confronto accoppiato sui soggetti: differenza entro 1 e
      ammissibili, nessuna scelta.
 Con due o piu' candidati il registro riporta anche i confronti accoppiati di tutte le coppie, descrittivi: non decidono nulla.
 
-  python3 scripts/calibration_select.py select --phase C1 --out decisione_C1.json --record registro_C1.json \\
-      --candidate 0.0001 RUN_DIR RAPPORTO_SONDA PASSI --candidate 0.0003 ... --candidate 0.001 ...       (sul cluster, CPU)
+Identita' dei candidati (review di GPT del 16/10/2026): nelle fasi C1-C4 `--plan` (il piano di training di `calibration_plan.py`, quello
+dato a `wsd_chain.py`) e' obbligatorio; per ogni candidato la configurazione effettiva del run (`config.json`: LR, seme, batch, passi,
+warmup, schedule, frazione del manifest, dataset, pannello, pesi della loss, dimensioni del modello) e lo SHA del codice (`summary.json`)
+devono essere quelli del piano per quel run, e il LR dichiarato quello del piano: altrimenti la selezione si ferma con un errore (il run non
+e' il candidato pianificato). Un candidato il cui training si e' fermato prima della sonda (STOP, allarme, run incompleto) si passa col
+rapporto «-»: e' inammissibile (A1-A4 sui file del run) e la fase procede con gli altri; un run ammissibile senza sonda e' un errore.
+
+  python3 scripts/calibration_select.py select --phase C1 --plan calibrazione_C1.json --out decisione_C1.json --record registro_C1.json \\
+      --candidate 0.0001 RUN_DIR RAPPORTO_SONDA PASSI --candidate 0.0003 ... --candidate 0.001 RUN_DIR - PASSI   (sul cluster, CPU)
   python3 scripts/calibration_select.py merge --decisions decisioni.json --add decisione_C1.json          (sul Mac: unisce e controlla)
 """
 
@@ -35,6 +42,7 @@ import argparse
 import hashlib
 import json
 import math
+import shlex
 import os
 import sys
 from pathlib import Path
@@ -132,8 +140,68 @@ def same_file(a, b) -> bool:
         return False
 
 
-def admissibility(run_dir: Path, report: dict, total_steps: int) -> dict:
-    """A1-A4 di un run; `report` = rapporto di `calibration_probe.py`."""
+def expected_config(plan: dict, run_id: str) -> dict:
+    """La configurazione che il piano di training (`calibration_plan.py`, formato di `wsd_chain.py`) prescrive al run `run_id`, come chiavi
+    puntate di `config.json` (`training.run.config_to_dict`). Gli argomenti si leggono come li legge `train_jepa.py` (`build_parser`)."""
+    import importlib.util
+
+    from wearusfm.training import run as R
+
+    runs = {r["id"]: r for r in plan["runs"]}
+    if run_id not in runs:
+        raise ValueError(f"run {run_id} assente dal piano di training (run del piano: {sorted(runs)})")
+    r = runs[run_id]
+    spec = importlib.util.spec_from_file_location("train_jepa_options", ROOT / "scripts" / "train_jepa.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    a = mod.build_parser().parse_args(["--preset", r["preset"], "--manifest", "-", "--root", "-", "--out-dir", "-"]
+                                      + shlex.split(f"{plan['common_args']} {r.get('args', '')}"))
+    base = R.sanity_config() if r["preset"] == "sanity" else R.ladder_config(r["preset"])
+    want = {"lr": a.lr if a.lr is not None else base.lr, "seed": r["seed"], "batch_size": r["batch_size"], "accum_steps": r["accum_steps"],
+            "max_steps": r["total_steps"], "warmup_steps": R.wsd_warmup_steps(r["steps_at_d"]), "schedule.kind": "wsd",
+            "schedule.total_steps": r["total_steps"], "schedule.decay_fraction": 0.2, "nested": a.nested,
+            "datasets": None if a.datasets == "all" else list(a.datasets.split(",")) if a.datasets else list(base.datasets),
+            "fixed_eval_every": a.fixed_eval_every if a.fixed_eval_every is not None else base.fixed_eval_every,
+            "loader.time_weighted": bool(a.window1_rules) or base.loader.time_weighted, "jepa.target": base.jepa.target,
+            "jepa.anchor_weight": a.anchor_weight if a.anchor_weight is not None else base.jepa.anchor_weight,
+            "jepa.jepa_weight": a.jepa_weight if a.jepa_weight is not None else base.jepa.jepa_weight,
+            "jepa.keep_weight": a.keep_weight if a.keep_calibration else 0.0}
+    if not a.spectral_branches:  # con i rami il peso lo fissa --branch-weight (fuori dalla calibrazione dell'obiettivo A)
+        want["jepa.branch_weight"] = 0.0
+    want.update({f"model.{k}": getattr(base.model, k) for k in ("dim", "n_heads", "k_latents", "local_layers", "backbone_layers",
+                                                                 "decoder_layers")})
+    return want  # None e' un valore atteso (es. datasets = tutti), non un campo da saltare
+
+
+def check_identity(run_dir: Path, plan: dict, lr: float) -> dict:
+    """Il run e' il candidato pianificato: configurazione effettiva (`config.json`) e codice (`summary.json`) uguali al piano, LR dichiarato
+    uguale a quello del piano. Errore altrimenti (review di GPT del 16/10/2026)."""
+    run_dir = Path(run_dir)
+    want = expected_config(plan, run_dir.name)
+    if lr != want["lr"]:
+        raise ValueError(f"{run_dir.name}: LR dichiarato {lr!r}, il piano dice {want['lr']!r}")
+    if not (run_dir / "config.json").exists():
+        raise ValueError(f"{run_dir}: config.json assente, configurazione effettiva non verificabile")
+    cfg = json.loads((run_dir / "config.json").read_text())
+    diff = []
+    for key, v in want.items():
+        got = cfg
+        for part in key.split("."):
+            got = got.get(part, "<assente>") if isinstance(got, dict) else "<assente>"
+        if got != v:
+            diff.append(f"{key}: run {got!r}, piano {v!r}")
+    if diff:
+        raise ValueError(f"{run_dir.name}: configurazione effettiva diversa dal piano: " + "; ".join(diff))
+    summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
+    sha = (summary.get("code") or {}).get("sha")
+    if summary and sha != plan["expected_sha"]:
+        raise ValueError(f"{run_dir.name}: codice {sha!r}, il piano dice {plan['expected_sha']!r}")
+    return {"config_checked": sorted(want), "code_sha": sha}
+
+
+def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int | None = None) -> dict:
+    """A1-A4 di un run; `report` = rapporto di `calibration_probe.py`, oppure None per un run fermato prima della sonda; `dim` = dimensione
+    del modello per la soglia del rango (default: quella del rapporto o di `config.json`)."""
     run_dir = Path(run_dir)
     problems, out = [], {"run_dir": str(run_dir)}
     if (run_dir / "STOP").exists():
@@ -142,7 +210,7 @@ def admissibility(run_dir: Path, report: dict, total_steps: int) -> dict:
     out["summary"] = {k: summary.get(k) for k in ("stopped", "steps", "elapsed_s", "code")}
     if summary.get("stopped") != "max_steps" or summary.get("steps") != total_steps:
         problems.append(f"run non completo: stopped {summary.get('stopped')!r}, passi {summary.get('steps')} su {total_steps}")
-    if not same_file(report.get("checkpoint"), run_dir / CHECKPOINT):
+    if report is not None and not same_file(report.get("checkpoint"), run_dir / CHECKPOINT):
         problems.append(f"la sonda viene da {report.get('checkpoint')}, non da {run_dir / CHECKPOINT}")
     metrics = _records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
     panel = _records(run_dir / "fixed_eval.jsonl") if (run_dir / "fixed_eval.jsonl").exists() else []
@@ -151,7 +219,15 @@ def admissibility(run_dir: Path, report: dict, total_steps: int) -> dict:
             problems.append(f"{name} assente o vuoto")
         elif bad := _non_finite(recs):
             problems.append(f"{name}: valori non finiti ai passi {bad[:5]}")
-    rule, dim = alarm_rule(), int(report["model_dim"])
+    if dim is None:
+        if report is not None:
+            dim = int(report["model_dim"])
+        elif (run_dir / "config.json").exists():
+            dim = int(json.loads((run_dir / "config.json").read_text())["model"]["dim"])
+        else:
+            dim = 0
+            problems.append("config.json assente: dimensione del modello ignota")
+    rule = alarm_rule()
     diags = [r for r in metrics if "student_collapse_ratio" in r]
     alarms = [r for r in metrics if r.get("alarm")]
     out["non_collapse"] = {"evaluations": len(diags), "alarms": [r["alarm"] for r in alarms], "ratio_min": rule.collapse_ratio_min,
@@ -263,25 +339,34 @@ def decide(phase: str, cands: dict) -> tuple[dict, list[dict]]:
     raise ValueError(f"fase {phase!r}")
 
 
-def select(phase: str, candidates: list[tuple[str, Path, Path, int]]) -> tuple[dict, dict]:
-    """`candidates`: (LR come testo, o un'etichetta nel collaudo; cartella del run; rapporto della sonda; passi pianificati)."""
+def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], plan: dict | None = None) -> tuple[dict, dict]:
+    """`candidates`: (LR come testo, o un'etichetta nel collaudo; cartella del run; rapporto della sonda, None se il training si e' fermato
+    prima; passi pianificati). `plan`: il piano di training, obbligatorio nelle fasi C1-C4 (identita' dei candidati)."""
+    if phase != COLLAUDO and plan is None:
+        raise ValueError(f"{phase}: serve il piano di training (--plan) per verificare la configurazione effettiva dei candidati")
     cands, record = {}, {"protocol": PROTOCOL, "phase": phase, "candidates": {}}
     for key, run_dir, report_path, steps in candidates:
         lr = str(key) if phase == COLLAUDO else float(key)
         if lr in cands:
             raise ValueError(f"LR {lr} ripetuto")
-        report = json.loads(Path(report_path).read_text())
-        if report.get("protocol") != PROTOCOL:
+        identity = check_identity(run_dir, plan, lr) if plan is not None else None
+        report = json.loads(Path(report_path).read_text()) if report_path is not None else None
+        if report is not None and report.get("protocol") != PROTOCOL:
             raise ValueError(f"{report_path}: protocollo {report.get('protocol')!r}, atteso {PROTOCOL}")
         adm = admissibility(run_dir, report, steps)
-        cands[lr] = {"admissible": adm["admissible"], "report": report, "oof": load_oof(report)}
-        record["candidates"][lr if isinstance(lr, str) else repr(lr)] = {"admissibility": adm, "S": report["S"], "S_se": report["S_se"], "report": str(report_path),
-                                          "report_sha256": _sha256(Path(report_path)), "checkpoint_sha256": report["checkpoint_sha256"],
-                                          "per_dataset_S": {d: v["s"] for d, v in report["datasets"].items()}}
-    if len({json.dumps(c["report"]["weights"], sort_keys=True) for c in cands.values()}) != 1:
+        if report is None and adm["admissible"]:
+            raise ValueError(f"{Path(run_dir).name}: run ammissibile senza sonda: la valutazione va completata, non saltata")
+        cands[lr] = {"admissible": adm["admissible"], "report": report, "oof": load_oof(report) if report is not None else None}
+        entry = {"admissibility": adm, "identity": identity, "report": str(report_path) if report_path is not None else None}
+        if report is not None:
+            entry.update({"S": report["S"], "S_se": report["S_se"], "report_sha256": _sha256(Path(report_path)),
+                          "checkpoint_sha256": report["checkpoint_sha256"], "per_dataset_S": {d: v["s"] for d, v in report["datasets"].items()}})
+        record["candidates"][lr if isinstance(lr, str) else repr(lr)] = entry
+    probed = {k: c for k, c in cands.items() if c["report"] is not None}
+    if len({json.dumps(c["report"]["weights"], sort_keys=True) for c in probed.values()}) > 1:
         raise ValueError("pesi dei dataset diversi fra i candidati")
     decision, comparisons = decide(phase, cands)
-    keys = sorted(cands)
+    keys = sorted(probed)
     descriptive = [{"a": a, "b": b, **paired_difference(cands[a]["oof"], cands[b]["oof"], cands[a]["report"]["weights"])}
                    for i, a in enumerate(keys) for b in keys[i + 1:]]
     record.update({"decision": decision, "comparisons": comparisons, "descriptive_comparisons": descriptive,
@@ -315,7 +400,9 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("select")
     s.add_argument("--phase", choices=PHASES + (COLLAUDO,), required=True)
-    s.add_argument("--candidate", nargs=4, action="append", required=True, metavar=("LR", "RUN_DIR", "RAPPORTO", "PASSI"))
+    s.add_argument("--candidate", nargs=4, action="append", required=True, metavar=("LR", "RUN_DIR", "RAPPORTO", "PASSI"),
+                   help="RAPPORTO '-' per un run fermato prima della sonda")
+    s.add_argument("--plan", type=Path, default=None, help="piano di training della fase (obbligatorio in C1-C4)")
     s.add_argument("--out", type=Path, required=True)
     s.add_argument("--record", type=Path, required=True)
     m = sub.add_parser("merge")
@@ -323,8 +410,11 @@ def main(argv=None) -> int:
     m.add_argument("--add", type=Path, required=True)
     args = ap.parse_args(argv)
     if args.cmd == "select":
-        cands = [(lr, Path(rd), Path(rp), int(st)) for lr, rd, rp, st in args.candidate]
-        decision, record = select(args.phase, cands)
+        cands = [(lr, Path(rd), None if rp == "-" else Path(rp), int(st)) for lr, rd, rp, st in args.candidate]
+        plan = json.loads(args.plan.read_text()) if args.plan is not None else None
+        decision, record = select(args.phase, cands, plan)
+        if plan is not None:
+            record["plan"] = {"path": str(args.plan), "sha256": _sha256(args.plan)}
         for path, obj in ((args.record, record), (args.out, decision)):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(obj, indent=1))

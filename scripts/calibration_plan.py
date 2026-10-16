@@ -137,11 +137,23 @@ def resolve_phases(decisions: dict | None) -> dict:
     return out
 
 
-def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict) -> dict:
-    """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0)."""
-    code = {"code_dir": base["code_dir"], "expected_sha": base["expected_sha"]}
+def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict, plan_path: str = "-",
+              failed: frozenset = frozenset()) -> dict:
+    """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0). `plan_path`: il piano di training della
+    fase come lo vede la selezione (relativo al checkout della valutazione, che deve contenerlo); `failed`: run il cui training si e' fermato
+    prima della sonda (niente guardia, estrazione e sonda: entrano nella selezione come inammissibili, review di GPT del 16/10/2026).
+    Il codice della valutazione puo' essere un checkout diverso da quello del training (`ev["code_dir"]`, `ev["expected_sha"]`)."""
+    code = {"code_dir": ev.get("code_dir", base["code_dir"]), "expected_sha": ev.get("expected_sha", base["expected_sha"])}
+    unknown = set(failed) - {r["id"] for r in jobs["runs"]}
+    if unknown:
+        raise ValueError(f"{name}: run falliti {sorted(unknown)} non sono run della fase")
+    if failed and len(failed) == len(jobs["runs"]):
+        raise ValueError(f"{name}: nessun run arrivato alla sonda: la fase si ferma, decisione da registrare a mano")
     nodes, cands, probe_outs = [], [], []
     for run, lr in zip(jobs["runs"], lrs):
+        if run["id"] in failed:
+            cands += [repr(float(lr)), run["run_dir"], "-", str(run["total_steps"])]
+            continue
         rid, ckpt = run["id"], f"{run['run_dir']}/checkpoint_postdecay.pt"
         feat, rep = f"{ev['features_root']}/{name}/{rid}", f"{ev['results_root']}/{name}/{rid}.json"
         npzs, oof = [f"{feat}/{d}.npz" for d in P1_DATASETS], str(Path(rep).with_suffix(".oof.npz"))
@@ -158,9 +170,10 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
         probe_outs += [rep, oof]
     out, record = f"{ev['results_root']}/{name}/decisione_{name}.json", f"{ev['results_root']}/{name}/registro_{name}.json"
     nodes.append({"id": f"W1CAL-{name}-select", "kind": "compare", "after": [n["id"] for n in nodes if n["kind"] == "probe"], "queue": "lrd_all_serial",
-                  "gpu_hours": 0, **code, "launcher": "scripts/slurm/calibration_select.sbatch", "args": [name, out, record, *cands], "exports": {},
+                  "gpu_hours": 0, **code, "launcher": "scripts/slurm/calibration_select.sbatch", "args": [name, out, record, plan_path, *cands],
+                  "exports": {},
                   "sbatch": [f"--time={SELECT_TIME}"], "inputs": probe_outs, "outputs": [out, record]})
-    n_runs = len(lrs)
+    n_runs = len(lrs) - len(failed)
     return {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{name.lower()}-eval", "agent": base["agent"],
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
             "estimate": {"gpu_hours_expected": round(n_runs * EXTRACT_EXPECTED_H[spec["preset"]], 2),
@@ -171,7 +184,8 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                                                      + n_runs * _hours("00:20:00"), 1)}}
 
 
-def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None) -> dict:
+def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None, plans_dir: str | None = None,
+         failed_runs: frozenset = frozenset()) -> dict:
     from wearusfm.training import run as R
 
     frac = build_report["fractions"]["1"]
@@ -210,7 +224,8 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
             raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)
         plans[name] = p
-        evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev)
+        evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev, f"{plans_dir}/calibrazione_{name}.json" if plans_dir else "-",
+                                frozenset(r["id"] for r in jobs["runs"] if r["id"] in failed_runs))
         for run, lr in zip(jobs["runs"], info["lrs"]):
             hours = run["total_steps"] * run["s_per_step"] / 3600
             rows.append({"phase": name, "id": run["id"], "size": spec["label"], "preset": spec["preset"], "seed": spec["seed"], "lr": lr,
@@ -220,6 +235,9 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
                          "jobs": run["jobs"], "gpu_hours_expected": run["gpu_hours_expected"], "gpu_hours_max": run["gpu_hours_max"]})
         if any(r["warmup_steps"] != warmup for r in jobs["runs"]):
             raise AssertionError("warmup diverso da quello di D")
+    unknown = set(failed_runs) - {r["id"] for r in rows}
+    if unknown:
+        raise ValueError(f"run falliti {sorted(unknown)} non sono run della fase (run pianificati: {sorted(r['id'] for r in rows)})")
     totals = {"runs": len(rows), "gpu_hours_expected": round(sum(r["gpu_hours_expected"] for r in rows), 1),
               "gpu_hours_max": round(sum(r["gpu_hours_max"] for r in rows), 1),
               "gpu_hours_training_only": round(sum(4 * r["steps"] * S_PER_STEP[r["preset"]] / 3600 for r in rows), 1),
@@ -254,10 +272,12 @@ def main(argv=None) -> int:
     ap.add_argument("build_report", type=Path)
     ap.add_argument("--decisions", type=Path)
     ap.add_argument("--campaign", type=Path, help="campi di campagna per wsd_chain.py (code_dir, expected_sha, manifest, ...); senza: dry-run")
-    ap.add_argument("--out", type=Path)
+    ap.add_argument("--out", type=Path, help="cartella dei piani (relativa: nel repo, cosi' il checkout della valutazione li contiene)")
+    ap.add_argument("--failed-runs", nargs="*", default=[], help="run fermati prima della sonda: entrano nella selezione come inammissibili")
     args = ap.parse_args(argv)
     result = plan(json.loads(args.build_report.read_text()), json.loads(args.decisions.read_text()) if args.decisions else None,
-                  json.loads(args.campaign.read_text()) if args.campaign else None)
+                  json.loads(args.campaign.read_text()) if args.campaign else None, str(args.out) if args.out else None,
+                  frozenset(args.failed_runs))
     print(table(result))
     print(f"\npassi a D (4 epoche) {result['steps_at_d']}, warmup {result['warmup_steps']}; solo training "
           f"{result['totals']['gpu_hours_training_only']} GPU-ora; {'DRY-RUN (percorsi segnaposto)' if result['dry_run'] else 'campagna'}")

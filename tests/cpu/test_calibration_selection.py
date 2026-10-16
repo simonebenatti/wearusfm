@@ -132,12 +132,38 @@ def test_extract_reads_only_pretraining_subjects(tmp_path, monkeypatch):
 # ---- ammissibilita' e selezione ----
 
 STEPS = 2000
+STEPS_AT_D = 2000  # warmup = max(1000, 2%) = 1000, decay da 1600
+CODE_SHA = "e" * 40
 
 
-def _run(tmp_path, name, *, stop=False, stopped="max_steps", steps=STEPS, nan_at=None, alarm=False, erank_last=100.0, panel=None):
+def _config(lr, seed=0, **over):
+    """La configurazione che `train_jepa.py` costruisce per un run di calibrazione (sanity, --window1-rules, --datasets all, WSD, --lr,
+    --nested 1, --fixed-eval-every 500), come la scrive il trainer in `config.json`."""
+    from dataclasses import replace
+
+    from wearusfm.training import run as R
+
+    cfg = R.with_wsd(R.with_window1_rules(R.sanity_config()), STEPS, warmup_steps=R.wsd_warmup_steps(STEPS_AT_D))
+    cfg = replace(cfg, lr=lr, seed=seed, batch_size=32, accum_steps=1, nested="1", datasets=None, fixed_eval_every=500, **over)
+    return R.config_to_dict(cfg)
+
+
+def _train_plan(cands, seed=0):
+    """Il piano di training (formato di wsd_chain.py) dei candidati: un run per cartella, col LR del candidato."""
+    return {"expected_sha": CODE_SHA, "common_args": "--window1-rules --datasets all --prefetch --fixed-eval-every 500",
+            "runs": [{"id": Path(rd).name, "preset": "sanity", "seed": seed, "batch_size": 32, "accum_steps": 1, "steps_at_d": STEPS_AT_D,
+                      "total_steps": STEPS, "keep_checkpoints": [], "args": f"--lr {lr:g} --nested 1"} for lr, rd, _, _ in cands]}
+
+
+def _sel(phase, cands):
+    return CS.select(phase, cands, _train_plan(cands))
+
+
+def _run(tmp_path, name, *, stop=False, stopped="max_steps", steps=STEPS, nan_at=None, alarm=False, erank_last=100.0, panel=None, lr=3e-4):
     d = tmp_path / name
     d.mkdir()
-    (d / "summary.json").write_text(json.dumps({"stopped": stopped, "steps": steps, "elapsed_s": 1.0, "code": {"sha": "x"}}))
+    (d / "summary.json").write_text(json.dumps({"stopped": stopped, "steps": steps, "elapsed_s": 1.0, "code": {"sha": CODE_SHA}}))
+    (d / "config.json").write_text(json.dumps(_config(lr)))
     if stop:
         (d / "STOP").write_text("allarme")
     lines = []
@@ -179,10 +205,10 @@ def _report(tmp_path, name, run_dir, quality, seed=0):
     return p
 
 
-def _cand(tmp_path, lr, quality, seed=0, **run_kw):
+def _cand(tmp_path, lr, quality, seed=0, no_probe=False, **run_kw):
     name = f"lr{lr:g}".replace(".", "p")
-    rd = _run(tmp_path, name, **run_kw)
-    return (lr, rd, _report(tmp_path, name, rd, quality, seed), STEPS)
+    rd = _run(tmp_path, name, lr=lr, **run_kw)
+    return (lr, rd, None if no_probe else _report(tmp_path, name, rd, quality, seed), STEPS)
 
 
 @pytest.mark.parametrize("kw,problem", [
@@ -233,12 +259,12 @@ def test_c1_reference_plus_best_alternative_with_ties_to_the_lower_lr(tmp_path):
     a, b, c = (tmp_path / x for x in "abc")
     for x in (a, b, c):
         x.mkdir()
-    dec, rec = CS.select("C1", [_cand(a, 1e-4, 0.55), _cand(a, 3e-4, 0.7), _cand(a, 1e-3, 0.85)])
+    dec, rec = _sel("C1", [_cand(a, 1e-4, 0.55), _cand(a, 3e-4, 0.7), _cand(a, 1e-3, 0.85)])
     assert dec == {"C1": {"finalists": [3e-4, 1e-3]}} and rec["comparisons"][0]["winner"] == 1e-3
-    dec, rec = CS.select("C1", [_cand(b, 1e-4, 0.70, seed=1), _cand(b, 3e-4, 0.7), _cand(b, 1e-3, 0.70, seed=2)])
+    dec, rec = _sel("C1", [_cand(b, 1e-4, 0.70, seed=1), _cand(b, 3e-4, 0.7), _cand(b, 1e-3, 0.70, seed=2)])
     assert dec == {"C1": {"finalists": [1e-4, 3e-4]}} and rec["comparisons"][0]["tie"]  # parita' entro 1 SE: il LR piu' basso
     # mai la training loss o un numero di test: la sola S fuori fold (qui 1e-4 e' migliore anche se la loss di 1e-3 fosse piu' bassa)
-    dec, _ = CS.select("C1", [_cand(c, 1e-4, 0.9), _cand(c, 3e-4, 0.7), _cand(c, 1e-3, 0.5)])
+    dec, _ = _sel("C1", [_cand(c, 1e-4, 0.9), _cand(c, 3e-4, 0.7), _cand(c, 1e-3, 0.5)])
     assert dec == {"C1": {"finalists": [1e-4, 3e-4]}}
 
 
@@ -249,7 +275,7 @@ def test_c1_reference_plus_best_alternative_with_ties_to_the_lower_lr(tmp_path):
     ({1e-3: {"alarm": True}}, {"finalists": [1e-4, 3e-4]}),
 ])
 def test_c1_admissibility_rules(tmp_path, bad, expected):
-    dec, rec = CS.select("C1", [_cand(tmp_path, lr, 0.8, seed=i, **bad.get(lr, {})) for i, lr in enumerate((1e-4, 3e-4, 1e-3))])
+    dec, rec = _sel("C1", [_cand(tmp_path, lr, 0.8, seed=i, **bad.get(lr, {})) for i, lr in enumerate((1e-4, 3e-4, 1e-3))])
     if expected == "stop":
         assert "stop" in dec["C1"] and "meno di due" in dec["C1"]["stop"]
     else:
@@ -260,19 +286,19 @@ def test_c2_c3_c4_rules(tmp_path):
     dirs = [tmp_path / str(i) for i in range(5)]
     for d in dirs:
         d.mkdir()
-    assert CS.select("C2", [_cand(dirs[0], 3e-4, 0.8), _cand(dirs[0], 1e-3, 0.8, seed=1)])[0] == {"C2": {"confirmed": [3e-4, 1e-3]}}
-    assert CS.select("C2", [_cand(dirs[1], 3e-4, 0.8), _cand(dirs[1], 1e-3, 0.8, seed=1, stop=True)])[0] == {"C2": {"confirmed": [3e-4]}}
-    assert CS.select("C3", [_cand(dirs[2], 3e-4, 0.6), _cand(dirs[2], 1e-3, 0.85, seed=1)])[0] == {"C3": {"proposed_300m_lr": 1e-3}}
+    assert _sel("C2", [_cand(dirs[0], 3e-4, 0.8), _cand(dirs[0], 1e-3, 0.8, seed=1)])[0] == {"C2": {"confirmed": [3e-4, 1e-3]}}
+    assert _sel("C2", [_cand(dirs[1], 3e-4, 0.8), _cand(dirs[1], 1e-3, 0.8, seed=1, stop=True)])[0] == {"C2": {"confirmed": [3e-4]}}
+    assert _sel("C3", [_cand(dirs[2], 3e-4, 0.6), _cand(dirs[2], 1e-3, 0.85, seed=1)])[0] == {"C3": {"proposed_300m_lr": 1e-3}}
     # accordo del 15/10: meno di due candidati ammissibili ferma il passaggio (anche con un solo LR ammissibile al 100M)
-    dec = CS.select("C3", [_cand(dirs[3], 3e-4, 0.6), _cand(dirs[3], 1e-3, 0.85, seed=1, stop=True)])[0]
+    dec = _sel("C3", [_cand(dirs[3], 3e-4, 0.6), _cand(dirs[3], 1e-3, 0.85, seed=1, stop=True)])[0]
     assert set(dec["C3"]) == {"stop"} and "meno di due" in dec["C3"]["stop"]
     dirs.append(tmp_path / "5")
     dirs[-1].mkdir()
-    dec = CS.select("C3", [_cand(dirs[5], 3e-4, 0.6, stop=True), _cand(dirs[5], 1e-3, 0.85, seed=1, stop=True)])[0]
+    dec = _sel("C3", [_cand(dirs[5], 3e-4, 0.6, stop=True), _cand(dirs[5], 1e-3, 0.85, seed=1, stop=True)])[0]
     assert set(dec["C3"]) == {"stop"}
-    assert CS.select("C4", [_cand(dirs[4], 3e-4, 0.6)])[0] == {"C4": {"lr": 3e-4, "passed": True}}
+    assert _sel("C4", [_cand(dirs[4], 3e-4, 0.6)])[0] == {"C4": {"lr": 3e-4, "passed": True}}
     with pytest.raises(ValueError, match="attesi"):
-        CS.select("C1", [_cand(tmp_path, 1e-4, 0.6)])
+        _sel("C1", [_cand(tmp_path, 1e-4, 0.6)])
 
 
 def test_paired_comparison_refuses_different_windows(tmp_path):
@@ -302,6 +328,60 @@ def test_merge_follows_the_planner_sequence(tmp_path):
     assert CS.main(["merge", "--decisions", str(p), "--add", str(a)]) == 0 and json.loads(p.read_text()) == {"C1": {"stop": "prova"}}
 
 
+def test_effective_configuration_must_match_the_plan(tmp_path):
+    """Review di GPT (16/10): LR, seme e configurazione effettiva del run (config.json) e codice (summary.json) contro il piano, non le
+    etichette: una differenza ferma la selezione."""
+    cands = [_cand(tmp_path, lr, 0.6 + 0.1 * i, seed=i) for i, lr in enumerate((1e-4, 3e-4, 1e-3))]
+    plan = _train_plan(cands)
+    assert CS.select("C1", cands, plan)[0]["C1"]["finalists"]
+    rec = CS.select("C1", cands, plan)[1]
+    assert "lr" in rec["candidates"]["0.0003"]["identity"]["config_checked"]
+    swapped = [(cands[0][0], cands[2][1], cands[0][2], STEPS), cands[1], (cands[2][0], cands[0][1], cands[2][2], STEPS)]
+    with pytest.raises(ValueError, match="LR dichiarato"):  # etichette scambiate: la cartella dice un altro LR
+        CS.select("C1", swapped, plan)
+    rd = cands[1][1]
+    for change, message in (({"seed": 1}, "seed"), ({"lr": 2e-4}, "lr"), ({"max_steps": 1999}, "max_steps"), ({"nested": None}, "nested"),
+                            ({"datasets": ["emg2qwerty"]}, "datasets"), ({"fixed_eval_every": 0}, "fixed_eval_every")):
+        good = (rd / "config.json").read_text()
+        (rd / "config.json").write_text(json.dumps({**json.loads(good), **change}))
+        with pytest.raises(ValueError, match=f"configurazione effettiva diversa dal piano: .*{message}"):
+            CS.select("C1", cands, plan)
+        (rd / "config.json").write_text(good)
+    cfg = json.loads((rd / "config.json").read_text())
+    cfg["jepa"]["anchor_weight"] = 0.0  # un braccio JEPA-only al posto di A
+    (rd / "config.json").write_text(json.dumps(cfg))
+    with pytest.raises(ValueError, match="jepa.anchor_weight"):
+        CS.select("C1", cands, plan)
+    (rd / "config.json").write_text(json.dumps(_config(3e-4)))
+    (rd / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": STEPS, "code": {"sha": "f" * 40}}))
+    with pytest.raises(ValueError, match="codice"):
+        CS.select("C1", cands, plan)
+    with pytest.raises(ValueError, match="serve il piano di training"):
+        CS.select("C1", cands)
+
+
+def test_a_run_stopped_before_the_probe_is_inadmissible_and_the_phase_goes_on(tmp_path):
+    """Review di GPT (16/10): un candidato fermato prima della sonda non blocca la selezione della fase: entra inammissibile, senza S."""
+    cands = [_cand(tmp_path, 1e-4, 0.6, no_probe=True, stop=True), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    dec, rec = _sel("C1", cands)
+    assert dec == {"C1": {"finalists": [3e-4, 1e-3]}}
+    c = rec["candidates"]["0.0001"]
+    assert not c["admissibility"]["admissible"] and "S" not in c and any("STOP" in p for p in c["admissibility"]["problems"])
+    assert [(d["a"], d["b"]) for d in rec["descriptive_comparisons"]] == [(3e-4, 1e-3)]  # solo fra chi ha la sonda
+    sub = tmp_path / "ok"
+    sub.mkdir()
+    fine = [_cand(sub, 1e-4, 0.6, no_probe=True), _cand(sub, 3e-4, 0.7, seed=1), _cand(sub, 1e-3, 0.8, seed=2)]
+    with pytest.raises(ValueError, match="ammissibile senza sonda"):  # un run finito bene non si salta
+        _sel("C1", fine)
+    out, recf = tmp_path / "d.json", tmp_path / "r.json"
+    args = ["select", "--phase", "C1", "--plan", str(tmp_path / "plan.json"), "--out", str(out), "--record", str(recf)]
+    (tmp_path / "plan.json").write_text(json.dumps(_train_plan(cands)))
+    for lr, rd, rp, st in cands:
+        args += ["--candidate", repr(lr), str(rd), "-" if rp is None else str(rp), str(st)]
+    assert CS.main(args) == 0 and json.loads(out.read_text()) == {"C1": {"finalists": [3e-4, 1e-3]}}
+    assert json.loads(recf.read_text())["plan"]["sha256"] == CS._sha256(tmp_path / "plan.json")
+
+
 def test_collaudo_phase_lists_admissible_runs_and_records_descriptive_comparisons(tmp_path):
     a, b = tmp_path / "a", tmp_path / "b"
     a.mkdir()
@@ -321,7 +401,7 @@ def test_collaudo_phase_lists_admissible_runs_and_records_descriptive_comparison
 
 
 def test_real_phases_also_record_all_pairs_descriptively(tmp_path):
-    _, rec = CS.select("C1", [_cand(tmp_path, lr, 0.6 + 0.1 * i, seed=i) for i, lr in enumerate((1e-4, 3e-4, 1e-3))])
+    _, rec = _sel("C1", [_cand(tmp_path, lr, 0.6 + 0.1 * i, seed=i) for i, lr in enumerate((1e-4, 3e-4, 1e-3))])
     assert [(d["a"], d["b"]) for d in rec["descriptive_comparisons"]] == [(1e-4, 3e-4), (1e-4, 1e-3), (3e-4, 1e-3)]
     assert sorted(rec["candidates"]) == ["0.0001", "0.0003", "0.001"]
 
@@ -337,13 +417,18 @@ def test_select_launcher_groups_candidates_and_uses_the_venv(work, tmp_path):  #
     (venv / "activate").write_text(f"export PATH={fakebin}:$PATH\n")
     env = {k: v for k, v in os.environ.items() if k not in ("CODE_DIR", "EXPECTED_SHA")}
     launcher = REPO / "scripts" / "slurm" / "calibration_select.sbatch"
-    args = ["C1", f"{root}/out/d.json", f"{root}/out/r.json", "0.0001", "/R/a", "/E/a.json", "24523", "0.0003", "/R/b", "/E/b.json", "24523"]
+    args = ["C1", f"{root}/out/d.json", f"{root}/out/r.json", "results/w1cal/calibrazione_C1.json", "0.0001", "/R/a", "/E/a.json", "24523",
+            "0.0003", "/R/b", "-", "24523"]
     r = subprocess.run(["bash", str(launcher), *args], env={**env, "WORK": str(root)}, capture_output=True, text=True)
-    assert ("VENV_PYTHON scripts/calibration_select.py select --phase C1 --out " + f"{root}/out/d.json --record {root}/out/r.json "
-            "--candidate 0.0001 /R/a /E/a.json 24523 --candidate 0.0003 /R/b /E/b.json 24523") in r.stdout, r.stdout + r.stderr
+    assert ("VENV_PYTHON scripts/calibration_select.py select --phase C1 --plan results/w1cal/calibrazione_C1.json --out " +
+            f"{root}/out/d.json --record {root}/out/r.json --candidate 0.0001 /R/a /E/a.json 24523 --candidate 0.0003 /R/b - 24523"
+            ) in r.stdout, r.stdout + r.stderr
+    r = subprocess.run(["bash", str(launcher), "collaudo", f"{root}/out/d.json", f"{root}/out/r.json", "-", *args[4:8]],
+                       env={**env, "WORK": str(root)}, capture_output=True, text=True)
+    assert "--plan" not in r.stdout and "--phase collaudo --out" in r.stdout, r.stdout + r.stderr
     r = subprocess.run(["bash", str(launcher), *args[:-1]], env={**env, "WORK": str(root)}, capture_output=True, text=True)
     assert r.returncode == 2 and "gruppi di 4" in r.stdout
-    r = subprocess.run(["bash", str(launcher), "C1", "rel/d.json", f"{root}/out/r.json", *args[3:7]], env={**env, "WORK": str(root)},
+    r = subprocess.run(["bash", str(launcher), "C1", "rel/d.json", f"{root}/out/r.json", "-", *args[4:8]], env={**env, "WORK": str(root)},
                        capture_output=True, text=True)
     assert r.returncode == 2 and "relativa" in r.stdout
     for name in ("calibration_extract.sbatch", "calibration_probe.sbatch"):

@@ -167,3 +167,19 @@ secondo sacct), estrazioni 60688824 (T) e 60688827 (B) su `boost_qos_dbg`, sonde
 **Misure per C1:** estrazione al 30M ~17 min (stimavo 12), sonda ~1,8 h a 8 core (stimavo 1,2); le sonde girano UNA alla volta, perche'
 sulla seriale c'e' un limite di core per utente (`QOSMaxCpuPerUserLimit`): con 3 run, ~5,5 h di sonde in fila dopo il training.
 **Consuntivo: 0,57 GPU-ora** (due estrazioni da 1 GPU) sul budget infrastruttura, ora 9,83 usate su 25 (residuo 15,17); ~29 core-ora CPU.
+
+## Correzioni dalla review di GPT (16/10/2026)
+
+GPT: «Gestire un candidato fallito prima della sonda: oggi blocca la selezione dell'intera fase» e «Verificare LR, seme e configurazione
+effettiva contro il piano, non soltanto le etichette ricevute». Entrambe giuste; nessuna regola di selezione cambiata.
+1. **Candidato fermato prima della sonda:** si passa alla selezione col rapporto «-» ed e' inammissibile per A1-A4 letti dai file del run
+   (STOP, allarme, run incompleto); la fase procede con gli altri. Un run ammissibile senza sonda e' un errore (la valutazione si completa,
+   non si salta). Nel pianificatore `--failed-runs`: niente guardia, estrazione e sonda per quei run, la selezione dipende solo dalle sonde
+   degli altri; tutti fermati = la fase si ferma, decisione da registrare a mano.
+2. **Identita' dei candidati:** nelle fasi C1-C4 la selezione riceve il piano di training della fase (`--plan`, quarto argomento del
+   launcher) e per ogni candidato confronta `config.json` del run (LR, seme, batch, accumulo, passi, warmup, schedule WSD e decay, frazione
+   del manifest, dataset, pannello, sampler pesato nel tempo, target, pesi di JEPA/ancore/keep/rami, dimensioni del modello) e lo SHA del
+   codice in `summary.json` col piano, e il LR dichiarato col piano: una differenza ferma la selezione con un errore. Verificato sulla
+   configurazione che `train_jepa.py` costruisce con gli argomenti veri dei tre run di C1.
+3. La catena di valutazione puo' usare un checkout diverso da quello dei training (`eval.code_dir`, `eval.expected_sha` nella campagna): per
+   C1 i training girano da 72cf24a, la valutazione partira' da un checkout nuovo con queste correzioni, dopo la review del `critico`.
