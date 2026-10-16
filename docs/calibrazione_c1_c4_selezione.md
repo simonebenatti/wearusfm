@@ -2,7 +2,7 @@
 
 **Stato: FIRMATO da Simone il 16/10/2026** («firmo A4 e parità, prepara il preventivo del collaudo su w1cat»; il 16/10 anche «in C3 con un
 solo LR ammissibile ci si ferma (come dice l'accordo), salvo diversa firma mia»). Proposta di Claude del 15/10/2026, rivista dal subagent
-`critico` il 16/10; GPT la rivede quando rientra. Resta aperto il budget della finestra 1, che precede il lancio di C1. L'accordo del
+`critico` il 16/10; GPT la rivede quando rientra. Budget firmati il 16/10: calibrazione 220 GPU-ora, finestra 1 6.000 (`docs/decisioni.md`). L'accordo del
 15/10/2026 (`docs/accordo_operativo_finestra1_20261015.md`, «Calibrazione» e prompt GPT punto 5) assegna questo protocollo a GPT. Simone:
 «come al solito chat gpt si è mangiato tutti i token , riessci tu a fare i task per C1 C4 ?» e «mi raccomando se trovi sistema tutto».
 Nessun file dell'harness e' stato modificato: il codice nuovo sta in file nuovi che usano l'harness in sola lettura.

@@ -3439,3 +3439,15 @@ manifest al critico». (2) I manifest derivati (frazioni 12,5/25/50/100%, costru
 nel registro «da rivedere da GPT prima dell'uso nei run», li rivede il subagent `critico` al posto di GPT, prima di C1; l'esito si
 registra qui. (8) Conferma la regola gia' registrata nella voce «Verifiche e revisore prima del lancio» dello stesso giorno: `critico`
 prima del lancio sulla parte scientifica e algoritmica, verifica di GPT non bloccante.
+
+**Budget della finestra 1 e della calibrazione FIRMATI (Simone, 16/10/2026).** Simone: «firmo 220 per la calibrazione e 6.000 per la
+finestra 1».
+- **Finestra 1: tetto complessivo 6.000 GPU-ora (48.000 ore locali), calibrazione compresa.** Base: stima del calendario del 15/10
+  5.070-5.700 GPU-ora; piano operativo ~6.000-7.000 del FM a novembre; saldo dell'account al 15/10 ~92.844 GPU-ora, quota mensile ~20.548
+  condivisa con gli altri utenti. E' un tetto, non un'autorizzazione: ogni tranche arriva con protocollo, preventivo e via di Simone, e il
+  superamento del tetto (o di quello di una voce) richiede una decisione registrata. Ripartizione del resto (~5.780) con la lista dei job,
+  dopo le firme sui bracci (`docs/bracci_obiettivo_finestra1.md`).
+- **Calibrazione C1-C4: 220 GPU-ora (1.760 ore locali)**, voce della finestra 1. Preventivo: ~163 attese, tetto 214,5 (training 160,2 /
+  208,0; valutazione 2,6 / 6,5), piu' il margine per i tetti delle valutazioni a 100M e 300M da rivedere dopo il collaudo `w1_selezione_v1`.
+  Consuntivo per fase qui sotto. Separata dal budget «preparazione dell'infrastruttura» (25 GPU-ora, residuo 15,74 prima del collaudo).
+- Consumato sulla finestra 1 finora: 0 GPU-ora.
