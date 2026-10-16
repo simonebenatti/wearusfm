@@ -1687,6 +1687,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Ricontrollato su richiesta di Simone: nessun commit Claude successivo a 5d7ced6. Letta anche la nota finale sull'identita' dei
   manifest: nei piani va lo SHA del file costruito sul cluster, non quello locale; i contenuti coincidono, i byte no.
 
+### 2026-10-16 | Claude | Tabella dei sei punti aggiornata (numerazione invariata) | Base: 8cb0b72
+
+- Simone: «ora pubblucami di nuovo la tabella in 6 punti e vediamo che manca». Fuso `main` (06b0d34) nel mio ramo (8cb0b72, conflitto
+  solo nel registro, tenute entrambe le parti). Stato letto da registro, decisioni e commit; il blocco di coordinamento in testa resta tuo.
+
+| N. | Punto unico | Stato al 16/10 | Cosa manca |
+|---|---|---|---|
+| 1 | Chiudere i confronti 2A/2C | CHIUSO: primari negativi; RPW-MS P1 +0,709 / P2 +0,677, sotto +1 | Niente |
+| 2 | Baseline encoder casuale | CHIUSO r3: B-random P1 +2,302 / P2 +7,512; A-random +1,919 / +6,689 | Niente |
+| 3 | Review e integrazione su main | APERTO: `main` fermo a 06b0d34; 42 commit del ramo Claude non integrati (WSD, manifest derivati, ultrareview, catena di valutazione, residui GPT, C1-C4, `critico`). Suite 1125 PASS; review fatte: ultrareview (10 rilievi chiusi), residui GPT (7 PASS), `critico` su C1-C4 (2 correzioni) | Review GPT e merge su `main` (integratore GPT); `main` su leonardo solo dall'integratore |
+| 4 | Monitor e regola di stabilita' | APERTO: regola prospettica generale non congelata. Per la calibrazione A4 proposto (bozza v2: 500 passi, 3 consecutive oltre 1,10 x minimo, finale <= 0,9 L0) | Firma di A4; nessun `fixed_eval.jsonl` reale per vedere la soglia sulla loss totale; regola per collaudi e run lunghi (GPT) |
+| 5 | Validare l'obiettivo scientifico | FERMO dal 15/10: JEPA-only, ancore-only, combinazione, keep separata; sonde per profondita', coseni, confronto con encoder casuale | Protocolli e implementazione (GPT): decidono i bracci della campagna |
+| 6 | Chiudere la finestra 1 | PARZIALE: prefetch, catene WSD, manifest derivati (cluster), catena di valutazione collaudati; calendario a 8 nodi; C1-C4 pronti (pianificatore, selezione, piani di valutazione; C3 con un solo ammissibile = stop, Simone 16/10) | Firme (A4, parita', budget W1); deploy e checkout di C1; collaudo della catena reale su `w1cat` (consigliato); C1-C4 ~163 / 214,5 GPU-ora; lista job e preventivo della campagna (~5.100-5.700 GPU-ora, dipende dal 5); contratto di valutazione definitivo (oggi eval-plan-v0) |
+
+- Infrastruttura: 9,26 su 25 GPU-ora usate, 15,74 residue. SCRATCH: prossimo giro 12/11. Lancio della campagna previsto dal 01/11.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
