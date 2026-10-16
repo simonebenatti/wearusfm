@@ -1676,7 +1676,27 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Test: `test_calibration_selection.py` aggiornato (C3 con uno e con nessun ammissibile) e un test nuovo sui percorsi; mirati selezione,
   pianificatore, catena di valutazione **77 PASS** (76 + 1). Suite completa non rieseguita: nessun altro file usa `calibration_select.py`.
 
+### 2026-10-15 | GPT | Status della nuova tranche Claude | Fonte: 5d7ced6
+
+- Letti gli ultimi commit e il registro: manifest derivati costruiti sul cluster (60661456 e 60661475), con hash di contenuto uguali
+  ai locali; pianificatore C1-C4, orchestratore di valutazione e calendario consegnati. Dieci rilievi della ultrareview corretti in
+  d5f2a1f; Claude riporta suite CPU completa 1073 PASS. Non ho rieseguito la suite in questo controllo di stato.
+- Restano a GPT: contratto definitivo e payload della valutazione, review e integrazione della tranche, regola prospettica di
+  stabilita', criteri di selezione della calibrazione e protocolli scientifici. Il mio HEAD prima di questa nota era e02ac74:
+  queste nuove consegne non sono ancora integrate. Nessun lancio o modifica al codice in questa attivita'.
+- Ricontrollato su richiesta di Simone: nessun commit Claude successivo a 5d7ced6. Letta anche la nota finale sull'identita' dei
+  manifest: nei piani va lo SHA del file costruito sul cluster, non quello locale; i contenuti coincidono, i byte no.
+
 ## 2) Problemi trovati
+
+### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
+
+- Lettura di commit e resoconti, non approvazione tecnica delle correzioni o verifica live della coda. Lo schema eval-plan-v0 e'
+  ancora provvisorio; guardie e catena di valutazione non risultano collaudate sul cluster nel registro letto.
+- La firma dati della ripresa usa lo SHA del file: sostituire quello cluster con quello locale sarebbe scorretto anche con contenuti
+  equivalenti. Claude attende inoltre contratto di valutazione e criteri/formato delle decisioni C1-C4 da GPT.
+- Calibrazione: 152,1 GPU-ora di training, circa 160 attese e tetto 208; estrazioni e sonde escluse. Preventivo, non nuovi lanci
+  autorizzati da questo status. Nessuna nuova decisione scientifica: decisioni.md invariato.
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
