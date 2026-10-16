@@ -3403,3 +3403,10 @@ una decisione prima di C1. Nessun job lanciato.
 alla fase successiva»). `scripts/calibration_select.py` e `docs/calibrazione_c1_c4_selezione.md` aggiornati; restano da firmare A4 e la regola
 di parita'. Nella stessa correzione (nessuna soglia cambiata): A1 confronta il checkpoint della sonda con quello del run come file e non come
 stringa (una barra finale in `run_root` avrebbe reso inammissibili tutti i run).
+
+**Calibrazione C1-C4: A4 e regola di parita' FIRMATE (Simone, 16/10/2026).** Simone: «firmo A4 e parità, prepara il preventivo del collaudo
+su w1cat». Congelate prima di qualunque run di C1 (`docs/calibrazione_c1_c4_selezione.md`, `scripts/calibration_select.py`): **A4** pannello
+fisso (8 x 32 finestre) ogni 500 passi dal passo 0 senza buchi, run inammissibile con 3 valutazioni consecutive in cui la loss totale supera
+1,10 volte il minimo raggiunto, o con loss all'ultima valutazione oltre 0,9 volte quella del passo 0; **parita'**: differenza accoppiata di S
+entro 1 errore standard -> vince il LR piu' basso. Insieme allo stop di C3 con un solo ammissibile (16/10) il protocollo di selezione e'
+completo. Resta da decidere il budget della finestra 1 prima del lancio di C1. Un cambio di queste soglie dopo C1 e' una decisione nuova.

@@ -1703,6 +1703,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Infrastruttura: 9,26 su 25 GPU-ora usate, 15,74 residue. SCRATCH: prossimo giro 12/11. Lancio della campagna previsto dal 01/11.
 
+### 2026-10-16 | Claude | Calibrazione C1-C4: A4 e parita' firmate da Simone | Base: bfdc589
+
+- Simone: «firmo A4 e parità, prepara il preventivo del collaudo su w1cat». Registrate in `docs/decisioni.md` e nel protocollo
+  (`docs/calibrazione_c1_c4_selezione.md`, ora FIRMATO): A4 (500 passi, 3 consecutive oltre 1,10 x minimo, finale <= 0,9 L0) e parita'
+  entro 1 SE accoppiato al LR piu' basso. Nessun cambio al codice: le soglie erano gia' quelle di `calibration_select.py`. Resta il budget W1.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

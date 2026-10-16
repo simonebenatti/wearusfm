@@ -1,6 +1,8 @@
-# Calibrazione C1-C4: ammissibilita', validation interna e selezione (proposta da congelare prima di C1)
+# Calibrazione C1-C4: ammissibilita', validation interna e selezione (congelata prima di C1)
 
-**Stato: PROPOSTA di Claude del 15/10/2026, da firmare da Simone prima del lancio di C1; GPT la rivede quando rientra.** L'accordo del
+**Stato: FIRMATO da Simone il 16/10/2026** («firmo A4 e parità, prepara il preventivo del collaudo su w1cat»; il 16/10 anche «in C3 con un
+solo LR ammissibile ci si ferma (come dice l'accordo), salvo diversa firma mia»). Proposta di Claude del 15/10/2026, rivista dal subagent
+`critico` il 16/10; GPT la rivede quando rientra. Resta aperto il budget della finestra 1, che precede il lancio di C1. L'accordo del
 15/10/2026 (`docs/accordo_operativo_finestra1_20261015.md`, «Calibrazione» e prompt GPT punto 5) assegna questo protocollo a GPT. Simone:
 «come al solito chat gpt si è mangiato tutti i token , riessci tu a fare i task per C1 C4 ?» e «mi raccomando se trovi sistema tutto».
 Nessun file dell'harness e' stato modificato: il codice nuovo sta in file nuovi che usano l'harness in sola lettura.
@@ -44,7 +46,7 @@ non sceglie mai.
 | A1 | Completo: nessuno STOP, `summary.json` con `stopped = max_steps` e i passi pianificati; la sonda viene dal suo `checkpoint_postdecay.pt` | regola della guardia, gia' in uso |
 | A2 | Ogni valore numerico di `metrics.jsonl` e `fixed_eval.jsonl` finito | gia' in uso (un non finito ferma il run) |
 | A3 | Non-collasso: nessun allarme nel run; all'ultima valutazione (passo finale) rapporto di collasso min(studente, teacher) >= 0,05 e rango effettivo dello studente >= 10% della dimensione | **firmate**, decisione 16 (`AlarmRule`) |
-| A4 | Stabilita' sul pannello fisso (8 x 32 finestre, ogni **500** passi dal passo 0, senza buchi): mai **3** valutazioni consecutive con L_t > **1,10** x min_{s<=t} L_s; L all'ultima valutazione <= **0,9** x L_0 (L = loss totale) | **nuove, da firmare** (bozza v2 del 14/10, `docs/regola_stabilita_bozza.md`) |
+| A4 | Stabilita' sul pannello fisso (8 x 32 finestre, ogni **500** passi dal passo 0, senza buchi): mai **3** valutazioni consecutive con L_t > **1,10** x min_{s<=t} L_s; L all'ultima valutazione <= **0,9** x L_0 (L = loss totale) | **firmate da Simone il 16/10/2026** (dalla bozza v2 del 14/10, `docs/regola_stabilita_bozza.md`) |
 
 - A4 richiede il pannello acceso nei run di calibrazione: il pianificatore aggiunge `--fixed-eval-every 500` (8 forward senza gradiente ogni
   500 passi, sotto l'1%). Tre valutazioni consecutive = 1.500 aggiornamenti di regressione persistente; una o due sopra soglia si
@@ -59,8 +61,8 @@ non sceglie mai.
 ## Selezione (solo S; confronto accoppiato sui soggetti)
 
 Per due LR, Delta = S(a) - S(b) e il suo errore standard da un bootstrap accoppiato (stesso ricampionamento dei soggetti per i due
-candidati; finestre, etichette e soggetti identici, controllato). **|Delta| <= 1 SE = parita' e vince il LR piu' basso.** *Interpretazione e
-motivo:* nella scala da 30M a 300M il LR ottimo tende a scendere con la taglia; a parita' il LR piu' basso e' la scelta prudente per C3/C4.
+candidati; finestre, etichette e soggetti identici, controllato). **|Delta| <= 1 SE = parita' e vince il LR piu' basso** (firmata da Simone
+il 16/10/2026). Motivo: nella scala da 30M a 300M il LR ottimo tende a scendere con la taglia; a parita' il LR piu' basso e' la scelta prudente per C3/C4.
 
 - **C1:** se 3e-4 e' ammissibile: finalisti 3e-4 e la migliore fra le alternative ammissibili (se sono due, confronto accoppiato); se
   nessuna alternativa e' ammissibile, stop. Se 3e-4 non e' ammissibile: 1e-4 e 1e-3 solo se entrambi ammissibili, altrimenti stop.
@@ -102,8 +104,8 @@ infrastruttura). Basi delle stime di valutazione: estrazione P1 al 30M 13:42 per
 
 ## Prima di C1
 
-1. Firma di Simone su A4 (delta, k, apprendimento, cadenza) e sulla regola di parita' (il caso «un solo LR ammissibile in C3» e' deciso:
-   stop, vedi sopra).
+1. ~~Firma di Simone su A4 e sulla regola di parita'~~: firmate il 16/10/2026 (C3 con un solo LR ammissibile: stop, firmato lo stesso
+   giorno). Resta il budget della finestra 1.
 2. Deploy di un commit con questi file (`deploy/<nome>`) e checkout di campagna (job CPU), percorsi del manifest derivato al 100% sul cluster
    (SHA del file del cluster), scale e `window_seconds`.
 3. Facoltativo, consigliato: collaudo della catena reale (estrazione, sonda, selezione) su un checkpoint gia' esistente (`w1cat`), per
