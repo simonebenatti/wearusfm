@@ -50,6 +50,9 @@ non sceglie mai.
   500 passi, sotto l'1%). Tre valutazioni consecutive = 1.500 aggiornamenti di regressione persistente; una o due sopra soglia si
   registrano senza escludere.
 - *Interpretazione:* «stabile» dell'accordo = ammissibile secondo A1-A4.
+- A1 confronta il checkpoint della sonda con quello del run come file, non come stringa: percorsi uguali dopo la normalizzazione (barre doppie
+  o finali, `.`) o, se esistono, lo stesso file su disco (link simbolici, `$WORK` contro `/leonardo_work/...`). Correzione del 16/10/2026:
+  prima una barra finale in `run_root` rendeva inammissibili tutti i run.
 - Limiti noti: il pannello misura la regressione sui dati di training, non la generalizzazione; la parte JEPA ha target mobili (teacher
   EMA), quindi la soglia sta sulla loss totale, dominata dalle ancore.
 
@@ -63,9 +66,10 @@ motivo:* nella scala da 30M a 300M il LR ottimo tende a scendere con la taglia; 
   nessuna alternativa e' ammissibile, stop. Se 3e-4 non e' ammissibile: 1e-4 e 1e-3 solo se entrambi ammissibili, altrimenti stop.
 - **C2:** confermati = i finalisti ammissibili al seme 1. Se uno manca, C3 e C4 si fermano (gia' nel pianificatore). S al seme 1 e il
   confronto si registrano, un'inversione dell'ordine non e' un fallimento.
-- **C3:** LR proposto per il 300M = il migliore fra i due LR ammissibili al 100M; nessuno ammissibile = stop. **Da decidere (Simone):** se
-  solo uno e' ammissibile propongo di continuare con quello, segnalandolo (l'accordo elenca come stop solo i casi di C1, C2 e C4);
-  l'alternativa e' fermarsi.
+- **C3:** LR proposto per il 300M = il migliore fra i due LR ammissibili al 100M; **meno di due ammissibili (uno o nessuno) = stop**, come
+  dice l'accordo: «Se mancano due candidati ammissibili [...] interrompere il passaggio alla fase successiva». Correzione del 16/10/2026
+  (Simone: «in C3 con un solo LR ammissibile ci si ferma (come dice l'accordo), salvo diversa firma mia»): la prima versione continuava con
+  l'unico LR ammissibile. Continuare con uno solo richiede una firma di Simone e un cambio di `calibration_select.py`.
 - **C4:** superata se ammissibile. Un solo punto al 300M non dimostra l'ottimo del rung (accordo): il LR della campagna resta una decisione
   di Simone sui risultati di C1-C4.
 
@@ -98,7 +102,8 @@ infrastruttura). Basi delle stime di valutazione: estrazione P1 al 30M 13:42 per
 
 ## Prima di C1
 
-1. Firma di Simone su A4 (delta, k, apprendimento, cadenza), sulla regola di parita' e sul caso «un solo LR ammissibile in C3».
+1. Firma di Simone su A4 (delta, k, apprendimento, cadenza) e sulla regola di parita' (il caso «un solo LR ammissibile in C3» e' deciso:
+   stop, vedi sopra).
 2. Deploy di un commit con questi file (`deploy/<nome>`) e checkout di campagna (job CPU), percorsi del manifest derivato al 100% sul cluster
    (SHA del file del cluster), scale e `window_seconds`.
 3. Facoltativo, consigliato: collaudo della catena reale (estrazione, sonda, selezione) su un checkpoint gia' esistente (`w1cat`), per

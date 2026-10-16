@@ -16,7 +16,9 @@ Selezione (S fuori fold; confronto accoppiato sui soggetti: differenza entro 1 e
   C1 (1e-4, 3e-4, 1e-3, seme 0): se 3e-4 e' ammissibile, finalisti 3e-4 e la migliore alternativa ammissibile; se 3e-4 non lo e', le due
      alternative solo se entrambe ammissibili; altrimenti stop (meno di due candidati).
   C2 (i finalisti, seme 1): confermati = quelli ammissibili; se uno manca il pianificatore ferma C3 e C4.
-  C3 (100M, i due confermati): LR proposto per il 300M = il migliore fra gli ammissibili; nessuno ammissibile -> stop.
+  C3 (100M, i due confermati): se entrambi ammissibili, LR proposto per il 300M = il migliore; meno di due ammissibili -> stop (accordo del
+     15/10: «Se mancano due candidati ammissibili [...] interrompere il passaggio alla fase successiva»; continuare con uno solo richiede una
+     firma di Simone e un cambio qui).
   C4 (300M, il LR proposto): superata se ammissibile.
 
   python3 scripts/calibration_select.py select --phase C1 --out decisione_C1.json --record registro_C1.json \\
@@ -30,6 +32,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -111,6 +114,20 @@ def panel_check(panel: list[dict], total_steps: int) -> dict:
     return out
 
 
+def same_file(a, b) -> bool:
+    """Lo stesso file: percorsi uguali dopo la normalizzazione (barre doppie o finali, `.`), oppure, se esistono entrambi, lo stesso file su
+    disco (link simbolici, `$WORK` contro `/leonardo_work/...`)."""
+    if a is None or b is None:
+        return False
+    a, b = os.path.normpath(str(a)), os.path.normpath(str(b))
+    if a == b:
+        return True
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return False
+
+
 def admissibility(run_dir: Path, report: dict, total_steps: int) -> dict:
     """A1-A4 di un run; `report` = rapporto di `calibration_probe.py`."""
     run_dir = Path(run_dir)
@@ -121,7 +138,7 @@ def admissibility(run_dir: Path, report: dict, total_steps: int) -> dict:
     out["summary"] = {k: summary.get(k) for k in ("stopped", "steps", "elapsed_s", "code")}
     if summary.get("stopped") != "max_steps" or summary.get("steps") != total_steps:
         problems.append(f"run non completo: stopped {summary.get('stopped')!r}, passi {summary.get('steps')} su {total_steps}")
-    if report.get("checkpoint") != str(run_dir / CHECKPOINT):
+    if not same_file(report.get("checkpoint"), run_dir / CHECKPOINT):
         problems.append(f"la sonda viene da {report.get('checkpoint')}, non da {run_dir / CHECKPOINT}")
     metrics = _records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
     panel = _records(run_dir / "fixed_eval.jsonl") if (run_dir / "fixed_eval.jsonl").exists() else []
@@ -227,10 +244,8 @@ def decide(phase: str, cands: dict) -> tuple[dict, list[dict]]:
     if phase == "C3":
         if len(cands) != 2:
             raise ValueError("C3: servono i due LR confermati")
-        if not ok:
-            return {"stop": "nessuno dei due LR ammissibile al 100M"}, comparisons
-        if len(ok) == 1:
-            return {"proposed_300m_lr": ok[0], "note": "unico LR ammissibile al 100M"}, comparisons
+        if len(ok) < 2:  # accordo del 15/10: meno di due candidati ammissibili ferma il passaggio alla fase successiva
+            return {"stop": f"meno di due LR ammissibili al 100M (ammissibili: {ok})"}, comparisons
         best, c = better(ok[0], ok[1], cands)
         comparisons.append(c)
         return {"proposed_300m_lr": best}, comparisons

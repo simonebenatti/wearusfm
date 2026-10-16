@@ -213,6 +213,22 @@ def test_admissible_run_and_tolerated_cases(tmp_path):
     assert any("la sonda viene da" in p for p in CS.admissibility(rd, rep, steps)["problems"])
 
 
+def test_checkpoint_path_of_the_probe_is_compared_robustly(tmp_path):
+    """Lo stesso checkpoint scritto in modi diversi (barre doppie o finali, `.`, link simbolico) non rende il run inammissibile."""
+    lr, rd, rp, steps = _cand(tmp_path, 3e-4, 0.8)
+    (rd / "checkpoint_postdecay.pt").write_bytes(b"ckpt")
+    rep = json.loads(rp.read_text())
+    link = tmp_path / "collegamento"
+    link.symlink_to(rd, target_is_directory=True)
+    for ckpt in (f"{rd}//checkpoint_postdecay.pt", f"{rd}/./checkpoint_postdecay.pt", str(link / "checkpoint_postdecay.pt")):
+        rep["checkpoint"] = ckpt
+        assert CS.admissibility(rd, rep, steps)["admissible"], ckpt
+    assert CS.admissibility(Path(f"{rd}/"), {**rep, "checkpoint": str(rd / "checkpoint_postdecay.pt")}, steps)["admissible"]
+    for other in (str(tmp_path / "altro" / "checkpoint_postdecay.pt"), str(rd / "checkpoint_predecay.pt"), None):
+        assert any("la sonda viene da" in p for p in CS.admissibility(rd, {**rep, "checkpoint": other}, steps)["problems"]), other
+    assert CS.same_file(rd / "assente.pt", f"{rd}//assente.pt") and not CS.same_file(rd / "assente.pt", rd / "altro.pt")
+
+
 def test_c1_reference_plus_best_alternative_with_ties_to_the_lower_lr(tmp_path):
     a, b, c = (tmp_path / x for x in "abc")
     for x in (a, b, c):
@@ -247,8 +263,13 @@ def test_c2_c3_c4_rules(tmp_path):
     assert CS.select("C2", [_cand(dirs[0], 3e-4, 0.8), _cand(dirs[0], 1e-3, 0.8, seed=1)])[0] == {"C2": {"confirmed": [3e-4, 1e-3]}}
     assert CS.select("C2", [_cand(dirs[1], 3e-4, 0.8), _cand(dirs[1], 1e-3, 0.8, seed=1, stop=True)])[0] == {"C2": {"confirmed": [3e-4]}}
     assert CS.select("C3", [_cand(dirs[2], 3e-4, 0.6), _cand(dirs[2], 1e-3, 0.85, seed=1)])[0] == {"C3": {"proposed_300m_lr": 1e-3}}
+    # accordo del 15/10: meno di due candidati ammissibili ferma il passaggio (anche con un solo LR ammissibile al 100M)
     dec = CS.select("C3", [_cand(dirs[3], 3e-4, 0.6), _cand(dirs[3], 1e-3, 0.85, seed=1, stop=True)])[0]
-    assert dec["C3"]["proposed_300m_lr"] == 3e-4 and "unico" in dec["C3"]["note"]
+    assert set(dec["C3"]) == {"stop"} and "meno di due" in dec["C3"]["stop"]
+    dirs.append(tmp_path / "5")
+    dirs[-1].mkdir()
+    dec = CS.select("C3", [_cand(dirs[5], 3e-4, 0.6, stop=True), _cand(dirs[5], 1e-3, 0.85, seed=1, stop=True)])[0]
+    assert set(dec["C3"]) == {"stop"}
     assert CS.select("C4", [_cand(dirs[4], 3e-4, 0.6)])[0] == {"C4": {"lr": 3e-4, "passed": True}}
     with pytest.raises(ValueError, match="attesi"):
         CS.select("C1", [_cand(tmp_path, 1e-4, 0.6)])

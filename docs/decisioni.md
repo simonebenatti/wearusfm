@@ -3396,3 +3396,10 @@ volte il minimo, L finale <= 0,9 L_0 (soglie nuove, da firmare)**; selezione per
 basso (da firmare)**; C3 con un solo LR ammissibile: continuare segnalandolo oppure fermarsi (**da decidere**). Preventivo C1-C4 ~163
 GPU-ora attese, tetto 214,5 (1.716 ore locali), CPU ~199 core-ora; C1 ~61 / 79,5. Il budget della finestra 1 non e' ancora fissato: serve
 una decisione prima di C1. Nessun job lanciato.
+
+**Calibrazione C1-C4: C3 con un solo LR ammissibile = stop (Simone, 16/10/2026).** Simone: «in C3 con un solo LR ammissibile ci si ferma
+(come dice l'accordo), salvo diversa firma mia». Chiude il punto «da decidere» della proposta del 15/10: in C3 meno di due LR ammissibili al
+100M (uno o nessuno) fermano il passaggio a C4, come l'accordo del 15/10 («Se mancano due candidati ammissibili [...] interrompere il passaggio
+alla fase successiva»). `scripts/calibration_select.py` e `docs/calibrazione_c1_c4_selezione.md` aggiornati; restano da firmare A4 e la regola
+di parita'. Nella stessa correzione (nessuna soglia cambiata): A1 confronta il checkpoint della sonda con quello del run come file e non come
+stringa (una barra finale in `run_root` avrebbe reso inammissibili tutti i run).

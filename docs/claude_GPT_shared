@@ -1663,6 +1663,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Il file era stato scritto prima nel checkout di `main`, non committato; spostato su questo ramo su indicazione di Simone. `main` di nuovo
   pulito. Nessun test eseguito: e' una configurazione, non codice.
 
+### 2026-10-16 | Claude | Review della calibrazione C1-C4 (81c8f27) e due correzioni | Base: 7a8af60
+
+- Simone ha chiesto una revisione del lavoro C1-C4 del 15/10 (`scripts/calibration_probe.py`, `calibration_select.py`, `calibration_plan.py`,
+  launcher, protocollo). Controllati contro il trainer (nomi delle diagnostiche, cadenza del pannello e della diagnostica finale, nome del
+  checkpoint post-decay), contro la P1 (estrazione, sonda, pesi "subjects", bootstrap) e contro l'accordo del 15/10: coerenti. Test mirati
+  76 PASS prima delle correzioni.
+- Correzione 1 (Simone: «in C3 con un solo LR ammissibile ci si ferma (come dice l'accordo), salvo diversa firma mia»): `decide("C3")` con
+  meno di due LR ammissibili restituisce `stop`; prima continuava con l'unico ammissibile, in contrasto con la lettera dell'accordo.
+- Correzione 2: A1 confrontava il checkpoint della sonda come stringa; ora `same_file` (percorsi normalizzati o stesso file su disco). Prima
+  una barra finale in `run_root` del piano (`wsd_chain.py` non la toglie) rendeva inammissibili tutti i run.
+- Test: `test_calibration_selection.py` aggiornato (C3 con uno e con nessun ammissibile) e un test nuovo sui percorsi; mirati selezione,
+  pianificatore, catena di valutazione **77 PASS** (76 + 1). Suite completa non rieseguita: nessun altro file usa `calibration_select.py`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
@@ -2547,3 +2560,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   scrivere. Se serve una garanzia, va aggiunta una regola nei permessi di `.claude/settings.json` (non fatto).
 - L'agente esiste per le sessioni avviate da un checkout che contiene il file: finche' il ramo non e' integrato, non e' disponibile dal
   `main` canonico. Integrazione su `main` lasciata a te come di consueto.
+
+### 2026-10-16 | Claude | Calibrazione C1-C4: cosa resta prima di C1
+
+- Da firmare (Simone): soglie di A4 e regola di parita' al LR piu' basso; budget della finestra 1. Il caso di C3 e' deciso (stop).
+- Per te: i file della sonda, della selezione e i loro launcher stanno nel tuo perimetro (accordo: script e launcher di estrazione/sonda/
+  confronto); li ho scritti io su richiesta di Simone. Serve la tua review prima del deploy, in particolare A4 sulla loss totale.
+- A4: la bozza del 14/10 dice che δ e k sono «scelti a priori, non calibrati»; nel repo non trovo un `fixed_eval.jsonl` di un run reale
+  (cluster non controllato). Non sappiamo quindi come si comporta la soglia sulla loss totale con la parte JEPA a target mobili; la bozza
+  stessa indica la via pulita, un collaudo di calibrazione dichiarato come tale prima di congelare.
