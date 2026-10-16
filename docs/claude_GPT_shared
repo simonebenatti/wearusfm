@@ -1904,6 +1904,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   i grezzi da `RAW_ROOT` (default `$WORK/data/raw`, che la pulizia non tocca). Comportamento invariato sul canonico. Test
   `test_probe_launchers.py` (5). Le campagne gia' concluse girano dai loro checkout congelati: non sono toccate.
 
+### 2026-10-16 | Claude | Pianificatore dei bracci e piano di valutazione P1/P2 | Base: 931dd26
+
+- `scripts/arms_plan.py` + `scripts/slurm/arms_compare.sbatch`: training per `wsd_chain.py` (obiettivo: A, JEPA-only, ancore-only; keep: A'
+  e B solo con la calibrazione sul corpus intero), 30M, 98.094 passi, semi 0 e 1, LR di C1-C2; valutazione per run: P1/P2 ufficiali e S della
+  P1 e della P2, poi il confronto con le regole firmate. `--probes-on-gpu`, `--failed-runs`. Test 5, compreso lo stato iniziale identico fra
+  bracci a pari seme. Preventivo: obiettivo 463,8 / 552 GPU-ora di training; valutazione 10,5 / 27 con sonde su CPU (~24 h in fila) o
+  34,5 / 87 su GPU. Chiusi i rilievi 3-6 della critica del punto 5.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

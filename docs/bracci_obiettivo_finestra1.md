@@ -145,3 +145,24 @@ Sostituiscono il punto 3 della firma («+1 punto sulla media dei due semi») e l
 Non cambiano: bracci, disegno (30M, 4 epoche, 2 semi), keep separata, allarme di collasso, letture «al LR di A».
 Implementazione delle due regole: `scripts/arms_compare.py` (test `tests/cpu/test_arms_compare.py`). Un braccio collassato non batte il
 riferimento; un run fermato per un altro motivo non e' valutabile (si decide a mano); se piu' bracci battono A su S, la scelta e' di Simone.
+
+## Pianificatore e piano di valutazione (16/10/2026; critica del punto 5, punti 3-6)
+
+`scripts/arms_plan.py` (test `tests/cpu/test_arms_plan.py`): piani per `wsd_chain.py` (gruppo «objective»: A, JEPA-only, ancore-only; gruppo
+«keep»: A' e B, solo con la calibrazione della keep sul corpus intero) e piano di valutazione per `evaluation_chain.py`: per ogni run guardia
+-> P1 e P2 ufficiali (`probe_p1*.sbatch`, `probe_p2*.sbatch`, ora con CODE_DIR) e S della P1 e della P2 (`calibration_*.sbatch`), poi
+`arms_compare.sbatch` col confronto firmato (spec `confronto_<gruppo>.json`). Test dello stato iniziale: a pari seme i tre bracci hanno la
+stessa architettura e lo stesso stato iniziale, con le configurazioni costruite da `train_jepa.py` (rilievo 5).
+
+**Preventivo** (LR di esempio 3e-4; un job da 23 h per run, 98.094 passi a 0,70 s):
+
+| Gruppo | Run | Training GPU-ora attese / tetto | Valutazione, sonde su CPU | Valutazione, sonde su GPU |
+|---|---|---|---|---|
+| Obiettivo (A, JEPA-only, ancore-only, 2 semi) | 6 | 463,8 / 552,0 | 10,5 / 27,0 GPU-ora + 192 core-ora, **~24 h di sonde in fila** | 34,5 / 87,0 GPU-ora, in parallelo |
+| Keep (A', B, 2 semi) | 4 | 309,2 / 368,0 | 7,0 / 18,0 + 128 core-ora, ~16 h in fila | 23,0 / 58,0 |
+| **Totale** | 10 | **773,0 / 920,0** | 17,5 / 45,0 | 57,5 / 145,0 |
+
+Sulla seriale le sonde girano una alla volta (`QOSMaxCpuPerUserLimit`, collaudo `w1_selezione_v1`): ~4 h di sonde per run, quindi ~24 h per i
+sei run dell'obiettivo dopo i training; sulle GPU costano ~24 GPU-ora in piu' e girano in parallelo (rilievo 4).
+**Prima del lancio dei bracci:** LR di 30M da C1-C2 (la regola firmata), calibrazione della keep sul corpus intero (per il gruppo keep;
+rilievo 6), review del `critico` su pianificatore, confronto e S della P2, collaudo breve su dbg dei due bracci nuovi, preventivo e via di Simone.
