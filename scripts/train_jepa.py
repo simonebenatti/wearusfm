@@ -46,6 +46,10 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
     ap.add_argument("--lr", type=float, default=None, help="learning rate di picco (calibrazione C1-C4); default quello del preset (3e-4)")
+    ap.add_argument("--anchor-weight", type=float, default=None,
+                    help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
+    ap.add_argument("--jepa-weight", type=float, default=None,
+                    help="peso della perdita JEPA; default 1; 0 = ancore attuali da sole (braccio W1-OBJ)")
     ap.add_argument("--batch-size", type=int, default=None, help="batch GLOBALE in finestre (con --distributed diviso fra i processi)")
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
@@ -113,6 +117,12 @@ def main(argv=None) -> int:
         if not args.lr > 0:
             ap.error("--lr deve essere positivo")
         cfg = replace(cfg, lr=args.lr)
+    weights = {k: v for k, v in (("anchor_weight", args.anchor_weight), ("jepa_weight", args.jepa_weight)) if v is not None}
+    if weights:
+        try:
+            cfg = replace(cfg, jepa=replace(cfg.jepa, **weights))
+        except ValueError as e:
+            ap.error(f"--anchor-weight / --jepa-weight: {e}")
     if args.accum_steps is not None:
         cfg = replace(cfg, accum_steps=args.accum_steps)
     if args.schedule == "wsd":

@@ -149,7 +149,7 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
     if isinstance(out.get("jepa"), dict):
-        out["jepa"] = {"branch_weight": 0.0, **out["jepa"]}
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, **out["jepa"]}
     return out
 
 

@@ -79,3 +79,20 @@ GPT (target a/b, identita', K, locale, bottleneck, vicinato) restano da prioriti
 3. Regola di lettura: +1 punto su P1 e P2, media dei due semi.
 4. Keep: opzione 1 o 2, e la calibrazione della keep per il corpus intero.
 5. Via all'implementazione dei punti 1-4 sopra (lavoro locale, nessun job).
+
+## Stato dell'implementazione (16/10/2026, Simone: «poi lavoriamo su» JEPA puro e ancore-only)
+
+Fatti i punti 1-3 di «Implementazione necessaria»:
+- `JEPAConfig.jepa_weight` (default 1) in `training/jepa.py`: totale = `jepa_weight` x JEPA + `anchor_weight` x ancore, anche nel contratto
+  delle loss distribuite (`terms.weight["jepa"]`); pesi finiti e non negativi, mai tutti a zero; JEPA a peso 0 senza target delle ancore
+  rifiutata. Col peso 1 la JEPA entra com'era: **training breve su CPU identico bit per bit** al codice di prima (studente `a9440678...`,
+  teacher `7d88427b...`, anche coi pesi espliciti 1 e 0,2). I checkpoint di prima si riprendono (peso 1 implicito); un peso cambiato no.
+- `--anchor-weight` e `--jepa-weight` in `scripts/train_jepa.py`; ammessi negli argomenti liberi delle catene WSD.
+- **Correzione al punto 2 sopra:** in DDP non serve `find_unused_parameters`. Un termine a peso 0 resta nel grafo (`backward_loss` lo
+  moltiplica, non lo salta): ogni parametro dello studente riceve un gradiente, zero dove deve, in entrambi i bracci (test, e training DDP a
+  2 processi gloo con accumulo per entrambi i bracci). Il decoder dello studente, in ancore-only, e' allenato dalle ancore (le teste leggono
+  le sue uscite); il teacher EMA si aggiorna come sempre ed e' l'encoder che le sonde valutano, come negli altri bracci.
+- Cosa leggere con cautela: nel JEPA puro le teste delle ancore restano non allenate, quindi le loss delle ancore registrate non dicono
+  nulla; in ancore-only la JEPA registrata misura un predittore che non viene allenato per quello.
+- Test: `tests/cpu/test_objective_arms.py` (19). Resta il punto 4 (pianificatore dei bracci e piano di valutazione), poi `critico` e collaudo
+  breve su dbg.

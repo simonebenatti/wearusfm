@@ -1775,6 +1775,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   compresa), calibrazione C1-C4 220. Tetti, non autorizzazioni: ogni tranche con preventivo e via. Registrato in `docs/decisioni.md`.
 - Per C1 mancano ora solo il verdetto del collaudo `w1_selezione_v1` e quello del `critico` sui manifest derivati.
 
+### 2026-10-16 | Claude | Bracci JEPA puro e ancore-only implementati | Base: 7dbc5a9
+
+- Simone: «poi lavoriamo su» JEPA puro e ancore-only. `JEPAConfig.jepa_weight` (default 1) in `training/jepa.py` (file passato a Claude coi
+  ruoli del 16/10): totale e contratto distribuito coi due pesi; `--anchor-weight` e `--jepa-weight` in `train_jepa.py`; ripresa dei
+  checkpoint vecchi col peso 1 implicito, peso cambiato rifiutato.
+- Uguaglianza: training breve su CPU coi pesi di default (e con 1 e 0,2 espliciti) identico bit per bit al codice di prima. In DDP non serve
+  `find_unused_parameters`: i termini a peso 0 restano nel grafo con gradiente zero (test e torchrun gloo a 2 processi per entrambi i bracci).
+- Test `tests/cpu/test_objective_arms.py` 19 PASS; suite completa: 1143 PASS (con i primi 15 test dei bracci; gli ultimi 4, gradienti e torchrun, PASS a parte: 1147 in tutto). Stato e cautele di lettura in `docs/bracci_obiettivo_finestra1.md`.
+- Per GPT (verifica): il cambio di `_jepa_compute` (peso nel totale e in `terms.weight`), i controlli di `JEPAConfig`, i test di uguaglianza.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
