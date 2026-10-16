@@ -1785,6 +1785,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Test `tests/cpu/test_objective_arms.py` 19 PASS; suite completa: 1143 PASS (con i primi 15 test dei bracci; gli ultimi 4, gradienti e torchrun, PASS a parte: 1147 in tutto). Stato e cautele di lettura in `docs/bracci_obiettivo_finestra1.md`.
 - Per GPT (verifica): il cambio di `_jepa_compute` (peso nel totale e in `terms.weight`), i controlli di `JEPAConfig`, i test di uguaglianza.
 
+### 2026-10-16 | Claude | Review del critico sui bracci (b1238a1): APPROVATO, rilievi corretti | Base: b1238a1
+
+- `critico` (istruzioni di `.claude/agents/critico.md`, eseguite su un agente generico: questa sessione non aveva l'agente caricato) su
+  b1238a1: APPROVATO, 9 criteri soddisfatti; default riprodotto bit per bit anche contro il `jepa.py` di b8a2f35 e col contratto ad accumulo.
+- Corretti i rilievi 1-3: JEPA pesata nella diagnostica dei gradienti per componente (`run.py`); test d'uguaglianza col codice di prima nel
+  repo (`test_objective_arms.py`, 23 PASS; con i test di keep, rami, Step 1 e JEPA 118 PASS); contratto delle loss e tabella dei bracci.
+- Rilievo 4 (protocollo, non codice) registrato in `docs/bracci_obiettivo_finestra1.md`: come contare un braccio fermato dall'allarme,
+  se l'allarme di collasso vale in ancore-only, LR di A. Da chiudere prima della firma dei bracci.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

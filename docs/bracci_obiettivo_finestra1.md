@@ -11,8 +11,8 @@ D11/D12/D14, confronti 2A/2C. Le parti marcate *proposta* sono scelte da firmare
 | Braccio | Definizione | Stato del codice |
 |---|---|---|
 | **A** (riferimento) | JEPA target b + ancore fisiche attuali e multi-scala (peso 0,2), keep e rami spenti, RVQ spento | pronto |
-| **JEPA-only** | A con peso delle ancore 0 | il modello lo supporta (`JEPAConfig.anchor_weight`); manca l'opzione `--anchor-weight` in `train_jepa.py` |
-| **Ancore-only** | A senza il termine JEPA (solo le ancore attuali) | **da implementare**: oggi `total = jepa + anchor_weight x ancore`, manca un peso della JEPA |
+| **JEPA-only** | A con peso delle ancore 0 | pronto dal 16/10 (`--anchor-weight 0`, b1238a1) |
+| **Ancore-only** | A senza il termine JEPA (solo le ancore attuali) | pronto dal 16/10 (`--jepa-weight 0`, `JEPAConfig.jepa_weight`, b1238a1) |
 | **Keep** (confronto separato) | A con la keep dello Step 1 a 0,05 | pronto (`--keep-calibration`, `--keep-weight`), ma vedi «Keep» sotto |
 
 - *Ancore-only* sono le **ancore attuali** (log-RMS, forma spettrale, inviluppo, multi-scala), non il braccio piu' ampio di v10 dei «soli
@@ -96,3 +96,21 @@ Fatti i punti 1-3 di «Implementazione necessaria»:
   nulla; in ancore-only la JEPA registrata misura un predittore che non viene allenato per quello.
 - Test: `tests/cpu/test_objective_arms.py` (19). Resta il punto 4 (pianificatore dei bracci e piano di valutazione), poi `critico` e collaudo
   breve su dbg.
+
+## Review del `critico` sull'implementazione (16/10/2026): APPROVATO, 4 rilievi minori
+
+Su b1238a1 (criteri: default identico, totale e contratto distribuito, pesi, DDP, ripresa, pianificatori, correttezza dei bracci, test,
+coerenza con decisioni e CLAUDE.md): tutti soddisfatti; ha riprodotto le impronte del default anche col `jepa.py` di b8a2f35 caricato in
+memoria, e col percorso del contratto a `--accum-steps 3`. Rilievi:
+1. Diagnostica dei gradienti per componente (`--keep-grad-every`, solo con keep o rami accesi) con la JEPA non pesata: **corretto**, ora
+   pesata come nel totale (col peso 1 la stessa espressione di prima). Il caso con peso diverso da 1 non ha un test (richiede la
+   calibrazione della keep): riletto, non provato.
+2. Test d'uguaglianza fuori dal repo: **corretto**, `test_default_objective_is_bit_identical_to_the_code_before_the_jepa_weight` confronta
+   col `jepa.py` di b8a2f35 letto da git perdite, termini del contratto e gradienti (torch.equal), target a e b, per finestra e per token.
+3. Contratto delle loss e tabella sopra non aggiornati: **corretti** (`docs/contratto_loss_distribuite.md`, colonna «Stato del codice»).
+4. **Da chiudere nel protocollo prima della firma** (non codice):
+   - (a) un braccio fermato dall'allarme di collasso (decisione 16) non ha il post-decay: la regola di lettura deve dire come si conta
+     (per esempio «non ammissibile = perde», o un esito a parte), soprattutto per il JEPA puro, il candidato piu' probabile al collasso;
+   - (b) in ancore-only il rapporto di collasso da query misura un decoder allenato dalle ancore, non dai latenti del teacher: va scritto
+     se l'allarme firmato a 0,05 vale anche li';
+   - (c) i bracci usano il LR calibrato su A: un «non batte A» o un «eguaglia A» si legge «al LR di A».

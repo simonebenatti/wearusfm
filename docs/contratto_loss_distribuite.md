@@ -19,7 +19,8 @@ Ogni componente c (JEPA, `log_rms`, `log_env`, `band_shape`, `ms_fast`, `ms_slow
 | `keep` | media sui campioni con almeno una famiglia valida (`SpectralKeepHead.loss`) | uguale (non dipende dal flag) |
 
 La perdita del batch globale e' `L = sum_c w_c * L_c` con `L_c = N_c / D_c` (numeratore e denominatore **su tutto il batch globale**),
-`w_jepa = 1`, `w_ancora = anchor_weight` (ogni ancora e `rvq`), `w_keep = keep_weight`. Con DDP ogni GPU calcola `N_c^r / D_c^r` sul suo pezzo
+`w_jepa = jepa_weight` (default 1; 0 nel braccio ancore-only, dal 16/10/2026), `w_ancora = anchor_weight` (ogni ancora e `rvq`; 0 nel
+JEPA puro), `w_keep = keep_weight`. Con DDP ogni GPU calcola `N_c^r / D_c^r` sul suo pezzo
 e DDP **media i gradienti**: si ottiene `(1/R) sum_r N_c^r / D_c^r`, che e' diverso da `sum_r N_c^r / sum_r D_c^r` appena i `D_c^r` differiscono
 (e differiscono: zona di bordo, finestre corte senza scala lenta valida, bande oltre il limite del canale). Cambierebbe di nascosto il
 bilanciamento JEPA / ancore.
@@ -31,7 +32,7 @@ bilanciamento JEPA / ancore.
     jepa_loss_terms(student, teacher, inp, visible, cfg, ...) -> LossTerms
     LossTerms.num:     dict[str, Tensor]  # componente -> numeratore locale, CON gradiente
     LossTerms.den:     dict[str, Tensor]  # componente -> denominatore locale, senza gradiente (float64 o int64)
-    LossTerms.weight:  dict[str, float]   # componente -> peso nella perdita totale (1, anchor_weight, keep_weight)
+    LossTerms.weight:  dict[str, float]   # componente -> peso nella perdita totale (jepa_weight, anchor_weight, keep_weight)
     LossTerms.log_num / log_den           # diagnostiche solo per il log (jepa_<maschera>, jepa_topo_<topologia>, rvq_acc...), senza gradiente
 
 con, per ogni componente:

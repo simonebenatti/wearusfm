@@ -1149,7 +1149,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 # una componente a se' (parere GPT d5c53c1: contributi dei rami separati, sui parametri raw condivisi)
                 shared = [p for name, p in student.named_parameters() if p.requires_grad and
                           name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
-                components = {"jepa": losses["jepa"]}
+                # pesata come nel totale (rilievo del critico su b1238a1): col peso 1 la stessa espressione di prima
+                w_jepa = cfg.jepa.jepa_weight
+                components = {"jepa": losses["jepa"] if w_jepa == 1.0 else w_jepa * losses["jepa"]}
                 for part, weight in (("keep", cfg.jepa.keep_weight), ("keep_branches", cfg.jepa.branch_weight)):
                     if weight > 0:
                         components[part] = weight * losses[part]

@@ -177,3 +177,54 @@ def test_both_arms_train_under_torchrun_without_unused_parameters(tmp_path, extr
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-3000:]
     s = json.loads((out / "summary.json").read_text())
     assert s["steps"] == 3 and s["stopped"] == "max_steps" and s["world_size"] == 2
+
+
+REFERENCE = "b8a2f35"  # l'ultimo commit col training/jepa.py di prima del peso della JEPA (b1238a1)
+
+
+def _reference_jepa():
+    """Il jepa.py di REFERENCE, letto da git e caricato in memoria (nessun file scritto)."""
+    import subprocess
+    import types
+
+    src = subprocess.run(["git", "-C", str(REPO), "show", f"{REFERENCE}:src/wearusfm/training/jepa.py"], capture_output=True, text=True,
+                         check=True).stdout
+    name = f"jepa_reference_{REFERENCE}"
+    mod = types.ModuleType(name)
+    sys.modules[name] = mod  # i dataclass cercano il modulo per nome
+    try:
+        exec(compile(src, f"{name}.py", "exec"), mod.__dict__)
+    except Exception:
+        sys.modules.pop(name, None)
+        raise
+    return mod
+
+
+@pytest.mark.parametrize("per_window", [False, True])
+@pytest.mark.parametrize("target", ["a", "b"])
+def test_default_objective_is_bit_identical_to_the_code_before_the_jepa_weight(per_window, target):
+    """Rilievo del critico su b1238a1: l'uguaglianza del default dentro il repo. Stessi ingressi, stesso modello: perdite, termini del
+    contratto distribuito e gradienti dello studente identici bit per bit (torch.equal) fra il codice di prima e quello col peso di default."""
+    from wearusfm.training import jepa as new
+
+    old = _reference_jepa()
+    student, teacher, inp, vis, tg = _setup()
+    kinds = (~vis).long()
+    cfg_old = old.JEPAConfig(target, 0.2, 0.99, loss_per_window=per_window)
+    cfg_new = new.JEPAConfig(target, 0.2, 0.99, loss_per_window=per_window)
+    results = {}
+    for tag, mod, cfg in (("old", old, cfg_old), ("new", new, cfg_new)):
+        torch.manual_seed(3)
+        student.zero_grad(set_to_none=True)
+        losses = mod.jepa_losses(student, teacher, inp, vis, cfg, anchor_targets=tg, kinds=kinds)
+        losses["total"].backward()
+        grads = [None if p.grad is None else p.grad.clone() for p in student.parameters()]
+        torch.manual_seed(3)
+        terms = mod.jepa_loss_terms(student, teacher, inp, vis, cfg, anchor_targets=tg, kinds=kinds)
+        results[tag] = (losses, grads, terms)
+    (lo, go, to), (ln, gn, tn) = results["old"], results["new"]
+    assert list(lo) == list(ln) and all(torch.equal(lo[k], ln[k]) for k in lo)
+    assert _same(go, gn)
+    assert dict(to.weight) == dict(tn.weight) and set(to.num) == set(tn.num)
+    assert all(torch.equal(to.num[k], tn.num[k]) and torch.equal(to.den[k], tn.den[k]) for k in to.num)
+    assert torch.equal(to.backward_loss(), tn.backward_loss())
