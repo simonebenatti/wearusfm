@@ -3433,3 +3433,9 @@ Aggiornati CLAUDE.md, l'accordo del 15/10 (sezione del 16/10, con il prompt per 
 verifica di GPT non blocca i lanci; (2) il subagent `critico` rivede prima del lancio la parte scientifica e algoritmica (protocolli,
 criteri, loss, target, sonde, selezione). *Interpretazione di Claude:* «nei test» = i collaudi e i test (CPU, launcher, criteri congelati
 dei collaudi), per i quali bastano le verifiche gia' previste senza il `critico`. CLAUDE.md e l'accordo del 15/10 aggiornati.
+
+**Manifest derivati: review del `critico` prima del primo uso nei run (Simone, 16/10/2026).** Simone: «firmo 2 e 8, fai rivedere i
+manifest al critico». (2) I manifest derivati (frazioni 12,5/25/50/100%, costruiti sul cluster dal job 60661475, codice 11f868b), segnati
+nel registro «da rivedere da GPT prima dell'uso nei run», li rivede il subagent `critico` al posto di GPT, prima di C1; l'esito si
+registra qui. (8) Conferma la regola gia' registrata nella voce «Verifiche e revisore prima del lancio» dello stesso giorno: `critico`
+prima del lancio sulla parte scientifica e algoritmica, verifica di GPT non bloccante.
