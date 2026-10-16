@@ -173,6 +173,9 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
     wpe = frac["windows_per_epoch"]
     # il rapporto della costruzione SUL CLUSTER: lo SHA del file e' quello che il training verifica (--manifest-sha256) e che entra nella
     # firma dei dati; quello della costruzione locale e' di un file che sul cluster non esiste (review del critico, 16/10/2026)
+    if not str((build_report.get("code") or {}).get("source", "")).startswith("launcher"):
+        raise ValueError("rapporto dei manifest derivati non costruito da un launcher sul cluster (code.source): serve quello della costruzione "
+                         "sul cluster, results/infra/derived_manifests_v1_1_build_cluster_20261015.json")
     if not (isinstance(frac.get("file_sha256"), str) and len(frac["file_sha256"]) == 64):
         raise ValueError("rapporto dei manifest derivati senza file_sha256 del derivato al 100%: serve il rapporto della costruzione sul cluster")
     steps_at_d = math.floor(4.0 * wpe / BATCH)

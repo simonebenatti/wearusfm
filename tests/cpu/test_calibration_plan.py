@@ -19,7 +19,8 @@ spec.loader.exec_module(CP)
 
 WPE = 784756.9792373349  # finestre per epoca del derivato al 100% (rapporto del 15/10)
 SHA_100 = "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"  # file del derivato al 100% costruito sul cluster
-REPORT = {"fractions": {"1": {"windows_per_epoch": WPE, "hash": "h", "file_sha256": SHA_100, "file": "m_nested_1.json.gz"}}}
+REPORT = {"fractions": {"1": {"windows_per_epoch": WPE, "hash": "h", "file_sha256": SHA_100, "file": "m_nested_1.json.gz"}},
+          "code": {"sha": "11f868b8ad8a949381a5cbb8519733e7dbc538bf", "source": "launcher (lib_code_dir.sh: checkout di campagna pulito)"}}
 DEC = {"C1": {"finalists": [3e-4, 1e-3]}, "C2": {"confirmed": [3e-4, 1e-3]}, "C3": {"proposed_300m_lr": 3e-4}}
 
 
@@ -152,9 +153,12 @@ def _load(name):
 def test_the_plan_is_bound_to_the_cluster_build_report():
     """Rilievo 5 del critico (16/10): lo SHA del file viene dal rapporto della costruzione sul cluster; senza, o con un manifest che il
     rapporto non descrive, nessun piano."""
-    bad = {"fractions": {"1": {**REPORT["fractions"]["1"], "file_sha256": None}}}
+    bad = {**REPORT, "fractions": {"1": {**REPORT["fractions"]["1"], "file_sha256": None}}}
     with pytest.raises(ValueError, match="costruzione sul cluster"):
         CP.plan(bad)
+    local = {**REPORT, "code": {"sha": "56cea75", "clean": True, "source": "git"}}  # come il rapporto della costruzione sul Mac
+    with pytest.raises(ValueError, match="launcher sul cluster"):
+        CP.plan(local)
     camp = {"campaign": "w1cal", "agent": "claude", "code_dir": "/C", "expected_sha": "a" * 40, "manifest": "/M/altro.json.gz",
             "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/R"}
     with pytest.raises(ValueError, match="il rapporto descrive"):

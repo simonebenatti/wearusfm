@@ -1,8 +1,8 @@
 """Rapporto sui manifest dell'asse dei soggetti (D16): il genitore (v1.1) e i derivati come file (`scripts/build_nested_manifests.py`).
 Per ogni file, sulla distribuzione che campiona davvero il loader (`pretraining_manifest.sampled_distribution`: normalizzazione dei pesi,
 probabilita' peso / durata delle finestre, quote nel tempo): massa, quote per classe e per unita', passaggi attesi per unita' a E epoche, ore
-campionabili ed escluse, endpoint a E epoche col floor sul totale e dose effettiva. Verifiche sui derivati: frazione dichiarata, pesi finiti e
-non negativi, massa 1, quota di A, tetto; annidamento per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100); il derivato al 100% con le stesse
+campionabili ed escluse, endpoint a E epoche col floor sul totale e dose effettiva. Verifiche sui derivati: frazione dichiarata, le stesse del
+costruttore (`pretraining_manifest.derived_checks`: durate, pesi, somma 1, quote di A, B + residuo e C - residuo, tetto); annidamento per soggetti e per sessioni (12,5 ⊂ 25 ⊂ 50 ⊂ 100); il derivato al 100% con le stesse
 sessioni di pretraining del genitore; righe di test e benchmark identiche al genitore (test per soggetto o per sessione, come emg2pose);
 ogni soggetto con tutte le sue sessioni di pretraining o con nessuna; provenienza (SHA del genitore e di window_s).
 

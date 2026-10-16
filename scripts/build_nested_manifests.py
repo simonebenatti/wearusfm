@@ -4,9 +4,9 @@ sessioni dei soggetti del sottoinsieme firmato, base temporale sulle ore campion
 residuo di C solo verso B con A alla sua quota (`pretraining_manifest.DERIVED_RULE`), provenienza degli ingressi nei parametri. Il v1.1 non si
 tocca.
 
-Prima di scrivere, sui derivati: pesi finiti e non negativi, massa 1, quota di A e tetto di passaggi dopo le trasformazioni del sampler
-(`sampled_distribution`, che replica `ManifestIndex.load` + `time_weighted_probs`: la coerenza col loader vero e' verificata qui sul derivato al
-100%), sottoinsiemi annidati, configurazione delle finestre del training uguale a quella con cui `window_s` e' stato calcolato. Confronto del
+Prima di scrivere, sui derivati (`pretraining_manifest.derived_checks`): durate valide, pesi finiti e non negativi, peso 0 senza finestre,
+somma 1 dei pesi, quote di A, B (+ residuo) e C (- residuo) e tetto di passaggi dopo le trasformazioni del sampler (`sampled_distribution`,
+che replica `ManifestIndex.load` + `time_weighted_probs`: la coerenza col loader vero e' verificata qui sul derivato al 100%), sottoinsiemi annidati, configurazione delle finestre del training uguale a quella con cui `window_s` e' stato calcolato. Confronto del
 derivato al 100% col v1.1: sessioni escluse, ore, quote per unita' e passaggi del v1.1 dopo il sampler; spiega le differenze. Una verifica
 fallita: nessun file scritto, uscita 1.
 

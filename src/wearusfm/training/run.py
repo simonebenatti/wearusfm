@@ -256,6 +256,8 @@ def check_derived_binding(params: dict, cfg: "RunConfig", window_s: dict | None)
     distribuzione pesata nel tempo con quelle durate e quella configurazione delle finestre (review del critico, 16/10/2026). Errore se il
     loader non pesa nel tempo, se mancano le durate o se la configurazione delle finestre e' diversa da quella della costruzione."""
     inputs = params.get("derived_inputs") or {}
+    if cfg.datasets is not None:  # filtrare e rinormalizzare cambierebbe quote e tetto verificati (critico, seconda review del 16/10)
+        raise ValueError(f"manifest derivato: si usa su tutti i suoi dataset (--datasets all), non su {list(cfg.datasets)}")
     if not cfg.loader.time_weighted:
         raise ValueError("manifest derivato: serve il sampler pesato nel tempo (loader.time_weighted, --window1-rules) con cui e' verificato")
     if window_s is None:

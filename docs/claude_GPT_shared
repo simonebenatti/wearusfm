@@ -1807,6 +1807,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Toccati anche `run.py`/`train_jepa.py` (dopo i bracci di b1238a1/fe67339, nessuna sovrapposizione). Suite 1166 PASS. Piani di C1 in dry-run
   rigenerati. Seconda review del `critico` in corso.
 
+### 2026-10-16 | Claude | Manifest derivati: rilievi della seconda review del critico corretti | Base: cfd7d47
+
+- Seconda review (DA RIVEDERE): determinismo confermato (14 semi, hash uguali al cluster; il codice di prima dava due contenuti al 25%),
+  pesi invariati, training non derivato invariato, comandi di C1 accettati. Corretti i cinque rilievi rimasti: il test del costruttore ora
+  isola il controllo di annidamento (manomissione a peso 0 su una sessione senza finestre: `derived_checks` passa, fallisce solo
+  l'annidamento); il pianificatore richiede il rapporto costruito da un launcher sul cluster (`code.source`); il training rifiuta un derivato
+  filtrato per dataset; docstring del costruttore e del rapporto; quattro casi negativi del rapporto in piu'. Suite 1168 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

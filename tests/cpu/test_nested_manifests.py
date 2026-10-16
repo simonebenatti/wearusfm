@@ -300,6 +300,7 @@ def test_loader_and_trainer_guard_the_declared_fraction_and_resume_refuses_anoth
     (lambda cfg, ws: (replace(cfg, loader=replace(cfg.loader, time_weighted=False)), ws), "pesato nel tempo"),
     (lambda cfg, ws: (cfg, None), "durate delle finestre"),
     (lambda cfg, ws: (replace(cfg, loader=replace(cfg.loader, min_window_s=2.0)), ws), "configurazione delle finestre"),
+    (lambda cfg, ws: (replace(cfg, datasets=("emg2pose",)), ws), "tutti i suoi dataset"),
 ])
 def test_trainer_refuses_a_derived_manifest_without_its_sampler_and_durations(tmp_path, change, message):
     """Rilievo 3 del critico (16/10): quote e tetto di un derivato valgono col sampler pesato nel tempo, con le durate e con la
@@ -446,7 +447,8 @@ def _scale_class(d, cls, factor):
     ("1", lambda d: d["params"].update(max_passes=1.0), "oltre il tetto"),
 ])
 def test_report_flags_each_nesting_and_identity_problem(tmp_path, fraction, tamper, message):
-    """Rilievo 4 del critico (16/10): ogni controllo del rapporto ha un caso che fallisce, con un file manomesso."""
+    """Rilievo 4 del critico (16/10): un caso che fallisce, con un file manomesso, per i controlli di annidamento, sessioni, righe di
+    test/benchmark, provenienza, quota e tetto (gli altri quattro in `test_report_flags_wrong_fractions_and_parent`)."""
     corpus = _corpus()
     doc = _doc(corpus)
     parent = _write(tmp_path / "full.json.gz", doc)
@@ -461,21 +463,52 @@ def test_report_flags_each_nesting_and_identity_problem(tmp_path, fraction, tamp
     assert any(message in x for x in probs), probs
 
 
-def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch):
-    """Il controllo `nested_subjects_and_sessions` del costruttore: un 50% che perde un soggetto del 25% blocca la scrittura di tutti i file."""
+def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch, capsys):
+    """Il controllo `nested_subjects_and_sessions` del costruttore, da solo: il 25% riceve a peso 0 una sessione di un soggetto fuori dal
+    50% (pesi, quote e tetto restano giusti, quindi `derived_checks` passa) e nessun file viene scritto (seconda review del critico)."""
     corpus = _corpus()
-    src = _write(tmp_path / "full.json.gz", _doc(corpus))
-    ws = _ws_file(tmp_path / "ws.json", corpus)
+    doc = _doc(corpus)
+    src = _write(tmp_path / "full.json.gz", doc)
+    outsider = next(r for r in doc["rows"] if dict(zip(doc["columns"], r))["subject"] == "a1s7")  # nessun sottoinsieme
+    o = dict(zip(doc["columns"], outsider))
+    # senza finestre: a peso 0 non entra ne' nelle ore campionabili ne' nelle quote, quindi solo l'annidamento puo' accorgersene
+    ws = _ws_file(tmp_path / "ws.json", corpus, **{M.session_key(o["dataset"], o["subject"], o["session"]): None})
     real = M.derived_manifest
 
-    def broken(doc, fraction, window_s, inputs, code_commit=""):
-        d = real(doc, fraction, window_s, inputs, code_commit)
-        if fraction == "0.5":
-            _drop_subject(d, "a1s0")
+    def broken(d0, fraction, window_s, inputs, code_commit=""):
+        d = real(d0, fraction, window_s, inputs, code_commit)
+        if fraction == "0.25":
+            row = list(outsider)
+            row[d["columns"].index("weight")] = 0.0
+            d["rows"].append(row)
         return d
 
     monkeypatch.setattr(BN.M, "derived_manifest", broken)
+    report, _ = BN.build(src, ws, 32)
+    assert report["checks"]["nested_subjects_and_sessions"] is False and report["checks"]["derived_checks"] is True
     assert BN.main([str(src), str(ws), str(tmp_path / "out")]) == 1 and not (tmp_path / "out").exists()
+    assert "VERIFICHE FALLITE: ['nested_subjects_and_sessions']" in capsys.readouterr().out
+
+
+def test_report_flags_wrong_fractions_and_parent(tmp_path):
+    """Gli altri quattro controlli del rapporto, ciascuno con un caso che fallisce: frazione fuori elenco, due file per la stessa frazione,
+    genitore che dichiara una frazione, sessioni di pretraining che nel genitore non lo sono."""
+    corpus = _corpus()
+    doc = _doc(corpus)
+    parent = _write(tmp_path / "full.json.gz", doc)
+    ws = _ws_file(tmp_path / "ws.json", corpus)
+    wsd = json.loads(ws.read_text())["window_s"]
+    files = {f: _write(tmp_path / f"n{f}.json.gz", M.derived_manifest(doc, f, wsd, {})) for f in M.DERIVED_FRACTIONS}
+    odd = _write(tmp_path / "odd.json.gz", M.derived_manifest(doc, "0.5", wsd, {}))
+    _tamper(odd, lambda d: d["params"].update(nested="0.3"))
+    assert any("non fra" in x for x in NR.report(ws, parent, [odd], batch=2)["problems"])
+    twin = _write(tmp_path / "twin.json.gz", M.derived_manifest(doc, "0.5", wsd, {}))
+    assert any("due derivati per la frazione 0.5" in x for x in NR.report(ws, parent, [files["0.5"], twin], batch=2)["problems"])
+    bad_parent = _write(tmp_path / "parent_nested.json.gz", {**doc, "params": {**doc["params"], "nested": "1"}})
+    assert any("il genitore dichiara" in x for x in NR.report(ws, bad_parent, list(files.values()), batch=2)["problems"])
+    _tamper(files["0.5"], lambda d: _set_field(d, lambda r: r["subject"] == "a1s2", "session", "nuova"))
+    probs = NR.report(ws, parent, list(files.values()), batch=2)["problems"]
+    assert any("nel genitore non lo sono" in x for x in probs), probs
 
 
 def test_cluster_launcher_refuses_output_inside_the_code(work):  # noqa: F811
