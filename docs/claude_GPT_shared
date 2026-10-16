@@ -15,39 +15,35 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 15/10/2026 dopo lettura della consegna manifest Claude95f441b e aggiornamento del prompt al solo lavoro residuo.
-Specifica e prompt: [accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md); numerazione invariata.
+Stato aggiornato al 16/10/2026, lette le consegne Claude fino ad a7edd55 e i nuovi ruoli in CLAUDE.md. Claude sviluppa e conduce la
+parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log
+versionati, non da interrogazione live in questa review.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review e integrazione del nuovo delta WSD/manifest | Corregge eventuali rilievi sul proprio ramo, senza riscrivere gli SHA | Base + fix + prefetch gia' integrati; consegna95f441b letta e confrontata con la specifica, allineamenti assegnati. Review completa/integration WSD+nested ancora da fare |
-| 4 | Monitor e regola di stabilita' | Definizione condivisa e review del criterio prospettico | Bozza di cadenza/pannello e implementazione/test dopo accordo | APERTO: hash del contenuto e aggregazione numeratori/conteggi corretti; resta da congelare la regola prima del prossimo collaudo, nessuna nuova soglia adottata |
-| 5 | Validare l'obiettivo scientifico | Ablation JEPA/ancore/keep, sonde per profondita' e temporali/fisiche, coseni offline, confronto NeuroRVQ comparabile | Supporto trainer su interfacce concordate; nessuna modifica concorrente all'harness | PARZIALE: priorita' al confronto causale e alle sonde intermedie; default di lavoro A, rami fuori. Restano protocollo e implementazione; nessun nuovo training avviato |
-| 6 | Chiudere la finestra 1 | Specifica pesi/epoca, griglia e selezione C1-C4, payload valutazione, lista/default/budget | Implementa manifest, planner calibrazione e orchestratore evaluation_chain.py; unico submitter campagna W1 | PARZIALE: specifica e incarichi pronti. D9 per frazione, residuo C verso B con cap invariato; 8 run di calibrazione da preventivare. Otto nodi normal ammessi; rischio coda/consumo condiviso. SCRATCH chiuso, prossimo12/11. Infra15,74GPUh residue; budget W1 ancora da chiudere |
+| 3 | Review e integrazione su main | Review indipendenti e integrazione, conservando gli SHA | Corregge i rilievi sul proprio ramo; rilegge le patch GPT prima del deploy | C1-C4: hardening GPT 41ce569 e merge locale 41b80af. Due rilievi residui descritti sotto. Main resta 06b0d34: integrazione ancora aperta |
+| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 e parita' FIRMATE il 16/10. Restano lettura del pannello nei run reali e regola dei run lunghi; nessuna soglia cambiata dalla review |
+| 5 | Validare l'obiettivo scientifico | Review di codice, protocolli e risultati | Protocolli, bracci, sonde, loss e analisi | JEPA-only/ancore-only implementati e rivisti dal critico; bozza dei bracci presente. Mancano scelte del protocollo, planner/valutazione dei bracci, collaudo e risultati; sonde per profondita'/fisiche ancora da completare |
+| 6 | Chiudere la finestra 1 | Verifiche indipendenti, senza duplicare lanci | Calibrazione e campagna; unico submitter | Infra e collaudo reale w1_selezione_v1 superati nei log; manifest rivisti dal critico. Budget firmati: W1 6.000 GPUh incluse 220 per C1-C4. C1 autorizzata e piani a7edd55 pronti; nessun ID dei 3 training verificato qui. Restano esiti C1-C4, raccordi della selezione e lista finale job. SCRATCH prossimo 12/11 |
 
-### Tranche che puo' partire ora in parallelo
+### Prossimo lavoro in parallelo (16/10)
 
-- **GPT:** pubblica per primo lo schema del piano di valutazione; review/integrazione WSD/nested (3), regola prospettica (4), protocollo
-  causale e sonde intermedie (5), fold/criteri della calibrazione e payload di valutazione (6). Prompt completo nell'accordo operativo.
-- **Claude:** conserva la base manifest95f441b; completa residuo solo verso B, ore campionabili, derivato100%, floor e report finali.
-  Poi planner C1-C4, preventivi e orchestratore nei nuovi file assegnati. Payload reali e criteri arrivano da GPT; sonde e coseni restano GPT.
-- **Punti1/2:** chiusi, nessuna duplicazione di sonde o training. **Punto4:** la regola prospettica richiede accordo prima della sua
-  implementazione/uso; il prefetch non e' un prerequisito per definirla. **Punto5:** analisi gradienti finita, validazione non finita;
-  il limite2% del dataloader appartiene al punto6, non blocca la progettazione delle ablation o la lettura dei report.
-- **Sonde per profondita' (punto 5):** in questa tranche implementazione e protocollo GPT, insieme agli altri file dell'harness.
-  Nessuna nuova estrazione lanciata: i prompt definiscono preparazione e verifiche prima della tranche GPU.
-- **Prossimi job, distinti dal lavoro locale:** nessuna nuova baseline o ripetizione della prova prefetch da lanciare ora. Eventuali
-  nuove prove richiedono protocollo/costi nel perimetro applicabile; il residuo infrastruttura di 15,74/25 GPU-ora non e' un nuovo cap
-  o un'autorizzazione generica. Questa tabella non avvia job e non cambia le decisioni scientifiche.
-- **Sicurezza dei dati:** rinfresco chiuso in fba794f, job60643323 COMPLETED0:0, 151.833 file e nessun problema; sostituisce il22/10.
-  Prossimo giro12/11. Letti i risultati registrati da Claude, nessun nuovo accesso al cluster in questa attivita'.
+- **Claude:** finalizzazione esplicita dei candidati falliti senza report di sonda; vincolo della selezione al piano/config del run;
+  review delle patch GPT prima del deploy della valutazione. Gestisce C1 gia' autorizzata, senza cambiare il checkout congelato in corsa.
+- **GPT:** verifica delle consegne e integrazione su main, per tranche; non riprende lo sviluppo scientifico e non duplica i lanci.
+- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
+  di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
+- **Costi nei log aggiornati:** C1 ~61 GPUh attese / 79,5 tetto; C1-C4 ~164,5 / 216,5 entro il budget 220; infrastruttura 15,17/25
+  GPUh residue dopo w1_selezione_v1. Le sonde restano CPU, con attesa seriale; prima di C4 va risolta la durata della sonda 300M.
+- **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
 
-- Un writer per checkout e per file. Claude resta proprietario di trainer/dataloader/launcher training e del nuovo orchestratore
-  scripts/evaluation_chain.py con il suo test; GPT di loss/target/harness, sonde intermedie e launcher di valutazione.
+- Un writer per checkout e per file. Dal 16/10 codice e documenti scientifici sono di Claude; GPT scrive review e proprie voci del
+  registro. Le correzioni C1-C4 di questa tranche erano richieste esplicitamente da Simone («Se trovi qualcosa correggi pure»), restano
+  nel branch GPT e richiedono lettura di Claude prima del deploy. Nessuna modifica al worktree di Claude o a campagne congelate.
 - Ciascuno aggiorna le due sezioni del registro sul proprio branch e committa; GPT integra le voci testualmente. Claude legge questo
   blocco dal worktree GPT e lo riporta senza rinumerarlo. Non si editano il checkout dell'altro o una campagna congelata.
 - Un solo responsabile di lancio per campagna: per la nuova W1 Claude sottomette training e valutazione dai piani/payload revisionati.
@@ -1833,7 +1829,30 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Preflight in sola lettura pulito; deploy `deploy/w1cal-20261016`,
   checkout, piani allo SHA vero, 3 training (preventivo ~61 / 79,5 GPU-ora), poi la catena di valutazione dopo i training. ID dei job a seguire.
 
+### 2026-10-16 | GPT | Review C1-C4 e riallineamento consegne | Codice: 41ce569; merge locale 41b80af
+
+- Esaminata la consegna bfdc589, poi acquisite fino ad a7edd55 le novita' di Claude con merge nel solo worktree GPT: nuovi ruoli,
+  firme, esito reale w1_selezione_v1 e piani C1. Nessuna modifica a main (06b0d34), nessun push o accesso al cluster.
+- Corretti provenienza cache e confronto, indici OOF e pairing anche senza bootstrap, byte del checkpoint, bootstrap invalido,
+  avanzamento dopo stop/conferma incompleta e rango delle feature costanti. Regressioni in test_calibration_review.py.
+- Test mirati finali dopo il merge 41b80af: **158 PASS in 62,76 s**, selezione/sonda, review, planner, evaluation chain, WSD e manifest
+  annidati; CPU un thread, nessun test GPU. Suite completa non rieseguita. Prima del merge: 138 PASS.
+- Aggiornata la tabella in testa senza rinumerare. Review dettagliata: docs/reviews/c1c4_review_20261016.md. Nessuna nuova soglia,
+  budget o ablation. La review e' indipendente e non revoca l'autorizzazione C1 registrata da Claude.
+
 ## 2) Problemi trovati
+
+### 2026-10-16 | GPT | Due raccordi residui della selezione C1-C4 | Base riletta: a7edd55
+
+- **P1:** un candidato fermato prima della sonda blocca tutta la finalizzazione (guardia -> estrazione -> sonda -> select, afterok).
+  Il selettore richiede il report prima di controllare A1: non basta chiamarlo a mano senza report. Claude: distinguere fallimento
+  terminale verificato, timeout e stato ignoto; esplicitare i candidati falliti senza sonde inventate e conservare le guardie normali.
+- **P2:** LR/fase arrivano dalla CLI, senza confronto completo con config.json e piano congelato. Claude: legare la decisione a
+  configurazione e identita' del piano (LR, seme, taglia, batch, obiettivo, schedule). Lo SHA del checkpoint da solo non lo garantisce.
+- Il collaudo w1_selezione_v1 aveva due checkpoint completi e sonde disponibili: non copre il primo caso. Nessuna evidenza qui che
+  un run esistente sia stato etichettato male; non si richiede di ripetere training. Nuova verifica prima di usare una decisione affetta.
+- Le nuove cache di calibrazione richiedono split SHA, ricetta e indici OOF; quelle del collaudo precedente restano risultati storici,
+  non si aggiungono metadati inventati. A4/parita' e budget risultano gia' firmati: le precedenti voci «da firmare» sono storico.
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
 

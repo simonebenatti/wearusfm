@@ -3479,3 +3479,11 @@ prima del lancio: protocollo e regole firmati (A4, parita', stop di C3), review 
 `deploy/w1cal-20261016`, checkout `wearusfm_campaigns/w1cal-20261016`). 3 run da 24.523 passi (LR 1e-4, 3e-4, 1e-3, seme 0, 30M, un nodo
 4 GPU, QoS normal, un job da 6 h 30 ciascuno), poi la catena di valutazione con le sonde sulla CPU seriale. **Preventivo C1: ~61 GPU-ora
 attese, tetto 79,5 (636 ore locali)**, sul budget della calibrazione (220, finora 0 usate): dopo il tetto ne restano almeno 140,5.
+
+**Review indipendente GPT di C1-C4 (16/10/2026, patch 41ce569 e merge locale 41b80af).** Hardening della provenienza delle cache e
+del confronto accoppiato, checkpoint verificato per byte/SHA, bootstrap invalido bloccante, merge delle decisioni dopo stop rifiutato,
+rango zero per feature costanti. Nessuna modifica ad A4, parita', griglia o budget firmati. Restano due raccordi segnalati a Claude:
+finalizzazione di candidati falliti prima della sonda e verifica della configurazione effettiva contro il piano. Dettagli e prove in
+`docs/reviews/c1c4_review_20261016.md`. Patch nel branch GPT, non ancora su main o nei checkout di campagna; lettura di Claude prima
+del deploy. Le cache di calibrazione senza i nuovi metadati non si attestano retroattivamente. Non revoca il via a C1 e non cambia
+i ruoli del 16/10; nessun lancio o costo in questa review.
