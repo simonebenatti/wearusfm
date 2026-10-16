@@ -25,7 +25,7 @@ versionati, non da interrogazione live in questa review.
 | 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
 | 3 | Review e integrazione su main | Review indipendenti e integrazione, conservando gli SHA | Corregge i rilievi sul proprio ramo; rilegge le patch GPT prima del deploy | CHIUSO per la consegna corrente: main canonico aggiornato da 06b0d34 a 1aa33c9 il 16/10, fast-forward, include Claude fino ad a7edd55 e hardening GPT 41ce569. 158 test mirati gia' passati sul codice integrato. I due rilievi residui della selezione restano nel punto 6 |
 | 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 e parita' FIRMATE il 16/10. Restano lettura del pannello nei run reali e regola dei run lunghi; nessuna soglia cambiata dalla review |
-| 5 | Validare l'obiettivo scientifico | Review di codice, protocolli e risultati | Protocolli, bracci, sonde, loss e analisi | JEPA-only/ancore-only implementati e rivisti dal critico; bozza dei bracci presente. Mancano scelte del protocollo, planner/valutazione dei bracci, collaudo e risultati; sonde per profondita'/fisiche ancora da completare |
+| 5 | Validare l'obiettivo scientifico | Review di codice, protocolli e risultati | Protocolli, bracci, sonde, loss e analisi | IMPLEMENTAZIONE JEPA-only/ancore-only verificata anche da GPT: nessun difetto confermato, 45 test mirati PASS. Protocollo firmato in 0d45a2f (letto sul ramo Claude). Restano planner/valutazione, collaudo GPU e risultati; keep da ricalibrare sul corpus, sonde per profondita'/fisiche da completare |
 | 6 | Chiudere la finestra 1 | Verifiche indipendenti, senza duplicare lanci | Calibrazione e campagna; unico submitter | Infra e collaudo reale w1_selezione_v1 superati nei log; manifest rivisti dal critico. Budget firmati: W1 6.000 GPUh incluse 220 per C1-C4. C1 autorizzata e piani a7edd55 pronti; nessun ID dei 3 training verificato qui. Restano esiti C1-C4, raccordi della selezione e lista finale job. SCRATCH prossimo 12/11 |
 
 ### Prossimo lavoro in parallelo (16/10)
@@ -1850,7 +1850,25 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   tabella e decisioni per chiudere l'integrazione della consegna corrente. I due rilievi della selezione rimangono nel punto 6.
 - Solo integrazione locale: nessun push su origin/Leonardo, nessuna modifica ai checkout di campagna o ai job.
 
+### 2026-10-16 | GPT | Review punto 5, JEPA-only/ancore-only | Codice b1238a1 + fe67339, checkout 2dc1197
+
+- Review di loss, gradienti, DDP/accumulo, validazione della ripresa e protocollo. Letta la firma 0d45a2f sul ramo Claude e la nota
+  e79a536: non riproposti i tre punti del critico gia' firmati. Seconda lettura indipendente del protocollo: nessun difetto confermato.
+- **Esito favorevole all'implementazione dei due bracci. 45 test mirati PASS:** 41 esistenti (due torchrun rieseguiti dopo blocco del
+  bind localhost nel sandbox) e quattro nuovi controlli indipendenti, in docs/reviews/test_objective_arms_review_20261016.py.
+- I nuovi test confrontano batch globale, accumulo e due processi gloo, incluse loss, gradienti, pesi dopo clipping/AdamW ed EMA,
+  e rifiutano cambi dei pesi alla ripresa. Rapporto: docs/reviews/objective_arms_review_20261016.md.
+- Aggiornato il punto 5: implementazione verificata, validazione scientifica ancora aperta. Nessuna modifica a codice di produzione,
+  soglie o protocollo; nessun job, push o intervento sul worktree Claude.
+
 ## 2) Problemi trovati
+
+### 2026-10-16 | GPT | Limiti e residui della review del punto 5 | Codice b1238a1 + fe67339
+
+- Nessun difetto confermato nei due bracci. La prova numerica e' CPU/float64 con gloo: resta il collaudo GPU breve gia' previsto,
+  insieme al pianificatore, al piano P1/P2 e alle misure scientifiche. Non e' un'approvazione indistinta degli altri task del punto 5.
+- Keep separata: ricalibrazione sul corpus intero ancora necessaria. Conclusioni JEPA/ancore al LR di A, come nella firma 0d45a2f;
+  la firma e la classificazione dei bracci collassati non sono punti aperti. Le metriche delle componenti a peso zero sono diagnostiche.
 
 ### 2026-10-16 | GPT | Residui dopo la chiusura del punto 3 | Consegna: 1aa33c9
 

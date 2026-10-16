@@ -3493,3 +3493,9 @@ punto 3 ? cosi lo chiudiamo». Main canonico pulito aggiornato in fast-forward d
 correzioni GPT 41ce569, conservando tutti gli SHA. Codice gia' verificato dai 158 test mirati della review. I due raccordi residui
 della selezione restano aperti nel punto 6; nessuna soglia o budget cambiato. Registro aggiornato in entrambe le sezioni. Nessun push,
 deploy o lancio in questa attivita'; le campagne congelate mantengono il proprio codice.
+
+**Review GPT del punto 5, implementazione JEPA-only/ancore-only (16/10/2026): favorevole.** Esaminati b1238a1 e fe67339 nel checkout
+2dc1197; letta anche la firma del protocollo 0d45a2f sul ramo Claude. Nessun difetto confermato; 45 test mirati passati, incluse prove
+aggiuntive di equivalenza delle loss, gradienti, pesi ed EMA fra batch globale, accumulo e due processi CPU gloo. Dettagli in
+`docs/reviews/objective_arms_review_20261016.md`. Restano pianificatore, piano P1/P2, collaudo GPU breve e risultati scientifici;
+per la keep separata, ricalibrazione sul corpus intero. Nessuna nuova scelta scientifica o autorizzazione a lanciare in questa voce.
