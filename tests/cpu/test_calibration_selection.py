@@ -302,6 +302,30 @@ def test_merge_follows_the_planner_sequence(tmp_path):
     assert CS.main(["merge", "--decisions", str(p), "--add", str(a)]) == 0 and json.loads(p.read_text()) == {"C1": {"stop": "prova"}}
 
 
+def test_collaudo_phase_lists_admissible_runs_and_records_descriptive_comparisons(tmp_path):
+    a, b = tmp_path / "a", tmp_path / "b"
+    a.mkdir()
+    b.mkdir()
+    ca, cb = _cand(a, 3e-4, 0.8), _cand(b, 3e-4, 0.6, seed=1, stop=True)  # stesso LR: nel collaudo contano le etichette
+    out, rec = tmp_path / "d.json", tmp_path / "r.json"
+    args = ["select", "--phase", "collaudo", "--out", str(out), "--record", str(rec),
+            "--candidate", "w1cat-T", str(ca[1]), str(ca[2]), str(STEPS), "--candidate", "w1cat-B", str(cb[1]), str(cb[2]), str(STEPS)]
+    assert CS.main(args) == 0
+    assert json.loads(out.read_text()) == {"collaudo": {"admissible": ["w1cat-T"]}}
+    r = json.loads(rec.read_text())
+    assert sorted(r["candidates"]) == ["w1cat-B", "w1cat-T"] and not r["candidates"]["w1cat-B"]["admissibility"]["admissible"]
+    (d,) = r["descriptive_comparisons"]  # descrittivo anche con un candidato inammissibile: non decide nulla
+    assert (d["a"], d["b"]) == ("w1cat-B", "w1cat-T") and d["delta"] < 0 and d["se"] > 0
+    with pytest.raises(ValueError, match="un collaudo no"):
+        CS.merge({}, {"collaudo": {"admissible": []}})
+
+
+def test_real_phases_also_record_all_pairs_descriptively(tmp_path):
+    _, rec = CS.select("C1", [_cand(tmp_path, lr, 0.6 + 0.1 * i, seed=i) for i, lr in enumerate((1e-4, 3e-4, 1e-3))])
+    assert [(d["a"], d["b"]) for d in rec["descriptive_comparisons"]] == [(1e-4, 3e-4), (1e-4, 1e-3), (3e-4, 1e-3)]
+    assert sorted(rec["candidates"]) == ["0.0001", "0.0003", "0.001"]
+
+
 def test_select_launcher_groups_candidates_and_uses_the_venv(work, tmp_path):  # noqa: F811
     root = work[0]
     venv = root / "venv_wearusfm" / "bin"

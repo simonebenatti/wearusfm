@@ -3410,3 +3410,9 @@ fisso (8 x 32 finestre) ogni 500 passi dal passo 0 senza buchi, run inammissibil
 1,10 volte il minimo raggiunto, o con loss all'ultima valutazione oltre 0,9 volte quella del passo 0; **parita'**: differenza accoppiata di S
 entro 1 errore standard -> vince il LR piu' basso. Insieme allo stop di C3 con un solo ammissibile (16/10) il protocollo di selezione e'
 completo. Resta da decidere il budget della finestra 1 prima del lancio di C1. Un cambio di queste soglie dopo C1 e' una decisione nuova.
+
+**Collaudo della catena reale `w1_selezione_v1`: protocollo e preventivo (16/10/2026), da autorizzare.** Simone: «firmo A4 e parità,
+prepara il preventivo del collaudo su w1cat». Estrazione, sonda a fold e selezione (fase `collaudo`) sui post-decay `w1cat-T` e `w1cat-B`;
+criteri congelati in `docs/calibrazione_c1_c4_selezione.md` prima del lancio (esito atteso della selezione: nessuno ammissibile, pannello
+assente in `w1cat`). **GPU attese ~0,4 GPU-ora (3,2 ore locali), tetto 1,0 (8 ore locali)** sul budget infrastruttura (residuo 15,74 su 25,
+dopo il tetto almeno 14,74); CPU attese ~20 core-ora, tetto ~51. Nessun job lanciato.

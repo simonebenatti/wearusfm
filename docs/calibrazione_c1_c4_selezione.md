@@ -114,3 +114,36 @@ infrastruttura). Basi delle stime di valutazione: estrazione P1 al 30M 13:42 per
 Test: `tests/cpu/test_calibration_selection.py` (fold, sonda sintetica, estrazione che apre solo i soggetti di pretraining, ammissibilita',
 regole di C1-C4 con parita', unione delle decisioni, launcher), `tests/cpu/test_calibration_plan.py` (stop, pannello, piani di
 valutazione validati dall'orchestratore).
+
+## Collaudo della catena reale `w1_selezione_v1` (16/10/2026; Simone: «firmo A4 e parità, prepara il preventivo del collaudo su w1cat»)
+
+**Scopo:** provare sul cluster, prima di spendere le GPU-ora di C1, i pezzi nuovi della catena con checkpoint veri: launcher di estrazione,
+sonda e selezione, lettura dei file reali del trainer, accoppiamento delle finestre fra due checkpoint diversi (condizione del confronto
+accoppiato), tempi e memoria per correggere il preventivo di C1. Controlla la meccanica, non l'ammissibilita'.
+
+**Piano:** i due post-decay del collaudo delle catene, `w1cat-T` (1.400 passi, ultimo job `w1cat-T-j03`) e `w1cat-B` (ramo, 1.375 passi,
+`w1cat-B-j02`), 30M. Per ciascuno guardia (passi minimi e SHA-256 gia' misurati nel collaudo `w1val`) -> estrazione (1 GPU, QoS di debug,
+30 min) -> sonda a fold (8 core, 3 h); poi la selezione nella fase `collaudo` (candidati con un'etichetta; nessuna scelta, solo gli
+ammissibili e i confronti accoppiati descrittivi). Feature in `$SCRATCH/wearusfm_runs/w1sel_1610/`, rapporti in
+`$WORK/wearusfm_runs/results/infra/w1sel_1610/`. Codice da un riferimento `deploy/w1sel-20261016` e da un checkout di campagna nuovo.
+
+**Criteri (congelati qui, prima del lancio):**
+1. Guardie: entrambe COMPLETED 0:0 col rapporto `ok` e gli SHA-256 attesi (T 15262e10..., B 71af16a2...), sottomesse senza afterok (i
+   training sono finiti da ieri secondo sacct).
+2. Estrazioni: COMPLETED 0:0 entro i 30 minuti; per ciascun checkpoint tre npz col protocollo `w1-calibrazione-selezione-v1`, i soli
+   soggetti di pretraining (32, 8, 8), lo SHA-256 del checkpoint uguale a quello della guardia, 768 colonne (2 x 384).
+3. Sonde: COMPLETED 0:0 entro le 3 ore; S ed errore standard finiti, 0 < S < 1; 4 fold per dataset; ogni soggetto di pretraining predetto
+   fuori fold.
+4. Selezione: COMPLETED 0:0; il registro riporta l'ammissibilita' di entrambi letta dai file reali. **Esito atteso: nessuno dei due
+   ammissibile**, per il pannello fisso assente (`w1cat` non l'aveva acceso): un «ammissibile» sarebbe un difetto. Il confronto accoppiato
+   descrittivo e' calcolato, quindi finestre, etichette e soggetti coincidono fra i due checkpoint.
+5. Rieseguendo la catena dopo la fine: nessuna sottomissione in piu'; nessun file scritto nel checkout.
+
+Un nodo che fallisce ferma quelli a valle (afterok); si analizza, nessun rilancio alla cieca. Le durate e la memoria misurate (sacct)
+aggiornano le stime e i tetti delle valutazioni di C1 con un commit prima di C1.
+
+**Risorse e costo:** riferimento di deploy (sola scrittura del ref, preflight in sola lettura) e checkout di campagna (job CPU, 1 core,
+pochi minuti); 2 guardie CPU (1 core, tetto 20 min); 2 estrazioni su 1 A100 con QoS `boost_qos_dbg` (tetto 30 min ciascuna); 2 sonde
+(8 core, tetto 3 h); 1 selezione (2 core, tetto 30 min). **GPU: attese ~0,4 GPU-ora (3,2 ore locali), tetto 1,0 GPU-ora (8 ore locali)**,
+dal budget «preparazione dell'infrastruttura»: 9,26 usate su 25, residuo 15,74, dopo il tetto almeno 14,74. **CPU: attese ~20 core-ora,
+tetto ~51 core-ora.**

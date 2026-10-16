@@ -20,6 +20,9 @@ Selezione (S fuori fold; confronto accoppiato sui soggetti: differenza entro 1 e
      15/10: «Se mancano due candidati ammissibili [...] interrompere il passaggio alla fase successiva»; continuare con uno solo richiede una
      firma di Simone e un cambio qui).
   C4 (300M, il LR proposto): superata se ammissibile.
+  collaudo (solo collaudi della catena, mai nel file delle decisioni): candidati con un'etichetta al posto del LR; la decisione elenca gli
+     ammissibili, nessuna scelta.
+Con due o piu' candidati il registro riporta anche i confronti accoppiati di tutte le coppie, descrittivi: non decidono nulla.
 
   python3 scripts/calibration_select.py select --phase C1 --out decisione_C1.json --record registro_C1.json \\
       --candidate 0.0001 RUN_DIR RAPPORTO_SONDA PASSI --candidate 0.0003 ... --candidate 0.001 ...       (sul cluster, CPU)
@@ -52,6 +55,7 @@ N_BOOT = 1000
 BOOT_SEED = 0
 CHECKPOINT = "checkpoint_postdecay.pt"
 PHASES = ("C1", "C2", "C3", "C4")
+COLLAUDO = "collaudo"
 
 
 def _sha256(path: Path) -> str:
@@ -254,12 +258,16 @@ def decide(phase: str, cands: dict) -> tuple[dict, list[dict]]:
             raise ValueError("C4: un solo LR, quello proposto dopo C3")
         (lr,) = cands
         return {"lr": lr, "passed": bool(cands[lr]["admissible"])}, comparisons
+    if phase == COLLAUDO:
+        return {"admissible": ok}, comparisons
     raise ValueError(f"fase {phase!r}")
 
 
-def select(phase: str, candidates: list[tuple[float, Path, Path, int]]) -> tuple[dict, dict]:
+def select(phase: str, candidates: list[tuple[str, Path, Path, int]]) -> tuple[dict, dict]:
+    """`candidates`: (LR come testo, o un'etichetta nel collaudo; cartella del run; rapporto della sonda; passi pianificati)."""
     cands, record = {}, {"protocol": PROTOCOL, "phase": phase, "candidates": {}}
-    for lr, run_dir, report_path, steps in candidates:
+    for key, run_dir, report_path, steps in candidates:
+        lr = str(key) if phase == COLLAUDO else float(key)
         if lr in cands:
             raise ValueError(f"LR {lr} ripetuto")
         report = json.loads(Path(report_path).read_text())
@@ -267,13 +275,16 @@ def select(phase: str, candidates: list[tuple[float, Path, Path, int]]) -> tuple
             raise ValueError(f"{report_path}: protocollo {report.get('protocol')!r}, atteso {PROTOCOL}")
         adm = admissibility(run_dir, report, steps)
         cands[lr] = {"admissible": adm["admissible"], "report": report, "oof": load_oof(report)}
-        record["candidates"][repr(lr)] = {"admissibility": adm, "S": report["S"], "S_se": report["S_se"], "report": str(report_path),
+        record["candidates"][lr if isinstance(lr, str) else repr(lr)] = {"admissibility": adm, "S": report["S"], "S_se": report["S_se"], "report": str(report_path),
                                           "report_sha256": _sha256(Path(report_path)), "checkpoint_sha256": report["checkpoint_sha256"],
                                           "per_dataset_S": {d: v["s"] for d, v in report["datasets"].items()}}
     if len({json.dumps(c["report"]["weights"], sort_keys=True) for c in cands.values()}) != 1:
         raise ValueError("pesi dei dataset diversi fra i candidati")
     decision, comparisons = decide(phase, cands)
-    record.update({"decision": decision, "comparisons": comparisons,
+    keys = sorted(cands)
+    descriptive = [{"a": a, "b": b, **paired_difference(cands[a]["oof"], cands[b]["oof"], cands[a]["report"]["weights"])}
+                   for i, a in enumerate(keys) for b in keys[i + 1:]]
+    record.update({"decision": decision, "comparisons": comparisons, "descriptive_comparisons": descriptive,
                    "rules": {"panel_every": PANEL_EVERY, "panel_delta": PANEL_DELTA, "panel_k": PANEL_K, "panel_learn": PANEL_LEARN,
                              "tie": "differenza accoppiata entro 1 SE: il LR piu' basso", "n_boot": N_BOOT, "boot_seed": BOOT_SEED}})
     return {phase: decision}, record
@@ -284,6 +295,8 @@ def merge(decisions: dict, add: dict) -> dict:
     import importlib.util
 
     (phase, dec), = add.items()
+    if phase not in PHASES:
+        raise ValueError(f"fase {phase!r}: nel file delle decisioni entrano solo {PHASES} (un collaudo no)")
     if phase in decisions:
         raise ValueError(f"{phase} gia' decisa: nessuna riscrittura")
     i = PHASES.index(phase)
@@ -301,7 +314,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("select")
-    s.add_argument("--phase", choices=PHASES, required=True)
+    s.add_argument("--phase", choices=PHASES + (COLLAUDO,), required=True)
     s.add_argument("--candidate", nargs=4, action="append", required=True, metavar=("LR", "RUN_DIR", "RAPPORTO", "PASSI"))
     s.add_argument("--out", type=Path, required=True)
     s.add_argument("--record", type=Path, required=True)
@@ -310,7 +323,7 @@ def main(argv=None) -> int:
     m.add_argument("--add", type=Path, required=True)
     args = ap.parse_args(argv)
     if args.cmd == "select":
-        cands = [(float(lr), Path(rd), Path(rp), int(st)) for lr, rd, rp, st in args.candidate]
+        cands = [(lr, Path(rd), Path(rp), int(st)) for lr, rd, rp, st in args.candidate]
         decision, record = select(args.phase, cands)
         for path, obj in ((args.record, record), (args.out, decision)):
             path.parent.mkdir(parents=True, exist_ok=True)
