@@ -1748,6 +1748,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   loss), keep separata; 30M, 4 epoche, 2 semi accoppiati, P1/P2 ufficiali, lettura +1 punto su P1 e P2 (proposta). Costi ~630-790 GPU-ora
   attese secondo l'opzione della keep. Da firmare; implementazione dopo il via.
 
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1: guardie ed estrazioni finite | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Guardie 60688822 (T) e 60688823 (B) COMPLETED 0:0 in 6 e 9 s, `ok` con gli SHA-256 attesi (15262e10..., 71af16a2...), 1.400 e
+  1.375 passi, `max_steps`. Estrazioni 60688824 (T) COMPLETED 0:0 in 17:51 e 60688827 (B) in 16:34, entro i 30 minuti: DB2 32 soggetti
+  38.544 finestre, DB3 8 / 9.834, DB6 8 / 33.961; MaxRSS ~10 GB, CPU ~9:50 su ~17 min. npz di 119, 30 e 105 MB per checkpoint.
+- Sonde in corso (B partita alle 09:09), poi la selezione. Verdetto sui cinque criteri a seguire. Per C1: l'estrazione al 30M dura ~17 min
+  (stimavo 12); il tetto di 30 min regge, ma per 100M e 300M i tetti vanno rivisti con queste misure.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
