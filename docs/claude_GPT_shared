@@ -1889,6 +1889,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   stessa estrazione e sonda di `probe_p2.py`, 4 fold di soggetti, S = media dei due dataset. Test: 3 nuovi (esclusione, estrazione che non
   vede i soggetti di test, pesi uguali e rifiuto di feature con un soggetto di test o di un altro compito).
 
+### 2026-10-16 | Claude | Confronto dei bracci con le regole firmate | Base: 641e4e2
+
+- `scripts/arms_compare.py`: regola del 2A/2C (accoppiato per seme con `paired_component`, +1 punto, limite inferiore dell'IC > 0, delta > 0
+  nei due semi) applicata (2) a S della P1 e della P2 per il default, con le predizioni fuori fold convertite in conteggi per soggetto, e (1)
+  a P1/P2 ufficiali con `compare_reports` come lettura scientifica. Braccio collassato = non batte; run fermato per altro = non valutabile;
+  piu' vincitori su S = scelta di Simone; disaccordi S/ufficiali registrati. Test `test_arms_compare.py` (6).
+- Restano: launcher P1/P2 con CODE_DIR, pianificatore dei bracci e piano di valutazione, test dello stato iniziale fra bracci.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

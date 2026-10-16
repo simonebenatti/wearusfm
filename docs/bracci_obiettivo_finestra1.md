@@ -143,3 +143,5 @@ Sostituiscono il punto 3 della firma («+1 punto sulla media dei due semi») e l
    --task p2`: soggetti fuori dai test dei tre split 7:1:2 (semi 0, 1, 2), finestre degli altri scartate prima dell'estrazione,
    stessa estrazione e sonda della P2, 4 fold di soggetti, media dei due dataset a pesi uguali.
 Non cambiano: bracci, disegno (30M, 4 epoche, 2 semi), keep separata, allarme di collasso, letture «al LR di A».
+Implementazione delle due regole: `scripts/arms_compare.py` (test `tests/cpu/test_arms_compare.py`). Un braccio collassato non batte il
+riferimento; un run fermato per un altro motivo non e' valutabile (si decide a mano); se piu' bracci battono A su S, la scelta e' di Simone.
