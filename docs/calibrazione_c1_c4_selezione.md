@@ -147,3 +147,8 @@ pochi minuti); 2 guardie CPU (1 core, tetto 20 min); 2 estrazioni su 1 A100 con 
 (8 core, tetto 3 h); 1 selezione (2 core, tetto 30 min). **GPU: attese ~0,4 GPU-ora (3,2 ore locali), tetto 1,0 GPU-ora (8 ore locali)**,
 dal budget «preparazione dell'infrastruttura»: 9,26 usate su 25, residuo 15,74, dopo il tetto almeno 14,74. **CPU: attese ~20 core-ora,
 tetto ~51 core-ora.**
+
+**Lancio (16/10/2026; Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su w1cat»).** Preflight in sola lettura pulito
+(nessun hook attivo, HEAD su main, nessun ref o checkout `w1sel`); `deploy/w1sel-20261016` -> 7cf4f08; checkout 60688786 COMPLETED 0:0
+(12 s, «checkout di campagna pronto»). Catena sottomessa una volta: guardie 60688822 (T) e 60688823 (B) senza afterok (training finiti
+secondo sacct), estrazioni 60688824 (T) e 60688827 (B) su `boost_qos_dbg`, sonde 60688826 e 60688829, selezione 60688830.

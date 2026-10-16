@@ -1718,6 +1718,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   ogni fase, confronti accoppiati di tutte le coppie nel registro, solo descrittivi (nessuna regola cambiata). Verificati in sola lettura
   i file di `w1cat` (post-decay, metrics, summary presenti; nessun `fixed_eval.jsonl`: il pannello era spento). Test 79 PASS (77 + 2).
 
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1 lanciato | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su w1cat». Preflight in sola lettura pulito; `deploy/w1sel-20261016`;
+  checkout 60688786 COMPLETED 0:0; catena sottomessa una volta con `evaluation_chain.py --submit`: guardie 60688822/60688823 (senza afterok,
+  training finiti), estrazioni 60688824/60688827 (dbg), sonde 60688826/60688829, selezione 60688830. Criteri in
+  `docs/calibrazione_c1_c4_selezione.md`; tetto 1,0 GPU-ora. Esito e consuntivo a seguire.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

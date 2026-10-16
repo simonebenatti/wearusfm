@@ -3416,3 +3416,7 @@ prepara il preventivo del collaudo su w1cat». Estrazione, sonda a fold e selezi
 criteri congelati in `docs/calibrazione_c1_c4_selezione.md` prima del lancio (esito atteso della selezione: nessuno ammissibile, pannello
 assente in `w1cat`). **GPU attese ~0,4 GPU-ora (3,2 ore locali), tetto 1,0 (8 ore locali)** sul budget infrastruttura (residuo 15,74 su 25,
 dopo il tetto almeno 14,74); CPU attese ~20 core-ora, tetto ~51. Nessun job lanciato.
+
+**Collaudo `w1_selezione_v1` autorizzato e lanciato (16/10/2026).** Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su
+w1cat». Deploy `deploy/w1sel-20261016` (7cf4f08), checkout 60688786 (CPU, 12 s), catena 60688822-60688830 (7 job; tetto 1,0 GPU-ora sul
+budget infrastruttura, residuo prima del collaudo 15,74 su 25). Consuntivo all'esito.
