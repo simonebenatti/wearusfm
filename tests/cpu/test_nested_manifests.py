@@ -1,8 +1,10 @@
 """Manifest derivati per l'asse dei soggetti (D16; accordo GPT-Claude del 15/10/2026, `docs/accordo_operativo_finestra1_20261015.md`):
 base temporale sulle ore campionabili secondo window_s congelato, D9 sul sottoinsieme, residuo di C solo verso B con A alla sua quota, errori
 espliciti di capacita'; durate (chiave mancante = errore di input, null dichiarato = peso 0, valori non validi = errore); verifiche dopo le
-trasformazioni del sampler (coerenti col loader vero) e endpoint col floor sul totale; costruttore (file deterministici, nessuna
-sovrascrittura), guardia `--nested` in due sensi, ripresa rifiutata con un manifest diverso, rapporto sui file."""
+trasformazioni del sampler (coerenti col loader vero; quote di A, B e C e somma dei pesi) e endpoint col floor sul totale; costruttore
+(file deterministici anche al variare di PYTHONHASHSEED, nessuna sovrascrittura), guardia `--nested` in due sensi, training legato a sampler,
+durate e configurazione delle finestre della costruzione, identita' dei file d'ingresso, ripresa rifiutata con un manifest diverso,
+rapporto sui file con un caso che fallisce per ogni controllo (review del critico del 16/10/2026)."""
 
 import gzip
 import hashlib
@@ -257,10 +259,18 @@ def _tree_derived(tmp_path):
     return root, doc, rows, ws
 
 
+def _tw(cfg):
+    """La configurazione con il sampler pesato nel tempo (come --window1-rules) che i derivati richiedono."""
+    return replace(cfg, loader=replace(cfg.loader, time_weighted=True))
+
+
+WCFG = {f: getattr(R.small_config().loader, f) for f in M.WINDOW_CONFIG_FIELDS}
+
+
 def test_loader_and_trainer_guard_the_declared_fraction_and_resume_refuses_another_manifest(tmp_path):
     root, doc, rows, ws = _tree_derived(tmp_path)
     full = _write(tmp_path / "full.json.gz", doc)
-    n025 = _write(tmp_path / "n025.json.gz", M.derived_manifest(doc, "0.25", ws, {"parent_file_sha256": "a"}))
+    n025 = _write(tmp_path / "n025.json.gz", M.derived_manifest(doc, "0.25", ws, {"parent_file_sha256": "a", "window_config": WCFG}))
     assert len(L.ManifestIndex.load(n025, [root], "0.25").rows) == 1
     with pytest.raises(ValueError, match="dichiara la frazione"):
         L.ManifestIndex.load(full, [root], "0.25")
@@ -270,20 +280,110 @@ def test_loader_and_trainer_guard_the_declared_fraction_and_resume_refuses_anoth
     assert len(L.ManifestIndex.load(n025, [root]).rows) == 1 and len(R.load_index(n025, [root], None).rows) == 1
     with pytest.raises(ValueError, match="va dichiarata"):
         R.train(replace(R.small_config(datasets=None, max_steps=1), nested="*"), n025, [root], tmp_path / "star", log=lambda _: None)
-    cfg = replace(R.small_config(datasets=None, max_steps=2), nested="0.25", log_batch_origin=True)
+    cfg = _tw(replace(R.small_config(datasets=None, max_steps=2), nested="0.25", log_batch_origin=True))
     out = tmp_path / "run"
-    R.train(cfg, n025, [root], out, log=lambda _: None)
+    R.train(cfg, n025, [root], out, log=lambda _: None, window_s=ws)
     assert json.loads((out / "origin_sessions.json").read_text()) == [R._session_key(rows[1])]
     # stessa frazione, manifest diverso (altra provenienza, altro contenuto): la firma dei dati della ripresa lo rifiuta
-    other = _write(tmp_path / "n025b.json.gz", M.derived_manifest(doc, "0.25", ws, {"parent_file_sha256": "b"}))
+    other = _write(tmp_path / "n025b.json.gz", M.derived_manifest(doc, "0.25", ws, {"parent_file_sha256": "b", "window_config": WCFG}))
     with pytest.raises(ValueError, match="dati diversi"):
-        R.train(replace(cfg, max_steps=4), other, [root], out, log=lambda _: None)
+        R.train(replace(cfg, max_steps=4), other, [root], out, log=lambda _: None, window_s=ws)
     with pytest.raises(ValueError, match="nested"):
-        R.train(replace(cfg, nested="0.5", max_steps=4), n025, [root], out, log=lambda _: None)
+        R.train(replace(cfg, nested="0.5", max_steps=4), n025, [root], out, log=lambda _: None, window_s=ws)
     with pytest.raises(ValueError, match="D16"):
-        R.train(replace(cfg, nested="0.3"), n025, [root], tmp_path / "bad", log=lambda _: None)
-    n1 = _write(tmp_path / "n1.json.gz", M.derived_manifest(doc, "1", ws, {}))
-    assert R.train(replace(cfg, nested="1"), n1, [root], tmp_path / "run1", log=lambda _: None)["steps"] == 2
+        R.train(replace(cfg, nested="0.3"), n025, [root], tmp_path / "bad", log=lambda _: None, window_s=ws)
+    n1 = _write(tmp_path / "n1.json.gz", M.derived_manifest(doc, "1", ws, {"window_config": WCFG}))
+    assert R.train(replace(cfg, nested="1"), n1, [root], tmp_path / "run1", log=lambda _: None, window_s=ws)["steps"] == 2
+
+
+@pytest.mark.parametrize("change,message", [
+    (lambda cfg, ws: (replace(cfg, loader=replace(cfg.loader, time_weighted=False)), ws), "pesato nel tempo"),
+    (lambda cfg, ws: (cfg, None), "durate delle finestre"),
+    (lambda cfg, ws: (replace(cfg, loader=replace(cfg.loader, min_window_s=2.0)), ws), "configurazione delle finestre"),
+])
+def test_trainer_refuses_a_derived_manifest_without_its_sampler_and_durations(tmp_path, change, message):
+    """Rilievo 3 del critico (16/10): quote e tetto di un derivato valgono col sampler pesato nel tempo, con le durate e con la
+    configurazione delle finestre della costruzione; altrimenti il training si rifiuta di partire."""
+    root, doc, rows, ws = _tree_derived(tmp_path)
+    n1 = _write(tmp_path / "n1.json.gz", M.derived_manifest(doc, "1", ws, {"window_config": WCFG}))
+    cfg, w = change(_tw(replace(R.small_config(datasets=None, max_steps=1), nested="1")), ws)
+    with pytest.raises(ValueError, match=message):
+        R.train(cfg, n1, [root], tmp_path / "run", log=lambda _: None, window_s=w)
+    assert not (tmp_path / "run" / "checkpoint.pt").exists()
+
+
+def test_input_files_are_checked_against_the_plan_and_the_build(tmp_path):
+    """Il file del manifest e' quello del piano (--manifest-sha256) e, per un derivato, le durate sono quelle della costruzione."""
+    root, doc, rows, ws = _tree_derived(tmp_path)
+    wfile = tmp_path / "ws.json"
+    wfile.write_text(json.dumps({"window_s": ws}))
+    wsha = hashlib.sha256(wfile.read_bytes()).hexdigest()
+    n1 = _write(tmp_path / "n1.json.gz", M.derived_manifest(doc, "1", ws, {"window_config": WCFG, "window_seconds_sha256": wsha}))
+    msha = hashlib.sha256(n1.read_bytes()).hexdigest()
+    R.check_input_files(n1, wfile, "1", msha)
+    with pytest.raises(ValueError, match="diverso da quello del piano"):
+        R.check_input_files(n1, wfile, "1", "0" * 64)
+    with pytest.raises(ValueError, match="servono le durate"):
+        R.check_input_files(n1, None, "1")
+    other = tmp_path / "ws2.json"
+    other.write_text(json.dumps({"window_s": {**ws, "extra/x/y": 1.0}}))
+    with pytest.raises(ValueError, match="con cui e' costruito"):
+        R.check_input_files(n1, other, "1")
+    R.check_input_files(_write(tmp_path / "full.json.gz", doc), None, None)  # manifest non derivato: niente durate obbligatorie
+
+
+# sei unita' al tetto nella stessa iterazione: col codice di prima (set) 3 risultati diversi su 8 valori di PYTHONHASHSEED (verificato il 16/10)
+ORDER_UNITS = {"s0": ("B", 1.445), "s1": ("B", 0.739), "s2": ("B", 2.887), "s3": ("B", 2.082), "s4": ("B", 1.716), "s5": ("B", 2.565),
+               "big": ("B", 400.0)}
+
+
+def test_allocation_does_not_depend_on_the_hash_seed():
+    """Rilievo 1 del critico (16/10, bloccante): con piu' unita' al tetto nella stessa iterazione l'ordine delle sottrazioni cambia l'ultima
+    cifra; prima era l'ordine di un set di stringhe (PYTHONHASHSEED) e il derivato al 25% aveva due contenuti possibili."""
+    import itertools
+    import os
+    import subprocess
+    import sys
+
+    a = M.allocate(ORDER_UNITS, {"B": 1.0}, 0.5, 8.0, 4.0)
+    capped = [k for k, (_, passes) in a["per_unit"].items() if abs(passes - 8.0) < 1e-9]
+    assert sorted(capped) == ["s0", "s1", "s2", "s3", "s4", "s5"]  # sei unita' al tetto nella stessa iterazione
+    budget = 4.0 * sum(h for _, h in ORDER_UNITS.values())
+    sums = set()
+    for perm in itertools.permutations(8.0 * ORDER_UNITS[k][1] / budget for k in capped):
+        x = 1.0
+        for c in perm:
+            x -= c
+        sums.add(x)
+    assert len(sums) > 1  # il caso e' sensibile all'ordine
+    code = ("import sys; sys.path.insert(0, %r); from wearusfm.data import pretraining_manifest as M; "
+            "print(repr(M.allocate(%r, {'B': 1.0}, 0.5, 8.0, 4.0)))") % (str(REPO / "src"), ORDER_UNITS)
+    outs = {subprocess.run([sys.executable, "-c", code], env={**os.environ, "PYTHONHASHSEED": str(seed)}, capture_output=True, text=True,
+                           check=True).stdout for seed in range(8)}
+    assert len(outs) == 1
+
+
+def test_derived_checks_catch_wrong_class_shares_and_inputs():
+    """Rilievo 2 del critico (16/10): dopo il sampler si verificano anche B (quota + residuo) e C (quota - residuo); la somma dei pesi
+    prima della normalizzazione; peso 0 per le righe senza finestre; una durata mancante e' un problema, non una rinormalizzazione."""
+    corpus = _corpus()
+    doc = _doc(corpus)
+    ws = _ws(corpus)
+    d = M.derived_manifest(doc, "1", ws, {})
+    rows = [M.SessionRow(**dict(zip(d["columns"], r))) for r in d["rows"]]
+    p, res = d["params"], d["params"]["residual_c_to_b"]
+    assert M.derived_checks(rows, ws, p, res) == []
+    moved = [replace(r, weight=r.weight * (1.2 if r.quota_class == "B" else 1.0)) for r in rows]
+    tot = sum(r.weight for r in moved if r.split == "pretraining")
+    moved = [replace(r, weight=r.weight / tot) for r in moved]  # somma 1, ma B sopra la sua quota e C sotto
+    probs = M.derived_checks(moved, ws, p, res)
+    assert any("quota di B" in x for x in probs) and any("quota di A" in x for x in probs)
+    assert any("somma dei pesi" in x for x in M.derived_checks([replace(r, weight=2 * r.weight) for r in rows], ws, p, res))
+    first = next(r for r in rows if r.split == "pretraining")
+    nul = _ws(corpus, **{M.session_key(first.dataset, first.subject, first.session): None})
+    assert any("senza finestre" in x for x in M.derived_checks(rows, nul, p, res))
+    missing = {k: v for k, v in ws.items() if k != M.session_key(first.dataset, first.subject, first.session)}
+    assert any("chiave assente" in x for x in M.derived_checks(rows, missing, p, res))
 
 
 # --- rapporto ------------------------------------------------------------------------------------------------------------------------
@@ -305,6 +405,77 @@ def test_report_on_files_checks_the_sampled_distribution_and_provenance(tmp_path
     bad = _write(tmp_path / "bad.json.gz", M.derived_manifest(doc, "0.125", wsd, {**inputs, "parent_file_sha256": "altro"}))
     assert any("costruita da" in p for p in NR.report(ws, parent, [bad], batch=2)["problems"])
     assert NR.main([str(ws), str(parent), str(bad)]) == 1
+
+
+def _tamper(path, fn):
+    d = json.loads(gzip.decompress(path.read_bytes()))
+    fn(d)
+    _write(path, d)
+
+
+def _drop_subject(d, subject):
+    cols = d["columns"]
+    d["rows"] = [r for r in d["rows"] if dict(zip(cols, r))["subject"] != subject]
+
+
+def _set_field(d, pred, field, value):
+    cols = d["columns"]
+    for r in d["rows"]:
+        if pred(dict(zip(cols, r))):
+            r[cols.index(field)] = value
+
+
+def _scale_class(d, cls, factor):
+    cols = d["columns"]
+    for r in d["rows"]:
+        x = dict(zip(cols, r))
+        if x["split"] == "pretraining" and x["quota_class"] == cls:
+            r[cols.index("weight")] *= factor
+    tot = sum(dict(zip(cols, r))["weight"] for r in d["rows"] if dict(zip(cols, r))["split"] == "pretraining")
+    for r in d["rows"]:
+        r[cols.index("weight")] /= tot
+
+
+@pytest.mark.parametrize("fraction,tamper,message", [
+    ("0.125", lambda d: d["rows"].append(list(d["rows"][-1][:2]) + ["altra"] + list(d["rows"][-1][3:])), "non e' contenuto"),
+    ("0.25", lambda d: _set_field(d, lambda r: r["subject"] == "a1s0", "session", "altra"), "solo una parte delle sessioni"),
+    ("1", lambda d: _drop_subject(d, "c2"), "stesse sessioni di pretraining"),
+    ("0.5", lambda d: _set_field(d, lambda r: r["split"] == "test", "n_samples", 7), "test/benchmark diverse"),
+    ("0.5", lambda d: d["params"]["derived_inputs"].update(window_seconds_sha256="altro"), "window_s"),
+    ("0.5", lambda d: _scale_class(d, "A", 1.3), "quota di A"),
+    ("1", lambda d: d["params"].update(max_passes=1.0), "oltre il tetto"),
+])
+def test_report_flags_each_nesting_and_identity_problem(tmp_path, fraction, tamper, message):
+    """Rilievo 4 del critico (16/10): ogni controllo del rapporto ha un caso che fallisce, con un file manomesso."""
+    corpus = _corpus()
+    doc = _doc(corpus)
+    parent = _write(tmp_path / "full.json.gz", doc)
+    ws = _ws_file(tmp_path / "ws.json", corpus)
+    inputs = {"parent_file_sha256": hashlib.sha256(parent.read_bytes()).hexdigest(),
+              "window_seconds_sha256": hashlib.sha256(ws.read_bytes()).hexdigest()}
+    wsd = json.loads(ws.read_text())["window_s"]
+    files = {f: _write(tmp_path / f"n{f}.json.gz", M.derived_manifest(doc, f, wsd, inputs)) for f in M.DERIVED_FRACTIONS}
+    assert NR.report(ws, parent, list(files.values()), batch=2)["problems"] == []
+    _tamper(files[fraction], tamper)
+    probs = NR.report(ws, parent, list(files.values()), batch=2)["problems"]
+    assert any(message in x for x in probs), probs
+
+
+def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch):
+    """Il controllo `nested_subjects_and_sessions` del costruttore: un 50% che perde un soggetto del 25% blocca la scrittura di tutti i file."""
+    corpus = _corpus()
+    src = _write(tmp_path / "full.json.gz", _doc(corpus))
+    ws = _ws_file(tmp_path / "ws.json", corpus)
+    real = M.derived_manifest
+
+    def broken(doc, fraction, window_s, inputs, code_commit=""):
+        d = real(doc, fraction, window_s, inputs, code_commit)
+        if fraction == "0.5":
+            _drop_subject(d, "a1s0")
+        return d
+
+    monkeypatch.setattr(BN.M, "derived_manifest", broken)
+    assert BN.main([str(src), str(ws), str(tmp_path / "out")]) == 1 and not (tmp_path / "out").exists()
 
 
 def test_cluster_launcher_refuses_output_inside_the_code(work):  # noqa: F811

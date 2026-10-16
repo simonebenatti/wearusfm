@@ -16,6 +16,7 @@ float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset
 from __future__ import annotations
 
 import copy
+import gzip
 import hashlib
 import json
 import os
@@ -246,8 +247,38 @@ def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | No
         if not keep:
             raise ValueError(f"nessuna riga di pretraining per {datasets}")
         w = idx.weights[keep]
-        idx = L.ManifestIndex([idx.rows[i] for i in keep], w / w.sum(), idx.roots)
+        idx = L.ManifestIndex([idx.rows[i] for i in keep], w / w.sum(), idx.roots, idx.params)
     return idx
+
+
+def check_derived_binding(params: dict, cfg: "RunConfig", window_s: dict | None) -> None:
+    """Un manifest derivato (D16) vale col sampler e con le durate con cui e' stato verificato: quote e tetto si controllano sulla
+    distribuzione pesata nel tempo con quelle durate e quella configurazione delle finestre (review del critico, 16/10/2026). Errore se il
+    loader non pesa nel tempo, se mancano le durate o se la configurazione delle finestre e' diversa da quella della costruzione."""
+    inputs = params.get("derived_inputs") or {}
+    if not cfg.loader.time_weighted:
+        raise ValueError("manifest derivato: serve il sampler pesato nel tempo (loader.time_weighted, --window1-rules) con cui e' verificato")
+    if window_s is None:
+        raise ValueError("manifest derivato: servono le durate delle finestre (--window-seconds) con cui e' stato costruito")
+    have = {f: getattr(cfg.loader, f) for f in PM.WINDOW_CONFIG_FIELDS}
+    if inputs.get("window_config") != have:
+        raise ValueError(f"manifest derivato costruito con la configurazione delle finestre {inputs.get('window_config')}, il loader ha {have}")
+
+
+def check_input_files(manifest: Path, window_seconds: Path | None, nested: str | None, manifest_sha256: str | None = None) -> None:
+    """Identita' dei file d'ingresso prima del training (review del critico, 16/10/2026): `manifest_sha256` (dal piano, facoltativo) = SHA
+    del file del manifest; con un derivato (`nested`) servono le durate e lo SHA del loro file e' quello registrato nella costruzione
+    (`derived_inputs.window_seconds_sha256`)."""
+    if manifest_sha256 is not None and sha256_file(manifest) != manifest_sha256:
+        raise ValueError(f"{manifest}: SHA-256 {sha256_file(manifest)} diverso da quello del piano {manifest_sha256}")
+    if nested is None:
+        return
+    if window_seconds is None:
+        raise ValueError("manifest derivato: servono le durate delle finestre (--window-seconds) con cui e' stato costruito")
+    doc = json.loads((gzip.open if str(manifest).endswith(".gz") else open)(manifest, "rb").read())
+    want = (doc.get("params", {}).get("derived_inputs") or {}).get("window_seconds_sha256")
+    if sha256_file(window_seconds) != want:
+        raise ValueError(f"{window_seconds}: SHA-256 {sha256_file(window_seconds)} diverso da quello con cui e' costruito il manifest ({want})")
 
 
 class BatchStream(torch.utils.data.IterableDataset):
@@ -964,6 +995,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
     torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
     index = load_index(manifest, roots, cfg.datasets, cfg.nested)
+    if cfg.nested is not None:
+        check_derived_binding(index.params, cfg, window_s)
     student = WearUsFM(cfg.model).to(device)
     frozen_init = branch_calibration = None
     if cfg.freeze_encoder and resume_state is None:

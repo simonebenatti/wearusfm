@@ -1,5 +1,5 @@
 """Calendario e costi della finestra 1 con N nodi sulla QoS normal (stima, aggiornata il 15/10/2026 con l'accordo GPT-Claude): run della
-bozza di GPT (non firmata), passi dei manifest derivati (floor sul totale, `results/infra/derived_manifests_v1_1_build_20261015.json`),
+bozza di GPT (non firmata), passi dei manifest derivati (floor sul totale, `results/infra/derived_manifests_v1_1_build_cluster_20261015.json`),
 s/passo misurati col prefetch, calibrazione C1-C4 dell'accordo in sequenza (C1 -> decisione -> C2 -> C3 -> C4) prima dei run che ne usano
 il LR. Separa il tempo di calcolo dalle attese: `gap` = attesa in coda prima di ogni job da 24 h (una catena da k job ne paga k), che dipende
 anche dal consumo degli altri 16 utenti del progetto; le attese delle decisioni di GPT fra le fasi della calibrazione sono a parte.
@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results" / "infra" / "derived_manifests_v1_1_build_20261015.json"
+REPORT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results" / "infra" / "derived_manifests_v1_1_build_cluster_20261015.json"
 WPE = {f: v["windows_per_epoch"] for f, v in json.loads(REPORT.read_text())["fractions"].items()}  # finestre per epoca, per frazione
 SPS = {"30m": 0.70, "100m": 1.39, "300m": 2.77}  # s/passo, DDP 4 GPU, batch 32, prefetch (w1pf, w1gd)
 OVER = 0.03  # avvio, valutazioni e checkpoint del trainer

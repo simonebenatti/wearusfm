@@ -6,7 +6,8 @@ documento non autorizza lanci.
 
 ## Pianificatore: `scripts/calibration_plan.py`
 
-Dal rapporto dei manifest derivati (`results/infra/derived_manifests_v1_1_build_20261015.json`, derivato al 100%) e dal file delle decisioni
+Dal rapporto dei manifest derivati costruiti sul cluster (`results/infra/derived_manifests_v1_1_build_cluster_20261015.json`, derivato al
+100%; quello della costruzione locale ha lo SHA di un file che sul cluster non esiste) e dal file delle decisioni
 di GPT: configurazioni, passi, warmup, decay, checkpoint, memoria, tempo, GPU-ora attese e tetto, e i piani per `scripts/wsd_chain.py`
 (stessi controlli di D14 col codice del trainer; comandi di `submit_job.py` con `--lr` e `--nested 1`). I finalisti sono dipendenze di
 decisione esplicite: senza la decisione che la precede una fase e' bloccata col motivo; finalisti fuori griglia o non distinti sono
@@ -34,7 +35,7 @@ Solo training **152,1 GPU-ora** (l'ordine di grandezza dell'accordo); con avvio 
 infrastruttura. Tempo di calendario: C1 in parallelo ~5 h, poi le decisioni di GPT, C2 ~5 h, C3 ~5 h, C4 ~5 h: con le attese delle
 decisioni e delle code, ~2-3 giorni prima della campagna (con 8 nodi C1 entra in un'ondata sola).
 
-Uso: `python scripts/calibration_plan.py results/infra/derived_manifests_v1_1_build_20261015.json [--decisions decisioni.json]
+Uso: `python scripts/calibration_plan.py results/infra/derived_manifests_v1_1_build_cluster_20261015.json [--decisions decisioni.json]
 [--campaign campagna.json] [--out cartella]`; senza `--campaign` e' un dry-run con percorsi segnaposto.
 
 ## Aggiornamento del 15/10/2026: selezione, valutazione e preventivo completo

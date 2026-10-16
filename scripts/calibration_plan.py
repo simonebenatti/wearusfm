@@ -22,7 +22,8 @@ Piano di valutazione (`--out` con una campagna che ha "eval"): per fase pronta `
 `scripts/evaluation_chain.py`): per ogni run guardia del checkpoint post-decay -> estrazione (1 GPU) -> sonda a fold (CPU), poi la selezione
 della fase (CPU) dopo tutte le sonde.
 
-Uso: python scripts/calibration_plan.py rapporto_dei_manifest_derivati.json [--decisions decisioni.json] [--campaign campagna.json]
+Uso (il rapporto e' quello della costruzione sul cluster, results/infra/derived_manifests_v1_1_build_cluster_20261015.json):
+     python scripts/calibration_plan.py rapporto_dei_manifest_derivati.json [--decisions decisioni.json] [--campaign campagna.json]
      [--out cartella]   -> tabella e preventivo; con --out i piani per wsd_chain.py delle fasi pronte e il riepilogo JSON
 """
 
@@ -170,6 +171,10 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
 
     frac = build_report["fractions"]["1"]
     wpe = frac["windows_per_epoch"]
+    # il rapporto della costruzione SUL CLUSTER: lo SHA del file e' quello che il training verifica (--manifest-sha256) e che entra nella
+    # firma dei dati; quello della costruzione locale e' di un file che sul cluster non esiste (review del critico, 16/10/2026)
+    if not (isinstance(frac.get("file_sha256"), str) and len(frac["file_sha256"]) == 64):
+        raise ValueError("rapporto dei manifest derivati senza file_sha256 del derivato al 100%: serve il rapporto della costruzione sul cluster")
     steps_at_d = math.floor(4.0 * wpe / BATCH)
     warmup = R.wsd_warmup_steps(steps_at_d)
     phases = resolve_phases(decisions)
@@ -177,6 +182,8 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
     base = {**DRY_CAMPAIGN, **(campaign or {})}
     ev = {**DRY_EVAL, **base.pop("eval", {})}
     dry = campaign is None
+    if not dry and Path(base["manifest"]).name != frac.get("file"):
+        raise ValueError(f"manifest della campagna {base['manifest']}: il rapporto descrive {frac.get('file')}")
     panel = _select().PANEL_EVERY
     rows, plans, blocked, evals = [], {}, {}, {}
     for name, spec in PHASES.items():
@@ -190,7 +197,7 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
                  "args": f"--lr {lr:g} --nested 1"} for lr in info["lrs"]]
         p = {**copy.deepcopy(base), "campaign": f"{base['campaign']}-{name.lower()}", "runs": runs,
              "s_per_step": {f"{spec['preset']}/{BATCH}": S_PER_STEP[spec["preset"]]}, "ckpt_gb": {spec["preset"]: CKPT_GB[spec["preset"]]},
-             "common_args": f"--window1-rules --datasets all --prefetch --fixed-eval-every {panel}"}
+             "common_args": f"--window1-rules --datasets all --prefetch --fixed-eval-every {panel} --manifest-sha256 {frac['file_sha256']}"}
         if len({r["id"] for r in runs}) != len(runs):
             raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)

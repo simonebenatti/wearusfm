@@ -43,6 +43,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--window1-rules", action="store_true",
                     help="decisioni del 04/10/2026: quote nel tempo, perdita per finestra, ancore lontane dai bordi (serve --window-seconds)")
     ap.add_argument("--window-seconds", type=Path, default=None, help="JSON di scripts/window_seconds.py (lunghezza media delle finestre per sessione)")
+    ap.add_argument("--manifest-sha256", default=None,
+                    help="SHA-256 atteso del file del manifest (dal piano): un file diverso ferma il run prima di partire")
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
     ap.add_argument("--lr", type=float, default=None, help="learning rate di picco (calibrazione C1-C4); default quello del preset (3e-4)")
@@ -108,6 +110,10 @@ def main(argv=None) -> int:
         cfg = R.with_rvq(cfg, args.rvq_codes)
     if args.window1_rules:
         cfg = R.with_window1_rules(cfg)
+    try:  # identita' dei file d'ingresso: manifest del piano e, per un derivato, le durate con cui e' stato costruito (critico, 16/10)
+        R.check_input_files(args.manifest, args.window_seconds, args.nested, args.manifest_sha256)
+    except ValueError as e:
+        ap.error(str(e))
     window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
     if args.warmup_steps is not None:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)

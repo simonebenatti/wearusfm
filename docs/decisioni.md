@@ -3451,3 +3451,11 @@ finestra 1».
   208,0; valutazione 2,6 / 6,5), piu' il margine per i tetti delle valutazioni a 100M e 300M da rivedere dopo il collaudo `w1_selezione_v1`.
   Consuntivo per fase qui sotto. Separata dal budget «preparazione dell'infrastruttura» (25 GPU-ora, residuo 15,74 prima del collaudo).
 - Consumato sulla finestra 1 finora: 0 GPU-ora.
+
+**Manifest derivati: review del `critico` (16/10/2026) DA RIVEDERE, rilievi corretti.** Bloccante: il derivato al 25% non era
+deterministico (ordine di un set in `allocate`, PYTHONHASHSEED): ora ordine fisso, scelto fra quelli fissi perche' riproduce i quattro file
+costruiti sul cluster il 15/10, che restano validi (ricostruiti con sei semi: 80a214fd / 13d3dce8 / 52ec61f0 / 167923c3). Minori: verifiche
+dopo il sampler complete (A, B + residuo, C - residuo, somma dei pesi, durate); il training rifiuta un derivato senza sampler pesato nel
+tempo, con durate o configurazione delle finestre diverse da quelle della costruzione, o con un file diverso da quello del piano
+(`--manifest-sha256`); test negativi; rapporto del cluster in pianificatore e documenti; identita' di un derivato documentata
+(`docs/manifest_annidati_d16.md`). Nessuna soglia ne' regola dei pesi cambiata. Suite 1166 PASS. Seconda review del `critico` a seguire.

@@ -1794,6 +1794,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Rilievo 4 (protocollo, non codice) registrato in `docs/bracci_obiettivo_finestra1.md`: come contare un braccio fermato dall'allarme,
   se l'allarme di collasso vale in ancore-only, LR di A. Da chiudere prima della firma dei bracci.
 
+### 2026-10-16 | Claude | Manifest derivati: rilievi del critico corretti | Base: fe67339
+
+- Review del `critico` (DA RIVEDERE): un bloccante e cinque minori, tutti corretti. Bloccante: `allocate` sottraeva le quote delle unita' al
+  tetto nell'ordine di un set (PYTHONHASHSEED): il derivato al 25% aveva due contenuti possibili. Ordine ora fisso (alfabetico inverso, quello
+  che riproduce i quattro file del cluster): nessun file cambia, ricostruzione con sei semi sempre identica al cluster.
+- `derived_checks` (costruttore e rapporto): quote di A, B + residuo, C - residuo dopo il sampler, somma 1 dei pesi, peso 0 senza finestre,
+  durate con `samplable_seconds`. Trainer: `check_derived_binding` (sampler pesato nel tempo, durate, configurazione delle finestre) e
+  `check_input_files` (SHA del file delle durate = quello della costruzione; `--manifest-sha256` = file del piano), da `train_jepa.py`;
+  `ManifestIndex.params`. Il pianificatore della calibrazione mette `--manifest-sha256` dal rapporto del cluster e rifiuta un manifest che il
+  rapporto non descrive. Test negativi per ogni controllo del rapporto e del costruttore; test di determinismo in sottoprocessi.
+- Toccati anche `run.py`/`train_jepa.py` (dopo i bracci di b1238a1/fe67339, nessuna sovrapposizione). Suite 1166 PASS. Piani di C1 in dry-run
+  rigenerati. Seconda review del `critico` in corso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

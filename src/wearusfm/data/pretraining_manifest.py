@@ -145,12 +145,16 @@ def allocate(units: dict[str, tuple[str, float]], quota: dict[str, float], alpha
         while free and left > 1e-12:
             w = {u: h ** alpha for u, h in free.items()}
             s = sum(w.values())
-            over = {u for u in free if left * w[u] / s > cap[u] + 1e-15}
+            over = [u for u in free if left * w[u] / s > cap[u] + 1e-15]
             if not over:
                 share.update({u: left * w[u] / s for u in free})
                 left = 0.0
                 break
-            for u in over:
+            # ordine FISSO delle sottrazioni (review del critico, 16/10/2026): prima era un set, il cui ordine dipende da PYTHONHASHSEED, e
+            # con due o piu' unita' al tetto nella stessa iterazione `left` cambiava all'ultima cifra (il derivato al 25% aveva due contenuti
+            # possibili). Alfabetico inverso: fra gli ordini fissi e' quello che riproduce i quattro derivati gia' costruiti sul cluster il
+            # 15/10 (hash di contenuto 80a214fd / 13d3dce8 / 52ec61f0 / 167923c3), quindi nessun file cambia
+            for u in sorted(over, reverse=True):
                 share[u] = cap[u]
                 left -= cap[u]
                 del free[u]
@@ -327,6 +331,37 @@ def sampled_distribution(rows: list[SessionRow], window_s: dict, epochs: float =
             "sessions": len(pre), "subjects": len({(r.dataset, r.subject) for r in pre})}
 
 
+def derived_checks(rows: list[SessionRow], window_s: dict, params: dict, residual: float, tol: float = 1e-9) -> list[str]:
+    """Le verifiche di un derivato (problemi; vuota se tutto torna), sul file e DOPO le trasformazioni del sampler (`sampled_distribution`):
+    durate valide per ogni riga di pretraining (`samplable_seconds`: chiave mancante o valore non valido = problema), pesi finiti e non
+    negativi, peso 0 sulle righe non campionabili, somma 1 dei pesi di pretraining prima della normalizzazione del loader, quote dopo il
+    sampler A = quota_A, B = quota_B + residuo, C = quota_C - residuo, passaggi entro il tetto (review del critico, 16/10/2026)."""
+    try:
+        ok = samplable_seconds(rows, window_s)
+    except ValueError as e:
+        return [f"durate: {e}"]
+    problems = []
+    pre = [r for r in rows if r.split == "pretraining"]
+    weights = [r.weight for r in rows]
+    if not all(isinstance(w, (int, float)) and math.isfinite(w) and w >= 0 for w in weights):
+        return ["pesi non finiti o negativi"]
+    bad = [session_key(r.dataset, r.subject, r.session) for r in pre if not ok[session_key(r.dataset, r.subject, r.session)] and r.weight != 0]
+    if bad:
+        problems.append(f"righe senza finestre con peso diverso da 0: {bad[:3]}")
+    if abs(sum(r.weight for r in pre) - 1.0) > tol:
+        problems.append(f"somma dei pesi di pretraining {sum(r.weight for r in pre)!r}, attesa 1")
+    dist = sampled_distribution(rows, window_s, params.get("epochs", 4.0))
+    q = params["quota"]
+    expected = {"A": q["A"], "B": q["B"] + residual, "C": q["C"] - residual}
+    for cls, want in expected.items():
+        got = dist["classes"].get(cls, 0.0)
+        if abs(got - want) > tol:
+            problems.append(f"quota di {cls} {got!r} dopo il sampler, attesa {want!r}")
+    if dist["max_passes"] > params["max_passes"] * (1 + tol):
+        problems.append(f"{dist['max_passes']:.6f} passaggi dopo il sampler, oltre il tetto {params['max_passes']}")
+    return problems
+
+
 def derived_manifest(doc: dict, fraction: str, window_s: dict, inputs: dict, code_commit: str = "") -> dict:
     """Il manifest derivato di `fraction` (D16; "1" = corpus intero) dal manifest congelato `doc`: sessioni di pretraining dei soggetti del
     sottoinsieme firmato (`nested` della riga; tutte per "1"), pesate con `assign_weights_derived`; test e benchmark invariati (peso 0); le
@@ -341,14 +376,9 @@ def derived_manifest(doc: dict, fraction: str, window_s: dict, inputs: dict, cod
     p = doc["params"]
     out = assign_weights_derived(keep, window_s, p["quota"], p["alpha"], p["max_passes"], p.get("epochs", 4.0))
     dist = sampled_distribution(keep, window_s, p.get("epochs", 4.0))
-    eps = 1e-9
-    weights = [r.weight for r in keep]
-    if not all(math.isfinite(w) and w >= 0 for w in weights):
-        raise ValueError(f"frazione {fraction}: pesi non finiti o negativi")
-    if abs(dist["mass"] - 1.0) > eps or dist["max_passes"] > p["max_passes"] * (1 + eps):
-        raise ValueError(f"frazione {fraction}: massa {dist['mass']} o passaggi {dist['max_passes']:.6f} fuori dai limiti dopo il sampler")
-    if abs(dist["classes"].get("A", 0.0) - p["quota"]["A"]) > 1e-9:
-        raise ValueError(f"frazione {fraction}: quota di A {dist['classes'].get('A')} dopo il sampler, attesa {p['quota']['A']}")
+    problems = derived_checks(keep, window_s, p, out["residual_c_to_b"])
+    if problems:
+        raise ValueError(f"frazione {fraction}: " + "; ".join(problems))
     params = {**p, "nested": fraction, "derived_rule": DERIVED_RULE, "derived_inputs": inputs,
               "derived_hours": {k: out[k] for k in ("hours_nominal", "hours_samplable", "hours_excluded", "sessions_excluded")},
               "residual_c_to_b": out["residual_c_to_b"],
