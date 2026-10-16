@@ -58,11 +58,15 @@ DRY_CAMPAIGN = {"campaign": "w1-calibrazione-DRYRUN", "agent": "claude", "code_d
                 "spare_jobs": 0, "gpus": 4}
 DRY_EVAL = {"features_root": "<FEATURES_ROOT>", "results_root": "<RESULTS_ROOT>"}
 P1_DATASETS = ("ninapro_db2", "ninapro_db3", "ninapro_db6")
-# valutazione: tetti dei nodi (l'estrazione P1 al 30M ha richiesto 13:42 per tutti i 61 soggetti, docs/step1_downstream_ab.md; qui solo i 48
-# di pretraining; le sonde P1 22 min con 8 core, qui 4 fold) e stime, da rivedere con le prime misure
-EXTRACT_TIME = {"sanity": "00:30:00", "100m": "01:00:00", "300m": "02:00:00"}
-EXTRACT_EXPECTED_H = {"sanity": 0.2, "100m": 0.4, "300m": 0.8}
-PROBE_TIME, PROBE_CORES, PROBE_EXPECTED_H = "03:00:00", 8, 1.2
+# valutazione: misure del collaudo w1_selezione_v1 (16/10/2026) al 30M: estrazione 17:51 e 16:34 (~10 min di CPU, il resto GPU e I/O), sonda
+# 1 h 44 e 1 h 51 a 8 core. 100M e 300M: STIME, estrazione scalata coi parametri sulla parte GPU, sonda con la larghezza delle feature (2d:
+# 768 / 1280 / 1792). Sulla seriale (tetto 4 h) la sonda del 300M (~4,2 h) non ci sta: prima di C4 va spostata su un nodo GPU o divisa per
+# dataset (registro, 16/10). Le sonde girano una alla volta per il limite di core per utente della seriale.
+EXTRACT_TIME = {"sanity": "00:30:00", "100m": "01:30:00", "300m": "03:00:00"}
+EXTRACT_EXPECTED_H = {"sanity": 0.3, "100m": 0.65, "300m": 1.5}
+PROBE_CORES = 8
+PROBE_TIME = {"sanity": "03:00:00", "100m": "04:00:00", "300m": "04:00:00"}
+PROBE_EXPECTED_H = {"sanity": 1.8, "100m": 3.0, "300m": 4.2}
 SELECT_TIME, SELECT_CORES = "00:30:00", 2
 EVAL_LIMITS = {"boost_usr_prod": 8, "lrd_all_serial": 8}
 
@@ -148,7 +152,7 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                       "checkpoint": {"run_dir": run["run_dir"], "name": "checkpoint_postdecay.pt", "training_job": run["job_ids"][-1],
                                      "min_steps": run["total_steps"], "sha256": None}})
         nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "lrd_all_serial", "gpu_hours": 0, **code,
-                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME}"],
+                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME[spec['preset']]}"],
                       "inputs": npzs, "outputs": [rep, oof]})
         cands += [repr(float(lr)), run["run_dir"], rep, str(run["total_steps"])]
         probe_outs += [rep, oof]
@@ -161,8 +165,9 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
             "estimate": {"gpu_hours_expected": round(n_runs * EXTRACT_EXPECTED_H[spec["preset"]], 2),
                          "gpu_hours_max": round(n_runs * _hours(EXTRACT_TIME[spec["preset"]]), 2),
-                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H, 1),
-                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME) + SELECT_CORES * _hours(SELECT_TIME)
+                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H[spec["preset"]], 1),
+                         "probe_fits_the_cap": PROBE_EXPECTED_H[spec["preset"]] <= _hours(PROBE_TIME[spec["preset"]]),
+                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME[spec["preset"]]) + SELECT_CORES * _hours(SELECT_TIME)
                                                      + n_runs * _hours("00:20:00"), 1)}}
 
 

@@ -1,0 +1,136 @@
+{
+ "protocol": "w1_selezione_v1",
+ "recorded_on": "2026-10-16",
+ "code_sha": "7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967",
+ "plan": "results/infra/w1sel_plan_20261016.json",
+ "passed": true,
+ "jobs": {
+  "w1sel_checkout": [
+   60688786,
+   "COMPLETED",
+   "0:0",
+   "00:00:12"
+  ],
+  "w1cat-T-j03-guard-43329a97": [
+   60688822,
+   "COMPLETED",
+   "0:0",
+   "00:00:06"
+  ],
+  "w1cat-B-j02-guard-eabdec7f": [
+   60688823,
+   "COMPLETED",
+   "0:0",
+   "00:00:09"
+  ],
+  "w1sel-T-ext": [
+   60688824,
+   "COMPLETED",
+   "0:0",
+   "00:17:51",
+   "MaxRSS 10,4 GB"
+  ],
+  "w1sel-B-ext": [
+   60688827,
+   "COMPLETED",
+   "0:0",
+   "00:16:34",
+   "MaxRSS 10,3 GB"
+  ],
+  "w1sel-T-probe": [
+   60688826,
+   "COMPLETED",
+   "0:0",
+   "01:44:18",
+   "TotalCPU 13:35:39"
+  ],
+  "w1sel-B-probe": [
+   60688829,
+   "COMPLETED",
+   "0:0",
+   "01:50:51",
+   "TotalCPU 14:30:29"
+  ],
+  "w1sel-select": [
+   60688830,
+   "COMPLETED",
+   "0:0",
+   "00:01:05"
+  ]
+ },
+ "criteria": {
+  "1_guards": {
+   "passed": true,
+   "note": "ok, SHA attesi, 1.400 e 1.375 passi, senza afterok (training finiti secondo sacct)"
+  },
+  "2_extractions": {
+   "passed": true,
+   "note": "entro 30 min; solo soggetti di pretraining 32/8/8; SHA del checkpoint = guardia; 768 colonne"
+  },
+  "3_probes": {
+   "passed": true,
+   "note": "entro 3 h; S finito in (0, 1); 4 fold per dataset; ogni soggetto fuori fold una volta"
+  },
+  "4_selection": {
+   "passed": true,
+   "decision": {
+    "admissible": []
+   },
+   "admissibility": {
+    "w1cat-T": [
+     "fixed_eval.jsonl assente o vuoto"
+    ],
+    "w1cat-B": [
+     "fixed_eval.jsonl assente o vuoto"
+    ]
+   },
+   "descriptive_comparisons": [
+    {
+     "a": "w1cat-B",
+     "b": "w1cat-T",
+     "delta": 0.0004759273368343813,
+     "se": 0.000982129196075043,
+     "tie": true
+    }
+   ],
+   "note": "nessuno ammissibile per il pannello assente (atteso); confronto accoppiato calcolato: finestre, etichette e soggetti coincidono fra i due checkpoint"
+  },
+  "5_rerun": {
+   "passed": true,
+   "note": "seconda chiamata: 7 nodi gia' sottomessi, nessuna sottomissione; checkout in sola lettura senza file nuovi"
+  }
+ },
+ "S": {
+  "T": {
+   "S": 0.15078036328274202,
+   "S_se": 0.0053449461804217545,
+   "per_dataset": {
+    "ninapro_db2": 0.1490685460946324,
+    "ninapro_db3": 0.024809607560891594,
+    "ninapro_db6": 0.3465837656179562
+   }
+  },
+  "B": {
+   "S": 0.15125629061957643,
+   "S_se": 0.00539555795332861,
+   "per_dataset": {
+    "ninapro_db2": 0.15030703944909632,
+    "ninapro_db3": 0.022282361282992817,
+    "ninapro_db6": 0.3485141893063722
+   }
+  }
+ },
+ "measures_for_c1": {
+  "extract_30m_h": 0.287,
+  "probe_h_8_cores": [
+   1.74,
+   1.85
+  ],
+  "probe_serialized": "la seconda sonda e' rimasta PENDING (QOSMaxCpuPerUserLimit) finche' la prima non e' finita",
+  "probe_warnings": "ConvergenceWarning di lbfgs (max_iter 3000) nella sonda della P1, come nelle sonde ufficiali"
+ },
+ "cost": {
+  "gpu_hours": 0.574,
+  "cpu_core_hours": 28.8
+ }
+}

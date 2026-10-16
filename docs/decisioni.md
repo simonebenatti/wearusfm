@@ -3466,3 +3466,9 @@ dettagli corretti in 8872d5c (test che isola l'annidamento, pianificatore legato
 filtrato per dataset, docstring, quattro casi negativi). Terza review su 8872d5c: **APPROVATO**, con due rilievi minori chiusi subito (test
 anche per la meta' «sessioni» dell'annidamento; questa registrazione). I file del cluster in `derived_v1_1/` restano quelli del 15/10; il
 training ne verifica identita' e durate all'avvio. Per C1 i manifest sono pronti.
+
+**Esito del collaudo `w1_selezione_v1` (16/10/2026, criteri congelati prima del lancio): SUPERATO.** Guardie, estrazioni (17:51 e 16:34),
+sonde (1 h 44 e 1 h 51) e selezione COMPLETED 0:0; solo soggetti di pretraining; decisione «nessuno ammissibile» per il pannello assente,
+come atteso; confronto accoppiato calcolato sui dati veri; nessun doppione rieseguendo. Job 60688786-60688830. **Consuntivo 0,57 GPU-ora**
+sul budget «preparazione dell'infrastruttura»: 9,83 usate su 25, residuo 15,17. Stime delle valutazioni di C1 aggiornate (estrazione 0,3 h,
+sonda 1,8 h a 8 core; sonde in fila per il limite di core per utente). `results/infra/w1sel_20261016.json`.

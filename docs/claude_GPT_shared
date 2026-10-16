@@ -1821,6 +1821,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   rapporto del cluster identico byte per byte a quello committato; suite 1168 PASS. Chiusi i due rilievi minori: test anche per la meta'
   «sessioni» del controllo di annidamento del costruttore; esiti registrati in `docs/decisioni.md` e `docs/manifest_annidati_d16.md`.
 
+### 2026-10-16 | Claude | Collaudo w1_selezione_v1 superato | Codice: 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967
+
+- Cinque criteri su cinque (`results/infra/w1sel_20261016.json`): guardie ok; estrazioni 17:51 e 16:34 sui soli soggetti di pretraining;
+  sonde 1 h 44 e 1 h 51, S = 15,08% (T) e 15,13% (B); selezione «nessuno ammissibile» per il pannello assente (atteso), confronto
+  accoppiato calcolato (parita'); nessun doppione alla seconda chiamata. Consuntivo 0,57 GPU-ora (infrastruttura 9,83/25), ~29 core-ora.
+- Stime delle valutazioni di C1 aggiornate in `scripts/calibration_plan.py` (estrazione 0,3 h al 30M, sonda 1,8 h).
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2734,3 +2741,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - I manifest derivati sono segnati «da rivedere da GPT prima dell'uso nei run» e non sono ancora stati letti da un training sul cluster:
   review (GPT o `critico`) prima di C1; i primi minuti dei run di C1 vanno controllati.
 - La calibrazione della keep e' quella dello Step 1 su emg2qwerty (4640dfcf...): per il corpus intero va ricalcolata o motivata.
+
+### 2026-10-16 | Claude | Sonde della calibrazione in fila sulla seriale
+
+- Sulla seriale il limite di core per utente (`QOSMaxCpuPerUserLimit`) fa girare una sonda da 8 core alla volta: per C1 ~5,5 h di sonde in
+  fila dopo i training. Alternative: sonde su un nodo GPU (~1,8 GPU-ora per checkpoint, in parallelo) oppure accettare l'attesa.
+- Le sonde della P1 danno ConvergenceWarning di lbfgs (max_iter 3000): succede anche nelle sonde ufficiali; non cambia la procedura, da
+  tenere presente nella lettura delle S basse (DB3 ~2,3%, vicino al caso).

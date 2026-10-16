@@ -1,0 +1,100 @@
+{
+ "protocol": "w1-calibrazione-selezione-v1",
+ "phase": "collaudo",
+ "candidates": {
+  "w1cat-T": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-T",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 1400,
+     "elapsed_s": 340.3951232433319,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cat-20261015",
+      "sha": "df4d2f5c48909c1d5f23af9ece09860ff9948e44"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 3,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 38.400000000000006,
+     "last_ratio": 1.7306034653346551,
+     "last_student_erank": 65.20305784565384
+    },
+    "problems": [
+     "fixed_eval.jsonl assente o vuoto"
+    ],
+    "admissible": false
+   },
+   "S": 0.15078036328274202,
+   "S_se": 0.0053449461804217545,
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/T-probe.json",
+   "report_sha256": "c0a9e7448a235c0b6faf4a65b1cea5616367bfd9cb81154d953543479936eaa7",
+   "checkpoint_sha256": "15262e1069c3969644595d20f0f4974d2f1948369cc9eb2a39e4f3c98459c069",
+   "per_dataset_S": {
+    "ninapro_db2": 0.1490685460946324,
+    "ninapro_db3": 0.024809607560891594,
+    "ninapro_db6": 0.3465837656179562
+   }
+  },
+  "w1cat-B": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cat_1510/w1cat-B",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 1375,
+     "elapsed_s": 243.77438521385193,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cat-20261015",
+      "sha": "df4d2f5c48909c1d5f23af9ece09860ff9948e44"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 1,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 38.400000000000006,
+     "last_ratio": 1.7477889255474974,
+     "last_student_erank": 63.666823146686475
+    },
+    "problems": [
+     "fixed_eval.jsonl assente o vuoto"
+    ],
+    "admissible": false
+   },
+   "S": 0.15125629061957643,
+   "S_se": 0.00539555795332861,
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/infra/w1sel_1610/B-probe.json",
+   "report_sha256": "0b88e64f399a6b870bd3c7a0d093ea2e4acb6c4090c11c8f3289d2038b82d55b",
+   "checkpoint_sha256": "71af16a20b596c4261f8ddfa7bb847bb6b5f09bb0b4f50c608284f4a058e5d06",
+   "per_dataset_S": {
+    "ninapro_db2": 0.15030703944909632,
+    "ninapro_db3": 0.022282361282992817,
+    "ninapro_db6": 0.3485141893063722
+   }
+  }
+ },
+ "decision": {
+  "admissible": []
+ },
+ "comparisons": [],
+ "descriptive_comparisons": [
+  {
+   "a": "w1cat-B",
+   "b": "w1cat-T",
+   "delta": 0.0004759273368343813,
+   "se": 0.000982129196075043,
+   "tie": true
+  }
+ ],
+ "rules": {
+  "panel_every": 500,
+  "panel_delta": 0.1,
+  "panel_k": 3,
+  "panel_learn": 0.9,
+  "tie": "differenza accoppiata entro 1 SE: il LR piu' basso",
+  "n_boot": 1000,
+  "boot_seed": 0
+ }
+}

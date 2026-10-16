@@ -91,13 +91,14 @@ Feature su `$SCRATCH`, rapporti e decisioni in `$WORK/wearusfm_runs/results/`; l
 
 | Fase | Training GPU-ora attese / tetto | Valutazione GPU-ora attese / tetto | CPU tetto (core-ora) |
 |---|---|---|---|
-| C1 (3 run, 30M) | 60,3 / 78,0 | 0,6 / 1,5 | 74 |
-| C2 (2 run, 30M) | 40,2 / 52,0 | 0,4 / 1,0 | 50 |
-| C3 (2 run, 100M) | 39,8 / 52,0 | 0,8 / 2,0 | 50 |
-| C4 (1 run, 300M) | 19,9 / 26,0 | 0,8 / 2,0 | 25 |
-| **Totale** | **160,2 / 208,0** | **2,6 / 6,5** | **199** |
+| C1 (3 run, 30M) | 60,3 / 78,0 | 0,9 / 1,5 | 74 |
+| C2 (2 run, 30M) | 40,2 / 52,0 | 0,6 / 1,0 | 50 |
+| C3 (2 run, 100M) | 39,8 / 52,0 | 1,3 / 3,0 | 66 |
+| C4 (1 run, 300M) | 19,9 / 26,0 | 1,5 / 3,0 | 33 |
+| **Totale** | **160,2 / 208,0** | **4,3 / 8,5** | **223** |
 
-Totale **~163 GPU-ora attese, tetto 214,5** (1.716 ore locali); C1 da sola **~61 attese, tetto 79,5** (636 ore locali). Voce della
+Totale **~164,5 GPU-ora attese, tetto 216,5** (1.732 ore locali), nel budget firmato di 220; C1 da sola **~61 attese, tetto 79,5** (636 ore
+locali). Valutazioni aggiornate il 16/10 con le misure di `w1_selezione_v1` (al 30M; 100M e 300M stimati). Voce della
 finestra 1: il budget della finestra 1 non e' ancora fissato, quindi serve una decisione di Simone sul budget prima di C1 (non il residuo
 infrastruttura). Basi delle stime di valutazione: estrazione P1 al 30M 13:42 per 61 soggetti, sonde P1 22 min a 8 core
 (`docs/step1_downstream_ab.md`); qui 48 soggetti e 4 fold.
@@ -152,3 +153,17 @@ tetto ~51 core-ora.**
 (nessun hook attivo, HEAD su main, nessun ref o checkout `w1sel`); `deploy/w1sel-20261016` -> 7cf4f08; checkout 60688786 COMPLETED 0:0
 (12 s, «checkout di campagna pronto»). Catena sottomessa una volta: guardie 60688822 (T) e 60688823 (B) senza afterok (training finiti
 secondo sacct), estrazioni 60688824 (T) e 60688827 (B) su `boost_qos_dbg`, sonde 60688826 e 60688829, selezione 60688830.
+
+**Esito (16/10/2026): SUPERATO** (`results/infra/w1sel_20261016.json`, rapporti in `results/infra/w1sel_1610/`). Codice `7cf4f08`.
+1. Guardie 60688822/60688823: `ok`, SHA attesi, senza afterok.
+2. Estrazioni 60688824 (17:51) e 60688827 (16:34), entro i 30 minuti: soli soggetti di pretraining (32/8/8), SHA del checkpoint uguale a
+   quello della guardia, 768 colonne; memoria ~10 GB.
+3. Sonde 60688826 (1 h 44) e 60688829 (1 h 51), entro le 3 ore: S = 15,08 ± 0,53% (T) e 15,13 ± 0,54% (B); DB2 ~15%, DB3 ~2,3% (49
+   classi, caso 2%), DB6 ~35% (7 classi); 4 fold, ogni soggetto predetto una volta fuori fold.
+4. Selezione 60688830: `{"collaudo": {"admissible": []}}`, entrambi inammissibili per il pannello fisso assente (atteso: `w1cat` non
+   l'aveva acceso); confronto accoppiato descrittivo calcolato (B - T = +0,05 punti, errore standard 0,10: parita'), quindi l'accoppiamento
+   delle finestre fra checkpoint regge sui dati veri.
+5. Seconda chiamata della catena: 7 nodi gia' sottomessi, nessuna sottomissione; checkout in sola lettura senza file nuovi.
+**Misure per C1:** estrazione al 30M ~17 min (stimavo 12), sonda ~1,8 h a 8 core (stimavo 1,2); le sonde girano UNA alla volta, perche'
+sulla seriale c'e' un limite di core per utente (`QOSMaxCpuPerUserLimit`): con 3 run, ~5,5 h di sonde in fila dopo il training.
+**Consuntivo: 0,57 GPU-ora** (due estrazioni da 1 GPU) sul budget infrastruttura, ora 9,83 usate su 25 (residuo 15,17); ~29 core-ora CPU.
