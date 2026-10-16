@@ -1828,6 +1828,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   accoppiato calcolato (parita'); nessun doppione alla seconda chiamata. Consuntivo 0,57 GPU-ora (infrastruttura 9,83/25), ~29 core-ora.
 - Stime delle valutazioni di C1 aggiornate in `scripts/calibration_plan.py` (estrazione 0,3 h al 30M, sonda 1,8 h).
 
+### 2026-10-16 | Claude | Via di Simone a C1 | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Preflight in sola lettura pulito; deploy `deploy/w1cal-20261016`,
+  checkout, piani allo SHA vero, 3 training (preventivo ~61 / 79,5 GPU-ora), poi la catena di valutazione dopo i training. ID dei job a seguire.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

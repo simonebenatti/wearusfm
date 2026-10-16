@@ -3472,3 +3472,10 @@ sonde (1 h 44 e 1 h 51) e selezione COMPLETED 0:0; solo soggetti di pretraining;
 come atteso; confronto accoppiato calcolato sui dati veri; nessun doppione rieseguendo. Job 60688786-60688830. **Consuntivo 0,57 GPU-ora**
 sul budget «preparazione dell'infrastruttura»: 9,83 usate su 25, residuo 15,17. Stime delle valutazioni di C1 aggiornate (estrazione 0,3 h,
 sonda 1,8 h a 8 core; sonde in fila per il limite di core per utente). `results/infra/w1sel_20261016.json`.
+
+**Calibrazione C1 AUTORIZZATA (Simone, 16/10/2026).** Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Verificato
+prima del lancio: protocollo e regole firmati (A4, parita', stop di C3), review del `critico` su calibrazione, bracci e manifest derivati
+(APPROVATO), collaudo `w1_selezione_v1` superato, budget firmati. Codice `72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec` (deploy
+`deploy/w1cal-20261016`, checkout `wearusfm_campaigns/w1cal-20261016`). 3 run da 24.523 passi (LR 1e-4, 3e-4, 1e-3, seme 0, 30M, un nodo
+4 GPU, QoS normal, un job da 6 h 30 ciascuno), poi la catena di valutazione con le sonde sulla CPU seriale. **Preventivo C1: ~61 GPU-ora
+attese, tetto 79,5 (636 ore locali)**, sul budget della calibrazione (220, finora 0 usate): dopo il tetto ne restano almeno 140,5.
