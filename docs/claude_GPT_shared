@@ -1864,6 +1864,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   500 loss totale 2,10 / 1,83 / 1,75 per LR 1e-4 / 3e-4 / 1e-3 (diagnostica, non selezione). Fine prevista ~19:15-19:45.
 - Un solo picco di attesa sui dati (0,94 s al passo 752 del run 1e-3): isolato, da tenere d'occhio.
 
+### 2026-10-16 | Claude | Critica di pianificatore e valutazione P1/P2 dei bracci (punto 5): DA RIVEDERE | Base: 5c3ec80
+
+- Simone: «fai una critica a quello fatto finora su punto 5, in particolare pianificatore e valutazione P1/P2». Rapporto completo:
+  `docs/reviews/punto5_pianificatore_p1p2_critica_20261016.md`. Revisione da una sessione diversa da quella che ha scritto il codice.
+- Cosa c'e': bracci JEPA-only/ancore-only (buoni, `critico` e GPT), sonde P1/P2, `evaluation_chain.py`, `compare_reports`,
+  `combine_seeds`. Mancano pianificatore dei bracci, piano P1/P2 e confronto con la regola firmata (punto 4 dell'implementazione).
+- Test: `test_objective_arms`, `test_evaluation_chain`, `test_p1_cross_subject`, `test_probe_p2`, `test_harness_probe`, `test_wsd_chain`,
+  `test_step2_closed_reports`: **118 PASS**. Nessun file di codice modificato. Simone: «passa tutto a fork 2»: rilievi inviati alla
+  sessione «Agents (fork 2)», che porta avanti il punto 5.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2784,3 +2794,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   fila dopo i training. Alternative: sonde su un nodo GPU (~1,8 GPU-ora per checkpoint, in parallelo) oppure accettare l'attesa.
 - Le sonde della P1 danno ConvergenceWarning di lbfgs (max_iter 3000): succede anche nelle sonde ufficiali; non cambia la procedura, da
   tenere presente nella lettura delle S basse (DB3 ~2,3%, vicino al caso).
+
+### 2026-10-16 | Claude | Punto 5: tre problemi da chiudere prima del lancio dei bracci
+
+- **Regola di lettura** (bloccante): il protocollo dice «come la soglia dei confronti 2A/2C», ma il 2C chiedeva anche limite inferiore > 0
+  e segno concorde nei due teacher; la regola firmata chiede solo +1 punto sulla media dei semi. Serve una decisione nuova prima dei
+  risultati (delta accoppiato per seme con `compare_reports`, IC > 0, segno concorde).
+- **Test ufficiale che sceglie il default** (bloccante, decide Simone): «altrimenti A resta il default» fa scegliere sui soggetti di test
+  di P1/P2; proposta: scegliere con S (validation interna) e usare P1/P2 come conferma, oppure dichiarare il limite prima dei risultati.
+- **Launcher P1/P2** (bloccante): `probe_p1*.sbatch`, `probe_p2*.sbatch` fanno `cd "$WORK/wearusfm"` senza `CODE_DIR` ne' verifica dello
+  SHA (regola dei checkout di campagna): da adattare nel piano P1/P2.
+- Minori: costo «~1,5 GPU-ora per checkpoint, come 2C» vale solo con sonde su CPU (2C: ~3,3 per checkpoint con sonde su GPU; sulla seriale
+  le sonde vanno in fila, voce precedente); manca il test dello stesso stato iniziale fra bracci a pari seme; keep da ricalibrare e C2 non
+  partita.
