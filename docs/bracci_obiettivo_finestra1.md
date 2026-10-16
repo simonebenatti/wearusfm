@@ -1,6 +1,6 @@
 # Finestra 1: protocollo dei bracci dell'obiettivo (punto 5) — BOZZA da firmare
 
-**Stato: bozza di Claude del 16/10/2026, da firmare da Simone prima del lancio; verifica di GPT dopo, non bloccante.** Simone ha scelto
+**Stato: FIRMATO da Simone il 16/10/2026** («firmo i bracci come proposti»): i cinque punti di «Da firmare» con le proposte di questo documento e i tre punti di protocollo del `critico` in coda, come riportati in `docs/decisioni.md`. Verifica di GPT dopo, non bloccante. Simone ha scelto
 «Protocollo dei bracci (punto 5)» mentre gira il collaudo `w1_selezione_v1`. Dal 16/10 protocolli, bracci, loss e harness sono di Claude
 (CLAUDE.md, «Ruoli dal 16/10/2026»). Fonti: accordo del 15/10 (`docs/accordo_operativo_finestra1_20261015.md`, «Obiettivo» e prompt GPT
 punti 3-4), bozza della lista dei job di GPT del 12/10 (`docs/finestra1_job_plan.md` nel worktree di GPT, non committata), v10 §10,
@@ -114,3 +114,16 @@ memoria, e col percorso del contratto a `--accum-steps 3`. Rilievi:
    - (b) in ancore-only il rapporto di collasso da query misura un decoder allenato dalle ancore, non dai latenti del teacher: va scritto
      se l'allarme firmato a 0,05 vale anche li';
    - (c) i bracci usano il LR calibrato su A: un «non batte A» o un «eguaglia A» si legge «al LR di A».
+
+## Firma (16/10/2026)
+
+Simone: «firmo i bracci come proposti». Firmati, nella forma proposta in chat lo stesso giorno:
+1. Bracci: A, JEPA-only (peso delle ancore 0), ancore-only (solo le ancore attuali, non il braccio v10 dei target espliciti), keep come
+   confronto separato.
+2. 30M, D = 4 epoche, 2 semi (0, 1); LR di 30M da C1-C2: se C2 conferma due LR, quello con S migliore al seme 1, a parita' il piu' basso.
+3. Lettura: un braccio batte A se migliora P1 **e** P2 di almeno +1 punto con la media dei due semi (errore standard combinato).
+4. Keep: opzione 1 (A' con la testa a peso 0 e B a 0,05, 2 semi); la calibrazione della keep si ricalcola sul corpus intero prima del lancio.
+5. Via all'implementazione del pianificatore dei bracci e del piano di valutazione P1/P2 (lavoro locale).
+6. (critico a) Un braccio fermato dall'allarme di collasso si registra come «collassato» e conta come «non batte A».
+7. (critico b) L'allarme di collasso firmato (0,05, decisione 16) vale per tutti i bracci, ancore-only compreso, senza eccezioni.
+8. (critico c) «Non batte A» o «eguaglia A» si legge «al LR di A»: nessuna calibrazione del LR per braccio in questa finestra.

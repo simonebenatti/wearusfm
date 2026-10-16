@@ -3479,3 +3479,10 @@ prima del lancio: protocollo e regole firmati (A4, parita', stop di C3), review 
 `deploy/w1cal-20261016`, checkout `wearusfm_campaigns/w1cal-20261016`). 3 run da 24.523 passi (LR 1e-4, 3e-4, 1e-3, seme 0, 30M, un nodo
 4 GPU, QoS normal, un job da 6 h 30 ciascuno), poi la catena di valutazione con le sonde sulla CPU seriale. **Preventivo C1: ~61 GPU-ora
 attese, tetto 79,5 (636 ore locali)**, sul budget della calibrazione (220, finora 0 usate): dopo il tetto ne restano almeno 140,5.
+
+**Bracci dell'obiettivo (punto 5) FIRMATI (Simone, 16/10/2026).** Simone: «firmo i bracci come proposti». Nella forma proposta in chat
+lo stesso giorno (dettaglio in `docs/bracci_obiettivo_finestra1.md`, «Firma»): bracci A, JEPA-only, ancore-only (ancore attuali), keep
+separata (opzione 1, A' a peso 0 e B a 0,05, calibrazione della keep ricalcolata sul corpus intero); 30M, 4 epoche, 2 semi, LR di 30M da
+C1-C2 (con due confermati: S migliore al seme 1, parita' al piu' basso); un braccio batte A con almeno +1 punto su P1 e P2 in media sui due
+semi; braccio fermato dall'allarme = «collassato», non batte A; allarme di collasso (0,05) valido in tutti i bracci; letture «al LR di A».
+Via al pianificatore dei bracci e al piano di valutazione (lavoro locale). Nessun lancio dei bracci autorizzato da questa firma.
