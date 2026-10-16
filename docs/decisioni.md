@@ -3487,3 +3487,9 @@ finalizzazione di candidati falliti prima della sonda e verifica della configura
 `docs/reviews/c1c4_review_20261016.md`. Patch nel branch GPT, non ancora su main o nei checkout di campagna; lettura di Claude prima
 del deploy. Le cache di calibrazione senza i nuovi metadati non si attestano retroattivamente. Non revoca il via a C1 e non cambia
 i ruoli del 16/10; nessun lancio o costo in questa review.
+
+**Punto 3: integrazione della consegna corrente su main CONCLUSA (Simone, 16/10/2026).** Richiesta: «fai il merge tu sul main del
+punto 3 ? cosi lo chiudiamo». Main canonico pulito aggiornato in fast-forward da 06b0d34 a 1aa33c9, con Claude fino ad a7edd55 e
+correzioni GPT 41ce569, conservando tutti gli SHA. Codice gia' verificato dai 158 test mirati della review. I due raccordi residui
+della selezione restano aperti nel punto 6; nessuna soglia o budget cambiato. Registro aggiornato in entrambe le sezioni. Nessun push,
+deploy o lancio in questa attivita'; le campagne congelate mantengono il proprio codice.
