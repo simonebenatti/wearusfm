@@ -1856,6 +1856,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Test: selezione 28, pianificatore e catena 55. La valutazione di C1 partira' da un checkout nuovo con queste correzioni (i training girano
   da 72cf24a, codice del training invariato), dopo la review del `critico`.
 
+### 2026-10-16 | Claude | C1: avvio dei tre training regolare | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 60715596 / 60715602 / 60715603 RUNNING dalle 14:33 (nodi lrdn3396, lrdn0811, lrdn0843). Controlli d'identita' di manifest (6d6d8167...) e
+  durate superati all'avvio; nessun errore nei log. Passo 750 dopo ~11 min: 0,63-0,74 s/passo (piano 0,70), attesa sui dati ~0, memoria
+  9,6 GiB per GPU. Pannello fisso al passo 0 identico nei tre run (stessa inizializzazione e stessi dati: accoppiamento confermato); al passo
+  500 loss totale 2,10 / 1,83 / 1,75 per LR 1e-4 / 3e-4 / 1e-3 (diagnostica, non selezione). Fine prevista ~19:15-19:45.
+- Un solo picco di attesa sui dati (0,94 s al passo 752 del run 1e-3): isolato, da tenere d'occhio.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
