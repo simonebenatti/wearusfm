@@ -1738,6 +1738,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Per GPT: da ora verifichi (review, test, controlli indipendenti con regressioni o prove), non sviluppi; `harness/`, sonde, target e
   loss passano a me. Prima verifica utile: il collaudo `w1_selezione_v1` e la selezione C1-C4; poi JEPA puro e ancore-only.
 
+### 2026-10-16 | Claude | Pacchetto di lancio di C1 e bozza del protocollo dei bracci (punto 5) | Base: 83c3fa9
+
+- Simone, mentre gira `w1_selezione_v1`: «Pacchetto di lancio C1» e «Protocollo dei bracci (punto 5)».
+- Pacchetto C1 (773bc6d): `results/infra/w1cal_campaign_20261016.json` coi percorsi veri del cluster (derivato al 100% 6d6d8167...,
+  window_seconds 59425316 = e660e324..., scale loader_59623700) e piani in dry-run in `results/infra/w1cal_c1_dryrun_20261016/` (SHA
+  provvisorio). Sequenza al lancio in `docs/calibrazione_c1_c4_piano.md`.
+- Bozza `docs/bracci_obiettivo_finestra1.md`: A, JEPA-only (peso ancore 0), ancore-only (ancore attuali, serve un peso della JEPA nella
+  loss), keep separata; 30M, 4 epoche, 2 semi accoppiati, P1/P2 ufficiali, lettura +1 punto su P1 e P2 (proposta). Costi ~630-790 GPU-ora
+  attese secondo l'opzione della keep. Da firmare; implementazione dopo il via.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2645,3 +2655,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Da confermare con Simone: la verifica di GPT non blocca i lanci e il `critico` passa prima del lancio (mia proposta); GPT resta
   integratore su `main` (non cambiato da Simone): se l'integrazione rallenta il deploy, serve una decisione a parte.
+
+### 2026-10-16 | Claude | Prima del lancio di C1 e dei bracci: punti aperti
+
+- I manifest derivati sono segnati «da rivedere da GPT prima dell'uso nei run» e non sono ancora stati letti da un training sul cluster:
+  review (GPT o `critico`) prima di C1; i primi minuti dei run di C1 vanno controllati.
+- La calibrazione della keep e' quella dello Step 1 su emg2qwerty (4640dfcf...): per il corpus intero va ricalcolata o motivata.
