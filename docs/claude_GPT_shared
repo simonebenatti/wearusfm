@@ -1882,6 +1882,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   nel protocollo dei bracci prima di qualunque risultato. Prossimo: S della P2, confronto dei bracci con le due regole, pianificatore,
   launcher P1/P2 con CODE_DIR.
 
+### 2026-10-16 | Claude | Validation interna della P2 (S della P2) | Base: 94e972a
+
+- Simone: «per p2 bene òa proposta tua». `scripts/calibration_probe.py --task p2`: EPN-612 e UCI-EMG coi soli soggetti fuori dai test dei
+  tre split 7:1:2 della P2 (semi 0, 1, 2; le finestre degli altri si scartano prima dell'estrazione e la sonda ricontrolla l'esclusione),
+  stessa estrazione e sonda di `probe_p2.py`, 4 fold di soggetti, S = media dei due dataset. Test: 3 nuovi (esclusione, estrazione che non
+  vede i soggetti di test, pesi uguali e rifiuto di feature con un soggetto di test o di un altro compito).
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

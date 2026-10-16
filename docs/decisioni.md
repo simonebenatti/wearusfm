@@ -3495,3 +3495,5 @@ apporvo le soluzioni proposte, se riesci firmo e implementa eventuali corrzioni 
 soggetti di test: si sceglie con la validation interna S (P1: `calibration_probe.py`; P2: analoga sui soggetti fuori dai test dei tre
 split), con la stessa regola applicata a S; P1/P2 ufficiali sono conferma e risultato; in disaccordo il default segue S e si registra.
 *Interpretazione:* costruire anche la S della P2 (dettaglio in `docs/bracci_obiettivo_finestra1.md`). Nessun risultato dei bracci esiste.
+Confermata la S della P2 (Simone: «per p2 bene òa proposta tua»): validation interna su EPN-612 e UCI-EMG coi soggetti fuori dai test dei
+tre split ufficiali, in `scripts/calibration_probe.py --task p2`.

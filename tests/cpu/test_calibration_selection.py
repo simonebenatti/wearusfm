@@ -129,6 +129,86 @@ def test_extract_reads_only_pretraining_subjects(tmp_path, monkeypatch):
         assert int(z["model_dim"]) == 4 and str(z["feature_set"]) == "model"  # identita' della cache, come la P1
 
 
+# ---- validation interna della P2 (bracci dell'obiettivo, decisione del 16/10: il default si sceglie su S) ----
+
+def test_p2_internal_subjects_exclude_the_test_of_all_three_official_splits():
+    from wearusfm.harness.splits import split_subjects
+
+    ids = [f"u{i:03d}" for i in range(40)]
+    internal = CP.p2_internal_subjects(ids + ids)  # finestre ripetute: conta il soggetto
+    test = set().union(*(split_subjects(ids, (0.7, 0.1, 0.2), seed=s).test for s in (0, 1, 2)))
+    assert internal == sorted(set(ids) - test) and not set(internal) & test and len(internal) >= CP.K_FOLDS
+    assert internal == CP.p2_internal_subjects(list(reversed(ids)))
+
+
+def test_p2_extraction_never_processes_test_subjects(tmp_path, monkeypatch):
+    from wearusfm.harness import benchmarks as B
+    from wearusfm.harness import fm_features as FF
+
+    ids = [f"u{i:03d}" for i in range(30)]
+    seen = []
+
+    def fake_load(*a, **k):
+        s = np.repeat(ids, 3)
+        return np.zeros((len(s), 10, 8), np.float32), np.tile([1, 2, 3], len(ids)), s, 200.0
+
+    class Model:
+        class cfg:
+            dim = 384
+
+    def fake_extract(model, w, fs, montage, subjects, **k):
+        seen.append(sorted(set(subjects.tolist())))
+        return np.zeros((len(w), 4), np.float32)
+
+    monkeypatch.setattr(B, "load_epn612", fake_load)
+    monkeypatch.setattr(B, "load_uci_emg", fake_load)
+    monkeypatch.setattr(FF, "load_model", lambda *a, **k: Model())
+    monkeypatch.setattr(FF, "extract_features", fake_extract)
+    monkeypatch.setattr(FF, "feature_width", lambda m, fs: 4)
+    ckpt = tmp_path / "checkpoint_postdecay.pt"
+    ckpt.write_bytes(b"pesi")
+    assert CP.main(["--task", "p2", "--stage", "extract", "--checkpoint", str(ckpt), "--epn-root", str(tmp_path), "--uci-root", str(tmp_path),
+                    "--features", str(tmp_path / "f"), "--device", "cpu"]) == 0
+    internal = CP.p2_internal_subjects(ids)
+    assert seen == [internal, internal]  # le finestre dei soggetti di test non arrivano mai all'estrazione
+    with np.load(tmp_path / "f" / "epn612.npz") as z:
+        assert str(z["task"]) == "p2" and z["subjects"].tolist() == internal and z["all_subjects"].tolist() == ids
+
+
+def test_p2_probe_scores_internal_subjects_with_equal_dataset_weights(tmp_path):
+    ids = [f"u{i:03d}" for i in range(40)]
+    internal = CP.p2_internal_subjects(ids)
+    rng = np.random.default_rng(0)
+    feat = tmp_path / "f2"
+    feat.mkdir()
+    for ds in CP.P2_DATASETS:
+        y = np.tile(np.arange(1, 4), 10 * len(internal))
+        s = np.repeat(internal, 30)
+        x = (2.0 * rng.normal(size=(4, 8))[y] + rng.normal(size=(len(y), 8))).astype(np.float32)
+        np.savez(feat / f"{ds}.npz", x=x, y=y, s=s, subjects=np.asarray(internal), all_subjects=np.asarray(ids),
+                 input_sha256=np.asarray("i" * 64), checkpoint=np.asarray("/R/c.pt"), checkpoint_sha256=np.asarray("c" * 64),
+                 encoder_dim=np.asarray(384), protocol=np.asarray(CP.PROTOCOL), task=np.asarray("p2"), **_cache(8))
+    out = tmp_path / "s_p2.json"
+    assert CP.main(["--task", "p2", "--stage", "probe", "--features", str(feat), "--out", str(out)]) == 0
+    rep = json.loads(out.read_text())
+    assert rep["task"] == "p2" and rep["weights"] == {"epn612": 0.5, "uci_emg": 0.5} and 0.5 < rep["S"] <= 1
+    with np.load(rep["oof"]) as z:
+        assert sorted(set(z["epn612_s"].tolist())) == internal
+    with pytest.raises(ValueError, match="altri soggetti"):  # un soggetto di test dei tre split dentro le feature: rifiutato
+        test_subject = sorted(set(ids) - set(internal))[0]
+        with np.load(feat / "uci_emg.npz") as z:
+            d = {k: z[k] for k in z.files}
+        d["subjects"] = np.asarray(sorted(internal + [test_subject]))
+        np.savez(feat / "uci_emg.npz", **d)
+        CP.main(["--task", "p2", "--stage", "probe", "--features", str(feat), "--out", str(tmp_path / "x.json")])
+    with pytest.raises(ValueError, match="altro compito"):  # feature della P1 date alla P2
+        sp, splits = _splits(tmp_path)
+        p1 = _features(tmp_path, splits, name="f1")
+        for ds in CP.P2_DATASETS:
+            (p1 / "ninapro_db2.npz").rename(p1 / f"{ds}.npz") if ds == "epn612" else (p1 / "ninapro_db3.npz").rename(p1 / f"{ds}.npz")
+        CP.main(["--task", "p2", "--stage", "probe", "--features", str(p1), "--out", str(tmp_path / "y.json")])
+
+
 # ---- ammissibilita' e selezione ----
 
 STEPS = 2000

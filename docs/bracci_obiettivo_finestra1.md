@@ -139,6 +139,7 @@ Sostituiscono il punto 3 della firma («+1 punto sulla media dei due semi») e l
    `scripts/calibration_probe.py` per la P1; l'analoga per la P2 sui soggetti fuori dai test dei tre split 7:1:2), con la stessa regola del
    punto 1 applicata a S (delta accoppiato sui soggetti, per seme): un braccio sostituisce A come default solo se batte A su S della P1 **e**
    su S della P2. P1/P2 ufficiali sono la conferma e il risultato scientifico; se S e test ufficiali non concordano, il default segue S e il
-   disaccordo si registra. *Interpretazione di Claude:* «implementa eventuali correzioni» = costruire anche la validation interna della P2
-   (la proposta lasciava la scelta fra P2 interna e sola S della P1); se Simone preferisce la sola S della P1, si toglie la P2 dalla regola.
+   disaccordo si registra. La S della P2 la conferma Simone: «per p2 bene òa proposta tua» (16/10). Implementata in `scripts/calibration_probe.py
+   --task p2`: soggetti fuori dai test dei tre split 7:1:2 (semi 0, 1, 2), finestre degli altri scartate prima dell'estrazione,
+   stessa estrazione e sonda della P2, 4 fold di soggetti, media dei due dataset a pesi uguali.
 Non cambiano: bracci, disegno (30M, 4 epoche, 2 semi), keep separata, allarme di collasso, letture «al LR di A».
