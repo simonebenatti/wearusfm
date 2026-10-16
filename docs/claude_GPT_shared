@@ -8,31 +8,31 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
 facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
-integratore su `main`. Le colonne «GPT» della tabella qui sotto valgono come storico: assegnazioni nuove in
+integratore su `main`. La tabella riporta lo stato corrente; assegnazioni e confini in
 [accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md), sezione del 16/10, e in CLAUDE.md.
 
 Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 16/10/2026, lette le consegne Claude fino ad a7edd55 e i nuovi ruoli in CLAUDE.md. Claude sviluppa e conduce la
+Stato aggiornato al 16/10/2026 dopo la review GPT del punto 5 (8508b7d) e la lettura dei log Claude fino a 5c3ec80. Claude sviluppa e conduce la
 parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log
 versionati, non da interrogazione live in questa review.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
-| 1 | Chiudere i confronti 2A/2C | Confronto accoppiato rami contro statistiche fisse dai report e lettura finale | Fornisce report/provenienza 2C; primario gia' concluso | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1 |
-| 2 | Baseline encoder casuale | Diagnosi del gate SHA, correzione, test, estrazioni/sonde e confronto Random-A/B | Supporto sul contesto storico e sui buffer immutabili, senza seconda catena di job | CHIUSO r3, 7 job COMPLETED0:0: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689, nessun nuovo training |
-| 3 | Review e integrazione su main | Review indipendenti e integrazione, conservando gli SHA | Corregge i rilievi sul proprio ramo; rilegge le patch GPT prima del deploy | CHIUSO per la consegna corrente: main canonico aggiornato da 06b0d34 a 1aa33c9 il 16/10, fast-forward, include Claude fino ad a7edd55 e hardening GPT 41ce569. 158 test mirati gia' passati sul codice integrato. I due rilievi residui della selezione restano nel punto 6 |
+| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
+| 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
+| 3 | Review e integrazione su main | Integrazione delle consegne verificate, conservando gli SHA | Correzioni sul proprio ramo e lettura delle patch prima del deploy | CHIUSO per la consegna integrata: main 2dc1197 include Claude fino ad a7edd55 e hardening GPT 41ce569; 158 test mirati PASS. Review punto 5 in 8508b7d, da pubblicare con questa tabella. Nuovo delta selezione 5c3ec80 da verificare al punto 6 |
 | 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 e parita' FIRMATE il 16/10. Restano lettura del pannello nei run reali e regola dei run lunghi; nessuna soglia cambiata dalla review |
 | 5 | Validare l'obiettivo scientifico | Review di codice, protocolli e risultati | Protocolli, bracci, sonde, loss e analisi | IMPLEMENTAZIONE JEPA-only/ancore-only verificata anche da GPT: nessun difetto confermato, 45 test mirati PASS. Protocollo firmato in 0d45a2f (letto sul ramo Claude). Restano planner/valutazione, collaudo GPU e risultati; keep da ricalibrare sul corpus, sonde per profondita'/fisiche da completare |
-| 6 | Chiudere la finestra 1 | Verifiche indipendenti, senza duplicare lanci | Calibrazione e campagna; unico submitter | Infra e collaudo reale w1_selezione_v1 superati nei log; manifest rivisti dal critico. Budget firmati: W1 6.000 GPUh incluse 220 per C1-C4. C1 autorizzata e piani a7edd55 pronti; nessun ID dei 3 training verificato qui. Restano esiti C1-C4, raccordi della selezione e lista finale job. SCRATCH prossimo 12/11 |
+| 6 | Chiudere la finestra 1 | Review delle nuove correzioni selezione, poi integrazione | Segue C1 e valutazione; prepara C2-C4 e lista finale dei job | IN CORSO: C1 sottomessa da Simone nei log e79a536, job 60715596/60715602/60715603. Correzioni dei due rilievi consegnate in 5c3ec80, ancora da verificare da GPT e integrare. Restano esiti e sonde C1, C2-C4, scelta LR e piano definitivo. Budget firmati W1 6.000 GPUh, calibrazione 220; SCRATCH prossimo 12/11 |
 
 ### Prossimo lavoro in parallelo (16/10)
 
-- **Claude:** finalizzazione esplicita dei candidati falliti senza report di sonda; vincolo della selezione al piano/config del run;
-  review delle patch GPT prima del deploy della valutazione. Gestisce C1 gia' autorizzata, senza cambiare il checkout congelato in corsa.
-- **GPT:** integrazione della consegna corrente chiusa; verifica delle prossime correzioni di Claude per tranche.
+- **Claude:** segue i tre training C1 gia' sottomessi, prepara la valutazione dal nuovo checkout e il planner dei bracci con piano P1/P2;
+  keep separata da ricalibrare sul corpus. Correzioni della selezione gia' consegnate in 5c3ec80, non ancora certificate da GPT.
+- **GPT:** review delle correzioni 5c3ec80 e integrazione della prossima tranche. Review dei due bracci gia' conclusa in 8508b7d (45 PASS).
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
 - **Costi nei log aggiornati:** C1 ~61 GPUh attese / 79,5 tetto; C1-C4 ~164,5 / 216,5 entro il budget 220; infrastruttura 15,17/25
@@ -1861,7 +1861,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Aggiornato il punto 5: implementazione verificata, validazione scientifica ancora aperta. Nessuna modifica a codice di produzione,
   soglie o protocollo; nessun job, push o intervento sul worktree Claude.
 
+### 2026-10-16 | GPT | Tabella dei sei punti aggiornata dopo review del punto 5 | Riferimenti: 8508b7d, log Claude 5c3ec80
+
+- Richiesta di Simone: «bene aggiorna la tabella nei 6 punti». Aggiornati stato e prossimi incarichi senza cambiare la numerazione.
+  Punti 1/2 chiusi; 3 chiuso per la consegna integrata; 4 firmato per la calibrazione, da leggere sui run; 5 codice dei due bracci
+  verificato ma validazione scientifica aperta; 6 C1 sottomessa e nuove correzioni della selezione consegnate, da verificare.
+- Letti e79a536 (tre ID C1 sottomessi da Simone) e 5c3ec80 (correzioni dei due rilievi): aggiornamento dai log, nessuna interrogazione
+  live del cluster. Pubblicazione locale della tabella e della review 8508b7d su main in fast-forward; nessun nuovo codice Claude integrato
+  con questo aggiornamento e nessuna nuova scelta scientifica. decisioni.md gia' aggiornato dalla review, nessuna nuova decisione qui.
+
 ## 2) Problemi trovati
+
+### 2026-10-16 | GPT | Limiti dello stato nella tabella aggiornata | Log Claude 5c3ec80
+
+- La consegna delle correzioni non equivale alla loro verifica indipendente: 5c3ec80 resta al punto 6, fuori dal main di questa tranche.
+  Le tre sottomissioni C1 sono documentate; stato corrente e completamento non verificati in questo aggiornamento. Nessun lancio duplicato.
 
 ### 2026-10-16 | GPT | Limiti e residui della review del punto 5 | Codice b1238a1 + fe67339
 
