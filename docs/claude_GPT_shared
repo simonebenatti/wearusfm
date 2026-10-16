@@ -1897,6 +1897,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   piu' vincitori su S = scelta di Simone; disaccordi S/ufficiali registrati. Test `test_arms_compare.py` (6).
 - Restano: launcher P1/P2 con CODE_DIR, pianificatore dei bracci e piano di valutazione, test dello stato iniziale fra bracci.
 
+### 2026-10-16 | Claude | Launcher P1/P2 con la regola dei checkout di campagna | Base: 1bb8e7d
+
+- Rilievo 3 della critica del punto 5: `probe_p1.sbatch`, `probe_p1_probe.sbatch`, `probe_p2.sbatch`, `probe_p2_probe.sbatch` non fanno piu'
+  `cd "$WORK/wearusfm"`: codice da CODE_DIR con SHA e pulizia verificati (`lib_code_dir.sh`), uscite assolute e fuori dal codice; la P2 legge
+  i grezzi da `RAW_ROOT` (default `$WORK/data/raw`, che la pulizia non tocca). Comportamento invariato sul canonico. Test
+  `test_probe_launchers.py` (5). Le campagne gia' concluse girano dai loro checkout congelati: non sono toccate.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
