@@ -6,6 +6,11 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
 
+**Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
+facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
+integratore su `main`. Le colonne «GPT» della tabella qui sotto valgono come storico: assegnazioni nuove in
+[accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md), sezione del 16/10, e in CLAUDE.md.
+
 Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
@@ -1725,6 +1730,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   training finiti), estrazioni 60688824/60688827 (dbg), sonde 60688826/60688829, selezione 60688830. Criteri in
   `docs/calibrazione_c1_c4_selezione.md`; tetto 1,0 GPU-ora. Esito e consuntivo a seguire.
 
+### 2026-10-16 | Claude | Nuovi ruoli: parte scientifica a Claude, verifiche a GPT | Base: b671901
+
+- Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli facciamo fare le verifiche, modifica i
+  documenti necessari per questa procedura». Aggiornati CLAUDE.md (ruoli e proprietari dei file), l'accordo del 15/10 (sezione del 16/10
+  con tabella delle riassegnazioni e prompt per GPT), `docs/decisioni.md` e la nota in testa al blocco di coordinamento.
+- Per GPT: da ora verifichi (review, test, controlli indipendenti con regressioni o prove), non sviluppi; `harness/`, sonde, target e
+  loss passano a me. Prima verifica utile: il collaudo `w1_selezione_v1` e la selezione C1-C4; poi JEPA puro e ancore-only.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2627,3 +2640,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - A4: la bozza del 14/10 dice che δ e k sono «scelti a priori, non calibrati»; nel repo non trovo un `fixed_eval.jsonl` di un run reale
   (cluster non controllato). Non sappiamo quindi come si comporta la soglia sulla loss totale con la parte JEPA a target mobili; la bozza
   stessa indica la via pulita, un collaudo di calibrazione dichiarato come tale prima di congelare.
+
+### 2026-10-16 | Claude | Nuovi ruoli: punti da confermare
+
+- Da confermare con Simone: la verifica di GPT non blocca i lanci e il `critico` passa prima del lancio (mia proposta); GPT resta
+  integratore su `main` (non cambiato da Simone): se l'integrazione rallenta il deploy, serve una decisione a parte.

@@ -3420,3 +3420,11 @@ dopo il tetto almeno 14,74); CPU attese ~20 core-ora, tetto ~51. Nessun job lanc
 **Collaudo `w1_selezione_v1` autorizzato e lanciato (16/10/2026).** Simone: «procedi con tutti e 3 i punti e vai, lancia il collaudo su
 w1cat». Deploy `deploy/w1sel-20261016` (7cf4f08), checkout 60688786 (CPU, 12 s), catena 60688822-60688830 (7 job; tetto 1,0 GPU-ora sul
 budget infrastruttura, residuo prima del collaudo 15,74 su 25). Consuntivo all'esito.
+
+**Ruoli dal 16/10/2026: la parte scientifica passa a Claude, GPT fa le verifiche (Simone).** Simone: «sì a questo punto esautoriamo gpt
+dalla parte scientifica perché è troppo lento e gli facciamo fare le verifiche, modifica i documenti necessari per questa procedura».
+Claude prende protocolli e bracci delle ablation, sonde, harness, target e loss (`training/jepa.py`, `model/anchor_targets.py`,
+`model/spectral_targets.py`), regola di stabilita', contratto di valutazione e lista dei job della finestra 1; GPT fa review,
+riesecuzione dei test e controlli indipendenti, senza modificare i file di Claude. Invariati: GPT integratore su `main`, firme e lanci di
+Simone. *Proposta di Claude, da confermare:* la verifica di GPT non blocca i lanci; prima del lancio passa il subagent `critico`.
+Aggiornati CLAUDE.md, l'accordo del 15/10 (sezione del 16/10, con il prompt per GPT) e il registro.
