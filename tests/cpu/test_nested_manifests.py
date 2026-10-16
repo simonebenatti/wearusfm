@@ -463,14 +463,22 @@ def test_report_flags_each_nesting_and_identity_problem(tmp_path, fraction, tamp
     assert any(message in x for x in probs), probs
 
 
-def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch, capsys):
-    """Il controllo `nested_subjects_and_sessions` del costruttore, da solo: il 25% riceve a peso 0 una sessione di un soggetto fuori dal
-    50% (pesi, quote e tetto restano giusti, quindi `derived_checks` passa) e nessun file viene scritto (seconda review del critico)."""
+@pytest.mark.parametrize("subject,session", [
+    ("a1s7", None),  # un soggetto fuori dal 50%: fallisce l'annidamento dei soggetti (e delle sessioni)
+    ("a1s0", "extra"),  # una sessione nuova di un soggetto gia' nel 50%: i soggetti restano annidati, fallisce solo quello delle sessioni
+])
+def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch, capsys, subject, session):
+    """Il controllo `nested_subjects_and_sessions` del costruttore, da solo e nelle sue due meta': il 25% riceve a peso 0 una sessione senza
+    finestre (pesi, quote e tetto restano giusti, quindi `derived_checks` passa) e nessun file viene scritto (seconda e terza review del
+    critico)."""
     corpus = _corpus()
     doc = _doc(corpus)
     src = _write(tmp_path / "full.json.gz", doc)
-    outsider = next(r for r in doc["rows"] if dict(zip(doc["columns"], r))["subject"] == "a1s7")  # nessun sottoinsieme
-    o = dict(zip(doc["columns"], outsider))
+    base = next(r for r in doc["rows"] if dict(zip(doc["columns"], r))["subject"] == subject)
+    extra = list(base)
+    if session is not None:
+        extra[doc["columns"].index("session")] = session
+    o = dict(zip(doc["columns"], extra))
     # senza finestre: a peso 0 non entra ne' nelle ore campionabili ne' nelle quote, quindi solo l'annidamento puo' accorgersene
     ws = _ws_file(tmp_path / "ws.json", corpus, **{M.session_key(o["dataset"], o["subject"], o["session"]): None})
     real = M.derived_manifest
@@ -478,7 +486,7 @@ def test_builder_refuses_to_write_when_nesting_fails(tmp_path, monkeypatch, caps
     def broken(d0, fraction, window_s, inputs, code_commit=""):
         d = real(d0, fraction, window_s, inputs, code_commit)
         if fraction == "0.25":
-            row = list(outsider)
+            row = list(extra)
             row[d["columns"].index("weight")] = 0.0
             d["rows"].append(row)
         return d

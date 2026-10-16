@@ -3459,3 +3459,10 @@ dopo il sampler complete (A, B + residuo, C - residuo, somma dei pesi, durate); 
 tempo, con durate o configurazione delle finestre diverse da quelle della costruzione, o con un file diverso da quello del piano
 (`--manifest-sha256`); test negativi; rapporto del cluster in pianificatore e documenti; identita' di un derivato documentata
 (`docs/manifest_annidati_d16.md`). Nessuna soglia ne' regola dei pesi cambiata. Suite 1166 PASS. Seconda review del `critico` a seguire.
+
+**Manifest derivati: review del `critico` CHIUSA, APPROVATO (16/10/2026).** Seconda review su cfd7d47: DA RIVEDERE (determinismo
+confermato con 14 semi e hash uguali al cluster; pesi e training non derivato invariati; comandi di C1 accettati), cinque rilievi su test e
+dettagli corretti in 8872d5c (test che isola l'annidamento, pianificatore legato al rapporto costruito sul cluster, rifiuto di un derivato
+filtrato per dataset, docstring, quattro casi negativi). Terza review su 8872d5c: **APPROVATO**, con due rilievi minori chiusi subito (test
+anche per la meta' «sessioni» dell'annidamento; questa registrazione). I file del cluster in `derived_v1_1/` restano quelli del 15/10; il
+training ne verifica identita' e durate all'avvio. Per C1 i manifest sono pronti.

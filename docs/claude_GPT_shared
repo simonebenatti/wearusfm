@@ -1815,6 +1815,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   l'annidamento); il pianificatore richiede il rapporto costruito da un launcher sul cluster (`code.source`); il training rifiuta un derivato
   filtrato per dataset; docstring del costruttore e del rapporto; quattro casi negativi del rapporto in piu'. Suite 1168 PASS.
 
+### 2026-10-16 | Claude | Manifest derivati: terza review del critico APPROVATO | Base: 8872d5c
+
+- Terza review: APPROVATO. Mutazioni in memoria: tolto o reso sempre vero ogni controllo nuovo, il suo test fallisce; piano di C1 dal
+  rapporto del cluster identico byte per byte a quello committato; suite 1168 PASS. Chiusi i due rilievi minori: test anche per la meta'
+  «sessioni» del controllo di annidamento del costruttore; esiti registrati in `docs/decisioni.md` e `docs/manifest_annidati_d16.md`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6

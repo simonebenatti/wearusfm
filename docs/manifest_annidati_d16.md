@@ -138,15 +138,20 @@ Un rilievo bloccante e cinque minori, tutti corretti nello stesso commit; 7 crit
 2. Verifiche dopo il sampler (`derived_checks`, usate da costruttore e rapporto): oltre ad A anche B = quota + residuo e C = quota - residuo,
    somma 1 dei pesi di pretraining prima della normalizzazione, peso 0 sulle righe senza finestre; la massa dopo il sampler (vera per
    costruzione) e' tolta; il rapporto controlla le durate con `samplable_seconds` (una chiave mancante e' un problema, non una rinormalizzazione).
-3. Il training lega un derivato al suo sampler e alle sue durate: rifiuta un derivato senza sampler pesato nel tempo, senza durate o con una
-   configurazione delle finestre diversa da quella della costruzione; `train_jepa.py` verifica che lo SHA del file delle durate sia quello
+3. Il training lega un derivato al suo sampler e alle sue durate: rifiuta un derivato senza sampler pesato nel tempo, senza durate, con una
+   configurazione delle finestre diversa da quella della costruzione o filtrato per dataset (con un derivato serve `--datasets all`); `train_jepa.py` verifica che lo SHA del file delle durate sia quello
    registrato nel derivato e, con `--manifest-sha256` (lo mette il pianificatore della calibrazione dal rapporto del cluster), che il file del
    manifest sia quello del piano.
 4. Test negativi per ogni controllo di annidamento e identita' del rapporto (file manomessi) e per il controllo del costruttore.
 5. Pianificatore e documenti puntano al rapporto della costruzione **sul cluster** (`derived_manifests_v1_1_build_cluster_20261015.json`):
-   quello locale ha lo SHA di un file che sul cluster non esiste; il pianificatore rifiuta un manifest che il rapporto non descrive.
+   quello locale ha lo SHA di un file che sul cluster non esiste; il pianificatore rifiuta un rapporto non costruito da un launcher sul cluster
+   (`code.source`) e un manifest che il rapporto non descrive.
 6. **Identita' di un derivato:** `params.nested` + `params.derived_inputs` (genitore, durate, configurazione delle finestre) + SHA del file.
    I campi `params.version` e `params.revision` sono ereditati dal genitore (v1 / v1.1) e non descrivono il derivato; non si rinominano ora
    perche' cambierebbero gli hash dei file gia' costruiti.
 Da controllare prima di C1 sul cluster: che i file in `derived_v1_1/` e `window_seconds_59425316.json` abbiano ancora gli SHA registrati;
 ora lo fa il job di training stesso all'avvio (punto 3), prima del primo passo.
+**Seconda review (16/10, cfd7d47): DA RIVEDERE** — determinismo confermato (14 semi), pesi e training non derivato invariati, comandi di C1
+accettati; cinque rilievi su test e dettagli, corretti in 8872d5c. **Terza review (8872d5c): APPROVATO** — ogni controllo rotto in memoria
+fa fallire il suo test; il piano di C1 dal rapporto del cluster coincide byte per byte con quello committato. I due rilievi minori della
+terza (meta' «sessioni» del controllo di annidamento del costruttore senza test; esiti non registrati) sono chiusi nel commit successivo.
