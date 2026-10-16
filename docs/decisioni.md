@@ -3486,3 +3486,12 @@ separata (opzione 1, A' a peso 0 e B a 0,05, calibrazione della keep ricalcolata
 C1-C2 (con due confermati: S migliore al seme 1, parita' al piu' basso); un braccio batte A con almeno +1 punto su P1 e P2 in media sui due
 semi; braccio fermato dall'allarme = «collassato», non batte A; allarme di collasso (0,05) valido in tutti i bracci; letture «al LR di A».
 Via al pianificatore dei bracci e al piano di valutazione (lavoro locale). Nessun lancio dei bracci autorizzato da questa firma.
+
+**Bracci dell'obiettivo: regola di lettura e scelta del default corrette (Simone, 16/10/2026).** Simone: «iniziamo a risolvere 1 e 2,
+apporvo le soluzioni proposte, se riesci firmo e implementa eventuali corrzioni dove non gi afatte». Dalla critica del punto 5 (`critico`,
+589be8c, `docs/reviews/punto5_pianificatore_p1p2_critica_20261016.md`). (1) Su P1/P2 ufficiali un braccio batte A solo con la regola del
+2A/2C: confronto accoppiato per seme (`compare_reports`), per P1 e per P2 delta medio >= +0,01, limite inferiore dell'IC al 95% > 0, delta
+> 0 in entrambi i semi; sostituisce il «+1 punto sulla media dei due semi» della firma dei bracci. (2) Il default non si sceglie sui
+soggetti di test: si sceglie con la validation interna S (P1: `calibration_probe.py`; P2: analoga sui soggetti fuori dai test dei tre
+split), con la stessa regola applicata a S; P1/P2 ufficiali sono conferma e risultato; in disaccordo il default segue S e si registra.
+*Interpretazione:* costruire anche la S della P2 (dettaglio in `docs/bracci_obiettivo_finestra1.md`). Nessun risultato dei bracci esiste.

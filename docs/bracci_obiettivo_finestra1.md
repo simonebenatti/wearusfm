@@ -127,3 +127,18 @@ Simone: «firmo i bracci come proposti». Firmati, nella forma proposta in chat 
 6. (critico a) Un braccio fermato dall'allarme di collasso si registra come «collassato» e conta come «non batte A».
 7. (critico b) L'allarme di collasso firmato (0,05, decisione 16) vale per tutti i bracci, ancore-only compreso, senza eccezioni.
 8. (critico c) «Non batte A» o «eguaglia A» si legge «al LR di A»: nessuna calibrazione del LR per braccio in questa finestra.
+
+## Decisioni del 16/10/2026 sulla critica del punto 5 (Simone: «iniziamo a risolvere 1 e 2, apporvo le soluzioni proposte, se riesci firmo e implementa eventuali corrzioni dove non gi afatte»)
+
+Sostituiscono il punto 3 della firma («+1 punto sulla media dei due semi») e la frase «altrimenti A resta il default» del Disegno.
+1. **Regola di lettura sui test ufficiali (come il 2A/2C):** un braccio «batte A» su P1/P2 se, nel confronto accoppiato per seme
+   (`harness.downstream_ab.compare_reports`: riferimento A, braccio al posto di B, semi 0 e 1), per P1 **e** per P2: delta medio >= +0,01
+   (+1 punto), limite inferiore dell'intervallo al 95% > 0, delta > 0 in tutti e due i semi. «Non dannoso» resta delta >= -0,01. E' la
+   lettura scientifica del confronto; non sceglie il default.
+2. **Il default si sceglie senza i soggetti di test:** sulla validation interna S (le sonde a fold dei soli soggetti delle partizioni train,
+   `scripts/calibration_probe.py` per la P1; l'analoga per la P2 sui soggetti fuori dai test dei tre split 7:1:2), con la stessa regola del
+   punto 1 applicata a S (delta accoppiato sui soggetti, per seme): un braccio sostituisce A come default solo se batte A su S della P1 **e**
+   su S della P2. P1/P2 ufficiali sono la conferma e il risultato scientifico; se S e test ufficiali non concordano, il default segue S e il
+   disaccordo si registra. *Interpretazione di Claude:* «implementa eventuali correzioni» = costruire anche la validation interna della P2
+   (la proposta lasciava la scelta fra P2 interna e sola S della P1); se Simone preferisce la sola S della P1, si toglie la P2 dalla regola.
+Non cambiano: bracci, disegno (30M, 4 epoche, 2 semi), keep separata, allarme di collasso, letture «al LR di A».
