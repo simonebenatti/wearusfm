@@ -45,3 +45,36 @@ nei run (`--fixed-eval-every 500`, serve al criterio di stabilita' A4); accetta 
 che non sia uno dei due di C3; con `--out` e una campagna con "eval" scrive anche `valutazione_<fase>.json` per `scripts/evaluation_chain.py`.
 Preventivo con la valutazione: **~163 GPU-ora attese, tetto 214,5** (training 160,2 / 208,0; valutazione 2,6 / 6,5) e CPU fino a ~199
 core-ora; C1 da sola ~61 / 79,5.
+
+## Pacchetto di lancio di C1 (16/10/2026; Simone: «Pacchetto di lancio C1»)
+
+Configurazione della campagna con i percorsi veri del cluster: `results/infra/w1cal_campaign_20261016.json`. Piani in dry-run in
+`results/infra/w1cal_c1_dryrun_20261016/` (`calibrazione_C1.json`, `valutazione_C1.json`, riepilogo, i 3 comandi di sottomissione del
+training e il dry-run della catena di valutazione: tutti i nodi «in attesa» del training, come deve essere). **`expected_sha` e `code_dir`
+sono provvisori** (b671901): al lancio si rigenerano allo SHA del deploy.
+
+| Ingresso | Percorso sul cluster | Identita' |
+|---|---|---|
+| Manifest derivato al 100% | `$WORK/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz` | file 6d6d8167..., contenuto 167923c3... (job 60661475) |
+| Durate delle sessioni | `$WORK/wearusfm_runs/results/passo6/window_seconds_59425316.json` | e660e324..., lo stesso della costruzione dei derivati |
+| Scale di sessione | `$WORK/wearusfm_runs/results/passo6/loader_59623700/session_scales.json` | come `w1cat` |
+| Run | `$SCRATCH/wearusfm_runs/runs/w1cal/<run>` | 3 x 1,4 GB di checkpoint |
+| Feature / rapporti | `$SCRATCH/wearusfm_runs/w1cal/features/`, `$WORK/wearusfm_runs/results/w1cal/` | |
+
+Run di C1: `W1CAL-C1-30M-lr{0p0001,0p0003,0p001}-s0`, 24.523 passi, warmup 1.962, decay da 19.618, un job da 6 h 30 per run su QoS `normal`
+(4 GPU), argomenti `--window1-rules --datasets all --prefetch --fixed-eval-every 500 --lr <lr> --nested 1`. Preventivo C1: training 60,3
+GPU-ora attese / 78,0 tetto, valutazione 0,6 / 1,5, CPU fino a 74 core-ora: **~61 / 79,5 GPU-ora (636 ore locali)**.
+
+**Sequenza al lancio:**
+1. Dopo l'esito di `w1_selezione_v1`: aggiornare stime e tetti delle valutazioni con le durate misurate (commit), se serve.
+2. Decisioni prima di C1: **budget della finestra 1** (la calibrazione e' una sua voce) e review dei manifest derivati, che il registro segna
+   «da rivedere da GPT prima dell'uso nei run» (si puo' affidare al subagent `critico`).
+3. Preflight in sola lettura, `deploy/w1cal-<data>` allo SHA del commit, checkout di campagna (job CPU).
+4. Rigenerare i piani con `expected_sha`/`code_dir` veri (`calibration_plan.py --campaign ... --out ...`) e committarli.
+5. Sottomettere i 3 training (`wsd_chain.py --commands`, comandi via leonardo-ops, uno per riga con `< /dev/null`).
+6. Sottomettere la catena di valutazione quando i training sono finiti (seconda chiamata di `evaluation_chain.py --submit`: le guardie partono
+   senza afterok e nessun nodo resta in coda con una dipendenza impossibile se un training fallisce).
+7. Copiare decisione e registro della selezione sul Mac, `calibration_select.py merge`, commit; C2 solo col via di Simone.
+
+**Primo uso del manifest derivato in un training:** finora l'hanno letto solo i test CPU e i rapporti del costruttore. Un errore di caricamento
+si vede nei primi minuti del job (costo minimo); controllare i primi passi dei tre run subito dopo la partenza.
