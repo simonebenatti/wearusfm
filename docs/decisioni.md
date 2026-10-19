@@ -3502,3 +3502,11 @@ tre split ufficiali, in `scripts/calibration_probe.py --task p2`.
 `max_steps` 24.523, nessuno STOP, checkpoint pre e post-decay. **63,2 GPU-ora** (4 GPU x 15 h 48; attese 60,3, tetto 78) sul budget della
 calibrazione: 63,2 usate su 220, residuo 156,8. La valutazione (estrazioni, sonde, selezione) parte da un checkout nuovo con le correzioni
 della selezione dopo la review del `critico`.
+
+**Valutazione di C1 lanciata (19/10/2026; Simone: «ok procedi, avvisami quando parte la valutazione»).** Codice della valutazione 9ab781e
+(`deploy/w1cal-eval-20261019`, checkout 61378990; review del `critico` APPROVATO), piano `results/infra/w1cal_c1_20261016/valutazione_C1.json`.
+Guardie 61379130/61379133/61379134 COMPLETED 0:0 (checkpoint post-decay verificati), estrazioni 61379154 (1e-4), 61379217 (3e-4),
+61379811 (1e-3), sonde 61379181/61379306/61379874 (CPU, in fila), selezione 61379881. L'estrazione di 1e-3 era stata rifiutata da sbatch
+(«Job dependency problem»: afterok su una guardia gia' finita e uscita dalla memoria di SLURM; nessun job creato): risottomessa senza
+dipendenza col `--dopo-rifiuto` del submitter, dopo aver verificato la guardia. Tetto della valutazione 1,5 GPU-ora sul budget della
+calibrazione (63,2 usate su 220).

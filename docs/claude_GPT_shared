@@ -1933,6 +1933,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   di lettura: verificato sul cluster che le copie committate sono giuste (elapsed 18.742 s per 3e-4 sotto i 5 h 12 41 del job; l'LR
   dell'ultimo passo conferma le cartelle).
 
+### 2026-10-19 | Claude | Valutazione di C1 in corso | Codice: 9ab781e98a44810f3223e5dec1eac52988f374fc
+
+- Deploy `deploy/w1cal-eval-20261019`, checkout 61378990, piano rigenerato (piano di training di C1 identico byte per byte), catena
+  sottomessa: guardie 61379130/61379133/61379134 COMPLETED 0:0, estrazioni 61379154, 61379217, 61379811, sonde 61379181, 61379306,
+  61379874, selezione 61379881 (afterok sulle tre sonde). L'estrazione di 1e-3 rifiutata da sbatch e recuperata con `--dopo-rifiuto`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2881,3 +2887,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Seguendo il rilievo (sbagliato) sulle durate ho scambiato le copie locali dei `summary.json` di 3e-4 e 1e-3, poi ho visto che prima
   dello scambio coincidevano col cluster e le ho rimesse a posto prima di qualunque commit: nessun file committato e' cambiato.
+
+### 2026-10-19 | Claude | Difetto della catena: afterok su un nodo della stessa chiamata gia' finito
+
+- `evaluation_chain.py` mette afterok sui nodi sottomessi nella stessa chiamata; se uno finisce in pochi secondi (le guardie: 5-7 s) e SLURM
+  lo dimentica prima che il successivo venga sottomesso, sbatch rifiuta la dipendenza («Job dependency problem»): e' successo
+  all'estrazione di 1e-3 (75 s dopo la fine della guardia). Recuperato senza danni (nessun job creato). Correzione da fare prima di C2:
+  prima di ogni sottomissione rileggere con sacct lo stato dei predecessori della stessa chiamata e togliere l'afterok da quelli finiti bene.
