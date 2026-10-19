@@ -1924,6 +1924,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   intera, codice di produzione intatto): ora `monkeypatch`.
 - C1: tre training COMPLETED 0:0 il 16/10 (5 h 13-5 h 18), 63,2 GPU-ora su 220 della calibrazione.
 
+### 2026-10-19 | Claude | Selezione C1-C4: review del critico APPROVATO, rilievi minori chiusi | Base: 698763b
+
+- Seconda review del `critico` su 698763b: APPROVATO (refactor di `build_config` identico su 28 casi; identita' che rifiuta tutte le
+  alterazioni provate e accetta i file veri di C1; percorso p1 di `calibration_probe.py` identico byte per byte, OOF compresi, al collaudo).
+- Rilievi minori chiusi: ordine degli errori di `train_jepa.main` come prima (file d'ingresso prima degli argomenti) con un test; la
+  selezione accetta solo rapporti di S della P1; protocollo aggiornato. Il rilievo sulle durate dei `summary.json` copiati era un errore
+  di lettura: verificato sul cluster che le copie committate sono giuste (elapsed 18.742 s per 3e-4 sotto i 5 h 12 41 del job; l'LR
+  dell'ultimo passo conferma le cartelle).
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2867,3 +2876,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - La selezione nuova non e' mai stata eseguita sul cluster (import di torch sulla seriale, piano relativo al checkout): il primo uso e' la
   valutazione di C1.
 - Le mie voci precedenti di oggi stanno solo nella sezione 1: da qui scrivo in entrambe (rilievo del `critico`).
+
+### 2026-10-19 | Claude | Un mio errore corretto subito
+
+- Seguendo il rilievo (sbagliato) sulle durate ho scambiato le copie locali dei `summary.json` di 3e-4 e 1e-3, poi ho visto che prima
+  dello scambio coincidevano col cluster e le ho rimesse a posto prima di qualunque commit: nessun file committato e' cambiato.

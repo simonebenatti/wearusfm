@@ -505,6 +505,42 @@ def test_a_run_stopped_before_the_probe_is_inadmissible_and_the_phase_goes_on(tm
     assert json.loads(recf.read_text())["plan"]["sha256"] == CS._sha256(tmp_path / "plan.json")
 
 
+def test_selection_accepts_only_p1_validation_reports(tmp_path):
+    """Seconda review del critico (19/10): i rapporti di S della P2 hanno lo stesso protocollo, ma la calibrazione usa S della P1."""
+    cands = [_cand(tmp_path, lr, 0.6 + 0.1 * i, seed=i) for i, lr in enumerate((1e-4, 3e-4, 1e-3))]
+    rp = cands[1][2]
+    rep = json.loads(rp.read_text())
+    rp.write_text(json.dumps({**rep, "task": "p2"}))
+    with pytest.raises(ValueError, match="S della P1"):
+        _sel("C1", cands)
+    rp.write_text(json.dumps({**rep, "weights": {"epn612": 0.5, "uci_emg": 0.5}}))
+    with pytest.raises(ValueError, match="S della P1"):
+        _sel("C1", cands)
+
+
+def test_train_jepa_build_config_errors_and_their_order(tmp_path):
+    """`build_config` senza parser solleva ValueError (la usa la selezione); in `main` l'identita' dei file viene prima degli argomenti,
+    come prima dell'estrazione di build_config (seconda review del critico, 19/10)."""
+    import importlib.util
+
+    sp = importlib.util.spec_from_file_location("train_jepa_err", REPO / "scripts" / "train_jepa.py")
+    TJ = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(TJ)
+    args = TJ.build_parser().parse_args(["--preset", "sanity", "--manifest", "-", "--root", "-", "--out-dir", "-", "--lr", "-1"])
+    with pytest.raises(ValueError, match="--lr deve essere positivo"):
+        TJ.build_config(args)
+    manifest = tmp_path / "m.json"
+    manifest.write_text("{}")
+    import contextlib
+    import io
+
+    err = io.StringIO()
+    with pytest.raises(SystemExit), contextlib.redirect_stderr(err):
+        TJ.main(["--preset", "sanity", "--manifest", str(manifest), "--root", "-", "--out-dir", str(tmp_path / "o"), "--lr", "-1",
+                 "--manifest-sha256", "0" * 64])
+    assert "diverso da quello del piano" in err.getvalue() and "--lr deve essere positivo" not in err.getvalue()
+
+
 def test_collaudo_phase_lists_admissible_runs_and_records_descriptive_comparisons(tmp_path):
     a, b = tmp_path / "a", tmp_path / "b"
     a.mkdir()

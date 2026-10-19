@@ -65,6 +65,7 @@ N_BOOT = 1000
 BOOT_SEED = 0
 CHECKPOINT = "checkpoint_postdecay.pt"
 PHASES = ("C1", "C2", "C3", "C4")
+P1_DATASETS = ("ninapro_db2", "ninapro_db3", "ninapro_db6")  # S della P1 (scripts/calibration_probe.py, compito p1)
 COLLAUDO = "collaudo"
 
 
@@ -357,6 +358,9 @@ def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], pla
         report = json.loads(Path(report_path).read_text()) if report_path is not None else None
         if report is not None and report.get("protocol") != PROTOCOL:
             raise ValueError(f"{report_path}: protocollo {report.get('protocol')!r}, atteso {PROTOCOL}")
+        if report is not None and (report.get("task", "p1") != "p1" or sorted(report["weights"]) != sorted(P1_DATASETS)):
+            raise ValueError(f"{report_path}: la selezione della calibrazione usa S della P1 (compito {report.get('task')!r}, "
+                             f"dataset {sorted(report['weights'])})")
         adm = admissibility(run_dir, report, steps)
         if report is None and adm["admissible"]:
             raise ValueError(f"{Path(run_dir).name}: run ammissibile senza sonda: la valutazione va completata, non saltata")

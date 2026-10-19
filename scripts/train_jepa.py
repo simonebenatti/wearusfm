@@ -172,12 +172,12 @@ def main(argv=None) -> int:
         ctx = R.dist_from_env()
         torch.distributed.init_process_group("nccl" if args.device.startswith("cuda") else "gloo")  # env:// da torchrun
     main_process = ctx is None or ctx.is_main
-    cfg = build_config(args, ap.error)
     try:  # identita' dei file d'ingresso: manifest del piano e, per un derivato, le durate con cui e' stato costruito (critico, 16/10)
         R.check_input_files(args.manifest, args.window_seconds, args.nested, args.manifest_sha256)
     except ValueError as e:
         ap.error(str(e))
     window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
+    cfg = build_config(args, ap.error)  # dopo i file, come prima dell'estrazione di build_config (stesso ordine degli errori)
     scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
     if main_process:
         print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}"

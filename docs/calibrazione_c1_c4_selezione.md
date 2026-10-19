@@ -183,3 +183,10 @@ effettiva contro il piano, non soltanto le etichette ricevute». Entrambe giuste
    configurazione che `train_jepa.py` costruisce con gli argomenti veri dei tre run di C1.
 3. La catena di valutazione puo' usare un checkout diverso da quello dei training (`eval.code_dir`, `eval.expected_sha` nella campagna): per
    C1 i training girano da 72cf24a, la valutazione partira' da un checkout nuovo con queste correzioni, dopo la review del `critico`.
+
+**Aggiornamento dopo la review del `critico` del 16/10 (APPROVATO su 698763b, 19/10/2026).** Il punto 2 sopra e' superato nella forma:
+l'identita' confronta l'INTERA configurazione effettiva (`config.json`, 99 campi), ricostruita dagli argomenti del job pianificato con
+`wsd_chain.extra_args` e `train_jepa.build_config` (la stessa funzione del training); campi in piu' o in meno sono differenze. Un candidato
+col rapporto «-» che non ha scritto `config.json` ha l'identita' «non verificabile» (il LR dichiarato si controlla comunque contro il piano)
+e decide A1: inammissibile, la fase procede. La selezione accetta solo rapporti di S della P1 (compito p1, dataset DB2/DB3/DB6). Verificato
+sui `config.json` veri dei tre run di C1 (`results/infra/w1cal_c1_20261016/runs/`).
