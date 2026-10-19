@@ -24,12 +24,13 @@ Selezione (S fuori fold; confronto accoppiato sui soggetti: differenza entro 1 e
      ammissibili, nessuna scelta.
 Con due o piu' candidati il registro riporta anche i confronti accoppiati di tutte le coppie, descrittivi: non decidono nulla.
 
-Identita' dei candidati (review di GPT del 16/10/2026): nelle fasi C1-C4 `--plan` (il piano di training di `calibration_plan.py`, quello
-dato a `wsd_chain.py`) e' obbligatorio; per ogni candidato la configurazione effettiva del run (`config.json`: LR, seme, batch, passi,
-warmup, schedule, frazione del manifest, dataset, pannello, pesi della loss, dimensioni del modello) e lo SHA del codice (`summary.json`)
-devono essere quelli del piano per quel run, e il LR dichiarato quello del piano: altrimenti la selezione si ferma con un errore (il run non
-e' il candidato pianificato). Un candidato il cui training si e' fermato prima della sonda (STOP, allarme, run incompleto) si passa col
-rapporto «-»: e' inammissibile (A1-A4 sui file del run) e la fase procede con gli altri; un run ammissibile senza sonda e' un errore.
+Identita' dei candidati (review di GPT e del critico del 16/10/2026): nelle fasi C1-C4 `--plan` (il piano di training di
+`calibration_plan.py`, quello dato a `wsd_chain.py`) e' obbligatorio; per ogni candidato l'INTERA configurazione effettiva del run
+(`config.json`) deve essere quella che `train_jepa.build_config` costruisce dagli argomenti del job pianificato, lo SHA del codice
+(`summary.json`) quello del piano e il LR dichiarato quello del piano: altrimenti la selezione si ferma con un errore (il run non e' il
+candidato pianificato). Un candidato il cui training si e' fermato prima della sonda (STOP, allarme, run incompleto, anche senza
+`config.json`) si passa col rapporto «-»: e' inammissibile (A1-A4 sui file del run) e la fase procede con gli altri; un run ammissibile
+senza sonda e' un errore.
 
   python3 scripts/calibration_select.py select --phase C1 --plan calibrazione_C1.json --out decisione_C1.json --record registro_C1.json \\
       --candidate 0.0001 RUN_DIR RAPPORTO_SONDA PASSI --candidate 0.0003 ... --candidate 0.001 RUN_DIR - PASSI   (sul cluster, CPU)
@@ -39,6 +40,7 @@ rapporto «-»: e' inammissibile (A1-A4 sui file del run) e la fase procede con 
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import json
 import math
@@ -140,63 +142,65 @@ def same_file(a, b) -> bool:
         return False
 
 
-def expected_config(plan: dict, run_id: str) -> dict:
-    """La configurazione che il piano di training (`calibration_plan.py`, formato di `wsd_chain.py`) prescrive al run `run_id`, come chiavi
-    puntate di `config.json` (`training.run.config_to_dict`). Gli argomenti si leggono come li legge `train_jepa.py` (`build_parser`)."""
+@functools.lru_cache(maxsize=None)
+def _script(name):
     import importlib.util
 
+    spec = importlib.util.spec_from_file_location(f"{name}_for_selection", ROOT / "scripts" / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def expected_config(plan: dict, run_id: str) -> dict:
+    """La configurazione COMPLETA (`training.run.config_to_dict`) che il run `run_id` del piano di training deve avere: gli argomenti che il
+    job passa a `train_jepa.py` (`train_ddp.sbatch`: preset, `--max-steps`, EXTRA_ARGS da `wsd_chain.extra_args`), costruiti con
+    `train_jepa.build_config`, la stessa funzione del training (review del critico del 16/10/2026: confronto dell'intera configurazione)."""
     from wearusfm.training import run as R
 
-    runs = {r["id"]: r for r in plan["runs"]}
+    W, TJ = _script("wsd_chain"), _script("train_jepa")
+    runs = {r["id"]: r for r in W.resolve(plan)}
     if run_id not in runs:
         raise ValueError(f"run {run_id} assente dal piano di training (run del piano: {sorted(runs)})")
     r = runs[run_id]
-    spec = importlib.util.spec_from_file_location("train_jepa_options", ROOT / "scripts" / "train_jepa.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    a = mod.build_parser().parse_args(["--preset", r["preset"], "--manifest", "-", "--root", "-", "--out-dir", "-"]
-                                      + shlex.split(f"{plan['common_args']} {r.get('args', '')}"))
-    base = R.sanity_config() if r["preset"] == "sanity" else R.ladder_config(r["preset"])
-    want = {"lr": a.lr if a.lr is not None else base.lr, "seed": r["seed"], "batch_size": r["batch_size"], "accum_steps": r["accum_steps"],
-            "max_steps": r["total_steps"], "warmup_steps": R.wsd_warmup_steps(r["steps_at_d"]), "schedule.kind": "wsd",
-            "schedule.total_steps": r["total_steps"], "schedule.decay_fraction": 0.2, "nested": a.nested,
-            "datasets": None if a.datasets == "all" else list(a.datasets.split(",")) if a.datasets else list(base.datasets),
-            "fixed_eval_every": a.fixed_eval_every if a.fixed_eval_every is not None else base.fixed_eval_every,
-            "loader.time_weighted": bool(a.window1_rules) or base.loader.time_weighted, "jepa.target": base.jepa.target,
-            "jepa.anchor_weight": a.anchor_weight if a.anchor_weight is not None else base.jepa.anchor_weight,
-            "jepa.jepa_weight": a.jepa_weight if a.jepa_weight is not None else base.jepa.jepa_weight,
-            "jepa.keep_weight": a.keep_weight if a.keep_calibration else 0.0}
-    if not a.spectral_branches:  # con i rami il peso lo fissa --branch-weight (fuori dalla calibrazione dell'obiettivo A)
-        want["jepa.branch_weight"] = 0.0
-    want.update({f"model.{k}": getattr(base.model, k) for k in ("dim", "n_heads", "k_latents", "local_layers", "backbone_layers",
-                                                                 "decoder_layers")})
-    return want  # None e' un valore atteso (es. datasets = tutti), non un campo da saltare
+    argv = ["--preset", r["preset"], "--manifest", "-", "--root", "-", "--out-dir", "-", "--max-steps", str(r["total_steps"])]
+    args = TJ.build_parser().parse_args(argv + shlex.split(W.extra_args(plan, r)))
+    return R.config_to_dict(TJ.build_config(args))
 
 
-def check_identity(run_dir: Path, plan: dict, lr: float) -> dict:
-    """Il run e' il candidato pianificato: configurazione effettiva (`config.json`) e codice (`summary.json`) uguali al piano, LR dichiarato
-    uguale a quello del piano. Errore altrimenti (review di GPT del 16/10/2026)."""
+def _flatten(d, prefix=""):
+    out = {}
+    for k, v in d.items():
+        key = f"{prefix}{k}"
+        if isinstance(v, dict):
+            out.update(_flatten(v, key + "."))
+        else:
+            out[key] = v
+    return out
+
+
+def check_identity(run_dir: Path, plan: dict, lr: float, allow_missing: bool = False) -> dict:
+    """Il run e' il candidato pianificato: configurazione effettiva (`config.json`, tutti i campi) e codice (`summary.json`) uguali al piano,
+    LR dichiarato uguale a quello del piano. Errore altrimenti (review di GPT e del critico del 16/10/2026). `allow_missing`: un candidato
+    fermato prima della sonda che non ha scritto `config.json` ha l'identita' «non verificabile» e decide A1 (inammissibile)."""
     run_dir = Path(run_dir)
     want = expected_config(plan, run_dir.name)
     if lr != want["lr"]:
         raise ValueError(f"{run_dir.name}: LR dichiarato {lr!r}, il piano dice {want['lr']!r}")
     if not (run_dir / "config.json").exists():
+        if allow_missing:
+            return {"config_checked": False, "note": "config.json assente: run fermato prima di scriverla, identita' non verificabile; decide A1"}
         raise ValueError(f"{run_dir}: config.json assente, configurazione effettiva non verificabile")
-    cfg = json.loads((run_dir / "config.json").read_text())
-    diff = []
-    for key, v in want.items():
-        got = cfg
-        for part in key.split("."):
-            got = got.get(part, "<assente>") if isinstance(got, dict) else "<assente>"
-        if got != v:
-            diff.append(f"{key}: run {got!r}, piano {v!r}")
+    have, exp = _flatten(json.loads((run_dir / "config.json").read_text())), _flatten(want)
+    diff = [f"{k}: run {have.get(k, '<assente>')!r}, piano {exp.get(k, '<assente>')!r}" for k in sorted(set(have) | set(exp))
+            if have.get(k, "<assente>") != exp.get(k, "<assente>")]
     if diff:
         raise ValueError(f"{run_dir.name}: configurazione effettiva diversa dal piano: " + "; ".join(diff))
     summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
     sha = (summary.get("code") or {}).get("sha")
     if summary and sha != plan["expected_sha"]:
         raise ValueError(f"{run_dir.name}: codice {sha!r}, il piano dice {plan['expected_sha']!r}")
-    return {"config_checked": sorted(want), "code_sha": sha}
+    return {"config_checked": True, "fields": len(exp), "code_sha": sha}
 
 
 def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int | None = None) -> dict:
@@ -349,7 +353,7 @@ def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], pla
         lr = str(key) if phase == COLLAUDO else float(key)
         if lr in cands:
             raise ValueError(f"LR {lr} ripetuto")
-        identity = check_identity(run_dir, plan, lr) if plan is not None else None
+        identity = check_identity(run_dir, plan, lr, allow_missing=report_path is None) if plan is not None else None
         report = json.loads(Path(report_path).read_text()) if report_path is not None else None
         if report is not None and report.get("protocol") != PROTOCOL:
             raise ValueError(f"{report_path}: protocollo {report.get('protocol')!r}, atteso {PROTOCOL}")

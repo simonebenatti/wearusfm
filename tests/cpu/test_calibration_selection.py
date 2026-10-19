@@ -216,23 +216,53 @@ STEPS_AT_D = 2000  # warmup = max(1000, 2%) = 1000, decay da 1600
 CODE_SHA = "e" * 40
 
 
-def _config(lr, seed=0, **over):
-    """La configurazione che `train_jepa.py` costruisce per un run di calibrazione (sanity, --window1-rules, --datasets all, WSD, --lr,
-    --nested 1, --fixed-eval-every 500), come la scrive il trainer in `config.json`."""
-    from dataclasses import replace
+_TMP = Path(__import__("tempfile").mkdtemp())
+(_TMP / "ws.json").write_text(json.dumps({"window_s": {}, "scales": {}}))
 
-    from wearusfm.training import run as R
 
-    cfg = R.with_wsd(R.with_window1_rules(R.sanity_config()), STEPS, warmup_steps=R.wsd_warmup_steps(STEPS_AT_D))
-    cfg = replace(cfg, lr=lr, seed=seed, batch_size=32, accum_steps=1, nested="1", datasets=None, fixed_eval_every=500, **over)
-    return R.config_to_dict(cfg)
+def _full_plan(runs, seed=0):
+    """Piano di training completo (formato di wsd_chain.py) coi run [(id, lr)], come quelli di calibration_plan.py."""
+    return {"campaign": "w1cal-test", "agent": "claude", "code_dir": "/C", "expected_sha": CODE_SHA, "manifest": "/M/m_nested_1.json.gz",
+            "scales": str(_TMP / "ws.json"), "window_seconds": str(_TMP / "ws.json"), "run_root": "/R",
+            "slurm": {"qos": "normal", "time": "24:00:00"}, "margin_min": 40, "startup_min": 15, "slack": 1.15, "spare_jobs": 0, "gpus": 4,
+            "s_per_step": {"sanity/32": 0.7}, "ckpt_gb": {"sanity": 0.45},
+            "common_args": "--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 " + "6" * 64,
+            "runs": [{"id": name, "preset": "sanity", "seed": seed, "batch_size": 32, "accum_steps": 1, "steps_at_d": STEPS_AT_D,
+                      "total_steps": STEPS, "keep_checkpoints": [], "args": f"--lr {lr:g} --nested 1"} for name, lr in runs]}
+
+
+@__import__("functools").lru_cache(maxsize=None)
+def _true_config_json(lr, seed=0):
+    """`config.json` come lo scrive il trainer: `train_jepa.main` con gli argomenti di `train_ddp.sbatch` per un run del piano (COMMON,
+    --max-steps, EXTRA_ARGS di wsd_chain), `R.train` sostituito per catturare la configurazione (ripristinato subito)."""
+    import importlib.util
+    import shlex
+
+    def load(name):
+        sp = importlib.util.spec_from_file_location(f"{name}_t", REPO / "scripts" / f"{name}.py")
+        m = importlib.util.module_from_spec(sp)
+        sp.loader.exec_module(m)
+        return m
+
+    W, TJ = load("wsd_chain"), load("train_jepa")
+    plan = _full_plan([("x", lr)], seed)
+    run = W.resolve(plan)[0]
+    argv = ["--preset", "sanity", "--manifest", "m.json.gz", "--root", "r", "--scales", str(_TMP / "ws.json"), "--out-dir", str(_TMP / "out"),
+            "--num-workers", "6", "--max-steps", str(STEPS), "--time-limit-s", "60"] + shlex.split(W.extra_args(plan, run))
+    captured = {}
+    orig = TJ.R.train, TJ.R.check_input_files
+    try:
+        TJ.R.train = lambda cfg, *a, **k: captured.__setitem__("cfg", cfg) or {"steps": 0}
+        TJ.R.check_input_files = lambda *a, **k: None
+        TJ.main(argv)
+    finally:
+        TJ.R.train, TJ.R.check_input_files = orig
+    return json.dumps(TJ.R.config_to_dict(captured["cfg"]))
 
 
 def _train_plan(cands, seed=0):
-    """Il piano di training (formato di wsd_chain.py) dei candidati: un run per cartella, col LR del candidato."""
-    return {"expected_sha": CODE_SHA, "common_args": "--window1-rules --datasets all --prefetch --fixed-eval-every 500",
-            "runs": [{"id": Path(rd).name, "preset": "sanity", "seed": seed, "batch_size": 32, "accum_steps": 1, "steps_at_d": STEPS_AT_D,
-                      "total_steps": STEPS, "keep_checkpoints": [], "args": f"--lr {lr:g} --nested 1"} for lr, rd, _, _ in cands]}
+    """Il piano di training dei candidati: un run per cartella, col LR del candidato."""
+    return _full_plan([(Path(rd).name, lr) for lr, rd, _, _ in cands], seed)
 
 
 def _sel(phase, cands):
@@ -243,7 +273,7 @@ def _run(tmp_path, name, *, stop=False, stopped="max_steps", steps=STEPS, nan_at
     d = tmp_path / name
     d.mkdir()
     (d / "summary.json").write_text(json.dumps({"stopped": stopped, "steps": steps, "elapsed_s": 1.0, "code": {"sha": CODE_SHA}}))
-    (d / "config.json").write_text(json.dumps(_config(lr)))
+    (d / "config.json").write_text(_true_config_json(lr))
     if stop:
         (d / "STOP").write_text("allarme")
     lines = []
@@ -415,24 +445,30 @@ def test_effective_configuration_must_match_the_plan(tmp_path):
     plan = _train_plan(cands)
     assert CS.select("C1", cands, plan)[0]["C1"]["finalists"]
     rec = CS.select("C1", cands, plan)[1]
-    assert "lr" in rec["candidates"]["0.0003"]["identity"]["config_checked"]
+    assert rec["candidates"]["0.0003"]["identity"]["config_checked"] is True and rec["candidates"]["0.0003"]["identity"]["fields"] > 50
     swapped = [(cands[0][0], cands[2][1], cands[0][2], STEPS), cands[1], (cands[2][0], cands[0][1], cands[2][2], STEPS)]
     with pytest.raises(ValueError, match="LR dichiarato"):  # etichette scambiate: la cartella dice un altro LR
         CS.select("C1", swapped, plan)
     rd = cands[1][1]
-    for change, message in (({"seed": 1}, "seed"), ({"lr": 2e-4}, "lr"), ({"max_steps": 1999}, "max_steps"), ({"nested": None}, "nested"),
-                            ({"datasets": ["emg2qwerty"]}, "datasets"), ({"fixed_eval_every": 0}, "fixed_eval_every")):
-        good = (rd / "config.json").read_text()
-        (rd / "config.json").write_text(json.dumps({**json.loads(good), **change}))
-        with pytest.raises(ValueError, match=f"configurazione effettiva diversa dal piano: .*{message}"):
-            CS.select("C1", cands, plan)
-        (rd / "config.json").write_text(good)
-    cfg = json.loads((rd / "config.json").read_text())
-    cfg["jepa"]["anchor_weight"] = 0.0  # un braccio JEPA-only al posto di A
-    (rd / "config.json").write_text(json.dumps(cfg))
-    with pytest.raises(ValueError, match="jepa.anchor_weight"):
-        CS.select("C1", cands, plan)
-    (rd / "config.json").write_text(json.dumps(_config(3e-4)))
+    good = (rd / "config.json").read_text()
+    flat = CS._flatten(json.loads(good))
+    for key in sorted(flat):  # OGNI campo della configurazione: alterarlo ferma la selezione (seconda review del critico)
+        cfg = json.loads(good)
+        node = cfg
+        *path, leaf = key.split(".")
+        for part in path:
+            node = node[part]
+        v = node[leaf]
+        node[leaf] = (not v if isinstance(v, bool) else v + 1 if isinstance(v, int) else v * 2 + 1 if isinstance(v, float)
+                      else v + "x" if isinstance(v, str) else list(v) + [0] if isinstance(v, list) else 0)
+        (rd / "config.json").write_text(json.dumps(cfg))
+        with pytest.raises(ValueError, match=f"configurazione effettiva diversa dal piano: .*{key.replace('.', '[.]')}"):
+            CS.check_identity(rd, plan, 3e-4)
+    (rd / "config.json").write_text(json.dumps({**json.loads(good), "campo_nuovo": 1}))  # un campo in piu' (altro codice)
+    with pytest.raises(ValueError, match="campo_nuovo"):
+        CS.check_identity(rd, plan, 3e-4)
+    (rd / "config.json").write_text(good)
+    assert CS.check_identity(rd, plan, 3e-4)["fields"] == len(flat)
     (rd / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": STEPS, "code": {"sha": "f" * 40}}))
     with pytest.raises(ValueError, match="codice"):
         CS.select("C1", cands, plan)
@@ -448,6 +484,13 @@ def test_a_run_stopped_before_the_probe_is_inadmissible_and_the_phase_goes_on(tm
     c = rec["candidates"]["0.0001"]
     assert not c["admissibility"]["admissible"] and "S" not in c and any("STOP" in p for p in c["admissibility"]["problems"])
     assert [(d["a"], d["b"]) for d in rec["descriptive_comparisons"]] == [(3e-4, 1e-3)]  # solo fra chi ha la sonda
+    gone = tmp_path / "gone"
+    gone.mkdir()
+    early = [(1e-4, gone / "lr0p0001", None, STEPS), _cand(gone, 3e-4, 0.7, seed=1), _cand(gone, 1e-3, 0.8, seed=2)]
+    dec, rec = _sel("C1", early)  # fermato prima di scrivere config.json (cartella assente): identita' non verificabile, decide A1
+    assert dec == {"C1": {"finalists": [3e-4, 1e-3]}} and rec["candidates"]["0.0001"]["identity"]["config_checked"] is False
+    with pytest.raises(ValueError, match="LR dichiarato"):  # il LR dichiarato si controlla comunque contro il piano
+        CS.select("C1", [(2e-4, gone / "lr0p0001", None, STEPS)] + early[1:], _train_plan(early))
     sub = tmp_path / "ok"
     sub.mkdir()
     fine = [_cand(sub, 1e-4, 0.6, no_probe=True), _cand(sub, 3e-4, 0.7, seed=1), _cand(sub, 1e-3, 0.8, seed=2)]

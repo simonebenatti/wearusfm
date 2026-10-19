@@ -92,7 +92,7 @@ def test_probes_on_gpu_and_input_checks():
         AP.plan(REPORT, 3e-4, {**CAMP, "manifest": "/M/altro.json.gz"})
 
 
-def test_arms_with_the_same_seed_start_from_the_same_state():
+def test_arms_with_the_same_seed_start_from_the_same_state(monkeypatch):
     """Rilievo 5 della critica: a pari seme i tre bracci hanno la stessa architettura e lo stesso stato iniziale (cambiano solo i pesi della
     loss), con le configurazioni costruite da train_jepa.py dagli argomenti del piano."""
     import torch
@@ -104,8 +104,9 @@ def test_arms_with_the_same_seed_start_from_the_same_state():
     r = AP.plan(REPORT, 3e-4, CAMP)
     plan = r["plans"]["objective"]
     captured = {}
-    TJ.R.train = lambda cfg, *a, **k: captured.__setitem__("cfg", cfg) or {"steps": 0}
-    TJ.R.check_input_files = lambda *a, **k: None
+    # monkeypatch, non assegnazione: TJ.R e' il modulo condiviso training.run e va ripristinato per gli altri test
+    monkeypatch.setattr(TJ.R, "train", lambda cfg, *a, **k: captured.__setitem__("cfg", cfg) or {"steps": 0})
+    monkeypatch.setattr(TJ.R, "check_input_files", lambda *a, **k: None)
     states = {}
     with tempfile.TemporaryDirectory() as tmp:
         ws = Path(tmp) / "ws.json"

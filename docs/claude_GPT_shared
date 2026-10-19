@@ -1912,6 +1912,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   bracci a pari seme. Preventivo: obiettivo 463,8 / 552 GPU-ora di training; valutazione 10,5 / 27 con sonde su CPU (~24 h in fila) o
   34,5 / 87 su GPU. Chiusi i rilievi 3-6 della critica del punto 5.
 
+### 2026-10-16 | Claude | Selezione C1-C4: identita' sull'intera configurazione, candidato senza config.json, test che non si contaminano | Base: 0adfc52
+
+- Review del `critico` delle correzioni di 5c3ec80: DA RIVEDERE (3 bloccanti, 2 minori). Corretti: (1) un candidato fermato prima di
+  scrivere `config.json` non blocca piu' la fase (identita' «non verificabile», LR dichiarato comunque controllato, decide A1); (2) l'identita'
+  confronta TUTTA la configurazione: `train_jepa.build_config` (estratta da `main`, stessa sequenza) e `wsd_chain.extra_args` (gli
+  EXTRA_ARGS del job) ricostruiscono il `config_to_dict` atteso, confrontato campo per campo (99 campi); (4) test che altera uno per uno
+  tutti i campi, configurazioni dei test prodotte da `train_jepa.main` per la strada vera degli argomenti.
+- Verifica sui `config.json` e `summary.json` VERI dei tre run di C1 (copiati dal cluster, codice 72cf24a): identita' completa superata.
+- Test che contaminava la suite: `test_arms_plan.py` sostituiva `R.train` sul modulo condiviso senza ripristinarlo (81 fallimenti nella suite
+  intera, codice di produzione intatto): ora `monkeypatch`.
+- C1: tre training COMPLETED 0:0 il 16/10 (5 h 13-5 h 18), 63,2 GPU-ora su 220 della calibrazione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2845,3 +2857,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Minori: costo «~1,5 GPU-ora per checkpoint, come 2C» vale solo con sonde su CPU (2C: ~3,3 per checkpoint con sonde su GPU; sulla seriale
   le sonde vanno in fila, voce precedente); manca il test dello stesso stato iniziale fra bracci a pari seme; keep da ricalibrare e C2 non
   partita.
+
+### 2026-10-16 | Claude | Aperti prima della valutazione di C1
+
+- Seconda review del `critico` sulla selezione corretta e sulla S della P2 (`calibration_probe.py`, 641e4e2: cambia anche il percorso P1 per
+  il refactor del compito): da fare prima del deploy della valutazione.
+- `results/infra/w1cal_c1_20261016/valutazione_C1.json` e' superato (selezione di 72cf24a, senza piano): va rigenerato col checkout nuovo
+  (`eval.code_dir`/`eval.expected_sha`) prima della sottomissione, verificando che `calibrazione_C1.json` resti identico byte per byte.
+- La selezione nuova non e' mai stata eseguita sul cluster (import di torch sulla seriale, piano relativo al checkout): il primo uso e' la
+  valutazione di C1.
+- Le mie voci precedenti di oggi stanno solo nella sezione 1: da qui scrivo in entrambe (rilievo del `critico`).

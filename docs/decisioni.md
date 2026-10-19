@@ -3497,3 +3497,8 @@ split), con la stessa regola applicata a S; P1/P2 ufficiali sono conferma e risu
 *Interpretazione:* costruire anche la S della P2 (dettaglio in `docs/bracci_obiettivo_finestra1.md`). Nessun risultato dei bracci esiste.
 Confermata la S della P2 (Simone: «per p2 bene òa proposta tua»): validation interna su EPN-612 e UCI-EMG coi soggetti fuori dai test dei
 tre split ufficiali, in `scripts/calibration_probe.py --task p2`.
+
+**C1, training finiti (consuntivo, 16/10/2026).** 60715596 (LR 1e-4) 5 h 18, 60715602 (3e-4) 5 h 13, 60715603 (1e-3) 5 h 18: COMPLETED 0:0,
+`max_steps` 24.523, nessuno STOP, checkpoint pre e post-decay. **63,2 GPU-ora** (4 GPU x 15 h 48; attese 60,3, tetto 78) sul budget della
+calibrazione: 63,2 usate su 220, residuo 156,8. La valutazione (estrazioni, sonde, selezione) parte da un checkout nuovo con le correzioni
+della selezione dopo la review del `critico`.
