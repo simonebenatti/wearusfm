@@ -44,6 +44,7 @@ EVAL = {"p1": {"extract": ("probe_p1.sbatch", "00:45:00", 0.25), "probe": ("prob
         "s_p1": {"extract": ("calibration_extract.sbatch", "00:45:00", 0.3), "probe": ("calibration_probe.sbatch", "03:00:00", 1.8)},
         "s_p2": {"extract": ("calibration_extract.sbatch", "01:30:00", 0.5), "probe": ("calibration_probe.sbatch", "03:00:00", 1.2)}}
 PROBE_CORES = 8
+QOS_MAX_SECONDS = {"boost_qos_dbg": 1800}  # limiti di durata delle QoS che un nodo puo' ereditare dall'intestazione del launcher (R3, GPT 3272398)
 GPU_PROBE_SBATCH = ["--partition=boost_usr_prod", "--qos=normal", "--gres=gpu:1"]
 
 
@@ -90,7 +91,9 @@ def eval_nodes(run: dict, code: dict, ev: dict, sbatch_probe: list[str]) -> tupl
         ext_args = [ckpt, f] + (task + p2_roots if kind == "s_p2" else [])
         exports = {"RAW_ROOT": raw} if kind == "p2" else {}
         ext = {"id": f"{rid}-{kind}-ext", "kind": "extract", "after": [], "queue": "boost_usr_prod", "gpu_hours": round(_hours(ext_t), 3), **code,
-               "launcher": f"scripts/slurm/{ext_l}", "args": ext_args, "exports": exports, "sbatch": [f"--time={ext_t}"], "inputs": [ckpt],
+               # QoS esplicita (R3 della review GPT 3272398): probe_p1.sbatch ha boost_qos_dbg nell'intestazione (30 min), l'estrazione ne chiede 45
+               "launcher": f"scripts/slurm/{ext_l}", "args": ext_args, "exports": exports, "sbatch": [f"--time={ext_t}", "--qos=normal"],
+               "inputs": [ckpt],
                "outputs": npzs, "checkpoint": {"run_dir": rd, "name": "checkpoint_postdecay.pt", "training_job": run["job_ids"][-1],
                                                 "min_steps": run["total_steps"], "sha256": None}}
         if kind in ("p1", "p2"):
@@ -103,6 +106,20 @@ def eval_nodes(run: dict, code: dict, ev: dict, sbatch_probe: list[str]) -> tupl
         nodes += [ext, prb]
         reports[kind] = rep
     return nodes, reports
+
+
+def check_qos_walltime(nodes: list[dict]) -> None:
+    """Il tempo chiesto da ogni nodo entra nel limite della sua QoS EFFETTIVA (opzioni del nodo piu' intestazione del launcher allo SHA di
+    deploy, `evaluation_chain.node_labels`): errore altrimenti (R3 della review GPT 3272398: estrazioni P1 da 45 minuti con boost_qos_dbg)."""
+    EC = _mod("evaluation_chain")
+    for n in nodes:
+        t = EC.sbatch_options(n.get("sbatch", [])).get("--time")
+        if t is None:
+            continue
+        secs = int(_hours(t) * 3600 + 0.5)
+        for qos, limit in QOS_MAX_SECONDS.items():
+            if qos in EC.node_labels(n) and secs > limit:
+                raise ValueError(f"{n['id']}: --time={t} oltre il limite di {qos} ({limit} s), QoS effettiva da opzioni e intestazione")
 
 
 def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | None = None, probes_on_gpu: bool = False,
@@ -164,6 +181,7 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
         ext_max = sum(_hours(EVAL[k]["extract"][1]) for k in EVAL)
         prb_exp = sum(EVAL[k]["probe"][2] for k in EVAL)
         prb_max = sum(_hours(EVAL[k]["probe"][1]) for k in EVAL)
+        check_qos_walltime(nodes)
         evals[g] = {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{g}-eval", "agent": base["agent"],
                     "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(CP.EVAL_LIMITS), "nodes": nodes,
                     "estimate": {"gpu_hours_expected": round(n_eval * (ext_exp + (prb_exp if probes_on_gpu else 0)), 1),

@@ -125,3 +125,22 @@ def test_arms_with_the_same_seed_start_from_the_same_state(monkeypatch):
     for m, s, j in others:
         assert m == m0 and s.keys() == s0.keys() and all(torch.equal(s[k], s0[k]) for k in s0)
     assert {j.anchor_weight for _, _, j in states.values()} == {0.2, 0.0} and {j.jepa_weight for _, _, j in states.values()} == {1.0, 0.0}
+
+
+def test_extractions_fit_the_walltime_of_their_effective_qos():
+    """R3 della review GPT 3272398: le estrazioni chiedono QoS normal esplicita (probe_p1.sbatch ha boost_qos_dbg, 30 min, nell'intestazione);
+    QoS effettiva letta dall'intestazione del launcher allo SHA vero, e un nodo oltre il limite e' un errore del pianificatore."""
+    import subprocess
+
+    head = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+    result = AP.plan(REPORT, 3e-4, {**CAMP, "expected_sha": head})
+    for name, ev in result["eval_plans"].items():
+        for n in EC.validate(ev):
+            if n["kind"] == "extract":
+                assert "--qos=normal" in n["sbatch"] and "boost_qos_dbg" not in EC.node_labels(n), (name, n["id"])
+    bad = {"id": "x", "kind": "extract", "queue": "boost_usr_prod", "code_dir": "/C", "expected_sha": head,
+           "launcher": "scripts/slurm/probe_p1.sbatch", "sbatch": ["--time=00:45:00"]}
+    assert "boost_qos_dbg" in EC.node_labels(bad)  # l'intestazione vera, senza la QoS esplicita
+    with pytest.raises(ValueError, match="oltre il limite di boost_qos_dbg"):
+        AP.check_qos_walltime([bad])
+    AP.check_qos_walltime([{**bad, "sbatch": ["--time=00:25:00"]}])  # entro il limite: nessun errore
