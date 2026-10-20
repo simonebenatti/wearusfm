@@ -19,6 +19,7 @@ import copy
 import gzip
 import hashlib
 import json
+import math
 import os
 import queue
 import shutil
@@ -841,6 +842,49 @@ def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg:
     return {"batches": len(parts), **_pool_terms(parts, weight)}
 
 
+def _ema_trainable(teacher: torch.nn.Module, student: torch.nn.Module, momentum: float) -> None:
+    """EMA sui soli parametri allenati dello studente (pilot dei rami): gli strati fissi del teacher restano uguali bit per bit; buffer copiati
+    come in `jepa.ema_update`."""
+    for pt, ps in zip(teacher.parameters(), student.parameters()):
+        if ps.requires_grad:
+            pt.mul_(momentum).add_(ps.detach(), alpha=1.0 - momentum)
+    for bt, bs in zip(teacher.buffers(), student.buffers()):
+        bt.copy_(bs)
+
+
+def _json_value(v):
+    """Un valore delle metriche nel record JSON: tensori a numeri, NaN a None."""
+    if isinstance(v, torch.Tensor):
+        v = v.detach().cpu().tolist()
+    if isinstance(v, float) and not math.isfinite(v):
+        return None
+    return v
+
+
+def _load_branch_state(student: WearUsFM, path: Path) -> dict:
+    """Il passo 0 dei rami (tensori dei rami, statistiche d'ingresso, teste) dallo studente di un `checkpoint_init.pt` del 2C (pilot dei rami,
+    protocollo `rami_pilota_v1`): stessa inizializzazione per costruzione. Si chiama dopo la calibrazione (stesso percorso del 2C) e registra
+    se la calibrazione del run coincideva."""
+    from wearusfm.model.spectral_branches import BRANCH_PREFIXES
+
+    src = torch.load(path, map_location="cpu", weights_only=False)["student"]
+    old = ("spectral_branches.", "branch_heads.")  # i predittori dell'obiettivo nuovo non ci sono nel 2C
+    mine = student.state_dict()
+    want = sorted(k for k in mine if k.startswith(old))
+    have = sorted(k for k in src if k.startswith(BRANCH_PREFIXES))
+    if want != have:
+        raise ValueError(f"{path}: rami e teste diversi da quelli del modello ({sorted(set(want) ^ set(have))[:5]})")
+    bad = [k for k in want if mine[k].shape != src[k].shape or mine[k].dtype != src[k].dtype]
+    if bad:
+        raise ValueError(f"{path}: forme o tipi diversi in {bad[:5]}")
+    stats = [k for k in want if k.startswith("spectral_branches.") and not k.endswith(("weight", "bias"))]
+    reproduced = {"all": all(torch.equal(mine[k].cpu(), src[k]) for k in want), "input_stats": all(torch.equal(mine[k].cpu(), src[k]) for k in stats)}
+    with torch.no_grad():
+        for k in want:
+            mine[k].copy_(src[k])  # i tensori di state_dict condividono la memoria con parametri e buffer
+    return {"from": str(path), "sha256": sha256_file(path), "tensors": len(want), "calibration_reproduced": reproduced}
+
+
 def _calibrate_branches(student: WearUsFM, cfg: RunConfig, index, scales: dict | None, window_s: dict | None, device) -> dict:
     """Statistiche d'ingresso dei rami spettrali da `branch_calibration_batches` batch del training (il corpus del pretraining), con un
     generatore proprio: lo stream dei batch del training non cambia. Uguali su tutti i processi (stesso seme). Ritorna la provenienza."""
@@ -885,7 +929,8 @@ def _load_frozen_encoder(student: WearUsFM, cfg: RunConfig, init_from: Path | No
 
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
-          init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None) -> dict:
+          init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None,
+          branch_state_from: Path | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
     il passo difettoso non aggiorna optimizer/EMA e non viene contato.
@@ -921,6 +966,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                              "(la testa raw e' congelata)")
         if ctx.active or cfg.accum_steps > 1 or cfg.keep_grad_every or cfg.pairing_audit or branch_from is not None:
             raise NotImplementedError("freeze_encoder: un processo, senza accumulo, keep_grad_every, pairing_audit o branch_from")
+    if (cfg.model.branch_objective != "readout" or cfg.model.branch_freeze_output or branch_state_from is not None) and not cfg.freeze_encoder:
+        raise ValueError("obiettivo dei rami, strati fissi e passo 0 caricato: solo a encoder congelato (pilot dei rami, raw congelato)")
     if ctx.active:
         if not torch.distributed.is_initialized():
             raise ValueError("DDP: il gruppo dei processi va inizializzato prima (scripts/train_jepa.py --distributed)")
@@ -1010,9 +1057,15 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             head.fit_target_stats(calibration[0], calibration[1])  # stessi target per tutte le teste
     if student.spectral_branches is not None and resume_state is None:
         branch_calibration = _calibrate_branches(student, cfg, index, scales, window_s, device)
+    branch_state = None
+    if branch_state_from is not None:
+        if resume_state is not None:
+            raise NotImplementedError("passo 0 dei rami caricato: nessuna ripresa (un job per run, come il 2C)")
+        branch_state = _load_branch_state(student, branch_state_from)
     if cfg.freeze_encoder:
-        from wearusfm.model.spectral_branches import freeze_raw
+        from wearusfm.model.spectral_branches import freeze_branch_layers, freeze_raw
         freeze_raw(student)
+        freeze_branch_layers(student)  # pilot dei rami: `output` e `combine` fissi, teste del vecchio obiettivo fisse con l'obiettivo nuovo
     teacher = make_teacher(student).to(device)
     # i parametri che si allenano (senza rami, tutti: la lista di sempre)
     opt = torch.optim.AdamW([p for p in student.parameters() if p.requires_grad], lr=cfg.lr, weight_decay=cfg.weight_decay)
@@ -1076,7 +1129,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
         if frozen_init is not None or branch_calibration is not None:  # rami spettrali: encoder congelato e calibrazione (solo all'inizio)
             (out_dir / "spectral_branches.json").write_text(json.dumps({"frozen_init": frozen_init, "calibration": branch_calibration,
-                                                                        "init_checkpoint_sha256": init_sha}, indent=1))
+                                                                        "init_checkpoint_sha256": init_sha, "branch_state": branch_state},
+                                                                       indent=1))
     scales = dict(scales or {})
     val = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
@@ -1104,6 +1158,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                        collate_fn=_to_shared if num_workers > 0 else None)
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
     fixed_log = (out_dir / "fixed_eval.jsonl").open("a") if fixed is not None else None
+    masked_metrics = branch_alarm = None
+    if cfg.model.branch_objective == "masked":
+        if resume_state is not None:
+            raise NotImplementedError("obiettivo mascherato dei rami: nessuna ripresa (l'allarme ha un riferimento dai primi passi)")
+        from wearusfm.model.branch_masking import CollapseAlarm
+        branch_alarm = CollapseAlarm()
 
     def fixed_eval(at_step: int) -> None:
         fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
@@ -1168,7 +1228,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         else:  # un processo senza accumulo: il percorso di sempre, sul micro-batch unico (il batch intero)
             m = micros[0]
             with amp:
-                if cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
+                if cfg.freeze_encoder and cfg.model.branch_objective == "masked":  # pilot dei rami: predizione locale mascherata
+                    from wearusfm.model.branch_masking import batch_spans, masked_branch_objective
+                    ml, masked_metrics = masked_branch_objective(student, teacher, student.branch_predictors, m.inp,
+                                                                 batch_spans(m.inp, cfg.seed, step + 1))
+                    losses = {"total": cfg.jepa.branch_weight * ml, "masked": ml}
+                elif cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
                     from wearusfm.model.spectral_branches import readout_objectives
                     kb, kb_metrics = readout_objectives(student, m.inp, batch.anchor_targets, keep=False)["keep_branches"]
                     # col suo peso, come nel training congiunto (review GPT del 14/10: senza, branch_weight non controllava il backward)
@@ -1209,7 +1274,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             opt.zero_grad(set_to_none=True)
             break  # niente optimizer, EMA, incremento del passo o metriche di un aggiornamento non eseguito
         opt.step()
-        if cfg.freeze_encoder:  # EMA solo su rami e teste: il raw del teacher resta quello di init_from bit per bit (m a + (1 - m) a != a)
+        if cfg.freeze_encoder and (cfg.model.branch_freeze_output or cfg.model.branch_objective != "readout"):
+            # pilot dei rami: EMA sui soli parametri allenati, gli strati fissi restano uguali al passo 0 bit per bit anche nel teacher
+            for name in ("spectral_branches", "branch_heads"):
+                _ema_trainable(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
+        elif cfg.freeze_encoder:  # EMA solo su rami e teste: il raw del teacher resta quello di init_from bit per bit (m a + (1 - m) a != a)
             for name in ("spectral_branches", "branch_heads"):
                 ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
         else:
@@ -1226,6 +1295,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
         if not ctx.active:
             rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
+        if masked_metrics is not None:  # pilot dei rami: perdite per ramo e scala, normalizzate, copertura, monitor
+            rec.update({k: _json_value(v) for k, v in masked_metrics.items()})
+            branch_alarm_reason = branch_alarm.update(step, masked_metrics)
+            if branch_alarm_reason:
+                rec["alarm"] = branch_alarm_reason
+                metrics.write(json.dumps(rec) + "\n")
+                reason = "allarme: " + branch_alarm_reason
+                break
         # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
         rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
         rec["virtual"] = sum(p != "full" for p in batch.presented or [])
@@ -1274,7 +1351,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             save(names)
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
-            part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo il termine dei rami
+            if cfg.freeze_encoder and "masked" in rec:  # pilot dei rami: perdita mascherata e normalizzata (1 = predittore costante)
+                part = f"rami mascherati {rec['masked']:.4f} (normalizzata {rec['masked_normalized']:.3f})"
+            else:
+                part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo i rami
             say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
     if prefetcher is not None:
         prefetcher.close()
@@ -1306,6 +1386,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         prov = out_dir / "spectral_branches.json"
         summary["spectral_branches"] = {"kinds": list(cfg.model.spectral_branches), "freeze_encoder": cfg.freeze_encoder,
                                         "trainable_parameters": sum(p.numel() for p in student.parameters() if p.requires_grad),
+                                        "objective": cfg.model.branch_objective, "freeze_output": cfg.model.branch_freeze_output,
+                                        "collapse_reference": branch_alarm.reference() if branch_alarm is not None else None,
                                         **(json.loads(prov.read_text()) if prov.exists() else {})}
     if ctx.is_main:
         (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))

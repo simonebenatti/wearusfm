@@ -411,6 +411,19 @@ def freeze_raw(model) -> None:
     model.raw_frozen = True
 
 
+def freeze_branch_layers(model) -> list[str]:
+    """Pilot dei rami (`docs/rami_pilota_obiettivo_v1.md`): con `branch_freeze_output` gli strati che dai token fanno l'embedding (`output` di
+    ogni scala, `combine`) restano al passo 0; con l'obiettivo mascherato anche le teste del vecchio obiettivo (non usate). Ritorna i nomi."""
+    cfg = model.cfg
+    frozen = []
+    for name, p in model.named_parameters():
+        out_layer = name.startswith("spectral_branches.") and (".output." in name or ".combine." in name)
+        if (cfg.branch_freeze_output and out_layer) or (cfg.branch_objective == "masked" and name.startswith("branch_heads.")):
+            p.requires_grad_(False)
+            frozen.append(name)
+    return frozen
+
+
 def readout_objectives(student, inp, anchor_targets, *, keep: bool, terms: bool = False) -> dict:
     """Le loss sul readout di un modello con i rami, da UN solo encode non mascherato dello studente (proposta del 13/10/2026, parere di GPT
     `d5c53c1`: due termini additivi, nessun encode in piu' per testa):
