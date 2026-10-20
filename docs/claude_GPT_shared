@@ -15,30 +15,31 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 20/10/2026 dopo lettura dei report C1 e dei log Claude fino a f250af3, riscontrati nel ledger locale. Claude sviluppa e conduce la
-parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log
-versionati, non da interrogazione live in questa review.
+Stato aggiornato al 20/10/2026 alle 18 da Claude, su richiesta di Simone («puoi aggiornare la tabella log e tutta la roba condivisa sino
+all'ultima versione sia in locale che su github ?»): log e ledger fino ad aba1f2e, review GPT sul suo ramo fino a 4203d59. Claude sviluppa e
+conduce la parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato del cluster
+dai log versionati, non da un'interrogazione dal vivo.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
-| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
+| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Review del nuovo delta selezione/planner/sonde, poi merge | Correzioni sul proprio ramo e lettura delle patch prima del deploy | Consegna precedente integrata in 5145efb; nuova tranche fino a f250af3 ancora sul ramo Claude. Critico: selezione APPROVATA nei log, suite 1191 PASS riportata da Claude; verifica GPT della nuova tranche ancora da fare. Questo status integra solo documentazione |
-| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 applicata a C1: 1e-4 e 3e-4 ammissibili; 1e-3 escluso, 7 valutazioni consecutive oltre 1,10 x minimo, picco 1,58. Nessun collasso o STOP nei training C1. Restano lettura di C2 e regola dei run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review dei nuovi strumenti e risultati; codice dei due bracci gia' verificato (45 PASS) | Pianificatore, sonde interne/ufficiali, confronto e campagna | Planner e piano P1/P2 ora consegnati (0adfc52), confronto e S interna P2 implementati. Default scelto sulle validation interne, test ufficiali per conferma: regola aggiornata e firmata nei log Claude. Restano review dei nuovi strumenti, LR da C1-C2, collaudo GPU, ricalibrazione keep e risultati dei bracci; sonde fisiche/profondita' ancora aperte |
-| 6 | Chiudere la finestra 1 | Review del nuovo delta di valutazione e dei report | Segue C2 e corregge afterok prima della valutazione; poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4 (f2c584e). C2 sottomessa il 20/10 alle 11:44: 61526225 e 61526229, in coda per priorita' nell'ultimo log. Residui selezione corretti da Claude; resta un difetto afterok emerso nella valutazione C1. Consuntivo C1 63,8/220 GPUh, C2 ~41/53. Poi C3-C4, LR e piano finale; SCRATCH prossimo 12/11 |
+| 3 | Review e integrazione su main | Verifica e merge della seconda tranche (prompt di Simone del 20/10), in corso | Tranche consegnata con elenco e ordine di verifica (6afa2b9); correzioni sul proprio ramo; lettura delle patch prima del deploy | APERTO sulla seconda tranche. Consegna del 16/10 integrata (fino ad a7edd55, tabella 5145efb). Sul ramo Claude fino ad aba1f2e: 33 commit e un merge di `main`, nessun file in `src/`; codice in uso e non su `main`: 9ab781e (valutazione di C1) e 62bec0b (valutazione di C2). Review GPT della diagnostica dei rami fatta (4203d59, sul ramo GPT, non su `main`), due P2 corretti (bbf824a). Suite 1241 PASS su aba1f2e. GitHub: `main` = 79db894 |
+| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 applicata a C1: 1e-4 e 3e-4 ammissibili; 1e-3 escluso, 7 valutazioni consecutive oltre 1,10 x minimo, picco 1,58. Training di C2 finiti a `max_steps`, nessuno STOP; A4 di C2 nella selezione in corso. Resta la regola dei run lunghi |
+| 5 | Validare l'obiettivo scientifico | Review dei nuovi strumenti e risultati; codice dei due bracci verificato (45 PASS); review della diagnostica dei rami fatta (4203d59) | Bracci: pianificatore, sonde, confronto e campagna. Rami spettrali: diagnostica (attivita' 1 del prompt 7d85f1a), poi una modifica alla volta | Bracci: strumenti consegnati (0adfc52, 1bb8e7d, 641e4e2); prima del lancio review del `critico`, LR da C1-C2, collaudo, ricalibrazione della keep. Rami: diagnostica `rami_diagnostica_v1` approvata dal `critico` (b597786), autorizzata da Simone dopo la valutazione di C2 e a tranche (6fd1f1b), P2 di GPT corretti (bbf824a): deploy nuovo prima del lancio. Attivita' 2-4 del prompt dopo gli esiti. Sonde fisiche/profondita' ancora aperte |
+| 6 | Chiudere la finestra 1 | Review del delta di valutazione e dei report | Segue C2, poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4 (f2c584e). C2: training 61526225 / 61526229 COMPLETED 0:0 (5 h 03 / 5 h 04, 40,4 GPU-ora); valutazione dal deploy 62bec0b sottomessa (61558827-61558834), nessun rifiuto di sbatch (correzione dell'afterok al primo uso); decisione attesa in serata. Calibrazione 104,2/220 GPU-ora. Poi C3 (100M) e C4 (300M), LR e piano finale; SCRATCH prossimo 12/11 |
 
-### Prossimo lavoro in parallelo (20/10)
+### Prossimo lavoro in parallelo (20/10, sera)
 
-- **Claude:** segue i due training C2 e verifica i primi passi; corregge l'afterok verso predecessori della stessa chiamata gia' finiti
-  prima di sottomettere la valutazione di C2. Per i bracci, restano LR, review nuovi strumenti, collaudo e ricalibrazione keep.
-- **GPT:** review della tranche di selezione, planner e sonde consegnata dopo 5145efb, poi integrazione. Review del codice dei due
-  bracci gia' conclusa in 8508b7d (45 PASS); questo controllo di stato non equivale a una nuova approvazione tecnica.
-- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
-  di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** consuntivo C1 63,8 GPUh, residuo prima di C2 156,2/220; C2 ~41 attese / 53 tetto (dopo il tetto,
-  almeno 103,2 per C3-C4). Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
-- **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
+- **Claude:** decisione di C2 dalla selezione 61558834, merge nel file delle decisioni, preventivo di C3. Deploy della diagnostica dei rami
+  con le correzioni bbf824a e lancio a tranche (autorizzato). Bracci: review del `critico` sugli strumenti prima del collaudo.
+- **GPT:** verifica e integrazione della seconda tranche (ordine nella voce «Punto 3: seconda tranche da verificare e integrare»), insieme
+  alle proprie voci e review ancora sul suo ramo (3b97655, 7d85f1a, 4203d59).
+- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. La provenienza nuova delle estrazioni vale dalle cache nuove: non invalida
+  ne' riscrive i risultati del collaudo o di 2A/2C.
+- **Costi:** calibrazione 104,2 usate su 220 (C1 63,8; training di C2 40,4; valutazione di C2 tetto 1,0); finestra 1 tetto 6.000;
+  infrastruttura 15,17/25 residue nell'ultimo consuntivo. Sonde CPU seriali; durata della sonda del 300M da verificare.
+- **Dati:** rinfresco SCRATCH chiuso in fba794f, prossimo 12/11.
 
 ### Confini anti-conflitto e registrazione
 
@@ -2114,6 +2115,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - `tests/cpu` 1241 PASS (1240 + il test dei rami costanti), 22 min 38 s, un thread. Questo codice andra' nel deploy della diagnostica.
 
+### 2026-10-20 | Claude | Tabella dei sei punti aggiornata alle 18 | Ramo: aba1f2e; ramo GPT: 4203d59; main: 79db894
+
+- Su richiesta di Simone ho aggiornato io la tabella e il «Prossimo lavoro», numerazione invariata, dai log e ledger fino ad aba1f2e e dalle
+  review GPT sul suo ramo. Cambiano le righe 3 (seconda tranche aperta, 33 commit), 4 (C2 senza STOP), 5 (diagnostica dei rami) e 6 (C2
+  finita, valutazione in corso). GitHub allineato: ramo di Claude, `main` 79db894 e il ramo GPT come copia di sicurezza.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3165,3 +3172,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Le correzioni arrivano dopo il deploy 62bec0b: la diagnostica avra' un deploy e un checkout suoi (CPU, 10 min); la valutazione di C2
   resta su 62bec0b, che non usa `spectral_diagnostic.py`.
+
+### 2026-10-20 | Claude | Tabella: chi la scrive
+
+- Il blocco dice che Claude lo riporta dal ramo GPT senza rinumerarlo; questa volta l'ho aggiornato io su richiesta di Simone. Se GPT la
+  aggiorna in parallelo, nel merge vale la versione piu' recente riga per riga, senza rinumerare.
