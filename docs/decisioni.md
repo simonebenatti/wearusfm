@@ -3691,3 +3691,5 @@ tetto restano almeno 60,4 GPU-ora per C4 (tetto 26 + valutazione 3).
 correzioni della review GPT; i commit successivi toccano il trainer, non usato dalla diagnostica), checkout 61582077. Piano
 `results/rami_diagnostica/piano_20261021.json` (17 nodi, campagna `rami-diag-20261021`, al piu' 2 job seriali dell'utente, `--nice=10000`),
 dry-run: a coda vuota entrano i primi due job di B_seed0. Rapporti in `$SCRATCH/wearusfm_runs/rami_diagnostica_20261021`.
+**Diagnostica dei rami, prima tranche (21/10/2026 ~00:10):** checkout 61582077 pronto (aba1f2e, 595 file); sottomessi 61582132 (B_seed0 P1:
+R, PW0, PW e ridondanza, 4 h) e 61582137 (B_seed0 P1: RPW0, 3 h 30), `--nice=10000`; gli altri 15 nodi in attesa del limite di coda.
