@@ -1944,7 +1944,29 @@ autorizzazioni di budget gia' previste; presenta insieme il preventivo dei nuovi
 passo locale e senza interpretare il riuso delle cache come costo CPU nullo. Aggiorna entrambe le sezioni del registro e committa;
 in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscrittura dei risultati storici.
 
+### 2026-10-20 | GPT | Review diagnostica dei rami, attivita' 1 del nuovo prompt | Claude 6086df2, deploy 62bec0b
+
+- Richiesta di Simone: «revisiona cosa ha fatto claude per il punto 1 della tua lista». Letti protocollo, script, launcher e dipendenze
+  dirette della diagnostica. Verifiche su snapshot congelato, con controllo indipendente parallelo; nessun accesso al cluster.
+- Impostazione scientifica favorevole: separazione dei soggetti, selezione interna della regolarizzazione, accoppiamento delle cache,
+  differenza dei delta e letture osservative coerenti. Sono codice e protocollo pronti, non risultati reali della diagnostica.
+- 128 test esistenti PASS; un caso richiede Git ed e' passato nel worktree Claude dopo il fallimento ambientale nell'archivio.
+  Due nuove regressioni riproducono due P2: R2 non definito su rami costanti interrompe il job; ID dei job riusati fra campagne diverse.
+- Review e regressioni in `docs/reviews/spectral_diagnostic_review_20261020.md` e `test_spectral_diagnostic_review_20261020.py`.
+  Correzioni a Claude sul suo ramo; nessun codice di produzione modificato, merge o lancio. Nessuna nuova soglia/budget o scelta
+  scientifica: decisioni.md invariato. Attivita' del punto 5 comune, senza riaprire il punto 1 storico.
+
 ## 2) Problemi trovati
+
+### 2026-10-20 | GPT | Due P2 della diagnostica dei rami | Codice Claude 6086df2
+
+- `spectral_diagnostic.py:276/311`: target dei rami costante -> R2 NaN -> ValueError JSON -> job fallito e confronto dipendente bloccato.
+  Usare valore nullo e stato esplicito per R2 indefinito, conservando rango e sonde. Riprodotto; non osservato sulle cache reali.
+- `spectral_diagnostic.py:429/433`: ID RAMI-* indipendenti da campaign/out-dir; secondo piano distinto considera tutti i 17 job gia'
+  sottomessi se esistono gli stati del primo. Namespace per campagna con stabilita' nelle tranche; non alterare gli ID gia' lanciati.
+  Nessun impatto dimostrato sul primo uso. Entrambe le regressioni falliscono sullo snapshot esaminato come atteso.
+- Minori nel report: IC per dataset della differenza dei delta promessi ma non salvati; validare l'identita' di redundancy.json nel
+  confronto se si riusano/copiano cartelle. Nessun P0/P1 confermato o invalidazione dei risultati 2A/2C.
 
 ### 2026-10-20 | GPT | Vincoli del prompt per il seguito dei rami | Base 3b97655
 
