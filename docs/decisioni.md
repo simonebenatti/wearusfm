@@ -3641,3 +3641,10 @@ checkpoint mancante non conta piu' fra i problemi di A1, cosi' un run altrimenti
 («la valutazione si completa, non si salta») invece di diventare un esito; (2) i test d'estrazione controllano che P1 e P2 scrivano i campi
 che la sonda verifica; (3) il protocollo `docs/calibrazione_c1_c4_selezione.md` elenca i controlli bloccanti della review GPT. Test collegati
 120 PASS. Questo codice e' quello del deploy della valutazione di C2 e della diagnostica dei rami.
+
+**Deploy della valutazione di C2 e della diagnostica dei rami (20/10/2026).** Preflight in sola lettura pulito (ref e cartella nuovi assenti,
+hook solo `.sample`, `updateInstead` solo su `main`; in coda solo i due training di C2, su un altro checkout). `deploy/w1cal-eval-20261020` =
+62bec0b71e89cdcff54de7c7e0f93d7046019213 (codice con il merge della review GPT, `critico` APPROVATO, e la correzione dell'afterok), checkout
+di campagna job 61540094 (1 core, 10 min). Piano `results/infra/w1cal_c2_20261020/valutazione_C2.json` dalla campagna
+`results/infra/w1cal_campaign_c2_eval_20261020.json` (piano di training di C2 rigenerato identico byte per byte), dry-run della catena: 2
+guardie, 2 estrazioni (0,5 GPU-ora di tetto ciascuna), 2 sonde CPU, selezione. Sottomissione a training finiti.
