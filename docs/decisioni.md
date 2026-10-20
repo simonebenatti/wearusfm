@@ -3616,3 +3616,9 @@ teacher sempre accanto. Limite di coda della diagnostica: **2** job seriali dell
 Ritardo massimo su un job seriale della finestra 1: al piu' 4 h **se il nice prevale sull'eta'** (pesi di priorita' non letti: `scontrol` e
 `sprio` non sono fra i comandi ammessi a leonardo-ops), **caso peggiore ~8 h**. Soggetti di UCI-EMG verificati sulla provenienza della
 tranche downstream: 36, 19 interni, 662 finestre in tutto (EPN-612: 612, 314 interni, 91.800 finestre).
+
+**Diagnostica dei rami: terza review del `critico` (20/10/2026, su 84bcbe0) APPROVATO.** Un minore chiuso (commento di `NICE` allineato al
+ritardo condizionato). **Lettura congelata con questo commit**, prima di qualunque sonda: quella delle voci del 20/10 come precisata dalla
+seconda review («entro le soglie» = regola non superata, non esclude una differenza neanche oltre 1 punto; differenza dei delta descrittiva
+senza soglia). **Lancio da autorizzare** (preventivo ~241 core-ora attese, tetto 481 ore locali, 0 GPU-ora, ore locali CPU dell'account),
+comunque dopo la valutazione di C2.
