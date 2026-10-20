@@ -3675,3 +3675,13 @@ attraverso le code delle wavelet (lo studente calcola gli spettri sul segnale co
 strati allenati. Per l'ultimo Claude ha proposto due rimedi: un controllo ibrido a costo GPU zero (token del vecchio obiettivo, strati finali
 del passo 0) e due run dell'obiettivo vecchio con gli strati finali congelati. Simone: «se consigli di aggiungere, aggiungi», «vai»: si
 aggiungono i due run (PWf) e il primario diventa il confronto fra obiettivi a parita' di strati allenati e LR. Protocollo in revisione.
+
+**C2 decisa con le regole firmate (selezione 61558834, 20/10/2026 20:12): confermati 1e-4 e 3e-4.** Entrambi ammissibili al seme 1:
+1e-4 pannello massimo 1,04 volte il minimo, rango finale 124; 3e-4 massimo 1,03, rango 87; nessuna valutazione sopra 1,10. S della P1 18,01
++- 0,77 (1e-4) e 17,95 +- 0,71 (3e-4); confronto descrittivo 1e-4 - 3e-4 = +0,06 punti (SE 0,27, parita'). Identita' dei due run verificata
+(99 campi, codice 72cf24a). `results/infra/w1cal_decisioni.json` = C1 finalisti + C2 confermati; rapporti, registro e config/summary in
+`results/infra/w1cal_c2_20261020/`. Consuntivo della valutazione: 2 estrazioni da 11 min 43 (**0,39 GPU-ora**), sonde 1 h 16 e 1 h 20 (~21
+core-ora). **Calibrazione: 104,6 GPU-ora usate su 220.**
+**Preventivo C3 (da autorizzare):** 100M, 0,5 epoche (12.261 passi, warmup 1.962, decay da 9.809), LR 1e-4 e 3e-4, seme 0, un job da 6 h 30
+per run: training 39,8 attese / 52,0 tetto, valutazione 1,3 / 3,0 (CPU fino a ~66 core-ora): **~41 / 55 GPU-ora (440 ore locali)**; dopo il
+tetto restano almeno 60,4 GPU-ora per C4 (tetto 26 + valutazione 3).
