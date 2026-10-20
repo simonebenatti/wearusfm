@@ -3510,3 +3510,16 @@ Guardie 61379130/61379133/61379134 COMPLETED 0:0 (checkpoint post-decay verifica
 («Job dependency problem»: afterok su una guardia gia' finita e uscita dalla memoria di SLURM; nessun job creato): risottomessa senza
 dipendenza col `--dopo-rifiuto` del submitter, dopo aver verificato la guardia. Tetto della valutazione 1,5 GPU-ora sul budget della
 calibrazione (63,2 usate su 220).
+
+**C1 decisa con le regole firmate (selezione 61379881, 19/10/2026 16:21): finalisti 1e-4 e 3e-4.** Ammissibilita': 1e-4 si' (pannello
+massimo 1,08 volte il minimo, rango finale 118), 3e-4 si' (una valutazione sopra 1,10, massimo 1,12, rango 85), **1e-3 no: A4, 7
+valutazioni consecutive oltre 1,10 volte il minimo fino al passo 8.000 (massimo 1,58)**. Regola di C1: 3e-4 ammissibile -> finalisti 3e-4 e
+la migliore alternativa ammissibile, cioe' 1e-4 (unica). S della P1 (descrittivo, non decide qui): 18,21 +- 0,78 / 17,46 +- 0,73 / 15,86 +-
+0,60; confronti accoppiati descrittivi: 1e-4 - 3e-4 = +0,74 punti (SE 0,32), 1e-4 - 1e-3 = +2,35 (0,40), 3e-4 - 1e-3 = +1,61 (0,30). Identita'
+dei tre run verificata (99 campi, codice 72cf24a). File delle decisioni: `results/infra/w1cal_decisioni.json`; rapporti e registro in
+`results/infra/w1cal_c1_20261016/valutazione/`.
+Consuntivo della valutazione: 3 estrazioni da 11 min (**0,57 GPU-ora**), sonde 1 h 09 / 1 h 17 / 1 h 46 in fila (~34 core-ora), selezione
+3 min. Calibrazione: 63,8 GPU-ora usate su 220.
+**Preventivo C2 (da autorizzare):** 1e-4 e 3e-4 al seme 1, 24.523 passi, un job da 6 h 30 per run: training 40,2 attese / 52,0 tetto,
+valutazione 0,6 / 1,0: **~41 / 53 GPU-ora (424 ore locali)**; dopo il tetto restano almeno 103 GPU-ora della calibrazione per C3 e C4
+(tetti 52 + 26 + valutazioni 6). Training dallo stesso checkout di C1 (72cf24a), stesso codice dei run da confermare.
