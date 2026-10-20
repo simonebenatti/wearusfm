@@ -1898,7 +1898,62 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Riferimenti metodologici consultati: TS2Vec https://arxiv.org/abs/2106.10466 e TF-C https://arxiv.org/abs/2206.08496;
   motivano alternative per serie temporali, non ne dimostrano l'efficacia su WearUsFM. Nessun nuovo training/test o modifica scientifica.
 
+### 2026-10-20 | GPT | Prompt operativo per Claude: seguito dei rami spettrali | Base 3b97655
+
+Richiesta di Simone: preparare il prompt sui quattro interventi, con sviluppo a Claude e review a GPT. Si puo' iniziare dalla diagnostica
+e dalla preparazione locale; i pilot successivi dipendono dagli esiti. Queste attivita' appartengono al punto 5 della tabella unica;
+il punto 1 storico e i verdetti 2A/2C restano chiusi. Nessuna nuova sottomissione con questa consegna.
+
+**Prompt da inoltrare:**
+
+Leggi CLAUDE.md e il registro aggiornato, compresa la discussione GPT del 20/10 (commit 3b97655). Lavora nel tuo worktree. Obiettivo:
+capire perche' allenare PSD e wavelet riduce il vantaggio iniziale, poi provare una sola modifica alla volta. Mantieni entrambi i rami;
+il raw resta congelato nei primi esperimenti. Non modificare le campagne di calibrazione in corso o il default della finestra 1.
+
+1. **Diagnostica dai dati gia' estratti.** Verifica cache, hash, split e disponibilita' di una validation interna disgiunta dai test
+   ufficiali. Prepara il confronto dei soli P+W al passo 0 contro finali, con R e R+P+W come controlli, usando gli stessi ingressi,
+   soggetti e semi. Normalizzazione e scelta della regolarizzazione solo nel training/validation previsto, mai sui test. Leggi i
+   risultati separatamente per dataset, poi aggregati. Rango effettivo e ridondanza col raw sono diagnostiche accessorie. La domanda
+   e' se il degrado si vede anche nei soli rami o soprattutto nella concatenazione; questo non identifica da solo la causa.
+   Se le cache non coprono la validation interna, elenca cosa manca e prepara la minima estrazione necessaria, senza riciclare
+   i test ufficiali per scegliere una variante. Consegna script, test mirati, protocollo breve e preventivo CPU/disco.
+
+2. **Un obiettivo temporale per i rami.** In base alla diagnostica, proponi un solo pilot: predizione di rappresentazioni locali
+   mascherate O coerenza fra viste dello stesso intervallo. Motiva la scelta. Specifica teacher/target/stop-gradient, preservazione
+   dell'informazione utile e controlli anti-collasso; se usi viste aumentate, giustifica le trasformazioni per EMG. Definisci dove
+   applicare le maschere e il supporto dei filtri: nessuna informazione del bersaglio nascosto deve entrare dal contesto o da un
+   altro ramo. Confronta passo 0, obiettivo precedente e nuovo obiettivo a parita' di architettura, dati, semi ed esposizione;
+   dichiara il costo effettivo. Non attribuire automaticamente tutto alla loss: LR/schedule restano spiegazioni alternative.
+   Fissa selezione dei checkpoint, endpoint e criteri prima del training; loss diverse non si confrontano dal loro valore numerico.
+   Nessun training congiunto del raw in questo pilot. Un solo seme, se usato nel collaudo, resta una verifica preliminare.
+
+3. **Informazione spaziale e fusione.** Verifica cosa si perde nella media dei canali dei rami e proponi la modifica minima che
+   conservi identita'/geometria degli elettrodi, canali QC e numero variabile di canali. Cross-attention e' un'opzione da motivare,
+   non un requisito. Prepara questa ablation separata dalla nuova loss, con controlli per numero di parametri e dimensione
+   dell'embedding quando pertinenti. Il confronto deve mantenere dati e obiettivo uguali; attivalo secondo gli esiti della diagnosi.
+
+4. **Trasferimento multi-dataset.** Prepara il confronto emg2qwerty contro un piccolo sottoinsieme multi-dataset gia' disponibile,
+   con stessa architettura, loss, semi ed esposizione definita prima (finestre e durata effettiva riportate). Proteggi soggetti e
+   split riservati alla validazione/test secondo il protocollo. Separa l'effetto della varieta' dei dati dall'effetto di piu' training;
+   non cambiare insieme anche fusione e obiettivo. Riporta metriche per dataset, disponibilita' delle bande e limiti delle wavelet
+   lente sulle finestre da 1 s; non cambiare silenziosamente i target o la regola dei bordi.
+
+Puoi iniziare subito con codice, verifiche locali e piano. Consegna in blocchi separati: prima diagnostica, poi proposta del pilot,
+poi ablation spaziale e dati. GPT revisiona protocolli, codice e risultati di ogni consegna. Mantieni il passaggio del critico e le
+autorizzazioni di budget gia' previste; presenta insieme il preventivo dei nuovi job necessari, senza richiedere conferme per ogni
+passo locale e senza interpretare il riuso delle cache come costo CPU nullo. Aggiorna entrambe le sezioni del registro e committa;
+in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscrittura dei risultati storici.
+
 ## 2) Problemi trovati
+
+### 2026-10-20 | GPT | Vincoli del prompt per il seguito dei rami | Base 3b97655
+
+- Una sonda sui soli rami distingue due spiegazioni del degrado, ma non prova da sola perdita d'informazione: contano leggibilita'
+  lineare, regolarizzazione e dominio. Il controllo al passo 0 ha filtri fisici e normalizzazione calibrata.
+- L'esistenza delle cache ufficiali non garantisce la copertura di una validation interna indipendente; questa va verificata prima
+  di ottimizzare. I quattro interventi non costituiscono quattro modifiche simultanee o quattro campagne gia' finanziate.
+- Il prompt e' una consegna di lavoro richiesta da Simone, non una firma di nuove soglie, di una specifica loss o del budget dei
+  pilot. Nessun cambiamento a decisioni.md necessario in questa attivita'; nessun test di produzione o lancio eseguito.
 
 ### 2026-10-20 | GPT | Limiti dell'interpretazione del punto 1 | Discussione, nessun nuovo difetto confermato
 
