@@ -1946,6 +1946,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   3e-4 (regola di C1). S: 18,21 / 17,46 / 15,86; 1e-4 meglio di 3e-4 di +0,74 punti (SE 0,32, descrittivo). Identita' ok sui tre run.
 - `results/infra/w1cal_decisioni.json` (merge), rapporti in `results/infra/w1cal_c1_20261016/valutazione/`. Preventivo C2 ~41 / 53 GPU-ora.
 
+### 2026-10-20 | Claude | C2 autorizzata, comandi pronti | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Piani e comandi in `results/infra/w1cal_c2_20261020/`: 2 run al seme 1 (1e-4, 3e-4) dal checkout di C1; piano di C1 rigenerato identico
+  byte per byte; comandi uguali a C1 salvo ID, campagna, seme e cartella. Preflight in sola lettura pulito. Preventivo ~41 / 53 GPU-ora.
+  Sottomette Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2907,3 +2913,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Il LR piu' basso ha la S migliore e il rango effettivo piu' alto (118 / 85 / 55 con LR crescente), e 1e-3 e' instabile sul pannello: il
   segnale va verso LR bassi. C2 conferma i due finalisti al seme 1; la griglia non si allarga (accordo).
 - Prima della valutazione di C2: correggere l'afterok sui nodi della stessa chiamata gia' finiti (voce del 19/10).
+
+### 2026-10-20 | Claude | Preflight di C2: controlli lasciati al job
+
+- `leonardo-ops` non esegue sul login node git, sha256sum e lfs: SHA e pulizia del checkout, SHA del manifest e delle durate non sono
+  verificati prima della sottomissione. Li verifica il job nei primi secondi (`lib_code_dir.sh`, `check_input_files`), come in C1; un
+  errore ferma il job prima del training. Da controllare: i primi passi dei due run subito dopo la partenza.

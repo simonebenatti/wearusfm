@@ -1,0 +1,143 @@
+{
+ "dry_run": false,
+ "batch": 32,
+ "windows_per_epoch": 784756.9792373349,
+ "steps_at_d": 98094,
+ "warmup_steps": 1962,
+ "manifest": {
+  "hash": "167923c337ccf604a605b4c1b2e2ec3375f4c2831b387c73f164c02d4fd8c2ad",
+  "file_sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+  "file": "manifest_v1_1_nested_1.json.gz"
+ },
+ "runs": [
+  {
+   "phase": "C1",
+   "id": "W1CAL-C1-30M-lr0p0001-s0",
+   "size": "30M",
+   "preset": "sanity",
+   "seed": 0,
+   "lr": 0.0001,
+   "epochs": 1.0,
+   "steps": 24523,
+   "warmup_steps": 1962,
+   "decay_start": 19618,
+   "checkpoints": [
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ],
+   "memory_gib_per_gpu": 10.0,
+   "hours": 4.77,
+   "job_time": "06:30:00",
+   "jobs": 1,
+   "gpu_hours_expected": 20.1,
+   "gpu_hours_max": 26.0
+  },
+  {
+   "phase": "C1",
+   "id": "W1CAL-C1-30M-lr0p0003-s0",
+   "size": "30M",
+   "preset": "sanity",
+   "seed": 0,
+   "lr": 0.0003,
+   "epochs": 1.0,
+   "steps": 24523,
+   "warmup_steps": 1962,
+   "decay_start": 19618,
+   "checkpoints": [
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ],
+   "memory_gib_per_gpu": 10.0,
+   "hours": 4.77,
+   "job_time": "06:30:00",
+   "jobs": 1,
+   "gpu_hours_expected": 20.1,
+   "gpu_hours_max": 26.0
+  },
+  {
+   "phase": "C1",
+   "id": "W1CAL-C1-30M-lr0p001-s0",
+   "size": "30M",
+   "preset": "sanity",
+   "seed": 0,
+   "lr": 0.001,
+   "epochs": 1.0,
+   "steps": 24523,
+   "warmup_steps": 1962,
+   "decay_start": 19618,
+   "checkpoints": [
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ],
+   "memory_gib_per_gpu": 10.0,
+   "hours": 4.77,
+   "job_time": "06:30:00",
+   "jobs": 1,
+   "gpu_hours_expected": 20.1,
+   "gpu_hours_max": 26.0
+  },
+  {
+   "phase": "C2",
+   "id": "W1CAL-C2-30M-lr0p0001-s1",
+   "size": "30M",
+   "preset": "sanity",
+   "seed": 1,
+   "lr": 0.0001,
+   "epochs": 1.0,
+   "steps": 24523,
+   "warmup_steps": 1962,
+   "decay_start": 19618,
+   "checkpoints": [
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ],
+   "memory_gib_per_gpu": 10.0,
+   "hours": 4.77,
+   "job_time": "06:30:00",
+   "jobs": 1,
+   "gpu_hours_expected": 20.1,
+   "gpu_hours_max": 26.0
+  },
+  {
+   "phase": "C2",
+   "id": "W1CAL-C2-30M-lr0p0003-s1",
+   "size": "30M",
+   "preset": "sanity",
+   "seed": 1,
+   "lr": 0.0003,
+   "epochs": 1.0,
+   "steps": 24523,
+   "warmup_steps": 1962,
+   "decay_start": 19618,
+   "checkpoints": [
+    "checkpoint_predecay.pt",
+    "checkpoint_postdecay.pt",
+    "checkpoint.pt"
+   ],
+   "memory_gib_per_gpu": 10.0,
+   "hours": 4.77,
+   "job_time": "06:30:00",
+   "jobs": 1,
+   "gpu_hours_expected": 20.1,
+   "gpu_hours_max": 26.0
+  }
+ ],
+ "blocked": {
+  "C3": "in attesa della conferma di C2",
+  "C4": "in attesa della conferma di C2"
+ },
+ "totals": {
+  "runs": 5,
+  "gpu_hours_expected": 100.5,
+  "gpu_hours_max": 130.0,
+  "gpu_hours_training_only": 95.4,
+  "eval_gpu_hours_expected": 1.5,
+  "eval_gpu_hours_max": 2.5,
+  "eval_cpu_core_hours_max": 123.7
+ },
+ "excluded_from_estimate": "collaudi; batch 64 e decay 10/20% fuori da questa griglia"
+}

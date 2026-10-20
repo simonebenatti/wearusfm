@@ -3523,3 +3523,14 @@ Consuntivo della valutazione: 3 estrazioni da 11 min (**0,57 GPU-ora**), sonde 1
 **Preventivo C2 (da autorizzare):** 1e-4 e 3e-4 al seme 1, 24.523 passi, un job da 6 h 30 per run: training 40,2 attese / 52,0 tetto,
 valutazione 0,6 / 1,0: **~41 / 53 GPU-ora (424 ore locali)**; dopo il tetto restano almeno 103 GPU-ora della calibrazione per C3 e C4
 (tetti 52 + 26 + valutazioni 6). Training dallo stesso checkout di C1 (72cf24a), stesso codice dei run da confermare.
+
+**Calibrazione C2 AUTORIZZATA (Simone, 20/10/2026).** Simone: «via per C2, prepara i comandi». Due run al seme 1, LR 1e-4 e 3e-4
+(`W1CAL-C2-30M-lr0p0001-s1`, `W1CAL-C2-30M-lr0p0003-s1`), 24.523 passi, warmup 1.962, decay da 19.618, un job da 6 h 30 per run, QoS
+normal, dallo stesso checkout congelato di C1 (`wearusfm_campaigns/w1cal-20261016`, 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec). Piani in
+`results/infra/w1cal_c2_20261020/` (`calibrazione_C2.json`, `comandi_training_C2.txt`, preventivo, riepilogo), generati con le decisioni
+di C1; il piano di C1 rigenerato e' identico byte per byte a quello committato, e i comandi di C2 differiscono da quelli di C1 solo per ID,
+campagna, seme e cartella del run. Preflight in sola lettura (20/10): coda vuota, cartelle dei run di C2 assenti, checkout (sola lettura) e
+ingressi con le date di C1; SHA e pulizia del checkout, SHA del manifest e delle durate li verifica il job all'avvio (`lib_code_dir.sh`,
+`check_input_files`). **Preventivo C2: ~41 GPU-ora attese, tetto 53 (424 ore locali)**, training 40,2 / 52,0 e valutazione 0,6 / 1,0, sul
+budget della calibrazione (63,8 usate su 220): dopo il tetto restano almeno 103,2. Sottomissione da parte di Simone. La valutazione di C2
+parte da un deploy nuovo, dopo la correzione dell'afterok della catena.
