@@ -2126,6 +2126,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Simone: «A, solo famiglia B, includi il controllo di LR». Si prepara il pilot della predizione locale mascherata nei rami (raw congelato),
   famiglia B, piu' l'obiettivo vecchio a LR piu' basso. Protocollo e codice locali, poi `critico`, preventivo e via.
 
+### 2026-10-20 | Claude | Rami spettrali, punto 2: review del disegno, braccio PWf aggiunto | Nessun job
+
+- Review del `critico` sul disegno: DA RIVEDERE (fuga dalle code delle wavelet, anti-collasso, confondimento obiettivo/strati allenati, piu'
+  6 minori). Simone ha scelto di aggiungere i due run dell'obiettivo vecchio con gli strati finali congelati (PWf): primario PWf -> PWm.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3182,3 +3187,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Il blocco dice che Claude lo riporta dal ramo GPT senza rinumerarlo; questa volta l'ho aggiornato io su richiesta di Simone. Se GPT la
   aggiorna in parallelo, nel merge vale la versione piu' recente riga per riga, senza rinumerare.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 2: difetti del mio primo disegno
+
+- Il primo disegno lasciava una fuga (le wavelet filtrano in frequenza: code oltre i +-3 sigma), confrontava obiettivi con strati allenati
+  diversi e aveva un riferimento banale sbagliato (predittore costante, non zero). Corretti nella revisione, prima di qualunque codice nel
+  trainer.

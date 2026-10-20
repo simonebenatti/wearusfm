@@ -3668,3 +3668,10 @@ Nessun rifiuto di sbatch (correzione dell'afterok del 20/10 al primo uso). Tetto
 (predizione di rappresentazioni locali mascherate nei rami, raw congelato), teacher della sola famiglia B (B_seed0, B_seed1), con un braccio
 di controllo dell'LR sull'obiettivo vecchio. Protocollo, codice e preventivo da preparare; review del `critico` prima del lancio; il lancio
 dopo l'esito della diagnostica del punto 1, che ne orienta la lettura.
+
+**Rami spettrali, punto 2: review del disegno del `critico` (20/10/2026) DA RIVEDERE; braccio in piu' scelto da Simone.** Tre bloccanti: fuga
+attraverso le code delle wavelet (lo studente calcola gli spettri sul segnale coi tratti nascosti azzerati), anti-collasso tarato male
+(riferimento = predittore costante, soglie relative al passo 0 per ramo e scala, varianza assoluta dei token), obiettivo confuso con gli
+strati allenati. Per l'ultimo Claude ha proposto due rimedi: un controllo ibrido a costo GPU zero (token del vecchio obiettivo, strati finali
+del passo 0) e due run dell'obiettivo vecchio con gli strati finali congelati. Simone: «se consigli di aggiungere, aggiungi», «vai»: si
+aggiungono i due run (PWf) e il primario diventa il confronto fra obiettivi a parita' di strati allenati e LR. Protocollo in revisione.
