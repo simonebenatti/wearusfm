@@ -3656,3 +3656,10 @@ come null con lo stato «non definito» (prima R^2 NaN faceva fallire il JSON e 
 delta anche per dataset; `compare` controlla protocollo, compito e teacher di `redundancy.json`. Le due regressioni di GPT passano sul ramo;
 test mirati 71 PASS. La diagnostica partira' da un deploy nuovo con queste correzioni (la valutazione di C2 resta sul deploy 62bec0b, che
 non usa questo script).
+
+**C2, training finiti (consuntivo, 20/10/2026).** 61526225 (1e-4) 5 h 03 e 61526229 (3e-4) 5 h 04: COMPLETED 0:0, 24.523 passi
+(`max_steps`), checkpoint pre e post-decay, codice 72cf24a. **40,4 GPU-ora** (4 GPU x 10 h 07; attese 40,2, tetto 52) sul budget della
+calibrazione: **104,2 usate su 220**, residuo 115,8.
+**Valutazione di C2 sottomessa (20/10/2026 17:3x)** dal checkout `w1cal-eval-20261020` (62bec0b): guardie 61558827 / 61558828 (senza afterok:
+training gia' finiti bene secondo sacct), estrazioni 61558829 (1e-4) / 61558831 (3e-4), sonde 61558830 / 61558832, selezione 61558834.
+Nessun rifiuto di sbatch (correzione dell'afterok del 20/10 al primo uso). Tetto 1,0 GPU-ora.

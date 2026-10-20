@@ -2105,6 +2105,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   obbligatoria. Minori: IC per dataset della differenza dei delta, identita' di `redundancy.json` controllata. Le due regressioni di GPT
   (`docs/reviews/test_spectral_diagnostic_review_20261020.py`, sul ramo GPT) passano con `WEARUSFM_REVIEW_SOURCE` sul ramo Claude.
 
+### 2026-10-20 | Claude | C2: training finiti, valutazione sottomessa | Valutazione: 62bec0b71e89cdcff54de7c7e0f93d7046019213
+
+- Training COMPLETED 0:0 alle 17:06-17:07, 40,4 GPU-ora (calibrazione 104,2 / 220). Catena: guardie 61558827/28, estrazioni 61558829/31,
+  sonde 61558830/32, selezione 61558834; nessun rifiuto. Uscita in `results/infra/w1cal_c2_20261020/catena_valutazione_C2_submit.txt`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
