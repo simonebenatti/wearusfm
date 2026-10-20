@@ -1882,7 +1882,33 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   Nessuna nuova review/test/integrazione di codice in questo status. Nuovi documenti e nuove scelte di Claude letti sul suo ramo;
   nessun cambiamento di protocollo o budget da parte di GPT. decisioni.md non richiede nuove firme per questo aggiornamento.
 
+### 2026-10-20 | GPT | Discussione sul seguito del punto 1 | Base 79db894; report 2A/2C congelati
+
+- Su richiesta di Simone, riletti protocolli, report 2A/2C e confronto secondario, piu' `model/spectral_branches.py`; controllo
+  indipendente in parallelo. 2A: MS-M P1 -0,366/P2 +0,068 punti; 2C famiglia B: RPW-R +0,343/+0,745. Su P2, RPW0-R +2,337
+  e RPW-RPW0 -1,592 punti: segnale descrittivo da approfondire, non nuovo endpoint primario o prova della causa.
+- Ipotesi discusse: obiettivo di ricostruzione delle 32 statistiche globali troppo ristretto; perdita dell'identita' spaziale nella
+  media sui canali dei rami; trasferimento limitato dal training solo emg2qwerty. LR/schedule e selezione del checkpoint sono spiegazioni
+  alternative, non escluse. Le wavelet lente hanno inoltre disponibilita' ridotta nelle finestre P1 da 1 s.
+- Proposta, NON decisione o lancio: prima sonda CPU sui SOLI rami P+W, passo 0 contro finali, usando le cache e validation interna,
+  per distinguere degrado del ramo e problema della concatenazione col raw; ranghi/ridondanza come diagnostiche accessorie e
+  regolarizzazione scelta nel train. Poi, secondo l'esito, un solo pilot con obiettivo locale tempo-frequenza e raw
+  congelato. Maschere coerenti fra viste e supporti dei filtri, controlli anti-collasso, confronto con passo 0 e obiettivo precedente;
+  generalizzazione multi-dataset da verificare separatamente. Nuova cross-attention solo dopo aver identificato il collo di bottiglia.
+- Riferimenti metodologici consultati: TS2Vec https://arxiv.org/abs/2106.10466 e TF-C https://arxiv.org/abs/2206.08496;
+  motivano alternative per serie temporali, non ne dimostrano l'efficacia su WearUsFM. Nessun nuovo training/test o modifica scientifica.
+
 ## 2) Problemi trovati
+
+### 2026-10-20 | GPT | Limiti dell'interpretazione del punto 1 | Discussione, nessun nuovo difetto confermato
+
+- I primari negativi escludono l'adozione delle varianti provate con la regola firmata; non dimostrano che ogni rappresentazione
+  spettrale sia inutile. Il vantaggio dei rami al passo 0 e' secondario descrittivo, con due teacher e IC P2 descrittivi.
+- La perdita durante il training e' compatibile con un obiettivo troppo ristretto, ma anche con ottimizzazione, dominio o geometria
+  dell'embedding. Non attribuirla automaticamente a compressione distruttiva. Passo 0 significa frontend fisici e normalizzazione
+  calibrata piu' encoder dei rami non allenati: non e' la baseline dell'intero encoder casuale del punto 2.
+- Nuove scelte vanno sviluppate sulla validation interna e confermate con protocollo congelato, evitando di ottimizzare ripetutamente
+  sui test ufficiali gia' letti. Punto 1 storico resta chiuso; l'eventuale nuovo obiettivo rientra nel punto 5. decisioni.md invariato.
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
 
