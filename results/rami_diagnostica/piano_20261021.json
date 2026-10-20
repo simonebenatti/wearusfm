@@ -1,0 +1,620 @@
+{
+ "schema": "eval-plan-v0",
+ "campaign": "rami-diag-20261021",
+ "agent": "claude",
+ "limits": {
+  "lrd_all_serial": 2
+ },
+ "nodes": [
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed0-p1-a",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed0",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed0-p1-b",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed0",
+    "--sets",
+    "RPW0"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/RPW0.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed0-p1-c",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed0",
+    "--sets",
+    "RPW"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/RPW.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed0-p2",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p2",
+    "--arm",
+    "B_seed0",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "RPW0",
+    "RPW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed1-p1-a",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed1",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed1-p1-b",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed1",
+    "--sets",
+    "RPW0"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/RPW0.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed1-p1-c",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "B_seed1",
+    "--sets",
+    "RPW"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/RPW.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-B_seed1-p2",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p2",
+    "--arm",
+    "B_seed1",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "RPW0",
+    "RPW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed0-p1-a",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed0",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed0-p1-b",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed0",
+    "--sets",
+    "RPW0"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/RPW0.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed0-p1-c",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed0",
+    "--sets",
+    "RPW"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/RPW.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed0-p2",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p2",
+    "--arm",
+    "A_seed0",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "RPW0",
+    "RPW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed1-p1-a",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed1",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed1-p1-b",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed1",
+    "--sets",
+    "RPW0"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/RPW0.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed1-p1-c",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p1",
+    "--arm",
+    "A_seed1",
+    "--sets",
+    "RPW"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=03:30:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/RPW.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-A_seed1-p2",
+   "kind": "probe",
+   "after": [],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "probe",
+    "--task",
+    "p2",
+    "--arm",
+    "A_seed1",
+    "--sets",
+    "R",
+    "PW0",
+    "PW",
+    "RPW0",
+    "RPW",
+    "--redundancy"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=04:00:00",
+    "--nice=10000"
+   ],
+   "inputs": [],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/redundancy.json"
+   ]
+  },
+  {
+   "id": "RAMI-rami-diag-20261021-compare",
+   "kind": "compare",
+   "after": [
+    "RAMI-rami-diag-20261021-B_seed0-p1-a",
+    "RAMI-rami-diag-20261021-B_seed0-p1-b",
+    "RAMI-rami-diag-20261021-B_seed0-p1-c",
+    "RAMI-rami-diag-20261021-B_seed0-p2",
+    "RAMI-rami-diag-20261021-B_seed1-p1-a",
+    "RAMI-rami-diag-20261021-B_seed1-p1-b",
+    "RAMI-rami-diag-20261021-B_seed1-p1-c",
+    "RAMI-rami-diag-20261021-B_seed1-p2",
+    "RAMI-rami-diag-20261021-A_seed0-p1-a",
+    "RAMI-rami-diag-20261021-A_seed0-p1-b",
+    "RAMI-rami-diag-20261021-A_seed0-p1-c",
+    "RAMI-rami-diag-20261021-A_seed0-p2",
+    "RAMI-rami-diag-20261021-A_seed1-p1-a",
+    "RAMI-rami-diag-20261021-A_seed1-p1-b",
+    "RAMI-rami-diag-20261021-A_seed1-p1-c",
+    "RAMI-rami-diag-20261021-A_seed1-p2"
+   ],
+   "queue": "lrd_all_serial",
+   "gpu_hours": 0,
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021",
+   "expected_sha": "aba1f2ef3a94b68b8e44bce005adf7b005a92011",
+   "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+   "args": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021",
+    "compare"
+   ],
+   "exports": {},
+   "sbatch": [
+    "--time=00:30:00",
+    "--cpus-per-task=2",
+    "--nice=10000"
+   ],
+   "inputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/B_seed1/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/B_seed1/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed0/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p1/A_seed1/RPW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/R.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/PW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/PW.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/RPW0.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/p2/A_seed1/RPW.json"
+   ],
+   "outputs": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021/esito.json"
+   ]
+  }
+ ]
+}

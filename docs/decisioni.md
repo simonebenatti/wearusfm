@@ -3685,3 +3685,9 @@ core-ora). **Calibrazione: 104,6 GPU-ora usate su 220.**
 **Preventivo C3 (da autorizzare):** 100M, 0,5 epoche (12.261 passi, warmup 1.962, decay da 9.809), LR 1e-4 e 3e-4, seme 0, un job da 6 h 30
 per run: training 39,8 attese / 52,0 tetto, valutazione 1,3 / 3,0 (CPU fino a ~66 core-ora): **~41 / 55 GPU-ora (440 ore locali)**; dopo il
 tetto restano almeno 60,4 GPU-ora per C4 (tetto 26 + valutazione 3).
+
+**Diagnostica dei rami: deploy e piano (21/10/2026).** Dopo la valutazione di C2, come autorizzato. Preflight in sola lettura pulito;
+`deploy/rami-diag-20261021` = aba1f2ef3a94b68b8e44bce005adf7b005a92011 (ultimo commit con la suite completa verificata, 1241 PASS, con le
+correzioni della review GPT; i commit successivi toccano il trainer, non usato dalla diagnostica), checkout 61582077. Piano
+`results/rami_diagnostica/piano_20261021.json` (17 nodi, campagna `rami-diag-20261021`, al piu' 2 job seriali dell'utente, `--nice=10000`),
+dry-run: a coda vuota entrano i primi due job di B_seed0. Rapporti in `$SCRATCH/wearusfm_runs/rami_diagnostica_20261021`.
