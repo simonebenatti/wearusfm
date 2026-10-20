@@ -2079,6 +2079,26 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - `tests/cpu` 1240 PASS (1239 + il test del run sano senza sonda e senza checkpoint), 19 min 08 s, un thread. Checkout 61540094 pronto.
 
+### 2026-10-20 | Claude | Punto 3: seconda tranche da verificare e integrare | Testa: c21ca40 (base: main 79db894)
+
+- Sul ramo `worktree-claude-training-engine`, non su `main`: 29 commit e un merge di `main` (58c043a), 24 file di codice (`scripts/`,
+  launcher, `tests/cpu/`) piu' documenti e risultati. **Nessun file in `src/`**: il percorso del training e' quello di `main`; i training
+  di C1 e C2 girano con 72cf24a, gia' su `main`. Suite 1240 PASS su 62bec0b (c21ca40).
+- **Codice in uso sul cluster e non ancora su `main`:** 9ab781e (valutazione di C1, `deploy/w1cal-eval-20261019`) e 62bec0b (valutazione
+  di C2 e diagnostica dei rami, `deploy/w1cal-eval-20261020`).
+- Gruppi, con l'ordine consigliato per la verifica:
+  1. **Selezione C1-C4 e catena di valutazione** (in uso per C2): 5c3ec80, 698763b, 9ab781e, 58c043a (merge della review 41ce569),
+     62bec0b, f89c780. Cambiano il comportamento: identita' sull'intera configurazione con `train_jepa.build_config` estratta da `main`
+     (stesso ordine degli errori), solo rapporti di S della P1, candidato fermato prima della sonda inammissibile, run sano senza sonda e
+     senza checkpoint = errore, catena che rilegge `sacct` prima di ogni nodo. `critico` APPROVATO su 9ab781e e su 62bec0b.
+  2. **Diagnostica dei rami spettrali** (da lanciare dopo la valutazione di C2): c631c6d, 10d3731, 84bcbe0, b597786, 7266a28, 6fd1f1b,
+     8f3f68b; `scripts/spectral_diagnostic.py` e il suo launcher; `critico` APPROVATO su b597786.
+  3. **Strumenti dei bracci, punto 5** (non ancora usati): 0d45a2f, 589be8c, 94e972a, 641e4e2 (S della P2), 1bb8e7d (`arms_compare.py`),
+     931dd26 (launcher delle sonde con CODE_DIR), 0adfc52 (`arms_plan.py`). La review del `critico` va fatta prima del lancio dei bracci.
+  4. **Registrazioni di C1 e C2** (documenti e risultati): e79a536, 5066da8, 74a589c, 082767f, f2c584e, 8bd51be, f250af3, fb4ffd4,
+     6086df2, c21ca40.
+- Integrazione per merge, senza squash ne' rebase. Se una correzione cambia il comportamento del mio codice, la rileggo prima del deploy.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3119,3 +3139,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Il controllo del checkpoint di GPT, applicato anche senza sonda, trasformava un run sano con un file perso in «inammissibile» e la fase
   andava avanti; il protocollo firmato vuole un errore. Corretto con un test. GPT: da rivedere (non blocca).
+
+### 2026-10-20 | Claude | Punto 3: «chiuso» vale solo per la consegna del 16/10
+
+- La consegna integrata e' quella fino ad a7edd55 (merge 41b80af, chiusura 2dc1197, tabella 5145efb). Dopo restano fuori da `main` i 30
+  commit della voce sopra, compreso il codice che gira nelle valutazioni di C1 e C2: per la tabella il punto 3 e' aperto sulla seconda
+  tranche, come gia' scritto da GPT nella riga del 20/10. GitHub: `main` era fermo a 5145efb, portato a 79db894 (solo avanzamento).
