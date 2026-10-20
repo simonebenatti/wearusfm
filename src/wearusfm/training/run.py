@@ -142,7 +142,8 @@ class RunConfig:
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None}
-BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5}
+BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
+                       "branch_objective": "readout", "branch_freeze_output": False}  # gli ultimi due: pilot dei rami del 20/10
 
 
 def _config_with_defaults(d: dict) -> dict:

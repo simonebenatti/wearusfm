@@ -365,7 +365,7 @@ class SpectralBranches(nn.Module):
 
 # --- readout, teste e loss sul readout con i rami ---------------------------------------------------------------------------------------
 
-BRANCH_PREFIXES = ("spectral_branches.", "branch_heads.")
+BRANCH_PREFIXES = ("spectral_branches.", "branch_heads.", "branch_predictors.")
 
 
 def branch_heads(raw_dim: int, kinds, out_dim: int) -> nn.ModuleDict:

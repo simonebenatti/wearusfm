@@ -120,13 +120,18 @@ class FramePredictor(nn.Module):
         return self.out(self.encoder(x, src_key_padding_mask=~ctx))
 
 
-def make_predictors(kinds, hidden: int, seed: int) -> nn.ModuleDict:
-    """Un predittore per ramo e scala, inizializzati con un generatore separato (seme del run): l'inizializzazione dei rami resta quella del
-    2C (stessi pesi al passo 0)."""
+def make_predictors(kinds, hidden: int, seed: int | None) -> nn.ModuleDict:
+    """Un predittore per ramo e scala. Col `seed`, da un generatore separato che poi si ripristina; con None dal generatore corrente (nel
+    modello: quello dei rami, dopo rami e teste, quindi l'inizializzazione dei rami resta quella del 2C)."""
+    def build():
+        return nn.ModuleDict({f"{k}_{name}": FramePredictor(hidden) for k in kinds for name, _, _, _ in SCALES})
+
+    if seed is None:
+        return build()
     state = torch.random.get_rng_state()
     try:
         torch.manual_seed(int(seed) * 1000 + 7)
-        return nn.ModuleDict({f"{k}_{name}": FramePredictor(hidden) for k in kinds for name, _, _, _ in SCALES})
+        return build()
     finally:
         torch.random.set_rng_state(state)
 

@@ -629,3 +629,14 @@ def test_select_launcher_groups_candidates_and_uses_the_venv(work, tmp_path):  #
     assert r.returncode == 2 and "relativa" in r.stdout
     for name in ("calibration_extract.sbatch", "calibration_probe.sbatch"):
         assert subprocess.run(["bash", "-n", str(REPO / "scripts" / "slurm" / name)]).returncode == 0
+
+
+@pytest.mark.parametrize("run,lr", [("W1CAL-C1-30M-lr0p0001-s0", 1e-4), ("W1CAL-C1-30M-lr0p0003-s0", 3e-4), ("W1CAL-C1-30M-lr0p001-s0", 1e-3)])
+def test_real_c1_configs_stay_verifiable_after_new_config_fields(run, lr):
+    """I `config.json` veri di C1 (codice 72cf24a) contro il piano committato, col codice di oggi: i campi aggiunti dopo (pilot dei rami del
+    20/10: `branch_objective`, `branch_freeze_output`) si confrontano coi loro default su tutte e due le parti, il resto resta identico."""
+    plan = json.loads((REPO / "results/infra/w1cal_c1_20261016/calibrazione_C1.json").read_text())
+    out = CS.check_identity(REPO / "results/infra/w1cal_c1_20261016/runs" / run, plan, lr)
+    assert out["config_checked"] and out["code_sha"] == "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+    have = json.loads((REPO / "results/infra/w1cal_c1_20261016/runs" / run / "config.json").read_text())
+    assert "branch_objective" not in have["model"]  # davvero scritti senza i campi nuovi
