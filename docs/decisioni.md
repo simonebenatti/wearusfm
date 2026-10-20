@@ -3628,3 +3628,8 @@ comunque dopo la valutazione di C2.
 (`SMALL_RELATIVE_TO_TIME`, `PriorityFavorSmall = no`), QoS 300.000, partizione 0. Per la diagnostica dei rami: il nice di 10.000 prevale
 sull'eta' di una sonda in attesa (~476 punti in 4 h, pareggio dopo ~84 h), quindi **il ritardo massimo su un job seriale della finestra 1 e'
 il resto della sonda in esecuzione, al piu' 4 h**; il caso peggiore di ~8 h della voce precedente non si applica.
+
+**Diagnostica dei rami AUTORIZZATA (Simone, 20/10/2026: «vai pure quando pronto»),** alle condizioni presentate: preventivo ~241 core-ora
+attese, tetto 481 ore locali (ore CPU dell'account), 0 GPU-ora; lancio dopo la valutazione di C2, a tranche con `evaluation_chain.py` (al
+piu' 2 job seriali dell'utente, finestra 1 compresa), `--nice=10000`, nessuna tranche nuova a ridosso delle valutazioni di C3 e C4. Lettura
+congelata in b597786. Lo stesso deploy serve alla valutazione di C2 (codice integrato con la review GPT e la correzione dell'afterok).
