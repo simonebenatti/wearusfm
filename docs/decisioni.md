@@ -3648,3 +3648,11 @@ hook solo `.sample`, `updateInstead` solo su `main`; in coda solo i due training
 di campagna job 61540094 (1 core, 10 min). Piano `results/infra/w1cal_c2_20261020/valutazione_C2.json` dalla campagna
 `results/infra/w1cal_campaign_c2_eval_20261020.json` (piano di training di C2 rigenerato identico byte per byte), dry-run della catena: 2
 guardie, 2 estrazioni (0,5 GPU-ora di tetto ciascuna), 2 sonde CPU, selezione. Sottomissione a training finiti.
+
+**Diagnostica dei rami: review GPT (20/10/2026, 4203d59 sul suo ramo, `docs/reviews/spectral_diagnostic_review_20261020.md`) favorevole al
+disegno, due P2 di robustezza corretti, nessun cambio del protocollo scientifico.** (1) Rami costanti: R^2 e CKA non definiti si registrano
+come null con lo stato «non definito» (prima R^2 NaN faceva fallire il JSON e il job); rango effettivo 0. (2) ID dei job unici per campagna
+(`RAMI-<campagna>-<teacher>-<job>`, `--campaign` obbligatoria), stabili nelle tranche della stessa campagna. Minori: IC della differenza dei
+delta anche per dataset; `compare` controlla protocollo, compito e teacher di `redundancy.json`. Le due regressioni di GPT passano sul ramo;
+test mirati 71 PASS. La diagnostica partira' da un deploy nuovo con queste correzioni (la valutazione di C2 resta sul deploy 62bec0b, che
+non usa questo script).

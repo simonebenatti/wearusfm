@@ -102,6 +102,8 @@ rispondono alla domanda, gli altri interpretano.
 interne; ridondanza col raw: CKA lineare fra raw e rami (passo 0, allenati) e fra rami al passo 0 e allenati, e R^2 fuori fold dei rami
 predetti dal raw (ridge sulle feature standardizzate nel train del fold, alpha in {1, 100, 10.000} scelto sui soggetti di validazione del
 fold, R^2 sui soggetti tenuti fuori). Un R^2 che sale col training dice che i rami allenati sono piu' leggibili dal raw (piu' ridondanti).
+Con rami costanti R^2 e CKA non sono definiti: si registrano come null con lo stato «non definito», mai come un valore (review GPT del
+20/10); il rango effettivo resta 0.
 
 ## Codice e test
 
@@ -163,6 +165,8 @@ tranche; le cache si leggono soltanto.
    R PW0 PW --redundancy`, `--time=04:00:00`; `... --sets RPW0` e `... --sets RPW`, `--time=03:30:00`; `... --task p2 --sets R PW0 PW RPW0
    RPW --redundancy`, `--time=04:00:00`), poi il confronto (`spectral_diagnostic.sbatch <OUT> compare`, `--time=00:30:00
    --cpus-per-task=2`), tutti con `--nice=10000`.
+   `--campaign` e' obbligatoria ed entra negli ID dei job (`RAMI-<campagna>-<teacher>-<job>`): gli ID del registro sono unici per sempre,
+   quindi una campagna nuova non eredita lo stato di un'altra; nelle tranche della stessa campagna gli ID restano gli stessi (review GPT).
 3. `evaluation_chain.py <piano> --submit` via leonardo-ops, a tranche (dry-run prima di ogni tranche), finche' tutto e' sottomesso; nessuna
    tranche nuova a ridosso delle valutazioni di C3 e C4.
 4. Copia di rapporti ed esito sul Mac, commit in `results/rami_diagnostica/`, voce nel registro e in `docs/decisioni.md`; poi la proposta
