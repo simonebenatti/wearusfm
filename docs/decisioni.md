@@ -3536,3 +3536,11 @@ budget della calibrazione (63,8 usate su 220): dopo il tetto restano almeno 103,
 parte da un deploy nuovo, dopo la correzione dell'afterok della catena.
 **C2 sottomessa da Simone (20/10/2026 11:44):** 61526225 (`W1CAL-C2-30M-lr0p0001-s1-j01`) e 61526229 (`W1CAL-C2-30M-lr0p0003-s1-j01`),
 sottomissioni pulite (uscita 0, stato in `~/wearusfm_local/jobs/`); alle 11:46 entrambi PENDING per priorita', senza partenza stimata.
+
+**Catena di valutazione: afterok sui nodi della stessa chiamata corretto (20/10/2026).** Il difetto visto nella valutazione di C1 (sbatch
+aveva rifiutato l'estrazione di 1e-3 con «Job dependency problem»: afterok su una guardia finita in 5 s e gia' dimenticata da SLURM) e'
+corretto in `scripts/evaluation_chain.py`: con `--submit` i nodi si sottomettono uno alla volta e prima di ciascuno lo stato dei
+predecessori si rilegge con `sacct`, compresi quelli sottomessi nella stessa chiamata (finito bene -> nessun afterok, fallito -> nodo
+bloccato, in coda o appena accettato da sbatch -> afterok). Il dry-run non cambia. Test nuovo sul cluster finto, che ora rifiuta come SLURM
+l'afterok su un job dimenticato: fallisce con la catena di prima e passa con la correzione; suite 1194 PASS (1193 + 1). La valutazione di C2 usera'
+questa versione (deploy nuovo). Collaudo infrastrutturale: nessuno, si vede alla valutazione di C2 (stessa catena, un solo cambiamento).

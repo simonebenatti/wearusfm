@@ -173,8 +173,17 @@ state, remote = pathlib.Path(sys.argv[1]), sys.argv[2]
 st = json.loads(state.read_text())
 st["calls"].append(remote)
 if remote.startswith("sbatch"):
+    dep = [a for a in remote.split() if a.startswith("--dependency=afterok:")]
+    if dep and set(dep[0].split(":")[1:]) & set(st.get("forgotten", [])):  # afterok su un job finito che SLURM ha dimenticato (MinJobAge)
+        print("sbatch: error: Batch job submission failed: Job dependency problem", file=sys.stderr)
+        state.write_text(json.dumps(st)); sys.exit(1)
     st["next"] += 1
     print(st["next"])
+    for word, outcome in st.get("finish", {}).items():  # job che finiscono subito dopo la sottomissione (le guardie: 5-7 s)
+        if word in remote:
+            st["jobs"][str(st["next"])] = outcome
+            if outcome.split("|")[0] not in ("RUNNING", "PENDING"):
+                st.setdefault("forgotten", []).append(str(st["next"]))
 elif remote.startswith("sacct"):
     if st.get("sacct_fail"):
         print("slurmdbd non raggiungibile", file=sys.stderr); state.write_text(json.dumps(st)); sys.exit(1)
@@ -249,6 +258,45 @@ def test_finished_predecessors_get_no_afterok_and_failed_ones_block(tmp_path):
     p = tmp_path / "x" / "plan.json"
     p.write_text(json.dumps(_plan()))
     assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 1 and len(_sbatch_calls(state)) == 1
+
+
+def test_a_predecessor_of_the_same_call_that_already_finished_gets_no_afterok(tmp_path, capsys):
+    """C1, 19/10/2026: la guardia (5-7 s) era finita e uscita dalla memoria di SLURM prima della sottomissione dell'estrazione, e sbatch
+    aveva rifiutato l'afterok («Job dependency problem»). Ora lo stato si rilegge prima di ogni nodo: guardia finita bene -> estrazione senza
+    afterok; guardia fallita -> estrazione e seguito bloccati; guardia ancora in corso -> afterok."""
+    S = EC._submitter()
+    for outcome, expect in (("COMPLETED|0:0", "senza"), ("FAILED|1:0", "bloccato"), ("RUNNING|0:0", "afterok")):
+        d = tmp_path / outcome.split("|")[0]
+        d.mkdir()
+        ssh, state = _cluster(d, jobs={"1001": "COMPLETED|0:0"}, finish={"-guard-": outcome})
+        reg = d / "jobs"
+        _train(S, reg, ssh)
+        p = d / "plan.json"
+        p.write_text(json.dumps(_plan()))
+        capsys.readouterr()
+        code = EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh])
+        out = capsys.readouterr().out
+        calls = _sbatch_calls(state)
+        assert "--dependency" not in calls[1]  # la guardia: training finito bene
+        if expect == "senza":
+            assert code == 0 and len(calls) == 6 and "--dependency" not in calls[2]  # l'estrazione parte senza afterok sulla guardia
+            assert "--dependency=afterok:1003" in calls[3] and "--dependency=afterok:1003" in calls[4]  # le sonde, estrazione in coda
+            assert "--dependency=afterok:1004:1005" in calls[5]
+        elif expect == "bloccato":
+            assert code == 0 and len(calls) == 2  # solo training e guardia
+            assert any(ln.startswith("bloccato") and ln.rstrip().split()[2] == "A-ext" for ln in out.splitlines())
+        else:
+            assert code == 0 and len(calls) == 6 and "--dependency=afterok:1002" in calls[2]
+    # il finto cluster rifiuta come SLURM l'afterok su un job finito e dimenticato (senza questo il caso «senza» non proverebbe nulla): con
+    # lo stato letto una volta sola, come prima della correzione, l'estrazione sarebbe stata rifiutata
+    d = tmp_path / "rifiuto"
+    d.mkdir()
+    ssh, state = _cluster(d, forgotten=["1001"])
+    reg = d / "jobs"
+    S.main(["--registro", str(reg), "--ssh", ssh, "--id", "x", "--agente", "claude", "--campagna", "w1", "--gpu-ore", "0", "--", "/C/a.sbatch"])
+    assert S.main(["--registro", str(reg), "--ssh", ssh, "--id", "y", "--agente", "claude", "--campagna", "w1", "--gpu-ore", "0",
+                   "--dopo", "x", "--", "/C/a.sbatch"]) == 3  # rifiutato: nessun job
+    assert json.loads((reg / "y" / "state.json").read_text())["stato"] == "rifiutato"
 
 
 def test_queue_limits_use_live_counts_when_submitting(tmp_path):

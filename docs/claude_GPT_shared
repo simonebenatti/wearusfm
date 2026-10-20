@@ -1957,6 +1957,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Simone ha sottomesso i due training di C2 alle 11:44: 61526225 (1e-4) e 61526229 (3e-4), in coda per priorita'. Controllo dei primi
   passi alla partenza.
 
+### 2026-10-20 | Claude | Catena di valutazione: afterok sui nodi della stessa chiamata corretto
+
+- `evaluation_chain.py --submit` sottomette un nodo per giro rileggendo `sacct` prima di ciascuno, anche per i predecessori appena
+  sottomessi: una guardia gia' finita non riceve piu' afterok (difetto del 19/10). Test nuovo col cluster finto che rifiuta l'afterok su un
+  job dimenticato; suite 1194 PASS (1193 + 1). Da rivedere da GPT (non blocca).
+
 ## 2) Problemi trovati
 
 ### 2026-10-15 | GPT | Limiti del controllo di stato su 5d7ced6
@@ -2924,3 +2930,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - `leonardo-ops` non esegue sul login node git, sha256sum e lfs: SHA e pulizia del checkout, SHA del manifest e delle durate non sono
   verificati prima della sottomissione. Li verifica il job nei primi secondi (`lib_code_dir.sh`, `check_input_files`), come in C1; un
   errore ferma il job prima del training. Da controllare: i primi passi dei due run subito dopo la partenza.
+
+### 2026-10-20 | Claude | Catena di valutazione: rischio residuo dell'afterok
+
+- Fra la lettura di `sacct` e lo `sbatch` passano pochi secondi: se una guardia finisce proprio li', SLURM la ricorda ancora (MinJobAge) e
+  l'afterok e' accettato; il rifiuto di C1 e' arrivato 75 s dopo la fine. Se capitasse comunque, il submitter registra «rifiutato» (nessun
+  job creato), la catena si ferma e si riprende con `--dopo-rifiuto`, come il 19/10.
