@@ -15,29 +15,29 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 20/10/2026 dopo lettura dei report C1 e dei log Claude fino a f250af3, riscontrati nel ledger locale. Claude sviluppa e conduce la
-parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log
-versionati, non da interrogazione live in questa review.
+Stato della review aggiornato al 21/10/2026: seconda tranche esaminata fino a c21ca40 e fix diagnostica bbf824a verificato.
+Nuovo pilot dei rami fino a fadb881 fuori da questa review. Claude sviluppa e conduce la parte scientifica; GPT verifica e integra.
+La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Review del nuovo delta selezione/planner/sonde, poi merge | Correzioni sul proprio ramo e lettura delle patch prima del deploy | Consegna precedente integrata in 5145efb; nuova tranche fino a f250af3 ancora sul ramo Claude. Critico: selezione APPROVATA nei log, suite 1191 PASS riportata da Claude; verifica GPT della nuova tranche ancora da fare. Questo status integra solo documentazione |
+| 3 | Review e integrazione su main | Review fino a c21ca40 conclusa; merge sospeso sui rilievi | Corregge R1/R2/R3 sul proprio ramo | APERTO: R1 esclusione senza prova di fallimento terminale; R2 PASSI non vincolato al piano; R3 QoS dbg con 45 min nelle estrazioni P1 dei bracci. 152 test esistenti PASS, 3 regressioni FAIL riprodotte. Fix diagnostica bbf824a: 2 regressioni PASS. Main resta 79db894; nessun merge della seconda tranche |
 | 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 applicata a C1: 1e-4 e 3e-4 ammissibili; 1e-3 escluso, 7 valutazioni consecutive oltre 1,10 x minimo, picco 1,58. Nessun collasso o STOP nei training C1. Restano lettura di C2 e regola dei run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review dei nuovi strumenti e risultati; codice dei due bracci gia' verificato (45 PASS) | Pianificatore, sonde interne/ufficiali, confronto e campagna | Planner e piano P1/P2 ora consegnati (0adfc52), confronto e S interna P2 implementati. Default scelto sulle validation interne, test ufficiali per conferma: regola aggiornata e firmata nei log Claude. Restano review dei nuovi strumenti, LR da C1-C2, collaudo GPU, ricalibrazione keep e risultati dei bracci; sonde fisiche/profondita' ancora aperte |
-| 6 | Chiudere la finestra 1 | Review del nuovo delta di valutazione e dei report | Segue C2 e corregge afterok prima della valutazione; poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4 (f2c584e). C2 sottomessa il 20/10 alle 11:44: 61526225 e 61526229, in coda per priorita' nell'ultimo log. Residui selezione corretti da Claude; resta un difetto afterok emerso nella valutazione C1. Consuntivo C1 63,8/220 GPUh, C2 ~41/53. Poi C3-C4, LR e piano finale; SCRATCH prossimo 12/11 |
+| 5 | Validare l'obiettivo scientifico | Verifica degli strumenti; due bracci gia' verificati (45 PASS) | Corregge planner, conduce campagne e pilot | Nuova review: planner/confronto 18 PASS, correggere QoS P1 (R3). Diagnostica dei rami: due P2 chiusi su bbf824a. Pilot dei rami fino a fadb881 non incluso nella review. Restano LR da C1-C2, collaudo GPU, ricalibrazione keep e risultati; sonde fisiche/profondita' aperte |
+| 6 | Chiudere la finestra 1 | Review della selezione e dei report | Segue valutazione C2, poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4; i nuovi rilievi non invalidano il record. Fix afterok verificato. Log df1c8c4: training C2 completati (40,4 GPUh), valutazione 61558827-61558834 sottomessa senza rifiuti; esito non verificato qui. Piano C2 normale, senza il percorso senza sonda affetto. Calibrazione 104,2/220 GPUh nei log. Poi C3-C4, LR e piano finale; SCRATCH prossimo 12/11 |
 
-### Prossimo lavoro in parallelo (20/10)
+### Prossimo lavoro in parallelo (21/10)
 
-- **Claude:** segue i due training C2 e verifica i primi passi; corregge l'afterok verso predecessori della stessa chiamata gia' finiti
-  prima di sottomettere la valutazione di C2. Per i bracci, restano LR, review nuovi strumenti, collaudo e ricalibrazione keep.
-- **GPT:** review della tranche di selezione, planner e sonde consegnata dopo 5145efb, poi integrazione. Review del codice dei due
-  bracci gia' conclusa in 8508b7d (45 PASS); questo controllo di stato non equivale a una nuova approvazione tecnica.
+- **Claude:** corregge R1/R2/R3 descritti in `docs/reviews/second_tranche_review_20261020.md`, con le tre regressioni allegate;
+  prosegue la valutazione C2 gia' autorizzata e le proprie attivita'. Nessuna richiesta di ripetere i training validi C1/C2.
+- **GPT:** verifica i tre fix e integra per merge preservando gli SHA. La seconda tranche non e' ancora su main; nessuna modifica
+  ai checkout congelati. I due precedenti P2 della diagnostica sono invece verificati e chiusi su bbf824a.
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** consuntivo C1 63,8 GPUh, residuo prima di C2 156,2/220; C2 ~41 attese / 53 tetto (dopo il tetto,
-  almeno 103,2 per C3-C4). Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
+- **Costi nei log aggiornati:** C1 63,8 GPUh + training C2 40,4 = 104,2/220, valutazione C2 ancora da consuntivare.
+  Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
 - **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
@@ -1956,7 +1956,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Correzioni a Claude sul suo ramo; nessun codice di produzione modificato, merge o lancio. Nessuna nuova soglia/budget o scelta
   scientifica: decisioni.md invariato. Attivita' del punto 5 comune, senza riaprire il punto 1 storico.
 
+### 2026-10-21 | GPT | Punto 3: seconda tranche verificata, merge sospeso sui rilievi | Target c21ca40; fix diagnostica bbf824a
+
+- Seguito l'ordine della consegna 6afa2b9 partendo dalla selezione C1-C4 gia' in uso per C2. Review indipendente anche in parallelo.
+  Configurazione completa e correzione afterok verificate; nessun codice di produzione modificato. Main rimane 79db894.
+- Test: 69 selezione/planner/review C1-C4 + 18 planner/confronto/launcher bracci + 65 catena/diagnostica = 152 PASS. Tre nuove
+  regressioni FAIL riproducono R1/R2/R3. Le due regressioni della precedente review 4203d59 PASSANO su bbf824a: quei P2 sono chiusi.
+- Review e prove in `docs/reviews/second_tranche_review_20261020.md` e `test_second_tranche_review_20261020.py`. Claude corregge sul
+  suo ramo; poi GPT verifica e integra per merge. I gruppi sono intercalati nella storia: merge di 62bec0b non isola solo il gruppo 1.
+- C1 ha report per tutti i candidati e summary a 24523 passi; il piano C2 ha report e guardie normali: nessuna invalidazione da questi
+  rilievi. Log df1c8c4: training C2 finiti e valutazione sottomessa; nessuna verifica live/esito finale C2 in questa attivita'.
+- Letta la nuova consegna fino a fadb881 solo per delimitarne il perimetro: pilot dei rami non incluso nella review. Aggiornata la
+  tabella unica; nessun job, SSH, push o deploy. decisioni.md invariato: nessuna nuova soglia, scelta scientifica o spesa.
+
 ## 2) Problemi trovati
+
+### 2026-10-21 | GPT | Tre rilievi della seconda tranche e chiusura dei precedenti P2 | Codice c21ca40
+
+- **R1 P1, selezione:** con report assente, config valida e nessuno STOP, summary assente basta per escludere il candidato e scegliere
+  gli altri. `--failed-runs` elimina anche la guardia: stato ancora running/ignoto non distinto dal fallimento terminale verificato.
+  Richiedere evidenza del fallimento, registrarla, e non emettere decisioni per stato ignoto o timeout riprendibile.
+- **R2 P2, selezione:** config e piano a 2000 passi ma PASSI CLI = 2001 fanno escludere un run sano senza sonda invece di fermare la
+  valutazione. Vincolare PASSI al total_steps del run nel piano prima di calcolare l'ammissibilita'.
+- **R3 P1, planner bracci:** estrazioni P1 a 45 min ereditano boost_qos_dbg (limite 30 min) da probe_p1.sbatch. QoS normal esplicita
+  e test con header allo SHA reale. Non coinvolge calibration_extract.sbatch usato da C2. Tutti e tre riprodotti, non osservati su C1.
+- Due P2 precedenti della diagnostica **chiusi su bbf824a** (null/stato per misure indefinite; ID per campagna), 2 regressioni PASS;
+  controllati anche i minori IC per dataset e identita' redundancy.json. c21ca40 da solo non contiene queste correzioni.
+- Nessun merge della tranche prima dei tre fix; nessun cambio retroattivo dei risultati. Dettagli, righe e regressioni nella review.
 
 ### 2026-10-20 | GPT | Due P2 della diagnostica dei rami | Codice Claude 6086df2
 
