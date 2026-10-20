@@ -202,3 +202,14 @@ sui `config.json` veri dei tre run di C1 (`results/infra/w1cal_c1_20261016/runs/
   ammissibile senza sonda resta un errore, come sopra; review del `critico` del 20/10);
 - bootstrap accoppiato con meno di due repliche valide o non finito: errore, nessuna selezione (non e' una parita');
 - `merge`: nessuna fase dopo uno stop; C3 e C4 solo con la conferma completa di C2.
+
+**Correzioni dalla review GPT 3272398 (21/10/2026; nessuna regola firmata cambiata).**
+- **R1, candidato senza sonda:** si esclude (inammissibile, la fase procede) solo con una **prova di fallimento terminale**, registrata nel
+  registro della selezione (`failure_evidence`): lo `STOP` del trainer nella cartella del run (allarme o errore numerico, definitivo), oppure
+  un'evidenza da sacct (`calibration_select.py failure-evidence`: ID SLURM dal registro del submitter, stati da sacct; ammessi FAILED,
+  CANCELLED, OUT_OF_MEMORY, NODE_FAIL, BOOT_FAIL, DEADLINE, con l'ultimo job della catena fallito e i precedenti al piu' COMPLETED; job uguali,
+  nell'ordine, a quelli del piano). Senza prova, o con un run in coda, in corso, in TIMEOUT (riprendibile), finito bene o sconosciuto:
+  **errore, nessuna decisione**. Nel pianificatore `--failed-runs RUN=STOP` o `RUN=<evidenza.json>` (relativa al repo e nel checkout della
+  valutazione), verificata gia' li'.
+- **R2, PASSI:** con il piano (C1-C4), i passi di ogni candidato devono essere quelli del run nel piano congelato; una discordanza e' un errore
+  negli argomenti, non un run incompleto.

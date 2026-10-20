@@ -281,7 +281,7 @@ def _true_config_json(lr, seed=0):
 
 def _train_plan(cands, seed=0):
     """Il piano di training dei candidati: un run per cartella, col LR del candidato."""
-    return _full_plan([(Path(rd).name, lr) for lr, rd, _, _ in cands], seed)
+    return _full_plan([(Path(c[1]).name, c[0]) for c in cands], seed)  # candidati da 4 o 5 elementi (evidenza di fallimento)
 
 
 def _sel(phase, cands):
@@ -512,14 +512,24 @@ def test_a_run_stopped_before_the_probe_is_inadmissible_and_the_phase_goes_on(tm
     gone = tmp_path / "gone"
     gone.mkdir()
     early = [(1e-4, gone / "lr0p0001", None, STEPS), _cand(gone, 3e-4, 0.7, seed=1), _cand(gone, 1e-3, 0.8, seed=2)]
-    dec, rec = _sel("C1", early)  # fermato prima di scrivere config.json (cartella assente): identita' non verificabile, decide A1
+    with pytest.raises(ValueError, match="senza prova di fallimento terminale"):  # R1 (GPT 3272398): cartella assente = stato ignoto
+        _sel("C1", early)
+    ev = _evidence(tmp_path, "lr0p0001", early, ["FAILED"])
+    early[0] = (*early[0], ev)
+    dec, rec = _sel("C1", early)  # fallimento provato da sacct, prima di scrivere config.json: identita' non verificabile, decide A1
     assert dec == {"C1": {"finalists": [3e-4, 1e-3]}} and rec["candidates"]["0.0001"]["identity"]["config_checked"] is False
+    fe = rec["candidates"]["0.0001"]["failure_evidence"]
+    assert fe["kind"] == "sacct" and fe["sha256"] == CS._sha256(ev) and fe["jobs"][0]["state"] == "FAILED"
+    assert rec["candidates"]["0.0003"]["failure_evidence"] is None
     with pytest.raises(ValueError, match="LR dichiarato"):  # il LR dichiarato si controlla comunque contro il piano
-        CS.select("C1", [(2e-4, gone / "lr0p0001", None, STEPS)] + early[1:], _train_plan(early))
+        CS.select("C1", [(2e-4, gone / "lr0p0001", None, STEPS, ev)] + early[1:], _train_plan(early))
     sub = tmp_path / "ok"
     sub.mkdir()
     fine = [_cand(sub, 1e-4, 0.6, no_probe=True), _cand(sub, 3e-4, 0.7, seed=1), _cand(sub, 1e-3, 0.8, seed=2)]
-    with pytest.raises(ValueError, match="ammissibile senza sonda"):  # un run finito bene non si salta
+    with pytest.raises(ValueError, match="senza prova di fallimento terminale"):  # un run finito bene non si salta
+        _sel("C1", fine)
+    fine[0] = (*fine[0], _evidence(sub, "lr0p0001", fine, ["FAILED"]))
+    with pytest.raises(ValueError, match="ammissibile senza sonda"):  # anche con un'evidenza: un run che risulta sano e' un errore
         _sel("C1", fine)
     out, recf = tmp_path / "d.json", tmp_path / "r.json"
     args = ["select", "--phase", "C1", "--plan", str(tmp_path / "plan.json"), "--out", str(out), "--record", str(recf)]
@@ -571,6 +581,9 @@ def test_a_healthy_run_without_probe_and_without_checkpoint_is_an_error_not_a_ve
     su un file mancante): resta l'errore operativo «run ammissibile senza sonda»."""
     cands = [_cand(tmp_path, 1e-4, 0.6, no_probe=True), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
     (cands[0][1] / CS.CHECKPOINT).unlink()
+    with pytest.raises(ValueError, match="senza prova di fallimento terminale"):  # R1 (GPT 3272398): prima ancora, nessuna prova
+        _sel("C1", cands)
+    cands[0] = (*cands[0], _evidence(tmp_path, "lr0p0001", cands, ["FAILED"]))
     with pytest.raises(ValueError, match="ammissibile senza sonda"):
         _sel("C1", cands)
     report = json.loads(cands[1][2].read_text())  # con la sonda il checkpoint mancante e' invece un problema di A1
@@ -640,3 +653,93 @@ def test_real_c1_configs_stay_verifiable_after_new_config_fields(run, lr):
     assert out["config_checked"] and out["code_sha"] == "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
     have = json.loads((REPO / "results/infra/w1cal_c1_20261016/runs" / run / "config.json").read_text())
     assert "branch_objective" not in have["model"]  # davvero scritti senza i campi nuovi
+
+
+def _evidence(root, run_id, cands, states, logical=None, name=None, **extra):
+    """Un'evidenza da sacct (`calibration_select.py failure-evidence`) per il run `run_id` del piano dei candidati."""
+    ids = logical if logical is not None else CS.planned_run(_train_plan(cands), run_id)["job_ids"]
+    doc = {"protocol": CS.EVIDENCE_PROTOCOL, "run_id": run_id, "source": "sacct", "read_at": "2026-10-21T00:00:00+02:00",
+           "jobs": [{"logical_id": i, "job_id": str(100 + k), "state": s, "exit_code": "1:0"} for k, (i, s) in enumerate(zip(ids, states))], **extra}
+    path = Path(root) / (name or f"{run_id}.failure.json")
+    path.write_text(json.dumps(doc))
+    return path
+
+
+@pytest.mark.parametrize("states,ok", [(["FAILED"], True), (["OUT_OF_MEMORY"], True), (["CANCELLED by 123"], True), (["NODE_FAIL"], True),
+                                       (["TIMEOUT"], False), (["RUNNING"], False), (["PENDING"], False), (["COMPLETED"], False),
+                                       (["PREEMPTED"], False), (["REQUEUED"], False)])
+def test_only_a_terminal_failure_from_sacct_excludes_a_candidate_without_probe(tmp_path, states, ok):
+    """R1 della review GPT 3272398: in coda, in corso, timeout riprendibile o finito bene non sono un fallimento terminale."""
+    cands = [(1e-4, tmp_path / "lr0p0001", None, STEPS), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    cands[0] = (*cands[0], _evidence(tmp_path, "lr0p0001", cands, states))
+    if ok:
+        assert _sel("C1", cands)[0] == {"C1": {"finalists": [3e-4, 1e-3]}}
+    else:
+        with pytest.raises(ValueError, match="non provano un fallimento terminale"):
+            _sel("C1", cands)
+
+
+def test_failure_evidence_must_be_of_that_run_and_of_its_planned_jobs(tmp_path):
+    cands = [(1e-4, tmp_path / "lr0p0001", None, STEPS), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    for bad, match in ((_evidence(tmp_path, "lr0p0003", cands, ["FAILED"]), "un altro run"),
+                       (_evidence(tmp_path, "lr0p0001", cands, ["FAILED"], logical=["altro-j01"], name="b.json"), "diversi da quelli del piano"),
+                       (_evidence(tmp_path, "lr0p0001", cands, ["FAILED"], protocol="vecchio", name="c.json"), "altro protocollo")):
+        with pytest.raises(ValueError, match=match):
+            _sel("C1", [(*cands[0], bad), *cands[1:]])
+    good = _evidence(tmp_path, "lr0p0001", cands, ["FAILED"])
+    with pytest.raises(ValueError, match="insieme"):  # un candidato con la sonda non porta anche un'evidenza di fallimento
+        _sel("C1", [(*cands[0], good), (*cands[1], good), cands[2]])
+    stop = tmp_path / "lr0p0001"  # lo STOP del trainer basta da solo ed e' registrato
+    stop.mkdir()
+    (stop / "STOP").write_text("allarme: collasso\n")
+    dec, rec = _sel("C1", cands)
+    fe = rec["candidates"]["0.0001"]["failure_evidence"]
+    assert dec == {"C1": {"finalists": [3e-4, 1e-3]}} and fe["kind"] == "STOP" and fe["text"] == "allarme: collasso"
+
+
+def test_steps_come_from_the_frozen_plan(tmp_path):
+    """R2 della review GPT 3272398: PASSI diversi dal piano sono un errore negli argomenti, non un run incompleto."""
+    cands = [_cand(tmp_path, 1e-4, 0.6), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    plan = _train_plan(cands)
+    assert CS.planned_run(plan, cands[0][1].name)["total_steps"] == STEPS
+    for wrong in (STEPS + 1, STEPS - 1):
+        with pytest.raises(ValueError, match="diverso dal piano"):
+            CS.select("C1", [(*cands[0][:3], wrong), *cands[1:]], plan)
+    with pytest.raises(ValueError, match="non e' un run del piano"):
+        CS.planned_run(plan, "altro")
+
+
+def test_failure_evidence_is_written_from_the_ledger_and_sacct(tmp_path):
+    """Il sottocomando `failure-evidence`: ID SLURM dal registro del submitter, stati da sacct (cluster finto); scrive solo un fallimento
+    terminale."""
+    import sys as _sys
+
+    S = CS._script("submit_job")
+    cands = [_cand(tmp_path, 1e-4, 0.6), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    plan = _train_plan(cands)
+    run = CS.planned_run(plan, "lr0p0001")
+    reg = tmp_path / "jobs"
+    fake = tmp_path / "cluster.py"
+    fake.write_text("import sys, json, pathlib\nst = json.loads(pathlib.Path(sys.argv[1]).read_text())\nr = sys.argv[2]\n"
+                    "print(st['next']) if r.startswith('sbatch') else [print(f\"{j}|{s}\") for j, s in st['jobs'].items()]\n")
+    state = tmp_path / "state.json"
+    planp = tmp_path / "plan.json"
+    planp.write_text(json.dumps(plan))
+    for outcome, ok in (("FAILED|1:0", True), ("TIMEOUT|0:0", False)):
+        state.write_text(json.dumps({"next": 4242, "jobs": {"4242": outcome}}))
+        ssh = f"{_sys.executable} {fake} {state}"
+        if not (reg / run["job_ids"][0]).exists():
+            assert S.main(["--registro", str(reg), "--ssh", ssh, "--id", run["job_ids"][0], "--agente", "claude", "--campagna", "w1",
+                           "--gpu-ore", "1", "--", "/C/train.sbatch"]) == 0
+        out = tmp_path / f"ev_{ok}.json"
+        if ok:
+            assert CS.main(["failure-evidence", "--plan", str(planp), "--run-id", "lr0p0001", "--out", str(out), "--registro", str(reg),
+                            "--ssh", ssh]) == 0
+            doc = json.loads(out.read_text())
+            assert doc["jobs"] == [{"logical_id": run["job_ids"][0], "job_id": "4242", "state": "FAILED", "exit_code": "1:0"}]
+            assert CS.check_failure_evidence(out, "lr0p0001", run["job_ids"])["kind"] == "sacct"
+        else:
+            with pytest.raises(ValueError, match="non provano un fallimento terminale"):
+                CS.main(["failure-evidence", "--plan", str(planp), "--run-id", "lr0p0001", "--out", str(out), "--registro", str(reg),
+                         "--ssh", ssh])
+            assert not out.exists()

@@ -175,7 +175,7 @@ def test_runs_stopped_before_the_probe_enter_the_selection_without_evaluation_no
             "eval": {"features_root": "/leonardo_scratch/F", "results_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal",
                      "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval", "expected_sha": "b" * 40}}
     failed = "W1CAL-C1-30M-lr0p0001-s0"
-    r = CP.plan(REPORT, None, camp, "results/infra/w1cal", frozenset({failed}))
+    r = CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: "STOP"})  # R1 (GPT 3272398): ogni run escluso ha la sua prova
     e = r["eval_plans"]["C1"]
     order = EC.validate(e)
     assert not any(n["id"].startswith(failed) for n in order if n["kind"] != "compare")
@@ -185,6 +185,24 @@ def test_runs_stopped_before_the_probe_enter_the_selection_without_evaluation_no
     assert {n["expected_sha"] for n in order} == {"b" * 40} and e["guard"]["expected_sha"] == "b" * 40
     assert r["plans"]["C1"]["expected_sha"] == "a" * 40  # i training restano allo SHA del loro checkout
     with pytest.raises(ValueError, match="nessun run arrivato alla sonda"):
-        CP.plan(REPORT, None, camp, "results/infra/w1cal", frozenset(x["id"] for x in r["runs"]))
+        CP.plan(REPORT, None, camp, "results/infra/w1cal", {x["id"]: "STOP" for x in r["runs"]})
     with pytest.raises(ValueError, match="non sono run della fase"):
-        CP.plan(REPORT, None, camp, "results/infra/w1cal", frozenset({"W1CAL-C9-altro"}))
+        CP.plan(REPORT, None, camp, "results/infra/w1cal", {"W1CAL-C9-altro": "STOP"})
+    # un'evidenza da sacct (relativa al repo): verificata dal pianificatore, poi passata alla selezione come «failed:<percorso>»
+    CS = _load("calibration_select")
+    ev_rel = "tests/cpu/_tmp_failure_evidence.json"
+    ev = CP.ROOT / ev_rel
+    try:
+        ev.write_text(json.dumps({"protocol": CS.EVIDENCE_PROTOCOL, "run_id": failed, "source": "sacct",
+                                  "jobs": [{"logical_id": f"{failed}-j01", "job_id": "1", "state": "FAILED", "exit_code": "1:0"}]}))
+        r2 = CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: ev_rel})
+        assert EC.validate(r2["eval_plans"]["C1"])[-1]["args"][6] == f"failed:{ev_rel}"
+        ev.write_text(json.dumps({"protocol": CS.EVIDENCE_PROTOCOL, "run_id": failed, "source": "sacct",
+                                  "jobs": [{"logical_id": f"{failed}-j01", "job_id": "1", "state": "TIMEOUT", "exit_code": "0:0"}]}))
+        with pytest.raises(ValueError, match="non provano un fallimento terminale"):
+            CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: ev_rel})
+    finally:
+        ev.unlink(missing_ok=True)
+    assert CP._failed_arg([f"{failed}=STOP"]) == {failed: "STOP"}
+    with pytest.raises(SystemExit, match="RUN=STOP"):
+        CP._failed_arg([failed])
