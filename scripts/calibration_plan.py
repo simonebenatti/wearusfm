@@ -71,6 +71,24 @@ SELECT_TIME, SELECT_CORES = "00:30:00", 2
 EVAL_LIMITS = {"boost_usr_prod": 8, "lrd_all_serial": 8}
 
 
+def _select_mod():
+    spec = importlib.util.spec_from_file_location("calibration_select_for_plan", ROOT / "scripts" / "calibration_select.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _failed_arg(items: list[str]) -> dict:
+    """RUN=PROVA dalla riga di comando; senza prova un run non si esclude (R1 della review GPT 3272398)."""
+    out = {}
+    for item in items:
+        run, sep, proof = item.partition("=")
+        if not sep or not run or not proof:
+            raise SystemExit(f"--failed-runs {item!r}: serve RUN=STOP o RUN=<evidenza.json>")
+        out[run] = proof
+    return out
+
+
 def _wsd_chain():
     spec = importlib.util.spec_from_file_location("wsd_chain", ROOT / "scripts" / "wsd_chain.py")
     mod = importlib.util.module_from_spec(spec)
@@ -138,12 +156,16 @@ def resolve_phases(decisions: dict | None) -> dict:
 
 
 def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict, plan_path: str = "-",
-              failed: frozenset = frozenset()) -> dict:
+              failed: dict | None = None) -> dict:
     """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0). `plan_path`: il piano di training della
-    fase come lo vede la selezione (relativo al checkout della valutazione, che deve contenerlo); `failed`: run il cui training si e' fermato
-    prima della sonda (niente guardia, estrazione e sonda: entrano nella selezione come inammissibili, review di GPT del 16/10/2026).
+    fase come lo vede la selezione (relativo al checkout della valutazione, che deve contenerlo); `failed`: {run: prova} per i run il cui
+    training si e' fermato per sempre prima della sonda (niente guardia, estrazione e sonda: entrano nella selezione come inammissibili, review
+    di GPT del 16/10/2026). Prova (R1 della review GPT 3272398): "STOP" (lo STOP del trainer nella cartella del run, la selezione lo
+    ricontrolla) o il percorso di un'evidenza da sacct (`calibration_select.py failure-evidence`, relativo al repo e nel checkout della
+    valutazione), verificata qui e di nuovo dalla selezione.
     Il codice della valutazione puo' essere un checkout diverso da quello del training (`ev["code_dir"]`, `ev["expected_sha"]`)."""
     code = {"code_dir": ev.get("code_dir", base["code_dir"]), "expected_sha": ev.get("expected_sha", base["expected_sha"])}
+    failed = dict(failed or {})
     unknown = set(failed) - {r["id"] for r in jobs["runs"]}
     if unknown:
         raise ValueError(f"{name}: run falliti {sorted(unknown)} non sono run della fase")
@@ -152,7 +174,10 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
     nodes, cands, probe_outs = [], [], []
     for run, lr in zip(jobs["runs"], lrs):
         if run["id"] in failed:
-            cands += [repr(float(lr)), run["run_dir"], "-", str(run["total_steps"])]
+            proof = failed[run["id"]]
+            if proof != "STOP":  # evidenza da sacct: la stessa regola della selezione, gia' qui
+                _select_mod().check_failure_evidence(ROOT / proof, run["id"], run["job_ids"])
+            cands += [repr(float(lr)), run["run_dir"], "-" if proof == "STOP" else f"failed:{proof}", str(run["total_steps"])]
             continue
         rid, ckpt = run["id"], f"{run['run_dir']}/checkpoint_postdecay.pt"
         feat, rep = f"{ev['features_root']}/{name}/{rid}", f"{ev['results_root']}/{name}/{rid}.json"
@@ -185,9 +210,11 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
 
 
 def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None, plans_dir: str | None = None,
-         failed_runs: frozenset = frozenset()) -> dict:
+         failed_runs: dict | None = None) -> dict:
+    """`failed_runs`: {run: prova} (vedi `eval_plan`; R1 della review GPT 3272398: niente esclusioni senza prova)."""
     from wearusfm.training import run as R
 
+    failed_runs = dict(failed_runs or {})
     frac = build_report["fractions"]["1"]
     wpe = frac["windows_per_epoch"]
     # il rapporto della costruzione SUL CLUSTER: lo SHA del file e' quello che il training verifica (--manifest-sha256) e che entra nella
@@ -225,7 +252,7 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
         jobs = W.plan_jobs(p)
         plans[name] = p
         evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev, f"{plans_dir}/calibrazione_{name}.json" if plans_dir else "-",
-                                frozenset(r["id"] for r in jobs["runs"] if r["id"] in failed_runs))
+                                {r["id"]: failed_runs[r["id"]] for r in jobs["runs"] if r["id"] in failed_runs})
         for run, lr in zip(jobs["runs"], info["lrs"]):
             hours = run["total_steps"] * run["s_per_step"] / 3600
             rows.append({"phase": name, "id": run["id"], "size": spec["label"], "preset": spec["preset"], "seed": spec["seed"], "lr": lr,
@@ -273,11 +300,13 @@ def main(argv=None) -> int:
     ap.add_argument("--decisions", type=Path)
     ap.add_argument("--campaign", type=Path, help="campi di campagna per wsd_chain.py (code_dir, expected_sha, manifest, ...); senza: dry-run")
     ap.add_argument("--out", type=Path, help="cartella dei piani (relativa: nel repo, cosi' il checkout della valutazione li contiene)")
-    ap.add_argument("--failed-runs", nargs="*", default=[], help="run fermati prima della sonda: entrano nella selezione come inammissibili")
+    ap.add_argument("--failed-runs", nargs="*", default=[], metavar="RUN=PROVA",
+                    help="run fermati per sempre prima della sonda, ognuno con la sua prova: RUN=STOP (lo STOP del trainer) o RUN=<evidenza da "
+                         "sacct, relativa al repo> (calibration_select.py failure-evidence); entrano nella selezione come inammissibili")
     args = ap.parse_args(argv)
     result = plan(json.loads(args.build_report.read_text()), json.loads(args.decisions.read_text()) if args.decisions else None,
                   json.loads(args.campaign.read_text()) if args.campaign else None, str(args.out) if args.out else None,
-                  frozenset(args.failed_runs))
+                  _failed_arg(args.failed_runs))
     print(table(result))
     print(f"\npassi a D (4 epoche) {result['steps_at_d']}, warmup {result['warmup_steps']}; solo training "
           f"{result['totals']['gpu_hours_training_only']} GPU-ora; {'DRY-RUN (percorsi segnaposto)' if result['dry_run'] else 'campagna'}")

@@ -65,6 +65,10 @@ N_BOOT = 1000
 BOOT_SEED = 0
 CHECKPOINT = "checkpoint_postdecay.pt"
 PHASES = ("C1", "C2", "C3", "C4")
+# R1 della review GPT 3272398: un candidato senza sonda si esclude solo con una prova di fallimento TERMINALE (lo STOP del trainer, definitivo,
+# o un'evidenza da sacct coi soli stati qui sotto); in corso, in coda, TIMEOUT (riprendibile dalla catena), COMPLETED o ignoto: nessuna decisione
+TERMINAL_FAILURES = ("FAILED", "CANCELLED", "OUT_OF_MEMORY", "NODE_FAIL", "BOOT_FAIL", "DEADLINE")
+EVIDENCE_PROTOCOL = "w1cal-failure-evidence-v1"
 P1_DATASETS = ("ninapro_db2", "ninapro_db3", "ninapro_db6")  # S della P1 (scripts/calibration_probe.py, compito p1)
 COLLAUDO = "collaudo"
 
@@ -178,6 +182,88 @@ def _flatten(d, prefix=""):
         else:
             out[key] = v
     return out
+
+
+def planned_run(plan: dict, run_id: str) -> dict:
+    """Il run del piano di training congelato (`wsd_chain.plan_jobs`): passi totali e ID logici dei suoi job."""
+    W = _script("wsd_chain")
+    runs = {r["id"]: r for r in W.plan_jobs(plan)["runs"]}
+    if run_id not in runs:
+        raise ValueError(f"{run_id}: non e' un run del piano ({sorted(runs)})")
+    return runs[run_id]
+
+
+def check_failure_evidence(path: Path, run_id: str, job_ids: list[str] | None) -> dict:
+    """Un'evidenza da sacct del fallimento terminale di un run (scritta da `failure-evidence`): protocollo, run, ID logici dei job uguali a
+    quelli del piano (se noti) e ogni stato fra `TERMINAL_FAILURES`. Ritorna la sua identita' (percorso, SHA-256, job)."""
+    path = Path(path)
+    doc = json.loads(path.read_text())
+    if doc.get("protocol") != EVIDENCE_PROTOCOL or doc.get("run_id") != run_id:
+        raise ValueError(f"{path}: evidenza di un altro protocollo o di un altro run (atteso {run_id})")
+    jobs = doc.get("jobs") or []
+    if not jobs:
+        raise ValueError(f"{path}: evidenza senza job")
+    if job_ids is not None and [j.get("logical_id") for j in jobs] != list(job_ids):
+        raise ValueError(f"{path}: job {[j.get('logical_id') for j in jobs]} diversi da quelli del piano, nell'ordine {list(job_ids)}")
+    states = [(str(j.get("state", "")).split() or [""])[0] for j in jobs]  # «CANCELLED by 123» -> CANCELLED
+    # i job prima dell'ultimo possono essere finiti (catena con ripresa); nessuno attivo o riprendibile, e l'ultimo fallito per sempre
+    if any(s not in TERMINAL_FAILURES + ("COMPLETED",) for s in states) or states[-1] not in TERMINAL_FAILURES:
+        raise ValueError(f"{path}: stati {list(zip([j.get('logical_id') for j in jobs], states))} non provano un fallimento terminale "
+                         f"(ammessi: {TERMINAL_FAILURES}, l'ultimo job fallito): nessuna esclusione")
+    return {"kind": "sacct", "path": str(path), "sha256": _sha256(path), "jobs": jobs, "read_at": doc.get("read_at")}
+
+
+def write_failure_evidence(plan: dict, run_id: str, out: Path, registro: Path | None = None, ssh: str = "ssh leonardo",
+                           timeout: float = 120.0) -> dict:
+    """Scrive l'evidenza da sacct del fallimento terminale di un run (sul Mac, via leonardo-ops): gli ID SLURM dal registro del submitter,
+    gli stati da sacct. Scrive solo se la regola di `check_failure_evidence` e' soddisfatta; altrimenti errore e nessun file."""
+    import datetime
+    import shlex
+    import tempfile
+
+    S = _script("submit_job")
+    reg = S.Registry(registro or S.DEFAULT_DIR)
+    jobs = []
+    for i in planned_run(plan, run_id)["job_ids"]:
+        st = reg.read(i)
+        if not st or st.get("stato") != "sottomesso" or not st.get("job_slurm"):
+            raise ValueError(f"{i}: nel registro non e' un job sottomesso con ID SLURM (stato {st and st.get('stato')!r})")
+        jobs.append({"logical_id": i, "job_id": str(st["job_slurm"])})
+    code, text, err = S.run_remote(shlex.split(ssh), f"sacct -X -n -P --format=JobID,State,ExitCode -j {','.join(j['job_id'] for j in jobs)}",
+                                   timeout)
+    if code != 0:
+        raise RuntimeError(f"sacct non leggibile (uscita {code}): {err.strip()[-300:]}")
+    rows = {}
+    for line in text.splitlines():
+        parts = line.strip().split("|")
+        if len(parts) == 3:
+            rows[parts[0]] = parts[1:]
+    for j in jobs:
+        if j["job_id"] not in rows:
+            raise ValueError(f"{j['logical_id']} ({j['job_id']}): sconosciuto a sacct")
+        j["state"], j["exit_code"] = rows[j["job_id"]]
+    doc = {"protocol": EVIDENCE_PROTOCOL, "run_id": run_id, "jobs": jobs, "source": "sacct",
+           "read_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
+    with tempfile.TemporaryDirectory() as tmp:  # la stessa regola della selezione, prima di scrivere
+        probe = Path(tmp) / "evidence.json"
+        probe.write_text(json.dumps(doc))
+        check_failure_evidence(probe, run_id, [j["logical_id"] for j in jobs])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(doc, indent=1))
+    return doc
+
+
+def failure_evidence(run_dir: Path, evidence: Path | None, job_ids: list[str] | None) -> dict:
+    """La prova che un candidato senza sonda si e' fermato per sempre (R1 della review GPT 3272398). Lo STOP del trainer (allarme o errore
+    numerico, definitivo per la catena) oppure un'evidenza da sacct (`check_failure_evidence`). Senza: errore, nessuna decisione (un run in
+    corso, un timeout riprendibile o file non ancora copiati non sono un fallimento)."""
+    stop = Path(run_dir) / "STOP"
+    if stop.exists():
+        return {"kind": "STOP", "path": str(stop), "sha256": _sha256(stop), "text": stop.read_text().strip()[:300]}
+    if evidence is not None:
+        return check_failure_evidence(evidence, Path(run_dir).name, job_ids)
+    raise ValueError(f"{Path(run_dir).name}: senza sonda e senza prova di fallimento terminale (STOP del trainer o evidenza da sacct): "
+                     "run in corso, timeout riprendibile o stato ignoto; nessuna decisione")
 
 
 def check_identity(run_dir: Path, plan: dict, lr: float, allow_missing: bool = False) -> dict:
@@ -393,10 +479,20 @@ def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], pla
     if phase != COLLAUDO and plan is None:
         raise ValueError(f"{phase}: serve il piano di training (--plan) per verificare la configurazione effettiva dei candidati")
     cands, record = {}, {"protocol": PROTOCOL, "phase": phase, "candidates": {}}
-    for key, run_dir, report_path, steps in candidates:
+    for key, run_dir, report_path, steps, *extra in candidates:
+        evidence_path = extra[0] if extra else None  # «failed:<percorso>» nella CLI: evidenza da sacct di un candidato senza sonda
         lr = str(key) if phase == COLLAUDO else float(key)
         if lr in cands:
             raise ValueError(f"LR {lr} ripetuto")
+        job_ids = None
+        if plan is not None:  # R2 della review GPT 3272398: i passi sono quelli del piano congelato, non un argomento libero
+            planned = planned_run(plan, Path(run_dir).name)
+            job_ids = planned["job_ids"]
+            if int(steps) != int(planned["total_steps"]):
+                raise ValueError(f"{Path(run_dir).name}: PASSI {steps} diverso dal piano ({planned['total_steps']}): errore negli argomenti")
+        evidence = failure_evidence(run_dir, evidence_path, job_ids) if report_path is None else None
+        if report_path is not None and evidence_path is not None:
+            raise ValueError(f"{Path(run_dir).name}: rapporto della sonda ed evidenza di fallimento insieme")
         identity = check_identity(run_dir, plan, lr, allow_missing=report_path is None) if plan is not None else None
         report = json.loads(Path(report_path).read_text()) if report_path is not None else None
         if report is not None and report.get("protocol") != PROTOCOL:
@@ -408,7 +504,8 @@ def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], pla
         if report is None and adm["admissible"]:
             raise ValueError(f"{Path(run_dir).name}: run ammissibile senza sonda: la valutazione va completata, non saltata")
         cands[lr] = {"admissible": adm["admissible"], "report": report, "oof": load_oof(report) if report is not None else None}
-        entry = {"admissibility": adm, "identity": identity, "report": str(report_path) if report_path is not None else None}
+        entry = {"admissibility": adm, "identity": identity, "report": str(report_path) if report_path is not None else None,
+                 "failure_evidence": evidence}
         if report is not None:
             entry.update({"S": report["S"], "S_se": report["S_se"], "report_sha256": _sha256(Path(report_path)),
                           "checkpoint_sha256": report["checkpoint_sha256"], "per_dataset_S": {d: v["s"] for d, v in report["datasets"].items()}})
@@ -465,16 +562,24 @@ def main(argv=None) -> int:
     s = sub.add_parser("select")
     s.add_argument("--phase", choices=PHASES + (COLLAUDO,), required=True)
     s.add_argument("--candidate", nargs=4, action="append", required=True, metavar=("LR", "RUN_DIR", "RAPPORTO", "PASSI"),
-                   help="RAPPORTO '-' per un run fermato prima della sonda")
+                   help="RAPPORTO: '-' per un run fermato dal trainer (STOP nella cartella), 'failed:<evidenza.json>' per un fallimento terminale "
+                        "provato da sacct (sottocomando failure-evidence); PASSI uguali a quelli del piano")
     s.add_argument("--plan", type=Path, default=None, help="piano di training della fase (obbligatorio in C1-C4)")
     s.add_argument("--out", type=Path, required=True)
     s.add_argument("--record", type=Path, required=True)
+    f = sub.add_parser("failure-evidence", help="evidenza da sacct del fallimento terminale di un run (sul Mac, via leonardo-ops)")
+    f.add_argument("--plan", type=Path, required=True)
+    f.add_argument("--run-id", required=True)
+    f.add_argument("--out", type=Path, required=True)
+    f.add_argument("--registro", type=Path, default=None)
+    f.add_argument("--ssh", default="ssh leonardo")
     m = sub.add_parser("merge")
     m.add_argument("--decisions", type=Path, required=True)
     m.add_argument("--add", type=Path, required=True)
     args = ap.parse_args(argv)
     if args.cmd == "select":
-        cands = [(lr, Path(rd), None if rp == "-" else Path(rp), int(st)) for lr, rd, rp, st in args.candidate]
+        cands = [(lr, Path(rd), None if rp == "-" or rp.startswith("failed:") else Path(rp), int(st),
+                  Path(rp[len("failed:"):]) if rp.startswith("failed:") else None) for lr, rd, rp, st in args.candidate]
         plan = json.loads(args.plan.read_text()) if args.plan is not None else None
         decision, record = select(args.phase, cands, plan)
         if plan is not None:
@@ -483,6 +588,10 @@ def main(argv=None) -> int:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(obj, indent=1))
         print(json.dumps(decision))
+        return 0
+    if args.cmd == "failure-evidence":
+        doc = write_failure_evidence(json.loads(args.plan.read_text()), args.run_id, args.out, args.registro, args.ssh)
+        print(json.dumps(doc))
         return 0
     old = json.loads(args.decisions.read_text()) if args.decisions.exists() else {}
     new = merge(old, json.loads(args.add.read_text()))
