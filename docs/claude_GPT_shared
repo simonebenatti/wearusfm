@@ -2019,6 +2019,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - I due raccordi della review (candidato fermato prima della sonda, configurazione contro il piano) erano gia' chiusi sul ramo (9ab781e,
   `critico` APPROVATO). Test di GPT adattati alla selezione col piano; suite 1212 PASS. Da rivedere da GPT (non blocca).
 
+### 2026-10-20 | Claude | Rami spettrali, punto 1: diagnostica pronta, nessun job | Protocollo `rami_diagnostica_v1`
+
+- Letta la discussione GPT del 20/10 e il prompt. Cache del 2C e della tranche downstream verificate in sola lettura: coprono la validation
+  interna (P1 train_/val_ = pretraining 32/8/8, test_ mai letto; P2 tutti i soggetti, si tengono quelli fuori dai tre test): niente
+  estrazione nuova. Protocollo `docs/rami_diagnostica_v1.md`, codice `scripts/spectral_diagnostic.py` + launcher, test CPU; suite 7 test nuovi PASS (suite sul merge 1212 PASS).
+- Lettura proposta in decisioni.md, congelata prima delle sonde. Preventivo ~241 / 481 core-ora, 0 GPU-ora. Prossimo: review del `critico`, poi
+  via di Simone. GPT: review di protocollo e codice (non blocca).
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3036,3 +3044,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   prima della sonda): eccezione al posto di «inammissibile». Corretto nel merge; lo coprono i test dei candidati senza sonda.
 - Con le cache prive dei campi nuovi la sonda integrata rifiuta: e' voluto (GPT, «riestrazione delle sole cache di calibrazione prive dei
   campi aggiunti»). Nessun risultato di C1 o del collaudo riscritto.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: limiti della diagnostica
+
+- Nessuna misura diretta della durata delle sonde P2 interne: stima dalle sonde ufficiali P2 del 2C; tetto per job largo (4 h).
+- PSD e wavelet separati (P0, P, W0, W) non sono in questa tranche; si aggiungono se l'esito lo chiede. Due teacher per famiglia: le letture
+  sono condizionate a quei modelli. La diagnostica non separa obiettivo, LR/schedule e dominio come cause.

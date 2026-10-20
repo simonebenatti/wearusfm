@@ -64,3 +64,24 @@ def test_p2_extraction_reads_the_raw_root_override(work):  # noqa: F811
     r = subprocess.run(["bash", str(SLURM / "probe_p2.sbatch"), "/C/ckpt.pt", f"{root}/out/f2"], env={**env, "RAW_ROOT": "/R/raw"},
                        capture_output=True, text=True)
     assert "--epn-root /R/raw/epn612/EMG-EPN612 Dataset/trainingJSON" in r.stdout and "--uci-root /R/raw/uci_emg" in r.stdout
+
+
+def test_spectral_diagnostic_launcher_reads_the_2c_caches_and_writes_outside_code_and_caches(work):  # noqa: F811
+    """Diagnostica dei rami (docs/rami_diagnostica_v1.md): radici delle cache del 2C fisse, rapporti fuori dal codice e dalle cache."""
+    root = work[0]
+    env = _env(root)
+    launcher = SLURM / "spectral_diagnostic.sbatch"
+    out = f"{root}/out/diag"
+    r = subprocess.run(["bash", str(launcher), out, "probe", "--task", "p1", "--arm", "B_seed0", "--sets", "R"], env=env, capture_output=True,
+                       text=True)
+    assert ("VENV_PYTHON scripts/spectral_diagnostic.py probe --eval-root "
+            "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410 --downstream-root "
+            "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910 --out-dir " + out) in r.stdout, r.stdout + r.stderr
+    r = subprocess.run(["bash", str(launcher), out, "compare", "--out", f"{out}/esito.json"], env=env, capture_output=True, text=True)
+    assert f"VENV_PYTHON scripts/spectral_diagnostic.py compare --out-dir {out} --out {out}/esito.json" in r.stdout
+    for bad, msg in (("rel/diag", "relativa"), (f"{root}/wearusfm/diag", "dentro il codice"),
+                     ("/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410/diag", "dentro le cache")):
+        r = subprocess.run(["bash", str(launcher), bad, "probe"], env=env, capture_output=True, text=True)
+        assert r.returncode == 2 and msg in r.stdout and "VENV_PYTHON" not in r.stdout
+    r = subprocess.run(["bash", str(launcher), out, "extract"], env=env, capture_output=True, text=True)
+    assert r.returncode == 2 and "sconosciuta" in r.stdout

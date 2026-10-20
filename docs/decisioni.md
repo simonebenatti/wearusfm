@@ -3574,3 +3574,18 @@ ricetta e identita' degli split (`EXTRACTION_RECIPE_P2`, `P2_SPLITS_SHA256`: la 
 dello SHA del checkpoint non si applica a un candidato senza sonda (prima del merge avrebbe sollevato un'eccezione); `arms_compare` chiama
 `check_pairing` sui rapporti di S. Test di GPT adattati alla selezione col piano, nuovi test su P2 e bracci; suite 1212 PASS. Le cache di C1
 non hanno i campi nuovi: C1 resta decisa com'e' (risultato storico); le estrazioni di C2 e dei bracci si fanno col codice integrato.
+
+**Diagnostica dei rami PSD e wavelet, protocollo `rami_diagnostica_v1` PROPOSTO (20/10/2026; Simone: «Procedi col punto 1», consegna
+preparata da GPT il 20/10).** Punto 5 della tabella; verdetti 2A/2C invariati. Domanda: il training dei rami del 2C peggiora i rami anche da
+soli o soprattutto nella concatenazione col raw? Solo cache gia' estratte (2C `step2c_1410`, tranche downstream `step1_downstream_0910`),
+verificate sul cluster: coprono la validation interna (P1: soggetti di pretraining, le righe di test non si leggono; P2: soggetti fuori dai
+test dei tre split), **nessuna estrazione nuova**. Metrica S della calibrazione invariata (4 fold di soggetti, normalizzazione sul train del
+fold, C sui soggetti di validazione del fold). Insiemi PW0, PW, R, RPW0, RPW sui quattro teacher dell'A/B. **Lettura proposta (si congela col
+commit che precede il lancio, dopo la review del `critico`; nessuna sonda prima):** per famiglia e compito, confronti accoppiati PW0->PW (rami da soli) e RPW0->RPW (concatenazione)
+letti con la regola dei bracci («migliora»: delta >= +0,01, limite inferiore dell'IC > 0, delta > 0 con i due teacher) e la sua speculare
+(«peggiora»: delta <= -0,01, limite superiore < 0, delta < 0 con i due teacher), altrimenti «entro le soglie»; tabella delle quattro risposte
+in `docs/rami_diagnostica_v1.md`. R->RPW0 e R->RPW, rango effettivo, CKA e R^2 dei rami dal raw: descrittivi. Le letture indicano dove si
+vede il peggioramento, non la causa; non adottano ne' escludono nulla. **Preventivo (da autorizzare):** 16 job seriali da 8 core + confronto
++ checkout, **~241 core-ora attese, tetto 481 core-ora (481 ore locali), 0 GPU-ora**, ~30 h di calendario, `--nice` dietro ai job della
+finestra 1; ~80 MB su `$SCRATCH`. Prima del lancio: review del `critico`. Codice `scripts/spectral_diagnostic.py`,
+`scripts/slurm/spectral_diagnostic.sbatch`; suite 7 test nuovi PASS (suite sul merge 1212 PASS).
