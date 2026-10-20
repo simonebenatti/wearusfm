@@ -142,11 +142,12 @@ alla volta, ~30 h di calendario. Le sonde S della finestra 1 (valutazione di C2,
   (correzione del 19-20/10); il confronto e' l'ultimo nodo, sottomesso solo quando tutte le sonde sono sottomesse. Si richiama a tranche;
 - `--nice=10000` ordina solo i job **in attesa**: abbassa la priorita' della sonda della diagnostica in coda rispetto a un job della finestra
   1 messo in coda dopo, ma non interrompe quella in esecuzione. **Ritardo massimo su un job seriale della finestra 1: il resto della sonda in
-  esecuzione, al piu' 4 h** (stima tipica 1 h 45 - 2 h 10), **se il nice prevale sul vantaggio d'eta' della sonda in attesa**. I pesi di
-  priorita' di Leonardo non sono letti (seconda review del `critico`: `scontrol show config | grep -i Priority` o `sprio`, sola lettura, non
-  fra i comandi ammessi a leonardo-ops; li puo' leggere Simone). **Caso peggiore**, se l'eta' prevale: anche la sonda in attesa passa
-  davanti, fino a ~8 h (2 job da 4 h). Prima delle valutazioni di C3 e C4 la diagnostica non si richiama (nessuna tranche nuova): il ritardo
-  resta al piu' quello dei due job gia' sottomessi.
+  esecuzione, al piu' 4 h** (stima tipica 1 h 45 - 2 h 10). **Verificato sui pesi di priorita' di Leonardo** (letti da Simone il 20/10,
+  `results/infra/slurm_priority_20261020.txt`): eta' 20.000 con massimo a 7 giorni, quindi una sonda in attesa per 4 h guadagna ~476 punti,
+  contro i 10.000 tolti dal nice (pareggio solo dopo ~84 h di attesa); QoS e fair-share uguali per i job della finestra 1 e della diagnostica;
+  dimensione del job rapportata al tempo (`SMALL_RELATIVE_TO_TIME`, `PriorityFavorSmall = no`): una sonda S della finestra 1 (8 core, 3 h)
+  non e' svantaggiata rispetto a una della diagnostica (8 core, 3 h 30 - 4 h). Il caso peggiore di ~8 h dichiarato prima della lettura non
+  si applica. Prima delle valutazioni di C3 e C4 la diagnostica non si richiama comunque (nessuna tranche nuova).
 
 Ordine: famiglia B, poi A (il segnale descrittivo piu' forte del 2C e' in B, P2); il confronto della sola B si puo' leggere prima (`compare
 --families B`). Disco: rapporti e predizioni fuori fold **~250 MB** (npz non compressi, etichette di EPN-612 e soggetti come stringhe: ~7,5 MB

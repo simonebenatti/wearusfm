@@ -3622,3 +3622,9 @@ ritardo condizionato). **Lettura congelata con questo commit**, prima di qualunq
 seconda review («entro le soglie» = regola non superata, non esclude una differenza neanche oltre 1 punto; differenza dei delta descrittiva
 senza soglia). **Lancio da autorizzare** (preventivo ~241 core-ora attese, tetto 481 ore locali, 0 GPU-ora, ore locali CPU dell'account),
 comunque dopo la valutazione di C2.
+
+**Pesi di priorita' di SLURM letti (Simone, 20/10/2026: `ssh leonardo 'scontrol show config | grep -i priority'`,
+`results/infra/slurm_priority_20261020.txt`).** multifactor; eta' 20.000 (massimo a 7 giorni), fair-share 25.000, dimensione 10.000.000
+(`SMALL_RELATIVE_TO_TIME`, `PriorityFavorSmall = no`), QoS 300.000, partizione 0. Per la diagnostica dei rami: il nice di 10.000 prevale
+sull'eta' di una sonda in attesa (~476 punti in 4 h, pareggio dopo ~84 h), quindi **il ritardo massimo su un job seriale della finestra 1 e'
+il resto della sonda in esecuzione, al piu' 4 h**; il caso peggiore di ~8 h della voce precedente non si applica.

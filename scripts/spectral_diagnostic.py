@@ -73,7 +73,7 @@ N_BOOT, BOOT_SEED = 1000, 20261009  # come arms_compare.s_comparison
 JOBS = (("p1-a", "p1", ("R", "PW0", "PW"), True, "04:00:00"), ("p1-b", "p1", ("RPW0",), False, "03:30:00"),
         ("p1-c", "p1", ("RPW",), False, "03:30:00"), ("p2", "p2", ("R", "PW0", "PW", "RPW0", "RPW"), True, "04:00:00"))
 ARM_ORDER = ("B_seed0", "B_seed1", "A_seed0", "A_seed1")
-NICE = 10000  # abbassa la priorita' fra i job in attesa; se prevalga sull'eta' dipende dai pesi di priorita' di SLURM (non letti)
+NICE = 10000  # abbassa la priorita' fra i job in attesa; prevale sull'eta' (peso 20.000 a 7 giorni: ~476 punti in 4 h; results/infra/slurm_priority_20261020.txt)
 
 
 def _script(name: str):
