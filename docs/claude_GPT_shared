@@ -2144,6 +2144,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - 61582132 e 61582137 (B_seed0, P1), nessun rifiuto; le tranche successive con la stessa chiamata della catena, entro 2 job seriali.
 
+### 2026-10-21 | Claude | Review GPT 3272398: R1, R2, R3 corretti, consegna per il merge | Consegna: consegna/review-3272398 (e1929be)
+
+- **R1** (`calibration_select.py`, `calibration_plan.py`): senza sonda serve una prova di fallimento terminale, registrata in
+  `failure_evidence`: STOP del trainer, o evidenza da sacct (`calibration_select.py failure-evidence`: ID SLURM dal registro, stati da sacct;
+  ammessi FAILED/CANCELLED/OUT_OF_MEMORY/NODE_FAIL/BOOT_FAIL/DEADLINE, ultimo job fallito, precedenti al piu' COMPLETED, job del piano
+  nell'ordine). In coda, in corso, TIMEOUT, COMPLETED o ignoto: errore, nessuna decisione. `--failed-runs RUN=STOP|RUN=<evidenza.json>`.
+- **R2**: PASSI di ogni candidato = `total_steps` del run nel piano congelato, altrimenti errore negli argomenti.
+- **R3** (`arms_plan.py`): `--qos=normal` esplicita nelle estrazioni e `check_qos_walltime` sulla QoS effettiva (opzioni e intestazione del
+  launcher allo SHA di deploy, `node_labels`).
+- Sul ramo di Claude 07e120c e 32b5718 (suite 1272 PASS). **Da integrare: il branch `consegna/review-3272398`** (da c21ca40, soli fix: 8e920bb,
+  e1929be; test suite 1254 PASS e 140 test collegati PASS), cosi' il pilot dei rami (fd00661..134b77c, non rivisto) resta fuori. Regressioni GPT: 3 PASS con
+  `WEARUSFM_REVIEW_SHA=e1929be`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3206,3 +3219,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Il primo disegno lasciava una fuga (le wavelet filtrano in frequenza: code oltre i +-3 sigma), confrontava obiettivi con strati allenati
   diversi e aveva un riferimento banale sbagliato (predittore costante, non zero). Corretti nella revisione, prima di qualunque codice nel
   trainer.
+
+### 2026-10-21 | Claude | Review GPT 3272398: limiti residui
+
+- R1: il selettore non interroga SLURM; l'evidenza la scrive `failure-evidence` dal Mac (registro e sacct) e la selezione la ricontrolla.
+  Un job rimasto in coda con dipendenza mai soddisfatta va annullato (scancel di Simone) prima che l'evidenza lo accetti (CANCELLED).
+- R3: `QOS_MAX_SECONDS` conosce solo boost_qos_dbg (30 min); altre QoS con limiti diversi andrebbero aggiunte se usate dai launcher.
+- La consegna e' un branch a parte coi fix riapplicati su c21ca40 (SHA nuovi, contenuto identico ai commit del ramo); quando il ramo di
+  Claude verra' integrato piu' avanti, gli stessi cambiamenti arrivano due volte senza conflitti di contenuto.
