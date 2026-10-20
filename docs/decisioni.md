@@ -3480,6 +3480,71 @@ prima del lancio: protocollo e regole firmati (A4, parita', stop di C3), review 
 4 GPU, QoS normal, un job da 6 h 30 ciascuno), poi la catena di valutazione con le sonde sulla CPU seriale. **Preventivo C1: ~61 GPU-ora
 attese, tetto 79,5 (636 ore locali)**, sul budget della calibrazione (220, finora 0 usate): dopo il tetto ne restano almeno 140,5.
 
+**Bracci dell'obiettivo (punto 5) FIRMATI (Simone, 16/10/2026).** Simone: «firmo i bracci come proposti». Nella forma proposta in chat
+lo stesso giorno (dettaglio in `docs/bracci_obiettivo_finestra1.md`, «Firma»): bracci A, JEPA-only, ancore-only (ancore attuali), keep
+separata (opzione 1, A' a peso 0 e B a 0,05, calibrazione della keep ricalcolata sul corpus intero); 30M, 4 epoche, 2 semi, LR di 30M da
+C1-C2 (con due confermati: S migliore al seme 1, parita' al piu' basso); un braccio batte A con almeno +1 punto su P1 e P2 in media sui due
+semi; braccio fermato dall'allarme = «collassato», non batte A; allarme di collasso (0,05) valido in tutti i bracci; letture «al LR di A».
+Via al pianificatore dei bracci e al piano di valutazione (lavoro locale). Nessun lancio dei bracci autorizzato da questa firma.
+
+**Bracci dell'obiettivo: regola di lettura e scelta del default corrette (Simone, 16/10/2026).** Simone: «iniziamo a risolvere 1 e 2,
+apporvo le soluzioni proposte, se riesci firmo e implementa eventuali corrzioni dove non gi afatte». Dalla critica del punto 5 (`critico`,
+589be8c, `docs/reviews/punto5_pianificatore_p1p2_critica_20261016.md`). (1) Su P1/P2 ufficiali un braccio batte A solo con la regola del
+2A/2C: confronto accoppiato per seme (`compare_reports`), per P1 e per P2 delta medio >= +0,01, limite inferiore dell'IC al 95% > 0, delta
+> 0 in entrambi i semi; sostituisce il «+1 punto sulla media dei due semi» della firma dei bracci. (2) Il default non si sceglie sui
+soggetti di test: si sceglie con la validation interna S (P1: `calibration_probe.py`; P2: analoga sui soggetti fuori dai test dei tre
+split), con la stessa regola applicata a S; P1/P2 ufficiali sono conferma e risultato; in disaccordo il default segue S e si registra.
+*Interpretazione:* costruire anche la S della P2 (dettaglio in `docs/bracci_obiettivo_finestra1.md`). Nessun risultato dei bracci esiste.
+Confermata la S della P2 (Simone: «per p2 bene òa proposta tua»): validation interna su EPN-612 e UCI-EMG coi soggetti fuori dai test dei
+tre split ufficiali, in `scripts/calibration_probe.py --task p2`.
+
+**C1, training finiti (consuntivo, 16/10/2026).** 60715596 (LR 1e-4) 5 h 18, 60715602 (3e-4) 5 h 13, 60715603 (1e-3) 5 h 18: COMPLETED 0:0,
+`max_steps` 24.523, nessuno STOP, checkpoint pre e post-decay. **63,2 GPU-ora** (4 GPU x 15 h 48; attese 60,3, tetto 78) sul budget della
+calibrazione: 63,2 usate su 220, residuo 156,8. La valutazione (estrazioni, sonde, selezione) parte da un checkout nuovo con le correzioni
+della selezione dopo la review del `critico`.
+
+**Valutazione di C1 lanciata (19/10/2026; Simone: «ok procedi, avvisami quando parte la valutazione»).** Codice della valutazione 9ab781e
+(`deploy/w1cal-eval-20261019`, checkout 61378990; review del `critico` APPROVATO), piano `results/infra/w1cal_c1_20261016/valutazione_C1.json`.
+Guardie 61379130/61379133/61379134 COMPLETED 0:0 (checkpoint post-decay verificati), estrazioni 61379154 (1e-4), 61379217 (3e-4),
+61379811 (1e-3), sonde 61379181/61379306/61379874 (CPU, in fila), selezione 61379881. L'estrazione di 1e-3 era stata rifiutata da sbatch
+(«Job dependency problem»: afterok su una guardia gia' finita e uscita dalla memoria di SLURM; nessun job creato): risottomessa senza
+dipendenza col `--dopo-rifiuto` del submitter, dopo aver verificato la guardia. Tetto della valutazione 1,5 GPU-ora sul budget della
+calibrazione (63,2 usate su 220).
+
+**C1 decisa con le regole firmate (selezione 61379881, 19/10/2026 16:21): finalisti 1e-4 e 3e-4.** Ammissibilita': 1e-4 si' (pannello
+massimo 1,08 volte il minimo, rango finale 118), 3e-4 si' (una valutazione sopra 1,10, massimo 1,12, rango 85), **1e-3 no: A4, 7
+valutazioni consecutive oltre 1,10 volte il minimo fino al passo 8.000 (massimo 1,58)**. Regola di C1: 3e-4 ammissibile -> finalisti 3e-4 e
+la migliore alternativa ammissibile, cioe' 1e-4 (unica). S della P1 (descrittivo, non decide qui): 18,21 +- 0,78 / 17,46 +- 0,73 / 15,86 +-
+0,60; confronti accoppiati descrittivi: 1e-4 - 3e-4 = +0,74 punti (SE 0,32), 1e-4 - 1e-3 = +2,35 (0,40), 3e-4 - 1e-3 = +1,61 (0,30). Identita'
+dei tre run verificata (99 campi, codice 72cf24a). File delle decisioni: `results/infra/w1cal_decisioni.json`; rapporti e registro in
+`results/infra/w1cal_c1_20261016/valutazione/`.
+Consuntivo della valutazione: 3 estrazioni da 11 min (**0,57 GPU-ora**), sonde 1 h 09 / 1 h 17 / 1 h 46 in fila (~34 core-ora), selezione
+3 min. Calibrazione: 63,8 GPU-ora usate su 220.
+**Preventivo C2 (da autorizzare):** 1e-4 e 3e-4 al seme 1, 24.523 passi, un job da 6 h 30 per run: training 40,2 attese / 52,0 tetto,
+valutazione 0,6 / 1,0: **~41 / 53 GPU-ora (424 ore locali)**; dopo il tetto restano almeno 103 GPU-ora della calibrazione per C3 e C4
+(tetti 52 + 26 + valutazioni 6). Training dallo stesso checkout di C1 (72cf24a), stesso codice dei run da confermare.
+
+**Calibrazione C2 AUTORIZZATA (Simone, 20/10/2026).** Simone: «via per C2, prepara i comandi». Due run al seme 1, LR 1e-4 e 3e-4
+(`W1CAL-C2-30M-lr0p0001-s1`, `W1CAL-C2-30M-lr0p0003-s1`), 24.523 passi, warmup 1.962, decay da 19.618, un job da 6 h 30 per run, QoS
+normal, dallo stesso checkout congelato di C1 (`wearusfm_campaigns/w1cal-20261016`, 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec). Piani in
+`results/infra/w1cal_c2_20261020/` (`calibrazione_C2.json`, `comandi_training_C2.txt`, preventivo, riepilogo), generati con le decisioni
+di C1; il piano di C1 rigenerato e' identico byte per byte a quello committato, e i comandi di C2 differiscono da quelli di C1 solo per ID,
+campagna, seme e cartella del run. Preflight in sola lettura (20/10): coda vuota, cartelle dei run di C2 assenti, checkout (sola lettura) e
+ingressi con le date di C1; SHA e pulizia del checkout, SHA del manifest e delle durate li verifica il job all'avvio (`lib_code_dir.sh`,
+`check_input_files`). **Preventivo C2: ~41 GPU-ora attese, tetto 53 (424 ore locali)**, training 40,2 / 52,0 e valutazione 0,6 / 1,0, sul
+budget della calibrazione (63,8 usate su 220): dopo il tetto restano almeno 103,2. Sottomissione da parte di Simone. La valutazione di C2
+parte da un deploy nuovo, dopo la correzione dell'afterok della catena.
+**C2 sottomessa da Simone (20/10/2026 11:44):** 61526225 (`W1CAL-C2-30M-lr0p0001-s1-j01`) e 61526229 (`W1CAL-C2-30M-lr0p0003-s1-j01`),
+sottomissioni pulite (uscita 0, stato in `~/wearusfm_local/jobs/`); alle 11:46 entrambi PENDING per priorita', senza partenza stimata.
+
+**Catena di valutazione: afterok sui nodi della stessa chiamata corretto (20/10/2026).** Il difetto visto nella valutazione di C1 (sbatch
+aveva rifiutato l'estrazione di 1e-3 con «Job dependency problem»: afterok su una guardia finita in 5 s e gia' dimenticata da SLURM) e'
+corretto in `scripts/evaluation_chain.py`: con `--submit` i nodi si sottomettono uno alla volta e prima di ciascuno lo stato dei
+predecessori si rilegge con `sacct`, compresi quelli sottomessi nella stessa chiamata (finito bene -> nessun afterok, fallito -> nodo
+bloccato, in coda o appena accettato da sbatch -> afterok). Il dry-run non cambia. Test nuovo sul cluster finto, che ora rifiuta come SLURM
+l'afterok su un job dimenticato: fallisce con la catena di prima e passa con la correzione; suite 1194 PASS (1193 + 1). La valutazione di C2 usera'
+questa versione (deploy nuovo). Collaudo infrastrutturale: nessuno, si vede alla valutazione di C2 (stessa catena, un solo cambiamento).
+
 **Review indipendente GPT di C1-C4 (16/10/2026, patch 41ce569 e merge locale 41b80af).** Hardening della provenienza delle cache e
 del confronto accoppiato, checkpoint verificato per byte/SHA, bootstrap invalido bloccante, merge delle decisioni dopo stop rifiutato,
 rango zero per feature costanti. Nessuna modifica ad A4, parita', griglia o budget firmati. Restano due raccordi segnalati a Claude:
@@ -3499,3 +3564,132 @@ deploy o lancio in questa attivita'; le campagne congelate mantengono il proprio
 aggiuntive di equivalenza delle loss, gradienti, pesi ed EMA fra batch globale, accumulo e due processi CPU gloo. Dettagli in
 `docs/reviews/objective_arms_review_20261016.md`. Restano pianificatore, piano P1/P2, collaudo GPU breve e risultati scientifici;
 per la keep separata, ricalibrazione sul corpus intero. Nessuna nuova scelta scientifica o autorizzazione a lanciare in questa voce.
+
+**Merge di `main` nel ramo di Claude (20/10/2026): review C1-C4 di GPT (41ce569) letta e integrata.** Simone, consegna sui rami: «Lavora
+nel tuo worktree». Prima della diagnostica dei rami (che riusa sonda e confronti della calibrazione) e della valutazione di C2. Patch di GPT
+tenute tutte (ricetta d'estrazione e SHA degli split nelle cache, righe OOF e loro impronta, `check_pairing` prima di ogni decisione, SHA del
+checkpoint contro la sonda, bootstrap invalido bloccante, `merge` dopo stop o conferma incompleta rifiutato, rango zero per feature costanti),
+unite alla P2 interna e alla selezione col piano del ramo. Correzioni del merge: la cache e il rapporto della P2 interna registrano anche loro
+ricetta e identita' degli split (`EXTRACTION_RECIPE_P2`, `P2_SPLITS_SHA256`: la definizione degli split, non c'e' un file); il controllo
+dello SHA del checkpoint non si applica a un candidato senza sonda (prima del merge avrebbe sollevato un'eccezione); `arms_compare` chiama
+`check_pairing` sui rapporti di S. Test di GPT adattati alla selezione col piano, nuovi test su P2 e bracci; suite 1212 PASS. Le cache di C1
+non hanno i campi nuovi: C1 resta decisa com'e' (risultato storico); le estrazioni di C2 e dei bracci si fanno col codice integrato.
+
+**Diagnostica dei rami PSD e wavelet, protocollo `rami_diagnostica_v1` PROPOSTO (20/10/2026; Simone: «Procedi col punto 1», consegna
+preparata da GPT il 20/10).** Punto 5 della tabella; verdetti 2A/2C invariati. Domanda: il training dei rami del 2C peggiora i rami anche da
+soli o soprattutto nella concatenazione col raw? Solo cache gia' estratte (2C `step2c_1410`, tranche downstream `step1_downstream_0910`),
+verificate sul cluster: coprono la validation interna (P1: soggetti di pretraining, le righe di test non si leggono; P2: soggetti fuori dai
+test dei tre split), **nessuna estrazione nuova**. Metrica S della calibrazione invariata (4 fold di soggetti, normalizzazione sul train del
+fold, C sui soggetti di validazione del fold). Insiemi PW0, PW, R, RPW0, RPW sui quattro teacher dell'A/B. **Lettura proposta (si congela col
+commit che precede il lancio, dopo la review del `critico`; nessuna sonda prima):** per famiglia e compito, confronti accoppiati PW0->PW (rami da soli) e RPW0->RPW (concatenazione)
+letti con la regola dei bracci («migliora»: delta >= +0,01, limite inferiore dell'IC > 0, delta > 0 con i due teacher) e la sua speculare
+(«peggiora»: delta <= -0,01, limite superiore < 0, delta < 0 con i due teacher), altrimenti «entro le soglie»; tabella delle quattro risposte
+in `docs/rami_diagnostica_v1.md`. R->RPW0 e R->RPW, rango effettivo, CKA e R^2 dei rami dal raw: descrittivi. Le letture indicano dove si
+vede il peggioramento, non la causa; non adottano ne' escludono nulla. **Preventivo (da autorizzare):** 16 job seriali da 8 core + confronto
++ checkout, **~241 core-ora attese, tetto 481 core-ora (481 ore locali), 0 GPU-ora**, ~30 h di calendario, `--nice` dietro ai job della
+finestra 1; ~80 MB su `$SCRATCH`. Prima del lancio: review del `critico`. Codice `scripts/spectral_diagnostic.py`,
+`scripts/slurm/spectral_diagnostic.sbatch`; 6 test nuovi PASS (suite 1218 PASS su c631c6d).
+
+**C2 partita (20/10/2026 12:03):** 61526225 (1e-4) su lrdn3052 e 61526229 (3e-4) su lrdn2272. Primi 2.350 / 800 passi regolari: perdite
+finite, passo 1 identico nei due run (6,1213: stesso seme), 0,61-0,95 s/passo (media ~0,70, come la stima), dati 0,00-0,01 s, memoria
+massima 10,2 GiB. Fine prevista verso le 17:15, dentro il limite del job (21.000 s).
+
+**Diagnostica dei rami: review del `critico` (20/10/2026, su c631c6d) DA RIVEDERE, rilievi chiusi; lettura proposta aggiornata (sostituisce
+la tabella delle quattro risposte della voce precedente; nessuna sonda lanciata).** Risposta per famiglia e compito = solo quale dei due
+confronti chiave (PW0->PW, RPW0->RPW) supera la regola dei bracci o la sua speculare: «peggioramento oltre le soglie», «miglioramento oltre le
+soglie», «entro le soglie (non esclude una differenza sotto 1 punto)»; nessun meccanismo ne' «soprattutto». Il confronto fra i due delta e'
+un descrittivo senza soglia: (RPW - RPW0) - (PW - PW0) con IC dallo stesso ricampionamento accoppiato. Nota: l'effetto che motiva la domanda
+puo' stare sotto la soglia (2C, A/P1 ufficiale -0,84). 16 letture senza correzione per confronti multipli. **Lancio solo dopo la valutazione
+di C2**, a tranche con `evaluation_chain.py` (al piu' 3 job seriali dell'utente in coda o in esecuzione, finestra 1 compresa; confronto come
+ultimo nodo; `--nice=10000`); ritardo massimo su un job seriale della finestra 1: il resto della sonda in esecuzione, al piu' 4 h; nessuna
+tranche nuova a ridosso delle valutazioni di C3 e C4. Budget: ore locali CPU dell'account, nessun budget GPU; tetto 481 ore locali da
+autorizzare. Disco ~250 MB su `$SCRATCH`. Correzioni nel codice: uscita del confronto fissa, argomenti di uscite/radici/split rifiutati dal
+launcher, nessuna abbreviazione; run del 2C controllato (stesso run per passo 0 e allenati, completo, non di collaudo); `--nice` (solo
+positivo) nell'elenco chiuso di `evaluation_chain.py`. Il numero dei test nuovi della voce precedente era sbagliato (7): sono 6, suite 1218
+PASS su c631c6d (corretto nella voce).
+
+**Diagnostica dei rami: seconda review del `critico` (20/10/2026, su 10d3731) DA RIVEDERE per un rilievo aperto in parte, chiuso; lettura
+proposta precisata (nessuna sonda lanciata).** «Entro le soglie» = **regola non superata** (stima sotto 1 punto, intervallo che tocca lo zero
+o teacher discordi): la frase della risposta e' «regola non superata (stima, intervallo o accordo dei teacher insufficienti): non esclude una
+differenza, neanche oltre 1 punto», sostituisce «non esclude una differenza sotto 1 punto» della voce precedente; delta, IC e delta per
+teacher sempre accanto. Limite di coda della diagnostica: **2** job seriali dell'utente (finestra 1 compresa; uno alla volta gira comunque).
+Ritardo massimo su un job seriale della finestra 1: al piu' 4 h **se il nice prevale sull'eta'** (pesi di priorita' non letti: `scontrol` e
+`sprio` non sono fra i comandi ammessi a leonardo-ops), **caso peggiore ~8 h**. Soggetti di UCI-EMG verificati sulla provenienza della
+tranche downstream: 36, 19 interni, 662 finestre in tutto (EPN-612: 612, 314 interni, 91.800 finestre).
+
+**Diagnostica dei rami: terza review del `critico` (20/10/2026, su 84bcbe0) APPROVATO.** Un minore chiuso (commento di `NICE` allineato al
+ritardo condizionato). **Lettura congelata con questo commit**, prima di qualunque sonda: quella delle voci del 20/10 come precisata dalla
+seconda review («entro le soglie» = regola non superata, non esclude una differenza neanche oltre 1 punto; differenza dei delta descrittiva
+senza soglia). **Lancio da autorizzare** (preventivo ~241 core-ora attese, tetto 481 ore locali, 0 GPU-ora, ore locali CPU dell'account),
+comunque dopo la valutazione di C2.
+
+**Pesi di priorita' di SLURM letti (Simone, 20/10/2026: `ssh leonardo 'scontrol show config | grep -i priority'`,
+`results/infra/slurm_priority_20261020.txt`).** multifactor; eta' 20.000 (massimo a 7 giorni), fair-share 25.000, dimensione 10.000.000
+(`SMALL_RELATIVE_TO_TIME`, `PriorityFavorSmall = no`), QoS 300.000, partizione 0. Per la diagnostica dei rami: il nice di 10.000 prevale
+sull'eta' di una sonda in attesa (~476 punti in 4 h, pareggio dopo ~84 h), quindi **il ritardo massimo su un job seriale della finestra 1 e'
+il resto della sonda in esecuzione, al piu' 4 h**; il caso peggiore di ~8 h della voce precedente non si applica.
+
+**Diagnostica dei rami AUTORIZZATA (Simone, 20/10/2026: «vai pure quando pronto»),** alle condizioni presentate: preventivo ~241 core-ora
+attese, tetto 481 ore locali (ore CPU dell'account), 0 GPU-ora; lancio dopo la valutazione di C2, a tranche con `evaluation_chain.py` (al
+piu' 2 job seriali dell'utente, finestra 1 compresa), `--nice=10000`, nessuna tranche nuova a ridosso delle valutazioni di C3 e C4. Lettura
+congelata in b597786. Lo stesso deploy serve alla valutazione di C2 (codice integrato con la review GPT e la correzione dell'afterok).
+
+**Merge della review C1-C4: review del `critico` APPROVATO (20/10/2026, su 58c043a).** Nessuna regola firmata cambiata; percorso reale di C2
+provato end-to-end in una cartella temporanea (estrazione P1 vera con modello finto, sonda, `select("C2")`, candidato senza sonda, `merge` sul
+file vero delle decisioni); P2 interna accoppiabile; nessuna perdita nella risoluzione dei conflitti. Tre minori chiusi: (1) senza sonda, un
+checkpoint mancante non conta piu' fra i problemi di A1, cosi' un run altrimenti ammissibile senza sonda resta l'errore del protocollo firmato
+(«la valutazione si completa, non si salta») invece di diventare un esito; (2) i test d'estrazione controllano che P1 e P2 scrivano i campi
+che la sonda verifica; (3) il protocollo `docs/calibrazione_c1_c4_selezione.md` elenca i controlli bloccanti della review GPT. Test collegati
+120 PASS. Questo codice e' quello del deploy della valutazione di C2 e della diagnostica dei rami.
+
+**Deploy della valutazione di C2 e della diagnostica dei rami (20/10/2026).** Preflight in sola lettura pulito (ref e cartella nuovi assenti,
+hook solo `.sample`, `updateInstead` solo su `main`; in coda solo i due training di C2, su un altro checkout). `deploy/w1cal-eval-20261020` =
+62bec0b71e89cdcff54de7c7e0f93d7046019213 (codice con il merge della review GPT, `critico` APPROVATO, e la correzione dell'afterok), checkout
+di campagna job 61540094 (1 core, 10 min). Piano `results/infra/w1cal_c2_20261020/valutazione_C2.json` dalla campagna
+`results/infra/w1cal_campaign_c2_eval_20261020.json` (piano di training di C2 rigenerato identico byte per byte), dry-run della catena: 2
+guardie, 2 estrazioni (0,5 GPU-ora di tetto ciascuna), 2 sonde CPU, selezione. Sottomissione a training finiti.
+
+**Diagnostica dei rami: review GPT (20/10/2026, 4203d59 sul suo ramo, `docs/reviews/spectral_diagnostic_review_20261020.md`) favorevole al
+disegno, due P2 di robustezza corretti, nessun cambio del protocollo scientifico.** (1) Rami costanti: R^2 e CKA non definiti si registrano
+come null con lo stato «non definito» (prima R^2 NaN faceva fallire il JSON e il job); rango effettivo 0. (2) ID dei job unici per campagna
+(`RAMI-<campagna>-<teacher>-<job>`, `--campaign` obbligatoria), stabili nelle tranche della stessa campagna. Minori: IC della differenza dei
+delta anche per dataset; `compare` controlla protocollo, compito e teacher di `redundancy.json`. Le due regressioni di GPT passano sul ramo;
+test mirati 71 PASS. La diagnostica partira' da un deploy nuovo con queste correzioni (la valutazione di C2 resta sul deploy 62bec0b, che
+non usa questo script).
+
+**C2, training finiti (consuntivo, 20/10/2026).** 61526225 (1e-4) 5 h 03 e 61526229 (3e-4) 5 h 04: COMPLETED 0:0, 24.523 passi
+(`max_steps`), checkpoint pre e post-decay, codice 72cf24a. **40,4 GPU-ora** (4 GPU x 10 h 07; attese 40,2, tetto 52) sul budget della
+calibrazione: **104,2 usate su 220**, residuo 115,8.
+**Valutazione di C2 sottomessa (20/10/2026 17:3x)** dal checkout `w1cal-eval-20261020` (62bec0b): guardie 61558827 / 61558828 (senza afterok:
+training gia' finiti bene secondo sacct), estrazioni 61558829 (1e-4) / 61558831 (3e-4), sonde 61558830 / 61558832, selezione 61558834.
+Nessun rifiuto di sbatch (correzione dell'afterok del 20/10 al primo uso). Tetto 1,0 GPU-ora.
+
+**Rami spettrali, punto 2: scelte di Simone (20/10/2026).** Simone: «A, solo famiglia B, includi il controllo di LR». Obiettivo A
+(predizione di rappresentazioni locali mascherate nei rami, raw congelato), teacher della sola famiglia B (B_seed0, B_seed1), con un braccio
+di controllo dell'LR sull'obiettivo vecchio. Protocollo, codice e preventivo da preparare; review del `critico` prima del lancio; il lancio
+dopo l'esito della diagnostica del punto 1, che ne orienta la lettura.
+
+**Rami spettrali, punto 2: review del disegno del `critico` (20/10/2026) DA RIVEDERE; braccio in piu' scelto da Simone.** Tre bloccanti: fuga
+attraverso le code delle wavelet (lo studente calcola gli spettri sul segnale coi tratti nascosti azzerati), anti-collasso tarato male
+(riferimento = predittore costante, soglie relative al passo 0 per ramo e scala, varianza assoluta dei token), obiettivo confuso con gli
+strati allenati. Per l'ultimo Claude ha proposto due rimedi: un controllo ibrido a costo GPU zero (token del vecchio obiettivo, strati finali
+del passo 0) e due run dell'obiettivo vecchio con gli strati finali congelati. Simone: «se consigli di aggiungere, aggiungi», «vai»: si
+aggiungono i due run (PWf) e il primario diventa il confronto fra obiettivi a parita' di strati allenati e LR. Protocollo in revisione.
+
+**C2 decisa con le regole firmate (selezione 61558834, 20/10/2026 20:12): confermati 1e-4 e 3e-4.** Entrambi ammissibili al seme 1:
+1e-4 pannello massimo 1,04 volte il minimo, rango finale 124; 3e-4 massimo 1,03, rango 87; nessuna valutazione sopra 1,10. S della P1 18,01
++- 0,77 (1e-4) e 17,95 +- 0,71 (3e-4); confronto descrittivo 1e-4 - 3e-4 = +0,06 punti (SE 0,27, parita'). Identita' dei due run verificata
+(99 campi, codice 72cf24a). `results/infra/w1cal_decisioni.json` = C1 finalisti + C2 confermati; rapporti, registro e config/summary in
+`results/infra/w1cal_c2_20261020/`. Consuntivo della valutazione: 2 estrazioni da 11 min 43 (**0,39 GPU-ora**), sonde 1 h 16 e 1 h 20 (~21
+core-ora). **Calibrazione: 104,6 GPU-ora usate su 220.**
+**Preventivo C3 (da autorizzare):** 100M, 0,5 epoche (12.261 passi, warmup 1.962, decay da 9.809), LR 1e-4 e 3e-4, seme 0, un job da 6 h 30
+per run: training 39,8 attese / 52,0 tetto, valutazione 1,3 / 3,0 (CPU fino a ~66 core-ora): **~41 / 55 GPU-ora (440 ore locali)**; dopo il
+tetto restano almeno 60,4 GPU-ora per C4 (tetto 26 + valutazione 3).
+
+**Diagnostica dei rami: deploy e piano (21/10/2026).** Dopo la valutazione di C2, come autorizzato. Preflight in sola lettura pulito;
+`deploy/rami-diag-20261021` = aba1f2ef3a94b68b8e44bce005adf7b005a92011 (ultimo commit con la suite completa verificata, 1241 PASS, con le
+correzioni della review GPT; i commit successivi toccano il trainer, non usato dalla diagnostica), checkout 61582077. Piano
+`results/rami_diagnostica/piano_20261021.json` (17 nodi, campagna `rami-diag-20261021`, al piu' 2 job seriali dell'utente, `--nice=10000`),
+dry-run: a coda vuota entrano i primi due job di B_seed0. Rapporti in `$SCRATCH/wearusfm_runs/rami_diagnostica_20261021`.
+**Diagnostica dei rami, prima tranche (21/10/2026 ~00:10):** checkout 61582077 pronto (aba1f2e, 595 file); sottomessi 61582132 (B_seed0 P1:
+R, PW0, PW e ridondanza, 4 h) e 61582137 (B_seed0 P1: RPW0, 3 h 30), `--nice=10000`; gli altri 15 nodi in attesa del limite di coda.
