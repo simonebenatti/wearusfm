@@ -3589,3 +3589,7 @@ vede il peggioramento, non la causa; non adottano ne' escludono nulla. **Prevent
 + checkout, **~241 core-ora attese, tetto 481 core-ora (481 ore locali), 0 GPU-ora**, ~30 h di calendario, `--nice` dietro ai job della
 finestra 1; ~80 MB su `$SCRATCH`. Prima del lancio: review del `critico`. Codice `scripts/spectral_diagnostic.py`,
 `scripts/slurm/spectral_diagnostic.sbatch`; suite 7 test nuovi PASS (suite sul merge 1212 PASS).
+
+**C2 partita (20/10/2026 12:03):** 61526225 (1e-4) su lrdn3052 e 61526229 (3e-4) su lrdn2272. Primi 2.350 / 800 passi regolari: perdite
+finite, passo 1 identico nei due run (6,1213: stesso seme), 0,61-0,95 s/passo (media ~0,70, come la stima), dati 0,00-0,01 s, memoria
+massima 10,2 GiB. Fine prevista verso le 17:15, dentro il limite del job (21.000 s).
