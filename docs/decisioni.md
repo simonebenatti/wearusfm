@@ -3534,3 +3534,5 @@ ingressi con le date di C1; SHA e pulizia del checkout, SHA del manifest e delle
 `check_input_files`). **Preventivo C2: ~41 GPU-ora attese, tetto 53 (424 ore locali)**, training 40,2 / 52,0 e valutazione 0,6 / 1,0, sul
 budget della calibrazione (63,8 usate su 220): dopo il tetto restano almeno 103,2. Sottomissione da parte di Simone. La valutazione di C2
 parte da un deploy nuovo, dopo la correzione dell'afterok della catena.
+**C2 sottomessa da Simone (20/10/2026 11:44):** 61526225 (`W1CAL-C2-30M-lr0p0001-s1-j01`) e 61526229 (`W1CAL-C2-30M-lr0p0003-s1-j01`),
+sottomissioni pulite (uscita 0, stato in `~/wearusfm_local/jobs/`); alle 11:46 entrambi PENDING per priorita', senza partenza stimata.
