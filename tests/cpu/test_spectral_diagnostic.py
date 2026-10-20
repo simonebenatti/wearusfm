@@ -75,7 +75,9 @@ def build(tmp_path, task, arms=("A_seed0", "A_seed1", "B_seed0", "B_seed1"), sig
             else:
                 ident = {**SDG.STEP2C, "task": task, "arm": arm, "variant": f"branches_{part}", "which": "teacher", "probe_seed": 0,
                          "split_sha256": SDG.SPLIT_SHA, "source_checkpoint_sha256": SDG.CHECKPOINTS[arm]}
-                (ev / task / arm / f"branches_{part}" / "provenance.json").write_text(json.dumps({"identity": ident, "cache": cache}))
+                run = {**SDG.STEP2C, "arm": arm, "collaudo": False, "complete": True, "encoder_identical": True, "steps": 3000,
+                       "source_checkpoint_sha256": SDG.CHECKPOINTS[arm], "checkpoint_sha256": f"{k}" * 64, "init_checkpoint_sha256": f"{k + 4}" * 64}
+                (ev / task / arm / f"branches_{part}" / "provenance.json").write_text(json.dumps({"identity": ident, "run": run, "cache": cache}))
     return ev, dn
 
 
@@ -157,8 +159,11 @@ def test_compare_reads_the_contrasts_per_family_with_the_frozen_rule(tmp_path, c
         c = res["families"]["p2"][fam]["contrasts"]
         assert c["rami_da_soli"]["reading"] == "peggiora" and c["concatenazione"]["reading"] == "peggiora"
         assert c["apporto_passo0"]["reading"] == "migliora" and c["rami_da_soli"]["delta"] < -0.1
-        assert res["families"]["p2"][fam]["answer"] == SDG.ANSWERS[(True, True)]
+        assert res["families"]["p2"][fam]["answer"] == SDG.answer("peggiora", "peggiora")
         assert len(c["rami_da_soli"]["delta_by_model_seed"]) == 2
+        dd = res["families"]["p2"][fam]["differenza_dei_delta"]  # descrittivo: entrambi i delta negativi, nessuna soglia
+        assert len(dd["delta_by_model_seed"]) == 2 and dd["ci95"][0] <= dd["delta"] <= dd["ci95"][1] and set(dd["datasets"]) == {"epn612", "uci_emg"}
+        assert dd["delta"] == pytest.approx(c["concatenazione"]["delta"] - c["rami_da_soli"]["delta"], abs=1e-9)
     assert set(res["teachers"]["p2"]) == set(SDG.CHECKPOINTS)
     assert "rami_da_soli" in capsys.readouterr().out
     assert SDG.main(["compare", "--out-dir", str(out), "--out", str(tmp_path / "b.json"), "--tasks", "p2", "--families", "B"]) == 0
@@ -185,4 +190,135 @@ def test_linear_cka_and_reading_rule():
     assert SDG.reading({**base, "delta": -0.015, "delta_by_model_seed": [-0.03, 0.001]}) == "entro le soglie"  # un teacher contrario
     assert SDG.reading({**base, "delta": -0.015, "ci95": [-0.03, 0.001]}) == "entro le soglie"  # IC che tocca lo zero
     assert SDG.reading({**base, "beats": True, "delta": 0.02}) == "migliora"
-    assert set(SDG.ANSWERS) == {(a, b) for a in (True, False) for b in (True, False)}
+    for a in SDG.READINGS:  # la risposta riporta solo cosa ha superato la regola: nessun meccanismo, nessun «soprattutto»
+        for b in SDG.READINGS:
+            text = SDG.answer(a, b)
+            assert "compensa" not in text and "soprattutto" not in text and "informazione" not in text
+    assert "non esclude" in SDG.answer("entro le soglie", "peggiora")
+
+
+def test_ridge_r2_recovers_known_cases():
+    """Review del critico (20/10): R^2 ~ 1 per rami combinazione lineare del raw, ~ 0 per rami indipendenti."""
+    rng = np.random.default_rng(0)
+    s = np.repeat([f"s{i:02d}" for i in range(16)], 40)
+    roles = SDG.CP.fold_roles(sorted(set(s.tolist())))
+    x = rng.normal(size=(len(s), 30))
+    lin = SDG.ridge_r2(x, x @ rng.normal(size=(30, 8)) + 0.01 * rng.normal(size=(len(s), 8)), s, roles)
+    ind = SDG.ridge_r2(x, rng.normal(size=(len(s), 8)), s, roles)
+    assert lin["r2"] > 0.99 and abs(ind["r2"]) < 0.05 and len(lin["alphas"]) == 4
+
+
+def _fake_reports(out, task="p2"):
+    """Rapporti minimi per `compare` (il confronto statistico e' sostituito nel test che li usa)."""
+    for arm in SDG.CHECKPOINTS:
+        for name in SDG.SETS:
+            d = out / task / arm
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{name}.json").write_text(json.dumps({"protocol": SDG.PROTOCOL, "task": task, "arm": arm, "set": name, "S": 0.5,
+                                                        "S_se": 0.01, "datasets": {"epn612": {"s": 0.5, "features": {"effective_rank": 9.0}}}}))
+
+
+@pytest.mark.parametrize("alone,concat", [(a, b) for a in ("peggiora", "entro le soglie", "migliora")
+                                          for b in ("peggiora", "entro le soglie", "migliora")])
+def test_compare_maps_every_combination_of_readings(tmp_path, monkeypatch, alone, concat):
+    """Review del critico (20/10): tutte le combinazioni passano per `compare`, con le letture dei due confronti chiave."""
+    delta = {"peggiora": -0.05, "entro le soglie": -0.005, "migliora": 0.05}
+
+    def fake_s_comparison(ref, arm):
+        key = (ref[0]["set"], arm[0]["set"])
+        d = delta[alone] if key == ("PW0", "PW") else delta[concat] if key == ("RPW0", "RPW") else 0.0
+        ci = [d - 0.01, d + 0.01] if abs(d) > 0.01 else [d - 0.02, d + 0.02]
+        return {"A": 0.5, "B": 0.5 + d, "delta": d, "ci95": ci, "delta_by_model_seed": [d, d], "beats": d >= 0.01 and ci[0] > 0}
+
+    real = SDG._script
+
+    def fake_script(name):
+        if name == "arms_compare":
+            return type("AC", (), {"s_comparison": staticmethod(fake_s_comparison)})
+        return real(name)
+
+    monkeypatch.setattr(SDG, "_script", fake_script)
+    monkeypatch.setattr(SDG, "difference_of_deltas", lambda reps, arms: {"delta": 0.0, "ci95": [0.0, 0.0]})
+    out = tmp_path / "out"
+    _fake_reports(out)
+    assert SDG.main(["compare", "--out-dir", str(out), "--out", str(tmp_path / "e.json"), "--tasks", "p2"]) == 0
+    res = json.loads((tmp_path / "e.json").read_text())["families"]["p2"]
+    for fam in ("A", "B"):
+        c = res[fam]["contrasts"]
+        assert (c["rami_da_soli"]["reading"], c["concatenazione"]["reading"]) == (alone, concat)
+        assert res[fam]["answer"] == SDG.answer(alone, concat)
+
+
+def test_difference_of_deltas_on_a_known_case(tmp_path):
+    """Soli rami invariati (PW = PW0), concatenazione che perde: differenza dei delta = delta della concatenazione, IC sotto zero."""
+    rng = np.random.default_rng(1)
+    s = np.repeat([f"u{i:02d}" for i in range(30)], 20)
+    y = np.tile(np.arange(4), len(s) // 4)
+    rows = np.arange(len(y), dtype=np.int64)
+
+    def noisy(acc):
+        return np.where(rng.random(len(y)) < acc, y, (y + 1) % 4)
+
+    reps = {}
+    for arm in ("B_seed0", "B_seed1"):
+        same = noisy(0.6)
+        preds = {"PW0": same, "PW": same.copy(), "RPW0": noisy(0.9), "RPW": noisy(0.6)}
+        reps[arm] = {}
+        for name, pred in preds.items():
+            path = tmp_path / f"{arm}_{name}.oof.npz"
+            np.savez(path, datasets=np.asarray(["epn612"]), epn612_y=y, epn612_pred=pred, epn612_s=s, epn612_row=rows)
+            reps[arm][name] = {"protocol": SDG.PROTOCOL, "splits_sha256": "x", "k_folds": 4, "fold_seed": 1, "val_frac": 0.1, "probe_seed": 0,
+                               "feature_set": SDG.FEATURE_SET, "window_s": None, "extraction_recipe": {}, "weights": {"epn612": 1.0},
+                               "oof": str(path), "oof_sha256": sha256_file(path),
+                               "datasets": {"epn612": {"input_sha256": "i" * 64, "oof_rows_sha256": fingerprint(rows)}}}
+    dd = SDG.difference_of_deltas(reps, ("B_seed0", "B_seed1"))
+    assert dd["delta"] < -0.2 and dd["ci95"][1] < 0 and all(v < 0 for v in dd["delta_by_model_seed"])
+    reps["B_seed1"]["RPW"] = {**reps["B_seed1"]["RPW"], "fold_seed": 2}
+    with pytest.raises(ValueError, match="provenienza non accoppiata"):
+        SDG.difference_of_deltas(reps, ("B_seed0", "B_seed1"))
+
+
+def test_branch_caches_must_come_from_one_complete_2c_run(tmp_path):
+    """Review del critico (20/10): passo 0 e allenati dallo stesso run del 2C, completo, non un collaudo."""
+    for field, value, match in (("collaudo", True, "provenienza diversa"), ("complete", False, "provenienza diversa"),
+                                ("checkpoint_sha256", "f" * 64, "stesso run")):
+        d = tmp_path / field
+        ev, dn = build(d, "p2", arms=("B_seed0",))
+        for which in ("init", "trained"):
+            p = ev / "p2" / "B_seed0" / f"branches_{which}" / "provenance.json"
+            meta = json.loads(p.read_text())
+            meta["run"] = {**SDG.STEP2C, "arm": "B_seed0", "collaudo": False, "complete": True, "encoder_identical": True,
+                           "source_checkpoint_sha256": SDG.CHECKPOINTS["B_seed0"], "checkpoint_sha256": "a" * 64,
+                           "init_checkpoint_sha256": "b" * 64}
+            if which == "trained":
+                meta["run"][field] = value
+            p.write_text(json.dumps(meta))
+        with pytest.raises(ValueError, match=match):
+            _probe(ev, dn, d / "out", "p2", "B_seed0", ["PW0"])
+
+
+def test_plan_feeds_the_evaluation_chain_in_tranches(tmp_path):
+    """Review del critico (20/10): 16 sonde e il confronto via evaluation_chain.py, entro il limite dei job seriali dell'utente (finestra 1
+    compresa), confronto dopo tutte le sonde, --nice positivo; uscite fuori dal codice."""
+    out = tmp_path / "piano.json"
+    assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(out),
+                     "--max-serial", "3"]) == 0
+    plan = json.loads(out.read_text())
+    EC = SDG._script("evaluation_chain")
+    nodes = EC.validate(plan)
+    assert len(nodes) == 17 and nodes[-1]["id"] == "RAMI-compare" and len(nodes[-1]["after"]) == 16
+    assert [n["id"] for n in nodes[:4]] == [f"RAMI-B_seed0-{j}" for j in ("p1-a", "p1-b", "p1-c", "p2")]
+    assert all(f"--nice={SDG.NICE}" in n["sbatch"] for n in nodes) and plan["limits"] == {"lrd_all_serial": 3}
+
+    class Ledger:
+        def __init__(self, states):
+            self.states = states
+
+        def read(self, i):
+            return {"stato": self.states[i]} if i in self.states else None
+
+    rows = EC.schedule(plan, Ledger({}).read, {"lrd_all_serial": 1})  # un job seriale della finestra 1 gia' in coda: ne entrano 2
+    assert [r["id"] for r in rows if r["status"] == "sottomesso ora"] == ["RAMI-B_seed0-p1-a", "RAMI-B_seed0-p1-b"]
+    assert next(r for r in rows if r["id"] == "RAMI-compare")["status"] == "in attesa"
+    with pytest.raises(ValueError, match="assoluta"):
+        SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "rel", "--out", str(out)])

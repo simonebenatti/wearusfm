@@ -77,8 +77,12 @@ def test_spectral_diagnostic_launcher_reads_the_2c_caches_and_writes_outside_cod
     assert ("VENV_PYTHON scripts/spectral_diagnostic.py probe --eval-root "
             "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410 --downstream-root "
             "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910 --out-dir " + out) in r.stdout, r.stdout + r.stderr
-    r = subprocess.run(["bash", str(launcher), out, "compare", "--out", f"{out}/esito.json"], env=env, capture_output=True, text=True)
-    assert f"VENV_PYTHON scripts/spectral_diagnostic.py compare --out-dir {out} --out {out}/esito.json" in r.stdout
+    r = subprocess.run(["bash", str(launcher), out, "compare"], env=env, capture_output=True, text=True)
+    assert f"VENV_PYTHON scripts/spectral_diagnostic.py compare --out-dir {out} --out {out}/esito.json" in r.stdout  # esito fisso
+    for extra in (["--out", "esito.json"], ["--out=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410/e.json"],
+                  ["--out-dir", "rel"], ["--eval-root", "/x"], ["--downstream-root=/y"], ["--splits", "s.json"]):
+        r = subprocess.run(["bash", str(launcher), out, "compare", *extra], env=env, capture_output=True, text=True)
+        assert r.returncode == 2 and "non ammesso" in r.stdout and "VENV_PYTHON" not in r.stdout  # review del critico del 20/10
     for bad, msg in (("rel/diag", "relativa"), (f"{root}/wearusfm/diag", "dentro il codice"),
                      ("/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410/diag", "dentro le cache")):
         r = subprocess.run(["bash", str(launcher), bad, "probe"], env=env, capture_output=True, text=True)

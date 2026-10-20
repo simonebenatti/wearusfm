@@ -17,13 +17,16 @@ Confronti accoppiati per famiglia (A: A_seed0/A_seed1, B: B_seed0/B_seed1; `arms
   rami_da_soli     PW  contro PW0     concatenazione   RPW contro RPW0
   apporto_passo0   RPW0 contro R      apporto_allenati RPW contro R
 Lettura (congelata in docs/decisioni.md prima delle sonde): «migliora» con la regola dei bracci (delta >= +0,01, limite inferiore dell'IC al
-95% > 0, delta > 0 con tutti e due i teacher), «peggiora» con la regola speculare, altrimenti «entro le soglie». Descrittivi: S per dataset e
-teacher, rango effettivo di ogni insieme, ridondanza col raw (CKA lineare; R^2 fuori fold dei rami predetti dal raw con ridge, alpha scelto
-sui soggetti di validazione del fold).
+95% > 0, delta > 0 con tutti e due i teacher), «peggiora» con la regola speculare, altrimenti «entro le soglie» (che non esclude una
+differenza sotto la soglia). La risposta dice solo quale dei due confronti ha superato la regola. Descrittivi senza soglia: la differenza dei
+due delta, (RPW - RPW0) - (PW - PW0), con IC dallo stesso ricampionamento accoppiato degli otto modelli; S per dataset e teacher; rango
+effettivo di ogni insieme; ridondanza col raw (CKA lineare; R^2 fuori fold dei rami predetti dal raw con ridge, alpha scelto sui soggetti di
+validazione del fold).
 
   python3 scripts/spectral_diagnostic.py probe --task p1 --arm B_seed0 --sets R PW0 PW --redundancy \
       --eval-root E --downstream-root D --out-dir O          (CPU)
   python3 scripts/spectral_diagnostic.py compare --out-dir O --out esito.json
+  python3 scripts/spectral_diagnostic.py plan --code-dir C --expected-sha SHA --out-dir O --out piano.json   (per evaluation_chain.py)
 """
 
 from __future__ import annotations
@@ -64,6 +67,12 @@ CONTRASTS = (("rami_da_soli", "PW0", "PW"), ("concatenazione", "RPW0", "RPW"), (
              ("apporto_allenati", "R", "RPW"))
 FEATURE_SET = "cache_2C"  # per l'accoppiamento dei rapporti: stessa sorgente per tutti gli insiemi (le colonne sono in "columns")
 RIDGE_ALPHAS = (1.0, 100.0, 10000.0)
+N_BOOT, BOOT_SEED = 1000, 20261009  # come arms_compare.s_comparison
+# job della catena: (suffisso, compito, insiemi, ridondanza, tempo massimo), nell'ordine dei teacher (famiglia B prima)
+JOBS = (("p1-a", "p1", ("R", "PW0", "PW"), True, "04:00:00"), ("p1-b", "p1", ("RPW0",), False, "03:30:00"),
+        ("p1-c", "p1", ("RPW",), False, "03:30:00"), ("p2", "p2", ("R", "PW0", "PW", "RPW0", "RPW"), True, "04:00:00"))
+ARM_ORDER = ("B_seed0", "B_seed1", "A_seed0", "A_seed1")
+NICE = 10000  # priorita' piu' bassa fra i job in attesa: un job della finestra 1 in coda parte prima di quelli della diagnostica ancora in coda
 
 
 def _script(name: str):
@@ -98,7 +107,14 @@ def provenance(eval_root: Path, downstream_root: Path, task: str, arm: str) -> d
                                            "split_sha256": SPLIT_SHA, "source_checkpoint_sha256": CHECKPOINTS[arm]}, path)
         if any(v.get("feature_set") != "branches" or v.get("model_dim") != BRANCH_COLS for v in meta["cache"].values()):
             raise ValueError(f"{path}: non e' una cache dei rami da {BRANCH_COLS} colonne")
+        run = meta.get("run") or {}
+        expected_run = {**STEP2C, "arm": arm, "collaudo": False, "complete": True, "encoder_identical": True,
+                        "source_checkpoint_sha256": CHECKPOINTS[arm]}
+        _check_identity(run, expected_run, path)
         out[which] = meta["cache"]
+        out[f"run_{which}"] = {k: run.get(k) for k in ("checkpoint_sha256", "init_checkpoint_sha256")}
+    if out["run_init"] != out["run_trained"] or not all(out["run_init"].values()):
+        raise ValueError(f"{task}/{arm}: rami al passo 0 e allenati non vengono dallo stesso run del 2C")
     path = downstream_root / task / arm / "provenance.json"
     meta = json.loads(path.read_text())
     _check_identity(meta["identity"], {**DOWNSTREAM, "task": task, "arm": arm, "which": "teacher", "split_sha256": SPLIT_SHA,
@@ -307,12 +323,53 @@ def reading(row: dict) -> str:
     return "entro le soglie"
 
 
-ANSWERS = {  # (rami da soli peggiorano, concatenazione peggiora) -> lettura congelata; non e' una causa
-    (True, True): "il training peggiora i rami anche da soli",
-    (False, True): "il peggioramento emerge soprattutto nella concatenazione",
-    (True, False): "i rami peggiorano da soli, ma nella concatenazione il raw compensa (informazione persa gia' presente nel raw)",
-    (False, False): "nessun peggioramento oltre le soglie sulla validation interna",
-}
+READINGS = ("peggiora", "entro le soglie", "migliora")
+_PHRASE = {"peggiora": "peggioramento oltre le soglie", "migliora": "miglioramento oltre le soglie",
+           "entro le soglie": "entro le soglie (non esclude una differenza sotto 1 punto)"}
+
+
+def answer(alone: str, concat: str) -> str:
+    """Risposta congelata: solo quale confronto ha superato la regola, senza meccanismi ne' confronti fra i due delta (quelli sono il
+    descrittivo `differenza_dei_delta`)."""
+    return f"soli rami (PW0 -> PW): {_PHRASE[alone]}; concatenazione (RPW0 -> RPW): {_PHRASE[concat]}"
+
+
+def difference_of_deltas(reps: dict, arms, n_boot: int = N_BOOT, seed: int = BOOT_SEED) -> dict:
+    """Descrittivo senza soglia: (RPW - RPW0) - (PW - PW0), media dei due teacher, con un solo ricampionamento dei soggetti per gli otto
+    modelli (stesse righe e soggetti per tutti gli insiemi). Negativo = la concatenazione perde piu' dei soli rami."""
+    from wearusfm.harness import downstream_ab as DA
+
+    CS = _script("calibration_select")
+    order = [(a, n) for a in arms for n in ("PW0", "PW", "RPW0", "RPW")]
+    reports = [reps[a][n] for a, n in order]
+    CS.check_pairing(reports)
+    if len({json.dumps(r["weights"], sort_keys=True) for r in reports}) != 1:
+        raise ValueError("pesi dei dataset diversi")
+    oofs = [CS.load_oof(r) for r in reports]
+    weights = reports[0]["weights"]
+    datasets = sorted(weights)
+    w = np.array([weights[d] for d in datasets])
+    rng = np.random.default_rng(seed)
+    points, teachers, draws, per_ds = [], [], [], {}
+    for d in datasets:
+        y0, _, s0 = oofs[0][d]
+        if any(not (np.array_equal(o[d][0], y0) and np.array_equal(o[d][2], s0)) for o in oofs):
+            raise ValueError(f"{d}: finestre o soggetti diversi fra gli insiemi: il confronto non e' accoppiato")
+        arrays = [DA._arrays(DA.subject_counts(y0, o[d][1], s0)) for o in oofs]
+        subs, n, _ = arrays[0]
+
+        def dd(pick):
+            v = np.array([DA.bacc(n[pick], a[2][pick]) for a in arrays]).reshape(len(arms), 4)
+            return (v[:, 3] - v[:, 2]) - (v[:, 1] - v[:, 0])
+
+        point = dd(np.arange(len(subs)))
+        teachers.append(point)
+        points.append(point.mean())
+        per_ds[d] = {"delta": float(point.mean()), "delta_by_model_seed": point.tolist()}
+        draws.append([dd(rng.integers(len(subs), size=len(subs))).mean() for _ in range(n_boot)])
+    samples = w @ np.asarray(draws)
+    return {"delta": float(w @ np.array(points)), "delta_by_model_seed": (w @ np.array(teachers)).tolist(),
+            "ci95": np.quantile(samples, [.025, .975]).tolist(), "paired_subject_se": float(np.std(samples, ddof=1)), "datasets": per_ds}
 
 
 def compare(args) -> int:
@@ -335,24 +392,59 @@ def compare(args) -> int:
             for key, ref, var in CONTRASTS:
                 row = AC.s_comparison([reps[arms[0]][ref], reps[arms[1]][ref]], [reps[arms[0]][var], reps[arms[1]][var]])
                 rows[key] = {"from": ref, "to": var, **row, "reading": reading(row)}
-            worse = (rows["rami_da_soli"]["reading"] == "peggiora", rows["concatenazione"]["reading"] == "peggiora")
-            result["families"].setdefault(task, {})[fam] = {"contrasts": rows, "answer": ANSWERS[worse]}
+            result["families"].setdefault(task, {})[fam] = {
+                "contrasts": rows, "answer": answer(rows["rami_da_soli"]["reading"], rows["concatenazione"]["reading"]),
+                "differenza_dei_delta": difference_of_deltas(reps, arms)}
     result["note"] = ("Validation interna (soggetti di pretraining P1, soggetti fuori dai test P2), nessun numero dei test ufficiali. "
-                      "Letture descrittive con la regola dei bracci: indicano dove si vede il peggioramento, non perche' avviene.")
+                      "Letture con la regola dei bracci: dicono quale confronto supera la soglia, non perche'; «entro le soglie» non esclude "
+                      "una differenza minore (nel 2C, A/P1 ufficiale RPW - RPW0 = -0,84 punti sarebbe «entro le soglie»). 16 letture "
+                      "(4 confronti x 2 famiglie x 2 compiti) senza correzione per confronti multipli.")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=1, allow_nan=False))
     for task, fams in result["families"].items():
         for fam, v in fams.items():
             c = v["contrasts"]
+            dd = v["differenza_dei_delta"]
             print(f"{task} {fam}: " + "; ".join(f"{k} {100 * c[k]['delta']:+.2f} [{100 * c[k]['ci95'][0]:+.2f}, {100 * c[k]['ci95'][1]:+.2f}] "
-                                               f"{c[k]['reading']}" for k, _, _ in CONTRASTS) + f" -> {v['answer']}")
+                                               f"{c[k]['reading']}" for k, _, _ in CONTRASTS)
+                  + f"; differenza dei delta {100 * dd['delta']:+.2f} [{100 * dd['ci95'][0]:+.2f}, {100 * dd['ci95'][1]:+.2f}] -> {v['answer']}")
+    return 0
+
+
+def plan(args) -> int:
+    """Piano per `scripts/evaluation_chain.py` (schema eval-plan-v0): 16 sonde e il confronto dopo tutte. La catena sottomette solo entro
+    `limits` (job dell'utente in coda e in esecuzione sulla seriale, finestra 1 compresa: la diagnostica si ferma se la coda e' occupata) e
+    non mette afterok su predecessori gia' finiti; si richiama a tranche finche' tutto e' sottomesso."""
+    out = args.out_dir
+    if not str(out).startswith("/"):
+        raise ValueError("--out-dir assoluta (e' la cartella dei rapporti sul cluster)")
+    nice = [f"--nice={NICE}"]
+    nodes, reports = [], []
+    for arm in ARM_ORDER:
+        for suffix, task, sets, red, time_limit in JOBS:
+            outputs = [f"{out}/{task}/{arm}/{n}.json" for n in sets] + ([f"{out}/{task}/{arm}/redundancy.json"] if red else [])
+            reports += outputs
+            nodes.append({"id": f"RAMI-{arm}-{suffix}", "kind": "probe", "after": [], "queue": "lrd_all_serial", "gpu_hours": 0,
+                          "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+                          "args": [str(out), "probe", "--task", task, "--arm", arm, "--sets", *sets] + (["--redundancy"] if red else []),
+                          "exports": {}, "sbatch": [f"--time={time_limit}", *nice], "inputs": [], "outputs": outputs})
+    nodes.append({"id": "RAMI-compare", "kind": "compare", "after": [n["id"] for n in nodes], "queue": "lrd_all_serial", "gpu_hours": 0,
+                  "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
+                  "args": [str(out), "compare"], "exports": {}, "sbatch": ["--time=00:30:00", "--cpus-per-task=2", *nice],
+                  "inputs": [r for r in reports if r.endswith(".json") and not r.endswith("redundancy.json")], "outputs": [f"{out}/esito.json"]})
+    doc = {"schema": "eval-plan-v0", "campaign": args.campaign, "agent": "claude", "limits": {"lrd_all_serial": args.max_serial},
+           "nodes": nodes}
+    _script("evaluation_chain").validate(doc)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(doc, indent=1))
+    print(f"{len(nodes)} nodi, al piu' {args.max_serial} job seriali dell'utente in coda -> {args.out}")
     return 0
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0], allow_abbrev=False)
     sub = ap.add_subparsers(dest="stage", required=True)
-    p = sub.add_parser("probe")
+    p = sub.add_parser("probe", allow_abbrev=False)  # niente abbreviazioni: il launcher rifiuta --out-dir e le radici per nome
     p.add_argument("--task", choices=["p1", "p2"], required=True)
     p.add_argument("--arm", choices=sorted(CHECKPOINTS), required=True)
     p.add_argument("--sets", nargs="+", choices=list(SETS), required=True)
@@ -362,13 +454,20 @@ def main(argv=None) -> int:
     p.add_argument("--splits", type=Path, default=ROOT / "splits" / "v1" / "splits_v1.json")
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--seed", type=int, default=0)
-    c = sub.add_parser("compare")
+    c = sub.add_parser("compare", allow_abbrev=False)
     c.add_argument("--out-dir", type=Path, required=True)
     c.add_argument("--out", type=Path, required=True)
     c.add_argument("--tasks", nargs="+", choices=["p1", "p2"], default=["p1", "p2"])
     c.add_argument("--families", nargs="+", choices=sorted(FAMILIES), default=sorted(FAMILIES), help="B si legge prima che A sia finita")
+    q = sub.add_parser("plan", allow_abbrev=False)
+    q.add_argument("--code-dir", required=True)
+    q.add_argument("--expected-sha", required=True)
+    q.add_argument("--out-dir", type=Path, required=True, help="cartella dei rapporti sul cluster (assoluta)")
+    q.add_argument("--out", type=Path, required=True)
+    q.add_argument("--campaign", default="rami-diag")
+    q.add_argument("--max-serial", type=int, default=3, help="job seriali dell'utente in coda o in esecuzione oltre i quali non si sottomette")
     args = ap.parse_args(argv)
-    return probe(args) if args.stage == "probe" else compare(args)
+    return {"probe": probe, "compare": compare, "plan": plan}[args.stage](args)
 
 
 if __name__ == "__main__":

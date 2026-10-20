@@ -422,3 +422,12 @@ def test_dummy_node_launcher_checks_inputs_and_writes_its_output(work, tmp_path)
     assert run(str(tmp_path / "out" / "a.json"), str(present), str(tmp_path / "manca")).returncode == 3
     ok = run(str(tmp_path / "out" / "b.json"), str(present))
     assert ok.returncode == 0 and json.loads((tmp_path / "out" / "b.json").read_text())["inputs"] == 1
+
+
+def test_nice_is_accepted_only_with_a_positive_value():
+    """Diagnostica dei rami (20/10): --nice abbassa la priorita' fra i job in attesa; un valore negativo la alzerebbe."""
+    assert EC.sbatch_options(["--nice=10000", "--time=01:00:00"]) == {"--nice": "10000", "--time": "01:00:00"}
+    for bad in (["--nice=-5"], ["--nice=0"], ["--nice=abc"]):
+        with pytest.raises(ValueError, match="positivi"):
+            EC.sbatch_options(bad)
+

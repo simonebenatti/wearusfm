@@ -3588,8 +3588,22 @@ in `docs/rami_diagnostica_v1.md`. R->RPW0 e R->RPW, rango effettivo, CKA e R^2 d
 vede il peggioramento, non la causa; non adottano ne' escludono nulla. **Preventivo (da autorizzare):** 16 job seriali da 8 core + confronto
 + checkout, **~241 core-ora attese, tetto 481 core-ora (481 ore locali), 0 GPU-ora**, ~30 h di calendario, `--nice` dietro ai job della
 finestra 1; ~80 MB su `$SCRATCH`. Prima del lancio: review del `critico`. Codice `scripts/spectral_diagnostic.py`,
-`scripts/slurm/spectral_diagnostic.sbatch`; suite 7 test nuovi PASS (suite sul merge 1212 PASS).
+`scripts/slurm/spectral_diagnostic.sbatch`; 6 test nuovi PASS (suite 1218 PASS su c631c6d).
 
 **C2 partita (20/10/2026 12:03):** 61526225 (1e-4) su lrdn3052 e 61526229 (3e-4) su lrdn2272. Primi 2.350 / 800 passi regolari: perdite
 finite, passo 1 identico nei due run (6,1213: stesso seme), 0,61-0,95 s/passo (media ~0,70, come la stima), dati 0,00-0,01 s, memoria
 massima 10,2 GiB. Fine prevista verso le 17:15, dentro il limite del job (21.000 s).
+
+**Diagnostica dei rami: review del `critico` (20/10/2026, su c631c6d) DA RIVEDERE, rilievi chiusi; lettura proposta aggiornata (sostituisce
+la tabella delle quattro risposte della voce precedente; nessuna sonda lanciata).** Risposta per famiglia e compito = solo quale dei due
+confronti chiave (PW0->PW, RPW0->RPW) supera la regola dei bracci o la sua speculare: «peggioramento oltre le soglie», «miglioramento oltre le
+soglie», «entro le soglie (non esclude una differenza sotto 1 punto)»; nessun meccanismo ne' «soprattutto». Il confronto fra i due delta e'
+un descrittivo senza soglia: (RPW - RPW0) - (PW - PW0) con IC dallo stesso ricampionamento accoppiato. Nota: l'effetto che motiva la domanda
+puo' stare sotto la soglia (2C, A/P1 ufficiale -0,84). 16 letture senza correzione per confronti multipli. **Lancio solo dopo la valutazione
+di C2**, a tranche con `evaluation_chain.py` (al piu' 3 job seriali dell'utente in coda o in esecuzione, finestra 1 compresa; confronto come
+ultimo nodo; `--nice=10000`); ritardo massimo su un job seriale della finestra 1: il resto della sonda in esecuzione, al piu' 4 h; nessuna
+tranche nuova a ridosso delle valutazioni di C3 e C4. Budget: ore locali CPU dell'account, nessun budget GPU; tetto 481 ore locali da
+autorizzare. Disco ~250 MB su `$SCRATCH`. Correzioni nel codice: uscita del confronto fissa, argomenti di uscite/radici/split rifiutati dal
+launcher, nessuna abbreviazione; run del 2C controllato (stesso run per passo 0 e allenati, completo, non di collaudo); `--nice` (solo
+positivo) nell'elenco chiuso di `evaluation_chain.py`. Il numero dei test nuovi della voce precedente era sbagliato (7): sono 6, suite 1218
+PASS su c631c6d (corretto nella voce).

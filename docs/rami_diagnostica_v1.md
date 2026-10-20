@@ -32,8 +32,14 @@ soggetti registrata; identita' della provenienza (protocollo, commit, teacher, c
   della S della calibrazione) e `test_`. La diagnostica legge solo `train_` e `val_`: **le righe di test non si aprono mai** (nei test CPU sono
   NaN e la sonda passa). Si controlla che l'unione di `train_` e `val_` sia esattamente il pretraining degli split e non tocchi il test.
 - **P2:** le cache hanno tutti i soggetti di EPN-612 e UCI-EMG. Si tengono solo quelli fuori dai test di **tutti e tre** gli split ufficiali
-  7:1:2 (semi 0, 1, 2; `calibration_probe.p2_internal_subjects`, la S della P2 dei bracci firmata il 16/10); le altre righe si scartano subito
-  dopo la lettura, prima di qualunque calcolo.
+  7:1:2 (semi 0, 1, 2; `calibration_probe.p2_internal_subjects`, la S della P2 dei bracci firmata il 16/10, stessi id e stesso ordinamento
+  degli split di `probe_p2.py`): 314 soggetti di EPN-612 su 612 e 19 di UCI-EMG su 36 (calcolo del `critico`); le altre righe si scartano
+  subito dopo la lettura, prima di qualunque calcolo.
+
+**Che cos'e' il passo 0** (precisazione di GPT, registro del 20/10): frontend fisici (PSD, banco di wavelet) e normalizzazione calibrata,
+piu' gli encoder dei rami non allenati. Non e' la baseline dell'encoder casuale del punto 2 (quella riguarda il raw). Le cache dei rami al
+passo 0 e allenati devono venire dallo stesso run del 2C (stessi SHA dei checkpoint finale e iniziale nelle due provenienze), completo e non
+di collaudo: controllato.
 
 ## Insiemi di colonne
 
@@ -69,17 +75,24 @@ Confronto accoppiato per famiglia (`arms_compare.s_comparison`: soggetti ricampi
 
 Lettura di ogni confronto (la regola dei bracci e la sua speculare, nessuna soglia nuova): **«migliora»** se delta >= +0,01, limite inferiore
 dell'IC al 95% > 0 e delta > 0 con tutti e due i teacher; **«peggiora»** se delta <= -0,01, limite superiore < 0 e delta < 0 con tutti e
-due; altrimenti **«entro le soglie»**. Risposta per famiglia e compito:
+due; altrimenti **«entro le soglie»**, che **non esclude una differenza sotto 1 punto**. Esempio: nel 2C, famiglia A, P1 ufficiale, R+PW
+contro R+PW0 = -0,84 punti (IC -1,38..-0,39, negativo con i due teacher) sarebbe «entro le soglie»: l'effetto che motiva questa domanda
+puo' stare sotto la soglia.
 
-| Rami da soli | Concatenazione | Lettura |
-|---|---|---|
-| peggiora | peggiora | il training peggiora i rami anche da soli |
-| non peggiora | peggiora | il peggioramento emerge soprattutto nella concatenazione |
-| peggiora | non peggiora | i rami peggiorano da soli, ma nella concatenazione il raw compensa (informazione persa gia' presente nel raw) |
-| non peggiora | non peggiora | nessun peggioramento oltre le soglie sulla validation interna |
+**Risposta per famiglia e compito (review del `critico` del 20/10):** solo quale dei due confronti chiave ha superato la regola, nella forma
+«soli rami (PW0 -> PW): <lettura>; concatenazione (RPW0 -> RPW): <lettura>», con «peggioramento oltre le soglie», «miglioramento oltre le
+soglie» o «entro le soglie (non esclude una differenza sotto 1 punto)». Nessun meccanismo (perdita d'informazione, compensazione del raw) e
+nessun «soprattutto»: una differenza di esito rispetto a una soglia non e' una differenza stimata.
+
+**Il confronto fra i due delta** (la parte comparativa della domanda) e' un descrittivo **senza soglia**: la differenza dei delta,
+(RPW - RPW0) - (PW - PW0), media dei due teacher, con IC al 95% dallo stesso ricampionamento accoppiato dei soggetti per gli otto modelli
+(righe e soggetti uguali per tutti gli insiemi). Negativa: la concatenazione perde piu' dei soli rami; positiva: meno. Si riporta col suo
+intervallo, per dataset e per teacher.
 
 Si legge per famiglia (A e B separate) e per compito, poi per dataset (descrittivo). Le letture orientano il punto 2 (obiettivo temporale)
 e il punto 3 (informazione spaziale); non adottano e non escludono nulla. Due teacher per famiglia: incertezza condizionata a quei modelli.
+**16 letture** (4 confronti x 2 famiglie x 2 compiti) **senza correzione per confronti multipli**, come nel 2C: i due confronti chiave
+rispondono alla domanda, gli altri interpretano.
 
 **Descrittivi (nessuna soglia):** S per dataset e per teacher; rango effettivo di ogni blocco (raw, rami al passo 0, allenati) sulle righe
 interne; ridondanza col raw: CKA lineare fra raw e rami (passo 0, allenati) e fra rami al passo 0 e allenati, e R^2 fuori fold dei rami
@@ -92,7 +105,9 @@ fold, R^2 sui soggetti tenuti fuori). Un R^2 che sale col training dice che i ra
 delle cache fisse, rapporti assoluti e fuori dal codice e dalle cache). Rapporti nel formato della calibrazione (S, SE, predizioni fuori fold
 con le righe della cache): li legge `calibration_select.load_oof`, e `check_pairing` controlla l'accoppiamento prima di ogni confronto.
 Test CPU in `tests/cpu/test_spectral_diagnostic.py` (righe di test della P1 mai lette, soggetti di test della P2 scartati, file cambiati,
-provenienza di un altro teacher, righe permutate, rapporti non accoppiati, lettura congelata, CKA) e in `tests/cpu/test_probe_launchers.py`.
+provenienza di un altro teacher o di run diversi, righe permutate, rapporti non accoppiati, tutte le combinazioni di letture in `compare`,
+differenza dei delta su un caso noto, R^2 del ridge su casi noti, CKA, piano della catena coi limiti) e in `tests/cpu/test_probe_launchers.py`
+(radici, uscite e split non sovrascrivibili dagli argomenti; esito del confronto sempre in `<cartella>/esito.json`).
 
 ## Esecuzione e costo (CPU seriale, 0 GPU-ora)
 
@@ -108,18 +123,50 @@ nessuna misura diretta, stima dalle sonde ufficiali della P2 del 2C, 48-53 min a
 | P2 | R, PW0, PW, RPW0, RPW + ridondanza | ~1 h 50 | 4 h |
 
 Quattro teacher: 16 job da 8 core su `lrd_all_serial` (30 GB), piu' il confronto (2 core, 30 min) e il checkout di campagna (1 core, 10
-min). **Stima ~241 core-ora, tetto 481 core-ora (= 481 ore locali), 0 GPU-ora.** Ordine: famiglia B, poi A (il segnale descrittivo piu'
-forte del 2C e' in B, P2); il confronto della sola B si puo' leggere prima (`compare --families B`). Le sonde seriali girano una alla volta
-(8 core per utente sulla seriale): ~30 h di calendario. I job si sottomettono con `--nice` cosi' i job della finestra 1 (valutazione di C2)
-li precedono in coda. Disco: rapporti e predizioni fuori fold ~80 MB in `$SCRATCH/wearusfm_runs/rami_diagnostica_<data>` (copiati sul Mac a
-fine tranche); le cache si leggono soltanto.
+min). **Stima ~241 core-ora, tetto 481 core-ora (= 481 ore locali), 0 GPU-ora.** Nessuna misura diretta a 256 colonne ne' per la P2
+interna: stime, coperte dal tempo massimo per job. **Budget:** ore locali CPU dell'account (saldo del 15/10: 1.257.249 usate su 2.000.000,
+residuo ~742.700); nessun budget GPU toccato (finestra 1, calibrazione, passo 6, infrastruttura invariati). Non c'e' un budget CPU firmato
+per il punto 5: il tetto di 481 ore locali e' quello da autorizzare.
 
-## Sequenza di lancio (dopo review del `critico`, decisioni.md e via di Simone)
+**Limiti della seriale e convivenza con la finestra 1** (review del `critico` del 20/10): sulla seriale valgono al piu' 10 job per utente in
+coda (`QOSMaxSubmitJobPerUserLimit`, rifiuto reale il 14/10) e 8 CPU per utente in esecuzione (`QOSMaxCpuPerUserLimit`): un job da 8 core
+alla volta, ~30 h di calendario. Le sonde S della finestra 1 (valutazione di C2, poi C3-C4) girano sulla stessa seriale. Quindi:
+- **lancio dopo la valutazione di C2** (sonde e selezione finite), non durante;
+- sottomissione **a tranche con `scripts/evaluation_chain.py`** (piano dalla fase `plan`): la catena sottomette solo se i job seriali
+  dell'utente in coda o in esecuzione, finestra 1 compresa, sono meno di 3 (`limits`), e non mette afterok sui predecessori gia' finiti
+  (correzione del 19-20/10); il confronto e' l'ultimo nodo, sottomesso solo quando tutte le sonde sono sottomesse. Si richiama a tranche;
+- `--nice=10000` ordina solo i job **in attesa**: un job della finestra 1 messo in coda passa davanti alle sonde della diagnostica ancora in
+  coda, ma non interrompe quella in esecuzione. **Ritardo massimo su un job seriale della finestra 1: il resto della sonda della diagnostica
+  in esecuzione, al piu' 4 h** (stima tipica 1 h 45 - 2 h 10). Prima delle valutazioni di C3 e C4 la diagnostica non si richiama (nessuna
+  tranche nuova), cosi' il ritardo resta al piu' quello di un job.
+
+Ordine: famiglia B, poi A (il segnale descrittivo piu' forte del 2C e' in B, P2); il confronto della sola B si puo' leggere prima (`compare
+--families B`). Disco: rapporti e predizioni fuori fold **~250 MB** (npz non compressi, etichette di EPN-612 e soggetti come stringhe: ~7,5 MB
+per insieme P2 e ~3 MB per insieme P1, stima del `critico`) in `$SCRATCH/wearusfm_runs/rami_diagnostica_<data>`, copiati sul Mac a fine
+tranche; le cache si leggono soltanto.
+
+## Sequenza di lancio (dopo review del `critico`, decisioni.md e via di Simone; dopo la valutazione di C2)
 
 1. Riferimento `deploy/rami-diag-<data>` allo SHA del commit rivisto, preflight in sola lettura, checkout di campagna (job CPU).
-2. Per teacher (B_seed0, B_seed1, A_seed0, A_seed1), via leonardo-ops e `scripts/submit_job.py`, i quattro job della tabella:
-   `spectral_diagnostic.sbatch <OUT> probe --task p1 --arm <teacher> --sets R PW0 PW --redundancy` (`--time=04:00:00`), `... --sets RPW0`
-   e `... --sets RPW` (`--time=03:30:00`), `... --task p2 --sets R PW0 PW RPW0 RPW --redundancy` (`--time=04:00:00`).
-3. Confronto (`afterok` di tutti): `spectral_diagnostic.sbatch <OUT> compare --out <OUT>/esito.json` (`--time=00:30:00 --cpus-per-task=2`).
+2. Piano della catena: `python3 scripts/spectral_diagnostic.py plan --code-dir <checkout> --expected-sha <SHA> --out-dir
+   $SCRATCH/wearusfm_runs/rami_diagnostica_<data> --out results/rami_diagnostica/piano_<data>.json --max-serial 3` (commit). Per teacher
+   (B_seed0, B_seed1, A_seed0, A_seed1) i quattro job della tabella (`spectral_diagnostic.sbatch <OUT> probe --task p1 --arm <teacher> --sets
+   R PW0 PW --redundancy`, `--time=04:00:00`; `... --sets RPW0` e `... --sets RPW`, `--time=03:30:00`; `... --task p2 --sets R PW0 PW RPW0
+   RPW --redundancy`, `--time=04:00:00`), poi il confronto (`spectral_diagnostic.sbatch <OUT> compare`, `--time=00:30:00
+   --cpus-per-task=2`), tutti con `--nice=10000`.
+3. `evaluation_chain.py <piano> --submit` via leonardo-ops, a tranche (dry-run prima di ogni tranche), finche' tutto e' sottomesso; nessuna
+   tranche nuova a ridosso delle valutazioni di C3 e C4.
 4. Copia di rapporti ed esito sul Mac, commit in `results/rami_diagnostica/`, voce nel registro e in `docs/decisioni.md`; poi la proposta
    del pilot del punto 2 secondo l'esito.
+
+## Review del `critico` (20/10/2026, su c631c6d): DA RIVEDERE, rilievi chiusi
+
+Bloccanti: (1) la risposta attribuiva un meccanismo («il raw compensa»): ora riporta solo quale confronto supera la regola; (2) «non
+peggiora» univa esiti diversi e il confronto fra i due delta non era stimato: risposta a tre valori per confronto, differenza dei delta con
+IC come descrittivo senza soglia, nota sull'effetto sotto 1 punto (A/P1 -0,84); (3) il piano di sottomissione ignorava i limiti per utente
+della seriale e la valutazione di C2: lancio dopo C2, tranche con `evaluation_chain.py` e `limits`, confronto come ultimo nodo, ritardo
+massimo dichiarato, frase su `--nice` corretta; (4) l'uscita del confronto non era controllata: fissata a `<cartella>/esito.json`, il
+launcher rifiuta uscite, radici e split negli argomenti e lo script non accetta abbreviazioni. Minori: numero dei test nuovi corretto
+(6, non 7: suite 1218 PASS su c631c6d); disco ~250 MB; test su R^2 del ridge, su tutte le combinazioni di `compare` e sull'uscita del
+confronto; identita' del run del 2C (stesso run per passo 0 e allenati, completo, non di collaudo); confronti multipli, significato del
+passo 0 e budget dichiarati.

@@ -64,7 +64,7 @@ SBATCH_OPTIONS = {"--time": "--time", "-t": "--time", "--partition": "--partitio
                   "--nodes": "--nodes", "-N": "--nodes", "--ntasks": "--ntasks", "-n": "--ntasks", "--ntasks-per-node": "--ntasks-per-node",
                   "--cpus-per-task": "--cpus-per-task", "-c": "--cpus-per-task", "--mem": "--mem", "--mem-per-cpu": "--mem-per-cpu",
                   "--gres": "--gres", "--gpus": "--gpus", "--gpus-per-node": "--gpus-per-node", "--output": "--output", "-o": "--output",
-                  "--error": "--error", "-e": "--error", "--constraint": "--constraint", "-C": "--constraint"}
+                  "--error": "--error", "-e": "--error", "--constraint": "--constraint", "-C": "--constraint", "--nice": "--nice"}
 SBATCH_FLAGS = ("--exclusive",)
 # QoS che SLURM assegna a un job senza --qos, per partizione: nei limiti conta come quella esplicita (squeue la riporta). sacct del
 # 15/10/2026 su job con launcher senza QoS: lrd_all_serial 60664574/84/86 -> normal; boost_usr_prod 59306259 (rvq_codes), 59412516
@@ -103,6 +103,8 @@ def sbatch_options(opts) -> dict[str, str]:
             raise ValueError(f"opzione sbatch {a} non ammessa (ammesse, per intero: {sorted(set(SBATCH_OPTIONS.values()) | set(SBATCH_FLAGS))})")
         if key in out:
             raise ValueError(f"opzione sbatch {key} ripetuta")
+        if key == "--nice" and not (val.isdigit() and int(val) > 0):  # un nice negativo alzerebbe la priorita' (e richiede l'amministratore)
+            raise ValueError(f"opzione sbatch --nice={val}: solo valori interi positivi")
         out[key] = val
         i += 1
     return out

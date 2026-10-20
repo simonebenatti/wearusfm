@@ -2023,7 +2023,7 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - Letta la discussione GPT del 20/10 e il prompt. Cache del 2C e della tranche downstream verificate in sola lettura: coprono la validation
   interna (P1 train_/val_ = pretraining 32/8/8, test_ mai letto; P2 tutti i soggetti, si tengono quelli fuori dai tre test): niente
-  estrazione nuova. Protocollo `docs/rami_diagnostica_v1.md`, codice `scripts/spectral_diagnostic.py` + launcher, test CPU; suite 7 test nuovi PASS (suite sul merge 1212 PASS).
+  estrazione nuova. Protocollo `docs/rami_diagnostica_v1.md`, codice `scripts/spectral_diagnostic.py` + launcher, test CPU; 6 test nuovi PASS (suite 1218 PASS su c631c6d).
 - Lettura proposta in decisioni.md, congelata prima delle sonde. Preventivo ~241 / 481 core-ora, 0 GPU-ora. Prossimo: review del `critico`, poi
   via di Simone. GPT: review di protocollo e codice (non blocca).
 
@@ -2031,6 +2031,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - 61526225 e 61526229 in esecuzione dalle 12:03: perdite finite, passo 1 identico nei due run (stesso seme), ~0,70 s/passo, attesa dei
   dati nulla, memoria 10,2 GiB. Fine prevista verso le 17:15.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: review del critico DA RIVEDERE, rilievi chiusi | Base: c631c6d
+
+- Quattro bloccanti chiusi: risposta solo osservativa (quale confronto supera la regola); differenza dei due delta con IC come descrittivo
+  senza soglia; lancio dopo la valutazione di C2 a tranche con `evaluation_chain.py` e `limits` (3 job seriali), confronto ultimo nodo,
+  ritardo massimo dichiarato (<= 4 h); uscita del confronto fissa e argomenti di uscite/radici rifiutati. Minori chiusi (test, disco, run del
+  2C, budget, confronti multipli). In attesa della seconda review del `critico`.
 
 ## 2) Problemi trovati
 
@@ -3055,3 +3062,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Nessuna misura diretta della durata delle sonde P2 interne: stima dalle sonde ufficiali P2 del 2C; tetto per job largo (4 h).
 - PSD e wavelet separati (P0, P, W0, W) non sono in questa tranche; si aggiungono se l'esito lo chiede. Due teacher per famiglia: le letture
   sono condizionate a quei modelli. La diagnostica non separa obiettivo, LR/schedule e dominio come cause.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: errori miei trovati dal critico
+
+- La prima tabella delle risposte attribuiva un meccanismo («il raw compensa») contro il vincolo di GPT del 20/10, e confrontava i due
+  delta senza stimarli. Il piano di sottomissione ignorava i 10 job per utente della seriale e la valutazione di C2. Avevo scritto 7 test
+  nuovi invece di 6 (corretto nella voce). Tutto corretto prima di qualunque lancio.
