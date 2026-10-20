@@ -15,7 +15,7 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 16/10/2026 dopo la review GPT del punto 5 (8508b7d) e la lettura dei log Claude fino a 5c3ec80. Claude sviluppa e conduce la
+Stato aggiornato al 20/10/2026 dopo lettura dei report C1 e dei log Claude fino a f250af3, riscontrati nel ledger locale. Claude sviluppa e conduce la
 parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log
 versionati, non da interrogazione live in questa review.
 
@@ -23,20 +23,21 @@ versionati, non da interrogazione live in questa review.
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Integrazione delle consegne verificate, conservando gli SHA | Correzioni sul proprio ramo e lettura delle patch prima del deploy | CHIUSO per la consegna integrata: main 2dc1197 include Claude fino ad a7edd55 e hardening GPT 41ce569; 158 test mirati PASS. Review punto 5 in 8508b7d, da pubblicare con questa tabella. Nuovo delta selezione 5c3ec80 da verificare al punto 6 |
-| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 e parita' FIRMATE il 16/10. Restano lettura del pannello nei run reali e regola dei run lunghi; nessuna soglia cambiata dalla review |
-| 5 | Validare l'obiettivo scientifico | Review di codice, protocolli e risultati | Protocolli, bracci, sonde, loss e analisi | IMPLEMENTAZIONE JEPA-only/ancore-only verificata anche da GPT: nessun difetto confermato, 45 test mirati PASS. Protocollo firmato in 0d45a2f (letto sul ramo Claude). Restano planner/valutazione, collaudo GPU e risultati; keep da ricalibrare sul corpus, sonde per profondita'/fisiche da completare |
-| 6 | Chiudere la finestra 1 | Review delle nuove correzioni selezione, poi integrazione | Segue C1 e valutazione; prepara C2-C4 e lista finale dei job | IN CORSO: C1 sottomessa da Simone nei log e79a536, job 60715596/60715602/60715603. Correzioni dei due rilievi consegnate in 5c3ec80, ancora da verificare da GPT e integrare. Restano esiti e sonde C1, C2-C4, scelta LR e piano definitivo. Budget firmati W1 6.000 GPUh, calibrazione 220; SCRATCH prossimo 12/11 |
+| 3 | Review e integrazione su main | Review del nuovo delta selezione/planner/sonde, poi merge | Correzioni sul proprio ramo e lettura delle patch prima del deploy | Consegna precedente integrata in 5145efb; nuova tranche fino a f250af3 ancora sul ramo Claude. Critico: selezione APPROVATA nei log, suite 1191 PASS riportata da Claude; verifica GPT della nuova tranche ancora da fare. Questo status integra solo documentazione |
+| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 applicata a C1: 1e-4 e 3e-4 ammissibili; 1e-3 escluso, 7 valutazioni consecutive oltre 1,10 x minimo, picco 1,58. Nessun collasso o STOP nei training C1. Restano lettura di C2 e regola dei run lunghi |
+| 5 | Validare l'obiettivo scientifico | Review dei nuovi strumenti e risultati; codice dei due bracci gia' verificato (45 PASS) | Pianificatore, sonde interne/ufficiali, confronto e campagna | Planner e piano P1/P2 ora consegnati (0adfc52), confronto e S interna P2 implementati. Default scelto sulle validation interne, test ufficiali per conferma: regola aggiornata e firmata nei log Claude. Restano review dei nuovi strumenti, LR da C1-C2, collaudo GPU, ricalibrazione keep e risultati dei bracci; sonde fisiche/profondita' ancora aperte |
+| 6 | Chiudere la finestra 1 | Review del nuovo delta di valutazione e dei report | Segue C2 e corregge afterok prima della valutazione; poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4 (f2c584e). C2 sottomessa il 20/10 alle 11:44: 61526225 e 61526229, in coda per priorita' nell'ultimo log. Residui selezione corretti da Claude; resta un difetto afterok emerso nella valutazione C1. Consuntivo C1 63,8/220 GPUh, C2 ~41/53. Poi C3-C4, LR e piano finale; SCRATCH prossimo 12/11 |
 
-### Prossimo lavoro in parallelo (16/10)
+### Prossimo lavoro in parallelo (20/10)
 
-- **Claude:** segue i tre training C1 gia' sottomessi, prepara la valutazione dal nuovo checkout e il planner dei bracci con piano P1/P2;
-  keep separata da ricalibrare sul corpus. Correzioni della selezione gia' consegnate in 5c3ec80, non ancora certificate da GPT.
-- **GPT:** review delle correzioni 5c3ec80 e integrazione della prossima tranche. Review dei due bracci gia' conclusa in 8508b7d (45 PASS).
+- **Claude:** segue i due training C2 e verifica i primi passi; corregge l'afterok verso predecessori della stessa chiamata gia' finiti
+  prima di sottomettere la valutazione di C2. Per i bracci, restano LR, review nuovi strumenti, collaudo e ricalibrazione keep.
+- **GPT:** review della tranche di selezione, planner e sonde consegnata dopo 5145efb, poi integrazione. Review del codice dei due
+  bracci gia' conclusa in 8508b7d (45 PASS); questo controllo di stato non equivale a una nuova approvazione tecnica.
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** C1 ~61 GPUh attese / 79,5 tetto; C1-C4 ~164,5 / 216,5 entro il budget 220; infrastruttura 15,17/25
-  GPUh residue dopo w1_selezione_v1. Le sonde restano CPU, con attesa seriale; prima di C4 va risolta la durata della sonda 300M.
+- **Costi nei log aggiornati:** consuntivo C1 63,8 GPUh, residuo prima di C2 156,2/220; C2 ~41 attese / 53 tetto (dopo il tetto,
+  almeno 103,2 per C3-C4). Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
 - **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
@@ -1870,7 +1871,25 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   live del cluster. Pubblicazione locale della tabella e della review 8508b7d su main in fast-forward; nessun nuovo codice Claude integrato
   con questo aggiornamento e nessuna nuova scelta scientifica. decisioni.md gia' aggiornato dalla review, nessuna nuova decisione qui.
 
+### 2026-10-20 | GPT | Controllo di stato e tabella aggiornata | Log Claude f250af3; main di codice 5145efb
+
+- Richiesta: «puoi ricontrollare lo status ?». Letti commit, registro/decisioni di Claude, decisione e registro JSON di C1, planner dei
+  bracci e ledger locale. C1 finita e valutata: finalisti 1e-4 e 3e-4; 1e-3 inammissibile per A4. S P1 18,21 / 17,46 / 15,86%,
+  validation interna, non accuratezze sui test ufficiali. Consuntivo registrato 63,8 GPUh su 220.
+- Durante il controllo e' arrivato f250af3: C2 sottomessa da Simone alle 11:44, 61526225 e 61526229, conferma nel ledger. Ultimo
+  stato riportato: in coda per priorita'. Nessun accesso live SLURM: non certificato l'avvio o l'avanzamento successivo a quel log.
+- Aggiornata la tabella senza rinumerare. Planner e valutazione dei bracci non sono piu' da implementare: sono consegne da verificare.
+  Nessuna nuova review/test/integrazione di codice in questo status. Nuovi documenti e nuove scelte di Claude letti sul suo ramo;
+  nessun cambiamento di protocollo o budget da parte di GPT. decisioni.md non richiede nuove firme per questo aggiornamento.
+
 ## 2) Problemi trovati
+
+### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
+
+- Prima della valutazione C2, correggere il caso afterok verso una guardia gia' finita nella stessa chiamata dell'orchestratore:
+  fallimento reale di una sottomissione C1, recuperata con --dopo-rifiuto senza danni. I training non richiedono una ripetizione.
+- Main ha la consegna precedente; i nuovi strumenti/report di Claude non sono ancora integrati e non sono stati riesaminati da GPT
+  in questa attivita'. Punti 3/5/6 richiedono la nuova tranche di review. Stato dei job dai log/ledger, non da una lettura live della coda.
 
 ### 2026-10-16 | GPT | Limiti dello stato nella tabella aggiornata | Log Claude 5c3ec80
 
