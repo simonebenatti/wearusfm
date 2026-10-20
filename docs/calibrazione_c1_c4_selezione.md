@@ -190,3 +190,15 @@ l'identita' confronta l'INTERA configurazione effettiva (`config.json`, 99 campi
 col rapporto «-» che non ha scritto `config.json` ha l'identita' «non verificabile» (il LR dichiarato si controlla comunque contro il piano)
 e decide A1: inammissibile, la fase procede. La selezione accetta solo rapporti di S della P1 (compito p1, dataset DB2/DB3/DB6). Verificato
 sui `config.json` veri dei tre run di C1 (`results/infra/w1cal_c1_20261016/runs/`).
+
+**Correzioni dalla review GPT 41ce569 (integrata nel merge 58c043a del 20/10/2026; nessuna regola cambiata).** Controlli che bloccano, in
+`scripts/calibration_probe.py` e `scripts/calibration_select.py`:
+- cache della sonda con SHA degli split e ricetta d'estrazione registrati, controllati dalla sonda (P1: SHA del file degli split; P2 interna:
+  identita' della definizione degli split, `P2_SPLITS_SHA256`, e ricetta della P2); una cache senza questi campi si estrae di nuovo;
+- predizioni fuori fold con le righe della cache e la loro impronta; `load_oof` rifiuta righe ripetute, impronte diverse, meno di due classi;
+- `check_pairing` prima di ogni decisione, anche senza bootstrap: stessi protocollo, split, fold, seme della sonda, insieme di feature,
+  finestra, ricetta, ingressi e righe per tutti i candidati;
+- A1: con la sonda, checkpoint post-decay presente e con lo SHA della sonda; senza sonda la sua assenza non decide nulla (un run altrimenti
+  ammissibile senza sonda resta un errore, come sopra; review del `critico` del 20/10);
+- bootstrap accoppiato con meno di due repliche valide o non finito: errore, nessuna selezione (non e' una parita');
+- `merge`: nessuna fase dopo uno stop; C3 e C4 solo con la conferma completa di C2.

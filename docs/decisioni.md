@@ -3633,3 +3633,11 @@ il resto della sonda in esecuzione, al piu' 4 h**; il caso peggiore di ~8 h dell
 attese, tetto 481 ore locali (ore CPU dell'account), 0 GPU-ora; lancio dopo la valutazione di C2, a tranche con `evaluation_chain.py` (al
 piu' 2 job seriali dell'utente, finestra 1 compresa), `--nice=10000`, nessuna tranche nuova a ridosso delle valutazioni di C3 e C4. Lettura
 congelata in b597786. Lo stesso deploy serve alla valutazione di C2 (codice integrato con la review GPT e la correzione dell'afterok).
+
+**Merge della review C1-C4: review del `critico` APPROVATO (20/10/2026, su 58c043a).** Nessuna regola firmata cambiata; percorso reale di C2
+provato end-to-end in una cartella temporanea (estrazione P1 vera con modello finto, sonda, `select("C2")`, candidato senza sonda, `merge` sul
+file vero delle decisioni); P2 interna accoppiabile; nessuna perdita nella risoluzione dei conflitti. Tre minori chiusi: (1) senza sonda, un
+checkpoint mancante non conta piu' fra i problemi di A1, cosi' un run altrimenti ammissibile senza sonda resta l'errore del protocollo firmato
+(«la valutazione si completa, non si salta») invece di diventare un esito; (2) i test d'estrazione controllano che P1 e P2 scrivano i campi
+che la sonda verifica; (3) il protocollo `docs/calibrazione_c1_c4_selezione.md` elenca i controlli bloccanti della review GPT. Test collegati
+120 PASS. Questo codice e' quello del deploy della valutazione di C2 e della diagnostica dei rami.

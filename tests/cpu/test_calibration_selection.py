@@ -130,6 +130,8 @@ def test_extract_reads_only_pretraining_subjects(tmp_path, monkeypatch):
     with np.load(tmp_path / "f" / "ninapro_db6.npz") as z:
         assert str(z["checkpoint_sha256"]) == CP._sha256(ckpt) and int(z["encoder_dim"]) == 384 and str(z["protocol"]) == CP.PROTOCOL
         assert int(z["model_dim"]) == 4 and str(z["feature_set"]) == "model"  # identita' della cache, come la P1
+        # i campi che `--stage probe` controlla (review del critico sul merge, 20/10): una regressione si vedrebbe solo dopo l'estrazione GPU
+        assert str(z["splits_sha256"]) == CP._sha256(sp) and json.loads(str(z["extraction_recipe"])) == CP.EXTRACTION_RECIPE
 
 
 # ---- validation interna della P2 (bracci dell'obiettivo, decisione del 16/10: il default si sceglie su S) ----
@@ -176,6 +178,7 @@ def test_p2_extraction_never_processes_test_subjects(tmp_path, monkeypatch):
     assert seen == [internal, internal]  # le finestre dei soggetti di test non arrivano mai all'estrazione
     with np.load(tmp_path / "f" / "epn612.npz") as z:
         assert str(z["task"]) == "p2" and z["subjects"].tolist() == internal and z["all_subjects"].tolist() == ids
+        assert str(z["splits_sha256"]) == CP.P2_SPLITS_SHA256 and json.loads(str(z["extraction_recipe"])) == CP.EXTRACTION_RECIPE_P2
 
 
 def test_p2_probe_scores_internal_subjects_with_equal_dataset_weights(tmp_path):
@@ -561,6 +564,18 @@ def test_train_jepa_build_config_errors_and_their_order(tmp_path):
         TJ.main(["--preset", "sanity", "--manifest", str(manifest), "--root", "-", "--out-dir", str(tmp_path / "o"), "--lr", "-1",
                  "--manifest-sha256", "0" * 64])
     assert "diverso da quello del piano" in err.getvalue() and "--lr deve essere positivo" not in err.getvalue()
+
+
+def test_a_healthy_run_without_probe_and_without_checkpoint_is_an_error_not_a_verdict(tmp_path):
+    """Review del critico sul merge (20/10): senza sonda, un checkpoint perso non rende inammissibile un run sano (la fase andrebbe avanti
+    su un file mancante): resta l'errore operativo «run ammissibile senza sonda»."""
+    cands = [_cand(tmp_path, 1e-4, 0.6, no_probe=True), _cand(tmp_path, 3e-4, 0.7, seed=1), _cand(tmp_path, 1e-3, 0.8, seed=2)]
+    (cands[0][1] / CS.CHECKPOINT).unlink()
+    with pytest.raises(ValueError, match="ammissibile senza sonda"):
+        _sel("C1", cands)
+    report = json.loads(cands[1][2].read_text())  # con la sonda il checkpoint mancante e' invece un problema di A1
+    (cands[1][1] / CS.CHECKPOINT).unlink()
+    assert "checkpoint post-decay assente o vuoto" in CS.admissibility(cands[1][1], report, STEPS)["problems"]
 
 
 def test_collaudo_phase_lists_admissible_runs_and_records_descriptive_comparisons(tmp_path):

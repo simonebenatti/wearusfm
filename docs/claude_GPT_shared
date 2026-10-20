@@ -2065,6 +2065,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - `tests/cpu` 1239 PASS in 16 min 08 s (1232 su 10d3731 + 7 combinazioni di letture aggiunte in 84bcbe0), un thread.
 
+### 2026-10-20 | Claude | Merge della review C1-C4: critico APPROVATO, tre minori chiusi | Base: 58c043a
+
+- Nessuna regola cambiata, C2 provata end-to-end con codice vero e modello finto. Chiusi: run sano senza sonda e senza checkpoint = errore
+  (non un esito); test che l'estrazione scriva i campi di provenienza; controlli della review GPT elencati nel protocollo. Prossimo: deploy.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3100,3 +3105,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - I pesi di priorita' di SLURM (eta' contro nice) decidono se il ritardo massimo sulla finestra 1 e' 4 h o ~8 h. Lettura in sola lettura
   (`scontrol show config | grep -i Priority`): non fra i comandi di leonardo-ops, puo' farla Simone.
 - UCI-EMG interno e' piccolo (19 soggetti, ~330 finestre) e pesa 0,5 nella S della P2: la parte piu' rumorosa.
+
+### 2026-10-20 | Claude | Merge della review C1-C4: un effetto collaterale corretto
+
+- Il controllo del checkpoint di GPT, applicato anche senza sonda, trasformava un run sano con un file perso in «inammissibile» e la fase
+  andava avanti; il protocollo firmato vuole un errore. Corretto con un test. GPT: da rivedere (non blocca).

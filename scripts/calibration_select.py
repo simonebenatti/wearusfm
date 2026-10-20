@@ -218,7 +218,9 @@ def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int
     if report is not None and not same_file(report.get("checkpoint"), run_dir / CHECKPOINT):
         problems.append(f"la sonda viene da {report.get('checkpoint')}, non da {run_dir / CHECKPOINT}")
     ckpt = run_dir / CHECKPOINT
-    if not ckpt.is_file() or ckpt.stat().st_size == 0:
+    # con la sonda, il checkpoint deve esserci ed essere quello sondato (review GPT 41ce569); senza sonda la sua assenza non decide nulla:
+    # un run altrimenti ammissibile senza sonda resta un errore operativo («la valutazione si completa, non si salta»; critico, 20/10)
+    if report is not None and (not ckpt.is_file() or ckpt.stat().st_size == 0):
         problems.append("checkpoint post-decay assente o vuoto")
     elif report is not None and report.get("checkpoint_sha256") != _sha256(ckpt):
         problems.append("SHA-256 del checkpoint diverso da quello della sonda")
