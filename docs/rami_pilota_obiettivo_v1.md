@@ -29,6 +29,8 @@ predire, dai frame visibili, i token del teacher nei tratti nascosti.
   contesto** (gli altri sono «non validi»: zeri prima e dopo ogni strato dell'encoder di scala). Il banco wavelet filtra nel dominio della
   frequenza (risposta all'impulso con code gaussiane, e un salto a f <= 0 nella banda veloce piu' bassa): azzerando, gli spettri dello
   studente **non dipendono dai campioni nascosti per costruzione**; la regola del supporto qui sotto limita la distorsione dell'azzeramento.
+  Misura (rumore a 2 kHz, ritagli da 4 s, 10 maschere): sui frame di contesto la differenza di log-potenza fra studente e teacher e' 0 per la
+  PSD, al piu' 3,4e-3 per le wavelet veloci e 4e-5 per le lente; limite dichiarato nel test 1e-2.
 - **Predittore:** per ramo e scala, un piccolo transformer sui frame di ciascun canale (2 strati, dimensione 64, 4 teste, posizione = tempo
   del centro del frame, sinusoidale), token di maschera nelle posizioni bersaglio, attenzione solo verso i frame di contesto dello stesso
   canale e campione. Inizializzato con un generatore separato (l'inizializzazione dei rami e il flusso dei dati restano quelli del 2C).
@@ -56,7 +58,8 @@ predire, dai frame visibili, i token del teacher nei tratti nascosti.
 - **Copertura (stima):** con ritagli quasi tutti da 4 s, la scala veloce ha ~110 frame di contesto e la PSD lenta ~10 per ritaglio; le bande
   wavelet lente sotto ~40 Hz (raggio 0,2-0,36 s) ne hanno 1-4; sui ritagli piu' corti di ~1,5 s la scala lenta ha pochissimo contesto. I
   pesi di `project` per quelle bande ricevono poco gradiente: **asimmetria dichiarata nella lettura**. Il collaudo misura la copertura reale
-  per ramo, scala e banda.
+  per ramo, scala e banda. Misura su rumore a 2 kHz, 4 s, caso peggiore su 10 maschere: frame-banda di contesto sul totale dei validi 68% PSD
+  veloce, 60% wavelet veloce, 8% PSD lenta, 3% wavelet lenta.
 
 ### Anti-collasso (per ramo e scala, sui target del batch)
 

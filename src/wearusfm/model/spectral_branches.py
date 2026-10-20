@@ -215,10 +215,11 @@ class ScaleEncoder(nn.Module):
         self.temporal = nn.ModuleList([nn.Conv1d(hidden, hidden, 3, padding=1) for _ in range(2)])
         self.output = nn.Linear(2 * hidden, out_dim)
 
-    def forward(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        """logp, valid: (C, P, B). Ritorna ((C, out_dim), (C,) canale con almeno un frame valido)."""
+    def tokens(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """I token per canale e frame prima della media sui frame (obiettivo mascherato dei rami, `branch_masking`): ((C, P, hidden), (C, P)
+        frame con almeno una banda usata). Stessi valori del forward (che li usa), zeri sui frame non validi."""
         if logp.shape[1] == 0:  # nessun frame nel ritaglio (piu' corto di un passo)
-            return logp.new_zeros(logp.shape[0], self.output.out_features), torch.zeros(logp.shape[0], dtype=torch.bool, device=logp.device)
+            return logp.new_zeros(logp.shape[0], 0, self.project.out_features), torch.zeros(logp.shape[0], 0, dtype=torch.bool, device=logp.device)
         use = valid & self.observed  # una coordinata mai vista nella calibrazione resta fuori (stessa regola nel training e nelle sonde)
         x = torch.where(use, (logp - self.input_mean) / self.input_scale, 0.0)
         x = torch.cat((x, use.to(x.dtype)), -1)
@@ -227,6 +228,13 @@ class ScaleEncoder(nn.Module):
         for conv in self.temporal:
             v = conv(h.transpose(1, 2)).transpose(1, 2)
             h = torch.where(ok[..., None], F.gelu(h + v), 0.0)
+        return h, ok
+
+    def forward(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """logp, valid: (C, P, B). Ritorna ((C, out_dim), (C,) canale con almeno un frame valido)."""
+        if logp.shape[1] == 0:  # nessun frame nel ritaglio (piu' corto di un passo)
+            return logp.new_zeros(logp.shape[0], self.output.out_features), torch.zeros(logp.shape[0], dtype=torch.bool, device=logp.device)
+        h, ok = self.tokens(logp, valid)
         den = ok.sum(1).clamp(min=1)[:, None].to(h.dtype)
         mean = h.sum(1) / den
         dev = torch.where(ok[..., None], h - mean[:, None, :], 0.0)
