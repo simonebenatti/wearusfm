@@ -56,6 +56,7 @@ def s_comparison(ref: list[dict], arm: list[dict], n_boot: int = N_BOOT, seed: i
     reps = [ref[0], arm[0], ref[1], arm[1]]  # ordine di paired_component: A0, B0, A1, B1
     if len({r.get("task", "p1") for r in reps}) != 1 or len({json.dumps(r["weights"], sort_keys=True) for r in reps}) != 1:
         raise ValueError("rapporti di S di compiti o pesi diversi")
+    CS.check_pairing(reps)  # split, fold, ricetta e righe uguali prima di confrontare (review GPT 41ce569)
     oofs = [CS.load_oof(r) for r in reps]
     weights = reps[0]["weights"]
     datasets = sorted(weights)

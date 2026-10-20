@@ -42,6 +42,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import p1_cross_subject as P1  # noqa: E402
+from wearusfm.harness.downstream_ab import fingerprint  # noqa: E402
 
 PROTOCOL = "w1-calibrazione-selezione-v1"
 K_FOLDS = 4
@@ -52,6 +53,15 @@ WINDOW_S = 1.0
 P2_DATASETS = ("epn612", "uci_emg")
 P2_SPLIT_SEEDS = (0, 1, 2)  # gli split ufficiali della P2 (scripts/probe_p2.py: SPLIT_SEEDS)
 P2_RATIOS = (0.7, 0.1, 0.2)
+EXTRACTION_RECIPE = {"encoder": "teacher", "feature_set": FEATURE_SET, "window_s": WINDOW_S,
+                     "extractor": "probe_p1.dataset_features", "input_audit": "downstream_ab.fingerprint-v1"}
+# P2: finestre dei caricatori della P2 (benchmarks.load_epn612 / load_uci_emg, montaggio myo8), come scripts/probe_p2.py
+EXTRACTION_RECIPE_P2 = {"encoder": "teacher", "feature_set": FEATURE_SET, "window_s": None,
+                        "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage", "input_audit": "downstream_ab.fingerprint-v1"}
+RECIPES = {"p1": EXTRACTION_RECIPE, "p2": EXTRACTION_RECIPE_P2}
+# P2 senza file degli split: l'identita' degli split e' la loro definizione (rapporti, semi, funzione), al posto dello SHA del file
+P2_SPLITS_SHA256 = hashlib.sha256(json.dumps({"split": "harness.splits.split_subjects", "ratios": P2_RATIOS, "seeds": P2_SPLIT_SEEDS,
+                                              "internal": "fuori dai test di tutti i semi"}, sort_keys=True).encode()).hexdigest()
 
 
 def _sha256(path: Path) -> str:
@@ -103,12 +113,13 @@ def fold_roles(subjects: list[str], k: int = K_FOLDS, seed: int = FOLD_SEED, val
 def feature_diagnostics(x: np.ndarray) -> dict:
     """Descrittivi del non-collasso delle feature (nessuna soglia): rango effettivo (exp dell'entropia dei valori singolari normalizzati,
     come la diagnostica del training) delle feature centrate e colonne quasi costanti."""
-    xc = x.astype(np.float64) - x.mean(0, keepdims=True)
+    x64 = x.astype(np.float64)
+    xc = x64 - x64.mean(0, keepdims=True)
     sv = np.linalg.svd(xc, compute_uv=False)
-    p = sv / sv.sum() if sv.sum() > 0 else np.ones_like(sv) / len(sv)
+    p = sv / sv.sum() if sv.sum() > 0 else np.empty(0)
     p = p[p > 0]
-    std = x.std(0)
-    return {"effective_rank": float(np.exp(-(p * np.log(p)).sum())), "columns": int(x.shape[1]),
+    std = x64.std(0)
+    return {"effective_rank": float(np.exp(-(p * np.log(p)).sum())) if len(p) else 0.0, "columns": int(x.shape[1]),
             "constant_columns": int((std <= 1e-6 * max(float(std.max()), 1e-12)).sum()), "finite": bool(np.isfinite(x).all())}
 
 
@@ -125,6 +136,7 @@ def extract(args, splits: dict, log) -> None:
 
     PP = _probe_p1_module()
     ckpt_sha = _sha256(Path(args.checkpoint))
+    splits_sha = _sha256(args.splits)
     model = FF.load_model(args.checkpoint, args.device, "teacher")
     log(f"modello {args.checkpoint} (teacher, sha256 {ckpt_sha[:12]}), dataset {args.datasets}")
     ns = argparse.Namespace(window_s=WINDOW_S, audit_inputs=True, batch=args.batch, device=args.device, feature_set=FEATURE_SET)
@@ -137,6 +149,7 @@ def extract(args, splits: dict, log) -> None:
         npz.parent.mkdir(parents=True, exist_ok=True)
         np.savez(npz, x=x, y=y, s=s, subjects=np.asarray(pre), input_sha256=np.asarray(ns.input_sha256), checkpoint=np.asarray(str(args.checkpoint)),
                  checkpoint_sha256=np.asarray(ckpt_sha), encoder_dim=np.asarray(model.cfg.dim), protocol=np.asarray(PROTOCOL),
+                 splits_sha256=np.asarray(splits_sha), extraction_recipe=np.asarray(json.dumps(EXTRACTION_RECIPE, sort_keys=True)),
                  **cache_record(FEATURE_SET, FF.feature_width(model, FEATURE_SET)))
         log(f"  {ds}: {len(pre)} soggetti, {len(y)} finestre -> {npz}")
 
@@ -168,16 +181,18 @@ def extract_p2(args, log) -> None:
         npz.parent.mkdir(parents=True, exist_ok=True)
         np.savez(npz, x=x, y=y, s=s, subjects=np.asarray(internal), all_subjects=np.asarray(all_subjects), input_sha256=np.asarray(input_sha),
                  checkpoint=np.asarray(str(args.checkpoint)), checkpoint_sha256=np.asarray(ckpt_sha), encoder_dim=np.asarray(model.cfg.dim),
-                 protocol=np.asarray(PROTOCOL), task=np.asarray("p2"), **cache_record(FEATURE_SET, FF.feature_width(model, FEATURE_SET)))
+                 protocol=np.asarray(PROTOCOL), task=np.asarray("p2"), splits_sha256=np.asarray(P2_SPLITS_SHA256),
+                 extraction_recipe=np.asarray(json.dumps(EXTRACTION_RECIPE_P2, sort_keys=True)),
+                 **cache_record(FEATURE_SET, FF.feature_width(model, FEATURE_SET)))
         log(f"  {ds}: {len(internal)} soggetti interni su {len(all_subjects)} ({len(all_subjects) - len(internal)} nei test esclusi), "
             f"{len(y)} finestre -> {npz}")
 
 
 def oof_predictions(x, y, s, roles: list[dict], seed: int) -> dict:
-    """Predizioni fuori fold: (y, pred, soggetti) delle finestre tenute, piu' i dettagli per fold."""
+    """Predizioni fuori fold e indici delle righe della cache, dopo il filtro delle classi; piu' i dettagli per fold."""
     from wearusfm.harness.probe import linear_probe
 
-    ys, ps, ss, per_fold = [], [], [], []
+    ys, ps, ss, rows, per_fold = [], [], [], [], []
     for r in roles:
         mt, mv, mh = (np.isin(s, r[k]) for k in ("train", "val", "held"))
         keep_v, keep_h = P1.keep_train_classes(y[mt], y[mv], y[mh])
@@ -185,10 +200,14 @@ def oof_predictions(x, y, s, roles: list[dict], seed: int) -> dict:
         ys.append(y[mh][keep_h])
         ps.append(res.test_pred)
         ss.append(s[mh][keep_h])
+        rows.append(np.flatnonzero(mh)[keep_h].astype(np.int64))
         per_fold.append({**r, "held_bacc": res.test_bacc, "val_bacc": res.val_bacc, "train_bacc": res.train_bacc, "c": res.c,
                          "n_train": res.n_train, "n_val": res.n_val, "n_held": res.n_test,
                          "dropped_val_windows": int((~keep_v).sum()), "dropped_held_windows": int((~keep_h).sum())})
-    return {"y": np.concatenate(ys), "pred": np.concatenate(ps), "s": np.concatenate(ss), "folds": per_fold}
+    row = np.concatenate(rows)
+    if len(np.unique(row)) != len(row):
+        raise ValueError("finestre ripetute nei fold di valutazione")
+    return {"y": np.concatenate(ys), "pred": np.concatenate(ps), "s": np.concatenate(ss), "row": row, "folds": per_fold}
 
 
 def probe(args, splits: dict, log) -> dict:
@@ -196,10 +215,12 @@ def probe(args, splits: dict, log) -> dict:
 
     from wearusfm.harness.feature_sets import check_cache
 
+    p1 = args.task == "p1"
     report = {"protocol": PROTOCOL, "task": args.task, "k_folds": K_FOLDS, "fold_seed": FOLD_SEED, "val_frac": VAL_FRAC,
-              "probe_seed": args.seed, "feature_set": FEATURE_SET, "window_s": WINDOW_S if args.task == "p1" else None,
-              "splits": str(args.splits) if args.task == "p1" else f"P2 7:1:2, test esclusi dei semi {list(P2_SPLIT_SEEDS)}",
-              "splits_sha256": _sha256(args.splits) if args.task == "p1" else None, "features": str(args.features), "datasets": {}}
+              "probe_seed": args.seed, "feature_set": FEATURE_SET, "window_s": WINDOW_S if p1 else None,
+              "splits": str(args.splits) if p1 else f"P2 7:1:2, test esclusi dei semi {list(P2_SPLIT_SEEDS)}",
+              "splits_sha256": _sha256(args.splits) if p1 else P2_SPLITS_SHA256, "extraction_recipe": RECIPES[args.task].copy(),
+              "features": str(args.features), "datasets": {}}
     parts, oof, idents = [], {}, set()
     for ds in args.datasets:
         with np.load(args.features / f"{ds}.npz") as z:
@@ -212,15 +233,20 @@ def probe(args, splits: dict, log) -> dict:
             if (str(z["protocol"]) != PROTOCOL or task != args.task or pre is None or sorted(z["subjects"].tolist()) != pre
                     or sorted(set(z["s"].tolist())) != pre):
                 raise ValueError(f"{ds}: feature di un altro protocollo, di un altro compito o di altri soggetti")
+            if "splits_sha256" not in z.files or str(z["splits_sha256"]) != report["splits_sha256"]:
+                raise ValueError(f"{ds}: SHA-256 degli split assente o diverso nella cache; ripetere l'estrazione")
+            if "extraction_recipe" not in z.files or json.loads(str(z["extraction_recipe"])) != RECIPES[args.task]:
+                raise ValueError(f"{ds}: ricetta di estrazione assente o diversa nella cache; ripetere l'estrazione")
             x, y, s = z["x"], z["y"], z["s"]
             idents.add((str(z["checkpoint"]), str(z["checkpoint_sha256"]), int(z["encoder_dim"])))  # model_dim: larghezza delle feature
             report["datasets"][ds] = {"input_sha256": str(z["input_sha256"])}
         res = oof_predictions(x, y, s, fold_roles(pre), args.seed)
         bacc = float(balanced_accuracy_score(res["y"], res["pred"]))
         parts.append((res["y"], res["pred"], res["s"]))
-        oof.update({f"{ds}_y": res["y"], f"{ds}_pred": res["pred"], f"{ds}_s": res["s"]})
+        oof.update({f"{ds}_y": res["y"], f"{ds}_pred": res["pred"], f"{ds}_s": res["s"], f"{ds}_row": res["row"]})
         report["datasets"][ds].update({"subjects": pre, "s": bacc, "folds": res["folds"], "n_classes": int(len(np.unique(y))),
-                                       "n_windows": int(len(y)), "n_oof_windows": int(len(res["y"])), "features": feature_diagnostics(x)})
+                                       "n_windows": int(len(y)), "n_oof_windows": int(len(res["y"])),
+                                       "oof_rows_sha256": fingerprint(res["row"]), "features": feature_diagnostics(x)})
         log(f"{ds}: S {100 * bacc:.2f} (fuori fold, {len(pre)} soggetti, {K_FOLDS} fold)")
     if len(idents) != 1:
         raise ValueError(f"feature di checkpoint diversi: {sorted(idents)}")

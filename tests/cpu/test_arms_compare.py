@@ -38,13 +38,19 @@ def _s_report(d, name, task, quality, seed):
     rng = np.random.default_rng(seed)
     y, s = _data()
     weights = P1_DS if task == "p1" else P2_DS
-    oof = {}
+    from wearusfm.harness.downstream_ab import fingerprint
+
+    oof, rows = {}, np.arange(len(y), dtype=np.int64)
     for ds in weights:
-        oof.update({f"{ds}_y": y, f"{ds}_pred": _preds(y, quality, rng), f"{ds}_s": s})
+        oof.update({f"{ds}_y": y, f"{ds}_pred": _preds(y, quality, rng), f"{ds}_s": s, f"{ds}_row": rows})
     path = d / f"{name}_s_{task}.oof.npz"
     np.savez(path, datasets=np.asarray(list(weights)), **oof)
     sel = AC._select()
-    rep = {"protocol": sel.PROTOCOL, "task": task, "weights": weights, "oof": str(path), "oof_sha256": sel._sha256(path)}
+    # campi di provenienza dei rapporti veri (review GPT 41ce569: accoppiamento controllato prima di ogni confronto)
+    rep = {"protocol": sel.PROTOCOL, "task": task, "weights": weights, "oof": str(path), "oof_sha256": sel._sha256(path),
+           "splits_sha256": "a" * 64 if task == "p1" else "b" * 64, "k_folds": 4, "fold_seed": 20261015, "val_frac": 0.1, "probe_seed": 0,
+           "feature_set": "model", "window_s": 1.0 if task == "p1" else None, "extraction_recipe": {"task": task},
+           "datasets": {ds: {"input_sha256": "i" * 64, "oof_rows_sha256": fingerprint(rows)} for ds in weights}}
     p = d / f"{name}_s_{task}.json"
     p.write_text(json.dumps(rep))
     return str(p)
@@ -170,3 +176,13 @@ def test_cli_writes_the_decision(tmp_path):
     p.write_text(json.dumps(spec))
     assert AC.main([str(p), "--out", str(tmp_path / "out" / "esito.json")]) == 0
     assert json.loads((tmp_path / "out" / "esito.json").read_text())["default"]["choice"] == "A"
+
+
+def test_s_reports_with_different_provenance_are_refused(tmp_path):
+    """Merge con la review GPT (41ce569): rapporti di S con fold, split o righe diversi non si confrontano, nemmeno con OOF uguali."""
+    spec = _spec(tmp_path, {"JEPA-only": _arm(tmp_path, "JEPA-only")})
+    path = Path(spec["runs"]["JEPA-only"]["0"]["s_p1"])
+    rep = json.loads(path.read_text())
+    path.write_text(json.dumps({**rep, "fold_seed": 1}))
+    with pytest.raises(ValueError, match="provenienza non accoppiata"):
+        AC.compare(spec)

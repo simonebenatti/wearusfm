@@ -217,6 +217,11 @@ def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int
         problems.append(f"run non completo: stopped {summary.get('stopped')!r}, passi {summary.get('steps')} su {total_steps}")
     if report is not None and not same_file(report.get("checkpoint"), run_dir / CHECKPOINT):
         problems.append(f"la sonda viene da {report.get('checkpoint')}, non da {run_dir / CHECKPOINT}")
+    ckpt = run_dir / CHECKPOINT
+    if not ckpt.is_file() or ckpt.stat().st_size == 0:
+        problems.append("checkpoint post-decay assente o vuoto")
+    elif report is not None and report.get("checkpoint_sha256") != _sha256(ckpt):
+        problems.append("SHA-256 del checkpoint diverso da quello della sonda")
     metrics = _records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
     panel = _records(run_dir / "fixed_eval.jsonl") if (run_dir / "fixed_eval.jsonl").exists() else []
     for name, recs in (("metrics.jsonl", metrics), ("fixed_eval.jsonl", panel)):
@@ -261,8 +266,40 @@ def load_oof(report: dict) -> dict:
     path = Path(report["oof"])
     if _sha256(path) != report["oof_sha256"]:
         raise ValueError(f"{path}: SHA-256 diverso da quello del rapporto")
+    from wearusfm.harness.downstream_ab import fingerprint
+
     with np.load(path) as z:
-        return {d: (z[f"{d}_y"], z[f"{d}_pred"], z[f"{d}_s"]) for d in z["datasets"].tolist()}
+        datasets = z["datasets"].tolist()
+        if sorted(datasets) != sorted(report["datasets"]) or len(set(datasets)) != len(datasets):
+            raise ValueError("dataset OOF diversi dal rapporto")
+        out = {}
+        for d in datasets:
+            y, pred, subjects, rows = (z[f"{d}_{k}"] for k in ("y", "pred", "s", "row"))
+            if (y.ndim != 1 or not (y.shape == pred.shape == subjects.shape == rows.shape) or not len(y)
+                    or rows.dtype.kind not in "iu" or np.any(rows < 0) or len(np.unique(rows)) != len(rows)):
+                raise ValueError(f"{d}: righe OOF non valide")
+            if fingerprint(rows) != report["datasets"][d].get("oof_rows_sha256"):
+                raise ValueError(f"{d}: identita' delle righe OOF diversa dal rapporto")
+            if len(np.unique(y)) < 2:
+                raise ValueError(f"{d}: meno di due classi OOF")
+            out[d] = (y, pred, subjects)
+        return out
+
+
+def check_pairing(reports: list[dict]) -> None:
+    """Valida la provenienza prima di QUALUNQUE decisione, anche senza bootstrap."""
+    keys = ("protocol", "splits_sha256", "k_folds", "fold_seed", "val_frac", "probe_seed", "feature_set", "window_s", "extraction_recipe")
+    reference = reports[0]
+    for report in reports:
+        if any(k not in report or report[k] != reference.get(k) for k in keys):
+            raise ValueError("provenienza non accoppiata: split, fold o ricetta della sonda diversi/mancanti")
+        if sorted(report["datasets"]) != sorted(reference["datasets"]):
+            raise ValueError("dataset diversi fra i candidati")
+        for ds, fields in report["datasets"].items():
+            for key in ("input_sha256", "oof_rows_sha256"):
+                value = fields.get(key)
+                if not value or value != reference["datasets"][ds].get(key):
+                    raise ValueError(f"{ds}: provenienza non accoppiata ({key})")
 
 
 def paired_difference(a: dict, b: dict, weights: dict, n_boot: int = N_BOOT, seed: int = BOOT_SEED) -> dict:
@@ -291,7 +328,11 @@ def paired_difference(a: dict, b: dict, weights: dict, n_boot: int = N_BOOT, see
             diff += w * (balanced_accuracy_score(y[idx], pa[idx]) - balanced_accuracy_score(y[idx], pb[idx]))
         if ok:
             vals.append(diff)
-    se = float(np.std(vals, ddof=1)) if len(vals) > 1 else float("nan")
+    if len(vals) < 2:
+        raise ValueError("bootstrap accoppiato senza abbastanza repliche valide: nessuna selezione")
+    se = float(np.std(vals, ddof=1))
+    if not math.isfinite(se) or not math.isfinite(point):
+        raise ValueError("confronto accoppiato non finito: nessuna selezione")
     return {"delta": float(point), "se": se, "tie": not abs(point) > se}
 
 
@@ -370,9 +411,18 @@ def select(phase: str, candidates: list[tuple[str, Path, Path | None, int]], pla
             entry.update({"S": report["S"], "S_se": report["S_se"], "report_sha256": _sha256(Path(report_path)),
                           "checkpoint_sha256": report["checkpoint_sha256"], "per_dataset_S": {d: v["s"] for d, v in report["datasets"].items()}})
         record["candidates"][lr if isinstance(lr, str) else repr(lr)] = entry
-    probed = {k: c for k, c in cands.items() if c["report"] is not None}
+    if not cands:
+        raise ValueError("nessun candidato")
+    probed = {k: c for k, c in cands.items() if c["report"] is not None}  # un candidato fermato prima della sonda non ha rapporto
     if len({json.dumps(c["report"]["weights"], sort_keys=True) for c in probed.values()}) > 1:
         raise ValueError("pesi dei dataset diversi fra i candidati")
+    if probed:
+        check_pairing([c["report"] for c in probed.values()])
+        reference = next(iter(probed.values()))["oof"]
+        for c in probed.values():
+            for ds, (y, _, subjects) in c["oof"].items():
+                if not np.array_equal(y, reference[ds][0]) or not np.array_equal(subjects, reference[ds][2]):
+                    raise ValueError(f"{ds}: etichette o soggetti OOF non accoppiati")
     decision, comparisons = decide(phase, cands)
     keys = sorted(probed)
     descriptive = [{"a": a, "b": b, **paired_difference(cands[a]["oof"], cands[b]["oof"], cands[a]["report"]["weights"])}
@@ -395,6 +445,10 @@ def merge(decisions: dict, add: dict) -> dict:
     i = PHASES.index(phase)
     if any(p not in decisions for p in PHASES[:i]):
         raise ValueError(f"{phase}: mancano le decisioni precedenti")
+    if any("stop" in decisions[p] for p in PHASES[:i]):
+        raise ValueError(f"{phase}: una fase precedente ha deciso stop")
+    if i >= 2 and sorted(decisions["C2"].get("confirmed", [])) != sorted(decisions["C1"].get("finalists", [])):
+        raise ValueError(f"{phase}: conferma C2 incompleta")
     out = {**decisions, phase: dec}
     spec = importlib.util.spec_from_file_location("calibration_plan", ROOT / "scripts" / "calibration_plan.py")
     mod = importlib.util.module_from_spec(spec)

@@ -3544,3 +3544,33 @@ predecessori si rilegge con `sacct`, compresi quelli sottomessi nella stessa chi
 bloccato, in coda o appena accettato da sbatch -> afterok). Il dry-run non cambia. Test nuovo sul cluster finto, che ora rifiuta come SLURM
 l'afterok su un job dimenticato: fallisce con la catena di prima e passa con la correzione; suite 1194 PASS (1193 + 1). La valutazione di C2 usera'
 questa versione (deploy nuovo). Collaudo infrastrutturale: nessuno, si vede alla valutazione di C2 (stessa catena, un solo cambiamento).
+
+**Review indipendente GPT di C1-C4 (16/10/2026, patch 41ce569 e merge locale 41b80af).** Hardening della provenienza delle cache e
+del confronto accoppiato, checkpoint verificato per byte/SHA, bootstrap invalido bloccante, merge delle decisioni dopo stop rifiutato,
+rango zero per feature costanti. Nessuna modifica ad A4, parita', griglia o budget firmati. Restano due raccordi segnalati a Claude:
+finalizzazione di candidati falliti prima della sonda e verifica della configurazione effettiva contro il piano. Dettagli e prove in
+`docs/reviews/c1c4_review_20261016.md`. Patch nel branch GPT, non ancora su main o nei checkout di campagna; lettura di Claude prima
+del deploy. Le cache di calibrazione senza i nuovi metadati non si attestano retroattivamente. Non revoca il via a C1 e non cambia
+i ruoli del 16/10; nessun lancio o costo in questa review.
+
+**Punto 3: integrazione della consegna corrente su main CONCLUSA (Simone, 16/10/2026).** Richiesta: «fai il merge tu sul main del
+punto 3 ? cosi lo chiudiamo». Main canonico pulito aggiornato in fast-forward da 06b0d34 a 1aa33c9, con Claude fino ad a7edd55 e
+correzioni GPT 41ce569, conservando tutti gli SHA. Codice gia' verificato dai 158 test mirati della review. I due raccordi residui
+della selezione restano aperti nel punto 6; nessuna soglia o budget cambiato. Registro aggiornato in entrambe le sezioni. Nessun push,
+deploy o lancio in questa attivita'; le campagne congelate mantengono il proprio codice.
+
+**Review GPT del punto 5, implementazione JEPA-only/ancore-only (16/10/2026): favorevole.** Esaminati b1238a1 e fe67339 nel checkout
+2dc1197; letta anche la firma del protocollo 0d45a2f sul ramo Claude. Nessun difetto confermato; 45 test mirati passati, incluse prove
+aggiuntive di equivalenza delle loss, gradienti, pesi ed EMA fra batch globale, accumulo e due processi CPU gloo. Dettagli in
+`docs/reviews/objective_arms_review_20261016.md`. Restano pianificatore, piano P1/P2, collaudo GPU breve e risultati scientifici;
+per la keep separata, ricalibrazione sul corpus intero. Nessuna nuova scelta scientifica o autorizzazione a lanciare in questa voce.
+
+**Merge di `main` nel ramo di Claude (20/10/2026): review C1-C4 di GPT (41ce569) letta e integrata.** Simone, consegna sui rami: «Lavora
+nel tuo worktree». Prima della diagnostica dei rami (che riusa sonda e confronti della calibrazione) e della valutazione di C2. Patch di GPT
+tenute tutte (ricetta d'estrazione e SHA degli split nelle cache, righe OOF e loro impronta, `check_pairing` prima di ogni decisione, SHA del
+checkpoint contro la sonda, bootstrap invalido bloccante, `merge` dopo stop o conferma incompleta rifiutato, rango zero per feature costanti),
+unite alla P2 interna e alla selezione col piano del ramo. Correzioni del merge: la cache e il rapporto della P2 interna registrano anche loro
+ricetta e identita' degli split (`EXTRACTION_RECIPE_P2`, `P2_SPLITS_SHA256`: la definizione degli split, non c'e' un file); il controllo
+dello SHA del checkpoint non si applica a un candidato senza sonda (prima del merge avrebbe sollevato un'eccezione); `arms_compare` chiama
+`check_pairing` sui rapporti di S. Test di GPT adattati alla selezione col piano, nuovi test su P2 e bracci; suite 1212 PASS. Le cache di C1
+non hanno i campi nuovi: C1 resta decisa com'e' (risultato storico); le estrazioni di C2 e dei bracci si fanno col codice integrato.
