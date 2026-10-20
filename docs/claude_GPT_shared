@@ -2075,6 +2075,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - `deploy/w1cal-eval-20261020`, checkout 61540094; piano e dry-run della valutazione di C2 committati (piano di training identico byte per
   byte). Catena da sottomettere a training finiti (~17:15); poi la diagnostica dei rami a tranche dallo stesso checkout.
 
+### 2026-10-20 | Claude | Suite completa sul codice del deploy | Codice: 62bec0b71e89cdcff54de7c7e0f93d7046019213
+
+- `tests/cpu` 1240 PASS (1239 + il test del run sano senza sonda e senza checkpoint), 19 min 08 s, un thread. Checkout 61540094 pronto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
