@@ -18,7 +18,8 @@ Confronti accoppiati per famiglia (A: A_seed0/A_seed1, B: B_seed0/B_seed1; `arms
   apporto_passo0   RPW0 contro R      apporto_allenati RPW contro R
 Lettura (congelata in docs/decisioni.md prima delle sonde): «migliora» con la regola dei bracci (delta >= +0,01, limite inferiore dell'IC al
 95% > 0, delta > 0 con tutti e due i teacher), «peggiora» con la regola speculare, altrimenti «entro le soglie» (che non esclude una
-differenza sotto la soglia). La risposta dice solo quale dei due confronti ha superato la regola. Descrittivi senza soglia: la differenza dei
+differenza, neanche oltre 1 punto: la regola puo' fallire per l'intervallo o per l'accordo dei teacher). La risposta dice solo quale dei
+due confronti ha superato la regola. Descrittivi senza soglia: la differenza dei
 due delta, (RPW - RPW0) - (PW - PW0), con IC dallo stesso ricampionamento accoppiato degli otto modelli; S per dataset e teacher; rango
 effettivo di ogni insieme; ridondanza col raw (CKA lineare; R^2 fuori fold dei rami predetti dal raw con ridge, alpha scelto sui soggetti di
 validazione del fold).
@@ -325,7 +326,8 @@ def reading(row: dict) -> str:
 
 READINGS = ("peggiora", "entro le soglie", "migliora")
 _PHRASE = {"peggiora": "peggioramento oltre le soglie", "migliora": "miglioramento oltre le soglie",
-           "entro le soglie": "entro le soglie (non esclude una differenza sotto 1 punto)"}
+           # seconda review del critico (20/10): esce anche con |delta| > 1 punto e IC che tocca lo zero, o teacher discordi
+           "entro le soglie": "regola non superata (stima, intervallo o accordo dei teacher insufficienti): non esclude una differenza, neanche oltre 1 punto"}
 
 
 def answer(alone: str, concat: str) -> str:
@@ -465,7 +467,8 @@ def main(argv=None) -> int:
     q.add_argument("--out-dir", type=Path, required=True, help="cartella dei rapporti sul cluster (assoluta)")
     q.add_argument("--out", type=Path, required=True)
     q.add_argument("--campaign", default="rami-diag")
-    q.add_argument("--max-serial", type=int, default=3, help="job seriali dell'utente in coda o in esecuzione oltre i quali non si sottomette")
+    # 2: uno in esecuzione (8 core per utente: uno alla volta) e uno pronto; di piu' non accelera e allungherebbe l'attesa della finestra 1
+    q.add_argument("--max-serial", type=int, default=2, help="job seriali dell'utente in coda o in esecuzione oltre i quali non si sottomette")
     args = ap.parse_args(argv)
     return {"probe": probe, "compare": compare, "plan": plan}[args.stage](args)
 

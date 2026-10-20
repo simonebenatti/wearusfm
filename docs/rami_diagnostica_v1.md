@@ -33,8 +33,10 @@ soggetti registrata; identita' della provenienza (protocollo, commit, teacher, c
   NaN e la sonda passa). Si controlla che l'unione di `train_` e `val_` sia esattamente il pretraining degli split e non tocchi il test.
 - **P2:** le cache hanno tutti i soggetti di EPN-612 e UCI-EMG. Si tengono solo quelli fuori dai test di **tutti e tre** gli split ufficiali
   7:1:2 (semi 0, 1, 2; `calibration_probe.p2_internal_subjects`, la S della P2 dei bracci firmata il 16/10, stessi id e stesso ordinamento
-  degli split di `probe_p2.py`): 314 soggetti di EPN-612 su 612 e 19 di UCI-EMG su 36 (calcolo del `critico`); le altre righe si scartano
-  subito dopo la lettura, prima di qualunque calcolo.
+  degli split di `probe_p2.py`): 314 soggetti di EPN-612 su 612 e 19 di UCI-EMG su 36 (verificato il 20/10 sulla provenienza della tranche
+  downstream, `step1_downstream_0910/p2/B_seed0/provenance.json`: 91.800 e 662 finestre in tutto); le altre righe si scartano subito dopo la
+  lettura, prima di qualunque calcolo. UCI-EMG interno e' piccolo (19 soggetti, circa la meta' delle 662 finestre) e pesa 0,5 nella S della
+  P2: la sua parte e' la piu' rumorosa, da leggere coi suoi intervalli.
 
 **Che cos'e' il passo 0** (precisazione di GPT, registro del 20/10): frontend fisici (PSD, banco di wavelet) e normalizzazione calibrata,
 piu' gli encoder dei rami non allenati. Non e' la baseline dell'encoder casuale del punto 2 (quella riguarda il raw). Le cache dei rami al
@@ -75,13 +77,15 @@ Confronto accoppiato per famiglia (`arms_compare.s_comparison`: soggetti ricampi
 
 Lettura di ogni confronto (la regola dei bracci e la sua speculare, nessuna soglia nuova): **«migliora»** se delta >= +0,01, limite inferiore
 dell'IC al 95% > 0 e delta > 0 con tutti e due i teacher; **«peggiora»** se delta <= -0,01, limite superiore < 0 e delta < 0 con tutti e
-due; altrimenti **«entro le soglie»**, che **non esclude una differenza sotto 1 punto**. Esempio: nel 2C, famiglia A, P1 ufficiale, R+PW
-contro R+PW0 = -0,84 punti (IC -1,38..-0,39, negativo con i due teacher) sarebbe «entro le soglie»: l'effetto che motiva questa domanda
-puo' stare sotto la soglia.
+due; altrimenti **«entro le soglie»**, cioe' **regola non superata**: per la stima sotto 1 punto, per l'intervallo che tocca lo zero o per
+i teacher discordi. **Non esclude una differenza, neanche oltre 1 punto** (seconda review del `critico`): per esempio -1,5 punti con IC
+[-3,0, +0,1] e' «entro le soglie». Esempio reale: nel 2C, famiglia A, P1 ufficiale, R+PW contro R+PW0 = -0,84 punti (IC -1,38..-0,39,
+negativo con i due teacher) sarebbe «entro le soglie»: l'effetto che motiva questa domanda puo' stare sotto la soglia. Delta, IC e delta per
+teacher si riportano sempre accanto alla lettura.
 
 **Risposta per famiglia e compito (review del `critico` del 20/10):** solo quale dei due confronti chiave ha superato la regola, nella forma
 «soli rami (PW0 -> PW): <lettura>; concatenazione (RPW0 -> RPW): <lettura>», con «peggioramento oltre le soglie», «miglioramento oltre le
-soglie» o «entro le soglie (non esclude una differenza sotto 1 punto)». Nessun meccanismo (perdita d'informazione, compensazione del raw) e
+soglie» o «regola non superata (stima, intervallo o accordo dei teacher insufficienti): non esclude una differenza, neanche oltre 1 punto». Nessun meccanismo (perdita d'informazione, compensazione del raw) e
 nessun «soprattutto»: una differenza di esito rispetto a una soglia non e' una differenza stimata.
 
 **Il confronto fra i due delta** (la parte comparativa della domanda) e' un descrittivo **senza soglia**: la differenza dei delta,
@@ -133,12 +137,16 @@ coda (`QOSMaxSubmitJobPerUserLimit`, rifiuto reale il 14/10) e 8 CPU per utente 
 alla volta, ~30 h di calendario. Le sonde S della finestra 1 (valutazione di C2, poi C3-C4) girano sulla stessa seriale. Quindi:
 - **lancio dopo la valutazione di C2** (sonde e selezione finite), non durante;
 - sottomissione **a tranche con `scripts/evaluation_chain.py`** (piano dalla fase `plan`): la catena sottomette solo se i job seriali
-  dell'utente in coda o in esecuzione, finestra 1 compresa, sono meno di 3 (`limits`), e non mette afterok sui predecessori gia' finiti
+  dell'utente in coda o in esecuzione, finestra 1 compresa, sono meno di 2 (`limits`; con 8 core per utente ne gira uno alla volta, il
+  secondo e' solo quello pronto a partire: di piu' non accelera), e non mette afterok sui predecessori gia' finiti
   (correzione del 19-20/10); il confronto e' l'ultimo nodo, sottomesso solo quando tutte le sonde sono sottomesse. Si richiama a tranche;
-- `--nice=10000` ordina solo i job **in attesa**: un job della finestra 1 messo in coda passa davanti alle sonde della diagnostica ancora in
-  coda, ma non interrompe quella in esecuzione. **Ritardo massimo su un job seriale della finestra 1: il resto della sonda della diagnostica
-  in esecuzione, al piu' 4 h** (stima tipica 1 h 45 - 2 h 10). Prima delle valutazioni di C3 e C4 la diagnostica non si richiama (nessuna
-  tranche nuova), cosi' il ritardo resta al piu' quello di un job.
+- `--nice=10000` ordina solo i job **in attesa**: abbassa la priorita' della sonda della diagnostica in coda rispetto a un job della finestra
+  1 messo in coda dopo, ma non interrompe quella in esecuzione. **Ritardo massimo su un job seriale della finestra 1: il resto della sonda in
+  esecuzione, al piu' 4 h** (stima tipica 1 h 45 - 2 h 10), **se il nice prevale sul vantaggio d'eta' della sonda in attesa**. I pesi di
+  priorita' di Leonardo non sono letti (seconda review del `critico`: `scontrol show config | grep -i Priority` o `sprio`, sola lettura, non
+  fra i comandi ammessi a leonardo-ops; li puo' leggere Simone). **Caso peggiore**, se l'eta' prevale: anche la sonda in attesa passa
+  davanti, fino a ~8 h (2 job da 4 h). Prima delle valutazioni di C3 e C4 la diagnostica non si richiama (nessuna tranche nuova): il ritardo
+  resta al piu' quello dei due job gia' sottomessi.
 
 Ordine: famiglia B, poi A (il segnale descrittivo piu' forte del 2C e' in B, P2); il confronto della sola B si puo' leggere prima (`compare
 --families B`). Disco: rapporti e predizioni fuori fold **~250 MB** (npz non compressi, etichette di EPN-612 e soggetti come stringhe: ~7,5 MB
@@ -149,7 +157,7 @@ tranche; le cache si leggono soltanto.
 
 1. Riferimento `deploy/rami-diag-<data>` allo SHA del commit rivisto, preflight in sola lettura, checkout di campagna (job CPU).
 2. Piano della catena: `python3 scripts/spectral_diagnostic.py plan --code-dir <checkout> --expected-sha <SHA> --out-dir
-   $SCRATCH/wearusfm_runs/rami_diagnostica_<data> --out results/rami_diagnostica/piano_<data>.json --max-serial 3` (commit). Per teacher
+   $SCRATCH/wearusfm_runs/rami_diagnostica_<data> --out results/rami_diagnostica/piano_<data>.json --max-serial 2` (commit). Per teacher
    (B_seed0, B_seed1, A_seed0, A_seed1) i quattro job della tabella (`spectral_diagnostic.sbatch <OUT> probe --task p1 --arm <teacher> --sets
    R PW0 PW --redundancy`, `--time=04:00:00`; `... --sets RPW0` e `... --sets RPW`, `--time=03:30:00`; `... --task p2 --sets R PW0 PW RPW0
    RPW --redundancy`, `--time=04:00:00`), poi il confronto (`spectral_diagnostic.sbatch <OUT> compare`, `--time=00:30:00
@@ -170,3 +178,8 @@ launcher rifiuta uscite, radici e split negli argomenti e lo script non accetta 
 (6, non 7: suite 1218 PASS su c631c6d); disco ~250 MB; test su R^2 del ridge, su tutte le combinazioni di `compare` e sull'uscita del
 confronto; identita' del run del 2C (stesso run per passo 0 e allenati, completo, non di collaudo); confronti multipli, significato del
 passo 0 e budget dichiarati.
+
+Seconda review (20/10, su 10d3731): DA RIVEDERE per un rilievo aperto in parte, chiuso: «entro le soglie» esce anche con stima oltre 1
+punto e intervallo che tocca lo zero, quindi la frase e' ora «regola non superata [...]: non esclude una differenza, neanche oltre 1 punto»,
+con un test sul caso. Minori: ritardo su C2 dichiarato come condizionato ai pesi di priorita' (non letti), col caso peggiore, e limite di coda
+abbassato a 2 (stesso ritmo, meno attesa); soggetti di UCI-EMG verificati sulla provenienza (36, 19 interni, 662 finestre).

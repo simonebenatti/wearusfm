@@ -194,7 +194,7 @@ def test_linear_cka_and_reading_rule():
         for b in SDG.READINGS:
             text = SDG.answer(a, b)
             assert "compensa" not in text and "soprattutto" not in text and "informazione" not in text
-    assert "non esclude" in SDG.answer("entro le soglie", "peggiora")
+    assert "non esclude una differenza, neanche oltre 1 punto" in SDG.answer("entro le soglie", "peggiora")
 
 
 def test_ridge_r2_recovers_known_cases():
@@ -218,16 +218,18 @@ def _fake_reports(out, task="p2"):
                                                         "S_se": 0.01, "datasets": {"epn612": {"s": 0.5, "features": {"effective_rank": 9.0}}}}))
 
 
-@pytest.mark.parametrize("alone,concat", [(a, b) for a in ("peggiora", "entro le soglie", "migliora")
-                                          for b in ("peggiora", "entro le soglie", "migliora")])
+CASES = {"peggiora": (-0.05, [-0.06, -0.04]), "entro le soglie": (-0.005, [-0.025, 0.015]), "migliora": (0.05, [0.04, 0.06]),
+         # seconda review del critico: stima oltre 1 punto ma IC che tocca lo zero -> regola non superata
+         "entro, oltre 1 punto": (-0.015, [-0.03, 0.001])}
+
+
+@pytest.mark.parametrize("alone,concat", [(a, b) for a in CASES for b in CASES])
 def test_compare_maps_every_combination_of_readings(tmp_path, monkeypatch, alone, concat):
     """Review del critico (20/10): tutte le combinazioni passano per `compare`, con le letture dei due confronti chiave."""
-    delta = {"peggiora": -0.05, "entro le soglie": -0.005, "migliora": 0.05}
 
     def fake_s_comparison(ref, arm):
         key = (ref[0]["set"], arm[0]["set"])
-        d = delta[alone] if key == ("PW0", "PW") else delta[concat] if key == ("RPW0", "RPW") else 0.0
-        ci = [d - 0.01, d + 0.01] if abs(d) > 0.01 else [d - 0.02, d + 0.02]
+        d, ci = CASES[alone] if key == ("PW0", "PW") else CASES[concat] if key == ("RPW0", "RPW") else (0.0, [-0.01, 0.01])
         return {"A": 0.5, "B": 0.5 + d, "delta": d, "ci95": ci, "delta_by_model_seed": [d, d], "beats": d >= 0.01 and ci[0] > 0}
 
     real = SDG._script
@@ -243,10 +245,13 @@ def test_compare_maps_every_combination_of_readings(tmp_path, monkeypatch, alone
     _fake_reports(out)
     assert SDG.main(["compare", "--out-dir", str(out), "--out", str(tmp_path / "e.json"), "--tasks", "p2"]) == 0
     res = json.loads((tmp_path / "e.json").read_text())["families"]["p2"]
+    expected = {k: ("entro le soglie" if k.startswith("entro") else k) for k in CASES}
     for fam in ("A", "B"):
         c = res[fam]["contrasts"]
-        assert (c["rami_da_soli"]["reading"], c["concatenazione"]["reading"]) == (alone, concat)
-        assert res[fam]["answer"] == SDG.answer(alone, concat)
+        assert (c["rami_da_soli"]["reading"], c["concatenazione"]["reading"]) == (expected[alone], expected[concat])
+        assert res[fam]["answer"] == SDG.answer(expected[alone], expected[concat])
+        if alone == "entro, oltre 1 punto":
+            assert "neanche oltre 1 punto" in res[fam]["answer"] and c["rami_da_soli"]["delta"] == -0.015
 
 
 def test_difference_of_deltas_on_a_known_case(tmp_path):
@@ -303,6 +308,9 @@ def test_plan_feeds_the_evaluation_chain_in_tranches(tmp_path):
     out = tmp_path / "piano.json"
     assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(out),
                      "--max-serial", "3"]) == 0
+    default = tmp_path / "piano2.json"
+    assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(default)]) == 0
+    assert json.loads(default.read_text())["limits"] == {"lrd_all_serial": 2}  # uno in esecuzione e uno pronto
     plan = json.loads(out.read_text())
     EC = SDG._script("evaluation_chain")
     nodes = EC.validate(plan)

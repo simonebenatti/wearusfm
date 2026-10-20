@@ -3607,3 +3607,12 @@ autorizzare. Disco ~250 MB su `$SCRATCH`. Correzioni nel codice: uscita del conf
 launcher, nessuna abbreviazione; run del 2C controllato (stesso run per passo 0 e allenati, completo, non di collaudo); `--nice` (solo
 positivo) nell'elenco chiuso di `evaluation_chain.py`. Il numero dei test nuovi della voce precedente era sbagliato (7): sono 6, suite 1218
 PASS su c631c6d (corretto nella voce).
+
+**Diagnostica dei rami: seconda review del `critico` (20/10/2026, su 10d3731) DA RIVEDERE per un rilievo aperto in parte, chiuso; lettura
+proposta precisata (nessuna sonda lanciata).** «Entro le soglie» = **regola non superata** (stima sotto 1 punto, intervallo che tocca lo zero
+o teacher discordi): la frase della risposta e' «regola non superata (stima, intervallo o accordo dei teacher insufficienti): non esclude una
+differenza, neanche oltre 1 punto», sostituisce «non esclude una differenza sotto 1 punto» della voce precedente; delta, IC e delta per
+teacher sempre accanto. Limite di coda della diagnostica: **2** job seriali dell'utente (finestra 1 compresa; uno alla volta gira comunque).
+Ritardo massimo su un job seriale della finestra 1: al piu' 4 h **se il nice prevale sull'eta'** (pesi di priorita' non letti: `scontrol` e
+`sprio` non sono fra i comandi ammessi a leonardo-ops), **caso peggiore ~8 h**. Soggetti di UCI-EMG verificati sulla provenienza della
+tranche downstream: 36, 19 interni, 662 finestre in tutto (EPN-612: 612, 314 interni, 91.800 finestre).

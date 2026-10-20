@@ -2039,6 +2039,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   ritardo massimo dichiarato (<= 4 h); uscita del confronto fissa e argomenti di uscite/radici rifiutati. Minori chiusi (test, disco, run del
   2C, budget, confronti multipli). In attesa della seconda review del `critico`.
 
+### 2026-10-20 | Claude | Rami spettrali, punto 1: seconda review del critico, rilievo residuo chiuso | Base: 10d3731
+
+- «Entro le soglie» riformulato come «regola non superata [...]: non esclude una differenza, neanche oltre 1 punto», con un test (stima
+  -1,5 punti, IC che tocca lo zero) attraverso `compare`. Limite di coda 2; ritardo su C2 dichiarato condizionato ai pesi di priorita',
+  caso peggiore ~8 h. UCI-EMG verificato: 36 soggetti, 19 interni, 662 finestre. In attesa della terza review del `critico`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3068,3 +3074,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - La prima tabella delle risposte attribuiva un meccanismo («il raw compensa») contro il vincolo di GPT del 20/10, e confrontava i due
   delta senza stimarli. Il piano di sottomissione ignorava i 10 job per utente della seriale e la valutazione di C2. Avevo scritto 7 test
   nuovi invece di 6 (corretto nella voce). Tutto corretto prima di qualunque lancio.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: dati da leggere sul cluster
+
+- I pesi di priorita' di SLURM (eta' contro nice) decidono se il ritardo massimo sulla finestra 1 e' 4 h o ~8 h. Lettura in sola lettura
+  (`scontrol show config | grep -i Priority`): non fra i comandi di leonardo-ops, puo' farla Simone.
+- UCI-EMG interno e' piccolo (19 soggetti, ~330 finestre) e pesa 0,5 nella S della P2: la parte piu' rumorosa.
