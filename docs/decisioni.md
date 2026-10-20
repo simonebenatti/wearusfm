@@ -3663,3 +3663,8 @@ calibrazione: **104,2 usate su 220**, residuo 115,8.
 **Valutazione di C2 sottomessa (20/10/2026 17:3x)** dal checkout `w1cal-eval-20261020` (62bec0b): guardie 61558827 / 61558828 (senza afterok:
 training gia' finiti bene secondo sacct), estrazioni 61558829 (1e-4) / 61558831 (3e-4), sonde 61558830 / 61558832, selezione 61558834.
 Nessun rifiuto di sbatch (correzione dell'afterok del 20/10 al primo uso). Tetto 1,0 GPU-ora.
+
+**Rami spettrali, punto 2: scelte di Simone (20/10/2026).** Simone: «A, solo famiglia B, includi il controllo di LR». Obiettivo A
+(predizione di rappresentazioni locali mascherate nei rami, raw congelato), teacher della sola famiglia B (B_seed0, B_seed1), con un braccio
+di controllo dell'LR sull'obiettivo vecchio. Protocollo, codice e preventivo da preparare; review del `critico` prima del lancio; il lancio
+dopo l'esito della diagnostica del punto 1, che ne orienta la lettura.
