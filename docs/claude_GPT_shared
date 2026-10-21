@@ -2232,6 +2232,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - `W1ARMC-ancore-only-30M-s0-j01` = job 61607561 (`boost_qos_dbg`, 4 GPU, 30 min). Con 61607555 i due posti di dbg sono occupati.
 
+### 2026-10-21 | Claude | Collaudo dei bracci SUPERATO; C3 finita; diagnostica a meta' | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Collaudo `w1arm-collaudo-v1`: 61607555 (JEPA-only) e 61607561 (ancore-only) COMPLETED, 8 criteri su 8 ciascuno; 2,39 GPU-ora,
+  infrastruttura 12,22 / 25. Esiti in `results/infra/w1arm_20261021/collaudo/`.
+- C3: 61593336 e 61593337 COMPLETED (4 h 57, 12.261 passi), 39,63 GPU-ora; calibrazione 144,2 / 220. Valutazione da preparare.
+- Diagnostica dei rami (B): 61592919 e 61592922 COMPLETED; pronti B_seed0 P2 PW e R. Nessun job sottomesso da me.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3328,3 +3335,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Il margine del tempo e' 0,9-1,9 h dopo i 15 minuti di avvio (la convenzione della soglia di ~0,81 s/passo), non 1,1-2,0 h.
 - Il difetto dei non finiti del collaudo non era «inf - inf»: con `total` infinito la tolleranza relativa diventa infinita e inf > inf e'
   falso. La correzione (componenti finite) non cambia.
+
+### 2026-10-21 | Claude | Collaudo dei bracci: tendenza del JEPA puro
+
+- Nel JEPA puro il rapporto di collasso scende da 1,30 a 0,58 (studente) in 800 passi, con JEPA a 0,001; in ancore-only resta ~2. Lontano
+  dall'allarme (0,05), ma e' il braccio da guardare nei primi controlli del run lungo. Nessuna soglia nuova: vale la regola firmata.
+- La media dell'attesa sui dati (2,8-3,0%) supera quella del collaudo del prefetch (0,67%) per una decina di pause di secondi negli stessi
+  passi dei due run: verosimilmente letture lente degli stessi file, non il prefetch (mediana 0,6%). Da guardare nei run lunghi.

@@ -3775,3 +3775,22 @@ collaudo e dei bracci assenti, in coda solo C3: i 2 posti di `boost_qos_dbg` son
 **Collaudo `w1arm-collaudo-v1` sottomesso da Simone (21/10/2026), sul preventivo presentato (2,6 / 4,0 GPU-ora, budget infrastruttura).**
 61607555 = `W1ARMC-JEPA-only-30M-s0-j01`.
 61607561 = `W1ARMC-ancore-only-30M-s0-j01`.
+
+**Collaudo `w1arm-collaudo-v1`: SUPERATO (21/10/2026, criteri congelati, `scripts/arms_collaudo.py`).** 61607555 (JEPA-only) e 61607561
+(ancore-only) COMPLETED 0:0 in 17:54 e 17:59 (11:28-11:46), 1.300 passi, `max_steps`, codice 72cf24a, DDP a 4 GPU: 8 criteri su 8 per
+entrambi (pesi effettivi JEPA 1 / ancore 0 e JEPA 0 / ancore 0,2, composizione della loss esatta a ogni passo, record completi e finiti,
+termine allenato in calo: JEPA 0,0090 -> 0,0010, ancore x 0,2 4,86 -> 1,26; nessun allarme, diagnostiche a 500/1.000/1.300, checkpoint
+pre e post-decay). Esiti in `results/infra/w1arm_20261021/collaudo/`. Descrittivi: 0,71 s/passo (mediana), memoria GPU 11,9 GiB, attesa
+sui dati tipica 0,6% (media 2,8-3,0% per una decina di passi con pause di secondi, gli stessi nei due run, che hanno lo stesso flusso di
+dati). **Da notare (descrittivo, nessuna soglia nuova):** nel JEPA puro il rapporto di collasso scende da 1,30 a 0,58 (studente) e da 1,61 a
+0,65 (teacher) fra i passi 500 e 1.300, rango effettivo ~52; in ancore-only resta ~2 (rango ~71). L'allarme firmato e' a 0,05: lontano, ma
+la tendenza dice che il JEPA puro e' il candidato al collasso nei 98.094 passi (la firma lo conta come «non batte A»).
+**Consuntivo del collaudo: 2,39 GPU-ora** (attese 2,6, tetto 4,0); budget infrastruttura **12,22 usate su 25, residuo 12,78**.
+
+**C3, training finiti (consuntivo, 21/10/2026).** 61593336 (1e-4) e 61593337 (3e-4) COMPLETED 0:0 in 4 h 57 (08:13-13:11), 12.261 passi,
+`max_steps`, 1,453 s/passo, 23,2 GiB, codice 72cf24a; config e summary in `results/infra/w1cal_c3_20261021/runs/`. **39,63 GPU-ora**
+(attese 39,8, tetto 52): calibrazione **144,2 usate su 220, residuo 75,8**. Prossimo: deploy e catena della valutazione di C3.
+
+**Diagnostica dei rami, famiglia B:** 61592919 (B_seed0 P1 PW e ridondanza) COMPLETED in 2 h 28 e 61592922 (B_seed0 P2 PW0) in 14 min; il
+dry-run della catena ha pronti B_seed0 P2 PW e R, 12 sonde e il confronto ancora da fare. Tranche a richiesta di Simone.
+

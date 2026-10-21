@@ -1,0 +1,163 @@
+{
+ "protocol": "w1arm-collaudo-v1",
+ "arm": "ancore-only",
+ "run_dir": "/Users/simonebenatti/wearusfm_local/reports/w1arm_collaudo/W1ARMC-ancore-only-30M-s0",
+ "steps": 1300,
+ "passed": true,
+ "criteria": {
+  "completo": {
+   "ok": true,
+   "detail": {
+    "STOP": null,
+    "stopped": "max_steps",
+    "steps": 1300,
+    "attesi": 1300
+   }
+  },
+  "codice_e_ddp": {
+   "ok": true,
+   "detail": {
+    "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+    "world_size": 4,
+    "batch_per_process": 8,
+    "accum_steps": 1
+   }
+  },
+  "pesi": {
+   "ok": true,
+   "detail": {
+    "config": {
+     "jepa_weight": 0.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0
+    },
+    "attesi": {
+     "jepa_weight": 0.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0
+    }
+   }
+  },
+  "record": {
+   "ok": true,
+   "detail": {
+    "records": 1300,
+    "in_sequenza": true,
+    "passi_con_finestre_diverse": [],
+    "passi_non_finiti": []
+   }
+  },
+  "composizione_della_loss": {
+   "ok": true,
+   "detail": {
+    "formula": "total = 0 x jepa + 0.2 x somma delle ancore ['log_rms', 'band_shape', 'log_env', 'ms_fast', 'ms_slow']",
+    "tolleranza_relativa": 1e-06,
+    "passi_senza_componenti_finite": [],
+    "passi_fuori_tolleranza": []
+   }
+  },
+  "apprendimento": {
+   "ok": true,
+   "detail": {
+    "termine_allenato": "total",
+    "media_primi": 4.862027751356363,
+    "media_ultimi": 1.2586329029351473,
+    "record_mediati": 50
+   }
+  },
+  "non_collasso": {
+   "ok": true,
+   "detail": {
+    "allarmi": [],
+    "valutazioni": [
+     500,
+     1000,
+     1300
+    ],
+    "attese": [
+     500,
+     1000,
+     1300
+    ]
+   }
+  },
+  "checkpoint": {
+   "ok": true,
+   "detail": {
+    "checkpoint_predecay.pt": 454073464,
+    "checkpoint_postdecay.pt": 454073464
+   }
+  }
+ },
+ "descriptive": {
+  "s_per_passo_mediana": 0.705254316329956,
+  "s_per_passo_A": {
+   "C2": 0.7402796319174357,
+   "C1_max": 0.7776
+  },
+  "attesa_dati_frazione": 0.029857969557544942,
+  "elapsed_s": 1055.6321280002594,
+  "gpu_max_memory_gib": 11.942770004272461,
+  "jepa_inizio_fine": [
+   0.15853170102782316,
+   0.03582466958090663
+  ],
+  "ancore_inizio_fine": {
+   "log_rms": [
+    1.0919490712881088,
+    0.5002156449109316
+   ],
+   "band_shape": [
+    3.5211381846666336,
+    0.4488923351466656
+   ],
+   "log_env": [
+    1.289507876187563,
+    0.3974725292623043
+   ],
+   "ms_fast": [
+    5.91311465382576,
+    2.745025570988655
+   ],
+   "ms_slow": [
+    12.49442897081375,
+    2.20155843436718
+   ]
+  },
+  "non_collasso": [
+   {
+    "step": 500,
+    "student_collapse_ratio": 3.446106853778657,
+    "teacher_collapse_ratio": 4.648731019574199,
+    "student_erank": 66.8224790296387,
+    "teacher_erank": 76.4944290822145,
+    "student_var_samples": 0.18150151285739563,
+    "student_var_queries": 0.052668567911171756,
+    "teacher_var_samples": 0.1048321106569275
+   },
+   {
+    "step": 1000,
+    "student_collapse_ratio": 1.8967176474296643,
+    "teacher_collapse_ratio": 2.8500327593998933,
+    "student_erank": 71.02674459028268,
+    "teacher_erank": 71.43748280014258,
+    "student_var_samples": 0.2076491291017041,
+    "student_var_queries": 0.10947814472180384,
+    "teacher_var_samples": 0.19104197228397815
+   },
+   {
+    "step": 1300,
+    "student_collapse_ratio": 2.0563336209898804,
+    "teacher_collapse_ratio": 2.3278562748659697,
+    "student_erank": 71.09633146192003,
+    "teacher_erank": 70.39990959222973,
+    "student_var_samples": 0.18010390816480062,
+    "student_var_queries": 0.08758496497183273,
+    "teacher_var_samples": 0.1901911659018763
+   }
+  ],
+  "lettura": "JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; ancore-only: la JEPA registrata misura un predittore non allenato (docs/bracci_obiettivo_finestra1.md)"
+ }
+}
