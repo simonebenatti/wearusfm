@@ -118,6 +118,9 @@ class RunConfig:
     # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e loro teste, col solo
     # termine dei rami sul readout (`jepa.branch_weight` > 0, `jepa.keep_weight` = 0)
     freeze_encoder: bool = False
+    # pilot dei rami (review GPT del 21/10, R3): i monitor e l'allarme di collasso dei rami anche con l'obiettivo vecchio (PWl); sempre accesi con
+    # l'obiettivo mascherato (PWm) e con gli strati finali fissi (PWf). Senza gradiente: la perdita e il training non cambiano.
+    branch_monitor: bool = False
     # diagnostiche della stabilita' (GPT e Claude, 14/10/2026, dopo il collaudo dello step 2C; Simone: «implementa i punti 1 e 2»). Non cambiano
     # il training (RNG, pesi e metriche del passo restano bit per bit quelli di un run senza):
     # - ogni `fixed_eval_every` aggiornamenti (0 = spenta), e al passo 0 di un run nuovo, le loss del training su un insieme FISSO di
@@ -142,7 +145,7 @@ class RunConfig:
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
-                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None}
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False}  # gli ultimi due: pilot dei rami del 20/10
 
@@ -852,6 +855,13 @@ def _ema_trainable(teacher: torch.nn.Module, student: torch.nn.Module, momentum:
         bt.copy_(bs)
 
 
+def _fmt(v, spec: str) -> str:
+    """Un numero del messaggio di avanzamento; None o non finito -> «non definita»."""
+    if v is None or (isinstance(v, float) and not math.isfinite(v)):
+        return "non definita"
+    return format(float(v), spec)
+
+
 def _json_value(v):
     """Un valore delle metriche nel record JSON: tensori a numeri, NaN a None."""
     if isinstance(v, torch.Tensor):
@@ -966,8 +976,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                              "(la testa raw e' congelata)")
         if ctx.active or cfg.accum_steps > 1 or cfg.keep_grad_every or cfg.pairing_audit or branch_from is not None:
             raise NotImplementedError("freeze_encoder: un processo, senza accumulo, keep_grad_every, pairing_audit o branch_from")
-    if (cfg.model.branch_objective != "readout" or cfg.model.branch_freeze_output or branch_state_from is not None) and not cfg.freeze_encoder:
-        raise ValueError("obiettivo dei rami, strati fissi e passo 0 caricato: solo a encoder congelato (pilot dei rami, raw congelato)")
+    if (cfg.model.branch_objective != "readout" or cfg.model.branch_freeze_output or cfg.branch_monitor or branch_state_from is not None) \
+            and not cfg.freeze_encoder:
+        raise ValueError("obiettivo dei rami, strati fissi, monitor dei rami e passo 0 caricato: solo a encoder congelato (pilot dei rami, "
+                         "raw congelato)")
     if ctx.active:
         if not torch.distributed.is_initialized():
             raise ValueError("DDP: il gruppo dei processi va inizializzato prima (scripts/train_jepa.py --distributed)")
@@ -1159,11 +1171,14 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
     fixed_log = (out_dir / "fixed_eval.jsonl").open("a") if fixed is not None else None
     masked_metrics = branch_alarm = None
-    if cfg.model.branch_objective == "masked":
+    masked_normalized_undefined = 0
+    if cfg.model.branch_objective == "masked" or cfg.model.branch_freeze_output or cfg.branch_monitor:
         if resume_state is not None:
-            raise NotImplementedError("obiettivo mascherato dei rami: nessuna ripresa (l'allarme ha un riferimento dai primi passi)")
-        from wearusfm.model.branch_masking import CollapseAlarm
-        branch_alarm = CollapseAlarm()
+            raise NotImplementedError("monitor dei rami del pilot: nessuna ripresa (l'allarme ha un riferimento dai primi passi)")
+        from wearusfm.model.branch_masking import MONITORS as BRANCH_MONITORS, CollapseAlarm
+        from wearusfm.model.spectral_branches import SCALES as BRANCH_SCALES
+        branch_alarm = CollapseAlarm(expected=[f"masked_{k}_{name}_{m}" for k in cfg.model.spectral_branches for name, *_ in BRANCH_SCALES
+                                               for m in BRANCH_MONITORS])
 
     def fixed_eval(at_step: int) -> None:
         fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
@@ -1238,6 +1253,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                     kb, kb_metrics = readout_objectives(student, m.inp, batch.anchor_targets, keep=False)["keep_branches"]
                     # col suo peso, come nel training congiunto (review GPT del 14/10: senza, branch_weight non controllava il backward)
                     losses = {"total": cfg.jepa.branch_weight * kb, "keep_branches": kb, **kb_metrics}
+                    masked_metrics = None
+                    if branch_alarm is not None and branch_alarm.wants(step + 1):  # PWf, PWl: i monitor del PWm, senza gradiente
+                        from wearusfm.model.branch_masking import batch_spans, branch_monitors
+                        masked_metrics = branch_monitors(teacher, m.inp, batch_spans(m.inp, cfg.seed, step + 1))
                 else:
                     losses = jepa_losses(student, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=batch.anchor_targets, kinds=m.kinds,
                                          rvq_on=m.rvq_on, rvq_codes=m.rvq_codes)
@@ -1297,6 +1316,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
         if masked_metrics is not None:  # pilot dei rami: perdite per ramo e scala, normalizzate, copertura, monitor
             rec.update({k: _json_value(v) for k, v in masked_metrics.items()})
+            if "masked_normalized" in rec and rec["masked_normalized"] is None:  # non definita (riferimento costante a varianza nulla)
+                masked_normalized_undefined += 1
             branch_alarm_reason = branch_alarm.update(step, masked_metrics)
             if branch_alarm_reason:
                 rec["alarm"] = branch_alarm_reason
@@ -1352,7 +1373,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if step % 50 == 0 or step == 1:
             mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
             if cfg.freeze_encoder and "masked" in rec:  # pilot dei rami: perdita mascherata e normalizzata (1 = predittore costante)
-                part = f"rami mascherati {rec['masked']:.4f} (normalizzata {rec['masked_normalized']:.3f})"
+                # una misura non definita si scrive come tale (review GPT del 21/10, R1): non e' un errore e non vale come superata
+                part = f"rami mascherati {_fmt(rec['masked'], '.4f')} (normalizzata {_fmt(rec.get('masked_normalized'), '.3f')})"
             else:
                 part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo i rami
             say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
@@ -1388,6 +1410,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                         "trainable_parameters": sum(p.numel() for p in student.parameters() if p.requires_grad),
                                         "objective": cfg.model.branch_objective, "freeze_output": cfg.model.branch_freeze_output,
                                         "collapse_reference": branch_alarm.reference() if branch_alarm is not None else None,
+                                        "collapse_monitor": branch_alarm.report() if branch_alarm is not None else None,
+                                        "masked_normalized_undefined": masked_normalized_undefined if cfg.model.branch_objective == "masked"
+                                        else None,
                                         **(json.loads(prov.read_text()) if prov.exists() else {})}
     if ctx.is_main:
         (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))

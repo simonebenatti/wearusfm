@@ -72,6 +72,19 @@ aggiornamenti dopo i primi 100, se per un ramo e una scala diversita' < 0,05 x r
 oppure rango effettivo < 0,10 x riferimento, in **3 controlli consecutivi**. Un run fermato dall'allarme e' «collassato» e non batte il
 riferimento.
 
+**Precisazioni dopo la review GPT del 21/10/2026 (R2, R3), prima di qualunque collaudo:**
+- **Consecutivi = controlli consecutivi** (a distanza di 10 aggiornamenti). Un controllo in cui un monitor col riferimento non e' misurabile
+  (nessun bersaglio per quella scala nel batch, o valore non finito) **interrompe la sequenza** e si conta come lacuna; per ogni monitor si
+  registrano controlli misurati, lacune e la lacuna piu' lunga (`collapse_monitor` nel summary). Nessuna soglia sulla copertura: e' descrittiva.
+- **Riferimento non definito:** un monitor atteso (ramo x scala x monitor) senza nessun valore finito e positivo nei passi 1-10 non puo' dare
+  l'allarme; si riporta come «non definito». **Non collassato** (per la lettura del primario) = almeno un controllo, nessun allarme e ogni
+  monitor atteso col riferimento definito (`collapse_monitor.verified`); altrimenti il non-collasso del braccio e' «non verificato» e il
+  primario non si legge. Un'assenza di STOP non basta.
+- **Stessi monitor per PWf e PWl:** con l'obiettivo vecchio i tre monitor si calcolano sugli STESSI frame bersaglio del PWm (gli stessi tratti
+  del campionamento del pilot, canali con contesto e almeno un bersaglio), sui token del teacher, senza gradiente e senza predittori: la
+  perdita del braccio non cambia (`branch_monitors`, uguaglianza esatta col PWm e training identico bit per bit provati nei test). Sempre
+  accesi per PWm e PWf, per PWl con `branch_monitor`; stessa regola d'allarme. PW e PW0 del 2C non hanno il monitor (run gia' fatti).
+
 ## Bracci, dati, esposizione (famiglia B)
 
 | Braccio | Obiettivo | Strati dei rami allenati | LR | Fonte |
@@ -106,7 +119,9 @@ insiemi PW e RPW (rami da soli e concatenati al raw). Confronti accoppiati per l
 - **Primario: PWf -> PWm su RPW** (confronto fra obiettivi a parita' di strati allenati, LR, dati, semi ed esposizione). **Positivo** =
   «migliora» in almeno un compito (P1 o P2) e **delta >= -0,01 sulla stima puntuale** nell'altro (il «non dannoso» del 2A/2C). Si legge
   **solo se** PWm ha imparato il suo compito (perdita normalizzata media sugli ultimi 100 aggiornamenti <= 0,9 con tutti e due i teacher) e
-  nessuno dei due bracci e' collassato. Accanto si riporta PW0 -> PWm.
+  nessuno dei due bracci e' collassato. **Misure non definite (review GPT, R1):** se una delle ultime 100 perdite normalizzate non e'
+  definita (riferimento costante a varianza nulla), il criterio «ha imparato» non e' verificabile e il primario non si legge; il trainer la
+  scrive come «non definita» e la conta (`masked_normalized_undefined`). «Non collassato» come sopra (`collapse_monitor.verified` per PWf e PWm). Accanto si riporta PW0 -> PWm.
 - **Descrittivi:** PWf -> PWm su PW; PW -> PWm (le ricette complete); PW0 -> PWm; PW -> PWl («a 3e-4 l'obiettivo vecchio: migliora /
   peggiora / regola non superata rispetto a 1e-3»; un LR piu' basso sugli stessi 3.000 passi e' anche meno spostamento dal passo 0); PW ->
   PWf (effetto di fissare `output` e `combine` col vecchio obiettivo); PW0 -> PWh e PWh -> PW (dove sta il cambiamento del vecchio

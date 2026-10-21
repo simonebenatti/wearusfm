@@ -3821,3 +3821,13 @@ training di C3 rigenerato identico): 2 guardie, 2 estrazioni (QoS normal, 1 h 30
 **Deploy della valutazione di C3 (21/10/2026):** suite completa 1309 PASS sul merge; `deploy/w1cal-eval-20261021` = 98c5832 (SHA remoto
 verificato), checkout di campagna job 61624224 (1 core, 10 min, 0 GPU-ora).
 
+**Pilot dei rami: correzioni della review GPT del 21/10 (`docs/reviews/branch_pilot_review_20261021.md`, R1-R3), prima di qualunque collaudo
+del pilot.** R1: il log scrive «non definita» per una misura non definita, il summary la conta (`masked_normalized_undefined`), e nella
+lettura una perdita normalizzata non definita fra le ultime 100 rende il criterio «PWm ha imparato» non verificabile. R2: i consecutivi
+dell'allarme sono controlli consecutivi; un controllo senza misura interrompe la sequenza e si conta; un monitor atteso senza riferimento e'
+«non definito» e il non-collasso del braccio non e' verificato (`collapse_monitor.verified`). R3: PWf (e PWl con `branch_monitor`) ha gli
+stessi monitor del PWm sugli stessi frame, senza gradiente: uguaglianza esatta col PWm e training identico bit per bit provati nei test. Le
+tre regressioni di GPT passano sul ramo; test del 2C, del pilot e dell'identita' 127 PASS. Protocollo aggiornato
+(`docs/rami_pilota_obiettivo_v1.md`, ancora PROPOSTA): passa dal `critico` col resto del pilot (launcher, estrazione, verdetto) prima del
+collaudo. Nessun job.
+

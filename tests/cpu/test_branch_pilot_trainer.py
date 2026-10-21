@@ -108,3 +108,60 @@ def test_branch_collapse_alarm_stops_the_run(tmp_path, monkeypatch):
     # l'allarme si legge dopo l'aggiornamento del passo 2 (come quello del raw): il passo conta, il run si ferma li'
     assert summary["steps"] == 2 and summary["stopped"].startswith("allarme")
     assert (out / "STOP").read_text().startswith("allarme") and "alarm" in json.loads((out / "metrics.jsonl").read_text().splitlines()[-1])
+
+
+# ---- review GPT del pilot (21/10/2026): log con misure non definite, monitor di PWf e PWl ----
+
+def test_an_undefined_normalized_loss_is_logged_as_such_and_counted(tmp_path, monkeypatch):
+    """R1 (regressione di GPT): una perdita normalizzata non definita (riferimento costante a varianza nulla) non interrompe il log; il run
+    finisce in ordine, il summary la conta e il messaggio la scrive come «non definita»."""
+    root, manifest, cfg_b, src = _source_and_cfg(tmp_path)
+    cfg = replace(cfg_b, max_steps=1, model=replace(cfg_b.model, branch_objective="masked", branch_freeze_output=True))
+    original = BM.masked_branch_objective
+
+    def objective(*args, **kwargs):
+        loss, metrics = original(*args, **kwargs)
+        metrics["masked_normalized"] = float("nan")
+        return loss, metrics
+
+    monkeypatch.setattr(BM, "masked_branch_objective", objective)
+    lines = []
+    out = tmp_path / "undefined"
+    summary = R.train(cfg, manifest, [root], out, log=lines.append, init_from=src)
+    assert summary["steps"] == 1 and summary["stopped"] == "max_steps" and (out / "summary.json").exists()
+    assert summary["spectral_branches"]["masked_normalized_undefined"] == 1
+    assert any("normalizzata non definita" in line for line in lines)
+    assert json.loads((out / "metrics.jsonl").read_text().splitlines()[0])["masked_normalized"] is None
+
+
+def test_pwf_and_pwl_observe_branch_collapse_like_pwm(tmp_path):
+    """R3 (regressione di GPT): PWf (obiettivo vecchio, strati finali fissi) ha riferimento, monitor e report di collasso dei rami; PWl con
+    `branch_monitor`; il percorso del 2C senza l'opzione resta senza monitor; nessuna ripresa col monitor acceso."""
+    root, manifest, cfg_b, src = _source_and_cfg(tmp_path)
+    pwf = replace(cfg_b, max_steps=1, model=replace(cfg_b.model, branch_freeze_output=True))
+    out = tmp_path / "pwf"
+    summary = R.train(pwf, manifest, [root], out, log=lambda _: None, init_from=src)
+    sb = summary["spectral_branches"]
+    assert sb["collapse_reference"] and sb["collapse_monitor"]["reference"] == sb["collapse_reference"]
+    rec = json.loads((out / "metrics.jsonl").read_text().splitlines()[0])
+    assert any(k.endswith("_variance") for k in rec) and "keep_branches" in rec  # la perdita resta quella vecchia
+    pwl = replace(cfg_b, max_steps=1, branch_monitor=True)
+    summary = R.train(pwl, manifest, [root], tmp_path / "pwl", log=lambda _: None, init_from=src)
+    assert summary["spectral_branches"]["collapse_reference"]
+    old = R.train(replace(cfg_b, max_steps=1), manifest, [root], tmp_path / "c2", log=lambda _: None, init_from=src)
+    assert old["spectral_branches"]["collapse_reference"] is None and old["spectral_branches"]["collapse_monitor"] is None
+    rec = json.loads((tmp_path / "c2" / "metrics.jsonl").read_text().splitlines()[0])
+    assert not any(k.startswith("masked_") for k in rec)
+    with pytest.raises(NotImplementedError, match="nessuna ripresa"):
+        R.train(replace(pwf, max_steps=2), manifest, [root], out, log=lambda _: None, init_from=src)
+
+
+def test_the_branch_monitor_does_not_change_the_old_objective_training(tmp_path):
+    """I monitor sono senza gradiente e senza RNG globale: PWl con e senza `branch_monitor` allena gli stessi pesi bit per bit."""
+    root, manifest, cfg_b, src = _source_and_cfg(tmp_path)
+    for name, flag in (("off", False), ("on", True)):
+        R.train(replace(cfg_b, max_steps=3, branch_monitor=flag), manifest, [root], tmp_path / name, log=lambda _: None, init_from=src)
+    a = torch.load(tmp_path / "off" / "checkpoint.pt", weights_only=False)
+    b = torch.load(tmp_path / "on" / "checkpoint.pt", weights_only=False)
+    for part in ("student", "teacher"):
+        assert a[part].keys() == b[part].keys() and all(torch.equal(a[part][k], b[part][k]) for k in a[part])

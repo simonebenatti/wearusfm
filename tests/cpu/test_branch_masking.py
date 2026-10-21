@@ -203,3 +203,63 @@ def test_collapse_alarm_relative_to_the_first_updates():
     fresh.update(110, bad)
     fresh.update(120, bad)
     assert fresh.update(130, good) is None and fresh.update(140, bad) is None  # una ripresa azzera il conteggio
+
+
+# ---- review GPT del pilot (21/10/2026): lacune dei controlli, riferimenti non definiti, monitor dell'obiettivo vecchio ----
+
+def test_a_check_without_measurement_breaks_the_consecutive_low_checks():
+    """R2 (regressione di GPT): riferimento nei passi 1-10, bassi a 110 e 120, nessun bersaglio per la scala a 130, basso a 140: i tre bassi
+    non sono controlli consecutivi, nessun allarme; la lacuna si conta. Tre bassi in controlli consecutivi danno l'allarme."""
+    key = "masked_wavelet_slow_variance"
+    alarm = BM.CollapseAlarm(expected=[key])
+    for step in range(1, 11):
+        alarm.update(step, {key: 1.0})
+    assert alarm.update(110, {key: 0.001}) is None and alarm.update(120, {key: 0.001}) is None
+    assert alarm.update(130, {"masked_wavelet_slow_targets": 0}) is None  # lacuna: interrompe la sequenza
+    assert alarm.update(140, {key: 0.001}) is None and alarm.update(150, {key: 0.001}) is None
+    assert alarm.update(160, {key: float("nan")}) is None  # non finito: come una lacuna
+    rep = alarm.report()
+    assert rep["coverage"][key] == {"measured": 4, "gaps": 2, "longest_gap": 1} and rep["checks"] == 6 and rep["verified"]
+    for step in (170, 180):
+        assert alarm.update(step, {key: 0.001}) is None
+    assert "3 controlli consecutivi" in alarm.update(190, {key: 0.001}) and not alarm.report()["verified"]
+
+
+def test_a_monitor_without_reference_is_reported_and_the_arm_is_not_verified():
+    """Un monitor atteso senza riferimento (mai misurato nei passi 1-10, o riferimento nullo) non puo' dare l'allarme: si riporta come non
+    definito e il non-collasso non e' verificato. Con tutti i riferimenti definiti e nessun allarme e' verificato."""
+    good, slow, null = "masked_psd_fast_variance", "masked_psd_slow_variance", "masked_psd_fast_erank"
+    alarm = BM.CollapseAlarm(expected=[good, slow, null])
+    for step in range(1, 11):
+        alarm.update(step, {good: 1.0, null: 0.0})
+    for step in (110, 120, 130, 140):
+        assert alarm.update(step, {good: 1.0, slow: 0.0, null: 0.0}) is None  # slow e null: niente allarme possibile
+    rep = alarm.report()
+    assert rep["reference_undefined"] == [null, slow] and not rep["verified"] and rep["alarm"] is None
+    ok = BM.CollapseAlarm(expected=[good])
+    for step in range(1, 11):
+        ok.update(step, {good: 1.0})
+    assert not ok.report()["verified"]  # nessun controllo ancora
+    ok.update(110, {good: 0.9})
+    assert ok.report()["verified"] and ok.wants(5) and ok.wants(110) and not ok.wants(105) and not ok.wants(50)
+
+
+def test_old_objective_monitors_equal_the_masked_ones_on_the_same_frames():
+    """R3: i monitor per PWf/PWl (`branch_monitors`) sono quelli del PWm sugli stessi frame bersaglio e gli stessi tratti: con lo stesso
+    teacher e lo stesso batch coincidono esattamente, anche se lo studente e' diverso (la selezione non dipende dai pesi)."""
+    sbs = _branches()
+    teacher = SimpleNamespace(spectral_branches=copy.deepcopy(sbs))
+    other = copy.deepcopy(sbs)
+    with torch.no_grad():
+        for p in other.parameters():
+            p.add_(0.1)
+    student = SimpleNamespace(spectral_branches=other)
+    predictors = BM.make_predictors(("psd", "wavelet"), hidden=8, seed=0)
+    inp = _inputs([_noise(3, 4.0, FS, 40), _noise(2, 4.0, FS, 41)], [FS, FS], [np.full(3, 450.0), np.full(2, 450.0)])
+    spans = BM.batch_spans(inp, 0, 1)
+    _, masked = BM.masked_branch_objective(student, teacher, predictors, inp, spans)
+    mon = BM.branch_monitors(teacher, inp, spans)
+    keys = BM.CollapseAlarm.monitor_keys(masked)
+    assert keys and sorted(keys) == sorted(BM.CollapseAlarm.monitor_keys(mon))
+    assert all(mon[k] == masked[k] for k in keys)
+    assert all(mon[f"masked_{k}_targets"] == masked[f"masked_{k}_targets"] for k in ("psd_fast", "wavelet_fast"))

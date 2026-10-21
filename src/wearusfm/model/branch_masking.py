@@ -170,20 +170,36 @@ def collapse_stats(targets: torch.Tensor, raw: torch.Tensor) -> dict:
 
 class CollapseAlarm:
     """Allarme di collasso dei rami (congelato in `COLLAPSE`): riferimento = media di ogni monitor, per ramo e scala, sui primi
-    `reference_updates` aggiornamenti; dopo `after_updates`, ogni `every` aggiornamenti, un monitor sotto la sua soglia relativa in
-    `consecutive` controlli di fila per un ramo e una scala -> allarme."""
+    `reference_updates` aggiornamenti; dopo `after_updates`, ogni `every` aggiornamenti un controllo; un monitor sotto la sua soglia relativa
+    in `consecutive` controlli di fila per un ramo e una scala -> allarme.
+    Lacune (review GPT del pilot, 21/10, R2): un controllo in cui un monitor col riferimento non e' misurabile (nessun bersaglio per quella
+    scala nel batch, o valore non finito) interrompe la sequenza e si conta; i consecutivi sono controlli consecutivi, a distanza `every`.
+    Un monitor senza riferimento (nessun valore finito e positivo nei primi aggiornamenti) non puo' dare l'allarme: si riporta come «non
+    definito» (`report`), e il non-collasso del braccio non e' allora verificato. `expected`: i monitor attesi (ramo, scala, monitor)."""
 
     RATIO = {"diversity": "diversity_ratio_min", "variance": "variance_ratio_min", "erank": "erank_ratio_min"}
 
-    def __init__(self, rule: dict = COLLAPSE):
+    def __init__(self, rule: dict = COLLAPSE, expected=None):
         self.rule, self.sums, self.counts, self.low = dict(rule), {}, {}, {}
+        self.expected = set(expected) if expected is not None else None
+        self.checks, self.measured, self.gaps, self.longest_gap, self.run_gap, self.alarm = 0, {}, {}, {}, {}, None
+
+    @staticmethod
+    def monitor_keys(metrics: dict) -> list[str]:
+        return [k for k in metrics if any(k.endswith("_" + m) for m in MONITORS) and k.startswith("masked_") and "_min" not in k]
 
     def reference(self) -> dict:
         return {k: self.sums[k] / self.counts[k] for k in self.sums if self.counts[k]}
 
+    def wants(self, step: int) -> bool:
+        """Il passo usa i monitor: uno dei primi `reference_updates` o un controllo."""
+        r = self.rule
+        return step <= r["reference_updates"] or (step > r["after_updates"] and step % r["every"] == 0)
+
     def update(self, step: int, metrics: dict) -> str | None:
-        """`metrics`: quelle di `masked_branch_objective` (chiavi masked_<ramo>_<scala>_<monitor>). Ritorna il motivo dell'allarme o None."""
-        keys = [k for k in metrics if any(k.endswith("_" + m) for m in MONITORS) and k.startswith("masked_") and "_min" not in k]
+        """`metrics`: chiavi masked_<ramo>_<scala>_<monitor> (da `masked_branch_objective` o `branch_monitors`). Ritorna il motivo
+        dell'allarme o None."""
+        keys = self.monitor_keys(metrics)
         if step <= self.rule["reference_updates"]:
             for k in keys:
                 v = float(metrics[k])
@@ -193,17 +209,39 @@ class CollapseAlarm:
             return None
         if step <= self.rule["after_updates"] or step % self.rule["every"]:
             return None
-        ref = self.reference()
-        for k in keys:
-            mon = k.rsplit("_", 1)[1]
-            v, r = float(metrics[k]), ref.get(k)
-            if r is None or not math.isfinite(v) or r <= 0:
+        self.checks += 1
+        ref = {k: r for k, r in self.reference().items() if math.isfinite(r) and r > 0}
+        reason = None
+        for k in sorted(ref):  # i monitor col riferimento, anche quelli assenti da questo batch (lacuna)
+            v = metrics.get(k)
+            v = float(v) if v is not None else float("nan")
+            if not math.isfinite(v):  # lacuna: la sequenza dei controlli consecutivi si interrompe
+                self.low[k] = 0
+                self.gaps[k] = self.gaps.get(k, 0) + 1
+                self.run_gap[k] = self.run_gap.get(k, 0) + 1
+                self.longest_gap[k] = max(self.longest_gap.get(k, 0), self.run_gap[k])
                 continue
+            self.run_gap[k] = 0
+            self.measured[k] = self.measured.get(k, 0) + 1
+            mon, r = k.rsplit("_", 1)[1], ref[k]
             low = v < self.rule[self.RATIO[mon]] * r
             self.low[k] = self.low.get(k, 0) + 1 if low else 0
-            if self.low[k] >= self.rule["consecutive"]:
-                return f"allarme di collasso dei rami: {k} {v:.4g} sotto {self.rule[self.RATIO[mon]]} x riferimento {r:.4g} per {self.low[k]} controlli"
-        return None
+            if reason is None and self.low[k] >= self.rule["consecutive"]:
+                reason = (f"allarme di collasso dei rami: {k} {v:.4g} sotto {self.rule[self.RATIO[mon]]} x riferimento {r:.4g} per "
+                          f"{self.low[k]} controlli consecutivi")
+        self.alarm = self.alarm or reason
+        return reason
+
+    def report(self) -> dict:
+        """Riferimento, copertura dei controlli e monitor senza riferimento; `verified` = almeno un controllo, nessun allarme, ogni monitor
+        atteso col riferimento definito (il «non collassato» della lettura del pilot)."""
+        ref = {k: r for k, r in self.reference().items() if math.isfinite(r) and r > 0}
+        seen = set(self.sums) | set(self.expected or ())
+        undefined = sorted(seen - set(ref))
+        coverage = {k: {"measured": self.measured.get(k, 0), "gaps": self.gaps.get(k, 0), "longest_gap": self.longest_gap.get(k, 0)}
+                    for k in sorted(ref)}
+        return {"reference": ref, "checks": self.checks, "coverage": coverage, "reference_undefined": undefined, "alarm": self.alarm,
+                "verified": bool(self.checks > 0 and self.alarm is None and not undefined)}
 
 
 def student_context(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
@@ -236,6 +274,36 @@ def student_context(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
         h, ok = sb.scales[name].tokens(logp, valid & ctx)  # ok: frame di contesto con almeno una banda valida
         out[name] = {"logp": logp, "valid": valid, "ctx": ctx, "tgt": tgt, "times": times, "h": h, "ok": ok}
     return out
+
+
+def branch_monitors(teacher, inp, spans: list[list[tuple[int, int]]]) -> dict:
+    """I monitor di collasso del PWm per un braccio che non usa l'obiettivo mascherato (PWf, PWl; review GPT del pilot, 21/10, R3): sui token
+    del teacher, per ramo e scala, sugli STESSI frame di `masked_branch_objective` con gli stessi tratti (canali con contesto e almeno un
+    bersaglio); senza predittori, senza gradiente, la perdita del braccio non cambia. La selezione dipende solo dalla geometria dei frame e
+    dalla validita' delle bande, non dai pesi: con lo stesso teacher e gli stessi tratti i valori coincidono con quelli del PWm
+    (`tests/cpu/test_branch_masking.py`)."""
+    metrics = {}
+    with torch.no_grad():
+        for kind, tb in teacher.spectral_branches.branches.items():
+            side = student_context(tb, inp, spans)
+            spec_t = tb.spectra(inp)
+            for name, _, _, _ in SCALES:
+                st = side[name]
+                logp_t, valid_t = spec_t[name]
+                h_t, ok_t = tb.scales[name].tokens(logp_t, valid_t)
+                y = target_tokens(h_t)
+                has_tgt = (st["tgt"] & ok_t).any(1)
+                rows = st["ok"].any(1) & has_tgt
+                key = f"{kind}_{name}"
+                if not bool(rows.any()):
+                    metrics[f"masked_{key}_targets"] = 0
+                    continue
+                sel = (st["tgt"] & ok_t)[rows]
+                stats = collapse_stats(y[rows][sel], h_t[rows][sel])
+                metrics[f"masked_{key}_targets"] = int(sel.sum())
+                for m in MONITORS:
+                    metrics[f"masked_{key}_{m}"] = stats[m]
+    return metrics
 
 
 def masked_branch_objective(student, teacher, predictors: nn.ModuleDict, inp, spans: list[list[tuple[int, int]]]) -> tuple[torch.Tensor, dict]:
