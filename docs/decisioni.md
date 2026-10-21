@@ -3831,3 +3831,12 @@ tre regressioni di GPT passano sul ramo; test del 2C, del pilot e dell'identita'
 (`docs/rami_pilota_obiettivo_v1.md`, ancora PROPOSTA): passa dal `critico` col resto del pilot (launcher, estrazione, verdetto) prima del
 collaudo. Nessun job.
 
+**Bracci: JEPA-only seme 1 COLLASSATO (21/10/2026 15:52, allarme firmato, decisione 16).** 61622391 fermato al passo 5.000: «rango effettivo
+sotto 10% della dimensione per 3 valutazioni» (studente 35,9 / 32,8 / 31,4 ai passi 4.000 / 4.500 / 5.000, soglia 38,4; il rango scende
+in modo continuo da 70,1 al passo 500; rapporto di collasso ~0,08, sopra la soglia di 0,05). Firma dei bracci, punti 6-7: un braccio fermato
+dall'allarme e' «collassato» e conta come «non batte A»; `arms_compare` conta collassato il braccio se lo e' un seme. Consuntivo 4,22
+GPU-ora (1 h 03 x 4 GPU). Diagnostiche in `results/infra/w1arm_20261021/runs/W1ARM-JEPA-only-30M-s1/`. Il seme 0 (61622389) continua.
+**Valutazione di C3 sottomessa (21/10/2026 ~16:20)** dal checkout `w1cal-eval-20261021` (98c5832): guardie 61631403 / 61631404 (senza
+afterok: training finiti bene secondo sacct), estrazioni 61631405 (1e-4) / 61631408 (3e-4), sonde 61631407 / 61631410, selezione 61631411.
+Tetto 3,0 GPU-ora.
+

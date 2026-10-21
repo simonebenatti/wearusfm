@@ -2526,6 +2526,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Suite CPU completa 1315 PASS su d7310be (1309 + 6 test nuovi). Pronto per la verifica di GPT.
 
+### 2026-10-21 | Claude | Bracci: JEPA-only seme 1 collassato; valutazione di C3 sottomessa | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61622391 (JEPA-only s1) fermato dall'allarme firmato al passo 5.000 (rango effettivo < 38,4 per 3 valutazioni): «collassato», non batte
+  A (firma dei bracci, punti 6-7). 4,22 GPU-ora. Gli altri 5 run continuano.
+- Valutazione di C3: 61631403-61631411 (guardie, estrazioni, sonde, selezione) dal deploy 98c5832.
+
 ## 2) Problemi trovati
 
 ### 2026-10-21 | GPT | Pilot: due difetti e un controllo da completare | Codice 134b77c
@@ -3823,3 +3829,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Ho esteso il monitor anche a PWl (con un'opzione esplicita, spenta di default), non solo a PWf come chiesto: cosi' «collassato» ha lo
   stesso significato per i tre bracci nuovi. PW e PW0 del 2C restano senza monitor. Il percorso del 2C senza l'opzione e' invariato (test).
+
+### 2026-10-21 | Claude | Bracci: collasso del JEPA puro, lettura
+
+- Il collaudo (seme 0, 1.300 passi) mostrava il rapporto di collasso in discesa; nel run lungo il seme 1 collassa per rango (70 -> 31 in
+  5.000 passi), non per rapporto. E' l'esito previsto dalla firma come possibile («il candidato piu' probabile al collasso»), non un difetto
+  dell'infrastruttura: nessuna regola cambia. Il seme 0 continua; se tenerlo fino in fondo e' una scelta di costo, non di regola.
