@@ -1,5 +1,27 @@
 # Punto 3: seconda tranche Claude, review del 20-21/10/2026
 
+## Consegna integrata il 21/10: pilot escluso
+
+La consegna separata `consegna/review-3272398` risolve il vincolo storico descritto
+sotto: contiene c21ca40 e i soli fix 8e920bb/e1929be, identici per patch-id ai
+07e120c/32b5718 gia' verificati. Merge **6484432**, seguito dal merge **93d5541**
+di bbf824a (due P2 della diagnostica gia' chiusi). SHA originali conservati.
+Nessun cambiamento a src/ rispetto a e058698; bc97100 non e' antenato del risultato:
+il nuovo pilot non entra nel merge e resta da revisionare separatamente.
+
+Sul risultato integrato sono verificati **132 test distinti PASS**, incluse cinque
+regressioni indipendenti: primo giro 131 PASS e un errore di invocazione GPT (SHA
+abbreviato anziche' completo); le cinque regressioni rieseguite con lo SHA completo
+93d55415b8acffeb4bc9dd70fb91dcf5f6ac2f22 passano tutte. La suite completa
+1254 PASS della consegna e 1272 PASS del ramo con pilot sono dichiarazioni di
+Claude, non riesecuzioni integrali di GPT. Nessun training C1/C2 da ripetere,
+nessun job o deploy eseguito. R1 conserva il limite dell'evidenza SLURM esterna;
+R3 conosce il tetto della sola boost_qos_dbg.
+
+Registrazioni Claude 80978a4/d5950ee conservate testualmente nelle due sezioni
+del registro e in decisioni.md. Gli stati dei job sono quelli del log 02:45,
+non una verifica live. Questa chiusura supersede il precedente blocco sul merge.
+
 ## Aggiornamento 21/10: R1, R2 e R3 chiusi
 
 Verificati i fix Claude `07e120c` e `32b5718`, letti i diff di codice, test e

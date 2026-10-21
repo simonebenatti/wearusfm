@@ -15,26 +15,26 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 21/10/2026 dopo verifica dei fix Claude 07e120c/32b5718: R1/R2/R3 chiusi (3 regressioni e 104 test collegati PASS).
-Registrazioni dei due rami consolidate; seconda tranche esaminata fino a c21ca40, fix diagnostica bbf824a verificato. Nuovo pilot fino a
-134b77c ancora da verificare da GPT e antenato dei fix: il merge del codice richiede quella review. Claude sviluppa; GPT verifica e integra.
+Stato aggiornato al 21/10/2026 dopo integrazione della consegna separata: merge 6484432 (c21ca40 + R1/R2/R3, consegna e1929be)
+e 93d5541 (fix diagnostica bbf824a). Contenuto dei fix identico a 07e120c/32b5718 verificati. Il nuovo pilot fino a 134b77c resta fuori
+dal merge e dalla review approvata; non blocca questa consegna. Claude sviluppa; GPT verifica e integra.
 La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Fix verificati; review del pilot e merge del codice pendenti | R1/R2/R3 consegnati in 07e120c/32b5718 | TRE RILIEVI CHIUSI: 3 regressioni + 104 test collegati PASS. Fix anche su GitHub. Merge ancora aperto: includerebbe il nuovo pilot, antenato dei fix, da revisionare. Documentazione e review aggiornate su main/GitHub |
+| 3 | Review e integrazione su main | Seconda tranche e fix integrati per merge | Consegna separata e1929be accettata | CHIUSO per questa tranche: merge 6484432 e 93d5541, SHA originali conservati. Pilot escluso; la sua review resta al punto 5. Nessun training C1/C2 da ripetere |
 | 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review del nuovo pilot; due bracci gia' verificati (45 PASS) | Campagne, planner e pilot dei rami | Diagnostica: prima tranche 61582132/61582137 sottomessa, esiti non ancora letti. Pilot fino a 134b77c: 65 PASS dichiarati da Claude, review GPT pendente. R3 del planner verificato e chiuso; restano collaudo GPU, keep sul corpus intero e risultati; sonde fisiche/profondita' aperte |
+| 5 | Validare l'obiettivo scientifico | Review del nuovo pilot; due bracci gia' verificati (45 PASS) | Campagne, planner e pilot dei rami | Log d5950ee: 61582137 completato in 1 h 37, 61582132 in corso, 61587820 sottomesso; non e' stato live. Pilot fino a 134b77c: review GPT pendente. R3 planner chiuso; restano collaudo GPU, keep sul corpus intero e risultati; sonde fisiche/profondita' aperte |
 | 6 | Chiudere la finestra 1 | Review dei piani e risultati | Prepara C3, poi C4 e piano finale | C1/C2 CHIUSE: confermati LR 1e-4 e 3e-4 (fd176a7); calibrazione 104,6/220 GPUh. C3 preventivata ~41/55 GPUh, da autorizzare secondo il log. Restano C3-C4, LR finale e piano W1. SCRATCH prossimo 12/11 |
 
 ### Prossimo lavoro in parallelo (21/10)
 
 - **Claude:** R1/R2/R3 completati e verificati; segue la diagnostica gia' sottomessa, prepara C3 e completa la consegna del pilot.
   C2 e' conclusa (fd176a7).
-- **GPT:** review del pilot che precede i fix nella storia, poi merge del codice preservando gli SHA. La seconda tranche non e'
-  ancora su main. I due precedenti P2 della diagnostica e i tre rilievi R1/R2/R3 sono tutti chiusi.
+- **GPT:** consegna della seconda tranche chiusa con il ramo separato e1929be e bbf824a; successiva review del pilot come task distinto
+  del punto 5. I due precedenti P2 della diagnostica e i tre rilievi R1/R2/R3 sono tutti chiusi.
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
 - **Costi nei log aggiornati:** calibrazione 104,6/220 GPUh, inclusa valutazione C2 0,39 GPUh (fd176a7).
@@ -2378,7 +2378,50 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sandbox mentre creava una fixture nel worktree Claude: rieseguito con permesso e passato. Ramo pulito, SHA GitHub = 32b5718.
 - Aggiornati tabella, prossimi compiti e review `docs/reviews/second_tranche_review_20261020.md`; pubblicazione su ramo GPT e main.
   Nessun nuovo job o risultato scientifico. Il codice dei fix e' sul ramo Claude: il merge porta anche il pilot ancora da revisionare.
+### 2026-10-21 | Claude | Review GPT 3272398: R1, R2, R3 corretti, consegna per il merge | Consegna: consegna/review-3272398 (e1929be)
+
+- **R1** (`calibration_select.py`, `calibration_plan.py`): senza sonda serve una prova di fallimento terminale, registrata in
+  `failure_evidence`: STOP del trainer, o evidenza da sacct (`calibration_select.py failure-evidence`: ID SLURM dal registro, stati da sacct;
+  ammessi FAILED/CANCELLED/OUT_OF_MEMORY/NODE_FAIL/BOOT_FAIL/DEADLINE, ultimo job fallito, precedenti al piu' COMPLETED, job del piano
+  nell'ordine). In coda, in corso, TIMEOUT, COMPLETED o ignoto: errore, nessuna decisione. `--failed-runs RUN=STOP|RUN=<evidenza.json>`.
+- **R2**: PASSI di ogni candidato = `total_steps` del run nel piano congelato, altrimenti errore negli argomenti.
+- **R3** (`arms_plan.py`): `--qos=normal` esplicita nelle estrazioni e `check_qos_walltime` sulla QoS effettiva (opzioni e intestazione del
+  launcher allo SHA di deploy, `node_labels`).
+- Sul ramo di Claude 07e120c e 32b5718 (suite 1272 PASS). **Da integrare: il branch `consegna/review-3272398`** (da c21ca40, soli fix: 8e920bb,
+  e1929be; test suite 1254 PASS e 140 test collegati PASS), cosi' il pilot dei rami (fd00661..134b77c, non rivisto) resta fuori. Regressioni GPT: 3 PASS con
+  `WEARUSFM_REVIEW_SHA=e1929be`.
+
+### 2026-10-21 | Claude | Diagnostica dei rami: tranche 3 | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- 61582137 (RPW0, B_seed0 P1) COMPLETED in 1 h 37; 61582132 in corso; sottomesso 61587820 (RPW, B_seed0 P1).
+
+### 2026-10-21 | GPT | Seconda tranche integrata, pilot escluso | Merge 6484432 e 93d5541
+
+- Integrati per merge consegna/review-3272398 (e1929be, R1/R2/R3 su c21ca40) e bbf824a (diagnostica). Patch-id dei fix identici a
+  07e120c/32b5718 gia' verificati; SHA originali conservati. Nessuna modifica a src/ rispetto a e058698; nuovo pilot non incluso.
+- Verifica sul codice integrato: 132 test distinti PASS. Primo giro 131 PASS e un errore nella mia invocazione (SHA abbreviato);
+  le cinque regressioni indipendenti rieseguite con lo SHA completo passano tutte. Suite 1254/1272: risultati dichiarati da Claude.
+- Conservate testualmente consegna e limiti 80978a4 e aggiornamento diagnostica d5950ee nelle due sezioni/decisioni.md. Tabella
+  aggiornata: punto 3 chiuso per questa tranche, pilot al punto 5; C3 ancora da autorizzare. Commit e pubblicazione su main/GitHub.
+  Nessun job o deploy, nessuna ripetizione C1/C2 richiesta.
+
 ## 2) Problemi trovati
+
+### 2026-10-21 | GPT | Chiusura integrazione e limiti residui | Merge 6484432 e 93d5541
+
+- Il ramo di consegna separato rimuove il precedente blocco sul merge: le note che richiedevano prima la review del pilot sono
+  superate per questa tranche. Il pilot resta escluso e non approvato. R1/R2/R3 e i due P2 della diagnostica sono chiusi.
+- R1 richiede evidenza SLURM esterna; R3 conosce solo il limite dbg. Nessuna nuova soglia scientifica o autorizzazione di spesa.
+  Stato diagnostica dal log d5950ee, non live. Errore di invocazione del test con SHA abbreviato corretto, non un difetto del codice.
+
+
+### 2026-10-21 | Claude | Review GPT 3272398: limiti residui
+
+- R1: il selettore non interroga SLURM; l'evidenza la scrive `failure-evidence` dal Mac (registro e sacct) e la selezione la ricontrolla.
+  Un job rimasto in coda con dipendenza mai soddisfatta va annullato (scancel di Simone) prima che l'evidenza lo accetti (CANCELLED).
+- R3: `QOS_MAX_SECONDS` conosce solo boost_qos_dbg (30 min); altre QoS con limiti diversi andrebbero aggiunte se usate dai launcher.
+- La consegna e' un branch a parte coi fix riapplicati su c21ca40 (SHA nuovi, contenuto identico ai commit del ramo); quando il ramo di
+  Claude verra' integrato piu' avanti, gli stessi cambiamenti arrivano due volte senza conflitti di contenuto.
 
 ### 2026-10-21 | GPT | Chiusura dei tre rilievi; residuo d'integrazione | Fonte 32b5718
 

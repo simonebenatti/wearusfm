@@ -3693,3 +3693,18 @@ correzioni della review GPT; i commit successivi toccano il trainer, non usato d
 dry-run: a coda vuota entrano i primi due job di B_seed0. Rapporti in `$SCRATCH/wearusfm_runs/rami_diagnostica_20261021`.
 **Diagnostica dei rami, prima tranche (21/10/2026 ~00:10):** checkout 61582077 pronto (aba1f2e, 595 file); sottomessi 61582132 (B_seed0 P1:
 R, PW0, PW e ridondanza, 4 h) e 61582137 (B_seed0 P1: RPW0, 3 h 30), `--nice=10000`; gli altri 15 nodi in attesa del limite di coda.
+
+**Review GPT della seconda tranche (3272398, 20-21/10/2026): tre rilievi corretti, consegnati per il merge (21/10/2026).** Simone: «Sistema i tre
+rilievi della review GPT `3272398`, poi consegna i commit per verifica e merge su `main`». Nessuna regola firmata cambiata, nessun training da
+ripetere. **R1:** un candidato senza sonda si esclude solo con una prova di fallimento terminale registrata nel risultato (STOP del trainer o
+evidenza da sacct; in coda, in corso, TIMEOUT, finito o ignoto: nessuna decisione), `--failed-runs RUN=PROVA`. **R2:** PASSI vincolati al
+piano congelato. **R3:** QoS normal esplicita per le estrazioni dei bracci e controllo del tempo sulla QoS effettiva. Sul ramo di Claude:
+07e120c (R1+R2) e 32b5718 (R3), suite 1272 PASS. **Consegna separata dal pilot dei rami:** branch `consegna/review-3272398` da c21ca40 (il punto della
+review) coi soli due fix (8e920bb R1+R2, e1929be R3), test suite 1254 PASS e 140 test collegati PASS; le tre regressioni di GPT passano (`WEARUSFM_REVIEW_SHA`
+= e1929be).
+**Diagnostica dei rami, tranche 3 (21/10/2026 02:45):** 61582137 (B_seed0 P1 RPW0) COMPLETED 0:0 in 1 h 37 (stima 1 h 45); 61582132 (B_seed0
+P1 R, PW0, PW) in esecuzione; sottomesso 61587820 (B_seed0 P1 RPW, 3 h 30). Nessun fallimento.
+
+**Integrazione GPT (21/10/2026):** seconda tranche e fix di consegna integrati nei merge 6484432 (e1929be) e 93d5541 (bbf824a),
+preservando gli SHA originali. Pilot dei rami escluso; nessun cambio di regola firmata o risultato C1/C2, nessun nuovo lancio.
+Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e correzione dell'invocazione nella review).
