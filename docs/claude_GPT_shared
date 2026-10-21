@@ -2193,6 +2193,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Simone ha chiesto di togliere i promemoria della sessione (consumano token): le tranche della diagnostica dei rami (piano v2, B) e i
   controlli di C3 si fanno a richiesta. In coda: 61592919 e 61592922 (diagnostica), 61593336 e 61593337 (C3).
 
+### 2026-10-21 | Claude | Bracci dell'obiettivo: piani, collaudo e correzioni del critico | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- LR dei bracci = 1e-4 con la regola firmata (C2 al seme 1: parita' entro 1 SE, il piu' basso), derivato da `arms_plan.py` dal file delle
+  decisioni e dal registro di C2. Piani dei 6 run e comandi in `results/infra/w1arm_20261021/` (98.094 passi, un job da 23 h, checkout di
+  C1-C3); preventivo 463,8 / 552 GPU-ora di training piu' la valutazione.
+- Review del `critico` sugli strumenti: DA RIVEDERE (1 bloccante: confronto senza identita' dei run e provenienza dei rapporti; 5 minori),
+  corretti con test; re-review prima del lancio.
+- Collaudo `w1arm-collaudo-v1` (JEPA-only e ancore-only, 1.300 passi su dbg, 2,6 / 4,0 GPU-ora): criteri congelati in
+  `docs/bracci_obiettivo_finestra1.md` e `scripts/arms_collaudo.py`. Nessun job sottomesso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3269,3 +3279,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Avevo stimato le sonde a 256 colonne in proporzione alla larghezza (~0,5 h): invece lbfgs non converge entro 3.000 iterazioni sui soli
   rami (avvisi di convergenza) e PW0 dura piu' di R. Raggruppare R, PW0 e PW in un job da 4 h era sbagliato. Si ripianifica un job per
   insieme coi tempi misurati; la sonda (protocollo della S) non cambia.
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: confronto senza identita' (trovato dal critico)
+
+- `arms_compare.py` (16/10) leggeva solo STOP e `stopped`: un braccio lanciato coi pesi di A o un rapporto di un altro checkpoint sarebbero
+  passati. Corretto prima di qualunque run dei bracci, nessun risultato toccato. GPT: da rivedere col resto (non blocca).
+- Nel collaudo il criterio «apprendimento» del JEPA puro guarda la sola JEPA, che nei run registrati sale nei primi 100 passi e poi scende
+  di 10-100 volte: per questo il confronto e' fra le medie dei primi e degli ultimi 50 passi, non fra passi singoli.

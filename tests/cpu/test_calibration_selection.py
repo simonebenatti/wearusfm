@@ -146,6 +146,31 @@ def test_p2_internal_subjects_exclude_the_test_of_all_three_official_splits():
     assert internal == CP.p2_internal_subjects(list(reversed(ids)))
 
 
+def test_p2_internal_subjects_are_outside_the_tests_that_probe_p2_really_uses(monkeypatch):
+    """Legame col codice della P2 ufficiale, non con una sua copia (rilievo 6 del critico, 21/10): i soggetti di test che
+    `probe_p2.probe_dataset` passa davvero alla sonda, con i suoi semi, sono esattamente il complemento di `p2_internal_subjects`."""
+    from types import SimpleNamespace
+
+    from wearusfm.harness import probe as HP
+
+    PP = _mod("probe_p2")
+    seen = []
+
+    def fake_probe(xtr, ytr, xva, yva, xte, yte, subjects_test, seed=0):
+        seen.append(set(subjects_test.tolist()))
+        return SimpleNamespace(test_bacc=0.5, test_bacc_se=0.01, val_bacc=0.5, train_bacc=0.5, c=1.0, n_train=len(ytr), n_val=len(yva),
+                               n_test=len(yte), n_test_subjects=len(set(subjects_test.tolist())), test_pred=yte)
+
+    monkeypatch.setattr(HP, "linear_probe", fake_probe)
+    for ids in ([f"trainingJSON/user{i}" for i in range(60)], [f"{i:02d}" for i in range(1, 37)]):  # come EPN-612 e UCI-EMG
+        seen.clear()
+        subjects = np.array([s for s in ids for _ in range(3)])
+        labels = np.array([k % 3 for k in range(len(subjects))])
+        PP.probe_dataset(np.zeros((len(subjects), 2)), labels, subjects, PP.SPLIT_SEEDS)
+        assert len(seen) == len(PP.SPLIT_SEEDS) == len(CP.P2_SPLIT_SEEDS)
+        assert CP.p2_internal_subjects(subjects) == sorted(set(ids) - set().union(*seen))
+
+
 def test_p2_extraction_never_processes_test_subjects(tmp_path, monkeypatch):
     from wearusfm.harness import benchmarks as B
     from wearusfm.harness import fm_features as FF

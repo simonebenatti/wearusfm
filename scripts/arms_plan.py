@@ -15,17 +15,24 @@ confronto: bracci contro A; B contro A'). Le sonde sulla seriale girano una alla
 mette su nodi GPU (1 GPU ciascuna) in parallelo. `--failed-runs`: run fermati prima della valutazione (niente nodi; nel confronto contano
 col loro stato: collassato = non batte).
 
-Uso: python scripts/arms_plan.py rapporto_cluster.json --lr LR --campaign campagna.json [--keep-calibration NPZ] [--probes-on-gpu]
-     [--failed-runs ID ...] [--out cartella]
+LR (rilievo 2 del critico, 21/10): si deriva con la regola firmata da `w1cal_decisioni.json` e dal registro di C2 (`signed_lr`); un `--lr`
+diverso e' un errore. La spec del confronto porta piano di training (percorso relativo al checkout e SHA-256), LR e ID dei run, perche'
+`arms_compare.py` verifichi l'identita' di ogni run e la provenienza di ogni rapporto (rilievo 1). La cartella dei piani e' relativa al
+repo (rilievo 4): il nodo del confronto la legge dal checkout della valutazione.
+
+Uso: python scripts/arms_plan.py rapporto_cluster.json --decisions w1cal_decisioni.json --registro-c2 registro_C2.json --campaign campagna.json
+     --out cartella_relativa [--lr LR] [--keep-calibration NPZ --keep-calibration-sha256 SHA] [--probes-on-gpu] [--failed-runs ID ...]
 """
 
 from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import importlib.util
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -46,6 +53,8 @@ EVAL = {"p1": {"extract": ("probe_p1.sbatch", "00:45:00", 0.25), "probe": ("prob
 PROBE_CORES = 8
 QOS_MAX_SECONDS = {"boost_qos_dbg": 1800}  # limiti di durata delle QoS che un nodo puo' ereditare dall'intestazione del launcher (R3, GPT 3272398)
 GPU_PROBE_SBATCH = ["--partition=boost_usr_prod", "--qos=normal", "--gres=gpu:1"]
+# calibrazione della keep dello Step 1 (solo emg2qwerty, decisioni.md): la firma (punto 4) chiede di ricalcolarla sul corpus intero
+STEP1_KEEP_CALIBRATION_SHA256 = "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
 
 
 def _mod(name):
@@ -58,6 +67,42 @@ def _mod(name):
 def _hours(hms: str) -> float:
     h, m, s = (int(x) for x in hms.split(":"))
     return h + m / 60 + s / 3600
+
+
+def plan_text(p: dict) -> str:
+    """Il testo del piano di training come lo scrive `main` (bracci_<gruppo>.json): il suo SHA-256 va nella spec del confronto."""
+    return json.dumps(p, indent=1)
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def signed_lr(decisions: dict, registro: dict) -> tuple[float, dict]:
+    """LR di 30M per i bracci con la regola firmata il 16/10 (firma, punto 2): l'unico LR confermato da C2, o, se C2 ne conferma due, quello
+    con S migliore al seme 1, a parita' il piu' basso. Parita' = quella della calibrazione (`rules.tie` del registro: differenza accoppiata
+    entro 1 SE), la sola definita nei protocolli firmati. Il registro di C2 deve dare la stessa decisione del file delle decisioni."""
+    confirmed = sorted(float(x) for x in decisions["C2"]["confirmed"])
+    if registro.get("phase") != "C2" or sorted(float(x) for x in registro["decision"]["confirmed"]) != confirmed:
+        raise ValueError(f"registro di C2 incoerente col file delle decisioni (C2 confermati {confirmed})")
+    if len(confirmed) == 1:
+        return confirmed[0], {"confirmed": confirmed, "why": "unico LR confermato da C2"}
+    if len(confirmed) != 2:
+        raise ValueError(f"C2 conferma {confirmed}: la regola firmata dei bracci copre uno o due LR")
+    lo, hi = confirmed
+    rows = [r for r in registro.get("descriptive_comparisons", []) if {float(r["a"]), float(r["b"])} == {lo, hi}]
+    if len(rows) != 1:
+        raise ValueError(f"registro di C2: serve un solo confronto fra {lo:g} e {hi:g}, trovati {len(rows)}")
+    row = rows[0]
+    s = {float(k): v["S"] for k, v in registro["candidates"].items()}
+    delta_lo = row["delta"] if float(row["a"]) == lo else -row["delta"]  # S(lo) - S(hi)
+    if not math.isclose(delta_lo, s[lo] - s[hi], rel_tol=1e-9, abs_tol=1e-12):
+        raise ValueError(f"registro di C2: delta {row['delta']} incoerente con le S {s}")
+    tie = bool(row["tie"])
+    choice = lo if tie or delta_lo > 0 else hi
+    return choice, {"confirmed": confirmed, "S_seed1": {f"{k:g}": v for k, v in s.items()}, "delta_low_minus_high": delta_lo,
+                    "se": row["se"], "tie": tie, "rule": registro["rules"]["tie"],
+                    "why": "parita' (entro 1 SE): il piu' basso" if tie else "S migliore al seme 1"}
 
 
 def arm_runs(steps: int, lr: float, keep_calibration: str | None) -> dict[str, list[dict]]:
@@ -123,8 +168,18 @@ def check_qos_walltime(nodes: list[dict]) -> None:
 
 
 def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | None = None, probes_on_gpu: bool = False,
-         failed_runs: frozenset = frozenset(), plans_dir: str | None = None) -> dict:
+         failed_runs: frozenset = frozenset(), *, plans_dir: str, keep_calibration_sha256: str | None = None) -> dict:
     from wearusfm.training import run as R
+
+    if not plans_dir or Path(plans_dir).is_absolute() or ".." in Path(plans_dir).parts:
+        raise ValueError(f"cartella dei piani {plans_dir!r}: relativa al repo, senza '..' (il confronto la legge dal checkout della valutazione)")
+    if keep_calibration is not None:
+        if not re.fullmatch(r"[0-9a-f]{64}", keep_calibration_sha256 or ""):
+            raise ValueError("--keep-calibration richiede --keep-calibration-sha256 (64 caratteri esadecimali) della ricalibrazione sul corpus intero")
+        if keep_calibration_sha256 == STEP1_KEEP_CALIBRATION_SHA256:
+            raise ValueError("calibrazione della keep dello Step 1 (solo emg2qwerty): la firma chiede quella ricalcolata sul corpus intero")
+    elif keep_calibration_sha256 is not None:
+        raise ValueError("--keep-calibration-sha256 senza --keep-calibration")
 
     CP, W = _mod("calibration_plan"), _mod("wsd_chain")
     if not str((build_report.get("code") or {}).get("source", "")).startswith("launcher"):
@@ -157,7 +212,7 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
             rows.append({"group": g, "id": run["id"], "arm": meta["arm"], "seed": run["seed"], "steps": run["total_steps"],
                          "warmup_steps": run["warmup_steps"], "decay_start": run["decay_start"], "jobs": run["jobs"], "job_time": run["time"],
                          "gpu_hours_expected": run["gpu_hours_expected"], "gpu_hours_max": run["gpu_hours_max"]})
-            entry = {"run_dir": run["run_dir"]}
+            entry = {"id": run["id"], "run_dir": run["run_dir"]}
             if run["id"] not in failed_runs:
                 n, reps = eval_nodes(run, code, ev, sbatch_probe)
                 nodes += n
@@ -165,13 +220,16 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
                 entry.update(reps)
             spec_runs.setdefault(meta["arm"], {})[str(run["seed"])] = entry
         ref = "A" if g == "objective" else "Aprime"
-        spec = {"reference": ref, "arms": [a for a in spec_runs if a != ref], "runs": spec_runs}
+        spec = {"reference": ref, "arms": [a for a in spec_runs if a != ref], "plan": f"{plans_dir}/bracci_{g}.json",
+                "plan_sha256": hashlib.sha256(plan_text(p).encode()).hexdigest(), "lr": lr, "runs": spec_runs}
+        if g == "keep":
+            spec["keep_calibration_sha256"] = keep_calibration_sha256
         if any(set(failed_runs) & {f"W1ARM-{ref}-30M-s{s}" for s in SEEDS}):
             raise ValueError(f"{g}: il riferimento {ref} non e' arrivato alla valutazione: nessun confronto")
-        spec_path = f"{plans_dir}/confronto_{g}.json" if plans_dir else "-"
+        spec_path = f"{plans_dir}/confronto_{g}.json"
         specs[g] = spec
         out = f"{ev['results_root']}/confronto_{g}.json"
-        reports = [v for e in spec_runs.values() for x in e.values() for k, v in x.items() if k != "run_dir"]
+        reports = [v for e in spec_runs.values() for x in e.values() for k, v in x.items() if k not in ("id", "run_dir")]
         oofs = [r[:-5] + ".oof.npz" for r in reports if r.split("/")[-1].startswith("s_")]
         nodes.append({"id": f"W1ARM-{g}-compare", "kind": "compare", "after": probes, "queue": "lrd_all_serial", "gpu_hours": 0, **code,
                       "launcher": "scripts/slurm/arms_compare.sbatch", "args": [spec_path, out], "exports": {}, "sbatch": ["--time=00:30:00"],
@@ -200,29 +258,36 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("build_report", type=Path)
-    ap.add_argument("--lr", type=float, required=True, help="LR di 30M da C1-C2 (regola firmata)")
+    ap.add_argument("--decisions", type=Path, required=True, help="results/infra/w1cal_decisioni.json")
+    ap.add_argument("--registro-c2", type=Path, required=True, help="registro della selezione di C2 (registro_C2.json)")
+    ap.add_argument("--lr", type=float, default=None, help="facoltativo: se dato, deve essere quello della regola firmata")
     ap.add_argument("--campaign", type=Path, required=True, help="come quella della calibrazione, con eval.raw_root per la P2")
     ap.add_argument("--keep-calibration", default=None, help="calibrazione della keep sul corpus intero (percorso sul cluster)")
+    ap.add_argument("--keep-calibration-sha256", default=None, help="SHA-256 atteso della calibrazione della keep sul corpus intero")
     ap.add_argument("--probes-on-gpu", action="store_true")
     ap.add_argument("--failed-runs", nargs="*", default=[])
-    ap.add_argument("--out", type=Path, help="cartella dei piani (relativa: nel repo, cosi' il checkout della valutazione li contiene)")
+    ap.add_argument("--out", type=Path, required=True, help="cartella dei piani, relativa al repo: il checkout della valutazione li contiene")
     args = ap.parse_args(argv)
-    res = plan(json.loads(args.build_report.read_text()), args.lr, json.loads(args.campaign.read_text()), args.keep_calibration,
-               args.probes_on_gpu, frozenset(args.failed_runs), str(args.out) if args.out else None)
+    lr, why = signed_lr(json.loads(args.decisions.read_text()), json.loads(args.registro_c2.read_text()))
+    if args.lr is not None and args.lr != lr:
+        raise SystemExit(f"--lr {args.lr:g}: la regola firmata da C2 da' {lr:g} ({why['why']})")
+    res = plan(json.loads(args.build_report.read_text()), lr, json.loads(args.campaign.read_text()), args.keep_calibration,
+               args.probes_on_gpu, frozenset(args.failed_runs), plans_dir=str(args.out), keep_calibration_sha256=args.keep_calibration_sha256)
+    res["lr_rule"] = {**why, "decisions": str(args.decisions), "decisions_sha256": _sha256_file(args.decisions),
+                      "registro_c2": str(args.registro_c2), "registro_c2_sha256": _sha256_file(args.registro_c2)}
     for r in res["runs"]:
         print(f"{r['group']:9s} {r['id']:28s} seme {r['seed']} passi {r['steps']} decay da {r['decay_start']} {r['jobs']} x {r['job_time']} "
               f"GPU-ora {r['gpu_hours_expected']} / {r['gpu_hours_max']}")
     t = res["totals"]
-    print(f"training {t['gpu_hours_expected']} / {t['gpu_hours_max']} GPU-ora; valutazione {t['eval_gpu_hours_expected']} / "
-          f"{t['eval_gpu_hours_max']}; bloccati: {res['blocked'] or 'nessuno'}")
-    if args.out:
-        args.out.mkdir(parents=True, exist_ok=True)
-        for g, p in res["plans"].items():
-            (args.out / f"bracci_{g}.json").write_text(json.dumps(p, indent=1))
-            (args.out / f"valutazione_{g}.json").write_text(json.dumps(res["eval_plans"][g], indent=1))
-            (args.out / f"confronto_{g}.json").write_text(json.dumps(res["specs"][g], indent=1))
-        (args.out / "bracci_riepilogo.json").write_text(json.dumps({k: v for k, v in res.items() if k not in ("plans", "eval_plans", "specs")},
-                                                                   indent=1))
+    print(f"LR {lr:g} ({why['why']}); training {t['gpu_hours_expected']} / {t['gpu_hours_max']} GPU-ora; valutazione "
+          f"{t['eval_gpu_hours_expected']} / {t['eval_gpu_hours_max']}; bloccati: {res['blocked'] or 'nessuno'}")
+    args.out.mkdir(parents=True, exist_ok=True)
+    for g, p in res["plans"].items():
+        (args.out / f"bracci_{g}.json").write_text(plan_text(p))
+        (args.out / f"valutazione_{g}.json").write_text(json.dumps(res["eval_plans"][g], indent=1))
+        (args.out / f"confronto_{g}.json").write_text(json.dumps(res["specs"][g], indent=1))
+    (args.out / "bracci_riepilogo.json").write_text(json.dumps({k: v for k, v in res.items() if k not in ("plans", "eval_plans", "specs")},
+                                                               indent=1))
     return 0
 
 

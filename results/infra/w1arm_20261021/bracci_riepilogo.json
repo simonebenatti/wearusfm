@@ -1,0 +1,116 @@
+{
+ "lr": 0.0001,
+ "steps": 98094,
+ "warmup_steps": 1962,
+ "keep": false,
+ "probes_on_gpu": false,
+ "runs": [
+  {
+   "group": "objective",
+   "id": "W1ARM-A-30M-s0",
+   "arm": "A",
+   "seed": 0,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  },
+  {
+   "group": "objective",
+   "id": "W1ARM-A-30M-s1",
+   "arm": "A",
+   "seed": 1,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  },
+  {
+   "group": "objective",
+   "id": "W1ARM-JEPA-only-30M-s0",
+   "arm": "JEPA-only",
+   "seed": 0,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  },
+  {
+   "group": "objective",
+   "id": "W1ARM-JEPA-only-30M-s1",
+   "arm": "JEPA-only",
+   "seed": 1,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  },
+  {
+   "group": "objective",
+   "id": "W1ARM-ancore-only-30M-s0",
+   "arm": "ancore-only",
+   "seed": 0,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  },
+  {
+   "group": "objective",
+   "id": "W1ARM-ancore-only-30M-s1",
+   "arm": "ancore-only",
+   "seed": 1,
+   "steps": 98094,
+   "warmup_steps": 1962,
+   "decay_start": 78475,
+   "jobs": 1,
+   "job_time": "23:00:00",
+   "gpu_hours_expected": 77.3,
+   "gpu_hours_max": 92.0
+  }
+ ],
+ "totals": {
+  "runs": 6,
+  "gpu_hours_expected": 463.8,
+  "gpu_hours_max": 552.0,
+  "eval_gpu_hours_expected": 10.5,
+  "eval_gpu_hours_max": 27.0
+ },
+ "blocked": {
+  "keep": "manca la calibrazione della keep ricalcolata sul corpus intero (firma, punto 4)"
+ },
+ "lr_rule": {
+  "confirmed": [
+   0.0001,
+   0.0003
+  ],
+  "S_seed1": {
+   "0.0001": 0.1801097475402664,
+   "0.0003": 0.17950757856568053
+  },
+  "delta_low_minus_high": 0.0006021689745858727,
+  "se": 0.0026840621137297787,
+  "tie": true,
+  "rule": "differenza accoppiata entro 1 SE: il LR piu' basso",
+  "why": "parita' (entro 1 SE): il piu' basso",
+  "decisions": "results/infra/w1cal_decisioni.json",
+  "decisions_sha256": "7f512d08ad3c9f386324b75dbb9e26051ad5892d53ce1fe2ef6a4aed3947e592",
+  "registro_c2": "results/infra/w1cal_c2_20261020/valutazione/registro_C2.json",
+  "registro_c2_sha256": "56d0b3b66772bbb1750e233c1602022f404aa53b83c142cc41e3e966679e9341"
+ }
+}

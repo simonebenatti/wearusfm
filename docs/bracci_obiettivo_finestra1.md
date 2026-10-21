@@ -166,3 +166,90 @@ Sulla seriale le sonde girano una alla volta (`QOSMaxCpuPerUserLimit`, collaudo 
 sei run dell'obiettivo dopo i training; sulle GPU costano ~24 GPU-ora in piu' e girano in parallelo (rilievo 4).
 **Prima del lancio dei bracci:** LR di 30M da C1-C2 (la regola firmata), calibrazione della keep sul corpus intero (per il gruppo keep;
 rilievo 6), review del `critico` su pianificatore, confronto e S della P2, collaudo breve su dbg dei due bracci nuovi, preventivo e via di Simone.
+
+## Lancio del gruppo dell'obiettivo (21/10/2026, Simone: «va bene procedi»): piani, collaudo e preventivo — DA AUTORIZZARE
+
+Nessun job e' autorizzato da questa sezione: collaudo e training partono col via di Simone, che esegue i comandi (come C1-C3).
+
+**LR = 1e-4, dalla regola firmata (firma, punto 2).** C2 conferma 1e-4 e 3e-4 (`results/infra/w1cal_decisioni.json`); al seme 1 la S vale
+0,18011 per 1e-4 e 0,17951 per 3e-4, differenza accoppiata +0,0006 con SE 0,0027 (`registro_C2.json`): parita' (entro 1 SE, la definizione
+`rules.tie` della calibrazione, l'unica dei protocolli firmati), quindi il piu' basso. 1e-4 ha anche la S piu' alta: nessuna lettura da' 3e-4.
+`scripts/arms_plan.py` deriva il LR da questi due file (`signed_lr`, SHA nel riepilogo) e rifiuta un `--lr` diverso.
+
+**Codice.** Training dal checkout di C1-C3 `wearusfm_campaigns/w1cal-20261016` a `72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec`, che contiene
+`--anchor-weight` e `--jepa-weight` (b1238a1): A dei bracci e' la ricetta calibrata in C1-C2 con lo stesso codice, nessun deploy nuovo per il
+training. La valutazione usera' un deploy nuovo col codice rivisto (questo lavoro e la re-review del `critico`): piano di valutazione e spec del
+confronto si rigenerano allora da una campagna di valutazione, come per C2; il piano di training resta questo (il suo SHA-256 entra nella spec).
+
+**Piani** (`results/infra/w1arm_20261021/`, campagna `results/infra/w1arm_campaign_20261021.json`): 6 run (A, JEPA-only, ancore-only, semi 0
+e 1), 98.094 passi, warmup 1.962, decay da 78.475, un job da 23 h per run (QoS normal, `TIME_LIMIT_S` 80.400), cartelle in
+`$SCRATCH/wearusfm_runs/runs/w1arm/`; comandi in `comandi_training_objective.txt` (rigenerati identici da `wsd_chain.py`). Col passo misurato
+in C2 (0,740 s, A a 30M, 24.523 passi in 18.154 s) un run dura ~20,2 h: ~2 h di margine sul limite del trainer.
+
+**Review del `critico` sugli strumenti dei bracci (21/10/2026): DA RIVEDERE, rilievi corretti.** Su pianificatore, confronto, S della P2 e
+test (86 PASS); soddisfatti piano uguale al protocollo, S della P2 sui soli soggetti fuori dai test (verificato incrociando con `probe_p2`),
+LR = 1e-4, nessuna contraddizione con `decisioni.md`.
+1. [bloccante] `arms_compare.py` decideva senza verificare che rapporti e run fossero quelli pianificati (un JEPA-only lanciato senza
+   `--anchor-weight 0`, un rapporto riusato per due semi o di un altro checkpoint sarebbero passati). **Corretto:** la spec porta piano di
+   training (percorso relativo al checkout e SHA-256), LR e ID dei run; per ogni run `check_identity` (configurazione completa e codice
+   contro il piano, LR), cartella e seme del piano, passi del piano per un run completo, ogni rapporto dal suo `checkpoint_postdecay.pt`
+   (stesso file; per S anche lo SHA-256; P1/P2 ufficiali del teacher), rapporti, run e checkpoint distinti; per la keep lo SHA della
+   calibrazione. Test negativi per ciascun caso, su run con le `config.json` costruite da `train_jepa.main` come nel training.
+2. LR non legato alla regola: **corretto** come sopra.
+3. Test che non distinguevano «P1 **e** P2» e caso limite della regola: **aggiunti** (P1 vinta e P2 no, su S e sui test ufficiali; limite
+   inferiore dell'intervallo = 0 o negativo con +1 punto e semi positivi).
+4. Spec del confronto con un percorso non valido sul cluster: **corretto**, la cartella dei piani e' obbligatoria e relativa al repo.
+5. Calibrazione della keep non verificata: **corretto**, il gruppo keep richiede lo SHA-256 dichiarato della ricalibrazione e rifiuta quello
+   dello Step 1 (`4640dfcf...`); il confronto lo verifica nella configurazione di ogni run.
+6. Costanti degli split della P2 duplicate: **test aggiunto** che confronta `p2_internal_subjects` coi soggetti di test che
+   `probe_p2.probe_dataset` usa davvero (sonda finta), per EPN-612 e UCI-EMG.
+Re-review del `critico` sulle correzioni prima del lancio.
+
+### Collaudo `w1arm-collaudo-v1` dei due bracci nuovi (criteri congelati prima del lancio)
+
+**Perche'.** JEPA-only e ancore-only non hanno mai girato su GPU: solo su CPU, anche in DDP a 2 processi gloo. Il collaudo prova DDP a 4 GPU col
+checkout dei bracci, i pesi della loss effettivi e il percorso fino al checkpoint post-decay. **Non prova** la qualita' dei bracci ne' il
+collasso su 98.094 passi: e' infrastruttura, non un risultato.
+
+**Job.** `W1ARMC-JEPA-only-30M-s0` e `W1ARMC-ancore-only-30M-s0`: i run dei bracci al seme 0 con 1.300 passi (warmup 1.000, il minimo di D14;
+decay da 1.040), stessi argomenti e stesso checkout del lancio; QoS `boost_qos_dbg`, 4 GPU, 30 min, `TIME_LIMIT_S` 1.620; cartelle nuove in
+`$SCRATCH/wearusfm_runs/runs/w1arm_collaudo/`. Piano `collaudo_bracci.json`, comandi `comandi_collaudo_bracci.txt` (da `wsd_chain.py`).
+**Costo: 2,6 GPU-ora attese, tetto 4,0 (32 ore locali)**, sul budget «preparazione dell'infrastruttura» (9,83 usate su 25): dopo il tetto
+restano almeno 11,17. Prima della sottomissione, controllo in sola lettura: cartelle dei run assenti, checkout presente.
+
+**Criteri** (`scripts/arms_collaudo.py`, test `tests/cpu/test_arms_collaudo.py`), per ciascun job, tutti veri:
+1. completo: nessuno STOP, `stopped` = `max_steps`, 1.300 passi;
+2. codice e DDP: SHA `72cf24a...`, `world_size` 4, 8 finestre per processo, accumulo 1;
+3. pesi in `config.json`: JEPA-only (JEPA 1, ancore 0), ancore-only (JEPA 0, ancore 0,2); keep e rami a 0;
+4. record: uno per passo da 1 a 1.300, 32 finestre per passo, nessun valore non finito;
+5. composizione della loss: a ogni passo `total` = peso JEPA x `jepa` + peso ancore x (`log_rms` + `band_shape` + `log_env` + `ms_fast` +
+   `ms_slow`), tolleranza relativa 1e-6 (il contratto la calcola in float64; sui record veri di A in C2 la differenza e' 0);
+6. apprendimento: la media di `total` sugli ultimi 50 passi e' minore di quella sui primi 50 (nei run a 30M registrati la JEPA scende di
+   10-100 volte e le ancore di 4-20 volte entro il passo 1.250, dopo un rialzo della JEPA nei primi 100 passi);
+7. non-collasso: nessun allarme; diagnostiche ai passi 500, 1.000 e 1.300;
+8. checkpoint pre-decay e post-decay presenti e non vuoti (`ls -l` della cartella, in sola lettura).
+Descrittivi, senza soglia: secondi per passo (A in C2: 0,740), attesa sui dati, memoria GPU, traiettorie di JEPA e ancore, rapporti e ranghi
+di collasso. Si leggono con la cautela gia' scritta: nel JEPA puro le loss delle ancore non dicono nulla, in ancore-only la JEPA misura un
+predittore non allenato.
+
+**Esito.** Superato: i comandi dei 6 run passano a Simone col preventivo qui sotto. Un criterio non superato: si guarda e si ripropone, nessun
+rilancio automatico. Un allarme di collasso entro 1.300 passi non e' un difetto dell'infrastruttura, ma si riporta a Simone prima del lancio
+(la regola firmata non cambia: un braccio collassato non batte A). Dopo: config, summary e metrics copiati sul Mac fuori dal repo (~2 MB),
+`arms_collaudo.py` con l'elenco `ls -l`, esito e consuntivo in `results/infra/w1arm_20261021/collaudo/`, `docs/decisioni.md` e registro.
+
+### Preventivo del gruppo dell'obiettivo (finestra 1)
+
+| Voce | GPU-ora attese / tetto | Ore locali (tetto) | Altro |
+|---|---|---|---|
+| Collaudo `w1arm-collaudo-v1` (budget infrastruttura) | 2,6 / 4,0 | 32 | 30 min, 2 job su dbg |
+| Training, 6 run da 98.094 passi | 463,8 / 552,0 (484 col passo di C2) | 4.416 | ~20,5 h, 6 nodi in un'ondata |
+| Valutazione, sonde sulla seriale | 10,5 / 27,0 | 216 | + 192 core-ora, ~24 h di sonde in fila |
+| Valutazione, in alternativa sonde su GPU | 34,5 / 87,0 | 696 | in parallelo |
+
+Budget della finestra 1: 6.000 GPU-ora, calibrazione compresa (220); consumato fuori dalla calibrazione: 0. **Voce proposta «Bracci
+dell'obiettivo»: tetto 579 GPU-ora con le sonde sulla seriale (552 + 27), 639 con le sonde su GPU**; dopo il tetto e la calibrazione restano
+almeno 5.201 o 5.141. La scelta seriale/GPU delle sonde si fa alla valutazione (il piano si rigenera allora).
+
+**Keep (gruppo separato, firma punto 4):** bloccata finche' non c'e' la calibrazione sul corpus intero. Prossimo passo: job CPU di split e
+calibrazione (`scripts/spectral_step1.py`, `--datasets all`, manifest derivato, 565 soggetti di cui 453 di train a 100 finestre ciascuno;
+stima 1,5-3 h su 1 core, tetto 4 h sulla seriale), con review del `critico` sulla ricetta e preventivo; poi 4 run, 309,2 / 368,0 GPU-ora.

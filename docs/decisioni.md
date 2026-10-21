@@ -3735,3 +3735,18 @@ identici byte per byte). **Preventivo: training 39,8 attese / 52 tetto, valutazi
 budget della calibrazione (104,6 usate su 220): dopo il tetto restano almeno 60,4 per C4. Sottomissione di Simone (come C1 e C2). La
 diagnostica dei rami non sottomette tranche nuove a ridosso della valutazione di C3.
 **C3 sottomessa da Simone (21/10/2026):** 61593336 (`W1CAL-C3-100M-lr0p0001-s0-j01`) e 61593337 (`W1CAL-C3-100M-lr0p0003-s0-j01`).
+
+**Bracci dell'obiettivo: piani, collaudo e preventivo pronti (21/10/2026, Simone: «va bene procedi» sul passo consigliato), da autorizzare.**
+LR = 1e-4 con la regola firmata (C2 conferma 1e-4 e 3e-4; al seme 1 S 0,18011 contro 0,17951, differenza accoppiata +0,0006, SE 0,0027:
+parita' entro 1 SE, il piu' basso), derivato da `scripts/arms_plan.py` da `results/infra/w1cal_decisioni.json` e `registro_C2.json` (SHA nel
+riepilogo). Piani in `results/infra/w1arm_20261021/` (campagna `results/infra/w1arm_campaign_20261021.json`): 6 run (A, JEPA-only,
+ancore-only, semi 0 e 1), 98.094 passi, un job da 23 h ciascuno, dal checkout di training di C1-C3 (`w1cal-20261016`, 72cf24a). Review del
+`critico` sugli strumenti dei bracci: DA RIVEDERE, 1 bloccante (il confronto non verificava identita' dei run e provenienza dei rapporti) e
+5 minori, corretti con test (`docs/bracci_obiettivo_finestra1.md`, «Lancio del gruppo dell'obiettivo»); re-review prima del lancio.
+**Collaudo `w1arm-collaudo-v1`** dei due bracci nuovi (1.300 passi ciascuno, `boost_qos_dbg`, 4 GPU, 30 min): criteri congelati in
+quel documento e in `scripts/arms_collaudo.py`; **2,6 GPU-ora attese, tetto 4,0 (32 ore locali)** sul budget «preparazione
+dell'infrastruttura» (9,83 usate su 25: dopo il tetto restano almeno 11,17). **Preventivo del gruppo:** training 463,8 / 552,0 GPU-ora (484
+attese col passo di C2; 4.416 ore locali di tetto), valutazione 10,5 / 27,0 con sonde sulla seriale (+192 core-ora, ~24 h in fila) o 34,5 /
+87,0 con sonde su GPU. Voce proposta sulla finestra 1 (6.000, calibrazione compresa; consumato fuori dalla calibrazione: 0): **tetto 579
+GPU-ora** (sonde sulla seriale) **o 639** (sonde su GPU). Keep: bloccata fino alla calibrazione sul corpus intero. Nessun job sottomesso.
+

@@ -3,6 +3,7 @@ keep solo con la calibrazione sul corpus intero, valutazione P1/P2 ufficiale e S
 senza nodi, sonde su GPU a richiesta; stesso stato iniziale fra bracci a pari seme (critica del punto 5, rilievo 5)."""
 
 import importlib.util
+import hashlib
 import json
 import math
 import shlex
@@ -22,6 +23,8 @@ def _load(name):
 
 
 AP, EC = _load("arms_plan"), _load("evaluation_chain")
+PD = "results/infra/w1arm"
+KEEP_SHA = "c" * 64
 WPE = 784756.9792373349
 REPORT = {"fractions": {"1": {"windows_per_epoch": WPE, "file_sha256": "6d6d" + "0" * 60, "file": "m_nested_1.json.gz"}},
           "code": {"source": "launcher (lib_code_dir.sh)"}}
@@ -33,7 +36,7 @@ CAMP = {"campaign": "w1arm", "agent": "claude", "code_dir": "/leonardo_work/Iscr
 
 
 def test_objective_arms_follow_the_signed_design():
-    r = AP.plan(REPORT, 3e-4, CAMP, plans_dir="results/infra/w1arm")
+    r = AP.plan(REPORT, 3e-4, CAMP, plans_dir=PD)
     steps = math.floor(4 * WPE / 32)
     assert r["steps"] == steps == 98094 and r["warmup_steps"] == 1962 and set(r["plans"]) == {"objective"} and "keep" in r["blocked"]
     rows = r["runs"]
@@ -48,7 +51,7 @@ def test_objective_arms_follow_the_signed_design():
 
 
 def test_evaluation_plan_is_valid_and_compares_with_the_signed_rules():
-    r = AP.plan(REPORT, 3e-4, CAMP, plans_dir="results/infra/w1arm")
+    r = AP.plan(REPORT, 3e-4, CAMP, plans_dir=PD)
     e = r["eval_plans"]["objective"]
     order = EC.validate(e)
     kinds = [n["kind"] for n in order]
@@ -60,36 +63,39 @@ def test_evaluation_plan_is_valid_and_compares_with_the_signed_rules():
     assert s_p2["args"][2:4] == ["--task", "p2"] and "--uci-root" in s_p2["args"]
     spec = r["specs"]["objective"]
     assert spec["reference"] == "A" and spec["arms"] == ["JEPA-only", "ancore-only"]
-    assert set(spec["runs"]["A"]["0"]) == {"run_dir", "p1", "p2", "s_p1", "s_p2"}
+    assert set(spec["runs"]["A"]["0"]) == {"id", "run_dir", "p1", "p2", "s_p1", "s_p2"} and spec["runs"]["A"]["0"]["id"] == "W1ARM-A-30M-s0"
+    # piano di training, suo SHA e LR nella spec: arms_compare verifica l'identita' dei run (rilievo 1 del critico, 21/10)
+    assert spec["plan"] == "results/infra/w1arm/bracci_objective.json" and spec["lr"] == 3e-4
+    assert spec["plan_sha256"] == hashlib.sha256(AP.plan_text(r["plans"]["objective"]).encode()).hexdigest()
     assert e["estimate"]["serial_probe_hours"] == pytest.approx(6 * 4.0, abs=0.1)  # sonde in fila sulla seriale: dichiarate
 
 
 def test_keep_needs_its_calibration_and_failed_runs_have_no_nodes():
-    r = AP.plan(REPORT, 3e-4, CAMP, keep_calibration="/K/keep_corpus.npz", plans_dir="results/infra/w1arm")
+    r = AP.plan(REPORT, 3e-4, CAMP, keep_calibration="/K/keep_corpus.npz", keep_calibration_sha256=KEEP_SHA, plans_dir=PD)
     assert set(r["plans"]) == {"objective", "keep"} and r["blocked"] == {}
     keep = {x["id"]: x["args"] for x in r["plans"]["keep"]["runs"]}
     assert keep["W1ARM-B-30M-s0"].endswith("--keep-calibration /K/keep_corpus.npz --keep-weight 0.05")
     assert keep["W1ARM-Aprime-30M-s1"].endswith("--keep-weight 0") and r["specs"]["keep"]["reference"] == "Aprime"
     failed = "W1ARM-JEPA-only-30M-s1"
-    r = AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({failed}), plans_dir="results/infra/w1arm")
+    r = AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({failed}), plans_dir=PD)
     order = EC.validate(r["eval_plans"]["objective"])
     assert not any(n["id"].startswith(failed) for n in order) and len(order[-1]["after"]) == 20
-    assert r["specs"]["objective"]["runs"]["JEPA-only"]["1"] == {"run_dir": f"/leonardo_scratch/R/{failed}"}
+    assert r["specs"]["objective"]["runs"]["JEPA-only"]["1"] == {"id": failed, "run_dir": f"/leonardo_scratch/R/{failed}"}
     with pytest.raises(ValueError, match="riferimento A non e' arrivato"):
-        AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({"W1ARM-A-30M-s0"}))
+        AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({"W1ARM-A-30M-s0"}), plans_dir=PD)
     with pytest.raises(ValueError, match="non sono run dei bracci"):
-        AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({"W1ARM-X-30M-s0"}))
+        AP.plan(REPORT, 3e-4, CAMP, failed_runs=frozenset({"W1ARM-X-30M-s0"}), plans_dir=PD)
 
 
 def test_probes_on_gpu_and_input_checks():
-    r = AP.plan(REPORT, 3e-4, CAMP, probes_on_gpu=True)
+    r = AP.plan(REPORT, 3e-4, CAMP, probes_on_gpu=True, plans_dir=PD)
     probes = [n for n in EC.validate(r["eval_plans"]["objective"]) if n["kind"] == "probe"]
     assert all("boost_usr_prod" in EC.node_labels(n) and n["gpu_hours"] > 0 for n in probes)
     assert r["eval_plans"]["objective"]["estimate"]["serial_probe_hours"] == 0
     with pytest.raises(ValueError, match="costruzione dei derivati sul cluster"):
-        AP.plan({**REPORT, "code": {"source": "git"}}, 3e-4, CAMP)
+        AP.plan({**REPORT, "code": {"source": "git"}}, 3e-4, CAMP, plans_dir=PD)
     with pytest.raises(ValueError, match="il rapporto descrive"):
-        AP.plan(REPORT, 3e-4, {**CAMP, "manifest": "/M/altro.json.gz"})
+        AP.plan(REPORT, 3e-4, {**CAMP, "manifest": "/M/altro.json.gz"}, plans_dir=PD)
 
 
 def test_arms_with_the_same_seed_start_from_the_same_state(monkeypatch):
@@ -101,7 +107,7 @@ def test_arms_with_the_same_seed_start_from_the_same_state(monkeypatch):
     from wearusfm.training import run as R
 
     TJ = _load("train_jepa")
-    r = AP.plan(REPORT, 3e-4, CAMP)
+    r = AP.plan(REPORT, 3e-4, CAMP, plans_dir=PD)
     plan = r["plans"]["objective"]
     captured = {}
     # monkeypatch, non assegnazione: TJ.R e' il modulo condiviso training.run e va ripristinato per gli altri test
@@ -133,7 +139,7 @@ def test_extractions_fit_the_walltime_of_their_effective_qos():
     import subprocess
 
     head = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
-    result = AP.plan(REPORT, 3e-4, {**CAMP, "expected_sha": head})
+    result = AP.plan(REPORT, 3e-4, {**CAMP, "expected_sha": head}, plans_dir=PD)
     for name, ev in result["eval_plans"].items():
         for n in EC.validate(ev):
             if n["kind"] == "extract":
@@ -144,3 +150,70 @@ def test_extractions_fit_the_walltime_of_their_effective_qos():
     with pytest.raises(ValueError, match="oltre il limite di boost_qos_dbg"):
         AP.check_qos_walltime([bad])
     AP.check_qos_walltime([{**bad, "sbatch": ["--time=00:25:00"]}])  # entro il limite: nessun errore
+
+
+# ---- rilievi del critico del 21/10 (LR dalla regola firmata, cartella dei piani, calibrazione della keep) ----
+
+DECISIONS = REPO / "results" / "infra" / "w1cal_decisioni.json"
+REGISTRO_C2 = REPO / "results" / "infra" / "w1cal_c2_20261020" / "valutazione" / "registro_C2.json"
+
+
+def _registro(s_lo, s_hi, tie, confirmed=(1e-4, 3e-4)):
+    return {"phase": "C2", "decision": {"confirmed": list(confirmed)}, "rules": {"tie": "entro 1 SE"},
+            "candidates": {"0.0001": {"S": s_lo}, "0.0003": {"S": s_hi}},
+            "descriptive_comparisons": [{"a": 1e-4, "b": 3e-4, "delta": s_lo - s_hi, "se": 0.003, "tie": tie}]}
+
+
+def test_the_arms_lr_follows_the_signed_rule_on_the_real_c2_record():
+    lr, why = AP.signed_lr(json.loads(DECISIONS.read_text()), json.loads(REGISTRO_C2.read_text()))
+    assert lr == 1e-4 and why["tie"] and why["confirmed"] == [1e-4, 3e-4]  # S 0,1801 contro 0,1795, entro 1 SE: il piu' basso
+    assert why["delta_low_minus_high"] == pytest.approx(0.18010974754 - 0.17950757857, abs=1e-9)
+
+
+def test_signed_lr_cases():
+    dec = {"C2": {"confirmed": [1e-4, 3e-4]}}
+    assert AP.signed_lr(dec, _registro(0.17, 0.19, tie=False))[0] == 3e-4  # S migliore al seme 1, fuori dalla parita'
+    assert AP.signed_lr(dec, _registro(0.19, 0.17, tie=False))[0] == 1e-4
+    assert AP.signed_lr(dec, _registro(0.17, 0.172, tie=True))[0] == 1e-4  # parita': il piu' basso anche con S piu' alta per 3e-4
+    one = {"C2": {"confirmed": [3e-4]}}
+    assert AP.signed_lr(one, {**_registro(0.1, 0.2, False, confirmed=(3e-4,)), "descriptive_comparisons": []})[0] == 3e-4
+    with pytest.raises(ValueError, match="incoerente col file delle decisioni"):
+        AP.signed_lr(one, _registro(0.17, 0.19, tie=False))
+    bad = _registro(0.17, 0.19, tie=False)
+    bad["descriptive_comparisons"][0]["delta"] = 0.02  # segno sbagliato rispetto alle S
+    with pytest.raises(ValueError, match="incoerente con le S"):
+        AP.signed_lr(dec, bad)
+
+
+def test_plans_dir_must_be_relative_to_the_repo():
+    for bad in ("/Users/x/w1arm", "../w1arm", "results/../../w1arm", ""):
+        with pytest.raises(ValueError, match="relativa al repo"):
+            AP.plan(REPORT, 3e-4, CAMP, plans_dir=bad)
+
+
+def test_keep_needs_a_declared_full_corpus_calibration():
+    with pytest.raises(ValueError, match="richiede --keep-calibration-sha256"):
+        AP.plan(REPORT, 3e-4, CAMP, keep_calibration="/K/keep.npz", plans_dir=PD)
+    with pytest.raises(ValueError, match="dello Step 1"):
+        AP.plan(REPORT, 3e-4, CAMP, keep_calibration="/K/keep.npz", keep_calibration_sha256=AP.STEP1_KEEP_CALIBRATION_SHA256, plans_dir=PD)
+    with pytest.raises(ValueError, match="senza --keep-calibration"):
+        AP.plan(REPORT, 3e-4, CAMP, keep_calibration_sha256=KEEP_SHA, plans_dir=PD)
+    r = AP.plan(REPORT, 3e-4, CAMP, keep_calibration="/K/keep.npz", keep_calibration_sha256=KEEP_SHA, plans_dir=PD)
+    assert r["specs"]["keep"]["keep_calibration_sha256"] == KEEP_SHA and "keep_calibration_sha256" not in r["specs"]["objective"]
+
+
+def test_cli_derives_the_lr_and_refuses_another(tmp_path, monkeypatch):
+    rep, camp = tmp_path / "rep.json", tmp_path / "camp.json"
+    rep.write_text(json.dumps(REPORT))
+    camp.write_text(json.dumps(CAMP))
+    monkeypatch.chdir(tmp_path)
+    base = [str(rep), "--decisions", str(DECISIONS), "--registro-c2", str(REGISTRO_C2), "--campaign", str(camp), "--out", "piani"]
+    assert AP.main(base) == 0
+    summary = json.loads((tmp_path / "piani" / "bracci_riepilogo.json").read_text())
+    assert summary["lr"] == 1e-4 and summary["lr_rule"]["tie"] and len(summary["lr_rule"]["registro_c2_sha256"]) == 64
+    spec = json.loads((tmp_path / "piani" / "confronto_objective.json").read_text())
+    assert spec["plan"] == "piani/bracci_objective.json"
+    assert spec["plan_sha256"] == hashlib.sha256((tmp_path / "piani" / "bracci_objective.json").read_bytes()).hexdigest()
+    assert AP.main(base[:-2] + ["--out", "piani2", "--lr", "1e-4"]) == 0
+    with pytest.raises(SystemExit, match="regola firmata"):
+        AP.main(base[:-2] + ["--out", "piani3", "--lr", "3e-4"])
