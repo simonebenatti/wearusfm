@@ -3,8 +3,8 @@
  "campaign": "w1cal-c1-eval",
  "agent": "claude",
  "guard": {
-  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-  "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+  "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
   "report_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/guards"
  },
  "limits": {
@@ -18,8 +18,8 @@
    "after": [],
    "queue": "boost_usr_prod",
    "gpu_hours": 0.5,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_extract.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C1-30M-lr0p0001-s0/checkpoint_postdecay.pt",
@@ -53,8 +53,8 @@
    ],
    "queue": "lrd_all_serial",
    "gpu_hours": 0,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_probe.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1cal/features/C1/W1CAL-C1-30M-lr0p0001-s0",
@@ -80,8 +80,8 @@
    "after": [],
    "queue": "boost_usr_prod",
    "gpu_hours": 0.5,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_extract.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C1-30M-lr0p0003-s0/checkpoint_postdecay.pt",
@@ -115,8 +115,8 @@
    ],
    "queue": "lrd_all_serial",
    "gpu_hours": 0,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_probe.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1cal/features/C1/W1CAL-C1-30M-lr0p0003-s0",
@@ -142,8 +142,8 @@
    "after": [],
    "queue": "boost_usr_prod",
    "gpu_hours": 0.5,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_extract.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C1-30M-lr0p001-s0/checkpoint_postdecay.pt",
@@ -177,8 +177,8 @@
    ],
    "queue": "lrd_all_serial",
    "gpu_hours": 0,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_probe.sbatch",
    "args": [
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1cal/features/C1/W1CAL-C1-30M-lr0p001-s0",
@@ -208,13 +208,14 @@
    ],
    "queue": "lrd_all_serial",
    "gpu_hours": 0,
-   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
-   "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019",
+   "expected_sha": "9ab781e98a44810f3223e5dec1eac52988f374fc",
    "launcher": "scripts/slurm/calibration_select.sbatch",
    "args": [
     "C1",
     "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C1/decisione_C1.json",
     "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C1/registro_C1.json",
+    "results/infra/w1cal_c1_20261016/calibrazione_C1.json",
     "0.0001",
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C1-30M-lr0p0001-s0",
     "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C1/W1CAL-C1-30M-lr0p0001-s0.json",

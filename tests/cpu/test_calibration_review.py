@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pytest
 
-from test_calibration_selection import CP, CS, DATASETS, _cand, _features, _splits
+from test_calibration_selection import CP, CS, DATASETS, _cand, _features, _sel, _splits
 
 
 def _rewrite_npz(path, update):
@@ -74,7 +74,7 @@ def test_pairing_checked_even_when_no_bootstrap_is_needed(tmp_path, field):
         rep[field] = "changed"
     rp.write_text(json.dumps(rep))
     with pytest.raises(ValueError, match="provenienza non accoppiata"):
-        CS.select("C1", candidates)
+        _sel("C1", candidates)
 
 
 @pytest.mark.parametrize("mutation", ["duplicates", "hash", "labels"])
@@ -93,7 +93,7 @@ def test_oof_integrity_checked_before_selection(tmp_path, mutation):
     rep["oof_sha256"] = CS._sha256(rep["oof"])
     rp.write_text(json.dumps(rep))
     with pytest.raises(ValueError, match="OOF"):
-        CS.select("C1", candidates)
+        _sel("C1", candidates)
 
 
 def test_invalid_bootstrap_is_not_a_tie():

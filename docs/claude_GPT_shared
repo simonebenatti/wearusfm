@@ -1831,6 +1831,136 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Simone: «se è tutto verificato e a posto, via per C1, sonde sulla CPU». Preflight in sola lettura pulito; deploy `deploy/w1cal-20261016`,
   checkout, piani allo SHA vero, 3 training (preventivo ~61 / 79,5 GPU-ora), poi la catena di valutazione dopo i training. ID dei job a seguire.
 
+### 2026-10-16 | Claude | Bracci dell'obiettivo firmati da Simone | Base: a7edd55
+
+- Simone: «firmo i bracci come proposti» (otto punti: i cinque della bozza e i tre di protocollo del `critico`). Registrati in
+  `docs/decisioni.md` e in `docs/bracci_obiettivo_finestra1.md` («Firma»). Prossimo: pianificatore dei bracci e piano di valutazione.
+
+### 2026-10-16 | Claude | C1 sottomessa | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- `deploy/w1cal-20261016`, checkout 60714885 (pronto). La sottomissione dei training da parte degli agenti e' stata negata dal classificatore
+  dei permessi di Claude Code («Interfere With Workloads»): i tre comandi li ha lanciati Simone col submitter comune. Ledger: 60715596
+  (`W1CAL-C1-30M-lr0p0001-s0-j01`), 60715602 (lr0p0003), 60715603 (lr0p001), 14:29. Avvio sotto controllo.
+- Le due note della tua review (candidato fallito prima della sonda; configurazione effettiva contro il piano) sono giuste: le correggo nella
+  selezione mentre i training girano; la catena di valutazione partira' da un checkout nuovo con la selezione corretta.
+
+### 2026-10-16 | Claude | Selezione C1-C4: le tue due note corrette | Base: e79a536
+
+- Candidato fermato prima della sonda: rapporto «-», inammissibile da A1-A4 sui file del run, la fase procede (`--failed-runs` nel
+  pianificatore toglie guardia/estrazione/sonda; un run ammissibile senza sonda e' un errore).
+- Identita': `--plan` obbligatorio in C1-C4; `config.json` del run (LR, seme, batch, passi, warmup, schedule, nested, dataset, pannello,
+  sampler, pesi della loss, dimensioni) e SHA del codice in `summary.json` contro il piano; LR dichiarato contro il piano; differenza = errore.
+  Verificato sulle configurazioni costruite da `train_jepa.py` con gli argomenti veri di C1.
+- Test: selezione 28, pianificatore e catena 55. La valutazione di C1 partira' da un checkout nuovo con queste correzioni (i training girano
+  da 72cf24a, codice del training invariato), dopo la review del `critico`.
+
+### 2026-10-16 | Claude | C1: avvio dei tre training regolare | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 60715596 / 60715602 / 60715603 RUNNING dalle 14:33 (nodi lrdn3396, lrdn0811, lrdn0843). Controlli d'identita' di manifest (6d6d8167...) e
+  durate superati all'avvio; nessun errore nei log. Passo 750 dopo ~11 min: 0,63-0,74 s/passo (piano 0,70), attesa sui dati ~0, memoria
+  9,6 GiB per GPU. Pannello fisso al passo 0 identico nei tre run (stessa inizializzazione e stessi dati: accoppiamento confermato); al passo
+  500 loss totale 2,10 / 1,83 / 1,75 per LR 1e-4 / 3e-4 / 1e-3 (diagnostica, non selezione). Fine prevista ~19:15-19:45.
+- Un solo picco di attesa sui dati (0,94 s al passo 752 del run 1e-3): isolato, da tenere d'occhio.
+
+### 2026-10-16 | Claude | Critica di pianificatore e valutazione P1/P2 dei bracci (punto 5): DA RIVEDERE | Base: 5c3ec80
+
+- Simone: «fai una critica a quello fatto finora su punto 5, in particolare pianificatore e valutazione P1/P2». Rapporto completo:
+  `docs/reviews/punto5_pianificatore_p1p2_critica_20261016.md`. Revisione da una sessione diversa da quella che ha scritto il codice.
+- Cosa c'e': bracci JEPA-only/ancore-only (buoni, `critico` e GPT), sonde P1/P2, `evaluation_chain.py`, `compare_reports`,
+  `combine_seeds`. Mancano pianificatore dei bracci, piano P1/P2 e confronto con la regola firmata (punto 4 dell'implementazione).
+- Test: `test_objective_arms`, `test_evaluation_chain`, `test_p1_cross_subject`, `test_probe_p2`, `test_harness_probe`, `test_wsd_chain`,
+  `test_step2_closed_reports`: **118 PASS**. Nessun file di codice modificato. Simone: «passa tutto a fork 2»: rilievi inviati alla
+  sessione «Agents (fork 2)», che porta avanti il punto 5.
+
+### 2026-10-16 | Claude | Punto 5: regola di lettura e scelta del default corrette, firmate da Simone | Base: 589be8c
+
+- Dalla critica del `critico` (589be8c), Simone approva le due soluzioni: (1) lettura su P1/P2 ufficiali con la regola del 2A/2C (accoppiato
+  per seme, +1 punto, limite inferiore > 0, positivo in entrambi i semi, per P1 e P2); (2) il default si sceglie con la validation interna S
+  (P1 e, da costruire, P2 sui soggetti fuori dai test dei tre split), P1/P2 ufficiali come conferma. Registrate in `docs/decisioni.md` e
+  nel protocollo dei bracci prima di qualunque risultato. Prossimo: S della P2, confronto dei bracci con le due regole, pianificatore,
+  launcher P1/P2 con CODE_DIR.
+
+### 2026-10-16 | Claude | Validation interna della P2 (S della P2) | Base: 94e972a
+
+- Simone: «per p2 bene òa proposta tua». `scripts/calibration_probe.py --task p2`: EPN-612 e UCI-EMG coi soli soggetti fuori dai test dei
+  tre split 7:1:2 della P2 (semi 0, 1, 2; le finestre degli altri si scartano prima dell'estrazione e la sonda ricontrolla l'esclusione),
+  stessa estrazione e sonda di `probe_p2.py`, 4 fold di soggetti, S = media dei due dataset. Test: 3 nuovi (esclusione, estrazione che non
+  vede i soggetti di test, pesi uguali e rifiuto di feature con un soggetto di test o di un altro compito).
+
+### 2026-10-16 | Claude | Confronto dei bracci con le regole firmate | Base: 641e4e2
+
+- `scripts/arms_compare.py`: regola del 2A/2C (accoppiato per seme con `paired_component`, +1 punto, limite inferiore dell'IC > 0, delta > 0
+  nei due semi) applicata (2) a S della P1 e della P2 per il default, con le predizioni fuori fold convertite in conteggi per soggetto, e (1)
+  a P1/P2 ufficiali con `compare_reports` come lettura scientifica. Braccio collassato = non batte; run fermato per altro = non valutabile;
+  piu' vincitori su S = scelta di Simone; disaccordi S/ufficiali registrati. Test `test_arms_compare.py` (6).
+- Restano: launcher P1/P2 con CODE_DIR, pianificatore dei bracci e piano di valutazione, test dello stato iniziale fra bracci.
+
+### 2026-10-16 | Claude | Launcher P1/P2 con la regola dei checkout di campagna | Base: 1bb8e7d
+
+- Rilievo 3 della critica del punto 5: `probe_p1.sbatch`, `probe_p1_probe.sbatch`, `probe_p2.sbatch`, `probe_p2_probe.sbatch` non fanno piu'
+  `cd "$WORK/wearusfm"`: codice da CODE_DIR con SHA e pulizia verificati (`lib_code_dir.sh`), uscite assolute e fuori dal codice; la P2 legge
+  i grezzi da `RAW_ROOT` (default `$WORK/data/raw`, che la pulizia non tocca). Comportamento invariato sul canonico. Test
+  `test_probe_launchers.py` (5). Le campagne gia' concluse girano dai loro checkout congelati: non sono toccate.
+
+### 2026-10-16 | Claude | Pianificatore dei bracci e piano di valutazione P1/P2 | Base: 931dd26
+
+- `scripts/arms_plan.py` + `scripts/slurm/arms_compare.sbatch`: training per `wsd_chain.py` (obiettivo: A, JEPA-only, ancore-only; keep: A'
+  e B solo con la calibrazione sul corpus intero), 30M, 98.094 passi, semi 0 e 1, LR di C1-C2; valutazione per run: P1/P2 ufficiali e S della
+  P1 e della P2, poi il confronto con le regole firmate. `--probes-on-gpu`, `--failed-runs`. Test 5, compreso lo stato iniziale identico fra
+  bracci a pari seme. Preventivo: obiettivo 463,8 / 552 GPU-ora di training; valutazione 10,5 / 27 con sonde su CPU (~24 h in fila) o
+  34,5 / 87 su GPU. Chiusi i rilievi 3-6 della critica del punto 5.
+
+### 2026-10-16 | Claude | Selezione C1-C4: identita' sull'intera configurazione, candidato senza config.json, test che non si contaminano | Base: 0adfc52
+
+- Review del `critico` delle correzioni di 5c3ec80: DA RIVEDERE (3 bloccanti, 2 minori). Corretti: (1) un candidato fermato prima di
+  scrivere `config.json` non blocca piu' la fase (identita' «non verificabile», LR dichiarato comunque controllato, decide A1); (2) l'identita'
+  confronta TUTTA la configurazione: `train_jepa.build_config` (estratta da `main`, stessa sequenza) e `wsd_chain.extra_args` (gli
+  EXTRA_ARGS del job) ricostruiscono il `config_to_dict` atteso, confrontato campo per campo (99 campi); (4) test che altera uno per uno
+  tutti i campi, configurazioni dei test prodotte da `train_jepa.main` per la strada vera degli argomenti.
+- Verifica sui `config.json` e `summary.json` VERI dei tre run di C1 (copiati dal cluster, codice 72cf24a): identita' completa superata.
+- Test che contaminava la suite: `test_arms_plan.py` sostituiva `R.train` sul modulo condiviso senza ripristinarlo (81 fallimenti nella suite
+  intera, codice di produzione intatto): ora `monkeypatch`.
+- C1: tre training COMPLETED 0:0 il 16/10 (5 h 13-5 h 18), 63,2 GPU-ora su 220 della calibrazione.
+
+### 2026-10-19 | Claude | Selezione C1-C4: review del critico APPROVATO, rilievi minori chiusi | Base: 698763b
+
+- Seconda review del `critico` su 698763b: APPROVATO (refactor di `build_config` identico su 28 casi; identita' che rifiuta tutte le
+  alterazioni provate e accetta i file veri di C1; percorso p1 di `calibration_probe.py` identico byte per byte, OOF compresi, al collaudo).
+- Rilievi minori chiusi: ordine degli errori di `train_jepa.main` come prima (file d'ingresso prima degli argomenti) con un test; la
+  selezione accetta solo rapporti di S della P1; protocollo aggiornato. Il rilievo sulle durate dei `summary.json` copiati era un errore
+  di lettura: verificato sul cluster che le copie committate sono giuste (elapsed 18.742 s per 3e-4 sotto i 5 h 12 41 del job; l'LR
+  dell'ultimo passo conferma le cartelle).
+
+### 2026-10-19 | Claude | Valutazione di C1 in corso | Codice: 9ab781e98a44810f3223e5dec1eac52988f374fc
+
+- Deploy `deploy/w1cal-eval-20261019`, checkout 61378990, piano rigenerato (piano di training di C1 identico byte per byte), catena
+  sottomessa: guardie 61379130/61379133/61379134 COMPLETED 0:0, estrazioni 61379154, 61379217, 61379811, sonde 61379181, 61379306,
+  61379874, selezione 61379881 (afterok sulle tre sonde). L'estrazione di 1e-3 rifiutata da sbatch e recuperata con `--dopo-rifiuto`.
+
+### 2026-10-20 | Claude | C1 decisa: finalisti 1e-4 e 3e-4 | Codice valutazione: 9ab781e98a44810f3223e5dec1eac52988f374fc
+
+- Catena di valutazione completa (19/10): estrazioni 11 min, sonde 1 h 09-1 h 46 in fila, selezione 61379881 COMPLETED 0:0. 1e-3
+  inammissibile per A4 (7 valutazioni consecutive del pannello oltre 1,10 x minimo, picco 1,58); 1e-4 e 3e-4 ammissibili: finalisti 1e-4 e
+  3e-4 (regola di C1). S: 18,21 / 17,46 / 15,86; 1e-4 meglio di 3e-4 di +0,74 punti (SE 0,32, descrittivo). Identita' ok sui tre run.
+- `results/infra/w1cal_decisioni.json` (merge), rapporti in `results/infra/w1cal_c1_20261016/valutazione/`. Preventivo C2 ~41 / 53 GPU-ora.
+
+### 2026-10-20 | Claude | C2 autorizzata, comandi pronti | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Piani e comandi in `results/infra/w1cal_c2_20261020/`: 2 run al seme 1 (1e-4, 3e-4) dal checkout di C1; piano di C1 rigenerato identico
+  byte per byte; comandi uguali a C1 salvo ID, campagna, seme e cartella. Preflight in sola lettura pulito. Preventivo ~41 / 53 GPU-ora.
+  Sottomette Simone.
+
+### 2026-10-20 | Claude | C2 sottomessa | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone ha sottomesso i due training di C2 alle 11:44: 61526225 (1e-4) e 61526229 (3e-4), in coda per priorita'. Controllo dei primi
+  passi alla partenza.
+
+### 2026-10-20 | Claude | Catena di valutazione: afterok sui nodi della stessa chiamata corretto
+
+- `evaluation_chain.py --submit` sottomette un nodo per giro rileggendo `sacct` prima di ciascuno, anche per i predecessori appena
+  sottomessi: una guardia gia' finita non riceve piu' afterok (difetto del 19/10). Test nuovo col cluster finto che rifiuta l'afterok su un
+  job dimenticato; suite 1194 PASS (1193 + 1). Da rivedere da GPT (non blocca).
+
 ### 2026-10-16 | GPT | Review C1-C4 e riallineamento consegne | Codice: 41ce569; merge locale 41b80af
 
 - Esaminata la consegna bfdc589, poi acquisite fino ad a7edd55 le novita' di Claude con merge nel solo worktree GPT: nuovi ruoli,
@@ -2099,7 +2229,6 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - `evaluation_chain.py --submit` sottomette un nodo per giro rileggendo `sacct` prima di ciascuno, anche per i predecessori appena
   sottomessi: una guardia gia' finita non riceve piu' afterok (difetto del 19/10). Test nuovo col cluster finto che rifiuta l'afterok su un
   job dimenticato; suite 1194 PASS (1193 + 1). Da rivedere da GPT (non blocca).
-
 ### 2026-10-20 | Claude | Merge di main nel ramo: review C1-C4 di GPT integrata | Main: 79db894
 
 - Portato `main` (fino a 79db894, review 41ce569) nel ramo, conflitti risolti tenendo le due parti: provenienza e righe OOF di GPT piu' P2
@@ -2249,7 +2378,6 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sandbox mentre creava una fixture nel worktree Claude: rieseguito con permesso e passato. Ramo pulito, SHA GitHub = 32b5718.
 - Aggiornati tabella, prossimi compiti e review `docs/reviews/second_tranche_review_20261020.md`; pubblicazione su ramo GPT e main.
   Nessun nuovo job o risultato scientifico. Il codice dei fix e' sul ramo Claude: il merge porta anche il pilot ancora da revisionare.
-
 ## 2) Problemi trovati
 
 ### 2026-10-21 | GPT | Chiusura dei tre rilievi; residuo d'integrazione | Fonte 32b5718
@@ -3370,3 +3498,86 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   fila dopo i training. Alternative: sonde su un nodo GPU (~1,8 GPU-ora per checkpoint, in parallelo) oppure accettare l'attesa.
 - Le sonde della P1 danno ConvergenceWarning di lbfgs (max_iter 3000): succede anche nelle sonde ufficiali; non cambia la procedura, da
   tenere presente nella lettura delle S basse (DB3 ~2,3%, vicino al caso).
+
+### 2026-10-16 | Claude | Punto 5: tre problemi da chiudere prima del lancio dei bracci
+
+- **Regola di lettura** (bloccante): il protocollo dice «come la soglia dei confronti 2A/2C», ma il 2C chiedeva anche limite inferiore > 0
+  e segno concorde nei due teacher; la regola firmata chiede solo +1 punto sulla media dei semi. Serve una decisione nuova prima dei
+  risultati (delta accoppiato per seme con `compare_reports`, IC > 0, segno concorde).
+- **Test ufficiale che sceglie il default** (bloccante, decide Simone): «altrimenti A resta il default» fa scegliere sui soggetti di test
+  di P1/P2; proposta: scegliere con S (validation interna) e usare P1/P2 come conferma, oppure dichiarare il limite prima dei risultati.
+- **Launcher P1/P2** (bloccante): `probe_p1*.sbatch`, `probe_p2*.sbatch` fanno `cd "$WORK/wearusfm"` senza `CODE_DIR` ne' verifica dello
+  SHA (regola dei checkout di campagna): da adattare nel piano P1/P2.
+- Minori: costo «~1,5 GPU-ora per checkpoint, come 2C» vale solo con sonde su CPU (2C: ~3,3 per checkpoint con sonde su GPU; sulla seriale
+  le sonde vanno in fila, voce precedente); manca il test dello stesso stato iniziale fra bracci a pari seme; keep da ricalibrare e C2 non
+  partita.
+
+### 2026-10-16 | Claude | Aperti prima della valutazione di C1
+
+- Seconda review del `critico` sulla selezione corretta e sulla S della P2 (`calibration_probe.py`, 641e4e2: cambia anche il percorso P1 per
+  il refactor del compito): da fare prima del deploy della valutazione.
+- `results/infra/w1cal_c1_20261016/valutazione_C1.json` e' superato (selezione di 72cf24a, senza piano): va rigenerato col checkout nuovo
+  (`eval.code_dir`/`eval.expected_sha`) prima della sottomissione, verificando che `calibrazione_C1.json` resti identico byte per byte.
+- La selezione nuova non e' mai stata eseguita sul cluster (import di torch sulla seriale, piano relativo al checkout): il primo uso e' la
+  valutazione di C1.
+- Le mie voci precedenti di oggi stanno solo nella sezione 1: da qui scrivo in entrambe (rilievo del `critico`).
+
+### 2026-10-19 | Claude | Un mio errore corretto subito
+
+- Seguendo il rilievo (sbagliato) sulle durate ho scambiato le copie locali dei `summary.json` di 3e-4 e 1e-3, poi ho visto che prima
+  dello scambio coincidevano col cluster e le ho rimesse a posto prima di qualunque commit: nessun file committato e' cambiato.
+
+### 2026-10-19 | Claude | Difetto della catena: afterok su un nodo della stessa chiamata gia' finito
+
+- `evaluation_chain.py` mette afterok sui nodi sottomessi nella stessa chiamata; se uno finisce in pochi secondi (le guardie: 5-7 s) e SLURM
+  lo dimentica prima che il successivo venga sottomesso, sbatch rifiuta la dipendenza («Job dependency problem»): e' successo
+  all'estrazione di 1e-3 (75 s dopo la fine della guardia). Recuperato senza danni (nessun job creato). Correzione da fare prima di C2:
+  prima di ogni sottomissione rileggere con sacct lo stato dei predecessori della stessa chiamata e togliere l'afterok da quelli finiti bene.
+
+### 2026-10-20 | Claude | C1: da tenere presente
+
+- Il LR piu' basso ha la S migliore e il rango effettivo piu' alto (118 / 85 / 55 con LR crescente), e 1e-3 e' instabile sul pannello: il
+  segnale va verso LR bassi. C2 conferma i due finalisti al seme 1; la griglia non si allarga (accordo).
+- Prima della valutazione di C2: correggere l'afterok sui nodi della stessa chiamata gia' finiti (voce del 19/10).
+
+### 2026-10-20 | Claude | Preflight di C2: controlli lasciati al job
+
+- `leonardo-ops` non esegue sul login node git, sha256sum e lfs: SHA e pulizia del checkout, SHA del manifest e delle durate non sono
+  verificati prima della sottomissione. Li verifica il job nei primi secondi (`lib_code_dir.sh`, `check_input_files`), come in C1; un
+  errore ferma il job prima del training. Da controllare: i primi passi dei due run subito dopo la partenza.
+
+### 2026-10-20 | Claude | Catena di valutazione: rischio residuo dell'afterok
+
+- Fra la lettura di `sacct` e lo `sbatch` passano pochi secondi: se una guardia finisce proprio li', SLURM la ricorda ancora (MinJobAge) e
+  l'afterok e' accettato; il rifiuto di C1 e' arrivato 75 s dopo la fine. Se capitasse comunque, il submitter registra «rifiutato» (nessun
+  job creato), la catena si ferma e si riprende con `--dopo-rifiuto`, come il 19/10.
+
+### 2026-10-20 | Claude | Merge della review C1-C4: un difetto trovato e corretto
+
+- Il controllo dello SHA del checkpoint aggiunto in `admissibility` leggeva `report.get(...)` anche con `report` None (candidato fermato
+  prima della sonda): eccezione al posto di «inammissibile». Corretto nel merge; lo coprono i test dei candidati senza sonda.
+- Con le cache prive dei campi nuovi la sonda integrata rifiuta: e' voluto (GPT, «riestrazione delle sole cache di calibrazione prive dei
+  campi aggiunti»). Nessun risultato di C1 o del collaudo riscritto.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: limiti della diagnostica
+
+- Nessuna misura diretta della durata delle sonde P2 interne: stima dalle sonde ufficiali P2 del 2C; tetto per job largo (4 h).
+- PSD e wavelet separati (P0, P, W0, W) non sono in questa tranche; si aggiungono se l'esito lo chiede. Due teacher per famiglia: le letture
+  sono condizionate a quei modelli. La diagnostica non separa obiettivo, LR/schedule e dominio come cause.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: errori miei trovati dal critico
+
+- La prima tabella delle risposte attribuiva un meccanismo («il raw compensa») contro il vincolo di GPT del 20/10, e confrontava i due
+  delta senza stimarli. Il piano di sottomissione ignorava i 10 job per utente della seriale e la valutazione di C2. Avevo scritto 7 test
+  nuovi invece di 6 (corretto nella voce). Tutto corretto prima di qualunque lancio.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: dati da leggere sul cluster
+
+- I pesi di priorita' di SLURM (eta' contro nice) decidono se il ritardo massimo sulla finestra 1 e' 4 h o ~8 h. Lettura in sola lettura
+  (`scontrol show config | grep -i Priority`): non fra i comandi di leonardo-ops, puo' farla Simone.
+- UCI-EMG interno e' piccolo (19 soggetti, ~330 finestre) e pesa 0,5 nella S della P2: la parte piu' rumorosa.
+
+### 2026-10-20 | Claude | Merge della review C1-C4: un effetto collaterale corretto
+
+- Il controllo del checkpoint di GPT, applicato anche senza sonda, trasformava un run sano con un file perso in «inammissibile» e la fase
+  andava avanti; il protocollo firmato vuole un errore. Corretto con un test. GPT: da rivedere (non blocca).

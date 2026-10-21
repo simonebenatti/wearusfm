@@ -13,10 +13,11 @@
 # (scripts/calibration_select.py select). CPU seriale, minuti; 0 GPU-ora. Ultimo nodo della catena di valutazione di una fase, dopo tutte
 # le sonde. La decisione entra nel repo solo dopo la copia sul Mac (calibration_select.py merge) e il via di Simone alla fase successiva.
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> scripts/slurm/calibration_select.sbatch <fase> <decisione.json> <registro.json> \
-#        <lr> <run_dir> <rapporto> <passi> [<lr> <run_dir> <rapporto> <passi> ...]
+#        <piano di training | -> <lr> <run_dir> <rapporto | -> <passi> [<lr> <run_dir> <rapporto | -> <passi> ...]
+# Il piano di training (relativo al checkout o assoluto) e' obbligatorio nelle fasi C1-C4; «-» come rapporto = run fermato prima della sonda.
 
 set -uo pipefail
-PHASE="${1:?fase}"; OUT="${2:?decisione}"; RECORD="${3:?registro}"; shift 3
+PHASE="${1:?fase}"; OUT="${2:?decisione}"; RECORD="${3:?registro}"; PLAN="${4:?piano di training o -}"; shift 4
 for f in "$OUT" "$RECORD"; do
   case "$f" in /*) ;; *) echo "uscita relativa: rifiutata"; exit 2;; esac
   case "$f" in "$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm/*|"$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*)
@@ -31,4 +32,6 @@ module load profile/deeplrn
 module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
-python3 scripts/calibration_select.py select --phase "$PHASE" --out "$OUT" --record "$RECORD" "${CANDS[@]}"
+PLAN_ARGS=()
+if [ "$PLAN" != "-" ]; then PLAN_ARGS=(--plan "$PLAN"); fi
+python3 scripts/calibration_select.py select --phase "$PHASE" ${PLAN_ARGS[@]+"${PLAN_ARGS[@]}"} --out "$OUT" --record "$RECORD" "${CANDS[@]}"

@@ -1,6 +1,6 @@
 # Finestra 1: protocollo dei bracci dell'obiettivo (punto 5) — BOZZA da firmare
 
-**Stato: bozza di Claude del 16/10/2026, da firmare da Simone prima del lancio; verifica di GPT dopo, non bloccante.** Simone ha scelto
+**Stato: FIRMATO da Simone il 16/10/2026** («firmo i bracci come proposti»): i cinque punti di «Da firmare» con le proposte di questo documento e i tre punti di protocollo del `critico` in coda, come riportati in `docs/decisioni.md`. Verifica di GPT dopo, non bloccante. Simone ha scelto
 «Protocollo dei bracci (punto 5)» mentre gira il collaudo `w1_selezione_v1`. Dal 16/10 protocolli, bracci, loss e harness sono di Claude
 (CLAUDE.md, «Ruoli dal 16/10/2026»). Fonti: accordo del 15/10 (`docs/accordo_operativo_finestra1_20261015.md`, «Obiettivo» e prompt GPT
 punti 3-4), bozza della lista dei job di GPT del 12/10 (`docs/finestra1_job_plan.md` nel worktree di GPT, non committata), v10 §10,
@@ -114,3 +114,55 @@ memoria, e col percorso del contratto a `--accum-steps 3`. Rilievi:
    - (b) in ancore-only il rapporto di collasso da query misura un decoder allenato dalle ancore, non dai latenti del teacher: va scritto
      se l'allarme firmato a 0,05 vale anche li';
    - (c) i bracci usano il LR calibrato su A: un «non batte A» o un «eguaglia A» si legge «al LR di A».
+
+## Firma (16/10/2026)
+
+Simone: «firmo i bracci come proposti». Firmati, nella forma proposta in chat lo stesso giorno:
+1. Bracci: A, JEPA-only (peso delle ancore 0), ancore-only (solo le ancore attuali, non il braccio v10 dei target espliciti), keep come
+   confronto separato.
+2. 30M, D = 4 epoche, 2 semi (0, 1); LR di 30M da C1-C2: se C2 conferma due LR, quello con S migliore al seme 1, a parita' il piu' basso.
+3. Lettura: un braccio batte A se migliora P1 **e** P2 di almeno +1 punto con la media dei due semi (errore standard combinato).
+4. Keep: opzione 1 (A' con la testa a peso 0 e B a 0,05, 2 semi); la calibrazione della keep si ricalcola sul corpus intero prima del lancio.
+5. Via all'implementazione del pianificatore dei bracci e del piano di valutazione P1/P2 (lavoro locale).
+6. (critico a) Un braccio fermato dall'allarme di collasso si registra come «collassato» e conta come «non batte A».
+7. (critico b) L'allarme di collasso firmato (0,05, decisione 16) vale per tutti i bracci, ancore-only compreso, senza eccezioni.
+8. (critico c) «Non batte A» o «eguaglia A» si legge «al LR di A»: nessuna calibrazione del LR per braccio in questa finestra.
+
+## Decisioni del 16/10/2026 sulla critica del punto 5 (Simone: «iniziamo a risolvere 1 e 2, apporvo le soluzioni proposte, se riesci firmo e implementa eventuali corrzioni dove non gi afatte»)
+
+Sostituiscono il punto 3 della firma («+1 punto sulla media dei due semi») e la frase «altrimenti A resta il default» del Disegno.
+1. **Regola di lettura sui test ufficiali (come il 2A/2C):** un braccio «batte A» su P1/P2 se, nel confronto accoppiato per seme
+   (`harness.downstream_ab.compare_reports`: riferimento A, braccio al posto di B, semi 0 e 1), per P1 **e** per P2: delta medio >= +0,01
+   (+1 punto), limite inferiore dell'intervallo al 95% > 0, delta > 0 in tutti e due i semi. «Non dannoso» resta delta >= -0,01. E' la
+   lettura scientifica del confronto; non sceglie il default.
+2. **Il default si sceglie senza i soggetti di test:** sulla validation interna S (le sonde a fold dei soli soggetti delle partizioni train,
+   `scripts/calibration_probe.py` per la P1; l'analoga per la P2 sui soggetti fuori dai test dei tre split 7:1:2), con la stessa regola del
+   punto 1 applicata a S (delta accoppiato sui soggetti, per seme): un braccio sostituisce A come default solo se batte A su S della P1 **e**
+   su S della P2. P1/P2 ufficiali sono la conferma e il risultato scientifico; se S e test ufficiali non concordano, il default segue S e il
+   disaccordo si registra. La S della P2 la conferma Simone: «per p2 bene òa proposta tua» (16/10). Implementata in `scripts/calibration_probe.py
+   --task p2`: soggetti fuori dai test dei tre split 7:1:2 (semi 0, 1, 2), finestre degli altri scartate prima dell'estrazione,
+   stessa estrazione e sonda della P2, 4 fold di soggetti, media dei due dataset a pesi uguali.
+Non cambiano: bracci, disegno (30M, 4 epoche, 2 semi), keep separata, allarme di collasso, letture «al LR di A».
+Implementazione delle due regole: `scripts/arms_compare.py` (test `tests/cpu/test_arms_compare.py`). Un braccio collassato non batte il
+riferimento; un run fermato per un altro motivo non e' valutabile (si decide a mano); se piu' bracci battono A su S, la scelta e' di Simone.
+
+## Pianificatore e piano di valutazione (16/10/2026; critica del punto 5, punti 3-6)
+
+`scripts/arms_plan.py` (test `tests/cpu/test_arms_plan.py`): piani per `wsd_chain.py` (gruppo «objective»: A, JEPA-only, ancore-only; gruppo
+«keep»: A' e B, solo con la calibrazione della keep sul corpus intero) e piano di valutazione per `evaluation_chain.py`: per ogni run guardia
+-> P1 e P2 ufficiali (`probe_p1*.sbatch`, `probe_p2*.sbatch`, ora con CODE_DIR) e S della P1 e della P2 (`calibration_*.sbatch`), poi
+`arms_compare.sbatch` col confronto firmato (spec `confronto_<gruppo>.json`). Test dello stato iniziale: a pari seme i tre bracci hanno la
+stessa architettura e lo stesso stato iniziale, con le configurazioni costruite da `train_jepa.py` (rilievo 5).
+
+**Preventivo** (LR di esempio 3e-4; un job da 23 h per run, 98.094 passi a 0,70 s):
+
+| Gruppo | Run | Training GPU-ora attese / tetto | Valutazione, sonde su CPU | Valutazione, sonde su GPU |
+|---|---|---|---|---|
+| Obiettivo (A, JEPA-only, ancore-only, 2 semi) | 6 | 463,8 / 552,0 | 10,5 / 27,0 GPU-ora + 192 core-ora, **~24 h di sonde in fila** | 34,5 / 87,0 GPU-ora, in parallelo |
+| Keep (A', B, 2 semi) | 4 | 309,2 / 368,0 | 7,0 / 18,0 + 128 core-ora, ~16 h in fila | 23,0 / 58,0 |
+| **Totale** | 10 | **773,0 / 920,0** | 17,5 / 45,0 | 57,5 / 145,0 |
+
+Sulla seriale le sonde girano una alla volta (`QOSMaxCpuPerUserLimit`, collaudo `w1_selezione_v1`): ~4 h di sonde per run, quindi ~24 h per i
+sei run dell'obiettivo dopo i training; sulle GPU costano ~24 GPU-ora in piu' e girano in parallelo (rilievo 4).
+**Prima del lancio dei bracci:** LR di 30M da C1-C2 (la regola firmata), calibrazione della keep sul corpus intero (per il gruppo keep;
+rilievo 6), review del `critico` su pianificatore, confronto e S della P2, collaudo breve su dbg dei due bracci nuovi, preventivo e via di Simone.

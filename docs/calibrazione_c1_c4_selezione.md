@@ -167,3 +167,49 @@ secondo sacct), estrazioni 60688824 (T) e 60688827 (B) su `boost_qos_dbg`, sonde
 **Misure per C1:** estrazione al 30M ~17 min (stimavo 12), sonda ~1,8 h a 8 core (stimavo 1,2); le sonde girano UNA alla volta, perche'
 sulla seriale c'e' un limite di core per utente (`QOSMaxCpuPerUserLimit`): con 3 run, ~5,5 h di sonde in fila dopo il training.
 **Consuntivo: 0,57 GPU-ora** (due estrazioni da 1 GPU) sul budget infrastruttura, ora 9,83 usate su 25 (residuo 15,17); ~29 core-ora CPU.
+
+## Correzioni dalla review di GPT (16/10/2026)
+
+GPT: «Gestire un candidato fallito prima della sonda: oggi blocca la selezione dell'intera fase» e «Verificare LR, seme e configurazione
+effettiva contro il piano, non soltanto le etichette ricevute». Entrambe giuste; nessuna regola di selezione cambiata.
+1. **Candidato fermato prima della sonda:** si passa alla selezione col rapporto «-» ed e' inammissibile per A1-A4 letti dai file del run
+   (STOP, allarme, run incompleto); la fase procede con gli altri. Un run ammissibile senza sonda e' un errore (la valutazione si completa,
+   non si salta). Nel pianificatore `--failed-runs`: niente guardia, estrazione e sonda per quei run, la selezione dipende solo dalle sonde
+   degli altri; tutti fermati = la fase si ferma, decisione da registrare a mano.
+2. **Identita' dei candidati:** nelle fasi C1-C4 la selezione riceve il piano di training della fase (`--plan`, quarto argomento del
+   launcher) e per ogni candidato confronta `config.json` del run (LR, seme, batch, accumulo, passi, warmup, schedule WSD e decay, frazione
+   del manifest, dataset, pannello, sampler pesato nel tempo, target, pesi di JEPA/ancore/keep/rami, dimensioni del modello) e lo SHA del
+   codice in `summary.json` col piano, e il LR dichiarato col piano: una differenza ferma la selezione con un errore. Verificato sulla
+   configurazione che `train_jepa.py` costruisce con gli argomenti veri dei tre run di C1.
+3. La catena di valutazione puo' usare un checkout diverso da quello dei training (`eval.code_dir`, `eval.expected_sha` nella campagna): per
+   C1 i training girano da 72cf24a, la valutazione partira' da un checkout nuovo con queste correzioni, dopo la review del `critico`.
+
+**Aggiornamento dopo la review del `critico` del 16/10 (APPROVATO su 698763b, 19/10/2026).** Il punto 2 sopra e' superato nella forma:
+l'identita' confronta l'INTERA configurazione effettiva (`config.json`, 99 campi), ricostruita dagli argomenti del job pianificato con
+`wsd_chain.extra_args` e `train_jepa.build_config` (la stessa funzione del training); campi in piu' o in meno sono differenze. Un candidato
+col rapporto «-» che non ha scritto `config.json` ha l'identita' «non verificabile» (il LR dichiarato si controlla comunque contro il piano)
+e decide A1: inammissibile, la fase procede. La selezione accetta solo rapporti di S della P1 (compito p1, dataset DB2/DB3/DB6). Verificato
+sui `config.json` veri dei tre run di C1 (`results/infra/w1cal_c1_20261016/runs/`).
+
+**Correzioni dalla review GPT 41ce569 (integrata nel merge 58c043a del 20/10/2026; nessuna regola cambiata).** Controlli che bloccano, in
+`scripts/calibration_probe.py` e `scripts/calibration_select.py`:
+- cache della sonda con SHA degli split e ricetta d'estrazione registrati, controllati dalla sonda (P1: SHA del file degli split; P2 interna:
+  identita' della definizione degli split, `P2_SPLITS_SHA256`, e ricetta della P2); una cache senza questi campi si estrae di nuovo;
+- predizioni fuori fold con le righe della cache e la loro impronta; `load_oof` rifiuta righe ripetute, impronte diverse, meno di due classi;
+- `check_pairing` prima di ogni decisione, anche senza bootstrap: stessi protocollo, split, fold, seme della sonda, insieme di feature,
+  finestra, ricetta, ingressi e righe per tutti i candidati;
+- A1: con la sonda, checkpoint post-decay presente e con lo SHA della sonda; senza sonda la sua assenza non decide nulla (un run altrimenti
+  ammissibile senza sonda resta un errore, come sopra; review del `critico` del 20/10);
+- bootstrap accoppiato con meno di due repliche valide o non finito: errore, nessuna selezione (non e' una parita');
+- `merge`: nessuna fase dopo uno stop; C3 e C4 solo con la conferma completa di C2.
+
+**Correzioni dalla review GPT 3272398 (21/10/2026; nessuna regola firmata cambiata).**
+- **R1, candidato senza sonda:** si esclude (inammissibile, la fase procede) solo con una **prova di fallimento terminale**, registrata nel
+  registro della selezione (`failure_evidence`): lo `STOP` del trainer nella cartella del run (allarme o errore numerico, definitivo), oppure
+  un'evidenza da sacct (`calibration_select.py failure-evidence`: ID SLURM dal registro del submitter, stati da sacct; ammessi FAILED,
+  CANCELLED, OUT_OF_MEMORY, NODE_FAIL, BOOT_FAIL, DEADLINE, con l'ultimo job della catena fallito e i precedenti al piu' COMPLETED; job uguali,
+  nell'ordine, a quelli del piano). Senza prova, o con un run in coda, in corso, in TIMEOUT (riprendibile), finito bene o sconosciuto:
+  **errore, nessuna decisione**. Nel pianificatore `--failed-runs RUN=STOP` o `RUN=<evidenza.json>` (relativa al repo e nel checkout della
+  valutazione), verificata gia' li'.
+- **R2, PASSI:** con il piano (C1-C4), i passi di ogni candidato devono essere quelli del run nel piano congelato; una discordanza e' un errore
+  negli argomenti, non un run incompleto.

@@ -1,0 +1,19 @@
+# Pesi di priorita' di SLURM su Leonardo, letti da Simone il 20/10/2026 (sola lettura):
+#   ssh leonardo 'scontrol show config | grep -i priority'
+PriorityParameters      = (null)
+PrioritySiteFactorParameters = (null)
+PrioritySiteFactorPlugin = (null)
+PriorityDecayHalfLife   = 4-00:00:00
+PriorityCalcPeriod      = 00:05:00
+PriorityFavorSmall      = no
+PriorityFlags           = SMALL_RELATIVE_TO_TIME,DEPTH_OBLIVIOUS,NO_FAIR_TREE,MAX_TRES
+PriorityMaxAge          = 7-00:00:00
+PriorityType            = priority/multifactor
+PriorityUsageResetPeriod = MONTHLY
+PriorityWeightAge       = 20000
+PriorityWeightAssoc     = 0
+PriorityWeightFairShare = 25000
+PriorityWeightJobSize   = 10000000
+PriorityWeightPartition = 0
+PriorityWeightQOS       = 300000
+PriorityWeightTRES      = (null)

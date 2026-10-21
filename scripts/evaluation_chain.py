@@ -28,6 +28,10 @@ Regole:
 - Con `--submit` lo stato SLURM dei predecessori gia' sottomessi si legge con `sacct`: finito bene -> nessun afterok (SLURM puo' aver gia'
   dimenticato il job e rifiuterebbe la dipendenza); in coda o in esecuzione -> afterok; finito male -> nodo bloccato; sconosciuto -> il nodo
   aspetta. Nel dry-run lo stato SLURM non si legge (afterok su tutti, indicato).
+- Con `--submit` i nodi si sottomettono uno alla volta e prima di ciascuno lo stato si rilegge con `sacct`, compresi i predecessori
+  sottomessi nella stessa chiamata: una guardia che finisce in pochi secondi non riceve afterok dal nodo che la segue (C1, 19/10/2026: sbatch
+  aveva rifiutato l'estrazione con «Job dependency problem», 75 s dopo la fine della guardia); se fallisce, cio' che ne dipende si blocca.
+  Un predecessore della stessa chiamata che sacct non vede ancora e' appena stato accettato da sbatch: afterok.
 - `limits` conta i job gia' in coda: con `--submit` i conteggi si leggono da `squeue --me` (o da `--queue-counts`); senza conteggi non si
   sottomette.
 - Rieseguibile: le dipendenze non ancora sottomesse fanno aspettare il nodo fino alla prossima chiamata. Uscite assolute e fuori dal codice.
@@ -60,7 +64,7 @@ SBATCH_OPTIONS = {"--time": "--time", "-t": "--time", "--partition": "--partitio
                   "--nodes": "--nodes", "-N": "--nodes", "--ntasks": "--ntasks", "-n": "--ntasks", "--ntasks-per-node": "--ntasks-per-node",
                   "--cpus-per-task": "--cpus-per-task", "-c": "--cpus-per-task", "--mem": "--mem", "--mem-per-cpu": "--mem-per-cpu",
                   "--gres": "--gres", "--gpus": "--gpus", "--gpus-per-node": "--gpus-per-node", "--output": "--output", "-o": "--output",
-                  "--error": "--error", "-e": "--error", "--constraint": "--constraint", "-C": "--constraint"}
+                  "--error": "--error", "-e": "--error", "--constraint": "--constraint", "-C": "--constraint", "--nice": "--nice"}
 SBATCH_FLAGS = ("--exclusive",)
 # QoS che SLURM assegna a un job senza --qos, per partizione: nei limiti conta come quella esplicita (squeue la riporta). sacct del
 # 15/10/2026 su job con launcher senza QoS: lrd_all_serial 60664574/84/86 -> normal; boost_usr_prod 59306259 (rvq_codes), 59412516
@@ -99,6 +103,8 @@ def sbatch_options(opts) -> dict[str, str]:
             raise ValueError(f"opzione sbatch {a} non ammessa (ammesse, per intero: {sorted(set(SBATCH_OPTIONS.values()) | set(SBATCH_FLAGS))})")
         if key in out:
             raise ValueError(f"opzione sbatch {key} ripetuta")
+        if key == "--nice" and not (val.isdigit() and int(val) > 0):  # un nice negativo alzerebbe la priorita' (e richiede l'amministratore)
+            raise ValueError(f"opzione sbatch --nice={val}: solo valori interi positivi")
         out[key] = val
         i += 1
     return out
@@ -354,36 +360,57 @@ def main(argv=None) -> int:
     order = validate(plan)
     ssh = shlex.split(args.ssh)
     counts = json.loads(args.queue_counts.read_text()) if args.queue_counts else None
-    slurm_state = None
-    if args.submit:
+    if not args.submit:
+        for r in schedule(plan, read_state, counts, None):
+            _print_row(r)
+        return 0
+    try:
+        if plan.get("limits") and counts is None:
+            counts = live_queue_counts(S, ssh, sorted(plan["limits"]))
+    except RuntimeError as e:
+        print(f"stato del cluster non leggibile, nessuna sottomissione: {e}")
+        return 1
+    nodes = {n["id"]: n for n in order}
+    used = dict(counts or {})
+    now: list[str] = []  # sottomessi in questa chiamata, nell'ordine
+    while True:  # un nodo per giro, con lo stato SLURM riletto prima di ciascuno (anche dei predecessori appena sottomessi)
         try:
-            if plan.get("limits") and counts is None:
-                counts = live_queue_counts(S, ssh, sorted(plan["limits"]))
             deps = sorted({d for n in order for d in n.get("after", []) if (read_state(d) or {}).get("stato") == "sottomesso"})
             known = slurm_states(S, ssh, read_state, deps)
-            slurm_state = lambda i: known.get(i, "sconosciuto")  # noqa: E731
         except RuntimeError as e:
-            print(f"stato del cluster non leggibile, nessuna sottomissione: {e}")
+            print(f"stato del cluster non leggibile, " + (f"mi fermo dopo {now}: {e}" if now else f"nessuna sottomissione: {e}"))
             return 1
-    rows = schedule(plan, read_state, counts, slurm_state)
-    failed = 0
+        def slurm_state(i):  # sconosciuto a sacct ma appena accettato da sbatch in questa chiamata: in coda, afterok
+            js = known.get(i, "sconosciuto")
+            return "in corso" if js == "sconosciuto" and i in now else js
+
+        rows = schedule(plan, read_state, used, slurm_state)
+        r = next((r for r in rows if r["status"] == "sottomesso ora"), None)
+        if r is None:
+            break
+        _print_row(r)
+        extra = ["--registro", str(args.registro)] if args.registro else []
+        try:
+            code = S.main([*extra, "--ssh", args.ssh, *r["command"]])
+        except SystemExit as e:  # il submitter rifiuta (prenotazione esistente, dipendenza non valida): ci si ferma con un messaggio
+            code, msg = 3, str(e)
+            print(f"    {r['id']}: rifiutato dal submitter: {msg}")
+        if code != 0:  # un esito diverso da `sottomesso` ferma la chiamata: il resto aspetta il chiarimento
+            print(f"    {r['id']}: non sottomesso (uscita {code}); mi fermo")
+            return 1
+        now.append(r["id"])
+        for q in node_labels(nodes[r["id"]]):
+            used[q] = used.get(q, 0) + 1
     for r in rows:
-        print(f"{r['status']:16s} {r['kind']:8s} {r['id']}" + (f"  ({r['why']})" if r["why"] else ""))
-        if r["status"] != "sottomesso ora":
-            continue
+        if r["id"] not in now:
+            _print_row(r)
+    return 0
+
+
+def _print_row(r: dict) -> None:
+    print(f"{r['status']:16s} {r['kind']:8s} {r['id']}" + (f"  ({r['why']})" if r["why"] else ""))
+    if r["status"] == "sottomesso ora":
         print("    python3 scripts/submit_job.py " + " ".join(shlex.quote(x) for x in r["command"]))
-        if args.submit:
-            extra = ["--registro", str(args.registro)] if args.registro else []
-            try:
-                code = S.main([*extra, "--ssh", args.ssh, *r["command"]])
-            except SystemExit as e:  # il submitter rifiuta (prenotazione esistente, dipendenza non valida): ci si ferma con un messaggio
-                code, msg = 3, str(e)
-                print(f"    {r['id']}: rifiutato dal submitter: {msg}")
-            if code != 0:  # un esito diverso da `sottomesso` ferma la chiamata: il resto aspetta il chiarimento
-                print(f"    {r['id']}: non sottomesso (uscita {code}); mi fermo")
-                failed = 1
-                break
-    return failed
 
 
 if __name__ == "__main__":
