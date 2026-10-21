@@ -1,5 +1,26 @@
 # Punto 3: seconda tranche Claude, review del 20-21/10/2026
 
+## Aggiornamento 21/10: R1, R2 e R3 chiusi
+
+Verificati i fix Claude `07e120c` e `32b5718`, letti i diff di codice, test e
+protocollo. Le tre regressioni indipendenti ora PASSANO. Test collegati:
+104 PASS (103 al primo giro; uno bloccato dal sandbox mentre scriveva una fixture
+temporanea nel worktree Claude, poi rieseguito con permesso e PASS). Nessun altro
+difetto confermato in questi fix. Ramo Claude pulito e GitHub verificato a
+`32b5718663f205cdf1f6ab862bae931e1332eedc`.
+
+- R1: evidenza terminale obbligatoria, con identita' del run e dei job e prova
+  salvata nel record; stato ignoto/running/timeout senza prova impedisce la decisione.
+- R2: PASSI verificato contro il run del piano prima dell'ammissibilita'.
+- R3: QoS normal esplicita e test della QoS effettiva allo SHA reale.
+
+Il merge del codice resta distinto dalla chiusura dei rilievi: i due fix hanno
+come antenati il nuovo pilot (`bc97100`, `e19f314`, `fadb881`, `134b77c`), che modifica
+modello e trainer e non e' stato revisionato da GPT. Un merge di `32b5718` includerebbe
+anche quel codice. Prossimo lavoro: review del pilot, poi merge conservando gli SHA.
+Questa verifica aggiorna e pubblica solo review e registro; le sezioni seguenti
+conservano il riscontro storico precedente alle correzioni.
+
 Richiesta: verificare e integrare per merge fino a `c21ca40`, cominciando dal gruppo 1
 (`62bec0b`). Base canonica: `79db894`. Nessun merge eseguito: tre rilievi riprodotti
 da correggere sul ramo Claude prima dell'integrazione. Nessun job, deploy o push.
