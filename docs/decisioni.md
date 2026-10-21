@@ -3769,3 +3769,6 @@ derivati) confrontati col piano; test del gruppo keep nel confronto; spiegazione
 infinita); limite di provenienza di P1/P2 ufficiali esteso all'encoder dichiarato. Piani congelati invariati (`dbe0f8fe...`, `a9e83540...`).
 Strumenti dei bracci pronti per il collaudo; il collaudo aspetta il via di Simone.
 
+**Collaudo dei bracci: controllo in sola lettura pulito (21/10/2026 ~11:15).** Checkout di training e input presenti, cartelle dei run del
+collaudo e dei bracci assenti, in coda solo C3: i 2 posti di `boost_qos_dbg` sono liberi. Il collaudo aspetta il via di Simone.
+

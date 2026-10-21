@@ -2213,6 +2213,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Cinque minori corretti (margine, passi di D nella spec, test del gruppo keep, spiegazione dei non finiti, limite sull'encoder dichiarato).
   Strumenti pronti; il collaudo `w1arm-collaudo-v1` aspetta il via di Simone. Nessun job.
 
+### 2026-10-21 | Claude | Collaudo dei bracci: controllo in sola lettura prima del via | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 11:15 circa, via leonardo-ops: checkout `w1cal-20261016` e file di input presenti; cartelle `runs/w1arm_collaudo/` e `runs/w1arm/` assenti;
+  in coda solo C3 (61593336 al passo ~7.630, 61593337 ~7.570 su 12.261). I due job della diagnostica dei rami (61592919, 61592922) non
+  sono piu' in coda. Nessun job sottomesso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
