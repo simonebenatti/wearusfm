@@ -3763,3 +3763,9 @@ results/infra/w1arm_20261021` rifiuta un piano rigenerato diverso. **Correzione 
 (C2) a 0,778 s (C1): training atteso 484-509 GPU-ora (tetto invariato 552), run da 20,2-21,2 h, un job solo finche' il passo medio resta
 sotto ~0,81 s; un run fermato per tempo si completa con un job di ripresa da presentare. Suite 1301 PASS su c3ef10b. Nessun job sottomesso.
 
+**Bracci dell'obiettivo: terza passata del `critico` (21/10/2026, su bd907a0): APPROVATO**, cinque minori corretti: margine del tempo scritto
+con la convenzione della soglia (0,9-1,9 h dopo i 15 minuti di avvio, non 1,1-2,0); passi di D nella spec (da `arms_plan`, dal rapporto dei
+derivati) confrontati col piano; test del gruppo keep nel confronto; spiegazione corretta del difetto dei non finiti (tolleranza relativa
+infinita); limite di provenienza di P1/P2 ufficiali esteso all'encoder dichiarato. Piani congelati invariati (`dbe0f8fe...`, `a9e83540...`).
+Strumenti dei bracci pronti per il collaudo; il collaudo aspetta il via di Simone.
+

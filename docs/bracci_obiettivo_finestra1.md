@@ -187,7 +187,8 @@ registrato in `decisioni.md`) e la spec punta al file lanciato, non a una copia.
 e 1), 98.094 passi, warmup 1.962, decay da 78.475, un job da 23 h per run (QoS normal, `TIME_LIMIT_S` 80.400), cartelle in
 `$SCRATCH/wearusfm_runs/runs/w1arm/`; comandi in `comandi_training_objective.txt` (rigenerati identici da `wsd_chain.py`).
 **Tempo (corretto con la re-review):** il passo misurato di A a 30M va da 0,740 s (C2) a 0,778 s (C1, il piu' lento dei cinque run): un run dura
-20,2-21,2 h, con 1,1-2,0 h di margine sul limite del trainer. Un job solo basta finche' il passo medio resta sotto ~0,81 s
+20,2-21,2 h, con 0,9-1,9 h di margine sul limite del trainer dopo i 15 minuti di avvio (la stessa convenzione della soglia; terza passata
+del `critico`: prima avevo scritto 1,1-2,0). Un job solo basta finche' il passo medio resta sotto ~0,81 s
 ((80.400 - 900) / 98.094), cioe' +4% sul run piu' lento misurato; il pianificatore lo ammette perche' usa 0,70 s con slack 1,15, e col passo
 misurato il suo margine pessimistico non tiene (re-review, rilievo 3). **Rischio dichiarato:** un run piu' lento si ferma per tempo
 (`stopped` = limite di tempo, checkpoint salvato 40 minuti prima della fine del job), non e' un run fallito: lo si completa con un job di
@@ -221,13 +222,14 @@ rigenerati identici; suite 1301 PASS. Nuovi rilievi:
    `arms_plan.arm_runs` per il gruppo e il LR della spec; la spec copre una volta sola tutti i bracci del gruppo, col riferimento del gruppo
    (`group` nella spec); ogni etichetta e' il run del suo braccio (`run_id`). Test: riferimento e braccio scambiati, braccio omesso o
    ripetuto, riferimento sbagliato, piano con un braccio diverso ma SHA coerente.
-2. Per P1/P2 ufficiali la provenienza dal checkpoint e' solo dichiarata (la fase della sonda non carica il modello e la cache delle feature
-   non registra lo SHA): **scritto come limite** nel confronto (il default si sceglie su S, che ha lo SHA dall'estrazione); aggiunto il
+2. Per P1/P2 ufficiali la provenienza dal checkpoint, e l'encoder (teacher), sono solo dichiarati (la fase della sonda non carica il
+   modello, non riceve `--which` e la cache delle feature non registra lo SHA): **scritto come limite** nel confronto (il default si sceglie su S, che ha lo SHA dall'estrazione); aggiunto il
    controllo del compito dei rapporti di S. Registrare lo SHA nelle cache di `probe_p1`/`probe_p2` resta un miglioramento possibile.
 3. Margine del tempo col passo misurato: **dichiarato** sopra (rischio e ripresa).
 4. Piano rigenerato alla valutazione non legato a quello lanciato: **corretto** (`--frozen-plans`, SHA registrato in `decisioni.md`).
 5. La CLI del collaudo si bloccava sui valori non finiti: **corretto** (non finiti -> None nell'esito). Il test nuovo ha trovato un difetto
-   vero: con `total` infinito la composizione passava (inf - inf); ora richiede componenti finite (criterio 5 piu' stretto, prima del lancio).
+   vero: con `total` infinito la composizione passava, perche' la tolleranza relativa (1e-6 x |total|) diventa infinita e inf > inf e' falso
+   (con una componente infinita si avrebbe anche inf - inf = NaN); ora richiede componenti finite (criterio 5 piu' stretto, prima del lancio).
 6. Percorso relativo del piano non provato: **test** dal file lanciato, da una cwd qualunque, con lo SHA registrato.
 Terza passata del `critico` sulle correzioni prima del lancio.
 

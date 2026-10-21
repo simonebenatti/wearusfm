@@ -19,11 +19,12 @@ Identita' e provenienza (rilievo 1 del critico, 21/10; come `calibration_select.
   cartella del piano, seme del piano uguale al seme della spec, configurazione effettiva completa e codice uguali al piano
   (`calibration_select.check_identity`), LR = `lr` della spec; per la keep, SHA della calibrazione = `keep_calibration_sha256`;
 - un run completo ha i passi del piano, e ogni suo rapporto viene dal suo `checkpoint_postdecay.pt` (stesso file; per S anche lo SHA-256 e
-  il compito), del teacher per P1/P2 ufficiali; checkpoint e rapporti distinti fra tutti i run;
-- il piano e' esattamente quello dei bracci del gruppo (`arms_plan.arm_runs` con lo stesso LR), la spec copre tutti i bracci del gruppo col
+  il compito), del teacher (dichiarato) per P1/P2 ufficiali; checkpoint e rapporti distinti fra tutti i run;
+- il piano e' esattamente quello dei bracci del gruppo (`arms_plan.arm_runs` con LR e passi della spec), la spec copre tutti i bracci del gruppo col
   riferimento giusto, e ogni etichetta e' il run del suo braccio (re-review del critico, 21/10: un riferimento scambiato con un braccio).
-Limite (re-review, rilievo 2): per P1/P2 ufficiali la provenienza e' il checkpoint DICHIARATO dalla fase della sonda (`probe_p1.py`,
-`probe_p2.py`: la cache delle feature non registra lo SHA del checkpoint); per S e' lo SHA scritto dall'estrazione. Il default si sceglie su S.
+Limite (re-review, rilievo 2): per P1/P2 ufficiali la provenienza e' il checkpoint, e l'encoder, DICHIARATI dalla fase della sonda
+(`probe_p1.py`, `probe_p2.py`: non carica il modello, non riceve `--which`, la cache delle feature non registra lo SHA del checkpoint); per S
+e' lo SHA scritto dall'estrazione. Il default si sceglie su S.
 
 Spec (JSON): {"group": "objective", "reference": "A", "arms": ["JEPA-only", ...], "plan": "results/.../bracci_objective.json", "plan_sha256", "lr",
 "runs": {nome: {"0": {"id", "run_dir", "s_p1", "s_p2", "p1", "p2"}, "1": {...}}}} (per un braccio collassato bastano id e run_dir).
@@ -143,10 +144,9 @@ def expected_runs(spec: dict, plan: dict) -> dict[tuple[str, str], str]:
         raise ValueError(f"gruppo {group!r}: uno di {sorted(AP.REFERENCE)}")
     if spec["reference"] != AP.REFERENCE[group]:
         raise ValueError(f"riferimento {spec['reference']!r}: il gruppo {group} ha {AP.REFERENCE[group]!r}")
-    steps = {r.get("total_steps") for r in plan["runs"]}
-    if len(steps) != 1:
-        raise ValueError(f"piano con passi diversi fra i run: {sorted(map(str, steps))}")
-    want = AP.arm_runs(steps.pop(), float(spec["lr"]), spec.get("keep_calibration"))
+    if not isinstance(spec.get("steps"), int) or spec["steps"] <= 0:  # i passi di D dal rapporto dei derivati, non dal piano (terza passata)
+        raise ValueError("spec senza 'steps' (passi di D del protocollo, da arms_plan)")
+    want = AP.arm_runs(spec["steps"], float(spec["lr"]), spec.get("keep_calibration"))
     if group not in want:
         raise ValueError(f"gruppo {group}: senza la calibrazione della keep nella spec")
     exp = want[group]

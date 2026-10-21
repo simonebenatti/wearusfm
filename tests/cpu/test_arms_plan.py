@@ -65,7 +65,7 @@ def test_evaluation_plan_is_valid_and_compares_with_the_signed_rules():
     assert spec["reference"] == "A" and spec["arms"] == ["JEPA-only", "ancore-only"]
     assert set(spec["runs"]["A"]["0"]) == {"id", "run_dir", "p1", "p2", "s_p1", "s_p2"} and spec["runs"]["A"]["0"]["id"] == "W1ARM-A-30M-s0"
     # piano di training, suo SHA e LR nella spec: arms_compare verifica l'identita' dei run (rilievo 1 del critico, 21/10)
-    assert spec["plan"] == "results/infra/w1arm/bracci_objective.json" and spec["lr"] == 3e-4
+    assert spec["plan"] == "results/infra/w1arm/bracci_objective.json" and spec["lr"] == 3e-4 and spec["steps"] == 98094
     assert spec["plan_sha256"] == hashlib.sha256(AP.plan_text(r["plans"]["objective"]).encode()).hexdigest()
     assert e["estimate"]["serial_probe_hours"] == pytest.approx(6 * 4.0, abs=0.1)  # sonde in fila sulla seriale: dichiarate
 

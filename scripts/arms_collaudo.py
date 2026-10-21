@@ -102,7 +102,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     missing, off = [], []
     for r in recs:
         keys = ("total", "jepa") + ANCHORS
-        if any(not isinstance(r.get(k), (int, float)) or not math.isfinite(r[k]) for k in keys):  # inf - inf non supera nessuna tolleranza
+        if any(not isinstance(r.get(k), (int, float)) or not math.isfinite(r[k]) for k in keys):  # total infinito: tolleranza infinita
             missing.append(r.get("step"))
             continue
         expected = wj * r["jepa"] + wa * sum(r[a] for a in ANCHORS)

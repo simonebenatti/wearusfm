@@ -405,8 +405,37 @@ def test_the_launched_plan_loads_from_its_relative_path_in_any_cwd(tmp_path, mon
     lanciato e' quello registrato (SHA in decisioni.md) e quello dei bracci di arms_plan con LR 1e-4."""
     monkeypatch.chdir(tmp_path)
     spec = {"group": "objective", "reference": "A", "arms": list(ARMS), "plan": LAUNCHED_PLAN, "plan_sha256": LAUNCHED_PLAN_SHA256,
-            "lr": 1e-4}
+            "lr": 1e-4, "steps": 98094}
     plan = AC.training_plan(spec)
     ids = AC.expected_runs(spec, plan)
     assert len(plan["runs"]) == 6 and ids["JEPA-only", "1"] == "W1ARM-JEPA-only-30M-s1"
     assert plan["expected_sha"] == "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+
+
+def test_steps_come_from_the_protocol_not_from_the_plan(env):
+    """Terza passata del critico: un piano coerente con se stesso ma con un altro numero di passi non e' quello dei bracci."""
+    spec = _spec(env, {})
+    plan = json.loads(Path(spec["plan"]).read_text())
+    for r in plan["runs"]:
+        r["total_steps"] = r["steps_at_d"] = 1300
+    short = env.tmp / "piano_corto.json"
+    short.write_text(AP.plan_text(plan))
+    with pytest.raises(ValueError, match="non e' quello dei bracci"):
+        AC.compare({**spec, "plan": str(short), "plan_sha256": AC._select()._sha256(short)})
+    with pytest.raises(ValueError, match="spec senza 'steps'"):
+        AC.compare({k: v for k, v in spec.items() if k != "steps"})
+
+
+def test_keep_group_specs_from_arms_plan_map_aprime_and_b(tmp_path):
+    """Terza passata del critico: il gruppo keep generato da arms_plan (A' e B) e il rifiuto di un'altra calibrazione o dell'altro gruppo."""
+    res = AP.plan(REPORT, 1e-4, _camp(tmp_path), keep_calibration="/K/keep_corpus.npz", keep_calibration_sha256="c" * 64,
+                  plans_dir="results/infra/w1arm")
+    spec, plan = res["specs"]["keep"], json.loads(AP.plan_text(res["plans"]["keep"]))
+    ids = AC.expected_runs(spec, plan)
+    assert ids == {(a, s): f"W1ARM-{a}-30M-s{s}" for a in ("Aprime", "B") for s in "01"}
+    with pytest.raises(ValueError, match="non e' quello dei bracci del gruppo keep"):
+        AC.expected_runs({**spec, "keep_calibration": "/K/altra.npz"}, plan)
+    with pytest.raises(ValueError, match="senza la calibrazione"):
+        AC.expected_runs({k: v for k, v in spec.items() if k != "keep_calibration"}, plan)
+    with pytest.raises(ValueError, match="non e' quello dei bracci del gruppo objective"):
+        AC.expected_runs(res["specs"]["objective"], plan)

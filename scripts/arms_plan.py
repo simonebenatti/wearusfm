@@ -235,7 +235,7 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
             if not frozen.is_file() or frozen.read_text() != plan_text(p):
                 raise ValueError(f"{g}: il piano rigenerato non e' identico al piano congelato {plan_path}")
         spec = {"group": g, "reference": ref, "arms": [a for a in spec_runs if a != ref], "plan": plan_path,
-                "plan_sha256": hashlib.sha256(plan_text(p).encode()).hexdigest(), "lr": lr, "runs": spec_runs}
+                "plan_sha256": hashlib.sha256(plan_text(p).encode()).hexdigest(), "lr": lr, "steps": steps, "runs": spec_runs}
         if g == "keep":
             spec.update(keep_calibration=keep_calibration, keep_calibration_sha256=keep_calibration_sha256)
         if any(set(failed_runs) & {run_id(ref, s) for s in SEEDS}):

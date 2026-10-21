@@ -2208,6 +2208,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Re-review su c3ef10b DA RIVEDERE (1 bloccante: etichetta del braccio non legata al run; 5 minori), corretti con test. Piani dei bracci
   e del collaudo congelati (SHA in decisioni.md), `--frozen-plans` per la valutazione. Suite 1301 PASS su c3ef10b. Nessun job.
 
+### 2026-10-21 | Claude | Bracci dell'obiettivo: terza passata del critico APPROVATO | Piano lanciato: dbe0f8fe (bracci_objective.json)
+
+- Cinque minori corretti (margine, passi di D nella spec, test del gruppo keep, spiegazione dei non finiti, limite sull'encoder dichiarato).
+  Strumenti pronti; il collaudo `w1arm-collaudo-v1` aspetta il via di Simone. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3298,3 +3303,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   piu' lento di ~0,81 s/passo si ferma per tempo e va completato con un job di ripresa. Scritto nel preventivo.
 - Il test nuovo del collaudo ha trovato un difetto mio: con `total` infinito la composizione della loss passava (inf - inf non supera
   nessuna tolleranza). Corretto prima di qualunque lancio.
+
+### 2026-10-21 | Claude | Bracci: due mie imprecisioni nella voce precedente
+
+- Il margine del tempo e' 0,9-1,9 h dopo i 15 minuti di avvio (la convenzione della soglia di ~0,81 s/passo), non 1,1-2,0 h.
+- Il difetto dei non finiti del collaudo non era «inf - inf»: con `total` infinito la tolleranza relativa diventa infinita e inf > inf e'
+  falso. La correzione (componenti finite) non cambia.
