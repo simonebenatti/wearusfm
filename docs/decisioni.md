@@ -3811,3 +3811,11 @@ Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e 
 rilievi FAIL attesi: metrica indefinita nel logging, consecutivi del monitor con lacune, monitor dei token assente per PWf. Protocollo
 ancora PROPOSTA, wrapper e controlli di esecuzione da completare; nessuna nuova soglia o autorizzazione di spesa firmata qui.
 Consegna a Claude in docs/reviews/branch_pilot_review_20261021.md. Non riguarda i collaudi JEPA-only/ancore-only o C3.
+
+**Valutazione di C3 AUTORIZZATA (Simone, 21/10/2026: «punto 2 approvo. vai pure.»)**, sul preventivo gia' firmato con C3 (1,3 GPU-ora
+attese, tetto 3,0; sonde CPU 48 / 65,7 core-ora). Merge di `main` (6fbe54d, review GPT del pilot) nel ramo: 98c5832, nessun cambio del
+codice del ramo (le correzioni R1-R3 di `main` sono le stesse gia' presenti). Deploy previsto `deploy/w1cal-eval-20261021` = 98c5832 dopo la
+suite completa; controllo in sola lettura pulito (ref e cartella assenti, hook solo `.sample`, `updateInstead` solo su `main`). Piano
+`results/infra/w1cal_c3_20261021/valutazione_C3.json` dalla campagna `results/infra/w1cal_campaign_c3_eval_20261021.json` (piano di
+training di C3 rigenerato identico): 2 guardie, 2 estrazioni (QoS normal, 1 h 30), 2 sonde sulla seriale (4 h), selezione.
+

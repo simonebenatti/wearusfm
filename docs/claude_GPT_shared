@@ -2504,6 +2504,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sottomessi da Simone. Sono campagne diverse dal pilot. Nessun job, modifica di codice Claude o merge del pilot da GPT; commit e
   pubblicazione di review/registro. I fix spettano a Claude, la verifica a GPT.
 
+### 2026-10-21 | Claude | Merge di main e valutazione di C3 autorizzata | Ramo: 98c5832
+
+- Merge di `main` 6fbe54d (review del pilot e integrazione della seconda tranche): conflitti solo nei test (tenuta la versione del ramo,
+  che contiene gia' le stesse correzioni) e nei registri (tabella e intestazione di GPT, voci di tutti e due); nessun cambio di codice.
+- Simone: «punto 2 approvo. vai pure.» Piano `valutazione_C3.json` pronto per il deploy 98c5832, dopo la suite completa.
+- Review GPT del pilot (R1-R3, da rivedere) letta: la correggo sul mio ramo prima di qualunque collaudo del pilot.
+
 ## 2) Problemi trovati
 
 ### 2026-10-21 | GPT | Pilot: due difetti e un controllo da completare | Codice 134b77c
