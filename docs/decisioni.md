@@ -3704,3 +3704,11 @@ review) coi soli due fix (8e920bb R1+R2, e1929be R3), test suite 1254 PASS e 140
 = e1929be).
 **Diagnostica dei rami, tranche 3 (21/10/2026 02:45):** 61582137 (B_seed0 P1 RPW0) COMPLETED 0:0 in 1 h 37 (stima 1 h 45); 61582132 (B_seed0
 P1 R, PW0, PW) in esecuzione; sottomesso 61587820 (B_seed0 P1 RPW, 3 h 30). Nessun fallimento.
+
+**Diagnostica dei rami: tranche sospese (21/10/2026 04:45), stime sbagliate per i soli rami.** Misure su B_seed0, P1: R (768 colonne) 1 h 26,
+RPW0 (1.024) 1 h 37, ma **PW0 (256) oltre 1 h 30 e non ancora finito**: la regressione logistica sui soli rami arriva al limite di 3.000
+iterazioni (avvisi di convergenza di lbfgs). Il job 61582132 (R, PW0, PW e ridondanza, 4 h) non entrera' nel suo limite (05:49): R e' salvato,
+PW0, PW e la ridondanza a rischio. Lo stesso raggruppamento e' pianificato per gli altri tre teacher, e i job P2 mettono 5 insiemi in 4 h.
+Sospese le tranche automatiche (nessun job nuovo); i job gia' sottomessi continuano (61587820, RPW di B_seed0, in coda). Proposta a Simone:
+un job per insieme con tempi misurati (stima ~435 core-ora complessive, tetto ~980, oltre il tetto autorizzato di 481) oppure la sola
+famiglia B ora (~200 / ~490), A dopo. Nessuna modifica del protocollo scientifico.

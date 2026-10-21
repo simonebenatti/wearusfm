@@ -2161,6 +2161,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - 61582137 (RPW0, B_seed0 P1) COMPLETED in 1 h 37; 61582132 in corso; sottomesso 61587820 (RPW, B_seed0 P1).
 
+### 2026-10-21 | Claude | Diagnostica dei rami: tranche sospese | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- Sospese le tranche automatiche: i job con R+PW0+PW in 4 h non ci stanno. Misure: R 1 h 26, RPW0 1 h 37, PW0 oltre 1 h 30. In attesa
+  della scelta di Simone sulla ripianificazione (un job per insieme) e sul costo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
@@ -3231,3 +3236,9 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - R3: `QOS_MAX_SECONDS` conosce solo boost_qos_dbg (30 min); altre QoS con limiti diversi andrebbero aggiunte se usate dai launcher.
 - La consegna e' un branch a parte coi fix riapplicati su c21ca40 (SHA nuovi, contenuto identico ai commit del ramo); quando il ramo di
   Claude verra' integrato piu' avanti, gli stessi cambiamenti arrivano due volte senza conflitti di contenuto.
+
+### 2026-10-21 | Claude | Diagnostica dei rami: stima sbagliata dei soli rami
+
+- Avevo stimato le sonde a 256 colonne in proporzione alla larghezza (~0,5 h): invece lbfgs non converge entro 3.000 iterazioni sui soli
+  rami (avvisi di convergenza) e PW0 dura piu' di R. Raggruppare R, PW0 e PW in un job da 4 h era sbagliato. Si ripianifica un job per
+  insieme coi tempi misurati; la sonda (protocollo della S) non cambia.
