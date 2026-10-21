@@ -3734,3 +3734,4 @@ checkout di training di C1 e C2 (`w1cal-20261016`, 72cf24a). Piani in `results/i
 identici byte per byte). **Preventivo: training 39,8 attese / 52 tetto, valutazione 1,3 / 3,0: ~41 / 55 GPU-ora (440 ore locali)** sul
 budget della calibrazione (104,6 usate su 220): dopo il tetto restano almeno 60,4 per C4. Sottomissione di Simone (come C1 e C2). La
 diagnostica dei rami non sottomette tranche nuove a ridosso della valutazione di C3.
+**C3 sottomessa da Simone (21/10/2026):** 61593336 (`W1CAL-C3-100M-lr0p0001-s0-j01`) e 61593337 (`W1CAL-C3-100M-lr0p0003-s0-j01`).
