@@ -3708,3 +3708,8 @@ P1 R, PW0, PW) in esecuzione; sottomesso 61587820 (B_seed0 P1 RPW, 3 h 30). Ness
 **Integrazione GPT (21/10/2026):** seconda tranche e fix di consegna integrati nei merge 6484432 (e1929be) e 93d5541 (bbf824a),
 preservando gli SHA originali. Pilot dei rami escluso; nessun cambio di regola firmata o risultato C1/C2, nessun nuovo lancio.
 Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e correzione dell'invocazione nella review).
+
+**Review GPT del pilot temporale dei rami (21/10/2026, target 134b77c): da rivedere.** 47 test esistenti PASS e tre regressioni dei
+rilievi FAIL attesi: metrica indefinita nel logging, consecutivi del monitor con lacune, monitor dei token assente per PWf. Protocollo
+ancora PROPOSTA, wrapper e controlli di esecuzione da completare; nessuna nuova soglia o autorizzazione di spesa firmata qui.
+Consegna a Claude in docs/reviews/branch_pilot_review_20261021.md. Non riguarda i collaudi JEPA-only/ancore-only o C3.
