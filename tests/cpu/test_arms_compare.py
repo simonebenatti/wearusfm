@@ -172,8 +172,13 @@ def _arm(env, name, s_quality=(0.6, 0.6), off_quality=(0.6, 0.6), stop=None, p2_
     return out
 
 
+ARMS = ("JEPA-only", "ancore-only")
+
+
 def _spec(env, arms, ref=None):
-    return {**env.base, "arms": list(arms), "runs": {"A": ref or _arm(env, "A"), **arms}}
+    """Spec del gruppo dell'obiettivo: i bracci non dati sono neutri (stessa qualita' di A), perche' la spec deve coprirli tutti."""
+    runs = {"A": ref or _arm(env, "A"), **{a: arms[a] if a in arms else _arm(env, a) for a in ARMS}}
+    return {**env.base, "arms": list(ARMS), "runs": runs}
 
 
 @pytest.fixture
@@ -187,7 +192,7 @@ def test_an_arm_that_is_clearly_better_becomes_the_default(env):
     assert arm["S"]["p1"]["beats"] and arm["S"]["p2"]["beats"] and arm["official"]["beats"]
     assert res["default"]["choice"] == "JEPA-only" and res["disagreements"] == []
     # identita' verificata e registrata per ogni run: configurazione completa, codice, passi e checkpoint
-    assert set(res["identity"]) == {f"{a}/{s}" for a in ("A", "JEPA-only") for s in "01"}
+    assert set(res["identity"]) == {f"{a}/{s}" for a in ("A", *ARMS) for s in "01"}
     assert all(v["config_checked"] and v["steps"] == env.steps and len(v["checkpoint_sha256"]) == 64 for v in res["identity"].values())
     assert res["plan"] == {"path": env.base["plan"], "sha256": env.base["plan_sha256"], "lr": 1e-4}
 
@@ -345,7 +350,63 @@ def test_wrong_steps_seed_encoder_plan_or_keep_calibration_are_refused(tmp_path)
         AC.compare({**spec, "plan_sha256": "0" * 64})
     with pytest.raises(ValueError, match="spec senza 'plan'"):
         AC.compare({k: v for k, v in spec.items() if k != "plan"})
-    with pytest.raises(ValueError, match="LR dichiarato"):
+    with pytest.raises(ValueError, match="non e' quello dei bracci"):  # il piano ha --lr 0.0001: non e' quello dei bracci a 3e-4
         AC.compare({**spec, "lr": 3e-4})
     with pytest.raises(ValueError, match="calibrazione della keep"):
         AC.compare({**spec, "keep_calibration_sha256": "f" * 64})
+
+
+def test_reference_and_arm_swapped_or_an_arm_omitted_are_refused(tmp_path):
+    """Re-review del critico (21/10), rilievo 1: un'etichetta deve essere il run del suo braccio, e la spec deve coprire tutto il gruppo."""
+    e = Env(tmp_path / "swap")
+    spec = _spec(e, {"JEPA-only": _arm(e, "JEPA-only", (0.8, 0.8), (0.8, 0.8))})
+    spec["runs"]["A"], spec["runs"]["JEPA-only"] = spec["runs"]["JEPA-only"], spec["runs"]["A"]  # ID, cartelle e rapporti coerenti fra loro
+    with pytest.raises(ValueError, match="il braccio A al seme 0 e' 'W1ARM-A-30M-s0'"):
+        AC.compare(spec)
+    e = Env(tmp_path / "omit")
+    spec = _spec(e, {})
+    with pytest.raises(ValueError, match="coprire una volta sola"):
+        AC.compare({**spec, "arms": ["JEPA-only"], "runs": {k: v for k, v in spec["runs"].items() if k != "ancore-only"}})
+    with pytest.raises(ValueError, match="coprire una volta sola"):
+        AC.compare({**spec, "arms": ["JEPA-only", "JEPA-only", "ancore-only"]})
+    with pytest.raises(ValueError, match="riferimento 'JEPA-only'"):
+        AC.compare({**spec, "reference": "JEPA-only", "arms": ["A", "ancore-only"]})
+    with pytest.raises(ValueError, match="gruppo 'altro'"):
+        AC.compare({**spec, "group": "altro"})
+
+
+def test_a_plan_that_is_not_the_arms_plan_is_refused(env):
+    """Il piano (anche con SHA coerente) deve essere esattamente quello di arms_plan.arm_runs per il gruppo e il LR della spec."""
+    spec = _spec(env, {})
+    plan = json.loads(Path(spec["plan"]).read_text())
+    for r in plan["runs"]:
+        if r["id"] == "W1ARM-JEPA-only-30M-s0":
+            r["args"] = r["args"].replace("--anchor-weight 0", "--anchor-weight 0.1")
+    other = env.tmp / "altro_piano.json"
+    other.write_text(AP.plan_text(plan))
+    with pytest.raises(ValueError, match="non e' quello dei bracci del gruppo objective"):
+        AC.compare({**spec, "plan": str(other), "plan_sha256": AC._select()._sha256(other)})
+
+
+def test_an_s_report_of_the_other_task_is_refused(env):
+    arm = _arm(env, "JEPA-only")
+    p = Path(arm["0"]["s_p1"])
+    p.write_text(json.dumps({**json.loads(p.read_text()), "task": "p2"}))
+    with pytest.raises(ValueError, match="del compito 'p2'"):
+        AC.compare(_spec(env, {"JEPA-only": arm}))
+
+
+LAUNCHED_PLAN = "results/infra/w1arm_20261021/bracci_objective.json"
+LAUNCHED_PLAN_SHA256 = "dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52"  # decisioni.md, lancio dei bracci (21/10)
+
+
+def test_the_launched_plan_loads_from_its_relative_path_in_any_cwd(tmp_path, monkeypatch):
+    """Re-review, rilievo 6: sul cluster il confronto legge il piano col percorso relativo al checkout, da una cwd qualunque; il piano
+    lanciato e' quello registrato (SHA in decisioni.md) e quello dei bracci di arms_plan con LR 1e-4."""
+    monkeypatch.chdir(tmp_path)
+    spec = {"group": "objective", "reference": "A", "arms": list(ARMS), "plan": LAUNCHED_PLAN, "plan_sha256": LAUNCHED_PLAN_SHA256,
+            "lr": 1e-4}
+    plan = AC.training_plan(spec)
+    ids = AC.expected_runs(spec, plan)
+    assert len(plan["runs"]) == 6 and ids["JEPA-only", "1"] == "W1ARM-JEPA-only-30M-s1"
+    assert plan["expected_sha"] == "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"

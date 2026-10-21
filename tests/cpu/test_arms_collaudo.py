@@ -148,3 +148,19 @@ def test_cli_exit_code_and_output(tmp_path):
     assert AC.main([str(d), "--arm", "JEPA-only", "--steps", str(STEPS), "--expected-sha", SHA, "--listing", str(ls), "--out", str(out)]) == 0
     assert json.loads(out.read_text())["passed"] is True
     assert AC.main([str(d), "--arm", "JEPA-only", "--steps", "1200", "--expected-sha", SHA, "--listing", str(ls)]) == 1
+
+
+def test_cli_writes_the_outcome_even_with_a_non_finite_collapse_ratio(tmp_path):
+    """Re-review del critico (21/10), rilievo 5: un rapporto di collasso NaN (che il trainer puo' scrivere) non deve impedire l'esito."""
+    def edit(recs):
+        recs[499]["student_collapse_ratio"] = float("nan")
+        recs[-1]["total"] = float("inf")
+        return recs
+    d = _run(tmp_path, "JEPA-only", edit=edit)
+    ls = tmp_path / "ls.txt"
+    ls.write_text(LISTING)
+    out = tmp_path / "esito.json"
+    assert AC.main([str(d), "--arm", "JEPA-only", "--steps", str(STEPS), "--expected-sha", SHA, "--listing", str(ls), "--out", str(out)]) == 1
+    res = json.loads(out.read_text())
+    assert res["passed"] is False and not res["criteria"]["record"]["ok"] and not res["criteria"]["composizione_della_loss"]["ok"]
+    assert res["descriptive"]["non_collasso"][0]["student_collapse_ratio"] is None

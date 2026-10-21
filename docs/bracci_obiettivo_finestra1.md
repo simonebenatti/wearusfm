@@ -179,12 +179,21 @@ Nessun job e' autorizzato da questa sezione: collaudo e training partono col via
 **Codice.** Training dal checkout di C1-C3 `wearusfm_campaigns/w1cal-20261016` a `72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec`, che contiene
 `--anchor-weight` e `--jepa-weight` (b1238a1): A dei bracci e' la ricetta calibrata in C1-C2 con lo stesso codice, nessun deploy nuovo per il
 training. La valutazione usera' un deploy nuovo col codice rivisto (questo lavoro e la re-review del `critico`): piano di valutazione e spec del
-confronto si rigenerano allora da una campagna di valutazione, come per C2; il piano di training resta questo (il suo SHA-256 entra nella spec).
+confronto si rigenerano allora da una campagna di valutazione, come per C2, con `--frozen-plans results/infra/w1arm_20261021`: il piano
+rigenerato deve essere identico byte per byte a quello lanciato (SHA-256 `dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52`,
+registrato in `decisioni.md`) e la spec punta al file lanciato, non a una copia.
 
 **Piani** (`results/infra/w1arm_20261021/`, campagna `results/infra/w1arm_campaign_20261021.json`): 6 run (A, JEPA-only, ancore-only, semi 0
 e 1), 98.094 passi, warmup 1.962, decay da 78.475, un job da 23 h per run (QoS normal, `TIME_LIMIT_S` 80.400), cartelle in
-`$SCRATCH/wearusfm_runs/runs/w1arm/`; comandi in `comandi_training_objective.txt` (rigenerati identici da `wsd_chain.py`). Col passo misurato
-in C2 (0,740 s, A a 30M, 24.523 passi in 18.154 s) un run dura ~20,2 h: ~2 h di margine sul limite del trainer.
+`$SCRATCH/wearusfm_runs/runs/w1arm/`; comandi in `comandi_training_objective.txt` (rigenerati identici da `wsd_chain.py`).
+**Tempo (corretto con la re-review):** il passo misurato di A a 30M va da 0,740 s (C2) a 0,778 s (C1, il piu' lento dei cinque run): un run dura
+20,2-21,2 h, con 1,1-2,0 h di margine sul limite del trainer. Un job solo basta finche' il passo medio resta sotto ~0,81 s
+((80.400 - 900) / 98.094), cioe' +4% sul run piu' lento misurato; il pianificatore lo ammette perche' usa 0,70 s con slack 1,15, e col passo
+misurato il suo margine pessimistico non tiene (re-review, rilievo 3). **Rischio dichiarato:** un run piu' lento si ferma per tempo
+(`stopped` = limite di tempo, checkpoint salvato 40 minuti prima della fine del job), non e' un run fallito: lo si completa con un job di
+ripresa (stesso comando, ID `-j02`, ripresa esatta dal checkpoint, provata nei collaudi) e solo dopo si valuta. Costo in piu' al massimo un job
+breve per run (passi mancanti x ~0,8 s x 4 GPU), da presentare a Simone se succede. Nessun job di scorta automatico: raddoppierebbe il tetto
+dichiarato senza servire nei run finora misurati.
 
 **Review del `critico` sugli strumenti dei bracci (21/10/2026): DA RIVEDERE, rilievi corretti.** Su pianificatore, confronto, S della P2 e
 test (86 PASS); soddisfatti piano uguale al protocollo, S della P2 sui soli soggetti fuori dai test (verificato incrociando con `probe_p2`),
@@ -203,7 +212,24 @@ LR = 1e-4, nessuna contraddizione con `decisioni.md`.
    dello Step 1 (`4640dfcf...`); il confronto lo verifica nella configurazione di ogni run.
 6. Costanti degli split della P2 duplicate: **test aggiunto** che confronta `p2_internal_subjects` coi soggetti di test che
    `probe_p2.probe_dataset` usa davvero (sonda finta), per EPN-612 e UCI-EMG.
-Re-review del `critico` sulle correzioni prima del lancio.
+
+**Re-review del `critico` (21/10/2026, su c3ef10b): DA RIVEDERE, rilievi corretti.** Rilievi 2-6 della prima review risolti; collaudo coerente
+col trainer a 72cf24a (composizione della loss verificata sui record veri di C2, valutazioni a 500/1.000/1.300, ~18-19 min attesi); piani
+rigenerati identici; suite 1301 PASS. Nuovi rilievi:
+1. [bloccante] il confronto non legava l'etichetta del braccio al run: una spec con A e JEPA-only scambiati per intero (ID, cartelle e
+   rapporti coerenti) passava, e un braccio poteva essere omesso. **Corretto:** il piano deve essere esattamente quello di
+   `arms_plan.arm_runs` per il gruppo e il LR della spec; la spec copre una volta sola tutti i bracci del gruppo, col riferimento del gruppo
+   (`group` nella spec); ogni etichetta e' il run del suo braccio (`run_id`). Test: riferimento e braccio scambiati, braccio omesso o
+   ripetuto, riferimento sbagliato, piano con un braccio diverso ma SHA coerente.
+2. Per P1/P2 ufficiali la provenienza dal checkpoint e' solo dichiarata (la fase della sonda non carica il modello e la cache delle feature
+   non registra lo SHA): **scritto come limite** nel confronto (il default si sceglie su S, che ha lo SHA dall'estrazione); aggiunto il
+   controllo del compito dei rapporti di S. Registrare lo SHA nelle cache di `probe_p1`/`probe_p2` resta un miglioramento possibile.
+3. Margine del tempo col passo misurato: **dichiarato** sopra (rischio e ripresa).
+4. Piano rigenerato alla valutazione non legato a quello lanciato: **corretto** (`--frozen-plans`, SHA registrato in `decisioni.md`).
+5. La CLI del collaudo si bloccava sui valori non finiti: **corretto** (non finiti -> None nell'esito). Il test nuovo ha trovato un difetto
+   vero: con `total` infinito la composizione passava (inf - inf); ora richiede componenti finite (criterio 5 piu' stretto, prima del lancio).
+6. Percorso relativo del piano non provato: **test** dal file lanciato, da una cwd qualunque, con lo SHA registrato.
+Terza passata del `critico` sulle correzioni prima del lancio.
 
 ### Collaudo `w1arm-collaudo-v1` dei due bracci nuovi (criteri congelati prima del lancio)
 
@@ -223,7 +249,7 @@ restano almeno 11,17. Prima della sottomissione, controllo in sola lettura: cart
 3. pesi in `config.json`: JEPA-only (JEPA 1, ancore 0), ancore-only (JEPA 0, ancore 0,2); keep e rami a 0;
 4. record: uno per passo da 1 a 1.300, 32 finestre per passo, nessun valore non finito;
 5. composizione della loss: a ogni passo `total` = peso JEPA x `jepa` + peso ancore x (`log_rms` + `band_shape` + `log_env` + `ms_fast` +
-   `ms_slow`), tolleranza relativa 1e-6 (il contratto la calcola in float64; sui record veri di A in C2 la differenza e' 0);
+   `ms_slow`), tutte finite, tolleranza relativa 1e-6 (il contratto la calcola in float64; sui record veri di A in C2 la differenza e' 0);
 6. apprendimento: la media di `total` sugli ultimi 50 passi e' minore di quella sui primi 50 (nei run a 30M registrati la JEPA scende di
    10-100 volte e le ancore di 4-20 volte entro il passo 1.250, dopo un rialzo della JEPA nei primi 100 passi);
 7. non-collasso: nessun allarme; diagnostiche ai passi 500, 1.000 e 1.300;
@@ -242,7 +268,7 @@ rilancio automatico. Un allarme di collasso entro 1.300 passi non e' un difetto 
 | Voce | GPU-ora attese / tetto | Ore locali (tetto) | Altro |
 |---|---|---|---|
 | Collaudo `w1arm-collaudo-v1` (budget infrastruttura) | 2,6 / 4,0 | 32 | 30 min, 2 job su dbg |
-| Training, 6 run da 98.094 passi | 463,8 / 552,0 (484 col passo di C2) | 4.416 | ~20,5 h, 6 nodi in un'ondata |
+| Training, 6 run da 98.094 passi | 463,8 / 552,0 (484-509 col passo di C2-C1) | 4.416 | 20,2-21,2 h, 6 nodi in un'ondata |
 | Valutazione, sonde sulla seriale | 10,5 / 27,0 | 216 | + 192 core-ora, ~24 h di sonde in fila |
 | Valutazione, in alternativa sonde su GPU | 34,5 / 87,0 | 696 | in parallelo |
 

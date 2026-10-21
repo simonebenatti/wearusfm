@@ -22,6 +22,7 @@ repo (rilievo 4): il nodo del confronto la legge dal checkout della valutazione.
 
 Uso: python scripts/arms_plan.py rapporto_cluster.json --decisions w1cal_decisioni.json --registro-c2 registro_C2.json --campaign campagna.json
      --out cartella_relativa [--lr LR] [--keep-calibration NPZ --keep-calibration-sha256 SHA] [--probes-on-gpu] [--failed-runs ID ...]
+     [--frozen-plans cartella_dei_piani_lanciati]   (alla valutazione: i piani rigenerati devono esserle identici, la spec punta a quelli)
 """
 
 from __future__ import annotations
@@ -42,6 +43,7 @@ sys.path.insert(0, str(ROOT / "src"))
 BATCH, PRESET, EPOCHS, SEEDS = 32, "sanity", 4.0, (0, 1)
 OBJECTIVE_ARMS = {"A": "", "JEPA-only": "--anchor-weight 0", "ancore-only": "--jepa-weight 0"}
 KEEP_ARMS = {"Aprime": "--keep-weight 0", "B": "--keep-weight 0.05"}  # con --keep-calibration
+REFERENCE = {"objective": "A", "keep": "Aprime"}
 P1_DS, P2_DS = ("ninapro_db2", "ninapro_db3", "ninapro_db6"), ("epn612", "uci_emg")
 # nodi della valutazione: (launcher, tetto, attese in ore); estrazioni 1 GPU; sonde 8 core (seriale) o 1 GPU con --probes-on-gpu.
 # Misure: P1 ufficiale 13:42 e sonde 22 min, P2 ufficiale 41:19 e sonde 33 min (docs/step1_downstream_ab.md); S della P1 17 min e 1 h 48
@@ -105,14 +107,19 @@ def signed_lr(decisions: dict, registro: dict) -> tuple[float, dict]:
                     "why": "parita' (entro 1 SE): il piu' basso" if tie else "S migliore al seme 1"}
 
 
+def run_id(arm: str, seed: int | str) -> str:
+    return f"W1ARM-{arm}-30M-s{seed}"
+
+
 def arm_runs(steps: int, lr: float, keep_calibration: str | None) -> dict[str, list[dict]]:
-    """{gruppo: [run]} per wsd_chain: "objective" (A, JEPA-only, ancore-only) e, con la calibrazione della keep, "keep" (A', B)."""
+    """{gruppo: [run]} per wsd_chain: "objective" (A, JEPA-only, ancore-only) e, con la calibrazione della keep, "keep" (A', B).
+    `arms_compare.py` la richiama per verificare che il piano di training sia esattamente quello dei bracci del gruppo."""
     groups = {"objective": OBJECTIVE_ARMS}
     if keep_calibration:
         groups["keep"] = {k: f"--keep-calibration {keep_calibration} {v}" for k, v in KEEP_ARMS.items()}
     out = {}
     for g, arms in groups.items():
-        out[g] = [{"id": f"W1ARM-{arm}-30M-s{seed}", "preset": PRESET, "seed": seed, "batch_size": BATCH, "accum_steps": 1, "steps_at_d": steps,
+        out[g] = [{"id": run_id(arm, seed), "preset": PRESET, "seed": seed, "batch_size": BATCH, "accum_steps": 1, "steps_at_d": steps,
                    "total_steps": steps, "keep_checkpoints": [], "args": f"--lr {lr:g} --nested 1 {flags}".strip(), "arm": arm}
                   for arm, flags in arms.items() for seed in SEEDS]
     return out
@@ -168,11 +175,13 @@ def check_qos_walltime(nodes: list[dict]) -> None:
 
 
 def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | None = None, probes_on_gpu: bool = False,
-         failed_runs: frozenset = frozenset(), *, plans_dir: str, keep_calibration_sha256: str | None = None) -> dict:
+         failed_runs: frozenset = frozenset(), *, plans_dir: str, keep_calibration_sha256: str | None = None,
+         frozen_plans: str | None = None) -> dict:
     from wearusfm.training import run as R
 
-    if not plans_dir or Path(plans_dir).is_absolute() or ".." in Path(plans_dir).parts:
-        raise ValueError(f"cartella dei piani {plans_dir!r}: relativa al repo, senza '..' (il confronto la legge dal checkout della valutazione)")
+    for d in (plans_dir, frozen_plans) if frozen_plans is not None else (plans_dir,):
+        if not d or Path(d).is_absolute() or ".." in Path(d).parts:
+            raise ValueError(f"cartella dei piani {d!r}: relativa al repo, senza '..' (il confronto la legge dal checkout della valutazione)")
     if keep_calibration is not None:
         if not re.fullmatch(r"[0-9a-f]{64}", keep_calibration_sha256 or ""):
             raise ValueError("--keep-calibration richiede --keep-calibration-sha256 (64 caratteri esadecimali) della ricalibrazione sul corpus intero")
@@ -219,12 +228,17 @@ def plan(build_report: dict, lr: float, campaign: dict, keep_calibration: str | 
                 probes += [x["id"] for x in n if x["kind"] == "probe"]
                 entry.update(reps)
             spec_runs.setdefault(meta["arm"], {})[str(run["seed"])] = entry
-        ref = "A" if g == "objective" else "Aprime"
-        spec = {"reference": ref, "arms": [a for a in spec_runs if a != ref], "plan": f"{plans_dir}/bracci_{g}.json",
+        ref = REFERENCE[g]
+        plan_path = f"{frozen_plans or plans_dir}/bracci_{g}.json"
+        if frozen_plans is not None:  # rilievo 4 della re-review: la valutazione si lega al piano LANCIATO, non a una sua rigenerazione
+            frozen = ROOT / plan_path
+            if not frozen.is_file() or frozen.read_text() != plan_text(p):
+                raise ValueError(f"{g}: il piano rigenerato non e' identico al piano congelato {plan_path}")
+        spec = {"group": g, "reference": ref, "arms": [a for a in spec_runs if a != ref], "plan": plan_path,
                 "plan_sha256": hashlib.sha256(plan_text(p).encode()).hexdigest(), "lr": lr, "runs": spec_runs}
         if g == "keep":
-            spec["keep_calibration_sha256"] = keep_calibration_sha256
-        if any(set(failed_runs) & {f"W1ARM-{ref}-30M-s{s}" for s in SEEDS}):
+            spec.update(keep_calibration=keep_calibration, keep_calibration_sha256=keep_calibration_sha256)
+        if any(set(failed_runs) & {run_id(ref, s) for s in SEEDS}):
             raise ValueError(f"{g}: il riferimento {ref} non e' arrivato alla valutazione: nessun confronto")
         spec_path = f"{plans_dir}/confronto_{g}.json"
         specs[g] = spec
@@ -267,12 +281,15 @@ def main(argv=None) -> int:
     ap.add_argument("--probes-on-gpu", action="store_true")
     ap.add_argument("--failed-runs", nargs="*", default=[])
     ap.add_argument("--out", type=Path, required=True, help="cartella dei piani, relativa al repo: il checkout della valutazione li contiene")
+    ap.add_argument("--frozen-plans", default=None, help="alla valutazione: cartella (relativa al repo) coi piani di training LANCIATI; "
+                    "i piani rigenerati devono esserle identici e la spec punta a quelli")
     args = ap.parse_args(argv)
     lr, why = signed_lr(json.loads(args.decisions.read_text()), json.loads(args.registro_c2.read_text()))
     if args.lr is not None and args.lr != lr:
         raise SystemExit(f"--lr {args.lr:g}: la regola firmata da C2 da' {lr:g} ({why['why']})")
     res = plan(json.loads(args.build_report.read_text()), lr, json.loads(args.campaign.read_text()), args.keep_calibration,
-               args.probes_on_gpu, frozenset(args.failed_runs), plans_dir=str(args.out), keep_calibration_sha256=args.keep_calibration_sha256)
+               args.probes_on_gpu, frozenset(args.failed_runs), plans_dir=str(args.out), keep_calibration_sha256=args.keep_calibration_sha256,
+               frozen_plans=args.frozen_plans)
     res["lr_rule"] = {**why, "decisions": str(args.decisions), "decisions_sha256": _sha256_file(args.decisions),
                       "registro_c2": str(args.registro_c2), "registro_c2_sha256": _sha256_file(args.registro_c2)}
     for r in res["runs"]:
@@ -283,7 +300,8 @@ def main(argv=None) -> int:
           f"{t['eval_gpu_hours_expected']} / {t['eval_gpu_hours_max']}; bloccati: {res['blocked'] or 'nessuno'}")
     args.out.mkdir(parents=True, exist_ok=True)
     for g, p in res["plans"].items():
-        (args.out / f"bracci_{g}.json").write_text(plan_text(p))
+        if args.frozen_plans is None:  # con i piani congelati la spec punta a quelli: nessuna copia
+            (args.out / f"bracci_{g}.json").write_text(plan_text(p))
         (args.out / f"valutazione_{g}.json").write_text(json.dumps(res["eval_plans"][g], indent=1))
         (args.out / f"confronto_{g}.json").write_text(json.dumps(res["specs"][g], indent=1))
     (args.out / "bracci_riepilogo.json").write_text(json.dumps({k: v for k, v in res.items() if k not in ("plans", "eval_plans", "specs")},

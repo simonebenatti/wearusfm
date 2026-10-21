@@ -217,3 +217,22 @@ def test_cli_derives_the_lr_and_refuses_another(tmp_path, monkeypatch):
     assert AP.main(base[:-2] + ["--out", "piani2", "--lr", "1e-4"]) == 0
     with pytest.raises(SystemExit, match="regola firmata"):
         AP.main(base[:-2] + ["--out", "piani3", "--lr", "3e-4"])
+
+
+def test_frozen_plans_bind_the_evaluation_to_the_launched_plan():
+    """Re-review del critico (21/10), rilievo 4: rigenerando alla valutazione, il piano deve essere identico a quello lanciato e la spec
+    punta al file lanciato (col suo SHA), non a una copia."""
+    report = json.loads((REPO / "results" / "infra" / "derived_manifests_v1_1_build_cluster_20261015.json").read_text())
+    camp = json.loads((REPO / "results" / "infra" / "w1arm_campaign_20261021.json").read_text())
+    camp_eval = {**camp, "eval": {**camp["eval"], "code_dir": "/C/eval", "expected_sha": "e" * 40}}  # un deploy nuovo della valutazione
+    r = AP.plan(report, 1e-4, camp_eval, plans_dir="results/infra/w1arm_eval", frozen_plans="results/infra/w1arm_20261021")
+    spec = r["specs"]["objective"]
+    assert spec["plan"] == "results/infra/w1arm_20261021/bracci_objective.json"
+    assert spec["plan_sha256"] == "dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52"
+    assert r["eval_plans"]["objective"]["nodes"][-1]["args"][0] == "results/infra/w1arm_eval/confronto_objective.json"
+    with pytest.raises(ValueError, match="non e' identico al piano congelato"):
+        AP.plan(report, 1e-4, {**camp_eval, "run_root": "/altrove"}, plans_dir=PD, frozen_plans="results/infra/w1arm_20261021")
+    with pytest.raises(ValueError, match="non e' identico al piano congelato"):
+        AP.plan(report, 3e-4, camp_eval, plans_dir=PD, frozen_plans="results/infra/w1arm_20261021")
+    with pytest.raises(ValueError, match="relativa al repo"):
+        AP.plan(report, 1e-4, camp_eval, plans_dir=PD, frozen_plans="/abs/w1arm")

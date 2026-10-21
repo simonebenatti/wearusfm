@@ -29,7 +29,8 @@ REL_TOL = 1e-6  # il totale del contratto e' la somma pesata delle componenti in
 EDGE = 50  # record mediati all'inizio e alla fine per «il termine allenato scende»; e passi esclusi dal ritmo (avvio)
 CHECKPOINTS = ("checkpoint_predecay.pt", "checkpoint_postdecay.pt")
 EVAL_EVERY = 500  # diagnostiche di non-collasso del preset sanity: ai multipli di 500 e all'ultimo passo
-C2_S_PER_STEP = 18153.877413511276 / 24523  # A a 30M in C2 (W1CAL-C2-30M-lr0p0001-s1, elapsed / passi), solo per confronto
+# A a 30M (elapsed / passi), solo per confronto: C2 W1CAL-C2-30M-lr0p0001-s1 e il piu' lento di C1 (W1CAL-C1-30M-lr0p0001-s0)
+A_S_PER_STEP = {"C2": 18153.877413511276 / 24523, "C1_max": 0.7776}
 
 
 def _select():
@@ -37,6 +38,17 @@ def _select():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def _clean(obj):
+    """Non finiti -> None, ricorsivamente: l'esito si scrive anche (soprattutto) quando il run ha valori non finiti (re-review, rilievo 5)."""
+    if isinstance(obj, float) and not math.isfinite(obj):
+        return None
+    if isinstance(obj, dict):
+        return {k: _clean(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_clean(v) for v in obj]
+    return obj
 
 
 def listing_sizes(text: str) -> dict[str, int]:
@@ -90,7 +102,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     missing, off = [], []
     for r in recs:
         keys = ("total", "jepa") + ANCHORS
-        if any(not isinstance(r.get(k), (int, float)) for k in keys):
+        if any(not isinstance(r.get(k), (int, float)) or not math.isfinite(r[k]) for k in keys):  # inf - inf non supera nessuna tolleranza
             missing.append(r.get("step"))
             continue
         expected = wj * r["jepa"] + wa * sum(r[a] for a in ANCHORS)
@@ -98,7 +110,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
             off.append(r.get("step"))
     put("composizione_della_loss", bool(recs) and not missing and not off,
         {"formula": f"total = {wj:g} x jepa + {wa:g} x somma delle ancore {list(ANCHORS)}", "tolleranza_relativa": REL_TOL,
-         "passi_senza_componenti": missing[:5], "passi_fuori_tolleranza": off[:5]})
+         "passi_senza_componenti_finite": missing[:5], "passi_fuori_tolleranza": off[:5]})
 
     totals = [r["total"] for r in recs if isinstance(r.get("total"), (int, float))]
     first = statistics.fmean(totals[:EDGE]) if len(totals) >= 2 * EDGE else None
@@ -125,7 +137,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
 
     descriptive = {
         "s_per_passo_mediana": statistics.median(t_step) if t_step else None,
-        "s_per_passo_A_C2": C2_S_PER_STEP,
+        "s_per_passo_A": A_S_PER_STEP,
         "attesa_dati_frazione": sum(t_data) / sum(t_step) if t_step and sum(t_step) > 0 else None,
         "elapsed_s": summary.get("elapsed_s"), "gpu_max_memory_gib": summary.get("gpu_max_memory_gib"),
         "jepa_inizio_fine": edge_means("jepa"),
@@ -135,8 +147,8 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "lettura": ("JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; "
                     "ancore-only: la JEPA registrata misura un predittore non allenato (docs/bracci_obiettivo_finestra1.md)"),
     }
-    return {"protocol": PROTOCOL, "arm": arm, "run_dir": str(run_dir), "steps": steps, "passed": all(c["ok"] for c in crit.values()),
-            "criteria": crit, "descriptive": descriptive}
+    return _clean({"protocol": PROTOCOL, "arm": arm, "run_dir": str(run_dir), "steps": steps, "passed": all(c["ok"] for c in crit.values()),
+                   "criteria": crit, "descriptive": descriptive})
 
 
 def main(argv=None) -> int:

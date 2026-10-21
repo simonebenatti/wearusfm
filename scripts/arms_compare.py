@@ -18,10 +18,14 @@ Identita' e provenienza (rilievo 1 del critico, 21/10; come `calibration_select.
 - il run e' quello del piano di training congelato (`plan`, percorso relativo al checkout, con `plan_sha256`): ID = nome della cartella e
   cartella del piano, seme del piano uguale al seme della spec, configurazione effettiva completa e codice uguali al piano
   (`calibration_select.check_identity`), LR = `lr` della spec; per la keep, SHA della calibrazione = `keep_calibration_sha256`;
-- un run completo ha i passi del piano, e ogni suo rapporto viene dal suo `checkpoint_postdecay.pt` (stesso file; per S anche lo SHA-256),
-  del teacher per P1/P2 ufficiali; checkpoint e rapporti distinti fra tutti i run.
+- un run completo ha i passi del piano, e ogni suo rapporto viene dal suo `checkpoint_postdecay.pt` (stesso file; per S anche lo SHA-256 e
+  il compito), del teacher per P1/P2 ufficiali; checkpoint e rapporti distinti fra tutti i run;
+- il piano e' esattamente quello dei bracci del gruppo (`arms_plan.arm_runs` con lo stesso LR), la spec copre tutti i bracci del gruppo col
+  riferimento giusto, e ogni etichetta e' il run del suo braccio (re-review del critico, 21/10: un riferimento scambiato con un braccio).
+Limite (re-review, rilievo 2): per P1/P2 ufficiali la provenienza e' il checkpoint DICHIARATO dalla fase della sonda (`probe_p1.py`,
+`probe_p2.py`: la cache delle feature non registra lo SHA del checkpoint); per S e' lo SHA scritto dall'estrazione. Il default si sceglie su S.
 
-Spec (JSON): {"reference": "A", "arms": ["JEPA-only", ...], "plan": "results/.../bracci_objective.json", "plan_sha256", "lr",
+Spec (JSON): {"group": "objective", "reference": "A", "arms": ["JEPA-only", ...], "plan": "results/.../bracci_objective.json", "plan_sha256", "lr",
 "runs": {nome: {"0": {"id", "run_dir", "s_p1", "s_p2", "p1", "p2"}, "1": {...}}}} (per un braccio collassato bastano id e run_dir).
 Uso: python3 scripts/arms_compare.py spec.json --out esito.json
 """
@@ -122,6 +126,39 @@ def training_plan(spec: dict) -> dict:
     return json.loads(path.read_text())
 
 
+def _arms_plan():
+    spec = importlib.util.spec_from_file_location("arms_plan_for_compare", ROOT / "scripts" / "arms_plan.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def expected_runs(spec: dict, plan: dict) -> dict[tuple[str, str], str]:
+    """{(braccio, seme): ID del run}: il piano di training deve essere esattamente quello che `arms_plan.arm_runs` produce per il gruppo
+    della spec, col LR della spec (e, per la keep, la sua calibrazione); la spec deve coprire tutti i bracci del gruppo, col riferimento del
+    gruppo, ciascuno una volta sola."""
+    AP = _arms_plan()
+    group = spec.get("group")
+    if group not in AP.REFERENCE:
+        raise ValueError(f"gruppo {group!r}: uno di {sorted(AP.REFERENCE)}")
+    if spec["reference"] != AP.REFERENCE[group]:
+        raise ValueError(f"riferimento {spec['reference']!r}: il gruppo {group} ha {AP.REFERENCE[group]!r}")
+    steps = {r.get("total_steps") for r in plan["runs"]}
+    if len(steps) != 1:
+        raise ValueError(f"piano con passi diversi fra i run: {sorted(map(str, steps))}")
+    want = AP.arm_runs(steps.pop(), float(spec["lr"]), spec.get("keep_calibration"))
+    if group not in want:
+        raise ValueError(f"gruppo {group}: senza la calibrazione della keep nella spec")
+    exp = want[group]
+    if [{k: v for k, v in r.items() if k != "arm"} for r in exp] != plan["runs"]:
+        raise ValueError(f"il piano di training non e' quello dei bracci del gruppo {group} (arms_plan.arm_runs)")
+    arms = [spec["reference"], *spec["arms"]]
+    if len(arms) != len(set(arms)) or set(arms) != {r["arm"] for r in exp}:
+        raise ValueError(f"la spec deve coprire una volta sola tutti i bracci del gruppo {group}: {sorted({r['arm'] for r in exp})}, "
+                         f"ha {arms}")
+    return {(r["arm"], str(r["seed"])): r["id"] for r in exp}
+
+
 def _flat_get(d: dict, key: str):
     """Il valore di una chiave foglia in una configurazione annidata (prima occorrenza), o None."""
     for k, v in d.items():
@@ -132,12 +169,12 @@ def _flat_get(d: dict, key: str):
     return None
 
 
-def run_identity(name: str, sd: str, entry: dict, status: str, plan: dict, spec: dict, reports: dict) -> dict:
+def run_identity(name: str, sd: str, entry: dict, status: str, plan: dict, spec: dict, reports: dict, ids: dict) -> dict:
     """Il run `entry` e' il braccio `name` al seme `sd` del piano e, se completo, i suoi rapporti vengono dal suo checkpoint post-decay."""
     CS = _select()
     rd = Path(entry["run_dir"])
-    if entry.get("id") != rd.name:
-        raise ValueError(f"{name}/{sd}: ID {entry.get('id')!r} diverso dal nome della cartella {rd.name!r}")
+    if entry.get("id") != ids[name, sd] or rd.name != ids[name, sd]:
+        raise ValueError(f"{name}/{sd}: run {entry.get('id')!r} in {rd.name!r}, il braccio {name} al seme {sd} e' {ids[name, sd]!r}")
     planned = CS.planned_run(plan, rd.name)
     if not CS.same_file(rd, planned["run_dir"]):
         raise ValueError(f"{rd.name}: cartella {rd}, il piano dice {planned['run_dir']}")
@@ -163,6 +200,8 @@ def run_identity(name: str, sd: str, entry: dict, status: str, plan: dict, spec:
             raise ValueError(f"{rd.name}: il rapporto {t} viene da {rep.get('checkpoint')}, non da {ckpt}")
         if t.startswith("s_") and rep.get("checkpoint_sha256") != sha:
             raise ValueError(f"{rd.name}: il rapporto {t} ha lo SHA-256 di un altro checkpoint")
+        if t.startswith("s_") and rep.get("task") != t[2:]:
+            raise ValueError(f"{rd.name}: il rapporto {t} e' del compito {rep.get('task')!r}")
         if not t.startswith("s_") and rep.get("which") != "teacher":
             raise ValueError(f"{rd.name}: il rapporto {t} e' dell'encoder {rep.get('which')!r}, non del teacher")
     return {**ident, "steps": summary["steps"], "checkpoint_sha256": sha}
@@ -172,6 +211,7 @@ def compare(spec: dict) -> dict:
     ref_name = spec["reference"]
     runs = spec["runs"]
     plan = training_plan(spec)
+    ids = expected_runs(spec, plan)
     paths = [e[t] for r in runs.values() for e in r.values() for t in REPORTS if t in e]
     if len(set(paths)) != len(paths):
         raise ValueError("lo stesso rapporto compare per piu' run o compiti")
@@ -184,7 +224,7 @@ def compare(spec: dict) -> dict:
         if "fallito" in st.values():
             raise ValueError(f"{name}: run fermato per un motivo diverso dal collasso ({st}): non valutabile, si decide a mano")
         for sd in SEEDS:
-            identities[f"{name}/{sd}"] = run_identity(name, sd, runs[name][sd], st[sd], plan, spec, reports)
+            identities[f"{name}/{sd}"] = run_identity(name, sd, runs[name][sd], st[sd], plan, spec, reports, ids)
         return "collassato" if "collassato" in st.values() else "completo"
 
     if status_of(ref_name) != "completo":

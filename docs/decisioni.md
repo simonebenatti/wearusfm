@@ -3750,3 +3750,16 @@ attese col passo di C2; 4.416 ore locali di tetto), valutazione 10,5 / 27,0 con 
 87,0 con sonde su GPU. Voce proposta sulla finestra 1 (6.000, calibrazione compresa; consumato fuori dalla calibrazione: 0): **tetto 579
 GPU-ora** (sonde sulla seriale) **o 639** (sonde su GPU). Keep: bloccata fino alla calibrazione sul corpus intero. Nessun job sottomesso.
 
+**Bracci dell'obiettivo: re-review del `critico` (21/10/2026, su c3ef10b) DA RIVEDERE, rilievi corretti.** Bloccante: il confronto non legava
+l'etichetta del braccio al run (A e JEPA-only scambiati per intero passavano; un braccio si poteva omettere): ora il piano deve essere
+quello di `arms_plan.arm_runs` per gruppo e LR, la spec copre tutti i bracci del gruppo e ogni etichetta e' il run del suo braccio. Minori:
+provenienza di P1/P2 ufficiali solo dichiarata (scritto come limite; il default si sceglie su S), controllo del compito dei rapporti di S,
+rischio sul tempo dichiarato, piano lanciato congelato, esito del collaudo scritto anche coi non finiti (e composizione della loss con
+componenti finite: criterio 5 piu' stretto, prima del lancio), test del percorso relativo. Dettagli in `docs/bracci_obiettivo_finestra1.md`.
+**Piani lanciabili congelati:** `results/infra/w1arm_20261021/bracci_objective.json` SHA-256
+`dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52` (training dei 6 run) e `collaudo_bracci.json`
+`a9e835400f5dc5a659952761dea570b961fcc3c11d639f9f4e38caa331954d6f` (collaudo); alla valutazione `arms_plan.py --frozen-plans
+results/infra/w1arm_20261021` rifiuta un piano rigenerato diverso. **Correzione del preventivo:** il passo di A a 30M misurato va da 0,740 s
+(C2) a 0,778 s (C1): training atteso 484-509 GPU-ora (tetto invariato 552), run da 20,2-21,2 h, un job solo finche' il passo medio resta
+sotto ~0,81 s; un run fermato per tempo si completa con un job di ripresa da presentare. Suite 1301 PASS su c3ef10b. Nessun job sottomesso.
+
