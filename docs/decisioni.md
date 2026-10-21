@@ -3702,3 +3702,5 @@ piano congelato. **R3:** QoS normal esplicita per le estrazioni dei bracci e con
 07e120c (R1+R2) e 32b5718 (R3), suite 1272 PASS. **Consegna separata dal pilot dei rami:** branch `consegna/review-3272398` da c21ca40 (il punto della
 review) coi soli due fix (8e920bb R1+R2, e1929be R3), test suite 1254 PASS e 140 test collegati PASS; le tre regressioni di GPT passano (`WEARUSFM_REVIEW_SHA`
 = e1929be).
+**Diagnostica dei rami, tranche 3 (21/10/2026 02:45):** 61582137 (B_seed0 P1 RPW0) COMPLETED 0:0 in 1 h 37 (stima 1 h 45); 61582132 (B_seed0
+P1 R, PW0, PW) in esecuzione; sottomesso 61587820 (B_seed0 P1 RPW, 3 h 30). Nessun fallimento.
