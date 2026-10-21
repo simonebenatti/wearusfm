@@ -3800,4 +3800,6 @@ comandi di `results/infra/w1arm_20261021/comandi_training_objective.txt`): 61622
 (JEPA-only s0), 61622391 (JEPA-only s1), 61622414 (ancore-only s0), 61622418 (ancore-only s1). **Voce di budget «Bracci dell'obiettivo»
 (tetto 639 GPU-ora proposto, 579 con le sonde sulla seriale): da confermare esplicitamente da Simone**; la sottomissione autorizza il
 training (tetto 552), non ancora la valutazione. Valutazione dopo i training, rigenerata con `--frozen-plans`.
+**Diagnostica dei rami, piano v2, tranche di Simone (21/10/2026 ~14:50):** 61622429 (B_seed0 P2 PW, 3 h) e 61622430 (B_seed0 P2 R, 2 h);
+restano 12 sonde e il confronto.
 
