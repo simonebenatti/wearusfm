@@ -15,31 +15,30 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 21/10/2026 dopo integrazione della consegna separata: merge 6484432 (c21ca40 + R1/R2/R3, consegna e1929be)
-e 93d5541 (fix diagnostica bbf824a). Contenuto dei fix identico a 07e120c/32b5718 verificati. Review pilot 134b77c conclusa: da rivedere,
-due difetti P2 e monitor PWf da completare; pilot fuori dal merge. Stato aggiornato anche dai log Claude fino a 58380a3.
-Claude sviluppa; GPT verifica e integra.
+Stato aggiornato al 21/10/2026: R1-R3 del pilot verificati e chiusi su d7310be, integrato col merge 3a3c595 (SHA conservati).
+Seconda tranche gia' chiusa nei merge 6484432/93d5541. Codice di base del pilot integrato; wrapper e campagna ancora da completare.
+Stato operativo dai log Claude fino a eb14798 (stesso codice del pilot); Claude sviluppa, GPT verifica e integra.
 La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Seconda tranche e fix integrati per merge | Consegna separata e1929be accettata | CHIUSO per questa tranche: merge 6484432 e 93d5541, SHA originali conservati. Pilot escluso; la sua review resta al punto 5. Nessun training C1/C2 da ripetere |
+| 3 | Review e integrazione su main | Integrato d7310be, inclusi i fix del pilot | R1-R3 corretti e verificati | CHIUSO fino a d7310be: merge 3a3c595, SHA conservati. Tre regressioni ora PASS; inclusi strumenti collegati revisionati. Resta il futuro codice operativo del pilot, non questi fix |
 | 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review pilot conclusa: R1/R2 P2 e monitor PWf da completare; verifica fix successiva | Corregge pilot e completa wrapper; segue campagne | 47 test PASS e 3 regressioni dei rilievi FAIL attesi. Pilot non integrato. Log Claude: diagnostica v2 sola B (61592919/61592922), dopo TIMEOUT 61582132; RPW 61587820 finito. Collaudi diversi JEPA-only/ancore-only sottomessi da Simone (61607555/61607561); nuovi planner ancora da review GPT. Restano risultati, keep e sonde fisiche/profondita' |
-| 6 | Chiudere la finestra 1 | Review dei piani e risultati | Segue C3, poi C4 e piano finale | C1/C2 CHIUSE; C3 autorizzata e sottomessa da Simone (61593336/61593337, log a8d7851), non verificata live. Ultimo consuntivo 104,6/220 GPUh prima di C3; preventivo C3 ~41/55. Restano risultati C3, C4, LR finale e piano W1. SCRATCH prossimo 12/11 |
+| 5 | Validare l'obiettivo scientifico | Fix pilot verificati; review futura del wrapper e dei risultati | Completa wrapper/guardie/estrazione/confronto/verdetto del pilot; segue campagne | R1-R3 CHIUSI; protocollo pilot ancora PROPOSTA. Collaudi JEPA-only/ancore-only superati, 6 run A/JEPA-only/ancore-only sottomessi e in corso secondo Claude. Diagnostica B: nuova tranche 61622429/61622430. Restano risultati, keep sul corpus e sonde fisiche/profondita' |
+| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Valutazione C3, poi C4 e piano finale | C1/C2 CHIUSE; training C3 FINITI (39,63 GPUh), valutazione autorizzata, deploy 98c5832 e dry-run a 7 job pronti. Calibrazione 144,2/220 GPUh. Restano decisione C3, C4, LR finale e piano W1; voce budget/valutazione dei bracci da confermare secondo il log. SCRATCH prossimo 12/11 |
 
 ### Prossimo lavoro in parallelo (21/10)
 
-- **Claude:** corregge i rilievi della review pilot del 21/10 e completa wrapper/controlli; segue diagnostica v2, C3 e collaudi dei bracci
-  gia' sottomessi da Simone. I precedenti R1/R2/R3 della selezione restano chiusi: non sono i nuovi rilievi del pilot.
-- **GPT:** verifica successiva dei fix pilot, poi dei nuovi planner/confronti dei bracci come consegna separata. Seconda tranche gia'
-  integrata; nessuna approvazione implicita dei commit successivi. Review pilot: docs/reviews/branch_pilot_review_20261021.md.
+- **Claude:** completa il codice operativo del pilot e il passaggio dal critico; segue diagnostica B, valutazione C3 e run dei bracci
+  gia' sottomessi. I fix R1-R3 del pilot sono verificati, non vanno rifatti. Nessun nuovo via al pilot implicito nel merge.
+- **GPT:** integrazione fino a d7310be chiusa; verifica della prossima consegna operativa e dei risultati. Review e limiti in
+  docs/reviews/branch_pilot_review_20261021.md. Le attivita' successive a questo snapshot non sono approvate implicitamente.
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** calibrazione 104,6/220 GPUh, inclusa valutazione C2 0,39 GPUh (fd176a7).
-  Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
+- **Costi nei log aggiornati:** calibrazione 144,2/220 GPUh dopo i training C3; infrastruttura 12,78/25 GPUh residue dopo il collaudo
+  dei bracci. Training dei 6 bracci: tetto 552 GPUh autorizzato dalla sottomissione; valutazione/voce complessiva ancora da confermare.
 - **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
@@ -2522,7 +2521,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (`docs/reviews/test_branch_pilot_review_20261021.py`, `WEARUSFM_REVIEW_SOURCE` = il mio worktree) passano; nuovi test in
   `test_branch_masking.py` e `test_branch_pilot_trainer.py`. Restano `branch_pilot.py`, estrazione, verdetto e critico prima del collaudo.
 
+### 2026-10-21 | Claude | Pilot dei rami: suite completa dopo R1-R3 | Codice: d7310be4c6f88b527aa3cbc4777afa5966c245b6
+
+- Suite CPU completa 1315 PASS su d7310be (1309 + 6 test nuovi). Pronto per la verifica di GPT.
+
+### 2026-10-21 | GPT | Pilot: fix verificati, merge completato | Codice d7310be, merge 3a3c595
+
+- R1-R3 chiusi: tre regressioni indipendenti PASS; test maschere/trainer del pilot inclusi, 23 PASS. Percorso spettrale precedente e
+  selezione C1-C4: 83 PASS (un DDP escluso, gia' verificato nella review precedente). Nessuna modifica del codice di Claude.
+- Verificati anche i cinque script collegati inclusi nella storia del merge (arms_plan/compare/collaudo, spectral_diagnostic,
+  calibration_select): nessun blocco confermato. Suite collegata 143 test verificati, in parte sovrapposti agli 83: 142 PASS e un
+  test impedito dall'assenza di .git nello snapshot, rieseguito con GIT_DIR e PASS. Suite completa 1315: dichiarata da Claude.
+- Merge 3a3c595 preserva gli SHA e tutte le voci Claude. Importati testualmente la voce ee41418 e il dry-run C3 di eb14798 (solo
+  documentazione dopo d7310be). Tabella aggiornata: C3 training finiti, valutazione pronta; collaudo bracci superato e 6 run sottomessi.
+  Stato dai log, non live. Review aggiornata in docs/reviews/branch_pilot_review_20261021.md.
+- Restano a Claude wrapper/guardie/estrazione/confronto/verdetto e critico/preventivo del pilot. Integrazione del codice non equivale
+  a campagna lanciabile o autorizzata. Nessun job/deploy da GPT. Commit e pubblicazione di main e ramo GPT su GitHub.
+
 ## 2) Problemi trovati
+
+### 2026-10-21 | GPT | Pilot: chiusura R1-R3 e limiti di consegna | Fix d7310be
+
+- Le tre regressioni originarie ora passano. Metrica non definita gestita e contata; lacune interrompono i consecutivi; monitor PWf/PWl
+  disponibili senza cambiare il training. Le voci della prima review restano storico, non problemi ancora aperti.
+- La copertura dei monitor resta descrittiva come da protocollo aggiornato; non aggiunta da GPT una soglia diversa. Il protocollo e'
+  ancora PROPOSTA e il codice operativo non e' completo: al merge non segue alcun lancio implicito.
+- Budget della valutazione dei 6 bracci ancora da confermare secondo decisioni.md. Non riguarda la valutazione C3 gia' autorizzata.
+  Nessuna invalidazione dei risultati precedenti e nessuna nuova soglia scientifica firmata.
 
 ### 2026-10-21 | GPT | Pilot: due difetti e un controllo da completare | Codice 134b77c
 

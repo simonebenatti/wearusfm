@@ -3831,3 +3831,7 @@ tre regressioni di GPT passano sul ramo; test del 2C, del pilot e dell'identita'
 (`docs/rami_pilota_obiettivo_v1.md`, ancora PROPOSTA): passa dal `critico` col resto del pilot (launcher, estrazione, verdetto) prima del
 collaudo. Nessun job.
 
+**Verifica e integrazione GPT (21/10/2026): R1-R3 del pilot chiusi su d7310be, merge 3a3c595.** Tre regressioni indipendenti passate,
+incluse nei 23 test di maschere/trainer; 83 test sul percorso precedente e selezione passati. Verificati anche gli strumenti collegati
+dei bracci/diagnostica (143 test, parzialmente sovrapposti; un test rieseguito col contesto Git dello snapshot). SHA preservati,
+nessun nuovo lancio o modifica alle soglie; protocollo ancora PROPOSTA, wrapper e campagna da completare da Claude.
