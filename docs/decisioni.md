@@ -3772,3 +3772,6 @@ Strumenti dei bracci pronti per il collaudo; il collaudo aspetta il via di Simon
 **Collaudo dei bracci: controllo in sola lettura pulito (21/10/2026 ~11:15).** Checkout di training e input presenti, cartelle dei run del
 collaudo e dei bracci assenti, in coda solo C3: i 2 posti di `boost_qos_dbg` sono liberi. Il collaudo aspetta il via di Simone.
 
+**Collaudo `w1arm-collaudo-v1` sottomesso da Simone (21/10/2026), sul preventivo presentato (2,6 / 4,0 GPU-ora, budget infrastruttura).**
+61607555 = `W1ARMC-JEPA-only-30M-s0-j01`.
+
