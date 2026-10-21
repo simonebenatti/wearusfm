@@ -3705,6 +3705,104 @@ review) coi soli due fix (8e920bb R1+R2, e1929be R3), test suite 1254 PASS e 140
 **Diagnostica dei rami, tranche 3 (21/10/2026 02:45):** 61582137 (B_seed0 P1 RPW0) COMPLETED 0:0 in 1 h 37 (stima 1 h 45); 61582132 (B_seed0
 P1 R, PW0, PW) in esecuzione; sottomesso 61587820 (B_seed0 P1 RPW, 3 h 30). Nessun fallimento.
 
+**Diagnostica dei rami: tranche sospese (21/10/2026 04:45), stime sbagliate per i soli rami.** Misure su B_seed0, P1: R (768 colonne) 1 h 26,
+RPW0 (1.024) 1 h 37, ma **PW0 (256) oltre 1 h 30 e non ancora finito**: la regressione logistica sui soli rami arriva al limite di 3.000
+iterazioni (avvisi di convergenza di lbfgs). Il job 61582132 (R, PW0, PW e ridondanza, 4 h) non entrera' nel suo limite (05:49): R e' salvato,
+PW0, PW e la ridondanza a rischio. Lo stesso raggruppamento e' pianificato per gli altri tre teacher, e i job P2 mettono 5 insiemi in 4 h.
+Sospese le tranche automatiche (nessun job nuovo); i job gia' sottomessi continuano (61587820, RPW di B_seed0, in coda). Proposta a Simone:
+un job per insieme con tempi misurati (stima ~435 core-ora complessive, tetto ~980, oltre il tetto autorizzato di 481) oppure la sola
+famiglia B ora (~200 / ~490), A dopo. Nessuna modifica del protocollo scientifico.
+
+**Diagnostica dei rami: tempi misurati e piano v2 pronto (21/10/2026 06:15), in attesa della scelta di Simone.** 61582132 TIMEOUT alle
+05:51 (4 h 03) con R (1 h 27) e PW0 (2 h 10, 7.800 s) salvati, PW interrotto, ridondanza non fatta; 61582137 (RPW0) 1 h 37; 61587820 (RPW
+di B_seed0) in corso dalle 05:51. Piano v2, un job per insieme (`spectral_diagnostic.py plan --per-set`, tempi massimi P1 R 3 h, PW0 e PW 4
+h, RPW0 e RPW 3 h; P2 2-3 h; la ridondanza col primo job rimasto), campagna `rami-diag-20261021b`, insiemi gia' fatti saltati, confronto
+dipendente anche da 61587820: **opzione B** (`results/rami_diagnostica/piano_20261021b_B.json`, famiglia B, 16 sonde, tetto 368 core-ora
+nuove, ~441 con quelle gia' usate, entro le 481 autorizzate; stima ~220 complessive) oppure **A+B** (`..._AB.json`, 36 sonde, tetto 840
+nuove, ~913 complessive, stima ~437, oltre il tetto autorizzato). Nessun job sottomesso.
+
+**Diagnostica dei rami: opzione B autorizzata (Simone, 21/10/2026: «va bene, procedi con B»).** Piano v2 per la sola famiglia B
+(`results/rami_diagnostica/piano_20261021b_B.json`, campagna `rami-diag-20261021b`, 16 sonde e confronto `--families B`), tetto ~441 core-ora
+compresi i job gia' usati, entro le 481 autorizzate. La famiglia A resta da decidere dopo l'esito di B. Tranche automatiche riattivate sul
+piano v2 (al piu' 2 job seriali dell'utente, `--nice=10000`).
+**Diagnostica dei rami, piano v2, prima tranche (21/10/2026 ~08:10):** 61587820 (RPW di B_seed0, P1) COMPLETED 0:0 in 1 h 30; sottomessi
+61592919 (B_seed0 P1 PW e ridondanza, 4 h) e 61592922 (B_seed0 P2 PW0, 3 h). Gli altri 14 nodi in attesa del limite di coda.
+
+**Calibrazione C3 AUTORIZZATA (Simone, 21/10/2026: «Potresti partire gia con C3 ?», sul preventivo presentato).** 100M, 0,5 epoche
+(12.261 passi, warmup 1.962, decay da 9.809), LR 1e-4 e 3e-4 (confermati da C2), seme 0, un job da 6 h 30 per run, QoS normal, dallo stesso
+checkout di training di C1 e C2 (`w1cal-20261016`, 72cf24a). Piani in `results/infra/w1cal_c3_20261021/` (piani di C1 e C2 rigenerati
+identici byte per byte). **Preventivo: training 39,8 attese / 52 tetto, valutazione 1,3 / 3,0: ~41 / 55 GPU-ora (440 ore locali)** sul
+budget della calibrazione (104,6 usate su 220): dopo il tetto restano almeno 60,4 per C4. Sottomissione di Simone (come C1 e C2). La
+diagnostica dei rami non sottomette tranche nuove a ridosso della valutazione di C3.
+**C3 sottomessa da Simone (21/10/2026):** 61593336 (`W1CAL-C3-100M-lr0p0001-s0-j01`) e 61593337 (`W1CAL-C3-100M-lr0p0003-s0-j01`).
+
+**Bracci dell'obiettivo: piani, collaudo e preventivo pronti (21/10/2026, Simone: «va bene procedi» sul passo consigliato), da autorizzare.**
+LR = 1e-4 con la regola firmata (C2 conferma 1e-4 e 3e-4; al seme 1 S 0,18011 contro 0,17951, differenza accoppiata +0,0006, SE 0,0027:
+parita' entro 1 SE, il piu' basso), derivato da `scripts/arms_plan.py` da `results/infra/w1cal_decisioni.json` e `registro_C2.json` (SHA nel
+riepilogo). Piani in `results/infra/w1arm_20261021/` (campagna `results/infra/w1arm_campaign_20261021.json`): 6 run (A, JEPA-only,
+ancore-only, semi 0 e 1), 98.094 passi, un job da 23 h ciascuno, dal checkout di training di C1-C3 (`w1cal-20261016`, 72cf24a). Review del
+`critico` sugli strumenti dei bracci: DA RIVEDERE, 1 bloccante (il confronto non verificava identita' dei run e provenienza dei rapporti) e
+5 minori, corretti con test (`docs/bracci_obiettivo_finestra1.md`, «Lancio del gruppo dell'obiettivo»); re-review prima del lancio.
+**Collaudo `w1arm-collaudo-v1`** dei due bracci nuovi (1.300 passi ciascuno, `boost_qos_dbg`, 4 GPU, 30 min): criteri congelati in
+quel documento e in `scripts/arms_collaudo.py`; **2,6 GPU-ora attese, tetto 4,0 (32 ore locali)** sul budget «preparazione
+dell'infrastruttura» (9,83 usate su 25: dopo il tetto restano almeno 11,17). **Preventivo del gruppo:** training 463,8 / 552,0 GPU-ora (484
+attese col passo di C2; 4.416 ore locali di tetto), valutazione 10,5 / 27,0 con sonde sulla seriale (+192 core-ora, ~24 h in fila) o 34,5 /
+87,0 con sonde su GPU. Voce proposta sulla finestra 1 (6.000, calibrazione compresa; consumato fuori dalla calibrazione: 0): **tetto 579
+GPU-ora** (sonde sulla seriale) **o 639** (sonde su GPU). Keep: bloccata fino alla calibrazione sul corpus intero. Nessun job sottomesso.
+
+**Bracci dell'obiettivo: re-review del `critico` (21/10/2026, su c3ef10b) DA RIVEDERE, rilievi corretti.** Bloccante: il confronto non legava
+l'etichetta del braccio al run (A e JEPA-only scambiati per intero passavano; un braccio si poteva omettere): ora il piano deve essere
+quello di `arms_plan.arm_runs` per gruppo e LR, la spec copre tutti i bracci del gruppo e ogni etichetta e' il run del suo braccio. Minori:
+provenienza di P1/P2 ufficiali solo dichiarata (scritto come limite; il default si sceglie su S), controllo del compito dei rapporti di S,
+rischio sul tempo dichiarato, piano lanciato congelato, esito del collaudo scritto anche coi non finiti (e composizione della loss con
+componenti finite: criterio 5 piu' stretto, prima del lancio), test del percorso relativo. Dettagli in `docs/bracci_obiettivo_finestra1.md`.
+**Piani lanciabili congelati:** `results/infra/w1arm_20261021/bracci_objective.json` SHA-256
+`dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52` (training dei 6 run) e `collaudo_bracci.json`
+`a9e835400f5dc5a659952761dea570b961fcc3c11d639f9f4e38caa331954d6f` (collaudo); alla valutazione `arms_plan.py --frozen-plans
+results/infra/w1arm_20261021` rifiuta un piano rigenerato diverso. **Correzione del preventivo:** il passo di A a 30M misurato va da 0,740 s
+(C2) a 0,778 s (C1): training atteso 484-509 GPU-ora (tetto invariato 552), run da 20,2-21,2 h, un job solo finche' il passo medio resta
+sotto ~0,81 s; un run fermato per tempo si completa con un job di ripresa da presentare. Suite 1301 PASS su c3ef10b. Nessun job sottomesso.
+
+**Bracci dell'obiettivo: terza passata del `critico` (21/10/2026, su bd907a0): APPROVATO**, cinque minori corretti: margine del tempo scritto
+con la convenzione della soglia (0,9-1,9 h dopo i 15 minuti di avvio, non 1,1-2,0); passi di D nella spec (da `arms_plan`, dal rapporto dei
+derivati) confrontati col piano; test del gruppo keep nel confronto; spiegazione corretta del difetto dei non finiti (tolleranza relativa
+infinita); limite di provenienza di P1/P2 ufficiali esteso all'encoder dichiarato. Piani congelati invariati (`dbe0f8fe...`, `a9e83540...`).
+Strumenti dei bracci pronti per il collaudo; il collaudo aspetta il via di Simone.
+
+**Collaudo dei bracci: controllo in sola lettura pulito (21/10/2026 ~11:15).** Checkout di training e input presenti, cartelle dei run del
+collaudo e dei bracci assenti, in coda solo C3: i 2 posti di `boost_qos_dbg` sono liberi. Il collaudo aspetta il via di Simone.
+
+**Collaudo `w1arm-collaudo-v1` sottomesso da Simone (21/10/2026), sul preventivo presentato (2,6 / 4,0 GPU-ora, budget infrastruttura).**
+61607555 = `W1ARMC-JEPA-only-30M-s0-j01`.
+61607561 = `W1ARMC-ancore-only-30M-s0-j01`.
+
+**Collaudo `w1arm-collaudo-v1`: SUPERATO (21/10/2026, criteri congelati, `scripts/arms_collaudo.py`).** 61607555 (JEPA-only) e 61607561
+(ancore-only) COMPLETED 0:0 in 17:54 e 17:59 (11:28-11:46), 1.300 passi, `max_steps`, codice 72cf24a, DDP a 4 GPU: 8 criteri su 8 per
+entrambi (pesi effettivi JEPA 1 / ancore 0 e JEPA 0 / ancore 0,2, composizione della loss esatta a ogni passo, record completi e finiti,
+termine allenato in calo: JEPA 0,0090 -> 0,0010, ancore x 0,2 4,86 -> 1,26; nessun allarme, diagnostiche a 500/1.000/1.300, checkpoint
+pre e post-decay). Esiti in `results/infra/w1arm_20261021/collaudo/`. Descrittivi: 0,71 s/passo (mediana), memoria GPU 11,9 GiB, attesa
+sui dati tipica 0,6% (media 2,8-3,0% per una decina di passi con pause di secondi, gli stessi nei due run, che hanno lo stesso flusso di
+dati). **Da notare (descrittivo, nessuna soglia nuova):** nel JEPA puro il rapporto di collasso scende da 1,30 a 0,58 (studente) e da 1,61 a
+0,65 (teacher) fra i passi 500 e 1.300, rango effettivo ~52; in ancore-only resta ~2 (rango ~71). L'allarme firmato e' a 0,05: lontano, ma
+la tendenza dice che il JEPA puro e' il candidato al collasso nei 98.094 passi (la firma lo conta come «non batte A»).
+**Consuntivo del collaudo: 2,39 GPU-ora** (attese 2,6, tetto 4,0); budget infrastruttura **12,22 usate su 25, residuo 12,78**.
+
+**C3, training finiti (consuntivo, 21/10/2026).** 61593336 (1e-4) e 61593337 (3e-4) COMPLETED 0:0 in 4 h 57 (08:13-13:11), 12.261 passi,
+`max_steps`, 1,453 s/passo, 23,2 GiB, codice 72cf24a; config e summary in `results/infra/w1cal_c3_20261021/runs/`. **39,63 GPU-ora**
+(attese 39,8, tetto 52): calibrazione **144,2 usate su 220, residuo 75,8**. Prossimo: deploy e catena della valutazione di C3.
+
+**Diagnostica dei rami, famiglia B:** 61592919 (B_seed0 P1 PW e ridondanza) COMPLETED in 2 h 28 e 61592922 (B_seed0 P2 PW0) in 14 min; il
+dry-run della catena ha pronti B_seed0 P2 PW e R, 12 sonde e il confronto ancora da fare. Tranche a richiesta di Simone.
+
+**Bracci dell'obiettivo: 6 run sottomessi da Simone (21/10/2026), dopo il collaudo superato e sul preventivo presentato** (training
+484-509 GPU-ora attese, tetto 552, 4.416 ore locali; un job da 23 h per run, checkout 72cf24a, piano `dbe0f8fe...`; Simone ha eseguito i
+comandi di `results/infra/w1arm_20261021/comandi_training_objective.txt`): 61622377 (`W1ARM-A-30M-s0-j01`), 61622387 (A s1), 61622389
+(JEPA-only s0), 61622391 (JEPA-only s1), 61622414 (ancore-only s0), 61622418 (ancore-only s1). **Voce di budget «Bracci dell'obiettivo»
+(tetto 639 GPU-ora proposto, 579 con le sonde sulla seriale): da confermare esplicitamente da Simone**; la sottomissione autorizza il
+training (tetto 552), non ancora la valutazione. Valutazione dopo i training, rigenerata con `--frozen-plans`.
+**Diagnostica dei rami, piano v2, tranche di Simone (21/10/2026 ~14:50):** 61622429 (B_seed0 P2 PW, 3 h) e 61622430 (B_seed0 P2 R, 2 h);
+restano 12 sonde e il confronto.
+
 **Integrazione GPT (21/10/2026):** seconda tranche e fix di consegna integrati nei merge 6484432 (e1929be) e 93d5541 (bbf824a),
 preservando gli SHA originali. Pilot dei rami escluso; nessun cambio di regola firmata o risultato C1/C2, nessun nuovo lancio.
 Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e correzione dell'invocazione nella review).
@@ -3713,3 +3811,23 @@ Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e 
 rilievi FAIL attesi: metrica indefinita nel logging, consecutivi del monitor con lacune, monitor dei token assente per PWf. Protocollo
 ancora PROPOSTA, wrapper e controlli di esecuzione da completare; nessuna nuova soglia o autorizzazione di spesa firmata qui.
 Consegna a Claude in docs/reviews/branch_pilot_review_20261021.md. Non riguarda i collaudi JEPA-only/ancore-only o C3.
+
+**Valutazione di C3 AUTORIZZATA (Simone, 21/10/2026: «punto 2 approvo. vai pure.»)**, sul preventivo gia' firmato con C3 (1,3 GPU-ora
+attese, tetto 3,0; sonde CPU 48 / 65,7 core-ora). Merge di `main` (6fbe54d, review GPT del pilot) nel ramo: 98c5832, nessun cambio del
+codice del ramo (le correzioni R1-R3 di `main` sono le stesse gia' presenti). Deploy previsto `deploy/w1cal-eval-20261021` = 98c5832 dopo la
+suite completa; controllo in sola lettura pulito (ref e cartella assenti, hook solo `.sample`, `updateInstead` solo su `main`). Piano
+`results/infra/w1cal_c3_20261021/valutazione_C3.json` dalla campagna `results/infra/w1cal_campaign_c3_eval_20261021.json` (piano di
+training di C3 rigenerato identico): 2 guardie, 2 estrazioni (QoS normal, 1 h 30), 2 sonde sulla seriale (4 h), selezione.
+**Deploy della valutazione di C3 (21/10/2026):** suite completa 1309 PASS sul merge; `deploy/w1cal-eval-20261021` = 98c5832 (SHA remoto
+verificato), checkout di campagna job 61624224 (1 core, 10 min, 0 GPU-ora).
+
+**Pilot dei rami: correzioni della review GPT del 21/10 (`docs/reviews/branch_pilot_review_20261021.md`, R1-R3), prima di qualunque collaudo
+del pilot.** R1: il log scrive «non definita» per una misura non definita, il summary la conta (`masked_normalized_undefined`), e nella
+lettura una perdita normalizzata non definita fra le ultime 100 rende il criterio «PWm ha imparato» non verificabile. R2: i consecutivi
+dell'allarme sono controlli consecutivi; un controllo senza misura interrompe la sequenza e si conta; un monitor atteso senza riferimento e'
+«non definito» e il non-collasso del braccio non e' verificato (`collapse_monitor.verified`). R3: PWf (e PWl con `branch_monitor`) ha gli
+stessi monitor del PWm sugli stessi frame, senza gradiente: uguaglianza esatta col PWm e training identico bit per bit provati nei test. Le
+tre regressioni di GPT passano sul ramo; test del 2C, del pilot e dell'identita' 127 PASS. Protocollo aggiornato
+(`docs/rami_pilota_obiettivo_v1.md`, ancora PROPOSTA): passa dal `critico` col resto del pilot (launcher, estrazione, verdetto) prima del
+collaudo. Nessun job.
+

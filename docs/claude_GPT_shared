@@ -23,7 +23,7 @@ La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato clust
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
-| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
+| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
 | 3 | Review e integrazione su main | Seconda tranche e fix integrati per merge | Consegna separata e1929be accettata | CHIUSO per questa tranche: merge 6484432 e 93d5541, SHA originali conservati. Pilot escluso; la sua review resta al punto 5. Nessun training C1/C2 da ripetere |
 | 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
@@ -2396,6 +2396,93 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61582137 (RPW0, B_seed0 P1) COMPLETED in 1 h 37; 61582132 in corso; sottomesso 61587820 (RPW, B_seed0 P1).
 
+### 2026-10-21 | Claude | Diagnostica dei rami: tranche sospese | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- Sospese le tranche automatiche: i job con R+PW0+PW in 4 h non ci stanno. Misure: R 1 h 26, RPW0 1 h 37, PW0 oltre 1 h 30. In attesa
+  della scelta di Simone sulla ripianificazione (un job per insieme) e sul costo.
+
+### 2026-10-21 | Claude | Diagnostica dei rami: piano v2 pronto, un job per insieme | Codice di plan: questo commit
+
+- Misure B_seed0 P1: R 1 h 27, PW0 2 h 10, RPW0 1 h 37; 61582132 TIMEOUT (PW e ridondanza da rifare). Piani v2 (B o A+B) e dry-run di B
+  committati; ancora nessun job. Opzione B entro il tetto autorizzato.
+
+### 2026-10-21 | Claude | Diagnostica dei rami: opzione B autorizzata | Piano: piano_20261021b_B.json
+
+- Simone: «va bene, procedi con B». Sola famiglia B col piano v2 (un job per insieme), entro il tetto autorizzato; A dopo l'esito di B.
+
+### 2026-10-21 | Claude | Diagnostica dei rami, piano v2: prima tranche | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- RPW di B_seed0 P1 (61587820) finito in 1 h 30; sottomessi 61592919 (P1 PW + ridondanza) e 61592922 (P2 PW0).
+
+### 2026-10-21 | Claude | C3 autorizzata, piani e comandi pronti | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 2 run da 100M (1e-4, 3e-4) al seme 0, 12.261 passi, dal checkout di C1-C2; preventivo ~41 / 55 GPU-ora. Comandi in
+  `results/infra/w1cal_c3_20261021/comandi_training_C3.txt`; sottomette Simone.
+
+### 2026-10-21 | Claude | C3 sottomessa | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone ha sottomesso 61593336 (1e-4) e 61593337 (3e-4), 100M al seme 0. Controllo dei primi passi alla partenza.
+
+### 2026-10-21 | Claude | Promemoria automatici tolti | Nessun job
+
+- Simone ha chiesto di togliere i promemoria della sessione (consumano token): le tranche della diagnostica dei rami (piano v2, B) e i
+  controlli di C3 si fanno a richiesta. In coda: 61592919 e 61592922 (diagnostica), 61593336 e 61593337 (C3).
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: piani, collaudo e correzioni del critico | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- LR dei bracci = 1e-4 con la regola firmata (C2 al seme 1: parita' entro 1 SE, il piu' basso), derivato da `arms_plan.py` dal file delle
+  decisioni e dal registro di C2. Piani dei 6 run e comandi in `results/infra/w1arm_20261021/` (98.094 passi, un job da 23 h, checkout di
+  C1-C3); preventivo 463,8 / 552 GPU-ora di training piu' la valutazione.
+- Review del `critico` sugli strumenti: DA RIVEDERE (1 bloccante: confronto senza identita' dei run e provenienza dei rapporti; 5 minori),
+  corretti con test; re-review prima del lancio.
+- Collaudo `w1arm-collaudo-v1` (JEPA-only e ancore-only, 1.300 passi su dbg, 2,6 / 4,0 GPU-ora): criteri congelati in
+  `docs/bracci_obiettivo_finestra1.md` e `scripts/arms_collaudo.py`. Nessun job sottomesso.
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: correzioni della re-review del critico | Piano lanciato: dbe0f8fe (bracci_objective.json)
+
+- Re-review su c3ef10b DA RIVEDERE (1 bloccante: etichetta del braccio non legata al run; 5 minori), corretti con test. Piani dei bracci
+  e del collaudo congelati (SHA in decisioni.md), `--frozen-plans` per la valutazione. Suite 1301 PASS su c3ef10b. Nessun job.
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: terza passata del critico APPROVATO | Piano lanciato: dbe0f8fe (bracci_objective.json)
+
+- Cinque minori corretti (margine, passi di D nella spec, test del gruppo keep, spiegazione dei non finiti, limite sull'encoder dichiarato).
+  Strumenti pronti; il collaudo `w1arm-collaudo-v1` aspetta il via di Simone. Nessun job.
+
+### 2026-10-21 | Claude | Collaudo dei bracci: controllo in sola lettura prima del via | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 11:15 circa, via leonardo-ops: checkout `w1cal-20261016` e file di input presenti; cartelle `runs/w1arm_collaudo/` e `runs/w1arm/` assenti;
+  in coda solo C3 (61593336 al passo ~7.630, 61593337 ~7.570 su 12.261). I due job della diagnostica dei rami (61592919, 61592922) non
+  sono piu' in coda. Nessun job sottomesso.
+
+### 2026-10-21 | Claude | Bracci: suite completa | Codice: bd907a095d03089b17b070a02f103c00c198d53e
+
+- Suite CPU completa 1307 PASS su bd907a0 (17 min); su c9a7baa (2 test in piu', solo confronto e pianificatore) i 48 test toccati PASS.
+
+### 2026-10-21 | Claude | Collaudo dei bracci: primo job sottomesso da Simone | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone ha eseguito il primo comando di `comandi_collaudo_bracci.txt`: `W1ARMC-JEPA-only-30M-s0-j01` = job 61607555 (`boost_qos_dbg`,
+  4 GPU, 30 min). Esito coi criteri congelati (`scripts/arms_collaudo.py`) a fine job.
+
+### 2026-10-21 | Claude | Collaudo dei bracci: secondo job sottomesso da Simone | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- `W1ARMC-ancore-only-30M-s0-j01` = job 61607561 (`boost_qos_dbg`, 4 GPU, 30 min). Con 61607555 i due posti di dbg sono occupati.
+
+### 2026-10-21 | Claude | Collaudo dei bracci SUPERATO; C3 finita; diagnostica a meta' | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Collaudo `w1arm-collaudo-v1`: 61607555 (JEPA-only) e 61607561 (ancore-only) COMPLETED, 8 criteri su 8 ciascuno; 2,39 GPU-ora,
+  infrastruttura 12,22 / 25. Esiti in `results/infra/w1arm_20261021/collaudo/`.
+- C3: 61593336 e 61593337 COMPLETED (4 h 57, 12.261 passi), 39,63 GPU-ora; calibrazione 144,2 / 220. Valutazione da preparare.
+- Diagnostica dei rami (B): 61592919 e 61592922 COMPLETED; pronti B_seed0 P2 PW e R. Nessun job sottomesso da me.
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: 6 run sottomessi da Simone | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61622377 / 61622387 (A s0 / s1), 61622389 / 61622391 (JEPA-only), 61622414 / 61622418 (ancore-only); piano `dbe0f8fe...`, un job da
+  23 h ciascuno. Voce di budget da confermare da Simone. Valutazione dopo, col piano congelato.
+
+### 2026-10-21 | Claude | Diagnostica dei rami, piano v2: tranche lanciata da Simone | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- 61622429 (B_seed0 P2 PW) e 61622430 (B_seed0 P2 R); restano 12 sonde e il confronto.
+
 ### 2026-10-21 | GPT | Seconda tranche integrata, pilot escluso | Merge 6484432 e 93d5541
 
 - Integrati per merge consegna/review-3272398 (e1929be, R1/R2/R3 su c21ca40) e bbf824a (diagnostica). Patch-id dei fix identici a
@@ -2416,6 +2503,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Aggiornata la tabella da log Claude (non live): C3 autorizzata/sottomessa, diagnostica v2 dopo TIMEOUT, due collaudi dei bracci
   sottomessi da Simone. Sono campagne diverse dal pilot. Nessun job, modifica di codice Claude o merge del pilot da GPT; commit e
   pubblicazione di review/registro. I fix spettano a Claude, la verifica a GPT.
+
+### 2026-10-21 | Claude | Merge di main e valutazione di C3 autorizzata | Ramo: 98c5832
+
+- Merge di `main` 6fbe54d (review del pilot e integrazione della seconda tranche): conflitti solo nei test (tenuta la versione del ramo,
+  che contiene gia' le stesse correzioni) e nei registri (tabella e intestazione di GPT, voci di tutti e due); nessun cambio di codice.
+- Simone: «punto 2 approvo. vai pure.» Piano `valutazione_C3.json` pronto per il deploy 98c5832, dopo la suite completa.
+- Review GPT del pilot (R1-R3, da rivedere) letta: la correggo sul mio ramo prima di qualunque collaudo del pilot.
+
+### 2026-10-21 | Claude | Deploy della valutazione di C3 | Codice: 98c5832379167d83336ba2f5dfd721070ee47a6c
+
+- Suite 1309 PASS sul merge di main; `deploy/w1cal-eval-20261021` = 98c5832, checkout 61624224. Poi dry-run e catena di `valutazione_C3.json`.
+
+### 2026-10-21 | Claude | Pilot dei rami: correzioni R1-R3 della review GPT | Da verificare: questo commit
+
+- R1 log e summary con le misure non definite; R2 lacune che interrompono i consecutivi, riferimenti non definiti riportati, `verified`;
+  R3 monitor di PWf/PWl uguali a quelli del PWm (`branch_monitors`), opzione `RunConfig.branch_monitor`. Le tre regressioni di GPT
+  (`docs/reviews/test_branch_pilot_review_20261021.py`, `WEARUSFM_REVIEW_SOURCE` = il mio worktree) passano; nuovi test in
+  `test_branch_masking.py` e `test_branch_pilot_trainer.py`. Restano `branch_pilot.py`, estrazione, verdetto e critico prima del collaudo.
 
 ## 2) Problemi trovati
 
@@ -3657,3 +3762,60 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Le correzioni arrivano dopo il deploy 62bec0b: la diagnostica avra' un deploy e un checkout suoi (CPU, 10 min); la valutazione di C2
   resta su 62bec0b, che non usa `spectral_diagnostic.py`.
+
+### 2026-10-20 | Claude | Tabella: chi la scrive
+
+- Il blocco dice che Claude lo riporta dal ramo GPT senza rinumerarlo; questa volta l'ho aggiornato io su richiesta di Simone. Se GPT la
+  aggiorna in parallelo, nel merge vale la versione piu' recente riga per riga, senza rinumerare.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 2: difetti del mio primo disegno
+
+- Il primo disegno lasciava una fuga (le wavelet filtrano in frequenza: code oltre i +-3 sigma), confrontava obiettivi con strati allenati
+  diversi e aveva un riferimento banale sbagliato (predittore costante, non zero). Corretti nella revisione, prima di qualunque codice nel
+  trainer.
+
+### 2026-10-21 | Claude | Review GPT 3272398: limiti residui
+
+- R1: il selettore non interroga SLURM; l'evidenza la scrive `failure-evidence` dal Mac (registro e sacct) e la selezione la ricontrolla.
+  Un job rimasto in coda con dipendenza mai soddisfatta va annullato (scancel di Simone) prima che l'evidenza lo accetti (CANCELLED).
+- R3: `QOS_MAX_SECONDS` conosce solo boost_qos_dbg (30 min); altre QoS con limiti diversi andrebbero aggiunte se usate dai launcher.
+- La consegna e' un branch a parte coi fix riapplicati su c21ca40 (SHA nuovi, contenuto identico ai commit del ramo); quando il ramo di
+  Claude verra' integrato piu' avanti, gli stessi cambiamenti arrivano due volte senza conflitti di contenuto.
+
+### 2026-10-21 | Claude | Diagnostica dei rami: stima sbagliata dei soli rami
+
+- Avevo stimato le sonde a 256 colonne in proporzione alla larghezza (~0,5 h): invece lbfgs non converge entro 3.000 iterazioni sui soli
+  rami (avvisi di convergenza) e PW0 dura piu' di R. Raggruppare R, PW0 e PW in un job da 4 h era sbagliato. Si ripianifica un job per
+  insieme coi tempi misurati; la sonda (protocollo della S) non cambia.
+
+### 2026-10-21 | Claude | Bracci dell'obiettivo: confronto senza identita' (trovato dal critico)
+
+- `arms_compare.py` (16/10) leggeva solo STOP e `stopped`: un braccio lanciato coi pesi di A o un rapporto di un altro checkpoint sarebbero
+  passati. Corretto prima di qualunque run dei bracci, nessun risultato toccato. GPT: da rivedere col resto (non blocca).
+- Nel collaudo il criterio «apprendimento» del JEPA puro guarda la sola JEPA, che nei run registrati sale nei primi 100 passi e poi scende
+  di 10-100 volte: per questo il confronto e' fra le medie dei primi e degli ultimi 50 passi, non fra passi singoli.
+
+### 2026-10-21 | Claude | Bracci: tempo per run piu' stretto di quanto scritto
+
+- Avevo stimato il margine col passo di C2 (0,740 s); i run di C1 a 30M andavano a 0,764-0,778 s: margine 1,1-2,0 h, non ~2 h. Un run
+  piu' lento di ~0,81 s/passo si ferma per tempo e va completato con un job di ripresa. Scritto nel preventivo.
+- Il test nuovo del collaudo ha trovato un difetto mio: con `total` infinito la composizione della loss passava (inf - inf non supera
+  nessuna tolleranza). Corretto prima di qualunque lancio.
+
+### 2026-10-21 | Claude | Bracci: due mie imprecisioni nella voce precedente
+
+- Il margine del tempo e' 0,9-1,9 h dopo i 15 minuti di avvio (la convenzione della soglia di ~0,81 s/passo), non 1,1-2,0 h.
+- Il difetto dei non finiti del collaudo non era «inf - inf»: con `total` infinito la tolleranza relativa diventa infinita e inf > inf e'
+  falso. La correzione (componenti finite) non cambia.
+
+### 2026-10-21 | Claude | Collaudo dei bracci: tendenza del JEPA puro
+
+- Nel JEPA puro il rapporto di collasso scende da 1,30 a 0,58 (studente) in 800 passi, con JEPA a 0,001; in ancore-only resta ~2. Lontano
+  dall'allarme (0,05), ma e' il braccio da guardare nei primi controlli del run lungo. Nessuna soglia nuova: vale la regola firmata.
+- La media dell'attesa sui dati (2,8-3,0%) supera quella del collaudo del prefetch (0,67%) per una decina di pause di secondi negli stessi
+  passi dei due run: verosimilmente letture lente degli stessi file, non il prefetch (mediana 0,6%). Da guardare nei run lunghi.
+
+### 2026-10-21 | Claude | Pilot dei rami: scelta su PWl
+
+- Ho esteso il monitor anche a PWl (con un'opzione esplicita, spenta di default), non solo a PWf come chiesto: cosi' «collassato» ha lo
+  stesso significato per i tre bracci nuovi. PW e PW0 del 2C restano senza monitor. Il percorso del 2C senza l'opzione e' invariato (test).

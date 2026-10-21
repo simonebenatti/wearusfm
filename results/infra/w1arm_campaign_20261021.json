@@ -1,0 +1,24 @@
+{
+ "campaign": "w1arm",
+ "agent": "claude",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+ "expected_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+ "manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+ "scales": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+ "window_seconds": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+ "run_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm",
+ "slurm": {
+  "qos": "normal",
+  "time": "24:00:00"
+ },
+ "margin_min": 40,
+ "startup_min": 15,
+ "slack": 1.15,
+ "spare_jobs": 0,
+ "gpus": 4,
+ "eval": {
+  "features_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/w1arm/features",
+  "results_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm",
+  "raw_root": "/leonardo_work/IscrB_WearUsFM/data/raw"
+ }
+}

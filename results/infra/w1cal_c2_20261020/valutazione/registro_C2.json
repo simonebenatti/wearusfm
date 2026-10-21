@@ -1,0 +1,131 @@
+{
+ "protocol": "w1-calibrazione-selezione-v1",
+ "phase": "C2",
+ "candidates": {
+  "0.0001": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C2-30M-lr0p0001-s1",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 24523,
+     "elapsed_s": 18153.877413511276,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+      "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 50,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 38.400000000000006,
+     "last_ratio": 3.13235390967966,
+     "last_student_erank": 124.47002946884153
+    },
+    "panel": {
+     "evaluations": 50,
+     "problems": [],
+     "L0": 5.860566290997667,
+     "L_last": 0.8461864462820814,
+     "ratio_last_to_first": 0.14438646442441858,
+     "max_ratio_to_running_min": 1.043707904537771,
+     "longest_run_above": 0
+    },
+    "problems": [],
+    "admissible": true
+   },
+   "identity": {
+    "config_checked": true,
+    "fields": 99,
+    "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+   },
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C2/W1CAL-C2-30M-lr0p0001-s1.json",
+   "S": 0.1801097475402664,
+   "S_se": 0.007744658060763369,
+   "report_sha256": "40c17289ab8741d31901d241b94b7ff0178e59cca6d75409adcfc658ab1b1302",
+   "checkpoint_sha256": "ccb091773754776cd0cc6e5b03c1dacde6963611ceaad0c8dbc0386a0d546c80",
+   "per_dataset_S": {
+    "ninapro_db2": 0.19508448561116376,
+    "ninapro_db3": 0.0303350352696287,
+    "ninapro_db6": 0.3448728636626334
+   }
+  },
+  "0.0003": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C2-30M-lr0p0003-s1",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 24523,
+     "elapsed_s": 18201.43627500534,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+      "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 50,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 38.400000000000006,
+     "last_ratio": 2.7146772843601124,
+     "last_student_erank": 87.39276495848455
+    },
+    "panel": {
+     "evaluations": 50,
+     "problems": [],
+     "L0": 5.860566169128288,
+     "L_last": 0.8404258263995872,
+     "ratio_last_to_first": 0.14340352145953056,
+     "max_ratio_to_running_min": 1.0307738696347353,
+     "longest_run_above": 0
+    },
+    "problems": [],
+    "admissible": true
+   },
+   "identity": {
+    "config_checked": true,
+    "fields": 99,
+    "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+   },
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C2/W1CAL-C2-30M-lr0p0003-s1.json",
+   "S": 0.17950757856568053,
+   "S_se": 0.0070773387218752174,
+   "report_sha256": "c17d69ff688c4b0745716d4acf5c2853c1edae2fce0502bf2637d4285bed1281",
+   "checkpoint_sha256": "c4c33682891337960e633861117667879c05831e6792e7fdbb228603a152b249",
+   "per_dataset_S": {
+    "ninapro_db2": 0.19664417329574108,
+    "ninapro_db3": 0.029551185564435433,
+    "ninapro_db6": 0.3358957891473059
+   }
+  }
+ },
+ "decision": {
+  "confirmed": [
+   0.0001,
+   0.0003
+  ]
+ },
+ "comparisons": [],
+ "descriptive_comparisons": [
+  {
+   "a": 0.0001,
+   "b": 0.0003,
+   "delta": 0.0006021689745858727,
+   "se": 0.0026840621137297787,
+   "tie": true
+  }
+ ],
+ "rules": {
+  "panel_every": 500,
+  "panel_delta": 0.1,
+  "panel_k": 3,
+  "panel_learn": 0.9,
+  "tie": "differenza accoppiata entro 1 SE: il LR piu' basso",
+  "n_boot": 1000,
+  "boot_seed": 0
+ },
+ "plan": {
+  "path": "results/infra/w1cal_c2_20261020/calibrazione_C2.json",
+  "sha256": "2e249461c87ffb3ea372c66e4899a7760fff81e2a48996fede8f7fee19665678"
+ }
+}

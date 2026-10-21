@@ -1,0 +1,21 @@
+sottomesso ora   probe    RAMI-rami-diag-20261021-B_seed0-p1-a
+    python3 scripts/submit_job.py --id RAMI-rami-diag-20261021-B_seed0-p1-a --agente claude --campagna rami-diag-20261021 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021,EXPECTED_SHA=aba1f2ef3a94b68b8e44bce005adf7b005a92011 --time=04:00:00 --nice=10000 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021/scripts/slurm/spectral_diagnostic.sbatch /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021 probe --task p1 --arm B_seed0 --sets R PW0 PW --redundancy
+RAMI-rami-diag-20261021-B_seed0-p1-a: sottomesso, job 61582132
+sottomesso ora   probe    RAMI-rami-diag-20261021-B_seed0-p1-b
+    python3 scripts/submit_job.py --id RAMI-rami-diag-20261021-B_seed0-p1-b --agente claude --campagna rami-diag-20261021 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021,EXPECTED_SHA=aba1f2ef3a94b68b8e44bce005adf7b005a92011 --time=03:30:00 --nice=10000 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021/scripts/slurm/spectral_diagnostic.sbatch /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021 probe --task p1 --arm B_seed0 --sets RPW0
+RAMI-rami-diag-20261021-B_seed0-p1-b: sottomesso, job 61582137
+in attesa        probe    RAMI-rami-diag-20261021-B_seed0-p1-c  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-B_seed0-p2  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-B_seed1-p1-a  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-B_seed1-p1-b  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-B_seed1-p1-c  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-B_seed1-p2  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed0-p1-a  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed0-p1-b  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed0-p1-c  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed0-p2  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed1-p1-a  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed1-p1-b  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed1-p1-c  (coda lrd_all_serial al limite di 2 job)
+in attesa        probe    RAMI-rami-diag-20261021-A_seed1-p2  (coda lrd_all_serial al limite di 2 job)
+in attesa        compare  RAMI-rami-diag-20261021-compare  (dipendenze non ancora sottomesse o di stato SLURM sconosciuto: ['RAMI-rami-diag-20261021-B_seed0-p1-c', 'RAMI-rami-diag-20261021-B_seed0-p2', 'RAMI-rami-diag-20261021-B_seed1-p1-a', 'RAMI-rami-diag-20261021-B_seed1-p1-b', 'RAMI-rami-diag-20261021-B_seed1-p1-c', 'RAMI-rami-diag-20261021-B_seed1-p2', 'RAMI-rami-diag-20261021-A_seed0-p1-a', 'RAMI-rami-diag-20261021-A_seed0-p1-b', 'RAMI-rami-diag-20261021-A_seed0-p1-c', 'RAMI-rami-diag-20261021-A_seed0-p2', 'RAMI-rami-diag-20261021-A_seed1-p1-a', 'RAMI-rami-diag-20261021-A_seed1-p1-b', 'RAMI-rami-diag-20261021-A_seed1-p1-c', 'RAMI-rami-diag-20261021-A_seed1-p2'])

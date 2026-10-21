@@ -360,3 +360,28 @@ def test_plan_feeds_the_evaluation_chain_in_tranches(tmp_path):
     first = {n["id"] for n in json.loads(default.read_text())["nodes"]}
     rows = EC.schedule(json.loads(other.read_text()), Ledger({i: "sottomesso" for i in first}).read, {"lrd_all_serial": 0})
     assert not any(r["status"] == "gia' sottomesso" for r in rows) and sum(r["status"] == "sottomesso ora" for r in rows) == 2
+
+
+def test_per_set_plan_skips_done_sets_and_keeps_redundancy_once(tmp_path):
+    """Piano v2 (21/10): un job per insieme coi tempi misurati, insiemi gia' fatti saltati, ridondanza col primo job rimasto del compito,
+    famiglie intere, confronto che dipende anche dai job di un'altra campagna e legge solo le famiglie pianificate."""
+    out = tmp_path / "v2.json"
+    assert SDG.main(["plan", "--per-set", "--arms", "B_seed0", "B_seed1", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x/rami",
+                     "--out", str(out), "--campaign", "v2", "--done", "p1/B_seed0/R", "p1/B_seed0/PW0", "p1/B_seed0/RPW0",
+                     "--external", "RAMI-v1-B_seed0-p1-b"]) == 0
+    plan = json.loads(out.read_text())
+    probes = [n for n in plan["nodes"] if n["kind"] == "probe"]
+    ids = [n["id"] for n in probes]
+    assert "RAMI-v2-B_seed0-p1-R" not in ids and "RAMI-v2-B_seed0-p1-PW" in ids and len(ids) == 2 * 10 - 3
+    red = {(n["args"][3], n["args"][5]): n["args"][7] for n in probes if "--redundancy" in n["args"]}
+    assert red == {("p1", "B_seed0"): "PW", ("p2", "B_seed0"): "RPW0", ("p1", "B_seed1"): "RPW0", ("p2", "B_seed1"): "RPW0"}
+    assert all(n["sbatch"][0] == f"--time={SDG.SET_TIME[n['args'][3]][n['args'][7]]}" for n in probes)
+    compare = plan["nodes"][-1]
+    assert compare["args"][1:] == ["compare", "--families", "B"] and "RAMI-v1-B_seed0-p1-b" in compare["after"]
+    SDG._script("evaluation_chain").validate(plan)
+    with pytest.raises(ValueError, match="famiglie intere"):
+        SDG.main(["plan", "--per-set", "--arms", "B_seed0", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x/rami",
+                  "--out", str(out), "--campaign", "v2"])
+    with pytest.raises(ValueError, match="nessun job del compito rimasto"):
+        SDG.main(["plan", "--per-set", "--arms", "B_seed0", "B_seed1", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x/rami",
+                  "--out", str(out), "--campaign", "v2", "--done", *[f"p1/B_seed0/{s}" for s in SDG.SETS]])

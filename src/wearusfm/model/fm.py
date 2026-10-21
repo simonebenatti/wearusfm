@@ -56,6 +56,10 @@ class FMConfig:
     branch_hidden: int = 48
     wavelet_learnable: bool = False  # centri e larghezze del banco wavelet apprendibili (entro limiti); dopo un confronto favorevole col fisso
     branch_alpha: float = 0.5
+    # obiettivo dei rami a encoder congelato (pilot del punto 2, `docs/rami_pilota_obiettivo_v1.md`): "readout" = i 32 target globali dello
+    # Step 1 (il 2C, default), "masked" = predizione locale mascherata (`model/branch_masking.py`, predittori nel modello)
+    branch_objective: str = "readout"
+    branch_freeze_output: bool = False  # `output` di ogni scala e `combine` fissi al passo 0 (fuori da ottimizzatore ed EMA)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "spectral_branches", tuple(self.spectral_branches))  # da JSON (checkpoint) arriva una lista
@@ -68,6 +72,12 @@ class FMConfig:
                 raise ValueError("rami spettrali: branch_alpha in (0, 1], dimensioni positive")
         if self.wavelet_learnable and "wavelet" not in self.spectral_branches:
             raise ValueError("wavelet_learnable senza il ramo wavelet")
+        if self.branch_objective not in ("readout", "masked"):
+            raise ValueError(f"branch_objective {self.branch_objective!r}: readout o masked")
+        if (self.branch_objective != "readout" or self.branch_freeze_output) and not self.spectral_branches:
+            raise ValueError("branch_objective / branch_freeze_output senza rami spettrali")
+        if self.branch_objective == "masked" and self.wavelet_learnable:
+            raise ValueError("obiettivo mascherato: banco wavelet fisso (il raggio del supporto e' quello dei filtri fissi)")
 
 
 @dataclass
@@ -131,7 +141,7 @@ class WearUsFM(nn.Module):
         self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands, multiscale=cfg.multiscale_anchor)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
         self.spectral_keep = SpectralKeepHead(2 * cfg.dim) if cfg.keep_readout else None
-        self.spectral_branches = self.branch_heads = None
+        self.spectral_branches = self.branch_heads = self.branch_predictors = None
         if cfg.spectral_branches:
             # dopo tutti gli altri moduli e con un generatore a parte: l'encoder raw nasce uguale e il generatore globale (dropout del muscolo)
             # resta quello del modello senza rami, cosi' i confronti con e senza rami sono accoppiati
@@ -141,6 +151,9 @@ class WearUsFM(nn.Module):
                 torch.random.default_generator.manual_seed((torch.initial_seed() + 7919) % 2 ** 63)
                 self.spectral_branches = SpectralBranches(cfg.spectral_branches, cfg.branch_dim, cfg.branch_hidden, cfg.wavelet_learnable)
                 self.branch_heads = branch_heads(2 * cfg.dim, cfg.spectral_branches, cfg.branch_dim)
+                if cfg.branch_objective == "masked":  # dopo rami e teste, dallo stesso generatore: i rami nascono come senza predittori
+                    from wearusfm.model.branch_masking import make_predictors
+                    self.branch_predictors = make_predictors(cfg.spectral_branches, cfg.branch_hidden, seed=None)
         for m in (self.local, self.backbone, self.decoder):
             m.grad_checkpoint = cfg.grad_checkpoint
 

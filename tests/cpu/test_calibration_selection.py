@@ -146,6 +146,31 @@ def test_p2_internal_subjects_exclude_the_test_of_all_three_official_splits():
     assert internal == CP.p2_internal_subjects(list(reversed(ids)))
 
 
+def test_p2_internal_subjects_are_outside_the_tests_that_probe_p2_really_uses(monkeypatch):
+    """Legame col codice della P2 ufficiale, non con una sua copia (rilievo 6 del critico, 21/10): i soggetti di test che
+    `probe_p2.probe_dataset` passa davvero alla sonda, con i suoi semi, sono esattamente il complemento di `p2_internal_subjects`."""
+    from types import SimpleNamespace
+
+    from wearusfm.harness import probe as HP
+
+    PP = _mod("probe_p2")
+    seen = []
+
+    def fake_probe(xtr, ytr, xva, yva, xte, yte, subjects_test, seed=0):
+        seen.append(set(subjects_test.tolist()))
+        return SimpleNamespace(test_bacc=0.5, test_bacc_se=0.01, val_bacc=0.5, train_bacc=0.5, c=1.0, n_train=len(ytr), n_val=len(yva),
+                               n_test=len(yte), n_test_subjects=len(set(subjects_test.tolist())), test_pred=yte)
+
+    monkeypatch.setattr(HP, "linear_probe", fake_probe)
+    for ids in ([f"trainingJSON/user{i}" for i in range(60)], [f"{i:02d}" for i in range(1, 37)]):  # come EPN-612 e UCI-EMG
+        seen.clear()
+        subjects = np.array([s for s in ids for _ in range(3)])
+        labels = np.array([k % 3 for k in range(len(subjects))])
+        PP.probe_dataset(np.zeros((len(subjects), 2)), labels, subjects, PP.SPLIT_SEEDS)
+        assert len(seen) == len(PP.SPLIT_SEEDS) == len(CP.P2_SPLIT_SEEDS)
+        assert CP.p2_internal_subjects(subjects) == sorted(set(ids) - set().union(*seen))
+
+
 def test_p2_extraction_never_processes_test_subjects(tmp_path, monkeypatch):
     from wearusfm.harness import benchmarks as B
     from wearusfm.harness import fm_features as FF
@@ -642,6 +667,17 @@ def test_select_launcher_groups_candidates_and_uses_the_venv(work, tmp_path):  #
     assert r.returncode == 2 and "relativa" in r.stdout
     for name in ("calibration_extract.sbatch", "calibration_probe.sbatch"):
         assert subprocess.run(["bash", "-n", str(REPO / "scripts" / "slurm" / name)]).returncode == 0
+
+
+@pytest.mark.parametrize("run,lr", [("W1CAL-C1-30M-lr0p0001-s0", 1e-4), ("W1CAL-C1-30M-lr0p0003-s0", 3e-4), ("W1CAL-C1-30M-lr0p001-s0", 1e-3)])
+def test_real_c1_configs_stay_verifiable_after_new_config_fields(run, lr):
+    """I `config.json` veri di C1 (codice 72cf24a) contro il piano committato, col codice di oggi: i campi aggiunti dopo (pilot dei rami del
+    20/10: `branch_objective`, `branch_freeze_output`) si confrontano coi loro default su tutte e due le parti, il resto resta identico."""
+    plan = json.loads((REPO / "results/infra/w1cal_c1_20261016/calibrazione_C1.json").read_text())
+    out = CS.check_identity(REPO / "results/infra/w1cal_c1_20261016/runs" / run, plan, lr)
+    assert out["config_checked"] and out["code_sha"] == "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+    have = json.loads((REPO / "results/infra/w1cal_c1_20261016/runs" / run / "config.json").read_text())
+    assert "branch_objective" not in have["model"]  # davvero scritti senza i campi nuovi
 
 
 def _evidence(root, run_id, cands, states, logical=None, name=None, **extra):

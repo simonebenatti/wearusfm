@@ -278,7 +278,11 @@ def check_identity(run_dir: Path, plan: dict, lr: float, allow_missing: bool = F
         if allow_missing:
             return {"config_checked": False, "note": "config.json assente: run fermato prima di scriverla, identita' non verificabile; decide A1"}
         raise ValueError(f"{run_dir}: config.json assente, configurazione effettiva non verificabile")
-    have, exp = _flatten(json.loads((run_dir / "config.json").read_text())), _flatten(want)
+    from wearusfm.training import run as R
+
+    # campi aggiunti dopo il codice dei run (es. quelli del pilot dei rami, 20/10): coi default che avevano implicitamente, sulle due parti
+    have = _flatten(R._config_with_defaults(json.loads((run_dir / "config.json").read_text())))
+    exp = _flatten(R._config_with_defaults(want))
     diff = [f"{k}: run {have.get(k, '<assente>')!r}, piano {exp.get(k, '<assente>')!r}" for k in sorted(set(have) | set(exp))
             if have.get(k, "<assente>") != exp.get(k, "<assente>")]
     if diff:
