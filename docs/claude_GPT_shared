@@ -15,31 +15,32 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 20/10/2026 alle 18 da Claude, su richiesta di Simone («puoi aggiornare la tabella log e tutta la roba condivisa sino
-all'ultima versione sia in locale che su github ?»): log e ledger fino ad aba1f2e, review GPT sul suo ramo fino a 4203d59. Claude sviluppa e
-conduce la parte scientifica; GPT verifica e integra. La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato del cluster
-dai log versionati, non da un'interrogazione dal vivo.
+Stato aggiornato al 21/10/2026 dopo integrazione della consegna separata: merge 6484432 (c21ca40 + R1/R2/R3, consegna e1929be)
+e 93d5541 (fix diagnostica bbf824a). Contenuto dei fix identico a 07e120c/32b5718 verificati. Review pilot 134b77c conclusa: da rivedere,
+due difetti P2 e monitor PWf da completare; pilot fuori dal merge. Stato aggiornato anche dai log Claude fino a 58380a3.
+Claude sviluppa; GPT verifica e integra.
+La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Verifica e merge della seconda tranche (prompt di Simone del 20/10), in corso | Tranche consegnata con elenco e ordine di verifica (6afa2b9); correzioni sul proprio ramo; lettura delle patch prima del deploy | APERTO sulla seconda tranche. Consegna del 16/10 integrata (fino ad a7edd55, tabella 5145efb). Sul ramo Claude fino ad aba1f2e: 33 commit e un merge di `main`, nessun file in `src/`; codice in uso e non su `main`: 9ab781e (valutazione di C1) e 62bec0b (valutazione di C2). Review GPT della diagnostica dei rami fatta (4203d59, sul ramo GPT, non su `main`), due P2 corretti (bbf824a). Suite 1241 PASS su aba1f2e. GitHub: `main` = 79db894 |
-| 4 | Monitor e regola di stabilita' | Verifica implementazione e lettura dei risultati | Monitor, protocollo e applicazione prospettica | A4 applicata a C1: 1e-4 e 3e-4 ammissibili; 1e-3 escluso, 7 valutazioni consecutive oltre 1,10 x minimo, picco 1,58. Training di C2 finiti a `max_steps`, nessuno STOP; A4 di C2 nella selezione in corso. Resta la regola dei run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review dei nuovi strumenti e risultati; codice dei due bracci verificato (45 PASS); review della diagnostica dei rami fatta (4203d59) | Bracci: pianificatore, sonde, confronto e campagna. Rami spettrali: diagnostica (attivita' 1 del prompt 7d85f1a), poi una modifica alla volta | Bracci: strumenti consegnati (0adfc52, 1bb8e7d, 641e4e2); prima del lancio review del `critico`, LR da C1-C2, collaudo, ricalibrazione della keep. Rami: diagnostica `rami_diagnostica_v1` approvata dal `critico` (b597786), autorizzata da Simone dopo la valutazione di C2 e a tranche (6fd1f1b), P2 di GPT corretti (bbf824a): deploy nuovo prima del lancio. Attivita' 2-4 del prompt dopo gli esiti. Sonde fisiche/profondita' ancora aperte |
-| 6 | Chiudere la finestra 1 | Review del delta di valutazione e dei report | Segue C2, poi C3-C4 | C1 CHIUSA: finalisti 1e-4 e 3e-4 (f2c584e). C2: training 61526225 / 61526229 COMPLETED 0:0 (5 h 03 / 5 h 04, 40,4 GPU-ora); valutazione dal deploy 62bec0b sottomessa (61558827-61558834), nessun rifiuto di sbatch (correzione dell'afterok al primo uso); decisione attesa in serata. Calibrazione 104,2/220 GPU-ora. Poi C3 (100M) e C4 (300M), LR e piano finale; SCRATCH prossimo 12/11 |
+| 3 | Review e integrazione su main | Seconda tranche e fix integrati per merge | Consegna separata e1929be accettata | CHIUSO per questa tranche: merge 6484432 e 93d5541, SHA originali conservati. Pilot escluso; la sua review resta al punto 5. Nessun training C1/C2 da ripetere |
+| 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
+| 5 | Validare l'obiettivo scientifico | Review pilot conclusa: R1/R2 P2 e monitor PWf da completare; verifica fix successiva | Corregge pilot e completa wrapper; segue campagne | 47 test PASS e 3 regressioni dei rilievi FAIL attesi. Pilot non integrato. Log Claude: diagnostica v2 sola B (61592919/61592922), dopo TIMEOUT 61582132; RPW 61587820 finito. Collaudi diversi JEPA-only/ancore-only sottomessi da Simone (61607555/61607561); nuovi planner ancora da review GPT. Restano risultati, keep e sonde fisiche/profondita' |
+| 6 | Chiudere la finestra 1 | Review dei piani e risultati | Segue C3, poi C4 e piano finale | C1/C2 CHIUSE; C3 autorizzata e sottomessa da Simone (61593336/61593337, log a8d7851), non verificata live. Ultimo consuntivo 104,6/220 GPUh prima di C3; preventivo C3 ~41/55. Restano risultati C3, C4, LR finale e piano W1. SCRATCH prossimo 12/11 |
 
-### Prossimo lavoro in parallelo (20/10, sera)
+### Prossimo lavoro in parallelo (21/10)
 
-- **Claude:** decisione di C2 dalla selezione 61558834, merge nel file delle decisioni, preventivo di C3. Deploy della diagnostica dei rami
-  con le correzioni bbf824a e lancio a tranche (autorizzato). Bracci: review del `critico` sugli strumenti prima del collaudo.
-- **GPT:** verifica e integrazione della seconda tranche (ordine nella voce «Punto 3: seconda tranche da verificare e integrare»), insieme
-  alle proprie voci e review ancora sul suo ramo (3b97655, 7d85f1a, 4203d59).
-- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. La provenienza nuova delle estrazioni vale dalle cache nuove: non invalida
-  ne' riscrive i risultati del collaudo o di 2A/2C.
-- **Costi:** calibrazione 104,2 usate su 220 (C1 63,8; training di C2 40,4; valutazione di C2 tetto 1,0); finestra 1 tetto 6.000;
-  infrastruttura 15,17/25 residue nell'ultimo consuntivo. Sonde CPU seriali; durata della sonda del 300M da verificare.
-- **Dati:** rinfresco SCRATCH chiuso in fba794f, prossimo 12/11.
+- **Claude:** corregge i rilievi della review pilot del 21/10 e completa wrapper/controlli; segue diagnostica v2, C3 e collaudi dei bracci
+  gia' sottomessi da Simone. I precedenti R1/R2/R3 della selezione restano chiusi: non sono i nuovi rilievi del pilot.
+- **GPT:** verifica successiva dei fix pilot, poi dei nuovi planner/confronti dei bracci come consegna separata. Seconda tranche gia'
+  integrata; nessuna approvazione implicita dei commit successivi. Review pilot: docs/reviews/branch_pilot_review_20261021.md.
+- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
+  di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
+- **Costi nei log aggiornati:** calibrazione 104,6/220 GPUh, inclusa valutazione C2 0,39 GPUh (fd176a7).
+  Infrastruttura 15,17/25 GPUh residue nell'ultimo consuntivo. Sonde CPU seriali; durata sonda 300M da verificare.
+- **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
 
@@ -2013,6 +2014,222 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
   Nessuna nuova review/test/integrazione di codice in questo status. Nuovi documenti e nuove scelte di Claude letti sul suo ramo;
   nessun cambiamento di protocollo o budget da parte di GPT. decisioni.md non richiede nuove firme per questo aggiornamento.
 
+### 2026-10-20 | GPT | Discussione sul seguito del punto 1 | Base 79db894; report 2A/2C congelati
+
+- Su richiesta di Simone, riletti protocolli, report 2A/2C e confronto secondario, piu' `model/spectral_branches.py`; controllo
+  indipendente in parallelo. 2A: MS-M P1 -0,366/P2 +0,068 punti; 2C famiglia B: RPW-R +0,343/+0,745. Su P2, RPW0-R +2,337
+  e RPW-RPW0 -1,592 punti: segnale descrittivo da approfondire, non nuovo endpoint primario o prova della causa.
+- Ipotesi discusse: obiettivo di ricostruzione delle 32 statistiche globali troppo ristretto; perdita dell'identita' spaziale nella
+  media sui canali dei rami; trasferimento limitato dal training solo emg2qwerty. LR/schedule e selezione del checkpoint sono spiegazioni
+  alternative, non escluse. Le wavelet lente hanno inoltre disponibilita' ridotta nelle finestre P1 da 1 s.
+- Proposta, NON decisione o lancio: prima sonda CPU sui SOLI rami P+W, passo 0 contro finali, usando le cache e validation interna,
+  per distinguere degrado del ramo e problema della concatenazione col raw; ranghi/ridondanza come diagnostiche accessorie e
+  regolarizzazione scelta nel train. Poi, secondo l'esito, un solo pilot con obiettivo locale tempo-frequenza e raw
+  congelato. Maschere coerenti fra viste e supporti dei filtri, controlli anti-collasso, confronto con passo 0 e obiettivo precedente;
+  generalizzazione multi-dataset da verificare separatamente. Nuova cross-attention solo dopo aver identificato il collo di bottiglia.
+- Riferimenti metodologici consultati: TS2Vec https://arxiv.org/abs/2106.10466 e TF-C https://arxiv.org/abs/2206.08496;
+  motivano alternative per serie temporali, non ne dimostrano l'efficacia su WearUsFM. Nessun nuovo training/test o modifica scientifica.
+
+### 2026-10-20 | GPT | Prompt operativo per Claude: seguito dei rami spettrali | Base 3b97655
+
+Richiesta di Simone: preparare il prompt sui quattro interventi, con sviluppo a Claude e review a GPT. Si puo' iniziare dalla diagnostica
+e dalla preparazione locale; i pilot successivi dipendono dagli esiti. Queste attivita' appartengono al punto 5 della tabella unica;
+il punto 1 storico e i verdetti 2A/2C restano chiusi. Nessuna nuova sottomissione con questa consegna.
+
+**Prompt da inoltrare:**
+
+Leggi CLAUDE.md e il registro aggiornato, compresa la discussione GPT del 20/10 (commit 3b97655). Lavora nel tuo worktree. Obiettivo:
+capire perche' allenare PSD e wavelet riduce il vantaggio iniziale, poi provare una sola modifica alla volta. Mantieni entrambi i rami;
+il raw resta congelato nei primi esperimenti. Non modificare le campagne di calibrazione in corso o il default della finestra 1.
+
+1. **Diagnostica dai dati gia' estratti.** Verifica cache, hash, split e disponibilita' di una validation interna disgiunta dai test
+   ufficiali. Prepara il confronto dei soli P+W al passo 0 contro finali, con R e R+P+W come controlli, usando gli stessi ingressi,
+   soggetti e semi. Normalizzazione e scelta della regolarizzazione solo nel training/validation previsto, mai sui test. Leggi i
+   risultati separatamente per dataset, poi aggregati. Rango effettivo e ridondanza col raw sono diagnostiche accessorie. La domanda
+   e' se il degrado si vede anche nei soli rami o soprattutto nella concatenazione; questo non identifica da solo la causa.
+   Se le cache non coprono la validation interna, elenca cosa manca e prepara la minima estrazione necessaria, senza riciclare
+   i test ufficiali per scegliere una variante. Consegna script, test mirati, protocollo breve e preventivo CPU/disco.
+
+2. **Un obiettivo temporale per i rami.** In base alla diagnostica, proponi un solo pilot: predizione di rappresentazioni locali
+   mascherate O coerenza fra viste dello stesso intervallo. Motiva la scelta. Specifica teacher/target/stop-gradient, preservazione
+   dell'informazione utile e controlli anti-collasso; se usi viste aumentate, giustifica le trasformazioni per EMG. Definisci dove
+   applicare le maschere e il supporto dei filtri: nessuna informazione del bersaglio nascosto deve entrare dal contesto o da un
+   altro ramo. Confronta passo 0, obiettivo precedente e nuovo obiettivo a parita' di architettura, dati, semi ed esposizione;
+   dichiara il costo effettivo. Non attribuire automaticamente tutto alla loss: LR/schedule restano spiegazioni alternative.
+   Fissa selezione dei checkpoint, endpoint e criteri prima del training; loss diverse non si confrontano dal loro valore numerico.
+   Nessun training congiunto del raw in questo pilot. Un solo seme, se usato nel collaudo, resta una verifica preliminare.
+
+3. **Informazione spaziale e fusione.** Verifica cosa si perde nella media dei canali dei rami e proponi la modifica minima che
+   conservi identita'/geometria degli elettrodi, canali QC e numero variabile di canali. Cross-attention e' un'opzione da motivare,
+   non un requisito. Prepara questa ablation separata dalla nuova loss, con controlli per numero di parametri e dimensione
+   dell'embedding quando pertinenti. Il confronto deve mantenere dati e obiettivo uguali; attivalo secondo gli esiti della diagnosi.
+
+4. **Trasferimento multi-dataset.** Prepara il confronto emg2qwerty contro un piccolo sottoinsieme multi-dataset gia' disponibile,
+   con stessa architettura, loss, semi ed esposizione definita prima (finestre e durata effettiva riportate). Proteggi soggetti e
+   split riservati alla validazione/test secondo il protocollo. Separa l'effetto della varieta' dei dati dall'effetto di piu' training;
+   non cambiare insieme anche fusione e obiettivo. Riporta metriche per dataset, disponibilita' delle bande e limiti delle wavelet
+   lente sulle finestre da 1 s; non cambiare silenziosamente i target o la regola dei bordi.
+
+Puoi iniziare subito con codice, verifiche locali e piano. Consegna in blocchi separati: prima diagnostica, poi proposta del pilot,
+poi ablation spaziale e dati. GPT revisiona protocolli, codice e risultati di ogni consegna. Mantieni il passaggio del critico e le
+autorizzazioni di budget gia' previste; presenta insieme il preventivo dei nuovi job necessari, senza richiedere conferme per ogni
+passo locale e senza interpretare il riuso delle cache come costo CPU nullo. Aggiorna entrambe le sezioni del registro e committa;
+in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscrittura dei risultati storici.
+
+### 2026-10-20 | GPT | Review diagnostica dei rami, attivita' 1 del nuovo prompt | Claude 6086df2, deploy 62bec0b
+
+- Richiesta di Simone: «revisiona cosa ha fatto claude per il punto 1 della tua lista». Letti protocollo, script, launcher e dipendenze
+  dirette della diagnostica. Verifiche su snapshot congelato, con controllo indipendente parallelo; nessun accesso al cluster.
+- Impostazione scientifica favorevole: separazione dei soggetti, selezione interna della regolarizzazione, accoppiamento delle cache,
+  differenza dei delta e letture osservative coerenti. Sono codice e protocollo pronti, non risultati reali della diagnostica.
+- 128 test esistenti PASS; un caso richiede Git ed e' passato nel worktree Claude dopo il fallimento ambientale nell'archivio.
+  Due nuove regressioni riproducono due P2: R2 non definito su rami costanti interrompe il job; ID dei job riusati fra campagne diverse.
+- Review e regressioni in `docs/reviews/spectral_diagnostic_review_20261020.md` e `test_spectral_diagnostic_review_20261020.py`.
+  Correzioni a Claude sul suo ramo; nessun codice di produzione modificato, merge o lancio. Nessuna nuova soglia/budget o scelta
+  scientifica: decisioni.md invariato. Attivita' del punto 5 comune, senza riaprire il punto 1 storico.
+
+### 2026-10-21 | GPT | Punto 3: seconda tranche verificata, merge sospeso sui rilievi | Target c21ca40; fix diagnostica bbf824a
+
+- Seguito l'ordine della consegna 6afa2b9 partendo dalla selezione C1-C4 gia' in uso per C2. Review indipendente anche in parallelo.
+  Configurazione completa e correzione afterok verificate; nessun codice di produzione modificato. Main rimane 79db894.
+- Test: 69 selezione/planner/review C1-C4 + 18 planner/confronto/launcher bracci + 65 catena/diagnostica = 152 PASS. Tre nuove
+  regressioni FAIL riproducono R1/R2/R3. Le due regressioni della precedente review 4203d59 PASSANO su bbf824a: quei P2 sono chiusi.
+- Review e prove in `docs/reviews/second_tranche_review_20261020.md` e `test_second_tranche_review_20261020.py`. Claude corregge sul
+  suo ramo; poi GPT verifica e integra per merge. I gruppi sono intercalati nella storia: merge di 62bec0b non isola solo il gruppo 1.
+- C1 ha report per tutti i candidati e summary a 24523 passi; il piano C2 ha report e guardie normali: nessuna invalidazione da questi
+  rilievi. Log df1c8c4: training C2 finiti e valutazione sottomessa; nessuna verifica live/esito finale C2 in questa attivita'.
+- Letta la nuova consegna fino a fadb881 solo per delimitarne il perimetro: pilot dei rami non incluso nella review. Aggiornata la
+  tabella unica; nessun job, SSH, push o deploy. decisioni.md invariato: nessuna nuova soglia, scelta scientifica o spesa.
+
+### 2026-10-16 | Claude | Bracci dell'obiettivo firmati da Simone | Base: a7edd55
+
+- Simone: «firmo i bracci come proposti» (otto punti: i cinque della bozza e i tre di protocollo del `critico`). Registrati in
+  `docs/decisioni.md` e in `docs/bracci_obiettivo_finestra1.md` («Firma»). Prossimo: pianificatore dei bracci e piano di valutazione.
+
+### 2026-10-16 | Claude | C1 sottomessa | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- `deploy/w1cal-20261016`, checkout 60714885 (pronto). La sottomissione dei training da parte degli agenti e' stata negata dal classificatore
+  dei permessi di Claude Code («Interfere With Workloads»): i tre comandi li ha lanciati Simone col submitter comune. Ledger: 60715596
+  (`W1CAL-C1-30M-lr0p0001-s0-j01`), 60715602 (lr0p0003), 60715603 (lr0p001), 14:29. Avvio sotto controllo.
+- Le due note della tua review (candidato fallito prima della sonda; configurazione effettiva contro il piano) sono giuste: le correggo nella
+  selezione mentre i training girano; la catena di valutazione partira' da un checkout nuovo con la selezione corretta.
+
+### 2026-10-16 | Claude | Selezione C1-C4: le tue due note corrette | Base: e79a536
+
+- Candidato fermato prima della sonda: rapporto «-», inammissibile da A1-A4 sui file del run, la fase procede (`--failed-runs` nel
+  pianificatore toglie guardia/estrazione/sonda; un run ammissibile senza sonda e' un errore).
+- Identita': `--plan` obbligatorio in C1-C4; `config.json` del run (LR, seme, batch, passi, warmup, schedule, nested, dataset, pannello,
+  sampler, pesi della loss, dimensioni) e SHA del codice in `summary.json` contro il piano; LR dichiarato contro il piano; differenza = errore.
+  Verificato sulle configurazioni costruite da `train_jepa.py` con gli argomenti veri di C1.
+- Test: selezione 28, pianificatore e catena 55. La valutazione di C1 partira' da un checkout nuovo con queste correzioni (i training girano
+  da 72cf24a, codice del training invariato), dopo la review del `critico`.
+
+### 2026-10-16 | Claude | C1: avvio dei tre training regolare | Codice: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 60715596 / 60715602 / 60715603 RUNNING dalle 14:33 (nodi lrdn3396, lrdn0811, lrdn0843). Controlli d'identita' di manifest (6d6d8167...) e
+  durate superati all'avvio; nessun errore nei log. Passo 750 dopo ~11 min: 0,63-0,74 s/passo (piano 0,70), attesa sui dati ~0, memoria
+  9,6 GiB per GPU. Pannello fisso al passo 0 identico nei tre run (stessa inizializzazione e stessi dati: accoppiamento confermato); al passo
+  500 loss totale 2,10 / 1,83 / 1,75 per LR 1e-4 / 3e-4 / 1e-3 (diagnostica, non selezione). Fine prevista ~19:15-19:45.
+- Un solo picco di attesa sui dati (0,94 s al passo 752 del run 1e-3): isolato, da tenere d'occhio.
+
+### 2026-10-16 | Claude | Critica di pianificatore e valutazione P1/P2 dei bracci (punto 5): DA RIVEDERE | Base: 5c3ec80
+
+- Simone: «fai una critica a quello fatto finora su punto 5, in particolare pianificatore e valutazione P1/P2». Rapporto completo:
+  `docs/reviews/punto5_pianificatore_p1p2_critica_20261016.md`. Revisione da una sessione diversa da quella che ha scritto il codice.
+- Cosa c'e': bracci JEPA-only/ancore-only (buoni, `critico` e GPT), sonde P1/P2, `evaluation_chain.py`, `compare_reports`,
+  `combine_seeds`. Mancano pianificatore dei bracci, piano P1/P2 e confronto con la regola firmata (punto 4 dell'implementazione).
+- Test: `test_objective_arms`, `test_evaluation_chain`, `test_p1_cross_subject`, `test_probe_p2`, `test_harness_probe`, `test_wsd_chain`,
+  `test_step2_closed_reports`: **118 PASS**. Nessun file di codice modificato. Simone: «passa tutto a fork 2»: rilievi inviati alla
+  sessione «Agents (fork 2)», che porta avanti il punto 5.
+
+### 2026-10-16 | Claude | Punto 5: regola di lettura e scelta del default corrette, firmate da Simone | Base: 589be8c
+
+- Dalla critica del `critico` (589be8c), Simone approva le due soluzioni: (1) lettura su P1/P2 ufficiali con la regola del 2A/2C (accoppiato
+  per seme, +1 punto, limite inferiore > 0, positivo in entrambi i semi, per P1 e P2); (2) il default si sceglie con la validation interna S
+  (P1 e, da costruire, P2 sui soggetti fuori dai test dei tre split), P1/P2 ufficiali come conferma. Registrate in `docs/decisioni.md` e
+  nel protocollo dei bracci prima di qualunque risultato. Prossimo: S della P2, confronto dei bracci con le due regole, pianificatore,
+  launcher P1/P2 con CODE_DIR.
+
+### 2026-10-16 | Claude | Validation interna della P2 (S della P2) | Base: 94e972a
+
+- Simone: «per p2 bene òa proposta tua». `scripts/calibration_probe.py --task p2`: EPN-612 e UCI-EMG coi soli soggetti fuori dai test dei
+  tre split 7:1:2 della P2 (semi 0, 1, 2; le finestre degli altri si scartano prima dell'estrazione e la sonda ricontrolla l'esclusione),
+  stessa estrazione e sonda di `probe_p2.py`, 4 fold di soggetti, S = media dei due dataset. Test: 3 nuovi (esclusione, estrazione che non
+  vede i soggetti di test, pesi uguali e rifiuto di feature con un soggetto di test o di un altro compito).
+
+### 2026-10-16 | Claude | Confronto dei bracci con le regole firmate | Base: 641e4e2
+
+- `scripts/arms_compare.py`: regola del 2A/2C (accoppiato per seme con `paired_component`, +1 punto, limite inferiore dell'IC > 0, delta > 0
+  nei due semi) applicata (2) a S della P1 e della P2 per il default, con le predizioni fuori fold convertite in conteggi per soggetto, e (1)
+  a P1/P2 ufficiali con `compare_reports` come lettura scientifica. Braccio collassato = non batte; run fermato per altro = non valutabile;
+  piu' vincitori su S = scelta di Simone; disaccordi S/ufficiali registrati. Test `test_arms_compare.py` (6).
+- Restano: launcher P1/P2 con CODE_DIR, pianificatore dei bracci e piano di valutazione, test dello stato iniziale fra bracci.
+
+### 2026-10-16 | Claude | Launcher P1/P2 con la regola dei checkout di campagna | Base: 1bb8e7d
+
+- Rilievo 3 della critica del punto 5: `probe_p1.sbatch`, `probe_p1_probe.sbatch`, `probe_p2.sbatch`, `probe_p2_probe.sbatch` non fanno piu'
+  `cd "$WORK/wearusfm"`: codice da CODE_DIR con SHA e pulizia verificati (`lib_code_dir.sh`), uscite assolute e fuori dal codice; la P2 legge
+  i grezzi da `RAW_ROOT` (default `$WORK/data/raw`, che la pulizia non tocca). Comportamento invariato sul canonico. Test
+  `test_probe_launchers.py` (5). Le campagne gia' concluse girano dai loro checkout congelati: non sono toccate.
+
+### 2026-10-16 | Claude | Pianificatore dei bracci e piano di valutazione P1/P2 | Base: 931dd26
+
+- `scripts/arms_plan.py` + `scripts/slurm/arms_compare.sbatch`: training per `wsd_chain.py` (obiettivo: A, JEPA-only, ancore-only; keep: A'
+  e B solo con la calibrazione sul corpus intero), 30M, 98.094 passi, semi 0 e 1, LR di C1-C2; valutazione per run: P1/P2 ufficiali e S della
+  P1 e della P2, poi il confronto con le regole firmate. `--probes-on-gpu`, `--failed-runs`. Test 5, compreso lo stato iniziale identico fra
+  bracci a pari seme. Preventivo: obiettivo 463,8 / 552 GPU-ora di training; valutazione 10,5 / 27 con sonde su CPU (~24 h in fila) o
+  34,5 / 87 su GPU. Chiusi i rilievi 3-6 della critica del punto 5.
+
+### 2026-10-16 | Claude | Selezione C1-C4: identita' sull'intera configurazione, candidato senza config.json, test che non si contaminano | Base: 0adfc52
+
+- Review del `critico` delle correzioni di 5c3ec80: DA RIVEDERE (3 bloccanti, 2 minori). Corretti: (1) un candidato fermato prima di
+  scrivere `config.json` non blocca piu' la fase (identita' «non verificabile», LR dichiarato comunque controllato, decide A1); (2) l'identita'
+  confronta TUTTA la configurazione: `train_jepa.build_config` (estratta da `main`, stessa sequenza) e `wsd_chain.extra_args` (gli
+  EXTRA_ARGS del job) ricostruiscono il `config_to_dict` atteso, confrontato campo per campo (99 campi); (4) test che altera uno per uno
+  tutti i campi, configurazioni dei test prodotte da `train_jepa.main` per la strada vera degli argomenti.
+- Verifica sui `config.json` e `summary.json` VERI dei tre run di C1 (copiati dal cluster, codice 72cf24a): identita' completa superata.
+- Test che contaminava la suite: `test_arms_plan.py` sostituiva `R.train` sul modulo condiviso senza ripristinarlo (81 fallimenti nella suite
+  intera, codice di produzione intatto): ora `monkeypatch`.
+- C1: tre training COMPLETED 0:0 il 16/10 (5 h 13-5 h 18), 63,2 GPU-ora su 220 della calibrazione.
+
+### 2026-10-19 | Claude | Selezione C1-C4: review del critico APPROVATO, rilievi minori chiusi | Base: 698763b
+
+- Seconda review del `critico` su 698763b: APPROVATO (refactor di `build_config` identico su 28 casi; identita' che rifiuta tutte le
+  alterazioni provate e accetta i file veri di C1; percorso p1 di `calibration_probe.py` identico byte per byte, OOF compresi, al collaudo).
+- Rilievi minori chiusi: ordine degli errori di `train_jepa.main` come prima (file d'ingresso prima degli argomenti) con un test; la
+  selezione accetta solo rapporti di S della P1; protocollo aggiornato. Il rilievo sulle durate dei `summary.json` copiati era un errore
+  di lettura: verificato sul cluster che le copie committate sono giuste (elapsed 18.742 s per 3e-4 sotto i 5 h 12 41 del job; l'LR
+  dell'ultimo passo conferma le cartelle).
+
+### 2026-10-19 | Claude | Valutazione di C1 in corso | Codice: 9ab781e98a44810f3223e5dec1eac52988f374fc
+
+- Deploy `deploy/w1cal-eval-20261019`, checkout 61378990, piano rigenerato (piano di training di C1 identico byte per byte), catena
+  sottomessa: guardie 61379130/61379133/61379134 COMPLETED 0:0, estrazioni 61379154, 61379217, 61379811, sonde 61379181, 61379306,
+  61379874, selezione 61379881 (afterok sulle tre sonde). L'estrazione di 1e-3 rifiutata da sbatch e recuperata con `--dopo-rifiuto`.
+
+### 2026-10-20 | Claude | C1 decisa: finalisti 1e-4 e 3e-4 | Codice valutazione: 9ab781e98a44810f3223e5dec1eac52988f374fc
+
+- Catena di valutazione completa (19/10): estrazioni 11 min, sonde 1 h 09-1 h 46 in fila, selezione 61379881 COMPLETED 0:0. 1e-3
+  inammissibile per A4 (7 valutazioni consecutive del pannello oltre 1,10 x minimo, picco 1,58); 1e-4 e 3e-4 ammissibili: finalisti 1e-4 e
+  3e-4 (regola di C1). S: 18,21 / 17,46 / 15,86; 1e-4 meglio di 3e-4 di +0,74 punti (SE 0,32, descrittivo). Identita' ok sui tre run.
+- `results/infra/w1cal_decisioni.json` (merge), rapporti in `results/infra/w1cal_c1_20261016/valutazione/`. Preventivo C2 ~41 / 53 GPU-ora.
+
+### 2026-10-20 | Claude | C2 autorizzata, comandi pronti | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Piani e comandi in `results/infra/w1cal_c2_20261020/`: 2 run al seme 1 (1e-4, 3e-4) dal checkout di C1; piano di C1 rigenerato identico
+  byte per byte; comandi uguali a C1 salvo ID, campagna, seme e cartella. Preflight in sola lettura pulito. Preventivo ~41 / 53 GPU-ora.
+  Sottomette Simone.
+
+### 2026-10-20 | Claude | C2 sottomessa | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- Simone ha sottomesso i due training di C2 alle 11:44: 61526225 (1e-4) e 61526229 (3e-4), in coda per priorita'. Controllo dei primi
+  passi alla partenza.
+
+### 2026-10-20 | Claude | Catena di valutazione: afterok sui nodi della stessa chiamata corretto
+
+- `evaluation_chain.py --submit` sottomette un nodo per giro rileggendo `sacct` prima di ciascuno, anche per i predecessori appena
+  sottomessi: una guardia gia' finita non riceve piu' afterok (difetto del 19/10). Test nuovo col cluster finto che rifiuta l'afterok su un
+  job dimenticato; suite 1194 PASS (1193 + 1). Da rivedere da GPT (non blocca).
 ### 2026-10-20 | Claude | Merge di main nel ramo: review C1-C4 di GPT integrata | Main: 79db894
 
 - Portato `main` (fino a 79db894, review 41ce569) nel ramo, conflitti risolti tenendo le due parti: provenienza e righe OOF di GPT piu' P2
@@ -2144,6 +2361,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - 61582132 e 61582137 (B_seed0, P1), nessun rifiuto; le tranche successive con la stessa chiamata della catena, entro 2 job seriali.
 
+### 2026-10-21 | GPT | Audit di allineamento, archivio e pubblicazione | Fonti main 79db894, GPT 3272398, Claude 134b77c
+
+- Controllo diretto GitHub: main e Claude allineati; GPT remoto fermo a 4203d59, review 3272398 solo locale. Quattro file GPT mai
+  committati recuperati con nota storica; la nota downstream cita un JSON assente dalla storia Git, da recuperare. Vecchio clone
+  `FM per EMG/wearusfm` a a3eda50 (05/10), pulito ma 201 commit dietro: non e' il canonico.
+- Consolidate testualmente le voci di Claude fino a 134b77c nelle due sezioni e le aggiunte a decisioni.md; tabella aggiornata da
+  C2 e diagnostica (fd176a7, c94befa). Pilot: 65 PASS dichiarati nel commit 134b77c, ancora fuori dalla review GPT.
+- Corretta in CLAUDE.md la data SCRATCH superata; registrata l'istruzione di Simone di pubblicare le consegne GPT su GitHub e
+  verificarle. Consegna: commit, push del ramo GPT con upstream, avanzamento documentale main e verifica SHA remoti.
+- Review/audit in `docs/reviews/repository_alignment_audit_20261021.md`. Seconda tranche codice ancora aperta sui tre fix;
+  nessun nuovo risultato scientifico, test del trainer, job o deploy. La pubblicazione non chiude la review del pilot.
+
+### 2026-10-21 | GPT | R1/R2/R3 verificati e chiusi | Fix Claude 07e120c e 32b5718
+
+- Letti codice, protocollo e test dei due fix. Tre regressioni indipendenti PASS; 104 test collegati PASS. Un test era impedito dal
+  sandbox mentre creava una fixture nel worktree Claude: rieseguito con permesso e passato. Ramo pulito, SHA GitHub = 32b5718.
+- Aggiornati tabella, prossimi compiti e review `docs/reviews/second_tranche_review_20261020.md`; pubblicazione su ramo GPT e main.
+  Nessun nuovo job o risultato scientifico. Il codice dei fix e' sul ramo Claude: il merge porta anche il pilot ancora da revisionare.
 ### 2026-10-21 | Claude | Review GPT 3272398: R1, R2, R3 corretti, consegna per il merge | Consegna: consegna/review-3272398 (e1929be)
 
 - **R1** (`calibration_select.py`, `calibration_plan.py`): senza sonda serve una prova di fallimento terminale, registrata in
@@ -2248,7 +2483,217 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 - 61622429 (B_seed0 P2 PW) e 61622430 (B_seed0 P2 R); restano 12 sonde e il confronto.
 
+### 2026-10-21 | GPT | Seconda tranche integrata, pilot escluso | Merge 6484432 e 93d5541
+
+- Integrati per merge consegna/review-3272398 (e1929be, R1/R2/R3 su c21ca40) e bbf824a (diagnostica). Patch-id dei fix identici a
+  07e120c/32b5718 gia' verificati; SHA originali conservati. Nessuna modifica a src/ rispetto a e058698; nuovo pilot non incluso.
+- Verifica sul codice integrato: 132 test distinti PASS. Primo giro 131 PASS e un errore nella mia invocazione (SHA abbreviato);
+  le cinque regressioni indipendenti rieseguite con lo SHA completo passano tutte. Suite 1254/1272: risultati dichiarati da Claude.
+- Conservate testualmente consegna e limiti 80978a4 e aggiornamento diagnostica d5950ee nelle due sezioni/decisioni.md. Tabella
+  aggiornata: punto 3 chiuso per questa tranche, pilot al punto 5; C3 ancora da autorizzare. Commit e pubblicazione su main/GitHub.
+  Nessun job o deploy, nessuna ripetizione C1/C2 richiesta.
+
+### 2026-10-21 | GPT | Review pilot temporale dei rami | Target 134b77c, file invariati a 58380a3
+
+- Letti protocollo, maschere, token/predittori, trainer e test su snapshot immutabile. 47 test esistenti PASS (DDP CPU rieseguito con
+  permesso dopo il blocco del sandbox). Tre regressioni indipendenti riproducono due difetti e un controllo mancante del protocollo.
+- Da rivedere: logging della metrica normalizzata nulla, consecutivi del monitor con misure assenti, anti-collasso del braccio PWf.
+  Wrapper branch_pilot.py e controlli di esecuzione ancora da completare. Dettagli e test in docs/reviews/branch_pilot_review_20261021.md
+  e test_branch_pilot_review_20261021.py. Le letture delegate interrotte dal limite del servizio non contano come review completate.
+- Aggiornata la tabella da log Claude (non live): C3 autorizzata/sottomessa, diagnostica v2 dopo TIMEOUT, due collaudi dei bracci
+  sottomessi da Simone. Sono campagne diverse dal pilot. Nessun job, modifica di codice Claude o merge del pilot da GPT; commit e
+  pubblicazione di review/registro. I fix spettano a Claude, la verifica a GPT.
+
 ## 2) Problemi trovati
+
+### 2026-10-21 | GPT | Pilot: due difetti e un controllo da completare | Codice 134b77c
+
+- R1 P2: run.py:1355 formatta None con :.3f se masked_normalized e' indefinita; TypeError invece della chiusura ordinata.
+- R2 P2: branch_masking.py:196-205 mantiene i conteggi attraverso controlli privi di misura. Basso 110/120, assente 130, basso 140:
+  allarme «3 consecutivi». Gestione delle lacune da chiarire/implementare prima del collaudo, senza adattarla ai risultati.
+- R3 P2/completamento: monitor dei token presente solo per PWm; PWf termina con collapse_reference=None. Il primario richiede
+  entrambi non collassati; il monitor del raw congelato non copre i rami. Nessun nuovo errore dimostrato nei risultati precedenti.
+- Pilot ancora PROPOSTA e wrapper assente; nessun via implicito a training. Nuove modifiche ai planner dei bracci e diagnostica v2
+  fuori da questa review. Non riapre la seconda tranche gia' integrata.
+
+### 2026-10-21 | GPT | Chiusura integrazione e limiti residui | Merge 6484432 e 93d5541
+
+- Il ramo di consegna separato rimuove il precedente blocco sul merge: le note che richiedevano prima la review del pilot sono
+  superate per questa tranche. Il pilot resta escluso e non approvato. R1/R2/R3 e i due P2 della diagnostica sono chiusi.
+- R1 richiede evidenza SLURM esterna; R3 conosce solo il limite dbg. Nessuna nuova soglia scientifica o autorizzazione di spesa.
+  Stato diagnostica dal log d5950ee, non live. Errore di invocazione del test con SHA abbreviato corretto, non un difetto del codice.
+
+
+### 2026-10-21 | Claude | Review GPT 3272398: limiti residui
+
+- R1: il selettore non interroga SLURM; l'evidenza la scrive `failure-evidence` dal Mac (registro e sacct) e la selezione la ricontrolla.
+  Un job rimasto in coda con dipendenza mai soddisfatta va annullato (scancel di Simone) prima che l'evidenza lo accetti (CANCELLED).
+- R3: `QOS_MAX_SECONDS` conosce solo boost_qos_dbg (30 min); altre QoS con limiti diversi andrebbero aggiunte se usate dai launcher.
+- La consegna e' un branch a parte coi fix riapplicati su c21ca40 (SHA nuovi, contenuto identico ai commit del ramo); quando il ramo di
+  Claude verra' integrato piu' avanti, gli stessi cambiamenti arrivano due volte senza conflitti di contenuto.
+
+### 2026-10-21 | GPT | Chiusura dei tre rilievi; residuo d'integrazione | Fonte 32b5718
+
+- R1/R2/R3 non sono piu' aperti: verificati fallimento terminale, PASSI/piano e QoS effettiva. Le voci precedenti restano storico.
+- I fix sono successivi ai commit del nuovo pilot (modello, branch_masking, trainer). Per conservare gli SHA il merge include anche
+  quel codice; prima serve la sua review. Il punto 3 resta aperto solo su questa verifica e integrazione, non su ulteriori fix richiesti.
+
+### 2026-10-21 | GPT | Disallineamenti riscontrati nell'audit | Fonti main 79db894, GPT 3272398, Claude 134b77c
+
+- Omissioni GPT: pubblicazione dell'ultima review, quattro file non tracciati e sintesi del registro arretrata. Recuperati in questa
+  consegna; file storici marcati come tali. La prova citata `step1_downstream_20261012.json` resta da ricondurre ai report disponibili.
+- Ramo Claude: commit e GitHub allineati; tabella precedente alle voci C2/diagnostica, cablaggio e test pilot descritti solo nei commit.
+  Questi fatti sono riportati ora nel riepilogo comune, distinguendo test dichiarati da verifica indipendente. R1/R2/R3 ancora aperti.
+- Il prossimo merge deve considerare che il ramo Claude ora include modifiche al trainer e al modello (`src/`), successive alla
+  tranche c21ca40. Nessun merge indiscriminato della testa corrente. Prima consegna realmente integrata, seconda correttamente aperta.
+- Vecchio clone e cinque registrazioni di worktree temporanei da riconoscere come storici; non cancellati in questo audit.
+
+### 2026-10-16 | Claude | Punto 5: tre problemi da chiudere prima del lancio dei bracci
+
+- **Regola di lettura** (bloccante): il protocollo dice «come la soglia dei confronti 2A/2C», ma il 2C chiedeva anche limite inferiore > 0
+  e segno concorde nei due teacher; la regola firmata chiede solo +1 punto sulla media dei semi. Serve una decisione nuova prima dei
+  risultati (delta accoppiato per seme con `compare_reports`, IC > 0, segno concorde).
+- **Test ufficiale che sceglie il default** (bloccante, decide Simone): «altrimenti A resta il default» fa scegliere sui soggetti di test
+  di P1/P2; proposta: scegliere con S (validation interna) e usare P1/P2 come conferma, oppure dichiarare il limite prima dei risultati.
+- **Launcher P1/P2** (bloccante): `probe_p1*.sbatch`, `probe_p2*.sbatch` fanno `cd "$WORK/wearusfm"` senza `CODE_DIR` ne' verifica dello
+  SHA (regola dei checkout di campagna): da adattare nel piano P1/P2.
+- Minori: costo «~1,5 GPU-ora per checkpoint, come 2C» vale solo con sonde su CPU (2C: ~3,3 per checkpoint con sonde su GPU; sulla seriale
+  le sonde vanno in fila, voce precedente); manca il test dello stesso stato iniziale fra bracci a pari seme; keep da ricalibrare e C2 non
+  partita.
+
+### 2026-10-16 | Claude | Aperti prima della valutazione di C1
+
+- Seconda review del `critico` sulla selezione corretta e sulla S della P2 (`calibration_probe.py`, 641e4e2: cambia anche il percorso P1 per
+  il refactor del compito): da fare prima del deploy della valutazione.
+- `results/infra/w1cal_c1_20261016/valutazione_C1.json` e' superato (selezione di 72cf24a, senza piano): va rigenerato col checkout nuovo
+  (`eval.code_dir`/`eval.expected_sha`) prima della sottomissione, verificando che `calibrazione_C1.json` resti identico byte per byte.
+- La selezione nuova non e' mai stata eseguita sul cluster (import di torch sulla seriale, piano relativo al checkout): il primo uso e' la
+  valutazione di C1.
+- Le mie voci precedenti di oggi stanno solo nella sezione 1: da qui scrivo in entrambe (rilievo del `critico`).
+
+### 2026-10-19 | Claude | Un mio errore corretto subito
+
+- Seguendo il rilievo (sbagliato) sulle durate ho scambiato le copie locali dei `summary.json` di 3e-4 e 1e-3, poi ho visto che prima
+  dello scambio coincidevano col cluster e le ho rimesse a posto prima di qualunque commit: nessun file committato e' cambiato.
+
+### 2026-10-19 | Claude | Difetto della catena: afterok su un nodo della stessa chiamata gia' finito
+
+- `evaluation_chain.py` mette afterok sui nodi sottomessi nella stessa chiamata; se uno finisce in pochi secondi (le guardie: 5-7 s) e SLURM
+  lo dimentica prima che il successivo venga sottomesso, sbatch rifiuta la dipendenza («Job dependency problem»): e' successo
+  all'estrazione di 1e-3 (75 s dopo la fine della guardia). Recuperato senza danni (nessun job creato). Correzione da fare prima di C2:
+  prima di ogni sottomissione rileggere con sacct lo stato dei predecessori della stessa chiamata e togliere l'afterok da quelli finiti bene.
+
+### 2026-10-20 | Claude | C1: da tenere presente
+
+- Il LR piu' basso ha la S migliore e il rango effettivo piu' alto (118 / 85 / 55 con LR crescente), e 1e-3 e' instabile sul pannello: il
+  segnale va verso LR bassi. C2 conferma i due finalisti al seme 1; la griglia non si allarga (accordo).
+- Prima della valutazione di C2: correggere l'afterok sui nodi della stessa chiamata gia' finiti (voce del 19/10).
+
+### 2026-10-20 | Claude | Preflight di C2: controlli lasciati al job
+
+- `leonardo-ops` non esegue sul login node git, sha256sum e lfs: SHA e pulizia del checkout, SHA del manifest e delle durate non sono
+  verificati prima della sottomissione. Li verifica il job nei primi secondi (`lib_code_dir.sh`, `check_input_files`), come in C1; un
+  errore ferma il job prima del training. Da controllare: i primi passi dei due run subito dopo la partenza.
+
+### 2026-10-20 | Claude | Catena di valutazione: rischio residuo dell'afterok
+
+- Fra la lettura di `sacct` e lo `sbatch` passano pochi secondi: se una guardia finisce proprio li', SLURM la ricorda ancora (MinJobAge) e
+  l'afterok e' accettato; il rifiuto di C1 e' arrivato 75 s dopo la fine. Se capitasse comunque, il submitter registra «rifiutato» (nessun
+  job creato), la catena si ferma e si riprende con `--dopo-rifiuto`, come il 19/10.
+
+### 2026-10-20 | Claude | Merge della review C1-C4: un difetto trovato e corretto
+
+- Il controllo dello SHA del checkpoint aggiunto in `admissibility` leggeva `report.get(...)` anche con `report` None (candidato fermato
+  prima della sonda): eccezione al posto di «inammissibile». Corretto nel merge; lo coprono i test dei candidati senza sonda.
+- Con le cache prive dei campi nuovi la sonda integrata rifiuta: e' voluto (GPT, «riestrazione delle sole cache di calibrazione prive dei
+  campi aggiunti»). Nessun risultato di C1 o del collaudo riscritto.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: limiti della diagnostica
+
+- Nessuna misura diretta della durata delle sonde P2 interne: stima dalle sonde ufficiali P2 del 2C; tetto per job largo (4 h).
+- PSD e wavelet separati (P0, P, W0, W) non sono in questa tranche; si aggiungono se l'esito lo chiede. Due teacher per famiglia: le letture
+  sono condizionate a quei modelli. La diagnostica non separa obiettivo, LR/schedule e dominio come cause.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: errori miei trovati dal critico
+
+- La prima tabella delle risposte attribuiva un meccanismo («il raw compensa») contro il vincolo di GPT del 20/10, e confrontava i due
+  delta senza stimarli. Il piano di sottomissione ignorava i 10 job per utente della seriale e la valutazione di C2. Avevo scritto 7 test
+  nuovi invece di 6 (corretto nella voce). Tutto corretto prima di qualunque lancio.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 1: dati da leggere sul cluster
+
+- I pesi di priorita' di SLURM (eta' contro nice) decidono se il ritardo massimo sulla finestra 1 e' 4 h o ~8 h. Lettura in sola lettura
+  (`scontrol show config | grep -i Priority`): non fra i comandi di leonardo-ops, puo' farla Simone.
+- UCI-EMG interno e' piccolo (19 soggetti, ~330 finestre) e pesa 0,5 nella S della P2: la parte piu' rumorosa.
+
+### 2026-10-20 | Claude | Merge della review C1-C4: un effetto collaterale corretto
+
+- Il controllo del checkpoint di GPT, applicato anche senza sonda, trasformava un run sano con un file perso in «inammissibile» e la fase
+  andava avanti; il protocollo firmato vuole un errore. Corretto con un test. GPT: da rivedere (non blocca).
+
+### 2026-10-20 | Claude | Punto 3: «chiuso» vale solo per la consegna del 16/10
+
+- La consegna integrata e' quella fino ad a7edd55 (merge 41b80af, chiusura 2dc1197, tabella 5145efb). Dopo restano fuori da `main` i 30
+  commit della voce sopra, compreso il codice che gira nelle valutazioni di C1 e C2: per la tabella il punto 3 e' aperto sulla seconda
+  tranche, come gia' scritto da GPT nella riga del 20/10. GitHub: `main` era fermo a 5145efb, portato a 79db894 (solo avanzamento).
+
+### 2026-10-20 | Claude | Diagnostica dei rami: conseguenza sul deploy
+
+- Le correzioni arrivano dopo il deploy 62bec0b: la diagnostica avra' un deploy e un checkout suoi (CPU, 10 min); la valutazione di C2
+  resta su 62bec0b, che non usa `spectral_diagnostic.py`.
+
+### 2026-10-20 | Claude | Tabella: chi la scrive
+
+- Il blocco dice che Claude lo riporta dal ramo GPT senza rinumerarlo; questa volta l'ho aggiornato io su richiesta di Simone. Se GPT la
+  aggiorna in parallelo, nel merge vale la versione piu' recente riga per riga, senza rinumerare.
+
+### 2026-10-20 | Claude | Rami spettrali, punto 2: difetti del mio primo disegno
+
+- Il primo disegno lasciava una fuga (le wavelet filtrano in frequenza: code oltre i +-3 sigma), confrontava obiettivi con strati allenati
+  diversi e aveva un riferimento banale sbagliato (predittore costante, non zero). Corretti nella revisione, prima di qualunque codice nel
+  trainer.
+
+### 2026-10-21 | GPT | Tre rilievi della seconda tranche e chiusura dei precedenti P2 | Codice c21ca40
+
+- **R1 P1, selezione:** con report assente, config valida e nessuno STOP, summary assente basta per escludere il candidato e scegliere
+  gli altri. `--failed-runs` elimina anche la guardia: stato ancora running/ignoto non distinto dal fallimento terminale verificato.
+  Richiedere evidenza del fallimento, registrarla, e non emettere decisioni per stato ignoto o timeout riprendibile.
+- **R2 P2, selezione:** config e piano a 2000 passi ma PASSI CLI = 2001 fanno escludere un run sano senza sonda invece di fermare la
+  valutazione. Vincolare PASSI al total_steps del run nel piano prima di calcolare l'ammissibilita'.
+- **R3 P1, planner bracci:** estrazioni P1 a 45 min ereditano boost_qos_dbg (limite 30 min) da probe_p1.sbatch. QoS normal esplicita
+  e test con header allo SHA reale. Non coinvolge calibration_extract.sbatch usato da C2. Tutti e tre riprodotti, non osservati su C1.
+- Due P2 precedenti della diagnostica **chiusi su bbf824a** (null/stato per misure indefinite; ID per campagna), 2 regressioni PASS;
+  controllati anche i minori IC per dataset e identita' redundancy.json. c21ca40 da solo non contiene queste correzioni.
+- Nessun merge della tranche prima dei tre fix; nessun cambio retroattivo dei risultati. Dettagli, righe e regressioni nella review.
+
+### 2026-10-20 | GPT | Due P2 della diagnostica dei rami | Codice Claude 6086df2
+
+- `spectral_diagnostic.py:276/311`: target dei rami costante -> R2 NaN -> ValueError JSON -> job fallito e confronto dipendente bloccato.
+  Usare valore nullo e stato esplicito per R2 indefinito, conservando rango e sonde. Riprodotto; non osservato sulle cache reali.
+- `spectral_diagnostic.py:429/433`: ID RAMI-* indipendenti da campaign/out-dir; secondo piano distinto considera tutti i 17 job gia'
+  sottomessi se esistono gli stati del primo. Namespace per campagna con stabilita' nelle tranche; non alterare gli ID gia' lanciati.
+  Nessun impatto dimostrato sul primo uso. Entrambe le regressioni falliscono sullo snapshot esaminato come atteso.
+- Minori nel report: IC per dataset della differenza dei delta promessi ma non salvati; validare l'identita' di redundancy.json nel
+  confronto se si riusano/copiano cartelle. Nessun P0/P1 confermato o invalidazione dei risultati 2A/2C.
+
+### 2026-10-20 | GPT | Vincoli del prompt per il seguito dei rami | Base 3b97655
+
+- Una sonda sui soli rami distingue due spiegazioni del degrado, ma non prova da sola perdita d'informazione: contano leggibilita'
+  lineare, regolarizzazione e dominio. Il controllo al passo 0 ha filtri fisici e normalizzazione calibrata.
+- L'esistenza delle cache ufficiali non garantisce la copertura di una validation interna indipendente; questa va verificata prima
+  di ottimizzare. I quattro interventi non costituiscono quattro modifiche simultanee o quattro campagne gia' finanziate.
+- Il prompt e' una consegna di lavoro richiesta da Simone, non una firma di nuove soglie, di una specifica loss o del budget dei
+  pilot. Nessun cambiamento a decisioni.md necessario in questa attivita'; nessun test di produzione o lancio eseguito.
+
+### 2026-10-20 | GPT | Limiti dell'interpretazione del punto 1 | Discussione, nessun nuovo difetto confermato
+
+- I primari negativi escludono l'adozione delle varianti provate con la regola firmata; non dimostrano che ogni rappresentazione
+  spettrale sia inutile. Il vantaggio dei rami al passo 0 e' secondario descrittivo, con due teacher e IC P2 descrittivi.
+- La perdita durante il training e' compatibile con un obiettivo troppo ristretto, ma anche con ottimizzazione, dominio o geometria
+  dell'embedding. Non attribuirla automaticamente a compressione distruttiva. Passo 0 significa frontend fisici e normalizzazione
+  calibrata piu' encoder dei rami non allenati: non e' la baseline dell'intero encoder casuale del punto 2.
+- Nuove scelte vanno sviluppate sulla validation interna e confermate con protocollo congelato, evitando di ottimizzare ripetutamente
+  sui test ufficiali gia' letti. Punto 1 storico resta chiuso; l'eventuale nuovo obiettivo rientra nel punto 5. decisioni.md invariato.
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10
 

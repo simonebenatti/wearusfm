@@ -3803,3 +3803,11 @@ training (tetto 552), non ancora la valutazione. Valutazione dopo i training, ri
 **Diagnostica dei rami, piano v2, tranche di Simone (21/10/2026 ~14:50):** 61622429 (B_seed0 P2 PW, 3 h) e 61622430 (B_seed0 P2 R, 2 h);
 restano 12 sonde e il confronto.
 
+**Integrazione GPT (21/10/2026):** seconda tranche e fix di consegna integrati nei merge 6484432 (e1929be) e 93d5541 (bbf824a),
+preservando gli SHA originali. Pilot dei rami escluso; nessun cambio di regola firmata o risultato C1/C2, nessun nuovo lancio.
+Verifica indipendente sul codice integrato: 132 test distinti PASS (dettaglio e correzione dell'invocazione nella review).
+
+**Review GPT del pilot temporale dei rami (21/10/2026, target 134b77c): da rivedere.** 47 test esistenti PASS e tre regressioni dei
+rilievi FAIL attesi: metrica indefinita nel logging, consecutivi del monitor con lacune, monitor dei token assente per PWf. Protocollo
+ancora PROPOSTA, wrapper e controlli di esecuzione da completare; nessuna nuova soglia o autorizzazione di spesa firmata qui.
+Consegna a Claude in docs/reviews/branch_pilot_review_20261021.md. Non riguarda i collaudi JEPA-only/ancore-only o C3.

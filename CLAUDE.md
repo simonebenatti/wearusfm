@@ -39,7 +39,9 @@
   attualmente estratto in un checkout usato da job in coda o in esecuzione.
   Prima del primo push di deploy verificare ref/configurazione/hook: nessun automatismo deve aggiornare checkout attivi; eseguire
   da SHA completo in un checkout detached nuovo, non dal nome mobile di un branch. La campagna corrente non si converte in corsa.
-- Non fare push su origin a meno che non te lo chieda esplicitamente.
+- Non fare push su origin a meno che non te lo chieda esplicitamente. **Dal 21/10/2026 Simone ha chiesto a GPT di pubblicare anche su
+  GitHub le proprie consegne e i log, verificando lo SHA remoto dopo il push.** La pubblicazione del ramo di lavoro non equivale alla
+  review o al merge del codice dell'altro agente; i checkout di campagna mantengono i propri riferimenti congelati.
 - Se un push verso leonardo viene rifiutato il tree remoto e' sporco:
   fermati e segnalalo, non forzare.
 
@@ -61,8 +63,9 @@
   checksum (7 dataset, gli originali in $WORK/data/raw restano finche' Simone non lancia
   `scripts/slurm/delete_verified_raw.sbatch`) e PROCESSATO grande in `$SCRATCH/data/processed/`
   (Kaifosh, NinaPro DB2/3/4/6/7, Hyser). Il processato piccolo gia' fatto resta in
-  `$WORK/data/processed/`. **La data di modifica va rinfrescata prima del purge: scadenza
-  25/10/2026 (Simone).** `rsync -a` preserva le date vecchie: dopo una copia si rinfresca
+  `$WORK/data/processed/`. **Rinfresco completato il 15/10/2026 (job 60643323, 151.833 file), sostitutivo del giro del 22/10;
+  prossimo giro il 12/11/2026** (decisioni.md, commit fba794f). La precedente scadenza del 25/10 e' superata da quel rinfresco.
+  `rsync -a` preserva le date vecchie: dopo una copia si rinfresca
   (vedi `scripts/slurm/verify_touch_scratch_raw.sbatch`). Stato dettagliato per dataset:
   `docs/dataset_access.md`, sezione "Stato dell'ingest".
 - Manutenzione programmata di Leonardo: 30/09/2026 08:00 - 01/10/2026 08:00 (Booster, DCGP, nodi di
