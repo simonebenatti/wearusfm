@@ -3774,4 +3774,4 @@ collaudo e dei bracci assenti, in coda solo C3: i 2 posti di `boost_qos_dbg` son
 
 **Collaudo `w1arm-collaudo-v1` sottomesso da Simone (21/10/2026), sul preventivo presentato (2,6 / 4,0 GPU-ora, budget infrastruttura).**
 61607555 = `W1ARMC-JEPA-only-30M-s0-j01`.
-
+61607561 = `W1ARMC-ancore-only-30M-s0-j01`.
