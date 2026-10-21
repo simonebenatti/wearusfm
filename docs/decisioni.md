@@ -3818,4 +3818,6 @@ codice del ramo (le correzioni R1-R3 di `main` sono le stesse gia' presenti). De
 suite completa; controllo in sola lettura pulito (ref e cartella assenti, hook solo `.sample`, `updateInstead` solo su `main`). Piano
 `results/infra/w1cal_c3_20261021/valutazione_C3.json` dalla campagna `results/infra/w1cal_campaign_c3_eval_20261021.json` (piano di
 training di C3 rigenerato identico): 2 guardie, 2 estrazioni (QoS normal, 1 h 30), 2 sonde sulla seriale (4 h), selezione.
+**Deploy della valutazione di C3 (21/10/2026):** suite completa 1309 PASS sul merge; `deploy/w1cal-eval-20261021` = 98c5832 (SHA remoto
+verificato), checkout di campagna job 61624224 (1 core, 10 min, 0 GPU-ora).
 
