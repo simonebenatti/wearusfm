@@ -3794,3 +3794,10 @@ la tendenza dice che il JEPA puro e' il candidato al collasso nei 98.094 passi (
 **Diagnostica dei rami, famiglia B:** 61592919 (B_seed0 P1 PW e ridondanza) COMPLETED in 2 h 28 e 61592922 (B_seed0 P2 PW0) in 14 min; il
 dry-run della catena ha pronti B_seed0 P2 PW e R, 12 sonde e il confronto ancora da fare. Tranche a richiesta di Simone.
 
+**Bracci dell'obiettivo: 6 run sottomessi da Simone (21/10/2026), dopo il collaudo superato e sul preventivo presentato** (training
+484-509 GPU-ora attese, tetto 552, 4.416 ore locali; un job da 23 h per run, checkout 72cf24a, piano `dbe0f8fe...`; Simone ha eseguito i
+comandi di `results/infra/w1arm_20261021/comandi_training_objective.txt`): 61622377 (`W1ARM-A-30M-s0-j01`), 61622387 (A s1), 61622389
+(JEPA-only s0), 61622391 (JEPA-only s1), 61622414 (ancore-only s0), 61622418 (ancore-only s1). **Voce di budget «Bracci dell'obiettivo»
+(tetto 639 GPU-ora proposto, 579 con le sonde sulla seriale): da confermare esplicitamente da Simone**; la sottomissione autorizza il
+training (tetto 552), non ancora la valutazione. Valutazione dopo i training, rigenerata con `--frozen-plans`.
+
