@@ -2166,6 +2166,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 - Sospese le tranche automatiche: i job con R+PW0+PW in 4 h non ci stanno. Misure: R 1 h 26, RPW0 1 h 37, PW0 oltre 1 h 30. In attesa
   della scelta di Simone sulla ripianificazione (un job per insieme) e sul costo.
 
+### 2026-10-21 | Claude | Diagnostica dei rami: piano v2 pronto, un job per insieme | Codice di plan: questo commit
+
+- Misure B_seed0 P1: R 1 h 27, PW0 2 h 10, RPW0 1 h 37; 61582132 TIMEOUT (PW e ridondanza da rifare). Piani v2 (B o A+B) e dry-run di B
+  committati; ancora nessun job. Opzione B entro il tetto autorizzato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-20 | GPT | Residui operativi al controllo di stato | Fonte: log Claude del 19-20/10

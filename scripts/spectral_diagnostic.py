@@ -73,6 +73,12 @@ N_BOOT, BOOT_SEED = 1000, 20261009  # come arms_compare.s_comparison
 JOBS = (("p1-a", "p1", ("R", "PW0", "PW"), True, "04:00:00"), ("p1-b", "p1", ("RPW0",), False, "03:30:00"),
         ("p1-c", "p1", ("RPW",), False, "03:30:00"), ("p2", "p2", ("R", "PW0", "PW", "RPW0", "RPW"), True, "04:00:00"))
 ARM_ORDER = ("B_seed0", "B_seed1", "A_seed0", "A_seed1")
+# piano v2 (21/10/2026), un job per insieme: le sonde sui soli rami non convergono entro le 3.000 iterazioni di lbfgs e durano piu' di R
+# (misure su B_seed0, P1: R 1 h 27, PW0 2 h 10, RPW0 1 h 37); tempi massimi coi margini; la ridondanza (~20 min) va col primo job rimasto
+# nell'ordine REDUNDANCY_WITH. P2: nessuna misura, tempi prudenti.
+SET_TIME = {"p1": {"R": "03:00:00", "PW0": "04:00:00", "PW": "04:00:00", "RPW0": "03:00:00", "RPW": "03:00:00"},
+            "p2": {"R": "02:00:00", "PW0": "03:00:00", "PW": "03:00:00", "RPW0": "02:30:00", "RPW": "02:00:00"}}
+REDUNDANCY_WITH = ("RPW0", "PW", "PW0", "R", "RPW")
 NICE = 10000  # abbassa la priorita' fra i job in attesa; prevale sull'eta' (peso 20.000 a 7 giorni: ~476 punti in 4 h; results/infra/slurm_priority_20261020.txt)
 
 
@@ -435,17 +441,42 @@ def plan(args) -> int:
         raise ValueError("--out-dir assoluta (e' la cartella dei rapporti sul cluster)")
     nice = [f"--nice={NICE}"]
     nodes, reports = [], []
-    for arm in ARM_ORDER:
-        for suffix, task, sets, red, time_limit in JOBS:
+    arms = tuple(args.arms) if args.arms else ARM_ORDER
+    families = [f for f, members in FAMILIES.items() if set(members) <= set(arms)]
+    if sorted(a for f in families for a in FAMILIES[f]) != sorted(arms):
+        raise ValueError(f"--arms {list(arms)}: famiglie intere (A: {FAMILIES['A']}, B: {FAMILIES['B']})")
+    done = set(args.done or ())
+    jobs = JOBS
+    if args.per_set:  # piano v2: un job per insieme, la ridondanza col primo job rimasto
+        jobs = []
+        for task in ("p1", "p2"):
+            for name in SETS:
+                jobs.append((f"{task}-{name}", task, (name,), False, SET_TIME[task][name]))
+    for arm in (a for a in ARM_ORDER if a in arms):
+        todo = [j for j in jobs if f"{j[1]}/{arm}/{j[2][0]}" not in done] if args.per_set else list(jobs)
+        if args.per_set:
+            for task in ("p1", "p2"):  # la ridondanza del compito, se non e' gia' fatta
+                if f"{task}/{arm}/redundancy" in done:
+                    continue
+                for name in REDUNDANCY_WITH:
+                    k = next((i for i, j in enumerate(todo) if j[1] == task and j[2] == (name,)), None)
+                    if k is not None:
+                        todo[k] = (*todo[k][:3], True, todo[k][4])
+                        break
+                else:
+                    raise ValueError(f"{task}/{arm}: ridondanza da fare ma nessun job del compito rimasto")
+        for suffix, task, sets, red, time_limit in todo:
             outputs = [f"{out}/{task}/{arm}/{n}.json" for n in sets] + ([f"{out}/{task}/{arm}/redundancy.json"] if red else [])
             reports += outputs
             nodes.append({"id": f"RAMI-{args.campaign}-{arm}-{suffix}", "kind": "probe", "after": [], "queue": "lrd_all_serial", "gpu_hours": 0,
                           "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
                           "args": [str(out), "probe", "--task", task, "--arm", arm, "--sets", *sets] + (["--redundancy"] if red else []),
                           "exports": {}, "sbatch": [f"--time={time_limit}", *nice], "inputs": [], "outputs": outputs})
-    nodes.append({"id": f"RAMI-{args.campaign}-compare", "kind": "compare", "after": [n["id"] for n in nodes], "queue": "lrd_all_serial", "gpu_hours": 0,
+    families_arg = [] if set(families) == set(FAMILIES) else ["--families", *families]
+    nodes.append({"id": f"RAMI-{args.campaign}-compare", "kind": "compare", "after": [n["id"] for n in nodes] + list(args.external or ()),
+                  "queue": "lrd_all_serial", "gpu_hours": 0,
                   "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
-                  "args": [str(out), "compare"], "exports": {}, "sbatch": ["--time=00:30:00", "--cpus-per-task=2", *nice],
+                  "args": [str(out), "compare", *families_arg], "exports": {}, "sbatch": ["--time=00:30:00", "--cpus-per-task=2", *nice],
                   "inputs": [r for r in reports if r.endswith(".json") and not r.endswith("redundancy.json")], "outputs": [f"{out}/esito.json"]})
     doc = {"schema": "eval-plan-v0", "campaign": args.campaign, "agent": "claude", "limits": {"lrd_all_serial": args.max_serial},
            "nodes": nodes}
@@ -483,6 +514,10 @@ def main(argv=None) -> int:
     q.add_argument("--campaign", required=True, help="nome della campagna, es. rami-diag-20261020: stesso nome = stessi ID nelle tranche")
     # 2: uno in esecuzione (8 core per utente: uno alla volta) e uno pronto; di piu' non accelera e allungherebbe l'attesa della finestra 1
     q.add_argument("--max-serial", type=int, default=2, help="job seriali dell'utente in coda o in esecuzione oltre i quali non si sottomette")
+    q.add_argument("--per-set", action="store_true", help="piano v2: un job per insieme (SET_TIME), ridondanza col primo job rimasto")
+    q.add_argument("--arms", nargs="+", choices=list(ARM_ORDER), help="teacher da pianificare (famiglie intere; default tutti)")
+    q.add_argument("--done", nargs="*", default=[], help="gia' fatti (o in corso in un'altra campagna): compito/teacher/insieme o .../redundancy")
+    q.add_argument("--external", nargs="*", default=[], help="ID logici di job di un'altra campagna da cui il confronto dipende")
     args = ap.parse_args(argv)
     return {"probe": probe, "compare": compare, "plan": plan}[args.stage](args)
 

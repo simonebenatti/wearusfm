@@ -3712,3 +3712,11 @@ PW0, PW e la ridondanza a rischio. Lo stesso raggruppamento e' pianificato per g
 Sospese le tranche automatiche (nessun job nuovo); i job gia' sottomessi continuano (61587820, RPW di B_seed0, in coda). Proposta a Simone:
 un job per insieme con tempi misurati (stima ~435 core-ora complessive, tetto ~980, oltre il tetto autorizzato di 481) oppure la sola
 famiglia B ora (~200 / ~490), A dopo. Nessuna modifica del protocollo scientifico.
+
+**Diagnostica dei rami: tempi misurati e piano v2 pronto (21/10/2026 06:15), in attesa della scelta di Simone.** 61582132 TIMEOUT alle
+05:51 (4 h 03) con R (1 h 27) e PW0 (2 h 10, 7.800 s) salvati, PW interrotto, ridondanza non fatta; 61582137 (RPW0) 1 h 37; 61587820 (RPW
+di B_seed0) in corso dalle 05:51. Piano v2, un job per insieme (`spectral_diagnostic.py plan --per-set`, tempi massimi P1 R 3 h, PW0 e PW 4
+h, RPW0 e RPW 3 h; P2 2-3 h; la ridondanza col primo job rimasto), campagna `rami-diag-20261021b`, insiemi gia' fatti saltati, confronto
+dipendente anche da 61587820: **opzione B** (`results/rami_diagnostica/piano_20261021b_B.json`, famiglia B, 16 sonde, tetto 368 core-ora
+nuove, ~441 con quelle gia' usate, entro le 481 autorizzate; stima ~220 complessive) oppure **A+B** (`..._AB.json`, 36 sonde, tetto 840
+nuove, ~913 complessive, stima ~437, oltre il tetto autorizzato). Nessun job sottomesso.
