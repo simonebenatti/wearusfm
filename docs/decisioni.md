@@ -3720,3 +3720,8 @@ h, RPW0 e RPW 3 h; P2 2-3 h; la ridondanza col primo job rimasto), campagna `ram
 dipendente anche da 61587820: **opzione B** (`results/rami_diagnostica/piano_20261021b_B.json`, famiglia B, 16 sonde, tetto 368 core-ora
 nuove, ~441 con quelle gia' usate, entro le 481 autorizzate; stima ~220 complessive) oppure **A+B** (`..._AB.json`, 36 sonde, tetto 840
 nuove, ~913 complessive, stima ~437, oltre il tetto autorizzato). Nessun job sottomesso.
+
+**Diagnostica dei rami: opzione B autorizzata (Simone, 21/10/2026: «va bene, procedi con B»).** Piano v2 per la sola famiglia B
+(`results/rami_diagnostica/piano_20261021b_B.json`, campagna `rami-diag-20261021b`, 16 sonde e confronto `--families B`), tetto ~441 core-ora
+compresi i job gia' usati, entro le 481 autorizzate. La famiglia A resta da decidere dopo l'esito di B. Tranche automatiche riattivate sul
+piano v2 (al piu' 2 job seriali dell'utente, `--nice=10000`).
