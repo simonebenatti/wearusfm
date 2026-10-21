@@ -3727,3 +3727,10 @@ compresi i job gia' usati, entro le 481 autorizzate. La famiglia A resta da deci
 piano v2 (al piu' 2 job seriali dell'utente, `--nice=10000`).
 **Diagnostica dei rami, piano v2, prima tranche (21/10/2026 ~08:10):** 61587820 (RPW di B_seed0, P1) COMPLETED 0:0 in 1 h 30; sottomessi
 61592919 (B_seed0 P1 PW e ridondanza, 4 h) e 61592922 (B_seed0 P2 PW0, 3 h). Gli altri 14 nodi in attesa del limite di coda.
+
+**Calibrazione C3 AUTORIZZATA (Simone, 21/10/2026: «Potresti partire gia con C3 ?», sul preventivo presentato).** 100M, 0,5 epoche
+(12.261 passi, warmup 1.962, decay da 9.809), LR 1e-4 e 3e-4 (confermati da C2), seme 0, un job da 6 h 30 per run, QoS normal, dallo stesso
+checkout di training di C1 e C2 (`w1cal-20261016`, 72cf24a). Piani in `results/infra/w1cal_c3_20261021/` (piani di C1 e C2 rigenerati
+identici byte per byte). **Preventivo: training 39,8 attese / 52 tetto, valutazione 1,3 / 3,0: ~41 / 55 GPU-ora (440 ore locali)** sul
+budget della calibrazione (104,6 usate su 220): dopo il tetto restano almeno 60,4 per C4. Sottomissione di Simone (come C1 e C2). La
+diagnostica dei rami non sottomette tranche nuove a ridosso della valutazione di C3.

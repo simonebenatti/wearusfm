@@ -1,0 +1,73 @@
+{
+ "campaign": "w1cal-c3",
+ "runs": [
+  {
+   "id": "W1CAL-C3-100M-lr0p0001-s0",
+   "branch_of": null,
+   "from_step": null,
+   "after": null,
+   "preset": "100m",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "warmup_steps": 1962,
+   "total_steps": 12261,
+   "decay_start": 9809,
+   "keep_checkpoints": [],
+   "s_per_step": 1.39,
+   "steps_per_job_pessimistic": 51986.2370972787,
+   "jobs_needed": 1,
+   "jobs": 1,
+   "job_ids": [
+    "W1CAL-C3-100M-lr0p0001-s0-j01"
+   ],
+   "gpu_hours_expected": 19.9,
+   "gpu_hours_max": 26.0,
+   "time": "06:30:00",
+   "time_limit_s": 21000,
+   "checkpoint_gb": 5.1,
+   "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0001-s0",
+   "branch_from": null
+  },
+  {
+   "id": "W1CAL-C3-100M-lr0p0003-s0",
+   "branch_of": null,
+   "from_step": null,
+   "after": null,
+   "preset": "100m",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "warmup_steps": 1962,
+   "total_steps": 12261,
+   "decay_start": 9809,
+   "keep_checkpoints": [],
+   "s_per_step": 1.39,
+   "steps_per_job_pessimistic": 51986.2370972787,
+   "jobs_needed": 1,
+   "jobs": 1,
+   "job_ids": [
+    "W1CAL-C3-100M-lr0p0003-s0-j01"
+   ],
+   "gpu_hours_expected": 19.9,
+   "gpu_hours_max": 26.0,
+   "time": "06:30:00",
+   "time_limit_s": 21000,
+   "checkpoint_gb": 5.1,
+   "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0003-s0",
+   "branch_from": null
+  }
+ ],
+ "commands": [
+  "python3 scripts/submit_job.py --id W1CAL-C3-100M-lr0p0001-s0-j01 --agente claude --campagna w1cal-c3 --gpu-ore 26 -- '--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016,EXPECTED_SHA=72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec,PRESET=100m,TIME_LIMIT_S=21000,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 12261 --steps-at-d 98094 --lr 0.0001 --nested 1' --qos=normal --time=06:30:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016/scripts/slurm/train_ddp.sbatch /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0001-s0 12261",
+  "python3 scripts/submit_job.py --id W1CAL-C3-100M-lr0p0003-s0-j01 --agente claude --campagna w1cal-c3 --gpu-ore 26 -- '--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016,EXPECTED_SHA=72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec,PRESET=100m,TIME_LIMIT_S=21000,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 12261 --steps-at-d 98094 --lr 0.0003 --nested 1' --qos=normal --time=06:30:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016/scripts/slurm/train_ddp.sbatch /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0003-s0 12261"
+ ],
+ "totals": {
+  "jobs": 2,
+  "gpu_hours_expected": 39.8,
+  "gpu_hours_max": 52.0,
+  "checkpoint_gb": 10.2
+ }
+}
