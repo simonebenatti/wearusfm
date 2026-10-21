@@ -244,13 +244,17 @@ def probe_set(data: dict, task: str, arm: str, name: str, splits: dict | None, s
     return report
 
 
-def linear_cka(a: np.ndarray, b: np.ndarray) -> float:
-    """CKA lineare (Kornblith et al. 2019) fra due insiemi di feature sulle stesse righe: 1 = stessa geometria a meno di rotazioni e scale."""
+UNDEFINED = "non definito: varianza nulla (feature costanti)"
+
+
+def linear_cka(a: np.ndarray, b: np.ndarray) -> float | None:
+    """CKA lineare (Kornblith et al. 2019) fra due insiemi di feature sulle stesse righe: 1 = stessa geometria a meno di rotazioni e scale.
+    None se uno dei due insiemi e' costante (review GPT del 20/10: nessun valore fittizio)."""
     a = a.astype(np.float64) - a.mean(0)
     b = b.astype(np.float64) - b.mean(0)
     num = np.linalg.norm(a.T @ b) ** 2
     den = np.linalg.norm(a.T @ a) * np.linalg.norm(b.T @ b)
-    return float(num / den) if den > 0 else 0.0
+    return float(num / den) if den > 0 else None
 
 
 def ridge_r2(x: np.ndarray, t: np.ndarray, s: np.ndarray, roles: list[dict]) -> dict:
@@ -273,7 +277,9 @@ def ridge_r2(x: np.ndarray, t: np.ndarray, s: np.ndarray, roles: list[dict]) -> 
         chosen.append(best)
         sse += float(((xh @ fit(best) - th) ** 2).sum())
         sst += float(((th - th.mean(0)) ** 2).sum())
-    return {"r2": 1.0 - sse / sst if sst > 0 else float("nan"), "alphas": chosen}
+    if not sst > 0:  # rami costanti: R^2 non definito (review GPT del 20/10: prima NaN, che faceva fallire il JSON e il job)
+        return {"r2": None, "status": UNDEFINED, "alphas": chosen}
+    return {"r2": 1.0 - sse / sst, "status": "definito", "alphas": chosen}
 
 
 def redundancy(data: dict) -> dict:
@@ -282,9 +288,10 @@ def redundancy(data: dict) -> dict:
         roles = CP.fold_roles(e["subjects"])
         x = e["raw"].astype(np.float64)
         row = {"cka_R_PW0": linear_cka(x, e["init"]), "cka_R_PW": linear_cka(x, e["trained"]), "cka_PW0_PW": linear_cka(e["init"], e["trained"])}
+        row["cka_status"] = {k: ("definito" if row[k] is not None else UNDEFINED) for k in ("cka_R_PW0", "cka_R_PW", "cka_PW0_PW")}
         for which, key in (("init", "PW0"), ("trained", "PW")):
             r = ridge_r2(x, e[which].astype(np.float64), e["s"], roles)
-            row[f"r2_{key}_from_R"], row[f"alphas_{key}"] = r["r2"], r["alphas"]
+            row[f"r2_{key}_from_R"], row[f"r2_{key}_status"], row[f"alphas_{key}"] = r["r2"], r["status"], r["alphas"]
         out[ds] = row
     return out
 
@@ -367,8 +374,9 @@ def difference_of_deltas(reps: dict, arms, n_boot: int = N_BOOT, seed: int = BOO
         point = dd(np.arange(len(subs)))
         teachers.append(point)
         points.append(point.mean())
-        per_ds[d] = {"delta": float(point.mean()), "delta_by_model_seed": point.tolist()}
         draws.append([dd(rng.integers(len(subs), size=len(subs))).mean() for _ in range(n_boot)])
+        per_ds[d] = {"delta": float(point.mean()), "delta_by_model_seed": point.tolist(),
+                     "ci95": np.quantile(draws[-1], [.025, .975]).tolist()}
     samples = w @ np.asarray(draws)
     return {"delta": float(w @ np.array(points)), "delta_by_model_seed": (w @ np.array(teachers)).tolist(),
             "ci95": np.quantile(samples, [.025, .975]).tolist(), "paired_subject_se": float(np.std(samples, ddof=1)), "datasets": per_ds}
@@ -389,7 +397,10 @@ def compare(args) -> int:
                         "effective_rank": {d: v["features"]["effective_rank"] for d, v in r["datasets"].items()}}
                 red = args.out_dir / task / a / "redundancy.json"
                 if red.exists():
-                    result["redundancy"].setdefault(task, {})[a] = json.loads(red.read_text())["datasets"]
+                    doc = json.loads(red.read_text())
+                    if (doc.get("protocol"), doc.get("task"), doc.get("arm")) != (PROTOCOL, task, a):
+                        raise ValueError(f"{red}: ridondanza di un altro protocollo, compito o teacher")
+                    result["redundancy"].setdefault(task, {})[a] = doc["datasets"]
             rows = {}
             for key, ref, var in CONTRASTS:
                 row = AC.s_comparison([reps[arms[0]][ref], reps[arms[1]][ref]], [reps[arms[0]][var], reps[arms[1]][var]])
@@ -418,6 +429,8 @@ def plan(args) -> int:
     `limits` (job dell'utente in coda e in esecuzione sulla seriale, finestra 1 compresa: la diagnostica si ferma se la coda e' occupata) e
     non mette afterok su predecessori gia' finiti; si richiama a tranche finche' tutto e' sottomesso."""
     out = args.out_dir
+    if not args.campaign or not all(c.isalnum() or c in "-_" for c in args.campaign):
+        raise ValueError("--campaign: solo lettere, cifre, - e _")
     if not str(out).startswith("/"):
         raise ValueError("--out-dir assoluta (e' la cartella dei rapporti sul cluster)")
     nice = [f"--nice={NICE}"]
@@ -426,11 +439,11 @@ def plan(args) -> int:
         for suffix, task, sets, red, time_limit in JOBS:
             outputs = [f"{out}/{task}/{arm}/{n}.json" for n in sets] + ([f"{out}/{task}/{arm}/redundancy.json"] if red else [])
             reports += outputs
-            nodes.append({"id": f"RAMI-{arm}-{suffix}", "kind": "probe", "after": [], "queue": "lrd_all_serial", "gpu_hours": 0,
+            nodes.append({"id": f"RAMI-{args.campaign}-{arm}-{suffix}", "kind": "probe", "after": [], "queue": "lrd_all_serial", "gpu_hours": 0,
                           "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
                           "args": [str(out), "probe", "--task", task, "--arm", arm, "--sets", *sets] + (["--redundancy"] if red else []),
                           "exports": {}, "sbatch": [f"--time={time_limit}", *nice], "inputs": [], "outputs": outputs})
-    nodes.append({"id": "RAMI-compare", "kind": "compare", "after": [n["id"] for n in nodes], "queue": "lrd_all_serial", "gpu_hours": 0,
+    nodes.append({"id": f"RAMI-{args.campaign}-compare", "kind": "compare", "after": [n["id"] for n in nodes], "queue": "lrd_all_serial", "gpu_hours": 0,
                   "code_dir": args.code_dir, "expected_sha": args.expected_sha, "launcher": "scripts/slurm/spectral_diagnostic.sbatch",
                   "args": [str(out), "compare"], "exports": {}, "sbatch": ["--time=00:30:00", "--cpus-per-task=2", *nice],
                   "inputs": [r for r in reports if r.endswith(".json") and not r.endswith("redundancy.json")], "outputs": [f"{out}/esito.json"]})
@@ -466,7 +479,8 @@ def main(argv=None) -> int:
     q.add_argument("--expected-sha", required=True)
     q.add_argument("--out-dir", type=Path, required=True, help="cartella dei rapporti sul cluster (assoluta)")
     q.add_argument("--out", type=Path, required=True)
-    q.add_argument("--campaign", default="rami-diag")
+    # obbligatoria: gli ID del registro sono unici per sempre, quindi entrano nell'ID dei job (review GPT del 20/10)
+    q.add_argument("--campaign", required=True, help="nome della campagna, es. rami-diag-20261020: stesso nome = stessi ID nelle tranche")
     # 2: uno in esecuzione (8 core per utente: uno alla volta) e uno pronto; di piu' non accelera e allungherebbe l'attesa della finestra 1
     q.add_argument("--max-serial", type=int, default=2, help="job seriali dell'utente in coda o in esecuzione oltre i quali non si sottomette")
     args = ap.parse_args(argv)

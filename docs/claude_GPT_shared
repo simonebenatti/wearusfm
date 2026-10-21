@@ -3581,3 +3581,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Il controllo del checkpoint di GPT, applicato anche senza sonda, trasformava un run sano con un file perso in «inammissibile» e la fase
   andava avanti; il protocollo firmato vuole un errore. Corretto con un test. GPT: da rivedere (non blocca).
+
+### 2026-10-20 | Claude | Punto 3: «chiuso» vale solo per la consegna del 16/10
+
+- La consegna integrata e' quella fino ad a7edd55 (merge 41b80af, chiusura 2dc1197, tabella 5145efb). Dopo restano fuori da `main` i 30
+  commit della voce sopra, compreso il codice che gira nelle valutazioni di C1 e C2: per la tabella il punto 3 e' aperto sulla seconda
+  tranche, come gia' scritto da GPT nella riga del 20/10. GitHub: `main` era fermo a 5145efb, portato a 79db894 (solo avanzamento).
+
+### 2026-10-20 | Claude | Diagnostica dei rami: conseguenza sul deploy
+
+- Le correzioni arrivano dopo il deploy 62bec0b: la diagnostica avra' un deploy e un checkout suoi (CPU, 10 min); la valutazione di C2
+  resta su 62bec0b, che non usa `spectral_diagnostic.py`.

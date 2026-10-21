@@ -197,6 +197,27 @@ def test_linear_cka_and_reading_rule():
     assert "non esclude una differenza, neanche oltre 1 punto" in SDG.answer("entro le soglie", "peggiora")
 
 
+def test_constant_branches_give_undefined_measures_not_a_failed_job(tmp_path, monkeypatch):
+    """Review GPT del 20/10 (P2): rami allenati costanti -> R^2 e CKA non definiti (null con lo stato), rango 0, JSON scritto, nessun
+    valore fittizio."""
+    rng = np.random.default_rng(123)
+    subjects = [f"s{i:02d}" for i in range(12)]
+    s = np.repeat(subjects, 8)
+    data = {"epn612": {"raw": rng.normal(size=(len(s), 5)), "init": rng.normal(size=(len(s), 3)), "trained": np.zeros((len(s), 3)),
+                       "s": s, "subjects": subjects}}
+    monkeypatch.setattr(SDG, "load", lambda *a: data)
+    from types import SimpleNamespace
+
+    args = SimpleNamespace(task="p2", arm="B_seed0", sets=[], redundancy=True, seed=0, eval_root=tmp_path / "e", downstream_root=tmp_path / "d",
+                           out_dir=tmp_path / "out", splits=None)
+    assert SDG.probe(args) == 0  # prima: «Out of range float values are not JSON compliant: nan» e job fallito
+    doc = json.loads((args.out_dir / "p2" / "B_seed0" / "redundancy.json").read_text())
+    assert doc["effective_rank"]["trained"]["epn612"]["effective_rank"] == 0
+    red = doc["datasets"]["epn612"]
+    assert red["r2_PW_from_R"] is None and red["r2_PW_status"] == SDG.UNDEFINED and red["cka_R_PW"] is None
+    assert red["cka_status"]["cka_R_PW"] == SDG.UNDEFINED and red["r2_PW0_from_R"] is not None and red["r2_PW0_status"] == "definito"
+
+
 def test_ridge_r2_recovers_known_cases():
     """Review del critico (20/10): R^2 ~ 1 per rami combinazione lineare del raw, ~ 0 per rami indipendenti."""
     rng = np.random.default_rng(0)
@@ -307,15 +328,16 @@ def test_plan_feeds_the_evaluation_chain_in_tranches(tmp_path):
     compresa), confronto dopo tutte le sonde, --nice positivo; uscite fuori dal codice."""
     out = tmp_path / "piano.json"
     assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(out),
-                     "--max-serial", "3"]) == 0
+                     "--max-serial", "3", "--campaign", "rami-t"]) == 0
     default = tmp_path / "piano2.json"
-    assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(default)]) == 0
+    assert SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/x/rami", "--out", str(default),
+                     "--campaign", "rami-t"]) == 0
     assert json.loads(default.read_text())["limits"] == {"lrd_all_serial": 2}  # uno in esecuzione e uno pronto
     plan = json.loads(out.read_text())
     EC = SDG._script("evaluation_chain")
     nodes = EC.validate(plan)
-    assert len(nodes) == 17 and nodes[-1]["id"] == "RAMI-compare" and len(nodes[-1]["after"]) == 16
-    assert [n["id"] for n in nodes[:4]] == [f"RAMI-B_seed0-{j}" for j in ("p1-a", "p1-b", "p1-c", "p2")]
+    assert len(nodes) == 17 and nodes[-1]["id"] == "RAMI-rami-t-compare" and len(nodes[-1]["after"]) == 16
+    assert [n["id"] for n in nodes[:4]] == [f"RAMI-rami-t-B_seed0-{j}" for j in ("p1-a", "p1-b", "p1-c", "p2")]
     assert all(f"--nice={SDG.NICE}" in n["sbatch"] for n in nodes) and plan["limits"] == {"lrd_all_serial": 3}
 
     class Ledger:
@@ -326,7 +348,15 @@ def test_plan_feeds_the_evaluation_chain_in_tranches(tmp_path):
             return {"stato": self.states[i]} if i in self.states else None
 
     rows = EC.schedule(plan, Ledger({}).read, {"lrd_all_serial": 1})  # un job seriale della finestra 1 gia' in coda: ne entrano 2
-    assert [r["id"] for r in rows if r["status"] == "sottomesso ora"] == ["RAMI-B_seed0-p1-a", "RAMI-B_seed0-p1-b"]
-    assert next(r for r in rows if r["id"] == "RAMI-compare")["status"] == "in attesa"
+    assert [r["id"] for r in rows if r["status"] == "sottomesso ora"] == ["RAMI-rami-t-B_seed0-p1-a", "RAMI-rami-t-B_seed0-p1-b"]
+    assert next(r for r in rows if r["id"] == "RAMI-rami-t-compare")["status"] == "in attesa"
     with pytest.raises(ValueError, match="assoluta"):
-        SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "rel", "--out", str(out)])
+        SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "rel", "--out", str(out), "--campaign", "rami-t"])
+    with pytest.raises(SystemExit):  # senza campagna non si pianifica (review GPT del 20/10: gli ID del registro sono per sempre)
+        SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x", "--out", str(out)])
+    # campagne diverse = ID diversi: lo stato sottomesso di una non fa saltare l'altra
+    other = tmp_path / "piano3.json"
+    SDG.main(["plan", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/leonardo_scratch/y/rami", "--out", str(other), "--campaign", "rami-u"])
+    first = {n["id"] for n in json.loads(default.read_text())["nodes"]}
+    rows = EC.schedule(json.loads(other.read_text()), Ledger({i: "sottomesso" for i in first}).read, {"lrd_all_serial": 0})
+    assert not any(r["status"] == "gia' sottomesso" for r in rows) and sum(r["status"] == "sottomesso ora" for r in rows) == 2
