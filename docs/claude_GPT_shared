@@ -2532,6 +2532,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   A (firma dei bracci, punti 6-7). 4,22 GPU-ora. Gli altri 5 run continuano.
 - Valutazione di C3: 61631403-61631411 (guardie, estrazioni, sonde, selezione) dal deploy 98c5832.
 
+### 2026-10-21 | Claude | Bracci: JEPA-only seme 0 collassato, braccio chiuso | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61622389 fermato dall'allarme al passo 7.000 (collasso da query, rapporto < 0,05 per 3 valutazioni); 5,79 GPU-ora. JEPA-only collassato
+  in entrambi i semi: non batte A. Continuano A e ancore-only (semi 0 e 1). Alla valutazione: `--failed-runs` per i due JEPA-only.
+
 ## 2) Problemi trovati
 
 ### 2026-10-21 | GPT | Pilot: due difetti e un controllo da completare | Codice 134b77c

@@ -3839,4 +3839,10 @@ GPU-ora (1 h 03 x 4 GPU). Diagnostiche in `results/infra/w1arm_20261021/runs/W1A
 **Valutazione di C3 sottomessa (21/10/2026 ~16:20)** dal checkout `w1cal-eval-20261021` (98c5832): guardie 61631403 / 61631404 (senza
 afterok: training finiti bene secondo sacct), estrazioni 61631405 (1e-4) / 61631408 (3e-4), sonde 61631407 / 61631410, selezione 61631411.
 Tetto 3,0 GPU-ora.
+**Bracci: JEPA-only seme 0 COLLASSATO (21/10/2026 16:15, allarme firmato).** 61622389 fermato al passo 7.000: «collasso da query: rapporto
+sotto 0.05 per 3 valutazioni» (min fra studente e teacher 0,0485 / 0,0339 / 0,0325 ai passi 6.000 / 6.500 / 7.000; il rapporto scende da
+1,64 al passo 500; il rango, sceso a 43 al passo 5.000, risale a 135). Consuntivo 5,79 GPU-ora. **JEPA-only collassa in tutti e due i semi**
+(per rango il seme 1, per rapporto il seme 0): «collassato», non batte A (firma, punti 6-7). Costo del braccio 10,0 GPU-ora invece di ~160.
+Simone (21/10): «se collassa inutile sprecare ore gpu»: nessuno scancel necessario, l'allarme li ha fermati. Alla valutazione i due run
+entrano come `--failed-runs` (niente nodi di valutazione; nel confronto contano collassati dallo STOP). Restano 4 run (A e ancore-only).
 
