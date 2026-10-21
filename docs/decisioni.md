@@ -3725,3 +3725,5 @@ nuove, ~913 complessive, stima ~437, oltre il tetto autorizzato). Nessun job sot
 (`results/rami_diagnostica/piano_20261021b_B.json`, campagna `rami-diag-20261021b`, 16 sonde e confronto `--families B`), tetto ~441 core-ora
 compresi i job gia' usati, entro le 481 autorizzate. La famiglia A resta da decidere dopo l'esito di B. Tranche automatiche riattivate sul
 piano v2 (al piu' 2 job seriali dell'utente, `--nice=10000`).
+**Diagnostica dei rami, piano v2, prima tranche (21/10/2026 ~08:10):** 61587820 (RPW di B_seed0, P1) COMPLETED 0:0 in 1 h 30; sottomessi
+61592919 (B_seed0 P1 PW e ridondanza, 4 h) e 61592922 (B_seed0 P2 PW0, 3 h). Gli altri 14 nodi in attesa del limite di coda.
