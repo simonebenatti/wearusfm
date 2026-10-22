@@ -3864,3 +3864,21 @@ da spostare su GPU o dividere prima del piano. Descrittivo, nessuna decisione: l
 144-146 (A) e 139-143 (ancore-only), rapporto 1,8-2,0 (A, in lenta discesa da 2,8) e 1,26 (ancore-only, stabile); fine attesa entro le 11:30.
 **Diagnostica dei rami, tranche di Simone (22/10/2026 ~11:15):** 61754844 (B_seed0 P2 RPW0 e ridondanza) e 61754849 (B_seed0 P2 RPW): con
 queste il seme 0 e' completo; restano le 10 sonde di B_seed1 e il confronto.
+
+**Bracci: valutazione con le sonde su GPU (Simone, 22/10/2026: «ok», alla proposta «sonde su GPU, come ti consiglio»; interpretazione: via alla
+valutazione dei 4 run sani col preventivo presentato, 23,0 GPU-ora attese, tetto 58,0, voce della finestra 1).** Training: A s1 e ancore-only
+s0 / s1 COMPLETED 0:0 (11:06-11:14), 98.094 passi in 20,3-20,4 h, 0,744-0,750 s/passo; A s0 in chiusura. Identita' delle `config.json` vere
+dei 4 run contro il piano congelato `dbe0f8fe...` col codice di oggi: 102 campi uguali, codice 72cf24a. Spec del confronto e piano della
+valutazione in `results/infra/w1arm_20261021/valutazione/` (`arms_plan.py --frozen-plans results/infra/w1arm_20261021 --probes-on-gpu
+--failed-runs` per i due JEPA-only collassati): 32 nodi di estrazione e sonda su GPU e il confronto, campagna
+`results/infra/w1arm_campaign_eval_20261022.json`; deploy nuovo che contiene la spec, poi piano rigenerato con lo SHA del deploy.
+**Voce «Bracci dell'obiettivo» sulla finestra 1:** training tetto 552 (autorizzato dalla sottomissione; speso finora 10,0 per JEPA-only, ~325
+attese per i 4 run sani) + valutazione 58 = 610 GPU-ora di tetto.
+
+**C4: piano e preventivo pronti, da autorizzare.** Regola nuova della sonda (`calibration_plan.py`): se la durata attesa supera il limite
+della seriale (4 h) la sonda va su un nodo GPU (1 GPU, 6 h; stesse opzioni delle sonde dei bracci); le valutazioni di C1-C3 rigenerate sono
+identiche a quelle usate (test). C4: 300M al LR 1e-4 (C3), 0,25 epoche (6.130 passi, warmup 1.962, decay da 4.904), seme 0, un job da
+6 h 30 dal checkout di C1-C3 (`w1cal-20261016`, 72cf24a); piani di C1-C3 rigenerati identici. **Preventivo: training 19,9 / 26,0 GPU-ora,
+valutazione 5,7 / 9,0 (estrazione 1,5 / 3,0 e sonda su GPU 4,2 / 6,0): ~25,6 / 35,0 GPU-ora (280 ore locali)** sul budget della
+calibrazione (144,7 usate su 220): dopo il tetto restano almeno 40,3. Piano e comandi in `results/infra/w1cal_c4_20261022/`.
+

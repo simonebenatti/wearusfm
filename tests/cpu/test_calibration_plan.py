@@ -138,10 +138,13 @@ def test_evaluation_plans_feed_the_evaluation_chain():
         for g in (n for n in order if n["kind"] == "guard"):
             run = next(x for x in runs if g["args"][0].endswith(x["id"]))
             assert g["after"] == [f"{run['id']}-j01"] and g["args"][1] == "checkpoint_postdecay.pt" and str(run["steps"]) in g["args"]
+        gpu_probe = CP.probe_on_gpu(runs[0]["preset"])  # sonde sui nodi GPU solo oltre il limite della seriale (C4, 300M)
         for n in order:
-            assert ("boost_usr_prod" in EC.node_labels(n)) == (n["kind"] == "extract")  # solo le estrazioni sui nodi GPU
-        ext = [n for n in order if n["kind"] == "extract"]
-        assert e["estimate"]["gpu_hours_max"] == pytest.approx(sum(n["gpu_hours"] for n in ext))
+            on_gpu = n["kind"] == "extract" or (n["kind"] == "probe" and gpu_probe)
+            assert ("boost_usr_prod" in EC.node_labels(n)) == on_gpu, (name, n["id"])
+        gpu = [n for n in order if n["kind"] == "extract" or (n["kind"] == "probe" and gpu_probe)]
+        assert e["estimate"]["gpu_hours_max"] == pytest.approx(sum(n["gpu_hours"] for n in gpu))
+        assert (name == "C4") == gpu_probe
 
 
 def _load(name):
@@ -206,3 +209,28 @@ def test_runs_stopped_before_the_probe_enter_the_selection_without_evaluation_no
     assert CP._failed_arg([f"{failed}=STOP"]) == {failed: "STOP"}
     with pytest.raises(SystemExit, match="RUN=STOP"):
         CP._failed_arg([failed])
+
+
+def test_a_probe_expected_over_the_serial_limit_goes_to_a_gpu_node():
+    """C4 (22/10/2026): la sonda del 300M (attese 4,2 h) supera le 4 h della seriale e va su un nodo GPU (1 GPU, i suoi core, 6 h), con le
+    GPU-ora nel preventivo; le sonde del 30M e del 100M restano sulla seriale: le valutazioni di C1-C3 rigenerate restano identiche a quelle
+    committate e usate."""
+    import json
+
+    EC = _load("evaluation_chain")
+    rep = json.loads((REPO / "results/infra/derived_manifests_v1_1_build_cluster_20261015.json").read_text())
+    dec = json.loads((REPO / "results/infra/w1cal_decisioni.json").read_text())
+    camp = json.loads((REPO / "results/infra/w1cal_campaign_c3_eval_20261021.json").read_text())
+    r = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021")
+    assert r["eval_plans"]["C3"] == json.loads((REPO / "results/infra/w1cal_c3_20261021/valutazione_C3.json").read_text())
+    assert not CP.probe_on_gpu("sanity") and not CP.probe_on_gpu("100m") and CP.probe_on_gpu("300m")
+    c4 = r["eval_plans"]["C4"]
+    EC.validate(c4)
+    probe = next(n for n in c4["nodes"] if n["kind"] == "probe")
+    assert probe["queue"] == "boost_usr_prod" and "--gres=gpu:1" in probe["sbatch"] and "--time=06:00:00" in probe["sbatch"]
+    assert EC.node_labels(probe) == {"boost_usr_prod", "normal"} and probe["gpu_hours"] == 6.0
+    est = c4["estimate"]
+    assert est["probe_on_gpu"] and est["gpu_hours_expected"] == pytest.approx(1.5 + 4.2) and est["gpu_hours_max"] == pytest.approx(9.0)
+    assert est["cpu_core_hours_expected"] == 0 and est["probe_fits_the_cap"]
+    c3 = next(n for n in r["eval_plans"]["C3"]["nodes"] if n["kind"] == "probe")
+    assert c3["queue"] == "lrd_all_serial" and c3["gpu_hours"] == 0

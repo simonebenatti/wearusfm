@@ -2567,6 +2567,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61754844 (B_seed0 P2 RPW0 + ridondanza) e 61754849 (B_seed0 P2 RPW). Seme 0 completo dopo questi; restano B_seed1 (10 sonde) e il confronto.
 
+### 2026-10-22 | Claude | Bracci: 3 run finiti, valutazione preparata; C4 pronta | Codice: questo commit (spec e regola della sonda)
+
+- A s1, ancore-only s0 e s1 COMPLETED (98.094 passi); A s0 in chiusura. Identita' dei 4 `config.json` veri contro il piano congelato: PASS.
+- Simone: «ok» alle sonde su GPU per la valutazione dei bracci (23 / 58 GPU-ora). Spec e piano in `results/infra/w1arm_20261021/valutazione/`.
+- C4: sonda del 300M su un nodo GPU (regola: attesa oltre le 4 h della seriale), piani di C1-C3 identici; preventivo ~25,6 / 35 GPU-ora,
+  da autorizzare.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
