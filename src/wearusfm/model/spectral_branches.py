@@ -215,6 +215,10 @@ class ScaleEncoder(nn.Module):
         self.temporal = nn.ModuleList([nn.Conv1d(hidden, hidden, 3, padding=1) for _ in range(2)])
         self.output = nn.Linear(2 * hidden, out_dim)
 
+    def frames_used(self, valid: torch.Tensor) -> torch.Tensor:
+        """(C, P): frame con almeno una banda usata, il secondo valore di `tokens` senza calcolare i token (monitor dei rami)."""
+        return (valid & self.observed).any(-1)
+
     def tokens(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """I token per canale e frame prima della media sui frame (obiettivo mascherato dei rami, `branch_masking`): ((C, P, hidden), (C, P)
         frame con almeno una banda usata). Stessi valori del forward (che li usa), zeri sui frame non validi."""

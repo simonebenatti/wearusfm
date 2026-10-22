@@ -446,6 +446,8 @@ def plan(args) -> int:
     if sorted(a for f in families for a in FAMILIES[f]) != sorted(arms):
         raise ValueError(f"--arms {list(arms)}: famiglie intere (A: {FAMILIES['A']}, B: {FAMILIES['B']})")
     done = set(args.done or ())
+    if done and not args.per_set:  # ultrareview del 22/10, rilievo 2: nel piano v1 --done non toglierebbe nulla
+        raise ValueError("--done vale solo col piano per insieme (--per-set)")
     jobs = JOBS
     if args.per_set:  # piano v2: un job per insieme, la ridondanza col primo job rimasto
         jobs = []

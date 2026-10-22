@@ -2608,6 +2608,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   verificati da me sul codice; nessuno tocca run gia' fatti o in corso (dettaglio in «Problemi trovati»). Correzioni proposte a Simone,
   non ancora fatte. Rami `review/` e PR da chiudere dopo.
 
+### 2026-10-22 | Claude | Ultrareview: rilievi 1, 2, 4 e 5 corretti, rami di revisione cancellati | Codice: questo commit
+
+- Simone: «si, procedi». (1) `train` rifiuta `fixed_eval_every > 0` con un obiettivo dei rami diverso dal readout (il pannello fisso
+  misurerebbe la loss di readout, non quella allenata). (2) `spectral_diagnostic.py plan` rifiuta `--done` senza `--per-set`. (4) In
+  `arms_compare.compare` la lista degli ID si chiama `run_ids`: `ids` resta la mappa attesa. (5) `branch_monitors` usa `context_roles` (il lato
+  dello studente senza token, separato da `student_context`) e `ScaleEncoder.frames_used`: un `tokens()` per ramo e scala invece di due,
+  valori identici. Il 3 (caricatore importlib duplicato) non si tocca: solo pulizia su 7 file.
+- Test: un test nuovo (monitor: solo i token del teacher, `frames_used` uguale al secondo valore di `tokens`) e due controlli aggiunti (pannello
+  col pilot mascherato, `--done` nel piano v1); suite 1317 PASS (1316 + 1). Nessun effetto sui job in corso: i checkout di campagna hanno il
+  loro SHA. Rami `review/base-20261020` e `review/codice-20261022` cancellati su origin (ls-remote vuoto): la PR #1 si chiude da sola.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
@@ -3959,3 +3970,7 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
    le chiamate vengono prima. Correzione: rinominare la lista.
 5. `branch_monitors`: chiama `student_context` completo sul teacher, cioe' anche gli spettri del segnale mascherato e i `tokens()` di ogni
    scala, poi butta i token. Costo GPU in piu' solo ai passi monitorati di PWf/PWl. Correzione: calcolare solo maschere e validita'.
+
+### 2026-10-22 | Claude | Ultrareview (PR #1): stato dei rilievi
+
+- 1, 2, 4, 5 corretti sul ramo di Claude con test (voce in «Cosa ho fatto»); 3 lasciato com'e' (pulizia senza effetto sui risultati).

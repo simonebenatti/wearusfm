@@ -3906,3 +3906,6 @@ in attesa del limite di 8 job della coda GPU nella catena, che conta anche C4: g
 (base 79db894, revisione 7cfad41: solo codice). 5 rilievi, tutti minori e verificati: pannello fisso con l'obiettivo mascherato del pilot,
 `--done` ignorato senza `--per-set` nella diagnostica, caricatore importlib duplicato, variabile `ids` riusata in `arms_compare`, monitor dei
 rami che calcola token inutili. Nessuno tocca run fatti o in corso; correzioni proposte, da fare sul ramo di Claude se Simone le approva.
+**Ultrareview, correzioni (Simone, 22/10/2026: «si, procedi»).** Rilievi 1, 2, 4, 5 corretti sul ramo di Claude: pannello fisso rifiutato
+con l'obiettivo mascherato del pilot, `--done` rifiutato senza `--per-set`, `run_ids` in `arms_compare`, monitor dei rami senza i token del
+lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `review/` cancellati su GitHub (PR #1 chiusa con essi).

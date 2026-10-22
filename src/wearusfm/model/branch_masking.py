@@ -244,10 +244,9 @@ class CollapseAlarm:
                 "verified": bool(self.checks > 0 and self.alarm is None and not undefined)}
 
 
-def student_context(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
-    """Il lato dello studente per un ramo, scala per scala: spettri del segnale coi tratti nascosti azzerati, ruoli dei frame (contesto per
-    banda, bersaglio), tempi dei centri e token dei soli frame di contesto. Nessuna di queste grandezze dipende dai campioni nascosti
-    (`tests/cpu/test_branch_masking.py`). Ritorna {scala: dict(logp, valid, ctx, tgt, times, h, ok)}."""
+def context_roles(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
+    """Il lato dello studente per un ramo senza i token, scala per scala: spettri del segnale coi tratti nascosti azzerati, ruoli dei frame
+    (contesto per banda, bersaglio) e tempi dei centri. Ritorna {scala: dict(logp, valid, ctx, tgt, times)}."""
     from dataclasses import replace as dc_replace
 
     if len(spans) != len(inp.counts):
@@ -270,9 +269,16 @@ def student_context(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
             times[a:a + c, :n_p] = torch.as_tensor((np.arange(n_p) + 0.5) * hop_ms / 1000.0, dtype=torch.float32)[None]
             a += c
         dev = valid.device
-        ctx, tgt, times = ctx.to(dev), tgt.to(dev), times.to(dev)
-        h, ok = sb.scales[name].tokens(logp, valid & ctx)  # ok: frame di contesto con almeno una banda valida
-        out[name] = {"logp": logp, "valid": valid, "ctx": ctx, "tgt": tgt, "times": times, "h": h, "ok": ok}
+        out[name] = {"logp": logp, "valid": valid, "ctx": ctx.to(dev), "tgt": tgt.to(dev), "times": times.to(dev)}
+    return out
+
+
+def student_context(sb, inp, spans: list[list[tuple[int, int]]]) -> dict:
+    """Il lato dello studente per un ramo, scala per scala: `context_roles` piu' i token dei soli frame di contesto. Nessuna di queste
+    grandezze dipende dai campioni nascosti (`tests/cpu/test_branch_masking.py`). Ritorna {scala: dict(logp, valid, ctx, tgt, times, h, ok)}."""
+    out = context_roles(sb, inp, spans)
+    for name, st in out.items():
+        st["h"], st["ok"] = sb.scales[name].tokens(st["logp"], st["valid"] & st["ctx"])  # ok: frame di contesto con almeno una banda valida
     return out
 
 
@@ -285,7 +291,7 @@ def branch_monitors(teacher, inp, spans: list[list[tuple[int, int]]]) -> dict:
     metrics = {}
     with torch.no_grad():
         for kind, tb in teacher.spectral_branches.branches.items():
-            side = student_context(tb, inp, spans)
+            side = context_roles(tb, inp, spans)  # i token del lato studente non servono (ultrareview del 22/10, rilievo 5)
             spec_t = tb.spectra(inp)
             for name, _, _, _ in SCALES:
                 st = side[name]
@@ -293,7 +299,7 @@ def branch_monitors(teacher, inp, spans: list[list[tuple[int, int]]]) -> dict:
                 h_t, ok_t = tb.scales[name].tokens(logp_t, valid_t)
                 y = target_tokens(h_t)
                 has_tgt = (st["tgt"] & ok_t).any(1)
-                rows = st["ok"].any(1) & has_tgt
+                rows = tb.scales[name].frames_used(st["valid"] & st["ctx"]).any(1) & has_tgt
                 key = f"{kind}_{name}"
                 if not bool(rows.any()):
                     metrics[f"masked_{key}_targets"] = 0

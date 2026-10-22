@@ -809,8 +809,9 @@ def _pool_terms(parts: list[dict], weight: dict[str, float]) -> dict:
 def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
     """Le loss del training sull'insieme fisso, con numeratori e conteggi di tutti i batch (`_pool_terms`): la stessa funzione del passo
     (`readout_objectives` a encoder congelato, totale = branch_weight x termine dei rami; altrimenti `jepa_loss_terms`, totale = somma pesata
-    delle componenti), senza gradiente, studente e teacher in eval (niente dropout del muscolo: valori ripetibili). Lo stato casuale di CPU e
-    GPU torna quello di prima e i modi train/eval pure: il training prosegue bit per bit come senza questa diagnostica."""
+    delle componenti; l'obiettivo mascherato del pilot non ha pannello, `train` lo rifiuta), senza gradiente, studente e teacher in eval
+    (niente dropout del muscolo: valori ripetibili). Lo stato casuale di CPU e GPU torna quello di prima e i modi train/eval pure: il training
+    prosegue bit per bit come senza questa diagnostica."""
     parts, weight = [], {}
     modes = (student.training, teacher.training)
     student.eval()
@@ -968,6 +969,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("branch_calibration_batches almeno 1")
     if cfg.fixed_eval_every < 0 or cfg.fixed_eval_batches < 1:
         raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
+    if cfg.fixed_eval_every and cfg.model.branch_objective != "readout":  # ultrareview del 22/10, rilievo 1
+        raise ValueError("pannello fisso: misura la loss di readout dei rami, non l'obiettivo mascherato del pilot (fixed_eval_every 0)")
     if cfg.nested == "*":  # nel training la frazione e' sempre esplicita: None o una di DERIVED_FRACTIONS (load_index la valida)
         raise ValueError("nested '*': nel training la frazione D16 va dichiarata (None o una delle frazioni)")
     if cfg.freeze_encoder:
