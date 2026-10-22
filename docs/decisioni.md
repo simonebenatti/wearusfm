@@ -3831,6 +3831,10 @@ tre regressioni di GPT passano sul ramo; test del 2C, del pilot e dell'identita'
 (`docs/rami_pilota_obiettivo_v1.md`, ancora PROPOSTA): passa dal `critico` col resto del pilot (launcher, estrazione, verdetto) prima del
 collaudo. Nessun job.
 
+**Verifica e integrazione GPT (21/10/2026): R1-R3 del pilot chiusi su d7310be, merge 3a3c595.** Tre regressioni indipendenti passate,
+incluse nei 23 test di maschere/trainer; 83 test sul percorso precedente e selezione passati. Verificati anche gli strumenti collegati
+dei bracci/diagnostica (143 test, parzialmente sovrapposti; un test rieseguito col contesto Git dello snapshot). SHA preservati,
+nessun nuovo lancio o modifica alle soglie; protocollo ancora PROPOSTA, wrapper e campagna da completare da Claude.
 **Bracci: JEPA-only seme 1 COLLASSATO (21/10/2026 15:52, allarme firmato, decisione 16).** 61622391 fermato al passo 5.000: «rango effettivo
 sotto 10% della dimensione per 3 valutazioni» (studente 35,9 / 32,8 / 31,4 ai passi 4.000 / 4.500 / 5.000, soglia 38,4; il rango scende
 in modo continuo da 70,1 al passo 500; rapporto di collasso ~0,08, sopra la soglia di 0,05). Firma dei bracci, punti 6-7: un braccio fermato

@@ -1,5 +1,40 @@
 # Pilot dei rami: review GPT del 21/10/2026
 
+## Aggiornamento: R1-R3 chiusi su d7310be, integrazione 3a3c595
+
+Verificato d7310be4c6f88b527aa3cbc4777afa5966c245b6 su snapshot immutabile:
+**23 PASS** (tre regressioni indipendenti e test di maschere/trainer del pilot),
+**83 PASS** nei test del percorso spettrale precedente e della selezione C1-C4
+(un test DDP escluso da questa seconda esecuzione, gia' verificato nella review
+originaria). La suite completa **1315 PASS** e' riportata da Claude in ee41418,
+non rieseguita integralmente da GPT.
+
+- R1: misura nulla stampata come «non definita», conteggio nel summary; il
+  protocollo non permette di leggerla come apprendimento riuscito.
+- R2: lacune e non finiti azzerano i consecutivi; copertura e riferimenti mancanti
+  vengono riportati. `verified` segue la definizione del protocollo: almeno un
+  controllo, riferimenti definiti e nessun allarme. La copertura resta descrittiva,
+  non e' stata introdotta una soglia nuova da GPT.
+- R3: stessi monitor sui medesimi frame per PWf/PWm; attivazione opzionale PWl.
+  Verificati uguaglianza dei monitor e pesi bit per bit con/senza monitor.
+
+**Merge 3a3c595**, SHA originali conservati. Il ramo comprende anche gli
+aggiornamenti di arms_plan/arms_compare/arms_collaudo, spectral_diagnostic e
+normalizzazione dei default in calibration_select. Review separata di questi
+cinque script: nessun blocco confermato (identita', LR, piano congelato, QoS,
+collaudo e pianificazione per insieme); non e' una nuova firma scientifica.
+La suite collegata ha **143 test verificati** (in parte sovrapposti agli 83 sopra):
+142 PASS iniziali e un test QoS impedito dall'assenza di .git nello snapshot,
+rieseguito col GIT_DIR del repository e PASS. Nessun difetto funzionale residuo
+confermato in questa verifica.
+
+Restano il wrapper branch_pilot.py, le guardie del job, estrazione/confronto,
+verdetto, critico e preventivo prima del collaudo. Il **codice di base e i fix
+sono integrati**, non l'intera campagna pronta da lanciare. Nessun job o deploy
+da GPT. Le sezioni seguenti conservano i rilievi originari, ora chiusi.
+
+## Verifica originaria prima dei fix
+
 **Esito: da rivedere.** Due difetti riprodotti e un controllo del protocollo ancora
 da implementare. Target: snapshot immutabile **134b77c**; i file di modello,
 mascheramento, trainer e protocollo sono invariati anche sul ramo Claude a
