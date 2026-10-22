@@ -3909,3 +3909,9 @@ rami che calcola token inutili. Nessuno tocca run fatti o in corso; correzioni p
 **Ultrareview, correzioni (Simone, 22/10/2026: «si, procedi»).** Rilievi 1, 2, 4, 5 corretti sul ramo di Claude: pannello fisso rifiutato
 con l'obiettivo mascherato del pilot, `--done` rifiutato senza `--per-set`, `run_ids` in `arms_compare`, monitor dei rami senza i token del
 lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `review/` cancellati su GitHub (PR #1 chiusa con essi).
+
+**Integrazione GPT (Simone, 22/10/2026: «Verifica e integra su main 23efccb ... e d4f4d23 ... cosi chiudiamo anche 3»).**
+Consegna integrata col merge `d8b7170`, senza riscrivere gli SHA. Review GPT: 90 test PASS; suite completa 1317 PASS riportata da Claude.
+Codice d'integrazione identico alla consegna verificata. Punto 3 chiuso fino a d4f4d23; il rilievo 3 importlib resta una pulizia non
+bloccante. Registro aggiornato con entrambe le tabelle. Priorita' confermata da Simone: prima PSD/wavelet, poi l'eventuale recupero di
+JEPA-only. Nessuna nuova soglia, default o budget, nessun job o deploy; i checkout di campagna restano congelati.

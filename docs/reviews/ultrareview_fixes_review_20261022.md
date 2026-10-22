@@ -1,5 +1,16 @@
 # Verifica GPT della consegna ultrareview — 22/10/2026
 
+## Aggiornamento: integrazione autorizzata e completata
+
+Su richiesta successiva di Simone, 23efccb e d4f4d23 sono integrati nel merge
+`d8b7170`, con gli SHA originali conservati. Codice src/scripts/tests identico
+al target verificato; unico conflitto nel registro, risolto conservando tutte
+le voci. Punto 3 chiuso per questa consegna. La nota sotto «non viene integrato
+implicitamente» descrive la review precedente al via esplicito, ora superata.
+Nessun deploy o job; la parte operativa del pilot resta da completare.
+
+## Review precedente al merge
+
 **Esito: nessun rilievo bloccante nel delta verificato.** Codice Claude
 `d4f4d23e0a59042c39c9ff6c12b1fcd1710d877d`, identico al ramo GitHub
 `worktree-claude-training-engine` al controllo. Worktree Claude pulito prima e
