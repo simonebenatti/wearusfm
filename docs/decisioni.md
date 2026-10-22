@@ -3891,4 +3891,7 @@ giro), il primo con le 4 guardie.
 `w1arm-eval-20261022` (job 61761132, in coda per il limite di CPU della seriale) esistesse: sbatch ha rifiutato la prima guardia
 («Unable to open file .../check_checkpoint.sbatch»), la catena si e' fermata, nessun job creato. Recupero previsto dal submitter: a checkout
 pronto, la stessa guardia con `--dopo-rifiuto`, poi la catena (che blocca i nodi rifiutati e non li rilancia da sola).
+**C4 sottomessa da Simone (22/10/2026), sul preventivo presentato (~25,6 / 35 GPU-ora: training 19,9 / 26, valutazione 5,7 / 9 con la
+sonda su GPU), dal checkout `w1cal-20261016` (72cf24a):** 61761908 = `W1CAL-C4-300M-lr0p0001-s0-j01` (300M, LR 1e-4, 6.130 passi, un job da
+6 h 30). La valutazione di C4 si prepara a training finito dalla campagna di valutazione (sonda su GPU).
 
