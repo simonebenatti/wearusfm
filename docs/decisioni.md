@@ -3887,4 +3887,8 @@ run con sacct: 244.2 GPU-ora (4 GPU x 20 h 17-20 h 26); A s0 da sacct alla pross
 **Deploy della valutazione dei bracci:** `deploy/w1arm-eval-20261022` = 23efccb (contiene spec e piano congelato; SHA remoto verificato),
 checkout job 61761132; piano rigenerato con quello SHA (spec identica) e dry-run: 4 giri da 8 job GPU (estrazioni e sonde di un run per
 giro), il primo con le 4 guardie.
+**Valutazione dei bracci: primo giro rifiutato senza danni (22/10/2026 11:45).** La catena e' stata lanciata prima che il checkout
+`w1arm-eval-20261022` (job 61761132, in coda per il limite di CPU della seriale) esistesse: sbatch ha rifiutato la prima guardia
+(«Unable to open file .../check_checkpoint.sbatch»), la catena si e' fermata, nessun job creato. Recupero previsto dal submitter: a checkout
+pronto, la stessa guardia con `--dopo-rifiuto`, poi la catena (che blocca i nodi rifiutati e non li rilancia da sola).
 

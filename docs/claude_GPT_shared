@@ -3910,3 +3910,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   la stessa regola vale invariata.
 - La S del 100M a 0,5 epoche e' sotto quella del 30M a 1 epoca: esposizioni diverse, non e' un confronto di taglie. Da non leggere come
   «il 100M non serve»: la calibrazione sceglie il LR.
+
+### 2026-10-22 | Claude | Valutazione dei bracci: catena lanciata prima del checkout
+
+- Avevo dato il comando della catena senza dire che andava lanciato dopo il checkout (61761132, fermo per il limite di CPU): sbatch ha
+  rifiutato la prima guardia (launcher non trovato), la catena si e' fermata, nessun job. Recupero: `--dopo-rifiuto` sulla sola guardia a
+  checkout pronto, poi la catena. Miglioria possibile: con `--submit`, la catena verifica prima che il checkout esista (`ls` del launcher).
