@@ -2667,6 +2667,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Punto 3 chiuso per questa tranche; codice operativo futuro del pilot nel punto 5. Pubblicazione di main e ramo GPT su GitHub,
   nessun push/deploy su Leonardo, nessun job. La PR #1 resta chiusa senza merge del ramo sintetico.
 
+### 2026-10-22 | Claude | Controllo dell'integrazione di GPT e merge di main nel ramo | Merge bf63bbf
+
+- Su richiesta di Simone: `main` (locale = origin) a 4680617 contiene 23efccb e d4f4d23 col merge d8b7170, SHA conservati; codice
+  src/scripts/tests/configs di main identico a d4f4d23 (diff vuoto); voci di Claude conservate; worktree di GPT e checkout di main puliti;
+  PR #1 chiusa senza merge (verificata da GPT via API). Punto 3 chiuso fino a d4f4d23, come in tabella.
+- `main` su leonardo resta a 8dad7e8 (286 commit indietro): non lo usa nessuna campagna (checkout dai riferimenti `deploy/`), lo aggiorna
+  solo l'integratore. Merge di main nel ramo di Claude (bf63bbf): conflitti solo nel registro e in decisioni.md, voci di tutti e due
+  conservate, tabella e intestazione di GPT. Letta la priorita' registrata da GPT: prima PSD/wavelet, poi l'eventuale recupero di JEPA-only.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

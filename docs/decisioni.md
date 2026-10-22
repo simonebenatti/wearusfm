@@ -3920,3 +3920,6 @@ Consegna integrata col merge `d8b7170`, senza riscrivere gli SHA. Review GPT: 90
 Codice d'integrazione identico alla consegna verificata. Punto 3 chiuso fino a d4f4d23; il rilievo 3 importlib resta una pulizia non
 bloccante. Registro aggiornato con entrambe le tabelle. Priorita' confermata da Simone: prima PSD/wavelet, poi l'eventuale recupero di
 JEPA-only. Nessuna nuova soglia, default o budget, nessun job o deploy; i checkout di campagna restano congelati.
+**Controllo dell'integrazione (Claude, 22/10/2026, su richiesta di Simone).** main 4680617 contiene 23efccb e d4f4d23 (merge d8b7170,
+SHA conservati), codice identico a d4f4d23: punto 3 chiuso fino a d4f4d23. main su leonardo a 8dad7e8, non usato dalle campagne. Ramo di
+Claude allineato con un merge di main (bf63bbf).
