@@ -3911,3 +3911,5 @@ con l'obiettivo mascherato del pilot, `--done` rifiutato senza `--per-set`, `run
 lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `review/` cancellati su GitHub (PR #1 chiusa con essi).
 **Stato alle 17:00 (22/10/2026, squeue e sacct dal vivo).** Bracci: A s0 8/8, A s1 6/8, restano 19 nodi (catena ferma dalle 15:17: il
 giro delle 15 non l'ho dato). Diagnostica B_seed1: P1 PW0 finita (2 h 05), P1 PW in corso; restano 8 sonde e il confronto. C4 in coda.
+**Valutazione dei bracci, terzo giro (Simone, 22/10/2026 ~17:05):** 61813378, 61813380 (S della P2 di A s1: A completo nei due semi) e
+ancore-only s0 61813385-61813407 (P1, P2, estrazione di S della P1). Restano 12 nodi, compreso il confronto.
