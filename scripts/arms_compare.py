@@ -234,9 +234,9 @@ def compare(spec: dict) -> dict:
     out = {"reference": ref_name, "rule": {"min_delta": MIN_DELTA, "harm_delta": HARM_DELTA, "ci": "95%, limite inferiore > 0",
                                            "seeds": "delta > 0 in tutti e due i semi"}, "arms": {}}
     status = {arm: status_of(arm) for arm in spec["arms"]}
-    ids = [runs[n][sd]["id"] for n in [ref_name, *spec["arms"]] for sd in SEEDS]
+    run_ids = [runs[n][sd]["id"] for n in [ref_name, *spec["arms"]] for sd in SEEDS]  # `ids` resta la mappa attesa letta da status_of
     shas = [v["checkpoint_sha256"] for v in identities.values() if "checkpoint_sha256" in v]
-    if len(set(ids)) != len(ids) or len(set(shas)) != len(shas):
+    if len(set(run_ids)) != len(run_ids) or len(set(shas)) != len(shas):
         raise ValueError("run o checkpoint ripetuti fra bracci o semi: il confronto non e' fra modelli distinti")
     out["plan"] = {"path": spec["plan"], "sha256": spec["plan_sha256"], "lr": spec["lr"]}
     out["identity"] = identities

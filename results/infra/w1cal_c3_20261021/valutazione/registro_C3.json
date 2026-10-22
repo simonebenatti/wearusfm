@@ -1,0 +1,139 @@
+{
+ "protocol": "w1-calibrazione-selezione-v1",
+ "phase": "C3",
+ "candidates": {
+  "0.0001": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0001-s0",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 12261,
+     "elapsed_s": 17817.624906778336,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+      "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 25,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 64.0,
+     "last_ratio": 2.776833611418533,
+     "last_student_erank": 128.99284292970754
+    },
+    "panel": {
+     "evaluations": 25,
+     "problems": [],
+     "L0": 5.389136004637113,
+     "L_last": 0.938878956087865,
+     "ratio_last_to_first": 0.17421697193761695,
+     "max_ratio_to_running_min": 1.1005778171802727,
+     "longest_run_above": 1
+    },
+    "problems": [],
+    "admissible": true
+   },
+   "identity": {
+    "config_checked": true,
+    "fields": 101,
+    "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+   },
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C3/W1CAL-C3-100M-lr0p0001-s0.json",
+   "failure_evidence": null,
+   "S": 0.17552240973587122,
+   "S_se": 0.007928193102717017,
+   "report_sha256": "8896738f4bb0e8c70e0ca130301d6978076eb1f9b8bd4cab50c69a8ae2de2591",
+   "checkpoint_sha256": "85fa6a8315c9ed4d3452ab1d03dcfd68d45c6f80f2d4ab6722c9f74ed4577ca7",
+   "per_dataset_S": {
+    "ninapro_db2": 0.18813374422772122,
+    "ninapro_db3": 0.029879118386711177,
+    "ninapro_db6": 0.34354200879221114
+   }
+  },
+  "0.0003": {
+   "admissibility": {
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1cal/W1CAL-C3-100M-lr0p0003-s0",
+    "summary": {
+     "stopped": "max_steps",
+     "steps": 12261,
+     "elapsed_s": 17812.403556585312,
+     "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+      "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+     }
+    },
+    "non_collapse": {
+     "evaluations": 25,
+     "alarms": [],
+     "ratio_min": 0.05,
+     "erank_min": 64.0,
+     "last_ratio": 3.4181518433097207,
+     "last_student_erank": 91.62287595794638
+    },
+    "panel": {
+     "evaluations": 25,
+     "problems": [],
+     "L0": 5.389135915332009,
+     "L_last": 0.9766318493988365,
+     "ratio_last_to_first": 0.18122234524097525,
+     "max_ratio_to_running_min": 1.1029464287474773,
+     "longest_run_above": 1
+    },
+    "problems": [],
+    "admissible": true
+   },
+   "identity": {
+    "config_checked": true,
+    "fields": 101,
+    "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+   },
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal/C3/W1CAL-C3-100M-lr0p0003-s0.json",
+   "failure_evidence": null,
+   "S": 0.171560831930278,
+   "S_se": 0.0068039041560703385,
+   "report_sha256": "d70d5d4b3acd66a78b4964cbedd1be600fe7458f22ed595e2c187f8bf0e4edf5",
+   "checkpoint_sha256": "415bf3f5f8e456dc0f66eb1944b285559135f4a68cfac8755ced384b20c8c48f",
+   "per_dataset_S": {
+    "ninapro_db2": 0.18495445926181853,
+    "ninapro_db3": 0.024505923035504446,
+    "ninapro_db6": 0.3385686859462762
+   }
+  }
+ },
+ "decision": {
+  "proposed_300m_lr": 0.0001
+ },
+ "comparisons": [
+  {
+   "a": 0.0001,
+   "b": 0.0003,
+   "delta": 0.003961577805593202,
+   "se": 0.003018452488394141,
+   "tie": false,
+   "winner": 0.0001
+  }
+ ],
+ "descriptive_comparisons": [
+  {
+   "a": 0.0001,
+   "b": 0.0003,
+   "delta": 0.003961577805593202,
+   "se": 0.003018452488394141,
+   "tie": false
+  }
+ ],
+ "rules": {
+  "panel_every": 500,
+  "panel_delta": 0.1,
+  "panel_k": 3,
+  "panel_learn": 0.9,
+  "tie": "differenza accoppiata entro 1 SE: il LR piu' basso",
+  "n_boot": 1000,
+  "boot_seed": 0
+ },
+ "plan": {
+  "path": "results/infra/w1cal_c3_20261021/calibrazione_C3.json",
+  "sha256": "68479b2e04f83eff2e38f43c76e2e172b7c166375acb687fbeb11b27665fd1cd"
+ }
+}

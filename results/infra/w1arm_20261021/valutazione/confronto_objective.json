@@ -1,0 +1,60 @@
+{
+ "group": "objective",
+ "reference": "A",
+ "arms": [
+  "JEPA-only",
+  "ancore-only"
+ ],
+ "plan": "results/infra/w1arm_20261021/bracci_objective.json",
+ "plan_sha256": "dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52",
+ "lr": 0.0001,
+ "steps": 98094,
+ "runs": {
+  "A": {
+   "0": {
+    "id": "W1ARM-A-30M-s0",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-A-30M-s0",
+    "p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/p1.json",
+    "p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/p2.json",
+    "s_p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/s_p1.json",
+    "s_p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/s_p2.json"
+   },
+   "1": {
+    "id": "W1ARM-A-30M-s1",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-A-30M-s1",
+    "p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s1/p1.json",
+    "p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s1/p2.json",
+    "s_p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s1/s_p1.json",
+    "s_p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s1/s_p2.json"
+   }
+  },
+  "JEPA-only": {
+   "0": {
+    "id": "W1ARM-JEPA-only-30M-s0",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-JEPA-only-30M-s0"
+   },
+   "1": {
+    "id": "W1ARM-JEPA-only-30M-s1",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-JEPA-only-30M-s1"
+   }
+  },
+  "ancore-only": {
+   "0": {
+    "id": "W1ARM-ancore-only-30M-s0",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-ancore-only-30M-s0",
+    "p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s0/p1.json",
+    "p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s0/p2.json",
+    "s_p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s0/s_p1.json",
+    "s_p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s0/s_p2.json"
+   },
+   "1": {
+    "id": "W1ARM-ancore-only-30M-s1",
+    "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-ancore-only-30M-s1",
+    "p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s1/p1.json",
+    "p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s1/p2.json",
+    "s_p1": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s1/s_p1.json",
+    "s_p2": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-ancore-only-30M-s1/s_p2.json"
+   }
+  }
+ }
+}

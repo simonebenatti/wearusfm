@@ -67,6 +67,15 @@ EXTRACT_EXPECTED_H = {"sanity": 0.3, "100m": 0.65, "300m": 1.5}
 PROBE_CORES = 8
 PROBE_TIME = {"sanity": "03:00:00", "100m": "04:00:00", "300m": "04:00:00"}
 PROBE_EXPECTED_H = {"sanity": 1.8, "100m": 3.0, "300m": 4.2}
+# sonda attesa oltre il limite della seriale (4 h, QoS normal di lrd_all_serial): su un nodo GPU (1 GPU, i suoi core), con un tempo massimo
+# piu' largo; le altre restano sulla seriale come prima (piani di C1-C3 identici). Misure: 30M 1 h 48, 100M 1 h 47 e 2 h 02 (C3).
+SERIAL_MAX_H = 4.0
+PROBE_TIME_GPU = "06:00:00"
+GPU_PROBE_SBATCH = ["--partition=boost_usr_prod", "--qos=normal", "--gres=gpu:1"]  # come le sonde dei bracci su GPU (arms_plan.py)
+
+
+def probe_on_gpu(preset: str) -> bool:
+    return PROBE_EXPECTED_H[preset] > SERIAL_MAX_H
 SELECT_TIME, SELECT_CORES = "00:30:00", 2
 EVAL_LIMITS = {"boost_usr_prod": 8, "lrd_all_serial": 8}
 
@@ -188,9 +197,12 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                       "inputs": [ckpt], "outputs": npzs,
                       "checkpoint": {"run_dir": run["run_dir"], "name": "checkpoint_postdecay.pt", "training_job": run["job_ids"][-1],
                                      "min_steps": run["total_steps"], "sha256": None}})
-        nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "lrd_all_serial", "gpu_hours": 0, **code,
-                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME[spec['preset']]}"],
-                      "inputs": npzs, "outputs": [rep, oof]})
+        on_gpu = probe_on_gpu(spec["preset"])
+        pt = PROBE_TIME_GPU if on_gpu else PROBE_TIME[spec["preset"]]
+        nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "boost_usr_prod" if on_gpu else "lrd_all_serial",
+                      "gpu_hours": round(_hours(pt), 3) if on_gpu else 0, **code,
+                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {},
+                      "sbatch": [f"--time={pt}", *(GPU_PROBE_SBATCH if on_gpu else [])], "inputs": npzs, "outputs": [rep, oof]})
         cands += [repr(float(lr)), run["run_dir"], rep, str(run["total_steps"])]
         probe_outs += [rep, oof]
     out, record = f"{ev['results_root']}/{name}/decisione_{name}.json", f"{ev['results_root']}/{name}/registro_{name}.json"
@@ -199,13 +211,15 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                   "exports": {},
                   "sbatch": [f"--time={SELECT_TIME}"], "inputs": probe_outs, "outputs": [out, record]})
     n_runs = len(lrs) - len(failed)
+    on_gpu = probe_on_gpu(spec["preset"])
+    probe_exp, probe_max = PROBE_EXPECTED_H[spec["preset"]], _hours(PROBE_TIME_GPU if on_gpu else PROBE_TIME[spec["preset"]])
     return {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{name.lower()}-eval", "agent": base["agent"],
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
-            "estimate": {"gpu_hours_expected": round(n_runs * EXTRACT_EXPECTED_H[spec["preset"]], 2),
-                         "gpu_hours_max": round(n_runs * _hours(EXTRACT_TIME[spec["preset"]]), 2),
-                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H[spec["preset"]], 1),
-                         "probe_fits_the_cap": PROBE_EXPECTED_H[spec["preset"]] <= _hours(PROBE_TIME[spec["preset"]]),
-                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME[spec["preset"]]) + SELECT_CORES * _hours(SELECT_TIME)
+            "estimate": {"gpu_hours_expected": round(n_runs * (EXTRACT_EXPECTED_H[spec["preset"]] + (probe_exp if on_gpu else 0)), 2),
+                         "gpu_hours_max": round(n_runs * (_hours(EXTRACT_TIME[spec["preset"]]) + (probe_max if on_gpu else 0)), 2),
+                         "cpu_core_hours_expected": round(0 if on_gpu else n_runs * PROBE_CORES * probe_exp, 1),
+                         "probe_fits_the_cap": probe_exp <= probe_max, **({"probe_on_gpu": True} if on_gpu else {}),
+                         "cpu_core_hours_max": round((0 if on_gpu else n_runs * PROBE_CORES * probe_max) + SELECT_CORES * _hours(SELECT_TIME)
                                                      + n_runs * _hours("00:20:00"), 1)}}
 
 

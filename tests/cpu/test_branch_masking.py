@@ -263,3 +263,20 @@ def test_old_objective_monitors_equal_the_masked_ones_on_the_same_frames():
     assert keys and sorted(keys) == sorted(BM.CollapseAlarm.monitor_keys(mon))
     assert all(mon[k] == masked[k] for k in keys)
     assert all(mon[f"masked_{k}_targets"] == masked[f"masked_{k}_targets"] for k in ("psd_fast", "wavelet_fast"))
+
+
+def test_old_objective_monitors_compute_only_the_teacher_tokens(monkeypatch):
+    """Ultrareview del 22/10, rilievo 5: `branch_monitors` calcola i token solo del teacher sull'ingresso completo (uno per ramo e scala), non
+    quelli del lato studente; i frame di contesto usati (`frames_used`) sono il secondo valore di `tokens`."""
+    sbs = _branches()
+    inp = _inputs([_noise(3, 4.0, FS, 40), _noise(2, 4.0, FS, 41)], [FS, FS], [np.full(3, 450.0), np.full(2, 450.0)])
+    spans = BM.batch_spans(inp, 0, 1)
+    side = BM.student_context(sbs.branches["psd"], inp, spans)
+    for name, _, _, _ in SB.SCALES:
+        st = side[name]
+        assert torch.equal(sbs.branches["psd"].scales[name].frames_used(st["valid"] & st["ctx"]), st["ok"])
+    calls = []
+    tokens = SB.ScaleEncoder.tokens
+    monkeypatch.setattr(SB.ScaleEncoder, "tokens", lambda self, logp, valid: calls.append(1) or tokens(self, logp, valid))
+    BM.branch_monitors(SimpleNamespace(spectral_branches=sbs), inp, spans)
+    assert len(calls) == len(sbs.branches) * len(SB.SCALES)

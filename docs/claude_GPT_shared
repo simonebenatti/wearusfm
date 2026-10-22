@@ -2567,6 +2567,69 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Priorita' confermata da Simone: completare PSD/wavelet prima di affrontare il recupero di JEPA-only. I run/valutazioni gia' avviati
   sono separati; il pilot richiede ancora wrapper, guardie, estrazione/confronto/verdetto, critico e preventivo.
 
+### 2026-10-22 | Claude | C3 decisa: 1e-4 per il 300M; bracci quasi finiti | Codice della valutazione: 98c5832379167d83336ba2f5dfd721070ee47a6c
+
+- Selezione 61631411: entrambi ammissibili, S 0,1755 (1e-4) contro 0,1716 (3e-4), delta +0,0040 oltre 1 SE (0,0030): `proposed_300m_lr`
+  1e-4, unito in `w1cal_decisioni.json`. Valutazione 0,53 GPU-ora; calibrazione 144,7 / 220.
+- Bracci dal vivo alle 10:50: A e ancore-only (semi 0 e 1) a 95.400-96.900 passi, nessun segno di collasso; fine attesa entro le 11:30.
+- Merge di main 9772b4c (verifica GPT del pilot) nel ramo: solo registri e review; `summary.json` di JEPA-only s1 uguale (a capo finale).
+
+### 2026-10-22 | Claude | Diagnostica dei rami: tranche lanciata da Simone | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- 61754844 (B_seed0 P2 RPW0 + ridondanza) e 61754849 (B_seed0 P2 RPW). Seme 0 completo dopo questi; restano B_seed1 (10 sonde) e il confronto.
+
+### 2026-10-22 | Claude | Bracci: 3 run finiti, valutazione preparata; C4 pronta | Codice: questo commit (spec e regola della sonda)
+
+- A s1, ancore-only s0 e s1 COMPLETED (98.094 passi); A s0 in chiusura. Identita' dei 4 `config.json` veri contro il piano congelato: PASS.
+- Simone: «ok» alle sonde su GPU per la valutazione dei bracci (23 / 58 GPU-ora). Spec e piano in `results/infra/w1arm_20261021/valutazione/`.
+- C4: sonda del 300M su un nodo GPU (regola: attesa oltre le 4 h della seriale), piani di C1-C3 identici; preventivo ~25,6 / 35 GPU-ora,
+  da autorizzare.
+
+### 2026-10-22 | Claude | Bracci: training finiti, deploy della valutazione | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- A s0 COMPLETED (11:21): i 4 run sani sono completi. Suite 1316 PASS su 23efccb; `deploy/w1arm-eval-20261022` = 23efccb, checkout 61761132.
+- Catena della valutazione a 4 giri da 8 job GPU (limite della coda nella catena); i giri dopo il primo a richiesta.
+
+### 2026-10-22 | Claude | C4 sottomessa da Simone | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61761908 (`W1CAL-C4-300M-lr0p0001-s0-j01`): 300M al LR 1e-4 di C3, 6.130 passi; preventivo ~25,6 / 35 GPU-ora sulla calibrazione.
+
+### 2026-10-22 | Claude | Valutazione dei bracci: primo giro | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- Guardia recuperata con `--dopo-rifiuto` (61769168), guardie degli altri tre run e 7 job GPU di A s0 (61769194-61769260). Altri giri a
+  richiesta (limite di 8 job GPU in coda nella catena, C4 compreso).
+
+### 2026-10-22 | Claude | Valutazione dei bracci: secondo giro lanciato da Simone | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- 61789204 (A s0 S della P2) e 61789208-61789264 (A s1); in attesa 17 nodi, confronto compreso.
+
+### 2026-10-22 | Claude | Diagnostica dei rami: seme 0 completo, tranche del seme 1 | Codice: aba1f2ef3a94b68b8e44bce005adf7b005a92011
+
+- 61789455 (B_seed1 P1 PW0) e 61789465 (B_seed1 P1 PW); restano 8 sonde di B_seed1 e il confronto.
+
+### 2026-10-22 | Claude | Rami di sola revisione su GitHub per l'ultrareview | Base 79db894, revisione 7cfad41
+
+- Simone: «va bene» alla PR di revisione. Pubblicati su origin `review/base-20261020` (= main del 20/10, 79db894) e
+  `review/codice-20261022` (7cfad41: quella base con src, scripts e tests di 10b3cac; 32 file, +4.749 / -160; docs e results invariati).
+  PR da aprire da Simone (manca `gh`), poi `/code-review ultra <PR>`. Non si integra; rami da cancellare dopo. Main e ramo di Claude intatti.
+
+### 2026-10-22 | Claude | Ultrareview della PR di revisione: 5 rilievi minori, nessuno sui run fatti | Base 79db894, revisione 7cfad41
+
+- Simone ha lanciato `/ultrareview 1` (simonebenatti/wearusfm#1, a crediti d'uso). Esito: 5 rilievi, tutti di gravita' minore (nit),
+  verificati da me sul codice; nessuno tocca run gia' fatti o in corso (dettaglio in «Problemi trovati»). Correzioni proposte a Simone,
+  non ancora fatte. Rami `review/` e PR da chiudere dopo.
+
+### 2026-10-22 | Claude | Ultrareview: rilievi 1, 2, 4 e 5 corretti, rami di revisione cancellati | Codice: questo commit
+
+- Simone: «si, procedi». (1) `train` rifiuta `fixed_eval_every > 0` con un obiettivo dei rami diverso dal readout (il pannello fisso
+  misurerebbe la loss di readout, non quella allenata). (2) `spectral_diagnostic.py plan` rifiuta `--done` senza `--per-set`. (4) In
+  `arms_compare.compare` la lista degli ID si chiama `run_ids`: `ids` resta la mappa attesa. (5) `branch_monitors` usa `context_roles` (il lato
+  dello studente senza token, separato da `student_context`) e `ScaleEncoder.frames_used`: un `tokens()` per ramo e scala invece di due,
+  valori identici. Il 3 (caricatore importlib duplicato) non si tocca: solo pulizia su 7 file.
+- Test: un test nuovo (monitor: solo i token del teacher, `frames_used` uguale al secondo valore di `tokens`) e due controlli aggiunti (pannello
+  col pilot mascherato, `--done` nel piano v1); suite 1317 PASS (1316 + 1). Nessun effetto sui job in corso: i checkout di campagna hanno il
+  loro SHA. Rami `review/base-20261020` e `review/codice-20261022` cancellati su origin (ls-remote vuoto): la PR #1 si chiude da sola.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti della verifica ultrareview | Codice Claude d4f4d23
@@ -3892,3 +3955,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Ho esteso il monitor anche a PWl (con un'opzione esplicita, spenta di default), non solo a PWf come chiesto: cosi' «collassato» ha lo
   stesso significato per i tre bracci nuovi. PW e PW0 del 2C restano senza monitor. Il percorso del 2C senza l'opzione e' invariato (test).
+
+### 2026-10-21 | Claude | Bracci: collasso del JEPA puro, lettura
+
+- Il collaudo (seme 0, 1.300 passi) mostrava il rapporto di collasso in discesa; nel run lungo il seme 1 collassa per rango (70 -> 31 in
+  5.000 passi), non per rapporto. E' l'esito previsto dalla firma come possibile («il candidato piu' probabile al collasso»), non un difetto
+  dell'infrastruttura: nessuna regola cambia. Il seme 0 continua; se tenerlo fino in fondo e' una scelta di costo, non di regola.
+
+### 2026-10-22 | Claude | C3: due note di lettura
+
+- Il pannello A4 di C3 arriva a 1,10 volte il minimo (una valutazione, ne servono 3): ammissibili, ma il margine e' piccolo; per C4 a 300M
+  la stessa regola vale invariata.
+- La S del 100M a 0,5 epoche e' sotto quella del 30M a 1 epoca: esposizioni diverse, non e' un confronto di taglie. Da non leggere come
+  «il 100M non serve»: la calibrazione sceglie il LR.
+
+### 2026-10-22 | Claude | Valutazione dei bracci: catena lanciata prima del checkout
+
+- Avevo dato il comando della catena senza dire che andava lanciato dopo il checkout (61761132, fermo per il limite di CPU): sbatch ha
+  rifiutato la prima guardia (launcher non trovato), la catena si e' fermata, nessun job. Recupero: `--dopo-rifiuto` sulla sola guardia a
+  checkout pronto, poi la catena. Miglioria possibile: con `--submit`, la catena verifica prima che il checkout esista (`ls` del launcher).
+
+### 2026-10-22 | Claude | Ultrareview (PR #1): 5 rilievi minori, verificati
+
+1. `run.py`, `_fixed_eval_losses`: a encoder congelato misura sempre la loss di readout; con `branch_objective="masked"` e
+   `fixed_eval_every > 0` il pannello fisso misurerebbe una loss diversa da quella allenata. Nessuna configurazione la usa oggi (il launcher
+   del pilot non c'e' ancora). Correzione: rifiutare la combinazione, o misurare la loss mascherata con span deterministici.
+2. `spectral_diagnostic.py plan`: `--done` (e il salto della ridondanza) valgono solo con `--per-set`; senza, il piano v1 ripianifica tutto
+   in silenzio. I piani attuali (`piano_20261021b_*`) sono per insieme: non toccati. Correzione: rifiutare `--done` senza `--per-set`.
+3. Il caricatore «script fratello come modulo» (importlib) e' copiato in 7 punti, quasi tutti senza cache (`arms_compare._select` riesegue
+   calibration_select a ogni chiamata). Solo pulizia e tempo CPU sul Mac.
+4. `arms_compare.compare`: `ids` e' prima il dizionario degli ID attesi (letto da `status_of`) e poi diventa una lista; funziona perche' tutte
+   le chiamate vengono prima. Correzione: rinominare la lista.
+5. `branch_monitors`: chiama `student_context` completo sul teacher, cioe' anche gli spettri del segnale mascherato e i `tokens()` di ogni
+   scala, poi butta i token. Costo GPU in piu' solo ai passi monitorati di PWf/PWl. Correzione: calcolare solo maschere e validita'.
+
+### 2026-10-22 | Claude | Ultrareview (PR #1): stato dei rilievi
+
+- 1, 2, 4, 5 corretti sul ramo di Claude con test (voce in «Cosa ho fatto»); 3 lasciato com'e' (pulizia senza effetto sui risultati).

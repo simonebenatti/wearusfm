@@ -1,0 +1,19 @@
+{
+ "stopped": "max_steps",
+ "steps": 98094,
+ "elapsed_s": 73016.48587465286,
+ "parameters": 28348361,
+ "device": "cuda:0",
+ "gpu_max_memory_gib": 17.454425811767578,
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+  "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+ },
+ "world_size": 4,
+ "batch_per_process": 8,
+ "prefetch": true,
+ "prefetch_audit_steps": null,
+ "accum_steps": 1,
+ "micro_batch": 8,
+ "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"
+}

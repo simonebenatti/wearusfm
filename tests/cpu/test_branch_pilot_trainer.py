@@ -91,6 +91,9 @@ def test_pilot_options_are_refused_outside_the_frozen_encoder_and_with_a_wrong_s
                     jepa=replace(cfg_b.jepa, keep_weight=0.05))
     with pytest.raises(ValueError, match="solo a encoder congelato"):
         R.train(joint, manifest, [root], tmp_path / "joint", log=lambda _: None)
+    panel = replace(cfg_b, max_steps=1, fixed_eval_every=1, model=replace(cfg_b.model, branch_objective="masked"))
+    with pytest.raises(ValueError, match="pannello fisso"):  # ultrareview del 22/10, rilievo 1: misurerebbe la loss di readout
+        R.train(panel, manifest, [root], tmp_path / "panel", log=lambda _: None, init_from=src)
     other = replace(cfg_b, max_steps=1, model=replace(cfg_b.model, spectral_branches=("psd",)))
     ref = tmp_path / "psd_only"
     R.train(other, manifest, [root], ref, log=lambda _: None, init_from=src)

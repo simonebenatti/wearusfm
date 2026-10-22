@@ -3849,3 +3849,63 @@ sotto 0.05 per 3 valutazioni» (min fra studente e teacher 0,0485 / 0,0339 / 0,0
 (per rango il seme 1, per rapporto il seme 0): «collassato», non batte A (firma, punti 6-7). Costo del braccio 10,0 GPU-ora invece di ~160.
 Simone (21/10): «se collassa inutile sprecare ore gpu»: nessuno scancel necessario, l'allarme li ha fermati. Alla valutazione i due run
 entrano come `--failed-runs` (niente nodi di valutazione; nel confronto contano collassati dallo STOP). Restano 4 run (A e ancore-only).
+
+**C3 decisa con le regole firmate (selezione 61631411, 21/10/2026 20:23): LR proposto per il 300M = 1e-4.** Entrambi ammissibili (A1-A4):
+S 0,1755 (SE 0,0079) per 1e-4 e 0,1716 (SE 0,0068) per 3e-4; differenza accoppiata +0,0040 con SE 0,0030, oltre 1 SE: vince 1e-4 (non
+parita'). Per dataset: db2 0,188 / 0,185, db3 0,030 / 0,025, db6 0,344 / 0,339. Pannello A4: massimo 1,101 e 1,103 volte il minimo, una
+sola valutazione oltre 1,10 (servono 3 consecutive): ammissibili ma vicini alla soglia. Collasso: rapporto finale 2,78 / 3,42, rango 129 /
+92. `results/infra/w1cal_decisioni.json` = C1 finalisti + C2 confermati + C3 `proposed_300m_lr` 1e-4 (merge di `calibration_select.py`);
+rapporti e registro in `results/infra/w1cal_c3_20261021/valutazione/`. Guardie 34-35 s, estrazioni 15:53 / 15:52, sonde 1 h 47 / 2 h 02
+(in fila), selezione 2 min. **Consuntivo della valutazione: 0,53 GPU-ora** (tetto 3,0) e 30,5 core-ora; **calibrazione 144,7 usate su
+220, residuo 75,3**. Prossimo: C4 (300M al LR 1e-4, 0,25 epoche, seme 0): la sonda del 300M (attese 4,2 h) supera le 4 h della seriale,
+da spostare su GPU o dividere prima del piano. Descrittivo, nessuna decisione: la S del 100M a 0,5 epoche (17,55) e' sotto quella del 30M a
+1 epoca (C1 seme 0: 18,21); esposizioni diverse, la calibrazione sceglie il LR, non la taglia.
+**Bracci, 22/10 10:50 (controllo dal vivo):** i 4 run sani (A e ancore-only, semi 0 e 1) ai passi 95.400-96.900 su 98.094 dopo 20 h, rango
+144-146 (A) e 139-143 (ancore-only), rapporto 1,8-2,0 (A, in lenta discesa da 2,8) e 1,26 (ancore-only, stabile); fine attesa entro le 11:30.
+**Diagnostica dei rami, tranche di Simone (22/10/2026 ~11:15):** 61754844 (B_seed0 P2 RPW0 e ridondanza) e 61754849 (B_seed0 P2 RPW): con
+queste il seme 0 e' completo; restano le 10 sonde di B_seed1 e il confronto.
+
+**Bracci: valutazione con le sonde su GPU (Simone, 22/10/2026: «ok», alla proposta «sonde su GPU, come ti consiglio»; interpretazione: via alla
+valutazione dei 4 run sani col preventivo presentato, 23,0 GPU-ora attese, tetto 58,0, voce della finestra 1).** Training: A s1 e ancore-only
+s0 / s1 COMPLETED 0:0 (11:06-11:14), 98.094 passi in 20,3-20,4 h, 0,744-0,750 s/passo; A s0 in chiusura. Identita' delle `config.json` vere
+dei 4 run contro il piano congelato `dbe0f8fe...` col codice di oggi: 102 campi uguali, codice 72cf24a. Spec del confronto e piano della
+valutazione in `results/infra/w1arm_20261021/valutazione/` (`arms_plan.py --frozen-plans results/infra/w1arm_20261021 --probes-on-gpu
+--failed-runs` per i due JEPA-only collassati): 32 nodi di estrazione e sonda su GPU e il confronto, campagna
+`results/infra/w1arm_campaign_eval_20261022.json`; deploy nuovo che contiene la spec, poi piano rigenerato con lo SHA del deploy.
+**Voce «Bracci dell'obiettivo» sulla finestra 1:** training tetto 552 (autorizzato dalla sottomissione; speso finora 10,0 per JEPA-only, ~325
+attese per i 4 run sani) + valutazione 58 = 610 GPU-ora di tetto.
+
+**C4: piano e preventivo pronti, da autorizzare.** Regola nuova della sonda (`calibration_plan.py`): se la durata attesa supera il limite
+della seriale (4 h) la sonda va su un nodo GPU (1 GPU, 6 h; stesse opzioni delle sonde dei bracci); le valutazioni di C1-C3 rigenerate sono
+identiche a quelle usate (test). C4: 300M al LR 1e-4 (C3), 0,25 epoche (6.130 passi, warmup 1.962, decay da 4.904), seme 0, un job da
+6 h 30 dal checkout di C1-C3 (`w1cal-20261016`, 72cf24a); piani di C1-C3 rigenerati identici. **Preventivo: training 19,9 / 26,0 GPU-ora,
+valutazione 5,7 / 9,0 (estrazione 1,5 / 3,0 e sonda su GPU 4,2 / 6,0): ~25,6 / 35,0 GPU-ora (280 ore locali)** sul budget della
+calibrazione (144,7 usate su 220): dopo il tetto restano almeno 40,3. Piano e comandi in `results/infra/w1cal_c4_20261022/`.
+**Bracci, training finiti (22/10/2026):** A s0 COMPLETED alle 11:21 (98.094 passi, `max_steps`, 20.55 h di training);
+con A s1 e ancore-only s0 / s1 i 4 run sani sono completi; summary e config in `results/infra/w1arm_20261021/runs/`. Consuntivo dei tre
+run con sacct: 244.2 GPU-ora (4 GPU x 20 h 17-20 h 26); A s0 da sacct alla prossima lettura. Suite 1316 PASS su 23efccb.
+**Deploy della valutazione dei bracci:** `deploy/w1arm-eval-20261022` = 23efccb (contiene spec e piano congelato; SHA remoto verificato),
+checkout job 61761132; piano rigenerato con quello SHA (spec identica) e dry-run: 4 giri da 8 job GPU (estrazioni e sonde di un run per
+giro), il primo con le 4 guardie.
+**Valutazione dei bracci: primo giro rifiutato senza danni (22/10/2026 11:45).** La catena e' stata lanciata prima che il checkout
+`w1arm-eval-20261022` (job 61761132, in coda per il limite di CPU della seriale) esistesse: sbatch ha rifiutato la prima guardia
+(«Unable to open file .../check_checkpoint.sbatch»), la catena si e' fermata, nessun job creato. Recupero previsto dal submitter: a checkout
+pronto, la stessa guardia con `--dopo-rifiuto`, poi la catena (che blocca i nodi rifiutati e non li rilancia da sola).
+**C4 sottomessa da Simone (22/10/2026), sul preventivo presentato (~25,6 / 35 GPU-ora: training 19,9 / 26, valutazione 5,7 / 9 con la
+sonda su GPU), dal checkout `w1cal-20261016` (72cf24a):** 61761908 = `W1CAL-C4-300M-lr0p0001-s0-j01` (300M, LR 1e-4, 6.130 passi, un job da
+6 h 30). La valutazione di C4 si prepara a training finito dalla campagna di valutazione (sonda su GPU).
+**Valutazione dei bracci, primo giro sottomesso (22/10/2026 ~12:10).** Checkout 61761132 COMPLETED (12:00, 673 file, 23efccb). Guardia di A s0
+risottomessa con `--dopo-rifiuto` (61769168); catena: guardie 61769194 / 61769201 / 61769207 (senza afterok, training finiti bene), A s0
+61769211-61769260 (estrazioni e sonde su GPU di P1, P2, S della P1 e l'estrazione di S della P2). Il resto (28 nodi, compreso il confronto)
+in attesa del limite di 8 job della coda GPU nella catena, che conta anche C4: giri successivi a richiesta. Nessun rifiuto.
+**Valutazione dei bracci, secondo giro (Simone, 22/10/2026 ~14:20):** 61789204 (sonda di S della P2 di A s0: A s0 completo) e A s1
+61789208-61789264 (estrazioni e sonde di P1, P2, S della P1). In attesa: S della P2 di A s1, ancore-only s0 e s1, confronto (17 nodi).
+**Diagnostica dei rami, tranche di Simone (22/10/2026 ~14:25):** seme 0 completo (61754844 P2 RPW0 + ridondanza 54 min, 61754849 P2 RPW
+40 min); sottomessi 61789455 (B_seed1 P1 PW0, 4 h) e 61789465 (B_seed1 P1 PW, 4 h). Restano 8 sonde di B_seed1 e il confronto.
+**Ultrareview della PR di revisione (22/10/2026).** `/ultrareview 1` lanciata da Simone (crediti d'uso) su simonebenatti/wearusfm#1
+(base 79db894, revisione 7cfad41: solo codice). 5 rilievi, tutti minori e verificati: pannello fisso con l'obiettivo mascherato del pilot,
+`--done` ignorato senza `--per-set` nella diagnostica, caricatore importlib duplicato, variabile `ids` riusata in `arms_compare`, monitor dei
+rami che calcola token inutili. Nessuno tocca run fatti o in corso; correzioni proposte, da fare sul ramo di Claude se Simone le approva.
+**Ultrareview, correzioni (Simone, 22/10/2026: «si, procedi»).** Rilievi 1, 2, 4, 5 corretti sul ramo di Claude: pannello fisso rifiutato
+con l'obiettivo mascherato del pilot, `--done` rifiutato senza `--per-set`, `run_ids` in `arms_compare`, monitor dei rami senza i token del
+lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `review/` cancellati su GitHub (PR #1 chiusa con essi).

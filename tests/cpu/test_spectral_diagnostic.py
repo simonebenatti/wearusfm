@@ -385,3 +385,7 @@ def test_per_set_plan_skips_done_sets_and_keeps_redundancy_once(tmp_path):
     with pytest.raises(ValueError, match="nessun job del compito rimasto"):
         SDG.main(["plan", "--per-set", "--arms", "B_seed0", "B_seed1", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x/rami",
                   "--out", str(out), "--campaign", "v2", "--done", *[f"p1/B_seed0/{s}" for s in SDG.SETS]])
+    with pytest.raises(ValueError, match="solo col piano per insieme"):  # ultrareview del 22/10, rilievo 2: nel piano v1 non toglierebbe nulla
+        SDG.main(["plan", "--arms", "B_seed0", "B_seed1", "--code-dir", "/C", "--expected-sha", "a" * 40, "--out-dir", "/x/rami",
+                  "--out", str(tmp_path / "v1.json"), "--campaign", "v2", "--done", "p1/B_seed0/R"])
+    assert not (tmp_path / "v1.json").exists()
