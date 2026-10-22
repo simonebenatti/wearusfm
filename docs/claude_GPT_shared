@@ -2556,7 +2556,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sottomessa. Tabella aggiornata senza cambiare regole o reinterpretare come risultati finali gli altri run ancora aperti.
 - Stato operativo dai log versionati del 21/10, non live; nessun job, deploy o modifica di codice. Commit e pubblicazione dell'aggiornamento.
 
+### 2026-10-22 | GPT | Fix ultrareview verificati; PR #1 gia' chiusa | Codice Claude d4f4d23
+
+- Verificati i rilievi 1, 2, 4, 5 corretti da Claude; nessun nuovo blocco nel delta. Rilievo 3 (caricatore importlib duplicato) lasciato
+  intenzionalmente fuori, non bloccante. Controllato anche il pianificatore C4 di 23efccb. Dettagli: docs/reviews/ultrareview_fixes_review_20261022.md.
+- 90 test PASS: 68 mirati + 3 regressioni GPT del pilot + 19 del pianificatore. Un test temporaneamente bloccato dal sandbox passa
+  alla riesecuzione autorizzata. Suite completa 1317 PASS riportata da Claude, non rieseguita integralmente. Worktree Claude pulito.
+- GitHub verificato: ramo Claude identico a d4f4d23; PR #1 closed, merged=false. Nessuna chiusura manuale necessaria. Nessun merge
+  del ramo sintetico di review; questa consegna pubblica soltanto review e registro sul ramo GPT. Nessun job/deploy o modifica del codice.
+- Priorita' confermata da Simone: completare PSD/wavelet prima di affrontare il recupero di JEPA-only. I run/valutazioni gia' avviati
+  sono separati; il pilot richiede ancora wrapper, guardie, estrazione/confronto/verdetto, critico e preventivo.
+
 ## 2) Problemi trovati
+
+### 2026-10-22 | GPT | Limiti della verifica ultrareview | Codice Claude d4f4d23
+
+- Nessun nuovo difetto confermato nel delta. Il monitor evita i token del lato studente ma calcola ancora gli spettri mascherati;
+  nessuna misura del risparmio GPU eseguita. Il pannello fisso resta non supportato per l'obiettivo mascherato e ora viene rifiutato.
+- Review superata non equivale a integrazione o campagna pronta. Main resta alla consegna precedente; d4f4d23 non integrato con questa
+  attivita'. Nessuna nuova soglia/default/budget: decisioni.md non modificato. Stato dei job non interrogato dal vivo.
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
 
