@@ -2602,6 +2602,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `review/codice-20261022` (7cfad41: quella base con src, scripts e tests di 10b3cac; 32 file, +4.749 / -160; docs e results invariati).
   PR da aprire da Simone (manca `gh`), poi `/code-review ultra <PR>`. Non si integra; rami da cancellare dopo. Main e ramo di Claude intatti.
 
+### 2026-10-22 | Claude | Ultrareview della PR di revisione: 5 rilievi minori, nessuno sui run fatti | Base 79db894, revisione 7cfad41
+
+- Simone ha lanciato `/ultrareview 1` (simonebenatti/wearusfm#1, a crediti d'uso). Esito: 5 rilievi, tutti di gravita' minore (nit),
+  verificati da me sul codice; nessuno tocca run gia' fatti o in corso (dettaglio in «Problemi trovati»). Correzioni proposte a Simone,
+  non ancora fatte. Rami `review/` e PR da chiudere dopo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
@@ -3939,3 +3945,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Avevo dato il comando della catena senza dire che andava lanciato dopo il checkout (61761132, fermo per il limite di CPU): sbatch ha
   rifiutato la prima guardia (launcher non trovato), la catena si e' fermata, nessun job. Recupero: `--dopo-rifiuto` sulla sola guardia a
   checkout pronto, poi la catena. Miglioria possibile: con `--submit`, la catena verifica prima che il checkout esista (`ls` del launcher).
+
+### 2026-10-22 | Claude | Ultrareview (PR #1): 5 rilievi minori, verificati
+
+1. `run.py`, `_fixed_eval_losses`: a encoder congelato misura sempre la loss di readout; con `branch_objective="masked"` e
+   `fixed_eval_every > 0` il pannello fisso misurerebbe una loss diversa da quella allenata. Nessuna configurazione la usa oggi (il launcher
+   del pilot non c'e' ancora). Correzione: rifiutare la combinazione, o misurare la loss mascherata con span deterministici.
+2. `spectral_diagnostic.py plan`: `--done` (e il salto della ridondanza) valgono solo con `--per-set`; senza, il piano v1 ripianifica tutto
+   in silenzio. I piani attuali (`piano_20261021b_*`) sono per insieme: non toccati. Correzione: rifiutare `--done` senza `--per-set`.
+3. Il caricatore «script fratello come modulo» (importlib) e' copiato in 7 punti, quasi tutti senza cache (`arms_compare._select` riesegue
+   calibration_select a ogni chiamata). Solo pulizia e tempo CPU sul Mac.
+4. `arms_compare.compare`: `ids` e' prima il dizionario degli ID attesi (letto da `status_of`) e poi diventa una lista; funziona perche' tutte
+   le chiamate vengono prima. Correzione: rinominare la lista.
+5. `branch_monitors`: chiama `student_context` completo sul teacher, cioe' anche gli spettri del segnale mascherato e i `tokens()` di ogni
+   scala, poi butta i token. Costo GPU in piu' solo ai passi monitorati di PWf/PWl. Correzione: calcolare solo maschere e validita'.
