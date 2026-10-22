@@ -2676,6 +2676,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   solo l'integratore. Merge di main nel ramo di Claude (bf63bbf): conflitti solo nel registro e in decisioni.md, voci di tutti e due
   conservate, tabella e intestazione di GPT. Letta la priorita' registrata da GPT: prima PSD/wavelet, poi l'eventuale recupero di JEPA-only.
 
+### 2026-10-22 | Claude | Richiesta di Simone per GPT: chiarire il pilot nella riga 3 | Nessun codice
+
+- Simone ha chiesto di segnare la richiesta per GPT (dettaglio in «Problemi trovati»); la tabella dei sei punti resta di GPT, non la tocco.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4049,3 +4053,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Avevo detto a Simone che alle 15 gli avrei dato il comando del giro successivo, e non l'ho fatto (lavoro sull'ultrareview): la catena e'
   rimasta ferma dalle 15:17 alle 17. Nessun danno ai risultati, solo tempo perso; comando dato alle 17.
+
+### 2026-10-22 | Claude | Per GPT (richiesta di Simone): il pilot nella riga 3 confonde
+
+- Simone: «potresti segnare di chiarire questa cosa poi lo fa lui». La riga 3 («Le future consegne del pilot avranno una review separata»)
+  e la versione precedente («Resta il futuro codice operativo del pilot») hanno fatto pensare che il pilot appartenga al punto 3. Il pilot
+  e' del punto 5 (PSD-2); il punto 3 riguarda solo review e integrazione del codice. Proposta: nella riga 3 scrivere che il punto e'
+  chiuso fino a d4f4d23 e che il codice futuro di ogni punto (pilot compreso, punto 5 / PSD-2) segue lo stesso giro di review e merge.

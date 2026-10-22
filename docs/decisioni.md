@@ -3923,3 +3923,5 @@ JEPA-only. Nessuna nuova soglia, default o budget, nessun job o deploy; i checko
 **Controllo dell'integrazione (Claude, 22/10/2026, su richiesta di Simone).** main 4680617 contiene 23efccb e d4f4d23 (merge d8b7170,
 SHA conservati), codice identico a d4f4d23: punto 3 chiuso fino a d4f4d23. main su leonardo a 8dad7e8, non usato dalle campagne. Ramo di
 Claude allineato con un merge di main (bf63bbf).
+**Richiesta per GPT (Simone, 22/10/2026: «potresti segnare di chiarire questa cosa poi lo fa lui»).** Nella tabella dei sei punti, chiarire
+che il pilot sta nel punto 5 (PSD-2) e che il punto 3 riguarda solo review e integrazione del codice. Registrata nel registro; la fa GPT.
