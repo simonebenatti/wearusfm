@@ -3894,4 +3894,8 @@ pronto, la stessa guardia con `--dopo-rifiuto`, poi la catena (che blocca i nodi
 **C4 sottomessa da Simone (22/10/2026), sul preventivo presentato (~25,6 / 35 GPU-ora: training 19,9 / 26, valutazione 5,7 / 9 con la
 sonda su GPU), dal checkout `w1cal-20261016` (72cf24a):** 61761908 = `W1CAL-C4-300M-lr0p0001-s0-j01` (300M, LR 1e-4, 6.130 passi, un job da
 6 h 30). La valutazione di C4 si prepara a training finito dalla campagna di valutazione (sonda su GPU).
+**Valutazione dei bracci, primo giro sottomesso (22/10/2026 ~12:10).** Checkout 61761132 COMPLETED (12:00, 673 file, 23efccb). Guardia di A s0
+risottomessa con `--dopo-rifiuto` (61769168); catena: guardie 61769194 / 61769201 / 61769207 (senza afterok, training finiti bene), A s0
+61769211-61769260 (estrazioni e sonde su GPU di P1, P2, S della P1 e l'estrazione di S della P2). Il resto (28 nodi, compreso il confronto)
+in attesa del limite di 8 job della coda GPU nella catena, che conta anche C4: giri successivi a richiesta. Nessun rifiuto.
 

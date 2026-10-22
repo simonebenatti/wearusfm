@@ -2583,6 +2583,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61761908 (`W1CAL-C4-300M-lr0p0001-s0-j01`): 300M al LR 1e-4 di C3, 6.130 passi; preventivo ~25,6 / 35 GPU-ora sulla calibrazione.
 
+### 2026-10-22 | Claude | Valutazione dei bracci: primo giro | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- Guardia recuperata con `--dopo-rifiuto` (61769168), guardie degli altri tre run e 7 job GPU di A s0 (61769194-61769260). Altri giri a
+  richiesta (limite di 8 job GPU in coda nella catena, C4 compreso).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
