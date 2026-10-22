@@ -3862,4 +3862,5 @@ da spostare su GPU o dividere prima del piano. Descrittivo, nessuna decisione: l
 1 epoca (C1 seme 0: 18,21); esposizioni diverse, la calibrazione sceglie il LR, non la taglia.
 **Bracci, 22/10 10:50 (controllo dal vivo):** i 4 run sani (A e ancore-only, semi 0 e 1) ai passi 95.400-96.900 su 98.094 dopo 20 h, rango
 144-146 (A) e 139-143 (ancore-only), rapporto 1,8-2,0 (A, in lenta discesa da 2,8) e 1,26 (ancore-only, stabile); fine attesa entro le 11:30.
-
+**Diagnostica dei rami, tranche di Simone (22/10/2026 ~11:15):** 61754844 (B_seed0 P2 RPW0 e ridondanza) e 61754849 (B_seed0 P2 RPW): con
+queste il seme 0 e' completo; restano le 10 sonde di B_seed1 e il confronto.
