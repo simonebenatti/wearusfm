@@ -124,7 +124,7 @@ def test_evaluation_plans_feed_the_evaluation_chain():
     camp = {"campaign": "w1cal", "agent": "claude", "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal", "expected_sha": "a" * 40,
             "manifest": "/M/m_nested_1.json.gz", "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/leonardo_scratch/R",
             "eval": {"features_root": "/leonardo_scratch/F", "results_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal"}}
-    r = CP.plan(REPORT, DEC, camp)
+    r = CP.plan(REPORT, DEC, camp, "results/infra/w1cal")
     assert "eval" not in r["plans"]["C1"]  # il piano dei training resta quello di wsd_chain.py
     for name, e in r["eval_plans"].items():
         order = EC.validate(e)
@@ -133,14 +133,18 @@ def test_evaluation_plans_feed_the_evaluation_chain():
         assert kinds.count("guard") == kinds.count("extract") == kinds.count("probe") == len(runs) and kinds[-1] == "compare"
         sel = order[-1]
         assert sorted(sel["after"]) == sorted(f"{x['id']}-probe" for x in runs) and sel["args"][0] == name
-        assert sel["args"][3::4] == [repr(float(x["lr"])) for x in runs] and sel["args"][6::4] == [str(x["steps"]) for x in runs]
+        assert sel["args"][3] == f"results/infra/w1cal/calibrazione_{name}.json"  # il piano di training per l'identita' dei candidati
+        assert sel["args"][4::4] == [repr(float(x["lr"])) for x in runs] and sel["args"][7::4] == [str(x["steps"]) for x in runs]
         for g in (n for n in order if n["kind"] == "guard"):
             run = next(x for x in runs if g["args"][0].endswith(x["id"]))
             assert g["after"] == [f"{run['id']}-j01"] and g["args"][1] == "checkpoint_postdecay.pt" and str(run["steps"]) in g["args"]
+        gpu_probe = CP.probe_on_gpu(runs[0]["preset"])  # sonde sui nodi GPU solo oltre il limite della seriale (C4, 300M)
         for n in order:
-            assert ("boost_usr_prod" in EC.node_labels(n)) == (n["kind"] == "extract")  # solo le estrazioni sui nodi GPU
-        ext = [n for n in order if n["kind"] == "extract"]
-        assert e["estimate"]["gpu_hours_max"] == pytest.approx(sum(n["gpu_hours"] for n in ext))
+            on_gpu = n["kind"] == "extract" or (n["kind"] == "probe" and gpu_probe)
+            assert ("boost_usr_prod" in EC.node_labels(n)) == on_gpu, (name, n["id"])
+        gpu = [n for n in order if n["kind"] == "extract" or (n["kind"] == "probe" and gpu_probe)]
+        assert e["estimate"]["gpu_hours_max"] == pytest.approx(sum(n["gpu_hours"] for n in gpu))
+        assert (name == "C4") == gpu_probe
 
 
 def _load(name):
@@ -163,3 +167,70 @@ def test_the_plan_is_bound_to_the_cluster_build_report():
             "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/R"}
     with pytest.raises(ValueError, match="il rapporto descrive"):
         CP.plan(REPORT, None, camp)
+
+
+def test_runs_stopped_before_the_probe_enter_the_selection_without_evaluation_nodes():
+    """Review di GPT (16/10): un training fermato non blocca la selezione della fase; niente guardia, estrazione e sonda per lui, rapporto
+    «-» nella selezione, che dipende solo dalle sonde degli altri. Codice della valutazione da un checkout diverso da quello dei training."""
+    EC = _load("evaluation_chain")
+    camp = {"campaign": "w1cal", "agent": "claude", "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal", "expected_sha": "a" * 40,
+            "manifest": "/M/m_nested_1.json.gz", "scales": "/M/s.json", "window_seconds": "/M/w.json", "run_root": "/leonardo_scratch/R",
+            "eval": {"features_root": "/leonardo_scratch/F", "results_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1cal",
+                     "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval", "expected_sha": "b" * 40}}
+    failed = "W1CAL-C1-30M-lr0p0001-s0"
+    r = CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: "STOP"})  # R1 (GPT 3272398): ogni run escluso ha la sua prova
+    e = r["eval_plans"]["C1"]
+    order = EC.validate(e)
+    assert not any(n["id"].startswith(failed) for n in order if n["kind"] != "compare")
+    sel = order[-1]
+    assert sel["args"][4:8] == [repr(1e-4), f"/leonardo_scratch/R/{failed}", "-", str(r["runs"][0]["steps"])]
+    assert sorted(sel["after"]) == ["W1CAL-C1-30M-lr0p0003-s0-probe", "W1CAL-C1-30M-lr0p001-s0-probe"]
+    assert {n["expected_sha"] for n in order} == {"b" * 40} and e["guard"]["expected_sha"] == "b" * 40
+    assert r["plans"]["C1"]["expected_sha"] == "a" * 40  # i training restano allo SHA del loro checkout
+    with pytest.raises(ValueError, match="nessun run arrivato alla sonda"):
+        CP.plan(REPORT, None, camp, "results/infra/w1cal", {x["id"]: "STOP" for x in r["runs"]})
+    with pytest.raises(ValueError, match="non sono run della fase"):
+        CP.plan(REPORT, None, camp, "results/infra/w1cal", {"W1CAL-C9-altro": "STOP"})
+    # un'evidenza da sacct (relativa al repo): verificata dal pianificatore, poi passata alla selezione come «failed:<percorso>»
+    CS = _load("calibration_select")
+    ev_rel = "tests/cpu/_tmp_failure_evidence.json"
+    ev = CP.ROOT / ev_rel
+    try:
+        ev.write_text(json.dumps({"protocol": CS.EVIDENCE_PROTOCOL, "run_id": failed, "source": "sacct",
+                                  "jobs": [{"logical_id": f"{failed}-j01", "job_id": "1", "state": "FAILED", "exit_code": "1:0"}]}))
+        r2 = CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: ev_rel})
+        assert EC.validate(r2["eval_plans"]["C1"])[-1]["args"][6] == f"failed:{ev_rel}"
+        ev.write_text(json.dumps({"protocol": CS.EVIDENCE_PROTOCOL, "run_id": failed, "source": "sacct",
+                                  "jobs": [{"logical_id": f"{failed}-j01", "job_id": "1", "state": "TIMEOUT", "exit_code": "0:0"}]}))
+        with pytest.raises(ValueError, match="non provano un fallimento terminale"):
+            CP.plan(REPORT, None, camp, "results/infra/w1cal", {failed: ev_rel})
+    finally:
+        ev.unlink(missing_ok=True)
+    assert CP._failed_arg([f"{failed}=STOP"]) == {failed: "STOP"}
+    with pytest.raises(SystemExit, match="RUN=STOP"):
+        CP._failed_arg([failed])
+
+
+def test_a_probe_expected_over_the_serial_limit_goes_to_a_gpu_node():
+    """C4 (22/10/2026): la sonda del 300M (attese 4,2 h) supera le 4 h della seriale e va su un nodo GPU (1 GPU, i suoi core, 6 h), con le
+    GPU-ora nel preventivo; le sonde del 30M e del 100M restano sulla seriale: le valutazioni di C1-C3 rigenerate restano identiche a quelle
+    committate e usate."""
+    import json
+
+    EC = _load("evaluation_chain")
+    rep = json.loads((REPO / "results/infra/derived_manifests_v1_1_build_cluster_20261015.json").read_text())
+    dec = json.loads((REPO / "results/infra/w1cal_decisioni.json").read_text())
+    camp = json.loads((REPO / "results/infra/w1cal_campaign_c3_eval_20261021.json").read_text())
+    r = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021")
+    assert r["eval_plans"]["C3"] == json.loads((REPO / "results/infra/w1cal_c3_20261021/valutazione_C3.json").read_text())
+    assert not CP.probe_on_gpu("sanity") and not CP.probe_on_gpu("100m") and CP.probe_on_gpu("300m")
+    c4 = r["eval_plans"]["C4"]
+    EC.validate(c4)
+    probe = next(n for n in c4["nodes"] if n["kind"] == "probe")
+    assert probe["queue"] == "boost_usr_prod" and "--gres=gpu:1" in probe["sbatch"] and "--time=06:00:00" in probe["sbatch"]
+    assert EC.node_labels(probe) == {"boost_usr_prod", "normal"} and probe["gpu_hours"] == 6.0
+    est = c4["estimate"]
+    assert est["probe_on_gpu"] and est["gpu_hours_expected"] == pytest.approx(1.5 + 4.2) and est["gpu_hours_max"] == pytest.approx(9.0)
+    assert est["cpu_core_hours_expected"] == 0 and est["probe_fits_the_cap"]
+    c3 = next(n for n in r["eval_plans"]["C3"]["nodes"] if n["kind"] == "probe")
+    assert c3["queue"] == "lrd_all_serial" and c3["gpu_hours"] == 0

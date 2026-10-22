@@ -97,57 +97,53 @@ def build_parser() -> argparse.ArgumentParser:
     return ap
 
 
-def main(argv=None) -> int:
-    ap = build_parser()
-    args = ap.parse_args(argv)
-    ctx = None
-    if args.distributed:
-        ctx = R.dist_from_env()
-        torch.distributed.init_process_group("nccl" if args.device.startswith("cuda") else "gloo")  # env:// da torchrun
-    main_process = ctx is None or ctx.is_main
+def build_config(args, error=None) -> "R.RunConfig":
+    """La configurazione del run dagli argomenti di `build_parser()`: la stessa strada per il training (`main`) e per la verifica
+    dell'identita' dei candidati della calibrazione (`scripts/calibration_select.py`, critico del 16/10/2026). Non legge i dati; legge solo
+    la calibrazione della keep, se data (il suo SHA entra nella configurazione). `error`: chiamato con il messaggio (es. `ap.error`); in ogni
+    caso un argomento non valido e' un ValueError."""
+    def fail(msg):
+        if error is not None:
+            error(msg)
+        raise ValueError(msg)
+
     cfg = {"sanity": R.sanity_config, "small": R.small_config}.get(args.preset, lambda: R.ladder_config(args.preset))()
     if args.rvq_codes is not None:
         cfg = R.with_rvq(cfg, args.rvq_codes)
     if args.window1_rules:
         cfg = R.with_window1_rules(cfg)
-    try:  # identita' dei file d'ingresso: manifest del piano e, per un derivato, le durate con cui e' stato costruito (critico, 16/10)
-        R.check_input_files(args.manifest, args.window_seconds, args.nested, args.manifest_sha256)
-    except ValueError as e:
-        ap.error(str(e))
-    window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
     if args.warmup_steps is not None:
         cfg = replace(cfg, warmup_steps=args.warmup_steps)
     if args.batch_size is not None:
         cfg = replace(cfg, batch_size=args.batch_size)
     if args.lr is not None:
         if not args.lr > 0:
-            ap.error("--lr deve essere positivo")
+            fail("--lr deve essere positivo")
         cfg = replace(cfg, lr=args.lr)
     weights = {k: v for k, v in (("anchor_weight", args.anchor_weight), ("jepa_weight", args.jepa_weight)) if v is not None}
     if weights:
         try:
             cfg = replace(cfg, jepa=replace(cfg.jepa, **weights))
         except ValueError as e:
-            ap.error(f"--anchor-weight / --jepa-weight: {e}")
+            fail(f"--anchor-weight / --jepa-weight: {e}")
     if args.accum_steps is not None:
         cfg = replace(cfg, accum_steps=args.accum_steps)
     if args.schedule == "wsd":
         if args.total_steps is None:
-            ap.error("--schedule wsd richiede --total-steps")
+            fail("--schedule wsd richiede --total-steps")
         if (args.steps_at_d is None) == (args.warmup_steps is None):
-            ap.error("--schedule wsd: il warmup da --steps-at-d (D14) oppure da --warmup-steps, uno dei due")
+            fail("--schedule wsd: il warmup da --steps-at-d (D14) oppure da --warmup-steps, uno dei due")
         warmup = R.wsd_warmup_steps(args.steps_at_d) if args.steps_at_d is not None else args.warmup_steps
         keep = tuple(int(x) for x in args.keep_checkpoints.replace(":", ",").split(",") if x.strip())
         cfg = R.with_wsd(cfg, args.total_steps, warmup_steps=warmup, keep_checkpoints=keep, decay_fraction=args.decay_fraction)
     elif args.total_steps is not None or args.steps_at_d is not None or args.keep_checkpoints:
-        ap.error("--total-steps, --steps-at-d e --keep-checkpoints valgono con --schedule wsd")
+        fail("--total-steps, --steps-at-d e --keep-checkpoints valgono con --schedule wsd")
     if args.rvq_targets is not None:
         cfg = replace(cfg, jepa=replace(cfg.jepa, rvq_targets=args.rvq_targets))
     if args.max_steps is not None:
         cfg = replace(cfg, max_steps=args.max_steps)
     if args.datasets is not None:
         cfg = replace(cfg, datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
-    scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
     if args.seed is not None:
         cfg = replace(cfg, seed=args.seed)
     cfg = replace(cfg, keep_grad_every=args.keep_grad_every, fixed_eval_every=args.fixed_eval_every,
@@ -156,15 +152,33 @@ def main(argv=None) -> int:
     if args.keep_calibration is not None:
         cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
     elif args.keep_weight != 0:
-        ap.error("--keep-weight requires --keep-calibration")
+        fail("--keep-weight requires --keep-calibration")
     if args.spectral_branches:
         if args.keep_calibration is None:
-            ap.error("--spectral-branches richiede --keep-calibration (target e teste dello Step 1)")
+            fail("--spectral-branches richiede --keep-calibration (target e teste dello Step 1)")
         cfg = R.with_spectral_branches(cfg, tuple(k.strip() for k in args.spectral_branches.split(",") if k.strip()),
                                        weight=args.branch_weight, wavelet_learnable=args.wavelet_learnable, alpha=args.branch_alpha,
                                        freeze_encoder=args.freeze_encoder, calibration_batches=args.branch_calibration_batches)
     elif args.wavelet_learnable or args.freeze_encoder or args.branch_weight != 0:
-        ap.error("--branch-weight, --wavelet-learnable e --freeze-encoder valgono con --spectral-branches")
+        fail("--branch-weight, --wavelet-learnable e --freeze-encoder valgono con --spectral-branches")
+    return cfg
+
+
+def main(argv=None) -> int:
+    ap = build_parser()
+    args = ap.parse_args(argv)
+    ctx = None
+    if args.distributed:
+        ctx = R.dist_from_env()
+        torch.distributed.init_process_group("nccl" if args.device.startswith("cuda") else "gloo")  # env:// da torchrun
+    main_process = ctx is None or ctx.is_main
+    try:  # identita' dei file d'ingresso: manifest del piano e, per un derivato, le durate con cui e' stato costruito (critico, 16/10)
+        R.check_input_files(args.manifest, args.window_seconds, args.nested, args.manifest_sha256)
+    except ValueError as e:
+        ap.error(str(e))
+    window_s = json.loads(args.window_seconds.read_text())["window_s"] if args.window_seconds else None
+    cfg = build_config(args, ap.error)  # dopo i file, come prima dell'estrazione di build_config (stesso ordine degli errori)
+    scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
     if main_process:
         print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}"
               + (f" globale su {ctx.world_size} processi" if ctx else "") + f", dispositivo {args.device}, {len(scales)} scale di sessione, "

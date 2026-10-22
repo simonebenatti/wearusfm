@@ -215,10 +215,11 @@ class ScaleEncoder(nn.Module):
         self.temporal = nn.ModuleList([nn.Conv1d(hidden, hidden, 3, padding=1) for _ in range(2)])
         self.output = nn.Linear(2 * hidden, out_dim)
 
-    def forward(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        """logp, valid: (C, P, B). Ritorna ((C, out_dim), (C,) canale con almeno un frame valido)."""
+    def tokens(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """I token per canale e frame prima della media sui frame (obiettivo mascherato dei rami, `branch_masking`): ((C, P, hidden), (C, P)
+        frame con almeno una banda usata). Stessi valori del forward (che li usa), zeri sui frame non validi."""
         if logp.shape[1] == 0:  # nessun frame nel ritaglio (piu' corto di un passo)
-            return logp.new_zeros(logp.shape[0], self.output.out_features), torch.zeros(logp.shape[0], dtype=torch.bool, device=logp.device)
+            return logp.new_zeros(logp.shape[0], 0, self.project.out_features), torch.zeros(logp.shape[0], 0, dtype=torch.bool, device=logp.device)
         use = valid & self.observed  # una coordinata mai vista nella calibrazione resta fuori (stessa regola nel training e nelle sonde)
         x = torch.where(use, (logp - self.input_mean) / self.input_scale, 0.0)
         x = torch.cat((x, use.to(x.dtype)), -1)
@@ -227,6 +228,13 @@ class ScaleEncoder(nn.Module):
         for conv in self.temporal:
             v = conv(h.transpose(1, 2)).transpose(1, 2)
             h = torch.where(ok[..., None], F.gelu(h + v), 0.0)
+        return h, ok
+
+    def forward(self, logp: torch.Tensor, valid: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """logp, valid: (C, P, B). Ritorna ((C, out_dim), (C,) canale con almeno un frame valido)."""
+        if logp.shape[1] == 0:  # nessun frame nel ritaglio (piu' corto di un passo)
+            return logp.new_zeros(logp.shape[0], self.output.out_features), torch.zeros(logp.shape[0], dtype=torch.bool, device=logp.device)
+        h, ok = self.tokens(logp, valid)
         den = ok.sum(1).clamp(min=1)[:, None].to(h.dtype)
         mean = h.sum(1) / den
         dev = torch.where(ok[..., None], h - mean[:, None, :], 0.0)
@@ -357,7 +365,7 @@ class SpectralBranches(nn.Module):
 
 # --- readout, teste e loss sul readout con i rami ---------------------------------------------------------------------------------------
 
-BRANCH_PREFIXES = ("spectral_branches.", "branch_heads.")
+BRANCH_PREFIXES = ("spectral_branches.", "branch_heads.", "branch_predictors.")
 
 
 def branch_heads(raw_dim: int, kinds, out_dim: int) -> nn.ModuleDict:
@@ -401,6 +409,19 @@ def freeze_raw(model) -> None:
         if not name.startswith(BRANCH_PREFIXES):
             p.requires_grad_(False)
     model.raw_frozen = True
+
+
+def freeze_branch_layers(model) -> list[str]:
+    """Pilot dei rami (`docs/rami_pilota_obiettivo_v1.md`): con `branch_freeze_output` gli strati che dai token fanno l'embedding (`output` di
+    ogni scala, `combine`) restano al passo 0; con l'obiettivo mascherato anche le teste del vecchio obiettivo (non usate). Ritorna i nomi."""
+    cfg = model.cfg
+    frozen = []
+    for name, p in model.named_parameters():
+        out_layer = name.startswith("spectral_branches.") and (".output." in name or ".combine." in name)
+        if (cfg.branch_freeze_output and out_layer) or (cfg.branch_objective == "masked" and name.startswith("branch_heads.")):
+            p.requires_grad_(False)
+            frozen.append(name)
+    return frozen
 
 
 def readout_objectives(student, inp, anchor_targets, *, keep: bool, terms: bool = False) -> dict:

@@ -67,8 +67,35 @@ EXTRACT_EXPECTED_H = {"sanity": 0.3, "100m": 0.65, "300m": 1.5}
 PROBE_CORES = 8
 PROBE_TIME = {"sanity": "03:00:00", "100m": "04:00:00", "300m": "04:00:00"}
 PROBE_EXPECTED_H = {"sanity": 1.8, "100m": 3.0, "300m": 4.2}
+# sonda attesa oltre il limite della seriale (4 h, QoS normal di lrd_all_serial): su un nodo GPU (1 GPU, i suoi core), con un tempo massimo
+# piu' largo; le altre restano sulla seriale come prima (piani di C1-C3 identici). Misure: 30M 1 h 48, 100M 1 h 47 e 2 h 02 (C3).
+SERIAL_MAX_H = 4.0
+PROBE_TIME_GPU = "06:00:00"
+GPU_PROBE_SBATCH = ["--partition=boost_usr_prod", "--qos=normal", "--gres=gpu:1"]  # come le sonde dei bracci su GPU (arms_plan.py)
+
+
+def probe_on_gpu(preset: str) -> bool:
+    return PROBE_EXPECTED_H[preset] > SERIAL_MAX_H
 SELECT_TIME, SELECT_CORES = "00:30:00", 2
 EVAL_LIMITS = {"boost_usr_prod": 8, "lrd_all_serial": 8}
+
+
+def _select_mod():
+    spec = importlib.util.spec_from_file_location("calibration_select_for_plan", ROOT / "scripts" / "calibration_select.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _failed_arg(items: list[str]) -> dict:
+    """RUN=PROVA dalla riga di comando; senza prova un run non si esclude (R1 della review GPT 3272398)."""
+    out = {}
+    for item in items:
+        run, sep, proof = item.partition("=")
+        if not sep or not run or not proof:
+            raise SystemExit(f"--failed-runs {item!r}: serve RUN=STOP o RUN=<evidenza.json>")
+        out[run] = proof
+    return out
 
 
 def _wsd_chain():
@@ -137,11 +164,30 @@ def resolve_phases(decisions: dict | None) -> dict:
     return out
 
 
-def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict) -> dict:
-    """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0)."""
-    code = {"code_dir": base["code_dir"], "expected_sha": base["expected_sha"]}
+def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict, plan_path: str = "-",
+              failed: dict | None = None) -> dict:
+    """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0). `plan_path`: il piano di training della
+    fase come lo vede la selezione (relativo al checkout della valutazione, che deve contenerlo); `failed`: {run: prova} per i run il cui
+    training si e' fermato per sempre prima della sonda (niente guardia, estrazione e sonda: entrano nella selezione come inammissibili, review
+    di GPT del 16/10/2026). Prova (R1 della review GPT 3272398): "STOP" (lo STOP del trainer nella cartella del run, la selezione lo
+    ricontrolla) o il percorso di un'evidenza da sacct (`calibration_select.py failure-evidence`, relativo al repo e nel checkout della
+    valutazione), verificata qui e di nuovo dalla selezione.
+    Il codice della valutazione puo' essere un checkout diverso da quello del training (`ev["code_dir"]`, `ev["expected_sha"]`)."""
+    code = {"code_dir": ev.get("code_dir", base["code_dir"]), "expected_sha": ev.get("expected_sha", base["expected_sha"])}
+    failed = dict(failed or {})
+    unknown = set(failed) - {r["id"] for r in jobs["runs"]}
+    if unknown:
+        raise ValueError(f"{name}: run falliti {sorted(unknown)} non sono run della fase")
+    if failed and len(failed) == len(jobs["runs"]):
+        raise ValueError(f"{name}: nessun run arrivato alla sonda: la fase si ferma, decisione da registrare a mano")
     nodes, cands, probe_outs = [], [], []
     for run, lr in zip(jobs["runs"], lrs):
+        if run["id"] in failed:
+            proof = failed[run["id"]]
+            if proof != "STOP":  # evidenza da sacct: la stessa regola della selezione, gia' qui
+                _select_mod().check_failure_evidence(ROOT / proof, run["id"], run["job_ids"])
+            cands += [repr(float(lr)), run["run_dir"], "-" if proof == "STOP" else f"failed:{proof}", str(run["total_steps"])]
+            continue
         rid, ckpt = run["id"], f"{run['run_dir']}/checkpoint_postdecay.pt"
         feat, rep = f"{ev['features_root']}/{name}/{rid}", f"{ev['results_root']}/{name}/{rid}.json"
         npzs, oof = [f"{feat}/{d}.npz" for d in P1_DATASETS], str(Path(rep).with_suffix(".oof.npz"))
@@ -151,29 +197,38 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                       "inputs": [ckpt], "outputs": npzs,
                       "checkpoint": {"run_dir": run["run_dir"], "name": "checkpoint_postdecay.pt", "training_job": run["job_ids"][-1],
                                      "min_steps": run["total_steps"], "sha256": None}})
-        nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "lrd_all_serial", "gpu_hours": 0, **code,
-                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {}, "sbatch": [f"--time={PROBE_TIME[spec['preset']]}"],
-                      "inputs": npzs, "outputs": [rep, oof]})
+        on_gpu = probe_on_gpu(spec["preset"])
+        pt = PROBE_TIME_GPU if on_gpu else PROBE_TIME[spec["preset"]]
+        nodes.append({"id": f"{rid}-probe", "kind": "probe", "after": [f"{rid}-ext"], "queue": "boost_usr_prod" if on_gpu else "lrd_all_serial",
+                      "gpu_hours": round(_hours(pt), 3) if on_gpu else 0, **code,
+                      "launcher": "scripts/slurm/calibration_probe.sbatch", "args": [feat, rep], "exports": {},
+                      "sbatch": [f"--time={pt}", *(GPU_PROBE_SBATCH if on_gpu else [])], "inputs": npzs, "outputs": [rep, oof]})
         cands += [repr(float(lr)), run["run_dir"], rep, str(run["total_steps"])]
         probe_outs += [rep, oof]
     out, record = f"{ev['results_root']}/{name}/decisione_{name}.json", f"{ev['results_root']}/{name}/registro_{name}.json"
     nodes.append({"id": f"W1CAL-{name}-select", "kind": "compare", "after": [n["id"] for n in nodes if n["kind"] == "probe"], "queue": "lrd_all_serial",
-                  "gpu_hours": 0, **code, "launcher": "scripts/slurm/calibration_select.sbatch", "args": [name, out, record, *cands], "exports": {},
+                  "gpu_hours": 0, **code, "launcher": "scripts/slurm/calibration_select.sbatch", "args": [name, out, record, plan_path, *cands],
+                  "exports": {},
                   "sbatch": [f"--time={SELECT_TIME}"], "inputs": probe_outs, "outputs": [out, record]})
-    n_runs = len(lrs)
+    n_runs = len(lrs) - len(failed)
+    on_gpu = probe_on_gpu(spec["preset"])
+    probe_exp, probe_max = PROBE_EXPECTED_H[spec["preset"]], _hours(PROBE_TIME_GPU if on_gpu else PROBE_TIME[spec["preset"]])
     return {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{name.lower()}-eval", "agent": base["agent"],
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
-            "estimate": {"gpu_hours_expected": round(n_runs * EXTRACT_EXPECTED_H[spec["preset"]], 2),
-                         "gpu_hours_max": round(n_runs * _hours(EXTRACT_TIME[spec["preset"]]), 2),
-                         "cpu_core_hours_expected": round(n_runs * PROBE_CORES * PROBE_EXPECTED_H[spec["preset"]], 1),
-                         "probe_fits_the_cap": PROBE_EXPECTED_H[spec["preset"]] <= _hours(PROBE_TIME[spec["preset"]]),
-                         "cpu_core_hours_max": round(n_runs * PROBE_CORES * _hours(PROBE_TIME[spec["preset"]]) + SELECT_CORES * _hours(SELECT_TIME)
+            "estimate": {"gpu_hours_expected": round(n_runs * (EXTRACT_EXPECTED_H[spec["preset"]] + (probe_exp if on_gpu else 0)), 2),
+                         "gpu_hours_max": round(n_runs * (_hours(EXTRACT_TIME[spec["preset"]]) + (probe_max if on_gpu else 0)), 2),
+                         "cpu_core_hours_expected": round(0 if on_gpu else n_runs * PROBE_CORES * probe_exp, 1),
+                         "probe_fits_the_cap": probe_exp <= probe_max, **({"probe_on_gpu": True} if on_gpu else {}),
+                         "cpu_core_hours_max": round((0 if on_gpu else n_runs * PROBE_CORES * probe_max) + SELECT_CORES * _hours(SELECT_TIME)
                                                      + n_runs * _hours("00:20:00"), 1)}}
 
 
-def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None) -> dict:
+def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None, plans_dir: str | None = None,
+         failed_runs: dict | None = None) -> dict:
+    """`failed_runs`: {run: prova} (vedi `eval_plan`; R1 della review GPT 3272398: niente esclusioni senza prova)."""
     from wearusfm.training import run as R
 
+    failed_runs = dict(failed_runs or {})
     frac = build_report["fractions"]["1"]
     wpe = frac["windows_per_epoch"]
     # il rapporto della costruzione SUL CLUSTER: lo SHA del file e' quello che il training verifica (--manifest-sha256) e che entra nella
@@ -210,7 +265,8 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
             raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)
         plans[name] = p
-        evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev)
+        evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev, f"{plans_dir}/calibrazione_{name}.json" if plans_dir else "-",
+                                {r["id"]: failed_runs[r["id"]] for r in jobs["runs"] if r["id"] in failed_runs})
         for run, lr in zip(jobs["runs"], info["lrs"]):
             hours = run["total_steps"] * run["s_per_step"] / 3600
             rows.append({"phase": name, "id": run["id"], "size": spec["label"], "preset": spec["preset"], "seed": spec["seed"], "lr": lr,
@@ -220,6 +276,9 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
                          "jobs": run["jobs"], "gpu_hours_expected": run["gpu_hours_expected"], "gpu_hours_max": run["gpu_hours_max"]})
         if any(r["warmup_steps"] != warmup for r in jobs["runs"]):
             raise AssertionError("warmup diverso da quello di D")
+    unknown = set(failed_runs) - {r["id"] for r in rows}
+    if unknown:
+        raise ValueError(f"run falliti {sorted(unknown)} non sono run della fase (run pianificati: {sorted(r['id'] for r in rows)})")
     totals = {"runs": len(rows), "gpu_hours_expected": round(sum(r["gpu_hours_expected"] for r in rows), 1),
               "gpu_hours_max": round(sum(r["gpu_hours_max"] for r in rows), 1),
               "gpu_hours_training_only": round(sum(4 * r["steps"] * S_PER_STEP[r["preset"]] / 3600 for r in rows), 1),
@@ -254,10 +313,14 @@ def main(argv=None) -> int:
     ap.add_argument("build_report", type=Path)
     ap.add_argument("--decisions", type=Path)
     ap.add_argument("--campaign", type=Path, help="campi di campagna per wsd_chain.py (code_dir, expected_sha, manifest, ...); senza: dry-run")
-    ap.add_argument("--out", type=Path)
+    ap.add_argument("--out", type=Path, help="cartella dei piani (relativa: nel repo, cosi' il checkout della valutazione li contiene)")
+    ap.add_argument("--failed-runs", nargs="*", default=[], metavar="RUN=PROVA",
+                    help="run fermati per sempre prima della sonda, ognuno con la sua prova: RUN=STOP (lo STOP del trainer) o RUN=<evidenza da "
+                         "sacct, relativa al repo> (calibration_select.py failure-evidence); entrano nella selezione come inammissibili")
     args = ap.parse_args(argv)
     result = plan(json.loads(args.build_report.read_text()), json.loads(args.decisions.read_text()) if args.decisions else None,
-                  json.loads(args.campaign.read_text()) if args.campaign else None)
+                  json.loads(args.campaign.read_text()) if args.campaign else None, str(args.out) if args.out else None,
+                  _failed_arg(args.failed_runs))
     print(table(result))
     print(f"\npassi a D (4 epoche) {result['steps_at_d']}, warmup {result['warmup_steps']}; solo training "
           f"{result['totals']['gpu_hours_training_only']} GPU-ora; {'DRY-RUN (percorsi segnaposto)' if result['dry_run'] else 'campagna'}")

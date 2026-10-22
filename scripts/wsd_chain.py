@@ -153,6 +153,19 @@ def resolve(plan: dict) -> list[dict]:
     return out
 
 
+def extra_args(plan: dict, run: dict) -> str:
+    """EXTRA_ARGS di `train_ddp.sbatch` per un run risolto (`resolve`): la stessa stringa che arriva a `train_jepa.py` nel job, usata anche
+    dalla selezione della calibrazione per ricostruire la configurazione attesa (`scripts/calibration_select.py`)."""
+    extra = (f"{plan['common_args']} --window-seconds {plan['window_seconds']} --batch-size {run['batch_size']} "
+             f"--accum-steps {run['accum_steps']} --seed {run['seed']} --schedule wsd --total-steps {run['total_steps']} "
+             f"--steps-at-d {run['steps_at_d']}")
+    if run["keep_checkpoints"]:
+        extra += " --keep-checkpoints " + ":".join(str(x) for x in sorted(run["keep_checkpoints"]))
+    if run["args"]:
+        extra += " " + run["args"]
+    return extra.strip()
+
+
 def plan_jobs(plan: dict) -> dict:
     """Job, dipendenze, comandi e preventivo."""
     runs = resolve(plan)
@@ -187,13 +200,7 @@ def plan_jobs(plan: dict) -> dict:
             after = jobs_of[trunk["id"]][k - 1]
             name = f"checkpoint_step{run['from_step']:07d}.pt" if run["from_step"] in trunk["keep_checkpoints"] else "checkpoint_predecay.pt"
             branch_from = f"{plan['run_root']}/{trunk['id']}/{name}"  # continuazione a 2D (D14): dal pre-decay
-        extra = (f"{plan['common_args']} --window-seconds {plan['window_seconds']} --batch-size {run['batch_size']} "
-                 f"--accum-steps {run['accum_steps']} --seed {run['seed']} --schedule wsd --total-steps {run['total_steps']} "
-                 f"--steps-at-d {run['steps_at_d']}")
-        if run["keep_checkpoints"]:
-            extra += " --keep-checkpoints " + ":".join(str(x) for x in sorted(run["keep_checkpoints"]))
-        if run["args"]:
-            extra += " " + run["args"]
+        extra = extra_args(plan, run)
         exports = [f"CODE_DIR={plan['code_dir']}", f"EXPECTED_SHA={plan['expected_sha']}", f"PRESET={run['preset']}",
                    f"TIME_LIMIT_S={run_limit}"] + ([f"BRANCH_FROM={branch_from}"] if branch_from else []) + [f"EXTRA_ARGS={extra.strip()}"]
         for item in exports:
