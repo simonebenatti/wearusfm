@@ -3914,3 +3914,9 @@ giro delle 15 non l'ho dato). Diagnostica B_seed1: P1 PW0 finita (2 h 05), P1 PW
 **Valutazione dei bracci, terzo giro (Simone, 22/10/2026 ~17:05):** 61813378, 61813380 (S della P2 di A s1: A completo nei due semi) e
 ancore-only s0 61813385-61813407 (P1, P2, estrazione di S della P1). Restano 12 nodi, compreso il confronto.
 **Diagnostica dei rami (Simone, 22/10/2026 ~17:10):** 61813410 (B_seed1 P1 R). Restano 7 sonde di B_seed1 e il confronto.
+
+**Integrazione GPT (Simone, 22/10/2026: «Verifica e integra su main 23efccb ... e d4f4d23 ... cosi chiudiamo anche 3»).**
+Consegna integrata col merge `d8b7170`, senza riscrivere gli SHA. Review GPT: 90 test PASS; suite completa 1317 PASS riportata da Claude.
+Codice d'integrazione identico alla consegna verificata. Punto 3 chiuso fino a d4f4d23; il rilievo 3 importlib resta una pulizia non
+bloccante. Registro aggiornato con entrambe le tabelle. Priorita' confermata da Simone: prima PSD/wavelet, poi l'eventuale recupero di
+JEPA-only. Nessuna nuova soglia, default o budget, nessun job o deploy; i checkout di campagna restano congelati.

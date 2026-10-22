@@ -15,30 +15,42 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 22/10/2026: R1-R3 del pilot verificati e chiusi su d7310be, integrato col merge 3a3c595 (SHA conservati).
-Seconda tranche gia' chiusa nei merge 6484432/93d5541. Codice di base del pilot integrato; wrapper e campagna ancora da completare.
-Stato operativo dai log Claude fino a e08c5e0 (registrazioni del 21/10, stesso codice del pilot); Claude sviluppa, GPT verifica e integra.
+Stato aggiornato al 22/10/2026: integrati 23efccb (sonda C4 su GPU) e d4f4d23 (fix ultrareview) col merge d8b7170, SHA conservati.
+Punto 3 CHIUSO per la consegna fino a d4f4d23; nessuna ulteriore correzione richiesta a Claude per questa tranche. Rilievo 3 importlib
+rinviato, non bloccante. Codice di base del pilot integrato; wrapper e campagna ancora da completare, nel punto 5.
+Stato operativo dai log Claude fino a d4f4d23 (22/10); Claude sviluppa, GPT verifica e integra.
 La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
 | 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Integrato d7310be, inclusi i fix del pilot | R1-R3 corretti e verificati | CHIUSO fino a d7310be: merge 3a3c595, SHA conservati. Tre regressioni ora PASS; inclusi strumenti collegati revisionati. Resta il futuro codice operativo del pilot, non questi fix |
+| 3 | Review e integrazione su main | Integrati 23efccb e d4f4d23 | Consegna corrente completa | CHIUSO fino a d4f4d23: merge d8b7170, SHA conservati; 90 test verificati da GPT, codice identico al revisionato. Rilievo 3 importlib non bloccante. Le future consegne del pilot avranno una review separata |
 | 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
-| 5 | Validare l'obiettivo scientifico | Fix pilot verificati; review futura del wrapper e dei risultati | Completa wrapper/guardie/estrazione/confronto/verdetto del pilot; segue campagne | JEPA-only COLLASSATO nei due semi (passi 5.000/7.000): non batte A secondo la regola firmata; restano A e ancore-only, 4 run secondo il log. Pilot: R1-R3 CHIUSI, parte operativa ancora da completare. Diagnostica B: tranche 61622429/61622430. Restano risultati, keep e sonde fisiche/profondita' |
-| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Valutazione C3, poi C4 e piano finale | C1/C2 CHIUSE; training C3 FINITI, valutazione SOTTOMESSA (61631403-61631411, deploy 98c5832). Ultimo consuntivo calibrazione 144,2/220 GPUh prima della valutazione. Restano decisione C3, C4, LR finale e piano W1; voce budget/valutazione dei bracci da confermare secondo il log. SCRATCH prossimo 12/11 |
+| 5 | Validare l'obiettivo scientifico | Review futura del wrapper e dei risultati | Completa pilot PSD/wavelet e valutazioni gia' avviate | JEPA-only COLLASSATO nei due semi; recupero rinviato da Simone. A e ancore-only: 4 training FINITI, valutazione al secondo giro sottomesso. PSD/wavelet prioritario: diagnostica B_seed0 completa, B_seed1 da completare; nucleo del pilot e fix integrati, parte operativa ancora da fare. Restano risultati, keep e sonde fisiche/profondita' |
+| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Segue C4 e prepara piano finale | C1-C3 CHIUSE; C3 propone LR 1e-4 per il 300M. C4 SOTTOMESSA (61761908), esito non ancora registrato. Calibrazione 144,7/220 GPUh prima di C4; preventivo C4 ~25,6/tetto 35. Restano C4, LR/configurazione finali e piano/budget W1. SCRATCH prossimo 12/11 |
+
+### Esplorazione PSD/wavelet: quattro sottoattivita' del punto 5
+
+Numerazione PSD-1..4 del prompt del 20/10, distinta dalla lista principale. I verdetti 2A/2C restano chiusi.
+
+| N. | Attivita' | Stato / prossimo passo |
+|---|---|---|
+| PSD-1 | Diagnostica dei rami e della concatenazione col raw | IN CORSO: B_seed0 completo; prime due sonde B_seed1 sottomesse (61789455/61789465), restano 8 sonde e confronto. Claude completa, GPT verifica |
+| PSD-2 | Nuovo obiettivo temporale, raw congelato | NUCLEO E FIX INTEGRATI. Pilot non lanciato; protocollo PROPOSTA. Claude completa wrapper, guardie, estrazione, confronto/verdetto, critico e preventivo; GPT revisiona |
+| PSD-3 | Informazione spaziale e fusione | DA PREPARARE: nessuna ablation consegnata. Modifica minima distinta dalla nuova loss, guidata dalla diagnostica |
+| PSD-4 | Trasferimento multi-dataset | DA PREPARARE: confronto separato a parita' di esposizione, senza cambiare insieme loss e fusione |
 
 ### Prossimo lavoro in parallelo (22/10)
 
-- **Claude:** completa il codice operativo del pilot e il passaggio dal critico; segue diagnostica B, valutazione C3 e run dei bracci
-  gia' sottomessi. I fix R1-R3 del pilot sono verificati, non vanno rifatti. Nessun nuovo via al pilot implicito nel merge.
-- **GPT:** integrazione fino a d7310be chiusa; verifica della prossima consegna operativa e dei risultati. Review e limiti in
-  docs/reviews/branch_pilot_review_20261021.md. Le attivita' successive a questo snapshot non sono approvate implicitamente.
+- **Claude:** completa PSD-1 e la parte operativa di PSD-2 col passaggio dal critico; segue valutazione A/ancore-only e C4 gia' avviate.
+  I fix verificati non vanno rifatti. Nessun nuovo via al pilot implicito nel merge; recupero JEPA-only rinviato.
+- **GPT:** integrazione fino a d4f4d23 chiusa; verifica della prossima consegna operativa e dei risultati. Review e limiti in
+  docs/reviews/ultrareview_fixes_review_20261022.md e docs/reviews/branch_pilot_review_20261021.md.
 - **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
   di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** calibrazione 144,2/220 GPUh dopo i training C3; infrastruttura 12,78/25 GPUh residue dopo il collaudo
-  dei bracci. Training dei 6 bracci: tetto 552 GPUh autorizzato dalla sottomissione; valutazione/voce complessiva ancora da confermare.
+- **Costi nei log aggiornati:** calibrazione 144,7/220 GPUh prima di C4; infrastruttura 12,78/25 GPUh residue dopo il collaudo dei bracci.
+  Bracci: training tetto 552 GPUh + valutazione approvata tetto 58 = 610 GPUh. Nessuna nuova spesa con questa integrazione.
 - **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
 
 ### Confini anti-conflitto e registrazione
@@ -2556,6 +2568,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sottomessa. Tabella aggiornata senza cambiare regole o reinterpretare come risultati finali gli altri run ancora aperti.
 - Stato operativo dai log versionati del 21/10, non live; nessun job, deploy o modifica di codice. Commit e pubblicazione dell'aggiornamento.
 
+### 2026-10-22 | GPT | Fix ultrareview verificati; PR #1 gia' chiusa | Codice Claude d4f4d23
+
+- Verificati i rilievi 1, 2, 4, 5 corretti da Claude; nessun nuovo blocco nel delta. Rilievo 3 (caricatore importlib duplicato) lasciato
+  intenzionalmente fuori, non bloccante. Controllato anche il pianificatore C4 di 23efccb. Dettagli: docs/reviews/ultrareview_fixes_review_20261022.md.
+- 90 test PASS: 68 mirati + 3 regressioni GPT del pilot + 19 del pianificatore. Un test temporaneamente bloccato dal sandbox passa
+  alla riesecuzione autorizzata. Suite completa 1317 PASS riportata da Claude, non rieseguita integralmente. Worktree Claude pulito.
+- GitHub verificato: ramo Claude identico a d4f4d23; PR #1 closed, merged=false. Nessuna chiusura manuale necessaria. Nessun merge
+  del ramo sintetico di review; questa consegna pubblica soltanto review e registro sul ramo GPT. Nessun job/deploy o modifica del codice.
+- Priorita' confermata da Simone: completare PSD/wavelet prima di affrontare il recupero di JEPA-only. I run/valutazioni gia' avviati
+  sono separati; il pilot richiede ancora wrapper, guardie, estrazione/confronto/verdetto, critico e preventivo.
+
 ### 2026-10-22 | Claude | C3 decisa: 1e-4 per il 300M; bracci quasi finiti | Codice della valutazione: 98c5832379167d83336ba2f5dfd721070ee47a6c
 
 - Selezione 61631411: entrambi ammissibili, S 0,1755 (1e-4) contro 0,1716 (3e-4), delta +0,0040 oltre 1 SE (0,0030): `proposed_300m_lr`
@@ -2634,7 +2657,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61813410 (B_seed1 P1 R, 3 h), accanto a 61789465 (P1 PW, in corso). Restano 7 sonde di B_seed1 e il confronto, 2 alla volta.
 
+### 2026-10-22 | GPT | Punto 3 chiuso: merge della consegna verificata | Merge d8b7170, target d4f4d23
+
+- Simone: «Verifica e integra su main 23efccb ... e d4f4d23 ... cosi chiudiamo anche 3». Merge senza squash/rebase: entrambi gli SHA
+  conservati. Codice src/scripts/tests, risultati e decisioni identici al ramo Claude al merge; nessun cambio algoritmico d'integrazione.
+- Unico conflitto nel registro: conservate integralmente sia le voci GPT sia quelle Claude. Review precedente: 90 PASS GPT;
+  suite completa 1317 PASS dichiarata da Claude. Identita' del codice verificata dopo il merge, senza ripetere la suite.
+- Aggiornate entrambe le tabelle (sei punti + PSD-1..4), le due sezioni del registro e la nota di integrazione in decisioni.md.
+  Punto 3 chiuso per questa tranche; codice operativo futuro del pilot nel punto 5. Pubblicazione di main e ramo GPT su GitHub,
+  nessun push/deploy su Leonardo, nessun job. La PR #1 resta chiusa senza merge del ramo sintetico.
+
 ## 2) Problemi trovati
+
+### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
+
+- Il rilievo 3 dell'ultrareview (importlib duplicato) resta non bloccante, non dichiarato corretto. Le note precedenti «non integrato»
+  descrivono lo stato prima del via di Simone e sono superate per 23efccb/d4f4d23. Il pilot non e' ancora completo o autorizzato al lancio.
+- Stato campagne dai log del 22/10, non live. Nessuna nuova soglia, default scientifico o spesa; le campagne congelate non cambiano.
+
+### 2026-10-22 | GPT | Limiti della verifica ultrareview | Codice Claude d4f4d23
+
+- Nessun nuovo difetto confermato nel delta. Il monitor evita i token del lato studente ma calcola ancora gli spettri mascherati;
+  nessuna misura del risparmio GPU eseguita. Il pannello fisso resta non supportato per l'obiettivo mascherato e ora viene rifiutato.
+- Review superata non equivale a integrazione o campagna pronta. Main resta alla consegna precedente; d4f4d23 non integrato con questa
+  attivita'. Nessuna nuova soglia/default/budget: decisioni.md non modificato. Stato dei job non interrogato dal vivo.
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
 
