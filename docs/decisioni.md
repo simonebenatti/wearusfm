@@ -3900,4 +3900,6 @@ risottomessa con `--dopo-rifiuto` (61769168); catena: guardie 61769194 / 6176920
 in attesa del limite di 8 job della coda GPU nella catena, che conta anche C4: giri successivi a richiesta. Nessun rifiuto.
 **Valutazione dei bracci, secondo giro (Simone, 22/10/2026 ~14:20):** 61789204 (sonda di S della P2 di A s0: A s0 completo) e A s1
 61789208-61789264 (estrazioni e sonde di P1, P2, S della P1). In attesa: S della P2 di A s1, ancore-only s0 e s1, confronto (17 nodi).
+**Diagnostica dei rami, tranche di Simone (22/10/2026 ~14:25):** seme 0 completo (61754844 P2 RPW0 + ridondanza 54 min, 61754849 P2 RPW
+40 min); sottomessi 61789455 (B_seed1 P1 PW0, 4 h) e 61789465 (B_seed1 P1 PW, 4 h). Restano 8 sonde di B_seed1 e il confronto.
 
