@@ -2574,6 +2574,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - C4: sonda del 300M su un nodo GPU (regola: attesa oltre le 4 h della seriale), piani di C1-C3 identici; preventivo ~25,6 / 35 GPU-ora,
   da autorizzare.
 
+### 2026-10-22 | Claude | Bracci: training finiti, deploy della valutazione | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- A s0 COMPLETED (11:21): i 4 run sani sono completi. Suite 1316 PASS su 23efccb; `deploy/w1arm-eval-20261022` = 23efccb, checkout 61761132.
+- Catena della valutazione a 4 giri da 8 job GPU (limite della coda nella catena); i giri dopo il primo a richiesta.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0

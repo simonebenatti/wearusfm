@@ -3881,4 +3881,10 @@ identiche a quelle usate (test). C4: 300M al LR 1e-4 (C3), 0,25 epoche (6.130 pa
 6 h 30 dal checkout di C1-C3 (`w1cal-20261016`, 72cf24a); piani di C1-C3 rigenerati identici. **Preventivo: training 19,9 / 26,0 GPU-ora,
 valutazione 5,7 / 9,0 (estrazione 1,5 / 3,0 e sonda su GPU 4,2 / 6,0): ~25,6 / 35,0 GPU-ora (280 ore locali)** sul budget della
 calibrazione (144,7 usate su 220): dopo il tetto restano almeno 40,3. Piano e comandi in `results/infra/w1cal_c4_20261022/`.
+**Bracci, training finiti (22/10/2026):** A s0 COMPLETED alle 11:21 (98.094 passi, `max_steps`, 20.55 h di training);
+con A s1 e ancore-only s0 / s1 i 4 run sani sono completi; summary e config in `results/infra/w1arm_20261021/runs/`. Consuntivo dei tre
+run con sacct: 244.2 GPU-ora (4 GPU x 20 h 17-20 h 26); A s0 da sacct alla prossima lettura. Suite 1316 PASS su 23efccb.
+**Deploy della valutazione dei bracci:** `deploy/w1arm-eval-20261022` = 23efccb (contiene spec e piano congelato; SHA remoto verificato),
+checkout job 61761132; piano rigenerato con quello SHA (spec identica) e dry-run: 4 giri da 8 job GPU (estrazioni e sonde di un run per
+giro), il primo con le 4 guardie.
 
