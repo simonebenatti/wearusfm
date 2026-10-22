@@ -1,0 +1,110 @@
+{
+ "run": "W1ARM-JEPA-only-30M-s1",
+ "job": "61622391",
+ "elapsed": "01:03:17",
+ "gpu_hours": 4.22,
+ "stopped": "rango effettivo sotto 10% della dimensione per 3 valutazioni",
+ "alarm_rule": "rango effettivo dello studente < 0,10 x dim (38,4) per 3 valutazioni (decisione 16)",
+ "diagnostics": [
+  {
+   "step": 500,
+   "student_collapse_ratio": 0.13377144535323968,
+   "teacher_collapse_ratio": 0.14562645124171383,
+   "student_erank": 70.14993865562812,
+   "teacher_erank": 74.84547178525541,
+   "student_var_samples": 0.013466581266096228,
+   "student_var_queries": 0.1006685786382594,
+   "teacher_var_samples": 0.014557703485291708
+  },
+  {
+   "step": 1000,
+   "student_collapse_ratio": 0.09520555174836365,
+   "teacher_collapse_ratio": 0.10707219221972573,
+   "student_erank": 62.08821617215008,
+   "teacher_erank": 65.91899120383876,
+   "student_var_samples": 0.00946248158505472,
+   "student_var_queries": 0.09939001887268992,
+   "teacher_var_samples": 0.010630635367649523
+  },
+  {
+   "step": 1500,
+   "student_collapse_ratio": 0.0888980341652768,
+   "teacher_collapse_ratio": 0.08755378141776658,
+   "student_erank": 56.897316400652045,
+   "teacher_erank": 59.960609596909,
+   "student_var_samples": 0.008859814094116191,
+   "student_var_queries": 0.0996626548304124,
+   "teacher_var_samples": 0.008676786746681294
+  },
+  {
+   "step": 2000,
+   "student_collapse_ratio": 0.08645296535617046,
+   "teacher_collapse_ratio": 0.08316135235743974,
+   "student_erank": 49.741209905008375,
+   "teacher_erank": 52.62497297124211,
+   "student_var_samples": 0.008530553183088478,
+   "student_var_queries": 0.09867276556615674,
+   "teacher_var_samples": 0.008165490672496209
+  },
+  {
+   "step": 2500,
+   "student_collapse_ratio": 0.0834231258066696,
+   "teacher_collapse_ratio": 0.08407432507859863,
+   "student_erank": 46.07842087140075,
+   "teacher_erank": 47.93389845287831,
+   "student_var_samples": 0.008107549025991048,
+   "student_var_queries": 0.09718586959663955,
+   "teacher_var_samples": 0.008208093963247622
+  },
+  {
+   "step": 3000,
+   "student_collapse_ratio": 0.09128610192262841,
+   "teacher_collapse_ratio": 0.0868954830285417,
+   "student_erank": 40.91345983313317,
+   "teacher_erank": 43.45697655271591,
+   "student_var_samples": 0.008848549152764732,
+   "student_var_queries": 0.09693205171872185,
+   "teacher_var_samples": 0.008454982266009409
+  },
+  {
+   "step": 3500,
+   "student_collapse_ratio": 0.0840706452087629,
+   "teacher_collapse_ratio": 0.08773527316120078,
+   "student_erank": 38.51699150168319,
+   "teacher_erank": 39.749929521213055,
+   "student_var_samples": 0.008196000748868205,
+   "student_var_queries": 0.09748944745833729,
+   "teacher_var_samples": 0.008518899851710282
+  },
+  {
+   "step": 4000,
+   "student_collapse_ratio": 0.08462259615204297,
+   "teacher_collapse_ratio": 0.08603278421903553,
+   "student_erank": 35.85137496178011,
+   "teacher_erank": 37.16336483674756,
+   "student_var_samples": 0.008176982471786203,
+   "student_var_queries": 0.09662883016605245,
+   "teacher_var_samples": 0.008346527152089197
+  },
+  {
+   "step": 4500,
+   "student_collapse_ratio": 0.08198815036745388,
+   "teacher_collapse_ratio": 0.08370224917199817,
+   "student_erank": 32.84881710808987,
+   "teacher_erank": 34.320358761456944,
+   "student_var_samples": 0.00797844463914426,
+   "student_var_queries": 0.09731216771431635,
+   "teacher_var_samples": 0.008097010615307742
+  },
+  {
+   "step": 5000,
+   "student_collapse_ratio": 0.07865513701815949,
+   "teacher_collapse_ratio": 0.07912163904447918,
+   "student_erank": 31.37699653894023,
+   "teacher_erank": 32.066583893705875,
+   "student_var_samples": 0.007578956221158338,
+   "student_var_queries": 0.09635678619959111,
+   "teacher_var_samples": 0.007643353069389534
+  }
+ ]
+}

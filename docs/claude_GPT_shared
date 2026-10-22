@@ -15,9 +15,9 @@ Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiv
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 21/10/2026: R1-R3 del pilot verificati e chiusi su d7310be, integrato col merge 3a3c595 (SHA conservati).
+Stato aggiornato al 22/10/2026: R1-R3 del pilot verificati e chiusi su d7310be, integrato col merge 3a3c595 (SHA conservati).
 Seconda tranche gia' chiusa nei merge 6484432/93d5541. Codice di base del pilot integrato; wrapper e campagna ancora da completare.
-Stato operativo dai log Claude fino a eb14798 (stesso codice del pilot); Claude sviluppa, GPT verifica e integra.
+Stato operativo dai log Claude fino a e08c5e0 (registrazioni del 21/10, stesso codice del pilot); Claude sviluppa, GPT verifica e integra.
 La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
@@ -26,10 +26,10 @@ La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato clust
 | 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
 | 3 | Review e integrazione su main | Integrato d7310be, inclusi i fix del pilot | R1-R3 corretti e verificati | CHIUSO fino a d7310be: merge 3a3c595, SHA conservati. Tre regressioni ora PASS; inclusi strumenti collegati revisionati. Resta il futuro codice operativo del pilot, non questi fix |
 | 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
-| 5 | Validare l'obiettivo scientifico | Fix pilot verificati; review futura del wrapper e dei risultati | Completa wrapper/guardie/estrazione/confronto/verdetto del pilot; segue campagne | R1-R3 CHIUSI; protocollo pilot ancora PROPOSTA. Collaudi JEPA-only/ancore-only superati, 6 run A/JEPA-only/ancore-only sottomessi e in corso secondo Claude. Diagnostica B: nuova tranche 61622429/61622430. Restano risultati, keep sul corpus e sonde fisiche/profondita' |
-| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Valutazione C3, poi C4 e piano finale | C1/C2 CHIUSE; training C3 FINITI (39,63 GPUh), valutazione autorizzata, deploy 98c5832 e dry-run a 7 job pronti. Calibrazione 144,2/220 GPUh. Restano decisione C3, C4, LR finale e piano W1; voce budget/valutazione dei bracci da confermare secondo il log. SCRATCH prossimo 12/11 |
+| 5 | Validare l'obiettivo scientifico | Fix pilot verificati; review futura del wrapper e dei risultati | Completa wrapper/guardie/estrazione/confronto/verdetto del pilot; segue campagne | JEPA-only COLLASSATO nei due semi (passi 5.000/7.000): non batte A secondo la regola firmata; restano A e ancore-only, 4 run secondo il log. Pilot: R1-R3 CHIUSI, parte operativa ancora da completare. Diagnostica B: tranche 61622429/61622430. Restano risultati, keep e sonde fisiche/profondita' |
+| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Valutazione C3, poi C4 e piano finale | C1/C2 CHIUSE; training C3 FINITI, valutazione SOTTOMESSA (61631403-61631411, deploy 98c5832). Ultimo consuntivo calibrazione 144,2/220 GPUh prima della valutazione. Restano decisione C3, C4, LR finale e piano W1; voce budget/valutazione dei bracci da confermare secondo il log. SCRATCH prossimo 12/11 |
 
-### Prossimo lavoro in parallelo (21/10)
+### Prossimo lavoro in parallelo (22/10)
 
 - **Claude:** completa il codice operativo del pilot e il passaggio dal critico; segue diagnostica B, valutazione C3 e run dei bracci
   gia' sottomessi. I fix R1-R3 del pilot sono verificati, non vanno rifatti. Nessun nuovo via al pilot implicito nel merge.
@@ -2538,7 +2538,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Restano a Claude wrapper/guardie/estrazione/confronto/verdetto e critico/preventivo del pilot. Integrazione del codice non equivale
   a campagna lanciabile o autorizzata. Nessun job/deploy da GPT. Commit e pubblicazione di main e ramo GPT su GitHub.
 
+### 2026-10-21 | Claude | Bracci: JEPA-only seme 1 collassato; valutazione di C3 sottomessa | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61622391 (JEPA-only s1) fermato dall'allarme firmato al passo 5.000 (rango effettivo < 38,4 per 3 valutazioni): «collassato», non batte
+  A (firma dei bracci, punti 6-7). 4,22 GPU-ora. Gli altri 5 run continuano.
+- Valutazione di C3: 61631403-61631411 (guardie, estrazioni, sonde, selezione) dal deploy 98c5832.
+
+### 2026-10-21 | Claude | Bracci: JEPA-only seme 0 collassato, braccio chiuso | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61622389 fermato dall'allarme al passo 7.000 (collasso da query, rapporto < 0,05 per 3 valutazioni); 5,79 GPU-ora. JEPA-only collassato
+  in entrambi i semi: non batte A. Continuano A e ancore-only (semi 0 e 1). Alla valutazione: `--failed-runs` per i due JEPA-only.
+
+### 2026-10-22 | GPT | Pubblicazione verificata e stato dei sei punti aggiornato | Main eedbd2e, fonti Claude 0584e2d/e08c5e0
+
+- Verificato direttamente su GitHub main = eedbd2e (merge pilot 3a3c595 e registro), identico al locale e al ramo GPT; checkout puliti.
+- Importate testualmente le nuove voci Claude e i tre file di evidenza: JEPA-only collassato in entrambi i semi, valutazione C3
+  sottomessa. Tabella aggiornata senza cambiare regole o reinterpretare come risultati finali gli altri run ancora aperti.
+- Stato operativo dai log versionati del 21/10, non live; nessun job, deploy o modifica di codice. Commit e pubblicazione dell'aggiornamento.
+
 ## 2) Problemi trovati
+
+### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
+
+- Il collasso JEPA-only e' l'esito sperimentale previsto dalla regola firmata, non una regressione del nuovo pilot (campagna distinta).
+  Non modifica retroattivamente soglie o risultati 2A/2C. Nessun esito finale C3 o confronto A/ancore-only ancora in queste fonti.
+
+
+### 2026-10-21 | Claude | Bracci: collasso del JEPA puro, lettura
+
+- Il collaudo (seme 0, 1.300 passi) mostrava il rapporto di collasso in discesa; nel run lungo il seme 1 collassa per rango (70 -> 31 in
+  5.000 passi), non per rapporto. E' l'esito previsto dalla firma come possibile («il candidato piu' probabile al collasso»), non un difetto
+  dell'infrastruttura: nessuna regola cambia. Il seme 0 continua; se tenerlo fino in fondo e' una scelta di costo, non di regola.
 
 ### 2026-10-21 | GPT | Pilot: chiusura R1-R3 e limiti di consegna | Fix d7310be
 
