@@ -2619,6 +2619,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   col pilot mascherato, `--done` nel piano v1); suite 1317 PASS (1316 + 1). Nessun effetto sui job in corso: i checkout di campagna hanno il
   loro SHA. Rami `review/base-20261020` e `review/codice-20261022` cancellati su origin (ls-remote vuoto): la PR #1 si chiude da sola.
 
+### 2026-10-22 | Claude | Stato dal vivo alle 17:00 (squeue e sacct) | Nessun codice
+
+- Valutazione dei bracci: A s0 completo (8/8), A s1 6/8; restano 19 nodi (S della P2 di A s1, ancore-only s0 e s1, confronto). Ferma
+  dalle 15:17 perche' il giro delle 15 non l'ho dato io. Diagnostica B_seed1: 61789455 (P1 PW0) COMPLETED 2 h 05, 61789465 (P1 PW) RUNNING
+  dalle 16:24; restano 8 sonde e il confronto. C4 (61761908) PENDING per priorita'.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
@@ -3974,3 +3980,8 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 ### 2026-10-22 | Claude | Ultrareview (PR #1): stato dei rilievi
 
 - 1, 2, 4, 5 corretti sul ramo di Claude con test (voce in «Cosa ho fatto»); 3 lasciato com'e' (pulizia senza effetto sui risultati).
+
+### 2026-10-22 | Claude | Giro della valutazione dei bracci non dato alle 15
+
+- Avevo detto a Simone che alle 15 gli avrei dato il comando del giro successivo, e non l'ho fatto (lavoro sull'ultrareview): la catena e'
+  rimasta ferma dalle 15:17 alle 17. Nessun danno ai risultati, solo tempo perso; comando dato alle 17.

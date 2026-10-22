@@ -3909,3 +3909,5 @@ rami che calcola token inutili. Nessuno tocca run fatti o in corso; correzioni p
 **Ultrareview, correzioni (Simone, 22/10/2026: «si, procedi»).** Rilievi 1, 2, 4, 5 corretti sul ramo di Claude: pannello fisso rifiutato
 con l'obiettivo mascherato del pilot, `--done` rifiutato senza `--per-set`, `run_ids` in `arms_compare`, monitor dei rami senza i token del
 lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `review/` cancellati su GitHub (PR #1 chiusa con essi).
+**Stato alle 17:00 (22/10/2026, squeue e sacct dal vivo).** Bracci: A s0 8/8, A s1 6/8, restano 19 nodi (catena ferma dalle 15:17: il
+giro delle 15 non l'ho dato). Diagnostica B_seed1: P1 PW0 finita (2 h 05), P1 PW in corso; restano 8 sonde e il confronto. C4 in coda.
