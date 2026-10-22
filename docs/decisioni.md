@@ -3898,4 +3898,6 @@ sonda su GPU), dal checkout `w1cal-20261016` (72cf24a):** 61761908 = `W1CAL-C4-3
 risottomessa con `--dopo-rifiuto` (61769168); catena: guardie 61769194 / 61769201 / 61769207 (senza afterok, training finiti bene), A s0
 61769211-61769260 (estrazioni e sonde su GPU di P1, P2, S della P1 e l'estrazione di S della P2). Il resto (28 nodi, compreso il confronto)
 in attesa del limite di 8 job della coda GPU nella catena, che conta anche C4: giri successivi a richiesta. Nessun rifiuto.
+**Valutazione dei bracci, secondo giro (Simone, 22/10/2026 ~14:20):** 61789204 (sonda di S della P2 di A s0: A s0 completo) e A s1
+61789208-61789264 (estrazioni e sonde di P1, P2, S della P1). In attesa: S della P2 di A s1, ancore-only s0 e s1, confronto (17 nodi).
 
