@@ -3913,3 +3913,4 @@ lato studente (valori identici). Il 3 resta com'e'. Suite 1317 PASS. Rami `revie
 giro delle 15 non l'ho dato). Diagnostica B_seed1: P1 PW0 finita (2 h 05), P1 PW in corso; restano 8 sonde e il confronto. C4 in coda.
 **Valutazione dei bracci, terzo giro (Simone, 22/10/2026 ~17:05):** 61813378, 61813380 (S della P2 di A s1: A completo nei due semi) e
 ancore-only s0 61813385-61813407 (P1, P2, estrazione di S della P1). Restano 12 nodi, compreso il confronto.
+**Diagnostica dei rami (Simone, 22/10/2026 ~17:10):** 61813410 (B_seed1 P1 R). Restano 7 sonde di B_seed1 e il confronto.
