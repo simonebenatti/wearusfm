@@ -3850,3 +3850,16 @@ sotto 0.05 per 3 valutazioni» (min fra studente e teacher 0,0485 / 0,0339 / 0,0
 Simone (21/10): «se collassa inutile sprecare ore gpu»: nessuno scancel necessario, l'allarme li ha fermati. Alla valutazione i due run
 entrano come `--failed-runs` (niente nodi di valutazione; nel confronto contano collassati dallo STOP). Restano 4 run (A e ancore-only).
 
+**C3 decisa con le regole firmate (selezione 61631411, 21/10/2026 20:23): LR proposto per il 300M = 1e-4.** Entrambi ammissibili (A1-A4):
+S 0,1755 (SE 0,0079) per 1e-4 e 0,1716 (SE 0,0068) per 3e-4; differenza accoppiata +0,0040 con SE 0,0030, oltre 1 SE: vince 1e-4 (non
+parita'). Per dataset: db2 0,188 / 0,185, db3 0,030 / 0,025, db6 0,344 / 0,339. Pannello A4: massimo 1,101 e 1,103 volte il minimo, una
+sola valutazione oltre 1,10 (servono 3 consecutive): ammissibili ma vicini alla soglia. Collasso: rapporto finale 2,78 / 3,42, rango 129 /
+92. `results/infra/w1cal_decisioni.json` = C1 finalisti + C2 confermati + C3 `proposed_300m_lr` 1e-4 (merge di `calibration_select.py`);
+rapporti e registro in `results/infra/w1cal_c3_20261021/valutazione/`. Guardie 34-35 s, estrazioni 15:53 / 15:52, sonde 1 h 47 / 2 h 02
+(in fila), selezione 2 min. **Consuntivo della valutazione: 0,53 GPU-ora** (tetto 3,0) e 30,5 core-ora; **calibrazione 144,7 usate su
+220, residuo 75,3**. Prossimo: C4 (300M al LR 1e-4, 0,25 epoche, seme 0): la sonda del 300M (attese 4,2 h) supera le 4 h della seriale,
+da spostare su GPU o dividere prima del piano. Descrittivo, nessuna decisione: la S del 100M a 0,5 epoche (17,55) e' sotto quella del 30M a
+1 epoca (C1 seme 0: 18,21); esposizioni diverse, la calibrazione sceglie il LR, non la taglia.
+**Bracci, 22/10 10:50 (controllo dal vivo):** i 4 run sani (A e ancore-only, semi 0 e 1) ai passi 95.400-96.900 su 98.094 dopo 20 h, rango
+144-146 (A) e 139-143 (ancore-only), rapporto 1,8-2,0 (A, in lenta discesa da 2,8) e 1,26 (ancore-only, stabile); fine attesa entro le 11:30.
+

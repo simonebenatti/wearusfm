@@ -2556,6 +2556,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sottomessa. Tabella aggiornata senza cambiare regole o reinterpretare come risultati finali gli altri run ancora aperti.
 - Stato operativo dai log versionati del 21/10, non live; nessun job, deploy o modifica di codice. Commit e pubblicazione dell'aggiornamento.
 
+### 2026-10-22 | Claude | C3 decisa: 1e-4 per il 300M; bracci quasi finiti | Codice della valutazione: 98c5832379167d83336ba2f5dfd721070ee47a6c
+
+- Selezione 61631411: entrambi ammissibili, S 0,1755 (1e-4) contro 0,1716 (3e-4), delta +0,0040 oltre 1 SE (0,0030): `proposed_300m_lr`
+  1e-4, unito in `w1cal_decisioni.json`. Valutazione 0,53 GPU-ora; calibrazione 144,7 / 220.
+- Bracci dal vivo alle 10:50: A e ancore-only (semi 0 e 1) a 95.400-96.900 passi, nessun segno di collasso; fine attesa entro le 11:30.
+- Merge di main 9772b4c (verifica GPT del pilot) nel ramo: solo registri e review; `summary.json` di JEPA-only s1 uguale (a capo finale).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dello stato aggiornato | Fonti 0584e2d/e08c5e0
@@ -3880,3 +3887,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Il collaudo (seme 0, 1.300 passi) mostrava il rapporto di collasso in discesa; nel run lungo il seme 1 collassa per rango (70 -> 31 in
   5.000 passi), non per rapporto. E' l'esito previsto dalla firma come possibile («il candidato piu' probabile al collasso»), non un difetto
   dell'infrastruttura: nessuna regola cambia. Il seme 0 continua; se tenerlo fino in fondo e' una scelta di costo, non di regola.
+
+### 2026-10-22 | Claude | C3: due note di lettura
+
+- Il pannello A4 di C3 arriva a 1,10 volte il minimo (una valutazione, ne servono 3): ammissibili, ma il margine e' piccolo; per C4 a 300M
+  la stessa regola vale invariata.
+- La S del 100M a 0,5 epoche e' sotto quella del 30M a 1 epoca: esposizioni diverse, non e' un confronto di taglie. Da non leggere come
+  «il 100M non serve»: la calibrazione sceglie il LR.
