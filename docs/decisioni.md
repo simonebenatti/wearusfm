@@ -4127,6 +4127,13 @@ descrittivo). Questi emendamenti sono scritti dopo l'apertura dei rapporti della
 **Opzione proposta (ablation):** ancore-only s0/s1 nella stessa campagna (+4 estrazioni, P1 e P2 per seme, tetto 5,0 GPU-ora, attese ~2,3; +8
 sonde, tetto 256 core-ore): se col readout per canale A supera ancore-only, il JEPA aggiunge informazione che la media non mostra. Suite
 completa su 63ac0dd: 1369 PASS (21 min 50).
+**Readout per canale: AUTORIZZATO (Simone, 23/10/2026: «Via al deploy deploy/readout-canale-20261023, al checkout e alle estrazioni, compresa
+l'opzione ancore-only s0/s1 (tetto totale 10 GPU-ora dalla voce della valutazione dei bracci); poi le sonde CPU.»).** Codice deployato
+6242bc3 (comandi in `results/infra/readout_canale_20261023/comandi.txt`, sezione «OPZIONE APPROVATA» per ancore-only). Budget: 8 estrazioni
+GPU (A s0/s1 e ancore-only s0/s1, P1 e P2), tetto **10,0 GPU-ora** (attese ~4,6) dalla voce della valutazione dei bracci (tetto 58, stima
+~12 usate prima di oggi); 21 sonde CPU seriali, tetto 672 core-ore (attese ~110), ore CPU dell'account. Sequenza: preflight in sola lettura,
+push del riferimento, checkout di campagna, estrazioni, sonde; uguaglianza e confronti sul Mac. Lettura congelata in 63ac0dd ed emendata in
+6242bc3; il confronto A contro ancore-only col readout per canale e' descrittivo (stessa regola dei bracci, riferimento ancore-only).
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le

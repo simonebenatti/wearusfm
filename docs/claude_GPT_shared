@@ -2955,6 +2955,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   «ancore-only = A» col readout per canale. Prossimo: comandi di deploy e lancio con lo SHA di questo commit; via di Simone (voce di budget,
   opzione ancore-only).
 
+### 2026-10-23 | Claude | Readout per canale: via di Simone, deploy e lanci | Codice: 6242bc3 (deploy), comandi in 66d078b/06f96e6 e questo commit
+
+- Simone: «Via al deploy deploy/readout-canale-20261023, al checkout e alle estrazioni, compresa l'opzione ancore-only s0/s1 (tetto totale 10
+  GPU-ora dalla voce della valutazione dei bracci); poi le sonde CPU.» Comandi di ancore-only aggiunti a `comandi.txt` (4 estrazioni, 8
+  sonde): in tutto 1 checkout, 8 estrazioni GPU (tetto 10,0 GPU-ora, attese ~4,6), 21 sonde CPU (tetto 672 core-ore, attese ~110). Voce in
+  decisioni.md. Sequenza: preflight in sola lettura, `git push leonardo 6242bc3:refs/heads/deploy/readout-canale-20261023` con SHA remoto
+  verificato, checkout da CPU, estrazioni, poi le sonde; job e ID nelle voci successive.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
