@@ -4134,6 +4134,9 @@ GPU (A s0/s1 e ancore-only s0/s1, P1 e P2), tetto **10,0 GPU-ora** (attese ~4,6)
 ~12 usate prima di oggi); 21 sonde CPU seriali, tetto 672 core-ore (attese ~110), ore CPU dell'account. Sequenza: preflight in sola lettura,
 push del riferimento, checkout di campagna, estrazioni, sonde; uguaglianza e confronti sul Mac. Lettura congelata in 63ac0dd ed emendata in
 6242bc3; il confronto A contro ancore-only col readout per canale e' descrittivo (stessa regola dei bracci, riferimento ancore-only).
+**Readout per canale: deploy, checkout ed estrazioni sottomessi (23/10/2026).** Preflight pulito; `deploy/readout-canale-20261023` = 6242bc3
+(SHA remoto verificato); checkout 61982223 COMPLETED in 13 s; estrazioni A s0 61982369 / 61982398, A s1 61982414 / 61982432, ancore-only s0
+61982457 / 61982465, s1 61982480 / 61982484 (P1 / P2; tetto 10,0 GPU-ora). Sonde dopo le estrazioni.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le
