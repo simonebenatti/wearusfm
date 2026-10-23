@@ -3931,3 +3931,5 @@ Con le regole firmate C4 non passa (A1, A3) e la calibrazione si ferma senza sos
 resta una decisione di Simone. Valutazione di C4 non preparata (risparmiate le ~5,7 GPU-ora previste). Consuntivo 4,82 GPU-ora:
 calibrazione ~149,5 / 220. Descrittivo per la decisione (`results/infra/w1cal_c4_20261022/diagnostiche_erank_taglie.json`): nei primi 4.000
 passi il rango effettivo e' ~67-87 in tutte e tre le taglie, mentre la soglia cresce con la dimensione (38,4 / 64 / 89,6).
+**Valutazione dei bracci, quarto giro (Simone, 23/10/2026 ~9:30):** 61919606-61919648 (ancore-only s0 completato, ancore-only s1 P1, P2 e
+estrazione di S della P1). Restano 4 nodi, compreso il confronto.
