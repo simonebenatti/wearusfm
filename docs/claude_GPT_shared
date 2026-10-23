@@ -2738,6 +2738,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   all'estrazione del 2C; controllo del teacher d'origine registrato dal trainer e test negativo di `consistent`; soglie dell'allarme e regole
   dei run mancanti congelate in decisioni.md; contatore del trainer dichiarato. Test del pilot 23 PASS.
 
+### 2026-10-23 | Claude | Pilot dei rami: fuga del contenuto nascosto attraverso il filtro del loader (misura preliminare) | Codice: questo commit
+
+- Simone: «va bene» alla misura (punto 3 di GPT). `scripts/branch_mask_leak.py`, esito `results/rami_pilota/fuga_preprocessing_20261023.json`:
+  grezzo sintetico a 2 kHz, filtro del loader (`_filter`, Butterworth 4 + notch, sosfiltfilt) prima della maschera, contenuto nascosto estremo
+  (x10, linee a 50/60 Hz, tono a 25 Hz, rumore indipendente). Le log-potenze di contesto dello studente cambiano di nat interi anche con 500 ms
+  di guardia (max), mentre la guardia lascia pochissimo contesto (scala lenta 2-4%). PRELIMINARE: da leggere con p99 e mediane e casi
+  realistici; ma la guardia non sembra una soluzione. Pilot NON lanciabile cosi'; da decidere: mascherare prima del filtro (lo studente sul
+  grezzo azzerato e poi filtrato) o altra via. Terzo giro del `critico` sul codice ancora in corso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

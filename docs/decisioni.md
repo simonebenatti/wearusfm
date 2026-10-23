@@ -3969,3 +3969,6 @@ comportamento che il codice non ha. Corretti nel commit di questa voce, con le m
 - **Run mancanti o falliti per altro** (compreso un ibrido PWh): nessun esito, stop e proposta. PWl collassato: il confronto completo si lancia
   a mano e salta i descrittivi di PWl.
 - **Misura non definita:** fa fede `learned` (media o componente presente non finita); il contatore del trainer conta solo le medie.
+**Pilot dei rami: fuga attraverso il preprocessing (23/10/2026, misura preliminare).** Il filtro del loader agisce prima della maschera: con
+contenuto nascosto estremo le log-potenze di contesto dello studente cambiano di nat interi anche a 500 ms dal tratto
+(`results/rami_pilota/fuga_preprocessing_20261023.json`). Il pilot non si lancia finche' non si decide come mascherare prima del filtro.
