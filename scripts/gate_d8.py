@@ -50,6 +50,7 @@ def load_windows(root: Path, per_subject: int, seed: int, max_subjects: int | No
 def stage_features(args) -> None:
     import torch
 
+    from wearusfm.model import frontend as FE
     from wearusfm.model.frontend import ContinuousKernelFrontEnd
 
     torch.set_num_threads(args.threads)
@@ -62,7 +63,7 @@ def stage_features(args) -> None:
     errors = {}
     for case, (fc, dec) in G.CASES.items():
         for seed in args.seeds:
-            r = G.features_case(ContinuousKernelFrontEnd(seed=seed), windows, fc, dec)
+            r = G.features_case(ContinuousKernelFrontEnd(seed=seed, **FE.window_kwargs(25.0, args.window_ms)), windows, fc, dec)
             key = f"{case}_seed{seed}"
             np.savez(args.work / f"{key}.npz", x=r["x"], y=r["y"], units=r["units"])
             errors[key] = r["rel_error"]
@@ -100,6 +101,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-subjects", type=int, default=None, help="solo per le prove: NON e' il gate firmato")
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--stage", choices=("all", "features", "probe"), default="all")
+    ap.add_argument("--window-ms", type=float, default=None,
+                    help="finestra del kernel piu' lunga del passo di 25 ms (R5 del pilot degli obiettivi): il gate va riaperto per quel banco; "
+                         "default nessuna, il banco firmato")
     args = ap.parse_args(argv)
     args.work = args.work or args.out.with_suffix("").with_name(args.out.stem + "_features")
     if args.stage == "all":

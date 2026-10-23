@@ -4143,6 +4143,13 @@ e P2 per checkpoint su `$SCRATCH/wearusfm_runs/readout_canale_20261023/features/
 14 dopo le P2); JobID nel registro. **Limite scoperto: la coda seriale ammette 10 job per utente** (`QOSMaxSubmitJobPerUserLimit`) oltre a
 farne girare uno alla volta: 10 sonde in coda, una rifiutata e segnata dal submitter, 11 da sottomettere a tornate man mano che la coda si
 svuota. **Controllo d'uguaglianza (punto 4) superato:** `pool` di A s0 sulla P1 = 0,18337 come lo storico, zero predizioni diverse.
+**Pilot degli obiettivi, braccio R5 «finestra 150 ms a passo 25 ms»: PROPOSTO e codice pronto (Simone, 23/10/2026: «tipo 150ms con overlap di
+125.ms. che ne pensi? va esplorata?»; alla proposta di farne un braccio: «si ottimo!»).** Il kernel del front-end vive su 150 ms centrati sulla
+patch; la griglia dei token (e quindi sequenza, maschere, ancore, RVQ) resta a 25 ms; le basi scalano per conservare il contenuto in frequenza
+fisico; la perdita conta solo i token interamente nascosti (3 patch per lato). Da firmare per questo braccio: `share_short` 0 (le maschere da
+1-2 patch non producono token interi), quote rinormalizzate 0,294 / 0,235 / 0,471: scostamento dichiarato da D10. Prerequisito: gate D8
+riaperto per il banco da 150 ms con le soglie firmate (D8a). Default del codice invariato bit per bit (test). Nessun job. Dettagli in
+`docs/pilot_obiettivi_v1.md`.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le

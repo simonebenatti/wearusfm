@@ -54,6 +54,11 @@ def build_parser() -> argparse.ArgumentParser:
                     help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
     ap.add_argument("--jepa-weight", type=float, default=None,
                     help="peso della perdita JEPA; default 1; 0 = ancore attuali da sole (braccio W1-OBJ)")
+    ap.add_argument("--jepa-target", choices=["a", "b"], default=None,
+                    help="D11: dove si leggono i target del teacher; default quello del preset (b); a = encoder locale (R1 del pilot degli obiettivi)")
+    ap.add_argument("--window-ms", type=float, default=None,
+                    help="finestra del kernel del front-end piu' lunga del passo di 25 ms (R5 del pilot degli obiettivi, p.es. 150): la griglia "
+                         "resta la patch, la perdita conta solo i token interamente nascosti; default nessuna (il banco di sempre)")
     ap.add_argument("--batch-size", type=int, default=None, help="batch GLOBALE in finestre (con --distributed diviso fra i processi)")
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
@@ -126,6 +131,13 @@ def build_config(args, error=None) -> "R.RunConfig":
         if not args.erank_min > 0:
             fail("--erank-min deve essere positivo")
         cfg = replace(cfg, alarm=replace(cfg.alarm, erank_min=float(args.erank_min)))
+    if getattr(args, "jepa_target", None) is not None:
+        cfg = replace(cfg, jepa=replace(cfg.jepa, target=args.jepa_target))
+    if getattr(args, "window_ms", None) is not None:
+        try:
+            cfg = replace(cfg, model=replace(cfg.model, window_ms=float(args.window_ms)))
+        except ValueError as e:
+            fail(f"--window-ms: {e}")
     weights = {k: v for k, v in (("anchor_weight", args.anchor_weight), ("jepa_weight", args.jepa_weight)) if v is not None}
     if weights:
         try:

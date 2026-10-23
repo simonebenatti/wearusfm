@@ -3003,6 +3003,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   36,269 identiche), `channel_readout.py --stage equality` con esito 0. Estrazione e sonda del readout per canale sono quelle dei bracci: le
   letture dei punti 1-3 sono valide. Esito in `~/wearusfm_local/readout_canale_20261023/confronti/uguaglianza_pool_s0_p1.json`.
 
+### 2026-10-23 | Claude | R5 del pilot degli obiettivi: finestra 150 ms a passo 25 ms, codice pronto, nessun lancio | Codice: questo commit
+
+- Simone: «invece di fare finestre da 25ms, possiamo cambiare? magari fare una finestra un po piu lunga con overlap, in modo che lo scorrimento
+  sia 25ms. tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!» alla proposta di farne il braccio R5 del pilot, con
+  codice preparato subito e lancio dopo R2 o insieme.
+- Codice: `ContinuousKernelFrontEnd(window_ms=...)` (il kernel vive sulla finestra centrata sulla patch; la griglia dei token resta il passo),
+  `frontend.window_kwargs` (basi scalate: 156 armoniche, 120 nodi, omega 36 per 150 ms), `FMConfig.window_ms` + `core_radius`,
+  `training.jepa.core_hidden` (JEPA, ancore e RVQ contano solo i token senza patch visibili entro 3 patch per lato; `core_hidden_fraction` nel
+  log), `train_jepa.py --window-ms` e `--jepa-target` (R1), `gate_d8.py --window-ms`. **Default invariato bit per bit** (test `torch.equal` sul
+  front-end a 2000/1000/200 Hz e sul guadagno del tokenizer). Test nuovi (`test_frontend_window.py`, 6): griglia invariata (40 token al secondo),
+  coerenza fra 2 kHz e 1 kHz / 200 Hz sotto il 2% per famiglia col banco da 150 ms, risposta a un impulso 2 patch prima (dentro la finestra
+  lunga, fuori da quella corta), token interi, modello e flag del trainer. Protocollo del pilot aggiornato con R5, lo scostamento da D10
+  (`share_short` 0) e il gate D8 da riaprire prima del run (~20 / 26 GPU-ora per il run).
+
+## 2) Problemi trovati
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

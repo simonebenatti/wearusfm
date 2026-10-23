@@ -92,6 +92,17 @@ def ema_update(teacher: torch.nn.Module, student: torch.nn.Module, momentum: flo
         bt.copy_(bs)
 
 
+def core_hidden(hidden: torch.Tensor, visible: torch.Tensor, radius: int) -> torch.Tensor:
+    """Con una finestra del kernel piu' lunga della patch (`FMConfig.window_ms`, R5), un token nascosto al bordo di una regione contiene campioni
+    visibili: predirlo e' banale. Restano «nascosti per la perdita» solo i token con nessuna patch visibile entro `radius` patch per lato
+    (`FMConfig.core_radius`); le patch oltre il segnale o di padding contano come nascoste (il front-end vi legge zeri). radius 0: invariato."""
+    if radius <= 0:
+        return hidden
+    vis = visible.to(torch.float32)[:, None, :]  # (C_tot, 1, P)
+    near_visible = F.max_pool1d(vis, kernel_size=2 * radius + 1, stride=1, padding=radius)[:, 0, :] > 0
+    return hidden & ~near_visible
+
+
 def hidden_queries(hidden: torch.Tensor, counts: list[int]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Tutti i token nascosti (canale impacchettato, istante), in ordine di canale e quindi raggruppati per campione; offset delle query."""
     ch, t = torch.nonzero(hidden, as_tuple=True)
@@ -279,6 +290,10 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4)."""
     enc = student.encode(inp, visible, generator)
     hidden = ~enc.visible & enc.patch_valid & inp.qc_valid[:, None]
+    radius = student.cfg.core_radius
+    if radius:  # finestra piu' lunga della patch (R5): solo i token interamente nascosti, per JEPA, ancore e RVQ
+        all_hidden = hidden
+        hidden = core_hidden(hidden, enc.visible, radius)
     q_ch, q_t, q_off = hidden_queries(hidden, inp.counts)
     if q_ch.numel() == 0 and terms is None:
         raise ValueError("nessun token nascosto: la maschera non chiede nessuna predizione")
@@ -294,6 +309,8 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
     err_q = (h - tgt).pow(2).mean(dim=-1)
     losses = {"jepa": (masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt))
               if q_ch.numel() else h.sum() * 0.0}
+    if radius:  # per il log: quanti dei token nascosti sono interamente nascosti
+        losses["core_hidden_fraction"] = (hidden.sum().float() / all_hidden.sum().clamp(min=1).float()).detach()
     if terms is not None:
         terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
                                               else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))

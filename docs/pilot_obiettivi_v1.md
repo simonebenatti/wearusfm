@@ -18,6 +18,12 @@ esposizione? Misura: S della validazione interna (P1 e P2) coi readout del proto
 | **R1** target a | `JEPAConfig.target = "a"`: target = uscita per canale dell'encoder locale del teacher, non il decoder a query | esiste nel codice; manca il flag `--jepa-target` in `train_jepa.py` (oggi fisso "b" in `sanity_config`) e il test che "b" resti identico |
 | **R2** target per regione | il target JEPA di ogni regione nascosta (tubo, slab o maschera spaziale) e' la **media del teacher sulla regione**; lo studente predice la media delle sue uscite sulla stessa regione; perdita per regione, media per finestra come oggi; ancore invariate per token | nuovo: `generate_mask` ritorna anche `region` (C, P) (id della maschera estratta), `PretrainBatch.region`, `_jepa_compute(region_target=True)`; test d'uguaglianza bit per bit con `region_target=False`; DDP: numeratori/denominatori per regione nel contratto delle loss |
 
+| **R5** finestra 150 ms, passo 25 ms (Simone, 23/10: «fare una finestra un po piu lunga con overlap, in modo che lo scorrimento sia 25ms. tipo 150ms con overlap di 125ms») | il kernel del front-end vive su 150 ms centrati sulla patch, la griglia dei token resta a 25 ms (sequenza, maschere, ancore e RVQ invariati); basi scalate per lo stesso contenuto in frequenza fisico (156 armoniche, 120 nodi, omega 36); **la perdita conta solo i token interamente nascosti** (nessuna patch visibile entro 3 patch per lato: JEPA, ancore e RVQ); le maschere corte da 1-2 patch non producono token interi, quindi la quota `share_short` (15%) passa a 0 e le altre si rinormalizzano (0,294 / 0,235 / 0,471): **scostamento dichiarato da D10**, da firmare per questo braccio | **fatto il 23/10** (`FMConfig.window_ms`, `frontend.window_kwargs`, `jepa.core_hidden`, `--window-ms`, `gate_d8.py --window-ms`; test: default bit per bit identico, griglia invariata, coerenza fra fs, token interi); manca il **gate D8 riaperto** per il banco da 150 ms (job CPU, `scripts/gate_d8.py --window-ms 150`, stesse soglie firmate: errore relativo <= 5% per famiglia, sonda <= 55%) prima del run |
+
+R5 e R2 provano la stessa ipotesi (un'unita' meno rumorosa, alla scala dell'inviluppo) in due posti diversi: R2 nella loss, a codice quasi nullo e
+col tokenizer di sempre; R5 nel tokenizer, che migliora anche l'ingresso ma cambia identita' al front-end (gate D8, training da zero). Ordine
+proposto: R2 prima o insieme a R5; se R2 non aiuta, R5 difficilmente aiutera'.
+
 Seconda ondata (dopo l'ingest degli angoli, da preventivare a parte): **R3** ancore + testa di posa su emg2pose senza JEPA; **R4** R2 + testa di posa.
 Richiede: rilettura del tar di emg2pose per i `joint_angles` (462 GB, job CPU lungo; oggi l'ingest li salta), `labels.npz` a 20 colonne float
 a 50 Hz, loader con i target per campione e maschera di validita', testa di regressione sulle uscite del decoder (o del backbone) attiva solo
@@ -53,10 +59,11 @@ che si scriva il codice.
 | Voce | Run | GPU-ora attese / tetto |
 |---|---|---|
 | R1, R2 (prima ondata) | 2 | ~40 / 52 |
+| R5 (front-end 1,5x nel costo del front-end, trascurabile sul totale) + gate D8 (CPU) | 1 | ~20 / 26 + ~10 core-ore |
 | Seme 1 del braccio che passa | 0-1 | ~20 / 26 |
-| S P2 di R0 + valutazione dei bracci (estrazioni GPU) | 3 x 2 | ~4 / 8 |
-| Sonde CPU (pool, readout designato; P1 e P2) | ~12 job seriali | 0 GPU-ora, ~60 core-ore |
-| **Prima ondata** | | **~64 / 86 GPU-ora** |
+| S P2 di R0 + valutazione dei bracci (estrazioni GPU) | 4 x 2 | ~5 / 10 |
+| Sonde CPU (pool, readout designato; P1 e P2) | ~16 job seriali | 0 GPU-ora, ~80 core-ore |
+| **Prima ondata con R5** | | **~85 / 114 GPU-ora** |
 
 Voce di budget: famiglia «Ablation a 30M» della finestra 1 (~2.100 GPU-ora stimate in `docs/finestra1_fattibilita.md`), oppure una voce nuova
 decisa da Simone. Calendario: i due run in un'ondata (~5 h su due nodi), valutazione ~1 giorno sulla seriale.

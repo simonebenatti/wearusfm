@@ -45,6 +45,11 @@ class PatchTokenizer(nn.Module):
     def patch_s(self) -> float:
         return self.frontend.patch_s
 
+    @property
+    def window_s(self) -> float:
+        """Supporto del kernel: la patch, oppure la finestra piu' lunga centrata sulla patch (`frontend.window_kwargs`)."""
+        return self.frontend.window_s
+
     def forward(self, signals: list[torch.Tensor], fs: list[float]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         if len(signals) != len(fs) or not signals:
             raise ValueError("serve una fs per campione, e almeno un campione")
@@ -67,6 +72,6 @@ class PatchTokenizer(nn.Module):
     def flops(self, n_channels: int, n_patches: int, fs: float) -> int:
         """Moltiplicazioni-addizioni x 2 per un campione: la somma pesata sul supporto di ogni patch (patch piu' contesto per lato,
         `frontend.context_s`) per ogni kernel, piu' la proiezione. Il calcolo dei kernel sulla griglia (una volta per sfasamento) e' trascurabile."""
-        support = math.ceil(self.frontend.patch_s * fs + 1e-9) + 2 * math.ceil(self.frontend.context_s * fs - 1e-9)
+        support = math.ceil(self.frontend.patch_s * fs + 1e-9) + 2 * math.ceil((self.frontend.context_s + self.frontend.lead_s) * fs - 1e-9)
         d_fe, dim = self.frontend.d_out, self.proj.out_features
         return 2 * n_channels * n_patches * (support * d_fe + d_fe * dim)

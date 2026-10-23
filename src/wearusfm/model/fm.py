@@ -42,6 +42,10 @@ class FMConfig:
     decoder_layers: int
     muscle_dropout: float  # D15, nessun default (piano: proposta 0,4)
     patch_ms: float = 25.0  # D10, proposta
+    # finestra del kernel piu' lunga del passo (R5 del pilot degli obiettivi, Simone 23/10/2026: «150ms con overlap di 125ms»): None = il banco di
+    # sempre; con una finestra la griglia resta `patch_ms`, le basi scalano (`frontend.window_kwargs`) e la perdita JEPA conta solo i token
+    # interamente nascosti (`training.jepa.core_hidden`)
+    window_ms: float | None = None
     n_bands: int = 5
     rvq_codes: int | None = None  # None = senza testa RVQ
     grad_checkpoint: bool = False  # activation checkpointing di encoder locale, backbone e decoder (v10 §5.5)
@@ -78,6 +82,20 @@ class FMConfig:
             raise ValueError("branch_objective / branch_freeze_output senza rami spettrali")
         if self.branch_objective == "masked" and self.wavelet_learnable:
             raise ValueError("obiettivo mascherato: banco wavelet fisso (il raggio del supporto e' quello dei filtri fissi)")
+        if self.window_ms is not None:
+            from wearusfm.model.frontend import window_kwargs
+
+            window_kwargs(self.patch_ms, self.window_ms)  # finita e maggiore della patch
+            if self.spectral_branches:
+                raise ValueError("finestra del kernel piu' lunga della patch e rami spettrali insieme: non previsto")
+
+    @property
+    def core_radius(self) -> int:
+        """Patch per lato che un token nascosto deve avere nascoste perche' la sua finestra non contenga campioni visibili: 0 senza finestra;
+        con 150 ms su 25: la finestra eccede la patch di 62,5 ms per lato, cioe' 2,5 patch -> 3."""
+        if self.window_ms is None:
+            return 0
+        return int(math.ceil((self.window_ms - self.patch_ms) / 2.0 / self.patch_ms - 1e-9))
 
 
 @dataclass
@@ -132,7 +150,9 @@ class WearUsFM(nn.Module):
     def __init__(self, cfg: FMConfig):
         super().__init__()
         self.cfg = cfg
-        self.tokenizer = PatchTokenizer(cfg.dim, patch_ms=cfg.patch_ms)
+        from wearusfm.model.frontend import window_kwargs
+
+        self.tokenizer = PatchTokenizer(cfg.dim, patch_ms=cfg.patch_ms, **window_kwargs(cfg.patch_ms, cfg.window_ms))
         self.identity = ChannelIdentity(cfg.dim, muscle_dropout=cfg.muscle_dropout)
         self.local = LocalEncoder(cfg.dim, cfg.n_heads, cfg.local_layers)
         self.pool = PerceiverPooling(cfg.dim, cfg.n_heads, cfg.k_latents)
