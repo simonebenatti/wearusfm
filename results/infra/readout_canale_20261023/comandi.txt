@@ -1,5 +1,5 @@
 # Readout per canale (docs/readout_per_canale_v1.md), campagna readout-canale-20261023, codice 6242bc3c1f40636691610f8f9e7a076ef64fe741. Ogni comando dal Mac (leonardo-ops),
-# dopo il via di Simone. Prima: deploy  git push leonardo 6242bc3c1f40636691610f8f9e7a076ef64fe741efs/heads/deploy/readout-canale-20261023  (nessun checkout attivo lo usa).
+# dopo il via di Simone. Prima: deploy  git push leonardo 6242bc3c1f40636691610f8f9e7a076ef64fe741:refs/heads/deploy/readout-canale-20261023  (nessun checkout attivo lo usa).
 
 # 1) checkout di campagna (CPU, secondi)
 python3 scripts/submit_job.py --id READOUT-CANALE-20261023-checkout --agente claude --campagna readout-canale-20261023 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=readout-canale-20261023,CAMPAIGN_SHA=6242bc3c1f40636691610f8f9e7a076ef64fe741
