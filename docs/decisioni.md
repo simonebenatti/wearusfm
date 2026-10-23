@@ -4040,3 +4040,6 @@ ripetono quelli gia' visti (~4,8 GPU-ora): dichiarato, ripresa dal passo 1.500 s
 cambio di codice). Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10. Prossimi passi: pianificatore
 (tentativo nuovo di C4 con ID e cartella nuovi e `--erank-min 38.4`), A3 letta dalla configurazione del run, test, `critico`, deploy,
 prova d'uguaglianza della configurazione del 300M con C4 (salvo `alarm.erank_min`), comando a Simone.
+**Baseline classica: checkout pronto (23/10/2026).** 61971050 COMPLETED 0:0 in 15 s, «checkout di campagna pronto»
+(`wearusfm_campaigns/baseline-td-20261023` @ 56984cf, 696 file in sola lettura). Diagnostica: 61919669 (B_seed1 P1 RPW) COMPLETED in 2 h 36;
+restano le 5 sonde della P2 di B_seed1 e il confronto, dopo le baseline.
