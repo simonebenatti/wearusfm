@@ -41,6 +41,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 GRID_C1 = (1e-4, 3e-4, 1e-3)
+# la sola ripetizione di C4 (Simone, 23/10/2026: «firmo,», decisioni.md): soglia assoluta del rango effettivo 38,4 per allarme e A3; se fallisce,
+# il 300M si ferma definitivamente
+C4_REPEAT = {"tag": "C4b", "erank_min": 38.4}
 PHASES = {"C1": {"preset": "sanity", "label": "30M", "epochs": 1.0, "seed": 0},
           "C2": {"preset": "sanity", "label": "30M", "epochs": 1.0, "seed": 1},
           "C3": {"preset": "100m", "label": "100M", "epochs": 0.5, "seed": 0},
@@ -165,14 +168,16 @@ def resolve_phases(decisions: dict | None) -> dict:
 
 
 def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict, plan_path: str = "-",
-              failed: dict | None = None) -> dict:
+              failed: dict | None = None, tag: str | None = None) -> dict:
     """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0). `plan_path`: il piano di training della
     fase come lo vede la selezione (relativo al checkout della valutazione, che deve contenerlo); `failed`: {run: prova} per i run il cui
     training si e' fermato per sempre prima della sonda (niente guardia, estrazione e sonda: entrano nella selezione come inammissibili, review
     di GPT del 16/10/2026). Prova (R1 della review GPT 3272398): "STOP" (lo STOP del trainer nella cartella del run, la selezione lo
     ricontrolla) o il percorso di un'evidenza da sacct (`calibration_select.py failure-evidence`, relativo al repo e nel checkout della
     valutazione), verificata qui e di nuovo dalla selezione.
-    Il codice della valutazione puo' essere un checkout diverso da quello del training (`ev["code_dir"]`, `ev["expected_sha"]`)."""
+    Il codice della valutazione puo' essere un checkout diverso da quello del training (`ev["code_dir"]`, `ev["expected_sha"]`).
+    `tag`: il nome di cartelle, ID e campagna quando e' diverso dalla fase che la selezione applica (la ripetizione di C4, «C4b»)."""
+    tag = tag or name
     code = {"code_dir": ev.get("code_dir", base["code_dir"]), "expected_sha": ev.get("expected_sha", base["expected_sha"])}
     failed = dict(failed or {})
     unknown = set(failed) - {r["id"] for r in jobs["runs"]}
@@ -189,7 +194,7 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
             cands += [repr(float(lr)), run["run_dir"], "-" if proof == "STOP" else f"failed:{proof}", str(run["total_steps"])]
             continue
         rid, ckpt = run["id"], f"{run['run_dir']}/checkpoint_postdecay.pt"
-        feat, rep = f"{ev['features_root']}/{name}/{rid}", f"{ev['results_root']}/{name}/{rid}.json"
+        feat, rep = f"{ev['features_root']}/{tag}/{rid}", f"{ev['results_root']}/{tag}/{rid}.json"
         npzs, oof = [f"{feat}/{d}.npz" for d in P1_DATASETS], str(Path(rep).with_suffix(".oof.npz"))
         t = EXTRACT_TIME[spec["preset"]]
         nodes.append({"id": f"{rid}-ext", "kind": "extract", "after": [], "queue": "boost_usr_prod", "gpu_hours": round(_hours(t), 3), **code,
@@ -205,15 +210,15 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
                       "sbatch": [f"--time={pt}", *(GPU_PROBE_SBATCH if on_gpu else [])], "inputs": npzs, "outputs": [rep, oof]})
         cands += [repr(float(lr)), run["run_dir"], rep, str(run["total_steps"])]
         probe_outs += [rep, oof]
-    out, record = f"{ev['results_root']}/{name}/decisione_{name}.json", f"{ev['results_root']}/{name}/registro_{name}.json"
-    nodes.append({"id": f"W1CAL-{name}-select", "kind": "compare", "after": [n["id"] for n in nodes if n["kind"] == "probe"], "queue": "lrd_all_serial",
+    out, record = f"{ev['results_root']}/{tag}/decisione_{tag}.json", f"{ev['results_root']}/{tag}/registro_{tag}.json"
+    nodes.append({"id": f"W1CAL-{tag}-select", "kind": "compare", "after": [n["id"] for n in nodes if n["kind"] == "probe"], "queue": "lrd_all_serial",
                   "gpu_hours": 0, **code, "launcher": "scripts/slurm/calibration_select.sbatch", "args": [name, out, record, plan_path, *cands],
                   "exports": {},
                   "sbatch": [f"--time={SELECT_TIME}"], "inputs": probe_outs, "outputs": [out, record]})
     n_runs = len(lrs) - len(failed)
     on_gpu = probe_on_gpu(spec["preset"])
     probe_exp, probe_max = PROBE_EXPECTED_H[spec["preset"]], _hours(PROBE_TIME_GPU if on_gpu else PROBE_TIME[spec["preset"]])
-    return {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{name.lower()}-eval", "agent": base["agent"],
+    return {"schema": "eval-plan-v0", "campaign": f"{base['campaign']}-{tag.lower()}-eval", "agent": base["agent"],
             "guard": {**code, "report_root": f"{ev['results_root']}/guards"}, "limits": dict(EVAL_LIMITS), "nodes": nodes,
             "estimate": {"gpu_hours_expected": round(n_runs * (EXTRACT_EXPECTED_H[spec["preset"]] + (probe_exp if on_gpu else 0)), 2),
                          "gpu_hours_max": round(n_runs * (_hours(EXTRACT_TIME[spec["preset"]]) + (probe_max if on_gpu else 0)), 2),
@@ -224,8 +229,10 @@ def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, e
 
 
 def plan(build_report: dict, decisions: dict | None = None, campaign: dict | None = None, plans_dir: str | None = None,
-         failed_runs: dict | None = None) -> dict:
-    """`failed_runs`: {run: prova} (vedi `eval_plan`; R1 della review GPT 3272398: niente esclusioni senza prova)."""
+         failed_runs: dict | None = None, c4_repeat: bool = False) -> dict:
+    """`failed_runs`: {run: prova} (vedi `eval_plan`; R1 della review GPT 3272398: niente esclusioni senza prova). `c4_repeat`: la sola
+    ripetizione di C4 firmata da Simone il 23/10/2026 (`C4_REPEAT`): ID, cartelle e campagna «C4b», soglia assoluta del rango
+    (`--erank-min`); la C4 fermata resta registrata e il suo piano non cambia."""
     from wearusfm.training import run as R
 
     failed_runs = dict(failed_runs or {})
@@ -254,22 +261,25 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
         if "blocked" in info:
             blocked[name] = info["blocked"]
             continue
+        repeat = c4_repeat and name == "C4"
+        tag = C4_REPEAT["tag"] if repeat else name
+        extra = f" --erank-min {C4_REPEAT['erank_min']:g}" if repeat else ""
         total = math.floor(spec["epochs"] * wpe / BATCH)
-        runs = [{"id": f"W1CAL-{name}-{spec['label']}-lr{_lr_tag(lr)}-s{spec['seed']}", "preset": spec["preset"], "seed": spec["seed"],
+        runs = [{"id": f"W1CAL-{tag}-{spec['label']}-lr{_lr_tag(lr)}-s{spec['seed']}", "preset": spec["preset"], "seed": spec["seed"],
                  "batch_size": BATCH, "accum_steps": 1, "steps_at_d": steps_at_d, "total_steps": total, "keep_checkpoints": [],
-                 "args": f"--lr {lr:g} --nested 1"} for lr in info["lrs"]]
-        p = {**copy.deepcopy(base), "campaign": f"{base['campaign']}-{name.lower()}", "runs": runs,
+                 "args": f"--lr {lr:g} --nested 1{extra}"} for lr in info["lrs"]]
+        p = {**copy.deepcopy(base), "campaign": f"{base['campaign']}-{tag.lower()}", "runs": runs,
              "s_per_step": {f"{spec['preset']}/{BATCH}": S_PER_STEP[spec["preset"]]}, "ckpt_gb": {spec["preset"]: CKPT_GB[spec["preset"]]},
              "common_args": f"--window1-rules --datasets all --prefetch --fixed-eval-every {panel} --manifest-sha256 {frac['file_sha256']}"}
         if len({r["id"] for r in runs}) != len(runs):
             raise ValueError(f"{name}: ID di run ripetuti {[r['id'] for r in runs]}")
         jobs = W.plan_jobs(p)
-        plans[name] = p
-        evals[name] = eval_plan(name, spec, jobs, info["lrs"], base, ev, f"{plans_dir}/calibrazione_{name}.json" if plans_dir else "-",
-                                {r["id"]: failed_runs[r["id"]] for r in jobs["runs"] if r["id"] in failed_runs})
+        plans[tag] = p
+        evals[tag] = eval_plan(name, spec, jobs, info["lrs"], base, ev, f"{plans_dir}/calibrazione_{tag}.json" if plans_dir else "-",
+                               {r["id"]: failed_runs[r["id"]] for r in jobs["runs"] if r["id"] in failed_runs}, tag=tag)
         for run, lr in zip(jobs["runs"], info["lrs"]):
             hours = run["total_steps"] * run["s_per_step"] / 3600
-            rows.append({"phase": name, "id": run["id"], "size": spec["label"], "preset": spec["preset"], "seed": spec["seed"], "lr": lr,
+            rows.append({"phase": tag, "id": run["id"], "size": spec["label"], "preset": spec["preset"], "seed": spec["seed"], "lr": lr,
                          "epochs": spec["epochs"], "steps": run["total_steps"], "warmup_steps": run["warmup_steps"],
                          "decay_start": run["decay_start"], "checkpoints": ["checkpoint_predecay.pt", "checkpoint_postdecay.pt", "checkpoint.pt"],
                          "memory_gib_per_gpu": MEMORY_GIB[spec["preset"]], "hours": round(hours, 2), "job_time": run["time"],
@@ -317,10 +327,12 @@ def main(argv=None) -> int:
     ap.add_argument("--failed-runs", nargs="*", default=[], metavar="RUN=PROVA",
                     help="run fermati per sempre prima della sonda, ognuno con la sua prova: RUN=STOP (lo STOP del trainer) o RUN=<evidenza da "
                          "sacct, relativa al repo> (calibration_select.py failure-evidence); entrano nella selezione come inammissibili")
+    ap.add_argument("--c4-repeat", action="store_true",
+                    help="la sola ripetizione di C4 firmata il 23/10/2026: ID e cartelle C4b, soglia assoluta del rango (--erank-min 38.4)")
     args = ap.parse_args(argv)
     result = plan(json.loads(args.build_report.read_text()), json.loads(args.decisions.read_text()) if args.decisions else None,
                   json.loads(args.campaign.read_text()) if args.campaign else None, str(args.out) if args.out else None,
-                  _failed_arg(args.failed_runs))
+                  _failed_arg(args.failed_runs), c4_repeat=args.c4_repeat)
     print(table(result))
     print(f"\npassi a D (4 epoche) {result['steps_at_d']}, warmup {result['warmup_steps']}; solo training "
           f"{result['totals']['gpu_hours_training_only']} GPU-ora; {'DRY-RUN (percorsi segnaposto)' if result['dry_run'] else 'campagna'}")

@@ -234,3 +234,29 @@ def test_a_probe_expected_over_the_serial_limit_goes_to_a_gpu_node():
     assert est["cpu_core_hours_expected"] == 0 and est["probe_fits_the_cap"]
     c3 = next(n for n in r["eval_plans"]["C3"]["nodes"] if n["kind"] == "probe")
     assert c3["queue"] == "lrd_all_serial" and c3["gpu_hours"] == 0
+
+
+def test_the_single_c4_repeat_is_a_new_attempt_with_the_absolute_rank_floor():
+    """La sola ripetizione di C4 firmata il 23/10/2026: ID, cartelle, piano e valutazione «C4b», `--erank-min 38.4`; la selezione applica la
+    fase C4; la configurazione attesa e' quella della C4 fermata salvo la soglia; senza `c4_repeat` il piano di C4 non cambia."""
+    EC = _load("evaluation_chain")
+    CS = _load("calibration_select")
+    rep = json.loads((REPO / "results/infra/derived_manifests_v1_1_build_cluster_20261015.json").read_text())
+    dec = json.loads((REPO / "results/infra/w1cal_decisioni.json").read_text())
+    camp = json.loads((REPO / "results/infra/w1cal_campaign_c3_eval_20261021.json").read_text())
+    old = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021")
+    new = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021", c4_repeat=True)
+    assert "C4" in old["plans"] and "C4b" not in old["plans"] and "C4b" in new["plans"] and "C4" not in new["plans"]
+    assert {k: v for k, v in new["plans"].items() if k != "C4b"} == {k: v for k, v in old["plans"].items() if k != "C4"}
+    a, b = old["plans"]["C4"]["runs"][0], new["plans"]["C4b"]["runs"][0]
+    assert a["id"] == "W1CAL-C4-300M-lr0p0001-s0" and b["id"] == "W1CAL-C4b-300M-lr0p0001-s0"
+    assert b["args"] == a["args"] + " --erank-min 38.4" and new["plans"]["C4b"]["campaign"].endswith("-c4b")
+    ev = new["eval_plans"]["C4b"]
+    EC.validate(ev)
+    select = next(n for n in ev["nodes"] if n["kind"] == "compare")
+    assert select["id"] == "W1CAL-C4b-select" and select["args"][0] == "C4" and "/C4b/" in select["args"][1]
+    assert all("/C4b/" in o for n in ev["nodes"] for o in n["outputs"] if n["kind"] != "guard")
+    ca, cb = CS.expected_config(old["plans"]["C4"], a["id"]), CS.expected_config(new["plans"]["C4b"], b["id"])
+    assert cb["alarm"]["erank_min"] == 38.4 and ca["alarm"]["erank_min"] is None
+    assert {k: v for k, v in cb.items() if k != "alarm"} == {k: v for k, v in ca.items() if k != "alarm"}
+    assert {k: v for k, v in cb["alarm"].items() if k != "erank_min"} == {k: v for k, v in ca["alarm"].items() if k != "erank_min"}

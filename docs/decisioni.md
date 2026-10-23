@@ -4043,3 +4043,8 @@ prova d'uguaglianza della configurazione del 300M con C4 (salvo `alarm.erank_min
 **Baseline classica: checkout pronto (23/10/2026).** 61971050 COMPLETED 0:0 in 15 s, «checkout di campagna pronto»
 (`wearusfm_campaigns/baseline-td-20261023` @ 56984cf, 696 file in sola lettura). Diagnostica: 61919669 (B_seed1 P1 RPW) COMPLETED in 2 h 36;
 restano le 5 sonde della P2 di B_seed1 e il confronto, dopo le baseline.
+**Rango effettivo: codice della firma del 23/10 (pianificatore e A3).** `calibration_plan.py --c4-repeat` (`C4_REPEAT`: ID, cartelle e campagna
+«C4b», `--erank-min 38.4`; i piani di C1-C4 restano identici, provato nei test), `calibration_select.erank_floor` (A3 con la soglia della
+configurazione del run, altrimenti la regola (16); chiave del rapporto ora `erank_floor`), test del flag (`--erank-min` 0, negativi, NaN
+rifiutati; allarme del rapporto invariato). Correzione di formulazione rispetto alla proposta: il rango non cresce *in proporzione* alla
+larghezza nei primi 1.500 passi; piu' avanti il 100M sta sopra il 30M (batch diverso).

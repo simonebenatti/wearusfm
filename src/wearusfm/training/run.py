@@ -51,9 +51,10 @@ class AlarmRule:
     collapse_ratio_min: float = 0.05  # firmata (16)
     erank_fraction_min: float = 0.10  # firmata (16)
     patience: int = 3  # valutazioni di fila (16)
-    # PROPOSTA del 23/10/2026 (C4 fermata al 300M): soglia assoluta del rango effettivo, al posto di erank_fraction_min x dim. Il rango delle
-    # diagnostiche non cresce con la larghezza (~67-87 nei primi passi a 30M, 100M e 300M): una soglia proporzionale alla dimensione ferma le
-    # taglie maggiori per costruzione. None = la regola firmata (16), invariata per ogni configurazione che non la imposta.
+    # FIRMATA da Simone il 23/10/2026 (C4 fermata al 300M; decisioni.md): soglia assoluta del rango effettivo, al posto di erank_fraction_min x
+    # dim, per la ripetizione di C4 e la finestra 1 (`--erank-min 38.4`). Nei primi 1.500 passi il rango delle diagnostiche non cresce in
+    # proporzione alla larghezza (~67-87 a 30M, 100M e 300M; piu' avanti il 100M sta sopra il 30M, con un altro batch): al 300M la soglia
+    # proporzionale (89,6) sta sopra i valori iniziali di tutte le taglie. Vale per il batch diagnostico attuale. None = la regola firmata (16).
     erank_min: float | None = None
 
 

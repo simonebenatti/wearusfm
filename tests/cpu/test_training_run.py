@@ -239,3 +239,22 @@ def test_absolute_erank_floor_does_not_scale_with_the_width():
     del old["alarm"]["erank_min"]  # una configurazione scritta prima del campo: stessa regola
     assert R._config_with_defaults(old) == R._config_with_defaults(R.config_to_dict(R.sanity_config()))
 
+
+
+def test_erank_min_flag_of_the_training_cli(tmp_path):
+    """`train_jepa.py --erank-min`: il valore entra in `alarm.erank_min` della configurazione; 0, negativi e NaN sono rifiutati; con la soglia
+    assoluta l'allarme del rapporto di collasso resta quello firmato."""
+    import importlib.util
+
+    sp = importlib.util.spec_from_file_location("train_jepa_t", SCRIPT)
+    TJ = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(TJ)
+    base = ["--preset", "300m", "--manifest", "-", "--root", "-", "--out-dir", "-", "--max-steps", "10"]
+    cfg = TJ.build_config(TJ.build_parser().parse_args(base + ["--erank-min", "38.4"]))
+    assert R.config_to_dict(cfg)["alarm"]["erank_min"] == 38.4 and cfg.alarm.erank_fraction_min == 0.10
+    assert TJ.build_config(TJ.build_parser().parse_args(base)).alarm.erank_min is None
+    for bad in ("0", "-1", "nan"):
+        with pytest.raises(ValueError, match="--erank-min"):
+            TJ.build_config(TJ.build_parser().parse_args(base + ["--erank-min", bad]))
+    mon = R.AlarmMonitor(R.AlarmRule(erank_min=38.4), dim=896)
+    assert [mon.update(0.01, 80.0) for _ in range(3)][-1].startswith("collasso da query")

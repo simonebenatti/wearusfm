@@ -108,6 +108,20 @@ def alarm_rule():
     return AlarmRule()
 
 
+def erank_floor(run_dir: Path, dim: int) -> tuple[float, str]:
+    """La soglia di A3 sul rango effettivo finale, la stessa dell'allarme del run: la soglia assoluta della configurazione (`alarm.erank_min`,
+    firmata il 23/10/2026 per la ripetizione di C4 e la finestra 1), altrimenti la regola firmata (16), il 10% della dimensione."""
+    rule = alarm_rule()
+    path = Path(run_dir) / "config.json"
+    if path.exists():
+        from wearusfm.training.run import _config_with_defaults
+
+        erank_min = (_config_with_defaults(json.loads(path.read_text())).get("alarm") or {}).get("erank_min")
+        if erank_min is not None:
+            return float(erank_min), f"{float(erank_min):g} (soglia assoluta della configurazione del run)"
+    return rule.erank_fraction_min * dim, f"{rule.erank_fraction_min:.0%} di {dim}"
+
+
 def panel_check(panel: list[dict], total_steps: int) -> dict:
     """A4 sulla loss totale del pannello fisso."""
     steps = [int(r["step"]) for r in panel]
@@ -330,10 +344,11 @@ def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int
             dim = 0
             problems.append("config.json assente: dimensione del modello ignota")
     rule = alarm_rule()
+    floor, floor_rule = erank_floor(run_dir, dim)
     diags = [r for r in metrics if "student_collapse_ratio" in r]
     alarms = [r for r in metrics if r.get("alarm")]
     out["non_collapse"] = {"evaluations": len(diags), "alarms": [r["alarm"] for r in alarms], "ratio_min": rule.collapse_ratio_min,
-                           "erank_min": rule.erank_fraction_min * dim}
+                           "erank_floor": floor, "erank_rule": floor_rule}
     if alarms:
         problems.append(f"allarme di collasso: {alarms[0]['alarm']}")
     if not diags or int(diags[-1]["step"]) != total_steps:
@@ -344,8 +359,8 @@ def admissibility(run_dir: Path, report: dict | None, total_steps: int, dim: int
         out["non_collapse"].update({"last_ratio": ratio, "last_student_erank": last["student_erank"]})
         if not ratio >= rule.collapse_ratio_min:
             problems.append(f"rapporto di collasso finale {ratio:.3g} sotto {rule.collapse_ratio_min}")
-        if not last["student_erank"] >= rule.erank_fraction_min * dim:
-            problems.append(f"rango effettivo finale {last['student_erank']:.1f} sotto {rule.erank_fraction_min:.0%} di {dim}")
+        if not last["student_erank"] >= floor:
+            problems.append(f"rango effettivo finale {last['student_erank']:.1f} sotto {floor_rule}")
     if panel and not _non_finite(panel):
         out["panel"] = panel_check(panel, total_steps)
         problems += out["panel"]["problems"]

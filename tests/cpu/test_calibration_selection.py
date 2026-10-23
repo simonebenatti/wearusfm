@@ -392,7 +392,7 @@ def test_admissible_run_and_tolerated_cases(tmp_path):
     lr, rd, rp, steps = _cand(tmp_path, 3e-4, 0.8, panel=[1.0, 0.7, 0.8, 0.8, 0.6])  # due valutazioni sopra soglia: registrate, non allarme
     adm = CS.admissibility(rd, json.loads(rp.read_text()), steps)
     assert adm["admissible"], adm["problems"]
-    assert adm["panel"]["longest_run_above"] == 2 and adm["non_collapse"]["erank_min"] == pytest.approx(38.4)
+    assert adm["panel"]["longest_run_above"] == 2 and adm["non_collapse"]["erank_floor"] == pytest.approx(38.4)
     rep = json.loads(rp.read_text())
     rep["checkpoint"] = "/altro/checkpoint_postdecay.pt"
     assert any("la sonda viene da" in p for p in CS.admissibility(rd, rep, steps)["problems"])
@@ -768,3 +768,19 @@ def test_failure_evidence_is_written_from_the_ledger_and_sacct(tmp_path):
                 CS.main(["failure-evidence", "--plan", str(planp), "--run-id", "lr0p0001", "--out", str(out), "--registro", str(reg),
                          "--ssh", ssh])
             assert not out.exists()
+
+
+def test_a3_uses_the_absolute_rank_floor_of_the_run_configuration(tmp_path):
+    """Firma di Simone del 23/10/2026: A3 usa la stessa soglia dell'allarme del run. Con `alarm.erank_min` 38,4 nella configurazione un rango
+    finale di 66,7 al 300M (dim 896) e' ammissibile; senza, vale la regola firmata (16), il 10% della dimensione (89,6)."""
+    lr, rd, rp, steps = _cand(tmp_path, 3e-4, 0.8, erank_last=66.7)
+    rep = json.loads(rp.read_text())
+    rep["model_dim"] = 896
+    old = CS.admissibility(rd, rep, steps)
+    assert not old["admissible"] and any("sotto 10% di 896" in p for p in old["problems"])
+    cfg = json.loads((rd / "config.json").read_text())
+    cfg["alarm"]["erank_min"] = 38.4
+    (rd / "config.json").write_text(json.dumps(cfg))
+    new = CS.admissibility(rd, rep, steps)
+    assert not any("rango effettivo" in p for p in new["problems"]) and new["non_collapse"]["erank_floor"] == 38.4
+    assert CS.erank_floor(tmp_path / "assente", 896) == (pytest.approx(89.6), "10% di 896")
