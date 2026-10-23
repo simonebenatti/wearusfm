@@ -48,6 +48,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--init-from", type=Path, default=None, help="checkpoint.pt di un altro run: pesi iniziali (ottimizzatore e passi da zero)")
     ap.add_argument("--warmup-steps", type=int, default=None)
     ap.add_argument("--lr", type=float, default=None, help="learning rate di picco (calibrazione C1-C4); default quello del preset (3e-4)")
+    ap.add_argument("--erank-min", type=float, default=None,
+                    help="soglia assoluta dell'allarme sul rango effettivo (proposta del 23/10/2026); default la regola firmata, 10%% della dimensione")
     ap.add_argument("--anchor-weight", type=float, default=None,
                     help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
     ap.add_argument("--jepa-weight", type=float, default=None,
@@ -120,6 +122,10 @@ def build_config(args, error=None) -> "R.RunConfig":
         if not args.lr > 0:
             fail("--lr deve essere positivo")
         cfg = replace(cfg, lr=args.lr)
+    if getattr(args, "erank_min", None) is not None:
+        if not args.erank_min > 0:
+            fail("--erank-min deve essere positivo")
+        cfg = replace(cfg, alarm=replace(cfg.alarm, erank_min=float(args.erank_min)))
     weights = {k: v for k, v in (("anchor_weight", args.anchor_weight), ("jepa_weight", args.jepa_weight)) if v is not None}
     if weights:
         try:

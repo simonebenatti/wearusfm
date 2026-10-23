@@ -221,3 +221,21 @@ def test_anchor_candidates_extract_and_probe_end_to_end(tmp_path, monkeypatch):
     n = len(z["code"])
     assert n > 0 and z["V"].shape == (n, 16) and z["c16"].shape == (n, 16) and z["ms"].shape == (n, 48) and z["nrvq"].shape == (n, 128)
     assert z["h_mask"].any() and (z["code"] >= 0).all()
+
+
+def test_absolute_erank_floor_does_not_scale_with_the_width():
+    """Proposta del 23/10/2026 (C4 fermata al 300M): con `erank_min` la soglia del rango e' assoluta; senza, resta la regola firmata
+    (10% della dimensione). Al 300M (dim 896) un rango di 66,7 ferma il run con la regola firmata, non con la soglia di 38,4."""
+    signed = R.AlarmMonitor(R.AlarmRule(), dim=896)
+    assert [signed.update(2.0, 66.7) for _ in range(3)][-1].startswith("rango effettivo sotto 10% della dimensione")
+    floor = R.AlarmMonitor(R.AlarmRule(erank_min=38.4), dim=896)
+    assert all(floor.update(2.0, 66.7) is None for _ in range(5))
+    assert [floor.update(2.0, 31.4) for _ in range(3)] == [None, None, "rango effettivo sotto 38.4 per 3 valutazioni"]
+    same = R.AlarmMonitor(R.AlarmRule(erank_min=38.4), dim=384)  # al 30M la soglia assoluta e' quella firmata: stesse decisioni
+    ref = R.AlarmMonitor(R.AlarmRule(), dim=384)
+    seq = [70.1, 62.1, 56.9, 49.7, 46.1, 40.9, 38.5, 35.9, 32.8, 31.4]  # JEPA-only seme 1, collassato al passo 5.000
+    assert [same.update(0.09, e) is None for e in seq] == [ref.update(0.09, e) is None for e in seq]  # stesso passo di stop
+    old = R.config_to_dict(R.sanity_config())
+    del old["alarm"]["erank_min"]  # una configurazione scritta prima del campo: stessa regola
+    assert R._config_with_defaults(old) == R._config_with_defaults(R.config_to_dict(R.sanity_config()))
+

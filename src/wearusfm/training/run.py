@@ -51,6 +51,10 @@ class AlarmRule:
     collapse_ratio_min: float = 0.05  # firmata (16)
     erank_fraction_min: float = 0.10  # firmata (16)
     patience: int = 3  # valutazioni di fila (16)
+    # PROPOSTA del 23/10/2026 (C4 fermata al 300M): soglia assoluta del rango effettivo, al posto di erank_fraction_min x dim. Il rango delle
+    # diagnostiche non cresce con la larghezza (~67-87 nei primi passi a 30M, 100M e 300M): una soglia proporzionale alla dimensione ferma le
+    # taglie maggiori per costruzione. None = la regola firmata (16), invariata per ogni configurazione che non la imposta.
+    erank_min: float | None = None
 
 
 @dataclass(frozen=True)
@@ -156,6 +160,8 @@ def _config_with_defaults(d: dict) -> dict:
         out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
     if isinstance(out.get("jepa"), dict):
         out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, **out["jepa"]}
+    if isinstance(out.get("alarm"), dict):
+        out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (proposta del 23/10): assente = regola firmata
     return out
 
 
@@ -377,10 +383,13 @@ class AlarmMonitor:
 
     def update(self, collapse_ratio: float, erank: float) -> str | None:
         self.low_collapse = self.low_collapse + 1 if not collapse_ratio >= self.rule.collapse_ratio_min else 0  # NaN conta come allarme
-        self.low_rank = self.low_rank + 1 if not erank >= self.rule.erank_fraction_min * self.dim else 0
+        floor = self.rule.erank_min if self.rule.erank_min is not None else self.rule.erank_fraction_min * self.dim
+        self.low_rank = self.low_rank + 1 if not erank >= floor else 0
         if self.low_collapse >= self.rule.patience:
             return f"collasso da query: rapporto sotto {self.rule.collapse_ratio_min} per {self.low_collapse} valutazioni"
         if self.low_rank >= self.rule.patience:
+            if self.rule.erank_min is not None:
+                return f"rango effettivo sotto {self.rule.erank_min:g} per {self.low_rank} valutazioni"
             return f"rango effettivo sotto {self.rule.erank_fraction_min:.0%} della dimensione per {self.low_rank} valutazioni"
         return None
 

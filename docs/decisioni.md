@@ -3980,3 +3980,20 @@ vince alla pari). `results/infra/w1arm_20261021/valutazione/esito_confronto_obje
 (serve mascherare prima del filtro: modifica del loader) e risultato dei bracci (il JEPA non aggiunge valore alle ancore). Nessun job del pilot
 lanciato; codice e misure restano. Priorita' nuove: (1) regola del rango effettivo e nuova C4 (300M), (2) baseline classica e rete casuale
 sulla stessa validazione. Diagnostica PSD/wavelet: si chiude come previsto.
+**Allarme sul rango effettivo: soglia assoluta, PROPOSTA (Claude, 23/10/2026; da firmare prima di una nuova C4).** La regola firmata (16)
+ferma un run col rango effettivo dello studente sotto il 10% della dimensione per 3 valutazioni: 38,4 al 30M, 64 al 100M, 89,6 al 300M.
+Dati (`results/infra/w1cal_c4_20261022/diagnostiche_erank_taglie.json`, `results/infra/w1arm_20261021/runs/W1ARM-JEPA-only-30M-s1/
+diagnostiche.json`), ai passi 500-1.500 e oltre:
+| run | rango effettivo | min / prima valutazione | rapporto di collasso | varianza fra campioni |
+|---|---|---|---|---|
+| 30M C2 1e-4 (sano) | 68-125 | 0,95 | 1,87-3,59 | 0,13-0,23 |
+| 100M C3 1e-4 (sano) | 72-129 | 0,90 | 1,95-3,74 | 0,08-0,15 |
+| 300M C4 1e-4 (fermato) | 67-78 | 0,86 | 1,94-2,35 | 0,07-0,10 |
+| 30M JEPA-only s1 (collassato) | 31-70 | 0,45 | 0,08-0,13 | 0,008-0,014 |
+Il rango delle diagnostiche non cresce con la larghezza; C4 ha rapporto e varianze dei run sani e scavalca solo la soglia proporzionale.
+**Proposta:** soglia assoluta di 38,4 (il valore firmato al 30M) a tutte le taglie (`AlarmRule.erank_min`, `train_jepa.py --erank-min
+38.4`); invariati la soglia del rapporto (0,05) e i 3 controlli. Al 30M le decisioni sono identiche a quelle della regola firmata (JEPA-only
+fermato allo stesso passo), quindi nulla di retroattivo; al 100M la soglia scende da 64 a 38,4 (C3 mai sotto 71). **Limite dichiarato:** la
+proposta nasce dopo aver visto C4 (i dati sopra), quindi va congelata prima della nuova C4 e non salva la C4 fermata, che resta inammissibile.
+**Nuova C4:** run nuovo (ID nuovo), stesso piano (300M, LR 1e-4, 6.130 passi, sonda su GPU), ~19,9 GPU-ora attese (tetto 26) piu' la
+valutazione (~5,7 / 9): calibrazione da ~149,5 a ~175 / 220. Codice: default `None` = regola firmata (nessun run gia' fatto cambia).
