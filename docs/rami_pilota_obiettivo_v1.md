@@ -1,5 +1,7 @@
 # Rami spettrali, punto 2: pilot dell'obiettivo temporale (protocollo `rami_pilota_v1`, PROPOSTA)
 
+**SOSPESO (Simone, 23/10/2026: «sospendi il pilot»).** Due motivi: la fuga del contenuto nascosto attraverso il filtro del loader, che agisce prima della maschera (`results/rami_pilota/fuga_preprocessing_20261023.json`, misura preliminare: per eliminarla lo studente deve azzerare il grezzo e filtrare dopo, modifica del loader con review e collaudo); e l'esito dei bracci del 23/10 (il JEPA non aggiunge valore misurabile alle ancore sul modello principale), che indebolisce l'ipotesi di un obiettivo di tipo JEPA sui rami. Codice (`scripts/branch_pilot.py`, 54b2aee) e misure restano; terzo giro del `critico` interrotto (limite d'uso). Si riprende solo con una decisione di Simone.
+
 Proposta di Claude del 20/10/2026 per il punto 2 della consegna sui rami (prompt di GPT del 20/10, base 3b97655). Scelte di Simone (20/10):
 «A, solo famiglia B, includi il controllo di LR»; dopo la review del disegno del `critico` (DA RIVEDERE), «se consigli di aggiungere,
 aggiungi»: braccio PWf. Punto 5 della tabella comune; i verdetti 2A/2C restano invariati. **Nessun job lanciato.** Prima del lancio: review

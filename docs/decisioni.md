@@ -3976,3 +3976,7 @@ contenuto nascosto estremo le log-potenze di contesto dello studente cambiano di
 collassato; ancore-only +0,51 punti su P1 con IC sopra zero ma sotto la soglia di 1 punto, -0,40 su P2). Test ufficiali descrittivi: P1 +0,07,
 P2 -0,89 per ancore-only. Il JEPA non mostra valore aggiunto misurabile sulle sole ancore a 30M; la scelta resta A per la regola (il riferimento
 vince alla pari). `results/infra/w1arm_20261021/valutazione/esito_confronto_objective.json`.
+**Pilot dei rami SOSPESO (Simone, 23/10/2026: «si, parti con 1 e 2 e sospendi il pilot»).** Motivi: fuga attraverso il filtro del loader
+(serve mascherare prima del filtro: modifica del loader) e risultato dei bracci (il JEPA non aggiunge valore alle ancore). Nessun job del pilot
+lanciato; codice e misure restano. Priorita' nuove: (1) regola del rango effettivo e nuova C4 (300M), (2) baseline classica e rete casuale
+sulla stessa validazione. Diagnostica PSD/wavelet: si chiude come previsto.
