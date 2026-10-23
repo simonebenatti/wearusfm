@@ -4048,3 +4048,4 @@ restano le 5 sonde della P2 di B_seed1 e il confronto, dopo le baseline.
 configurazione del run, altrimenti la regola (16); chiave del rapporto ora `erank_floor`), test del flag (`--erank-min` 0, negativi, NaN
 rifiutati; allarme del rapporto invariato). Correzione di formulazione rispetto alla proposta: il rango non cresce *in proporzione* alla
 larghezza nei primi 1.500 passi; piu' avanti il 100M sta sopra il 30M (batch diverso).
+**Baseline classica: job P1 sottomesso da Simone (23/10/2026):** 61972380 (`BASELINE-TD-20261023-p1`).
