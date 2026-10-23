@@ -1,0 +1,223 @@
+{
+ "reference": "A",
+ "rule": {
+  "min_delta": 0.01,
+  "harm_delta": -0.01,
+  "ci": "95%, limite inferiore > 0",
+  "seeds": "delta > 0 in tutti e due i semi"
+ },
+ "arms": {
+  "JEPA-only": {
+   "status": "collassato",
+   "S": {
+    "beats": false
+   },
+   "official": {
+    "beats": false,
+    "not_harmful": false
+   }
+  },
+  "ancore-only": {
+   "status": "completo",
+   "S": {
+    "p1": {
+     "A": 0.18306610753585328,
+     "B": 0.18817612541412276,
+     "delta": 0.005110017878269492,
+     "delta_by_model_seed": [
+      0.0046111069745072815,
+      0.0056089287820317016
+     ],
+     "ci95": [
+      0.00155086548469445,
+      0.008750002096104725
+     ],
+     "paired_subject_se": 0.0018616337969061829,
+     "datasets": {
+      "ninapro_db2": {
+       "A": 0.1977799139704107,
+       "B": 0.2049481517077847,
+       "delta": 0.007168237737374003,
+       "delta_by_model_seed": [
+        0.008537558933424672,
+        0.0057989165413233346
+       ],
+       "ci95": [
+        0.00264398181735795,
+        0.01126187015160325
+       ],
+       "paired_subject_se": 0.0021684433399609833
+      },
+      "ninapro_db3": {
+       "A": 0.030939256556889318,
+       "B": 0.030633541884397167,
+       "delta": -0.0003057146724921526,
+       "delta_by_model_seed": [
+        0.0003251397293233399,
+        -0.000936569074307645
+       ],
+       "ci95": [
+        -0.005403053554664491,
+        0.004821289032260653
+       ],
+       "paired_subject_se": 0.0026319874353838944
+      },
+      "ninapro_db6": {
+       "A": 0.3524011582660695,
+       "B": 0.35740189553406343,
+       "delta": 0.00500073726799391,
+       "delta_by_model_seed": [
+        -0.00466574999338637,
+        0.01466722452937419
+       ],
+       "ci95": [
+        -0.007704008408399576,
+        0.020606336610607165
+       ],
+       "paired_subject_se": 0.0071885934553835495
+      }
+     },
+     "beats": false,
+     "not_harmful": true
+    },
+    "p2": {
+     "A": 0.8133662949155155,
+     "B": 0.8093656338909029,
+     "delta": -0.004000661024612662,
+     "delta_by_model_seed": [
+      -0.015174909292204997,
+      0.007173587242979673
+     ],
+     "ci95": [
+      -0.015127806576287478,
+      0.007455390085849817
+     ],
+     "paired_subject_se": 0.005664842471756568,
+     "datasets": {
+      "epn612": {
+       "A": 0.8671656050955414,
+       "B": 0.8608811040339703,
+       "delta": -0.0062845010615710795,
+       "delta_by_model_seed": [
+        -0.010552016985137969,
+        -0.0020169851380041903
+       ],
+       "ci95": [
+        -0.01003211252653925,
+        -0.0026955944798300094
+       ],
+       "paired_subject_se": 0.0018041221324448782
+      },
+      "uci_emg": {
+       "A": 0.7595669847354896,
+       "B": 0.7578501637478354,
+       "delta": -0.001716820987654244,
+       "delta_by_model_seed": [
+        -0.019797801599272025,
+        0.016364159623963537
+       ],
+       "ci95": [
+        -0.023770768950335117,
+        0.02048436451600841
+       ],
+       "paired_subject_se": 0.0111684495678532
+      }
+     },
+     "beats": false,
+     "not_harmful": true
+    },
+    "beats": false
+   },
+   "official": {
+    "tasks": {
+     "p1": {
+      "A": 0.2131391601361477,
+      "B": 0.2138381153088103,
+      "delta": 0.0006989551726626519,
+      "delta_by_model_seed": [
+       0.0014176322668321669,
+       -1.9721921506862838e-05
+      ],
+      "ci95": [
+       -0.005622322071809539,
+       0.006800823127753992
+      ],
+      "paired_subject_se": 0.0033220608574474762,
+      "beats": false,
+      "not_harmful": true
+     },
+     "p2": {
+      "A": 0.8597327671808619,
+      "B": 0.8508292434817447,
+      "delta": -0.008903523699117113,
+      "delta_by_model_seed": [
+       -0.02162640360310414,
+       0.003819356204869913
+      ],
+      "ci95": [
+       -0.029268710614096777,
+       0.011461663215862552
+      ],
+      "paired_subject_se": 0.010390401487234524,
+      "beats": false,
+      "not_harmful": true
+     }
+    },
+    "beats": false,
+    "not_harmful": true,
+    "uncertainty": "Conditional on the two trained models. P1 percentile subject bootstrap; P2 descriptive normal interval from RMS split paired SE, no independence assumption between splits."
+   },
+   "S_and_official_agree": true
+  }
+ },
+ "plan": {
+  "path": "results/infra/w1arm_20261021/bracci_objective.json",
+  "sha256": "dbe0f8feff7ebc3604dfc3c414646b51ddf3160bcfb699d8a5ed7021e6940b52",
+  "lr": 0.0001
+ },
+ "identity": {
+  "A/0": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "steps": 98094,
+   "checkpoint_sha256": "39cbc1d7d9798372724f3f56e877d2847025055753b3e5475b9ea35d1feb108e"
+  },
+  "A/1": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "steps": 98094,
+   "checkpoint_sha256": "3a348cf8f1dec9064e1091b8bf0457313a5928b983ca6017dc87d84dbb092d44"
+  },
+  "JEPA-only/0": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+  },
+  "JEPA-only/1": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+  },
+  "ancore-only/0": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "steps": 98094,
+   "checkpoint_sha256": "d2d8ccd037ab7b2a6a21d212c81fe049132ef3302112291a57170fe36d76df69"
+  },
+  "ancore-only/1": {
+   "config_checked": true,
+   "fields": 102,
+   "code_sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec",
+   "steps": 98094,
+   "checkpoint_sha256": "f622fec46e82ac97e35854f3326f12841caf971c625dc8d0ca25eaa8c92151b7"
+  }
+ },
+ "default": {
+  "choice": "A",
+  "why": "nessun braccio batte il riferimento su S della P1 e della P2"
+ },
+ "disagreements": []
+}

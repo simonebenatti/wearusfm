@@ -2747,6 +2747,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   realistici; ma la guardia non sembra una soluzione. Pilot NON lanciabile cosi'; da decidere: mascherare prima del filtro (lo studente sul
   grezzo azzerato e poi filtrato) o altra via. Terzo giro del `critico` sul codice ancora in corso.
 
+### 2026-10-23 | Claude | Bracci dell'obiettivo: esito del confronto (A contro ancore-only), default A | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- 61925288 COMPLETED (11:24-11:25), esito in `results/infra/w1arm_20261021/valutazione/esito_confronto_objective.json`. Regola firmata (S
+  della P1 e della P2, delta >= +1 punto, IC > 0, tutti e due i semi): **nessun braccio batte A, default A**. JEPA-only collassato.
+- Ancore-only contro A: S P1 18,82 contro 18,31 (+0,51 punti, IC [+0,16, +0,88], positivo nei due semi, sotto la soglia di 1); S P2 80,94
+  contro 81,34 (-0,40, IC [-1,51, +0,75]). Test ufficiali (descrittivi): P1 21,38 contro 21,31 (+0,07, IC [-0,56, +0,68]); P2 85,08 contro
+  85,97 (-0,89, IC [-2,93, +1,15]). Lettura: togliere il JEPA non cambia le sonde oltre le soglie; il JEPA non mostra un valore aggiunto
+  misurabile rispetto alle sole ancore, a 30M e 4 epoche, su queste sonde. Non e' una prova che sia inutile (seme e taglia unici).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

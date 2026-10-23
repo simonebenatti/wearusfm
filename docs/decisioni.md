@@ -3972,3 +3972,7 @@ comportamento che il codice non ha. Corretti nel commit di questa voce, con le m
 **Pilot dei rami: fuga attraverso il preprocessing (23/10/2026, misura preliminare).** Il filtro del loader agisce prima della maschera: con
 contenuto nascosto estremo le log-potenze di contesto dello studente cambiano di nat interi anche a 500 ms dal tratto
 (`results/rami_pilota/fuga_preprocessing_20261023.json`). Il pilot non si lancia finche' non si decide come mascherare prima del filtro.
+**Bracci dell'obiettivo: esito (23/10/2026), default A per la regola firmata.** Nessun braccio batte A su S della P1 e della P2 (JEPA-only
+collassato; ancore-only +0,51 punti su P1 con IC sopra zero ma sotto la soglia di 1 punto, -0,40 su P2). Test ufficiali descrittivi: P1 +0,07,
+P2 -0,89 per ancore-only. Il JEPA non mostra valore aggiunto misurabile sulle sole ancore a 30M; la scelta resta A per la regola (il riferimento
+vince alla pari). `results/infra/w1arm_20261021/valutazione/esito_confronto_objective.json`.
