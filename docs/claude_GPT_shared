@@ -2805,6 +2805,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   un canale scartato), uguaglianza con `calibration_probe` anche per S_se, pesi e P2, impronta degli ingressi uguale a quella
   dell'estrazione della calibrazione; LDA di v10 dichiarata ancora dovuta; lettura solo affiancata; costo atteso ~20 core-ora.
 
+### 2026-10-23 | Claude | Baseline classica: correzione della terza review del `critico` | Codice: questo commit
+
+- Terza review (f765a83): DA RIVEDERE, 1 bloccante (canali della cache td conservati fra dataset: la P1 ufficiale cadeva su DB6, 16 colonne)
+  e 2 minori (impronta degli ingressi provata solo in P1, pesi provati con un solo dataset). Corretti con test: due dataset di larghezza
+  diversa, pesi con due dataset P1, impronta P2 uguale a `CP.extract_p2`. Test delle baseline 11 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4215,3 +4221,8 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Seconda review (54e5615): bloccante il controllo tautologico dei canali; minori prova d'uguaglianza piu' stretta del dichiarato, confronto
   accoppiato senza procedura, soglia 0,05 senza provenienza, stato della LDA di v10, preventivo solo col tetto, QC non provato sul percorso
   vero, checkpoint qualunque accettato con td, questa voce mancante. Corretti nel commit successivo; nessun job lanciato.
+
+### 2026-10-23 | Claude | Baseline classica: rilievi della terza review del `critico` (f765a83)
+
+- Bloccante: `args.td_channels` di `probe_p1` condiviso fra i dataset (DB6 ha 16 colonne): il job P1 vero si sarebbe fermato dopo DB2 e DB3.
+  Minori: impronta degli ingressi provata solo in P1; pesi P1 provati con un solo dataset. Corretti nel commit successivo.

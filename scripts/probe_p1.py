@@ -40,6 +40,7 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
 
     out = {}
     digest = hashlib.sha256()
+    args.td_channels = None  # td: i canali di QUESTO dataset (ogni dataset ha la sua larghezza: DB2 e DB3 12 colonne, DB6 16)
     for role, subjects in roles.items():
         xs, ys, ss = [], [], []
         for s in subjects:
@@ -53,7 +54,7 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
                     from wearusfm.model import channel_codes as CC
 
                     c = sw.windows.shape[2]
-                    if c != len(CC.layout_from_montage(sw.montage).qc_valid) or getattr(args, "td_channels", c) != c:
+                    if c != len(CC.layout_from_montage(sw.montage).qc_valid) or args.td_channels not in (None, c):
                         raise ValueError(f"{dataset}/{s}/{sw.session}: {c} canali, diversi dal montaggio o dalle altre sessioni")
                     args.td_channels = c
                 if args.audit_inputs:

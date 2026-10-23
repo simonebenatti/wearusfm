@@ -4018,3 +4018,7 @@ Lettura **solo affiancata** ad A (S e accuratezza ufficiale); un confronto accop
 aver verificato che `input_sha256` e `oof_rows_sha256` coincidono con quelli dei rapporti di A (nei test l'impronta degli ingressi della
 baseline e' uguale a quella dell'estrazione della calibrazione). (5) Costo atteso ~20 core-ora (~1-1,5 h per job: lettura dei dati e
 sonde su poche colonne), tetto 48 core-ora, ore CPU dell'account IscrB_WearUsFM, 0 GPU-ora. (6) `--feature-set td` vuole `--checkpoint none`.
+**Baseline classica: terza review del `critico` (23/10/2026).** Bloccante trovato: in `probe_p1` il numero di canali della cache td restava
+da un dataset al successivo, quindi la P1 ufficiale si sarebbe fermata su DB6 (16 colonne contro 12 di DB2 e DB3) dopo aver speso DB2 e DB3.
+Corretto (canali per dataset) con un test su due dataset di larghezza diversa; provati anche pesi, S e S_se uguali a `calibration_probe` con
+due dataset P1, e l'impronta degli ingressi uguale a quella dell'estrazione della calibrazione in P1 e in P2.

@@ -163,6 +163,72 @@ def test_internal_p1_baseline_equals_the_calibration_probe_on_the_same_features(
         assert str(z["input_sha256"]) == d["input_sha256"]
 
 
+def _fake_p1(monkeypatch, counts, root):
+    """Sessioni P1 finte in memoria per piu' dataset di larghezza diversa (DB2 12 colonne, DB6 16 con due vuote scartate dal QC), al posto
+    di `P1.sessions_of` / `P1.session_windows` (il formato dei file di DB6 qui non serve)."""
+    from types import SimpleNamespace
+
+    from wearusfm.harness import p1_cross_subject as P1
+    from wearusfm.ingest import ninapro_db6, ninapro_std
+    from wearusfm.ingest.common import montage_to_dict
+
+    montages = {"ninapro_db2": montage_to_dict(ninapro_std.build_montage_metadata(ninapro_std.DB2, 1, "right"), [True] * 12),
+                "ninapro_db6": montage_to_dict(ninapro_db6.build_montage_metadata(1, 1, 1), [True] * 14 + [False] * 2)}
+    sessions = {}
+    for k, (ds, n) in enumerate(counts.items()):
+        c = 12 if ds == "ninapro_db2" else 16
+        for i in range(n):
+            rng = np.random.default_rng(100 * k + i)
+            y = np.repeat(np.arange(1, 5), 6)
+            amp = 1.0 + 3.0 * (np.arange(c)[None, None, :] == y[:, None, None])
+            w = (rng.normal(size=(len(y), int(FS), c)) * amp).astype(np.float32)
+            w[:, :, 14:] = 0 if c == 16 else w[:, :, 14:]
+            sessions[ds, f"s{i + 1:02d}"] = SimpleNamespace(windows=w, labels=y, fs=FS, montage=montages[ds], session="session1")
+            (root / ds / f"s{i + 1:02d}").mkdir(parents=True, exist_ok=True)  # `probe_p1._root_of` cerca la cartella del soggetto
+    monkeypatch.setattr(P1, "sessions_of", lambda root, ds, s: [SimpleNamespace(name="session1", ds=ds, s=s)])
+    monkeypatch.setattr(P1, "session_windows", lambda sess, ds, window_s=1.0: sessions[ds, sess.s])
+    return {ds: [f"s{i + 1:02d}" for i in range(n)] for ds, n in counts.items()}
+
+
+def test_td_channels_are_kept_per_dataset_in_the_official_p1_probe(tmp_path, monkeypatch):
+    """Terza review del critico (23/10): i canali della cache td valgono per dataset; DB6 (16 colonne) dopo DB2 (12) non e' un errore."""
+    subjects = _fake_p1(monkeypatch, {"ninapro_db2": 3, "ninapro_db6": 3}, tmp_path)
+    args = argparse.Namespace(window_s=1.0, audit_inputs=True, batch=8, device="cpu", feature_set="td")
+    out2 = probe_p1.dataset_features(None, [tmp_path], "ninapro_db2", {"train": subjects["ninapro_db2"]}, args, lambda m: None)
+    assert args.td_channels == 12 and out2["train"][0].shape[1] == 48
+    out6 = probe_p1.dataset_features(None, [tmp_path], "ninapro_db6", {"train": subjects["ninapro_db6"]}, args, lambda m: None)
+    assert args.td_channels == 16 and out6["train"][0].shape[1] == 64
+    assert np.all(out6["train"][0][:, np.arange(4) * 16 + 14] == 0)  # colonne vuote di DB6, scartate dal QC
+    assert int(cache_record("td", 64, args.td_channels)["td_channels"]) == 16
+
+
+def test_internal_p1_weights_equal_the_calibration_probe_with_two_datasets(tmp_path, monkeypatch):
+    """Due dataset P1 con soggetti di test diversi: S, S_se e pesi di `classical_baseline` uguali a quelli di `calibration_probe.probe`."""
+    subjects = _fake_p1(monkeypatch, {"ninapro_db2": 9, "ninapro_db6": 7}, tmp_path)
+    splits = {"datasets": {"ninapro_db2": {"pretraining": subjects["ninapro_db2"][:6], "test": subjects["ninapro_db2"][6:]},
+                           "ninapro_db6": {"pretraining": subjects["ninapro_db6"][:6], "test": subjects["ninapro_db6"][6:]}}}
+    path = tmp_path / "splits.json"
+    path.write_text(json.dumps(splits))
+    monkeypatch.setattr(CB.P1, "P1_DATASETS", ("ninapro_db2", "ninapro_db6"))
+    out = tmp_path / "td.json"
+    assert CB.main(["--task", "p1", "--root", str(tmp_path), "--splits", str(path), "--out", str(out)]) == 0
+    rep = json.loads(out.read_text())
+    CP = CB._script("calibration_probe")
+    feats = tmp_path / "cp"
+    feats.mkdir()
+    for ds in ("ninapro_db2", "ninapro_db6"):
+        pre = CP.pretraining_subjects(splits, ds)
+        x, y, s, input_sha = CB.features_p1([tmp_path], ds, pre, lambda m: None)
+        np.savez(feats / f"{ds}.npz", x=x, y=y, s=s, subjects=np.asarray(pre), input_sha256=np.asarray(input_sha), checkpoint=np.asarray("none"),
+                 checkpoint_sha256=np.asarray("0" * 64), encoder_dim=np.asarray(0), protocol=np.asarray(CP.PROTOCOL),
+                 splits_sha256=np.asarray(CB._sha256(path)), extraction_recipe=np.asarray(json.dumps(CP.EXTRACTION_RECIPE, sort_keys=True)),
+                 **cache_record("model", x.shape[1]))
+    cp = CP.probe(argparse.Namespace(task="p1", features=feats, datasets=["ninapro_db2", "ninapro_db6"], seed=0, splits=path,
+                                     out=tmp_path / "cp.json"), splits, lambda m: None)
+    assert rep["weights"] == cp["weights"] and rep["weights"]["ninapro_db2"] == pytest.approx(3 / 4)  # 3 contro 1 soggetti di test
+    assert cp["S"] == pytest.approx(rep["S"]) and cp["S_se"] == pytest.approx(rep["S_se"])
+
+
 def _data(tmp_path, users=24, subjects=20):
     _epn(tmp_path / "epn" / "trainingJSON", users)
     _uci(tmp_path / "uci", subjects)
@@ -214,6 +280,18 @@ def test_internal_p2_baseline_uses_the_internal_subjects_and_the_calibration_pro
     cp = CP.probe(argparse.Namespace(task="p2", features=feats, datasets=["epn612", "uci_emg"], seed=0, splits=None, out=tmp_path / "cp2.json"),
                   None, lambda m: None)
     assert cp["S"] == pytest.approx(rep["S"]) and cp["S_se"] == pytest.approx(rep["S_se"]) and cp["weights"] == rep["weights"]
+    # impronta degli ingressi uguale a quella dell'estrazione P2 della calibrazione (che non dipende dal modello): stesse finestre di A
+    import random_checkpoint as RC
+
+    tiny = {"model": {"dim": 16, "n_heads": 4, "k_latents": 4, "local_layers": 1, "backbone_layers": 1, "decoder_layers": 1,
+                      "muscle_dropout": 0.4}, "seed": 0}
+    torch.save(RC.random_state(tiny, 0), tmp_path / "tiny.pt")
+    cal = tmp_path / "cal2"
+    CP.extract_p2(argparse.Namespace(checkpoint=str(tmp_path / "tiny.pt"), device="cpu", batch=8, datasets=["epn612", "uci_emg"],
+                                     epn_root=[epn], uci_root=uci, features=cal), lambda m: None)
+    for ds in ("epn612", "uci_emg"):
+        with np.load(cal / f"{ds}.npz") as z:
+            assert str(z["input_sha256"]) == rep["datasets"][ds]["input_sha256"]
 
 
 def test_classical_baseline_launcher(work):  # noqa: F811
