@@ -2680,6 +2680,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Simone ha chiesto di segnare la richiesta per GPT (dettaglio in «Problemi trovati»); la tabella dei sei punti resta di GPT, non la tocco.
 
+### 2026-10-23 | Claude | C4 fermata dall'allarme di collasso al passo 1.500: inammissibile, calibrazione ferma | Codice del training: 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec
+
+- 61761908 (300M, LR 1e-4) COMPLETED 0:0 in 1 h 12 (03:22-04:34): `stopped` = «allarme: rango effettivo sotto 10% della dimensione per 3
+  valutazioni», 1.500 passi su 6.130, nessun checkpoint dopo il decay. Rango effettivo dello studente 77,6 / 75,0 / 66,7 ai passi 500 / 1.000 /
+  1.500, soglia 89,6 (10% di 896). Con le regole firmate C4 e' inammissibile (A1 incompleto, A3 allarme): «C4 instabile: ci si ferma e si
+  registra, senza sostituire LR ne' allargare la griglia». La valutazione di C4 non si prepara. Consuntivo: 4,82 GPU-ora (4 x 1 h 12 19 s).
+- Confronto descrittivo (`results/infra/w1cal_c4_20261022/diagnostiche_erank_taglie.json`): ai passi 500-4.000 il rango effettivo e' ~67-87
+  in tutte e tre le taglie al LR 1e-4 (30M C2 seme 1: 68-77, soglia 38,4; 100M C3: 72-87, soglia 64), poi sale (124 e 129 a fine run). La
+  soglia cresce con la dimensione, il rango dei primi passi no: al 300M la soglia sta sopra i valori iniziali di tutte le taglie. Mia lettura,
+  non un risultato: l'allarme al 300M potrebbe dipendere dalla scala della soglia piu' che da un collasso; rapporto di collasso (~2) e varianza
+  delle query (0,03-0,05) sono come al 100M. Cambiare la regola e' una decisione di Simone, da congelare prima di un nuovo run.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4060,3 +4072,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   e la versione precedente («Resta il futuro codice operativo del pilot») hanno fatto pensare che il pilot appartenga al punto 3. Il pilot
   e' del punto 5 (PSD-2); il punto 3 riguarda solo review e integrazione del codice. Proposta: nella riga 3 scrivere che il punto e'
   chiuso fino a d4f4d23 e che il codice futuro di ogni punto (pilot compreso, punto 5 / PSD-2) segue lo stesso giro di review e merge.
+
+### 2026-10-23 | Claude | C4: la soglia del rango effettivo scala con la dimensione, il rango dei primi passi no
+
+- Al LR 1e-4 il rango effettivo dei primi 4.000 passi e' ~67-87 a 30M, 100M e 300M; la soglia firmata (10% della dimensione) e' 38,4 / 64 /
+  89,6. Al 100M il margine nei passi 1.500-2.000 era gia' piccolo (71,6 contro 64). Il 300M e' stato fermato al passo 1.500 (66,7). Nessun
+  risultato riscritto: C4 resta inammissibile con le regole firmate. Per Simone: se e come cambiare la regola (p.es. un riferimento dei primi
+  passi del run, come nel monitor dei rami) prima di un'eventuale nuova C4, con passaggio dal `critico`.

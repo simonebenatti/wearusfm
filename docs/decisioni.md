@@ -3925,3 +3925,9 @@ SHA conservati), codice identico a d4f4d23: punto 3 chiuso fino a d4f4d23. main 
 Claude allineato con un merge di main (bf63bbf).
 **Richiesta per GPT (Simone, 22/10/2026: «potresti segnare di chiarire questa cosa poi lo fa lui»).** Nella tabella dei sei punti, chiarire
 che il pilot sta nel punto 5 (PSD-2) e che il punto 3 riguarda solo review e integrazione del codice. Registrata nel registro; la fa GPT.
+**C4 inammissibile: allarme di collasso al passo 1.500 (23/10/2026).** 61761908 (300M, LR 1e-4) fermato dall'allarme firmato (16): rango
+effettivo dello studente 77,6 / 75,0 / 66,7 ai passi 500 / 1.000 / 1.500 contro la soglia 89,6 (10% di 896); 1.500 passi su 6.130.
+Con le regole firmate C4 non passa (A1, A3) e la calibrazione si ferma senza sostituire LR ne' allargare la griglia; il LR della campagna
+resta una decisione di Simone. Valutazione di C4 non preparata (risparmiate le ~5,7 GPU-ora previste). Consuntivo 4,82 GPU-ora:
+calibrazione ~149,5 / 220. Descrittivo per la decisione (`results/infra/w1cal_c4_20261022/diagnostiche_erank_taglie.json`): nei primi 4.000
+passi il rango effettivo e' ~67-87 in tutte e tre le taglie, mentre la soglia cresce con la dimensione (38,4 / 64 / 89,6).

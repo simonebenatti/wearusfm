@@ -1,0 +1,19 @@
+{
+ "stopped": "allarme: rango effettivo sotto 10% della dimensione per 3 valutazioni",
+ "steps": 1500,
+ "elapsed_s": 4309.295997619629,
+ "parameters": 292029931,
+ "device": "cuda:0",
+ "gpu_max_memory_gib": 32.78411865234375,
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016",
+  "sha": "72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec"
+ },
+ "world_size": 4,
+ "batch_per_process": 8,
+ "prefetch": true,
+ "prefetch_audit_steps": null,
+ "accum_steps": 1,
+ "micro_batch": 8,
+ "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"
+}
