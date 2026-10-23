@@ -2973,6 +2973,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   i comandi sono stati dati uno per uno, identici a `comandi.txt`). Le 21 sonde partono dopo le estrazioni (monitor sulla coda).
   Log `~/wearusfm_local/logs/readout_canale_lanci_20261023.txt`.
 
+### 2026-10-23 | Claude | Pilot degli obiettivi: BOZZA del protocollo, nessun codice | Codice: questo commit
+
+- `docs/pilot_obiettivi_v1.md` (Simone: «poi lavorare sulle tue soluzioni per il tokenizer/embeddings»): prima ondata R1 (target a, manca
+  solo il flag) e R2 (target per regione: id delle maschere nel loader, media del teacher per regione, test d'uguaglianza) a 30M / 1 epoca /
+  seme 0, riferimento C1 s0 gia' fatto (manca la sua S P2); seconda ondata con l'ancora di posa dopo l'ingest degli angoli e la decisione di
+  Simone sul principio. Lettura proposta: +1 punto su S P1 e P2 rispetto a R0 col readout designato dal readout per canale; seme 1 solo per chi
+  passa. Costo prima ondata ~64 / 86 GPU-ora. Punti aperti: fuga attraverso il filtro (proposta: loader attuale, ablation separata dopo), S P2
+  di C1 s0, readout designato, review del `critico`. Niente congelato, nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
