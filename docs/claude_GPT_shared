@@ -2991,6 +2991,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Sonde P1 sottomesse (CPU seriale, 8 core, 4 h): A s0 pool 61984655, local 61984666, dec 61984669; A s1 local 61984679, dec 61984695;
   ancore-only s0 local 61984705, dec 61984713. Una in esecuzione, le altre in coda (QOSMaxCpuPerUserLimit: una alla volta). Le due di
   ancore-only s1 P1 e le 12 della P2 nella tornata successiva. Log `~/wearusfm_local/logs/readout_canale_sonde_20261023.txt`.
+- Estrazioni P2 COMPLETED: A s0 61982398 (27 min 49), A s1 61982432 (27 min 50), ancore-only s0 61982465 (27 min 55), s1 61982484 (27 min 52).
+  **Consuntivo delle 8 estrazioni: 164 min di GPU = 2,74 GPU-ora** (tetto 10,0; attese 4,6), dalla voce della valutazione dei bracci.
+- Seconda tornata di sonde (~18:20): ancore-only s1 P1 local 61987693, dec 61987715; A s0 P2 local 61987733. **La quarta (A s0 P2 dec) e'
+  stata rifiutata da sbatch: `QOSMaxSubmitJobPerUserLimit`, la coda seriale ammette 10 job per utente fra in coda e in esecuzione** (e ne fa
+  girare uno alla volta: `QOSMaxCpuPerUserLimit`); il submitter l'ha segnata «rifiutato», nessun rilancio. Restano 11 sonde da sottomettere a
+  mano a mano che la coda si svuota (monitor sulla coda, tornate da 4): A s0 P2 dec (con `--dopo-rifiuto`), A s1 P2 local/dec, le 4 a larghezza
+  intera, ancore-only s0/s1 P2 local/dec. Con una sonda alla volta le 21 finiscono fra domani mattina e il primo pomeriggio.
 
 ## 2) Problemi trovati
 
