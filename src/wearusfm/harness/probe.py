@@ -52,11 +52,14 @@ def bootstrap_bacc_se(y_true: np.ndarray, y_pred: np.ndarray, subjects: np.ndarr
 
 
 def linear_probe(x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_val: np.ndarray, x_test: np.ndarray, y_test: np.ndarray,
-                 test_subjects: np.ndarray, *, c_grid=C_GRID, n_boot: int = 1000, seed: int = 0) -> ProbeResult:
+                 test_subjects: np.ndarray, *, c_grid=C_GRID, n_boot: int = 1000, seed: int = 0, scale: bool = True) -> ProbeResult:
     if len(x_train) == 0 or len(x_val) == 0 or len(x_test) == 0:
         raise ValueError("servono finestre in train, validazione e test")
-    scaler = StandardScaler().fit(x_train)  # solo sul train
-    xt, xv, xs = scaler.transform(x_train), scaler.transform(x_val), scaler.transform(x_test)
+    if scale:
+        scaler = StandardScaler().fit(x_train)  # solo sul train
+        xt, xv, xs = scaler.transform(x_train), scaler.transform(x_val), scaler.transform(x_test)
+    else:  # readout per canale (Simone, 23/10/2026): il chiamante ha gia' standardizzato (e ridotto) sul solo train; nessuna nuova scala
+        xt, xv, xs = np.asarray(x_train), np.asarray(x_val), np.asarray(x_test)
 
     def fit(c: float) -> LogisticRegression:
         return LogisticRegression(C=c, max_iter=3000, class_weight="balanced", random_state=seed).fit(xt, y_train)

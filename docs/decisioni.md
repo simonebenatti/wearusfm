@@ -4050,6 +4050,45 @@ rifiutati; allarme del rapporto invariato). Correzione di formulazione rispetto 
 larghezza nei primi 1.500 passi; piu' avanti il 100M sta sopra il 30M (batch diverso).
 **Baseline classica: job P1 sottomesso da Simone (23/10/2026):** 61972380 (`BASELINE-TD-20261023-p1`).
 **Baseline classica: job P2 sottomesso da Simone (23/10/2026):** 61972407 (`BASELINE-TD-20261023-p2`). Le due baseline sono in coda.
+**Diagnosi del pretraining e idea di soluzione (Claude, 23/10/2026; Simone: «dobbiamo capire perche la parte del tokenizer, degli embedding e
+quindi il pretraining non va, e immaginare possibili soluzioni»).** `docs/diagnosi_pretraining_20261023.md`: 12 fatti gia' nel repo (ancore-only
+= A; JEPA-only collassato sulla query; +2/+7 punti sul casuale; embedding = statistiche spettrali, 2A e 2C; rango ~70-87 uguale a 30M, 100M e
+300M; readout medio sui canali). In una frase: l'obiettivo insegna cio' che le ancore chiedono e il termine JEPA (target b) o collassa o non
+aggiunge nulla di misurabile; cause in ordine: scala del target (25 ms), target b, readout medio, esposizione del caso A. Non e' il problema:
+front-end, RVQ, LR, taglia (F4: una nuova C4 misura lo stesso obiettivo). Proposta in tre mosse: readout per canale (3.1), pilot degli
+obiettivi a 30M/1 epoca (3.3: target a, target per regione, ancora di posa su emg2pose, combinazione; ~76 GPU-ora attese), ancora di posa come
+cambio di principio rispetto a v10 §6.1 (decisione di Simone). **Scelta di Simone:** «Parti dal readout per canale sui checkpoint esistenti
+(3.1), insieme alla baseline classica; il pilot degli obiettivi dopo».
+**Readout per canale sui checkpoint esistenti: protocollo `readout_per_canale_v1` PROPOSTO, lettura CONGELATA con questo commit (Claude,
+23/10/2026).** `docs/readout_per_canale_v1.md`; codice `harness/channel_readout.py`, `scripts/channel_readout.py`, launcher
+`channel_readout_{extract,probe}.sbatch`; `harness/probe.py` NON toccato (vincolato byte per byte ai rapporti della diagnostica dei rami,
+`tests/cpu/test_branch_pilot.py`). Cosa: dalla stessa passata in avanti di A s0 e s1 (post-decay, teacher, gli stessi dei bracci), per
+finestra e per canale la media nel tempo dell'encoder locale (`local`) e del decoder a query su ogni (canale, patch) valida (`dec`), piu' il
+readout medio (`pool`) come controllo d'uguaglianza; validazione interna della calibrazione (stessi soggetti, finestre, fold, C, pesi e
+sonda); a larghezza pari (standardizzazione e PCA a k = 2d = 768 sul solo train del fold, le componenti alla sonda invariata) e, sulla sola
+P2, intera. Nessun training, nessun numero di test, nessuna adozione: le sonde ufficiali restano quelle di D12. **Lettura congelata qui,
+prima di qualunque sonda e prima di aprire i rapporti della baseline classica (non letti):** regola dei bracci cosi' com'e' implementata
+(`arms_compare.s_comparison`: bootstrap congiunto dei soggetti sui quattro rapporti, 1.000, seme 20261009, intervallo dei percentili;
+«migliora» = delta medio dei due semi >= +0,01, limite inferiore > 0, delta > 0 in tutti e due i semi; «peggiora» la speculare; altrimenti
+«regola non superata»). (1) `local` e `dec` a k 768 contro i rapporti storici di S di A (s0 P1 0,1834 / P2 0,8192; s1 0,1828 / 0,8075; readout
+medio), per compito, 4 letture senza correzione: «il readout medio nasconde informazione» se uno strato «migliora» in un compito senza
+«peggiorare» nell'altro. (2) Un candidato scelto prima di aprire la baseline: fra `local` e `dec` a k 768 quello con la S della P1 media dei
+due semi piu' alta, se supera il `pool` storico (0,1831); altrimenti il `pool`; parita' = `pool`; contro `interna_p1.json` / `interna_p2.json`
+della baseline (stesso rapporto per i due semi): «l'encoder batte le feature classiche» solo se «migliora» in tutti e due i compiti
+(distorsione dichiarata: la P1 sceglie e confronta). (3) Descrittivi: `local` contro `dec`, larghezza intera sulla P2, varianza spiegata,
+rango effettivo, S per dataset. (4) Controllo d'uguaglianza: `pool` di A s0 sulla P1 = 0,1834 entro 1e-3, se no nessuna lettura.
+Tranche 2 (rete casuale con l'architettura di A, larghezza intera sulla P1 divisa per dataset) si decide prima di leggere la 1.
+**Costo, da autorizzare:** 4 estrazioni GPU (1 A100), tetto 5,0 GPU-ora (40 ore locali), attese ~2,3; 13 sonde CPU seriali da 8 core e 4 h,
+tetto 416 core-ore (52 ore locali), attese ~70; ~6 GB su `$SCRATCH`. Voce proposta: la valutazione dei bracci (tetto 58 GPU-ora, Simone
+22/10/2026; consuntivo non registrato, stima dal `sacct` del 23/10 ~12 usate, residuo ~46); in alternativa l'infrastruttura (12,78 / 25). Ore CPU
+dell'account. Review del `critico`: prima DA RIVEDERE (3 bloccanti: accoppiamento della P2, regola non quella dei bracci, confronto sul Mac;
+8 minori), tutti corretti; seconda review in corso alla scrittura di questa voce, esito nel registro. Nessun job lanciato, nessun deploy.
+**Sonda senza nuova scala e vincolo su `harness/probe.py`: DECISO (Simone, 23/10/2026: «devi dire all'altro agente che adesso le modifiche
+principali sono quelle che fai tu, se modifichi cose poi le riporti a come erano prima perdiamo tempo»).** Il readout per canale usa
+`linear_probe(scale=False)` sulle componenti della PCA (nessuna nuova scala, come nel protocollo presentato al `critico`); il parametro e'
+aggiunto con default invariato e il percorso di default (pilot, diagnostica, calibrazione) e' provato uguale nei test. Il vincolo byte per
+byte di `tests/cpu/test_branch_pilot.py` su `harness/probe.py` passa all'hash del commit di questa voce, con la decisione citata nel test;
+gli altri quattro file restano quelli di aba1f2e. L'altra sessione Claude (C4, pilot) e' avvisata: le modifiche all'harness le fa questa.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le

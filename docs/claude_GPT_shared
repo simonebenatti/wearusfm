@@ -2841,6 +2841,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61972407 (validazione interna e test ufficiale P2). Tutte e due le baseline sottomesse.
 
+### 2026-10-23 | Claude | Diagnosi del pretraining: perche' non rende e idea di soluzione | Nessun codice
+
+- Richiesta di Simone: «dobbiamo capire perche la parte del tokenizer, degli embedding e quindi il pretraining non va, e immaginare possibili
+  soluzioni. Guarda cosa e' stato fatto finora e dammi una tua idea di soluzione». `docs/diagnosi_pretraining_20261023.md`: 12 fatti con le
+  fonti nel repo; in una frase, l'obiettivo insegna cio' che le ancore chiedono (ampiezza e spettro per patch da 25 ms) e il JEPA con target b
+  o collassa sulla query o non aggiunge nulla di misurabile (ancore-only = A); quattro cause (scala del target, target b, readout medio sui
+  canali, esposizione del caso A); non e' il problema: front-end, RVQ, LR, taglia (rango ~70-87 uguale a 30M, 100M, 300M). Proposta: readout
+  per canale a costo zero, pilot degli obiettivi a 30M/1 epoca (target a, target per regione, ancora di posa su emg2pose), con l'ancora di posa
+  come cambio di principio da decidere. Simone: «Parti dal readout per canale sui checkpoint esistenti (3.1), insieme alla baseline classica;
+  il pilot degli obiettivi dopo». Voce in decisioni.md.
+
+### 2026-10-23 | Claude | Readout per canale sui checkpoint esistenti: protocollo, codice, lettura congelata | Codice: questo commit
+
+- `harness/channel_readout.py` (passata in avanti uguale a `encode`, strati `local` e `dec` per canale, `pool` di controllo, PCA sul train del
+  fold), `scripts/channel_readout.py` (extract / probe / compare; compare con `arms_compare.s_comparison` e `--oof-map` per i rapporti copiati
+  sul Mac), `channel_readout_{extract,probe}.sbatch`, protocollo `docs/readout_per_canale_v1.md`, lettura congelata in decisioni.md prima di
+  aprire i rapporti della baseline classica (non letti). 12 test nuovi (`test_channel_readout.py`): stessa S, stessi C e stesse predizioni di
+  `calibration_probe` sul readout medio, stessa impronta degli ingressi delle cache dei bracci (P1 e P2), accoppiamento con un rapporto vero
+  della baseline classica, regola dei bracci, identita' dei modelli, launcher. `harness/probe.py` non toccato.
+- Piano: A s0 e s1; 4 estrazioni GPU (tetto 5,0 GPU-ora, attese ~2,3) e 13 sonde CPU seriali (tetto 416 core-ore, attese ~70); voce di budget
+  e via di Simone; deploy `deploy/readout-canale-20261023` dopo il via. Critico: prima review DA RIVEDERE (3 bloccanti, 8 minori), corretti;
+  seconda review in corso alla scrittura di questa voce (esito nella voce successiva). Suite completa sul codice precedente alla correzione del
+  vincolo della sonda: 1365 PASS, 1 fallito (il vincolo stesso); rilanciata sul tree definitivo, esito nella voce successiva.
+- **Per GPT (tabella dei sei punti, sottoattivita' PSD; Simone, 23/10: «va bene» alla riformulazione, numerazione invariata):** PSD-3
+  («informazione spaziale e fusione») ha ora la sua diagnostica: il readout per canale (questo protocollo); la «modifica minima distinta dalla
+  nuova loss» si decide dal suo esito (readout/pooling se l'informazione c'e' e la media la nasconde, obiettivo se non c'e'). PSD-2 («nuovo
+  obiettivo temporale, raw congelato») va riformulato: il pilot dei rami e' sospeso e i bracci dicono che il JEPA dell'encoder raw non aggiunge
+  valore alle ancore; l'obiettivo nuovo si applica all'encoder raw stesso (target per regione, target a, ancora di posa), col pilot degli
+  obiettivi a 30M/1 epoca della diagnosi; «mascherare prima del filtro» resta un prerequisito. PSD-1 si chiude con la tranche P2 di B_seed1;
+  PSD-4 invariato e ultimo. Ordine di lavoro: PSD-3 -> PSD-1 -> PSD-2 riformulato -> PSD-4.
+
 ### 2026-10-23 | Claude | Rango effettivo: codice della firma, pianificatore della C4b e A3 | Codice: 4808ddc, 1b7b1c2
 
 - 4808ddc: `calibration_plan.py --c4-repeat` (`C4_REPEAT`: ID `W1CAL-C4b-300M-lr0p0001-s0`, cartelle, campagna, piano e valutazione «C4b»,
@@ -2881,6 +2912,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sul cluster non e' calcolato, leonardo-ops non esegue sha256sum). Il test d'uguaglianza resta verde.
 - Test: calibrazione, selezione e training 87 PASS; suite completa lanciata dopo il commit, esito nella voce successiva. Prossimo: terza review del `critico`,
   poi preflight e deploy, checkout, comando del training della C4b a Simone.
+
+### 2026-10-23 | Claude | Passaggio di consegne dalla sessione «Agents PSD exploration» a questa | Codice: 36ad0e4 (HEAD al passaggio)
+
+- Simone all'altra sessione: «adesso l'altra sesisone comanda, altiemrnti facciamo casino, passa tutto di la e conrtinuiamo da lui, ok ?»; a
+  questa: «devi dire all'altro agente che adesso le modifiche principali sono quelle che fai tu, se modifichi cose poi le riporti a come erano
+  prima perdiamo tempo». L'altra sessione ha committato i suoi file in 36ad0e4 (pubblicato su origin), fermato la terza review del `critico`
+  sulla C4b, la suite completa su 36ad0e4 e il timer delle baseline, e non fa piu' nulla nel worktree. Passaggio scritto in
+  `~/wearusfm_local/passaggio_da_agents_psd_20261023.md` (fuori dal repo). La voce precedente («suite completa lanciata dopo il commit, esito
+  nella voce successiva») si chiude cosi': quella suite e' stata fermata dal passaggio; rilanciata qui sul tree 36ad0e4 + readout per canale,
+  in corso al momento del commit del readout (Simone: «ricorda di committare tutto»), esito nella voce successiva.
+- Ereditato, in ordine di arrivo: (1) C4b firmata (terza review del `critico` su 36ad0e4, preflight, deploy, checkout, campagna con lo SHA
+  nuovo, `calibration_plan.py --c4-repeat`, comando di training a Simone, tetto 26 GPU-ora); (2) baseline classica: P1 61972380 COMPLETED
+  in 20:32, rapporti in `$SCRATCH/wearusfm_runs/baseline_td_20261023/p1`, **non aperti** (prima si committa la lettura congelata del readout);
+  P2 61972407 in esecuzione dalle 16:33; (3) diagnostica dei rami B_seed1, tranche della P2 (5 sonde + confronto) dopo le baseline; (4) rete
+  casuale con l'architettura di A (si sovrappone alla tranche 2 del readout: una sola proposta a Simone); (5) LDA sulle feature di Hudgins di
+  v10 §8; pilot dei rami sospeso. Priorita' fra questi: di Simone.
 
 ## 2) Problemi trovati
 
@@ -4297,6 +4344,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Bloccante: `args.td_channels` di `probe_p1` condiviso fra i dataset (DB6 ha 16 colonne): il job P1 vero si sarebbe fermato dopo DB2 e DB3.
   Minori: impronta degli ingressi provata solo in P1; pesi P1 provati con un solo dataset. Corretti nel commit successivo.
+
+### 2026-10-23 | Claude | Diagnosi del pretraining: limiti della lettura
+
+- Le cause sono un'interpretazione mia dei fatti, non una prova: il readout per canale (causa 3) e il pilot degli obiettivi (cause 1 e 2) sono
+  le prove. Il confronto allenato/casuale citato (+2/+7 punti) e' dello Step 1 a 4.000 passi; sui bracci a 4 epoche il distacco dal casuale
+  non e' misurato con lo stesso readout (la rete casuale e' nella tranche 2 della baseline classica). Il rango effettivo «uguale a tutte le
+  taglie» vale nei primi 1.500-4.000 passi (dati di C2-C4), non a fine training delle taglie maggiori.
+
+### 2026-10-23 | Claude | Readout per canale: rilievi del `critico` e un vincolo scoperto
+
+- Prima review, bloccanti: `compare` rifiutava tutta la P2 (`window_s` None preso per chiave assente); la regola non era quella dei bracci
+  (intervallo normale ed errori standard dei due semi sommati come indipendenti: anti-conservativo, 0,0097 contro 0,0117 del bootstrap
+  congiunto in una prova del critico); il confronto «sul Mac» non poteva girare (OOF coi percorsi del cluster). Minori: scelta del «migliore»
+  non univoca e ottimistica sulla P1, molteplicita' del confronto 1 non dichiarata, nessun controllo dell'identita' dei modelli, lettura non
+  congelata con la baseline in coda, preventivo senza ore locali e residuo (e tetto datato 21/10 invece del 22/10), strato `tok` rimasto nei
+  commenti, test della «rotazione» che non provava nulla, modelli con rami e ordine dei canali non controllati, 4 feature di Hudgins e non 5.
+  Tutti corretti; nessun job era partito.
+- Vincolo scoperto dalla suite: `tests/cpu/test_branch_pilot.py` fissa byte per byte `harness/probe.py` (e `calibration_probe.py`,
+  `p1_cross_subject.py`, `downstream_ab.py`, `splits.py`) ai rapporti della diagnostica dei rami. La mia prima versione aggiungeva un
+  parametro a `linear_probe` e faceva fallire quel test; l'avevo ripristinato cambiando il protocollo (componenti ristandardizzate dalla
+  sonda). **Simone ha deciso il contrario** («adesso le modifiche principali sono quelle che fai tu, se modifichi cose poi le riporti a come
+  erano prima perdiamo tempo»): il parametro `scale` resta (default invariato, percorso di default provato uguale), il vincolo passa al nuovo
+  hash con la decisione citata nel test, l'altra sessione e' avvisata. Il tempo perso per il doppio cambio e' mio.
+- Lo strato «token» (prima dell'encoder locale) non si legge con una media nel tempo: front-end lineare su un segnale a media nulla, resta solo
+  l'identita' di canale. Tolto dal protocollo; un readout di strato 0 richiederebbe una non linearita' che non e' del modello.
 
 ### 2026-10-23 | Claude | Rango effettivo: rilievi delle due review del `critico`
 

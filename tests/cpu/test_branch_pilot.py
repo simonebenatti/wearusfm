@@ -72,10 +72,13 @@ def test_a_difference_outside_the_arm_is_refused(no_hash):
 def test_the_probe_code_is_the_one_of_the_diagnostic_reports():
     """I rapporti PW0, PW, RPW0, RPW vengono dal codice della diagnostica (aba1f2e); quelli del pilot dal suo commit: la sonda deve essere la
     stessa (critico, 23/10). Hash di aba1f2e (`git show aba1f2e:<file>`): cambiare uno di questi file rompe l'accoppiamento coi rapporti della
-    diagnostica, serve una decisione, non un aggiornamento dell'hash."""
+    diagnostica, serve una decisione, non un aggiornamento dell'hash.
+    Decisione di Simone del 23/10/2026 («adesso le modifiche principali sono quelle che fai tu», readout per canale): `harness/probe.py`
+    guadagna il parametro `scale` di `linear_probe` con default invariato (il percorso di default, quello del pilot e della diagnostica, e'
+    provato uguale in `test_channel_readout.py`); l'hash e' quello di quel commit, non piu' di aba1f2e."""
     at_diagnostic = {
         "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
-        "src/wearusfm/harness/probe.py": "aaf3e9495edf307db4f08320b6121ae39af1144b8ab6cb7345b36430dfe8d3ae",
+        "src/wearusfm/harness/probe.py": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
         "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
         "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
         "src/wearusfm/harness/splits.py": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e"}
