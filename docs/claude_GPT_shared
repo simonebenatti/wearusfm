@@ -2773,6 +2773,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   un anti-collasso esplicito (VICReg, SIGReg); rete casuale e feature classiche mancano spesso, e dove ci sono le feature classiche sono
   competitive; scaling self-supervised piccolo o non monotono. Creato anche l'agente fisso `letteratura` (86851a0).
 
+### 2026-10-23 | Claude | Allarme sul rango effettivo: proposta di soglia assoluta e review del `critico` (DA RIVEDERE) | Codice: 08a1d65
+
+- Codice (08a1d65): `AlarmRule.erank_min` (soglia assoluta opzionale), `train_jepa.py --erank-min`; default `None` = regola firmata (16),
+  nessun run fatto cambia. Proposta in decisioni.md: 38,4 a tutte le taglie (identica al 30M), nuova C4. Da firmare.
+- Review del `critico`: DA RIVEDERE. Bloccanti: A3 della selezione resta al 10% della dimensione (la nuova C4 dovrebbe finire con rango >=
+  89,6); manca la deroga esplicita al «ci si ferma» del protocollo C1-C4 e cosa succede se la nuova C4 fallisce; non e' «stesso piano»
+  (72cf24a non ha il flag: deploy nuovo, 133 commit dopo, va provata l'uguaglianza della configurazione); il pianificatore non genera un
+  secondo tentativo di C4 (ID, flag, identita', registrazione nelle decisioni); alternative (relativa, varianza, combinata) non discusse,
+  mentre il registro annunciava una regola relativa; questa voce mancava. Minori: test del flag, frasi sull'indipendenza dalla larghezza,
+  nome `erank_min` gia' usato nei rapporti di A3, i primi 1.500 passi della nuova C4 sono gia' noti (~4,8 GPU-ora ripetute). Decisioni a
+  Simone prima di correggere il pianificatore.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
