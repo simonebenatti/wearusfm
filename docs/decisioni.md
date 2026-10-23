@@ -4050,3 +4050,10 @@ rifiutati; allarme del rapporto invariato). Correzione di formulazione rispetto 
 larghezza nei primi 1.500 passi; piu' avanti il 100M sta sopra il 30M (batch diverso).
 **Baseline classica: job P1 sottomesso da Simone (23/10/2026):** 61972380 (`BASELINE-TD-20261023-p1`).
 **Baseline classica: job P2 sottomesso da Simone (23/10/2026):** 61972407 (`BASELINE-TD-20261023-p2`). Le due baseline sono in coda.
+**Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
+alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
+alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le
+alternative coi dati e le correzioni della seconda review»): non cambia la regola firmata. Correzioni della seconda review del `critico`
+(DA RIVEDERE, 2 bloccanti di registrazione): costante `W1_ERANK_MIN`; `--c4-repeat` rifiuta codice che non contiene 1b7b1c2; test della C4b
+dalla selezione al merge, STOP compreso; comando a mano della selezione per lo STOP ed emendamento in testa a
+`docs/calibrazione_c1_c4_selezione.md`; byte esatti del `config.json` della C4. Prossimo: terza review, poi deploy e comando a Simone.

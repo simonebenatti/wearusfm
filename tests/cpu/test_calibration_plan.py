@@ -244,6 +244,13 @@ def test_the_single_c4_repeat_is_a_new_attempt_with_the_absolute_rank_floor():
     rep = json.loads((REPO / "results/infra/derived_manifests_v1_1_build_cluster_20261015.json").read_text())
     dec = json.loads((REPO / "results/infra/w1cal_decisioni.json").read_text())
     camp = json.loads((REPO / "results/infra/w1cal_campaign_c3_eval_20261021.json").read_text())
+    with pytest.raises(ValueError, match="codice di training: 72cf24abec5b non contiene"):  # i checkout della C4 fermata: troppo vecchi
+        CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021", c4_repeat=True)
+    camp["expected_sha"] = CP.C4_REPEAT["min_commit"]
+    with pytest.raises(ValueError, match="codice di valutazione: 98c583237916 non contiene"):
+        CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021", c4_repeat=True)
+    camp["eval"]["expected_sha"] = CP.C4_REPEAT["min_commit"]
+    assert CP.C4_REPEAT["erank_min"] == R.W1_ERANK_MIN
     old = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021")
     new = CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021", c4_repeat=True)
     assert "C4" in old["plans"] and "C4b" not in old["plans"] and "C4b" in new["plans"] and "C4" not in new["plans"]
@@ -260,6 +267,13 @@ def test_the_single_c4_repeat_is_a_new_attempt_with_the_absolute_rank_floor():
     assert cb["alarm"]["erank_min"] == 38.4 and ca["alarm"]["erank_min"] is None
     assert {k: v for k, v in cb.items() if k != "alarm"} == {k: v for k, v in ca.items() if k != "alarm"}
     assert {k: v for k, v in cb["alarm"].items() if k != "erank_min"} == {k: v for k, v in ca["alarm"].items() if k != "erank_min"}
+    # la C4b differisce dalla C4 solo per campagna, ID e soglia: stessi passi, LR, preset, seme, manifest, codice
+    pa, pb = old["plans"]["C4"], new["plans"]["C4b"]
+    assert {k: v for k, v in pb.items() if k not in ("campaign", "runs")} == {k: v for k, v in pa.items() if k not in ("campaign", "runs")}
+    assert {k: v for k, v in b.items() if k not in ("id", "args")} == {k: v for k, v in a.items() if k not in ("id", "args")}
+    # STOP del trainer (come la C4 del 22/10): nessuna valutazione da pianificare, la selezione si lancia a mano (test della selezione)
+    with pytest.raises(ValueError, match="registrare a mano"):
+        CP.plan(rep, dec, camp, plans_dir="results/infra/w1cal_c3_20261021", c4_repeat=True, failed_runs={b["id"]: "STOP"})
 
 
 def test_today_the_c4_plan_reproduces_the_real_c4_configuration():

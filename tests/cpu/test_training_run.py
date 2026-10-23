@@ -224,7 +224,7 @@ def test_anchor_candidates_extract_and_probe_end_to_end(tmp_path, monkeypatch):
 
 
 def test_absolute_erank_floor_does_not_scale_with_the_width():
-    """Proposta del 23/10/2026 (C4 fermata al 300M): con `erank_min` la soglia del rango e' assoluta; senza, resta la regola firmata
+    """Firmata il 23/10/2026 (C4 fermata al 300M): con `erank_min` la soglia del rango e' assoluta; senza, resta la regola firmata
     (10% della dimensione). Al 300M (dim 896) un rango di 66,7 ferma il run con la regola firmata, non con la soglia di 38,4."""
     signed = R.AlarmMonitor(R.AlarmRule(), dim=896)
     assert [signed.update(2.0, 66.7) for _ in range(3)][-1].startswith("rango effettivo sotto 10% della dimensione")

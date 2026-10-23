@@ -276,9 +276,10 @@ def _full_plan(runs, seed=0):
 
 
 @__import__("functools").lru_cache(maxsize=None)
-def _true_config_json(lr, seed=0):
+def _true_config_json(lr, seed=0, extra=""):
     """`config.json` come lo scrive il trainer: `train_jepa.main` con gli argomenti di `train_ddp.sbatch` per un run del piano (COMMON,
-    --max-steps, EXTRA_ARGS di wsd_chain), `R.train` sostituito per catturare la configurazione (ripristinato subito)."""
+    --max-steps, EXTRA_ARGS di wsd_chain), `R.train` sostituito per catturare la configurazione (ripristinato subito). `extra`: argomenti
+    aggiunti a quelli del run (es. `--erank-min` della C4b)."""
     import importlib.util
     import shlex
 
@@ -290,6 +291,7 @@ def _true_config_json(lr, seed=0):
 
     W, TJ = load("wsd_chain"), load("train_jepa")
     plan = _full_plan([("x", lr)], seed)
+    plan["runs"][0]["args"] += f" {extra}" if extra else ""
     run = W.resolve(plan)[0]
     argv = ["--preset", "sanity", "--manifest", "m.json.gz", "--root", "r", "--scales", str(_TMP / "ws.json"), "--out-dir", str(_TMP / "out"),
             "--num-workers", "6", "--max-steps", str(STEPS), "--time-limit-s", "60"] + shlex.split(W.extra_args(plan, run))
@@ -784,3 +786,40 @@ def test_a3_uses_the_absolute_rank_floor_of_the_run_configuration(tmp_path):
     new = CS.admissibility(rd, rep, steps)
     assert not any("rango effettivo" in p for p in new["problems"]) and new["non_collapse"]["erank_floor"] == 38.4
     assert CS.erank_floor(tmp_path / "assente", 896) == (pytest.approx(89.6), "10% di 896")
+
+
+def test_the_c4b_decision_goes_from_selection_to_merge_with_the_absolute_floor(tmp_path):
+    """Dalla selezione al file delle decisioni con la C4b: run del piano con `--erank-min 38.4` (config.json scritto da `train_jepa.main`),
+    rango finale 66,7 a dimensione 896 (come la C4 del 22/10): la selezione della fase C4 lo ammette e registra la soglia, `merge` lo aggiunge
+    alle decisioni vere di C1-C3 coi controlli del pianificatore. Lo stesso run senza la soglia (regola 16) e' inammissibile: passed falso."""
+    decisions = json.loads((REPO / "results/infra/w1cal_decisioni.json").read_text())
+    out = {}
+    for extra in ("--erank-min 38.4", ""):
+        sub = tmp_path / (extra and "c4b" or "regola16")
+        sub.mkdir()
+        lr, rd, rp, steps = _cand(sub, 1e-4, 0.8, erank_last=66.7)
+        (rd / "config.json").write_text(_true_config_json(1e-4, 0, extra))
+        rep = json.loads(rp.read_text())
+        rep["model_dim"] = 896
+        rp.write_text(json.dumps(rep))
+        plan = _full_plan([(rd.name, 1e-4)])
+        plan["runs"][0]["args"] += f" {extra}" if extra else ""
+        decision, record = CS.select("C4", [(lr, rd, rp, steps)], plan)
+        out[extra] = (decision, record["candidates"]["0.0001"]["admissibility"]["non_collapse"])
+    (dec_b, nc_b), (dec_16, nc_16) = out["--erank-min 38.4"], out[""]
+    assert dec_b == {"C4": {"lr": 1e-4, "passed": True}} and nc_b["erank_floor"] == 38.4
+    assert dec_16 == {"C4": {"lr": 1e-4, "passed": False}} and nc_16["erank_floor"] == pytest.approx(89.6)
+    merged = CS.merge(decisions, dec_b)
+    assert merged == {**decisions, "C4": {"lr": 1e-4, "passed": True}}
+    with pytest.raises(ValueError, match="gia' decisa"):
+        CS.merge(merged, dec_16)
+    # C4b fermata dall'allarme: selezione a mano col rapporto «-» (prova = lo STOP del trainer), esito registrato come passed falso
+    sub = tmp_path / "stop"
+    sub.mkdir()
+    lr, rd, _, steps = _cand(sub, 1e-4, 0.8, no_probe=True, stop=True, stopped="alarm", steps=1500)
+    (rd / "config.json").write_text(_true_config_json(1e-4, 0, "--erank-min 38.4"))
+    plan = _full_plan([(rd.name, 1e-4)])
+    plan["runs"][0]["args"] += " --erank-min 38.4"
+    decision, record = CS.select("C4", [(lr, rd, None, STEPS)], plan)
+    assert decision == {"C4": {"lr": 1e-4, "passed": False}} and record["candidates"]["0.0001"]["failure_evidence"]["kind"] == "STOP"
+    assert CS.merge(decisions, decision)["C4"] == {"lr": 1e-4, "passed": False}

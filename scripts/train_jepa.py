@@ -49,7 +49,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--warmup-steps", type=int, default=None)
     ap.add_argument("--lr", type=float, default=None, help="learning rate di picco (calibrazione C1-C4); default quello del preset (3e-4)")
     ap.add_argument("--erank-min", type=float, default=None,
-                    help="soglia assoluta dell'allarme sul rango effettivo (proposta del 23/10/2026); default la regola firmata, 10%% della dimensione")
+                    help="soglia assoluta dell'allarme sul rango effettivo (firmata il 23/10/2026, R.W1_ERANK_MIN); default la regola (16), 10%% della dimensione")
     ap.add_argument("--anchor-weight", type=float, default=None,
                     help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
     ap.add_argument("--jepa-weight", type=float, default=None,

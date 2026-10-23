@@ -2841,6 +2841,47 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 61972407 (validazione interna e test ufficiale P2). Tutte e due le baseline sottomesse.
 
+### 2026-10-23 | Claude | Rango effettivo: codice della firma, pianificatore della C4b e A3 | Codice: 4808ddc, 1b7b1c2
+
+- 4808ddc: `calibration_plan.py --c4-repeat` (`C4_REPEAT`: ID `W1CAL-C4b-300M-lr0p0001-s0`, cartelle, campagna, piano e valutazione «C4b»,
+  `--erank-min 38.4`; la selezione resta quella della fase C4; senza il flag i piani di C1-C4 sono identici a prima, provato nei test),
+  `calibration_select.erank_floor` (A3 con la soglia della configurazione del run, `alarm.erank_min`, altrimenti la regola (16); chiavi del
+  rapporto `erank_floor` ed `erank_rule`), test del flag di `train_jepa.py`. 1b7b1c2: `config.json` vero della C4 fermata copiato dal
+  cluster e test: la configurazione attesa dal piano di C4 col codice di oggi coincide con quella vera (normalizzate); la C4b ne differisce
+  solo per `alarm.erank_min`. Questa voce mancava quando ho fatto i due commit (rilievo del `critico`, sezione 2).
+
+### 2026-10-23 | Claude | Rango effettivo: le alternative coi dati e le correzioni della seconda review del `critico` | Codice: questo commit
+
+- **Correzione.** La voce della firma in decisioni.md rimanda alle «Alternative valutate (relativa, varianza, combinata) nella voce del
+  registro del 23/10»: quella valutazione nel registro non c'era (la voce della proposta le dava come «non discusse»). La scrivo ora, DOPO
+  la firma, coi soli dati gia' nel repo: non ha informato la firma e non la cambia. Dati: `results/infra/w1cal_c4_20261022/
+  diagnostiche_erank_taglie.json` (LR 1e-4, una valutazione ogni 500 passi: 30M 50 valutazioni, 100M 25, 300M 3) e l'unico collasso visto
+  finora, il JEPA-only dei bracci al 30M (seme 1, rango 70 -> 31 in 5.000 passi con il rapporto sopra soglia, voce del 21/10).
+
+  | Regola | 30M (dim 384) | 100M (640) | 300M (896) | JEPA-only 30M | Cosa andrebbe congelato |
+  |---|---|---|---|---|---|
+  | (16): 10% della dimensione | soglia 38,4; min 68,2, nessun allarme | 64,0; min 71,6 (margine 7,6), nessuno | 89,6; 77,6 / 75,0 / 66,7: allarme a 1.500 | allarme | niente |
+  | assoluta 38,4 (firmata) | come la (16) | min 71,6, nessuno | min 66,7 (margine 28), nessuno | allarme | niente di nuovo (il valore della (16) al 30M) |
+  | relativa al run (min / prima valutazione) | 0,95 | 0,90 | 0,86 | 0,44 | una frazione nuova, tarata su un solo collasso; non vede un run gia' basso alla prima valutazione |
+  | varianza fra campioni dello studente | min 0,132 | 0,082 | 0,073 | non nel file | una soglia nuova senza riferimento; il rapporto di collasso (min 1,87 / 1,95 / 1,94 contro 0,05) misura gia' la varianza relativa |
+  | combinata (rango E rapporto sotto soglia) | nessun allarme | nessuno | nessuno (rapporto 1,94) | **nessun allarme** | indebolisce la (16) anche al 30M: avrebbe mancato l'unico collasso visto |
+
+  Lettura: la sola regola che non chiede una soglia nuova, lascia il 30M com'era e vede il collasso noto e' l'assoluta. Limite (gia' nella
+  firma): a dimensione 896 un rango di 40 (4,5%) non fa scattare l'allarme; vale per il batch diagnostico attuale (16 finestre).
+- **Seconda review del `critico` (DA RIVEDERE), correzioni:** costante `run.W1_ERANK_MIN = 38.4`, uguale a `C4_REPEAT["erank_min"]` (test);
+  `--c4-repeat` rifiuta un codice di training o di valutazione che non contiene 1b7b1c2 (`git merge-base --is-ancestor` sul Mac): i checkout
+  della C4 fermata (72cf24a) e della valutazione di C3 (98c5832) sono rifiutati (test); test sull'intero piano: la C4b differisce dalla C4
+  solo per campagna, ID e `--erank-min`; test dalla selezione al merge (run del piano con `config.json` scritto da `train_jepa.main`, rango
+  66,7 a 896: con la soglia `passed` vero e `erank_floor` 38,4, merge sulle decisioni vere di C1-C3; lo stesso run con la regola (16):
+  `passed` falso; C4b fermata dallo STOP: selezione a mano col rapporto «-», `passed` falso, merge); col solo run fermato il pianificatore
+  non genera la valutazione («decisione da registrare a mano», test): comando a mano nell'emendamento del protocollo
+  (`docs/calibrazione_c1_c4_selezione.md`, in testa), con lo SHA-256 di `registro_C4b.json` da registrare al merge; docstring di
+  `calibration_select.py`; «proposta» -> «firmata» in `train_jepa.py`, `run.py` e nel test. `config.json` della C4: la copia committata in
+  1b7b1c2 aveva un a capo finale in piu' rispetto al file del cluster; ora 2.677 byte, SHA-256 bd4a371f...a7d3 (sul cluster: 2677 byte, `ls -l` del 23/10; lo SHA
+  sul cluster non e' calcolato, leonardo-ops non esegue sha256sum). Il test d'uguaglianza resta verde.
+- Test: calibrazione, selezione e training 87 PASS; suite completa lanciata dopo il commit, esito nella voce successiva. Prossimo: terza review del `critico`,
+  poi preflight e deploy, checkout, comando del training della C4b a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4256,3 +4297,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - Bloccante: `args.td_channels` di `probe_p1` condiviso fra i dataset (DB6 ha 16 colonne): il job P1 vero si sarebbe fermato dopo DB2 e DB3.
   Minori: impronta degli ingressi provata solo in P1; pesi P1 provati con un solo dataset. Corretti nel commit successivo.
+
+### 2026-10-23 | Claude | Rango effettivo: rilievi delle due review del `critico`
+
+- Prima review (proposta 08a1d65), DA RIVEDERE: A3 della selezione rimasta al 10% della dimensione; deroga al «ci si ferma» del protocollo
+  non scritta; «stesso piano» falso (72cf24a senza il flag); pianificatore senza secondo tentativo di C4; alternative non discusse; voce del
+  registro mancante. Portati a Simone, che ha firmato (a)-(d); il codice (4808ddc, 1b7b1c2) segue la firma.
+- Seconda review (4808ddc, 1b7b1c2), DA RIVEDERE. Bloccanti, entrambi di registrazione: decisioni.md rimanda a una valutazione delle
+  alternative nel registro che non esisteva; nessuna voce del registro per i due commit. Minori: `--c4-repeat` accettava gli SHA vecchi (il
+  job sarebbe fallito o A3 giudicata con la regola (16)); nessun test dalla selezione al merge ne' comando per lo STOP; protocollo firmato
+  senza nota dell'emendamento; formulazioni «proposta»; valore 38,4 duplicato; un byte in piu' nella copia del `config.json`. Tutti corretti
+  nel commit di questa voce (sezione 1). Nessun run toccato.

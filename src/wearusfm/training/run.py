@@ -46,6 +46,11 @@ from wearusfm.model.query_decoder import probe_query_collapse
 from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, jepa_loss_terms, jepa_losses, loss_counts, make_teacher
 
 
+# soglia assoluta del rango effettivo per la ripetizione di C4 e i run della finestra 1 (Simone, 23/10/2026: «firmo,»; decisioni.md): la
+# passano i pianificatori con `--erank-min`; il default di `AlarmRule` resta None (le configurazioni gia' fatte non cambiano)
+W1_ERANK_MIN = 38.4
+
+
 @dataclass(frozen=True)
 class AlarmRule:
     collapse_ratio_min: float = 0.05  # firmata (16)
@@ -162,7 +167,7 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("jepa"), dict):
         out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, **out["jepa"]}
     if isinstance(out.get("alarm"), dict):
-        out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (proposta del 23/10): assente = regola firmata
+        out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out
 
 

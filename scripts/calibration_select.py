@@ -9,7 +9,8 @@ Ammissibilita' di un run (tutte):
      `checkpoint_postdecay.pt`;
   A2 numerico: ogni valore numerico di `metrics.jsonl` e di `fixed_eval.jsonl` finito;
   A3 non-collasso (soglie firmate, decisione 16, `training.run.AlarmRule`): nessun allarme nel run e, all'ultima valutazione (passo finale),
-     rapporto di collasso min(studente, teacher) >= 0,05 e rango effettivo dello studente >= 10% della dimensione;
+     rapporto di collasso min(studente, teacher) >= 0,05 e rango effettivo dello studente >= 10% della dimensione, o la soglia assoluta della
+     configurazione del run (`alarm.erank_min`, 38,4: firma di Simone del 23/10/2026 per la ripetizione di C4 e la finestra 1);
   A4 stabilita' sul pannello fisso (`fixed_eval.jsonl`, ogni `PANEL_EVERY` passi dal passo 0, senza buchi): mai `PANEL_K` valutazioni
      consecutive con L_t > (1 + `PANEL_DELTA`) * min_{s<=t} L_s, e L all'ultima valutazione <= `PANEL_LEARN` * L_0 (L = loss totale).
 Selezione (S fuori fold; confronto accoppiato sui soggetti: differenza entro 1 errore standard = parita', vince il LR piu' basso):

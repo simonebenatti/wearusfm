@@ -43,7 +43,9 @@ sys.path.insert(0, str(ROOT / "src"))
 GRID_C1 = (1e-4, 3e-4, 1e-3)
 # la sola ripetizione di C4 (Simone, 23/10/2026: «firmo,», decisioni.md): soglia assoluta del rango effettivo 38,4 per allarme e A3; se fallisce,
 # il 300M si ferma definitivamente
-C4_REPEAT = {"tag": "C4b", "erank_min": 38.4}
+C4_REPEAT = {"tag": "C4b", "erank_min": 38.4, "min_commit": "1b7b1c2419537ce933a0a0d8e8eb47fae1169789"}  # = run.W1_ERANK_MIN (test)
+# `min_commit`: il codice di training e di valutazione della ripetizione deve contenerlo (flag `--erank-min` e A3 con la soglia del run): un
+# checkout piu' vecchio farebbe fallire il job (e bruciare l'ID) o giudicherebbe A3 con la regola (16)
 PHASES = {"C1": {"preset": "sanity", "label": "30M", "epochs": 1.0, "seed": 0},
           "C2": {"preset": "sanity", "label": "30M", "epochs": 1.0, "seed": 1},
           "C3": {"preset": "100m", "label": "100M", "epochs": 0.5, "seed": 0},
@@ -167,6 +169,16 @@ def resolve_phases(decisions: dict | None) -> dict:
     return out
 
 
+def _require_commit(sha: str, needed: str, what: str) -> None:
+    """`sha` contiene `needed` (git del repo locale, dove gira il pianificatore): altrimenti errore prima di pianificare."""
+    import subprocess
+
+    r = subprocess.run(["git", "merge-base", "--is-ancestor", needed, sha], cwd=ROOT, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise ValueError(f"{what}: {sha[:12]} non contiene {needed[:12]} (flag --erank-min e A3 con la soglia del run)"
+                         + (f": {r.stderr.strip()}" if r.returncode not in (0, 1) else ""))
+
+
 def eval_plan(name: str, spec: dict, jobs: dict, lrs: list[float], base: dict, ev: dict, plan_path: str = "-",
               failed: dict | None = None, tag: str | None = None) -> dict:
     """Il piano di valutazione della fase per `scripts/evaluation_chain.py` (schema eval-plan-v0). `plan_path`: il piano di training della
@@ -262,6 +274,9 @@ def plan(build_report: dict, decisions: dict | None = None, campaign: dict | Non
             blocked[name] = info["blocked"]
             continue
         repeat = c4_repeat and name == "C4"
+        if repeat and not dry:
+            for which, sha in (("training", base["expected_sha"]), ("valutazione", ev.get("expected_sha", base["expected_sha"]))):
+                _require_commit(sha, C4_REPEAT["min_commit"], f"ripetizione di C4, codice di {which}")
         tag = C4_REPEAT["tag"] if repeat else name
         extra = f" --erank-min {C4_REPEAT['erank_min']:g}" if repeat else ""
         total = math.floor(spec["epochs"] * wpe / BATCH)
