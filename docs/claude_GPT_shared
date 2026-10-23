@@ -2763,6 +2763,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dimensione) e nuova C4, con `critico` e firma di Simone; (2) baseline classica (feature nel tempo) e rete casuale sulla validazione
   interna e sui test ufficiali. Ricerca bibliografica sui FM per serie temporali multicanale lanciata (Fable 5.1). Diagnostica: si chiude.
 
+### 2026-10-23 | Claude | Ricerca bibliografica sui FM per serie temporali e biosegnali (Fable 5.1) | Nessun codice
+
+- Simone: «lancia un subagent con fable5.1 che cerchi cosa fanno i FM per serie temporali (multicanale)». Rapporto in
+  `docs/letteratura_fm_serie_temporali_20261023.md` (~50 lavori, fonte per ogni numero, [T]/[A]/[D]; da verificare). Punti per noi: quasi
+  tutti i FM sEMG valutano in fine-tuning con split diversi; l'unico con sonda congelata + rete casuale + feature classiche + ablation e'
+  EMGBlend (preprint 09/2026: +13 punti sulla rete casuale, codici spettrali discreti >> ricostruzione del segnale, capacita' non monotona);
+  nessun JEPA per sEMG; nei biosegnali il latente batte la ricostruzione in sonda congelata ma non in fine-tuning, e i JEPA che funzionano hanno
+  un anti-collasso esplicito (VICReg, SIGReg); rete casuale e feature classiche mancano spesso, e dove ci sono le feature classiche sono
+  competitive; scaling self-supervised piccolo o non monotono. Creato anche l'agente fisso `letteratura` (86851a0).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
