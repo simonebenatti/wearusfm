@@ -4140,7 +4140,9 @@ push del riferimento, checkout di campagna, estrazioni, sonde; uguaglianza e con
 **Readout per canale: estrazioni finite, consuntivo (23/10/2026).** Le 8 estrazioni COMPLETED senza errori: P1 12-14 min l'una, P2 ~28 min l'una;
 **2,74 GPU-ora** in tutto (tetto 10,0, attese 4,6), dalla voce della valutazione dei bracci (stima: ~15 usate su 58 dopo oggi). Cache P1 ~2 GB
 e P2 per checkpoint su `$SCRATCH/wearusfm_runs/readout_canale_20261023/features/`. Le 21 sonde CPU sottomesse in due tornate (7 dopo le P1,
-14 dopo le P2); JobID nel registro.
+14 dopo le P2); JobID nel registro. **Limite scoperto: la coda seriale ammette 10 job per utente** (`QOSMaxSubmitJobPerUserLimit`) oltre a
+farne girare uno alla volta: 10 sonde in coda, una rifiutata e segnata dal submitter, 11 da sottomettere a tornate man mano che la coda si
+svuota. **Controllo d'uguaglianza (punto 4) superato:** `pool` di A s0 sulla P1 = 0,18337 come lo storico, zero predizioni diverse.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le

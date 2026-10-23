@@ -2998,6 +2998,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   girare uno alla volta: `QOSMaxCpuPerUserLimit`); il submitter l'ha segnata «rifiutato», nessun rilancio. Restano 11 sonde da sottomettere a
   mano a mano che la coda si svuota (monitor sulla coda, tornate da 4): A s0 P2 dec (con `--dopo-rifiuto`), A s1 P2 local/dec, le 4 a larghezza
   intera, ancore-only s0/s1 P2 local/dec. Con una sonda alla volta le 21 finiscono fra domani mattina e il primo pomeriggio.
+- **Controllo d'uguaglianza (protocollo, punto 4) SUPERATO:** sonda `pool` di A s0 sulla P1 (61984655, 62 min sulla seriale) contro il rapporto
+  storico `s_p1.json`: S 18,337 contro 18,337, **zero predizioni diverse** su 38.544 + 9.834 + 33.961 finestre (DB2 19,485, DB3 3,320, DB6
+  36,269 identiche), `channel_readout.py --stage equality` con esito 0. Estrazione e sonda del readout per canale sono quelle dei bracci: le
+  letture dei punti 1-3 sono valide. Esito in `~/wearusfm_local/readout_canale_20261023/confronti/uguaglianza_pool_s0_p1.json`.
 
 ## 2) Problemi trovati
 
