@@ -4026,3 +4026,5 @@ due dataset P1, e l'impronta degli ingressi uguale a quella dell'estrazione dell
 `receive.denyCurrentBranch = updateInstead`: un riferimento `deploy/` non tocca il checkout di `main`); pubblicato
 `deploy/baseline-td-20261023` = 56984cf (SHA remoto verificato). Comandi in `results/infra/baseline_td_20261023/comandi.txt`: checkout di
 campagna, poi i job p1 e p2 (CPU seriale, tetto 48 core-ora, stima ~20, 0 GPU-ora), rapporti in `$SCRATCH/wearusfm_runs/baseline_td_20261023/`.
+**Baseline classica: checkout sottomesso da Simone (23/10/2026):** 61971050 (`BASELINE-TD-20261023-checkout`). I due job dopo
+«checkout di campagna pronto».
