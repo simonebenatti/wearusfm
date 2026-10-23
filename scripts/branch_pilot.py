@@ -316,7 +316,8 @@ def _train_one(args, arm: str, teacher: str, out: Path, *, max_steps: int | None
             finite = False
         # come il 2C (step2c.train): checkpoint del run, passo 0 al passo 0, provenienza dei rami col passo 0 registrato
         consistent = bool(state.get("config") == R.config_to_dict(cfg) and own_init.get("config") == state.get("config")
-                          and own_init.get("step") == 0 and spectral.get("init_checkpoint_sha256") == prov["init_checkpoint_sha256"])
+                          and own_init.get("step") == 0 and spectral.get("init_checkpoint_sha256") == prov["init_checkpoint_sha256"]
+                          and (spectral.get("frozen_init") or {}).get("sha256") == SD.CHECKPOINTS[teacher])
         prov["checks"] = {
             "raw": raw, "init": init_check(ref_init, own_init), "fixed": fixed_check(trainable_names(cfg), ref_init, state),
             "branch_state": {"sha256": branch_state.get("sha256"), "calibration_reproduced": branch_state.get("calibration_reproduced")},
@@ -513,7 +514,10 @@ def paired(reps: dict, task: str, ref: str, var: str) -> dict:
         raise ValueError(f"{task}: {ref} e {var} con split, fold o sonda diversi")
     for ra, rb in zip(a, b):
         fa, fb = _raw_files(ra), _raw_files(rb)
-        if all(fa.values()) and all(fb.values()) and fa != fb:
+        for name, f in ((ref, fa), (var, fb)):
+            if name.startswith("R") and not all(f.values()):
+                raise ValueError(f"{task}/{ra['arm']}/{name}: SHA del file raw mancante nel rapporto")
+        if ref.startswith("R") and var.startswith("R") and fa != fb:
             raise ValueError(f"{task}/{ra['arm']}: {ref} e {var} da file raw diversi")
     row = AC.s_comparison([_normalized(r) for r in a], [_normalized(r) for r in b])
     return {"from": ref, "to": var, **row, "reading": SDG.reading(row)}
@@ -527,22 +531,30 @@ def primary_reading(rows: dict) -> dict:
             "harm_delta": HARM_DELTA}
 
 
-COLLAPSE_STOP = "allarme di collasso dei rami"  # l'inizio del motivo dello STOP scritto dal trainer (`branch_masking.CollapseAlarm`)
+COLLAPSE_STOP = "allarme di collasso dei rami"  # il motivo dell'allarme dei rami (`branch_masking.CollapseAlarm`); il trainer lo scrive in STOP
+# e in `stopped` come «allarme: allarme di collasso dei rami: ...» (run.py), non all'inizio della riga
 
 
-def run_state(args, arm: str, teacher: str) -> str:
-    """«collassato» se il run e' stato fermato dall'allarme di collasso dei rami (collassato = non batte il riferimento, protocollo), se no
-    «valido» per un run completo coi controlli passati; altrimenti errore (un run fallito per altro non ha esito)."""
+def run_state(args, arm: str, teacher: str) -> tuple[str, str]:
+    """(stato, commit del training): «collassato» se il run di questo braccio e teacher del pilot e' stato fermato dall'allarme di collasso dei
+    rami (STOP e `stopped` della provenienza, che `_train_one` scrive anche per un run fermato; collassato = non batte il riferimento), se no
+    «valido» per un run completo coi controlli passati; altrimenti errore (un run fallito per altro, o mancante, non ha esito)."""
     folder = _run_dir(args, arm, teacher)
     stop = folder / "STOP"
-    if stop.exists() and stop.read_text().startswith(COLLAPSE_STOP):
-        return "collassato"
-    run_summary(args, arm, teacher)
-    return "valido"
+    if stop.exists():
+        prov = json.loads((folder / "run_provenance.json").read_text())
+        if (prov.get("protocol"), prov.get("arm"), prov.get("teacher"), prov.get("collaudo")) != (PROTOCOL, arm, teacher, False):
+            raise ValueError(f"{folder}: run fermato che non e' {arm}/{teacher} del pilot")
+        if COLLAPSE_STOP in str(prov.get("stopped")) and COLLAPSE_STOP in stop.read_text():
+            return "collassato", prov.get("source_commit")
+        raise ValueError(f"{folder}: run fermato per altro ({prov.get('stopped')}): nessun esito, stop e proposta")
+    return "valido", run_summary(args, arm, teacher)["source_commit"]
 
 
 def run_summary(args, arm: str, teacher: str) -> dict:
     folder = _run_dir(args, arm, teacher)
+    if not (folder / "run_provenance.json").exists():
+        raise ValueError(f"{folder}: run del pilot mancante (anche un ibrido mancante e' un fallimento: stop e proposta)")
     prov = json.loads((folder / "run_provenance.json").read_text())
     if (prov.get("protocol"), prov.get("arm"), prov.get("teacher"), prov.get("complete"), prov.get("checks_passed")) != \
             (PROTOCOL, arm, teacher, True, True) or (folder / "STOP").exists():
@@ -574,7 +586,10 @@ def _write(args, result: dict) -> None:
 def compare(args) -> None:
     SD.check_source(args.expected_commit)
     arms = ("PWf", "PWm") if args.primary_only else MODELS
-    states = {a: {te: run_state(args, a, te) for te in TEACHERS} for a in arms}
+    found = {a: {te: run_state(args, a, te) for te in TEACHERS} for a in arms}
+    states = {a: {te: s for te, (s, _) in v.items()} for a, v in found.items()}
+    if len({c for v in found.values() for _, c in v.values()}) != 1:
+        raise ValueError("run del pilot da codici diversi")
     collapsed = sorted(f"{a}/{te}" for a, v in states.items() for te, s in v.items() if s == "collassato")
     base = {"protocol": PROTOCOL, "compare_commit": args.expected_commit, "states": states, "collapsed": collapsed, "note": NOTE}
     if any(c.split("/")[0] in PRIMARY_ARMS for c in collapsed):  # la catena si ferma: questo esito si calcola a mano (protocollo)

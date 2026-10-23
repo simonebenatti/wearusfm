@@ -162,6 +162,13 @@ def test_train_one_writes_the_provenance_with_every_check(runs, monkeypatch):
                                           | ({"step1"} if arm != "PWm" else set()))
         assert json.loads((runs.tmp / f"run_{arm}" / "run_provenance.json").read_text())["checks_passed"]
         assert summary["spectral_branches"]["collapse_monitor"] is not None
+    real = BP._load
+    monkeypatch.setattr(BP, "_load", lambda path: {**real(path), "config": {"altro": 1}} if path.parent.name == "run_odd"
+                        and path.name == "checkpoint.pt" else real(path))
+    prov, _ = BP._train_one(args, "PWf", "B_seed0", runs.tmp / "run_odd", max_steps=None, time_limit_s=600, source=runs.src, run2c=runs.ref,
+                            scales=None, window_s=None)
+    assert prov["checks_ok"]["consistent"] is False and not prov["checks_passed"]  # checkpoint con un'altra configurazione
+    monkeypatch.setattr(BP, "_load", real)
     monkeypatch.setattr(BP, "build_config", lambda arm, teacher, cal, max_steps=None: replace(runs.cfgs[arm], batch_size=4, max_steps=2))
     with pytest.raises(ValueError, match="configurazione diversa dal 2C"):
         BP._train_one(args, "PWf", "B_seed0", runs.tmp / "bad", max_steps=None, time_limit_s=600, source=runs.src, run2c=runs.ref,
@@ -354,7 +361,7 @@ def _report(folder: Path, task: str, teacher: str, name: str, quality: float, se
         row = np.arange(len(y), dtype=np.int64)
         pred = np.where(rng.random(len(y)) < quality, y, rng.integers(0, 4, len(y)))
         oof.update({f"{d}_y": y, f"{d}_pred": pred, f"{d}_s": s, f"{d}_row": row})
-        files = {"raw": {"path": "raw", "sha256": raw}} if name.startswith("R") else {}
+        files = {"raw": {"path": "raw", "sha256": raw}} if name.startswith("R") and raw else {}
         datasets[d] = {"input_sha256": "i" * 64, "oof_rows_sha256": fingerprint(row), "s": float((pred == y).mean()), "files": files}
     path = folder / task / teacher / f"{name}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -376,9 +383,11 @@ def _pilot_runs(tmp_path, norm=0.5, verified=True, commit="f" * 40, collapsed=()
         for t in BP.TEACHERS:
             d = runs / arm / t
             d.mkdir(parents=True)
-            if f"{arm}/{t}" in collapsed:  # fermato dall'allarme: provenienza incompleta e STOP del trainer
-                (d / "STOP").write_text("allarme di collasso dei rami: psd_fast rank 0.01 sotto 0.1 x riferimento\n")
-                (d / "run_provenance.json").write_text(json.dumps({"protocol": BP.PROTOCOL, "arm": arm, "teacher": t, "complete": False}))
+            if f"{arm}/{t}" in collapsed:  # fermato dall'allarme: STOP e `stopped` nel formato del trainer (run.py), provenienza incompleta
+                why = "allarme: allarme di collasso dei rami: psd_fast_erank 0.01 sotto 0.1 x riferimento 9 per 3 controlli consecutivi"
+                (d / "STOP").write_text(why + "\n")
+                (d / "run_provenance.json").write_text(json.dumps({"protocol": BP.PROTOCOL, "arm": arm, "teacher": t, "collaudo": False,
+                                                                   "complete": False, "stopped": why, "source_commit": commit}))
                 continue
             (d / "run_provenance.json").write_text(json.dumps({
                 "protocol": BP.PROTOCOL, "arm": arm, "teacher": t, "complete": True, "checks_passed": True, "source_commit": commit,
@@ -440,6 +449,25 @@ def test_a_collapsed_arm_gives_a_formal_outcome(tmp_path, no_source):
     assert sorted(res["descriptive_skipped"]) == ["PW_PWl_su_PW", "PW_PWl_su_RPW"]
 
 
+def test_a_run_really_stopped_by_the_branch_alarm_is_read_as_collapsed(runs, monkeypatch):
+    """Col trainer vero (allarme forzato come in test_branch_pilot_trainer): STOP e provenienza scritti da `_train_one`; `run_state` lo legge
+    come «collassato». Un run fermato per altro, o mancante, non ha esito (seconda review del critico, 23/10)."""
+    from wearusfm.model import branch_masking as BM
+
+    args = _env(runs, monkeypatch)
+    monkeypatch.setattr(BM.CollapseAlarm, "update", lambda self, step, metrics: "allarme di collasso dei rami: prova" if step == 2 else None)
+    out = BP._run_dir(args, "PWm", "B_seed0")
+    prov, summary = BP._train_one(args, "PWm", "B_seed0", out, max_steps=4, time_limit_s=600, source=runs.src, run2c=runs.ref,
+                                  scales=None, window_s=None, extra=(("max_steps",),))  # il run del test «2C» ha 2 passi
+    assert not prov["complete"] and summary["stopped"].startswith("allarme: allarme di collasso dei rami")
+    assert BP.run_state(args, "PWm", "B_seed0") == ("collassato", args.expected_commit)
+    (out / "STOP").write_text("allarme: rango effettivo sotto 10% della dimensione per 3 valutazioni\n")
+    with pytest.raises(ValueError, match="fermato per altro"):
+        BP.run_state(args, "PWm", "B_seed0")
+    with pytest.raises(ValueError, match="mancante"):
+        BP.run_state(args, "PWh", "B_seed0")
+
+
 def test_compare_refuses_reports_of_other_sources_codes_checkpoints_or_raw_files(tmp_path, no_source):
     runs = _pilot_runs(tmp_path)
     diag, pil = _reports(tmp_path, {})
@@ -452,6 +480,9 @@ def test_compare_refuses_reports_of_other_sources_codes_checkpoints_or_raw_files
     _report(pil, "p1", "B_seed0", "RPWl", 0.5, seed=0)
     _report(pil, "p2", "B_seed1", "RPWf", 0.5, seed=0, raw="q" * 64)
     with pytest.raises(ValueError, match="file raw diversi"):
+        _compare(tmp_path, runs)
+    _report(pil, "p2", "B_seed1", "RPWf", 0.5, seed=0, raw=None)
+    with pytest.raises(ValueError, match="SHA del file raw mancante"):
         _compare(tmp_path, runs)
     _report(pil, "p2", "B_seed1", "RPWf", 0.5, seed=0)
     path = pil / "p1" / "B_seed1" / "PWm.json"
@@ -480,6 +511,10 @@ def test_compare_refuses_reports_of_other_sources_codes_checkpoints_or_raw_files
     prov.write_text(json.dumps({**json.loads(prov.read_text()), "checks_passed": False}))
     with pytest.raises(ValueError, match="non valido"):
         _compare(tmp_path, bad)
+    missing = _pilot_runs(tmp_path / "missing")
+    (missing / "PWh" / "B_seed1" / "run_provenance.json").unlink()  # un ibrido mancante e' un fallimento, non un descrittivo saltato
+    with pytest.raises(ValueError, match="mancante"):
+        _compare(tmp_path, missing)
 
 
 def test_primary_reading_rule():
@@ -515,3 +550,64 @@ def test_plan_puts_the_primary_first_and_validates(tmp_path, queue):
     lines = [line for line in cmds.read_text().splitlines() if line]
     assert len(lines) == 7 and "boost_qos_dbg" in lines[0] and lines[0].endswith("PWm B_seed0 collaudo")
     assert all("--qos=boost_qos_lprod --time=01:30:00" in line for line in lines[1:])
+
+
+# --- estrazione e sonda: stesso codice del 2C e della diagnostica -----------------------------------------------------------------------
+
+def test_extract_p2_writes_the_same_branch_outputs_as_the_2c_for_the_same_checkpoint(tmp_path, monkeypatch):
+    """`extract` (P2, in CPU) sul checkpoint di un run del 2C sintetico, presentato come run del pilot: cache uguale bit per bit a quella
+    dell'estrazione del 2C (`step2c.extract`, branches_trained), identita' e provenienza del pilot, accoppiata alla cache raw."""
+    import test_step2c as TS
+
+    args = TS._extract_setup(tmp_path, monkeypatch)
+    S2C.extract(args)
+    two_c = args.branch_runs / "B_seed0"
+    pilot_runs = tmp_path / "pilot_runs"
+    run = pilot_runs / "PWm" / "B_seed0"
+    run.mkdir(parents=True)
+    (run / "checkpoint.pt").write_bytes((two_c / "checkpoint.pt").read_bytes())
+    prov = {"protocol": BP.PROTOCOL, "source_commit": args.expected_commit, "arm": "PWm", "teacher": "B_seed0", "collaudo": False,
+            "complete": True, "checks_passed": True, "source_checkpoint_sha256": BP.SD.CHECKPOINTS["B_seed0"],
+            "checkpoint_sha256": sha256_file(run / "checkpoint.pt")}
+    (run / "run_provenance.json").write_text(json.dumps(prov))
+    pargs = SimpleNamespace(**{**vars(args), "arm": "PWm", "teacher": "B_seed0", "pilot_runs": pilot_runs, "eval_root": tmp_path / "pilot_cache"})
+    BP.extract(pargs)
+    folder = pargs.eval_root / "p2" / "B_seed0" / "branches_PWm"
+    meta = json.loads((folder / "provenance.json").read_text())
+    assert meta["identity"] == BP.cache_identity(args.expected_commit, "p2", "B_seed0", "PWm") and meta["run"] == prov
+    for ds in BP.SD.DATASETS["p2"]:
+        with np.load(folder / f"{ds}.npz") as a, np.load(args.eval_root / "p2" / "B_seed0" / "branches_trained" / f"{ds}.npz") as b:
+            assert sorted(a.files) == sorted(b.files) and all(np.array_equal(a[k], b[k]) for k in a.files)
+    with pytest.raises(ValueError, match="NEW"):
+        BP.extract(pargs)  # cartella gia' scritta: niente sovrascritture
+    (run / "run_provenance.json").write_text(json.dumps({**prov, "checks_passed": False}))
+    with pytest.raises(ValueError, match="run non valido per il pilot"):
+        BP.extract(SimpleNamespace(**{**vars(pargs), "eval_root": tmp_path / "other"}))
+
+
+def test_the_probe_path_gives_the_same_report_as_the_diagnostic_code(tmp_path):
+    """Il percorso della sonda in `spectral_diagnostic.py` (caricamento, colonne, `probe_set`) da' lo stesso S e le stesse predizioni del codice
+    con cui la diagnostica ha prodotto PW0, PW, RPW0, RPW (aba1f2e): l'accoppiamento coi rapporti del pilot regge (seconda review del critico)."""
+    import subprocess
+    import test_spectral_diagnostic as TSD
+
+    try:
+        old_src = subprocess.check_output(["git", "show", "aba1f2e:scripts/spectral_diagnostic.py"], cwd=REPO, text=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pytest.skip("storia git non disponibile")
+    old = type(sys)("spectral_diagnostic_aba1f2e")
+    old.__file__ = str(REPO / "scripts" / "spectral_diagnostic.py")  # stesse radici e stessi moduli della sonda
+    exec(compile(old_src, old.__file__, "exec"), old.__dict__)
+    ev, dn = TSD.build(tmp_path, "p2", arms=("B_seed0",))
+    reports = {}
+    for name, mod in (("new", BP._script("spectral_diagnostic")), ("old", old)):
+        out = tmp_path / name
+        assert mod.main(["probe", "--task", "p2", "--arm", "B_seed0", "--sets", "RPW0", "PW", "--eval-root", str(ev), "--downstream-root",
+                         str(dn), "--out-dir", str(out)]) == 0
+        reports[name] = {s: json.loads((out / "p2" / "B_seed0" / f"{s}.json").read_text()) for s in ("RPW0", "PW")}
+    for s in ("RPW0", "PW"):
+        a, b = reports["new"][s], reports["old"][s]
+        skip = {"oof", "oof_sha256", "elapsed_s"}
+        assert {k: v for k, v in a.items() if k not in skip} == {k: v for k, v in b.items() if k not in skip}
+        with np.load(a["oof"]) as za, np.load(b["oof"]) as zb:
+            assert sorted(za.files) == sorted(zb.files) and all(np.array_equal(za[k], zb[k]) for k in za.files)

@@ -2729,6 +2729,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   finiti, checkpoint coerenti); test in piu' (PWl nel trainer, sequenza del collaudo, ibrido, rifiuti; config del 2C copiati in
   `results/passo6/step2c_configs_20261014/`). Lettura e criteri del collaudo congelati in decisioni.md. Test del pilot 20 PASS.
 
+### 2026-10-23 | Claude | Pilot dei rami: correzioni della seconda review del `critico` | Codice: questo commit
+
+- Seconda review (su 4af5715): DA RIVEDERE, 2 bloccanti e 7 minori. Corretti: `run_state` riconosce lo STOP vero del trainer («allarme:
+  allarme di collasso dei rami: ...») e controlla la provenienza del run fermato; test col trainer vero e l'allarme forzato; ibrido mancante =
+  fallimento (protocollo corretto con nota datata); SHA del file raw obbligatorio per gli insiemi col raw; percorso della sonda di
+  `spectral_diagnostic.py` provato uguale a quello di aba1f2e (rapporti e predizioni); `extract` P2 provato uguale bit per bit
+  all'estrazione del 2C; controllo del teacher d'origine registrato dal trainer e test negativo di `consistent`; soglie dell'allarme e regole
+  dei run mancanti congelate in decisioni.md; contatore del trainer dichiarato. Test del pilot 23 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4124,3 +4133,10 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   della diagnostica; radice della diagnostica sovrascrivibile; commit del confronto non registrato; nessun esito con un braccio collassato;
   un limite mancante nella nota; componenti non definite invisibili alla media; controlli del 2C omessi; test mancanti; voci da scrivere.
   Corretti nel commit successivo; nessun job era partito.
+
+### 2026-10-23 | Claude | Pilot dei rami: rilievi della seconda review del `critico` (4af5715)
+
+- Bloccanti: l'esito «collassato» non scattava sul formato vero dello STOP (il test usava uno STOP scritto a mano); protocollo e codice in
+  disaccordo sull'ibrido mancante. Minori: SHA raw saltato se mancante; percorso della sonda in `spectral_diagnostic.py` non vincolato;
+  `extract` senza test; un controllo del 2C mancante in `consistent`; soglie dell'allarme non in decisioni.md e «tutti corretti» non vero;
+  due conteggi delle misure non definite diversi; confronto completo da lanciare a mano con PWl collassato. Corretti nel commit successivo.

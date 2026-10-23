@@ -3958,3 +3958,14 @@ nodi del piano sottomessi.
   tetto (stima ~475), ~60 h di calendario (~18 h per il primario, per primo). L'opzione su nodo GPU (tetto 134 GPU-ora) supera il residuo:
   solo con una decisione di budget. Review del `critico` del 23/10: DA RIVEDERE (2 bloccanti, 10 minori), tutti corretti in questo commit;
   seconda review prima del collaudo. Nessun job lanciato; il collaudo richiede il via di Simone.
+**Pilot dei rami: seconda review del `critico` e soglie dell'allarme congelate (23/10/2026).** La voce precedente diceva «tutti corretti»: la
+seconda review (DA RIVEDERE, 2 bloccanti e 7 minori su 4af5715) ha trovato che l'esito «collassato» non scattava su un vero STOP del trainer
+(«allarme: allarme di collasso dei rami: ...», non all'inizio della riga) e che il protocollo prometteva per un ibrido mancante un
+comportamento che il codice non ha. Corretti nel commit di questa voce, con le minori. Regole che la lettura usa, congelate qui:
+- **Allarme di collasso dei rami** (`branch_masking.COLLAPSE`, invariato dal 21/10): per ramo e scala, riferimento = media dei passi 1-10;
+  un controllo ogni 10 aggiornamenti dopo i primi 100; allarme e STOP con diversita' < 0,05 x riferimento, oppure varianza assoluta < 0,05 x
+  riferimento, oppure rango effettivo < 0,10 x riferimento in 3 controlli consecutivi (una lacuna interrompe la sequenza). Collassato = non
+  batte il riferimento; il primario non si legge se PWf o PWm collassa o non e' «verified».
+- **Run mancanti o falliti per altro** (compreso un ibrido PWh): nessun esito, stop e proposta. PWl collassato: il confronto completo si lancia
+  a mano e salta i descrittivi di PWl.
+- **Misura non definita:** fa fede `learned` (media o componente presente non finita); il contatore del trainer conta solo le medie.

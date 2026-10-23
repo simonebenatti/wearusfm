@@ -121,7 +121,7 @@ insiemi PW e RPW (rami da soli e concatenati al raw). Confronti accoppiati per l
   **solo se** PWm ha imparato il suo compito (perdita normalizzata media sugli ultimi 100 aggiornamenti <= 0,9 con tutti e due i teacher) e
   nessuno dei due bracci e' collassato. **Misure non definite (review GPT, R1):** se una delle ultime 100 perdite normalizzate non e'
   definita (riferimento costante a varianza nulla), il criterio «ha imparato» non e' verificabile e il primario non si legge; il trainer la
-  scrive come «non definita» e la conta (`masked_normalized_undefined`). **Precisazione del 23/10 (critico):** e' non definita anche una misura con una componente ramo x scala presente ma non finita (la media del trainer la salterebbe); una componente assente (nessun bersaglio di quella scala nel batch) non e' una misura. «Non collassato» come sopra (`collapse_monitor.verified` per PWf e PWm). Accanto si riporta PW0 -> PWm.
+  scrive come «non definita» e conta le medie non definite (`masked_normalized_undefined`; fa fede `learned`, che conta anche le componenti). **Precisazione del 23/10 (critico):** e' non definita anche una misura con una componente ramo x scala presente ma non finita (la media del trainer la salterebbe); una componente assente (nessun bersaglio di quella scala nel batch) non e' una misura. «Non collassato» come sopra (`collapse_monitor.verified` per PWf e PWm). Accanto si riporta PW0 -> PWm.
 - **Descrittivi:** PWf -> PWm su PW; PW -> PWm (le ricette complete); PW0 -> PWm; PW -> PWl («a 3e-4 l'obiettivo vecchio: migliora /
   peggiora / regola non superata rispetto a 1e-3»; un LR piu' basso sugli stessi 3.000 passi e' anche meno spostamento dal passo 0); PW ->
   PWf (effetto di fissare `output` e `combine` col vecchio obiettivo); PW0 -> PWh e PWh -> PW (dove sta il cambiamento del vecchio
@@ -194,8 +194,11 @@ compra il parallelismo, fino a 8 job insieme), stessa estrazione in CPU. Tetto d
 
 **Un braccio collassato** (run fermato dall'allarme di collasso dei rami) e' incompleto: il training esce con errore e la catena non estrae
 ne' sonda quel braccio. Se e' PWf o PWm, il confronto si lancia a mano (`branch_pilot_cpu.sbatch <cartella> compare --primary-only`) e scrive
-«braccio collassato: non batte il riferimento», primario non positivo; se e' PWl (o un ibrido manca), il confronto completo salta i suoi
-descrittivi e li elenca (`descriptive_skipped`). Un run fallito per altro non ha esito: stop e proposta.
+«braccio collassato: non batte il riferimento», primario non positivo; se e' PWl, il confronto completo (che nella catena dipende anche
+dalle sonde di PWl, quindi non parte da solo) si lancia a mano, salta i descrittivi di PWl e li elenca (`descriptive_skipped`). Lo stato si
+legge dallo STOP e da `stopped` della provenienza, nel formato del trainer («allarme: allarme di collasso dei rami: ...»). **Correzione del
+23/10 (seconda review del critico):** un ibrido mancante o non valido, come un run fallito per altro, non ha esito: stop e proposta (la prima
+stesura diceva che il confronto ne saltava i descrittivi, il codice no).
 
 ## Codice
 
@@ -213,4 +216,4 @@ descrittivi e li elenca (`descriptive_skipped`). Un run fallito per altro non ha
   validation interna; rapporti col protocollo e la ricetta del pilot (le uscite dei rami non sono quelle del 2C); il launcher passa
   `PILOT_ROOT`. Il confronto del pilot accoppia rapporti della diagnostica e del pilot dopo aver controllato la sorgente di ciascuno: contano
   split, fold, sonda e righe, come in `arms_compare.s_comparison`.
-- Test CPU: `tests/cpu/test_branch_pilot.py` (configurazione contro i `config.json` veri del 2C in `results/passo6/step2c_configs_20261014/`, controlli sul trainer vero per PWl, PWf e PWm, sequenza del collaudo, ibrido e sua rilettura, verdetto, sonde del pilot e rifiuti delle cache, confronto e rifiuti, braccio collassato, piano; codice della sonda uguale a quello della diagnostica, aba1f2e, fissato per hash).
+- Test CPU: `tests/cpu/test_branch_pilot.py` (configurazione contro i `config.json` veri del 2C in `results/passo6/step2c_configs_20261014/`, controlli sul trainer vero per PWl, PWf e PWm, sequenza del collaudo, ibrido e sua rilettura, verdetto, sonde del pilot e rifiuti delle cache, confronto e rifiuti, braccio collassato, piano; codice della sonda uguale a quello della diagnostica, aba1f2e: i file della sonda fissati per hash e il percorso di `spectral_diagnostic.py` provato uguale, rapporti e predizioni, a quello di aba1f2e; estrazione P2 uguale bit per bit a quella del 2C).
