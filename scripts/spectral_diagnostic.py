@@ -64,6 +64,12 @@ DATASETS = {"p1": ("ninapro_db2", "ninapro_db3", "ninapro_db6"), "p2": ("epn612"
 RAW_DIM, BRANCH_COLS = 768, 256
 # insieme -> (raw incluso, modello dei rami o None)
 SETS = {"PW0": (False, "init"), "PW": (False, "trained"), "R": (True, None), "RPW0": (True, "init"), "RPW": (True, "trained")}
+# pilot dei rami (`rami_pilota_v1`, scripts/branch_pilot.py): le uscite dei rami dei modelli nuovi, da sole e concatenate al raw, con la stessa
+# sonda e la stessa validation interna; le cache stanno sotto --pilot-root (<compito>/<teacher>/branches_<modello>)
+PILOT = {"protocol": "rami_pilota_v1"}
+PILOT_MODELS = ("PWl", "PWf", "PWm", "PWh")
+PILOT_SETS = {**{m: (False, m) for m in PILOT_MODELS}, **{f"R{m}": (True, m) for m in PILOT_MODELS}}
+ALL_SETS = {**SETS, **PILOT_SETS}
 CONTRASTS = (("rami_da_soli", "PW0", "PW"), ("concatenazione", "RPW0", "RPW"), ("apporto_passo0", "R", "RPW0"),
              ("apporto_allenati", "R", "RPW"))
 FEATURE_SET = "cache_2C"  # per l'accoppiamento dei rapporti: stessa sorgente per tutti gli insiemi (le colonne sono in "columns")
@@ -137,9 +143,34 @@ def provenance(eval_root: Path, downstream_root: Path, task: str, arm: str) -> d
     return out
 
 
-def _file(eval_root: Path, downstream_root: Path, task: str, arm: str, part: str, ds: str) -> Path:
+def pilot_provenance(pilot_root: Path, task: str, arm: str, models, raw: dict) -> dict:
+    """Le cache delle uscite dei rami del pilot: identita' (protocollo, compito, teacher, modello, split, teacher d'origine), run completo e coi
+    controlli passati, stesso codice per tutte, righe accoppiate alla cache raw."""
+    out = {}
+    for m in models:
+        path = pilot_root / task / arm / f"branches_{m}" / "provenance.json"
+        meta = json.loads(path.read_text())
+        _check_identity(meta["identity"], {**PILOT, "task": task, "arm": arm, "model": m, "variant": f"branches_{m}", "which": "teacher",
+                                           "split_sha256": SPLIT_SHA, "source_checkpoint_sha256": CHECKPOINTS[arm]}, path)
+        if any(v.get("feature_set") != "branches" or v.get("model_dim") != BRANCH_COLS for v in meta["cache"].values()):
+            raise ValueError(f"{path}: non e' una cache dei rami da {BRANCH_COLS} colonne")
+        _check_identity(meta.get("run") or {}, {**PILOT, "arm": m, "teacher": arm, "collaudo": False, "complete": True, "checks_passed": True,
+                                                "source_commit": meta["identity"]["source_commit"]}, path)
+        keep = ("input_sha256", "rows")
+        if sorted(meta["cache"]) != sorted(raw) or any({k: meta["cache"][d][k] for k in keep} != {k: raw[d][k] for k in keep} for d in raw):
+            raise ValueError(f"{task}/{arm}: rami {m} non accoppiati alla cache raw")
+        out[m] = meta["cache"]
+        out[f"commit_{m}"] = meta["identity"]["source_commit"]
+    if len({out[f"commit_{m}"] for m in models}) > 1:
+        raise ValueError(f"{task}/{arm}: cache del pilot da codici diversi")
+    return out
+
+
+def _file(eval_root: Path, downstream_root: Path, task: str, arm: str, part: str, ds: str, pilot_root: Path | None = None) -> Path:
     if part == "raw":
         return downstream_root / task / arm / f"{ds}.npz"
+    if part in PILOT_MODELS:
+        return pilot_root / task / arm / f"branches_{part}" / f"{ds}.npz"
     return eval_root / task / arm / f"branches_{part}" / f"{ds}.npz"
 
 
@@ -155,9 +186,16 @@ def internal_subjects(task: str, ds: str, prov_rows: dict, splits: dict | None) 
     return CP.p2_internal_subjects(prov_rows[""]["subjects"])
 
 
-def load(eval_root: Path, downstream_root: Path, task: str, arm: str, parts: set[str], splits: dict | None) -> dict:
-    """{ds: {"y", "s", "subjects", "input_sha256", parte: x}} sulle sole righe interne, con file e righe verificati."""
+def load(eval_root: Path, downstream_root: Path, task: str, arm: str, parts: set[str], splits: dict | None,
+         pilot_root: Path | None = None) -> dict:
+    """{ds: {"y", "s", "subjects", "input_sha256", parte: x}} sulle sole righe interne, con file e righe verificati. Le parti del pilot
+    (`PILOT_MODELS`) si leggono da `pilot_root`."""
     prov = provenance(eval_root, downstream_root, task, arm)
+    pilot = sorted(set(parts) & set(PILOT_MODELS))
+    if pilot:
+        if pilot_root is None:
+            raise ValueError("insiemi del pilot: serve --pilot-root")
+        prov.update(pilot_provenance(pilot_root, task, arm, pilot, prov["raw"]))
     out = {}
     for ds in DATASETS[task]:
         rows = prov["raw"][ds]["rows"]
@@ -165,7 +203,7 @@ def load(eval_root: Path, downstream_root: Path, task: str, arm: str, parts: set
         entry = {"subjects": pre, "input_sha256": prov["raw"][ds]["input_sha256"], "files": {}}
         ref = None
         for part in sorted(parts):
-            path = _file(eval_root, downstream_root, task, arm, part, ds)
+            path = _file(eval_root, downstream_root, task, arm, part, ds, pilot_root)
             sha = sha256_file(path)
             if sha != prov[part][ds]["sha256"]:
                 raise ValueError(f"{path}: SHA-256 diverso da quello della provenienza")
@@ -194,12 +232,13 @@ def load(eval_root: Path, downstream_root: Path, task: str, arm: str, parts: set
             entry[part] = x
         if sorted(set(entry["s"].tolist())) != pre:
             raise ValueError(f"{ds}: soggetti interni assenti dalla cache")
+        entry["pilot_commit"] = prov[f"commit_{pilot[0]}"] if pilot else None
         out[ds] = entry
     return out
 
 
 def columns(entry: dict, name: str) -> np.ndarray:
-    raw, which = SETS[name]
+    raw, which = ALL_SETS[name]
     blocks = ([entry["raw"]] if raw else []) + ([entry[which]] if which else [])
     return np.concatenate(blocks, 1) if len(blocks) > 1 else blocks[0]
 
@@ -207,7 +246,7 @@ def columns(entry: dict, name: str) -> np.ndarray:
 def parts_of(names) -> set[str]:
     out = set()
     for n in names:
-        raw, which = SETS[n]
+        raw, which = ALL_SETS[n]
         out |= {"raw"} if raw else set()
         out |= {which} if which else set()
     return out
@@ -221,10 +260,15 @@ def probe_set(data: dict, task: str, arm: str, name: str, splits: dict | None, s
     from sklearn.metrics import balanced_accuracy_score
 
     t0 = time.time()
-    report = {"protocol": PROTOCOL, "task": task, "arm": arm, "set": name, "columns": {"raw": SETS[name][0], "branches": SETS[name][1]},
-              "k_folds": CP.K_FOLDS, "fold_seed": CP.FOLD_SEED, "val_frac": CP.VAL_FRAC, "probe_seed": seed, "feature_set": FEATURE_SET,
-              "window_s": CP.WINDOW_S if task == "p1" else None, "splits_sha256": splits_sha,
-              "extraction_recipe": {"branches": STEP2C, "raw": DOWNSTREAM, "split_sha256": SPLIT_SHA}, "datasets": {}}
+    pilot = name in PILOT_SETS  # protocollo e ricetta del pilot: le uscite dei rami vengono dal suo codice, non dal 2C
+    commit = next(iter(data.values()))["pilot_commit"] if pilot else None
+    report = {"protocol": PILOT["protocol"] if pilot else PROTOCOL, "task": task, "arm": arm, "set": name,
+              "columns": {"raw": ALL_SETS[name][0], "branches": ALL_SETS[name][1]},
+              "k_folds": CP.K_FOLDS, "fold_seed": CP.FOLD_SEED, "val_frac": CP.VAL_FRAC, "probe_seed": seed,
+              "feature_set": "cache_pilota" if pilot else FEATURE_SET, "window_s": CP.WINDOW_S if task == "p1" else None,
+              "splits_sha256": splits_sha,
+              "extraction_recipe": {"branches": {**PILOT, "source_commit": commit} if pilot else STEP2C, "raw": DOWNSTREAM,
+                                    "split_sha256": SPLIT_SHA}, "datasets": {}}
     parts, oof = [], {}
     for ds, e in data.items():
         x = columns(e, name)
@@ -309,7 +353,7 @@ def probe(args) -> int:
     splits_sha = SPLIT_SHA if args.task == "p1" else CP.P2_SPLITS_SHA256
     names = list(args.sets)
     need = parts_of(names) | ({"raw", "init", "trained"} if args.redundancy else set())
-    data = load(args.eval_root, args.downstream_root, args.task, args.arm, need, splits)
+    data = load(args.eval_root, args.downstream_root, args.task, args.arm, need, splits, getattr(args, "pilot_root", None))
     folder = args.out_dir / args.task / args.arm
     folder.mkdir(parents=True, exist_ok=True)
     for name in names:
@@ -495,11 +539,12 @@ def main(argv=None) -> int:
     p = sub.add_parser("probe", allow_abbrev=False)  # niente abbreviazioni: il launcher rifiuta --out-dir e le radici per nome
     p.add_argument("--task", choices=["p1", "p2"], required=True)
     p.add_argument("--arm", choices=sorted(CHECKPOINTS), required=True)
-    p.add_argument("--sets", nargs="+", choices=list(SETS), required=True)
+    p.add_argument("--sets", nargs="+", choices=list(ALL_SETS), required=True)
     p.add_argument("--redundancy", action="store_true", help="anche CKA, R^2 dal raw e rango effettivo dei blocchi")
     p.add_argument("--eval-root", type=Path, required=True, help="cartella della valutazione del 2C (step2c_1410)")
     p.add_argument("--downstream-root", type=Path, required=True, help="cartella della tranche downstream (step1_downstream_0910)")
     p.add_argument("--splits", type=Path, default=ROOT / "splits" / "v1" / "splits_v1.json")
+    p.add_argument("--pilot-root", type=Path, help="uscite dei rami del pilot (scripts/branch_pilot.py extract), per gli insiemi del pilot")
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--seed", type=int, default=0)
     c = sub.add_parser("compare", allow_abbrev=False)

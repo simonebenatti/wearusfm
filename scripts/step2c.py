@@ -256,23 +256,23 @@ def _probe_argv(args, task: str, checkpoint: Path, folder: Path, stage: str, fea
     return argv
 
 
-def _extract_p2(args, checkpoints: dict, folders: dict) -> None:
+def _extract_p2(args, checkpoints: dict, folders: dict, device: str = "cpu") -> None:
     """Come `probe_p2 --stage extract --audit-inputs --feature-set branches --device cpu --batch 64`, per piu' modelli leggendo le finestre una
     volta sola (la lettura di EPN-612 e' la parte lunga): stesse finestre, stesso hash degli ingressi, stesso formato della cache (uguaglianza
-    con `probe_p2` nei test)."""
+    con `probe_p2` nei test). `device`: cpu nel 2C; il pilot dei rami lo passa (valutazione eventuale su nodo GPU)."""
     from types import SimpleNamespace
 
     from wearusfm.harness import fm_features as FF
     from wearusfm.harness.downstream_ab import fingerprint
 
-    models = {which: FF.load_model(str(path), "cpu", "teacher") for which, path in checkpoints.items()}
+    models = {which: FF.load_model(str(path), device, "teacher") for which, path in checkpoints.items()}
     source = SimpleNamespace(epn_root=args.epn_root, uci_root=args.uci_root, max_users=None)
     for ds in probe_p2.DATASETS:
         w, labels, subjects, fs = probe_p2.load_windows(ds, source)
         print(f"{ds}: {len(w)} finestre, {len(set(subjects.tolist()))} soggetti", flush=True)
         input_hash = fingerprint(w, labels, subjects, fs, FF.myo8_montage(ds, fs))
         for which, model in models.items():
-            x = FF.extract_features(model, w, fs, FF.myo8_montage(ds, fs), subjects, batch=64, device="cpu", feature_set="branches")
+            x = FF.extract_features(model, w, fs, FF.myo8_montage(ds, fs), subjects, batch=64, device=device, feature_set="branches")
             folders[which].mkdir(parents=True, exist_ok=True)
             np.savez(folders[which] / f"{ds}.npz", x=x, y=labels, s=subjects, input_sha256=np.asarray(input_hash),
                      **cache_record("branches", FF.feature_width(model, "branches")))

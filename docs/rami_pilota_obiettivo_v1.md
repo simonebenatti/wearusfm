@@ -144,7 +144,31 @@ sonda. Verdetto scritto dal job:
   perdita mascherata, riportata ma non bloccante.
 Passa -> i sei run con l'allocazione misurata (nuovo via di Simone). Non passa -> stop e proposta (nessun retry automatico).
 
+**Aggiunte al collaudo e ai run (Claude, 23/10/2026, con il codice; prima del `critico`):**
+- **Prima del PWm, nello stesso job: PWf per un passo** (`collaudo/PWf_B_seed0_passo1`): configurazione, passo 0 caricato dal 2C e perdita
+  del passo 1 contro quella del 2C (tolleranza 1e-4). E' la verifica d'inizializzazione dei bracci col vecchio obiettivo, che il PWm (obiettivo
+  diverso) non puo' dare; senza, un errore si vedrebbe solo nei sei run. Entra nell'integrita' del verdetto.
+- **Configurazione del 2C per costruzione, controllata:** ogni run confronta la propria configurazione con il `config.json` del run del 2C
+  dello stesso teacher (normalizzate coi default dei campi aggiunti dopo); sono ammesse solo le differenze del braccio (PWl: `lr`,
+  `branch_monitor`; PWf: `branch_freeze_output`; PWm: anche `branch_objective`). Altrimenti il run non parte. Verificato sul Mac il 23/10 coi
+  `config.json` veri del 2C: col codice di oggi la configurazione del 2C si riproduce senza differenze per B_seed0 e B_seed1.
+- **Controlli a fine run, nella provenienza:** raw uguale al teacher d'origine (studente e teacher, finale e passo 0); passo 0 del run uguale
+  al passo 0 del 2C su rami e teste (studente e teacher); ogni tensore non allenato dal braccio (statistiche d'ingresso, frontend, strati fissi,
+  teste fisse) uguale al passo 0 del 2C a fine run; SHA del passo 0 caricato; per PWl e PWf la perdita del passo 1. Un controllo fallito = run
+  non valido, nessuna estrazione. La distanza relativa dei token dal passo 0 si registra (descrittivo).
+- **Monitor del collaudo:** «nessun allarme e riferimenti registrati» si legge come `collapse_monitor.verified` (almeno un controllo, nessun
+  allarme, ogni riferimento atteso definito), lo stesso criterio del «non collassato» della lettura.
+- **Apprendimento del collaudo:** servono 100 misure definite della perdita normalizzata (`learned`, come nella lettura del primario).
+
 ## Esecuzione e costo (stime; preventivo definitivo dopo il collaudo)
+
+**Ordine (23/10/2026):** il piano della catena mette prima il primario (uscite di PWf e PWm, sonde RPWf e RPWm sui due compiti e teacher,
+confronto del solo primario, `esito_primario.json`), poi ibridi, PWl e PWh, gli insiemi dei soli rami e il confronto completo (`esito.json`).
+Il confronto dipende dal confronto della diagnostica (`RAMI-rami-diag-20261021b-compare`): PW0, PW, RPW0 e RPW sono i suoi rapporti.
+**Tempi misurati dopo la stesura:** sulla coda seriale gira un job dell'utente alla volta (diagnostica del 22-23/10); le sonde dei soli rami
+durano piu' di quelle con il raw (P1 PW0 2 h 05, PW 2 h 26, R 1 h 51; P2 ~40-55 min). In tutto 16 estrazioni e 32 sonde (una per insieme,
+come la diagnostica v2): ~60 h di calcolo in serie su CPU, ~18 h per il solo primario. **Alternativa da decidere col preventivo:** estrazioni e
+sonde su nodo GPU (`plan --eval-queue gpu`, 8 job insieme, come la valutazione dei bracci), poche ore, GPU-ora pari ai tempi effettivi.
 
 | Fase | Job | Risorse | Tempo massimo | Stima |
 |---|---|---|---|---|
@@ -169,5 +193,12 @@ seriali dell'utente, `--nice`, nessuna tranche a ridosso delle valutazioni di C3
   fissi esclusi da ottimizzatore ed EMA, caricamento dei rami dal passo 0 del 2C, allarme di collasso dei rami. I campi nuovi della
   configurazione hanno un default retrocompatibile (`_config_with_defaults`); il controllo d'identita' della selezione di C1-C4 normalizza le
   due parti allo stesso modo (i run di C1-C2, fatti col codice 72cf24a, restano verificabili: test sui `config.json` veri).
-- `scripts/branch_pilot.py`: training dei bracci nuovi (come `step2c.train`, identita' e controlli suoi, collaudo), ibridi, uscite dei rami
-  (come `step2c.extract`); lettura con `spectral_diagnostic.py` esteso alle cache del pilot.
+- `scripts/branch_pilot.py` (23/10/2026): `train` (bracci nuovi dal passo 0 del 2C, controlli sopra; `--collaudo`: PWf per un passo, poi PWm,
+  verdetto), `hybrid` (PWh), `extract` (uscite dei rami di un modello, P1 o P2, accoppiate alla cache raw), `compare` (primario con le sue
+  condizioni, confronto accanto, descrittivi, distanze; `--primary-only`), `plan` (comandi del collaudo e dei sei training, piano della catena
+  `eval-plan-v0`, coda seriale o GPU). Launcher `scripts/slurm/branch_pilot_train.sbatch` (GPU) e `branch_pilot_cpu.sbatch` (CPU).
+- `scripts/spectral_diagnostic.py probe --pilot-root`: insiemi del pilot (PWl, PWf, PWm, PWh da soli e `R`+modello), stessa sonda e stessa
+  validation interna; rapporti col protocollo e la ricetta del pilot (le uscite dei rami non sono quelle del 2C); il launcher passa
+  `PILOT_ROOT`. Il confronto del pilot accoppia rapporti della diagnostica e del pilot dopo aver controllato la sorgente di ciascuno: contano
+  split, fold, sonda e righe, come in `arms_compare.s_comparison`.
+- Test CPU: `tests/cpu/test_branch_pilot.py` (configurazione, controlli sul trainer vero, ibrido, collaudo, sonde del pilot, confronto, piano).

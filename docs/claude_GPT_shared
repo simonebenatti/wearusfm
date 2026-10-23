@@ -2703,6 +2703,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - 61919664 (P1 RPW0 con la ridondanza) e 61919669 (P1 RPW). Finite ieri 61789465 (P1 PW, 2 h 26) e 61813410 (P1 R, 1 h 51). Restano le 5
   sonde della P2 di B_seed1 e il confronto.
 
+### 2026-10-23 | Claude | Pilot dei rami: codice operativo scritto, `critico` in corso | Codice: questo commit
+
+- Simone: «no fermarlo, vediamo che succede» (letto come «non fermarlo»; gliel'ho detto). `scripts/branch_pilot.py` (train coi controlli,
+  collaudo con PWf a un passo prima del PWm, hybrid, extract, compare col primario e i descrittivi, plan), launcher
+  `branch_pilot_train.sbatch` e `branch_pilot_cpu.sbatch`, `spectral_diagnostic.py probe --pilot-root` (insiemi del pilot, protocollo e
+  ricetta propri), `step2c._extract_p2` con `device` (default cpu). Protocollo aggiornato (aggiunte dichiarate: controllo della
+  configurazione contro il `config.json` del 2C, PWf a un passo nel collaudo, primario per primo, tempi misurati, opzione GPU).
+- Verificato sul Mac coi `config.json` veri del 2C: col codice di oggi la configurazione del 2C si riproduce senza differenze (B_seed0,
+  B_seed1). Test: `tests/cpu/test_branch_pilot.py` 16 PASS; suite 1333 PASS (1317 + 16). Nessun job; review del `critico` in corso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

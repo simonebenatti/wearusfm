@@ -3935,3 +3935,7 @@ passi il rango effettivo e' ~67-87 in tutte e tre le taglie, mentre la soglia cr
 estrazione di S della P1). Restano 4 nodi, compreso il confronto.
 **Diagnostica dei rami (Simone, 23/10/2026 ~9:05):** 61919664 (B_seed1 P1 RPW0 e ridondanza), 61919669 (B_seed1 P1 RPW). Restano le 5 sonde
 della P2 di B_seed1 e il confronto.
+**Pilot dei rami: codice operativo (23/10/2026, Simone: «no fermarlo, vediamo che succede»).** `scripts/branch_pilot.py`, due launcher,
+sonde del pilot nella diagnostica; protocollo con le aggiunte dichiarate (controllo della configurazione del 2C, PWf a un passo nel collaudo,
+primario per primo, opzione GPU per la valutazione). Configurazione del 2C riprodotta senza differenze col codice di oggi. Suite 1333 PASS.
+Review del `critico` in corso; nessun job, nessuna soglia nuova (la lettura resta quella del protocollo, da congelare col commit del lancio).

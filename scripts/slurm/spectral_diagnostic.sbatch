@@ -15,17 +15,23 @@
 #        probe --task p1 --arm B_seed0 --sets R PW0 PW --redundancy        oppure        compare      (esito in <cartella>/esito.json)
 # Le radici delle cache sono fisse (quelle del 2C): EVAL_ROOT e DOWNSTREAM_ROOT si possono sovrascrivere solo per un collaudo. Uscite,
 # radici e split non si passano negli argomenti (review del critico del 20/10: un --out relativo finirebbe nel checkout).
+# Pilot dei rami (scripts/branch_pilot.py): PILOT_ROOT (export) = cartella delle uscite dei rami del pilot, per gli insiemi del pilot.
 
 set -uo pipefail
 OUT_DIR="${1:?cartella dei rapporti}"; STAGE="${2:?probe o compare}"; shift 2
 EVAL_ROOT="${EVAL_ROOT:-/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410}"
 DOWNSTREAM_ROOT="${DOWNSTREAM_ROOT:-/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910}"
+PILOT_ROOT="${PILOT_ROOT:-}"
 case "$OUT_DIR" in /*) ;; *) echo "cartella dei rapporti relativa: rifiutata"; exit 2;; esac
 case "$OUT_DIR" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*|"$EVAL_ROOT"|"$EVAL_ROOT"/*|"$DOWNSTREAM_ROOT"|"$DOWNSTREAM_ROOT"/*)
   echo "rapporti dentro il codice o dentro le cache d'origine: rifiutato"; exit 2;; esac
+if [ -n "$PILOT_ROOT" ]; then
+  case "$PILOT_ROOT" in /*) ;; *) echo "PILOT_ROOT relativa: rifiutata"; exit 2;; esac
+  case "$OUT_DIR" in "$PILOT_ROOT"|"$PILOT_ROOT"/*) echo "rapporti dentro le cache del pilot: rifiutato"; exit 2;; esac
+fi
 for a in "$@"; do
-  case "$a" in --out|--out=*|--out-*|--eval-root*|--downstream-root*|--splits*)
+  case "$a" in --out|--out=*|--out-*|--eval-root*|--downstream-root*|--splits*|--pilot-root*)
     echo "argomento $a non ammesso: uscite, radici delle cache e split li fissa il launcher"; exit 2;; esac
 done
 source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
@@ -36,7 +42,8 @@ source "$WORK/venv_wearusfm/bin/activate"
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-8}" OPENBLAS_NUM_THREADS="${SLURM_CPUS_PER_TASK:-8}"
 mkdir -p "$OUT_DIR"
 case "$STAGE" in
-  probe) python3 scripts/spectral_diagnostic.py probe --eval-root "$EVAL_ROOT" --downstream-root "$DOWNSTREAM_ROOT" --out-dir "$OUT_DIR" "$@" ;;
+  probe) python3 scripts/spectral_diagnostic.py probe --eval-root "$EVAL_ROOT" --downstream-root "$DOWNSTREAM_ROOT" --out-dir "$OUT_DIR" \
+           ${PILOT_ROOT:+--pilot-root "$PILOT_ROOT"} "$@" ;;
   compare) python3 scripts/spectral_diagnostic.py compare --out-dir "$OUT_DIR" --out "$OUT_DIR/esito.json" "$@" ;;
   *) echo "fase $STAGE sconosciuta"; exit 2 ;;
 esac
