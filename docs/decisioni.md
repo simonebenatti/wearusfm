@@ -3997,3 +3997,15 @@ fermato allo stesso passo), quindi nulla di retroattivo; al 100M la soglia scend
 proposta nasce dopo aver visto C4 (i dati sopra), quindi va congelata prima della nuova C4 e non salva la C4 fermata, che resta inammissibile.
 **Nuova C4:** run nuovo (ID nuovo), stesso piano (300M, LR 1e-4, 6.130 passi, sonda su GPU), ~19,9 GPU-ora attese (tetto 26) piu' la
 valutazione (~5,7 / 9): calibrazione da ~149,5 a ~175 / 220. Codice: default `None` = regola firmata (nessun run gia' fatto cambia).
+**Baseline classica e rete casuale: protocollo e preventivo PROPOSTI (23/10/2026, Simone: «parti con 1 e 2»).** Lettura descrittiva, nessuna
+soglia di adozione. **Classica (`baseline_classica_td_v1`):** le feature di Hudgins del progetto (`harness.features_hudgins`: MAV, ZC, SSC,
+WL per canale, soglia di ZC e SSC 0,05 in unita' della scala del soggetto), sullo stesso segnale delle feature del modello (filtro del
+pretraining, scala per sessione in P1 e per soggetto in P2, zone di bordo di 0,1 s); differenze dichiarate: finestra intera (il modello
+media due ritagli da 4 s), canali scartati dal QC con feature a 0, sonda logistica del modello e non la LDA di v10 §8. Valutazione: la
+validazione interna della calibrazione (`scripts/classical_baseline.py`, stessa sonda, fold, soggetti e pesi di `calibration_probe`, provata
+uguale nei test; predizioni fuori fold salvate per confronti accoppiati con A) e i test ufficiali (`probe_p1`/`probe_p2 --feature-set td
+--checkpoint none`). Si riportano S e accuratezza ufficiale accanto a quelle di A (interna P1 18,31, P2 81,34; ufficiale P1 21,31, P2 85,97).
+**Costo:** 2 job CPU seriali (`scripts/slurm/classical_baseline.sbatch`, P1 e P2), 8 core, al piu' 3 h ciascuno: tetto 48 core-ora, 0
+GPU-ora. **Rete casuale:** checkpoint con l'architettura di A e pesi dai semi 0 e 1 (`scripts/random_checkpoint.py`; non e' il passo 0 di A,
+che non e' registrato), valutato con le stesse estrazioni e sonde dei bracci: piano e preventivo a parte. Review del `critico`: DA RIVEDERE (4
+bloccanti, 6 minori), corretti; seconda review prima del lancio.

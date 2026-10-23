@@ -83,6 +83,41 @@ def band_limit_hz(montage: dict, fs: float) -> np.ndarray:
 # nessun valore stimato, quindi nessuna stima che possa vedere validazione o test. Nomi e colonne in `feature_sets` (anche per la fase probe).
 
 
+# Baseline classica (23/10/2026, Simone: «parti con 1 e 2»): le feature di Hudgins del progetto (`harness.features_hudgins`, la baseline
+# «non negoziabile» di v10 §8: MAV, ZC, SSC, WL per canale, nell'ordine [MAV di tutti i canali, ZC, SSC, WL]), senza modello, sullo stesso
+# segnale filtrato e scalato per soggetto o sessione delle feature del modello. Differenze dalla pipeline del modello, dichiarate: finestra
+# INTERA (il modello media due ritagli da 4 s quando la finestra e' piu' lunga, es. EPN-612 da 5 s) e canali scartati dal QC con feature a 0
+# (il modello li maschera e li esclude dal pooling; le feature per canale non hanno pooling). La sonda e' quella del modello (logistica, C
+# scelto sulla validazione), non la LDA di v10 §8.
+TD_FEATURES = ("mav", "zc", "ssc", "wl")
+TD_DEADZONE = 0.05  # soglia di ZC e SSC in unita' della scala del soggetto (mediana dei MAD), come `features_hudgins`
+
+
+def td_features(windows: np.ndarray, fs: float, subjects: np.ndarray, montage: dict | None = None, band=(20.0, 450.0),
+                scale_windows: int = 10, edge_guard_s: float = 0.1) -> np.ndarray:
+    """(N, 4 x C): per finestra (T, C), filtrata come nel pretraining, divisa per la scala del soggetto (`subject_scales`, come il modello) e
+    fuori dalle zone di bordo `edge_guard_s` (transitori del filtro), `features_hudgins.extract_hudgins_features` con soglia `TD_DEADZONE`.
+    I canali scartati dal QC del montaggio (se dato) hanno feature 0."""
+    from wearusfm.harness.features_hudgins import extract_hudgins_features
+
+    subjects = np.asarray(subjects)
+    scales = subject_scales(windows, subjects, fs, band, scale_windows)
+    c = windows.shape[2]
+    qc = np.asarray(CC.layout_from_montage(montage).qc_valid, dtype=bool) if montage else np.ones(c, dtype=bool)
+    if qc.shape != (c,):
+        raise ValueError(f"QC del montaggio per {qc.shape} canali, finestre da {c}")
+    keep = np.tile(qc, len(TD_FEATURES))
+    g = int(round(edge_guard_s * fs))
+    out = np.zeros((len(windows), c * len(TD_FEATURES)), dtype=np.float32)
+    for i, w in enumerate(windows):
+        x = _filtered(w, fs, band).astype(np.float64) / scales[subjects[i]]  # (C, T)
+        if x.shape[1] > 2 * g + 2:
+            x = x[:, g:x.shape[1] - g]
+        f = extract_hudgins_features(x.T, zc_threshold=TD_DEADZONE, ssc_threshold=TD_DEADZONE)
+        out[i] = np.where(keep, f, 0.0)
+    return out
+
+
 def model_width(model: WearUsFM) -> int:
     """Colonne dell'embedding del modello (`spectral_branches.readout`): 2d piu' i rami spettrali."""
     return 2 * model.cfg.dim + model.cfg.branch_dim * len(model.cfg.spectral_branches)
@@ -121,6 +156,8 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
     statistiche (come `anchor_edge_guard_s` del pretraining)."""
     if feature_set not in FEATURE_SETS:
         raise ValueError(f"feature_set {feature_set!r}: uno di {FEATURE_SETS}")
+    if feature_set == "td":  # baseline classica: nessun modello (puo' essere None)
+        return td_features(windows, fs, subjects, montage, band, scale_windows, edge_guard_s)
     use_model, use_stats = uses_model(feature_set), feature_set not in ("model", "branches")
     branches_only = feature_set == "branches"
     if branches_only and getattr(model, "spectral_branches", None) is None:

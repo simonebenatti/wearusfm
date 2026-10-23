@@ -97,8 +97,11 @@ def main(argv=None) -> int:
     if args.stage != "probe":
         from wearusfm.harness import fm_features as FF
 
-        model = FF.load_model(args.checkpoint, args.device, args.which)
-        log(f"modello {args.checkpoint} ({args.which}), dataset {args.datasets}, finestre da {args.window_s} s")
+        if args.feature_set == "td":  # baseline classica: nessun modello (--checkpoint none)
+            log(f"feature classiche {FF.TD_FEATURES}, nessun modello")
+        else:
+            model = FF.load_model(args.checkpoint, args.device, args.which)
+            log(f"modello {args.checkpoint} ({args.which}), dataset {args.datasets}, finestre da {args.window_s} s")
     # sklearn DOPO torch: nell'ordine opposto, sul Mac, le operazioni di torch a piu' thread vanno in segmentation fault (due runtime OpenMP;
     # verificato il 05/10, venv del tokenizer)
     from wearusfm.harness.probe import linear_probe
@@ -118,7 +121,8 @@ def main(argv=None) -> int:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(args.input_sha256)} if args.audit_inputs else {}
                 np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)}, **extra,
-                         **cache_record(args.feature_set, FF.feature_width(model, args.feature_set)))
+                         **(cache_record("td", f["train"][0].shape[1], f["train"][0].shape[1] // 4) if args.feature_set == "td"
+                            else cache_record(args.feature_set, FF.feature_width(model, args.feature_set))))
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue

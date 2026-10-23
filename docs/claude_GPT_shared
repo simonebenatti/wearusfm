@@ -2785,6 +2785,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   nome `erank_min` gia' usato nei rapporti di A3, i primi 1.500 passi della nuova C4 sono gia' noti (~4,8 GPU-ora ripetute). Decisioni a
   Simone prima di correggere il pianificatore.
 
+### 2026-10-23 | Claude | Baseline classica (feature di Hudgins) e rete casuale: codice, review del `critico` e correzioni | Codice: questo commit
+
+- `fm_features.td_features` (feature di Hudgins del progetto per canale, canali scartati dal QC a 0, finestra intera), insieme "td" nelle
+  cache (colonne = 4 x canali, registrate), `probe_p1`/`probe_p2` senza modello con `--feature-set td --checkpoint none`,
+  `scripts/classical_baseline.py` (validazione interna con la sonda di `calibration_probe`, che resta invariata; OOF salvate),
+  `scripts/random_checkpoint.py` (rete casuale con l'architettura di A, dichiarata non passo 0), launcher `classical_baseline.sbatch` (rifiuta
+  una cartella non vuota). Test: P1 e P2 da capo a fondo, uguaglianza con `CP.probe`, QC, launcher, rete casuale.
+- Review del `critico`: DA RIVEDERE, 4 bloccanti (finestra intera e canali del QC non dichiarati, rete casuale non dichiarata come non passo
+  0, P1 senza test) e 6 minori (protocollo e preventivo, baseline di v10 e due SSC nel repo: ora si usa `features_hudgins`, OOF, provenienza
+  della rete casuale, launcher, larghezza td): corretti. Protocollo e preventivo in decisioni.md (48 core-ora di tetto). Seconda review prima
+  del lancio.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

@@ -90,8 +90,11 @@ def main(argv=None) -> int:
     if args.stage != "probe":
         from wearusfm.harness import fm_features as FF  # torch prima di sklearn (sul Mac l'ordine opposto va in segmentation fault)
 
-        model = FF.load_model(args.checkpoint, args.device, args.which)
-        log(f"modello {args.checkpoint} ({args.which})")
+        if args.feature_set == "td":  # baseline classica: nessun modello (--checkpoint none)
+            log(f"feature classiche {FF.TD_FEATURES}, nessun modello")
+        else:
+            model = FF.load_model(args.checkpoint, args.device, args.which)
+            log(f"modello {args.checkpoint} ({args.which})")
     report = {"checkpoint": str(args.checkpoint), "which": args.which, "split_seeds": args.split_seeds, "feature_set": args.feature_set, "datasets": {}}
     for ds in args.datasets:
         npz = args.features / f"{ds}.npz" if args.features is not None else None
@@ -109,7 +112,9 @@ def main(argv=None) -> int:
             if npz is not None:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(input_hash)} if args.audit_inputs else {}
-                np.savez(npz, x=x, y=labels, s=subjects, **extra, **cache_record(args.feature_set, FF.feature_width(model, args.feature_set)))
+                record = (cache_record("td", x.shape[1], x.shape[1] // 4) if args.feature_set == "td"
+                          else cache_record(args.feature_set, FF.feature_width(model, args.feature_set)))
+                np.savez(npz, x=x, y=labels, s=subjects, **extra, **record)
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":
                 continue
