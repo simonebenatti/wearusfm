@@ -2983,6 +2983,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di C1 s0, readout designato, review del `critico`. Niente congelato, nessun job.
 - Suite completa sul codice deployato 6242bc3: **1369 PASS** (21 min).
 
+### 2026-10-23 | Claude | Readout per canale: estrazioni P1 finite, prime 7 sonde sottomesse | Codice: 6242bc3 (deploy)
+
+- Estrazioni P1 COMPLETED: A s0 61982369 (13 min 38), A s1 61982414 (13 min 32), ancore-only s0 61982457 (12 min 21), ancore-only s1 61982480
+  (13 min 19): log puliti («estrazione finita»), cache DB2 829,6 MB, DB3 211,7 MB, DB6 939,6 MB per checkpoint (38.544 / 9.834 / 33.961
+  finestre; 12 / 12 / 16 canali x 384). Le 4 estrazioni P2 in esecuzione (tetto 1 h 30).
+- Sonde P1 sottomesse (CPU seriale, 8 core, 4 h): A s0 pool 61984655, local 61984666, dec 61984669; A s1 local 61984679, dec 61984695;
+  ancore-only s0 local 61984705, dec 61984713. Una in esecuzione, le altre in coda (QOSMaxCpuPerUserLimit: una alla volta). Le due di
+  ancore-only s1 P1 e le 12 della P2 nella tornata successiva. Log `~/wearusfm_local/logs/readout_canale_sonde_20261023.txt`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
