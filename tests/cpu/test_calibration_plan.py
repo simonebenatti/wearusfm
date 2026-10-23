@@ -260,3 +260,13 @@ def test_the_single_c4_repeat_is_a_new_attempt_with_the_absolute_rank_floor():
     assert cb["alarm"]["erank_min"] == 38.4 and ca["alarm"]["erank_min"] is None
     assert {k: v for k, v in cb.items() if k != "alarm"} == {k: v for k, v in ca.items() if k != "alarm"}
     assert {k: v for k, v in cb["alarm"].items() if k != "erank_min"} == {k: v for k, v in ca["alarm"].items() if k != "erank_min"}
+
+
+def test_today_the_c4_plan_reproduces_the_real_c4_configuration():
+    """La ripetizione di C4 gira col codice di oggi, non con 72cf24a: la configurazione attesa dal piano di C4 (`calibration_select.
+    expected_config`, la funzione del training) coincide campo per campo, normalizzata, col `config.json` vero del run fermato (copiato dal
+    cluster il 23/10/2026); la C4b ne differisce solo per `alarm.erank_min` (test precedente)."""
+    CS = _load("calibration_select")
+    plan = json.loads((REPO / "results/infra/w1cal_c4_20261022/calibrazione_C4.json").read_text())
+    actual = json.loads((REPO / "results/infra/w1cal_c4_20261022/runs/W1CAL-C4-300M-lr0p0001-s0/config.json").read_text())
+    assert R._config_with_defaults(CS.expected_config(plan, "W1CAL-C4-300M-lr0p0001-s0")) == R._config_with_defaults(actual)
