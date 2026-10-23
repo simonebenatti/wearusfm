@@ -2713,6 +2713,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Verificato sul Mac coi `config.json` veri del 2C: col codice di oggi la configurazione del 2C si riproduce senza differenze (B_seed0,
   B_seed1). Test: `tests/cpu/test_branch_pilot.py` 16 PASS; suite 1333 PASS (1317 + 16). Nessun job; review del `critico` in corso.
 
+### 2026-10-23 | Claude | Valutazione dei bracci: ultimo giro lanciato da Simone, confronto sottomesso | Codice: 23efccbf4a2089dfe9b966b30986a7dc10189a14
+
+- ~9:45: 61925267 (sonda di S della P1 di ancore-only s1), 61925272 / 61925282 (S della P2 di ancore-only s1), 61925288 (confronto
+  `W1ARM-objective-compare`, afterok sulle tre sonde ancora in coda o in corso). Tutti i 33 nodi del piano sottomessi; nessun rifiuto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

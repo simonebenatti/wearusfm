@@ -3939,3 +3939,5 @@ della P2 di B_seed1 e il confronto.
 sonde del pilot nella diagnostica; protocollo con le aggiunte dichiarate (controllo della configurazione del 2C, PWf a un passo nel collaudo,
 primario per primo, opzione GPU per la valutazione). Configurazione del 2C riprodotta senza differenze col codice di oggi. Suite 1333 PASS.
 Review del `critico` in corso; nessun job, nessuna soglia nuova (la lettura resta quella del protocollo, da congelare col commit del lancio).
+**Valutazione dei bracci, ultimo giro (Simone, 23/10/2026 ~9:45):** 61925267, 61925272, 61925282 e il confronto 61925288 (afterok). Tutti i
+nodi del piano sottomessi.
