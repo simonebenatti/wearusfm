@@ -14,7 +14,7 @@ esposizione? Misura: S della validazione interna (P1 e P2) coi readout del proto
 
 | Braccio | Cosa cambia rispetto ad A (JEPA target b + ancore 0,2) | Codice |
 |---|---|---|
-| **R0** riferimento | niente: **C1 seme 0 al LR 1e-4** esiste gia' (`W1CAL-C1-30M-lr0p0001-s0`, 1 epoca = 24.523 passi, S P1 18,21) | fatto; manca la **S P2** di quel checkpoint (estrazione ~1,5 GPU-ora + sonda CPU) |
+| **R0** riferimento | **A rifatto a 2 epoche** col ramo di decay a 1 (Simone, 23/10: «scelgo le 2 epoche per tutti i 4 run»): stesso seme 0 e LR 1e-4 di C1 s0, che resta il controllo di coerenza dell'endpoint a 1 epoca (S P1 18,21) | pronto (e' A); C1 s0 ha solo la S P1 |
 | **R1** target a | `JEPAConfig.target = "a"`: target = uscita per canale dell'encoder locale del teacher, non il decoder a query | esiste nel codice; manca il flag `--jepa-target` in `train_jepa.py` (oggi fisso "b" in `sanity_config`) e il test che "b" resti identico |
 | **R2** target per regione | il target JEPA di ogni regione nascosta (tubo, slab o maschera spaziale) e' la **media del teacher sulla regione**; lo studente predice la media delle sue uscite sulla stessa regione; perdita per regione, media per finestra come oggi; ancore invariate per token | nuovo: `generate_mask` ritorna anche `region` (C, P) (id della maschera estratta), `PretrainBatch.region`, `_jepa_compute(region_target=True)`; test d'uguaglianza bit per bit con `region_target=False`; DDP: numeratori/denominatori per regione nel contratto delle loss |
 
@@ -32,15 +32,23 @@ che si scriva il codice.
 
 ## Disegno (proposta)
 
-- **Taglia e durata:** 30M (preset `sanity`), 1 epoca del manifest v1.1 al 100% (24.523 passi, batch 32, WSD con warmup 1.962 e decay dal
-  passo 19.618), LR 1e-4, seme 0: identico a C1 s0, cosi' R0 non si rifa'. Stesso manifest, stesso sampler, stesso loader (vedi «fuga»).
-- **Valutazione:** S interna P1 e P2 del teacher post-decay, con **due readout**: il medio (`pool`, il riferimento storico) e quello per canale
-  che il protocollo del readout designa (local o dec a k 768), estratti e sondati con `channel_readout.py`; baseline classica accanto.
-- **Semi:** seme 0 per tutti; **seme 1 solo per il braccio che passa** la regola (un run in piu').
-- **Regola di lettura (da congelare prima del lancio):** un braccio «passa» se migliora S della P1 **e** S della P2 di almeno +1 punto rispetto
-  a R0 con lo stesso readout (regola dei bracci, bootstrap congiunto dei soggetti; con un solo seme il «delta > 0 nei due semi» non c'e': si
-  dichiara, e il seme 1 serve a confermare); si legge col readout designato; il `pool` resta descrittivo. Nessun braccio passa -> si registra
-  e non si cambia il default; si va alla seconda ondata solo se Simone lo decide.
+- **Taglia e durata (Simone, 23/10/2026: «scelgo le 2 epoche per tutti i 4 run»):** 30M (preset `sanity`), **2 epoche** del manifest v1.1 al 100%
+  (49.046 passi, batch 32, WSD D14: warmup 1.962, fase stabile, decay lineare sul 20% finale, dal passo 39.237) **piu' un ramo di decay dal
+  checkpoint a 1 epoca** (passo 24.523, nella fase stabile; decay su 4.905 passi = 20% di un'epoca): due endpoint validi per run, a 1 e a 2
+  epoche, ~2,2 epoche di calcolo. LR 1e-4, seme 0, stesso manifest, stesso sampler, stesso loader (vedi «fuga»). L'endpoint a 1 epoca di R0
+  deve coincidere con C1 s0 a meno del ramo di decay: controllo di coerenza, descrittivo.
+- **Perche' due epoche:** A e' piatto da 1 a 4 epoche (18,21 -> 18,34), ma i bracci nuovi possono imparare piu' lentamente (R2 ha un target
+  per regione invece che per token; la posa impara da un terzo dei batch): con due endpoint si legge la **pendenza** 1 -> 2 di ogni braccio
+  accanto a quella di R0, non solo un punto.
+- **Valutazione:** S interna P1 e P2 del teacher post-decay dei due endpoint, con **due readout**: il medio (`pool`, il riferimento storico) e
+  quello per canale che il protocollo del readout designa (local o dec a k 768), estratti e sondati con `channel_readout.py`; baseline classica
+  accanto.
+- **Semi:** seme 0 per tutti; **seme 1 solo per il braccio che passa** la regola (un run in piu', a 2 epoche).
+- **Regola di lettura (da congelare prima del lancio):** un braccio «passa» se **all'endpoint a 2 epoche** migliora S della P1 **e** S della P2
+  di almeno +1 punto rispetto a R0 con lo stesso readout (regola dei bracci, bootstrap congiunto dei soggetti; con un solo seme il «delta > 0
+  nei due semi» non c'e': si dichiara, e il seme 1 serve a confermare); si legge col readout designato; il `pool` e l'endpoint a 1 epoca
+  (pendenza) restano descrittivi. Nessun braccio passa -> si registra e non si cambia il default; si va alla seconda ondata solo se Simone lo
+  decide.
 - **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1.
 
 ## Prerequisiti e punti aperti
@@ -50,20 +58,22 @@ che si scriva il codice.
    log-potenze di contesto cambiate fino a ~3 nat al 99° percentile con contenuto nascosto estremo). Vale per A e per tutti i bracci allo
    stesso modo. Due strade: (a) pilot col loader attuale, confrontabile con C1 s0, e «mascherare prima del filtro» come ablation separata dopo;
    (b) loader nuovo per tutti i bracci, ma allora R0 va rifatto (+1 run). *Proposta: (a).*
-2. **S P2 di C1 s0:** da estrarre e sondare (non c'e': la calibrazione usava solo la P1). Stessa catena del readout per canale.
+2. **S P2 di C1 s0:** non serve piu' come riferimento (R0 si rifa' a 2 epoche); C1 s0 resta il controllo di coerenza sulla sola P1.
+   **Rami di decay:** la catena WSD (`scripts/wsd_chain.py`, D14) prevede checkpoint da tenere (`--keep-checkpoints`) e rami di decay: il
+   piano del pilot usa quelli, e il pianificatore va esteso ai 4 run con 2 endpoint (test di uguaglianza coi piani esistenti).
 3. **Readout designato:** si aspetta l'esito del readout per canale; se non e' concluso si usa il `pool`.
 4. **Review del `critico`** su protocollo e codice prima del lancio; soglie in `decisioni.md` prima dei job.
 
-## Costi (stima dalle misure di C1: 0,707 s/passo a 4 GPU, 4,77 h per epoca)
+## Costi (stima dalle misure di C1: 0,707 s/passo a 4 GPU, 4,77 h per epoca; 2,2 epoche per run = ~10,5 h su un nodo, ~44 GPU-ora)
 
 | Voce | Run | GPU-ora attese / tetto |
 |---|---|---|
-| R1, R2 (prima ondata) | 2 | ~40 / 52 |
-| R5 (front-end 1,5x nel costo del front-end, trascurabile sul totale) + gate D8 (CPU) | 1 | ~20 / 26 + ~10 core-ore |
-| Seme 1 del braccio che passa | 0-1 | ~20 / 26 |
-| S P2 di R0 + valutazione dei bracci (estrazioni GPU) | 4 x 2 | ~5 / 10 |
-| Sonde CPU (pool, readout designato; P1 e P2) | ~16 job seriali | 0 GPU-ora, ~80 core-ore |
-| **Prima ondata con R5** | | **~85 / 114 GPU-ora** |
+| R0 (A), R1, R2, R5 a 2 epoche col ramo di decay a 1 | 4 | ~176 / 230 |
+| Gate D8 per il banco da 150 ms (R5), CPU | 1 | 0 GPU-ora, ~10 core-ore |
+| Seme 1 del braccio che passa (2 epoche col ramo) | 0-1 | ~44 / 58 |
+| Valutazione: estrazioni GPU di 8 endpoint (4 run x 2), P1 e P2 | 16 | ~8 / 16 |
+| Sonde CPU (pool, readout designato; P1 e P2; 8 endpoint) | ~32 job seriali (10 alla volta in coda, 1 in esecuzione) | 0 GPU-ora, ~160 core-ore |
+| **Prima ondata** | | **~184 / 246 GPU-ora** (+44 / 58 col seme 1) |
 
 Voce di budget: famiglia «Ablation a 30M» della finestra 1 (~2.100 GPU-ora stimate in `docs/finestra1_fattibilita.md`), oppure una voce nuova
 decisa da Simone. Calendario: i due run in un'ondata (~5 h su due nodi), valutazione ~1 giorno sulla seriale.

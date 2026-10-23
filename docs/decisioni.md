@@ -4150,6 +4150,14 @@ fisico; la perdita conta solo i token interamente nascosti (3 patch per lato). D
 1-2 patch non producono token interi), quote rinormalizzate 0,294 / 0,235 / 0,471: scostamento dichiarato da D10. Prerequisito: gate D8
 riaperto per il banco da 150 ms con le soglie firmate (D8a). Default del codice invariato bit per bit (test). Nessun job. Dettagli in
 `docs/pilot_obiettivi_v1.md`.
+**Pilot degli obiettivi: durata DECISA, 2 epoche per tutti e 4 i run (Simone, 23/10/2026: «scelgo le 2 epoche per tutti i 4 run»).** Run R0 (A
+rifatto), R1 (target a), R2 (target per regione), R5 (finestra 150 ms): 30M, seme 0, LR 1e-4, 2 epoche WSD (49.046 passi) piu' un ramo di decay
+dal checkpoint a 1 epoca (due endpoint validi per run, ~2,2 epoche di calcolo, ~44 GPU-ora l'uno). Motivo (proposta di Claude accolta): A e'
+piatto da 1 a 4 epoche, i bracci nuovi possono essere piu' lenti; due endpoint danno la pendenza. C1 s0 resta il controllo di coerenza
+dell'endpoint a 1 epoca di R0. Regola di lettura proposta (da congelare prima del lancio): passa chi all'endpoint a 2 epoche migliora S P1 e
+S P2 di +1 punto rispetto a R0 col readout designato; seme 1 solo per chi passa. Preventivo prima ondata: ~176 / 230 GPU-ora di training,
+~8 / 16 di estrazioni, ~170 core-ore di sonde; famiglia «Ablation a 30M» o voce nuova (da decidere). Prerequisiti: R2 da scrivere, gate D8
+per R5, firma dello scostamento da D10 per R5, review del `critico`, congelamento in questo file. Nessun job.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le
