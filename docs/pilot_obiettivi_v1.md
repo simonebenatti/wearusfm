@@ -40,9 +40,16 @@ che si scriva il codice.
 - **Perche' due epoche:** A e' piatto da 1 a 4 epoche (18,21 -> 18,34), ma i bracci nuovi possono imparare piu' lentamente (R2 ha un target
   per regione invece che per token; la posa impara da un terzo dei batch): con due endpoint si legge la **pendenza** 1 -> 2 di ogni braccio
   accanto a quella di R0, non solo un punto.
-- **Valutazione:** S interna P1 e P2 del teacher post-decay dei due endpoint, con **due readout**: il medio (`pool`, il riferimento storico) e
-  quello per canale che il protocollo del readout designa (local o dec a k 768), estratti e sondati con `channel_readout.py`; baseline classica
-  accanto.
+- **Valutazione (Simone, 23/10: «valuti le loss dopo le 2 epoche o valuti anche altro?»):** le loss NON sono il criterio: fra obiettivi diversi
+  non sono confrontabili (target a e b sono grandezze diverse, la media per regione cambia l'unita', R5 conta solo i token interi). A ciascuno
+  dei due endpoint: (1) **S interna P1 e P2** del teacher post-decay, encoder congelato e sonda lineare, con **due readout**: il medio (`pool`,
+  il riferimento storico) e quello per canale che il protocollo del readout designa (local o dec a k 768), estratti e sondati con
+  `channel_readout.py`: e' il criterio; (2) la **pendenza 1 -> 2** di S accanto a quella di R0, descrittiva; (3) le **diagnostiche di non
+  collasso** del trainer ogni 500 passi (rango effettivo di studente e teacher, rapporto di collasso da query, varianza fra campioni) con
+  l'allarme firmato (38,4 / 0,05 / 3 controlli): un run fermato dall'allarme non passa; (4) le **loss come monitor**, non per decidere: JEPA
+  per tipo di maschera e per topologia, ancore (RMS, forma spettrale, inviluppo, multiscala: target fisici uguali fra i bracci; per R5 sui
+  soli token interi, con `core_hidden_fraction`), pannello fisso ogni 500 passi; (5) **riferimenti esterni** sulla stessa validazione: baseline
+  classica e rete casuale. Per il braccio che passa: seme 1, poi i test ufficiali P1/P2 e le 4 epoche prima di toccare un default.
 - **Semi:** seme 0 per tutti; **seme 1 solo per il braccio che passa** la regola (un run in piu', a 2 epoche).
 - **Regola di lettura (da congelare prima del lancio):** un braccio «passa» se **all'endpoint a 2 epoche** migliora S della P1 **e** S della P2
   di almeno +1 punto rispetto a R0 con lo stesso readout (regola dei bracci, bootstrap congiunto dei soggetti; con un solo seme il «delta > 0
