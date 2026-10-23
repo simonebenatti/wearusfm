@@ -3933,3 +3933,5 @@ calibrazione ~149,5 / 220. Descrittivo per la decisione (`results/infra/w1cal_c4
 passi il rango effettivo e' ~67-87 in tutte e tre le taglie, mentre la soglia cresce con la dimensione (38,4 / 64 / 89,6).
 **Valutazione dei bracci, quarto giro (Simone, 23/10/2026 ~9:00):** 61919606-61919648 (ancore-only s0 completato, ancore-only s1 P1, P2 e
 estrazione di S della P1). Restano 4 nodi, compreso il confronto.
+**Diagnostica dei rami (Simone, 23/10/2026 ~9:05):** 61919664 (B_seed1 P1 RPW0 e ridondanza), 61919669 (B_seed1 P1 RPW). Restano le 5 sonde
+della P2 di B_seed1 e il confronto.
