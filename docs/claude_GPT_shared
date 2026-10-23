@@ -3024,7 +3024,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   aggiornato: R0 = A rifatto a 2 epoche (seme 0, LR 1e-4), R1, R2, R5; ~44 GPU-ora l'uno; prima ondata ~184 / 246 GPU-ora con la
   valutazione; regola di lettura sull'endpoint a 2 epoche, pendenza 1 -> 2 descrittiva; C1 s0 controllo di coerenza. Voce in decisioni.md.
   Da fare prima del lancio: codice di R2, pianificatore con i rami di decay, gate D8 di R5, firma dello scostamento da D10, `critico`.
-- Suite completa sul codice di R5 (3048e81): **1375 PASS** (1369 + 6 nuovi).
+- **Correzione (23/10, sera).** La riga precedente di questa voce diceva «suite completa 1375 PASS» e la voce di R5 diceva che i test del
+  trainer e della calibrazione erano passati: **tutte e due false**. Avevo letto l'esito del processo di fondo («exited with code 0») al
+  posto del riepilogo di pytest: la suite su 3048e81 ha dato **6 falliti, 1369 passati**, e anche il giro mirato di prima ne aveva 6. I sei
+  sono tutti lo stesso difetto: `model.window_ms` mancava fra i campi aggiunti dopo i run storici (`run.BRANCH_MODEL_FIELDS`), quindi i
+  controlli d'identita' delle configurazioni vere di C1, C4 e del 2C (`calibration_select.check_identity`, `branch_pilot.config_check`)
+  vedevano «run assente, piano None». Corretto nel commit di questa riga (default None fra i campi aggiunti dopo); esito dei test e della
+  suite rilanciata nella voce successiva. Da qui in poi leggo la riga di riepilogo di pytest, non l'uscita del wrapper.
 
 ## 2) Problemi trovati
 

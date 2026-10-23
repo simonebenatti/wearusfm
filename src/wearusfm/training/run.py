@@ -157,7 +157,8 @@ class RunConfig:
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
-                       "branch_objective": "readout", "branch_freeze_output": False}  # gli ultimi due: pilot dei rami del 20/10
+                       "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
+                       "window_ms": None}  # finestra del kernel (R5 del pilot degli obiettivi, 23/10): assente = la patch, il banco di sempre
 
 
 def _config_with_defaults(d: dict) -> dict:
