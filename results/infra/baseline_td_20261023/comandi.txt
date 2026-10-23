@@ -1,0 +1,6 @@
+# 1) checkout di campagna (CPU, secondi)
+python3 scripts/submit_job.py --id BASELINE-TD-20261023-checkout --agente claude --campagna baseline-td-20261023 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=baseline-td-20261023,CAMPAIGN_SHA=56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca
+
+# 2) dopo COMPLETED e «checkout di campagna pronto»: i due job CPU (8 core, <= 3 h)
+python3 scripts/submit_job.py --id BASELINE-TD-20261023-p1 --agente claude --campagna baseline-td-20261023 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/baseline-td-20261023,EXPECTED_SHA=56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/baseline-td-20261023/scripts/slurm/classical_baseline.sbatch p1 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/baseline_td_20261023/p1
+python3 scripts/submit_job.py --id BASELINE-TD-20261023-p2 --agente claude --campagna baseline-td-20261023 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/baseline-td-20261023,EXPECTED_SHA=56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/baseline-td-20261023/scripts/slurm/classical_baseline.sbatch p2 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/baseline_td_20261023/p2

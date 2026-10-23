@@ -4022,3 +4022,7 @@ sonde su poche colonne), tetto 48 core-ora, ore CPU dell'account IscrB_WearUsFM,
 da un dataset al successivo, quindi la P1 ufficiale si sarebbe fermata su DB6 (16 colonne contro 12 di DB2 e DB3) dopo aver speso DB2 e DB3.
 Corretto (canali per dataset) con un test su due dataset di larghezza diversa; provati anche pesi, S e S_se uguali a `calibration_probe` con
 due dataset P1, e l'impronta degli ingressi uguale a quella dell'estrazione della calibrazione in P1 e in P2.
+**Baseline classica: deploy (23/10/2026).** Controllo in sola lettura del cluster (riferimenti, hook solo d'esempio, campagna libera,
+`receive.denyCurrentBranch = updateInstead`: un riferimento `deploy/` non tocca il checkout di `main`); pubblicato
+`deploy/baseline-td-20261023` = 56984cf (SHA remoto verificato). Comandi in `results/infra/baseline_td_20261023/comandi.txt`: checkout di
+campagna, poi i job p1 e p2 (CPU seriale, tetto 48 core-ora, stima ~20, 0 GPU-ora), rapporti in `$SCRATCH/wearusfm_runs/baseline_td_20261023/`.

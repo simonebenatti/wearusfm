@@ -2818,6 +2818,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   PASS. Memoria stimata del job P2 (EPN-612 intero su 30 GB CPU): ~12-13 GB, da guardare nel log. Pronta per deploy e lancio (2 job CPU,
   tetto 48 core-ora, stima ~20, 0 GPU-ora), col via di Simone.
 
+### 2026-10-23 | Claude | Baseline classica: deploy pubblicato, comandi pronti | Codice: 56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca
+
+- Preflight in sola lettura, poi `git push leonardo 56984cf:refs/heads/deploy/baseline-td-20261023` (SHA remoto verificato). Comandi del
+  checkout e dei due job in `results/infra/baseline_td_20261023/comandi.txt`; li lancia Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
