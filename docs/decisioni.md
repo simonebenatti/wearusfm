@@ -4049,3 +4049,4 @@ configurazione del run, altrimenti la regola (16); chiave del rapporto ora `eran
 rifiutati; allarme del rapporto invariato). Correzione di formulazione rispetto alla proposta: il rango non cresce *in proporzione* alla
 larghezza nei primi 1.500 passi; piu' avanti il 100M sta sopra il 30M (batch diverso).
 **Baseline classica: job P1 sottomesso da Simone (23/10/2026):** 61972380 (`BASELINE-TD-20261023-p1`).
+**Baseline classica: job P2 sottomesso da Simone (23/10/2026):** 61972407 (`BASELINE-TD-20261023-p2`). Le due baseline sono in coda.
