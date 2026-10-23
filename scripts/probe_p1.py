@@ -49,6 +49,13 @@ def dataset_features(model, roots: list[Path], dataset: str, roles: dict, args, 
                     log(f"  {dataset}/{s}/{sess.name}: nessuna finestra")
                     continue
                 key = np.full(len(sw.windows), f"{s}/{sw.session}")  # chiave della scala: la sessione, come nel pretraining
+                if args.feature_set == "td":  # baseline classica: i canali dei dati, uguali al montaggio e gli stessi in ogni sessione
+                    from wearusfm.model import channel_codes as CC
+
+                    c = sw.windows.shape[2]
+                    if c != len(CC.layout_from_montage(sw.montage).qc_valid) or getattr(args, "td_channels", c) != c:
+                        raise ValueError(f"{dataset}/{s}/{sw.session}: {c} canali, diversi dal montaggio o dalle altre sessioni")
+                    args.td_channels = c
                 if args.audit_inputs:
                     digest.update(fingerprint(role, s, sw.session, sw.windows, sw.labels, sw.fs, sw.montage, key).encode())
                 xs.append(FF.extract_features(model, sw.windows, sw.fs, sw.montage, key, batch=args.batch, device=args.device,
@@ -83,6 +90,8 @@ def main(argv=None) -> int:
                     help="feature (harness.fm_features.FEATURE_SETS): l'embedding del modello (default), le varianti del test 2A dello "
                          "step 2 o le sole uscite dei rami (step 2C)")
     args = ap.parse_args(argv)
+    if (args.feature_set == "td") != (args.checkpoint == "none"):
+        ap.error("--feature-set td (baseline classica) vuole --checkpoint none, e --checkpoint none vale solo con td")
     if args.stage != "all" and args.features is None:
         ap.error("--stage extract/probe richiede --features")
     if args.stage != "extract" and args.out is None:
@@ -121,7 +130,7 @@ def main(argv=None) -> int:
                 npz.parent.mkdir(parents=True, exist_ok=True)
                 extra = {"input_sha256": np.asarray(args.input_sha256)} if args.audit_inputs else {}
                 np.savez(npz, **{f"{r}_{k}": v for r, t in f.items() for k, v in zip("xys", t)}, **extra,
-                         **(cache_record("td", f["train"][0].shape[1], f["train"][0].shape[1] // 4) if args.feature_set == "td"
+                         **(cache_record("td", f["train"][0].shape[1], args.td_channels) if args.feature_set == "td"
                             else cache_record(args.feature_set, FF.feature_width(model, args.feature_set))))
                 log(f"  feature salvate in {npz}")
             if args.stage == "extract":

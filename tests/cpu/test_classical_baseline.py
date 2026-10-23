@@ -83,6 +83,10 @@ def test_td_cache_records_its_channels():
     check_cache(_Z(rec), "td", 32)
     with pytest.raises(ValueError, match="4 per canale"):
         check_cache(_Z({k: v for k, v in rec.items() if k != "td_channels"}), "td", 32)
+    other = json.loads(str(rec["td_recipe"]))
+    other["deadzone"] = 0.05  # una cache fatta con un'altra soglia (o bordi, banda, QC) non passa
+    with pytest.raises(ValueError, match="ricetta"):
+        check_cache(_Z({**rec, "td_recipe": np.asarray(json.dumps(other))}), "td", 32)
 
 
 def _p1(tmp_path):
@@ -97,13 +101,23 @@ def _p1(tmp_path):
 
 
 def test_official_p1_probe_runs_without_a_model(tmp_path):
-    root, splits, _ = _p1(tmp_path)
+    root, splits, subjects = _p1(tmp_path)
+    meta_path = root / "ninapro_db2" / "s03" / "session1" / "metadata.json"  # un canale scartato dal QC in una sessione vera
+    meta = json.loads(meta_path.read_text())
+    meta["montage"]["groups"][0]["channels"][4]["qc_valid"] = False
+    meta_path.write_text(json.dumps(meta))
     base = ["--checkpoint", "none", "--root", str(root), "--splits", str(splits), "--datasets", "ninapro_db2", "--feature-set", "td",
             "--device", "cpu", "--window-s", "1", "--val-frac", "0.1", "--weighting", "subjects"]
     assert probe_p1.main(base + ["--stage", "extract", "--features", str(tmp_path / "f"), "--audit-inputs"]) == 0
     with np.load(tmp_path / "f" / "ninapro_db2.npz") as z:
         assert str(z["feature_set"]) == "td" and int(z["td_channels"]) == 12 and z["train_x"].shape[1] == 48
         check_cache(z, "td", z["train_x"].shape[1])
+        x = np.concatenate([z[f"{r}_x"] for r in ("train", "val", "test")])
+        s = np.concatenate([z[f"{r}_s"] for r in ("train", "val", "test")])
+        cols = np.arange(4) * 12 + 4
+        assert np.all(x[s == "s03"][:, cols] == 0) and np.all(np.any(x[s != "s03"][:, cols] != 0, 1))  # solo la sessione col canale scartato
+    with pytest.raises(SystemExit):  # td senza modello: il checkpoint dev'essere «none», e «none» vale solo con td
+        probe_p1.main([a if a != "none" else str(tmp_path / "ckpt.pt") for a in base] + ["--stage", "extract", "--features", str(tmp_path / "g")])
     assert probe_p1.main(base + ["--stage", "probe", "--features", str(tmp_path / "f"), "--out", str(tmp_path / "p1.json")]) == 0
     rep = json.loads((tmp_path / "p1.json").read_text())
     assert rep["feature_set"] == "td" and rep["checkpoint"] == "none" and rep["p1"] > 0.5  # classi separabili per ampiezza
@@ -130,9 +144,23 @@ def test_internal_p1_baseline_equals_the_calibration_probe_on_the_same_features(
              **cache_record("model", x.shape[1]))
     cp = CP.probe(argparse.Namespace(task="p1", features=feats, datasets=["ninapro_db2"], seed=0, splits=splits, out=tmp_path / "cp.json"),
                   json.loads(splits.read_text()), lambda m: None)
-    assert cp["S"] == pytest.approx(rep["S"]) and cp["datasets"]["ninapro_db2"]["oof_rows_sha256"] == d["oof_rows_sha256"]
+    assert cp["S"] == pytest.approx(rep["S"]) and cp["S_se"] == pytest.approx(rep["S_se"]) and cp["weights"] == rep["weights"]
+    assert cp["datasets"]["ninapro_db2"]["oof_rows_sha256"] == d["oof_rows_sha256"]
     assert [f["c"] for f in cp["datasets"]["ninapro_db2"]["folds"]] == [f["c"] for f in d["folds"]]
-    assert d["input_sha256"] == cp["datasets"]["ninapro_db2"]["input_sha256"]
+    # l'impronta degli ingressi e' quella dell'estrazione della calibrazione (che non dipende dal modello): stesse finestre di A
+    import random_checkpoint as RC
+    from wearusfm.model.fm import FMConfig
+
+    tiny = {"model": {"dim": 16, "n_heads": 4, "k_latents": 4, "local_layers": 1, "backbone_layers": 1, "decoder_layers": 1,
+                      "muscle_dropout": 0.4}, "seed": 0}
+    ckpt = tmp_path / "tiny.pt"
+    torch.save(RC.random_state(tiny, 0), ckpt)
+    assert FMConfig(**tiny["model"]).dim == 16
+    cal = tmp_path / "cal"
+    CP.extract(argparse.Namespace(checkpoint=str(ckpt), device="cpu", batch=8, root=[root], datasets=["ninapro_db2"], features=cal,
+                                  splits=splits), json.loads(splits.read_text()), lambda m: None)
+    with np.load(cal / "ninapro_db2.npz") as z:
+        assert str(z["input_sha256"]) == d["input_sha256"]
 
 
 def _data(tmp_path, users=24, subjects=20):
@@ -172,6 +200,20 @@ def test_internal_p2_baseline_uses_the_internal_subjects_and_the_calibration_pro
     assert rep["probe"]["k_folds"] == CP.K_FOLDS and rep["probe"]["fold_seed"] == CP.FOLD_SEED
     with np.load(rep["oof"]) as z:  # formato di calibration_probe: confronti accoppiati possibili
         assert sorted(z["datasets"].tolist()) == ["epn612", "uci_emg"] and all(f"{d}_row" in z.files for d in ("epn612", "uci_emg"))
+    # stessa S della sonda della calibrazione sulle stesse feature, scritte nel suo formato (P2: soggetti interni, split dei tre semi)
+    feats = tmp_path / "cp2"
+    feats.mkdir()
+    args = argparse.Namespace(epn_root=[epn], uci_root=uci)
+    for ds in ("epn612", "uci_emg"):
+        x, y, s, input_sha, internal = CB.features_p2(args, ds)
+        all_subjects = (sorted(f"trainingJSON/user{i}" for i in range(1, 25)) if ds == "epn612" else [f"{i:02d}" for i in range(1, 21)])
+        np.savez(feats / f"{ds}.npz", x=x, y=y, s=s, subjects=np.asarray(internal), all_subjects=np.asarray(all_subjects),
+                 input_sha256=np.asarray(input_sha), checkpoint=np.asarray("none"), checkpoint_sha256=np.asarray("0" * 64),
+                 encoder_dim=np.asarray(0), protocol=np.asarray(CP.PROTOCOL), task=np.asarray("p2"), splits_sha256=np.asarray(CP.P2_SPLITS_SHA256),
+                 extraction_recipe=np.asarray(json.dumps(CP.EXTRACTION_RECIPE_P2, sort_keys=True)), **cache_record("model", x.shape[1]))
+    cp = CP.probe(argparse.Namespace(task="p2", features=feats, datasets=["epn612", "uci_emg"], seed=0, splits=None, out=tmp_path / "cp2.json"),
+                  None, lambda m: None)
+    assert cp["S"] == pytest.approx(rep["S"]) and cp["S_se"] == pytest.approx(rep["S_se"]) and cp["weights"] == rep["weights"]
 
 
 def test_classical_baseline_launcher(work):  # noqa: F811

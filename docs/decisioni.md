@@ -4009,3 +4009,12 @@ uguale nei test; predizioni fuori fold salvate per confronti accoppiati con A) e
 GPU-ora. **Rete casuale:** checkpoint con l'architettura di A e pesi dai semi 0 e 1 (`scripts/random_checkpoint.py`; non e' il passo 0 di A,
 che non e' registrato), valutato con le stesse estrazioni e sonde dei bracci: piano e preventivo a parte. Review del `critico`: DA RIVEDERE (4
 bloccanti, 6 minori), corretti; seconda review prima del lancio.
+**Baseline classica: correzioni della seconda review del `critico` (23/10/2026), da leggere con la voce precedente.** (1) Soglia di ZC e SSC
+**0** (non 0,05): e' quella di default di `harness.features_hudgins` e di `HudginsLDABaseline`; lo 0,05 della voce precedente non aveva una
+provenienza. (2) La ricetta td (feature, soglia, bordi 0,1 s, banda 20-450, QC a 0, finestra intera) e i canali dei dati (uguali al
+montaggio e alle altre sessioni) si registrano nella cache e si verificano in `check_cache`. (3) Questa e' la sonda logistica del modello
+sulle feature di Hudgins, NON la «LDA su feature di Hudgins» di v10 §8: quella resta dovuta (`harness.baselines.HudginsLDABaseline`). (4)
+Lettura **solo affiancata** ad A (S e accuratezza ufficiale); un confronto accoppiato, se servira', con `load_oof` e `paired_difference` dopo
+aver verificato che `input_sha256` e `oof_rows_sha256` coincidono con quelli dei rapporti di A (nei test l'impronta degli ingressi della
+baseline e' uguale a quella dell'estrazione della calibrazione). (5) Costo atteso ~20 core-ora (~1-1,5 h per job: lettura dei dati e
+sonde su poche colonne), tetto 48 core-ora, ore CPU dell'account IscrB_WearUsFM, 0 GPU-ora. (6) `--feature-set td` vuole `--checkpoint none`.

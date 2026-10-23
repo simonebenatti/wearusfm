@@ -2797,6 +2797,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   della rete casuale, launcher, larghezza td): corretti. Protocollo e preventivo in decisioni.md (48 core-ora di tetto). Seconda review prima
   del lancio.
 
+### 2026-10-23 | Claude | Baseline classica: correzioni della seconda review del `critico` | Codice: questo commit
+
+- Seconda review (54e5615): DA RIVEDERE, 1 bloccante (controllo dei canali della cache tautologico) e 8 minori. Corretti: canali dai dati
+  (uguali al montaggio, costanti fra le sessioni) e ricetta td registrati e verificati in `check_cache`; soglia di ZC e SSC 0 come
+  `features_hudgins` (lo 0,05 non aveva provenienza); `--checkpoint none` obbligatorio con td; test sul percorso vero del QC (P1, sessione con
+  un canale scartato), uguaglianza con `calibration_probe` anche per S_se, pesi e P2, impronta degli ingressi uguale a quella
+  dell'estrazione della calibrazione; LDA di v10 dichiarata ancora dovuta; lettura solo affiancata; costo atteso ~20 core-ora.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4199,3 +4207,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   disaccordo sull'ibrido mancante. Minori: SHA raw saltato se mancante; percorso della sonda in `spectral_diagnostic.py` non vincolato;
   `extract` senza test; un controllo del 2C mancante in `consistent`; soglie dell'allarme non in decisioni.md e «tutti corretti» non vero;
   due conteggi delle misure non definite diversi; confronto completo da lanciare a mano con PWl collassato. Corretti nel commit successivo.
+
+### 2026-10-23 | Claude | Baseline classica e rete casuale: rilievi delle due review del `critico`
+
+- Prima review (codice non committato): bloccanti finestra intera e canali del QC non dichiarati, rete casuale non dichiarata come non passo 0,
+  P1 senza test; minori protocollo/preventivo, baseline LDA di v10 e due SSC nel repo, OOF, provenienza della rete casuale, launcher, larghezza.
+- Seconda review (54e5615): bloccante il controllo tautologico dei canali; minori prova d'uguaglianza piu' stretta del dichiarato, confronto
+  accoppiato senza procedura, soglia 0,05 senza provenienza, stato della LDA di v10, preventivo solo col tetto, QC non provato sul percorso
+  vero, checkpoint qualunque accettato con td, questa voce mancante. Corretti nel commit successivo; nessun job lanciato.

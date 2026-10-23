@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Baseline classica sulla validazione interna (23/10/2026, Simone: «parti con 1 e 2»): le feature di Hudgins del progetto
-(`fm_features.td_features` -> `harness.features_hudgins`: MAV, ZC, SSC, WL per canale, soglia 0,05 in unita' della scala), sullo stesso
+(`fm_features.td_features` -> `harness.features_hudgins`: MAV, ZC, SSC, WL per canale, soglia 0 come `HudginsLDABaseline`), sullo stesso
 segnale filtrato e scalato delle feature del modello, con la STESSA sonda e la STESSA validazione interna di `calibration_probe.py` (fold di
 soggetti, C scelto sui soggetti di validazione, S fuori fold coi pesi della P1; P2 sui soggetti fuori dai test dei tre split). Nessun
 modello, nessun numero di test. Differenze dalla pipeline del modello (dichiarate anche nel rapporto): finestra intera, canali scartati dal
@@ -74,7 +74,9 @@ def run(args, log) -> dict:
     p1 = args.task == "p1"
     splits = json.loads(args.splits.read_text()) if p1 else None
     datasets = list(P1.P1_DATASETS) if p1 else ["epn612", "uci_emg"]
-    report = {"protocol": PROTOCOL, "task": args.task, "features": list(FF.TD_FEATURES), "deadzone": FF.TD_DEADZONE,
+    from wearusfm.harness.feature_sets import TD_RECIPE
+
+    report = {"protocol": PROTOCOL, "task": args.task, "features": list(FF.TD_FEATURES), "deadzone": FF.TD_DEADZONE, "td_recipe": TD_RECIPE,
               "differences_from_model": {"window": "intera, nessun ritaglio da 4 s", "qc": "canali scartati dal QC con feature a 0",
                                          "probe": "sonda logistica del modello (calibration_probe), non la LDA di v10 §8"},
               "probe": {"k_folds": CP.K_FOLDS, "fold_seed": CP.FOLD_SEED, "val_frac": CP.VAL_FRAC, "probe_seed": args.seed,

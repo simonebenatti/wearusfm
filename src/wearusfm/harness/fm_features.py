@@ -19,7 +19,7 @@ import numpy as np
 import torch
 
 from wearusfm.data import pretraining_loader as L
-from wearusfm.harness.feature_sets import FEATURE_SETS, uses_model
+from wearusfm.harness.feature_sets import FEATURE_SETS, TD_BAND, TD_DEADZONE, TD_EDGE_GUARD_S, TD_FEATURES, uses_model
 from wearusfm.ingest.common import montage_to_dict
 from wearusfm.metadata.schema import (AnatomicalIdentity, AnatomicalPrecision, ChannelGroup, ChannelMetadata, Chirality, MontageMetadata,
                                       RawOrEnvelope, SensorCoordinates, Topology)
@@ -88,13 +88,12 @@ def band_limit_hz(montage: dict, fs: float) -> np.ndarray:
 # segnale filtrato e scalato per soggetto o sessione delle feature del modello. Differenze dalla pipeline del modello, dichiarate: finestra
 # INTERA (il modello media due ritagli da 4 s quando la finestra e' piu' lunga, es. EPN-612 da 5 s) e canali scartati dal QC con feature a 0
 # (il modello li maschera e li esclude dal pooling; le feature per canale non hanno pooling). La sonda e' quella del modello (logistica, C
-# scelto sulla validazione), non la LDA di v10 §8.
-TD_FEATURES = ("mav", "zc", "ssc", "wl")
-TD_DEADZONE = 0.05  # soglia di ZC e SSC in unita' della scala del soggetto (mediana dei MAD), come `features_hudgins`
+# scelto sulla validazione), non la LDA di v10 §8 (`harness.baselines.HudginsLDABaseline`), che resta dovuta.
+# ricetta (TD_FEATURES, TD_DEADZONE, TD_EDGE_GUARD_S, TD_BAND) in `feature_sets`, con le cache che la registrano
 
 
-def td_features(windows: np.ndarray, fs: float, subjects: np.ndarray, montage: dict | None = None, band=(20.0, 450.0),
-                scale_windows: int = 10, edge_guard_s: float = 0.1) -> np.ndarray:
+def td_features(windows: np.ndarray, fs: float, subjects: np.ndarray, montage: dict | None = None, band=TD_BAND,
+                scale_windows: int = 10, edge_guard_s: float = TD_EDGE_GUARD_S) -> np.ndarray:
     """(N, 4 x C): per finestra (T, C), filtrata come nel pretraining, divisa per la scala del soggetto (`subject_scales`, come il modello) e
     fuori dalle zone di bordo `edge_guard_s` (transitori del filtro), `features_hudgins.extract_hudgins_features` con soglia `TD_DEADZONE`.
     I canali scartati dal QC del montaggio (se dato) hanno feature 0."""
@@ -156,7 +155,9 @@ def extract_features(model: WearUsFM, windows: np.ndarray, fs: float, montage: d
     statistiche (come `anchor_edge_guard_s` del pretraining)."""
     if feature_set not in FEATURE_SETS:
         raise ValueError(f"feature_set {feature_set!r}: uno di {FEATURE_SETS}")
-    if feature_set == "td":  # baseline classica: nessun modello (puo' essere None)
+    if feature_set == "td":  # baseline classica: nessun modello (puo' essere None); banda e bordi della ricetta td
+        if tuple(band) != TD_BAND or edge_guard_s != TD_EDGE_GUARD_S:
+            raise ValueError("td: banda e zone di bordo sono quelle della ricetta (feature_sets.TD_RECIPE)")
         return td_features(windows, fs, subjects, montage, band, scale_windows, edge_guard_s)
     use_model, use_stats = uses_model(feature_set), feature_set not in ("model", "branches")
     branches_only = feature_set == "branches"
