@@ -164,7 +164,8 @@ def test_internal_p1_baseline_equals_the_calibration_probe_on_the_same_features(
 
 
 def _fake_p1(monkeypatch, counts, root):
-    """Sessioni P1 finte in memoria per piu' dataset di larghezza diversa (DB2 12 colonne, DB6 16 con due vuote scartate dal QC), al posto
+    """Sessioni P1 finte in memoria per piu' dataset di larghezza diversa (DB2 12 colonne, DB6 16 con le colonne vuote 8 e 9 scartate dal QC,
+    come `ingest.ninapro_db6.EMPTY_COLUMNS`), al posto
     di `P1.sessions_of` / `P1.session_windows` (il formato dei file di DB6 qui non serve)."""
     from types import SimpleNamespace
 
@@ -173,7 +174,7 @@ def _fake_p1(monkeypatch, counts, root):
     from wearusfm.ingest.common import montage_to_dict
 
     montages = {"ninapro_db2": montage_to_dict(ninapro_std.build_montage_metadata(ninapro_std.DB2, 1, "right"), [True] * 12),
-                "ninapro_db6": montage_to_dict(ninapro_db6.build_montage_metadata(1, 1, 1), [True] * 14 + [False] * 2)}
+                "ninapro_db6": montage_to_dict(ninapro_db6.build_montage_metadata(1, 1, 1), [True] * 8 + [False] * 2 + [True] * 6)}
     sessions = {}
     for k, (ds, n) in enumerate(counts.items()):
         c = 12 if ds == "ninapro_db2" else 16
@@ -182,7 +183,8 @@ def _fake_p1(monkeypatch, counts, root):
             y = np.repeat(np.arange(1, 5), 6)
             amp = 1.0 + 3.0 * (np.arange(c)[None, None, :] == y[:, None, None])
             w = (rng.normal(size=(len(y), int(FS), c)) * amp).astype(np.float32)
-            w[:, :, 14:] = 0 if c == 16 else w[:, :, 14:]
+            if c == 16:
+                w[:, :, 8:10] = 0  # colonne vuote del DB6 vero
             sessions[ds, f"s{i + 1:02d}"] = SimpleNamespace(windows=w, labels=y, fs=FS, montage=montages[ds], session="session1")
             (root / ds / f"s{i + 1:02d}").mkdir(parents=True, exist_ok=True)  # `probe_p1._root_of` cerca la cartella del soggetto
     monkeypatch.setattr(P1, "sessions_of", lambda root, ds, s: [SimpleNamespace(name="session1", ds=ds, s=s)])
@@ -198,8 +200,27 @@ def test_td_channels_are_kept_per_dataset_in_the_official_p1_probe(tmp_path, mon
     assert args.td_channels == 12 and out2["train"][0].shape[1] == 48
     out6 = probe_p1.dataset_features(None, [tmp_path], "ninapro_db6", {"train": subjects["ninapro_db6"]}, args, lambda m: None)
     assert args.td_channels == 16 and out6["train"][0].shape[1] == 64
-    assert np.all(out6["train"][0][:, np.arange(4) * 16 + 14] == 0)  # colonne vuote di DB6, scartate dal QC
+    empty = np.concatenate([np.arange(4) * 16 + 8, np.arange(4) * 16 + 9])
+    assert np.all(out6["train"][0][:, empty] == 0)  # colonne vuote 8 e 9 di DB6, scartate dal QC
     assert int(cache_record("td", 64, args.td_channels)["td_channels"]) == 16
+
+
+def test_td_channel_check_refuses_a_width_different_from_the_montage_or_from_the_other_sessions(tmp_path, monkeypatch):
+    """Il ramo d'errore del controllo dei canali di `probe_p1.dataset_features` (quarta review del critico): 16 colonne su un montaggio da 12,
+    oppure due sessioni dello stesso dataset da 12 e 16 colonne (montaggi giusti), si fermano prima di estrarre."""
+    from types import SimpleNamespace
+
+    from wearusfm.harness import p1_cross_subject as P1
+
+    subjects = _fake_p1(monkeypatch, {"ninapro_db2": 2, "ninapro_db6": 1}, tmp_path)
+    real = P1.session_windows
+    db6 = real(SimpleNamespace(name="session1", s="s01"), "ninapro_db6")
+    args = argparse.Namespace(window_s=1.0, audit_inputs=False, batch=8, device="cpu", feature_set="td")
+    for case, sw2 in (("montaggio", lambda sw: SimpleNamespace(**{**vars(sw), "windows": np.concatenate([sw.windows, sw.windows[:, :, :4]], 2)})),
+                      ("sessioni", lambda sw: db6)):
+        monkeypatch.setattr(P1, "session_windows", lambda sess, ds, window_s=1.0, f=sw2: f(real(sess, ds)) if sess.s == "s02" else real(sess, ds))
+        with pytest.raises(ValueError, match="diversi dal montaggio o dalle altre sessioni"):
+            probe_p1.dataset_features(None, [tmp_path], "ninapro_db2", {"train": subjects["ninapro_db2"]}, args, lambda m: None)
 
 
 def test_internal_p1_weights_equal_the_calibration_probe_with_two_datasets(tmp_path, monkeypatch):

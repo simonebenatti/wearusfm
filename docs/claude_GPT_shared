@@ -2811,6 +2811,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   e 2 minori (impronta degli ingressi provata solo in P1, pesi provati con un solo dataset). Corretti con test: due dataset di larghezza
   diversa, pesi con due dataset P1, impronta P2 uguale a `CP.extract_p2`. Test delle baseline 11 PASS.
 
+### 2026-10-23 | Claude | Baseline classica: quarta review del `critico` APPROVATO | Codice: questo commit
+
+- Quarta review (7447d71): APPROVATO, con 2 minori corretti qui: test del ramo d'errore del controllo dei canali (montaggio e sessioni) e DB6
+  finto con le colonne vuote 8 e 9 come quello vero. Il `critico` ha verificato che il test nuovo fallisce col codice di f765a83. Suite 1352
+  PASS. Memoria stimata del job P2 (EPN-612 intero su 30 GB CPU): ~12-13 GB, da guardare nel log. Pronta per deploy e lancio (2 job CPU,
+  tetto 48 core-ora, stima ~20, 0 GPU-ora), col via di Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
