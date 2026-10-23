@@ -4028,3 +4028,15 @@ due dataset P1, e l'impronta degli ingressi uguale a quella dell'estrazione dell
 campagna, poi i job p1 e p2 (CPU seriale, tetto 48 core-ora, stima ~20, 0 GPU-ora), rapporti in `$SCRATCH/wearusfm_runs/baseline_td_20261023/`.
 **Baseline classica: checkout sottomesso da Simone (23/10/2026):** 61971050 (`BASELINE-TD-20261023-checkout`). I due job dopo
 «checkout di campagna pronto».
+**Allarme sul rango effettivo e nuova C4: FIRMATO (Simone, 23/10/2026: «firmo,»), sui punti (a)-(d) proposti da Claude dopo la review del
+`critico`.** (a) **Regola:** soglia assoluta del rango effettivo 38,4 (il valore firmato al 30M) sia per l'allarme del trainer sia per A3
+della selezione, a tutte le taglie; invariati la soglia del rapporto (0,05) e i 3 controlli consecutivi. Limite dichiarato: la soglia vale
+per il batch diagnostico attuale (16 finestre, seme del run); se il batch cambia si rivede. Al 30M decisioni identiche alla regola firmata
+(16), che questa modifica per le taglie maggiori. (b) **Deroga** al «C4 instabile: ci si ferma» del protocollo C1-C4: UNA sola ripetizione
+di C4; se fallisce anche questa, il 300M si ferma definitivamente e il piano W1 si fa fino al 100M. La C4 fermata resta inammissibile e
+registrata. (c) **Ambito:** C4 e tutti i run della finestra 1. (d) **Costo:** checkout nuovo (CPU, minuti); C4 tetto 26 GPU-ora (stima ~20),
+valutazione tetto 9 (stima ~5,7): calibrazione da ~149,5 a un tetto di 184,5 / 220, residuo 35,5. I primi 1.500 passi della nuova C4
+ripetono quelli gia' visti (~4,8 GPU-ora): dichiarato, ripresa dal passo 1.500 scartata (vietata da `_check_resume_recipe`, servirebbe un
+cambio di codice). Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10. Prossimi passi: pianificatore
+(tentativo nuovo di C4 con ID e cartella nuovi e `--erank-min 38.4`), A3 letta dalla configurazione del run, test, `critico`, deploy,
+prova d'uguaglianza della configurazione del 300M con C4 (salvo `alarm.erank_min`), comando a Simone.
