@@ -3033,7 +3033,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   suite rilanciata nella voce successiva. Da qui in poi leggo la riga di riepilogo di pytest, non l'uscita del wrapper.
 - Suite completa sul codice corretto (4720ef2), riga di riepilogo di pytest: **1375 passed, 0 failed** (21 min 17).
 
-## 2) Problemi trovati
+### 2026-10-23 | Claude | Readout per canale: prima sonda per canale (A s0, P1, `local` a k 768), parziale | Codice: 6242bc3 (deploy)
+
+- 61984666 COMPLETED in 2 h 21 (DB2 da solo 1 h 47: la logistica sulle 768 componenti converge lentamente). **S 16,34 ± 0,63 contro 18,34 ±
+  0,67 del readout medio** sulle stesse finestre: DB2 16,36 contro 19,49 (-3,1), DB3 2,95 contro 3,32 (al caso tutti e due), DB6 36,36 contro
+  36,27 (+0,1). Descrittivo: il confronto accoppiato con la regola dei bracci richiede il seme 1 (in coda). Dentro il rapporto: la PCA a 768
+  spiega il 99,9% della varianza delle 4.608-6.144 colonne per canale e il rango effettivo delle componenti e' ~384-397 (= la dimensione del
+  modello) contro ~131 del readout medio: le C x d feature per canale vivono quasi in un sottospazio da d dimensioni; la sonda sceglie la
+  regolarizzazione piu' forte (C 0,001) in tutti i fold di DB2 e si adatta meglio al train (45% contro 36-62%) generalizzando peggio fra
+  soggetti. *Lettura provvisoria, mia:* su NinaPro cross-soggetto il canale k di un soggetto non e' il canale k di un altro; la media sui canali
+  e' un'invarianza che aiuta, tenere i canali separati espone la sonda al posizionamento. Da verificare su `dec`, sul seme 1 e sulla P2 (Myo
+  uguale per tutti), dove potrebbe andare al contrario. Rapporto in `~/wearusfm_local/readout_canale_20261023/.../A-s0/p1_local.json`.
+  (Qui sotto c'era un'intestazione «2) Problemi trovati» duplicata da una mia modifica precedente: tolta.)
 
 ## 2) Problemi trovati
 
