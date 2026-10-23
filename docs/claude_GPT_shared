@@ -2929,6 +2929,32 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   casuale con l'architettura di A (si sovrappone alla tranche 2 del readout: una sola proposta a Simone); (5) LDA sulle feature di Hudgins di
   v10 §8; pilot dei rami sospeso. Priorita' fra questi: di Simone.
 
+### 2026-10-23 | Claude | Baseline classica: P1 e P2 finite; P1 letta accanto ad A | Codice: 63ac0dd (confronto), 56984cf (baseline)
+
+- Simone: «l'idea e' quella di finire P2, capire cosa e' successo, poi lavorare sulle tue soluzioni». P1 61972380 COMPLETED in 20:32, P2
+  61972407 COMPLETED in 18:42; rapporti copiati sul Mac dopo il commit della lettura congelata del readout (63ac0dd), con gli S storici di A.
+- P1, validazione interna, stesse finestre di A (impronte e righe uguali, verificato): TD 14,30 ± 0,55 contro A 18,34 (s0) e 18,28 (s1).
+  Ufficiale: TD 16,17 ± 1,44 contro A 21,31. Confronto accoppiato descrittivo con la regola dei bracci (`channel_readout.py compare`,
+  bootstrap congiunto, baseline come riferimento per i due semi): A - TD **+4,01 punti, IC95 [+2,97; +5,03]**, semi +4,04 / +3,98, «migliora»;
+  DB2 +5,71, DB3 +0,07 (tutti e due al caso), DB6 +3,10 (IC che tocca lo zero). Il readout medio dell'encoder allenato batte le feature di
+  Hudgins sulla P1, con la stessa sonda; P2 nella voce successiva. Voce in decisioni.md.
+- P2, validazione interna, stesse finestre di A: TD 67,48 ± 2,17 (EPN-612 66,61, UCI-EMG 68,35) contro A 81,92 (s0) e 80,75 (s1). Ufficiale: TD
+  71,58 ± 3,35 contro A 85,97. Accoppiato descrittivo: A - TD **+13,86 punti, IC95 [+11,00; +17,03]**, semi +14,44 / +13,27, «migliora»;
+  EPN-612 ~+20, UCI-EMG ~+7,5. Log dei job puliti. Lettura: col readout medio l'encoder allenato batte Hudgins su tutti e due i compiti; la
+  rete casuale dello Step 1 (ufficiale P2 73,1) era gia' al livello di Hudgins (71,6). Voce in decisioni.md. LDA di v10 §8 ancora dovuta.
+
+### 2026-10-23 | Claude | Readout per canale: seconda review del `critico`, correzioni, suite 1369 PASS | Codice: questo commit
+
+- Suite completa su 63ac0dd (tree 36ad0e4 + readout): **1369 PASS** in 21 min 50: chiude anche la nota della sessione PSD. Seconda review:
+  DA RIVEDERE, 2 bloccanti e 8 minori, tutti corretti qui (dettaglio in «Problemi trovati» e in decisioni.md): k effettivo = min(k, righe di
+  train - 1) (UCI-EMG: di fatto larghezza intera, dichiarato); controlli fra i due semi prima della normalizzazione per `s_comparison`;
+  `--stage equality` (soglia unica 1e-3); `dec` descritto correttamente; ore locali; correzione di tre affermazioni della voce di 63ac0dd
+  (`probe.py` «non toccato», «12 test» -> 11, «DECISO» marcato come interpretazione delle parole di Simone). Protocollo con la sezione
+  «Emendamenti dopo il congelamento», scritti dopo l'apertura della baseline; regola, soglie e candidati invariati.
+- Opzione proposta a Simone: ancore-only s0/s1 nella stessa campagna (+4 estrazioni GPU, tetto 5,0 GPU-ora; +8 sonde CPU) per rileggere
+  «ancore-only = A» col readout per canale. Prossimo: comandi di deploy e lancio con lo SHA di questo commit; via di Simone (voce di budget,
+  opzione ancore-only).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4369,6 +4395,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   hash con la decisione citata nel test, l'altra sessione e' avvisata. Il tempo perso per il doppio cambio e' mio.
 - Lo strato «token» (prima dell'encoder locale) non si legge con una media nel tempo: front-end lineare su un segnale a media nulla, resta solo
   l'identita' di canale. Tolto dal protocollo; un readout di strato 0 richiederebbe una non linearita' che non e' del modello.
+
+### 2026-10-23 | Claude | Readout per canale: rilievi della seconda review del `critico` (su 63ac0dd)
+
+- Bloccanti: (1) k = 768 impossibile su UCI-EMG (~220-240 finestre di train per fold): le quattro sonde P2 si sarebbero fermate dopo EPN-612 e
+  le letture P2 congelate non si potevano eseguire; il test della P2 evitava il caso con `--k 8`. (2) La normalizzazione dei rapporti per
+  `arms_compare.s_comparison` accettava candidati dei due semi di strato o k diversi e riferimenti uno con modello e uno senza (prova in
+  memoria del critico). Minori: `dec` descritto male; ore locali sbagliate (core-ore = ore locali); soglia d'uguaglianza doppia (1e-6/1e-3) e
+  senza comando; tre affermazioni false nella voce di 63ac0dd (`probe.py` «non toccato», «12 test», lettura di Simone scritta come «DECISO»);
+  il punto (4) della baseline non dichiarato sostituito; un ramo di `check_models` irraggiungibile e il controllo degli SHA senza test; gli
+  emendamenti arrivano dopo l'apertura della baseline (congelamento rispettato, emendamenti dichiarati). Tutti corretti nel commit di questa voce.
+- Lettura mia dei fatti: i due bloccanti sarebbero emersi al primo job P2 (nessun costo GPU perso, ma una giornata di coda) e al primo
+  confronto misto; il critico li ha presi prima. Il doppio cambio su `probe.py` nella stessa ora ha prodotto una voce incoerente: da qui in
+  poi una decisione di Simone che cambia un vincolo la scrivo come voce separata, con le parole esatte, prima di toccare il codice.
 
 ### 2026-10-23 | Claude | Rango effettivo: rilievi delle due review del `critico`
 

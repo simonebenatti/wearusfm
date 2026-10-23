@@ -4089,6 +4089,44 @@ principali sono quelle che fai tu, se modifichi cose poi le riporti a come erano
 aggiunto con default invariato e il percorso di default (pilot, diagnostica, calibrazione) e' provato uguale nei test. Il vincolo byte per
 byte di `tests/cpu/test_branch_pilot.py` su `harness/probe.py` passa all'hash del commit di questa voce, con la decisione citata nel test;
 gli altri quattro file restano quelli di aba1f2e. L'altra sessione Claude (C4, pilot) e' avvisata: le modifiche all'harness le fa questa.
+**Baseline classica, P1: esito (23/10/2026, letto dopo il commit 63ac0dd della lettura congelata del readout per canale).** Job 61972380
+COMPLETED in 20:32, 61972407 (P2) COMPLETED in 18:42 (P2 da leggere). Validazione interna S, stesse finestre e stesse righe fuori fold di A
+(verificato): **TD 14,30 ± 0,55** (DB2 14,07, DB3 3,02, DB6 32,14; 48/48/64 colonne) contro A s0 18,34 e s1 18,28. Test ufficiale P1: TD 16,17 ±
+1,44 (DB2 16,19, DB3 3,14, DB6 35,67) contro A 21,31. Confronto accoppiato descrittivo (regola dei bracci con `channel_readout.py compare`,
+bootstrap congiunto dei soggetti, riferimento la baseline per tutti e due i semi): **A - TD = +4,01 punti, IC95 [+2,97; +5,03], per seme +4,04
+e +3,98: «migliora»**; per dataset DB2 +5,71 [+4,43; +7,02], DB3 +0,07 [-1,14; +1,26] (tutti e due al caso), DB6 +3,10 [-0,39; +6,73]. Lettura:
+sulla P1 l'encoder allenato, letto col readout medio, batte le feature di Hudgins con la stessa sonda; il distacco sta in DB2. Non e' la LDA di
+v10 §8 (ancora dovuta) e non cambia nessuna regola. Esito in `~/wearusfm_local/readout_canale_20261023/confronti/td_vs_A_pool_p1.json`
+(dati, fuori Git); la copia dell'esito entra in `results/` col commit dei confronti del readout.
+**Baseline classica, P2: esito (23/10/2026).** Validazione interna S (soggetti fuori dai test dei tre split, stesse finestre e righe di A,
+verificato): **TD 67,48 ± 2,17** (EPN-612 66,61, UCI-EMG 68,35) contro A s0 81,92 (87,34 / 76,49) e s1 80,75 (86,09 / 75,42). Test ufficiale
+P2: TD 71,58 ± 3,35 (EPN-612 65,19, UCI-EMG 77,98) contro A 85,97. Confronto accoppiato descrittivo (come per la P1): **A - TD = +13,86 punti,
+IC95 [+11,00; +17,03], per seme +14,44 e +13,27: «migliora»**; EPN-612 circa +20, UCI-EMG circa +7,5. Log dei due job senza errori ne'
+avvisi di convergenza (P1: 495 avvisi «y_pred contains classes not in y_true», gia' previsti dal protocollo). Lettura dei due compiti insieme:
+col readout medio l'encoder allenato batte le feature di Hudgins con la stessa sonda su P1 (+4) e P2 (+14); e la rete casuale dello Step 1
+(ufficiale P2 73,1) stava gia' al livello delle feature classiche (71,6): l'architettura col readout medio vale da sola quanto Hudgins, il
+training aggiunge il resto. Resta da misurare quanto il readout medio nasconde (readout per canale) e la LDA di v10 §8. Esito in
+`~/wearusfm_local/readout_canale_20261023/confronti/td_vs_A_pool_p2.json`.
+**Readout per canale: seconda review del `critico` (DA RIVEDERE, 2 bloccanti e 8 minori) e correzioni (23/10/2026), con una voce di
+correzione.** Bloccanti: (1) k = 768 non era applicabile su UCI-EMG (~220-240 finestre di train per fold: il codice rifiutava e le quattro
+sonde P2 si sarebbero fermate) -> k effettivo = min(k, righe di train - 1), dichiarato nel rapporto; su UCI il readout per canale e' di fatto a
+larghezza intera e la «pari larghezza» non vincola nulla; (2) la normalizzazione dei rapporti per `s_comparison` poteva nascondere candidati
+dei due semi di tipo diverso (strato, k) o riferimenti uno con modello e uno senza -> controlli espliciti prima della normalizzazione, con
+test. Minori corretti: `dec` descritto come target dell'opzione b del teacher esteso a tutte le posizioni (non cio' che leggono le teste delle
+ancore, che sono sullo studente mascherato); ore locali (le core-ore sono le ore locali del budget CPU: 416 di tetto e ~70 attese; 52 e 9
+erano ore di orologio; vale anche per la voce di 63ac0dd); una sola soglia d'uguaglianza (1e-3 su S) e il comando `--stage equality`; ramo
+irraggiungibile tolto e test del «due file dello stesso checkpoint». **Correzioni a 63ac0dd:** la voce del protocollo diceva «`harness/probe.py`
+NON toccato» e «componenti alla sonda invariata»: era vero quando e' stata scritta e falso al commit, perche' la decisione successiva nello
+stesso commit ha ripristinato `scale`; fa fede la voce «Sonda senza nuova scala ... DECISO». Il messaggio di commit e il registro dicevano «12
+test»: `test_channel_readout.py` ne ha 11. La frase «DECISO (Simone ...)» sul vincolo di `probe.py` e' la mia lettura delle parole di Simone
+(«le modifiche principali sono quelle che fai tu», «se modifichi cose poi le riporti a come erano prima perdiamo tempo», «tua nel senso che
+usi il file probe.py che hai modificato oggi»): *interpretazione*, non una firma sul vincolo; se Simone la smentisce si ripristina l'hash di
+aba1f2e e il parametro resta inutilizzato dal pilot. Il punto (4) della voce della baseline classica («lettura solo affiancata; accoppiato
+con `load_oof`/`paired_difference` se servira'») e' sostituito dal confronto 2 del protocollo (`s_comparison`, regola dei bracci,
+descrittivo). Questi emendamenti sono scritti dopo l'apertura dei rapporti della baseline (P1 e P2) e non cambiano soglie, regola o candidati.
+**Opzione proposta (ablation):** ancore-only s0/s1 nella stessa campagna (+4 estrazioni, P1 e P2 per seme, tetto 5,0 GPU-ora, attese ~2,3; +8
+sonde, tetto 256 core-ore): se col readout per canale A supera ancore-only, il JEPA aggiunge informazione che la media non mostra. Suite
+completa su 63ac0dd: 1369 PASS (21 min 50).
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le

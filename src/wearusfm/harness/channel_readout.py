@@ -9,7 +9,7 @@ tiene per canale, mediata solo nel tempo, a due profondita' della stessa passata
 |---|---|---|
 | `pool` | il readout di sempre (`pool_p1p2`), per il controllo d'uguaglianza con le cache esistenti | 2d |
 | `local` | uscita dell'encoder locale (target dell'opzione a di D11) | C x d |
-| `dec` | uscita del decoder a query interrogato su OGNI (canale, patch) valida: la rappresentazione profonda per canale, quella che leggono le teste delle ancore | C x d |
+| `dec` | uscita del decoder a query del modello (teacher) sulla vista senza maschera, interrogato su OGNI (canale, patch) valida: il target JEPA dell'opzione b (D11) esteso a tutte le posizioni; la rappresentazione profonda per canale (le teste delle ancore leggono invece il decoder dello studente sulla vista mascherata, alle sole posizioni nascoste) | C x d |
 
 Non c'e' uno strato «token» (patch + identita', prima dell'encoder locale): il front-end e' lineare nel segnale e la media nel tempo delle
 sue uscite su un segnale a media nulla e' ~0 qualunque sia l'ampiezza; resterebbe solo l'identita' di canale, costante. L'ampiezza entra
@@ -132,17 +132,26 @@ def extract_channel_readouts(model, windows: np.ndarray, fs: float, montage: dic
     return result
 
 
+def effective_k(k: int | None, n_train: int, width: int) -> int | None:
+    """Componenti della PCA davvero stimabili: None (nessuna riduzione) se `k` manca, e' 0 o raggiunge la larghezza; altrimenti min(k, n_train - 1):
+    le feature standardizzate e centrate di n_train righe hanno rango al piu' n_train - 1, e con k >= rango la PCA e' una base ortonormale
+    dello spazio dei dati di train, in cui la soluzione L2 della logistica (che vive in quello spazio) e' la stessa della larghezza intera: la
+    «pari larghezza» su un dataset piccolo (UCI-EMG: ~220-240 finestre di train per fold) non vincola nulla, e si dichiara (`k_capped`)."""
+    if k is None or k <= 0 or k >= width:
+        return None
+    if n_train < 2:
+        raise ValueError(f"{n_train} finestre di train: nessuna riduzione possibile")
+    return min(k, n_train - 1)
+
+
 def fit_reduction(x_train: np.ndarray, k: int | None, seed: int = 0):
-    """Standardizzazione (solo train) e, se `k` e' minore della larghezza, PCA a `k` componenti stimata sul solo train. Ritorna (scaler, pca|None)."""
+    """Standardizzazione (solo train) e, se `effective_k` lo chiede, PCA a quel numero di componenti stimata sul solo train. Ritorna (scaler, pca|None)."""
     from sklearn.decomposition import PCA
     from sklearn.preprocessing import StandardScaler
 
     scaler = StandardScaler().fit(x_train)
-    pca = None
-    if k is not None and 0 < k < x_train.shape[1]:
-        if k > len(x_train):
-            raise ValueError(f"k = {k} maggiore delle finestre di train ({len(x_train)})")
-        pca = PCA(n_components=k, svd_solver="randomized", random_state=seed).fit(scaler.transform(x_train))
+    k_eff = effective_k(k, len(x_train), x_train.shape[1])
+    pca = None if k_eff is None else PCA(n_components=k_eff, svd_solver="randomized", random_state=seed).fit(scaler.transform(x_train))
     return scaler, pca
 
 

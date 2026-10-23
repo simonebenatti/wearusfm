@@ -13,6 +13,7 @@ a k = 2d componenti, default) oppure intera (`--k 0`). Nessun training, nessun n
   python3 scripts/channel_readout.py --stage probe --features DIR --layer local --out rapporto.json [--k 768] [--task p2]   (CPU)
   python3 scripts/channel_readout.py --stage compare --reference RIF_s0.json RIF_s1.json --candidate CAND_s0.json CAND_s1.json \\
       [--oof-map /leonardo_work/...=/Users/.../copia] --out confronto.json                                                 (Mac)
+  python3 scripts/channel_readout.py --stage equality --reference STORICO_s_p1.json --candidate POOL_s0_p1.json [--oof-map ...] --out eq.json
 
 I rapporti della fase probe hanno il formato dei rapporti di `calibration_probe` (S, S_se, pesi, fold, predizioni fuori fold accanto):
 `compare` li accoppia per finestra (stessi `input_sha256` e `oof_rows_sha256`) e per modello (stesso checkpoint per seme) con i rapporti
@@ -177,7 +178,7 @@ def oof_predictions(x, y, s, roles: list[dict], seed: int, k: int | None) -> dic
         mt, mv, mh = (np.isin(s, r[kk]) for kk in ("train", "val", "held"))
         keep_v, keep_h = P1.keep_train_classes(y[mt], y[mv], y[mh])
         if reduce:
-            scaler, pca = CR.fit_reduction(x[mt], k, seed)
+            scaler, pca = CR.fit_reduction(x[mt], k, seed)  # k effettivo = min(k, righe di train - 1): `channel_readout.effective_k`
             xt, xv, xh = (CR.apply_reduction(scaler, pca, v) for v in (x[mt], x[mv][keep_v], x[mh][keep_h]))
         else:
             pca, (xt, xv, xh) = None, (x[mt], x[mv][keep_v], x[mh][keep_h])
@@ -189,7 +190,8 @@ def oof_predictions(x, y, s, roles: list[dict], seed: int, k: int | None) -> dic
         per_fold.append({**r, "held_bacc": res.test_bacc, "val_bacc": res.val_bacc, "train_bacc": res.train_bacc, "c": res.c,
                          "n_train": res.n_train, "n_val": res.n_val, "n_held": res.n_test,
                          "dropped_val_windows": int((~keep_v).sum()), "dropped_held_windows": int((~keep_h).sum()),
-                         "k": int(xt.shape[1]), "explained_variance": float(pca.explained_variance_ratio_.sum()) if pca is not None else 1.0})
+                         "k": int(xt.shape[1]), "k_capped": bool(reduce and xt.shape[1] < k),
+                         "explained_variance": float(pca.explained_variance_ratio_.sum()) if pca is not None else 1.0})
     row = np.concatenate(rows)
     if len(np.unique(row)) != len(row):
         raise ValueError("finestre ripetute nei fold di valutazione")
@@ -244,7 +246,8 @@ def probe(args, splits: dict | None, log) -> dict:
         report["datasets"][ds].update({"subjects": pre, "s": bacc, "folds": res["folds"], "n_classes": int(len(np.unique(y))),
                                        "n_windows": int(len(y)), "n_oof_windows": int(len(res["y"])), "oof_rows_sha256": fingerprint(res["row"]),
                                        "readout": {"layer": args.layer, "width": int(x.shape[1]), "channels": channels, "k": k_eff or int(x.shape[1]),
-                                                   "reduced": k_eff is not None},
+                                                   "reduced": k_eff is not None, "k_capped_folds": int(sum(f["k_capped"] for f in res["folds"])),
+                                                   "k_by_fold": [f["k"] for f in res["folds"]]},
                                        "features": feature_diagnostics(x, args.seed)})
         log(f"{ds}: S {100 * bacc:.2f} ({args.layer}, larghezza {x.shape[1]} -> k {k_eff or x.shape[1]}; {len(pre)} soggetti, {CP.K_FOLDS} fold)")
     if len(idents) != 1:
@@ -298,7 +301,8 @@ def _model_free(report: dict) -> bool:
 
 def check_models(refs: list[dict], cands: list[dict]) -> None:
     """Identita' dei modelli: i due candidati sono due modelli diversi (i due semi); per ogni seme il riferimento e' lo stesso checkpoint del
-    candidato, salvo un riferimento senza modello (la baseline classica), che puo' essere lo stesso rapporto per tutti e due i semi."""
+    candidato, salvo un riferimento senza modello (la baseline classica), che puo' essere lo stesso rapporto per tutti e due i semi. (Che i due
+    riferimenti con modello siano diversi segue: ciascuno ha lo SHA del suo candidato.)"""
     shas = [str(c.get("checkpoint_sha256", "")) for c in cands]
     if any(not s or _model_free(c) for s, c in zip(shas, cands)):
         raise ValueError("candidato senza checkpoint: il readout per canale si confronta per modello")
@@ -307,8 +311,28 @@ def check_models(refs: list[dict], cands: list[dict]) -> None:
     for ref, cand in zip(refs, cands):
         if not _model_free(ref) and str(ref.get("checkpoint_sha256", "")) != str(cand["checkpoint_sha256"]):
             raise ValueError("riferimento e candidato di uno stesso seme vengono da checkpoint diversi")
-    if not _model_free(refs[0]) and str(refs[0].get("checkpoint_sha256")) == str(refs[1].get("checkpoint_sha256")):
-        raise ValueError("i due riferimenti sono lo stesso checkpoint: servono i due semi")
+
+
+SIDE_KEYS = ("protocol", "feature_set", "extraction_recipe")
+
+
+def _readout_identity(r: dict) -> dict:
+    ro = r.get("readout") or {}
+    return {"layer": ro.get("layer"), "k_requested": ro.get("k_requested"),
+            "datasets": {d: {kk: (v.get("readout") or {}).get(kk) for kk in ("k", "reduced", "width")} for d, v in sorted(r["datasets"].items())}}
+
+
+def check_sides_alike(refs: list[dict], cands: list[dict]) -> None:
+    """I due semi di uno stesso lato sono lo stesso tipo di rapporto (la normalizzazione per `s_comparison` cancella queste chiavi, quindi
+    vanno confrontate prima): per i candidati protocollo, insieme di feature, ricetta, strato, k richiesto e k/riduzione/larghezza per dataset;
+    per i riferimenti protocollo, insieme di feature e ricetta, e tutti e due con modello o tutti e due senza."""
+    for side, reps in (("candidati", cands), ("riferimenti", refs)):
+        if any(reps[0].get(kk) != reps[1].get(kk) for kk in SIDE_KEYS):
+            raise ValueError(f"{side} dei due semi di tipo diverso (protocollo, insieme di feature o ricetta)")
+    if _readout_identity(cands[0]) != _readout_identity(cands[1]):
+        raise ValueError("candidati dei due semi con strato, k o larghezza diversi")
+    if _model_free(refs[0]) != _model_free(refs[1]):
+        raise ValueError("riferimenti dei due semi: uno con modello e uno senza")
 
 
 def remap_oof(report: dict, maps: list[tuple[str, str]]) -> dict:
@@ -357,6 +381,7 @@ def compare(args) -> dict:
         raise ValueError("servono due rapporti candidati diversi (seme 0 e seme 1)")
     for ref, cand in zip(refs, cands):
         check_readout_pairing(ref, cand)
+    check_sides_alike(refs, cands)
     check_models(refs, cands)
     row = AC.s_comparison([_normalized(r, refs[0]) for r in refs], [_normalized(c, refs[0]) for c in cands])
 
@@ -370,6 +395,32 @@ def compare(args) -> dict:
             "reading": reading(row), "oof_maps": [list(m) for m in args.oof_maps]}
 
 
+EQUALITY_TOL = 1e-3  # protocollo, punto 4: |S(pool nuovo) - S(storico)| oltre questa soglia = nessuna lettura
+
+
+def equality(args) -> dict:
+    """Controllo d'uguaglianza del protocollo (punto 4): il `pool` riestratto e risondato contro il rapporto storico di S dello stesso checkpoint
+    (stesse finestre e righe), |delta S| <= EQUALITY_TOL e conteggio delle predizioni diverse (bf16 su GPU: qualche ulp puo' spostarne alcune)."""
+    CS = _script("calibration_select")
+    ref, cand = (remap_oof(json.loads(Path(p).read_text()), args.oof_maps) for p in (args.reference[0], args.candidate[0]))
+    check_readout_pairing(ref, cand)
+    if str(ref.get("checkpoint_sha256", "")) != str(cand.get("checkpoint_sha256", "")) or not ref.get("checkpoint_sha256"):
+        raise ValueError("il controllo d'uguaglianza vuole lo stesso checkpoint nei due rapporti")
+    oof_ref, oof_cand = CS.load_oof(ref), CS.load_oof(cand)
+    per_ds = {}
+    for d in sorted(ref["datasets"]):
+        (y_r, p_r, s_r), (y_c, p_c, s_c) = oof_ref[d], oof_cand[d]
+        if not (np.array_equal(y_r, y_c) and np.array_equal(s_r, s_c)):
+            raise ValueError(f"{d}: finestre o soggetti diversi")
+        per_ds[d] = {"s_reference": ref["datasets"][d]["s"], "s_candidate": cand["datasets"][d]["s"],
+                     "delta_s": cand["datasets"][d]["s"] - ref["datasets"][d]["s"], "n_windows": int(len(y_r)),
+                     "predictions_differing": int((p_r != p_c).sum())}
+    delta = float(cand["S"] - ref["S"])
+    return {"protocol": PROTOCOL, "task": ref.get("task", "p1"), "reference": str(args.reference[0]), "candidate": str(args.candidate[0]),
+            "S_reference": ref["S"], "S_candidate": cand["S"], "delta_S": delta, "tolerance": EQUALITY_TOL, "equal": bool(abs(delta) <= EQUALITY_TOL),
+            "datasets": per_ds, "oof_maps": [list(m) for m in args.oof_maps]}
+
+
 def _map(text: str) -> tuple[str, str]:
     if "=" not in text:
         raise argparse.ArgumentTypeError(f"--oof-map vuole PREFISSO_CLUSTER=PREFISSO_LOCALE: {text!r}")
@@ -379,7 +430,7 @@ def _map(text: str) -> tuple[str, str]:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--stage", choices=["extract", "probe", "compare"], required=True)
+    ap.add_argument("--stage", choices=["extract", "probe", "compare", "equality"], required=True)
     ap.add_argument("--task", choices=["p1", "p2"], default="p1")
     ap.add_argument("--epn-root", type=Path, action="append", default=None, help="P2: trainingJSON e testingJSON di EPN-612")
     ap.add_argument("--uci-root", type=Path, default=None, help="P2: UCI-EMG")
@@ -393,8 +444,8 @@ def main(argv=None) -> int:
     ap.add_argument("--seed", type=int, default=0, help="seme della sonda, della PCA e del bootstrap (come la calibrazione)")
     ap.add_argument("--layer", choices=CR.LAYERS, help="probe: strato da leggere")
     ap.add_argument("--k", type=int, default=None, help="probe: componenti della PCA sul train del fold; default 2d (larghezza del readout medio), 0 = intera")
-    ap.add_argument("--reference", nargs=2, type=Path, metavar=("S0.json", "S1.json"), help="compare: rapporti del riferimento, seme 0 e seme 1")
-    ap.add_argument("--candidate", nargs=2, type=Path, metavar=("S0.json", "S1.json"), help="compare: rapporti del candidato, seme 0 e seme 1")
+    ap.add_argument("--reference", nargs="+", type=Path, metavar="S.json", help="compare: rapporti del riferimento, seme 0 e seme 1; equality: uno")
+    ap.add_argument("--candidate", nargs="+", type=Path, metavar="S.json", help="compare: rapporti del candidato, seme 0 e seme 1; equality: uno")
     ap.add_argument("--oof-map", dest="oof_maps", type=_map, action="append", default=[],
                     help="compare: PREFISSO_CLUSTER=PREFISSO_LOCALE per le predizioni fuori fold copiate sul Mac (SHA-256 verificato)")
     ap.add_argument("--out", type=Path, help="rapporto JSON (probe, compare); le predizioni fuori fold accanto, .oof.npz")
@@ -411,13 +462,22 @@ def main(argv=None) -> int:
         ap.error("extract della P2: servono --checkpoint, --epn-root e --uci-root")
     if args.stage == "probe" and (args.out is None or args.layer is None or (args.k is not None and args.k < 0)):
         ap.error("probe: servono --layer e --out; --k >= 0")
-    if args.stage == "compare" and (args.out is None or not args.reference or not args.candidate):
+    if args.stage == "compare" and (args.out is None or len(args.reference or []) != 2 or len(args.candidate or []) != 2):
         ap.error("compare: servono --reference, --candidate (due rapporti ciascuno) e --out")
+    if args.stage == "equality" and (args.out is None or len(args.reference or []) != 1 or len(args.candidate or []) != 1):
+        ap.error("equality: servono --reference, --candidate (un rapporto ciascuno) e --out")
     t0 = time.time()
 
     def log(msg: str) -> None:
         print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
+    if args.stage == "equality":
+        result = equality(args)
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(result, indent=1))
+        log(f"S {100 * result['S_candidate']:.3f} contro {100 * result['S_reference']:.3f} (delta {100 * result['delta_S']:+.3f} punti, soglia "
+            f"{100 * EQUALITY_TOL:.1f}): {'uguale' if result['equal'] else 'DIVERSO: nessuna lettura'}")
+        return 0 if result["equal"] else 1
     if args.stage == "compare":
         result = compare(args)
         args.out.parent.mkdir(parents=True, exist_ok=True)

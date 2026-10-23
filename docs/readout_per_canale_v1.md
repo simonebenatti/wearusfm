@@ -1,6 +1,8 @@
 # Readout per canale sui checkpoint esistenti — protocollo `readout_per_canale_v1`
 
-**Stato: PROPOSTA (Claude, 23/10/2026), da congelare col commit che precede il lancio, dopo la review del `critico`. Nessun job lanciato.**
+**Stato: lettura CONGELATA in 63ac0dd (23/10/2026, prima di aprire i rapporti della baseline classica), emendata nel commit successivo
+dopo la seconda review del `critico` e dopo l'apertura della baseline (emendamenti elencati in fondo, nessuno cambia la regola di lettura).
+Nessun job lanciato.**
 Richiesta di Simone: «Parti dal readout per canale sui checkpoint esistenti (3.1), insieme alla baseline classica; il pilot degli obiettivi
 dopo». Origine: `docs/diagnosi_pretraining_20261023.md`, causa 3 (il readout delle sonde media sui canali e sui latenti e cancella *quale*
 elettrodo e' attivo). Codice: `src/wearusfm/harness/channel_readout.py`, `scripts/channel_readout.py`, launcher
@@ -20,7 +22,7 @@ Dalla stessa passata in avanti senza maschera (identica a `encode`, provata nei 
 |---|---|---|
 | `pool` | il readout di sempre (controllo d'uguaglianza con le cache e i rapporti storici) | 2d = 768 |
 | `local` | uscita dell'encoder locale (target dell'opzione a di D11) | C x d (Myo 3.072; DB2/DB3 4.608; DB6 6.144) |
-| `dec` | decoder a query interrogato su ogni (canale, patch) valida: la rappresentazione profonda per canale, quella che leggono le teste delle ancore | C x d |
+| `dec` | decoder a query del teacher sulla vista senza maschera, interrogato su ogni (canale, patch) valida: il target JEPA dell'opzione b esteso a tutte le posizioni, la rappresentazione profonda per canale (le teste delle ancore leggono invece il decoder dello studente sulla vista mascherata, alle sole posizioni nascoste) | C x d |
 
 Canali scartati dal QC o senza patch a 0 (come la baseline classica). Niente strato «token» prima dell'encoder locale: il front-end e'
 lineare nel segnale e la sua media nel tempo su un segnale a media nulla e' ~0 (resterebbe solo l'identita' di canale, costante).
@@ -40,7 +42,11 @@ della diagnostica dei rami (`tests/cpu/test_branch_pilot.py`): il vincolo si agg
 principali sono quelle che fai tu»), e il percorso di default della sonda, quello del pilot e della diagnostica, non cambia (test
 d'uguaglianza). Con k >= larghezza non si riduce nulla e la sonda riceve le colonne come nella calibrazione (uguaglianza provata nei test:
 `pool` da' la stessa S, gli stessi C e le stesse predizioni di `calibration_probe`; un test controlla che scaler e PCA vedano solo le righe
-di train del fold). **k = 2d = 768** per default: la larghezza del readout medio,
+di train del fold). **k effettivo = min(k, righe di train del fold - 1)** (`channel_readout.effective_k`): le feature standardizzate e
+centrate di n righe hanno rango al piu' n - 1, e con k >= rango la PCA e' una base dello spazio dei dati di train, dove la soluzione L2
+coincide con quella a larghezza intera. Su **UCI-EMG** (19 soggetti interni, ~220-240 finestre di train per fold) il tetto scatta sempre:
+li' la «pari larghezza» non vincola nulla e il readout per canale e' di fatto a larghezza intera, dichiarato nel rapporto (`k_capped`,
+`k_by_fold`); su EPN-612 (~35.000 finestre di train) e sui dataset della P1 no. **k = 2d = 768** per default: la larghezza del readout medio,
 cosi' il confronto non premia la sola larghezza; `--k 0` = larghezza intera (in questa tranche solo sulla P2, 3.072 colonne: le sonde
 di S della P2 a 30M durano 11-12 min, quindi ~4x resta sotto un'ora; sulla P1, 4.608-6.144 colonne per 6-8x di 37-39 min, supera le 4 h
 della seriale: tranche 2, divisa per dataset). La PCA toglie direzioni a bassa varianza che potrebbero essere discriminanti: e' un limite
@@ -71,11 +77,21 @@ il riferimento): niente errori standard sommati come indipendenti.
    sia a confrontarlo, quindi la sua lettura e' ottimistica (al piu' per la scelta fra due strati); la P2 non entra nella scelta.
 3. **Descrittivi:** `local` contro `dec` (dove sta l'informazione), varianza spiegata della PCA per fold, rango effettivo (su 8.192 righe),
    S per dataset (DB3 a parte), C scelti.
-4. **Controllo d'uguaglianza:** `pool` di A s0 sulla P1 deve dare la S storica di s0 (0,1834, `s_p1.json`) entro 1e-6 e le stesse
-   predizioni (bf16 su GPU in tutti e due i casi; una differenza di un ulp nelle feature puo' spostare qualche predizione: si dichiara); se
-   la S differisce oltre 1e-3, nessuna lettura dei punti 1-3 finche' non si capisce la differenza.
+4. **Controllo d'uguaglianza:** `pool` di A s0 sulla P1 contro la S storica di s0 (0,1834, `s_p1.json`): `channel_readout.py --stage
+   equality` (stesse finestre e righe, stesso checkpoint), **|delta S| <= 1e-3** e conteggio delle predizioni diverse (bf16 su GPU in tutti e
+   due i casi: qualche ulp puo' spostarne alcune, si dichiara). Oltre 1e-3 il comando esce con 1 e nessuna lettura dei punti 1-3 finche'
+   non si capisce la differenza.
 
-Non si ritocca la lettura dopo i numeri; la seconda tranche (sotto) si decide prima, non in base ai risultati della prima.
+Non si ritocca la lettura dopo i numeri; la seconda tranche (sotto) si decide prima, non in base ai risultati della prima. Questo confronto 2
+sostituisce il punto (4) della voce della baseline classica in decisioni.md («lettura solo affiancata; un confronto accoppiato, se servira',
+con `load_oof` e `paired_difference`»): il confronto accoppiato si fa con `s_comparison` e la regola dei bracci, e resta descrittivo
+rispetto alla baseline (nessuna soglia di adozione).
+
+**Opzione proposta a Simone (ablation, da decidere prima di lanciare): ancore-only s0/s1 nella stessa campagna.** Il verdetto «ancore-only =
+A» dei bracci e' stato preso col readout medio; se col readout per canale A supera ancore-only (stessa regola, riferimento ancore-only,
+candidato A), il JEPA aggiunge informazione che la media non mostra e la diagnosi cambia; se restano uguali, si rafforza. Costo: 4 estrazioni
+GPU in piu' (P1 e P2 per i due semi: tetto 5,0 GPU-ora, attese ~2,3) e 8 sonde CPU a k 768 (s0/s1 x P1/P2 x {local, dec}: tetto 256 core-ore,
+attese ~40). Lettura: la stessa regola dei bracci, descrittiva; nessuna adozione.
 
 ## Checkpoint e tranche
 
@@ -98,7 +114,8 @@ la sonda a k = 768 aggiunge la PCA (~1-3 min per fold e dataset) e la lettura di
 | Sonde a k = 768: s0 P1 {pool, local, dec}, s1 P1 {local, dec}, s0 e s1 P2 {local, dec} | 9 CPU seriali (`channel_readout_probe.sbatch`) | 8 core, 30 GB, 4 h | 288 core-ore, 0 GPU-ora | P1 ~50 min, P2 ~15 min l'una: ~40 core-ore |
 | Sonde a larghezza intera sulla P2 (`--k 0`): s0 e s1 {local, dec} | 4 CPU seriali | idem | 128 core-ore | ~1 h l'una: ~32 core-ore |
 | Confronti | sul Mac dai rapporti e dalle predizioni fuori fold copiati (`--oof-map`, SHA-256 verificato; secondi) | — | — | — |
-| **Totale** | 1 + 4 + 13 job | | **5,0 GPU-ora (= 40 ore locali di GPU) + 416 core-ore (52 ore locali)** | **~2,3 GPU-ora (~18 ore locali) + ~70 core-ore (~9 ore locali)** |
+| **Totale** | 1 + 4 + 13 job | | **5,0 GPU-ora (= 40 ore locali di GPU) + 416 core-ore (= 416 ore locali CPU; 52 ore di orologio al massimo)** | **~2,3 GPU-ora (~18 ore locali) + ~70 core-ore (= ~70 ore locali; ~9 ore di orologio)** |
+| Opzione ancore-only s0/s1 | 4 + 8 job | idem | 5,0 GPU-ora + 256 core-ore | ~2,3 GPU-ora + ~40 core-ore |
 
 Disco: ~3,1 GB di cache per checkpoint su `$SCRATCH/wearusfm_runs/readout_canale_20261023/features/` (float16: P1 ~2,5 GB, P2 ~0,6 GB),
 rapporti in `$WORK/wearusfm_runs/results/readout_canale_20261023/`. Calendario: estrazioni in poche ore di coda; sonde a 2 alla volta sulla
@@ -125,3 +142,18 @@ tetto; in alternativa l'infrastruttura (12,78 residue su 25). Ore CPU dell'accou
   due i semi.
 - Quattro letture nel confronto 1 e la scelta del candidato sulla P1 nel confronto 2, senza correzione: dichiarate sopra.
 - Nessun numero di test: tutto sulla validazione interna; le sonde ufficiali P1/P2 restano quelle di D12.
+
+## Emendamenti dopo il congelamento (63ac0dd), dalla seconda review del `critico`, scritti dopo l'apertura della baseline classica
+
+1. **k su UCI-EMG:** 63ac0dd rifiutava k > righe di train e le quattro sonde P2 a k 768 si sarebbero fermate su UCI-EMG dopo EPN-612; ora k
+   effettivo = min(k, righe - 1), dichiarato (`k_capped`). Su UCI il readout per canale e' di fatto a larghezza intera. La regola di lettura
+   non cambia; cambia cio' che «pari larghezza» significa su quel dataset, e si dice.
+2. **Accoppiamento fra i due semi:** `compare` ora rifiuta candidati dei due semi di tipo diverso (strato, k, larghezza, protocollo, ricetta)
+   e riferimenti uno con modello e uno senza; prima la normalizzazione per `s_comparison` poteva nasconderlo.
+3. **Controllo d'uguaglianza:** una sola soglia (1e-3 su S) e un comando versionato (`--stage equality`).
+4. **`dec`** descritto correttamente (target dell'opzione b del teacher esteso a tutte le posizioni, non cio' che leggono le teste delle ancore).
+5. **Ore locali:** le core-ore della coda seriale SONO le ore locali del budget CPU (piano operativo §5); le «52 ore» erano ore di orologio.
+6. Il punto (4) della voce della baseline classica e' sostituito dal confronto 2 (sopra).
+7. **Opzione ancore-only** aggiunta come proposta, non come parte della tranche 1.
+Nessuno di questi emendamenti cambia soglie, regola o candidati del confronto; i rapporti della baseline (P1 e P2) sono stati aperti dopo
+63ac0dd e prima di questi emendamenti: si dichiara.

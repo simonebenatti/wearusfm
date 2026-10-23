@@ -141,8 +141,13 @@ def test_linear_probe_without_a_new_scale_equals_the_probe_on_prescaled_inputs_a
     assert pca is not None and z.shape == (len(x[te]), 2)
     np.testing.assert_allclose(scaler.mean_, x[tr].mean(0))
     np.testing.assert_allclose(CR.apply_reduction(scaler, pca, x[tr]).mean(0), 0, atol=1e-9)
-    with pytest.raises(ValueError, match="maggiore"):
-        CR.fit_reduction(x[tr][:4], 5)
+    # k oltre il rango del train: tetto a righe - 1 (UCI-EMG: ~220-240 finestre di train per fold contro k = 768), dichiarato con `k_capped`
+    assert CR.effective_k(768, 221, 3072) == 220 and CR.effective_k(768, 50000, 3072) == 768 and CR.effective_k(32, 18, 128) == 17
+    assert CR.effective_k(768, 100, 768) is None and CR.effective_k(0, 10, 100) is None and CR.effective_k(None, 10, 100) is None
+    _, pca4 = CR.fit_reduction(x[tr][:4], 5)
+    assert pca4.n_components_ == 3
+    with pytest.raises(ValueError, match="nessuna riduzione"):
+        CR.effective_k(5, 1, 6)
 
 
 def _extract_p1(tmp_path, monkeypatch, seeds=(0,)):
@@ -191,7 +196,8 @@ def test_p1_extraction_matches_the_calibration_cache_and_the_pool_probe_equals_c
     d, dc = rep["datasets"]["ninapro_db2"], cp["datasets"]["ninapro_db2"]
     assert rep["S"] == pytest.approx(cp["S"], abs=1e-9) and rep["S_se"] == pytest.approx(cp["S_se"], abs=1e-9) and rep["weights"] == cp["weights"]
     assert d["oof_rows_sha256"] == dc["oof_rows_sha256"] and [f["c"] for f in d["folds"]] == [f["c"] for f in dc["folds"]]
-    assert d["readout"] == {"layer": "pool", "width": 32, "channels": 12, "k": 32, "reduced": False}  # k = 2d = larghezza: nessuna PCA
+    assert d["readout"] == {"layer": "pool", "width": 32, "channels": 12, "k": 32, "reduced": False, "k_capped_folds": 0,
+                            "k_by_fold": [32] * 4}  # k = 2d = larghezza: nessuna PCA
     assert all(f["explained_variance"] == 1.0 for f in d["folds"]) and d["features"]["finite"]
     assert rep["protocol"] == "readout_per_canale_v1" and rep["calibration_protocol"] == CP.PROTOCOL and Path(rep["oof"]).exists()
     with np.load(rep["oof"]) as z, np.load(cp["oof"]) as zc:
@@ -207,9 +213,10 @@ def test_channel_layer_is_reduced_on_the_train_fold_and_compare_applies_the_arms
         rep["dec", i] = _probe(f, splits, "dec", tmp_path / f"dec{i}.json", ["--k", "0"])  # larghezza intera
     pool, local, dec = rep["pool", 0], rep["local", 0], rep["dec", 0]
     dl = local["datasets"]["ninapro_db2"]
-    assert dl["readout"] == {"layer": "local", "width": 192, "channels": 12, "k": 32, "reduced": True}
-    assert all(f["k"] == 32 and 0 < f["explained_variance"] <= 1 for f in dl["folds"]) and 0 <= local["S"] <= 1
-    assert dec["datasets"]["ninapro_db2"]["readout"] == {"layer": "dec", "width": 192, "channels": 12, "k": 192, "reduced": False}
+    assert dl["readout"] == {"layer": "local", "width": 192, "channels": 12, "k": 32, "reduced": True, "k_capped_folds": 0, "k_by_fold": [32] * 4}
+    assert all(f["k"] == 32 and not f["k_capped"] and 0 < f["explained_variance"] <= 1 for f in dl["folds"]) and 0 <= local["S"] <= 1
+    assert dec["datasets"]["ninapro_db2"]["readout"] == {"layer": "dec", "width": 192, "channels": 12, "k": 192, "reduced": False,
+                                                        "k_capped_folds": 0, "k_by_fold": [192] * 4}
     assert 0 <= dec["S"] <= 1 and np.isfinite(local["S_se"]) and np.isfinite(dec["S_se"])  # rete casuale minuscola: nessun livello atteso
     assert dl["input_sha256"] == pool["datasets"]["ninapro_db2"]["input_sha256"] and dl["oof_rows_sha256"] == pool["datasets"]["ninapro_db2"]["oof_rows_sha256"]
     assert rep["pool", 1]["checkpoint_sha256"] != pool["checkpoint_sha256"] == local["checkpoint_sha256"]  # due semi, stesso modello per seme
@@ -230,14 +237,39 @@ def test_channel_layer_is_reduced_on_the_train_fold_and_compare_applies_the_arms
     assert SC.reading({"delta": 0.02, "ci95": [0.005, 0.03], "delta_by_model_seed": [0.045, -0.005]})["verdict"] == "regola non superata"
     assert SC.reading({"delta": 0.02, "ci95": [-0.001, 0.04], "delta_by_model_seed": [0.025, 0.015]})["verdict"] == "regola non superata"
     assert SC.reading({"delta": -0.02, "ci95": [-0.03, -0.005], "delta_by_model_seed": [-0.025, -0.015]})["verdict"] == "peggiora"
-    # identita' dei modelli: stesso candidato due volte, semi scambiati, riferimenti uguali con un modello
-    for cand, msg in (((paths["local", 0], paths["local", 0]), "candidati diversi"), ((paths["local", 1], paths["local", 0]), "checkpoint diversi")):
+    # identita' dei modelli: stesso candidato due volte, semi scambiati, riferimenti uguali con un modello, due file dello stesso checkpoint
+    copy0 = tmp_path / "local0_copia.json"
+    copy0.write_text(json.dumps(local))
+    for cand, msg in (((paths["local", 0], paths["local", 0]), "candidati diversi"), ((paths["local", 1], paths["local", 0]), "checkpoint diversi"),
+                      ((paths["local", 0], copy0), "stesso checkpoint")):
         with pytest.raises(ValueError, match=msg):
             SC.main(["--stage", "compare", "--reference", str(paths["pool", 0]), str(paths["pool", 1]), "--candidate", str(cand[0]), str(cand[1]),
                      "--out", str(tmp_path / "no.json")])
     with pytest.raises(ValueError, match="checkpoint diversi"):
         SC.main(["--stage", "compare", "--reference", str(paths["pool", 0]), str(paths["pool", 0]), "--candidate", str(paths["local", 0]),
                  str(paths["local", 1]), "--out", str(tmp_path / "no.json")])
+    # i due semi di un lato devono essere lo stesso tipo di rapporto (la normalizzazione per `s_comparison` non deve nascondere il contrario):
+    # strati mescolati, k mescolati, riferimenti uno con modello e uno senza
+    _probe(feats[1], splits, "local", tmp_path / "local1_full.json", ["--k", "0"])
+    for cand, msg in (((paths["local", 0], paths["dec", 1]), "tipo diverso"),  # insieme di feature diverso (channel_readout/local vs /dec)
+                      ((paths["local", 0], tmp_path / "local1_full.json"), "strato, k o larghezza")):  # stesso strato, k diverso
+        with pytest.raises(ValueError, match=msg):
+            SC.main(["--stage", "compare", "--reference", str(paths["pool", 0]), str(paths["pool", 1]), "--candidate", str(cand[0]), str(cand[1]),
+                     "--out", str(tmp_path / "no.json")])
+    nomodel = {k: v for k, v in rep["pool", 1].items() if k not in ("checkpoint", "checkpoint_sha256")}
+    (tmp_path / "pool1_senza_modello.json").write_text(json.dumps(nomodel))
+    with pytest.raises(ValueError, match="uno con modello e uno senza"):
+        SC.main(["--stage", "compare", "--reference", str(paths["pool", 0]), str(tmp_path / "pool1_senza_modello.json"), "--candidate",
+                 str(paths["local", 0]), str(paths["local", 1]), "--out", str(tmp_path / "no.json")])
+    # controllo d'uguaglianza (protocollo, punto 4): lo stesso rapporto copiato = uguale; un altro strato dello stesso checkpoint = diverso
+    assert SC.main(["--stage", "equality", "--reference", str(paths["pool", 0]), "--candidate", str(copy0.with_name("pool0_copia.json")) if False else str(paths["pool", 0]),
+                    "--out", str(tmp_path / "eq.json")]) == 0
+    eq = json.loads((tmp_path / "eq.json").read_text())
+    assert eq["equal"] and eq["delta_S"] == 0 and all(v["predictions_differing"] == 0 for v in eq["datasets"].values()) and eq["tolerance"] == 1e-3
+    assert SC.main(["--stage", "equality", "--reference", str(paths["pool", 0]), "--candidate", str(paths["local", 0]), "--out", str(tmp_path / "eq2.json")]) == 1
+    assert not json.loads((tmp_path / "eq2.json").read_text())["equal"]
+    with pytest.raises(ValueError, match="stesso checkpoint"):
+        SC.main(["--stage", "equality", "--reference", str(paths["pool", 1]), "--candidate", str(paths["pool", 0]), "--out", str(tmp_path / "no.json")])
     # rapporti non accoppiati: altre finestre
     other = {**local, "datasets": {"ninapro_db2": {**dl, "input_sha256": "0" * 64}}}
     (tmp_path / "altro.json").write_text(json.dumps(other))
@@ -338,15 +370,18 @@ def test_p2_extraction_and_probe_use_the_internal_subjects_and_pair_with_calibra
     for ds in ("epn612", "uci_emg"):
         with np.load(cal / f"{ds}.npz") as zc:
             assert str(zc["input_sha256"]) == sha[ds] and np.allclose(zc["x"], x_pool[ds], atol=1e-5)
-    out = tmp_path / "p2_local0.json"
-    with pytest.raises(ValueError, match="maggiore delle finestre"):  # k = 2d = 32 > 18 finestre di train nei dati finti: rifiutato, non ridotto a caso
-        SC.main(["--stage", "probe", "--task", "p2", "--features", str(feats[0]), "--layer", "local", "--out", str(out)])
+    out = tmp_path / "p2_local_cap.json"  # k = 2d = 32 > 18 finestre di train nei dati finti: tetto a righe - 1 per fold, dichiarato
+    assert SC.main(["--stage", "probe", "--task", "p2", "--features", str(feats[0]), "--layer", "local", "--out", str(out)]) == 0
+    cap = json.loads(out.read_text())["datasets"]["epn612"]
+    assert cap["readout"]["k_capped_folds"] == 4 and cap["readout"]["k_by_fold"] == [f["n_train"] - 1 for f in cap["folds"]]
+    assert all(f["k_capped"] and f["k"] == f["n_train"] - 1 < 32 for f in cap["folds"])
     for i, f in enumerate(feats):
         assert SC.main(["--stage", "probe", "--task", "p2", "--features", str(f), "--layer", "local", "--k", "8", "--out", str(tmp_path / f"p2_local{i}.json")]) == 0
         reports.append(json.loads((tmp_path / f"p2_local{i}.json").read_text()))
     rep = reports[0]
     assert rep["task"] == "p2" and rep["weights"] == {"epn612": 0.5, "uci_emg": 0.5} and rep["splits_sha256"] == CP.P2_SPLITS_SHA256
     assert rep["datasets"]["epn612"]["readout"]["reduced"] and rep["datasets"]["epn612"]["readout"]["k"] == 8 and rep["readout"]["k_requested"] == 8
+    assert rep["datasets"]["epn612"]["readout"]["k_capped_folds"] == 0
     # si accoppia con un rapporto di S della P2 di `calibration_probe` (il riferimento storico) ...
     ref = tmp_path / "ref_p2"
     ref.mkdir()
