@@ -2718,6 +2718,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - ~9:45: 61925267 (sonda di S della P1 di ancore-only s1), 61925272 / 61925282 (S della P2 di ancore-only s1), 61925288 (confronto
   `W1ARM-objective-compare`, afterok sulle tre sonde ancora in coda o in corso). Tutti i 33 nodi del piano sottomessi; nessun rifiuto.
 
+### 2026-10-23 | Claude | Pilot dei rami: correzioni della review del `critico` e lettura congelata | Codice: questo commit
+
+- Review del `critico` sul codice del pilot (288a217): DA RIVEDERE, 2 bloccanti e 10 minori, corretti tutti: (1) estrazione sempre su CPU
+  (su CUDA andava in bf16, non confrontabile con PW0/PW del 2C), dispositivo nell'identita' e nella ricetta; (2) preventivo rifatto dal piano
+  generato (32 sonde, tetto CPU ~1.060 core-ora, stima ~475; opzione GPU 134 GPU-ora di tetto, oltre il residuo 26,21: solo con decisione);
+  rapporti legati al checkpoint del run e file raw confrontati; codice della sonda fissato per hash a quello della diagnostica (aba1f2e);
+  cartella della diagnostica fissa nel launcher; commit del confronto verificato e registrato; esito formale con un braccio collassato;
+  limite delle bande wavelet lente nella nota; misura non definita anche per una sola componente; controlli del 2C che mancavano (numeri
+  finiti, checkpoint coerenti); test in piu' (PWl nel trainer, sequenza del collaudo, ibrido, rifiuti; config del 2C copiati in
+  `results/passo6/step2c_configs_20261014/`). Lettura e criteri del collaudo congelati in decisioni.md. Test del pilot 20 PASS.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4105,3 +4116,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   89,6. Al 100M il margine nei passi 1.500-2.000 era gia' piccolo (71,6 contro 64). Il 300M e' stato fermato al passo 1.500 (66,7). Nessun
   risultato riscritto: C4 resta inammissibile con le regole firmate. Per Simone: se e come cambiare la regola (p.es. un riferimento dei primi
   passi del run, come nel monitor dei rami) prima di un'eventuale nuova C4, con passaggio dal `critico`.
+
+### 2026-10-23 | Claude | Pilot dei rami: rilievi del `critico` sul primo codice (288a217)
+
+- Bloccanti: estrazione in bf16 con la valutazione su GPU (confronti con PW0/PW del 2C in fp32 falsati, senza controllo); preventivo del
+  protocollo non coerente col piano generato. Minori: rapporti legati ai run solo per commit; codice della sonda non vincolato a quello
+  della diagnostica; radice della diagnostica sovrascrivibile; commit del confronto non registrato; nessun esito con un braccio collassato;
+  un limite mancante nella nota; componenti non definite invisibili alla media; controlli del 2C omessi; test mancanti; voci da scrivere.
+  Corretti nel commit successivo; nessun job era partito.

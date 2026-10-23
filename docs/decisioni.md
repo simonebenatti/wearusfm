@@ -3941,3 +3941,20 @@ primario per primo, opzione GPU per la valutazione). Configurazione del 2C ripro
 Review del `critico` in corso; nessun job, nessuna soglia nuova (la lettura resta quella del protocollo, da congelare col commit del lancio).
 **Valutazione dei bracci, ultimo giro (Simone, 23/10/2026 ~9:45):** 61925267, 61925272, 61925282 e il confronto 61925288 (afterok). Tutti i
 nodi del piano sottomessi.
+**Pilot dei rami (`rami_pilota_v1`): lettura e criteri del collaudo congelati prima del lancio (23/10/2026).** Dal protocollo
+(`docs/rami_pilota_obiettivo_v1.md`), con le aggiunte del 23/10 dichiarate li', e col codice `scripts/branch_pilot.py` di questo commit:
+- **Primario:** PWf -> PWm su RPW (validation interna, regola dei bracci di `spectral_diagnostic.reading`); positivo = «migliora» in almeno un
+  compito e delta >= -0,01 sulla stima puntuale nell'altro. Si legge solo se PWm ha imparato con tutti e due i teacher (media della perdita
+  normalizzata sugli ultimi 100 aggiornamenti <= 0,9; una misura non definita, anche di una sola componente ramo x scala, rende il criterio non
+  verificabile) e PWf e PWm sono non collassati (`collapse_monitor.verified`) con tutti e due. Braccio collassato = non batte il riferimento.
+  Accanto PW0 -> PWm; descrittivi come nel protocollo; nessuna adozione automatica, nessuna variante nuova automatica se il primario non aiuta.
+- **Collaudo** (PWm, B_seed0, dbg 30 min; prima PWf per un passo nello stesso job): integrita' (nessuno STOP; configurazione del 2C salvo il
+  braccio; raw, passo 0 e strati fissi uguali al 2C; perdita del passo 1 di PWf entro 1e-4 relativo), apprendimento come sopra, monitor
+  verified, copertura >= 50% degli aggiornamenti per ramo x scala, allocazione dei run ((avvio + 3.000 x mediana s/passo dal 51esimo) x 1,25 +
+  10 min, al quarto d'ora) <= 1 h 30; stabilita' descrittiva. Passa -> preventivo dei sei run e via di Simone; non passa -> stop e proposta.
+- **Run:** controlli del passo 0, del raw, degli strati fissi, della perdita del passo 1 (PWl, PWf), configurazione del 2C; un controllo
+  fallito = run non valido, nessuna estrazione. Uscite dei rami sempre su CPU (fp32, come il 2C).
+- **Preventivo:** training 9,5 GPU-ora di tetto (stima ~4,6) dal residuo 26,21 del passo 6; valutazione su coda seriale ~1.060 core-ora di
+  tetto (stima ~475), ~60 h di calendario (~18 h per il primario, per primo). L'opzione su nodo GPU (tetto 134 GPU-ora) supera il residuo:
+  solo con una decisione di budget. Review del `critico` del 23/10: DA RIVEDERE (2 bloccanti, 10 minori), tutti corretti in questo commit;
+  seconda review prima del collaudo. Nessun job lanciato; il collaudo richiede il via di Simone.

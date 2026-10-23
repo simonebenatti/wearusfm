@@ -1,0 +1,38 @@
+{
+  "protocol": "step2c_frozen_branches_v1",
+  "source_commit": "1c9485260aaf32d5936346b50225f5cff1d1b8ea",
+  "arm": "B_seed0",
+  "collaudo": false,
+  "source_checkpoint_sha256": "b264df4b75f7047980212ab068fe524148e71dbdef442d4e75e95648f841d3cd",
+  "input_sha256": {
+    "manifest": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "calibration": "4640dfcf2c6819fb8ba2870e1506f08e4b024cdf38dda267c4cd37652cbc1f89"
+  },
+  "time_limit_s": 3300.0,
+  "steps": 3000,
+  "stopped": "max_steps",
+  "complete": true,
+  "encoder_identical": true,
+  "checkpoint_sha256": "7d45049efc1af79003ba4d34f8d2ab26aea4aeed3ce7acbab1861b5a2413bcb8",
+  "init_checkpoint_sha256": "6d4f9e68fbd59be28ed2fd79eff6b9e833294e1344fe70c174a01e9de5dd6cc8",
+  "raw_check": {
+    "final": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+    },
+    "init": {
+      "encoder_tensors": 265,
+      "student": true,
+      "student_step1_head_identical": true,
+      "teacher": true,
+      "teacher_step1_head_identical": true,
+      "encoder_identical": true
+    }
+  }
+}

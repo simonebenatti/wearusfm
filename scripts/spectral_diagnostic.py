@@ -151,7 +151,7 @@ def pilot_provenance(pilot_root: Path, task: str, arm: str, models, raw: dict) -
         path = pilot_root / task / arm / f"branches_{m}" / "provenance.json"
         meta = json.loads(path.read_text())
         _check_identity(meta["identity"], {**PILOT, "task": task, "arm": arm, "model": m, "variant": f"branches_{m}", "which": "teacher",
-                                           "split_sha256": SPLIT_SHA, "source_checkpoint_sha256": CHECKPOINTS[arm]}, path)
+                                           "split_sha256": SPLIT_SHA, "source_checkpoint_sha256": CHECKPOINTS[arm], "device": "cpu"}, path)
         if any(v.get("feature_set") != "branches" or v.get("model_dim") != BRANCH_COLS for v in meta["cache"].values()):
             raise ValueError(f"{path}: non e' una cache dei rami da {BRANCH_COLS} colonne")
         _check_identity(meta.get("run") or {}, {**PILOT, "arm": m, "teacher": arm, "collaudo": False, "complete": True, "checks_passed": True,
@@ -159,8 +159,11 @@ def pilot_provenance(pilot_root: Path, task: str, arm: str, models, raw: dict) -
         keep = ("input_sha256", "rows")
         if sorted(meta["cache"]) != sorted(raw) or any({k: meta["cache"][d][k] for k in keep} != {k: raw[d][k] for k in keep} for d in raw):
             raise ValueError(f"{task}/{arm}: rami {m} non accoppiati alla cache raw")
+        if not meta["run"].get("checkpoint_sha256"):
+            raise ValueError(f"{path}: checkpoint del run non registrato")
         out[m] = meta["cache"]
         out[f"commit_{m}"] = meta["identity"]["source_commit"]
+        out[f"ckpt_{m}"] = meta["run"]["checkpoint_sha256"]
     if len({out[f"commit_{m}"] for m in models}) > 1:
         raise ValueError(f"{task}/{arm}: cache del pilot da codici diversi")
     return out
@@ -233,6 +236,7 @@ def load(eval_root: Path, downstream_root: Path, task: str, arm: str, parts: set
         if sorted(set(entry["s"].tolist())) != pre:
             raise ValueError(f"{ds}: soggetti interni assenti dalla cache")
         entry["pilot_commit"] = prov[f"commit_{pilot[0]}"] if pilot else None
+        entry["pilot_checkpoints"] = {m: prov[f"ckpt_{m}"] for m in pilot}
         out[ds] = entry
     return out
 
@@ -267,8 +271,9 @@ def probe_set(data: dict, task: str, arm: str, name: str, splits: dict | None, s
               "k_folds": CP.K_FOLDS, "fold_seed": CP.FOLD_SEED, "val_frac": CP.VAL_FRAC, "probe_seed": seed,
               "feature_set": "cache_pilota" if pilot else FEATURE_SET, "window_s": CP.WINDOW_S if task == "p1" else None,
               "splits_sha256": splits_sha,
-              "extraction_recipe": {"branches": {**PILOT, "source_commit": commit} if pilot else STEP2C, "raw": DOWNSTREAM,
-                                    "split_sha256": SPLIT_SHA}, "datasets": {}}
+              "extraction_recipe": {"branches": {**PILOT, "source_commit": commit, "device": "cpu",
+                                                 "checkpoint_sha256": next(iter(data.values()))["pilot_checkpoints"][ALL_SETS[name][1]]}
+                                    if pilot else STEP2C, "raw": DOWNSTREAM, "split_sha256": SPLIT_SHA}, "datasets": {}}
     parts, oof = [], {}
     for ds, e in data.items():
         x = columns(e, name)

@@ -16,12 +16,13 @@
 #        hybrid --teacher T  |  extract --task p1|p2 --arm PWl|PWf|PWm|PWh --teacher T  |  compare [--primary-only]
 set -euo pipefail
 PILOT="${1:?cartella del pilot}"; STAGE="${2:?fase}"; shift 2
-DIAGNOSTIC_DIR="${DIAGNOSTIC_DIR:-/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021}"
+DIAGNOSTIC_DIR=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/rami_diagnostica_20261021  # fissa: i rapporti PW0/PW/RPW0/RPW
 case "$PILOT" in /*) ;; *) echo "cartella del pilot relativa: rifiutata"; exit 2;; esac
 case "$PILOT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*) echo "cartella del pilot dentro il codice: rifiutata"; exit 2;; esac
 for a in "$@"; do
-  case "$a" in --out|--out=*|--pilot-runs*|--eval-root*|--downstream-root*|--step2c-runs*|--runs-root*|--diagnostic-dir*|--reports-dir*)
+  case "$a" in --out|--out=*|--pilot-runs*|--eval-root*|--downstream-root*|--step2c-runs*|--runs-root*|--diagnostic-dir*|--reports-dir*|\
+--expected-commit*)
     echo "argomento $a non ammesso: radici e uscite le fissa il launcher"; exit 2;; esac
 done
 source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
@@ -41,7 +42,7 @@ case "$STAGE" in
   compare)
     OUT="$PILOT/esito.json"
     for a in "$@"; do [ "$a" = --primary-only ] && OUT="$PILOT/esito_primario.json"; done
-    python scripts/branch_pilot.py --stage compare --pilot-runs "$PILOT/runs" --diagnostic-dir "$DIAGNOSTIC_DIR" --reports-dir "$PILOT/sonde" \
-      --out "$OUT" "$@" ;;
+    python scripts/branch_pilot.py --stage compare --expected-commit "$WEARUSFM_CODE_SHA" --pilot-runs "$PILOT/runs" \
+      --diagnostic-dir "$DIAGNOSTIC_DIR" --reports-dir "$PILOT/sonde" --out "$OUT" "$@" ;;
   *) echo "fase $STAGE sconosciuta"; exit 2 ;;
 esac

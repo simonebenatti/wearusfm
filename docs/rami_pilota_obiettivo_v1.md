@@ -121,7 +121,7 @@ insiemi PW e RPW (rami da soli e concatenati al raw). Confronti accoppiati per l
   **solo se** PWm ha imparato il suo compito (perdita normalizzata media sugli ultimi 100 aggiornamenti <= 0,9 con tutti e due i teacher) e
   nessuno dei due bracci e' collassato. **Misure non definite (review GPT, R1):** se una delle ultime 100 perdite normalizzate non e'
   definita (riferimento costante a varianza nulla), il criterio «ha imparato» non e' verificabile e il primario non si legge; il trainer la
-  scrive come «non definita» e la conta (`masked_normalized_undefined`). «Non collassato» come sopra (`collapse_monitor.verified` per PWf e PWm). Accanto si riporta PW0 -> PWm.
+  scrive come «non definita» e la conta (`masked_normalized_undefined`). **Precisazione del 23/10 (critico):** e' non definita anche una misura con una componente ramo x scala presente ma non finita (la media del trainer la salterebbe); una componente assente (nessun bersaglio di quella scala nel batch) non e' una misura. «Non collassato» come sopra (`collapse_monitor.verified` per PWf e PWm). Accanto si riporta PW0 -> PWm.
 - **Descrittivi:** PWf -> PWm su PW; PW -> PWm (le ricette complete); PW0 -> PWm; PW -> PWl («a 3e-4 l'obiettivo vecchio: migliora /
   peggiora / regola non superata rispetto a 1e-3»; un LR piu' basso sugli stessi 3.000 passi e' anche meno spostamento dal passo 0); PW ->
   PWf (effetto di fissare `output` e `combine` col vecchio obiettivo); PW0 -> PWh e PWh -> PW (dove sta il cambiamento del vecchio
@@ -165,25 +165,37 @@ Passa -> i sei run con l'allocazione misurata (nuovo via di Simone). Non passa -
 **Ordine (23/10/2026):** il piano della catena mette prima il primario (uscite di PWf e PWm, sonde RPWf e RPWm sui due compiti e teacher,
 confronto del solo primario, `esito_primario.json`), poi ibridi, PWl e PWh, gli insiemi dei soli rami e il confronto completo (`esito.json`).
 Il confronto dipende dal confronto della diagnostica (`RAMI-rami-diag-20261021b-compare`): PW0, PW, RPW0 e RPW sono i suoi rapporti.
-**Tempi misurati dopo la stesura:** sulla coda seriale gira un job dell'utente alla volta (diagnostica del 22-23/10); le sonde dei soli rami
-durano piu' di quelle con il raw (P1 PW0 2 h 05, PW 2 h 26, R 1 h 51; P2 ~40-55 min). In tutto 16 estrazioni e 32 sonde (una per insieme,
-come la diagnostica v2): ~60 h di calcolo in serie su CPU, ~18 h per il solo primario. **Alternativa da decidere col preventivo:** estrazioni e
-sonde su nodo GPU (`plan --eval-queue gpu`, 8 job insieme, come la valutazione dei bracci), poche ore, GPU-ora pari ai tempi effettivi.
+**Tempi misurati dopo la stesura:** sulla coda seriale gira un job dell'utente alla volta (diagnostica del 22-23/10: il secondo resta in
+attesa per `QOSMaxCpuPerUserLimit`); le sonde dei soli rami durano piu' di quelle con il raw (P1 PW0 2 h 05, PW 2 h 26, R 1 h 51, RPW0 ~1 h
+37; P2 ~40-55 min). **Le uscite dei rami si estraggono sempre su CPU, in fp32, come quelle del 2C** (PW0 e PW): su CUDA l'estrazione va in
+bf16 e i confronti con PW0 e PW mescolerebbero due precisioni (critico, 23/10); il dispositivo e' nell'identita' delle cache e nella ricetta
+dei rapporti, e il confronto rifiuta uscite non estratte su CPU.
+
+**Preventivo dal piano generato dal codice (`branch_pilot.py --stage plan`, campo `estimate`; sostituisce la tabella della stesura, che
+contava 16 sonde e non 32):**
 
 | Fase | Job | Risorse | Tempo massimo | Stima |
 |---|---|---|---|---|
-| Collaudo (PWm, B_seed0) | 1 | 1 A100, `boost_qos_dbg` | 30 min | |
-| Training | 6 (PWl, PWf, PWm x 2 teacher) | 1 A100, 8 CPU, 100 GB, `boost_qos_lprod` | 1 h 30 ciascuno | PWl, PWf ~0,6 h; PWm ~0,8 h |
-| Ibridi PWh | 1 | 1 CPU | 15 min | minuti |
-| Uscite dei rami | 16 (8 modelli x P1/P2) | 8 CPU seriali | P1 1 h 30, P2 3 h | P1 ~54 min (misurato sulla seriale), P2 ~1 h 30 |
-| Sonde interne (PW, RPW) | 16 | 8 CPU seriali | P1 4 h, P2 2 h | P1 ~2 h 15, P2 ~50 min |
-| Confronto | 1 | 2 CPU | 30 min | minuti |
+| Collaudo (PWf a un passo, poi PWm; B_seed0) | 1 | 1 A100, `boost_qos_dbg` | 30 min | 30 min |
+| Training | 6 (PWl, PWf, PWm x 2 teacher) | 1 A100, 8 CPU, 100 GB, `boost_qos_lprod` | allocazione del collaudo (<= 1 h 30) | PWl, PWf ~0,6 h (2C: 37 min); PWm ~0,8 h |
+| Ibridi PWh | 2 | 2 CPU seriali | 30 min | minuti |
+| Uscite dei rami | 16 (8 modelli x P1/P2) | 8 CPU seriali, in CPU | P1 1 h 30, P2 3 h | P1 ~0,7 h, P2 ~1,2 h |
+| Sonde interne | 32 (8 modelli x 2 insiemi x P1/P2) | 8 CPU seriali | P1 4 h (soli rami) / 3 h (con il raw); P2 3 h / 2 h | P1 ~2,2 h / ~1,8 h; P2 ~0,8 h / ~0,7 h |
+| Confronti | 2 (primario, completo) | 2 CPU seriali | 30 min | minuti |
 
-**GPU: tetto 9,5 GPU-ora (76 ore locali) = collaudo 0,5 + 6 x 1,5;** stima ~4,6. Dal budget del passo 6: 64,29 usate su 100 (33,08 prima del
-2C + 29,32 del 2C + 1,89 della baseline casuale di GPT); dopo il tetto 73,79, **residuo 26,21**. **CPU: tetto ~674 core-ora** (uscite 8 x 4,5
-h x 8 = 288; sonde 8 x 6 h x 8 = 384; confronto, ibridi e checkout ~1,4), stima ~350; ore locali CPU dell'account. **Calendario:** sulla
-seriale gira un job da 8 core alla volta: ~43 h di uscite e sonde, dopo le ~30 h della diagnostica, con le stesse regole (al piu' 2 job
-seriali dell'utente, `--nice`, nessuna tranche a ridosso delle valutazioni di C3 e C4). Disco: ~3 GB di checkpoint e uscite dei rami.
+**GPU (training): tetto 9,5 GPU-ora (76 ore locali) = collaudo 0,5 + 6 x 1,5;** stima ~4,6. Dal budget del passo 6: 64,29 usate su 100
+(33,08 prima del 2C + 29,32 del 2C + 1,89 della baseline casuale di GPT); dopo il tetto 73,79, **residuo 26,21**. **CPU (valutazione su coda
+seriale, scelta di default): tetto ~1.060 core-ora** (uscite 288, sonde 768, ibridi e confronti ~4), **stima ~475** (~59 h x 8 core); ore
+locali CPU dell'account. **Calendario:** un job alla volta, ~60 h di calcolo (~18 h per il solo primario, che il piano mette per primo),
+dopo la diagnostica; ogni tranche la lancia Simone con la catena (al piu' 2 job seriali in coda, `--nice`).
+**Opzione su nodo GPU (`--eval-queue gpu`, solo con una decisione registrata):** stessi job su `boost_usr_prod` con 1 GPU inattiva (si
+compra il parallelismo, fino a 8 job insieme), stessa estrazione in CPU. Tetto del piano **134 GPU-ora** (38,5 per il solo primario), stima
+~59 (~18 per il primario): sopra il residuo di 26,21 del passo, quindi solo con una decisione di budget di Simone. Disco: ~3 GB.
+
+**Un braccio collassato** (run fermato dall'allarme di collasso dei rami) e' incompleto: il training esce con errore e la catena non estrae
+ne' sonda quel braccio. Se e' PWf o PWm, il confronto si lancia a mano (`branch_pilot_cpu.sbatch <cartella> compare --primary-only`) e scrive
+«braccio collassato: non batte il riferimento», primario non positivo; se e' PWl (o un ibrido manca), il confronto completo salta i suoi
+descrittivi e li elenca (`descriptive_skipped`). Un run fallito per altro non ha esito: stop e proposta.
 
 ## Codice
 
@@ -201,4 +213,4 @@ seriali dell'utente, `--nice`, nessuna tranche a ridosso delle valutazioni di C3
   validation interna; rapporti col protocollo e la ricetta del pilot (le uscite dei rami non sono quelle del 2C); il launcher passa
   `PILOT_ROOT`. Il confronto del pilot accoppia rapporti della diagnostica e del pilot dopo aver controllato la sorgente di ciascuno: contano
   split, fold, sonda e righe, come in `arms_compare.s_comparison`.
-- Test CPU: `tests/cpu/test_branch_pilot.py` (configurazione, controlli sul trainer vero, ibrido, collaudo, sonde del pilot, confronto, piano).
+- Test CPU: `tests/cpu/test_branch_pilot.py` (configurazione contro i `config.json` veri del 2C in `results/passo6/step2c_configs_20261014/`, controlli sul trainer vero per PWl, PWf e PWm, sequenza del collaudo, ibrido e sua rilettura, verdetto, sonde del pilot e rifiuti delle cache, confronto e rifiuti, braccio collassato, piano; codice della sonda uguale a quello della diagnostica, aba1f2e, fissato per hash).

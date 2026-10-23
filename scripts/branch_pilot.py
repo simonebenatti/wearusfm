@@ -192,11 +192,21 @@ def _finite(v) -> bool:
     return isinstance(v, (int, float)) and math.isfinite(v)
 
 
+def _undefined(r: dict) -> bool:
+    """Misura non definita: la media (`masked_normalized` null) o una componente ramo x scala presente ma non finita (riferimento a varianza
+    nulla). La media del trainer salta le componenti non finite (`branch_masking`): senza questo controllo resterebbe definita (critico, 23/10).
+    Una componente assente (nessun bersaglio di quella scala nel batch) non e' una misura."""
+    if not _finite(r.get("masked_normalized")):
+        return True
+    return any(k.startswith("masked_") and k.endswith("_normalized") and k != "masked_normalized" and not _finite(v) for k, v in r.items())
+
+
 def learned(metrics: list[dict]) -> dict:
     """PWm ha imparato il suo compito: media della perdita normalizzata sugli ultimi 100 aggiornamenti <= 0,9. Una sola misura non definita
-    fra le ultime 100 (riferimento costante; il trainer la scrive come null) rende il criterio non verificabile (review GPT, R1)."""
-    last = [r.get("masked_normalized") for r in metrics[-LEARN_WINDOW:]]
-    undefined = sum(not _finite(v) for v in last)
+    fra le ultime 100 (`_undefined`; il trainer scrive null) rende il criterio non verificabile (review GPT, R1)."""
+    window = metrics[-LEARN_WINDOW:]
+    last = [r.get("masked_normalized") for r in window]
+    undefined = sum(_undefined(r) for r in window)
     if len(last) < LEARN_WINDOW or undefined:
         return {"verifiable": False, "updates": len(last), "undefined": undefined, "mean": None, "learned": False}
     mean = float(np.mean(last))
@@ -297,12 +307,21 @@ def _train_one(args, arm: str, teacher: str, out: Path, *, max_steps: int | None
         state, own_init, ref_init = _load(out / "checkpoint.pt"), _load(out / "checkpoint_init.pt"), _load(run2c / "checkpoint_init.pt")
         source_teacher = _load(source)["teacher"]
         raw = {"final": S2C.raw_check(source_teacher, state), "init": S2C.raw_check(source_teacher, own_init)}
-        branch_state = json.loads((out / "spectral_branches.json").read_text()).get("branch_state") or {}
+        spectral = json.loads((out / "spectral_branches.json").read_text())
+        branch_state = spectral.get("branch_state") or {}
+        try:
+            S2C.SA._finite_state(state)
+            finite = True
+        except ValueError:
+            finite = False
+        # come il 2C (step2c.train): checkpoint del run, passo 0 al passo 0, provenienza dei rami col passo 0 registrato
+        consistent = bool(state.get("config") == R.config_to_dict(cfg) and own_init.get("config") == state.get("config")
+                          and own_init.get("step") == 0 and spectral.get("init_checkpoint_sha256") == prov["init_checkpoint_sha256"])
         prov["checks"] = {
             "raw": raw, "init": init_check(ref_init, own_init), "fixed": fixed_check(trainable_names(cfg), ref_init, state),
             "branch_state": {"sha256": branch_state.get("sha256"), "calibration_reproduced": branch_state.get("calibration_reproduced")},
             "token_distance": {p: token_distance(ref_init[p], state[p]) for p in ("student", "teacher")}}
-        checks.update(raw=raw["final"]["encoder_identical"] and raw["init"]["encoder_identical"],
+        checks.update(finite=finite, consistent=consistent, raw=raw["final"]["encoder_identical"] and raw["init"]["encoder_identical"],
                       init=prov["checks"]["init"]["identical"], fixed=prov["checks"]["fixed"]["identical"],
                       branch_state=branch_state.get("sha256") == STEP2C_RUNS[teacher]["init_checkpoint_sha256"])
         if ARMS[arm]["objective"] == "readout":
@@ -401,10 +420,14 @@ def pilot_run(args, arm: str, teacher: str) -> tuple[Path, dict]:
     return folder, prov
 
 
+EXTRACT_DEVICE = "cpu"  # come il 2C (fp32): su CUDA l'estrazione va in bf16 e le uscite non sarebbero confrontabili con PW0 e PW (critico)
+
+
 def cache_identity(commit: str, task: str, teacher: str, arm: str) -> dict:
     """Identita' di una cache delle uscite dei rami del pilot; `arm` = teacher come nella diagnostica, `model` = il braccio."""
     return {"protocol": PROTOCOL, "source_commit": commit, "task": task, "arm": teacher, "model": arm, "variant": f"branches_{arm}",
-            "which": "teacher", "probe_seed": 0, "split_sha256": SD.SPLIT_SHA, "source_checkpoint_sha256": SD.CHECKPOINTS[teacher]}
+            "which": "teacher", "probe_seed": 0, "split_sha256": SD.SPLIT_SHA, "source_checkpoint_sha256": SD.CHECKPOINTS[teacher],
+            "device": EXTRACT_DEVICE}
 
 
 def extract(args) -> None:
@@ -417,10 +440,10 @@ def extract(args) -> None:
     if task == "p2":
         if not args.epn_root or not args.uci_root:
             raise ValueError("P2: servono le radici di EPN-612 e UCI-EMG")
-        S2C._extract_p2(args, {arm: ckpt}, {arm: folder}, device=args.extract_device)
+        S2C._extract_p2(args, {arm: ckpt}, {arm: folder}, device=EXTRACT_DEVICE)
     else:
         argv = S2C._probe_argv(args, task, ckpt, folder, "extract", "branches") + ["--audit-inputs", "--batch", "64", "--device",
-                                                                                   args.extract_device]
+                                                                                   EXTRACT_DEVICE]
         if probe_p1.main(argv) != 0:
             raise ValueError("estrazione dei rami fallita")
     SD.check_source(commit)
@@ -440,6 +463,7 @@ def extract(args) -> None:
 DIAG_SETS = ("PW0", "PW", "RPW0", "RPW")  # dalla diagnostica (rami del 2C)
 PILOT_SETS = tuple(n for m in MODELS for n in (m, f"R{m}"))
 PRIMARY = ("RPWf", "RPWm")
+PRIMARY_ARMS = ("PWf", "PWm")
 BESIDE = ("RPW0", "RPWm")
 DESCRIPTIVE = {  # nome -> (da, a)
     "PWf_PWm_su_PW": ("PWf", "PWm"), "PW_PWm_su_PW": ("PW", "PWm"), "PW_PWm_su_RPW": ("RPW", "RPWm"),
@@ -475,12 +499,22 @@ def _normalized(r: dict) -> dict:
     return {**r, "protocol": "rami_pilota_o_diagnostica", "feature_set": "cache", "extraction_recipe": {"raw": r["extraction_recipe"]["raw"]}}
 
 
+def _raw_files(r: dict) -> dict:
+    return {d: (v.get("files") or {}).get("raw", {}).get("sha256") for d, v in r["datasets"].items()}
+
+
 def paired(reps: dict, task: str, ref: str, var: str) -> dict:
+    """Confronto accoppiato da `ref` a `var` coi due teacher (`arms_compare.s_comparison`), dopo i controlli dei rapporti: stessa sonda, e per
+    gli insiemi col raw lo stesso file raw (SHA) per teacher."""
     AC, SDG = _script("arms_compare"), _script("spectral_diagnostic")
     a = [reps[task][t][ref] for t in TEACHERS]
     b = [reps[task][t][var] for t in TEACHERS]
     if len({json.dumps({k: r.get(k) for k in PROBE_KEYS}, sort_keys=True) for r in a + b}) != 1:
         raise ValueError(f"{task}: {ref} e {var} con split, fold o sonda diversi")
+    for ra, rb in zip(a, b):
+        fa, fb = _raw_files(ra), _raw_files(rb)
+        if all(fa.values()) and all(fb.values()) and fa != fb:
+            raise ValueError(f"{task}/{ra['arm']}: {ref} e {var} da file raw diversi")
     row = AC.s_comparison([_normalized(r) for r in a], [_normalized(r) for r in b])
     return {"from": ref, "to": var, **row, "reading": SDG.reading(row)}
 
@@ -493,11 +527,25 @@ def primary_reading(rows: dict) -> dict:
             "harm_delta": HARM_DELTA}
 
 
+COLLAPSE_STOP = "allarme di collasso dei rami"  # l'inizio del motivo dello STOP scritto dal trainer (`branch_masking.CollapseAlarm`)
+
+
+def run_state(args, arm: str, teacher: str) -> str:
+    """«collassato» se il run e' stato fermato dall'allarme di collasso dei rami (collassato = non batte il riferimento, protocollo), se no
+    «valido» per un run completo coi controlli passati; altrimenti errore (un run fallito per altro non ha esito)."""
+    folder = _run_dir(args, arm, teacher)
+    stop = folder / "STOP"
+    if stop.exists() and stop.read_text().startswith(COLLAPSE_STOP):
+        return "collassato"
+    run_summary(args, arm, teacher)
+    return "valido"
+
+
 def run_summary(args, arm: str, teacher: str) -> dict:
     folder = _run_dir(args, arm, teacher)
     prov = json.loads((folder / "run_provenance.json").read_text())
     if (prov.get("protocol"), prov.get("arm"), prov.get("teacher"), prov.get("complete"), prov.get("checks_passed")) != \
-            (PROTOCOL, arm, teacher, True, True):
+            (PROTOCOL, arm, teacher, True, True) or (folder / "STOP").exists():
         raise ValueError(f"{folder}: run del pilot non valido")
     out = {"source_commit": prov["source_commit"], "checkpoint_sha256": prov["checkpoint_sha256"],
            "token_distance": (prov.get("checks") or {}).get("token_distance")}
@@ -511,15 +559,47 @@ def run_summary(args, arm: str, teacher: str) -> dict:
     return out
 
 
+NOTE = ("Validation interna (soggetti di pretraining P1, soggetti fuori dai test P2), nessun numero dei test ufficiali. Un seme per teacher, due "
+        "teacher della famiglia B: incertezza condizionata a questi modelli; piu' confronti senza correzione (il primario decide, gli altri "
+        "descrivono); asimmetria delle bande wavelet lente (poco contesto: i loro pesi ricevono poco gradiente nel PWm); le perdite dei due "
+        "obiettivi non si confrontano; nessuna conclusione causale ne' adozione automatica.")
+
+
+def _write(args, result: dict) -> None:
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(result, indent=1, allow_nan=False))
+    print(json.dumps({k: result.get(k) for k in ("gate", "collapsed")} | {"primary": result["primary"]["reading"]}), flush=True)
+
+
 def compare(args) -> None:
-    sets = DIAG_SETS + PILOT_SETS if not args.primary_only else ("RPW0", "RPWf", "RPWm")
+    SD.check_source(args.expected_commit)
+    arms = ("PWf", "PWm") if args.primary_only else MODELS
+    states = {a: {te: run_state(args, a, te) for te in TEACHERS} for a in arms}
+    collapsed = sorted(f"{a}/{te}" for a, v in states.items() for te, s in v.items() if s == "collassato")
+    base = {"protocol": PROTOCOL, "compare_commit": args.expected_commit, "states": states, "collapsed": collapsed, "note": NOTE}
+    if any(c.split("/")[0] in PRIMARY_ARMS for c in collapsed):  # la catena si ferma: questo esito si calcola a mano (protocollo)
+        why = f"braccio collassato ({', '.join(collapsed)}): collassato = non batte il riferimento"
+        _write(args, {**base, "primary": {"from": PRIMARY[0], "to": PRIMARY[1], "readable": False,
+                                          "reading": {"positive": False, "reason": why}}})
+        return
+    alive = [a for a in arms if all(s == "valido" for s in states[a].values())]
+    sets = (("RPW0", "RPWf", "RPWm") if args.primary_only else
+            DIAG_SETS + tuple(n for n in PILOT_SETS if (n[1:] if n.startswith("R") else n) in alive))
     reps = {t: {te: {n: _report(args, t, te, n) for n in sets} for te in TEACHERS} for t in ("p1", "p2")}
-    commits = {r["extraction_recipe"]["branches"].get("source_commit") for t in reps.values() for te in t.values()
-               for n, r in te.items() if n not in DIAG_SETS}
+    runs = {a: {te: run_summary(args, a, te) for te in TEACHERS} for a in alive}
+    commits = set()
+    for t, v in reps.items():
+        for te, w in v.items():
+            for n, r in w.items():
+                if n in DIAG_SETS:
+                    continue
+                b = r["extraction_recipe"]["branches"]
+                model = n[1:] if n.startswith("R") else n
+                if b.get("checkpoint_sha256") != runs[model][te]["checkpoint_sha256"] or b.get("device") != EXTRACT_DEVICE:
+                    raise ValueError(f"{t}/{te}/{n}: uscite dei rami non dal checkpoint del run {model}/{te} o non in CPU")
+                commits.add(b.get("source_commit"))
     if len(commits) != 1:
         raise ValueError(f"sonde del pilot da codici diversi: {sorted(map(str, commits))}")
-    arms = ("PWf", "PWm") if args.primary_only else MODELS
-    runs = {a: {te: run_summary(args, a, te) for te in TEACHERS} for a in arms}
     if {r["source_commit"] for a in runs.values() for r in a.values()} != commits:
         raise ValueError("run e uscite dei rami del pilot da codici diversi")
     gate = {"PWm_learned": all(runs["PWm"][te]["learned"]["learned"] for te in TEACHERS),
@@ -528,22 +608,18 @@ def compare(args) -> None:
             "PWm_not_collapsed": all(runs["PWm"][te]["collapse_monitor_verified"] for te in TEACHERS)}
     rows = {t: paired(reps, t, *PRIMARY) for t in ("p1", "p2")}
     readable = gate["PWm_learned"] and gate["PWf_not_collapsed"] and gate["PWm_not_collapsed"]
-    result = {"protocol": PROTOCOL, "source_commit": commits.pop(), "gate": gate,
+    result = {**base, "source_commit": commits.pop(), "gate": gate,
               "primary": {"from": PRIMARY[0], "to": PRIMARY[1], "readable": readable,
                           "reading": primary_reading(rows) if readable else "non si legge: PWm non ha imparato o un braccio non e' verificato",
                           "paired": rows},
-              "beside_PW0_PWm_su_RPW": {t: paired(reps, t, *BESIDE) for t in ("p1", "p2")},
-              "runs": runs}
+              "beside_PW0_PWm_su_RPW": {t: paired(reps, t, *BESIDE) for t in ("p1", "p2")}, "runs": runs}
     if not args.primary_only:
-        result["descriptive"] = {k: {t: paired(reps, t, a, b) for t in ("p1", "p2")} for k, (a, b) in DESCRIPTIVE.items()}
+        have = set(sets)
+        result["descriptive"] = {k: {t: paired(reps, t, a, b) for t in ("p1", "p2")} for k, (a, b) in DESCRIPTIVE.items()
+                                 if a in have and b in have}
+        result["descriptive_skipped"] = sorted(k for k, (a, b) in DESCRIPTIVE.items() if a not in have or b not in have)
     result["report_sha256"] = {f"{t}/{te}/{n}": r["_sha256"] for t, v in reps.items() for te, w in v.items() for n, r in w.items()}
-    result["note"] = ("Validation interna (soggetti di pretraining P1, soggetti fuori dai test P2), nessun numero dei test ufficiali. Un seme per "
-                      "teacher, due teacher della famiglia B: incertezza condizionata a questi modelli; piu' confronti senza correzione (il "
-                      "primario decide, gli altri descrivono); le perdite dei due obiettivi non si confrontano; nessuna conclusione causale ne' "
-                      "adozione automatica.")
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=1, allow_nan=False))
-    print(json.dumps({"gate": gate, "primary": result["primary"]["reading"]}), flush=True)
+    _write(args, result)
 
 
 # --- piano (comandi dei training e catena di valutazione) -------------------------------------------------------------------------------
@@ -572,7 +648,6 @@ def main(argv=None) -> int:
         ap.add_argument("--" + name.replace("_", "-"), type=Path)
     ap.add_argument("--time-limit-s", type=float)
     ap.add_argument("--device", default="cuda", help="train")
-    ap.add_argument("--extract-device", choices=["cpu", "cuda"], default="cpu", help="extract (cuda: valutazione su nodo GPU)")
     ap.add_argument("--num-workers", type=int, default=S2C.NUM_WORKERS)
     q = ap.add_argument_group("plan")
     q.add_argument("--code-dir", help="checkout di campagna (cluster)")
@@ -588,7 +663,7 @@ def main(argv=None) -> int:
     need = {"train": ("arm", "teacher", "expected_commit", "runs_root", "step2c_runs", "pilot_runs", "time_limit_s", "root", *S2C.INPUTS),
             "hybrid": ("teacher", "expected_commit", "step2c_runs", "pilot_runs"),
             "extract": ("arm", "teacher", "task", "expected_commit", "pilot_runs", "downstream_root", "eval_root"),
-            "compare": ("diagnostic_dir", "reports_dir", "pilot_runs", "out"),
+            "compare": ("expected_commit", "diagnostic_dir", "reports_dir", "pilot_runs", "out"),
             "plan": ("code_dir", "expected_sha", "pilot_dir", "campaign", "out", "commands")}[args.stage]
     missing = [k for k in need if not getattr(args, k)]
     if missing:
@@ -605,6 +680,10 @@ PROBE_TIME = {"p1": {"branches": "04:00:00", "raw": "03:00:00"}, "p2": {"branche
 DIAG_COMPARE = "RAMI-rami-diag-20261021b-compare"  # il confronto della diagnostica: dopo tutte le sue sonde (PW0, PW, RPW0, RPW dei teacher B)
 
 
+def _opt(node: dict, name: str) -> str | None:
+    return next((o.split("=", 1)[1] for o in node["sbatch"] if o.startswith(name + "=")), None)
+
+
 def _hours(t: str) -> float:
     h, m, s = (int(x) for x in t.split(":"))
     return round(h + m / 60 + s / 3600, 2)
@@ -613,7 +692,8 @@ def _hours(t: str) -> float:
 def plan(args) -> None:
     """Comandi del collaudo e dei 6 training (submit_job.py) e piano della catena di valutazione (schema eval-plan-v0): prima il primario
     (uscite di PWf e PWm, sonde RPWf e RPWm, confronto del solo primario), poi ibridi, PWl e PWh, gli insiemi dei soli rami e il confronto
-    completo. `--eval-queue gpu`: estrazioni e sonde su un nodo GPU (piu' job insieme; GPU-ora = tempo massimo)."""
+    completo. `--eval-queue gpu`: estrazioni e sonde su un nodo GPU (piu' job insieme; GPU-ora = tempo massimo), sempre in CPU (`EXTRACT_DEVICE`)
+    come il 2C: la GPU resta inattiva, si compra solo il parallelismo. Sopra il residuo del budget del passo serve una decisione registrata."""
     pilot, c, code, sha = args.pilot_dir, args.campaign, args.code_dir, args.expected_sha
     if not pilot.startswith("/") or not code.startswith("/"):
         raise ValueError("--pilot-dir e --code-dir assolute (cluster)")
@@ -647,7 +727,7 @@ def plan(args) -> None:
         if i not in by_id:
             after = [f"RAMIPILOT-{c}-PWh-{t}"] if arm == "PWh" else [train_id[arm, t]]
             node(i, "extract", after, "scripts/slurm/branch_pilot_cpu.sbatch",
-                 [pilot, "extract", "--task", task, "--arm", arm, "--teacher", t] + (["--extract-device", "cuda"] if gpu else []),
+                 [pilot, "extract", "--task", task, "--arm", arm, "--teacher", t],
                  EXTRACT_TIME[task], [f"{pilot}/cache/{task}/{t}/branches_{arm}/provenance.json"],
                  inputs=[f"{pilot}/runs/PWh/{t}/run_provenance.json"] if arm == "PWh" else ())
         return i
@@ -677,6 +757,7 @@ def plan(args) -> None:
     doc = {"schema": "eval-plan-v0", "campaign": c, "agent": "claude",
            "limits": {"boost_usr_prod": args.max_gpu} if gpu else {"lrd_all_serial": args.max_serial}, "nodes": nodes,
            "estimate": {"eval_queue": args.eval_queue, "gpu_hours_max": round(sum(n["gpu_hours"] for n in nodes), 2),
+                        "cpu_core_hours_max": round(sum(_hours(_opt(n, "--time")) * int(_opt(n, "--cpus-per-task") or 8) for n in nodes), 2),
                         "jobs": len(nodes)}}
     _script("evaluation_chain").validate(doc)
     args.out.parent.mkdir(parents=True, exist_ok=True)
