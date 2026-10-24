@@ -3239,6 +3239,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - **Coda (Simone, 18:29):** per far passare prima il checkout e il gate, Simone ha messo in hold dal suo terminale le 4 sonde P2 del
   readout in attesa (`scontrol hold 62100961 62128193 62128210 62128222`, nessun output = eseguito); la sonda in corso (62080282) continua.
   **Da rilasciare dopo il gate** (`scontrol release` degli stessi 4 job): lo segno qui perche' non lo dimentichi nessuno.
+  Conferma (`squeue`, 18:30): le 4 sonde `JobHeldUser`, la sonda 62080282 RUNNING da 14 min, il checkout PENDING per
+  `QOSMaxCpuPerUserLimit` (parte quando la sonda in corso libera le CPU). Simone (18:3x): «rilasciale dopo il gate», come eccezione alla
+  regola di leonardo-ops: il rilascio lo fara' l'agente dopo l'esito del gate.
 
 ## 2) Problemi trovati
 
