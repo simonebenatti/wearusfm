@@ -3049,6 +3049,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `local`: a pari larghezza la rappresentazione profonda per canale vale quanto la media (+0,35 su DB2, -2,3 su DB6), quella dell'encoder
   locale meno. Finora, su P1 cross-soggetto, nessun segno che la media nasconda informazione; descrittivo fino al seme 1.
 
+### 2026-10-24 | Claude | Readout per canale: confronto 1 sulla P1, `local` contro readout medio, due semi: «peggiora» | Codice: 6242bc3 (deploy)
+
+- `local` A s1 P1 (61984679, 2 h 27): S 16,28 ± 0,61 (DB2 16,37, DB3 2,72, DB6 36,25). Confronto accoppiato con la regola congelata
+  (`channel_readout.py --stage compare`, `arms_compare.s_comparison`, bootstrap congiunto, seme 20261009): **`local` a k 768 - readout medio =
+  -2,00 punti, IC95 [-2,60; -1,36], per seme -1,99 / -2,00: «peggiora»**. Per dataset: DB2 -3,41 [-4,25; -2,61], DB3 -0,26 [-0,91; +0,37],
+  DB6 +1,07 [-0,62; +3,04]. Prima lettura formale del protocollo: sulla P1 cross-soggetto l'uscita dell'encoder locale tenuta per canale, a pari
+  larghezza, fa perdere 2 punti rispetto alla media sui canali; il peggioramento sta in DB2. Esito in
+  `~/wearusfm_local/readout_canale_20261023/confronti/confronto1_p1_local_vs_pool.json`. Restano `dec` (s1 in esecuzione), ancore-only, la P2.
+- Terza tornata di sonde (coda a 6 -> 10): A s0 P2 dec 62043217 (con `--dopo-rifiuto`), A s1 P2 local 62043237, A s1 P2 dec 62043256,
+  ancore-only s0 P2 local 62043273. Restano 7 da sottomettere (4 a larghezza intera, ancore-only s0 P2 dec, s1 P2 local/dec).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

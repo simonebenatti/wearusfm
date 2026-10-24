@@ -4158,6 +4158,10 @@ dell'endpoint a 1 epoca di R0. Regola di lettura proposta (da congelare prima de
 S P2 di +1 punto rispetto a R0 col readout designato; seme 1 solo per chi passa. Preventivo prima ondata: ~176 / 230 GPU-ora di training,
 ~8 / 16 di estrazioni, ~170 core-ore di sonde; famiglia «Ablation a 30M» o voce nuova (da decidere). Prerequisiti: R2 da scrivere, gate D8
 per R5, firma dello scostamento da D10 per R5, review del `critico`, congelamento in questo file. Nessun job.
+**Readout per canale, confronto 1 sulla P1, strato `local` (24/10/2026, regola congelata in 63ac0dd): «PEGGIORA».** `local` per canale a k 768
+contro il readout medio storico di A, due semi, bootstrap congiunto: delta -2,00 punti, IC95 [-2,60; -1,36], per seme -1,99 / -2,00 (DB2 -3,41,
+DB3 -0,26, DB6 +1,07 con intervallo che include lo zero). Sulla P1 cross-soggetto la media sui canali non nasconde informazione utile
+dell'encoder locale: la toglie dove e' dannosa (il posizionamento per soggetto). Nessuna adozione. Seguono `dec`, ancore-only e la P2.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le
