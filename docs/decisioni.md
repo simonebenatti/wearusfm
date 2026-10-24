@@ -4266,3 +4266,13 @@ checkout di campagna (CPU seriale, secondi), gate D8 sul banco da 150 ms (CPU se
 training). Ordine scelto da Claude dentro l'autorizzazione: checkout -> gate D8 e collaudo di R2 insieme -> collaudo di R5 dopo l'esito del gate
 (se NON SUPERATO il collaudo di R5 non si lancia e le sue GPU-ore restano). Soglia del collaudo (congelata il 24/10): oltre 0,81 s/passo il run
 passa a `spare_jobs` 1 in `piano.json` prima del lancio. **I 4 training (tronchi e rami) restano in attesa del via di Simone dopo gate e collaudo.**
+**Pilot degli obiettivi: deploy e checkout sottomessi (24/10/2026, 18:25).** Preflight in sola lettura: hook del canonico solo `.sample`,
+cartella e ref assenti, `main` di leonardo (8dad7e8) non toccato; `receive.denyCurrentBranch` non riverificato oggi (il subagent non esegue
+`git` sul login node): vale la verifica del 23/10 e la regola riguarda solo il ramo estratto. `deploy/pilot-obiettivi-20261024` =
+**705ec0465420e80d5d818a8bbc7acc3a92c06efc** (SHA remoto verificato; codice del cluster identico a 7da3d9e, suite completa 1387 PASS; il commit
+aggiunge la firma e l'agente di monitoraggio). Piani e comandi rigenerati con lo SHA vero (`results/infra/pilot_obiettivi_20261024/`, identici
+alle bozze a meno dello SHA). Checkout di campagna `PILOT-OBIETTIVI-20261024-checkout` = job **62148779** (serial, 0 GPU-ora), in coda dietro
+le sonde P2 del readout (limite di CPU per utente sulla seriale: una sonda alla volta, ~2,5 h l'una, 1 in corso e 4 in attesa). Il gate,
+sottomesso nella stessa tornata con afterok sul checkout, e' stato rifiutato da sbatch (il launcher sta nel checkout non ancora creato; nessun
+job, nessun costo): gate e collaudo di R2 si sottomettono dopo «checkout di campagna pronto», il collaudo di R5 con afterok sul gate. Monitoraggio
+con l'agente leggero `leonardo-watch` (richiesta di Simone del 24/10; haiku), che sveglia la sessione a job finito. Nessuna GPU-ora spesa.

@@ -3209,6 +3209,34 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Verdetto del `critico`: ancora DA RIVEDERE prima delle correzioni; una terza review prima del deploy, se Simone la vuole, e' a costo di token
   (~200k a giro). Nessun job.
 
+### 2026-10-24 | Claude | Pilot degli obiettivi: regola e scostamento D10 FIRMATI, deploy 705ec04, checkout in coda (62148779), gate rifiutato alla prima sottomissione (si rifa' dopo il checkout), agente leggero `leonardo-watch` | Codice: 705ec04 (deploy, firma, agente), commit di questa voce (comandi)
+
+- **Firma di Simone (24/10):** «Firmo la regola di lettura del pilot (testo del §5) e lo scostamento da D10 per R5. Via al deploy
+  deploy/pilot-obiettivi-20261024, al checkout di campagna, al gate D8 sul banco da 150 ms e al collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4
+  training aspettano il mio via dopo gate e collaudo.» Registrata in decisioni.md (voce della firma) e nel protocollo (stato, R5, §5, §6); il
+  blocco del §5 e' identico nei due file (2.085 caratteri, confronto con la chiusura del paragrafo come riferimento).
+- **Preflight in sola lettura:** hook del canonico solo `.sample`; cartella `wearusfm_campaigns/pilot-obiettivi-20261024` e ref assenti;
+  `main` di leonardo a 8dad7e8, non toccato dal push. Non riverificati oggi `receive.denyCurrentBranch` e lo stato del working tree del canonico:
+  il subagent leonardo-ops non esegue `git` sul login node (sua regola). Vale la verifica del 23/10 (`updateInstead`), e in ogni caso quella
+  regola riguarda solo il ramo estratto: un ref `deploy/` non tocca il working tree.
+- **Deploy:** `deploy/pilot-obiettivi-20261024` = 705ec0465420e80d5d818a8bbc7acc3a92c06efc (SHA remoto verificato con `ls-remote`), codice del
+  cluster identico a 7da3d9e (suite completa 1387 PASS): il commit aggiunge la firma, l'agente di monitoraggio e il suo test. `piano.json`,
+  `collaudo.json` e i comandi rigenerati con lo SHA vero (`comandi_training.txt`, `comandi_collaudo.txt`, `comandi_gate_d8.txt`; bozze tolte):
+  identici alle bozze a meno dello SHA.
+- **Sottomissioni (18:25):** checkout `PILOT-OBIETTIVI-20261024-checkout` sottomesso, **job 62148779** (serial, 1 core, 10 min di tetto, 0
+  GPU-ora); e' in coda dietro le sonde P2 del readout (una alla volta per il limite di CPU per utente: 1 in corso, 4 in attesa, ~2,5 h l'una).
+  Il gate e' stato **rifiutato da sbatch** («Unable to open file .../pilot-obiettivi-20261024/scripts/slurm/gate_d8.sbatch»): sbatch legge il
+  launcher dal checkout al momento della sottomissione, quindi la dipendenza afterok che avevo messo non basta; nessun job creato, nessun
+  costo; i collaudi non sono stati sottomessi (il loop si ferma al primo non «sottomesso»). Sezione 2. **Seconda tornata, dopo «checkout di
+  campagna pronto»:** gate (`--dopo-rifiuto`) e collaudo di R2 insieme; collaudo di R5 con afterok sul gate (`comandi_sottomissione_20261024.txt`).
+- **Agente leggero `leonardo-watch`** (richiesta di Simone: «un agente ... solo per monitorare le cose, cosi' usera' pochissimi token ...
+  quando dal monitoring vede che il job e' finito te lo comunica e ti sveglia»): `.claude/agents/leonardo-watch.md` (haiku: compito meccanico,
+  la decisione resta alla sessione principale) e `scripts/leonardo_watch.py` (sacct via ssh ogni 3 minuti, righe di stato e code dei log in
+  `~/wearusfm_local/logs/`, una chiamata dura 9 minuti e si richiama; sul login node solo sacct e tail). Test con un finto ssh:
+  `tests/cpu/test_leonardo_watch.py` **6 passed** (con `test_submit_job.py`: 25 passed in 2.37s). Il tipo nuovo di agente entra alla prossima
+  sessione; oggi lo stesso flusso gira con un agente generico su haiku. Sta aspettando il job 62148779.
+- Nessun job GPU; tetto del collaudo 4,0 GPU-ora, nessuna spesa finora.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4698,3 +4726,13 @@ generatore vero (misura del `critico`: D10 a 0,5, 160 patch, 40 semi, capgmyo/em
 maschere corte da 25-50 ms, dove il target per regione e' quasi quello per token, e il 2% sulle regioni lunghe: un esito nullo di R2 non avrebbe
 detto nulla sull'ipotesi «scala del movimento», ed era uno scostamento da D10 non dichiarato. Corretto nello stesso giorno (ogni token porta
 l'errore della sua regione: quote di D10 invariate), con test. Nessun run toccato.
+
+### 2026-10-24 | Claude | Pilot degli obiettivi: la sottomissione del gate con afterok sul checkout e' stata rifiutata da sbatch (nessun job, nessun costo)
+
+Ho sottomesso gate e collaudi nella stessa tornata del checkout, con `--dopo` (afterok) sul job di checkout, per non dover aspettare a mano.
+`sbatch` pero' legge il file del launcher al momento della sottomissione e il launcher sta nel checkout di campagna, che il job 62148779 deve
+ancora creare: «Unable to open file .../pilot-obiettivi-20261024/scripts/slurm/gate_d8.sbatch», stato `rifiutato` nel submitter; il loop si e'
+fermato li' e i collaudi non sono stati sottomessi. Nessun job creato, nessun costo. Regola che ne ricavo: afterok serve fra job i cui launcher
+esistono gia'; il primo passo dopo un checkout nuovo si sottomette dopo «checkout di campagna pronto», come dicevano i comandi originali. Il
+gate si risottomette con `--dopo-rifiuto` (ID prenotato e rifiutato), i collaudi dopo di esso; il collaudo di R5 con afterok sul gate resta
+corretto perche' a quel punto il launcher esiste.

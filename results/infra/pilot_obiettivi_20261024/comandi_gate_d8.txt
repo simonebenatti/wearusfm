@@ -2,18 +2,19 @@
 # il 01/10/2026 (docs/proposta_gate_d8.md: errore relativo <= 5% per famiglia, sonda <= 55%), front-end con finestra del kernel di 150 ms
 # a passo 25 ms (scripts/gate_d8.py --window-ms 150). Job CPU sulla seriale, 2 core, 16 GB, 2 h di tetto (= 4 core-ore di tetto, ~1 attesa:
 # ~10 min di feature, 1 di sonda, piu' la lettura di Kaifosh), 0 GPU-ora. Il JSON dell'esito registra il banco (frontend.window_ms, bank).
-# Ogni comando dal Mac (leonardo-ops), dopo il via di Simone. <SHA> = commit pubblicato con `git push leonardo <SHA>:refs/heads/deploy/pilot-obiettivi-20261024`.
+# Ogni comando dal Mac (leonardo-ops), dopo il via di Simone. 705ec0465420e80d5d818a8bbc7acc3a92c06efc = commit pubblicato con `git push leonardo 705ec0465420e80d5d818a8bbc7acc3a92c06efc:refs/heads/deploy/pilot-obiettivi-20261024`.
 
 # 1) checkout di campagna (CPU, secondi)
-python3 scripts/submit_job.py --id PILOT-OBIETTIVI-20261024-checkout --agente claude --campagna pilot-obiettivi-20261024 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=pilot-obiettivi-20261024,CAMPAIGN_SHA=<SHA>
+python3 scripts/submit_job.py --id PILOT-OBIETTIVI-20261024-checkout --agente claude --campagna pilot-obiettivi-20261024 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=pilot-obiettivi-20261024,CAMPAIGN_SHA=705ec0465420e80d5d818a8bbc7acc3a92c06efc
 
-# 2) dopo COMPLETED e «checkout di campagna pronto»: il gate sul banco da 150 ms
-python3 scripts/submit_job.py --id PILOT-OBIETTIVI-20261024-gate-d8-150ms --agente claude --campagna pilot-obiettivi-20261024 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024,EXPECTED_SHA=<SHA> /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024/scripts/slurm/gate_d8.sbatch --window-ms 150
+# 2) SOLO dopo COMPLETED e «checkout di campagna pronto»: sbatch legge il launcher dal checkout al momento della sottomissione (una dipendenza
+#    afterok non basta: sottomissione rifiutata il 24/10 alle 18:25, nessun job creato; l'ID e' prenotato e rifiutato, quindi --dopo-rifiuto)
+python3 scripts/submit_job.py --id PILOT-OBIETTIVI-20261024-gate-d8-150ms --agente claude --campagna pilot-obiettivi-20261024 --gpu-ore 0 --dopo-rifiuto -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024,EXPECTED_SHA=705ec0465420e80d5d818a8bbc7acc3a92c06efc /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024/scripts/slurm/gate_d8.sbatch --window-ms 150
 
 # Esito: $WORK/wearusfm_runs/results/step3/gate_<job>.json ("passes" true/false per caso e complessivo); uscita 1 = NON SUPERATO -> R5 non parte.
 # 3) collaudo su dbg di R2 e R5 (1.300 passi, 30 min l'uno, 2,6 / 4,0 GPU-ora): misura dei s/passo e prova del contratto delle loss sul nodo.
 #    Comandi da rigenerare con lo SHA vero: python scripts/wsd_chain.py results/infra/pilot_obiettivi_20261024/collaudo.json --commands comandi_collaudo.txt
-#    (comandi_collaudo_BOZZA.txt: SHA segnaposto, non si esegue). Se R2 o R5 superano 0,81 s/passo: spare_jobs 1 per quel run in piano.json.
+#    (comandi_collaudo.txt, SHA vero; dipendenze in comandi_sottomissione_20261024.txt). Se R2 o R5 superano 0,81 s/passo: spare_jobs 1 per quel run in piano.json.
 # 4) I comandi del training (4 tronchi + 4 rami) si rigenerano DOPO il deploy con lo SHA vero:
 #   python scripts/wsd_chain.py results/infra/pilot_obiettivi_20261024/piano.json --commands comandi_training.txt --json preventivo_training.json
-# (oggi piano.json ha expected_sha di soli zeri: comandi_training_BOZZA.txt serve al preventivo, non si esegue).
+# (fatto il 24/10 con lo SHA vero: comandi_training.txt; NON si esegue senza il via di Simone).
