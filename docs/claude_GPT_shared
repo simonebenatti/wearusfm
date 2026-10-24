@@ -3242,6 +3242,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Conferma (`squeue`, 18:30): le 4 sonde `JobHeldUser`, la sonda 62080282 RUNNING da 14 min, il checkout PENDING per
   `QOSMaxCpuPerUserLimit` (parte quando la sonda in corso libera le CPU). Simone (18:3x): «rilasciale dopo il gate», come eccezione alla
   regola di leonardo-ops: il rilascio lo fara' l'agente dopo l'esito del gate.
+### 2026-10-24 | Claude | Pilot degli obiettivi: checkout pronto (62148779), gate D8 a 150 ms (job 62154852) e collaudi dbg di R2 (62154863) e R5 (62154880, afterok sul gate) sottomessi | Codice: 705ec04 sul cluster; commit di questa voce (registro)
+
+- **Checkout di campagna:** job 62148779 **COMPLETED** (14 s di esecuzione, exit 0:0; circa un'ora in coda dietro la sonda 62080282 per il
+  limite di CPU per utente della seriale). Log: «checkout di campagna pronto: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024
+  @ 705ec0465420e80d5d818a8bbc7acc3a92c06efc», HEAD detached a 705ec04, 719 file, 716K. Sveglia arrivata dall'agente di monitoraggio alle 19:32
+  (`~/wearusfm_local/logs/watch_pilot_checkout.txt`).
+- **Seconda tornata (19:33-19:34, `submit_job.py` eseguito dallo stesso agente haiku, un comando alla volta, fermo al primo non «sottomesso»):**
+  gate `PILOT-OBIETTIVI-20261024-gate-d8-150ms` risottomesso con `--dopo-rifiuto` (ledger: `prenotato_di_nuovo` -> `sottomesso`), **job 62154852**
+  (seriale, 0 GPU-ora, tetto 4 core-ore); collaudo `PILOTC-R2-regione-30M-s0-j01`, **job 62154863** (`boost_qos_dbg`, 30 min, 1.300 passi,
+  2 GPU-ora prenotate); collaudo `PILOTC-R5-finestra150-30M-s0-j01`, **job 62154880**, con `--dependency=afterok:62154852` (verificato nel
+  ledger): parte solo se il gate esce con 0 (SUPERATO); se NON SUPERATO resta PENDING con `DependencyNeverSatisfied` a costo zero e si cancella
+  col via di Simone. Tre risposte «sottomesso», nessun rifiuto o ambiguo, nessuna ripetizione (`~/wearusfm_local/logs/submit_pilot_20261024_tornata2.txt`).
+- **Attesa in corso:** l'agente aspetta gate e collaudo di R2 (`--mode any`; righe di stato e code dei log `gate_d8_62154852.out` e
+  `train_ddp_62154863.out` in `~/wearusfm_local/logs/watch_pilot_gate_r2.txt`). Al primo che finisce mi sveglia: se e' il gate, leggo
+  `gate_62154852.json` (banco da 150 ms), faccio rilasciare le 4 sonde in hold (eccezione autorizzata da Simone) e R5 segue da solo l'esito; se e'
+  il collaudo, leggo s/passo e contratto delle loss (soglia congelata 0,81 s/passo -> `spare_jobs` 1 in `piano.json`).
+- **Costo:** prenotate 4,0 GPU-ora (2 + 2) dentro il tetto di 4,0 del collaudo, attese 2,6; nessuna GPU-ora spesa finora. **I 4 training
+  restano in attesa del via di Simone** dopo gate e collaudo.
+- **Coda alle 19:35 (`squeue`, `~/wearusfm_local/logs/squeue_pilot_tornata2_20261024.txt`):** gate 62154852 **RUNNING** (0:23) e collaudo di R2
+  62154863 **RUNNING** (0:46), collaudo di R5 62154880 PENDING `Dependency afterok:62154852`; le 4 sonde P2 del readout restano in hold
+  (`JobHeldUser`); la sonda 62080282 non e' piu' in coda (finita prima delle ~2,5 h stimate: e' per questo che il checkout e' partito alle
+  19:3x; il suo esito si legge alla chiusura del readout, non ora).
 
 ## 2) Problemi trovati
 

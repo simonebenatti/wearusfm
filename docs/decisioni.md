@@ -4276,3 +4276,12 @@ le sonde P2 del readout (limite di CPU per utente sulla seriale: una sonda alla 
 sottomesso nella stessa tornata con afterok sul checkout, e' stato rifiutato da sbatch (il launcher sta nel checkout non ancora creato; nessun
 job, nessun costo): gate e collaudo di R2 si sottomettono dopo «checkout di campagna pronto», il collaudo di R5 con afterok sul gate. Monitoraggio
 con l'agente leggero `leonardo-watch` (richiesta di Simone del 24/10; haiku), che sveglia la sessione a job finito. Nessuna GPU-ora spesa. **Coda (18:29):** Simone ha messo in hold le 4 sonde P2 del readout in attesa (62100961, 62128193, 62128210, 62128222) per far passare prima checkout e gate (squeue: `JobHeldUser`); rilascio dopo il gate autorizzato da Simone come eccezione alla regola di leonardo-ops.
+**Pilot degli obiettivi: checkout pronto, gate D8 e collaudi dbg sottomessi (24/10/2026, 19:34).** Checkout job 62148779 COMPLETED
+(«checkout di campagna pronto: .../wearusfm_campaigns/pilot-obiettivi-20261024 @ 705ec0465420e80d5d818a8bbc7acc3a92c06efc», 719 file).
+Seconda tornata con `submit_job.py`: gate D8 a 150 ms = **job 62154852** (`--dopo-rifiuto` sull'ID rifiutato alle 18:25; seriale, 0 GPU-ora);
+collaudo di R2 `PILOTC-R2-regione-30M-s0-j01` = **job 62154863** (dbg, 30 min, 1.300 passi, 2 GPU-ora prenotate); collaudo di R5
+`PILOTC-R5-finestra150-30M-s0-j01` = **job 62154880** con `afterok:62154852` (parte solo a gate SUPERATO; altrimenti resta
+`DependencyNeverSatisfied` a costo zero e si cancella col via di Simone). Prenotate 4,0 GPU-ora dentro il tetto di 4,0 del collaudo, attese
+2,6. Alle 19:35 gate e collaudo di R2 erano gia' RUNNING (la sonda 62080282 che occupava la seriale e' finita prima del previsto), R5 in
+attesa del gate, le 4 sonde del readout ancora in hold. L'agente di monitoraggio aspetta gate e collaudo di R2; dopo il gate si rilasciano le
+4 sonde in hold (eccezione autorizzata da Simone). **I 4 training restano in attesa del via di Simone.**
