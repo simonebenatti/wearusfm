@@ -17,6 +17,13 @@ errore quadratico medio come perdita (l'errore assoluto e' l'alternativa usata i
 rami). `jepa_weight` = 1 e' l'obiettivo di sempre (stesso grafo, bit per bit); `anchor_weight` = 0 e' il JEPA puro; `jepa_weight` = 0 sono le
 ancore attuali da sole: stesso masking, stesso decoder dello studente (che le ancore allenano), teacher EMA aggiornato come sempre. Una
 perdita a peso 0 si calcola e si registra lo stesso, senza contare nel gradiente.
+
+**Target per regione** (R2 del pilot degli obiettivi, `JEPAConfig.region_target`, 24/10/2026): il target JEPA e' definito sulla **regione
+nascosta**, cioe' la maschera estratta dal generatore (tubo, slab o maschera spaziale; `PretrainBatch.region`): il target e' la LayerNorm della
+media del teacher (grezzo, stesso punto di lettura di D11) sui token della regione, la predizione e' la media delle uscite del decoder dello
+studente sugli stessi token; l'errore quadratico medio della regione e' attribuito a ciascuno dei suoi token e ridotto come per token (per
+finestra o per elemento), cosi' le quote di D10 restano quelle di sempre e cambia solo l'unita' del target. Le ancore restano per token. Le
+medie si fanno in float32 (`index_add`: su GPU l'ordine delle somme non e' deterministico). Default False: stesso grafo di sempre.
 """
 
 from __future__ import annotations
@@ -57,6 +64,8 @@ class JEPAConfig:
     branch_weight: float = 0.0
     # peso della perdita JEPA (16/10/2026, braccio ancore-only di W1-OBJ): 1 = l'obiettivo di sempre, 0 = sole ancore
     jepa_weight: float = 1.0
+    # target JEPA per regione nascosta invece che per token (R2 del pilot degli obiettivi, 24/10/2026): servono le regioni delle maschere
+    region_target: bool = False
 
     def __post_init__(self) -> None:
         for name in ("jepa_weight", "anchor_weight"):
@@ -101,6 +110,38 @@ def core_hidden(hidden: torch.Tensor, visible: torch.Tensor, radius: int) -> tor
     vis = visible.to(torch.float32)[:, None, :]  # (C_tot, 1, P)
     near_visible = F.max_pool1d(vis, kernel_size=2 * radius + 1, stride=1, padding=radius)[:, 0, :] > 0
     return hidden & ~near_visible
+
+
+REGION_STRIDE = 1 << 16  # le regioni sono int16 >= 0 per campione: chiave unica (campione, regione) = campione * stride + regione
+
+
+def region_keys(regions: torch.Tensor, hidden_shape: tuple, q_ch: torch.Tensor, q_t: torch.Tensor, sample: torch.Tensor) -> torch.Tensor:
+    """Chiave (campione, regione) di ogni token nascosto: `regions` (C_tot, P) dal generatore (`generate_mask_regions`), 0 = nessuna regione."""
+    if regions is None:
+        raise ValueError("target per regione: servono le regioni delle maschere (PretrainBatch.region, generate_mask_regions)")
+    if tuple(regions.shape) != tuple(hidden_shape):
+        raise ValueError(f"regioni {tuple(regions.shape)} e maschera {tuple(hidden_shape)} di forma diversa")
+    r_q = regions[q_ch, q_t].long()
+    if q_ch.numel() and (bool((r_q <= 0).any()) or bool((r_q >= REGION_STRIDE).any())):
+        raise ValueError("target per regione: un token nascosto senza regione (o regione oltre lo stride)")
+    return sample * REGION_STRIDE + r_q
+
+
+def region_means(h: torch.Tensor, raw: torch.Tensor, regions: torch.Tensor, hidden_shape: tuple, q_ch: torch.Tensor, q_t: torch.Tensor,
+                 q_off: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """R2: per ogni regione nascosta di ogni campione la media delle uscite dello studente `h` (Q, d) e la LayerNorm della media del teacher
+    grezzo `raw` (Q, d) sui suoi token, in float32. Ritorna (h_r, tgt_r, inv, s_r): medie (R, d), regione di ogni query, campione di ogni
+    regione."""
+    sample = torch.searchsorted(q_off, torch.arange(q_ch.numel(), device=q_ch.device), right=True) - 1
+    uniq, inv = torch.unique(region_keys(regions, hidden_shape, q_ch, q_t, sample), return_inverse=True)
+    n_r, d = uniq.numel(), h.shape[-1]
+    acc = torch.promote_types(h.dtype, torch.float32)  # almeno float32 (bf16 dell'autocast); float64 resta float64 (test d'equivalenza)
+    cnt = torch.zeros(n_r, device=h.device, dtype=acc).index_add(0, inv, torch.ones(q_ch.numel(), device=h.device, dtype=acc))
+    h_r = torch.zeros(n_r, d, device=h.device, dtype=acc).index_add(0, inv, h.to(acc)) / cnt[:, None]
+    with torch.no_grad():
+        t_r = torch.zeros(n_r, d, device=h.device, dtype=acc).index_add(0, inv, raw.to(acc)) / cnt[:, None]
+        t_r = F.layer_norm(t_r, t_r.shape[-1:])
+    return h_r, t_r, inv, torch.div(uniq, REGION_STRIDE, rounding_mode="floor")
 
 
 def hidden_queries(hidden: torch.Tensor, counts: list[int]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -216,12 +257,16 @@ def _keep_valid(anchor_targets, inp: ModelInputs, target_active: torch.Tensor) -
 def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable | None = None, *, model_cfg: FMConfig,
-                keep_target_active: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+                keep_target_active: torch.Tensor | None = None, regions: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
     """Detached int64 counts from geometry/targets, WITHOUT encode/decode or RNG consumption.
 
     model_cfg is mandatory: JEPAConfig has no patch duration, latent width, or optional-head geometry. For keep, supply the calibrated
     target_active buffer, not a guess based only on observed targets. Same active components on all ranks are the trainer's responsibility.
     rvq_codes is a pure lookup into frozen codes (as in the current loader); the callback must not draw randomness.
+    Con una finestra del kernel piu' lunga della patch (`model_cfg.core_radius` > 0, R5) contano solo i token interamente nascosti, come in
+    `_jepa_compute` (24/10/2026: prima mancava e il contratto delle loss avrebbe fermato il run). Col target per regione (`cfg.region_target`)
+    i conteggi non cambiano (ogni token porta l'errore della sua regione): `regions` e' accettato per simmetria con `jepa_loss_terms` e non
+    serve.
     """
     if len(inp.signals) != len(inp.counts) or len(inp.fs) != len(inp.counts) or not inp.counts:
         raise ValueError("inconsistent sample geometry")
@@ -237,6 +282,8 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
     n_ch = torch.repeat_interleave(torch.as_tensor(lengths, device=visible.device), torch.as_tensor(inp.counts, device=visible.device))
     patch_valid = torch.arange(max(lengths), device=visible.device)[None, :] < n_ch[:, None]
     hidden = ~visible & patch_valid & inp.qc_valid[:, None]
+    if model_cfg.core_radius:  # come in _jepa_compute: `enc.visible` e' visible & patch_valid & qc_valid
+        hidden = core_hidden(hidden, visible & patch_valid & inp.qc_valid[:, None], model_cfg.core_radius)
     ch, qt, _ = hidden_queries(hidden, inp.counts)
     sq = _sample_index(ch, inp.counts) if cfg.loss_per_window else None
     ns = len(inp.counts)
@@ -269,25 +316,27 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
 def jepa_loss_terms(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                     anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                     rvq_codes: Callable | None = None, generator: torch.Generator | None = None,
-                    kinds: torch.Tensor | None = None) -> LossTerms:
+                    kinds: torch.Tensor | None = None, regions: torch.Tensor | None = None) -> LossTerms:
     terms = LossTerms()
-    _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms)
+    _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms, regions)
     return terms
 
 
 def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
-                generator: torch.Generator | None = None, kinds: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+                generator: torch.Generator | None = None, kinds: torch.Tensor | None = None,
+                regions: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
     """Backward-compatible single-process API: historical means, keys and RNG ordering unchanged."""
-    return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds)
+    return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, regions=regions)
 
 
 def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None, generator=None, kinds=None,
-                  terms: LossTerms | None = None):
+                  terms: LossTerms | None = None, regions: torch.Tensor | None = None):
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
-    JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4)."""
+    JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4).
+    regions: (C_tot, P) regione di ogni token nascosto (`generate_mask_regions`), richiesta da `cfg.region_target` e ignorata altrimenti."""
     enc = student.encode(inp, visible, generator)
     hidden = ~enc.visible & enc.patch_valid & inp.qc_valid[:, None]
     radius = student.cfg.core_radius
@@ -300,24 +349,43 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
     h = student.decode(enc, q_ch, q_t, q_off)
     with torch.no_grad():
         enc_t = teacher.encode(inp, None)
-        tgt = enc_t.local[q_ch, q_t] if cfg.target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
-        tgt = F.layer_norm(tgt, tgt.shape[-1:])
+        raw = enc_t.local[q_ch, q_t] if cfg.target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
+        tgt = F.layer_norm(raw, raw.shape[-1:])
     s_q = None
     if cfg.loss_per_window:
         s_q = torch.searchsorted(q_off, torch.arange(q_ch.numel(), device=q_ch.device), right=True) - 1  # campione di ogni query
     n_s = len(inp.counts)
-    err_q = (h - tgt).pow(2).mean(dim=-1)
-    losses = {"jepa": (masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt))
-              if q_ch.numel() else h.sum() * 0.0}
+    if cfg.region_target:  # R2: target e predizione sono medie per regione (float32); ogni token porta l'errore della sua regione, cosi' le
+        # quote di D10 restano quelle per token (critico del 24/10: a regioni pesate alla pari il 70% della perdita finiva sulle maschere corte)
+        h_r, tgt_r, inv, _ = region_means(h, raw, regions, hidden.shape, q_ch, q_t, q_off)
+        err_r = (h_r - tgt_r).pow(2).mean(dim=-1)  # (R,)
+        err_q = err_r[inv]  # (Q,), col gradiente: stesse riduzioni del percorso per token
+        d = h.shape[-1]
+        losses = {"jepa": (masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else err_q.mean())
+                  if q_ch.numel() else h.sum() * 0.0}
+        losses["jepa_regions"] = err_r.new_tensor(float(err_r.numel()))
+        losses["jepa_tokens_per_region"] = err_r.new_tensor(q_ch.numel() / max(1, err_r.numel()))
+        if terms is not None:
+            terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
+                                                  else (err_q.sum() * d, q_ch.new_tensor(q_ch.numel() * d)))
+            terms.weight["jepa"] = cfg.jepa_weight
+            terms.log_sum["jepa_regions"] = q_ch.new_tensor(err_r.numel())
+            terms.log_sum["jepa_hidden_tokens"] = q_ch.new_tensor(q_ch.numel())  # token per regione = jepa_hidden_tokens / jepa_regions
+        err_log = err_q.detach()
+    else:
+        err_q = (h - tgt).pow(2).mean(dim=-1)
+        losses = {"jepa": (masked_mean(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window else F.mse_loss(h, tgt))
+                  if q_ch.numel() else h.sum() * 0.0}
+        if terms is not None:
+            terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
+                                                  else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))
+            terms.weight["jepa"] = cfg.jepa_weight
+        err_log = None
     if radius:  # per il log: quanti dei token nascosti sono interamente nascosti
         losses["core_hidden_fraction"] = (hidden.sum().float() / all_hidden.sum().clamp(min=1).float()).detach()
-    if terms is not None:
-        terms.num["jepa"], terms.den["jepa"] = (masked_sum_count(err_q, torch.ones_like(err_q), s_q, n_s) if cfg.loss_per_window
-                                              else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))
-        terms.weight["jepa"] = cfg.jepa_weight
     if kinds is not None:
         with torch.no_grad():
-            err = (h.float() - tgt.float()).pow(2).mean(dim=-1)  # (Q,)
+            err = (h.float() - tgt.float()).pow(2).mean(dim=-1) if err_log is None else err_log.float()  # (Q,)
             kq = kinds[q_ch, q_t]
             for k, name in KIND_NAMES.items():
                 sel = kq == k

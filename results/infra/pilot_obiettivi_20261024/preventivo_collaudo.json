@@ -1,0 +1,73 @@
+{
+ "campaign": "pilot-obiettivi-collaudo",
+ "runs": [
+  {
+   "id": "PILOTC-R2-regione-30M-s0",
+   "branch_of": null,
+   "from_step": null,
+   "after": null,
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 1300,
+   "warmup_steps": 1000,
+   "total_steps": 1300,
+   "decay_start": 1040,
+   "keep_checkpoints": [],
+   "s_per_step": 0.7,
+   "steps_per_job_pessimistic": 1639.751552795031,
+   "jobs_needed": 1,
+   "jobs": 1,
+   "job_ids": [
+    "PILOTC-R2-regione-30M-s0-j01"
+   ],
+   "gpu_hours_expected": 1.3,
+   "gpu_hours_max": 2.0,
+   "time": "00:30:00",
+   "time_limit_s": 1620,
+   "checkpoint_gb": 1.4,
+   "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi_collaudo/PILOTC-R2-regione-30M-s0",
+   "branch_from": null
+  },
+  {
+   "id": "PILOTC-R5-finestra150-30M-s0",
+   "branch_of": null,
+   "from_step": null,
+   "after": null,
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 1300,
+   "warmup_steps": 1000,
+   "total_steps": 1300,
+   "decay_start": 1040,
+   "keep_checkpoints": [],
+   "s_per_step": 0.7,
+   "steps_per_job_pessimistic": 1639.751552795031,
+   "jobs_needed": 1,
+   "jobs": 1,
+   "job_ids": [
+    "PILOTC-R5-finestra150-30M-s0-j01"
+   ],
+   "gpu_hours_expected": 1.3,
+   "gpu_hours_max": 2.0,
+   "time": "00:30:00",
+   "time_limit_s": 1620,
+   "checkpoint_gb": 1.4,
+   "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi_collaudo/PILOTC-R5-finestra150-30M-s0",
+   "branch_from": null
+  }
+ ],
+ "commands": [
+  "python3 scripts/submit_job.py --id PILOTC-R2-regione-30M-s0-j01 --agente claude --campagna pilot-obiettivi-collaudo --gpu-ore 2 -- '--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024,EXPECTED_SHA=0000000000000000000000000000000000000000,PRESET=sanity,TIME_LIMIT_S=1620,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --erank-min 38.4 --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 1300 --steps-at-d 1300 --lr 0.0001 --nested 1 --jepa-region-target' --qos=boost_qos_dbg --time=00:30:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024/scripts/slurm/train_ddp.sbatch /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi_collaudo/PILOTC-R2-regione-30M-s0 1300",
+  "python3 scripts/submit_job.py --id PILOTC-R5-finestra150-30M-s0-j01 --agente claude --campagna pilot-obiettivi-collaudo --gpu-ore 2 -- '--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024,EXPECTED_SHA=0000000000000000000000000000000000000000,PRESET=sanity,TIME_LIMIT_S=1620,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --erank-min 38.4 --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 1300 --steps-at-d 1300 --lr 0.0001 --nested 1 --window-ms 150 --mask-shares 0:0.294:0.235:0.471' --qos=boost_qos_dbg --time=00:30:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024/scripts/slurm/train_ddp.sbatch /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi_collaudo/PILOTC-R5-finestra150-30M-s0 1300"
+ ],
+ "totals": {
+  "jobs": 2,
+  "gpu_hours_expected": 2.6,
+  "gpu_hours_max": 4.0,
+  "checkpoint_gb": 2.8
+ }
+}

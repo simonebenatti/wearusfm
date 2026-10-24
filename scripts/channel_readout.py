@@ -299,32 +299,32 @@ def _model_free(report: dict) -> bool:
     return str(report.get("checkpoint", "none")) in MODEL_FREE
 
 
-def check_models(refs: list[dict], cands: list[dict]) -> None:
+def check_models(refs: list[dict], cands: list[dict], single_seed: bool = False) -> None:
     """Identita' dei modelli: i due candidati sono due modelli diversi (i due semi); per ogni seme il riferimento e' lo stesso checkpoint del
     candidato, salvo un riferimento senza modello (la baseline classica), che puo' essere lo stesso rapporto per tutti e due i semi. (Che i due
-    riferimenti con modello siano diversi segue: ciascuno ha lo SHA del suo candidato.)"""
+    riferimenti con modello siano diversi segue: ciascuno ha lo SHA del suo candidato.) `single_seed`: un solo candidato, ripetuto."""
     shas = [str(c.get("checkpoint_sha256", "")) for c in cands]
     if any(not s or _model_free(c) for s, c in zip(shas, cands)):
         raise ValueError("candidato senza checkpoint: il readout per canale si confronta per modello")
-    if shas[0] == shas[1]:
+    if shas[0] == shas[1] and not single_seed:
         raise ValueError("i due candidati sono lo stesso checkpoint: servono i due semi")
     for ref, cand in zip(refs, cands):
         if not _model_free(ref) and str(ref.get("checkpoint_sha256", "")) != str(cand["checkpoint_sha256"]):
             raise ValueError("riferimento e candidato di uno stesso seme vengono da checkpoint diversi")
 
 
-def check_two_models_same_readout(refs: list[dict], cands: list[dict]) -> None:
+def check_two_models_same_readout(refs: list[dict], cands: list[dict], single_seed: bool = False) -> None:
     """`--models` (opzione ancore-only del protocollo: riferimento ancore-only, candidato A, stesso readout): tutti e quattro i rapporti hanno
-    un modello, i due riferimenti sono due checkpoint diversi come i due candidati, per ogni seme riferimento e candidato sono checkpoint
-    diversi, e i due lati sono lo stesso tipo di rapporto (protocollo, insieme di feature, ricetta, strato, k richiesto, k/riduzione/larghezza
-    per dataset): si confrontano due modelli, non due readout."""
+    un modello, i due riferimenti sono due checkpoint diversi come i due candidati (salvo `single_seed`: un rapporto per lato, ripetuto), per
+    ogni seme riferimento e candidato sono checkpoint diversi, e i due lati sono lo stesso tipo di rapporto (protocollo, insieme di feature,
+    ricetta, strato, k richiesto, k/riduzione/larghezza per dataset): si confrontano due modelli, non due readout."""
     for r in refs + cands:
         if _model_free(r) or not r.get("checkpoint_sha256"):
             raise ValueError("--models: rapporto senza modello: il confronto fra modelli vuole un checkpoint per ogni rapporto")
     shas_r, shas_c = [str(r["checkpoint_sha256"]) for r in refs], [str(c["checkpoint_sha256"]) for c in cands]
-    if shas_r[0] == shas_r[1]:
+    if shas_r[0] == shas_r[1] and not single_seed:
         raise ValueError("--models: i due riferimenti sono lo stesso checkpoint: servono i due semi")
-    if shas_c[0] == shas_c[1]:
+    if shas_c[0] == shas_c[1] and not single_seed:
         raise ValueError("--models: i due candidati sono lo stesso checkpoint: servono i due semi")
     for ref, cand in zip(refs, cands):
         if str(ref["checkpoint_sha256"]) == str(cand["checkpoint_sha256"]):
@@ -376,19 +376,20 @@ def _normalized(r: dict, like: dict) -> dict:
             "extraction_recipe": like.get("extraction_recipe")}
 
 
-def reading(row: dict) -> dict:
+def reading(row: dict, single_seed: bool = False) -> dict:
     """La regola dei bracci su S (`arms_compare.verdict`: delta medio dei due semi >= +0,01, limite inferiore dell'intervallo dei percentili al
     95% > 0, delta > 0 in tutti e due i semi) e la sua speculare; altrimenti «regola non superata» (non esclude una differenza, neanche oltre
-    1 punto)."""
+    1 punto). `single_seed` (pilot degli obiettivi, un rapporto per lato): stessa stima e stesso intervallo, senza il criterio dell'accordo
+    fra i semi, che con un seme non esiste (dichiarato nel rapporto: `seeds` 1)."""
     AC = _script("arms_compare")
     v = AC.verdict(row)
-    if v["beats"]:
-        verdict = "migliora"
-    elif row["delta"] <= -AC.MIN_DELTA and row["ci95"][1] < 0 and all(d < 0 for d in row["delta_by_model_seed"]):
-        verdict = "peggiora"
+    if single_seed:
+        v = {**v, "beats": bool(row["delta"] >= AC.MIN_DELTA and row["ci95"][0] > 0)}
+        worse = row["delta"] <= -AC.MIN_DELTA and row["ci95"][1] < 0
     else:
-        verdict = "regola non superata"
-    return {**v, "verdict": verdict, "min_delta": AC.MIN_DELTA}
+        worse = row["delta"] <= -AC.MIN_DELTA and row["ci95"][1] < 0 and all(d < 0 for d in row["delta_by_model_seed"])
+    verdict = "migliora" if v["beats"] else "peggiora" if worse else "regola non superata"
+    return {**v, "verdict": verdict, "min_delta": AC.MIN_DELTA, "seeds": 1 if single_seed else 2}
 
 
 def compare(args) -> dict:
@@ -397,17 +398,22 @@ def compare(args) -> dict:
     intervallo dei percentili. `--reference` e `--candidate` prendono i rapporti del seme 0 e del seme 1 (la baseline classica, senza modello,
     puo' essere lo stesso rapporto due volte)."""
     AC = _script("arms_compare")
+    single = bool(getattr(args, "single_seed", False))
     refs = [remap_oof(json.loads(Path(p).read_text()), args.oof_maps) for p in args.reference]
     cands = [remap_oof(json.loads(Path(p).read_text()), args.oof_maps) for p in args.candidate]
-    if len({str(p) for p in args.candidate}) != 2:
+    if single:  # un rapporto per lato: lo stesso rapporto due volte per `s_comparison` (soggetti ricampionati insieme, stessa stima)
+        if str(args.reference[0]) == str(args.candidate[0]):
+            raise ValueError("--single-seed: riferimento e candidato sono lo stesso rapporto")
+        refs, cands = refs * 2, cands * 2
+    elif len({str(p) for p in args.candidate}) != 2:
         raise ValueError("servono due rapporti candidati diversi (seme 0 e seme 1)")
     for ref, cand in zip(refs, cands):
         check_readout_pairing(ref, cand)
     check_sides_alike(refs, cands)
     if args.models:
-        check_two_models_same_readout(refs, cands)
+        check_two_models_same_readout(refs, cands, single)
     else:
-        check_models(refs, cands)
+        check_models(refs, cands, single)
     row = AC.s_comparison([_normalized(r, refs[0]) for r in refs], [_normalized(c, refs[0]) for c in cands])
 
     def describe(paths, reps):
@@ -415,10 +421,13 @@ def compare(args) -> dict:
                  "checkpoint_sha256": r.get("checkpoint_sha256"), "readout": r.get("readout")} for p, r in zip(paths, reps)]
 
     mode = "due modelli con lo stesso readout (--models)" if args.models else "due readout dello stesso modello, o readout contro baseline senza modello"
-    return {"protocol": PROTOCOL, "task": refs[0].get("task", "p1"), "mode": mode, "reference": describe(args.reference, refs),
-            "candidate": describe(args.candidate, cands), "comparison": row, "bootstrap": {"n_boot": AC.N_BOOT, "seed": AC.BOOT_SEED,
+    if single:
+        mode += "; un solo seme per lato (--single-seed): nessun accordo fra semi"
+    return {"protocol": PROTOCOL, "task": refs[0].get("task", "p1"), "mode": mode, "seeds": 1 if single else 2,
+            "reference": describe(args.reference, refs[:len(args.reference)]), "candidate": describe(args.candidate, cands[:len(args.candidate)]),
+            "comparison": row, "bootstrap": {"n_boot": AC.N_BOOT, "seed": AC.BOOT_SEED,
             "method": "soggetti ricampionati insieme per i quattro rapporti (downstream_ab.paired_component), intervallo dei percentili"},
-            "reading": reading(row), "oof_maps": [list(m) for m in args.oof_maps]}
+            "reading": reading(row, single), "oof_maps": [list(m) for m in args.oof_maps]}
 
 
 EQUALITY_TOL = 1e-3  # protocollo, punto 4: |S(pool nuovo) - S(storico)| oltre questa soglia = nessuna lettura
@@ -478,9 +487,12 @@ def main(argv=None) -> int:
     ap.add_argument("--models", action="store_true",
                     help="compare: due modelli con lo stesso readout (opzione ancore-only: riferimento ancore-only s0 s1, candidato A s0 s1), "
                          "invece di due readout dello stesso modello; stessa regola e stesso bootstrap")
+    ap.add_argument("--single-seed", action="store_true",
+                    help="compare: un rapporto per lato (pilot degli obiettivi, seme 0): stessa stima e stesso bootstrap, lettura senza il "
+                         "criterio dell'accordo fra i semi (dichiarato nel rapporto)")
     args = ap.parse_args(argv)
-    if args.models and args.stage != "compare":
-        ap.error("--models: solo con --stage compare")
+    if (args.models or args.single_seed) and args.stage != "compare":
+        ap.error("--models e --single-seed: solo con --stage compare")
     args.datasets = args.datasets or list(P1.P1_DATASETS if args.task == "p1" else CP.P2_DATASETS)
     if args.task == "p2" and set(args.datasets) - set(CP.P2_DATASETS):
         ap.error(f"--task p2: dataset fra {CP.P2_DATASETS}")
@@ -493,8 +505,9 @@ def main(argv=None) -> int:
         ap.error("extract della P2: servono --checkpoint, --epn-root e --uci-root")
     if args.stage == "probe" and (args.out is None or args.layer is None or (args.k is not None and args.k < 0)):
         ap.error("probe: servono --layer e --out; --k >= 0")
-    if args.stage == "compare" and (args.out is None or len(args.reference or []) != 2 or len(args.candidate or []) != 2):
-        ap.error("compare: servono --reference, --candidate (due rapporti ciascuno) e --out")
+    per_side = 1 if args.single_seed else 2
+    if args.stage == "compare" and (args.out is None or len(args.reference or []) != per_side or len(args.candidate or []) != per_side):
+        ap.error(f"compare: servono --reference, --candidate ({'un rapporto' if per_side == 1 else 'due rapporti'} ciascuno) e --out")
     if args.stage == "equality" and (args.out is None or len(args.reference or []) != 1 or len(args.candidate or []) != 1):
         ap.error("equality: servono --reference, --candidate (un rapporto ciascuno) e --out")
     t0 = time.time()

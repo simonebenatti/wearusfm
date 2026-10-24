@@ -157,6 +157,115 @@ def test_additive_terms_match_legacy_and_precounts(per_window, target, rvq_selec
     assert all(p.grad is None for p in teacher.parameters())
 
 
+def _regions_of(visible, inp, per_token: bool):
+    """Regioni della maschera di `_visible`: per token (ogni token nascosto la sua) oppure le quattro maschere vere (slab e canale sul primo
+    campione, slab e tubo sul secondo; il canale 3 dentro lo slab resta dello slab, come nel generatore)."""
+    hidden = ~visible
+    region = torch.zeros_like(visible, dtype=torch.int16)
+    if per_token:
+        region[hidden] = torch.arange(1, int(hidden.sum()) + 1, dtype=torch.int16)
+        return region
+    c0 = inp.counts[0]
+    region[:c0, 8:16] = 1
+    region[3][region[3] == 0] = 2
+    region[c0:, 8:16] = 1
+    region[c0 + 2, 20:28] = 2
+    assert torch.equal(region > 0, hidden)
+    return region
+
+
+@pytest.mark.parametrize("per_window", [False, True])
+@pytest.mark.parametrize("target", ["a", "b"])
+def test_region_target_reduces_to_the_token_target_on_single_token_regions_and_keeps_the_loss_contract(per_window, target):
+    """R2: con una regione per token la perdita per regione e' quella per token (stesse medie, in float32); con le regioni vere i numeratori e
+    i conteggi del contratto coincidono con le medie e con `loss_counts`, il gradiente c'e', il default e' intoccato."""
+    from dataclasses import replace
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    torch.manual_seed(3)
+    model_cfg = replace(CFG, multiscale_anchor=True)
+    student = WearUsFM(model_cfg).eval()
+    teacher = make_teacher(student)
+    inp = _inputs()
+    visible = _visible(inp)
+    tg = _heterogeneous_targets(inp)
+    tok = JEPAConfig(target, .2, .99, loss_per_window=per_window)
+    reg = replace(tok, region_target=True)
+    kinds = (~visible).long()
+    base = jepa_losses(student, teacher, inp, visible, tok, anchor_targets=tg, kinds=kinds)
+    same = jepa_losses(student, teacher, inp, visible, tok, anchor_targets=tg, kinds=kinds, regions=_regions_of(visible, inp, True))
+    assert all(torch.equal(base[k], same[k]) for k in base)  # senza region_target le regioni si ignorano: bit per bit
+    one = jepa_losses(student, teacher, inp, visible, reg, anchor_targets=tg, kinds=kinds, regions=_regions_of(visible, inp, True))
+    torch.testing.assert_close(one["jepa"], base["jepa"], rtol=1e-5, atol=1e-6)
+    assert one["jepa_regions"] == int((~visible).sum()) and one["jepa_tokens_per_region"] == 1.0
+    for k in ("log_rms", "band_shape", "log_env"):  # le ancore restano per token
+        assert torch.equal(one[k], base[k])
+    regions = _regions_of(visible, inp, False)
+    kw = dict(anchor_targets=tg, kinds=kinds, regions=regions)
+    four = jepa_losses(student, teacher, inp, visible, reg, **kw)
+    assert four["jepa_regions"] == 4 and four["jepa"] != base["jepa"] and torch.isfinite(four["jepa"])
+    assert four["jepa_tokens_per_region"] == pytest.approx(int((~visible).sum()) / 4)
+    terms = jepa_loss_terms(student, teacher, inp, visible, reg, **kw)
+    counts = loss_counts(inp, visible, reg, tg, model_cfg=model_cfg, regions=regions)
+    assert set(counts) == set(terms.num) == set(terms.den)
+    for k in counts:
+        assert torch.equal(counts[k], terms.den[k]), k
+        torch.testing.assert_close(terms.num[k] / terms.den[k].clamp(min=1), four[k], rtol=2e-6, atol=1e-7)
+    n_hidden = int((~visible).sum())
+    assert int(terms.den["jepa"]) == (2 if per_window else n_hidden * CFG.dim)  # ogni token porta l'errore della sua regione: conteggi per token
+    assert int(terms.log_sum["jepa_regions"]) == 4 and int(terms.log_sum["jepa_hidden_tokens"]) == n_hidden
+    assert torch.equal(loss_counts(inp, visible, reg, tg, model_cfg=model_cfg)["jepa"], terms.den["jepa"])  # senza regioni: stessi conteggi
+    torch.testing.assert_close(terms.backward_loss(), four["total"], rtol=2e-6, atol=1e-7)
+    # le quote di D10 restano: la perdita e' la media per token dell'errore della regione di ogni token
+    from wearusfm.training.jepa import hidden_queries, region_means
+    enc = student.encode(inp, visible)
+    q_ch, q_t, q_off = hidden_queries(~enc.visible & enc.patch_valid & inp.qc_valid[:, None], inp.counts)
+    with torch.no_grad():
+        hh = student.decode(enc, q_ch, q_t, q_off)
+        enc_t = teacher.encode(inp, None)
+        rr = enc_t.local[q_ch, q_t] if target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
+        h_r, t_r, inv, _ = region_means(hh, rr, regions, visible.shape, q_ch, q_t, q_off)
+        per_token = (h_r - t_r).pow(2).mean(-1)[inv]
+        if not per_window:
+            torch.testing.assert_close(four["jepa"], per_token.mean(), rtol=1e-5, atol=1e-7)
+    terms.backward_loss().backward()
+    assert all(p.grad is None or torch.isfinite(p.grad).all() for p in student.parameters())
+    assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in student.decoder.parameters())
+    # il log per tipo di maschera esiste anche per regione (ogni token porta l'errore della sua regione)
+    assert "jepa_corta" in four and torch.isfinite(four["jepa_corta"])
+    # senza regioni, o con un token nascosto senza regione: errore, non un numero
+    with pytest.raises(ValueError, match="regioni"):
+        jepa_losses(student, teacher, inp, visible, reg, anchor_targets=tg)
+    broken = regions.clone()
+    broken[3, 0] = 0
+    with pytest.raises(ValueError, match="senza regione"):
+        jepa_losses(student, teacher, inp, visible, reg, anchor_targets=tg, regions=broken)
+
+
+def test_loss_counts_apply_the_core_radius_of_a_longer_kernel_window():
+    """R5: con `window_ms` > patch la perdita conta solo i token interamente nascosti; `loss_counts` deve contare gli stessi (prima del 24/10 non
+    lo faceva e il contratto delle loss avrebbe fermato il run al primo passo). Con ancore, un canale scartato dal QC e un campione corto
+    (12 patch vere su 32 impacchettate: oltre il segnale conta come nascosto)."""
+    from dataclasses import replace
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    torch.manual_seed(5)
+    model_cfg = replace(CFG, window_ms=150.0, multiscale_anchor=True)
+    student = WearUsFM(model_cfg).eval()
+    teacher = make_teacher(student)
+    inp = _inputs()
+    inp.signals[1] = inp.signals[1][:, :300]
+    inp.qc_valid[3] = False
+    tg = _heterogeneous_targets(inp)
+    visible = torch.ones(sum(inp.counts), 32, dtype=torch.bool)
+    visible[:, 4:24] = False  # 20 patch nascoste su tutti i canali: interamente nascoste 7..20 (3 per lato); sul campione corto 7..11
+    for per_window in (False, True):
+        cfg = JEPAConfig("b", .2, .99, loss_per_window=per_window)
+        terms = jepa_loss_terms(student, teacher, inp, visible, cfg, anchor_targets=tg)
+        counts = loss_counts(inp, visible, cfg, tg, model_cfg=model_cfg)
+        assert set(counts) == set(terms.den) and all(torch.equal(counts[k], terms.den[k]) for k in counts)
+        if not per_window:
+            assert int(counts["jepa"]) == (15 * 14 + 11 * 5) * CFG.dim < sum(inp.counts) * 20 * CFG.dim
+
+
 def _one_sample(inp, s):
     a, b = sum(inp.counts[:s]), sum(inp.counts[:s+1])
     sets = {k: v[a:b].clone() for k, v in inp.sets.items()}
@@ -166,7 +275,8 @@ def _one_sample(inp, s):
 
 
 @pytest.mark.parametrize("per_window", [False, True])
-def test_global_batch_equals_microbatches_loss_gradients_optimizer_and_ema(per_window):
+@pytest.mark.parametrize("region_target", [False, True])
+def test_global_batch_equals_microbatches_loss_gradients_optimizer_and_ema(per_window, region_target):
     import copy
     from dataclasses import replace
     from wearusfm.training.jepa import jepa_loss_terms, loss_counts
@@ -178,15 +288,16 @@ def test_global_batch_equals_microbatches_loss_gradients_optimizer_and_ema(per_w
     inp, visible = _inputs(), _visible(_inputs())
     inp.signals[1] = inp.signals[1][:, :300]
     tg = _heterogeneous_targets(inp)
-    cfg = JEPAConfig('b', .2, .99, loss_per_window=per_window)
-    whole = jepa_loss_terms(full, tf, inp, visible, cfg, tg)
+    cfg = JEPAConfig('b', .2, .99, loss_per_window=per_window, region_target=region_target)
+    regions = _regions_of(visible, inp, False) if region_target else None  # R2: le regioni seguono i micro-batch come le maschere
+    whole = jepa_loss_terms(full, tf, inp, visible, cfg, tg, regions=regions)
     pieces = []
     a = 0
     for s, c in enumerate(inp.counts):
         one = _one_sample(inp, s)
         n = split.n_patches(one)
         v = visible[a:a+c, :n]
-        piece = jepa_loss_terms(split, ts, one, v, cfg, [tg[s]])
+        piece = jepa_loss_terms(split, ts, one, v, cfg, [tg[s]], regions=regions[a:a+c, :n] if region_target else None)
         precount = loss_counts(one, v, cfg, [tg[s]], model_cfg=model_cfg)
         assert all(torch.equal(piece.den[k], precount[k]) for k in piece.den)
         pieces.append(piece)

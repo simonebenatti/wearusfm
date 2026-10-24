@@ -339,6 +339,40 @@ def test_compare_between_two_models_with_the_same_readout_needs_the_models_flag(
         SC.main(["--stage", "equality", "--models", "--reference", p[0], "--candidate", p[0], "--out", str(tmp_path / "no.json")])
 
 
+def test_single_seed_compare_uses_the_same_estimate_without_the_seed_agreement(tmp_path, monkeypatch):
+    """Pilot degli obiettivi (un seme): `--single-seed` prende un rapporto per lato, stesso bootstrap (il rapporto ripetuto), lettura senza
+    l'accordo fra i semi, `seeds` 1 nel rapporto; per readout (stesso modello) e fra modelli (`--models`)."""
+    root, splits, subjects, ckpts, feats = _extract_p1(tmp_path, monkeypatch, seeds=(0, 1))
+    pool0 = _probe(feats[0], splits, "pool", tmp_path / "pool0.json")
+    local0 = _probe(feats[0], splits, "local", tmp_path / "local0.json")
+    local1 = _probe(feats[1], splits, "local", tmp_path / "local1.json")
+    p = {k: str(tmp_path / f"{k}.json") for k in ("pool0", "local0", "local1")}
+    out = tmp_path / "uno.json"
+    assert SC.main(["--stage", "compare", "--single-seed", "--reference", p["pool0"], "--candidate", p["local0"], "--out", str(out)]) == 0
+    c = json.loads(out.read_text())
+    row = c["comparison"]
+    assert c["seeds"] == 1 and c["reading"]["seeds"] == 1 and "single-seed" in c["mode"] and len(c["reference"]) == len(c["candidate"]) == 1
+    assert row["A"] == pytest.approx(pool0["S"], abs=1e-9) and row["B"] == pytest.approx(local0["S"], abs=1e-9)
+    assert row["delta_by_model_seed"][0] == row["delta_by_model_seed"][1] == pytest.approx(row["delta"], abs=1e-12)
+    assert c["reading"]["beats"] == (row["delta"] >= 0.01 and row["ci95"][0] > 0)
+    assert SC.reading({"delta": 0.02, "ci95": [0.005, 0.03], "delta_by_model_seed": [0.02, 0.02]}, single_seed=True)["verdict"] == "migliora"
+    assert SC.reading({"delta": -0.02, "ci95": [-0.03, -0.005], "delta_by_model_seed": [-0.02, -0.02]}, single_seed=True)["verdict"] == "peggiora"
+    assert SC.reading({"delta": 0.02, "ci95": [-0.001, 0.03], "delta_by_model_seed": [0.02, 0.02]}, single_seed=True)["verdict"] == "regola non superata"
+    # fra due modelli con lo stesso readout
+    assert SC.main(["--stage", "compare", "--single-seed", "--models", "--reference", p["local1"], "--candidate", p["local0"],
+                    "--out", str(tmp_path / "due.json")]) == 0
+    d = json.loads((tmp_path / "due.json").read_text())
+    assert d["comparison"]["A"] == pytest.approx(local1["S"], abs=1e-9) and d["seeds"] == 1
+    # rifiuti: stesso rapporto nei due lati; un rapporto per lato senza il flag; due per lato col flag
+    with pytest.raises(ValueError, match="stesso rapporto"):
+        SC.main(["--stage", "compare", "--single-seed", "--reference", p["pool0"], "--candidate", p["pool0"], "--out", str(tmp_path / "no.json")])
+    with pytest.raises(SystemExit):
+        SC.main(["--stage", "compare", "--reference", p["pool0"], "--candidate", p["local0"], "--out", str(tmp_path / "no.json")])
+    with pytest.raises(SystemExit):
+        SC.main(["--stage", "compare", "--single-seed", "--reference", p["pool0"], p["pool0"], "--candidate", p["local0"], p["local1"],
+                 "--out", str(tmp_path / "no.json")])
+
+
 def test_scaler_and_pca_see_only_the_train_rows_of_each_fold(monkeypatch):
     rng = np.random.default_rng(0)
     subjects = [f"S{i:02d}" for i in range(8)]

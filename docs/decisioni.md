@@ -4192,3 +4192,62 @@ scelta del readout del pilot degli obiettivi, non e' una prova.
 punti, IC95 [-1,12; -0,45], per seme -0,78 / -0,78 (DB2 -1,17 [-1,60; -0,78]). Con `local` (+0,20) e `dec` (-0,78) il verdetto dei bracci
 «ancore-only = A» regge col readout per canale. Sonde: tutte le 21 sottomesse (ultime tre 62128193, 62128210, 62128222); 13 finite senza
 errori, 8 in coda o in esecuzione, tutte P2 (larghezza intera e ancore-only), descrittive.
+**Sintesi «cosa e' successo» al pretraining (Claude, 24/10/2026; `docs/sintesi_pretraining_20261024.md`).** Il passo 1 della diagnosi del 23/10
+e' chiuso: l'encoder batte le feature classiche (P1 +4,01, P2 +13,86); il readout medio non nasconde informazione con la regola congelata
+(quattro letture, nessuno strato «migliora»); A contro ancore-only col readout per canale: local +0,20, dec -0,78, regola non superata. La
+causa 3 (readout) cade come causa principale; restano le cause 1 e 2 (scala del target, target b): *interpretazione*, il collo di bottiglia
+piu' probabile e' nell'obiettivo.
+Readout per il pilot: `pool` come criterio, `dec` per canale a 768 descrittivo. La C4 a 300M misura lo stesso obiettivo a taglia maggiore:
+resta in attesa della decisione di Simone.
+**Pilot degli obiettivi: PROPOSTA pronta dopo la review del `critico`, regola di lettura DA CONGELARE (Claude, 24/10/2026;
+`docs/pilot_obiettivi_v1.md`; Simone: «scrivi la sintesi e prepara il pilot degli obiettivi (codice R2, pianificatore a 2 endpoint, gate D8 per
+R5, regola di lettura, critico); nessun job senza il mio via»).** Bracci R0 (A rifatto), R1 (target a), R2 (target per regione: ogni regione
+pesa quanto i suoi token, quote di D10 invariate), R5 (finestra 150 ms); 30M, seme 0, LR 1e-4, `--erank-min 38.4`, tronco a 2 epoche
+(49.046 passi, checkpoint tenuto a 19.618) piu' ramo di decay a 1 epoca come in D14 (da 19.618 a 24.523, decay su 4.905 passi: lo schedule di
+C1 s0). **Regola di lettura, testo unico col protocollo §5, da firmare:**
+«**Regola di lettura del pilot degli obiettivi.** Criterio: per ciascun braccio R_i (R1, R2, R5) e per ciascun compito (P1, P2) della validazione
+interna, all'endpoint a 2 epoche (teacher di `checkpoint_postdecay.pt` del tronco, run completo senza STOP), col readout `pool` estratto e
+sondato con `scripts/channel_readout.py` (`--stage extract`, poi `--stage probe --layer pool`: la sonda della calibrazione, controllo
+d'uguaglianza del 23/10 su P1, A s0), il confronto accoppiato con R0 allo stesso endpoint con `scripts/channel_readout.py --stage compare --single-seed
+--models` (soggetti ricampionati insieme, 1.000 ricampionamenti, seme 20261009, intervallo dei percentili, `arms_compare.s_comparison`). R_i
+**passa** se in P1 **e** in P2 il delta e' >= +1 punto col limite inferiore dell'intervallo al 95% > 0. Sei letture del criterio (3 bracci x 2
+compiti) senza correzione per confronti multipli: dichiarato. Un solo seme: il criterio dell'accordo fra i semi della regola dei bracci non si
+applica e il rapporto lo dichiara (`seeds` 1). Un run fermato dall'allarme sul rango (38,4 / 0,05 / 3 controlli) o incompleto non passa.
+Provenienza: il rapporto di confronto registra percorso e SHA-256 dei due checkpoint; prima di leggere si verifica che siano i
+`checkpoint_postdecay.pt` dei run giusti (R0 e R_i, tronco a 2 epoche) e che `arms_compare.run_status` dia «completo» per entrambi, e lo si
+scrive nel registro. **Conferma:** per ogni braccio che passa si lanciano il suo seme 1 e, una volta sola, R0 seme 1 (stesso disegno, tronco
+e ramo), e si rilegge con la regola dei bracci intera (due semi: `compare --models` senza `--single-seed`); se piu' bracci passano anche la
+conferma, si registra l'ordine per delta medio di P1 e P2 e la scelta del default e' di Simone. **Descrittivi, fuori dal criterio:** `dec` per
+canale a 768, l'endpoint a 1 epoca, la pendenza 1 -> 2, le loss e le diagnostiche. Nessun braccio passa -> si registra e il default non
+cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1.»
+**Scostamento da D10 per R5, da firmare:** `share_short` 0, quote 0,294 / 0,235 / 0,471 (`--mask-shares 0:0.294:0.235:0.471`). **Preventivo
+prima ondata** (s/passo 0,7 misurato su A, slack 1,15): collaudo dbg di R2 e R5 2,6 / 4,0 GPU-ora; training 175,6 / 228 (4 tronchi 12 h + 4 rami
+2 h 15, un nodo ciascuno); estrazioni ~5,6 / 20; gate D8 ~1 core-ora (tetto 4); sonde ~270 core-ore; **~184 / 252 GPU-ora = ~1.472 / 2.016 ore locali**; conferma del primo braccio che passa (seme 1 suo e di R0, tronco e
+ramo) ~88 / 114 GPU-ora (704 / 912 ore locali) piu' ~2,8 / 10 di valutazione, +44 / 57 per ogni altro. Budget: finestra 1 (6.000 GPU-ora firmate
+il 16/10, calibrazione compresa); spese registrate finora ~496 (calibrazione ~149,5 con C4; bracci: 4 run sani ~321, JEPA-only ~10, valutazione
+~15 col readout per canale): residuo indicativo ~5.500, da confermare col consuntivo prima della firma; voce «Ablation a 30M» o voce nuova
+(Simone). **Scostamento da D10 per R5, da firmare anche nella ripartizione della perdita** (solo token interi; misura del `critico` col
+generatore vero): media 15,8 -> 10,2%, slab 19,6 -> 14,1%, spaziale 52,3 -> 62,3% dei token su capgmyo (emg2pose e DB2 simili), token interi /
+nascosti ~0,83.
+Prerequisiti prima dei job: firma della regola e dello scostamento D10, deploy `deploy/pilot-obiettivi-20261024`, checkout di campagna, gate D8
+sul banco da 150 ms (NON SUPERATO -> R5 non parte), collaudo dbg (s/passo > 0,81 -> job di scorta), via di Simone. Nessun job.
+**Codice del pilot (Claude, 24/10/2026).** R2: `generate_mask_regions` (numero della maschera estratta per token; `generate_mask` invariato
+bit per bit), `PretrainBatch.region`, `JEPAConfig.region_target`, `jepa.region_means` (LayerNorm della media del teacher grezzo per regione,
+media delle uscite dello studente; medie in float32), `loss_counts` coerente, `--jepa-region-target`; test: default identico, regione per token
+= perdita per token, contratto delle loss (numeratori, conteggi, micro-batch), dal loader vero. **Correzione a R5 (problema trovato prima di
+ogni job):** `loss_counts` non applicava il raggio dei token interi (`core_radius`), mentre `_jepa_compute` si': col contratto delle loss
+distribuite il run R5 si sarebbe fermato al primo passo («conteggi del forward diversi da quelli precalcolati»); corretto con test. Launcher
+del gate D8 con la regola CODE_DIR (prima `cd $WORK/wearusfm`). Pianificatore: nessuna estensione necessaria (tronco con `keep_checkpoints`
+e ramo `branch_of`, come `w1cat`); piano e preventivo in `results/infra/pilot_obiettivi_20261024/` (SHA segnaposto, comandi da rigenerare al
+deploy). Test: nella voce del registro del 24/10 (righe di riepilogo di pytest per file e suite completa sul commit finale).
+**Pilot degli obiettivi: review del `critico` (DA RIVEDERE: 4 bloccanti, 9 minori) e correzioni (Claude, 24/10/2026).** Bloccanti:
+(1) R2 pesava le regioni alla pari: col generatore vero il 70% della perdita sarebbe finito sulle maschere corte da 1-2 patch e il 2% sulle
+spaziali, l'opposto dell'ipotesi e uno scostamento da D10 non dichiarato -> ogni token porta l'errore della sua regione (quote di D10 invariate,
+conteggi del contratto uguali a quelli per token), test; (2) il ramo «a 1 epoca» stava a 1,25 epoche (24.523 -> 30.654) contro D14 -> ramo da
+19.618 a 24.523 (lo schedule di C1 s0), piano e preventivo rigenerati; (3) la conferma col seme 1 richiede anche R0 seme 1 -> nella regola e nei
+costi, col caso di piu' bracci che passano; (4) la sintesi affermava oltre i dati -> «+0,20, intervallo che esclude lo zero, sotto la soglia,
+solo P1», interpretazioni marcate. Minori: testo della regola unico nei due file (sei letture = 3 bracci x 2 compiti; allarme; provenienza con
+`run_status` e SHA dei checkpoint); `--erank-min 38.4` nel piano; `jepa_hidden_tokens` nel contratto (token per regione anche in DDP); il JSON
+del gate registra il banco; test del contratto a micro-batch con le regioni e di R5 con ancore, QC e lunghezze diverse; s/passo di R2 e R5 non
+misurati -> collaudo dbg prima del lancio e soglia 0,81 s/passo; strumento unico `channel_readout.py`; gate ~1 core-ora attesa (4 di tetto);
+residuo del budget dichiarato; segnaposti del registro riempiti. Esito della seconda review nel registro.

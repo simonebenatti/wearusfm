@@ -3131,6 +3131,84 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Restano i descrittivi: larghezza intera sulla P2 (4 sonde), ancore-only sulla P2 (4 sonde) e A contro ancore-only sulla P2; poi consuntivo
   CPU e chiusura della campagna. Nessun controllo o monitor fino al prossimo messaggio di Simone (sua istruzione del 24/10).
 
+### 2026-10-24 | Claude | Sintesi «cosa e' successo» e pilot degli obiettivi pronto per il `critico`: codice R2, correzione a R5, `--single-seed`, gate D8 da CODE_DIR, piano e preventivo | Codice: commit di questa voce
+
+- Simone (24/10): «Sì: scrivi la sintesi e prepara il pilot degli obiettivi (codice R2, pianificatore a 2 endpoint, gate D8 per R5, regola di
+  lettura, critico); nessun job senza il mio via.»
+- **Sintesi** in `docs/sintesi_pretraining_20261024.md`: tre domande del passo 1 e risposte (encoder > feature classiche; il readout medio non
+  nasconde informazione; il JEPA non aggiunge niente alle ancore con nessun readout); la causa 3 della diagnosi cade, restano le cause 1 e 2;
+  conseguenze (readout del pilot: `pool` criterio + `dec` descrittivo; C4 in attesa). Voce in decisioni.md.
+- **R2, target JEPA per regione:** `training.masking.generate_mask_regions` (terzo array: numero della maschera estratta che ha nascosto ogni
+  token; `generate_mask` ne e' la versione a due uscite, stesse estrazioni), `PretrainBatch.region` (anche nei micro-batch), `JEPAConfig.region_target`,
+  `jepa.region_means` (medie in float32 via `index_add`; target = LayerNorm della media del teacher grezzo; predizione = media delle uscite del
+  decoder), `loss_counts` con regioni x dimensione, `_Micro.regions` e i quattro punti di chiamata del trainer, `--jepa-region-target`,
+  `_config_with_defaults` con `region_target` False per i checkpoint storici. Quattro scelte dichiarate nel protocollo (§2) per il `critico`.
+- **Correzione a R5 (problema, sezione 2):** `loss_counts` non applicava `core_radius`: il contratto delle loss distribuite avrebbe fermato il
+  run al primo passo. Corretto; test `test_loss_counts_apply_the_core_radius_of_a_longer_kernel_window`. Aggiunto `--mask-shares` per lo
+  scostamento da D10 (0:0.294:0.235:0.471), validato (somma 1).
+- **Pianificatore:** nessuna estensione: il ramo a 1 epoca e' `branch_of` da `keep_checkpoints` [24.523] con totale 30.654 (il decay di D14
+  comincia esattamente li', 6.131 passi: la bozza diceva 4.905, corretto nel protocollo). Piano `results/infra/pilot_obiettivi_20261024/piano.json`
+  (SHA segnaposto), preventivo 179,6 / 232 GPU-ora di training (8 job), comandi BOZZA da rigenerare al deploy.
+- **Gate D8 per R5:** `scripts/slurm/gate_d8.sbatch` passa alla regola CODE_DIR (`lib_code_dir.sh`), argomenti allo script (`--window-ms 150`);
+  comandi in `results/infra/pilot_obiettivi_20261024/comandi_gate_d8.txt` (checkout + gate, ~4 core-ore). Test del launcher.
+- **Strumento di lettura a un seme:** `channel_readout.py --stage compare --single-seed [--models]`: un rapporto per lato (ripetuto per
+  `s_comparison`: stessa stima e stesso bootstrap), lettura senza l'accordo fra semi, `seeds` 1 nel rapporto; test.
+- **Protocollo** `docs/pilot_obiettivi_v1.md` riscritto da BOZZA a PROPOSTA: bracci, disegno (2 epoche + ramo), valutazione, regola di lettura
+  (testo da congelare, in decisioni.md), prerequisiti, costi (~185 / 252 GPU-ora prima ondata). Nessun job.
+- Test, righe di riepilogo di pytest per file (prima della review): masking + JEPA + loader->JEPA + finestra **53 passed**; DDP + prefetch +
+  loader + pianificatore + rami **85 passed**; readout per canale **13 passed**; launcher e deploy **24 passed**; suite completa sul codice
+  prima di `--single-seed` e del launcher del gate **1383 passed** (21 min 27). Quelle sul codice corretto: voce successiva.
+
+### 2026-10-24 | Claude | Pilot degli obiettivi: review del `critico` (DA RIVEDERE, 4 bloccanti e 9 minori) e correzioni | Codice: commit di questa voce
+
+- **Bloccante 1, R2 pesava le regioni alla pari.** Il `critico` ha misurato col generatore vero (D10 a 0,5, 160 patch, 40 semi, tre montaggi)
+  che a regioni pesate alla pari il 69-71% della perdita JEPA finiva sulle maschere corte da 1-2 patch (regioni da 2-6 token) e il 2% sulle
+  spaziali (166-604 token, 0,5-4 s): l'opposto dell'ipotesi del braccio e uno scostamento da D10 non dichiarato. Corretto: ogni token porta
+  l'errore della sua regione (`err_q = err_r[inv]`) e le riduzioni sono quelle per token; i conteggi del contratto tornano Q x d e per finestra
+  (`loss_counts` non ha piu' bisogno delle regioni); `jepa_hidden_tokens` nel `log_sum` accanto a `jepa_regions`. Test: perdita = media per token
+  dell'errore della regione; batch intero = micro-batch (perdita, gradienti, ottimizzatore, EMA) anche con `region_target`.
+- **Bloccante 2, ramo a 1,25 epoche.** Il ramo da 24.523 a 30.654 contraddiceva D14 (decay da 0,8 E a E). Ora: checkpoint tenuto a 19.618,
+  ramo fino a 24.523 con decay su 4.905 passi = lo schedule di C1 s0 (il controllo di coerenza diventa una replica); piano e preventivo
+  rigenerati: training 175,6 / 228 GPU-ora.
+- **Bloccante 3, conferma col seme 1.** La regola dei bracci intera vuole anche R0 seme 1: aggiunto alla regola e ai costi (~88 / 114 GPU-ora
+  per il primo braccio che passa, +44 / 57 per ogni altro), col caso di piu' bracci che passano (ordine per delta medio, scelta di Simone).
+- **Bloccante 4, sintesi oltre i dati.** «Tutto quello che la sonda legge ... con qualunque readout» e «non porta informazione lineare
+  aggiuntiva» contraddicevano l'intervallo [+0,01; +0,39] di `A_vs_AO_p1_local.json` (esclude lo zero) ed erano solo P1: riscritto («sotto la
+  soglia di +1 punto, una differenza piccola c'e', solo P1»); le conclusioni sul collo di bottiglia marcate come interpretazione; «non e' la
+  risoluzione spettrale» tolto (R5 prova la finestra d'integrazione, altra cosa).
+- Minori corretti: testo della regola unico in protocollo §5 e decisioni.md (sei letture = 3 bracci x 2 compiti; clausola dell'allarme;
+  provenienza: `checkpoint_postdecay.pt` dei run giusti, `arms_compare.run_status` completo, SHA nel rapporto); `--erank-min 38.4` nel piano
+  (firma del 23/10, «tutti i run della finestra 1»); il JSON del gate D8 registra il banco (`frontend.window_ms`, `bank`); test di R5 con
+  ancore, canale QC e campione corto; s/passo di R2 e R5 non misurati -> **collaudo dbg** prima del lancio (`collaudo.json`: 1.300 passi
+  l'uno, 2,6 / 4,0 GPU-ora) con soglia 0,81 s/passo oltre la quale si aggiunge il job di scorta; strumento unico `channel_readout.py` per il
+  criterio; gate: ~1 core-ora attesa, 4 di tetto; residuo indicativo della finestra 1 dichiarato (~5.500 su 6.000, da confermare col
+  consuntivo); segnaposti riempiti.
+- Test dopo le correzioni, righe di riepilogo di pytest: JEPA + loader->JEPA + finestra + masking **55 passed**; gate D8 **10 passed**; suite
+  completa su quel codice **1387 passed** in 22 min 46 (`~/wearusfm_local/logs/pytest_full_20261024_r4.txt`).
+
+### 2026-10-24 | Claude | Pilot degli obiettivi: seconda review del `critico` (DA RIVEDERE, 2 bloccanti e 7 minori) e correzioni | Codice: commit di questa voce
+
+- **Bloccante 1: la regola in decisioni.md era troncata**, e la mia verifica «identici byte per byte» era falsa: lo script tagliava il blocco
+  alla prima «»» interna (quella di «completo») e confrontava i due file con lo stesso taglio, quindi non poteva che dire «uguali». Nel testo
+  di decisioni.md mancavano la clausola della conferma (seme 1 e R0 seme 1: il rilievo 3 della prima review), il caso di piu' bracci, i
+  descrittivi, «nessun braccio passa» e «non si decide qui». Corretto: il blocco intero del §5 (2.085 caratteri, chiuso dalla «»» finale)
+  incollato in decisioni.md e confrontato per intero. Lezione, oltre a quella del 23/10 sulla riga di pytest: una verifica che usa la stessa
+  funzione difettosa su tutti e due i lati non verifica niente; si confronta contro un riferimento indipendente (qui: la fine del paragrafo).
+- **Bloccante 2: copertura dichiarata e inesistente** per `_config_with_defaults` con `region_target` (il test di `test_training_run.py` toglieva
+  solo `erank_min`). Aggiunte le cancellazioni di `region_target`, `jepa_weight` e `branch_weight` e l'asserzione sul default.
+- Minori corretti: «il collo di bottiglia e' nell'obiettivo» marcato come interpretazione anche nel protocollo e in decisioni.md; la sintesi
+  dice «a livello di compito» (dentro EPN-612 `dec` guadagna 1,41); strumento unico `channel_readout.py` anche nel §4.1 e controllo d'uguaglianza
+  dichiarato per quello che e' (P1, A s0; sulla P2 proposto un job CPU di 30 min, facoltativo); `gate_d8.py` prende il banco da `errors.json`
+  della fase features e rifiuta un `--window-ms` in contrasto, con test (`test_gate_probe.py`, fase probe su feature finte); voci del budget
+  corrette (calibrazione ~149,5 con C4, JEPA-only ~10, readout dentro la valutazione: ~496 spese, residuo indicativo ~5.500 su 6.000); ore
+  locali nel preventivo (1 GPU-ora = 8 ore locali: prima ondata ~1.472 / 2.016, conferma 704 / 912); segnaposto della suite riempito; per R5 la
+  ripartizione della perdita sui soli token interi (misura del `critico`: spaziali 52 -> 62%, medie 16 -> 10%, slab 20 -> 14%, interi/nascosti
+  ~0,83) entra nella richiesta di firma dello scostamento da D10.
+- Test dopo queste correzioni (righe di riepilogo di pytest): gate D8 (probe e consistenza) + trainer + launcher **31 passed**; la suite completa
+  (1387 passed, sopra) e' sul codice prima di queste tre modifiche (`gate_d8.py` fase probe, due file di test), che quei 31 test coprono.
+  Verdetto del `critico`: ancora DA RIVEDERE prima delle correzioni; una terza review prima del deploy, se Simone la vuole, e' a costo di token
+  (~200k a giro). Nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4604,3 +4682,19 @@ modello): il confronto fra due modelli diversi a readout uguale veniva rifiutato
 letto male): e' uno strumento incompleto rispetto al protocollo, scoperto al primo uso. Corretto con l'opzione esplicita `--models` e il suo
 test (sezione 1, voce dello stesso giorno); il modo del confronto e' scritto nel rapporto (`mode`). Il default resta identico per i confronti
 1 e 2 gia' fatti.
+
+### 2026-10-24 | Claude | R5: `loss_counts` non applicava il raggio dei token interi (trovato prima di ogni job)
+
+Il codice di R5 del 23/10 (`FMConfig.window_ms`, `core_hidden`) restringeva la perdita ai token interamente nascosti dentro `_jepa_compute`, ma
+`loss_counts` (i conteggi precalcolati senza forward, contratto delle loss distribuite) contava tutti i token nascosti: nel trainer DDP il
+confronto «conteggi del forward diversi da quelli precalcolati» avrebbe fermato R5 al primo passo. I test del 23/10 coprivano solo il percorso a
+un processo (`jepa_losses`). Corretto il 24/10 (stesso `visible & patch_valid & qc_valid` di `enc.visible`, poi `core_hidden`), con un test
+che confronta `loss_counts` e `terms.den` con la finestra da 150 ms. Nessun run toccato; il default (nessuna finestra) non cambia.
+
+### 2026-10-24 | Claude | R2: la prima stesura pesava le regioni alla pari (trovato dal `critico` prima di ogni job)
+
+La perdita per regione «media per regione, poi per finestra» dava lo stesso peso a una maschera corta da 2 token e a una spaziale da 600: col
+generatore vero (misura del `critico`: D10 a 0,5, 160 patch, 40 semi, capgmyo/emg2pose/DB2) il 70% della perdita JEPA di R2 sarebbe finito sulle
+maschere corte da 25-50 ms, dove il target per regione e' quasi quello per token, e il 2% sulle regioni lunghe: un esito nullo di R2 non avrebbe
+detto nulla sull'ipotesi «scala del movimento», ed era uno scostamento da D10 non dichiarato. Corretto nello stesso giorno (ogni token porta
+l'errore della sua regione: quote di D10 invariate), con test. Nessun run toccato.

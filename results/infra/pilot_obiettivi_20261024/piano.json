@@ -1,0 +1,104 @@
+{
+ "campaign": "pilot-obiettivi-20261024",
+ "agent": "claude",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024",
+ "expected_sha": "0000000000000000000000000000000000000000",
+ "manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+ "scales": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+ "window_seconds": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+ "run_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi",
+ "slurm": {
+  "qos": "normal",
+  "time": "24:00:00"
+ },
+ "margin_min": 40,
+ "startup_min": 15,
+ "slack": 1.15,
+ "spare_jobs": 0,
+ "gpus": 4,
+ "s_per_step": {
+  "sanity/32": 0.7
+ },
+ "ckpt_gb": {
+  "sanity": 0.45
+ },
+ "common_args": "--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --erank-min 38.4",
+ "runs": [
+  {
+   "id": "PILOT-R0-A-30M-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 49046,
+   "keep_checkpoints": [
+    19618
+   ],
+   "args": "--lr 0.0001 --nested 1"
+  },
+  {
+   "id": "PILOT-R0-A-30M-s0-e1",
+   "branch_of": "PILOT-R0-A-30M-s0",
+   "from_step": 19618,
+   "total_steps": 24523
+  },
+  {
+   "id": "PILOT-R1-targetA-30M-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 49046,
+   "keep_checkpoints": [
+    19618
+   ],
+   "args": "--lr 0.0001 --nested 1 --jepa-target a"
+  },
+  {
+   "id": "PILOT-R1-targetA-30M-s0-e1",
+   "branch_of": "PILOT-R1-targetA-30M-s0",
+   "from_step": 19618,
+   "total_steps": 24523
+  },
+  {
+   "id": "PILOT-R2-regione-30M-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 49046,
+   "keep_checkpoints": [
+    19618
+   ],
+   "args": "--lr 0.0001 --nested 1 --jepa-region-target"
+  },
+  {
+   "id": "PILOT-R2-regione-30M-s0-e1",
+   "branch_of": "PILOT-R2-regione-30M-s0",
+   "from_step": 19618,
+   "total_steps": 24523
+  },
+  {
+   "id": "PILOT-R5-finestra150-30M-s0",
+   "preset": "sanity",
+   "seed": 0,
+   "batch_size": 32,
+   "accum_steps": 1,
+   "steps_at_d": 98094,
+   "total_steps": 49046,
+   "keep_checkpoints": [
+    19618
+   ],
+   "args": "--lr 0.0001 --nested 1 --window-ms 150 --mask-shares 0:0.294:0.235:0.471"
+  },
+  {
+   "id": "PILOT-R5-finestra150-30M-s0-e1",
+   "branch_of": "PILOT-R5-finestra150-30M-s0",
+   "from_step": 19618,
+   "total_steps": 24523
+  }
+ ]
+}

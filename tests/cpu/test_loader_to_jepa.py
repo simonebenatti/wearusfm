@@ -29,6 +29,33 @@ def test_one_training_step_from_a_real_loader_batch(tmp_path):
     assert all(np.isfinite(v) for v in out.values()) and {"jepa", "log_rms", "band_shape", "log_env", "total"} <= set(out)
 
 
+def test_loader_batches_carry_mask_regions_and_the_region_target_trains_from_them(tmp_path):
+    """R2 dal loader: ogni batch porta le regioni delle maschere (una per token nascosto di un canale valido, zero altrove), i micro-batch le
+    tagliano come le maschere, e un passo col target per regione e' finito; col contratto delle loss i conteggi coincidono."""
+    from wearusfm.training.jepa import jepa_loss_terms, loss_counts
+    root, mpath = _tree(tmp_path)
+    loader = L.PretrainLoader(L.ManifestIndex.load(mpath, [root]), _cfg(filter_band_hz=(20.0, 450.0)))
+    batch = loader.batch(4, np.random.default_rng(1))
+    assert batch.region is not None and batch.region.shape == batch.kind.shape and batch.region.dtype == np.int16
+    assert np.array_equal(batch.region > 0, (~batch.visible) & batch.qc_valid[:, None])
+    for part in L.split_batch(batch, 2):
+        assert part.region.shape == part.kind.shape and np.array_equal(part.region > 0, ~part.visible & part.qc_valid[:, None])
+    inp, visible, rvq_on = L.to_model_inputs(batch)
+    regions = torch.as_tensor(batch.region)
+    torch.manual_seed(0)
+    model_cfg = FMConfig(dim=16, n_heads=4, k_latents=4, local_layers=1, backbone_layers=1, decoder_layers=1, muscle_dropout=0.4)
+    student = WearUsFM(model_cfg)
+    teacher = make_teacher(student)
+    cfg = JEPAConfig("b", 0.2, 0.99, loss_per_window=True, region_target=True)
+    opt = torch.optim.AdamW(student.parameters(), lr=1e-3)
+    out = train_step(student, teacher, opt, inp, visible, cfg, anchor_targets=batch.anchor_targets, kinds=torch.as_tensor(batch.kind),
+                     regions=regions)
+    assert all(np.isfinite(v) for v in out.values()) and out["jepa_regions"] >= 4 and out["jepa_tokens_per_region"] > 1
+    terms = jepa_loss_terms(student.eval(), teacher, inp, visible, cfg, anchor_targets=batch.anchor_targets, regions=regions)
+    counts = loss_counts(inp, visible, cfg, batch.anchor_targets, model_cfg=model_cfg, regions=regions)
+    assert all(torch.equal(counts[k], terms.den[k]) for k in counts)
+
+
 @pytest.mark.skipif(not torch.backends.mps.is_available(), reason="serve un secondo dispositivo (MPS sul Mac)")
 def test_no_tensor_is_created_off_the_model_device(tmp_path):
     """Il job 59264349 e' fallito al primo passo su GPU: tensori creati senza `device` restavano sulla CPU. Qui modello e ingressi stanno sulla

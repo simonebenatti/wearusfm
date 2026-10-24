@@ -58,6 +58,27 @@ def test_probe_launchers_use_the_code_dir_rule(work, name, args, expected):  # n
     assert r.returncode == 2 and "atteso" in r.stderr  # SHA diverso da quello del checkout
 
 
+def test_gate_d8_launcher_uses_the_code_dir_rule_and_forwards_the_window(work):  # noqa: F811
+    """Gate D8 riaperto per il banco da 150 ms (R5 del pilot degli obiettivi, 24/10/2026): stesso launcher, codice da CODE_DIR con SHA verificato
+    (prima faceva `cd $WORK/wearusfm` e basta), argomenti passati allo script, esito fuori dal codice."""
+    root, canon, first, second = work
+    env = {**_env(root), "KAIFOSH_ROOT": str(root / "kaifosh"), "SLURM_JOB_ID": "7"}
+    (root / "kaifosh").mkdir()
+    launcher = SLURM / "gate_d8.sbatch"
+    r = subprocess.run(["bash", str(launcher), "--window-ms", "150"], env=env, capture_output=True, text=True)
+    assert "VENV_PYTHON scripts/gate_d8.py" in r.stdout and "--window-ms 150" in r.stdout, r.stdout + r.stderr
+    assert f"--out {root}/wearusfm_runs/results/step3/gate_7.json" in r.stdout and "codice:" in r.stdout
+    r = subprocess.run(["bash", str(launcher)], env=env, capture_output=True, text=True)
+    assert "VENV_PYTHON scripts/gate_d8.py" in r.stdout and "--window-ms" not in r.stdout  # il banco firmato, come prima
+    other = root / "altro_checkout"
+    subprocess.run(["git", "-C", str(canon), "worktree", "add", "-q", "--detach", str(other), second], check=True, capture_output=True)
+    r = subprocess.run(["bash", str(launcher), "--window-ms", "150"], env={**env, "CODE_DIR": str(other)}, capture_output=True, text=True)
+    assert r.returncode == 2 and "senza EXPECTED_SHA" in r.stderr and "VENV_PYTHON" not in r.stdout
+    r = subprocess.run(["bash", str(launcher), "--window-ms", "150"], env={**env, "CODE_DIR": str(other), "EXPECTED_SHA": first},
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "atteso" in r.stderr and "VENV_PYTHON" not in r.stdout
+
+
 def test_p2_extraction_reads_the_raw_root_override(work):  # noqa: F811
     root = work[0]
     env = _env(root)

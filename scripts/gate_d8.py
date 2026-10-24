@@ -68,14 +68,23 @@ def stage_features(args) -> None:
             np.savez(args.work / f"{key}.npz", x=r["x"], y=r["y"], units=r["units"])
             errors[key] = r["rel_error"]
             print(f"{key}: errore totale {r['rel_error']['total']:.4f}", flush=True)
-    (args.work / "errors.json").write_text(json.dumps({"errors": errors, "n_windows": len(windows), "elapsed_s": time.time() - t0}, indent=2))
+    # il banco provato, per distinguere il gate firmato (patch 25 ms) da quello riaperto per R5 (finestra piu' lunga): lo copia `stage_probe`
+    bank = {"window_ms": args.window_ms, **FE.window_kwargs(25.0, args.window_ms)}
+    (args.work / "errors.json").write_text(json.dumps({"errors": errors, "n_windows": len(windows), "elapsed_s": time.time() - t0,
+                                                       "frontend": bank}, indent=2))
 
 
 def stage_probe(args) -> int:
     e = json.loads((args.work / "errors.json").read_text())
+    bank = e.get("frontend", {"window_ms": None})  # il banco lo dice chi ha calcolato le feature, non la fase probe lanciata da sola
+    window_ms = bank.get("window_ms")
+    if args.window_ms is not None and window_ms != args.window_ms:
+        raise SystemExit(f"--window-ms {args.window_ms} ma le feature in {args.work} sono del banco {window_ms}")
     res: dict = {"decision": "docs/decisioni.md, D8a - definizioni operative FIRMATE il 01/10/2026", "dataset": "kaifosh",
                  "per_subject": args.per_subject, "n_windows": e["n_windows"], "trial_only": bool(args.max_subjects),
-                 "frontend": {"patch_ms": 25.0, "context_ms": 100.0, "families": ["fourier", "spline", "mlp"], "seeds": args.seeds}, "cases": {}}
+                 "frontend": {"patch_ms": 25.0, "context_ms": 100.0, "families": ["fourier", "spline", "mlp"], "seeds": args.seeds, **bank},
+                 "bank": "firmato (kernel sulla patch da 25 ms)" if window_ms is None else f"finestra del kernel di {window_ms:g} ms a passo 25 ms (R5)",
+                 "cases": {}}
     for key, rel in e["errors"].items():
         z = np.load(args.work / f"{key}.npz")
         probe = G.probe_case(z["x"], z["y"], z["units"], args.split_seed)

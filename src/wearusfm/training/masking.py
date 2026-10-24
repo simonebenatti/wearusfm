@@ -101,8 +101,19 @@ def _slab_lengths(lo: int, hi: int, cap: int) -> list[int]:
 
 def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int, p_max: int, rvq_on: bool, spec: MaskSpec,
                   rng: np.random.Generator, tolerance: float = 0.1) -> tuple[np.ndarray, np.ndarray]:
-    """visible (C, p_max) e kind (C, p_max) per un campione con `n_patches` patch valide (il resto e' padding, mai nascosto).
+    """visible (C, p_max) e kind (C, p_max): `generate_mask_regions` senza le regioni (stesse estrazioni, stessi valori)."""
+    visible, kind, _ = generate_mask_regions(layout, compartment, n_patches, p_max, rvq_on, spec, rng, tolerance)
+    return visible, kind
+
+
+def generate_mask_regions(layout: ChannelLayout, compartment: np.ndarray, n_patches: int, p_max: int, rvq_on: bool, spec: MaskSpec,
+                          rng: np.random.Generator, tolerance: float = 0.1) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """visible (C, p_max), kind (C, p_max) e region (C, p_max) per un campione con `n_patches` patch valide (il resto e' padding, mai nascosto).
     `compartment` (C,): indice del compartimento piu' probabile (0 = ignoto), per i gruppi anatomici.
+    `region` (int16): 0 sui token visibili; sui token nascosti il numero (da 1) della maschera estratta che li ha nascosti (tubo, slab o
+    maschera spaziale), nell'ordine delle estrazioni accettate; un token coperto da due maschere resta della prima (le sovrapposizioni contano
+    una volta sola), quindi le regioni sono disgiunte e ogni regione ha un solo tipo. Serve al target JEPA per regione (R2 del pilot degli
+    obiettivi, `JEPAConfig.region_target`): il default del training non la legge.
 
     Le quote sono **attese** sui token nascosti, non vincoli per campione: uno slab copre tutti i canali e da solo puo' valere piu' della sua quota
     (uno slab lungo di 24 patch e' il 15% di una finestra da 4 s). A ogni passo si sceglie il tipo di maschera con probabilita' proporzionale a
@@ -114,6 +125,7 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
     valid_idx = np.flatnonzero(valid)
     n_ch = len(valid_idx)
     kind = np.zeros((c, p_max), dtype=np.int8)
+    region = np.zeros((c, p_max), dtype=np.int16)
     if n_ch == 0 or n_patches == 0:
         raise ValueError("nessun token valido")
     budget = spec.ratio * n_ch * n_patches
@@ -157,7 +169,7 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
         return draw_tube(layout, compartment, valid, n_patches, lo, hi, rng)
 
     hidden_ch: set[int] = set()
-    total, tries = 0, 0
+    total, tries, n_regions = 0, 0, 0
     keys = list(feasible)
     weights = np.array([feasible[k][1] / feasible[k][0] for k in keys])
     # numero atteso di maschere: su una griglia da 128 canali le maschere temporali di un canale sono piccole e ne servono ~1000
@@ -173,18 +185,24 @@ def generate_mask(layout: ChannelLayout, compartment: np.ndarray, n_patches: int
         if got is None:
             continue
         rows, t0, t1 = got
-        block = kind[np.ix_(rows, np.arange(t0, t1))]
-        new = int((block == VISIBLE).sum())
+        sel = np.ix_(rows, np.arange(t0, t1))
+        block = kind[sel]
+        fresh = block == VISIBLE
+        new = int(fresh.sum())
         if new == 0 or total + new > budget * (1 + tolerance):
             continue
-        block[block == VISIBLE] = SLAB if k[1] else k[0]
-        kind[np.ix_(rows, np.arange(t0, t1))] = block
+        block[fresh] = SLAB if k[1] else k[0]
+        kind[sel] = block
+        n_regions += 1
+        reg = region[sel]
+        reg[fresh] = n_regions
+        region[sel] = reg
         total += new
         if k[0] == SPATIAL:
             hidden_ch.update(int(r) for r in rows)
     visible = kind == VISIBLE
     visible[~valid] = True  # i canali scartati restano fuori comunque (qc_valid), qui non si contano
-    return visible, kind
+    return visible, kind, region
 
 
 def pack_masks(masks: list[tuple[np.ndarray, np.ndarray]]) -> tuple[np.ndarray, np.ndarray]:

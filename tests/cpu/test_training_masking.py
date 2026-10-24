@@ -121,6 +121,36 @@ def test_long_tubes_can_end_at_the_last_valid_patch(n_patches):
     assert (kind[:, n_patches:] == M.VISIBLE).all()
 
 
+def test_regions_number_the_accepted_masks_and_the_two_entry_points_agree():
+    """R2: `generate_mask_regions` numera le maschere accettate (1..n) sui token che hanno nascosto; `generate_mask` e' la stessa estrazione
+    senza le regioni. Regioni disgiunte, un tipo per regione, zero sui visibili, sul padding e sui canali scartati."""
+    m = ninapro_std.build_montage_metadata(ninapro_std.DB2, 1, "right")
+    valid = [True] * m.n_channels
+    valid[5] = False
+    lay, comp = _setup(m, valid)
+    spec = M.MaskSpec.d10_proposal(0.5)
+    vis, kind, region = M.generate_mask_regions(lay, comp, 40, 64, True, spec, np.random.default_rng(3))
+    vis2, kind2 = M.generate_mask(lay, comp, 40, 64, True, spec, np.random.default_rng(3))
+    assert np.array_equal(vis, vis2) and np.array_equal(kind, kind2) and region.dtype == np.int16
+    assert np.array_equal(region > 0, ~vis)  # una regione per ogni token nascosto e solo li'
+    assert not region[5].any() and not region[:, 40:].any()  # canale scartato e padding
+    ids = sorted(set(region[region > 0].tolist()))
+    assert ids == list(range(1, len(ids) + 1)) and len(ids) >= 2
+    for r in ids:  # una regione = una maschera estratta: un solo tipo
+        assert len(set(kind[region == r].tolist())) == 1
+    # le sovrapposizioni restano della prima maschera: una regione e' un blocco (righe x intervallo) meno i token gia' nascosti da maschere
+    # PRECEDENTI, quindi dentro l'intervallo di una regione su una riga ci sono solo lei o regioni di numero minore
+    for r in ids:
+        for row in np.flatnonzero((region == r).any(axis=1)):
+            t = np.flatnonzero(region[row] == r)
+            span = region[row, t[0]:t[-1] + 1]
+            assert np.all((span == r) | ((span > 0) & (span < r)))
+    # ninapro: solo canali, nessuna griglia; lo stesso vale su una griglia densa (regioni rettangolari)
+    lay_g, comp_g = _setup(capgmyo.build_montage_metadata(1))
+    _, kind_g, region_g = M.generate_mask_regions(lay_g, comp_g, 160, 160, True, spec, np.random.default_rng(0))
+    assert np.array_equal(region_g > 0, kind_g != M.VISIBLE) and region_g.max() > 10
+
+
 def test_spec_checks_and_determinism():
     with pytest.raises(ValueError):
         M.MaskSpec(1.0, 0.15, 0.25, 0.2, 0.4)

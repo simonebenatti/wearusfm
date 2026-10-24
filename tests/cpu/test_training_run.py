@@ -237,7 +237,10 @@ def test_absolute_erank_floor_does_not_scale_with_the_width():
     assert [same.update(0.09, e) is None for e in seq] == [ref.update(0.09, e) is None for e in seq]  # stesso passo di stop
     old = R.config_to_dict(R.sanity_config())
     del old["alarm"]["erank_min"]  # una configurazione scritta prima del campo: stessa regola
+    for k in ("region_target", "jepa_weight", "branch_weight"):  # campi della JEPA aggiunti dopo i primi checkpoint (R2 del 24/10, bracci, rami)
+        del old["jepa"][k]
     assert R._config_with_defaults(old) == R._config_with_defaults(R.config_to_dict(R.sanity_config()))
+    assert R._config_with_defaults(old)["jepa"]["region_target"] is False
 
 
 

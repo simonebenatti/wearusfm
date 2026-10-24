@@ -416,6 +416,9 @@ class PretrainBatch:
     # i campioni (inizio, fine) entro `anchor_edge_guard_s` dal bordo del tratto
     band_limit: list | None = None
     edge_guard: list | None = None
+    # (C_tot, P_max) int16: numero della maschera estratta che ha nascosto ogni token (0 = visibile; `training.masking.generate_mask_regions`),
+    # per il target JEPA per regione (R2 del pilot degli obiettivi); il default del training non lo legge
+    region: np.ndarray | None = None
 
 
 def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
@@ -562,7 +565,8 @@ class PretrainLoader:
             picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
-        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards = ([] for _ in range(16))
+        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards, regions = \
+            ([] for _ in range(17))
         for row, src, win in picked:
             view = src.view if isinstance(src, Block) else src
             vm = None
@@ -589,7 +593,8 @@ class PretrainLoader:
             t = self._tick("lettura_e_filtro", t)
             layout = CC.layout_from_montage(montage)
             code = CC.anatomy_codes(montage)
-            v, k = MK.generate_mask(layout, code.compartment_weights.argmax(axis=1), win.n_patches, p_max, row["rvq"] == "on", self.cfg.mask, rng)
+            v, k, rg = MK.generate_mask_regions(layout, code.compartment_weights.argmax(axis=1), win.n_patches, p_max, row["rvq"] == "on",
+                                                self.cfg.mask, rng)
             t = self._tick("maschera", t)
             signals.append(x)
             fs.append(view.fs)
@@ -600,6 +605,7 @@ class PretrainLoader:
             t = self._tick("codici_e_vicini", t)
             vis.append(v)
             kind.append(k)
+            regions.append(rg)
             rvq.append(np.full(layout.n_channels, row["rvq"] == "on"))
             g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
@@ -619,7 +625,8 @@ class PretrainLoader:
         packed_codes = CC.pack_codes(codes)
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
                              np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped_ever),
-                             rvq_codes if self.rvq_store is not None else None, presented, band_limit=limits, edge_guard=guards)
+                             rvq_codes if self.rvq_store is not None else None, presented, band_limit=limits, edge_guard=guards,
+                             region=np.concatenate(regions))
 
 
 def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
@@ -647,7 +654,8 @@ def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
                            windows=batch.windows[s0:s1], rvq_codes=batch.rvq_codes[s0:s1] if batch.rvq_codes is not None else None,
                            presented=batch.presented[s0:s1] if batch.presented is not None else None,
                            band_limit=batch.band_limit[s0:s1] if batch.band_limit is not None else None,
-                           edge_guard=batch.edge_guard[s0:s1] if batch.edge_guard is not None else None))
+                           edge_guard=batch.edge_guard[s0:s1] if batch.edge_guard is not None else None,
+                           region=batch.region[a:b, :p] if batch.region is not None else None))
     return out
 
 

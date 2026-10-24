@@ -14,10 +14,13 @@
 # Atteso (misurato sul Mac su finestre sintetiche da 16 canali): ~10 minuti di feature e ~1 minuto di sonda, piu' la lettura di Kaifosh (~7 GB).
 #
 # Uso: sbatch scripts/slurm/gate_d8.sbatch
+#      sbatch --export=ALL,CODE_DIR=<checkout di campagna>,EXPECTED_SHA=<sha> <checkout>/scripts/slurm/gate_d8.sbatch --window-ms 150
+#        (gate riaperto per il banco da 150 ms, R5 del pilot degli obiettivi, 24/10/2026: stesse soglie firmate, altro banco)
 # Esito in $WORK/wearusfm_runs/results/step3/gate_<job>.json (fuori dal repo); feature intermedie in $SCRATCH. Uscita 1 = gate non superato.
 
 set -uo pipefail
-cd "$WORK/wearusfm"
+# codice congelato (CLAUDE.md, «Checkout di campagna»): CODE_DIR e EXPECTED_SHA, default il repo canonico come prima
+source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
 
 module purge
 module load profile/deeplrn
@@ -25,7 +28,7 @@ module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
 
 KAIFOSH="${KAIFOSH_ROOT:-$SCRATCH/data/processed/kaifosh}"
-echo "commit $(git rev-parse --short HEAD), Kaifosh da $KAIFOSH ($(find "$KAIFOSH" -name metadata.json | wc -l) sessioni)"
+echo "commit $(git rev-parse --short HEAD), Kaifosh da $KAIFOSH ($(find "$KAIFOSH" -name metadata.json | wc -l) sessioni), argomenti: $*"
 mkdir -p "$WORK/wearusfm_runs/results/step3" "$WORK/wearusfm_runs/logs" "$SCRATCH/wearusfm_runs/step3"
 python3 scripts/gate_d8.py \
   --processed-root "$KAIFOSH" \

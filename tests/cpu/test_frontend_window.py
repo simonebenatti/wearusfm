@@ -136,3 +136,13 @@ def test_trainer_flags_for_target_a_and_window():
     assert cfg.jepa.target == "a" and cfg.model.window_ms == 150.0 and cfg.model.core_radius == 3
     with pytest.raises(ValueError, match="--window-ms"):
         TJ.build_config(TJ.build_parser().parse_args(base + ["--window-ms", "25"]))
+    # R2 e lo scostamento da D10 di R5: target per regione e quote delle maschere; default intoccati
+    assert cfg.jepa.region_target is False and (cfg.loader.mask.share_short, cfg.loader.mask.share_spatial) == (0.15, 0.40)
+    cfg = TJ.build_config(TJ.build_parser().parse_args(base + ["--jepa-region-target"]))
+    assert cfg.jepa.region_target is True and cfg.loader.mask.share_short == 0.15
+    cfg = TJ.build_config(TJ.build_parser().parse_args(base + ["--window-ms", "150", "--mask-shares", "0:0.294:0.235:0.471"]))
+    m = cfg.loader.mask
+    assert (m.share_short, m.share_medium, m.share_long, m.share_spatial) == (0.0, 0.294, 0.235, 0.471) and m.ratio == 0.5
+    for bad in ("0.5:0.5", "0.1:0.2:0.3:0.5", "a:b:c:d"):
+        with pytest.raises(ValueError, match="--mask-shares"):
+            TJ.build_config(TJ.build_parser().parse_args(base + ["--mask-shares", bad]))

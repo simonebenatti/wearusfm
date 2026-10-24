@@ -1,91 +1,142 @@
-# Pilot degli obiettivi di pretraining — `pilot_obiettivi_v1` (BOZZA)
+# Pilot degli obiettivi di pretraining — `pilot_obiettivi_v1`
 
-**Stato: BOZZA di Claude (23/10/2026), da discutere con Simone e da passare al `critico`; niente e' congelato, nessun codice nuovo, nessun job.**
-Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 (Simone: «poi lavorare sulle tue soluzioni per il tokenizer/embeddings»). Si legge
-dopo l'esito del readout per canale (`docs/readout_per_canale_v1.md`): la scelta del readout con cui si misura il pilot dipende da quello.
+**Stato: PROPOSTA di Claude (24/10/2026), codice pronto, in attesa della review del `critico` e della firma di Simone; nessun job.** La regola di
+lettura (§5) si congela in `docs/decisioni.md` prima di qualunque lancio. Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+`docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
+bottiglia piu' probabile e' nell'obiettivo).
+Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata
+(«scelgo le 2 epoche per tutti i 4 run», 23/10); preparazione («scrivi la sintesi e prepara il pilot degli obiettivi (codice R2, pianificatore a
+2 endpoint, gate D8 per R5, regola di lettura, critico); nessun job senza il mio via», 24/10).
 
-## Domanda
+## 1. Domanda
 
-Un obiettivo che chiede la struttura alla scala del movimento (regione nascosta, non patch da 25 ms), o che toglie il percorso query -> target
-(opzione a), o che chiede esplicitamente le variabili motorie (posa), produce un encoder che una sonda lineare legge meglio di A, a pari
-esposizione? Misura: S della validazione interna (P1 e P2) coi readout del protocollo del readout per canale.
+Un obiettivo che chiede la struttura alla scala del movimento (regione nascosta, non patch da 25 ms: R2 nella loss, R5 nel tokenizer), o che
+toglie il percorso query -> target (R1, target (a) di D11), produce un encoder che una sonda lineare legge meglio di A a pari esposizione?
+Misura: S della validazione interna (P1 e P2) col readout medio `pool`, lo stesso di tutta la storia del progetto.
 
-## Bracci (prima ondata: solo codice gia' quasi pronto)
+## 2. Bracci (prima ondata)
 
 | Braccio | Cosa cambia rispetto ad A (JEPA target b + ancore 0,2) | Codice |
 |---|---|---|
-| **R0** riferimento | **A rifatto a 2 epoche** col ramo di decay a 1 (Simone, 23/10: «scelgo le 2 epoche per tutti i 4 run»): stesso seme 0 e LR 1e-4 di C1 s0, che resta il controllo di coerenza dell'endpoint a 1 epoca (S P1 18,21) | pronto (e' A); C1 s0 ha solo la S P1 |
-| **R1** target a | `JEPAConfig.target = "a"`: target = uscita per canale dell'encoder locale del teacher, non il decoder a query | esiste nel codice; manca il flag `--jepa-target` in `train_jepa.py` (oggi fisso "b" in `sanity_config`) e il test che "b" resti identico |
-| **R2** target per regione | il target JEPA di ogni regione nascosta (tubo, slab o maschera spaziale) e' la **media del teacher sulla regione**; lo studente predice la media delle sue uscite sulla stessa regione; perdita per regione, media per finestra come oggi; ancore invariate per token | nuovo: `generate_mask` ritorna anche `region` (C, P) (id della maschera estratta), `PretrainBatch.region`, `_jepa_compute(region_target=True)`; test d'uguaglianza bit per bit con `region_target=False`; DDP: numeratori/denominatori per regione nel contratto delle loss |
+| **R0** riferimento | A rifatto a 2 epoche col ramo di decay a 1 epoca: stesso seme 0, LR 1e-4, manifest, loader e sampler di C1 s0 e dei bracci | pronto (e' A) |
+| **R1** target (a) | `JEPAConfig.target = "a"`: target = uscita per canale dell'encoder locale del teacher allo stesso (canale, istante), non il decoder a query (D11; il braccio di controllo di v10 §5.6 mai eseguito) | `--jepa-target a` (23/10), test di default invariato |
+| **R2** target per regione | il target JEPA di ogni **regione nascosta** (una maschera estratta: tubo, slab o maschera spaziale) e' la LayerNorm della media del teacher sui suoi token; lo studente predice la media delle sue uscite sugli stessi token; l'errore quadratico della regione e' attribuito a ciascuno dei suoi token e ridotto come oggi (per finestra), cosi' **le quote di D10 restano quelle per token** e cambia solo l'unita' del target; ancore invariate per token | **fatto il 24/10**: `generate_mask_regions` (numero della maschera per token), `PretrainBatch.region`, `JEPAConfig.region_target`, `jepa.region_means`, `--jepa-region-target`; test: default bit per bit identico, regione per token = perdita per token, perdita = media per token dell'errore della regione, contratto delle loss (numeratori e conteggi uguali a `loss_counts`; batch intero = micro-batch per perdita, gradienti, ottimizzatore ed EMA), dal loader vero |
+| **R5** finestra 150 ms, passo 25 ms | il kernel del front-end vive su 150 ms centrati sulla patch; la griglia dei token resta a 25 ms (sequenza, maschere, ancore, RVQ invariati); basi scalate (156 armoniche, 120 nodi, omega 36); **la perdita conta solo i token interamente nascosti** (nessuna patch visibile entro 3 patch per lato); le maschere da 1-2 patch non producono token interi: `share_short` 0, quote 0,294 / 0,235 / 0,471 (**scostamento dichiarato da D10, da firmare**) | fatto il 23/10 (`FMConfig.window_ms`, `core_hidden`, `--window-ms`); il 24/10: `--mask-shares 0:0.294:0.235:0.471`, e `loss_counts` corretto (prima non applicava il raggio: il contratto delle loss avrebbe fermato il run al primo passo; test) |
 
-| **R5** finestra 150 ms, passo 25 ms (Simone, 23/10: «fare una finestra un po piu lunga con overlap, in modo che lo scorrimento sia 25ms. tipo 150ms con overlap di 125ms») | il kernel del front-end vive su 150 ms centrati sulla patch, la griglia dei token resta a 25 ms (sequenza, maschere, ancore e RVQ invariati); basi scalate per lo stesso contenuto in frequenza fisico (156 armoniche, 120 nodi, omega 36); **la perdita conta solo i token interamente nascosti** (nessuna patch visibile entro 3 patch per lato: JEPA, ancore e RVQ); le maschere corte da 1-2 patch non producono token interi, quindi la quota `share_short` (15%) passa a 0 e le altre si rinormalizzano (0,294 / 0,235 / 0,471): **scostamento dichiarato da D10**, da firmare per questo braccio | **fatto il 23/10** (`FMConfig.window_ms`, `frontend.window_kwargs`, `jepa.core_hidden`, `--window-ms`, `gate_d8.py --window-ms`; test: default bit per bit identico, griglia invariata, coerenza fra fs, token interi); manca il **gate D8 riaperto** per il banco da 150 ms (job CPU, `scripts/gate_d8.py --window-ms 150`, stesse soglie firmate: errore relativo <= 5% per famiglia, sonda <= 55%) prima del run |
+R2 e R5 provano la stessa ipotesi (unita' meno rumorosa, alla scala dell'inviluppo) in due posti: R2 nella loss, col tokenizer di sempre; R5
+nel tokenizer. Seconda ondata (non in questo preventivo, decisione di Simone separata): R3 ancore + testa di posa su emg2pose senza JEPA; R4 =
+R2 + posa. Richiedono l'ingest degli angoli (`joint_angles` dal tar di emg2pose, 462 GB) e un cambio di principio rispetto a v10 §6.1.
 
-R5 e R2 provano la stessa ipotesi (un'unita' meno rumorosa, alla scala dell'inviluppo) in due posti diversi: R2 nella loss, a codice quasi nullo e
-col tokenizer di sempre; R5 nel tokenizer, che migliora anche l'ingresso ma cambia identita' al front-end (gate D8, training da zero). Ordine
-proposto: R2 prima o insieme a R5; se R2 non aiuta, R5 difficilmente aiutera'.
+**Scelte di Claude dentro R2 (il `critico` del 24/10 le ha giudicate difendibili; la (v) e' la sua correzione):** (i) la LayerNorm si applica
+alla media del teacher grezzo (non alla media dei token normalizzati): il target ha sempre scala unitaria, come per token; (ii) la predizione
+e' la media delle uscite grezze del decoder: lo studente puo' scegliere la norma; (iii) una regione e' una maschera estratta, non una componente
+connessa: due tubi sovrapposti restano due regioni (i token in comune vanno al primo); (iv) il log per tipo di maschera e per topologia pesa
+ogni token con l'errore della sua regione; (v) **ogni regione pesa quanto i suoi token**: la prima stesura faceva la media alla pari fra le
+regioni, e il `critico` ha misurato col generatore vero che cosi' il 70% della perdita sarebbe finito sulle maschere corte da 1-2 patch (regioni
+da 2-6 token) e il 2% su quelle spaziali (0,5-4 s): l'opposto dell'ipotesi, e uno scostamento da D10 non dichiarato. Con la pesatura per token
+le scale delle regioni sono quelle delle maschere di D10 (corte 15%, medie 25%, lunghe 20%, spaziali 40% dei token).
 
-Seconda ondata (dopo l'ingest degli angoli, da preventivare a parte): **R3** ancore + testa di posa su emg2pose senza JEPA; **R4** R2 + testa di posa.
-Richiede: rilettura del tar di emg2pose per i `joint_angles` (462 GB, job CPU lungo; oggi l'ingest li salta), `labels.npz` a 20 colonne float
-a 50 Hz, loader con i target per campione e maschera di validita', testa di regressione sulle uscite del decoder (o del backbone) attiva solo
-sui batch di emg2pose, termine nel contratto delle loss, log separato. E' un cambio di principio rispetto a v10 §6.1: lo decide Simone prima
-che si scriva il codice.
+## 3. Disegno
 
-## Disegno (proposta)
+- **Taglia, durata, semi:** 30M (preset `sanity`), seme 0, LR 1e-4, batch 32 su 4 GPU, manifest v1.1 al 100% (`--nested 1`), regole della
+  finestra 1, soglia assoluta dell'allarme sul rango `--erank-min 38.4` (firma del 23/10, ambito «tutti i run della finestra 1»), loader
+  attuale (vedi «fuga»). **Tronco: 2 epoche** = 49.046 passi, WSD D14 (warmup 1.962 = 2% dei passi a D = 98.094, come C1 e i bracci; decay
+  lineare sul 20% finale, dal passo 39.237), checkpoint tenuto al passo 19.618. **Ramo a 1 epoca, come D14 lo definisce** (decay da 0,8 E a
+  E): dal checkpoint 19.618, totale 24.523 passi, decay su 4.905 passi: e' esattamente lo schedule di C1 s0 (la prima stesura metteva il ramo
+  a 1,25 epoche, da 24.523 a 30.654: corretto dal `critico`). Due endpoint validi per run (teacher post-decay a 1 e a 2 epoche), 53.951 passi
+  di calcolo (2,2 epoche). Il pianificatore (`scripts/wsd_chain.py`) non va esteso: tronco con `keep_checkpoints` e ramo con `branch_of` sono
+  il caso gia' previsto (`_check_branch`, `with_wsd`).
+- **Controllo di coerenza, descrittivo:** l'endpoint a 1 epoca di R0 ha lo stesso schedule, seme, dati e codice di C1 s0 (S P1 18,21): e' una
+  replica (a meno del non determinismo di DDP e delle differenze di codice fra 72cf24a e il deploy del pilot, dichiarate al deploy).
+- **Perche' due epoche:** A e' piatto da 1 a 4 epoche (18,21 -> 18,34); i bracci nuovi possono imparare piu' lentamente (R2 ha meno unita' di
+  perdita per finestra; R5 conta solo i token interi): con due endpoint si legge la pendenza 1 -> 2 accanto a quella di R0.
 
-- **Taglia e durata (Simone, 23/10/2026: «scelgo le 2 epoche per tutti i 4 run»):** 30M (preset `sanity`), **2 epoche** del manifest v1.1 al 100%
-  (49.046 passi, batch 32, WSD D14: warmup 1.962, fase stabile, decay lineare sul 20% finale, dal passo 39.237) **piu' un ramo di decay dal
-  checkpoint a 1 epoca** (passo 24.523, nella fase stabile; decay su 4.905 passi = 20% di un'epoca): due endpoint validi per run, a 1 e a 2
-  epoche, ~2,2 epoche di calcolo. LR 1e-4, seme 0, stesso manifest, stesso sampler, stesso loader (vedi «fuga»). L'endpoint a 1 epoca di R0
-  deve coincidere con C1 s0 a meno del ramo di decay: controllo di coerenza, descrittivo.
-- **Perche' due epoche:** A e' piatto da 1 a 4 epoche (18,21 -> 18,34), ma i bracci nuovi possono imparare piu' lentamente (R2 ha un target
-  per regione invece che per token; la posa impara da un terzo dei batch): con due endpoint si legge la **pendenza** 1 -> 2 di ogni braccio
-  accanto a quella di R0, non solo un punto.
-- **Valutazione (Simone, 23/10: «valuti le loss dopo le 2 epoche o valuti anche altro?»):** le loss NON sono il criterio: fra obiettivi diversi
-  non sono confrontabili (target a e b sono grandezze diverse, la media per regione cambia l'unita', R5 conta solo i token interi). A ciascuno
-  dei due endpoint: (1) **S interna P1 e P2** del teacher post-decay, encoder congelato e sonda lineare, con **due readout**: il medio (`pool`,
-  il riferimento storico) e quello per canale che il protocollo del readout designa (local o dec a k 768), estratti e sondati con
-  `channel_readout.py`: e' il criterio; (2) la **pendenza 1 -> 2** di S accanto a quella di R0, descrittiva; (3) le **diagnostiche di non
-  collasso** del trainer ogni 500 passi (rango effettivo di studente e teacher, rapporto di collasso da query, varianza fra campioni) con
-  l'allarme firmato (38,4 / 0,05 / 3 controlli): un run fermato dall'allarme non passa; (4) le **loss come monitor**, non per decidere: JEPA
-  per tipo di maschera e per topologia, ancore (RMS, forma spettrale, inviluppo, multiscala: target fisici uguali fra i bracci; per R5 sui
-  soli token interi, con `core_hidden_fraction`), pannello fisso ogni 500 passi; (5) **riferimenti esterni** sulla stessa validazione: baseline
-  classica e rete casuale. Per il braccio che passa: seme 1, poi i test ufficiali P1/P2 e le 4 epoche prima di toccare un default.
-- **Semi:** seme 0 per tutti; **seme 1 solo per il braccio che passa** la regola (un run in piu', a 2 epoche).
-- **Regola di lettura (da congelare prima del lancio):** un braccio «passa» se **all'endpoint a 2 epoche** migliora S della P1 **e** S della P2
-  di almeno +1 punto rispetto a R0 con lo stesso readout (regola dei bracci, bootstrap congiunto dei soggetti; con un solo seme il «delta > 0
-  nei due semi» non c'e': si dichiara, e il seme 1 serve a confermare); si legge col readout designato; il `pool` e l'endpoint a 1 epoca
-  (pendenza) restano descrittivi. Nessun braccio passa -> si registra e non si cambia il default; si va alla seconda ondata solo se Simone lo
-  decide.
-- **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1.
+## 4. Valutazione
 
-## Prerequisiti e punti aperti
+Le loss **non** sono il criterio: fra obiettivi diversi non sono confrontabili (target a e b sono grandezze diverse, la media per regione
+cambia l'unita', R5 conta solo i token interi). A ciascuno dei due endpoint di ogni run:
 
-1. **Fuga attraverso il filtro** (`results/rami_pilota/fuga_preprocessing_20261023.json`): il filtro passa-banda del loader agisce prima della
-   maschera, quindi i token visibili entro ~100 ms da una regione nascosta portano una traccia del contenuto nascosto (ringing del filtro;
-   log-potenze di contesto cambiate fino a ~3 nat al 99° percentile con contenuto nascosto estremo). Vale per A e per tutti i bracci allo
-   stesso modo. Due strade: (a) pilot col loader attuale, confrontabile con C1 s0, e «mascherare prima del filtro» come ablation separata dopo;
-   (b) loader nuovo per tutti i bracci, ma allora R0 va rifatto (+1 run). *Proposta: (a).*
-2. **S P2 di C1 s0:** non serve piu' come riferimento (R0 si rifa' a 2 epoche); C1 s0 resta il controllo di coerenza sulla sola P1.
-   **Rami di decay:** la catena WSD (`scripts/wsd_chain.py`, D14) prevede checkpoint da tenere (`--keep-checkpoints`) e rami di decay: il
-   piano del pilot usa quelli, e il pianificatore va esteso ai 4 run con 2 endpoint (test di uguaglianza coi piani esistenti).
-3. **Readout designato:** si aspetta l'esito del readout per canale; se non e' concluso si usa il `pool`.
-4. **Review del `critico`** su protocollo e codice prima del lancio; soglie in `decisioni.md` prima dei job.
+1. **S interna P1 e P2** del teacher post-decay, encoder congelato, sonda lineare della calibrazione, **readout `pool`**: e' il criterio.
+   Strumento unico: `scripts/channel_readout.py` (`--stage extract`, poi `--stage probe --layer pool`), che riproduce la sonda della
+   calibrazione (controllo d'uguaglianza del 23/10: stessa S e zero predizioni diverse su P1, A s0; sulla P2 il controllo non e' stato fatto:
+   un job CPU di ~30 min lo chiuderebbe, proposto fra i prerequisiti). Accanto, **descrittivo**, `dec` per canale a k 768 (stesso strumento,
+   protocollo del readout per canale): e' l'unico readout in cui un cambiamento a montaggio condiviso (EPN-612, +1,4 punti il 24/10) si
+   vedrebbe prima.
+2. **Pendenza 1 -> 2 epoche** di S accanto a quella di R0: descrittiva.
+3. **Diagnostiche di non collasso** del trainer ogni 500 passi (rango effettivo di studente e teacher, rapporto di collasso da query, varianza
+   fra campioni), con l'allarme firmato il 23/10 (soglia assoluta 38,4, rapporto 0,05, 3 controlli): un run fermato dall'allarme non passa.
+4. **Loss come monitor**, non per decidere: JEPA per tipo di maschera e per topologia (per R2 i contatori `jepa_regions` e
+   `jepa_hidden_tokens`, il cui rapporto e' il numero di token per regione, nel trainer DDP; per R5: `core_hidden_fraction`), ancore (target
+   fisici uguali fra i bracci), pannello fisso ogni 500 passi.
+5. **Riferimenti esterni** sulla stessa validazione: baseline classica (P1 14,30, P2 67,48) e A storico (18,34 / 81,92).
 
-## Costi (stima dalle misure di C1: 0,707 s/passo a 4 GPU, 4,77 h per epoca; 2,2 epoche per run = ~10,5 h su un nodo, ~44 GPU-ora)
+## 5. Regola di lettura (testo unico, identico in `docs/decisioni.md`, da congelare con la firma di Simone prima del lancio)
 
-| Voce | Run | GPU-ora attese / tetto |
+«**Regola di lettura del pilot degli obiettivi.** Criterio: per ciascun braccio R_i (R1, R2, R5) e per ciascun compito (P1, P2) della validazione
+interna, all'endpoint a 2 epoche (teacher di `checkpoint_postdecay.pt` del tronco, run completo senza STOP), col readout `pool` estratto e
+sondato con `scripts/channel_readout.py` (`--stage extract`, poi `--stage probe --layer pool`: la sonda della calibrazione, controllo
+d'uguaglianza del 23/10 su P1, A s0), il confronto accoppiato con R0 allo stesso endpoint con `scripts/channel_readout.py --stage compare --single-seed
+--models` (soggetti ricampionati insieme, 1.000 ricampionamenti, seme 20261009, intervallo dei percentili, `arms_compare.s_comparison`). R_i
+**passa** se in P1 **e** in P2 il delta e' >= +1 punto col limite inferiore dell'intervallo al 95% > 0. Sei letture del criterio (3 bracci x 2
+compiti) senza correzione per confronti multipli: dichiarato. Un solo seme: il criterio dell'accordo fra i semi della regola dei bracci non si
+applica e il rapporto lo dichiara (`seeds` 1). Un run fermato dall'allarme sul rango (38,4 / 0,05 / 3 controlli) o incompleto non passa.
+Provenienza: il rapporto di confronto registra percorso e SHA-256 dei due checkpoint; prima di leggere si verifica che siano i
+`checkpoint_postdecay.pt` dei run giusti (R0 e R_i, tronco a 2 epoche) e che `arms_compare.run_status` dia «completo» per entrambi, e lo si
+scrive nel registro. **Conferma:** per ogni braccio che passa si lanciano il suo seme 1 e, una volta sola, R0 seme 1 (stesso disegno, tronco
+e ramo), e si rilegge con la regola dei bracci intera (due semi: `compare --models` senza `--single-seed`); se piu' bracci passano anche la
+conferma, si registra l'ordine per delta medio di P1 e P2 e la scelta del default e' di Simone. **Descrittivi, fuori dal criterio:** `dec` per
+canale a 768, l'endpoint a 1 epoca, la pendenza 1 -> 2, le loss e le diagnostiche. Nessun braccio passa -> si registra e il default non
+cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1.»
+
+## 6. Prerequisiti
+
+1. **Fuga attraverso il filtro** (`results/rami_pilota/fuga_preprocessing_20261023.json`): il passa-banda del loader agisce prima della
+   maschera, quindi i token visibili entro ~100 ms da una regione nascosta portano una traccia del contenuto nascosto; vale per A e per tutti i
+   bracci allo stesso modo. Si usa il **loader attuale** (confrontabile con C1 s0 e coi bracci); «mascherare prima del filtro» e' un'ablation
+   separata, dopo.
+2. **Gate D8 riaperto per il banco da 150 ms** (R5): `scripts/slurm/gate_d8.sbatch --window-ms 150` dal checkout di campagna (CODE_DIR), stesse
+   definizioni e soglie firmate il 01/10 (errore relativo <= 5% per famiglia, sonda <= 55%), job CPU sulla seriale (tetto 2 core x 2 h = 4
+   core-ore, attesa ~1; 0 GPU-ora); il JSON dell'esito registra il banco (`frontend.window_ms`, `bank`). Comandi in
+   `results/infra/pilot_obiettivi_20261024/comandi_gate_d8.txt`. NON SUPERATO -> R5 non parte, gli altri tre si'.
+3. **Collaudo su dbg di R2 e R5** (1.300 passi l'uno, 30 min, `boost_qos_dbg`, piano `collaudo.json`: 2,6 / 4,0 GPU-ora): misura i s/passo
+   (il preventivo usa 0,7 misurati su A; con `TIME_LIMIT_S` 40.800 e nessun job di scorta il tronco regge fino a 0,81 s/passo) e prova sul
+   nodo il contratto delle loss con le regioni e coi token interi. Se R2 o R5 superano 0,81 s/passo, il piano passa a `spare_jobs` 1 per
+   quel run prima del lancio.
+4. **Firma dello scostamento da D10** per R5: quote delle maschere `share_short` 0, 0,294 / 0,235 / 0,471 (`--mask-shares`), **e** la
+   ripartizione della perdita che ne segue, perche' la perdita conta solo i token interi (misura del `critico` del 24/10 col generatore vero,
+   raggio 3, 160 patch, 40 semi; quota dei token nascosti -> quota dei token interi): media 15,8 -> 10,2%, slab 19,6 -> 14,1%, spaziale 52,3 ->
+   62,3% su capgmyo; emg2pose 17,9 -> 11,9 / 23,1 -> 18,1 / 46,7 -> 56,4; DB2 16,0 -> 9,7 / 20,9 -> 16,3 / 48,3 -> 57,8; token interi / nascosti
+   ~0,83. Le maschere spaziali pesano di piu', le corte spariscono: e' parte dell'ipotesi di R5, ma e' uno scostamento da D10 e si firma.
+5. **Controllo d'uguaglianza sulla P2 (proposta, facoltativo):** `pool` di A s0 sulla P2 con `channel_readout.py` contro `s_p2.json` storico
+   (un job CPU di ~30 min, 0 GPU-ora), per chiudere l'uguaglianza dello strumento del criterio anche sulla P2.
+6. **Review del `critico`** su protocollo e codice; regola di lettura in `decisioni.md`; poi deploy `deploy/pilot-obiettivi-20261024`, checkout
+   di campagna, gate D8 e collaudo, e il via di Simone ai 4 training.
+7. **Valutazione:** le estrazioni e le sonde si sottomettono a run finiti, coi launcher del readout per canale (`channel_readout_extract.sbatch`,
+   `channel_readout_probe.sbatch --layer pool` e `--layer dec`); il confronto sul Mac dai rapporti copiati, come il 23-24/10.
+
+## 7. Costi (preventivo `results/infra/pilot_obiettivi_20261024/preventivo_training.json`, s/passo 0,7 misurato a 4 GPU, slack 1,15)
+
+| Voce | Job | GPU-ora attese / tetto |
 |---|---|---|
-| R0 (A), R1, R2, R5 a 2 epoche col ramo di decay a 1 | 4 | ~176 / 230 |
-| Gate D8 per il banco da 150 ms (R5), CPU | 1 | 0 GPU-ora, ~10 core-ore |
-| Seme 1 del braccio che passa (2 epoche col ramo) | 0-1 | ~44 / 58 |
-| Valutazione: estrazioni GPU di 8 endpoint (4 run x 2), P1 e P2 | 16 | ~8 / 16 |
-| Sonde CPU (pool, readout designato; P1 e P2; 8 endpoint) | ~32 job seriali (10 alla volta in coda, 1 in esecuzione) | 0 GPU-ora, ~160 core-ore |
-| **Prima ondata** | | **~184 / 246 GPU-ora** (+44 / 58 col seme 1) |
+| Collaudo dbg di R2 e R5 (1.300 passi, 30 min l'uno) | 2 | 2,6 / 4,0 |
+| 4 tronchi a 2 epoche (12 h di tetto l'uno, un nodo) | 4 | 156,4 / 192,0 |
+| 4 rami di decay a 1 epoca (2 h 15 l'uno) | 4 | 19,2 / 36,0 |
+| Gate D8 per il banco da 150 ms (CPU seriale) | 1 (+1 checkout) | 0 (~1 core-ora, tetto 4) |
+| Estrazioni GPU: 8 endpoint x (P1 + P2) | 16 | ~5,6 / 20,0 |
+| Sonde CPU: 8 endpoint x (pool P1, pool P2, dec P1, dec P2) | 32 seriali (10 in coda alla volta) | 0 (~270 core-ore attese, tetto 1.024) |
+| **Prima ondata** | | **~184 / 252 GPU-ora = ~1.472 / 2.016 ore locali** |
+| Conferma: seme 1 del braccio che passa + R0 seme 1 (tronco e ramo ciascuno) | 4 (+8 valutazione) | ~88 / 114 GPU-ora (= 704 / 912 ore locali; +2,8 / 10 di valutazione) per il primo braccio, +44 / 57 per ogni altro |
 
-Voce di budget: famiglia «Ablation a 30M» della finestra 1 (~2.100 GPU-ora stimate in `docs/finestra1_fattibilita.md`), oppure una voce nuova
-decisa da Simone. Calendario: i due run in un'ondata (~5 h su due nodi), valutazione ~1 giorno sulla seriale.
+Ore locali: 1 GPU-ora = 8 ore locali (convenzione del progetto). Voce di budget: finestra 1 (tetto firmato il 16/10: 6.000 GPU-ora,
+calibrazione compresa). Spese registrate finora in `decisioni.md`: calibrazione ~149,5 (su 220, C4 compresa); bracci: 4 run sani ~321 (244,2
+da sacct per tre run + A s0 ~77), JEPA-only s0 e s1 ~10 (5,79 + 4,22), valutazione ~15 (readout per canale compreso); in tutto ~496:
+**residuo indicativo ~5.500 GPU-ora**, da confermare col consuntivo prima della firma. Dentro la finestra 1 la voce e' la famiglia «Ablation a 30M»
+(~2.100 GPU-ora stimate in `docs/finestra1_fattibilita.md`), oppure una voce nuova decisa da Simone. Calendario: i 4 tronchi in parallelo su 4
+nodi (~12 h), i rami dietro (~1 h 10 di calcolo, 2 h 15 di tetto), valutazione ~1-2 giorni sulla seriale. Disco: 12,8 GB di checkpoint su
+`$SCRATCH/wearusfm_runs/runs/pilot_obiettivi/`.
 
-## Cosa NON fa questo pilot
+## 8. Cosa NON fa questo pilot
 
-Non tocca il tokenizer (front-end, identita' di canale) ne' K: se R1 e R2 non passano e la seconda ondata non e' voluta, la mossa successiva e'
-sul tokenizer (token da 100-200 ms sopra le patch, lettura non lineare per canale) con l'analisi sui pesi come primo passo a costo zero.
+Non tocca K ne' l'identita' di canale; non ingerisce etichette; non cambia il loader. Se nessun braccio passa e la seconda ondata non e' voluta,
+la mossa successiva e' sul tokenizer (token da 100-200 ms sopra le patch, lettura non lineare per canale), con l'analisi dei pesi come primo
+passo a costo zero.

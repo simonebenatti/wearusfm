@@ -59,6 +59,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--window-ms", type=float, default=None,
                     help="finestra del kernel del front-end piu' lunga del passo di 25 ms (R5 del pilot degli obiettivi, p.es. 150): la griglia "
                          "resta la patch, la perdita conta solo i token interamente nascosti; default nessuna (il banco di sempre)")
+    ap.add_argument("--jepa-region-target", action="store_true",
+                    help="target JEPA per regione nascosta (media del teacher sulla maschera estratta) invece che per token: R2 del pilot degli "
+                         "obiettivi; default per token")
+    ap.add_argument("--mask-shares", default=None,
+                    help="quote delle maschere corta:media:lunga:spaziale (somma 1; D10 firmata: 0.15:0.25:0.20:0.40); per R5 "
+                         "0:0.294:0.235:0.471, scostamento dichiarato da D10; default le quote firmate")
     ap.add_argument("--batch-size", type=int, default=None, help="batch GLOBALE in finestre (con --distributed diviso fra i processi)")
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
@@ -138,6 +144,17 @@ def build_config(args, error=None) -> "R.RunConfig":
             cfg = replace(cfg, model=replace(cfg.model, window_ms=float(args.window_ms)))
         except ValueError as e:
             fail(f"--window-ms: {e}")
+    if getattr(args, "jepa_region_target", False):
+        cfg = replace(cfg, jepa=replace(cfg.jepa, region_target=True))
+    if getattr(args, "mask_shares", None) is not None:
+        try:
+            shares = [float(x) for x in args.mask_shares.split(":")]
+            if len(shares) != 4:
+                raise ValueError("servono quattro quote corta:media:lunga:spaziale")
+            cfg = replace(cfg, loader=replace(cfg.loader, mask=replace(cfg.loader.mask, share_short=shares[0], share_medium=shares[1],
+                                                                       share_long=shares[2], share_spatial=shares[3])))
+        except ValueError as e:
+            fail(f"--mask-shares: {e}")
     weights = {k: v for k, v in (("anchor_weight", args.anchor_weight), ("jepa_weight", args.jepa_weight)) if v is not None}
     if weights:
         try:

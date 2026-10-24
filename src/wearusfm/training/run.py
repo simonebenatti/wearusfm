@@ -166,7 +166,7 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
     if isinstance(out.get("jepa"), dict):
-        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, **out["jepa"]}
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, **out["jepa"]}  # region_target: R2, 24/10
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out
@@ -503,6 +503,7 @@ class _Micro:
     rvq_on: torch.Tensor | None
     rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
     codes: torch.Tensor | None = None  # i codici impacchettati dietro `rvq_codes`
+    regions: torch.Tensor | None = None  # regioni delle maschere (target per regione, R2), se il batch le porta
 
 
 def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
@@ -512,7 +513,8 @@ def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -
         inp.signals = [x.to(dtype) for x in inp.signals]
     codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
     return _Micro(inp, visible, torch.as_tensor(batch.kind).to(device), batch.anchor_targets, rvq_on if codes_t is not None else None,
-                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None, codes_t)
+                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None, codes_t,
+                  regions=torch.as_tensor(batch.region).to(device) if batch.region is not None else None)
 
 
 def _stage(batch: L.PretrainBatch, accum_steps: int, device) -> list[_Micro]:
@@ -525,7 +527,7 @@ def _micro_tensors(micros: list[_Micro]) -> list[torch.Tensor]:
     out = []
     for m in micros:
         out += [*m.inp.signals, *m.inp.codes.values(), *m.inp.sets.values(), m.inp.qc_valid, m.visible, m.kinds]
-        out += [t for t in (m.rvq_on, m.codes) if t is not None]
+        out += [t for t in (m.rvq_on, m.codes, m.regions) if t is not None]
     return out
 
 
@@ -629,7 +631,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     all_reduce). Ritorna (motivo d'arresto o None, metriche): le metriche sono somme e conteggi globali (numeratori, diagnostiche, contatori)."""
     keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0 else None
     pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
-                       keep_target_active=keep_active) for m in micros]
+                       keep_target_active=keep_active, regions=m.regions) for m in micros]
     keys = sorted(pre[0])
     if any(sorted(p) != keys for p in pre):
         raise RuntimeError(f"componenti delle loss diverse fra i micro-batch: {[sorted(p) for p in pre]}")
@@ -649,7 +651,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
 
             def compute(s, m=m):
                 return jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
-                                       rvq_codes=m.rvq_codes, kinds=m.kinds)
+                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions)
 
             with amp:
                 terms = model(compute) if model is not None else compute(student)
@@ -852,7 +854,8 @@ def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg:
                     codes_t = torch.from_numpy(RC.pack_codes(b.rvq_codes)).to(device) if b.rvq_codes is not None else None
                     t = jepa_loss_terms(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
                                         kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
-                                        rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None)
+                                        rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None,
+                                        regions=torch.as_tensor(b.region).to(device) if b.region is not None else None)
                     parts.append({"num": values(t.num), "den": values(t.den), "log_num": values(t.log_num), "log_den": values(t.log_den),
                                   "log_sum": values(t.log_sum)})
                     weight = dict(t.weight)
@@ -1278,7 +1281,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                         masked_metrics = branch_monitors(teacher, m.inp, batch_spans(m.inp, cfg.seed, step + 1))
                 else:
                     losses = jepa_losses(student, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=batch.anchor_targets, kinds=m.kinds,
-                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes)
+                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes, regions=m.regions)
             if not bool(torch.isfinite(losses["total"])):
                 reason = f"perdita non finita al passo {step}"
                 numerical_failure = True
