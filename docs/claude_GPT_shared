@@ -3286,6 +3286,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Test del verificatore: `tests/cpu/test_arms_collaudo.py` (il test del braccio sconosciuto usava il nome «A»: ora usa un nome che non esiste;
   riga di riepilogo di pytest nel messaggio di commit). Gate 62154852 RUNNING da 18 min alle 19:52, l'agente lo aspetta; R5 (62154880) parte
   dopo il gate; le 4 sonde restano in hold fino al gate.
+### 2026-10-24 | Claude | Pilot degli obiettivi: gate D8 sul banco da 150 ms SUPERATO (job 62154852, 6 casi su 6); le 4 sonde del readout rilasciate; collaudo di R5 in corso (62154880) | Codice: 705ec04 sul cluster; commit di questa voce (esito del gate in `results/step3/`)
+
+- **Gate D8 a 150 ms** (`gate_d8.sbatch --window-ms 150` dal checkout, job 62154852, seriale, 44 min e 12 s, exit 0; circa 1,5 core-ore su
+  2 core, entro il tetto di 4; 0 GPU-ora): codice 705ec04 verificato all'avvio; Kaifosh da `$SCRATCH/data/processed/kaifosh` (100 sessioni),
+  2.000 finestre da 100 soggetti; definizioni e soglie firmate il 01/10 (errore relativo <= 5% per famiglia, sonda <= 55%). **GATE: SUPERATO,
+  6 casi su 6**: errore totale 0,0000 a 1 kHz (semi 0, 1, 2; fourier, spline e mlp 0,0000) e 0,0010-0,0012 a 200 Hz (fourier 0,0010-0,0012,
+  spline 0,0011, mlp 0,0005-0,0006); sonda di soggetto 0,500 a 1 kHz (IC [0,500, 0,500]) e 0,500-0,5025 a 200 Hz (IC al 95% fino a 0,579 nel
+  seme 1: il criterio firmato guarda la stima, come il 01/10). Il JSON registra il banco: `frontend.window_ms` 150,0, `bank` = «finestra del
+  kernel di 150 ms a passo 25 ms (R5)», `passes` true. Copiato dal cluster (`$WORK/wearusfm_runs/results/step3/gate_62154852.json`) in
+  `results/step3/gate_62154852.json`, accanto a `gate_59087481.json` del 01/10 (stesse chiavi piu' `bank`). Sveglia dall'agente alle 20:20.
+- **R5 e' autorizzato a partire** (il NON SUPERATO avrebbe fermato solo R5): il collaudo `PILOTC-R5-finestra150-30M-s0-j01` (62154880, afterok
+  sul gate) e' passato a RUNNING alle 20:20 da solo; alle 20:23 era in corso da 2 min e 28 s. L'agente lo aspetta
+  (`~/wearusfm_local/logs/watch_pilot_r5.txt`); lettura con lo stesso verificatore di R2 (`arms_collaudo.py --arm A`).
+- **Rilascio delle 4 sonde P2 del readout** (62100961, 62128193, 62128210, 62128222), come da autorizzazione di Simone del 24/10 («rilasciale
+  dopo il gate», eccezione alla regola di leonardo-ops): il subagent leonardo-ops ha **rifiutato** `scontrol release` (sua regola: niente
+  `scontrol`; e l'autorizzazione gli arrivava di seconda mano, non da Simone), quindi l'ho eseguito io dal Mac alle 20:23 (`ssh leonardo
+  'scontrol release ...'`, exit 0, `~/wearusfm_local/logs/release_sonde_20261024.txt`). `squeue` prima e dopo (`squeue_dopo_gate_20261024.txt`,
+  `squeue_dopo_rilascio_20261024.txt`): le 4 sonde da `JobHeldUser` a PENDING con motivo `None`, cioe' di nuovo in coda normale della seriale
+  (partono una alla volta per il limite di CPU per utente). Nessun altro job toccato. Rilievo per la regola: un'eccezione di Simone va eseguita
+  dalla sessione principale, non dal subagent, che per costruzione non puo' verificarla.
+- **Stato del budget del collaudo:** R2 ~1,15 GPU-ora reali, R5 in corso (2,0 prenotate), tetto 4,0; consuntivo con `sacct` alla chiusura.
+  **I 4 training restano in attesa del via di Simone**, che riceve gate, due collaudi e i comandi di `comandi_training.txt` insieme.
 
 ## 2) Problemi trovati
 

@@ -1,0 +1,161 @@
+{
+  "decision": "docs/decisioni.md, D8a - definizioni operative FIRMATE il 01/10/2026",
+  "dataset": "kaifosh",
+  "per_subject": 20,
+  "n_windows": 2000,
+  "trial_only": false,
+  "frontend": {
+    "patch_ms": 25.0,
+    "context_ms": 100.0,
+    "families": [
+      "fourier",
+      "spline",
+      "mlp"
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "window_ms": 150.0,
+    "n_harmonics": 156,
+    "n_knots": 120,
+    "mlp_omega0": 36.0
+  },
+  "bank": "finestra del kernel di 150 ms a passo 25 ms (R5)",
+  "cases": {
+    "1kHz_seed0": {
+      "rel_error": {
+        "fourier": 3.826656072013048e-06,
+        "spline": 3.5705025645065563e-07,
+        "mlp": 1.056870970451218e-09,
+        "total": 3.759788943613428e-06
+      },
+      "probe": {
+        "balanced_accuracy": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    },
+    "1kHz_seed1": {
+      "rel_error": {
+        "fourier": 4.086709951919153e-06,
+        "spline": 3.8053262446489834e-07,
+        "mlp": 2.4530855373154705e-10,
+        "total": 4.015525406194891e-06
+      },
+      "probe": {
+        "balanced_accuracy": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    },
+    "1kHz_seed2": {
+      "rel_error": {
+        "fourier": 3.8398591286388765e-06,
+        "spline": 3.833324937252131e-07,
+        "mlp": 2.642957349448008e-10,
+        "total": 3.770944512803216e-06
+      },
+      "probe": {
+        "balanced_accuracy": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    },
+    "200Hz_seed0": {
+      "rel_error": {
+        "fourier": 0.001052769538491869,
+        "spline": 0.001068441884538647,
+        "mlp": 0.0006172996717149862,
+        "total": 0.0010510777511456189
+      },
+      "probe": {
+        "balanced_accuracy": 0.5025,
+        "ci95": [
+          0.45625000000000004,
+          0.55
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    },
+    "200Hz_seed1": {
+      "rel_error": {
+        "fourier": 0.001012288464680089,
+        "spline": 0.0011008503165269709,
+        "mlp": 0.0005488688256087478,
+        "total": 0.0010137947080298695
+      },
+      "probe": {
+        "balanced_accuracy": 0.5,
+        "ci95": [
+          0.41996875000000006,
+          0.5788125
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    },
+    "200Hz_seed2": {
+      "rel_error": {
+        "fourier": 0.0012471717450598784,
+        "spline": 0.0011243199725292246,
+        "mlp": 0.0005741041691784076,
+        "total": 0.0012393158768446333
+      },
+      "probe": {
+        "balanced_accuracy": 0.50125,
+        "ci95": [
+          0.45746875000000004,
+          0.54375
+        ],
+        "chance": 0.5,
+        "model": "logreg_C0.1",
+        "n_test": 800,
+        "n_subjects": 100
+      },
+      "passes_error": true,
+      "passes_probe": true,
+      "passes": true
+    }
+  },
+  "passes": true
+}

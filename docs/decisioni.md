@@ -4292,3 +4292,11 @@ memoria GPU max 11,9 GiB; rango effettivo 66,8-74,0 (minimo 38,4), nessun allarm
 l'obiettivo A (pesi dei bracci del pilot): 8 criteri su 8, esito in `results/infra/pilot_obiettivi_20261024/collaudo/esito_R2.json`. Costo
 reale ~1,15 GPU-ora su 2,0 prenotate (consuntivo con sacct alla chiusura). Gate D8 in corso; R5 parte dopo il gate; **i 4 training restano in
 attesa del via di Simone.**
+**Pilot degli obiettivi: gate D8 sul banco da 150 ms SUPERATO (24/10/2026, job 62154852), sonde del readout rilasciate, collaudo di R5 in
+corso.** Gate dal checkout 705ec04 (44 min sulla seriale, ~1,5 core-ore su 4 di tetto, 0 GPU-ora): 6 casi su 6 superati con le soglie
+firmate il 01/10 (errore relativo <= 5%: misurato 0,0000 a 1 kHz e 0,0010-0,0012 a 200 Hz; sonda <= 55%: 0,500-0,5025); il JSON registra
+`frontend.window_ms` 150 e `bank` «finestra del kernel di 150 ms a passo 25 ms (R5)», archiviato in `results/step3/gate_62154852.json`.
+Quindi **R5 e' ammesso al pilot**: il suo collaudo (62154880) e' partito da solo alle 20:20 per la dipendenza afterok. Le 4 sonde P2 del readout
+(62100961, 62128193, 62128210, 62128222) sono state rilasciate alle 20:23 dalla sessione principale con `scontrol release`, per l'eccezione
+autorizzata da Simone il 24/10 (il subagent leonardo-ops l'ha rifiutato, come da sua regola): tornate in coda normale. **I 4 training restano
+in attesa del via di Simone.**
