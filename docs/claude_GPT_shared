@@ -3060,6 +3060,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Terza tornata di sonde (coda a 6 -> 10): A s0 P2 dec 62043217 (con `--dopo-rifiuto`), A s1 P2 local 62043237, A s1 P2 dec 62043256,
   ancore-only s0 P2 local 62043273. Restano 7 da sottomettere (4 a larghezza intera, ancore-only s0 P2 dec, s1 P2 local/dec).
 
+### 2026-10-24 | Claude | Readout per canale: confronto 1 sulla P1, `dec` contro readout medio, due semi: regola non superata | Codice: 6242bc3 (deploy)
+
+- `dec` A s1 P1 (61984695, 2 h 17): S 17,71 ± 0,78 (DB2 18,92, DB3 2,84, DB6 35,17). Confronto accoppiato (regola congelata): **`dec` a k 768 -
+  readout medio = -0,42 punti, IC95 [-1,20; +0,33], per seme -0,28 / -0,56: «regola non superata»** (ne' migliora ne' peggiora oltre le
+  soglie). Per dataset: DB2 -0,40 [-1,39; +0,50], DB3 -0,33, DB6 -0,65 [-3,74; +2,75].
+- **Confronto 1 sulla P1 chiuso per A:** nessuno dei due strati per canale «migliora» (local «peggiora» di 2 punti, dec alla pari): sulla P1
+  cross-soggetto il readout medio non nasconde informazione. La risposta del protocollo («il readout medio nasconde informazione» se uno
+  strato migliora in un compito senza peggiorare nell'altro) dipende ora dalla P2 (sonde in coda). Esito in
+  `~/wearusfm_local/readout_canale_20261023/confronti/confronto1_p1_dec_vs_pool.json`. In esecuzione: ancore-only s0 P1 local; 8 in coda.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

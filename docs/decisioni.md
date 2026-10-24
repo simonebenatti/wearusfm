@@ -4162,6 +4162,9 @@ per R5, firma dello scostamento da D10 per R5, review del `critico`, congelament
 contro il readout medio storico di A, due semi, bootstrap congiunto: delta -2,00 punti, IC95 [-2,60; -1,36], per seme -1,99 / -2,00 (DB2 -3,41,
 DB3 -0,26, DB6 +1,07 con intervallo che include lo zero). Sulla P1 cross-soggetto la media sui canali non nasconde informazione utile
 dell'encoder locale: la toglie dove e' dannosa (il posizionamento per soggetto). Nessuna adozione. Seguono `dec`, ancore-only e la P2.
+**Readout per canale, confronto 1 sulla P1, strato `dec` (24/10/2026, regola congelata): «REGOLA NON SUPERATA».** `dec` per canale a k 768 contro
+il readout medio di A, due semi: delta -0,42 punti, IC95 [-1,20; +0,33], per seme -0,28 / -0,56 (DB2 -0,40, DB3 -0,33, DB6 -0,65). Sulla P1
+nessuno strato per canale migliora il readout medio: `local` peggiora, `dec` e' alla pari. La domanda del protocollo resta aperta sulla P2.
 **Correzione della voce della firma del rango (Claude, 23/10/2026).** La voce «Allarme sul rango effettivo e nuova C4: FIRMATO» rimanda
 alle «Alternative valutate (relativa, varianza, combinata) nella voce del registro del 23/10»: nel registro quella valutazione non c'era (le
 alternative risultavano «non discusse»). Ora c'e', scritta dopo la firma coi dati gia' nel repo (registro, voce «Rango effettivo: le
