@@ -4178,3 +4178,17 @@ NON SUPERATA».** Riferimento ancore-only s0/s1, candidato A s0/s1, stesso strat
 ~0,2 punti anche col readout per canale: il verdetto «ancore-only = A» dei bracci regge. `dec` appena finisce il seme 1. Strumento:
 `--stage compare --models` (emendamento 8 del protocollo), aggiunto dopo l'apertura dei rapporti e prima del confronto, dichiarato; regola e
 bootstrap invariati. Sonde: 17 job finiti senza errori, 1 in esecuzione, 9 in coda (quinta tornata: ancore-only s1 P2 local), 3 da sottomettere.
+**Readout per canale, confronto 1 sulla P2 e risposta alla domanda del protocollo (24/10/2026, regola congelata in 63ac0dd).** `local` a k 768
+contro il readout medio di A, due semi, bootstrap congiunto: -2,49 punti, IC95 [-4,59; -0,66], per seme -3,12 / -1,87: «PEGGIORA» (EPN-612
+-7,40; UCI +2,41 con intervallo che include lo zero). `dec`: +1,33 punti, IC95 [-0,93; +3,54], per seme +0,72 / +1,93: «REGOLA NON SUPERATA»
+(EPN-612 +1,41 [+1,03; +1,83]; UCI +1,25 [-3,26; +5,74]). Quattro letture (P1 e P2 x local e dec): nessuno strato «migliora» in un compito ->
+**con la regola congelata il readout medio non nasconde informazione.** Nessuna adozione, nessun cambio del readout di default. Sfumatura
+descrittiva registrata (decoder per canale +1,4 su EPN-612 a montaggio condiviso, in perdita sui montaggi per soggetto di DB2/DB6): orienta la
+scelta del readout del pilot degli obiettivi, non e' una prova.
+**Readout per canale, confronto 2 (24/10/2026):** candidato scelto con la regola del protocollo (S P1 media dei due semi: local 16,31, dec
+17,89, pool storico 18,31) = `pool` storico; contro la baseline classica gli esiti del 23/10 (P1 +4,01 [+2,97; +5,03], P2 +13,86 [+11,00;
++17,03], tutti e due «migliora»): «l'encoder batte le feature classiche», descrittivo, nessuna soglia di adozione.
+**Readout per canale, opzione ancore-only, strato `dec` sulla P1 (24/10/2026, descrittivo): «REGOLA NON SUPERATA».** A - ancore-only = -0,78
+punti, IC95 [-1,12; -0,45], per seme -0,78 / -0,78 (DB2 -1,17 [-1,60; -0,78]). Con `local` (+0,20) e `dec` (-0,78) il verdetto dei bracci
+«ancore-only = A» regge col readout per canale. Sonde: tutte le 21 sottomesse (ultime tre 62128193, 62128210, 62128222); 13 finite senza
+errori, 8 in coda o in esecuzione, tutte P2 (larghezza intera e ancore-only), descrittive.

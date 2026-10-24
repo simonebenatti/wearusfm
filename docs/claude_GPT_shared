@@ -3098,6 +3098,39 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   riepilogo di pytest: sottoinsieme `compare or models` 2 passed; file intero `tests/cpu/test_channel_readout.py` **12 passed** in 1 min 17
   (suite completa non rilanciata: la modifica tocca solo questo script e il suo test).
 
+### 2026-10-24 | Claude | Readout per canale: confronto 1 chiuso anche sulla P2 (risposta: con la regola congelata il readout medio non nasconde informazione), A contro ancore-only su `dec`, confronto 2 chiuso col `pool`; tutte le 21 sonde sottomesse | Codice: 0146e8f (confronti), 6242bc3 (deploy)
+
+- Stato alle 15:22 (sacct): 22 job COMPLETED senza errori (checkout, 8 estrazioni, 13 sonde: le 9 della P1 e le 4 di A sulla P2 a k 768,
+  24-30 min l'una contro 2-2,5 h sulla P1); in esecuzione ancore-only s0 P2 local (62043273); 4 in coda; nessun fallimento. Sesta tornata, le
+  ultime 3 (coda 5 -> 8): ancore-only s1 P2 dec 62128193, A s1 P2 a larghezza intera local 62128210 e dec 62128222. **Tutte le 21 sonde sono
+  sottomesse; ne restano 8 (1 in esecuzione, 7 in coda), tutte P2.** Rapporti e OOF nuovi copiati sul Mac (10 file).
+- `dec` ancore-only s1 P1 (61987715, 1 h 53): S 18,49 ± 0,74 (DB2 20,40, DB3 2,87, DB6 34,29). **A contro ancore-only, strato `dec` a k 768,
+  P1, due semi (`--models`, descrittivo per protocollo): A - ancore-only = -0,78 punti, IC95 [-1,12; -0,45], per seme -0,78 / -0,78: «regola
+  non superata»** (sotto la soglia di 1 punto del «peggiora», ma intervallo tutto sotto lo zero). Per dataset: DB2 -1,17 [-1,60; -0,78], DB3
+  -0,01, DB6 -0,38 [-1,60; +0,97]. Con `local` A faceva +0,20: col readout per canale il JEPA non aggiunge niente alle ancore, e sul decoder la
+  rete di sole ancore si legge perfino un po' meglio (il suo decoder e' di fatto il predittore delle ancore fisiche; quello di A porta anche la
+  predizione dell'embedding del teacher). Il verdetto dei bracci «ancore-only = A» regge con tutti e due gli strati. Esito in
+  `~/wearusfm_local/readout_canale_20261023/confronti/A_vs_AO_p1_dec.json`.
+- P2 di A a k 768 (4 sonde): `local` s0 78,80 ± 2,26, s1 78,88 ± 2,14; `dec` s0 82,64 ± 2,28, s1 82,69 ± 2,24; readout medio storico 81,92 /
+  80,75. EPN-612: PCA a 768 sulle 3.072 colonne (8 canali x 384) spiega il 100% della varianza; UCI-EMG (364 finestre): k effettivo 222-258
+  per fold (tetto righe - 1 in tutti e 4 i fold, dichiarato `k_capped`), cioe' di fatto larghezza piena.
+- **Confronto 1 sulla P2 (regola congelata, bootstrap congiunto):** `local` - readout medio = **-2,49 punti, IC95 [-4,59; -0,66], per seme
+  -3,12 / -1,87: «peggiora»** (EPN-612 -7,40 [-8,23; -6,60]; UCI +2,41 [-1,71; +6,02]). `dec` - readout medio = **+1,33 punti, IC95 [-0,93;
+  +3,54], per seme +0,72 / +1,93: «regola non superata»** (EPN-612 +1,41 [+1,03; +1,83], positivo nei due semi; UCI +1,25 [-3,26; +5,74]: poche
+  finestre e pochi soggetti allargano l'intervallo congiunto). Esiti in `confronti/confronto1_p2_{local,dec}_vs_pool.json`.
+- **Risposta alla domanda 1 del protocollo (quattro letture, senza correzione, dichiarato):** P1 `local` «peggiora» (-2,00), P1 `dec` «regola
+  non superata» (-0,42), P2 `local` «peggiora» (-2,49), P2 `dec` «regola non superata» (+1,33). Nessuno strato «migliora» in un compito: **con
+  la regola congelata il readout medio non nasconde informazione.** Sfumatura descrittiva, fuori dalla risposta: il decoder per canale guadagna
+  1,4 punti su EPN-612 (montaggio Myo uguale per tutti i soggetti) e perde su DB2/DB6 (montaggi per soggetto): coerente con la lettura che la
+  media sui canali e' un'invarianza al posizionamento, utile fra montaggi diversi e superflua a montaggio condiviso. Indizio per la scelta del
+  readout nel pilot, non una prova.
+- **Confronto 2 chiuso (candidato scelto con la regola del protocollo, fissata prima di aprire la baseline):** S P1 media dei due semi `local`
+  16,31, `dec` 17,89, nessuna sopra il `pool` storico (18,31) -> candidato il `pool` storico. Contro la baseline classica (feature di Hudgins
+  per canale, sonda lineare) valgono gli esiti gia' calcolati il 23/10: P1 +4,01 [+2,97; +5,03] «migliora», P2 +13,86 [+11,00; +17,03]
+  «migliora» -> **«l'encoder batte le feature classiche»** (descrittivo rispetto alla baseline, nessuna soglia di adozione).
+- Restano i descrittivi: larghezza intera sulla P2 (4 sonde), ancore-only sulla P2 (4 sonde) e A contro ancore-only sulla P2; poi consuntivo
+  CPU e chiusura della campagna. Nessun controllo o monitor fino al prossimo messaggio di Simone (sua istruzione del 24/10).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
