@@ -1,7 +1,9 @@
 # Pilot degli obiettivi di pretraining — `pilot_obiettivi_v1`
 
-**Stato: PROPOSTA di Claude (24/10/2026), codice pronto, in attesa della review del `critico` e della firma di Simone; nessun job.** La regola di
-lettura (§5) si congela in `docs/decisioni.md` prima di qualunque lancio. Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+**Stato: regola di lettura (§5) e scostamento da D10 per R5 FIRMATI da Simone il 24/10/2026** («Firmo la regola di lettura del pilot (testo del
+§5) e lo scostamento da D10 per R5. Via al deploy deploy/pilot-obiettivi-20261024, al checkout di campagna, al gate D8 sul banco da 150 ms e al
+collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4 training aspettano il mio via dopo gate e collaudo.»), dopo due review del `critico` (24/10,
+rilievi tutti corretti). La regola congelata sta in `docs/decisioni.md` (voce della firma); i 4 training attendono il via dopo gate e collaudo. Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
 `docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
 bottiglia piu' probabile e' nell'obiettivo).
 Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata
@@ -21,7 +23,7 @@ Misura: S della validazione interna (P1 e P2) col readout medio `pool`, lo stess
 | **R0** riferimento | A rifatto a 2 epoche col ramo di decay a 1 epoca: stesso seme 0, LR 1e-4, manifest, loader e sampler di C1 s0 e dei bracci | pronto (e' A) |
 | **R1** target (a) | `JEPAConfig.target = "a"`: target = uscita per canale dell'encoder locale del teacher allo stesso (canale, istante), non il decoder a query (D11; il braccio di controllo di v10 §5.6 mai eseguito) | `--jepa-target a` (23/10), test di default invariato |
 | **R2** target per regione | il target JEPA di ogni **regione nascosta** (una maschera estratta: tubo, slab o maschera spaziale) e' la LayerNorm della media del teacher sui suoi token; lo studente predice la media delle sue uscite sugli stessi token; l'errore quadratico della regione e' attribuito a ciascuno dei suoi token e ridotto come oggi (per finestra), cosi' **le quote di D10 restano quelle per token** e cambia solo l'unita' del target; ancore invariate per token | **fatto il 24/10**: `generate_mask_regions` (numero della maschera per token), `PretrainBatch.region`, `JEPAConfig.region_target`, `jepa.region_means`, `--jepa-region-target`; test: default bit per bit identico, regione per token = perdita per token, perdita = media per token dell'errore della regione, contratto delle loss (numeratori e conteggi uguali a `loss_counts`; batch intero = micro-batch per perdita, gradienti, ottimizzatore ed EMA), dal loader vero |
-| **R5** finestra 150 ms, passo 25 ms | il kernel del front-end vive su 150 ms centrati sulla patch; la griglia dei token resta a 25 ms (sequenza, maschere, ancore, RVQ invariati); basi scalate (156 armoniche, 120 nodi, omega 36); **la perdita conta solo i token interamente nascosti** (nessuna patch visibile entro 3 patch per lato); le maschere da 1-2 patch non producono token interi: `share_short` 0, quote 0,294 / 0,235 / 0,471 (**scostamento dichiarato da D10, da firmare**) | fatto il 23/10 (`FMConfig.window_ms`, `core_hidden`, `--window-ms`); il 24/10: `--mask-shares 0:0.294:0.235:0.471`, e `loss_counts` corretto (prima non applicava il raggio: il contratto delle loss avrebbe fermato il run al primo passo; test) |
+| **R5** finestra 150 ms, passo 25 ms | il kernel del front-end vive su 150 ms centrati sulla patch; la griglia dei token resta a 25 ms (sequenza, maschere, ancore, RVQ invariati); basi scalate (156 armoniche, 120 nodi, omega 36); **la perdita conta solo i token interamente nascosti** (nessuna patch visibile entro 3 patch per lato); le maschere da 1-2 patch non producono token interi: `share_short` 0, quote 0,294 / 0,235 / 0,471 (**scostamento dichiarato da D10, firmato da Simone il 24/10/2026**) | fatto il 23/10 (`FMConfig.window_ms`, `core_hidden`, `--window-ms`); il 24/10: `--mask-shares 0:0.294:0.235:0.471`, e `loss_counts` corretto (prima non applicava il raggio: il contratto delle loss avrebbe fermato il run al primo passo; test) |
 
 R2 e R5 provano la stessa ipotesi (unita' meno rumorosa, alla scala dell'inviluppo) in due posti: R2 nella loss, col tokenizer di sempre; R5
 nel tokenizer. Seconda ondata (non in questo preventivo, decisione di Simone separata): R3 ancore + testa di posa su emg2pose senza JEPA; R4 =
@@ -70,7 +72,7 @@ cambia l'unita', R5 conta solo i token interi). A ciascuno dei due endpoint di o
    fisici uguali fra i bracci), pannello fisso ogni 500 passi.
 5. **Riferimenti esterni** sulla stessa validazione: baseline classica (P1 14,30, P2 67,48) e A storico (18,34 / 81,92).
 
-## 5. Regola di lettura (testo unico, identico in `docs/decisioni.md`, da congelare con la firma di Simone prima del lancio)
+## 5. Regola di lettura (testo unico, identico in `docs/decisioni.md`; FIRMATA da Simone il 24/10/2026, prima di qualunque job)
 
 «**Regola di lettura del pilot degli obiettivi.** Criterio: per ciascun braccio R_i (R1, R2, R5) e per ciascun compito (P1, P2) della validazione
 interna, all'endpoint a 2 epoche (teacher di `checkpoint_postdecay.pt` del tronco, run completo senza STOP), col readout `pool` estratto e
@@ -106,11 +108,13 @@ cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR
    ripartizione della perdita che ne segue, perche' la perdita conta solo i token interi (misura del `critico` del 24/10 col generatore vero,
    raggio 3, 160 patch, 40 semi; quota dei token nascosti -> quota dei token interi): media 15,8 -> 10,2%, slab 19,6 -> 14,1%, spaziale 52,3 ->
    62,3% su capgmyo; emg2pose 17,9 -> 11,9 / 23,1 -> 18,1 / 46,7 -> 56,4; DB2 16,0 -> 9,7 / 20,9 -> 16,3 / 48,3 -> 57,8; token interi / nascosti
-   ~0,83. Le maschere spaziali pesano di piu', le corte spariscono: e' parte dell'ipotesi di R5, ma e' uno scostamento da D10 e si firma.
+   ~0,83. Le maschere spaziali pesano di piu', le corte spariscono: e' parte dell'ipotesi di R5, ma e' uno scostamento da D10. **Firmato da
+   Simone il 24/10/2026** (quote e ripartizione della perdita; `docs/decisioni.md`).
 5. **Controllo d'uguaglianza sulla P2 (proposta, facoltativo):** `pool` di A s0 sulla P2 con `channel_readout.py` contro `s_p2.json` storico
    (un job CPU di ~30 min, 0 GPU-ora), per chiudere l'uguaglianza dello strumento del criterio anche sulla P2.
-6. **Review del `critico`** su protocollo e codice; regola di lettura in `decisioni.md`; poi deploy `deploy/pilot-obiettivi-20261024`, checkout
-   di campagna, gate D8 e collaudo, e il via di Simone ai 4 training.
+6. **Review del `critico`** su protocollo e codice (fatte: due giri il 24/10, rilievi corretti); regola di lettura in `decisioni.md` (firmata il
+   24/10); poi deploy `deploy/pilot-obiettivi-20261024`, checkout di campagna, gate D8 e collaudo (autorizzati il 24/10; ordine: checkout, poi
+   gate e collaudo di R2 insieme, collaudo di R5 dopo l'esito del gate), e il via di Simone ai 4 training.
 7. **Valutazione:** le estrazioni e le sonde si sottomettono a run finiti, coi launcher del readout per canale (`channel_readout_extract.sbatch`,
    `channel_readout_probe.sbatch --layer pool` e `--layer dec`); il confronto sul Mac dai rapporti copiati, come il 23-24/10.
 

@@ -4251,3 +4251,18 @@ solo P1», interpretazioni marcate. Minori: testo della regola unico nei due fil
 del gate registra il banco; test del contratto a micro-batch con le regioni e di R5 con ancore, QC e lunghezze diverse; s/passo di R2 e R5 non
 misurati -> collaudo dbg prima del lancio e soglia 0,81 s/passo; strumento unico `channel_readout.py`; gate ~1 core-ora attesa (4 di tetto);
 residuo del budget dichiarato; segnaposti del registro riempiti. Esito della seconda review nel registro.
+**Pilot degli obiettivi: regola di lettura e scostamento da D10 per R5 FIRMATI; deploy, checkout, gate D8 e collaudo AUTORIZZATI (Simone,
+24/10/2026: «Firmo la regola di lettura del pilot (testo del §5) e lo scostamento da D10 per R5. Via al deploy deploy/pilot-obiettivi-20261024,
+al checkout di campagna, al gate D8 sul banco da 150 ms e al collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4 training aspettano il mio via dopo
+gate e collaudo.»).** Firmati: (1) la regola di lettura, cioe' il blocco «Regola di lettura del pilot degli obiettivi» qui sopra (identico al §5
+di `docs/pilot_obiettivi_v1.md`), scritta prima di qualunque job: criterio `pool` a 2 epoche, delta >= +1 punto in P1 e in P2 col limite inferiore
+dell'intervallo al 95% > 0, un seme dichiarato, conferma col seme 1 del braccio che passa e di R0, sei letture senza correzione, allarme sul
+rango = non passa; (2) lo scostamento da D10 per R5: `share_short` 0, quote 0,294 / 0,235 / 0,471 (`--mask-shares 0:0.294:0.235:0.471`) e la
+ripartizione della perdita sui soli token interi che ne segue (capgmyo: media 15,8 -> 10,2%, slab 19,6 -> 14,1%, spaziale 52,3 -> 62,3%; token
+interi / nascosti ~0,83). Autorizzati ora: deploy del codice (commit di questa voce, stesso codice di 7da3d9e con la suite completa 1387 PASS),
+checkout di campagna (CPU seriale, secondi), gate D8 sul banco da 150 ms (CPU seriale, tetto 2 core x 2 h = 4 core-ore, 0 GPU-ora; NON SUPERATO
+-> R5 non parte, gli altri tre si'), collaudo dbg di R2 e R5 (2 job su `boost_qos_dbg`, 1.300 passi, 30 min l'uno su un nodo da 4 A100: **tetto
+4,0 GPU-ora**, attese 2,6; dentro la prima ondata del pilot, ~184 / 252 preventivati; voce di budget della finestra 1 da nominare al via dei
+training). Ordine scelto da Claude dentro l'autorizzazione: checkout -> gate D8 e collaudo di R2 insieme -> collaudo di R5 dopo l'esito del gate
+(se NON SUPERATO il collaudo di R5 non si lancia e le sue GPU-ore restano). Soglia del collaudo (congelata il 24/10): oltre 0,81 s/passo il run
+passa a `spare_jobs` 1 in `piano.json` prima del lancio. **I 4 training (tronchi e rami) restano in attesa del via di Simone dopo gate e collaudo.**
