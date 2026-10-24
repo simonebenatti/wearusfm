@@ -4172,3 +4172,9 @@ alternative coi dati e le correzioni della seconda review»): non cambia la rego
 (DA RIVEDERE, 2 bloccanti di registrazione): costante `W1_ERANK_MIN`; `--c4-repeat` rifiuta codice che non contiene 1b7b1c2; test della C4b
 dalla selezione al merge, STOP compreso; comando a mano della selezione per lo STOP ed emendamento in testa a
 `docs/calibrazione_c1_c4_selezione.md`; byte esatti del `config.json` della C4. Prossimo: terza review, poi deploy e comando a Simone.
+**Readout per canale, opzione ancore-only, strato `local` sulla P1 (24/10/2026, regola congelata, lettura descrittiva per protocollo): «REGOLA
+NON SUPERATA».** Riferimento ancore-only s0/s1, candidato A s0/s1, stesso strato `local` a k 768, bootstrap congiunto: delta +0,20 punti, IC95
+[+0,01; +0,39], per seme +0,31 / +0,09 (DB2 +0,16, DB3 +0,24, DB6 +0,28, intervalli che includono lo zero). Il JEPA aggiunge alle ancore sole
+~0,2 punti anche col readout per canale: il verdetto «ancore-only = A» dei bracci regge. `dec` appena finisce il seme 1. Strumento:
+`--stage compare --models` (emendamento 8 del protocollo), aggiunto dopo l'apertura dei rapporti e prima del confronto, dichiarato; regola e
+bootstrap invariati. Sonde: 17 job finiti senza errori, 1 in esecuzione, 9 in coda (quinta tornata: ancore-only s1 P2 local), 3 da sottomettere.

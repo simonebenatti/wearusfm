@@ -306,6 +306,39 @@ def test_channel_layer_is_reduced_on_the_train_fold_and_compare_applies_the_arms
         SC.check_readout_pairing({**td, "probe": {k: v for k, v in td["probe"].items() if k != "window_s"}}, local)
 
 
+def test_compare_between_two_models_with_the_same_readout_needs_the_models_flag(tmp_path, monkeypatch):
+    """Opzione ancore-only del protocollo: riferimento ancore-only s0/s1, candidato A s0/s1, stesso strato. Quattro reti casuali minuscole:
+    (0, 1) fanno da candidato, (2, 3) da riferimento."""
+    root, splits, subjects, ckpts, feats = _extract_p1(tmp_path, monkeypatch, seeds=(0, 1, 2, 3))
+    rep = {i: _probe(f, splits, "local", tmp_path / f"local{i}.json") for i, f in enumerate(feats)}
+    assert len({r["checkpoint_sha256"] for r in rep.values()}) == 4
+    p = {i: str(tmp_path / f"local{i}.json") for i in rep}
+    base = ["--stage", "compare", "--reference", p[2], p[3], "--candidate", p[0], p[1]]
+    with pytest.raises(ValueError, match="checkpoint diversi"):  # il confronto 1-2 vuole lo stesso modello per seme
+        SC.main(base + ["--out", str(tmp_path / "no.json")])
+    out = tmp_path / "modelli.json"
+    assert SC.main(base + ["--models", "--out", str(out)]) == 0
+    c = json.loads(out.read_text())
+    row = c["comparison"]
+    assert c["mode"].startswith("due modelli") and c["reading"]["min_delta"] == 0.01 and c["bootstrap"]["seed"] == 20261009
+    assert row["A"] == pytest.approx((rep[2]["S"] + rep[3]["S"]) / 2, abs=1e-9) and row["B"] == pytest.approx((rep[0]["S"] + rep[1]["S"]) / 2, abs=1e-9)
+    assert row["delta"] == pytest.approx(row["B"] - row["A"], abs=1e-9) and len(row["delta_by_model_seed"]) == 2
+    # rifiuti: riferimenti dello stesso checkpoint, candidato uguale al riferimento del seme, strati diversi fra i lati, riferimento senza modello
+    _probe(feats[2], splits, "dec", tmp_path / "dec2.json", ["--k", "0"])
+    _probe(feats[3], splits, "dec", tmp_path / "dec3.json", ["--k", "0"])
+    nomodel = {k: v for k, v in rep[2].items() if k not in ("checkpoint", "checkpoint_sha256")}
+    (tmp_path / "local2_senza_modello.json").write_text(json.dumps(nomodel))
+    (tmp_path / "local3_senza_modello.json").write_text(json.dumps({k: v for k, v in rep[3].items() if k not in ("checkpoint", "checkpoint_sha256")}))
+    for ref, cand, msg in (((p[2], p[2]), (p[0], p[1]), "due riferimenti sono lo stesso checkpoint"),
+                           ((p[0], p[3]), (p[0], p[1]), "stesso seme sono lo stesso checkpoint"),
+                           ((str(tmp_path / "dec2.json"), str(tmp_path / "dec3.json")), (p[0], p[1]), "tipo diverso"),
+                           ((str(tmp_path / "local2_senza_modello.json"), str(tmp_path / "local3_senza_modello.json")), (p[0], p[1]), "senza modello")):
+        with pytest.raises(ValueError, match=msg):
+            SC.main(["--stage", "compare", "--models", "--reference", *ref, "--candidate", *cand, "--out", str(tmp_path / "no.json")])
+    with pytest.raises(SystemExit):  # solo con compare
+        SC.main(["--stage", "equality", "--models", "--reference", p[0], "--candidate", p[0], "--out", str(tmp_path / "no.json")])
+
+
 def test_scaler_and_pca_see_only_the_train_rows_of_each_fold(monkeypatch):
     rng = np.random.default_rng(0)
     subjects = [f"S{i:02d}" for i in range(8)]

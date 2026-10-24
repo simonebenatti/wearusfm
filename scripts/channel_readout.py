@@ -313,6 +313,28 @@ def check_models(refs: list[dict], cands: list[dict]) -> None:
             raise ValueError("riferimento e candidato di uno stesso seme vengono da checkpoint diversi")
 
 
+def check_two_models_same_readout(refs: list[dict], cands: list[dict]) -> None:
+    """`--models` (opzione ancore-only del protocollo: riferimento ancore-only, candidato A, stesso readout): tutti e quattro i rapporti hanno
+    un modello, i due riferimenti sono due checkpoint diversi come i due candidati, per ogni seme riferimento e candidato sono checkpoint
+    diversi, e i due lati sono lo stesso tipo di rapporto (protocollo, insieme di feature, ricetta, strato, k richiesto, k/riduzione/larghezza
+    per dataset): si confrontano due modelli, non due readout."""
+    for r in refs + cands:
+        if _model_free(r) or not r.get("checkpoint_sha256"):
+            raise ValueError("--models: rapporto senza modello: il confronto fra modelli vuole un checkpoint per ogni rapporto")
+    shas_r, shas_c = [str(r["checkpoint_sha256"]) for r in refs], [str(c["checkpoint_sha256"]) for c in cands]
+    if shas_r[0] == shas_r[1]:
+        raise ValueError("--models: i due riferimenti sono lo stesso checkpoint: servono i due semi")
+    if shas_c[0] == shas_c[1]:
+        raise ValueError("--models: i due candidati sono lo stesso checkpoint: servono i due semi")
+    for ref, cand in zip(refs, cands):
+        if str(ref["checkpoint_sha256"]) == str(cand["checkpoint_sha256"]):
+            raise ValueError("--models: riferimento e candidato di uno stesso seme sono lo stesso checkpoint: nessun confronto fra modelli")
+        if any(ref.get(kk) != cand.get(kk) for kk in SIDE_KEYS):
+            raise ValueError("--models: riferimento e candidato di tipo diverso (protocollo, insieme di feature o ricetta): stesso readout richiesto")
+        if _readout_identity(ref) != _readout_identity(cand):
+            raise ValueError("--models: riferimento e candidato con strato, k o larghezza diversi: stesso readout richiesto")
+
+
 SIDE_KEYS = ("protocol", "feature_set", "extraction_recipe")
 
 
@@ -382,14 +404,18 @@ def compare(args) -> dict:
     for ref, cand in zip(refs, cands):
         check_readout_pairing(ref, cand)
     check_sides_alike(refs, cands)
-    check_models(refs, cands)
+    if args.models:
+        check_two_models_same_readout(refs, cands)
+    else:
+        check_models(refs, cands)
     row = AC.s_comparison([_normalized(r, refs[0]) for r in refs], [_normalized(c, refs[0]) for c in cands])
 
     def describe(paths, reps):
         return [{"path": str(p), "S": r["S"], "S_se": r.get("S_se"), "feature_set": r.get("feature_set"), "checkpoint": r.get("checkpoint"),
                  "checkpoint_sha256": r.get("checkpoint_sha256"), "readout": r.get("readout")} for p, r in zip(paths, reps)]
 
-    return {"protocol": PROTOCOL, "task": refs[0].get("task", "p1"), "reference": describe(args.reference, refs),
+    mode = "due modelli con lo stesso readout (--models)" if args.models else "due readout dello stesso modello, o readout contro baseline senza modello"
+    return {"protocol": PROTOCOL, "task": refs[0].get("task", "p1"), "mode": mode, "reference": describe(args.reference, refs),
             "candidate": describe(args.candidate, cands), "comparison": row, "bootstrap": {"n_boot": AC.N_BOOT, "seed": AC.BOOT_SEED,
             "method": "soggetti ricampionati insieme per i quattro rapporti (downstream_ab.paired_component), intervallo dei percentili"},
             "reading": reading(row), "oof_maps": [list(m) for m in args.oof_maps]}
@@ -449,7 +475,12 @@ def main(argv=None) -> int:
     ap.add_argument("--oof-map", dest="oof_maps", type=_map, action="append", default=[],
                     help="compare: PREFISSO_CLUSTER=PREFISSO_LOCALE per le predizioni fuori fold copiate sul Mac (SHA-256 verificato)")
     ap.add_argument("--out", type=Path, help="rapporto JSON (probe, compare); le predizioni fuori fold accanto, .oof.npz")
+    ap.add_argument("--models", action="store_true",
+                    help="compare: due modelli con lo stesso readout (opzione ancore-only: riferimento ancore-only s0 s1, candidato A s0 s1), "
+                         "invece di due readout dello stesso modello; stessa regola e stesso bootstrap")
     args = ap.parse_args(argv)
+    if args.models and args.stage != "compare":
+        ap.error("--models: solo con --stage compare")
     args.datasets = args.datasets or list(P1.P1_DATASETS if args.task == "p1" else CP.P2_DATASETS)
     if args.task == "p2" and set(args.datasets) - set(CP.P2_DATASETS):
         ap.error(f"--task p2: dataset fra {CP.P2_DATASETS}")

@@ -3077,6 +3077,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   62080282. In esecuzione `local` di ancore-only s1 P1. Restano 4 da sottomettere (A s1 P2 a larghezza intera local/dec, ancore-only s1
   P2 local/dec).
 
+### 2026-10-24 | Claude | Readout per canale: A contro ancore-only col readout per canale (`local`, P1, due semi): regola non superata | Codice: commit di questa voce
+
+- Stato alle 11:37 (sacct, sola lettura): 17 job COMPLETED senza errori (checkout, 8 estrazioni, 8 sonde), in esecuzione `dec` di ancore-only
+  s1 P1 (61987715, dalle 11:11), 8 in coda; nessun FAILED/TIMEOUT. Quinta tornata (coda a 9 -> 10): ancore-only s1 P2 local 62100961. Restano
+  3 da sottomettere (A s1 P2 a larghezza intera local/dec, ancore-only s1 P2 dec).
+- `local` ancore-only s1 P1 (61987693, 2 h 24): S 16,19 ± 0,62 (DB2 16,40, DB3 2,42, DB6 36,01); con s0 (16,03) i due semi di ancore-only.
+- **Confronto dell'opzione ancore-only (protocollo: «stessa regola, riferimento ancore-only, candidato A», descrittivo), strato `local` a k 768,
+  P1, due semi, bootstrap congiunto: A - ancore-only = +0,20 punti, IC95 [+0,01; +0,39], per seme +0,31 / +0,09: «regola non superata»**
+  (sotto la soglia di +1 punto; il limite inferiore sfiora lo zero). Per dataset: DB2 +0,16 [-0,05; +0,38], DB3 +0,24 [-0,19; +0,80], DB6
+  +0,28 [-0,07; +0,65]. Lettura: anche tenendo i canali separati all'uscita dell'encoder locale, il JEPA aggiunge alle ancore sole ~0,2 punti,
+  non 1: il verdetto dei bracci «ancore-only = A» regge col readout per canale `local`. Lo stesso confronto su `dec` appena finisce il seme 1
+  (in esecuzione, ~13:35). Esito in `~/wearusfm_local/readout_canale_20261023/confronti/A_vs_AO_p1_local.json`.
+- Strumento: la fase `compare` rifiutava il confronto («riferimento e candidato di uno stesso seme vengono da checkpoint diversi»): il suo
+  controllo d'identita' era scritto per i confronti 1 e 2 (stesso modello, o baseline senza modello). Aggiunta l'opzione `--models` con i
+  controlli propri del confronto fra modelli (quattro rapporti con modello, due checkpoint per lato e diversi fra i lati a pari seme, stesso
+  strato/k/larghezza e insieme di feature nei due lati), stessa regola e stesso bootstrap; emendamento 8 in `docs/readout_per_canale_v1.md`
+  (scritto dopo l'apertura dei rapporti local di ancore-only, dichiarato); test nuovo
+  `test_compare_between_two_models_with_the_same_readout_needs_the_models_flag` (quattro reti casuali minuscole; rifiuti compresi). Riga di
+  riepilogo di pytest: sottoinsieme `compare or models` 2 passed; file intero `tests/cpu/test_channel_readout.py` **12 passed** in 1 min 17
+  (suite completa non rilanciata: la modifica tocca solo questo script e il suo test).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -4541,3 +4562,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   job sarebbe fallito o A3 giudicata con la regola (16)); nessun test dalla selezione al merge ne' comando per lo STOP; protocollo firmato
   senza nota dell'emendamento; formulazioni «proposta»; valore 38,4 duplicato; un byte in piu' nella copia del `config.json`. Tutti corretti
   nel commit di questa voce (sezione 1). Nessun run toccato.
+
+### 2026-10-24 | Claude | Readout per canale: il confronto dell'opzione ancore-only non passava dai controlli della fase `compare`
+
+Il protocollo (opzione ancore-only, 63ac0dd + emendamento 7) prescrive «stessa regola dei bracci, riferimento ancore-only, candidato A» col
+readout per canale, ma `channel_readout.py --stage compare` ammetteva solo i confronti 1 e 2 (stesso checkpoint per seme, o riferimento senza
+modello): il confronto fra due modelli diversi a readout uguale veniva rifiutato. Non e' un errore di risultato (nessun numero prodotto o
+letto male): e' uno strumento incompleto rispetto al protocollo, scoperto al primo uso. Corretto con l'opzione esplicita `--models` e il suo
+test (sezione 1, voce dello stesso giorno); il modo del confronto e' scritto nel rapporto (`mode`). Il default resta identico per i confronti
+1 e 2 gia' fatti.

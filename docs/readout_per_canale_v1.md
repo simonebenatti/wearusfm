@@ -155,5 +155,11 @@ tetto; in alternativa l'infrastruttura (12,78 residue su 25). Ore CPU dell'accou
 5. **Ore locali:** le core-ore della coda seriale SONO le ore locali del budget CPU (piano operativo §5); le «52 ore» erano ore di orologio.
 6. Il punto (4) della voce della baseline classica e' sostituito dal confronto 2 (sopra).
 7. **Opzione ancore-only** aggiunta come proposta, non come parte della tranche 1.
+8. **(24/10/2026) Confronto dell'opzione ancore-only: `--stage compare --models`.** Il controllo d'identita' dei modelli della fase `compare`
+   (scritto per i confronti 1 e 2: stesso checkpoint per seme, o riferimento senza modello) rifiutava il confronto fra due modelli diversi a
+   readout uguale; l'opzione `--models` lo sostituisce con i controlli propri di quel confronto (quattro rapporti con modello, due checkpoint
+   diversi per lato e fra i lati a pari seme, stesso strato/k/larghezza e stesso insieme di feature nei due lati). Regola, bootstrap
+   (`arms_compare.s_comparison`, seme 20261009) e lettura descrittiva invariati; aggiunto dopo l'apertura dei rapporti local di ancore-only
+   (s0 il 23/10, s1 il 24/10) e prima di eseguire il confronto: si dichiara.
 Nessuno di questi emendamenti cambia soglie, regola o candidati del confronto; i rapporti della baseline (P1 e P2) sono stati aperti dopo
 63ac0dd e prima di questi emendamenti: si dichiara.
