@@ -4275,4 +4275,4 @@ alle bozze a meno dello SHA). Checkout di campagna `PILOT-OBIETTIVI-20261024-che
 le sonde P2 del readout (limite di CPU per utente sulla seriale: una sonda alla volta, ~2,5 h l'una, 1 in corso e 4 in attesa). Il gate,
 sottomesso nella stessa tornata con afterok sul checkout, e' stato rifiutato da sbatch (il launcher sta nel checkout non ancora creato; nessun
 job, nessun costo): gate e collaudo di R2 si sottomettono dopo «checkout di campagna pronto», il collaudo di R5 con afterok sul gate. Monitoraggio
-con l'agente leggero `leonardo-watch` (richiesta di Simone del 24/10; haiku), che sveglia la sessione a job finito. Nessuna GPU-ora spesa.
+con l'agente leggero `leonardo-watch` (richiesta di Simone del 24/10; haiku), che sveglia la sessione a job finito. Nessuna GPU-ora spesa. **Coda (18:29):** Simone ha messo in hold le 4 sonde P2 del readout in attesa (62100961, 62128193, 62128210, 62128222) per far passare prima checkout e gate; si rilasciano dopo il gate.

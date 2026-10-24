@@ -3236,6 +3236,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `tests/cpu/test_leonardo_watch.py` **6 passed** (con `test_submit_job.py`: 25 passed in 2.37s). Il tipo nuovo di agente entra alla prossima
   sessione; oggi lo stesso flusso gira con un agente generico su haiku. Sta aspettando il job 62148779.
 - Nessun job GPU; tetto del collaudo 4,0 GPU-ora, nessuna spesa finora.
+- **Coda (Simone, 18:29):** per far passare prima il checkout e il gate, Simone ha messo in hold dal suo terminale le 4 sonde P2 del
+  readout in attesa (`scontrol hold 62100961 62128193 62128210 62128222`, nessun output = eseguito); la sonda in corso (62080282) continua.
+  **Da rilasciare dopo il gate** (`scontrol release` degli stessi 4 job): lo segno qui perche' non lo dimentichi nessuno.
 
 ## 2) Problemi trovati
 
