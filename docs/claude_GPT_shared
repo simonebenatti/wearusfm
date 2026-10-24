@@ -3264,6 +3264,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   62154863 **RUNNING** (0:46), collaudo di R5 62154880 PENDING `Dependency afterok:62154852`; le 4 sonde P2 del readout restano in hold
   (`JobHeldUser`); la sonda 62080282 non e' piu' in coda (finita prima delle ~2,5 h stimate: e' per questo che il checkout e' partito alle
   19:3x; il suo esito si legge alla chiusura del readout, non ora).
+### 2026-10-24 | Claude | Pilot degli obiettivi: collaudo dbg di R2 SUPERATO (job 62154863: mediana 0,706 s/passo sotto la soglia 0,81, contratto delle loss con le regioni rispettato), `spare_jobs` resta 0; gate ancora in corso | Codice: commit di questa voce (verificatore con l'obiettivo A, esito)
+
+- **Esito del job 62154863** (`PILOTC-R2-regione-30M-s0`, 1.300 passi, `boost_qos_dbg`, 4 A100, 19:34-19:51): COMPLETED, `max_steps`,
+  998,8 s di training; codice 705ec04 dal checkout (prima riga del log e `summary.json`); DDP a 4 processi, micro-batch 8, `loss_reduction` =
+  contratto. Costo reale circa 17 min x 4 GPU = ~1,15 GPU-ora (2,0 prenotate; consuntivo con `sacct` alla chiusura del collaudo).
+- **s/passo (criterio congelato del 24/10, soglia 0,81):** mediana **0,706** sui passi 51-1300 (`t_step_s` di `metrics.jsonl`, la stessa misura
+  dei collaudi del 21/10), media 0,709, p90 0,815, massimo 1,13; attesa dei dati 0,7% del tempo. Dalle 27 letture del log (ogni 50 passi):
+  mediana 0,69, min 0,61, max 0,88; elapsed/passi 0,768 (comprende il passo 1 a 4,77 s e le valutazioni). **Sotto la soglia: R2 resta con
+  `spare_jobs` 0** e il preventivo a 0,7 s/passo tiene.
+- **Contratto delle loss con le regioni, provato sul nodo:** `jepa.region_target = true` nel `config.json`; il run non si e' fermato al passo 1
+  (il confronto fra i conteggi del forward e quelli precalcolati, che prima della correzione del 24/10 avrebbe fermato R2, e' passato a tutti i
+  1.300 aggiornamenti); `jepa_regions` e `jepa_hidden_tokens` registrati a ogni passo (regioni per aggiornamento 2.853-6.748, mediana 3.980;
+  token per regione 10,0-25,1, mediana 14,8); `total = 1 x jepa + 0,2 x somma delle ancore` entro 1e-6 a tutti i passi; nessun NaN.
+- **Verificatore dei collaudi** (`scripts/arms_collaudo.py`, criteri del 21/10) esteso con l'obiettivo A (jepa 1,0, ancore 0,2: i bracci del
+  pilot ne tengono i pesi) e una lettura per A; eseguito sulla copia locale del run (config, summary, metrics, fixed_eval, `ls` dei checkpoint):
+  **8 criteri su 8 OK, SUPERATO** (`results/infra/pilot_obiettivi_20261024/collaudo/esito_R2.json`, `ls_R2.txt`). Descrittivo: memoria GPU max
+  11,9 GiB; jepa 0,125 -> 0,012 e totale 5,0 -> 1,29 (medie dei primi/ultimi 50 passi); valutazioni fisse 5,96 / 1,95 / 1,57 ai passi 0 / 500 /
+  1000; rango effettivo dello studente 66,8 / 74,0 / 71,3 ai passi 500 / 1000 / 1300 (minimo 38,4), nessun allarme. Numeri di un collaudo da
+  1.300 passi: dicono che gira, non come andra'.
+- Test del verificatore: `tests/cpu/test_arms_collaudo.py` (il test del braccio sconosciuto usava il nome «A»: ora usa un nome che non esiste;
+  riga di riepilogo di pytest nel messaggio di commit). Gate 62154852 RUNNING da 18 min alle 19:52, l'agente lo aspetta; R5 (62154880) parte
+  dopo il gate; le 4 sonde restano in hold fino al gate.
 
 ## 2) Problemi trovati
 

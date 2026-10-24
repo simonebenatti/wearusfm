@@ -1,0 +1,163 @@
+{
+ "protocol": "w1arm-collaudo-v1",
+ "arm": "A",
+ "run_dir": "/Users/simonebenatti/wearusfm_local/reports/pilot_collaudo/PILOTC-R2-regione-30M-s0",
+ "steps": 1300,
+ "passed": true,
+ "criteria": {
+  "completo": {
+   "ok": true,
+   "detail": {
+    "STOP": null,
+    "stopped": "max_steps",
+    "steps": 1300,
+    "attesi": 1300
+   }
+  },
+  "codice_e_ddp": {
+   "ok": true,
+   "detail": {
+    "sha": "705ec0465420e80d5d818a8bbc7acc3a92c06efc",
+    "world_size": 4,
+    "batch_per_process": 8,
+    "accum_steps": 1
+   }
+  },
+  "pesi": {
+   "ok": true,
+   "detail": {
+    "config": {
+     "jepa_weight": 1.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0
+    },
+    "attesi": {
+     "jepa_weight": 1.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0
+    }
+   }
+  },
+  "record": {
+   "ok": true,
+   "detail": {
+    "records": 1300,
+    "in_sequenza": true,
+    "passi_con_finestre_diverse": [],
+    "passi_non_finiti": []
+   }
+  },
+  "composizione_della_loss": {
+   "ok": true,
+   "detail": {
+    "formula": "total = 1 x jepa + 0.2 x somma delle ancore ['log_rms', 'band_shape', 'log_env', 'ms_fast', 'ms_slow']",
+    "tolleranza_relativa": 1e-06,
+    "passi_senza_componenti_finite": [],
+    "passi_fuori_tolleranza": []
+   }
+  },
+  "apprendimento": {
+   "ok": true,
+   "detail": {
+    "termine_allenato": "total",
+    "media_primi": 4.995944958988985,
+    "media_ultimi": 1.2853769281255083,
+    "record_mediati": 50
+   }
+  },
+  "non_collasso": {
+   "ok": true,
+   "detail": {
+    "allarmi": [],
+    "valutazioni": [
+     500,
+     1000,
+     1300
+    ],
+    "attese": [
+     500,
+     1000,
+     1300
+    ]
+   }
+  },
+  "checkpoint": {
+   "ok": true,
+   "detail": {
+    "checkpoint_predecay.pt": 454073656,
+    "checkpoint_postdecay.pt": 454073656
+   }
+  }
+ },
+ "descriptive": {
+  "s_per_passo_mediana": 0.7057989835739136,
+  "s_per_passo_A": {
+   "C2": 0.7402796319174357,
+   "C1_max": 0.7776
+  },
+  "attesa_dati_frazione": 0.006584894060696097,
+  "elapsed_s": 998.7742745876312,
+  "gpu_max_memory_gib": 11.943198204040527,
+  "jepa_inizio_fine": [
+   0.12447750485356664,
+   0.011499722530134022
+  ],
+  "ancore_inizio_fine": {
+   "log_rms": [
+    1.09057294100523,
+    0.5077786489576102
+   ],
+   "band_shape": [
+    3.53795009046793,
+    0.44943750962615014
+   ],
+   "log_env": [
+    1.2851853892207146,
+    0.4053132651746273
+   ],
+   "ms_fast": [
+    5.9265615320205685,
+    2.775580608844757
+   ],
+   "ms_slow": [
+    12.517067317962647,
+    2.231275995373726
+   ]
+  },
+  "non_collasso": [
+   {
+    "step": 500,
+    "student_collapse_ratio": 2.759379405066475,
+    "teacher_collapse_ratio": 3.168414155424101,
+    "student_erank": 66.77677127966285,
+    "teacher_erank": 74.33837154532921,
+    "student_var_samples": 0.10842051752582549,
+    "student_var_queries": 0.039291631055430584,
+    "teacher_var_samples": 0.056583016873319916
+   },
+   {
+    "step": 1000,
+    "student_collapse_ratio": 1.949678136046851,
+    "teacher_collapse_ratio": 2.7001820303340205,
+    "student_erank": 74.04102569182704,
+    "teacher_erank": 72.77656619575632,
+    "student_var_samples": 0.10028008787795586,
+    "student_var_queries": 0.051434175735941126,
+    "teacher_var_samples": 0.11109182657667863
+   },
+   {
+    "step": 1300,
+    "student_collapse_ratio": 2.378922489554904,
+    "teacher_collapse_ratio": 2.5235055164100353,
+    "student_erank": 71.27140210315041,
+    "teacher_erank": 70.69335275629982,
+    "student_var_samples": 0.11703757003245648,
+    "student_var_queries": 0.049197723148329306,
+    "teacher_var_samples": 0.11650967571133558
+   }
+  ],
+  "lettura": "A: JEPA e ancore allenate insieme; il collaudo misura ritmo, memoria e contratto, non confronta gli obiettivi (docs/pilot_obiettivi_v1.md)"
+ }
+}

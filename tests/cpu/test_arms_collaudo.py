@@ -137,7 +137,7 @@ def test_wrong_code_or_ddp_shape_fails(tmp_path):
 
 def test_unknown_arm_is_rejected(tmp_path):
     with pytest.raises(ValueError, match="braccio"):
-        AC.check(_run(tmp_path, "JEPA-only"), "A", STEPS, SHA, LISTING)
+        AC.check(_run(tmp_path, "JEPA-only"), "inesistente", STEPS, SHA, LISTING)
 
 
 def test_cli_exit_code_and_output(tmp_path):

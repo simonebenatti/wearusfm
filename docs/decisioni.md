@@ -4285,3 +4285,10 @@ collaudo di R2 `PILOTC-R2-regione-30M-s0-j01` = **job 62154863** (dbg, 30 min, 1
 2,6. Alle 19:35 gate e collaudo di R2 erano gia' RUNNING (la sonda 62080282 che occupava la seriale e' finita prima del previsto), R5 in
 attesa del gate, le 4 sonde del readout ancora in hold. L'agente di monitoraggio aspetta gate e collaudo di R2; dopo il gate si rilasciano le
 4 sonde in hold (eccezione autorizzata da Simone). **I 4 training restano in attesa del via di Simone.**
+**Pilot degli obiettivi: collaudo dbg di R2 SUPERATO (24/10/2026, job 62154863).** 1.300 passi completati in 998,8 s su 4 A100 col codice
+705ec04 del checkout; mediana **0,706 s/passo** sui passi 51-1300 (soglia congelata 0,81) -> **R2 resta con `spare_jobs` 0**; contratto delle
+loss con le regioni rispettato a tutti i passi (`jepa_regions`, `jepa_hidden_tokens`, totale = jepa + 0,2 x ancore entro 1e-6, nessun NaN);
+memoria GPU max 11,9 GiB; rango effettivo 66,8-74,0 (minimo 38,4), nessun allarme. Verificatore `scripts/arms_collaudo.py` esteso con
+l'obiettivo A (pesi dei bracci del pilot): 8 criteri su 8, esito in `results/infra/pilot_obiettivi_20261024/collaudo/esito_R2.json`. Costo
+reale ~1,15 GPU-ora su 2,0 prenotate (consuntivo con sacct alla chiusura). Gate D8 in corso; R5 parte dopo il gate; **i 4 training restano in
+attesa del via di Simone.**

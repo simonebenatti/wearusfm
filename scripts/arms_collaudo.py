@@ -22,7 +22,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = "w1arm-collaudo-v1"
-ARM_WEIGHTS = {"JEPA-only": (1.0, 0.0), "ancore-only": (0.0, 0.2)}  # (jepa_weight, anchor_weight), firma dei bracci del 16/10
+ARM_WEIGHTS = {"JEPA-only": (1.0, 0.0), "ancore-only": (0.0, 0.2),  # (jepa_weight, anchor_weight), firma dei bracci del 16/10
+               "A": (1.0, 0.2)}  # obiettivo A: i bracci del pilot degli obiettivi (R0, R1, R2, R5) ne tengono i pesi (24/10/2026)
 ANCHORS = ("log_rms", "band_shape", "log_env", "ms_fast", "ms_slow")  # le ancore attuali (`training/jepa.py`, anchor_losses)
 WORLD, BATCH_PER_PROCESS, WINDOWS = 4, 8, 32
 REL_TOL = 1e-6  # il totale del contratto e' la somma pesata delle componenti in float64 (`run._accumulate_terms`)
@@ -144,7 +145,9 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "ancore_inizio_fine": {a: edge_means(a) for a in ANCHORS},
         "non_collasso": [{k: r.get(k) for k in ("step", "student_collapse_ratio", "teacher_collapse_ratio", "student_erank", "teacher_erank",
                                                   "student_var_samples", "student_var_queries", "teacher_var_samples")} for r in diags],
-        "lettura": ("JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; "
+        "lettura": ("A: JEPA e ancore allenate insieme; il collaudo misura ritmo, memoria e contratto, non confronta gli obiettivi "
+                    "(docs/pilot_obiettivi_v1.md)" if arm == "A" else
+                    "JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; "
                     "ancore-only: la JEPA registrata misura un predittore non allenato (docs/bracci_obiettivo_finestra1.md)"),
     }
     return _clean({"protocol": PROTOCOL, "arm": arm, "run_dir": str(run_dir), "steps": steps, "passed": all(c["ok"] for c in crit.values()),
