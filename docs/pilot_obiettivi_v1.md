@@ -3,7 +3,8 @@
 **Stato: regola di lettura (§5) e scostamento da D10 per R5 FIRMATI da Simone il 24/10/2026** («Firmo la regola di lettura del pilot (testo del
 §5) e lo scostamento da D10 per R5. Via al deploy deploy/pilot-obiettivi-20261024, al checkout di campagna, al gate D8 sul banco da 150 ms e al
 collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4 training aspettano il mio via dopo gate e collaudo.»), dopo due review del `critico` (24/10,
-rilievi tutti corretti). La regola congelata sta in `docs/decisioni.md` (voce della firma); i 4 training attendono il via dopo gate e collaudo. Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+rilievi tutti corretti). La regola congelata sta in `docs/decisioni.md` (voce della firma). **Gate D8 a 150 ms SUPERATO e collaudi di R2 e R5 SUPERATI il 24/10 sera** (0,706 e 0,709 s/passo contro la soglia
+0,81; consuntivo 2,29 GPU-ora su 4,0): **i 4 training attendono il via di Simone** (§6, punto 6). Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
 `docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
 bottiglia piu' probabile e' nell'obiettivo).
 Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata
@@ -114,7 +115,11 @@ cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR
    (un job CPU di ~30 min, 0 GPU-ora), per chiudere l'uguaglianza dello strumento del criterio anche sulla P2.
 6. **Review del `critico`** su protocollo e codice (fatte: due giri il 24/10, rilievi corretti); regola di lettura in `decisioni.md` (firmata il
    24/10); poi deploy `deploy/pilot-obiettivi-20261024`, checkout di campagna, gate D8 e collaudo (autorizzati il 24/10; ordine: checkout, poi
-   gate e collaudo di R2 insieme, collaudo di R5 dopo l'esito del gate), e il via di Simone ai 4 training.
+   gate e collaudo di R2 insieme, collaudo di R5 dopo l'esito del gate), e il via di Simone ai 4 training. **Fatti il 24/10 sera:** deploy
+   705ec04, checkout (job 62148779), gate D8 a 150 ms **SUPERATO** (62154852, 6 casi su 6, `results/step3/gate_62154852.json`), collaudi
+   di R2 (62154863, mediana 0,706 s/passo) e R5 (62154880, 0,709) **SUPERATI** sotto la soglia di 0,81
+   (`results/infra/pilot_obiettivi_20261024/collaudo/esito_R2.json`, `esito_R5.json`; `spare_jobs` resta 0), consuntivo 2,29 GPU-ora su
+   4,0. **In attesa del via di Simone ai 4 training** e della voce di budget.
 7. **Valutazione:** le estrazioni e le sonde si sottomettono a run finiti, coi launcher del readout per canale (`channel_readout_extract.sbatch`,
    `channel_readout_probe.sbatch --layer pool` e `--layer dec`); il confronto sul Mac dai rapporti copiati, come il 23-24/10.
 

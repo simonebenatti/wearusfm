@@ -3308,6 +3308,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dalla sessione principale, non dal subagent, che per costruzione non puo' verificarla.
 - **Stato del budget del collaudo:** R2 ~1,15 GPU-ora reali, R5 in corso (2,0 prenotate), tetto 4,0; consuntivo con `sacct` alla chiusura.
   **I 4 training restano in attesa del via di Simone**, che riceve gate, due collaudi e i comandi di `comandi_training.txt` insieme.
+### 2026-10-24 | Claude | Pilot degli obiettivi: collaudo dbg di R5 SUPERATO (job 62154880: mediana 0,709 s/passo sotto la soglia 0,81, contratto coi token interi rispettato); gate e collaudi chiusi, consuntivo 2,29 GPU-ora su 4,0; i 4 training aspettano il via di Simone | Codice: 705ec04 sul cluster; commit di questa voce (esito di R5, protocollo)
+
+- **Esito del job 62154880** (`PILOTC-R5-finestra150-30M-s0`, 1.300 passi, `boost_qos_dbg`, 4 A100, 20:19-20:36, partito da solo per l'afterok
+  sul gate): COMPLETED, `max_steps`, 1.012,0 s di training; codice 705ec04 dal checkout; DDP a 4 processi, micro-batch 8, `loss_reduction` =
+  contratto. `config.json`: `model.window_ms` 150,0 e `loader.patch_ms` 25,0, quote delle maschere `share_short` 0 / `share_medium` 0,294 /
+  `share_long` 0,235 / `share_spatial` 0,471 (lo scostamento da D10 firmato), `jepa.region_target` false (giusto: R5 non e' R2), `erank_min` 38,4,
+  LR 1e-4, seme 0.
+- **s/passo (soglia congelata 0,81):** mediana **0,709** sui passi 51-1300 (`t_step_s`), media 0,720, p90 0,828, massimo 1,14; attesa dei dati
+  <= 0,014 s. Dalle 25 letture del log dopo il passo 50: mediana 0,70, min 0,64, max 1,04. **Sotto la soglia: anche R5 resta con `spare_jobs` 0.**
+  Memoria GPU max **16,3 GiB** (R2 11,9; la finestra piu' lunga costa memoria, non tempo): larghissimo margine sui 64 GB.
+- **Contratto delle loss coi token interi, provato sul nodo:** il run non si e' fermato al passo 1 (il confronto fra i conteggi del forward e quelli
+  precalcolati, che senza la correzione del raggio dei token interi del 24/10 avrebbe fermato R5, e' passato a tutti i 1.300 aggiornamenti);
+  `total = 1 x jepa + 0,2 x somma delle ancore` entro 1e-6 a tutti i passi; nessun NaN; la famiglia `jepa_corta` non compare nei record (quota
+  0, come da scostamento), le altre sette si' (0,31-0,44 al passo 100 -> 0,007-0,018 al passo 1300).
+- **Verificatore** (`arms_collaudo.py --arm A`, stessa procedura di R2): **8 criteri su 8 OK, SUPERATO**
+  (`results/infra/pilot_obiettivi_20261024/collaudo/esito_R5.json`, `ls_R5.txt`). Descrittivo: totale 4,94 -> 1,34 (medie dei primi/ultimi
+  50 passi); valutazioni fisse 5,74 / 1,74 / 1,43 ai passi 0 / 500 / 1000; rango effettivo dello studente 81,7 / 74,4 / 71,7 ai passi 500 /
+  1000 / 1300 (minimo 38,4), nessun allarme. Numeri di un collaudo da 1.300 passi: dicono che gira, non come andra'.
+- **Consuntivo del gate e del collaudo (sacct, `~/wearusfm_local/logs/sacct_pilot_collaudo_20261024.txt`):** checkout 62148779 14 s su 2 core;
+  gate 62154852 44 min 12 s su 2 core = ~1,5 core-ore (tetto 4), 0 GPU-ora; collaudo R2 62154863 17 min 04 s x 4 GPU = **1,138 GPU-ora**;
+  collaudo R5 62154880 17 min 14 s x 4 GPU = **1,149 GPU-ora**; **totale 2,287 GPU-ora su 4,0 di tetto** (attese 2,6). Nessun altro job.
+- **Pacchetto per il via di Simone** (ordine firmato il 24/10: «I 4 training aspettano il mio via dopo gate e collaudo»): gate D8 a 150 ms
+  SUPERATO (R5 ammesso), collaudi di R2 e R5 SUPERATI sotto la soglia, `piano.json` invariato (`spare_jobs` 0, 0,7 s/passo, slack 1,15), comandi
+  in `results/infra/pilot_obiettivi_20261024/comandi_training.txt`: 8 job = 4 tronchi (`PILOT-R0-A`, `PILOT-R1-targetA`, `PILOT-R2-regione`,
+  `PILOT-R5-finestra150`, 30M, seme 0, 49.046 passi, 12 h di tetto l'uno, 39,1 / 48 GPU-ora) + 4 rami a 1 epoca (`-e1`, dal checkpoint 19.618 a
+  24.523, afterok sul tronco, 2 h 15 di tetto, 4,8 / 9 GPU-ora): **175,6 GPU-ora attese, tetto 228** (= 1.405 / 1.824 ore locali), 12,8 GB di
+  checkpoint su $SCRATCH. Voce di budget da nominare da Simone: finestra 1 (6.000 GPU-ora firmate il 16/10), famiglia «Ablation a 30M» del
+  piano di fattibilita' oppure una voce nuova. Sottomissione con l'agente leggero (8 comandi in fila, i rami con `--dopo`), attesa sui tronchi.
+- Readout: le 4 sonde P2 rilasciate alle 20:23 sono in coda normale (una alla volta); la chiusura del readout resta in attesa di Simone.
 
 ## 2) Problemi trovati
 

@@ -4300,3 +4300,11 @@ Quindi **R5 e' ammesso al pilot**: il suo collaudo (62154880) e' partito da solo
 (62100961, 62128193, 62128210, 62128222) sono state rilasciate alle 20:23 dalla sessione principale con `scontrol release`, per l'eccezione
 autorizzata da Simone il 24/10 (il subagent leonardo-ops l'ha rifiutato, come da sua regola): tornate in coda normale. **I 4 training restano
 in attesa del via di Simone.**
+**Pilot degli obiettivi: collaudo dbg di R5 SUPERATO (24/10/2026, job 62154880); gate e collaudi chiusi; consuntivo; via ai training da
+chiedere a Simone.** R5: 1.300 passi in 1.012 s su 4 A100 col codice 705ec04, `window_ms` 150 e quote 0 / 0,294 / 0,235 / 0,471 come firmato;
+mediana **0,709 s/passo** sui passi 51-1300 (soglia 0,81) -> **anche R5 resta con `spare_jobs` 0**; contratto coi token interi rispettato a tutti
+i passi (totale = jepa + 0,2 x ancore entro 1e-6, nessun NaN); memoria GPU max 16,3 GiB; rango effettivo 71,7-81,7 (minimo 38,4), nessun allarme;
+verificatore 8 criteri su 8 (`results/infra/pilot_obiettivi_20261024/collaudo/esito_R5.json`). **Consuntivo (sacct):** gate ~1,5 core-ore su 4
+di tetto e 0 GPU-ora; collaudi 1,138 + 1,149 = **2,287 GPU-ora su 4,0 di tetto** (attese 2,6). `piano.json` invariato. **Da decidere (Simone):**
+via ai 4 training (`comandi_training.txt`: 4 tronchi + 4 rami, 175,6 GPU-ora attese, tetto 228, 12,8 GB di checkpoint) e la voce di budget
+dentro la finestra 1 (famiglia «Ablation a 30M» oppure una voce nuova). Fino al via nessun job di training viene sottomesso.
