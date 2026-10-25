@@ -4337,3 +4337,9 @@ descrittivo `dec` (8 sonde, 88 / 256 core-ore); **B** endpoint a 1 epoca dei ram
 core-ore); **C** confronti sul Mac (6 letture del criterio con `--single-seed --models`, R0 riferimento, dopo il controllo di provenienza e di
 `run_status`). Totale 5,6 / 20,0 GPU-ora e 269 / 1.024 core-ore = la riga «valutazione» del §7 del protocollo; voce di budget: finestra 1,
 famiglia «Ablation a 30M». Consuntivo parziale dei training: tronco R1 COMPLETED per `max_steps` in 9 h 40 (38,6 GPU-ora su 48 prenotate).
+**Pilot degli obiettivi: via di Simone alla valutazione, tutti i blocchi (25/10/2026, dopo i 4 tronchi COMPLETED per `max_steps`).** Simone:
+«seguo il consiglio, via a tutti!» (consiglio: i descrittivi A2 e B sono gia' nel protocollo e costano 2,8 GPU-ora in piu'). Autorizzati i blocchi
+A1 (criterio), A2 e B di `results/infra/pilot_obiettivi_20261024/preventivo_valutazione.json`: 16 estrazioni GPU, 5,6 attese / 20,0 di tetto
+GPU-ora; 32 sonde CPU, 269 / 1.024 core-ore; voce di budget: finestra 1, famiglia «Ablation a 30M». Sequenza: A1 subito, A2 a estrazioni di A1
+COMPLETED, B a rami COMPLETED. Tronchi: R0 10 h 03, R1 9 h 40, R2 10 h 03, R5 10 h 13, tutti `max_steps`, ~160 GPU-ora (consuntivo `sacct` a
+rami finiti). Lettura del criterio con la regola del §5 (firmata il 24/10), dopo il controllo di provenienza e di `run_status`.

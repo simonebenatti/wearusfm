@@ -3469,6 +3469,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Tronchi alle 18:30: R1 COMPLETED; R0, R2, R5 attesi COMPLETED per `max_steps` a minuti (agente leggero in attesa, poi sui rami). Il blocco
   A1 si sottomette solo dopo che tutti e quattro risultano COMPLETED con `stopped: max_steps` e col via di Simone sul preventivo. Nessun job
   sottomesso in questa voce.
+### 2026-10-25 | Claude | Pilot degli obiettivi: i 4 tronchi COMPLETED per `max_steps` (R0 10 h 03, R1 9 h 40, R2 10 h 03, R5 10 h 13; ~160 GPU-ora sui 192 prenotati dei tronchi); via di Simone alla valutazione, tutti i blocchi («seguo il consiglio, via a tutti!»); sottomissione del blocco A1 avviata | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Tronchi** (file dell'attesa `~/wearusfm_local/logs/watch_pilot_tronchi_b.txt`, `sacct` ogni 3 min): R0 62233554 COMPLETED alle 18:08
+  (10:02:31), R2 62233768 alle 18:20 (10:03:06), R5 62233770 alle 18:29 (10:13:21), tutti exit 0:0 e con «fine: max_steps, passo 49046» nel
+  log; R1 62233766 alle 17:55 (09:39:36). Nessun allarme. Consuntivo di massima dei tronchi: (9,66 + 10,04 + 10,05 + 10,22) h x 4 GPU =
+  **~160 GPU-ora** contro 192 prenotate (156,4 attese): il `sacct -X` definitivo a rami finiti. I 4 rami `-e1` (62233765/67/69/71) sono in
+  coda con la dipendenza soddisfatta; l'agente leggero li aspetta (`watch_pilot_rami.txt`).
+- **Via di Simone (25/10, 18:3x):** alla domanda «che differenza c'e se do il via ad a1 o il via a tutti i blocchi?» ho risposto che cambia
+  solo quanto autorizza adesso (A1 = criterio; A2 e B descrittivi, +2,8 GPU-ora e ~220 core-ore, sequenza che non ritarda il criterio) e ho
+  consigliato tutti i blocchi; risposta: **«seguo il consiglio, via a tutti!»**. Vale per i blocchi A1, A2 e B del preventivo
+  (`results/infra/pilot_obiettivi_20261024/preventivo_valutazione.json`: 16 estrazioni 5,6 attese / 20,0 di tetto GPU-ora; 32 sonde 269 / 1.024
+  core-ore), voce di budget: finestra 1, famiglia «Ablation a 30M». Sequenza concordata: A1 subito (i 4 tronchi sono COMPLETED con
+  `max_steps`); A2 solo quando le 8 estrazioni di A1 sono COMPLETED (cosi' le sonde `pool` del criterio sono gia' eleggibili in coda prima
+  delle `dec`); B dopo i 4 rami COMPLETED.
+- **Esecuzione:** agente leggero (haiku) con il loop di sottomissione (lettura da `grep` per ID, `</dev/null`, stop al primo esito diverso da
+  «sottomesso»): blocco A1 (16 comandi), poi attesa delle 8 estrazioni, controllo COMPLETED exit 0:0 x 8, blocco A2 (8 comandi), poi attesa
+  delle 8 sonde `pool` di A1; log in `~/wearusfm_local/logs/submit_pilot_eval_A1_20261025.txt`, `submit_pilot_eval_A2_20261025.txt`,
+  `watch_pilot_eval_ext_e2.txt`, `watch_pilot_eval_pool_e2.txt`. Gli ID SLURM dal ledger, in una voce successiva.
 
 ## 2) Problemi trovati
 
