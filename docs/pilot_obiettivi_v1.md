@@ -131,11 +131,15 @@ cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR
    sono lo strumento del controllo d'uguaglianza del 23/10; `load_model` ricostruisce il modello dalla configurazione del checkpoint, `window_ms`
    compreso, quindi R5 si estrae col suo banco da 150 ms). Quattro blocchi, ciascuno col via di Simone: **A1, il criterio** (endpoint a 2 epoche
    dei 4 tronchi: 8 estrazioni, 2,8 / 10,0 GPU-ora, + 8 sonde `pool` in afterok, 46 / 256 core-ore); **A2**, descrittivo `dec` sugli stessi
-   endpoint (8 sonde, 88 / 256 core-ore, dopo che le `pool` di A1 sono partite); **B**, endpoint a 1 epoca dei 4 rami (8 estrazioni 2,8 / 10,0
-   GPU-ora + 16 sonde 134 / 512 core-ore); **C**, i confronti sul Mac (`--stage compare --single-seed --models`, R0 riferimento), preceduti
-   dal controllo di provenienza e di `run_status` della regola. Le sonde non girano in parallelo: sulla seriale sono partite una alla volta il
-   23-24/10, quindi A1 risponde circa 6-7 ore dopo la sottomissione (estrazioni ~30 min + coda GPU, poi 4 sonde P1 da ~62 min e 4 P2 da ~25 min
-   in fila).
+   endpoint (8 sonde, 88 / 256 core-ore, dopo che le estrazioni di A1 sono COMPLETED); **B1**, 8 estrazioni dell'endpoint a 1 epoca dei 4
+   rami (2,8 / 10,0 GPU-ora) e **B2**, le sue 16 sonde (134 / 512 core-ore); **C**, i confronti sul Mac (`--stage compare --single-seed
+   --models`, R0 riferimento), preceduti dal controllo di provenienza e di `run_status` della regola. Le sonde non girano in parallelo: sulla
+   seriale sono partite una alla volta il 23-24/10, quindi A1 risponde circa 6-7 ore dopo la sottomissione (estrazioni ~30 min + coda GPU, poi
+   4 sonde P1 da ~62 min e 4 P2 da ~25 min in fila). **Due vincoli imparati il 25/10 sera, a costo zero:** un `--dopo` (afterok) su un job
+   finito da qualche minuto viene rifiutato da sbatch («Job dependency problem»: SLURM toglie dalla coda i job finiti), quindi le sonde su
+   cache gia' pronte (A2, B2) vanno senza `--dopo`; e la QoS della seriale ammette **10 job in coda per utente** (`QOSMaxSubmitJobPerUserLimit`,
+   l'undicesima sonda rifiutata), quindi A2 e B2 si alimentano con `scripts/leonardo_feed.py` (sottomette man mano che la coda scende sotto 10,
+   si ferma al primo esito diverso da «sottomesso»; prove in `tests/cpu/test_leonardo_feed.py`).
 
 ## 7. Costi (preventivo `results/infra/pilot_obiettivi_20261024/preventivo_training.json`, s/passo 0,7 misurato a 4 GPU, slack 1,15)
 

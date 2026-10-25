@@ -3499,6 +3499,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   blocco A2 (8 sonde `dec`), poi attesa delle 8 sonde `pool` (`watch_pilot_eval_pool_e2.txt`, attese ~6 h in fila). Il blocco B (24 job) lo
   sottometto a rami COMPLETED (l'altro agente li aspetta: `watch_pilot_rami.txt`). Poi: `rsync` dei rapporti e degli OOF sul Mac, controllo
   di provenienza e di `run_status`, le 6 letture del criterio con `--stage compare --single-seed --models`, consuntivo `sacct`.
+### 2026-10-25 | Claude | Pilot degli obiettivi: estrazioni di A1 COMPLETED (8/8, 13-28 min); blocco A2 sottomesso solo per 2 sonde su 8 dopo due rifiuti di sbatch a costo zero (dipendenza su job finito; limite di 10 job in coda sulla seriale); scritto `scripts/leonardo_feed.py` (alimentatore della coda seriale, 6 test) e ristrutturato il file dei comandi (A2 e B2 senza `--dopo`, B diviso in B1 estrazioni e B2 sonde alimentate); attesa armata sulle 8 sonde `pool` del criterio | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **A1:** le 8 estrazioni sono COMPLETED exit 0:0 (P1 13-15 min, P2 28 min; `~/wearusfm_local/logs/watch_pilot_eval_ext_e2.txt`), le 8 sonde
+  `pool` (62272310-62272318) sono in coda sulla seriale; attesa `--mode all` armata (`watch_pilot_eval_pool_e2.txt`).
+- **A2, due rifiuti (sezione 2, nessun job creato, nessun costo):** alle 19:06 `PILOT-EVAL-probe-R0-e2-p1-dec` rifiutato per «Job dependency
+  problem» (afterok sull'estrazione 62272299, finita alle 18:50 e gia' tolta dalla coda); corretto togliendo `--dopo` alle sonde su cache
+  pronte e risottomesso alle 19:09 con `--dopo-rifiuto`: job 62274190; `R1-e2-p1-dec` 62274191; poi `R2-e2-p1-dec` rifiutato per
+  `QOSMaxSubmitJobPerUserLimit`: la QoS della seriale ammette 10 job in coda per utente (8 `pool` + 2 `dec`). Il loop si e' fermato come
+  previsto; restano 6 sonde `dec` da sottomettere (R2 e R5 P1, le quattro P2).
+- **Alimentatore `scripts/leonardo_feed.py`** (nuovo, per l'agente leggero): legge i comandi scelti da un file (`--select`), salta gli ID gia'
+  `sottomesso` nel ledger, si ferma (uscita 6) davanti a un ID `rifiutato` senza `--dopo-rifiuto` o a un esito diverso da «sottomesso», e ogni
+  3 min conta i job dell'utente sulla partizione (`squeue -u $USER -p ... -h -o %i`, unico comando sul login node) sottomettendo finche' la coda
+  resta sotto `--max-queued`; uscite 0/3/4/5 come `leonardo_watch.py`. Prove: `tests/cpu/test_leonardo_feed.py` (6 test; con quelli di watch e
+  submit_job 32 passati). Avviato sulle 6 sonde `dec` restanti (`feed_pilot_eval_A2.txt`; R2-e2-p1-dec riparte con `--dopo-rifiuto`).
+- **File dei comandi** (`comandi_valutazione.txt`, 48 job come prima): A2 e B2 senza `--dopo`; B diviso in **B1** (8 estrazioni, tutte insieme
+  a rami COMPLETED) e **B2** (16 sonde alimentate con `leonardo_feed.py` dopo B1 COMPLETED); `preventivo_valutazione.json` aggiornato (blocchi
+  B1/B2, limite della seriale, tempi). Protocollo §6 punto 7 aggiornato.
 
 ## 2) Problemi trovati
 
@@ -5013,3 +5030,16 @@ non cambia) con il test `test_remote_does_not_inherit_the_callers_stdin` in `tes
 legge «riga 2 / riga 3», col nuovo legge una stringa vuota (`26 passed` sui due file del submitter e del watcher; la suite CPU completa, finita
 dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legge il file da `sed` e chiude comunque lo stdin con `</dev/null`. I comandi 2-8 sono stati sottomessi alle 08:07 saltando esplicitamente il comando 1
 (sezione 1, voce dello stesso giorno). Nessun job doppio, nessun job rifiutato, nessun costo.
+
+### 2026-10-25 | Claude | Due rifiuti di sbatch nella valutazione del pilot (A2), nessun job creato e nessun costo: (1) `--dopo` su un job gia' finito; (2) limite di 10 job in coda per utente sulla seriale
+
+- **(1) «Job dependency problem»** (19:06): le sonde `dec` di A2 avevano `--dopo` (afterok) sulla propria estrazione, ma A2 si sottomette per
+  disegno dopo che le estrazioni sono COMPLETED, e SLURM toglie dalla coda un job finito dopo pochi minuti: la dipendenza punta a un job che non
+  c'e' piu'. Regola: `--dopo` solo su job ancora in coda o in esecuzione, cioe' dentro lo stesso blocco di sottomissione (A1, B1); le sonde su
+  cache pronte vanno senza. Corretto nel file dei comandi; l'ID rifiutato risottomesso con `--dopo-rifiuto` (62274190).
+- **(2) `QOSMaxSubmitJobPerUserLimit`** (19:09): la QoS di `lrd_all_serial` ammette 10 job dell'utente in coda o in esecuzione; con 8 sonde `pool`
+  e 2 `dec` in coda l'undicesima e' stata rifiutata. Il protocollo lo diceva («32 seriali, 10 in coda alla volta», §7) e non l'avevo applicato
+  alla meccanica della sottomissione. Rimedio: `scripts/leonardo_feed.py` alimenta la coda man mano che scende sotto 10. L'ID rifiutato
+  (`PILOT-EVAL-probe-R2-e2-p1-dec`) riparte con `--dopo-rifiuto` dall'alimentatore.
+- Il loop di sottomissione si e' fermato al primo esito diverso da «sottomesso» in tutti e due i casi, come previsto: nessun rilancio alla
+  cieca, nessun job doppio (verificato nel ledger).

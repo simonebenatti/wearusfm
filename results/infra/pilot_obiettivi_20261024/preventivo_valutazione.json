@@ -32,12 +32,22 @@
    "core_hours_max": 256.0,
    "probe_wall_hours_if_serial": 11.0
   },
-  "B": {
-   "jobs": 24,
+  "B1": {
+   "jobs": 8,
    "extractions": 8,
-   "probes": 16,
+   "probes": 0,
    "gpu_hours_expected": 2.8,
    "gpu_hours_max": 10.0,
+   "core_hours_expected": 0,
+   "core_hours_max": 0,
+   "probe_wall_hours_if_serial": 0.0
+  },
+  "B2": {
+   "jobs": 16,
+   "extractions": 0,
+   "probes": 16,
+   "gpu_hours_expected": 0,
+   "gpu_hours_max": 0,
    "core_hours_expected": 134.4,
    "core_hours_max": 512.0,
    "probe_wall_hours_if_serial": 16.8
@@ -53,10 +63,16 @@
    "probe_wall_hours_if_serial": 33.6
   }
  },
+ "serial_queue_limit": {
+  "qos_max_submit_per_user": 10,
+  "evidence": "sbatch 25/10/2026 19:09: QOSMaxSubmitJobPerUserLimit sull'undicesima sonda",
+  "feeder": "scripts/leonardo_feed.py (A2, B2): sottomette man mano che la coda scende sotto 10"
+ },
  "timeline_from_go": {
   "A1": "estrazioni: ~30 min di calcolo piu' la coda GPU; sonde pool: ~5 h 50 in fila (4 x 62 + 4 x 25 min) dopo le estrazioni; confronti sul Mac: minuti. Con il via la sera del 25/10: sei letture del criterio nella mattina del 26/10.",
   "A2": "~11 h in fila dopo A1 (4 x 140 + 4 x 25 min)",
-  "B": "dopo i rami COMPLETED (attesi entro le 21:00 del 25/10): come A1 + A2, ~17 h in fila"
+  "B1": "8 estrazioni dopo i rami COMPLETED: ~30 min di calcolo piu' la coda GPU",
+  "B2": "16 sonde alimentate nella seriale dopo B1 e dietro A1/A2: ~17 h in fila (4 x 62 + 4 x 25 + 4 x 140 + 4 x 25 min)"
  },
  "disk": {
   "features_gb_estimate": "cache per endpoint e compito come nel readout (stesso strumento); in $SCRATCH, scadenza automatica a 40 giorni",
@@ -305,7 +321,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R0-e1-p1",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.0,
@@ -315,7 +331,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R1-e1-p1",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.0,
@@ -325,7 +341,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R2-e1-p1",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.0,
@@ -335,7 +351,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R5-e1-p1",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.0,
@@ -345,7 +361,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R0-e1-p2",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.5,
@@ -355,7 +371,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R1-e1-p2",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.5,
@@ -365,7 +381,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R2-e1-p2",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.5,
@@ -375,7 +391,7 @@
   },
   {
    "id": "PILOT-EVAL-ext-R5-e1-p2",
-   "block": "B",
+   "block": "B1",
    "kind": "extract",
    "gpu": 1,
    "cap_gpu_hours": 1.5,
@@ -385,7 +401,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R0-e1-p1-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -395,7 +411,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R1-e1-p1-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -405,7 +421,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R2-e1-p1-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -415,7 +431,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R5-e1-p1-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -425,7 +441,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R0-e1-p2-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -435,7 +451,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R1-e1-p2-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -445,7 +461,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R2-e1-p2-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -455,7 +471,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R5-e1-p2-pool",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -465,7 +481,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R0-e1-p1-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -475,7 +491,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R1-e1-p1-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -485,7 +501,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R2-e1-p1-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -495,7 +511,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R5-e1-p1-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -505,7 +521,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R0-e1-p2-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -515,7 +531,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R1-e1-p2-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -525,7 +541,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R2-e1-p2-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
@@ -535,7 +551,7 @@
   },
   {
    "id": "PILOT-EVAL-probe-R5-e1-p2-dec",
-   "block": "B",
+   "block": "B2",
    "kind": "probe",
    "cores": 8,
    "cap_core_hours": 32.0,
