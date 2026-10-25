@@ -4889,6 +4889,6 @@ del launcher come argomento). Esito: 1 comando eseguito su 8, tronco R0 sottomes
 in coda. A giudicare dai log, nelle tornate del 24/10 i comandi erano stati eseguiti uno per uno, non con un loop su file, e il difetto non si era
 visto. Corretto in `scripts/submit_job.py` (`stdin=subprocess.DEVNULL` quando non c'e' uno script da passare; il percorso con `--script-stdin`
 non cambia) con il test `test_remote_does_not_inherit_the_callers_stdin` in `tests/cpu/test_submit_job.py`: col vecchio codice il finto ssh
-legge «riga 2 / riga 3», col nuovo legge una stringa vuota (`26 passed` sui due file del submitter e del watcher). Il loop dell'agente ora legge il
-file da `sed` e chiude comunque lo stdin con `</dev/null`. I comandi 2-8 sono stati sottomessi alle 08:07 saltando esplicitamente il comando 1
+legge «riga 2 / riga 3», col nuovo legge una stringa vuota (`26 passed` sui due file del submitter e del watcher; la suite CPU completa, finita
+dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legge il file da `sed` e chiude comunque lo stdin con `</dev/null`. I comandi 2-8 sono stati sottomessi alle 08:07 saltando esplicitamente il comando 1
 (sezione 1, voce dello stesso giorno). Nessun job doppio, nessun job rifiutato, nessun costo.
