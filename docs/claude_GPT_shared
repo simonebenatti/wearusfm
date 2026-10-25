@@ -3378,6 +3378,43 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   che finisce, in qualunque stato; poi si riarma sui restanti. Nessuna lettura degli esiti prima della regola del §5 (a 2 epoche, sui rami).
 - **Prossimi passi a run finiti:** consuntivo `sacct`; poi la valutazione del §7 del protocollo (estrazioni e sonde del readout per canale sui
   checkpoint dei rami `-e1` al passo 24.523, cioe' a 2 epoche), con un preventivo a parte e il via di Simone.
+### 2026-10-25 | Claude | Readout per canale: campagna CHIUSA. Letti gli 8 rapporti P2 restanti (ancore-only `local`/`dec`, A a larghezza intera): A contro ancore-only sulla P2 «regola non superata» con tutti e due gli strati (local +0,65, dec -0,46), la larghezza intera non cambia nulla a livello di compito; consuntivo 2,74 GPU-ora e 238,9 core-ore, 30 job COMPLETED | Codice: 6242bc3 sul cluster; commit di questa voce (esiti in `results/readout_canale_20261023/`)
+
+- **Via di Simone (25/10):** «Sì: leggi le 4 sonde P2 del readout e la sonda 62080282 e chiudi il readout per canale, senza toccare i
+  training.» Letti tutti gli 8 rapporti P2 arrivati dopo la voce delle 15:22 del 24/10: i 5 nominati (62080282 A s0 `dec` a larghezza intera;
+  62100961 e 62128193 ancore-only s1 `local`/`dec`; 62128210 e 62128222 A s1 `local`/`dec` a larghezza intera) e i 3 finiti fra le 15:25 e le
+  18:15 del 24/10 e non ancora letti (62043273 e 62080252 ancore-only s0 `local`/`dec`, 62080269 A s0 `local` a larghezza intera), perche' i
+  confronti li vogliono a coppie di semi. Copiati sul Mac con `rsync` (8 JSON + 8 OOF; SHA-256 degli OOF verificato dalla fase `compare`);
+  nessun job sottomesso, i 4 tronchi del pilot non toccati.
+- **Sonde P2 (S ± es; EPN-612 / UCI-EMG):** ancore-only `local` s0 77,92 ± 2,24 (79,35 / 76,48), s1 78,47 ± 2,10 (79,81 / 77,13); `dec` s0
+  82,52 ± 2,20 (87,48 / 77,55), s1 83,73 ± 2,07 (87,97 / 79,49). A a larghezza intera (3.072 colonne, nessuna PCA): `local` s0 78,99 ± 2,26,
+  s1 78,67 ± 2,20; `dec` s0 83,01 ± 2,34, s1 82,44 ± 2,45 (a k 768: `local` 78,80 / 78,88, `dec` 82,64 / 82,69). Durate: 22-31 min a k 768,
+  75-146 min a larghezza intera. Tutto in `results/readout_canale_20261023/riepilogo_sonde.json` (le 21 sonde).
+- **A contro ancore-only sulla P2** (opzione del protocollo: stessa regola dei bracci, riferimento ancore-only, candidato A, `--models`,
+  lettura descrittiva): `local` a k 768 **+0,65 punti, IC95 [-0,01; +1,26], per seme +0,88 / +0,42: «regola non superata»** (EPN-612 -0,26
+  [-0,55; +0,03]; UCI-EMG +1,56 [+0,36; +2,72]); `dec` a k 768 **-0,46 [-1,52; +0,47], per seme +0,13 / -1,05: «regola non superata»**
+  (EPN-612 +0,40 [+0,11; +0,70]; UCI-EMG -1,32 [-3,42; +0,39]). Con la P1 (`local` +0,20, `dec` -0,78) sono quattro letture, nessuna oltre
+  1 punto in nessun verso: **il verdetto dei bracci «ancore-only = A» regge col readout per canale su tutti e due i compiti e gli strati**; il
+  JEPA aggiunge alle ancore al piu' qualche decimo di punto lineare. I due intervalli per dataset sopra lo zero (UCI `local`, 364 finestre;
+  EPN `dec`) sono descrittivi, senza correzione per confronti multipli (dichiarato). Esiti in `confronti/A_vs_AO_p2_{local,dec}.json`.
+- **Larghezza intera sulla P2** (descrittivo del protocollo: «quanto costa la PCA a 768», non entra nella risposta): contro k 768 dello stesso
+  modello, `local` -0,01 [-0,31; +0,24] (per seme +0,19 / -0,22) e `dec` +0,06 [-0,35; +0,38] (+0,36 / -0,24): **la PCA a 768 non costa
+  niente a livello di compito**; dentro EPN-612 la larghezza intera guadagna ~0,5 (`local` +0,47 [+0,33; +0,61], `dec` +0,55 [+0,40; +0,70])
+  e su UCI-EMG perde ~0,5 (li' a k 768 la PCA era gia' `k_capped` a 222-258 componenti: la differenza e' PCA contro colonne grezze, non la
+  larghezza). Contro il readout medio storico le letture del confronto 1 non cambiano: `local` -2,51 [-4,65; -0,55] «peggiora», `dec` +1,39
+  [-1,09; +3,73] «regola non superata» (a k 768: -2,49 e +1,33). La risposta alla domanda 1 resta: con la regola congelata il readout medio
+  non nasconde informazione. Esiti in `confronti/descrittivo_p2_{local,dec}_k0_vs_{k768,pool}.json`.
+- **Consuntivo** (`sacct -X` dei 30 job del ledger, tutti COMPLETED; `results/readout_canale_20261023/consuntivo_sacct_20261025.txt` e
+  `consuntivo.json`): estrazioni **2,74 GPU-ora** (8 job da 1 A100, 12-28 min l'uno; tetto 10,0 = 5,0 tranche 1 + 5,0 opzione ancore-only,
+  attese 4,6) sulla voce della valutazione dei bracci; sonde **238,9 core-ore** (21 sonde x 8 core; tetto 672 = 416 + 256, attese ~110):
+  P1 a k 768 152,6 (1 h 55-2 h 27 l'una contro i ~50 min stimati nel protocollo: la PCA per fold e le cache larghe costano piu' del previsto),
+  P2 a k 768 28,7, larghezza intera 57,6; di cui ancore-only 82,8. **Sotto i tetti, sopra le attese per le P1.** Il «~35 core-ore di sonde
+  finora» della sintesi del 24/10 era una sottostima (le 13 sonde finite allora valevano gia' 167,2 core-ore): corretto nella sintesi.
+- **Chiusura:** esiti nel repo in `results/readout_canale_20261023/` (`confronti/` con i 15 rapporti di confronto, `riepilogo_sonde.json`,
+  consuntivo, `README.md` con la tabella dei verdetti); rapporti delle sonde e OOF restano fuori da Git in `~/wearusfm_local/readout_canale_20261023/`.
+  `docs/sintesi_pretraining_20261024.md` aggiornata (domanda 3 con la P2, larghezza intera nei controlli, costi); riga di chiusura nel
+  protocollo. Le tre risposte del passo 1 non cambiano. Il checkout di campagna e le cache su $SCRATCH restano (nessuna cancellazione senza
+  Simone; le cache scadono da sole a 40 giorni). Nessun altro job della campagna.
 
 ## 2) Problemi trovati
 

@@ -1,0 +1,133 @@
+{
+ "campagna": "readout-canale-20261023",
+ "letto": "2026-10-25 (sacct -X, tutti i 30 job del ledger)",
+ "job": 30,
+ "stati": [
+  "COMPLETED"
+ ],
+ "gpu_ore": {
+  "estrazioni": 2.738,
+  "tetto": 10.0,
+  "attese": 4.6,
+  "nota": "8 estrazioni, 1 A100 l'una (tranche 1: 5,0 di tetto; opzione ancore-only: 5,0)"
+ },
+ "core_ore": {
+  "totale_cpu": 238.91,
+  "checkout": 0.0072,
+  "sonde_tutte": 238.91,
+  "sonde_P1_k768": 152.59,
+  "sonde_P2_k768": 28.7,
+  "sonde_P2_k0": 57.62,
+  "sonde_ancore_only": 82.83,
+  "tetto": 672.0,
+  "attese": 112.0,
+  "nota": "8 core per sonda; tranche 1: 416 di tetto (~72 attese), opzione ancore-only: 256 (~40 attese)"
+ },
+ "sonde": {
+  "A-s0-p1-pool": {
+   "job": "61984655",
+   "elapsed": "01:02:31",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p1-local": {
+   "job": "61984666",
+   "elapsed": "02:21:24",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p1-dec": {
+   "job": "61984669",
+   "elapsed": "02:20:37",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p1-local": {
+   "job": "61984679",
+   "elapsed": "02:27:20",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p1-dec": {
+   "job": "61984695",
+   "elapsed": "02:17:20",
+   "stato": "COMPLETED"
+  },
+  "AO-s0-p1-local": {
+   "job": "61984705",
+   "elapsed": "02:24:10",
+   "stato": "COMPLETED"
+  },
+  "AO-s0-p1-dec": {
+   "job": "61984713",
+   "elapsed": "01:54:36",
+   "stato": "COMPLETED"
+  },
+  "AO-s1-p1-local": {
+   "job": "61987693",
+   "elapsed": "02:23:37",
+   "stato": "COMPLETED"
+  },
+  "AO-s1-p1-dec": {
+   "job": "61987715",
+   "elapsed": "01:52:51",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p2-local": {
+   "job": "61987733",
+   "elapsed": "00:28:53",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p2-dec": {
+   "job": "62043217",
+   "elapsed": "00:24:07",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p2-local": {
+   "job": "62043237",
+   "elapsed": "00:29:31",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p2-dec": {
+   "job": "62043256",
+   "elapsed": "00:26:43",
+   "stato": "COMPLETED"
+  },
+  "AO-s0-p2-local": {
+   "job": "62043273",
+   "elapsed": "00:30:39",
+   "stato": "COMPLETED"
+  },
+  "AO-s0-p2-dec": {
+   "job": "62080252",
+   "elapsed": "00:22:51",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p2-local-k0": {
+   "job": "62080269",
+   "elapsed": "02:26:20",
+   "stato": "COMPLETED"
+  },
+  "A-s0-p2-dec-k0": {
+   "job": "62080282",
+   "elapsed": "01:14:48",
+   "stato": "COMPLETED"
+  },
+  "AO-s1-p2-local": {
+   "job": "62100961",
+   "elapsed": "00:30:19",
+   "stato": "COMPLETED"
+  },
+  "AO-s1-p2-dec": {
+   "job": "62128193",
+   "elapsed": "00:22:12",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p2-local-k0": {
+   "job": "62128210",
+   "elapsed": "02:10:45",
+   "stato": "COMPLETED"
+  },
+  "A-s1-p2-dec-k0": {
+   "job": "62128222",
+   "elapsed": "01:20:14",
+   "stato": "COMPLETED"
+  }
+ }
+}

@@ -1,4 +1,4 @@
-# Cosa e' successo al pretraining: sintesi dopo il readout per canale (Claude, 24/10/2026)
+# Cosa e' successo al pretraining: sintesi dopo il readout per canale (Claude, 24/10/2026; aggiornata il 25/10/2026 con la P2 di ancore-only e la larghezza intera, campagna chiusa)
 
 Chiude il passo 1 della diagnosi del 23/10 (`docs/diagnosi_pretraining_20261023.md`; Simone: «finire P2, capire cosa e' successo, poi lavorare
 sulle tue soluzioni»). Tutti i numeri sono S della validazione interna (P1: NinaPro DB2/DB3/DB6 cross-soggetto; P2: EPN-612 e UCI-EMG), in
@@ -10,10 +10,12 @@ punti percentuali, con la regola dei bracci congelata (delta >= +1 punto, limite
 |---|---|---|
 | L'encoder batte le feature classiche? | Baseline classica (4 feature di Hudgins per canale, stessa sonda lineare, stessi fold) contro il readout medio di A | **Si'**: P1 +4,01 [+2,97; +5,03], P2 +13,86 [+11,00; +17,03], «migliora» in entrambi. *Interpretazione:* con lo stesso readout l'encoder contiene piu' informazione lineare delle 4 feature di Hudgins |
 | La media sui canali nasconde informazione? (causa 3 della diagnosi) | Readout per canale (`local` e `dec` a 768 componenti) contro il readout medio, due semi, P1 e P2 | **No, con la regola congelata**: P1 local -2,00 «peggiora», dec -0,42 regola non superata; P2 local -2,49 «peggiora», dec +1,33 [-0,93; +3,54] regola non superata. Nessuno strato «migliora» in un compito |
-| Il JEPA aggiunge qualcosa alle ancore che la media non mostra? | A contro ancore-only con lo stesso readout per canale, **solo P1** (le sonde P2 di ancore-only sono in coda) | **Sotto la soglia di +1 punto**: local +0,20 [+0,01; +0,39] (l'intervallo esclude lo zero: una differenza piccola c'e'), dec -0,78 [-1,12; -0,45]. «Ancore-only = A» regge anche per canale, nel senso della regola |
+| Il JEPA aggiunge qualcosa alle ancore che la media non mostra? | A contro ancore-only con lo stesso readout per canale, P1 e P2, due strati (quattro letture) | **Sotto la soglia di +1 punto in tutte e quattro**: P1 local +0,20 [+0,01; +0,39] (l'intervallo esclude lo zero: una differenza piccola c'e'), dec -0,78 [-1,12; -0,45]; P2 local +0,65 [-0,01; +1,26], dec -0,46 [-1,52; +0,47]. «Ancore-only = A» regge anche per canale, nel senso della regola |
 
 Controlli: `pool` riestratto = storico (0,18337, zero predizioni diverse); PCA a 768 spiega il 99,9-100% della varianza delle colonne per
-canale; UCI-EMG (364 finestre) di fatto a larghezza piena.
+canale; UCI-EMG (364 finestre) di fatto a larghezza piena; la larghezza intera sulla P2 (3.072 colonne, senza PCA) da' lo stesso S di k 768
+(local -0,01 [-0,31; +0,24], dec +0,06 [-0,35; +0,38]): la PCA a 768 non costa niente a livello di compito, e le letture del confronto 1
+non cambiano (local -2,51 «peggiora», dec +1,39 regola non superata).
 
 ## 2. Cosa resta in piedi della diagnosi
 
@@ -26,7 +28,9 @@ canale; UCI-EMG (364 finestre) di fatto a larghezza piena.
   ancore si legge meglio di 0,8 punti. *Interpretazione (mia):* il decoder di ancore-only e' il predittore delle ancore fisiche, quello di A
   porta anche la predizione dell'embedding del teacher; il termine JEPA, con target per patch da 25 ms letto dal decoder a query, aggiunge poca
   informazione lineare. E' coerente con F3-F5 della diagnosi (collasso senza ancore, rango che non cresce con la taglia, quota di contenuto che
-  scende lungo il training). La P2 di ancore-only (in coda) completa il quadro.
+  scende lungo il training). Sulla P2 (25/10) lo stesso quadro: `local` +0,65 [-0,01; +1,26] e `dec` -0,46 [-1,52; +0,47] per A rispetto
+  ad ancore-only; dentro UCI-EMG (364 finestre) `local` +1,56 [+0,36; +2,72] e dentro EPN-612 `dec` +0,40 [+0,11; +0,70], descrittivi senza
+  correzione. In nessuna delle quattro letture il JEPA aggiunge 1 punto lineare alle ancore.
 - *Interpretazione (mia):* **il readout non e' la causa principale; la taglia non lo e' finche' l'obiettivo e' questo** (F4: rango uguale a
   30M, 100M e 300M; la C4 e' sospesa, non smentita); LR e stabilita' sono regolari (C1-C3); il contenuto spettrale del banco a 25 ms c'e'
   (F6, F7). Il collo di bottiglia piu' probabile e' nell'obiettivo. R5 non prova la risoluzione spettrale ma la finestra d'integrazione del
@@ -39,7 +43,9 @@ canale; UCI-EMG (364 finestre) di fatto a larghezza piena.
 2. **Il pilot degli obiettivi e' il passo successivo giusto** (`docs/pilot_obiettivi_v1.md`): R1 target (a), R2 target per regione, R5 finestra
    150 ms, contro R0 = A rifatto a 2 epoche. R2 e R5 attaccano la causa 1 (unita' alla scala dell'inviluppo), R1 la causa 2.
 3. **La C4 a 300M** misura un modello piu' grande dello stesso obiettivo: la diagnosi non e' cambiata, resta in attesa (decisione di Simone).
-4. **Costi del passo 1:** 2,74 GPU-ora di estrazioni (tetto 10) e ~35 core-ore di sonde finora (21 sonde; le 8 descrittive P2 in coda).
+4. **Costi del passo 1 (consuntivo `sacct` del 25/10, 30 job COMPLETED):** 2,74 GPU-ora di estrazioni (tetto 10) e 238,9 core-ore di sonde
+   (21 sonde a 8 core; tetto 672, attese ~110: le sonde P1 a k 768 sono durate 1 h 55-2 h 27 l'una contro i ~50 min stimati). Il «~35
+   core-ore finora» della prima stesura era una sottostima (le 13 sonde finite il 24/10 alle 15:22 valevano gia' 167 core-ore).
 
 ## 4. Limiti di questa lettura
 

@@ -2,7 +2,9 @@
 
 **Stato: lettura CONGELATA in 63ac0dd (23/10/2026, prima di aprire i rapporti della baseline classica), emendata nel commit successivo
 dopo la seconda review del `critico` e dopo l'apertura della baseline (emendamenti elencati in fondo, nessuno cambia la regola di lettura).
-Nessun job lanciato.**
+Nessun job lanciato al congelamento.** **Campagna `readout-canale-20261023` eseguita (deploy 6242bc3, autorizzata il 23/10) e CHIUSA il
+25/10/2026: 30 job COMPLETED, 2,74 GPU-ora e 238,9 core-ore; confronti, riepilogo delle 21 sonde e consuntivo in
+`results/readout_canale_20261023/` (README con la tabella dei verdetti); risposte in `docs/sintesi_pretraining_20261024.md`.**
 Richiesta di Simone: «Parti dal readout per canale sui checkpoint esistenti (3.1), insieme alla baseline classica; il pilot degli obiettivi
 dopo». Origine: `docs/diagnosi_pretraining_20261023.md`, causa 3 (il readout delle sonde media sui canali e sui latenti e cancella *quale*
 elettrodo e' attivo). Codice: `src/wearusfm/harness/channel_readout.py`, `scripts/channel_readout.py`, launcher

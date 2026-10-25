@@ -1,0 +1,44 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "task": "p1",
+ "reference": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/s_p1.json",
+ "candidate": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/readout_canale_20261023/A-s0/p1_pool.json",
+ "S_reference": 0.18336720989811456,
+ "S_candidate": 0.18336720989811456,
+ "delta_S": 0.0,
+ "tolerance": 0.001,
+ "equal": true,
+ "datasets": {
+  "ninapro_db2": {
+   "s_reference": 0.19485045338516516,
+   "s_candidate": 0.19485045338516516,
+   "delta_s": 0.0,
+   "n_windows": 38544,
+   "predictions_differing": 0
+  },
+  "ninapro_db3": {
+   "s_reference": 0.033199298767623606,
+   "s_candidate": 0.033199298767623606,
+   "delta_s": 0.0,
+   "n_windows": 9834,
+   "predictions_differing": 0
+  },
+  "ninapro_db6": {
+   "s_reference": 0.3626861026456485,
+   "s_candidate": 0.3626861026456485,
+   "delta_s": 0.0,
+   "n_windows": 33961,
+   "predictions_differing": 0
+  }
+ },
+ "oof_maps": [
+  [
+   "/leonardo_work",
+   "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work"
+  ],
+  [
+   "/leonardo_scratch",
+   "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_scratch"
+  ]
+ ]
+}

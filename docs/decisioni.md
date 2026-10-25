@@ -4318,3 +4318,13 @@ la lettura degli esiti segue la regola del §5 di `docs/pilot_obiettivi_v1.md` f
 tutti sul checkout di campagna 705ec04, QoS `normal`, 4 A100 per job; 228 GPU-ora prenotate (175,6 attese) sulla voce **finestra 1, famiglia
 «Ablation a 30M»**. Ledger e `squeue` in `~/wearusfm_local/` (file nel registro). L'agente leggero aspetta i tronchi; il consuntivo e la
 lettura (regola del §5, a 2 epoche sui rami) seguono a run finiti. Nessun altro job oltre questi 8 senza un nuovo via.
+**Readout per canale: campagna CHIUSA (25/10/2026; Simone: «Sì: leggi le 4 sonde P2 del readout e la sonda 62080282 e chiudi il readout per
+canale, senza toccare i training.»).** Letture finali con la regola congelata in 63ac0dd: A contro ancore-only sulla P2 (opzione del protocollo,
+descrittiva, `--models`): `local` +0,65 [-0,01; +1,26], `dec` -0,46 [-1,52; +0,47], «regola non superata» in tutti e due; con la P1 (+0,20 /
+-0,78) il verdetto «ancore-only = A» regge col readout per canale su entrambi i compiti e gli strati. Larghezza intera sulla P2 (descrittivo):
+-0,01 / +0,06 punti contro k 768 (la PCA a 768 non costa niente a livello di compito); contro il readout medio le letture del confronto 1 non
+cambiano (`local` -2,51 «peggiora», `dec` +1,39 regola non superata). Le tre risposte della sintesi del 24/10 restano: l'encoder batte le
+feature classiche; il readout medio non nasconde informazione; il JEPA non aggiunge piu' di qualche decimo di punto lineare alle ancore.
+Consuntivo: 30 job COMPLETED, **2,74 GPU-ora** (tetto 10) e **238,9 core-ore** (tetto 672; attese ~110: le sonde P1 a k 768 sono durate ~2 h 20
+l'una invece di ~50 min). Esiti in `results/readout_canale_20261023/` (README con la tabella dei verdetti). Nessun altro job; il pilot degli
+obiettivi non e' stato toccato.

@@ -1,0 +1,125 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "task": "p1",
+ "reference": [
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/baseline_td_20261023/p1/interna_p1.json",
+   "S": 0.14300665513910493,
+   "S_se": 0.005506753459518803,
+   "feature_set": null,
+   "checkpoint": null,
+   "checkpoint_sha256": null,
+   "readout": null
+  },
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/baseline_td_20261023/p1/interna_p1.json",
+   "S": 0.14300665513910493,
+   "S_se": 0.005506753459518803,
+   "feature_set": null,
+   "checkpoint": null,
+   "checkpoint_sha256": null,
+   "readout": null
+  }
+ ],
+ "candidate": [
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s0/s_p1.json",
+   "S": 0.18336720989811456,
+   "S_se": 0.006699739805330705,
+   "feature_set": "model",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-A-30M-s0/checkpoint_postdecay.pt",
+   "checkpoint_sha256": "39cbc1d7d9798372724f3f56e877d2847025055753b3e5475b9ea35d1feb108e",
+   "readout": null
+  },
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/w1arm/W1ARM-A-30M-s1/s_p1.json",
+   "S": 0.182765005173592,
+   "S_se": 0.007248939889120785,
+   "feature_set": "model",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/w1arm/W1ARM-A-30M-s1/checkpoint_postdecay.pt",
+   "checkpoint_sha256": "3a348cf8f1dec9064e1091b8bf0457313a5928b983ca6017dc87d84dbb092d44",
+   "readout": null
+  }
+ ],
+ "comparison": {
+  "A": 0.14300665513910493,
+  "B": 0.18306610753585328,
+  "delta": 0.040059452396748345,
+  "delta_by_model_seed": [
+   0.04036055475900962,
+   0.03975835003448708
+  ],
+  "ci95": [
+   0.02971108816916471,
+   0.0502744764940782
+  ],
+  "paired_subject_se": 0.005237889649654767,
+  "datasets": {
+   "ninapro_db2": {
+    "A": 0.14070977741529384,
+    "B": 0.1977799139704107,
+    "delta": 0.05707013655511686,
+    "delta_by_model_seed": [
+     0.05414067596987132,
+     0.059999597140362404
+    ],
+    "ci95": [
+     0.044275162942083265,
+     0.07017424644100004
+    ],
+    "paired_subject_se": 0.00638929044546688
+   },
+   "ninapro_db3": {
+    "A": 0.03023092399138347,
+    "B": 0.030939256556889318,
+    "delta": 0.000708332565505846,
+    "delta_by_model_seed": [
+     0.002968374776240134,
+     -0.001551709645228442
+    ],
+    "ci95": [
+     -0.011383433441047914,
+     0.012635183127507308
+    ],
+    "paired_subject_se": 0.005787768829401179
+   },
+   "ninapro_db6": {
+    "A": 0.3213577627559315,
+    "B": 0.3524011582660695,
+    "delta": 0.031043395510138017,
+    "delta_by_model_seed": [
+     0.041328339889717014,
+     0.02075845113055902
+    ],
+    "ci95": [
+     -0.0038799816764981494,
+     0.06731896935919951
+    ],
+    "paired_subject_se": 0.01881914634563678
+   }
+  },
+  "beats": true,
+  "not_harmful": true
+ },
+ "bootstrap": {
+  "n_boot": 1000,
+  "seed": 20261009,
+  "method": "soggetti ricampionati insieme per i quattro rapporti (downstream_ab.paired_component), intervallo dei percentili"
+ },
+ "reading": {
+  "beats": true,
+  "not_harmful": true,
+  "verdict": "migliora",
+  "min_delta": 0.01
+ },
+ "oof_maps": [
+  [
+   "/leonardo_work",
+   "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_work"
+  ],
+  [
+   "/leonardo_scratch",
+   "/Users/simonebenatti/wearusfm_local/readout_canale_20261023/leonardo_scratch"
+  ]
+ ]
+}
