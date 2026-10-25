@@ -166,9 +166,13 @@ class Registry:
 
 
 def run_remote(ssh: list[str], remote: str, timeout: float, stdin: str | None = None) -> tuple[int | None, str, str]:
-    """(codice d'uscita o None se timeout, stdout, stderr). `stdin`: testo passato al comando remoto (lo script di sbatch)."""
+    """(codice d'uscita o None se timeout, stdout, stderr). `stdin`: testo passato al comando remoto (lo script di sbatch).
+    Senza testo lo stdin di ssh e' chiuso (`/dev/null`): altrimenti ssh eredita quello del chiamante e, in un loop
+    `while read cmd; do python3 submit_job.py ...; done < comandi.txt`, si mangia le righe restanti del file (25/10/2026, pilot:
+    sottomesso 1 comando su 8, nessun job in piu' e nessun costo)."""
     try:
-        r = subprocess.run([*ssh, remote], capture_output=True, text=True, timeout=timeout, input=stdin)
+        r = subprocess.run([*ssh, remote], capture_output=True, text=True, timeout=timeout, input=stdin,
+                           **({} if stdin is not None else {"stdin": subprocess.DEVNULL}))
         return r.returncode, r.stdout, r.stderr
     except subprocess.TimeoutExpired as e:
         return None, (e.stdout or b"").decode() if isinstance(e.stdout, bytes) else (e.stdout or ""), str(e)

@@ -4314,3 +4314,7 @@ Simone: «Via ai 4 training del pilot degli obiettivi (8 job di comandi_training
 GPU-ora prenotate + 4 rami da 9, afterok sul tronco; 228 GPU-ora di tetto, 175,6 attese; 12,8 GB di checkpoint su $SCRATCH) sul checkout di
 campagna 705ec04, nell'ordine del file e fermandosi al primo non «sottomesso». Il consuntivo si fa con `sacct` a run finiti e si scrive qui;
 la lettura degli esiti segue la regola del §5 di `docs/pilot_obiettivi_v1.md` firmata il 24/10. Nessun altro job oltre gli 8 senza un nuovo via.
+**Pilot degli obiettivi: 8 job sottomessi il 25/10/2026 alle 08:04 (tronco R0) e 08:07 (gli altri 7)** (tronchi 62233554, 62233766, 62233768, 62233770; rami `-e1` in afterok sul proprio tronco: 62233765, 62233767, 62233769, 62233771),
+tutti sul checkout di campagna 705ec04, QoS `normal`, 4 A100 per job; 228 GPU-ora prenotate (175,6 attese) sulla voce **finestra 1, famiglia
+«Ablation a 30M»**. Ledger e `squeue` in `~/wearusfm_local/` (file nel registro). L'agente leggero aspetta i tronchi; il consuntivo e la
+lettura (regola del §5, a 2 epoche sui rami) seguono a run finiti. Nessun altro job oltre questi 8 senza un nuovo via.

@@ -3357,6 +3357,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   che finisce, in qualunque stato); i rami partono da soli per l'afterok. Gli ID SLURM si leggono dal ledger appena scritti e vanno nella voce
   successiva, con `squeue` dopo la sottomissione. **Lettura degli esiti solo con la regola del §5 firmata il 24/10** (criterio `pool` a 2
   epoche, delta >= +1 punto su P1 e P2 con IC che non tocca 0), nessuna lettura anticipata dei log come «risultato».
+### 2026-10-25 | Claude | Pilot degli obiettivi: gli 8 job dei 4 training SOTTOMESSI (tronchi 62233554, 62233766, 62233768, 62233770; rami in afterok), 228 GPU-ora prenotate sulla voce «Ablation a 30M» della finestra 1; l'agente leggero aspetta il primo tronco | Codice: 705ec04 sul cluster; commit di questa voce
+
+- **Sottomissione del 25/10** dal Mac con `submit_job.py`, nell'ordine di `comandi_training.txt`, in due tornate: alle 08:02-08:04 il comando 1
+  (tronco R0, job 62233554), poi il loop si e' fermato per il problema dello stdin descritto nella sezione 2 (nessun job
+  in piu', nessun costo: `squeue` delle 08:05 con il solo R0, `~/wearusfm_local/logs/squeue_pilot_training_20261025_dopo1.txt`); alle 08:07,
+  dopo la correzione di `submit_job.py`, i comandi 2-8 con lo stdin chiuso: 7 «sottomesso», nessun rifiuto ne' ambiguita', il comando 1 saltato
+  esplicitamente (`~/wearusfm_local/logs/submit_pilot_training_20261025.txt` e `..._b.txt`; ledger `~/wearusfm_local/jobs/ledger.tsv`,
+  campagna `pilot-obiettivi-20261024`, agente `claude`).
+- **Tronchi (QoS `normal`, 4 A100, 12 h di tetto, 48 GPU-ora prenotate l'uno):** `PILOT-R0-A-30M-s0-j01` -> job 62233554 (RUNNING, lrdn1797); `PILOT-R1-targetA-30M-s0-j01` -> job 62233766 (PENDING, (Priority)); `PILOT-R2-regione-30M-s0-j01` -> job 62233768 (PENDING, (Priority)); `PILOT-R5-finestra150-30M-s0-j01` -> job 62233770 (PENDING, (Priority)).
+- **Rami a 1 epoca (afterok sul proprio tronco, 2 h 15 di tetto, 9 GPU-ora prenotate l'uno):** `PILOT-R0-A-30M-s0-e1-j01` -> job 62233765 (PENDING, (Dependency)); `PILOT-R1-targetA-30M-s0-e1-j01` -> job 62233767 (PENDING, (Dependency)); `PILOT-R2-regione-30M-s0-e1-j01` -> job 62233769 (PENDING, (Dependency)); `PILOT-R5-finestra150-30M-s0-e1-j01` -> job 62233771 (PENDING, (Dependency)). Un ramo parte solo se il suo
+  tronco esce con 0; se il tronco fallisce il ramo resta `DependencyNeverSatisfied` a costo zero e si decide cosa fare.
+- **`squeue` subito dopo** (`~/wearusfm_local/logs/squeue_pilot_training_20261025.txt`): le 8 righe sopra; nessun altro job toccato. Le 4 sonde P2 del readout rilasciate il 24/10 (62100961, 62128193,
+  62128210, 62128222) risultano tutte COMPLETED in `sacct` (ultima finita alle 00:46 del 25/10, `~/wearusfm_local/logs/sacct_readout_sonde_20261025.txt`):
+  la chiusura del readout resta in attesa della parola di Simone, non si legge nulla adesso.
+- **Budget prenotato:** 4 x 48 + 4 x 9 = **228 GPU-ora** (tetto) sulla voce **finestra 1, famiglia «Ablation a 30M»**, attese 175,6; consuntivo
+  con `sacct` a run finiti.
+- **Attesa:** l'agente leggero (haiku) esegue `scripts/leonardo_watch.py --mode any --max-total-seconds 172800` sui 4 tronchi (log
+  `$WORK/wearusfm_runs/logs/train_ddp_%j.out`, uscita in `~/wearusfm_local/logs/watch_pilot_training.txt`) e sveglia la sessione al primo tronco
+  che finisce, in qualunque stato; poi si riarma sui restanti. Nessuna lettura degli esiti prima della regola del §5 (a 2 epoche, sui rami).
+- **Prossimi passi a run finiti:** consuntivo `sacct`; poi la valutazione del §7 del protocollo (estrazioni e sonde del readout per canale sui
+  checkpoint dei rami `-e1` al passo 24.523, cioe' a 2 epoche), con un preventivo a parte e il via di Simone.
 
 ## 2) Problemi trovati
 
@@ -4857,3 +4878,17 @@ fermato li' e i collaudi non sono stati sottomessi. Nessun job creato, nessun co
 esistono gia'; il primo passo dopo un checkout nuovo si sottomette dopo «checkout di campagna pronto», come dicevano i comandi originali. Il
 gate si risottomette con `--dopo-rifiuto` (ID prenotato e rifiutato), i collaudi dopo di esso; il collaudo di R5 con afterok sul gate resta
 corretto perche' a quel punto il launcher esiste.
+
+### 2026-10-25 | Claude | Pilot degli obiettivi: il loop di sottomissione si e' fermato dopo il primo comando perche' ssh dentro `submit_job.py` leggeva lo stdin del chiamante (nessun job in piu', nessun costo)
+
+Alle 08:02 l'agente leggero ha eseguito gli 8 comandi di `comandi_training.txt` con `while read cmd; do eval "$cmd"; done < file`: `run_remote`
+di `scripts/submit_job.py` chiamava `subprocess.run` senza chiudere lo stdin quando non c'era uno script da passare (`--script-stdin`), quindi ssh
+ha ereditato lo stdin del loop e si e' mangiato le righe 2-8 del file (finite sullo stdin remoto di `sbatch`, che le ignora perche' aveva il file
+del launcher come argomento). Esito: 1 comando eseguito su 8, tronco R0 sottomesso correttamente (job 62233554), gli altri
+7 non eseguiti; il loop e' finito per fine del file, non per un rifiuto (nessuna riga STOP nel log). `squeue` subito dopo: un solo job del pilot
+in coda. A giudicare dai log, nelle tornate del 24/10 i comandi erano stati eseguiti uno per uno, non con un loop su file, e il difetto non si era
+visto. Corretto in `scripts/submit_job.py` (`stdin=subprocess.DEVNULL` quando non c'e' uno script da passare; il percorso con `--script-stdin`
+non cambia) con il test `test_remote_does_not_inherit_the_callers_stdin` in `tests/cpu/test_submit_job.py`: col vecchio codice il finto ssh
+legge «riga 2 / riga 3», col nuovo legge una stringa vuota (`26 passed` sui due file del submitter e del watcher). Il loop dell'agente ora legge il
+file da `sed` e chiude comunque lo stdin con `</dev/null`. I comandi 2-8 sono stati sottomessi alle 08:07 saltando esplicitamente il comando 1
+(sezione 1, voce dello stesso giorno). Nessun job doppio, nessun job rifiutato, nessun costo.

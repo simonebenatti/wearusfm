@@ -203,6 +203,19 @@ def test_script_passed_on_stdin(env, tmp_path):
         run("stdin", "--id", "camp_02", "--agente", "claude", "--campagna", "infra", "--gpu-ore", "0", "--script-stdin", str(bad))
 
 
+def test_remote_does_not_inherit_the_callers_stdin(env, tmp_path):
+    """Senza `--script-stdin` ssh non deve leggere lo stdin del chiamante: in `while read cmd; do submit_job.py ...; done < comandi.txt`
+    si mangiava le righe restanti del file (25/10/2026: 1 comando su 8 eseguito, nessun job in piu'). Il finto ssh salva cio' che legge."""
+    run, state, _, tmp = env
+    ssh = f"{sys.executable} {tmp / 'fake_ssh.py'} stdin {tmp / 'calls.txt'}"
+    code = (f"import sys; sys.path.insert(0, {str(SCRIPT.parent)!r}); import submit_job as S\n"
+            f"S.main(['--registro', {str(tmp / 'jobs2')!r}, '--ssh', {ssh!r}, '--timeout', '10', *{BASE!r}, *{SB!r}])\n")
+    r = subprocess.run([sys.executable, "-c", code], input="riga 2 che non va letta\nriga 3\n", capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stderr
+    assert (tmp / "stdin.txt").read_text() == ""  # il finto ssh ha visto uno stdin vuoto
+    assert json.loads((tmp / "jobs2" / "prova_01" / "state.json").read_text())["job_slurm"] == 777
+
+
 def test_reconcile_rereads_state_under_lock(env, monkeypatch):
     """Review GPT (P1): un'altra riconciliazione, in un processo separato, chiude il job a `sottomesso` subito prima che questa prenda il
     lock. Lo stato va riletto sotto lock: niente copia vecchia che lo riporta ad `assente` (e quindi risottomettibile)."""
