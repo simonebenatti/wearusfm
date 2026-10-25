@@ -5,7 +5,9 @@
 collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4 training aspettano il mio via dopo gate e collaudo.»), dopo due review del `critico` (24/10,
 rilievi tutti corretti). La regola congelata sta in `docs/decisioni.md` (voce della firma). **Gate D8 a 150 ms SUPERATO e collaudi di R2 e R5 SUPERATI il 24/10 sera** (0,706 e 0,709 s/passo contro la soglia
 0,81; consuntivo 2,29 GPU-ora su 4,0): **Via di Simone il 25/10 (voce di budget: finestra 1, famiglia «Ablation a 30M»); gli 8 job sono stati sottomessi alle 08:04 e 08:07 (tronchi 62233554, 62233766, 62233768, 62233770, rami in afterok; 228 GPU-ora prenotate, 175,6 attese)** (§6, punto 6). **Tronco R1 COMPLETED il 25/10 alle 17:55 (`max_steps`, 9 h 40, 38,6
-GPU-ora); valutazione: comandi e preventivo pronti il 25/10 (§6, punto 7), in attesa del via di Simone.** Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+GPU-ora); poi R0, R2, R5 COMPLETED per `max_steps` fra le 18:08 e le 18:29 (10 h 03 / 10 h 03 / 10 h 13), ~160 GPU-ora in tutto. Valutazione:
+comandi e preventivo del 25/10 (§6, punto 7); via di Simone a tutti i blocchi («seguo il consiglio, via a tutti!»); blocco A1 sottomesso alle
+18:36 (estrazioni 62272299-62272309, sonde `pool` 62272310-62272318); A2 a estrazioni COMPLETED, B a rami COMPLETED.** Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
 `docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
 bottiglia piu' probabile e' nell'obiettivo).
 Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata

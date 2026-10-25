@@ -3487,6 +3487,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   «sottomesso»): blocco A1 (16 comandi), poi attesa delle 8 estrazioni, controllo COMPLETED exit 0:0 x 8, blocco A2 (8 comandi), poi attesa
   delle 8 sonde `pool` di A1; log in `~/wearusfm_local/logs/submit_pilot_eval_A1_20261025.txt`, `submit_pilot_eval_A2_20261025.txt`,
   `watch_pilot_eval_ext_e2.txt`, `watch_pilot_eval_pool_e2.txt`. Gli ID SLURM dal ledger, in una voce successiva.
+### 2026-10-25 | Claude | Pilot degli obiettivi: blocco A1 della valutazione SOTTOMESSO (16 job su 16: 8 estrazioni GPU 62272299-62272309, 8 sonde `pool` 62272310-62272318 in afterok; tetto 10,0 GPU-ora e 256 core-ore, attese 2,8 e 46); A2 e B seguono in sequenza | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Sottomissione** (agente leggero, loop con stop al primo esito diverso da «sottomesso», `~/wearusfm_local/logs/submit_pilot_eval_A1_20261025.txt`:
+  «FINE: eseguiti 16, sottomessi 16», 18:36-18:37). Estrazioni (1 A100, `checkpoint_postdecay.pt` dei tronchi, cache in
+  `$SCRATCH/wearusfm_runs/pilot_obiettivi_20261024/features/<braccio>-e2/<p1|p2>`): P1 R0 62272299, R1 62272301, R2 62272302, R5 62272303
+  (tetto 1 h l'una); P2 R0 62272304, R1 62272306, R2 62272308, R5 62272309 (tetto 1 h 30). Sonde `pool` (seriale, 8 core, 4 h di tetto,
+  afterok sulla propria estrazione, rapporti in `$WORK/wearusfm_runs/results/pilot_obiettivi_20261024/<braccio>-e2/<p1|p2>_pool.json`):
+  P1 R0 62272310, R1 62272312, R2 62272313, R5 62272314; P2 R0 62272315, R1 62272316, R2 62272317, R5 62272318.
+- **Seguito automatico** (stesso agente): attesa delle 8 estrazioni (`watch_pilot_eval_ext_e2.txt`), controllo COMPLETED exit 0:0 x 8, poi
+  blocco A2 (8 sonde `dec`), poi attesa delle 8 sonde `pool` (`watch_pilot_eval_pool_e2.txt`, attese ~6 h in fila). Il blocco B (24 job) lo
+  sottometto a rami COMPLETED (l'altro agente li aspetta: `watch_pilot_rami.txt`). Poi: `rsync` dei rapporti e degli OOF sul Mac, controllo
+  di provenienza e di `run_status`, le 6 letture del criterio con `--stage compare --single-seed --models`, consuntivo `sacct`.
 
 ## 2) Problemi trovati
 
