@@ -3535,6 +3535,36 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   7 passati). L'alimentatore di A2 gia' in corso usa il codice nuovo dalla chiamata successiva (lo script si rilegge a ogni chiamata).
 - Stato della valutazione alle 20:05: A1 8 estrazioni COMPLETED e 8 sonde `pool` in coda (attesa armata); A2 2 sonde in coda, 6 in
   alimentazione; B1 8 estrazioni in coda GPU; B2 dopo B1. Nessuna lettura ancora.
+### 2026-10-26 | Claude | Pilot degli obiettivi: CRITERIO LETTO (§5): **nessun braccio passa**: R1 -0,76 / -1,27, R2 -0,27 / +0,55, R5 -0,53 / +0,35 punti su P1 / P2 contro R0, nessun limite inferiore dell'IC95 sopra lo zero; provenienza e `run_status` verificati prima di leggere; il default non cambia, la seconda ondata la decide Simone; A2 7/8 e B2 3/16 in alimentazione | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Sonde `pool` del criterio** (blocco A1, 8/8 COMPLETED exit 0:0, ultima alle 00:16-00:19 del 26/10; `watch_pilot_eval_pool_e2.txt`): P1 R0
+  62272310, R1 62272312, R2 62272313, R5 62272314 (64-68 min l'una, k 768 pieno nei 3 dataset); P2 R0 62272315, R1 62272316, R2 62272317, R5
+  62272318 (15-17 min). Copia sul Mac con rsync (rapporti, OOF e cartelle dei run senza `*.pt`; `blocco_C_rsync_20261026.txt`).
+- **Provenienza prima di leggere** (`results/pilot_obiettivi_20261024/provenienza_criterio.json`, 00:23): per i 4 bracci i rapporti P1 e P2
+  puntano al `checkpoint_postdecay.pt` del tronco giusto (`runs/pilot_obiettivi/PILOT-R0-A-30M-s0`, `PILOT-R1-targetA-30M-s0`,
+  `PILOT-R2-regione-30M-s0`, `PILOT-R5-finestra150-30M-s0`), con lo stesso SHA-256 nelle due estrazioni e codice 705ec04; OOF con lo SHA del
+  rapporto; `arms_compare.run_status` = «completo» per i 4 tronchi (`stopped: max_steps`, 49.046 passi, nessun STOP); 4 checkpoint distinti.
+  Lo `sha256sum` indipendente sul login node non e' stato eseguito (leonardo-ops lo tiene fuori dai comandi ammessi): il controllo poggia sul
+  percorso, sulle due estrazioni concordi e su `run_status`. Tutto registrato nel JSON.
+- **Le 6 letture** (`scripts/channel_readout.py --stage compare --single-seed --models`, riferimento R0, 1.000 ricampionamenti, seme 20261009;
+  `results/pilot_obiettivi_20261024/confronti/`, `criterio.json`, `README.md`), punti di S, delta [IC95]:
+
+  | Braccio | P1 (S R0 18,84) | P2 (S R0 81,22) | Criterio |
+  |---|---|---|---|
+  | R1 `--jepa-target a` | 18,08: -0,76 [-1,25; -0,28] | 79,95: -1,27 [-2,63; +0,15] | non passa |
+  | R2 `--jepa-region-target` | 18,57: -0,27 [-0,72; +0,16] | 81,77: +0,55 [-1,53; +2,66] | non passa |
+  | R5 `--window-ms 150` | 18,31: -0,53 [-1,07; -0,02] | 81,58: +0,35 [-2,14; +2,68] | non passa |
+
+  Nessuna lettura «migliora», nessuna «peggiora» (regola speculare: delta <= -1 con limite superiore < 0). Per dataset nel README. Esito fissato
+  dalla regola: si registra, il default (obiettivo A sul bersaglio di default, banco a 1 s) non cambia, nessuna conferma col seme 1, la seconda
+  ondata la decide Simone. *Interpretazione, fuori dalla regola:* R1 sta sotto R0 nei due compiti pur con rango effettivo del teacher piu' alto
+  (163 contro 130); R2 e R5 non si distinguono da R0 (delta piccoli, segno opposto nei due compiti); su R5 i dataset si muovono in direzioni
+  diverse (DB6 e UCI su, DB2 ed EPN-612 giu').
+- Diagnostiche dei tronchi a fine run (descrittive, nel README): erank teacher 130,4 / 163,0 / 131,1 / 134,0; allarme mai toccato.
+- **Code alle 00:25:** A2 (`dec` a 2 epoche) 7 sonde su 8 sottomesse (62274190, 62274191, 62277081, 62281122, 62289821, 62293179, 62294440), 1
+  in alimentazione; B2 (1 epoca) 3 su 16 (62284911, 62291015, 62291939), 13 in alimentazione; coda seriale piena (10/10, `QOSMaxCpuPerUserLimit`
+  sulle sonde in attesa: e' un tetto di CPU per utente, non solo di job). Descrittivi e consuntivo `sacct` della valutazione a code vuote.
+- Fuori da Git: rapporti e OOF in `~/wearusfm_local/pilot_obiettivi_20261024/`; log in `~/wearusfm_local/logs/blocco_C_*_20261026.txt`.
 
 ## 2) Problemi trovati
 

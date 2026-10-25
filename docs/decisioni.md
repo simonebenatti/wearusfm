@@ -4348,3 +4348,11 @@ rami finiti). Lettura del criterio con la regola del §5 (firmata il 24/10), dop
 rami 16,6 (attese 19,2, tetto 36), totale **176,5 contro 175,6 attese e 228 di tetto** (`results/infra/pilot_obiettivi_20261024/consuntivo_training.json`).
 Voce di budget: finestra 1, famiglia «Ablation a 30M». La valutazione (blocchi A1, A2, B1, B2 autorizzati da Simone il 25/10) e' in corso:
 criterio A1 in coda sulla seriale, risposta attesa la mattina del 26/10.
+**Pilot degli obiettivi: criterio letto (26/10/2026, 00:24): NESSUN BRACCIO PASSA; il default non cambia; la seconda ondata la decide Simone.**
+Regola §5 firmata il 24/10 applicata dopo il controllo di provenienza e di `run_status` (`results/pilot_obiettivi_20261024/provenienza_criterio.json`:
+4 tronchi «completo», checkpoint giusti e distinti). Sei letture `pool` a 2 epoche contro R0 (`--single-seed --models`, 1.000 ricampionamenti,
+seme 20261009), punti di S: R1 -0,76 [-1,25; -0,28] su P1 e -1,27 [-2,63; +0,15] su P2; R2 -0,27 [-0,72; +0,16] e +0,55 [-1,53; +2,66];
+R5 -0,53 [-1,07; -0,02] e +0,35 [-2,14; +2,68]: nessuna con delta >= +1 e limite inferiore > 0, nessuna «peggiora». Conseguenze fissate dalla
+regola: nessuna conferma col seme 1; il default della finestra 1 (obiettivo A, bersaglio di default, banco a 1 s) resta; non si decide qui K,
+taglie o LR. I descrittivi (`dec` k 768, endpoint a 1 epoca, pendenza 1 -> 2) e il consuntivo `sacct` della valutazione seguono a code vuote.
+Dettaglio in `results/pilot_obiettivi_20261024/README.md` e nel registro (voce del 26/10).

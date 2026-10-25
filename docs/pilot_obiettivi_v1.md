@@ -9,7 +9,7 @@ GPU-ora); poi R0, R2, R5 COMPLETED per `max_steps` fra le 18:08 e le 18:29 (10 h
 comandi e preventivo del 25/10 (§6, punto 7); via di Simone a tutti i blocchi («seguo il consiglio, via a tutti!»); blocco A1 sottomesso alle
 18:36 (estrazioni 62272299-62272309, sonde `pool` 62272310-62272318); A2 a estrazioni COMPLETED, B a rami COMPLETED. Rami COMPLETED per
 `max_steps` fra le 19:42 e le 19:51 (59-65 min): **training finito, consuntivo `sacct` 176,5 GPU-ora (attese 175,6, tetto 228;
-`results/infra/pilot_obiettivi_20261024/consuntivo_training.json`)**; B1 sottomesso alle 20:0x (62276966-62276989).** Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+`results/infra/pilot_obiettivi_20261024/consuntivo_training.json`)**; B1 sottomesso alle 20:0x (62276966-62276989).** **CRITERIO LETTO il 26/10 alle 00:24 (§5, dopo provenienza e `run_status`): NESSUN BRACCIO PASSA: R1 -0,76 / -1,27, R2 -0,27 / +0,55, R5 -0,53 / +0,35 punti su P1 / P2 contro R0, nessun limite inferiore dell'IC95 > 0 (`results/pilot_obiettivi_20261024/`); il default non cambia, nessuna conferma col seme 1, la seconda ondata la decide Simone; descrittivi A2/B2 in coda.** Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
 `docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
 bottiglia piu' probabile e' nell'obiettivo).
 Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata

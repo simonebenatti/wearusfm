@@ -1,0 +1,243 @@
+{
+ "rule": "docs/pilot_obiettivi_v1.md §5 (firmata il 24/10/2026): R_i passa se in P1 e in P2 delta >= +1 punto con limite inferiore dell'IC95 > 0; un solo seme (seeds 1), 6 letture senza correzione",
+ "min_delta_points": 1.0,
+ "reference": "R0 (A rifatto, 30M, seme 0, tronco a 2 epoche, checkpoint_postdecay.pt)",
+ "arms": {
+  "R1": {
+   "description": "`--jepa-target a` (bersaglio A)",
+   "tasks": {
+    "p1": {
+     "S_R0": 18.841332256035518,
+     "S_R1": 18.078972270853576,
+     "delta": -0.7623599851819396,
+     "ci95": [
+      -1.2547605495359988,
+      -0.2776007211647196
+     ],
+     "paired_subject_se": 0.24794003247814467,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": true,
+     "per_dataset": {
+      "ninapro_db2": {
+       "delta": -0.9640797469925411,
+       "ci95": [
+        -1.649452076504301,
+        -0.30989371118547593
+       ]
+      },
+      "ninapro_db3": {
+       "delta": 0.24340502422184537,
+       "ci95": [
+        -0.33704269891032107,
+        0.8119604606835605
+       ]
+      },
+      "ninapro_db6": {
+       "delta": -1.4641284520452102,
+       "ci95": [
+        -3.210128545097142,
+        0.16656924303577128
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "21f714e2a73e4f229b84d4e7cc3ac53b1254a4ba751c7efc230a8832c7c0977f",
+     "file": "confronti/criterio_R1_vs_R0_e2_p1_pool.json"
+    },
+    "p2": {
+     "S_R0": 81.22338505897034,
+     "S_R1": 79.95147892889713,
+     "delta": -1.271906130073197,
+     "ci95": [
+      -2.62922266356048,
+      0.14616743746391772
+     ],
+     "paired_subject_se": 0.7282808401824796,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": false,
+     "per_dataset": {
+      "epn612": {
+       "delta": -0.9723991507430974,
+       "ci95": [
+        -1.4653397027600734,
+        -0.5010084925689978
+       ]
+      },
+      "uci_emg": {
+       "delta": -1.5714131094032968,
+       "ci95": [
+        -4.310970257565015,
+        1.2370451577415382
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "21f714e2a73e4f229b84d4e7cc3ac53b1254a4ba751c7efc230a8832c7c0977f",
+     "file": "confronti/criterio_R1_vs_R0_e2_p2_pool.json"
+    }
+   },
+   "passes_criterion": false,
+   "worse_somewhere": false
+  },
+  "R2": {
+   "description": "`--jepa-region-target` (bersaglio di regione)",
+   "tasks": {
+    "p1": {
+     "S_R0": 18.841332256035518,
+     "S_R2": 18.57064887016633,
+     "delta": -0.27068338586918583,
+     "ci95": [
+      -0.7231686528101072,
+      0.16066048848401585
+     ],
+     "paired_subject_se": 0.22968260175900487,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": true,
+     "per_dataset": {
+      "ninapro_db2": {
+       "delta": -0.4803280297788787,
+       "ci95": [
+        -1.0821267211105132,
+        0.06464694447473597
+       ]
+      },
+      "ninapro_db3": {
+       "delta": -0.06928535332996894,
+       "ci95": [
+        -0.856708848770554,
+        0.6877183282714692
+       ]
+      },
+      "ninapro_db6": {
+       "delta": 0.26579814096076015,
+       "ci95": [
+        -1.1415242846226494,
+        1.6734638642424569
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "a13c3e6d03c77da7f590c7350f290fc8a150a8996a01cf55558b8323b8f9996d",
+     "file": "confronti/criterio_R2_vs_R0_e2_p1_pool.json"
+    },
+    "p2": {
+     "S_R0": 81.22338505897034,
+     "S_R2": 81.77278251906313,
+     "delta": 0.5493974600927931,
+     "ci95": [
+      -1.525141820894296,
+      2.663007381873908
+     ],
+     "paired_subject_se": 1.0523057507254265,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": true,
+     "per_dataset": {
+      "epn612": {
+       "delta": -0.28237791932058665,
+       "ci95": [
+        -0.7687898089171993,
+        0.14230360934183336
+       ]
+      },
+      "uci_emg": {
+       "delta": 1.3811728395061729,
+       "ci95": [
+        -2.634887623212024,
+        5.594806422354975
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "a13c3e6d03c77da7f590c7350f290fc8a150a8996a01cf55558b8323b8f9996d",
+     "file": "confronti/criterio_R2_vs_R0_e2_p2_pool.json"
+    }
+   },
+   "passes_criterion": false,
+   "worse_somewhere": false
+  },
+  "R5": {
+   "description": "`--window-ms 150` (banco a 150 ms)",
+   "tasks": {
+    "p1": {
+     "S_R0": 18.841332256035518,
+     "S_R5": 18.313581480476238,
+     "delta": -0.5277507755592807,
+     "ci95": [
+      -1.0735052234863505,
+      -0.016618600941354946
+     ],
+     "paired_subject_se": 0.2802073637133527,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": true,
+     "per_dataset": {
+      "ninapro_db2": {
+       "delta": -1.2179642526943257,
+       "ci95": [
+        -1.953897479179979,
+        -0.5149537196874286
+       ]
+      },
+      "ninapro_db3": {
+       "delta": 0.12820855120164976,
+       "ci95": [
+        -0.42451451371649285,
+        0.6258649943080822
+       ]
+      },
+      "ninapro_db6": {
+       "delta": 1.249164142839504,
+       "ci95": [
+        -0.7005444693521871,
+        3.184442111066414
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "01d3048dc6f88bb74d206c7379413fe6df805dc27a3f69ac1bfd0c5a88e2035e",
+     "file": "confronti/criterio_R5_vs_R0_e2_p1_pool.json"
+    },
+    "p2": {
+     "S_R0": 81.22338505897034,
+     "S_R5": 81.5755828589443,
+     "delta": 0.3521977999739745,
+     "ci95": [
+      -2.138590970293994,
+      2.676909964012004
+     ],
+     "paired_subject_se": 1.191297848602723,
+     "verdict": "regola non superata",
+     "beats": false,
+     "not_harmful": true,
+     "per_dataset": {
+      "epn612": {
+       "delta": -2.4458598726114555,
+       "ci95": [
+        -2.9746284501061573,
+        -1.919267515923571
+       ]
+      },
+      "uci_emg": {
+       "delta": 3.1502554725594045,
+       "ci95": [
+        -1.7810179795741097,
+        7.79512003089788
+       ]
+      }
+     },
+     "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+     "candidate_sha256": "01d3048dc6f88bb74d206c7379413fe6df805dc27a3f69ac1bfd0c5a88e2035e",
+     "file": "confronti/criterio_R5_vs_R0_e2_p2_pool.json"
+    }
+   },
+   "passes_criterion": false,
+   "worse_somewhere": false
+  }
+ },
+ "arms_passing": [],
+ "outcome": "nessun braccio passa: si registra e il default non cambia; la seconda ondata la decide Simone (§5)"
+}
