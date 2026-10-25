@@ -3415,6 +3415,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `docs/sintesi_pretraining_20261024.md` aggiornata (domanda 3 con la P2, larghezza intera nei controlli, costi); riga di chiusura nel
   protocollo. Le tre risposte del passo 1 non cambiano. Il checkout di campagna e le cache su $SCRATCH restano (nessuna cancellazione senza
   Simone; le cache scadono da sole a 40 giorni). Nessun altro job della campagna.
+### 2026-10-25 | Claude | Pilot degli obiettivi: tronco R1 (62233766) COMPLETED per max_steps in 9 h 40 min (38,6 GPU-ora su 48 prenotate), checkpoint del ramo presente, ramo in coda; R0/R2/R5 al 95-98 % dei passi; attesa riarmata in due stadi (tronchi, poi rami) | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Tronco R1 `--jepa-target a` (62233766):** COMPLETED alle 17:54:57, exit 0:0, 9 h 39 min 36 s su lrdn2190, fine per `max_steps` a 49.046
+  passi (non per tempo: il cap e' 12 h); **38,6 GPU-ora** contro le 48 prenotate. `summary.json`: 28.348.361 parametri, memoria GPU max
+  17,5 GiB, 4 processi x 8 di batch, prefetch attivo. Nella cartella del run (`$SCRATCH/wearusfm_runs/runs/pilot_obiettivi/PILOT-R1-targetA-30M-s0/`):
+  `checkpoint_step0019618.pt` (12:06, quello da cui parte il ramo), `checkpoint_predecay.pt` (15:57), `checkpoint_postdecay.pt` e
+  `checkpoint.pt` (17:54), `fixed_eval.jsonl`, `metrics.jsonl`, `config.json`. Nessuna lettura delle metriche prima della valutazione del
+  §7 del protocollo.
+- **Ramo R1 `-e1` (62233767):** afterok soddisfatto; alle 18:00 PENDING per priorita' (gli altri tre rami PENDING per dipendenza), nessun log
+  ancora.
+- **Tronchi in corso alle 18:00** (`sacct`/`squeue`, code dei log; file `~/wearusfm_local/logs/stato_pilot_training_20261025_1800.txt`):
+  R0 (62233554, lrdn1797) passo 48.200 a 9 h 52; R2 (62233768, lrdn2198) passo 47.350 a 9 h 42; R5 (62233770, lrdn2340) passo 46.500 a
+  9 h 42; 0,65-0,75 s/passo, memoria GPU max 17,5 GiB (R5 16,2). Previsti finiti per `max_steps` entro le 18:30 circa, tutti sotto il cap.
+- *Osservazione descrittiva, non una lettura:* nei log il termine `jepa` sta intorno a 0,25 per R1 e intorno a 0,01 per R0, R2 e R5: il
+  target (a) ha un'altra scala per definizione, i valori della loss non sono confrontabili fra bracci. Il criterio resta quello del §5
+  (sonde `pool` a 2 epoche), nessuna conclusione dai log.
+- **Attesa riarmata** con l'agente leggero (`scripts/leonardo_watch.py`): stadio 1 `--mode all` sui tre tronchi
+  (`~/wearusfm_local/logs/watch_pilot_tronchi_b.txt`, massimo 4 h), controllo che tutti e tre risultino COMPLETED con exit 0:0, poi stadio 2
+  `--mode all` sui quattro rami (`~/wearusfm_local/logs/watch_pilot_rami.txt`, massimo 6 h); l'agente si ferma e riferisce al primo esito
+  diverso. A rami finiti: consuntivo `sacct` degli 8 job, poi preventivo della valutazione del §7 (estrazioni + sonde sui checkpoint `-e1`
+  a 24.523 passi) da sottoporre a Simone. Nessun job sottomesso, nessuno toccato.
+- Nota operativa: leonardo-ops esegue sul login node solo `squeue`, `sacct`, `ls`, `tail`, `du`, `df` (niente `grep`, `head`, `cut` o cicli
+  remoti): il controllo di stato e' stato fatto con `tail` dei log e filtrato sul Mac.
 
 ## 2) Problemi trovati
 
