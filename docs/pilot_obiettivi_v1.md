@@ -4,7 +4,8 @@
 §5) e lo scostamento da D10 per R5. Via al deploy deploy/pilot-obiettivi-20261024, al checkout di campagna, al gate D8 sul banco da 150 ms e al
 collaudo dbg di R2 e R5 (tetto 4 GPU-ora). I 4 training aspettano il mio via dopo gate e collaudo.»), dopo due review del `critico` (24/10,
 rilievi tutti corretti). La regola congelata sta in `docs/decisioni.md` (voce della firma). **Gate D8 a 150 ms SUPERATO e collaudi di R2 e R5 SUPERATI il 24/10 sera** (0,706 e 0,709 s/passo contro la soglia
-0,81; consuntivo 2,29 GPU-ora su 4,0): **Via di Simone il 25/10 (voce di budget: finestra 1, famiglia «Ablation a 30M»); gli 8 job sono stati sottomessi alle 08:04 e 08:07 (tronchi 62233554, 62233766, 62233768, 62233770, rami in afterok; 228 GPU-ora prenotate, 175,6 attese)** (§6, punto 6). Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
+0,81; consuntivo 2,29 GPU-ora su 4,0): **Via di Simone il 25/10 (voce di budget: finestra 1, famiglia «Ablation a 30M»); gli 8 job sono stati sottomessi alle 08:04 e 08:07 (tronchi 62233554, 62233766, 62233768, 62233770, rami in afterok; 228 GPU-ora prenotate, 175,6 attese)** (§6, punto 6). **Tronco R1 COMPLETED il 25/10 alle 17:55 (`max_steps`, 9 h 40, 38,6
+GPU-ora); valutazione: comandi e preventivo pronti il 25/10 (§6, punto 7), in attesa del via di Simone.** Origine: `docs/diagnosi_pretraining_20261023.md` §3.2-3.3 e
 `docs/sintesi_pretraining_20261024.md` (il readout per canale ha escluso il readout come causa principale; *interpretazione:* il collo di
 bottiglia piu' probabile e' nell'obiettivo).
 Decisioni di Simone gia' prese: braccio R5 («tipo 150ms con overlap di 125.ms. che ne pensi? va esplorata?» -> «si ottimo!», 23/10); durata
@@ -122,7 +123,17 @@ cambia; la seconda ondata la decide Simone. **Non si decide qui:** K, taglie, LR
    4,0. **Via di Simone il 25/10/2026** («Via ai 4 training del pilot degli obiettivi (8 job di comandi_training.txt, 175,6 GPU-ora attese,
    tetto 228), voce di budget: finestra 1, famiglia «Ablation a 30M».»); **8 job sottomessi alle 08:04 (tronco R0) e 08:07 (gli altri 7)**: tronchi R0 62233554, R1 62233766, R2 62233768, R5 62233770; rami `-e1` R0 62233765, R1 62233767, R2 62233769, R5 62233771 (afterok sul tronco). Attesa con l'agente leggero; consuntivo e lettura (§5) a run finiti.
 7. **Valutazione:** le estrazioni e le sonde si sottomettono a run finiti, coi launcher del readout per canale (`channel_readout_extract.sbatch`,
-   `channel_readout_probe.sbatch --layer pool` e `--layer dec`); il confronto sul Mac dai rapporti copiati, come il 23-24/10.
+   `channel_readout_probe.sbatch --layer pool` e `--layer dec`); il confronto sul Mac dai rapporti copiati, come il 23-24/10. **Comandi e
+   preventivo pronti il 25/10/2026** (`results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt`, `preventivo_valutazione.json`), dal
+   checkout di campagna 705ec04 (fra 6242bc3 del readout e 705ec04 `channel_readout.py` cambia solo nella fase `compare`: estrazione e sonda
+   sono lo strumento del controllo d'uguaglianza del 23/10; `load_model` ricostruisce il modello dalla configurazione del checkpoint, `window_ms`
+   compreso, quindi R5 si estrae col suo banco da 150 ms). Quattro blocchi, ciascuno col via di Simone: **A1, il criterio** (endpoint a 2 epoche
+   dei 4 tronchi: 8 estrazioni, 2,8 / 10,0 GPU-ora, + 8 sonde `pool` in afterok, 46 / 256 core-ore); **A2**, descrittivo `dec` sugli stessi
+   endpoint (8 sonde, 88 / 256 core-ore, dopo che le `pool` di A1 sono partite); **B**, endpoint a 1 epoca dei 4 rami (8 estrazioni 2,8 / 10,0
+   GPU-ora + 16 sonde 134 / 512 core-ore); **C**, i confronti sul Mac (`--stage compare --single-seed --models`, R0 riferimento), preceduti
+   dal controllo di provenienza e di `run_status` della regola. Le sonde non girano in parallelo: sulla seriale sono partite una alla volta il
+   23-24/10, quindi A1 risponde circa 6-7 ore dopo la sottomissione (estrazioni ~30 min + coda GPU, poi 4 sonde P1 da ~62 min e 4 P2 da ~25 min
+   in fila).
 
 ## 7. Costi (preventivo `results/infra/pilot_obiettivi_20261024/preventivo_training.json`, s/passo 0,7 misurato a 4 GPU, slack 1,15)
 
@@ -142,7 +153,9 @@ calibrazione compresa). Spese registrate finora in `decisioni.md`: calibrazione 
 da sacct per tre run + A s0 ~77), JEPA-only s0 e s1 ~10 (5,79 + 4,22), valutazione ~15 (readout per canale compreso); in tutto ~496:
 **residuo indicativo ~5.500 GPU-ora**, da confermare col consuntivo prima della firma. Dentro la finestra 1 la voce e' la famiglia «Ablation a 30M»
 (~2.100 GPU-ora stimate in `docs/finestra1_fattibilita.md`), oppure una voce nuova decisa da Simone. Calendario: i 4 tronchi in parallelo su 4
-nodi (~12 h), i rami dietro (~1 h 10 di calcolo, 2 h 15 di tetto), valutazione ~1-2 giorni sulla seriale. Disco: 12,8 GB di checkpoint su
+nodi (~12 h), i rami dietro (~1 h 10 di calcolo, 2 h 15 di tetto), valutazione ~1-2 giorni sulla seriale (consuntivo parziale del 25/10: il
+tronco R1 e' finito per `max_steps` in 9 h 40, 38,6 GPU-ora; le sonde sulla seriale girano una alla volta, per cui il criterio, blocco A1,
+arriva ~6-7 h dopo la sua sottomissione e i descrittivi A2 + B circa un giorno dopo; dettaglio in `preventivo_valutazione.json`). Disco: 12,8 GB di checkpoint su
 `$SCRATCH/wearusfm_runs/runs/pilot_obiettivi/`.
 
 ## 8. Cosa NON fa questo pilot

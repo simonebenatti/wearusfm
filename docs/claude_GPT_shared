@@ -3438,6 +3438,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   a 24.523 passi) da sottoporre a Simone. Nessun job sottomesso, nessuno toccato.
 - Nota operativa: leonardo-ops esegue sul login node solo `squeue`, `sacct`, `ls`, `tail`, `du`, `df` (niente `grep`, `head`, `cut` o cicli
   remoti): il controllo di stato e' stato fatto con `tail` dei log e filtrato sul Mac.
+### 2026-10-25 | Claude | Pilot degli obiettivi: comandi e preventivo della valutazione pronti (48 job in tre blocchi + confronti sul Mac; criterio = blocco A1: 2,8 / 10,0 GPU-ora e 46 / 256 core-ore, risposta ~6-7 h dopo la sottomissione); in attesa del via di Simone | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Domande di Simone (25/10, sera):** «quindi nessuna buona notizia», «r1 non collassa ma non da nulla a livello di rappresentazione, da quello
+  che capisco», «aspettiamo. ma 1, R2 e R5 contro R0 quando arrivano?», «"Nessuno dei tre dice quanto il suo encoder sia leggibile"... questo
+  come lo capiamo?». Risposte date: della rappresentazione di R1 non si sa ancora nulla (la loss non e' confrontabile fra bracci, l'allarme
+  non scattato dice solo che non c'e' collasso); «leggibile» = S della sonda lineare sul readout `pool` congelato (estrazione GPU, regressione
+  logistica per fold sulla seriale, confronto accoppiato con R0); il criterio del §5 usa il `checkpoint_postdecay.pt` del **tronco**, non del
+  ramo, quindi i confronti possono partire appena i 4 tronchi sono COMPLETED.
+- **File:** `results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt` (100 righe) e `preventivo_valutazione.json` (48 job con tetti,
+  attese e base della stima). Generati da uno script della sessione; ID logici `PILOT-EVAL-ext-<braccio>-<e1|e2>-<p1|p2>` e
+  `PILOT-EVAL-probe-<braccio>-<e1|e2>-<p1|p2>-<pool|dec>`, nessun duplicato; sonde con `--dopo` sulla propria estrazione (afterok), cache in
+  `$SCRATCH/wearusfm_runs/pilot_obiettivi_20261024/features/`, rapporti in `$WORK/wearusfm_runs/results/pilot_obiettivi_20261024/`.
+- **Codice:** checkout di campagna 705ec04, lo stesso dei training. Fra 6242bc3 (readout per canale) e 705ec04 `scripts/channel_readout.py`
+  cambia solo nella fase `compare` (`--models`, `--single-seed`, verificato col diff): estrazione e sonda sono lo strumento del controllo
+  d'uguaglianza del 23/10. `fm_features.load_model` ricostruisce `FMConfig` dalla configurazione del checkpoint, `window_ms` compreso: R5 si
+  estrae col suo banco da 150 ms (verificato nel codice, `model/fm.py` e `model/frontend.py`).
+- **Blocchi e costi** (base: `sacct` del readout del 25/10: estrazioni P1 12-14 min e P2 28 min su 1 A100; sonde a 8 core: `pool` P1 62 min,
+  `dec` P1 113-141 min, `dec`/`local` P2 22-31 min; `pool` P2 non misurata, stima 25 min):
+  **A1, il criterio** (endpoint a 2 epoche dei 4 tronchi): 8 estrazioni, 2,8 attese / 10,0 di tetto GPU-ora, + 8 sonde `pool`, 46 / 256 core-ore;
+  **A2** (descrittivo `dec` sugli stessi endpoint): 8 sonde, 88 / 256 core-ore, da sottomettere dopo che le `pool` di A1 sono partite;
+  **B** (endpoint a 1 epoca dei 4 rami, descrittivo: pendenza 1 -> 2 e replica di C1 s0): 8 estrazioni 2,8 / 10,0 GPU-ora + 16 sonde 134 / 512
+  core-ore; **C** sul Mac: 6 letture del criterio (`--stage compare --single-seed --models`, R0 riferimento) piu' i descrittivi, preceduti dal
+  controllo di provenienza (SHA dei `checkpoint_postdecay.pt`) e di `arms_compare.run_status` = «completo», come vuole la regola.
+  Totale = la riga «valutazione» del §7: 5,6 / 20,0 GPU-ora e 269 / 1.024 core-ore. Voce di budget: la stessa dei training (finestra 1,
+  famiglia «Ablation a 30M»).
+- **Tempi:** sulla seriale le sonde del readout sono partite una alla volta, ciascuna all'uscita della precedente (21 sonde in ~31 h):
+  il blocco A1 risponde ~6-7 h dopo la sottomissione (estrazioni ~30 min piu' coda GPU, poi 4 sonde P1 da ~62 min e 4 P2 da ~25 min in fila);
+  A2 ~11 h dopo; B ~17 h in fila dopo i rami. Col via la sera del 25/10 le sei letture del criterio arrivano la mattina del 26/10.
+- Tronchi alle 18:30: R1 COMPLETED; R0, R2, R5 attesi COMPLETED per `max_steps` a minuti (agente leggero in attesa, poi sui rami). Il blocco
+  A1 si sottomette solo dopo che tutti e quattro risultano COMPLETED con `stopped: max_steps` e col via di Simone sul preventivo. Nessun job
+  sottomesso in questa voce.
 
 ## 2) Problemi trovati
 

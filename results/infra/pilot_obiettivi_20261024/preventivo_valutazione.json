@@ -1,0 +1,547 @@
+{
+ "campaign": "pilot-obiettivi-20261024",
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024",
+  "sha": "705ec0465420e80d5d818a8bbc7acc3a92c06efc"
+ },
+ "protocol": "docs/pilot_obiettivi_v1.md §4-§5 (regola firmata il 24/10/2026) e §7; comandi in comandi_valutazione.txt",
+ "budget_line": "finestra 1, famiglia «Ablation a 30M» (la stessa dei training; voce «valutazione» del §7: estrazioni 5,6 / 20,0 GPU-ora, sonde ~270 / 1.024 core-ore)",
+ "basis": {
+  "extractions": "readout-canale-20261023, sacct -X del 25/10: P1 12-14 min, P2 28 min su 1 A100 (8 job)",
+  "probes": "readout-canale-20261023: pool P1 62 min; dec P1 113-141 min; dec/local P2 22-31 min; pool P2 non misurata (stima 25 min); 8 core l'una",
+  "serial_queue": "osservato il 23-24/10: le sonde sulla seriale sono partite una alla volta, ciascuna all'uscita della precedente (21 sonde in ~31 h)"
+ },
+ "blocks": {
+  "A1": {
+   "jobs": 16,
+   "extractions": 8,
+   "probes": 8,
+   "gpu_hours_expected": 2.8,
+   "gpu_hours_max": 10.0,
+   "core_hours_expected": 46.4,
+   "core_hours_max": 256.0,
+   "probe_wall_hours_if_serial": 5.8
+  },
+  "A2": {
+   "jobs": 8,
+   "extractions": 0,
+   "probes": 8,
+   "gpu_hours_expected": 0,
+   "gpu_hours_max": 0,
+   "core_hours_expected": 88.0,
+   "core_hours_max": 256.0,
+   "probe_wall_hours_if_serial": 11.0
+  },
+  "B": {
+   "jobs": 24,
+   "extractions": 8,
+   "probes": 16,
+   "gpu_hours_expected": 2.8,
+   "gpu_hours_max": 10.0,
+   "core_hours_expected": 134.4,
+   "core_hours_max": 512.0,
+   "probe_wall_hours_if_serial": 16.8
+  },
+  "total": {
+   "jobs": 48,
+   "extractions": 16,
+   "probes": 32,
+   "gpu_hours_expected": 5.6,
+   "gpu_hours_max": 20.0,
+   "core_hours_expected": 268.8,
+   "core_hours_max": 1024.0,
+   "probe_wall_hours_if_serial": 33.6
+  }
+ },
+ "timeline_from_go": {
+  "A1": "estrazioni: ~30 min di calcolo piu' la coda GPU; sonde pool: ~5 h 50 in fila (4 x 62 + 4 x 25 min) dopo le estrazioni; confronti sul Mac: minuti. Con il via la sera del 25/10: sei letture del criterio nella mattina del 26/10.",
+  "A2": "~11 h in fila dopo A1 (4 x 140 + 4 x 25 min)",
+  "B": "dopo i rami COMPLETED (attesi entro le 21:00 del 25/10): come A1 + A2, ~17 h in fila"
+ },
+ "disk": {
+  "features_gb_estimate": "cache per endpoint e compito come nel readout (stesso strumento); in $SCRATCH, scadenza automatica a 40 giorni",
+  "reports": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_obiettivi_20261024 (JSON + .oof.npz), copiati sul Mac in $HOME/wearusfm_local/pilot_obiettivi_20261024"
+ },
+ "jobs": [
+  {
+   "id": "PILOT-EVAL-ext-R0-e2-p1",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R1-e2-p1",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R2-e2-p1",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R5-e2-p1",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R0-e2-p2",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R1-e2-p2",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R2-e2-p2",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R5-e2-p2",
+   "block": "A1",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e2-p1-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e2-p1-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e2-p1-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e2-p1-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e2-p2-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e2-p2-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e2-p2-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e2-p2-pool",
+   "block": "A1",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e2-p1-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e2-p1-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e2-p1-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e2-p1-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e2-p2-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e2-p2-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e2-p2-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e2-p2-dec",
+   "block": "A2",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R0-e1-p1",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R1-e1-p1",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R2-e1-p1",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R5-e1-p1",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.0,
+   "expected_gpu_hours": 0.23,
+   "expected_min": 14,
+   "basis": "12-14 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R0-e1-p2",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R1-e1-p2",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R2-e1-p2",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-ext-R5-e1-p2",
+   "block": "B",
+   "kind": "extract",
+   "gpu": 1,
+   "cap_gpu_hours": 1.5,
+   "expected_gpu_hours": 0.47,
+   "expected_min": 28,
+   "basis": "28 min (4 job)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e1-p1-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e1-p1-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e1-p1-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e1-p1-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 8.3,
+   "expected_min": 62,
+   "basis": "misurata: 62 min (A s0, 23/10)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e1-p2-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e1-p2-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e1-p2-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e1-p2-pool",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "stima: non misurata; `local`/`dec` P2 a k 768 22-31 min"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e1-p1-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e1-p1-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e1-p1-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e1-p1-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 18.7,
+   "expected_min": 140,
+   "basis": "misurata: 113-141 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R0-e1-p2-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R1-e1-p2-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R2-e1-p2-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  },
+  {
+   "id": "PILOT-EVAL-probe-R5-e1-p2-dec",
+   "block": "B",
+   "kind": "probe",
+   "cores": 8,
+   "cap_core_hours": 32.0,
+   "expected_core_hours": 3.3,
+   "expected_min": 25,
+   "basis": "misurata: 22-27 min (4 sonde)"
+  }
+ ]
+}

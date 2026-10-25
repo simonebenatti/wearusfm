@@ -4328,3 +4328,12 @@ feature classiche; il readout medio non nasconde informazione; il JEPA non aggiu
 Consuntivo: 30 job COMPLETED, **2,74 GPU-ora** (tetto 10) e **238,9 core-ore** (tetto 672; attese ~110: le sonde P1 a k 768 sono durate ~2 h 20
 l'una invece di ~50 min). Esiti in `results/readout_canale_20261023/` (README con la tabella dei verdetti). Nessun altro job; il pilot degli
 obiettivi non e' stato toccato.
+**Pilot degli obiettivi: preventivo della valutazione (25/10/2026, in attesa del via).** Comandi in
+`results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt`, costi in `preventivo_valutazione.json`, dal checkout di campagna 705ec04
+(`channel_readout.py` fra 6242bc3 e 705ec04 cambia solo in `compare`; `load_model` ricostruisce il modello dal checkpoint, `window_ms` compreso).
+Blocchi, ciascuno col via di Simone: **A1 = criterio del §5** (endpoint a 2 epoche dei 4 tronchi: 8 estrazioni GPU 2,8 attese / 10,0 di tetto
+GPU-ora + 8 sonde `pool` 46 / 256 core-ore; risposta ~6-7 h dopo la sottomissione perche' la seriale fa girare una sonda alla volta); **A2**
+descrittivo `dec` (8 sonde, 88 / 256 core-ore); **B** endpoint a 1 epoca dei rami (8 estrazioni 2,8 / 10,0 GPU-ora + 16 sonde 134 / 512
+core-ore); **C** confronti sul Mac (6 letture del criterio con `--single-seed --models`, R0 riferimento, dopo il controllo di provenienza e di
+`run_status`). Totale 5,6 / 20,0 GPU-ora e 269 / 1.024 core-ore = la riga «valutazione» del §7 del protocollo; voce di budget: finestra 1,
+famiglia «Ablation a 30M». Consuntivo parziale dei training: tronco R1 COMPLETED per `max_steps` in 9 h 40 (38,6 GPU-ora su 48 prenotate).
