@@ -3337,6 +3337,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   checkpoint su $SCRATCH. Voce di budget da nominare da Simone: finestra 1 (6.000 GPU-ora firmate il 16/10), famiglia «Ablation a 30M» del
   piano di fattibilita' oppure una voce nuova. Sottomissione con l'agente leggero (8 comandi in fila, i rami con `--dopo`), attesa sui tronchi.
 - Readout: le 4 sonde P2 rilasciate alle 20:23 sono in coda normale (una alla volta); la chiusura del readout resta in attesa di Simone.
+### 2026-10-25 | Claude | Pilot degli obiettivi: via di Simone ai 4 training ricevuto (voce di budget: finestra 1, famiglia «Ablation a 30M»); sottomissione degli 8 job di `comandi_training.txt` in corso con l'agente leggero | Codice: 705ec04 sul cluster; commit di questa voce (nessun file di codice)
+
+- **Via di Simone, 25/10/2026 alle 08:00, alla lettera:** «Via ai 4 training del pilot degli obiettivi (8 job di comandi_training.txt, 175,6
+  GPU-ora attese, tetto 228), voce di budget: finestra 1, famiglia «Ablation a 30M».» Arriva dopo gate D8 a 150 ms SUPERATO e collaudi di R2 e
+  R5 SUPERATI (voci del 24/10), come da ordine firmato il 24/10 («I 4 training aspettano il mio via dopo gate e collaudo»).
+- **Cosa si sottomette:** gli 8 comandi di `results/infra/pilot_obiettivi_20261024/comandi_training.txt`, nell'ordine del file, dal Mac con
+  `submit_job.py` (ledger `~/wearusfm_local/jobs/ledger.tsv`): 4 tronchi (`PILOT-R0-A-30M-s0-j01`, `PILOT-R1-targetA-30M-s0-j01`,
+  `PILOT-R2-regione-30M-s0-j01`, `PILOT-R5-finestra150-30M-s0-j01`; 49.046 passi, `--keep-checkpoints 19618`, `--time=12:00:00`,
+  `TIME_LIMIT_S` 40.800, 48 GPU-ora prenotate l'uno) e 4 rami a 1 epoca (`...-e1-j01`, `BRANCH_FROM` il checkpoint 19.618 del proprio tronco,
+  24.523 passi, `--dopo` = afterok sul tronco, `--time=02:15:00`, 9 GPU-ora prenotate l'uno). Codice: checkout di campagna 705ec04 (`CODE_DIR`
+  + `EXPECTED_SHA`), QoS `normal`, 4 A100 per job; run e checkpoint su `$SCRATCH/wearusfm_runs/runs/pilot_obiettivi/`, log in
+  `$WORK/wearusfm_runs/logs/train_ddp_%j.out`. Il loop si ferma al primo esito diverso da «sottomesso»; nessun rilancio alla cieca, nessun
+  `--dopo-rifiuto` senza aver capito la causa; un ID gia' usato non si risottomette.
+- **Budget:** voce **finestra 1, famiglia «Ablation a 30M»** (6.000 GPU-ora della finestra firmate il 16/10; famiglia del piano di fattibilita'
+  `docs/finestra1_fattibilita.md`): **prenotate 228 GPU-ora (tetto = 4 x 48 + 4 x 9), attese 175,6**; consuntivo con `sacct` a run finiti.
+  Gate e collaudi gia' a consuntivo nella voce del 24/10 (2,29 GPU-ora su 4,0). Nessun altro job oltre questi 8 senza un nuovo via.
+- **Attesa:** l'agente leggero (haiku) sottomette e poi aspetta i 4 tronchi con `scripts/leonardo_watch.py --mode any` (sveglia al primo tronco
+  che finisce, in qualunque stato); i rami partono da soli per l'afterok. Gli ID SLURM si leggono dal ledger appena scritti e vanno nella voce
+  successiva, con `squeue` dopo la sottomissione. **Lettura degli esiti solo con la regola del §5 firmata il 24/10** (criterio `pool` a 2
+  epoche, delta >= +1 punto su P1 e P2 con IC che non tocca 0), nessuna lettura anticipata dei log come «risultato».
 
 ## 2) Problemi trovati
 

@@ -4308,3 +4308,9 @@ verificatore 8 criteri su 8 (`results/infra/pilot_obiettivi_20261024/collaudo/es
 di tetto e 0 GPU-ora; collaudi 1,138 + 1,149 = **2,287 GPU-ora su 4,0 di tetto** (attese 2,6). `piano.json` invariato. **Da decidere (Simone):**
 via ai 4 training (`comandi_training.txt`: 4 tronchi + 4 rami, 175,6 GPU-ora attese, tetto 228, 12,8 GB di checkpoint) e la voce di budget
 dentro la finestra 1 (famiglia «Ablation a 30M» oppure una voce nuova). Fino al via nessun job di training viene sottomesso.
+**Pilot degli obiettivi: via di Simone ai 4 training (25/10/2026); voce di budget: finestra 1, famiglia «Ablation a 30M».** Testo di
+Simone: «Via ai 4 training del pilot degli obiettivi (8 job di comandi_training.txt, 175,6 GPU-ora attese, tetto 228), voce di budget: finestra
+1, famiglia «Ablation a 30M».» Si sottomettono gli 8 job di `results/infra/pilot_obiettivi_20261024/comandi_training.txt` (4 tronchi da 48
+GPU-ora prenotate + 4 rami da 9, afterok sul tronco; 228 GPU-ora di tetto, 175,6 attese; 12,8 GB di checkpoint su $SCRATCH) sul checkout di
+campagna 705ec04, nell'ordine del file e fermandosi al primo non «sottomesso». Il consuntivo si fa con `sacct` a run finiti e si scrive qui;
+la lettura degli esiti segue la regola del §5 di `docs/pilot_obiettivi_v1.md` firmata il 24/10. Nessun altro job oltre gli 8 senza un nuovo via.
