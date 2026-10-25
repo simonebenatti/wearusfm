@@ -3516,6 +3516,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - **File dei comandi** (`comandi_valutazione.txt`, 48 job come prima): A2 e B2 senza `--dopo`; B diviso in **B1** (8 estrazioni, tutte insieme
   a rami COMPLETED) e **B2** (16 sonde alimentate con `leonardo_feed.py` dopo B1 COMPLETED); `preventivo_valutazione.json` aggiornato (blocchi
   B1/B2, limite della seriale, tempi). Protocollo §6 punto 7 aggiornato.
+### 2026-10-25 | Claude | Pilot degli obiettivi: i 4 rami `-e1` COMPLETED per `max_steps` (59-65 min); **consuntivo `sacct` degli 8 job di training: 176,5 GPU-ora** (attese 175,6, tetto 228; tronchi 159,9, rami 16,6); blocco B1 sottomesso (8 estrazioni sui rami, 62276966-62276989); lock di file nell'alimentatore per due code concorrenti (7 test) | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- **Rami** (`watch_pilot_rami.txt`): R1 62233767 COMPLETED alle 19:42 (59:19), R0 62233765 alle 19:45 (1:01:52), R2 62233769 alle 19:48
+  (1:02:32), R5 62233771 alle 19:51 (1:05:04); tutti exit 0:0, «fine: max_steps, passo 24523» nei quattro log, memoria GPU max 14,7-16,1
+  GiB. Nessun allarme in nessuno degli 8 run.
+- **Consuntivo dei training** (`sacct -X`, `results/infra/pilot_obiettivi_20261024/consuntivo_training_sacct_20261025.txt` e
+  `consuntivo_training.json`): tronchi R0 40,2, R1 38,6, R2 40,2, R5 40,9 GPU-ora (= 159,9; attese 156,4, tetto 192); rami 4,1 / 4,0 / 4,2 / 4,3
+  (= 16,6; attese 19,2, tetto 36); **totale 176,5 GPU-ora contro 175,6 attese e 228 di tetto**: il preventivo (0,7 s/passo, slack 1,15) ha
+  tenuto. Voce di budget: finestra 1, famiglia «Ablation a 30M».
+- **B1 sottomesso** alle 20:0x (agente leggero, `submit_pilot_eval_B1_20261025.txt`, «FINE: eseguiti 8, sottomessi 8»): estrazioni sui
+  `checkpoint_postdecay.pt` dei rami, P1 R0 62276966, R1 62276968, R2 62276972, R5 62276976; P2 R0 62276980, R1 62276985, R2 62276986, R5
+  62276989 (1 A100, tetti 1 h / 1 h 30; attese 2,8 GPU-ora, tetto 10). Lo stesso agente aspetta le 8 estrazioni, controlla COMPLETED exit 0:0
+  x 8 e poi alimenta le 16 sonde di B2 con `leonardo_feed.py` (`feed_pilot_eval_B2.txt`).
+- **Lock nell'alimentatore:** con A2 e B2 alimentati in parallelo sulla stessa coda da 10, due processi potevano contare 9 insieme e sottomettere
+  l'undicesimo job; ora conteggio e sottomissioni stanno sotto un `flock` (`--lock`, default `~/wearusfm_local/jobs/feed_<partizione>.lock`) e
+  il ledger si rilegge sotto lock. Prova nuova: un processo che tiene il lock 1,5 s fa aspettare l'alimentatore (`tests/cpu/test_leonardo_feed.py`,
+  7 passati). L'alimentatore di A2 gia' in corso usa il codice nuovo dalla chiamata successiva (lo script si rilegge a ogni chiamata).
+- Stato della valutazione alle 20:05: A1 8 estrazioni COMPLETED e 8 sonde `pool` in coda (attesa armata); A2 2 sonde in coda, 6 in
+  alimentazione; B1 8 estrazioni in coda GPU; B2 dopo B1. Nessuna lettura ancora.
 
 ## 2) Problemi trovati
 

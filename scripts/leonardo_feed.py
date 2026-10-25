@@ -12,7 +12,9 @@ Si ferma: con 0 quando tutti i comandi scelti risultano sottomessi; con 3 quando
 limite di 10 minuti del tool Bash: si richiama identico, lo stato sta in `<out>.state.json`); con 4 dopo cinque errori ssh di fila; con 5
 oltre --max-total-seconds; con 6 davanti a un esito diverso da «sottomesso» (rifiuto, ambiguita'), a un ID del ledger in uno stato non
 finale, o a un ID `rifiutato` il cui comando non porta `--dopo-rifiuto`: serve una decisione, nessun rilancio automatico. Sul login node
-esegue solo `squeue`; non cancella e non risottomette mai un ID gia' sottomesso.
+esegue solo `squeue`; non cancella e non risottomette mai un ID gia' sottomesso. Due alimentatori sulla stessa partizione (es. A2 e B2 del
+pilot) non si pestano i piedi: conteggio e sottomissioni avvengono sotto un lock di file (`--lock`, default
+`<cartella del ledger>/feed_<partizione>.lock`), cosi' il secondo conta dopo che il primo ha sottomesso.
 
   python3 scripts/leonardo_feed.py --commands results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt \\
       --select='--id PILOT-EVAL-probe-R[0-9]-e2-p[12]-dec ' --partition lrd_all_serial --max-queued 10 --out ~/wearusfm_local/logs/feed_A2.txt
@@ -23,7 +25,9 @@ esegue solo `squeue`; non cancella e non risottomette mai un ID gia' sottomesso.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
+import fcntl
 import json
 import re
 import shlex
@@ -112,6 +116,18 @@ def submit(cmd: str, cwd: Path, timeout: float) -> tuple[bool, str]:
     return r.returncode == 0 and OK_MARK in r.stdout, text + f"\n[rc={r.returncode}]"
 
 
+@contextlib.contextmanager
+def locked(path: Path):
+    """Lock esclusivo (flock) sul file `path`, creato se manca: un solo alimentatore alla volta conta la coda e sottomette."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--commands", type=Path, required=True, help="file dei comandi di sottomissione (righe `python3 scripts/submit_job.py ...`)")
@@ -121,6 +137,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, required=True, help="file delle righe di stato (fuori dal repo, es. ~/wearusfm_local/logs/)")
     ap.add_argument("--ledger", type=Path, default=DEFAULT_LEDGER, help="ledger di submit_job.py (ID gia' sottomessi)")
     ap.add_argument("--cwd", type=Path, default=ROOT, help="directory da cui eseguire i comandi (default: la radice del repo)")
+    ap.add_argument("--lock", type=Path, help="file di lock fra alimentatori della stessa partizione (default: <cartella del ledger>/feed_<partizione>.lock)")
     ap.add_argument("--interval", type=float, default=180.0)
     ap.add_argument("--max-seconds", type=float, default=540.0, help="durata massima di questa chiamata")
     ap.add_argument("--max-total-seconds", type=float, default=48 * 3600.0, help="durata massima dell'alimentazione intera, dalla prima chiamata")
@@ -131,6 +148,7 @@ def main(argv=None) -> int:
     if args.max_queued < 1:
         ap.error("--max-queued >= 1")
     chosen = select_commands(args.commands, args.select)
+    lock_path = args.lock or args.ledger.parent / f"feed_{args.partition}.lock"
     if not chosen:
         raise SystemExit(f"nessun comando corrisponde a {args.select!r} in {args.commands}")
     ssh = shlex.split(args.ssh)
@@ -161,28 +179,30 @@ def main(argv=None) -> int:
             return stop(6, why)
         if not todo:
             return stop(0, f"tutti i {len(chosen)} comandi risultano sottomessi: {', '.join(done)}")
-        code, out = run_ssh(ssh, f"squeue -u $USER -p {shlex.quote(args.partition)} -h -o %i", args.ssh_timeout)
-        if code != 0:
-            state["ssh_failures"] += 1
-            note(f"squeue non risponde ({state['ssh_failures']}/{SSH_FAILURES_MAX}): {out.strip()[-200:]}")
-            if state["ssh_failures"] >= SSH_FAILURES_MAX:
-                state_path.write_text(json.dumps(state))
-                return 4
-        else:
-            state["ssh_failures"] = 0
-            count = len([x for x in out.split() if x.strip()])
-            note(f"in coda sulla partizione: {count}/{args.max_queued}; sottomessi {len(done)}/{len(chosen)}, da sottomettere {len(todo)}")
-            while count < args.max_queued and todo:
-                i, cmd = todo.pop(0)
-                ok, text = submit(cmd, args.cwd, args.submit_timeout)
-                with args.out.open("a") as f:
-                    f.write(f"{now()}  sottomissione di {i}:\n{text}\n")
-                if not ok:
-                    return stop(6, f"{i}: esito diverso da «sottomesso», mi fermo senza rilanciare")
-                count += 1
-                done.append(i)
-            if not todo:
-                return stop(0, f"tutti i {len(chosen)} comandi risultano sottomessi: {', '.join(done)}")
+        with locked(lock_path):  # un solo alimentatore alla volta fra conteggio e sottomissione
+            done, todo, why = classify(chosen, ledger_states(args.ledger))  # riletto sotto lock: un altro alimentatore puo' aver sottomesso
+            code, out = run_ssh(ssh, f"squeue -u $USER -p {shlex.quote(args.partition)} -h -o %i", args.ssh_timeout)
+            if code != 0:
+                state["ssh_failures"] += 1
+                note(f"squeue non risponde ({state['ssh_failures']}/{SSH_FAILURES_MAX}): {out.strip()[-200:]}")
+                if state["ssh_failures"] >= SSH_FAILURES_MAX:
+                    state_path.write_text(json.dumps(state))
+                    return 4
+            else:
+                state["ssh_failures"] = 0
+                count = len([x for x in out.split() if x.strip()])
+                note(f"in coda sulla partizione: {count}/{args.max_queued}; sottomessi {len(done)}/{len(chosen)}, da sottomettere {len(todo)}")
+                while count < args.max_queued and todo:
+                    i, cmd = todo.pop(0)
+                    ok, text = submit(cmd, args.cwd, args.submit_timeout)
+                    with args.out.open("a") as f:
+                        f.write(f"{now()}  sottomissione di {i}:\n{text}\n")
+                    if not ok:
+                        return stop(6, f"{i}: esito diverso da «sottomesso», mi fermo senza rilanciare")
+                    count += 1
+                    done.append(i)
+                if not todo:
+                    return stop(0, f"tutti i {len(chosen)} comandi risultano sottomessi: {', '.join(done)}")
         state_path.write_text(json.dumps(state))
         if time.time() - t0 + args.interval > args.max_seconds:
             print(f"ancora da sottomettere {len(todo)} comandi su {len(chosen)} (sottomessi {len(done)}): richiamare identico")

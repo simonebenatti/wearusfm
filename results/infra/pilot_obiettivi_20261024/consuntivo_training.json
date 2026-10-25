@@ -1,0 +1,101 @@
+{
+ "campaign": "pilot-obiettivi-20261024",
+ "source": "sacct -X del 25/10/2026 (consuntivo_training_sacct_20261025.txt)",
+ "jobs": {
+  "PILOT-R0-A-30M-s0-j01": {
+   "job": "62233554",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "10:02:31",
+   "gpus": 4,
+   "gpu_hours": 40.17,
+   "start": "2026-10-25T08:05:24",
+   "end": "2026-10-25T18:07:55",
+   "node": "lrdn1797"
+  },
+  "PILOT-R0-A-30M-s0-e1-j01": {
+   "job": "62233765",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "01:01:52",
+   "gpus": 4,
+   "gpu_hours": 4.12,
+   "start": "2026-10-25T18:43:23",
+   "end": "2026-10-25T19:45:15",
+   "node": "lrdn3398"
+  },
+  "PILOT-R1-targetA-30M-s0-j01": {
+   "job": "62233766",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "09:39:36",
+   "gpus": 4,
+   "gpu_hours": 38.64,
+   "start": "2026-10-25T08:15:21",
+   "end": "2026-10-25T17:54:57",
+   "node": "lrdn2190"
+  },
+  "PILOT-R1-targetA-30M-s0-e1-j01": {
+   "job": "62233767",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "00:59:19",
+   "gpus": 4,
+   "gpu_hours": 3.95,
+   "start": "2026-10-25T18:43:23",
+   "end": "2026-10-25T19:42:42",
+   "node": "lrdn3245"
+  },
+  "PILOT-R2-regione-30M-s0-j01": {
+   "job": "62233768",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "10:03:06",
+   "gpus": 4,
+   "gpu_hours": 40.21,
+   "start": "2026-10-25T08:15:21",
+   "end": "2026-10-25T18:18:27",
+   "node": "lrdn2198"
+  },
+  "PILOT-R2-regione-30M-s0-e1-j01": {
+   "job": "62233769",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "01:02:32",
+   "gpus": 4,
+   "gpu_hours": 4.17,
+   "start": "2026-10-25T18:44:31",
+   "end": "2026-10-25T19:47:03",
+   "node": "lrdn3413"
+  },
+  "PILOT-R5-finestra150-30M-s0-j01": {
+   "job": "62233770",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "10:13:21",
+   "gpus": 4,
+   "gpu_hours": 40.89,
+   "start": "2026-10-25T08:15:21",
+   "end": "2026-10-25T18:28:42",
+   "node": "lrdn2340"
+  },
+  "PILOT-R5-finestra150-30M-s0-e1-j01": {
+   "job": "62233771",
+   "state": "COMPLETED",
+   "exit": "0:0",
+   "elapsed": "01:05:04",
+   "gpus": 4,
+   "gpu_hours": 4.34,
+   "start": "2026-10-25T18:44:31",
+   "end": "2026-10-25T19:49:35",
+   "node": "lrdn3323"
+  }
+ },
+ "gpu_hours": {
+  "trunks": 159.9,
+  "branches": 16.6,
+  "total": 176.5,
+  "expected": 175.6,
+  "max": 228.0
+ }
+}

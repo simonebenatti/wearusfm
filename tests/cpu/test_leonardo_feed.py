@@ -128,3 +128,20 @@ def test_select_rejects_duplicate_ids(tmp_path):
         assert "ID ripetuti" in str(e)
     else:
         raise AssertionError("duplicati accettati")
+
+
+def test_two_feeders_share_the_queue_through_the_lock(tmp_path):
+    """Un altro alimentatore tiene il lock per 1,5 s: questo aspetta, poi conta e sottomette; il lock sta accanto al ledger."""
+    import subprocess
+    import time
+
+    run, out, ledger, *_ , calls_sub = _env(tmp_path, count=0)
+    lock = ledger.parent / "feed_lrd_all_serial.lock"
+    holder = subprocess.Popen([sys.executable, "-c", "import fcntl, sys, time; f = open(sys.argv[1], 'a'); fcntl.flock(f, fcntl.LOCK_EX); "
+                               "print('preso', flush=True); time.sleep(1.5)", str(lock)], stdout=subprocess.PIPE, text=True)
+    assert holder.stdout.readline().strip() == "preso"
+    t0 = time.time()
+    assert run() == 0
+    assert time.time() - t0 >= 1.0  # ha aspettato il lock
+    assert _submitted(calls_sub) == ["PROVA-A", "PROVA-B", "PROVA-C"]
+    holder.wait(timeout=10)
