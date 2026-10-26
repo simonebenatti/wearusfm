@@ -267,6 +267,24 @@ cambia; la mossa successiva la decide Simone. **Non si decide qui:** K, taglie, 
 9. **Valutazione:** blocchi A1, A2, B come nel pilot (comandi dallo stesso schema di `comandi_valutazione.txt`, alimentatore e attese con gli
    agenti leggeri); provenienza e condizioni del §3 prima della lettura; registro, `decisioni.md`, `results/pilot_posa/`.
 
+**Stato del codice (26/10/2026, dopo la firma; commit d9e8fa6, 1bf33fd, b41b40c, 71c0a93, dfb6d3e sul ramo di Claude):** fatto il punto 2 per
+intero, in attesa del `critico` (punto 3). Dove sta: riferimento d'uguaglianza (b1) in `tests/cpu/readout_reference.py` +
+`tests/cpu/data/readout_reference_705ec04.npz` (scritto PRIMA della testa, codice di `src/wearusfm/` identico a 705ec04) e
+`test_readout_reference.py`; ingest in `src/wearusfm/ingest/emg2pose_pose.py`, `scripts/ingest_emg2pose_pose.py`,
+`scripts/slurm/ingest_emg2pose_pose.sbatch` (`CODE_DIR`, 2 core, 4 h, budget 3 h 40; collaudo `--limit 40 --both-sides`); target per finestra in
+`src/wearusfm/data/pose_targets.py` (`PoseStore`, `window_pose`) e nel loader (`LoaderConfig.pose_root`, `pose_unprompted`,
+`PretrainBatch.pose`); testa in `src/wearusfm/model/pose_head.py` (`FMConfig.pose_head`); termine e conteggi in `training/jepa.py`
+(`pose_terms`, `pose_time_valid`, `JEPAConfig.pose_weight`); trainer in `training/run.py` (`_pose_tensors`, `_Micro.pose`, `pose_stats_sha256`
+nel config, pannello fisso con `pose_mae`, `pose_mae_std`, `pose_mae_j00..j19`, `pose_windows`); launcher `--pose-root`, `--pose-weight`
+(default 1,0), `--pose-unprompted on|off`; collaudo `scripts/arms_collaudo.py --arm R3` (pesi con la posa, `posa_configurata`, i quattro criteri
+del cancello, `ritmo` <= 0,81); `scripts/slurm/train_ddp.sbatch` scrive `module list` nel log e `pip_freeze_<job>.txt` nella cartella del run.
+Piano con le opzioni della posa in `results/infra/pilot_posa/piano.json` (convalidato da `wsd_chain.py`). Tre dettagli d'implementazione da
+sapere: la validita' della posa e' per blocco, e la maschera (P, 20) la ripete sui 20 giunti; l'errore di posa de-standardizzato del pannello
+fisso usa la deviazione per giunto **dell'insieme** anche quando la standardizzazione e' per lato (esatto se insieme, approssimato se per lato:
+il valore standardizzato `pose_mae_std` e' quello esatto); il margine della regola di validita' entra nell'ingest come `--zero-margin-samples`
+(default 0 = solo righe a zero), da congelare dopo il collaudo. Test CPU nuovi: 33 (riferimento 3, ingest 9, target 6, obiettivo 6, collaudo 3,
+piu' i flag); suite completa in corso al momento di questa nota.
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |

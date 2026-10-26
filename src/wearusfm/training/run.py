@@ -168,7 +168,13 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
     if isinstance(out.get("jepa"), dict):
-        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, **out["jepa"]}  # region_target: R2, 24/10
+        # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0, **out["jepa"]}
+    if isinstance(out.get("model"), dict):
+        out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
+    if isinstance(out.get("loader"), dict):
+        out["loader"] = {"pose_root": None, "pose_unprompted": True, **out["loader"]}  # R3, 26/10
+    out.setdefault("pose_stats_sha256", None)
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out
