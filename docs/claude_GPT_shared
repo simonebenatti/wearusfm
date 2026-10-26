@@ -3739,6 +3739,7 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (E1 rapporto col costante sulle finestre dinamiche, bootstrap sui 15 utenti, regola < 0,9; E2 appaiamento per utente e fase a >= 8 s,
   coppie quasi identiche scartate, regola > 0,95; E3 ridge con intercetta dai latenti alla posa, alpha scelto fra due meta' di utenti del train).
   Launcher: `pose_eval_extract.sbatch` (1 A100, 40 min), `pose_eval_report.sbatch` (seriale, 8 core, 2 h). Stato in `docs/emendamento_pilot_posa_v1.md` E9.
+- **Suite CPU completa col codice dell'emendamento: 1.445 test, tutti verdi** (`~/wearusfm_local/logs/suite_cpu_pilot_posa_20261026_d.txt`, 21 min 53 s).
 - Da fare prima dei job (ciascuno col via di Simone): review di GPT/critico su questo codice, deploy `deploy/pilot-posa-<data>`, checkout,
   collaudo dell'ingest (40 registrazioni), regola di validita' da firmare, ingest intero, collaudo dbg di R3 (con `--pose-grad-every 100`),
   training R3 e R3c, valutazione (A1/A2/B + E1-E3).
