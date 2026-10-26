@@ -91,6 +91,7 @@ class LoaderConfig:
     # target di posa di emg2pose (R3, seconda ondata del pilot degli obiettivi, firmata il 26/10/2026; `data.pose_targets`): albero
     # `<pose_root>/u<utente>/<stem>/` scritto da `ingest.emg2pose_pose`, con `pose_stats.json`. None = il default (nessun target di posa)
     pose_root: str | None = None
+    pose_unprompted: bool = True  # tenere le registrazioni a mano non sollecitata nel termine di posa (firma del 26/10/2026); False = mascherate
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
@@ -455,7 +456,7 @@ class PretrainLoader:
         self._pool: list[Block] = []
         self.blocks_read = 0
         self.rvq_store = RC.RVQCodeStore(cfg.rvq_codes_root) if cfg.rvq_codes_root else None
-        self.pose_store = PT.PoseStore(cfg.pose_root) if cfg.pose_root else None
+        self.pose_store = PT.PoseStore(cfg.pose_root, include_unprompted=cfg.pose_unprompted) if cfg.pose_root else None
 
     def reset_stream_state(self) -> None:
         """Lo stato che porta da un batch all'altro e che influisce sulle estrazioni: pool di blocchi e sessioni saltate. Si azzera all'inizio

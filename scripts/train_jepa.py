@@ -62,6 +62,13 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--jepa-region-target", action="store_true",
                     help="target JEPA per regione nascosta (media del teacher sulla maschera estratta) invece che per token: R2 del pilot degli "
                          "obiettivi; default per token")
+    ap.add_argument("--pose-root", default=None,
+                    help="R3 (seconda ondata del pilot degli obiettivi, firmata il 26/10/2026): albero della posa di emg2pose scritto da "
+                         "scripts/ingest_emg2pose_pose.py (con pose_stats.json); accende la testa di posa e il suo termine; default nessuno")
+    ap.add_argument("--pose-weight", type=float, default=None,
+                    help="peso del termine di posa; default 1,0 con --pose-root (firma del 26/10), non ammesso senza")
+    ap.add_argument("--pose-unprompted", choices=["on", "off"], default="on",
+                    help="registrazioni di emg2pose a mano non sollecitata nel termine di posa: on (firma del 26/10) o off (mascherate)")
     ap.add_argument("--mask-shares", default=None,
                     help="quote delle maschere corta:media:lunga:spaziale (somma 1; D10 firmata: 0.15:0.25:0.20:0.40); per R5 "
                          "0:0.294:0.235:0.471, scostamento dichiarato da D10; default le quote firmate")
@@ -161,6 +168,18 @@ def build_config(args, error=None) -> "R.RunConfig":
             cfg = replace(cfg, jepa=replace(cfg.jepa, **weights))
         except ValueError as e:
             fail(f"--anchor-weight / --jepa-weight: {e}")
+    pose_root, pose_weight = getattr(args, "pose_root", None), getattr(args, "pose_weight", None)
+    if pose_weight is not None and pose_root is None:
+        fail("--pose-weight senza --pose-root")
+    if pose_root is not None:  # R3: target di posa nel loader, testa nel modello, termine nella loss (peso firmato 1,0)
+        w = 1.0 if pose_weight is None else float(pose_weight)
+        if not w > 0:
+            fail("--pose-weight deve essere positivo")
+        try:
+            cfg = replace(cfg, loader=replace(cfg.loader, pose_root=str(pose_root), pose_unprompted=getattr(args, "pose_unprompted", "on") == "on"),
+                          model=replace(cfg.model, pose_head=True), jepa=replace(cfg.jepa, pose_weight=w))
+        except ValueError as e:
+            fail(f"--pose-root / --pose-weight: {e}")
     if args.accum_steps is not None:
         cfg = replace(cfg, accum_steps=args.accum_steps)
     if args.schedule == "wsd":

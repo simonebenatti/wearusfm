@@ -66,13 +66,16 @@ class JEPAConfig:
     jepa_weight: float = 1.0
     # target JEPA per regione nascosta invece che per token (R2 del pilot degli obiettivi, 24/10/2026): servono le regioni delle maschere
     region_target: bool = False
+    # peso del termine di posa (R3, seconda ondata del pilot degli obiettivi, firmato il 26/10/2026: 1,0 sul target standardizzato); 0 = nessun
+    # termine (il default). Richiede `FMConfig.pose_head` e i target di posa nel batch (`PretrainBatch.pose`)
+    pose_weight: float = 0.0
 
     def __post_init__(self) -> None:
-        for name in ("jepa_weight", "anchor_weight"):
+        for name in ("jepa_weight", "anchor_weight", "pose_weight"):
             v = getattr(self, name)
             if not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0:
                 raise ValueError(f"{name} must be finite and nonnegative")
-        if self.jepa_weight == 0 and self.anchor_weight == 0 and self.keep_weight == 0 and self.branch_weight == 0:
+        if self.jepa_weight == 0 and self.anchor_weight == 0 and self.keep_weight == 0 and self.branch_weight == 0 and self.pose_weight == 0:
             raise ValueError("jepa_weight, anchor_weight, keep_weight e branch_weight tutti a zero: nessuna perdita da allenare")
         if not math.isfinite(self.keep_weight) or self.keep_weight < 0:
             raise ValueError("keep_weight must be finite and nonnegative")
@@ -142,6 +145,43 @@ def region_means(h: torch.Tensor, raw: torch.Tensor, regions: torch.Tensor, hidd
         t_r = torch.zeros(n_r, d, device=h.device, dtype=acc).index_add(0, inv, raw.to(acc)) / cnt[:, None]
         t_r = F.layer_norm(t_r, t_r.shape[-1:])
     return h_r, t_r, inv, torch.div(uniq, REGION_STRIDE, rounding_mode="floor")
+
+
+def pose_time_valid(vis: torch.Tensor, counts: list[int]) -> torch.Tensor:
+    """(S, P) istanti con almeno un canale visibile per campione: e' `Encoded.key_time_valid` (vis = visible & patch_valid & qc_valid, e una
+    patch visibile esiste), ricalcolato dalla sola geometria per `loss_counts`. Il termine di posa (R3) conta solo questi istanti."""
+    bounds = np.cumsum([0, *counts])
+    return torch.stack([vis[a:b].any(dim=0) for a, b in zip(bounds[:-1], bounds[1:])])
+
+
+def pose_terms(pred: torch.Tensor, pose: tuple[torch.Tensor, torch.Tensor] | None, time_valid: torch.Tensor, per_window: bool) \
+        -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Termine di posa da una predizione (S, P, J) e dai target (target (S, P, J), maschera (S, P, J)): errore quadratico sugli elementi
+    validi (maschera e istante valido). Per finestra: media dentro ogni finestra che ha almeno un elemento valido, poi media fra quelle
+    finestre (come `masked_mean` con `sample_index`); per token: media sugli elementi. Ritorna (perdita, numeratore additivo, conteggio,
+    maschera di validita' usata). Senza target (micro-batch senza finestre di posa) la perdita e' `pred.sum() * 0`: la testa resta nel grafo
+    con gradiente nullo e il conteggio e' 0."""
+    if pose is None:
+        zero = pred.sum() * 0.0
+        return zero, zero, pred.new_zeros((), dtype=torch.int64), torch.zeros_like(pred, dtype=torch.bool)
+    target, mask = pose
+    if target.shape != pred.shape or mask.shape != pred.shape:
+        raise ValueError(f"posa: target {tuple(target.shape)} e maschera {tuple(mask.shape)} contro predizione {tuple(pred.shape)}")
+    valid = mask & time_valid[..., None]
+    err = (pred.float() - target.float()).pow(2) * valid
+    if per_window:
+        s_num, s_den = err.sum(dim=(1, 2)), valid.sum(dim=(1, 2))
+        ok = s_den > 0
+        if not bool(ok.any()):
+            zero = pred.sum() * 0.0
+            return zero, zero, ok.sum().detach(), valid
+        means = s_num[ok] / s_den[ok]
+        return means.mean(), means.sum(), ok.sum().detach(), valid
+    n = valid.sum()
+    if int(n) == 0:
+        zero = pred.sum() * 0.0
+        return zero, zero, n.detach(), valid
+    return err.sum() / n, err.sum(), n.detach(), valid
 
 
 def hidden_queries(hidden: torch.Tensor, counts: list[int]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -257,8 +297,12 @@ def _keep_valid(anchor_targets, inp: ModelInputs, target_active: torch.Tensor) -
 def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable | None = None, *, model_cfg: FMConfig,
-                keep_target_active: torch.Tensor | None = None, regions: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+                keep_target_active: torch.Tensor | None = None, regions: torch.Tensor | None = None,
+                pose_valid: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
     """Detached int64 counts from geometry/targets, WITHOUT encode/decode or RNG consumption.
+    Col termine di posa (`cfg.pose_weight` > 0, R3): `pose_valid` (S, P, J) e' la maschera dei target del micro-batch (None = nessuna finestra
+    di posa); il conteggio e' il numero di finestre con almeno un elemento valido su un istante valido (per finestra) o degli elementi (per
+    token), lo stesso di `pose_terms`.
 
     model_cfg is mandatory: JEPAConfig has no patch duration, latent width, or optional-head geometry. For keep, supply the calibrated
     target_active buffer, not a guess based only on observed targets. Same active components on all ranks are the trainer's responsibility.
@@ -302,6 +346,17 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
         valid = rvq_codes(wc, ww) >= 0 if wc.numel() else wc.new_zeros(0, dtype=torch.bool)
         sw = _sample_index(wc, inp.counts) if cfg.loss_per_window else None
         out["rvq"] = _valid_count(valid, sw, ns)
+    if cfg.pose_weight > 0:
+        if not model_cfg.pose_head:
+            raise ValueError("pose counts require the pose head (FMConfig.pose_head)")
+        if pose_valid is None:
+            out["pose"] = visible.new_zeros((), dtype=torch.int64)
+        else:
+            tv = pose_time_valid(visible & patch_valid & inp.qc_valid[:, None], inp.counts)
+            if pose_valid.shape[:2] != tv.shape:
+                raise ValueError(f"pose_valid {tuple(pose_valid.shape)} contro la geometria {tuple(tv.shape)}")
+            valid = pose_valid & tv[..., None]
+            out["pose"] = (valid.any(dim=(1, 2)).sum() if cfg.loss_per_window else valid.sum()).detach()
     if cfg.keep_weight > 0:
         if anchor_targets is None or keep_target_active is None or not model_cfg.keep_readout:
             raise ValueError("keep counts require targets, head geometry and calibrated target_active")
@@ -316,9 +371,11 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
 def jepa_loss_terms(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
                     anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                     rvq_codes: Callable | None = None, generator: torch.Generator | None = None,
-                    kinds: torch.Tensor | None = None, regions: torch.Tensor | None = None) -> LossTerms:
+                    kinds: torch.Tensor | None = None, regions: torch.Tensor | None = None,
+                    pose: tuple[torch.Tensor, torch.Tensor] | None = None, pose_std: torch.Tensor | None = None) -> LossTerms:
     terms = LossTerms()
-    _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms, regions)
+    _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms, regions, pose=pose,
+                  pose_std=pose_std)
     return terms
 
 
@@ -326,13 +383,13 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
                 generator: torch.Generator | None = None, kinds: torch.Tensor | None = None,
-                regions: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+                regions: torch.Tensor | None = None, pose: tuple[torch.Tensor, torch.Tensor] | None = None) -> dict[str, torch.Tensor]:
     """Backward-compatible single-process API: historical means, keys and RNG ordering unchanged."""
-    return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, regions=regions)
+    return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, regions=regions, pose=pose)
 
 
 def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None, generator=None, kinds=None,
-                  terms: LossTerms | None = None, regions: torch.Tensor | None = None):
+                  terms: LossTerms | None = None, regions: torch.Tensor | None = None, pose=None, pose_std=None):
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4).
@@ -456,10 +513,30 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
             o_loss, o_n, o_acc = rvq_on_windows(other_sel, other)
             losses[other], losses[other + "_targets"], losses[other + "_acc"] = o_loss.detach(), o_n, o_acc
         anchor_total = anchor_total + losses["rvq"]
-    if cfg.jepa_weight == 0 and anchor_targets is None and cfg.keep_weight == 0 and cfg.branch_weight == 0:
+    if cfg.jepa_weight == 0 and anchor_targets is None and cfg.keep_weight == 0 and cfg.branch_weight == 0 and cfg.pose_weight == 0:
         raise ValueError("jepa_weight = 0 senza target delle ancore: nessuna perdita da allenare")
     # col peso 1 la JEPA entra com'era (stesso grafo, bit per bit); con un altro peso si moltiplica
     losses["total"] = (losses["jepa"] if cfg.jepa_weight == 1.0 else cfg.jepa_weight * losses["jepa"]) + cfg.anchor_weight * anchor_total
+    if cfg.pose_weight > 0:  # R3: la testa di posa sulla media dei latenti del backbone per istante, su tutte le finestre del micro-batch
+        if student.pose_head is None:
+            raise ValueError("pose_weight > 0 senza la testa di posa (FMConfig.pose_head)")
+        from wearusfm.model.pose_head import latent_mean
+        pred = student.pose_head(latent_mean(enc.z))  # (S, P, 20); calcolata sempre: nessun parametro fuori dal grafo DDP
+        p_loss, p_num, p_den, p_valid = pose_terms(pred, pose, enc.key_time_valid, cfg.loss_per_window)
+        losses["pose"] = p_loss
+        losses["pose_windows"] = p_den.to(p_loss.dtype) if cfg.loss_per_window else p_valid.any(dim=(1, 2)).sum().to(p_loss.dtype)
+        losses["total"] = losses["total"] + cfg.pose_weight * p_loss
+        if terms is not None:
+            terms.num["pose"], terms.den["pose"], terms.weight["pose"] = p_num, p_den, cfg.pose_weight
+            terms.log_sum["pose_windows"] = p_valid.any(dim=(1, 2)).sum().detach()
+            if pose is not None and pose_std is not None:  # pannello fisso: errore assoluto per giunto, standardizzato e nell'unita' degli angoli
+                abs_err = ((pred.float() - pose[0].float()).abs() * p_valid).detach()
+                n_j, e_j = p_valid.sum(dim=(0, 1)), abs_err.sum(dim=(0, 1))
+                std = pose_std.to(e_j.device, e_j.dtype)
+                terms.log_num["pose_mae_std"], terms.log_den["pose_mae_std"] = e_j.sum(), n_j.sum()
+                terms.log_num["pose_mae"], terms.log_den["pose_mae"] = (e_j * std).sum(), n_j.sum()
+                for j in range(e_j.shape[0]):
+                    terms.log_num[f"pose_mae_j{j:02d}"], terms.log_den[f"pose_mae_j{j:02d}"] = e_j[j] * std[j], n_j[j]
     if cfg.keep_weight > 0 or cfg.branch_weight > 0:
         if anchor_targets is None:
             raise ValueError("keep loss requires multiscale targets")

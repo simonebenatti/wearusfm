@@ -33,6 +33,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from wearusfm.data import pose_targets as PT
 from wearusfm.data import pretraining_loader as L
 from wearusfm.data import pretraining_manifest as PM
 from wearusfm.data import rvq_codes as RC
@@ -114,6 +115,7 @@ class RunConfig:
     readout_version: str = READOUT_VERSION
     keep_calibration: str | None = None
     keep_calibration_sha256: str | None = None
+    pose_stats_sha256: str | None = None  # R3: SHA-256 di `pose_stats.json` sotto `loader.pose_root`, scritto dal trainer nel config del run
     keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
     pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
     # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
@@ -504,6 +506,25 @@ class _Micro:
     rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
     codes: torch.Tensor | None = None  # i codici impacchettati dietro `rvq_codes`
     regions: torch.Tensor | None = None  # regioni delle maschere (target per regione, R2), se il batch le porta
+    pose: tuple[torch.Tensor, torch.Tensor] | None = None  # (target (S, P, 20), maschera (S, P, 20)) di posa (R3); None senza finestre di posa
+
+
+def _pose_tensors(batch: L.PretrainBatch, device) -> tuple[torch.Tensor, torch.Tensor] | None:
+    """I target di posa del batch (R3) riempiti alla larghezza del batch (P_max, la stessa di `visible`), sul dispositivo. None se il loader non
+    porta la posa o se nessuna finestra del micro-batch ne ha (la testa si calcola lo stesso, `jepa.pose_terms`)."""
+    if batch.pose is None or all(item is None for item in batch.pose):
+        return None
+    n, p_max = len(batch.pose), max(batch.n_patches)
+    target = np.zeros((n, p_max, PT.N_JOINTS), dtype=np.float32)
+    mask = np.zeros((n, p_max, PT.N_JOINTS), dtype=bool)
+    for s, item in enumerate(batch.pose):
+        if item is not None:
+            t, m = item
+            if t.shape[0] != batch.n_patches[s] or m.shape != t.shape:
+                raise ValueError(f"posa del campione {s}: {t.shape} per {batch.n_patches[s]} patch")
+            target[s, :t.shape[0]] = t
+            mask[s, :m.shape[0]] = m
+    return torch.from_numpy(target).to(device), torch.from_numpy(mask).to(device)
 
 
 def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
@@ -514,7 +535,7 @@ def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -
     codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
     return _Micro(inp, visible, torch.as_tensor(batch.kind).to(device), batch.anchor_targets, rvq_on if codes_t is not None else None,
                   (lambda c, w: codes_t[c, w]) if codes_t is not None else None, codes_t,
-                  regions=torch.as_tensor(batch.region).to(device) if batch.region is not None else None)
+                  regions=torch.as_tensor(batch.region).to(device) if batch.region is not None else None, pose=_pose_tensors(batch, device))
 
 
 def _stage(batch: L.PretrainBatch, accum_steps: int, device) -> list[_Micro]:
@@ -528,6 +549,8 @@ def _micro_tensors(micros: list[_Micro]) -> list[torch.Tensor]:
     for m in micros:
         out += [*m.inp.signals, *m.inp.codes.values(), *m.inp.sets.values(), m.inp.qc_valid, m.visible, m.kinds]
         out += [t for t in (m.rvq_on, m.codes, m.regions) if t is not None]
+        if m.pose is not None:
+            out += list(m.pose)
     return out
 
 
@@ -631,7 +654,8 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     all_reduce). Ritorna (motivo d'arresto o None, metriche): le metriche sono somme e conteggi globali (numeratori, diagnostiche, contatori)."""
     keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0 else None
     pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
-                       keep_target_active=keep_active, regions=m.regions) for m in micros]
+                       keep_target_active=keep_active, regions=m.regions, pose_valid=m.pose[1] if m.pose is not None else None)
+           for m in micros]
     keys = sorted(pre[0])
     if any(sorted(p) != keys for p in pre):
         raise RuntimeError(f"componenti delle loss diverse fra i micro-batch: {[sorted(p) for p in pre]}")
@@ -651,7 +675,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
 
             def compute(s, m=m):
                 return jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
-                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions)
+                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions, pose=m.pose)
 
             with amp:
                 terms = model(compute) if model is not None else compute(student)
@@ -824,7 +848,8 @@ def _pool_terms(parts: list[dict], weight: dict[str, float]) -> dict:
     return {**out, **diag}
 
 
-def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
+def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp,
+                       pose_std: torch.Tensor | None = None) -> dict:
     """Le loss del training sull'insieme fisso, con numeratori e conteggi di tutti i batch (`_pool_terms`): la stessa funzione del passo
     (`readout_objectives` a encoder congelato, totale = branch_weight x termine dei rami; altrimenti `jepa_loss_terms`, totale = somma pesata
     delle componenti; l'obiettivo mascherato del pilot non ha pannello, `train` lo rifiuta), senza gradiente, studente e teacher in eval
@@ -855,7 +880,8 @@ def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg:
                     t = jepa_loss_terms(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
                                         kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
                                         rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None,
-                                        regions=torch.as_tensor(b.region).to(device) if b.region is not None else None)
+                                        regions=torch.as_tensor(b.region).to(device) if b.region is not None else None,
+                                        pose=_pose_tensors(b, device), pose_std=pose_std)
                     parts.append({"num": values(t.num), "den": values(t.den), "log_num": values(t.log_num), "log_den": values(t.log_den),
                                   "log_sum": values(t.log_sum)})
                     weight = dict(t.weight)
@@ -1157,6 +1183,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         torch.save(payload({}), init_ckpt.with_suffix(".tmp"))
         init_ckpt.with_suffix(".tmp").replace(init_ckpt)
         init_sha = sha256_file(init_ckpt)
+    if cfg.loader.pose_root:  # R3: lo SHA delle statistiche di standardizzazione della posa entra nel config del run
+        cfg = replace(cfg, pose_stats_sha256=hashlib.sha256((Path(cfg.loader.pose_root) / PT.STATS_FILE).read_bytes()).hexdigest())
     if ctx.is_main:
         (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
         if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
@@ -1166,10 +1194,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                                                         "init_checkpoint_sha256": init_sha, "branch_state": branch_state},
                                                                        indent=1))
     scales = dict(scales or {})
-    val = None
+    val = pose_std = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
         val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
         val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
+        if val_loader.pose_store is not None:  # R3, pannello fisso: errore di posa nell'unita' degli angoli (deviazione per giunto, insieme)
+            pose_std = torch.as_tensor(val_loader.pose_store.std_all, dtype=torch.float32)
     fixed = None  # diagnostiche della stabilita' (RunConfig.fixed_eval_every, log_batch_origin), solo sul processo 0 per i file
     if ctx.is_main and cfg.fixed_eval_every:
         fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
@@ -1203,7 +1233,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                                for m in BRANCH_MONITORS])
 
     def fixed_eval(at_step: int) -> None:
-        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
+        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp, pose_std)}) + "\n")
         fixed_log.flush()
 
     if fixed is not None and resume_state is None:  # il punto di partenza della curva
@@ -1281,7 +1311,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                         masked_metrics = branch_monitors(teacher, m.inp, batch_spans(m.inp, cfg.seed, step + 1))
                 else:
                     losses = jepa_losses(student, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=batch.anchor_targets, kinds=m.kinds,
-                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes, regions=m.regions)
+                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes, regions=m.regions, pose=m.pose)
             if not bool(torch.isfinite(losses["total"])):
                 reason = f"perdita non finita al passo {step}"
                 numerical_failure = True

@@ -41,8 +41,11 @@ def pose_dir(pose_root: Path, session_path: Path) -> Path:
 class PoseStore:
     """I file di posa per sessione (memoria mappata, cache) e le statistiche di standardizzazione."""
 
-    def __init__(self, root: str | Path, cache: int = 64):
+    def __init__(self, root: str | Path, cache: int = 64, include_unprompted: bool = True):
         self.root = Path(root)
+        # registrazioni col bracciale sulla mano NON sollecitata a muoversi in quella fase (`moving_hand` diverso da `side` e da `both`;
+        # 23% delle ore di emg2pose nel pretraining): tenute nel termine per la firma del 26/10/2026; `--pose-unprompted off` le maschera
+        self.include_unprompted = include_unprompted
         raw = (self.root / STATS_FILE).read_bytes()
         self.stats = json.loads(raw)
         self.stats_sha256 = hashlib.sha256(raw).hexdigest()
@@ -63,6 +66,13 @@ class PoseStore:
     @staticmethod
     def applies(row: dict) -> bool:
         return row.get("dataset") == POSE_DATASET
+
+    @staticmethod
+    def unprompted(view) -> bool:
+        """Vero se in quella fase la mano del bracciale non era sollecitata a muoversi (dal `csv_row` del sidecar dell'EMG)."""
+        row = view.meta.get("csv_row") or {}
+        side, moving = (row.get("side") or "").lower(), (row.get("moving_hand") or "").lower()
+        return bool(side) and bool(moving) and moving not in (side, "both")
 
     def norm(self, view) -> tuple[np.ndarray, np.ndarray]:
         """(media, deviazione) per giunto: per lato (dal `csv_row.side` del sidecar dell'EMG) se il criterio congelato lo ha deciso."""
@@ -106,6 +116,9 @@ class PoseStore:
             return None
         blocks, valid = self.entry(view)
         self.check_length(blocks, view)
+        if not self.include_unprompted and self.unprompted(view):  # finestra di emg2pose senza target: contribuisce zero, conta zero
+            p = int(win.n_patches)
+            return np.zeros((p, N_JOINTS), dtype=np.float32), np.zeros((p, N_JOINTS), dtype=bool)
         mean, std = self.norm(view)
         return window_pose(blocks, valid, win, view.fs, patch_ms, mean, std)
 

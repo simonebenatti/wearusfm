@@ -64,6 +64,9 @@ class FMConfig:
     # Step 1 (il 2C, default), "masked" = predizione locale mascherata (`model/branch_masking.py`, predittori nel modello)
     branch_objective: str = "readout"
     branch_freeze_output: bool = False  # `output` di ogni scala e `combine` fissi al passo 0 (fuori da ottimizzatore ed EMA)
+    # testa di posa sulla media dei latenti del backbone per istante (R3, seconda ondata del pilot degli obiettivi, 26/10/2026;
+    # `model/pose_head.py`): inizializzata a zero, fuori dal percorso di encode/decode. False = il modello di sempre
+    pose_head: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "spectral_branches", tuple(self.spectral_branches))  # da JSON (checkpoint) arriva una lista
@@ -161,6 +164,11 @@ class WearUsFM(nn.Module):
         self.anchor_heads = AnchorHeads(cfg.dim, cfg.n_bands, multiscale=cfg.multiscale_anchor)
         self.rvq_head = RVQHead(cfg.dim, cfg.rvq_codes) if cfg.rvq_codes else None
         self.spectral_keep = SpectralKeepHead(2 * cfg.dim) if cfg.keep_readout else None
+        if cfg.pose_head:  # a zero, senza estrazioni casuali: gli altri moduli nascono identici a un modello senza testa
+            from wearusfm.model.pose_head import PoseHead
+            self.pose_head = PoseHead(cfg.dim)
+        else:
+            self.pose_head = None
         self.spectral_branches = self.branch_heads = self.branch_predictors = None
         if cfg.spectral_branches:
             # dopo tutti gli altri moduli e con un generatore a parte: l'encoder raw nasce uguale e il generatore globale (dropout del muscolo)
