@@ -4438,3 +4438,10 @@ R3 contro R3c descrittiva, conferma a due semi con R3c; E6 albero delle decision
 
 **Emendamento 1 a `pilot_posa_v1`: FIRMATO (Simone, 26/10/2026: «emendamento firmato, finisci i test»).** Regole E1-E7 congelate come nella voce precedente; il codice
 dell'emendamento si scrive ora; nessun job senza il via di Simone.
+
+**Seconda ondata: AUTORIZZAZIONE ANTICIPATA dei passi della catena (Simone, 26/10/2026: «R3 sul cluster, ogni passo col tuo via:.lo puoi gia far partire? io autorizzo gia i passo che servono, cosi sveltiamo»).** Vale per i job della catena scritta in
+`results/infra/pilot_posa/comandi_catena_20261026.txt`: checkout (0 GPU-ora), collaudo dell'ingest (0), R3c tronco e ramo (51 + 9 GPU-ora di
+tetto, 47,0 attese), ingest intero (0), collaudo dbg di R3 (2 di tetto), R3 tronco e ramo (51 + 9 di tetto, 47,0 attese), valutazione come il
+preventivo (estrazioni 5,0 + 4,0 per E1-E3 di tetto; sonde CPU). Restano con Simone, perche' non sono job ma decisioni: il margine della regola di
+validita' dei campioni di posa (dopo il collaudo dell'ingest) e la lettura del cancello del collaudo dbg (fuori dal cancello R3 non parte).
+Deploy `deploy/pilot-posa-20261026` = c5e42cb99b4dc0a105495de70946a411b0523dbc.

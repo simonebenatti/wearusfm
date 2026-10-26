@@ -3743,6 +3743,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Da fare prima dei job (ciascuno col via di Simone): review di GPT/critico su questo codice, deploy `deploy/pilot-posa-<data>`, checkout,
   collaudo dell'ingest (40 registrazioni), regola di validita' da firmare, ingest intero, collaudo dbg di R3 (con `--pose-grad-every 100`),
   training R3 e R3c, valutazione (A1/A2/B + E1-E3).
+### 2026-10-26 | Claude | Seconda ondata AVVIATA sul cluster con l'autorizzazione anticipata di Simone («R3 sul cluster, ogni passo col tuo via:.lo puoi gia far partire? io autorizzo gia i passo che servono, cosi sveltiamo»): deploy `deploy/pilot-posa-20261026` = c5e42cb (SHA remoto verificato, `main` di leonardo intatto a 8dad7e8), checkout di campagna in coda tramite l'alimentatore (seriale piena: 10/10 di sonde del pilot), catena dei comandi in `results/infra/pilot_posa/comandi_catena_20261026.txt`; nessuna GPU-ora spesa | Codice: c5e42cb (deploy)
+
+- **Preflight di sola lettura** (leonardo-ops, `~/wearusfm_local/logs/preflight_pilot_posa_20261026.txt`): hook del canonico solo `.sample`; ref e
+  cartella `pilot-posa` assenti; `packed-refs` assente; coda: 10 sonde del pilot (A2 R1-e2-p2-dec in esecuzione, 2 di A2 e 7 di B2 in attesa).
+- **Deploy** dal Mac: `git push leonardo c5e42cb:refs/heads/deploy/pilot-posa-20261026`; `git ls-remote` = c5e42cb99b4dc0a105495de70946a411b0523dbc.
+  c5e42cb = 89bbbdf (suite 1.445 verdi) + `INGEST_ARGS` nel launcher dell'ingest (solo launcher). Piano, comandi di training e preventivo
+  rigenerati con lo SHA vero (`results/infra/pilot_posa/`).
+- **Catena** (ordine e dipendenze nel file dei comandi): [1] checkout (CPU, 10 min) -> [2] collaudo dell'ingest su 40 registrazioni (CPU, 30 min
+  di tetto) e [3] R3c tronco + ramo (51 + 9 GPU-ora di tetto, nessuna dipendenza dalla posa) subito dopo il checkout -> regola di validita' da
+  congelare con Simone -> [4] ingest intero (CPU, 4 h) -> [5] collaudo dbg di R3 (2 GPU-ora di tetto, `--pose-grad-every 100`) -> lettura del
+  cancello -> [6] R3 tronco + ramo (51 + 9) -> [7] valutazione. Costi come il preventivo firmato (con R3c ~98,1 / 132,0 GPU-ora + E1-E3 ~1,0 / 4,0).
+- **Collo di bottiglia:** la seriale e' piena di sonde del pilot (tetto di 8 CPU per utente, una sonda alla volta): il checkout e il collaudo
+  dell'ingest, pur piccoli, partono dopo le sonde in attesa (~8 h) a meno che Simone non metta in hold le 9 sonde pendenti per ~1 h
+  (`scontrol hold`, come fece il 24/10 col readout), poi le rilasci. Chiesto a Simone. R3c non ne risente (partizione GPU).
+- Nessun job di R3 oltre la catena scritta; il margine della regola di validita' e il cancello del collaudo dbg restano decisioni da registrare
+  prima dei passi [4] e [6].
 
 ## 2) Problemi trovati
 

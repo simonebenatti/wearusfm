@@ -1,5 +1,5 @@
 {
- "campaign": "pilot-posa-<data del deploy>",
+ "campaign": "pilot-posa-20261026",
  "protocol": "docs/pilot_posa_v1.md",
  "status": "FIRMATA da Simone il 26/10/2026 (regola §5, deroghe, soglie, mano non sollecitata, CON R3c) dopo tre review del critico sul protocollo (8+9, 3+6, 1+5 rilievi); codice in revisione (critico, 26/10: 7 bloccanti e 8 minori, corretti); nessun job senza il via di Simone",
  "budget_line": "finestra 1, famiglia «Ablation a 30M» (stima ~2.100 GPU-ora in docs/finestra1_fattibilita.md), la stessa dei bracci W1ARM e del pilot; speso finora dalla famiglia ~530 GPU-ora (bracci ~321 + JEPA-only ~10 + valutazione dei bracci ~15; pilot: collaudi 2,29, training 176,5, valutazione ~5,6 attese); residuo indicativo della finestra 1 ~5.300 GPU-ora (5.500 della proposta del pilot meno ~184), da confermare col consuntivo prima della firma",
@@ -132,5 +132,6 @@
   }
  },
  "calendar": "dal via: codice e test ~1 giorno; critico; deploy + checkout (~30 min di coda); collaudo dell'ingest (~15 min) e firma della regola di validita'; ingest intero ~4 h sulla seriale (dietro le sonde B2 del pilot, fino all'alba del 27/10); collaudo dbg ~30 min; tronco ~10 h 30 + ramo ~1 h; valutazione ~1 giorno sulla seriale: 4-5 giorni con R3 solo, ~5-6 con R3c (training in parallelo, sonde in fila)",
- "ore_locali_note": "1 GPU-ora = 8 ore locali (convenzione del progetto)"
+ "ore_locali_note": "1 GPU-ora = 8 ore locali (convenzione del progetto)",
+ "code_sha": "c5e42cb99b4dc0a105495de70946a411b0523dbc"
 }
