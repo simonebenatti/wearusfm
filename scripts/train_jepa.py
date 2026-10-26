@@ -88,6 +88,8 @@ def build_parser() -> argparse.ArgumentParser:
                          "(--branch-weight > 0, --keep-weight 0)")
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
+    ap.add_argument("--pose-grad-every", type=int, default=0,
+                    help="R3, emendamento 1 (E4): ogni N passi norme dei gradienti di posa e ancore sui moduli condivisi e il loro coseno; 0 = spenta")
     ap.add_argument("--fixed-eval-every", type=int, default=0,
                     help="ogni N aggiornamenti le loss su un insieme fisso di batch del training (fixed_eval.jsonl); 0 = spenta")
     ap.add_argument("--fixed-eval-batches", type=int, default=8, help="batch dell'insieme fisso (fino a 32 finestre ciascuno)")
@@ -200,7 +202,7 @@ def build_config(args, error=None) -> "R.RunConfig":
         cfg = replace(cfg, datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
     if args.seed is not None:
         cfg = replace(cfg, seed=args.seed)
-    cfg = replace(cfg, keep_grad_every=args.keep_grad_every, fixed_eval_every=args.fixed_eval_every,
+    cfg = replace(cfg, keep_grad_every=args.keep_grad_every, pose_grad_every=getattr(args, "pose_grad_every", 0), fixed_eval_every=args.fixed_eval_every,
                   fixed_eval_batches=args.fixed_eval_batches, log_batch_origin=args.log_batch_origin, prefetch=args.prefetch,
                   prefetch_audit=args.prefetch_audit, nested=args.nested)
     if args.keep_calibration is not None:

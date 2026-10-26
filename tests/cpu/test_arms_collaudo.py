@@ -252,3 +252,20 @@ def test_old_arms_ignore_the_pose_fields_and_old_configs_count_as_zero_pose_weig
     res = AC.check(_run(tmp_path, "ancore-only"), "ancore-only", STEPS, SHA, LISTING)
     assert res["passed"] and "posa_scala_avvio" not in res["criteria"] and "ritmo" not in res["criteria"]
     assert res["criteria"]["pesi"]["detail"]["config"]["pose_weight"] == 0.0
+
+
+def test_r3_gradient_diagnostic_is_descriptive_and_flags_below_one_percent(tmp_path):
+    def grads(scale):
+        def edit(recs):
+            for r in recs:
+                if r["step"] % 100 == 0:
+                    r["shared_grad_anchors"], r["shared_grad_pose"], r["shared_grad_cos"] = 2.0, 2.0 * scale, 0.1
+            return recs
+        return edit
+    res = AC.check(_run_r3(tmp_path / "ok", edit=grads(0.3)), "R3", STEPS, SHA, LISTING)
+    g = res["descriptive"]["gradienti_condivisi"]
+    assert res["passed"] and g["n_record"] == 9 and abs(g["rapporto_norme_medio"] - 0.3) < 1e-9 and not g["flag_sotto_1pct"]
+    res = AC.check(_run_r3(tmp_path / "weak", edit=grads(0.001)), "R3", STEPS, SHA, LISTING)
+    assert res["passed"] and res["descriptive"]["gradienti_condivisi"]["flag_sotto_1pct"]  # descrittivo: non cambia l'esito del collaudo
+    res = AC.check(_run_r3(tmp_path / "none"), "R3", STEPS, SHA, LISTING)
+    assert res["descriptive"]["gradienti_condivisi"] is None

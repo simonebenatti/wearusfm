@@ -189,3 +189,30 @@ def test_fingerprints_and_data_signature_of_runs_without_pose_are_unchanged(tmp_
     assert "pose_root" not in sig and "pose_unprompted" not in sig
     sig2 = _loader_signature(replace(cfg, pose_root="/x"))
     assert sig2["pose_root"] == "/x" and sig2["pose_unprompted"] is True
+
+
+def test_pose_gradient_diagnostic_in_both_trainer_paths(tmp_path):
+    root, mpath, pose_root = _pose_setup(tmp_path)
+    cfg = replace(_r3_config(pose_root, total=4, keep=()), pose_grad_every=2, fixed_eval_every=0)
+    s = R.train(cfg, mpath, [root], tmp_path / "g1", log=lambda m: None)
+    assert s["steps"] == 4
+    recs = [json.loads(x) for x in (tmp_path / "g1" / "metrics.jsonl").read_text().splitlines()]
+    for r in recs:
+        if r["step"] % 2 == 0:
+            assert {"shared_grad_pose", "shared_grad_anchors", "shared_grad_cos"} <= set(r) and -1.0 <= r["shared_grad_cos"] <= 1.0
+            assert np.isfinite(r["shared_grad_pose"]) and r["shared_grad_anchors"] > 0
+        else:
+            assert "shared_grad_pose" not in r
+    # il diagnostico non cambia il training: pesi identici a un run senza
+    R.train(replace(cfg, pose_grad_every=0), mpath, [root], tmp_path / "g0", log=lambda m: None)
+    a, b = (torch.load(tmp_path / d / "checkpoint.pt", weights_only=False) for d in ("g1", "g0"))
+    assert all(torch.equal(a["student"][k], b["student"][k]) for k in a["student"])
+    # percorso del contratto (accumulo): stesse chiavi
+    cfg2 = replace(cfg, accum_steps=2, batch_size=4)
+    R.train(cfg2, mpath, [root], tmp_path / "g2", log=lambda m: None)
+    recs2 = [json.loads(x) for x in (tmp_path / "g2" / "metrics.jsonl").read_text().splitlines()]
+    assert all({"shared_grad_pose", "shared_grad_anchors", "shared_grad_cos"} <= set(r) for r in recs2 if r["step"] % 2 == 0)
+    assert all("shared_grad_pose" not in r for r in recs2 if r["step"] % 2 == 1)
+    with pytest.raises(ValueError, match="pose_grad_every"):
+        R.train(replace(cfg, pose_grad_every=2, jepa=replace(cfg.jepa, pose_weight=0.0), model=replace(cfg.model, pose_head=False),
+                        loader=replace(cfg.loader, pose_root=None)), mpath, [root], tmp_path / "g3", log=lambda m: None)

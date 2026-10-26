@@ -116,3 +116,17 @@ Piu' E4 (gradienti della posa e delle ancore nei moduli condivisi) e E6 (albero 
 **R3 + R3c con questo emendamento**: gia' firmati e preparati, con in piu' (a) la posa misurata su 15 utenti mai visti contro il costante e contro
 il disallineato, (b) la sonda per istante dai latenti su R3, R3c e R0, (c) adozione e attribuzione separate per dataset, i gradienti nel collaudo,
 e l'albero E6 congelato. Costo ~99 / 136 GPU-ora. Se il risultato e' negativo, l'albero dice gia' quale delle tre cause e' esclusa e quale no.
+
+## E9. Stato del codice dell'emendamento (26/10/2026, sera; dopo la firma)
+
+Fatto, test CPU verdi, nessun job: **E4** `--pose-grad-every N` nel trainer (`RunConfig.pose_grad_every`; `shared_grad_pose`, `shared_grad_anchors`,
+`shared_grad_cos` in `metrics.jsonl` ai passi multipli di N; nel contratto DDP sul micro-batch finale del processo 0, gradiente locale; a un
+processo come `keep_grad_every`; il training non cambia bit per bit con o senza), lettura E4 in `scripts/arms_collaudo.py` (`gradienti_condivisi`,
+descrittivo, `flag_sotto_1pct` sui passi 500-1.300). **E1-E3** `src/wearusfm/harness/pose_eval.py` + `scripts/pose_eval.py` (`--stage extract`:
+finestre fisse 10 x 4 s sulla griglia a 200 ms del loader, seme 20261026, preprocessing del training con la scala di sessione, encoder senza
+maschera, latenti per istante in float16, testa, target e maschere di `PoseStore`; `--stage report`: E1 con bootstrap sui 15 utenti e regola
+congelata, E2 appaiamento per utente e fase a >= 8 s con scarto delle coppie quasi identiche, E3 ridge con alpha scelto fra gli utenti del train)
+e launcher `scripts/slurm/pose_eval_extract.sbatch` (1 A100, 40 min) e `pose_eval_report.sbatch` (seriale, 2 h). Test: `tests/cpu/test_pose_eval.py`
+(6) e `test_pose_training.py` (6, con E4); il rapporto applica solo le regole scritte sopra. Due dettagli: la «finestra dinamica» usa la varianza
+della posa standardizzata sulle patch valide, mediana calcolata su `val` nel rapporto stesso; la ridge e' con intercetta, su istanti campionati
+(8 per finestra nel train), alpha fra 0,1 / 1 / 10 / 100 per errore medio su due meta' di utenti del train.

@@ -95,6 +95,25 @@ def pose_panel_errors(run_dir: Path) -> list[dict] | None:
     return out or None
 
 
+POSE_GRAD_STEPS = (500, 1300)  # emendamento 1, E4: passi su cui si legge il rapporto fra le norme dei gradienti condivisi
+POSE_GRAD_MIN_RATIO = 0.01  # sotto l'1% delle ancore: «la posa non muove l'encoder», si registra prima del lancio (descrittivo, non cancello)
+
+
+def pose_gradients(recs: list[dict]) -> dict | None:
+    """E4 (descrittivo): media sui passi `POSE_GRAD_STEPS` dei record che portano `shared_grad_pose`/`shared_grad_anchors` (ogni
+    `--pose-grad-every` passi) del rapporto fra le norme e del coseno; `flag_sotto_1pct` vero se il rapporto medio sta sotto `POSE_GRAD_MIN_RATIO`."""
+    rows = [r for r in recs if isinstance(r.get("shared_grad_pose"), (int, float)) and isinstance(r.get("shared_grad_anchors"), (int, float))
+            and POSE_GRAD_STEPS[0] <= r.get("step", 0) <= POSE_GRAD_STEPS[1]]
+    if not rows:
+        return None
+    ratios = [r["shared_grad_pose"] / r["shared_grad_anchors"] for r in rows if r["shared_grad_anchors"] > 0]
+    cos = [r["shared_grad_cos"] for r in rows if isinstance(r.get("shared_grad_cos"), (int, float))]
+    mean_ratio = statistics.fmean(ratios) if ratios else None
+    return {"passi": list(POSE_GRAD_STEPS), "n_record": len(rows), "rapporto_norme_medio": mean_ratio,
+            "rapporto_norme_min_max": [min(ratios), max(ratios)] if ratios else None, "coseno_medio": statistics.fmean(cos) if cos else None,
+            "flag_sotto_1pct": bool(mean_ratio is not None and mean_ratio < POSE_GRAD_MIN_RATIO), "soglia_flag": POSE_GRAD_MIN_RATIO}
+
+
 def pose_gate(recs: list[dict], wp: float, wa: float, steps: int) -> list[tuple[str, bool, dict]]:
     """I quattro criteri congelati del cancello di R3 (`POSE_GATE`), sui soli record con conteggio di posa > 0 (`pose_windows`). Un record
     senza `pose_windows` o senza componenti finite non entra nelle medie. Ritorna [(nome, ok, dettaglio)]."""
@@ -228,6 +247,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "ancore_inizio_fine": {a: edge_means(a) for a in ANCHORS},
         "posa_inizio_fine": edge_means("pose") if wp > 0 else None,
         "posa_errore_pannello_fisso": pose_panel_errors(run_dir) if wp > 0 else None,
+        "gradienti_condivisi": pose_gradients(recs) if wp > 0 else None,
         "posa_finestre_medie": (statistics.fmean(r["pose_windows"] for r in recs if isinstance(r.get("pose_windows"), (int, float)))
                                 if wp > 0 and any(isinstance(r.get("pose_windows"), (int, float)) for r in recs) else None),
         "non_collasso": [{k: r.get(k) for k in ("step", "student_collapse_ratio", "teacher_collapse_ratio", "student_erank", "teacher_erank",

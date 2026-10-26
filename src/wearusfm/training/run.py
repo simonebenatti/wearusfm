@@ -116,6 +116,10 @@ class RunConfig:
     keep_calibration: str | None = None
     keep_calibration_sha256: str | None = None
     keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
+    # R3, emendamento 1 (E4, firmato il 26/10/2026): ogni N passi, norme dei gradienti del termine di posa pesato e delle ancore pesate sui
+    # parametri condivisi dell'encoder e il loro coseno (`shared_grad_pose`, `shared_grad_anchors`, `shared_grad_cos`); diagnostica, nessun
+    # aggiornamento in piu'. Nel contratto DDP: sul micro-batch finale del processo 0, gradiente locale. 0 = spenta
+    pose_grad_every: int = 0
     pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
     # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
     stream_segment: int = 1200
@@ -156,6 +160,7 @@ class RunConfig:
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
+                   "pose_grad_every": 0,
                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
@@ -665,7 +670,28 @@ def _keys_differ(ctx: DistContext, device, h: float) -> bool:
     return mx != h or -mn != h
 
 
-def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp):
+SHARED_PREFIXES = ("tokenizer", "identity", "local", "pool", "backbone")  # i moduli condivisi dell'encoder (come `keep_grad_every`)
+
+
+def _shared_params(student) -> list:
+    return [p for name, p in student.named_parameters() if p.requires_grad and name.split(".")[0] in SHARED_PREFIXES]
+
+
+def _shared_grad_stats(components: dict, shared: list) -> dict:
+    """Norme (float) dei gradienti di ogni componente della perdita sui parametri condivisi e coseno fra `pose` e `anchors` (E4). Con
+    `retain_graph`: il backward del passo segue intatto. Un gradiente assente vale zero."""
+    flat = {}
+    for name, value in components.items():
+        grads = torch.autograd.grad(value, shared, retain_graph=True, allow_unused=True)
+        flat[name] = torch.cat([(g if g is not None else torch.zeros_like(p)).detach().float().reshape(-1) for g, p in zip(grads, shared)])
+    out = {f"shared_grad_{k}": float(v.norm()) for k, v in flat.items()}
+    if "pose" in flat and "anchors" in flat:
+        den = float(flat["pose"].norm() * flat["anchors"].norm())
+        out["shared_grad_cos"] = float(torch.dot(flat["pose"], flat["anchors"])) / den if den > 0 else 0.0
+    return out
+
+
+def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp, grad_diag: bool = False):
     """Forward e backward di un aggiornamento col contratto delle loss distribuite (DDP e/o accumulo; `docs/contratto_loss_distribuite.md`,
     consegna di GPT del 12/10/2026). Prima di ogni backward: conteggi `loss_counts` di tutti i micro-batch, sommati e ridotti fra i processi
     (denominatori globali D_c). Per micro-batch: forward (`no_sync` su tutti tranne l'ultimo), confronto dei conteggi del forward coi
@@ -688,7 +714,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     if int(global_den["jepa"]) == 0:
         return "nessun target JEPA nel batch globale", {}
     sums: dict[tuple[str, str], torch.Tensor] = {}
-    weight, first_hash = {}, None
+    weight, first_hash, grad_stats = {}, None, {}
     for i, m in enumerate(micros):
         last = i == len(micros) - 1
         with nullcontext() if model is None or last else model.no_sync():
@@ -717,6 +743,12 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
                 return "perdita non finita", {}
             if flags[2] or flags[3] != h or -flags[4] != h:
                 return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
+            if grad_diag and last and "pose" in terms.num:  # E4: gradiente locale del micro-batch finale, prima del backward del passo
+                ws = ctx.world_size
+                comps = {"pose": terms.weight["pose"] * terms.num["pose"] * ws / global_den["pose"].clamp(min=1),
+                         "anchors": sum(terms.weight[k] * terms.num[k] * ws / global_den[k].clamp(min=1) for k in terms.num
+                                        if k not in ("pose", "jepa", "keep", "keep_branches"))}
+                grad_stats = _shared_grad_stats(comps, _shared_params(student))
             loss.backward()
         weight = terms.weight
         for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):
@@ -734,6 +766,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     if set(diag) & set(out):
         raise RuntimeError(f"diagnostiche con lo stesso nome di una componente: {sorted(set(diag) & set(out))}")
     out.update(diag)
+    out.update(grad_stats)  # E4: vuoto quando spenta
     return None, out
 
 
@@ -1021,6 +1054,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("readout_version incompatible with this code")
     if cfg.keep_grad_every < 0:
         raise ValueError("keep_grad_every must be nonnegative")
+    if cfg.pose_grad_every < 0 or (cfg.pose_grad_every and cfg.jepa.pose_weight <= 0):
+        raise ValueError("pose_grad_every: non negativo e solo col termine di posa (pose_weight > 0)")
     if cfg.model.keep_readout and torch.device(device).type not in ("cpu", "cuda"):
         raise ValueError("Step 1 supports CPU/CUDA only")
     if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
@@ -1314,7 +1349,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         if micros is None:
             micros = _stage(batch, cfg.accum_steps, device)
         if use_terms:  # DDP e/o accumulo: il contratto delle loss distribuite
-            failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp)
+            failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp,
+                                                      grad_diag=bool(cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0))
             if failure is not None:  # deciso insieme da tutti i processi, prima del backward che l'avrebbe usato
                 reason = f"{failure} al passo {step}"
                 numerical_failure = True
@@ -1362,6 +1398,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                     grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
                     squares = [g.detach().float().square().sum() for g in grads if g is not None]
                     losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
+            if cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0:  # E4, un processo (passo del record)
+                pose_c = cfg.jepa.pose_weight * losses["pose"]
+                jepa_c = losses["jepa"] if cfg.jepa.jepa_weight == 1.0 else cfg.jepa.jepa_weight * losses["jepa"]
+                anchors_c = losses["total"] - pose_c - jepa_c
+                for k, v in _shared_grad_stats({"pose": pose_c, "anchors": anchors_c}, _shared_params(student)).items():
+                    losses[k] = losses["total"].new_tensor(v)
             losses["total"].backward()
             loss_values = {k: float(v.detach()) for k, v in losses.items()}
         gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la riduzione
