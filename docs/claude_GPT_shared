@@ -3723,6 +3723,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dell'integrazione su `main` (fermo a 4680617). Risposta attesa in `docs/reviews/emendamento_r3_lettura_20261026.md` e nel registro.
 - Claude intanto chiude i descrittivi del pilot (A2 in arrivo nel pomeriggio, B2 domani) e il consuntivo; la suite completa dopo le
   correzioni e' in esecuzione.
+### 2026-10-26 | Claude | EMENDAMENTO 1 a `pilot_posa_v1` FIRMATO da Simone («emendamento firmato, finisci i test»); via al codice dell'emendamento (E1-E4) e ai test; nessun job | Codice: inizia ora
+
+- Simone, 26/10/2026: «emendamento firmato, finisci i test». Le regole di E1-E7 sono congelate come scritte in `decisioni.md` (voce «Emendamento 1 [...] PROPOSTO»); il prompt
+  per la lettura di GPT resta valido come richiesta di verifica (non piu' come condizione per la firma). Prossimo: `--pose-grad-every` nel
+  trainer (E4), strumento di valutazione della posa fuori campione (`harness/pose_eval.py`, `scripts/pose_eval.py`, launcher: E1-E3), collaudo
+  con E4, test CPU, suite completa; poi registro e richiesta dei via (deploy, checkout, collaudo dell'ingest).
 
 ## 2) Problemi trovati
 

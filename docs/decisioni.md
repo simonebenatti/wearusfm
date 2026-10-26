@@ -4435,3 +4435,6 @@ delle ancore nei passi 500-1.300 = la posa non muove l'encoder», da registrare 
 R3 contro R3c descrittiva, conferma a due semi con R3c; E6 albero delle decisioni (tabella nel documento). Costo aggiuntivo ~1,0 / 4,0 GPU-ora e
 ~12 / 64 core-ore; totale della seconda ondata ~99 / 136 GPU-ora. Dettaglio in `docs/emendamento_pilot_posa_v1.md`; diagnosi in
 `docs/diagnosi_aggiornata_20261026.md`.
+
+**Emendamento 1 a `pilot_posa_v1`: FIRMATO (Simone, 26/10/2026: «emendamento firmato, finisci i test»).** Regole E1-E7 congelate come nella voce precedente; il codice
+dell'emendamento si scrive ora; nessun job senza il via di Simone.

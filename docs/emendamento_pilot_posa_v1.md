@@ -1,6 +1,6 @@
 # Emendamento 1 al protocollo `pilot_posa_v1` (R3 / R3c): rendere la seconda ondata diagnostica
 
-**Stato: PROPOSTA (Claude, 26/10/2026), su richiesta di Simone** («Prima della campagna completa, prepara un emendamento esplicito al protocollo
+**Stato: FIRMATO da Simone il 26/10/2026 («emendamento firmato, finisci i test»); passato anche a GPT per la lettura scientifica (`docs/prompt_gpt_emendamento_r3_20261026.md`). Proposta di Claude del 26/10/2026, su richiesta di Simone** («Prima della campagna completa, prepara un emendamento esplicito al protocollo
 gia' firmato, senza modificarne silenziosamente le regole. La questione principale e' distinguere: a) la posa viene imparata fuori campione?
 b) l'informazione e' accessibile nella rappresentazione? c) trasferisce agli altri dataset?»). Dal 26/10 la responsabilita' scientifica e' di
 GPT: l'emendamento va a GPT e a Simone per la firma; Claude lo esegue. **Nessuna regola firmata cambia**: il criterio §5 (R3 contro R0, +1
