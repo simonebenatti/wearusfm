@@ -3691,6 +3691,8 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   lato (10); `fs != 2000` rifiutata (11); preventivo ripristinato (12); rapporti dell'ingest con statistiche per lato e campi del file, collaudo
   con l'errore di posa dal pannello fisso (13); deviazione congiunta del criterio per lato registrata (14); tolleranza del test stretta e test
   della testa aggiunto (15).
+- **Suite CPU completa dopo le correzioni (d8650c6): 1.437 test, tutti verdi** (`~/wearusfm_local/logs/suite_cpu_pilot_posa_20261026_c.txt`,
+  21 min 48 s; prima delle correzioni 1.430 verdi).
 - **Verificato e non verificato:** verificato = codice (test CPU, contratto, default bit per bit, riferimento 705ec04); NON verificato = ogni
   ipotesi scientifica (nessun job). Il fact-checker ha confermato la correzione bibliografica di GPT su CPEP: «RandInit» e' un encoder EMG
   inizializzato a caso e addestrato con la loss contrastiva, non un encoder casuale congelato (arXiv 2509.04699v3, Sez. 3.3 e Tabella 2).
