@@ -4445,3 +4445,5 @@ tetto, 47,0 attese), ingest intero (0), collaudo dbg di R3 (2 di tetto), R3 tron
 preventivo (estrazioni 5,0 + 4,0 per E1-E3 di tetto; sonde CPU). Restano con Simone, perche' non sono job ma decisioni: il margine della regola di
 validita' dei campioni di posa (dopo il collaudo dell'ingest) e la lettura del cancello del collaudo dbg (fuori dal cancello R3 non parte).
 Deploy `deploy/pilot-posa-20261026` = c5e42cb99b4dc0a105495de70946a411b0523dbc.
+Consuntivo parziale (26/10/2026, 19:54): checkout 62341827 COMPLETED (19:53); sottomessi il collaudo dell'ingest 62364572 (0 GPU-ora), R3c
+tronco 62364571 e ramo 62364573 (tetti 51 + 9 GPU-ora, 47,0 attese). Spesa a oggi: 0 GPU-ora. Passi [4] e [6] fermi alle due decisioni.

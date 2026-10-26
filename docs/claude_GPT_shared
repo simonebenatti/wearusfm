@@ -3780,6 +3780,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - In fila con loro il checkout di campagna di R3 (62341827, quarto in attesa). Alla fine di B2: 12 confronti descrittivi (`pool` e `dec` a 1
   epoca contro R0-e1), pendenza 1 -> 2 per braccio, R0-e1 contro C1 s0 (18,21 su P1), per dataset, consuntivo `sacct` della valutazione.
 
+### 2026-10-26 | Claude | Seconda ondata: checkout di campagna PRONTO (62341827 COMPLETED alle 19:53, 786 file @ c5e42cb) e passi [2] e [3] della catena sottomessi alle 19:54: collaudo dell'ingest della posa 62364572 (seriale, 30 min di tetto, 0 GPU-ora), R3c tronco 62364571 (12 h 45 di tetto, 51 GPU-ora) e ramo a 1 epoca 62364573 (afterok sul tronco, 2 h 15, 9 GPU-ora); attese armate; nessun job di R3 oltre la catena scritta | Codice: nessuno (gira c5e42cb dal checkout)
+
+- **Checkout:** `/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-20261026` @ c5e42cb99b4dc0a105495de70946a411b0523dbc («HEAD is now
+  at c5e42cb», 786 file, 766K; attesa `~/wearusfm_local/logs/watch_pilot_posa_checkout.txt`). E' arrivato prima della stima («stanotte /
+  domattina»): alle 19:54 la seriale aveva 7 job in coda su 10. *Interpretazione:* il tetto per utente e' in CPU (8), e un job da pochi core sta
+  accanto a una sonda; la stima contava i job, non le CPU.
+- **Sottomissioni** con `scripts/leonardo_feed.py` (ledger, lock per partizione, un comando alla volta; il ramo porta `--dopo` sul tronco, risolto
+  dal ledger): `PILOT-POSA-ingest-collaudo` -> 62364572 (`--limit 40 --both-sides`, `--time=00:30:00`, report
+  `$WORK/wearusfm_runs/results/passo2/emg2pose_pose_ingest_report_62364572.json`); `PILOT-POSA-R3C-ancore-30M-s0-j01` -> 62364571 (ancore-only,
+  `--jepa-weight 0`, 49.046 passi, `--keep-checkpoints 19618`, `--time=12:45:00`); `PILOT-POSA-R3C-ancore-30M-s0-e1-j01` -> 62364573
+  (`BRANCH_FROM` = checkpoint del passo 19.618 del tronco, 24.523 passi, afterok). Log degli alimentatori in
+  `~/wearusfm_local/logs/feed_pilot_posa_{ingest_collaudo,r3c}.txt`; attese in `watch_pilot_posa_{ingest_collaudo,r3c}.txt` (cicli in
+  background dal Mac, `leonardo_watch.py --mode all`).
+- **Spesa della seconda ondata finora: 0 GPU-ora** (checkout e collaudo dell'ingest sono CPU). Tetti impegnati con R3c: 60 GPU-ora (47,0 attese).
+- **Prossimi passi, nell'ordine:** rapporto del collaudo dell'ingest (margine M dei campioni invalidi, profilo di bordo, cali simultanei, 20
+  registrazioni per lato) -> proposta della regola di validita' -> **firma di Simone in decisioni.md** -> [4] ingest intero -> [5] collaudo dbg
+  di R3 -> lettura del cancello -> [6] R3. Lo stato di B2 (sonde del pilot a 1 epoca) e' separato: alle 19:53 la `dec` P1 di R0 era finita, quella
+  di R1 in esecuzione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
