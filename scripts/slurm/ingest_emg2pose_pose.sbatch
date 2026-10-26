@@ -15,6 +15,8 @@
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> scripts/slurm/ingest_emg2pose_pose.sbatch --limit 40 --both-sides   (collaudo)
 #      sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> scripts/slurm/ingest_emg2pose_pose.sbatch --skip-existing --zero-margin-samples <M> --no-measure --stats
 #      sbatch ... scripts/slurm/ingest_emg2pose_pose.sbatch --stats-only
+# Oppure con lo script su stdin (prima che il checkout esista, con afterok sul job del checkout: sbatch non accetta argomenti posizionali da
+# stdin), gli argomenti in INGEST_ARGS:  ssh leonardo "sbatch --export=ALL,CODE_DIR=...,EXPECTED_SHA=...,INGEST_ARGS='--limit 40 --both-sides'" < scripts/slurm/ingest_emg2pose_pose.sbatch
 
 set -uo pipefail
 source "${CODE_DIR:-$WORK/wearusfm}/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
@@ -33,4 +35,4 @@ python3 scripts/ingest_emg2pose_pose.py \
   --out-root "$OUT_ROOT" \
   --report "$REPORT" \
   --time-budget-s 13200 \
-  "$@"
+  ${INGEST_ARGS:-} "$@"
