@@ -3565,6 +3565,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   in alimentazione; B2 (1 epoca) 3 su 16 (62284911, 62291015, 62291939), 13 in alimentazione; coda seriale piena (10/10, `QOSMaxCpuPerUserLimit`
   sulle sonde in attesa: e' un tetto di CPU per utente, non solo di job). Descrittivi e consuntivo `sacct` della valutazione a code vuote.
 - Fuori da Git: rapporti e OOF in `~/wearusfm_local/pilot_obiettivi_20261024/`; log in `~/wearusfm_local/logs/blocco_C_*_20261026.txt`.
+### 2026-10-26 | Claude | Pilot degli obiettivi: blocco A2 alimentato per intero: 8 sonde `dec` a 2 epoche su 8 in coda (ultima, R5 P2, job 62304087 alle 02:47); alimentatore 74 chiamate in 7 h 30, nessun rifiuto; attesa armata sulle 8; B2 3/16, in alimentazione | Codice: 705ec04 (checkout di campagna); commit di questa voce
+
+- `feed_pilot_eval_A2.txt`: avviato il 25/10 alle 19:16 con 2 sonde gia' in coda, concluso il 26/10 alle 02:47 con «tutti i 8 comandi risultano
+  sottomessi» (uscita 0). Job: P1 R0 62274190, R1 62274191, R2 62277081, R5 62281122; P2 R0 62289821, R1 62293179, R2 62294440, R5 62304087
+  (CPU seriale, 8 core, tetto 4 h l'una; `dec` k 768: le P1 durano ~2 h 20 l'una, misurato il 23-24/10). La coda seriale resta a 10/10 e fa
+  girare circa una sonda alla volta: le sonde di A2 e B2 si alternano nell'ordine di sottomissione.
+- Attesa armata (agente leggero, `scripts/leonardo_watch.py --mode all`, `watch_pilot_eval_dec_e2.txt`, tetto 48 h): a 8/8 COMPLETED si
+  leggono i descrittivi `dec` a 2 epoche (6 confronti, blocco C del file dei comandi), fuori dal criterio.
+- B2 (endpoint a 1 epoca): 3 sonde su 16 in coda (62284911, 62291015, 62291939), 13 in alimentazione (`feed_pilot_eval_B2.txt`).
 
 ## 2) Problemi trovati
 
