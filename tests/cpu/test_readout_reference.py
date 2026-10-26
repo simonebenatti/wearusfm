@@ -37,3 +37,16 @@ def test_fresh_seed0_model_is_the_reference_model():
     fresh = RR.fresh_model().state_dict()
     assert set(fresh) == set(state)
     assert all(torch.equal(fresh[k], state[k]) for k in state)
+
+
+def test_a_model_with_the_pose_head_extracts_the_reference_identically():
+    # condizione (b1) del protocollo: la testa non sta nel percorso di encode; i pesi del riferimento caricati in un modello con la testa
+    # (la testa resta a zero) danno pool/local/dec identici bit per bit
+    from dataclasses import replace
+
+    state, ref = RR.load_reference()
+    model = WearUsFM(replace(RR.tiny_config(), pose_head=True)).eval()
+    missing, unexpected = model.load_state_dict(state, strict=False)
+    assert set(missing) == {"pose_head.norm.weight", "pose_head.norm.bias", "pose_head.out.weight", "pose_head.out.bias"} and not unexpected
+    out = RR.extract(model)
+    assert all(np.array_equal(out[k], ref[k]) for k in RR.LAYERS)

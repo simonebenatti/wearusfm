@@ -28,6 +28,7 @@ import numpy as np
 
 POSE_DATASET = "emg2pose"
 N_JOINTS = 20
+NATIVE_FS_HZ = 2000.0  # emg2pose: la posa e' allineata per indice di campione all'EMG a 2 kHz
 BLOCK = 10  # campioni grezzi per blocco: 2000 Hz -> 200 Hz
 POSE_FILE, VALID_FILE, META_FILE, STATS_FILE = "pose_200hz_f16.npy", "pose_valid.npy", "pose_meta.json", "pose_stats.json"
 STD_FLOOR = 1e-6
@@ -110,17 +111,20 @@ class PoseStore:
         if blocks.shape[0] != n_blocks:
             raise ValueError(f"{view.path}: {blocks.shape[0]} blocchi di posa per {n_blocks} attesi dall'EMG ({arr.shape[0]} campioni)")
 
-    def window(self, row: dict, view, win, patch_ms: float) -> tuple[np.ndarray, np.ndarray] | None:
-        """(target (P, 20) float32 standardizzato, maschera (P, 20) bool) per una finestra di emg2pose; None per gli altri dataset."""
+    def window(self, row: dict, view, win, patch_ms: float) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+        """(target (P, 20) float32 standardizzato, maschera (P, 20) bool, deviazioni (20,) usate) per una finestra di emg2pose; None per gli
+        altri dataset. Le deviazioni servono al pannello fisso per riportare l'errore nell'unita' degli angoli, per lato se la
+        standardizzazione e' per lato."""
         if not self.applies(row):
             return None
         blocks, valid = self.entry(view)
         self.check_length(blocks, view)
+        mean, std = self.norm(view)
         if not self.include_unprompted and self.unprompted(view):  # finestra di emg2pose senza target: contribuisce zero, conta zero
             p = int(win.n_patches)
-            return np.zeros((p, N_JOINTS), dtype=np.float32), np.zeros((p, N_JOINTS), dtype=bool)
-        mean, std = self.norm(view)
-        return window_pose(blocks, valid, win, view.fs, patch_ms, mean, std)
+            return np.zeros((p, N_JOINTS), dtype=np.float32), np.zeros((p, N_JOINTS), dtype=bool), std.copy()
+        target, mask = window_pose(blocks, valid, win, view.fs, patch_ms, mean, std)
+        return target, mask, std.copy()
 
 
 def patch_bounds(n_patches: int, patch_ms: float, fs: float) -> np.ndarray:
@@ -133,8 +137,8 @@ def window_pose(blocks: np.ndarray, valid: np.ndarray, win, fs: float, patch_ms:
     """Target per patch (P, 20) float32 standardizzato e maschera (P, 20): media dei blocchi validi col centro dentro la patch."""
     if getattr(win, "trial", None) is not None:
         raise ValueError("posa: sessioni a prove non previste (emg2pose e' un array continuo)")
-    if abs(fs * (BLOCK / 2000.0) - BLOCK * fs / 2000.0) > 1e-9 or fs <= 0:
-        raise ValueError("fs non valida")
+    if float(fs) != NATIVE_FS_HZ:  # i blocchi sono [10 j, 10 j + 10) campioni a 2 kHz: un'altra frequenza sposterebbe la griglia
+        raise ValueError(f"posa: frequenza {fs} Hz, i blocchi sono definiti sui campioni a {NATIVE_FS_HZ:g} Hz di emg2pose")
     p = int(win.n_patches)
     bounds = patch_bounds(p, patch_ms, fs) + int(win.start)  # assoluti, in campioni grezzi
     target = np.zeros((p, N_JOINTS), dtype=np.float32)

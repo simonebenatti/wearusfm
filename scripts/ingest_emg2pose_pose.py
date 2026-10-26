@@ -39,7 +39,21 @@ def _aggregate_profiles(done: list, metas: list[dict]) -> dict:
         for r in done:
             bucket.setdefault(str(r.get(key)), 0)
             bucket[str(r.get(key))] += 1
+    # statistiche per lato sulle registrazioni fatte (media e deviazione per giunto sui blocchi validi; varianza media per registrazione)
+    out["per_side_stats"] = {}
+    for side in sorted({str(m.get("side")) for m in metas}):
+        ms = [m for m in metas if str(m.get("side")) == side]
+        acc = {"n": 0, "sum": [0.0] * PP.N_JOINTS, "sumsq": [0.0] * PP.N_JOINTS, "min": None, "max": None}
+        for m in ms:
+            PP._accumulate(acc, m["joint_stats_valid_blocks"])
+        fin = PP._finish(acc)
+        var = [m["per_joint_var_valid_blocks"] for m in ms if m.get("per_joint_var_valid_blocks") and m["per_joint_var_valid_blocks"][0] is not None]
+        out["per_side_stats"][side] = {"n_recordings": len(ms), "hours": sum(m["n_samples"] for m in ms) / PP.NATIVE_FS_HZ / 3600,
+                                       "mean": fin.get("mean"), "std": fin.get("std"), "n_valid_blocks": fin["n"],
+                                       "mean_per_recording_var": [float(sum(v[j] for v in var) / len(var)) for j in range(PP.N_JOINTS)] if var else None,
+                                       "per_recording_var_mean_over_joints": [float(sum(v) / len(v)) for v in var]}
     prof = [m["edge_profile"] for m in metas if "edge_profile" in m and m["edge_profile"]["bins"]]
+    out["frac_zero_rows_per_recording"] = sorted(r["frac_zero_rows"] for r in done)
     if prof:
         bins = []
         for i in range(len(prof[0]["bins"])):
@@ -120,8 +134,8 @@ def main() -> int:
             if picker is not None and not picker.accept(row):
                 continue
             user = (row or {}).get("user", "sconosciuto")
-            if args.skip_existing and (PP.out_dir_for(args.out_root, user, ref.stem) / PP.META_FILE).exists():
-                skipped += 1
+            if args.skip_existing and PP.already_done(PP.out_dir_for(args.out_root, user, ref.stem), args.zero_margin_samples):
+                skipped += 1  # saltata solo se scritta con la STESSA regola di validita' (margine e tolleranza): altrimenti si riscrive
                 continue
             try:
                 fobj = tf.extractfile(ref.info if ref.info is not None else ref.member)  # col membro, non col nome (vedi E2P.RecordingRef)
@@ -129,9 +143,8 @@ def main() -> int:
                     fields = PP.fields_in_file(fobj)
                     fobj.seek(0)
                 done.append(PP.ingest_pose_recording(fobj, ref, args.out_root, row, zero_margin_samples=args.zero_margin_samples,
-                                                     measure=not args.no_measure))
-                if not args.no_measure:
-                    metas.append(json.loads((PP.out_dir_for(args.out_root, user, ref.stem) / PP.META_FILE).read_text()))
+                                                     measure=not args.no_measure, fields=fields))
+                metas.append(json.loads((PP.out_dir_for(args.out_root, user, ref.stem) / PP.META_FILE).read_text()))
             except Exception as e:  # un file rotto non ferma gli altri
                 failed[ref.stem] = f"{type(e).__name__}: {e}"
                 print(f"  FALLITO {ref.stem}: {failed[ref.stem]}", flush=True)

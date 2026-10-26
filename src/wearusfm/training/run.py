@@ -21,6 +21,7 @@ import hashlib
 import json
 import math
 import os
+import sys
 import queue
 import shutil
 import threading
@@ -33,7 +34,6 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from wearusfm.data import pose_targets as PT
 from wearusfm.data import pretraining_loader as L
 from wearusfm.data import pretraining_manifest as PM
 from wearusfm.data import rvq_codes as RC
@@ -115,7 +115,6 @@ class RunConfig:
     readout_version: str = READOUT_VERSION
     keep_calibration: str | None = None
     keep_calibration_sha256: str | None = None
-    pose_stats_sha256: str | None = None  # R3: SHA-256 di `pose_stats.json` sotto `loader.pose_root`, scritto dal trainer nel config del run
     keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
     pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
     # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
@@ -163,6 +162,17 @@ BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidde
                        "window_ms": None}  # finestra del kernel (R5 del pilot degli obiettivi, 23/10): assente = la patch, il banco di sempre
 
 
+def _environment(out_dir: Path) -> dict:
+    """Versioni di Python, torch e CUDA, piu' nome e SHA-256 dell'ultimo `pip_freeze_*.txt` scritto dal launcher nella cartella del run
+    (`scripts/slurm/train_ddp.sbatch`); None dove manca. Solo lettura, nessun comando esterno."""
+    freezes = sorted(Path(out_dir).glob("pip_freeze_*.txt"), key=lambda p: p.stat().st_mtime)
+    env = {"python": sys.version.split()[0], "torch": torch.__version__, "cuda": getattr(torch.version, "cuda", None),
+           "pip_freeze_file": freezes[-1].name if freezes else None,
+           "pip_freeze_sha256": hashlib.sha256(freezes[-1].read_bytes()).hexdigest() if freezes else None,
+           "modules_loaded": os.environ.get("LOADEDMODULES")}
+    return env
+
+
 def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
@@ -174,7 +184,6 @@ def _config_with_defaults(d: dict) -> dict:
         out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
     if isinstance(out.get("loader"), dict):
         out["loader"] = {"pose_root": None, "pose_unprompted": True, **out["loader"]}  # R3, 26/10
-    out.setdefault("pose_stats_sha256", None)
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out
@@ -512,25 +521,30 @@ class _Micro:
     rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
     codes: torch.Tensor | None = None  # i codici impacchettati dietro `rvq_codes`
     regions: torch.Tensor | None = None  # regioni delle maschere (target per regione, R2), se il batch le porta
-    pose: tuple[torch.Tensor, torch.Tensor] | None = None  # (target (S, P, 20), maschera (S, P, 20)) di posa (R3); None senza finestre di posa
+    pose: tuple | None = None  # (target (S, P, 20), maschera (S, P, 20), deviazioni (S, 20)) di posa (R3); None senza finestre di posa
 
 
-def _pose_tensors(batch: L.PretrainBatch, device) -> tuple[torch.Tensor, torch.Tensor] | None:
-    """I target di posa del batch (R3) riempiti alla larghezza del batch (P_max, la stessa di `visible`), sul dispositivo. None se il loader non
-    porta la posa o se nessuna finestra del micro-batch ne ha (la testa si calcola lo stesso, `jepa.pose_terms`)."""
+def _pose_tensors(batch: L.PretrainBatch, device) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor] | None:
+    """I target di posa del batch (R3) riempiti alla larghezza del batch (P_max, la stessa di `visible`), sul dispositivo, con le deviazioni per
+    giunto usate per ogni finestra (per il pannello fisso: errore nell'unita' degli angoli, per lato se la standardizzazione e' per lato). None
+    se il loader non porta la posa o se nessuna finestra del micro-batch ne ha (la testa si calcola lo stesso, `jepa.pose_terms`)."""
+    from wearusfm.data.pose_targets import N_JOINTS
+
     if batch.pose is None or all(item is None for item in batch.pose):
         return None
     n, p_max = len(batch.pose), max(batch.n_patches)
-    target = np.zeros((n, p_max, PT.N_JOINTS), dtype=np.float32)
-    mask = np.zeros((n, p_max, PT.N_JOINTS), dtype=bool)
+    target = np.zeros((n, p_max, N_JOINTS), dtype=np.float32)
+    mask = np.zeros((n, p_max, N_JOINTS), dtype=bool)
+    std = np.ones((n, N_JOINTS), dtype=np.float32)
     for s, item in enumerate(batch.pose):
         if item is not None:
-            t, m = item
-            if t.shape[0] != batch.n_patches[s] or m.shape != t.shape:
-                raise ValueError(f"posa del campione {s}: {t.shape} per {batch.n_patches[s]} patch")
+            t, m, sd = item
+            if t.shape[0] != batch.n_patches[s] or m.shape != t.shape or sd.shape != (N_JOINTS,):
+                raise ValueError(f"posa del campione {s}: {t.shape} / {sd.shape} per {batch.n_patches[s]} patch")
             target[s, :t.shape[0]] = t
             mask[s, :m.shape[0]] = m
-    return torch.from_numpy(target).to(device), torch.from_numpy(mask).to(device)
+            std[s] = sd
+    return torch.from_numpy(target).to(device), torch.from_numpy(mask).to(device), torch.from_numpy(std).to(device)
 
 
 def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
@@ -854,8 +868,7 @@ def _pool_terms(parts: list[dict], weight: dict[str, float]) -> dict:
     return {**out, **diag}
 
 
-def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp,
-                       pose_std: torch.Tensor | None = None) -> dict:
+def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
     """Le loss del training sull'insieme fisso, con numeratori e conteggi di tutti i batch (`_pool_terms`): la stessa funzione del passo
     (`readout_objectives` a encoder congelato, totale = branch_weight x termine dei rami; altrimenti `jepa_loss_terms`, totale = somma pesata
     delle componenti; l'obiettivo mascherato del pilot non ha pannello, `train` lo rifiuta), senza gradiente, studente e teacher in eval
@@ -887,7 +900,7 @@ def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg:
                                         kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
                                         rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None,
                                         regions=torch.as_tensor(b.region).to(device) if b.region is not None else None,
-                                        pose=_pose_tensors(b, device), pose_std=pose_std)
+                                        pose=_pose_tensors(b, device), pose_std_log=True)
                     parts.append({"num": values(t.num), "den": values(t.den), "log_num": values(t.log_num), "log_den": values(t.log_den),
                                   "log_sum": values(t.log_sum)})
                     weight = dict(t.weight)
@@ -1101,10 +1114,19 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
     # ricetta e dati della ripresa (review GPT del 14/10/2026): dopo lo STOP, che vince su tutto, e prima di creare modelli o scrivere file
     data_signature = json.loads(json.dumps(calibration_signature(cfg, manifest, scales, window_s)))  # registrata in ogni checkpoint
+    # R3: le statistiche di standardizzazione della posa (`pose_stats.json`) sono un ingresso dei dati come manifest e scale: SHA nel
+    # checkpoint, verificato alla ripresa e al ramo (critico del 26/10, rilievo 1: non nel config, che resta l'identita' del run)
+    pose_sha = None
+    if cfg.loader.pose_root:
+        from wearusfm.data.pose_targets import STATS_FILE
+        pose_sha = hashlib.sha256((Path(cfg.loader.pose_root) / STATS_FILE).read_bytes()).hexdigest()
     if resume_state is not None:
         if branch is None:  # un ramo ha la sua guardia (_check_branch: cambiano solo schedule e max_steps)
             _check_resume_recipe(cfg, resume_state)
         _check_data_signature(resume_state, data_signature, say)
+        old_pose_sha = resume_state.get("pose_stats_sha256")
+        if (old_pose_sha or pose_sha) and old_pose_sha != pose_sha:
+            raise ValueError(f"statistiche della posa diverse da quelle del checkpoint ({old_pose_sha} contro {pose_sha}): run nuovo")
     if cfg.loader.multiscale_anchor != cfg.model.multiscale_anchor:
         raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
@@ -1180,7 +1202,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         return {"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
                 "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
                 "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
-                "stream": stream, "data_signature": data_signature, **extra}
+                "stream": stream, "data_signature": data_signature, "pose_stats_sha256": pose_sha, **extra}
 
     init_sha = None
     if cfg.freeze_encoder and resume_state is None:  # un processo solo (controllato sopra)
@@ -1189,10 +1211,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         torch.save(payload({}), init_ckpt.with_suffix(".tmp"))
         init_ckpt.with_suffix(".tmp").replace(init_ckpt)
         init_sha = sha256_file(init_ckpt)
-    if cfg.loader.pose_root:  # R3: lo SHA delle statistiche di standardizzazione della posa entra nel config del run
-        cfg = replace(cfg, pose_stats_sha256=hashlib.sha256((Path(cfg.loader.pose_root) / PT.STATS_FILE).read_bytes()).hexdigest())
     if ctx.is_main:
         (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
+        if pose_sha is not None:  # R3: provenienza delle statistiche di standardizzazione (fuori dal config, che resta l'identita' del run)
+            (out_dir / "pose_provenance.json").write_text(json.dumps({"pose_root": cfg.loader.pose_root, "pose_stats_sha256": pose_sha,
+                                                                     "pose_unprompted": cfg.loader.pose_unprompted}, indent=1))
         if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
             (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
         if frozen_init is not None or branch_calibration is not None:  # rami spettrali: encoder congelato e calibrazione (solo all'inizio)
@@ -1200,12 +1223,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                                                         "init_checkpoint_sha256": init_sha, "branch_state": branch_state},
                                                                        indent=1))
     scales = dict(scales or {})
-    val = pose_std = None
+    val = None
     if ctx.is_main:  # diagnostiche solo sul processo 0
         val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
         val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
-        if val_loader.pose_store is not None:  # R3, pannello fisso: errore di posa nell'unita' degli angoli (deviazione per giunto, insieme)
-            pose_std = torch.as_tensor(val_loader.pose_store.std_all, dtype=torch.float32)
     fixed = None  # diagnostiche della stabilita' (RunConfig.fixed_eval_every, log_batch_origin), solo sul processo 0 per i file
     if ctx.is_main and cfg.fixed_eval_every:
         fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
@@ -1239,7 +1260,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                                for m in BRANCH_MONITORS])
 
     def fixed_eval(at_step: int) -> None:
-        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp, pose_std)}) + "\n")
+        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
         fixed_log.flush()
 
     if fixed is not None and resume_state is None:  # il punto di partenza della curva
@@ -1454,7 +1475,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
                "device": device, "gpu_max_memory_gib": gpu_mem,
                # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
-               "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")}}
+               "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")},
+               # ambiente (docs/pilot_posa_v1.md §3 (d)): versioni e il `pip freeze` che il launcher scrive nella cartella del run
+               "environment": _environment(out_dir), "pose_stats_sha256": pose_sha}
     if ctx.active:
         summary.update({"world_size": ctx.world_size, "batch_per_process": per_process})
     if cfg.prefetch or cfg.prefetch_audit:

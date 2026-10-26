@@ -22,9 +22,19 @@ def json_sha256(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
 
 
+def _loader_signature(loader) -> dict:
+    """La configurazione del loader nella firma dei dati; i campi della posa (R3, 26/10/2026) solo se accesi, cosi' i checkpoint di prima
+    della posa si riprendono con la stessa firma."""
+    d = json.loads(json.dumps(asdict(loader)))
+    if d.get("pose_root") is None:
+        d.pop("pose_root", None)
+        d.pop("pose_unprompted", None)
+    return d
+
+
 def calibration_signature(cfg, manifest, scales, window_s):
     return {"target_version": TARGET_VERSION, "readout_version": READOUT_VERSION,
-            "manifest_sha256": sha256_file(manifest), "loader": json.loads(json.dumps(asdict(cfg.loader))),
+            "manifest_sha256": sha256_file(manifest), "loader": _loader_signature(cfg.loader),
             "datasets": list(cfg.datasets) if cfg.datasets is not None else None,
             "scales_sha256": json_sha256(scales or {}), "window_seconds_sha256": json_sha256(window_s)}
 

@@ -3661,6 +3661,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Il prompt per GPT (presa in carico: diagnosi, piano, critica di R3, albero delle decisioni, ricalcoli; forma della risposta in
   `docs/reviews/` + registro) sta in `docs/prompt_review_gpt_seconda_ondata_20261026.md`; Simone lo incolla e riporta la risposta; Claude
   risponde nel registro.
+### 2026-10-26 | Claude | Seconda ondata, codice (2-4/4) e REVIEW DEL CRITICO SUL CODICE (DA RIVEDERE: 7 bloccanti, 8 minori), tutti corretti; 197 test mirati verdi, suite completa 1.430/1.430 prima delle correzioni e rilanciata dopo | Codice: b41b40c (loader), 71c0a93 (testa, loss, trainer, flag), dfb6d3e (collaudo, launcher, piano), 820c91b (default dei config), piu' il commit di questa voce (correzioni)
+
+- **2/4 loader (b41b40c):** `data/pose_targets.py` (`PoseStore` con `pose_stats.json`, lato e SHA; `window_pose` sulla griglia del front-end coi
+  centri dei blocchi a 10 j + 5), `LoaderConfig.pose_root`/`pose_unprompted`, `PretrainBatch.pose`, micro-batch; sessione di emg2pose senza posa =
+  errore. **3/4 (71c0a93):** `model/pose_head.py` (LayerNorm + Linear a zero), `FMConfig.pose_head`, `JEPAConfig.pose_weight`, termine `pose` per
+  finestra nel contratto (`pose_terms`, `loss_counts`), testa sempre nel grafo, pannello fisso con `pose_mae*`, `_pose_tensors`, flag
+  `--pose-root/--pose-weight/--pose-unprompted`. **4/4 (dfb6d3e):** `arms_collaudo.py --arm R3` (pesi, `posa_configurata`, cancello:
+  `POSE_GATE` = soglie di decisioni.md, `ritmo` <= 0,81), `train_ddp.sbatch` con `module list` e `pip freeze`, piano WSD con le opzioni della posa
+  convalidato da `wsd_chain`. **820c91b:** `_config_with_defaults` riempie i campi della posa nei config precedenti (il confronto coi config
+  congelati del 2C torna senza differenze).
+- **Review del `critico` sul codice (26/10, dopo dfb6d3e): DA RIVEDERE.** Bloccanti e correzioni: (1) `pose_stats_sha256` entrava nel config
+  DOPO `_check_branch`/`_check_resume_recipe`: ramo e ripresa di R3 si sarebbero fermati -> lo SHA sta ora nel checkpoint, in `summary.json` e
+  in `pose_provenance.json`, calcolato PRIMA delle guardie e verificato alla ripresa e al ramo (statistiche cambiate = run nuovo); `RunConfig` non
+  lo porta (identita' del run invariata, `check_identity` di `calibration_select` intatto). (2) Il termine escludeva gli istanti senza canali
+  visibili (slab: 12,5% delle patch di emg2pose, misura del critico) contro il §2 (ii) firmato -> validita' = maschera e patch esistente, su
+  tutte le patch; `pose_time_valid` ricalcola la stessa cosa per `loss_counts`. (3) `--skip-existing` saltava le registrazioni del collaudo
+  scritte con margine 0 -> si salta solo a regola uguale (`already_done`: margine e tolleranza nel meta), altrimenti si riscrive; test
+  aggiornato. (4) Chiusura degli import: `pose_targets` ora importato pigramente in loader e trainer; `pose_head` eseguito solo con la testa;
+  `_config_with_defaults` resta modificata (necessaria) e si DICHIARA (precisazione al §3 (b)). (5) Ambiente: `pip freeze` anche nel log del
+  job e `environment` (python, torch, cuda, file e SHA del freeze, moduli caricati) + `pose_stats_sha256` nel `summary.json`. (6) Test mancanti
+  scritti (`tests/cpu/test_pose_training.py`: training vero con `--pose-root`, pannello fisso, ramo e ripresa, ripresa rifiutata a statistiche
+  cambiate; batch intero = micro-batch con la posa; passo intero senza posa in `_accumulate_terms`; per lato dalla vista vera; flag; impronte e
+  firma dei dati invariate senza posa; testa che legge solo il proprio istante e non muove il generatore; estrazione identica con la testa).
+  (7) Registro: questa voce. Minori: testa costruita sotto `fork_rng` (8); campo `pose` fuori dall'impronta `batch_sha256` e dalla firma dei
+  dati quando e' spento (9: i run senza posa hanno le impronte di prima); errore de-standardizzato con le deviazioni per finestra, quindi per
+  lato (10); `fs != 2000` rifiutata (11); preventivo ripristinato (12); rapporti dell'ingest con statistiche per lato e campi del file, collaudo
+  con l'errore di posa dal pannello fisso (13); deviazione congiunta del criterio per lato registrata (14); tolleranza del test stretta e test
+  della testa aggiunto (15).
+- **Verificato e non verificato:** verificato = codice (test CPU, contratto, default bit per bit, riferimento 705ec04); NON verificato = ogni
+  ipotesi scientifica (nessun job). Il fact-checker ha confermato la correzione bibliografica di GPT su CPEP: «RandInit» e' un encoder EMG
+  inizializzato a caso e addestrato con la loss contrastiva, non un encoder casuale congelato (arXiv 2509.04699v3, Sez. 3.3 e Tabella 2).
 
 ## 2) Problemi trovati
 

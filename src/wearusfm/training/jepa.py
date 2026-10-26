@@ -147,24 +147,26 @@ def region_means(h: torch.Tensor, raw: torch.Tensor, regions: torch.Tensor, hidd
     return h_r, t_r, inv, torch.div(uniq, REGION_STRIDE, rounding_mode="floor")
 
 
-def pose_time_valid(vis: torch.Tensor, counts: list[int]) -> torch.Tensor:
-    """(S, P) istanti con almeno un canale visibile per campione: e' `Encoded.key_time_valid` (vis = visible & patch_valid & qc_valid, e una
-    patch visibile esiste), ricalcolato dalla sola geometria per `loss_counts`. Il termine di posa (R3) conta solo questi istanti."""
+def pose_time_valid(patch_valid: torch.Tensor, counts: list[int]) -> torch.Tensor:
+    """(S, P) patch che esistono per campione (non riempimento), dalla geometria (C_tot, P) dei canali impacchettati. Il termine di posa (R3)
+    vale su TUTTE le patch esistenti con target valido, visibili, nascoste e anche senza nessun canale visibile all'istante (gli slab): il
+    latente dell'istante esiste sempre (latenti appresi + contesto del backbone) e il §2 (ii) del protocollo firmato chiede tutte le patch
+    (rilievo 2 del critico del 26/10: con gli slab il 12,5% delle patch di emg2pose non ha canali visibili)."""
     bounds = np.cumsum([0, *counts])
-    return torch.stack([vis[a:b].any(dim=0) for a, b in zip(bounds[:-1], bounds[1:])])
+    return torch.stack([patch_valid[a:b].any(dim=0) for a, b in zip(bounds[:-1], bounds[1:])])
 
 
-def pose_terms(pred: torch.Tensor, pose: tuple[torch.Tensor, torch.Tensor] | None, time_valid: torch.Tensor, per_window: bool) \
+def pose_terms(pred: torch.Tensor, pose: tuple | None, time_valid: torch.Tensor, per_window: bool) \
         -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    """Termine di posa da una predizione (S, P, J) e dai target (target (S, P, J), maschera (S, P, J)): errore quadratico sugli elementi
-    validi (maschera e istante valido). Per finestra: media dentro ogni finestra che ha almeno un elemento valido, poi media fra quelle
-    finestre (come `masked_mean` con `sample_index`); per token: media sugli elementi. Ritorna (perdita, numeratore additivo, conteggio,
-    maschera di validita' usata). Senza target (micro-batch senza finestre di posa) la perdita e' `pred.sum() * 0`: la testa resta nel grafo
-    con gradiente nullo e il conteggio e' 0."""
+    """Termine di posa da una predizione (S, P, J) e dai target (target (S, P, J), maschera (S, P, J)[, deviazioni (S, J)]): errore
+    quadratico sugli elementi validi (maschera e patch esistente). Per finestra: media dentro ogni finestra che ha almeno un elemento valido,
+    poi media fra quelle finestre (come `masked_mean` con `sample_index`); per token: media sugli elementi. Ritorna (perdita, numeratore
+    additivo, conteggio, maschera di validita' usata). Senza target (micro-batch senza finestre di posa) la perdita e' `pred.sum() * 0`: la
+    testa resta nel grafo con gradiente nullo e il conteggio e' 0."""
     if pose is None:
         zero = pred.sum() * 0.0
         return zero, zero, pred.new_zeros((), dtype=torch.int64), torch.zeros_like(pred, dtype=torch.bool)
-    target, mask = pose
+    target, mask = pose[0], pose[1]
     if target.shape != pred.shape or mask.shape != pred.shape:
         raise ValueError(f"posa: target {tuple(target.shape)} e maschera {tuple(mask.shape)} contro predizione {tuple(pred.shape)}")
     valid = mask & time_valid[..., None]
@@ -352,7 +354,7 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
         if pose_valid is None:
             out["pose"] = visible.new_zeros((), dtype=torch.int64)
         else:
-            tv = pose_time_valid(visible & patch_valid & inp.qc_valid[:, None], inp.counts)
+            tv = pose_time_valid(patch_valid, inp.counts)  # patch esistenti: come `enc.patch_valid` in `_jepa_compute`
             if pose_valid.shape[:2] != tv.shape:
                 raise ValueError(f"pose_valid {tuple(pose_valid.shape)} contro la geometria {tuple(tv.shape)}")
             valid = pose_valid & tv[..., None]
@@ -372,10 +374,12 @@ def jepa_loss_terms(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visi
                     anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                     rvq_codes: Callable | None = None, generator: torch.Generator | None = None,
                     kinds: torch.Tensor | None = None, regions: torch.Tensor | None = None,
-                    pose: tuple[torch.Tensor, torch.Tensor] | None = None, pose_std: torch.Tensor | None = None) -> LossTerms:
+                    pose: tuple | None = None, pose_std: torch.Tensor | None = None, pose_std_log: bool = False) -> LossTerms:
+    """`pose`: (target, maschera[, deviazioni per finestra]) del micro-batch (R3). `pose_std_log`: logga l'errore assoluto di posa per giunto,
+    standardizzato e nell'unita' degli angoli (con le deviazioni per finestra del batch, o `pose_std` (J,) se date): solo il pannello fisso."""
     terms = LossTerms()
     _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms, regions, pose=pose,
-                  pose_std=pose_std)
+                  pose_std=pose_std, pose_std_log=pose_std_log)
     return terms
 
 
@@ -383,13 +387,13 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
                 anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                 rvq_codes: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
                 generator: torch.Generator | None = None, kinds: torch.Tensor | None = None,
-                regions: torch.Tensor | None = None, pose: tuple[torch.Tensor, torch.Tensor] | None = None) -> dict[str, torch.Tensor]:
+                regions: torch.Tensor | None = None, pose: tuple | None = None) -> dict[str, torch.Tensor]:
     """Backward-compatible single-process API: historical means, keys and RNG ordering unchanged."""
     return _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, regions=regions, pose=pose)
 
 
 def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None, generator=None, kinds=None,
-                  terms: LossTerms | None = None, regions: torch.Tensor | None = None, pose=None, pose_std=None):
+                  terms: LossTerms | None = None, regions: torch.Tensor | None = None, pose=None, pose_std=None, pose_std_log=False):
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4).
@@ -522,21 +526,23 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
             raise ValueError("pose_weight > 0 senza la testa di posa (FMConfig.pose_head)")
         from wearusfm.model.pose_head import latent_mean
         pred = student.pose_head(latent_mean(enc.z))  # (S, P, 20); calcolata sempre: nessun parametro fuori dal grafo DDP
-        p_loss, p_num, p_den, p_valid = pose_terms(pred, pose, enc.key_time_valid, cfg.loss_per_window)
+        p_loss, p_num, p_den, p_valid = pose_terms(pred, pose, pose_time_valid(enc.patch_valid, inp.counts), cfg.loss_per_window)
         losses["pose"] = p_loss
         losses["pose_windows"] = p_den.to(p_loss.dtype) if cfg.loss_per_window else p_valid.any(dim=(1, 2)).sum().to(p_loss.dtype)
         losses["total"] = losses["total"] + cfg.pose_weight * p_loss
         if terms is not None:
             terms.num["pose"], terms.den["pose"], terms.weight["pose"] = p_num, p_den, cfg.pose_weight
             terms.log_sum["pose_windows"] = p_valid.any(dim=(1, 2)).sum().detach()
-            if pose is not None and pose_std is not None:  # pannello fisso: errore assoluto per giunto, standardizzato e nell'unita' degli angoli
-                abs_err = ((pred.float() - pose[0].float()).abs() * p_valid).detach()
-                n_j, e_j = p_valid.sum(dim=(0, 1)), abs_err.sum(dim=(0, 1))
-                std = pose_std.to(e_j.device, e_j.dtype)
+            std = pose_std if pose_std is not None else (pose[2] if pose is not None and len(pose) > 2 else None)
+            if pose is not None and std is not None and pose_std_log:  # pannello fisso: errore assoluto per giunto, standardizzato e in radianti
+                abs_err = ((pred.float() - pose[0].float()).abs() * p_valid).detach()  # (S, P, J)
+                std = std.to(abs_err.device, abs_err.dtype)
+                std = std[:, None, :] if std.dim() == 2 else std.view(1, 1, -1)  # per finestra (lato della sessione) o unica
+                n_j, e_j, r_j = p_valid.sum(dim=(0, 1)), abs_err.sum(dim=(0, 1)), (abs_err * std).sum(dim=(0, 1))
                 terms.log_num["pose_mae_std"], terms.log_den["pose_mae_std"] = e_j.sum(), n_j.sum()
-                terms.log_num["pose_mae"], terms.log_den["pose_mae"] = (e_j * std).sum(), n_j.sum()
+                terms.log_num["pose_mae"], terms.log_den["pose_mae"] = r_j.sum(), n_j.sum()
                 for j in range(e_j.shape[0]):
-                    terms.log_num[f"pose_mae_j{j:02d}"], terms.log_den[f"pose_mae_j{j:02d}"] = e_j[j] * std[j], n_j[j]
+                    terms.log_num[f"pose_mae_j{j:02d}"], terms.log_den[f"pose_mae_j{j:02d}"] = r_j[j], n_j[j]
     if cfg.keep_weight > 0 or cfg.branch_weight > 0:
         if anchor_targets is None:
             raise ValueError("keep loss requires multiscale targets")

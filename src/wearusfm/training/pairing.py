@@ -24,7 +24,8 @@ def _update(digest, value):
         digest.update(json.dumps([str(value.dtype), list(value.shape)]).encode())
         digest.update(np.ascontiguousarray(value).tobytes())
     elif is_dataclass(value):
-        _update(digest, {f.name: getattr(value, f.name) for f in fields(value)})
+        # `pose` (R3, 26/10/2026) entra solo quando c'e': un batch senza posa ha la stessa impronta di prima della posa
+        _update(digest, {f.name: getattr(value, f.name) for f in fields(value) if not (f.name == "pose" and getattr(value, f.name) is None)})
     elif isinstance(value, dict):
         digest.update(b"dict{")
         for key in sorted(value):

@@ -75,6 +75,26 @@ def expected_evaluations(steps: int) -> list[int]:
     return sorted({s for s in range(EVAL_EVERY, steps + 1, EVAL_EVERY)} | {steps})
 
 
+def pose_panel_errors(run_dir: Path) -> list[dict] | None:
+    """Dal pannello fisso (`fixed_eval.jsonl`): per ogni pannello il passo, l'errore assoluto medio di posa standardizzato (`pose_mae_std`), in
+    radianti (`pose_mae`, deviazioni per finestra) e per giunto (`pose_mae_jNN`), con il conteggio delle finestre di posa. Descrittivo."""
+    path = Path(run_dir) / "fixed_eval.jsonl"
+    if not path.exists():
+        return None
+    out = []
+    for line in path.read_text().splitlines():
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if "pose_mae" not in r and "pose_mae_std" not in r:
+            continue
+        out.append({"step": r.get("step"), "pose_mae_std": r.get("pose_mae_std"), "pose_mae": r.get("pose_mae"),
+                    "pose_windows": r.get("pose_windows"), "pose_count": r.get("pose_count"),
+                    "per_joint": {k: v for k, v in r.items() if k.startswith("pose_mae_j")}})
+    return out or None
+
+
 def pose_gate(recs: list[dict], wp: float, wa: float, steps: int) -> list[tuple[str, bool, dict]]:
     """I quattro criteri congelati del cancello di R3 (`POSE_GATE`), sui soli record con conteggio di posa > 0 (`pose_windows`). Un record
     senza `pose_windows` o senza componenti finite non entra nelle medie. Ritorna [(nome, ok, dettaglio)]."""
@@ -207,6 +227,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "jepa_inizio_fine": edge_means("jepa"),
         "ancore_inizio_fine": {a: edge_means(a) for a in ANCHORS},
         "posa_inizio_fine": edge_means("pose") if wp > 0 else None,
+        "posa_errore_pannello_fisso": pose_panel_errors(run_dir) if wp > 0 else None,
         "posa_finestre_medie": (statistics.fmean(r["pose_windows"] for r in recs if isinstance(r.get("pose_windows"), (int, float)))
                                 if wp > 0 and any(isinstance(r.get("pose_windows"), (int, float)) for r in recs) else None),
         "non_collasso": [{k: r.get(k) for k in ("step", "student_collapse_ratio", "teacher_collapse_ratio", "student_erank", "teacher_erank",

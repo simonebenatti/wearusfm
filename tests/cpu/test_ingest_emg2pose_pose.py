@@ -208,14 +208,23 @@ def test_driver_collaudo_then_full_ingest_with_skip_and_stats(tmp_path):
     assert report["collaudo"]["fields_in_first_file"]["timeseries_fields"] == ["time", "joint_angles", "emg"]
     assert report["collaudo"]["edge_profile"]["bins"][0]["n"] > 0 and report["collaudo"]["frac_zero_rows"] > 0
     assert len(list(out.rglob(PP.META_FILE))) == 4
-    # ingest intero con margine, ripresa (--skip-existing) e statistiche: le 4 gia' fatte si saltano, le altre 2 si fanno
+    # ingest intero con margine 33, ripresa (--skip-existing) e statistiche: le 4 del collaudo (margine 0) si RIFANNO con la regola nuova, le
+    # altre 2 si fanno; nessuna saltata (saltare vale solo a regola uguale)
     r2 = subprocess.run([sys.executable, str(SCRIPT), "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(out), "--report", str(rep),
                          "--skip-existing", "--zero-margin-samples", "33", "--no-measure", "--stats"], capture_output=True, text=True,
                         env={**env, "PATH": "/usr/bin:/bin"})
     assert r2.returncode == 0, r2.stdout + r2.stderr
     report2 = json.loads(rep.read_text())
-    assert report2["n_recordings"] == 2 and report2["n_skipped_existing"] == 4 and report2["params"]["zero_margin_samples"] == 33
+    assert report2["n_recordings"] == 6 and report2["n_skipped_existing"] == 0 and report2["params"]["zero_margin_samples"] == 33
+    assert all(json.loads(p.read_text())["zero_margin_samples"] == 33 for p in out.rglob(PP.META_FILE))
     assert report2["stats"]["n_recordings"] == 5 and (out / PP.STATS_FILE).exists()  # 5 di train su 6
+    assert set(report2["collaudo"]["per_side_stats"]) == {"left", "right"} and report2["collaudo"]["per_side_stats"]["left"]["n_recordings"] == 3
+    # una terza passata con la stessa regola salta tutte e 6
+    r2b = subprocess.run([sys.executable, str(SCRIPT), "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(out), "--report", str(rep),
+                          "--skip-existing", "--zero-margin-samples", "33", "--no-measure"], capture_output=True, text=True,
+                         env={**env, "PATH": "/usr/bin:/bin"})
+    assert r2b.returncode == 0 and json.loads(rep.read_text())["n_skipped_existing"] == 6
+    assert json.loads(next(out.rglob(PP.META_FILE)).read_text())["fields_in_file"]["timeseries_fields"] == ["time", "joint_angles", "emg"]
     r3 = subprocess.run([sys.executable, str(SCRIPT), "--csv", str(csvp), "--out-root", str(out), "--report", str(rep), "--stats-only"],
                         capture_output=True, text=True, env={**env, "PATH": "/usr/bin:/bin"})
     assert r3.returncode == 0 and json.loads(r3.stdout)["n_recordings"] == 5

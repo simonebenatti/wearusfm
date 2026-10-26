@@ -74,7 +74,7 @@ def test_loader_batch_counts_match_the_terms_and_the_total_is_the_weighted_sum(t
     batch = _batch_with_pose(tmp_path)
     student, teacher = _models(True)
     m = R._prepare(batch, "cpu")
-    assert m.pose is not None and m.pose[0].shape == (6, max(batch.n_patches), 20) and m.pose[1].dtype == torch.bool
+    assert m.pose is not None and m.pose[0].shape == (6, max(batch.n_patches), 20) and m.pose[1].dtype == torch.bool and m.pose[2].shape == (6, 20)
     for s, item in enumerate(batch.pose):  # riempimento oltre le patch del campione: maschera falsa
         n_p = batch.n_patches[s]
         assert not m.pose[1][s, n_p:].any()
@@ -93,10 +93,11 @@ def test_loader_batch_counts_match_the_terms_and_the_total_is_the_weighted_sum(t
     terms2 = J.jepa_loss_terms(student, teacher, m.inp, m.visible, JC, anchor_targets=m.anchor_targets, kinds=m.kinds, pose=m.pose)
     assert torch.allclose(losses["pose"], terms2.num["pose"] / terms2.den["pose"]) and float(losses["pose_windows"]) == float(terms2.den["pose"])
     # testa a zero e target standardizzati: il termine iniziale e' la media dei quadrati dei target validi (~1 se standardizzati sul corpus)
-    tgt, msk = m.pose
+    tgt, msk, _ = m.pose
+    # validita' = maschera e patch esistente: la maschera e' gia' falsa sul riempimento, quindi il termine iniziale (testa a zero) e' esattamente
+    # la media, sulle finestre con posa, della media dei quadrati dei target validi (float32)
     expected = [float((tgt[s] ** 2)[msk[s]].mean()) for s in range(6) if msk[s].any()]
-    # la media per finestra sugli istanti validi puo' differire dalla media su tutti gli elementi solo per gli istanti senza canali visibili
-    assert abs(float(losses["pose"]) - float(np.mean(expected))) < 0.5 * float(np.mean(expected)) + 1e-6
+    assert abs(float(losses["pose"]) - float(np.mean(expected))) < 1e-4 * max(1.0, float(np.mean(expected)))
     anchors = sum(float(losses[k]) for k in ("log_rms", "band_shape", "log_env"))
     total = 0.2 * anchors + 1.0 * float(losses["pose"])
     assert abs(float(losses["total"]) - total) < 1e-5 * max(1.0, abs(total))  # float32
@@ -124,18 +125,51 @@ def test_fixed_panel_logs_the_pose_error_per_joint(tmp_path):
     batch = _batch_with_pose(tmp_path)
     student, teacher = _models(True)
     m = R._prepare(batch, "cpu")
-    std = torch.full((20,), 0.25)
-    terms = J.jepa_loss_terms(student, teacher, m.inp, m.visible, JC, anchor_targets=m.anchor_targets, kinds=m.kinds, pose=m.pose, pose_std=std)
+    terms = J.jepa_loss_terms(student, teacher, m.inp, m.visible, JC, anchor_targets=m.anchor_targets, kinds=m.kinds, pose=m.pose, pose_std_log=True)
     keys = {"pose_mae", "pose_mae_std"} | {f"pose_mae_j{j:02d}" for j in range(20)}
     assert keys <= set(terms.log_num) and keys <= set(terms.log_den)
     pooled = R._pool_terms([{"num": {k: float(v) for k, v in terms.num.items()}, "den": {k: float(v) for k, v in terms.den.items()},
                              "log_num": {k: float(v) for k, v in terms.log_num.items()}, "log_den": {k: float(v) for k, v in terms.log_den.items()},
                              "log_sum": {k: float(v) for k, v in terms.log_sum.items()}}], dict(terms.weight))
-    assert pooled["pose_mae"] == pytest.approx(0.25 * pooled["pose_mae_std"], rel=1e-6) and pooled["pose_count"] == float(terms.den["pose"])
+    assert pooled["pose_mae"] == pytest.approx(0.25 * pooled["pose_mae_std"], rel=1e-6) and pooled["pose_count"] == float(terms.den["pose"])  # std 0,25
     assert pooled["pose_mae_j00"] > 0 and "pose_windows" in pooled
-    # senza pose_std (passo di training) le medie per giunto non si loggano
+    # le deviazioni per finestra: una finestra con deviazione diversa pesa diversamente l'errore in radianti
+    tgt, msk, sd = m.pose
+    sd2 = sd.clone()
+    first = next(s for s in range(6) if msk[s].any())
+    sd2[first] = 1.0
+    t2 = J.jepa_loss_terms(student, teacher, m.inp, m.visible, JC, anchor_targets=m.anchor_targets, kinds=m.kinds, pose=(tgt, msk, sd2), pose_std_log=True)
+    assert float(t2.log_num["pose_mae"]) > float(terms.log_num["pose_mae"]) and torch.equal(t2.log_num["pose_mae_std"], terms.log_num["pose_mae_std"])
+    # senza pose_std_log (passo di training) le medie per giunto non si loggano
     plain = J.jepa_loss_terms(student, teacher, m.inp, m.visible, JC, anchor_targets=m.anchor_targets, kinds=m.kinds, pose=m.pose)
     assert "pose_mae" not in plain.log_num and "pose_windows" in plain.log_sum
+
+
+def test_head_reads_only_its_own_instant_and_does_not_move_the_global_rng():
+    from wearusfm.model.pose_head import PoseHead
+    torch.manual_seed(0)
+    head = PoseHead(16)
+    with torch.no_grad():
+        head.out.weight.normal_()
+    z = torch.randn(2, 5, 16)
+    z2 = z.clone()
+    z2[:, 3] += 10.0
+    a, b = head(z), head(z2)
+    assert torch.equal(a[:, :3], b[:, :3]) and torch.equal(a[:, 4:], b[:, 4:]) and not torch.equal(a[:, 3], b[:, 3])
+    # il generatore globale non si sposta costruendo la testa (fork_rng): stesso stato e stesse estrazioni dopo
+    torch.manual_seed(5)
+    _ = PoseHead(16)
+    after_head = torch.rand(3)
+    torch.manual_seed(5)
+    after_none = torch.rand(3)
+    assert torch.equal(after_head, after_none)
+    torch.manual_seed(7)
+    WearUsFM(replace(CFG, pose_head=True))
+    x1 = torch.rand(2)
+    torch.manual_seed(7)
+    WearUsFM(CFG)
+    x2 = torch.rand(2)
+    assert torch.equal(x1, x2)
 
 
 def test_default_without_pose_is_unchanged_and_misconfigurations_fail(tmp_path):
@@ -160,4 +194,4 @@ def test_default_without_pose_is_unchanged_and_misconfigurations_fail(tmp_path):
     plain = L.PretrainLoader(L.ManifestIndex.load(mpath, [root]), _cfg()).batch(4, np.random.default_rng(0))
     assert R._prepare(plain, "cpu").pose is None
     m1 = R._prepare(batch, "cpu")
-    assert len(R._micro_tensors([m1])) == len(R._micro_tensors([replace(m1, pose=None)])) + 2
+    assert len(R._micro_tensors([m1])) == len(R._micro_tensors([replace(m1, pose=None)])) + 3  # target, maschera, deviazioni

@@ -44,7 +44,6 @@ from pathlib import Path
 import numpy as np
 from scipy import signal as sps
 
-from wearusfm.data import pose_targets as PT
 from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.data.processed import read_scale
@@ -456,7 +455,10 @@ class PretrainLoader:
         self._pool: list[Block] = []
         self.blocks_read = 0
         self.rvq_store = RC.RVQCodeStore(cfg.rvq_codes_root) if cfg.rvq_codes_root else None
-        self.pose_store = PT.PoseStore(cfg.pose_root, include_unprompted=cfg.pose_unprompted) if cfg.pose_root else None
+        self.pose_store = None
+        if cfg.pose_root:  # R3; import pigro: il percorso di default non carica il modulo della posa
+            from wearusfm.data import pose_targets as PT
+            self.pose_store = PT.PoseStore(cfg.pose_root, include_unprompted=cfg.pose_unprompted)
 
     def reset_stream_state(self) -> None:
         """Lo stato che porta da un batch all'altro e che influisce sulle estrazioni: pool di blocchi e sessioni saltate. Si azzera all'inizio

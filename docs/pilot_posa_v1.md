@@ -285,6 +285,13 @@ il valore standardizzato `pose_mae_std` e' quello esatto); il margine della rego
 (default 0 = solo righe a zero), da congelare dopo il collaudo. Test CPU nuovi: 33 (riferimento 3, ingest 9, target 6, obiettivo 6, collaudo 3,
 piu' i flag); suite completa in corso al momento di questa nota.
 
+**Precisazioni dopo la review del `critico` sul codice (26/10, sera; voce in `decisioni.md`):** validita' del termine su tutte le patch esistenti
+(anche gli istanti senza canali visibili: il §2 (ii) vale alla lettera); SHA delle statistiche nel checkpoint, nel `summary.json` e in
+`pose_provenance.json` (non nel config, che resta l'identita' del run; ripresa e ramo lo verificano); ambiente nel log e nel `summary.json`;
+deviazione congiunta per lato = sqrt((s_sx^2 + s_dx^2) / 2); nella chiusura degli import del §3 (b) `_config_with_defaults` e' toccata e
+dichiarata, `pose_targets` e `pose_head` si caricano solo coi rami della posa; `--skip-existing` dell'ingest salta solo a regola uguale.
+Test CPU della posa: 44 in sei file (riferimento 4, ingest 9, target 6, obiettivo 7, training 5, collaudo 3), piu' i flag.
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |

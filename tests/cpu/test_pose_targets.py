@@ -94,7 +94,7 @@ def test_store_reads_stats_picks_the_side_and_fails_loudly_without_pose_files(tm
             self.arr = np.zeros((n, 16), dtype=np.int16)
     v = V(tmp_path / "processed" / "emg2pose" / "u1" / "sessA", "left", 24000)
     out = store.window({"dataset": "emg2pose"}, v, _Win(0, 4), 25.0)
-    assert out is not None and out[0].shape == (4, 20) and out[1].all()
+    assert out is not None and out[0].shape == (4, 20) and out[1].all() and np.allclose(out[2], 2.0)  # (target, maschera, deviazioni usate)
     assert store.window({"dataset": "ninapro_db2"}, v, _Win(0, 4), 25.0) is None
     with pytest.raises(FileNotFoundError, match="posa mancante"):
         store.window({"dataset": "emg2pose"}, V(tmp_path / "processed" / "emg2pose" / "u9" / "nope", "left", 24000), _Win(0, 4), 25.0)
@@ -103,9 +103,21 @@ def test_store_reads_stats_picks_the_side_and_fails_loudly_without_pose_files(tm
     # per lato: le statistiche del lato della sessione; un lato senza statistiche e' un errore
     _stats(tmp_path / "pose", per_side=True, by_side={"left": {"mean": [0.0] * 20, "std": [1.0] * 20}, "right": {"mean": [5.0] * 20, "std": [1.0] * 20}})
     ps = PT.PoseStore(tmp_path / "pose")
-    l_t, _ = ps.window({"dataset": "emg2pose"}, V(v.path, "left", 24000), _Win(0, 2), 25.0)
-    r_t, _ = ps.window({"dataset": "emg2pose"}, V(v.path, "right", 24000), _Win(0, 2), 25.0)
-    assert np.allclose(l_t - r_t, 5.0, atol=1e-3)
+    l_t, _, l_sd = ps.window({"dataset": "emg2pose"}, V(v.path, "left", 24000), _Win(0, 2), 25.0)
+    r_t, _, r_sd = ps.window({"dataset": "emg2pose"}, V(v.path, "right", 24000), _Win(0, 2), 25.0)
+    assert np.allclose(l_t - r_t, 5.0, atol=1e-3) and np.allclose(l_sd, 1.0) and np.allclose(r_sd, 1.0)
+    # mano non sollecitata esclusa (--pose-unprompted off): target a zero e maschera falsa, deviazioni comunque riportate
+    class VU(V):
+        def __init__(self, path, side, n, moving):
+            super().__init__(path, side, n)
+            self.meta["csv_row"]["moving_hand"] = moving
+    off = PT.PoseStore(tmp_path / "pose", include_unprompted=False)
+    t_u, m_u, _ = off.window({"dataset": "emg2pose"}, VU(v.path, "left", 24000, "right"), _Win(0, 3), 25.0)
+    assert not m_u.any() and np.all(t_u == 0) and PT.PoseStore.unprompted(VU(v.path, "left", 24000, "right"))
+    t_p, m_p, _ = off.window({"dataset": "emg2pose"}, VU(v.path, "left", 24000, "both"), _Win(0, 3), 25.0)
+    assert m_p.all() and not PT.PoseStore.unprompted(VU(v.path, "left", 24000, "left"))
+    with pytest.raises(ValueError, match="2000"):
+        PT.window_pose(np.zeros((10, 20), np.float16), np.ones(10, bool), _Win(0, 1), 1000.0, 25.0, np.zeros(20, np.float32), np.ones(20, np.float32))
     with pytest.raises(ValueError, match="lato"):
         ps.window({"dataset": "emg2pose"}, V(v.path, "", 24000), _Win(0, 2), 25.0)
     (tmp_path / "pose" / PT.STATS_FILE).write_text(json.dumps({"all": {"mean": None}}))
@@ -132,8 +144,8 @@ def test_loader_attaches_pose_only_to_emg2pose_windows_and_the_default_stays_bit
     for row, win, pose, n_p in zip(b1.rows, b1.windows, b1.pose, b1.n_patches):
         if row["dataset"] == "emg2pose":
             n_pose += 1
-            tgt, mask = pose
-            assert tgt.shape == (n_p, 20) and mask.shape == (n_p, 20) and tgt.dtype == np.float32
+            tgt, mask, sd = pose
+            assert tgt.shape == (n_p, 20) and mask.shape == (n_p, 20) and tgt.dtype == np.float32 and sd.shape == (20,)
             # posa lineare nel tempo: il target della patch p cresce col centro della patch (a meno della finestra)
             valid_p = np.flatnonzero(mask[:, 0])
             if len(valid_p) > 2:

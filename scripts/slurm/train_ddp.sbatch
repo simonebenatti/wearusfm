@@ -45,6 +45,7 @@ mkdir -p "$RUN_DIR" "$WORK/wearusfm_runs/logs"
 # ambiente registrato (seconda ondata, docs/pilot_posa_v1.md §3 (d)): moduli nel log del job e pip freeze nella cartella del run
 echo "== moduli caricati"; module list 2>&1
 python3 -m pip freeze 2>/dev/null | sort > "$RUN_DIR/pip_freeze_${SLURM_JOB_ID:-local}.txt" && echo "pip freeze: $(wc -l < "$RUN_DIR/pip_freeze_${SLURM_JOB_ID:-local}.txt") righe in $RUN_DIR"
+echo "== pip freeze"; cat "$RUN_DIR/pip_freeze_${SLURM_JOB_ID:-local}.txt"; echo "== fine pip freeze"
 if [ -f "$RUN_DIR/STOP" ]; then echo "STOP in $RUN_DIR: $(cat "$RUN_DIR/STOP")"; exit 0; fi
 if [ -f "$RUN_DIR/summary.json" ] && python3 -c '
 import json, sys

@@ -4414,3 +4414,13 @@ obiettivi: descrittivi A2/B2 e consuntivo; review del `critico` sul codice di R3
 del passaggio) lo eredita GPT come proposta da confermare, modificare o accantonare per la firma di Simone. Invariati: GPT integratore su
 `main`, firme di Simone, soglie congelate in questo file prima di guardare, registro dopo ogni attivita', nessun job senza il via di Simone.
 Dettaglio in CLAUDE.md («Ruoli dal 26/10/2026») e nel prompt di presa in carico `docs/prompt_review_gpt_seconda_ondata_20261026.md`.
+
+**Seconda ondata, precisazioni d'implementazione dopo la review del critico sul codice (Claude, 26/10/2026; nessuna soglia cambia).**
+(1) Validita' del termine di posa: tutte le patch ESISTENTI con target valido, visibili, nascoste e anche senza nessun canale visibile all'istante
+(slab), come dice il §2 (ii) firmato; il riempimento no. (2) Lo SHA-256 di `pose_stats.json` sta nel checkpoint, in `summary.json` e in
+`pose_provenance.json` del run, non nel config: alla ripresa e al ramo statistiche diverse fermano il run. (3) L'ambiente sta nel log del job
+(`module list`, `pip freeze`) e nel `summary.json` (versioni, file e SHA del freeze, moduli caricati). (4) Deviazione congiunta del criterio per
+lato = radice della media delle due varianze, sqrt((s_sx^2 + s_dx^2) / 2), non pesata per numerosita'. (5) Chiusura degli import della valutazione:
+`data/pose_targets.py` e' importato solo dentro i rami della posa, `model/pose_head.py` solo con la testa; `training/run._config_with_defaults`
+cambia (riempie i default dei campi della posa nei config precedenti) ed e' dichiarata fra le funzioni toccate del §3 (b). (6) L'ingest intero
+riscrive le registrazioni fatte con un altro margine (`--skip-existing` salta solo a regola uguale).

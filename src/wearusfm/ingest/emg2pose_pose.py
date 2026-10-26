@@ -206,8 +206,22 @@ def out_dir_for(out_root: Path, user: str, stem: str) -> Path:
     return Path(out_root) / f"u{_SAFE_RE.sub('_', user)}" / _SAFE_RE.sub("_", stem)
 
 
+def already_done(out_dir: Path, zero_margin_samples: int, atol: float = ZERO_ATOL) -> bool:
+    """Vero se `pose_meta.json` esiste ed e' stato scritto con la STESSA regola di validita' (margine e tolleranza): le 40 registrazioni del
+    collaudo (margine 0) non devono entrare nell'ingest intero con un altro margine (critico del 26/10, rilievo 3)."""
+    meta_path = Path(out_dir) / META_FILE
+    if not meta_path.exists():
+        return False
+    try:
+        meta = json.loads(meta_path.read_text())
+    except ValueError:
+        return False
+    return int(meta.get("zero_margin_samples", -1)) == int(zero_margin_samples) and float(meta.get("zero_atol", -1.0)) == float(atol) \
+        and (Path(out_dir) / POSE_FILE).exists() and (Path(out_dir) / VALID_FILE).exists()
+
+
 def ingest_pose_recording(fileobj, ref: RecordingRef, out_root: Path, meta_row: dict | None, *, zero_margin_samples: int = 0,
-                          measure: bool = True) -> dict:
+                          measure: bool = True, fields: dict | None = None) -> dict:
     """Una registrazione -> `pose_200hz_f16.npy`, `pose_valid.npy`, `pose_meta.json` in `<out_root>/u<utente>/<stem>/`. Con `measure` calcola
     anche profilo dei bordi e minimi simultanei (collaudo); senza, solo validita', blocchi e statistiche."""
     rec = read_pose(fileobj)
@@ -234,7 +248,7 @@ def ingest_pose_recording(fileobj, ref: RecordingRef, out_root: Path, meta_row: 
         "zero_margin_samples": int(zero_margin_samples), "zero_atol": ZERO_ATOL, "n_invalid_rows": int(bad.sum()),
         "time_axis": tax, "max_abs_per_joint": finite_abs.max(axis=0).tolist() if angles.shape[0] else [None] * N_JOINTS,
         "per_joint_var_valid_blocks": per_joint_var, "joint_stats_valid_blocks": joint_stats(blocks, valid), "joints": list(JOINTS),
-        "fields_in_file": None,
+        "fields_in_file": fields,
     }
     if measure:
         meta["edge_profile"] = edge_profile(angles, zero)
