@@ -3756,7 +3756,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   cancello -> [6] R3 tronco + ramo (51 + 9) -> [7] valutazione. Costi come il preventivo firmato (con R3c ~98,1 / 132,0 GPU-ora + E1-E3 ~1,0 / 4,0).
 - **Collo di bottiglia:** la seriale e' piena di sonde del pilot (tetto di 8 CPU per utente, una sonda alla volta): il checkout e il collaudo
   dell'ingest, pur piccoli, partono dopo le sonde in attesa (~8 h) a meno che Simone non metta in hold le 9 sonde pendenti per ~1 h
-  (`scontrol hold`, come fece il 24/10 col readout), poi le rilasci. Chiesto a Simone. R3c non ne risente (partizione GPU).
+  (`scontrol hold`, come fece il 24/10 col readout), poi le rilasci. Chiesto a Simone; risposta: «Non metto in hold: checkout e collaudo
+  dell'ingest aspettano la fine delle sonde del pilot.» Quindi: la catena CPU parte dopo le sonde del pilot (stima: stanotte / domattina);
+  R3c non ne risente (partizione GPU) e parte appena il checkout esiste.
 - Nessun job di R3 oltre la catena scritta; il margine della regola di validita' e il cancello del collaudo dbg restano decisioni da registrare
   prima dei passi [4] e [6].
 
