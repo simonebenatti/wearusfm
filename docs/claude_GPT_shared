@@ -3761,6 +3761,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   R3c non ne risente (partizione GPU) e parte appena il checkout esiste.
 - Nessun job di R3 oltre la catena scritta; il margine della regola di validita' e il cancello del collaudo dbg restano decisioni da registrare
   prima dei passi [4] e [6].
+### 2026-10-26 | Claude | Pilot degli obiettivi: descrittivi `dec` per canale a 2 epoche LETTI (A2 chiuso, 8/8 sonde): nessun braccio si stacca da R0 nemmeno col decoder per canale; quadro per dataset uguale al `pool` (R1 e R5 giu' su EPN-612, su su DB6); `results/pilot_obiettivi_20261024/descrittivi.json`, README | Codice: nessuno (letture); commit di questa voce
+
+- Sonde A2 finite fra le 02:45 e le 15:05 (`dec` P1 134-149 min, `dec` P2 24-28 min); rsync dei rapporti e OOF sul Mac; 6 confronti con la stessa
+  chiamata del criterio (`compare --single-seed --models`, riferimento R0), letti come descrittivi, senza correzione.
+- `dec` a k 768, delta [IC95] su P1 / P2: R1 -0,19 [-0,73; +0,36] / -0,65 [-1,47; +0,21]; R2 +0,16 [-0,21; +0,57] / -0,65 [-1,86; +0,63];
+  R5 +0,32 [-0,17; +0,82] / -0,85 [-2,38; +0,72]. S assolute `dec` di R0 17,38 / 83,14 (`pool` 18,84 / 81,22). Per dataset: EPN-612 R1 -1,62
+  [-2,14; -1,12], R5 -1,96 [-2,43; -1,48]; DB6 R1 +2,39 [+0,31; +4,85], R5 +1,57 [+0,74; +2,54]; DB2 R1 -0,97 [-1,64; -0,28].
+- *Interpretazione:* lo scarto di R1 da R0 si riduce col decoder per canale su P1 (-0,19 contro -0,76), ma nessun braccio si avvicina al punto;
+  un readout per canale non cambierebbe l'esito del criterio. Riepilogo delle 16 sonde a 2 epoche in `riepilogo_sonde.json` (i `dec` sono sugli
+  stessi checkpoint dei `pool`, SHA uguali).
+- Restano: B2 (endpoint a 1 epoca, 10/16 sottomesse), pendenza 1 -> 2, R0-e1 contro C1 s0, consuntivo `sacct`.
 
 ## 2) Problemi trovati
 

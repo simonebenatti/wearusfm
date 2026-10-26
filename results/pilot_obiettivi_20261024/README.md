@@ -57,8 +57,32 @@ diverse (DB6 e UCI su, DB2 ed EPN-612 giu'), coerente con un banco a 150 ms che 
 Soglie dell'allarme (38,4 / 0,05 / 3 controlli) mai toccate. Il rapporto di collasso di R1 e' su un'altra scala perche' il bersaglio A ha
 un'altra scala: non si confronta con gli altri tre (solo con la soglia).
 
-## Descrittivi (fuori dal criterio): a fine coda
+## Descrittivi (fuori dal criterio): `dec` per canale a k 768, endpoint a 2 epoche (letti il 26/10/2026, 15:10)
 
-`dec` per canale a k 768 ai due endpoint (A2), `pool` e `dec` all'endpoint a 1 epoca e pendenza 1 -> 2 epoche (B2), R0-e1 contro C1 s0 (18,21 su
-P1) come controllo di coerenza; confronti con la stessa chiamata (`comandi_valutazione.txt`, blocco C). Consuntivo `sacct` della valutazione
-(16 estrazioni, 32 sonde) a code vuote.
+Stessa chiamata del criterio (`compare --single-seed --models`, riferimento R0), readout `dec` per canale a 768 componenti
+(`confronti/descrittivo_<R>_vs_R0_e2_<p>_dec.json`, `descrittivi.json`). Sei letture senza correzione; **non decidono nulla**: servono a capire
+il meccanismo (Simone, 26/10: «I descrittivi servono a capire il meccanismo, non a scegliere retroattivamente un vincitore»). S assolute `dec`
+di R0: P1 17,38 (`pool` 18,84), P2 83,14 (`pool` 81,22): come nel readout per canale, a montaggio condiviso (P2) il decoder per canale sta sopra il
+readout medio, su P1 sotto.
+
+| Braccio | Compito | S R0 `dec` | S R_i `dec` | Delta [IC95] | Per dataset (delta [IC95]) |
+|---|---|---|---|---|---|
+| R1 (`--jepa-target a`) | P1 | 17,38 | 17,20 | -0,19 [-0,73; +0,36] | DB2 -0,97 [-1,64; -0,28], DB3 +0,17 [-0,32; +0,81], DB6 +2,39 [+0,31; +4,85] |
+| R1 | P2 | 83,14 | 82,49 | -0,65 [-1,47; +0,21] | EPN-612 -1,62 [-2,14; -1,12], UCI +0,33 [-1,27; +2,00] |
+| R2 (`--jepa-region-target`) | P1 | 17,38 | 17,54 | +0,16 [-0,21; +0,57] | DB2 -0,07 [-0,51; +0,39], DB3 +0,37 [-0,23; +0,94], DB6 +0,79 [-0,47; +2,50] |
+| R2 | P2 | 83,14 | 82,50 | -0,65 [-1,86; +0,63] | EPN-612 +0,23 [-0,16; +0,64], UCI -1,52 [-3,93; +0,99] |
+| R5 (`--window-ms 150`) | P1 | 17,38 | 17,70 | +0,32 [-0,17; +0,82] | DB2 +0,05 [-0,61; +0,75], DB3 +0,20 [-0,72; +1,06], DB6 +1,57 [+0,74; +2,54] |
+| R5 | P2 | 83,14 | 82,29 | -0,85 [-2,38; +0,72] | EPN-612 -1,96 [-2,43; -1,48], UCI +0,26 [-2,68; +3,45] |
+
+*Interpretazione (non e' una lettura della regola):* col decoder per canale nessun braccio si stacca da R0 nemmeno in modo descrittivo (tutti i
+delta aggregati entro un punto, intervalli che includono lo zero). Il quadro per dataset e' lo stesso del `pool`: R1 e R5 perdono su EPN-612
+(intervallo intero sotto lo zero) e guadagnano su DB6 (R5 +1,57 [+0,74; +2,54], R1 +2,39 [+0,31; +4,85]: intervalli sopra lo zero, ma su 8 soggetti).
+Lo scarto di R1 da R0 e' piu' piccolo con `dec` che con `pool` su P1 (-0,19 contro -0,76). Nessun segnale che un readout per canale cambi
+l'esito del criterio.
+
+Diagnostiche di non collasso e tempi delle 16 sonde a 2 epoche in `riepilogo_sonde.json` (`dec` P1 134-149 min, `dec` P2 24-28 min).
+
+## Descrittivi ancora in coda
+
+Endpoint a 1 epoca (`pool` e `dec`), pendenza 1 -> 2 epoche, R0-e1 contro C1 s0 (18,21 su P1) come controllo di coerenza; consuntivo `sacct` della
+valutazione (16 estrazioni, 32 sonde) a code vuote.

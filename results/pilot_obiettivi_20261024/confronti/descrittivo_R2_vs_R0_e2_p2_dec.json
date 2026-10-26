@@ -1,0 +1,100 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "task": "p2",
+ "mode": "due modelli con lo stesso readout (--models); un solo seme per lato (--single-seed): nessun accordo fra semi",
+ "seeds": 1,
+ "reference": [
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/pilot_obiettivi_20261024/R0-e2/p2_dec.json",
+   "S": 0.8314251508565662,
+   "S_se": 0.02357604859992643,
+   "feature_set": "channel_readout/dec",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi/PILOT-R0-A-30M-s0/checkpoint_postdecay.pt",
+   "checkpoint_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
+   "readout": {
+    "layer": "dec",
+    "k_requested": null,
+    "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+   }
+  }
+ ],
+ "candidate": [
+  {
+   "path": "/Users/simonebenatti/wearusfm_local/pilot_obiettivi_20261024/R2-e2/p2_dec.json",
+   "S": 0.8249702958753048,
+   "S_se": 0.024486435486858395,
+   "feature_set": "channel_readout/dec",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_obiettivi/PILOT-R2-regione-30M-s0/checkpoint_postdecay.pt",
+   "checkpoint_sha256": "a13c3e6d03c77da7f590c7350f290fc8a150a8996a01cf55558b8323b8f9996d",
+   "readout": {
+    "layer": "dec",
+    "k_requested": null,
+    "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+   }
+  }
+ ],
+ "comparison": {
+  "A": 0.8314251508565662,
+  "B": 0.8249702958753048,
+  "delta": -0.006454854981261471,
+  "delta_by_model_seed": [
+   -0.006454854981261471,
+   -0.006454854981261471
+  ],
+  "ci95": [
+   -0.01862939755562463,
+   0.006298523893659825
+  ],
+  "paired_subject_se": 0.0063979530112743275,
+  "datasets": {
+   "epn612": {
+    "A": 0.8787473460721867,
+    "B": 0.8810615711252655,
+    "delta": 0.0023142250530787667,
+    "delta_by_model_seed": [
+     0.0023142250530787667,
+     0.0023142250530787667
+    ],
+    "ci95": [
+     -0.001614118895965988,
+     0.006369957537155093
+    ],
+    "paired_subject_se": 0.0020215233895112673
+   },
+   "uci_emg": {
+    "A": 0.7841029556409458,
+    "B": 0.7688790206253441,
+    "delta": -0.015223935015601708,
+    "delta_by_model_seed": [
+     -0.015223935015601708,
+     -0.015223935015601708
+    ],
+    "ci95": [
+     -0.03929871476289471,
+     0.009931628416806233
+    ],
+    "paired_subject_se": 0.012667785971176312
+   }
+  },
+  "beats": false,
+  "not_harmful": true
+ },
+ "bootstrap": {
+  "n_boot": 1000,
+  "seed": 20261009,
+  "method": "soggetti ricampionati insieme per i quattro rapporti (downstream_ab.paired_component), intervallo dei percentili"
+ },
+ "reading": {
+  "beats": false,
+  "not_harmful": true,
+  "verdict": "regola non superata",
+  "min_delta": 0.01,
+  "seeds": 1
+ },
+ "oof_maps": [
+  [
+   "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_obiettivi_20261024",
+   "/Users/simonebenatti/wearusfm_local/pilot_obiettivi_20261024"
+  ]
+ ]
+}
