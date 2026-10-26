@@ -3633,6 +3633,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   fisso; collaudo esteso), review del `critico` su protocollo e codice, poi deploy, checkout, collaudo dell'ingest e regola di validita' da
   firmare, ingest intero, collaudo dbg, training: ciascun job col via di Simone e col preventivo gia' approvato (solo R3 ~49,7 / 67,0 GPU-ora,
   con R3c ~98,1 / 132,0; core-ore ~149 / 531).
+### 2026-10-26 | Claude | Seconda ondata, codice (1/4): riferimento d'uguaglianza dell'estrazione (condizione (b1), commit d9e8fa6) e ingest della posa di emg2pose (modulo `ingest/emg2pose_pose.py`, driver `scripts/ingest_emg2pose_pose.py`, launcher con `CODE_DIR`, 9 test CPU verdi); nessun job | Codice: commit di questa voce
+
+- **(b1)** `tests/cpu/readout_reference.py` + `tests/cpu/data/readout_reference_705ec04.npz` (130 KB, sintetico: modellino di seme 0 e 6 finestre
+  casuali; aggiunto con `-f` oltre la regola `*.npz`, non sono dati di wearable) scritti col codice di `src/wearusfm/` identico a 705ec04 PRIMA di
+  toccare il modello; `test_readout_reference.py` pretende `pool`/`local`/`dec` identici bit per bit e l'inizializzazione di seme 0 invariata.
+- **Ingest della posa:** legge solo `joint_angles`; righe tutte a zero (`|x| <= 1e-8` sui 20 giunti) e non finite non valide, margine
+  `--zero-margin-samples` (default 0, da congelare dopo il collaudo); blocchi da 10 campioni (200 Hz) allineati per indice all'EMG processato,
+  validi solo se interi; per registrazione `pose_200hz_f16.npy`, `pose_valid.npy`, `pose_meta.json` con massimo assoluto per giunto, tratti a
+  zero, **profilo di |differenza prima| per distanza dal bordo dei blocchi di zeri fino a 200 ms contro il valore lontano**, **minimi simultanei
+  senza righe nulle**, campi presenti nel file; selezione del collaudo `--limit N --both-sides` (meta' per lato, quote uguali per
+  `moving_hand`); `--skip-existing`, budget di tempo; `pose_stats.json` per giunto, per lato e insieme, sullo split `train` del CSV (= pretraining
+  del manifest), col criterio congelato per la standardizzazione per lato (0,5 deviazioni / rapporto 1,5). Albero separato
+  `$SCRATCH/data/processed/emg2pose_pose/`; report in `$WORK/wearusfm_runs/results/passo2/`.
+- Prossimi: loader (posa per finestra e per patch), testa + loss + contratto + launcher + pannello fisso, collaudo esteso, suite, `critico`.
 
 ## 2) Problemi trovati
 
