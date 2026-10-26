@@ -35,11 +35,10 @@ from pathlib import Path
 import h5py
 import numpy as np
 
+from wearusfm.data.pose_targets import BLOCK, META_FILE, N_JOINTS, POSE_FILE, STATS_FILE, VALID_FILE  # un'unica definizione, lato dati
 from wearusfm.ingest.emg2pose import NATIVE_FS_HZ, RecordingRef, _SAFE_RE, load_metadata_csv  # noqa: F401  (riesportati per il driver)
 from wearusfm.ingest.kaifosh import time_axis_report
 
-N_JOINTS = 20
-BLOCK = 10  # campioni per blocco: 2000 Hz -> 200 Hz
 POSE_FS_HZ = NATIVE_FS_HZ / BLOCK
 MOCAP_FS_HZ = 60.0
 FRAME_SAMPLES = NATIVE_FS_HZ / MOCAP_FS_HZ  # 33,3 campioni per frame di motion capture
@@ -52,7 +51,6 @@ DIP_MARGIN = int(round(2 * FRAME_SAMPLES))  # lontano almeno due frame da una ri
 JOINTS = ("THUMB_CMC_FE", "THUMB_CMC_AA", "THUMB_MCP_FE", "THUMB_IP_FE",
           *[f"{f}_{j}" for f in ("INDEX", "MIDDLE", "RING", "PINKY") for j in ("MCP_AA", "MCP_FE", "PIP_FE", "DIP_FE")])
 PRETRAINING_SPLIT = "train"
-POSE_FILE, VALID_FILE, META_FILE, STATS_FILE = "pose_200hz_f16.npy", "pose_valid.npy", "pose_meta.json", "pose_stats.json"
 # criterio congelato per la standardizzazione per lato (docs/pilot_posa_v1.md §2 (iv)): per lato se per almeno un giunto |media sx - media dx|
 # supera SIDE_MEAN_SD deviazioni standard congiunte, o se il rapporto fra le deviazioni dei due lati supera SIDE_SD_RATIO
 SIDE_MEAN_SD, SIDE_SD_RATIO = 0.5, 1.5

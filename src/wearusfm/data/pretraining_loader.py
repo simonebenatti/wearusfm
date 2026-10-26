@@ -44,6 +44,7 @@ from pathlib import Path
 import numpy as np
 from scipy import signal as sps
 
+from wearusfm.data import pose_targets as PT
 from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.data.processed import read_scale
@@ -87,6 +88,9 @@ class LoaderConfig:
     multiscale_anchor: bool = False  # target dell'ancora multi-scala (Simone, 04/10/2026, dalla finestra 1)
     # montaggi virtuali dalle griglie HD (D6a, decisione 15 del 04/10; `data.virtual_montage`, parametri da firmare). None = griglie intere
     virtual: VM.VirtualSpec | None = None
+    # target di posa di emg2pose (R3, seconda ondata del pilot degli obiettivi, firmata il 26/10/2026; `data.pose_targets`): albero
+    # `<pose_root>/u<utente>/<stem>/` scritto da `ingest.emg2pose_pose`, con `pose_stats.json`. None = il default (nessun target di posa)
+    pose_root: str | None = None
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
@@ -419,6 +423,9 @@ class PretrainBatch:
     # (C_tot, P_max) int16: numero della maschera estratta che ha nascosto ogni token (0 = visibile; `training.masking.generate_mask_regions`),
     # per il target JEPA per regione (R2 del pilot degli obiettivi); il default del training non lo legge
     region: np.ndarray | None = None
+    # target di posa per campione (R3): (target (P_s, 20) float32 standardizzato, maschera (P_s, 20) bool) per le finestre di emg2pose, None per
+    # gli altri dataset; l'intera lista e' None senza `LoaderConfig.pose_root` (il default del training)
+    pose: list | None = None
 
 
 def time_weighted_probs(index: ManifestIndex, window_s: dict) -> np.ndarray:
@@ -448,6 +455,7 @@ class PretrainLoader:
         self._pool: list[Block] = []
         self.blocks_read = 0
         self.rvq_store = RC.RVQCodeStore(cfg.rvq_codes_root) if cfg.rvq_codes_root else None
+        self.pose_store = PT.PoseStore(cfg.pose_root) if cfg.pose_root else None
 
     def reset_stream_state(self) -> None:
         """Lo stato che porta da un batch all'altro e che influisce sulle estrazioni: pool di blocchi e sessioni saltate. Si azzera all'inizio
@@ -565,8 +573,8 @@ class PretrainLoader:
             picked = [self.sample(rng) for _ in range(batch_size)]
         t = self._tick("sessione_e_finestra", t)
         p_max = max(w.n_patches for _, _, w in picked)
-        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards, regions = \
-            ([] for _ in range(17))
+        signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards, regions, poses = \
+            ([] for _ in range(18))
         for row, src, win in picked:
             view = src.view if isinstance(src, Block) else src
             vm = None
@@ -616,6 +624,8 @@ class PretrainLoader:
             if self.rvq_store is not None:
                 entry = self.rvq_store.get(row) if row["rvq"] == "on" else None
                 rvq_codes.append(RC.window_codes(entry, view, win, layout.n_channels, self.cfg.patch_ms))
+            if self.pose_store is not None:  # R3: una sessione di emg2pose senza posa e' un errore (PoseStore), non un salto
+                poses.append(self.pose_store.window(row, view, win, self.cfg.patch_ms))
             t = self._tick("target_ancore", t)
             rows.append(row)
             wins.append(win)
@@ -626,7 +636,7 @@ class PretrainLoader:
         return PretrainBatch(signals, fs, counts, np.concatenate(qc), packed_codes, CC.pack_attention_sets(sets), np.concatenate(vis),
                              np.concatenate(kind), np.concatenate(rvq), targets, [w.n_patches for w in wins], rows, wins, len(self.skipped_ever),
                              rvq_codes if self.rvq_store is not None else None, presented, band_limit=limits, edge_guard=guards,
-                             region=np.concatenate(regions))
+                             region=np.concatenate(regions), pose=poses if self.pose_store is not None else None)
 
 
 def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
@@ -655,7 +665,8 @@ def split_batch(batch: PretrainBatch, parts: int) -> list[PretrainBatch]:
                            presented=batch.presented[s0:s1] if batch.presented is not None else None,
                            band_limit=batch.band_limit[s0:s1] if batch.band_limit is not None else None,
                            edge_guard=batch.edge_guard[s0:s1] if batch.edge_guard is not None else None,
-                           region=batch.region[a:b, :p] if batch.region is not None else None))
+                           region=batch.region[a:b, :p] if batch.region is not None else None,
+                           pose=batch.pose[s0:s1] if batch.pose is not None else None))
     return out
 
 
