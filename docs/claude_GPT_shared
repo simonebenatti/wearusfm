@@ -3772,6 +3772,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   un readout per canale non cambierebbe l'esito del criterio. Riepilogo delle 16 sonde a 2 epoche in `riepilogo_sonde.json` (i `dec` sono sugli
   stessi checkpoint dei `pool`, SHA uguali).
 - Restano: B2 (endpoint a 1 epoca, 10/16 sottomesse), pendenza 1 -> 2, R0-e1 contro C1 s0, consuntivo `sacct`.
+### 2026-10-26 | Claude | Pilot degli obiettivi: blocco B2 (endpoint a 1 epoca) alimentato per intero, 16 sonde su 16 sottomesse (ultime quattro alle 17:18); attesa armata sulle 16; alimentatore chiuso con uscita 0 dopo tre errori ssh transitori (16:10-16:57) | Codice: nessuno
+
+- ID: `pool` P1 62284911 (R0), 62291015 (R1), 62291939 (R2), 62313968 (R5); `pool` P2 62321765, 62326635, 62330152, 62331780; `dec` P1 62336274,
+  62340076, 62342956, 62344748; `dec` P2 62355768, 62355776, 62355779, 62355781. Una alla volta sulla seriale (tetto di CPU per utente): le
+  `dec` P1 da 2 h 20-2 h 30 l'una; chiusura stimata domani in giornata.
+- In fila con loro il checkout di campagna di R3 (62341827, quarto in attesa). Alla fine di B2: 12 confronti descrittivi (`pool` e `dec` a 1
+  epoca contro R0-e1), pendenza 1 -> 2 per braccio, R0-e1 contro C1 s0 (18,21 su P1), per dataset, consuntivo `sacct` della valutazione.
 
 ## 2) Problemi trovati
 
