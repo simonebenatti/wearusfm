@@ -3624,6 +3624,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   job di scorta; standardizzazione per lato se per un giunto |media sx - media dx| > 0,5 deviazioni congiunte o rapporto delle deviazioni > 1,5.
 - Nessun job, nessun deploy, nessun codice: il codice (ingest della posa, loader, testa, loss, launcher, test) si scrive dopo la firma di Simone
   sul disegno. Le sonde del pilot (A2, B2) continuano in coda.
+### 2026-10-26 | Claude | Seconda ondata del pilot degli obiettivi: FIRMATA da Simone (regola §5, deroghe a v10 §6.1 e §6.5/§3.7, soglie congelate, mano non sollecitata tenuta), CON il controllo R3c; via al codice e ai test, nessun job senza il suo via | Codice: inizia ora sul ramo di Claude
+
+- Simone, 26/10/2026: «Firmo la regola di lettura del §5 di docs/pilot_posa_v1.md, le deroghe a v10 §6.1 e §6.5/§3.7, le soglie congelate e la scelta sulla mano non sollecitata; seconda ondata CON il controllo R3c. Via al codice e ai test; nessun job senza il mio via.»
+- Conseguenze: la regola del §5 e le soglie registrate in `decisioni.md` (voce della proposta) sono congelate da ora; R3c entra nel piano
+  (`results/infra/pilot_posa/piano.json` lo ha gia'); prossimi passi nell'ordine del §6: codice e test CPU (riferimento d'uguaglianza
+  dell'estrazione prodotto col codice attuale PRIMA di toccare il modello; ingest della posa; loader; testa, loss e contratto; launcher e pannello
+  fisso; collaudo esteso), review del `critico` su protocollo e codice, poi deploy, checkout, collaudo dell'ingest e regola di validita' da
+  firmare, ingest intero, collaudo dbg, training: ciascun job col via di Simone e col preventivo gia' approvato (solo R3 ~49,7 / 67,0 GPU-ora,
+  con R3c ~98,1 / 132,0; core-ore ~149 / 531).
 
 ## 2) Problemi trovati
 

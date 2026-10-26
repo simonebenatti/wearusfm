@@ -4401,3 +4401,9 @@ configurazione candidata al default della finestra 1 e' R3 cosi' com'e' (ancore 
 **Descrittivi, fuori dal criterio:** `dec` per canale a 768, l'endpoint a 1 epoca, la pendenza 1 -> 2, i confronti con R3c (R3 contro R3c, R3c
 contro R0) se R3c e' stato lanciato, l'errore di posa sul pannello fisso, le loss e le diagnostiche. R3 non passa -> si registra e il default non
 cambia; la mossa successiva la decide Simone. **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1, R4, A + posa.»
+
+**Seconda ondata del pilot degli obiettivi: regola di lettura, deroghe, soglie e mano non sollecitata FIRMATE; CON il controllo R3c; via al codice e ai test; nessun job senza il via (Simone, 26/10/2026).**
+Testo di Simone: «Firmo la regola di lettura del §5 di docs/pilot_posa_v1.md, le deroghe a v10 §6.1 e §6.5/§3.7, le soglie congelate e la scelta sulla mano non sollecitata; seconda ondata CON il controllo R3c. Via al codice e ai test; nessun job senza il mio via.» Restano congelati il testo della regola e le soglie della voce precedente («Seconda ondata del pilot degli obiettivi:
+PROPOSTA di R3 ...»); la regola di validita' dei campioni di posa si congela qui dopo il collaudo dell'ingest, con la firma di Simone, prima
+dell'ingest intero. Budget della seconda ondata con R3c: ~98,1 GPU-ora attese, tetto 132,0 (piu' eventuale job di scorta +51 di tetto), ~149 /
+531 core-ore; voce: finestra 1, famiglia «Ablation a 30M». Ogni job si sottomette solo col via di Simone.

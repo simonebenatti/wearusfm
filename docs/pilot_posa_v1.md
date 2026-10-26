@@ -1,6 +1,6 @@
 # Seconda ondata del pilot degli obiettivi: R3, ancore + testa di posa su emg2pose, senza JEPA — `pilot_posa_v1`
 
-**Stato: PROPOSTA (Claude, 26/10/2026), passata tre volte dal `critico` lo stesso giorno: prima review DA RIVEDERE (8 bloccanti, 9 minori),
+**Stato: FIRMATA da Simone il 26/10/2026** («Firmo la regola di lettura del §5 di docs/pilot_posa_v1.md, le deroghe a v10 §6.1 e §6.5/§3.7, le soglie congelate e la scelta sulla mano non sollecitata; seconda ondata CON il controllo R3c. Via al codice e ai test; nessun job senza il mio via.») **: regola §5, deroghe (§2), soglie del §2 (iii)-(iv) e del §6 (punto 7), mano non sollecitata tenuta, CON R3c; codice e test in corso, nessun job senza il via. Storia della proposta:** passata tre volte dal `critico` lo stesso giorno: prima review DA RIVEDERE (8 bloccanti, 9 minori),
 seconda DA RIVEDERE (3 bloccanti, 6 minori), terza DA RIVEDERE con un solo bloccante (la condizione (b) del §3, riscritta attorno a tre controlli
 d'uguaglianza) e 5 minori, tutti ripresi in questa versione; il `critico` rivede protocollo e codice insieme prima di qualunque job (§6, punto 3).
 In attesa della firma di Simone su: regola di lettura (§5), deroghe dichiarate a v10 §6.1 e §6.5/§3.7 (§2), soglie congelate del §2 (iii)-(iv) e
