@@ -292,6 +292,12 @@ deviazione congiunta per lato = sqrt((s_sx^2 + s_dx^2) / 2); nella chiusura degl
 dichiarata, `pose_targets` e `pose_head` si caricano solo coi rami della posa; `--skip-existing` dell'ingest salta solo a regola uguale.
 Test CPU della posa: 44 in sei file (riferimento 4, ingest 9, target 6, obiettivo 7, training 5, collaudo 3), piu' i flag.
 
+**Precisazione (26/10, sera, PRIMA del rapporto del collaudo; voce in `decisioni.md`):** la regola che trasforma il profilo dei bordi in M e'
+congelata in `decisioni.md` e nel codice (`margin_from_collaudo`): precondizioni (15 per lato, zeri fra 2% e 40%, radianti, nessun file fallito);
+M = `lag_to` dell'ultimo bin fuori tolleranza (0,25 sul rapporto con la media lontana, bin con almeno 200 campioni); M = 0 se il profilo e' piatto;
+«non determinato» se non rientra entro 200 ms (profilo da allungare, non M a occhio); «V» tollerate fino allo 0,1% delle righe non nulle, sopra serve
+una regola in piu'. Il §6, punto 5, resta: il valore di M lo firma Simone.
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |

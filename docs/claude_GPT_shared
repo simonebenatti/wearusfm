@@ -3799,6 +3799,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di R3 -> lettura del cancello -> [6] R3. Lo stato di B2 (sonde del pilot a 1 epoca) e' separato: alle 19:53 la `dec` P1 di R0 era finita, quella
   di R1 in esecuzione.
 
+### 2026-10-26 | Claude | Seconda ondata: regola di lettura del collaudo dell'ingest (margine M e «V») CONGELATA prima del rapporto, in codice con test (`margin_from_collaudo`) e in decisioni.md; Simone: «ok firmo se proponi bene»: la proposta di M la calcola il codice dal rapporto del job 62364572 | Codice: commit di questa voce
+
+- Spiegato a Simone che cosa e' M (campioni da scartare ai bordi di ogni blocco di zeri, perche' interpolazione e passa-basso spalmano il buco
+  sui vicini) e perche' si decide dal collaudo e non a occhio. Per «proporre bene» la regola si scrive prima dei numeri, come le soglie del §5.
+- Regola (testo integrale in `decisioni.md`): precondizioni -> M = `lag_to` dell'ULTIMO bin del profilo fuori tolleranza (|rapporto - 1| > 0,25, bin
+  con >= 200 campioni), 0 se piatto, «non determinato» se fuori anche a 200 ms (allungare il profilo, non scegliere); «V» tollerate fino allo 0,1%
+  delle righe non nulle; perdita riportata (2 M x blocchi di zeri / righe). Perche' 0,25: interpretazione dichiarata (contaminazione attesa di un
+  ordine di grandezza, bin con migliaia di campioni).
+- Codice: `margin_from_collaudo` + `__main__` nel modulo dell'ingest; test sintetico (ultimo bin comanda, piatto, non torna, bin magri, «V», quattro
+  precondizioni, riga di comando) e aggancio al rapporto vero del driver (nomi dei campi). File del test: 9 -> 10. Suite completa: 1.445 verdi + il nuovo (`~/wearusfm_local/logs/suite_cpu_margine_20261026.txt`;
+  alla prima passata il pezzo da riga di comando importava il pacchetto installato dal `main` invece del worktree: corretto con `PYTHONPATH`
+  come nel test del driver, rilanciato il file nei due modi). Nessun cambio al checkout c5e42cb: la lettura gira sul Mac sul JSON copiato.
+- Prossimo: rapporto del collaudo -> `python3 -m wearusfm.ingest.emg2pose_pose <rapporto>` -> proposta di M con i numeri -> firma di Simone -> [4].
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

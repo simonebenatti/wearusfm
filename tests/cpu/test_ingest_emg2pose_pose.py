@@ -208,6 +208,13 @@ def test_driver_collaudo_then_full_ingest_with_skip_and_stats(tmp_path):
     assert report["collaudo"]["fields_in_first_file"]["timeseries_fields"] == ["time", "joint_angles", "emg"]
     assert report["collaudo"]["edge_profile"]["bins"][0]["n"] > 0 and report["collaudo"]["frac_zero_rows"] > 0
     assert len(list(out.rglob(PP.META_FILE))) == 4
+    # la regola del margine legge il rapporto VERO (stessi nomi dei campi): qui 2 per lato e 1,7% di zeri, quindi si ferma SOLO su quelle due
+    # precondizioni (lati, frazione di zeri), e il resto della lettura (profilo, perdita, «V») viene comunque calcolato
+    lettura = PP.margin_from_collaudo(report)
+    problemi = lettura["precondizioni"]["problemi"]
+    assert len(problemi) == 2 and {p.split(" ")[0] for p in problemi} == {"lati", "frazione"}
+    assert lettura["margine"]["stato"] in ("determinato", "nessuna_contaminazione", "non_determinato") and lettura["perdita"]["rows"] == 4 * 1200
+    assert lettura["V"]["frac_dip_rows_over_nonzero"] is not None and lettura["proposta"].startswith("FERMARSI")
     # ingest intero con margine 33, ripresa (--skip-existing) e statistiche: le 4 del collaudo (margine 0) si RIFANNO con la regola nuova, le
     # altre 2 si fanno; nessuna saltata (saltare vale solo a regola uguale)
     r2 = subprocess.run([sys.executable, str(SCRIPT), "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(out), "--report", str(rep),
@@ -235,3 +242,50 @@ def test_launcher_uses_the_frozen_checkout_and_writes_outside_the_repo():
     assert "lib_code_dir.sh" in text and "code_dir_setup" in text and 'cd "$WORK/wearusfm"' not in text
     assert "emg2pose_pose_ingest_report_${SLURM_JOB_ID}.json" in text and "$SCRATCH/data/processed/emg2pose_pose" in text
     assert "--time-budget-s 13200" in text and "lrd_all_serial" in text and "--cpus-per-task=2" in text
+
+
+# --- regola per il margine M dal rapporto del collaudo (congelata prima del rapporto) --------------------------------------------------------
+
+def _report(ratios, *, far=0.002, n=1000, sides=(20, 20), frac_zero=0.127, max_abs=3.3, dips_rows=0, failed=None, n_samples=600000, n_runs=30):
+    bins = [{"lag_from": 1 + 10 * i, "lag_to": 10 + 10 * i, "n": n, "mean_abs_diff": far * r} for i, r in enumerate(ratios)]
+    recs = [{"n_samples": n_samples, "n_zero_rows": int(frac_zero * n_samples), "n_zero_runs": n_runs,
+             "n_invalid_rows": int(frac_zero * n_samples)} for _ in range(sum(sides))]
+    return {"collaudo": {"per_side": {"left": sides[0], "right": sides[1]}, "frac_zero_rows": frac_zero, "max_abs_overall": max_abs,
+                         "n_nonfinite_rows": 0, "edge_profile": {"bins": bins, "far_mean_abs_diff": far, "far_n": 10 ** 6},
+                         "simultaneous_dips": {"n_dip_rows_total": dips_rows, "n_dip_runs_total": dips_rows // 3,
+                                               "recordings_with_dips": 1 if dips_rows else 0}},
+            "per_recording": recs, "failed": failed or {}}
+
+
+def test_margin_rule_from_the_collaudo_report_is_frozen_and_mechanical(tmp_path):
+    ratios = [6.0, 2.5, 1.3, 1.1, 0.95] + [1.0] * 35
+    r = PP.margin_from_collaudo(_report(ratios))
+    assert r["precondizioni"]["ok"] and r["margine"]["M"] == 30 and r["margine"]["stato"] == "determinato"
+    assert r["proposta"].startswith("M = 30 campioni (15 ms")
+    assert abs(r["perdita"]["frac_rows_margine_tetto"] - 2 * 30 * 30 / 600000) < 1e-12  # tetto 2 M n_blocchi / righe
+    # comanda l'ULTIMO bin fuori, anche se in mezzo il profilo rientra
+    assert PP.margin_from_collaudo(_report([3.0, 1.0, 1.0, 1.0, 1.4] + [1.0] * 35))["margine"]["M"] == 50
+    # profilo piatto: nessuna contaminazione, M = 0
+    r3 = PP.margin_from_collaudo(_report([1.0] * 40))
+    assert r3["margine"]["stato"] == "nessuna_contaminazione" and r3["margine"]["M"] == 0 and r3["perdita"]["frac_rows_margine_tetto"] == 0.0
+    # non torna entro il massimo misurato: non si inventa un M
+    r4 = PP.margin_from_collaudo(_report([2.0] * 40))
+    assert r4["margine"]["M"] is None and r4["margine"]["stato"] == "non_determinato" and r4["proposta"].startswith("FERMARSI")
+    # un bin troppo magro non conta
+    thin = _report(ratios)
+    thin["collaudo"]["edge_profile"]["bins"][2]["n"] = 50
+    assert PP.margin_from_collaudo(thin)["margine"]["M"] == 20 and PP.margin_from_collaudo(thin)["profilo"]["n_bins_non_contati"] == 1
+    # «V» oltre lo 0,1% delle righe non nulle: M c'e', ma la proposta chiede la regola in piu'
+    r5 = PP.margin_from_collaudo(_report(ratios, dips_rows=30000))
+    assert r5["V"]["regola_aggiuntiva_necessaria"] and "regola in piu'" in r5["proposta"] and r5["margine"]["M"] == 30
+    assert not PP.margin_from_collaudo(_report(ratios, dips_rows=2000))["V"]["regola_aggiuntiva_necessaria"]
+    # precondizioni: non radianti, un lato solo, file falliti, zeri implausibili -> FERMARSI
+    for bad in (dict(max_abs=12.0), dict(sides=(40, 0)), dict(failed={"x": "err"}), dict(frac_zero=0.6)):
+        rb = PP.margin_from_collaudo(_report(ratios, **bad))
+        assert not rb["precondizioni"]["ok"] and rb["proposta"].startswith("FERMARSI")
+    # da riga di comando, sul file del rapporto (come dal Mac dopo il rsync)
+    path = tmp_path / "rapporto.json"
+    path.write_text(json.dumps(_report(ratios)))
+    out = subprocess.run([sys.executable, "-m", "wearusfm.ingest.emg2pose_pose", str(path)], capture_output=True, text=True, check=True,
+                         env={"PYTHONPATH": str(REPO / "src"), "PATH": "/usr/bin:/bin"})  # il modulo del worktree, non quello installato
+    assert json.loads(out.stdout)["margine"]["M"] == 30

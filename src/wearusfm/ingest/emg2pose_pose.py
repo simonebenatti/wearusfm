@@ -366,3 +366,95 @@ def load_stats(root: Path) -> tuple[np.ndarray, np.ndarray | None, np.ndarray | 
     raw = p.read_bytes()
     stats = json.loads(raw)
     return stats, hashlib.sha256(raw).hexdigest()
+
+
+# --- regola per il margine M, dal rapporto del collaudo (congelata il 26/10/2026 PRIMA di leggere il rapporto; `docs/decisioni.md`) -----------
+MARGIN_TOL = 0.25  # un bin del profilo e' «fuori» se la sua |differenza prima| media si scosta piu' del 25% dal valore lontano dai bordi
+MARGIN_MIN_N = 200  # un bin con meno campioni non conta (ne' dentro ne' fuori)
+DIP_FRAC_MAX = 1e-3  # «V» tollerate: righe nei minimi simultanei fino allo 0,1% delle righe non nulle; oltre serve una regola in piu'
+ZERO_FRAC_RANGE = (0.02, 0.40)  # frazione di righe a zero plausibile sul collaudo (paper: 12,7%)
+MAX_ABS_RADIANS = 7.0  # oltre 2 pi (piu' un margine) gli angoli non sono radianti: fermarsi
+SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
+
+
+def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = MARGIN_MIN_N, dip_frac_max: float = DIP_FRAC_MAX) -> dict:
+    """Legge il rapporto JSON del collaudo (`scripts/ingest_emg2pose_pose.py --limit N --both-sides`) e applica la regola congelata.
+    Precondizioni (se una manca: FERMARSI, nessun M): almeno `SIDE_MIN_RECORDINGS` registrazioni per lato, frazione di righe a zero in
+    `ZERO_FRAC_RANGE`, massimo assoluto <= `MAX_ABS_RADIANS`, nessuna registrazione fallita. Margine: M = `lag_to` dell'ULTIMO bin del profilo dei
+    bordi fuori tolleranza (|media del bin / media lontana - 1| > tol, bin con almeno min_n campioni); 0 se nessun bin e' fuori; «non
+    determinato» se e' fuori anche l'ultimo bin (il profilo non torna entro il massimo misurato: si allunga il profilo, non si sceglie a occhio).
+    «V»: nessuna regola in piu' se le righe nei minimi simultanei sono <= dip_frac_max delle righe non nulle. Riporta anche il tetto della
+    perdita di righe dovuta a M (2 M per blocco di zeri)."""
+    col = report.get("collaudo") or {}
+    recs = report.get("per_recording") or []
+    problems = []
+    per_side = col.get("per_side") or {}
+    sides_ok = {s: n for s, n in per_side.items() if n >= SIDE_MIN_RECORDINGS}
+    if len(sides_ok) < 2:
+        problems.append(f"lati con almeno {SIDE_MIN_RECORDINGS} registrazioni: {sides_ok} (ne servono due)")
+    fz = col.get("frac_zero_rows")
+    if fz is None or not (ZERO_FRAC_RANGE[0] <= fz <= ZERO_FRAC_RANGE[1]):
+        problems.append(f"frazione di righe a zero {fz} fuori da {ZERO_FRAC_RANGE}")
+    mx = col.get("max_abs_overall")
+    if mx is None or mx > MAX_ABS_RADIANS:
+        problems.append(f"massimo assoluto {mx} oltre {MAX_ABS_RADIANS}: non radianti?")
+    n_failed = len(report.get("failed") or {})
+    if n_failed:
+        problems.append(f"{n_failed} registrazioni fallite")
+    rows = sum(int(r["n_samples"]) for r in recs)
+    zero_rows_total = sum(int(r["n_zero_rows"]) for r in recs)
+    runs_total = sum(int(r["n_zero_runs"]) for r in recs)
+    invalid0 = sum(int(r["n_invalid_rows"]) for r in recs)
+    out = {"precondizioni": {"ok": not problems, "problemi": problems, "per_side": per_side, "frac_zero_rows": fz, "max_abs_overall": mx,
+                             "n_nonfinite_rows": col.get("n_nonfinite_rows"), "n_failed": n_failed, "n_recordings": len(recs)},
+           "soglie": {"tol": tol, "min_n": min_n, "dip_frac_max": dip_frac_max, "zero_frac_range": list(ZERO_FRAC_RANGE),
+                      "max_abs_radians": MAX_ABS_RADIANS, "side_min_recordings": SIDE_MIN_RECORDINGS}}
+    prof = col.get("edge_profile") or {}
+    far = prof.get("far_mean_abs_diff")
+    bins = []
+    last_out = None
+    for b in prof.get("bins") or []:
+        m = b.get("mean_abs_diff")
+        counted = bool(far) and m is not None and int(b["n"]) >= min_n
+        ratio = (m / far) if counted else None
+        outside = bool(counted and abs(ratio - 1.0) > tol)
+        bins.append({"lag_from": b["lag_from"], "lag_to": b["lag_to"], "n": b["n"], "ratio": ratio, "conta": counted, "fuori": outside})
+        if outside:
+            last_out = int(b["lag_to"])
+    if not far or not bins:
+        stato, M, why = "non_determinato", None, "profilo dei bordi assente o valore lontano nullo"
+    elif bins[-1]["fuori"]:
+        stato, M = "non_determinato", None
+        why = f"anche l'ultimo bin (fino a {bins[-1]['lag_to']} campioni) e' fuori tolleranza: il profilo non torna entro il massimo misurato"
+    elif last_out is None:
+        stato, M, why = "nessuna_contaminazione", 0, "nessun bin fuori tolleranza"
+    else:
+        stato, M, why = "determinato", last_out, f"ultimo bin fuori tolleranza: fino a {last_out} campioni dal bordo"
+    out["profilo"] = {"far_mean_abs_diff": far, "far_n": prof.get("far_n"), "bins": bins,
+                      "n_bins_non_contati": sum(1 for b in bins if not b["conta"])}
+    out["margine"] = {"M": M, "stato": stato, "motivo": why}
+    out["perdita"] = {"rows": rows, "frac_zero_rows": zero_rows_total / rows if rows else None, "n_zero_runs": runs_total,
+                      "frac_invalid_m0": invalid0 / rows if rows else None,
+                      "frac_rows_margine_tetto": (min(1.0, 2 * M * runs_total / rows) if rows else None) if M else (0.0 if M == 0 else None)}
+    dips = col.get("simultaneous_dips") or {}
+    nonzero = rows - zero_rows_total
+    frac_dip = (int(dips.get("n_dip_rows_total", 0)) / nonzero) if nonzero else None
+    out["V"] = {"n_dip_rows_total": dips.get("n_dip_rows_total"), "n_dip_runs_total": dips.get("n_dip_runs_total"),
+                "recordings_with_dips": dips.get("recordings_with_dips"), "frac_dip_rows_over_nonzero": frac_dip,
+                "regola_aggiuntiva_necessaria": None if frac_dip is None else bool(frac_dip > dip_frac_max)}
+    if problems:
+        out["proposta"] = "FERMARSI: precondizioni non soddisfatte (" + "; ".join(problems) + ")"
+    elif stato == "non_determinato":
+        out["proposta"] = "FERMARSI: margine non determinato (" + why + "); allungare il profilo e ripetere il collaudo"
+    elif out["V"]["regola_aggiuntiva_necessaria"]:
+        out["proposta"] = (f"M = {M} campioni, MA le «V» superano la soglia ({frac_dip:.2e} > {dip_frac_max}): serve una regola in piu' "
+                           "prima dell'ingest intero")
+    else:
+        out["proposta"] = f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri); nessuna regola per le «V»"
+    return out
+
+
+if __name__ == "__main__":  # python3 -m wearusfm.ingest.emg2pose_pose <rapporto del collaudo>.json
+    import sys
+
+    print(json.dumps(margin_from_collaudo(json.loads(Path(sys.argv[1]).read_text())), indent=1))

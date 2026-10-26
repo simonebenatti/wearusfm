@@ -4447,3 +4447,28 @@ validita' dei campioni di posa (dopo il collaudo dell'ingest) e la lettura del c
 Deploy `deploy/pilot-posa-20261026` = c5e42cb99b4dc0a105495de70946a411b0523dbc.
 Consuntivo parziale (26/10/2026, 19:54): checkout 62341827 COMPLETED (19:53); sottomessi il collaudo dell'ingest 62364572 (0 GPU-ora), R3c
 tronco 62364571 e ramo 62364573 (tetti 51 + 9 GPU-ora, 47,0 attese). Spesa a oggi: 0 GPU-ora. Passi [4] e [6] fermi alle due decisioni.
+
+**Seconda ondata: REGOLA DI LETTURA DEL COLLAUDO DELL'INGEST (margine M e «V») CONGELATA PRIMA DEL RAPPORTO (Claude, 26/10/2026, sera; job
+62364572 in coda; Simone: «ok firmo se proponi bene»: il valore di M che ne esce lo propone il codice e lo firma Simone, qui sotto).**
+- **Precondizioni** (se una manca: FERMARSI, nessun M): almeno 15 registrazioni per lato sulle 20 chieste; frazione di righe a zero fra il 2% e il
+  40% (paper: 12,7%); massimo assoluto per giunto <= 7 (radianti); nessuna registrazione fallita.
+- **Margine.** Profilo dei bordi del rapporto: bin di 10 campioni (un blocco a 200 Hz) fino a 400 campioni (200 ms), media di |differenza prima|
+  pesata sui campioni di tutte le registrazioni, contro la media lontana (> 400 campioni da ogni riga a zero). Un bin e' «fuori» se
+  |media del bin / media lontana - 1| > 0,25 e ha almeno 200 campioni (sotto, non conta). **M = `lag_to` dell'ULTIMO bin fuori** (quindi un multiplo
+  di 10); **M = 0** se nessun bin e' fuori (profilo piatto: gli zeri sono stati messi dopo filtro e interpolazione, niente da togliere); se e' fuori
+  anche l'ultimo bin, M e' **non determinato**: si allunga il profilo (`PROFILE_MAX_LAG`: codice, review del `critico`, secondo deploy e checkout) e si
+  ripete il collaudo. Non si sceglie M a occhio e non si sceglie fra i bin con un criterio diverso da questo.
+- **«V»** (minimi simultanei dei 20 giunti senza righe a zero, norma < 5% della mediana, ad almeno 67 campioni dagli zeri): nessuna regola in piu'
+  se le righe nei minimi sono <= 0,1% delle righe non nulle delle 40 registrazioni; sopra, la regola di validita' deve includerle (codice nuovo,
+  `critico`, secondo deploy e checkout) PRIMA dell'ingest intero, e M da solo non basta.
+- **Perdita** riportata, non vincolante: tetto della frazione di righe tolte dal margine = 2 M x (blocchi di zeri) / righe, oltre a quelle gia'
+  non valide a M = 0.
+- *Perche' 0,25 (interpretazione, non misura):* ogni bin raccoglie migliaia di campioni (errore statistico sotto il 5%); la tolleranza assorbe le
+  differenze di comportamento della mano vicino a una perdita di tracking; una contaminazione da rampa o da transitorio del filtro vale un ordine
+  di grandezza (stima: rampa da ~0,5 rad a 0 in un frame = ~0,015 rad per campione, contro ~0,001-0,003 del movimento filtrato a 15 Hz). Il
+  collaudo lo verifica: se il profilo fosse ambiguo (fra 1,1 e 1,4 per molti bin), M verrebbe grande e la perdita lo direbbe.
+- **Codice:** `margin_from_collaudo` in `src/wearusfm/ingest/emg2pose_pose.py` (`python3 -m wearusfm.ingest.emg2pose_pose <rapporto.json>`;
+  soglie = costanti del modulo `MARGIN_TOL`, `MARGIN_MIN_N`, `DIP_FRAC_MAX`, `ZERO_FRAC_RANGE`, `MAX_ABS_RADIANS`, `SIDE_MIN_RECORDINGS`), test
+  sintetico e sul rapporto vero del driver in `tests/cpu/test_ingest_emg2pose_pose.py` (9 -> 10 test). L'ingest intero [4] riceve M con
+  `--zero-margin-samples M`: nessun cambio al checkout c5e42cb se M e' determinato e le «V» stanno sotto soglia. Firma di Simone sul valore di M:
+  voce successiva, dopo il rapporto.
