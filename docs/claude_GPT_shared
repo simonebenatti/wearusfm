@@ -3574,6 +3574,56 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Attesa armata (agente leggero, `scripts/leonardo_watch.py --mode all`, `watch_pilot_eval_dec_e2.txt`, tetto 48 h): a 8/8 COMPLETED si
   leggono i descrittivi `dec` a 2 epoche (6 confronti, blocco C del file dei comandi), fuori dal criterio.
 - B2 (endpoint a 1 epoca): 3 sonde su 16 in coda (62284911, 62291015, 62291939), 13 in alimentazione (`feed_pilot_eval_B2.txt`).
+### 2026-10-26 | Claude | Valutazione del pilot: caduta di rete del Mac (~09:00-09:57) che ha ucciso gli agenti leggeri dell'alimentatore B2 e dell'attesa A2 (e una review del `critico`); riarmati alle 09:58 come processi in background dal Mac, nessuna sottomissione doppia; A2 4/8, B2 6/16 | Codice: nessuno
+
+- L'alimentatore B2 aveva registrato l'ultimo giro alle 08:57 e alle 09:56 «squeue non risponde: Connection closed»; i tre agenti sono caduti con
+  «Can't reach the API server (ENOTFOUND)». Riarmo con gli stessi comandi (`leonardo_feed.py --select='--id PILOT-EVAL-probe-R[0-9]-e1-'`,
+  `leonardo_watch.py` sulle 8 sonde `dec` di A2), stavolta come cicli in background del tool Bash sul Mac (richiamo sull'uscita 3) invece che
+  dentro un agente: non dipendono dall'API. Lo stato sta nei file `.state.json` e nel ledger: l'alimentatore ha ripreso da «sottomessi 5/16»
+  senza ripetere nulla (alle 10:01, coda 9/10, sottomessa `PILOT-EVAL-probe-R1-e1-p2-pool`, job 62326635). Due errori ssh transitori alle
+  09:58 («Permission denied (publickey...)» da un login node), poi regolare.
+- A2: `PILOT-EVAL-probe-R5-e2-p1-dec` (62281122) COMPLETED alle 09:59 in 2 h 14 (le quattro `dec` su P1: 2 h 14 - 2 h 29); restano le quattro su
+  P2. Nessun costo aggiuntivo, nessun job perso.
+
+### 2026-10-26 | Claude | Seconda ondata del pilot degli obiettivi: PROPOSTA di R3 (ancore + testa di posa su emg2pose, senza JEPA) con preventivo (`docs/pilot_posa_v1.md`, `results/infra/pilot_posa/`); due review del `critico` e un giro di fact-checker; regola §5 e due deroghe DA FIRMARE; nessun job | Codice: nessuno (solo documenti); commit di questa voce
+
+- **Richiesta di Simone (26/10, dopo lo stato del pilot):** «si ma mi sembra che questi approci non funzionino, serve qualcoìsa di meglio. quando
+  finisce quello sch sta girando adesso cosa facciamo?» e poi «Sì, prepara la proposta della seconda ondata con R3 (ancore + testa di posa su
+  emg2pose, senza JEPA) e il preventivo; nessun job senza il mio via.» *Lettura di Claude dell'evidenza, alla base della proposta:* ancore-only =
+  A (4 letture), JEPA-only collassa, il rango non cresce con la taglia, le tre varianti del JEPA della prima ondata non danno nulla: l'informazione
+  lineare viene dai bersagli esterni, e un bersaglio alla scala del movimento e' la leva non ancora provata.
+- **Che cosa propone:** R3 = ancore 0,2 + testa di posa lineare (`LayerNorm` + `Linear(d, 20)`) sulla media dei K latenti del backbone per istante
+  (la parte di `pool_p1p2` che il criterio legge), target = 20 angoli di emg2pose standardizzati per giunto, su tutte le patch con target valido,
+  peso 1,0, `--jepa-weight 0`; stesso disegno del pilot (30M, seme 0, tronco 2 epoche + ramo a 1); riferimento R0 del pilot gia' fatto (nessun nuovo
+  R0, condizioni (a)-(d) del §3 per la comparabilita'); R3c = ancore-only a 2 epoche come controllo consigliato e separabile (attribuzione alla
+  posa); criterio §5 = R3 contro R0 su P1 e P2, +1 punto con IC95 sopra zero, un seme, conferma col seme 1 se passa.
+- **Da firmare:** regola §5; deroga a v10 §6.1 (target non calcolato dal raw); deroga a v10 §6.5/§3.7 (peso di loss e ritardo zero: il backbone e'
+  bidirezionale); scelta sulle registrazioni a mano non sollecitata (23% delle ore di emg2pose nel pretraining: tenute); con o senza R3c; dopo il
+  collaudo dell'ingest, la regola di validita' dei campioni (proposta: riga tutta a zero o entro 33 campioni da una, blocco a 200 Hz valido solo
+  se intero) e la standardizzazione per lato o insieme.
+- **Preventivo** (`results/infra/pilot_posa/preventivo.json`, training da `wsd_chain.py` a 0,75 s/passo): solo R3 ~49,7 / 67,0 GPU-ora
+  (collaudo dbg 1,3 / 2; tronco 41,9 / 51 con 12 h 45 di tetto; ramo 5,1 / 9; estrazioni 1,4 / 5) e ~79 / 275 core-ore (ingest 7,4 / 17 in 3
+  job; checkout 0,4 / 2; 8 sonde 70,8 / 256); con R3c ~98,1 / 132 GPU-ora e ~149 / 531 core-ore; job di scorta +51 di tetto solo se s/passo > 0,81
+  al collaudo; conferma se passa 94 / 120 + 2,8 / 10 GPU-ora e 141,6 / 512 core-ore. Voce: finestra 1, famiglia «Ablation a 30M» (~530 spese
+  finora con W1ARM e pilot; residuo indicativo della finestra ~5.300, da confermare col consuntivo). Calendario dal via: 4-5 giorni (5-6 con R3c).
+- **Prima review del `critico` (26/10): DA RIVEDERE, 8 bloccanti e 9 minori,** tutti ripresi: §6.5/§3.7 non citati; «guanto» (e' mocap) e
+  validita' decisa prima di misurarla; mano non sollecitata sottostimata (540 registrazioni contro 4.973, 66,3 h: ricalcolato dal CSV dei
+  metadati); peso 0,2 che faceva scattare il cancello (ancore pesate 2,0 al passo 500 di R0 contro posa ~1: ora peso 1,0 e cancello [0,25; 1,0]);
+  attribuzione alla posa non misurabile senza controllo (R3c); ingest prima del `critico` e del checkout (riordinato, launcher con `CODE_DIR`);
+  nessuna soglia s/passo (0,81 congelata, scorta); condizione di comparabilita' mancante (percorso di estrazione, test d'uguaglianza, ambiente);
+  minori: RVQ, quota dell'unita', «peggiora», 540, definizione per mano, `arms_collaudo` e parametri non usati, 3 job di ingest, budget della
+  famiglia, durate `dec`, percorso del report, sfasamento della griglia, registrazione.
+- **Fact-checker (26/10) sulla posa di emg2pose** (`docs/fatti_da_verificare.md`, riga 28, stato `raccolto`): mocap ottico a 26 telecamere a 60 Hz,
+  cinematica inversa offline, interpolazione lineare a 2 kHz, passa-basso 15 Hz; fallimenti IK (12,7% dei frame) = righe tutte a zero senza
+  maschera nel file; radianti solo dai commenti del codice; specchiatura degli angoli per la mano sinistra non verificabile; `moving_hand` =
+  mano sollecitata a muoversi, la non sollecitata e' libera, non «ferma».
+- **Seconda e terza review del `critico` (26/10):** la seconda DA RIVEDERE (3 bloccanti: condizione (b) del §3 incompatibile col codice previsto, cancello del collaudo mal posto, margine della regola di validita' non misurabile; 6 minori), la terza DA RIVEDERE con un solo bloccante (la (b), riscritta attorno a tre controlli d'uguaglianza: estrazione bit per bit da un checkpoint di riferimento, sonda con la stessa S, confronto del pilot riprodotto identico) e 5 minori (atteso del cancello, margine della discesa, perimetro della registrazione, testata, ore dello split), tutti ripresi nella versione committata; il `critico` rivede protocollo e codice insieme prima di qualunque job (§6, punto 3)
+- **Soglie congelate con la proposta (in `decisioni.md`, da firmare):** peso della posa 1,0 con testa inizializzata a zero; cancello del collaudo
+  dbg da `metrics.jsonl` sui passi con conteggio di posa > 0 (scala all'avvio: media 1-100, posa pesata >= 0,1 x ancore pesate; tetto: media
+  500-1.300 <= 2 x; discesa: media 1.201-1.300 <= 0,9 x media 500-599; conteggio > 0 nel 90% dei passi); s/passo <= 0,81 al collaudo, altrimenti
+  job di scorta; standardizzazione per lato se per un giunto |media sx - media dx| > 0,5 deviazioni congiunte o rapporto delle deviazioni > 1,5.
+- Nessun job, nessun deploy, nessun codice: il codice (ingest della posa, loader, testa, loss, launcher, test) si scrive dopo la firma di Simone
+  sul disegno. Le sonde del pilot (A2, B2) continuano in coda.
 
 ## 2) Problemi trovati
 
@@ -5101,3 +5151,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   (`PILOT-EVAL-probe-R2-e2-p1-dec`) riparte con `--dopo-rifiuto` dall'alimentatore.
 - Il loop di sottomissione si e' fermato al primo esito diverso da «sottomesso» in tutti e due i casi, come previsto: nessun rilancio alla
   cieca, nessun job doppio (verificato nel ledger).
+
+### 2026-10-26 | Claude | Dicitura «lato fermo» per le 540 registrazioni di emg2pose (decisioni.md, 09/10, punto 11): il paper dice «not prompted to move»
+
+- La voce storica chiama «lato fermo» le 540 registrazioni (7,3 h) che hanno nel pretraining la mano non sollecitata e nel test per fasi nuove
+  l'altra. Il fact-checker (26/10, `docs/fatti_da_verificare.md` riga 28) riporta che `moving_hand` e' «whether the hand is prompted to move
+  during the stage» e che la mano non sollecitata e' «the hand that is not prompted to move during a particular stage», libera di muoversi: non
+  e' ferma per costruzione. Nello split di pretraining le registrazioni in questa condizione sono 4.973 (66,3 h, 23%), non solo le 540.
+- Nessuna conseguenza sul pretraining fatto finora (l'EMG non cambia). Conta per chi usa la posa come target (`docs/pilot_posa_v1.md`, §2) e per
+  come si descrive quella condizione nei documenti: non riscrivo la voce storica, la correzione sta qui e nel protocollo.

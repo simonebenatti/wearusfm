@@ -1,0 +1,136 @@
+{
+ "campaign": "pilot-posa-<data del deploy>",
+ "protocol": "docs/pilot_posa_v1.md",
+ "status": "PROPOSTA (26/10/2026), tre review del critico lo stesso giorno (8+9, 3+6, 1+5 rilievi, tutti ripresi; il critico rivede protocollo e codice insieme prima di qualunque job): nessun job senza la firma e il via di Simone",
+ "budget_line": "finestra 1, famiglia «Ablation a 30M» (stima ~2.100 GPU-ora in docs/finestra1_fattibilita.md), la stessa dei bracci W1ARM e del pilot; speso finora dalla famiglia ~530 GPU-ora (bracci ~321 + JEPA-only ~10 + valutazione dei bracci ~15; pilot: collaudi 2,29, training 176,5, valutazione ~5,6 attese); residuo indicativo della finestra 1 ~5.300 GPU-ora (5.500 della proposta del pilot meno ~184), da confermare col consuntivo prima della firma",
+ "basis": {
+  "training": "scripts/wsd_chain.py su piano.json: s/passo 0,75 (pilot: R0 0,737, R5 0,750; ancore-only W1ARM 0,744), slack 1,15, margine 40 min, avvio 15 min; tronco 12 h 45 di tetto, ramo 2 h 15",
+  "extractions": "pilot A1/B1 (sacct 25/10): P1 12-14 min, P2 ~28 min su 1 A100; --time 01:00 e 01:30",
+  "probes": "pilot: pool P1 64-68 min e pool P2 15-17 min (watch_pilot_eval_pool_e2.txt, 26/10), dec P1 2 h 26 - 2 h 29 (watch_pilot_eval_dec_e2.txt, prime due sonde di A2); dec P2 stimata 36 min (pool P2 x 2,2); 8 core, 4 h di tetto; sulla seriale una alla volta (QOSMaxCpuPerUserLimit); consuntivo sacct della valutazione del pilot a code vuote",
+  "ingest": "ingest EMG di emg2pose (01/10): 12.755 s in tre job per l'intero tar con 2 core (59094713 fermato dal budget di 9.600 s)"
+ },
+ "blocks": {
+  "checkout": {
+   "jobs": 2,
+   "core_hours_expected": 0.4,
+   "core_hours_max": 2.0,
+   "note": "scripts/slurm/campaign_checkout.sbatch, come il pilot (62148779); il secondo solo se la regola di validita' della posa, congelata dopo il collaudo dell'ingest, richiede codice nuovo"
+  },
+  "ingest_posa": {
+   "jobs": 3,
+   "note": "collaudo su 40 registrazioni (20 per lato) (30 min di tetto) + ingest intero (4 h di tetto) + job di ripresa (--skip-existing, 4 h), 2 core su lrd_all_serial, dal checkout di campagna (CODE_DIR); stima dal consuntivo dell'ingest EMG (12.755 s in tre job per l'intero tar, uno fermato dal budget di 9.600 s; il tar si legge per intero anche per i soli angoli perche' `timeseries` e' un dataset composto); statistiche per giunto nello stesso job finale",
+   "core_hours_expected": 7.4,
+   "core_hours_max": 17.0,
+   "disk_gb_scratch": 12.2,
+   "disk_note": "422,7 h x 200 Hz x 20 giunti x float16 (piu' le maschere), tutte le 25.253 registrazioni; in $SCRATCH, nel giro di rinfresco dei 21 giorni"
+  },
+  "collaudo_dbg": {
+   "jobs": 1,
+   "gpu_hours_expected": 1.3,
+   "gpu_hours_max": 2.0,
+   "note": "R3: 1.300 passi su 4 A100, boost_qos_dbg, 30 min di tetto (R2 del pilot: 998,8 s); R3c non si collauda (ancore-only 61607561 del 21/10, stesso disegno)"
+  },
+  "training_R3": {
+   "jobs": 2,
+   "gpu_hours_expected": 47.0,
+   "gpu_hours_max": 60.0,
+   "trunk": {
+    "id": "PILOT-POSA-R3-30M-s0",
+    "steps": 49046,
+    "time": "12:45:00",
+    "gpu_hours_expected": 41.9,
+    "gpu_hours_max": 51.0
+   },
+   "branch": {
+    "id": "PILOT-POSA-R3-30M-s0-e1",
+    "steps": 24523,
+    "time": "02:15:00",
+    "gpu_hours_expected": 5.1,
+    "gpu_hours_max": 9.0
+   },
+   "checkpoint_gb": 3.2,
+   "s_per_step": 0.75,
+   "slack": 1.15
+  },
+  "evaluation_R3": {
+   "extractions": 4,
+   "probes": 8,
+   "gpu_hours_expected": 1.4,
+   "gpu_hours_max": 5.0,
+   "core_hours_expected": 70.8,
+   "core_hours_max": 256.0,
+   "probe_wall_hours_if_serial": 8.8
+  },
+  "training_R3c_optional": {
+   "jobs": 2,
+   "gpu_hours_expected": 47.0,
+   "gpu_hours_max": 60.0,
+   "trunk": {
+    "id": "PILOT-POSA-R3C-ancore-30M-s0",
+    "steps": 49046,
+    "time": "12:45:00",
+    "gpu_hours_expected": 41.9,
+    "gpu_hours_max": 51.0
+   },
+   "branch": {
+    "id": "PILOT-POSA-R3C-ancore-30M-s0-e1",
+    "steps": 24523,
+    "time": "02:15:00",
+    "gpu_hours_expected": 5.1,
+    "gpu_hours_max": 9.0
+   },
+   "checkpoint_gb": 3.2,
+   "s_per_step": 0.75,
+   "slack": 1.15
+  },
+  "evaluation_R3c_optional": {
+   "extractions": 4,
+   "probes": 8,
+   "gpu_hours_expected": 1.4,
+   "gpu_hours_max": 5.0,
+   "core_hours_expected": 70.8,
+   "core_hours_max": 256.0,
+   "probe_wall_hours_if_serial": 8.8
+  },
+  "spare_job_if_slow": {
+   "condition": "solo se il collaudo dbg di R3 da' s/passo > 0,81: piano rigenerato con spare_jobs 1",
+   "jobs": 1,
+   "gpu_hours_expected": 0.0,
+   "gpu_hours_max": 51.0
+  }
+ },
+ "first_wave_totals_R3_only": {
+  "gpu_hours_expected": 49.7,
+  "gpu_hours_max": 67.0,
+  "core_hours_expected": 78.6,
+  "core_hours_max": 275.0,
+  "jobs": 20,
+  "local_hours_expected": 398,
+  "local_hours_max": 536
+ },
+ "first_wave_totals_with_R3c": {
+  "gpu_hours_expected": 98.1,
+  "gpu_hours_max": 132.0,
+  "core_hours_expected": 149.4,
+  "core_hours_max": 531.0,
+  "jobs": 34,
+  "local_hours_expected": 785,
+  "local_hours_max": 1056
+ },
+ "confirmation_if_passes": {
+  "condition": "solo se R3 passa il criterio (§5): R3 seme 1 e R0 seme 1, tronco e ramo ciascuno; rilettura con la regola dei bracci a due semi",
+  "training_gpu_hours_expected": 94.0,
+  "training_gpu_hours_max": 120.0,
+  "evaluation": {
+   "extractions": 8,
+   "probes": 16,
+   "gpu_hours_expected": 2.8,
+   "gpu_hours_max": 10.0,
+   "core_hours_expected": 141.6,
+   "core_hours_max": 512.0,
+   "probe_wall_hours_if_serial": 17.7
+  }
+ },
+ "calendar": "dal via: codice e test ~1 giorno; critico; deploy + checkout (~30 min di coda); collaudo dell'ingest (~15 min) e firma della regola di validita'; ingest intero ~4 h sulla seriale (dietro le sonde B2 del pilot, fino all'alba del 27/10); collaudo dbg ~30 min; tronco ~10 h 30 + ramo ~1 h; valutazione ~1 giorno sulla seriale: 4-5 giorni con R3 solo, ~5-6 con R3c (training in parallelo, sonde in fila)",
+ "ore_locali_note": "1 GPU-ora = 8 ore locali (convenzione del progetto)"
+}

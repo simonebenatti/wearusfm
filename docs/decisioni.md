@@ -4356,3 +4356,48 @@ R5 -0,53 [-1,07; -0,02] e +0,35 [-2,14; +2,68]: nessuna con delta >= +1 e limite
 regola: nessuna conferma col seme 1; il default della finestra 1 (obiettivo A, bersaglio di default, banco a 1 s) resta; non si decide qui K,
 taglie o LR. I descrittivi (`dec` k 768, endpoint a 1 epoca, pendenza 1 -> 2) e il consuntivo `sacct` della valutazione seguono a code vuote.
 Dettaglio in `results/pilot_obiettivi_20261024/README.md` e nel registro (voce del 26/10).
+
+**Seconda ondata del pilot degli obiettivi: PROPOSTA di R3 (ancore + testa di posa su emg2pose, senza JEPA) e preventivo; regola di lettura e due deroghe DA FIRMARE (Claude, 26/10/2026; `docs/pilot_posa_v1.md`, `results/infra/pilot_posa/preventivo.json`).**
+Simone, 26/10: «Sì, prepara la proposta della seconda ondata con R3 (ancore + testa di posa su emg2pose, senza JEPA) e il preventivo; nessun job
+senza il mio via.» Disegno: come il pilot (30M, seme 0, tronco a 2 epoche + ramo a 1 epoca), riferimento R0 del pilot gia' fatto, testa lineare
+di posa sulla media dei latenti del backbone per istante, target = 20 angoli di emg2pose standardizzati per giunto (mocap a 60 Hz interpolato a
+2 kHz; fallimenti IK = righe tutte a zero), peso 1,0, `--jepa-weight 0`; R3c = ancore-only a 2 epoche come controllo consigliato e separabile.
+Tre review del `critico` (la prima DA RIVEDERE con 8 bloccanti e 9 minori, tutti ripresi; la seconda DA RIVEDERE (3 bloccanti: condizione (b) del §3 incompatibile col codice previsto, cancello del collaudo mal posto, margine della regola di validita' non misurabile; 6 minori), la terza DA RIVEDERE con un solo bloccante (la (b), riscritta attorno a tre controlli d'uguaglianza: estrazione bit per bit da un checkpoint di riferimento, sonda con la stessa S, confronto del pilot riprodotto identico) e 5 minori (atteso del cancello, margine della discesa, perimetro della registrazione, testata, ore dello split), tutti ripresi nella versione committata; il `critico` rivede protocollo e codice insieme prima di qualunque job (§6, punto 3)) e un giro di fact-checker
+(`docs/fatti_da_verificare.md`, riga 28). **Soglie congelate con la proposta, da firmare insieme alla regola:** peso della posa 1,0, testa
+inizializzata a zero; cancello del collaudo dbg letto da `metrics.jsonl` sui passi con conteggio di posa > 0: (1) media dei passi 1-100, posa
+pesata >= 0,1 x ancore pesate (x 0,2); (2) media dei passi 500-1.300, posa pesata <= 2 x ancore pesate; (3) media del termine di posa sui passi
+1.201-1.300 <= 0,9 x media sui passi 500-599; (4) conteggio di posa > 0 in almeno il 90% dei passi 1-1.300; s/passo al collaudo <= 0,81, altrimenti
+piano rigenerato con un job di scorta (+51 GPU-ora di tetto); standardizzazione per lato se per almeno un giunto |media sinistra - media destra|
+> 0,5 deviazioni standard congiunte o rapporto fra le deviazioni dei due lati > 1,5, altrimenti insieme; regola di validita' dei campioni da
+congelare qui dopo il collaudo dell'ingest (nucleo: riga coi 20 angoli tutti a zero non valida; margine ai bordi misurato dal profilo di
+|differenza prima|). **Costi:** solo R3 ~49,7 / 67,0 GPU-ora e ~79 / 275 core-ore; con R3c ~98,1 / 132 GPU-ora e ~149 / 531
+core-ore; job di scorta +51 di tetto solo se il collaudo da' s/passo > 0,81; conferma, solo se R3 passa, 94 / 120 + 2,8 / 10 GPU-ora e 141,6 / 512
+core-ore; voce: finestra 1, famiglia «Ablation a 30M» (~530 GPU-ora spese finora dalla famiglia; residuo indicativo della finestra ~5.300, da
+confermare col consuntivo); 4-5 giorni di calendario dal via (5-6 con R3c). **Da firmare prima di qualunque job:** (1) la regola di lettura qui
+sotto; (2) deroga a v10 §6.1 («Tutti i target sono osservativi, calcolati dal raw»: la posa e' misurata dal motion capture); (3) deroga a v10
+§6.5/§3.7 (peso di loss sul termine, ritardo zero senza lead time: il backbone e' bidirezionale); (4) registrazioni a mano non sollecitata tenute
+nel termine e nelle statistiche (23% delle ore di emg2pose nel pretraining); (5) con o senza R3c; (6) dopo il collaudo dell'ingest: regola di
+validita' dei campioni e standardizzazione per lato o insieme. **Non si decide qui:** K, taglie, LR, default della finestra 1, R4, A + posa.
+Nessun job, deploy o codice fino alla firma. Testo della regola, identico al §5 del protocollo:
+
+«**Regola di lettura della seconda ondata (R3).** Criterio: per ciascun compito (P1, P2) della validazione interna, all'endpoint a 2 epoche
+(teacher di `checkpoint_postdecay.pt` del tronco, run completo senza STOP), col readout `pool` estratto e sondato con `scripts/channel_readout.py`
+(`--stage extract`, poi `--stage probe --layer pool`), il confronto accoppiato di R3 con **R0 del pilot degli obiettivi allo stesso endpoint**
+(`PILOT-R0-A-30M-s0`, `checkpoint_postdecay.pt`, SHA-256 registrato in `results/pilot_obiettivi_20261024/provenienza_criterio.json`) con
+`scripts/channel_readout.py --stage compare --single-seed --models` (soggetti ricampionati insieme, 1.000 ricampionamenti, seme 20261009,
+intervallo dei percentili, `arms_compare.s_comparison`). R3 **passa** se in P1 **e** in P2 il delta e' >= +1 punto col limite inferiore
+dell'intervallo al 95% > 0. Due letture del criterio senza correzione per confronti multipli: dichiarato. Un solo seme: il criterio dell'accordo
+fra i semi non si applica e il rapporto lo dichiara (`seeds` 1). Un run fermato dall'allarme sul rango o incompleto non passa. Provenienza: prima
+di leggere si verifica che i due checkpoint siano i `checkpoint_postdecay.pt` dei run giusti (R0 del pilot e R3, tronco a 2 epoche), che
+`arms_compare.run_status` dia «completo» per entrambi, che lo SHA di R0 coincida con quello registrato dal pilot e che le condizioni di
+comparabilita' del §3 del protocollo (commit della firma) siano verificate: percorso di default bit per bit identico senza le opzioni della posa
+(test); i tre controlli d'uguaglianza superati (estrazione identica bit per bit da un checkpoint di riferimento, sonda con la stessa S e zero
+predizioni diverse, confronto R1 contro R0 del pilot riprodotto identico col codice di R3); `git diff` fra 705ec04 e il deploy di R3 sulla
+chiusura degli import di estrazione, sonda e confronto vuoto fuori dai quattro file dichiarati nel §3 e, dentro quelli, limitato alle aggiunte
+della posa con le funzioni usate dall'estrazione e dal confronto identiche; stesso manifest, scale, finestre e seme; ambiente registrato nel log
+del job di R3. Tutto si scrive nel registro; una condizione che manca blocca la lettura. **Conferma:** se R3 passa si lanciano R3 seme 1 e R0 seme 1 (stesso disegno,
+tronco e ramo), e si rilegge con la regola dei bracci intera (due semi: `compare --models` senza `--single-seed`); se anche la conferma passa, la
+configurazione candidata al default della finestra 1 e' R3 cosi' com'e' (ancore 0,2 + posa 1,0, senza JEPA) e la decisione e' di Simone.
+**Descrittivi, fuori dal criterio:** `dec` per canale a 768, l'endpoint a 1 epoca, la pendenza 1 -> 2, i confronti con R3c (R3 contro R3c, R3c
+contro R0) se R3c e' stato lanciato, l'errore di posa sul pannello fisso, le loss e le diagnostiche. R3 non passa -> si registra e il default non
+cambia; la mossa successiva la decide Simone. **Non si decide qui:** K, taglie, LR della campagna, default della finestra 1, R4, A + posa.»
