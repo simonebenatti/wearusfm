@@ -4407,3 +4407,10 @@ Testo di Simone: «Firmo la regola di lettura del §5 di docs/pilot_posa_v1.md, 
 PROPOSTA di R3 ...»); la regola di validita' dei campioni di posa si congela qui dopo il collaudo dell'ingest, con la firma di Simone, prima
 dell'ingest intero. Budget della seconda ondata con R3c: ~98,1 GPU-ora attese, tetto 132,0 (piu' eventuale job di scorta +51 di tetto), ~149 /
 531 core-ore; voce: finestra 1, famiglia «Ablation a 30M». Ogni job si sottomette solo col via di Simone.
+
+**RUOLI dal 26/10/2026: la responsabilita' scientifica passa a GPT; Claude parte tecnica e verifiche del lavoro scientifico di GPT; revisione reciproca (Simone, 26/10/2026).**
+Testo di Simone: «la cosa migliore sarà usare entrambi e far rivedere il lavoro di uno agli altri, preparami un prompt per chatgpt poi ti dico cosa risponderà.» e «i ruoli sono: Claude fa la parte scientifica e tecnica, tu fai le verifiche e sei l'integratore su `main`. ..non è quello che ho detto. Ho detto che da adesso la responsabilita scientifica è di gpt. riformulalo cosi, poi ufficialmente la cosa iniziaera qiuando finiscono i task che hai lanciato tu adesso» (dopo «ok, poi mi sa che dovremo riportare la diorezione della parte scientifica che no funziona a chatgpt»). Ufficiale quando finiscono i task gia' lanciati da Claude il 26/10 (valutazione del pilot degli
+obiettivi: descrittivi A2/B2 e consuntivo; review del `critico` sul codice di R3). R3 (`docs/pilot_posa_v1.md`, firmato lo stesso giorno prima
+del passaggio) lo eredita GPT come proposta da confermare, modificare o accantonare per la firma di Simone. Invariati: GPT integratore su
+`main`, firme di Simone, soglie congelate in questo file prima di guardare, registro dopo ogni attivita', nessun job senza il via di Simone.
+Dettaglio in CLAUDE.md («Ruoli dal 26/10/2026») e nel prompt di presa in carico `docs/prompt_review_gpt_seconda_ondata_20261026.md`.

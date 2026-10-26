@@ -3647,6 +3647,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   del manifest), col criterio congelato per la standardizzazione per lato (0,5 deviazioni / rapporto 1,5). Albero separato
   `$SCRATCH/data/processed/emg2pose_pose/`; report in `$WORK/wearusfm_runs/results/passo2/`.
 - Prossimi: loader (posa per finestra e per patch), testa + loss + contratto + launcher + pannello fisso, collaudo esteso, suite, `critico`.
+### 2026-10-26 | Claude | RUOLI: la responsabilita' scientifica passa a GPT (decisione di Simone del 26/10); Claude resta sulla parte tecnica e fa le verifiche del lavoro scientifico di GPT (revisione reciproca); ufficiale quando finiscono i task gia' lanciati (valutazione del pilot, review del critico sul codice di R3); prompt di presa in carico per GPT in `docs/prompt_review_gpt_seconda_ondata_20261026.md` | Codice: nessuno (CLAUDE.md, decisioni.md, prompt)
+
+- Simone, nell'ordine: «ok, poi mi sa che dovremo riportare la diorezione della parte scientifica che no funziona a chatgpt»; «la cosa migliore sarà usare entrambi e far rivedere il lavoro di uno agli altri, preparami un prompt per chatgpt poi ti dico cosa risponderà.»; «i ruoli sono: Claude fa la parte scientifica e tecnica, tu fai le verifiche e sei l'integratore su `main`. ..non è quello che ho detto. Ho detto che da adesso la responsabilita scientifica è di gpt. riformulalo cosi, poi ufficialmente la cosa iniziaera qiuando finiscono i task che hai lanciato tu adesso»
+- **Che cosa cambia:** protocolli, bracci, criteri, letture e piani li propone GPT per la firma di Simone; Claude esegue la parte tecnica
+  (trainer, dataloader, launcher, deploy, checkout, sottomissioni, analisi e strumenti su richiesta) e rivede il lavoro scientifico di GPT, come
+  GPT rivede quello tecnico di Claude. R3 (`docs/pilot_posa_v1.md`, firmato il 26/10 prima del passaggio) lo eredita GPT: conferma, modifica o
+  accantonamento come proposta per Simone. Invariati: GPT integratore su `main`, firme di Simone, soglie congelate prima di guardare, registro
+  dopo ogni attivita', nessun job senza il via di Simone. Registrato in CLAUDE.md («Ruoli dal 26/10/2026») e in `decisioni.md`.
+- **Fino al passaggio ufficiale** Claude chiude: i descrittivi del pilot (A2 `dec` a 2 epoche: 4/8 fatte, 4 su P2 in coda; B2 a 1 epoca: 6/16
+  sottomesse), il consuntivo `sacct`, la suite CPU completa e la review del `critico` sul codice di R3, con le correzioni che ne escono; tutto
+  registrato. La richiesta di via per deploy, checkout e collaudo dell'ingest di R3 passa a GPT se conferma R3.
+- Il prompt per GPT (presa in carico: diagnosi, piano, critica di R3, albero delle decisioni, ricalcoli; forma della risposta in
+  `docs/reviews/` + registro) sta in `docs/prompt_review_gpt_seconda_ondata_20261026.md`; Simone lo incolla e riporta la risposta; Claude
+  risponde nel registro.
 
 ## 2) Problemi trovati
 

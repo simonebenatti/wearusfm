@@ -16,6 +16,15 @@
   piani e preventivi, oltre a trainer, dataloader, launcher, deploy e sottomissioni. **GPT fa le verifiche:** review del codice e dei
   protocolli di Claude, riesecuzione dei test, controlli indipendenti delle analisi e dei risultati; segnala i problemi nel registro con una
   regressione o una prova, e la correzione la fa Claude sul suo ramo. GPT resta integratore su `main`. Le firme restano di Simone.
+- **Ruoli dal 26/10/2026** (Simone: «la cosa migliore sarà usare entrambi e far rivedere il lavoro di uno agli altri» e «da adesso la
+  responsabilita scientifica è di gpt [...] ufficialmente la cosa iniziaera qiuando finiscono i task che hai lanciato tu adesso»). **La
+  responsabilita' scientifica passa a GPT:** protocolli, bracci, criteri, letture e piani li propone GPT per la firma di Simone. **Claude fa
+  la parte tecnica** (trainer, dataloader, launcher, deploy, checkout di campagna, sottomissioni, analisi e strumenti su richiesta) **e le
+  verifiche del lavoro scientifico di GPT**, come GPT fa di quello tecnico di Claude: revisione reciproca. Il passaggio e' ufficiale quando
+  finiscono i task gia' lanciati da Claude il 26/10 (valutazione del pilot degli obiettivi: descrittivi A2/B2 e consuntivo; review del
+  `critico` sul codice di R3): fino ad allora Claude li porta a termine e li registra. La seconda ondata R3 (`docs/pilot_posa_v1.md`, firmata
+  il 26/10 prima del passaggio) la eredita GPT, che la conferma, modifica o accantona come proposta per Simone. Invariati: GPT integratore su
+  `main`, firme di Simone, soglie congelate prima di guardare, registro dopo ogni attivita', nessun job senza il via di Simone.
 - **Proprietari dei file.** Claude: tutto il codice e i documenti di lavoro, compresi `harness/`, le sonde, i moduli dei target e delle loss
   (`model/anchor_targets.py`, `model/spectral_targets.py`, `training/jepa.py` e le riduzioni delle loss) e i loro launcher, che dal 16/10
   passano a Claude. GPT: le sue review (`docs/reviews/`) e le sue voci del registro. Un cambio di target o loss resta una modifica separata
