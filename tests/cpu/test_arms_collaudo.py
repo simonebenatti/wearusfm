@@ -43,7 +43,7 @@ def _run(tmp_path, arm, steps=STEPS, edit=None):
     return d
 
 
-@pytest.mark.parametrize("arm", sorted(AC.ARM_WEIGHTS))
+@pytest.mark.parametrize("arm", sorted(a for a in AC.ARM_WEIGHTS if a not in AC.ARM_POSE_WEIGHT))  # R3: il suo test, con la posa
 def test_a_clean_run_passes(tmp_path, arm):
     res = AC.check(_run(tmp_path, arm), arm, STEPS, SHA, LISTING)
     assert res["passed"], {k: v for k, v in res["criteria"].items() if not v["ok"]}
@@ -164,3 +164,91 @@ def test_cli_writes_the_outcome_even_with_a_non_finite_collapse_ratio(tmp_path):
     res = json.loads(out.read_text())
     assert res["passed"] is False and not res["criteria"]["record"]["ok"] and not res["criteria"]["composizione_della_loss"]["ok"]
     assert res["descriptive"]["non_collasso"][0]["student_collapse_ratio"] is None
+
+
+# --- R3: posa (seconda ondata, docs/pilot_posa_v1.md §2 (iii) e §6 punto 7) -----------------------------------------------------------------
+
+def _run_r3(tmp_path, steps=STEPS, edit=None, cfg_edit=None, rate=0.74):
+    wj, wa = AC.ARM_WEIGHTS["R3"]
+    wp = AC.ARM_POSE_WEIGHT["R3"]
+    d = tmp_path / "R3"
+    d.mkdir(parents=True)
+    cfg = {"jepa": {"jepa_weight": wj, "anchor_weight": wa, "keep_weight": 0.0, "branch_weight": 0.0, "pose_weight": wp},
+           "model": {"pose_head": True}, "loader": {"pose_root": "/scratch/emg2pose_pose"}, "pose_stats_sha256": "ab" * 32}
+    if cfg_edit:
+        cfg = cfg_edit(cfg)
+    (d / "config.json").write_text(json.dumps(cfg))
+    (d / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": steps, "elapsed_s": 1000.0, "code": {"sha": SHA},
+                                                "world_size": 4, "batch_per_process": 8, "accum_steps": 1, "gpu_max_memory_gib": 14.5}))
+    recs = []
+    for s in range(1, steps + 1):
+        decay = 1.0 / (1.0 + s / 100)
+        r = {"step": s, "windows": 32, "t_step_s": rate, "t_data_s": 0.005, "jepa": 0.5 * decay + 0.01,
+             **{a: (3.0 + i) * decay + 0.5 for i, a in enumerate(AC.ANCHORS)}}  # ancore ~ 25 all'avvio (R0: 29,8), ~8 a 500 passi
+        r["pose"] = 0.3 + 0.7 * decay  # parte da ~1 e scende (testa a zero su target standardizzati)
+        r["pose_windows"] = 0.0 if s % 97 == 0 else 7.0  # un passo su 97 senza finestre di posa (~1%)
+        r["total"] = wj * r["jepa"] + wa * sum(r[a] for a in AC.ANCHORS) + wp * r["pose"]
+        if s in AC.expected_evaluations(steps):
+            r.update(student_collapse_ratio=3.0, teacher_collapse_ratio=2.5, student_erank=100.0, teacher_erank=90.0)
+        recs.append(r)
+    if edit:
+        recs = edit(recs)
+    (d / "metrics.jsonl").write_text("".join(json.dumps(r) + "\n" for r in recs))
+    return d
+
+
+def test_r3_clean_run_passes_the_gate_and_the_rate(tmp_path):
+    res = AC.check(_run_r3(tmp_path), "R3", STEPS, SHA, LISTING)
+    assert res["passed"], {k: v for k, v in res["criteria"].items() if not v["ok"]}
+    c = res["criteria"]
+    assert {"posa_configurata", "posa_scala_avvio", "posa_tetto", "posa_discesa", "posa_conteggio", "ritmo"} <= set(c)
+    assert 0.1 <= c["posa_scala_avvio"]["detail"]["rapporto"] < 1.0 and c["posa_tetto"]["detail"]["rapporto"] <= 2.0
+    assert c["posa_conteggio"]["detail"]["frazione_passi_con_posa"] > 0.98 and c["ritmo"]["detail"]["soglia"] == 0.81
+    assert "+ 1 x pose" in c["composizione_della_loss"]["detail"]["formula"] and res["descriptive"]["posa_inizio_fine"][1] < res["descriptive"]["posa_inizio_fine"][0]
+
+
+def test_r3_gate_failures(tmp_path):
+    def scaled(f):
+        def edit(recs):
+            for r in recs:
+                r["pose"] *= f
+                r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + 1.0 * r["pose"]
+            return recs
+        return edit
+    # scala sbagliata della standardizzazione: posa cento volte piu' piccola -> rapporto all'avvio sotto 0,1
+    res = AC.check(_run_r3(tmp_path / "small", edit=scaled(0.01)), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["posa_scala_avvio"]["ok"] and not res["passed"]
+    # divergenza: posa cento volte piu' grande -> sopra il tetto
+    res = AC.check(_run_r3(tmp_path / "big", edit=scaled(100.0)), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["posa_tetto"]["ok"]
+
+    def flat(recs):
+        for r in recs:
+            r["pose"] = 0.8
+            r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + 0.8
+        return recs
+    res = AC.check(_run_r3(tmp_path / "flat", edit=flat), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["posa_discesa"]["ok"] and res["criteria"]["posa_scala_avvio"]["ok"]
+
+    def sparse(recs):
+        for r in recs:
+            if r["step"] % 5 == 0:
+                r["pose_windows"] = 0.0
+        return recs
+    res = AC.check(_run_r3(tmp_path / "sparse", edit=sparse), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["posa_conteggio"]["ok"]
+    # ritmo sopra la soglia congelata
+    res = AC.check(_run_r3(tmp_path / "slow", rate=0.85), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["ritmo"]["ok"] and res["criteria"]["ritmo"]["detail"]["s_per_passo_mediana"] == 0.85
+    # configurazione senza testa o senza albero della posa
+    res = AC.check(_run_r3(tmp_path / "nohead", cfg_edit=lambda c: {**c, "model": {"pose_head": False}}), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["posa_configurata"]["ok"]
+    # pesi di un altro braccio (A) letti come R3: il peso della posa manca
+    res = AC.check(_run(tmp_path, "A"), "R3", STEPS, SHA, LISTING)
+    assert not res["criteria"]["pesi"]["ok"] and not res["criteria"]["composizione_della_loss"]["ok"]
+
+
+def test_old_arms_ignore_the_pose_fields_and_old_configs_count_as_zero_pose_weight(tmp_path):
+    res = AC.check(_run(tmp_path, "ancore-only"), "ancore-only", STEPS, SHA, LISTING)
+    assert res["passed"] and "posa_scala_avvio" not in res["criteria"] and "ritmo" not in res["criteria"]
+    assert res["criteria"]["pesi"]["detail"]["config"]["pose_weight"] == 0.0

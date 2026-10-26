@@ -1,7 +1,7 @@
 {
  "campaign": "pilot-posa-<data del deploy>",
  "protocol": "docs/pilot_posa_v1.md",
- "status": "PROPOSTA (26/10/2026), tre review del critico lo stesso giorno (8+9, 3+6, 1+5 rilievi, tutti ripresi; il critico rivede protocollo e codice insieme prima di qualunque job): nessun job senza la firma e il via di Simone",
+ "status": "PROPOSTA (26/10/2026, rivista dopo la review del critico): nessun job senza il via di Simone",
  "budget_line": "finestra 1, famiglia «Ablation a 30M» (stima ~2.100 GPU-ora in docs/finestra1_fattibilita.md), la stessa dei bracci W1ARM e del pilot; speso finora dalla famiglia ~530 GPU-ora (bracci ~321 + JEPA-only ~10 + valutazione dei bracci ~15; pilot: collaudi 2,29, training 176,5, valutazione ~5,6 attese); residuo indicativo della finestra 1 ~5.300 GPU-ora (5.500 della proposta del pilot meno ~184), da confermare col consuntivo prima della firma",
  "basis": {
   "training": "scripts/wsd_chain.py su piano.json: s/passo 0,75 (pilot: R0 0,737, R5 0,750; ancore-only W1ARM 0,744), slack 1,15, margine 40 min, avvio 15 min; tronco 12 h 45 di tetto, ramo 2 h 15",
@@ -18,7 +18,7 @@
   },
   "ingest_posa": {
    "jobs": 3,
-   "note": "collaudo su 40 registrazioni (20 per lato) (30 min di tetto) + ingest intero (4 h di tetto) + job di ripresa (--skip-existing, 4 h), 2 core su lrd_all_serial, dal checkout di campagna (CODE_DIR); stima dal consuntivo dell'ingest EMG (12.755 s in tre job per l'intero tar, uno fermato dal budget di 9.600 s; il tar si legge per intero anche per i soli angoli perche' `timeseries` e' un dataset composto); statistiche per giunto nello stesso job finale",
+   "note": "collaudo su 3 registrazioni (30 min di tetto) + ingest intero (4 h di tetto) + job di ripresa (--skip-existing, 4 h), 2 core su lrd_all_serial, dal checkout di campagna (CODE_DIR); stima dal consuntivo dell'ingest EMG (12.755 s in tre job per l'intero tar, uno fermato dal budget di 9.600 s; il tar si legge per intero anche per i soli angoli perche' `timeseries` e' un dataset composto); statistiche per giunto nello stesso job finale",
    "core_hours_expected": 7.4,
    "core_hours_max": 17.0,
    "disk_gb_scratch": 12.2,
