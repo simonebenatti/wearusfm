@@ -3729,6 +3729,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   per la lettura di GPT resta valido come richiesta di verifica (non piu' come condizione per la firma). Prossimo: `--pose-grad-every` nel
   trainer (E4), strumento di valutazione della posa fuori campione (`harness/pose_eval.py`, `scripts/pose_eval.py`, launcher: E1-E3), collaudo
   con E4, test CPU, suite completa; poi registro e richiesta dei via (deploy, checkout, collaudo dell'ingest).
+### 2026-10-26 | Claude | Emendamento 1: codice di E1-E4 fatto (3874996): `--pose-grad-every` nel trainer (contratto DDP e un processo) e lettura E4 nel collaudo; `harness/pose_eval.py` + `scripts/pose_eval.py` (estrazione dei latenti per istante, predittore costante, controllo disallineato, ridge, bootstrap sugli utenti, regole congelate) con launcher GPU e CPU; 13 test verdi, suite completa rilanciata; nessun job | Codice: 3874996
+
+- E4: `shared_grad_pose`, `shared_grad_anchors`, `shared_grad_cos` in `metrics.jsonl` ai passi multipli di N (nel contratto: micro-batch finale
+  del processo 0, gradiente locale); il training resta bit per bit uguale con o senza (test). `arms_collaudo.py --arm R3` riporta
+  `gradienti_condivisi` (rapporto medio delle norme e coseno sui passi 500-1.300, `flag_sotto_1pct`), descrittivo.
+- E1-E3: `pose_eval.py --stage extract` (finestre fisse 10 x 4 s per registrazione sulla griglia a 200 ms, seme 20261026; preprocessing del
+  training; encoder senza maschera; latenti per istante float16, testa, target, maschere, varianza della posa per finestra) e `--stage report`
+  (E1 rapporto col costante sulle finestre dinamiche, bootstrap sui 15 utenti, regola < 0,9; E2 appaiamento per utente e fase a >= 8 s,
+  coppie quasi identiche scartate, regola > 0,95; E3 ridge con intercetta dai latenti alla posa, alpha scelto fra due meta' di utenti del train).
+  Launcher: `pose_eval_extract.sbatch` (1 A100, 40 min), `pose_eval_report.sbatch` (seriale, 8 core, 2 h). Stato in `docs/emendamento_pilot_posa_v1.md` E9.
+- Da fare prima dei job (ciascuno col via di Simone): review di GPT/critico su questo codice, deploy `deploy/pilot-posa-<data>`, checkout,
+  collaudo dell'ingest (40 registrazioni), regola di validita' da firmare, ingest intero, collaudo dbg di R3 (con `--pose-grad-every 100`),
+  training R3 e R3c, valutazione (A1/A2/B + E1-E3).
 
 ## 2) Problemi trovati
 
