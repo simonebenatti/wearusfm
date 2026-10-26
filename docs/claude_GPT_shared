@@ -8,27 +8,30 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
 facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
-integratore su `main`. La tabella riporta lo stato corrente; assegnazioni e confini in
-[accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md), sezione del 16/10, e in CLAUDE.md.
+integratore su `main`. **Dal 26/10/2026 cambiano di nuovo** (Simone: «da adesso la responsabilita scientifica è di gpt»; «usare entrambi e far
+rivedere il lavoro di uno agli altri»): la responsabilita' scientifica torna a GPT, Claude fa la parte tecnica e le verifiche del lavoro
+scientifico di GPT, revisione reciproca; ufficiale a fine dei task gia' lanciati da Claude il 26/10 (descrittivi del pilot, consuntivo, review
+del critico sul codice di R3). Assegnazioni e confini in [accordo_operativo_finestra1_20261015.md](accordo_operativo_finestra1_20261015.md),
+sezione del 16/10, e in CLAUDE.md («Ruoli dal 26/10/2026»).
 
 Richiesta di Simone: «usiamo una numerazione unica e mettiamola nel file condiviso». Questo blocco e' il riferimento operativo:
 si conserva la numerazione della lista gia' concordata con Claude. Le liste diverse nelle voci cronologiche restano storico, non nuove
 assegnazioni. Si riferisce sempre al nome oltre che al numero; le sonde P1/P2 non sono i punti 1/2 di questa lista.
 
-Stato aggiornato al 22/10/2026: integrati 23efccb (sonda C4 su GPU) e d4f4d23 (fix ultrareview) col merge d8b7170, SHA conservati.
-Punto 3 CHIUSO per la consegna fino a d4f4d23; nessuna ulteriore correzione richiesta a Claude per questa tranche. Rilievo 3 importlib
-rinviato, non bloccante. Codice di base del pilot integrato; wrapper e campagna ancora da completare, nel punto 5.
-Stato operativo dai log Claude fino a d4f4d23 (22/10); Claude sviluppa, GPT verifica e integra.
-La review GPT non blocca i lanci autorizzati. Numerazione invariata; stato cluster dai log versionati, non da interrogazione live.
+Stato aggiornato al 26/10/2026 (Claude, chiusura delle attivita' avviate; stato del 22/10 di GPT conservato nelle voci cronologiche): readout
+per canale chiuso il 25/10 (il readout medio non nasconde informazione con la regola; limite del readout in generale NON escluso); pilot
+degli obiettivi letto il 26/10 (nessun braccio passa); seconda ondata R3 + R3c firmata il 26/10 e codice pronto e revisionato (d8650c6),
+emendamento diagnostico PROPOSTO (`docs/emendamento_pilot_posa_v1.md`); diagnosi aggiornata in `docs/diagnosi_aggiornata_20261026.md`.
+Nessun job di R3 senza il via di Simone; GPT eredita R3 come responsabile scientifico.
 
 | N. | Punto unico | GPT | Claude | Stato / consegna |
 |---|---|---|---|---|
-| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO: primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default. Il seguito dei rami spettrali (prompt GPT 7d85f1a) sta nel punto 5 |
-| 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689. Nessun nuovo job previsto |
-| 3 | Review e integrazione su main | Integrati 23efccb e d4f4d23 | Consegna corrente completa | CHIUSO fino a d4f4d23: merge d8b7170, SHA conservati; 90 test verificati da GPT, codice identico al revisionato. Rilievo 3 importlib non bloccante. Le future consegne del pilot avranno una review separata |
-| 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa; lettura dei risultati | Applica A4 e prepara regola dei run lunghi | C1: 1e-3 escluso per A4. C2: entrambi i candidati ammissibili; pannello massimo 1,04/1,03 volte il minimo, nessun punto oltre 1,10 (fd176a7). Resta la regola per i run lunghi |
-| 5 | Validare l'obiettivo scientifico | Review futura del wrapper e dei risultati | Completa pilot PSD/wavelet e valutazioni gia' avviate | JEPA-only COLLASSATO nei due semi; recupero rinviato da Simone. A e ancore-only: 4 training FINITI, valutazione al secondo giro sottomesso. PSD/wavelet prioritario: diagnostica B_seed0 completa, B_seed1 da completare; nucleo del pilot e fix integrati, parte operativa ancora da fare. Restano risultati, keep e sonde fisiche/profondita' |
-| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | Segue C4 e prepara piano finale | C1-C3 CHIUSE; C3 propone LR 1e-4 per il 300M. C4 SOTTOMESSA (61761908), esito non ancora registrato. Calibrazione 144,7/220 GPUh prima di C4; preventivo C4 ~25,6/tetto 35. Restano C4, LR/configurazione finali e piano/budget W1. SCRATCH prossimo 12/11 |
+| 1 | Chiudere i confronti 2A/2C | Verifica e confronto conclusi | Esperimenti e report consegnati | CHIUSO (22/10): primari negativi; anche il secondario RPW-MS negativo, P1 +0,709/P2 +0,677 punti, entrambi sotto +1. Rami fuori dal default |
+| 2 | Baseline encoder casuale | Diagnosi, sonde e confronto conclusi | Supporto storico concluso | CHIUSO r3: B-random P1 +2,302/P2 +7,512 punti; A-random +1,919/+6,689 (Step 1, 4.000 passi su emg2qwerty: non si trasferisce numericamente ai modelli sul corpus intero) |
+| 3 | Review e integrazione su main | Integrati fino a d4f4d23 (merge d8b7170); review scientifica del 26/10 consegnata (proposta_scientifica.md) | Consegne dal 23/10 al 26/10 sul ramo (readout per canale, pilot, R3) pubblicate su origin, NON ancora integrate | APERTO: `main` fermo a 4680617 (22/10); da integrare le consegne del 23-26/10 (readout, pilot, R3 d8650c6) dopo la review di GPT del codice della posa |
+| 4 | Monitor e regola di stabilita' | Verifica del monitor conclusa | Applicati A4, allarme sul rango (38,4 / 0,05 / 3) in tutti i run della finestra 1 | CHIUSO per la finestra 1: nessun allarme nei 4 tronchi e 4 rami del pilot; rango e rapporto restano allarmi, non misure di qualita' |
+| 5 | Validare l'obiettivo scientifico | Responsabile scientifico dal 26/10: eredita R3/R3c e l'emendamento; prima review consegnata | Readout per canale CHIUSO (25/10); pilot R0/R1/R2/R5 LETTO (26/10: nessun braccio passa); R3/R3c codice pronto; descrittivi A2/B2 e consuntivo in chiusura | IN CORSO: diagnosi aggiornata (docs/diagnosi_aggiornata_20261026.md); prossimo esperimento proposto = R3 + R3c con emendamento (~99 / 136 GPU-ora), firma di Simone e GPT |
+| 6 | Chiudere la finestra 1 | Verifica dei risultati e piani | C4 sospesa (decisione di Simone); piano finale dipende dal punto 5 | SOSPESO: scaling non giustificato finche' non c'e' un beneficio replicabile (accordo Claude/GPT); speso dalla famiglia «Ablation a 30M» ~530 GPU-ora; residuo indicativo della finestra ~5.300 |
 
 ### Esplorazione PSD/wavelet: quattro sottoattivita' del punto 5
 
@@ -36,22 +39,21 @@ Numerazione PSD-1..4 del prompt del 20/10, distinta dalla lista principale. I ve
 
 | N. | Attivita' | Stato / prossimo passo |
 |---|---|---|
-| PSD-1 | Diagnostica dei rami e della concatenazione col raw | IN CORSO: B_seed0 completo; prime due sonde B_seed1 sottomesse (61789455/61789465), restano 8 sonde e confronto. Claude completa, GPT verifica |
-| PSD-2 | Nuovo obiettivo temporale, raw congelato | NUCLEO E FIX INTEGRATI. Pilot non lanciato; protocollo PROPOSTA. Claude completa wrapper, guardie, estrazione, confronto/verdetto, critico e preventivo; GPT revisiona |
-| PSD-3 | Informazione spaziale e fusione | DA PREPARARE: nessuna ablation consegnata. Modifica minima distinta dalla nuova loss, guidata dalla diagnostica |
-| PSD-4 | Trasferimento multi-dataset | DA PREPARARE: confronto separato a parita' di esposizione, senza cambiare insieme loss e fusione |
+| PSD-1 | Diagnostica dei rami e della concatenazione col raw | CHIUSA (25/10, nella campagna del readout e nei rami pilota): i rami non entrano nel default; nessun nuovo job |
+| PSD-2 | Nuovo obiettivo temporale, raw congelato | SUPERATA dal pilot degli obiettivi (R1/R2/R5, letto il 26/10: nessun braccio passa) e dalla seconda ondata R3 (bersaglio esterno di posa): nessun pilot dei rami a raw congelato previsto |
+| PSD-3 | Informazione spaziale e fusione | NON PREPARATA: resta nell'albero delle decisioni dopo R3 (emendamento E6), decide GPT |
+| PSD-4 | Trasferimento multi-dataset | NON PREPARATA: le letture per dataset sono la prima forma (README del pilot, diagnosi H7/H9); un confronto a pari esposizione resta da pianificare, decide GPT |
 
-### Prossimo lavoro in parallelo (22/10)
+### Prossimo lavoro in parallelo (26/10)
 
-- **Claude:** completa PSD-1 e la parte operativa di PSD-2 col passaggio dal critico; segue valutazione A/ancore-only e C4 gia' avviate.
-  I fix verificati non vanno rifatti. Nessun nuovo via al pilot implicito nel merge; recupero JEPA-only rinviato.
-- **GPT:** integrazione fino a d4f4d23 chiusa; verifica della prossima consegna operativa e dei risultati. Review e limiti in
-  docs/reviews/ultrareview_fixes_review_20261022.md e docs/reviews/branch_pilot_review_20261021.md.
-- **Punti 1/2 chiusi.** Punto 5 a Claude come da nuovi ruoli. Il nuovo controllo di provenienza richiede riestrazione delle sole cache
-  di calibrazione prive dei campi aggiunti: non invalidare o sovrascrivere retroattivamente i risultati del collaudo o di 2A/2C.
-- **Costi nei log aggiornati:** calibrazione 144,7/220 GPUh prima di C4; infrastruttura 12,78/25 GPUh residue dopo il collaudo dei bracci.
-  Bracci: training tetto 552 GPUh + valutazione approvata tetto 58 = 610 GPUh. Nessuna nuova spesa con questa integrazione.
-- **Dati:** rinfresco chiuso in fba794f, prossimo 12/11. Questa review non sottomette, cancella o modifica job.
+- **Claude:** chiude i descrittivi del pilot (A2 `dec` a 2 epoche, B2 a 1 epoca, pendenza, coerenza R0-e1/C1, per dataset) e il consuntivo
+  `sacct`; registra; esegue il codice dell'emendamento SOLO dopo la firma; prepara deploy, checkout, collaudo dell'ingest e collaudo dbg di R3,
+  ciascuno col via di Simone. Nessuna nuova variante.
+- **GPT:** responsabile scientifico: legge diagnosi ed emendamento, conferma/modifica/accantona R3 come proposta per Simone; review del codice
+  della posa (d8650c6) e integrazione su `main` delle consegne del 23-26/10.
+- **Costi aggiornati (26/10):** pilot 176,5 GPU-ora di training + ~5,6 attese di valutazione; seconda ondata con R3c ed emendamento ~99 / 136
+  GPU-ora attese / tetto; voce finestra 1, famiglia «Ablation a 30M» (~530 spese); residuo indicativo ~5.300, da confermare col consuntivo.
+- **Dati:** rinfresco di `$SCRATCH` chiuso il 15/10 (fba794f), prossimo 12/11; la posa di emg2pose (12,2 GB) entrera' nello stesso giro.
 
 ### Confini anti-conflitto e registrazione
 
@@ -3692,6 +3694,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - **Verificato e non verificato:** verificato = codice (test CPU, contratto, default bit per bit, riferimento 705ec04); NON verificato = ogni
   ipotesi scientifica (nessun job). Il fact-checker ha confermato la correzione bibliografica di GPT su CPEP: «RandInit» e' un encoder EMG
   inizializzato a caso e addestrato con la loss contrastiva, non un encoder casuale congelato (arXiv 2509.04699v3, Sez. 3.3 e Tabella 2).
+### 2026-10-26 | Claude | Diagnosi aggiornata (`docs/diagnosi_aggiornata_20261026.md`: tabella per ipotesi H1-H9, sette rilievi di GPT verificati, correzioni alla revisione) ed EMENDAMENTO 1 a `pilot_posa_v1` PROPOSTO (`docs/emendamento_pilot_posa_v1.md`: posa fuori campione su 15 utenti di `val`, controllo disallineato, sonda per istante su R3/R3c/R0, gradienti condivisi, attribuzione separata dall'adozione, albero delle decisioni congelato; +1,0 / 4,0 GPU-ora); testata del registro aggiornata al 26/10; nessun job | Codice: nessuno (documenti); commit di questa voce
+
+- **Richiesta di Simone (26/10):** «completassi le attività sperimentali già avviate [...] diagnosi aggiornata [...] emendamento esplicito al
+  protocollo già firmato [...] un solo prossimo esperimento prioritario». Fatto nei due documenti; la chiusura dei descrittivi del pilot (A2
+  5/8 sonde finite, B2 8/16 sottomesse) e il consuntivo seguono nel registro appena le sonde finiscono.
+- **Verifica dei sette rilievi di GPT:** tutti e sette concordati, con le correzioni di formulazione alla diagnosi di Claude (readout: solo due
+  letture lineari escluse; JEPA: «nessun beneficio robusto», non «peso morto»; target: struttura del movimento, non finestra). Correzioni e
+  precisazioni alla revisione di GPT: CPEP/RandInit confermato dal fact-checker (la rassegna locale e' da correggere); `key_time_valid` era un
+  difetto del codice di 71c0a93, corretto in d8650c6; `PoseHead` = LayerNorm + Linear dichiarato; la concatenazione `[pool; dec]` e' una prova
+  descrittiva con cautele sulla larghezza.
+- **Emendamento:** nessuna regola firmata cambia; aggiunge E1 (posa appresa fuori campione: rapporto MAE / MAE del costante sulle finestre
+  dinamiche di `val`, IC95 sui 15 utenti con limite superiore < 0,9 e mediana per utente < 0,9), E2 (controllo disallineato: stesso utente e
+  fase, distanza >= 8 s, limite inferiore dell'IC95 del rapporto > 0,95), E3 (ridge lineare per istante dai latenti congelati, su R3, R3c, R0),
+  E4 (norme e coseno dei gradienti posa/ancore sui moduli condivisi; «sotto l'1% = la posa non muove l'encoder», registrato prima del lancio), E5
+  (adozione §5 invariata; attribuzione R3 contro R3c descrittiva; conferma a due semi con R3c, +47 / 60 GPU-ora), E6 (albero delle decisioni),
+  E7 (costi: ~1,0 / 4,0 GPU-ora, ~12 / 64 core-ore, +1 giorno; totale ~99 / 136 GPU-ora). Prossimo esperimento prioritario (E8): R3 + R3c con
+  l'emendamento. Da firmare: GPT (responsabile scientifico) e Simone. Il codice dell'emendamento (`scripts/pose_eval.py`, `--pose-grad-every`)
+  si scrive solo dopo la firma.
+- **Testata del registro:** stato dei sei punti e delle PSD-1..4 aggiornato al 26/10 (punto 3 APERTO: `main` fermo a 4680617, consegne del
+  23-26/10 da integrare; punto 5 IN CORSO con GPT responsabile; punto 6 SOSPESO).
 
 ## 2) Problemi trovati
 

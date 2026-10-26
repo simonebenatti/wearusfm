@@ -4424,3 +4424,14 @@ lato = radice della media delle due varianze, sqrt((s_sx^2 + s_dx^2) / 2), non p
 `data/pose_targets.py` e' importato solo dentro i rami della posa, `model/pose_head.py` solo con la testa; `training/run._config_with_defaults`
 cambia (riempie i default dei campi della posa nei config precedenti) ed e' dichiarata fra le funzioni toccate del §3 (b). (6) L'ingest intero
 riscrive le registrazioni fatte con un altro margine (`--skip-existing` salta solo a regola uguale).
+
+**Emendamento 1 a `pilot_posa_v1`: PROPOSTO (Claude, 26/10/2026, su richiesta di Simone); nessuna regola firmata cambia; da firmare GPT e Simone.**
+Regole aggiunte, congelate nella forma prima di qualunque lettura: E1 «posa appresa fuori campione» = rapporto MAE_R3 / MAE_costante sulle finestre
+dinamiche dello split `val` di emg2pose (15 utenti assenti dal training), limite superiore dell'IC95 (bootstrap sui 15 utenti, 1.000
+ricampionamenti, seme 20261009) < 0,9 e mediana per utente < 0,9, all'endpoint a 2 epoche; E2 controllo disallineato (stesso utente e fase,
+distanza >= 8 s, coppie quasi identiche scartate): limite inferiore dell'IC95 di MAE_disallineato / MAE_costante > 0,95, altrimenti (a) non
+interpretabile; E3 sonda ridge per istante su R3, R3c, R0 (descrittiva, soglia di lettura 0,9); E4 gradienti condivisi (descrittivo; «sotto l'1%
+delle ancore nei passi 500-1.300 = la posa non muove l'encoder», da registrare prima del lancio); E5 adozione = §5 invariato, attribuzione =
+R3 contro R3c descrittiva, conferma a due semi con R3c; E6 albero delle decisioni (tabella nel documento). Costo aggiuntivo ~1,0 / 4,0 GPU-ora e
+~12 / 64 core-ore; totale della seconda ondata ~99 / 136 GPU-ora. Dettaglio in `docs/emendamento_pilot_posa_v1.md`; diagnosi in
+`docs/diagnosi_aggiornata_20261026.md`.
