@@ -2652,7 +2652,39 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Punto 3 chiuso per questa tranche; codice operativo futuro del pilot nel punto 5. Pubblicazione di main e ramo GPT su GitHub,
   nessun push/deploy su Leonardo, nessun job. La PR #1 resta chiusa senza merge del ramo sintetico.
 
+### 2026-10-27 | GPT | Lettura aggiornamenti R3 e margine della posa | Snapshot Claude: d43dbcf; base GPT: 4680617
+
+- Su richiesta di Simone, ripresa con Astra la lettura del pilot chiuso e della preparazione R3. Review in
+  `docs/reviews/r3_updates_review_20261027.md`, con riproduzioni in `docs/reviews/repro_pose_eval_20261027.py`.
+- Descrittivi a una/due epoche e decoder per canale coerenti col verdetto: nessuna variante passa. R3c completo, valutazione anticipata
+  autorizzata e quattro estrazioni sottomesse secondo il registro; R3 ancora nella catena ingest/collaudo. Stato dai file locali, non live.
+- Ricalcolata `margin_from_collaudo` sul rapporto 62409366: identica al JSON salvato. M v1 = 2.800, M3 = 280, M5 = 270; tetto di esclusione
+  aggiuntiva a M = 280 pari al 5,028% del campione, oltre al 9,403% di zeri. Parere favorevole al completamento del pilot col margine firmato,
+  qualificato come compromesso operativo; il profilo non separa movimento reale ed errore del tracking.
+- E1/E3 per istante sono un progresso per la regressione. Un beneficio sulla posa fuori campione ha valore scientifico distinto dal criterio
+  di adozione P1/P2 per classificazione. Conservare confronti quantitativi R3/R3c/R0, senza dedurre equivalenza dal solo superamento di 0,9.
+- Due problemi E2 riprodotti sul codice reale: gap calcolato su supporti diversi (+1 corretto, -32,333 nel report sintetico); fallback che
+  accetta le mani opposte della stessa sessione e stesso istante. Correzioni da Claude prima di interpretare E2, circoscritte alla valutazione.
+- Nessuna modifica al codice di Claude, a protocolli, soglie, M o job. Nessuna nuova spesa di cluster. Suite completa non rieseguita;
+  verificati ricalcolo del margine, JSON del pilot e due controesempi. Rassegna: EEG incluso, TinyMyo/PhysioWave esclusi come chiesto da Simone.
+
 ## 2) Problemi trovati
+
+### 2026-10-27 | GPT | Limiti scientifici del margine e due difetti della valutazione E2 | Snapshot Claude: d43dbcf
+
+- `decisioni.md` (lettura del collaudo lungo, da riga 4697): la certezza «solo i primi 40 campioni sono artefatto / coda = comportamento»
+  non e' sostenuta dal profilo. R5 supera la sua soglia in 104 bin fino a 3.570 campioni, senza per questo dimostrare artefatti in tutti quei
+  bin. M3/M5 sono entrambi limitati a 300 per costruzione; la loro vicinanza non e' conferma indipendente. Variazione della posa non equivale
+  a rumore. La scelta firmata M = 280 resta ragionevole per il pilot, ma la qualita' dei target residui e' ancora incerta.
+- `harness/pose_eval.py:384-392`: gap disallineato meno allineato usa subset e maschere diversi; puo' invertire il segno. Calcolare entrambe
+  le MAE sulle stesse coppie e sulla stessa intersezione delle maschere. Il difetto e' nel gap descrittivo, non direttamente nel gate E2.
+- `harness/pose_eval.py:280-297`: il fallback ignora sessione/lato, puo' accoppiare mani simultanee; con statistiche per lato mescola anche
+  coordinate standardizzate diverse. Vincolare le coppie e/o convertire in uno spazio comune, contando fallback/esclusioni. Frequenza reale
+  e attivazione `per_side` non misurate. Riproduzioni sintetiche conservate nella review, nessun risultato R3 esistente invalidato.
+- E2 migliore del costante globale non dimostra di per se' leakage; E4 sul microbatch locale del rank 0 e' diagnostico e non prova da solo
+  che la posa non muova l'encoder. Limiti da rispettare nella lettura, senza riscrivere soglie congelate.
+- README del pilot: un IC di R5 pool P1 e2 nel paragrafo e1 e' trascritto diversamente dal JSON (-1,09/+0,05 invece di -1,0735/-0,0166
+  punti); la tabella iniziale e il JSON sono coerenti e il verdetto resta negativo per l'adozione.
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
 
