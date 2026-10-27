@@ -1,6 +1,8 @@
-"""Audit della catena dei bersagli di posa su dati costruiti con geometria reale (`scripts/pose_audit.py`, controllo 1 della diagnosi GPT del
-27/10/2026): identita' e ricostruzione dal tar, oracolo delle patch, ridge da log-RMS che batte il costante quando l'EMG porta la posa, scansione
-del ritardo a zero quando EMG e posa sono allineati e NON a zero quando la posa e' spostata; split temporale fit / separazione / test."""
+"""Audit della catena dei bersagli di posa su dati costruiti con geometria reale (`scripts/pose_audit.py`; correzioni R1-R4 della review GPT
+`docs/reviews/pose_audit_e198a87_review_20261027.md`): UNA fixture HDF5 attraversa l'ingest dell'EMG e quello della posa; stati
+verificato / fallito / non verificato con copertura; EMG sostituito o spostato fallisce anche con sidecar plausibili; senza tar l'audit e' parziale;
+oracolo con NaN / Inf; movimento su coppie adiacenti valide; ridge con split interno; disallineato come in E2; scansione del ritardo esplorativa
+che recupera segno e grandezza di uno spostamento noto (200 ms = 8 patch) senza un verdetto «minimo a zero»."""
 
 import csv
 import io
@@ -9,91 +11,176 @@ import subprocess
 import sys
 from pathlib import Path
 
+import h5py
 import numpy as np
 import pytest
 
 torch = pytest.importorskip("torch")
 
-from test_ingest_emg2pose_pose import _hdf5_bytes, _tar  # noqa: E402
-from test_pose_chain_oracle import FS, M, _ingest  # noqa: E402
+from test_ingest_emg2pose_pose import _tar  # noqa: E402
 from test_pose_targets import _stats  # noqa: E402
 from wearusfm.data import pose_targets as PT  # noqa: E402
-from wearusfm.ingest import emg2pose  # noqa: E402
-from wearusfm.ingest.common import montage_to_dict  # noqa: E402
+from wearusfm.ingest import emg2pose as E2P  # noqa: E402
+from wearusfm.ingest import emg2pose_pose as PP  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 SCRIPT = REPO / "scripts" / "pose_audit.py"
-N = 60000  # 30 s: fino a 7 finestre da 4 s per registrazione (fit 60% / separazione / test con almeno 2 finestre)
+sys.path.insert(0, str(REPO / "scripts"))
+import pose_audit as PA  # noqa: E402
+
+FS, N, M = 2000.0, 120000, 280  # 60 s a 2 kHz: ~11 finestre da 4 s per registrazione (coppie a >= 8 s fra le finestre di test)
+SPECS = [("1", "sA", "A", "left", 1), ("1", "sB", "A", "left", 2), ("2", "sC", "A", "right", 3), ("2", "sD", "B", "right", 4)]
+
+
+def _hdf5(angles, emg, rate=2000.0):
+    n = angles.shape[0]
+    dt = np.dtype([("time", "<f8"), ("joint_angles", "<f4", (20,)), ("emg", "<f4", (16,))])
+    arr = np.zeros(n, dtype=dt)
+    arr["time"], arr["joint_angles"], arr["emg"] = np.arange(n) / rate, angles, emg
+    buf = io.BytesIO()
+    with h5py.File(buf, "w") as f:
+        g = f.create_group("emg2pose")
+        g.create_dataset("timeseries", data=arr)
+        g.attrs["sample_rate"] = rate
+    return buf.getvalue()
 
 
 def _pose_and_emg(n, seed, shift_blocks=0):
-    """Posa lenta per giunto; EMG con l'ampiezza del canale c modulata dal giunto c (log-RMS lineare nella posa): la ridge deve batterla.
-    `shift_blocks` sposta la POSA scritta nell'albero rispetto all'EMG (posa disallineata di proposito)."""
+    """Posa lenta per giunto; EMG col canale c modulato in ampiezza dal giunto c all'ISTANTE STESSO (log-RMS lineare nella posa, nessun
+    ritardo). `shift_blocks` sposta la posa scritta nel file rispetto all'EMG (posa disallineata di proposito)."""
     rng = np.random.default_rng(seed)
     t = np.arange(n) / FS
     pose = (0.6 * np.sin(2 * np.pi * (0.25 + 0.05 * np.arange(20))[None, :] * t[:, None] + rng.normal(size=20)[None, :]) + 1.0).astype(np.float32)
-    amp = 0.3 + 0.7 * (pose[:, :16] - 0.4) / 1.2  # (n, 16) in [0,3; 1,0]
-    emg = rng.normal(size=(n, 16)) * amp * 3.0
-    pose_written = np.roll(pose, shift_blocks * PT.BLOCK, axis=0) if shift_blocks else pose
-    pose_written[5000:5300] = 0.0  # un blocco di zeri (fallimento della cinematica inversa)
-    return pose_written, emg
+    amp = 0.3 + 0.7 * (pose[:, :16] - 0.4) / 1.2
+    emg = (rng.normal(size=(n, 16)) * amp * 3.0).astype(np.float32)
+    written = np.roll(pose, shift_blocks * PT.BLOCK, axis=0) if shift_blocks else pose.copy()
+    written[5000:5300] = 0.0  # un blocco di zeri (fallimento della cinematica inversa)
+    return written, emg
 
 
-def _setup(tmp_path, shift_blocks=0):
+def _setup(tmp_path, shift_blocks=0, mutate=None):
+    """Alberi EMG e posa dall'UNICA fixture HDF5 per registrazione, con i due ingest veri; CSV con inizi assoluti; tar con gli stessi byte.
+    `mutate`: funzione (stem, dir_emg) applicata DOPO l'ingest (EMG sostituito o spostato)."""
     root, pose_root = tmp_path / "processed" / "emg2pose", tmp_path / "pose"
     rows, recs = [], {}
-    specs = [("1", "sA", "A", "left", 1), ("1", "sB", "A", "left", 2), ("2", "sC", "A", "right", 3), ("2", "sD", "B", "right", 4)]
-    for user, sess, stage, side, seed in specs:
+    for i, (user, sess, stage, side, seed) in enumerate(SPECS):
         stem = f"2021-01-0{seed}-1-h{seed}-cv-emg-pose-{stage}@2-recording-0_{side}"
         pose, emg = _pose_and_emg(N, seed, shift_blocks)
-        m = emg2pose.build_montage_metadata(user, stem, side)
-        d = root / f"u{user}" / stem
-        d.mkdir(parents=True, exist_ok=True)
-        np.save(d / "data_int16.npy", np.round(emg * 1000).astype(np.int16))
-        (d / "metadata.json").write_text(json.dumps({"montage": montage_to_dict(m, [True] * 16), "native_fs_hz": FS, "shape": [N, 16],
-                                                     "int16_scale": 1000.0, "csv_row": {"side": side, "moving_hand": "both", "user": user}}))
-        _ingest(pose_root, user, stem, pose, side)
-        recs[stem] = _hdf5_bytes(pose)
-        rows.append({"session": sess, "user": user, "stage": stage, "start": 0, "end": 20, "side": side, "filename": stem + ".hdf5",
-                     "moving_hand": "both", "held_out_user": False, "held_out_stage": False, "split": "train", "generalization": "user"})
+        data = _hdf5(pose, emg)
+        row = {"session": sess, "user": user, "stage": stage, "start": 1_600_000_000 + 100 * i, "end": 1_600_000_000 + 100 * i + 30, "side": side,
+               "filename": stem + ".hdf5", "moving_hand": "both", "held_out_user": False, "held_out_stage": False, "split": "train", "generalization": "user"}
+        ref = E2P.RecordingRef(member=f"emg2pose_data/{stem}.hdf5", stem=stem)
+        E2P.ingest_recording(io.BytesIO(data), ref, root, row)
+        PP.ingest_pose_recording(io.BytesIO(data), ref, pose_root, row, zero_margin_samples=M, measure=False)
+        recs[stem] = data
+        rows.append(row)
+        if mutate:
+            mutate(stem, root / f"u{user}" / stem)
     _stats(pose_root, mean=[1.0] * 20, std=[0.42] * 20)
     csvp = tmp_path / "meta.csv"
     with open(csvp, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
-    tar = _tar(tmp_path / "emg2pose_dataset.tar", recs)
-    return root, pose_root, csvp, tar
+    return root, pose_root, csvp, _tar(tmp_path / "emg2pose_dataset.tar", recs)
 
 
-def _run(tmp_path, root, pose_root, csvp, tar, out):
+def _run(root, pose_root, csvp, tar, out, extra=()):
     env = {"PYTHONPATH": str(REPO / "src"), "PATH": "/usr/bin:/bin", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}
-    cmd = [sys.executable, str(SCRIPT), "--csv", str(csvp), "--processed-root", str(root), "--pose-root", str(pose_root), "--tar", str(tar),
-           "--n-users", "2", "--n-recordings", "4", "--n-windows", "5", "--context", "1", "--lags", "6", "--out", str(out)]
+    cmd = [sys.executable, str(SCRIPT), "--csv", str(csvp), "--processed-root", str(root), "--pose-root", str(pose_root),
+           "--n-users", "2", "--n-recordings", "4", "--n-windows", "24", "--out", str(out), *([] if tar is None else ["--tar", str(tar)]), *extra]
     r = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert r.returncode == 0, r.stdout + r.stderr
     return json.loads(out.read_text())
 
 
-def test_audit_confirms_an_aligned_chain_and_the_ridge_beats_the_constant(tmp_path):
+def test_single_fixture_through_both_ingests_is_verified_and_the_ridge_beats_the_constant(tmp_path):
     root, pose_root, csvp, tar = _setup(tmp_path)
-    rep = _run(tmp_path, root, pose_root, csvp, tar, tmp_path / "audit.json")
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "audit.json", extra=["--context", "0", "--lags", "12"])
     s = rep["sintesi"]
-    assert rep["n_recordings"] == 4 and rep["tar"]["found"] == 4 and rep["tar"]["missing"] == 0
-    assert s["identita_ok_tutte"] and s["ricostruzione_ok_tutte"] and s["n_ricostruite"] == 4 and s["oracolo_ok_tutte"] and s["n_finestre_oracolo"] >= 12
-    assert sum(s["blocchi_validi_per_patch_istogramma_0_5"]) == s["n_finestre_oracolo"] * 160 and s["blocchi_validi_per_patch_istogramma_0_5"][5] > 0
+    assert rep["tar"] == {"found": 4, "missing": 0, "index_seconds": rep["tar"]["index_seconds"]} and s["stato_catena"] == "verificato"
+    assert all(c["verificato"] == 4 and c["fallito"] == 0 and c["non_verificato"] == 0 for c in s["copertura"].values())
+    for r in rep["per_recording"]:
+        assert all(r["sidecar"].values()) and r["emg"]["errore_massimo"] <= r["emg"]["tolleranza"] + 1e-5 and r["emg"]["errore_massimo_blocco"] < 1e-4
+        assert r["frac_valid_blocks"] < 1.0 and r["movimento_adiacenti_validi"] is not None
+    assert sum(s["blocchi_validi_per_patch_istogramma_0_5"]) > 0 and s["blocchi_validi_per_patch_istogramma_0_5"][5] > 0
     for u, v in rep["ridge"].items():
-        assert v["n_fit"] >= 2 and v["n_gap"] >= 1 and v["n_test"] >= 1 and v["n_fit"] + v["n_gap"] + v["n_test"] <= v["n_windows"]
-        assert v["ratio_all"] < 0.8 and v["lag_scan"]["best_lag"] == 0 and v["misaligned"]["ratio_vs_const"] > v["ratio_all"]
-    assert s["lag_zero_per_tutti"] and s["ridge_ratio_all_mediana_utenti"] < 0.8
-    per = {r["stem"]: r for r in rep["per_recording"]}
-    assert all(r["identita"]["side_emg"] and r["identita"]["margin"] for r in per.values())
-    assert all(r["frac_valid_blocks"] < 1.0 for r in per.values())  # il blocco di zeri col margine M toglie qualcosa ovunque
+        assert v["n_fit"] >= 2 and v["n_gap"] >= 1 and v["n_test"] >= 2 and v["n_fit"] + v["n_gap"] + v["n_test"] == v["n_windows"]
+        assert v["cronologia"].startswith("tempo assoluto") and v["simultanee_fit_test"] == 0 and v["alpha"]["n_fit_interno"] >= 2
+        assert v["ratio_all"] < 0.8 and v["mae"] < v["mae_const"]
+        d = v["disallineato"]
+        assert d["stato"] == "verificato" and d["n_coppie"] >= 1 and d["mae_disallineata"] > d["mae_allineata"] and d["gap"] > 0
+        sc = v["scansione_ritardo"]
+        assert sc["esplorativa"] and sc["per_lag"]["0"]["n"] == sc["per_lag"]["8"]["n"] == sc["n_righe_test"]  # supporto comune
+        assert sc["mae_test_a_0"] <= sc["per_lag"]["8"]["mae"] and sc["mae_test_a_0"] <= sc["per_lag"]["-8"]["mae"]
+        assert abs(sc["lag_operativo_dal_fit"]) <= 1  # allineato: nessuna pretesa che il minimo sia esattamente 0
+    assert "lag_zero_per_tutti" not in s
 
 
-def test_audit_detects_a_pose_shifted_against_the_emg(tmp_path):
-    root, pose_root, csvp, tar = _setup(tmp_path, shift_blocks=40)  # posa spostata di 40 blocchi = 8 patch = 400 ms
-    rep = _run(tmp_path, root, pose_root, csvp, tar, tmp_path / "audit_shift.json")
+def test_shifted_pose_is_recovered_in_sign_and_magnitude_by_the_lag_scan_only(tmp_path):
+    root, pose_root, csvp, tar = _setup(tmp_path, shift_blocks=40)  # 40 blocchi = 400 campioni = 200 ms = 8 patch da 25 ms
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "audit_shift.json", extra=["--context", "0", "--lags", "12"])
+    assert rep["sintesi"]["stato_catena"] == "verificato"  # la catena e' coerente con l'albero: il problema sta nei dati
+    for u, v in rep["ridge"].items():
+        sc = v["scansione_ritardo"]
+        assert abs(sc["lag_operativo_dal_fit"] - 8) <= 1 and sc["mae_test_al_lag_operativo"] < 0.8 * sc["mae_test_a_0"]
+
+
+def test_substituted_or_shifted_emg_fails_even_with_plausible_sidecars(tmp_path):
+    def substitute(stem, d):
+        other = np.load(d / "data_int16.npy")[::-1].copy()  # stesso file, al contrario: stessa scala e stessa forma
+        np.save(d / "data_int16.npy", other)
+
+    root, pose_root, csvp, tar = _setup(tmp_path / "sub", mutate=substitute)
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "sub.json", extra=["--lags", "0"])
+    assert rep["sintesi"]["stato_catena"] == "fallito" and rep["sintesi"]["copertura"]["emg_grezzo"]["fallito"] == 4
+    assert rep["sintesi"]["copertura"]["sidecar"]["verificato"] == 4 and rep["sintesi"]["copertura"]["posa_ricostruzione"]["verificato"] == 4
+
+    def shift(stem, d):
+        np.save(d / "data_int16.npy", np.roll(np.load(d / "data_int16.npy"), 100, axis=0))
+
+    root, pose_root, csvp, tar = _setup(tmp_path / "shift", mutate=shift)
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "shift.json", extra=["--lags", "0"])
+    assert rep["sintesi"]["stato_catena"] == "fallito" and rep["sintesi"]["copertura"]["emg_grezzo"]["fallito"] == 4
+
+
+def test_without_raw_the_audit_is_partial_never_ok(tmp_path):
+    root, pose_root, csvp, tar = _setup(tmp_path)
+    rep = _run(root, pose_root, csvp, None, tmp_path / "partial.json", extra=["--lags", "0"])
     s = rep["sintesi"]
-    assert s["identita_ok_tutte"] and s["ricostruzione_ok_tutte"] and s["oracolo_ok_tutte"]  # la catena e' coerente con l'albero: il difetto e' nei dati
-    assert not s["lag_zero_per_tutti"] and all(abs(k) >= 4 for k in s["lag_migliore_per_utente"])  # ma lo spostamento si vede nel ritardo
+    assert s["stato_catena"] == "parziale" and rep["tar"] is None
+    assert s["copertura"]["emg_grezzo"]["non_verificato"] == 4 and s["copertura"]["posa_ricostruzione"]["non_verificato"] == 4
+    assert s["copertura"]["oracolo"]["non_verificato"] == 4 and s["copertura"]["sidecar"]["verificato"] == 4 and s["copertura"]["lettura_blocco"]["verificato"] == 4
+    rep2 = _run(root, pose_root, csvp, tar, tmp_path / "budget0.json", extra=["--lags", "0", "--tar-index-budget-s", "0"])
+    assert rep2["tar"]["found"] == 0 and rep2["sintesi"]["stato_catena"] == "parziale"
+
+
+def test_oracle_follows_the_ingest_contract_for_nonfinite_rows_and_side_stats():
+    angles = np.ones((2000, 20), np.float32)
+    angles[0, 0] = np.nan
+    angles[700, 3] = np.inf
+    angles[1000:1010] = 0.0  # un blocco di zeri: dilatato di M; i non finiti no
+    for margin in (0, 50, 280):
+        t, m, n_v = PA.oracle_patch_targets(angles, 0, 40, 50, margin, np.zeros(20), np.ones(20))
+        bad = PP.invalid_rows(angles, margin)
+        blocks, valid = PP.block_reduce(angles, ~bad)
+        assert not valid[0] and not valid[70] and np.isfinite(t).all()
+        assert n_v[0] == 4 and n_v[14] == valid[70:75].sum() <= 4, (margin, n_v[:16])  # la prima patch perde il blocco col NaN; la 15a quello
+        #                                                                                 con l'Inf (e, con M = 280, anche quelli nel margine degli zeri)
+        exp = np.array([valid[5 * p:5 * p + 5].sum() for p in range(40)])
+        assert np.array_equal(n_v, exp) and np.array_equal(m, exp > 0)
+    # statistiche per lato: l'oracolo riceve quelle del lato della finestra (lo stesso che PoseStore.norm applica)
+    t_l, _, _ = PA.oracle_patch_targets(angles, 0, 4, 50, 0, np.full(20, 0.5), np.full(20, 2.0))
+    t_r, _, _ = PA.oracle_patch_targets(angles, 0, 4, 50, 0, np.full(20, 1.0), np.full(20, 0.5))
+    assert np.allclose(t_l[1], 0.25) and np.allclose(t_r[1], 0.0)
+
+
+def test_movement_never_jumps_across_a_gap_and_dynamic_patches_need_a_valid_neighbour():
+    blocks = np.concatenate([np.zeros((10, 20)), np.full((5, 20), 9.0), np.ones((10, 20))])  # plateau 0, buco (valori 9), plateau 1
+    valid = np.array([True] * 10 + [False] * 5 + [True] * 10)
+    mv, ma, n = PA.movement_adjacent(blocks, valid)
+    assert mv == 0.0 and n == 18 and ma > 0  # nessun salto attraverso il buco fra le coppie valide
+    target = np.concatenate([np.zeros((5, 20)), np.ones((1, 20)), np.full((4, 20), 1.5)])
+    v = np.array([True, True, True, False, False, True, True, True, True, True])
+    dyn = PA.dynamic_patches(target, v)
+    assert not dyn[5] and dyn[6]  # la patch 5 ha la precedente non valida: mai dinamica per il salto attraverso il buco

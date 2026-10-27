@@ -70,7 +70,9 @@ def recordings_for(csv_path: Path, processed_root: Path, split: str, *, n_users:
             d = Path(processed_root) / f"u{_SAFE_RE.sub('_', r['user'])}" / _SAFE_RE.sub("_", stem)
             if (d / "metadata.json").exists():
                 rows.append({"user": r["user"], "session": r["session"], "stage": r["stage"], "side": r["side"],
-                             "moving_hand": r["moving_hand"], "stem": stem, "path": str(d)})
+                             "moving_hand": r["moving_hand"], "stem": stem, "path": str(d),
+                             "start_s": float(r["start"]) if r.get("start") not in (None, "") else None,  # cronologia assoluta (audit)
+                             "end_s": float(r["end"]) if r.get("end") not in (None, "") else None})
     rows.sort(key=lambda r: (r["user"], r["session"], r["stem"]))
     rng = np.random.default_rng(seed)
     if n_users is not None:

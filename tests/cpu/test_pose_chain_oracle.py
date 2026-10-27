@@ -70,7 +70,7 @@ def _ingest(pose_root: Path, user: str, stem: str, angles: np.ndarray, side: str
 def _oracle(angles: np.ndarray, win, mean, std, patch_samples=50):
     n = angles.shape[0]
     zero = np.all(np.abs(angles) <= PP.ZERO_ATOL, axis=1)
-    bad = zero.copy()
+    bad = zero | ~np.all(np.isfinite(angles), axis=1)  # righe non finite: non valide, NON dilatate (contratto dell'ingest)
     for z in np.flatnonzero(zero):  # forza bruta: entro M campioni (inclusi) da una riga a zero
         bad[max(0, z - M):min(n, z + M + 1)] = True
     P = int(win.n_patches)
@@ -94,49 +94,69 @@ def _oracle(angles: np.ndarray, win, mean, std, patch_samples=50):
 @pytest.fixture
 def chain(tmp_path):
     root, pose_root = tmp_path / "processed" / "emg2pose", tmp_path / "pose"
-    specs = {("1", "2021-01-01-1-h1-cv-emg-pose-A@2-recording-0_left", "left"): _raw_angles(N, 1, zero_runs=[(5000, 5400), (25000, 25020)]),
+    a1 = _raw_angles(N, 1, zero_runs=[(5000, 5400), (25000, 25020)])
+    a1[12000:12003, 4] = np.nan  # righe non finite: il blocco non vale, ma niente margine attorno
+    a1[30000, 7] = np.inf
+    specs = {("1", "2021-01-01-1-h1-cv-emg-pose-A@2-recording-0_left", "left"): a1,
              ("2", "2021-01-02-1-h2-cv-emg-pose-A@2-recording-0_right", "right"): _raw_angles(N, 2, zero_runs=[(39000, 39700)])}
     views = {}
     for (user, stem, side), ang in specs.items():
         d = _emg_tree(root, user, stem, side, N, seed=int(user))
         out = _ingest(pose_root, user, stem, ang, side)
         assert out["n_blocks"] == N // 10 and out["n_zero_rows"] == sum(e - s for s, e in ([(5000, 5400), (25000, 25020)] if user == "1" else [(39000, 39700)]))
+        assert out["n_nonfinite_rows"] == (4 if user == "1" else 0)
         views[user] = (d, ang, stem, side)
-    _stats(pose_root, mean=MEAN, std=STD)
+    # statistiche PER LATO (criterio `per_side`): l'oracolo deve usare quelle del lato della finestra
+    _stats(pose_root, mean=MEAN, std=STD, per_side=True, by_side={"left": {"mean": MEAN, "std": STD}, "right": {"mean": [1.2] * 20, "std": [0.5] * 20}})
     return root, pose_root, views
 
 
 def test_targets_from_raw_to_trainer_tensors_match_an_independent_oracle(chain):
     root, pose_root, views = chain
     store = PT.PoseStore(pose_root)
+    assert store.per_side
     cfg = L.signed_config()
     assert cfg.patch_ms == 25.0  # 50 campioni a 2 kHz: 5 blocchi di posa per patch
     n_checked, n_masked_patches, n_full = 0, 0, 0
     items, n_patches = [], []
     for user, (d, ang, stem, side) in views.items():
         view = L.SessionView.open(d, True)
-        wins = PE.fixed_windows(view, cfg, 10, 4.0, PE.SEED_WINDOWS)
+        mean_side, std_side = store.norm(view)
+        assert np.allclose(std_side, STD if side == "left" else 0.5)
+        wins = PE.fixed_windows(view, cfg, 10, 4.0 if user == "1" else 2.0, PE.SEED_WINDOWS)  # utente 2: finestre corte (80 patch)
         assert len(wins) >= 3
         for w in wins:
             got = store.window({"dataset": "emg2pose"}, view, w, cfg.patch_ms)
             assert got is not None
             t, m, sd = got
-            o_t, o_m = _oracle(ang, w, MEAN, STD)
+            o_t, o_m = _oracle(ang, w, mean_side, std_side)
             assert m.shape == (w.n_patches, 20) and np.array_equal(m, o_m), (user, w.start)
             assert np.allclose(t[m], o_t[o_m], atol=6e-3), (user, w.start, float(np.abs(t[m] - o_t[o_m]).max()))  # blocchi in float16
-            assert np.allclose(sd, STD)
+            assert np.isfinite(t).all() and np.allclose(sd, std_side)
             n_checked += 1
             n_masked_patches += int((~m[:, 0]).sum())
             n_full += int(m.all())
             items.append((t, m, sd))
             n_patches.append(int(w.n_patches))
     assert n_checked >= 6 and n_masked_patches > 0 and n_full > 0  # finestre con margine mascherato e finestre piene
+    # righe non finite (utente 1, campioni 12.000-12.002 e 30.000): invalidano il loro blocco, non la patch (restano 4 blocchi su 5) e non
+    # dilatano: finestra esplicita che le contiene, uguale all'oracolo e tutta valida
+    d1, ang1, _, _ = views["1"]
+    view1 = L.SessionView.open(d1, True)
+    mean1, std1 = store.norm(view1)
+    for start in (11600, 29800):
+        w = L.Window(None, start, start + 8000, (0, N), 160)
+        t, m, _ = store.window({"dataset": "emg2pose"}, view1, w, cfg.patch_ms)
+        o_t, o_m = _oracle(ang1, w, mean1, std1)
+        assert m.all() and np.array_equal(m, o_m) and np.allclose(t, o_t, atol=6e-3) and np.isfinite(t).all()
     # _pose_tensors: riempimento alla larghezza del batch con maschera falsa, una finestra senza posa nel mezzo
     batch = SimpleNamespace(pose=[items[0], None, items[-1]], n_patches=[n_patches[0], n_patches[0], n_patches[-1]])
     tgt, msk, std = R._pose_tensors(batch, "cpu")
     p_max = max(batch.n_patches)
+    assert n_patches[-1] < p_max  # la finestra corta: il riempimento oltre le sue patch e' davvero controllato
     assert tgt.shape == (3, p_max, 20) and msk.shape == (3, p_max, 20) and std.shape == (3, 20)
-    assert torch.equal(msk[0, :n_patches[0]], torch.from_numpy(items[0][1])) and not msk[1].any() and not msk[0, n_patches[0]:].any()
+    assert torch.equal(msk[0, :n_patches[0]], torch.from_numpy(items[0][1])) and not msk[1].any()
+    assert torch.equal(msk[2, :n_patches[-1]], torch.from_numpy(items[-1][1])) and not msk[2, n_patches[-1]:].any() and not tgt[2, n_patches[-1]:].any()
     assert torch.allclose(tgt[2, :n_patches[-1]], torch.from_numpy(items[-1][0])) and torch.allclose(std[2], torch.from_numpy(items[-1][2]))
     # la perdita iniziale (testa a zero) sul supporto valido e' la media dei quadrati dei bersagli: ~ varianza standardizzata, non esattamente 1
     sq = float((tgt[msk] ** 2).mean())
@@ -190,17 +210,21 @@ def test_zero_head_learns_a_known_linear_target_only_with_enough_signal_and_lr_d
     """Calibrazione del controllo (non una previsione del dataset vero): a feature fisse e isotrope, con lo schedule del collaudo (dose di lr
     pari a ~671 passi di picco) la testa a zero scende del 10% solo con segnale forte; con lo schedule di R3 fino a 5.000 passi anche con
     segnale moderato; senza segnale mai. I numeri (passi al 10%) stanno in `scripts/pose_head_synthetic.py --out`."""
+    from wearusfm.training import run as R
+    cfg = PHS.schedule_cfg("dbg")
+    assert all(PHS.lr_at(s, "dbg") == R._lr_at(s - 1, cfg) for s in range(1, 1301))  # lo stesso schedule del trainer, passo per passo
+    assert abs(sum(PHS.lr_at(s, "dbg") for s in range(1, 1301)) / 1e-4 - 671) < 1e-6 and PHS.lr_at(1041, "dbg") == 1e-4 and PHS.lr_at(1042, "dbg") < 1e-4
+    assert PHS.lr_at(1962, "r3") == 1e-4 and PHS.lr_at(5000, "r3") == 1e-4 and PHS.lr_at(1, "r3") < 1e-6
     strong = PHS.simulate(1.0, 7, "dbg", 0, 1300, eval_every=100)
-    assert abs(strong["lr_dose_peak_steps"] - 671) < 2 and strong["mse_end"] <= 0.9 * strong["mse_0"] and strong["first_step_with_10pct"] <= 1300
+    assert abs(strong["lr_dose_peak_steps"] - 671) < 1e-6 and strong["mse_end"] <= 0.9 * strong["mse_0"] and strong["first_step_with_10pct"] <= 1300
     null = PHS.simulate(0.0, 7, "dbg", 0, 1300, eval_every=100)
     assert null["ratio_end"] > 0.95 and null["first_step_with_10pct"] is None
-    # segnale moderato (q = 0,2): con 7 finestre da 10 istanti indipendenti (70 campioni per passo) il collaudo dbg basta; con 7 campioni per
-    # passo (P = 1, il «B = 7» del conto di GPT) no, e con lo schedule di R3 fino a 5.000 passi si'. Nel dataset vero gli istanti di una finestra
-    # sono correlati: il numero efficace sta fra i due casi, e q non e' noto
+    # segnale moderato (q = 0,2): con 7 finestre da 10 istanti indipendenti (70 per passo) il collaudo dbg basta; con 7 istanti per passo (P = 1)
+    # no, e con lo schedule di R3 fino a 5.000 passi si'. Scenari illustrativi: nel dataset vero il numero efficace di istanti e q non sono misurati
     mod_p10 = PHS.simulate(0.2, 7, "dbg", 0, 1300, eval_every=100)
     mod_p1_dbg = PHS.simulate(0.2, 7, "dbg", 0, 1300, eval_every=100, P=1)
     mod_p1_r3 = PHS.simulate(0.2, 7, "r3", 0, 5000, eval_every=500, P=1)
     assert mod_p10["instants_per_step"] == 70 and mod_p10["ratio_end"] <= 0.9
     assert mod_p1_dbg["instants_per_step"] == 7 and mod_p1_dbg["ratio_end"] > 0.9
     assert mod_p1_r3["ratio_end"] <= 0.9 and mod_p1_r3["first_step_with_10pct"] is not None
-    assert abs(PHS.lr_at(1100, "dbg") - 7.7e-5) < 1e-6 and abs(PHS.lr_at(1200, "dbg") - 3.85e-5) < 1e-6 and PHS.lr_at(1962, "r3") == 1e-4
+    assert strong["optimum_ratio_at_fixed_features"] == 0.0 and strong["mse_end"] < 0.5  # teacher sulle feature normalizzate: l'ottimo e' 1 - q
