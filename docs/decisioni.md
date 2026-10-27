@@ -4587,3 +4587,21 @@ lungo NON torna mai al valore lontano; l'ordine giusto e' verifica di GPT -> via
   tetto 51). Residuo: ~531 core-ore e 132 GPU-ora.
 Consuntivo parziale (27/10/2026, 06:15): R3c tronco 62364571 COMPLETED per `max_steps` (49.046 passi, 0,74 s/passo), 40,4 GPU-ora sulle 51 di
 tetto; ramo 62364573 in coda. Spesa della seconda ondata: 40,4 GPU-ora (tetto 132,0), ~0,1 core-ore (tetto 531).
+
+**Seconda ondata: TERZA RETTIFICA dopo la terza review del `critico` (Claude, 27/10/2026, ore del commit): l'innesco della riserva e' «nessun bin
+contato rientra nel 25% del lontano», non «l'ultimo bin e' fuori»; chi rientra e poi riesce si ferma; residuo del budget corretto.**
+- **Bloccante accolto.** Nel codice la condizione «non rientra mai» era approssimata con «l'ultimo bin e' fuori» (il predicato della v1): su code
+  non monotone (rientra nel 25% e poi riesce, oscilla attorno a 1,25, ultimi bin magri) la riserva si riapriva o si chiudeva per 0,02 di un solo
+  bin. Ora: la riserva si **calcola** quando la v1 e' non determinata o da' M > 400; si **applica** solo se **nessun bin contato** del profilo
+  lungo rientra nel 25% del lontano (indipendente dall'ultimo bin, la v1 congelata non cambia), con R2 che regge e bin contati fino a 2.000. Un
+  profilo che **rientra e poi riesce** non e' «mai rientrato»: **fermarsi**, decide Simone (la proposta porta la v1 se determinata, la perdita e i
+  valori informativi R3 e R5). Se la v1 risulta determinata solo perche' gli ultimi bin non sono contati, vale il predicato sui bin contati.
+- Minori: il test della contaminazione che scala col salto ora finisce a 1.000 in ogni terzile e verifica che R5 dia 0 mentre la v1 la vede;
+  etichette `calcolata` / `applicabile` al posto di `applicata`; commenti, docstring e precisazione del protocollo allineati («calcola» contro
+  «applica»); R3 e R5 nella proposta di stop; precondizione **almeno 10 utenti per il collaudo lungo** (`--lungo` nella lettura da riga di comando,
+  `LONG_COLLAUDO_MIN_USERS`); `--exclude-users` provato nel test del driver; prompt per GPT completato (seconda rettifica nell'elenco, i due
+  utenti esclusi dichiarati).
+- **Residuo del budget corretto** (la voce delle 06:11 diceva 0 GPU-ora, ma il tronco R3c era finito alle 06:01): spese 40,4 GPU-ora (tronco R3c)
+  e ~0,1 core-ore; tetti 132,0 GPU-ora e 531 core-ore; **residuo 91,6 GPU-ora** (di cui 9 di tetto per il ramo R3c in coda) **e ~531 core-ore**;
+  i due job CPU del profilo lungo valgono <= 1,2 core-ore e 0 GPU-ora.
+- Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.

@@ -3880,6 +3880,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Spesa della seconda ondata: 40,4 GPU-ora (tetto 132,0 con R3c; attese 98,1); ramo R3c 9 di tetto in coda. Diagnostiche di fine run (collasso,
   rango) si leggono con la valutazione, come per il pilot.
 
+### 2026-10-27 | Claude | Terza review del `critico` (DA RIVEDERE: 1 bloccante, 6 minori) accolta: l'innesco della riserva e' ora «nessun bin contato rientra nel 25% del lontano» (indipendente dall'ultimo bin), chi rientra e poi riesce si ferma; etichette, R3/R5 nella proposta di stop, precondizione di 10 utenti per il collaudo lungo, `--exclude-users` nel test del driver, residuo del budget corretto (91,6 GPU-ora e ~531 core-ore) | Codice: commit di questa voce
+
+- Bloccante: la condizione «non rientra mai» era «l'ultimo bin e' fuori» (il predicato della v1): con code non monotone (rientra e poi riesce, oscilla
+  attorno a 1,25, ultimi bin magri) la riserva si riapriva o cambiava esito per 0,02 di un bin. Ora il predicato guarda tutti i bin contati; la v1
+  congelata non cambia. Test: tre code che rientrano e riescono, una oscillante, una con gli ultimi 5 bin magri (v1 «determinata» a 3.950 per
+  conteggio: vale la riserva, M = 200), contaminazione che scala col salto e finisce a 1.000 (R5 = 0, v1 = 1.000 -> fermarsi), precondizione utenti.
+- Minori: tutti accolti (elenco nella TERZA RETTIFICA di decisioni.md). Quarta review del `critico` sul diff; nessun job, nessun deploy.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

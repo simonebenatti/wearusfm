@@ -417,11 +417,14 @@
   "perdita_tetto": null
  },
  "v2": {
-  "applicata": true,
+  "calcolata": true,
   "applicabile": false,
   "v1_stato": "non_determinato",
   "v1_M": null,
   "v1_perdita_tetto": null,
+  "profilo_rientra": false,
+  "bins_rientrati": [],
+  "n_bins_rientrati": 0,
   "R5_calcolabile": false,
   "R1_plateau_level_ratio_to_far": 1.7841960773762182,
   "R1_n_plateau_bins": 10,
@@ -447,7 +450,7 @@
  "margine": {
   "M": null,
   "stato": "non_determinato",
-  "motivo": "v1 non_determinato: anche l'ultimo bin (fino a 400 campioni) e' fuori tolleranza: il profilo non torna entro il massimo misurato; riserva non applicabile: profilo contato solo fino a 400 campioni (< 2000): valore PROVVISORIO M = 200"
+  "motivo": "v1 non_determinato: anche l'ultimo bin (fino a 400 campioni) e' fuori tolleranza: il profilo non torna entro il massimo misurato; riserva non applicata: profilo contato solo fino a 400 campioni (< 2000): valore PROVVISORIO M = 200; valori informativi della riserva: R3 = 200, R5 = None"
  },
  "perdita": {
   "rows": 3709000,
@@ -463,5 +466,5 @@
   "frac_dip_rows_over_nonzero": 0.00012924003934352554,
   "regola_aggiuntiva_necessaria": false
  },
- "proposta": "FERMARSI: margine non determinato (v1 non_determinato: anche l'ultimo bin (fino a 400 campioni) e' fuori tolleranza: il profilo non torna entro il massimo misurato; riserva non applicabile: profilo contato solo fino a 400 campioni (< 2000): valore PROVVISORIO M = 200); profilo lungo da misurare e poi rileggere"
+ "proposta": "FERMARSI: margine non determinato (v1 non_determinato: anche l'ultimo bin (fino a 400 campioni) e' fuori tolleranza: il profilo non torna entro il massimo misurato; riserva non applicata: profilo contato solo fino a 400 campioni (< 2000): valore PROVVISORIO M = 200; valori informativi della riserva: R3 = 200, R5 = None); profilo lungo da misurare e poi rileggere"
 }

@@ -3,7 +3,8 @@
 Contesto. Seconda ondata del pilot degli obiettivi (`docs/pilot_posa_v1.md`, firmato; emendamento 1 firmato). I bersagli di posa di emg2pose hanno
 righe tutte a zero dove la cinematica inversa fallisce (17% delle righe nel collaudo, 12,7% nel paper); attorno a ogni blocco di zeri si scartano M
 campioni per lato. La regola per scegliere M dal collaudo dell'ingest e' in `docs/decisioni.md` (voci del 26 e 27/10/2026 sulla seconda ondata, in
-particolare «REGOLA DI LETTURA ... CONGELATA», «COLLAUDO ... LETTO ... NON DETERMINATO» e la «RETTIFICA») e nel codice
+particolare «REGOLA DI LETTURA ... CONGELATA», «COLLAUDO ... LETTO ... NON DETERMINATO», «RETTIFICA», «SECONDA RETTIFICA» e «TERZA
+RETTIFICA») e nel codice
 (`src/wearusfm/ingest/emg2pose_pose.py`: `margin_from_collaudo`, `jump_profile_margin`, `edge_profile`; test in
 `tests/cpu/test_ingest_emg2pose_pose.py`). Rapporto e lettura del primo collaudo (job 62364572, 40 registrazioni di 2 utenti):
 `results/passo2/emg2pose_pose_ingest_collaudo_62364572.json`, `results/passo2/emg2pose_pose_margine_lettura_62364572.json`.
@@ -21,9 +22,11 @@ Ti chiedo, come responsabile scientifico:
    distinguerla?
 3. Le soglie (0,80-1,25 per R2, 1,10 per R3 (proposta di Claude, tabella di sensibilita' in decisioni.md), 1,25 per R5, 2.000 campioni contati,
    9 blocchi per i terzili) ti sembrano difendibili? La riserva si applica solo se la v1 sul profilo lungo e' «non determinata» (il profilo non
-   rientra mai nel 25% dal lontano in 2 s); se la v1 e' determinata con M > 400 ci si ferma e decide Simone. **I job del profilo lungo partono
+   rientra mai nel 25% dal lontano in 2 s, cioe' nessun bin contato rientra; chi rientra e poi riesce si ferma); se la v1 e' determinata con
+   M > 400 ci si ferma e decide Simone. **I job del profilo lungo partono
    solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica alle soglie va scritta ora, prima della misura.
-4. Il campione: 40 registrazioni con al massimo 4 per utente (almeno 10 utenti) bastano? Serve un secondo campione indipendente?
+4. Il campione del collaudo lungo: 40 registrazioni, al massimo 4 per utente, almeno 10 utenti, ESCLUSI i 2 utenti del primo collaudo
+   (29ddab35d7, d387095792): basta cosi', o serve un secondo campione indipendente?
 5. Il costo della scelta: tetto della perdita 2 M x (blocchi di zeri) / righe = 5,3% a M = 200, oltre al 17% gia' nullo. Accettabile per R3?
 
 Rispondi nel registro condiviso (`docs/claude_GPT_shared`, sezione 1, voce tua) con: accordo o modifiche alle soglie, osservazione che smentirebbe

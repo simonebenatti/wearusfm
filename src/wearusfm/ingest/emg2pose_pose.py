@@ -424,12 +424,15 @@ SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
 # della norma della posa a 150-200 ms dal bordo, ogni terzile sul proprio L): un artefatto d'interpolazione o di filtro scala col salto, il
 # comportamento e il rumore della cinematica inversa no; M5 = ultimo bin entro 300 in cui alto / basso supera 1 + JUMP_RATIO_TOL. M = max(M3, M5);
 # se R5 non e' calcolabile (terzili assenti, plateau magro) M = M3, dichiarato nella proposta.
-# Seconda review del critico (27/10): la riserva si APPLICA solo se la v1 e' «non determinata» sul profilo lungo (il profilo non torna mai entro il
-# 25% del valore lontano): una contaminazione, anche piatta e lunga, FINISCE entro il misurato e la v1 la vede; se la v1 e' determinata con M >
-# V1_MAX_M la riserva e' solo informativa e ci si ferma portando a Simone la v1 con la perdita.
+# Seconda e terza review del critico (27/10): la riserva si CALCOLA se la v1 e' «non determinata» o da' M > V1_MAX_M, ma si APPLICA solo se
+# NESSUN bin contato del profilo lungo rientra nel 25% del valore lontano (predicato proprio, indipendente dall'ultimo bin): una contaminazione,
+# anche piatta e lunga, FINISCE entro il misurato e la v1 la vede; un profilo che rientra e poi riesce non e' «mai rientrato» e ci si ferma. Se la
+# v1 e' determinata con M > V1_MAX_M (il profilo rientra solo dopo 200 ms) la riserva e' solo informativa e ci si ferma portando a Simone la v1
+# con la perdita e R3 / R5. Se la v1 risulta determinata solo perche' gli ultimi bin non sono contati, vale il predicato sui bin contati.
 PLATEAU_LAGS = (301, 400)  # campioni dal bordo: 150-200 ms
 V1_MAX_M = 400  # oltre 200 ms di margine la v1 non decide da sola (perdita > 10% delle righe sul collaudo): fermarsi, decisione di Simone
-V2_TOL = 0.10  # R3: soglia sul plateau; scelta il 27/10 con la tabella di sensibilita' in decisioni.md (0,25 -> 140; 0,10 -> 200; 0,05 -> 240)
+LONG_COLLAUDO_MIN_USERS = 10  # collaudo lungo: almeno 10 utenti (il primo ne aveva 2); si passa a margin_from_collaudo(min_users=...)
+V2_TOL = 0.10  # R3: soglia sul plateau; PROPOSTA di Claude del 27/10 con la tabella di sensibilita' in decisioni.md (0,25 -> 140; 0,10 -> 200; 0,05 -> 240)
 V2_PERSIST_LAGS = (401, 1000)  # R2: 200-500 ms, banda a due lati
 V2_PERSIST_BAND = (0.80, 1.25)  # R2: [0,80 L; 1,25 L] fra 401 e 1.000; oltre, solo il tetto 1,25 L
 V2_MIN_COUNTED_LAG = 2000  # R2: bin CONTATI almeno fino a 1 s; su un profilo corto la riserva da' solo un valore provvisorio
@@ -481,13 +484,14 @@ def jump_profile_margin(terciles: dict, *, min_n: int = MARGIN_MIN_N, jump_tol: 
 
 
 def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = MARGIN_MIN_N, dip_frac_max: float = DIP_FRAC_MAX,
-                         v2_tol: float = V2_TOL, jump_tol: float = JUMP_RATIO_TOL) -> dict:
+                         v2_tol: float = V2_TOL, jump_tol: float = JUMP_RATIO_TOL, min_users: int | None = None) -> dict:
     """Legge il rapporto JSON del collaudo (`scripts/ingest_emg2pose_pose.py --limit N --both-sides`) e applica, nell'ordine:
-    precondizioni (se una manca: FERMARSI, nessun M); la regola v1 congelata il 26/10/2026 (M = `lag_to` dell'ULTIMO bin del profilo dei bordi
-    fuori tolleranza |bin / lontano - 1| > tol, bin con almeno min_n campioni; 0 se nessuno; «non determinato» se fuori anche l'ultimo bin);
-    se la v1 e' non determinata o da' M > V1_MAX_M, la riserva R1-R5 (post hoc, 27/10: vedi le costanti), che decide solo se la persistenza
-    R2 regge sul profilo lungo, altrimenti ci si ferma; la regola per le «V» (nessuna in piu' se le righe nei minimi simultanei sono
-    <= dip_frac_max delle righe non nulle). Riporta il tetto della perdita di righe dovuta a M (2 M per blocco di zeri)."""
+    precondizioni (se una manca: FERMARSI, nessun M; `min_users` = LONG_COLLAUDO_MIN_USERS per il collaudo lungo); la regola v1 congelata il
+    26/10/2026 (M = `lag_to` dell'ULTIMO bin del profilo dei bordi fuori tolleranza |bin / lontano - 1| > tol, bin con almeno min_n campioni; 0 se
+    nessuno; «non determinato» se fuori anche l'ultimo bin); se la v1 e' non determinata o da' M > V1_MAX_M, si CALCOLA la riserva R1-R5 (post
+    hoc, 27/10: vedi le costanti), che si APPLICA solo se nessun bin contato rientra nel 25% del lontano e la persistenza R2 regge sul profilo
+    lungo; altrimenti ci si ferma e la proposta porta a Simone la v1 (con la perdita) e R3 / R5 informativi; la regola per le «V» (nessuna in
+    piu' se le righe nei minimi simultanei sono <= dip_frac_max delle righe non nulle). Riporta il tetto della perdita di righe dovuta a M."""
     col = report.get("collaudo") or {}
     recs = report.get("per_recording") or []
     problems = []
@@ -504,6 +508,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     n_failed = len(report.get("failed") or {})
     if n_failed:
         problems.append(f"{n_failed} registrazioni fallite")
+    users_all = sorted({str(r.get("user")) for r in recs})
+    if min_users is not None and len(users_all) < min_users:
+        problems.append(f"utenti {len(users_all)} < {min_users} richiesti per il collaudo lungo")
     rows = sum(int(r["n_samples"]) for r in recs)
     zero_rows_total = sum(int(r["n_zero_rows"]) for r in recs)
     runs_total = sum(int(r["n_zero_runs"]) for r in recs)
@@ -542,15 +549,17 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
                       "max_lag_measured": int(bins[-1]["lag_to"]) if bins else None,
                       "max_lag_counted": max((b["lag_to"] for b in bins if b["conta"]), default=0)}
     out["v1"] = {"stato": stato, "M": M, "motivo": why, "perdita_tetto": loss(M)}
-    # --- riserva R1-R5 (27/10/2026, post hoc): solo se la v1 non decide o da' un M non credibile
-    v2 = {"applicata": False}
+    inside_bins = [b["lag_to"] for b in bins if b["conta"] and not b["fuori"]]  # bin contati entro il 25% del lontano
+    never_returns = bool(bins) and not inside_bins
+    # --- riserva R1-R5 (27/10/2026, post hoc): si calcola se la v1 non decide o da' M > V1_MAX_M; si applica solo se il profilo non rientra mai
+    v2 = {"calcolata": False}
     if bins and (stato == "non_determinato" or (stato == "determinato" and M > V1_MAX_M)):
         v1_stato, v1_M = stato, M
         level, n_pl = _level(bins, PLATEAU_LAGS)
         counted_max = out["profilo"]["max_lag_counted"]
         if n_pl < 5 or not level:
-            v2 = {"applicata": False, "motivo": f"meno di 5 bin contati nel plateau {PLATEAU_LAGS}", "v1_stato": v1_stato, "v1_M": v1_M}
-            stato, M, why = "non_determinato", None, why + "; riserva non applicabile: plateau non misurabile"
+            v2 = {"calcolata": False, "motivo": f"meno di 5 bin contati nel plateau {PLATEAU_LAGS}", "v1_stato": v1_stato, "v1_M": v1_M}
+            stato, M, why = "non_determinato", None, why + "; riserva non calcolabile: plateau non misurabile; decide Simone"
         else:
             persist = [b for b in bins if b["conta"] and b["lag_from"] >= V2_PERSIST_LAGS[0] and b["lag_to"] <= V2_PERSIST_LAGS[1]]
             below = [b["lag_to"] for b in persist if b["ratio"] < V2_PERSIST_BAND[0] * level]
@@ -561,9 +570,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             r5 = jump_profile_margin(prof.get("by_jump_tercile") or {}, min_n=min_n, jump_tol=jump_tol)
             m5 = r5.get("M5")
             m_res = max(m3, m5) if m5 is not None else m3
-            v1_returns = v1_stato == "determinato"  # il profilo torna entro il 25% del lontano dentro il misurato: non e' un plateau che persiste
-            applicabile = (not v1_returns) and not short and not below and not above
-            v2 = {"applicata": True, "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M),
+            applicabile = never_returns and not short and not below and not above
+            v2 = {"calcolata": True, "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M),
+                  "profilo_rientra": not never_returns, "bins_rientrati": inside_bins[:50], "n_bins_rientrati": len(inside_bins),
                   "R5_calcolabile": m5 is not None,
                   "R1_plateau_level_ratio_to_far": level, "R1_n_plateau_bins": n_pl,
                   "R2_profilo_corto": short, "R2_max_lag_counted": counted_max, "R2_bins_sotto_banda_401_1000": below,
@@ -578,17 +587,21 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             else:
                 stato, M = "non_determinato", None
                 reasons = []
-                if v1_returns:
-                    reasons.append(f"la v1 e' determinata (il profilo torna al valore lontano entro {v1_M} campioni): la riserva vale solo se non "
-                                   f"torna; valori informativi R3 = {m3}, R5 = {m5}")
+                if not never_returns:
+                    if v1_stato == "determinato":
+                        reasons.append(f"la v1 e' determinata con M = {v1_M} > {V1_MAX_M} (il profilo rientra nel 25% del lontano solo dopo 200 ms): "
+                                       "decide Simone con la perdita")
+                    else:
+                        reasons.append(f"il profilo rientra nel 25% del lontano e poi riesce ({len(inside_bins)} bin contati dentro, fino a "
+                                       f"{max(inside_bins)} campioni): la riserva vale solo se non rientra mai; decide Simone")
                 if short:
                     reasons.append(f"profilo contato solo fino a {counted_max} campioni (< {V2_MIN_COUNTED_LAG}): valore PROVVISORIO M = {m_res}")
                 if below:
                     reasons.append(f"R2 caduta: {len(below)} bin fra 401 e 1.000 sotto {V2_PERSIST_BAND[0]:.2f} x plateau (segno di artefatto che decade)")
                 if above:
                     reasons.append(f"R2 caduta: {len(above)} bin oltre 400 sopra {V2_PERSIST_BAND[1]:.2f} x plateau")
-                why = (f"v1 {v1_stato}" + (f" con M = {v1_M} > {V1_MAX_M} (non credibile)" if v1_M is not None else f": {why}")
-                       + "; riserva non applicabile: " + "; ".join(reasons))
+                reasons.append(f"valori informativi della riserva: R3 = {m3}, R5 = {m5}")
+                why = (f"v1 {v1_stato}" + (f" con M = {v1_M}" if v1_M is not None else f": {why}") + "; riserva non applicata: " + "; ".join(reasons))
     out["v2"] = v2
     out["margine"] = {"M": M, "stato": stato, "motivo": why}
     out["perdita"] = {"rows": rows, "frac_zero_rows": zero_rows_total / rows if rows else None, "n_zero_runs": runs_total,
@@ -602,11 +615,14 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     if problems:
         out["proposta"] = "FERMARSI: precondizioni non soddisfatte (" + "; ".join(problems) + ")"
     elif stato == "non_determinato":
-        if v2.get("applicata") and v2.get("R2_profilo_corto"):
+        info = f"; valori informativi della riserva: R3 = {v2.get('R3_M3')}, R5 = {(v2.get('R5') or {}).get('M5')}" if v2.get("calcolata") else ""
+        if v2.get("calcolata") and v2.get("R2_profilo_corto"):
             out["proposta"] = "FERMARSI: margine non determinato (" + why + "); profilo lungo da misurare e poi rileggere"
-        elif v2.get("applicata") and v2.get("v1_M") is not None:
+        elif v2.get("calcolata") and v2.get("v1_M") is not None:
             out["proposta"] = (f"FERMARSI: la riserva non si applica e la v1 sul profilo lungo da' M = {v2['v1_M']} campioni (perdita fino al "
-                               f"{100 * (v2['v1_perdita_tetto'] or 0):.1f}% delle righe): decisione di Simone, con la perdita in chiaro")
+                               f"{100 * (v2['v1_perdita_tetto'] or 0):.1f}% delle righe): decisione di Simone, con la perdita in chiaro" + info)
+        elif v2.get("calcolata"):
+            out["proposta"] = "FERMARSI: margine non determinato (" + why + "): decisione di Simone" + info
         else:
             out["proposta"] = "FERMARSI: margine non determinato (" + why + ")"
     elif out["V"]["regola_aggiuntiva_necessaria"]:
@@ -621,7 +637,8 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     return out
 
 
-if __name__ == "__main__":  # python3 -m wearusfm.ingest.emg2pose_pose <rapporto del collaudo>.json
+if __name__ == "__main__":  # python3 -m wearusfm.ingest.emg2pose_pose <rapporto del collaudo>.json [--lungo]  (--lungo: almeno 10 utenti)
     import sys
 
-    print(json.dumps(margin_from_collaudo(json.loads(Path(sys.argv[1]).read_text())), indent=1))
+    _min_users = LONG_COLLAUDO_MIN_USERS if "--lungo" in sys.argv[2:] else None
+    print(json.dumps(margin_from_collaudo(json.loads(Path(sys.argv[1]).read_text()), min_users=_min_users), indent=1))
