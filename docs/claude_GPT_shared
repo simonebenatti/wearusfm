@@ -3841,6 +3841,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prossimo: deploy `deploy/pilot-posa-collaudo-20261027` + checkout separato + collaudo lungo (2 job CPU, 0 GPU-ora; §6 punto 5 e preventivo); poi
   la proposta di M con la firma. Il passo [4] (ingest intero) aspetta la firma; R3c tronco in esecuzione da 9 h 40 (fine attesa entro le 08:40).
 
+### 2026-10-27 | Claude | Seconda ondata: review del `critico` sulla lettura del collaudo (DA RIVEDERE: 3 bloccanti, 7 minori) accolta per intero: la «v2» era post hoc e non falsificabile, i due job CPU del profilo lungo NON erano autorizzati; regola di riserva R1-R5 (persistenza a due lati, profilo per altezza del salto, quota per utente) scritta e testata; provvisorio M3 = 200; via di Simone da chiedere; regola passata a GPT (responsabile scientifico) | Codice: commit di questa voce
+
+- Rilievi (tutti verificati sui file e sui numeri): (1) la v2 premiava una contaminazione piu' lunga con un M piu' piccolo (plateau dentro la
+  contaminazione -> M = 0) e il profilo lungo non poteva smentirla; (2) «pre-registrata» era falso (M fissato dai dati visti, scelte verso un M
+  piccolo, incoerenza con la mia stessa lettura: filtro fino a ~100 ms ma M = 70 ms); (3) autorizzazione anticipata e preventivo estesi a job che non
+  contengono, citazione di Simone alterata («i passi» per «i passo»); minori: occlusione parziale come alternativa, 2 utenti soli nel campione,
+  unita' sbagliate (campioni / ms), ora della voce dopo il commit, condizioni del codice non scritte, innesco assente nel protocollo, due test
+  mancanti, frase sui ruoli non nelle parole di Simone. Rettifica integrale in `decisioni.md`.
+- Fatto: R1-R5 come proposto dal critico (R3 con tolleranza 0,10 scelta con la tabella di sensibilita': 140 / 200 / 240 per 0,25 / 0,10 / 0,05), R5
+  col profilo per blocco di zeri nel modulo (`edge_profile` restituisce `runs` con altezza del salto e conteggi per bin; il driver aggrega per
+  terzile e per utente), `--max-per-user` nel `CollaudoPicker`, invarianza e plateau non misurabile nei test. Test del file: 10 -> 11 (casi: v1,
+  riserva provvisoria su profilo corto, decadimento lento che passa, casi B/C/D che cadono, caso A -> v1 M = 400, rialzo oltre il plateau, v1 M > 400
+  con R2 caduta -> fermarsi con la perdita, invarianza, plateau magro, terzili R5, quota per utente, profilo per blocco, driver).
+- Sul rapporto vero: v1 non determinata; riserva PROVVISORIA M3 = 200 (R2 non verificabile: profilo a 400 campioni; R5 non calcolabile). Nessun M
+  firmato, nessun job sottomesso.
+- Ruoli: con la chiusura del pilot i task elencati il 26/10 sono finiti; secondo le parole di Simone la responsabilita' scientifica e' di GPT da ora:
+  la regola di riserva gli va in verifica (`docs/prompt_gpt_regola_margine_20261027.md`). Simone decide M e il via ai due job CPU.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5376,3 +5394,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   e' ferma per costruzione. Nello split di pretraining le registrazioni in questa condizione sono 4.973 (66,3 h, 23%), non solo le 540.
 - Nessuna conseguenza sul pretraining fatto finora (l'EMG non cambia). Conta per chi usa la posa come target (`docs/pilot_posa_v1.md`, §2) e per
   come si descrive quella condizione nei documenti: non riscrivo la voce storica, la correzione sta qui e nel protocollo.
+### 2026-10-27 | Claude | Lettura del collaudo dell'ingest: due errori miei trovati dal `critico` prima di qualunque job: (1) una regola chiamata «pre-registrata» che non lo era; (2) l'autorizzazione anticipata di Simone estesa a due job CPU che non copre, con la citazione alterata
+
+- (1) In `decisioni.md` e nel protocollo la v2 era presentata come pre-registrata prima del profilo lungo, ma il suo M veniva dai bin gia' visti e
+  le sue scelte (riferimento negli ultimi 100 campioni misurati, tolleranza sul plateau, tetto di 400) spingevano M verso il basso; inoltre non era
+  falsificabile dal profilo lungo (controllo a un lato solo). Corretto: regola di riserva R1-R5 dichiarata post hoc, persistenza a due lati,
+  profilo per altezza del salto, tabella di sensibilita' e tolleranza scritte prima del profilo lungo; rettifica testuale in `decisioni.md`.
+- (2) Avevo scritto che i due job CPU (secondo checkout e collaudo lungo) rientravano in «i passi che servono» dell'autorizzazione del 26/10: la voce
+  autorizza «i job della catena scritta» e il preventivo non ha un secondo collaudo; la citazione vera e' «io autorizzo gia i passo che servono, cosi
+  sveltiamo». Nessun job e' stato sottomesso. Corretto: richiesta esplicita a Simone con risorse, durata e costo (0 GPU-ora, <= 1,2 core-ore).
+- Conseguenza per il metodo: una regola scritta dopo aver visto i dati si chiama post hoc, e il controllo che la puo' smentire va scritto a due lati
+  prima della misura successiva; un'autorizzazione si cita alla lettera e vale per i job che nomina.

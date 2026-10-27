@@ -39,6 +39,9 @@ def _aggregate_profiles(done: list, metas: list[dict]) -> dict:
         for r in done:
             bucket.setdefault(str(r.get(key)), 0)
             bucket[str(r.get(key))] += 1
+    out["per_user"] = {}
+    for r in done:
+        out["per_user"][str(r.get("user"))] = out["per_user"].get(str(r.get("user")), 0) + 1
     # statistiche per lato sulle registrazioni fatte (media e deviazione per giunto sui blocchi validi; varianza media per registrazione)
     out["per_side_stats"] = {}
     for side in sorted({str(m.get("side")) for m in metas}):
@@ -64,8 +67,34 @@ def _aggregate_profiles(done: list, metas: list[dict]) -> dict:
         far_n = sum(p["far"].get("n", 0) for p in prof)
         far_mean = sum(p["far"]["n"] * p["far"]["mean"] for p in prof if p["far"].get("n")) / far_n if far_n else None
         out["edge_profile"] = {"bins": bins, "far_mean_abs_diff": far_mean, "far_n": far_n,
-                               "note": "contaminazione dei bordi = bin con mean_abs_diff lontano da far_mean_abs_diff; il margine e' il primo lag "
-                                       "oltre il quale il profilo torna al valore lontano (da congelare in decisioni.md)"}
+                               "note": "contaminazione dei bordi = bin con mean_abs_diff lontano da far_mean_abs_diff; la lettura (v1 del 26/10, "
+                                       "riserva R1-R5 del 27/10) sta in wearusfm.ingest.emg2pose_pose.margin_from_collaudo"}
+        lags = [(b["lag_from"], b["lag_to"]) for b in bins]
+
+        def pooled(run_list):
+            n = [0] * len(lags)
+            sm = [0.0] * len(lags)
+            for rr in run_list:
+                for i in range(min(len(lags), len(rr["n_per_bin"]))):
+                    n[i] += int(rr["n_per_bin"][i])
+                    sm[i] += float(rr["sum_per_bin"][i])
+            return [{"lag_from": lo, "lag_to": hi, "n": n[i], "mean_abs_diff": (sm[i] / n[i]) if n[i] else None} for i, (lo, hi) in enumerate(lags)]
+
+        # R5: per terzile dell'altezza del salto (su tutti i blocchi di zeri di tutte le registrazioni) e per utente
+        runs_all = [(str(m.get("user")), rr) for m, pr in zip(metas, [m.get("edge_profile") or {} for m in metas]) for rr in pr.get("runs", [])]
+        with_h = sorted([rr for _, rr in runs_all if rr.get("h") is not None and rr.get("n_h", 0) >= 10], key=lambda rr: rr["h"])
+        if len(with_h) >= PP.JUMP_MIN_RUNS:
+            k = len(with_h)
+            parts = {"low": with_h[: k // 3], "mid": with_h[k // 3: 2 * (k // 3)], "high": with_h[2 * (k // 3):]}
+            out["edge_profile"]["by_jump_tercile"] = {name: {"n_runs": len(part), "h_min": part[0]["h"], "h_max": part[-1]["h"], "bins": pooled(part)}
+                                                      for name, part in parts.items()}
+        else:
+            out["edge_profile"]["by_jump_tercile"] = None
+        by_user = {}
+        for u, rr in runs_all:
+            by_user.setdefault(u, []).append(rr)
+        out["edge_profile"]["by_user"] = {u: {"n_runs": len(rl), "bins": pooled(rl)} for u, rl in sorted(by_user.items())}
+        out["edge_profile"]["n_runs_with_h"] = len(with_h)
     dips = [m["simultaneous_dips"] for m in metas if "simultaneous_dips" in m]
     if dips:
         out["simultaneous_dips"] = {"n_dip_runs_total": sum(d["n_dip_runs"] for d in dips), "n_dip_rows_total": sum(d["n_dip_rows"] for d in dips),
@@ -76,7 +105,7 @@ def _aggregate_profiles(done: list, metas: list[dict]) -> dict:
 def _write_report(path: Path, done: list, failed: dict, skipped: int, t0: float, stopped: str | None, args, extra: dict | None) -> dict:
     report = {
         "dataset": "emg2pose_pose", "params": {"zero_margin_samples": args.zero_margin_samples, "limit": args.limit, "both_sides": args.both_sides,
-                                               "profile_max_lag": args.profile_max_lag,
+                                               "profile_max_lag": args.profile_max_lag, "max_per_user": args.max_per_user,
                                                "measure": not args.no_measure, "pose_fs_hz": PP.POSE_FS_HZ, "block_samples": PP.BLOCK},
         "n_recordings": len(done), "n_failed": len(failed), "n_skipped_existing": skipped, "n_users": len({r["user"] for r in done}),
         "hours_total": sum(r["n_samples"] for r in done) / PP.NATIVE_FS_HZ / 3600, "n_valid_blocks_total": sum(r["n_valid_blocks"] for r in done),
@@ -96,6 +125,8 @@ def main() -> int:
     p.add_argument("--report", type=Path, required=True)
     p.add_argument("--limit", type=int, default=None, help="collaudo: al massimo N registrazioni (nell'ordine del tar)")
     p.add_argument("--both-sides", action="store_true", help="col --limit: meta' per lato e quote uguali per moving_hand")
+    p.add_argument("--max-per-user", type=int, default=None, help="col --limit: al massimo N registrazioni per utente (27/10: il primo collaudo "
+                                                                  "ha preso 40 registrazioni da 2 utenti)")
     p.add_argument("--skip-existing", action="store_true")
     p.add_argument("--time-budget-s", type=float, default=None)
     p.add_argument("--zero-margin-samples", type=int, default=0, help="campioni non validi attorno a ogni riga a zero (congelato in decisioni.md "
@@ -119,7 +150,7 @@ def main() -> int:
 
     t0 = time.time()
     done, metas, failed, skipped, stopped = [], [], {}, 0, None
-    picker = PP.CollaudoPicker(args.limit, args.both_sides) if args.limit is not None else None
+    picker = PP.CollaudoPicker(args.limit, args.both_sides, max_per_user=args.max_per_user) if args.limit is not None else None
     meta = E2P.load_metadata_csv(args.csv)
     fields = None
 

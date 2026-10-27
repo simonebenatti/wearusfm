@@ -298,10 +298,14 @@ M = `lag_to` dell'ultimo bin fuori tolleranza (0,25 sul rapporto con la media lo
 «non determinato» se non rientra entro 200 ms (profilo da allungare, non M a occhio); «V» tollerate fino allo 0,1% delle righe non nulle, sopra serve
 una regola in piu'. Il §6, punto 5, resta: il valore di M lo firma Simone.
 
-**Precisazione (27/10, dopo il collaudo 62364572; voce in `decisioni.md`):** la regola v1 ha dato «non determinato» (profilo piatto a 1,8 volte il
-valore lontano dai 150 ai 200 ms). Regola v2 di riserva pre-registrata (riferimento = plateau 150-200 ms, M = ultimo bin sopra 1,25 volte il plateau
-entro 150 ms, applicabile solo con profilo misurato fino ad almeno 1 s e nessun bin oltre il plateau sopra la soglia); provvisorio M = 140 campioni.
-Profilo lungo (2 s) da un secondo checkout (`--profile-max-lag 4000`), come previsto dal §6, punto 5. Il valore di M lo firma Simone dopo.
+**Precisazione (27/10, dopo il collaudo 62364572 e la review del `critico`; voci in `decisioni.md`):** la regola v1 del 26/10 ha dato «non
+determinato» (profilo piatto a ~1,78 volte il valore lontano da ~125 a 200 ms, tutti i 40 bin fuori dal 25%). E' stata scritta una regola di riserva
+R1-R5, **post hoc, informata da quel profilo** (non pre-registrata): scatta solo se la v1 e' non determinata o da' M > 400 campioni; R1 plateau =
+media dei bin 301-400; R2 persistenza a due lati (bin 401-1.000 fra 0,80 e 1,25 volte il plateau, nessun bin oltre 400 sopra 1,25, bin contati fino
+ad almeno 2.000 campioni), altrimenti la riserva non si applica e vale la v1 (se M > 400 ci si ferma); R3 M3 = ultimo bin entro 300 sopra 1,10
+volte il plateau; R5 M5 dal profilo per altezza del salto (terzili, alto / basso > 1,25); M = max(M3, M5). Provvisorio sul primo campione (2 utenti
+soli): M3 = 200 campioni. Il profilo lungo (2 s) e un campione con almeno 10 utenti richiedono un secondo deploy e checkout (§6, punto 5) e due
+job CPU **non coperti dall'autorizzazione anticipata**: via di Simone da chiedere. Il valore di M lo firma Simone dopo la verifica di GPT.
 
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 

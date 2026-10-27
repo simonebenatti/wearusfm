@@ -4505,3 +4505,49 @@ coerenza con C1 nel README dei risultati: nessuna lettura cambia l'esito del cri
   dell'ingest intero non cambia: la validita' (`invalid_rows`) e' la stessa, cambia solo la misura. Poi la proposta di M a Simone, con la firma.
 - Letto nell'autorizzazione anticipata di Simone («io autorizzo gia i passi che servono, cosi sveltiamo»): i due job CPU del secondo checkout e del
   collaudo lungo sono «passi che servono» gia' previsti dal protocollo firmato; nessun job GPU in piu', nessun passo [4]-[6] prima della firma di M.
+
+**Seconda ondata: RETTIFICA della voce precedente dopo la review del `critico` (Claude, 27/10/2026, ore del commit): la «v2» NON era pre-registrata
+ed e' sostituita dalla regola di riserva R1-R5, post hoc e dichiarata tale; i due job CPU del profilo lungo NON sono coperti dall'autorizzazione
+anticipata: VIA DI SIMONE DA CHIEDERE; nessuna firma di M.**
+- **Che cosa correggo della voce precedente.** (1) La v2 era chiamata «pre-registrata», ma M veniva gia' dai dati visti (i bin fino a 300 campioni
+  non dipendono dalla lunghezza del profilo, e il collaudo lungo avrebbe riusato le stesse 40 registrazioni): era una regola **post hoc, informata
+  dal profilo a 200 ms**, con scelte che spingevano M in basso (riferimento negli ultimi 100 campioni misurati, tolleranza relativa al plateau,
+  tetto di 400 al posto dell'esito «M grande» accettato il 26/10) e non falsificabile dal profilo lungo (il controllo guardava un solo lato: una
+  discesa rapida verso 1, cioe' il segno di un artefatto, lasciava M = 140; un plateau dentro la contaminazione azzerava M). (2) Unita' sbagliate:
+  «3,0 -> 2,1 fra 50 e 150 ms» va letto **3,0 a 71-100 campioni (35-50 ms), 2,1 a 141-200 campioni (70-100 ms), plateau a 1,78 da ~251 campioni
+  (125 ms)**; i bin 301-400 sono 150-200 ms. (3) L'ora «05:30» era dopo il commit (05:20): vale l'ora del commit. (4) **La frase «letto
+  nell'autorizzazione anticipata ... passi che servono» era sbagliata:** l'autorizzazione del 26/10 vale per «i job della catena scritta in
+  `comandi_catena_20261026.txt`», che ha un solo checkout e un solo collaudo; il preventivo prevede il secondo checkout solo «se la regola di
+  validita' richiede codice nuovo» e nessun secondo collaudo. Citazione corretta di Simone: «io autorizzo gia i passo che servono, cosi sveltiamo».
+  (5) Il campione del collaudo ha **2 utenti soli** (24 + 16 registrazioni): non dichiarato. (6) Il registro diceva che il passaggio di ruoli «lo
+  dichiara Simone»: non sta nelle sue parole; Simone ha detto «ufficialmente la cosa iniziaera qiuando finiscono i task che hai lanciato tu adesso»,
+  e quei task (descrittivi del pilot, consuntivo, codice e test di R3) sono chiusi: **da ora la responsabilita' scientifica e' di GPT**, e questa
+  regola (un criterio scientifico nuovo) gli va passata per la verifica (`docs/prompt_gpt_regola_margine_20261027.md`).
+- **Regola di riserva R1-R5 (post hoc, scritta ora, PRIMA del profilo lungo; in codice: `margin_from_collaudo`, costanti `PLATEAU_LAGS`, `V1_MAX_M`,
+  `V2_TOL`, `V2_PERSIST_LAGS`, `V2_PERSIST_BAND`, `V2_MIN_COUNTED_LAG`, `JUMP_RATIO_TOL`, `JUMP_MIN_RUNS`).** La v1 del 26/10 resta e si applica per
+  prima, invariata. La riserva scatta solo se la v1 e' non determinata o da' M > 400 campioni (questo tetto e' un cambio rispetto al 26/10,
+  dichiarato: oltre 200 ms di margine la perdita supera il 10% delle righe del collaudo).
+  - **R1.** L = media (non pesata) del profilo nei bin 301-400 campioni (150-200 ms), con almeno 5 bin contati (>= 200 campioni l'uno).
+  - **R2, persistenza a due lati.** La lettura «il plateau e' comportamento della mano vicino a una perdita di tracking, non artefatto» regge solo se:
+    tutti i bin contati fra 401 e 1.000 campioni (200-500 ms) stanno fra **0,80 L e 1,25 L**; nessun bin contato oltre 400 supera 1,25 L; ci sono bin
+    **contati** almeno fino a 2.000 campioni (1 s). Una discesa sotto 0,80 L entro 500 ms e' il segno di un artefatto che decade: **la riserva non si
+    applica**; vale la v1 sul profilo lungo e, se da' M > 400, **ci si ferma** e si porta a Simone con la perdita in chiaro.
+  - **R3.** M3 = `lag_to` dell'ultimo bin entro 300 campioni sopra **1,10 L**. Tolleranza scelta ora con la tabella di sensibilita' sul profilo del
+    primo campione: 0,25 e 0,20 -> M3 = 140 (perdita 3,7%); 0,15 e 0,10 -> **200 (5,3%)**; 0,05 -> 240 (6,4%). Scelgo 0,10 perche' e' coerente con la
+    lettura dichiarata («transitorio del filtro fino a ~100 ms»: con 140 restavano validi i campioni fra 70 e 100 ms, a 2,07-2,13 volte il lontano).
+  - **R5.** Profilo per altezza del salto verso lo zero: per ogni blocco di zeri, h = norma RMS della posa a 150-200 ms dal bordo; terzili di h su
+    tutti i blocchi del collaudo (almeno 9); ogni terzile normalizzato al proprio plateau; un bin e' contaminato se **alto / basso > 1,25** (un
+    artefatto d'interpolazione o di filtro scala col salto; il comportamento e il rumore della cinematica inversa no). M5 = ultimo bin entro 300 cosi'.
+    **M = max(M3, M5).** Il rapporto riporta anche il profilo per utente.
+  - Valore **provvisorio** sul primo campione (profilo corto, R2 non verificabile): M3 = 200 campioni (100 ms per lato; tetto della perdita 5,3% oltre
+    al 17% gia' nullo); R5 non calcolabile (il primo collaudo non aveva il profilo per blocco).
+- **Interpretazione alternativa, non esclusa:** il fatto 28 dice che i fallimenti della cinematica inversa sono «typically due to simultaneously
+  occluded markers»; un'occlusione parziale vicino alla perdita da' una cinematica inversa piu' rumorosa, cioe' rumore sul bersaglio, che la
+  differenza prima non distingue dal comportamento. R5 lo affronta in parte (il rumore non scala col salto); il profilo per utente dice se e' un
+  effetto di pochi soggetti.
+- **Richiesta a Simone (nessun job prima del suo via):** secondo deploy `deploy/pilot-posa-collaudo-20261027` (dal commit di questa voce, dopo la
+  seconda review del `critico`), checkout di campagna separato `pilot-posa-collaudo-20261027` (CPU seriale, 1 core, 10 min di tetto) e collaudo
+  lungo `--limit 40 --both-sides --max-per-user 4 --profile-max-lag 4000` (CPU seriale, 2 core, 30 min di tetto; campione NUOVO con almeno 10
+  utenti). Costo: **0 GPU-ora, <= 1,2 core-ore** (il primo collaudo ha preso 13 s). Il checkout c5e42cb dei training e dell'ingest intero non
+  cambia (`invalid_rows` uguale; cambia solo la misura). Poi: rilettura con v1 e riserva, proposta di M con la perdita, verifica di GPT, firma di
+  Simone, e solo allora il passo [4].
