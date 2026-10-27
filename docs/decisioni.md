@@ -4780,3 +4780,16 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   Cosi' la ripresa dell'ingest non finisce in coda dietro alle sonde. Costo della scelta: le sonde di R3c partono dopo l'ingest invece che subito.
 - **Lettura prevista (descrittiva, nessun criterio nuovo):** R3c contro R0 del pilot (stesso codice, stesse sonde) a 2 e a 1 epoca su P1/P2, `pool` e
   `dec`, piu' la pendenza 1 -> 2 epoche; dice se le ancore da sole a 2 epoche si muovono rispetto a R0 prima che arrivi R3.
+
+**Seconda ondata: ingest intero della posa [4] COMPLETATO (job 62410740, 27/10/2026, 11:33-13:30) e via al collaudo dbg di R3 [5] (job 62429050).**
+- **Consuntivo [4]:** 1 h 57 di parete su 2 core = **3,9 core-ore, 0 GPU-ora** (tetto 8); 1 h 49 di elaborazione, nessuno stop per budget di tempo,
+  nessuna ripresa necessaria. 25.253 registrazioni, 193 utenti, 0 fallite, 0 saltate (le 80 dei collaudi rifatte con M = 280), 422,7 ore di
+  posa; blocchi validi 249.798.976 su 304.319.128 (**82,1%**; non validi 17,9% = zeri + margine). `pose_stats.json` scritto sullo split train
+  (17.136 registrazioni; 8.117 di altri split saltate; sha256 del file 757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e;
+  rapporto di deviazione per lato 1,00-1,06 per giunto, per_side = false). Rapporto (27 MB) e log sul Mac in `~/wearusfm_local/pilot_posa/`.
+- **[5] sottomesso alle 14:51** dalla catena (pre-autorizzato: «SOLO dopo l'ingest intero COMPLETED (pose_stats.json scritto)»): 1.300 passi, 4 A100,
+  `boost_qos_dbg`, 30 min, 2 GPU-ora di tetto, `--pose-grad-every 100`. Il cancello (`arms_collaudo.py --arm R3`: 8 criteri + posa_configurata +
+  cancello + ritmo <= 0,81) si legge con Simone PRIMA di [6]; fuori dal cancello R3 non parte (Simone, 27/10: «se non passa qualcosa vediamo che
+  dice il critico»).
+- **Sonde di R3c (stadio [S]):** alimentatore avviato alle 14:52 (`leonardo_feed.py`, 8 sonde, al massimo 10 in coda), ora che l'ingest ha liberato
+  la seriale. Residuo della seconda ondata: ~86 GPU-ora prima di [5]; core-ore: ~526 prima delle sonde.
