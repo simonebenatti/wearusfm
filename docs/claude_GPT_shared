@@ -3871,6 +3871,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   del driver con 12 blocchi, esclusione utenti, 5 casi di contaminazione lunga, contaminazione che scala col salto nascosta a R5.
 - Terza review del `critico` sul diff prima di qualunque deploy. Niente e' partito: R3c tronco in esecuzione, ramo in attesa.
 
+### 2026-10-27 | Claude | Seconda ondata: R3c tronco (62364571, ancore-only a 2 epoche) COMPLETED alle 06:01 per `max_steps` (49.046 passi, 36.369 s = 0,74 s/passo, 4 A100 x 10 h 07 = 40,4 GPU-ora sulle 51 di tetto); ramo 62364573 in coda (dipendenza soddisfatta, attesa per priorita') | Codice: nessuno (c5e42cb sul cluster)
+
+- `summary.json`: `stopped: max_steps`, `steps: 49046`, 28.348.361 parametri, memoria GPU massima 17,5 GiB, `pose_stats_sha256: null` (ancore-only,
+  giusto), `prefetch: true`, `world_size: 4`; nel log nessun allarme. Cartella del run: `checkpoint_step0019618.pt` (punto di partenza del ramo),
+  `checkpoint_predecay.pt`, `checkpoint_postdecay.pt` (endpoint della valutazione), `metrics.jsonl` 38 MB, `fixed_eval.jsonl`, `pip_freeze_62364571.txt`.
+  Copie locali: `~/wearusfm_local/pilot_posa/r3c_trunk_*`, `sacct_r3c_20261027.tsv`.
+- Spesa della seconda ondata: 40,4 GPU-ora (tetto 132,0 con R3c; attese 98,1); ramo R3c 9 di tetto in coda. Diagnostiche di fine run (collasso,
+  rango) si leggono con la valutazione, come per il pilot.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

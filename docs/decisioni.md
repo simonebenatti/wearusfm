@@ -4585,3 +4585,5 @@ lungo NON torna mai al valore lontano; l'ordine giusto e' verifica di GPT -> via
 - **Costo e residuo del passo:** i due job valgono 0 GPU-ora e <= 1,2 core-ore. Seconda ondata con R3c (preventivo firmato): tetto 132,0 GPU-ora
   (attese 98,1) e 531 core-ore (attese 149,4); spese finora ~0,1 core-ore (checkout e collaudo breve) e 0 GPU-ora (R3c tronco in esecuzione,
   tetto 51). Residuo: ~531 core-ore e 132 GPU-ora.
+Consuntivo parziale (27/10/2026, 06:15): R3c tronco 62364571 COMPLETED per `max_steps` (49.046 passi, 0,74 s/passo), 40,4 GPU-ora sulle 51 di
+tetto; ramo 62364573 in coda. Spesa della seconda ondata: 40,4 GPU-ora (tetto 132,0), ~0,1 core-ore (tetto 531).
