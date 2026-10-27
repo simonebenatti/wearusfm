@@ -4939,3 +4939,20 @@ eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lu
   shell (variabile non quotata in zsh) entrambe hanno estratto `val`: la val e' valida (18.548 finestre, 1.950 registrazioni, file da rinominare),
   il train e' da rifare (**0,67 GPU-ora di tetto, ~4 min attesi**; registro, sezione 2). Comandi corretti in
   `results/infra/pilot_posa/comandi_e3_r3c.txt`: [E3b] ri-estrazione del train, [E3c] rapporto (16 core-ore). In attesa del via, con J2.
+
+### Esecuzione della tranche E3 di R3c (27/10/2026, 17:10-17:30; brief di Simone: «procedi entro i tetti indicati: 0,67 GPU-ore e 25,5 core-ore complessive, verificando il residuo»)
+- **[E3a] rinomina della val sul cluster** (`mv`, nessun job, nessun costo): `val.npz --split val.npz` -> `val.npz`; il «train» di 62437151 (copia
+  di val) -> `val_duplicate_from_62437151.npz`.
+- **[E3b] ri-estrazione del train:** job 62442491 (`PILOT-POSA-E3-ext-R3c-e2-train-r2`; argv passati con `shlex.split` + `subprocess.run`, non
+  dalla shell), COMPLETED in 4 min 12 s su 1 A100 + 8 core = **0,07 GPU-ora, 0,56 core-ore** (tetto dichiarato 0,67 GPU-ora). Controllo delle
+  cache (`~/wearusfm_local/pilot_posa/e3_cache_check_20261027.txt`): val 18.548 finestre, 1.923 registrazioni, 15 utenti, tutte `val`; train
+  1.907 finestre, 198 registrazioni, 40 utenti, tutte `train`; checkpoint R3c `checkpoint_postdecay.pt`, pose_stats 757f2aeb..., codice 41f6ac1,
+  per_side false, 10 finestre da 4 s per registrazione, seme 20261026.
+- **[E3c] rapporto E3:** job 62443474 (`PILOT-POSA-E3-report-R3c-e2`), sottomesso alle 17:28 con `--mem=30G` sulla riga di comando: il launcher
+  chiede 60 GB e la QoS lrd_all_serial ammette al massimo cpu=8 e mem=30800M per job (sacctmgr, 27/10 17:30): due rifiuti («job submit limit,
+  user's size and/or time limits», nessun job creato), poi la sottomissione a 30 GB (al rapporto bastano ~10 GB). **La riduzione della memoria
+  l'ho fatta senza dichiararla prima** (Simone: «fai il furbo?»): registrata qui e nel registro, sezione 2. Costo a tetto 8 core x 2 h = **16
+  core-ore, 0 GPU-ora**. PENDING dietro le sonde di R3c sulla coda seriale (un job alla volta: MaxJobsPU 2, MaxTRESPU cpu=8, MaxWall 4 h).
+- **Residuo della tranche** (tetti 0,67 GPU-ora / 25,5 core-ore): spesi 0,07 GPU-ora e 0,56 core-ore; impegnati a tetto 16 core-ore (E3c);
+  restano 0,60 GPU-ora e 8,9 core-ore, di cui 0,17 per il checkout dell'audit e 4 per l'audit (J2). Le 0,84 GPU-ora e 6,7 core-ore delle
+  estrazioni sbagliate (62437148, 62437151) restano fuori dalla tranche, rendicontate a parte (consuntivo delle 16:40).

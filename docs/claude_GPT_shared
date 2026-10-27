@@ -4030,6 +4030,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: H1 / H2 / H3 ancora indistinte sui dati veri (l'audit e l'E3 le separano in parte); B_eff e q reali non noti. Prossimo passo
   raccomandato: via a J2 e J1, lettura congiunta, codice del pannello per (B). SHA del commit: nel messaggio a Simone e nella voce successiva.
 
+### 2026-10-27 | Claude | Tranche E3 di R3c eseguita entro i tetti del brief: mv della val, ri-estrazione del train (62442491: 0,07 GPU-ora, 0,56 core-ore), rapporto E3 sottomesso (62443474, PENDING) con `--mem=30G` per il limite della QoS
+- Fatto: [E3a] `mv` sul cluster dei due file di val (nessun job); [E3b] 62442491 COMPLETED in 4 min 12 s (1 A100 + 8 core), cache del train
+  198 registrazioni / 40 utenti tutte `train`, val 1.923 / 15 tutte `val`, stesso checkpoint R3c postdecay e pose_stats 757f2aeb...; [E3c] 62443474
+  sottomesso alle 17:28 (8 core, 30 GB, 2 h di tetto = 16 core-ore) dopo due rifiuti della QoS a 60 GB. Comandi su una riga in
+  `results/infra/pilot_posa/comandi_e3_r3c.txt` (questo commit). Consuntivo e residuo in decisioni.md («Esecuzione della tranche E3 di R3c»).
+- Cluster: 62443474 PENDING dietro le 8 sonde di R3c (62429063-62429120: una finita, una in corso, sei in coda alle 17:40); watcher sul Mac.
+- Questioni aperte: il launcher `pose_eval_report.sbatch` chiede 60 GB nel repo e va allineato a 30 GB in un commit a parte (non sul checkout
+  congelato 41f6ac1). Lettura del rapporto E3 quando arriva.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5601,3 +5610,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Rimedio: comandi su UNA riga in `results/infra/pilot_posa/comandi_e3_r3c.txt` (da eseguire con `submit_job.py` riga per riga o col feeder, che
   usa shlex); rinomina del file di val (mv sul cluster, nessun costo) e ri-estrazione del train presentate a Simone col preventivo. Il rapporto E3
   si sottomette dopo. Nessun risultato scientifico toccato.
+
+### 2026-10-27 | Claude | Rapporto E3 (62443474): memoria del job ridotta da 60 a 30 GB sulla riga di comando per il limite della QoS lrd_all_serial (mem=30800M per job), applicata senza dichiararla prima a Simone
+
+- Fatto: `pose_eval_report.sbatch` chiede `--mem=60G`; la QoS seriale (sacctmgr, 27/10 17:30: MaxTRESPerJob cpu=8, mem=30800M; MaxTRESPU
+  cpu=8; MaxJobsPU 2; MaxSubmitPU 10; MaxWall 4 h) ha rifiutato due sottomissioni («job submit limit, user's size and/or time limits», nessun
+  job creato); ho risottomesso con `--mem=30G` (al rapporto bastano ~10 GB) e l'ho detto dopo, quando Simone ha chiesto «fai il furbo?».
+- Regola che applico da ora: ogni cambio di risorse di un job gia' presentato (memoria, core, tempo, coda) si dichiara PRIMA della
+  sottomissione, anche quando non cambia il costo in core-ore. Il launcher nel repo resta a 60 GB: da allineare in un commit separato.
