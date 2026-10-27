@@ -2741,7 +2741,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - d037a3e contiene soltanto documenti/comandi: i 18 test e i controesempi della review e198a87 restano riferiti allo stesso codice.
   Nessuna modifica al codice Claude, nessun invio automatico a Claude e nessuna sottomissione; consegna del prompt a Simone.
 
+### 2026-10-27 | GPT | Review aecff1a chiusa nei rilievi sostanziali; completare E3 e audit, poi leggere i risultati
+
+- Richiesta di Simone: verificare l'ultima consegna Claude e lo stato dei lanci, «convergiamo?». Letti `e198a87..aecff1a` e il delta
+  del critico `ebb16e1..aecff1a`; 2c8c575 aggiunge documenti/comandi, nessun codice. Review completa:
+  `docs/reviews/pose_audit_aecff1a_review_20261027.md`.
+- **Verdetto favorevole a terminare la tranche autorizzata.** R1/R2 raw EMG, identita', copertura esplicita, oracle non finiti/per lato
+  e padding chiusi; R3 esplorativa con lag scelto nel fit e R4 differenze adiacenti chiusi; split interno/scaling e disallineato corretti.
+  Correzioni del critico su stem, fallback cronologico, guardia e lag None confermate. Limiti dichiarati conservati.
+- Sintetico: LR esatti per tutti i 1.300 passi, dose 671; teacher su LayerNorm(x) rappresentabile; rettifica H1 corretta. JSON 96
+  esecuzioni (32 combinazioni x3 semi) coerente con mediane/checkpoint citati. Due dettagli P3 sotto, nessun nuovo training necessario.
+- **Test GPT: 20 passati in 46,06s** sui tre file richiesti; 36 confronti aggiuntivi dell'oracle con start fuori griglia/M diversi/non
+  finiti. Suite completa Claude letta dal log locale audit_v3: 1.462 passati/1 warning noto, rc0; non rieseguita da GPT, SHA non nel log.
+- Controllo cache di Claude letto: train 1.907 finestre/198 recording/40 utenti, val 18.548/1.923/15; tutti nello split giusto del CSV,
+  utenti disgiunti, stesso percorso checkpoint/code SHA/statistiche. Distinguere selezionati nominali (200/1.950) da effettivi (198/1.923).
+- **Snapshot live 18:41–18:42 CET tramite leonardo-ops:** train62442491 COMPLETED4min12s; report62443474 e checkout62447995 PENDING
+  QOSMaxCpuPerUserLimit; audit effettivo ancora non sottomesso, la catena locale attende il checkout. Sonde e2:62429063/066/083 finite,
+  62429093 in corso; quattro sonde e1 in attesa. Nessun fallimento osservato; risultati E3/audit ancora assenti.
+- Costi coerenti: train effettivo0,07 GPUh/0,56 coreh + tetti report16/audit4/checkout1/6 =20,7267 coreh, entro25,5. Report con override
+  esplicito30GB. Nessun job lanciato/cancellato da GPT, nessun codice Claude modificato; soli review e registro sul branch GPT.
+- Convergenza sugli strumenti diagnostici, non ancora prova di apprendimento R3. Completare la tranche e leggere insieme copertura e
+  risultati; B5.000 e R3 completo restano rinviati. Il passaggio scientifico puo' essere preparato su questa consegna consolidata.
+
 ## 2) Problemi trovati
+
+### 2026-10-27 | GPT | aecff1a: due dettagli P3 e limiti della lettura, nessun nuovo blocco E3/J2
+
+- `decisioni.md:4972`: spread fra semi non sempre <=0,01; massimo dei ratio finali0,019865. Correggere a circa0,02/esatto.
+- `pose_head_synthetic.py:63,98`: q nominale; 1-q e' floor MSE assoluto di popolazione, non esatto rapporto sulla loss iniziale del
+  pannello finito. Rinomina `optimum_ratio_at_fixed_features` in `noise_floor_mse` e qualifica q; non richiede nuovi job.
+- Lag scan: comuni righe di feature, target e baseline ancora diversi; resta esplorativa. Contatore simultanee non universale;
+  gap temporali del loader non coperti dalla fixture; possibile differenza dei time_axis storici da interpretare sui reali.
+- Default60GB del launcher E3 da allineare in manutenzione, il job corrente ha override30GB corretto. Suite completa nel log non
+  identificata da SHA interno; non confonderla con la riesecuzione GPT dei20 test. Watcher: script/log letti, vitalita' processo non provata.
+- H1/H2/H3 restano aperte fino alla lettura dei risultati reali; nessun problema sostanziale residuo trovato che giustifichi bloccare i job.
 
 ### 2026-10-27 | GPT | E3: COMPLETED non certifica lo split; train da recuperare | Claude d037a3e
 
