@@ -5001,3 +5001,51 @@ eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lu
 - **Lancio (27/10, 18:14):** ref `deploy/pilot-posa-audit-20261027` = aecff1a pubblicato e verificato su Leonardo; checkout [A1] sottomesso,
   job 62447995 (coda seriale, dietro 5 sonde di R3c e il rapporto E3: un job alla volta); l'audit [A2] lo sottomette un watcher sul Mac SOLO
   a checkout COMPLETED, dal launcher del checkout (`results/infra/pilot_posa/comandi_audit_20261027.txt`). Nessun altro job.
+
+**Seconda ondata: LETTURA delle 8 sonde di R3c (R3c contro R0, descrittiva) e del rapporto E3 su R3c-e2 (27/10/2026, 23:10-23:50). Nessun
+criterio nuovo, nessuna decisione; audit della posa in corso.**
+- **Job:** le 8 sonde 62429063-62429120 tutte COMPLETED (exit 0), una alla volta sulla seriale dalle 14:52 alle 23:08: 8 h 14 di parete x 8 core =
+  **65,8 core-ore, 0 GPU-ora** (`preventivo_valutazione_r3c.json`: attese 68, tetto 256). Rapporto E3 62443474 COMPLETED in **60 s** su 8 core =
+  0,13 core-ore (impegnate a tetto 16: il tetto di 2 h era sovrastimato di due ordini di grandezza, registro sezione 2). Checkout dell'audit
+  62447995 COMPLETED in 19 s (2 core allocati per 1 chiesto: 0,01 core-ore). Audit 62473340 sottomesso dal watcher alle 23:11 a checkout
+  COMPLETED, in esecuzione (4 core, 16 GB, tetto 1 h = 4 core-ore). Nessun altro job.
+- **Provenienza:** 8 rapporti con codice c5e42cb (checkout `pilot-posa-20261026`); checkpoint `PILOT-POSA-R3C-ancore-30M-s0` per e2
+  (sha256 07d70f7d...) e `...-s0-e1` per e1 (d676de9b...), uguali dentro l'epoca e distinti fra epoche; OOF copiate sul Mac
+  (`~/wearusfm_local/pilot_posa/r3c_probes/`) e verificate per SHA-256 dal confronto (`--oof-map`). Riferimento: R0 e R0-e1 del pilot
+  (`~/wearusfm_local/pilot_obiettivi_20261024/`), stessa chiamata del pilot (`channel_readout.py --stage compare --single-seed --models`,
+  soggetti ricampionati insieme, 1.000 ricampionamenti, seme 20261009, `seeds` 1 dichiarato). Uscite:
+  `results/infra/pilot_posa/confronti/descrittivo_R3c_vs_R0_<e>_<p>_<readout>.json` (8), riepilogo `lettura_r3c_e3_20261027.json`
+  (sonde, confronti, pendenze, E3, consuntivo), rapporto E3 copiato in `pose_eval_R3c-e2_62443474.json`.
+- **R3c contro R0, punti percentuali di S (delta, IC95 appaiato per soggetto):**
+
+| Lettura | R0 | R3c | delta [IC95] |
+|---|---|---|---|
+| e2 P1 `pool` | 18,84 | 18,65 | -0,19 [-0,73, +0,33] |
+| e2 P1 `dec` | 17,38 | 18,25 | +0,87 [+0,48, +1,29] |
+| e2 P2 `pool` | 81,22 | 82,21 | +0,99 [-0,53, +2,32] |
+| e2 P2 `dec` | 83,14 | 83,50 | +0,36 [-0,56, +1,32] |
+| e1 P1 `pool` | 18,32 | 17,77 | -0,55 [-1,02, -0,10] |
+| e1 P1 `dec` | 17,16 | 17,75 | +0,59 [+0,22, +0,98] |
+| e1 P2 `pool` | 80,53 | 80,22 | -0,31 [-1,92, +1,27] |
+| e1 P2 `dec` | 81,96 | 82,62 | +0,66 [-0,52, +1,89] |
+
+  Otto letture senza correzione; nessuna raggiunge +1 con limite inferiore > 0 (la regola del pilot, qui solo come metro: `beats` false in
+  tutte, `not_harmful` true in tutte). Per dataset: P1 `pool` a 1 epoca DB2 -1,12 [-1,66, -0,60] e DB6 +1,71 [+0,50, +2,98]; P1 `dec` a 2 epoche
+  DB2 +1,09 [+0,65, +1,60]; su P2 EPN-612 sta sotto R0 col `pool` (-1,20 [-1,69, -0,71] a e1; -0,45 [-0,89, -0,02] a e2) e UCI-EMG sopra con IC
+  larghi (+0,58 / +2,43, IC a cavallo dello 0).
+- **Pendenza 1 -> 2 epoche (S(e2) - S(e1), sonde separate, nessun intervallo appaiato):** P1 `pool` +0,89 (R0 +0,52), P1 `dec` +0,50 (R0 +0,22),
+  P2 `pool` +1,99 (R0 +0,69), P2 `dec` +0,88 (R0 +1,18).
+- *Interpretazione (non e' una lettura di regola):* le ancore da sole dentro la catena della posa (R3c) stanno dove sta R0: col `pool` a cavallo
+  dello 0 o sotto (P1 a 1 epoca), col decoder per canale sopra di +0,6 / +0,9 su P1 con IC sopra lo 0 ma sotto il punto; le pendenze differiscono
+  da quelle di R0 di +0,3 / +1,3, dell'ordine dell'errore standard di una S. R3c e' un riferimento utilizzabile per R3 (stesso codice, stesse
+  sonde, stesso loader con la posa); su cosa faccia la posa non dice nulla.
+- **E3 su R3c-e2** (sonda ridge per istante dai latenti del teacher, `pose_eval` del checkout 41f6ac1; alpha 100 scelto sul train interno,
+  14.783 istanti di train da 40 utenti; val: 15 utenti assenti dal training): finestre dinamiche (8.329 sopra la mediana della varianza della posa,
+  0,257) **MAE / MAE_costante = 0,949** [IC95 sui 15 utenti 0,932-0,963], mediana per utente 0,947; tutte le finestre con bersaglio valido
+  (16.684 su 18.548: 1.864 senza elementi validi) 0,926 [0,905-0,945], mediana 0,937. Soglia di lettura 0,9 (descrittiva): **la posa non e'
+  accessibile linearmente dai latenti di R3c** (`accessible` false). E' la base per R3 e R0: su un encoder senza posa la ridge recupera il 5%
+  (dinamiche) / 7% (tutte) dell'errore della costante. E3 su R0 ed E3 su R3 restano da fare (R3 non esiste; R0 fuori da questa tranche).
+- **Consuntivo della tranche (tetti 0,67 GPU-ora / 25,5 core-ore):** spesi 0,07 GPU-ora (62442491) e 0,56 + 0,13 + 0,01 = **0,70 core-ore**;
+  l'audit in corso al massimo 4 core-ore -> totale <= 0,07 GPU-ora e <= 4,7 core-ore. Fuori tranche, rendicontate a parte: 0,84 GPU-ora e 6,7
+  core-ore delle estrazioni sbagliate (62437148, 62437151; consuntivo delle 16:40). Le sonde di R3c (65,8 core-ore) stanno sulla voce
+  «valutazione» della seconda ondata (residuo core-ore ~526 -> ~460; GPU-ora invariato, ~85).

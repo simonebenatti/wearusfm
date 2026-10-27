@@ -4057,6 +4057,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Cluster: coda seriale alle 18:14: sonda 62429083 in corso, 5 sonde + rapporto E3 62443474 + checkout in attesa (QOSMaxCpuPerUserLimit).
 - Questioni aperte: lettura dell'audit e dell'E3 quando arrivano (domattina); consuntivo finale della tranche nella consegna.
 
+### 2026-10-27 | Claude | Lettura delle 8 sonde di R3c (R3c contro R0, descrittiva: nessuna lettura a +1 con IC sopra lo 0; `dec` P1 sopra R0 di +0,6 / +0,9, `pool` a cavallo dello 0 o sotto) e del rapporto E3 su R3c-e2 (ridge dai latenti 0,949 sulle dinamiche: posa non accessibile, base per R3 e R0); audit 62473340 in corso
+- Fatto: 8 sonde COMPLETED (65,8 core-ore, attese 68) e rapporto E3 COMPLETED (60 s, 0,13 core-ore) letti; confronti con la chiamata del pilot
+  (`channel_readout.py --stage compare --single-seed --models`, OOF verificate per SHA-256) in
+  `results/infra/pilot_posa/confronti/descrittivo_R3c_vs_R0_<e>_<p>_<readout>.json`, riepilogo `lettura_r3c_e3_20261027.json`, rapporto E3 in
+  `pose_eval_R3c-e2_62443474.json`. Tabella, pendenze 1 -> 2, E3 e consuntivo in decisioni.md («LETTURA delle 8 sonde di R3c»). Nessun codice
+  toccato, nessun test da rieseguire.
+- Cluster: checkout 62447995 COMPLETED (19 s); audit 62473340 sottomesso dal watcher alle 23:11, RUNNING (4 core, 16 GB, tetto 1 h); nessun altro
+  job. Tranche: 0,07 GPU-ora e 0,70 core-ore spesi, audit <= 4 core-ore ancora impegnate (tetti 0,67 / 25,5).
+- Questioni aperte: lettura dell'audit all'arrivo (voce a parte); E3 su R0 e su R3 non fatti (R3 non esiste, R0 fuori tranche); collaudo lungo (B)
+  e R3 restano rinviati in attesa di Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5647,3 +5658,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Messaggio di commit di ebb16e1: dichiarava la correzione di `comandi_e3_r3c.txt`, che non era nel commit (committato a parte in e970833).
 - Documentazione: ebb16e1 non aveva voce nel registro e decisioni.md riportava ancora la conclusione esclusiva su H1, lo spostamento di
   400 ms e la scansione «attesa 0»: rettificati nella voce nuova (la vecchia resta).
+
+### 2026-10-27 | Claude | Tetto del rapporto E3 sovrastimato di due ordini di grandezza (2 h impegnate, 60 s reali); nessun run toccato
+
+- Il rapporto E3 (62443474) e' stato presentato e sottomesso con 8 core x 2 h = 16 core-ore di tetto sulla tranche da 25,5; e' durato 60 s
+  (0,13 core-ore). Il tetto veniva dal launcher `pose_eval_report.sbatch` (2 h, 60 GB), scritto per rapporti con la testa e non per la sola
+  ridge su 1.907 finestre di train. Nessun costo reale in piu' (sulla seriale gira un job alla volta), ma il residuo dichiarato della tranche
+  (8,9 core-ore dopo i lanci) era di 15 core-ore piu' basso del vero. Da ora: il tetto di un job CPU si stima dal lavoro del job, non dal
+  launcher; il launcher va allineato (tempo e memoria) in un commit a parte, insieme ai 60 GB -> 30 GB gia' segnalati.

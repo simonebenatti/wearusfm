@@ -1,0 +1,257 @@
+{
+ "rule": {
+  "learned_ci_upper": 0.9,
+  "learned_median_user": 0.9,
+  "misaligned_ci_lower": 0.95,
+  "misaligned_min_gap_s": 8.0,
+  "misaligned_drop_quantile": 0.1,
+  "dynamic_split": "mediana della varianza della posa per finestra su val",
+  "ridge_alphas": [
+   0.1,
+   1.0,
+   10.0,
+   100.0
+  ],
+  "instants_per_window": 8
+ },
+ "n_windows": 18548,
+ "n_users": 15,
+ "n_recordings": 1950,
+ "config": {
+  "n_windows": 10,
+  "window_s": 4.0,
+  "seed": 20261026,
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "per_side": false,
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_postdecay.pt",
+  "which": "teacher",
+  "split": "val",
+  "code_sha": "41f6ac15f9f9cf50bc9b06a9d57ded3725326f04",
+  "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+  "checkpoint_pose_stats_sha256": null
+ },
+ "median_pose_var": 0.2574231028556824,
+ "n_dynamic": 8329,
+ "has_head": false,
+ "E3": {
+  "alpha": 100.0,
+  "inner_mae_std": 0.7779727477880849,
+  "n_train_instants": 14783,
+  "dynamic": {
+   "label": "ridge dai latenti, finestre dinamiche",
+   "n_windows": 8329,
+   "n_users": 15,
+   "mae": 0.33906741807270147,
+   "mae_const": 0.35718408062418083,
+   "ratio": 0.949279199342198,
+   "ratio_ci95_users": [
+    0.931843558848939,
+    0.9627788434556116
+   ],
+   "median_user_ratio": 0.947481232817028,
+   "per_user": {
+    "1f6de69ab3": {
+     "ratio": 0.9701294513484771,
+     "mae": 0.3486422246554004,
+     "mae_const": 0.3593770132128127,
+     "n_windows": 677
+    },
+    "2251681168": {
+     "ratio": 0.9695052744856545,
+     "mae": 0.35848731411841944,
+     "mae_const": 0.3697631395647697,
+     "n_windows": 685
+    },
+    "29ddab35d7": {
+     "ratio": 0.8752584402094861,
+     "mae": 0.3408040622865009,
+     "mae_const": 0.3893753509019944,
+     "n_windows": 528
+    },
+    "2af4aec870": {
+     "ratio": 0.9577925064668432,
+     "mae": 0.3029149766961036,
+     "mae_const": 0.316263673656743,
+     "n_windows": 626
+    },
+    "2d0838950a": {
+     "ratio": 0.9778177287050255,
+     "mae": 0.3638187013189411,
+     "mae_const": 0.3720721057090722,
+     "n_windows": 741
+    },
+    "3875521008": {
+     "ratio": 0.9421257367112608,
+     "mae": 0.3686124421271497,
+     "mae_const": 0.3912561007131479,
+     "n_windows": 661
+    },
+    "7016fd5330": {
+     "ratio": 0.9393790275339534,
+     "mae": 0.3441148242821726,
+     "mae_const": 0.36632159564551775,
+     "n_windows": 660
+    },
+    "737fb9d2eb": {
+     "ratio": 0.9095392759613501,
+     "mae": 0.30409801274795134,
+     "mae_const": 0.3343429149076941,
+     "n_windows": 493
+    },
+    "9b8c99cdc2": {
+     "ratio": 0.9876643670787519,
+     "mae": 0.30950728773674874,
+     "mae_const": 0.3133729413081783,
+     "n_windows": 514
+    },
+    "a993d16f6e": {
+     "ratio": 0.9199954745988241,
+     "mae": 0.3106573712616058,
+     "mae_const": 0.337672716702299,
+     "n_windows": 392
+    },
+    "ab228f34a5": {
+     "ratio": 0.9895937358605472,
+     "mae": 0.34627109738717077,
+     "mae_const": 0.3499123780184953,
+     "n_windows": 7
+    },
+    "d387095792": {
+     "ratio": 0.9474429572047854,
+     "mae": 0.34133353148946155,
+     "mae_const": 0.36026816062519307,
+     "n_windows": 385
+    },
+    "e51f6d97cf": {
+     "ratio": 0.947481232817028,
+     "mae": 0.33868034115400414,
+     "mae_const": 0.3574533504447872,
+     "n_windows": 680
+    },
+    "e86f1eaf2f": {
+     "ratio": 0.9339894772913979,
+     "mae": 0.3467510141501591,
+     "mae_const": 0.37125794517059135,
+     "n_windows": 637
+    },
+    "f3a4630adf": {
+     "ratio": 0.9830507845969805,
+     "mae": 0.34309872529355806,
+     "mae_const": 0.34901424287476424,
+     "n_windows": 643
+    }
+   }
+  },
+  "all": {
+   "label": "ridge dai latenti, tutte",
+   "n_windows": 16684,
+   "n_users": 15,
+   "mae": 0.295496648322808,
+   "mae_const": 0.31926312984443794,
+   "ratio": 0.9255583269724561,
+   "ratio_ci95_users": [
+    0.9045072245433677,
+    0.9449544537882497
+   ],
+   "median_user_ratio": 0.9366544665011521,
+   "per_user": {
+    "1f6de69ab3": {
+     "ratio": 0.9652544433817988,
+     "mae": 0.3010271372857704,
+     "mae_const": 0.31186299047856497,
+     "n_windows": 1158
+    },
+    "2251681168": {
+     "ratio": 0.9709587590755571,
+     "mae": 0.32472534009288656,
+     "mae_const": 0.3344378296788375,
+     "n_windows": 1341
+    },
+    "29ddab35d7": {
+     "ratio": 0.8758076748449392,
+     "mae": 0.3058664972173596,
+     "mae_const": 0.34923934329704626,
+     "n_windows": 877
+    },
+    "2af4aec870": {
+     "ratio": 0.9924704528999838,
+     "mae": 0.29038281786641174,
+     "mae_const": 0.2925858568564107,
+     "n_windows": 1275
+    },
+    "2d0838950a": {
+     "ratio": 0.9413682548477132,
+     "mae": 0.3153494809867158,
+     "mae_const": 0.33499056226166285,
+     "n_windows": 1500
+    },
+    "3875521008": {
+     "ratio": 0.9402454328665949,
+     "mae": 0.3405988443773867,
+     "mae_const": 0.3622446145140829,
+     "n_windows": 974
+    },
+    "7016fd5330": {
+     "ratio": 0.9148299817132504,
+     "mae": 0.3061465367148832,
+     "mae_const": 0.33464856075392985,
+     "n_windows": 1305
+    },
+    "737fb9d2eb": {
+     "ratio": 0.8392041892282679,
+     "mae": 0.2682985060326571,
+     "mae_const": 0.31970587072424456,
+     "n_windows": 1106
+    },
+    "9b8c99cdc2": {
+     "ratio": 0.944579534191781,
+     "mae": 0.23799305439038146,
+     "mae_const": 0.2519566069087211,
+     "n_windows": 1520
+    },
+    "a993d16f6e": {
+     "ratio": 0.9062957504646805,
+     "mae": 0.27958498534635556,
+     "mae_const": 0.30849199635219005,
+     "n_windows": 966
+    },
+    "ab228f34a5": {
+     "ratio": 0.9348656522876426,
+     "mae": 0.2930885510633617,
+     "mae_const": 0.3135087382301036,
+     "n_windows": 114
+    },
+    "d387095792": {
+     "ratio": 0.9505158897668297,
+     "mae": 0.330469661271712,
+     "mae_const": 0.34767399980317976,
+     "n_windows": 656
+    },
+    "e51f6d97cf": {
+     "ratio": 0.9120346188045112,
+     "mae": 0.2932245177178339,
+     "mae_const": 0.32150590742069707,
+     "n_windows": 1176
+    },
+    "e86f1eaf2f": {
+     "ratio": 0.8841326248154885,
+     "mae": 0.30303973450349186,
+     "mae_const": 0.342753706851089,
+     "n_windows": 1500
+    },
+    "f3a4630adf": {
+     "ratio": 0.9366544665011521,
+     "mae": 0.2927733376355047,
+     "mae_const": 0.3125734709077423,
+     "n_windows": 1216
+    }
+   }
+  },
+  "accessible": false
+ },
+ "inputs": {
+  "val": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/val.npz",
+  "train": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/train_subset.npz",
+  "elapsed_s": 47.6639838218689
+ }
+}
