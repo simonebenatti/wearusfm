@@ -1,5 +1,12 @@
 # Prompt per GPT (responsabile scientifico dal 26/10/2026): verifica della regola di validita' della posa (margine M)
 
+**Aggiornamento del 27/10/2026, decisione di Simone:** «La riserva diventa numeri descrittivi per la mia firma; la regola resta la v1 congelata.
+Dichiaro che questa lettura la scrive Claude. Via ai due job CPU del profilo lungo.» Quindi la riserva R1-R5 descritta sotto NON e' piu' una
+regola: resta nel rapporto come numeri (blocco `v2`, `ruolo: descrittivo`: plateau L, persistenza R2, R3, R5, M_riserva, perdita) per la firma di
+Simone; il margine lo dice solo la v1 sul profilo lungo, e se la v1 non decide, M lo sceglie Simone con quei numeri. I due job CPU del profilo
+lungo partono col via di Simone, senza aspettare la tua risposta; la tua verifica resta richiesta e si registra nel registro, e le opzioni A / B
+del punto 3 cambiano solo i numeri descrittivi. Il testo che segue e' quello sottoposto prima della decisione.
+
 Contesto. Seconda ondata del pilot degli obiettivi (`docs/pilot_posa_v1.md`, firmato; emendamento 1 firmato). I bersagli di posa di emg2pose hanno
 righe tutte a zero dove la cinematica inversa fallisce (17% delle righe nel collaudo, 12,7% nel paper); attorno a ogni blocco di zeri si scartano M
 campioni per lato. La regola per scegliere M dal collaudo dell'ingest e' in `docs/decisioni.md` (voci del 26 e 27/10/2026 sulla seconda ondata, in
@@ -43,5 +50,5 @@ Ti chiedo, come responsabile scientifico:
 5. Il costo della scelta: tetto della perdita 2 M x (blocchi di zeri) / righe = 5,3% a M = 200, oltre al 17% gia' nullo. Accettabile per R3?
 
 Rispondi nel registro condiviso (`docs/claude_GPT_shared`, sezione 1, voce tua) con: accordo o modifiche alle soglie, osservazione che smentirebbe
-la lettura, e il tuo parere su M. Non e' richiesto nessun job: i due job CPU del profilo lungo partono solo dopo la tua risposta registrata e col via di Simone (ordine in
-`decisioni.md`, «SECONDA RETTIFICA»).
+la lettura, e il tuo parere su M. Non e' richiesto nessun job. (Ordine aggiornato il 27/10 dalla decisione di Simone in testa a questo file: i due
+job CPU del profilo lungo partono col suo via, la tua verifica arriva in parallelo e non blocca la misura.)

@@ -414,8 +414,11 @@ DIP_FRAC_MAX = 1e-3  # «V» tollerate: righe nei minimi simultanei fino allo 0,
 ZERO_FRAC_RANGE = (0.02, 0.40)  # frazione di righe a zero plausibile sul collaudo (paper: 12,7%)
 MAX_ABS_RADIANS = 7.0  # oltre 2 pi (piu' un margine) gli angoli non sono radianti: fermarsi
 SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
-# Regola di riserva R1-R5 (scritta il 27/10/2026 DOPO aver visto il profilo a 200 ms del collaudo 62364572, su proposta del `critico`, PRIMA del
-# collaudo col profilo lungo; e' una regola POST HOC informata da quel profilo, non una pre-registrazione: decisioni.md). Si CALCOLA solo se la v1
+# Decisione di Simone (27/10/2026): «La riserva diventa numeri descrittivi per la mia firma; la regola resta la v1 congelata.» Quindi il blocco
+# `margine` viene SOLO dalla v1; il blocco `v2` resta nel rapporto come NUMERI (L, R2, R3, R5, M_riserva, perdita) per la firma, e `applicabile`
+# dice solo se le condizioni della riserva reggono: non produce mai un margine. Quel che segue descrive come quei numeri si calcolano.
+# Riserva R1-R5 (scritta il 27/10/2026 DOPO aver visto il profilo a 200 ms del collaudo 62364572, su proposta del `critico`, PRIMA del
+# collaudo col profilo lungo; e' POST HOC, informata da quel profilo, non una pre-registrazione: decisioni.md). Si CALCOLA solo se la v1
 # e' non determinata o da' M > V1_MAX_M. R1: L = media del profilo nei bin PLATEAU_LAGS (150-200 ms). R2, persistenza a due lati: la lettura «il
 # plateau e' comportamento, non artefatto» regge solo se TUTTI i bin contati oltre 400 campioni stanno fra 0,80 L e 1,25 L (pavimento e tetto su
 # tutto il profilo misurato, quinta review) e ci sono bin contati almeno fino a 2.000 campioni; una discesa sotto 0,80 L, presto o tardi, e' il
@@ -493,9 +496,10 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     precondizioni (se una manca: FERMARSI, nessun M; `min_users` = LONG_COLLAUDO_MIN_USERS per il collaudo lungo); la regola v1 congelata il
     26/10/2026 (M = `lag_to` dell'ULTIMO bin del profilo dei bordi fuori tolleranza |bin / lontano - 1| > tol, bin con almeno min_n campioni; 0 se
     nessuno; «non determinato» se fuori anche l'ultimo bin); se la v1 e' non determinata o da' M > V1_MAX_M, si CALCOLA la riserva R1-R5 (post
-    hoc, 27/10: vedi le costanti), che si APPLICA solo se nessun bin contato rientra sotto 1 + tol volte il lontano (a un lato solo) e la
-    persistenza R2 regge su tutto il profilo lungo; altrimenti ci si ferma e la proposta porta a Simone la v1 (con la perdita) e R3 / R5
-    informativi; la regola per le «V» (nessuna in
+    hoc, 27/10: vedi le costanti) come NUMERI DESCRITTIVI per la firma di Simone (sua decisione del 27/10: la regola resta la v1): `applicabile`
+    dice se le sue condizioni reggono (nessun bin contato rientra sotto 1 + tol volte il lontano, a un lato solo; persistenza R2 su tutto il
+    profilo lungo) ma non produce un margine: in ogni caso ci si ferma e la proposta porta a Simone la v1 (con la perdita) e L, R2, R3, R5,
+    M_riserva; la regola per le «V» (nessuna in
     piu' se le righe nei minimi simultanei sono <= dip_frac_max delle righe non nulle). Riporta il tetto della perdita di righe dovuta a M."""
     col = report.get("collaudo") or {}
     recs = report.get("per_recording") or []
@@ -576,7 +580,8 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             m5 = r5.get("M5")
             m_res = max(m3, m5) if m5 is not None else m3
             applicabile = never_returns and not short and not below and not above
-            v2 = {"calcolata": True, "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M),
+            v2 = {"calcolata": True, "ruolo": "descrittivo: numeri per la firma di Simone (sua decisione del 27/10/2026), non una regola",
+                  "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M), "perdita_tetto_M": loss(int(m_res)),
                   "profilo_rientra": not never_returns, "bins_rientrati": inside_bins[:50], "n_bins_rientrati": len(inside_bins),
                   "soglia_rientro_ratio": 1 + tol, "R5_calcolabile": m5 is not None,
                   "R1_plateau_level_ratio_to_far": level, "R1_n_plateau_bins": n_pl,
@@ -584,11 +589,12 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
                   "R2_bins_sopra_tetto_oltre_400": above, "R3_M3": int(m3), "R5": r5, "M": int(m_res),
                   "sensibilita_R3": {str(tt): (max([b["lag_to"] for b in bins if b["conta"] and b["lag_to"] < PLATEAU_LAGS[0]
                                                     and b["ratio"] > (1 + tt) * level] or [0])) for tt in (0.25, 0.20, 0.15, 0.10, 0.05)}}
-            if applicabile:
-                stato, M = "determinato_riserva", int(m_res)
-                why = (f"v1 {v1_stato}" + (f" (M = {v1_M})" if v1_M is not None else "") + f"; riserva: plateau {PLATEAU_LAGS[0]}-{PLATEAU_LAGS[1]} = "
-                       f"{level:.2f} x lontano, persistenza R2 ok fino a {counted_max} campioni; R3 (> {1 + v2_tol:.2f} x plateau) = {m3}; "
-                       f"R5 (salto alto / basso > {1 + jump_tol:.2f}) = {m5}; M = max")
+            if applicabile:  # dal 27/10 (decisione di Simone) NON e' un margine: numeri per la sua firma; il margine resta alla v1 (qui: nessuno)
+                stato, M = "non_determinato", None
+                why = (f"v1 {v1_stato}" + (f" con M = {v1_M} (solo per bin finali non contati: non e' un esito)" if v1_M is not None else f": {why}")
+                       + f"; riserva DESCRITTIVA (decisione di Simone, 27/10/2026): nessun bin contato rientra, plateau {PLATEAU_LAGS[0]}-"
+                       f"{PLATEAU_LAGS[1]} = {level:.2f} x lontano, persistenza R2 ok fino a {counted_max} campioni; R3 (> {1 + v2_tol:.2f} x plateau) = "
+                       f"{m3}; R5 (salto alto / basso > {1 + jump_tol:.2f}) = {m5}; M_riserva = max = {m_res}; decide Simone")
             else:
                 stato, M = "non_determinato", None
                 reasons = []
@@ -630,7 +636,14 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
         out["proposta"] = "FERMARSI: precondizioni non soddisfatte (" + "; ".join(problems) + ")"
     elif stato == "non_determinato":
         info = f"; valori informativi della riserva: R3 = {v2.get('R3_M3')}, R5 = {(v2.get('R5') or {}).get('M5')}" if v2.get("calcolata") else ""
-        if v2.get("calcolata") and v2.get("R2_profilo_corto"):
+        if v2.get("calcolata") and v2.get("applicabile"):
+            out["proposta"] = (f"FERMARSI: la v1 non determina M ({v2['v1_stato']}); numeri descrittivi per la firma di Simone (decisione del "
+                               f"27/10/2026): M_riserva = {v2['M']} campioni ({v2['M'] / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri, "
+                               f"perdita fino al {100 * (v2['perdita_tetto_M'] or 0):.1f}% delle righe), plateau L = "
+                               f"{v2['R1_plateau_level_ratio_to_far']:.2f} x lontano, R2 ok fino a {v2['R2_max_lag_counted']} campioni, "
+                               f"R3 = {v2['R3_M3']}, R5 = {v2['R5'].get('M5')}"
+                               + ("" if v2["R5_calcolabile"] else " (R5 NON calcolabile: M_riserva = M3, dichiarato)") + "; nessuna regola per le «V»")
+        elif v2.get("calcolata") and v2.get("R2_profilo_corto"):
             out["proposta"] = "FERMARSI: margine non determinato (" + why + "); profilo lungo da misurare e poi rileggere"
         elif v2.get("calcolata") and v2.get("v1_M") is not None and v2.get("profilo_rientra"):
             out["proposta"] = (f"FERMARSI: la riserva non si applica e la v1 sul profilo lungo da' M = {v2['v1_M']} campioni (perdita fino al "
@@ -645,10 +658,6 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     elif out["V"]["regola_aggiuntiva_necessaria"]:
         out["proposta"] = (f"M = {M} campioni, MA le «V» superano la soglia ({frac_dip:.2e} > {dip_frac_max}): serve una regola in piu' "
                            "prima dell'ingest intero")
-    elif stato == "determinato_riserva":
-        out["proposta"] = (f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri) con la regola di riserva "
-                           f"R1-R5 (post hoc): R3 = {v2['R3_M3']}, R5 = {v2['R5'].get('M5')}"
-                           + ("" if v2["R5_calcolabile"] else " (R5 NON calcolabile: M = M3, dichiarato)") + "; nessuna regola per le «V»")
     else:
         out["proposta"] = f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri); nessuna regola per le «V»"
     return out

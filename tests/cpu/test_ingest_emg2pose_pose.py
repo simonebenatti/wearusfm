@@ -342,16 +342,19 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     # piatto a 2x ovunque, corto: riserva provvisoria con M = 0, stato fermo (non un M a vuoto)
     r4 = PP.margin_from_collaudo(_report([2.0] * 40))
     assert r4["margine"]["M"] is None and r4["v2"]["calcolata"] and r4["v2"]["R2_profilo_corto"] and r4["v2"]["M"] == 0
-    # profilo lungo (2 s = 400 bin) che DECADE LENTAMENTE oltre il plateau restando sopra il 25% dal lontano: v1 non determinata, R2 regge -> M = M3 = 200
+    # profilo lungo (2 s = 400 bin) che DECADE LENTAMENTE oltre il plateau restando sopra il 25% dal lontano: v1 non determinata, R2 regge ->
+    # M_riserva = M3 = 200, DESCRITTIVO (decisione di Simone del 27/10: il margine resta alla v1, qui nessuno; i numeri vanno alla sua firma)
     slow = PROF_VERO + [1.7] * 60 + [1.6] * 100 + [1.55] * 100 + [1.5] * 100  # resta sopra 0,80 L = 1,43 fino alla fine (quinta review)
     ok = PP.margin_from_collaudo(_report(slow))
     # se invece rientra nel 25% dal lontano entro i 2 s (qui a 1,5 s), la v1 e' determinata (M = 3.000): la riserva e' solo informativa, ci si ferma
     back = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 60 + [1.5] * 100 + [1.3] * 100 + [1.2] * 100))
     assert back["v1"]["M"] == 3000 and back["v2"]["calcolata"] and not back["v2"]["applicabile"] and back["margine"]["M"] is None
     assert back["proposta"].startswith("FERMARSI") and "M = 3000" in back["proposta"] and "R3 = 200" in back["proposta"]
-    assert ok["v2"]["applicabile"] and not ok["v2"]["R2_bins_sotto_pavimento_oltre_400"] and ok["margine"]["stato"] == "determinato_riserva"
-    assert ok["margine"]["M"] == 200 and ok["v2"]["R2_max_lag_counted"] == 4000 and ok["proposta"].startswith("M = 200 campioni (100 ms")
-    assert abs(ok["perdita"]["frac_rows_margine_tetto"] - 2 * 200 * 30 / 600000) < 1e-12
+    assert ok["v2"]["applicabile"] and not ok["v2"]["R2_bins_sotto_pavimento_oltre_400"] and ok["margine"]["stato"] == "non_determinato"
+    assert ok["margine"]["M"] is None and ok["v2"]["M"] == 200 and ok["v2"]["R2_max_lag_counted"] == 4000 and ok["v2"]["ruolo"].startswith("descrittivo")
+    assert ok["proposta"].startswith("FERMARSI") and "M_riserva = 200 campioni (100 ms" in ok["proposta"] and "firma di Simone" in ok["proposta"]
+    assert "decide Simone" in ok["margine"]["motivo"] and ok["perdita"]["frac_rows_margine_tetto"] is None
+    assert abs(ok["v2"]["perdita_tetto_M"] - 2 * 200 * 30 / 600000) < 1e-12
     # il profilo torna a 1 subito dopo il plateau (casi B, C, D del critico: artefatto che decade): R2 cade, niente riserva; v1 decide o ci si ferma
     for tail in ([1.78] * 1 + [1.0] * 359, [1.78] * 20 + [1.0] * 340, [1.78 - 0.78 * k / 59 for k in range(60)] + [1.0] * 300):
         bad = PP.margin_from_collaudo(_report(PROF_VERO + tail))
@@ -389,7 +392,8 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
         b["n"] = 10
     tt = PP.margin_from_collaudo(thin_tail)
     assert tt["v1"]["stato"] == "determinato" and tt["v1"]["M"] == 3950 and not tt["v2"]["profilo_rientra"] and tt["v2"]["applicabile"]
-    assert tt["margine"]["stato"] == "determinato_riserva" and tt["margine"]["M"] == 200
+    assert tt["margine"]["stato"] == "non_determinato" and tt["margine"]["M"] is None and tt["v2"]["M"] == 200
+    assert "non e' un esito" in tt["margine"]["motivo"] and "M_riserva = 200" in tt["proposta"]
     # precondizione del collaudo lungo: almeno 10 utenti (qui 4)
     few = PP.margin_from_collaudo(_report(slow), min_users=10)
     assert not few["precondizioni"]["ok"] and any(p.startswith("utenti 4 < 10") for p in few["precondizioni"]["problemi"])
@@ -410,9 +414,9 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     for level, key in ((1.24, "profilo_rientra"), (1.26, "R2_bins_sotto_pavimento_oltre_400"), (1.42, "R2_bins_sotto_pavimento_oltre_400")):
         one = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [level] + [1.78] * 99))
         assert one["margine"]["M"] is None and one["v2"][key]
-    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [1.45] + [1.78] * 99))["margine"]["M"] == 200
-    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 210 + [1.45] * 150))["margine"]["M"] == 200
-    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [2.22] + [1.78] * 99))["margine"]["M"] == 200  # tetto 2,23: sotto passa
+    for tail in ([1.78] * 260 + [1.45] + [1.78] * 99, [1.78] * 210 + [1.45] * 150, [1.78] * 260 + [2.22] + [1.78] * 99):  # tetto 2,23: sotto passa
+        held = PP.margin_from_collaudo(_report(PROF_VERO + tail))
+        assert held["v2"]["applicabile"] and held["v2"]["M"] == 200 and held["margine"]["M"] is None  # descrittivo: il margine resta alla v1
     top = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [2.24] + [1.78] * 99))
     assert top["margine"]["M"] is None and top["v2"]["R2_bins_sopra_tetto_oltre_400"] == [3010]
     # gradino sotto il pavimento dopo 1 s e discesa LINEARE che lo attraversa dopo 1 s: entrambi fermano (dichiarato)
@@ -427,7 +431,7 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     lo_in = PP.margin_from_collaudo(_report(low_prof + [1.50] * 210 + [1.24] * 150))
     lo_out = PP.margin_from_collaudo(_report(low_prof + [1.50] * 210 + [1.26] * 150))
     assert lo_in["margine"]["M"] is None and lo_in["v2"]["profilo_rientra"]
-    assert lo_out["margine"]["stato"] == "determinato_riserva" and abs(lo_out["v2"]["R1_plateau_level_ratio_to_far"] - 1.50) < 1e-9
+    assert lo_out["margine"]["M"] is None and lo_out["v2"]["applicabile"] and abs(lo_out["v2"]["R1_plateau_level_ratio_to_far"] - 1.50) < 1e-9
     # gradino verso il basso che non risale: il motivo dice che la contaminazione e' finita li', non che «riesce»
     down = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 60 + [0.74] * 300))
     assert "non riesce piu'" in down["margine"]["motivo"] and "poi riesce" not in down["margine"]["motivo"]
@@ -442,7 +446,8 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     k = 7.3
     sc = _report(slow, far=0.002 * k)
     r_sc = PP.margin_from_collaudo(sc)
-    assert r_sc["margine"]["M"] == 200 and abs(r_sc["v2"]["R1_plateau_level_ratio_to_far"] - ok["v2"]["R1_plateau_level_ratio_to_far"]) < 1e-9
+    assert r_sc["v2"]["applicabile"] and r_sc["v2"]["M"] == 200 and r_sc["margine"]["M"] is None
+    assert abs(r_sc["v2"]["R1_plateau_level_ratio_to_far"] - ok["v2"]["R1_plateau_level_ratio_to_far"]) < 1e-9
     # plateau non misurabile (bin 301-400 magri): riserva non applicabile, fermi
     thin = _report(slow)
     for b in thin["collaudo"]["edge_profile"]["bins"][30:37]:
@@ -453,9 +458,10 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     low = [2.0] * 25 + [1.0] * 375
     high = [3.0] * 25 + [1.0] * 375  # rapporto 1,5 nei primi 25 bin, poi 1
     r5 = PP.margin_from_collaudo(_report(slow, terciles={"low": low, "mid": low, "high": high}))
-    assert r5["v2"]["R5"]["applicabile"] and r5["v2"]["R5"]["M5"] == 250 and r5["v2"]["R3_M3"] == 200 and r5["margine"]["M"] == 250
+    assert r5["v2"]["R5"]["applicabile"] and r5["v2"]["R5"]["M5"] == 250 and r5["v2"]["R3_M3"] == 200 and r5["v2"]["M"] == 250
+    assert r5["margine"]["M"] is None and "M_riserva = 250 campioni (125 ms" in r5["proposta"]
     same = PP.margin_from_collaudo(_report(slow, terciles={"low": low, "mid": low, "high": low}))
-    assert same["v2"]["R5"]["M5"] == 0 and same["margine"]["M"] == 200
+    assert same["v2"]["R5"]["M5"] == 0 and same["v2"]["M"] == 200 and same["margine"]["M"] is None
     assert not ok["v2"]["R5_calcolabile"] and "R5 NON calcolabile" in ok["proposta"] and r5["v2"]["R5_calcolabile"]  # senza terzili: M = M3, detto
     # R5 da solo: profili dei terzili in unita' diverse (plateau proprio): il rapporto e' lo stesso
     r5b = PP.jump_profile_margin({"low": {"bins": _report(low, far=1.0)["collaudo"]["edge_profile"]["bins"]},

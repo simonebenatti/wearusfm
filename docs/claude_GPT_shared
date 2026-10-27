@@ -3922,6 +3922,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Costo del giro: sette review, circa 1,1 milioni di token di sotto-agenti. Errore di metodo mio: rattoppare il caso mostrato invece di ripensare la
   regola una volta (registrato anche in decisioni.md, SETTIMA RETTIFICA). Da ora: una review per oggetto, poi si chiede a Simone.
 
+### 2026-10-27 | Claude | Decisione di Simone sul margine M: la riserva R1-R5 diventa numeri descrittivi, la regola resta la v1 congelata, la lettura la scrive Claude; via ai due job CPU del profilo lungo
+
+- Simone: «La riserva diventa numeri descrittivi per la mia firma; la regola resta la v1 congelata. Dichiaro che questa lettura la scrive Claude.
+  Via ai due job CPU del profilo lungo (secondo checkout e collaudo lungo, 0 GPU-ora, <= 1,2 core-ore).» Voce in decisioni.md («DECISIONE di
+  Simone sul margine M»).
+- Codice: `margine` viene solo dalla v1 (niente `determinato_riserva`); il blocco `v2` resta come numeri (`ruolo: descrittivo`, `perdita_tetto_M`)
+  e, quando le sue condizioni reggono, la proposta e' FERMARSI con i numeri per la firma. Test del file 12/12; suite intera in corso in
+  background. Lettura committata rigenerata (v1 e numeri invariati). Protocollo e prompt per GPT aggiornati: la verifica di GPT non blocca i job.
+- Prossimo: deploy `deploy/pilot-posa-collaudo-20261027` dallo SHA di questo commit, checkout di campagna, collaudo lungo dopo «checkout pronto»
+  (voci [2b] e [2c] della catena; ID SLURM nella voce successiva).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

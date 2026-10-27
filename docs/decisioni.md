@@ -4670,3 +4670,26 @@ codice; con questa il giro di review si chiude (Simone, 27/10: «stiamo a vedere
   perdita), lasciando alla v1 congelata il ruolo di regola: se il profilo lungo rientra, decide la v1 o ci si ferma con la perdita; se non rientra
   mai, M lo sceglie Simone con quei numeri. Cosi' non serve una regola automatica a tenuta stagna per un caso solo, e GPT la legge senza bloccare
   la misura. Nessun ottavo giro del critico.
+
+**Seconda ondata: DECISIONE di Simone sul margine M (27/10/2026): la riserva R1-R5 e' DESCRITTIVA, la regola resta la v1 congelata; la lettura la
+scrive Claude; via ai due job CPU del profilo lungo.**
+- Parole di Simone (27/10/2026): «La riserva diventa numeri descrittivi per la mia firma; la regola resta la v1 congelata. Dichiaro che questa
+  lettura la scrive Claude. Via ai due job CPU del profilo lungo (secondo checkout e collaudo lungo, 0 GPU-ora, <= 1,2 core-ore).»
+- **Regola:** resta la v1 del 26/10 (invariata nel codice: M = ultimo bin fuori dal 25% rispetto al lontano, 0 se nessuno, «non determinato» se
+  anche l'ultimo bin e' fuori; oltre 400 campioni la v1 non decide da sola: ci si ferma, decide Simone con la perdita). Il blocco `margine` della
+  lettura viene SOLO dalla v1: lo stato `determinato_riserva` non esiste piu'.
+- **Riserva:** R1-R5 resta nel rapporto come blocco `v2` di numeri (plateau L, persistenza R2, R3, R5, M_riserva, tetto della perdita a M_riserva,
+  sensibilita' di R3), con `ruolo: descrittivo`; `applicabile` dice solo se le sue condizioni reggono. Quando reggono, la proposta e' FERMARSI con
+  quei numeri per la firma di Simone. Le opzioni A / B offerte a GPT cambiano solo i numeri descrittivi, non il margine. Codice, test (12, invariati
+  di numero) e lettura committata (`results/passo2/emg2pose_pose_margine_lettura_62364572.json`, v1 e numeri invariati) aggiornati in questo commit.
+- **Chi scrive la lettura:** Claude, per dichiarazione di Simone; GPT (responsabile scientifico) la verifica DOPO, senza bloccare i job
+  (`docs/prompt_gpt_regola_margine_20261027.md` aggiornato: niente attesa della risposta prima della misura).
+- **Via ai due job CPU** (coperti da questo via, non dall'autorizzazione del 26/10): (a) deploy `deploy/pilot-posa-collaudo-20261027` dallo SHA
+  del commit del codice e checkout di campagna `pilot-posa-collaudo-20261027` (`campaign_checkout.sbatch` su stdin; CPU seriale, 1 core, 2 GB,
+  10 min di tetto); (b) collaudo lungo dell'ingest dal checkout nuovo, DOPO «checkout di campagna pronto»: `--limit 40 --both-sides
+  --max-per-user 4 --exclude-users 29ddab35d7,d387095792 --profile-max-lag 4000` (CPU seriale, 2 core, 16 GB, 30 min di tetto; il primo
+  collaudo ha girato in 18 s). Costo: 0 GPU-ora, <= 1,2 core-ore (1 x 10 min + 2 x 30 min = 1,17 core-ore di tetto). Residuo della seconda
+  ondata dopo i due job: 87,5 GPU-ora, ~530 core-ore. Comandi in `results/infra/pilot_posa/comandi_catena_20261026.txt`, voci [2b] e [2c].
+- **Ordine aggiornato:** deploy -> checkout -> collaudo lungo -> rilettura `python3 -m wearusfm.ingest.emg2pose_pose <rapporto> --lungo` ->
+  lettura scritta da Claude (v1 sul profilo lungo + numeri descrittivi) -> firma di M da parte di Simone -> [4] ingest intero -> [5] collaudo dbg
+  di R3 -> cancello -> [6] R3 -> [7] valutazione. GPT legge e verifica in parallelo.

@@ -310,6 +310,12 @@ lontano (chi rientra, anche sotto il lontano, si ferma) e R2 regge su tutto il p
 dichiarato. Ordine: verifica di GPT (responsabile scientifico) PRIMA dei job -> via di Simone ai due job CPU (secondo deploy e checkout, §6 punto 5;
 campione nuovo senza i 2 utenti del primo collaudo, almeno 10 utenti) -> rilettura -> proposta di M -> firma di Simone.
 
+**Decisione di Simone (27/10; voce in `decisioni.md`):** «La riserva diventa numeri descrittivi per la mia firma; la regola resta la v1 congelata.
+Dichiaro che questa lettura la scrive Claude. Via ai due job CPU del profilo lungo (secondo checkout e collaudo lungo, 0 GPU-ora, <= 1,2
+core-ore).» Quindi: il margine lo dice solo la v1 (sul profilo lungo); la riserva R1-R5 resta nel rapporto come numeri (L, R2, R3, R5, M_riserva,
+perdita) per la firma; GPT verifica dopo, senza bloccare la misura. Ordine: deploy -> checkout -> collaudo lungo -> rilettura (`--lungo`) ->
+lettura scritta da Claude -> firma di M -> §6 punto 5 (ingest intero).
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |
