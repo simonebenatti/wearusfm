@@ -5086,3 +5086,6 @@ per utente). Tranche diagnostica CHIUSA: 0,07 GPU-ora e 1,79 core-ore sui tetti 
 - **Cosa resta (decisione di Simone; nulla parte da solo):** collaudo lungo (B) con pannello nel trainer e criterio firmato; R3 completo; E3 su R0
   (estrazione di val e train da preventivare); eventuale J2 bis (piu' registrazioni per utente, lag fino a +-16 patch). Da allineare in commit a
   parte, senza toccare i checkout: `pose_eval_report.sbatch` (memoria e tempo) e il campo `tolleranza` del rapporto dell'audit.
+- **Allineamenti del 28/10 (00:30, senza effetto sui run):** `pose_eval_report.sbatch` 60 GB -> 30 GB e 2 h -> 20 min (QoS lrd_all_serial: cpu=8,
+  mem=30800M; rapporto E3 su R3c-e2 in 60 s); rapporto dell'audit con `tolleranza_applicata_massima` e `regola_tolleranza` (il margine del
+  confronto esposto). Test dell'audit: 9 passati. I checkout di campagna restano ai loro SHA.

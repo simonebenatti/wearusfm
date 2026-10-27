@@ -4081,6 +4081,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   e piu' registrazioni per utente). Per GPT: verifica indipendente di 6aba4a7 (confronti R3c contro R0, E3) e di questo commit (audit); due
   rilievi cosmetici gia' in sezione 2.
 
+### 2026-10-28 | Claude | Allineamenti senza effetto sui run: `pose_eval_report.sbatch` a 30 GB e 20 min (QoS seriale, rapporto da 60 s) e campo `tolleranza_applicata_massima` nel rapporto dell'audit; 9 test dell'audit verdi
+- Fatto: launcher del rapporto E3 allineato alla QoS (`--mem=30G`, `--time=00:20:00`, commento con la misura del 27/10); `scripts/pose_audit.py`
+  espone la tolleranza applicata per finestra (mezzo passo x (1 + 1e-3) + 1e-6 x max|grezzo|) e la regola, cosi' `errore_massimo` sopra il
+  mezzo passo nominale con zero finestre fallite non sembra un'incoerenza; test in `tests/cpu/test_pose_audit.py` (9 passati, 33 s). Nessun
+  checkout toccato: i checkout di campagna restano ai loro SHA.
+- Cluster: nessun job. Dalle 00:15 del 28/10 lo ssh verso Leonardo e' rifiutato (certificato `step ssh login` scaduto: lo rinnova solo Simone
+  col 2FA); E3 su R0, J2 bis e B aspettano il rientro.
+- Questioni aperte: nessuna.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

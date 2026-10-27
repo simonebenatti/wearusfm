@@ -118,6 +118,9 @@ def test_single_fixture_through_both_ingests_is_verified_and_the_ridge_beats_the
     assert all(c["verificato"] == 4 and c["fallito"] == 0 and c["non_verificato"] == 0 for c in s["copertura"].values())
     for r in rep["per_recording"]:
         assert all(r["sidecar"].values()) and r["emg"]["errore_massimo"] <= r["emg"]["tolleranza"] + 1e-5 and r["emg"]["errore_massimo_blocco"] < 1e-4
+        # la tolleranza applicata (col margine) e' quella del confronto: sta sopra il mezzo passo nominale e sopra l'errore di una verificata
+        assert r["emg"]["tolleranza"] < r["emg"]["tolleranza_applicata_massima"] < r["emg"]["tolleranza"] * 1.01 + 1e-3
+        assert r["emg"]["errore_massimo"] <= r["emg"]["tolleranza_applicata_massima"] and "mezzo passo" in r["emg"]["regola_tolleranza"]
         assert r["frac_valid_blocks"] < 1.0 and r["movimento_adiacenti_validi"] is not None
     assert sum(s["blocchi_validi_per_patch_istogramma_0_5"]) > 0 and s["blocchi_validi_per_patch_istogramma_0_5"][5] > 0
     for u, v in rep["ridge"].items():

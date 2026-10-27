@@ -3,13 +3,15 @@
 #SBATCH -p lrd_all_serial
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=60G
-#SBATCH --time=02:00:00
+#SBATCH --mem=30G
+#SBATCH --time=00:20:00
 #SBATCH -J pose_eval_report
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_report_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_report_%j.out
 
-# Emendamento 1 (E1-E3): il rapporto dalle estrazioni (val e, per E3, il sottoinsieme del train). CPU seriale, 8 core, 2 h di tetto.
+# Emendamento 1 (E1-E3): il rapporto dalle estrazioni (val e, per E3, il sottoinsieme del train). CPU seriale, 8 core, 30 GB (la QoS
+# lrd_all_serial ammette al massimo cpu=8 e mem=30800M per job: i 60 GB di prima venivano rifiutati), 20 min di tetto (il rapporto E3 su R3c-e2,
+# 18.548 finestre di val e 1.907 di train, e' durato 60 s: job 62443474 del 27/10/2026; le 2 h di prima erano un tetto non misurato).
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> scripts/slurm/pose_eval_report.sbatch <val.npz> <rapporto.json> [--train <train_subset.npz>]
 
 set -uo pipefail

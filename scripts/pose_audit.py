@@ -132,7 +132,7 @@ def emg_checks(view, raw_emg: np.ndarray | None, wins: list, cfg) -> dict:
         return out
     scale = float(np.asarray(view.scale).max()) if view.scale is not None else 1.0
     if raw_emg is not None:
-        bad, worst = 0, 0.0
+        bad, worst, worst_tol = 0, 0.0, 0.0
         for w in wins:
             proc = view.read(w.trial, w.start, w.stop)  # (C, n) = int16 / scala
             raw = np.asarray(raw_emg[w.start:w.stop], np.float32).T
@@ -141,10 +141,16 @@ def emg_checks(view, raw_emg: np.ndarray | None, wins: list, cfg) -> dict:
                 continue
             err = float(np.abs(proc.astype(np.float64) - raw.astype(np.float64)).max())
             worst = max(worst, err)
-            if err > 0.5 / scale * (1 + 1e-3) + 1e-6 * float(np.abs(raw).max()):
+            # tolleranza per finestra: mezzo passo di quantizzazione col margine relativo dello 0,1% (int16 / scala in float32 contro il
+            # grezzo float32) e un'aliquota dell'ampiezza; il rapporto la espone (`tolleranza_applicata_massima`), cosi' «errore massimo sopra
+            # il mezzo passo nominale con zero finestre fallite» non sembra un'incoerenza (audit 62473340 del 27/10/2026: 0,0126648 contro 0,0126618)
+            tol = 0.5 / scale * (1 + 1e-3) + 1e-6 * float(np.abs(raw).max())
+            worst_tol = max(worst_tol, tol)
+            if err > tol:
                 bad += 1
         out.update({"emg_grezzo": FALLITO if bad else VERIFICATO, "finestre_emg_fallite": bad, "errore_massimo": worst,
-                    "tolleranza": 0.5 / scale})
+                    "tolleranza": 0.5 / scale, "tolleranza_applicata_massima": worst_tol,
+                    "regola_tolleranza": "per finestra: mezzo passo x (1 + 1e-3) + 1e-6 x max|grezzo|; fallita se l'errore massimo la supera"})
     else:
         out["motivo"] = "nessun EMG grezzo letto dal tar"
     ok_block, worst_b = True, 0.0
