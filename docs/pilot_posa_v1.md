@@ -304,8 +304,10 @@ R1-R5, **post hoc, informata da quel profilo** (non pre-registrata): scatta solo
 media dei bin 301-400; R2 persistenza a due lati (bin 401-1.000 fra 0,80 e 1,25 volte il plateau, nessun bin oltre 400 sopra 1,25, bin contati fino
 ad almeno 2.000 campioni), altrimenti la riserva non si applica e vale la v1 (se M > 400 ci si ferma); R3 M3 = ultimo bin entro 300 sopra 1,10
 volte il plateau; R5 M5 dal profilo per altezza del salto (terzili, alto / basso > 1,25); M = max(M3, M5). Provvisorio sul primo campione (2 utenti
-soli): M3 = 200 campioni. Il profilo lungo (2 s) e un campione con almeno 10 utenti richiedono un secondo deploy e checkout (§6, punto 5) e due
-job CPU **non coperti dall'autorizzazione anticipata**: via di Simone da chiedere. Il valore di M lo firma Simone dopo la verifica di GPT.
+soli): M3 = 200 campioni. **Seconda review (27/10):** la riserva si applica SOLO se la v1 sul profilo lungo e' «non determinata» (il profilo non
+rientra mai nel 25% dal lontano in 2 s); se la v1 e' determinata con M > 400 ci si ferma e decide Simone con la perdita; R5 non calcolabile -> M = M3
+dichiarato. Ordine: verifica di GPT (responsabile scientifico) PRIMA dei job -> via di Simone ai due job CPU (secondo deploy e checkout, §6 punto 5;
+campione nuovo senza i 2 utenti del primo collaudo, almeno 10 utenti) -> rilettura -> proposta di M -> firma di Simone.
 
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 

@@ -4551,3 +4551,37 @@ anticipata: VIA DI SIMONE DA CHIEDERE; nessuna firma di M.**
   utenti). Costo: **0 GPU-ora, <= 1,2 core-ore** (il primo collaudo ha preso 13 s). Il checkout c5e42cb dei training e dell'ingest intero non
   cambia (`invalid_rows` uguale; cambia solo la misura). Poi: rilettura con v1 e riserva, proposta di M con la perdita, verifica di GPT, firma di
   Simone, e solo allora il passo [4].
+
+**Seconda ondata: SECONDA RETTIFICA dopo la seconda review del `critico` (Claude, 27/10/2026, ore del commit): la riserva vale solo se il profilo
+lungo NON torna mai al valore lontano; l'ordine giusto e' verifica di GPT -> via di Simone -> job; nessun M firmato, nessun job.**
+- **Rilievi accolti.** (1) La riserva azzerava ancora M se una contaminazione piatta durava oltre 500 ms (la banda a due lati era controllata solo
+  fra 401 e 1.000 campioni; R5, normalizzando ogni terzile al proprio plateau, non vedeva una contaminazione che copre anche il plateau). (2) Avevo
+  scritto «da ora la responsabilita' scientifica e' di GPT» e nella stessa voce sceglievo io la soglia e mettevo la verifica di GPT DOPO il
+  profilo lungo: contraddizione; con quell'ordine una modifica di GPT sarebbe arrivata dopo aver visto i dati, di nuovo post hoc. Minori: R5 non
+  calcolabile non dichiarato; `n_h >= 10` non scritto; test deboli (assegnazione al blocco piu' vicino, terzili del driver); il file della lettura
+  rigenerato senza dirlo; «campione NUOVO» non garantito (fino a 8 registrazioni su 40 in comune col primo collaudo); residuo del budget assente.
+- **Correzioni alla regola di riserva (in codice e qui; il resto di R1-R5 resta come nella rettifica precedente).**
+  - **Innesco e applicabilita' (sostituisce il tetto di 400 come innesco):** la riserva si APPLICA solo se la v1, letta sul profilo lungo, e'
+    **«non determinata»**, cioe' il profilo non rientra mai entro il 25% del valore lontano nei 2 s misurati. Una contaminazione, anche piatta e
+    lunga, FINISCE dentro il misurato e la v1 la vede. Se la v1 e' determinata con M <= 400, vale la v1. Se la v1 e' determinata con **M > 400**
+    (il profilo rientra solo dopo 200 ms), **ci si ferma**: la proposta porta a Simone la v1 con la perdita e, come valori solo informativi, R3 e R5.
+    Questo vale anche per una discesa lenta che rientri nel 25% entro i 2 s: decide Simone, non la regola.
+  - R2 resta: bin contati 401-1.000 fra 0,80 L e 1,25 L; nessun bin contato oltre 400 sopra 1,25 L; bin contati fino ad almeno 2.000.
+  - **R5 non calcolabile** (terzili assenti perche' i blocchi con altezza misurabile sono meno di 9, o plateau magro in un terzile): **M = M3,
+    dichiarato nella proposta**. Entrano nei terzili solo i blocchi con almeno 10 campioni a 150-200 ms dal bordo (`n_h >= 10`).
+  - La tolleranza 0,10 di R3 e' una **proposta** di Claude con la tabella di sensibilita'; la scelta spetta al responsabile scientifico (GPT) e la
+    firma a Simone.
+- **Campione del collaudo lungo:** `--exclude-users 29ddab35d7,d387095792` (i due utenti del primo collaudo) piu' `--max-per-user 4`: zero registrazioni in
+  comune per costruzione, almeno 10 utenti. Il selettore resta deterministico (ordine del tar).
+- **File rigenerato:** `results/passo2/emg2pose_pose_margine_lettura_62364572.json` e' la lettura col codice di questo commit (v1 identica a quella
+  di 40d648a; riserva provvisoria M3 = 200, R5 non calcolabile sul primo rapporto). La lettura precedente (v2, M = 140) resta nella storia di Git
+  (40d648a).
+- **Ordine corretto, che sostituisce quello della rettifica precedente:** (1) GPT (responsabile scientifico) verifica R1-R5 e la soglia 0,10, e
+  registra conferma o modifiche nel registro; (2) le modifiche entrano in `decisioni.md` e nel codice PRIMA di qualunque job; (3) **via di Simone**
+  ai due job CPU (secondo deploy `deploy/pilot-posa-collaudo-20261027` dallo SHA finale dopo la review del `critico`, checkout separato
+  `pilot-posa-collaudo-20261027`: CPU seriale, 1 core, 10 min di tetto; collaudo lungo `--limit 40 --both-sides --max-per-user 4 --exclude-users
+  29ddab35d7,d387095792 --profile-max-lag 4000`: CPU seriale, 2 core, 30 min di tetto); (4) rilettura con v1 e riserva; (5) proposta di M con la perdita;
+  (6) firma di Simone; (7) passo [4]. Se Simone preferisce che questa regola la scriva Claude, lo dichiara e si salta il punto (1).
+- **Costo e residuo del passo:** i due job valgono 0 GPU-ora e <= 1,2 core-ore. Seconda ondata con R3c (preventivo firmato): tetto 132,0 GPU-ora
+  (attese 98,1) e 531 core-ore (attese 149,4); spese finora ~0,1 core-ore (checkout e collaudo breve) e 0 GPU-ora (R3c tronco in esecuzione,
+  tetto 51). Residuo: ~531 core-ore e 132 GPU-ora.

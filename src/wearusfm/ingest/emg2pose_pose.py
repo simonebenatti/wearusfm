@@ -303,8 +303,10 @@ class CollaudoPicker:
     meta' per lato e dentro ogni lato quote uguali per i valori di `moving_hand` (3 attesi: left, right, both). Con `max_per_user` al massimo
     tante registrazioni per utente (27/10/2026: il primo collaudo ha preso 40 registrazioni da 2 utenti soli)."""
 
-    def __init__(self, limit: int, both_sides: bool, moving_values: tuple[str, ...] = ("left", "right", "both"), max_per_user: int | None = None):
+    def __init__(self, limit: int, both_sides: bool, moving_values: tuple[str, ...] = ("left", "right", "both"), max_per_user: int | None = None,
+                 exclude_users: set[str] | None = None):
         self.limit, self.both_sides, self.max_per_user = limit, both_sides, max_per_user
+        self.exclude_users = {str(u) for u in (exclude_users or ())}  # es. gli utenti del primo collaudo: il campione nuovo non li riusa
         self.per_side = math.ceil(limit / 2) if both_sides else limit
         self.per_bucket = math.ceil(self.per_side / len(moving_values)) if both_sides else limit
         self.taken: dict[tuple[str, str], int] = {}
@@ -322,6 +324,8 @@ class CollaudoPicker:
                 return False
             if self.taken.get((side, mh), 0) >= self.per_bucket:
                 return False
+        if user in self.exclude_users:
+            return False
         if self.max_per_user is not None and self.per_user.get(user, 0) >= self.max_per_user:
             return False
         self.taken[(side, mh)] = self.taken.get((side, mh), 0) + 1
@@ -418,9 +422,13 @@ SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
 # artefatto che decade, e allora la riserva NON si applica (vale la v1 sul profilo lungo; se da' M > 400 ci si ferma e si porta a Simone con la
 # perdita). R3: M3 = `lag_to` dell'ultimo bin entro 300 campioni sopra (1 + V2_TOL) L. R5: profilo per altezza del salto verso lo zero (terzili
 # della norma della posa a 150-200 ms dal bordo, ogni terzile sul proprio L): un artefatto d'interpolazione o di filtro scala col salto, il
-# comportamento e il rumore della cinematica inversa no; M5 = ultimo bin entro 300 in cui alto / basso supera 1 + JUMP_RATIO_TOL. M = max(M3, M5).
+# comportamento e il rumore della cinematica inversa no; M5 = ultimo bin entro 300 in cui alto / basso supera 1 + JUMP_RATIO_TOL. M = max(M3, M5);
+# se R5 non e' calcolabile (terzili assenti, plateau magro) M = M3, dichiarato nella proposta.
+# Seconda review del critico (27/10): la riserva si APPLICA solo se la v1 e' «non determinata» sul profilo lungo (il profilo non torna mai entro il
+# 25% del valore lontano): una contaminazione, anche piatta e lunga, FINISCE entro il misurato e la v1 la vede; se la v1 e' determinata con M >
+# V1_MAX_M la riserva e' solo informativa e ci si ferma portando a Simone la v1 con la perdita.
 PLATEAU_LAGS = (301, 400)  # campioni dal bordo: 150-200 ms
-V1_MAX_M = 400  # oltre 200 ms di margine la v1 non e' credibile (perdita > 10% delle righe sul collaudo): si passa alla riserva, o ci si ferma
+V1_MAX_M = 400  # oltre 200 ms di margine la v1 non decide da sola (perdita > 10% delle righe sul collaudo): fermarsi, decisione di Simone
 V2_TOL = 0.10  # R3: soglia sul plateau; scelta il 27/10 con la tabella di sensibilita' in decisioni.md (0,25 -> 140; 0,10 -> 200; 0,05 -> 240)
 V2_PERSIST_LAGS = (401, 1000)  # R2: 200-500 ms, banda a due lati
 V2_PERSIST_BAND = (0.80, 1.25)  # R2: [0,80 L; 1,25 L] fra 401 e 1.000; oltre, solo il tetto 1,25 L
@@ -553,8 +561,10 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             r5 = jump_profile_margin(prof.get("by_jump_tercile") or {}, min_n=min_n, jump_tol=jump_tol)
             m5 = r5.get("M5")
             m_res = max(m3, m5) if m5 is not None else m3
-            applicabile = not short and not below and not above
+            v1_returns = v1_stato == "determinato"  # il profilo torna entro il 25% del lontano dentro il misurato: non e' un plateau che persiste
+            applicabile = (not v1_returns) and not short and not below and not above
             v2 = {"applicata": True, "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M),
+                  "R5_calcolabile": m5 is not None,
                   "R1_plateau_level_ratio_to_far": level, "R1_n_plateau_bins": n_pl,
                   "R2_profilo_corto": short, "R2_max_lag_counted": counted_max, "R2_bins_sotto_banda_401_1000": below,
                   "R2_bins_sopra_tetto_oltre_400": above, "R3_M3": int(m3), "R5": r5, "M": int(m_res),
@@ -568,6 +578,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             else:
                 stato, M = "non_determinato", None
                 reasons = []
+                if v1_returns:
+                    reasons.append(f"la v1 e' determinata (il profilo torna al valore lontano entro {v1_M} campioni): la riserva vale solo se non "
+                                   f"torna; valori informativi R3 = {m3}, R5 = {m5}")
                 if short:
                     reasons.append(f"profilo contato solo fino a {counted_max} campioni (< {V2_MIN_COUNTED_LAG}): valore PROVVISORIO M = {m_res}")
                 if below:
@@ -601,7 +614,8 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
                            "prima dell'ingest intero")
     elif stato == "determinato_riserva":
         out["proposta"] = (f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri) con la regola di riserva "
-                           f"R1-R5 (post hoc): R3 = {v2['R3_M3']}, R5 = {v2['R5'].get('M5')}; nessuna regola per le «V»")
+                           f"R1-R5 (post hoc): R3 = {v2['R3_M3']}, R5 = {v2['R5'].get('M5')}"
+                           + ("" if v2["R5_calcolabile"] else " (R5 NON calcolabile: M = M3, dichiarato)") + "; nessuna regola per le «V»")
     else:
         out["proposta"] = f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri); nessuna regola per le «V»"
     return out

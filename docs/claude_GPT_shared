@@ -3859,6 +3859,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Ruoli: con la chiusura del pilot i task elencati il 26/10 sono finiti; secondo le parole di Simone la responsabilita' scientifica e' di GPT da ora:
   la regola di riserva gli va in verifica (`docs/prompt_gpt_regola_margine_20261027.md`). Simone decide M e il via ai due job CPU.
 
+### 2026-10-27 | Claude | Seconda review del `critico` sulla regola di riserva (DA RIVEDERE: 2 bloccanti, 6 minori) accolta: la riserva vale solo se la v1 sul profilo lungo e' «non determinata» (una contaminazione che finisce, anche lunga, la vede la v1; con M > 400 ci si ferma e decide Simone); ordine corretto = verifica di GPT -> via di Simone -> job; utenti del primo collaudo esclusi dal campione nuovo; R5 non calcolabile dichiarato; test 11 -> 12 | Codice: commit di questa voce
+
+- Bloccanti: (1) con la banda a due lati solo fra 401 e 1.000, una contaminazione piatta oltre 500 ms azzerava M (casi `[3,0]x100 + 1`, plateau fino a
+  1.500, gradino netto dopo il plateau vero); R5 non la vedeva. Correzione: innesco = v1 non determinata sul profilo lungo; se la v1 e' determinata
+  con M > 400 la riserva e' solo informativa e ci si ferma (proposta con la v1 e la perdita; anche per una discesa lenta che rientri nel 25% entro
+  i 2 s). (2) Ruoli: la verifica di GPT stava dopo il profilo lungo e la soglia la sceglievo io: ora la soglia 0,10 e' una proposta, la verifica
+  di GPT precede i job, e se Simone vuole che la regola la scriva Claude lo dichiara. Minori: R5 non calcolabile -> M = M3 dichiarato; `n_h >= 10`
+  scritto; `--exclude-users 29ddab35d7,d387095792` (zero sovrapposizione col primo collaudo, per costruzione); lettura rigenerata dichiarata; residuo del
+  budget (531 core-ore e 132 GPU-ora di tetto, ~0,1 core-ore spese); test: assegnazione campione per campione (499 + 499 a forza bruta), terzili
+  del driver con 12 blocchi, esclusione utenti, 5 casi di contaminazione lunga, contaminazione che scala col salto nascosta a R5.
+- Terza review del `critico` sul diff prima di qualunque deploy. Niente e' partito: R3c tronco in esecuzione, ramo in attesa.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

@@ -139,7 +139,16 @@ def test_edge_profile_sees_a_ramp_next_to_a_zero_block_and_dips_count_the_v_shap
     assert abs(sum(prof["runs"][0]["sum_per_bin"]) - sum(b["n"] * b["mean_abs_diff"] for b in prof["bins"] if b["mean_abs_diff"] is not None)) < 1e-9
     two = _angles(6000, zero_runs=[(1000, 1100), (1300, 1350)])  # due blocchi vicini: ogni campione va al piu' vicino
     p2 = PP.edge_profile(two, PP.zero_rows(two))
-    assert len(p2["runs"]) == 2 and [sum(r["n_per_bin"]) for r in p2["runs"]] and sum(sum(r["n_per_bin"]) for r in p2["runs"]) == sum(b["n"] for b in p2["bins"])
+    assert len(p2["runs"]) == 2 and sum(sum(r["n_per_bin"]) for r in p2["runs"]) == sum(b["n"] for b in p2["bins"])
+    # fra i due blocchi (1100-1300) la meta' di sinistra va al blocco 0 e quella di destra al blocco 1: a forza bruta, bin per bin
+    zr = PP.zero_rows(two)
+    dist = PP.distance_to(zr)
+    left = [i for i in range(1100, 1300) if (i - 1099) <= (1300 - i)]  # piu' vicini al blocco 0 (a pari distanza: il precedente)
+    right = [i for i in range(1100, 1300) if (i - 1099) > (1300 - i)]
+    good = lambda i: 1 <= dist[i] <= 400 and not zr[i - 1]  # la differenza prima esiste solo se anche la riga precedente non e' a zero
+    n0 = sum(1 for i in list(range(600, 1000)) + left if good(i))
+    n1 = sum(1 for i in right + list(range(1350, 1750)) if good(i))
+    assert sum(p2["runs"][0]["n_per_bin"]) == n0 == 499 and sum(p2["runs"][1]["n_per_bin"]) == n1 == 499
 
 
 def test_collaudo_picker_balances_sides_and_moving_hand():
@@ -154,6 +163,8 @@ def test_collaudo_picker_balances_sides_and_moving_hand():
     assert pk3.accept(None) and pk3.accept(None) and not pk3.accept(None)
     pk4 = PP.CollaudoPicker(6, both_sides=False, max_per_user=2)  # quota per utente (27/10): la terza dello stesso utente e' rifiutata
     assert [pk4.accept({"user": "a"}) for _ in range(3)] == [True, True, False] and pk4.accept({"user": "b"}) and pk4.per_user == {"a": 2, "b": 1}
+    pk5 = PP.CollaudoPicker(4, both_sides=False, exclude_users={"a"})  # gli utenti del primo collaudo non rientrano nel campione nuovo
+    assert not pk5.accept({"user": "a"}) and pk5.accept({"user": "b"}) and pk5.total == 1
 
 
 # --- una registrazione e le statistiche -----------------------------------------------------------------------------------------------------
@@ -327,9 +338,13 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     # piatto a 2x ovunque, corto: riserva provvisoria con M = 0, stato fermo (non un M a vuoto)
     r4 = PP.margin_from_collaudo(_report([2.0] * 40))
     assert r4["margine"]["M"] is None and r4["v2"]["applicata"] and r4["v2"]["R2_profilo_corto"] and r4["v2"]["M"] == 0
-    # profilo lungo (2 s = 400 bin) che DECADE LENTAMENTE oltre il plateau: R2 regge -> M = M3 = 200
-    slow = PROF_VERO + [1.7] * 60 + [1.5] * 100 + [1.3] * 100 + [1.2] * 100
+    # profilo lungo (2 s = 400 bin) che DECADE LENTAMENTE oltre il plateau restando sopra il 25% dal lontano: v1 non determinata, R2 regge -> M = M3 = 200
+    slow = PROF_VERO + [1.7] * 60 + [1.6] * 100 + [1.5] * 100 + [1.4] * 100
     ok = PP.margin_from_collaudo(_report(slow))
+    # se invece rientra nel 25% dal lontano entro i 2 s (qui a 1,5 s), la v1 e' determinata (M = 3.000): la riserva e' solo informativa, ci si ferma
+    back = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 60 + [1.5] * 100 + [1.3] * 100 + [1.2] * 100))
+    assert back["v1"]["M"] == 3000 and back["v2"]["applicata"] and not back["v2"]["applicabile"] and back["margine"]["M"] is None
+    assert back["proposta"].startswith("FERMARSI") and "M = 3000" in back["proposta"] and "R3 = 200" in back["margine"]["motivo"]
     assert ok["v2"]["applicabile"] and not ok["v2"]["R2_bins_sotto_banda_401_1000"] and ok["margine"]["stato"] == "determinato_riserva"
     assert ok["margine"]["M"] == 200 and ok["v2"]["R2_max_lag_counted"] == 4000 and ok["proposta"].startswith("M = 200 campioni (100 ms")
     assert abs(ok["perdita"]["frac_rows_margine_tetto"] - 2 * 200 * 30 / 600000) < 1e-12
@@ -344,10 +359,17 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     # rialzo oltre il plateau sopra 1,25 x: R2 cade
     up = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 50 + [2.5] * 10 + [1.6] * 300))
     assert not up["v2"]["applicabile"] and up["v2"]["R2_bins_sopra_tetto_oltre_400"] and up["margine"]["stato"] == "non_determinato"
-    # v1 «determinata» con M > 400 e plateau dentro la contaminazione: R2 cade (1,0 < 0,80 x 3) -> fermarsi, proposta con la v1 e la perdita
-    big = PP.margin_from_collaudo(_report([3.0] * 45 + [1.0] * 355))
-    assert big["v2"]["applicata"] and big["v2"]["v1_M"] == 450 and not big["v2"]["applicabile"] and big["margine"]["M"] is None
-    assert big["proposta"].startswith("FERMARSI") and "M = 450" in big["proposta"] and "decisione di Simone" in big["proposta"]
+    # v1 «determinata» con M > 400: la contaminazione FINISCE entro il misurato, la riserva e' solo informativa -> fermarsi, proposta con la v1 e la
+    # perdita (seconda review del critico: anche piatta e lunga oltre 500 ms, anche con R2 che reggerebbe)
+    for prof_long, m1 in (([3.0] * 45 + [1.0] * 355, 450), ([3.0] * 100 + [1.0] * 300, 1000), (PROF_VERO[:4] + [3.0] * 96 + [1.0] * 300, 1000),
+                          (PROF_VERO[:4] + [3.0] * 146 + [1.0] * 250, 1500), (PROF_VERO + [1.78] * 60 + [1.0] * 300, 1000)):
+        big = PP.margin_from_collaudo(_report(prof_long))
+        assert big["v2"]["applicata"] and big["v2"]["v1_M"] == m1 and not big["v2"]["applicabile"] and big["margine"]["M"] is None
+        assert big["proposta"].startswith("FERMARSI") and f"M = {m1}" in big["proposta"] and "decisione di Simone" in big["proposta"]
+    # contaminazione additiva che scala col salto fino a 1.000 campioni (R5 da solo la nasconderebbe): la v1 la vede -> fermarsi
+    terc = {name: [1 + h * (20 if i < 4 else 1) for i in range(400)] for name, h in (("low", 1), ("mid", 2), ("high", 3))}
+    hid = PP.margin_from_collaudo(_report([3.0] * 100 + [1.0] * 300, terciles=terc))
+    assert hid["margine"]["stato"] == "non_determinato" and not hid["v2"]["applicabile"]
     # invarianza al valore lontano: stesso rapporto e stesso M se tutto il profilo e il lontano sono scalati di k
     k = 7.3
     sc = _report(slow, far=0.002 * k)
@@ -366,7 +388,36 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     assert r5["v2"]["R5"]["applicabile"] and r5["v2"]["R5"]["M5"] == 250 and r5["v2"]["R3_M3"] == 200 and r5["margine"]["M"] == 250
     same = PP.margin_from_collaudo(_report(slow, terciles={"low": low, "mid": low, "high": low}))
     assert same["v2"]["R5"]["M5"] == 0 and same["margine"]["M"] == 200
+    assert not ok["v2"]["R5_calcolabile"] and "R5 NON calcolabile" in ok["proposta"] and r5["v2"]["R5_calcolabile"]  # senza terzili: M = M3, detto
     # R5 da solo: profili dei terzili in unita' diverse (plateau proprio): il rapporto e' lo stesso
     r5b = PP.jump_profile_margin({"low": {"bins": _report(low, far=1.0)["collaudo"]["edge_profile"]["bins"]},
                                   "high": {"bins": _report([x * 5 for x in high], far=1.0)["collaudo"]["edge_profile"]["bins"]}})
     assert r5b["M5"] == 250 and abs(r5b["bins"][0]["high_over_low"] - 1.5) < 1e-9
+
+
+
+def test_driver_aggregates_jump_terciles_and_per_user_profiles():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("ingest_pose_driver", SCRIPT)
+    drv = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(drv)
+    metas, done = [], []
+    for i in range(4):  # 4 registrazioni x 3 blocchi = 12 blocchi con altezza misurabile (>= JUMP_MIN_RUNS)
+        a = _angles(8000, seed=i, zero_runs=[(1000, 1100), (3500, 3550), (6000, 6100)]) * (0.5 + 0.5 * i)  # ampiezze diverse -> h diverse
+        prof = PP.edge_profile(a, PP.zero_rows(a))
+        metas.append({"user": f"u{i % 2}", "side": "left", "edge_profile": prof, "simultaneous_dips": PP.simultaneous_dips(a, PP.zero_rows(a)),
+                      "joint_stats_valid_blocks": PP.joint_stats(*PP.block_reduce(a, ~PP.invalid_rows(a))), "per_joint_var_valid_blocks": [0.1] * 20,
+                      "n_samples": 8000})
+        done.append({"user": f"u{i % 2}", "side": "left", "moving_hand": "left", "n_samples": 8000, "n_zero_rows": 250, "n_nonfinite_rows": 0,
+                     "max_abs_per_joint": [1.0] * 20, "frac_zero_rows": 250 / 8000})
+    out = drv._aggregate_profiles(done, metas)
+    ep = out["edge_profile"]
+    assert ep["n_runs_with_h"] == 12 and set(ep["by_jump_tercile"]) == {"low", "mid", "high"}
+    assert sum(ep["by_jump_tercile"][k]["n_runs"] for k in ("low", "mid", "high")) == 12 and ep["by_jump_tercile"]["low"]["h_max"] <= ep["by_jump_tercile"]["high"]["h_min"]
+    assert all(len(ep["by_jump_tercile"][k]["bins"]) == 40 for k in ("low", "mid", "high"))
+    assert set(ep["by_user"]) == {"u0", "u1"} and ep["by_user"]["u0"]["n_runs"] == 6
+    # i bin dei terzili sommati danno i bin complessivi (stessi campioni, stesse somme)
+    tot_n = [sum(ep["by_jump_tercile"][k]["bins"][i]["n"] for k in ("low", "mid", "high")) for i in range(40)]
+    assert tot_n == [b["n"] for b in ep["bins"]]
+    assert out["per_user"] == {"u0": 2, "u1": 2}

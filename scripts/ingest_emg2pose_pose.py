@@ -106,6 +106,7 @@ def _write_report(path: Path, done: list, failed: dict, skipped: int, t0: float,
     report = {
         "dataset": "emg2pose_pose", "params": {"zero_margin_samples": args.zero_margin_samples, "limit": args.limit, "both_sides": args.both_sides,
                                                "profile_max_lag": args.profile_max_lag, "max_per_user": args.max_per_user,
+                                               "exclude_users": sorted({u.strip() for u in args.exclude_users.split(",") if u.strip()}),
                                                "measure": not args.no_measure, "pose_fs_hz": PP.POSE_FS_HZ, "block_samples": PP.BLOCK},
         "n_recordings": len(done), "n_failed": len(failed), "n_skipped_existing": skipped, "n_users": len({r["user"] for r in done}),
         "hours_total": sum(r["n_samples"] for r in done) / PP.NATIVE_FS_HZ / 3600, "n_valid_blocks_total": sum(r["n_valid_blocks"] for r in done),
@@ -127,6 +128,7 @@ def main() -> int:
     p.add_argument("--both-sides", action="store_true", help="col --limit: meta' per lato e quote uguali per moving_hand")
     p.add_argument("--max-per-user", type=int, default=None, help="col --limit: al massimo N registrazioni per utente (27/10: il primo collaudo "
                                                                   "ha preso 40 registrazioni da 2 utenti)")
+    p.add_argument("--exclude-users", default="", help="col --limit: utenti esclusi, separati da virgola (es. i 2 del primo collaudo)")
     p.add_argument("--skip-existing", action="store_true")
     p.add_argument("--time-budget-s", type=float, default=None)
     p.add_argument("--zero-margin-samples", type=int, default=0, help="campioni non validi attorno a ogni riga a zero (congelato in decisioni.md "
@@ -150,7 +152,8 @@ def main() -> int:
 
     t0 = time.time()
     done, metas, failed, skipped, stopped = [], [], {}, 0, None
-    picker = PP.CollaudoPicker(args.limit, args.both_sides, max_per_user=args.max_per_user) if args.limit is not None else None
+    excluded = {u.strip() for u in args.exclude_users.split(",") if u.strip()}
+    picker = PP.CollaudoPicker(args.limit, args.both_sides, max_per_user=args.max_per_user, exclude_users=excluded) if args.limit is not None else None
     meta = E2P.load_metadata_csv(args.csv)
     fields = None
 

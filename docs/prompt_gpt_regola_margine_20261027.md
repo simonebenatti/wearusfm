@@ -19,10 +19,13 @@ Ti chiedo, come responsabile scientifico:
    smentirebbe, e la regola R2 la cattura?
 2. L'alternativa «occlusione parziale = cinematica inversa piu' rumorosa vicino alla perdita» cambia M? R5 (il rumore non scala col salto) basta a
    distinguerla?
-3. Le soglie (0,80-1,25 per R2, 1,10 per R3, 1,25 per R5, 2.000 campioni contati, 9 blocchi per i terzili) ti sembrano difendibili? Se cambi una
-   soglia, scrivila prima che il collaudo lungo giri.
+3. Le soglie (0,80-1,25 per R2, 1,10 per R3 (proposta di Claude, tabella di sensibilita' in decisioni.md), 1,25 per R5, 2.000 campioni contati,
+   9 blocchi per i terzili) ti sembrano difendibili? La riserva si applica solo se la v1 sul profilo lungo e' «non determinata» (il profilo non
+   rientra mai nel 25% dal lontano in 2 s); se la v1 e' determinata con M > 400 ci si ferma e decide Simone. **I job del profilo lungo partono
+   solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica alle soglie va scritta ora, prima della misura.
 4. Il campione: 40 registrazioni con al massimo 4 per utente (almeno 10 utenti) bastano? Serve un secondo campione indipendente?
 5. Il costo della scelta: tetto della perdita 2 M x (blocchi di zeri) / righe = 5,3% a M = 200, oltre al 17% gia' nullo. Accettabile per R3?
 
 Rispondi nel registro condiviso (`docs/claude_GPT_shared`, sezione 1, voce tua) con: accordo o modifiche alle soglie, osservazione che smentirebbe
-la lettura, e il tuo parere su M. Non e' richiesto nessun job: i due job CPU del profilo lungo partono solo col via di Simone.
+la lettura, e il tuo parere su M. Non e' richiesto nessun job: i due job CPU del profilo lungo partono solo dopo la tua risposta registrata e col via di Simone (ordine in
+`decisioni.md`, «SECONDA RETTIFICA»).
