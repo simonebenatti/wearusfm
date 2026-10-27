@@ -3998,6 +3998,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   nessun checkout di campagna toccato, nessun training. Il campo `session` del CSV e' la sessione (751 per 193 utenti). SHA del commit nella
   voce successiva (e nel messaggio a Simone); suite intera in corso dopo il commit.
 
+### 2026-10-27 | Claude | Collaudo dbg di R3: prompt per GPT («come mai fallisce?», Simone) e file del run copiati nel repo
+
+- `docs/prompt_gpt_collaudo_r3_20261027.md`: contesto, numeri, che cosa i dati escludono, ipotesi H1 (passi/lr), H2 (accessibilita' lineare),
+  H3 (difetto nella catena dei bersagli sui dati veri), H4 (riduzione DDP), codice da leggere, sei domande (diagnosi, rilettura della catena,
+  conto a tavolino, controlli a basso costo con preventivo, criterio per il collaudo lungo, raccomandazione fra (A)-(D)). Nessun job.
+- `results/infra/pilot_posa/collaudo_r3_dbg_62429050/`: metrics.jsonl (1.300 record), fixed_eval.jsonl, fixed_eval_set.json, config.json,
+  summary.json, pose_provenance.json, listing del run (senza checkpoint). Review del `critico` sulla lettura ancora in corso.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
