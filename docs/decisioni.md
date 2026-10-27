@@ -4622,3 +4622,5 @@ pavimento di R2 vale fino a 2.000 campioni; il prompt per GPT distingue calcolo 
 - Costanti toccate: `V2_PERSIST_LAGS = (401, 2000)`; nel codice il campo si chiama ancora `R2_bins_sotto_banda_401_1000` per continuita' dei test,
   ma copre 401-2.000 (dichiarato qui).
 - Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
+Consuntivo parziale (27/10/2026, 08:00): R3c ramo 62364573 COMPLETED per `max_steps` (24.523 passi), 4,1 GPU-ora sulle 9 di tetto. R3c completo:
+44,5 GPU-ora (attese 47,0, tetto 60). Spesa della seconda ondata: 44,5 GPU-ora (tetto 132,0), ~0,1 core-ore (tetto 531); residuo 87,5 GPU-ora.

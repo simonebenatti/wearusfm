@@ -3896,6 +3896,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   gradino verso il basso, 1 con gradino a 1,30, coda magra con R2 caduta, `--lungo` da riga di comando. File del test: 12 test, casi dentro.
 - Quinta review del `critico`; nessun job, nessun deploy. Ramo R3c in coda (watcher riarmato dopo una caduta ssh delle 06:40).
 
+### 2026-10-27 | Claude | Seconda ondata: R3c ramo a 1 epoca (62364573) COMPLETED alle 07:54 per `max_steps` (24.523 passi, 3.676 s = 0,15 s/passo, 4 A100 x 1 h 01 = 4,1 GPU-ora sulle 9 di tetto): R3c tronco + ramo COMPLETI, 44,5 GPU-ora (attese 47,0, tetto 60); valutazione di R3c insieme a quella di R3 | Codice: nessuno (c5e42cb sul cluster)
+
+- Dal log: `stopped: max_steps`, `steps: 24523`, 28.348.361 parametri, memoria GPU massima 17,5 GiB. Il ramo e' partito dal checkpoint 19.618 del
+  tronco (BRANCH_FROM) come nel piano. Il watcher era caduto alle 06:40 per cinque errori ssh di fila (rete verso Leonardo giu'), riarmato alle 07:32
+  con riprova automatica: ha visto il COMPLETED alle 07:54.
+- Spesa della seconda ondata: 44,5 GPU-ora (tetto 132,0 con R3c), ~0,1 core-ore (tetto 531). Residuo: 87,5 GPU-ora e ~531 core-ore.
+- I due endpoint di R3c (`checkpoint_postdecay.pt` del tronco e del ramo) aspettano la valutazione [7] (A1/A2/B + E1-E3), che si genera dopo R3.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
