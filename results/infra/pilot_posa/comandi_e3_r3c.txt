@@ -1,0 +1,13 @@
+# E3 su R3c (ridge dai latenti congelati alla posa; emendamento 1, E3; diagnosi GPT del 27/10/2026). Checkout pilot-posa-collaudo-20261027
+# (41f6ac1: pose_eval identico a c5e42cb). Ogni comando dal Mac via `scripts/submit_job.py` (o `leonardo_feed.py`, che usa shlex): UNA riga per
+# comando, mai variabili non quotate in zsh (27/10 16:11: `$tail_args` non spezzato da zsh ha passato «val.npz --split val» come UNICO argomento:
+# le due estrazioni hanno letto lo split di default `val`, il file del train e' una copia inutile di val; registro, sezione 2).
+#
+# [E3a] estrazione su val: FATTA (62437148, 25 min, 0,42 GPU-ora), file scritto col nome sbagliato
+#       «.../R3c-e2/val.npz --split val.npz»: da rinominare in val.npz (mv sul cluster, con il via di Simone; nessun costo).
+# [E3b] estrazione del sottoinsieme del train (200 registrazioni, 40 utenti): DA RIFARE (quella del 27/10 ha letto val). 1 A100, 40 min di tetto
+#       (attesi ~4 min: 200 registrazioni contro le 1.950 di val in 25 min), 0,67 GPU-ora di tetto:
+python3 scripts/submit_job.py --id PILOT-POSA-E3-ext-R3c-e2-train-r2 --agente claude --campagna pilot-posa-20261026 --gpu-ore 0.67 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-collaudo-20261027,EXPECTED_SHA=41f6ac15f9f9cf50bc9b06a9d57ded3725326f04 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-collaudo-20261027/scripts/slurm/pose_eval_extract.sbatch /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_postdecay.pt /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/train_subset.npz --split train --n-users 40 --n-recordings 200
+#
+# [E3c] rapporto (CPU seriale, 8 core x 2 h di tetto = 16 core-ore, 0 GPU-ora), DOPO [E3b] COMPLETED e il mv di [E3a], senza --dopo:
+python3 scripts/submit_job.py --id PILOT-POSA-E3-report-R3c-e2 --dopo-rifiuto --agente claude --campagna pilot-posa-20261026 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-collaudo-20261027,EXPECTED_SHA=41f6ac15f9f9cf50bc9b06a9d57ded3725326f04 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-collaudo-20261027/scripts/slurm/pose_eval_report.sbatch /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/val.npz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa_20261026/pose_eval/R3c-e2.json --train /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/train_subset.npz

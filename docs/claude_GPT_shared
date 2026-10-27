@@ -5590,3 +5590,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   lettore ora legge summary / provenienza / config e dichiara dove l'ha trovato; test con i quattro casi. Il verdetto del cancello non cambia:
   `posa_discesa` boccia da sola. Nessun job in piu', nessun costo. Causa: i due file (trainer e lettore) scritti lo stesso giorno senza un test
   che li incroci su una cartella di run vera.
+
+### 2026-10-27 | Claude | Estrazioni E3 di R3c (62437148, 62437151): errore mio di shell: gli argomenti `--split ...` sono finiti dentro il nome del file di uscita; entrambe hanno estratto lo split `val`; il file «train» e' una copia inutile di val (0,42 GPU-ora sprecate)
+
+- Causa: nel ciclo di sottomissione ho passato `$tail_args` NON quotato: zsh non spezza le variabili sulle parole (a differenza di bash), quindi
+  «.../val.npz --split val» e «.../train_subset.npz --split train --n-users 40 --n-recordings 200» sono arrivati a sbatch come un unico argomento
+  (il nome del file). `pose_eval.py` ha usato lo split di default `val` (1.950 registrazioni, 18.548 finestre) in tutti e due i job: 25 min l'uno,
+  0,42 GPU-ora l'uno. Il file di val e' valido ma si chiama «val.npz --split val.npz»; quello del train va rifatto (0,67 GPU-ora di tetto, ~4 min
+  attesi). Visto alle 16:40 dal log («1950 registrazioni dello split 'val'») e dall'elenco dei file.
+- Rimedio: comandi su UNA riga in `results/infra/pilot_posa/comandi_e3_r3c.txt` (da eseguire con `submit_job.py` riga per riga o col feeder, che
+  usa shlex); rinomina del file di val (mv sul cluster, nessun costo) e ri-estrazione del train presentate a Simone col preventivo. Il rapporto E3
+  si sottomette dopo. Nessun risultato scientifico toccato.

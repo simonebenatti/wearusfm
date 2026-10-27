@@ -4935,3 +4935,7 @@ eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lu
   (con test). Un E3 negativo non e' un veto a (B) (brief di Simone).
 - **Prossimo passo raccomandato:** via a J2 e, a estrazioni finite, a J1; lettura congiunta con GPT; intanto il codice del pannello per (B) sul Mac.
   Peso della posa, M = 280 e criteri firmati invariati; il dbg resta fallito.
+- **Consuntivo delle estrazioni E3 di R3c (27/10, 16:40):** 62437148 e 62437151 COMPLETED in 25 min l'una = **0,84 GPU-ora**; per un errore mio di
+  shell (variabile non quotata in zsh) entrambe hanno estratto `val`: la val e' valida (18.548 finestre, 1.950 registrazioni, file da rinominare),
+  il train e' da rifare (**0,67 GPU-ora di tetto, ~4 min attesi**; registro, sezione 2). Comandi corretti in
+  `results/infra/pilot_posa/comandi_e3_r3c.txt`: [E3b] ri-estrazione del train, [E3c] rapporto (16 core-ore). In attesa del via, con J2.
