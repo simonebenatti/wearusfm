@@ -3933,6 +3933,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prossimo: deploy `deploy/pilot-posa-collaudo-20261027` dallo SHA di questo commit, checkout di campagna, collaudo lungo dopo «checkout pronto»
   (voci [2b] e [2c] della catena; ID SLURM nella voce successiva).
 
+### 2026-10-27 | Claude | Profilo lungo della posa: deploy, secondo checkout (62409314, COMPLETED in 16 s) e collaudo lungo (62409366) sottomessi col via di Simone
+
+- Deploy `deploy/pilot-posa-collaudo-20261027` = 41f6ac1 (verificato con `git ls-remote`). Checkout `pilot-posa-collaudo-20261027` pronto alle
+  11:20 (812 file, sola lettura). Collaudo lungo sottomesso alle 11:20 dal checkout nuovo: `--limit 40 --both-sides --max-per-user 4
+  --exclude-users 29ddab35d7,d387095792 --profile-max-lag 4000`, 2 core, 30 min di tetto, 0 GPU-ora. Catena: voci [2b] e [2c] (commit cfeb07a).
+- Attesa armata (`leonardo_watch.py`, ciclo in background). Poi: rsync del rapporto, rilettura `--lungo`, lettura scritta da Claude, firma di M.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
