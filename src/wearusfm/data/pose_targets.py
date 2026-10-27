@@ -96,6 +96,19 @@ class PoseStore:
         valid = np.load(d / VALID_FILE)
         if blocks.ndim != 2 or blocks.shape[1] != N_JOINTS or valid.shape != (blocks.shape[0],):
             raise ValueError(f"{d}: forme di posa inattese {blocks.shape} / {valid.shape}")
+        if (d / META_FILE).exists():  # identita' della posa (27/10/2026, diagnosi di GPT: due array della stessa lunghezza scambiati fra
+            # registrazioni passavano le guardie su forma e lunghezza): utente e stem del sidecar devono essere quelli della cartella, e il
+            # lato quello del sidecar dell'EMG
+            from wearusfm.ingest.emg2pose import _SAFE_RE
+
+            meta = json.loads((d / META_FILE).read_text())
+            if meta.get("stem") is not None and (_SAFE_RE.sub("_", str(meta["stem"])) != d.name
+                                                 or "u" + _SAFE_RE.sub("_", str(meta.get("user", ""))) != d.parent.name):
+                raise ValueError(f"{view.path}: pose_meta.json di u{meta.get('user')}/{meta.get('stem')} nella cartella di posa {d}")
+            side_emg = ((view.meta.get("csv_row") or {}).get("side") or "").lower()
+            side_pose = (meta.get("side") or "").lower()
+            if side_emg and side_pose and side_emg != side_pose:
+                raise ValueError(f"{view.path}: lato dell'EMG {side_emg!r} diverso dal lato della posa {side_pose!r} in {d}")
         self._cache[key] = (blocks, valid)
         if len(self._cache) > self._cache_size:
             self._cache.popitem(last=False)

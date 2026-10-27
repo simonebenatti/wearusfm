@@ -4016,6 +4016,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (B) col rumore misurato, (B) riprendibile come inizio di R3. Nuova proposta: (A) E1+E2+E3 sul checkpoint del collaudo + (A2) regressione CPU
   da feature grezze (H3), poi (B) solo se H3 esclusa e ridge < 0,9. Prompt per GPT corretto negli stessi numeri. Decide Simone.
 
+### 2026-10-27 | Claude | Seguito del collaudo dbg di R3: diagnosi di GPT (b2ea51e) verificata; controlli locali fatti (oracolo della catena dei bersagli OK, guardia d'identita' aggiunta, testa sintetica calibrata); audit delle registrazioni vere pronto; E3 su R3c in corso; nessun difetto dimostrato
+
+- Verificato in proprio: conteggio globale 9.332, schedule (plateau 1.000-1.041), catena dei bersagli con oracolo dagli indici grezzi su
+  geometria reale (`tests/cpu/test_pose_chain_oracle.py`: uguale), E4 locale e nota sul clipping accolta. Difetti dimostrati: nessuno.
+- Modifiche: `PoseStore.entry` rifiuta sidecar con utente/stem/lato incoerenti (lacuna di copertura segnalata da GPT); `scripts/pose_head_synthetic.py`
+  (q = 0,2 scende del 10% nel dbg con 70 istanti indipendenti per passo, non con 7; con lo schedule di R3 si'); `scripts/pose_audit.py` +
+  `scripts/slurm/pose_audit.sbatch` + `tests/cpu/test_pose_audit.py` (identita', ricostruzione dal tar, oracolo, supporto, ridge log-RMS con
+  split temporale, disallineato, scansione del ritardo: la posa spostata di 400 ms si vede solo li'). 26 test della posa verdi; suite intera in corso.
+- Cluster: estrazioni E3 di R3c 62437148 / 62437151 in corso (sottomesse alle 16:11 sul primo «Esegui»); rapporto E3 (16 core-ore) e audit
+  (deploy + checkout + 4 core-ore) presentati in decisioni.md («SEGUITO del collaudo dbg di R3») e in attesa del via. Collaudo lungo: tre
+  obiezioni (pannello di train con errori per finestra da implementare; identita' del config per la ripresa; cancello da firmare) e costo 5 GPU-ora.
+- Questioni aperte: H1 / H2 / H3 ancora indistinte sui dati veri (l'audit e l'E3 le separano in parte); B_eff e q reali non noti. Prossimo passo
+  raccomandato: via a J2 e J1, lettura congiunta, codice del pannello per (B). SHA del commit: nel messaggio a Simone e nella voce successiva.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

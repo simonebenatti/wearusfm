@@ -4887,3 +4887,51 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
 - **Risultati E2 da ricalcolare: nessuno** (nessun job `pose_eval` nel ledger; E1-E3 partono col passo [7]). **Conteggi su dati veri: non ancora
   disponibili** (servono le estrazioni); dal CSV di `val`: 1.950 registrazioni, mediana 58,7 s, 10 sotto i 12 s (senza coppia nella stessa
   registrazione), 78 su 747 combinazioni (utente, fase, lato) con una sola registrazione (senza fallback se corta).
+
+**Seconda ondata: SEGUITO del collaudo dbg di R3 (27/10/2026, sera): diagnosi di GPT (commit b2ea51e) verificata in proprio; controlli locali
+eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lungo da congelare. Nessun difetto dimostrato.**
+- Parole di Simone: «Esegui» (sulla sequenza di GPT: test sul Mac, audit + ridge RMS, E3 su R3c, eventuale collaudo da 5.000 passi) e poi il brief:
+  «I controlli locali possono procedere; per i nuovi job sul cluster presenta comandi e preventivi definitivi prima del lancio, come concordato.
+  I costi della review sono proposte, non autorizzazioni» e «va bene, ti do fiducia per stavolta». Dichiarazione: le 2 estrazioni E3 di R3c
+  (62437148 val, 62437151 train; 1 A100 x 40 min di tetto l'una = 1,33 GPU-ora) erano gia' state sottomesse alle 16:11 sul primo «Esegui», prima
+  del brief; il rapporto E3 e l'audit si presentano qui con comandi e preventivo e partono solo col via.
+- **Verifica della diagnosi (senza assumere H1):** (a) conteggio globale delle finestre di posa 9.332 confermato nel codice (`log_sum` ridotto
+  fra i processi) e gia' corretto; (b) schedule confermato (warmup 1.000, plateau 1.000-1.041, decadimento dal 1.042); (c) catena dei bersagli
+  provata con un oracolo indipendente dagli indici grezzi su geometria reale (`tests/cpu/test_pose_chain_oracle.py`: HDF5 -> ingest con M = 280 ->
+  albero della posa -> `PoseStore.window` sulle finestre vere del loader, patch da 25 ms -> `_pose_tensors`): maschere uguali e bersagli uguali
+  entro il float16 su finestre con margine mascherato e piene; (d) gradienti: E4 e' il gradiente locale di un micro-batch (gia' dichiarato); la
+  nota di GPT sul clipping con fattore variabile (0,11 nei primi 100 passi, 0,24 negli ultimi) e' accolta: l'invarianza di Adam alla scala non
+  esclude un rallentamento, che resta non dimostrato.
+- **Difetti dimostrati: nessuno.** Lacuna di copertura chiusa: `PoseStore.entry` ora rifiuta un albero di posa il cui sidecar ha utente/stem
+  diversi dalla cartella o lato diverso dal sidecar dell'EMG (prima due array della stessa lunghezza scambiati fra registrazioni passavano
+  forma e lunghezza); alberi senza sidecar si leggono come prima. Non cambia i run fatti (i file veri si controllano con l'audit).
+- **Apprendibilita' della testa a feature note** (`scripts/pose_head_synthetic.py`, test): testa vera a zero (LayerNorm + Linear 384 -> 20),
+  AdamW lr 1e-4, wd 0,05, clip 1,0, schedule del dbg (dose 671 passi di picco) o di R3 (warmup 1.962 poi costante), feature isotrope, bersaglio
+  lineare con frazione spiegabile q. Esiti: q = 1 scende del 10% nel dbg; q = 0 mai; **q = 0,2 scende del 10% nel dbg con 70 istanti
+  indipendenti per passo (7 finestre x 10 istanti) ma NON con 7 istanti per passo (il «B = 7» del conto di GPT), e scende con lo schedule di R3
+  entro 5.000 passi.** Lettura: H1 regge solo se il numero efficace di istanti per passo e' basso (istanti correlati dentro la finestra) o q e'
+  piccolo; il sintetico calibra il controllo, non prevede il dataset vero.
+- **Audit delle registrazioni vere, pronto** (`scripts/pose_audit.py`, `scripts/slurm/pose_audit.sbatch`, `tests/cpu/test_pose_audit.py` su dati
+  costruiti con geometria reale): identita' (sidecar della posa contro CSV e sidecar dell'EMG), ricostruzione dal tar grezzo (blocchi e validita'
+  uguali con M = 280), oracolo delle patch sulle finestre del loader, supporto (blocchi validi per patch su 5, quota per finestra, movimento prima
+  e dopo la maschera), ridge da log-RMS per canale (contesto +-2 patch) alla posa standardizzata con fit 60% / separazione 10% / test 30% in
+  ordine temporale per utente, alpha dentro il fit, costante dal fit, disallineato sullo stesso supporto, scansione del ritardo +-8 patch (atteso
+  0). Nel test la posa spostata di 400 ms contro l'EMG passa identita', ricostruzione e oracolo (la catena e' coerente con l'albero) e viene vista
+  SOLO dalla scansione del ritardo: e' il controllo che l'oracolo non puo' fare.
+- **Job sul cluster, presentati per il via (nessuno sottomesso):**
+  (J1) rapporto E3 di R3c dal checkout `pilot-posa-collaudo-20261027` (41f6ac1): `pose_eval_report.sbatch <val.npz> <R3c-e2.json> --train
+  <train_subset.npz>`, CPU seriale 8 core x 2 h di tetto = **16 core-ore, 0 GPU-ora**; si sottomette senza `--dopo` a estrazioni finite (il
+  tentativo con `--dopo` e' stato rifiutato dalla QoS: limite di sottomissioni, nessun job creato).
+  (J2) audit: deploy `deploy/pilot-posa-audit-20261027` dallo SHA del commit del codice di questa voce; checkout di campagna
+  `pilot-posa-audit-20261027` (CPU 1 core, 10 min di tetto, ~0,2 core-ore); `pose_audit.sbatch` (CPU seriale **4 core x 1 h = 4 core-ore, 16 GB,
+  0 GPU-ora**: 20 registrazioni di 10 utenti del train, 20 finestre l'una, tar grezzo con 20 min di budget per l'indice).
+- **Collaudo lungo (B), obiezioni prima del preventivo definitivo:** (1) serve una modifica al trainer: pannello diagnostico di train di sole
+  finestre con posa (32 utenti x 2 registrazioni x 4 finestre), valutazioni a 0, 2.000, ..., 5.000 con errori per finestra salvati (oggi il
+  pannello fisso e' quello del pretraining: 32-41 finestre con posa su 256, aggregate); (2) la ricetta esatta di R3 con `--max-steps 5000` e
+  `--pose-grad-every 500` rende il run riprendibile come inizio di R3 solo se il config e' identico: il pannello nuovo entra nella definizione
+  di R3 (da dichiarare); (3) il cancello proposto da GPT (MSE(5.000) <= 0,9 x MSE(0) sul pannello, IC95 appaiato per utente < 1, seme 20261027,
+  1.000 ricampionamenti) e' accolto come proposta da firmare, con in piu' il predittore costante e la varianza delle predizioni sul pannello e
+  il ritmo <= 0,81. Costo: 4 A100 x 1 h 15 = **5 GPU-ora, 40 core-ore**. Nessun lancio prima della firma del criterio e del codice del pannello
+  (con test). Un E3 negativo non e' un veto a (B) (brief di Simone).
+- **Prossimo passo raccomandato:** via a J2 e, a estrazioni finite, a J1; lettura congiunta con GPT; intanto il codice del pannello per (B) sul Mac.
+  Peso della posa, M = 280 e criteri firmati invariati; il dbg resta fallito.
