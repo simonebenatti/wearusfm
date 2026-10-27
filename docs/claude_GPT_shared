@@ -3969,6 +3969,7 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 ### 2026-10-27 | Claude | Valutazione di R3c, stadio [E]: 4 estrazioni sottomesse alle 11:45 (62412330 e2-p1, 62412331 e2-p2, 62412332 e1-p1, 62412333 e1-p2), 1 A100 l'una; attesa armata
 
+- Le 4 estrazioni sono COMPLETED alle 12:14 (P1 13 min 45, P2 28 min; ~1,4 GPU-ora, come nel pilot; cache in `$SCRATCH/.../pilot_posa_20261026/features/R3c-e{1,2}/p{1,2}`).
 - Stadio [S] (8 sonde, `leonardo_feed.py --select '--id PILOT-POSA-EVAL-probe-R3c-'`) dopo l'ingest intero 62410740 COMPLETED. Simone (27/10): «ovvio
   che se non passa qualcosa vediamo che dice il critico»: il critico entra se qualcosa non passa (cancello del collaudo dbg di R3, esiti), non a ogni passo.
 
