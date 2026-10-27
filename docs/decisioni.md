@@ -5089,3 +5089,28 @@ per utente). Tranche diagnostica CHIUSA: 0,07 GPU-ora e 1,79 core-ore sui tetti 
 - **Allineamenti del 28/10 (00:30, senza effetto sui run):** `pose_eval_report.sbatch` 60 GB -> 30 GB e 2 h -> 20 min (QoS lrd_all_serial: cpu=8,
   mem=30800M; rapporto E3 su R3c-e2 in 60 s); rapporto dell'audit con `tolleranza_applicata_massima` e `regola_tolleranza` (il margine del
   confronto esposto). Test dell'audit: 9 passati. I checkout di campagna restano ai loro SHA.
+
+**Seconda ondata: via di Simone del 28/10/2026 («accetto tutti vai») alle tre proposte della consegna notturna: (1) collaudo lungo B, (2) E3 su R0,
+(3) J2 bis. Preventivi e lanci di (2) e (3) (28/10, 01:00); (1) si prepara (pannello nel trainer, test, criterio congelato, critico) e parte
+solo con la firma del criterio.**
+- **Autorizzazione citata alla lettera:** «accetto tutti vai. soo finite per domattna?», in risposta all'elenco «1. Collaudo lungo B ... 2. E3 su
+  R0 ... 3. J2 bis ...» e ai due allineamenti di codice. Per B la proposta diceva «serve prima il pannello nel trainer e un criterio firmato»:
+  il lancio di B resta subordinato alla firma del criterio (voce «obiezioni prima del preventivo definitivo»: «nessun lancio prima della firma
+  del criterio e del codice del pannello»). Alle 00:15 lo ssh verso Leonardo era rifiutato (certificato `step ssh login` scaduto); alle 00:50
+  Simone e' rientrato e la coda era vuota.
+- **(2) E3 su R0-e2** (`results/infra/pilot_posa/comandi_e3_r0_e_j2bis_20261028.txt`, [R0a]-[R0c]): checkpoint postdecay del pilot
+  `PILOT-R0-A-30M-s0` (sha256 a440aea6...), codice 41f6ac1 (stesso `pose_eval` di R3c-e2), stessa val (18.548 finestre, 15 utenti) e stesso
+  sottoinsieme del train (200 registrazioni, 40 utenti, seme 20261026). Risorse dichiarate: [R0a] 1 A100, 40 min = **0,67 GPU-ora** di tetto
+  (attesi 25 min, 0,42); [R0b] 1 A100, `--time=00:15:00` = **0,25 GPU-ora** di tetto (attesi 4 min); [R0c] 8 core, `--mem=30G --time=00:20:00`
+  = 2,7 core-ore, sottomesso dal watcher a [R0a] e [R0b] COMPLETED. Totale a tetto **0,92 GPU-ora, ~10 core-ore** (attesi ~0,5 GPU-ora).
+  Lettura: la stessa dell'E3 su R3c (soglia 0,9 descrittiva, firmata il 26/10): dice se la posa e' piu' o meno accessibile dai latenti di R0
+  (JEPA + ancore) che da quelli di R3c (ancore sole, 0,949).
+- **(3) J2 bis** ([J2bis]): audit con 10 utenti del train, 40 registrazioni (4 per utente), 20 finestre l'una, lag +-16 patch (+-400 ms), seme
+  20261028 (utenti diversi dal primo: secondo campione), codice aecff1a (il campo `tolleranza` resta quello nominale, letto con la regola di
+  fa07e8b). CPU seriale 4 core, 16 GB, 1 h = **4 core-ore, 0 GPU-ora** (attesi ~25 min). Lettura descrittiva: con 4 registrazioni per utente lo
+  split cronologico ha fit e test piu' simili; la scansione dice se la discesa verso i lag positivi vista in 6 utenti su 10 ha un minimo
+  entro +400 ms. Nessun criterio nuovo.
+- **Budget:** voce E dell'emendamento 1 («Costo aggiuntivo ~1,0 / 4,0 GPU-ora e ~12 / 64 core-ore»): dopo la tranche del 27/10 (0,07 GPU-ora,
+  1,79 core-ore) restano ~3,9 GPU-ora e ~62 core-ore di tetto; questi lanci ne impegnano 0,92 e 14. Residuo della seconda ondata ~85 GPU-ora.
+- **(1) B:** codice del pannello della posa nel trainer (`RunConfig.pose_panel_*`, `pose_panel.jsonl`, `pose_panel_set.json`), test, criterio
+  congelato in una voce a parte, preventivo (4 A100 x 1 h 15 = 5 GPU-ora, 40 core-ore), review del critico; poi la firma di Simone e il lancio.

@@ -4090,6 +4090,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   col 2FA); E3 su R0, J2 bis e B aspettano il rientro.
 - Questioni aperte: nessuna.
 
+### 2026-10-28 | Claude | Via di Simone («accetto tutti vai») a B, E3 su R0 e J2 bis: preventivi e lancio di E3 su R0 (0,92 GPU-ora di tetto) e J2 bis (4 core-ore); B in preparazione (pannello nel trainer), lancio solo dopo la firma del criterio
+- Fatto: comandi su una riga in `results/infra/pilot_posa/comandi_e3_r0_e_j2bis_20261028.txt` ([R0a] val, [R0b] train con `--time=00:15:00`,
+  [R0c] rapporto con `--mem=30G --time=00:20:00` dal watcher, [J2bis] audit 10 utenti x 4 registrazioni, lag +-16, seme 20261028); risorse e
+  budget (voce E dell'emendamento 1) in decisioni.md («via di Simone del 28/10/2026»). Autorizzazione citata alla lettera; per B resta la
+  condizione registrata il 27/10: nessun lancio prima della firma del criterio e del codice del pannello.
+- Cluster: ssh rifiutato dalle 00:15 (certificato scaduto), rientro di Simone alle 00:50, coda vuota; sottomissioni subito dopo questo commit
+  (ID nel ledger: PILOT-POSA-E3-ext-R0-e2-{val,train}, PILOT-POSA-E3-report-R0-e2, PILOT-POSA-audit-20261028-bis).
+- Questioni aperte: lettura di E3 su R0 e di J2 bis all'arrivo; B: codice, test, criterio, critico, poi firma.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
