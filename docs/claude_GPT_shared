@@ -2724,7 +2724,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   al verdetto separato J1/J2. Suite CPU completa non rieseguita. Solo file sintetici temporanei e review; nessun codice Claude modificato,
   nessun job o accesso cluster. Le correzioni sono a Claude; l'approvazione dei job resta a Simone.
 
+### 2026-10-27 | GPT | Consegna finale e prompt per Claude: recupero E3 e audit corretto | Addendum d037a3e
+
+- Su richiesta di Simone («ok completa tutto e generami un prompt cosi lo faccio lavorare»), completata la consegna della review:
+  `docs/reviews/pose_audit_e198a87_review_20261027.md`, aggiornata all'errore di estrazione registrato da Claude in d037a3e;
+  prompt completo in `docs/reviews/prompt_claude_pose_audit_followup_20261027.md`. La review/prova iniziale e' pubblicata in 6af707a.
+- Entrambe le estrazioni hanno letto val: recuperare la val valida senza overwrite, estrarre davvero train (40 utenti/200 recording),
+  verificare identita'/split/provenienza effettivi prima del rapporto. Stato e consuntivo 0,84 GPU-ore dai documenti Claude, non da
+  lettura live. Parsing locale dei comandi corretti verificato; nessun comando cluster eseguito da GPT.
+- **Aggiornamento del preventivo futuro:** estrazione train 1 A100/8 core/40 min = 0,6667 GPU-ore e 5,3333 core-ore; rapporto E3 16,
+  audit J2 4, checkout 1/6 core-ora. Totale **0,67 GPU-ore arrotondate e 25,5 core-ore**; i precedenti 20,1667 core-ore/0 GPU non
+  includevano questa riestrazione, emersa dopo la review. Durate massime sommate 3h50min, escluse code e lavoro locale.
+- Prompt: E3 puo' avanzare indipendentemente; J2 dopo R1-R4, chiarimenti split/pairing, test e critico, su nuovo SHA/checkout.
+  Sintetico da correggere senza deduzioni esclusive su H1; guardia compatibile, limiti espliciti. B da 5.000 passi e R3 completo restano
+  separati e rinviati alla lettura dei risultati/firma. Nessun aumento di peso/M o riscrittura del cancello dbg.
+- d037a3e contiene soltanto documenti/comandi: i 18 test e i controesempi della review e198a87 restano riferiti allo stesso codice.
+  Nessuna modifica al codice Claude, nessun invio automatico a Claude e nessuna sottomissione; consegna del prompt a Simone.
+
 ## 2) Problemi trovati
+
+### 2026-10-27 | GPT | E3: COMPLETED non certifica lo split; train da recuperare | Claude d037a3e
+
+- La stringa di opzioni espansa in zsh e' finita nel nome del file: entrambe le cache sono val. Il solo nome train_subset o lo stato
+  COMPLETED non basta per ammettere E3. Verificare identita' contro CSV/split, disgiunzione prevista, checkpoint e statistiche.
+- L'indicazione precedente «J1 a estrazioni finite, senza nuove GPU» e' superata operativamente: serve prima una vera estrazione train,
+  tetto 0,67 GPU-ore; totale della nuova tranche 25,5 core-ore. Le 0,84 GPU-ore gia' spese sono separate, non un costo futuro.
+- Questi fatti non cambiano la review del codice e198a87, ne' dimostrano un difetto nei dati R3. J2 resta da correggere e B rinviato.
+  Lo stato cluster e' quello documentato da Claude, non verificato live da GPT. Nessuna spesa con questa consegna.
 
 ### 2026-10-27 | GPT | Audit posa e198a87: false rassicurazioni e falsi allarmi possibili | J1 separato da J2
 

@@ -4,7 +4,11 @@
 Richiesta di Simone: verificare oracolo, split/ritardi, guardia e preventivi prima del via. Codice Claude e checkout di campagna non modificati;
 nessun accesso al cluster e nessun job sottomesso. Tre letture indipendenti: target/guardia, critica scientifica dell'audit, sintetico/risorse.
 
-**Raccomandazione operativa:** J1 (rapporto E3 R3c) puo' procedere a estrazioni completate, dopo il via di Simone. **J2 va corretto prima
+**Aggiornamento operativo, d037a3e:** Claude ha registrato che entrambe le estrazioni E3 hanno letto `val`: la cache train manca.
+Prima di J1 occorrono recupero della val, verifica delle identita' e nuova estrazione del vero train. Questo aggiorna la raccomandazione
+e il preventivo iniziali; il codice esaminato resta e198a87, poiche' d037a3e modifica soltanto documenti/comandi. Dettagli e tetti sotto.
+
+**Raccomandazione operativa:** J1 (rapporto E3 R3c) puo' procedere dopo il recupero corretto delle cache, con il via di Simone. **J2 va corretto prima
 di presentarlo come audit completo dell'associazione EMG-posa**: i controesempi sotto mostrano false rassicurazioni e falsi allarmi possibili.
 Non sono prove di un difetto nei dati o nel training R3. Nessun nuovo motivo per aumentare il peso della posa o abbandonare R3.
 
@@ -16,7 +20,7 @@ Non sono prove di un difetto nei dati o nel training R3. Nessun nuovo motivo per
 | Split senza perdite? | Nessun mescolamento casuale di patch fra fit/test esterno; finestre distinte e gap. Validazione interna alpha da correggere; ordine per sessione/stem non garantisce cronologia globale o isolamento di acquisizioni simultanee |
 | Lag valida l'allineamento? | **No come verdetto**. Utile come esplorazione, con supporto controllato e incertezza. Minimo nonzero compatibile con dati allineati; il test di shift non verifica il ritardo dichiarato |
 | Guardia compatibile? | Nessuna regressione trovata sui sidecar conformi; mantiene lettura senza sidecar. Controlla metadati, non identita' del contenuto degli array |
-| Preventivi corretti? | Si': J1 16 core-ore, J2 4 core-ore, checkout 1/6 core-ora. Totale **20,1667 core-ore, 0 nuove GPU-ore** |
+| Preventivi corretti? | J1 16 core-ore, J2 4, checkout 1/6. Dopo d037a3e aggiungere nuova estrazione train: 1 A100/8 core per 40 min. Nuovo totale **25,5 core-ore e 0,6667 GPU-ore** |
 
 ## Correzioni necessarie alla diagnosi J2
 
@@ -117,15 +121,31 @@ limiti noti: e' una guardia di coerenza, non un checksum del contenuto.
 
 ## Via ai job e budget
 
-**J1, rapporto E3: favorevole.** Le correzioni precedenti a E2 non toccano E3; R3c ha has_head=false e non entra in E1/E2. Il confronto
-del checkout41f6ac1 con e198a87 conferma che il delta del report riguarda E2, non la ridge E3. Verificare il completamento delle due
-estrazioni e usare cache train/val coerenti come previsto. Tetto **8 core ×2h,60GB =16 core-ore**, nessuna GPU aggiuntiva.
+**J1, rapporto E3: favorevole dopo recupero train/val.** Le correzioni precedenti a E2 non toccano E3; R3c ha has_head=false e non entra
+in E1/E2. Il confronto del checkout41f6ac1 con e198a87 conferma che il delta del report riguarda E2, non la ridge E3.
+
+**Novita' d037a3e, fonte: registro e comandi versionati di Claude, senza verifica live del cluster:** 62437148 e 62437151 risultano
+COMPLETED, ma entrambi hanno estratto val. In zsh `$tail_args` non quotato e' arrivato come unico argomento nel nome del file; lo split
+e' rimasto al default val. Una val e' recuperabile (18.548 finestre/1.950 recording dichiarati); la seconda non e' un train. Il costo
+gia' sostenuto e' **0,84 GPU-ore**, distinto da quello futuro. Non basta che un job sia COMPLETED o che il nome contenga “train”.
+
+Usare `results/infra/pilot_posa/comandi_e3_r3c.txt` aggiornato: recupero val senza sovrascrivere un file esistente, nuova estrazione
+train di 40 utenti/200 recording, poi rapporto. I comandi [E3b]/[E3c] sono stati verificati con parsing locale degli argomenti, senza
+eseguirli: `--split train`, `--n-users 40`, `--n-recordings 200` sono token separati. Verificare prima del rapporto le identita' effettive
+nelle cache contro il CSV/split, numerosita', disgiunzione train/val prevista dal protocollo, checkpoint e statistiche congelate;
+non dedurre lo split dal nome del file. Se la cache non contiene tutti i metadati, ricostruire la provenienza dai recording/manifest/log
+e registrare le verifiche mancanti. Nessun rapporto E3 ammissibile con due cache val.
+
+Nuova estrazione: **1 A100, 8 core, 60 GB ×40 min = 0,6667 GPU-ore e 5,3333 core-ore**; i 4 minuti attesi indicati da Claude sono una stima,
+non una misura. Rapporto: **8 core ×2h,60GB =16 core-ore**, senza GPU. E3 puo' avanzare indipendentemente dalle correzioni di J2.
 
 **J2: correggere prima R1–R4 e chiarire split/disallineato**, poi un nuovo SHA e checkout. La parte di sola ricostruzione della posa
 sarebbe gia' utile come audit parziale, ma il job presentato promette una diagnosi piu' ampia e potrebbe generare conclusioni sbagliate.
 Le correzioni sono locali agli strumenti; non richiedono di cambiare R3, M=280 o il peso. Tetto esistente **4 core ×1h,16GB =4 core-ore**,
 checkout **1 core ×10min,2GB =0,1667 core-ore** (0,2 arrotondato). Il confronto raw EMG deve essere campionato e restare nel tetto;
-se serve ampliare tempi/memoria, aggiornare il preventivo prima del via. Totale J1+J2+checkout **20,1667 core-ore,0 GPU-ora**.
+se serve ampliare tempi/memoria, aggiornare il preventivo prima del via. J1+J2+checkout restano **20,1667 core-ore,0 GPU-ora**;
+**includendo il recupero train necessario dopo d037a3e, totale futuro 25,5 core-ore e 0,6667 GPU-ore** (tetto GPU arrotondato 0,67).
+Somma delle durate massime dei job 3h50min, esclusi attese in coda e lavoro locale; non e' una previsione del tempo a calendario.
 
 Entrambi i launcher passano bash -n, verificano CODE_DIR/SHA e scrivono fuori dal repo. **B da5.000 passi resta una proposta separata**:
 nuovo pannello, criterio e compatibilita' della ripresa da verificare e firmare. Le tre obiezioni tecniche di Claude sono ragionevoli;
