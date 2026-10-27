@@ -4809,38 +4809,60 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   dichiarata, in `summary.json` e in `pose_provenance.json` (il config resta l'identita' del run). La prima lettura dava quindi NO anche a
   `posa_configurata` su un run configurato bene. Il lettore ora legge summary / provenienza / config (test: `tests/cpu/test_arms_collaudo.py`,
   quattro casi). La correzione non cambia il verdetto: `posa_discesa` boccia da sola.
-- **Che cosa dicono i numeri.** La perdita di posa per blocchi di 100 passi: 1,08 1,05 1,02 1,03 1,00 0,99 1,04 0,96 1,01 1,05 1,05 1,08 1,01
-  (deviazione dentro il blocco 0,20-0,25, errore standard della media 0,02): **piatta al valore di partenza 1** (testa a zero = predittore
-  costante). Pannello fisso (32 finestre di posa): perdita 1,075 / 1,060 / 1,048 ai passi 0 / 500 / 1.000; errore assoluto standardizzato 0,871 /
-  0,854 / 0,865; in radianti 0,350 / 0,343 / 0,350 (~20 gradi). Finestre di posa viste: ~37.300 sui 4 processi (7,2 per passo per processo su
-  32). **La testa lineare non ha imparato niente in 1.300 passi.**
+- **Che cosa dicono i numeri.** La perdita di posa per blocchi di 100 passi (escluso il passo 119, senza finestre di posa, come da §6): 1,08 1,07
+  1,02 1,03 1,00 0,99 1,04 0,96 1,01 1,05 1,05 1,08 1,01 (deviazione dentro il blocco 0,20-0,28, errore standard della media 0,02-0,03):
+  **piatta al valore di partenza 1** (testa a zero = predittore costante). Pannello fisso (32 finestre di posa): perdita 1,075 / 1,060 / 1,048 ai passi 0 / 500 / 1.000; errore assoluto standardizzato 0,871 /
+  0,854 / 0,865; in radianti 0,350 / 0,343 / 0,350 (~20 gradi). Finestre di posa viste: 9.332 in tutto (`pose_windows` e' il conteggio GLOBALE sui 4 processi: 7,2 per passo sul batch di
+  32, cioe' ~1,8 per processo). **La testa lineare non ha imparato niente in 1.300 passi.**
 - **E4 (lettura descrittiva congelata nell'emendamento):** norma del gradiente della posa sui moduli condivisi / norma di quello delle ancore,
-  ai passi 500-1.300: 25%, 146%, 15%, 0 (ultimo micro-batch senza posa), 46%, 27%, 0 (idem), 328%, 81%: molto sopra la soglia dell'1%: **la posa
-  muove l'encoder**; coseno fra i due gradienti fra -0,43 e +0,25, nessun conflitto sistematico. Il gradiente c'e', la perdita non scende.
-- **Schedule del collaudo (fatto da tenere presente):** con `total_steps = steps_at_d = 1.300` il warmup D14 e' `max(1.000; 2%)` = 1.000 passi:
-  lr da 1e-7 a 1e-4 lineare fino al passo 1.000, poi decadimento a ~0 al passo 1.300. Il criterio confronta i passi 500-599 (lr 5-6e-5) coi
-  passi 1.201-1.300 (lr da 3,9e-5 a 0). Le ancore scendono lo stesso (somma 24,3 -> 6,4), e nel collaudo del pilot gli stessi criteri sono
-  passati per tutti i bracci. Il criterio della posa era congelato senza aver provato che una testa lineare possa scendere del 10% in questo
-  schedule: lo dichiaro.
+  ai passi 500-1.300: 25%, 146%, 15%, 0 (micro-batch senza posa), 46%, 27%, 0 (idem), 328%, 81%: nelle 7 misure con posa, molto sopra la
+  soglia dell'1%; coseno fra i due gradienti (passi 500-1.300) fra -0,43 e +0,25, nessun segno sistematico. E4 misura la norma del gradiente
+  LOCALE di un solo micro-batch del processo 0 (~1,8 finestre di posa): dice che il termine produce gradiente sui moduli condivisi, non che
+  l'encoder si sia spostato. Il gradiente c'e', la perdita non scende.
+- **Schedule del collaudo (fatto):** con `total_steps = steps_at_d = 1.300` il warmup D14 e' `max(1.000; 2%)` = 1.000 passi (piu' rapido di
+  quello di R3, 1.962: fino al passo 1.040 il lr del collaudo e' sempre >= di quello che avra' R3): lr da 1e-7 a 1e-4 lineare fino al passo
+  1.000, plateau a 1e-4 nei passi 1.000-1.041, decadimento dal passo 1.042 (decay_start = 1.300 - 260) a ~0 al 1.300. Il criterio confronta i
+  passi 500-599 (lr 5-6e-5) coi passi 1.201-1.300 (lr da 3,9e-5 a 0). Sulle stesse finestre le ancore pesate scendono da 7,93 a 6,45 (-18,7%).
+  Nei collaudi precedenti (bracci di finestra 1, pilot) esistevano solo gli 8 criteri generici: la discesa 500-599 -> 1.201-1.300 non era mai
+  stata provata su nessun run. Che lo schedule abbia penalizzato la testa e' un'IPOTESI (H1 nel prompt per GPT), non un fatto: lo dichiaro.
 - **Letture possibili, non distinguibili col solo collaudo:** (i) la posa non e' leggibile linearmente dai latenti attuali (il termine potrebbe
   rimodellarli solo lungo tutto il training, lentamente); (ii) la testa ha bisogno di molti piu' passi a lr pieno di quelli che il collaudo da';
   (iii) un difetto nella catena dei target sui dati veri che i test CPU (allineamento su dati costruiti) non vedono.
 - **Protocollo:** «Fuori dal cancello non si lancia e il peso si ridecide con Simone, registrato» (§2 (iii)). Simone, 27/10: «ovvio che se non
   passa qualcosa vediamo che dice il critico». R3 [6] NON viene sottomesso.
-- **Opzioni per Simone (preventivi):**
-  (A) **E3 su R3c, subito** (gia' nel passo [7], lettura pre-registrata b1/b2/b3 dell'emendamento): ridge dai latenti congelati di R3c alla posa,
-  allenata sul sottoinsieme del train (200 registrazioni, 40 utenti) e letta su val (1.950 registrazioni, 15 utenti): 2 estrazioni GPU (1 A100,
-  40 min di tetto l'una) + rapporto CPU; **~1,3 GPU-ora di tetto, ~0,7 attese**, 0 training. Se il rapporto col costante e' < 0,9 la posa e'
-  leggibile linearmente dai latenti delle sole ancore e la testa di R3 dovrebbe imparare con piu' passi: il criterio del collaudo era troppo
-  stretto per questo schedule -> (B). Se e' >= 0,9 anche su R0, la testa lineare parte da latenti che non portano la posa: R3 dovrebbe
-  rimodellare la rappresentazione lungo 51 GPU-ora senza garanzie -> decisione col critico.
-  (B) **Collaudo lungo di R3**: 5.000 passi con lo schedule vero (warmup 1.962, plateau a 1e-4, `--steps-at-d 98094`), stesso codice e stessi
-  pesi; criterio da congelare PRIMA (proposta: perdita di posa nei passi 4.901-5.000 <= 0,9 x quella dei passi 2.000-2.099, con lr pieno):
-  ~1 h di calcolo, **4 A100 x 1 h 15 di tetto = 5 GPU-ora** (qos normal: la dbg ha 30 min). Dice se la testa impara a lr pieno.
-  (C) Peso della posa piu' alto (2 o 5) nel collaudo: 2 GPU-ora, ma cambia la definizione firmata di R3 e non risponde a (i) ne' a (iii).
-  (D) Fermare R3 qui: nessun costo in piu'; resta la valutazione di R3c (in corso) e l'E3 come lettura dell'accessibilita'.
-  **Proposta di Claude: (A) subito, poi (B) solo se (A) dice «leggibile»; (C) no; il `critico` legge questa voce prima della decisione.**
+- **Opzioni per Simone (preventivi), RIFORMULATE dopo la review del `critico` (27/10, sera; una sola review):**
+  (A) **E1 + E2 + E3 sul checkpoint del collaudo 62429050** (`checkpoint_postdecay.pt`, gia' sul cluster): 2 estrazioni GPU con `pose_eval.py`
+  (val, 1.950 registrazioni; sottoinsieme del train, 200), 1 A100 x 40 min di tetto l'una = **~1,3 GPU-ora di tetto**, piu' il rapporto CPU
+  (`pose_eval_report.sbatch`: 8 core x 2 h di tetto = **16 core-ore**). Confronta la testa (E1) e la ridge (E3) sugli STESSI latenti che la testa
+  vedeva: ridge < 0,9 con testa >= 0,9 -> problema di ottimizzazione o del percorso del loader in training (H1 / H4); entrambe >= 0,9 ->
+  encoder ancora immaturo (H1 / H2) OPPURE catena dei bersagli (H3): E3 usa la stessa catena dei bersagli del training (`PoseStore.window`),
+  quindi NON esclude H3. Da' anche i primi conteggi di E2 su dati veri. Questa lettura e' NUOVA rispetto all'emendamento (scritta dopo il
+  collaudo): si congela qui, prima del lancio, e non e' la lettura b1/b2/b3, che presuppone R3.
+  (A2) **Regressione CPU da feature grezze dell'EMG** (RMS per canale per patch) ai bersagli di `PoseStore`, entro l'utente, su ~20 registrazioni
+  del train (E6 dell'emendamento la prevede per il caso «(a) NO»): mette alla prova H3 senza il modello. Serve uno script (Claude, con test) e
+  un job CPU seriale: 8 core x 1 h di tetto = **8 core-ore, 0 GPU-ora**. Feature grezze che non battono il costante entro l'utente -> catena dei
+  bersagli sospetta; che lo battono -> H3 esclusa.
+  (B) **Collaudo lungo di R3 con la ricetta ESATTA di R3** (`--total-steps 49046 --steps-at-d 98094 --keep-checkpoints 19618`, stesso seme,
+  `--pose-grad-every 500`) fermato a 5.000 passi con `max_steps`: se passa si RIPRENDE come inizio di R3 (le GPU-ora non si perdono; senza
+  `--total-steps` esplicito il decadimento partirebbe al passo 4.000 e la finestra finale non sarebbe a lr pieno). 4 A100 x 1 h 15 di tetto =
+  **5 GPU-ora**. Criterio da congelare PRIMA, tenendo conto del rumore misurato (su questo run piatto la deviazione delle medie di blocco da 100
+  e' 0,035: due blocchi da 100 col fattore 0,9 possono «passare» per caso, 1,082 -> 0,961 = 0,888): proposta: media della perdita di posa nei
+  passi 4.500-4.999 <= 0,9 x quella nei passi 2.000-2.499 (blocchi da 500) E `pose_mae_std` del pannello fisso al passo 5.000 <= 0,9 x quello al
+  passo 2.000. Dice se la testa impara a lr pieno; non distingue H3.
+  (C) Peso della posa piu' alto (2 o 5) nel collaudo: 2 GPU-ora, ma cambia la definizione firmata di R3 e non risponde a H2 ne' a H3.
+  (D) Fermare R3 qui: nessun costo in piu'; resta la valutazione di R3c (in corso).
+  **Proposta di Claude: (A2) e (A) insieme** (8 + 16 core-ore, ~1,3 GPU-ora di tetto), **poi (B) solo se H3 e' esclusa e la ridge sui latenti del
+  collaudo e' < 0,9** (allora e' ottimizzazione, e il collaudo lungo lo misura); se tutto resta >= 0,9, decisione con GPT (prompt
+  `docs/prompt_gpt_collaudo_r3_20261027.md`) e Simone. In ogni caso il comando [6] della catena prende `--pose-grad-every 500` (E4 firmata:
+  «ogni 500 passi del training»; il default e' 0; `pose_grad_every` non e' operativo alla ripresa, quindi va uguale in (B) e in [6]).
   Residuo della seconda ondata: 87,5 - 1,4 (R3c) - 1,15 = ~85 GPU-ora; core-ore ~520 prima delle sonde di R3c.
+- **Rettifica dopo la review del `critico` (27/10, sera; DA RIVEDERE: 2 bloccanti, 6 minori; corretti in questa voce, nessun altro giro):**
+  (1) finestre di posa 9.332 globali, non ~37.300 (`pose_windows` e' gia' la somma sui processi); (2) l'albero di decisione dell'opzione (A)
+  traeva da E3 su R3c conclusioni che non sostiene (non separa H3; «criterio troppo stretto» non segue; mancavano le estrazioni del train e di
+  R0 e il costo CPU; la lettura b1/b2 era etichettata impropriamente): riscritto; (3) schedule: plateau a 1e-4 nei passi 1.000-1.041, warmup
+  piu' rapido di R3, ancore -18,7% sulle stesse finestre, nessun collaudo precedente aveva il criterio di discesa; (4) statistiche di blocco
+  (0,20-0,28; blocco 101-200 = 1,07 senza il passo 119); (5) E4 e' il gradiente locale di un micro-batch del processo 0; (6) costo CPU di (A) e
+  regola E3 -> (B) dichiarata nuova; (7) opzioni (A)/(A2)/(B) riprendibile e criterio con blocchi da 500; (8) `--pose-grad-every 500` in [6].
 
 **E2 (controllo disallineato): due correzioni dalla review di GPT del 27/10/2026 (`docs/reviews/r3_updates_review_20261027.md`, commit GPT
 5cc9e0c), fatte da Claude PRIMA di qualunque risultato E2; protocollo scientifico, criteri e soglie invariati.**

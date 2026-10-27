@@ -26,16 +26,16 @@ fisso: 3 valutazioni ai passi 0 / 500 / 1.000 su 32 finestre di posa fisse: `pos
 
 | Che cosa | Valore |
 |---|---|
-| Perdita di posa pesata, media per blocchi di 100 passi (1-100 ... 1.201-1.300) | 1,08 1,05 1,02 1,03 1,00 0,99 1,04 0,96 1,01 1,05 1,05 1,08 1,01 |
+| Perdita di posa pesata, media per blocchi di 100 passi (1-100 ... 1.201-1.300) | 1,08 1,07 1,02 1,03 1,00 0,99 1,04 0,96 1,01 1,05 1,05 1,08 1,01 (escluso il passo 119, senza posa) |
 | Criterio `posa_discesa`: media 500-599 -> media 1.201-1.300 (richiesto <= 0,9 x) | 0,991 -> 1,014 (+2,3%) |
-| Deviazione della perdita di posa dentro un blocco di 100 passi; errore standard della media | 0,20-0,25; ~0,02 |
+| Deviazione della perdita di posa dentro un blocco di 100 passi; errore standard della media | 0,20-0,28; 0,02-0,03 |
 | Pannello fisso ai passi 0 / 500 / 1.000: perdita; MAE standardizzata; MAE in radianti | 1,075 / 1,060 / 1,048; 0,871 / 0,854 / 0,865; 0,350 / 0,343 / 0,350 |
-| Finestre di posa per passo per processo (su 32 per passo, 8 per processo) | 7,2 in media; 99,9% dei passi ne ha almeno una; ~37.300 viste in tutto |
-| Somma delle ancore pesate: blocco 1 -> blocco 13; `total` | 24,3 -> 6,4; 5,87 -> 2,24 |
+| Finestre di posa per passo (`pose_windows`, conteggio GLOBALE sui 4 processi, su 32 per passo) | 7,2 in media (~1,8 per processo); 99,9% dei passi ne ha almeno una; 9.332 viste in tutto |
+| Somma delle ancore pesate: passi 1-50 -> 1.251-1.300; sulle finestre del criterio (500-599 -> 1.201-1.300); `total` | 24,3 -> 6,4; 7,93 -> 6,45 (-18,7%); 5,87 -> 2,24 |
 | `grad_norm` (prima del clip a 1,0), media primi / ultimi 100 passi | 12,5 / 4,4 |
-| lr ai passi 1 / 500 / 1.000 / 1.100 / 1.200 / 1.300 | 1e-7 / 5e-5 / 1e-4 / 7,7e-5 / 3,9e-5 / 3,8e-7 (warmup `max(1.000; 2%)` = 1.000 passi, poi decadimento) |
+| lr ai passi 1 / 500 / 1.000 / 1.100 / 1.200 / 1.300 | 1e-7 / 5e-5 / 1e-4 / 7,7e-5 / 3,9e-5 / 3,8e-7 (warmup `max(1.000; 2%)` = 1.000 passi, piu' rapido di quello di R3 = 1.962; plateau a 1e-4 nei passi 1.000-1.041; decadimento dal 1.042) |
 | E4 ai passi 500 ... 1.300: norma del gradiente della posa / norma di quello delle ancore sui moduli condivisi | 25%, 146%, 15%, 0*, 46%, 27%, 0*, 328%, 81% (*ultimo micro-batch senza posa) |
-| E4: coseno fra i due gradienti | fra -0,80 e +0,39, senza segno sistematico |
+| E4: coseno fra i due gradienti | fra -0,80 e +0,39, senza segno sistematico (E4 e' il gradiente locale di un solo micro-batch del processo 0, ~1,8 finestre di posa) |
 | Ritmo | 0,711 s/passo (soglia 0,81) |
 
 Per confronto, le stesse 1.300 iterazioni nel collaudo dbg del pilot (R0/R1/R2/R5, 24/10) hanno fatto scendere le ancore allo stesso modo; la posa
@@ -47,8 +47,8 @@ non c'era.
   `posa_scala_avvio` 0,275 >= 0,1 e `posa_tetto` 0,695 <= 2 OK).
 - Configurazione: testa presente (+8.468 parametri rispetto a R3c), albero della posa e SHA di `pose_stats.json` uguali a quelli dell'ingest
   intero (757f2aee...), peso 1,0; conteggio delle finestre di posa stabile.
-- Flusso del gradiente: il termine di posa produce gradiente sui moduli condivisi dell'ordine di quello delle ancore (E4), quindi la perdita
-  e' collegata ai parametri; `clip_grad_norm_` a 1,0 non riduce il passo di AdamW, che e' invariante alla scala del gradiente.
+- Flusso del gradiente: nelle misure con posa nel micro-batch il termine produce gradiente sui moduli condivisi dell'ordine di quello delle
+  ancore (E4, locale al processo 0), quindi la perdita e' collegata ai parametri; `clip_grad_norm_` a 1,0 non riduce il passo di AdamW, che e' invariante alla scala del gradiente.
 - Le ancore imparano, nessun collasso, nessun allarme, nessun NaN.
 
 ## Ipotesi che restano (non distinguibili col solo collaudo)
@@ -91,7 +91,9 @@ non c'era.
 3. **Un conto a tavolino per H1:** con ~28 finestre di posa per passo, una testa lineare a zero su 384 dimensioni normalizzate, AdamW a lr 1e-4
    (pieno solo per ~100 passi qui) e un rapporto segnale/rumore r del bersaglio lineare, quanti passi servono per una discesa del 10%? Il
    criterio congelato (discesa >= 10% fra i passi 500-599 e 1.201-1.300, con warmup di 1.000 passi su 1.300) era realistico?
-4. **Controlli a basso costo, con preventivo, SENZA lanciarli:** (a) sul Mac, un test con dati costruiti che imiti una registrazione vera (finestre
+4. **Controlli a basso costo, con preventivo, SENZA lanciarli** (dopo la review interna le opzioni in decisioni.md sono: (A) E1+E2+E3 sul
+   checkpoint del collaudo 62429050, ~1,3 GPU-ora + 16 core-ore di tetto; (A2) regressione CPU da feature grezze per H3, 8 core-ore; (B) collaudo
+   lungo con la ricetta esatta di R3, riprendibile; giudica anche queste): (a) sul Mac, un test con dati costruiti che imiti una registrazione vera (finestre
    del loader, blocchi a 200 Hz, margine) e misuri in quanti passi una testa lineare impara a lr 1e-4; (b) sul cluster, CPU, <= 1 h, 0 GPU-ora: per
    esempio una ridge dalle feature semplici dell'EMG (RMS per canale per patch) alla posa standardizzata su 20 registrazioni del train, entro
    l'utente: se nemmeno quella batte il costante, la catena dei bersagli e' sospetta (H3); (c) l'E3 dell'emendamento su R3c (ridge dai latenti

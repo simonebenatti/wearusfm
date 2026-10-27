@@ -3983,7 +3983,8 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 
 - 13 criteri su 14 OK (ritmo 0,711 s/passo, scala e tetto della posa, conteggio, ancore che scendono, nessun collasso); `posa_discesa` NO:
   0,991 (passi 500-599) -> 1,014 (1.201-1.300), +2,3% invece di -10%. Pannello fisso: errore standardizzato 0,87 / 0,85 / 0,87, 0,35 rad.
-  E4: la posa muove l'encoder (gradiente sui moduli condivisi fra il 15% e il 330% di quello delle ancore, mai sotto l'1%).
+  E4 (gradiente locale di un micro-batch del processo 0): nelle 7 misure con posa il gradiente sui moduli condivisi e' fra il 15% e il 330% di quello
+  delle ancore; 2 misure su 9 sono 0 (micro-batch senza posa).
 - `posa_configurata` dava NO per un difetto del lettore (SHA cercato nel config: il trainer lo scrive in summary e provenienza): corretto con
   test; voce in sezione 2. Esito: `results/infra/pilot_posa/collaudo_r3_dbg_62429050.json`. Costo del collaudo: 1,15 GPU-ora.
 - Opzioni con preventivo in decisioni.md («COLLAUDO dbg di R3 ... LETTO»): (A) E3 su R3c subito (~1,3 GPU-ora di tetto), (B) collaudo lungo a
@@ -4006,6 +4007,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   conto a tavolino, controlli a basso costo con preventivo, criterio per il collaudo lungo, raccomandazione fra (A)-(D)). Nessun job.
 - `results/infra/pilot_posa/collaudo_r3_dbg_62429050/`: metrics.jsonl (1.300 record), fixed_eval.jsonl, fixed_eval_set.json, config.json,
   summary.json, pose_provenance.json, listing del run (senza checkpoint). Review del `critico` sulla lettura ancora in corso.
+
+### 2026-10-27 | Claude | Review del `critico` sulla lettura del collaudo dbg di R3: DA RIVEDERE (2 bloccanti, 6 minori), tutti corretti in un passaggio nella voce di decisioni.md; opzioni riformulate; `--pose-grad-every 500` aggiunto a [6]
+
+- Bloccanti: `pose_windows` e' il conteggio globale (9.332 finestre, non ~37.300); l'opzione (A) traeva da E3 su R3c conclusioni che non
+  sostiene (E3 usa la stessa catena dei bersagli: non esclude H3). Minori: schedule (plateau 1.000-1.041, warmup piu' rapido di R3, ancore
+  -18,7% sulle stesse finestre, nessun collaudo precedente col criterio di discesa), statistiche di blocco, E4 locale, costo CPU, criterio di
+  (B) col rumore misurato, (B) riprendibile come inizio di R3. Nuova proposta: (A) E1+E2+E3 sul checkpoint del collaudo + (A2) regressione CPU
+  da feature grezze (H3), poi (B) solo se H3 esclusa e ridge < 0,9. Prompt per GPT corretto negli stessi numeri. Decide Simone.
 
 ## 2) Problemi trovati
 
