@@ -4050,6 +4050,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: limiti dichiarati in decisioni.md (buchi nell'asse dei tempi non provati; `time_axis` dei sidecar veri verificabile solo
   dall'audit sul cluster). Il rapporto E3 (62443474) e le sonde di R3c restano in coda.
 
+### 2026-10-27 | Claude | Audit della posa lanciato dentro i tetti della tranche: deploy aecff1a verificato, checkout 62447995 sottomesso (0,17 core-ore); l'audit (4 core-ore, 0 GPU-ora) parte dal watcher a checkout COMPLETED
+- Fatto: `git push leonardo aecff1a:refs/heads/deploy/pilot-posa-audit-20261027` (show-ref verificato); [A1] via `submit_job.py` (ledger:
+  sottomesso, 62447995); comandi in `results/infra/pilot_posa/comandi_audit_20261027.txt`; catena in `~/wearusfm_local/pilot_posa/chain_audit_20261027.sh`
+  (watcher del checkout -> sacct COMPLETED -> [A2] -> watcher dell'audit, log in `~/wearusfm_local/logs/watch_pilot_posa_audit*.txt`).
+- Cluster: coda seriale alle 18:14: sonda 62429083 in corso, 5 sonde + rapporto E3 62443474 + checkout in attesa (QOSMaxCpuPerUserLimit).
+- Questioni aperte: lettura dell'audit e dell'E3 quando arrivano (domattina); consuntivo finale della tranche nella consegna.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

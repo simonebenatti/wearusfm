@@ -4998,3 +4998,6 @@ eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lu
   di questo commit, checkout `pilot-posa-audit-20261027` (1 core, 10 min: 0,17 core-ore), audit `pose_audit.sbatch` con i default (split train,
   10 utenti, 20 registrazioni, 20 finestre, M = 280, contesto 2, lag 8, seme 20261027, indice del tar 20 min: 4 core x 1 h = 4 core-ore, 16 GB,
   0 GPU-ora) sulla coda seriale, dietro le sonde di R3c e il rapporto E3.
+- **Lancio (27/10, 18:14):** ref `deploy/pilot-posa-audit-20261027` = aecff1a pubblicato e verificato su Leonardo; checkout [A1] sottomesso,
+  job 62447995 (coda seriale, dietro 5 sonde di R3c e il rapporto E3: un job alla volta); l'audit [A2] lo sottomette un watcher sul Mac SOLO
+  a checkout COMPLETED, dal launcher del checkout (`results/infra/pilot_posa/comandi_audit_20261027.txt`). Nessun altro job.

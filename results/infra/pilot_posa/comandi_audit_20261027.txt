@@ -1,0 +1,10 @@
+# Audit della catena dei bersagli di posa su 20 registrazioni vere (J2; brief di Simone del 27/10/2026: «Completa il seguito diagnostico di R3
+# ... procedi entro i tetti indicati: 0,67 GPU-ore e 25,5 core-ore complessive, verificando il residuo»; residuo prima di questi job: 0,60
+# GPU-ora, 8,9 core-ore). Codice aecff1a652096e8320f169d26dbea01d283ef29f (ref deploy/pilot-posa-audit-20261027, pubblicato il 27/10 alle
+# 18:10). Ogni comando dal Mac via `scripts/submit_job.py` (argv con shlex): UNA riga per comando.
+# [A1] checkout di campagna (CPU seriale, 1 core, 10 min di tetto: 0,17 core-ore, 0 GPU-ora):
+python3 scripts/submit_job.py --id PILOT-POSA-audit-20261027-checkout --agente claude --campagna pilot-posa-audit-20261027 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=pilot-posa-audit-20261027,CAMPAIGN_SHA=aecff1a652096e8320f169d26dbea01d283ef29f
+# [A2] SOLO dopo [A1] COMPLETED (sbatch legge il launcher dal checkout alla sottomissione): audit con i default dello script (split train, 10
+#      utenti, 20 registrazioni, 20 finestre da 4 s, M = 280, contesto 2, lag 8, seme 20261027, indice del tar 20 min). CPU seriale, 4 core,
+#      16 GB, 1 h di tetto = 4 core-ore, 0 GPU-ora. Uscita: $WORK/wearusfm_runs/results/pilot_posa_20261026/pose_audit/pose_audit_<job>.json
+python3 scripts/submit_job.py --id PILOT-POSA-audit-20261027 --agente claude --campagna pilot-posa-audit-20261027 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-audit-20261027,EXPECTED_SHA=aecff1a652096e8320f169d26dbea01d283ef29f /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-audit-20261027/scripts/slurm/pose_audit.sbatch
