@@ -4624,3 +4624,20 @@ pavimento di R2 vale fino a 2.000 campioni; il prompt per GPT distingue calcolo 
 - Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
 Consuntivo parziale (27/10/2026, 08:00): R3c ramo 62364573 COMPLETED per `max_steps` (24.523 passi), 4,1 GPU-ora sulle 9 di tetto. R3c completo:
 44,5 GPU-ora (attese 47,0, tetto 60). Spesa della seconda ondata: 44,5 GPU-ora (tetto 132,0), ~0,1 core-ore (tetto 531); residuo 87,5 GPU-ora.
+
+**Seconda ondata: QUINTA RETTIFICA dopo la quinta review del `critico` (Claude, 27/10/2026, ore del commit): la soglia del rientro e' 1,25 volte il
+lontano (nei documenti avevo scritto 1,10 per errore, confondendola con la soglia di R3); il pavimento 0,80 L di R2 vale su tutti i bin contati
+oltre 400, anche dopo 2.000.**
+- **Bloccanti accolti.** (1) Il codice usava, come soglia del rientro a un lato solo, 1 + 0,25 = **1,25 volte il lontano** (coerente con «rientra nel
+  25%» della seconda e terza rettifica e col test); la QUARTA RETTIFICA, la precisazione del protocollo, il prompt per GPT e il registro scrivevano
+  **1,10** per errore di trascrizione (1,10 e' la soglia di R3 sul plateau). Vale **1,25**: corretti i documenti, nessun cambio al codice, test di
+  confine a 1,24 / 1,26. (2) Dopo 2.000 campioni il pavimento non valeva piu' e un gradino a un livello fra 1,25 x lontano e 0,80 L dava M = 200 con
+  capovolgimento per 0,02: ora **pavimento e tetto di R2 valgono su tutti i bin contati oltre 400**, anche dopo 2.000; una discesa lenta che
+  scende sotto 0,80 L dopo 1 s **ferma** (dichiarato). Conseguenza: oltre 400 ci sono solo tre esiti, senza zona grigia: livello <= 1,25 x lontano =
+  rientro (fermarsi); fra 1,25 x lontano e 0,80 L = pavimento (fermarsi); >= 0,80 L e <= 1,25 L = persistenza (riserva). Il capovolgimento per un
+  solo bin resta solo al confine 0,80 L, che e' un confine dichiarato.
+- Minori: commenti e docstring riallineati; motivo distinto per un gradino verso il basso che non risale («rientra ... e non riesce piu'»); prompt
+  per GPT con QUARTA e QUINTA rettifica e col caso dei bin finali non contati; nel protocollo la soglia di R3 e' marcata come proposta.
+- Costanti: `V2_PERSIST_FROM = 401`, `V2_PERSIST_BAND = (0,80; 1,25)`; campo `R2_bins_sotto_pavimento_oltre_400` (rinominato). La lettura
+  committata si rigenera con questo commit (numeri invariati).
+- Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.

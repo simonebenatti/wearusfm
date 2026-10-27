@@ -343,19 +343,19 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     r4 = PP.margin_from_collaudo(_report([2.0] * 40))
     assert r4["margine"]["M"] is None and r4["v2"]["calcolata"] and r4["v2"]["R2_profilo_corto"] and r4["v2"]["M"] == 0
     # profilo lungo (2 s = 400 bin) che DECADE LENTAMENTE oltre il plateau restando sopra il 25% dal lontano: v1 non determinata, R2 regge -> M = M3 = 200
-    slow = PROF_VERO + [1.7] * 60 + [1.6] * 100 + [1.5] * 100 + [1.4] * 100
+    slow = PROF_VERO + [1.7] * 60 + [1.6] * 100 + [1.55] * 100 + [1.5] * 100  # resta sopra 0,80 L = 1,43 fino alla fine (quinta review)
     ok = PP.margin_from_collaudo(_report(slow))
     # se invece rientra nel 25% dal lontano entro i 2 s (qui a 1,5 s), la v1 e' determinata (M = 3.000): la riserva e' solo informativa, ci si ferma
     back = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 60 + [1.5] * 100 + [1.3] * 100 + [1.2] * 100))
     assert back["v1"]["M"] == 3000 and back["v2"]["calcolata"] and not back["v2"]["applicabile"] and back["margine"]["M"] is None
     assert back["proposta"].startswith("FERMARSI") and "M = 3000" in back["proposta"] and "R3 = 200" in back["proposta"]
-    assert ok["v2"]["applicabile"] and not ok["v2"]["R2_bins_sotto_banda_401_1000"] and ok["margine"]["stato"] == "determinato_riserva"
+    assert ok["v2"]["applicabile"] and not ok["v2"]["R2_bins_sotto_pavimento_oltre_400"] and ok["margine"]["stato"] == "determinato_riserva"
     assert ok["margine"]["M"] == 200 and ok["v2"]["R2_max_lag_counted"] == 4000 and ok["proposta"].startswith("M = 200 campioni (100 ms")
     assert abs(ok["perdita"]["frac_rows_margine_tetto"] - 2 * 200 * 30 / 600000) < 1e-12
     # il profilo torna a 1 subito dopo il plateau (casi B, C, D del critico: artefatto che decade): R2 cade, niente riserva; v1 decide o ci si ferma
     for tail in ([1.78] * 1 + [1.0] * 359, [1.78] * 20 + [1.0] * 340, [1.78 - 0.78 * k / 59 for k in range(60)] + [1.0] * 300):
         bad = PP.margin_from_collaudo(_report(PROF_VERO + tail))
-        assert bad["v2"]["calcolata"] and not bad["v2"]["applicabile"] and bad["v2"]["R2_bins_sotto_banda_401_1000"]
+        assert bad["v2"]["calcolata"] and not bad["v2"]["applicabile"] and bad["v2"]["R2_bins_sotto_pavimento_oltre_400"]
         assert bad["margine"]["stato"] in ("non_determinato", "determinato")
     # caso A: torna a 1 dal bin 401: la v1 e' determinata con M = 400 (<= 400) e la riserva non scatta nemmeno
     a = PP.margin_from_collaudo(_report(PROF_VERO + [1.0] * 360))
@@ -399,9 +399,24 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
         st = PP.margin_from_collaudo(_report(PROF_VERO + tail))
         assert st["margine"]["M"] is None and st["margine"]["stato"] == "non_determinato" and st["proposta"].startswith("FERMARSI")
         assert st["v2"]["calcolata"] and st["v2"]["profilo_rientra"]
-    # gradino verso il basso dopo 1.000 che resta sopra 1,25 x lontano (1,30 = 0,73 L): il pavimento 0,80 L vale fino a 2.000 -> R2 cade
-    step = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 100 + [1.30] * 260))
-    assert not step["v2"]["applicabile"] and step["v2"]["R2_bins_sotto_banda_401_1000"] and step["margine"]["M"] is None
+    # gradino verso il basso che resta sopra 1,25 x lontano (1,30 = 0,73 L): il pavimento 0,80 L vale su tutto il profilo -> R2 cade, dopo 1.000
+    # come dopo 2.000 (quinta review: nessuna zona grigia fra la soglia di rientro 1,25 e il pavimento 1,43)
+    for tail in ([1.78] * 100 + [1.30] * 260, [1.78] * 210 + [1.30] * 150, [1.78] * 210 + [1.26] * 150, [1.78] * 210 + [1.40] * 150):
+        step = PP.margin_from_collaudo(_report(PROF_VERO + tail))
+        assert not step["v2"]["applicabile"] and step["v2"]["R2_bins_sotto_pavimento_oltre_400"] and step["margine"]["M"] is None
+    # confine del rientro (1,25 = 1 + MARGIN_TOL, a un lato solo) e del pavimento (1,43): sotto 1,25 rientro (stop), fra 1,25 e 1,43 pavimento
+    # (stop), da 1,43 in su persistenza (riserva); un solo bin basta
+    for level, key in ((1.24, "profilo_rientra"), (1.26, "R2_bins_sotto_pavimento_oltre_400"), (1.42, "R2_bins_sotto_pavimento_oltre_400")):
+        one = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [level] + [1.78] * 99))
+        assert one["margine"]["M"] is None and one["v2"][key]
+    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [1.45] + [1.78] * 99))["margine"]["M"] == 200
+    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 210 + [1.45] * 150))["margine"]["M"] == 200
+    # discesa lenta che scende sotto il pavimento dopo 1 s: ferma (dichiarato)
+    late = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 160 + [1.3] * 200))
+    assert late["margine"]["M"] is None and late["v2"]["R2_bins_sotto_pavimento_oltre_400"]
+    # gradino verso il basso che non risale: il motivo dice che la contaminazione e' finita li', non che «riesce»
+    down = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 60 + [0.74] * 300))
+    assert "non riesce piu'" in down["margine"]["motivo"] and "poi riesce" not in down["margine"]["motivo"]
     # coda magra con R2 che cade: la proposta non presenta il M della v1 (dovuto solo ai bin non contati) come esito
     thin_bad = _report(PROF_VERO + [1.30] * 360)
     for b in thin_bad["collaudo"]["edge_profile"]["bins"][-5:]:

@@ -3904,6 +3904,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Spesa della seconda ondata: 44,5 GPU-ora (tetto 132,0 con R3c), ~0,1 core-ore (tetto 531). Residuo: 87,5 GPU-ora e ~531 core-ore.
 - I due endpoint di R3c (`checkpoint_postdecay.pt` del tronco e del ramo) aspettano la valutazione [7] (A1/A2/B + E1-E3), che si genera dopo R3.
 
+### 2026-10-27 | Claude | Quinta review del `critico` (DA RIVEDERE: 2 bloccanti, 4 minori) accolta: la soglia del rientro e' 1,25 x lontano (nei documenti avevo scritto 1,10 per errore: il codice era giusto), il pavimento 0,80 L di R2 vale su tutti i bin contati oltre 400 (anche dopo 2.000: niente zona grigia fra 1,25 x lontano e 0,80 L); commenti, motivo per un gradino che non risale, prompt per GPT e protocollo allineati; test di confine | Codice: commit di questa voce
+
+- Bloccanti: (1) 1,10 contro 1,25: errore di trascrizione mio nella QUARTA RETTIFICA, nel protocollo, nel prompt e nel registro; vale 1,25 (= 1 +
+  tolleranza della v1), documenti corretti, test a 1,24 / 1,26. (2) `[1,78]x210 + 1,30` dava M = 200 (pavimento solo fino a 2.000): ora pavimento e
+  tetto su tutto il profilo; una discesa sotto 0,80 L dopo 1 s ferma (dichiarato). Test: quattro gradini (1.000 e 2.000; 1,26 / 1,30 / 1,40), un bin
+  solo a 1,24 / 1,26 / 1,42 (fermarsi) e 1,45 (riserva), discesa tardiva, motivo del gradino che non risale. Sesta review del `critico`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

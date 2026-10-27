@@ -415,28 +415,28 @@ ZERO_FRAC_RANGE = (0.02, 0.40)  # frazione di righe a zero plausibile sul collau
 MAX_ABS_RADIANS = 7.0  # oltre 2 pi (piu' un margine) gli angoli non sono radianti: fermarsi
 SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
 # Regola di riserva R1-R5 (scritta il 27/10/2026 DOPO aver visto il profilo a 200 ms del collaudo 62364572, su proposta del `critico`, PRIMA del
-# collaudo col profilo lungo; e' una regola POST HOC informata da quel profilo, non una pre-registrazione: decisioni.md). Si applica solo se la v1 e'
-# non determinata o da' M > V1_MAX_M. R1: L = media del profilo nei bin PLATEAU_LAGS (150-200 ms). R2, persistenza a due lati: la lettura «il
-# plateau e' comportamento, non artefatto» regge solo se tutti i bin contati fra 401 e 1.000 campioni stanno fra 0,80 L e 1,25 L, nessun bin
-# contato oltre 400 supera 1,25 L e ci sono bin contati almeno fino a 2.000 campioni; una discesa sotto 0,80 L entro 500 ms e' il segno di un
-# artefatto che decade, e allora la riserva NON si applica (vale la v1 sul profilo lungo; se da' M > 400 ci si ferma e si porta a Simone con la
-# perdita). R3: M3 = `lag_to` dell'ultimo bin entro 300 campioni sopra (1 + V2_TOL) L. R5: profilo per altezza del salto verso lo zero (terzili
+# collaudo col profilo lungo; e' una regola POST HOC informata da quel profilo, non una pre-registrazione: decisioni.md). Si CALCOLA solo se la v1
+# e' non determinata o da' M > V1_MAX_M. R1: L = media del profilo nei bin PLATEAU_LAGS (150-200 ms). R2, persistenza a due lati: la lettura «il
+# plateau e' comportamento, non artefatto» regge solo se TUTTI i bin contati oltre 400 campioni stanno fra 0,80 L e 1,25 L (pavimento e tetto su
+# tutto il profilo misurato, quinta review) e ci sono bin contati almeno fino a 2.000 campioni; una discesa sotto 0,80 L, presto o tardi, e' il
+# segno di un artefatto che decade o finisce, e allora la riserva NON si applica (vale la v1 sul profilo lungo; se da' M > 400 ci si ferma e si
+# porta a Simone con la perdita). R3: M3 = `lag_to` dell'ultimo bin entro 300 campioni sopra (1 + V2_TOL) L. R5: profilo per altezza del salto verso lo zero (terzili
 # della norma della posa a 150-200 ms dal bordo, ogni terzile sul proprio L): un artefatto d'interpolazione o di filtro scala col salto, il
 # comportamento e il rumore della cinematica inversa no; M5 = ultimo bin entro 300 in cui alto / basso supera 1 + JUMP_RATIO_TOL. M = max(M3, M5);
 # se R5 non e' calcolabile (terzili assenti, plateau magro) M = M3, dichiarato nella proposta.
 # Seconda, terza e quarta review del critico (27/10): la riserva si CALCOLA se la v1 e' «non determinata» o da' M > V1_MAX_M, ma si APPLICA solo
-# se NESSUN bin contato del profilo lungo «rientra», dove rientrare e' A UN LATO SOLO: rapporto al lontano <= 1 + MARGIN_TOL (anche sotto il
-# lontano: una contaminazione che finisce con un gradino verso il basso e' finita). Predicato proprio, indipendente dall'ultimo bin e dallo stato
-# della v1: un profilo che rientra e poi riesce non e' «mai rientrato» e ci si ferma; se la v1 risulta determinata solo perche' gli ultimi bin
-# non sono contati, vale il predicato sui bin contati. R2 tiene il pavimento 0,80 L su TUTTI i bin contati da 401 a V2_MIN_COUNTED_LAG (un gradino
-# verso il basso che resta sopra 1,25 x lontano lo fa cadere) e il tetto 1,25 L su tutti i bin contati oltre 400. Se la v1 e' determinata con
-# M > V1_MAX_M (il profilo rientra solo dopo 200 ms) la riserva e' solo informativa e ci si ferma portando a Simone la v1 con la perdita e R3 / R5.
+# se NESSUN bin contato del profilo lungo «rientra», dove rientrare e' A UN LATO SOLO: rapporto al lontano <= 1 + MARGIN_TOL = 1,25 (anche sotto
+# il lontano: una contaminazione che finisce con un gradino verso il basso e' finita). Predicato proprio, indipendente dall'ultimo bin e dallo
+# stato della v1: un profilo che rientra e poi riesce non e' «mai rientrato» e ci si ferma; se la v1 risulta determinata solo perche' gli ultimi
+# bin non sono contati, vale il predicato sui bin contati. R2 tiene il pavimento 0,80 L e il tetto 1,25 L su TUTTI i bin contati oltre 400 (quinta
+# review: anche dopo 2.000, cosi' un livello fra 1,25 x lontano e 0,80 L ferma sempre, senza zona grigia). Se la v1 e' determinata con M > V1_MAX_M
+# (il profilo rientra solo dopo 200 ms) la riserva e' solo informativa e ci si ferma portando a Simone la v1 con la perdita e R3 / R5.
 PLATEAU_LAGS = (301, 400)  # campioni dal bordo: 150-200 ms
 V1_MAX_M = 400  # oltre 200 ms di margine la v1 non decide da sola (perdita > 10% delle righe sul collaudo): fermarsi, decisione di Simone
 LONG_COLLAUDO_MIN_USERS = 10  # collaudo lungo: almeno 10 utenti (il primo ne aveva 2); si passa a margin_from_collaudo(min_users=...)
 V2_TOL = 0.10  # R3: soglia sul plateau; PROPOSTA di Claude del 27/10 con la tabella di sensibilita' in decisioni.md (0,25 -> 140; 0,10 -> 200; 0,05 -> 240)
-V2_PERSIST_LAGS = (401, 2000)  # R2: 200 ms - 1 s, banda a due lati (quarta review: il pavimento fino a 2.000, non a 1.000)
-V2_PERSIST_BAND = (0.80, 1.25)  # R2: [0,80 L; 1,25 L] fra 401 e 2.000; oltre, solo il tetto 1,25 L
+V2_PERSIST_FROM = 401  # R2: banda a due lati su tutti i bin contati da qui in poi (quinta review: pavimento e tetto su tutto il misurato)
+V2_PERSIST_BAND = (0.80, 1.25)  # R2: [0,80 L; 1,25 L] su ogni bin contato oltre 400
 V2_MIN_COUNTED_LAG = 2000  # R2: bin CONTATI almeno fino a 1 s; su un profilo corto la riserva da' solo un valore provvisorio
 JUMP_RATIO_TOL = 0.25  # R5: alto / basso (ciascuno normalizzato al proprio plateau) sopra 1,25 = contaminazione che scala col salto
 JUMP_MIN_RUNS = 9  # R5: terzili solo con almeno 9 blocchi di zeri con altezza misurabile
@@ -491,8 +491,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     precondizioni (se una manca: FERMARSI, nessun M; `min_users` = LONG_COLLAUDO_MIN_USERS per il collaudo lungo); la regola v1 congelata il
     26/10/2026 (M = `lag_to` dell'ULTIMO bin del profilo dei bordi fuori tolleranza |bin / lontano - 1| > tol, bin con almeno min_n campioni; 0 se
     nessuno; «non determinato» se fuori anche l'ultimo bin); se la v1 e' non determinata o da' M > V1_MAX_M, si CALCOLA la riserva R1-R5 (post
-    hoc, 27/10: vedi le costanti), che si APPLICA solo se nessun bin contato rientra nel 25% del lontano e la persistenza R2 regge sul profilo
-    lungo; altrimenti ci si ferma e la proposta porta a Simone la v1 (con la perdita) e R3 / R5 informativi; la regola per le «V» (nessuna in
+    hoc, 27/10: vedi le costanti), che si APPLICA solo se nessun bin contato rientra sotto 1 + tol volte il lontano (a un lato solo) e la
+    persistenza R2 regge su tutto il profilo lungo; altrimenti ci si ferma e la proposta porta a Simone la v1 (con la perdita) e R3 / R5
+    informativi; la regola per le «V» (nessuna in
     piu' se le righe nei minimi simultanei sono <= dip_frac_max delle righe non nulle). Riporta il tetto della perdita di righe dovuta a M."""
     col = report.get("collaudo") or {}
     recs = report.get("per_recording") or []
@@ -527,7 +528,7 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
                              "n_users": len(users), "per_user": col.get("per_user")},
            "soglie": {"tol": tol, "min_n": min_n, "dip_frac_max": dip_frac_max, "zero_frac_range": list(ZERO_FRAC_RANGE),
                       "max_abs_radians": MAX_ABS_RADIANS, "side_min_recordings": SIDE_MIN_RECORDINGS, "v1_max_m": V1_MAX_M,
-                      "plateau_lags": list(PLATEAU_LAGS), "v2_tol": v2_tol, "v2_persist_lags": list(V2_PERSIST_LAGS),
+                      "plateau_lags": list(PLATEAU_LAGS), "v2_tol": v2_tol, "v2_persist_from": V2_PERSIST_FROM, "soglia_rientro_ratio": 1 + tol,
                       "v2_persist_band": list(V2_PERSIST_BAND), "v2_min_counted_lag": V2_MIN_COUNTED_LAG, "jump_ratio_tol": jump_tol}}
     prof = col.get("edge_profile") or {}
     far = prof.get("far_mean_abs_diff")
@@ -563,9 +564,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             v2 = {"calcolata": False, "motivo": f"meno di 5 bin contati nel plateau {PLATEAU_LAGS}", "v1_stato": v1_stato, "v1_M": v1_M}
             stato, M, why = "non_determinato", None, why + "; riserva non calcolabile: plateau non misurabile; decide Simone"
         else:
-            persist = [b for b in bins if b["conta"] and b["lag_from"] >= V2_PERSIST_LAGS[0] and b["lag_to"] <= V2_PERSIST_LAGS[1]]
+            persist = [b for b in bins if b["conta"] and b["lag_from"] >= V2_PERSIST_FROM]
             below = [b["lag_to"] for b in persist if b["ratio"] < V2_PERSIST_BAND[0] * level]
-            above = [b["lag_to"] for b in bins if b["conta"] and b["lag_from"] > PLATEAU_LAGS[1] and b["ratio"] > V2_PERSIST_BAND[1] * level]
+            above = [b["lag_to"] for b in persist if b["ratio"] > V2_PERSIST_BAND[1] * level]
             short = counted_max < V2_MIN_COUNTED_LAG
             inside = [b["lag_to"] for b in bins if b["conta"] and b["lag_to"] < PLATEAU_LAGS[0] and b["ratio"] > (1 + v2_tol) * level]
             m3 = max(inside) if inside else 0
@@ -575,9 +576,9 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
             applicabile = never_returns and not short and not below and not above
             v2 = {"calcolata": True, "applicabile": applicabile, "v1_stato": v1_stato, "v1_M": v1_M, "v1_perdita_tetto": loss(v1_M),
                   "profilo_rientra": not never_returns, "bins_rientrati": inside_bins[:50], "n_bins_rientrati": len(inside_bins),
-                  "R5_calcolabile": m5 is not None,
+                  "soglia_rientro_ratio": 1 + tol, "R5_calcolabile": m5 is not None,
                   "R1_plateau_level_ratio_to_far": level, "R1_n_plateau_bins": n_pl,
-                  "R2_profilo_corto": short, "R2_max_lag_counted": counted_max, "R2_bins_sotto_banda_401_1000": below,
+                  "R2_profilo_corto": short, "R2_max_lag_counted": counted_max, "R2_bins_sotto_pavimento_oltre_400": below,
                   "R2_bins_sopra_tetto_oltre_400": above, "R3_M3": int(m3), "R5": r5, "M": int(m_res),
                   "sensibilita_R3": {str(tt): (max([b["lag_to"] for b in bins if b["conta"] and b["lag_to"] < PLATEAU_LAGS[0]
                                                     and b["ratio"] > (1 + tt) * level] or [0])) for tt in (0.25, 0.20, 0.15, 0.10, 0.05)}}
@@ -594,16 +595,21 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
                         reasons.append(f"la v1 e' determinata con M = {v1_M} > {V1_MAX_M} (il profilo rientra sotto {1 + tol:.2f} x lontano solo dopo "
                                        "200 ms): decide Simone con la perdita")
                     else:
-                        reasons.append(f"il profilo rientra sotto {1 + tol:.2f} x lontano e poi riesce ({len(inside_bins)} bin contati dentro, fino a "
-                                       f"{max(inside_bins)} campioni): la riserva vale solo se non rientra mai; decide Simone")
+                        re_exits = any(b["conta"] and b["ratio"] > 1 + tol and b["lag_to"] > min(inside_bins) for b in bins)
+                        if re_exits:
+                            reasons.append(f"il profilo rientra sotto {1 + tol:.2f} x lontano e poi riesce ({len(inside_bins)} bin contati dentro, "
+                                           f"fino a {max(inside_bins)} campioni): la riserva vale solo se non rientra mai; decide Simone")
+                        else:
+                            reasons.append(f"il profilo rientra sotto {1 + tol:.2f} x lontano da {min(inside_bins)} campioni e non riesce piu': la "
+                                           f"contaminazione e' finita li' ma la v1 non la chiude (ultimo bin fuori); decide Simone")
                 elif v1_stato == "determinato":
                     reasons.append(f"la v1 risulta determinata (M = {v1_M}) solo per bin finali NON contati: nessun bin contato rientra, quel M non e' "
                                    "un esito")
                 if short:
                     reasons.append(f"profilo contato solo fino a {counted_max} campioni (< {V2_MIN_COUNTED_LAG}): valore PROVVISORIO M = {m_res}")
                 if below:
-                    reasons.append(f"R2 caduta: {len(below)} bin fra {V2_PERSIST_LAGS[0]} e {V2_PERSIST_LAGS[1]} sotto {V2_PERSIST_BAND[0]:.2f} x plateau "
-                                   "(segno di artefatto che decade o finisce)")
+                    reasons.append(f"R2 caduta: {len(below)} bin contati oltre {V2_PERSIST_FROM - 1} sotto {V2_PERSIST_BAND[0]:.2f} x plateau (fino a "
+                                   f"{max(below)}): segno di artefatto che decade o finisce")
                 if above:
                     reasons.append(f"R2 caduta: {len(above)} bin oltre 400 sopra {V2_PERSIST_BAND[1]:.2f} x plateau")
                 reasons.append(f"valori informativi della riserva: R3 = {m3}, R5 = {m5}")

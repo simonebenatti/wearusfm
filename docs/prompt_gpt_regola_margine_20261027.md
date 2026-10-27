@@ -3,8 +3,8 @@
 Contesto. Seconda ondata del pilot degli obiettivi (`docs/pilot_posa_v1.md`, firmato; emendamento 1 firmato). I bersagli di posa di emg2pose hanno
 righe tutte a zero dove la cinematica inversa fallisce (17% delle righe nel collaudo, 12,7% nel paper); attorno a ogni blocco di zeri si scartano M
 campioni per lato. La regola per scegliere M dal collaudo dell'ingest e' in `docs/decisioni.md` (voci del 26 e 27/10/2026 sulla seconda ondata, in
-particolare «REGOLA DI LETTURA ... CONGELATA», «COLLAUDO ... LETTO ... NON DETERMINATO», «RETTIFICA», «SECONDA RETTIFICA» e «TERZA
-RETTIFICA») e nel codice
+particolare «REGOLA DI LETTURA ... CONGELATA», «COLLAUDO ... LETTO ... NON DETERMINATO», «RETTIFICA», «SECONDA», «TERZA», «QUARTA» e
+«QUINTA RETTIFICA») e nel codice
 (`src/wearusfm/ingest/emg2pose_pose.py`: `margin_from_collaudo`, `jump_profile_margin`, `edge_profile`; test in
 `tests/cpu/test_ingest_emg2pose_pose.py`). Rapporto e lettura del primo collaudo (job 62364572, 40 registrazioni di 2 utenti):
 `results/passo2/emg2pose_pose_ingest_collaudo_62364572.json`, `results/passo2/emg2pose_pose_margine_lettura_62364572.json`.
@@ -22,11 +22,11 @@ Ti chiedo, come responsabile scientifico:
    distinguerla?
 3. La regola, come sta nel codice. **Calcolo:** la riserva R1-R5 si calcola solo se la v1 (congelata il 26/10) sul profilo lungo e' «non
    determinata» oppure da' M > 400 campioni. **Applicazione**, indipendente dallo stato della v1: (a) nessun bin contato (>= 200 campioni) del
-   profilo lungo «rientra», dove rientrare e' a un lato solo, rapporto al valore lontano <= 1,10, anche sotto il lontano (chi rientra e poi riesce
-   si ferma; un gradino verso il basso che chiude la contaminazione e' un rientro); (b) R2: tutti i bin contati fra 401 e 2.000 campioni stanno
-   fra 0,80 e 1,25 volte il plateau L (media dei bin 301-400), nessun bin contato oltre 400 supera 1,25 L; (c) bin contati almeno fino a 2.000.
-   Se la v1 risulta determinata solo perche' gli ultimi bin non sono contati, vale il predicato sui bin contati. Se la riserva non si applica ci
-   si ferma e la proposta porta a Simone la v1 (se determinata, con la perdita) e i valori informativi R3 e R5. R3: M3 = ultimo bin entro 300
+   profilo lungo «rientra», dove rientrare e' a un lato solo, rapporto al valore lontano <= 1,25, anche sotto il lontano (chi rientra, anche
+   senza riuscire, si ferma: un gradino verso il basso che chiude la contaminazione e' un rientro); (b) R2: TUTTI i bin contati oltre 400 campioni
+   stanno fra 0,80 e 1,25 volte il plateau L (media dei bin 301-400), anche dopo 2.000; (c) bin contati almeno fino a 2.000. Se la v1 risulta
+   determinata solo perche' gli ultimi bin non sono contati, vale il predicato sui bin contati (e quel M non e' un esito). Se la riserva non si
+   applica ci si ferma e la proposta porta a Simone la v1 (se determinata su bin contati, con la perdita) e i valori informativi R3 e R5. R3: M3 = ultimo bin entro 300
    sopra 1,10 L (soglia PROPOSTA da Claude, tabella di sensibilita' in decisioni.md: 0,25 -> 140, 0,10 -> 200, 0,05 -> 240). R5: terzili
    dell'altezza del salto (almeno 9 blocchi con `n_h >= 10`), alto / basso > 1,25; se R5 non e' calcolabile M = M3, dichiarato. M = max(M3, M5).
    Le soglie ti sembrano difendibili? **I job del profilo lungo partono solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica

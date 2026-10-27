@@ -30,10 +30,8 @@
    400
   ],
   "v2_tol": 0.1,
-  "v2_persist_lags": [
-   401,
-   2000
-  ],
+  "v2_persist_from": 401,
+  "soglia_rientro_ratio": 1.25,
   "v2_persist_band": [
    0.8,
    1.25
@@ -425,12 +423,13 @@
   "profilo_rientra": false,
   "bins_rientrati": [],
   "n_bins_rientrati": 0,
+  "soglia_rientro_ratio": 1.25,
   "R5_calcolabile": false,
   "R1_plateau_level_ratio_to_far": 1.7841960773762182,
   "R1_n_plateau_bins": 10,
   "R2_profilo_corto": true,
   "R2_max_lag_counted": 400,
-  "R2_bins_sotto_banda_401_1000": [],
+  "R2_bins_sotto_pavimento_oltre_400": [],
   "R2_bins_sopra_tetto_oltre_400": [],
   "R3_M3": 200,
   "R5": {
