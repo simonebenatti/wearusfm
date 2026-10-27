@@ -30,9 +30,13 @@ Ti chiedo, come responsabile scientifico:
    sopra 1,10 L (soglia PROPOSTA da Claude, tabella di sensibilita' in decisioni.md: 0,25 -> 140, 0,10 -> 200, 0,05 -> 240). R5: terzili
    dell'altezza del salto (almeno 9 blocchi con `n_h >= 10`), alto / basso > 1,25; se R5 non e' calcolabile M = M3, dichiarato. M = max(M3, M5).
    I confini oltre 400 sono tre (1,25 x lontano per il rientro, 0,80 L e 1,25 L per R2) e la partizione e' netta solo se L > 1,5625: con un
-   plateau piu' basso le zone «rientro» e «persistenza» si sovrappongono e il codice da' la precedenza al rientro (SESTA RETTIFICA); a ogni
-   confine un solo bin cambia l'esito per 0,02. **Devi scegliere, prima della misura:** accettare la precedenza del rientro per L < 1,5625, o
-   cambiare la regola (per esempio pavimento = max(0,80 L; 1,25 x lontano)). Le soglie ti sembrano difendibili? **I job del profilo lungo
+   plateau piu' basso le zone «rientro» e «persistenza» si sovrappongono e il codice da' la precedenza al rientro (SESTA RETTIFICA). La decisione
+   riserva / fermarsi si capovolge a due confini: max(1,25 x lontano; 0,80 L) e 1,25 L (SETTIMA RETTIFICA). **Devi scegliere, prima della misura,**
+   fra due opzioni che si comportano davvero in modo diverso quando L < 1,5625: (A) precedenza del rientro, com'e' ora: con L = 1,50 un livello a
+   1,24 ferma (rientro) e a 1,26 da' la riserva; (B) precedenza della persistenza: oltre 400 un bin dentro [0,80 L; 1,25 L] non conta come rientro
+   (soglia di rientro = min(1,25; 0,80 L)): con L = 1,50 sia 1,24 sia 1,26 danno la riserva, e il capovolgimento sta a 1,20. Con L = 1,78 le due
+   opzioni coincidono. (Una terza formulazione, pavimento = max(0,80 L; 1,25 x lontano), e' solo una rietichettatura della (A): stesso esito su
+   20.000 profili casuali, verificato dal revisore interno.) Le soglie ti sembrano difendibili? **I job del profilo lungo
    partono solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica alle soglie va scritta ora, prima della misura.
 4. Il campione del collaudo lungo: 40 registrazioni, al massimo 4 per utente, almeno 10 utenti, ESCLUSI i 2 utenti del primo collaudo
    (29ddab35d7, d387095792): basta cosi', o serve un secondo campione indipendente?

@@ -4657,3 +4657,16 @@ tetto; scelta da confermare da GPT prima del collaudo lungo.**
 - Minori: test con plateau basso (L = 1,50) che fissa l'esito attuale; test con discesa LINEARE 1,78 -> 1,30 su 401-4.000 (ferma, primo bin sotto
   il pavimento dopo 2.000); voce nella sezione 2 del registro per l'errore di trascrizione 1,10 / 1,25 (QUINTA RETTIFICA).
 - Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
+
+**Seconda ondata: SETTIMA RETTIFICA dopo la settima review del `critico` (Claude, 27/10/2026, ore del commit): due frasi corrette, nessun cambio al
+codice; con questa il giro di review si chiude (Simone, 27/10: «stiamo a vedere i risultati»), e la riserva resta DA RIVEDERE per il critico.**
+- (1) «A ogni confine un solo bin cambia l'esito» era falsa: la decisione riserva / fermarsi si capovolge a **due confini soli, max(1,25 x lontano;
+  0,80 L) e 1,25 L**; al terzo (il minore fra 1,25 x lontano e 0,80 L) cambia solo il motivo, o nulla quando L < 1,5625. Corretto qui, nel prompt per
+  GPT, nel commento del codice e in quello del test.
+- (2) L'alternativa offerta a GPT («pavimento = max(0,80 L; 1,25 x lontano)») era una rietichettatura della regola attuale (0 differenze su 20.000
+  profili, verifica del critico). L'alternativa vera e' la **precedenza della persistenza** (soglia di rientro = min(1,25; 0,80 L)): con L = 1,50 un
+  livello a 1,24 da' la riserva invece di fermare. Le due opzioni, con gli esiti a L = 1,50 e a L = 1,78, sono ora nel prompt (punto 3).
+- **Proposta a Simone, in attesa della sua decisione:** declassare la riserva da regola a **numeri descrittivi** per la firma (R3, R5, plateau,
+  perdita), lasciando alla v1 congelata il ruolo di regola: se il profilo lungo rientra, decide la v1 o ci si ferma con la perdita; se non rientra
+  mai, M lo sceglie Simone con quei numeri. Cosi' non serve una regola automatica a tenuta stagna per un caso solo, e GPT la legge senza bloccare
+  la misura. Nessun ottavo giro del critico.

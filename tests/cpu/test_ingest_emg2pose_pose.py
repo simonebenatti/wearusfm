@@ -405,8 +405,8 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
         step = PP.margin_from_collaudo(_report(PROF_VERO + tail))
         assert not step["v2"]["applicabile"] and step["v2"]["R2_bins_sotto_pavimento_oltre_400"] and step["margine"]["M"] is None
     # confini con il plateau vero (L = 1,78): rientro a 1,25 x lontano (a un lato solo), pavimento 0,80 L = 1,43, tetto 1,25 L = 2,23: sotto 1,25
-    # rientro (stop), fra 1,25 e 1,43 pavimento (stop), fra 1,43 e 2,23 persistenza (riserva), sopra 2,23 tetto (stop); un solo bin basta, e a ogni
-    # confine l'esito cambia per 0,02 (dichiarato nella SESTA RETTIFICA)
+    # rientro (stop), fra 1,25 e 1,43 pavimento (stop: cambia solo il motivo rispetto al rientro), fra 1,43 e 2,23 persistenza (riserva), sopra
+    # 2,23 tetto (stop); un solo bin basta; la decisione si capovolge a 1,43 e a 2,23 (SETTIMA RETTIFICA)
     for level, key in ((1.24, "profilo_rientra"), (1.26, "R2_bins_sotto_pavimento_oltre_400"), (1.42, "R2_bins_sotto_pavimento_oltre_400")):
         one = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [level] + [1.78] * 99))
         assert one["margine"]["M"] is None and one["v2"][key]
