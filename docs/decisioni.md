@@ -4605,3 +4605,20 @@ contato rientra nel 25% del lontano», non «l'ultimo bin e' fuori»; chi rientr
   e ~0,1 core-ore; tetti 132,0 GPU-ora e 531 core-ore; **residuo 91,6 GPU-ora** (di cui 9 di tetto per il ramo R3c in coda) **e ~531 core-ore**;
   i due job CPU del profilo lungo valgono <= 1,2 core-ore e 0 GPU-ora.
 - Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
+
+**Seconda ondata: QUARTA RETTIFICA dopo la quarta review del `critico` (Claude, 27/10/2026, ore del commit): «rientra» e' a un lato solo e il
+pavimento di R2 vale fino a 2.000 campioni; il prompt per GPT distingue calcolo e applicazione; la lettura committata si rigenera a ogni commit.**
+- **Bloccanti accolti.** (1) Una contaminazione piatta che finiva con un gradino verso un livello FUORI dalla banda del 25% (0,74 sotto il lontano,
+  oppure 1,30 dopo 1.000 campioni) non contava come «rientro» e la riserva dava M = 200, con l'esito che si capovolgeva per 0,02 di livello. Ora
+  **rientrare e' a un lato solo: un bin contato con rapporto al lontano <= 1,10 e' un rientro** (anche sotto il lontano); e **il pavimento 0,80 L di
+  R2 vale su tutti i bin contati da 401 a 2.000** (non solo fino a 1.000), il tetto 1,25 L oltre 400 resta. Cosi' `[1,78]x60 + 0,74`, `0,70`,
+  `[1,78]x160 + 0,70` si fermano (rientro) come `+ 0,76` (v1 determinata a 1.000), e `[1,78]x100 + 1,30` si ferma (R2 caduta). (2) Il prompt per GPT
+  descriveva l'applicabilita' come «v1 non determinata», mentre il codice la separa dallo stato della v1: riscritto con la distinzione fra
+  **calcolo** (v1 non determinata o M > 400) e **applicazione** (nessun bin contato rientra, R2 regge, bin contati fino a 2.000; indipendente dallo
+  stato della v1, compreso il caso dei bin finali non contati).
+- Minori: nel caso «nessun bin contato rientra ma R2 cade, con la v1 determinata solo per bin finali non contati» la proposta non presenta piu' il
+  M della v1 come esito; `--lungo` provato da riga di comando nel test; **il file `results/passo2/emg2pose_pose_margine_lettura_62364572.json` si
+  rigenera a ogni commit che cambia il codice della lettura** (anche in questo; la v1 e i numeri non cambiano, cambiano etichette e testi).
+- Costanti toccate: `V2_PERSIST_LAGS = (401, 2000)`; nel codice il campo si chiama ancora `R2_bins_sotto_banda_401_1000` per continuita' dei test,
+  ma copre 401-2.000 (dichiarato qui).
+- Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.

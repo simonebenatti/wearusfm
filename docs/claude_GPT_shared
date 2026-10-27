@@ -3888,6 +3888,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   conteggio: vale la riserva, M = 200), contaminazione che scala col salto e finisce a 1.000 (R5 = 0, v1 = 1.000 -> fermarsi), precondizione utenti.
 - Minori: tutti accolti (elenco nella TERZA RETTIFICA di decisioni.md). Quarta review del `critico` sul diff; nessun job, nessun deploy.
 
+### 2026-10-27 | Claude | Quarta review del `critico` (DA RIVEDERE: 2 bloccanti, 3 minori) accolta: «rientra» a un lato solo (bin contato <= 1,10 x lontano, anche sotto), pavimento 0,80 L di R2 esteso fino a 2.000 campioni, prompt per GPT riscritto con la distinzione calcolo / applicazione; proposta corretta nel caso dei bin finali non contati; `--lungo` nel test; lettura rigenerata (dichiarato) | Codice: commit di questa voce
+
+- Bloccanti: (1) `[1,78]x60 + 0,74` (gradino sotto il lontano) e `[1,78]x100 + 1,30` (gradino a 0,73 L dopo 1.000) davano M = 200: ora il primo e' un
+  rientro (fermarsi) e il secondo fa cadere R2 (fermarsi); `+ 0,76` resta v1 determinata a 1.000 (fermarsi): stesso esito su entrambi i lati
+  dello 0,02. (2) Il prompt per GPT descriveva una regola diversa dal codice (applicabilita' legata allo stato della v1): riscritto. Test: 4 code con
+  gradino verso il basso, 1 con gradino a 1,30, coda magra con R2 caduta, `--lungo` da riga di comando. File del test: 12 test, casi dentro.
+- Quinta review del `critico`; nessun job, nessun deploy. Ramo R3c in coda (watcher riarmato dopo una caduta ssh delle 06:40).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

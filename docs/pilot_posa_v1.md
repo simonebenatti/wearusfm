@@ -301,12 +301,12 @@ una regola in piu'. Il §6, punto 5, resta: il valore di M lo firma Simone.
 **Precisazione (27/10, dopo il collaudo 62364572 e la review del `critico`; voci in `decisioni.md`):** la regola v1 del 26/10 ha dato «non
 determinato» (profilo piatto a ~1,78 volte il valore lontano da ~125 a 200 ms, tutti i 40 bin fuori dal 25%). E' stata scritta una regola di riserva
 R1-R5, **post hoc, informata da quel profilo** (non pre-registrata): si calcola se la v1 e' non determinata o da' M > 400 campioni, e si applica
-solo se nessun bin contato del profilo lungo rientra nel 25% del lontano (terza review); R1 plateau =
-media dei bin 301-400; R2 persistenza a due lati (bin 401-1.000 fra 0,80 e 1,25 volte il plateau, nessun bin oltre 400 sopra 1,25, bin contati fino
-ad almeno 2.000 campioni), altrimenti la riserva non si applica e vale la v1 (se M > 400 ci si ferma); R3 M3 = ultimo bin entro 300 sopra 1,10
+solo se nessun bin contato del profilo lungo rientra sotto 1,10 volte il lontano (rientro a un lato solo, quarta review); R1 plateau =
+media dei bin 301-400; R2 persistenza a due lati (bin contati 401-2.000 fra 0,80 e 1,25 volte il plateau, nessun bin oltre 400 sopra 1,25, bin
+contati fino ad almeno 2.000 campioni), altrimenti la riserva non si applica e vale la v1 (se M > 400 ci si ferma); R3 M3 = ultimo bin entro 300 sopra 1,10
 volte il plateau; R5 M5 dal profilo per altezza del salto (terzili, alto / basso > 1,25); M = max(M3, M5). Provvisorio sul primo campione (2 utenti
-soli): M3 = 200 campioni. **Seconda e terza review (27/10):** la riserva si applica SOLO se nessun bin contato del profilo lungo rientra nel 25% dal lontano
-(chi rientra e poi riesce si ferma); se la v1 e' determinata con M > 400 ci si ferma e decide Simone con la perdita; R5 non calcolabile -> M = M3
+soli): M3 = 200 campioni. **Seconda, terza e quarta review (27/10):** la riserva si applica SOLO se nessun bin contato del profilo lungo rientra sotto 1,10 volte il
+lontano (chi rientra, anche sotto il lontano, e poi riesce si ferma); se la v1 e' determinata con M > 400 ci si ferma e decide Simone con la perdita; R5 non calcolabile -> M = M3
 dichiarato. Ordine: verifica di GPT (responsabile scientifico) PRIMA dei job -> via di Simone ai due job CPU (secondo deploy e checkout, §6 punto 5;
 campione nuovo senza i 2 utenti del primo collaudo, almeno 10 utenti) -> rilettura -> proposta di M -> firma di Simone.
 

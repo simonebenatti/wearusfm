@@ -325,6 +325,9 @@ def test_margin_rule_v1_is_frozen_and_mechanical(tmp_path):
     out = subprocess.run([sys.executable, "-m", "wearusfm.ingest.emg2pose_pose", str(path)], capture_output=True, text=True, check=True,
                          env={"PYTHONPATH": str(REPO / "src"), "PATH": "/usr/bin:/bin"})  # il modulo del worktree, non quello installato
     assert json.loads(out.stdout)["margine"]["M"] == 30
+    long_cmd = subprocess.run([sys.executable, "-m", "wearusfm.ingest.emg2pose_pose", str(path), "--lungo"], capture_output=True, text=True,
+                              check=True, env={"PYTHONPATH": str(REPO / "src"), "PATH": "/usr/bin:/bin"})  # collaudo lungo: almeno 10 utenti (qui 4)
+    assert not json.loads(long_cmd.stdout)["precondizioni"]["ok"] and "utenti 4 < 10" in long_cmd.stdout
 
 
 def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persistence():
@@ -390,6 +393,22 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     # precondizione del collaudo lungo: almeno 10 utenti (qui 4)
     few = PP.margin_from_collaudo(_report(slow), min_users=10)
     assert not few["precondizioni"]["ok"] and any(p.startswith("utenti 4 < 10") for p in few["precondizioni"]["problemi"])
+    # quarta review: «rientra» e' a un lato solo. Una contaminazione che finisce con un gradino verso il basso (0,74 o 0,70, sotto il lontano) e'
+    # finita: rientro -> fermarsi; a 0,76 (dentro il 25%) la v1 e' determinata a 1.000 -> fermarsi: stesso esito, niente capovolgimenti per 0,02
+    for tail in ([1.78] * 60 + [0.74] * 300, [1.78] * 60 + [0.76] * 300, [1.78] * 60 + [0.70] * 300, [1.78] * 160 + [0.70] * 200):
+        st = PP.margin_from_collaudo(_report(PROF_VERO + tail))
+        assert st["margine"]["M"] is None and st["margine"]["stato"] == "non_determinato" and st["proposta"].startswith("FERMARSI")
+        assert st["v2"]["calcolata"] and st["v2"]["profilo_rientra"]
+    # gradino verso il basso dopo 1.000 che resta sopra 1,25 x lontano (1,30 = 0,73 L): il pavimento 0,80 L vale fino a 2.000 -> R2 cade
+    step = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 100 + [1.30] * 260))
+    assert not step["v2"]["applicabile"] and step["v2"]["R2_bins_sotto_banda_401_1000"] and step["margine"]["M"] is None
+    # coda magra con R2 che cade: la proposta non presenta il M della v1 (dovuto solo ai bin non contati) come esito
+    thin_bad = _report(PROF_VERO + [1.30] * 360)
+    for b in thin_bad["collaudo"]["edge_profile"]["bins"][-5:]:
+        b["n"] = 10
+    tb = PP.margin_from_collaudo(thin_bad)
+    assert tb["v1"]["stato"] == "determinato" and not tb["v2"]["profilo_rientra"] and not tb["v2"]["applicabile"]
+    assert "non e' un esito" in tb["proposta"] and "da' M = 3950" not in tb["proposta"]
     # invarianza al valore lontano: stesso rapporto e stesso M se tutto il profilo e il lontano sono scalati di k
     k = 7.3
     sc = _report(slow, far=0.002 * k)

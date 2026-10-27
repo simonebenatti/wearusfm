@@ -20,11 +20,17 @@ Ti chiedo, come responsabile scientifico:
    smentirebbe, e la regola R2 la cattura?
 2. L'alternativa «occlusione parziale = cinematica inversa piu' rumorosa vicino alla perdita» cambia M? R5 (il rumore non scala col salto) basta a
    distinguerla?
-3. Le soglie (0,80-1,25 per R2, 1,10 per R3 (proposta di Claude, tabella di sensibilita' in decisioni.md), 1,25 per R5, 2.000 campioni contati,
-   9 blocchi per i terzili) ti sembrano difendibili? La riserva si applica solo se la v1 sul profilo lungo e' «non determinata» (il profilo non
-   rientra mai nel 25% dal lontano in 2 s, cioe' nessun bin contato rientra; chi rientra e poi riesce si ferma); se la v1 e' determinata con
-   M > 400 ci si ferma e decide Simone. **I job del profilo lungo partono
-   solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica alle soglie va scritta ora, prima della misura.
+3. La regola, come sta nel codice. **Calcolo:** la riserva R1-R5 si calcola solo se la v1 (congelata il 26/10) sul profilo lungo e' «non
+   determinata» oppure da' M > 400 campioni. **Applicazione**, indipendente dallo stato della v1: (a) nessun bin contato (>= 200 campioni) del
+   profilo lungo «rientra», dove rientrare e' a un lato solo, rapporto al valore lontano <= 1,10, anche sotto il lontano (chi rientra e poi riesce
+   si ferma; un gradino verso il basso che chiude la contaminazione e' un rientro); (b) R2: tutti i bin contati fra 401 e 2.000 campioni stanno
+   fra 0,80 e 1,25 volte il plateau L (media dei bin 301-400), nessun bin contato oltre 400 supera 1,25 L; (c) bin contati almeno fino a 2.000.
+   Se la v1 risulta determinata solo perche' gli ultimi bin non sono contati, vale il predicato sui bin contati. Se la riserva non si applica ci
+   si ferma e la proposta porta a Simone la v1 (se determinata, con la perdita) e i valori informativi R3 e R5. R3: M3 = ultimo bin entro 300
+   sopra 1,10 L (soglia PROPOSTA da Claude, tabella di sensibilita' in decisioni.md: 0,25 -> 140, 0,10 -> 200, 0,05 -> 240). R5: terzili
+   dell'altezza del salto (almeno 9 blocchi con `n_h >= 10`), alto / basso > 1,25; se R5 non e' calcolabile M = M3, dichiarato. M = max(M3, M5).
+   Le soglie ti sembrano difendibili? **I job del profilo lungo partono solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica
+   alle soglie va scritta ora, prima della misura.
 4. Il campione del collaudo lungo: 40 registrazioni, al massimo 4 per utente, almeno 10 utenti, ESCLUSI i 2 utenti del primo collaudo
    (29ddab35d7, d387095792): basta cosi', o serve un secondo campione indipendente?
 5. Il costo della scelta: tetto della perdita 2 M x (blocchi di zeri) / righe = 5,3% a M = 200, oltre al 17% gia' nullo. Accettabile per R3?
