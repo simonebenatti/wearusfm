@@ -225,6 +225,456 @@
    "reference_sha256": "a440aea6b69484f094462ba6479568bbd6c068a14e7236e79a8db4c30f8d96d0",
    "candidate_sha256": "01d3048dc6f88bb74d206c7379413fe6df805dc27a3f69ac1bfd0c5a88e2035e",
    "file": "confronti/descrittivo_R5_vs_R0_e2_p2_dec.json"
+  },
+  "descrittivo_R1_vs_R0_e1_p1_dec": {
+   "arm": "R1",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "dec",
+   "S_ref": 17.157569447551808,
+   "S_arm": 17.062063301316222,
+   "delta": -0.09550614623558493,
+   "ci95": [
+    -0.5686986699411322,
+    0.32468903632432694
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": -0.31139637755338845,
+     "ci95": [
+      -0.9373301951167072,
+      0.24637071080660417
+     ]
+    },
+    "ninapro_db3": {
+     "delta": 0.23448063357560736,
+     "ci95": [
+      -0.33513183978478917,
+      0.8950485381764406
+     ]
+    },
+    "ninapro_db6": {
+     "delta": 0.27307460931884076,
+     "ci95": [
+      -0.8914919993445483,
+      1.3135631917093438
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "ce17a17a2e5f3103abbfe26fbb19593f166a62711d4fae1e947eef67a183a607",
+   "file": "confronti/descrittivo_R1_vs_R0_e1_p1_dec.json"
+  },
+  "descrittivo_R1_vs_R0_e1_p1_pool": {
+   "arm": "R1",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "pool",
+   "S_ref": 18.317671702194385,
+   "S_arm": 17.898530377953414,
+   "delta": -0.41914132424096834,
+   "ci95": [
+    -0.949167851130448,
+    0.0931652022765633
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": -0.649092788364769,
+     "ci95": [
+      -1.3379393005355333,
+      -0.002515019549828722
+     ]
+    },
+    "ninapro_db3": {
+     "delta": -0.8155975723593251,
+     "ci95": [
+      -1.5901962511882548,
+      -0.128865265785619
+     ]
+    },
+    "ninapro_db6": {
+     "delta": 1.09534890443177,
+     "ci95": [
+      -0.816540494027012,
+      2.9503475974735176
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "ce17a17a2e5f3103abbfe26fbb19593f166a62711d4fae1e947eef67a183a607",
+   "file": "confronti/descrittivo_R1_vs_R0_e1_p1_pool.json"
+  },
+  "descrittivo_R1_vs_R0_e1_p2_dec": {
+   "arm": "R1",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "dec",
+   "S_ref": 81.96202290470782,
+   "S_arm": 81.4607341431546,
+   "delta": -0.5012887615532202,
+   "ci95": [
+    -1.7776843890279435,
+    0.8731849559928226
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": -1.3503184713375749,
+     "ci95": [
+      -1.8322717622080713,
+      -0.8150743099787728
+     ]
+    },
+    "uci_emg": {
+     "delta": 0.34774094823113444,
+     "ci95": [
+      -2.22119263229049,
+      3.1012218320163787
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "ce17a17a2e5f3103abbfe26fbb19593f166a62711d4fae1e947eef67a183a607",
+   "file": "confronti/descrittivo_R1_vs_R0_e1_p2_dec.json"
+  },
+  "descrittivo_R1_vs_R0_e1_p2_pool": {
+   "arm": "R1",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "pool",
+   "S_ref": 80.5315124589041,
+   "S_arm": 78.87736887471884,
+   "delta": -1.6541435841852692,
+   "ci95": [
+    -3.490895827855197,
+    0.43639581417925244
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": -1.498938428874741,
+     "ci95": [
+      -2.055520169851378,
+      -0.9850318471337627
+     ]
+    },
+    "uci_emg": {
+     "delta": -1.8093487394957974,
+     "ci95": [
+      -5.494760478546212,
+      2.379779017439788
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "ce17a17a2e5f3103abbfe26fbb19593f166a62711d4fae1e947eef67a183a607",
+   "file": "confronti/descrittivo_R1_vs_R0_e1_p2_pool.json"
+  },
+  "descrittivo_R2_vs_R0_e1_p1_dec": {
+   "arm": "R2",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "dec",
+   "S_ref": 17.157569447551808,
+   "S_arm": 17.642914116430596,
+   "delta": 0.4853446688787916,
+   "ci95": [
+    0.10004440028361591,
+    0.9456837299339635
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": 0.4890429526495321,
+     "ci95": [
+      0.0024440409646395217,
+      1.0419064026011755
+     ]
+    },
+    "ninapro_db3": {
+     "delta": 0.7157837763694066,
+     "ci95": [
+      0.21694736884198101,
+      1.4697334793960146
+     ]
+    },
+    "ninapro_db6": {
+     "delta": 0.12489287255990633,
+     "ci95": [
+      -1.200528376279506,
+      1.4805176720057867
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "fa6020262d3db9450d275d68bbc3d8705acba9909c1326af7ff1a944cd0d8a1e",
+   "file": "confronti/descrittivo_R2_vs_R0_e1_p1_dec.json"
+  },
+  "descrittivo_R2_vs_R0_e1_p1_pool": {
+   "arm": "R2",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "pool",
+   "S_ref": 18.317671702194385,
+   "S_arm": 18.205092792639984,
+   "delta": -0.11257890955439799,
+   "ci95": [
+    -0.5850884747174293,
+    0.3141639059211142
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": -0.20995837182797572,
+     "ci95": [
+      -0.7758422327771023,
+      0.3245676870728034
+     ]
+    },
+    "ninapro_db3": {
+     "delta": -0.619325701971124,
+     "ci95": [
+      -1.4552596425618003,
+      0.36740112789803714
+     ]
+    },
+    "ninapro_db6": {
+     "delta": 1.0370591281650021,
+     "ci95": [
+      -0.2464670571952382,
+      2.2790982252259977
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "fa6020262d3db9450d275d68bbc3d8705acba9909c1326af7ff1a944cd0d8a1e",
+   "file": "confronti/descrittivo_R2_vs_R0_e1_p1_pool.json"
+  },
+  "descrittivo_R2_vs_R0_e1_p2_dec": {
+   "arm": "R2",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "dec",
+   "S_ref": 81.96202290470782,
+   "S_arm": 81.62486700259703,
+   "delta": -0.3371559021107917,
+   "ci95": [
+    -1.529782443016336,
+    0.733226401903604
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": 0.2653927813163426,
+     "ci95": [
+      -0.13593418259022688,
+      0.666666666666671
+     ]
+    },
+    "uci_emg": {
+     "delta": -0.939704585537926,
+     "ci95": [
+      -3.2630429181440768,
+      1.1383699902519693
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "fa6020262d3db9450d275d68bbc3d8705acba9909c1326af7ff1a944cd0d8a1e",
+   "file": "confronti/descrittivo_R2_vs_R0_e1_p2_dec.json"
+  },
+  "descrittivo_R2_vs_R0_e1_p2_pool": {
+   "arm": "R2",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "pool",
+   "S_ref": 80.5315124589041,
+   "S_arm": 79.95285059193984,
+   "delta": -0.5786618669642807,
+   "ci95": [
+    -2.0203436153264156,
+    0.9669528226595302
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": -0.10191082802546436,
+     "ci95": [
+      -0.5798301486199716,
+      0.41836518046708837
+     ]
+    },
+    "uci_emg": {
+     "delta": -1.055412905903097,
+     "ci95": [
+      -3.829682613613119,
+      1.9326361996964014
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "fa6020262d3db9450d275d68bbc3d8705acba9909c1326af7ff1a944cd0d8a1e",
+   "file": "confronti/descrittivo_R2_vs_R0_e1_p2_pool.json"
+  },
+  "descrittivo_R5_vs_R0_e1_p1_dec": {
+   "arm": "R5",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "dec",
+   "S_ref": 17.157569447551808,
+   "S_arm": 17.14613338329297,
+   "delta": -0.011436064258834871,
+   "ci95": [
+    -0.5542614963812311,
+    0.46996431081547324
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": 0.09424324762890846,
+     "ci95": [
+      -0.576741706366927,
+      0.7500741216422929
+     ]
+    },
+    "ninapro_db3": {
+     "delta": 0.21624772311754567,
+     "ci95": [
+      -0.5745715546534095,
+      0.9260771245142128
+     ]
+    },
+    "ninapro_db6": {
+     "delta": -0.775678992874379,
+     "ci95": [
+      -2.329263822619013,
+      1.0414991193094856
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "708dba4832bddea27bb0bee011cb11933dcb3892976983bc7a2074d599bb3505",
+   "file": "confronti/descrittivo_R5_vs_R0_e1_p1_dec.json"
+  },
+  "descrittivo_R5_vs_R0_e1_p1_pool": {
+   "arm": "R5",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p1",
+   "layer": "pool",
+   "S_ref": 18.317671702194385,
+   "S_arm": 17.31641683056237,
+   "delta": -1.001254871632009,
+   "ci95": [
+    -1.5482215775078398,
+    -0.41290870240289335
+   ],
+   "verdict_descriptive": "peggiora",
+   "per_dataset": {
+    "ninapro_db2": {
+     "delta": -1.620924222932546,
+     "ci95": [
+      -2.4116940072893636,
+      -0.854841908926653
+     ]
+    },
+    "ninapro_db3": {
+     "delta": -0.3589967323541162,
+     "ci95": [
+      -1.2396986171450306,
+      0.3425840679888801
+     ]
+    },
+    "ninapro_db6": {
+     "delta": 0.5140353246533003,
+     "ci95": [
+      -0.4413710573206507,
+      1.5559959419284586
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "708dba4832bddea27bb0bee011cb11933dcb3892976983bc7a2074d599bb3505",
+   "file": "confronti/descrittivo_R5_vs_R0_e1_p1_pool.json"
+  },
+  "descrittivo_R5_vs_R0_e1_p2_dec": {
+   "arm": "R5",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "dec",
+   "S_ref": 81.96202290470782,
+   "S_arm": 80.69346156857866,
+   "delta": -1.2685613361291592,
+   "ci95": [
+    -2.6091136361179514,
+    0.008276220103733474
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": -2.8874734607218455,
+     "ci95": [
+      -3.4353503184713348,
+      -2.397027600849266
+     ]
+    },
+    "uci_emg": {
+     "delta": 0.3503507884635271,
+     "ci95": [
+      -2.2624073728476564,
+      2.798473255611476
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "708dba4832bddea27bb0bee011cb11933dcb3892976983bc7a2074d599bb3505",
+   "file": "confronti/descrittivo_R5_vs_R0_e1_p2_dec.json"
+  },
+  "descrittivo_R5_vs_R0_e1_p2_pool": {
+   "arm": "R5",
+   "reference": "R0",
+   "epochs": 1,
+   "task": "p2",
+   "layer": "pool",
+   "S_ref": 80.5315124589041,
+   "S_arm": 80.25119325408137,
+   "delta": -0.2803192048227543,
+   "ci95": [
+    -2.2056417710358396,
+    1.7902484811995305
+   ],
+   "verdict_descriptive": "regola non superata",
+   "per_dataset": {
+    "epn612": {
+     "delta": -2.7579617834394776,
+     "ci95": [
+      -3.3015923566879137,
+      -2.193205944798304
+     ]
+    },
+    "uci_emg": {
+     "delta": 2.197323373793969,
+     "ci95": [
+      -1.6295350555093921,
+      6.334132121382807
+     ]
+    }
+   },
+   "reference_sha256": "25fca9e0bacf9c619ac250875df9e2697d5e21bba872815f91a41a5a148be6ab",
+   "candidate_sha256": "708dba4832bddea27bb0bee011cb11933dcb3892976983bc7a2074d599bb3505",
+   "file": "confronti/descrittivo_R5_vs_R0_e1_p2_pool.json"
   }
  }
 }

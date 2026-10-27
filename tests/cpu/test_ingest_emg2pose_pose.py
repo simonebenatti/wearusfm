@@ -201,10 +201,11 @@ def test_driver_collaudo_then_full_ingest_with_skip_and_stats(tmp_path):
     out, rep = tmp_path / "pose_root", tmp_path / "rep.json"
     env = {"PYTHONPATH": str(REPO / "src")}
     r = subprocess.run([sys.executable, str(SCRIPT), "--tar", str(tarp), "--csv", str(csvp), "--out-root", str(out), "--report", str(rep),
-                        "--limit", "4", "--both-sides"], capture_output=True, text=True, env={**env, "PATH": "/usr/bin:/bin"})
+                        "--limit", "4", "--both-sides", "--profile-max-lag", "600"], capture_output=True, text=True, env={**env, "PATH": "/usr/bin:/bin"})
     assert r.returncode == 0, r.stdout + r.stderr
     report = json.loads(rep.read_text())
     assert report["n_recordings"] == 4 and report["stopped"] == "limit" and report["collaudo"]["per_side"] == {"left": 2, "right": 2}
+    assert report["params"]["profile_max_lag"] == 600 and len(report["collaudo"]["edge_profile"]["bins"]) == 60  # profilo lungo a richiesta
     assert report["collaudo"]["fields_in_first_file"]["timeseries_fields"] == ["time", "joint_angles", "emg"]
     assert report["collaudo"]["edge_profile"]["bins"][0]["n"] > 0 and report["collaudo"]["frac_zero_rows"] > 0
     assert len(list(out.rglob(PP.META_FILE))) == 4
@@ -271,6 +272,7 @@ def test_margin_rule_from_the_collaudo_report_is_frozen_and_mechanical(tmp_path)
     # non torna entro il massimo misurato: non si inventa un M
     r4 = PP.margin_from_collaudo(_report([2.0] * 40))
     assert r4["margine"]["M"] is None and r4["margine"]["stato"] == "non_determinato" and r4["proposta"].startswith("FERMARSI")
+    assert r4["v2"]["applicata"] and r4["v2"]["profilo_corto"] and not r4["v2"]["applicabile"] and r4["v2"]["M"] == 0  # v2 provvisoria: profilo corto
     # un bin troppo magro non conta
     thin = _report(ratios)
     thin["collaudo"]["edge_profile"]["bins"][2]["n"] = 50
@@ -283,6 +285,25 @@ def test_margin_rule_from_the_collaudo_report_is_frozen_and_mechanical(tmp_path)
     for bad in (dict(max_abs=12.0), dict(sides=(40, 0)), dict(failed={"x": "err"}), dict(frac_zero=0.6)):
         rb = PP.margin_from_collaudo(_report(ratios, **bad))
         assert not rb["precondizioni"]["ok"] and rb["proposta"].startswith("FERMARSI")
+    # regola v2 di riserva: v1 non determinata (plateau a 1,8 x lontano fino alla fine), riferimento = plateau 301-400 -> M dall'ultimo bin sopra
+    # 1,25 x plateau entro 300; applicabile solo se oltre il plateau nessun bin supera la soglia
+    prof = [25.0, 25.0, 24.0, 10.0, 3.4, 3.3, 3.1, 3.0, 3.0, 2.9, 2.5, 2.46, 2.42, 2.28, 2.09, 2.1, 2.08, 2.09, 2.13, 2.07] + [1.9] * 5 + [1.78] * 15
+    r6 = PP.margin_from_collaudo(_report(prof))  # profilo corto (400): la v2 e' solo provvisoria, lo stato resta non determinato
+    assert r6["v2"]["applicata"] and r6["v2"]["profilo_corto"] and not r6["v2"]["applicabile"] and r6["v2"]["M"] == 140
+    assert r6["margine"]["stato"] == "non_determinato" and r6["margine"]["M"] is None and "PROVVISORIA" in r6["margine"]["motivo"]
+    assert abs(r6["v2"]["plateau_level_ratio_to_far"] - 1.78) < 1e-9 and r6["proposta"].startswith("FERMARSI") and "profilo lungo" in r6["proposta"]
+    # profilo lungo (2 s): la v2 si applica se oltre il plateau nessun bin supera 1,25 x il plateau (decadimento lento = comportamento)
+    long_ok = PP.margin_from_collaudo(_report(prof + [1.7] * 100 + [1.4] * 100 + [1.2] * 160))  # 400 bin = 4.000 campioni
+    assert long_ok["margine"]["stato"] == "determinato_v2" and long_ok["margine"]["M"] == 140 and long_ok["v2"]["max_lag_measured"] == 4000
+    assert long_ok["proposta"].startswith("M = 140 campioni (70 ms") and "v2" in long_ok["proposta"]
+    assert abs(long_ok["perdita"]["frac_rows_margine_tetto"] - 2 * 140 * 30 / 600000) < 1e-12
+    long_bad = PP.margin_from_collaudo(_report(prof + [1.7] * 50 + [2.5] * 10 + [1.2] * 300))  # v1 «determinata» a 1.000 (> 400) -> v2 -> bin a 2,5
+    assert long_bad["v2"]["v1_stato"] == "determinato" and long_bad["v2"]["v1_M"] == 1000 and not long_bad["v2"]["applicabile"]
+    assert long_bad["margine"]["stato"] == "non_determinato" and long_bad["margine"]["M"] is None and long_bad["proposta"].startswith("FERMARSI")
+    # la v2 non scatta se la v1 e' determinata con M <= 400; scatta se la v1 da' M > 400
+    assert not PP.margin_from_collaudo(_report(ratios))["v2"]["applicata"]
+    big = PP.margin_from_collaudo(_report([3.0] * 45 + [1.0] * 15 + [1.0] * 340))  # v1: M = 450 > 400 -> v2 (plateau 301-400 = 3.0: niente sopra -> M = 0)
+    assert big["v2"]["applicata"] and big["v2"]["v1_M"] == 450 and big["margine"]["stato"] == "determinato_v2" and big["margine"]["M"] == 0
     # da riga di comando, sul file del rapporto (come dal Mac dopo il rsync)
     path = tmp_path / "rapporto.json"
     path.write_text(json.dumps(_report(ratios)))

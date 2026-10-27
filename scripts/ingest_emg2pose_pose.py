@@ -76,6 +76,7 @@ def _aggregate_profiles(done: list, metas: list[dict]) -> dict:
 def _write_report(path: Path, done: list, failed: dict, skipped: int, t0: float, stopped: str | None, args, extra: dict | None) -> dict:
     report = {
         "dataset": "emg2pose_pose", "params": {"zero_margin_samples": args.zero_margin_samples, "limit": args.limit, "both_sides": args.both_sides,
+                                               "profile_max_lag": args.profile_max_lag,
                                                "measure": not args.no_measure, "pose_fs_hz": PP.POSE_FS_HZ, "block_samples": PP.BLOCK},
         "n_recordings": len(done), "n_failed": len(failed), "n_skipped_existing": skipped, "n_users": len({r["user"] for r in done}),
         "hours_total": sum(r["n_samples"] for r in done) / PP.NATIVE_FS_HZ / 3600, "n_valid_blocks_total": sum(r["n_valid_blocks"] for r in done),
@@ -100,11 +101,15 @@ def main() -> int:
     p.add_argument("--zero-margin-samples", type=int, default=0, help="campioni non validi attorno a ogni riga a zero (congelato in decisioni.md "
                                                                       "dopo il collaudo; 0 = solo le righe a zero)")
     p.add_argument("--no-measure", action="store_true", help="senza profilo dei bordi e minimi simultanei (ingest intero, piu' veloce)")
+    p.add_argument("--profile-max-lag", type=int, default=PP.PROFILE_MAX_LAG, help="collaudo: lunghezza del profilo dei bordi in campioni a 2 kHz "
+                                                                                   "(default 400 = 200 ms; 4000 = 2 s per il profilo lungo)")
     p.add_argument("--stats", action="store_true", help="alla fine scrive pose_stats.json sullo split di pretraining")
     p.add_argument("--stats-only", action="store_true", help="solo pose_stats.json da un albero gia' scritto")
     args = p.parse_args()
     if args.zero_margin_samples < 0:
         p.error("--zero-margin-samples >= 0")
+    if args.profile_max_lag < PP.PROFILE_BIN:
+        p.error("--profile-max-lag >= un bin")
     if args.stats_only:
         stats = PP.aggregate_stats(args.out_root)
         print(json.dumps({k: stats[k] for k in ("n_recordings", "n_recordings_per_side", "side_criterion")}, indent=1))
@@ -143,7 +148,7 @@ def main() -> int:
                     fields = PP.fields_in_file(fobj)
                     fobj.seek(0)
                 done.append(PP.ingest_pose_recording(fobj, ref, args.out_root, row, zero_margin_samples=args.zero_margin_samples,
-                                                     measure=not args.no_measure, fields=fields))
+                                                     measure=not args.no_measure, fields=fields, profile_max_lag=args.profile_max_lag))
                 metas.append(json.loads((PP.out_dir_for(args.out_root, user, ref.stem) / PP.META_FILE).read_text()))
             except Exception as e:  # un file rotto non ferma gli altri
                 failed[ref.stem] = f"{type(e).__name__}: {e}"

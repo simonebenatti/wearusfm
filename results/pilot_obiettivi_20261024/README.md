@@ -6,7 +6,8 @@ Quattro bracci a 30M, seme 0: R0 = A rifatto, R1 = `--jepa-target a`, R2 = `--je
 (49.046 passi) e rami `-e1` a 1 epoca dal checkpoint 19.618. Training finito il 25/10 (8 job COMPLETED per `max_steps`, nessun allarme; 176,5
 GPU-ora, `results/infra/pilot_obiettivi_20261024/consuntivo_training.json`). Rapporti delle sonde e predizioni fuori fold restano fuori da Git
 (`~/wearusfm_local/pilot_obiettivi_20261024/`, stesso albero del cluster); qui stanno i controlli di provenienza, i confronti, le letture e il
-riepilogo delle sonde. Comandi: `results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt`.
+riepilogo delle sonde. Comandi: `results/infra/pilot_obiettivi_20261024/comandi_valutazione.txt`. Campagna CHIUSA il 27/10/2026:
+criterio (nessun braccio passa), descrittivi a 2 e a 1 epoca, pendenze, coerenza con C1, consuntivo.
 
 - `provenienza_criterio.json`: controllo §5 PRIMA di leggere (26/10/2026, 00:23): per R0, R1, R2, R5 i rapporti `pool` P1 e P2 vengono dal
   `checkpoint_postdecay.pt` del tronco giusto (percorso nel rapporto), con lo stesso SHA-256 nelle due estrazioni, codice 705ec04, OOF integri;
@@ -82,7 +83,54 @@ l'esito del criterio.
 
 Diagnostiche di non collasso e tempi delle 16 sonde a 2 epoche in `riepilogo_sonde.json` (`dec` P1 134-149 min, `dec` P2 24-28 min).
 
-## Descrittivi ancora in coda
+## Descrittivi (fuori dal criterio): endpoint a 1 epoca, `pool` e `dec` (letti il 27/10/2026, 05:15)
 
-Endpoint a 1 epoca (`pool` e `dec`), pendenza 1 -> 2 epoche, R0-e1 contro C1 s0 (18,21 su P1) come controllo di coerenza; consuntivo `sacct` della
-valutazione (16 estrazioni, 32 sonde) a code vuote.
+Rami `-e1` (1 epoca dal checkpoint 19.618 del tronco; `provenienza_e1.json`: 4 rami «completo», SHA uguali nei 4 rapporti di ogni braccio e
+distinti fra bracci e dal tronco, codice 705ec04, OOF integri). Stessa chiamata del criterio, riferimento R0-e1
+(`confronti/descrittivo_<R>_vs_R0_e1_<p>_<readout>.json`, `descrittivi.json`). Dodici letture senza correzione; **non decidono nulla.**
+S assolute di R0-e1: `pool` P1 18,32, P2 80,53; `dec` P1 17,16, P2 81,96.
+
+| Braccio | Compito | Readout | S R0-e1 | S R_i-e1 | Delta [IC95] | Per dataset (delta [IC95]) |
+|---|---|---|---|---|---|---|
+| R1 | P1 | pool | 18,32 | 17,90 | -0,42 [-0,95; +0,09] | DB2 -0,65 [-1,34; -0,00], DB3 -0,82 [-1,59; -0,13], DB6 +1,10 [-0,82; +2,95] |
+| R1 | P1 | dec | 17,16 | 17,06 | -0,10 [-0,57; +0,32] | DB2 -0,31 [-0,94; +0,25], DB3 +0,23 [-0,34; +0,90], DB6 +0,27 [-0,89; +1,31] |
+| R1 | P2 | pool | 80,53 | 78,88 | -1,65 [-3,49; +0,44] | EPN-612 -1,50 [-2,06; -0,99], UCI -1,81 [-5,49; +2,38] |
+| R1 | P2 | dec | 81,96 | 81,46 | -0,50 [-1,78; +0,87] | EPN-612 -1,35 [-1,83; -0,82], UCI +0,35 [-2,22; +3,10] |
+| R2 | P1 | pool | 18,32 | 18,21 | -0,11 [-0,59; +0,31] | DB2 -0,21 [-0,78; +0,32], DB3 -0,62 [-1,46; +0,37], DB6 +1,04 [-0,25; +2,28] |
+| R2 | P1 | dec | 17,16 | 17,64 | +0,49 [+0,10; +0,95] | DB2 +0,49 [+0,00; +1,04], DB3 +0,72 [+0,22; +1,47], DB6 +0,12 [-1,20; +1,48] |
+| R2 | P2 | pool | 80,53 | 79,95 | -0,58 [-2,02; +0,97] | EPN-612 -0,10 [-0,58; +0,42], UCI -1,06 [-3,83; +1,93] |
+| R2 | P2 | dec | 81,96 | 81,62 | -0,34 [-1,53; +0,73] | EPN-612 +0,27 [-0,14; +0,67], UCI -0,94 [-3,26; +1,14] |
+| R5 | P1 | pool | 18,32 | 17,32 | -1,00 [-1,55; -0,41] | DB2 -1,62 [-2,41; -0,85], DB3 -0,36 [-1,24; +0,34], DB6 +0,51 [-0,44; +1,56] |
+| R5 | P1 | dec | 17,16 | 17,15 | -0,01 [-0,55; +0,47] | DB2 +0,09 [-0,58; +0,75], DB3 +0,22 [-0,57; +0,93], DB6 -0,78 [-2,33; +1,04] |
+| R5 | P2 | pool | 80,53 | 80,25 | -0,28 [-2,21; +1,79] | EPN-612 -2,76 [-3,30; -2,19], UCI +2,20 [-1,63; +6,33] |
+| R5 | P2 | dec | 81,96 | 80,69 | -1,27 [-2,61; +0,01] | EPN-612 -2,89 [-3,44; -2,40], UCI +0,35 [-2,26; +2,80] |
+
+*Interpretazione (non e' una lettura della regola):* a 1 epoca il quadro e' quello delle 2 epoche, con scarti un po' piu' grandi: nessun braccio
+sopra R0 di un punto; R5 `pool` P1 sotto R0 con l'intervallo intero sotto lo zero (-1,00 [-1,55; -0,41]), che a 2 epoche diventa -0,53 [-1,09;
++0,05]; R1 `pool` P2 -1,65 [-3,49; +0,44]. L'unico intervallo sopra lo zero e' R2 `dec` P1 +0,49 [+0,10; +0,95] (a 2 epoche +0,16 [-0,21; +0,57]):
+sotto il punto e non ripetuto a 2 epoche, quindi niente. Su EPN-612 R1 e R5 stanno sotto R0 a 1 come a 2 epoche, con entrambi i readout.
+
+## Pendenza 1 -> 2 epoche e coerenza con C1 (descrittive, `pendenza.json`)
+
+S(e2) - S(e1) in punti, da due sonde separate (nessun intervallo appaiato): la pendenza di R0 e' il riferimento.
+
+| Braccio | P1 pool | P1 dec | P2 pool | P2 dec |
+|---|---|---|---|---|
+| R0 | +0,52 | +0,22 | +0,69 | +1,18 |
+| R1 | +0,18 (-0,34) | +0,13 (-0,09) | +1,07 (+0,38) | +1,03 (-0,15) |
+| R2 | +0,37 (-0,16) | -0,10 (-0,32) | +1,82 (+1,13) | +0,87 (-0,31) |
+| R5 | +1,00 (+0,47) | +0,56 (+0,33) | +1,32 (+0,63) | +1,60 (+0,42) |
+
+(tra parentesi: pendenza del braccio meno quella di R0). *Interpretazione:* R5 parte piu' in basso e sale piu' di R0 in tutte e quattro le letture
+(+0,3 / +0,6 punti di pendenza in piu'): con piu' epoche potrebbe raggiungere R0, non c'e' segno che lo superi; R1 e R2 hanno pendenze come R0 salvo
+R2 su P2 `pool` (+1,13). Sono differenze fra sonde singole, dell'ordine dell'errore standard di una S (0,7-0,8 su P1): indicazioni, non misure.
+
+**Coerenza con C1:** R0-e1 (A rifatto, seme 0, 1 epoca, `pool` P1) 18,32 +- 0,75 contro C1 seme 0 (stessa configurazione, 19/10) 18,21 +- 0,78:
+differenza +0,11, un decimo di errore standard non appaiato. Il pilot riproduce il punto di partenza della calibrazione.
+
+## Consuntivo della valutazione (`consuntivo_valutazione.json`, `sacct -X` del 27/10/2026 05:10)
+
+48 job su 48 COMPLETED. GPU-ora 5,56 (attese 5,6, tetto 20,0); core-ore 317,7 (attese 268,8, tetto 1.024): le sonde `pool` P1 del criterio hanno
+preso 65-68 min invece dei 62 stimati e le 16 estrazioni GPU contano 8 core l'una (22 core-ore non messe a preventivo). Finestre: A1 25/10 18:36 ->
+26/10 00:16; A2 -> 26/10 15:05; B1 25/10 19:54-20:22; B2 26/10 09:49 -> 27/10 05:02 (una sonda alla volta sulla seriale, tetto di CPU per utente).
+**Totale della campagna: training 176,5 + valutazione 5,56 = 182,1 GPU-ora** (tetti 228 + 20).

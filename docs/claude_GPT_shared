@@ -3813,6 +3813,34 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   come nel test del driver, rilanciato il file nei due modi). Nessun cambio al checkout c5e42cb: la lettura gira sul Mac sul JSON copiato.
 - Prossimo: rapporto del collaudo -> `python3 -m wearusfm.ingest.emg2pose_pose <rapporto>` -> proposta di M con i numeri -> firma di Simone -> [4].
 
+### 2026-10-27 | Claude | Pilot degli obiettivi CHIUSO: blocco B2 letto (16 sonde a 1 epoca, 12 confronti descrittivi), pendenza 1 -> 2, R0-e1 = C1 s0 (18,32 contro 18,21), consuntivo della valutazione 48/48 COMPLETED, 5,56 GPU-ora e 317,7 core-ore; totale campagna 182,1 GPU-ora | Codice: nessuno (letture); commit di questa voce
+
+- Provenienza prima di leggere (`provenienza_e1.json`): 4 rami `-e1` «completo», SHA uguali nei 4 rapporti per braccio, distinti fra bracci e dal
+  tronco, codice 705ec04, OOF integri. 12 confronti con la stessa chiamata del criterio, riferimento R0-e1, letti come descrittivi (README, tabella).
+- A 1 epoca nessun braccio sopra R0; R5 `pool` P1 -1,00 [-1,55; -0,41]; R1 `pool` P2 -1,65 [-3,49; +0,44]; R2 `dec` P1 +0,49 [+0,10; +0,95] (sotto
+  il punto, non ripetuto a 2 epoche). EPN-612 giu' per R1 e R5 con entrambi i readout e a entrambe le epoche.
+- Pendenza S(e2) - S(e1): R0 +0,52 / +0,22 / +0,69 / +1,18 (P1 pool, P1 dec, P2 pool, P2 dec); R5 piu' ripido di R0 in tutte e quattro (+0,3 / +0,6);
+  R1, R2 come R0 salvo R2 P2 pool (+1,13). *Interpretazione:* R5 potrebbe raggiungere R0 con piu' epoche, nessun segno che lo superi.
+- Coerenza: R0-e1 P1 pool 18,32 +- 0,75 contro C1 s0 18,21 +- 0,78 (+0,11, 0,1 SE non appaiate).
+- Consuntivo (`consuntivo_valutazione.json`): 5,56 GPU-ora (attese 5,6 / tetto 20), 317,7 core-ore (attese 268,8 / tetto 1.024: sonde P1 del
+  criterio 65-68 min, 22 core-ore delle estrazioni GPU non a preventivo). Training 176,5 + valutazione 5,56 = 182,1 GPU-ora (tetti 228 + 20).
+- Con questo si chiudono le attivita' avviate da Claude elencate il 26/10 (descrittivi, consuntivo; codice R3 e test gia' chiusi). Restano in corso
+  solo i job della catena R3 che Simone ha autorizzato dopo. Il passaggio ufficiale della responsabilita' scientifica a GPT lo dichiara Simone.
+
+### 2026-10-27 | Claude | Seconda ondata: collaudo dell'ingest 62364572 COMPLETED (12,7 s) e LETTO con la regola v1: margine NON DETERMINATO (profilo piatto a 1,8x il valore lontano fra 150 e 200 ms, tutti i 40 bin fuori dal 25%); precondizioni ok, «V» 0,013% (nessuna regola in piu'); regola v2 di riserva pre-registrata (plateau 150-200 ms; provvisorio M = 140 campioni, perdita <= 3,7%), profilo lungo a 2 s da misurare con `--profile-max-lag`; M NON firmato | Codice: commit di questa voce (driver e lettura; checkout c5e42cb invariato)
+
+- Numeri (dettaglio in decisioni.md e `results/passo2/`): 40 registrazioni, 20 per lato, 0,52 h; zeri 17,0% (una registrazione tutta a zero); 491
+  blocchi di zeri da 0,64 s in media; massimo 2,15 rad; 0 non finiti, 0 falliti. Profilo: 25x nel primo frame, 10x a 31-40, 3,4x a 41-50, 3 -> 2,1
+  fra 50 e 150 ms, 1,78 (1,71-1,84) fra 150 e 200 ms.
+- *Interpretazione:* rampa di un frame (interpolazione dopo gli zeri a 60 Hz) + transitorio del filtro fino a ~100 ms + plateau comportamentale (la
+  mano si muove di piu' vicino a una perdita di tracking). Un artefatto lineare decade, non si ferma a 1,8x per 50 ms.
+- Codice: `--profile-max-lag` nel driver (default 400 invariato; nei parametri del report), `margin_from_collaudo` con la v2 (costanti
+  `PLATEAU_LAGS`, `V1_MAX_M`, `V2_MIN_MAX_LAG`; su profilo corto la v2 e' solo provvisoria e lo stato resta non determinato: trovato dal caso di
+  test «piatto a 2x ovunque», che con la prima stesura sarebbe passato a vuoto), test aggiornati (profilo lungo da riga di comando, v2 provvisoria,
+  v2 applicabile, v2 non applicabile, v1 con M > 400). Review del `critico` sul diff prima del deploy.
+- Prossimo: deploy `deploy/pilot-posa-collaudo-20261027` + checkout separato + collaudo lungo (2 job CPU, 0 GPU-ora; §6 punto 5 e preventivo); poi
+  la proposta di M con la firma. Il passo [4] (ingest intero) aspetta la firma; R3c tronco in esecuzione da 9 h 40 (fine attesa entro le 08:40).
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

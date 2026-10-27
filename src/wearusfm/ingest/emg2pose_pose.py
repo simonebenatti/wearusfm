@@ -221,9 +221,9 @@ def already_done(out_dir: Path, zero_margin_samples: int, atol: float = ZERO_ATO
 
 
 def ingest_pose_recording(fileobj, ref: RecordingRef, out_root: Path, meta_row: dict | None, *, zero_margin_samples: int = 0,
-                          measure: bool = True, fields: dict | None = None) -> dict:
+                          measure: bool = True, fields: dict | None = None, profile_max_lag: int = PROFILE_MAX_LAG) -> dict:
     """Una registrazione -> `pose_200hz_f16.npy`, `pose_valid.npy`, `pose_meta.json` in `<out_root>/u<utente>/<stem>/`. Con `measure` calcola
-    anche profilo dei bordi e minimi simultanei (collaudo); senza, solo validita', blocchi e statistiche."""
+    anche profilo dei bordi (fino a `profile_max_lag` campioni) e minimi simultanei (collaudo); senza, solo validita', blocchi e statistiche."""
     rec = read_pose(fileobj)
     angles = rec["angles"]
     user = (meta_row or {}).get("user", "sconosciuto")
@@ -251,7 +251,7 @@ def ingest_pose_recording(fileobj, ref: RecordingRef, out_root: Path, meta_row: 
         "fields_in_file": fields,
     }
     if measure:
-        meta["edge_profile"] = edge_profile(angles, zero)
+        meta["edge_profile"] = edge_profile(angles, zero, max_lag=int(profile_max_lag))
         meta["simultaneous_dips"] = simultaneous_dips(angles, zero)
     (out_dir / META_FILE).write_text(json.dumps(meta, indent=1, default=str))
     return {k: meta[k] for k in ("user", "stem", "side", "moving_hand", "split", "n_samples", "n_blocks", "n_valid_blocks", "n_zero_rows",
@@ -375,6 +375,15 @@ DIP_FRAC_MAX = 1e-3  # «V» tollerate: righe nei minimi simultanei fino allo 0,
 ZERO_FRAC_RANGE = (0.02, 0.40)  # frazione di righe a zero plausibile sul collaudo (paper: 12,7%)
 MAX_ABS_RADIANS = 7.0  # oltre 2 pi (piu' un margine) gli angoli non sono radianti: fermarsi
 SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
+# Regola v2, di riserva (congelata il 27/10/2026 DOPO aver visto il profilo a 200 ms del collaudo 62364572, PRIMA del collaudo col profilo lungo;
+# decisioni.md): si applica solo se la v1 e' non determinata o da' M > V1_MAX_M. Il riferimento non e' piu' il valore lontano (> max_lag) ma il
+# livello del profilo a 150-200 ms (PLATEAU_LAGS), dove sul collaudo il profilo e' piatto: cio' che sta sopra 1,25 volte quel livello entro 150 ms e'
+# contaminazione (rampa di un frame, transitorio del filtro); cio' che resta sopra il valore lontano anche a 200 ms e' letto come comportamento
+# della mano vicino a una perdita di tracking, non come artefatto. La v2 e' applicabile solo se NESSUN bin oltre il plateau supera 1,25 volte il
+# livello del plateau (il profilo lungo lo verifica); altrimenti: fermarsi.
+PLATEAU_LAGS = (301, 400)  # campioni dal bordo: 150-200 ms
+V1_MAX_M = 400  # oltre 200 ms di margine la v1 non e' credibile (perdita > 10% delle righe sul collaudo): si passa alla v2
+V2_MIN_MAX_LAG = 2000  # la v2 si applica solo a un profilo misurato almeno fino a 1 s: su un profilo corto da' un M provvisorio, non una decisione
 
 
 def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = MARGIN_MIN_N, dip_frac_max: float = DIP_FRAC_MAX) -> dict:
@@ -433,6 +442,38 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     out["profilo"] = {"far_mean_abs_diff": far, "far_n": prof.get("far_n"), "bins": bins,
                       "n_bins_non_contati": sum(1 for b in bins if not b["conta"])}
     out["margine"] = {"M": M, "stato": stato, "motivo": why}
+    # regola v2 di riserva (vedi le costanti): riferimento = livello del plateau a PLATEAU_LAGS, non il valore lontano
+    v2 = {"applicata": False}
+    if bins and (stato == "non_determinato" or (stato == "determinato" and M > V1_MAX_M)):
+        plateau = [b["ratio"] for b in bins if b["conta"] and b["lag_from"] >= PLATEAU_LAGS[0] and b["lag_to"] <= PLATEAU_LAGS[1]]
+        if len(plateau) >= 5:
+            level = sum(plateau) / len(plateau)
+            inside = [b for b in bins if b["conta"] and b["lag_to"] < PLATEAU_LAGS[0] and b["ratio"] > (1 + tol) * level]
+            beyond = [b["lag_to"] for b in bins if b["conta"] and b["lag_from"] > PLATEAU_LAGS[1] and b["ratio"] > (1 + tol) * level]
+            m2 = max(b["lag_to"] for b in inside) if inside else 0
+            measured = int(bins[-1]["lag_to"])
+            short = measured < V2_MIN_MAX_LAG
+            v2 = {"applicata": True, "plateau_lags": list(PLATEAU_LAGS), "plateau_level_ratio_to_far": level, "n_plateau_bins": len(plateau),
+                  "M": int(m2), "bins_beyond_plateau_above": beyond, "profilo_corto": short, "applicabile": not beyond and not short,
+                  "max_lag_measured": measured, "min_max_lag": V2_MIN_MAX_LAG, "v1_stato": stato, "v1_M": M}
+            if v2["applicabile"]:
+                stato, M = "determinato_v2", int(m2)
+                why = (f"v1 {v2['v1_stato']}; v2: riferimento = plateau {PLATEAU_LAGS[0]}-{PLATEAU_LAGS[1]} campioni ({level:.2f} x lontano), "
+                       f"ultimo bin sopra {1 + tol:.2f} x plateau: fino a {m2} campioni; nessun bin oltre il plateau sopra la soglia "
+                       f"(profilo misurato fino a {measured} campioni)")
+            else:  # la v1 e' inutilizzabile per costruzione (non determinata o M > V1_MAX_M) e la v2 non decide: fermarsi
+                if stato == "determinato":
+                    why = f"v1 determinata ma con M = {M} > {V1_MAX_M} campioni (non credibile)"
+                stato, M = "non_determinato", None
+                if short:
+                    why = why + (f"; v2 PROVVISORIA (M = {m2}, plateau {level:.2f} x lontano): si applica solo a un profilo misurato almeno fino a "
+                                 f"{V2_MIN_MAX_LAG} campioni, qui {measured}")
+                else:
+                    why = why + f"; v2 NON applicabile: oltre il plateau {len(beyond)} bin sopra {1 + tol:.2f} x il suo livello (fino a {max(beyond)})"
+            out["margine"] = {"M": M, "stato": stato, "motivo": why}
+        else:
+            v2 = {"applicata": False, "motivo": f"meno di 5 bin contati nel plateau {PLATEAU_LAGS}"}
+    out["v2"] = v2
     out["perdita"] = {"rows": rows, "frac_zero_rows": zero_rows_total / rows if rows else None, "n_zero_runs": runs_total,
                       "frac_invalid_m0": invalid0 / rows if rows else None,
                       "frac_rows_margine_tetto": (min(1.0, 2 * M * runs_total / rows) if rows else None) if M else (0.0 if M == 0 else None)}
@@ -445,7 +486,11 @@ def margin_from_collaudo(report: dict, *, tol: float = MARGIN_TOL, min_n: int = 
     if problems:
         out["proposta"] = "FERMARSI: precondizioni non soddisfatte (" + "; ".join(problems) + ")"
     elif stato == "non_determinato":
-        out["proposta"] = "FERMARSI: margine non determinato (" + why + "); allungare il profilo e ripetere il collaudo"
+        out["proposta"] = ("FERMARSI: margine non determinato (" + why + "); "
+                           + ("profilo lungo da misurare e poi rileggere" if v2.get("profilo_corto") else "allungare il profilo e ripetere il collaudo"))
+    elif stato == "determinato_v2" and not out["V"]["regola_aggiuntiva_necessaria"]:
+        out["proposta"] = (f"M = {M} campioni ({M / NATIVE_FS_HZ * 1000:.0f} ms per lato di ogni blocco di zeri) con la regola v2 (riferimento = "
+                           f"plateau a 150-200 ms); nessuna regola per le «V»")
     elif out["V"]["regola_aggiuntiva_necessaria"]:
         out["proposta"] = (f"M = {M} campioni, MA le «V» superano la soglia ({frac_dip:.2e} > {dip_frac_max}): serve una regola in piu' "
                            "prima dell'ingest intero")

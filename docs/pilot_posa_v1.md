@@ -298,6 +298,11 @@ M = `lag_to` dell'ultimo bin fuori tolleranza (0,25 sul rapporto con la media lo
 «non determinato» se non rientra entro 200 ms (profilo da allungare, non M a occhio); «V» tollerate fino allo 0,1% delle righe non nulle, sopra serve
 una regola in piu'. Il §6, punto 5, resta: il valore di M lo firma Simone.
 
+**Precisazione (27/10, dopo il collaudo 62364572; voce in `decisioni.md`):** la regola v1 ha dato «non determinato» (profilo piatto a 1,8 volte il
+valore lontano dai 150 ai 200 ms). Regola v2 di riserva pre-registrata (riferimento = plateau 150-200 ms, M = ultimo bin sopra 1,25 volte il plateau
+entro 150 ms, applicabile solo con profilo misurato fino ad almeno 1 s e nessun bin oltre il plateau sopra la soglia); provvisorio M = 140 campioni.
+Profilo lungo (2 s) da un secondo checkout (`--profile-max-lag 4000`), come previsto dal §6, punto 5. Il valore di M lo firma Simone dopo.
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |

@@ -4472,3 +4472,36 @@ tronco 62364571 e ramo 62364573 (tetti 51 + 9 GPU-ora, 47,0 attese). Spesa a ogg
   sintetico e sul rapporto vero del driver in `tests/cpu/test_ingest_emg2pose_pose.py` (9 -> 10 test). L'ingest intero [4] riceve M con
   `--zero-margin-samples M`: nessun cambio al checkout c5e42cb se M e' determinato e le «V» stanno sotto soglia. Firma di Simone sul valore di M:
   voce successiva, dopo il rapporto.
+
+**Pilot degli obiettivi: CONSUNTIVO della valutazione e chiusura della campagna (Claude, 27/10/2026).** 48 job su 48 COMPLETED: 5,56 GPU-ora
+(attese 5,6, tetto 20,0) e 317,7 core-ore (attese 268,8, tetto 1.024; `results/pilot_obiettivi_20261024/consuntivo_valutazione.json`). Totale della
+campagna: training 176,5 + valutazione 5,56 = **182,1 GPU-ora** sui tetti 228 + 20 della famiglia «Ablation a 30M». Descrittivi a 1 epoca, pendenze e
+coerenza con C1 nel README dei risultati: nessuna lettura cambia l'esito del criterio (nessun braccio passa).
+
+**Seconda ondata: COLLAUDO DELL'INGEST LETTO con la regola v1: margine NON DETERMINATO; regola v2 di riserva PRE-REGISTRATA e profilo lungo da misurare
+(Claude, 27/10/2026, 05:30; job 62364572, 40 registrazioni, 12,7 s; `results/passo2/emg2pose_pose_ingest_collaudo_62364572.json`,
+`emg2pose_pose_margine_lettura_62364572.json`). Nessuna firma chiesta ora: M resta da firmare.**
+- **Fatti.** Precondizioni tutte soddisfatte: 20 + 20 registrazioni (0,25 + 0,27 h), righe a zero 17,0% (paper 12,7%; per registrazione mediana 8,7%,
+  una registrazione tutta a zero), massimo assoluto 2,15 (radianti confermati), 0 righe non finite, 0 file falliti; 491 blocchi di zeri, lunghezza
+  media 0,64 s (38 frame), 15,9 al minuto. «V»: 398 righe in 120 tratti su 28 registrazioni = 0,013% delle righe non nulle (soglia 0,1%): nessuna
+  regola in piu'. Profilo dei bordi (rapporto al valore lontano > 200 ms, bin di 10 campioni, 6.000-9.500 campioni per bin): 25,9 / 25,5 / 24,1 nei
+  primi 30 campioni, 10,2 a 31-40, 3,4 a 41-50, poi 3,0 -> 2,1 fra 50 e 150 ms, e **piatto a 1,78 (1,71-1,84) dai 150 ai 200 ms**. Tutti i 40 bin
+  sono fuori dalla tolleranza del 25%: **la v1 e' non determinata** (il profilo non torna al valore lontano entro 200 ms), come la regola prevedeva.
+- **Lettura (interpretazione, dichiarata):** la rampa nel primo frame (33 campioni, 25 volte il valore lontano) e' l'artefatto dell'interpolazione dopo
+  gli zeri a 60 Hz; la discesa fra 40 e 150 ms e' compatibile col transitorio del passa-basso a 15 Hz; il plateau a 1,8 volte, piatto per 50 ms, non
+  ha la forma di un artefatto lineare (che decade, non si ferma): e' letto come comportamento, la mano si muove di piu' vicino a una perdita di
+  tracking. Se fosse un artefatto, allungare il profilo lo mostrerebbe decadere verso 1 con una scala breve; se e' comportamento, oltre 200 ms il
+  profilo resta sopra 1 o scende lentamente su scala di secondi.
+- **Regola v2 di riserva, PRE-REGISTRATA ora (dopo il profilo a 200 ms, PRIMA del profilo lungo):** si applica solo se la v1 e' non determinata o da'
+  M > 400 campioni. Riferimento L = media del profilo nei bin 301-400 (150-200 ms); contaminazione = bin entro 300 campioni sopra 1,25 L; **M =
+  `lag_to` dell'ultimo di questi**; la v2 e' applicabile solo se il profilo e' misurato almeno fino a 2.000 campioni (1 s) e **nessun bin oltre il
+  plateau supera 1,25 L**; altrimenti fermarsi. Sul profilo a 200 ms la v2 da' un valore **provvisorio M = 140 campioni (70 ms per lato; tetto della
+  perdita 3,7% delle righe, oltre al 17% gia' nullo)**: provvisorio perche' il controllo oltre il plateau non c'e' ancora. La v2 e' invariante al
+  riferimento lontano (rapporto fra bin e plateau): il profilo lungo non cambia M, ne verifica l'applicabilita'.
+- **Prossimo passo (0 GPU-ora, previsto dal §6 punto 5 del protocollo firmato e dal preventivo: secondo deploy e secondo checkout):** `--profile-max-lag
+  4000` nel driver (default 400 invariato), `margin_from_collaudo` con la v2, test (10 -> 10 nel file, casi nuovi dentro), review del `critico` sul
+  diff, deploy `deploy/pilot-posa-collaudo-20261027`, checkout di campagna separato (`pilot-posa-collaudo-20261027`), collaudo con `--limit 40
+  --both-sides --profile-max-lag 4000` (stesse 40 registrazioni: il selettore e' deterministico), rilettura. Il checkout c5e42cb dei training e
+  dell'ingest intero non cambia: la validita' (`invalid_rows`) e' la stessa, cambia solo la misura. Poi la proposta di M a Simone, con la firma.
+- Letto nell'autorizzazione anticipata di Simone («io autorizzo gia i passi che servono, cosi sveltiamo»): i due job CPU del secondo checkout e del
+  collaudo lungo sono «passi che servono» gia' previsti dal protocollo firmato; nessun job GPU in piu', nessun passo [4]-[6] prima della firma di M.

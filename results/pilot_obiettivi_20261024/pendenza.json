@@ -1,0 +1,189 @@
+{
+ "note": "pendenza S(e2) - S(e1) in punti, descrittiva: le due S vengono da sonde separate su cache separate, nessun IC appaiato; la pendenza di R0 e' il riferimento",
+ "arms": {
+  "R0": {
+   "p1_pool": {
+    "S_e1": 18.318,
+    "S_e2": 18.841,
+    "slope": 0.523,
+    "per_dataset": {
+     "ninapro_db2": 0.738,
+     "ninapro_db3": -0.508,
+     "ninapro_db6": 1.214
+    }
+   },
+   "p1_dec": {
+    "S_e1": 17.158,
+    "S_e2": 17.382,
+    "slope": 0.224,
+    "per_dataset": {
+     "ninapro_db2": 0.323,
+     "ninapro_db3": 0.135,
+     "ninapro_db6": -0.033
+    }
+   },
+   "p2_pool": {
+    "S_e1": 80.532,
+    "S_e2": 81.223,
+    "slope": 0.691,
+    "per_dataset": {
+     "epn612": 1.168,
+     "uci_emg": 0.216
+    }
+   },
+   "p2_dec": {
+    "S_e1": 81.962,
+    "S_e2": 83.143,
+    "slope": 1.181,
+    "per_dataset": {
+     "epn612": 0.949,
+     "uci_emg": 1.412
+    }
+   }
+  },
+  "R1": {
+   "p1_pool": {
+    "S_e1": 17.899,
+    "S_e2": 18.079,
+    "slope": 0.18,
+    "per_dataset": {
+     "ninapro_db2": 0.423,
+     "ninapro_db3": 0.551,
+     "ninapro_db6": -1.346
+    },
+    "slope_minus_R0": -0.343
+   },
+   "p1_dec": {
+    "S_e1": 17.062,
+    "S_e2": 17.196,
+    "slope": 0.134,
+    "per_dataset": {
+     "ninapro_db2": -0.332,
+     "ninapro_db3": 0.076,
+     "ninapro_db6": 2.081
+    },
+    "slope_minus_R0": -0.09
+   },
+   "p2_pool": {
+    "S_e1": 78.877,
+    "S_e2": 79.951,
+    "slope": 1.074,
+    "per_dataset": {
+     "epn612": 1.695,
+     "uci_emg": 0.454
+    },
+    "slope_minus_R0": 0.383
+   },
+   "p2_dec": {
+    "S_e1": 81.461,
+    "S_e2": 82.493,
+    "slope": 1.032,
+    "per_dataset": {
+     "epn612": 0.676,
+     "uci_emg": 1.39
+    },
+    "slope_minus_R0": -0.149
+   }
+  },
+  "R2": {
+   "p1_pool": {
+    "S_e1": 18.205,
+    "S_e2": 18.571,
+    "slope": 0.366,
+    "per_dataset": {
+     "ninapro_db2": 0.468,
+     "ninapro_db3": 0.041,
+     "ninapro_db6": 0.442
+    },
+    "slope_minus_R0": -0.157
+   },
+   "p1_dec": {
+    "S_e1": 17.643,
+    "S_e2": 17.543,
+    "slope": -0.1,
+    "per_dataset": {
+     "ninapro_db2": -0.241,
+     "ninapro_db3": -0.213,
+     "ninapro_db6": 0.634
+    },
+    "slope_minus_R0": -0.324
+   },
+   "p2_pool": {
+    "S_e1": 79.953,
+    "S_e2": 81.773,
+    "slope": 1.82,
+    "per_dataset": {
+     "epn612": 0.988,
+     "uci_emg": 2.653
+    },
+    "slope_minus_R0": 1.129
+   },
+   "p2_dec": {
+    "S_e1": 81.625,
+    "S_e2": 82.497,
+    "slope": 0.872,
+    "per_dataset": {
+     "epn612": 0.915,
+     "uci_emg": 0.829
+    },
+    "slope_minus_R0": -0.309
+   }
+  },
+  "R5": {
+   "p1_pool": {
+    "S_e1": 17.316,
+    "S_e2": 18.314,
+    "slope": 0.998,
+    "per_dataset": {
+     "ninapro_db2": 1.141,
+     "ninapro_db3": -0.021,
+     "ninapro_db6": 1.95
+    },
+    "slope_minus_R0": 0.475
+   },
+   "p1_dec": {
+    "S_e1": 17.146,
+    "S_e2": 17.701,
+    "slope": 0.555,
+    "per_dataset": {
+     "ninapro_db2": 0.282,
+     "ninapro_db3": 0.115,
+     "ninapro_db6": 2.309
+    },
+    "slope_minus_R0": 0.331
+   },
+   "p2_pool": {
+    "S_e1": 80.251,
+    "S_e2": 81.576,
+    "slope": 1.325,
+    "per_dataset": {
+     "epn612": 1.48,
+     "uci_emg": 1.169
+    },
+    "slope_minus_R0": 0.634
+   },
+   "p2_dec": {
+    "S_e1": 80.693,
+    "S_e2": 82.291,
+    "slope": 1.598,
+    "per_dataset": {
+     "epn612": 1.875,
+     "uci_emg": 1.32
+    },
+    "slope_minus_R0": 0.417
+   }
+  }
+ },
+ "R0_e1_vs_C1_s0": {
+  "S_R0_e1_p1_pool": 18.318,
+  "S_se": 0.753,
+  "C1_s0": {
+   "S": 18.21,
+   "S_se": 0.78,
+   "source": "docs/decisioni.md, C1 deciso il 19/10/2026 (seme 0, LR 1e-4, 1 epoca, P1 pool)"
+  },
+  "difference": 0.108,
+  "difference_over_se_unpaired": 0.1,
+  "note": "controllo di coerenza, non appaiato (C1 s0 letto con la sonda della calibrazione, R0-e1 con quella del pilot: stesse 4 pieghe sui soggetti del pretraining, codice diverso); |diff| sotto ~2 SE = coerente"
+ }
+}
