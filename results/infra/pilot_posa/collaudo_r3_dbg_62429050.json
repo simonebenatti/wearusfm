@@ -1,0 +1,351 @@
+{
+ "protocol": "w1arm-collaudo-v1",
+ "arm": "R3",
+ "run_dir": "/Users/simonebenatti/wearusfm_local/pilot_posa/collaudo_r3/PILOTC-POSA-R3-30M-s0",
+ "steps": 1300,
+ "passed": false,
+ "criteria": {
+  "completo": {
+   "ok": true,
+   "detail": {
+    "STOP": null,
+    "stopped": "max_steps",
+    "steps": 1300,
+    "attesi": 1300
+   }
+  },
+  "codice_e_ddp": {
+   "ok": true,
+   "detail": {
+    "sha": "c5e42cb99b4dc0a105495de70946a411b0523dbc",
+    "world_size": 4,
+    "batch_per_process": 8,
+    "accum_steps": 1
+   }
+  },
+  "pesi": {
+   "ok": true,
+   "detail": {
+    "config": {
+     "jepa_weight": 0.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0,
+     "pose_weight": 1.0
+    },
+    "attesi": {
+     "jepa_weight": 0.0,
+     "anchor_weight": 0.2,
+     "keep_weight": 0.0,
+     "branch_weight": 0.0,
+     "pose_weight": 1.0
+    }
+   }
+  },
+  "posa_configurata": {
+   "ok": true,
+   "detail": {
+    "pose_head": true,
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "sha_in": [
+     "summary.json",
+     "pose_provenance.json"
+    ]
+   }
+  },
+  "record": {
+   "ok": true,
+   "detail": {
+    "records": 1300,
+    "in_sequenza": true,
+    "passi_con_finestre_diverse": [],
+    "passi_non_finiti": []
+   }
+  },
+  "composizione_della_loss": {
+   "ok": true,
+   "detail": {
+    "formula": "total = 0 x jepa + 0.2 x somma delle ancore ['log_rms', 'band_shape', 'log_env', 'ms_fast', 'ms_slow'] + 1 x pose",
+    "tolleranza_relativa": 1e-06,
+    "passi_senza_componenti_finite": [],
+    "passi_fuori_tolleranza": []
+   }
+  },
+  "posa_scala_avvio": {
+   "ok": true,
+   "detail": {
+    "passi": [
+     1,
+     100
+    ],
+    "n_record": 100,
+    "posa_pesata": 1.0816686857359286,
+    "ancore_pesate": 3.9337676426023247,
+    "rapporto": 0.2749701517755042,
+    "minimo": 0.1
+   }
+  },
+  "posa_tetto": {
+   "ok": true,
+   "detail": {
+    "passi": [
+     500,
+     1300
+    ],
+    "n_record": 801,
+    "posa_pesata": 1.0244282760806445,
+    "ancore_pesate": 1.4734667945811326,
+    "rapporto": 0.6952503306135664,
+    "massimo": 2.0
+   }
+  },
+  "posa_discesa": {
+   "ok": false,
+   "detail": {
+    "media_posa_pesata_da": 0.9908600772335266,
+    "passi_da": [
+     500,
+     599
+    ],
+    "media_posa_pesata_a": 1.0140042293722755,
+    "passi_a": [
+     1201,
+     1300
+    ],
+    "fattore": 0.9,
+    "n_record": [
+     100,
+     100
+    ]
+   }
+  },
+  "posa_conteggio": {
+   "ok": true,
+   "detail": {
+    "frazione_passi_con_posa": 0.9992307692307693,
+    "minimo": 0.9,
+    "record_con_conteggio": 1300,
+    "passi": 1300
+   }
+  },
+  "ritmo": {
+   "ok": true,
+   "detail": {
+    "s_per_passo_mediana": 0.7106046676635742,
+    "soglia": 0.81,
+    "passi_esclusi_avvio": 50
+   }
+  },
+  "apprendimento": {
+   "ok": true,
+   "detail": {
+    "termine_allenato": "total",
+    "media_primi": 5.870089101967056,
+    "media_ultimi": 2.2440852301882375,
+    "record_mediati": 50
+   }
+  },
+  "non_collasso": {
+   "ok": true,
+   "detail": {
+    "allarmi": [],
+    "valutazioni": [
+     500,
+     1000,
+     1300
+    ],
+    "attese": [
+     500,
+     1000,
+     1300
+    ]
+   }
+  },
+  "checkpoint": {
+   "ok": true,
+   "detail": {
+    "checkpoint_predecay.pt": 454215648,
+    "checkpoint_postdecay.pt": 454215648
+   }
+  }
+ },
+ "descriptive": {
+  "s_per_passo_mediana": 0.7106046676635742,
+  "s_per_passo_A": {
+   "C2": 0.7402796319174357,
+   "C1_max": 0.7776
+  },
+  "attesa_dati_frazione": 0.006694656042971196,
+  "elapsed_s": 1011.1630384922028,
+  "gpu_max_memory_gib": 11.944135665893555,
+  "jepa_inizio_fine": [
+   0.15787398541957373,
+   0.035068931924179196
+  ],
+  "ancore_inizio_fine": {
+   "log_rms": [
+    1.092067413330078,
+    0.5054395047575235
+   ],
+   "band_shape": [
+    3.522999545931816,
+    0.45368213281035424
+   ],
+   "log_env": [
+    1.2897743560373782,
+    0.4017984885722399
+   ],
+   "ms_fast": [
+    5.914003167152405,
+    2.7825190597772598
+   ],
+   "ms_slow": [
+    12.499014797210693,
+    2.250661540031433
+   ]
+  },
+  "posa_inizio_fine": [
+   1.0065172460345824,
+   0.9652650849984752
+  ],
+  "posa_errore_pannello_fisso": [
+   {
+    "step": 0,
+    "pose_mae_std": 0.8705169253036469,
+    "pose_mae": 0.3500576618414513,
+    "pose_windows": 32.0,
+    "pose_count": 32.0,
+    "per_joint": {
+     "pose_mae_j00": 0.1926685228025463,
+     "pose_mae_j01": 0.19926994470194367,
+     "pose_mae_j02": 0.1290243060640976,
+     "pose_mae_j03": 0.4177686641988887,
+     "pose_mae_j04": 0.17586165014839553,
+     "pose_mae_j05": 0.3347114400408614,
+     "pose_mae_j06": 0.5518970413663041,
+     "pose_mae_j07": 0.1853990232494195,
+     "pose_mae_j08": 0.08430884135646327,
+     "pose_mae_j09": 0.4590430098546902,
+     "pose_mae_j10": 0.615678055385946,
+     "pose_mae_j11": 0.27532516748720326,
+     "pose_mae_j12": 0.12337220639405146,
+     "pose_mae_j13": 0.5632382292396743,
+     "pose_mae_j14": 0.5567664379627993,
+     "pose_mae_j15": 0.38651596433362717,
+     "pose_mae_j16": 0.14341220419639147,
+     "pose_mae_j17": 0.6067468290537537,
+     "pose_mae_j18": 0.47250008630468165,
+     "pose_mae_j19": 0.5276457377029935
+    }
+   },
+   {
+    "step": 500,
+    "pose_mae_std": 0.8542200744507564,
+    "pose_mae": 0.34255253088403176,
+    "pose_windows": 32.0,
+    "pose_count": 32.0,
+    "per_joint": {
+     "pose_mae_j00": 0.19151481245431465,
+     "pose_mae_j01": 0.19529392444352744,
+     "pose_mae_j02": 0.13561796359940032,
+     "pose_mae_j03": 0.4224699060201171,
+     "pose_mae_j04": 0.17893375980688137,
+     "pose_mae_j05": 0.31036429471571453,
+     "pose_mae_j06": 0.5390112746069967,
+     "pose_mae_j07": 0.18688554934431498,
+     "pose_mae_j08": 0.0849179401549383,
+     "pose_mae_j09": 0.42965351753159026,
+     "pose_mae_j10": 0.6066672910989871,
+     "pose_mae_j11": 0.272426408991425,
+     "pose_mae_j12": 0.11324984605459286,
+     "pose_mae_j13": 0.5353565291903365,
+     "pose_mae_j14": 0.5441653335070752,
+     "pose_mae_j15": 0.3833194357263402,
+     "pose_mae_j16": 0.1455124576333503,
+     "pose_mae_j17": 0.5813458691060425,
+     "pose_mae_j18": 0.4634706656454098,
+     "pose_mae_j19": 0.5308739148361783
+    }
+   },
+   {
+    "step": 1000,
+    "pose_mae_std": 0.8652267122363475,
+    "pose_mae": 0.34960538587323714,
+    "pose_windows": 32.0,
+    "pose_count": 32.0,
+    "per_joint": {
+     "pose_mae_j00": 0.18661486699614327,
+     "pose_mae_j01": 0.2045605604501652,
+     "pose_mae_j02": 0.1345377932959949,
+     "pose_mae_j03": 0.4077314306680061,
+     "pose_mae_j04": 0.17740322320646132,
+     "pose_mae_j05": 0.3254796889856843,
+     "pose_mae_j06": 0.5696491180783949,
+     "pose_mae_j07": 0.20266799661321622,
+     "pose_mae_j08": 0.0761528332712162,
+     "pose_mae_j09": 0.43313696844203337,
+     "pose_mae_j10": 0.6346991901132268,
+     "pose_mae_j11": 0.27641269558703685,
+     "pose_mae_j12": 0.11184699374212186,
+     "pose_mae_j13": 0.5226519899387246,
+     "pose_mae_j14": 0.5721672042819188,
+     "pose_mae_j15": 0.405142657088475,
+     "pose_mae_j16": 0.14202325694840662,
+     "pose_mae_j17": 0.5692325320916906,
+     "pose_mae_j18": 0.4684245866051251,
+     "pose_mae_j19": 0.5715721558860946
+    }
+   }
+  ],
+  "gradienti_condivisi": {
+   "passi": [
+    500,
+    1300
+   ],
+   "n_record": 9,
+   "rapporto_norme_medio": 0.7428486336940081,
+   "rapporto_norme_min_max": [
+    0.0,
+    3.280364643316456
+   ],
+   "coseno_medio": -0.026381474477128034,
+   "flag_sotto_1pct": false,
+   "soglia_flag": 0.01
+  },
+  "posa_finestre_medie": 7.178461538461539,
+  "non_collasso": [
+   {
+    "step": 500,
+    "student_collapse_ratio": 3.2258969449672925,
+    "teacher_collapse_ratio": 4.7806989409273655,
+    "student_erank": 65.0380286707359,
+    "teacher_erank": 77.52348448795011,
+    "student_var_samples": 0.18013057870229313,
+    "student_var_queries": 0.05583891295204394,
+    "teacher_var_samples": 0.1052512405566754
+   },
+   {
+    "step": 1000,
+    "student_collapse_ratio": 2.236773066037394,
+    "teacher_collapse_ratio": 3.066270251850626,
+    "student_erank": 71.24512231134757,
+    "teacher_erank": 68.70548950210731,
+    "student_var_samples": 0.20744450183028684,
+    "student_var_queries": 0.09274275740354378,
+    "teacher_var_samples": 0.2001313815787713
+   },
+   {
+    "step": 1300,
+    "student_collapse_ratio": 2.1787712845352862,
+    "teacher_collapse_ratio": 2.387306504025016,
+    "student_erank": 74.02138828954614,
+    "teacher_erank": 71.63015125063697,
+    "student_var_samples": 0.20157580834792968,
+    "student_var_queries": 0.09251811320384834,
+    "teacher_var_samples": 0.19591586368865538
+   }
+  ],
+  "lettura": "R3: ancore e testa di posa, JEPA registrata ma non allenata; il cancello della posa controlla scala, tetto, discesa e conteggio, non quanto la testa impari (docs/pilot_posa_v1.md \u00a72 (iii))"
+ }
+}

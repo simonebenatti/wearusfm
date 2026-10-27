@@ -168,18 +168,27 @@ def test_cli_writes_the_outcome_even_with_a_non_finite_collapse_ratio(tmp_path):
 
 # --- R3: posa (seconda ondata, docs/pilot_posa_v1.md §2 (iii) e §6 punto 7) -----------------------------------------------------------------
 
-def _run_r3(tmp_path, steps=STEPS, edit=None, cfg_edit=None, rate=0.74):
+def _run_r3(tmp_path, steps=STEPS, edit=None, cfg_edit=None, rate=0.74, sha_in=("summary", "provenance")):
+    """Cartella di un run R3 come la scrive il trainer: lo SHA di pose_stats.json sta in summary.json e in pose_provenance.json, NON nel
+    config (`training/run.py`: il config e' l'identita' del run). `sha_in` dice dove metterlo (il lettore fino al 27/10 lo cercava solo nel
+    config e bocciava un run vero, collaudo 62429050)."""
     wj, wa = AC.ARM_WEIGHTS["R3"]
     wp = AC.ARM_POSE_WEIGHT["R3"]
     d = tmp_path / "R3"
     d.mkdir(parents=True)
     cfg = {"jepa": {"jepa_weight": wj, "anchor_weight": wa, "keep_weight": 0.0, "branch_weight": 0.0, "pose_weight": wp},
-           "model": {"pose_head": True}, "loader": {"pose_root": "/scratch/emg2pose_pose"}, "pose_stats_sha256": "ab" * 32}
+           "model": {"pose_head": True}, "loader": {"pose_root": "/scratch/emg2pose_pose"}}
+    if "config" in sha_in:
+        cfg["pose_stats_sha256"] = "ab" * 32
     if cfg_edit:
         cfg = cfg_edit(cfg)
     (d / "config.json").write_text(json.dumps(cfg))
-    (d / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": steps, "elapsed_s": 1000.0, "code": {"sha": SHA},
-                                                "world_size": 4, "batch_per_process": 8, "accum_steps": 1, "gpu_max_memory_gib": 14.5}))
+    summary = {"stopped": "max_steps", "steps": steps, "elapsed_s": 1000.0, "code": {"sha": SHA}, "world_size": 4, "batch_per_process": 8,
+               "accum_steps": 1, "gpu_max_memory_gib": 14.5, "pose_stats_sha256": "ab" * 32 if "summary" in sha_in else None}
+    (d / "summary.json").write_text(json.dumps(summary))
+    if "provenance" in sha_in:
+        (d / "pose_provenance.json").write_text(json.dumps({"pose_root": "/scratch/emg2pose_pose", "pose_stats_sha256": "ab" * 32,
+                                                            "pose_unprompted": True}))
     recs = []
     for s in range(1, steps + 1):
         decay = 1.0 / (1.0 + s / 100)
@@ -243,6 +252,14 @@ def test_r3_gate_failures(tmp_path):
     # configurazione senza testa o senza albero della posa
     res = AC.check(_run_r3(tmp_path / "nohead", cfg_edit=lambda c: {**c, "model": {"pose_head": False}}), "R3", STEPS, SHA, LISTING)
     assert not res["criteria"]["posa_configurata"]["ok"]
+    # lo SHA delle statistiche: basta che stia in summary.json O in pose_provenance.json (dove lo scrive il trainer) O nel config; in nessuno
+    # dei tre -> NO. Regressione del 27/10/2026: il lettore cercava solo nel config e dava NO al collaudo vero 62429050
+    for where, ok in ((("summary",), True), (("provenance",), True), (("config",), True), ((), False)):
+        res = AC.check(_run_r3(tmp_path / ("sha_" + "_".join(where or ("none",))), sha_in=where), "R3", STEPS, SHA, LISTING)
+        assert res["criteria"]["posa_configurata"]["ok"] is ok, (where, res["criteria"]["posa_configurata"])
+        if ok:
+            assert res["criteria"]["posa_configurata"]["detail"]["sha_in"] == [{"summary": "summary.json", "provenance": "pose_provenance.json",
+                                                                               "config": "config.json"}[where[0]]]
     # pesi di un altro braccio (A) letti come R3: il peso della posa manca
     res = AC.check(_run(tmp_path, "A"), "R3", STEPS, SHA, LISTING)
     assert not res["criteria"]["pesi"]["ok"] and not res["criteria"]["composizione_della_loss"]["ok"]

@@ -4793,3 +4793,51 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   dice il critico»).
 - **Sonde di R3c (stadio [S]):** alimentatore avviato alle 14:52 (`leonardo_feed.py`, 8 sonde, al massimo 10 in coda), ora che l'ingest ha liberato
   la seriale. Residuo della seconda ondata: ~86 GPU-ora prima di [5]; core-ore: ~526 prima delle sonde.
+
+**Seconda ondata: COLLAUDO dbg di R3 (job 62429050) LETTO il 27/10/2026: cancello NON SUPERATO per `posa_discesa`; R3 NON parte. Il criterio
+`posa_configurata` dava NO per un difetto del lettore, corretto e dichiarato. Decisione a Simone, dopo il parere del `critico`.**
+- **Job:** 1.300 passi, 4 A100, `boost_qos_dbg`, durata 17 min 18 (16 min 51 di training), **1,15 GPU-ora** (tetto 2); 0,711 s/passo
+  (mediana; soglia 0,81). Codice c5e42cb dal checkout `pilot-posa-20261026`; posa da `$SCRATCH/data/processed/emg2pose_pose` (M = 280,
+  `pose_stats.json` sha 757f2aee...). Esito in `results/infra/pilot_posa/collaudo_r3_dbg_62429050.json`; cartella del run (senza checkpoint) e
+  log sul Mac in `~/wearusfm_local/pilot_posa/collaudo_r3/`.
+- **Criteri: 13 su 14 OK.** completo; codice_e_ddp; pesi (jepa 0, ancore 0,2, posa 1,0); posa_configurata (testa, albero, SHA); record (1.300 in
+  sequenza); composizione della loss; posa_scala_avvio 0,275 (minimo 0,1); posa_tetto 0,695 (massimo 2,0); posa_conteggio 99,9% dei passi con
+  posa; ritmo 0,711 <= 0,81; apprendimento (total 5,87 -> 2,24); non_collasso (valutazioni a 500, 1.000, 1.300, nessun allarme); checkpoint.
+  **NO: `posa_discesa`**: la perdita di posa pesata e' 0,991 nei passi 500-599 e 1,014 nei passi 1.201-1.300 (richiesto: <= 0,9 x, cioe' una
+  discesa di almeno il 10%): +2,3%.
+- **Difetto del lettore, corretto:** `scripts/arms_collaudo.py` cercava `pose_stats_sha256` in `config.json`; il trainer lo scrive, per scelta
+  dichiarata, in `summary.json` e in `pose_provenance.json` (il config resta l'identita' del run). La prima lettura dava quindi NO anche a
+  `posa_configurata` su un run configurato bene. Il lettore ora legge summary / provenienza / config (test: `tests/cpu/test_arms_collaudo.py`,
+  quattro casi). La correzione non cambia il verdetto: `posa_discesa` boccia da sola.
+- **Che cosa dicono i numeri.** La perdita di posa per blocchi di 100 passi: 1,08 1,05 1,02 1,03 1,00 0,99 1,04 0,96 1,01 1,05 1,05 1,08 1,01
+  (deviazione dentro il blocco 0,20-0,25, errore standard della media 0,02): **piatta al valore di partenza 1** (testa a zero = predittore
+  costante). Pannello fisso (32 finestre di posa): perdita 1,075 / 1,060 / 1,048 ai passi 0 / 500 / 1.000; errore assoluto standardizzato 0,871 /
+  0,854 / 0,865; in radianti 0,350 / 0,343 / 0,350 (~20 gradi). Finestre di posa viste: ~37.300 sui 4 processi (7,2 per passo per processo su
+  32). **La testa lineare non ha imparato niente in 1.300 passi.**
+- **E4 (lettura descrittiva congelata nell'emendamento):** norma del gradiente della posa sui moduli condivisi / norma di quello delle ancore,
+  ai passi 500-1.300: 25%, 146%, 15%, 0 (ultimo micro-batch senza posa), 46%, 27%, 0 (idem), 328%, 81%: molto sopra la soglia dell'1%: **la posa
+  muove l'encoder**; coseno fra i due gradienti fra -0,43 e +0,25, nessun conflitto sistematico. Il gradiente c'e', la perdita non scende.
+- **Schedule del collaudo (fatto da tenere presente):** con `total_steps = steps_at_d = 1.300` il warmup D14 e' `max(1.000; 2%)` = 1.000 passi:
+  lr da 1e-7 a 1e-4 lineare fino al passo 1.000, poi decadimento a ~0 al passo 1.300. Il criterio confronta i passi 500-599 (lr 5-6e-5) coi
+  passi 1.201-1.300 (lr da 3,9e-5 a 0). Le ancore scendono lo stesso (somma 24,3 -> 6,4), e nel collaudo del pilot gli stessi criteri sono
+  passati per tutti i bracci. Il criterio della posa era congelato senza aver provato che una testa lineare possa scendere del 10% in questo
+  schedule: lo dichiaro.
+- **Letture possibili, non distinguibili col solo collaudo:** (i) la posa non e' leggibile linearmente dai latenti attuali (il termine potrebbe
+  rimodellarli solo lungo tutto il training, lentamente); (ii) la testa ha bisogno di molti piu' passi a lr pieno di quelli che il collaudo da';
+  (iii) un difetto nella catena dei target sui dati veri che i test CPU (allineamento su dati costruiti) non vedono.
+- **Protocollo:** «Fuori dal cancello non si lancia e il peso si ridecide con Simone, registrato» (§2 (iii)). Simone, 27/10: «ovvio che se non
+  passa qualcosa vediamo che dice il critico». R3 [6] NON viene sottomesso.
+- **Opzioni per Simone (preventivi):**
+  (A) **E3 su R3c, subito** (gia' nel passo [7], lettura pre-registrata b1/b2/b3 dell'emendamento): ridge dai latenti congelati di R3c alla posa,
+  allenata sul sottoinsieme del train (200 registrazioni, 40 utenti) e letta su val (1.950 registrazioni, 15 utenti): 2 estrazioni GPU (1 A100,
+  40 min di tetto l'una) + rapporto CPU; **~1,3 GPU-ora di tetto, ~0,7 attese**, 0 training. Se il rapporto col costante e' < 0,9 la posa e'
+  leggibile linearmente dai latenti delle sole ancore e la testa di R3 dovrebbe imparare con piu' passi: il criterio del collaudo era troppo
+  stretto per questo schedule -> (B). Se e' >= 0,9 anche su R0, la testa lineare parte da latenti che non portano la posa: R3 dovrebbe
+  rimodellare la rappresentazione lungo 51 GPU-ora senza garanzie -> decisione col critico.
+  (B) **Collaudo lungo di R3**: 5.000 passi con lo schedule vero (warmup 1.962, plateau a 1e-4, `--steps-at-d 98094`), stesso codice e stessi
+  pesi; criterio da congelare PRIMA (proposta: perdita di posa nei passi 4.901-5.000 <= 0,9 x quella dei passi 2.000-2.099, con lr pieno):
+  ~1 h di calcolo, **4 A100 x 1 h 15 di tetto = 5 GPU-ora** (qos normal: la dbg ha 30 min). Dice se la testa impara a lr pieno.
+  (C) Peso della posa piu' alto (2 o 5) nel collaudo: 2 GPU-ora, ma cambia la definizione firmata di R3 e non risponde a (i) ne' a (iii).
+  (D) Fermare R3 qui: nessun costo in piu'; resta la valutazione di R3c (in corso) e l'E3 come lettura dell'accessibilita'.
+  **Proposta di Claude: (A) subito, poi (B) solo se (A) dice «leggibile»; (C) no; il `critico` legge questa voce prima della decisione.**
+  Residuo della seconda ondata: 87,5 - 1,4 (R3c) - 1,15 = ~85 GPU-ora; core-ore ~520 prima delle sonde di R3c.

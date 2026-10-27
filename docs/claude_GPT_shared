@@ -3979,6 +3979,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   lettura del cancello con Simone. Le 8 sonde di R3c sono tutte sottomesse alle 14:52 (62429063 e2-p1-pool, 62429066 e2-p1-dec, 62429083 e2-p2-pool,
   62429093 e2-p2-dec, 62429103 e1-p1-pool, 62429112 e1-p1-dec, 62429117 e1-p2-pool, 62429120 e1-p2-dec; una alla volta sulla seriale). Attese armate.
 
+### 2026-10-27 | Claude | Collaudo dbg di R3 (62429050) LETTO: cancello NON SUPERATO per `posa_discesa` (perdita di posa piatta a 1,0 per 1.300 passi); R3 non parte; lettura e opzioni in decisioni.md, al `critico` prima della decisione di Simone
+
+- 13 criteri su 14 OK (ritmo 0,711 s/passo, scala e tetto della posa, conteggio, ancore che scendono, nessun collasso); `posa_discesa` NO:
+  0,991 (passi 500-599) -> 1,014 (1.201-1.300), +2,3% invece di -10%. Pannello fisso: errore standardizzato 0,87 / 0,85 / 0,87, 0,35 rad.
+  E4: la posa muove l'encoder (gradiente sui moduli condivisi fra il 15% e il 330% di quello delle ancore, mai sotto l'1%).
+- `posa_configurata` dava NO per un difetto del lettore (SHA cercato nel config: il trainer lo scrive in summary e provenienza): corretto con
+  test; voce in sezione 2. Esito: `results/infra/pilot_posa/collaudo_r3_dbg_62429050.json`. Costo del collaudo: 1,15 GPU-ora.
+- Opzioni con preventivo in decisioni.md («COLLAUDO dbg di R3 ... LETTO»): (A) E3 su R3c subito (~1,3 GPU-ora di tetto), (B) collaudo lungo a
+  lr pieno (5 GPU-ora, criterio da congelare prima), (C) peso piu' alto (sconsigliato), (D) fermarsi. Proposta: (A), poi (B) se leggibile.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5532,3 +5542,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   nessun cambio al codice, test di confine); le voci precedenti restano come storia, superate esplicitamente.
 - Lezione: quando una regola ha due soglie con lo stesso aspetto (1,10 sul plateau, 1,25 sul lontano), scriverle con il loro riferimento accanto
   («1,25 x lontano», «1,10 x plateau») e far leggere al critico anche i documenti, non solo il codice.
+
+### 2026-10-27 | Claude | Lettore del collaudo (`arms_collaudo.py`): `posa_configurata` cercava lo SHA di pose_stats.json in config.json, dove il trainer per scelta non lo scrive (sta in summary.json e pose_provenance.json); NO falso sul collaudo vero 62429050
+
+- Trovato alla prima lettura del cancello di R3: il run era configurato bene (testa, albero, SHA 757f2aee... in summary e provenienza). Il
+  lettore ora legge summary / provenienza / config e dichiara dove l'ha trovato; test con i quattro casi. Il verdetto del cancello non cambia:
+  `posa_discesa` boccia da sola. Nessun job in piu', nessun costo. Causa: i due file (trainer e lettore) scritti lo stesso giorno senza un test
+  che li incroci su una cartella di run vera.

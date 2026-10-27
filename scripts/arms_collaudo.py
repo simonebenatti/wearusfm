@@ -183,8 +183,15 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     put("pesi", weights == expected_w, {"config": weights, "attesi": expected_w})
     if wp > 0:  # R3: testa nel modello e albero della posa nel loader, con lo SHA delle statistiche registrato
         model_cfg, loader_cfg = cfg.get("model") or {}, cfg.get("loader") or {}
-        put("posa_configurata", bool(model_cfg.get("pose_head")) and bool(loader_cfg.get("pose_root")) and bool(cfg.get("pose_stats_sha256")),
-            {"pose_head": model_cfg.get("pose_head"), "pose_root": loader_cfg.get("pose_root"), "pose_stats_sha256": cfg.get("pose_stats_sha256")})
+        # lo SHA di pose_stats.json sta in summary.json e in pose_provenance.json (il trainer lo tiene FUORI dal config, che e' l'identita' del
+        # run: `training/run.py`); fino al 27/10/2026 il lettore lo cercava solo nel config e dava NO a un run configurato bene (collaudo
+        # 62429050): corretto, dichiarato in decisioni.md
+        prov = json.loads((run_dir / "pose_provenance.json").read_text()) if (run_dir / "pose_provenance.json").exists() else {}
+        pose_sha = summary.get("pose_stats_sha256") or prov.get("pose_stats_sha256") or cfg.get("pose_stats_sha256")
+        put("posa_configurata", bool(model_cfg.get("pose_head")) and bool(loader_cfg.get("pose_root")) and bool(pose_sha),
+            {"pose_head": model_cfg.get("pose_head"), "pose_root": loader_cfg.get("pose_root"), "pose_stats_sha256": pose_sha,
+             "sha_in": [k for k, v in (("summary.json", summary.get("pose_stats_sha256")), ("pose_provenance.json", prov.get("pose_stats_sha256")),
+                                       ("config.json", cfg.get("pose_stats_sha256"))) if v]})
 
     recs = CS._records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
     seq = [r.get("step") for r in recs]
