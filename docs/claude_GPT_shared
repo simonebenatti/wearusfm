@@ -3940,6 +3940,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   --exclude-users 29ddab35d7,d387095792 --profile-max-lag 4000`, 2 core, 30 min di tetto, 0 GPU-ora. Catena: voci [2b] e [2c] (commit cfeb07a).
 - Attesa armata (`leonardo_watch.py`, ciclo in background). Poi: rsync del rapporto, rilettura `--lungo`, lettura scritta da Claude, firma di M.
 
+### 2026-10-27 | Claude | Collaudo lungo della posa (62409366) COMPLETED in 1 min 30: lettura scritta (decisioni.md, «LETTURA DEL COLLAUDO LUNGO»); la v1 da' M = 2.800 (50% di perdita), decide Simone; proposta M = 280
+
+- 10 utenti x 4 registrazioni, 9,4% di zeri, 408 blocchi, profilo contato fino a 4.000 campioni, precondizioni ok, «V» 0,0095%. Il profilo e' una
+  discesa lenta (34x fino a 30, 4x a 50-100, 2x a 280, 1,8x a 310-400, 1,5x a 600, gobbe fino a 1,4 s), non un plateau: l'ipotesi del primo
+  collaudo (2 utenti) non regge nella forma «plateau». R5: solo i primi 40 campioni scalano col salto (artefatto); oltre, l'eccesso non scala col
+  salto e dipende dall'utente (comportamento o rumore della cinematica inversa). R2 caduta; R3 = 280 (stabile 260-300 per soglie 0,05-0,20); R5 =
+  270 (fragile: gobba del terzile alto a 210-270); M_riserva = 280.
+- Opzioni e tetto della perdita: 40 -> 0,7%; 100 -> 1,8%; 280 -> 5,0%; 400 -> 7,2%; 2.800 -> 50,3%. Proposta per la firma: M = 280 (alternativa
+  minima 40). JSON snello e lettura in `results/passo2/` (identica da rapporto intero e snello). Prompt per GPT aggiornato con i numeri.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

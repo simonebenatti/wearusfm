@@ -7,6 +7,11 @@ Simone; il margine lo dice solo la v1 sul profilo lungo, e se la v1 non decide, 
 lungo partono col via di Simone, senza aspettare la tua risposta; la tua verifica resta richiesta e si registra nel registro, e le opzioni A / B
 del punto 3 cambiano solo i numeri descrittivi. Il testo che segue e' quello sottoposto prima della decisione.
 
+**Collaudo lungo fatto (27/10, job 62409366, 10 utenti x 4 registrazioni, profilo a 2 s):** lettura scritta da Claude in `decisioni.md` («LETTURA
+DEL COLLAUDO LUNGO»), JSON in `results/passo2/emg2pose_pose_ingest_collaudo_62409366.json` e `..._margine_lettura_62409366.json`. In breve: la v1 da'
+M = 2.800 (perdita fino al 50%), quindi decide Simone; R5 mostra che solo i primi 40 campioni scalano col salto; R3 = 280, R5 = 270 (fragile);
+proposta di Claude M = 280 (5,0%), alternativa M = 40 (0,7%). La tua verifica serve soprattutto sulle domande 1, 2 e 5 alla luce di questi numeri.
+
 Contesto. Seconda ondata del pilot degli obiettivi (`docs/pilot_posa_v1.md`, firmato; emendamento 1 firmato). I bersagli di posa di emg2pose hanno
 righe tutte a zero dove la cinematica inversa fallisce (17% delle righe nel collaudo, 12,7% nel paper); attorno a ogni blocco di zeri si scartano M
 campioni per lato. La regola per scegliere M dal collaudo dell'ingest e' in `docs/decisioni.md` (voci del 26 e 27/10/2026 sulla seconda ondata, in

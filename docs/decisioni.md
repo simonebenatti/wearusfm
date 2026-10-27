@@ -4693,3 +4693,57 @@ scrive Claude; via ai due job CPU del profilo lungo.**
 - **Ordine aggiornato:** deploy -> checkout -> collaudo lungo -> rilettura `python3 -m wearusfm.ingest.emg2pose_pose <rapporto> --lungo` ->
   lettura scritta da Claude (v1 sul profilo lungo + numeri descrittivi) -> firma di M da parte di Simone -> [4] ingest intero -> [5] collaudo dbg
   di R3 -> cancello -> [6] R3 -> [7] valutazione. GPT legge e verifica in parallelo.
+
+**Seconda ondata: LETTURA DEL COLLAUDO LUNGO della posa (job 62409366; scritta da Claude per dichiarazione di Simone del 27/10/2026), con la
+proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (perdita fino al 50%): oltre 400 non decide da sola, decide Simone.**
+- **Campione:** 40 registrazioni, 20 per lato, 4 per ciascuno di 10 utenti (nessuno dei 2 del primo collaudo), 4.544.475 righe, 408 blocchi di
+  zeri, 9,4% di righe a zero (primo collaudo: 17,0%; paper: 12,7%), massimo 2,145 rad, nessun file fallito; profilo misurato e contato fino a
+  4.000 campioni (2 s), 2,26 milioni di righe «lontane»; «V» = 0,0095% delle righe non nulle (< 0,1%: nessuna regola in piu'). Precondizioni
+  del collaudo lungo soddisfatte. Job: 1 min 30 (82 s di elaborazione), 0 GPU-ora, 0,05 core-ore; checkout: 16 s.
+- **Regola v1 (congelata il 26/10) sul profilo lungo: «determinata» con M = 2.800 campioni** (ultimo bin fuori dal 25%: 1,305 a 2.800; il
+  profilo rientra a 1.500-1.800, riesce a 1.900-2.500 con 1,26-1,38, rientra a 2.600-2.700, riesce a 2.800, poi resta sotto 1,18 fino a 4.000).
+  Tetto della perdita a 2.800: **50,3%** delle righe. Per la v1 oltre 400 ci si ferma: **decide Simone con la perdita.**
+- **Forma del profilo (rapporto al lontano, bin di 10 campioni):** 34,5 fino a 30; 14,3 a 40; 4,1-3,6 da 50 a 100; 2,75 da 110 a 130; 2,5-2,2
+  da 140 a 260; 2,0 a 280; 1,92 a 300; 1,77-1,89 da 310 a 400 (NON un plateau: nel primo collaudo, 2 utenti, era piatto a 1,78 da 125 a 200 ms);
+  1,61 a 500; 1,48 a 600-700; 1,57-1,64 a 800-900; 1,98 a 1.000 (gobba); 1,52-1,65 fino a 1.400; 1,25 a 1.500; 1,1-1,4 fino a 2.800; 1,0-1,2
+  fino a 4.000. Una discesa lenta con gobbe che dura ~1,5 s, non un'onda che finisce.
+- **Numeri descrittivi della riserva (decisione del 27/10: non sono una regola):** L (media 301-400) = 1,82 x lontano; R2 caduta (262 bin oltre
+  400 sotto 0,80 L): il livello a 150-200 ms NON persiste; R3 = 280 (ultimo bin entro 300 sopra 1,10 L = 2,0; sensibilita': 0,25 -> 170, 0,20 ->
+  260, 0,15 -> 270, 0,10 -> 280, 0,05 -> 300: stabile a 260-300 per soglie fra 0,05 e 0,20); R5 = 270 con 370 blocchi misurabili, terzili di
+  123/123/124 blocchi; M_riserva = max = 280 (140 ms per lato, perdita fino al 5,0%).
+- **Che cosa dice R5 (profilo per altezza del salto, ogni terzile sul proprio plateau), letto per intero:** alto / basso = 2,07 fino a 30 campioni
+  e 1,79 a 40: **l'unica componente che scala col salto, cioe' un artefatto del passaggio a zero, finisce a 40 campioni (20 ms)**. Da 50 a 200
+  alto / basso = 0,78-0,99 (il terzile alto sta anche SOTTO il basso): l'eccesso 4x -> 2,2x in quella zona NON scala col salto, quindi non e' una
+  rampa d'interpolazione ne' un transitorio di filtro. Poi il rapporto oscilla: 1,33-1,39 a 210-270, 1,09 a 280-300, 0,83-0,92 a 310-360, 1,26
+  a 380-400, 1,02 a 450, 0,69-0,87 da 500. **M5 = 270 non e' robusto:** dipende da una gobba del terzile alto a 210-270 (2,45-2,69 contro
+  1,73-1,82 del basso) con ~2.000 campioni per bin e terzile, e il criterio si riaccende a 380-400 (fuori dal conteggio, che si ferma a 300).
+- **Per utente** (rapporto al proprio lontano a 100 / 300 / 1.000 / 2.000 campioni): gli utenti con molti blocchi di zeri hanno code lunghe
+  (3916480018, 125 blocchi: 2,9 / 1,9 / 1,2 / 1,2; 8e69533c16, 109 blocchi: 3,9 / 2,0 / 4,2 / 1,7; 0816388460, 54 blocchi: 5,4 / 1,8 / 2,0 /
+  1,3); quelli con pochi blocchi stanno sotto 1 gia' a 200-300 (03d49b393e, 1 blocco: 2,0 / 0,9 / 0,4 / 0,15; 751c72b291, 11 blocchi: 4,7 / 0,7
+  / 0,7 / 1,1). Lettura: le perdite di tracking capitano quando la mano si muove; per chi ne ha molte il «lontano» (> 2 s da ogni zero) e' fatto
+  di periodi calmi, e il rapporto resta sopra 1 per secondi. **La coda lunga (1,1-1,6x da 0,5 a 1,5 s) e' comportamento vicino alle perdite di
+  tracking, non un artefatto dell'elaborazione:** non scala col salto, dipende dall'utente e dal numero di blocchi, e non ha una fine netta.
+  L'ipotesi del primo collaudo («plateau = comportamento») era basata su 2 utenti e non regge nella forma «plateau»; regge nella sostanza
+  «oltre i primi 20 ms l'eccesso non e' artefatto di passaggio».
+- **Opzioni per la firma (tetto della perdita = 2 M x 408 / 4.544.475, oltre al 9,4% gia' nullo):**
+
+  | M (campioni) | ms per lato | tetto della perdita | che cosa toglie |
+  |---|---|---|---|
+  | 40 | 20 | 0,7% | solo l'artefatto che scala col salto (34x -> 14x) |
+  | 100 | 50 | 1,8% | anche la zona a 3,6-4,1x (non scala col salto) |
+  | 280 | 140 | 5,0% | anche la discesa 2,75x -> 2,0x (R3; R5 fragile concorda a 270) |
+  | 400 | 200 | 7,2% | fino al tetto della v1 (1,9x) |
+  | 2.800 | 1.400 | 50,3% | la v1 alla lettera: butta soprattutto comportamento |
+
+- **Proposta di Claude: M = 280 campioni (140 ms per lato).** Motivi: toglie l'artefatto certo (fino a 40) e tutta la zona in cui la posa e' da
+  2 a 4 volte piu' «scattosa» del normale, che come bersaglio e' rumore anche se non e' artefatto; e' stabile rispetto alla soglia di R3 (260-300
+  per 0,05-0,20); costa il 5,0% di tetto (reale piu' basso: il tetto conta ogni blocco per 2 M righe anche vicino ai bordi del file e a blocchi
+  vicini). L'alternativa minima e meccanicistica e' M = 40 (0,7%): tiene come bersaglio la zona 50-280, piu' rumorosa ma non artefatta; la scelta
+  fra le due e' un giudizio su quanto rumore si vuole nel bersaglio, non una misura. Sconsigliate 400 e oltre: dal 300 in poi l'eccesso e'
+  comportamento. La v1 resta la regola e resta «non decide da sola»: la firma di Simone e' la decisione.
+- **Dopo la firma:** [4] ingest intero con `--zero-margin-samples <M firmato>` (il comando nella catena ha il segnaposto M); le 80 registrazioni
+  dei due collaudi (margine 0) vengono rifatte col margine firmato (`already_done` controlla il margine). File: rapporto snello
+  `results/passo2/emg2pose_pose_ingest_collaudo_62409366.json` (profili per utente riassunti; l'intero, 982 KB, sul Mac in
+  `~/wearusfm_local/pilot_posa/`), lettura `results/passo2/emg2pose_pose_margine_lettura_62409366.json` (identica da rapporto intero e snello).
+- **Per GPT (verifica, non bloccante):** la lettura sopra e i due JSON; il prompt `docs/prompt_gpt_regola_margine_20261027.md` resta valido per le
+  domande 1, 2 e 5; le opzioni A / B del punto 3 non cambiano nulla qui (il profilo rientra e R2 cade in entrambe).

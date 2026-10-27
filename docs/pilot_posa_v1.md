@@ -316,6 +316,13 @@ core-ore).» Quindi: il margine lo dice solo la v1 (sul profilo lungo); la riser
 perdita) per la firma; GPT verifica dopo, senza bloccare la misura. Ordine: deploy -> checkout -> collaudo lungo -> rilettura (`--lungo`) ->
 lettura scritta da Claude -> firma di M -> §6 punto 5 (ingest intero).
 
+**Lettura del collaudo lungo (27/10, job 62409366, 10 utenti x 4 registrazioni, profilo a 2 s; voce «LETTURA DEL COLLAUDO LUNGO» in
+`decisioni.md`):** la v1 da' M = 2.800 (perdita fino al 50%): oltre 400 decide Simone. Il profilo e' una discesa lenta (34x fino a 30 campioni,
+4x a 50-100, 2,75x a 110-130, 2,0x a 280, 1,8x a 310-400, 1,5x a 600, gobbe fino a 1,4 s, 1,0-1,2x oltre 2,6 s), non un plateau che finisce.
+R5 dice che solo i primi 40 campioni scalano col salto (artefatto); oltre, l'eccesso e' comportamento o rumore della cinematica inversa vicino alle
+perdite di tracking. Numeri descrittivi: R3 = 280, R5 = 270 (fragile), M_riserva = 280 (5,0% di tetto). **Proposta di Claude per la firma: M = 280
+campioni (140 ms per lato); alternativa minima M = 40 (0,7%).**
+
 ## 7. Costi (preventivo `results/infra/pilot_posa/preventivo.json`; training da `wsd_chain.py`, s/passo 0,75 misurato sul pilot e su ancore-only, slack 1,15)
 
 | Voce | Job | GPU-ora attese / tetto | Core-ore attese / tetto |
