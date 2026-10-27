@@ -429,7 +429,9 @@ SIDE_MIN_RECORDINGS = 15  # sulle 20 per lato chieste al collaudo
 # il lontano: una contaminazione che finisce con un gradino verso il basso e' finita). Predicato proprio, indipendente dall'ultimo bin e dallo
 # stato della v1: un profilo che rientra e poi riesce non e' «mai rientrato» e ci si ferma; se la v1 risulta determinata solo perche' gli ultimi
 # bin non sono contati, vale il predicato sui bin contati. R2 tiene il pavimento 0,80 L e il tetto 1,25 L su TUTTI i bin contati oltre 400 (quinta
-# review: anche dopo 2.000, cosi' un livello fra 1,25 x lontano e 0,80 L ferma sempre, senza zona grigia). Se la v1 e' determinata con M > V1_MAX_M
+# review: anche dopo 2.000). Sesta review: la partizione «rientro / pavimento / persistenza / tetto» e' netta solo se L > 1,25 / 0,80 = 1,5625; con
+# L piu' basso il pavimento sta sotto la soglia di rientro, le zone si sovrappongono e il rientro ha la precedenza; a ogni confine (1,25 x lontano,
+# 0,80 L, 1,25 L) un solo bin cambia l'esito. Dichiarato in decisioni.md e nel prompt per GPT. Se la v1 e' determinata con M > V1_MAX_M
 # (il profilo rientra solo dopo 200 ms) la riserva e' solo informativa e ci si ferma portando a Simone la v1 con la perdita e R3 / R5.
 PLATEAU_LAGS = (301, 400)  # campioni dal bordo: 150-200 ms
 V1_MAX_M = 400  # oltre 200 ms di margine la v1 non decide da sola (perdita > 10% delle righe sul collaudo): fermarsi, decisione di Simone

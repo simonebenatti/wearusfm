@@ -404,16 +404,30 @@ def test_margin_reserve_rule_r1_r5_needs_the_long_profile_and_two_sided_persiste
     for tail in ([1.78] * 100 + [1.30] * 260, [1.78] * 210 + [1.30] * 150, [1.78] * 210 + [1.26] * 150, [1.78] * 210 + [1.40] * 150):
         step = PP.margin_from_collaudo(_report(PROF_VERO + tail))
         assert not step["v2"]["applicabile"] and step["v2"]["R2_bins_sotto_pavimento_oltre_400"] and step["margine"]["M"] is None
-    # confine del rientro (1,25 = 1 + MARGIN_TOL, a un lato solo) e del pavimento (1,43): sotto 1,25 rientro (stop), fra 1,25 e 1,43 pavimento
-    # (stop), da 1,43 in su persistenza (riserva); un solo bin basta
+    # confini con il plateau vero (L = 1,78): rientro a 1,25 x lontano (a un lato solo), pavimento 0,80 L = 1,43, tetto 1,25 L = 2,23: sotto 1,25
+    # rientro (stop), fra 1,25 e 1,43 pavimento (stop), fra 1,43 e 2,23 persistenza (riserva), sopra 2,23 tetto (stop); un solo bin basta, e a ogni
+    # confine l'esito cambia per 0,02 (dichiarato nella SESTA RETTIFICA)
     for level, key in ((1.24, "profilo_rientra"), (1.26, "R2_bins_sotto_pavimento_oltre_400"), (1.42, "R2_bins_sotto_pavimento_oltre_400")):
         one = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [level] + [1.78] * 99))
         assert one["margine"]["M"] is None and one["v2"][key]
     assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [1.45] + [1.78] * 99))["margine"]["M"] == 200
     assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 210 + [1.45] * 150))["margine"]["M"] == 200
-    # discesa lenta che scende sotto il pavimento dopo 1 s: ferma (dichiarato)
+    assert PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [2.22] + [1.78] * 99))["margine"]["M"] == 200  # tetto 2,23: sotto passa
+    top = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 260 + [2.24] + [1.78] * 99))
+    assert top["margine"]["M"] is None and top["v2"]["R2_bins_sopra_tetto_oltre_400"] == [3010]
+    # gradino sotto il pavimento dopo 1 s e discesa LINEARE che lo attraversa dopo 1 s: entrambi fermano (dichiarato)
     late = PP.margin_from_collaudo(_report(PROF_VERO + [1.7] * 160 + [1.3] * 200))
     assert late["margine"]["M"] is None and late["v2"]["R2_bins_sotto_pavimento_oltre_400"]
+    lin = PP.margin_from_collaudo(_report(PROF_VERO + [1.78 - 0.48 * k / 359 for k in range(360)]))  # 1,78 -> 1,30 lineare su 401-4.000
+    assert lin["margine"]["M"] is None and min(lin["v2"]["R2_bins_sotto_pavimento_oltre_400"]) > 2000 and not lin["v2"]["profilo_rientra"]
+    # plateau basso (L = 1,50 < 1,5625): 0,80 L = 1,20 sta SOTTO la soglia di rientro 1,25, le zone «rientro» e «persistenza» si sovrappongono e
+    # il codice da' la precedenza al rientro: 1,24 -> fermarsi, 1,26 -> riserva (M dal plateau basso). Esito dichiarato nella SESTA RETTIFICA,
+    # scelta da confermare da GPT prima del collaudo lungo
+    low_prof = PROF_VERO[:25] + [1.50] * 15
+    lo_in = PP.margin_from_collaudo(_report(low_prof + [1.50] * 210 + [1.24] * 150))
+    lo_out = PP.margin_from_collaudo(_report(low_prof + [1.50] * 210 + [1.26] * 150))
+    assert lo_in["margine"]["M"] is None and lo_in["v2"]["profilo_rientra"]
+    assert lo_out["margine"]["stato"] == "determinato_riserva" and abs(lo_out["v2"]["R1_plateau_level_ratio_to_far"] - 1.50) < 1e-9
     # gradino verso il basso che non risale: il motivo dice che la contaminazione e' finita li', non che «riesce»
     down = PP.margin_from_collaudo(_report(PROF_VERO + [1.78] * 60 + [0.74] * 300))
     assert "non riesce piu'" in down["margine"]["motivo"] and "poi riesce" not in down["margine"]["motivo"]

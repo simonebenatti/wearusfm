@@ -4,7 +4,7 @@ Contesto. Seconda ondata del pilot degli obiettivi (`docs/pilot_posa_v1.md`, fir
 righe tutte a zero dove la cinematica inversa fallisce (17% delle righe nel collaudo, 12,7% nel paper); attorno a ogni blocco di zeri si scartano M
 campioni per lato. La regola per scegliere M dal collaudo dell'ingest e' in `docs/decisioni.md` (voci del 26 e 27/10/2026 sulla seconda ondata, in
 particolare «REGOLA DI LETTURA ... CONGELATA», «COLLAUDO ... LETTO ... NON DETERMINATO», «RETTIFICA», «SECONDA», «TERZA», «QUARTA» e
-«QUINTA RETTIFICA») e nel codice
+«QUINTA» e «SESTA RETTIFICA») e nel codice
 (`src/wearusfm/ingest/emg2pose_pose.py`: `margin_from_collaudo`, `jump_profile_margin`, `edge_profile`; test in
 `tests/cpu/test_ingest_emg2pose_pose.py`). Rapporto e lettura del primo collaudo (job 62364572, 40 registrazioni di 2 utenti):
 `results/passo2/emg2pose_pose_ingest_collaudo_62364572.json`, `results/passo2/emg2pose_pose_margine_lettura_62364572.json`.
@@ -29,8 +29,11 @@ Ti chiedo, come responsabile scientifico:
    applica ci si ferma e la proposta porta a Simone la v1 (se determinata su bin contati, con la perdita) e i valori informativi R3 e R5. R3: M3 = ultimo bin entro 300
    sopra 1,10 L (soglia PROPOSTA da Claude, tabella di sensibilita' in decisioni.md: 0,25 -> 140, 0,10 -> 200, 0,05 -> 240). R5: terzili
    dell'altezza del salto (almeno 9 blocchi con `n_h >= 10`), alto / basso > 1,25; se R5 non e' calcolabile M = M3, dichiarato. M = max(M3, M5).
-   Le soglie ti sembrano difendibili? **I job del profilo lungo partono solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica
-   alle soglie va scritta ora, prima della misura.
+   I confini oltre 400 sono tre (1,25 x lontano per il rientro, 0,80 L e 1,25 L per R2) e la partizione e' netta solo se L > 1,5625: con un
+   plateau piu' basso le zone «rientro» e «persistenza» si sovrappongono e il codice da' la precedenza al rientro (SESTA RETTIFICA); a ogni
+   confine un solo bin cambia l'esito per 0,02. **Devi scegliere, prima della misura:** accettare la precedenza del rientro per L < 1,5625, o
+   cambiare la regola (per esempio pavimento = max(0,80 L; 1,25 x lontano)). Le soglie ti sembrano difendibili? **I job del profilo lungo
+   partono solo DOPO la tua risposta registrata e il via di Simone:** ogni modifica alle soglie va scritta ora, prima della misura.
 4. Il campione del collaudo lungo: 40 registrazioni, al massimo 4 per utente, almeno 10 utenti, ESCLUSI i 2 utenti del primo collaudo
    (29ddab35d7, d387095792): basta cosi', o serve un secondo campione indipendente?
 5. Il costo della scelta: tetto della perdita 2 M x (blocchi di zeri) / righe = 5,3% a M = 200, oltre al 17% gia' nullo. Accettabile per R3?

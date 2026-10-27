@@ -3911,6 +3911,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   tetto su tutto il profilo; una discesa sotto 0,80 L dopo 1 s ferma (dichiarato). Test: quattro gradini (1.000 e 2.000; 1,26 / 1,30 / 1,40), un bin
   solo a 1,24 / 1,26 / 1,42 (fermarsi) e 1,45 (riserva), discesa tardiva, motivo del gradino che non risale. Sesta review del `critico`.
 
+### 2026-10-27 | Claude | Sesta review del `critico` (DA RIVEDERE: 1 bloccante sul testo, 2 minori) accolta: la partizione «tre esiti senza zona grigia» vale solo per L > 1,5625; dichiarati dipendenza da L, precedenza del rientro e capovolgimento al tetto, scelta da confermare da GPT prima della misura; test con plateau basso e discesa lineare; voce in sezione 2 per l'errore 1,10 / 1,25 | Codice: commit di questa voce
+
+- Il critico ha verificato 33 code sui bin veri: tutte coerenti con la quinta rettifica; il bloccante e' la frase «il capovolgimento resta solo al
+  confine 0,80 L»: c'e' anche al tetto (2,22 / 2,24) e, con L < 1,5625, la zona pavimento e' vuota e vale la precedenza del rientro (1,24 / 1,26).
+  Dichiarato in decisioni.md («SESTA RETTIFICA»), nel prompt per GPT e nel codice; test aggiunti. Settima review del `critico`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5457,3 +5463,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   sveltiamo». Nessun job e' stato sottomesso. Corretto: richiesta esplicita a Simone con risorse, durata e costo (0 GPU-ora, <= 1,2 core-ore).
 - Conseguenza per il metodo: una regola scritta dopo aver visto i dati si chiama post hoc, e il controllo che la puo' smentire va scritto a due lati
   prima della misura successiva; un'autorizzazione si cita alla lettera e vale per i job che nomina.
+### 2026-10-27 | Claude | Regola del margine: errore di trascrizione mio, 1,10 al posto di 1,25 come soglia del rientro, arrivato in decisioni.md (quarta rettifica), nel protocollo, nel prompt per GPT e nel registro; trovato dalla quinta review del `critico`
+
+- Il codice usava 1 + 0,25 = 1,25 (coerente con «rientra nel 25%» delle rettifiche precedenti e col test); scrivendo la quarta rettifica ho messo
+  1,10, che e' la soglia di R3 sul plateau. Con 1,10 due code del test avrebbero avuto l'esito opposto. Corretto nella QUINTA RETTIFICA (vale 1,25,
+  nessun cambio al codice, test di confine); le voci precedenti restano come storia, superate esplicitamente.
+- Lezione: quando una regola ha due soglie con lo stesso aspetto (1,10 sul plateau, 1,25 sul lontano), scriverle con il loro riferimento accanto
+  («1,25 x lontano», «1,10 x plateau») e far leggere al critico anche i documenti, non solo il codice.

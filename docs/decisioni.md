@@ -4641,3 +4641,19 @@ oltre 400, anche dopo 2.000.**
 - Costanti: `V2_PERSIST_FROM = 401`, `V2_PERSIST_BAND = (0,80; 1,25)`; campo `R2_bins_sotto_pavimento_oltre_400` (rinominato). La lettura
   committata si rigenera con questo commit (numeri invariati).
 - Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
+
+**Seconda ondata: SESTA RETTIFICA dopo la sesta review del `critico` (Claude, 27/10/2026, ore del commit): la frase «tre esiti senza zona grigia»
+della quinta rettifica vale solo se il plateau L supera 1,5625; dichiarati la dipendenza da L, la precedenza del rientro e il capovolgimento al
+tetto; scelta da confermare da GPT prima del collaudo lungo.**
+- **Bloccante accolto (sul testo, non sul meccanismo).** I confini oltre 400 sono tre: rientro a 1,25 x lontano (a un lato solo), pavimento 0,80 L,
+  tetto 1,25 L. La partizione «rientro / pavimento / persistenza / tetto» e' netta solo se 0,80 L > 1,25, cioe' **L > 1,5625**. Sul primo campione
+  L = 1,78 (pavimento 1,43, tetto 2,23) e la partizione regge. Con un plateau piu' basso (per esempio L = 1,50: pavimento 1,20 < 1,25) la zona
+  «pavimento» e' vuota, i livelli fra 0,80 L e 1,25 x lontano cadono sia in «rientro» sia in «persistenza» e **il codice da' la precedenza al
+  rientro** (1,24 -> fermarsi; 1,26 -> riserva). A OGNI confine un solo bin cambia l'esito per 0,02, anche al tetto (2,22 -> riserva, 2,24 ->
+  fermarsi sul primo campione): un confine dichiarato e' un confine, non una zona grigia, ma la frase «solo al confine 0,80 L» era sbagliata.
+- **Che cosa decidere PRIMA del collaudo lungo (GPT, responsabile scientifico; poi Simone):** accettare questo comportamento per L < 1,5625 (la
+  precedenza del rientro: un livello sotto 1,25 x lontano chiude la contaminazione anche se sta sopra il pavimento), oppure cambiare la regola (per
+  esempio pavimento = max(0,80 L; 1,25 x lontano)). Il plateau del campione nuovo non e' noto: la scelta va scritta prima.
+- Minori: test con plateau basso (L = 1,50) che fissa l'esito attuale; test con discesa LINEARE 1,78 -> 1,30 su 401-4.000 (ferma, primo bin sotto
+  il pavimento dopo 2.000); voce nella sezione 2 del registro per l'errore di trascrizione 1,10 / 1,25 (QUINTA RETTIFICA).
+- Ordine invariato: verifica di GPT -> via di Simone -> deploy, checkout, collaudo lungo -> rilettura (`--lungo`) -> proposta di M -> firma.
