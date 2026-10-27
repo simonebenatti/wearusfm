@@ -3961,6 +3961,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Comando della catena [4] (commit 434ae41). Al COMPLETED con `pose_stats.json` scritto: [5] collaudo dbg di R3 (pre-autorizzato), poi lettura del
   cancello con Simone prima di [6].
 
+### 2026-10-27 | Claude | Via di Simone alla valutazione anticipata di R3c (12 job, ~1,4 GPU-ora): comandi e preventivo scritti; estrazioni subito, sonde dopo l'ingest intero (tetto di 8 core sulla seriale)
+
+- `results/infra/pilot_posa/comandi_valutazione_r3c.txt` e `preventivo_valutazione_r3c.json`; voce in decisioni.md («VIA ... R3c»). Endpoint
+  verificati «completo»; codice c5e42cb (estrazione e sonda identiche al pilot). Ingest intero 62410740 RUNNING dalle 11:33. ID SLURM delle
+  estrazioni nella voce successiva.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

@@ -1,0 +1,37 @@
+{
+ "campaign": "pilot-posa-20261026",
+ "arm": "R3c (ancore-only, 2 epoche; controllo)",
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-20261026",
+  "sha": "c5e42cb99b4dc0a105495de70946a411b0523dbc"
+ },
+ "authorization": "Simone, 27/10/2026: «Sì, lancia adesso la valutazione dei 2 endpoint di R3c (12 job, ~1,4 GPU-ora), in parallelo alla catena della posa.»",
+ "protocol": "docs/pilot_posa_v1.md §4 (A1/A2/B come il pilot degli obiettivi); comandi in comandi_valutazione_r3c.txt",
+ "budget_line": "seconda ondata, voce «valutazione» del §7 di docs/pilot_posa_v1.md; residuo prima di questi job: 87,5 GPU-ora, ~530 core-ore",
+ "basis": "consuntivo della valutazione del pilot (results/pilot_obiettivi_20261024/consuntivo_valutazione.json, sacct del 27/10): 48 job per 8 endpoint, 5,56 GPU-ora e 317,7 core-ore",
+ "blocks": {
+  "E_estrazioni": {
+   "jobs": 4,
+   "gpu_hours_expected": 1.4,
+   "gpu_hours_max": 5.0,
+   "core_hours_expected": 11.0,
+   "core_hours_max": 40.0
+  },
+  "S_sonde": {
+   "jobs": 8,
+   "gpu_hours_expected": 0,
+   "gpu_hours_max": 0,
+   "core_hours_expected": 68.0,
+   "core_hours_max": 256.0,
+   "probe_wall_hours_if_serial": 8.0,
+   "when": "dopo l'ingest intero della posa COMPLETED (tetto di 8 core per utente sulla seriale)"
+  },
+  "total": {
+   "jobs": 12,
+   "gpu_hours_expected": 1.4,
+   "gpu_hours_max": 5.0,
+   "core_hours_expected": 79.0,
+   "core_hours_max": 296.0
+  }
+ }
+}

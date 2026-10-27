@@ -4763,3 +4763,20 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   `pose_stats.json` sullo split di pretraining, rapporto in `$WORK/wearusfm_runs/results/passo2/`.
 - **Poi:** [5] collaudo dbg di R3 (pre-autorizzato, «SOLO dopo l'ingest intero COMPLETED, pose_stats.json scritto»), lettura del cancello con
   Simone, [6] R3, [7] valutazione. Residuo della seconda ondata: 87,5 GPU-ora, ~530 core-ore prima di [4].
+
+**Seconda ondata: VIA di Simone alla valutazione anticipata dei 2 endpoint di R3c (27/10/2026), in parallelo alla catena della posa.**
+- Parole di Simone (27/10/2026): «Sì, lancia adesso la valutazione dei 2 endpoint di R3c (12 job, ~1,4 GPU-ora), in parallelo alla catena della
+  posa.» Copre i 12 job di `results/infra/pilot_posa/comandi_valutazione_r3c.txt` (4 estrazioni GPU + 8 sonde CPU, A1/A2/B come il pilot), non i
+  confronti ne' altro.
+- **Endpoint:** tronco `PILOT-POSA-R3C-ancore-30M-s0` (49.046 passi, 2 epoche, 10 h 06) e ramo `-e1` (24.523 passi, 1 h 01), entrambi
+  `checkpoint_postdecay.pt` e «completo» (`stopped = max_steps`, nessun STOP; verificato il 27/10). Codice: checkout `pilot-posa-20261026` (c5e42cb),
+  lo stesso dei training; estrazione, sonda e `channel_readout.py` identici al pilot (705ec04), diff verificato.
+- **Preventivo** (`preventivo_valutazione_r3c.json`, dal consuntivo del pilot): estrazioni 1,4 GPU-ora attese (tetto 5,0; ~11 core-ore); sonde
+  ~68 core-ore attese (tetto 256), ~8 h di parete sulla seriale; totale 12 job, 1,4 GPU-ora, ~79 core-ore. Residuo della seconda ondata dopo:
+  ~86 GPU-ora, ~450 core-ore.
+- **Due stadi, per la coda seriale:** il tetto e' 8 core per utente e una sonda ne usa 8: non gira insieme all'ingest intero della posa (2 core,
+  job 62410740, via critica, in esecuzione dalle 11:33). Le 4 estrazioni (GPU) si sottomettono subito; le 8 sonde si alimentano con
+  `leonardo_feed.py` SOLO dopo l'ingest intero COMPLETED (compresa l'eventuale ripresa), senza `--dopo` (le estrazioni saranno finite da ore).
+  Cosi' la ripresa dell'ingest non finisce in coda dietro alle sonde. Costo della scelta: le sonde di R3c partono dopo l'ingest invece che subito.
+- **Lettura prevista (descrittiva, nessun criterio nuovo):** R3c contro R0 del pilot (stesso codice, stesse sonde) a 2 e a 1 epoca su P1/P2, `pool` e
+  `dec`, piu' la pendenza 1 -> 2 epoche; dice se le ancore da sole a 2 epoche si muovono rispetto a R0 prima che arrivi R3.
