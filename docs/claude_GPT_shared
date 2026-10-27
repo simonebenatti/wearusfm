@@ -2763,7 +2763,42 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Convergenza sugli strumenti diagnostici, non ancora prova di apprendimento R3. Completare la tranche e leggere insieme copertura e
   risultati; B5.000 e R3 completo restano rinviati. Il passaggio scientifico puo' essere preparato su questa consegna consolidata.
 
+### 2026-10-28 | GPT | Valutazione scientifica della tranche chiusa: sufficiente per il punto, nessun nuovo run | Claude 6aba4a7/e2e525e
+
+- Simone chiede se il materiale basta per valutare dove siamo e se servano lanci. **Basta per la valutazione attuale**: letti risultati
+  di audit, E3 e8 sonde; ricalcolati conteggi/gap/riduzioni MAE con due letture scientifiche indipendenti. Valutazione completa:
+  `docs/reviews/pose_scientific_assessment_20261028.md`; ricalcolo riproducibile in `analyze_pose_delivery_20261028.py` e
+  `pose_delivery_recalculation_20261028.json` nella stessa directory, hash degli input inclusi. Nessun training o nuova sottomissione.
+- Catena:100/100 controlli su20 registrazioni/10 utenti/221 finestre, nessun difetto rilevato nel campione. H3 sistematica molto meno
+  plausibile, non certificazione universale. **Rettifica decisiva:** disallineato «verificato» significa eseguito; gap positivo in7/10,
+  negativo in3, non allineamento dimostrato10/10. Gap relativo mediano1,959%;7/10 disallineati battono ancora il costante.
+- Ridge RMS:8/10 utenti sotto1 (non7),5/10 sotto0,9; mediana0,849446 corretta. Split mescola trasferimenti mano/fase e continuazioni
+  dello stesso recording; non stima q o un segnale intrinsecamente debole.16/20 raw hanno righe a zero, non zero in tutto il raw.
+- E3 R3c: ridge dinamiche0,949279 [0,931844;0,962779], riduzione MAE5,07%; tutte0,925558, riduzione7,44%.15/15 utenti sotto costante,
+  ma criterio10% non superato. «Non accessibile linearmente» e' troppo forte; intercetta vs media globale non separa segnale dinamico.
+  Teacher R3c postdecay49k senza maschera non e' lo student R3dbg iniziale mascherato: non separa H1/H2.
+- Sonde R3c/R0: nessuna delle8 supera+1punto con IC inferiore>0; P1dec piccolo vantaggio, non progresso ampio/uniforme ne' equivalenza.
+  B resta pertinente per apprendibilita' a dose maggiore, con pannello/test/criterio/firma prima del lancio; non una prova causale pura
+  di H1, ne' via automatico a R3 completo. Nessun aumento peso/lag/architettura proposto ora; E3R0/J2bis non prerequisiti obbligatori.
+- **Stato live 28/10 00:08 CET via leonardo-ops:** coda vuota. R0val62478383 e J2bis62478392 CANCELLED00:03:21 (SlurmUID127686,
+  nessuna attribuzione personale); R0train62478387 COMPLETED3min04s. Nessun nuovo rapportoR0/J2bis; B non lanciato. Nessun rilancio.
+- ClaudeHEAD63acf94 con codice del pannello B non committato: non toccato o revisionato qui. Questa e' una review dei risultati,
+  distinta dalla precedente review tecnica aecff1a, che resta chiusa nei rilievi sostanziali. Review finale del critico favorevole.
+
 ## 2) Problemi trovati
+
+### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
+
+- Confusione fra controllo eseguito e prova di allineamento: gap positivo7/10, non10/10. L'audit calcola correttamente; va corretta
+  la lettura nel titolo/interpretazione di decisioni.md e nella consegna. Ridge sotto costante8/10, non7/10.
+- «Segnale debole/q piccolo» non misurato: i due casi peggiori sono trasferimenti mano/fase diversi; altri8 sono dentro recording.
+  Disallineato spesso batte ancora costante, miglior ratio0,288 anche con gap negativo. Non equiparare MAE a varianza spiegata.
+- E3 sotto soglia0,9 non equivale ad assenza di informazione. Piccolo vantaggio MAE misurato; senza controllo intercetta/E2 non e'
+  quantificata la componente dinamica. Non attribuire il mancato apprendimento del diverso R3dbg ai latenti finali R3c.
+- Dati raw:16/20 recording hanno zeri (max16,69%), non finiti assenti; la frase «0 righe a zero» va chiarita. Sui casi controllati la
+  mascheratura/ricostruzione passa: questa rettifica numerica non rivela un nuovo difetto della pipeline.
+- Non usare report inesistentiR0/J2bis o orari prospettici nei documenti per descrivere lo stato live; i due job sono cancellati e
+  l'ulteriore trainR0 finito. Nessun rilancio o altro impegno di risorse autorizzato da questa valutazione.
 
 ### 2026-10-27 | GPT | aecff1a: due dettagli P3 e limiti della lettura, nessun nuovo blocco E3/J2
 
