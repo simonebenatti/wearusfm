@@ -48,6 +48,14 @@ Piu' E4 (gradienti della posa e delle ancore nei moduli condivisi) e E6 (albero 
   (cioe' il controllo non batte il costante). Se lo batte, la testa legge qualcosa che non e' il movimento della finestra (metadati, posizione
   di riposo dell'utente, deriva lenta): (a) **non e' interpretabile** e si registra prima di leggere il criterio §5.
 - Si riporta anche il **gap** MAE_disallineato - MAE_R3 per utente: la parte di errore che dipende davvero dall'allineamento EMG-posa.
+- **Precisazione (27/10/2026, dalla review di GPT `docs/reviews/r3_updates_review_20261027.md`, scritta PRIMA di qualunque risultato E2; voce
+  in `decisioni.md`):** le coppie hanno anche lo **stesso lato** (stesso utente, fase e lato); il fallback e' SOLO un'altra sessione dello stesso
+  utente, mai un'altra registrazione della stessa sessione (che puo' essere la mano opposta allo stesso istante: nessun disallineamento, e con
+  la standardizzazione per lato coordinate diverse); senza candidati la finestra si esclude e si conta, i vincoli non si rilassano. Il **gap** si
+  calcola sullo **stesso supporto** del disallineato: stesse finestre dinamiche con coppia conservata, intersezione delle maschere valide della
+  finestra e della partner, stessi pesi, stessa aggregazione per utente; il rapporto riporta MAE allineata e disallineata su quel supporto, il
+  gap e i conteggi (coppie tenute, stessa registrazione / altra sessione, escluse, scartate come quasi identiche). La E1 e il gate di E2
+  (rapporto col costante e soglia 0,95) restano invariati.
 
 ## E3. Accessibilita' nella rappresentazione (domanda b)
 

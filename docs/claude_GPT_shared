@@ -3989,6 +3989,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Opzioni con preventivo in decisioni.md («COLLAUDO dbg di R3 ... LETTO»): (A) E3 su R3c subito (~1,3 GPU-ora di tetto), (B) collaudo lungo a
   lr pieno (5 GPU-ora, criterio da congelare prima), (C) peso piu' alto (sconsigliato), (D) fermarsi. Proposta: (A), poi (B) se leggibile.
 
+### 2026-10-27 | Claude | E2: le due correzioni della review di GPT (5cc9e0c) fatte: gap sullo stesso supporto; coppie stesso utente / fase / lato, fallback solo altra sessione, esclusioni contate; 8 test; nessun risultato E2 da ricalcolare
+
+- `src/wearusfm/harness/pose_eval.py` (`misaligned_pairs`, blocco E2 di `report`: `paired_support`, conteggi `n_same_recording`,
+  `n_other_session`, `n_no_candidate`, `n_dropped_near_identical`, `n_excluded_std_mismatch`), `tests/cpu/test_pose_eval.py` (controesempio
+  della review: gap +1, prima -32,33; maschere parziali; mani opposte escluse; fallback altra sessione; nessun candidato; determinismo),
+  precisazione in `docs/emendamento_pilot_posa_v1.md` e voce in decisioni.md («E2 ... due correzioni»). E1, formula e soglie dei gate invariate;
+  nessun checkout di campagna toccato, nessun training. Il campo `session` del CSV e' la sessione (751 per 193 utenti). SHA del commit nella
+  voce successiva (e nel messaggio a Simone); suite intera in corso dopo il commit.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

@@ -4,10 +4,12 @@
   media del train per giunto, cioe' 0 nello spazio standardizzato): errore assoluto medio per giunto nell'unita' degli angoli, per utente e
   complessivo, su finestre dinamiche e poco dinamiche; **regola congelata**: rapporto MAE / MAE_costante sulle finestre dinamiche con limite
   superiore dell'IC95 (bootstrap sugli utenti, 1.000 ricampionamenti, seme 20261009) < 0,9 e mediana per utente < 0,9.
-- E2: **controllo disallineato in valutazione**: lo stesso modello, target di posa di un'altra finestra dello stesso utente e della stessa fase
-  (stessa registrazione a >= 8 s, altrimenti un'altra registrazione della stessa fase), coppie quasi identiche scartate (distanza standardizzata
-  sotto il 10° percentile); **regola congelata**: limite inferiore dell'IC95 di MAE_disallineato / MAE_costante > 0,95, altrimenti (a) non e'
-  interpretabile.
+- E2: **controllo disallineato in valutazione**: lo stesso modello, target di posa di un'altra finestra dello stesso utente, della stessa fase e
+  dello stesso lato (stessa registrazione a >= 8 s, altrimenti un'altra SESSIONE dello stesso utente; senza candidati la finestra si esclude e si
+  conta), coppie quasi identiche scartate (distanza standardizzata sotto il 10° percentile); **regola congelata**: limite inferiore dell'IC95 di
+  MAE_disallineato / MAE_costante > 0,95, altrimenti (a) non e' interpretabile. Il **gap** MAE_disallineato - MAE_allineato si calcola sullo
+  STESSO supporto (stesse finestre dinamiche con coppia conservata, stessa intersezione delle maschere, stessi pesi), per utente e complessivo
+  (correzioni del 27/10/2026 dalla review di GPT, `docs/reviews/r3_updates_review_20261027.md`: la E1 e il gate di E2 restano invariati).
 - E3: **accessibilita'**: regressione ridge lineare per istante dai latenti congelati del backbone (la media sui K latenti, la parte del backbone
   di `pool_p1p2` prima della media sul tempo) alla posa standardizzata, allenata su un sottoinsieme fisso del train e letta su `val` con le
   stesse metriche: vale per R3, R3c e R0 (anche senza testa).
@@ -265,25 +267,37 @@ def _block(err, const, n, users, sel, label: str) -> dict:
 
 def misaligned_pairs(meta: list[dict], target: np.ndarray, mask: np.ndarray, *, min_gap_s: float = RULE["misaligned_min_gap_s"],
                      drop_quantile: float = RULE["misaligned_drop_quantile"], seed: int = SEED_WINDOWS) -> tuple[np.ndarray, dict]:
-    """Per ogni finestra i, una finestra j dello stesso utente e della stessa fase: stessa registrazione a >= `min_gap_s`, altrimenti un'altra
-    registrazione della stessa fase (seme fisso); -1 se non c'e'. Le coppie con distanza standardizzata dei target sotto il `drop_quantile`
-    si scartano (quasi identiche: il controllo non cambierebbe il movimento)."""
+    """Per ogni finestra i, una finestra j dello STESSO utente, della STESSA fase e dello STESSO lato: prima scelta la stessa registrazione a
+    >= `min_gap_s`; altrimenti (fallback) un'ALTRA SESSIONE dello stesso utente, sempre stessa fase e stesso lato; -1 se non c'e' (la finestra si
+    esclude e si conta: i vincoli non si rilassano). Seme fisso, scelta deterministica nell'ordine delle finestre. Le coppie con distanza
+    standardizzata dei target sotto il `drop_quantile` si scartano (quasi identiche: il controllo non cambierebbe il movimento).
+    Correzione del 27/10/2026 (review di GPT): prima il fallback era «registrazione diversa», e poteva prendere la mano opposta della stessa
+    sessione allo stesso istante (nessun disallineamento temporale; con la standardizzazione per lato, coordinate diverse)."""
     rng = np.random.default_rng(seed)
     n = len(meta)
     users = np.asarray([m["user"] for m in meta])
     stages = np.asarray([m["stage"] for m in meta])
+    sides = np.asarray([m["side"] for m in meta])
+    sessions = np.asarray([m["session"] for m in meta])
     recs = np.asarray([m["recording"] for m in meta])
     starts = np.asarray([m["start"] for m in meta], dtype=np.int64)
     fs = np.asarray([m["fs"] for m in meta], dtype=np.float64)
     partner = np.full(n, -1, dtype=np.int64)
+    how = np.zeros(n, dtype=np.int8)  # 0 nessun candidato, 1 stessa registrazione a >= min_gap_s, 2 altra sessione
+    idx = np.arange(n)
     for i in range(n):
-        same = np.flatnonzero((users == users[i]) & (stages == stages[i]) & (np.arange(n) != i))
+        same = np.flatnonzero((users == users[i]) & (stages == stages[i]) & (sides == sides[i]) & (idx != i))
         if same.size == 0:
             continue
         far = same[(recs[same] == recs[i]) & (np.abs(starts[same] - starts[i]) >= min_gap_s * fs[i])]
-        pool = far if far.size else same[recs[same] != recs[i]]
-        if pool.size:
-            partner[i] = int(rng.choice(pool))
+        if far.size:
+            pool, how[i] = far, 1
+        else:
+            other = same[sessions[same] != sessions[i]]
+            if not other.size:
+                continue
+            pool, how[i] = other, 2
+        partner[i] = int(rng.choice(pool))
     ok = partner >= 0
     dist = np.full(n, np.nan)
     for i in np.flatnonzero(ok):
@@ -295,8 +309,12 @@ def misaligned_pairs(meta: list[dict], target: np.ndarray, mask: np.ndarray, *, 
     thr = float(np.nanquantile(dist[finite], drop_quantile)) if finite.any() else float("nan")
     keep = finite & (dist >= thr) if finite.any() else finite
     partner[~keep] = -1
-    info = {"n_with_partner": int(ok.sum()), "n_kept": int(keep.sum()), "distance_threshold": thr, "min_gap_s": min_gap_s,
-            "n_same_recording": int((ok & (recs[np.maximum(partner, 0)] == recs)).sum())}
+    info = {"n_windows": int(n), "n_with_partner": int(ok.sum()), "n_kept": int(keep.sum()), "distance_threshold": thr, "min_gap_s": min_gap_s,
+            "n_same_recording": int((how == 1).sum()), "n_other_session": int((how == 2).sum()), "n_no_candidate": int((how == 0).sum()),
+            "n_dropped_near_identical": int((ok & ~keep).sum()),
+            "n_kept_same_recording": int((keep & (how == 1)).sum()), "n_kept_other_session": int((keep & (how == 2)).sum()),
+            "constraints": "stesso utente, stessa fase, stesso lato; prima la stessa registrazione a >= min_gap_s, poi un'altra sessione; "
+                           "senza candidati la finestra e' esclusa (vincoli mai rilassati)"}
     return partner, info
 
 
@@ -380,17 +398,46 @@ def report(val: dict, train: dict | None = None, *, rule: dict = RULE) -> dict:
         partner, info = misaligned_pairs(meta, val["target"], val["mask"], min_gap_s=rule["misaligned_min_gap_s"],
                                          drop_quantile=rule["misaligned_drop_quantile"])
         ok = partner >= 0
+        j = np.maximum(partner, 0)
+        # coordinate coerenti: le due finestre della coppia devono avere le stesse statistiche di standardizzazione (stesso lato => uguali;
+        # un disaccordo si esclude e si conta, non si converte)
+        std_mismatch = ok & ~np.all(np.isclose(val["std"], val["std"][j]), axis=1)
+        partner[std_mismatch] = -1
+        ok = partner >= 0
+        j = np.maximum(partner, 0)
+        info["n_excluded_std_mismatch"] = int(std_mismatch.sum())
+        info["n_kept"] = int(ok.sum())
         if ok.any():
-            tj = val["target"][np.maximum(partner, 0)]
-            mj = val["mask"][np.maximum(partner, 0)] & val["mask"]
-            err_m, const_m, n_m = _window_errors(val["pred"], tj, mj, val["std"])
+            tj = val["target"][j]
+            mj = val["mask"][j] & val["mask"]  # supporto comune della coppia: intersezione delle maschere valide
+            err_m, const_m, n_m = _window_errors(val["pred"], tj, mj, val["std"])  # disallineato sul supporto comune
+            err_a, _, n_a = _window_errors(val["pred"], val["target"], mj, val["std"])  # allineato sullo STESSO supporto
             n_m = np.where(ok, n_m, 0)
-            blk = _block(err_m, const_m, n_m, users, dynamic & ok, "disallineato, finestre dinamiche")
-            gap = {}
-            for u, v in blk["per_user"].items():
-                if u in e1["dynamic"]["per_user"]:
-                    gap[u] = v["mae"] - e1["dynamic"]["per_user"][u]["mae"]
-            out["E2"] = {**blk, "pairing": info, "gap_mae_per_user": gap,
+            n_a = np.where(ok, n_a, 0)
+            sel = dynamic & ok
+            blk = _block(err_m, const_m, n_m, users, sel, "disallineato, finestre dinamiche")  # gate: formula e soglia invariate
+            # gap MAE_disallineato - MAE_allineato sullo stesso supporto: stesse finestre (dinamiche, con coppia conservata), stessa
+            # intersezione delle maschere, stessi pesi (elementi validi), stessa aggregazione per utente (review GPT del 27/10/2026)
+            recs_all = np.asarray([m["recording"] for m in meta])
+            s = sel & (n_m > 0)
+            per_user = {}
+            for u in sorted(set(users[s].tolist())):
+                su = s & (users == u)
+                w = n_m[su]
+                ma, mm = float((err_a[su] * w).sum() / w.sum()), float((err_m[su] * w).sum() / w.sum())
+                per_user[u] = {"mae_aligned": ma, "mae_misaligned": mm, "gap": mm - ma, "n_windows": int(su.sum()), "n_valid_elements": int(w.sum()),
+                               "n_same_recording": int((recs_all[su] == recs_all[j[su]]).sum()),
+                               "n_other_session": int((recs_all[su] != recs_all[j[su]]).sum())}
+            w = n_m[s]
+            ma_all = float((err_a[s] * w).sum() / w.sum()) if w.sum() else float("nan")
+            mm_all = float((err_m[s] * w).sum() / w.sum()) if w.sum() else float("nan")
+            gaps = [v["gap"] for v in per_user.values()]
+            paired = {"label": "stesso supporto: finestre dinamiche con coppia conservata, intersezione delle maschere valide della finestra e della partner",
+                      "n_windows": int(s.sum()), "n_users": len(per_user), "n_valid_elements": int(w.sum()),
+                      "n_same_recording": int((recs_all[s] == recs_all[j[s]]).sum()), "n_other_session": int((recs_all[s] != recs_all[j[s]]).sum()),
+                      "mae_aligned": ma_all, "mae_misaligned": mm_all, "gap_mae": mm_all - ma_all,
+                      "median_user_gap": float(np.median(gaps)) if gaps else float("nan"), "per_user": per_user}
+            out["E2"] = {**blk, "pairing": info, "paired_support": paired, "gap_mae_per_user": {u: v["gap"] for u, v in per_user.items()},
                          "misaligned_ok": bool(np.isfinite(blk["ratio_ci95_users"][0]) and blk["ratio_ci95_users"][0] > rule["misaligned_ci_lower"])}
         else:
             out["E2"] = {"pairing": info, "misaligned_ok": None, "note": "nessuna coppia"}

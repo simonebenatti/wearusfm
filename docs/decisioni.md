@@ -4841,3 +4841,27 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   (D) Fermare R3 qui: nessun costo in piu'; resta la valutazione di R3c (in corso) e l'E3 come lettura dell'accessibilita'.
   **Proposta di Claude: (A) subito, poi (B) solo se (A) dice «leggibile»; (C) no; il `critico` legge questa voce prima della decisione.**
   Residuo della seconda ondata: 87,5 - 1,4 (R3c) - 1,15 = ~85 GPU-ora; core-ore ~520 prima delle sonde di R3c.
+
+**E2 (controllo disallineato): due correzioni dalla review di GPT del 27/10/2026 (`docs/reviews/r3_updates_review_20261027.md`, commit GPT
+5cc9e0c), fatte da Claude PRIMA di qualunque risultato E2; protocollo scientifico, criteri e soglie invariati.**
+- (1) **Gap sullo stesso supporto.** Il gap MAE_disallineato - MAE_allineato per utente confrontava il disallineato sulle coppie conservate
+  (intersezione delle maschere) con la MAE della E1 su TUTTE le finestre dinamiche (maschera intera): supporti diversi, segno invertibile (il
+  controesempio della review dava -32,33 invece di +1). Ora entrambi gli errori si calcolano sulle stesse finestre (dinamiche, con coppia
+  conservata), sulla stessa intersezione delle maschere, con gli stessi pesi e la stessa aggregazione per utente; il blocco `paired_support` del
+  rapporto porta MAE allineata, disallineata, gap, numero di finestre, utenti, elementi validi, coppie stessa registrazione / altra sessione. La
+  E1 resta com'era; il gate di E2 (rapporto col costante sulle stesse coppie, soglia 0,95) resta com'era.
+- (2) **Scelta delle coppie.** Il fallback «registrazione diversa» poteva prendere la mano opposta della stessa sessione allo stesso istante
+  (nessun disallineamento temporale; con la standardizzazione per lato, coordinate diverse). Ora: stesso utente, stessa fase, **stesso lato**;
+  prima scelta la stessa registrazione a >= 8 s; fallback un'**altra sessione** (il campo `session` del CSV di emg2pose e' la sessione, non la
+  registrazione: 751 sessioni per 193 utenti, 3,9 per utente; in `val` 57 sessioni per 15 utenti, ognuno con almeno 2); senza candidati la
+  finestra si esclude e si conta. Seme, determinismo e scarto delle coppie quasi identiche (10° percentile) invariati. In piu', nel rapporto, una
+  coppia con statistiche di standardizzazione diverse fra le due finestre si esclude e si conta (`n_excluded_std_mismatch`), invece di
+  convertire le coordinate.
+- Test di regressione (`tests/cpu/test_pose_eval.py`, 6 -> 8 test): gap +1 sul controesempio della review (prima -32,33); maschere parziali
+  diverse con lo stesso supporto per i due errori; esclusione delle coppie simultanee destra / sinistra; fallback stesso lato / altra sessione
+  ammesso e stessa sessione / altra registrazione rifiutato; nessun candidato -> esclusione contata, vincoli non rilassati; determinismo; std
+  diverse -> esclusione. Lo script di riproduzione di GPT, che documenta il comportamento difettoso, ora fallisce sulla prima asserzione (gap
+  riportato = +1): atteso.
+- **Risultati E2 da ricalcolare: nessuno** (nessun job `pose_eval` nel ledger; E1-E3 partono col passo [7]). **Conteggi su dati veri: non ancora
+  disponibili** (servono le estrazioni); dal CSV di `val`: 1.950 registrazioni, mediana 58,7 s, 10 sotto i 12 s (senza coppia nella stessa
+  registrazione), 78 su 747 combinazioni (utente, fase, lato) con una sola registrazione (senza fallback se corta).
