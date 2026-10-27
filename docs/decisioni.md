@@ -4747,3 +4747,19 @@ proposta di M PER LA FIRMA di Simone. La v1 congelata da' M = 2.800 campioni (pe
   `~/wearusfm_local/pilot_posa/`), lettura `results/passo2/emg2pose_pose_margine_lettura_62409366.json` (identica da rapporto intero e snello).
 - **Per GPT (verifica, non bloccante):** la lettura sopra e i due JSON; il prompt `docs/prompt_gpt_regola_margine_20261027.md` resta valido per le
   domande 1, 2 e 5; le opzioni A / B del punto 3 non cambiano nulla qui (il profilo rientra e R2 cade in entrambe).
+
+**Seconda ondata: FIRMA di Simone del margine M = 280 campioni (27/10/2026) e via all'ingest intero della posa [4].**
+- Parole di Simone (27/10/2026, dopo la lettura del collaudo lungo e la spiegazione di che cos'e' M): «proviam M = 280».
+- **M = 280 campioni = 140 ms per lato di ogni blocco di righe a zero** (tetto della perdita 5,0% delle righe, oltre al 9,4% gia' nullo sul campione
+  del collaudo lungo). Regola di validita' dei campioni di posa: riga non valida se tutta a zero o entro 280 campioni da una riga tutta a zero;
+  blocco di 10 campioni valido solo se tutti e 10 sono validi (`docs/pilot_posa_v1.md` §6, punto 5). Le 80 registrazioni dei due collaudi
+  (margine 0) vengono rifatte col margine firmato (`already_done` confronta il margine).
+- **Job [4] (catena, pre-autorizzato il 26/10 «SOLO dopo la firma della regola di validita'»):** `ingest_emg2pose_pose.sbatch --skip-existing
+  --zero-margin-samples 280 --no-measure --stats`, CPU seriale, 2 core, 16 GB, 4 h di tetto (budget di tempo interno 3 h 40: si ferma in ordine
+  e scrive il rapporto; si riprende con lo stesso comando e un ID nuovo), 0 GPU-ora, <= 8 core-ore. **Dal checkout `pilot-posa-collaudo-20261027`
+  (41f6ac1)** invece del `pilot-posa-20261026` (c5e42cb) scritto nella catena: il percorso di scrittura dell'ingest (`ingest_pose_recording`,
+  margine, `pose_meta.json`, `already_done`) e' identico nei due commit (diff verificato: fra c5e42cb e 41f6ac1 cambiano solo la misura del
+  profilo e la lettura), e il checkout nuovo e' quello col codice piu' recente e provato. Uscita: `$SCRATCH/data/processed/emg2pose_pose/`,
+  `pose_stats.json` sullo split di pretraining, rapporto in `$WORK/wearusfm_runs/results/passo2/`.
+- **Poi:** [5] collaudo dbg di R3 (pre-autorizzato, «SOLO dopo l'ingest intero COMPLETED, pose_stats.json scritto»), lettura del cancello con
+  Simone, [6] R3, [7] valutazione. Residuo della seconda ondata: 87,5 GPU-ora, ~530 core-ore prima di [4].

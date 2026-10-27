@@ -3950,6 +3950,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Opzioni e tetto della perdita: 40 -> 0,7%; 100 -> 1,8%; 280 -> 5,0%; 400 -> 7,2%; 2.800 -> 50,3%. Proposta per la firma: M = 280 (alternativa
   minima 40). JSON snello e lettura in `results/passo2/` (identica da rapporto intero e snello). Prompt per GPT aggiornato con i numeri.
 
+### 2026-10-27 | Claude | Simone firma M = 280 («proviam M = 280»): regola di validita' della posa congelata in decisioni.md («FIRMA»); via all'ingest intero [4]
+
+- M = 280 campioni = 140 ms per lato di ogni blocco di zeri (tetto della perdita 5,0%). Job [4] dalla catena (pre-autorizzato il 26/10 per dopo
+  la firma): `--skip-existing --zero-margin-samples 280 --no-measure --stats`, CPU seriale, 2 core, 4 h di tetto, 0 GPU-ora, <= 8 core-ore; dal
+  checkout pilot-posa-collaudo-20261027 (41f6ac1; percorso di scrittura identico a c5e42cb, diff verificato). ID SLURM nella voce successiva.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
