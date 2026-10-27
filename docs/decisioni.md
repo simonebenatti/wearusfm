@@ -4956,3 +4956,45 @@ eseguiti; E3 su R3c in corso; audit delle registrazioni vere pronto; collaudo lu
 - **Residuo della tranche** (tetti 0,67 GPU-ora / 25,5 core-ore): spesi 0,07 GPU-ora e 0,56 core-ore; impegnati a tetto 16 core-ore (E3c);
   restano 0,60 GPU-ora e 8,9 core-ore, di cui 0,17 per il checkout dell'audit e 4 per l'audit (J2). Le 0,84 GPU-ora e 6,7 core-ore delle
   estrazioni sbagliate (62437148, 62437151) restano fuori dalla tranche, rendicontate a parte (consuntivo delle 16:40).
+
+### Audit della posa: review del critico su ebb16e1 (DA RIVEDERE) e correzioni; rettifica di tre punti della voce «SEGUITO del collaudo dbg di R3» (27/10/2026, 18:00-18:45)
+- **Rettifica (la voce vecchia resta com'e'):**
+  (1) la frase «H1 regge solo se il numero efficace di istanti per passo e' basso ... o q e' piccolo» era una conclusione esclusiva non
+  sostenuta. Il sintetico mostra solo che lo schedule del dbg puo' NON far scendere del 10% un segnale moderato con pochi istanti indipendenti
+  per passo, e puo' farlo con 70; non misura B_eff ne' q dei dati veri e non contiene encoder mobile e ancore, quindi non esclude H2 ne' H3.
+  Lettura corretta: il sintetico calibra il controllo; H1, H2 e H3 restano indistinte sui dati veri (le separano in parte l'audit e l'E3).
+  (2) J2: la scansione del ritardo e' esplorativa (lag da -L a +L patch, MAE e N per lag sulle stesse righe), senza «atteso 0» e senza verdetto;
+  il lag operativo si sceglie dentro il fit (split interno) e si valuta una volta sul test. Nel test la posa e' spostata di **200 ms = 8 patch**
+  (non 400 ms) e la scansione ne recupera segno e grandezza.
+  (3) sintetico, scenari e semi realmente eseguiti (`results/infra/pilot_posa/pose_head_synthetic_20261027.json`, committato ora): q in
+  {1; 0,5; 0,2; 0}, B in {7, 28} finestre per passo, P in {10, 1} istanti per finestra, semi 0, 1, 2; 1.300 passi (schedule dbg) e 5.000 (r3);
+  teacher lineare in LayerNorm(x), schedule dal trainer (`run.with_wsd` + `run._lr_at`, dose 671 passi di picco nel dbg). Rapporto MSE
+  finale / iniziale (mediana dei 3 semi; i semi differiscono al piu' di 0,01) e passo del primo -10%: **dbg** q = 1: 0,67 / 0,29 / 0,42 / 0,17
+  per (B, P) = (7, 1) / (7, 10) / (28, 1) / (28, 10), -10% al passo 1.000 / 500 / 500 / 500; q = 0,5: 0,85 / 0,65 / 0,73 / 0,57, al passo 1.000 /
+  1.000 / 1.000 / 500; **q = 0,2: 0,943 (mai -10%) / 0,86 (1.000) / 0,90 (1.300 in 2 semi su 3, mai nel terzo) / 0,82 (1.000)**; q = 0: 1,00,
+  mai. **r3** (5.000 passi) q = 1: 0,00 ovunque (1.000; 500 con 28 x 10); q = 0,5: 0,54 / 0,50 / 0,52 / 0,50 (1.500 / 1.000 / 1.000 / 1.000);
+  q = 0,2: 0,835 (2.500) / 0,80 (1.500) / 0,82 (2.000) / 0,80 (1.000); q = 0: 1,00, mai. Ottimo a feature fisse: 1 - q.
+- **Review del critico su ebb16e1: DA RIVEDERE.** Criteri R1-R4, split, test, launcher e coerenza con decisioni.md soddisfatti; un bloccante
+  (documentazione non aggiornata: questa voce e il registro) e sette minori, tutti corretti in questo commit, nessun altro giro:
+  (2) il ripiego senza inizio assoluto ordinava per offset dentro la registrazione mescolando le registrazioni: ora ordina davvero per
+  (sessione, stem, inizio) e il rapporto espone `bordo_split` (ultima finestra di fit, prima di test); (3) il sotto-controllo `stem` del sidecar
+  non confrontava mai lo stem del sidecar di posa (precedenza degli operatori): ora `meta_pose.stem == stem` e cartella == stem sanificato;
+  (4) il lag operativo non vale piu' 0 in silenzio: `None` con `motivo_lag_operativo` quando lo split interno non basta; (5) test aggiunti
+  (vedi sotto); (6) il confronto dello schedule usa la configurazione del collaudo costruita nel test (`with_wsd(sanity_config lr 1e-4, 1300,
+  warmup 1000)`), non quella dello script; (7) se la guardia d'identita' di `PoseStore.entry` scatta la registrazione e' `fallito` con la
+  nota e l'audit arriva al rapporto, invece di fermare il job; (8) `comandi_e3_r3c.txt` committato a parte con la sua voce (e970833),
+  docstring dell'oracolo allineata (righe non finite non valide da sole, senza dilatazione).
+- **Test** (`tests/cpu/test_pose_audit.py` 9, `test_pose_chain_oracle.py` 3, `test_pose_eval.py` 8: 20 passati in 44 s): nuovi end-to-end con
+  statistiche per lato + NaN/Inf negli angoli + due lati simultanei della stessa sessione (catena verificata 6/6, righe non finite viste da
+  ingest, albero e oracolo); sidecar con stem alterato nella sola cartella sanificata (solo il controllo `stem` lo vede) e con utente sbagliato
+  (guardia: registrazione fallita, audit completo con 3 verificate); ripiego senza inizio assoluto (ordine dichiarato rispettato al bordo
+  dello split); caso positivo del contatore delle simultanee (`simultaneous_pairs`). Suite completa su ebb16e1: 1.459 passati in 25 min; sulle
+  correzioni gira dopo questo commit.
+- **Limiti dichiarati:** nessuna fixture con buchi nell'asse dei tempi (letture diretta e da blocco provate su registrazioni continue);
+  l'uguaglianza dei `time_axis` fra sidecar dell'EMG (ingest dell'01/10) e della posa (27/10) sui file veri non e' verificabile sul Mac: se
+  differissero l'audit darebbe un `fallito` falso, mai un ok falso; il contatore delle simultanee e' 0 per costruzione quando i due lati hanno
+  le stesse finestre e la separazione del 10% copre l'istante a cavallo.
+- **Prossimo passo, dentro i tetti della tranche (residuo 0,60 GPU-ora, 8,9 core-ore):** deploy `deploy/pilot-posa-audit-20261027` dallo SHA
+  di questo commit, checkout `pilot-posa-audit-20261027` (1 core, 10 min: 0,17 core-ore), audit `pose_audit.sbatch` con i default (split train,
+  10 utenti, 20 registrazioni, 20 finestre, M = 280, contesto 2, lag 8, seme 20261027, indice del tar 20 min: 4 core x 1 h = 4 core-ore, 16 GB,
+  0 GPU-ora) sulla coda seriale, dietro le sonde di R3c e il rapporto E3.

@@ -45,9 +45,13 @@ def _hdf5(angles, emg, rate=2000.0):
     return buf.getvalue()
 
 
-def _pose_and_emg(n, seed, shift_blocks=0):
+SPECS_SIM = SPECS + [("3", "sE", "A", "left", 5), ("3", "sE", "A", "right", 6)]  # due lati simultanei della stessa sessione
+
+
+def _pose_and_emg(n, seed, shift_blocks=0, nonfinite=False):
     """Posa lenta per giunto; EMG col canale c modulato in ampiezza dal giunto c all'ISTANTE STESSO (log-RMS lineare nella posa, nessun
-    ritardo). `shift_blocks` sposta la posa scritta nel file rispetto all'EMG (posa disallineata di proposito)."""
+    ritardo). `shift_blocks` sposta la posa scritta nel file rispetto all'EMG (posa disallineata di proposito); `nonfinite` mette NaN e Inf
+    in qualche riga (righe non valide da sole, senza dilatazione)."""
     rng = np.random.default_rng(seed)
     t = np.arange(n) / FS
     pose = (0.6 * np.sin(2 * np.pi * (0.25 + 0.05 * np.arange(20))[None, :] * t[:, None] + rng.normal(size=20)[None, :]) + 1.0).astype(np.float32)
@@ -55,28 +59,39 @@ def _pose_and_emg(n, seed, shift_blocks=0):
     emg = (rng.normal(size=(n, 16)) * amp * 3.0).astype(np.float32)
     written = np.roll(pose, shift_blocks * PT.BLOCK, axis=0) if shift_blocks else pose.copy()
     written[5000:5300] = 0.0  # un blocco di zeri (fallimento della cinematica inversa)
+    if nonfinite:
+        written[20000:20003, 4] = np.nan
+        written[40000, 7] = np.inf
     return written, emg
 
 
-def _setup(tmp_path, shift_blocks=0, mutate=None):
-    """Alberi EMG e posa dall'UNICA fixture HDF5 per registrazione, con i due ingest veri; CSV con inizi assoluti; tar con gli stessi byte.
-    `mutate`: funzione (stem, dir_emg) applicata DOPO l'ingest (EMG sostituito o spostato)."""
+def _setup(tmp_path, shift_blocks=0, mutate=None, *, specs=SPECS, per_side=False, nonfinite=False, csv_start=True, mutate_pose=None):
+    """Alberi EMG e posa dall'UNICA fixture HDF5 per registrazione, con i due ingest veri; CSV con inizi assoluti (stessa sessione = stesso
+    inizio; `csv_start=False` li toglie dal CSV); tar con gli stessi byte. `mutate`: funzione (stem, dir_emg) applicata DOPO l'ingest (EMG
+    sostituito o spostato); `mutate_pose`: lo stesso sull'albero della posa (sidecar alterato)."""
     root, pose_root = tmp_path / "processed" / "emg2pose", tmp_path / "pose"
-    rows, recs = [], {}
-    for i, (user, sess, stage, side, seed) in enumerate(SPECS):
+    rows, recs, starts = [], {}, {}
+    for user, sess, stage, side, seed in specs:
         stem = f"2021-01-0{seed}-1-h{seed}-cv-emg-pose-{stage}@2-recording-0_{side}"
-        pose, emg = _pose_and_emg(N, seed, shift_blocks)
+        pose, emg = _pose_and_emg(N, seed, shift_blocks, nonfinite)
         data = _hdf5(pose, emg)
-        row = {"session": sess, "user": user, "stage": stage, "start": 1_600_000_000 + 100 * i, "end": 1_600_000_000 + 100 * i + 30, "side": side,
+        start = starts.setdefault(sess, 1_600_000_000 + 100 * len(starts))
+        row = {"session": sess, "user": user, "stage": stage, "start": start, "end": start + 30, "side": side,
                "filename": stem + ".hdf5", "moving_hand": "both", "held_out_user": False, "held_out_stage": False, "split": "train", "generalization": "user"}
         ref = E2P.RecordingRef(member=f"emg2pose_data/{stem}.hdf5", stem=stem)
         E2P.ingest_recording(io.BytesIO(data), ref, root, row)
         PP.ingest_pose_recording(io.BytesIO(data), ref, pose_root, row, zero_margin_samples=M, measure=False)
         recs[stem] = data
-        rows.append(row)
+        rows.append(dict(row) if csv_start else {**row, "start": "", "end": ""})
         if mutate:
             mutate(stem, root / f"u{user}" / stem)
-    _stats(pose_root, mean=[1.0] * 20, std=[0.42] * 20)
+        if mutate_pose:
+            mutate_pose(stem, pose_root / f"u{user}" / stem)
+    if per_side:
+        _stats(pose_root, mean=[1.0] * 20, std=[0.42] * 20, per_side=True,
+               by_side={"left": {"mean": [1.0] * 20, "std": [0.42] * 20}, "right": {"mean": [1.1] * 20, "std": [0.5] * 20}})
+    else:
+        _stats(pose_root, mean=[1.0] * 20, std=[0.42] * 20)
     csvp = tmp_path / "meta.csv"
     with open(csvp, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
@@ -85,10 +100,11 @@ def _setup(tmp_path, shift_blocks=0, mutate=None):
     return root, pose_root, csvp, _tar(tmp_path / "emg2pose_dataset.tar", recs)
 
 
-def _run(root, pose_root, csvp, tar, out, extra=()):
+def _run(root, pose_root, csvp, tar, out, extra=(), n_users=2, n_recordings=4):
     env = {"PYTHONPATH": str(REPO / "src"), "PATH": "/usr/bin:/bin", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}
     cmd = [sys.executable, str(SCRIPT), "--csv", str(csvp), "--processed-root", str(root), "--pose-root", str(pose_root),
-           "--n-users", "2", "--n-recordings", "4", "--n-windows", "24", "--out", str(out), *([] if tar is None else ["--tar", str(tar)]), *extra]
+           "--n-users", str(n_users), "--n-recordings", str(n_recordings), "--n-windows", "24", "--out", str(out),
+           *([] if tar is None else ["--tar", str(tar)]), *extra]
     r = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert r.returncode == 0, r.stdout + r.stderr
     return json.loads(out.read_text())
@@ -184,3 +200,59 @@ def test_movement_never_jumps_across_a_gap_and_dynamic_patches_need_a_valid_neig
     v = np.array([True, True, True, False, False, True, True, True, True, True])
     dyn = PA.dynamic_patches(target, v)
     assert not dyn[5] and dyn[6]  # la patch 5 ha la precedente non valida: mai dinamica per il salto attraverso il buco
+
+
+def test_per_side_stats_nonfinite_rows_and_simultaneous_sides_go_through_the_whole_audit(tmp_path):
+    root, pose_root, csvp, tar = _setup(tmp_path, specs=SPECS_SIM, per_side=True, nonfinite=True)
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "sides.json", extra=["--context", "0", "--lags", "4"], n_users=3, n_recordings=6)
+    s = rep["sintesi"]
+    assert s["stato_catena"] == "verificato" and s["registrazioni"] == 6 and all(c["verificato"] == 6 for c in s["copertura"].values())
+    assert all(r["posa_ricostruzione"]["frac_nonfinite_rows"] > 0 for r in rep["per_recording"])  # NaN/Inf attraversano ingest, albero e oracolo
+    # due lati simultanei con le stesse finestre: la separazione del 10% (2 finestre = un istante per lato) copre la coppia a cavallo, quindi 0
+    assert rep["ridge"]["3"]["simultanee_fit_test"] == 0 and rep["ridge"]["3"]["n_gap"] >= 2 and rep["ridge"]["3"]["disallineato"]["stato"] == "verificato"
+    w = lambda t, side: {"session": "s", "stage": "A", "side": side, "t_abs": t}  # noqa: E731
+    assert PA.simultaneous_pairs([w(10.0, "left")], [w(12.0, "right"), w(15.0, "right"), w(12.0, "left")], 4.0) == 1  # caso positivo del contatore
+
+
+def test_pose_sidecar_with_wrong_stem_or_user_fails_the_sidecar_check_without_stopping_the_audit(tmp_path):
+    def once(fn):
+        done = []
+
+        def wrapped(stem, d):
+            if not done:
+                done.append(stem)
+                fn(stem, d)
+        return wrapped
+
+    def wrong_stem(stem, d):  # stessa cartella dopo la sanificazione ('#' -> '_'): la guardia di PoseStore.entry passa, il controllo `stem` no
+        meta = json.loads((d / PT.META_FILE).read_text())
+        meta["stem"] = "#".join(stem.rsplit("_", 1))
+        (d / PT.META_FILE).write_text(json.dumps(meta))
+
+    root, pose_root, csvp, tar = _setup(tmp_path / "stem", mutate_pose=once(wrong_stem))
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "stem.json", extra=["--lags", "0"])
+    cov = rep["sintesi"]["copertura"]
+    assert rep["sintesi"]["stato_catena"] == "fallito" and cov["sidecar"] == {"verificato": 3, "fallito": 1, "non_verificato": 0}
+    bad = [r for r in rep["per_recording"] if r["stati"]["sidecar"] == "fallito"]
+    assert len(bad) == 1 and bad[0]["sidecar"]["stem"] is False and bad[0]["sidecar"]["source_member"] and bad[0]["stati"]["emg_grezzo"] == "verificato"
+
+    def wrong_user(stem, d):  # la guardia di PoseStore.entry rifiuta l'albero: registrazione fallita, l'audit arriva in fondo
+        meta = json.loads((d / PT.META_FILE).read_text())
+        meta["user"] = "99"
+        (d / PT.META_FILE).write_text(json.dumps(meta))
+
+    root, pose_root, csvp, tar = _setup(tmp_path / "user", mutate_pose=once(wrong_user))
+    rep = _run(root, pose_root, csvp, tar, tmp_path / "user.json", extra=["--lags", "0"])
+    cov = rep["sintesi"]["copertura"]
+    assert rep["sintesi"]["stato_catena"] == "fallito" and cov["sidecar"] == {"verificato": 3, "fallito": 1, "non_verificato": 0}
+    assert cov["emg_grezzo"] == {"verificato": 3, "fallito": 0, "non_verificato": 1} and rep["sintesi"]["registrazioni"] == 4
+    bad = [r for r in rep["per_recording"] if r["stati"]["sidecar"] == "fallito"]
+    assert len(bad) == 1 and "guardia d'identita'" in bad[0]["nota"] and len(rep["ridge"]) == 2
+
+
+def test_without_absolute_start_in_the_csv_the_chronology_falls_back_to_session_stem_start(tmp_path):
+    root, pose_root, csvp, tar = _setup(tmp_path, csv_start=False)
+    rep = _run(root, pose_root, csvp, None, tmp_path / "nostart.json", extra=["--lags", "0"])
+    for v in rep["ridge"].values():
+        assert v["cronologia"].startswith("ordine lessicografico") and v["n_gap"] >= 1
+        assert tuple(v["bordo_split"]["ultima_fit"]) < tuple(v["bordo_split"]["prima_test"])  # ordine dichiarato (sessione, stem, inizio)

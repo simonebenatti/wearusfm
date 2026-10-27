@@ -4,7 +4,8 @@ sbagliato rifiutato; apprendibilita' della testa su feature note (`scripts/pose_
 
 Catena provata: HDF5 (angoli a 2 kHz) -> `ingest_pose_recording` (zeri + margine M = 280, blocchi di 10) -> albero della posa -> `PoseStore.window`
 sulle finestre vere del loader (`fixed_windows`: griglia a 200 ms, patch da 25 ms, 4 s) -> `_pose_tensors` (riempimento alla larghezza del batch).
-Oracolo: campione non valido se tutto a zero o entro M campioni da una riga tutta a zero (forza bruta); blocco valido se tutti i 10 campioni lo
+Oracolo: campione non valido se tutto a zero o entro M campioni da una riga tutta a zero (forza bruta), oppure se la riga ha un NaN/Inf (non
+valida da sola, senza dilatazione); blocco valido se tutti i 10 campioni lo
 sono; bersaglio della patch = media dei blocchi validi col centro (10 j + 5) in [inizio, fine) della patch, standardizzato."""
 
 import io
@@ -210,8 +211,10 @@ def test_zero_head_learns_a_known_linear_target_only_with_enough_signal_and_lr_d
     """Calibrazione del controllo (non una previsione del dataset vero): a feature fisse e isotrope, con lo schedule del collaudo (dose di lr
     pari a ~671 passi di picco) la testa a zero scende del 10% solo con segnale forte; con lo schedule di R3 fino a 5.000 passi anche con
     segnale moderato; senza segnale mai. I numeri (passi al 10%) stanno in `scripts/pose_head_synthetic.py --out`."""
+    from dataclasses import replace
+
     from wearusfm.training import run as R
-    cfg = PHS.schedule_cfg("dbg")
+    cfg = R.with_wsd(replace(R.sanity_config(), lr=1e-4), 1300, warmup_steps=1000)  # la configurazione del collaudo costruita QUI, non da PHS
     assert all(PHS.lr_at(s, "dbg") == R._lr_at(s - 1, cfg) for s in range(1, 1301))  # lo stesso schedule del trainer, passo per passo
     assert abs(sum(PHS.lr_at(s, "dbg") for s in range(1, 1301)) / 1e-4 - 671) < 1e-6 and PHS.lr_at(1041, "dbg") == 1e-4 and PHS.lr_at(1042, "dbg") < 1e-4
     assert PHS.lr_at(1962, "r3") == 1e-4 and PHS.lr_at(5000, "r3") == 1e-4 and PHS.lr_at(1, "r3") < 1e-6

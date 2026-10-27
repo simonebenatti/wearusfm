@@ -165,7 +165,7 @@ def emg_checks(view, raw_emg: np.ndarray | None, wins: list, cfg) -> dict:
 def sidecar_checks(meta_emg: dict, meta_pose: dict, rec: dict, d_pose: Path) -> dict:
     row = meta_emg.get("csv_row") or {}
     checks = {"utente": meta_pose.get("user") == rec["user"] == row.get("user", rec["user"]),
-              "stem": meta_pose.get("stem") == rec["stem"] and d_pose.name == rec["stem"].replace("@", "_") or d_pose.name == rec["stem"],
+              "stem": meta_pose.get("stem") == rec["stem"] and d_pose.name == E2P._SAFE_RE.sub("_", rec["stem"]),
               "lato": (meta_pose.get("side") or "").lower() == rec["side"].lower() == (row.get("side") or "").lower(),
               "source_member": bool(meta_emg.get("source_member")) and meta_emg.get("source_member") == meta_pose.get("source_member"),
               "fs": float(meta_emg.get("native_fs_hz", 0)) == PT.NATIVE_FS_HZ == float(meta_pose.get("native_fs_hz", 0)),
@@ -231,22 +231,30 @@ def _choose_alpha(fit: list, shift=0, common=0) -> tuple[float, dict]:
     return best, {"alpha": best, "mae_interna_per_alpha": errs, "n_fit_interno": len(inner_fit), "n_holdout_interno": len(inner_hold)}
 
 
+def simultaneous_pairs(fit: list[dict], test: list[dict], window_s: float) -> int:
+    """Acquisizioni simultanee a cavallo dello split: coppie (fit, test) della stessa sessione e fase, lato diverso, a meno di una finestra di
+    distanza. Con la separazione del 10% in ordine di tempo e' 0 quando i due lati hanno le stesse finestre (la separazione le copre)."""
+    return sum(1 for a in fit for b in test
+               if a["session"] == b["session"] and a["stage"] == b["stage"] and a["side"] != b["side"] and abs(a["t_abs"] - b["t_abs"]) < window_s)
+
+
 def ridge_per_user(windows: list[dict], *, lags: int, seed: int, window_s: float, min_gap_s: float = 8.0) -> dict:
     out = {}
     for user in sorted({w["user"] for w in windows}):
-        ws = sorted((w for w in windows if w["user"] == user), key=lambda w: (w["t_abs"], w["side"]))
+        ws = [w for w in windows if w["user"] == user]
+        from_csv = all(w["t_abs_from_csv"] for w in ws)
+        # cronologia: tempo assoluto dal CSV; senza inizio assoluto per tutte, ordine (sessione, stem, inizio), cosi' le finestre di una stessa
+        # registrazione restano contigue e in ordine di tempo e la separazione per finestre separa nel tempo dentro la registrazione
+        ws = sorted(ws, key=(lambda w: (w["t_abs"], w["session"], w["stem"], w["start"], w["side"])) if from_csv
+                    else (lambda w: (w["session"], w["stem"], w["start"], w["side"])))
         n = len(ws)
         fit, gap, test = _split_windows(ws)
         res = {"n_windows": n, "n_fit": len(fit), "n_gap": len(gap), "n_test": len(test),
-               "cronologia": "tempo assoluto dal CSV (inizio della registrazione) + inizio della finestra" if all(w["t_abs_from_csv"] for w in ws)
-               else "ordine lessicografico (sessione, stem, inizio): il CSV non da' l'inizio assoluto per tutte le registrazioni"}
-        # acquisizioni simultanee a cavallo dello split (stessa sessione e fase, stesso istante, lato diverso)
-        sim = 0
-        for a in fit:
-            for b in test:
-                if a["session"] == b["session"] and a["stage"] == b["stage"] and a["side"] != b["side"] and abs(a["t_abs"] - b["t_abs"]) < window_s:
-                    sim += 1
-        res["simultanee_fit_test"] = sim
+               "cronologia": "tempo assoluto dal CSV (inizio della registrazione) + inizio della finestra" if from_csv
+               else "ordine lessicografico (sessione, stem, inizio): il CSV non da' l'inizio assoluto per tutte le registrazioni",
+               "bordo_split": {"ultima_fit": [fit[-1]["session"], fit[-1]["stem"], fit[-1]["start"]] if fit else None,
+                               "prima_test": [test[0]["session"], test[0]["stem"], test[0]["start"]] if test else None}}
+        res["simultanee_fit_test"] = simultaneous_pairs(fit, test, window_s)
         if len(fit) < 2 or len(test) < 1:
             res["nota"] = "troppo poche finestre per fit / separazione / test"
             out[user] = res
@@ -308,7 +316,7 @@ def ridge_per_user(windows: list[dict], *, lags: int, seed: int, window_s: float
                     scan[str(k)] = {"mae": float(np.abs(pk - ytk).mean()), "mae_const": float(np.abs(ytk - yk.mean(axis=0)).mean()), "n": int(ytk.shape[0])}
                 # lag operativo: scelto dentro il fit (split interno), valutato una volta sul test
                 inner_fit, _, inner_hold = _split_windows(fit)
-                best_k, best_e = 0, np.inf
+                best_k, best_e = None, np.inf  # None finche' lo split interno non basta: mai uno 0 implicito
                 if len(inner_fit) >= 2 and len(inner_hold) >= 1:
                     xi, _, _ = _stack(inner_fit, 0, lags)
                     xh, _, _ = _stack(inner_hold, 0, lags)
@@ -322,7 +330,10 @@ def ridge_per_user(windows: list[dict], *, lags: int, seed: int, window_s: float
                             if e < best_e:
                                 best_k, best_e = k, e
                 res["scansione_ritardo"] = {"esplorativa": True, "lags": lags, "n_righe_fit": int(xfc.shape[0]), "n_righe_test": int(xtc.shape[0]),
-                                            "per_lag": scan, "lag_operativo_dal_fit": best_k, "mae_test_al_lag_operativo": scan[str(best_k)]["mae"],
+                                            "per_lag": scan, "lag_operativo_dal_fit": best_k,
+                                            "mae_test_al_lag_operativo": scan[str(best_k)]["mae"] if best_k is not None else None,
+                                            "motivo_lag_operativo": None if best_k is not None else
+                                            "split interno insufficiente (< 2 finestre di fit, nessuna di controllo o < 20 righe): nessun lag scelto",
                                             "mae_test_a_0": scan["0"]["mae"],
                                             "nota": "nessun verdetto di allineamento: con contesto > 0 piu' lag sono rappresentabili dalle stesse feature"}
         out[user] = res
@@ -381,7 +392,14 @@ def main(argv=None) -> int:
         d_pose = PT.pose_dir(args.pose_root, Path(r["path"]))
         meta_pose = json.loads((d_pose / PT.META_FILE).read_text()) if (d_pose / PT.META_FILE).exists() else {}
         meta_emg = json.loads((Path(r["path"]) / "metadata.json").read_text())
-        blocks, valid = store.entry(view)
+        try:
+            blocks, valid = store.entry(view)
+        except ValueError as e:  # guardia d'identita' di PoseStore.entry: la registrazione e' `fallito`, l'audit continua fino al rapporto
+            per_rec.append({"user": r["user"], "session": r["session"], "stage": r["stage"], "side": r["side"], "stem": r["stem"],
+                            "stati": {**{k: NON_VERIFICATO for k in CHECKS}, "sidecar": FALLITO}, "sidecar": {"guardia_identita": False},
+                            "nota": f"guardia d'identita' dell'albero della posa: {e}"})
+            print(f"  [{ri + 1}/{len(recs)}] {r['stem']}: sidecar fallito (guardia d'identita': {e})", flush=True)
+            continue
         mean, std = store.norm(view)
         n_samples = int(view.arr.shape[0])
         rec_out = {"user": r["user"], "session": r["session"], "stage": r["stage"], "side": r["side"], "moving_hand": r["moving_hand"], "stem": r["stem"],
@@ -439,7 +457,7 @@ def main(argv=None) -> int:
                 mov_a.append(ma)
             fracs.append(float(v.mean()))
             t_abs = (r.get("start_s") if r.get("start_s") is not None else 0.0) + int(w.start) / float(view.fs)
-            windows.append({"user": r["user"], "session": r["session"], "stage": r["stage"], "side": r["side"], "recording": ri, "start": int(w.start),
+            windows.append({"user": r["user"], "session": r["session"], "stage": r["stage"], "side": r["side"], "stem": r["stem"], "recording": ri, "start": int(w.start),
                             "fs": float(view.fs), "t_abs": t_abs, "t_abs_from_csv": r.get("start_s") is not None, "feat": feat, "target": t, "valid": v,
                             "dyn": dynamic_patches(t, v)})
         rec_out["stati"]["oracolo"] = (VERIFICATO if oracle_ok else FALLITO) if n_or else NON_VERIFICATO

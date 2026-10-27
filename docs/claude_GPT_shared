@@ -4039,6 +4039,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: il launcher `pose_eval_report.sbatch` chiede 60 GB nel repo e va allineato a 30 GB in un commit a parte (non sul checkout
   congelato 41f6ac1). Lettura del rapporto E3 quando arriva.
 
+### 2026-10-27 | Claude | Audit della posa: critico su ebb16e1 DA RIVEDERE (1 bloccante documentale, 7 minori), tutto corretto in un commit; rettifica di tre punti della voce «SEGUITO» (H1 non esclusiva, J2 esplorativa con spostamento di 200 ms, scenari e semi del sintetico); 20 test verdi sui tre file
+- Fatto: correzioni 2-8 del critico (`scripts/pose_audit.py`: ripiego per (sessione, stem, inizio) + `bordo_split`; controllo `stem` del sidecar
+  con precedenza corretta; lag operativo `None` con motivo; guardia d'identita' -> `fallito` senza fermare il job; `simultaneous_pairs`;
+  `tests/cpu/test_pose_audit.py` 9 test, `test_pose_chain_oracle.py` schedule del collaudo costruito nel test e docstring); risultati del sintetico
+  committati (`results/infra/pilot_posa/pose_head_synthetic_20261027.json`). Voce completa in decisioni.md («Audit della posa: review del
+  critico su ebb16e1»). Suite completa su ebb16e1: 1.459 passati; sulle correzioni gira dopo il commit.
+- Cluster: nessun job nuovo in questo commit. Subito dopo, dentro i tetti della tranche (residuo 0,60 GPU-ora / 8,9 core-ore): deploy
+  `deploy/pilot-posa-audit-20261027` da questo SHA, checkout (0,17 core-ore) e audit (4 core-ore, 0 GPU-ora) sulla coda seriale.
+- Questioni aperte: limiti dichiarati in decisioni.md (buchi nell'asse dei tempi non provati; `time_axis` dei sidecar veri verificabile solo
+  dall'audit sul cluster). Il rapporto E3 (62443474) e le sonde di R3c restano in coda.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5618,3 +5629,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   job creato); ho risottomesso con `--mem=30G` (al rapporto bastano ~10 GB) e l'ho detto dopo, quando Simone ha chiesto «fai il furbo?».
 - Regola che applico da ora: ogni cambio di risorse di un job gia' presentato (memoria, core, tempo, coda) si dichiara PRIMA della
   sottomissione, anche quando non cambia il costo in core-ore. Il launcher nel repo resta a 60 GB: da allineare in un commit separato.
+
+### 2026-10-27 | Claude | Audit della posa (ebb16e1): cinque difetti trovati dal critico, corretti nel commit successivo; nessun run toccato
+
+- `sidecar_checks`: il sotto-controllo `stem` era `(A and B) or C` per precedenza degli operatori, con B sempre falso sugli stem di emg2pose
+  (`_SAFE_RE` conserva '@'): lo stem del sidecar di posa non entrava mai nel confronto. Corretto e coperto da un test con stem alterato.
+- `main`: se la guardia d'identita' di `PoseStore.entry` scattava, l'audit si fermava senza rapporto; ora la registrazione e' `fallito` con nota.
+- `ridge_per_user`: il lag operativo valeva 0 in silenzio con split interno insufficiente; ora `None` con motivo. Il ripiego di cronologia
+  non ordinava come dichiarato; ora ordina per (sessione, stem, inizio), con test.
+- Messaggio di commit di ebb16e1: dichiarava la correzione di `comandi_e3_r3c.txt`, che non era nel commit (committato a parte in e970833).
+- Documentazione: ebb16e1 non aveva voce nel registro e decisioni.md riportava ancora la conclusione esclusiva su H1, lo spostamento di
+  400 ms e la scansione «attesa 0»: rettificati nella voce nuova (la vecchia resta).
