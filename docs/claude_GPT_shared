@@ -2668,7 +2668,51 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nessuna modifica al codice di Claude, a protocolli, soglie, M o job. Nessuna nuova spesa di cluster. Suite completa non rieseguita;
   verificati ricalcolo del margine, JSON del pilot e due controesempi. Rassegna: EEG incluso, TinyMyo/PhysioWave esclusi come chiesto da Simone.
 
+### 2026-10-27 | GPT | Diagnosi del collaudo R3 dbg fallito e proposta per Simone | Prompt Claude: 921cb97; snapshot: 1bfef02; run: c5e42cb
+
+- Letti prompt e file del job 62429050, ricalcolati log e pannello, revisionate catena dei target e riduzione DDP con tre letture indipendenti
+  (target, ottimizzatore, critico). Risposta completa alle sei domande: `docs/reviews/r3_dbg_diagnosis_20261027.md`; ricalcolo riproducibile:
+  `docs/reviews/analyze_r3_dbg_20261027.py` e `r3_dbg_recalculation_20261027.json`, con hash degli input.
+- **Diagnosi:** fallimento confermato (0,990860 -> 1,014004, +2,336%); H1 plausibile ma non provata, H2/H3 restano aperte, nessun difetto
+  deterministico di offset/lato/maschera o riduzione trovato. `pose_windows` e' gia' GLOBALE (`training/run.py:754-770`): **9.332 esposizioni,
+  7,178 per aggiornamento**, non 37.300 / 28. Patch **25 ms**, 200 ms e' la griglia degli inizi. LR pieno solo **42 aggiornamenti**, dose
+  equivalente 671 passi al picco. Pannello MSE -2,487%, MAE rad -0,129% a 1.000: non miglioramento sostanziale, non apprendimento nullo provato.
+- **Catena:** target/loader/trainer/testa rilevanti identici a c5e42cb. Dieci test CPU di logica passati; riduzione posa verificata anche con
+  rank/microbatch virtuali e conteggi diseguali (gradiente -1,024999976158142 identico). Nessun test distribuito GPU o training eseguito.
+  Restano da verificare sui file reali identita' raw/sidecar/array e supporto valido: `pose_targets.py:87-112` non confronta pose_meta con
+  metadata EMG; `159-166` ammette patch con 1/5 blocchi validi. Lacune diagnostiche, non prova di target errati nel run.
+- **Conto H1:** con modello Adam idealizzato, encoder fisso/isotropo, B=7,178 e varianza spiegabile q=0,2, il 10% dalla testa zero richiede
+  ~1.296 passi equivalenti a lr pieno; q=0,5 ~418. Fra i blocchi del gate passano ~513,28 passi equivalenti: nel toy la discesa sarebbe
+  ~4,50% / ~11,49%. Esempi condizionali, non stime del run; r da solo non identifica i passi. Criterio dbg non calibrato, esito non riscritto.
+- **Controlli PROPOSTI, non lanciati:** (0) Mac, sintesi geometria/oracle e testa su problema noto, 1 thread <=30 min (0,5 core-ore locali);
+  (1) 20 recording reali, audit diretto + ridge RMS con split temporale e controllo disallineato, CPU 4 core/16 GB/<=1 h (4 core-ore);
+  (A) E3 R3c, due estrazioni 1 A100 x40 min (1,333 GPU-ore), CPU totale <=26,667 core-ore incluso report; (B) eventuale unico collaudo
+  5.000 passi, 4 A100/32 core/75 min (5 GPU-ore, 40 core-ore). Totali tetti **6,333 GPU-ore / 70,667 core-ore cluster**, piu' Mac;
+  eventuale piccolo deploy da preventivare separatamente. Residuo ~85 GPU-ore dichiarato da Claude, non verificato live.
+- **Criterio B PROPOSTO per firma:** schedule vero total_steps=49046, steps_at_d=98094, warmup1962 e max_steps=5000, run nuovo; peso1,
+  M280 e ritmo0,81 invariati. Pannello train congelato 256 finestre/32 utenti, misure a0,2000 e ogni500 fino5000, errori per finestra;
+  MSE(5000)<=0,9*MSE(0) e limite superiore IC95 appaiato per utenti <1. Trend dopo warmup, MAE e finestre del flusso da500 passi descrittivi.
+  Non chiedere obbligatoriamente ulteriore10% dopo2000: potrebbe aver imparato prima. Nessuna riscrittura del gate dbg o dei criteri E1-E3/P1/P2.
+- **Raccomandazione:** controlli diretti -> A come diagnosi -> B condizionale alla correttezza, **non** all'esito positivo di A. E3 negativo
+  su ancore non esclude che la posa possa costruire la rappresentazione; RMS negativo non prova H3. C (peso maggiore) no ora; D no come
+  abbandono definitivo, si' come mantenimento del blocco del run completo. B fallito non autorizza altro training. Critico favorevole alla
+  proposta, recepita la precisazione che anche un sintetico fallito richiede diagnosi, non prova automaticamente un bug.
+- Nessun job, accesso al cluster, modifica al codice Claude o a campagne. Il lavoro scientifico e i preventivi sono una proposta per Simone;
+  eventuali correzioni/strumenti/deploy li fa Claude. Il run completo R3 resta fermo fino alla decisione di Simone.
+
 ## 2) Problemi trovati
+
+### 2026-10-27 | GPT | Collaudo R3: premesse errate e diagnosi ancora non identificata | Prompt: 921cb97; run: c5e42cb
+
+- Conteggio posa moltiplicato per4 nel prompt/lettura Claude; patch25ms confuse con griglia200ms; plateau di42 aggiornamenti. Correggere la
+  lettura, non i log. DDP corretto nel percorso analizzato; H1 rimane plausibile, non dimostrata.
+- MSE iniziale ~1 non certifica associazione dei target; E4 e' locale e non misura il gradiente globale/aggiornamento Adam; clipping variabile
+  non e' neutralizzato dall'invarianza ideale alla scala. Pannello attuale:41 finestre emg2pose nominali,32 valide,6 utenti/recording e
+  sovrapposizioni; manca misura fissa a1300. Non dichiarare generalizzazione o apprendimento esattamente nullo.
+- Nessun bug di training confermato da correggere subito. Mancano controlli di provenienza dei singoli target e supporto dinamico reale;
+  array/raw/checkpoint non presenti qui. RMS ridge negativa non implica H3; E3 R3c negativa non implica impossibilita' di R3.
+- Proposta nuova di collaudo/cancello e costi in `docs/reviews/r3_dbg_diagnosis_20261027.md`, da approvare prima di lanciare; vecchio dbg resta
+  fallito, R3 completo bloccato. Nessuna spesa o modifica al codice di prodotto con questa review.
 
 ### 2026-10-27 | GPT | Limiti scientifici del margine e due difetti della valutazione E2 | Snapshot Claude: d43dbcf
 
