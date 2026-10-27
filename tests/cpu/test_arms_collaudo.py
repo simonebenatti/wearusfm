@@ -286,3 +286,112 @@ def test_r3_gradient_diagnostic_is_descriptive_and_flags_below_one_percent(tmp_p
     assert res["passed"] and res["descriptive"]["gradienti_condivisi"]["flag_sotto_1pct"]  # descrittivo: non cambia l'esito del collaudo
     res = AC.check(_run_r3(tmp_path / "none"), "R3", STEPS, SHA, LISTING)
     assert res["descriptive"]["gradienti_condivisi"] is None
+
+
+# --- R3-lungo: collaudo lungo (B) a 5.000 passi, cancello proposto il 28/10/2026 (POSE_GATE_LONG + PANEL_GATE) ---------------------------
+
+LONG_STEPS = 5000
+LISTING_LONG = """total 443431
+-rw-r--r--. 1 sbenatti interactive 454073464 Oct 28 03:06 checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive      2677 Oct 28 02:03 config.json
+"""
+
+
+def _panel(steps=LONG_STEPS, every=500, users=32, windows=8, final=0.7, pred_var=0.2, flat=False, drop=()):
+    """Record di `pose_panel.jsonl` come li scrive il trainer: per finestra MSE, MAE, MSE del costante, varianza delle predizioni, utente."""
+    out = []
+    for step in range(0, steps + 1, every):
+        if step in drop:
+            continue
+        frac = 1.0 if flat else 1.0 - (1.0 - final) * step / steps
+        per = []
+        for u in range(users):
+            for w in range(windows):
+                const = 1.0 + 0.05 * ((u * 7 + w) % 5)  # MSE del costante per finestra, fra 1,0 e 1,2
+                mse = const * frac * (1.0 + 0.02 * ((u + w) % 3))  # al passo 0 (frac 1) la testa e' la costante, poi scende
+                per.append({"user": f"u{u:02d}", "session": f"emg2pose/u{u:02d}/s{w // 4}", "window": [None, 1000 * w, 1000 * w + 8000],
+                            "n_valid": 400, "mse": mse if step else const, "mae": (mse if step else const) ** 0.5 * 0.8,
+                            "mse_const": const, "pred_var": 0.0 if step == 0 else pred_var})
+        out.append({"step": step, "n_windows": len(per), "n_windows_valid": len(per), "n_users": users,
+                    "mse": sum(p["mse"] for p in per) / len(per), "mae": sum(p["mae"] for p in per) / len(per),
+                    "mse_const": sum(p["mse_const"] for p in per) / len(per), "pred_var": sum(p["pred_var"] for p in per) / len(per),
+                    "per_window": per})
+    return out
+
+
+def _run_long(tmp_path, steps=LONG_STEPS, edit=None, panel=None):
+    """Cartella di un run R3-lungo: ricetta di R3 (pesi, posa, provenienza), 5.000 record con la posa che scende a blocchi, pannello."""
+    wj, wa = AC.ARM_WEIGHTS["R3-lungo"]
+    wp = AC.ARM_POSE_WEIGHT["R3-lungo"]
+    d = tmp_path / "R3-lungo"
+    d.mkdir(parents=True)
+    (d / "config.json").write_text(json.dumps({"jepa": {"jepa_weight": wj, "anchor_weight": wa, "keep_weight": 0.0, "branch_weight": 0.0,
+                                                        "pose_weight": wp}, "model": {"pose_head": True},
+                                               "loader": {"pose_root": "/scratch/emg2pose_pose"}, "pose_panel_every": 500}))
+    (d / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": steps, "elapsed_s": 3600.0, "code": {"sha": SHA},
+                                                "world_size": 4, "batch_per_process": 8, "accum_steps": 1, "gpu_max_memory_gib": 14.5,
+                                                "pose_stats_sha256": "ab" * 32}))
+    (d / "pose_provenance.json").write_text(json.dumps({"pose_root": "/scratch/emg2pose_pose", "pose_stats_sha256": "ab" * 32,
+                                                        "pose_unprompted": True}))
+    recs = []
+    for s in range(1, steps + 1):
+        decay = 1.0 / (1.0 + s / 100)
+        r = {"step": s, "windows": 32, "t_step_s": 0.71, "t_data_s": 0.005, "jepa": 0.5 * decay + 0.01,
+             **{a: (3.0 + i) * decay + 0.5 for i, a in enumerate(AC.ANCHORS)}}
+        r["pose"] = 0.1 + 0.9 / (1.0 + s / 500)  # ~1 all'avvio, 0,26 nel blocco 2.000-2.499, 0,19 nel blocco 4.500-4.999
+        r["pose_windows"] = 0.0 if s % 97 == 0 else 7.0
+        r["total"] = wj * r["jepa"] + wa * sum(r[a] for a in AC.ANCHORS) + wp * r["pose"]
+        if s in AC.expected_evaluations(steps):
+            r.update(student_collapse_ratio=3.0, teacher_collapse_ratio=2.5, student_erank=100.0, teacher_erank=90.0)
+        recs.append(r)
+    if edit:
+        recs = edit(recs)
+    (d / "metrics.jsonl").write_text("".join(json.dumps(r) + "\n" for r in recs))
+    panel = _panel() if panel is None else panel
+    (d / "pose_panel.jsonl").write_text("".join(json.dumps(p) + "\n" for p in panel))
+    return d
+
+
+def test_r3_long_clean_run_passes_training_blocks_and_panel(tmp_path):
+    res = AC.check(_run_long(tmp_path), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert res["passed"], {k: v for k, v in res["criteria"].items() if not v["ok"]}
+    c = res["criteria"]
+    assert {"posa_scala_avvio", "posa_tetto", "posa_discesa", "posa_conteggio", "ritmo", "pannello_valutazioni", "pannello_discesa",
+            "pannello_ic95_utenti", "pannello_sotto_costante", "pannello_varianza_predizioni"} <= set(c)
+    assert c["posa_discesa"]["detail"]["passi_da"] == [2000, 2499] and c["posa_discesa"]["detail"]["passi_a"] == [4500, 4999]
+    assert c["pannello_valutazioni"]["detail"]["attese"] == list(range(0, 5001, 500))
+    assert c["pannello_discesa"]["detail"]["rapporto"] == pytest.approx(0.7 * 1.02 / 1.0, abs=0.02)
+    ic = c["pannello_ic95_utenti"]["detail"]
+    assert ic["n_utenti"] == 32 and ic["ic95"][0] <= ic["rapporto_medie_utente"] <= ic["ic95"][1] < 1.0 and ic["utenti_in_discesa"] == 32
+    assert ic["n_boot"] == 1000 and ic["seme"] == 20261027
+    assert c["checkpoint"]["detail"] == {"checkpoint.pt": 454073464}  # a 5.000 di 49.046 niente predecay/postdecay
+    assert len(res["descriptive"]["pannello_posa"]) == 11 and res["descriptive"]["pannello_posa"][0]["pred_var"] == 0.0
+
+
+def test_r3_long_gate_failures(tmp_path):
+    # pannello piatto: nessuna discesa, IC a cavallo di 1, sopra 0,9 x costante; la varianza resta
+    res = AC.check(_run_long(tmp_path / "flat", panel=_panel(flat=True)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    c = res["criteria"]
+    assert not c["pannello_discesa"]["ok"] and not c["pannello_ic95_utenti"]["ok"] and not c["pannello_sotto_costante"]["ok"] and not res["passed"]
+    assert c["pannello_varianza_predizioni"]["ok"] and c["pannello_valutazioni"]["ok"]
+    # una valutazione mancante
+    res = AC.check(_run_long(tmp_path / "drop", panel=_panel(drop=(2500,))), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert not res["criteria"]["pannello_valutazioni"]["ok"] and res["criteria"]["pannello_discesa"]["ok"]
+    # testa collassata su una costante diversa da zero: varianza nulla
+    res = AC.check(_run_long(tmp_path / "const", panel=_panel(pred_var=0.0)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert not res["criteria"]["pannello_varianza_predizioni"]["ok"]
+    # pannello senza il passo finale: i quattro criteri del pannello cadono con il motivo
+    res = AC.check(_run_long(tmp_path / "nofinal", panel=_panel(drop=(5000,))), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert all(not res["criteria"][k]["ok"] for k in ("pannello_discesa", "pannello_ic95_utenti", "pannello_sotto_costante",
+                                                      "pannello_varianza_predizioni"))
+    assert "motivo" in res["criteria"]["pannello_discesa"]["detail"]
+
+    # training piatto nei blocchi lunghi: posa_discesa (2.000-2.499 -> 4.500-4.999) cade anche col pannello buono
+    def flat_blocks(recs):
+        for r in recs:
+            if r["step"] >= 1500:
+                r["pose"] = 0.3
+                r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + 1.0 * r["pose"]
+        return recs
+    res = AC.check(_run_long(tmp_path / "flatblocks", edit=flat_blocks), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert not res["criteria"]["posa_discesa"]["ok"] and res["criteria"]["pannello_discesa"]["ok"]

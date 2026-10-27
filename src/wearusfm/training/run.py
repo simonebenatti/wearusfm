@@ -146,6 +146,15 @@ class RunConfig:
     fixed_eval_every: int = 0
     fixed_eval_batches: int = 8
     log_batch_origin: bool = False
+    # pannello della posa (collaudo lungo (B) di R3, 28/10/2026): ogni `pose_panel_every` aggiornamenti (0 = spento), e al passo 0 di un run
+    # nuovo, l'errore della testa di posa su un insieme FISSO di finestre di emg2pose con la posa: `pose_panel_users` utenti del training x
+    # `pose_panel_recordings` sessioni x `pose_panel_windows` finestre, da un generatore proprio (`_pose_panel_set`), senza gradiente e in
+    # eval, con l'errore di ogni finestra in `pose_panel.jsonl` e l'identita' in `pose_panel_set.json`. Non cambia il training (come il
+    # pannello fisso). Sta nel config: un run col pannello e uno senza non sono lo stesso run (la ricetta di R3 lo dichiara)
+    pose_panel_every: int = 0
+    pose_panel_users: int = 32
+    pose_panel_recordings: int = 2
+    pose_panel_windows: int = 4
     # prefetch (Simone, 15/10/2026: «vai con la 1, il prefetch sulla GPU», dopo l'attesa sui dati al 30M sopra il 2% di D6a): il batch
     # successivo preso dal DataLoader, preparato e copiato sul dispositivo in un thread (`_Prefetcher`) mentre gira il passo corrente. Non
     # cambia il training: stessi batch, stessi valori, stesso ordine. `prefetch_audit` (verifica): a fine passo gli ingressi sul dispositivo
@@ -160,7 +169,7 @@ class RunConfig:
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
-                   "pose_grad_every": 0,
+                   "pose_grad_every": 0, "pose_panel_every": 0, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
@@ -943,6 +952,95 @@ def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg:
     return {"batches": len(parts), **_pool_terms(parts, weight)}
 
 
+POSE_PANEL_SEED = 7272
+
+
+def _pose_panel_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
+    """L'insieme fisso del pannello della posa (collaudo lungo (B) di R3, 28/10/2026): `pose_panel_users` utenti di emg2pose del manifest con
+    almeno `pose_panel_recordings` sessioni, `pose_panel_recordings` sessioni per utente e `pose_panel_windows` finestre per sessione (estrazioni
+    indipendenti sulla griglia del loader: possono sovrapporsi), da un generatore proprio ([seed, POSE_PANEL_SEED]) e materializzate dal loader
+    (`PretrainLoader.materialize`: stesse scale, maschere e target del training); un batch per sessione. Identita' come il pannello fisso: utenti,
+    finestre (sessione, trial, inizio, fine) e hash del contenuto di ogni batch, cosi' dati o preprocessing diversi alla ripresa si vedono."""
+    from wearusfm.data import pose_targets as PT
+    from wearusfm.training.pairing import batch_sha256
+
+    by_user: dict[str, list] = {}
+    for r in index.rows:
+        if PT.PoseStore.applies(r):
+            by_user.setdefault(str(r["subject"]), []).append(r)
+    users = sorted(u for u, rs in by_user.items() if len(rs) >= cfg.pose_panel_recordings)
+    if len(users) < cfg.pose_panel_users:
+        raise ValueError(f"pannello della posa: {len(users)} utenti di emg2pose con almeno {cfg.pose_panel_recordings} sessioni nel manifest, "
+                         f"chiesti {cfg.pose_panel_users}")
+    rng = np.random.default_rng([cfg.seed, POSE_PANEL_SEED])
+    chosen = sorted(str(u) for u in rng.choice(users, size=cfg.pose_panel_users, replace=False).tolist())
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+    batches = []
+    for u in chosen:
+        rows = sorted(by_user[u], key=_session_key)
+        for i in sorted(rng.choice(len(rows), size=cfg.pose_panel_recordings, replace=False).tolist()):
+            row = rows[i]
+            view = loader.view(row)
+            picked = []
+            for _ in range(cfg.pose_panel_windows):
+                win = L.sample_window(view, cfg.loader, rng)
+                if win is None:
+                    raise ValueError(f"pannello della posa: nessuna finestra ammessa in {_session_key(row)}")
+                picked.append((row, view, win))
+            batches.append(loader.materialize(picked, rng))
+    windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
+               for b in batches for r, w in zip(b.rows, b.windows)]
+    return batches, {"seed": [cfg.seed, POSE_PANEL_SEED], "users": chosen, "windows": windows, "batch_sha256": [batch_sha256(b) for b in batches]}
+
+
+def _pose_panel_errors(student: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
+    """L'errore della testa di posa sul pannello, finestra per finestra: predizione dello studente in eval sulla maschera del batch
+    (`student.encode` + `pose_head(latent_mean(z))`, come nel passo), elementi validi = maschera dei target e patch esistenti (`pose_time_valid`,
+    come `pose_terms`). Per finestra: MSE e MAE standardizzati, MSE del predittore costante (0 = la media del train standardizzata, cioe' la
+    testa all'inizio), varianza delle predizioni sugli elementi validi, utente e sessione. Aggregati: medie fra le finestre con almeno un
+    elemento valido. Senza gradiente, studente in eval, stato casuale e modo ripristinati: il training prosegue bit per bit come senza."""
+    from wearusfm.model.pose_head import latent_mean
+    from wearusfm.training.jepa import pose_time_valid
+
+    per_window = []
+    mode = student.training
+    student.eval()
+    devices = [torch.cuda.current_device()] if str(device).startswith("cuda") else []
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad(), amp:
+            for b in batches:
+                inp, visible, _ = _to_device(*L.to_model_inputs(b), device)
+                pose = _pose_tensors(b, device)
+                enc = student.encode(inp, visible)
+                pred = student.pose_head(latent_mean(enc.z)).float()  # (S, P, J)
+                if pose is None:
+                    target, valid = torch.zeros_like(pred), torch.zeros_like(pred, dtype=torch.bool)
+                else:
+                    target = pose[0].float()
+                    valid = pose[1] & pose_time_valid(enc.patch_valid, inp.counts)[..., None]
+                n = valid.sum(dim=(1, 2))
+                err2 = ((pred - target).pow(2) * valid).sum(dim=(1, 2))
+                err1 = ((pred - target).abs() * valid).sum(dim=(1, 2))
+                const = (target.pow(2) * valid).sum(dim=(1, 2))
+                mean_pred = (pred * valid).sum(dim=(1, 2)) / n.clamp(min=1)
+                var_pred = ((pred - mean_pred[:, None, None]).pow(2) * valid).sum(dim=(1, 2)) / n.clamp(min=1)
+                for s, (r, w) in enumerate(zip(b.rows, b.windows)):
+                    k = int(n[s])
+                    per_window.append({"user": str(r["subject"]), "session": _session_key(r),
+                                       "window": [None if w.trial is None else int(w.trial), int(w.start), int(w.stop)], "n_valid": k,
+                                       "mse": float(err2[s]) / k if k else None, "mae": float(err1[s]) / k if k else None,
+                                       "mse_const": float(const[s]) / k if k else None, "pred_var": float(var_pred[s]) if k else None})
+    finally:
+        student.train(mode)
+    ok = [w for w in per_window if w["n_valid"] > 0]
+
+    def mean(key):
+        return float(np.mean([w[key] for w in ok])) if ok else None
+
+    return {"n_windows": len(per_window), "n_windows_valid": len(ok), "n_users": len({w["user"] for w in ok}),
+            "mse": mean("mse"), "mae": mean("mae"), "mse_const": mean("mse_const"), "pred_var": mean("pred_var"), "per_window": per_window}
+
+
 def _ema_trainable(teacher: torch.nn.Module, student: torch.nn.Module, momentum: float) -> None:
     """EMA sui soli parametri allenati dello studente (pilot dei rami): gli strati fissi del teacher restano uguali bit per bit; buffer copiati
     come in `jepa.ema_update`."""
@@ -1070,6 +1168,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
     if cfg.fixed_eval_every and cfg.model.branch_objective != "readout":  # ultrareview del 22/10, rilievo 1
         raise ValueError("pannello fisso: misura la loss di readout dei rami, non l'obiettivo mascherato del pilot (fixed_eval_every 0)")
+    if cfg.pose_panel_every < 0 or min(cfg.pose_panel_users, cfg.pose_panel_recordings, cfg.pose_panel_windows) < 1:
+        raise ValueError("pose_panel_every >= 0 (0 = spento) e pose_panel_users, pose_panel_recordings, pose_panel_windows >= 1")
+    if cfg.pose_panel_every and (cfg.jepa.pose_weight <= 0 or not cfg.loader.pose_root or not cfg.model.pose_head):
+        raise ValueError("pannello della posa: solo col termine di posa (pose_weight > 0, loader.pose_root e model.pose_head)")
     if cfg.nested == "*":  # nel training la frazione e' sempre esplicita: None o una di DERIVED_FRACTIONS (load_index la valida)
         raise ValueError("nested '*': nel training la frazione D16 va dichiarata (None o una delle frazioni)")
     if cfg.freeze_encoder:
@@ -1266,6 +1368,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if ctx.is_main and cfg.fixed_eval_every:
         fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
         _write_or_check(out_dir / "fixed_eval_set.json", ident, "insieme fisso della diagnostica di stabilita'")
+    panel = None  # pannello della posa (RunConfig.pose_panel_every), solo sul processo 0
+    if ctx.is_main and cfg.pose_panel_every:
+        panel, ident = _pose_panel_set(index, cfg, scales, window_s)
+        _write_or_check(out_dir / "pose_panel_set.json", ident, "insieme fisso del pannello della posa")
     session_pos = {}
     if cfg.log_batch_origin:
         keys = [_session_key(r) for r in index.rows]
@@ -1284,6 +1390,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                        collate_fn=_to_shared if num_workers > 0 else None)
     metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
     fixed_log = (out_dir / "fixed_eval.jsonl").open("a") if fixed is not None else None
+    panel_log = (out_dir / "pose_panel.jsonl").open("a") if panel is not None else None
     masked_metrics = branch_alarm = None
     masked_normalized_undefined = 0
     if cfg.model.branch_objective == "masked" or cfg.model.branch_freeze_output or cfg.branch_monitor:
@@ -1300,6 +1407,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
 
     if fixed is not None and resume_state is None:  # il punto di partenza della curva
         fixed_eval(0)
+
+    def panel_eval(at_step: int) -> None:
+        panel_log.write(json.dumps({"step": at_step, **_pose_panel_errors(student, panel, cfg, device, amp)}) + "\n")
+        panel_log.flush()
+
+    if panel is not None and resume_state is None:  # la testa a zero: il predittore costante, riferimento della discesa
+        panel_eval(0)
     reason, it = "max_steps", iter(data)
     numerical_failure = False
 
@@ -1484,6 +1598,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             metrics.flush()
         if fixed is not None and step % cfg.fixed_eval_every == 0:
             fixed_eval(step)
+        if panel is not None and step % cfg.pose_panel_every == 0:
+            panel_eval(step)
         names = ()
         if cfg.schedule.kind == "wsd":  # D14: il checkpoint pre-decay e quelli della fase stabile da cui partono i rami
             names = (("checkpoint_predecay.pt",) if step == cfg.schedule.decay_start else ()) + \
@@ -1507,6 +1623,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         metrics.close()
     if fixed_log is not None:
         fixed_log.close()
+    if panel_log is not None:
+        panel_log.close()
     if ctx.is_main and (reason.startswith("allarme") or numerical_failure):
         stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
     gpu_mem = torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None

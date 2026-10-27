@@ -5114,3 +5114,27 @@ solo con la firma del criterio.**
   1,79 core-ore) restano ~3,9 GPU-ora e ~62 core-ore di tetto; questi lanci ne impegnano 0,92 e 14. Residuo della seconda ondata ~85 GPU-ora.
 - **(1) B:** codice del pannello della posa nel trainer (`RunConfig.pose_panel_*`, `pose_panel.jsonl`, `pose_panel_set.json`), test, criterio
   congelato in una voce a parte, preventivo (4 A100 x 1 h 15 = 5 GPU-ora, 40 core-ore), review del critico; poi la firma di Simone e il lancio.
+
+**Seconda ondata: pannello della posa nel trainer (parte tecnica) e cancello del collaudo lungo (B) scritto come PROPOSTA per GPT (28/10/2026,
+01:30-02:30). NULLA e' congelato, NULLA e' lanciato. Rettifica della voce precedente: E3 su R0 e J2 bis cancellati.**
+- **Rettifica («via di Simone del 28/10/2026 ... Preventivi e lanci di (2) e (3)»):** E3 su R0 e J2 bis erano un'iniziativa di Claude fuori dal
+  piano concordato con GPT (leggere i risultati, preparare e testare il pannello, fissare il criterio, poi presentare B con preventivo per il
+  via; E3 su R0 e J2 bis facoltativi). Simone, 01:25: «si li cancelli e non fai piu nulla che non venga approvato da gpt». `scancel` alle
+  01:26: 62478383 (val di R0-e2) CANCELLED dopo 401 s = **0,11 GPU-ora, 0,89 core-ore**; 62478392 (J2 bis) CANCELLED dopo 415 s = **0,46
+  core-ore**; 62478387 (train di R0-e2) era gia' COMPLETED in 184 s = **0,05 GPU-ora, 0,41 core-ore** (`.../pose_eval/R0-e2/train_subset.npz`
+  resta su $SCRATCH, usabile se GPT vorra' E3 su R0). Totale della deviazione: **0,16 GPU-ora, 1,76 core-ore** (voce E dell'emendamento 1).
+  Watcher fermati; coda vuota. Regola che applico da ora (memoria): nessuna proposta fuori dal piano concordato se non richiesta; ogni scelta
+  scientifica passa prima da GPT; un job parte solo con un via esplicito su quel job.
+- **Pannello della posa (codice, con test):** `RunConfig.pose_panel_every / _users / _recordings / _windows` (0 / 32 / 2 / 4, nei
+  `_LATER_DEFAULTS`: i config vecchi non cambiano); `_pose_panel_set` (utenti di emg2pose del manifest con almeno N sessioni, seme
+  `[seed, 7272]`, finestre sulla griglia del loader materializzate da `PretrainLoader.materialize`, identita' in `pose_panel_set.json`);
+  `_pose_panel_errors` (studente in eval, senza gradiente, RNG ripristinato; per finestra MSE, MAE, MSE del costante = 0 standardizzato,
+  varianza delle predizioni, utente, sessione) in `pose_panel.jsonl` al passo 0 e ogni N passi; flag del launcher `--pose-panel-*`. Lettore:
+  `arms_collaudo.py` braccio `R3-lungo` con `POSE_GATE_LONG` e `PANEL_GATE` (valori = proposta, sotto). Test: `tests/cpu/test_pose_panel.py`
+  (4), `test_arms_collaudo.py` 23 (+2), moduli toccati (loader, stabilita', training con la posa, ripresa, DDP, launcher): Test eseguiti sul Mac (28/10, 01:40-02:40): `test_pose_panel.py` + loader + stabilita' + training con la posa 29 passati (1 min 58); `test_arms_collaudo.py` 23 passati; moduli toccati (ripresa, training run, I/O del run, DDP, equivalenza DDP, WSD, trainer del pilot dei rami, launcher, obiettivo di posa, sicurezza numerica) 78 passati (4 min 24), tutti rc 0; log in `~/wearusfm_local/logs/test_pannello_moduli_20261028.txt`.
+- **Cancello di B: PROPOSTA a GPT** (`docs/prompt_gpt_collaudo_b_20261028.md`, domande 1-5), non congelata: dal cancello di GPT del 27/10 MSE
+  del pannello a 5.000 <= 0,9 x MSE a 0 e IC95 per utente (bootstrap appaiato sugli utenti, 1.000, seme 20261027) con limite superiore < 1;
+  aggiunte di Claude da accettare o togliere: <= 0,9 x MSE del predittore costante, varianza delle predizioni >= 0,01, valutazioni a 0, 500,
+  ..., 5.000, discesa del training a blocchi da 500 (4.500-4.999 <= 0,9 x 2.000-2.499), scala / tetto / conteggio del dbg, ritmo <= 0,81,
+  `checkpoint.pt`. Comando e preventivo di B (5 GPU-ora, 40 core-ore) nel prompt, solo come proposta. Dopo il parere di GPT: voce «criterio
+  congelato», `critico` sui file toccati, comando e preventivo a Simone per la firma.

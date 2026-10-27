@@ -574,7 +574,15 @@ class PretrainLoader:
             picked = [self.sample_from_blocks(rng) for _ in range(batch_size)]
         else:
             picked = [self.sample(rng) for _ in range(batch_size)]
-        t = self._tick("sessione_e_finestra", t)
+        self._tick("sessione_e_finestra", t)
+        return self.materialize(picked, rng, dry=dry)
+
+    def materialize(self, picked: list[tuple], rng: np.random.Generator, *, dry: bool = False) -> PretrainBatch | None:
+        """Il batch dalle finestre gia' estratte `picked` = [(riga del manifest, sorgente (vista della sessione o tessera), finestra)]: montaggio
+        virtuale, scala, maschere, target delle ancore, codici RVQ e posa, con le estrazioni casuali da `rng` nello stesso ordine di sempre
+        (`batch` estrae le finestre e chiama questa). Da sola serve ai pannelli con finestre scelte fuori dallo stream (pannello della posa del
+        collaudo lungo di R3, `training/run._pose_panel_set`, 28/10/2026)."""
+        t = time.perf_counter()
         p_max = max(w.n_patches for _, _, w in picked)
         signals, fs, counts, qc, codes, sets, vis, kind, rvq, targets, rows, wins, rvq_codes, presented, limits, guards, regions, poses = \
             ([] for _ in range(18))

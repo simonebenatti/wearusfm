@@ -90,6 +90,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--keep-grad-every", type=int, default=0, help="diagnostic weighted gradient norms on shared encoder parameters")
     ap.add_argument("--pose-grad-every", type=int, default=0,
                     help="R3, emendamento 1 (E4): ogni N passi norme dei gradienti di posa e ancore sui moduli condivisi e il loro coseno; 0 = spenta")
+    ap.add_argument("--pose-panel-every", type=int, default=0,
+                    help="collaudo lungo (B) di R3: ogni N passi (e al passo 0) l'errore della testa di posa su un insieme fisso di finestre di "
+                         "emg2pose con la posa (pose_panel.jsonl, identita' in pose_panel_set.json); 0 = spento; solo con --pose-root")
+    ap.add_argument("--pose-panel-users", type=int, default=32, help="utenti del pannello della posa")
+    ap.add_argument("--pose-panel-recordings", type=int, default=2, help="sessioni per utente del pannello della posa")
+    ap.add_argument("--pose-panel-windows", type=int, default=4, help="finestre per sessione del pannello della posa")
     ap.add_argument("--fixed-eval-every", type=int, default=0,
                     help="ogni N aggiornamenti le loss su un insieme fisso di batch del training (fixed_eval.jsonl); 0 = spenta")
     ap.add_argument("--fixed-eval-batches", type=int, default=8, help="batch dell'insieme fisso (fino a 32 finestre ciascuno)")
@@ -173,6 +179,8 @@ def build_config(args, error=None) -> "R.RunConfig":
     pose_root, pose_weight = getattr(args, "pose_root", None), getattr(args, "pose_weight", None)
     if pose_weight is not None and pose_root is None:
         fail("--pose-weight senza --pose-root")
+    if getattr(args, "pose_panel_every", 0) and pose_root is None:
+        fail("--pose-panel-every senza --pose-root")
     if pose_root is not None:  # R3: target di posa nel loader, testa nel modello, termine nella loss (peso firmato 1,0)
         w = 1.0 if pose_weight is None else float(pose_weight)
         if not w > 0:
@@ -204,7 +212,9 @@ def build_config(args, error=None) -> "R.RunConfig":
         cfg = replace(cfg, seed=args.seed)
     cfg = replace(cfg, keep_grad_every=args.keep_grad_every, pose_grad_every=getattr(args, "pose_grad_every", 0), fixed_eval_every=args.fixed_eval_every,
                   fixed_eval_batches=args.fixed_eval_batches, log_batch_origin=args.log_batch_origin, prefetch=args.prefetch,
-                  prefetch_audit=args.prefetch_audit, nested=args.nested)
+                  prefetch_audit=args.prefetch_audit, nested=args.nested,
+                  pose_panel_every=getattr(args, "pose_panel_every", 0), pose_panel_users=getattr(args, "pose_panel_users", 32),
+                  pose_panel_recordings=getattr(args, "pose_panel_recordings", 2), pose_panel_windows=getattr(args, "pose_panel_windows", 4))
     if args.keep_calibration is not None:
         cfg = R.with_spectral_keep(cfg, args.keep_calibration, args.keep_weight)
     elif args.keep_weight != 0:

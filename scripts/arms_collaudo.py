@@ -24,15 +24,30 @@ ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = "w1arm-collaudo-v1"
 ARM_WEIGHTS = {"JEPA-only": (1.0, 0.0), "ancore-only": (0.0, 0.2),  # (jepa_weight, anchor_weight), firma dei bracci del 16/10
                "A": (1.0, 0.2),  # obiettivo A: i bracci del pilot degli obiettivi (R0, R1, R2, R5) ne tengono i pesi (24/10/2026)
-               "R3": (0.0, 0.2)}  # seconda ondata (firma del 26/10/2026): ancore + testa di posa, senza JEPA
-ARM_POSE_WEIGHT = {"R3": 1.0}  # peso del termine di posa (docs/pilot_posa_v1.md §2 (iii)); 0 per gli altri bracci
+               "R3": (0.0, 0.2),  # seconda ondata (firma del 26/10/2026): ancore + testa di posa, senza JEPA
+               "R3-lungo": (0.0, 0.2)}  # collaudo lungo (B) di R3: la ricetta ESATTA di R3 fermata a 5.000 passi (28/10/2026)
+ARM_POSE_WEIGHT = {"R3": 1.0, "R3-lungo": 1.0}  # peso del termine di posa (docs/pilot_posa_v1.md §2 (iii)); 0 per gli altri bracci
 # cancello congelato del collaudo dbg di R3 (docs/pilot_posa_v1.md §2 (iii) e decisioni.md del 26/10/2026), letto da metrics.jsonl sui soli
 # passi con conteggio di posa > 0; posa pesata = pose_weight x pose, ancore pesate = anchor_weight x somma delle ancore
 POSE_GATE = {"start_steps": (1, 100), "start_min_ratio": 0.1,  # scala all'avvio: media 1-100, posa pesata >= 0,1 x ancore pesate
              "mid_steps": (500, 1300), "max_ratio": 2.0,  # tetto: media 500-1.300, posa pesata <= 2 x ancore pesate
              "descent_from": (500, 599), "descent_to": (1201, 1300), "descent_factor": 0.9,  # discesa: media 1.201-1.300 <= 0,9 x media 500-599
              "min_count_fraction": 0.9}  # conteggio di posa > 0 in almeno il 90% dei passi 1-1.300
-ARM_MAX_S_PER_STEP = {"R3": 0.81}  # soglia di ritmo congelata (mediana di t_step_s oltre l'avvio): sopra, piano rigenerato con un job di scorta
+ARM_MAX_S_PER_STEP = {"R3": 0.81, "R3-lungo": 0.81}  # soglia di ritmo congelata (mediana di t_step_s oltre l'avvio): sopra, piano rigenerato
+# collaudo lungo (B) di R3 a 5.000 passi (28/10/2026): cancello PROPOSTO (quello di GPT del 27/10 piu' le aggiunte di Claude; da firmare da
+# Simone dopo il parere di GPT, poi congelato). Sul training (metrics.jsonl, blocchi da 500 passi contro il rumore misurato sul dbg: deviazione
+# delle medie di blocco da 100 = 0,035): scala all'avvio e tetto come il dbg, discesa = media della posa pesata nei passi 4.500-4.999 <= 0,9 x
+# media nei passi 2.000-2.499, conteggio >= 90%.
+POSE_GATE_LONG = {**POSE_GATE, "mid_steps": (500, 5000), "descent_from": (2000, 2499), "descent_to": (4500, 4999)}
+# Sul pannello della posa (pose_panel.jsonl, 32 utenti x 2 sessioni x 4 finestre, valutato a 0, 500, ..., 5.000): MSE medio delle finestre al
+# 5.000 <= 0,9 x MSE al passo 0 (cancello di GPT); IC95 del rapporto delle medie per utente MSE(5.000) / MSE(0), bootstrap appaiato sugli
+# utenti (gli stessi utenti ricampionati ai due passi, 1.000 ricampionamenti, seme 20261027, percentili 2,5-97,5), limite superiore < 1 (GPT);
+# MSE al 5.000 <= 0,9 x MSE del predittore costante sulle stesse finestre (aggiunta: al passo 0 la testa e' la costante, questo lo verifica);
+# varianza delle predizioni sugli elementi validi al 5.000 >= 0,01 in unita' standardizzate (aggiunta: una testa collassata su una costante
+# ha varianza ~0); tutte le valutazioni attese presenti.
+PANEL_GATE = {"step_from": 0, "step_to": 5000, "every": 500, "factor": 0.9, "ci_upper_max": 1.0, "n_boot": 1000, "seed": 20261027,
+              "const_factor": 0.9, "min_pred_var": 0.01}
+ARM_CHECKPOINTS = {"R3-lungo": ("checkpoint.pt",)}  # fermato a 5.000 di 49.046: ne' predecay ne' postdecay, resta il checkpoint di ripresa
 ANCHORS = ("log_rms", "band_shape", "log_env", "ms_fast", "ms_slow")  # le ancore attuali (`training/jepa.py`, anchor_losses)
 WORLD, BATCH_PER_PROCESS, WINDOWS = 4, 8, 32
 REL_TOL = 1e-6  # il totale del contratto e' la somma pesata delle componenti in float64 (`run._accumulate_terms`)
@@ -114,10 +129,10 @@ def pose_gradients(recs: list[dict]) -> dict | None:
             "flag_sotto_1pct": bool(mean_ratio is not None and mean_ratio < POSE_GRAD_MIN_RATIO), "soglia_flag": POSE_GRAD_MIN_RATIO}
 
 
-def pose_gate(recs: list[dict], wp: float, wa: float, steps: int) -> list[tuple[str, bool, dict]]:
-    """I quattro criteri congelati del cancello di R3 (`POSE_GATE`), sui soli record con conteggio di posa > 0 (`pose_windows`). Un record
-    senza `pose_windows` o senza componenti finite non entra nelle medie. Ritorna [(nome, ok, dettaglio)]."""
-    g = POSE_GATE
+def pose_gate(recs: list[dict], wp: float, wa: float, steps: int, gate: dict = POSE_GATE) -> list[tuple[str, bool, dict]]:
+    """I quattro criteri congelati del cancello di R3 (`POSE_GATE`; `POSE_GATE_LONG` per il collaudo lungo), sui soli record con conteggio di
+    posa > 0 (`pose_windows`). Un record senza `pose_windows` o senza componenti finite non entra nelle medie. Ritorna [(nome, ok, dettaglio)]."""
+    g = gate
 
     def finite(r, k):
         return isinstance(r.get(k), (int, float)) and math.isfinite(r[k])
@@ -152,6 +167,65 @@ def pose_gate(recs: list[dict], wp: float, wa: float, steps: int) -> list[tuple[
     out.append(("posa_conteggio", bool(counted) and frac >= g["min_count_fraction"],
                 {"frazione_passi_con_posa": frac, "minimo": g["min_count_fraction"], "record_con_conteggio": len(counted), "passi": steps}))
     return out
+
+
+def _panel_user_means(rec: dict) -> dict[str, float]:
+    """MSE medio per utente dalle finestre valide di una valutazione del pannello (`per_window`: user, mse, n_valid)."""
+    acc: dict[str, list] = {}
+    for w in rec.get("per_window") or []:
+        if isinstance(w.get("mse"), (int, float)) and math.isfinite(w["mse"]) and (w.get("n_valid") or 0) > 0:
+            acc.setdefault(str(w.get("user")), []).append(float(w["mse"]))
+    return {u: statistics.fmean(v) for u, v in acc.items()}
+
+
+def panel_gate(panel: list[dict], g: dict = PANEL_GATE) -> list[tuple[str, bool, dict]]:
+    """I criteri del pannello della posa del collaudo lungo (`PANEL_GATE`, proposti il 28/10/2026) dai record di `pose_panel.jsonl`: valutazioni
+    attese; discesa del MSE medio fra il passo iniziale e quello finale; IC95 del rapporto delle medie per utente (bootstrap appaiato: gli stessi
+    utenti ricampionati ai due passi, le stesse finestre per costruzione del pannello); MSE finale sotto il predittore costante; varianza delle
+    predizioni finale. Ritorna [(nome, ok, dettaglio)]."""
+    import numpy as np
+
+    by_step = {int(r["step"]): r for r in panel if isinstance(r.get("step"), int)}
+    want = list(range(g["step_from"], g["step_to"] + 1, g["every"]))
+    have = sorted(by_step)
+    out = [("pannello_valutazioni", have == want, {"valutazioni": have, "attese": want})]
+    a, b = by_step.get(g["step_from"]), by_step.get(g["step_to"])
+
+    def num(r, k):
+        return r is not None and isinstance(r.get(k), (int, float)) and math.isfinite(r[k])
+
+    if not (num(a, "mse") and num(b, "mse")):
+        detail = {"motivo": f"pannello senza MSE al passo {g['step_from']} o {g['step_to']}", "valutazioni": have}
+        return out + [(n, False, detail) for n in ("pannello_discesa", "pannello_ic95_utenti", "pannello_sotto_costante",
+                                                   "pannello_varianza_predizioni")]
+    out.append(("pannello_discesa", b["mse"] <= g["factor"] * a["mse"],
+                {"passi": [g["step_from"], g["step_to"]], "mse_iniziale": a["mse"], "mse_finale": b["mse"],
+                 "rapporto": b["mse"] / a["mse"] if a["mse"] else None, "fattore": g["factor"], "mae_iniziale_finale": [a.get("mae"), b.get("mae")]}))
+    ua, ub = _panel_user_means(a), _panel_user_means(b)
+    users = sorted(set(ua) & set(ub))
+    if len(users) >= 2:
+        x, y = np.array([ua[u] for u in users]), np.array([ub[u] for u in users])
+        idx = np.random.default_rng(g["seed"]).integers(0, len(users), size=(g["n_boot"], len(users)))
+        ratios = y[idx].mean(axis=1) / x[idx].mean(axis=1)
+        lo, hi = float(np.percentile(ratios, 2.5)), float(np.percentile(ratios, 97.5))
+        ok = math.isfinite(hi) and hi < g["ci_upper_max"]
+        detail = {"n_utenti": len(users), "rapporto_medie_utente": float(y.mean() / x.mean()), "ic95": [lo, hi],
+                  "massimo_limite_superiore": g["ci_upper_max"], "n_boot": g["n_boot"], "seme": g["seed"],
+                  "utenti_in_discesa": int((y < x).sum()), "per_utente": {u: [ua[u], ub[u]] for u in users}}
+    else:
+        ok, detail = False, {"n_utenti": len(users), "motivo": "meno di 2 utenti con finestre valide ai due passi"}
+    out.append(("pannello_ic95_utenti", ok, detail))
+    out.append(("pannello_sotto_costante", num(b, "mse_const") and b["mse"] <= g["const_factor"] * b["mse_const"],
+                {"mse_finale": b["mse"], "mse_costante_finale": b.get("mse_const"), "fattore": g["const_factor"],
+                 "rapporto": (b["mse"] / b["mse_const"]) if num(b, "mse_const") and b["mse_const"] else None}))
+    out.append(("pannello_varianza_predizioni", num(b, "pred_var") and b["pred_var"] >= g["min_pred_var"],
+                {"varianza_predizioni_finale": b.get("pred_var"), "minimo": g["min_pred_var"], "varianza_predizioni_iniziale": a.get("pred_var")}))
+    return out
+
+
+def pose_panel_summary(panel: list[dict]) -> list[dict]:
+    """Per ogni valutazione del pannello della posa: passo, MSE, MAE, MSE del costante, varianza delle predizioni, finestre e utenti (descrittivo)."""
+    return [{k: r.get(k) for k in ("step", "mse", "mae", "mse_const", "pred_var", "n_windows_valid", "n_users")} for r in panel]
 
 
 def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) -> dict:
@@ -214,7 +288,11 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         {"formula": f"total = {wj:g} x jepa + {wa:g} x somma delle ancore {list(ANCHORS)}" + (f" + {wp:g} x pose" if wp > 0 else ""),
          "tolleranza_relativa": REL_TOL, "passi_senza_componenti_finite": missing[:5], "passi_fuori_tolleranza": off[:5]})
     if wp > 0:
-        for name, ok, detail in pose_gate(recs, wp, wa, steps):
+        for name, ok, detail in pose_gate(recs, wp, wa, steps, POSE_GATE_LONG if arm == "R3-lungo" else POSE_GATE):
+            put(name, ok, detail)
+    panel = CS._records(run_dir / "pose_panel.jsonl") if arm == "R3-lungo" and (run_dir / "pose_panel.jsonl").exists() else []
+    if arm == "R3-lungo":
+        for name, ok, detail in panel_gate(panel):
             put(name, ok, detail)
     max_rate = ARM_MAX_S_PER_STEP.get(arm)
     if max_rate is not None:
@@ -235,7 +313,8 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         {"allarmi": alarms, "valutazioni": [r["step"] for r in diags], "attese": want})
 
     sizes = listing_sizes(listing)
-    put("checkpoint", all(sizes.get(n, 0) > 0 for n in CHECKPOINTS), {n: sizes.get(n) for n in CHECKPOINTS})
+    wanted = ARM_CHECKPOINTS.get(arm, CHECKPOINTS)
+    put("checkpoint", all(sizes.get(n, 0) > 0 for n in wanted), {n: sizes.get(n) for n in wanted})
 
     later = [r for r in recs if r.get("step", 0) > EDGE]
     t_step = [r["t_step_s"] for r in later if isinstance(r.get("t_step_s"), (int, float))]
@@ -254,6 +333,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "ancore_inizio_fine": {a: edge_means(a) for a in ANCHORS},
         "posa_inizio_fine": edge_means("pose") if wp > 0 else None,
         "posa_errore_pannello_fisso": pose_panel_errors(run_dir) if wp > 0 else None,
+        "pannello_posa": pose_panel_summary(panel) if arm == "R3-lungo" else None,
         "gradienti_condivisi": pose_gradients(recs) if wp > 0 else None,
         "posa_finestre_medie": (statistics.fmean(r["pose_windows"] for r in recs if isinstance(r.get("pose_windows"), (int, float)))
                                 if wp > 0 and any(isinstance(r.get("pose_windows"), (int, float)) for r in recs) else None),
@@ -263,6 +343,9 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
                     "(docs/pilot_obiettivi_v1.md)" if arm == "A" else
                     "R3: ancore e testa di posa, JEPA registrata ma non allenata; il cancello della posa controlla scala, tetto, discesa e "
                     "conteggio, non quanto la testa impari (docs/pilot_posa_v1.md §2 (iii))" if arm == "R3" else
+                    "R3-lungo: la ricetta di R3 fermata a 5.000 passi; il cancello (POSE_GATE_LONG + PANEL_GATE) dice se la testa impara a lr "
+                    "pieno sul training a blocchi da 500 e sul pannello fisso della posa (discesa, IC95 per utente, sotto il costante, "
+                    "varianza); non distingue le ipotesi sul perche' (decisioni.md, 28/10/2026)" if arm == "R3-lungo" else
                     "JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; "
                     "ancore-only: la JEPA registrata misura un predittore non allenato (docs/bracci_obiettivo_finestra1.md)"),
     }
