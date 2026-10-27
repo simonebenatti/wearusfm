@@ -4068,6 +4068,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: lettura dell'audit all'arrivo (voce a parte); E3 su R0 e su R3 non fatti (R3 non esiste, R0 fuori tranche); collaudo lungo (B)
   e R3 restano rinviati in attesa di Simone.
 
+### 2026-10-27 | Claude | Audit della catena della posa (J2, job 62473340, codice aecff1a) LETTO: 100 controlli su 100 verificati su 20 registrazioni vere, posa allineata all'EMG in 10 utenti su 10, ridge dall'EMG grezzo con mediana 0,85 per utente; tranche diagnostica CHIUSA a 0,07 GPU-ora e 1,79 core-ore (tetti 0,67 / 25,5)
+- Fatto: audit COMPLETED in 16 min 23 s (4 core: 1,09 core-ore, tetto 4), rapporto letto e copiato in `results/infra/pilot_posa/pose_audit_62473340.json`.
+  Sidecar (9 sotto-controlli), EMG grezzo dal tar contro processato (221 finestre, errore massimo = mezzo passo int16), lettura da blocco, posa
+  ricostruita (0 righe a zero / non finite / non valide) e oracolo delle finestre: tutti verificati in 20 su 20. Controllo disallineato 10/10,
+  simultanee 0, cronologia dal CSV. Ridge per utente 0,29-5,47 (mediana 0,85; due utenti >> 1 per split cronologico su fase e lato diversi);
+  scansione del ritardo esplorativa: in 6 utenti su 10 la MAE cala verso lag positivi, in 3 fino al bordo (+200 ms). Voce completa, tabella dei
+  conteggi, interpretazione e consuntivo finale in decisioni.md («AUDIT della catena dei bersagli di posa ... LETTO»). Nessun codice toccato.
+- Cluster: nessun job di Claude in coda o in esecuzione. Tranche chiusa: 0,07 GPU-ora e 1,79 core-ore; fuori tranche 0,84 GPU-ora + 6,7 core-ore
+  delle estrazioni sbagliate (gia' rendicontate).
+- Questioni aperte: decisioni a Simone (collaudo lungo B con pannello e criterio firmato; R3; E3 su R0; eventuale J2 bis con lag fino a +-16 patch
+  e piu' registrazioni per utente). Per GPT: verifica indipendente di 6aba4a7 (confronti R3c contro R0, E3) e di questo commit (audit); due
+  rilievi cosmetici gia' in sezione 2.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5666,3 +5679,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   ridge su 1.907 finestre di train. Nessun costo reale in piu' (sulla seriale gira un job alla volta), ma il residuo dichiarato della tranche
   (8,9 core-ore dopo i lanci) era di 15 core-ore piu' basso del vero. Da ora: il tetto di un job CPU si stima dal lavoro del job, non dal
   launcher; il launcher va allineato (tempo e memoria) in un commit a parte, insieme ai 60 GB -> 30 GB gia' segnalati.
+
+### 2026-10-27 | Claude | Rapporto dell'audit (aecff1a): il campo `tolleranza` non include il margine del confronto (cosmetico); due utenti con rapporto della ridge >> 1 per lo split cronologico su fasi diverse (limite del disegno, non difetto); nessun esito cambia
+
+- `emg_check`: il rapporto espone `errore_massimo` 0,0126648 sopra `tolleranza` 0,0126618 (mezzo passo int16) con `finestre_emg_fallite` 0. Il
+  confronto usa mezzo passo x (1 + 1e-3) + 1e-6 x max|raw|, il campo espone solo il mezzo passo: a una lettura esterna sembra un'incoerenza.
+  Da allineare (campo `tolleranza_effettiva` o nota) in un commit a parte con test, senza toccare il checkout; nessun esito cambia.
+- Ridge per utente: con 2 registrazioni per utente lo split cronologico mette spesso nel test una fase e un lato diversi dal fit; due rapporti
+  1,58 e 5,47 su 10. Il disegno e' quello dichiarato (J2 descrittiva, nessun verdetto); una J2 bis dovrebbe prendere piu' registrazioni per
+  utente o stratificare per fase prima di leggere i rapporti per utente.
+- Finestre per registrazione: chieste 20, ottenute 8-20 (non sovrapposte sulla griglia del loader, limitate dalla durata). Il preventivo diceva
+  «20 finestre»: il conteggio reale (221) e' nel rapporto e in decisioni.md.

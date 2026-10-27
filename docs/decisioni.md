@@ -5049,3 +5049,40 @@ criterio nuovo, nessuna decisione; audit della posa in corso.**
   l'audit in corso al massimo 4 core-ore -> totale <= 0,07 GPU-ora e <= 4,7 core-ore. Fuori tranche, rendicontate a parte: 0,84 GPU-ora e 6,7
   core-ore delle estrazioni sbagliate (62437148, 62437151; consuntivo delle 16:40). Le sonde di R3c (65,8 core-ore) stanno sulla voce
   «valutazione» della seconda ondata (residuo core-ore ~526 -> ~460; GPU-ora invariato, ~85).
+
+**Seconda ondata: AUDIT della catena dei bersagli di posa su 20 registrazioni vere (J2) LETTO (job 62473340, 27/10/2026, 23:11-23:29): catena
+verificata 100 controlli su 100; posa allineata all'EMG in 10 utenti su 10; dall'EMG grezzo la posa si predice poco (mediana del rapporto 0,85
+per utente). Tranche diagnostica CHIUSA: 0,07 GPU-ora e 1,79 core-ore sui tetti 0,67 / 25,5.**
+- **Job:** codice aecff1a (checkout `pilot-posa-audit-20261027`, SHA verificato dal launcher), 4 core, 16 GB, COMPLETED in 16 min 23 s =
+  **1,09 core-ore, 0 GPU-ora** (tetto 4), di cui 877 s per l'indice del tar (budget 1.200). Parametri: split train, 10 utenti, 20 registrazioni
+  (2 per utente, lati e fasi misti, 4 «unprompted»), finestre da 4 s non sovrapposte sulla griglia del loader (chieste 20, ottenute 8-20 per
+  registrazione secondo la durata: 221 in tutto), M = 280, contesto 2 patch, lag +-8 patch, seme 20261027. Rapporto copiato in
+  `results/infra/pilot_posa/pose_audit_62473340.json` (sul Mac `~/wearusfm_local/pilot_posa/pose_audit/`).
+- **Catena (R1-R4 + sidecar): `stato_catena` = verificato; 100 controlli su 100 verificati, 0 falliti, 0 non verificati.** (a) sidecar: 9
+  sotto-controlli (utente, stem, lato, membro del tar, fs, asse del tempo, campioni, blocchi, margine) veri in tutte e 20; (b) EMG grezzo dal tar
+  contro processato: 221 finestre, 0 fallite, errore massimo 0,01266 = mezzo passo di quantizzazione int16 (entro il margine dello 0,1% del
+  confronto; il campo `tolleranza` del rapporto espone solo il mezzo passo: registro, sezione 2); lettura da blocco uguale alla lettura diretta
+  (errore 0); (c) posa ricostruita dall'albero: 0 righe a zero, 0 non finite, 0 non valide fuori dalla maschera in tutte e 20; frazione di blocchi
+  validi per registrazione 0,73-1,00; (d) oracolo delle finestre uguale ai bersagli della catena in 221 su 221. Istogramma dei blocchi validi per
+  patch (0..5): 2.531 / 17 / 26 / 48 / 22 / 32.716: il 92,4% delle patch e' intero, il 7,1% vuoto, lo 0,3% parziale (i blocchi non validi stanno
+  a tratti interi, non sparsi).
+- **Allineamento nel tempo (controllo disallineato per utente: stessa registrazione, stesso lato e fase, distanza >= 8 s):** 10 utenti su 10
+  verificati, la MAE della ridge sui bersagli allineati sta sotto quella sui bersagli spostati in tutti (es. 0,905 contro 0,980). Coppie
+  simultanee fit/test: 0 in tutti. Cronologia dal tempo assoluto del CSV per tutti e 10.
+- **Ridge per utente dall'EMG grezzo** (log-RMS per patch e canale, contesto +-2, split cronologico 60/10/30 delle finestre, alpha scelto dentro
+  il fit): rapporto MAE / MAE_costante sul test 0,29-5,47, **mediana 0,85** (finestre dinamiche 0,86); 7 utenti su 10 sotto 1, due molto sopra
+  (1,58 e 5,47: con due registrazioni per utente il test cronologico cade su fase e lato diversi dal fit). Scansione esplorativa del ritardo (lag
+  positivo = bersaglio di posa successivo alle feature EMG): curve piatte entro l'1-3% in 4 utenti; in 6 la MAE cala verso i lag positivi, in 3
+  fino al bordo (+8 patch = +200 ms) senza minimo interno; lag operativo scelto nel fit sparso fra -8 e +8. Nessun verdetto di allineamento dalla
+  scansione (dichiarato nel rapporto: con contesto > 0 piu' lag sono rappresentabili dalle stesse feature).
+- *Interpretazione (non e' una lettura di regola):* sui 20 casi la catena non introduce errori: H3 («difetto della catena») perde terreno, perche'
+  sidecar, EMG, posa, oracolo e allineamento tornano. La posa e' leggibile dall'EMG grezzo ma debolmente e con grande variabilita' fra utenti
+  (segnale q piccolo o moderato): compatibile con H1 (dose dello schedule dbg insufficiente per un segnale debole) e con H2 (encoder che non la
+  rappresenta; l'E3 su R3c da' 0,949). La discesa verso i lag positivi in 6 utenti suggerisce un ritardo elettromeccanico > 0, da esplorare oltre
+  +200 ms in un'eventuale J2 bis: ipotesi, non misura.
+- **Consuntivo FINALE della tranche** (brief del 27/10: «0,67 GPU-ore e 25,5 core-ore complessive»): **0,07 GPU-ora** (62442491) e **1,79
+  core-ore** (0,56 estrazione + 0,13 rapporto E3 + 0,01 checkout + 1,09 audit); non usati 0,60 GPU-ora e 23,7 core-ore. Fuori tranche,
+  rendicontate a parte: 0,84 GPU-ora e 6,7 core-ore delle estrazioni sbagliate (62437148, 62437151). Nessun job di Claude in coda o in esecuzione.
+- **Cosa resta (decisione di Simone; nulla parte da solo):** collaudo lungo (B) con pannello nel trainer e criterio firmato; R3 completo; E3 su R0
+  (estrazione di val e train da preventivare); eventuale J2 bis (piu' registrazioni per utente, lag fino a +-16 patch). Da allineare in commit a
+  parte, senza toccare i checkout: `pose_eval_report.sbatch` (memoria e tempo) e il campo `tolleranza` del rapporto dell'audit.
