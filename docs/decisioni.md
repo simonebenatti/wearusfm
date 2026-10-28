@@ -5152,3 +5152,12 @@ Il margine aggiunto rispetto a 5 GPU-ore serve a pannello e checkpoint; **non e'
 `results/infra/pilot_posa/piano_b_20261028.json`. Review e test in `docs/reviews/collaudo_b_preparation_20261028.md`.
 Prima del deploy: review reciproca delle modifiche tecniche e firma di Simone. Nessuna sottomissione ora; niente E3 R0, J2 bis,
 retry o continuazione automatica del full R3. L'esito positivo aprira' una decisione separata.
+
+
+## 2026-10-28 — GPT: via di Simone a checkout e B; pooling invariato
+
+Dopo la consegna con preventivo aggiornato, Simone chiede a GPT di lanciare i test e a Claude di fare il controllo.
+Il via riguarda il checkout e il singolo B del piano `piano_b_20261028.json`: codice 24139ab, 5.000 passi, 6 GPU-ore,
+48+1/3 core-ore; nessun esperimento aggiuntivo o retry. Review scientifica/tecnica indipendente e 123 test gia' conclusi.
+Il dubbio sulla media dei canali e' risolto senza cambiare codice: il readout ufficiale la conserva; B usa la media sui latenti
+per patch. Le sonde alternative non furono adottate nel training. Conservare ricetta e criterio per rendere interpretabile B.

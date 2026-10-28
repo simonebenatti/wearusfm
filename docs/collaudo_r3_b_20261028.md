@@ -1,8 +1,10 @@
 # R3: collaudo lungo B — proposta del 28/10/2026
 
-**Stato: PROPOSTO, DA FIRMARE. Nessun lancio autorizzato da questo documento.** Simone ha autorizzato la preparazione di codice,
-protocollo e test. Criterio, comando definitivo e preventivo richiedono la sua firma prima della sottomissione. Il collaudo dbg da
-1.300 passi resta fallito secondo la regola allora firmata; B e' un nuovo controllo, non una rilettura retroattiva.
+**Stato aggiornato il 28/10/2026: AUTORIZZATO AL LANCIO da Simone.** Dopo la consegna completa con tetto di 6 GPU-ore,
+Simone chiede: «puoi lanciare tu i test? cosi a claude faccio fare solo il controllo». GPT esegue il checkout e il singolo collaudo B;
+Claude svolge il controllo. Restano invariati codice `24139ab`, ricetta, criteri e preventivo presentati. Nessun altro job incluso.
+La proposta originale riportata sotto e' ora il criterio applicabile a B. Il dbg resta fallito secondo la regola allora firmata.
+
 
 Riferimenti: [valutazione scientifica del 28/10](reviews/pose_scientific_assessment_20261028.md),
 [pilot della posa](pilot_posa_v1.md), [emendamento diagnostico](emendamento_pilot_posa_v1.md).
@@ -186,4 +188,4 @@ Verificare il comportamento distribuito quando soltanto il rank principale prepa
 
 Il checkpoint e il dataset reale non sono sostituiti dai test sintetici: i test verificano il contratto del collaudo, non anticipano il
 suo risultato. Review tecnica e scientifica della consegna finale, firma esplicita di Simone su criterio e preventivo, poi eventuale
-sottomissione con la procedura comune. **Fino a quella firma si prepara soltanto: nessun job.**
+sottomissione con la procedura comune. Il via successivo di Simone e' registrato in apertura e nel piano; non estenderlo ad altri esperimenti.

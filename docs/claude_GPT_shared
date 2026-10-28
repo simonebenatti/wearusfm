@@ -4133,6 +4133,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   quotato e config ricostruito dal parser verificati coerenti. Prompt di review: `docs/prompt_claude_review_b_20261028.md`.
   Simone ha confermato «comitta e pusha sempre tutto»: regola registrata anche in CLAUDE.md, consegna completa sul ramo GPT di origin.
 
+### 2026-10-28 | GPT | Via di Simone al lancio di B; media sui canali ancora nel readout ufficiale
+
+- Simone: «siccome abbiamo avuto degrado delle performance togliendo la media sui canali [...] impatta qua?» e «puoi lanciare tu i test?
+  cosi a claude faccio fare solo il controllo». GPT prende in carico checkout e singolo B nei tetti gia' presentati (6 GPU-ore,
+  48+1/3 core-ore); Claude svolge il controllo. Questa istruzione aggiorna l'attesa della proposta precedente; nessun altro job incluso.
+- Verifica del pooling: il protocollo della campagna `readout_canale_20261023` non adottava le letture alternative nel training.
+  Il `pool` ufficiale mantiene la media sui canali QC-validi; la posa legge la media sui K latenti per patch, preservando il tempo.
+  `local` contro `pool`: P1 -2,00 punti, P2 -2,49; `dec`: -0,42/+1,33, senza superare il criterio complessivo. Il confronto cambia anche
+  strato/rappresentazione: non prova che la media sia universalmente migliore. Nessuna modifica al modello o al readout di B.
+- Piano aggiornato con il via e stessi SHA/argomenti/tetti; preflight operativo affidato a leonardo-ops. ID e consuntivo saranno
+  registrati dopo le sottomissioni; nessuna dichiarazione anticipata di job eseguiti o di review Claude conclusa.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5767,3 +5779,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   senza riuso automatico della directory (`REQUIRE_NEW_RUN=1`) e senza retry. Nessun log di run precedenti viene riscritto.
 - 75 min /5 GPU-ore non garantivano margine sufficiente al ritmo limite: presentato il tetto aggiornato di 90 min /6 GPU-ore,
   esplicitamente ancora da approvare. Non e' una variazione applicata di nascosto a un job.
+
+### 2026-10-28 | GPT | Chiarimento: il degrado delle sonde per canale non e' una rimozione della media dal training
+
+- Le sonde `local` e `dec` erano confronti alternativi sui checkpoint congelati. Il percorso ufficiale `pool_p1p2` conserva la media
+  dei canali validi; `PoseHead` usa `latent_mean` per istante. Ripristinare qualcosa in B significherebbe cambiare una ricetta che
+  gia' usa la propria aggregazione, confondendo la diagnosi sulla dose di training. Fonte: protocollo e risultati readout del 23-25/10,
+  `model/spectral_step1.py`, `model/pose_head.py`, `training/jepa.py`. Nessun difetto o cambiamento di codice in questa verifica.

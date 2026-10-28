@@ -1,9 +1,9 @@
-# COLLAUDO R3 B — PROPOSTO DA FIRMARE, NON ESEGUITO.
+# COLLAUDO R3 B — AUTORIZZATO DA SIMONE IL 28/10/2026; stato dei job nel piano/registro.
 # Codice congelato 24139ab901c052357a46a65bc20466f2eb1e8358; protocollo docs/collaudo_r3_b_20261028.md.
 # Prima: review reciproca di Claude, firma esplicita di Simone sul tetto 6 GPU-ore + 48,3333 core-ore,
 # verifica read-only di hook/ref remoti, coda/ledger, hash degli ingressi e assenza directory del run.
 # Esegue leonardo-ops dal Mac, dalla consegna GPT pulita. Niente feeder, catena o retry automatici.
-# Le righe sotto sono un piano: NON eseguirle con shell prima della firma.
+# Via registrato: GPT esegue checkout e B; Claude controlla. Verifiche tecniche pre-lancio obbligatorie, nessun altro job.
 
 # [D] Dopo firma e controllo remoto, pubblicazione del riferimento congelato (non cambia main):
 git push leonardo 24139ab901c052357a46a65bc20466f2eb1e8358:refs/heads/deploy/pilot-posa-b-20261028

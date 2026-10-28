@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "PROPOSTO_DA_FIRMARE",
+  "status": "AUTORIZZATO_DA_SOTTOMETTERE",
   "prepared_by": "GPT",
   "date": "2026-10-28",
   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
@@ -88,10 +88,18 @@
   "automatic_retry": false,
   "automatic_full_r3": false,
   "other_jobs": [],
-  "approval": null,
+  "approval": {
+    "by": "Simone",
+    "date": "2026-10-28",
+    "request": "puoi lanciare tu i test? cosi a claude faccio fare solo il controllo",
+    "scope": "GPT esegue checkout e singolo collaudo B gia' presentati; Claude svolge il controllo. Ricetta e tetti invariati.",
+    "gpu_hours_cap": 6,
+    "core_hours_cap": 48.333333333333336,
+    "no_other_jobs": true
+  },
   "pre_launch_checks": [
-    "Firma di Simone su criterio, codice e preventivo aggiornato.",
-    "Review reciproca di Claude delle modifiche tecniche prima del deploy (CLAUDE.md).",
+    "Via di Simone del 28/10/2026 registrato in approval: checkout e B, nei tetti presentati.",
+    "Review scientifica/tecnica indipendente e 123 test completati; Simone affida il lancio a GPT e il controllo a Claude, con questa istruzione successiva alla proposta.",
     "Verifica read-only dello SHA/deploy hook remoto prima del push, coda e ledger; nessun riuso di checkout attivi.",
     "Confermare hash manifest e pose_stats, ingressi e assenza directory run prima della sottomissione.",
     "Verificare checkout completato e SHA pulito prima del solo job B; nessuna catena automatica."

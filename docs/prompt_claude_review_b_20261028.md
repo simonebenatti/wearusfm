@@ -1,6 +1,7 @@
 # Prompt per Claude — review della preparazione di B, senza lancio
 
-GPT ha completato la preparazione di B su richiesta di Simone. Leggi il ramo pubblicato
+GPT ha completato la preparazione di B su richiesta di Simone. Il 28/10 Simone ha poi affidato a GPT il lancio di B e a Claude il controllo.
+Consulta piano e registro per gli ID effettivi: non duplicare le sottomissioni. Leggi il ramo pubblicato
 `origin/codex/r3-long-collaudo-20261028`, nel tuo worktree senza modificare quello di GPT.
 Codice da rivedere: `24139ab901c052357a46a65bc20466f2eb1e8358`, dalla tua bozza `afd2e4d6aca7a417fef59efcd3df2c048fa23653`.
 Il tip del ramo aggiunge protocollo, piano, comandi e registro; il codice eseguibile e' congelato allo SHA indicato.
@@ -26,4 +27,4 @@ Le predizioni al passo zero e l'integrita' del pannello sono controlli prelimina
 Un esito positivo non autorizza R3 completo. Nessun E3 R0, J2 bis, seed aggiuntivo, retry o job di scorta e' incluso.
 
 Restituisci a Simone: verdetto, eventuali problemi verificati e conferma di corrispondenza fra codice/protocollo/comandi.
-**Lancio solo dopo review chiusa e via esplicito di Simone su B e sul suo preventivo.**
+**Il lancio di B e' affidato a GPT dal via di Simone del 28/10; tu esegui il controllo e segnala subito eventuali difetti.**
