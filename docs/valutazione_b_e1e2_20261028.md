@@ -4,6 +4,10 @@
 con E1/E2 e senza altro addestramento, Simone risponde «vai con la tua proposta».
 Il via copre i due job indicati sotto, entro il preventivo gia' presentato. Nessun nuovo consenso richiesto per eseguirli.
 
+**SOTTOMESSI:** estrazione **62539724**, rapporto **62540295** con `afterok:62539724`.
+Ultimo snapshot: estrazione PENDING Priority, rapporto PENDING Dependency; log non ancora presenti.
+Piano e wrapper congelati nel commit `78e9b2c712d75bd20011a7812792a13c6e8d75d2`, pubblicato e verificato su origin prima dei lanci.
+
 ## Obiettivo e configurazione congelata prima della lettura
 
 Checkpoint B: `PILOT-POSA-R3-B-30M-s0-20261028/checkpoint.pt`, **student dopo 5.000 aggiornamenti**.
@@ -67,3 +71,27 @@ Piano e comandi: `results/infra/pilot_posa/piano_b_e1e2_20261028.json` e `comand
 Due review indipendenti prima del lancio: scientifica favorevole con i limiti sopra, tecnica favorevole con le guardie esterne;
 8 test CPU dell'harness E1/E2 passati. Il wrapper viene verificato separatamente prima della sottomissione.
 La consegna e gli ID effettivi sono pubblicati sul ramo `codex/r3-long-collaudo-20261028` e nel registro condiviso.
+
+
+## Precisazioni di lettura dopo la sottomissione, prima dei risultati
+
+Simone riporta tre suggerimenti di Claude e chiede se si possano applicare dopo. **Questa precisazione e' successiva alle
+sottomissioni**, non viene presentata come precedente al lancio. Nell'ultimo snapshot entrambi i job erano PENDING;
+nessun risultato E1/E2 o log di esecuzione e' stato letto. Non cambia codice, dati, risorse o job gia' sottomessi.
+
+1. A 5.000 si riportano numeri descrittivi (E1 dinamiche con IC, mediana per utente, E2 e gap sul supporto comune),
+   senza chiamare il candidato «superato» o «non superato». I booleani legacy del rapporto si conservano come output,
+   ma le regole scientifiche firmate restano riferite all'endpoint a 49.046. B resta superato per il suo diverso collaudo.
+2. Attese a due lati: un gap E2 vicino a zero e' compatibile con prevalenza di postura/contesto o con predizione dinamica
+   ancora debole; anche la sola postura puo' portare E1 sotto 1, percio' «poco sotto 1» non e' una necessita'. Un gap positivo
+   nella maggior parte degli utenti, insieme a E1 favorevole sulle dinamiche, sostiene l'ipotesi di movimento appreso.
+   Entrambe le letture sono utili, nessuna e' una diagnosi esclusiva o autorizza automaticamente R3 completo.
+3. Il checkpoint student a 5.000 viene letto senza modificarlo. E3 sui latenti B resta possibile in seguito, riusando la
+   cache val e aggiungendo una sola estrazione train; quel job non fa parte del via attuale e non e' stato sottomesso.
+
+**IC del gap E2:** il rapporto frozen salva medie MAE allineata/disallineata e numero di elementi validi per utente sullo stesso
+supporto. Si calcola localmente dopo il rapporto, senza nuova estrazione: 1.000 ricampionamenti appaiati degli utenti con
+reinserimento, seme 20261009; ciascun utente porta entrambe le MAE e il suo conteggio valido. Per replica, gap = differenza
+fra le due MAE aggregate con pesi degli elementi validi; percentili 2,5/97,5. Si conserva l'estimando pooled del gap frozen,
+non si sostituisce con la media non pesata dei gap utente. Riportare anche numero di utenti e segni dei gap individuali.
+Nessuna nuova soglia; con dati mancanti/non finiti o supporto insufficiente si dichiara l'IC non valutabile.

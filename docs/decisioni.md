@@ -5211,3 +5211,16 @@ stats concordi, CSV/full val/disgiunzione train, impronta cache e utenti con sup
 Il rapporto dipende dall'estrazione completata; non si deduce movimento corretto dal solo booleano E2.
 Piano/comandi congelati prima del lancio in `results/infra/pilot_posa/piano_b_e1e2_20261028.json` e relativo file comandi.
 Gli ID effettivi saranno registrati dopo la sottomissione; R3 completo resta una decisione separata.
+
+
+### Seguito: E1/E2 sottomessa e precisazioni prima dei risultati
+
+Congelamento e pubblicazione pre-lancio `78e9b2c`; ID **62539724** estrazione e **62540295** rapporto afterok:62539724.
+Risorse invariate, tetto totale 0,6667 GPU-ore / 8 core-ore. Ultimo snapshot PENDING Priority / Dependency, log assenti.
+Nessun risultato letto e nessun job aggiuntivo. Evidenze di submitter e snapshot nel risultato `b_e1e2_20261028`.
+
+Dopo le sottomissioni Simone riporta i suggerimenti Claude, accolti e registrati come precisazione **prima dei risultati**:
+solo lettura descrittiva a5.000, senza superato/non_superato scientifico; attese a due lati posture/contesto vs movimento
+come indicazioni non esclusive; student readonly; E3 sui latenti B facoltativa in seguito, non sottomessa ora.
+IC del gap E2 da derivare localmente dai dati appaiati per utente: 1.000 ricampionamenti, seme20261009, medie pesate per
+supporto valido e percentili2,5/97,5. Metodo nel protocollo, nessuna nuova soglia e nessuna estrazione aggiuntiva.

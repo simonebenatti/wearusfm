@@ -8,7 +8,8 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 ### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B autorizzata
 
 Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
-**Due job autorizzati e pronti**, estrazione + rapporto E1/E2, tetto 0,6667 GPU-ore / 8 core-ore; ID SLURM ancora da registrare.
+**Due job sottomessi**: estrazione **62539724** e rapporto **62540295**, tetto 0,6667 GPU-ore / 8 core-ore.
+Ultimo snapshot: PENDING Priority e PENDING Dependency (afterok:62539724).
 Codice scientifico frozen `24139ab`, wrapper di provenienza versionato inviato via stdin: nessun nuovo checkout o training.
 26 test CPU passati (8 harness + 18 guardie). [Protocollo](valutazione_b_e1e2_20261028.md).
 R3 completo, E3 su R0 e J2 bis restano fermi; il via attuale non li include.
@@ -4225,6 +4226,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Protocollo `docs/valutazione_b_e1e2_20261028.md`; piano/comandi `results/infra/pilot_posa/*b_e1e2_20261028*`.
   Questa voce precede le sottomissioni: ID e stato saranno aggiunti dopo ciascun sbatch. Nessun retry automatico.
 
+### 2026-10-28 | GPT | E1/E2 di B sottomessa: 62539724 → 62540295
+
+- Piano e wrapper `78e9b2c` pubblicati su origin e SHA remoto verificato prima dei lanci. Eseguiti esattamente i due argv
+  congelati, tramite submitter comune: estrazione 62539724 (1 GPU / 8 core / 60G / 40min), rapporto 62540295
+  (0 GPU / 8 core / 30G / 20min), dipendenza afterok:62539724. Nessun terzo job, checkout o retry.
+- Copie del ledger e risposte di sottomissione in `results/infra/pilot_posa/b_e1e2_20261028/`.
+  Ultimo snapshot: estrazione PENDING Priority, rapporto PENDING Dependency; nessun log, guardie ancora da eseguire.
+- Dopo le sottomissioni, prima dei risultati, Simone propone le precisazioni Claude e chiede se possano seguire:
+  lettura descrittiva senza verdetti a5.000, attese a due lati, student readonly, E3 facoltativa dopo. Accolte con
+  limiti espliciti: postura puo' migliorare E1; gap vicino a zero non identifica una causa unica; nessun via automatico R3.
+  Metodo dell'IC appaiato del gap fissato nel protocollo (1.000 bootstrap utenti, seme20261009, pesi supporto valido),
+  calcolabile localmente dal JSON senza altri job. Non presentato come emendamento precedente alle sottomissioni.
+- E3 sui latenti B rimandata, estrazione train NON sottomessa. R3 completo, E3 R0 e J2 bis restano fermi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5897,3 +5912,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   leak o assenza di dinamica. Partner/fallback/scarto non preservano perfettamente i margini. Limiti congelati nel protocollo.
 - Gli 0,023 di B e gli ~0,26 citati da Simone non sono stati assunti come un confronto gia' verificato sullo stesso supporto.
   Questa esecuzione non modifica soglie, target o pesi sulla base di quel rapporto.
+
+### 2026-10-28 | GPT | E1/E2: sottomesso non significa in esecuzione; IC del gap da derivare
+
+- Nell'ultimo snapshot 62539724 attende Priority e 62540295 Dependency: non ci sono ancora esiti scientifici o guardie
+  runtime verificate. Nessun errore di sottomissione; nessun rilancio.
+- Il report frozen salva il gap appaiato e i dati per utente, ma non il suo IC. IC derivabile localmente con il metodo
+  esplicitato dopo le sottomissioni e prima dei risultati; nessuna modifica al report congelato o nuova soglia.

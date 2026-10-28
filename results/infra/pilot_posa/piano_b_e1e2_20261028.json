@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-28",
-  "status": "AUTORIZZATO_PRONTO",
+  "status": "SOTTOMESSO_PENDING",
   "prepared_by": "GPT",
   "approval": {
     "by": "Simone",
@@ -78,7 +78,9 @@
         "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_extract_%j.out",
         "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_extract_%j.out"
       ],
-      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_extract_%j.out"
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_extract_%j.out",
+      "slurm_id": 62539724,
+      "submission_status": "sottomesso"
     },
     {
       "mode": "report",
@@ -118,7 +120,9 @@
         "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_report_%j.out",
         "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_report_%j.out"
       ],
-      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_report_%j.out"
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_report_%j.out",
+      "slurm_id": 62540295,
+      "submission_status": "sottomesso"
     }
   ],
   "total_caps": {
@@ -134,13 +138,53 @@
     "bootstrap_seed": 20261009,
     "n_boot": 1000,
     "no_new_gate_for_B": true,
-    "no_validation_tuning": true
+    "no_validation_tuning": true,
+    "language": "Numeri descrittivi a5000: nessun superato/non_superato scientifico; booleani legacy del report non sono verdetti a questo endpoint.",
+    "clarification_timing": "Precisazioni richieste da Simone dopo le sottomissioni e prima di qualsiasi risultato letto; ultimo snapshot entrambi PENDING.",
+    "two_sided_expectations": {
+      "posture_compatible": "Gap E2 vicino a zero; E1 puo comunque migliorare per postura/contesto. Non diagnosi esclusiva.",
+      "movement_compatible": "Gap E2 positivo nella maggior parte degli utenti e vantaggio E1 sulle dinamiche; leggere IC/copertura. Non prova causale pura.",
+      "automatic_full_R3": false
+    },
+    "gap_ci": {
+      "method": "Percentile paired user bootstrap from E2.paired_support.per_user; retain common-support valid-element weights, resample users with replacement and their aligned/misaligned means together. Gap = pooled MAE_misaligned - pooled MAE_aligned.",
+      "n_boot": 1000,
+      "seed": 20261009,
+      "percentiles": [
+        2.5,
+        97.5
+      ],
+      "location": "local after report; no additional GPU/CPU cluster job",
+      "note": "Not a new threshold; no CI if missing/nonfinite/insufficient paired-support data."
+    }
   },
   "automatic_retry": false,
   "automatic_training": false,
   "other_jobs": [],
   "execution": {
-    "jobs_submitted": []
+    "plan_commit": "78e9b2c712d75bd20011a7812792a13c6e8d75d2",
+    "scientific_code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "wrapper_sha256": "ba0213379c987cadc5f903c911665c4fd5b168168dbad310523dc1e39b1f5f34",
+    "jobs_submitted": [
+      {
+        "mode": "extract",
+        "slurm_id": 62539724,
+        "submitted_at_utc": "2026-10-28T09:51:27.385539+00:00",
+        "state": "PENDING",
+        "evidence": "results/infra/pilot_posa/b_e1e2_20261028/extract_submission.json",
+        "reason": "Priority"
+      },
+      {
+        "mode": "report",
+        "slurm_id": 62540295,
+        "submitted_at_utc": "2026-10-28T09:54:21.221386+00:00",
+        "state": "PENDING",
+        "evidence": "results/infra/pilot_posa/b_e1e2_20261028/report_submission.json",
+        "reason": "Dependency"
+      }
+    ],
+    "extra_jobs_submitted": [],
+    "startup_snapshot": "results/infra/pilot_posa/b_e1e2_20261028/startup.json"
   },
   "preflight": "results/infra/pilot_posa/b_e1e2_20261028/preflight.json",
   "tests": {
