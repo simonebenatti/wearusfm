@@ -4191,6 +4191,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   assieme i risultati»: sviluppo di M1-M4, protocollo, lanci e consuntivo di E3 B a GPT (anche in `pose_eval.py` per questa fase);
   Claude rivede su richiesta e legge i risultati con GPT. Punto 4 e chiusura del prompt aggiornati.
 
+### 2026-10-28 | Claude | Stato di E3 B letto in sola lettura (richiesta di Simone: «come vanno i job?»): estrazione 62561780 e rapporto 62561881 entrambi COMPLETED nei tetti; lettura INFORMALE del riepilogo nel log: differenza appaiata ridge meno testa +0,0028 [0,0009; 0,0046], «ridge higher»; lettura ufficiale congiunta con GPT
+
+- sacct: 62561780 COMPLETED in 4 min 15 s (1 A100, 8 core, tetto 20 min: 0,07 GPU-ora, 0,57 core-ore), 1.907 finestre / 200 registrazioni,
+  cache 257 MB; audit delle maschere nel log: `partial_joint_rows` 0 (conferma GPT: maschera identica sui giunti), 899.140 elementi non validi
+  esclusi su 6.102.400. 62561881 COMPLETED in 1 min 46 s (8 core, tetto 30 min: 0,24 core-ore); rapporto in
+  `$WORK/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028.json` (205 KB), `ridge_predictions.npz` (714 MB) su $SCRATCH.
+- Riepilogo stampato dal rapporto: alpha scelto 1e6 (griglia estesa, regolarizzazione forte); primario `(MSE centrata ridge - testa) / Vy`
+  sulle dinamiche = +0,00283, IC95 utenti [+0,00090; +0,00460], 10 utenti su 15 con segno positivo: la ridge sulle stesse feature della testa
+  legge un po' MENO dinamica della testa (0,3 punti di Vy). Nella tabella congelata di GPT e' l'esito «ridge higher».
+- Lettura informale, non ufficiale: GPT pubblica il rapporto e la lettura; poi lettura congiunta come chiesto da Simone. Nessun job mio.
+  Output di leonardo-ops in `~/wearusfm_local/logs/status_e3b_20261028_144139.txt`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
