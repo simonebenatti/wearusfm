@@ -5,6 +5,12 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
 
+### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B autorizzata
+
+Dopo la lettura E1/E2 Simone ha risposto «va bene, procedi» alla separazione postura/dinamica dalla cache esistente.
+Un solo job CPU previsto: 4 core, 16GB, massimo 10min, 0 GPU-ore / 0,666667 core-ore; nessun nuovo training o inferenza.
+[Protocollo](dinamica_b_20261028.md), review scientifica favorevole prima del lancio. ID SLURM da registrare dopo sottomissione.
+
 ### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B letta
 
 Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
@@ -4261,6 +4267,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Proposta successiva: lettura CPU della dinamica centrata dalla cache esistente, da preparare/revisionare/preventivare;
   non lanciata. E3 B/R0, J2 bis e R3 completo restano fermi. Registro e consegna pubblicati sul ramo GPT di origin.
 
+### 2026-10-28 | GPT | Preparazione autorizzata della separazione postura/dinamica B | Base 21c3833
+
+- Simone autorizza con «va bene, procedi» l'analisi della cache B gia' prodotta. Metodo fissato prima del calcolo in
+  docs/dinamica_b_20261028.md: scomposizione MSE standardizzata, supporto comune per finestra/giunto, baseline centrata
+  nulla, attribuzione additiva del guadagno livello medio/dinamica, pooling per elementi e bootstrap per utente.
+- Il critico scientifico rilegge e approva il protocollo, chiarito l'oracolo della correzione perfetta del bias temporale.
+  Nessuna nuova soglia, selezione di modello o autorizzazione a R3 completo.
+- Preventivo: un job CPU 4 core / 16GB / 10min, tetto 0,666667 core-ore, zero GPU; attesi circa 1–3min piu' coda.
+  Preflight read-only: cache e provenienze presenti, output nuovo e ID logico assenti, coda vuota.
+- Analisi standalone inviata tramite payload stdin versionato/hashato; checkout scientifico e input restano congelati.
+  18 test sintetici passati anche nella riesecuzione root; review tecnica finale favorevole e payload/argv verificati.
+  ID e consuntivo seguiranno come evidenze separate.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5951,3 +5970,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Il JSON E1 non salva i conteggi validi per utente: ricalcolo indipendente del suo pooling/IC non disponibile dal solo JSON.
   E2 pooling, rapporto/IC e gap/IC ricostruiti e concordi. Nessuna nuova soglia, tuning su val o alterazione dei risultati.
 - La raccolta SSH ha incontrato errori intermittenti e poi e' riuscita sullo stesso accesso; non e' un errore dei job.
+
+### 2026-10-28 | GPT | Limiti fissati prima dell'analisi della dinamica B
+
+- Centrare entrambi i segnali concede una correzione perfetta del bias per finestra/giunto: e' una diagnostica delle
+  fluttuazioni, non una prestazione operativa. La MSE totale e l'errore delle medie restano riportati sul medesimo supporto.
+- Pesi per elementi validi, n>=2 per le metriche temporali, mediana target E1 gia' congelata; denominatori nulli e IC
+  non definiti dichiarati senza eliminare repliche. Nessuna assunzione che ogni metrica sia valutabile per ogni utente.
+- Un solo checkpoint/seme, utenti val e selezione dinamica condizionata al target: nessuna prova di trasferimento o
+  causalita' EMG, nessuna modifica delle soglie E1/E2. E3/R0/J2 bis e training completo fuori da questo via.

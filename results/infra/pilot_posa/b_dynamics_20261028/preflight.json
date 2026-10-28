@@ -1,0 +1,27 @@
+{
+  "checked_at_utc": "2026-10-28T11:13:18.653649+00:00",
+  "status": "READ_ONLY_PREFLIGHT_OK",
+  "queue_sbenatti": [],
+  "logical_id": "PILOT-POSA-B5000-dynamics-20261028",
+  "ledger_existing_matches": 0,
+  "inputs_present": {
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz": 2484409931,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz.extract_provenance.json": 2598137,
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json": 17902,
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json": 1530
+  },
+  "output_absent": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_dynamics_20261028.json",
+  "requested_caps": {
+    "gpus": 0,
+    "cpus": 4,
+    "memory": "16G",
+    "walltime": "00:10:00",
+    "gpu_hours": 0,
+    "core_hours": 0.6666666666666666,
+    "partition": "lrd_all_serial"
+  },
+  "delivery": "versioned inline Python --script-stdin, frozen code dir24139ab; no new checkout",
+  "cache_not_downloaded": true,
+  "remote_mutations": [],
+  "submissions": []
+}

@@ -5244,3 +5244,20 @@ scientifico finale a questo endpoint. Nessuna revisione del verdetto di B, nessu
 medie e delle traiettorie centrate, varianze/covarianza e aggregazioni per utente da fissare prima del calcolo. Non serve
 un'altra inferenza GPU. La media del target della finestra e' un oracolo descrittivo. Script/review/preventivo prima di
 qualunque eventuale lancio; nessun job nuovo in questa consegna. E3 B/R0 e J2 bis restano rimandati.
+
+
+### 2026-10-28 — Autorizzata analisi CPU della dinamica di B
+
+Simone: «va bene, procedi» alla proposta di separare errore sulla postura media ed errore sulle variazioni entro finestra,
+riusando la cache E1/E2 gia' estratta. Il via copre un job CPU 4 core, 16GB, massimo 10min = 0,666667 core-ore, zero GPU;
+nessun nuovo training, estrazione o checkout. Preventivo comunicato prima del lancio; normale esecuzione del lavoro autorizzato.
+
+Metodo prima del calcolo: docs/dinamica_b_20261028.md. MSE standardizzata e identita' esatta fra errore totale, errore delle
+medie e traiettorie centrate; guadagno sul livello + guadagno sulla dinamica contro trainzero, stesso supporto n>=2,
+pesi per elementi e IC bootstrap appaiato utenti (1000, seed20261009). Primario dinamiche E1; all/static descrittivi.
+Denominatori nulli/nonfiniti dichiarati, niente selezione a posteriori di utenti/finestre/lag e nessun cancello nuovo.
+Il critico scientifico approva dopo chiarimento di unita', pesi, supporti e significato dell'oracolo di centratura.
+
+ID logico PILOT-POSA-B5000-dynamics-20261028; source e payload versionati/hashati, ambiente frozen24139ab,
+submitter comune e output nuovo fuori codice. Preflight positivo. Test e review tecnica prima della sottomissione;
+risultati e costi registrati successivamente, nessun retry automatico. R3 completo resta una decisione separata.
