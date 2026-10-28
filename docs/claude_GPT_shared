@@ -4130,6 +4130,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `results/infra/pilot_posa/comandi_b_20261028.txt`.
 - Questioni aperte: lettura di B con GPT all'arrivo (lettore `R3-lungo`); R3 completo resta fermo.
 
+### 2026-10-28 | Claude | Lettura INFORMALE del collaudo lungo B (job 62523672, COMPLETED in 1 h 03, 4,2 GPU-ora / 34 core-ore sui tetti 6 / 48) col lettore congelato di 24139ab: SUPERATO (rapporto 0,883, IC95 [0,839; 0,932]); la lettura ufficiale [L] resta di GPT
+- Fatto (su richiesta di Simone: «puoi ovviamente leggere anche tu e farti una idea»): copia in sola lettura del run (senza checkpoint) in
+  `~/wearusfm_local/pilot_posa/collaudo_b_62523672/` e `arms_collaudo.py --arm R3-lungo --steps 5000 --expected-sha 24139ab` dal checkout
+  staccato di 24139ab (poi rimosso): 19 criteri OK, `status = superato`. Pannello: MSE 1,1601 -> 1,0242 (rapporto 0,883 <= 0,9), IC95
+  bootstrap [0,839; 0,932] < 1, 23 utenti su 32 in discesa (rapporti per utente 0,63-1,24, mediana 0,907), 18 giunti su 20 con MAE in calo
+  (media -8,3%), 165 finestre su 256 sotto il costante; curva ancora in discesa fra 4.500 e 5.000. Descrittivi: posa pesata sul training
+  0,945 (2.001-2.500) -> 0,900 (4.501-5.000); gradienti condivisi posa/ancore 0,92 (coseno -0,06); ritmo 0,708 s/passo; attesa dati 0,7%;
+  memoria 13,7 GiB; pannello 19 s di preparazione + 11 x 3,4 s.
+- Idea di Claude (interpretazione, non lettura di regola): la varianza temporale delle predizioni e' piccola (0,023 a 5.000, contro ~0,26 di
+  varianza tipica dei bersagli in 4 s) e le medie predette per giunto sono entro +-0,18: il calo del 12% e' in buona parte correzione del
+  livello per finestra/contesto piu' una dinamica lenta, non inseguimento del movimento. Sostiene H1 (col dbg la testa non aveva ancora
+  mosso nulla; a lr pieno dopo il 1.962 scende), non esclude H2. Nulla dice su utenti nuovi o trasferimento.
+- Cluster: nessun job. Nessun file in `results/`: l'esito ufficiale lo scrive GPT nel passo [L]. R3 completo resta una decisione separata.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
