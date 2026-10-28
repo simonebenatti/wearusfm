@@ -7,8 +7,11 @@ modesto, le predizioni temporali sono attenuate e l'utilita' come foundation mod
 [congelato](../e3_b_20261028.md). [Risposta punto per punto](risposta_review_claude_e3_b_20261028.md).
 GPT implementa e lancia, Claude resta revisore per istruzione successiva di Simone. Le proposte sotto conservano il contesto
 della sintesi iniziale; stato esecutivo aggiornato nel registro e nel piano E3.
-Lanciata da `520158e`: estrazione 62561780 e rapporto 62561881 afterok; snapshot iniziale 14:22 Europe/Rome rispettivamente
-RUNNING e PENDING Dependency. Nessuna continuazione del training in questa tranche, nessun risultato E3 ancora letto.
+**E3 conclusa e letta:** estrazione 62561780 e rapporto 62561881 COMPLETED 0:0 (255 / 106 s), da `520158e`.
+La ridge post-LayerNorm non recupera altra dinamica: rapporto 0,930307 contro 0,927475 della testa; delta appaiato
++0,002832, IC95 [+0,000898; +0,004602]. Migliora invece il livello medio e la MSE totale.
+Consuntivo 0,070833 GPU-ore / 0,802222 core-ore; nessuna continuazione del training lanciata.
+[Risultati, modifiche completate ed elenco dei punti aperti](e3_b_results_20261028.md).
 
 ## Che cosa abbiamo verificato
 
@@ -21,6 +24,7 @@ RUNNING e PENDING Dependency. Nessuna continuazione del training in questa tranc
 | E2, stesso supporto | Gap allineato/disallineato +0,017654 rad, IC95 [0,013260; 0,023309], positivo in 14/14 utenti valutabili | Il cambio di finestra cambia anche la postura media |
 | Separazione delle medie e della dinamica | Sulle dinamiche MSE centrata −7,252%, IC95 [6,083%; 8,752%], guadagno in 14/15 utenti | Centratura concede correzione perfetta del bias per finestra, non prestazione operativa |
 | Finestre poco dinamiche | Errore centrato +5,945%, peggioramento in 15/15 utenti; livello medio migliora | Gruppo definito dalla mediana del target, non necessariamente riposo |
+| E3 B post-LayerNorm | Ridge leggermente peggiore sulla dinamica (delta +0,2832 punti percentuali di Vy), migliore sul livello medio | Non dimostra ottimalita' della testa o saturazione dell'encoder |
 
 Sulle dinamiche la varianza predetta e' il 6,324% della varianza del target sullo stesso supporto, e la correlazione pooled
 centrata e' 0,270. I guadagni MSE sono +0,044640 sul livello medio e +0,038692 sulle variazioni: non soltanto postura,
@@ -48,30 +52,32 @@ informazione. Non confrontiamo quel numero direttamente con E1 B: teacher/studen
 
 ## Direzione successiva
 
-La tranche attuale e' conclusa: non serve ripetere audit generici o altri controlli per interpretarne i risultati.
-Prima del training completo, il prossimo approfondimento pertinente e' **E3 sullo stesso checkpoint B student**:
-encoder congelato, piccolo lettore ridge addestrato solo nel train, iperparametri selezionati esclusivamente fra utenti
-train, e lettura val con protocollo definito prima. La cache val esiste; serve l'estrazione del sottoinsieme train.
-Tempi e costi effettivi vanno scritti nel piano operativo, sfruttando la nuova autonomia per i piccoli job.
+La tranche E3 e' conclusa. Il rifit lineare non ha recuperato dinamica aggiuntiva; il ricalcolo della scala globale
+prevede un beneficio molto piccolo, senza aver applicato una riscalatura. Non serve ripetere la stessa sonda
+o riottimizzarla sulle finestre dinamiche della val gia' osservata.
 
-Per la domanda attuale non basta il solo MAE totale della ridge: va affiancata la stessa separazione media/dinamica, per
-non scambiare un migliore livello medio per piu' informazione sul movimento. Un lettore che recupera piu' dinamica
-indicherebbe informazione accessibile con quel lettore oltre la testa attuale; non dimostrerebbe da solo un unico collo
-di bottiglia. Un esito simile manterrebbe aperti dose, rappresentazione e obiettivo, senza provare un limite assoluto.
+La prossima proposta raccomandata e' preparare un punto intermedio a **19.618 passi**, mantenendo la ricetta di B:
+valutare l'evoluzione con differenze appaiate B19618-B5000 e confrontare rappresentazioni/trasferimento con R3c.
+Prima servono verifica effettiva di stream/schedule/dose, copia immutabile del checkpoint5000, protocollo riformulato
+e preventivo definitivo. P1/P2 e accessibilita' della posa richiedono confronti comuni; R3c non ha la LayerNorm
+della testa di B, quindi questo E3 non si trasferisce automaticamente al confronto fra encoder.
+E2 resta un controllo di associazione, non deve crescere obbligatoriamente; IC inconcludenti non provano equivalenza
+o assenza di danno. La precedente proposta Claude di circa 13 GPU-ore e' una stima da verificare, non un lancio avvenuto.
 
 R0 resta un riferimento utile per confrontare le ricette, a pari vista student/teacher, protocollo e durata. Non isola il
 contributo della posa, perche' cambia anche JEPA: per tale attribuzione serve il confronto con **R3c abbinato**, come
 previsto dal [protocollo del pilot](../pilot_posa_v1.md). I precedenti job interrotti non sono risultati completati.
 J2 bis ha priorita' inferiore: non emerge una nuova prova di errore di allineamento che lo renda necessario ora.
 
-Dopo questa diagnosi si decide se proseguire la ricetta invariata o verificare una lettura diversa. Eventuali scelte di
+Il punto intermedio proposto resta da preparare e rivedere; E3 non ne impone automaticamente l'esecuzione. Eventuali scelte di
 architettura/iperparametri si sviluppano su sottosplit train; val non diventa un banco di tuning ripetuto. R3 a 49.046 passi e i
 confronti di trasferimento restano una decisione distinta con obiettivo, costo e letture fissati prima del lancio.
 Nessuna di queste proposte successive e' stata sottomessa nella tranche chiusa qui.
 
 ## Stato operativo e autonomia
 
-Ultimo job 62551730 COMPLETED in 13 s, 0 GPU-ore / 0,014444 core-ore. E1/E2: 0,435278 GPU-ore / 3,595556 core-ore.
+Ultimi job E3 62561780/62561881 COMPLETED: 0,070833 GPU-ore / 0,802222 core-ore.
+Dinamica 62551730: 0 GPU-ore / 0,014444 core-ore. E1/E2: 0,435278 GPU-ore / 3,595556 core-ore.
 Fonte e output verificati, test e review indipendenti completati, documenti e registro sul ramo GPT di origin.
 
 Istruzioni aggiornate di Simone: job con costo massimo <5 GPU-ore autonomi; lettura log/commit/push autonomi;

@@ -1,0 +1,73 @@
+{
+  "collected_at_utc": "2026-10-28T13:45:32.406965+00:00",
+  "collection": "read-only ssh leonardo tail/ls/squeue/sacct; local checksums and accounting",
+  "files": {
+    "accounting.json": {
+      "bytes": 1931,
+      "sha256": "e679b97c196691eff1c604f55197a2e65daca906f8884f1845cc4902c4f22bc5",
+      "remote_source": null,
+      "derived_locally": true
+    },
+    "extract_62561780.out": {
+      "bytes": 20816,
+      "sha256": "0f9811b143d7b3be2f4d5241ec1b53ac0e09b0017fb9870ffed25f0e098a53af",
+      "remote_source": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_62561780.out",
+      "derived_locally": false
+    },
+    "extract_provenance.json": {
+      "bytes": 3600,
+      "sha256": "1e28099fd2832296c87440329d1afa7b7ff76dc32ed0a5350b227f39d623b181",
+      "remote_source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028/train_subset.npz.extract_provenance.json",
+      "derived_locally": false
+    },
+    "outputs_ls_l.txt": {
+      "bytes": 523,
+      "sha256": "fd69468504ee72da33033d4c74e581145f1a25ad93a864fdfdce727a3b18c28e",
+      "remote_source": null,
+      "derived_locally": true
+    },
+    "report.json": {
+      "bytes": 205592,
+      "sha256": "761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94",
+      "remote_source": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028.json",
+      "derived_locally": false
+    },
+    "report_62561881.out": {
+      "bytes": 3558,
+      "sha256": "e6d77d75837f14bb8655796a6bc7d394a7decfe924ba3eaf23ed58675f08c21d",
+      "remote_source": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_62561881.out",
+      "derived_locally": false
+    },
+    "report_provenance.json": {
+      "bytes": 1939,
+      "sha256": "792677afae9dc33a8e17b210884dec9d03a79f1870c4877a1dc85b74e6fb0ac2",
+      "remote_source": null,
+      "derived_locally": true
+    },
+    "sacct_utc.txt": {
+      "bytes": 1183,
+      "sha256": "20eaecb992ea698a42923a74d5e712dce44f8aaea56f68422f773efcfde22889",
+      "remote_source": null,
+      "derived_locally": true
+    },
+    "squeue.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "remote_source": null,
+      "derived_locally": true
+    },
+    "validation.json": {
+      "bytes": 7403,
+      "sha256": "4433b4518b074a7e3e735ede4dd53a426bf58afc28be3e442d1d1eaaffe98526",
+      "remote_source": null,
+      "derived_locally": true
+    }
+  },
+  "excluded": [
+    "train_subset.npz",
+    "ridge_predictions.npz",
+    "checkpoint.pt"
+  ],
+  "mutations_remote": [],
+  "new_jobs": []
+}

@@ -5338,3 +5338,22 @@ La chiamata preliminare rimasta in attesa del permesso runtime e' stata interrot
 sottomissione su registro o SLURM; non conta come esperimento eseguito. Stato e risultati vanno letti separatamente dagli ID.
 Snapshot iniziale registrato alle 14:22 Europe/Rome: 62561780 RUNNING (avvio 14:20:37), 62561881 PENDING Dependency;
 checkout/source hash verificati, senza errori visibili, prima del messaggio di guardia completa. Evidenze startup versionate.
+
+### 2026-10-28 — E3 B conclusa: la ridge non recupera ulteriore dinamica
+
+Protocollo/codice520158e, sottomissioni28695c1; job62561780 e62561881 COMPLETED0:0,255s/106s.
+Consuntivo0,070833GPU-ore /0,802222core-ore entro0,333333/6,666667. Coda vuota, nessun retry o nuovo training.
+Rapporto originale, accounting, log e provenienze raccolti e verificati con SHA sul Mac in
+results/infra/pilot_posa/b_e3_20261028/final; biosignali, cache e checkpoint non copiati nel repo.
+
+Train40utenti,1907finestre, subset identico a R3c; zero maschere parziali in train/val. M2 superato,
+alpha1e6 interno alla griglia estesa. Momenti della testa uguali al riferimento precedente.
+Primario dinamiche ridge−testa **+0,002831768**, IC95 **[+0,000897868;+0,004602495]**,10utenti peggiorano/5migliorano.
+Rapporti centrati0,930307/0,927475: guadagno dinamico6,9693%/7,2525%. Ridge migliora invece livello medio e MSE totale.
+Poco dinamiche: miglioramento relativo alla testa, entrambe sopra il piatto; tutte: delta centrato inconcludente.
+Ricalcolo indipendente dei tre IC/delta concorde; critico concorde. Nota informale Claude7a4221d letta e concorde sul primario.
+
+Non si conclude saturazione dell'encoder, ottimalita' della testa o via automatico al training. Le differenze di fit
+restano dichiarate. Risultati, figura, elenco M1-M4/opzioni e stato complessivo in docs/reviews/e3_b_results_20261028.md.
+Proposta successiva raccomandata: preparare il punto intermedio19618 con confronto R3c verificato, criteri appaiati,
+trasformazione comune e preventivo definitivo. Non avviato; nessuna modifica di pooling, target, loss o scala in questa tranche.

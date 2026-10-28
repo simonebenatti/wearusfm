@@ -1,0 +1,33 @@
+{
+  "derived_from": "report.json:provenance",
+  "report_sha256": "761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94",
+  "provenance": {
+    "checkpoint_sha256": "815956b98d27cd2ff71f1255d0e220e2b0e08e467e7bedf93a54d0984b10783e",
+    "checkpoint_step": 5000,
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "train_cache_sha256": "1bcb387ed4b5c178146f224e2e84e2547d2f970439a4e3105ed86c50af5d6ee6",
+    "val_cache_sha256": "70bb551309b502565d38072abf41ffee322a06de14589d36b720570f1cfbfa46",
+    "analysis_source_sha256": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "dynamics_source_sha256": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "wrapper_sha256": "4a5532a617c4b82baa63621c376ea726418a08b5b5cd6b0b3f517de986494d28",
+    "numpy_version": "1.26.4",
+    "inputs": {
+      "train_provenance": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028/train_subset.npz.extract_provenance.json",
+        "sha256": "1e28099fd2832296c87440329d1afa7b7ff76dc32ed0a5350b227f39d623b181"
+      },
+      "val_provenance": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json",
+        "sha256": "fe619d100b33618e0081fbbc151401d22f4a0dc5f300a2ce164d356f30319c3e"
+      },
+      "reference_dynamics": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_dynamics_20261028.json",
+        "sha256": "c624a13c1d028a16c17237853d91df3ca29159f5d80088ccede4c9368a9d9c74"
+      }
+    },
+    "predictions": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028/ridge_predictions.npz",
+      "sha256": "9f58b763d322c93de79f90a4a392e21c65b84404bb5f8715314bd6917e77f064"
+    }
+  }
+}

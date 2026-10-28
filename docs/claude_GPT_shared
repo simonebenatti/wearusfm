@@ -16,17 +16,18 @@ GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budge
 Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
 e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
 
-### Aggiornamento operativo GPT del 28/10/2026 — E3 B sottomessa
+### Aggiornamento operativo GPT del 28/10/2026 — E3 B conclusa e letta
 
-Review Claude `986b008` letta senza merge; [risposta punto per punto](reviews/risposta_review_claude_e3_b_20261028.md),
-[protocollo](e3_b_20261028.md). M1/M2 accolte; M4 con ricerca train-only limitata; M3 come robustezza, **non bug dimostrato**:
-la maschera attuale e' uniforme fra i giunti e `_instants` esclude le patch invalide. CI che include zero resta inconclusivo.
-Nuovi programmi separati, harness e trainer invariati. 41 test CPU passati; review scientifica preventiva favorevole.
-Metodo/codice pubblicati in `520158e` prima dei job: **62561780 estrazione train**, **62561881 rapporto CPU afterok**.
-Tetto totale 0,333333 GPU-ore / 6,666667 core-ore; sottomissioni confermate, stato live nelle evidenze startup della campagna.
-Snapshot salvato alle 14:22 Europe/Rome: estrazione RUNNING, rapporto PENDING per Dependency; checkout/source verificati,
-guardia completa di estrazione non ancora stampata. Nessun risultato E3 ancora letto.
-Nessun resume a 19.618 in questa tranche; la proposta di continuazione richiede correzioni scientifiche esplicitate nella risposta.
+**62561780 / 62561881 COMPLETED 0:0**, 255 / 106 s; consuntivo **0,070833 GPU-ore / 0,802222 core-ore**.
+Codice/protocollo `520158e` congelati prima dei job. M2 e provenienze coerenti, alpha 10^6 interno alla griglia,
+zero righe parzialmente valide: confermata la rettifica M3. Nessun retry o training successivo.
+Primario dinamiche: testa 0,927475, ridge 0,930307; delta appaiato **+0,002832 [+0,000898; +0,004602]**.
+Ridge leggermente peggiore sulla dinamica, migliore su livello medio e MSE totale; non prova un limite dell'encoder.
+[Risultati, grafico, elenco delle modifiche e sei punti](reviews/e3_b_results_20261028.md),
+[sintesi aggiornata](reviews/sintesi_scientifica_20261028.md), [risposta a Claude](reviews/risposta_review_claude_e3_b_20261028.md).
+Ricalcolo indipendente concorde; nota informale Claude `7a4221d` letta senza merge e concorde sul primario.
+Proposta successiva: preparare il punto intermedio a 19.618 con criteri corretti e confronto effettivamente abbinato a R3c;
+protocollo/preventivo ancora da completare, **nessuna continuazione lanciata**, nessun via automatico a R3 completo.
 
 ### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B letta
 
@@ -65,6 +66,11 @@ R3 completo, E3 su R0 e J2 bis restano fermi. [Analisi](reviews/collaudo_b_resul
 [prompt per la review Claude](prompt_claude_review_b_20261028.md). Le tabelle del 26/10 sotto conservano lo stato storico.
 
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
+
+**Aggiornamento del 28/10 dopo E3:** numerazione invariata. 1/2/4 chiusi nel rispettivo perimetro;
+3 integrazione ancora aperta (`origin/main` verificato a 4680617); 5 aperto con B, E1/E2, dinamica ed E3 conclusi;
+6 sospeso. Ruoli attuali: GPT implementazione/lanci, Claude revisore. La tabella e le assegnazioni del 26/10
+sotto restano storico; [riepilogo attuale completo](reviews/e3_b_results_20261028.md).
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
 facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
@@ -4359,6 +4365,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - La prima richiesta del permesso runtime nell'app era rimasta sospesa ed e' stata interrotta: riconciliati registro,
   tracce helper, squeue e sacct, tutti senza job corrispondenti, prima dell'invocazione effettiva. Nessun doppio lancio.
 
+### 2026-10-28 | GPT | E3 B conclusa, risultati e recap consegnati | Protocollo 520158e, lanci 28695c1
+
+- Job62561780 COMPLETED0:0 in255s;62561881 COMPLETED0:0 in106s. Coda vuota alla raccolta. Consuntivo
+  0,070833GPU-ore /0,802222core-ore entro i tetti0,333333/6,666667. Nessun retry o altro job.
+- Raccolti sul Mac rapporto originale, provenienze, accounting, log e manifest SHA; nessun NPZ/checkpoint.
+  SHA report761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94; evidenze in
+  results/infra/pilot_posa/b_e3_20261028/final. Confrontati gli SHA prima della copia deliberata nel repo.
+- Guardie passate:40utenti train/1907finestre, subset identico a R3c; maschere parziali0 su train/val;
+  M2 val maxabs0,00011572/RMSE0,00001551; riferimento dinamico della testa riprodotto. Alpha1e6, interno alla griglia.
+- Primario dinamiche: ridge−testa +0,002831768, IC95[+0,000897868;+0,004602495];10utenti peggiorano/5migliorano.
+  Rapporti0,930307/0,927475. Ridge migliora il livello medio e MSE totale; non e' peggiore in generale.
+- Ricalcolo indipendente dei tre delta/IC dai momenti per utente concorde1e-12; critico indipendente concorde sul primario.
+  Letta senza merge la nota Claude7a4221d: stesso primario/consuntivo. Grafico e script riproducibili aggiunti.
+- Aggiornati piano, sintesi, README e registro; recap richiesto da Simone con M1-M4, opzioni, scala, pooling,
+  stato dei sei punti e proposta successiva in docs/reviews/e3_b_results_20261028.md.
+  Continuazione19618 da preparare con criteri corretti e confronto R3c verificato; nessun training successivo lanciato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6093,3 +6116,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   M2/provenienza. Nessun esito scientifico E3 dedotto dalla sola accettazione di SLURM.
 - Il ritardo pre-lancio era il permesso runtime del comando nell'app, distinto dal consenso scientifico gia' espresso.
   Verifica negativa di qualunque lancio parziale prima della nuova invocazione; nessun retry automatico di job.
+
+### 2026-10-28 | GPT | E3 B: limite del risultato e punti ancora aperti | Fonte 520158e, rapporto finale
+
+- Questo rifit non recupera dinamica aggiuntiva: effetto primario piccolo ma sfavorevole, non equivalenza o saturazione
+  dell'encoder. Subset, obiettivo MSE totale, regolarizzazione, vista e percorso di fit restano diversi dalla testa.
+- Poco dinamiche: ridge migliora in15/15 rispetto alla testa, ma entrambe restano peggio del piatto. Su tutte le finestre
+  il delta centrato comprende0: inconclusivo. Non cambiare ora selezione/scala in base a questa val.
+- Nessun difetto di maschere dimostrato; M3 di Claude rettificata con supporti reali. I residui centrati ~1e-32 della
+  costante del subset sono roundoff, non movimento reale. Nessun risultato storico invalidato da questa osservazione.
+- La proposta19618 richiede ancora protocollo/preventivo, verifica dose/config/stream e trasformazione comune a R3c.
+  Non applicabili plateau da E1>=0,92, equivalenza da IC sovrapposti, monotonia di E2 o assenza di danno da test inconcludente.
+  Utilita' FM e trasferimento rimangono aperti. GPT implementa/lancia, Claude rivede; nessun nuovo job in questa lettura.

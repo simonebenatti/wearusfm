@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-28",
-  "status": "SOTTOMESSO",
+  "status": "COMPLETATO_E_LETTO",
   "approval": {
     "by": "Simone",
     "request": "se approvi procedi autonomamente, e lancia i teste che devi",
@@ -70,7 +70,21 @@
       "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
       "slurm_id": 62561780,
       "submission_state": "sottomesso",
-      "last_observed_state": "RUNNING"
+      "last_observed_state": "COMPLETED",
+      "completion": {
+        "exit_code": "0:0",
+        "elapsed_seconds": 255,
+        "start": {
+          "utc": "2026-10-28T13:20:37+00:00",
+          "Europe/Rome": "2026-10-28T14:20:37+01:00"
+        },
+        "end": {
+          "utc": "2026-10-28T13:24:52+00:00",
+          "Europe/Rome": "2026-10-28T14:24:52+01:00"
+        },
+        "gpu_hours": 0.07083333333333333,
+        "core_hours": 0.5666666666666667
+      }
     },
     {
       "mode": "report",
@@ -113,7 +127,21 @@
       "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out",
       "slurm_id": 62561881,
       "submission_state": "sottomesso",
-      "last_observed_state": "PENDING"
+      "last_observed_state": "COMPLETED",
+      "completion": {
+        "exit_code": "0:0",
+        "elapsed_seconds": 106,
+        "start": {
+          "utc": "2026-10-28T13:25:46+00:00",
+          "Europe/Rome": "2026-10-28T14:25:46+01:00"
+        },
+        "end": {
+          "utc": "2026-10-28T13:27:32+00:00",
+          "Europe/Rome": "2026-10-28T14:27:32+01:00"
+        },
+        "gpu_hours": 0.0,
+        "core_hours": 0.23555555555555555
+      }
     }
   ],
   "total_caps": {
@@ -146,7 +174,9 @@
     "extra_jobs_submitted": [],
     "note": "Prima chiamata runtime interrotta prima di qualunque prenotazione; riconciliazione ledger e SLURM vuota. Una sola sottomissione effettiva per ID, nessun retry di job.",
     "startup_snapshot": "results/infra/pilot_posa/b_e3_20261028/startup/startup.json",
-    "startup_recorded_at_utc": "2026-10-28T13:22:33.873Z"
+    "startup_recorded_at_utc": "2026-10-28T13:22:33.873Z",
+    "final_evidence": "results/infra/pilot_posa/b_e3_20261028/final",
+    "queue_at_collection": "empty"
   },
   "verification": {
     "cpu_tests": 41,
@@ -154,5 +184,20 @@
     "scientific_review": "PASS: critico scientifico su source859dc19 e protocollo, senza blocchi; nessun via alla continuazione19618",
     "technical_review": "results/infra/pilot_posa/b_e3_20261028/technical_review.json",
     "frozen_outputs_absent": true
+  },
+  "actual_costs": {
+    "gpu_hours": 0.07083333333333333,
+    "core_hours": 0.8022222222222222,
+    "total_cpu_seconds": 746.179
+  },
+  "results": {
+    "review": "docs/reviews/e3_b_results_20261028.md",
+    "report_sha256": "761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94",
+    "primary_delta_ratio": 0.002831767845052352,
+    "primary_delta_ratio_ci95": [
+      0.0008978678459578433,
+      0.004602495328618166
+    ],
+    "interpretation": "This ridge reads slightly less dynamics than the existing head; mean-level and total MSE improve. No encoder ceiling or automatic continuation inferred."
   }
 }
