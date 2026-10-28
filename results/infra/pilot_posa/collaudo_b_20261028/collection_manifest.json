@@ -1,0 +1,56 @@
+{
+  "collected_at_utc": "2026-10-28T09:15:31.558021+00:00",
+  "transport": "ssh leonardo tail -c +1; no remote computation",
+  "files": {
+    "config.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/config.json",
+      "bytes": 3142,
+      "sha256_local": "f55fa6a5f117ad8898c20bbaf8b20f288c169a9a9a12e7bf3bfdad26fef1d157"
+    },
+    "summary.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/summary.json",
+      "bytes": 1888,
+      "sha256_local": "d5ffc17b878d38af57ea7f54b0c76ae78b5016a99a4b099dfd679bf0324b2a10"
+    },
+    "metrics.jsonl": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/metrics.jsonl",
+      "bytes": 4112243,
+      "sha256_local": "497bb1db15b41236c137472137c273d1bb55d032aa6f8e8a53a2b478ff34ad1f"
+    },
+    "fixed_eval.jsonl": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/fixed_eval.jsonl",
+      "bytes": 17108,
+      "sha256_local": "baa5d58885f84640c66d35f284bf24c8034bd1ecf3ca3966a5a39439bcc8cd94"
+    },
+    "fixed_eval_set.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/fixed_eval_set.json",
+      "bytes": 22232,
+      "sha256_local": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5"
+    },
+    "pose_provenance.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/pose_provenance.json",
+      "bytes": 210,
+      "sha256_local": "0463d2b9ac3cc49abf1667e91ff9594581dc623997a8318b1b9a457c8a03322e"
+    },
+    "pose_panel_set.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/pose_panel_set.json",
+      "bytes": 83267,
+      "sha256_local": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018"
+    },
+    "pose_panel.jsonl": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/pose_panel.jsonl",
+      "bytes": 3917267,
+      "sha256_local": "63c08bec07e353515769b76bff41418497d5aaa81d151b34956f15d6b65eb967"
+    },
+    "pip_freeze_62523672.txt": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/pip_freeze_62523672.txt",
+      "bytes": 8487,
+      "sha256_local": "f97a0225bfecbb5d25ddc1056e9be6519b801dc4fed2186e7109134b1d2c8f36"
+    },
+    "train_ddp_62523672.out": {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/train_ddp_62523672.out",
+      "bytes": 24253,
+      "sha256_local": "ebf51679ecd89e780d709b7c657765efa1ee65ff5e87456d828d14db47c7b66c"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+ "stopped": "max_steps",
+ "steps": 5000,
+ "elapsed_s": 3784.605773448944,
+ "parameters": 28356829,
+ "device": "cuda:0",
+ "gpu_max_memory_gib": 13.747344970703125,
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028",
+  "sha": "24139ab901c052357a46a65bc20466f2eb1e8358"
+ },
+ "environment": {
+  "python": "3.11.6",
+  "torch": "2.2.0a0+git6c8c5ad",
+  "cuda": "12.1",
+  "pip_freeze_file": "pip_freeze_62523672.txt",
+  "pip_freeze_sha256": "f97a0225bfecbb5d25ddc1056e9be6519b801dc4fed2186e7109134b1d2c8f36",
+  "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+ },
+ "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+ "world_size": 4,
+ "batch_per_process": 8,
+ "prefetch": true,
+ "prefetch_audit_steps": null,
+ "accum_steps": 1,
+ "micro_batch": 8,
+ "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+ "pose_panel_timing": {
+  "prepare_s": 19.032033454976045,
+  "evaluations_s": [
+   3.411463852971792,
+   3.391299133072607,
+   3.3765581810148433,
+   3.3883266530465335,
+   3.387310217018239,
+   3.3907955680042505,
+   3.386622032034211,
+   3.3754681170685217,
+   3.3914231760427356,
+   3.3773371629649773,
+   3.374963192967698
+  ],
+  "total_s": 56.283600741182454
+ }
+}

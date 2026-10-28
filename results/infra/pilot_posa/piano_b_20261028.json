@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "SOTTOMESSO_PENDING",
+  "status": "COMPLETATO_SUPERATO",
   "prepared_by": "GPT",
   "date": "2026-10-28",
   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
@@ -271,11 +271,30 @@
     "checkout_exit_code": "0:0",
     "checkout_core_hours": 0.009444444444444445,
     "training_job_id": 62523672,
-    "training_state": "PENDING",
-    "training_reason": "Priority",
-    "state_checked_at": "2026-10-28T07:38:49.532967+00:00",
-    "runtime_code_sha_verified": false,
+    "training_state": "COMPLETED",
+    "training_reason": null,
+    "state_checked_at": "2026-10-28T09:15:30.228094+00:00",
+    "runtime_code_sha_verified": true,
     "evidence_dir": "results/infra/pilot_posa/collaudo_b_20261028",
-    "extra_jobs_submitted": []
+    "extra_jobs_submitted": [],
+    "startup_snapshot": {
+      "training_state": "PENDING",
+      "training_reason": "Priority",
+      "state_checked_at": "2026-10-28T07:38:49.532967+00:00",
+      "runtime_code_sha_verified": false
+    },
+    "training_exit_code": "0:0",
+    "steps_completed": 5000,
+    "start_utc": "2026-10-28T07:52:24Z",
+    "end_utc": "2026-10-28T08:55:58Z",
+    "training_elapsed_s": 3814,
+    "training_gpu_hours": 4.237777777777778,
+    "training_core_hours": 33.90222222222222,
+    "total_core_hours_with_checkout": 33.91166666666667,
+    "checkpoint_remote_bytes": 454215776,
+    "checkpoint_internal_state_checked": false,
+    "gate_status": "superato",
+    "gate_result": "results/infra/pilot_posa/collaudo_b_20261028/verdetto.json",
+    "analysis": "docs/reviews/collaudo_b_results_20261028.md"
   }
 }

@@ -4,6 +4,16 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
+
+### Aggiornamento operativo GPT del 28/10/2026 — B letto
+
+**B 62523672 COMPLETED e SUPERATO**, codice congelato `24139ab`: 5.000 passi, MSE −11,713%, IC95 del rapporto
+[0,839470; 0,932231], 23/32 utenti migliorano. Consuntivo 4,23778 GPU-ore e 33,91167 core-ore checkout compreso.
+Il punto 5 resta aperto: appresa riduzione della loss sul train, ancora da verificare dinamica, generalizzazione e trasferimento.
+Proposta GPT: inferenza E1/E2 sullo student B a 5.000, da preparare e autorizzare separatamente; **nessun nuovo job avviato**.
+R3 completo, E3 su R0 e J2 bis restano fermi. [Analisi](reviews/collaudo_b_results_20261028.md),
+[prompt per la review Claude](prompt_claude_review_b_20261028.md). Le tabelle del 26/10 sotto conservano lo stato storico.
+
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
@@ -4168,6 +4178,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Simone chiede per curiosita' se due nodi potrebbero accelerare: il launcher attuale e' a un nodo; il solo cambio SLURM non usa il
   secondo nodo. Multi-nodo richiederebbe launcher/ripresa e un benchmark separato; nessuna modifica a B, come confermato da Simone.
 
+### 2026-10-28 | GPT | B completato e letto: SUPERATO, nessuna continuazione automatica
+
+- Richiesta di Simone: «finito direi, leggi, commenta e analizza». Riferimento eseguibile e lettore `24139ab`; run 62523672,
+  checkout 62523525. Raccolta readonly tramite leonardo-ops, copie complete e SHA locali in
+  `results/infra/pilot_posa/collaudo_b_20261028/collection_manifest.json`. Nessun checkpoint o dato wearable grezzo copiato nel repo.
+- SLURM COMPLETED 0:0, 5.000 passi, 08:52:24–09:55:58 Europe/Rome, 3.814s. Costo 4,23778 GPU-ore, 33,90222 core-ore,
+  checkout compreso 33,91167, entro i tetti 6 / 48,3333. STOP assente, checkpoint 454.215.776 byte; stato interno non caricato.
+- Lettore congelato: tutti i criteri OK. MSE 1,160059→1,024176, rapporto 0,8828655883, IC95 utenti
+  [0,8394701934; 0,9322308875]; bootstrap 1.000, seme 20261027. MAE rad 0,348610→0,310489 (−10,935%).
+  Migliorano 23/32 utenti, 16/32 di almeno il 10%. Ritmo mediano 0,70756s/passo, nessun allarme di collasso.
+- 36.620 esposizioni globali a finestre con posa (gia' sommate fra GPU); E4 locale medio posa/ancore 0,917802.
+  Varianza temporale predizioni 0,023003, positiva in tutte le finestre. La decomposizione dell'energia delle predizioni
+  NON attribuisce il miglioramento della MSE a movimento o bias; questa distinzione richiede target/predizioni completi.
+- Interpretazione: dose dbg insufficiente piu' plausibile, nessuna dimostrazione causale esclusiva; non piu' sostenibile
+  l'assenza assoluta di apprendimento con R3. Generalizzazione, dipendenza dinamica e trasferimento ancora aperti.
+- Raccomandazione, NON autorizzazione: inferenza E1/E2 sullo student B a 5.000, val senza maschera, prima di R3 completo;
+  lettura diagnostica distinta dal criterio finale a 49.046. Preventivo indicativo tetto 0,667 GPU-ore / 8 core-ore,
+  da concretizzare con comandi e review prima del via. E3 R0 e J2 bis non sono prerequisiti e restano interrotti.
+- Consegnati `docs/reviews/collaudo_b_results_20261028.md`, ricalcolo riproducibile e figura, verdetto, consuntivo,
+  piano aggiornato e prompt per Claude. Due review indipendenti confermano numeri/formule/limiti e raccomandazione.
+  Nessuna modifica a trainer, ricetta o gate; nessun nuovo job. Tutta la consegna committata e pubblicata sul ramo GPT.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5815,3 +5847,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La sottomissione e' riuscita, ma al controllo il job 62523672 e' PENDING per Priority: non e' ancora un run in esecuzione e non
   esistono metriche o log di training. Nessuna anomalia di codice rilevata; nessuna cancellazione o risottomissione. Il costo del
   checkout e' consuntivato, quello di B e' ancora soltanto il tetto prenotato. E3 R0 e J2 bis restano interrotti.
+
+### 2026-10-28 | GPT | Lettura B: formato del listing e limiti scientifici
+
+- Prima invocazione del lettore con `ls -l /path/checkpoint.pt`: chiave assoluta, non il basename richiesto da
+  `--listing` (documentato come elenco della directory). Il solo controllo checkpoint risultava NO; file sempre presente.
+  Raccolto `ls -l` della directory, il lettore invariato passa. Conservati entrambi gli input e il primo verdetto con nome
+  `verdetto_listing_file_assoluto.json`; applicabile `verdetto.json`. Nessun difetto del run e nessuna soglia cambiata.
+- B passa, ma nove utenti peggiorano; IC95 non prova un calo >=10% con confidenza95%. E4 e' locale al micro-batch;
+  clipping in tutti i passi non dimostra un difetto. Energia temporale delle predizioni != quota del guadagno MSE.
+  Pannello train, un seme, supporti variabili: nessuna inferenza automatica a utenti nuovi o al trasferimento P1/P2.
+- La proposta E1/E2 anticipata deve specificare student (default estrattore teacher), vista senza maschera, endpoint
+  diagnostico a5.000 e confronto sul supporto comune; non cambia il cancello gia' superato o le regole finali a49.046.
+  Nessun cambio di pooling/target/lag/pesi giustificato da questa sola lettura; nessun lancio autorizzato dalla proposta.

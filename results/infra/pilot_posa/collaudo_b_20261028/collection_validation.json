@@ -1,0 +1,47 @@
+{
+  "summary.json": {
+    "json_valid": true
+  },
+  "pose_panel_set.json": {
+    "json_valid": true
+  },
+  "config.json": {
+    "json_valid": true
+  },
+  "pose_provenance.json": {
+    "json_valid": true
+  },
+  "accounting.json": {
+    "json_valid": true
+  },
+  "collection_manifest.json": {
+    "json_valid": true
+  },
+  "fixed_eval_set.json": {
+    "json_valid": true
+  },
+  "fixed_eval.jsonl": {
+    "jsonl_valid": true,
+    "rows": 11,
+    "first_step": 0,
+    "last_step": 5000
+  },
+  "metrics.jsonl": {
+    "jsonl_valid": true,
+    "rows": 5000,
+    "first_step": 1,
+    "last_step": 5000
+  },
+  "pose_panel.jsonl": {
+    "jsonl_valid": true,
+    "rows": 11,
+    "first_step": 0,
+    "last_step": 5000
+  },
+  "summary_checks": {
+    "steps": 5000,
+    "stopped": "max_steps",
+    "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "pip_freeze_hash_matches": true
+  }
+}

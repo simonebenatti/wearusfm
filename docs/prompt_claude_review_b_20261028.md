@@ -1,34 +1,38 @@
-# Prompt per Claude — controllo di B, lancio eseguito da GPT
+# Prompt per Claude — controllo dei risultati B
 
-**Aggiornamento operativo:** il piano e' stato approvato da Claude secondo la conferma di Simone. Checkout **62523525 COMPLETED**;
-B **62523672 sottomesso**, ultimo snapshot PENDING Priority. Evidenze in `results/infra/pilot_posa/collaudo_b_20261028/`.
-Il testo di review sotto conserva i riferimenti tecnici: il controllo ora riguarda la corrispondenza fra piano ed esecuzione.
+B e' terminato. GPT ha raccolto e analizzato il job 62523672 sul ramo pubblicato
+`origin/codex/r3-long-collaudo-20261028`. Esegui la revisione reciproca dal tuo worktree;
+non modificare quello GPT. Nessun deploy, estrazione, training o nuovo job in questa richiesta.
 
-GPT ha completato la preparazione di B su richiesta di Simone. Il 28/10 Simone ha poi affidato a GPT il lancio di B e a Claude il controllo.
-Consulta piano e registro per gli ID effettivi: non duplicare le sottomissioni. Leggi il ramo pubblicato
-`origin/codex/r3-long-collaudo-20261028`, nel tuo worktree senza modificare quello di GPT.
-Codice da rivedere: `24139ab901c052357a46a65bc20466f2eb1e8358`, dalla tua bozza `afd2e4d6aca7a417fef59efcd3df2c048fa23653`.
-Il tip del ramo aggiunge protocollo, piano, comandi e registro; il codice eseguibile e' congelato allo SHA indicato.
+Codice eseguito e lettore congelati: `24139ab901c052357a46a65bc20466f2eb1e8358`, dalla tua base
+`afd2e4d6aca7a417fef59efcd3df2c048fa23653`. Il tip aggiunge evidenze, analisi e registro;
+non cambia trainer, ricetta o soglie dopo il risultato.
 
-Fai una review tecnica e scientifica della consegna, come previsto dalla revisione reciproca. **Non fare deploy e non lanciare job.**
+1. Leggi `docs/reviews/collaudo_b_results_20261028.md`, `docs/collaudo_r3_b_20261028.md`,
+   `results/infra/pilot_posa/collaudo_b_20261028/README.md` e le nuove voci GPT del registro.
+2. Riesegui localmente i due comandi del README: lettore congelato e analisi descrittiva.
+   Il verdetto applicabile e' `verdetto.json`: SUPERATO, MSE 1,160059 → 1,024176, ratio 0,882866,
+   IC95 utenti [0,839470; 0,932231], 23/32 utenti in miglioramento. Verifica config e provenienza,
+   5.000 passi, 11 pannelli invariati, bootstrap, conteggi globali e checkpoint nel listing.
+   Il primo `verdetto_listing_file_assoluto.json` aveva un input `ls` non conforme alla CLI,
+   descritto nel README; non scambiarlo per il verdetto definitivo o per un difetto del run.
+3. Rivedi l'interpretazione: B dimostra un calo sul train; non generalizzazione, movimento corretto
+   o causalita' esclusiva della durata del dbg. IC95 positivo non significa miglioramento >=10%
+   con confidenza 95%. E4 resta locale; le quote di energia delle predizioni non sono quote del
+   guadagno MSE. Nove utenti peggiorano. Supporti e stratificazioni sono descrittivi post hoc.
+4. Valuta la proposta scientifica: prima del costo di R3 completo, sola inferenza E1/E2 sullo
+   **student a 5.000**, su `val`, col controllo disallineato a supporto comune. Lo script ha
+   default teacher: va specificato student. Nessun train/E3 necessario per questa lettura.
+   Il checkpoint a 5.000 sarebbe diagnostico, distinto dall'endpoint scientifico a 49.046;
+   encoder senza maschera come E1/E2, mentre B usa maschere fisse. Non introdurre un nuovo gate
+   retroattivo o una selezione dei modelli su `val`. La proposta non e' autorizzata al lancio.
+5. Controlla il preventivo indicativo del rapporto: 1 A100 / 8 core / 60G / 40 min piu' 8 core / 30G / 20 min,
+   tetto 0,667 GPU-ore e 8 core-ore, senza nuovo checkout se riutilizzabile quello congelato.
+   E2 con testa non e' stato cronometrato da B; non assumere i 60s del rapporto R3c senza testa.
+6. Pubblica review e rilievi verificati sul tuo ramo, nel registro, indicando se cambiano il
+   verdetto, la sola interpretazione o la proposta successiva. Niente correzioni preventive
+   non motivate, nessuna riscrittura dei risultati. I 123 test della preparazione restano validi;
+   riesegui soltanto quelli pertinenti a un dubbio concreto.
 
-1. Leggi `docs/collaudo_r3_b_20261028.md`, `docs/reviews/collaudo_b_preparation_20261028.md` e
-   `docs/reviews/pose_scientific_assessment_20261028.md`; poi le nuove voci GPT nelle due sezioni del registro.
-2. Rivedi `git diff afd2e4d 24139ab -- src/wearusfm/training/run.py scripts/arms_collaudo.py scripts/slurm/train_ddp.sbatch tests/cpu`.
-   Controlla soprattutto selezione e supporto del pannello, indipendenza dal training, errori DDP, identita' alla ripresa,
-   aggregazione/bootstrap e guardia di partenza da zero. Non modificare i checkout delle campagne precedenti.
-3. Verifica che `results/infra/pilot_posa/piano_b_20261028.json`, `config_b_atteso_20261028.json` e `comandi_b_20261028.txt`
-   concordino: nuovo run, 5.000 passi, schedule 49.046/warmup 1.962, ancore 0,2/posa 1/JEPA 0, seme 0, quattro A100.
-   Il tetto PROPOSTO e' 6 GPU-ore e 48 core-ore, piu' 1/3 core-ora per checkout. L'aumento da 75 a 90 minuti e' esplicito e
-   ancora da approvare; non applicare cambi di risorse o soglie senza una nuova proposta.
-4. I test mirati sono gia' passati: 123 distinti, compreso DDP2. Riesegui quelli pertinenti a dubbi concreti, senza lanciare
-   training sul cluster. Segnala difetti con una riproduzione e indica se bloccano B. Se non ne trovi, scrivi un verdetto chiaro.
-5. Registra e pubblica review ed eventuali correzioni sul tuo ramo, senza riscrivere i commit GPT. Per correzioni che cambiano il
-   codice congelato, serve un nuovo SHA verificato e l'aggiornamento coerente del piano prima della firma.
-
-Il gate primario resta: MSE media per utente al passo 5.000 <=0,9 dell'inizio e IC95 appaiato con limite superiore <1.
-Le predizioni al passo zero e l'integrita' del pannello sono controlli preliminari; trend del training e varianza sono descrittivi.
-Un esito positivo non autorizza R3 completo. Nessun E3 R0, J2 bis, seed aggiuntivo, retry o job di scorta e' incluso.
-
-Restituisci a Simone: verdetto, eventuali problemi verificati e conferma di corrispondenza fra codice/protocollo/comandi.
-**Il lancio di B e' affidato a GPT dal via di Simone del 28/10; tu esegui il controllo e segnala subito eventuali difetti.**
+Consuntivo B: 4,23778 GPU-ore, 33,91167 core-ore checkout compreso. R3 completo, E3 su R0 e J2 bis
+restano fermi. Restituisci a Simone un verdetto chiaro sul risultato e sulla raccomandazione.

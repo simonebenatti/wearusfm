@@ -5170,3 +5170,28 @@ Con approvazione di Claude confermata da Simone, GPT ha pubblicato il riferiment
 non ancora avviato. Parametri e tetti invariati: un nodo/quattro A100, 5.000 passi, massimo 6 GPU-ore e 48 core-ore per il training.
 Le idee sul multi-nodo restano una discussione, senza modifiche. E3 R0 e J2 bis non sono prerequisiti e non sono stati rilanciati.
 Provenienza e sottomissioni: `results/infra/pilot_posa/collaudo_b_20261028/`. Nessun esito o continuazione automatica di R3.
+
+
+## 28/10/2026 — GPT: risultati del collaudo lungo B e proposta successiva (nessun nuovo lancio)
+
+Simone: «finito direi, leggi, commenta e analizza». Riferimento eseguito `24139ab901c052357a46a65bc20466f2eb1e8358`;
+job 62523672 COMPLETED 0:0, 5.000 passi. **B SUPERATO** con il criterio congelato: MSE 1,160059→1,024176,
+rapporto 0,8828655883, IC95 utenti [0,8394701934; 0,9322308875]. Tutti i controlli tecnici passano; nessun ritocco alle soglie.
+Ricalcolo e critica scientifica indipendenti concordano. Il dbg resta non superato secondo la regola originaria.
+
+Consuntivo: 3.814s di allocazione, 4,23778 GPU-ore, 33,90222 core-ore; con checkout 33,91167 core-ore, nei tetti 6 / 48,3333.
+Evidenze complete, listing checkpoint non vuoto e SHA locali delle copie in `results/infra/pilot_posa/collaudo_b_20261028/`.
+Il primo listing del singolo file era in formato non conforme alla CLI: passare l'elenco della directory ha risolto il solo
+controllo del basename, senza cambiare codice. Entrambe le invocazioni sono conservate e spiegate nel README.
+
+Lettura GPT: la ricetta estesa apprende sul train; H1 dose dbg troppo breve piu' plausibile, non isolata causalmente.
+Migliorano 23/32 utenti; MAE rad −10,935%; il miglioramento non e' uniforme. Le predizioni variano nel tempo ma la
+scomposizione dell'energia non separa il guadagno MSE da postura, contesto e movimento. Generalizzazione e trasferimento aperti.
+Review completa: `docs/reviews/collaudo_b_results_20261028.md`; prompt per la revisione reciproca aggiornato.
+
+**Proposta di GPT per la prossima decisione, non ancora autorizzata:** sola inferenza E1/E2 sul checkpoint B, student a5.000,
+val senza maschera, allineato/disallineato sul supporto comune, prima del costo di R3 completo. Nessuna ridge/train extraction
+necessaria per questa domanda. Lettura diagnostica a5.000, non criterio scientifico finale a49.046 e non nuovo cancello per B.
+Preventivo indicativo: 1 A100 / 8 core / 60G / 40min + rapporto 8 core / 30G / 20min, totale massimo 0,667 GPU-ore e8 core-ore;
+comandi e review da completare prima di un via. E2 con testa non ha una durata gia' misurata da B. Eventuale nuovo checkout
+per correzioni non compreso in quel preventivo. Nessun cambio di ricetta, pooling, target o peso. R3 completo, E3 R0 e J2 bis fermi.
