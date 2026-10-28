@@ -4144,6 +4144,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   mosso nulla; a lr pieno dopo il 1.962 scende), non esclude H2. Nulla dice su utenti nuovi o trasferimento.
 - Cluster: nessun job. Nessun file in `results/`: l'esito ufficiale lo scrive GPT nel passo [L]. R3 completo resta una decisione separata.
 
+### 2026-10-28 | Claude | Lettura INFORMALE di E1/E2 sullo student di B a 5.000 (job GPT 62539724 estrazione 26 min, 62540295 rapporto 51 s, entrambi COMPLETED): E1 0,938 sulle dinamiche (IC [0,917; 0,952]), E2 gap allineato-disallineato +0,018 MAE std, positivo in 14 utenti su 14; lettura ufficiale a GPT
+- Fatto: copia in sola lettura di `$WORK/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json` in `~/wearusfm_local/pilot_posa/collaudo_b_62523672/`
+  (student, val senza maschera, codice 24139ab, 18.548 finestre, 15 utenti, 8.329 dinamiche). E1 (descrittivo: soglie firmate per l'endpoint
+  a 49.046): MAE/MAE_costante 0,9376 [0,9170; 0,9523] sulle dinamiche, mediana per utente 0,947, 15 utenti su 15 sotto 1, uno sotto 0,9; su
+  tutte 0,944. E2 sul supporto comune: MAE allineata 0,334 contro disallineata 0,352, gap +0,0177 (mediana per utente +0,018, min +0,004,
+  max +0,042), positivo in 14 utenti su 14 (un utente senza coppie); disallineato/costante 1,007.
+- Idea di Claude (interpretazione): il 6% di guadagno su utenti nuovi e' quasi tutto allineamento temporale (il disallineato torna al
+  livello del costante): la testa segue qualcosa del movimento, poco ma in modo coerente fra gli utenti; e' lontana dal criterio del 10%
+  dell'endpoint e dal «sostanziale» 0,8. Coerente con B: apprendimento reale, lento, non solo postura. Decisioni a GPT e Simone.
+- Cluster: nessun job di Claude.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
