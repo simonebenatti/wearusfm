@@ -288,17 +288,13 @@ def test_r3_gradient_diagnostic_is_descriptive_and_flags_below_one_percent(tmp_p
     assert res["descriptive"]["gradienti_condivisi"] is None
 
 
-# --- R3-lungo: collaudo lungo (B) a 5.000 passi, cancello proposto il 28/10/2026 (POSE_GATE_LONG + PANEL_GATE) ---------------------------
+# --- R3-lungo: paired fixed-panel decision; legacy gates above remain unchanged --------------------------------------
 
 LONG_STEPS = 5000
-LISTING_LONG = """total 443431
--rw-r--r--. 1 sbenatti interactive 454073464 Oct 28 03:06 checkpoint.pt
--rw-r--r--. 1 sbenatti interactive      2677 Oct 28 02:03 config.json
-"""
+LISTING_LONG = "-rw-r--r--. 1 sbenatti interactive 454073464 Oct 28 03:06 checkpoint.pt\n"
 
 
 def _panel(steps=LONG_STEPS, every=500, users=32, windows=8, final=0.7, pred_var=0.2, flat=False, drop=()):
-    """Record di `pose_panel.jsonl` come li scrive il trainer: per finestra MSE, MAE, MSE del costante, varianza delle predizioni, utente."""
     out = []
     for step in range(0, steps + 1, every):
         if step in drop:
@@ -307,91 +303,320 @@ def _panel(steps=LONG_STEPS, every=500, users=32, windows=8, final=0.7, pred_var
         per = []
         for u in range(users):
             for w in range(windows):
-                const = 1.0 + 0.05 * ((u * 7 + w) % 5)  # MSE del costante per finestra, fra 1,0 e 1,2
-                mse = const * frac * (1.0 + 0.02 * ((u + w) % 3))  # al passo 0 (frac 1) la testa e' la costante, poi scende
-                per.append({"user": f"u{u:02d}", "session": f"emg2pose/u{u:02d}/s{w // 4}", "window": [None, 1000 * w, 1000 * w + 8000],
-                            "n_valid": 400, "mse": mse if step else const, "mae": (mse if step else const) ** 0.5 * 0.8,
-                            "mse_const": const, "pred_var": 0.0 if step == 0 else pred_var})
-        out.append({"step": step, "n_windows": len(per), "n_windows_valid": len(per), "n_users": users,
-                    "mse": sum(p["mse"] for p in per) / len(per), "mae": sum(p["mae"] for p in per) / len(per),
-                    "mse_const": sum(p["mse_const"] for p in per) / len(per), "pred_var": sum(p["pred_var"] for p in per) / len(per),
-                    "per_window": per})
+                const = 1.0 + 0.05 * ((u * 7 + w) % 5)
+                mse = const * frac
+                start = 10000 * (w % 4)
+                per.append({"user": f"u{u:02d}", "session": f"emg2pose/u{u:02d}/s{w // 4}", "window": [None, start, start + 8000],
+                            "n_valid": 400, "mse": mse, "mae": mse ** 0.5 * 0.8,
+                            "mse_const": const, "pred_var": 0.0 if step == 0 else pred_var,
+                            "n_valid_per_joint": [20] * 20, "pred_mean_per_joint": [0.0] * 20})
+        row = {"step": step, "n_windows": len(per), "n_windows_valid": len(per), "n_users": users, "per_window": per}
+        _aggregates(row)
+        out.append(row)
     return out
 
 
+def _aggregates(row):
+    for key in ("mse", "mae", "mse_const", "pred_var"):
+        row[key] = sum(w[key] for w in row["per_window"]) / len(row["per_window"])
+
+
+def _manifest(panel):
+    per = panel[0]["per_window"]
+    ident = {"schema_version": 1, "window_s": 4.0, "sampling": "nonoverlapping_pose_valid", "seed": [0, 7272],
+             "mask_strategy": "training_mask_fixed",
+             "users": sorted({w["user"] for w in per}), "window_users": [w["user"] for w in per],
+             "windows": [[w["session"], *w["window"]] for w in per], "n_valid": [w["n_valid"] for w in per],
+             "batch_sha256": ["cd" * 32] * 64, "pose_stats_sha256": AC.B_POSE_STATS_SHA}
+    for row in panel:
+        row["panel_sha256"] = AC._canonical_sha256(ident)
+    return ident
+
+
+def _long_config():
+    return {"jepa": {"jepa_weight": 0.0, "anchor_weight": 0.2, "keep_weight": 0.0, "branch_weight": 0.0,
+                     "pose_weight": 1.0, "loss_per_window": True},
+            "model": {"pose_head": True, "dim": 384, "patch_ms": 25.0, "n_heads": 6, "k_latents": 64, "local_layers": 2,
+                      "backbone_layers": 8, "decoder_layers": 2, "muscle_dropout": 0.4, "grad_checkpoint": True},
+            "loader": {"pose_root": "/scratch/emg2pose_pose", "pose_unprompted": True, "patch_ms": 25.0},
+            "max_steps": 5000, "warmup_steps": 1962, "lr": 1e-4, "weight_decay": 0.05, "grad_clip": 1.0,
+            "batch_size": 32, "accum_steps": 1, "seed": 0, "freeze_encoder": False, "pose_grad_every": 500,
+            "pose_panel_every": 500, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
+            "nested": "1", "eval_every": 500, "amp_bf16": True, "prefetch": True,
+            "schedule": {"kind": "wsd", "total_steps": 49046, "decay_fraction": 0.2, "keep_checkpoints": [19618]}}
+
+
 def _run_long(tmp_path, steps=LONG_STEPS, edit=None, panel=None):
-    """Cartella di un run R3-lungo: ricetta di R3 (pesi, posa, provenienza), 5.000 record con la posa che scende a blocchi, pannello."""
-    wj, wa = AC.ARM_WEIGHTS["R3-lungo"]
-    wp = AC.ARM_POSE_WEIGHT["R3-lungo"]
-    d = tmp_path / "R3-lungo"
-    d.mkdir(parents=True)
-    (d / "config.json").write_text(json.dumps({"jepa": {"jepa_weight": wj, "anchor_weight": wa, "keep_weight": 0.0, "branch_weight": 0.0,
-                                                        "pose_weight": wp}, "model": {"pose_head": True},
-                                               "loader": {"pose_root": "/scratch/emg2pose_pose"}, "pose_panel_every": 500}))
-    (d / "summary.json").write_text(json.dumps({"stopped": "max_steps", "steps": steps, "elapsed_s": 3600.0, "code": {"sha": SHA},
-                                                "world_size": 4, "batch_per_process": 8, "accum_steps": 1, "gpu_max_memory_gib": 14.5,
-                                                "pose_stats_sha256": "ab" * 32}))
-    (d / "pose_provenance.json").write_text(json.dumps({"pose_root": "/scratch/emg2pose_pose", "pose_stats_sha256": "ab" * 32,
-                                                        "pose_unprompted": True}))
-    recs = []
-    for s in range(1, steps + 1):
-        decay = 1.0 / (1.0 + s / 100)
-        r = {"step": s, "windows": 32, "t_step_s": 0.71, "t_data_s": 0.005, "jepa": 0.5 * decay + 0.01,
-             **{a: (3.0 + i) * decay + 0.5 for i, a in enumerate(AC.ANCHORS)}}
-        r["pose"] = 0.1 + 0.9 / (1.0 + s / 500)  # ~1 all'avvio, 0,26 nel blocco 2.000-2.499, 0,19 nel blocco 4.500-4.999
-        r["pose_windows"] = 0.0 if s % 97 == 0 else 7.0
-        r["total"] = wj * r["jepa"] + wa * sum(r[a] for a in AC.ANCHORS) + wp * r["pose"]
-        if s in AC.expected_evaluations(steps):
-            r.update(student_collapse_ratio=3.0, teacher_collapse_ratio=2.5, student_erank=100.0, teacher_erank=90.0)
-        recs.append(r)
+    d = _run_r3(tmp_path, steps=steps)
+    (d / "config.json").write_text(json.dumps(_long_config()))
+    for filename in ("summary.json", "pose_provenance.json"):
+        obj = json.loads((d / filename).read_text())
+        obj["pose_stats_sha256"] = AC.B_POSE_STATS_SHA
+        (d / filename).write_text(json.dumps(obj))
+    recs = [json.loads(line) for line in (d / "metrics.jsonl").read_text().splitlines()]
+    for r in recs:
+        r["lr"] = 1e-4 * min(1.0, r["step"] / 1962)
+        r["pose"] = 0.1 + 0.9 / (1.0 + r["step"] / 500)
+        r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + r["pose"]
     if edit:
         recs = edit(recs)
     (d / "metrics.jsonl").write_text("".join(json.dumps(r) + "\n" for r in recs))
-    panel = _panel() if panel is None else panel
+    reference = _panel()
+    manifest = _manifest(reference)
+    if panel is None:
+        panel = reference
+    else:
+        for row in panel:
+            row["panel_sha256"] = AC._canonical_sha256(manifest)
+    (d / "pose_panel_set.json").write_text(json.dumps(manifest))
     (d / "pose_panel.jsonl").write_text("".join(json.dumps(p) + "\n" for p in panel))
     return d
 
 
-def test_r3_long_clean_run_passes_training_blocks_and_panel(tmp_path):
+def _gate(panel, manifest):
+    return {name: {"ok": ok, "detail": detail} for name, ok, detail in AC.panel_gate(panel, manifest)}
+
+
+def test_r3_long_clean_run_uses_only_paired_panel_learning_gate(tmp_path):
     res = AC.check(_run_long(tmp_path), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    assert res["passed"], {k: v for k, v in res["criteria"].items() if not v["ok"]}
+    assert res["passed"] and res["evaluable"] and res["status"] == "superato", _failed(res)
     c = res["criteria"]
-    assert {"posa_scala_avvio", "posa_tetto", "posa_discesa", "posa_conteggio", "ritmo", "pannello_valutazioni", "pannello_discesa",
-            "pannello_ic95_utenti", "pannello_sotto_costante", "pannello_varianza_predizioni"} <= set(c)
-    assert c["posa_discesa"]["detail"]["passi_da"] == [2000, 2499] and c["posa_discesa"]["detail"]["passi_a"] == [4500, 4999]
-    assert c["pannello_valutazioni"]["detail"]["attese"] == list(range(0, 5001, 500))
-    assert c["pannello_discesa"]["detail"]["rapporto"] == pytest.approx(0.7 * 1.02 / 1.0, abs=0.02)
+    assert {"posa_scala_avvio", "posa_tetto", "posa_conteggio", "ritmo", "pannello_valutazioni", "pannello_integrita",
+            "pannello_baseline", "pannello_discesa", "pannello_ic95_utenti", "configurazione_b", "file_integri"} <= set(c)
+    assert not {"posa_discesa", "pannello_sotto_costante", "pannello_varianza_predizioni", "apprendimento"} & set(c)
+    assert c["pannello_discesa"]["detail"]["rapporto"] == pytest.approx(0.7)
     ic = c["pannello_ic95_utenti"]["detail"]
-    assert ic["n_utenti"] == 32 and ic["ic95"][0] <= ic["rapporto_medie_utente"] <= ic["ic95"][1] < 1.0 and ic["utenti_in_discesa"] == 32
+    assert ic["n_utenti"] == 32 and ic["ic95"][1] < 1.0 and ic["utenti_in_discesa"] == 32
     assert ic["n_boot"] == 1000 and ic["seme"] == 20261027
-    assert c["checkpoint"]["detail"] == {"checkpoint.pt": 454073464}  # a 5.000 di 49.046 niente predecay/postdecay
-    assert len(res["descriptive"]["pannello_posa"]) == 11 and res["descriptive"]["pannello_posa"][0]["pred_var"] == 0.0
+    assert c["checkpoint"]["detail"] == {"checkpoint.pt": 454073464}
+    trend = res["descriptive"]["posa_training_blocchi"]
+    assert trend["passi_da"] == [2001, 2500] and trend["passi_a"] == [4501, 5000]
+    assert len(res["descriptive"]["pannello_posa"]) == 11
 
 
-def test_r3_long_gate_failures(tmp_path):
-    # pannello piatto: nessuna discesa, IC a cavallo di 1, sopra 0,9 x costante; la varianza resta
-    res = AC.check(_run_long(tmp_path / "flat", panel=_panel(flat=True)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    c = res["criteria"]
-    assert not c["pannello_discesa"]["ok"] and not c["pannello_ic95_utenti"]["ok"] and not c["pannello_sotto_costante"]["ok"] and not res["passed"]
-    assert c["pannello_varianza_predizioni"]["ok"] and c["pannello_valutazioni"]["ok"]
-    # una valutazione mancante
-    res = AC.check(_run_long(tmp_path / "drop", panel=_panel(drop=(2500,))), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    assert not res["criteria"]["pannello_valutazioni"]["ok"] and res["criteria"]["pannello_discesa"]["ok"]
-    # testa collassata su una costante diversa da zero: varianza nulla
-    res = AC.check(_run_long(tmp_path / "const", panel=_panel(pred_var=0.0)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    assert not res["criteria"]["pannello_varianza_predizioni"]["ok"]
-    # pannello senza il passo finale: i quattro criteri del pannello cadono con il motivo
-    res = AC.check(_run_long(tmp_path / "nofinal", panel=_panel(drop=(5000,))), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    assert all(not res["criteria"][k]["ok"] for k in ("pannello_discesa", "pannello_ic95_utenti", "pannello_sotto_costante",
-                                                      "pannello_varianza_predizioni"))
-    assert "motivo" in res["criteria"]["pannello_discesa"]["detail"]
+def test_r3_long_flat_panel_is_valid_but_fails_learning(tmp_path):
+    res = AC.check(_run_long(tmp_path, panel=_panel(flat=True)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert res["evaluable"] and not res["passed"] and res["status"] == "non_superato"
+    assert not res["criteria"]["pannello_discesa"]["ok"]
+    assert not res["criteria"]["pannello_ic95_utenti"]["ok"]
 
-    # training piatto nei blocchi lunghi: posa_discesa (2.000-2.499 -> 4.500-4.999) cade anche col pannello buono
-    def flat_blocks(recs):
+
+def test_r3_long_flat_training_and_zero_prediction_variance_are_descriptive(tmp_path):
+    def flat(recs):
         for r in recs:
             if r["step"] >= 1500:
                 r["pose"] = 0.3
-                r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + 1.0 * r["pose"]
+                r["total"] = 0.2 * sum(r[a] for a in AC.ANCHORS) + 0.3
         return recs
-    res = AC.check(_run_long(tmp_path / "flatblocks", edit=flat_blocks), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
-    assert not res["criteria"]["posa_discesa"]["ok"] and res["criteria"]["pannello_discesa"]["ok"]
+    res = AC.check(_run_long(tmp_path, edit=flat, panel=_panel(pred_var=0.0)), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert res["passed"], _failed(res)
+    assert res["descriptive"]["posa_training_blocchi"]["media_posa_pesata_da"] == res["descriptive"]["posa_training_blocchi"]["media_posa_pesata_a"]
+
+
+@pytest.mark.parametrize("corruption", ["missing_eval", "duplicate_eval", "out_of_order", "missing_window", "duplicate_window", "user",
+                                         "recording", "coordinates", "n_valid", "nonfinite", "nonfinite_extra", "negative", "aggregate", "const_changed", "hash", "null_row"])
+def test_panel_integrity_rejects_corruptions_before_computing_gate(corruption):
+    panel = _panel()
+    manifest = _manifest(panel)
+    middle = panel[5]
+    row = middle["per_window"][0]
+    if corruption == "missing_eval":
+        panel.pop(5)
+    elif corruption == "duplicate_eval":
+        panel.insert(5, panel[5])
+    elif corruption == "out_of_order":
+        panel[4], panel[5] = panel[5], panel[4]
+    elif corruption == "missing_window":
+        middle["per_window"].pop()
+    elif corruption == "duplicate_window":
+        middle["per_window"][0] = dict(middle["per_window"][1])
+    elif corruption == "user":
+        row["user"] = "u31"
+    elif corruption == "recording":
+        row["session"] += "other"
+    elif corruption == "coordinates":
+        row["window"][1] += 1
+    elif corruption == "n_valid":
+        row["n_valid"] -= 1
+    elif corruption == "nonfinite":
+        row["mae"] = float("nan")
+    elif corruption == "nonfinite_extra":
+        middle["diagnostic"] = {"extra": [float("inf")]}
+    elif corruption == "negative":
+        row["mse"] = -1
+    elif corruption == "aggregate":
+        middle["mse"] *= 0.5
+    elif corruption == "const_changed":
+        row["mse_const"] += 0.1
+        _aggregates(middle)
+    elif corruption == "hash":
+        middle["panel_sha256"] = "0" * 64
+    elif corruption == "null_row":
+        middle["per_window"][0] = None
+    gates = _gate(panel, manifest)
+    assert not gates["pannello_integrita"]["ok"]
+    assert not gates["pannello_discesa"]["ok"] and not gates["pannello_ic95_utenti"]["ok"]
+
+
+@pytest.mark.parametrize("bad", ["size", "duplicate", "overlap", "users", "support", "digest", "seed"])
+def test_manifest_must_describe_the_complete_nonoverlapping_panel(bad):
+    panel = _panel()
+    manifest = _manifest(panel)
+    if bad == "size":
+        manifest["windows"].pop()
+    elif bad == "duplicate":
+        manifest["windows"][0] = manifest["windows"][1]
+    elif bad == "overlap":
+        manifest["windows"][1][2] = 7999
+    elif bad == "users":
+        manifest["users"].pop()
+    elif bad == "support":
+        manifest["n_valid"][0] = 0
+    elif bad == "digest":
+        manifest["batch_sha256"][0] = "x" * 64
+    elif bad == "seed":
+        manifest["seed"] = [1, 7272]
+    gates = _gate(panel, manifest)
+    assert not gates["pannello_integrita"]["ok"]
+
+
+def test_baseline_is_consistency_check_not_an_additional_learning_target():
+    panel = _panel()
+    manifest = _manifest(panel)
+    panel[0]["per_window"][0]["mse"] *= 1.1
+    _aggregates(panel[0])
+    gates = _gate(panel, manifest)
+    assert gates["pannello_integrita"]["ok"] and not gates["pannello_baseline"]["ok"]
+    assert not gates["pannello_discesa"]["ok"]
+
+
+def test_long_rejects_nonzero_joint_bias_even_with_unchanged_constant_mse_and_zero_variance(tmp_path):
+    panel = _panel()
+    w = panel[0]["per_window"][0]
+    # A temporally constant prediction 2 * target mean has the same MSE as prediction zero.
+    w["pred_mean_per_joint"][0] = 0.5
+    assert w["mse"] == w["mse_const"] and w["pred_var"] == 0.0
+    res = AC.check(_run_long(tmp_path, panel=panel), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert res["status"] == "non_valutabile" and not res["criteria"]["pannello_integrita"]["ok"]
+
+
+@pytest.mark.parametrize("field,value", [
+    ("pred_mean_per_joint", None), ("n_valid_per_joint", None),
+    ("pred_mean_per_joint", [0.0] * 19), ("n_valid_per_joint", [20] * 19),
+    ("n_valid_per_joint", [20.0] * 20), ("n_valid_per_joint", [-1, 41] + [20] * 18),
+    ("n_valid_per_joint", [21] * 20), ("pred_mean_per_joint", [None] + [0.0] * 19),
+    ("pred_mean_per_joint", [float("nan")] + [0.0] * 19),
+])
+def test_zero_step_joint_support_and_mean_fields_are_required(field, value):
+    panel = _panel()
+    manifest = _manifest(panel)
+    if value is None:
+        del panel[0]["per_window"][0][field]
+    else:
+        panel[0]["per_window"][0][field] = value
+    assert not _gate(panel, manifest)["pannello_integrita"]["ok"]
+
+
+def test_zero_step_joint_mean_can_be_null_only_without_valid_support():
+    panel = _panel()
+    manifest = _manifest(panel)
+    w = panel[0]["per_window"][0]
+    w["n_valid_per_joint"] = [0, 40] + [20] * 18
+    w["pred_mean_per_joint"] = [None, 1e-6] + [0.0] * 18
+    assert all(c["ok"] for c in _gate(panel, manifest).values())
+
+
+@pytest.mark.parametrize("zero_users", [1, 31, 32])
+def test_long_baseline_requires_global_positive_mse_and_valid_bootstrap_denominators(tmp_path, zero_users):
+    panel = _panel()
+    for row in panel:
+        for w in row["per_window"]:
+            if int(w["user"][1:]) < zero_users:
+                w.update(mse=0.0, mse_const=0.0, mae=0.0)
+        _aggregates(row)
+    res = AC.check(_run_long(tmp_path, panel=panel), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    gates = res["criteria"]
+    assert gates["pannello_integrita"]["ok"]
+    assert gates["pannello_baseline"]["ok"] == (zero_users < 32)
+    if zero_users == 1:
+        assert res["status"] == "superato" and gates["pannello_bootstrap_valido"]["ok"]
+    else:
+        assert res["status"] == "non_valutabile" and not gates["pannello_bootstrap_valido"]["ok"]
+        if zero_users == 31:
+            assert gates["pannello_bootstrap_valido"]["detail"]["repliche_denominatore_non_positivo_o_non_finito"] > 0
+
+
+def test_long_gradient_diagnostic_includes_every_measurement_through_endpoint(tmp_path):
+    def grads(recs):
+        for r in recs:
+            if r["step"] % 500 == 0:
+                r.update(shared_grad_anchors=2.0, shared_grad_pose=r["step"] / 1000, shared_grad_cos=0.1)
+        return recs
+    res = AC.check(_run_long(tmp_path, edit=grads), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    g = res["descriptive"]["gradienti_condivisi"]
+    assert res["passed"] and g["passi"] == [500, 5000] and g["n_record"] == 10
+    assert g["rapporto_norme_medio"] == pytest.approx(1.375)
+    assert g["rapporto_norme_min_max"] == [0.25, 2.5]
+
+
+def test_paired_bootstrap_detects_user_heterogeneity_even_when_mean_drop_passes():
+    panel = _panel()
+    manifest = _manifest(panel)
+    for w in panel[-1]["per_window"]:
+        w["mse"] = w["mse_const"] * (8.0 if w["user"] == "u00" else 0.65)
+    _aggregates(panel[-1])
+    gates = _gate(panel, manifest)
+    assert gates["pannello_discesa"]["ok"] and not gates["pannello_ic95_utenti"]["ok"]
+
+
+@pytest.mark.parametrize("field,value", [("warmup_steps", 1000), ("max_steps", 49046), ("pose_panel_users", 31),
+                                        ("lr", 3e-4), ("freeze_encoder", True), ("pose_grad_every", 100)])
+def test_long_configuration_cannot_silently_change_the_recipe(tmp_path, field, value):
+    d = _run_long(tmp_path)
+    cfg = json.loads((d / "config.json").read_text())
+    cfg[field] = value
+    (d / "config.json").write_text(json.dumps(cfg))
+    res = AC.check(d, "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert not res["criteria"]["configurazione_b"]["ok"] and res["status"] == "non_valutabile"
+
+
+def test_long_rejects_short_schedule_and_mismatched_pose_provenance(tmp_path):
+    d = _run_long(tmp_path)
+    cfg = json.loads((d / "config.json").read_text())
+    cfg["schedule"]["total_steps"] = 5000
+    (d / "config.json").write_text(json.dumps(cfg))
+    prov = json.loads((d / "pose_provenance.json").read_text())
+    prov["pose_stats_sha256"] = "ff" * 32
+    (d / "pose_provenance.json").write_text(json.dumps(prov))
+    res = AC.check(d, "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    differences = res["criteria"]["configurazione_b"]["detail"]["differenze"]
+    assert {"schedule.total_steps", "pose_stats_sha256"} <= set(differences)
+    assert not res["evaluable"]
+
+
+def test_long_rejects_lr_from_the_old_dbg(tmp_path):
+    def change(recs):
+        recs[1040]["lr"] = 1e-4
+        return recs
+    res = AC.check(_run_long(tmp_path, edit=change), "R3-lungo", LONG_STEPS, SHA, LISTING_LONG)
+    assert res["criteria"]["configurazione_b"]["detail"]["differenze"]["lr_metrics"]["passi_errati"] == [1041]
+
+
+@pytest.mark.parametrize("kind", ["broken_json", "duplicate_key", "list_record", "missing_file"])
+def test_long_cli_always_emits_non_evaluable_result_for_bad_panel_file(tmp_path, kind):
+    d = _run_long(tmp_path)
+    path = d / "pose_panel.jsonl"
+    if kind == "broken_json":
+        path.write_text(path.read_text() + "{truncated\n")
+    elif kind == "duplicate_key":
+        path.write_text(path.read_text() + '{"step":0,"step":5000}\n')
+    elif kind == "list_record":
+        path.write_text(path.read_text() + "[]\n")
+    else:
+        path.unlink()
+    listing, output = tmp_path / "ls.txt", tmp_path / "result.json"
+    listing.write_text(LISTING_LONG)
+    assert AC.main([str(d), "--arm", "R3-lungo", "--steps", "5000", "--expected-sha", SHA,
+                    "--listing", str(listing), "--out", str(output)]) == 1
+    result = json.loads(output.read_text())
+    assert result["status"] == "non_valutabile" and not result["passed"]

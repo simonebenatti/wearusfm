@@ -30,6 +30,14 @@
 
 set -uo pipefail
 MANIFEST="${1:?manifest}"; SCALES="${2:?session_scales.json}"; RUN_DIR="${3:?cartella del run}"; MAX_STEPS="${4:-20000}"
+# Collaudi da zero: il riuso automatico della cartella o di un checkpoint cambierebbe la prova autorizzata.
+# Spento di default: le catene WSD continuano a riprendere come prima.
+if [ "${REQUIRE_NEW_RUN:-0}" = 1 ]; then
+  if [ -e "$RUN_DIR" ] || [ -L "$RUN_DIR" ] || [ -n "${BRANCH_FROM:-}" ] || [ -n "${RESUME_TO:-}" ] \
+     || [[ " ${EXTRA_ARGS:-} " == *"--init-from"* ]] || [[ " ${EXTRA_ARGS:-} " == *"--branch-from"* ]]; then
+    echo "REQUIRE_NEW_RUN: cartella esistente o inizializzazione/ripresa esterna; collaudo rifiutato"; exit 2
+  fi
+fi
 case "$RUN_DIR" in /*) ;; *) echo "RUN_DIR relativo: rifiutato"; exit 2;; esac
 case "$RUN_DIR" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
   "$WORK/wearusfm_campaigns"|"$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*)

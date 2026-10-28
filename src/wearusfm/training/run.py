@@ -956,48 +956,95 @@ POSE_PANEL_SEED = 7272
 
 
 def _pose_panel_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
-    """L'insieme fisso del pannello della posa (collaudo lungo (B) di R3, 28/10/2026): `pose_panel_users` utenti di emg2pose del manifest con
-    almeno `pose_panel_recordings` sessioni, `pose_panel_recordings` sessioni per utente e `pose_panel_windows` finestre per sessione (estrazioni
-    indipendenti sulla griglia del loader: possono sovrapporsi), da un generatore proprio ([seed, POSE_PANEL_SEED]) e materializzate dal loader
-    (`PretrainLoader.materialize`: stesse scale, maschere e target del training); un batch per sessione. Identita' come il pannello fisso: utenti,
-    finestre (sessione, trial, inizio, fine) e hash del contenuto di ogni batch, cosi' dati o preprocessing diversi alla ripresa si vedono."""
+    """Pannello bilanciato del training: registrazioni attive distinte, finestre da 4 s non sovrapposte con posa valida.
+
+    Per ogni registrazione, visita gli inizi ammessi in ordine temporale e tiene la prima finestra valida che non si sovrappone alle
+    precedenti; poi estrae senza reinserimento dal reticolo ottenuto. Utenti e registrazioni sono visitati in ordine casuale indipendente
+    dal training, fino alle quote esatte. L'ammissibilita' dipende solo dai dati, mai dagli errori del modello. I difetti dei file restano
+    errori; la sola insufficienza di supporto viene registrata e consente di provare la registrazione/utente successivo."""
     from wearusfm.data import pose_targets as PT
     from wearusfm.training.pairing import batch_sha256
 
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+    selection_cfg = replace(cfg.loader, min_window_s=4.0, max_window_s=4.0)
     by_user: dict[str, list] = {}
-    for r in index.rows:
-        if PT.PoseStore.applies(r):
+    seen = set()
+    for r, p in zip(index.rows, loader.probs):
+        key = _session_key(r)
+        if PT.PoseStore.applies(r) and p > 0 and key not in seen:
             by_user.setdefault(str(r["subject"]), []).append(r)
+            seen.add(key)
     users = sorted(u for u, rs in by_user.items() if len(rs) >= cfg.pose_panel_recordings)
     if len(users) < cfg.pose_panel_users:
         raise ValueError(f"pannello della posa: {len(users)} utenti di emg2pose con almeno {cfg.pose_panel_recordings} sessioni nel manifest, "
                          f"chiesti {cfg.pose_panel_users}")
     rng = np.random.default_rng([cfg.seed, POSE_PANEL_SEED])
-    chosen = sorted(str(u) for u in rng.choice(users, size=cfg.pose_panel_users, replace=False).tolist())
-    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
-    batches = []
-    for u in chosen:
+    selected, excluded = {}, []
+    for u in rng.permutation(users).tolist():
         rows = sorted(by_user[u], key=_session_key)
-        for i in sorted(rng.choice(len(rows), size=cfg.pose_panel_recordings, replace=False).tolist()):
+        records = []
+        for i in rng.permutation(len(rows)).tolist():
             row = rows[i]
             view = loader.view(row)
-            picked = []
-            for _ in range(cfg.pose_panel_windows):
-                win = L.sample_window(view, cfg.loader, rng)
-                if win is None:
-                    raise ValueError(f"pannello della posa: nessuna finestra ammessa in {_session_key(row)}")
-                picked.append((row, view, win))
-            batches.append(loader.materialize(picked, rng))
+            candidates, last_stop = [], {}
+            for cand in L.admissible_starts(view, selection_cfg):
+                for k in cand[5]:
+                    start = max(int(round(cand[3] + int(k) * selection_cfg.align_ms / 1000.0 * view.fs)), cand[1])
+                    if start < last_stop.get(cand[0], -1):
+                        continue
+                    win = L.window_at(view, selection_cfg, cand, int(k))
+                    if win is not None and loader.pose_store.window(row, view, win, cfg.loader.patch_ms)[1].any():
+                        candidates.append(win)
+                        last_stop[win.trial] = win.stop
+            if len(candidates) < cfg.pose_panel_windows:
+                excluded.append({"user": u, "recording": _session_key(row), "eligible_windows": len(candidates)})
+                continue
+            windows = [candidates[j] for j in sorted(rng.choice(len(candidates), cfg.pose_panel_windows, replace=False).tolist())]
+            records.append((row, view, windows))
+            if len(records) == cfg.pose_panel_recordings:
+                break
+        if len(records) == cfg.pose_panel_recordings:
+            selected[u] = records
+        else:
+            excluded.append({"user": u, "eligible_recordings": len(records)})
+        if len(selected) == cfg.pose_panel_users:
+            break
+    if len(selected) < cfg.pose_panel_users:
+        raise ValueError(f"pannello della posa: {len(selected)} utenti di emg2pose con supporto valido sufficiente, "
+                         f"chiesti {cfg.pose_panel_users}; esclusioni: {excluded}")
+    chosen = sorted(selected)
+    batches, recordings = [], []
+    for u in chosen:
+        for row, view, windows in sorted(selected[u], key=lambda item: _session_key(item[0])):
+            batches.append(loader.materialize([(row, view, w) for w in windows], rng))
+            csv = view.meta.get("csv_row") or {}
+            recordings.append({"recording": _session_key(row), "user": u, "session": csv.get("session"),
+                               "side": csv.get("side"), "stage": csv.get("stage"), "unprompted": PT.PoseStore.unprompted(view)})
     windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
                for b in batches for r, w in zip(b.rows, b.windows)]
-    return batches, {"seed": [cfg.seed, POSE_PANEL_SEED], "users": chosen, "windows": windows, "batch_sha256": [batch_sha256(b) for b in batches]}
+    return batches, {"schema_version": 1, "seed": [cfg.seed, POSE_PANEL_SEED], "users": chosen, "windows": windows,
+                     "window_s": 4.0, "sampling": "nonoverlapping_pose_valid", "mask_strategy": "training_mask_fixed",
+                     "window_users": [str(r["subject"]) for b in batches for r in b.rows],
+                     "n_valid": [int(p[1].sum()) for b in batches for p in b.pose],
+                     "n_valid_per_joint": [p[1].sum(axis=0).tolist() for b in batches for p in b.pose],
+                     "pose_stats_sha256": loader.pose_store.stats_sha256, "recordings": recordings, "excluded": excluded,
+                     "batch_sha256": [batch_sha256(b) for b in batches]}
+
+
+def _pose_temporal_variance(pred, valid):
+    """Varianza temporale per giunto, poi media dei giunti con almeno due istanti validi; bias diversi fra giunti danno zero."""
+    n = valid.sum(dim=1)
+    mean = (pred * valid).sum(dim=1) / n.clamp(min=1)
+    var = ((pred - mean[:, None, :]).square() * valid).sum(dim=1) / n.clamp(min=1)
+    has = n >= 2
+    return (var * has).sum(dim=1) / has.sum(dim=1).clamp(min=1)
 
 
 def _pose_panel_errors(student: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
     """L'errore della testa di posa sul pannello, finestra per finestra: predizione dello studente in eval sulla maschera del batch
     (`student.encode` + `pose_head(latent_mean(z))`, come nel passo), elementi validi = maschera dei target e patch esistenti (`pose_time_valid`,
     come `pose_terms`). Per finestra: MSE e MAE standardizzati, MSE del predittore costante (0 = la media del train standardizzata, cioe' la
-    testa all'inizio), varianza delle predizioni sugli elementi validi, utente e sessione. Aggregati: medie fra le finestre con almeno un
+    testa all'inizio), varianza temporale per giunto delle predizioni, utente e sessione. Aggregati: medie fra le finestre con almeno un
     elemento valido. Senza gradiente, studente in eval, stato casuale e modo ripristinati: il training prosegue bit per bit come senza."""
     from wearusfm.model.pose_head import latent_mean
     from wearusfm.training.jepa import pose_time_valid
@@ -1022,14 +1069,24 @@ def _pose_panel_errors(student: WearUsFM, batches: list, cfg: RunConfig, device,
                 err2 = ((pred - target).pow(2) * valid).sum(dim=(1, 2))
                 err1 = ((pred - target).abs() * valid).sum(dim=(1, 2))
                 const = (target.pow(2) * valid).sum(dim=(1, 2))
-                mean_pred = (pred * valid).sum(dim=(1, 2)) / n.clamp(min=1)
-                var_pred = ((pred - mean_pred[:, None, None]).pow(2) * valid).sum(dim=(1, 2)) / n.clamp(min=1)
+                joint_n = valid.sum(dim=1)
+                joint_mae = ((pred - target).abs() * valid).sum(dim=1) / joint_n.clamp(min=1)
+                joint_mean = (pred * valid).sum(dim=1) / joint_n.clamp(min=1)
+                mae_rad = (joint_mae * joint_n * pose[2]).sum(dim=1) / n.clamp(min=1) if pose is not None else n * 0.0
+                const_mae = (target.abs() * valid).sum(dim=(1, 2)) / n.clamp(min=1)
+                var_pred = _pose_temporal_variance(pred, valid)
                 for s, (r, w) in enumerate(zip(b.rows, b.windows)):
                     k = int(n[s])
                     per_window.append({"user": str(r["subject"]), "session": _session_key(r),
                                        "window": [None if w.trial is None else int(w.trial), int(w.start), int(w.stop)], "n_valid": k,
                                        "mse": float(err2[s]) / k if k else None, "mae": float(err1[s]) / k if k else None,
-                                       "mse_const": float(const[s]) / k if k else None, "pred_var": float(var_pred[s]) if k else None})
+                                       "mse_const": float(const[s]) / k if k else None, "mae_const": float(const_mae[s]) if k else None,
+                                       "mae_rad": float(mae_rad[s]) if k else None, "pred_var": float(var_pred[s]) if k else None,
+                                       "valid_fraction": k / valid[s].numel(), "n_valid_per_joint": joint_n[s].tolist(),
+                                       "n_valid_patches": int(valid[s].any(dim=-1).sum()),
+                                       "n_joints_temporal": int((joint_n[s] >= 2).sum()),
+                                       "mae_per_joint": [float(v) if c else None for v, c in zip(joint_mae[s], joint_n[s])],
+                                       "pred_mean_per_joint": [float(v) if c else None for v, c in zip(joint_mean[s], joint_n[s])]})
     finally:
         student.train(mode)
     ok = [w for w in per_window if w["n_valid"] > 0]
@@ -1038,7 +1095,9 @@ def _pose_panel_errors(student: WearUsFM, batches: list, cfg: RunConfig, device,
         return float(np.mean([w[key] for w in ok])) if ok else None
 
     return {"n_windows": len(per_window), "n_windows_valid": len(ok), "n_users": len({w["user"] for w in ok}),
-            "mse": mean("mse"), "mae": mean("mae"), "mse_const": mean("mse_const"), "pred_var": mean("pred_var"), "per_window": per_window}
+            "mse": mean("mse"), "mae": mean("mae"), "mae_rad": mean("mae_rad"), "mse_const": mean("mse_const"),
+            "mae_const": mean("mae_const"), "pred_var": mean("pred_var"),
+            "pred_var_definition": "temporal_per_joint_mean_ddof0_min_two", "per_window": per_window}
 
 
 def _ema_trainable(teacher: torch.nn.Module, student: torch.nn.Module, momentum: float) -> None:
@@ -1368,10 +1427,24 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if ctx.is_main and cfg.fixed_eval_every:
         fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
         _write_or_check(out_dir / "fixed_eval_set.json", ident, "insieme fisso della diagnostica di stabilita'")
-    panel = None  # pannello della posa (RunConfig.pose_panel_every), solo sul processo 0
+    panel, panel_sha = None, None  # contenuti solo sul processo 0; errori di inizializzazione condivisi prima del training
+    panel_prepare_s, panel_evaluations_s = 0.0, []
+    panel_error = None
     if ctx.is_main and cfg.pose_panel_every:
-        panel, ident = _pose_panel_set(index, cfg, scales, window_s)
-        _write_or_check(out_dir / "pose_panel_set.json", ident, "insieme fisso del pannello della posa")
+        try:
+            panel_start = time.perf_counter()
+            panel, ident = _pose_panel_set(index, cfg, scales, window_s)
+            _write_or_check(out_dir / "pose_panel_set.json", ident, "insieme fisso del pannello della posa")
+            panel_sha = hashlib.sha256(json.dumps(ident, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+            panel_prepare_s = time.perf_counter() - panel_start
+        except Exception as exc:
+            panel_error = f"pannello della posa: {type(exc).__name__}: {exc}"
+    if ctx.active and cfg.pose_panel_every:
+        box = [panel_error]
+        torch.distributed.broadcast_object_list(box, src=0)
+        panel_error = box[0]
+    if panel_error is not None:
+        raise ValueError(panel_error)
     session_pos = {}
     if cfg.log_batch_origin:
         keys = [_session_key(r) for r in index.rows]
@@ -1409,7 +1482,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         fixed_eval(0)
 
     def panel_eval(at_step: int) -> None:
-        panel_log.write(json.dumps({"step": at_step, **_pose_panel_errors(student, panel, cfg, device, amp)}) + "\n")
+        panel_start = time.perf_counter()
+        errors = _pose_panel_errors(student, panel, cfg, device, amp)
+        panel_evaluations_s.append(time.perf_counter() - panel_start)
+        panel_log.write(json.dumps({"step": at_step, "panel_sha256": panel_sha,
+                                    "elapsed_s": panel_evaluations_s[-1], **errors}, allow_nan=False) + "\n")
         panel_log.flush()
 
     if panel is not None and resume_state is None:  # la testa a zero: il predittore costante, riferimento della discesa
@@ -1656,6 +1733,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                         else None,
                                         **(json.loads(prov.read_text()) if prov.exists() else {})}
     if ctx.is_main:
+        if panel is not None:
+            summary["pose_panel_timing"] = {"prepare_s": panel_prepare_s, "evaluations_s": panel_evaluations_s,
+                                            "total_s": panel_prepare_s + sum(panel_evaluations_s)}
         (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
     say(f"fine: {reason}, passo {step}")
     return summary
