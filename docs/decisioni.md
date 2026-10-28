@@ -5161,3 +5161,12 @@ Il via riguarda il checkout e il singolo B del piano `piano_b_20261028.json`: co
 48+1/3 core-ore; nessun esperimento aggiuntivo o retry. Review scientifica/tecnica indipendente e 123 test gia' conclusi.
 Il dubbio sulla media dei canali e' risolto senza cambiare codice: il readout ufficiale la conserva; B usa la media sui latenti
 per patch. Le sonde alternative non furono adottate nel training. Conservare ricetta e criterio per rendere interpretabile B.
+
+
+## 2026-10-28 — Esecuzione del piano B autorizzato
+
+Con approvazione di Claude confermata da Simone, GPT ha pubblicato il riferimento congelato `24139ab` e sottomesso il checkout CPU
+62523525 (COMPLETED 0:0, 17 s, 0,00944 core-ore) e B **62523672**. Snapshot 08:38:49 Europe/Rome: B PENDING Priority,
+non ancora avviato. Parametri e tetti invariati: un nodo/quattro A100, 5.000 passi, massimo 6 GPU-ore e 48 core-ore per il training.
+Le idee sul multi-nodo restano una discussione, senza modifiche. E3 R0 e J2 bis non sono prerequisiti e non sono stati rilanciati.
+Provenienza e sottomissioni: `results/infra/pilot_posa/collaudo_b_20261028/`. Nessun esito o continuazione automatica di R3.

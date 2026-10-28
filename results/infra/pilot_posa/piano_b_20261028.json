@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "AUTORIZZATO_DA_SOTTOMETTERE",
+  "status": "SOTTOMESSO_PENDING",
   "prepared_by": "GPT",
   "date": "2026-10-28",
   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
@@ -263,5 +263,19 @@
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028",
     "5000"
   ],
-  "preflight": "results/infra/pilot_posa/collaudo_b_20261028/preflight.json"
+  "preflight": "results/infra/pilot_posa/collaudo_b_20261028/preflight.json",
+  "execution": {
+    "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "checkout_job_id": 62523525,
+    "checkout_state": "COMPLETED",
+    "checkout_exit_code": "0:0",
+    "checkout_core_hours": 0.009444444444444445,
+    "training_job_id": 62523672,
+    "training_state": "PENDING",
+    "training_reason": "Priority",
+    "state_checked_at": "2026-10-28T07:38:49.532967+00:00",
+    "runtime_code_sha_verified": false,
+    "evidence_dir": "results/infra/pilot_posa/collaudo_b_20261028",
+    "extra_jobs_submitted": []
+  }
 }

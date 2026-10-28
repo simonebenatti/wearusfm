@@ -1,0 +1,59 @@
+{
+  "recorded_at": "2026-10-28T07:37:55.483536+00:00",
+  "submission": {
+    "id": "PILOT-POSA-R3-B-20261028",
+    "creato": "2026-10-28T08:37:44+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b-20261028",
+    "gpu_ore_stimate": 6.0,
+    "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-R3-B-20261028",
+      "--comment=wearusfm:PILOT-POSA-R3-B-20261028",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,PRESET=sanity,TIME_LIMIT_S=5100,REQUIRE_NEW_RUN=1,BRANCH_FROM=,RESUME_TO=,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --erank-min 38.4 --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 49046 --steps-at-d 98094 --keep-checkpoints 19618 --lr 0.0001 --nested 1 --jepa-weight 0 --pose-root /leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose --pose-weight 1.0 --pose-unprompted on --pose-grad-every 500 --pose-panel-every 500 --pose-panel-users 32 --pose-panel-recordings 2 --pose-panel-windows 4",
+      "--qos=normal",
+      "--time=01:30:00",
+      "--cpus-per-task=32",
+      "--gres=gpu:4",
+      "--mem=480G",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/scripts/slurm/train_ddp.sbatch",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028",
+      "5000"
+    ],
+    "dopo": null,
+    "script_stdin": null,
+    "script_stdin_sha256": null,
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T08:37:44+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T08:37:44+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T08:37:49+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62523672,
+        "uscita": 0,
+        "stdout": "62523672\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+      }
+    ],
+    "job_slurm": 62523672,
+    "uscita": 0,
+    "stdout": "62523672\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  },
+  "checkout_job": 62523525,
+  "checkout_verified_completed": true,
+  "additional_jobs": [],
+  "automatic_retry": false,
+  "automatic_full_r3": false
+}

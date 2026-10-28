@@ -1,6 +1,7 @@
 # R3: collaudo lungo B — proposta del 28/10/2026
 
-**Stato aggiornato il 28/10/2026: AUTORIZZATO AL LANCIO da Simone.** Dopo la consegna completa con tetto di 6 GPU-ore,
+**Stato aggiornato il 28/10/2026: B SOTTOMESSO, job 62523672.** Checkout 62523525 COMPLETED;
+snapshot 08:38:49 Europe/Rome: training PENDING Priority, nessun risultato ancora. Lancio autorizzato da Simone. Dopo la consegna completa con tetto di 6 GPU-ore,
 Simone chiede: «puoi lanciare tu i test? cosi a claude faccio fare solo il controllo». GPT esegue il checkout e il singolo collaudo B;
 Simone conferma inoltre «claude ha approvato il tuo piano, quando vuoi puoi partire». Restano invariati codice `24139ab`, ricetta, criteri e preventivo presentati. Nessun altro job incluso.
 La proposta originale riportata sotto e' ora il criterio applicabile a B. Il dbg resta fallito secondo la regola allora firmata.

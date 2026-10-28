@@ -1,4 +1,8 @@
-# Prompt per Claude — review della preparazione di B, senza lancio
+# Prompt per Claude — controllo di B, lancio eseguito da GPT
+
+**Aggiornamento operativo:** il piano e' stato approvato da Claude secondo la conferma di Simone. Checkout **62523525 COMPLETED**;
+B **62523672 sottomesso**, ultimo snapshot PENDING Priority. Evidenze in `results/infra/pilot_posa/collaudo_b_20261028/`.
+Il testo di review sotto conserva i riferimenti tecnici: il controllo ora riguarda la corrispondenza fra piano ed esecuzione.
 
 GPT ha completato la preparazione di B su richiesta di Simone. Il 28/10 Simone ha poi affidato a GPT il lancio di B e a Claude il controllo.
 Consulta piano e registro per gli ID effettivi: non duplicare le sottomissioni. Leggi il ramo pubblicato

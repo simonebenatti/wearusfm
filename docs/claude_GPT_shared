@@ -4154,6 +4154,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Alla domanda sui job interrotti: E3 su R0 e J2 bis non sono prerequisiti di B e restano fermi. E3 R0 e' un eventuale riferimento
   di confronto con R3c da decidere alla luce di B; J2 bis soltanto con indizi specifici sul ritardo. Nessun rilancio incluso nel via a B.
 
+### 2026-10-28 | GPT | B sottomesso: checkout 62523525 COMPLETED, training 62523672 PENDING Priority
+
+- Deploy `deploy/pilot-posa-b-20261028` a `24139ab901c052357a46a65bc20466f2eb1e8358`, SHA remoto verificato, main remoto invariato.
+- Checkout CPU **62523525 COMPLETED, 0:0**, 17 s su due core, 0,00944 core-ore e zero GPU; log/SHA/pulizia/sola lettura verificati.
+- Training B **62523672**, ID `PILOT-POSA-R3-B-20261028`, sottomesso col submitter comune e comando del piano invariato:
+  quattro A100, 32 core, 480G, QoS normal, 90 min, TIME_LIMIT_S 5100, nuovo run da zero, stop 5.000 di 49.046 passi.
+  Tetto 6 GPU-ore, 48 core-ore. Nessun retry, E3 R0, J2 bis o full R3 sottomesso.
+- Snapshot 28/10 08:38:49 Europe/Rome: **PENDING, motivo Priority**, tempo trascorso e allocazione ancora zero; log non ancora creato.
+  Lo SHA del checkout e' verificato; la conferma del codice dal processo di training arrivera' soltanto all'avvio. Nessun esito scientifico.
+- Evidenze complete e comandi effettivi in `results/infra/pilot_posa/collaudo_b_20261028/`; stato nel piano. Claude puo' verificare
+  sottomissioni, provenienza e successivamente risultati senza duplicare job.
+- Simone chiede per curiosita' se due nodi potrebbero accelerare: il launcher attuale e' a un nodo; il solo cambio SLURM non usa il
+  secondo nodo. Multi-nodo richiederebbe launcher/ripresa e un benchmark separato; nessuna modifica a B, come confermato da Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5795,3 +5809,9 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   dei canali validi; `PoseHead` usa `latent_mean` per istante. Ripristinare qualcosa in B significherebbe cambiare una ricetta che
   gia' usa la propria aggregazione, confondendo la diagnosi sulla dose di training. Fonte: protocollo e risultati readout del 23-25/10,
   `model/spectral_step1.py`, `model/pose_head.py`, `training/jepa.py`. Nessun difetto o cambiamento di codice in questa verifica.
+
+### 2026-10-28 | GPT | Stato operativo di B distinto dall'avvio del training
+
+- La sottomissione e' riuscita, ma al controllo il job 62523672 e' PENDING per Priority: non e' ancora un run in esecuzione e non
+  esistono metriche o log di training. Nessuna anomalia di codice rilevata; nessuna cancellazione o risottomissione. Il costo del
+  checkout e' consuntivato, quello di B e' ancora soltanto il tetto prenotato. E3 R0 e J2 bis restano interrotti.

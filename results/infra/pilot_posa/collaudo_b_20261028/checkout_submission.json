@@ -1,0 +1,55 @@
+{
+  "recorded_at": "2026-10-28T07:35:24.695149+00:00",
+  "deploy": {
+    "sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "ref": "refs/heads/deploy/pilot-posa-b-20261028",
+    "push_exit": 0,
+    "ls_remote_verified": true,
+    "main_sha_unchanged": "8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7"
+  },
+  "checkout_submission": {
+    "id": "PILOT-POSA-B-20261028-checkout",
+    "creato": "2026-10-28T08:35:09+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b-20261028",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": null,
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-B-20261028-checkout",
+      "--comment=wearusfm:PILOT-POSA-B-20261028-checkout",
+      "--cpus-per-task=2",
+      "--mem=2G",
+      "--time=00:10:00",
+      "--export=ALL,CAMPAIGN=pilot-posa-b-20261028,CAMPAIGN_SHA=24139ab901c052357a46a65bc20466f2eb1e8358"
+    ],
+    "dopo": null,
+    "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+    "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T08:35:09+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T08:35:09+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T08:35:17+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62523525,
+        "uscita": 0,
+        "stdout": "62523525\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 62523525,
+    "uscita": 0,
+    "stdout": "62523525\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  },
+  "b_submitted": false
+}

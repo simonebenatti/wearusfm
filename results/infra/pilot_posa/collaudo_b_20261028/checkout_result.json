@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-10-28T07:36:25.286043+00:00",
+  "job_id": 62523525,
+  "logical_id": "PILOT-POSA-B-20261028-checkout",
+  "sacct_state": "COMPLETED",
+  "exit_code": "0:0",
+  "squeue": [],
+  "sacct_start_raw": "2026-10-28T08:35:29",
+  "sacct_end_raw": "2026-10-28T08:35:46",
+  "elapsed_seconds": 17,
+  "allocated_cpus": 2,
+  "gpu_hours": 0,
+  "core_hours": 0.009444444444444445,
+  "log_final_lines": [
+    "HEAD is now at 24139ab Prepare R3 B panel, integrity gates and distributed checks",
+    "checkout di campagna pronto: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028 @ 24139ab901c052357a46a65bc20466f2eb1e8358",
+    "files: 849; dimensione: 4.3M"
+  ],
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "creator_enforces": [
+    "exact commit",
+    "clean checkout",
+    "read-only files and directories",
+    "locked worktree"
+  ],
+  "b_submitted": false,
+  "ls_permissions": {
+    "checkout_directory": "dr-xr-xr-x",
+    "scripts/slurm/train_ddp.sbatch": "-r--r--r--",
+    "src/wearusfm/training/run.py": "-r--r--r--"
+  }
+}
