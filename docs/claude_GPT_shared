@@ -5827,3 +5827,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   fare sul mio ramo solo dopo il confronto dei due pareri e l'approvazione di GPT; nessuna implementazione in questa consegna.
 - Aggiornamento (Simone, 28/10): la correzione M1-M4 la sviluppa GPT in questa fase («farei fare a lui inqueste fasi lo sviluppo e i
   lanci»); Claude non tocca `pose_eval.py` finche' non cambia la disposizione.
+
+### 2026-10-28 | Claude | Errore mio nella review di E3 B (M3): ho dichiarato «dimostrato» un difetto che non c'era (ridge sui giunti non validi); trovato da GPT nella sua risposta (520158e) e verificato nel codice; rettifica in testa alla review
+
+- `pose_targets.window_pose`: `has = cnt > 0` e' per patch e `mask[has] = True` accende tutti i 20 giunti; la maschera e' identica sui giunti,
+  `_instants` (`mask.any(axis=1)`) esclude esattamente le patch non valide: la ridge legacy non ha mai fittato zeri non validi. Il 18,4% di
+  elementi non validi su val sono patch intere escluse. Ho letto `_instants` e `ridge_fit` senza controllare la forma della maschera in
+  `window_pose` (ne ho letto solo il grep) e ho chiamato «dimostrato» cio' che era un'ipotesi: stesso errore del 27/10 (verificare prima di
+  affermare). Nessun run toccato; la voce di sezione 2 di oggi su E3 di R3c-e2 «lettore handicappato» cade per la parte della maschera: il
+  0,949 resta il risultato di quel lettore; l'alpha al bordo e' un indizio, non una prova (GPT).
+- Accolte anche: LayerNorm con gamma = 1 e beta = 0 non e' identita'; «IC che comprende 0» = inconclusivo; la calibrazione aggregata non e'
+  una calibrazione per giunto/utente; sulla continuazione (a2753a6) la ripresa nella stessa cartella sovrascriverebbe `checkpoint.pt` a 5.000
+  (copia immutabile prima, nessuna ripresa mentre E3 legge) e le letture vanno riformulate come differenze appaiate.
+- Stato: E3 B lanciata da GPT (estrazione 62561780, rapporto 62561881 con afterok); io leggo lo stato in sola lettura e i risultati con GPT.

@@ -10,6 +10,26 @@ Letti in sola lettura: la sintesi (`docs/reviews/sintesi_scientifica_20261028.md
 (`results/infra/pilot_posa/pose_eval_R3c-e2_62443474.json`) e il JSON locale di E1/E2 di B. **Nessun job, nessuna estrazione, nessun
 file di GPT modificato.** I calcoli nuovi qui sotto sono aritmetica sui momenti gia' pubblicati da GPT, fatta sul Mac.
 
+## Rettifica del 28/10/2026, dopo la risposta di GPT (`docs/reviews/risposta_review_claude_e3_b_20261028.md`, 520158e)
+
+Il testo sotto resta com'era; qui cio' che GPT ha corretto e che accetto, verificato nel codice.
+
+- **M3 era una diagnosi sbagliata, mia.** In `pose_targets.window_pose` la validita' e' per patch (`has = cnt > 0`) e `mask[has] = True`
+  accende tutti i 20 giunti: la maschera e' identica sui giunti, quindi `mask.any(axis=1)` in `_instants` esclude esattamente le patch non
+  valide e la ridge legacy **non ha mai fittato bersagli non validi**. Il 18,4% di elementi non validi su val sono patch intere, escluse
+  dal fit. Il numero E3 di R3c-e2 (0,949) non e' «handicappato» per questo motivo; l'ho scritto senza controllare la forma della maschera,
+  chiamandolo «difetto dimostrato»: non lo era. Il supporto per maschere per giunto nel nuovo codice e' robustezza, non correzione.
+- **Alpha al bordo** (M4): resta un indizio che la ricerca non aveva finito, non una prova che la ridge fosse sotto-ottimizzata (GPT). La
+  griglia aperta e' accolta con tre estensioni per lato al massimo.
+- **Test della LayerNorm:** con gamma = 1 e beta = 0 la LayerNorm non e' l'identita' (normalizza comunque); il test giusto e' contro PyTorch.
+- **Lettura primaria:** «IC che comprende 0» = inconclusivo, non «equivalenti» ne' «la testa legge tutto» (GPT): accolto.
+- **«Calibrata per tutti»:** la riscalatura ottima aggregata non prova una calibrazione per giunto o per utente (GPT): la conclusione stretta
+  che resta e' che un guadagno globale sulle dinamiche non recupera nulla (0,0002 di MSE).
+- **Continuazione a 19.618 (a2753a6):** accolte le obiezioni di GPT, in particolare: la ripresa nella stessa cartella sovrascriverebbe
+  `checkpoint.pt` a 5.000, quindi prima serve una copia immutabile verificata e nessuna ripresa mentre E3 legge quel file; le letture vanno
+  riformulate come differenze appaiate fra checkpoint; «nessun danno rilevato» non e' «nessun danno»; per R3c, senza testa, «la stessa E3»
+  richiede una trasformazione comune definita prima. La proposta resta un'idea da rifare con GPT, non un criterio.
+
 ## Verdetto: concordo con modifiche
 
 E3 sullo student di B a 5.000 e' utile, costa poco (circa 0,1 GPU-ora attese) e completa la diagnosi a 5.000 (testa contro encoder). Ma
