@@ -4705,6 +4705,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Avviso P2: riga malformata scartata in UCI 1_raw_data_10-51_07.04.16.txt; da verificare la concordanza dei
   supporti/provenienze nel confronto B/R3c previsto. Training e rapporti finali non ancora iniziati.
 
+### 2026-10-28 | Claude | Brief a «semplicione» per la sorveglianza dei 14 job B19618 di GPT | Nessun job, nessun codice
+
+- Simone ha creato la sessione «semplicione» (agente di monitoraggio): «passagli le info che servono per controllare i job che sottomette
+  GPT e fagli capire come usare gli script python per monitorare i job e leggere i log quando hanno finito. Quando un job finisce
+  semplicione legge il log e ti manda un messaggio. poi io ti chiedo la valutazione».
+- Brief consegnato come file fuori dal repo (`~/wearusfm_local/semplicione/brief_b19618_20261028.md`) e come messaggio alla sessione:
+  i 14 job della campagna `pilot-posa-b19618-20261028` letti dal ledger (preflight 62575087, 16:04; train 62582916, 4 A100, tetto 4 h, 17:22;
+  R3c-pose / p1-ext / p2-ext 62583147-49; B-pose / p1-ext / p2-ext 62583151, 62583153, 62583154 in afterok del train; sonde pool
+  62583155, 62583157, 62583160, 62583163; pose-report 62583164; p1p2-compare 62583165), log in `$WORK/wearusfm_runs/logs/` con i pattern
+  dei launcher di GPT (SHA dei launcher nel clone identici a `script_stdin_sha256` del ledger), uso di `scripts/leonardo_watch.py`
+  (una sorveglianza per job, `--interval 300`, ciclo in background che richiama lo script finche' esce 3), lettura del `tail` del log e
+  messaggio a Claude in un formato fisso, controllo del ledger a ogni risveglio per job nuovi di GPT. Divieti: niente sbatch, scancel,
+  salloc, scontrol, srun o `submit_job.py`; niente scrittura su Leonardo; niente giudizio sui log.
+- Prima, su richiesta di Simone («leggi il log cosi ti aggiorni ma non fare nulla»), letti i commit di GPT fino a c709297 (E3 B conclusa e
+  letta; protocollo B19618 `docs/continuazione_b19618_20261028.md`; preflight e 13 job sottomessi da GPT alle 17:22-17:25) senza alcuna
+  azione. La lettura dei risultati di B19618 si fara' quando Simone la chiede.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6589,3 +6606,23 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Riferimento `6405067`: E3 non prova assenza di informazione nell'intero encoder o ottimalita' globale della testa;
   un eventuale probe lineare negativo sui latenti completi non la proverebbe a sua volta. Costo completo del
   probe non mediato e ruolo predominante della postura media in P1/P2 non verificati. Nessun nuovo esperimento.
+
+### 2026-10-28 | Claude | B19618: guardia di GPT caduta sulla sonda P2 di R3c (62583157 FAILED), confronto P1/P2 cancellato | Payload 8405a0b, log del job
+
+- Job `PILOT-POSA-B19618-R3c-p2-pool-20261028` (62583157): la sonda ha finito (`epn612: S 84.40`, `uci_emg: S 77.28`, `S = 80.84 ± 2.24
+  (pool); 1212 s`), poi `pose_b19618_eval_guard.py` e' caduto in `check_probe_report` (riga 258): `TypeError: ufunc 'isfinite' not
+  supported for the input types` su `np.isfinite(y)`. Exit 1:0 dopo 20 min 31 s. Log: `$WORK/wearusfm_runs/logs/pose_b19618_eval_62583157.out`
+  (copia sul Mac in `~/wearusfm_local/logs/`).
+- Causa: per `epn612` etichette e predizioni OOF sono stringhe (`epn612_y` e `epn612_pred` dtype `<U9`, es. `noGesture`; verificato sui file
+  `p2_*.oof.npz` del pilot in `~/wearusfm_local/pilot_obiettivi_20261024/`), e `np.isfinite` accetta solo tipi numerici. `uci_emg` e NinaPro
+  hanno etichette `int64`: la stessa guardia passa su P1 (62583155 COMPLETED). `tests/cpu/test_pose_b19618_eval_guard.py` costruisce il
+  rapporto di prova solo per `p1` (`probe_fixture(..., task='p1')`): il caso P2 con etichette stringa non era coperto.
+- Conseguenze: `PILOT-POSA-B19618-p1p2-compare-20261028` (62583165, afterok sui quattro pool) CANCELLED alle 19:24, mai partito;
+  `PILOT-POSA-B19618-B-p2-pool-20261028` (62583163, in coda) porta lo stesso payload e cadra' allo stesso modo dopo la sonda. Non toccati:
+  train 62582916 (PENDING dalle 17:22), catena della posa (62583147 fatto; 62583151, 62583164 in coda), catena P1 (62583155 fatto; 62583160 in
+  coda). Rapporto e OOF della sonda P2 di R3c sono stati scritti prima della caduta; la ricevuta della guardia no.
+- Proposta per GPT (correzione sua, sul suo ramo): `np.isfinite` solo sui dtype numerici (`kind in 'iuf'`) e per le stringhe controllo di
+  non vuoto; test con etichette stringa; poi decidere se validare con la guardia corretta il rapporto P2 di R3c gia' scritto (job CPU, nessuna
+  sonda da rifare) o rifare la sonda su un output nuovo (20 min, ~2,7 core-ore); sostituire 62583163 con un payload corretto (cancellazione e
+  risottomissione in afterok di 62583154) e risottomettere il confronto P1/P2 in afterok dei quattro pool. Nessuna azione di Claude sul cluster;
+  segnalazione da semplicione alle 19:24, lettura di Claude dal log.
