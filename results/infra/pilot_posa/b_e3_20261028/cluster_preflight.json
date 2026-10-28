@@ -1,0 +1,101 @@
+{
+  "checked_at_utc": "2026-10-28T12:36:22.271684+00:00",
+  "status": "READ_ONLY_PREFLIGHT_OK_WITH_PARALLEL_RESUME_CAVEAT",
+  "reviewed_commits": [
+    "986b008",
+    "a2753a6"
+  ],
+  "queue_sbenatti": [],
+  "ledger_new_e3_or_resume_found": false,
+  "b5000": {
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/checkpoint.pt",
+    "checkpoint_bytes": 454215776,
+    "checkpoint_mtime_remote": "Oct28 09:55",
+    "checkpoint_sha256": "815956b98d27cd2ff71f1255d0e220e2b0e08e467e7bedf93a54d0984b10783e",
+    "sha_source": "E1/E2 compute-node extraction and report provenance, not rehashed on login in this precheck",
+    "config_bytes": 3142,
+    "config_file_sha256": "f55fa6a5f117ad8898c20bbaf8b20f288c169a9a9a12e7bf3bfdad26fef1d157",
+    "current_config_read_matches_known_fields": true,
+    "summary_steps": 5000,
+    "summary_stopped": "max_steps",
+    "total_steps": 49046,
+    "warmup_steps": 1962,
+    "keep_checkpoints": [
+      19618
+    ],
+    "pose_weight": 1.0,
+    "jepa_weight": 0.0,
+    "anchor_weight": 0.2,
+    "seed": 0,
+    "prefetch": true,
+    "only_checkpoint_file": "checkpoint.pt"
+  },
+  "code": {
+    "directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028",
+    "sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sha_source": "prior locked checkout job and current B summary; launcher will verify again",
+    "launchers_present_readonly": [
+      "scripts/slurm/pose_eval_extract.sbatch",
+      "scripts/slurm/pose_eval_report.sbatch",
+      "scripts/slurm/train_ddp.sbatch"
+    ]
+  },
+  "val_cache": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz",
+    "bytes": 2484409931,
+    "sha256": "70bb551309b502565d38072abf41ffee322a06de14589d36b720570f1cfbfa46",
+    "sha_source": "prior report/dynamics provenance"
+  },
+  "legacy_r3c_train": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/train_subset.npz",
+    "bytes": 234817553,
+    "metadata_source": "/Users/simonebenatti/wearusfm_local/pilot_posa/e3_cache_check_20261027.txt",
+    "n_recordings_requested": 200,
+    "n_recordings_with_windows": 198,
+    "n_windows": 1907,
+    "n_users": 40,
+    "split": "train",
+    "n_windows_max": 10,
+    "window_seconds": 4.0,
+    "seed": 20261026,
+    "code_sha": "41f6ac15f9f9cf50bc9b06a9d57ded3725326f04",
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "train_val_user_overlap": 0,
+    "stem_comparison_status": "Full stem metadata not available locally; compare from NPZ metadata inside planned compute-node job, no analysis on login."
+  },
+  "r3c19618": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+    "bytes": 454073784,
+    "exists": true
+  },
+  "proposed_e3_caps": {
+    "extract": {
+      "gpus": 1,
+      "cpus": 8,
+      "minutes": 20,
+      "memory": "60G"
+    },
+    "report": {
+      "gpus": 0,
+      "cpus": 8,
+      "minutes": 30,
+      "memory": "30G"
+    },
+    "total_gpu_hours": 0.3333333333333333,
+    "total_core_hours": 6.666666666666666
+  },
+  "historical_timing": {
+    "R3c_train_extract_job": 62442491,
+    "R3c_train_extract_seconds": 252,
+    "R0_train_extract_job": 62478387,
+    "R0_train_extract_seconds": 184,
+    "B_val_extract_job": 62539724,
+    "B_val_extract_seconds": 1567,
+    "legacy_E3_report_job": 62443474,
+    "legacy_E3_report_seconds": 60
+  },
+  "feasibility": "20min train extraction conservative vs observed3-4min; new CPU masked ridge runtime not measured,30min cap plausible with blockwise sufficient statistics. Avoid holding multiple full-val float64 feature copies under30G.",
+  "parallel_resume_caveat": "Resume in original B directory overwrites checkpoint.pt and config/summary. Finish all E3 consumers first, or create and verify immutable B5000 copy on an authorized compute job before parallel resume; this precheck performs neither.",
+  "remote_mutations": [],
+  "submissions": []
+}

@@ -5304,3 +5304,26 @@ solo review, senza esperimenti. GPT prepara docs/prompt_claude_review_e3_b_20261
 inoltra. Il prompt chiede un giudizio indipendente sull'utilita' del prossimo passo e sulle condizioni per un confronto
 testa/ridge interpretabile, con correzioni indispensabili separate dagli approfondimenti facoltativi.
 Nessuna implementazione, estrazione, training o nuovo job in questo passaggio; confronto della review prima della fase esecutiva.
+
+### 2026-10-28 — Review conclusa: GPT implementa e lancia E3 B
+
+Nuove istruzioni dirette di Simone: «se approvi procedi autonomamente, e lancia i teste che devi», «adesso sarai tu ad
+implementare le modifiche e a lanciare le cose, e clasude fara solo da revisore», e conferma «lancia pure quando sei pronto
+ti avevo gia. autorizzato». Il precedente perimetro di sola review e' superato per E3 approvata da GPT.
+
+Accolto il confronto E3 B post-LayerNorm con M2 e selezione alpha sul train. Rettificate la diagnosi M3 (maschere uniformi,
+patch invalide gia' escluse), l'equivalenza dedotta da IC contenente zero e l'automatismo di continuazione. Scala ottima
+globale ricalcolata: recupero MSE dinamica 0,0001818; nessuna riscalatura operativa. Risposta dettagliata in
+docs/reviews/risposta_review_claude_e3_b_20261028.md, protocollo docs/e3_b_20261028.md.
+
+Tutti gli istanti validi; raw-SSE ridge alpha 10**[-2..4], estensioni fino a 3 decadi per lato, parita' alpha minore, eventuale
+bordo irrisolto dichiarato; due meta' disgiunte utenti train, obiettivo MSE mascherata. M2 per blocco di 128 finestre,
+max 0,005 / RMSE 0,0005, stop se fallisce. Primario delta appaiato ridge-testa rapporto MSE centrata/Vy, bootstrap 1.000,
+seme 20261009; lettura esplorativa senza cancello e senza equivalenza. 41 test CPU passati, review scientifica e tecnica
+preventive favorevoli. Codice separato sul ramo GPT.
+
+Piano: un job train 1 A100 / 8 CPU / 60 GB / 20 min e un rapporto 8 CPU / 30 GB / 30 min afterok,
+tetto 0,333333 GPU-ore / 6,666667 core-ore; attesi circa 0,1 GPU-ora / 2 core-ore, stima CPU non cronometrata.
+Submitter comune, payload/source hash, ambiente frozen 24139ab, checkpoint/cache immutati, output nuovi, no retry.
+Commit/push prima del lancio; ID successivamente. Nessun resume a 19.618 in questa tranche: non approvata la tabella di
+decisione proposta da Claude, motivi nella risposta. Non serve nuovo consenso per E3.

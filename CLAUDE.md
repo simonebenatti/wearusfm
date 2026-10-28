@@ -6,6 +6,11 @@
 
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
+**Aggiornamento dei ruoli, successivo alla review E3 B:** Simone: «adesso sarai tu ad implementare le modifiche e a
+lanciare le cose, e clasude fara solo da revisore». GPT assume anche implementazione e sottomissioni del lavoro affidato;
+Claude resta revisore. Questa istruzione supera la precedente proprieta' esclusiva del codice tecnico assegnata a Claude.
+Restano worktree separati, un writer per checkout, review pertinenti, criteri congelati e registro condiviso.
+
 Queste istruzioni successive prevalgono sui precedenti passaggi che chiedevano un nuovo consenso prima di ogni lancio:
 
 - «se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»: per attivita' pertinenti al lavoro affidato,

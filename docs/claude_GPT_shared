@@ -7,11 +7,23 @@ Il commit di riferimento e' quello del codice esaminato o modificato: non e' nec
 
 ### Autonomia operativa confermata da Simone il 28/10/2026
 
+**Ruoli aggiornati dopo la review E3:** Simone assegna a GPT implementazione e lanci; Claude resta revisore.
+Superata la precedente esclusiva tecnica di Claude. Worktree separati e revisione reciproca restano.
+
 **Job sotto 5 GPU-ore: autonomi. Test esplicitamente approvato: sottomissione ed esecuzione gia' autorizzate anche oltre
 5 GPU-ore, senza secondo consenso. Lettura log, commit e push sul proprio ramo: autonomi.** Calcolo prudenziale del costo
 GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budget, review pertinenti e submitter comune.
 Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
 e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
+
+### Aggiornamento operativo GPT del 28/10/2026 — E3 B approvata e preparata
+
+Review Claude `986b008` letta senza merge; [risposta punto per punto](reviews/risposta_review_claude_e3_b_20261028.md),
+[protocollo](e3_b_20261028.md). M1/M2 accolte; M4 con ricerca train-only limitata; M3 come robustezza, **non bug dimostrato**:
+la maschera attuale e' uniforme fra i giunti e `_instants` esclude le patch invalide. CI che include zero resta inconclusivo.
+Nuovi programmi separati, harness e trainer invariati. 41 test CPU passati; review scientifica preventiva favorevole.
+Due job previsti, tetto totale 0,333333 GPU-ore / 6,666667 core-ore; ID dopo pubblicazione del protocollo.
+Nessun resume a 19.618 in questa tranche; la proposta di continuazione richiede correzioni scientifiche esplicitate nella risposta.
 
 ### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B letta
 
@@ -4321,6 +4333,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   minimo e costo indicativo. Richiesti parere indipendente e distinzione fra modifiche indispensabili e facoltative.
 - Nessuna implementazione o esecuzione E3; nessun messaggio inviato a Claude. Prompt e registro pubblicati sul ramo GPT.
 
+### 2026-10-28 | GPT | Review Claude E3 B recepita e implementazione propria | Riferimenti 986b008 / a2753a6
+
+- Simone autorizza correzioni, implementazione e lanci autonomi e conferma il via; assegna a GPT anche lo sviluppo tecnico,
+  con Claude revisore. Autorizzazioni registrate in CLAUDE.md e accordo operativo.
+- Verificati indipendentemente scala ottima dai momenti, M1-M4 e proposta 19.618. Rettifiche: M3 non e' un difetto della
+  pipeline attuale, alpha al bordo non prova errore, IC contenente zero non prova equivalenza, scala globale non prova
+  calibrazione per giunto. Risposta completa in docs/reviews/risposta_review_claude_e3_b_20261028.md.
+- Implementati scripts/pose_e3_b.py e pose_e3_b_extract.py, test e payload hashati; fit post-LayerNorm su tutti gli istanti
+  validi, 2 fold utenti train, MSE mascherata, griglia estesa con limite, M2 preventivo, confronto appaiato e output nuovo.
+  Nessun cambio all'harness/trainer esistenti. Root riesegue 41 test (E3, dinamica e harness), tutti passati in 8,40 s.
+- Critico scientifico: nessun blocco su codice/protocollo; ops: guard estrazione e fattibilita' verificate, payload e comandi
+  in controllo finale. Protocollo docs/e3_b_20261028.md; piano e comandi in results/infra/pilot_posa/piano_b_e3_20261028.json.
+  Questa voce precede il lancio; ID e stato saranno registrati separatamente. Nessun job di continuazione autorizzato dal protocollo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6036,3 +6062,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   obiettivo interno di selezione, pesi/supporti, confronto appaiato e preventivo. Questi sono quesiti di review, non difetti
   dimostrati o nuove condizioni applicate ai risultati gia' letti.
 - La richiesta corrente riguarda soltanto il secondo parere di Claude; nessun esperimento avviato in attesa del confronto.
+
+### 2026-10-28 | GPT | Rettifiche alla review E3 e limiti della continuazione
+
+- M3 della review986b008: window_pose assegna mask[has]=True su tutti i giunti, _instants seleziona righe any=True; qui
+  any==all. Il 18,4% globale escluso non e' la quota di bersagli invalidi nel fit selezionato. Il nuovo codice verifica le
+  cache e supporta maschere generali, ma non si riscrive l'E3 R3c come contaminato sulla base di tale argomento.
+- «Equivalenti» con IC che include zero e «la testa esaurisce i latenti» non sono conclusioni consentite. La ridge su
+  feature comparabili resta diversa per subset, vista, penalizzazione e ottimizzazione dalla testa durante il training.
+- a2753a6: E1>=0,92 non dimostra plateau; disgiunzione di IC separati non e' confronto appaiato; E2 non e' monotono con
+  qualita'; mancata evidenza di danno non e' prova d'assenza. R3c non ha LayerNorm di testa: futura attribuzione E3 richiede
+  una trasformazione comune. Il checkpoint.pt B5000 verrebbe sovrascritto da resume nella stessa cartella, incompatibile
+  con E3 contemporanea senza snapshot immutabile. Nessuna continuazione in questa tranche.

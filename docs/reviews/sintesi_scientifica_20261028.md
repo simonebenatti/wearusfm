@@ -3,6 +3,11 @@
 **La ricetta di R3 apprende la posa e una componente dinamica anche su utenti esclusi dal training. Il beneficio e' ancora
 modesto, le predizioni temporali sono attenuate e l'utilita' come foundation model rimane da dimostrare.**
 
+**Seguito del 28/10:** review Claude `986b008` letta e corretta; E3 B approvata da GPT con protocollo
+[congelato](../e3_b_20261028.md). [Risposta punto per punto](risposta_review_claude_e3_b_20261028.md).
+GPT implementa e lancia, Claude resta revisore per istruzione successiva di Simone. Le proposte sotto conservano il contesto
+della sintesi iniziale; stato esecutivo aggiornato nel registro e nel piano E3.
+
 ## Che cosa abbiamo verificato
 
 | Passaggio | Risultato sostenuto | Limite |
@@ -18,6 +23,12 @@ modesto, le predizioni temporali sono attenuate e l'utilita' come foundation mod
 Sulle dinamiche la varianza predetta e' il 6,324% della varianza del target sullo stesso supporto, e la correlazione pooled
 centrata e' 0,270. I guadagni MSE sono +0,044640 sul livello medio e +0,038692 sulle variazioni: non soltanto postura,
 ma non ancora una ricostruzione forte del movimento. Non si deduce che basti amplificare le uscite.
+
+Il ricalcolo proposto da Claude conferma quantitativamente quest'ultimo punto: sulle dinamiche la riscalatura globale
+ideale a posteriori sarebbe 1,0734 e ridurrebbe il rapporto centrato solo da 0,927475 a 0,927134 (MSE assoluta 0,0001818).
+Non prova calibrazione per giunto/utente e non viene applicata. La diagnosi Claude di zeri invalidi entrati nella ridge
+precedente non e' confermata: la maschera attuale e' uguale sui 20 giunti e `_instants` esclude le patch interamente invalide.
+E3 R3c mantiene il suo valore descrittivo; non la svalutiamo per quel presunto difetto.
 
 L'audit originario non dimostrava «allineamento 10/10»: il confronto RMS aveva gap positivo in 7/10 utenti.
 Analogamente, E3 R3c aveva circa il 5,07% di vantaggio sul costante: sotto il suo criterio operativo, non assenza di

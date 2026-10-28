@@ -197,3 +197,10 @@ un'altra volta [...] in questo caso anche se supera le 5h gpu».
 
 Invariati metodo fissato prima dei risultati, review pertinenti, un writer per checkout, campagne congelate,
 submitter/ledger comuni e registrazione delle attivita'. Le istruzioni valgono anche nei turni successivi.
+
+### Aggiornamento dei ruoli dopo la review E3 B, 28/10/2026
+
+Simone: «adesso sarai tu ad implementare le modifiche e a lanciare le cose, e clasude fara solo da revisore».
+GPT assume implementazione e lanci oltre alla responsabilita' scientifica; Claude resta revisore. Questo supera le
+precedenti assegnazioni esclusive dei file tecnici. Restano worktree separati, un writer per checkout, protocollo prima
+dei risultati, review pertinenti, submitter comune e commit/push della consegna con verifica del riferimento remoto.

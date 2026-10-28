@@ -1,0 +1,34 @@
+{
+  "reviewed_at_utc": "2026-10-28T12:41:13.191866+00:00",
+  "status": "NO_BLOCKING_FINDING_SOURCE_ONLY",
+  "source": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/pose_e3_b_extract.py",
+  "source_sha256": "21ada4640c4504f78672eb2adcbfa0bb7aa64116f28ae91453296d04c5850bd7",
+  "checks": {
+    "syntax_ast": true,
+    "old_cache_n_recordings": 200,
+    "old_cache_recordings_with_windows": 198,
+    "old_cache_n_windows": 1907,
+    "old_cache_users": 40,
+    "old_cache_split": "train",
+    "old_cache_seed": 20261026,
+    "n_train_users_prior_provenance": 158,
+    "checkpoint_config_is_json_normalized": true,
+    "frozen_extract_metadata_unchanged_between_old_and_new_code": true,
+    "all_subprocess_args_list": true,
+    "new_output_exclusive_provenance": true,
+    "no_encoder_or_training_changes": true
+  },
+  "evidence": [
+    "/Users/simonebenatti/wearusfm_local/pilot_posa/e3_cache_check_20261027.txt",
+    "/private/tmp/wearusfm-b-e1e2-20261028/final/extract_provenance.json",
+    "src/wearusfm/training/run.py:config_to_dict",
+    "git diff 41f6ac15f9f9cf50bc9b06a9d57ded3725326f04 24139ab901c052357a46a65bc20466f2eb1e8358 -- src/wearusfm/harness/pose_eval.py scripts/pose_eval.py src/wearusfm/data/pretraining_loader.py"
+  ],
+  "pending": [
+    "wrapper must run code_dir_setup before temporary source",
+    "final committed source/wrapper hashes",
+    "exact resources and afterok plan review"
+  ],
+  "remote_mutations": [],
+  "submissions": []
+}
