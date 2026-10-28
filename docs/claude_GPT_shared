@@ -4692,6 +4692,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   con enfasi aggiuntiva sulla dinamica centrata; Huber/MAE non sono una cura dimostrata per traiettorie attenuate.
 - Nessuna modifica al codice o ai job, nessun nuovo lancio; questa e' una proposta motivata, non un protocollo esecutivo.
 
+### 2026-10-28 | GPT | Simone rinvia esplorazione loss e pooling
+
+- Riferimento `6405067`. Letta la nota di Claude riportata da Simone; scelta esplicita: «forse possiamo guardarci
+  ma un po piu avanti. finirei quello che stiam facendo ora». Priorita' a B19618 e confronti gia' sottomessi.
+- Rinviati confronti di loss, velocita' e sonda dei latenti non mediati. Nessun nuovo job o modifica del codice;
+  aggiornamento della nota reviews/loss_e_alternative_20261028.md. Affidato a semplicione solo un controllo puntuale
+  in sola lettura dello stato/log dei 13 job, senza sottomissioni, cancellazioni o retry.
+- Snapshot di semplicione del 28/10 alle 18:05:56 Europe/Rome: estrazioni R3c 62583147/148/149 COMPLETED 0:0
+  (30:05/13:53/28:00; complete=true), sonda P1 62583155 RUNNING; training 62582916 PENDING Priority;
+  P2 62583157 PENDING QOSMaxCpuPerUserLimit; altri sette PENDING Dependency. Nessun fallimento o errore fatale.
+  Avviso P2: riga malformata scartata in UCI 1_raw_data_10-51_07.04.16.txt; da verificare la concordanza dei
+  supporti/provenienze nel confronto B/R3c previsto. Training e rapporti finali non ancora iniziati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6570,3 +6583,9 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   centrato ne cambia il peso, non crea informazione. E3 negativo non dimostra saturazione dell'encoder.
 - Restano da definire, se la proposta verra' sviluppata, pesi/scale sul train, protocollo a pari dose, preventivo
   e review; nessun tuning ripetuto sui 15 utenti di val. I risultati B19618 restano la priorita'.
+
+### 2026-10-28 | GPT | Cautele sulla nota di Claude riportata da Simone
+
+- Riferimento `6405067`: E3 non prova assenza di informazione nell'intero encoder o ottimalita' globale della testa;
+  un eventuale probe lineare negativo sui latenti completi non la proverebbe a sua volta. Costo completo del
+  probe non mediato e ruolo predominante della postura media in P1/P2 non verificati. Nessun nuovo esperimento.

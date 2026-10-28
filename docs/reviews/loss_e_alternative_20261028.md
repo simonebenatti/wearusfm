@@ -3,6 +3,11 @@
 Risposta alla domanda di Simone dopo l'integrazione `78268d6`. Analisi e proposta, nessuna modifica al training
 o sottomissione. B19618 mantiene il protocollo congelato; le future sottomissioni spettano a semplicione.
 
+**Decisione successiva di Simone, dopo la nota di Claude:** «forse possiamo guardarci ma un po piu avanti.
+finirei quello che stiam facendo ora». Rinviati sia i confronti fra loss sia il controllo dei latenti non mediati.
+La priorita' resta completare e leggere B19618 con le valutazioni gia' sottomesse. Nessuna nuova estrazione,
+sonda o variante di training da questa discussione. Le alternative sotto rimangono ipotesi, non lavori avviati.
+
 ## Obiettivo effettivo
 
 Il config del checkpoint B e il preflight B19618 confermano:
@@ -69,3 +74,14 @@ I vecchi R1/R2/R5 cambiavano target/aggregazione JEPA o frontend; non esauriscon
 
 Consultati i testi primari il 28/10/2026. Review indipendente del subagent concorde su formula, riduzioni, priorita'
 e limiti; nessun test di codice necessario per questa nota. Nessuna alternativa dichiarata superiore senza prova.
+
+## Nota sulla discussione con Claude, rinviata nel merito sperimentale
+
+Convergenza sull'ordine: finire la tranche corrente e poi scegliere eventuali prove. E3 non dimostra un limite
+informativo dell'intero encoder: legge una trasformazione della media dei K latenti, con una classe lineare,
+un subset train e alpha selezionato dalla validazione interna, non un ottimo globale garantito. Anche un'eventuale
+ridge negativa sui latenti non mediati non dimostrerebbe assenza di informazione non lineare o temporale.
+La classificazione su finestre P1/P2 puo' dipendere anche da dinamica e coattivazione: la predominanza causale
+della postura media non e' stabilita dai nostri risultati. Il costo del probe non mediato, compresa la parte
+CPU/memoria e la regolarizzazione nell'alta dimensionalita', andra' preventivato prima di riprenderlo; 0,1 GPU-ora
+non e' un preventivo verificato. Nessuno di questi punti cambia il protocollo o il lancio B19618 gia' avvenuto.

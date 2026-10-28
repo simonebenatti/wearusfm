@@ -5435,3 +5435,11 @@ review, pubblicazione e verifica; semplicione esegue il piano pubblicato con sub
 L'istruzione supera l'assegnazione precedente dei lanci a leonardo-ops. Nessun nuovo esperimento, duplicato, cancellazione
 od obbligo di ripetere l'approvazione dei piani gia' autorizzati. B19618 e 12 valutazioni erano gia' stati sottomessi.
 Affidato a semplicione un controllo puntuale in sola lettura di stato/log per il riepilogo dopo il merge.
+
+### 2026-10-28 — Completare B19618 prima di esplorare loss o latenti non mediati
+
+Dopo la discussione sulle loss con GPT e Claude, Simone: «forse possiamo guardarci ma un po piu avanti.
+finirei quello che stiam facendo ora». Rinviate le proposte di loss scomposta/velocita' e la sonda dei latenti
+non mediati. Proseguono solo B19618 e le valutazioni gia' sottomesse, con protocollo e budget invariati.
+Semplicione controlla stato e log; nessun nuovo lancio o retry. La nota scientifica sulle loss conserva ipotesi
+e limiti senza trasformarli in una diagnosi di assenza d'informazione nell'encoder.
