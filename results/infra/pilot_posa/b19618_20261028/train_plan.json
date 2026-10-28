@@ -30,5 +30,17 @@
     "scripts/slurm/pose_b19618_continue.sbatch",
     "--",
     "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=881909f4c5d0d2426bca44756a93f77555e865eb5f0ee46af531b5595cbc4ff7,B19618_SOURCE_RUN=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028,B19618_RUN_DIR=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028"
-  ]
+  ],
+  "campaign_budget": {
+    "cap_gpu_hours": 132,
+    "cap_cpu_only_core_hours": 531,
+    "spent_gpu_hours": 52.92916666666667,
+    "spent_cpu_only_core_hours": 71.88722222222222,
+    "remaining_gpu_hours_before": 79.07083333333333,
+    "remaining_cpu_only_core_hours_before": 459.11277777777775,
+    "remaining_gpu_hours_after_full_new_chain_cap": 56.07083333333333,
+    "remaining_cpu_only_core_hours_after_remaining_chain_cap": 319.11277777777775,
+    "note": "Preflight already in spent; remaining chain 23 GPUh/140 CPU-only coreh. GPU-job CPU tracked separately. All 37 prior jobs including failed/cancelled charged; no supplemental amendment allowance used.",
+    "evidence": "budget_summary.json"
+  }
 }

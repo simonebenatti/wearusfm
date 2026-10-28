@@ -5380,3 +5380,9 @@ con il piano train_plan.json e saldo aggiornato:4A100,32CPU,480G,4h,16GPU-ore e1
 Il protocollo complessivo prevede23GPU-ore e324,333333core-ore allocate, di cui140,333333 su job soloCPU.
 Review scientifica e launcher favorevoli,21test CPU passati. Nuova directory, copia integrale di checkpoint/RNG/optimizer,
 ricetta invariata salvo max_steps. Nessun retry, endpoint49046 o modifica di pooling. Pubblicazione prima del lancio.
+
+Saldo riconciliato su37job terminali di ledger+sacct prima del resume:52,929167GPU-ore e71,887222core-ore soloCPU.
+Residuo conservativo sui tetti base132/531:79,070833GPU-ore e459,112778core-ore soloCPU. Include errori, cancellati,
+E3B e preflight; nessun uso del margine extra dell'emendamento. Prenotando l'intera nuova catena restante23GPU-ore/
+140core-ore soloCPU restano56,070833GPU-ore/319,112778core-ore soloCPU. Le184core-ore massime dei jobGPU si
+registrano separatamente, evitando doppio addebito alla colonna soloCPU. Evidenza budget_summary.json nel risultato.
