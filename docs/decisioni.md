@@ -5464,3 +5464,15 @@ Evidenze riuscite raccolte alle22:34; training partito22:18:26, passo6150. Confr
 Start=None/elapsed0, con kill_invalid_depend e prerequisito fallito19:20:52. Quattro warning lbfgs/max_iter restano
 nel log e nella lettura: la correzione non cambia iperparametri ne' dichiara convergenza dei fit. Il solo S80,84
 non autorizza conclusioni sul vantaggio di B. Hash OOF atteso dal rapporto, misura diretta obbligatoria pre-lancio.
+
+
+### Seguito esecutivo — recupero P2 del 28/10, piano f45a73b
+
+Semplicione ha cancellato il solo B-P2 pendente62583163 alle22:49:28, attestato mai partito da sacct (elapsed0,
+Start=None, nessuna allocazione/log), e sottomesso con nuovi ID: validatore62618174, B-P2 corretto62618177,
+confronto62618179. Ricevute/argv/hash verificati e salvati sotto recovery/submission. Il controllo scontrol
+subito dopo scancel ha richiesto riconciliazione con sacct, effettuata senza ripetere scancel o alcun job.
+
+**Validatore COMPLETED0:0,11s x2CPU=0,006111core-ore,0GPU-ore**, rapporto/OOF invariati, provenance completa.
+B-P2 e confronto PENDING Dependency nello snapshot22:52; training RUNNING, passo7450 nel log22:50:57.
+Nessun nuovo costoGPU e nessun cambiamento scientifico. Restano da leggere gli esiti B e il confronto finale.

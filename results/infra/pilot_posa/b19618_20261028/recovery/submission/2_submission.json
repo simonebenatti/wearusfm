@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-10-28T22:50:39.908554+01:00",
+  "logical_id": "PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "scripts/submit_job.py",
+    "--id",
+    "PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "pilot-posa-b19618-20261028",
+    "--gpu-ore",
+    "0",
+    "--dopo",
+    "PILOT-POSA-B19618-R3c-p2-validate-r1-20261028",
+    "--dopo",
+    "PILOT-POSA-B19618-B-p1-pool-20261028",
+    "--dopo",
+    "PILOT-POSA-B19618-B-p2-pool-r1-20261028",
+    "--script-stdin",
+    "scripts/slurm/pose_b19618_eval.sbatch",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=219f88cccd10f32fc869e8aadef676ebd55108ea600af124035b1fdff9420591,B19618_ARGS_B64=WyItLW1vZGUiLCJjb21wYXJlIiwiLS1vdXQiLCIvbGVvbmFyZG9fd29yay9Jc2NyQl9XZWFyVXNGTS93ZWFydXNmbV9ydW5zL3Jlc3VsdHMvcGlsb3RfcG9zYS9CMTk2MThfMjAyNjEwMjgiXQ==",
+    "--cpus-per-task=8",
+    "--mem=30G",
+    "--time=00:30:00"
+  ],
+  "returncode": 0,
+  "stdout": "PILOT-POSA-B19618-p1p2-compare-r1-20261028: sottomesso, job 62618179\n",
+  "stderr": "",
+  "ledger_state": {
+    "id": "PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+    "creato": "2026-10-28T22:50:39+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b19618-20261028",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+      "--comment=wearusfm:PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+      "--dependency=afterok:62618174:62583160:62618177",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=219f88cccd10f32fc869e8aadef676ebd55108ea600af124035b1fdff9420591,B19618_ARGS_B64=WyItLW1vZGUiLCJjb21wYXJlIiwiLS1vdXQiLCIvbGVvbmFyZG9fd29yay9Jc2NyQl9XZWFyVXNGTS93ZWFydXNmbV9ydW5zL3Jlc3VsdHMvcGlsb3RfcG9zYS9CMTk2MThfMjAyNjEwMjgiXQ==",
+      "--cpus-per-task=8",
+      "--mem=30G",
+      "--time=00:30:00"
+    ],
+    "dopo": [
+      "PILOT-POSA-B19618-R3c-p2-validate-r1-20261028",
+      "PILOT-POSA-B19618-B-p1-pool-20261028",
+      "PILOT-POSA-B19618-B-p2-pool-r1-20261028"
+    ],
+    "script_stdin": "scripts/slurm/pose_b19618_eval.sbatch",
+    "script_stdin_sha256": "219f88cccd10f32fc869e8aadef676ebd55108ea600af124035b1fdff9420591",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T22:50:39+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T22:50:39+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T22:50:39+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62618179,
+        "uscita": 0,
+        "stdout": "62618179\n",
+        "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 62618179,
+    "uscita": 0,
+    "stdout": "62618179\n",
+    "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+}

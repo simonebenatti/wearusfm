@@ -4742,6 +4742,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   solo claude/gpt/simone. Piano rettificato a gpt come categoria/responsabile; operatore resta semplicione.
   Payload, risorse e ricetta invariati; nessuna modifica al submitter. Nuovo SHA del piano da consegnare.
 
+### 2026-10-28 | GPT | Recupero P2 sottomesso da semplicione e convalida riuscita | Piano f45a73b
+
+- Tre ricevute non ambigue: convalida R3c-P2 **62618174**, B-P2 corretto **62618177**, confronto **62618179**.
+  Verificati argv esatti del piano, SHA e provenance. Ricevute in results/infra/pilot_posa/b19618_20261028/recovery/submission.
+- Convalida COMPLETED0:0 alle22:51:17, durata11s,2CPU =0,006111core-ore e0GPU-ore; rapporto/OOF originali invariati,
+  nessun rifit. Nuova provenance identifica62618174 e originale62583157. Vecchio B-P2 cancellato22:49:28 prima
+  dell'avvio, sacct Start=None/elapsed0/nessunaallocazione. Nessuna seconda scancel o retry della sonda.
+- Snapshot22:52: B-P2 e confronto PENDING Dependency, collegati alle sonde/estrazione B corrette. Training62582916
+  RUNNING; log22:50:57 al passo7450. Tutta la catena predisposta, risultati finali B ancora attesi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6661,3 +6671,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 
 - Il primo recovery_plan173a305 usava --agente semplicione, non ammesso dalle choices del parser.
   Corretto a gpt, separando operatore nel piano e categoria nel ledger. Intercettato prima di azioni sul cluster.
+
+### 2026-10-28 | GPT | Distinzione fra recupero concluso e valutazioni in attesa | Piano f45a73b
+
+- Il validatore ha terminato; B-P2 e confronto sono sottomessi e attendono dipendenze, non ancora in esecuzione.
+  Dopo scancel scontrol ha mostrato temporaneamente StartTime=ora cancellazione: procedura operatore arrestata,
+  sacct ha confermato Start=None/elapsed0/AllocTRES vuoto/log assente, poi ripresa senza seconda cancellazione.
+  Evidenze conservate. Non e' un nuovo fallimento di job o un retry. Monitor generale resta nella scelta di Simone.
