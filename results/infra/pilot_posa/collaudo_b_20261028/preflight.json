@@ -1,0 +1,56 @@
+{
+  "checked_at": "2026-10-28T07:32:14.442252+00:00",
+  "status": "READ_ONLY_PREFLIGHT_OK",
+  "queue_sbenatti": [],
+  "sacct_names": {
+    "PILOT-POSA-B-20261028-checkout": [],
+    "PILOT-POSA-R3-B-20261028": []
+  },
+  "ledger_ids": {
+    "PILOT-POSA-B-20261028-checkout": [],
+    "PILOT-POSA-R3-B-20261028": []
+  },
+  "remote_repo": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm",
+    "HEAD": "refs/heads/main",
+    "main_sha": "8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7",
+    "deploy_ref": "refs/heads/deploy/pilot-posa-b-20261028",
+    "deploy_ref_exists": false,
+    "receive.denyCurrentBranch": "updateInstead",
+    "core.hooksPath_in_repository_config": null,
+    "hooks": "only *.sample",
+    "standard_global_configs": "~/.gitconfig ~/.config/git/config /etc/gitconfig absent"
+  },
+  "paths_absent": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028"
+  ],
+  "inputs_present": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json"
+  ],
+  "local_sha256_of_remote_bytes": {
+    "manifest_v1_1_nested_1.json.gz": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "pose_stats.json": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "hashes_match_plan": true,
+  "read_methods": [
+    "ssh leonardo squeue",
+    "ssh leonardo ls",
+    "ssh leonardo tail",
+    "ssh leonardo sacct",
+    "git ls-remote leonardo"
+  ],
+  "budget": {
+    "requested_caps_gpu_hours": 6,
+    "requested_caps_core_hours": 48.333333333333336,
+    "documented_remaining_second_wave_gpu_hours_approx": 85,
+    "documented_remaining_second_wave_cpu_core_hours_approx": 460,
+    "note": "Approximate remainder from decisioni.md 5051/5114; final cancelled diagnostic deviation additionally charged 0.16 GPU-hour and 1.76 core-hours. No new B reservations exist. Not a current CINECA account balance."
+  },
+  "network_note": "Initial redirected reads failed with Connection closed; permitted retries succeeded. No credentials or configuration altered.",
+  "mutations_or_submissions": []
+}

@@ -95,11 +95,13 @@
     "scope": "GPT esegue checkout e singolo collaudo B gia' presentati; Claude svolge il controllo. Ricetta e tetti invariati.",
     "gpu_hours_cap": 6,
     "core_hours_cap": 48.333333333333336,
-    "no_other_jobs": true
+    "no_other_jobs": true,
+    "confirmation": "claude ha approvato il tuo piano, quando vuoi puoi partire",
+    "claude_review": "Approvazione riferita direttamente da Simone il 28/10/2026."
   },
   "pre_launch_checks": [
     "Via di Simone del 28/10/2026 registrato in approval: checkout e B, nei tetti presentati.",
-    "Review scientifica/tecnica indipendente e 123 test completati; Simone affida il lancio a GPT e il controllo a Claude, con questa istruzione successiva alla proposta.",
+    "Approvazione del piano da Claude confermata da Simone il 28/10/2026; review indipendenti e 123 test gia' completati.",
     "Verifica read-only dello SHA/deploy hook remoto prima del push, coda e ledger; nessun riuso di checkout attivi.",
     "Confermare hash manifest e pose_stats, ingressi e assenza directory run prima della sottomissione.",
     "Verificare checkout completato e SHA pulito prima del solo job B; nessuna catena automatica."
@@ -260,5 +262,6 @@
     "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
     "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028",
     "5000"
-  ]
+  ],
+  "preflight": "results/infra/pilot_posa/collaudo_b_20261028/preflight.json"
 }

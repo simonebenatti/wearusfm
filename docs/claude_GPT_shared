@@ -4145,6 +4145,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Piano aggiornato con il via e stessi SHA/argomenti/tetti; preflight operativo affidato a leonardo-ops. ID e consuntivo saranno
   registrati dopo le sottomissioni; nessuna dichiarazione anticipata di job eseguiti o di review Claude conclusa.
 
+### 2026-10-28 | GPT | Approvazione Claude confermata da Simone e preflight di B superato
+
+- Simone: «claude ha approvato il tuo piano, quando vuoi puoi partire». La review non e' dichiarata per inferenza: e' confermata
+  direttamente dal responsabile. Preflight read-only chiuso: coda vuota, ID non presenti nel ledger/sacct, directory libere,
+  hash manifest e pose_stats coincidenti, deploy separato da main e nessun hook attivo rilevato. Evidenza in
+  `results/infra/pilot_posa/collaudo_b_20261028/preflight.json`.
+- Alla domanda sui job interrotti: E3 su R0 e J2 bis non sono prerequisiti di B e restano fermi. E3 R0 e' un eventuale riferimento
+  di confronto con R3c da decidere alla luce di B; J2 bis soltanto con indizi specifici sul ritardo. Nessun rilancio incluso nel via a B.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
