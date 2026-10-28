@@ -5261,3 +5261,38 @@ Il critico scientifico approva dopo chiarimento di unita', pesi, supporti e sign
 ID logico PILOT-POSA-B5000-dynamics-20261028; source e payload versionati/hashati, ambiente frozen24139ab,
 submitter comune e output nuovo fuori codice. Preflight positivo. Test e review tecnica prima della sottomissione;
 risultati e costi registrati successivamente, nessun retry automatico. R3 completo resta una decisione separata.
+
+
+### Aggiornamento del 28/10/2026: autonomia autorizzata da Simone
+
+Le istruzioni successive di Simone superano il requisito storico di un nuovo via per ogni sottomissione:
+
+1. Job pertinenti al lavoro affidato con costo massimo **inferiore a 5 GPU-ore**: preparazione e lancio autonomi.
+   Calcolo prudenziale = GPU allocate per walltime richiesto. Restano preventivo, costo CPU e consuntivo nel registro,
+   rispetto dei budget e nessun frazionamento artificiale di un esperimento per aggirare la soglia.
+2. Lettura dei log, commit e push della consegna sul proprio ramo di origin: autonomi, con verifica dello SHA remoto.
+3. **Una proposta di test approvata da Simone e' gia' autorizzata alla sottomissione ed esecuzione, anche oltre 5 GPU-ore**.
+   Nessuna seconda richiesta di consenso per dare corso al test approvato. La soglia riguarda i job decisi autonomamente,
+   non limita l'autorizzazione esplicita di un esperimento piu' costoso.
+
+Richieste testuali: «se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»;
+«anche per leggere i log e committare/pushare puoi procedere in autonomia»;
+«se discutiamo un test e io ti dico che la approvo la puoi sottomettere direttamente e far partire senza chidere consenso
+un'altra volta [...] in questo caso anche se supera le 5h gpu».
+
+Invariati metodo fissato prima dei risultati, review pertinenti, un writer per checkout, campagne congelate,
+submitter/ledger comuni e registrazione delle attivita'. Le istruzioni valgono anche nei turni successivi.
+
+
+### 2026-10-28 — Risultato della separazione postura/dinamica B
+
+Job 62551730 COMPLETED 0:0 in 13 s, 0 GPU-ore / 0,014444 core-ore; piano e codice dda2b1b pubblicati prima del lancio.
+Primario dinamiche: MSE centrata / baseline 0,927475, IC95 [0,912480; 0,939174], beneficio 7,252%, 14/15 utenti. Vp/Vy 0,063240,
+correlazione pooled 0,269936. Guadagno MSE medio +0,044640 e dinamico +0,038692 su identico supporto: non solo postura.
+Secondario poco dinamiche: ratio 1,059447, IC95 [1,045879; 1,074216], dinamica peggiora per 15/15 utenti; guadagno medio
+compensa il termine dinamico negativo. Fonte docs/reviews/dinamica_b_results_20261028.md e report originale associato.
+
+E1 ricostruita e concorde, identita' MSE/guadagni entro 6,4e-14, provenance/source/cache/refs verificati; review indipendente
+concorde. Tranche diagnostica completata, nessun altro job. L'esito non autorizza automaticamente R3, ne' suggerisce un
+cambio immediato di pooling/target/pesi. Restano i limiti di un checkpoint, un seme e 15 utenti, e dell'oracolo di centratura.
+Sintesi complessiva e proposta successiva E3 B in docs/reviews/sintesi_scientifica_20261028.md; proposta non ancora sottomessa.

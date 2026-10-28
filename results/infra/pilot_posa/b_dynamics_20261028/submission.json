@@ -1,0 +1,85 @@
+{
+  "recorded_at_utc": "2026-10-28T11:30:54.181098+00:00",
+  "plan_commit": "dda2b1b055ecc49efa90d0d75e7c208f5a5c5575",
+  "plan_sha256": "a992d00900c0164b3a7cd450775fdb6671a0aac37f4fb2e77260774f65fab008",
+  "source_sha256": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+  "wrapper_sha256": "288d76a289435550983055e3e35a5084e57c7ca0053c5bf12efb569c36a7ac2f",
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "scripts/submit_job.py",
+    "--id",
+    "PILOT-POSA-B5000-dynamics-20261028",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "pilot-posa-b-dynamics-20261028",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "scripts/slurm/pose_dynamics_b.sbatch",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=288d76a289435550983055e3e35a5084e57c7ca0053c5bf12efb569c36a7ac2f,DYN_CACHE=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz,DYN_OUT=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_dynamics_20261028.json,DYN_REPORT_PROVENANCE=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json,DYN_REFERENCE_REPORT=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json",
+    "--account=IscrB_WearUsFM",
+    "--partition=lrd_all_serial",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=4",
+    "--mem=16G",
+    "--time=00:10:00",
+    "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out",
+    "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out"
+  ],
+  "returncode": 0,
+  "stdout": "PILOT-POSA-B5000-dynamics-20261028: sottomesso, job 62551730\n",
+  "stderr": "",
+  "state": {
+    "id": "PILOT-POSA-B5000-dynamics-20261028",
+    "creato": "2026-10-28T12:30:25+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b-dynamics-20261028",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-B5000-dynamics-20261028",
+      "--comment=wearusfm:PILOT-POSA-B5000-dynamics-20261028",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=288d76a289435550983055e3e35a5084e57c7ca0053c5bf12efb569c36a7ac2f,DYN_CACHE=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz,DYN_OUT=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_dynamics_20261028.json,DYN_REPORT_PROVENANCE=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json,DYN_REFERENCE_REPORT=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json",
+      "--account=IscrB_WearUsFM",
+      "--partition=lrd_all_serial",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=4",
+      "--mem=16G",
+      "--time=00:10:00",
+      "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out",
+      "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out"
+    ],
+    "dopo": null,
+    "script_stdin": "scripts/slurm/pose_dynamics_b.sbatch",
+    "script_stdin_sha256": "288d76a289435550983055e3e35a5084e57c7ca0053c5bf12efb569c36a7ac2f",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T12:30:25+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T12:30:25+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T12:30:54+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62551730,
+        "uscita": 0,
+        "stdout": "62551730\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 62551730,
+    "uscita": 0,
+    "stdout": "62551730\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+}

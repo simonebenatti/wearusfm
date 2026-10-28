@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-28",
-  "status": "AUTORIZZATO_PRONTO",
+  "status": "COMPLETATO_LETTO_DESCRITTIVO",
   "approval": {
     "by": "Simone",
     "request": "va bene, procedi",
@@ -56,7 +56,10 @@
         "--time=00:10:00",
         "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out",
         "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_dynamics_b_%j.out"
-      ]
+      ],
+      "slurm_id": 62551730,
+      "final_state": "COMPLETED",
+      "exit_code": "0:0"
     }
   ],
   "total_caps": {
@@ -88,7 +91,20 @@
   "automatic_retry": false,
   "automatic_training": false,
   "execution": {
-    "jobs_submitted": []
+    "plan_commit": "dda2b1b055ecc49efa90d0d75e7c208f5a5c5575",
+    "jobs_submitted": [
+      {
+        "slurm_id": 62551730,
+        "state": "COMPLETED",
+        "exit_code": "0:0"
+      }
+    ],
+    "submission_evidence": "results/infra/pilot_posa/b_dynamics_20261028/submission.json",
+    "final_accounting": "results/infra/pilot_posa/b_dynamics_20261028/final/accounting.json",
+    "result_review": "docs/reviews/dinamica_b_results_20261028.md",
+    "total_gpu_hours": 0,
+    "total_core_hours": 0.014444444444444444,
+    "extra_jobs_submitted": []
   },
   "preflight": "results/infra/pilot_posa/b_dynamics_20261028/preflight.json"
 }

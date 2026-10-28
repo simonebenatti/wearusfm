@@ -176,3 +176,24 @@ protocolli, criteri congelati, codice e risultati contro `docs/decisioni.md`, l'
 problema scrivi nel registro gravita', riferimento (file:riga o commit) e una regressione o una prova riproducibile; (4) non modificare i
 file di Claude e non lanciare job. Priorita': il collaudo `w1_selezione_v1`, la selezione C1-C4, i bracci JEPA puro e ancore-only quando
 arrivano. Continua l'integrazione su `main` come prima.
+
+
+## Aggiornamento del 28/10/2026: autonomia autorizzata da Simone
+
+Le istruzioni successive di Simone superano il requisito storico di un nuovo via per ogni sottomissione:
+
+1. Job pertinenti al lavoro affidato con costo massimo **inferiore a 5 GPU-ore**: preparazione e lancio autonomi.
+   Calcolo prudenziale = GPU allocate per walltime richiesto. Restano preventivo, costo CPU e consuntivo nel registro,
+   rispetto dei budget e nessun frazionamento artificiale di un esperimento per aggirare la soglia.
+2. Lettura dei log, commit e push della consegna sul proprio ramo di origin: autonomi, con verifica dello SHA remoto.
+3. **Una proposta di test approvata da Simone e' gia' autorizzata alla sottomissione ed esecuzione, anche oltre 5 GPU-ore**.
+   Nessuna seconda richiesta di consenso per dare corso al test approvato. La soglia riguarda i job decisi autonomamente,
+   non limita l'autorizzazione esplicita di un esperimento piu' costoso.
+
+Richieste testuali: «se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»;
+«anche per leggere i log e committare/pushare puoi procedere in autonomia»;
+«se discutiamo un test e io ti dico che la approvo la puoi sottomettere direttamente e far partire senza chidere consenso
+un'altra volta [...] in questo caso anche se supera le 5h gpu».
+
+Invariati metodo fissato prima dei risultati, review pertinenti, un writer per checkout, campagne congelate,
+submitter/ledger comuni e registrazione delle attivita'. Le istruzioni valgono anche nei turni successivi.

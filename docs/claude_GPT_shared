@@ -5,11 +5,23 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
 
-### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B autorizzata
+### Autonomia operativa confermata da Simone il 28/10/2026
+
+**Job sotto 5 GPU-ore: autonomi. Test esplicitamente approvato: sottomissione ed esecuzione gia' autorizzate anche oltre
+5 GPU-ore, senza secondo consenso. Lettura log, commit e push sul proprio ramo: autonomi.** Calcolo prudenziale del costo
+GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budget, review pertinenti e submitter comune.
+Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
+e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
+
+### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B letta
 
 Dopo la lettura E1/E2 Simone ha risposto «va bene, procedi» alla separazione postura/dinamica dalla cache esistente.
-Un solo job CPU previsto: 4 core, 16GB, massimo 10min, 0 GPU-ore / 0,666667 core-ore; nessun nuovo training o inferenza.
-[Protocollo](dinamica_b_20261028.md), review scientifica favorevole prima del lancio. ID SLURM da registrare dopo sottomissione.
+Job **62551730 COMPLETED 0:0**, 13s, **0 GPU-ore / 0,014444 core-ore**. Metodo/source congelati in `dda2b1b`.
+MSE centrata dinamiche rapporto **0,927475 [0,912480; 0,939174]**, beneficio 7,252%, 14/15 utenti; poco dinamiche
+**1,059447 [1,045879; 1,074216]**, peggioramento 5,945%, 15/15 utenti. Appresa una dinamica utile ma debole;
+varianza predetta/target sulle dinamiche 0,063240, correlazione pooled 0,269936.
+[Protocollo](dinamica_b_20261028.md), [risultati](reviews/dinamica_b_results_20261028.md),
+[sintesi e prossimi passi](reviews/sintesi_scientifica_20261028.md). Nessun altro job lanciato.
 
 ### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B letta
 
@@ -4280,6 +4292,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   18 test sintetici passati anche nella riesecuzione root; review tecnica finale favorevole e payload/argv verificati.
   ID e consuntivo seguiranno come evidenze separate.
 
+### 2026-10-28 | GPT | Dinamica B letta e autonomia operativa aggiornata | Codice/piano dda2b1b
+
+- Sottomesso unico job 62551730 tramite submitter, dopo commit/push e verifica SHA origin; COMPLETED 0:0 in 13 s,
+  0 GPU-ore / 0,014444 core-ore, tetto 0,666667. Nessun retry, estrazione o training; input rimasti invariati.
+- Primario dinamiche: centeredMSEratio 0,927475 IC95 [0,912480; 0,939174], riduzione 7,252%, 14/15 utenti con gain>0.
+  Varianza pred/target 0,063240, correlazione pooled 0,269936. Guadagno MSE medio +0,044640, centrato +0,038692,
+  totale +0,083332: non e' soltanto postura. Restano variazioni predette piccole e ricostruzione limitata.
+- Poco dinamiche (secondario predefinito): ratio 1,059447 IC95 [1,045879; 1,074216], dinamica peggiora in 15/15 utenti;
+  il miglioramento totale resta positivo grazie al livello medio. Non chiamate finestre immobili o a riposo.
+- Provenienza e identita' verificate; E1 ricostruita dalla cache entro rtol1e-6/atol1e-8, IC del centrato ricalcolato
+  indipendentemente. Output/log/accounting in results/infra/pilot_posa/b_dynamics_20261028; relazione
+  docs/reviews/dinamica_b_results_20261028.md. Tranche completata; nessun altro job lanciato. Sintesi complessiva e proposta
+  E3 B in docs/reviews/sintesi_scientifica_20261028.md, preparata su richiesta di Simone.
+- Recepiti in CLAUDE.md, accordo_operativo_finestra1_20261015.md e decisioni.md i tre chiarimenti successivi di Simone:
+  job con costo massimo <5 GPU-ore autonomi; log/commit/push autonomi; test approvato direttamente eseguibile anche >5 GPU-ore
+  senza chiedere un secondo consenso. Regole precedenti di consenso per ogni lancio superate in questo perimetro.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5979,3 +6008,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   non definiti dichiarati senza eliminare repliche. Nessuna assunzione che ogni metrica sia valutabile per ogni utente.
 - Un solo checkpoint/seme, utenti val e selezione dinamica condizionata al target: nessuna prova di trasferimento o
   causalita' EMG, nessuna modifica delle soglie E1/E2. E3/R0/J2 bis e training completo fuori da questo via.
+
+### 2026-10-28 | GPT | Limiti residui dopo la separazione postura/dinamica B
+
+- Nessun difetto di esecuzione rilevato. Beneficio dinamico osservabile ma modesto; sulle poco dinamiche le oscillazioni
+  introdotte peggiorano il termine centrato. Centratura e' oracolo del bias, non prestazione operativa corretta gratuitamente.
+- Non si deduce che basti amplificare le uscite, aumentare il peso della posa o proseguire a 49.046 passi per risolvere il limite.
+  Il risultato non e' causalita' EMG-movimento o trasferimento multi-dataset. Nessuna soglia aggiunta dopo la lettura.
+- Il permesso del comando fuori sandbox ha ritardato il lancio; il job ha poi richiesto 13 s. Non un blocco della coda,
+  un errore scientifico o una richiesta nuova di approvazione della proposta. Autorizzazioni utente ora esplicite nei documenti.

@@ -4,6 +4,9 @@
 entro finestra usando la cache gia' prodotta, senza altra inferenza GPU o addestramento. Una sola analisi CPU,
 metodo definito qui prima della sua esecuzione. E1/E2 e il collaudo B conservano risultati e regole originali.
 
+**COMPLETATO:** job 62551730, 0:0, 13s, 0 GPU-ore / 0,014444 core-ore.
+Metodo e codice congelati in `dda2b1b` prima del lancio. [Risultati](reviews/dinamica_b_results_20261028.md).
+
 ## Domanda e dati congelati
 
 La testa migliora soltanto la posizione media nella finestra, oppure predice anche una parte delle variazioni intorno a

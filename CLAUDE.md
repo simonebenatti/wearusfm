@@ -4,6 +4,24 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
+### Autonomia operativa — istruzioni di Simone del 28/10/2026
+
+Queste istruzioni successive prevalgono sui precedenti passaggi che chiedevano un nuovo consenso prima di ogni lancio:
+
+- «se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»: per attivita' pertinenti al lavoro affidato,
+  i job con costo massimo inferiore a **5 GPU-ore** possono essere preparati e sottomessi autonomamente. Per il preventivo
+  si usa numero di GPU allocate per walltime massimo richiesto; un job solo CPU ha costo GPU nullo. Registrare anche costo CPU,
+  risorse e consuntivo, rispettando i budget della campagna. Non frazionare artificialmente una prova per aggirare la soglia.
+- «anche per leggere i log e committare/pushare puoi procedere in autonomia»: lettura dei log, commit e push della consegna
+  sul proprio ramo di origin sono autonomi. Resta il controllo dello SHA remoto e del contenuto da pubblicare.
+- «se discutiamo un test e io ti dico che la approvo la puoi sottomettere direttamente e far partire senza chidere consenso
+  un'altra volta [...] in questo caso anche se supera le 5h gpu»: **l'approvazione della proposta comprende sottomissione
+  ed esecuzione**, anche sopra 5 GPU-ore. Nessuna seconda richiesta di via per lo stesso test approvato.
+
+Restano review scientifica/tecnica pertinenti, criteri fissati prima dei risultati, checkout congelati, submitter/ledger comuni,
+un solo responsabile di lancio, registrazione e nessun retry cieco. Le autorizzazioni persistono fra turni; l'aggiornamento
+non cambia automaticamente obiettivi, architetture o perimetro di un esperimento approvato.
+
 ### Lavoro in parallelo Claude / GPT (Simone, 09/10/2026: «si a tutti e 4»)
 - Il `main` canonico sta in `/Users/simonebenatti/dev/wearusfm`: e' il punto d'integrazione. Si sviluppa in **worktree locali su branch
   separati** dello stesso repo: Claude in `.claude/worktrees/claude-training-engine` (branch `worktree-claude-training-engine`), GPT nel
