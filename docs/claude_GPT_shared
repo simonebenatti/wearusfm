@@ -4163,6 +4163,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   tetti ~20 / ~225), procedura di ripresa (senza REQUIRE_NEW_RUN, un solo job), cosa non autorizza, alternative (dritti a 49.046; fermarsi).
 - Cluster: nessun job. Decisioni a GPT e Simone.
 
+### 2026-10-28 | Claude | Review della proposta E3 B di GPT (prompt 23cf073, consegnato da Simone): CONCORDO CON MODIFICHE; quattro correzioni indispensabili (feature post-LayerNorm, ridge mascherata per giunto, griglia di alpha aperta, scomposizione appaiata) e E3 B come baseline per 19.618, non cancello; nessun job
+
+- Richiesta di Simone: «Ti chiedo solo una review scientifica della proposta E3 di GPT ... Nessuna implementazione, estrazione o esperimento in
+  questa fase». Review in `docs/reviews/claude_review_proposta_e3_b_20261028.md`; letti in sola lettura sintesi, dinamica, E1/E2, report.json,
+  `pose_eval.py`, `pose_head.py`, `pose_dynamics.py`, emendamento, rapporto E3 di R3c. Nessun file di GPT toccato.
+- Numeri della sintesi tutti verificati sulle fonti (E1/E2, dinamica, B, audit 20 registrazioni / 10 utenti, E3 R3c 0,949). Diagnosi condivisa.
+  La selezione di alpha di E3 e' gia' fra utenti disgiunti del train (docstring «2 meta' per utente» fuorviante).
+- Aggiunta dai momenti di GPT: la testa e' gia' calibrata in ampiezza sulle dinamiche (fattore ottimo a = C/Vp = 1,07; rapporto centrato
+  0,9275 contro il minimo 1 - rho^2 = 0,9271; guadagno di un riscalamento 0,0002): «varianza predetta al 6%» e' conseguenza di rho = 0,27,
+  non difetto di scala; sulle poco dinamiche a = 0,29 (fluttuazioni troppo grandi per cio' che sa); per utente a fra 0,83 e 1,29 in 14/15.
+- Verdetto: E3 B utile e a basso costo (circa 0,1 GPU-ora attese: estrazione del sottoinsieme del train dello student, base documentale
+  62442491 4 min 12 s su R3c-e2 con le stesse 200 registrazioni; rapporto CPU in minuti; la cache di val di B contiene gia' i latenti), ma oggi
+  il confronto ridge/testa non e' interpretabile: (M1) ridge pre-LayerNorm contro testa post-LayerNorm = famiglie diverse; (M3) la ridge
+  fitta anche i giunti non validi (target 0, maschera falsa, ~18% degli elementi); (M4) griglia di alpha chiusa al bordo (100 su R3c-e2),
+  obiettivo interno MAE non mascherata. Piu' (M2) controllo di coerenza testa-dalla-cache contro `pred`. Lettura primaria proposta: differenza
+  appaiata ridge-testa del rapporto centrato sulle dinamiche con IC per utente, riusando `pose_dynamics.py` sulle predizioni della ridge.
+- In tutti gli esiti (ridge migliore / equivalente / peggiore) la mossa successiva e' la stessa (altri passi del tronco): E3 B e' diagnostica e
+  baseline per la stessa lettura a 19.618 su R3 e R3c (attribuzione a pari dose, (b2) dell'emendamento), non un prerequisito della
+  continuazione (proposta a2753a6, da discutere con GPT). R0 e J2 bis: non necessari ora, concordo.
+- Autonomia del 28/10 (job < 5 GPU-ore): letta come regola di Simone per GPT, recepita da GPT in CLAUDE.md sul suo ramo; per me resta
+  «non fai piu nulla che non venga approvato da gpt» e, a GPT, «lui non fa esperinenti adesos, e' solo per fare un review».
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5786,3 +5808,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Regola (memoria di Claude e qui): nessuna proposta fuori dal piano concordato se non richiesta; ogni scelta scientifica (cosa lanciare,
   criteri, analisi in piu') prima a GPT; un job parte solo con un via esplicito di Simone su quel job dopo il parere di GPT; un «vai» generico
   non autorizza job non nominati. La parte tecnica concordata (codice, test, launcher) si fa senza chiedere ma non si lancia nulla.
+
+### 2026-10-28 | Claude | Trovato rileggendo E3 per la review (codice mio, `pose_eval.py`, invariato da c5e42cb a 24139ab): la ridge fitta anche i giunti non validi e la griglia di alpha si e' chiusa al bordo su R3c-e2; il numero E3 di R3c (0,949) e' di un lettore handicappato; nessun esito firmato cambia
+
+- `_instants` prende gli istanti con almeno un giunto valido e `ridge_fit` usa tutte le 20 colonne: nei giunti non validi il target e' 0 con
+  maschera falsa (`pose_targets.window_pose`), circa il 18% degli elementi (val dinamiche: 21.750.080 validi su 26.652.800). La ridge impara
+  anche quegli zeri ed e' spinta verso la costante. Alpha scelto = 100, bordo della griglia {0,1; 1; 10; 100}: la selezione non ha finito.
+- Effetto: E3 e' descrittivo (nessun cancello firmato dipende da E3); la lettura di GPT su R3c («sotto il criterio del 10%, non assenza di
+  informazione») resta vera, ma l'accessibilita' vera di R3c-e2 puo' essere piu' alta di 5,07%. Nessun run toccato; nessun rilancio proposto
+  per R3c (dose diversa da B: il confronto utile e' a pari passo, 19.618 o endpoint).
+- Correzione: nel codice di E3 B (fit mascherato per giunto, griglia aperta, obiettivo interno MSE mascherata, feature post-LayerNorm), da
+  fare sul mio ramo solo dopo il confronto dei due pareri e l'approvazione di GPT; nessuna implementazione in questa consegna.
