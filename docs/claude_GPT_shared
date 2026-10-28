@@ -4110,6 +4110,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: parere di GPT sul cancello (domande 1-5 del prompt) e sulla verifica del pannello; poi voce «criterio congelato», critico,
   comando con preventivo a Simone per la firma. Lo SHA di questo commit nel messaggio a Simone.
 
+### 2026-10-28 | GPT | Preparazione del collaudo lungo B su richiesta di Simone; nessun lancio
+
+- Simone: «la vuoi preparare tu?». Preparazione locale di codice, protocollo, test e comandi nel worktree GPT `wearusfm-gpt-science`,
+  ramo `codex/r3-long-collaudo-20261028`, dalla bozza di Claude `afd2e4d`. La richiesta autorizza queste modifiche tecniche locali;
+  non autorizza deploy o job. Il worktree di Claude e i checkout di campagna restano intatti.
+- Pannello completato: 32 utenti x 2 registrazioni x 4 finestre da 4 s, valide e non sovrapposte; solo probabilita' di training positive,
+  registrazioni deduplicate, rimpiazzi deterministici basati sul supporto, identita'/hash/conteggi congelati, errori di preparazione
+  propagati ai rank DDP. Varianza temporale per giunto, MAE in radianti e tempi del pannello sono descrittivi.
+- Lettore B: ricetta vera R3 a 5.000 di 49.046, warmup 1.962; rifiuto di log incompleti, duplicati, pannelli cambiati e provenienza
+  incoerente. Primario proposto: rapporto delle medie utente <=0,9 e IC95 bootstrap appaiato con limite superiore <1. Nessuna seconda
+  discesa obbligatoria dopo il warmup e nessun cutoff arbitrario della varianza. Gli altri bracci conservano le loro regole.
+- Protocollo `docs/collaudo_r3_b_20261028.md`, piano/comandi in `results/infra/pilot_posa/*b*20261028*`; preventivo PROPOSTO aggiornato:
+  B 4 A100 x 90 min = 6 GPU-ore, 48 core-ore; checkout 2 core x 10 min = 1/3 core-ora. Motivazione: margine per preparazione,
+  valutazioni e checkpoint. Nessun retry, E3 R0, J2 bis o avvio automatico di R3 completo. Firma di Simone ancora da acquisire.
+- Ripubblicata in questo ramo la valutazione scientifica gia' consegnata in `da0e803`, senza modificarne dati o conclusioni. Audit:
+  controllo disallineato positivo 7/10, non «allineamento 10/10»; ridge RMS 8/10 sotto costante; E3 R3c mostra un guadagno dinamico
+  del 5,07%, inferiore al gate del 10%, non assenza d'informazione. Evidenze sufficienti a preparare B, non a prevederne l'esito.
+- Verifiche e SHA finali: `docs/reviews/collaudo_b_preparation_20261028.md`. Review scientifica e tecnica indipendenti dei subagent;
+  la review reciproca di Claude delle modifiche tecniche resta da fare prima dell'eventuale deploy, come da CLAUDE.md.
+- Codice congelato `24139ab901c052357a46a65bc20466f2eb1e8358`; 123 test distinti passati, inclusi due test DDP2. Piano, comando
+  quotato e config ricostruito dal parser verificati coerenti. Prompt di review: `docs/prompt_claude_review_b_20261028.md`.
+  Simone ha confermato «comitta e pusha sempre tutto»: regola registrata anche in CLAUDE.md, consegna completa sul ramo GPT di origin.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5733,3 +5756,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Regola (memoria di Claude e qui): nessuna proposta fuori dal piano concordato se non richiesta; ogni scelta scientifica (cosa lanciare,
   criteri, analisi in piu') prima a GPT; un job parte solo con un via esplicito di Simone su quel job dopo il parere di GPT; un «vai» generico
   non autorizza job non nominati. La parte tecnica concordata (codice, test, launcher) si fa senza chiedere ma non si lancia nulla.
+
+### 2026-10-28 | GPT | B: correzioni alla bozza prima di qualunque run
+
+- La prima bozza ammetteva finestre sovrapposte o senza posa valida e registrazioni con probabilita' di training nulla; ora selezione
+  esplicita, deduplica, supporto positivo e quote esatte. L'errore di selezione/provenienza sul rank 0 viene comunicato a tutti i rank.
+- Varianza aggregata fra tempi e giunti confondeva bias diversi con movimento: sostituita da varianza temporale per giunto. Una soglia
+  >=0,01 e un ulteriore -10% nel training dopo 2.000 non erano nel criterio GPT: rimossi dai gate e mantenuti solo descrittivi pertinenti.
+- Append dopo un crash puo' duplicare passi rispetto al checkpoint: il lettore B rifiuta log duplicati; questo collaudo parte da zero,
+  senza riuso automatico della directory (`REQUIRE_NEW_RUN=1`) e senza retry. Nessun log di run precedenti viene riscritto.
+- 75 min /5 GPU-ore non garantivano margine sufficiente al ritmo limite: presentato il tetto aggiornato di 90 min /6 GPU-ore,
+  esplicitamente ancora da approvare. Non e' una variazione applicata di nascosto a un job.

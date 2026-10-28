@@ -51,6 +51,9 @@
 - Non fare push su origin a meno che non te lo chieda esplicitamente. **Dal 21/10/2026 Simone ha chiesto a GPT di pubblicare anche su
   GitHub le proprie consegne e i log, verificando lo SHA remoto dopo il push.** La pubblicazione del ramo di lavoro non equivale alla
   review o al merge del codice dell'altro agente; i checkout di campagna mantengono i propri riferimenti congelati.
+- **Confermato il 28/10/2026 da Simone:** «comitta e pusha sempre tutto, in modo che anche claude sia aggiornato su cosa fai».
+  Ogni consegna di GPT comprende codice, test, documenti e voci del registro sul proprio ramo di `origin`, con verifica dello SHA remoto;
+  non lasciare modifiche locali della consegna fuori dal commit. Questa regola non autorizza deploy o job sul cluster.
 - Se un push verso leonardo viene rifiutato il tree remoto e' sporco:
   fermati e segnalalo, non forzare.
 

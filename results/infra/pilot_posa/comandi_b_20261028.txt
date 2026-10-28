@@ -1,0 +1,23 @@
+# COLLAUDO R3 B — PROPOSTO DA FIRMARE, NON ESEGUITO.
+# Codice congelato 24139ab901c052357a46a65bc20466f2eb1e8358; protocollo docs/collaudo_r3_b_20261028.md.
+# Prima: review reciproca di Claude, firma esplicita di Simone sul tetto 6 GPU-ore + 48,3333 core-ore,
+# verifica read-only di hook/ref remoti, coda/ledger, hash degli ingressi e assenza directory del run.
+# Esegue leonardo-ops dal Mac, dalla consegna GPT pulita. Niente feeder, catena o retry automatici.
+# Le righe sotto sono un piano: NON eseguirle con shell prima della firma.
+
+# [D] Dopo firma e controllo remoto, pubblicazione del riferimento congelato (non cambia main):
+git push leonardo 24139ab901c052357a46a65bc20466f2eb1e8358:refs/heads/deploy/pilot-posa-b-20261028
+
+# [C] Checkout CPU: 2 core, 2G, 10 min, zero GPU; avviare SOLO dopo il deploy verificato.
+python3 scripts/submit_job.py --id PILOT-POSA-B-20261028-checkout --agente gpt --campagna pilot-posa-b-20261028 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --cpus-per-task=2 --mem=2G --time=00:10:00 --export=ALL,CAMPAIGN=pilot-posa-b-20261028,CAMPAIGN_SHA=24139ab901c052357a46a65bc20466f2eb1e8358
+
+# [B] SOLO dopo checkout COMPLETED e SHA/pulizia verificati. Non usare --dopo su un checkout gia' finito.
+# Nuova directory obbligatoria; 4 A100, 32 core, 480G, QoS normal, 90 min; TIME_LIMIT_S=5100.
+# Nessuna ripresa, job di scorta, E3 R0, J2 bis o full R3 in questo piano.
+python3 scripts/submit_job.py --id PILOT-POSA-R3-B-20261028 --agente gpt --campagna pilot-posa-b-20261028 --gpu-ore 6 -- '--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,PRESET=sanity,TIME_LIMIT_S=5100,REQUIRE_NEW_RUN=1,BRANCH_FROM=,RESUME_TO=,EXTRA_ARGS=--window1-rules --datasets all --prefetch --fixed-eval-every 500 --manifest-sha256 6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec --erank-min 38.4 --window-seconds /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json --batch-size 32 --accum-steps 1 --seed 0 --schedule wsd --total-steps 49046 --steps-at-d 98094 --keep-checkpoints 19618 --lr 0.0001 --nested 1 --jepa-weight 0 --pose-root /leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose --pose-weight 1.0 --pose-unprompted on --pose-grad-every 500 --pose-panel-every 500 --pose-panel-users 32 --pose-panel-recordings 2 --pose-panel-windows 4' --qos=normal --time=01:30:00 --cpus-per-task=32 --gres=gpu:4 --mem=480G /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/scripts/slurm/train_ddp.sbatch /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028 5000
+
+# [L] Dopo B: copiare localmente config.json, summary.json, metrics.jsonl, fixed_eval.jsonl,
+# pose_provenance.json, pose_panel_set.json, pose_panel.jsonl, stdout/pip_freeze e listing ls -l dei checkpoint.
+# Conservare eventuale STOP. Listing fresco dello stesso run; nessun download del checkpoint necessario per il lettore.
+# Lettura locale (cartella di raccolta prevista; nessuna GPU):
+python3 scripts/arms_collaudo.py results/infra/pilot_posa/collaudo_b_20261028 --arm R3-lungo --steps 5000 --expected-sha 24139ab901c052357a46a65bc20466f2eb1e8358 --listing results/infra/pilot_posa/collaudo_b_20261028/ls_l.txt --out results/infra/pilot_posa/collaudo_b_20261028/verdetto.json

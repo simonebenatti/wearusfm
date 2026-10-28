@@ -1,0 +1,169 @@
+{
+  "model": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": null,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true
+  },
+  "jepa": {
+    "target": "b",
+    "anchor_weight": 0.2,
+    "ema_momentum": 0.996,
+    "loss_per_window": true,
+    "rvq_targets": "slab",
+    "keep_weight": 0.0,
+    "branch_weight": 0.0,
+    "jepa_weight": 0.0,
+    "region_target": false,
+    "pose_weight": 1.0
+  },
+  "loader": {
+    "min_window_s": 1.0,
+    "max_window_s": 4.0,
+    "split_at_gaps": true,
+    "mask": {
+      "ratio": 0.5,
+      "share_short": 0.15,
+      "share_medium": 0.25,
+      "share_long": 0.2,
+      "share_spatial": 0.4,
+      "short": [
+        1,
+        2
+      ],
+      "medium": [
+        4,
+        12
+      ],
+      "long": [
+        20,
+        80
+      ],
+      "slab_fraction": 0.5,
+      "max_spatial_fraction": 0.5
+    },
+    "k_neighbors": 8,
+    "filter_band_hz": [
+      20.0,
+      450.0
+    ],
+    "patch_ms": 25.0,
+    "align_ms": 200.0,
+    "notch_hz": [
+      50.0,
+      60.0
+    ],
+    "filter_margin_s": 0.5,
+    "run_margin_s": 0.2,
+    "max_window_attempts": 20,
+    "max_session_attempts": 20,
+    "scale_chunks": 32,
+    "scale_chunk_s": 2.0,
+    "open_sessions": 64,
+    "block_s": 30.0,
+    "windows_per_block": 8,
+    "block_pool": 16,
+    "rvq_codes_root": null,
+    "anchor_edge_guard_s": 0.1,
+    "time_weighted": true,
+    "multiscale_anchor": true,
+    "virtual": {
+      "p": 0.5,
+      "p_bipolar": 0.5,
+      "shapes": [
+        [
+          4,
+          8
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "strides": [
+        1,
+        2
+      ],
+      "classes": [
+        "C"
+      ],
+      "exclude_datasets": [
+        "capgmyo"
+      ],
+      "no_bipolar_datasets": [
+        "csl_hdemg"
+      ]
+    },
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "pose_unprompted": true
+  },
+  "datasets": null,
+  "batch_size": 32,
+  "lr": 0.0001,
+  "warmup_steps": 1962,
+  "weight_decay": 0.05,
+  "grad_clip": 1.0,
+  "max_steps": 5000,
+  "eval_every": 500,
+  "ckpt_every": 500,
+  "seed": 0,
+  "alarm": {
+    "collapse_ratio_min": 0.05,
+    "erank_fraction_min": 0.1,
+    "patience": 3,
+    "erank_min": 38.4
+  },
+  "amp_bf16": true,
+  "target_version": "step1_psd_power_shape_energy_v1",
+  "readout_version": "p1p2_qc_equal_channel_v1",
+  "keep_calibration": null,
+  "keep_calibration_sha256": null,
+  "keep_grad_every": 0,
+  "pose_grad_every": 500,
+  "pairing_audit": false,
+  "stream_segment": 1200,
+  "schedule": {
+    "kind": "wsd",
+    "total_steps": 49046,
+    "decay_fraction": 0.2,
+    "keep_checkpoints": [
+      19618
+    ]
+  },
+  "accum_steps": 1,
+  "branch_calibration_batches": 16,
+  "freeze_encoder": false,
+  "branch_monitor": false,
+  "fixed_eval_every": 500,
+  "fixed_eval_batches": 8,
+  "log_batch_origin": false,
+  "pose_panel_every": 500,
+  "pose_panel_users": 32,
+  "pose_panel_recordings": 2,
+  "pose_panel_windows": 4,
+  "prefetch": true,
+  "prefetch_audit": false,
+  "nested": "1"
+}

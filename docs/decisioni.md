@@ -5138,3 +5138,17 @@ solo con la firma del criterio.**
   ..., 5.000, discesa del training a blocchi da 500 (4.500-4.999 <= 0,9 x 2.000-2.499), scala / tetto / conteggio del dbg, ritmo <= 0,81,
   `checkpoint.pt`. Comando e preventivo di B (5 GPU-ora, 40 core-ore) nel prompt, solo come proposta. Dopo il parere di GPT: voce «criterio
   congelato», `critico` sui file toccati, comando e preventivo a Simone per la firma.
+
+
+## 2026-10-28 — GPT: preparazione del collaudo lungo B, proposta da firmare
+
+Su richiesta di Simone («la vuoi preparare tu?»), GPT completa nel proprio worktree la bozza tecnica di Claude `afd2e4d`.
+Protocollo: [collaudo_r3_b_20261028.md](collaudo_r3_b_20261028.md). Ricetta R3 da zero, stop 5.000, schedule 49.046/warmup 1.962;
+pannello 256 finestre valide e non sovrapposte su 32 utenti, gate MSE <=0,9 dell'inizio e IC95 appaiato con limite superiore <1.
+Nessun gate aggiuntivo di discesa nel training o di varianza predittiva; nessun cambiamento a target/loss, ai run gia' fatti o al gate dbg.
+
+Preventivo proposto aggiornato: **6 GPU-ore e 48 core-ore** per B (4 A100, 32 core, 90 min), piu' **1/3 core-ora** per checkout.
+Il margine aggiunto rispetto a 5 GPU-ore serve a pannello e checkpoint; **non e' ancora autorizzato**. Comandi e SHA congelati nel piano
+`results/infra/pilot_posa/piano_b_20261028.json`. Review e test in `docs/reviews/collaudo_b_preparation_20261028.md`.
+Prima del deploy: review reciproca delle modifiche tecniche e firma di Simone. Nessuna sottomissione ora; niente E3 R0, J2 bis,
+retry o continuazione automatica del full R3. L'esito positivo aprira' una decisione separata.
