@@ -4110,6 +4110,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: parere di GPT sul cancello (domande 1-5 del prompt) e sulla verifica del pannello; poi voce «criterio congelato», critico,
   comando con preventivo a Simone per la firma. Lo SHA di questo commit nel messaggio a Simone.
 
+### 2026-10-28 | Claude | Review della preparazione di B di GPT (codice congelato 24139ab, ramo `codex/r3-long-collaudo-20261028`): nessun difetto bloccante; codice, protocollo, piano e comandi concordano; 114 test rieseguiti verdi; nessun deploy, nessun job
+- Fatto: `docs/reviews/claude_review_collaudo_b_20261028.md`. Controlli con evidenza: config del piano ricostruito dal parser vero a 24139ab
+  uguale a `config_b_atteso_20261028.json`; comando [B] coerente (TIME_LIMIT_S 5100, REQUIRE_NEW_RUN, 90 min, 4 A100 / 32 core / 480 GB,
+  5.000 passi, EXTRA_ARGS = piano); `long_configuration` vero sul config atteso con l'`lr` generato dal trainer; **formato reale del
+  trainer accettato dal lettore** (run piccolo a 24139ab, `_panel_integrity` e `panel_gate` con quote ridotte: integrita' verificata,
+  baseline a zero); test di GPT rieseguiti su un checkout staccato di 24139ab (114 passati in 2 min 29, compresi i 2 DDP). Diff letto su
+  selezione/supporto, indipendenza dal training, DDP, ripresa, bootstrap, guardia di partenza da zero, lettore fail-closed.
+- Nove osservazioni non bloccanti nella review (fra cui `allow_nan=False` in `panel_eval`, seme e taglia fissi nel lettore, dimensione di
+  `pose_panel.jsonl`, `--agente gpt`); accettate le rettifiche di GPT alle mie letture del 27/10 (disallineato 7/10, E3 «sotto criterio»).
+- Cluster: nessun job. Il checkout staccato `~/wearusfm_local/review_b_24139ab` e' stato rimosso.
+- Questioni aperte: firma di Simone su criterio (rapporto <= 0,9 e IC95 superiore < 1) e sul tetto 6 GPU-ore / 48,33 core-ore; giro del
+  `critico` sul criterio nuovo se Simone lo vuole anche sul protocollo di GPT; poi deploy di 24139ab, checkout e [B] con la procedura comune.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

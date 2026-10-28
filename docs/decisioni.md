@@ -5138,3 +5138,10 @@ solo con la firma del criterio.**
   ..., 5.000, discesa del training a blocchi da 500 (4.500-4.999 <= 0,9 x 2.000-2.499), scala / tetto / conteggio del dbg, ritmo <= 0,81,
   `checkpoint.pt`. Comando e preventivo di B (5 GPU-ora, 40 core-ore) nel prompt, solo come proposta. Dopo il parere di GPT: voce «criterio
   congelato», `critico` sui file toccati, comando e preventivo a Simone per la firma.
+
+**Review di Claude della preparazione di B di GPT (28/10/2026, 08:00-08:40; codice congelato 24139ab): nessun difetto bloccante;
+corrispondenza fra codice, protocollo (`docs/collaudo_r3_b_20261028.md`), piano, config atteso e comandi verificata; 114 test rieseguiti
+verdi; nessun deploy ne' job.** Dettagli in `docs/reviews/claude_review_collaudo_b_20261028.md`. Restano a Simone: la firma del criterio
+(L(5000)/L(0) <= 0,9 e limite superiore dell'IC95 appaiato per utente < 1; 1.000 ricampionamenti, seme 20261027) e del tetto aggiornato
+(90 min: 6 GPU-ore e 48 core-ore per B, 1/3 core-ora per il checkout), poi la procedura comune. Nessuna risorsa o soglia e' stata cambiata da
+Claude; i checkout di campagna restano ai loro SHA.
