@@ -71,7 +71,7 @@
         "--id",
         "PILOT-POSA-B19618-R3c-p2-validate-r1-20261028",
         "--agente",
-        "semplicione",
+        "gpt",
         "--campagna",
         "pilot-posa-b19618-20261028",
         "--gpu-ore",
@@ -117,7 +117,7 @@
         "--id",
         "PILOT-POSA-B19618-B-p2-pool-r1-20261028",
         "--agente",
-        "semplicione",
+        "gpt",
         "--campagna",
         "pilot-posa-b19618-20261028",
         "--gpu-ore",
@@ -159,7 +159,7 @@
         "--id",
         "PILOT-POSA-B19618-p1p2-compare-r1-20261028",
         "--agente",
-        "semplicione",
+        "gpt",
         "--campagna",
         "pilot-posa-b19618-20261028",
         "--gpu-ore",
@@ -191,5 +191,7 @@
     "training_tail_20261028_2234.txt": "5d2d2beb6d7dc1bc66363005634f73346770a75cf961733098bb9af642aacf3e",
     "independent_oof_and_b_pending_preflight.txt": "d365752dd14057e7b2dd2ea471c62cee59092c2fa8e4714ef68f71c3f191ecd4"
   },
-  "preflight_update": "2026-10-28 22:41 CET: direct OOF hash matches pinned digest; old B-P2 PENDING with no outputs. Recheck current state before cancellation."
+  "preflight_update": "2026-10-28 22:41 CET: direct OOF hash matches pinned digest; old B-P2 PENDING with no outputs. Recheck current state before cancellation.",
+  "ledger_agent": "gpt",
+  "ledger_agent_note": "submit_job.py admits claude/gpt/simone only. gpt identifies scientific owner/category; actual operator remains semplicione."
 }

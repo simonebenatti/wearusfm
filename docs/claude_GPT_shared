@@ -4736,6 +4736,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Raccolta22:34: training62582916 RUNNING da22:18:26, passo6150;62583157 FAILED dopo20m31s,62583165 CANCELLED prima
   di partire. Nessun job di recupero ancora sottomesso a questa registrazione; storico e codice scientifico24139ab immutati.
 
+### 2026-10-28 | GPT | Allineamento categoria del ledger per semplicione | Base 173a305
+
+- Rilievo operativo di semplicione prima di qualsiasi cancellazione/lancio: submit_job.py accetta in --agente
+  solo claude/gpt/simone. Piano rettificato a gpt come categoria/responsabile; operatore resta semplicione.
+  Payload, risorse e ricetta invariati; nessuna modifica al submitter. Nuovo SHA del piano da consegnare.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6650,3 +6656,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Quattro warning lbfgs/max_iter nel fit originale restano dichiarati; nessun tuning dopo il risultato. S80,84 non
   misura il beneficio di B. Training partito22:18:26, aggiornamento dello snapshot precedente PENDING. Cancellazione
   confronto da sacct19:20:55;19:24 era la segnalazione. R3completo, nuova loss e latenti non mediati restano rinviati.
+
+### 2026-10-28 | GPT | Parametro di lancio inizialmente incompatibile con il submitter
+
+- Il primo recovery_plan173a305 usava --agente semplicione, non ammesso dalle choices del parser.
+  Corretto a gpt, separando operatore nel piano e categoria nel ledger. Intercettato prima di azioni sul cluster.
