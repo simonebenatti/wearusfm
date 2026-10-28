@@ -1,0 +1,187 @@
+{
+  "checked_at_utc": "2026-10-28T16:27:47.200398+00:00",
+  "all_13_present": true,
+  "all_resources_comments_dependencies_match_plan": true,
+  "states": {
+    "PENDING": 10,
+    "RUNNING": 3
+  },
+  "training_log_absent_pending": true,
+  "jobs": [
+    {
+      "job_id": 62583154,
+      "logical_id": "PILOT-POSA-B19618-B-p2-ext-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "100G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:00:00",
+      "dependencies": "afterok:62582916(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-B-p2-ext-20261028"
+    },
+    {
+      "job_id": 62583151,
+      "logical_id": "PILOT-POSA-B19618-B-pose-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "60G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:00:00",
+      "dependencies": "afterok:62582916(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-B-pose-20261028"
+    },
+    {
+      "job_id": 62583153,
+      "logical_id": "PILOT-POSA-B19618-B-p1-ext-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "100G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:30:00",
+      "dependencies": "afterok:62582916(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-B-p1-ext-20261028"
+    },
+    {
+      "job_id": 62582916,
+      "logical_id": "PILOT-POSA-B19618-train-20261028",
+      "state": "PENDING",
+      "reason": "(Priority)",
+      "cpus": 32,
+      "memory": "480G",
+      "gres": "gres/gpu:4",
+      "time_limit": "4:00:00",
+      "dependencies": "(null)",
+      "comment": "wearusfm:PILOT-POSA-B19618-train-20261028"
+    },
+    {
+      "job_id": 62583147,
+      "logical_id": "PILOT-POSA-B19618-R3c-pose-20261028",
+      "state": "RUNNING",
+      "reason": "lrdn0773",
+      "cpus": 8,
+      "memory": "60G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:00:00",
+      "dependencies": "(null)",
+      "comment": "wearusfm:PILOT-POSA-B19618-R3c-pose-20261028"
+    },
+    {
+      "job_id": 62583149,
+      "logical_id": "PILOT-POSA-B19618-R3c-p2-ext-20261028",
+      "state": "RUNNING",
+      "reason": "lrdn0047",
+      "cpus": 8,
+      "memory": "100G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:00:00",
+      "dependencies": "(null)",
+      "comment": "wearusfm:PILOT-POSA-B19618-R3c-p2-ext-20261028"
+    },
+    {
+      "job_id": 62583148,
+      "logical_id": "PILOT-POSA-B19618-R3c-p1-ext-20261028",
+      "state": "RUNNING",
+      "reason": "lrdn0116",
+      "cpus": 8,
+      "memory": "100G",
+      "gres": "gres/gpu:1",
+      "time_limit": "1:30:00",
+      "dependencies": "(null)",
+      "comment": "wearusfm:PILOT-POSA-B19618-R3c-p1-ext-20261028"
+    },
+    {
+      "job_id": 62583165,
+      "logical_id": "PILOT-POSA-B19618-p1p2-compare-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "30:00",
+      "dependencies": "afterok:62583155(unfulfilled),afterok:62583157(unfulfilled),afterok:62583160(unfulfilled),afterok:62583163(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-p1p2-compare-20261028"
+    },
+    {
+      "job_id": 62583164,
+      "logical_id": "PILOT-POSA-B19618-pose-report-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "1:00:00",
+      "dependencies": "afterok:62583151(unfulfilled),afterok:62583147(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-pose-report-20261028"
+    },
+    {
+      "job_id": 62583163,
+      "logical_id": "PILOT-POSA-B19618-B-p2-pool-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "4:00:00",
+      "dependencies": "afterok:62583154(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-B-p2-pool-20261028"
+    },
+    {
+      "job_id": 62583160,
+      "logical_id": "PILOT-POSA-B19618-B-p1-pool-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "4:00:00",
+      "dependencies": "afterok:62583153(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-B-p1-pool-20261028"
+    },
+    {
+      "job_id": 62583157,
+      "logical_id": "PILOT-POSA-B19618-R3c-p2-pool-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "4:00:00",
+      "dependencies": "afterok:62583149(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-R3c-p2-pool-20261028"
+    },
+    {
+      "job_id": 62583155,
+      "logical_id": "PILOT-POSA-B19618-R3c-p1-pool-20261028",
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "cpus": 8,
+      "memory": "30G",
+      "gres": "gres/tmpfs:10g",
+      "time_limit": "4:00:00",
+      "dependencies": "afterok:62583148(unfulfilled)",
+      "comment": "wearusfm:PILOT-POSA-B19618-R3c-p1-pool-20261028"
+    }
+  ],
+  "log_checks": {
+    "62583147": {
+      "frozen_code_verified": true,
+      "stage": "environment loaded; no extraction progress printed yet",
+      "traceback_seen": false
+    },
+    "62583148": {
+      "frozen_code_verified": true,
+      "stage": "teacher R3c19618 loaded, expected SHA ee78d2a96264, P1 extraction started",
+      "traceback_seen": false
+    },
+    "62583149": {
+      "frozen_code_verified": true,
+      "stage": "teacher R3c19618 loaded, expected SHA ee78d2a96264, P2 extraction started",
+      "traceback_seen": false
+    }
+  },
+  "timezone_accounting": "UTC",
+  "timezone_logs": "Europe/Rome"
+}

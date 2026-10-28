@@ -16,6 +16,21 @@ GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budge
 Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
 e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
 
+### Aggiornamento operativo GPT del 28/10/2026 — B19618 sottomessa e consegne integrate
+
+Dopo il preflight62575087, sottomessi **training62582916 +12 valutazioni** con codice congelato24139ab;
+protocollo e payload pubblicati prima del lancio (8405a0b). Snapshot **17:27:47 Europe/Rome**: training PENDING Priority,
+R3c posa/P1/P2 RUNNING (62583147/148/149), nove successivi PENDING Dependency. Nessun risultato finale ancora disponibile.
+Piano e ID in results/infra/pilot_posa/b19618_20261028/submission. Tetto23GPU-ore e324,333333core-ore con preflight;
+componente restante soloCPU140core-ore. Nessuna continuazione automatica a49046.
+
+Consegne riunite tramite merge2b8e352 (GPT evaluationda0e803) e2cb1644 (Claude7a4221d), commit originali preservati;
+main riceve questa consegna dopo i lanci, come richiesto. Review indipendenti favorevoli, **501test passati/1saltato**;
+codice runtime identico al ramo science8405a0b. Voci cronologiche di tutti i rami verificate testualmente.
+[Review integrazione](reviews/integration_science_20261028.md). Nessun deploy o modifica dei checkout di campagna.
+[Stato distinto dei quattro punti PSD](reviews/stato_psd_20261028.md): PSD-1 chiuso, PSD-2 riorientato;
+PSD-3 e confronto controllato PSD-4 ancora aperti. Non quattro esperimenti tutti negativi.
+
 ### Aggiornamento operativo GPT del 28/10/2026 — E3 B conclusa e letta
 
 **62561780 / 62561881 COMPLETED 0:0**, 255 / 106 s; consuntivo **0,070833 GPU-ore / 0,802222 core-ore**.
@@ -67,10 +82,11 @@ R3 completo, E3 su R0 e J2 bis restano fermi. [Analisi](reviews/collaudo_b_resul
 
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
 
-**Aggiornamento del 28/10 dopo E3:** numerazione invariata. 1/2/4 chiusi nel rispettivo perimetro;
-3 integrazione ancora aperta (`origin/main` verificato a 4680617); 5 aperto con B, E1/E2, dinamica ed E3 conclusi;
-6 sospeso. Ruoli attuali: GPT implementazione/lanci, Claude revisore. La tabella e le assegnazioni del 26/10
-sotto restano storico; [riepilogo attuale completo](reviews/e3_b_results_20261028.md).
+**Aggiornamento del 28/10 dopo i lanci B19618:** numerazione invariata. 1/2/4 chiusi nel rispettivo perimetro;
+3 consegne riunite e verificate per main (merge2b8e352/2cb1644 e pubblicazione di questa voce); 5 aperto, ora con B19618
+sottomessa e tre confronti in catena; 6 sospeso. GPT implementa/lancia, Claude rivede. La tabella e le assegnazioni del26/10
+sotto restano storico. Vedere [review integrazione](reviews/integration_science_20261028.md) e
+[protocollo B19618](continuazione_b19618_20261028.md).
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
 facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
@@ -4638,6 +4654,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Lettura informale, non ufficiale: GPT pubblica il rapporto e la lettura; poi lettura congiunta come chiesto da Simone. Nessun job mio.
   Output di leonardo-ops in `~/wearusfm_local/logs/status_e3b_20261028_144139.txt`.
 
+### 2026-10-28 | GPT | Lanci B19618 e integrazione di tutte le consegne
+
+- Sottomessi training62582916 e12valutazioni dal piano8405a0b; tutti rc0, dipendenze/commenti/risorse verificati.
+  Snapshot17:27:47Roma: tre estrazioni R3c RUNNING, training PENDING Priority, altri nove Dependency.
+  Tetto23GPU-ore; residuo conservativo56,070833GPU-ore e319,112778core-ore soloCPU dopo la prenotazione.
+- L'helper del primo dispatch si e' fermato prima della prenotazione per HEAD aggiornato durante il permesso runtime:
+  assenza di ledger/directory/output verificata, nessun sbatch. Dispatch effettivo una sola volta da8405a0b, nessun retry di job.
+- Dopo i lanci, merge senza squash/rebase delle review GPTda0e803 e Claude7a4221d; risolti solo conflitti di documentazione,
+  conservate tutte le voci cronologiche. Prova testuale:628/472/605voci dei tre snapshot tutte presenti.
+  Runtime src/scripts/tests identico a8405a0b;501test distinti verdi,1saltato. Dettagli nella review d'integrazione.
+- Risposta a Simone sui quattro PSD registrata: PSD-1 chiuso; PSD-2 riorientato, non eseguito nel disegno originario;
+  PSD-3 e prova controllata PSD-4 non ancora eseguiti. Nessuna nuova sperimentazione PSD in questa consegna.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6495,3 +6524,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   una calibrazione per giunto/utente; sulla continuazione (a2753a6) la ripresa nella stessa cartella sovrascriverebbe `checkpoint.pt` a 5.000
   (copia immutabile prima, nessuna ripresa mentre E3 legge) e le letture vanno riformulate come differenze appaiate.
 - Stato: E3 B lanciata da GPT (estrazione 62561780, rapporto 62561881 con afterok); io leggo lo stato in sola lettura e i risultati con GPT.
+
+### 2026-10-28 | GPT | Limiti della consegna integrata e rettifiche del sintetico
+
+- Job sottomessi non significa training iniziato o risultati disponibili. Lo snapshot e' datato; R3completo resta escluso.
+- Il registro conserva diagnosi e proposte superate: M3 rettificata, E2 non isola da solo il movimento, IC comprendente0
+  non e' equivalenza e proposta Claudea2753a6 superata per le regole di continuazione dal protocollo B19618.
+- Rettificati descrittivamente due P3 del sintetico nella review: massimo scarto fra semi0,0198646646 (non0,01);
+ 1−q e' il floor MSE di popolazione del rumore, non il ratio/minimo empirico del pannello. JSON storici invariati;
+  vecchia chiave optimum_ratio_at_fixed_features resta un nome legacy improprio. Duplicazione importlib non risolta, non bloccante.

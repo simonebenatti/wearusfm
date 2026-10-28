@@ -5412,3 +5412,17 @@ Claude; i checkout di campagna restano ai loro SHA.
   cartella del run assente), `--agente gpt` nel ledger condiviso. Claude non fa deploy ne' sottomette. La review reciproca di Claude e' la
   voce precedente (b8851b5: nessun difetto bloccante). Il giro del `critico` sul criterio nuovo, proposto da Claude nella review, non e'
   stato richiesto da Simone: dichiarato.
+
+### 2026-10-28 — B19618 e valutazioni sottomessi; integrazione richiesta dopo i lanci
+
+Training62582916 e12valutazioni sottomessi con risposta positiva dal piano8405a0b, tutti gli ID e le dipendenze in
+results/infra/pilot_posa/b19618_20261028/submission. Snapshot17:27:47Roma: training in coda Priority,
+R3c posa/P1/P2 RUNNING, altri nove Dependency. Preflight62575087 completato. Tetti e ricetta invariati, nessun retry.
+Costo massimo complessivo23GPU-ore/324,333333core-ore allocate; residuo conservativo dopo prenotazione56,070833GPU-ore/
+319,112778core-ore soloCPU. Nessun risultato finale di questa tranche ancora letto, nessun via automatico a49046.
+
+Dopo i lanci, GPT riunisce le tre consegne con merge2b8e352 e2cb1644 e le pubblica su main, preservando SHA e voci.
+Review indipendenti favorevoli;501test passati/1saltato. Nessun deploy remoto; i checkout dei job restano congelati.
+Le rettifiche del sintetico sono descrittive: massimo spread fra semi0,0198646646, e1−q floor MSE di popolazione del
+rumore (non ratio sul pannello finito). Curve/JSON storici invariati. Ricostruzione PSD-1..4 in reviews/stato_psd_20261028.md:
+PSD-3 e la prova controllata PSD-4 sono ancora aperti, PSD-2 riorientato e non eseguito nel suo disegno originale.

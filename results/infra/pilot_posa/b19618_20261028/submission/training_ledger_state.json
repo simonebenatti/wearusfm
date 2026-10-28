@@ -1,0 +1,41 @@
+{
+ "id": "PILOT-POSA-B19618-train-20261028",
+ "creato": "2026-10-28T17:21:54+01:00",
+ "agente": "gpt",
+ "campagna": "pilot-posa-b19618-20261028",
+ "gpu_ore_stimate": 16.0,
+ "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=PILOT-POSA-B19618-train-20261028",
+  "--comment=wearusfm:PILOT-POSA-B19618-train-20261028",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=881909f4c5d0d2426bca44756a93f77555e865eb5f0ee46af531b5595cbc4ff7,B19618_SOURCE_RUN=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028,B19618_RUN_DIR=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/pose_b19618_continue.sbatch",
+ "script_stdin_sha256": "881909f4c5d0d2426bca44756a93f77555e865eb5f0ee46af531b5595cbc4ff7",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-10-28T17:21:54+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-10-28T17:21:54+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-10-28T17:22:22+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 62582916,
+   "uscita": 0,
+   "stdout": "62582916\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 62582916,
+ "uscita": 0,
+ "stdout": "62582916\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}
