@@ -4684,6 +4684,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Snapshot delle 17:32:26, Roma: 62582916 PENDING Priority, 62583147/148/149 RUNNING, 9 job Dependency, nessun fallimento.
   Evidenza copiata in results/infra/pilot_posa/b19618_20261028/submission/final_status.json.
 
+### 2026-10-28 | GPT | Loss attuale e alternative motivate
+
+- Riferimento esaminato `78268d6`, config B e preflight B19618: MSE posa standardizzata (peso 1) + cinque ancore
+  quadratiche (peso 0,2), JEPA spento, riduzione per finestre valide. Verificati codice e fonti primarie emg2pose.
+- Nota in reviews/loss_e_alternative_20261028.md: esplorazione mirata dopo i risultati B19618, priorita' a MSE
+  con enfasi aggiuntiva sulla dinamica centrata; Huber/MAE non sono una cura dimostrata per traiettorie attenuate.
+- Nessuna modifica al codice o ai job, nessun nuovo lancio; questa e' una proposta motivata, non un protocollo esecutivo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6555,3 +6563,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 
 - Le vecchie istruzioni che assegnano i lanci a GPT o leonardo-ops sono storico per questo punto: da ora si delega
   a semplicione. Autonomia sui piani approvati, budget, ruoli scientifici e divieto di duplicare le prenotazioni invariati.
+
+### 2026-10-28 | GPT | Limiti dell'ipotesi sulla loss
+
+- Riferimento `78268d6`: nessun difetto nuovo dimostrato. MSE contiene gia' l'errore dinamico; aggiungerne un termine
+  centrato ne cambia il peso, non crea informazione. E3 negativo non dimostra saturazione dell'encoder.
+- Restano da definire, se la proposta verra' sviluppata, pesi/scale sul train, protocollo a pari dose, preventivo
+  e review; nessun tuning ripetuto sui 15 utenti di val. I risultati B19618 restano la priorita'.
