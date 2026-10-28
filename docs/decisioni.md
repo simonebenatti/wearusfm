@@ -5195,3 +5195,19 @@ necessaria per questa domanda. Lettura diagnostica a5.000, non criterio scientif
 Preventivo indicativo: 1 A100 / 8 core / 60G / 40min + rapporto 8 core / 30G / 20min, totale massimo 0,667 GPU-ore e8 core-ore;
 comandi e review da completare prima di un via. E2 con testa non ha una durata gia' misurata da B. Eventuale nuovo checkout
 per correzioni non compreso in quel preventivo. Nessun cambio di ricetta, pooling, target o peso. R3 completo, E3 R0 e J2 bis fermi.
+
+
+## 28/10/2026 — GPT: via di Simone a E1/E2 del checkpoint B a 5.000
+
+Simone cita la proposta «valutazione breve del checkpoint B sui 15 utenti esclusi dal training, usando E1/E2» e risponde:
+**«vai con la tua proposta»**. Autorizzati i due job: 1 A100 / 8 core / 60G / 40min per val student, poi 8 core / 30G / 20min
+per rapporto E1/E2 senza --train; tetto totale **0,6667 GPU-ore e 8 core-ore**. Codice scientifico frozen24139ab riusato,
+nessun nuovo checkout. Nessun training, E3 R0, J2 bis o retry automatico nel via attuale.
+
+Review scientifica favorevole prima dei risultati, limiti E2 esplicitati in `docs/valutazione_b_e1e2_20261028.md`.
+Verifica tecnica: 8 test CPU harness passati; nuovo wrapper operativo di provenienza, 18 test passati, inviato come script
+versionato su stdin dal submitter. Verifiche compute dentro i due budget: checkpoint B step/config/testa student e SHA256,
+stats concordi, CSV/full val/disgiunzione train, impronta cache e utenti con supporto. Funzioni E1/E2 invariate.
+Il rapporto dipende dall'estrazione completata; non si deduce movimento corretto dal solo booleano E2.
+Piano/comandi congelati prima del lancio in `results/infra/pilot_posa/piano_b_e1e2_20261028.json` e relativo file comandi.
+Gli ID effettivi saranno registrati dopo la sottomissione; R3 completo resta una decisione separata.

@@ -1,0 +1,126 @@
+{
+  "checked_at_utc": "2026-10-28T09:38:34.633370+00:00",
+  "status": "READ_ONLY_PREFLIGHT_OK",
+  "queue_sbenatti": [],
+  "b_job": {
+    "id": 62523672,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_s": 3814,
+    "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/checkpoint.pt",
+    "checkpoint_bytes": 454215776
+  },
+  "code": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028",
+    "expected_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sha_provenance": "Prior frozen checkout62523525 and B summary; launcher will verify SHA and cleanliness again. No remote git command executed.",
+    "read_only": true,
+    "launchers_present": {
+      "scripts/slurm/pose_eval_extract.sbatch": 1996,
+      "scripts/slurm/pose_eval_report.sbatch": 1751
+    }
+  },
+  "inputs_present": {
+    "/leonardo_work/IscrB_WearUsFM/data/raw/emg2pose_mini/emg2pose_metadata.csv": 5674462,
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json": 7377,
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose": "directory"
+  },
+  "unused_path_absent": "/leonardo_work/IscrB_WearUsFM/data/processed/emg2pose",
+  "outputs_absent": [
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json"
+  ],
+  "ledger_search": {
+    "patterns": [
+      "B5000_student_E1E2",
+      "B-E1E2",
+      "B5000"
+    ],
+    "matches": 0
+  },
+  "historical_jobs": [
+    {
+      "id": 62437148,
+      "kind": "val extraction R3c",
+      "state": "COMPLETED",
+      "elapsed_s": 1511,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G",
+      "windows": 18548,
+      "recordings_selected": 1950,
+      "application_elapsed_s": 1499.7171216011047,
+      "final_npz_bytes": 2263146810,
+      "caveat": "Initial job shell argument bug embedded --split val in filename; existing val.npz was subsequently renamed and verified in prior campaign."
+    },
+    {
+      "id": 62437151,
+      "kind": "mislabeled train extraction actually val",
+      "state": "COMPLETED",
+      "elapsed_s": 1512,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G"
+    },
+    {
+      "id": 62442491,
+      "kind": "corrected train subset extraction R3c",
+      "state": "COMPLETED",
+      "elapsed_s": 252,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G",
+      "windows": 1907,
+      "recordings_selected": 200,
+      "application_elapsed_s": 240.42873287200928,
+      "npz_bytes": 234817553
+    },
+    {
+      "id": 62443474,
+      "kind": "E3 report R3c",
+      "state": "COMPLETED",
+      "elapsed_s": 60,
+      "gpus": 0,
+      "cpus": 8,
+      "memory": "30G",
+      "report_bytes": 6760
+    },
+    {
+      "id": 62478383,
+      "kind": "R0 val extraction cancelled",
+      "state": "CANCELLED by 127686",
+      "elapsed_s": 401,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G"
+    },
+    {
+      "id": 62478387,
+      "kind": "R0 train subset extraction",
+      "state": "COMPLETED",
+      "elapsed_s": 184,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G"
+    }
+  ],
+  "proposed_caps": {
+    "extract": {
+      "gpus": 1,
+      "minutes": 40,
+      "cpus": 8,
+      "memory": "60G"
+    },
+    "report": {
+      "gpus": 0,
+      "minutes": 20,
+      "cpus": 8,
+      "memory": "30G"
+    },
+    "total_gpu_hours": 0.6666666666666666,
+    "total_core_hours": 8
+  },
+  "submissions": [],
+  "remote_mutations": []
+}

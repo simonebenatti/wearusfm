@@ -5,6 +5,14 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
 
+### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B autorizzata
+
+Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
+**Due job autorizzati e pronti**, estrazione + rapporto E1/E2, tetto 0,6667 GPU-ore / 8 core-ore; ID SLURM ancora da registrare.
+Codice scientifico frozen `24139ab`, wrapper di provenienza versionato inviato via stdin: nessun nuovo checkout o training.
+26 test CPU passati (8 harness + 18 guardie). [Protocollo](valutazione_b_e1e2_20261028.md).
+R3 completo, E3 su R0 e J2 bis restano fermi; il via attuale non li include.
+
 ### Aggiornamento operativo GPT del 28/10/2026 — B letto
 
 **B 62523672 COMPLETED e SUPERATO**, codice congelato `24139ab`: 5.000 passi, MSE −11,713%, IC95 del rapporto
@@ -4200,6 +4208,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   piano aggiornato e prompt per Claude. Due review indipendenti confermano numeri/formule/limiti e raccomandazione.
   Nessuna modifica a trainer, ricetta o gate; nessun nuovo job. Tutta la consegna committata e pubblicata sul ramo GPT.
 
+### 2026-10-28 | GPT | E1/E2 dello student B: via di Simone e preparazione dei due job
+
+- Simone cita la proposta di sola inferenza B sui 15 utenti esclusi dal training e autorizza: «vai con la tua proposta».
+  Scope: estrazione val dello student a 5.000 + rapporto E1/E2 senza train/ridge. Tetto 0,6667 GPU-ore e 8 core-ore;
+  1 A100 / 8 core / 60G / 40min e poi 8 core / 30G / 20min, rapporto con afterok. Nessun training, E3 R0 o J2 bis.
+- Review scientifica prima del lancio favorevole: lettura diagnostica anticipata, condizioni senza maschera e metriche diverse da B,
+  limiti del controllo disallineato dichiarati prima dei numeri. I booleani finali a 49.046 non diventano nuovi cancelli per B.
+- Review tecnica: lo student carica testa/encoder corretti, E2 funziona senza --train, 8 test CPU passati. Mancano nello script
+  frozen il confronto fra hash stats, la verifica del passo e l'impronta checkpoint: aggiunto solo wrapper operativo versionato
+  `scripts/slurm/pose_eval_b_guarded.sbatch`, trasmesso con --script-stdin del submitter, che chiama i launcher frozen24139ab.
+  Guardie nel compute node, nello stesso budget: checkpoint/config/stats/manifest, disgiunzione utenti, full val, cache e supporti.
+- 18 test delle guardie passati, inclusi percorsi di rifiuto; root ha verificato schema reale del manifest (158 utenti train)
+  e del checkpoint, sintassi e comandi. SHA del wrapper nel piano e nel submitter. Nessun cambiamento al calcolo E1/E2,
+  nessun nuovo checkout. Preflight remoto: coda vuota, input presenti, output nuovi assenti; stima val precedente 25min11s.
+- Protocollo `docs/valutazione_b_e1e2_20261028.md`; piano/comandi `results/infra/pilot_posa/*b_e1e2_20261028*`.
+  Questa voce precede le sottomissioni: ID e stato saranno aggiunti dopo ciascun sbatch. Nessun retry automatico.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5860,3 +5885,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La proposta E1/E2 anticipata deve specificare student (default estrattore teacher), vista senza maschera, endpoint
   diagnostico a5.000 e confronto sul supporto comune; non cambia il cancello gia' superato o le regole finali a49.046.
   Nessun cambio di pooling/target/lag/pesi giustificato da questa sola lettura; nessun lancio autorizzato dalla proposta.
+
+### 2026-10-28 | GPT | E1/E2 anticipata: lacune di provenienza del launcher frozen e limiti di interpretazione
+
+- `pose_eval.py` salva gli hash delle statistiche correnti e del checkpoint ma non ne impone l'uguaglianza; non salva passo
+  e SHA256 checkpoint. Guardia esterna nel job: impedisce letture incompatibili senza modificare le funzioni scientifiche.
+- Il selettore puo' saltare registrazioni processate assenti: full val verificato contro CSV e registrazioni presenti;
+  supporti effettivi e conteggi della cache verificati prima del rapporto. E2 puo' avere copertura inferiore a 15 utenti,
+  da leggere nel JSON. Lo stdout frozen omette E2 nel riepilogo, ma il JSON lo conserva: usare quest'ultimo.
+- E2 inferiore IC95 >0,95 e' regola operativa, non prova di identita' col costante; un fallimento non prova automaticamente
+  leak o assenza di dinamica. Partner/fallback/scarto non preservano perfettamente i margini. Limiti congelati nel protocollo.
+- Gli 0,023 di B e gli ~0,26 citati da Simone non sono stati assunti come un confronto gia' verificato sullo stesso supporto.
+  Questa esecuzione non modifica soglie, target o pesi sulla base di quel rapporto.
