@@ -4403,6 +4403,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   attese3,1h. Via di Simone gia' acquisito; lancio dopo pubblicazione e saldo campagna, ID in voce successiva.
 - Valutazioni secondo protocollo continuazione_b19618_20261028.md; integrazione main richiesta dopo i lanci.
 
+### 2026-10-28 | GPT | Valutazioni B19618 congelate prima del lancio
+
+- Dodici job dopo il training/preflight: due estrazioni posa student, quattro estrazioni teacher P1/P2, quattro sonde pool,
+  rapporto posa e confronto P1/P2. evaluation_plan.json contiene argv, dipendenze, SHA e risorse;7GPU-ore/196core-ore
+  allocate massime,140core-ore soloCPU. Argomenti codificati base64 per preservarli in sbatch --export.
+- Report nuovo riusa le routine frozen di dinamica e ridge; selezione alpha solo train per encoder, LN stateless comune,
+  delta appaiati E1/dinamiche/E2, M2 solo B. Guardia headless per R3c. Review scientifica/algoritmica indipendente favorevole.
+  Nessun risultato nuovo letto, nessun gate endpoint applicato e nessun automatismo verso49046.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
