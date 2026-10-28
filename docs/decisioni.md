@@ -5327,3 +5327,14 @@ tetto 0,333333 GPU-ore / 6,666667 core-ore; attesi circa 0,1 GPU-ora / 2 core-or
 Submitter comune, payload/source hash, ambiente frozen 24139ab, checkpoint/cache immutati, output nuovi, no retry.
 Commit/push prima del lancio; ID successivamente. Nessun resume a 19.618 in questa tranche: non approvata la tabella di
 decisione proposta da Claude, motivi nella risposta. Non serve nuovo consenso per E3.
+
+### 2026-10-28 — Sottomesse estrazione e analisi E3 B
+
+Protocollo e codice `520158e6ee48ea0924e7b0ea5532b874ca3d4667`, pubblicati e verificati su origin prima del lancio.
+Job **62561780**: train B student, tetto 1/3 GPU-ora e 8/3 core-ore. Job **62561881**: rapporto CPU, afterok:62561780,
+tetto 4 core-ore. Entrambe le sottomissioni confermate dal submitter comune; evidenze e piano in results/infra/pilot_posa.
+Nessun altro job, retry di job o continuazione del training. Criteri, tolleranze e source invariati dopo il lancio.
+La chiamata preliminare rimasta in attesa del permesso runtime e' stata interrotta e riconciliata senza tracce di
+sottomissione su registro o SLURM; non conta come esperimento eseguito. Stato e risultati vanno letti separatamente dagli ID.
+Snapshot iniziale registrato alle 14:22 Europe/Rome: 62561780 RUNNING (avvio 14:20:37), 62561881 PENDING Dependency;
+checkout/source hash verificati, senza errori visibili, prima del messaggio di guardia completa. Evidenze startup versionate.

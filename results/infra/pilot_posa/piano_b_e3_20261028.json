@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-28",
-  "status": "AUTORIZZATO_PRONTO",
+  "status": "SOTTOMESSO",
   "approval": {
     "by": "Simone",
     "request": "se approvi procedi autonomamente, e lancia i teste che devi",
@@ -67,7 +67,10 @@
         "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
         "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out"
       ],
-      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out"
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
+      "slurm_id": 62561780,
+      "submission_state": "sottomesso",
+      "last_observed_state": "RUNNING"
     },
     {
       "mode": "report",
@@ -107,7 +110,10 @@
         "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out",
         "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out"
       ],
-      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out"
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out",
+      "slurm_id": 62561881,
+      "submission_state": "sottomesso",
+      "last_observed_state": "PENDING"
     }
   ],
   "total_caps": {
@@ -122,7 +128,25 @@
   "automatic_retry": false,
   "automatic_training": false,
   "execution": {
-    "jobs_submitted": []
+    "plan_commit": "520158e6ee48ea0924e7b0ea5532b874ca3d4667",
+    "jobs_submitted": [
+      {
+        "mode": "extract",
+        "slurm_id": 62561780,
+        "submitted_at_utc": "2026-10-28T13:19:52.151243+00:00",
+        "evidence": "results/infra/pilot_posa/b_e3_20261028/extract_submission.json"
+      },
+      {
+        "mode": "report",
+        "slurm_id": 62561881,
+        "submitted_at_utc": "2026-10-28T13:20:41.466954+00:00",
+        "evidence": "results/infra/pilot_posa/b_e3_20261028/report_submission.json"
+      }
+    ],
+    "extra_jobs_submitted": [],
+    "note": "Prima chiamata runtime interrotta prima di qualunque prenotazione; riconciliazione ledger e SLURM vuota. Una sola sottomissione effettiva per ID, nessun retry di job.",
+    "startup_snapshot": "results/infra/pilot_posa/b_e3_20261028/startup/startup.json",
+    "startup_recorded_at_utc": "2026-10-28T13:22:33.873Z"
   },
   "verification": {
     "cpu_tests": 41,

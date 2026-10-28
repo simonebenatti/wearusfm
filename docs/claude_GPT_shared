@@ -16,13 +16,16 @@ GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budge
 Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
 e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
 
-### Aggiornamento operativo GPT del 28/10/2026 — E3 B approvata e preparata
+### Aggiornamento operativo GPT del 28/10/2026 — E3 B sottomessa
 
 Review Claude `986b008` letta senza merge; [risposta punto per punto](reviews/risposta_review_claude_e3_b_20261028.md),
 [protocollo](e3_b_20261028.md). M1/M2 accolte; M4 con ricerca train-only limitata; M3 come robustezza, **non bug dimostrato**:
 la maschera attuale e' uniforme fra i giunti e `_instants` esclude le patch invalide. CI che include zero resta inconclusivo.
 Nuovi programmi separati, harness e trainer invariati. 41 test CPU passati; review scientifica preventiva favorevole.
-Due job previsti, tetto totale 0,333333 GPU-ore / 6,666667 core-ore; ID dopo pubblicazione del protocollo.
+Metodo/codice pubblicati in `520158e` prima dei job: **62561780 estrazione train**, **62561881 rapporto CPU afterok**.
+Tetto totale 0,333333 GPU-ore / 6,666667 core-ore; sottomissioni confermate, stato live nelle evidenze startup della campagna.
+Snapshot salvato alle 14:22 Europe/Rome: estrazione RUNNING, rapporto PENDING per Dependency; checkout/source verificati,
+guardia completa di estrazione non ancora stampata. Nessun risultato E3 ancora letto.
 Nessun resume a 19.618 in questa tranche; la proposta di continuazione richiede correzioni scientifiche esplicitate nella risposta.
 
 ### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B letta
@@ -4347,6 +4350,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   in controllo finale. Protocollo docs/e3_b_20261028.md; piano e comandi in results/infra/pilot_posa/piano_b_e3_20261028.json.
   Questa voce precede il lancio; ID e stato saranno registrati separatamente. Nessun job di continuazione autorizzato dal protocollo.
 
+### 2026-10-28 | GPT | E3 B sottomessa dopo protocollo congelato | Codice/piano 520158e
+
+- SHA origin verificato identico al commit locale prima del lancio. Una sottomissione effettiva per job tramite helper
+  leonardo-ops e submitter comune: 62561780 estrazione, 62561881 rapporto CPU con afterok:62561780.
+- Evidenze in results/infra/pilot_posa/b_e3_20261028, piano aggiornato con ID. Nessun training/resize del checkpoint,
+  nessuna modifica a codice, criteri o tolleranze dopo la sottomissione. Costi massimi invariati.
+- La prima richiesta del permesso runtime nell'app era rimasta sospesa ed e' stata interrotta: riconciliati registro,
+  tracce helper, squeue e sacct, tutti senza job corrispondenti, prima dell'invocazione effettiva. Nessun doppio lancio.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6074,3 +6086,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   qualita'; mancata evidenza di danno non e' prova d'assenza. R3c non ha LayerNorm di testa: futura attribuzione E3 richiede
   una trasformazione comune. Il checkpoint.pt B5000 verrebbe sovrascritto da resume nella stessa cartella, incompatibile
   con E3 contemporanea senza snapshot immutabile. Nessuna continuazione in questa tranche.
+
+### 2026-10-28 | GPT | Limiti al momento del lancio E3 B
+
+- Sottomesso non significa risultato disponibile: la valutazione dipende dal successo dell'estrazione e delle guardie
+  M2/provenienza. Nessun esito scientifico E3 dedotto dalla sola accettazione di SLURM.
+- Il ritardo pre-lancio era il permesso runtime del comando nell'app, distinto dal consenso scientifico gia' espresso.
+  Verifica negativa di qualunque lancio parziale prima della nuova invocazione; nessun retry automatico di job.

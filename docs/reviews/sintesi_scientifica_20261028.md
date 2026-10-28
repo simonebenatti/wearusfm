@@ -7,6 +7,8 @@ modesto, le predizioni temporali sono attenuate e l'utilita' come foundation mod
 [congelato](../e3_b_20261028.md). [Risposta punto per punto](risposta_review_claude_e3_b_20261028.md).
 GPT implementa e lancia, Claude resta revisore per istruzione successiva di Simone. Le proposte sotto conservano il contesto
 della sintesi iniziale; stato esecutivo aggiornato nel registro e nel piano E3.
+Lanciata da `520158e`: estrazione 62561780 e rapporto 62561881 afterok; snapshot iniziale 14:22 Europe/Rome rispettivamente
+RUNNING e PENDING Dependency. Nessuna continuazione del training in questa tranche, nessun risultato E3 ancora letto.
 
 ## Che cosa abbiamo verificato
 

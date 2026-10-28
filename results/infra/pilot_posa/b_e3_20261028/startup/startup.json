@@ -1,0 +1,62 @@
+{
+  "recorded_at_utc": "2026-10-28T13:22:33.873Z",
+  "one_cluster_snapshot": true,
+  "plan_commit": "520158e6ee48ea0924e7b0ea5532b874ca3d4667",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "jobs": {
+    "extract": {
+      "job_slurm": 62561780,
+      "state": "RUNNING",
+      "elapsed_seconds": 73,
+      "start_utc": "2026-10-28T13:20:37Z",
+      "start_europe_rome": "2026-10-28T14:20:37+01:00",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "60G",
+      "walltime": "00:20:00",
+      "comment": "wearusfm:PILOT-POSA-B5000-E3-extract-20261028",
+      "code_verified": true,
+      "source_hash_check_passed": true,
+      "full_extraction_guard_passed_line_seen": false,
+      "extraction_progress_line_seen": false,
+      "obvious_error_seen": false
+    },
+    "report": {
+      "job_slurm": 62561881,
+      "state": "PENDING",
+      "reason": "Dependency",
+      "dependency": "afterok:62561780(unfulfilled)",
+      "gpus": 0,
+      "cpus": 8,
+      "memory": "30G",
+      "walltime": "00:30:00",
+      "comment": "wearusfm:PILOT-POSA-B5000-E3-report-20261028",
+      "log_exists": false
+    }
+  },
+  "reads": {
+    "squeue": {
+      "command": "ssh leonardo 'squeue -h -j 62561780,62561881 -o \"%i|%j|%T|%M|%l|%C|%m|%b|%E|%k|%R\"'",
+      "returncode": 0,
+      "output": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\n62561780|PILOT-POSA-B5000-E3-extract-20261028|RUNNING|1:13|20:00|8|60G|gres/gpu:1|(null)|wearusfm:PILOT-POSA-B5000-E3-extract-20261028|lrdn0071\n62561881|PILOT-POSA-B5000-E3-report-20261028|PENDING|0:00|30:00|8|30G|gres/tmpfs:10g|afterok:62561780(unfulfilled)|wearusfm:PILOT-POSA-B5000-E3-report-20261028|(Dependency)\n"
+    },
+    "sacct": {
+      "command": "ssh leonardo 'TZ=UTC sacct -n -P -j 62561780,62561881 --format=JobID,JobName%64,State,ExitCode,Submit,Start,End,Elapsed,ElapsedRaw,AllocCPUS,ReqTRES%100,AllocTRES%100,Timelimit,Comment%100,TotalCPU,MaxRSS'",
+      "returncode": 0,
+      "output": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nControlSocket /Users/simonebenatti/.ssh/cm-sbenatti@login.leonardo.cineca.it:22 already exists, disabling multiplexing\r\n62561780|PILOT-POSA-B5000-E3-extract-20261028|RUNNING|0:0|2026-10-28T13:19:52|2026-10-28T13:20:37|Unknown|00:01:13|73|8|billing=8,cpu=8,gres/gpu=1,mem=60G,node=1|billing=8,cpu=8,gres/gpu=1,mem=60G,node=1|00:20:00||00:00:00|\n62561780.batch|batch|RUNNING|0:0|2026-10-28T13:20:37|2026-10-28T13:20:37|Unknown|00:01:13|73|8||cpu=8,gres/gpu=1,mem=60G,node=1|||00:00:00|\n62561780.extern|extern|RUNNING|0:0|2026-10-28T13:20:37|2026-10-28T13:20:37|Unknown|00:01:13|73|8||billing=8,cpu=8,gres/gpu=1,mem=60G,node=1|||00:00:00|\n62561881|PILOT-POSA-B5000-E3-report-20261028|PENDING|0:0|2026-10-28T13:20:41|Unknown|Unknown|00:00:00|0|0|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1||00:30:00||00:00:00|\n"
+    },
+    "extract_log": {
+      "command": "ssh leonardo 'tail -n 50 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_62561780.out'",
+      "returncode": 0,
+      "output": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nControlSocket /Users/simonebenatti/.ssh/cm-sbenatti@login.leonardo.cineca.it:22 already exists, disabling multiplexing\r\ncodice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028 @ 24139ab901c052357a46a65bc20466f2eb1e8358\nLoading cineca-ai/4.3.0\n  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1\n    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41\n    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q\n    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea\n    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s\n    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp\n    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif\n    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2\n    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7\n    openjdk/11.0.20.1_1\nE3 source and reference hashes verified\n"
+    },
+    "report_log": {
+      "command": "ssh leonardo 'tail -n 50 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_62561881.out'",
+      "returncode": 1,
+      "output": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nControlSocket /Users/simonebenatti/.ssh/cm-sbenatti@login.leonardo.cineca.it:22 already exists, disabling multiplexing\r\ntail: cannot open '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_62561881.out' for reading: No such file or directory\n"
+    }
+  },
+  "interpretation": "Extraction has passed checkout/source verification and is still initializing. Full train guard success was not yet printed. Report awaits afterok. No additional polling, retries or jobs.",
+  "remote_mutations": []
+}
+

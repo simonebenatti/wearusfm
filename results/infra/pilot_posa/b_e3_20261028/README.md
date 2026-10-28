@@ -10,3 +10,9 @@ Protocollo: `docs/e3_b_20261028.md`; risposta alla review Claude:
 41 test CPU passati, critico scientifico favorevole. Questa preparazione precede i risultati;
 le evidenze di sottomissione e gli eventuali risultati saranno aggiunti con commit separati.
 Cache e checkpoint rimangono sul cluster; nessun dato wearable viene pubblicato nel repository.
+
+Protocollo pubblicato prima dei job in `520158e`. Sottomissioni: **62561780** (estrazione train),
+**62561881** (rapporto CPU, afterok:62561780), entrambe confermate dal submitter.
+`extract_submission.json` e `report_submission.json` conservano argv e risposte;
+`interrupted_launch_local_reconciliation.json` documenta l'assenza di job dopo l'interruzione del primo permesso runtime.
+Nessuna esecuzione duplicata o retry automatico.
