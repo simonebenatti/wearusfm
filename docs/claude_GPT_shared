@@ -23,6 +23,10 @@ varianza predetta/target sulle dinamiche 0,063240, correlazione pooled 0,269936.
 [Protocollo](dinamica_b_20261028.md), [risultati](reviews/dinamica_b_results_20261028.md),
 [sintesi e prossimi passi](reviews/sintesi_scientifica_20261028.md). Nessun altro job lanciato.
 
+**Seguito richiesto da Simone:** prima della fase esecutiva, review di Claude della proposta E3 B, senza esperimenti.
+[Prompt da inoltrare](prompt_claude_review_e3_b_20261028.md), riferimento scientifico `9142ca6`. GPT prepara il prompt;
+Claude valuta il disegno e propone eventuali correzioni. Nessuna implementazione, estrazione o sottomissione in questo passaggio.
+
 ### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B letta
 
 Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
@@ -4309,6 +4313,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   job con costo massimo <5 GPU-ore autonomi; log/commit/push autonomi; test approvato direttamente eseguibile anche >5 GPU-ore
   senza chiedere un secondo consenso. Regole precedenti di consenso per ogni lancio superate in questo perimetro.
 
+### 2026-10-28 | GPT | Prompt per la review Claude della proposta E3 B | Riferimento 9142ca6
+
+- Simone chiede un secondo parere prima di procedere e precisa: «lui non fa esperinenti adesos, e' solo per fare un review
+  di quello che proponi». Preparato docs/prompt_claude_review_e3_b_20261028.md, da inoltrare a cura di Simone.
+- Review mirata a utilita' di E3, confronto LayerNorm/testa/ridge, split e cache, metriche e limiti inferenziali, perimetro
+  minimo e costo indicativo. Richiesti parere indipendente e distinzione fra modifiche indispensabili e facoltative.
+- Nessuna implementazione o esecuzione E3; nessun messaggio inviato a Claude. Prompt e registro pubblicati sul ramo GPT.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6017,3 +6029,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Il risultato non e' causalita' EMG-movimento o trasferimento multi-dataset. Nessuna soglia aggiunta dopo la lettura.
 - Il permesso del comando fuori sandbox ha ritardato il lancio; il job ha poi richiesto 13 s. Non un blocco della coda,
   un errore scientifico o una richiesta nuova di approvazione della proposta. Autorizzazioni utente ora esplicite nei documenti.
+
+### 2026-10-28 | GPT | Punti aperti per la review della proposta E3 B
+
+- La proposta in 9142ca6 non e' ancora un protocollo eseguibile: da definire lettore comparabile alla testa con LayerNorm,
+  obiettivo interno di selezione, pesi/supporti, confronto appaiato e preventivo. Questi sono quesiti di review, non difetti
+  dimostrati o nuove condizioni applicate ai risultati gia' letti.
+- La richiesta corrente riguarda soltanto il secondo parere di Claude; nessun esperimento avviato in attesa del confronto.

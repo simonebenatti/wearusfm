@@ -5296,3 +5296,11 @@ E1 ricostruita e concorde, identita' MSE/guadagni entro 6,4e-14, provenance/sour
 concorde. Tranche diagnostica completata, nessun altro job. L'esito non autorizza automaticamente R3, ne' suggerisce un
 cambio immediato di pooling/target/pesi. Restano i limiti di un checkpoint, un seme e 15 utenti, e dell'oracolo di centratura.
 Sintesi complessiva e proposta successiva E3 B in docs/reviews/sintesi_scientifica_20261028.md; proposta non ancora sottomessa.
+
+### 2026-10-28 — Secondo parere di Claude sulla proposta E3 B
+
+Simone: «facciamo fare una review a claude della tua proposta e vediamo se si converge», poi precisa che Claude deve fare
+solo review, senza esperimenti. GPT prepara docs/prompt_claude_review_e3_b_20261028.md sul riferimento 9142ca6; Simone lo
+inoltra. Il prompt chiede un giudizio indipendente sull'utilita' del prossimo passo e sulle condizioni per un confronto
+testa/ridge interpretabile, con correzioni indispensabili separate dagli approfondimenti facoltativi.
+Nessuna implementazione, estrazione, training o nuovo job in questo passaggio; confronto della review prima della fase esecutiva.
