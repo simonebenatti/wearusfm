@@ -4123,6 +4123,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: firma di Simone su criterio (rapporto <= 0,9 e IC95 superiore < 1) e sul tetto 6 GPU-ore / 48,33 core-ore; giro del
   `critico` sul criterio nuovo se Simone lo vuole anche sul protocollo di GPT; poi deploy di 24139ab, checkout e [B] con la procedura comune.
 
+### 2026-10-28 | Claude | FIRMA di Simone di criterio e tetto di B registrata alla lettera in decisioni.md prima del lancio; esecuzione a GPT («con GPT che sottomette come da comandi»); Claude non fa deploy ne' job
+- Fatto: voce «FIRMA di Simone del collaudo lungo B» in decisioni.md (criterio congelato: L(5000)/L(0) <= 0,9 e IC95 appaiato per utente con
+  limite superiore < 1; tetto 6 GPU-ore + 48,33 core-ore; esecuzione GPT; critico non richiesto, dichiarato). Commit prima di qualunque lancio.
+- Cluster: nessun job di Claude. Il deploy di 24139ab, il checkout `pilot-posa-b-20261028` e il job B li esegue GPT secondo
+  `results/infra/pilot_posa/comandi_b_20261028.txt`.
+- Questioni aperte: lettura di B con GPT all'arrivo (lettore `R3-lungo`); R3 completo resta fermo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170

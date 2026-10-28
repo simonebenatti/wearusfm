@@ -5145,3 +5145,22 @@ verdi; nessun deploy ne' job.** Dettagli in `docs/reviews/claude_review_collaudo
 (L(5000)/L(0) <= 0,9 e limite superiore dell'IC95 appaiato per utente < 1; 1.000 ricampionamenti, seme 20261027) e del tetto aggiornato
 (90 min: 6 GPU-ore e 48 core-ore per B, 1/3 core-ora per il checkout), poi la procedura comune. Nessuna risorsa o soglia e' stata cambiata da
 Claude; i checkout di campagna restano ai loro SHA.
+
+**FIRMA di Simone del collaudo lungo B (28/10/2026, ~08:50): criterio e tetto della proposta di GPT (codice congelato 24139ab,
+`docs/collaudo_r3_b_20261028.md`, piano `results/infra/pilot_posa/piano_b_20261028.json`, comandi `comandi_b_20261028.txt`).**
+- **Parole di Simone, alla lettera:** «Firmo il criterio di B (L(5000)/L(0) <= 0,9 e IC95 appaiato per utente con limite superiore < 1) e il
+  tetto di 6 GPU-ore + 48,33 core-ore (90 minuti). Procedete con la procedura comune: deploy di 24139ab, checkout e job B, con GPT che
+  sottomette come da comandi.»
+- **Criterio CONGELATO (prima del lancio):** sul pannello fisso del train (32 utenti x 2 registrazioni x 4 finestre da 4 s, seme [0, 7272],
+  valutazioni a 0, 500, ..., 5.000), L(t) = media delle 32 medie per utente delle 8 MSE standardizzate per finestra; **superato** se
+  controlli tecnici e d'integrita' soddisfatti E L(5000) <= 0,9 x L(0) E limite superiore dell'IC95 del rapporto (bootstrap appaiato sugli
+  utenti, 1.000 ricampionamenti, seme 20261027, percentili 2,5-97,5) < 1. Discesa a blocchi del training, varianza temporale delle
+  predizioni, MAE e gradienti: descrittivi. Lettore: `scripts/arms_collaudo.py --arm R3-lungo --steps 5000 --expected-sha 24139ab...`.
+  Un esito positivo non autorizza R3 completo (decisione separata); «non superato» ferma R3; «non valutabile» non si rilancia da solo.
+- **Tetto FIRMATO:** B 4 A100 x 32 core x 90 min = 6 GPU-ora e 48 core-ore (TIME_LIMIT_S 5100, SLURM 5400), checkout 2 core x 10 min = 1/3
+  core-ora; totale 6 GPU-ora e 48,33 core-ore sulla seconda ondata (residuo prima: ~85 GPU-ora, ~460 core-ore). Nessun retry, job di scorta,
+  seme in piu', E3 su R0 o J2 bis.
+- **Esecuzione:** GPT, con la procedura comune e i controlli pre-lancio del suo piano (hook e ref remoti, coda e ledger, hash degli ingressi,
+  cartella del run assente), `--agente gpt` nel ledger condiviso. Claude non fa deploy ne' sottomette. La review reciproca di Claude e' la
+  voce precedente (b8851b5: nessun difetto bloccante). Il giro del `critico` sul criterio nuovo, proposto da Claude nella review, non e'
+  stato richiesto da Simone: dichiarato.
