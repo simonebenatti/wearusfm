@@ -24,8 +24,6 @@
     "pilot-posa-b19618-20261028",
     "--gpu-ore",
     "16",
-    "--dopo",
-    "PILOT-POSA-B19618-preflight-20261028",
     "--script-stdin",
     "scripts/slurm/pose_b19618_continue.sbatch",
     "--",
@@ -42,5 +40,12 @@
     "remaining_cpu_only_core_hours_after_remaining_chain_cap": 319.11277777777775,
     "note": "Preflight already in spent; remaining chain 23 GPUh/140 CPU-only coreh. GPU-job CPU tracked separately. All 37 prior jobs including failed/cancelled charged; no supplemental amendment allowance used.",
     "evidence": "budget_summary.json"
+  },
+  "completed_preflight_gate": {
+    "job_id": "62575087",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "receipt_sha256": "3a1f86c3985aebda300477afcf013ec681fe6f8afa74dc608bd3eb0bc4c5e841",
+    "reason_no_slurm_dependency": "Completed job already aged out of controller; receipt fully checked before dispatch."
   }
 }
