@@ -5370,3 +5370,13 @@ Primo controllo operativo in sola lettura: preflight checkpoint B5000/R3c19618 s
 7test CPU, source e wrapper hashati, nessun sampler o modello costruito. Solo JSON nuovo fuori dal codice.
 Il controllo raccoglie l'evidenza; completed non prova da solo comparabilita': il diff config/firme viene riletto prima del resume.
 Nessuna sottomissione anticipata dichiarata in questa voce. Piano scientifico del training in preparazione separata.
+
+### 2026-10-28 — Gate operativo B19618 positivo; resume congelato
+
+Preflight62575087 COMPLETED0:0 in22s,0GPU-ore/0,012222core-ore. GPT ha riletto tutte le differenze di configurazione,
+firma dati e ottimizzatore: solo differenze attese della posa, diagnostiche e stop; dettaglio machine-readable in
+results/infra/pilot_posa/b19618_20261028/comparability_review.json. Lanciare il singolo resume autorizzato dopo commit/push
+con il piano train_plan.json e saldo aggiornato:4A100,32CPU,480G,4h,16GPU-ore e128core-ore massimo (circa3,1h attese).
+Il protocollo complessivo prevede23GPU-ore e324,333333core-ore allocate, di cui140,333333 su job soloCPU.
+Review scientifica e launcher favorevoli,21test CPU passati. Nuova directory, copia integrale di checkpoint/RNG/optimizer,
+ricetta invariata salvo max_steps. Nessun retry, endpoint49046 o modifica di pooling. Pubblicazione prima del lancio.

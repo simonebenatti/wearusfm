@@ -1,0 +1,74 @@
+{
+  "started_at_utc": "2026-10-28T15:04:17.479722+00:00",
+  "plan_commit": "c7092971ac93001d6763031d0a216b455cad6d05",
+  "plan_sha256": "931e988590a162e00123d658f5bf463c71a0b7f3229c45533c1f2aeb5e112e55",
+  "source_sha256": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+  "wrapper_sha256": "beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "scripts/submit_job.py",
+    "--id",
+    "PILOT-POSA-B19618-preflight-20261028",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "pilot-posa-b19618-20261028",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "scripts/slurm/pose_b19618_preflight.sbatch",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+    "--cpus-per-task=2",
+    "--mem=16G",
+    "--time=00:10:00"
+  ],
+  "recorded_at_utc": "2026-10-28T15:04:44.817459+00:00",
+  "returncode": 0,
+  "stdout": "PILOT-POSA-B19618-preflight-20261028: sottomesso, job 62575087\n",
+  "stderr": "",
+  "state": {
+    "id": "PILOT-POSA-B19618-preflight-20261028",
+    "creato": "2026-10-28T16:04:17+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b19618-20261028",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-B19618-preflight-20261028",
+      "--comment=wearusfm:PILOT-POSA-B19618-preflight-20261028",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+      "--cpus-per-task=2",
+      "--mem=16G",
+      "--time=00:10:00"
+    ],
+    "dopo": null,
+    "script_stdin": "scripts/slurm/pose_b19618_preflight.sbatch",
+    "script_stdin_sha256": "beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T16:04:17+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T16:04:17+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T16:04:44+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62575087,
+        "uscita": 0,
+        "stdout": "62575087\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 62575087,
+    "uscita": 0,
+    "stdout": "62575087\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+}

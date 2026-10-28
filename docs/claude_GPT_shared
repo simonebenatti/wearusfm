@@ -4391,6 +4391,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - R3c19618 presente; config nominali compatibili salvo posa/diagnostiche/max_steps. Evidenze metadata e costo locali
   salvate in preparation/. Nessun training sottomesso da questa consegna; comparabilita' completa da leggere dopo il guard.
 
+### 2026-10-28 | GPT | Preflight B19618 completato e resume pronto
+
+- Job CPU62575087 COMPLETED0:0,22s,0GPU-ore/0,012222core-ore. Receipt e confronto completo in
+  results/infra/pilot_posa/b19618_20261028/preflight e comparability_review.json. Config differisce soltanto nei nove
+  campi previsti (testa/loss/root posa, diagnostiche e stop); firma input soltanto nel payload posa. Stream,
+  finestre fixed-eval, schedule, clipping, EMA e parametri AdamW concordi. Nessuna equivalenza numerica dei pesi dichiarata.
+- Launcher riprende lo stato completo da copia indipendente B5000, destinazione nuova, ricetta invariata salvo stop19618.
+  Receipt finale obbligatorio allo step esatto; time limit non vale come endpoint. Review indipendente positiva;
+  21test CPU launcher/preflight passati. Piano train_plan.json:4A100/32CPU/480G/4h,16GPU-ore/128core-ore massimo,
+  attese3,1h. Via di Simone gia' acquisito; lancio dopo pubblicazione e saldo campagna, ID in voce successiva.
+- Valutazioni secondo protocollo continuazione_b19618_20261028.md; integrazione main richiesta dopo i lanci.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6144,3 +6156,9 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   la review di tutte le differenze B/R3c. Questa e' necessaria prima del resume. Differenze attese solo posa/diagnostiche.
 - P1/P2 frozen usano teacher per entrambi; posa/dinamica/accessibilita' useranno student per entrambi. Non si mescolano
   le due viste nello stesso confronto. La trasformazione comune E3 e i criteri appaiati sono in preparazione.
+
+### 2026-10-28 | GPT | Limiti del preflight B19618
+
+- Il preflight verifica stato e metadati, non prova uguaglianza numerica di una ripresa rispetto a un training continuo.
+  L'identita' di finestre e stream non implica identiche traiettorie RNG fra obiettivi diversi. Il confronto e' a un seme.
+- I rapporti a19618 restano descrittivi; nessun esito autorizza automaticamente49046. B5000 sorgente immutato.

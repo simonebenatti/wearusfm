@@ -1,0 +1,37 @@
+{
+  "completed": true,
+  "job_id": 62575087,
+  "receipt_sha256": "3a1f86c3985aebda300477afcf013ec681fe6f8afa74dc608bd3eb0bc4c5e841",
+  "receipt_bytes": 29455,
+  "B5000_checkpoint_sha256": "815956b98d27cd2ff71f1255d0e220e2b0e08e467e7bedf93a54d0984b10783e",
+  "R3c19618_checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+  "B_config_sha256": "f55fa6a5f117ad8898c20bbaf8b20f288c169a9a9a12e7bf3bfdad26fef1d157",
+  "R3c_config_sha256": "863c06f053cbea5f65b46d6fe94a999286e5c415a57e5ac37a61e6b923fc4794",
+  "fixed_eval_windows_identical": true,
+  "fixed_eval_seeds_identical": true,
+  "fixed_eval_sets_identical": false,
+  "schedule_identical": true,
+  "stream_identical": true,
+  "stream": {
+    "num_workers": 6,
+    "segment": 1200,
+    "world_size": 4
+  },
+  "B_optimizer_step_counts": {
+    "5000.0": 266
+  },
+  "R3c_optimizer_step_counts": {
+    "19618.0": 262
+  },
+  "B_rank_rng_count": 4,
+  "R3c_rank_rng_count": 4,
+  "pose_split": {
+    "pretraining_users": 158,
+    "validation_users": 15,
+    "overlap": 0
+  },
+  "source_sha256": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+  "environment_code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "no_training_submitted": true,
+  "limitations": "Read-only metadata audit; no proof of numerical resume equality and no training."
+}
