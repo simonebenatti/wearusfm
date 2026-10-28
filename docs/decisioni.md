@@ -5224,3 +5224,23 @@ solo lettura descrittiva a5.000, senza superato/non_superato scientifico; attese
 come indicazioni non esclusive; student readonly; E3 sui latenti B facoltativa in seguito, non sottomessa ora.
 IC del gap E2 da derivare localmente dai dati appaiati per utente: 1.000 ricampionamenti, seme20261009, medie pesate per
 supporto valido e percentili2,5/97,5. Metodo nel protocollo, nessuna nuova soglia e nessuna estrazione aggiuntiva.
+
+
+### 2026-10-28 — E1/E2 di B a 5.000: completata, lettura descrittiva
+
+Codice frozen 24139ab, piano pre-lancio 78e9b2c, precisazioni prima dei risultati dd8ede7. Estrazione 62539724 e rapporto
+62540295 COMPLETED 0:0, guardie superate; costo 0,435278 GPU-ore / 3,595556 core-ore entro 0,666667 / 8.
+Rapporto originale e provenienze in results/infra/pilot_posa/b_e1e2_20261028/final; analisi in docs/reviews/b_e1e2_results_20261028.md.
+
+E1 dinamiche: rapporto testa/costante 0,937552, IC95 [0,917038; 0,952262], mediana 0,947380, 15/15 utenti con vantaggio.
+E2 disallineato/costante 1,007443 [0,996323; 1,016716]; gap sul supporto comune +0,017654 rad [0,013260; 0,023309],
+14/14 utenti con gap positivo. Bootstrap del gap eseguito localmente secondo il metodo registrato prima della lettura.
+
+Beneficio modesto e coerente su utenti esclusi dal training, sensibile all'associazione con la finestra corretta. E2 non
+separa da solo postura media da traiettoria entro 4s. I booleani legacy false/true restano nel risultato, senza verdetto
+scientifico finale a questo endpoint. Nessuna revisione del verdetto di B, nessun via automatico a R3 completo.
+
+**Proposta GPT, non autorizzazione a nuovi job:** analisi CPU della cache gia' prodotta, con scomposizione dell'errore delle
+medie e delle traiettorie centrate, varianze/covarianza e aggregazioni per utente da fissare prima del calcolo. Non serve
+un'altra inferenza GPU. La media del target della finestra e' un oracolo descrittivo. Script/review/preventivo prima di
+qualunque eventuale lancio; nessun job nuovo in questa consegna. E3 B/R0 e J2 bis restano rimandati.

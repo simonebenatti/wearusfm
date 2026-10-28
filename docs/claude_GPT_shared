@@ -5,13 +5,17 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
 
-### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B autorizzata
+### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B letta
 
 Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
-**Due job sottomessi**: estrazione **62539724** e rapporto **62540295**, tetto 0,6667 GPU-ore / 8 core-ore.
-Ultimo snapshot: PENDING Priority e PENDING Dependency (afterok:62539724).
+**Due job COMPLETED 0:0**: estrazione **62539724** e rapporto **62540295**, guardie superate.
+Consuntivo 0,435278 GPU-ore / 3,595556 core-ore, entro 0,6667 / 8. E1 dinamiche rapporto 0,937552
+IC95 [0,917038; 0,952262], 15/15 utenti sotto la costante; gap E2 +0,017654 rad IC95 [0,013260; 0,023309],
+14/14 utenti valutabili con gap positivo. Beneficio modesto fuori dai soggetti train; dinamica intra-finestra ancora da separare
+dalla postura media. Lettura descrittiva a 5.000, nessun verdetto finale E1/E2 o via automatico a R3.
 Codice scientifico frozen `24139ab`, wrapper di provenienza versionato inviato via stdin: nessun nuovo checkout o training.
-26 test CPU passati (8 harness + 18 guardie). [Protocollo](valutazione_b_e1e2_20261028.md).
+26 test CPU pre-lancio passati (8 harness + 18 guardie), ricalcolo locale e review dei risultati concordi.
+[Protocollo](valutazione_b_e1e2_20261028.md), [analisi](reviews/b_e1e2_results_20261028.md).
 R3 completo, E3 su R0 e J2 bis restano fermi; il via attuale non li include.
 
 ### Aggiornamento operativo GPT del 28/10/2026 — B letto
@@ -4240,6 +4244,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   calcolabile localmente dal JSON senza altri job. Non presentato come emendamento precedente alle sottomissioni.
 - E3 sui latenti B rimandata, estrazione train NON sottomessa. R3 completo, E3 R0 e J2 bis restano fermi.
 
+### 2026-10-28 | GPT | E1/E2 di B completata e letta | Codice 24139ab, protocollo 78e9b2c / dd8ede7
+
+- Alla richiesta «sono finiti direi», letti stato/log/provenienze e rapporto. Entrambi COMPLETED 0:0; guardie superate,
+  student a 5.000 e checkpoint immutato, utenti val disgiunti dal train. Estrazione 26min07s, rapporto 51s;
+  0,435278 GPU-ore e 3,595556 core-ore entro 0,666667 / 8. Nessun nuovo job, retry, training o modifica remota.
+- E1 dinamiche: 8.329 finestre / 15 utenti; MAE testa 0,334879 contro costante 0,357184 rad, rapporto 0,937552
+  IC95 [0,917038; 0,952262], mediana utente 0,947380, tutti 15 sotto 1. Beneficio 6,245%, ancora modesto.
+- E2: 8.003 finestre / 14 utenti; sullo stesso supporto MAE 0,333954 allineata e 0,351608 disallineata, gap
+  +0,017654 rad IC95 [0,013260; 0,023309], positivo in tutti 14. Rapporto disallineato/costante 1,007443
+  IC95 [0,996323; 1,016716]. IC gap calcolato localmente come fissato prima dei risultati e verificato indipendentemente.
+- Lettura descrittiva a 5.000, nessun superato/non_superato scientifico finale. Il vantaggio della finestra corretta puo'
+  includere postura media: movimento intra-finestra ancora non identificato. Non confrontare direttamente con il calo MSE di B.
+- Copiati report, provenienze, log/accounting in results/infra/pilot_posa/b_e1e2_20261028/final; analisi riproducibile e
+  figura in analysis. Checkpoint e cache rimasti remoti. Review: docs/reviews/b_e1e2_results_20261028.md.
+- Proposta successiva: lettura CPU della dinamica centrata dalla cache esistente, da preparare/revisionare/preventivare;
+  non lanciata. E3 B/R0, J2 bis e R3 completo restano fermi. Registro e consegna pubblicati sul ramo GPT di origin.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5919,3 +5940,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   runtime verificate. Nessun errore di sottomissione; nessun rilancio.
 - Il report frozen salva il gap appaiato e i dati per utente, ma non il suo IC. IC derivabile localmente con il metodo
   esplicitato dopo le sottomissioni e prima dei risultati; nessuna modifica al report congelato o nuova soglia.
+
+### 2026-10-28 | GPT | Limiti della lettura E1/E2 B: postura vs dinamica e supporto incompleto
+
+- Nessun difetto di esecuzione dimostrato. I booleani frozen E1=false/E2=true non diventano verdetti a 5.000.
+- E2 copre 14/15 utenti: ab228f34a5 ha 7 finestre dinamiche E1 e nessuna coppia conservata. Il gap positivo puo' includere
+  postura media della finestra; partner/filtri/margini impediscono l'interpretazione causale pura del movimento temporale.
+- 27/1.950 registrazioni senza finestre; 26 finestre E1 valide senza varianza temporale definita, fuori dai due gruppi.
+  Il contatore n_dropped_near_identical comprende anche assenza di supporto comune finito; non tutte le 4.275 sono quasi identiche.
+- Il JSON E1 non salva i conteggi validi per utente: ricalcolo indipendente del suo pooling/IC non disponibile dal solo JSON.
+  E2 pooling, rapporto/IC e gap/IC ricostruiti e concordi. Nessuna nuova soglia, tuning su val o alterazione dei risultati.
+- La raccolta SSH ha incontrato errori intermittenti e poi e' riuscita sullo stesso accesso; non e' un errore dei job.

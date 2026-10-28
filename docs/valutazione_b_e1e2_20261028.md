@@ -4,8 +4,9 @@
 con E1/E2 e senza altro addestramento, Simone risponde «vai con la tua proposta».
 Il via copre i due job indicati sotto, entro il preventivo gia' presentato. Nessun nuovo consenso richiesto per eseguirli.
 
-**SOTTOMESSI:** estrazione **62539724**, rapporto **62540295** con `afterok:62539724`.
-Ultimo snapshot: estrazione PENDING Priority, rapporto PENDING Dependency; log non ancora presenti.
+**COMPLETATI:** estrazione **62539724**, rapporto **62540295** con `afterok:62539724`, entrambi COMPLETED 0:0.
+Terminati alle 11:31:47 e 11:33:24 Europe/Rome del 28/10; guardie superate. Consuntivo 0,435278 GPU-ore / 3,595556 core-ore.
+[Risultati e lettura descrittiva](reviews/b_e1e2_results_20261028.md). Il protocollo sotto conserva le regole predefinite.
 Piano e wrapper congelati nel commit `78e9b2c712d75bd20011a7812792a13c6e8d75d2`, pubblicato e verificato su origin prima dei lanci.
 
 ## Obiettivo e configurazione congelata prima della lettura

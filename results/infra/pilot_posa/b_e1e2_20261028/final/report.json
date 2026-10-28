@@ -1,0 +1,675 @@
+{
+ "rule": {
+  "learned_ci_upper": 0.9,
+  "learned_median_user": 0.9,
+  "misaligned_ci_lower": 0.95,
+  "misaligned_min_gap_s": 8.0,
+  "misaligned_drop_quantile": 0.1,
+  "dynamic_split": "mediana della varianza della posa per finestra su val",
+  "ridge_alphas": [
+   0.1,
+   1.0,
+   10.0,
+   100.0
+  ],
+  "instants_per_window": 8
+ },
+ "n_windows": 18548,
+ "n_users": 15,
+ "n_recordings": 1950,
+ "config": {
+  "n_windows": 10,
+  "window_s": 4.0,
+  "seed": 20261026,
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "per_side": false,
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/checkpoint.pt",
+  "which": "student",
+  "split": "val",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+  "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+ },
+ "median_pose_var": 0.2574231028556824,
+ "n_dynamic": 8329,
+ "has_head": true,
+ "E1": {
+  "dynamic": {
+   "label": "finestre dinamiche (regola)",
+   "n_windows": 8329,
+   "n_users": 15,
+   "mae": 0.33487858214439603,
+   "mae_const": 0.35718408062418083,
+   "ratio": 0.9375518123853508,
+   "ratio_ci95_users": [
+    0.9170379979417217,
+    0.952262058888828
+   ],
+   "median_user_ratio": 0.9473800709828267,
+   "per_user": {
+    "1f6de69ab3": {
+     "ratio": 0.9597586727179077,
+     "mae": 0.34491520520645513,
+     "mae_const": 0.3593770132128127,
+     "n_windows": 677
+    },
+    "2251681168": {
+     "ratio": 0.9488991045146209,
+     "mae": 0.35086791201552475,
+     "mae_const": 0.3697631395647697,
+     "n_windows": 685
+    },
+    "29ddab35d7": {
+     "ratio": 0.8356633321864412,
+     "mae": 0.3253867032060254,
+     "mae_const": 0.3893753509019944,
+     "n_windows": 528
+    },
+    "2af4aec870": {
+     "ratio": 0.9640674173581743,
+     "mae": 0.3048995030664647,
+     "mae_const": 0.316263673656743,
+     "n_windows": 626
+    },
+    "2d0838950a": {
+     "ratio": 0.9687582675171068,
+     "mae": 0.36044792851816265,
+     "mae_const": 0.3720721057090722,
+     "n_windows": 741
+    },
+    "3875521008": {
+     "ratio": 0.9323896187444253,
+     "mae": 0.36480312657536246,
+     "mae_const": 0.3912561007131479,
+     "n_windows": 661
+    },
+    "7016fd5330": {
+     "ratio": 0.9296825251675234,
+     "mae": 0.3405627860631214,
+     "mae_const": 0.36632159564551775,
+     "n_windows": 660
+    },
+    "737fb9d2eb": {
+     "ratio": 0.9010419787078824,
+     "mae": 0.3012570016153898,
+     "mae_const": 0.3343429149076941,
+     "n_windows": 493
+    },
+    "9b8c99cdc2": {
+     "ratio": 0.9741997382337972,
+     "mae": 0.30528783739198234,
+     "mae_const": 0.3133729413081783,
+     "n_windows": 514
+    },
+    "a993d16f6e": {
+     "ratio": 0.9482273998579318,
+     "mae": 0.320190522161585,
+     "mae_const": 0.337672716702299,
+     "n_windows": 392
+    },
+    "ab228f34a5": {
+     "ratio": 0.9556675947392991,
+     "mae": 0.3343999206704437,
+     "mae_const": 0.3499123780184953,
+     "n_windows": 7
+    },
+    "d387095792": {
+     "ratio": 0.9372874388640918,
+     "mae": 0.33767482157666445,
+     "mae_const": 0.36026816062519307,
+     "n_windows": 385
+    },
+    "e51f6d97cf": {
+     "ratio": 0.9407982819573113,
+     "mae": 0.3362914979783405,
+     "mae_const": 0.3574533504447872,
+     "n_windows": 680
+    },
+    "e86f1eaf2f": {
+     "ratio": 0.9270356875844958,
+     "mae": 0.3441693644724262,
+     "mae_const": 0.37125794517059135,
+     "n_windows": 637
+    },
+    "f3a4630adf": {
+     "ratio": 0.9473800709828267,
+     "mae": 0.33064913818871167,
+     "mae_const": 0.34901424287476424,
+     "n_windows": 643
+    }
+   }
+  },
+  "static": {
+   "label": "finestre poco dinamiche",
+   "n_windows": 8329,
+   "n_users": 15,
+   "mae": 0.2695991200737355,
+   "mae_const": 0.2830585757537181,
+   "ratio": 0.9524499279198898,
+   "ratio_ci95_users": [
+    0.9053003175614274,
+    0.9900419636237231
+   ],
+   "median_user_ratio": 0.9415508114832383,
+   "per_user": {
+    "1f6de69ab3": {
+     "ratio": 0.9052585197050673,
+     "mae": 0.2245396012968585,
+     "mae_const": 0.24803920251423137,
+     "n_windows": 481
+    },
+    "2251681168": {
+     "ratio": 1.0332812483042075,
+     "mae": 0.3049217322049342,
+     "mae_const": 0.295100421792579,
+     "n_windows": 653
+    },
+    "29ddab35d7": {
+     "ratio": 0.8654180711964342,
+     "mae": 0.25065216593298256,
+     "mae_const": 0.2896313056953592,
+     "n_windows": 349
+    },
+    "2af4aec870": {
+     "ratio": 1.0214533690199055,
+     "mae": 0.27812764531403283,
+     "mae_const": 0.27228618921772124,
+     "n_windows": 646
+    },
+    "2d0838950a": {
+     "ratio": 0.9845302554799235,
+     "mae": 0.29632906654950464,
+     "mae_const": 0.30098523118017817,
+     "n_windows": 758
+    },
+    "3875521008": {
+     "ratio": 0.9013921757084958,
+     "mae": 0.26913313440812753,
+     "mae_const": 0.29857496177686305,
+     "n_windows": 306
+    },
+    "7016fd5330": {
+     "ratio": 0.8998294109205576,
+     "mae": 0.27230459272695734,
+     "mae_const": 0.30261801784004816,
+     "n_windows": 642
+    },
+    "737fb9d2eb": {
+     "ratio": 0.7708989714548209,
+     "mae": 0.23768014127830045,
+     "mae_const": 0.30831555116717374,
+     "n_windows": 610
+    },
+    "9b8c99cdc2": {
+     "ratio": 0.9856301694083872,
+     "mae": 0.21887562826915274,
+     "mae_const": 0.2220666889696875,
+     "n_windows": 1006
+    },
+    "a993d16f6e": {
+     "ratio": 0.9998381260880449,
+     "mae": 0.2885951602979971,
+     "mae_const": 0.2886418838888962,
+     "n_windows": 574
+    },
+    "ab228f34a5": {
+     "ratio": 0.9415508114832383,
+     "mae": 0.293092360663927,
+     "mae_const": 0.31128682285581005,
+     "n_windows": 105
+    },
+    "d387095792": {
+     "ratio": 0.91190800481549,
+     "mae": 0.3013256868394483,
+     "mae_const": 0.3304343039519833,
+     "n_windows": 269
+    },
+    "e51f6d97cf": {
+     "ratio": 0.867073898180094,
+     "mae": 0.2356047482574359,
+     "mae_const": 0.27172395426958185,
+     "n_windows": 494
+    },
+    "e86f1eaf2f": {
+     "ratio": 1.0425076051522417,
+     "mae": 0.336325724119925,
+     "mae_const": 0.32261224998047855,
+     "n_windows": 863
+    },
+    "f3a4630adf": {
+     "ratio": 0.9581845035257027,
+     "mae": 0.2615008982458052,
+     "mae_const": 0.2729128860711016,
+     "n_windows": 573
+    }
+   }
+  },
+  "all": {
+   "label": "tutte",
+   "n_windows": 16684,
+   "n_users": 15,
+   "mae": 0.30148308178111355,
+   "mae_const": 0.31926312984443794,
+   "ratio": 0.944309109316858,
+   "ratio_ci95_users": [
+    0.9167577147034482,
+    0.9673068733865468
+   ],
+   "median_user_ratio": 0.9424657538534923,
+   "per_user": {
+    "1f6de69ab3": {
+     "ratio": 0.941260308216229,
+     "mae": 0.29354425453908894,
+     "mae_const": 0.31186299047856497,
+     "n_windows": 1158
+    },
+    "2251681168": {
+     "ratio": 0.9841235851013495,
+     "mae": 0.3291281559370521,
+     "mae_const": 0.3344378296788375,
+     "n_windows": 1341
+    },
+    "29ddab35d7": {
+     "ratio": 0.8455927932546308,
+     "mae": 0.2953142718129622,
+     "mae_const": 0.34923934329704626,
+     "n_windows": 877
+    },
+    "2af4aec870": {
+     "ratio": 0.9928209079124616,
+     "mae": 0.2904853560465272,
+     "mae_const": 0.2925858568564107,
+     "n_windows": 1275
+    },
+    "2d0838950a": {
+     "ratio": 0.9761510055982889,
+     "mae": 0.3270013742176584,
+     "mae_const": 0.33499056226166285,
+     "n_windows": 1500
+    },
+    "3875521008": {
+     "ratio": 0.9243954768894892,
+     "mae": 0.33485728318439484,
+     "mae_const": 0.3622446145140829,
+     "n_windows": 974
+    },
+    "7016fd5330": {
+     "ratio": 0.916257998543721,
+     "mae": 0.3066244204919326,
+     "mae_const": 0.33464856075392985,
+     "n_windows": 1305
+    },
+    "737fb9d2eb": {
+     "ratio": 0.8304694914720868,
+     "mae": 0.2655059718810041,
+     "mae_const": 0.31970587072424456,
+     "n_windows": 1106
+    },
+    "9b8c99cdc2": {
+     "ratio": 0.9809762103225174,
+     "mae": 0.2471634374110374,
+     "mae_const": 0.2519566069087211,
+     "n_windows": 1520
+    },
+    "a993d16f6e": {
+     "ratio": 0.9769670950774858,
+     "mae": 0.30138652953085343,
+     "mae_const": 0.30849199635219005,
+     "n_windows": 966
+    },
+    "ab228f34a5": {
+     "ratio": 0.9424657538534923,
+     "mae": 0.2954712493156918,
+     "mae_const": 0.3135087382301036,
+     "n_windows": 114
+    },
+    "d387095792": {
+     "ratio": 0.9271068425119342,
+     "mae": 0.3223309441810208,
+     "mae_const": 0.34767399980317976,
+     "n_windows": 656
+    },
+    "e51f6d97cf": {
+     "ratio": 0.9146722651967297,
+     "mae": 0.2940725366146191,
+     "mae_const": 0.32150590742069707,
+     "n_windows": 1176
+    },
+    "e86f1eaf2f": {
+     "ratio": 0.9907211193958089,
+     "mae": 0.3395733361285739,
+     "mae_const": 0.342753706851089,
+     "n_windows": 1500
+    },
+    "f3a4630adf": {
+     "ratio": 0.9518972682621963,
+     "mae": 0.29753783308831294,
+     "mae_const": 0.3125734709077423,
+     "n_windows": 1216
+    }
+   }
+  },
+  "per_joint_mae": [
+   0.20044014653811124,
+   0.19901438041074504,
+   0.1937197603463236,
+   0.39441462677423933,
+   0.1216221299135718,
+   0.29893706761196953,
+   0.4651957389512564,
+   0.251423534573976,
+   0.09787796675900526,
+   0.34303306785988247,
+   0.48824153817410315,
+   0.3082295366273419,
+   0.10705605813693418,
+   0.3589222051856922,
+   0.4863184163392599,
+   0.3037467528792933,
+   0.15976274573472954,
+   0.4098658743781966,
+   0.47316954236706565,
+   0.3667158001390468
+  ],
+  "per_joint_mae_const": [
+   0.220295063006717,
+   0.20498290152915583,
+   0.19112366376267184,
+   0.3991032748312665,
+   0.11943460408930615,
+   0.3264102126212842,
+   0.4918986471677742,
+   0.27564439402350144,
+   0.09831397580064206,
+   0.3731931435002794,
+   0.523634199501659,
+   0.32558150632267846,
+   0.10809819357016207,
+   0.40217706418969296,
+   0.5325418869588806,
+   0.30952824456073597,
+   0.1537067168465832,
+   0.4465980291369575,
+   0.5052309295657751,
+   0.37426990309837294
+  ],
+  "learned": false,
+  "learned_substantially": false
+ },
+ "E2": {
+  "label": "disallineato, finestre dinamiche",
+  "n_windows": 8003,
+  "n_users": 14,
+  "mae": 0.35160810654258395,
+  "mae_const": 0.34901032455171427,
+  "ratio": 1.0074432812101086,
+  "ratio_ci95_users": [
+   0.9963234258630327,
+   1.0167164212976194
+  ],
+  "median_user_ratio": 1.0102319109865727,
+  "per_user": {
+   "1f6de69ab3": {
+    "ratio": 1.003883116048892,
+    "mae": 0.3581000138329129,
+    "mae_const": 0.35671484867912895,
+    "n_windows": 666
+   },
+   "2251681168": {
+    "ratio": 1.0233045936746494,
+    "mae": 0.3679603340198251,
+    "mae_const": 0.35958045756297546,
+    "n_windows": 646
+   },
+   "29ddab35d7": {
+    "ratio": 0.9705523163388003,
+    "mae": 0.3650115556310701,
+    "mae_const": 0.37608642984645857,
+    "n_windows": 516
+   },
+   "2af4aec870": {
+    "ratio": 1.0171155964991332,
+    "mae": 0.31446716362879357,
+    "mae_const": 0.3091754415242236,
+    "n_windows": 571
+   },
+   "2d0838950a": {
+    "ratio": 1.0097174505131155,
+    "mae": 0.36683001687458194,
+    "mae_const": 0.3632996703069431,
+    "n_windows": 734
+   },
+   "3875521008": {
+    "ratio": 0.9965083793140902,
+    "mae": 0.3821582277091481,
+    "mae_const": 0.3834972546564963,
+    "n_windows": 595
+   },
+   "7016fd5330": {
+    "ratio": 1.017382513889504,
+    "mae": 0.36342009866467867,
+    "mae_const": 0.3572108756570874,
+    "n_windows": 620
+   },
+   "737fb9d2eb": {
+    "ratio": 0.9604361513196635,
+    "mae": 0.3199388301562592,
+    "mae_const": 0.333118271023696,
+    "n_windows": 472
+   },
+   "9b8c99cdc2": {
+    "ratio": 1.03465032089361,
+    "mae": 0.30696161717864995,
+    "mae_const": 0.29668150773251817,
+    "n_windows": 514
+   },
+   "a993d16f6e": {
+    "ratio": 1.0323903824536445,
+    "mae": 0.34715182089558727,
+    "mae_const": 0.33626022364769054,
+    "n_windows": 390
+   },
+   "d387095792": {
+    "ratio": 0.9977361550392247,
+    "mae": 0.3679393368017243,
+    "mae_const": 0.3687741843806986,
+    "n_windows": 360
+   },
+   "e51f6d97cf": {
+    "ratio": 1.01074637146003,
+    "mae": 0.3558637022226493,
+    "mae_const": 0.3520801184857104,
+    "n_windows": 663
+   },
+   "e86f1eaf2f": {
+    "ratio": 1.0286127847635822,
+    "mae": 0.36893284060537973,
+    "mae_const": 0.3586702849412627,
+    "n_windows": 629
+   },
+   "f3a4630adf": {
+    "ratio": 0.9926917031428312,
+    "mae": 0.34143899726432986,
+    "mae_const": 0.34395270574272413,
+    "n_windows": 627
+   }
+  },
+  "pairing": {
+   "n_windows": 18548,
+   "n_with_partner": 18544,
+   "n_kept": 14269,
+   "distance_threshold": 0.20867522656917573,
+   "min_gap_s": 8.0,
+   "n_same_recording": 18524,
+   "n_other_session": 20,
+   "n_no_candidate": 4,
+   "n_dropped_near_identical": 4275,
+   "n_kept_same_recording": 14251,
+   "n_kept_other_session": 18,
+   "constraints": "stesso utente, stessa fase, stesso lato; prima la stessa registrazione a >= min_gap_s, poi un'altra sessione; senza candidati la finestra e' esclusa (vincoli mai rilassati)",
+   "n_excluded_std_mismatch": 0
+  },
+  "paired_support": {
+   "label": "stesso supporto: finestre dinamiche con coppia conservata, intersezione delle maschere valide della finestra e della partner",
+   "n_windows": 8003,
+   "n_users": 14,
+   "n_valid_elements": 18256160,
+   "n_same_recording": 7993,
+   "n_other_session": 10,
+   "mae_aligned": 0.333953840877996,
+   "mae_misaligned": 0.35160810654258395,
+   "gap_mae": 0.017654265664587943,
+   "median_user_gap": 0.018256162447422702,
+   "per_user": {
+    "1f6de69ab3": {
+     "mae_aligned": 0.3434072831080304,
+     "mae_misaligned": 0.3581000138329129,
+     "gap": 0.014692730724882475,
+     "n_windows": 666,
+     "n_valid_elements": 1798580,
+     "n_same_recording": 666,
+     "n_other_session": 0
+    },
+    "2251681168": {
+     "mae_aligned": 0.34939726373308694,
+     "mae_misaligned": 0.3679603340198251,
+     "gap": 0.018563070286738148,
+     "n_windows": 646,
+     "n_valid_elements": 1225800,
+     "n_same_recording": 645,
+     "n_other_session": 1
+    },
+    "29ddab35d7": {
+     "mae_aligned": 0.323417364924414,
+     "mae_misaligned": 0.3650115556310701,
+     "gap": 0.0415941907066561,
+     "n_windows": 516,
+     "n_valid_elements": 1260240,
+     "n_same_recording": 508,
+     "n_other_session": 8
+    },
+    "2af4aec870": {
+     "mae_aligned": 0.30276537241100987,
+     "mae_misaligned": 0.31446716362879357,
+     "gap": 0.011701791217783697,
+     "n_windows": 571,
+     "n_valid_elements": 1123280,
+     "n_same_recording": 571,
+     "n_other_session": 0
+    },
+    "2d0838950a": {
+     "mae_aligned": 0.35972070671620426,
+     "mae_misaligned": 0.36683001687458194,
+     "gap": 0.00710931015837768,
+     "n_windows": 734,
+     "n_valid_elements": 1830600,
+     "n_same_recording": 734,
+     "n_other_session": 0
+    },
+    "3875521008": {
+     "mae_aligned": 0.3640209902081438,
+     "mae_misaligned": 0.3821582277091481,
+     "gap": 0.018137237501004266,
+     "n_windows": 595,
+     "n_valid_elements": 803240,
+     "n_same_recording": 595,
+     "n_other_session": 0
+    },
+    "7016fd5330": {
+     "mae_aligned": 0.3433997667195836,
+     "mae_misaligned": 0.36342009866467867,
+     "gap": 0.02002033194509506,
+     "n_windows": 620,
+     "n_valid_elements": 1336940,
+     "n_same_recording": 620,
+     "n_other_session": 0
+    },
+    "737fb9d2eb": {
+     "mae_aligned": 0.30156374276241804,
+     "mae_misaligned": 0.3199388301562592,
+     "gap": 0.01837508739384114,
+     "n_windows": 472,
+     "n_valid_elements": 1122700,
+     "n_same_recording": 472,
+     "n_other_session": 0
+    },
+    "9b8c99cdc2": {
+     "mae_aligned": 0.3031491475337712,
+     "mae_misaligned": 0.30696161717864995,
+     "gap": 0.0038124696448787465,
+     "n_windows": 514,
+     "n_valid_elements": 1380700,
+     "n_same_recording": 514,
+     "n_other_session": 0
+    },
+    "a993d16f6e": {
+     "mae_aligned": 0.3210442170330718,
+     "mae_misaligned": 0.34715182089558727,
+     "gap": 0.026107603862515483,
+     "n_windows": 390,
+     "n_valid_elements": 1060380,
+     "n_same_recording": 389,
+     "n_other_session": 1
+    },
+    "d387095792": {
+     "mae_aligned": 0.3371349283456163,
+     "mae_misaligned": 0.3679393368017243,
+     "gap": 0.03080440845610799,
+     "n_windows": 360,
+     "n_valid_elements": 522040,
+     "n_same_recording": 360,
+     "n_other_session": 0
+    },
+    "e51f6d97cf": {
+     "mae_aligned": 0.3393602735729114,
+     "mae_misaligned": 0.3558637022226493,
+     "gap": 0.016503428649737917,
+     "n_windows": 663,
+     "n_valid_elements": 1554040,
+     "n_same_recording": 663,
+     "n_other_session": 0
+    },
+    "e86f1eaf2f": {
+     "mae_aligned": 0.3447836315745721,
+     "mae_misaligned": 0.36893284060537973,
+     "gap": 0.02414920903080764,
+     "n_windows": 629,
+     "n_valid_elements": 1622900,
+     "n_same_recording": 629,
+     "n_other_session": 0
+    },
+    "f3a4630adf": {
+     "mae_aligned": 0.32985240473215227,
+     "mae_misaligned": 0.34143899726432986,
+     "gap": 0.011586592532177586,
+     "n_windows": 627,
+     "n_valid_elements": 1614720,
+     "n_same_recording": 627,
+     "n_other_session": 0
+    }
+   }
+  },
+  "gap_mae_per_user": {
+   "1f6de69ab3": 0.014692730724882475,
+   "2251681168": 0.018563070286738148,
+   "29ddab35d7": 0.0415941907066561,
+   "2af4aec870": 0.011701791217783697,
+   "2d0838950a": 0.00710931015837768,
+   "3875521008": 0.018137237501004266,
+   "7016fd5330": 0.02002033194509506,
+   "737fb9d2eb": 0.01837508739384114,
+   "9b8c99cdc2": 0.0038124696448787465,
+   "a993d16f6e": 0.026107603862515483,
+   "d387095792": 0.03080440845610799,
+   "e51f6d97cf": 0.016503428649737917,
+   "e86f1eaf2f": 0.02414920903080764,
+   "f3a4630adf": 0.011586592532177586
+  },
+  "misaligned_ok": true
+ },
+ "inputs": {
+  "val": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz",
+  "train": null,
+  "elapsed_s": 20.035504579544067
+ }
+}
