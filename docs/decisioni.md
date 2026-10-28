@@ -5443,3 +5443,24 @@ finirei quello che stiam facendo ora». Rinviate le proposte di loss scomposta/v
 non mediati. Proseguono solo B19618 e le valutazioni gia' sottomesse, con protocollo e budget invariati.
 Semplicione controlla stato e log; nessun nuovo lancio o retry. La nota scientifica sulle loss conserva ipotesi
 e limiti senza trasformarli in una diagnosi di assenza d'informazione nell'encoder.
+
+
+## 28/10/2026 — Recupero della guardia P2 di B19618 (GPT; diagnosi Claude 8e6288c)
+
+La sonda R3c-P2 62583157 ha finito e salvato rapporto/OOF, poi il controller GPT ha applicato `np.isfinite` alle
+classi stringa EPN612. Lacuna del test (solo P1), corretta senza cambiare la sonda frozen24139ab. `validate-probe`
+riusa gli output immutabili e produce soltanto l'attestazione mancante, con hash, identita' e traccia esplicita
+originale/recupero. 87test guard/readout passati, 74test guard rieseguiti dopo metadato IDjob; review indipendente.
+
+Piano concreto: `docs/recupero_b19618_p2_20261028.md` e
+`results/infra/pilot_posa/b19618_20261028/recovery/recovery_plan.json`. Operatore semplicione, autonomia gia'
+concessa da Simone. Convalida2CPU/30min/30G=1core-ora; B-P2 sostitutiva8CPU/4h/30G=32; confronto8CPU/30min/30G=4.
+**0GPU-ore,37core-ore di tetto nuovo**;36 sostituiscono prenotazioni di job mai partiti, incremento1. Il probe
+fallito20m31s costa2,735556core-ore e resta nel consuntivo. Vecchi ID e storico non si riusano/cancellano.
+B-P2 62583163 si cancella solo se ancora PENDING e senza alcun output; se avviata si ferma il recupero e si adatta
+il piano. Nessun fit R3c rifatto, estrazioneGPU o training aggiunto. Nessun lancio di recupero in questa registrazione.
+
+Evidenze riuscite raccolte alle22:34; training partito22:18:26, passo6150. Confronto62583165 cancellato19:20:55,
+Start=None/elapsed0, con kill_invalid_depend e prerequisito fallito19:20:52. Quattro warning lbfgs/max_iter restano
+nel log e nella lettura: la correzione non cambia iperparametri ne' dichiara convergenza dei fit. Il solo S80,84
+non autorizza conclusioni sul vantaggio di B. Hash OOF atteso dal rapporto, misura diretta obbligatoria pre-lancio.

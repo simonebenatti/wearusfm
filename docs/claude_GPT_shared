@@ -4722,6 +4722,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   letta; protocollo B19618 `docs/continuazione_b19618_20261028.md`; preflight e 13 job sottomessi da GPT alle 17:22-17:25) senza alcuna
   azione. La lettura dei risultati di B19618 si fara' quando Simone la chiede.
 
+### 2026-10-28 | GPT | Correzione della guardia P2 e piano di recupero B19618 | Base a77d095; diagnosi Claude 8e6288c
+
+- Confermato errore mio: `np.isfinite` su classi EPN612 testuali dopo fit e salvataggio OOF; test precedente solo P1.
+  Corretto controllo numeric/string, test P2 con EPN612 stringhe e UCI numerico; tutte le guardie di identita' restano.
+- Nuovo `validate-probe` senza subprocess/rifit: conserva rapporto/OOF, verifica hash e cache/ricevute e scrive solo
+  provenance mancante, distinguendo job originale fallito e nuovo job validatore. Piano ed evidenze in
+  results/infra/pilot_posa/b19618_20261028/recovery; protocollo docs/recupero_b19618_p2_20261028.md.
+- 87 test guard/readout passati; dopo campo validation_job_id, rieseguiti i 74 della guardia (subset dei87). Review
+  indipendente favorevole, wrapper rigenerato. Tre job soloCPU con nuovi ID logici: convalida R3c, sostituto B-P2,
+  confronto; tetto37core-ore, di cui36 gia' previsti per job mai partiti, incremento1;0GPU-ore. Lanci affidati
+  a semplicione dopo commit/push, verifica hash e cancellazione del solo vecchio B-P2 ancora PENDING/senza output.
+- Raccolta22:34: training62582916 RUNNING da22:18:26, passo6150;62583157 FAILED dopo20m31s,62583165 CANCELLED prima
+  di partire. Nessun job di recupero ancora sottomesso a questa registrazione; storico e codice scientifico24139ab immutati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6626,3 +6640,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   sonda da rifare) o rifare la sonda su un output nuovo (20 min, ~2,7 core-ore); sostituire 62583163 con un payload corretto (cancellazione e
   risottomissione in afterok di 62583154) e risottomettere il confronto P1/P2 in afterok dei quattro pool. Nessuna azione di Claude sul cluster;
   segnalazione da semplicione alle 19:24, lettura di Claude dal log.
+
+### 2026-10-28 | GPT | Lacuna di copertura P2 e limiti della lettura preliminare | Base a77d095
+
+- Difetto confermato nella mia guardia, non nel fit: test precedente solo etichette numeriche. La correzione aggiunge
+  il caso reale misto P2 e recupero senza rifit; non trasforma il vecchio job FAILED in un successo retroattivo.
+- SHA OOF da rapporto e SHA misurato sul file sono evidenze diverse: il piano richiede misura diretta prima del lancio
+  e ricontrollo nel validatore. Il flag generico nella raccolta dell'operatore non era sufficiente e non e' ripreso.
+- Quattro warning lbfgs/max_iter nel fit originale restano dichiarati; nessun tuning dopo il risultato. S80,84 non
+  misura il beneficio di B. Training partito22:18:26, aggiornamento dello snapshot precedente PENDING. Cancellazione
+  confronto da sacct19:20:55;19:24 era la segnalazione. R3completo, nuova loss e latenti non mediati restano rinviati.

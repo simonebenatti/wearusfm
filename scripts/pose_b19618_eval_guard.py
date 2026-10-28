@@ -239,6 +239,19 @@ def guarded_features(features,receipt_path,model,task):
     return receipt,inputs
 
 
+def check_classification_labels(y,p):
+    """OOF labels retain the dataset's numeric or textual class representation."""
+    y_kind,p_kind = y.dtype.kind,p.dtype.kind
+    if y_kind in 'biuf' and p_kind in 'biuf':
+        require(np.isfinite(y).all() and np.isfinite(p).all(),'nonfinite OOF class labels')
+    elif y_kind in 'US' and p_kind == y_kind:
+        require(np.all(np.char.str_len(np.char.strip(y)) > 0)
+                and np.all(np.char.str_len(np.char.strip(p)) > 0),'empty OOF class labels')
+    else:
+        raise ValueError('unsupported or incompatible OOF class label dtypes')
+    # A class learned in a training fold need not occur among its held-out y.
+
+
 def check_probe_report(report_path,model,task,identity,inputs=None):
     report = json.loads(report_path.read_text())
     for key,value in {'protocol':'readout_per_canale_v1','task':task,'probe_seed':0,'code_sha':CODE_SHA,
@@ -255,8 +268,8 @@ def check_probe_report(report_path,model,task,identity,inputs=None):
         for ds in DATASETS[task]:
             y,p,s,rows = (z[ds+'_'+k] for k in ('y','pred','s','row'))
             require(y.ndim==p.ndim==s.ndim==rows.ndim==1 and len(y)==len(p)==len(s)==len(rows)>0,'OOF shape mismatch')
-            require(np.isfinite(y).all() and np.isfinite(p).all() and rows.dtype.kind in 'iu'
-                    and len(np.unique(rows))==len(rows),'invalid OOF predictions/rows')
+            check_classification_labels(y,p)
+            require(rows.dtype.kind in 'iu' and len(np.unique(rows))==len(rows),'invalid OOF rows')
             require(report['datasets'][ds]['n_oof_windows']==len(rows),'OOF count mismatch')
             if inputs is not None:
                 require(report['datasets'][ds]['input_sha256']==inputs[ds]['input_sha256']
@@ -282,6 +295,51 @@ def run_probe(a,code,roots):
                       report=str(a.out),report_sha256=sha(a.out),oof=report['oof'],oof_sha256=report['oof_sha256'],
                       extraction_receipt=str(a.receipt),extraction_receipt_sha256=receipt_sha,feature_inputs=inputs)
     write_json(Path(str(a.out)+'.provenance.json'),provenance)
+    return 0
+
+
+def recovery_evidence(raw):
+    try:
+        evidence = json.loads(raw)
+    except (TypeError,ValueError) as exc:
+        raise ValueError('validate-probe needs valid recovery evidence JSON') from exc
+    hash_keys = ('original_source_sha256','original_wrapper_sha256','failure_log_sha256',
+                 'report_sha256','oof_sha256')
+    require(isinstance(evidence,dict) and set(evidence)=={'original_job_id',*hash_keys},'invalid recovery evidence keys')
+    job = evidence['original_job_id']
+    require(isinstance(job,str) and job.isascii() and job.isdigit() and int(job)>0,'invalid original job ID')
+    require(all(is_sha(evidence[k]) for k in hash_keys),'invalid recovery evidence hashes')
+    return evidence
+
+
+def run_validate_probe(a,code,roots):
+    """Attest completed probe outputs after a guard failure; never refit a probe."""
+    require(a.model is not None and a.task is not None and a.features is not None and a.receipt is not None,
+            'validate-probe needs model/task/features/receipt')
+    require(a.checkpoint is None and a.reference_train is None and a.reference_val is None,'validate-probe has extraneous input')
+    evidence = recovery_evidence(a.recovery_evidence)
+    oof = a.out.with_suffix('.oof.npz')
+    provenance_path = Path(str(a.out)+'.provenance.json')
+    fresh(provenance_path,roots)
+    for path in (a.out,oof):
+        require(path.is_absolute() and path.is_file() and not path.is_symlink(),'recovery output must be an existing absolute file')
+        require(not any(path.resolve()==r.resolve() or r.resolve() in path.resolve().parents for r in roots),'recovery output inside code')
+    require(sha(a.out)==evidence['report_sha256'] and sha(oof)==evidence['oof_sha256'],'recovery output SHA mismatch')
+    receipt_sha = sha(a.receipt)
+    receipt,inputs = guarded_features(a.features,a.receipt,a.model,a.task)
+    report = check_probe_report(a.out,a.model,a.task,receipt,inputs)
+    require(sha(a.receipt)==receipt_sha and all(sha(v['path'])==v['sha256'] for v in inputs.values()),
+            'extraction inputs changed during recovery')
+    require(sha(a.out)==evidence['report_sha256'] and sha(oof)==evidence['oof_sha256'],'recovery outputs changed during validation')
+    provenance = {k:receipt[k] for k in ('model','checkpoint','checkpoint_sha256','checkpoint_step','config_file_sha256','code_sha')}
+    provenance.update(mode='probe',complete=True,task=a.task,which='teacher',layer='pool',k=0,seed=0,
+                      source_sha256=a.source_sha256,wrapper_sha256=a.wrapper_sha256,
+                      recovery=True,validator_mode='validate-probe',recovery_evidence=evidence,
+                      validation_job_id=os.environ.get('SLURM_JOB_ID'),
+                      original_probe_command=probe_command(code,a.features,a.out,a.task),
+                      report=str(a.out),report_sha256=evidence['report_sha256'],oof=report['oof'],oof_sha256=report['oof_sha256'],
+                      extraction_receipt=str(a.receipt),extraction_receipt_sha256=receipt_sha,feature_inputs=inputs)
+    write_json(provenance_path,provenance)
     return 0
 
 
@@ -336,7 +394,8 @@ def run_compare(a,code,roots):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--mode',choices=['pose','channel','probe','compare'],required=True)
+    ap.add_argument('--mode',choices=['pose','channel','probe','compare','validate-probe'],required=True)
+    ap.add_argument('--recovery-evidence',help='pinned original job and output hashes; validate-probe only')
     ap.add_argument('--model',choices=['B','R3c'])
     ap.add_argument('--out',type=Path,required=True)
     for key in ('checkpoint','receipt','features'):
@@ -347,10 +406,14 @@ def main(argv=None):
     for key in ('source-sha256','wrapper-sha256'):
         ap.add_argument('--'+key,required=True)
     a = ap.parse_args(argv)
+    require((a.recovery_evidence is not None)==(a.mode=='validate-probe'),
+            'recovery evidence is required only for validate-probe')
     require(is_sha(a.source_sha256) and sha(__file__)==a.source_sha256 and is_sha(a.wrapper_sha256),'source/wrapper SHA invalid')
     require(os.environ.get('WEARUSFM_CODE_SHA')==CODE_SHA,'wrong frozen execution code')
     work,scratch,code = (Path(os.environ[k]) for k in ('WORK','SCRATCH','CODE_DIR'))
     roots = [code,work/'wearusfm',work/'wearusfm_campaigns']
+    if a.mode=='validate-probe':
+        return run_validate_probe(a,code,roots)
     if a.mode=='probe':
         return run_probe(a,code,roots)
     if a.mode=='compare':
