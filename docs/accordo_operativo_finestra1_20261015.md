@@ -204,3 +204,12 @@ Simone: «adesso sarai tu ad implementare le modifiche e a lanciare le cose, e c
 GPT assume implementazione e lanci oltre alla responsabilita' scientifica; Claude resta revisore. Questo supera le
 precedenti assegnazioni esclusive dei file tecnici. Restano worktree separati, un writer per checkout, protocollo prima
 dei risultati, review pertinenti, submitter comune e commit/push della consegna con verifica del riferimento remoto.
+
+## Aggiornamento del 28/10/2026: operatore delle sottomissioni
+
+Simone assegna le nuove sottomissioni su Leonardo alla chat esistente `semplicione`
+(thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`), a cui ha assegnato anche il controllo dei log.
+GPT scientifico prepara e pubblica codice, piano, review, SHA, risorse, budget e dipendenze; delega l'esecuzione
+al nuovo operatore, sempre tramite submit_job.py/ledger comune. Superata l'assegnazione dei lanci a leonardo-ops;
+nessun consenso scientifico da ripetere per un piano gia' approvato, nessun duplicato o retry cieco.
+I 13 job B19618 sottomessi prima dell'istruzione restano validi; nessun nuovo lancio deriva da questo aggiornamento.

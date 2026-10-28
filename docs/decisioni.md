@@ -5426,3 +5426,12 @@ Review indipendenti favorevoli;501test passati/1saltato. Nessun deploy remoto; i
 Le rettifiche del sintetico sono descrittive: massimo spread fra semi0,0198646646, e1−q floor MSE di popolazione del
 rumore (non ratio sul pannello finito). Curve/JSON storici invariati. Ricostruzione PSD-1..4 in reviews/stato_psd_20261028.md:
 PSD-3 e la prova controllata PSD-4 sono ancora aperti, PSD-2 riorientato e non eseguito nel suo disegno originale.
+
+### 2026-10-28 — Nuova regola: semplicione sottomette i job
+
+Su istruzione diretta di Simone, le future sottomissioni Leonardo sono affidate alla chat esistente `semplicione`,
+identificata nel workspace (thread `01a18355-6241-7c53-98fe-fbc8450c2b30`). GPT conserva preparazione scientifica/tecnica,
+review, pubblicazione e verifica; semplicione esegue il piano pubblicato con submitter/ledger comuni e controlla i log.
+L'istruzione supera l'assegnazione precedente dei lanci a leonardo-ops. Nessun nuovo esperimento, duplicato, cancellazione
+od obbligo di ripetere l'approvazione dei piani gia' autorizzati. B19618 e 12 valutazioni erano gia' stati sottomessi.
+Affidato a semplicione un controllo puntuale in sola lettura di stato/log per il riepilogo dopo il merge.

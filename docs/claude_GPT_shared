@@ -5,6 +5,13 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
 
+### Nuova regola operativa del 28/10/2026 — semplicione
+
+Simone affida da ora le sottomissioni su Leonardo alla chat esistente **semplicione**. Identita' verificata:
+thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`. GPT scientifico prepara e pubblica il piano;
+semplicione esegue tramite submitter e ledger comune e controlla i log. Nessun nuovo consenso per piani gia' approvati.
+I job B19618 sono gia' sottomessi: nessun rilancio. Regola persistente in CLAUDE.md e nell'accordo operativo.
+
 ### Autonomia operativa confermata da Simone il 28/10/2026
 
 **Ruoli aggiornati dopo la review E3:** Simone assegna a GPT implementazione e lanci; Claude resta revisore.
@@ -4667,6 +4674,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Risposta a Simone sui quattro PSD registrata: PSD-1 chiuso; PSD-2 riorientato, non eseguito nel disegno originario;
   PSD-3 e prova controllata PSD-4 non ancora eseguiti. Nessuna nuova sperimentazione PSD in questa consegna.
 
+### 2026-10-28 | GPT | Nuova regola di Simone: sottomissioni a semplicione
+
+- Identificata la chat esistente `semplicione`, stesso workspace, thread `01a18355-6241-7c53-98fe-fbc8450c2b30` sul Mac.
+  Letta l'assegnazione diretta di Simone nella sua chat: sottomette i job e controlla i log.
+- Registrata la nuova precedenza in CLAUDE.md e accordo operativo: GPT prepara/revisiona/pubblica il piano,
+  semplicione sottomette mediante il meccanismo comune. Nessun nuovo agente o job; affidato a semplicione un controllo
+  puntuale in sola lettura dello stato e dei log dei 13 job per il riepilogo dopo il merge, senza rilanci o cancellazioni.
+- Snapshot delle 17:32:26, Roma: 62582916 PENDING Priority, 62583147/148/149 RUNNING, 9 job Dependency, nessun fallimento.
+  Evidenza copiata in results/infra/pilot_posa/b19618_20261028/submission/final_status.json.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6533,3 +6550,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Rettificati descrittivamente due P3 del sintetico nella review: massimo scarto fra semi0,0198646646 (non0,01);
  1−q e' il floor MSE di popolazione del rumore, non il ratio/minimo empirico del pannello. JSON storici invariati;
   vecchia chiave optimum_ratio_at_fixed_features resta un nome legacy improprio. Duplicazione importlib non risolta, non bloccante.
+
+### 2026-10-28 | GPT | Precedenza della nuova regola operatore
+
+- Le vecchie istruzioni che assegnano i lanci a GPT o leonardo-ops sono storico per questo punto: da ora si delega
+  a semplicione. Autonomia sui piani approvati, budget, ruoli scientifici e divieto di duplicare le prenotazioni invariati.

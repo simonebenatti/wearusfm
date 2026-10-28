@@ -4,6 +4,21 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
+### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
+
+Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».
+**Da questa istruzione, le nuove sottomissioni su Leonardo passano dalla chat `semplicione`**, gia' esistente sul Mac
+(thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`; identita' verificata nell'app).
+Simone gli ha assegnato anche il controllo dei log nella sua chat. GPT scientifico prepara codice, protocollo, review,
+piano committato/pushato, SHA, risorse, budget, output e dipendenze; poi affida la sottomissione a semplicione.
+La richiesta di Simone autorizza questa delega operativa: non serve chiedere nuovamente chi debba eseguire un piano gia' approvato.
+
+Semplicione usa sempre `scripts/submit_job.py` e il ledger comune, conserva gli SHA congelati e restituisce ID, stato e log.
+Non creare un secondo agente omonimo o duplicare un lancio: prima verificare le prenotazioni e gli ID esistenti.
+Questa regola sostituisce l'assegnazione delle sottomissioni al subagent leonardo-ops e il lancio diretto da questa chat;
+restano responsabilita' scientifica, criteri, budget e autorizzazioni gia' definite. I job B19618 e le 12 valutazioni sono
+stati sottomessi prima della nuova regola: nessuna risottomissione, cancellazione o migrazione implicita.
+
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
 **Aggiornamento dei ruoli, successivo alla review E3 B:** Simone: «adesso sarai tu ad implementare le modifiche e a
@@ -113,7 +128,7 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Lo esegue leonardo-ops dal Mac. Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 28/10/2026 lo esegue semplicione dal Mac (regola successiva sopra). Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
@@ -149,7 +164,7 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Ogni interazione col cluster passa dal subagent leonardo-ops.
+- Sottomissioni e controllo operativo dei log passano da semplicione (regola successiva del 28/10 sopra); nessun lancio parallelo tramite il vecchio subagent leonardo-ops.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
