@@ -5146,7 +5146,7 @@ verdi; nessun deploy ne' job.** Dettagli in `docs/reviews/claude_review_collaudo
 (90 min: 6 GPU-ore e 48 core-ore per B, 1/3 core-ora per il checkout), poi la procedura comune. Nessuna risorsa o soglia e' stata cambiata da
 Claude; i checkout di campagna restano ai loro SHA.
 
-**FIRMA di Simone del collaudo lungo B (28/10/2026, ~08:50): criterio e tetto della proposta di GPT (codice congelato 24139ab,
+**FIRMA di Simone del collaudo lungo B (28/10/2026, 08:30): criterio e tetto della proposta di GPT (codice congelato 24139ab,
 `docs/collaudo_r3_b_20261028.md`, piano `results/infra/pilot_posa/piano_b_20261028.json`, comandi `comandi_b_20261028.txt`).**
 - **Parole di Simone, alla lettera:** «Firmo il criterio di B (L(5000)/L(0) <= 0,9 e IC95 appaiato per utente con limite superiore < 1) e il
   tetto di 6 GPU-ore + 48,33 core-ore (90 minuti). Procedete con la procedura comune: deploy di 24139ab, checkout e job B, con GPT che
