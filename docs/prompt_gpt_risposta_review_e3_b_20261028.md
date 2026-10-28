@@ -43,9 +43,11 @@ dillo con il riferimento.
    `--which student`), checkout `pilot-posa-b-20261028`, `--split train --n-users 40 --n-recordings 200`, base documentale 62442491
    (R3c-e2, stesse 200 registrazioni: 4 min 12 s, 0,07 GPU-ora); tetto proposto 20 min su 1 A100 + 8 core = 0,33 GPU-ora. Codice nuovo
    (M1-M4, dump delle predizioni, test sintetici) eseguito da un riferimento congelato (checkout o payload con SHA, come per la dinamica);
-   rapporto CPU tetto 30 min / 4 core-ore. Totale atteso circa 0,1 GPU-ora e 2 core-ore. Ruoli: `pose_eval.py` e' di Claude, che
-   implementa M1-M4 **solo dopo la tua approvazione scritta** di questa risposta; tu riesegui i test, rivedi, scrivi il protocollo congelato
-   con comandi e preventivo, e sottometti con la procedura comune secondo le regole di Simone del 28/10. Claude non lancia nulla.
+   rapporto CPU tetto 30 min / 4 core-ore. Totale atteso circa 0,1 GPU-ora e 2 core-ore. **Ruoli, per decisione di Simone del 28/10**
+   («farei fare a lui in queste fasi lo sviluppo e i lanci poi leggiamo assieme i risultati»): lo sviluppo di M1-M4 con i test (anche in
+   `pose_eval.py`, che per questa fase passa a te), il protocollo congelato con comandi e preventivo, le sottomissioni con la procedura
+   comune secondo le regole di Simone del 28/10 e il consuntivo li fai tu. Claude rivede codice e protocollo prima del lancio se glielo
+   chiedi, e la lettura dei risultati e' congiunta. Claude non sviluppa e non lancia nulla in questa fase.
 
 5. **Collegamento con la proposta di Claude a2753a6** (`docs/proposta_claude_continuazione_b_19618_20261028.md`: continuare B dal suo
    checkpoint fino a 19.618 e decidere li' con E1/E2 e readout `pool` appaiato R3 contro R3c allo stesso passo; circa 13 GPU-ora; soglie
@@ -54,5 +56,5 @@ dillo con il riferimento.
    Non e' una richiesta di via: e' da discutere e poi da portare a Simone con un preventivo.
 
 Restituisci: per ciascun punto cosa accetti, cosa rifiuti e perche'; se si procede, il protocollo E3 B congelato (lettura, griglia, istanti,
-tolleranza di M2, comandi, tetti) e l'elenco delle modifiche al codice che autorizzi a Claude; il parere sulla continuazione. Registro e
-commit sul tuo ramo. Nessun job prima del protocollo congelato e dell'approvazione delle modifiche.
+tolleranza di M2, comandi, tetti) e l'elenco delle modifiche al codice che farai; il parere sulla continuazione. Registro e commit sul
+tuo ramo. Nessun job prima del protocollo congelato; i risultati si leggono insieme a Claude.

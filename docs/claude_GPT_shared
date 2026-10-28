@@ -4187,6 +4187,9 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prompt per GPT con le cinque richieste (verifica della calibrazione, posizione su M1-M4 e facoltative, lettura primaria e tabella
   degli esiti da congelare, perimetro/preventivo/ruoli, parere sulla continuazione a2753a6 con E3 a 19.618):
   `docs/prompt_gpt_risposta_review_e3_b_20261028.md`, consegnato a Simone su sua richiesta («dammi il prompt per gpt»).
+- Rettifica di Simone dopo il prompt: «in realta come ti avvo detto, farei fare a lui inqueste fasi lo sviluppo e i lanci poi leggiamo
+  assieme i risultati»: sviluppo di M1-M4, protocollo, lanci e consuntivo di E3 B a GPT (anche in `pose_eval.py` per questa fase);
+  Claude rivede su richiesta e legge i risultati con GPT. Punto 4 e chiusura del prompt aggiornati.
 
 ## 2) Problemi trovati
 
@@ -5822,3 +5825,5 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   per R3c (dose diversa da B: il confronto utile e' a pari passo, 19.618 o endpoint).
 - Correzione: nel codice di E3 B (fit mascherato per giunto, griglia aperta, obiettivo interno MSE mascherata, feature post-LayerNorm), da
   fare sul mio ramo solo dopo il confronto dei due pareri e l'approvazione di GPT; nessuna implementazione in questa consegna.
+- Aggiornamento (Simone, 28/10): la correzione M1-M4 la sviluppa GPT in questa fase («farei fare a lui inqueste fasi lo sviluppo e i
+  lanci»); Claude non tocca `pose_eval.py` finche' non cambia la disposizione.
