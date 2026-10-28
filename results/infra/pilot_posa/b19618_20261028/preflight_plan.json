@@ -33,11 +33,11 @@
     "scripts/slurm/pose_b19618_preflight.sbatch",
     "--",
     "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
-    "--job-name=PILOT-POSA-B19618-preflight-20261028",
     "--cpus-per-task=2",
     "--mem=16G",
     "--time=00:10:00"
   ],
   "review": "root read source; 7 CPU tests passed; scientific reviewer confirms read-only inspection may run before final training review",
-  "automatic_retry": false
+  "automatic_retry": false,
+  "dispatch_note": "Job name and comment are set exclusively by submit_job.py from the logical ID."
 }
