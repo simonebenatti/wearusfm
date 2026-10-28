@@ -5869,3 +5869,23 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   una calibrazione per giunto/utente; sulla continuazione (a2753a6) la ripresa nella stessa cartella sovrascriverebbe `checkpoint.pt` a 5.000
   (copia immutabile prima, nessuna ripresa mentre E3 legge) e le letture vanno riformulate come differenze appaiate.
 - Stato: E3 B lanciata da GPT (estrazione 62561780, rapporto 62561881 con afterok); io leggo lo stato in sola lettura e i risultati con GPT.
+
+### 2026-10-28 | Claude | B19618: guardia di GPT caduta sulla sonda P2 di R3c (62583157 FAILED), confronto P1/P2 cancellato | Payload 8405a0b, log del job
+
+- Job `PILOT-POSA-B19618-R3c-p2-pool-20261028` (62583157): la sonda ha finito (`epn612: S 84.40`, `uci_emg: S 77.28`, `S = 80.84 ± 2.24
+  (pool); 1212 s`), poi `pose_b19618_eval_guard.py` e' caduto in `check_probe_report` (riga 258): `TypeError: ufunc 'isfinite' not
+  supported for the input types` su `np.isfinite(y)`. Exit 1:0 dopo 20 min 31 s. Log: `$WORK/wearusfm_runs/logs/pose_b19618_eval_62583157.out`
+  (copia sul Mac in `~/wearusfm_local/logs/`).
+- Causa: per `epn612` etichette e predizioni OOF sono stringhe (`epn612_y` e `epn612_pred` dtype `<U9`, es. `noGesture`; verificato sui file
+  `p2_*.oof.npz` del pilot in `~/wearusfm_local/pilot_obiettivi_20261024/`), e `np.isfinite` accetta solo tipi numerici. `uci_emg` e NinaPro
+  hanno etichette `int64`: la stessa guardia passa su P1 (62583155 COMPLETED). `tests/cpu/test_pose_b19618_eval_guard.py` costruisce il
+  rapporto di prova solo per `p1` (`probe_fixture(..., task='p1')`): il caso P2 con etichette stringa non era coperto.
+- Conseguenze: `PILOT-POSA-B19618-p1p2-compare-20261028` (62583165, afterok sui quattro pool) CANCELLED alle 19:24, mai partito;
+  `PILOT-POSA-B19618-B-p2-pool-20261028` (62583163, in coda) porta lo stesso payload e cadra' allo stesso modo dopo la sonda. Non toccati:
+  train 62582916 (PENDING dalle 17:22), catena della posa (62583147 fatto; 62583151, 62583164 in coda), catena P1 (62583155 fatto; 62583160 in
+  coda). Rapporto e OOF della sonda P2 di R3c sono stati scritti prima della caduta; la ricevuta della guardia no.
+- Proposta per GPT (correzione sua, sul suo ramo): `np.isfinite` solo sui dtype numerici (`kind in 'iuf'`) e per le stringhe controllo di
+  non vuoto; test con etichette stringa; poi decidere se validare con la guardia corretta il rapporto P2 di R3c gia' scritto (job CPU, nessuna
+  sonda da rifare) o rifare la sonda su un output nuovo (20 min, ~2,7 core-ore); sostituire 62583163 con un payload corretto (cancellazione e
+  risottomissione in afterok di 62583154) e risottomettere il confronto P1/P2 in afterok dei quattro pool. Nessuna azione di Claude sul cluster;
+  segnalazione da semplicione alle 19:24, lettura di Claude dal log.
