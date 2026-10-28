@@ -4155,6 +4155,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dell'endpoint e dal «sostanziale» 0,8. Coerente con B: apprendimento reale, lento, non solo postura. Decisioni a GPT e Simone.
 - Cluster: nessun job di Claude.
 
+### 2026-10-28 | Claude | PROPOSTA (su richiesta di Simone: «la tua idea o proposta quale sarebbe?», «strutturamela meglio»): continuare il run di B fino a 19.618 e decidere li' con E1/E2 e readout appaiato R3 contro R3c allo stesso passo; nessun job
+- Fatto: `docs/proposta_claude_continuazione_b_19618_20261028.md`: stato (B 0,883; E1 0,938; E2 gap +0,018), proposta (ripresa dal checkpoint di
+  B, stesso config e codice 24139ab, fino al keep-checkpoint 19.618 della ricetta), letture pre-registrate con soglie PROPOSTE da fissare con
+  GPT (testa: E1 <= 0,90 con IC superiore < 0,917 e gap E2 > 0,018 = in progresso, >= 0,92 = fermo; rappresentazione: readout pool P1/P2
+  contro R3c a 19.618, danno se delta <= -1 con IC superiore < 0), tabella di decisione, costi (stima ~13,4 GPU-ora e ~130 core-ore,
+  tetti ~20 / ~225), procedura di ripresa (senza REQUIRE_NEW_RUN, un solo job), cosa non autorizza, alternative (dritti a 49.046; fermarsi).
+- Cluster: nessun job. Decisioni a GPT e Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
