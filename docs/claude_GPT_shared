@@ -4545,6 +4545,99 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - ClaudeHEAD63acf94 con codice del pannello B non committato: non toccato o revisionato qui. Questa e' una review dei risultati,
   distinta dalla precedente review tecnica aecff1a, che resta chiusa nei rilievi sostanziali. Review finale del critico favorevole.
 
+### 2026-10-28 | Claude | Review della preparazione di B di GPT (codice congelato 24139ab, ramo `codex/r3-long-collaudo-20261028`): nessun difetto bloccante; codice, protocollo, piano e comandi concordano; 114 test rieseguiti verdi; nessun deploy, nessun job
+- Fatto: `docs/reviews/claude_review_collaudo_b_20261028.md`. Controlli con evidenza: config del piano ricostruito dal parser vero a 24139ab
+  uguale a `config_b_atteso_20261028.json`; comando [B] coerente (TIME_LIMIT_S 5100, REQUIRE_NEW_RUN, 90 min, 4 A100 / 32 core / 480 GB,
+  5.000 passi, EXTRA_ARGS = piano); `long_configuration` vero sul config atteso con l'`lr` generato dal trainer; **formato reale del
+  trainer accettato dal lettore** (run piccolo a 24139ab, `_panel_integrity` e `panel_gate` con quote ridotte: integrita' verificata,
+  baseline a zero); test di GPT rieseguiti su un checkout staccato di 24139ab (114 passati in 2 min 29, compresi i 2 DDP). Diff letto su
+  selezione/supporto, indipendenza dal training, DDP, ripresa, bootstrap, guardia di partenza da zero, lettore fail-closed.
+- Nove osservazioni non bloccanti nella review (fra cui `allow_nan=False` in `panel_eval`, seme e taglia fissi nel lettore, dimensione di
+  `pose_panel.jsonl`, `--agente gpt`); accettate le rettifiche di GPT alle mie letture del 27/10 (disallineato 7/10, E3 «sotto criterio»).
+- Cluster: nessun job. Il checkout staccato `~/wearusfm_local/review_b_24139ab` e' stato rimosso.
+- Questioni aperte: firma di Simone su criterio (rapporto <= 0,9 e IC95 superiore < 1) e sul tetto 6 GPU-ore / 48,33 core-ore; giro del
+  `critico` sul criterio nuovo se Simone lo vuole anche sul protocollo di GPT; poi deploy di 24139ab, checkout e [B] con la procedura comune.
+
+### 2026-10-28 | Claude | FIRMA di Simone di criterio e tetto di B registrata alla lettera in decisioni.md prima del lancio; esecuzione a GPT («con GPT che sottomette come da comandi»); Claude non fa deploy ne' job
+- Fatto: voce «FIRMA di Simone del collaudo lungo B» in decisioni.md (criterio congelato: L(5000)/L(0) <= 0,9 e IC95 appaiato per utente con
+  limite superiore < 1; tetto 6 GPU-ore + 48,33 core-ore; esecuzione GPT; critico non richiesto, dichiarato). Commit prima di qualunque lancio.
+- Cluster: nessun job di Claude. Il deploy di 24139ab, il checkout `pilot-posa-b-20261028` e il job B li esegue GPT secondo
+  `results/infra/pilot_posa/comandi_b_20261028.txt`.
+- Questioni aperte: lettura di B con GPT all'arrivo (lettore `R3-lungo`); R3 completo resta fermo.
+
+### 2026-10-28 | Claude | Lettura INFORMALE del collaudo lungo B (job 62523672, COMPLETED in 1 h 03, 4,2 GPU-ora / 34 core-ore sui tetti 6 / 48) col lettore congelato di 24139ab: SUPERATO (rapporto 0,883, IC95 [0,839; 0,932]); la lettura ufficiale [L] resta di GPT
+- Fatto (su richiesta di Simone: «puoi ovviamente leggere anche tu e farti una idea»): copia in sola lettura del run (senza checkpoint) in
+  `~/wearusfm_local/pilot_posa/collaudo_b_62523672/` e `arms_collaudo.py --arm R3-lungo --steps 5000 --expected-sha 24139ab` dal checkout
+  staccato di 24139ab (poi rimosso): 19 criteri OK, `status = superato`. Pannello: MSE 1,1601 -> 1,0242 (rapporto 0,883 <= 0,9), IC95
+  bootstrap [0,839; 0,932] < 1, 23 utenti su 32 in discesa (rapporti per utente 0,63-1,24, mediana 0,907), 18 giunti su 20 con MAE in calo
+  (media -8,3%), 165 finestre su 256 sotto il costante; curva ancora in discesa fra 4.500 e 5.000. Descrittivi: posa pesata sul training
+  0,945 (2.001-2.500) -> 0,900 (4.501-5.000); gradienti condivisi posa/ancore 0,92 (coseno -0,06); ritmo 0,708 s/passo; attesa dati 0,7%;
+  memoria 13,7 GiB; pannello 19 s di preparazione + 11 x 3,4 s.
+- Idea di Claude (interpretazione, non lettura di regola): la varianza temporale delle predizioni e' piccola (0,023 a 5.000, contro ~0,26 di
+  varianza tipica dei bersagli in 4 s) e le medie predette per giunto sono entro +-0,18: il calo del 12% e' in buona parte correzione del
+  livello per finestra/contesto piu' una dinamica lenta, non inseguimento del movimento. Sostiene H1 (col dbg la testa non aveva ancora
+  mosso nulla; a lr pieno dopo il 1.962 scende), non esclude H2. Nulla dice su utenti nuovi o trasferimento.
+- Cluster: nessun job. Nessun file in `results/`: l'esito ufficiale lo scrive GPT nel passo [L]. R3 completo resta una decisione separata.
+
+### 2026-10-28 | Claude | Lettura INFORMALE di E1/E2 sullo student di B a 5.000 (job GPT 62539724 estrazione 26 min, 62540295 rapporto 51 s, entrambi COMPLETED): E1 0,938 sulle dinamiche (IC [0,917; 0,952]), E2 gap allineato-disallineato +0,018 MAE std, positivo in 14 utenti su 14; lettura ufficiale a GPT
+- Fatto: copia in sola lettura di `$WORK/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json` in `~/wearusfm_local/pilot_posa/collaudo_b_62523672/`
+  (student, val senza maschera, codice 24139ab, 18.548 finestre, 15 utenti, 8.329 dinamiche). E1 (descrittivo: soglie firmate per l'endpoint
+  a 49.046): MAE/MAE_costante 0,9376 [0,9170; 0,9523] sulle dinamiche, mediana per utente 0,947, 15 utenti su 15 sotto 1, uno sotto 0,9; su
+  tutte 0,944. E2 sul supporto comune: MAE allineata 0,334 contro disallineata 0,352, gap +0,0177 (mediana per utente +0,018, min +0,004,
+  max +0,042), positivo in 14 utenti su 14 (un utente senza coppie); disallineato/costante 1,007.
+- Idea di Claude (interpretazione): il 6% di guadagno su utenti nuovi e' quasi tutto allineamento temporale (il disallineato torna al
+  livello del costante): la testa segue qualcosa del movimento, poco ma in modo coerente fra gli utenti; e' lontana dal criterio del 10%
+  dell'endpoint e dal «sostanziale» 0,8. Coerente con B: apprendimento reale, lento, non solo postura. Decisioni a GPT e Simone.
+- Cluster: nessun job di Claude.
+
+### 2026-10-28 | Claude | PROPOSTA (su richiesta di Simone: «la tua idea o proposta quale sarebbe?», «strutturamela meglio»): continuare il run di B fino a 19.618 e decidere li' con E1/E2 e readout appaiato R3 contro R3c allo stesso passo; nessun job
+- Fatto: `docs/proposta_claude_continuazione_b_19618_20261028.md`: stato (B 0,883; E1 0,938; E2 gap +0,018), proposta (ripresa dal checkpoint di
+  B, stesso config e codice 24139ab, fino al keep-checkpoint 19.618 della ricetta), letture pre-registrate con soglie PROPOSTE da fissare con
+  GPT (testa: E1 <= 0,90 con IC superiore < 0,917 e gap E2 > 0,018 = in progresso, >= 0,92 = fermo; rappresentazione: readout pool P1/P2
+  contro R3c a 19.618, danno se delta <= -1 con IC superiore < 0), tabella di decisione, costi (stima ~13,4 GPU-ora e ~130 core-ore,
+  tetti ~20 / ~225), procedura di ripresa (senza REQUIRE_NEW_RUN, un solo job), cosa non autorizza, alternative (dritti a 49.046; fermarsi).
+- Cluster: nessun job. Decisioni a GPT e Simone.
+
+### 2026-10-28 | Claude | Review della proposta E3 B di GPT (prompt 23cf073, consegnato da Simone): CONCORDO CON MODIFICHE; quattro correzioni indispensabili (feature post-LayerNorm, ridge mascherata per giunto, griglia di alpha aperta, scomposizione appaiata) e E3 B come baseline per 19.618, non cancello; nessun job
+
+- Richiesta di Simone: «Ti chiedo solo una review scientifica della proposta E3 di GPT ... Nessuna implementazione, estrazione o esperimento in
+  questa fase». Review in `docs/reviews/claude_review_proposta_e3_b_20261028.md`; letti in sola lettura sintesi, dinamica, E1/E2, report.json,
+  `pose_eval.py`, `pose_head.py`, `pose_dynamics.py`, emendamento, rapporto E3 di R3c. Nessun file di GPT toccato.
+- Numeri della sintesi tutti verificati sulle fonti (E1/E2, dinamica, B, audit 20 registrazioni / 10 utenti, E3 R3c 0,949). Diagnosi condivisa.
+  La selezione di alpha di E3 e' gia' fra utenti disgiunti del train (docstring «2 meta' per utente» fuorviante).
+- Aggiunta dai momenti di GPT: la testa e' gia' calibrata in ampiezza sulle dinamiche (fattore ottimo a = C/Vp = 1,07; rapporto centrato
+  0,9275 contro il minimo 1 - rho^2 = 0,9271; guadagno di un riscalamento 0,0002): «varianza predetta al 6%» e' conseguenza di rho = 0,27,
+  non difetto di scala; sulle poco dinamiche a = 0,29 (fluttuazioni troppo grandi per cio' che sa); per utente a fra 0,83 e 1,29 in 14/15.
+- Verdetto: E3 B utile e a basso costo (circa 0,1 GPU-ora attese: estrazione del sottoinsieme del train dello student, base documentale
+  62442491 4 min 12 s su R3c-e2 con le stesse 200 registrazioni; rapporto CPU in minuti; la cache di val di B contiene gia' i latenti), ma oggi
+  il confronto ridge/testa non e' interpretabile: (M1) ridge pre-LayerNorm contro testa post-LayerNorm = famiglie diverse; (M3) la ridge
+  fitta anche i giunti non validi (target 0, maschera falsa, ~18% degli elementi); (M4) griglia di alpha chiusa al bordo (100 su R3c-e2),
+  obiettivo interno MAE non mascherata. Piu' (M2) controllo di coerenza testa-dalla-cache contro `pred`. Lettura primaria proposta: differenza
+  appaiata ridge-testa del rapporto centrato sulle dinamiche con IC per utente, riusando `pose_dynamics.py` sulle predizioni della ridge.
+- In tutti gli esiti (ridge migliore / equivalente / peggiore) la mossa successiva e' la stessa (altri passi del tronco): E3 B e' diagnostica e
+  baseline per la stessa lettura a 19.618 su R3 e R3c (attribuzione a pari dose, (b2) dell'emendamento), non un prerequisito della
+  continuazione (proposta a2753a6, da discutere con GPT). R0 e J2 bis: non necessari ora, concordo.
+- Autonomia del 28/10 (job < 5 GPU-ore): letta come regola di Simone per GPT, recepita da GPT in CLAUDE.md sul suo ramo; per me resta
+  «non fai piu nulla che non venga approvato da gpt» e, a GPT, «lui non fa esperinenti adesos, e' solo per fare un review».
+- Prompt per GPT con le cinque richieste (verifica della calibrazione, posizione su M1-M4 e facoltative, lettura primaria e tabella
+  degli esiti da congelare, perimetro/preventivo/ruoli, parere sulla continuazione a2753a6 con E3 a 19.618):
+  `docs/prompt_gpt_risposta_review_e3_b_20261028.md`, consegnato a Simone su sua richiesta («dammi il prompt per gpt»).
+- Rettifica di Simone dopo il prompt: «in realta come ti avvo detto, farei fare a lui inqueste fasi lo sviluppo e i lanci poi leggiamo
+  assieme i risultati»: sviluppo di M1-M4, protocollo, lanci e consuntivo di E3 B a GPT (anche in `pose_eval.py` per questa fase);
+  Claude rivede su richiesta e legge i risultati con GPT. Punto 4 e chiusura del prompt aggiornati.
+
+### 2026-10-28 | Claude | Stato di E3 B letto in sola lettura (richiesta di Simone: «come vanno i job?»): estrazione 62561780 e rapporto 62561881 entrambi COMPLETED nei tetti; lettura INFORMALE del riepilogo nel log: differenza appaiata ridge meno testa +0,0028 [0,0009; 0,0046], «ridge higher»; lettura ufficiale congiunta con GPT
+
+- sacct: 62561780 COMPLETED in 4 min 15 s (1 A100, 8 core, tetto 20 min: 0,07 GPU-ora, 0,57 core-ore), 1.907 finestre / 200 registrazioni,
+  cache 257 MB; audit delle maschere nel log: `partial_joint_rows` 0 (conferma GPT: maschera identica sui giunti), 899.140 elementi non validi
+  esclusi su 6.102.400. 62561881 COMPLETED in 1 min 46 s (8 core, tetto 30 min: 0,24 core-ore); rapporto in
+  `$WORK/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028.json` (205 KB), `ridge_predictions.npz` (714 MB) su $SCRATCH.
+- Riepilogo stampato dal rapporto: alpha scelto 1e6 (griglia estesa, regolarizzazione forte); primario `(MSE centrata ridge - testa) / Vy`
+  sulle dinamiche = +0,00283, IC95 utenti [+0,00090; +0,00460], 10 utenti su 15 con segno positivo: la ridge sulle stesse feature della testa
+  legge un po' MENO dinamica della testa (0,3 punti di Vy). Nella tabella congelata di GPT e' l'esito «ridge higher».
+- Lettura informale, non ufficiale: GPT pubblica il rapporto e la lettura; poi lettura congiunta come chiesto da Simone. Nessun job mio.
+  Output di leonardo-ops in `~/wearusfm_local/logs/status_e3b_20261028_144139.txt`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6376,3 +6469,29 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Il preflight verifica stato e metadati, non prova uguaglianza numerica di una ripresa rispetto a un training continuo.
   L'identita' di finestre e stream non implica identiche traiettorie RNG fra obiettivi diversi. Il confronto e' a un seme.
 - I rapporti a19618 restano descrittivi; nessun esito autorizza automaticamente49046. B5000 sorgente immutato.
+
+### 2026-10-28 | Claude | Trovato rileggendo E3 per la review (codice mio, `pose_eval.py`, invariato da c5e42cb a 24139ab): la ridge fitta anche i giunti non validi e la griglia di alpha si e' chiusa al bordo su R3c-e2; il numero E3 di R3c (0,949) e' di un lettore handicappato; nessun esito firmato cambia
+
+- `_instants` prende gli istanti con almeno un giunto valido e `ridge_fit` usa tutte le 20 colonne: nei giunti non validi il target e' 0 con
+  maschera falsa (`pose_targets.window_pose`), circa il 18% degli elementi (val dinamiche: 21.750.080 validi su 26.652.800). La ridge impara
+  anche quegli zeri ed e' spinta verso la costante. Alpha scelto = 100, bordo della griglia {0,1; 1; 10; 100}: la selezione non ha finito.
+- Effetto: E3 e' descrittivo (nessun cancello firmato dipende da E3); la lettura di GPT su R3c («sotto il criterio del 10%, non assenza di
+  informazione») resta vera, ma l'accessibilita' vera di R3c-e2 puo' essere piu' alta di 5,07%. Nessun run toccato; nessun rilancio proposto
+  per R3c (dose diversa da B: il confronto utile e' a pari passo, 19.618 o endpoint).
+- Correzione: nel codice di E3 B (fit mascherato per giunto, griglia aperta, obiettivo interno MSE mascherata, feature post-LayerNorm), da
+  fare sul mio ramo solo dopo il confronto dei due pareri e l'approvazione di GPT; nessuna implementazione in questa consegna.
+- Aggiornamento (Simone, 28/10): la correzione M1-M4 la sviluppa GPT in questa fase («farei fare a lui inqueste fasi lo sviluppo e i
+  lanci»); Claude non tocca `pose_eval.py` finche' non cambia la disposizione.
+
+### 2026-10-28 | Claude | Errore mio nella review di E3 B (M3): ho dichiarato «dimostrato» un difetto che non c'era (ridge sui giunti non validi); trovato da GPT nella sua risposta (520158e) e verificato nel codice; rettifica in testa alla review
+
+- `pose_targets.window_pose`: `has = cnt > 0` e' per patch e `mask[has] = True` accende tutti i 20 giunti; la maschera e' identica sui giunti,
+  `_instants` (`mask.any(axis=1)`) esclude esattamente le patch non valide: la ridge legacy non ha mai fittato zeri non validi. Il 18,4% di
+  elementi non validi su val sono patch intere escluse. Ho letto `_instants` e `ridge_fit` senza controllare la forma della maschera in
+  `window_pose` (ne ho letto solo il grep) e ho chiamato «dimostrato» cio' che era un'ipotesi: stesso errore del 27/10 (verificare prima di
+  affermare). Nessun run toccato; la voce di sezione 2 di oggi su E3 di R3c-e2 «lettore handicappato» cade per la parte della maschera: il
+  0,949 resta il risultato di quel lettore; l'alpha al bordo e' un indizio, non una prova (GPT).
+- Accolte anche: LayerNorm con gamma = 1 e beta = 0 non e' identita'; «IC che comprende 0» = inconclusivo; la calibrazione aggregata non e'
+  una calibrazione per giunto/utente; sulla continuazione (a2753a6) la ripresa nella stessa cartella sovrascriverebbe `checkpoint.pt` a 5.000
+  (copia immutabile prima, nessuna ripresa mentre E3 legge) e le letture vanno riformulate come differenze appaiate.
+- Stato: E3 B lanciata da GPT (estrazione 62561780, rapporto 62561881 con afterok); io leggo lo stato in sola lettura e i risultati con GPT.
