@@ -1,0 +1,28 @@
+{
+  "reviewed_at_utc": "2026-10-28T14:37:48.256269+00:00",
+  "status": "READY_FOR_ROOT_REVIEW_NO_SUBMISSION",
+  "source_hashes": {
+    "scripts/pose_b19618_preflight.py": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+    "scripts/build_pose_b19618_preflight_payload.py": "5fe992d14536cb4c05cb34f2b1e4d53f1ef0f5ca298aa2d14b4b95d17dc168cb",
+    "scripts/slurm/pose_b19618_preflight.sbatch": "beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+    "tests/cpu/test_pose_b19618_preflight.py": "92b8445afca1cba1a5bdced3d95192a5ac6eaede772b4273b46280671b9726c8"
+  },
+  "tests": {
+    "file": "tests/cpu/test_pose_b19618_preflight.py",
+    "passed": 7,
+    "seconds": 1.55
+  },
+  "bash_n_passed": true,
+  "git_diff_check_passed": true,
+  "resources": {
+    "gpus": 0,
+    "cpus": 2,
+    "memory": "16G",
+    "time": "00:10:00",
+    "torch_threads": 1,
+    "core_hours_cap": 0.3333333333333333
+  },
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_preflight_20261028.json",
+  "mutations_remote": [],
+  "submissions": []
+}

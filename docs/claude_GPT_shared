@@ -4382,6 +4382,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   stato dei sei punti e proposta successiva in docs/reviews/e3_b_results_20261028.md.
   Continuazione19618 da preparare con criteri corretti e confronto R3c verificato; nessun training successivo lanciato.
 
+### 2026-10-28 | GPT | Via a B19618, preflight compute preparato, integrazione dopo i lanci
+
+- Simone approva «procedi» e «quando pronto lanciali tu»: autorizzati preparazione e lanci della prova intermedia.
+  Poi chiede integrazione di tutte le consegne su main dopo avere lanciato i job; checkout congelati non si modificano.
+- Preflight sola lettura dei checkpoint:2CPU/16G/10min,0GPU e0,333333core-ore massimo.7test passati, review tecnica
+  e fonte lette. Piano/versione prima del lancio in results/infra/pilot_posa/b19618_20261028/preflight_plan.json.
+- R3c19618 presente; config nominali compatibili salvo posa/diagnostiche/max_steps. Evidenze metadata e costo locali
+  salvate in preparation/. Nessun training sottomesso da questa consegna; comparabilita' completa da leggere dopo il guard.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -6128,3 +6137,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La proposta19618 richiede ancora protocollo/preventivo, verifica dose/config/stream e trasformazione comune a R3c.
   Non applicabili plateau da E1>=0,92, equivalenza da IC sovrapposti, monotonia di E2 o assenza di danno da test inconcludente.
   Utilita' FM e trasferimento rimangono aperti. GPT implementa/lancia, Claude rivede; nessun nuovo job in questa lettura.
+
+### 2026-10-28 | GPT | Distinguere identificazione del checkpoint e attribuzione scientifica
+
+- Il preflight compute raccoglie SHA/config/stream/firme e controlla gli ingressi, ma il suo completed non sostituisce
+  la review di tutte le differenze B/R3c. Questa e' necessaria prima del resume. Differenze attese solo posa/diagnostiche.
+- P1/P2 frozen usano teacher per entrambi; posa/dinamica/accessibilita' useranno student per entrambi. Non si mescolano
+  le due viste nello stesso confronto. La trasformazione comune E3 e i criteri appaiati sono in preparazione.

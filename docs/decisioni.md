@@ -5357,3 +5357,16 @@ Non si conclude saturazione dell'encoder, ottimalita' della testa o via automati
 restano dichiarate. Risultati, figura, elenco M1-M4/opzioni e stato complessivo in docs/reviews/e3_b_results_20261028.md.
 Proposta successiva raccomandata: preparare il punto intermedio19618 con confronto R3c verificato, criteri appaiati,
 trasformazione comune e preventivo definitivo. Non avviato; nessuna modifica di pooling, target, loss o scala in questa tranche.
+
+### 2026-10-28 — Simone autorizza il punto intermedio B19618 e l'integrazione successiva
+
+Alla proposta di preparare il confronto a19.618 Simone risponde «procedi» e ribadisce «quando pronto lanciali tu».
+Il via comprende i lanci dopo verifiche e review, anche oltre5GPU-ore, senza un nuovo consenso. Poi richiede
+«quando hai lanciato i job parti a integrare tutto»: review e merge su main dopo i lanci, conservando commit e registro;
+checkout dei job congelati. GPT implementa e lancia, Claude revisore.
+
+Primo controllo operativo in sola lettura: preflight checkpoint B5000/R3c19618 su compute,2CPU/16G/10min,
+0GPU-ore e0,333333core-ore massimo. Piano in results/infra/pilot_posa/b19618_20261028/preflight_plan.json;
+7test CPU, source e wrapper hashati, nessun sampler o modello costruito. Solo JSON nuovo fuori dal codice.
+Il controllo raccoglie l'evidenza; completed non prova da solo comparabilita': il diff config/firme viene riletto prima del resume.
+Nessuna sottomissione anticipata dichiarata in questa voce. Piano scientifico del training in preparazione separata.
