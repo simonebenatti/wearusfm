@@ -4752,6 +4752,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Snapshot22:52: B-P2 e confronto PENDING Dependency, collegati alle sonde/estrazione B corrette. Training62582916
   RUNNING; log22:50:57 al passo7450. Tutta la catena predisposta, risultati finali B ancora attesi.
 
+### 2026-10-29 | Claude | B19618: batteria di GPT chiusa (17 job), lettura informale dai log via semplicione | Lettura ufficiale a GPT
+
+- Alle 03:23 del 29/10 tutti i job della campagna `pilot-posa-b19618-20261028` sono chiusi: 14 COMPLETED, il vecchio R3c-P2 FAILED (guardia,
+  voce in sezione 2), B-P2 e confronto originali CANCELLED mai partiti e sostituiti dai tre job di recupero. Train 62582916: 19.618 passi
+  per `max_steps`, 3 h 03 su 4 A100 (12,2 GPU-ora), `source_unchanged: true`, checkpoint 96f87035. GPU-ora totali stimate dai tempi ~14,6
+  (train + sei estrazioni); consuntivo ufficiale a GPT.
+- Posa (rapporto 62583164, soli delta puntuali dal log; IC nel JSON sul cluster, non ancora letti): E1 dinamiche B19618 − B5000 **−0,075**
+  (0,938 -> ~0,863); rapporto centrato della testa **−0,061** (0,927 -> ~0,867); accessibilita' con trasformazione comune, ridge su student
+  B meno ridge su student R3c, **−0,124** (B piu' leggibile).
+- Trasferimento (confronto appaiato 62618179, pool, R3c riferimento, B candidato, stesso passo 19.618): **P1 −0,56 punti, IC95 [−1,10;
+  −0,03]**; **P2 −1,23 punti, IC95 [−3,00; +0,58]**. Sonde: P1 B 16,99 ± 0,69 contro R3c 17,55 ± 0,70; P2 B 79,60 ± 1,95 contro R3c
+  80,84 ± 2,24 (EPN612 81,8 contro 84,4; UCI 77,4 contro 77,3).
+- Lettura informale di Claude: la supervisione di posa fa cio' che chiede (testa e accessibilita' migliorano nettamente dal 5.000 al 19.618 e
+  rispetto a R3c), ma a pari passo e pari batch il trasferimento non ne guadagna: su P1 un calo piccolo con IC sotto zero, su P2 un calo
+  puntuale piu' grande con IC che include zero e cali di tre punti. Un seme, due sonde, nessuna correzione per confronti multipli; «regola non
+  superata» nel log e' l'etichetta del lettore del pilot, non un cancello di questa tranche. Nessuna decisione: lettura congiunta con Simone e
+  GPT, nessun job di Claude.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
