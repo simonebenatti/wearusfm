@@ -4781,6 +4781,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Rapporto preliminare docs/reviews/b19618_preliminary_20261029.md; log locali salvati sotto
   results/infra/pilot_posa/b19618_20261029/preliminary_logs. Nessuna nuova esecuzione o cambio di ricetta.
 
+### 2026-10-29 | GPT | B19618: lettura completa, posa migliore e trasferimento non migliorato | Base 52ae536, protocollo 8405a0b/f45a73b
+
+- Raccolta sbloccata: 60 file testuali con hash verificati, 14 job COMPLETED 0:0 piu' 1 FAILED storico recuperato e 2 CANCELLED
+  mai partiti; catena conclusa alle 03:19:22. Training continuo 5001–19618, stop max_steps/source_unchanged. Review indipendenti
+  di posa, trasferimento e integrita': nessuna discrepanza nei ricalcoli/identita'. Report docs/reviews/b19618_results_20261029.md.
+- A: E1 dinamiche 0,937552 → 0,862629, delta −0,074922, IC [−0,089755; −0,059466]; centered 0,927475 → 0,866689,
+  delta −0,060786 [−0,075004; −0,045008], 15/15 utenti migliorano. Vp/Vy 6,324% → 14,961%, rho 0,270 → 0,366.
+- C: ridge comune centered R3c 0,986693 → B 0,862650, delta −0,124044 [−0,142974; −0,105411], 15/15;
+  alpha 1e5 interno per entrambi, M2 entro soglie. B codifica posa piu' accessibile nella vista mediata/normalizzata.
+- B: P1 −0,556 pp [−1,104; −0,026], P2 −1,233 pp [−2,997; +0,576], EPN612 −2,580 pp [−3,172; −2,032].
+  Nessun beneficio sulle sonde interne di classificazione; non valutato trasferimento su un'altra regressione.
+- Raccomandazione: B come ramo posa, non nuovo backbone generale; nessuna estensione automatica a 49046 o ricerca
+  indiscriminata sulla distanza della loss. Prossimo controllo proposto: robustezza/convergenza simmetrica delle sonde
+  con feature esistenti, da definire prima di eseguirlo. Nessun nuovo job in questa lettura.
+- Tranche: 14,622778 GPU-ore / 26,985 core-ore CPU-only; tolto il preflight gia' contato, incremento 26,972778 core-ore CPU.
+  Residuo pilot: 64,448056 GPU-ore / 432,14 core-ore CPU. JSON/grafico/review in results/infra/pilot_posa/b19618_20261029.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6716,3 +6733,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   non prova del numero di fit distinti. Mantenerli come limite; non correggere a posteriori un solo encoder.
 - P1/P2 validazione interna, singolo seme; IC non comprendono variabilita' fra training. Nessun esito autorizza
   automaticamente49046 e nessun dato implica dataset troppo piccolo o saturazione dell'encoder.
+
+### 2026-10-29 | GPT | Limiti finali e rettifica degli avvisi B19618
+
+- Il blocco runtime precedente e' risolto. IC della posa ricalcolati indipendentemente da somme per utente;
+  IC P1/P2 letti dal comparatore congelato con provenienza verificata, non ricalcolati localmente dagli OOF non copiati.
+- Sonde con un seme/validazione interna, test ufficiali esclusi; i dati non provano un beneficio FM generale ne'
+  insufficienza della scala del dataset. Not_harmful=true legacy P1 non e' prova di assenza di danno: l'IC include −1 pp.
+- 18 emissioni ConvergenceWarning senza attribuzione C/fold/fit finale. Warnings_summary dell'operatore ometteva
+  489 warning di classi per ciascun braccio P1 (978 messaggi, fase DB3): aggiunti nelle review. Classi assenti nel sottoinsieme
+  di scoring/bootstrap non invalidano da sole pairing o metrica; input/target/denominatori comuni verificati.
+- Una stessa riga UCI malformata esclusa in entrambi i bracci. Poco dinamiche: centered 1,005, IC [0,993; 1,017]:
+  riduzione del danno precedente, non equivalenza col piatto. Restano attenuazione temporale e limiti della vista
+  ridge normalizzata. Nessun risultato riscritto e nessun gate dell'endpoint applicato.

@@ -5476,3 +5476,25 @@ subito dopo scancel ha richiesto riconciliazione con sacct, effettuata senza rip
 **Validatore COMPLETED0:0,11s x2CPU=0,006111core-ore,0GPU-ore**, rapporto/OOF invariati, provenance completa.
 B-P2 e confronto PENDING Dependency nello snapshot22:52; training RUNNING, passo7450 nel log22:50:57.
 Nessun nuovo costoGPU e nessun cambiamento scientifico. Restano da leggere gli esiti B e il confronto finale.
+
+
+## 29/10/2026 — Lettura B19618 conclusa (GPT; proposta di seguito, nessun nuovo lancio)
+
+Simone autorizza lettura/analisi; permesso runtime semplicione risolto, 60 file raccolti con hash verificati.
+Training a 19618 completo e catena conclusa alle 03:19:22; errori storici conservati. Rapporto completo
+`docs/reviews/b19618_results_20261029.md`, JSON e review indipendenti sotto results/infra/pilot_posa/b19618_20261029.
+
+La posa migliora: E1 delta −0,074922 [−0,089755; −0,059466], centered −0,060786 [−0,075004; −0,045008], 15/15 utenti;
+Vp/Vy 14,96%, rho 0,366. Accessibilita' ridge comune B−R3c: −0,124044 [−0,142974; −0,105411], alpha interno / M2 valido.
+Trasferimento interno: P1 −0,556 pp [−1,104; −0,026], P2 −1,233 pp [−2,997; +0,576]: nessun vantaggio misurato.
+Lettura esplorativa con un seme, classificazione interna distinta dal test ufficiale e da altre regressioni.
+
+Raccomandazione GPT: conservare B come ramo posa, non adottarlo come FM generale o proseguire automaticamente a 49046.
+Prima di un altro training, proporre un controllo simmetrico di convergenza delle sonde con le feature esistenti:
+18 warning lbfgs non attribuibili ai fit finali dai log. Nessun nuovo job approvato o sottomesso da questa voce;
+autorizzazioni persistenti di Simone restano, eventuale controllo va concretizzato con protocollo/preventivo.
+
+Consuntivo tranche, 17 ID: 14,622778 GPU-ore, 143,967222 core-ore allocate, 26,985 core-ore CPU-only. Preflight 0,012222 gia' nella base:
+incremento netto 26,972778 core-ore CPU. Cumulato seconda ondata: 67,551944 GPU-ore / 98,86 core-ore CPU; residuo 64,448056 / 432,14
+sui tetti 132 / 531. Nessun nuovo consumo GPU per la lettura. Rettificato il conteggio degli avvisi nei documenti finali:
+978 warning di classi DB3 (489 per braccio) mancavano dal riepilogo dell'operatore; non altri fit falliti. UCI: stessa riga scartata.
