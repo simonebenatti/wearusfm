@@ -4238,6 +4238,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   superata» nel log e' l'etichetta del lettore del pilot, non un cancello di questa tranche. Nessuna decisione: lettura congiunta con Simone e
   GPT, nessun job di Claude.
 
+### 2026-10-29 | Claude | Lettura congiunta di B19618: concordo con il rapporto di GPT (f7433f4), tre precisazioni e un'aggiunta | Richiesta di Simone («concordi con questa lettura?» -> «Sì, registra»)
+
+- Verificati i numeri di `docs/reviews/b19618_results_20261029.md` sui log dei 17 job (copie in `~/wearusfm_local/logs/`) e sui JSON di
+  `results/infra/pilot_posa/b19618_20261029/`: coincidono (E1 0,937552 -> 0,862629; centrato 0,927475 -> 0,866689; Vp/Vy 0,063 -> 0,150;
+  rho 0,270 -> 0,366; accessibilita' ridge B − R3c −0,124044 [−0,142974; −0,105411]; P1 −0,556 [−1,104; −0,026]; P2 −1,233 [−2,997; +0,576];
+  EPN612 −2,580 [−3,172; −2,032]; 14,622778 GPU-ore, residuo 64,448056). Pannello di train: rapporto 0,873 (5.500) -> 0,779 (19.500),
+  nessun plateau. **Concordo con la lettura e con i punti 1-5 del seguito raccomandato.**
+- Precisazione 1, trasferimento: a pari passo e pari batch e' una **perdita misurata** su P1 (IC tutto sotto zero) e su EPN612 (−2,6 punti),
+  non solo «non migliora»; quattro dataset su cinque col segno negativo; P2 inconclusivo per l'intervallo di UCI (19 soggetti, ±3,5 punti).
+  Un seme, nessuna correzione multipla, direzione coerente.
+- Precisazione 2, continuazione: **con questa ricetta non prolungherei a 49.046**: la domanda del pilot (la posa migliora la rappresentazione
+  per P1/P2?) ha risposta negativa al 40% del tronco e il decay non cambia uno scambio di capacita'; tronco e ramo costerebbero ~35 delle 64
+  GPU-ore. Se l'idea della posa per il FM resta viva, la variante piu' diretta e' il **peso** del termine (es. 0,2 invece di 1,0, dentro lo
+  0,1-0,3 di v10 §6.2 per le teste ausiliarie), non la forma della loss. Opinione per la decisione congiunta, nessuna proposta di job.
+- Precisazione 3, controlli: il controllo di convergenza delle sonde va fatto prima di qualunque job nuovo ma agisce sui due bracci allo stesso
+  modo (igiene, non un modo per cambiare il segno); il trasferimento verso una regressione diversa dalla posa va **pre-registrato** (compito,
+  dataset, metrica, lettore scritti prima di guardare), altrimenti diventa la ricerca di un compito in cui B vince.
+- Aggiunta (calibrazione, dai numeri di GPT): con rho 0,365725 il minimo lineare dell'errore centrato e' 1 − rho² = 0,866250 e la testa sta a
+  0,866689; fattore di riscalatura ottimo a = rho·sqrt(Vy/Vp) = 0,946. La testa resta all'ottimo di MSE per l'informazione che ha:
+  l'attenuazione e' calata perche' e' cresciuta l'informazione. Sostiene «non basta moltiplicare le uscite» e il rinvio dell'esplorazione
+  della loss. Nessun job di Claude; nessun codice.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
