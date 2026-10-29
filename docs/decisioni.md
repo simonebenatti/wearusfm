@@ -5608,3 +5608,15 @@ Parita' identica per i quattro rapporti, 280 record, cancello passed. I 18 fit a
 riaddestramenti dove C = 100 e' stato scelto: R3c DB6 fold 3, B EPN612 fold 1). Tetti della fase B dai tempi misurati: DB2 45 + 45, DB3 20, DB6 45,
 P2 60 min per encoder = **57,33 core-ore** (atteso ~36); consuntivo della fase A 26,4 core-ore di shard. Nessuna modifica alla ricetta ne' al codice
 (f6c89cc); nessun job GPU.
+
+### 2026-10-29 — PSD-3: tetti degli shard per dataset e preventivo definitivo (Claude, prima del lancio dei blocchi 3-5)
+
+**DECISO (prompt GPT 73b6fba: «Pubblica il preventivo definitivo dopo il timing ... Puoi adeguare CPU/memoria/walltime entro il residuo,
+rispettando serial≤4h. Non ridurre celle, epoche o griglie per rientrare nel tempo; niente retry ciechi»; Simone, 29/10: «se è tutto chiaro ti
+autorizzo a partire»):** walltime per dataset DB2 04:00:00, EPN612 03:00:00, DB6 02:00:00, DB3 02:00:00, UCI 00:30:00; 4 core e 30G per i 20
+shard (stessi thread dei benchmark: una sola identita' numerica nel confronto); confronto 4 core/16G/30 min. **Preventivo definitivo: 0 GPU-ora;
+tetto 195 core-ore + 0,33 di checkout = 195,33 (atteso ~70)**, dai benchmark B DB6/EPN612 pool/dec (proiezioni per shard 42-72 min) e
+dall'estrapolazione degli audit della fase A delle sonde per DB2/DB3/UCI. Sonde al tetto 112,0 (A 50,83 + B 61,0 + checkout 0,17; i 57,33
+della voce precedente erano i soli shard). Residuo CPU-only al tetto 124,81 core-ore. Nessun cambio a viste, PCA, split, griglie, epoche, semi,
+metriche o max_iter (codice 2235c15, checkout `pilot-psd3-20261029b`). Un timeout non si ripete alla cieca: si registra e si propone un
+emendamento congelato (fold separati o salvataggio per fold), mai una riduzione della ricetta.

@@ -37,7 +37,8 @@ PLAN_REL = "results/infra/psd3_preparation_20261029/plan.json"
 CHECKOUT_JOB = {"cpus": 2, "time": "00:10:00"}
 PROVISIONAL_ESTIMATE_CORE_HOURS = 86  # docs/psd3_readers_20261029.md §Costi: 1 + 4 + 80 + 1, con benchmark e rapporto da 15 min
 RESIDUAL_CPU_ONLY_BEFORE_PROBES = 432.14  # core-ore CPU-only registrate dopo B19618 (b19618_results_20261029.md)
-PROBE_CAPS_WITH_CHECKOUT = 169.3333  # tetto del controllo delle sonde, checkout compreso (docs/sonde_convergenza_20261029.md §6)
+PROBE_CAPS_WITH_CHECKOUT = 112.0  # tetto del controllo delle sonde, checkout compreso: fase A 50,83 + fase B 61,0 (tetti dai tempi
+# misurati, commit 6424fdc: 57,33 di shard + 3,67 di aggregati e confronto) + 0,17 di checkout; prima dell'affinamento era 169,33
 
 
 def _hours(hms: str) -> float:
@@ -64,9 +65,15 @@ def check_resources(cpus: int, mem: str, time_: str) -> None:
 
 def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledger_campaign: str, *, shard_cpus: int, shard_mem: str,
                shard_time: str, benchmark_cpus: int, benchmark_mem: str, benchmark_time: str, inventory_time: str, compare_time: str,
-               date: str = "20261029") -> dict:
+               date: str = "20261029", shard_times: dict | None = None, shard_time_note: str = "") -> dict:
+    """`shard_times`: walltime per dataset (nome -> hh:mm:ss) fissato dopo il benchmark; i dataset non elencati usano `shard_time`."""
     if len(code_sha) != 40 or any(c not in "0123456789abcdef" for c in code_sha):
         raise ValueError("code_sha deve essere uno SHA a 40 caratteri")
+    times = {d: shard_time for d in DATASETS}
+    for d, v in (shard_times or {}).items():
+        if d not in DATASETS:
+            raise ValueError(f"dataset sconosciuto in shard_times: {d}")
+        times[d] = v
     if shard_cpus != benchmark_cpus:
         raise ValueError("benchmark e shard devono usare gli stessi core: la firma numerica registra i thread")
     checkout = f"/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/{campaign}"
@@ -90,7 +97,7 @@ def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledg
             expected_min=10)
     cells = [(m, d, v) for m in MODELS for d in DATASETS for v in VIEWS]
     for i, (model, dataset, view) in enumerate(cells):
-        job(3 + i // MAX_QUEUED, f"PILOT-PSD3-run-{model}-{dataset}-{view}-{date}", shard_cpus, shard_mem, shard_time,
+        job(3 + i // MAX_QUEUED, f"PILOT-PSD3-run-{model}-{dataset}-{view}-{date}", shard_cpus, shard_mem, times[dataset],
             f"{results_root}/shards/{model}_{dataset}_{view}.json", "run", ["--model", model, "--dataset", dataset, "--view", view])
     shard_outs = [j["out"] for j in jobs if j["stage"] == "run"]
     job(5, f"PILOT-PSD3-compare-{date}", 4, "16G", compare_time, f"{results_root}/compare.json", "compare", ["--reports", *shard_outs], expected_min=5)
@@ -113,13 +120,14 @@ def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledg
             "prerequisites": {"campaign_checkout": {"name": campaign, "sha": code_sha, "launcher": "scripts/slurm/campaign_checkout.sbatch",
                                                     **CHECKOUT_JOB, "core_hours_cap": checkout_cap, "note": "fuori dai 26 job; deploy/<campaign> gia' su leonardo"}},
             "qos_limits": {"cpus_per_job": SERIAL_MAX_CPUS, "mem_mb_per_job": SERIAL_MAX_MEM_MB, "walltime": SERIAL_WALLTIME, "max_queued_per_user": MAX_QUEUED},
-            "shard_resources": {"cpus": shard_cpus, "mem": shard_mem, "time": shard_time,
-                                "note": "da fissare dopo il benchmark (blocco 2); stessi core per tutti gli shard e per i benchmark; mai oltre i limiti della QoS"},
+            "shard_resources": {"cpus": shard_cpus, "mem": shard_mem, "time_default": shard_time, "time_by_dataset": times, "note": shard_time_note or
+                                "da fissare dopo il benchmark (blocco 2); stessi core per tutti gli shard e per i benchmark; mai oltre i limiti della QoS"},
             "core_hours_cap": {f"block_{b['block']}": b["core_hours_cap"] for b in blocks} | {"total": total, "checkout": checkout_cap,
                                                                                                "total_with_checkout": total + checkout_cap},
             "budget": {"provisional_estimate_core_hours": PROVISIONAL_ESTIMATE_CORE_HOURS,
                        "deviation_from_provisional": total - PROVISIONAL_ESTIMATE_CORE_HOURS,
-                       "deviation_note": "benchmark e confronto a 30 min invece di 15 (tetti, non durate); gli shard restano 20 x cpus x walltime",
+                       "deviation_note": "tetti, non durate: benchmark e confronto a 30 min invece di 15; shard = cpus x walltime per dataset "
+                                         "(shard_resources.time_by_dataset), fissati dopo il benchmark e sopra le proiezioni",
                        "residual_cpu_only_core_hours_before_probes": RESIDUAL_CPU_ONLY_BEFORE_PROBES,
                        "probe_caps_with_checkout": PROBE_CAPS_WITH_CHECKOUT,
                        "residual_after_probe_caps": after_probes, "residual_after_psd3_caps": after_probes - total - checkout_cap,
@@ -159,10 +167,18 @@ def main(argv=None) -> int:
     ap.add_argument("--inventory-time", default="00:30:00")
     ap.add_argument("--compare-time", default="00:30:00")
     ap.add_argument("--out-dir", type=Path, default=ROOT / "results" / "infra" / "psd3_20261029")
+    ap.add_argument("--shard-time-for", action="append", help="walltime per dataset, dataset=hh:mm:ss (ripetibile), fissato dopo il benchmark")
+    ap.add_argument("--shard-time-note", help="da dove vengono i tempi degli shard (benchmark, proiezioni)")
     a = ap.parse_args(argv)
+    per_dataset = {}
+    for item in a.shard_time_for or []:
+        if "=" not in item:
+            raise ValueError(f"--shard-time-for vuole dataset=hh:mm:ss: {item!r}")
+        d, v = item.split("=", 1)
+        per_dataset[d] = v
     plan = build_jobs(a.code_sha, a.campaign, a.results_root, a.agente, a.ledger_campaign, shard_cpus=a.shard_cpus, shard_mem=a.shard_mem,
                       shard_time=a.shard_time, benchmark_cpus=a.benchmark_cpus, benchmark_mem=a.benchmark_mem, benchmark_time=a.benchmark_time,
-                      inventory_time=a.inventory_time, compare_time=a.compare_time)
+                      inventory_time=a.inventory_time, compare_time=a.compare_time, shard_times=per_dataset, shard_time_note=a.shard_time_note or "")
     plan_path, cmd_path = write_outputs(plan, a.out_dir)
     print(json.dumps({"complete": True, "jobs": len(plan["jobs"]), "core_hours_cap": plan["core_hours_cap"], "plan": str(plan_path),
                       "commands": str(cmd_path)}))

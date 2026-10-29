@@ -150,22 +150,23 @@ le quattro sonde hanno consumato 26,52 core-ore allocate.
 
 | Blocco | Job | Tetto core-ore | Atteso core-ore |
 |---|---|---:|---:|
-| 1. fase A, shard | 10 | 48,00 | ~25,3 (tempi osservati) |
+| 1. fase A, shard | 10 | 48,00 | 26,4 (consuntivo del 29/10) |
 | 2. fase A, aggregati + parita' | 4 | 2,67 | ~0,4 |
 | 3. cancello | 1 | 0,17 | ~0,02 |
 | **Fase A** | 15 | **50,83** | **~26** |
-| 4. fase B, shard a 12000 | 10 | 114,67 | fra ~25 (nessun fit cambia) e ~101 (ogni fit al limite x4) |
+| 4. fase B, shard a 12000 | 10 | 57,33 (tetti dai tempi della fase A, 29/10; prima 114,67) | ~36 |
 | 5. fase B, aggregati + confronto | 5 | 3,67 | ~0,6 |
-| **Fase B** | 15 | **118,33** | **26-102** |
-| **Totale scientifico** | 30 | **169,17** | **52-128** |
+| **Fase B** | 15 | **61,00** (prima 118,33) | **~36** |
+| **Totale scientifico** | 30 | **111,83** (prima 169,17) | **~62** |
 | Checkout di campagna (prerequisito) | 1 | 0,17 | |
-| **Totale con il checkout** | 31 | **169,33** | **52-128** |
+| **Totale con il checkout** | 31 | **112,00** (prima 169,33) | **~62** |
 
 Il fattore quattro di `max_iter` non e' un tempo e non e' un limite rigoroso: vale solo per i fit che toccano il limite (5/4/4/5 emissioni di
 warning nei log, su 84 fit per P1 e 56 per P2, cioe' 28 per dataset). I tempi e le iterazioni per fit della fase A (`elapsed_s`, `n_iter` nei
 record) servono ad affinare il tetto della fase B **prima** di eseguirla, con margine e overhead, senza toccare la ricetta numerica; i tetti
 sono allocazioni che fermano il job, non garanzie che il lavoro finisca. Residuo registrato dopo B19618: 432,14 core-ore CPU-only / 64,45
-GPU-ore; questo controllo ne impegna al massimo 169,33 core-ore (residuo teorico al tetto completo 262,81) e nessuna GPU-ora.
+GPU-ore; questo controllo ne impegna al massimo 112,00 core-ore dopo l'affinamento della fase B del 29/10 (169,33 prima; residuo teorico al tetto
+completo 320,14) e nessuna GPU-ora.
 
 ## 7. Obiezioni e scelte dichiarate
 

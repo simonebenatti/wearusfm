@@ -56,7 +56,8 @@ def test_jobs_cover_the_grid_once_in_blocks_under_the_queue_limit(tmp_path):
     assert plan["core_hours_cap"]["block_3"] + plan["core_hours_cap"]["block_4"] == pytest.approx(20 * 4 * 1.0)
     assert plan["core_hours_cap"]["total_with_checkout"] == pytest.approx(plan["core_hours_cap"]["total"] + 2 / 6)
     assert plan["budget"]["deviation_from_provisional"] == pytest.approx(plan["core_hours_cap"]["total"] - 86)
-    assert plan["budget"]["residual_after_psd3_caps"] == pytest.approx(432.14 - 169.3333 - plan["core_hours_cap"]["total_with_checkout"])
+    assert plan["budget"]["probe_caps_with_checkout"] == pytest.approx(112.0)  # 50,83 + 61,0 + 0,17 dopo i tempi della fase A (6424fdc)
+    assert plan["budget"]["residual_after_psd3_caps"] == pytest.approx(432.14 - 112.0 - plan["core_hours_cap"]["total_with_checkout"])
     assert plan["qos_limits"] == {"cpus_per_job": 8, "mem_mb_per_job": 30800, "walltime": "04:00:00", "max_queued_per_user": 10}
     # risorse degli shard fissate dopo il benchmark: si rigenera; mai oltre i limiti della QoS seriale (8 core, 30800M, 4 ore) per NESSUN job;
     # stessi core di benchmark e shard
@@ -74,6 +75,15 @@ def test_jobs_cover_the_grid_once_in_blocks_under_the_queue_limit(tmp_path):
         _plan(shard_mem="30GB")
     with pytest.raises(ValueError, match="stessi core"):
         _plan(shard_cpus=8)
+    # tempi degli shard per dataset dopo il benchmark: solo i job «run» di quel dataset cambiano; dataset ignoti rifiutati; limiti della QoS validi
+    tuned = _plan(shard_times={"ninapro_db2": "02:00:00", "uci_emg": "00:15:00"}, shard_time_note="dal benchmark del 29/10")
+    runs = {(shlex.split(j["command"])[shlex.split(j["command"]).index("--dataset") + 1], j["time"]) for j in tuned["jobs"] if j["stage"] == "run"}
+    assert ("ninapro_db2", "02:00:00") in runs and ("uci_emg", "00:15:00") in runs and ("ninapro_db6", "01:00:00") in runs
+    assert tuned["shard_resources"]["time_by_dataset"]["ninapro_db2"] == "02:00:00" and tuned["shard_resources"]["note"] == "dal benchmark del 29/10"
+    with pytest.raises(ValueError, match="sconosciuto"):
+        _plan(shard_times={"ninapro_db9": "01:00:00"})
+    with pytest.raises(ValueError, match="seriale"):
+        _plan(shard_times={"ninapro_db2": "04:30:00"})
     with pytest.raises(ValueError, match="40 caratteri"):
         PJ.build_jobs("abc", "c", "/W", "gpt", "c", shard_cpus=4, shard_mem="32G", shard_time="01:00:00", benchmark_cpus=4, benchmark_mem="32G",
                       benchmark_time="00:30:00", inventory_time="00:30:00", compare_time="00:30:00")

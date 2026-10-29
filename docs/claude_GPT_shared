@@ -5007,6 +5007,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Semplicione intanto esegue PSD-3 blocchi 1-2 (inventario con SHA e 4 benchmark, 5 job); i blocchi 4-5 delle sonde partono dopo, per il limite
   di 10 job in coda. Risultati A copiati sul Mac in `~/wearusfm_local/sonde_convergenza_20261029/A/` (senza NPZ).
 
+### 2026-10-29 | Claude | PSD-3: inventario e benchmark letti, tetti degli shard per dataset, preventivo definitivo | Checkout pilot-psd3-20261029b (2235c15), job 62769884-62770102
+
+- Blocchi 1-2 eseguiti da semplicione (17:3x): inventario `hash_and_header_verified` per le 10 cache (B/R3c x DB2, DB3, DB6, EPN612, UCI;
+  checkpoint B 96f87035, R3c ee78d2a9; code_sha delle cache 24139ab), 4 benchmark B a 4 core COMPLETED 0:0. Consumo: 0,35 core-ore allocate
+  (TotalCPU 16 min).
+- **Benchmark** (fold 0, solo train; PCA128, due fit C = 1, MLP 5 epoche): EPN612 dec PCA 12 s, C = 1 53,7 s per fit, 5 epoche 9,6 s ->
+  proiezione per fold 1.077 s (72 min per shard di 4 fold); EPN612 pool 831 s (55 min); DB6 dec 705 s (47 min); DB6 pool 629 s (42 min).
+  MaxRSS <= 3,4 GB. Il MLP (6 configurazioni x 60 epoche) pesa ~11 min per fold ovunque; la logistica a C = 1 in EPN612 dec costa 9 volte
+  quella di DB6 (n simile): nello spazio PCA non sbiancato le iterazioni crescono, e a C = 10/100 i fit EPN612 toccheranno probabilmente le
+  12.000 (nelle sonde erano al limite di 3.000 gia' a 768 feature). La proiezione di GPT (3,5 x due fit a C = 1) non e' un limite superiore.
+- DB2, DB3 e UCI non sono nel benchmark (piano GPT: solo i due dataset piu' grandi per n). Estrapolazione dagli audit della fase A delle sonde
+  (768 feature, 8 thread): DB2 e' il dataset piu' costoso per fit (49 classi: C = 100 ~400 s per fit, 2.505-2.943 iterazioni) -> a 128
+  componenti e 4 thread stimo 0,03-0,05 s per iterazione, cioe' 11-37 min di logistica per fold piu' ~11 di MLP: 1,5-3,3 h per shard.
+  DB3 (~7,4k finestre di train) <= 30 min per fold nel caso peggiore; UCI (~240) pochi minuti.
+- **Tetti** (walltime per dataset; 4 core e 30G per tutti gli shard, stessi thread dei benchmark, una sola identita' numerica;
+  `--shard-time-for` nel generatore): DB2 4:00 (massimo della QoS), EPN612 3:00, DB6 2:00, DB3 2:00, UCI 0:30. Shard 184 core-ore (92 per
+  modello), inventario 1 + benchmark 8 + confronto 2 -> **195 core-ore + 0,33 di checkout = 195,33 al tetto; atteso ~70 core-ore** (DB2 ~1,5 h,
+  EPN612 ~1,3, DB6 ~0,85, DB3 ~0,4, UCI ~0,1 per shard; 16-17 h di parete con un job alla volta). Sonde al tetto 112,0 (A 50,83 + B 61,0 +
+  checkout 0,17; nella voce precedente «57,33» erano i soli shard della fase B). **Residuo CPU-only al tetto: 432,14 - 112,0 - 195,33 =
+  124,81 core-ore; nessuna GPU-ora.** Deviazione dal provvisorio di 86: +109 al tetto, dovuta ai tetti sopra le proiezioni, non a celle,
+  epoche o griglie (invariate, codice 2235c15).
+- Rischio dichiarato: DB2 senza benchmark; se uno shard DB2 superasse le 4 ore il job si ferma e lo shard si perde (nessun retry cieco):
+  l'emendamento congelato sarebbe spezzare i fold o salvare per fold nel codice di GPT, mai ridurre griglia o epoche ne' alzare max_iter.
+  Due job da 4 core potrebbero girare insieme nella seriale (limite osservato 8 core per utente): da osservare, non assunto nei tempi.
+- Piano e comandi rigenerati (`results/infra/psd3_20261029/`, checkout gia' creato), test del generatore verdi. I blocchi 3-5 partono dopo il
+  blocco 5 delle sonde (coda di 10 job per utente); blocco 4 delle sonde in corso dalle 17:47 (62772041-62772083).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7048,3 +7075,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   consegna ne' la review di GPT (sottoinsieme) avevano visto. Ora la decisione c'e' (29/10) e il pin e' aggiornato con la decisione citata.
 - Restano: `probe_convergence.py` accetta abbreviazioni (`fresh()` protegge l'uscita, i pin sono un argomento libero); l'intestazione di
   `comandi.txt` delle sonde dice «a GPT» (codice congelato): il destinatario operativo e' Claude.
+
+### 2026-10-29 | Claude | Limiti del preventivo PSD-3 e precisazione sulla fase B delle sonde
+
+- DB2, DB3 e UCI senza benchmark PSD-3: i tetti vengono da un'estrapolazione (sonde a 768 feature e 8 thread -> PCA128 a 4 thread) con
+  margine, non da una misura; DB2 e' al massimo della QoS (4 h) senza prova che basti se anche i C piccoli arrivassero a 12.000 iterazioni.
+- Le proiezioni del benchmark di GPT sono per fit a C = 1: a C = 10/100 i fit EPN612 possono costare 2-3 volte; il tetto EPN612 di 3 h copre il
+  caso peggiore stimato (103 min per shard), non uno dimostrato.
+- Nella voce «Sonde, fase A» ho scritto «tetto della fase B 57,33 core-ore»: sono i soli shard; con aggregati e confronto il blocco vale 61,0 e il
+  totale delle sonde con checkout 112,0 (costante del generatore PSD-3 e §6 del protocollo aggiornati in questo commit).
+- Non so se la QoS seriale permetta due job da 4 core contemporanei (limite osservato: 8 core per utente): i tempi di parete sono stimati con un
+  job alla volta.
