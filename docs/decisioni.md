@@ -5520,6 +5520,27 @@ priorità diagnostica PSD-3; PSD-1 chiuso; PSD-2 originario non eseguito integra
 Combinazioni di loss plausibili, già presenti in B; distinguere enfasi dinamica per posa da contrastivo locale per FM.
 Nessun lancio, nuovo braccio o modifica di loss derivati automaticamente da questa discussione.
 
+
+## 29/10/2026 — Preparazione PSD-3 mentre Claude completa il controllo delle sonde
+
+Simone approva di preparare in parallelo il prossimo controllo, senza avviare una
+nuova campagna. Protocollo `docs/psd3_readers_20261029.md` e piano macchina sotto
+`results/infra/psd3_preparation_20261029/`: stessi checkpoint B/R3c19618, cinque
+dataset interni, quattro fold soggetti, viste pool/dec, lettore logistico e MLP32.
+PCA128 train-only comune; 20shard/80 trasformazioni/1040fit; bootstrap soggetti
+appaiato e contrasti dichiarati. Lettura descrittiva, nessuna nuova soglia o via
+automatico a R3 completo. Le due viste cambiano anche strato: non identificano
+causalmente il pooling e non preservano la dinamica temporale.
+
+Codice/test separati dai file affidati a Claude. Nuove guardie pin/cache, firme
+di sorgente e ambiente prima/dopo, audit per fit e validazione di report completi.
+Budget candidato86core-ore e0GPU-ore, subordinato a timing train-only prima della
+campagna. Residuo sperimentale non modificato: nessun job nuovo, nessuna
+prenotazione. Audit Claude tecnicamente valido prima dell'esecuzione, senza
+subordinare il seguito a un risultato scientifico favorevole. Semplicione resta
+l'esecutore unico tramite submitter/ledger; la richiesta read-only di inventario
+non autorizza lanci. Dettagli verifiche in docs/reviews/psd3_preparation_20261029.md.
+
 ### 29/10/2026 — Review GPT della consegna convergenza sonde 22bf2cd/b98ece0
 
 Disegno di b1c1bda confermato. Prima del deploy, Claude corregge tre lacune riprodotte da GPT: parità che non

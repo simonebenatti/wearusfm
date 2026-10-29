@@ -178,6 +178,27 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 29/10/2026 — GPT: preparazione PSD-3 in parallelo al controllo Claude (base b1c1bda)
+
+Simone autorizza di procedere con la preparazione. Pubblicati protocollo
+`docs/psd3_readers_20261029.md`, piano `results/infra/psd3_preparation_20261029/plan.json`
+e codice separato `scripts/psd3_readout.py` / `harness.psd3_{inputs,readers,compare}`.
+Nessuna modifica ai file della sonda che Claude sta strumentando. Matrice congelata
+B/R3c × pool/dec × logistica/MLP su cinque dataset/quattro fold; scaler/PCA train-only
+a128 componenti condivisi dai lettori, selezione sui soggetti validation, held solo
+per la valutazione. 20shard,80 trasformazioni,560+480fit; bootstrap soggetti appaiato,
+MLP come media delle BAcc dei due semi, nessun ensemble o nuova replica di pretraining.
+Inventario documentale10 cache/5.431.115.084byte; hash/ruoli/ricette degli archivi pinati.
+Review incrociate di lettori, ingressi, comparatore, CLI e protocollo; corrette le
+guardie sui report completi, classi OOF, identità prima/dopo e coercizione degli ID.
+Verifiche locali e loro perimetro in `docs/reviews/psd3_preparation_20261029.md`.
+
+Solo preparazione, **nessun job/fit sui dati reali/estrazione/training lanciato**.
+Preventivo candidato86core-ore/0GPU-ore, non prenotato: quattro timing train-only
+devono confermare le risorse prima dei20shard. Esecuzione dopo audit Claude valido,
+tramite semplicione; nessun nuovo consenso richiesto per il controllo già approvato.
+
+
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -4831,6 +4852,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 29/10/2026 — GPT: limiti e dipendenze aperte della preparazione PSD-3 (base b1c1bda)
+
+Le viste pool/dec delle cache B19618 hanno già mediato il tempo e provengono da
+strati diversi: questa matrice misura accessibilità per classificazione interna,
+non inseguimento della posa né causalità della sola media dei canali. PCA128 e MLP
+a60epoche introducono limiti espliciti; un esito negativo non prova assenza di
+informazione nel FM. Nessuna modifica alle loss del FM o scelta di una nuova
+architettura. Per il tempo servirà un lettore su rappresentazioni temporali;
+l'eventuale estrazione dei latenti interi richiede inferenza, non nuovo training.
+
+Alla verifica finale di origin Claude ha consegnato codice `22bf2cd`, piano
+`b98ece0` e prompt di review `e074659`; la review di tale consegna è il prossimo
+passo, non è inclusa nella preparazione PSD-3. I tempi CPU e
+la memoria PSD-3 non sono misurati su Leonardo;86core-ore è un preventivo provvisorio,
+non un consuntivo o una garanzia. Richiesto a semplicione un inventario read-only,
+ma il tool della chat ha restituito host durable non disponibile: nessuno stato
+remoto inferito, nessun lancio diretto sostitutivo. SHA cache da ricalcolare in
+preflight; lo stato qui si basa sugli archivi già verificati della tranche B19618.
+
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
