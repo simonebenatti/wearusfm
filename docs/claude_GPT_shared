@@ -4292,6 +4292,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   test, nove punti da verificare (default invariati, attribuzione dei warning, shard e aggregato, parita' e cancello, bootstrap congiunto,
   firma del solver, pin, piano e preventivo, procedura dopo la review), cosa non si chiede, cosa riportare. Nessun job.
 
+### 2026-10-29 | Claude | Controllo delle sonde: correzioni R1-R3 della review GPT (de06bca), piano rigenerato | Codice f6c89cc
+
+- Review di GPT: disegno approvato, tre correzioni prima del lancio. Fatte sul mio ramo, disegno scientifico invariato:
+  **R1** `parity_check` confronta tutti i campi scientifici confrontabili con lo storico (rapporto: parametri della sonda, split, pesi, ricetta,
+  checkpoint, S, S_se; dataset: impronte, righe, soggetti, s, conteggi, readout; fold: ruoli, C, held/val/train_bacc, conteggi, esclusioni, k;
+  piu' gli array OOF), ogni differenza in `problems` e `differences`, `identical` solo a zero differenze, nessuna tolleranza (prima `val_bacc`
+  diverso lasciava `identical=True`). **R2** `AuditLog.persist`: ogni record e' su disco appena definitivo (`audit_progress.jsonl`; la libreria
+  chiama `persist` dopo il punteggio del candidato, dopo il refit e prima di rilanciare un'eccezione); un errore lascia `shard_failed.json`
+  (eccezione, traceback, dataset completati) e mai `shard.json`; l'aggregatore rifiuta shard interrotti; chiavi `experiment_phase` (A/B) e
+  `fit_phase` (candidate/refit) distinte. **R3** `gate_preflight` prima di qualunque fit della fase B: cancello superato, firma della ricetta
+  corrente riportata a max_iter 3000 uguale a quella attestata, ricetta per esteso uguale, contesto numerico (dtype feature, BLAS/OpenMP con
+  versione e strato, limiti dei thread) uguale, i quattro rapporti attestati presenti con gli SHA attestati; il cancello ora attesta ricetta e
+  contesto per esteso; `phase_guard` e il confronto esigono lo stesso contesto numerico.
+- Rettifiche documentali: 169,33 core-ore col checkout (169,17 scientifiche + 0,17); 28 fit per dataset, 84 per P1, 56 per P2; legacy/legacy
+  si accoppiano, legacy/nuovo no; SHA della ricevuta dell'estrazione verificato dal pin; ordine test_bacc/bootstrap ripristinato.
+- Test: `test_probe_convergence.py` 10 -> 23 (regressioni equivalenti alle tre prove di GPT, adattate ai nuovi prerequisiti: undici differenze
+  singole chiudono la parita', fit fallito persistente con aggregatore che rifiuta, fase B fermata prima dei fit per seme, firma, contenuto,
+  contesto numerico, rapporti attestati, cancello chiuso); regressioni collegate 82 verdi (sonda, readout, arms_compare, launcher, checkout,
+  sonde P2/spettrali). Test CPU: 1.098 -> 1.101. Nessun job sottomesso.
+- Piano e comandi rigenerati con lo SHA definitivo del codice (f6c89cc1cfb07734345b3adde8bec68b69594fb5); tetti invariati: 50,83 (A) + 118,33 (B) = 169,17 core-ore, 0 GPU-ora.
+  Prossimo passo: review di GPT del nuovo SHA; poi deploy, checkout `pilot-posa-sonde-20261029`, blocchi 1-3 di semplicione; tetto della fase B
+  affinato con i tempi della fase A prima del blocco 4.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5974,3 +5997,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Categoria del ledger `--agente gpt` con operatore semplicione, come nel piano di recupero di GPT: scelta da confermare in review.
 - I warning catturati vengono riemessi con `warn_explicit` senza registro di deduplica: in audit i log possono mostrare piu' righe di warning
   di prima (una per fit non convergente), mai meno. I conteggi fanno fede nei record, non nelle righe del log.
+
+### 2026-10-29 | Claude | Limiti residui dopo le correzioni della review | Codice f6c89cc
+
+- Il salvataggio fit per fit copre gli errori ordinari e la terminazione del processo dopo un fit finito; il fit in corso al momento di un
+  SIGKILL non si recupera (dichiarato, nessun resume). Nel file progressivo `selected` e' nullo: si sa solo a fine fold; l'audit completo lo ha.
+- Il contesto numerico confronta dtype delle feature, backend e limiti dei thread come li riporta `threadpoolctl` all'avvio del job: e' una
+  firma di compatibilita', non una prova che i due job abbiano usato gli stessi kernel BLAS in ogni chiamata.
+- La parita' confronta i campi scientifici elencati nel protocollo; un campo nuovo aggiunto in futuro ai rapporti non entra da solo nel
+  confronto (va aggiunto alle liste `PARITY_*_FIELDS`).
+- Restano quelli del 29/10: test con sklearn 1.7.2 sul Mac; tetto della fase B al caso peggiore da affinare dopo la fase A; piano legato allo SHA.

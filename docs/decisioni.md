@@ -5173,3 +5173,10 @@ solver nel pairing, protocollo `docs/sonde_convergenza_20261029.md`, piano e com
 Due fasi fissate prima dell'esecuzione: A riproduzione a 3.000 iterazioni con parita' esatta, B la sola variante `max_iter` 12.000 per entrambi
 gli encoder; nessuna nuova soglia, lettura descrittiva. **Preventivo: 0 GPU-ora; tetti 50,83 + 118,33 = 169,17 core-ore CPU allocate**, attesi
 ~26 (A) e 26-102 (B); residuo CPU-only dopo B19618 432,14 core-ore. Nessun job sottomesso; i lanci dopo la review, blocco per blocco.
+
+### 2026-10-29 — Controllo delle sonde: correzioni della review GPT (de06bca), consegna rivista f6c89cc
+
+R1 parita' completa (tutti i campi scientifici, nessuna tolleranza), R2 audit persistente fit per fit con `shard_failed.json` e chiavi
+`experiment_phase`/`fit_phase`, R3 preflight della fase B (ricetta a 3000, contesto numerico, rapporti attestati) prima dei fit; 23 test,
+82 regressioni collegate verdi. Piano e comandi rigenerati con lo SHA f6c89cc1cfb07734345b3adde8bec68b69594fb5. **Preventivo invariato: 0 GPU-ora; 169,17 core-ore scientifiche +
+0,17 di checkout = 169,33**; fase B da affinare dopo la fase A. In attesa della seconda review di GPT; nessun job sottomesso.
