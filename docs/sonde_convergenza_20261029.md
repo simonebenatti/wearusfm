@@ -1,6 +1,7 @@
 # Controllo della convergenza delle sonde P1/P2 di B19618 contro R3c — protocollo eseguibile e preventivo (29/10/2026)
 
-**Stato: in esecuzione dal 29/10 pomeriggio (checkout `pilot-posa-sonde-20261029` a f6c89cc, blocco 1 sottomesso da semplicione); consegna
+**Stato: ESEGUITO il 29/10 (fase A 14:03-17:31, fase B 17:47-23:42, 30 job + checkout, tutti COMPLETED 0:0; risultati nel §8; rapporti,
+audit e confronto in `results/infra/pilot_posa/sonde_convergenza_20261029/{A,B,confronto}/`). Era: in esecuzione dal 29/10 pomeriggio (checkout `pilot-posa-sonde-20261029` a f6c89cc, blocco 1 sottomesso da semplicione); consegna
 rivista dopo la review di GPT (de06bca: disegno approvato, tre correzioni R1-R3 fatte) e dopo la review del `critico` del 29/10 (vincolo
 sull'hash di `probe.py` spostato con decisione, nessun cambio al codice delle sonde).**
 Richiesta: `docs/prompt_claude_convergenza_sonde_20261029.md` (GPT, commit b1c1bda), su mandato di Simone («stavolta devi scrivere tu il
@@ -187,3 +188,48 @@ completo 320,14) e nessuna GPU-ora.
   gli shard girano uno alla volta. Tempo di parete atteso per la fase A circa 3 ore, per la fase B fra 3 e 13; i tetti per job non cambiano.
 - **Fuori perimetro**, come nel prompt: nuovi training, loss, PSD, latenti non mediati, tuning sul test, aggiornamenti delle librerie,
   correzioni di un solo encoder.
+
+## 8. Risultati (29/10/2026, sera; lettura descrittiva, nessuna nuova soglia)
+
+**Riproducibilita' (fase A).** I quattro rapporti a 3.000 iterazioni riproducono gli originali di B19618 alla lettera: parita' IDENTICA su
+predizioni, C, punteggi per fold e dataset, righe, soggetti, S e S_se (nessuna tolleranza); cancello `passed`, 280 record, una sola ricetta del
+solver e un solo contesto numerico (sklearn 1.4.1.post1, numpy 1.26.4, scipy 1.12.0, OpenBLAS pthreads, 8 thread, float32).
+
+**Convergenza (fase B, `max_iter` 12.000).** 280 record, **0 fit al limite, 0 ConvergenceWarning** (a 3.000 erano 18: tutti candidati C = 100 in
+DB6 ed EPN612, piu' i due riaddestramenti dove C = 100 era stato scelto). Quei 18 fit convergono per criterio fra 3.160 e 4.823 iterazioni
+(DB6 3.334-4.265, EPN612 3.160-4.823). I punteggi di validazione dei candidati cambiano al massimo di 0,0049 (B DB6), 0,0039 (B EPN612), 0,0029
+(R3c DB6), 0,0019 (R3c EPN612); in DB2, DB3 e UCI zero fit cambiano iterazioni e nessun numero cambia.
+
+**Selezioni e predizioni.** Cambia il C scelto in due fold su 40: EPN612 B fold 3 e R3c fold 1, da 10 a 100 (il candidato C = 100, ora
+convergente, vince la validazione per pochi millesimi). In DB6 nessun cambio di C; R3c DB6 fold 3 mantiene C = 100 e il suo riaddestramento
+converge a 4.244 iterazioni invece di fermarsi a 3.000. Predizioni OOF cambiate: R3c DB6 255 su 33.961 (0,75 %), B EPN612 666 su 47.100
+(1,41 %), R3c EPN612 358 su 47.100 (0,76 %); zero in DB2, DB3, UCI e in B DB6.
+
+| | 3.000 (A) | 12.000 (B) |
+|---|---:|---:|
+| S P1 B | 16,995 | 16,995 |
+| S P1 R3c | 17,551 | 17,547 |
+| S P2 B | 79,604 | 79,613 |
+| S P2 R3c | 80,837 | 80,785 |
+| P1 B−R3c (IC95, bootstrap congiunto per soggetto) | −0,556 [−1,104; −0,026] | −0,553 [−1,105; −0,017] |
+| P2 B−R3c | −1,233 [−2,997; +0,576] | −1,172 [−2,956; +0,651] |
+
+Per dataset: DB6 R3c 34,70 -> 34,68; EPN612 B 81,82 -> 81,84, R3c 84,40 -> 84,30; gli altri identici. **Differenza dei delta (12.000 − 3.000):
+P1 +0,004 [−0,002; +0,013] (IC con lo zero); P2 +0,061 [+0,001; +0,120]** (tutta da EPN612, +0,121 [+0,002; +0,240]): per P2 l'IC esclude lo zero,
+cioe' l'effetto della convergenza sul contrasto e' rilevabile dal bootstrap appaiato, ma vale un ventesimo dell'ampiezza dell'IC del contrasto
+stesso (±1,8 punti) e va nella direzione di ridurre lo svantaggio di B. Segno di B−R3c invariato in entrambi i compiti; l'etichetta del lettore
+del pilot resta «regola non superata» a 3.000 e a 12.000; il confronto ufficiale (`arms_compare`) e il bootstrap congiunto coincidono (1e−12).
+
+**Lettura.** La lettura congiunta di B19618 (29/10) resta valida con le sonde convergenti: P1 calo piccolo con IC sotto lo zero, P2 inconclusivo
+con cali possibili di 3 punti. I warning storici erano candidati C = 100 non selezionati (salvo due riaddestramenti) e il loro completamento
+sposta S di al piu' 0,05 punti. Regole del prompt PSD-3 (§1): punto 2, punteggi cambiati ma segno invariato, conclusione aggiornata nel senso di
+confermata; punto 3, nessun warning residuo a 12.000, quindi nessun controllo mirato e nessun cambio di `max_iter` per PSD-3; il segno delle
+sonde non seleziona nulla di PSD-3, gia' in esecuzione come preparata.
+
+**Avvisi di scoring.** DB3: 24 «y_pred contains classes not in y_true» per fase, identici in A e B (soggetti tenuti fuori privi di alcune classi:
+le classi predette assenti contano come errori nella BAcc). Nessun arresto anomalo, nessuna eccezione.
+
+**Consuntivo.** Fase A: shard 26,4 core-ore (10 job, 8 core, 198 min di parete), aggregati e cancello < 1. Fase B: shard 27,0 core-ore (10 job,
+202,5 min: DB2 27-29 min per meta', DB3 10-11, DB6 12-14, P2 20-26), aggregati e confronto 0,6. **Sonde in tutto ~55 core-ore** (tetto 112,0 con
+il checkout), 0 GPU-ora; 7 h 40 di parete per la fase B compreso un guasto di `slurmdbd` (sacct muto dalle ~21:00 alle 23:30: i job non ne
+hanno risentito, il completamento si e' verificato dai file `shard.json` e dai log).

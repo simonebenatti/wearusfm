@@ -5034,6 +5034,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Piano e comandi rigenerati (`results/infra/psd3_20261029/`, checkout gia' creato), test del generatore verdi. I blocchi 3-5 partono dopo il
   blocco 5 delle sonde (coda di 10 job per utente); blocco 4 delle sonde in corso dalle 17:47 (62772041-62772083).
 
+### 2026-10-29 | Claude | Sonde, fase B eseguita e confronto fra le fasi: a 12.000 iterazioni nessun fit al limite, B−R3c invariato (P1 −0,553, P2 −1,172), lettura B19618 confermata | Checkout f6c89cc, job 62772041-62821411
+
+- Blocchi 4-5 eseguiti da semplicione (10 shard 17:47-23:40, 4 aggregati + confronto 23:36-23:42), 15 job COMPLETED 0:0; un guasto di
+  `slurmdbd` (sacct muto ~21:00-23:30) non ha toccato i job: completamento verificato dai `shard.json` e dai log, poi confermato da sacct.
+  Consuntivo fase B 27,6 core-ore (shard 27,0); **sonde in tutto ~55 core-ore su 112,0 di tetto, 0 GPU-ora.**
+- **A 12.000: 0 fit al limite, 0 ConvergenceWarning su 280 record.** I 18 fit al limite di 3.000 (candidati C = 100 di DB6 ed EPN612 piu' due
+  riaddestramenti) convergono per criterio fra 3.160 e 4.823 iterazioni; punteggi di validazione cambiati al massimo di 0,005; DB2, DB3, UCI
+  identici. Cambia il C scelto in 2 fold su 40 (EPN612: B fold 3 e R3c fold 1, da 10 a 100); predizioni OOF cambiate: R3c DB6 0,75 %, B EPN612
+  1,41 %, R3c EPN612 0,76 %, zero altrove.
+- **S:** P1 B 16,995 -> 16,995, R3c 17,551 -> 17,547; P2 B 79,604 -> 79,613, R3c 80,837 -> 80,785. **B−R3c:** P1 −0,556 [−1,104; −0,026] ->
+  −0,553 [−1,105; −0,017]; P2 −1,233 [−2,997; +0,576] -> −1,172 [−2,956; +0,651]. Differenza dei delta: P1 +0,004 [−0,002; +0,013]; P2 +0,061
+  [+0,001; +0,120] (tutta da EPN612): rilevabile dal bootstrap appaiato ma un ventesimo dell'IC del contrasto, nel senso di ridurre lo
+  svantaggio di B. Segno invariato, etichette «regola non superata» invariate, confronto ufficiale e bootstrap congiunto coincidenti.
+- **Lettura:** la lettura congiunta di B19618 resta valida con sonde convergenti (P1 calo piccolo con IC sotto lo zero; P2 inconclusivo).
+  Regole §1 del prompt PSD-3: punto 2 applicato (conclusione confermata), punto 3 senza seguito (nessun warning residuo: niente controllo
+  mirato, niente cambio di `max_iter` in PSD-3). Dettagli e tabella in `docs/sonde_convergenza_20261029.md` §8; rapporti, audit per fit e
+  confronto in `results/infra/pilot_posa/sonde_convergenza_20261029/{A,B,confronto}/` (1,6 MB, nessun array di feature o predizioni).
+- PSD-3: blocco 3 (10 shard B) sottomesso da semplicione dopo il blocco 5, come preautorizzato dal prompt («senza chiedere un secondo via»);
+  i blocchi 4-5 seguono da soli con le regole di arresto (nessun rilancio).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7086,3 +7106,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   totale delle sonde con checkout 112,0 (costante del generatore PSD-3 e §6 del protocollo aggiornati in questo commit).
 - Non so se la QoS seriale permetta due job da 4 core contemporanei (limite osservato: 8 core per utente): i tempi di parete sono stimati con un
   job alla volta.
+
+### 2026-10-29 | Claude | Limiti della lettura delle sonde convergenti
+
+- Convergenza per criterio (tol 1e−4) a 12.000, non certificata oltre; un solo seme di pretraining; la differenza dei delta ha un IC stretto
+  perche' il bootstrap e' appaiato per soggetto, non perche' l'effetto sia grande.
+- Per P2 l'IC della differenza dei delta esclude lo zero (+0,06 [+0,001; +0,12]): lo riporto come effetto rilevabile e piccolo, non come
+  cambiamento della lettura; chi legge il solo IC potrebbe sopravvalutarlo.
+- DB3: 24 avvisi «y_pred contains classes not in y_true» per fase, identici in A e B; sono una proprieta' degli split (soggetti tenuti fuori
+  senza alcune classi), non del solver, ma la BAcc di DB3 (peso 0,23 in P1) ne risente allo stesso modo in entrambi gli encoder.
+- Il guasto di `slurmdbd` ha lasciato il ledger senza exit/elapsed per due ore e mezza: la catena ha retto solo perche' i launcher scrivono
+  `shard.json`/`shard_failed.json`; per PSD-3 vale lo stesso (file `.../psd3_20261029/shards/*.json`).

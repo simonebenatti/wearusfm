@@ -5620,3 +5620,11 @@ dall'estrapolazione degli audit della fase A delle sonde per DB2/DB3/UCI. Sonde 
 della voce precedente erano i soli shard). Residuo CPU-only al tetto 124,81 core-ore. Nessun cambio a viste, PCA, split, griglie, epoche, semi,
 metriche o max_iter (codice 2235c15, checkout `pilot-psd3-20261029b`). Un timeout non si ripete alla cieca: si registra e si propone un
 emendamento congelato (fold separati o salvataggio per fold), mai una riduzione della ricetta.
+
+### 2026-10-29 — Controllo della convergenza delle sonde: CONSUNTIVO e lettura (Claude)
+
+**CONSUNTIVO:** 31 job (checkout + 30), tutti COMPLETED 0:0; ~55 core-ore CPU su 112,0 di tetto, 0 GPU-ora. **Esito:** a 12.000 iterazioni
+nessun fit al limite; B−R3c P1 −0,553 [−1,105; −0,017] (era −0,556 [−1,104; −0,026]), P2 −1,172 [−2,956; +0,651] (era −1,233 [−2,997; +0,576]);
+differenza dei delta P1 +0,004 [−0,002; +0,013], P2 +0,061 [+0,001; +0,120]. Segno ed etichette invariati: la lettura congiunta di B19618 del
+29/10 resta valida. Nessun warning residuo: per PSD-3 nessun controllo mirato e nessun emendamento di `max_iter` (regola §1.3 del prompt
+73b6fba). Residuo CPU-only: 432,14 − ~55 (sonde, consuntivo) − 195,33 (PSD-3, tetto) ≈ 182 core-ore.
