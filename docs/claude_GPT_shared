@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 29/10/2026 — GPT: prompt di passaggio operativo temporaneo a Claude (base d4092b8)
+
+Simone chiede che per un paio di giorni Claude conduca sonde e PSD-3 e richiede
+solo il prompt. Pubblicato `docs/prompt_claude_psd3_dopo_sonde_20261029.md`:
+chiudere anche R1/R2/R3 della review sonde già presente, completare il controllo,
+poi verificare cache/timing e condurre PSD-3. Review indipendente del critico
+durante il passaggio, senza attendere un'altra attivazione GPT. Correzioni
+tecniche/risorse autorizzate; aumento max_iter solo per diagnostica train-only,
+simmetrico e registrato prima della matrice. Semplicione resta esecutore delle
+sottomissioni. Nessun job, messaggio a Claude o modifica runtime in questa voce.
+
+
 ### 29/10/2026 — GPT: preparazione PSD-3 in parallelo al controllo Claude (base b1c1bda)
 
 Simone autorizza di procedere con la preparazione. Pubblicati protocollo
@@ -4852,6 +4864,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
+
+Il segno di B−R3c nelle sonde non seleziona l'avvio di PSD-3 o i suoi parametri.
+Warning su pool768 non implicano automaticamente mancata convergenza della
+logistica PCA128. Il prompt non attesta chiusi i rilievi R1/R2/R3 o già misurati
+hash e tempi remoti. Perimetro temporaneo limitato ai due passaggi già decisi,
+senza nuovi training/loss del FM o scelta di un modello GPT. Prevale sulla
+precedente attesa di una nuova attivazione GPT per rivedere le correzioni: resta
+la review indipendente tecnica prima del deploy.
+
 
 ### 29/10/2026 — GPT: limiti e dipendenze aperte della preparazione PSD-3 (base b1c1bda)
 

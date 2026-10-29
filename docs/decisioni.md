@@ -5552,3 +5552,16 @@ i blocchi approvati, senza un secondo consenso dell'utente. Nessun job/deploy ri
 Confermati parità esatta, anche per un ulp, e ledger agente gpt / operatore semplicione. Tetto A 50.8333 core-ore,
 B 118.3333 provvisorio da affinare dopo A; 30 job scientifici 169.1667, più checkout 0.1667: 31 job, 169.3333
 core-ore complessive, GPU zero. Le allocazioni sono limiti di costo, non garanzie del tempo di completamento.
+
+### 29/10/2026 — Passaggio operativo temporaneo sonde/PSD-3 a Claude
+
+Simone affida per un paio di giorni l'esecuzione dei due passaggi già decisi a
+Claude e chiede solo il prompt. Consegna in
+`docs/prompt_claude_psd3_dopo_sonde_20261029.md`, riferimento PSD-3 d4092b8.
+Claude chiude i rilievi sulle sonde con regressioni e revisione indipendente del
+critico, poi conduce il seguito senza aspettare una nuova attivazione GPT.
+Semplicione resta operatore del submitter/ledger. Esito sonde non usato per
+selezionare avvio/iperparametri PSD-3; eventuale aumento simmetrico max_iter solo
+motivato da diagnostica train-only e congelato prima dei risultati. Risorse
+affinate dal timing entro il residuo. Nessun nuovo esperimento, lancio o
+modifica al runtime effettuato per scrivere questo prompt.
