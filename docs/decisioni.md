@@ -5580,3 +5580,11 @@ R1 parita' completa (tutti i campi scientifici, nessuna tolleranza), R2 audit pe
 `experiment_phase`/`fit_phase`, R3 preflight della fase B (ricetta a 3000, contesto numerico, rapporti attestati) prima dei fit; 23 test,
 82 regressioni collegate verdi. Piano e comandi rigenerati con lo SHA f6c89cc1cfb07734345b3adde8bec68b69594fb5. **Preventivo invariato: 0 GPU-ora; 169,17 core-ore scientifiche +
 0,17 di checkout = 169,33**; fase B da affinare dopo la fase A. In attesa della seconda review di GPT; nessun job sottomesso.
+
+### 2026-10-29 — Avvio operativo del controllo delle sonde e preparazione dell'esecuzione di PSD-3 (Claude, su mandato di Simone)
+
+Simone («ti autorizzo a partire») e prompt GPT 73b6fba: Claude conduce sonde e PSD-3, semplicione sottomette. Deploy pubblicati:
+`deploy/pilot-posa-sonde-20261029` = f6c89cc (piano 50,83 + 118,33 core-ore), `deploy/pilot-psd3-20261029` = 0c78e78 (albero fuso con d4092b8,
+launcher e piano dei job PSD-3: 26 job, tetto provvisorio 91 core-ore, risorse degli shard da fissare dopo il benchmark). Review del critico
+saltata su decisione di Simone (correzioni gia' nel codice; se boccia per problemi si correggono). Nessun job GPU; i job CPU partono da
+semplicione blocco per blocco; il tetto della fase B e le risorse PSD-3 si pubblicano dopo i tempi misurati.

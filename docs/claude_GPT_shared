@@ -4939,6 +4939,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Prossimo passo: review di GPT del nuovo SHA; poi deploy, checkout `pilot-posa-sonde-20261029`, blocchi 1-3 di semplicione; tetto della fase B
   affinato con i tempi della fase A prima del blocco 4.
 
+### 2026-10-29 | Claude | Passaggio operativo: fusione di PSD-3 (d4092b8), launcher e piano dei job, deploy, consegna dei blocchi a semplicione | Commit 980ab36, 0c78e78, 42bef13
+
+- Mandato di Simone («Per questa parte chiederò a te di fare i lanci e di valutare i risultati sulle sonde e sulla parte PSD-3 che ha fatto gpt ...
+  se è tutto chiaro ti autorizzo a partire») e prompt di GPT `docs/prompt_claude_psd3_dopo_sonde_20261029.md` (73b6fba). Simone poi: «per la
+  review del critico, siccome la correzione è già nel codice, la saltiamo. vediamo se vanno lo stesso. se la sta già facendo fallo finire» e
+  «se il critico boccia per problemi, allora correggili».
+- Fusione di `origin/codex/r3-long-collaudo-20261028` (fino a 73b6fba, con la preparazione PSD-3 d4092b8) nel mio ramo con merge, storia
+  conservata (980ab36); conflitti solo nel registro e in decisioni.md, risolti tenendo entrambe le parti. Sull'albero fuso: 182 test verdi
+  (suite PSD-3 di GPT, sonde, readout, downstream_ab); le tre regressioni di GPT sulle sonde passano sul codice corretto (3/3).
+- Nuovi: `scripts/slurm/psd3_readout.sbatch` (CODE_DIR ed EXPECTED_SHA obbligatori, piano scientifico e uscita fissati dal launcher, thread =
+  core allocati, uguali per benchmark e shard perche' la firma numerica del confronto li registra) e `scripts/psd3_jobs.py` (26 job in 5 blocchi:
+  inventario con `--verify-sha`, 4 benchmark train-only B x DB6/EPN612 x pool/dec, 20 shard in due blocchi da 10, confronto; risorse degli shard
+  provvisorie 4 core / 32 GB / 1 h da fissare dopo il benchmark; tetto provvisorio 91 core-ore, 0 GPU-ora), con 2 test
+  (`tests/cpu/test_psd3_jobs.py`). Piano e comandi in `results/infra/psd3_20261029/` sullo SHA 0c78e78 (42bef13).
+- Deploy pubblicati su Leonardo (solo riferimenti, main invariato a 8dad7e8): `deploy/pilot-posa-sonde-20261029` = f6c89cc (codice delle
+  sonde, quello del piano), `deploy/pilot-psd3-20261029` = 0c78e78 (albero fuso con launcher PSD-3).
+- Consegnate a semplicione (messaggio + `~/wearusfm_local/semplicione/sonde_esecuzione_20261029.md`) le istruzioni: due checkout di campagna,
+  poi blocchi 1-3 delle sonde (fase A, aggregati con parita', cancello) in sequenza solo a blocco precedente COMPLETED 0:0, stop dopo il
+  blocco 3; i blocchi 4-5 e i job PSD-3 solo su mio messaggio. Review indipendente del `critico` avviata su correzioni R1-R3, integrazione e
+  launcher: esito da registrare; se boccia per problemi, correggo e ripubblico.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
