@@ -1,0 +1,277 @@
+{
+  "reviewer": "loss_alternatives_review",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "text_manifest_files_independently_hashed": 60,
+  "tasks": {
+    "p1": {
+      "reference_percent": 17.550895754133723,
+      "candidate_percent": 16.99465310413119,
+      "delta_pp": -0.5562426500025333,
+      "ci95_pp": [
+        -1.1038182674065273,
+        -0.0264643308355437
+      ],
+      "datasets": {
+        "ninapro_db2": {
+          "reference_percent": 18.807368892893646,
+          "candidate_percent": 18.11577348748858,
+          "delta_pp": -0.6915954054050683,
+          "ci95_pp": [
+            -1.3331448580024765,
+            -0.04563828493115949
+          ],
+          "n_subjects": 32,
+          "n_oof_windows": 38544,
+          "weight": 0.6153846153846154,
+          "fold_delta_pp": [
+            -0.43638997661471224,
+            -0.6226170779690093,
+            -0.6795414434950131,
+            -1.021572023143205
+          ],
+          "selected_C_reference": [
+            0.01,
+            0.1,
+            0.1,
+            0.1
+          ],
+          "selected_C_candidate": [
+            0.01,
+            0.1,
+            0.01,
+            0.1
+          ],
+          "ci_vs_thresholds": {
+            "-1": "contains",
+            "0": "entirely_below",
+            "1": "entirely_below"
+          }
+        },
+        "ninapro_db3": {
+          "reference_percent": 2.7647143550483735,
+          "candidate_percent": 2.6994356207674564,
+          "delta_pp": -0.06527873428091718,
+          "ci95_pp": [
+            -0.9973313629332746,
+            1.1763189060015504
+          ],
+          "n_subjects": 8,
+          "n_oof_windows": 9834,
+          "weight": 0.23076923076923078,
+          "fold_delta_pp": [
+            -0.376852120453261,
+            -0.12728876372284578,
+            -1.835269569304765,
+            1.0065240566774336
+          ],
+          "selected_C_reference": [
+            1.0,
+            0.01,
+            10.0,
+            1.0
+          ],
+          "selected_C_candidate": [
+            100.0,
+            10.0,
+            0.1,
+            0.001
+          ],
+          "ci_vs_thresholds": {
+            "-1": "entirely_above",
+            "0": "contains",
+            "1": "contains"
+          }
+        },
+        "ninapro_db6": {
+          "reference_percent": 34.704275297722035,
+          "candidate_percent": 33.952997795747216,
+          "delta_pp": -0.7512775019748175,
+          "ci95_pp": [
+            -2.4419263841142955,
+            0.9691570561245101
+          ],
+          "n_subjects": 8,
+          "n_oof_windows": 33961,
+          "weight": 0.15384615384615385,
+          "fold_delta_pp": [
+            0.934318375159654,
+            -0.691677870735552,
+            -2.0560202037710806,
+            -1.1017775925175721
+          ],
+          "selected_C_reference": [
+            0.01,
+            0.01,
+            0.1,
+            100.0
+          ],
+          "selected_C_candidate": [
+            0.001,
+            0.001,
+            0.001,
+            0.01
+          ],
+          "ci_vs_thresholds": {
+            "-1": "contains",
+            "0": "contains",
+            "1": "entirely_below"
+          }
+        }
+      },
+      "ci_vs_thresholds": {
+        "-1": "contains",
+        "0": "entirely_below",
+        "1": "entirely_below"
+      }
+    },
+    "p2": {
+      "reference_percent": 80.83719637436697,
+      "candidate_percent": 79.60443110796318,
+      "delta_pp": -1.2327652664037958,
+      "ci95_pp": [
+        -2.997250474260461,
+        0.5761470977837396
+      ],
+      "datasets": {
+        "epn612": {
+          "reference_percent": 84.39915074309977,
+          "candidate_percent": 81.81953290870489,
+          "delta_pp": -2.5796178343948872,
+          "ci95_pp": [
+            -3.1720276008492823,
+            -2.031847133757969
+          ],
+          "n_subjects": 314,
+          "n_oof_windows": 47100,
+          "weight": 0.5,
+          "fold_delta_pp": [
+            -3.3924050632911484,
+            -2.506329113924055,
+            -2.658119658119662,
+            -1.752136752136746
+          ],
+          "selected_C_reference": [
+            1.0,
+            10.0,
+            10.0,
+            1.0
+          ],
+          "selected_C_candidate": [
+            1.0,
+            100.0,
+            10.0,
+            10.0
+          ],
+          "ci_vs_thresholds": {
+            "-1": "entirely_below",
+            "0": "entirely_below",
+            "1": "entirely_below"
+          }
+        },
+        "uci_emg": {
+          "reference_percent": 77.27524200563417,
+          "candidate_percent": 77.38932930722146,
+          "delta_pp": 0.11408730158729563,
+          "ci95_pp": [
+            -3.3921266940603725,
+            3.591112060307696
+          ],
+          "n_subjects": 19,
+          "n_oof_windows": 364,
+          "weight": 0.5,
+          "fold_delta_pp": [
+            4.0021929824561315,
+            0.11544011544013522,
+            -4.371304077186422,
+            1.0489510489510412
+          ],
+          "selected_C_reference": [
+            10.0,
+            0.1,
+            0.001,
+            0.001
+          ],
+          "selected_C_candidate": [
+            0.001,
+            10.0,
+            0.001,
+            0.001
+          ],
+          "ci_vs_thresholds": {
+            "-1": "contains",
+            "0": "contains",
+            "1": "contains"
+          }
+        }
+      },
+      "ci_vs_thresholds": {
+        "-1": "contains",
+        "0": "contains",
+        "1": "entirely_below"
+      }
+    }
+  },
+  "checks": [
+    "all copied text hashes match collection manifest remote digests",
+    "comparison report and provenance hashes match",
+    "probe/extraction provenance chain matches copied receipts",
+    "equal paired input/split/OOF-row fingerprints",
+    "same fold subjects/counts and readout768 with no PCA",
+    "scores recomputed from fixed dataset weights",
+    "all point deltas recomputed from source reports",
+    "R3c P2 recovery report unchanged and original failure log digest matches"
+  ],
+  "warnings": {
+    "pose_b19618_62582916.out": {
+      "torch_omp_default_warning": 1,
+      "deprecated_pytree_warning": 4
+    },
+    "pose_b19618_eval_62583149.out": {
+      "malformed_row_warning": 1
+    },
+    "pose_b19618_eval_62583154.out": {
+      "malformed_row_warning": 1
+    },
+    "pose_b19618_eval_62583155.out": {
+      "logistic_convergence_warning": 5,
+      "prediction_class_absent_from_scoring_targets_warning": 489,
+      "class_warning_context": "All occurrences between DB2 and DB3 summaries; DB3 probe phase. Exact C/fold/scoring call not logged."
+    },
+    "pose_b19618_eval_62583157.out": {
+      "logistic_convergence_warning": 4,
+      "traceback": 1,
+      "type_error": 1
+    },
+    "pose_b19618_eval_62583160.out": {
+      "logistic_convergence_warning": 4,
+      "prediction_class_absent_from_scoring_targets_warning": 489,
+      "class_warning_context": "All occurrences between DB2 and DB3 summaries; DB3 probe phase. Exact C/fold/scoring call not logged."
+    },
+    "pose_b19618_eval_62618177.out": {
+      "logistic_convergence_warning": 5
+    }
+  },
+  "limitations": [
+    "OOF binaries and feature/checkpoint binaries were not copied or freshly hashed by this collector; values are checked through saved provenance, not independently reloaded here.",
+    "CI values read from frozen reports, not independently bootstrapped without OOF; per-user scores/sign counts unavailable in copied JSON. Fold signs are not per-user signs.",
+    "One pretraining seed; subject bootstrap intervals do not measure initialization variation.",
+    "P1/P2 internal validation only, official tests remain excluded.",
+    "Four probe logs have 18 aggregate lbfgs convergence warnings; exact attribution to selected vs trial models unavailable.",
+    "Dataset intervals exploratory, without multiplicity correction; legacy beats/not_harmful fields ignored.",
+    "Original warnings_summary.json omitted 489 class-support UserWarnings in each P1 log; these 978 warning messages were counted directly here."
+  ],
+  "conclusion": "No observed transfer benefit for B at matched nominal dose/readout: P1 small negative with CI below zero; P2 negative estimate and uncertain sign, both aggregate CIs exclude +1 pp. EPN612 shows a larger descriptive decline. Does not justify adoption or automatic scaling of pose objective as general FM improvement.",
+  "class_support_warning_review": {
+    "count": 978,
+    "phase": "DB3 probes",
+    "interpretation": "Learned train classes can be absent in validation/held/bootstrap target support. Log locations do not identify exact C/fold/scoring calls. Warning alone does not invalidate the paired comparison.",
+    "paired_estimator": "subject_counts and paired_component require equal y/subject/class denominators; absent prediction classes still create wrong predictions, while recall averages over target classes present in the common support.",
+    "source_references": [
+      "src/wearusfm/harness/probe.py:38",
+      "src/wearusfm/harness/probe.py:67",
+      "src/wearusfm/harness/downstream_ab.py:23",
+      "src/wearusfm/harness/downstream_ab.py:56",
+      "scripts/arms_compare.py:81"
+    ]
+  }
+}

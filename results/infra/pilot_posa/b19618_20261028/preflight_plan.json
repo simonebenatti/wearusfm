@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "READY_FOR_SUBMISSION",
+  "approval": {
+    "by": "Simone",
+    "requests": [
+      "procedi",
+      "quando pronto lanciali tu"
+    ],
+    "scope": "Read-only preflight required by authorized B19618 continuation; no training in this job"
+  },
+  "logical_id": "PILOT-POSA-B19618-preflight-20261028",
+  "gpus": 0,
+  "cpus": 2,
+  "walltime": "00:10:00",
+  "gpu_hours_cap": 0,
+  "core_hours_cap": 0.3333333333333333,
+  "wrapper_sha256": "beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+  "source_sha256": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_preflight_20261028.json",
+  "submit_argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "scripts/submit_job.py",
+    "--id",
+    "PILOT-POSA-B19618-preflight-20261028",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "pilot-posa-b19618-20261028",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "scripts/slurm/pose_b19618_preflight.sbatch",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=beac0adf374c7936fdaec5dceec97be5ef420cf0138925c020a22567d3212b30",
+    "--cpus-per-task=2",
+    "--mem=16G",
+    "--time=00:10:00"
+  ],
+  "review": "root read source; 7 CPU tests passed; scientific reviewer confirms read-only inspection may run before final training review",
+  "automatic_retry": false,
+  "dispatch_note": "Job name and comment are set exclusively by submit_job.py from the logical ID."
+}

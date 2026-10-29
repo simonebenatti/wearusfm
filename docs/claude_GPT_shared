@@ -4,7 +4,96 @@ Registro cronologico di coordinamento per Simone. Ogni agente legge questo file 
 
 Il commit di riferimento e' quello del codice esaminato o modificato: non e' necessariamente il commit che pubblica il registro. Il commit del registro si ricava dalla storia Git, evitando un hash autoreferenziale.
 
+
+### Nuova regola operativa del 28/10/2026 — semplicione
+
+Simone affida da ora le sottomissioni su Leonardo alla chat esistente **semplicione**. Identita' verificata:
+thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`. GPT scientifico prepara e pubblica il piano;
+semplicione esegue tramite submitter e ledger comune e controlla i log. Nessun nuovo consenso per piani gia' approvati.
+I job B19618 sono gia' sottomessi: nessun rilancio. Regola persistente in CLAUDE.md e nell'accordo operativo.
+
+### Autonomia operativa confermata da Simone il 28/10/2026
+
+**Ruoli aggiornati dopo la review E3:** Simone assegna a GPT implementazione e lanci; Claude resta revisore.
+Superata la precedente esclusiva tecnica di Claude. Worktree separati e revisione reciproca restano.
+
+**Job sotto 5 GPU-ore: autonomi. Test esplicitamente approvato: sottomissione ed esecuzione gia' autorizzate anche oltre
+5 GPU-ore, senza secondo consenso. Lettura log, commit e push sul proprio ramo: autonomi.** Calcolo prudenziale del costo
+GPU = numero di GPU per walltime richiesto; restano preventivo/consuntivo, budget, review pertinenti e submitter comune.
+Questa istruzione successiva prevale sui precedenti obblighi di chiedere un nuovo via per ogni job. Dettagli in CLAUDE.md
+e nell'accordo operativo. Nessun frazionamento artificiale per aggirare la soglia; nessun retry cieco.
+
+### Aggiornamento operativo GPT del 28/10/2026 — B19618 sottomessa e consegne integrate
+
+Dopo il preflight62575087, sottomessi **training62582916 +12 valutazioni** con codice congelato24139ab;
+protocollo e payload pubblicati prima del lancio (8405a0b). Snapshot **17:27:47 Europe/Rome**: training PENDING Priority,
+R3c posa/P1/P2 RUNNING (62583147/148/149), nove successivi PENDING Dependency. Nessun risultato finale ancora disponibile.
+Piano e ID in results/infra/pilot_posa/b19618_20261028/submission. Tetto23GPU-ore e324,333333core-ore con preflight;
+componente restante soloCPU140core-ore. Nessuna continuazione automatica a49046.
+
+Consegne riunite tramite merge2b8e352 (GPT evaluationda0e803) e2cb1644 (Claude7a4221d), commit originali preservati;
+main riceve questa consegna dopo i lanci, come richiesto. Review indipendenti favorevoli, **501test passati/1saltato**;
+codice runtime identico al ramo science8405a0b. Voci cronologiche di tutti i rami verificate testualmente.
+[Review integrazione](reviews/integration_science_20261028.md). Nessun deploy o modifica dei checkout di campagna.
+[Stato distinto dei quattro punti PSD](reviews/stato_psd_20261028.md): PSD-1 chiuso, PSD-2 riorientato;
+PSD-3 e confronto controllato PSD-4 ancora aperti. Non quattro esperimenti tutti negativi.
+
+### Aggiornamento operativo GPT del 28/10/2026 — E3 B conclusa e letta
+
+**62561780 / 62561881 COMPLETED 0:0**, 255 / 106 s; consuntivo **0,070833 GPU-ore / 0,802222 core-ore**.
+Codice/protocollo `520158e` congelati prima dei job. M2 e provenienze coerenti, alpha 10^6 interno alla griglia,
+zero righe parzialmente valide: confermata la rettifica M3. Nessun retry o training successivo.
+Primario dinamiche: testa 0,927475, ridge 0,930307; delta appaiato **+0,002832 [+0,000898; +0,004602]**.
+Ridge leggermente peggiore sulla dinamica, migliore su livello medio e MSE totale; non prova un limite dell'encoder.
+[Risultati, grafico, elenco delle modifiche e sei punti](reviews/e3_b_results_20261028.md),
+[sintesi aggiornata](reviews/sintesi_scientifica_20261028.md), [risposta a Claude](reviews/risposta_review_claude_e3_b_20261028.md).
+Ricalcolo indipendente concorde; nota informale Claude `7a4221d` letta senza merge e concorde sul primario.
+Proposta successiva: preparare il punto intermedio a 19.618 con criteri corretti e confronto effettivamente abbinato a R3c;
+protocollo/preventivo ancora da completare, **nessuna continuazione lanciata**, nessun via automatico a R3 completo.
+
+### Aggiornamento operativo GPT del 28/10/2026 — dinamica centrata B letta
+
+Dopo la lettura E1/E2 Simone ha risposto «va bene, procedi» alla separazione postura/dinamica dalla cache esistente.
+Job **62551730 COMPLETED 0:0**, 13s, **0 GPU-ore / 0,014444 core-ore**. Metodo/source congelati in `dda2b1b`.
+MSE centrata dinamiche rapporto **0,927475 [0,912480; 0,939174]**, beneficio 7,252%, 14/15 utenti; poco dinamiche
+**1,059447 [1,045879; 1,074216]**, peggioramento 5,945%, 15/15 utenti. Appresa una dinamica utile ma debole;
+varianza predetta/target sulle dinamiche 0,063240, correlazione pooled 0,269936.
+[Protocollo](dinamica_b_20261028.md), [risultati](reviews/dinamica_b_results_20261028.md),
+[sintesi e prossimi passi](reviews/sintesi_scientifica_20261028.md). Nessun altro job lanciato.
+
+**Seguito richiesto da Simone:** prima della fase esecutiva, review di Claude della proposta E3 B, senza esperimenti.
+[Prompt da inoltrare](prompt_claude_review_e3_b_20261028.md), riferimento scientifico `9142ca6`. GPT prepara il prompt;
+Claude valuta il disegno e propone eventuali correzioni. Nessuna implementazione, estrazione o sottomissione in questo passaggio.
+
+### Aggiornamento operativo GPT del 28/10/2026 — E1/E2 di B letta
+
+Simone ha risposto «vai con la tua proposta» alla valutazione breve dello student B a 5.000 sui 15 utenti di val.
+**Due job COMPLETED 0:0**: estrazione **62539724** e rapporto **62540295**, guardie superate.
+Consuntivo 0,435278 GPU-ore / 3,595556 core-ore, entro 0,6667 / 8. E1 dinamiche rapporto 0,937552
+IC95 [0,917038; 0,952262], 15/15 utenti sotto la costante; gap E2 +0,017654 rad IC95 [0,013260; 0,023309],
+14/14 utenti valutabili con gap positivo. Beneficio modesto fuori dai soggetti train; dinamica intra-finestra ancora da separare
+dalla postura media. Lettura descrittiva a 5.000, nessun verdetto finale E1/E2 o via automatico a R3.
+Codice scientifico frozen `24139ab`, wrapper di provenienza versionato inviato via stdin: nessun nuovo checkout o training.
+26 test CPU pre-lancio passati (8 harness + 18 guardie), ricalcolo locale e review dei risultati concordi.
+[Protocollo](valutazione_b_e1e2_20261028.md), [analisi](reviews/b_e1e2_results_20261028.md).
+R3 completo, E3 su R0 e J2 bis restano fermi; il via attuale non li include.
+
+### Aggiornamento operativo GPT del 28/10/2026 — B letto
+
+**B 62523672 COMPLETED e SUPERATO**, codice congelato `24139ab`: 5.000 passi, MSE −11,713%, IC95 del rapporto
+[0,839470; 0,932231], 23/32 utenti migliorano. Consuntivo 4,23778 GPU-ore e 33,91167 core-ore checkout compreso.
+Il punto 5 resta aperto: appresa riduzione della loss sul train, ancora da verificare dinamica, generalizzazione e trasferimento.
+Proposta GPT: inferenza E1/E2 sullo student B a 5.000, da preparare e autorizzare separatamente; **nessun nuovo job avviato**.
+R3 completo, E3 su R0 e J2 bis restano fermi. [Analisi](reviews/collaudo_b_results_20261028.md),
+[prompt per la review Claude](prompt_claude_review_b_20261028.md). Le tabelle del 26/10 sotto conservano lo stato storico.
+
 ## Coordinamento attivo: numerazione unica dei sei punti critici (14/10/2026)
+
+**Aggiornamento del 28/10 dopo i lanci B19618:** numerazione invariata. 1/2/4 chiusi nel rispettivo perimetro;
+3 consegne riunite e verificate per main (merge2b8e352/2cb1644 e pubblicazione di questa voce); 5 aperto, ora con B19618
+sottomessa e tre confronti in catena; 6 sospeso. GPT implementa/lancia, Claude rivede. La tabella e le assegnazioni del26/10
+sotto restano storico. Vedere [review integrazione](reviews/integration_science_20261028.md) e
+[protocollo B19618](continuazione_b19618_20261028.md).
 
 **Dal 16/10/2026 i ruoli sono cambiati** (Simone: «sì a questo punto esautoriamo gpt dalla parte scientifica perché è troppo lento e gli
 facciamo fare le verifiche»): la parte scientifica e i file di harness, sonde, target e loss passano a Claude; GPT fa le verifiche e resta
@@ -88,6 +177,39 @@ GPT ha completato la review/integrazione del prefetch; prosegue con regola prosp
 reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione del prefetch sono registrati nelle voci cronologiche.
 
 ## 1) Cosa ho fatto
+
+### 29/10/2026 — GPT: prompt di passaggio operativo temporaneo a Claude (base d4092b8)
+
+Simone chiede che per un paio di giorni Claude conduca sonde e PSD-3 e richiede
+solo il prompt. Pubblicato `docs/prompt_claude_psd3_dopo_sonde_20261029.md`:
+chiudere anche R1/R2/R3 della review sonde già presente, completare il controllo,
+poi verificare cache/timing e condurre PSD-3. Review indipendente del critico
+durante il passaggio, senza attendere un'altra attivazione GPT. Correzioni
+tecniche/risorse autorizzate; aumento max_iter solo per diagnostica train-only,
+simmetrico e registrato prima della matrice. Semplicione resta esecutore delle
+sottomissioni. Nessun job, messaggio a Claude o modifica runtime in questa voce.
+
+
+### 29/10/2026 — GPT: preparazione PSD-3 in parallelo al controllo Claude (base b1c1bda)
+
+Simone autorizza di procedere con la preparazione. Pubblicati protocollo
+`docs/psd3_readers_20261029.md`, piano `results/infra/psd3_preparation_20261029/plan.json`
+e codice separato `scripts/psd3_readout.py` / `harness.psd3_{inputs,readers,compare}`.
+Nessuna modifica ai file della sonda che Claude sta strumentando. Matrice congelata
+B/R3c × pool/dec × logistica/MLP su cinque dataset/quattro fold; scaler/PCA train-only
+a128 componenti condivisi dai lettori, selezione sui soggetti validation, held solo
+per la valutazione. 20shard,80 trasformazioni,560+480fit; bootstrap soggetti appaiato,
+MLP come media delle BAcc dei due semi, nessun ensemble o nuova replica di pretraining.
+Inventario documentale10 cache/5.431.115.084byte; hash/ruoli/ricette degli archivi pinati.
+Review incrociate di lettori, ingressi, comparatore, CLI e protocollo; corrette le
+guardie sui report completi, classi OOF, identità prima/dopo e coercizione degli ID.
+Verifiche locali e loro perimetro in `docs/reviews/psd3_preparation_20261029.md`.
+
+Solo preparazione, **nessun job/fit sui dati reali/estrazione/training lanciato**.
+Preventivo candidato86core-ore/0GPU-ore, non prenotato: quattro timing train-only
+devono confermare le risorse prima dei20shard. Esecuzione dopo audit Claude valido,
+tramite semplicione; nessun nuovo consenso richiesto per il controllo già approvato.
+
 
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
@@ -4110,6 +4232,375 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Questioni aperte: parere di GPT sul cancello (domande 1-5 del prompt) e sulla verifica del pannello; poi voce «criterio congelato», critico,
   comando con preventivo a Simone per la firma. Lo SHA di questo commit nel messaggio a Simone.
 
+### 2026-10-28 | GPT | Preparazione del collaudo lungo B su richiesta di Simone; nessun lancio
+
+- Simone: «la vuoi preparare tu?». Preparazione locale di codice, protocollo, test e comandi nel worktree GPT `wearusfm-gpt-science`,
+  ramo `codex/r3-long-collaudo-20261028`, dalla bozza di Claude `afd2e4d`. La richiesta autorizza queste modifiche tecniche locali;
+  non autorizza deploy o job. Il worktree di Claude e i checkout di campagna restano intatti.
+- Pannello completato: 32 utenti x 2 registrazioni x 4 finestre da 4 s, valide e non sovrapposte; solo probabilita' di training positive,
+  registrazioni deduplicate, rimpiazzi deterministici basati sul supporto, identita'/hash/conteggi congelati, errori di preparazione
+  propagati ai rank DDP. Varianza temporale per giunto, MAE in radianti e tempi del pannello sono descrittivi.
+- Lettore B: ricetta vera R3 a 5.000 di 49.046, warmup 1.962; rifiuto di log incompleti, duplicati, pannelli cambiati e provenienza
+  incoerente. Primario proposto: rapporto delle medie utente <=0,9 e IC95 bootstrap appaiato con limite superiore <1. Nessuna seconda
+  discesa obbligatoria dopo il warmup e nessun cutoff arbitrario della varianza. Gli altri bracci conservano le loro regole.
+- Protocollo `docs/collaudo_r3_b_20261028.md`, piano/comandi in `results/infra/pilot_posa/*b*20261028*`; preventivo PROPOSTO aggiornato:
+  B 4 A100 x 90 min = 6 GPU-ore, 48 core-ore; checkout 2 core x 10 min = 1/3 core-ora. Motivazione: margine per preparazione,
+  valutazioni e checkpoint. Nessun retry, E3 R0, J2 bis o avvio automatico di R3 completo. Firma di Simone ancora da acquisire.
+- Ripubblicata in questo ramo la valutazione scientifica gia' consegnata in `da0e803`, senza modificarne dati o conclusioni. Audit:
+  controllo disallineato positivo 7/10, non «allineamento 10/10»; ridge RMS 8/10 sotto costante; E3 R3c mostra un guadagno dinamico
+  del 5,07%, inferiore al gate del 10%, non assenza d'informazione. Evidenze sufficienti a preparare B, non a prevederne l'esito.
+- Verifiche e SHA finali: `docs/reviews/collaudo_b_preparation_20261028.md`. Review scientifica e tecnica indipendenti dei subagent;
+  la review reciproca di Claude delle modifiche tecniche resta da fare prima dell'eventuale deploy, come da CLAUDE.md.
+- Codice congelato `24139ab901c052357a46a65bc20466f2eb1e8358`; 123 test distinti passati, inclusi due test DDP2. Piano, comando
+  quotato e config ricostruito dal parser verificati coerenti. Prompt di review: `docs/prompt_claude_review_b_20261028.md`.
+  Simone ha confermato «comitta e pusha sempre tutto»: regola registrata anche in CLAUDE.md, consegna completa sul ramo GPT di origin.
+
+### 2026-10-28 | GPT | Via di Simone al lancio di B; media sui canali ancora nel readout ufficiale
+
+- Simone: «siccome abbiamo avuto degrado delle performance togliendo la media sui canali [...] impatta qua?» e «puoi lanciare tu i test?
+  cosi a claude faccio fare solo il controllo». GPT prende in carico checkout e singolo B nei tetti gia' presentati (6 GPU-ore,
+  48+1/3 core-ore); Claude svolge il controllo. Questa istruzione aggiorna l'attesa della proposta precedente; nessun altro job incluso.
+- Verifica del pooling: il protocollo della campagna `readout_canale_20261023` non adottava le letture alternative nel training.
+  Il `pool` ufficiale mantiene la media sui canali QC-validi; la posa legge la media sui K latenti per patch, preservando il tempo.
+  `local` contro `pool`: P1 -2,00 punti, P2 -2,49; `dec`: -0,42/+1,33, senza superare il criterio complessivo. Il confronto cambia anche
+  strato/rappresentazione: non prova che la media sia universalmente migliore. Nessuna modifica al modello o al readout di B.
+- Piano aggiornato con il via e stessi SHA/argomenti/tetti; preflight operativo affidato a leonardo-ops. ID e consuntivo saranno
+  registrati dopo le sottomissioni; nessuna dichiarazione anticipata di job eseguiti o di review Claude conclusa.
+
+### 2026-10-28 | GPT | Approvazione Claude confermata da Simone e preflight di B superato
+
+- Simone: «claude ha approvato il tuo piano, quando vuoi puoi partire». La review non e' dichiarata per inferenza: e' confermata
+  direttamente dal responsabile. Preflight read-only chiuso: coda vuota, ID non presenti nel ledger/sacct, directory libere,
+  hash manifest e pose_stats coincidenti, deploy separato da main e nessun hook attivo rilevato. Evidenza in
+  `results/infra/pilot_posa/collaudo_b_20261028/preflight.json`.
+- Alla domanda sui job interrotti: E3 su R0 e J2 bis non sono prerequisiti di B e restano fermi. E3 R0 e' un eventuale riferimento
+  di confronto con R3c da decidere alla luce di B; J2 bis soltanto con indizi specifici sul ritardo. Nessun rilancio incluso nel via a B.
+
+### 2026-10-28 | GPT | B sottomesso: checkout 62523525 COMPLETED, training 62523672 PENDING Priority
+
+- Deploy `deploy/pilot-posa-b-20261028` a `24139ab901c052357a46a65bc20466f2eb1e8358`, SHA remoto verificato, main remoto invariato.
+- Checkout CPU **62523525 COMPLETED, 0:0**, 17 s su due core, 0,00944 core-ore e zero GPU; log/SHA/pulizia/sola lettura verificati.
+- Training B **62523672**, ID `PILOT-POSA-R3-B-20261028`, sottomesso col submitter comune e comando del piano invariato:
+  quattro A100, 32 core, 480G, QoS normal, 90 min, TIME_LIMIT_S 5100, nuovo run da zero, stop 5.000 di 49.046 passi.
+  Tetto 6 GPU-ore, 48 core-ore. Nessun retry, E3 R0, J2 bis o full R3 sottomesso.
+- Snapshot 28/10 08:38:49 Europe/Rome: **PENDING, motivo Priority**, tempo trascorso e allocazione ancora zero; log non ancora creato.
+  Lo SHA del checkout e' verificato; la conferma del codice dal processo di training arrivera' soltanto all'avvio. Nessun esito scientifico.
+- Evidenze complete e comandi effettivi in `results/infra/pilot_posa/collaudo_b_20261028/`; stato nel piano. Claude puo' verificare
+  sottomissioni, provenienza e successivamente risultati senza duplicare job.
+- Simone chiede per curiosita' se due nodi potrebbero accelerare: il launcher attuale e' a un nodo; il solo cambio SLURM non usa il
+  secondo nodo. Multi-nodo richiederebbe launcher/ripresa e un benchmark separato; nessuna modifica a B, come confermato da Simone.
+
+### 2026-10-28 | GPT | B completato e letto: SUPERATO, nessuna continuazione automatica
+
+- Richiesta di Simone: «finito direi, leggi, commenta e analizza». Riferimento eseguibile e lettore `24139ab`; run 62523672,
+  checkout 62523525. Raccolta readonly tramite leonardo-ops, copie complete e SHA locali in
+  `results/infra/pilot_posa/collaudo_b_20261028/collection_manifest.json`. Nessun checkpoint o dato wearable grezzo copiato nel repo.
+- SLURM COMPLETED 0:0, 5.000 passi, 08:52:24–09:55:58 Europe/Rome, 3.814s. Costo 4,23778 GPU-ore, 33,90222 core-ore,
+  checkout compreso 33,91167, entro i tetti 6 / 48,3333. STOP assente, checkpoint 454.215.776 byte; stato interno non caricato.
+- Lettore congelato: tutti i criteri OK. MSE 1,160059→1,024176, rapporto 0,8828655883, IC95 utenti
+  [0,8394701934; 0,9322308875]; bootstrap 1.000, seme 20261027. MAE rad 0,348610→0,310489 (−10,935%).
+  Migliorano 23/32 utenti, 16/32 di almeno il 10%. Ritmo mediano 0,70756s/passo, nessun allarme di collasso.
+- 36.620 esposizioni globali a finestre con posa (gia' sommate fra GPU); E4 locale medio posa/ancore 0,917802.
+  Varianza temporale predizioni 0,023003, positiva in tutte le finestre. La decomposizione dell'energia delle predizioni
+  NON attribuisce il miglioramento della MSE a movimento o bias; questa distinzione richiede target/predizioni completi.
+- Interpretazione: dose dbg insufficiente piu' plausibile, nessuna dimostrazione causale esclusiva; non piu' sostenibile
+  l'assenza assoluta di apprendimento con R3. Generalizzazione, dipendenza dinamica e trasferimento ancora aperti.
+- Raccomandazione, NON autorizzazione: inferenza E1/E2 sullo student B a 5.000, val senza maschera, prima di R3 completo;
+  lettura diagnostica distinta dal criterio finale a 49.046. Preventivo indicativo tetto 0,667 GPU-ore / 8 core-ore,
+  da concretizzare con comandi e review prima del via. E3 R0 e J2 bis non sono prerequisiti e restano interrotti.
+- Consegnati `docs/reviews/collaudo_b_results_20261028.md`, ricalcolo riproducibile e figura, verdetto, consuntivo,
+  piano aggiornato e prompt per Claude. Due review indipendenti confermano numeri/formule/limiti e raccomandazione.
+  Nessuna modifica a trainer, ricetta o gate; nessun nuovo job. Tutta la consegna committata e pubblicata sul ramo GPT.
+
+### 2026-10-28 | GPT | E1/E2 dello student B: via di Simone e preparazione dei due job
+
+- Simone cita la proposta di sola inferenza B sui 15 utenti esclusi dal training e autorizza: «vai con la tua proposta».
+  Scope: estrazione val dello student a 5.000 + rapporto E1/E2 senza train/ridge. Tetto 0,6667 GPU-ore e 8 core-ore;
+  1 A100 / 8 core / 60G / 40min e poi 8 core / 30G / 20min, rapporto con afterok. Nessun training, E3 R0 o J2 bis.
+- Review scientifica prima del lancio favorevole: lettura diagnostica anticipata, condizioni senza maschera e metriche diverse da B,
+  limiti del controllo disallineato dichiarati prima dei numeri. I booleani finali a 49.046 non diventano nuovi cancelli per B.
+- Review tecnica: lo student carica testa/encoder corretti, E2 funziona senza --train, 8 test CPU passati. Mancano nello script
+  frozen il confronto fra hash stats, la verifica del passo e l'impronta checkpoint: aggiunto solo wrapper operativo versionato
+  `scripts/slurm/pose_eval_b_guarded.sbatch`, trasmesso con --script-stdin del submitter, che chiama i launcher frozen24139ab.
+  Guardie nel compute node, nello stesso budget: checkpoint/config/stats/manifest, disgiunzione utenti, full val, cache e supporti.
+- 18 test delle guardie passati, inclusi percorsi di rifiuto; root ha verificato schema reale del manifest (158 utenti train)
+  e del checkpoint, sintassi e comandi. SHA del wrapper nel piano e nel submitter. Nessun cambiamento al calcolo E1/E2,
+  nessun nuovo checkout. Preflight remoto: coda vuota, input presenti, output nuovi assenti; stima val precedente 25min11s.
+- Protocollo `docs/valutazione_b_e1e2_20261028.md`; piano/comandi `results/infra/pilot_posa/*b_e1e2_20261028*`.
+  Questa voce precede le sottomissioni: ID e stato saranno aggiunti dopo ciascun sbatch. Nessun retry automatico.
+
+### 2026-10-28 | GPT | E1/E2 di B sottomessa: 62539724 → 62540295
+
+- Piano e wrapper `78e9b2c` pubblicati su origin e SHA remoto verificato prima dei lanci. Eseguiti esattamente i due argv
+  congelati, tramite submitter comune: estrazione 62539724 (1 GPU / 8 core / 60G / 40min), rapporto 62540295
+  (0 GPU / 8 core / 30G / 20min), dipendenza afterok:62539724. Nessun terzo job, checkout o retry.
+- Copie del ledger e risposte di sottomissione in `results/infra/pilot_posa/b_e1e2_20261028/`.
+  Ultimo snapshot: estrazione PENDING Priority, rapporto PENDING Dependency; nessun log, guardie ancora da eseguire.
+- Dopo le sottomissioni, prima dei risultati, Simone propone le precisazioni Claude e chiede se possano seguire:
+  lettura descrittiva senza verdetti a5.000, attese a due lati, student readonly, E3 facoltativa dopo. Accolte con
+  limiti espliciti: postura puo' migliorare E1; gap vicino a zero non identifica una causa unica; nessun via automatico R3.
+  Metodo dell'IC appaiato del gap fissato nel protocollo (1.000 bootstrap utenti, seme20261009, pesi supporto valido),
+  calcolabile localmente dal JSON senza altri job. Non presentato come emendamento precedente alle sottomissioni.
+- E3 sui latenti B rimandata, estrazione train NON sottomessa. R3 completo, E3 R0 e J2 bis restano fermi.
+
+### 2026-10-28 | GPT | E1/E2 di B completata e letta | Codice 24139ab, protocollo 78e9b2c / dd8ede7
+
+- Alla richiesta «sono finiti direi», letti stato/log/provenienze e rapporto. Entrambi COMPLETED 0:0; guardie superate,
+  student a 5.000 e checkpoint immutato, utenti val disgiunti dal train. Estrazione 26min07s, rapporto 51s;
+  0,435278 GPU-ore e 3,595556 core-ore entro 0,666667 / 8. Nessun nuovo job, retry, training o modifica remota.
+- E1 dinamiche: 8.329 finestre / 15 utenti; MAE testa 0,334879 contro costante 0,357184 rad, rapporto 0,937552
+  IC95 [0,917038; 0,952262], mediana utente 0,947380, tutti 15 sotto 1. Beneficio 6,245%, ancora modesto.
+- E2: 8.003 finestre / 14 utenti; sullo stesso supporto MAE 0,333954 allineata e 0,351608 disallineata, gap
+  +0,017654 rad IC95 [0,013260; 0,023309], positivo in tutti 14. Rapporto disallineato/costante 1,007443
+  IC95 [0,996323; 1,016716]. IC gap calcolato localmente come fissato prima dei risultati e verificato indipendentemente.
+- Lettura descrittiva a 5.000, nessun superato/non_superato scientifico finale. Il vantaggio della finestra corretta puo'
+  includere postura media: movimento intra-finestra ancora non identificato. Non confrontare direttamente con il calo MSE di B.
+- Copiati report, provenienze, log/accounting in results/infra/pilot_posa/b_e1e2_20261028/final; analisi riproducibile e
+  figura in analysis. Checkpoint e cache rimasti remoti. Review: docs/reviews/b_e1e2_results_20261028.md.
+- Proposta successiva: lettura CPU della dinamica centrata dalla cache esistente, da preparare/revisionare/preventivare;
+  non lanciata. E3 B/R0, J2 bis e R3 completo restano fermi. Registro e consegna pubblicati sul ramo GPT di origin.
+
+### 2026-10-28 | GPT | Preparazione autorizzata della separazione postura/dinamica B | Base 21c3833
+
+- Simone autorizza con «va bene, procedi» l'analisi della cache B gia' prodotta. Metodo fissato prima del calcolo in
+  docs/dinamica_b_20261028.md: scomposizione MSE standardizzata, supporto comune per finestra/giunto, baseline centrata
+  nulla, attribuzione additiva del guadagno livello medio/dinamica, pooling per elementi e bootstrap per utente.
+- Il critico scientifico rilegge e approva il protocollo, chiarito l'oracolo della correzione perfetta del bias temporale.
+  Nessuna nuova soglia, selezione di modello o autorizzazione a R3 completo.
+- Preventivo: un job CPU 4 core / 16GB / 10min, tetto 0,666667 core-ore, zero GPU; attesi circa 1–3min piu' coda.
+  Preflight read-only: cache e provenienze presenti, output nuovo e ID logico assenti, coda vuota.
+- Analisi standalone inviata tramite payload stdin versionato/hashato; checkout scientifico e input restano congelati.
+  18 test sintetici passati anche nella riesecuzione root; review tecnica finale favorevole e payload/argv verificati.
+  ID e consuntivo seguiranno come evidenze separate.
+
+### 2026-10-28 | GPT | Dinamica B letta e autonomia operativa aggiornata | Codice/piano dda2b1b
+
+- Sottomesso unico job 62551730 tramite submitter, dopo commit/push e verifica SHA origin; COMPLETED 0:0 in 13 s,
+  0 GPU-ore / 0,014444 core-ore, tetto 0,666667. Nessun retry, estrazione o training; input rimasti invariati.
+- Primario dinamiche: centeredMSEratio 0,927475 IC95 [0,912480; 0,939174], riduzione 7,252%, 14/15 utenti con gain>0.
+  Varianza pred/target 0,063240, correlazione pooled 0,269936. Guadagno MSE medio +0,044640, centrato +0,038692,
+  totale +0,083332: non e' soltanto postura. Restano variazioni predette piccole e ricostruzione limitata.
+- Poco dinamiche (secondario predefinito): ratio 1,059447 IC95 [1,045879; 1,074216], dinamica peggiora in 15/15 utenti;
+  il miglioramento totale resta positivo grazie al livello medio. Non chiamate finestre immobili o a riposo.
+- Provenienza e identita' verificate; E1 ricostruita dalla cache entro rtol1e-6/atol1e-8, IC del centrato ricalcolato
+  indipendentemente. Output/log/accounting in results/infra/pilot_posa/b_dynamics_20261028; relazione
+  docs/reviews/dinamica_b_results_20261028.md. Tranche completata; nessun altro job lanciato. Sintesi complessiva e proposta
+  E3 B in docs/reviews/sintesi_scientifica_20261028.md, preparata su richiesta di Simone.
+- Recepiti in CLAUDE.md, accordo_operativo_finestra1_20261015.md e decisioni.md i tre chiarimenti successivi di Simone:
+  job con costo massimo <5 GPU-ore autonomi; log/commit/push autonomi; test approvato direttamente eseguibile anche >5 GPU-ore
+  senza chiedere un secondo consenso. Regole precedenti di consenso per ogni lancio superate in questo perimetro.
+
+### 2026-10-28 | GPT | Prompt per la review Claude della proposta E3 B | Riferimento 9142ca6
+
+- Simone chiede un secondo parere prima di procedere e precisa: «lui non fa esperinenti adesos, e' solo per fare un review
+  di quello che proponi». Preparato docs/prompt_claude_review_e3_b_20261028.md, da inoltrare a cura di Simone.
+- Review mirata a utilita' di E3, confronto LayerNorm/testa/ridge, split e cache, metriche e limiti inferenziali, perimetro
+  minimo e costo indicativo. Richiesti parere indipendente e distinzione fra modifiche indispensabili e facoltative.
+- Nessuna implementazione o esecuzione E3; nessun messaggio inviato a Claude. Prompt e registro pubblicati sul ramo GPT.
+
+### 2026-10-28 | GPT | Review Claude E3 B recepita e implementazione propria | Riferimenti 986b008 / a2753a6
+
+- Simone autorizza correzioni, implementazione e lanci autonomi e conferma il via; assegna a GPT anche lo sviluppo tecnico,
+  con Claude revisore. Autorizzazioni registrate in CLAUDE.md e accordo operativo.
+- Verificati indipendentemente scala ottima dai momenti, M1-M4 e proposta 19.618. Rettifiche: M3 non e' un difetto della
+  pipeline attuale, alpha al bordo non prova errore, IC contenente zero non prova equivalenza, scala globale non prova
+  calibrazione per giunto. Risposta completa in docs/reviews/risposta_review_claude_e3_b_20261028.md.
+- Implementati scripts/pose_e3_b.py e pose_e3_b_extract.py, test e payload hashati; fit post-LayerNorm su tutti gli istanti
+  validi, 2 fold utenti train, MSE mascherata, griglia estesa con limite, M2 preventivo, confronto appaiato e output nuovo.
+  Nessun cambio all'harness/trainer esistenti. Root riesegue 41 test (E3, dinamica e harness), tutti passati in 8,40 s.
+- Critico scientifico: nessun blocco su codice/protocollo; ops: guard estrazione e fattibilita' verificate, payload e comandi
+  in controllo finale. Protocollo docs/e3_b_20261028.md; piano e comandi in results/infra/pilot_posa/piano_b_e3_20261028.json.
+  Questa voce precede il lancio; ID e stato saranno registrati separatamente. Nessun job di continuazione autorizzato dal protocollo.
+
+### 2026-10-28 | GPT | E3 B sottomessa dopo protocollo congelato | Codice/piano 520158e
+
+- SHA origin verificato identico al commit locale prima del lancio. Una sottomissione effettiva per job tramite helper
+  leonardo-ops e submitter comune: 62561780 estrazione, 62561881 rapporto CPU con afterok:62561780.
+- Evidenze in results/infra/pilot_posa/b_e3_20261028, piano aggiornato con ID. Nessun training/resize del checkpoint,
+  nessuna modifica a codice, criteri o tolleranze dopo la sottomissione. Costi massimi invariati.
+- La prima richiesta del permesso runtime nell'app era rimasta sospesa ed e' stata interrotta: riconciliati registro,
+  tracce helper, squeue e sacct, tutti senza job corrispondenti, prima dell'invocazione effettiva. Nessun doppio lancio.
+
+### 2026-10-28 | GPT | E3 B conclusa, risultati e recap consegnati | Protocollo 520158e, lanci 28695c1
+
+- Job62561780 COMPLETED0:0 in255s;62561881 COMPLETED0:0 in106s. Coda vuota alla raccolta. Consuntivo
+  0,070833GPU-ore /0,802222core-ore entro i tetti0,333333/6,666667. Nessun retry o altro job.
+- Raccolti sul Mac rapporto originale, provenienze, accounting, log e manifest SHA; nessun NPZ/checkpoint.
+  SHA report761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94; evidenze in
+  results/infra/pilot_posa/b_e3_20261028/final. Confrontati gli SHA prima della copia deliberata nel repo.
+- Guardie passate:40utenti train/1907finestre, subset identico a R3c; maschere parziali0 su train/val;
+  M2 val maxabs0,00011572/RMSE0,00001551; riferimento dinamico della testa riprodotto. Alpha1e6, interno alla griglia.
+- Primario dinamiche: ridge−testa +0,002831768, IC95[+0,000897868;+0,004602495];10utenti peggiorano/5migliorano.
+  Rapporti0,930307/0,927475. Ridge migliora il livello medio e MSE totale; non e' peggiore in generale.
+- Ricalcolo indipendente dei tre delta/IC dai momenti per utente concorde1e-12; critico indipendente concorde sul primario.
+  Letta senza merge la nota Claude7a4221d: stesso primario/consuntivo. Grafico e script riproducibili aggiunti.
+- Aggiornati piano, sintesi, README e registro; recap richiesto da Simone con M1-M4, opzioni, scala, pooling,
+  stato dei sei punti e proposta successiva in docs/reviews/e3_b_results_20261028.md.
+  Continuazione19618 da preparare con criteri corretti e confronto R3c verificato; nessun training successivo lanciato.
+
+### 2026-10-28 | GPT | Via a B19618, preflight compute preparato, integrazione dopo i lanci
+
+- Simone approva «procedi» e «quando pronto lanciali tu»: autorizzati preparazione e lanci della prova intermedia.
+  Poi chiede integrazione di tutte le consegne su main dopo avere lanciato i job; checkout congelati non si modificano.
+- Preflight sola lettura dei checkpoint:2CPU/16G/10min,0GPU e0,333333core-ore massimo.7test passati, review tecnica
+  e fonte lette. Piano/versione prima del lancio in results/infra/pilot_posa/b19618_20261028/preflight_plan.json.
+- R3c19618 presente; config nominali compatibili salvo posa/diagnostiche/max_steps. Evidenze metadata e costo locali
+  salvate in preparation/. Nessun training sottomesso da questa consegna; comparabilita' completa da leggere dopo il guard.
+
+### 2026-10-28 | GPT | Preflight B19618 completato e resume pronto
+
+- Job CPU62575087 COMPLETED0:0,22s,0GPU-ore/0,012222core-ore. Receipt e confronto completo in
+  results/infra/pilot_posa/b19618_20261028/preflight e comparability_review.json. Config differisce soltanto nei nove
+  campi previsti (testa/loss/root posa, diagnostiche e stop); firma input soltanto nel payload posa. Stream,
+  finestre fixed-eval, schedule, clipping, EMA e parametri AdamW concordi. Nessuna equivalenza numerica dei pesi dichiarata.
+- Launcher riprende lo stato completo da copia indipendente B5000, destinazione nuova, ricetta invariata salvo stop19618.
+  Receipt finale obbligatorio allo step esatto; time limit non vale come endpoint. Review indipendente positiva;
+  21test CPU launcher/preflight passati. Piano train_plan.json:4A100/32CPU/480G/4h,16GPU-ore/128core-ore massimo,
+  attese3,1h. Via di Simone gia' acquisito; lancio dopo pubblicazione e saldo campagna, ID in voce successiva.
+- Valutazioni secondo protocollo continuazione_b19618_20261028.md; integrazione main richiesta dopo i lanci.
+
+### 2026-10-28 | GPT | Valutazioni B19618 congelate prima del lancio
+
+- Dodici job dopo il training/preflight: due estrazioni posa student, quattro estrazioni teacher P1/P2, quattro sonde pool,
+  rapporto posa e confronto P1/P2. evaluation_plan.json contiene argv, dipendenze, SHA e risorse;7GPU-ore/196core-ore
+  allocate massime,140core-ore soloCPU. Argomenti codificati base64 per preservarli in sbatch --export.
+- Report nuovo riusa le routine frozen di dinamica e ridge; selezione alpha solo train per encoder, LN stateless comune,
+  delta appaiati E1/dinamiche/E2, M2 solo B. Guardia headless per R3c. Review scientifica/algoritmica indipendente favorevole.
+  Nessun risultato nuovo letto, nessun gate endpoint applicato e nessun automatismo verso49046.
+
+### 2026-10-27 | GPT | Lettura aggiornamenti R3 e margine della posa | Snapshot Claude: d43dbcf; base GPT: 4680617
+
+- Su richiesta di Simone, ripresa con Astra la lettura del pilot chiuso e della preparazione R3. Review in
+  `docs/reviews/r3_updates_review_20261027.md`, con riproduzioni in `docs/reviews/repro_pose_eval_20261027.py`.
+- Descrittivi a una/due epoche e decoder per canale coerenti col verdetto: nessuna variante passa. R3c completo, valutazione anticipata
+  autorizzata e quattro estrazioni sottomesse secondo il registro; R3 ancora nella catena ingest/collaudo. Stato dai file locali, non live.
+- Ricalcolata `margin_from_collaudo` sul rapporto 62409366: identica al JSON salvato. M v1 = 2.800, M3 = 280, M5 = 270; tetto di esclusione
+  aggiuntiva a M = 280 pari al 5,028% del campione, oltre al 9,403% di zeri. Parere favorevole al completamento del pilot col margine firmato,
+  qualificato come compromesso operativo; il profilo non separa movimento reale ed errore del tracking.
+- E1/E3 per istante sono un progresso per la regressione. Un beneficio sulla posa fuori campione ha valore scientifico distinto dal criterio
+  di adozione P1/P2 per classificazione. Conservare confronti quantitativi R3/R3c/R0, senza dedurre equivalenza dal solo superamento di 0,9.
+- Due problemi E2 riprodotti sul codice reale: gap calcolato su supporti diversi (+1 corretto, -32,333 nel report sintetico); fallback che
+  accetta le mani opposte della stessa sessione e stesso istante. Correzioni da Claude prima di interpretare E2, circoscritte alla valutazione.
+- Nessuna modifica al codice di Claude, a protocolli, soglie, M o job. Nessuna nuova spesa di cluster. Suite completa non rieseguita;
+  verificati ricalcolo del margine, JSON del pilot e due controesempi. Rassegna: EEG incluso, TinyMyo/PhysioWave esclusi come chiesto da Simone.
+
+### 2026-10-27 | GPT | Diagnosi del collaudo R3 dbg fallito e proposta per Simone | Prompt Claude: 921cb97; snapshot: 1bfef02; run: c5e42cb
+
+- Letti prompt e file del job 62429050, ricalcolati log e pannello, revisionate catena dei target e riduzione DDP con tre letture indipendenti
+  (target, ottimizzatore, critico). Risposta completa alle sei domande: `docs/reviews/r3_dbg_diagnosis_20261027.md`; ricalcolo riproducibile:
+  `docs/reviews/analyze_r3_dbg_20261027.py` e `r3_dbg_recalculation_20261027.json`, con hash degli input.
+- **Diagnosi:** fallimento confermato (0,990860 -> 1,014004, +2,336%); H1 plausibile ma non provata, H2/H3 restano aperte, nessun difetto
+  deterministico di offset/lato/maschera o riduzione trovato. `pose_windows` e' gia' GLOBALE (`training/run.py:754-770`): **9.332 esposizioni,
+  7,178 per aggiornamento**, non 37.300 / 28. Patch **25 ms**, 200 ms e' la griglia degli inizi. LR pieno solo **42 aggiornamenti**, dose
+  equivalente 671 passi al picco. Pannello MSE -2,487%, MAE rad -0,129% a 1.000: non miglioramento sostanziale, non apprendimento nullo provato.
+- **Catena:** target/loader/trainer/testa rilevanti identici a c5e42cb. Dieci test CPU di logica passati; riduzione posa verificata anche con
+  rank/microbatch virtuali e conteggi diseguali (gradiente -1,024999976158142 identico). Nessun test distribuito GPU o training eseguito.
+  Restano da verificare sui file reali identita' raw/sidecar/array e supporto valido: `pose_targets.py:87-112` non confronta pose_meta con
+  metadata EMG; `159-166` ammette patch con 1/5 blocchi validi. Lacune diagnostiche, non prova di target errati nel run.
+- **Conto H1:** con modello Adam idealizzato, encoder fisso/isotropo, B=7,178 e varianza spiegabile q=0,2, il 10% dalla testa zero richiede
+  ~1.296 passi equivalenti a lr pieno; q=0,5 ~418. Fra i blocchi del gate passano ~513,28 passi equivalenti: nel toy la discesa sarebbe
+  ~4,50% / ~11,49%. Esempi condizionali, non stime del run; r da solo non identifica i passi. Criterio dbg non calibrato, esito non riscritto.
+- **Controlli PROPOSTI, non lanciati:** (0) Mac, sintesi geometria/oracle e testa su problema noto, 1 thread <=30 min (0,5 core-ore locali);
+  (1) 20 recording reali, audit diretto + ridge RMS con split temporale e controllo disallineato, CPU 4 core/16 GB/<=1 h (4 core-ore);
+  (A) E3 R3c, due estrazioni 1 A100 x40 min (1,333 GPU-ore), CPU totale <=26,667 core-ore incluso report; (B) eventuale unico collaudo
+  5.000 passi, 4 A100/32 core/75 min (5 GPU-ore, 40 core-ore). Totali tetti **6,333 GPU-ore / 70,667 core-ore cluster**, piu' Mac;
+  eventuale piccolo deploy da preventivare separatamente. Residuo ~85 GPU-ore dichiarato da Claude, non verificato live.
+- **Criterio B PROPOSTO per firma:** schedule vero total_steps=49046, steps_at_d=98094, warmup1962 e max_steps=5000, run nuovo; peso1,
+  M280 e ritmo0,81 invariati. Pannello train congelato 256 finestre/32 utenti, misure a0,2000 e ogni500 fino5000, errori per finestra;
+  MSE(5000)<=0,9*MSE(0) e limite superiore IC95 appaiato per utenti <1. Trend dopo warmup, MAE e finestre del flusso da500 passi descrittivi.
+  Non chiedere obbligatoriamente ulteriore10% dopo2000: potrebbe aver imparato prima. Nessuna riscrittura del gate dbg o dei criteri E1-E3/P1/P2.
+- **Raccomandazione:** controlli diretti -> A come diagnosi -> B condizionale alla correttezza, **non** all'esito positivo di A. E3 negativo
+  su ancore non esclude che la posa possa costruire la rappresentazione; RMS negativo non prova H3. C (peso maggiore) no ora; D no come
+  abbandono definitivo, si' come mantenimento del blocco del run completo. B fallito non autorizza altro training. Critico favorevole alla
+  proposta, recepita la precisazione che anche un sintetico fallito richiede diagnosi, non prova automaticamente un bug.
+- Nessun job, accesso al cluster, modifica al codice Claude o a campagne. Il lavoro scientifico e i preventivi sono una proposta per Simone;
+  eventuali correzioni/strumenti/deploy li fa Claude. Il run completo R3 resta fermo fino alla decisione di Simone.
+
+### 2026-10-27 | GPT | Review del seguito R3: favorevole a J1, correggere l'audit J2 | Claude e198a87
+
+- Verificato `e198a8707b72a6f0433134eaf80921358fe16d72`: oracolo, guardia, sintetico, split/ridge/ritardi, launcher e preventivi. Review:
+  `docs/reviews/pose_audit_e198a87_review_20261027.md`; controesempi eseguibili: `docs/reviews/repro_pose_audit_review_20261027.py`.
+- **Raccomandazione a Simone: J1 rapporto E3 si', a estrazioni finite; J2 dopo correzioni mirate.** R3c senza testa non esegue E1/E2;
+  il percorso E3 non e' modificato fra il checkout 41f6ac1 e questa consegna. J1: 16 core-ore, J2: 4, checkout: 1/6; totale 20,1667 core-ore,
+  0 GPU-ora aggiuntive. Nessun nuovo via a B da 5.000 passi, che richiede pannello/codice/criterio firmati come proposto.
+- **Riscontro principale:** l'audit ricostruisce solo la posa, non confronta l'EMG raw/processato. Nella stessa fixture di Claude i due EMG
+  sono diversi: il repro misura errore massimo 10,3390 sui primi 100 campioni e tutte le bandiere identita'/ricostruzione/oracolo restano
+  True. Con budget indice tar zero: 0 ricostruzioni e 0 finestre oracle, ma `ricostruzione_ok_tutte` e `oracolo_ok_tutte` ancora True.
+  Correggere copertura/stati non verificati e controllo diretto EMG, senza interpretare questi difetti come bug gia' dimostrati nel training.
+- Altri punti da correggere in J2: oracle non esclude NaN/Inf (falso mismatch riprodotto); lag scan non e' un verdetto sugli indici
+  (minimo scelto sul test, supporto/costante diversi, contesto); test shift di 40 blocchi = 200 ms/8 patch, non 400 ms, fuori dal range
+  +/-6 usato dal test; differenze della posa calcolate comprimendo i buchi (`diff(t[v])`) alterano la misura di movimento valido.
+- Split esterno per finestre senza mescolamento di patch: nessuna fuga diretta di etichette trovata; validazione interna alpha senza gap
+  e normalizzazione sull'inner holdout da correggere; chiarire cronologia/acquisizioni simultanee. Disallineato audit non mantiene
+  lato/fase/distanza: non equivalente a E2, correggere pairing o limitare esplicitamente la lettura.
+- Guardia compatibile coi sidecar conformi, nessuna regressione trovata; non verifica contenuto degli array. Oracle usa statistiche globali
+  anche con per_side=true: difetto latente, non attivo sui dati attuali per_side=false. Sintetico: dose670 anziche'671 per off-by-one del
+  decay, floor1-q non garantito con teacher su x e testa su LN(x); conclusione esclusiva su H1 e intervallo B_eff7-70 non dimostrati.
+- **Verifica:** 18 test mirati rieseguiti verdi (19,82 s); cinque controesempi locali riprodotti; bash -n launcher OK. Critico favorevole
+  al verdetto separato J1/J2. Suite CPU completa non rieseguita. Solo file sintetici temporanei e review; nessun codice Claude modificato,
+  nessun job o accesso cluster. Le correzioni sono a Claude; l'approvazione dei job resta a Simone.
+
+### 2026-10-27 | GPT | Consegna finale e prompt per Claude: recupero E3 e audit corretto | Addendum d037a3e
+
+- Su richiesta di Simone («ok completa tutto e generami un prompt cosi lo faccio lavorare»), completata la consegna della review:
+  `docs/reviews/pose_audit_e198a87_review_20261027.md`, aggiornata all'errore di estrazione registrato da Claude in d037a3e;
+  prompt completo in `docs/reviews/prompt_claude_pose_audit_followup_20261027.md`. La review/prova iniziale e' pubblicata in 6af707a.
+- Entrambe le estrazioni hanno letto val: recuperare la val valida senza overwrite, estrarre davvero train (40 utenti/200 recording),
+  verificare identita'/split/provenienza effettivi prima del rapporto. Stato e consuntivo 0,84 GPU-ore dai documenti Claude, non da
+  lettura live. Parsing locale dei comandi corretti verificato; nessun comando cluster eseguito da GPT.
+- **Aggiornamento del preventivo futuro:** estrazione train 1 A100/8 core/40 min = 0,6667 GPU-ore e 5,3333 core-ore; rapporto E3 16,
+  audit J2 4, checkout 1/6 core-ora. Totale **0,67 GPU-ore arrotondate e 25,5 core-ore**; i precedenti 20,1667 core-ore/0 GPU non
+  includevano questa riestrazione, emersa dopo la review. Durate massime sommate 3h50min, escluse code e lavoro locale.
+- Prompt: E3 puo' avanzare indipendentemente; J2 dopo R1-R4, chiarimenti split/pairing, test e critico, su nuovo SHA/checkout.
+  Sintetico da correggere senza deduzioni esclusive su H1; guardia compatibile, limiti espliciti. B da 5.000 passi e R3 completo restano
+  separati e rinviati alla lettura dei risultati/firma. Nessun aumento di peso/M o riscrittura del cancello dbg.
+- d037a3e contiene soltanto documenti/comandi: i 18 test e i controesempi della review e198a87 restano riferiti allo stesso codice.
+  Nessuna modifica al codice Claude, nessun invio automatico a Claude e nessuna sottomissione; consegna del prompt a Simone.
+
+### 2026-10-27 | GPT | Review aecff1a chiusa nei rilievi sostanziali; completare E3 e audit, poi leggere i risultati
+
+- Richiesta di Simone: verificare l'ultima consegna Claude e lo stato dei lanci, «convergiamo?». Letti `e198a87..aecff1a` e il delta
+  del critico `ebb16e1..aecff1a`; 2c8c575 aggiunge documenti/comandi, nessun codice. Review completa:
+  `docs/reviews/pose_audit_aecff1a_review_20261027.md`.
+- **Verdetto favorevole a terminare la tranche autorizzata.** R1/R2 raw EMG, identita', copertura esplicita, oracle non finiti/per lato
+  e padding chiusi; R3 esplorativa con lag scelto nel fit e R4 differenze adiacenti chiusi; split interno/scaling e disallineato corretti.
+  Correzioni del critico su stem, fallback cronologico, guardia e lag None confermate. Limiti dichiarati conservati.
+- Sintetico: LR esatti per tutti i 1.300 passi, dose 671; teacher su LayerNorm(x) rappresentabile; rettifica H1 corretta. JSON 96
+  esecuzioni (32 combinazioni x3 semi) coerente con mediane/checkpoint citati. Due dettagli P3 sotto, nessun nuovo training necessario.
+- **Test GPT: 20 passati in 46,06s** sui tre file richiesti; 36 confronti aggiuntivi dell'oracle con start fuori griglia/M diversi/non
+  finiti. Suite completa Claude letta dal log locale audit_v3: 1.462 passati/1 warning noto, rc0; non rieseguita da GPT, SHA non nel log.
+- Controllo cache di Claude letto: train 1.907 finestre/198 recording/40 utenti, val 18.548/1.923/15; tutti nello split giusto del CSV,
+  utenti disgiunti, stesso percorso checkpoint/code SHA/statistiche. Distinguere selezionati nominali (200/1.950) da effettivi (198/1.923).
+- **Snapshot live 18:41–18:42 CET tramite leonardo-ops:** train62442491 COMPLETED4min12s; report62443474 e checkout62447995 PENDING
+  QOSMaxCpuPerUserLimit; audit effettivo ancora non sottomesso, la catena locale attende il checkout. Sonde e2:62429063/066/083 finite,
+  62429093 in corso; quattro sonde e1 in attesa. Nessun fallimento osservato; risultati E3/audit ancora assenti.
+- Costi coerenti: train effettivo0,07 GPUh/0,56 coreh + tetti report16/audit4/checkout1/6 =20,7267 coreh, entro25,5. Report con override
+  esplicito30GB. Nessun job lanciato/cancellato da GPT, nessun codice Claude modificato; soli review e registro sul branch GPT.
+- Convergenza sugli strumenti diagnostici, non ancora prova di apprendimento R3. Completare la tranche e leggere insieme copertura e
+  risultati; B5.000 e R3 completo restano rinviati. Il passaggio scientifico puo' essere preparato su questa consegna consolidata.
+
+### 2026-10-28 | GPT | Valutazione scientifica della tranche chiusa: sufficiente per il punto, nessun nuovo run | Claude 6aba4a7/e2e525e
+
+- Simone chiede se il materiale basta per valutare dove siamo e se servano lanci. **Basta per la valutazione attuale**: letti risultati
+  di audit, E3 e8 sonde; ricalcolati conteggi/gap/riduzioni MAE con due letture scientifiche indipendenti. Valutazione completa:
+  `docs/reviews/pose_scientific_assessment_20261028.md`; ricalcolo riproducibile in `analyze_pose_delivery_20261028.py` e
+  `pose_delivery_recalculation_20261028.json` nella stessa directory, hash degli input inclusi. Nessun training o nuova sottomissione.
+- Catena:100/100 controlli su20 registrazioni/10 utenti/221 finestre, nessun difetto rilevato nel campione. H3 sistematica molto meno
+  plausibile, non certificazione universale. **Rettifica decisiva:** disallineato «verificato» significa eseguito; gap positivo in7/10,
+  negativo in3, non allineamento dimostrato10/10. Gap relativo mediano1,959%;7/10 disallineati battono ancora il costante.
+- Ridge RMS:8/10 utenti sotto1 (non7),5/10 sotto0,9; mediana0,849446 corretta. Split mescola trasferimenti mano/fase e continuazioni
+  dello stesso recording; non stima q o un segnale intrinsecamente debole.16/20 raw hanno righe a zero, non zero in tutto il raw.
+- E3 R3c: ridge dinamiche0,949279 [0,931844;0,962779], riduzione MAE5,07%; tutte0,925558, riduzione7,44%.15/15 utenti sotto costante,
+  ma criterio10% non superato. «Non accessibile linearmente» e' troppo forte; intercetta vs media globale non separa segnale dinamico.
+  Teacher R3c postdecay49k senza maschera non e' lo student R3dbg iniziale mascherato: non separa H1/H2.
+- Sonde R3c/R0: nessuna delle8 supera+1punto con IC inferiore>0; P1dec piccolo vantaggio, non progresso ampio/uniforme ne' equivalenza.
+  B resta pertinente per apprendibilita' a dose maggiore, con pannello/test/criterio/firma prima del lancio; non una prova causale pura
+  di H1, ne' via automatico a R3 completo. Nessun aumento peso/lag/architettura proposto ora; E3R0/J2bis non prerequisiti obbligatori.
+- **Stato live 28/10 00:08 CET via leonardo-ops:** coda vuota. R0val62478383 e J2bis62478392 CANCELLED00:03:21 (SlurmUID127686,
+  nessuna attribuzione personale); R0train62478387 COMPLETED3min04s. Nessun nuovo rapportoR0/J2bis; B non lanciato. Nessun rilancio.
+- ClaudeHEAD63acf94 con codice del pannello B non committato: non toccato o revisionato qui. Questa e' una review dei risultati,
+  distinta dalla precedente review tecnica aecff1a, che resta chiusa nei rilievi sostanziali. Review finale del critico favorevole.
+
 ### 2026-10-28 | Claude | Review della preparazione di B di GPT (codice congelato 24139ab, ramo `codex/r3-long-collaudo-20261028`): nessun difetto bloccante; codice, protocollo, piano e comandi concordano; 114 test rieseguiti verdi; nessun deploy, nessun job
 - Fatto: `docs/reviews/claude_review_collaudo_b_20261028.md`. Controlli con evidenza: config del piano ricostruito dal parser vero a 24139ab
   uguale a `config_b_atteso_20261028.json`; comando [B] coerente (TIME_LIMIT_S 5100, REQUIRE_NEW_RUN, 90 min, 4 A100 / 32 core / 480 GB,
@@ -4203,6 +4694,50 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Lettura informale, non ufficiale: GPT pubblica il rapporto e la lettura; poi lettura congiunta come chiesto da Simone. Nessun job mio.
   Output di leonardo-ops in `~/wearusfm_local/logs/status_e3b_20261028_144139.txt`.
 
+### 2026-10-28 | GPT | Lanci B19618 e integrazione di tutte le consegne
+
+- Sottomessi training62582916 e12valutazioni dal piano8405a0b; tutti rc0, dipendenze/commenti/risorse verificati.
+  Snapshot17:27:47Roma: tre estrazioni R3c RUNNING, training PENDING Priority, altri nove Dependency.
+  Tetto23GPU-ore; residuo conservativo56,070833GPU-ore e319,112778core-ore soloCPU dopo la prenotazione.
+- L'helper del primo dispatch si e' fermato prima della prenotazione per HEAD aggiornato durante il permesso runtime:
+  assenza di ledger/directory/output verificata, nessun sbatch. Dispatch effettivo una sola volta da8405a0b, nessun retry di job.
+- Dopo i lanci, merge senza squash/rebase delle review GPTda0e803 e Claude7a4221d; risolti solo conflitti di documentazione,
+  conservate tutte le voci cronologiche. Prova testuale:628/472/605voci dei tre snapshot tutte presenti.
+  Runtime src/scripts/tests identico a8405a0b;501test distinti verdi,1saltato. Dettagli nella review d'integrazione.
+- Risposta a Simone sui quattro PSD registrata: PSD-1 chiuso; PSD-2 riorientato, non eseguito nel disegno originario;
+  PSD-3 e prova controllata PSD-4 non ancora eseguiti. Nessuna nuova sperimentazione PSD in questa consegna.
+
+### 2026-10-28 | GPT | Nuova regola di Simone: sottomissioni a semplicione
+
+- Identificata la chat esistente `semplicione`, stesso workspace, thread `01a18355-6241-7c53-98fe-fbc8450c2b30` sul Mac.
+  Letta l'assegnazione diretta di Simone nella sua chat: sottomette i job e controlla i log.
+- Registrata la nuova precedenza in CLAUDE.md e accordo operativo: GPT prepara/revisiona/pubblica il piano,
+  semplicione sottomette mediante il meccanismo comune. Nessun nuovo agente o job; affidato a semplicione un controllo
+  puntuale in sola lettura dello stato e dei log dei 13 job per il riepilogo dopo il merge, senza rilanci o cancellazioni.
+- Snapshot delle 17:32:26, Roma: 62582916 PENDING Priority, 62583147/148/149 RUNNING, 9 job Dependency, nessun fallimento.
+  Evidenza copiata in results/infra/pilot_posa/b19618_20261028/submission/final_status.json.
+
+### 2026-10-28 | GPT | Loss attuale e alternative motivate
+
+- Riferimento esaminato `78268d6`, config B e preflight B19618: MSE posa standardizzata (peso 1) + cinque ancore
+  quadratiche (peso 0,2), JEPA spento, riduzione per finestre valide. Verificati codice e fonti primarie emg2pose.
+- Nota in reviews/loss_e_alternative_20261028.md: esplorazione mirata dopo i risultati B19618, priorita' a MSE
+  con enfasi aggiuntiva sulla dinamica centrata; Huber/MAE non sono una cura dimostrata per traiettorie attenuate.
+- Nessuna modifica al codice o ai job, nessun nuovo lancio; questa e' una proposta motivata, non un protocollo esecutivo.
+
+### 2026-10-28 | GPT | Simone rinvia esplorazione loss e pooling
+
+- Riferimento `6405067`. Letta la nota di Claude riportata da Simone; scelta esplicita: «forse possiamo guardarci
+  ma un po piu avanti. finirei quello che stiam facendo ora». Priorita' a B19618 e confronti gia' sottomessi.
+- Rinviati confronti di loss, velocita' e sonda dei latenti non mediati. Nessun nuovo job o modifica del codice;
+  aggiornamento della nota reviews/loss_e_alternative_20261028.md. Affidato a semplicione solo un controllo puntuale
+  in sola lettura dello stato/log dei 13 job, senza sottomissioni, cancellazioni o retry.
+- Snapshot di semplicione del 28/10 alle 18:05:56 Europe/Rome: estrazioni R3c 62583147/148/149 COMPLETED 0:0
+  (30:05/13:53/28:00; complete=true), sonda P1 62583155 RUNNING; training 62582916 PENDING Priority;
+  P2 62583157 PENDING QOSMaxCpuPerUserLimit; altri sette PENDING Dependency. Nessun fallimento o errore fatale.
+  Avviso P2: riga malformata scartata in UCI 1_raw_data_10-51_07.04.16.txt; da verificare la concordanza dei
+  supporti/provenienze nel confronto B/R3c previsto. Training e rapporti finali non ancora iniziati.
+
 ### 2026-10-28 | Claude | Brief a «semplicione» per la sorveglianza dei 14 job B19618 di GPT | Nessun job, nessun codice
 
 - Simone ha creato la sessione «semplicione» (agente di monitoraggio): «passagli le info che servono per controllare i job che sottomette
@@ -4219,6 +4754,36 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prima, su richiesta di Simone («leggi il log cosi ti aggiorni ma non fare nulla»), letti i commit di GPT fino a c709297 (E3 B conclusa e
   letta; protocollo B19618 `docs/continuazione_b19618_20261028.md`; preflight e 13 job sottomessi da GPT alle 17:22-17:25) senza alcuna
   azione. La lettura dei risultati di B19618 si fara' quando Simone la chiede.
+
+### 2026-10-28 | GPT | Correzione della guardia P2 e piano di recupero B19618 | Base a77d095; diagnosi Claude 8e6288c
+
+- Confermato errore mio: `np.isfinite` su classi EPN612 testuali dopo fit e salvataggio OOF; test precedente solo P1.
+  Corretto controllo numeric/string, test P2 con EPN612 stringhe e UCI numerico; tutte le guardie di identita' restano.
+- Nuovo `validate-probe` senza subprocess/rifit: conserva rapporto/OOF, verifica hash e cache/ricevute e scrive solo
+  provenance mancante, distinguendo job originale fallito e nuovo job validatore. Piano ed evidenze in
+  results/infra/pilot_posa/b19618_20261028/recovery; protocollo docs/recupero_b19618_p2_20261028.md.
+- 87 test guard/readout passati; dopo campo validation_job_id, rieseguiti i 74 della guardia (subset dei87). Review
+  indipendente favorevole, wrapper rigenerato. Tre job soloCPU con nuovi ID logici: convalida R3c, sostituto B-P2,
+  confronto; tetto37core-ore, di cui36 gia' previsti per job mai partiti, incremento1;0GPU-ore. Lanci affidati
+  a semplicione dopo commit/push, verifica hash e cancellazione del solo vecchio B-P2 ancora PENDING/senza output.
+- Raccolta22:34: training62582916 RUNNING da22:18:26, passo6150;62583157 FAILED dopo20m31s,62583165 CANCELLED prima
+  di partire. Nessun job di recupero ancora sottomesso a questa registrazione; storico e codice scientifico24139ab immutati.
+
+### 2026-10-28 | GPT | Allineamento categoria del ledger per semplicione | Base 173a305
+
+- Rilievo operativo di semplicione prima di qualsiasi cancellazione/lancio: submit_job.py accetta in --agente
+  solo claude/gpt/simone. Piano rettificato a gpt come categoria/responsabile; operatore resta semplicione.
+  Payload, risorse e ricetta invariati; nessuna modifica al submitter. Nuovo SHA del piano da consegnare.
+
+### 2026-10-28 | GPT | Recupero P2 sottomesso da semplicione e convalida riuscita | Piano f45a73b
+
+- Tre ricevute non ambigue: convalida R3c-P2 **62618174**, B-P2 corretto **62618177**, confronto **62618179**.
+  Verificati argv esatti del piano, SHA e provenance. Ricevute in results/infra/pilot_posa/b19618_20261028/recovery/submission.
+- Convalida COMPLETED0:0 alle22:51:17, durata11s,2CPU =0,006111core-ore e0GPU-ore; rapporto/OOF originali invariati,
+  nessun rifit. Nuova provenance identifica62618174 e originale62583157. Vecchio B-P2 cancellato22:49:28 prima
+  dell'avvio, sacct Start=None/elapsed0/nessunaallocazione. Nessuna seconda scancel o retry della sonda.
+- Snapshot22:52: B-P2 e confronto PENDING Dependency, collegati alle sonde/estrazione B corrette. Training62582916
+  RUNNING; log22:50:57 al passo7450. Tutta la catena predisposta, risultati finali B ancora attesi.
 
 ### 2026-10-29 | Claude | B19618: batteria di GPT chiusa (17 job), lettura informale dai log via semplicione | Lettura ufficiale a GPT
 
@@ -4238,6 +4803,65 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   superata» nel log e' l'etichetta del lettore del pilot, non un cancello di questa tranche. Nessuna decisione: lettura congiunta con Simone e
   GPT, nessun job di Claude.
 
+### 2026-10-29 | GPT | Lettura preliminare B19618 e raccolta JSON pendente | Base ddcb08c
+
+- Simone autorizza lettura risultati. Semplicione conferma catena conclusa con successo08:12, nessun job in coda.
+  Letti i log locali e integrata voce Claude3bbb79f senza perderne il commit. La raccolta JSON richiesta e' ferma
+  su waitingOnApproval dell'app nella chat semplicione; nessun ulteriore consenso scientifico richiesto.
+- Posa: deltaE1 -0,0749224, centered -0,0607859, accessibilita' B-R3c -0,1240439 (IC non ancora letti).
+  Trasferimento: P1 -0,56pp IC[-1,10;-0,03], P2 -1,23pp IC[-3,00;+0,58]. Quadro preliminare compatibile con
+  specializzazione, non vantaggio FM dimostrato; raccomandato non estendere ora automaticamente a49046.
+- Rapporto preliminare docs/reviews/b19618_preliminary_20261029.md; log locali salvati sotto
+  results/infra/pilot_posa/b19618_20261029/preliminary_logs. Nessuna nuova esecuzione o cambio di ricetta.
+
+### 2026-10-29 | GPT | B19618: lettura completa, posa migliore e trasferimento non migliorato | Base 52ae536, protocollo 8405a0b/f45a73b
+
+- Raccolta sbloccata: 60 file testuali con hash verificati, 14 job COMPLETED 0:0 piu' 1 FAILED storico recuperato e 2 CANCELLED
+  mai partiti; catena conclusa alle 03:19:22. Training continuo 5001–19618, stop max_steps/source_unchanged. Review indipendenti
+  di posa, trasferimento e integrita': nessuna discrepanza nei ricalcoli/identita'. Report docs/reviews/b19618_results_20261029.md.
+- A: E1 dinamiche 0,937552 → 0,862629, delta −0,074922, IC [−0,089755; −0,059466]; centered 0,927475 → 0,866689,
+  delta −0,060786 [−0,075004; −0,045008], 15/15 utenti migliorano. Vp/Vy 6,324% → 14,961%, rho 0,270 → 0,366.
+- C: ridge comune centered R3c 0,986693 → B 0,862650, delta −0,124044 [−0,142974; −0,105411], 15/15;
+  alpha 1e5 interno per entrambi, M2 entro soglie. B codifica posa piu' accessibile nella vista mediata/normalizzata.
+- B: P1 −0,556 pp [−1,104; −0,026], P2 −1,233 pp [−2,997; +0,576], EPN612 −2,580 pp [−3,172; −2,032].
+  Nessun beneficio sulle sonde interne di classificazione; non valutato trasferimento su un'altra regressione.
+- Raccomandazione: B come ramo posa, non nuovo backbone generale; nessuna estensione automatica a 49046 o ricerca
+  indiscriminata sulla distanza della loss. Prossimo controllo proposto: robustezza/convergenza simmetrica delle sonde
+  con feature esistenti, da definire prima di eseguirlo. Nessun nuovo job in questa lettura.
+- Tranche: 14,622778 GPU-ore / 26,985 core-ore CPU-only; tolto il preflight gia' contato, incremento 26,972778 core-ore CPU.
+  Residuo pilot: 64,448056 GPU-ore / 432,14 core-ore CPU. JSON/grafico/review in results/infra/pilot_posa/b19618_20261029.
+
+### 2026-10-29 | GPT | Controllo sonde approvato, implementazione affidata a Claude; proposta PSD/loss | Base f7433f4
+
+- Simone approva il controllo delle sonde e chiede istruzioni per farne scrivere il codice a Claude.
+  Assegnazione tecnica specifica: Claude prepara codice/test/preventivo, GPT rivede, semplicione esegue.
+  Il controllo è già autorizzato; nessun secondo consenso scientifico richiesto per lo stesso perimetro.
+- Prompt pubblicato: docs/prompt_claude_convergenza_sonde_20261029.md. Fase A replica con audit dei 280 fit,
+  max_iter 3000; fase B unica e simmetrica a 12000, tolleranza e resto della ricetta invariati.
+  Identità OOF e provenienza prima di B, nuovi output, nessun filtro dei C non convergenti o tuning sul test.
+  Solo CPU: storico quattro sonde 26,517778 core-ore; risorse della fase B da affinare coi tempi per fit di A,
+  entro i limiti della seriale. Nessun codice implementato o job lanciato da GPT in questa consegna.
+- Discussione PSD/loss in docs/reviews/psd_loss_dopo_b19618_20261029.md: PSD-1 chiuso, PSD-3 primo candidato
+  diagnostico su cache disponibili; PSD-2 originario non completato, PSD-4 causale sulle quote ancora aperto.
+  Regressione di trasferimento distinta complementare a PSD-4, non sostitutiva.
+- B usa già ancore + posa. Loss centrata per enfatizzare dinamica e contrastivo locale per il FM sono ipotesi
+  diverse, da provare separatamente. Nessun nuovo training PSD/loss autorizzato implicitamente dalla domanda.
+  Pesi adattivi da motivare tramite gradienti globali; letteratura primaria verificata, esclusi TinyMyo/PhysioWave.
+
+### 2026-10-29 | GPT | Review tecnica e scientifica della convergenza sonde di Claude
+
+- Riferimenti 22bf2cd (codice) e b98ece0 (piano); richiesta b1c1bda. Review in checkout separato, senza modificare
+  il ramo di Claude. Disegno scientifico confermato; codice DA CORREGGERE prima del deploy e della fase A.
+- Report completo: docs/reviews/sonde_convergenza_review_20261029.md. Suite richiesta 25 passed in 121.96s;
+  172 verifiche indipendenti su pin/provenienze locali/percorsi/aritmetica senza incongruenze. NPZ remoti non riletti.
+- Tre regressioni indipendenti rosse (1.74s), in docs/reviews/test_sonde_convergenza_review_20261029.py:
+  parità accetta val_bacc diverso; eccezione perde audit su disco; B entra nei fit con ricetta diversa da A.
+  Claude corregge sul proprio ramo e rigenera piano/comandi col nuovo SHA; GPT rivede, semplicione esegue dopo.
+- Confermati split/fold indipendenti, fit e selezione senza leakage, bootstrap congiunto e cinque contrasti;
+  parità esatta anche per un ulp, nessuna tolleranza aggiunta a posteriori. Ledger gpt, operatore semplicione.
+- Tetti A 50.8333 / B 118.3333 core-ore; 30 job scientifici 169.1667. Con checkout 31 job e 169.3333 core-ore,
+  GPU zero. B va affinata sui tempi per fit di A prima dei lanci, non sul vantaggio scientifico di un encoder.
+  Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 ### 2026-10-29 | Claude | Lettura congiunta di B19618: concordo con il rapporto di GPT (f7433f4), tre precisazioni e un'aggiunta | Richiesta di Simone («concordi con questa lettura?» -> «Sì, registra»)
 
 - Verificati i numeri di `docs/reviews/b19618_results_20261029.md` sui log dei 17 job (copie in `~/wearusfm_local/logs/`) e sui JSON di
@@ -4316,6 +4940,109 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   affinato con i tempi della fase A prima del blocco 4.
 
 ## 2) Problemi trovati
+
+### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
+
+Il segno di B−R3c nelle sonde non seleziona l'avvio di PSD-3 o i suoi parametri.
+Warning su pool768 non implicano automaticamente mancata convergenza della
+logistica PCA128. Il prompt non attesta chiusi i rilievi R1/R2/R3 o già misurati
+hash e tempi remoti. Perimetro temporaneo limitato ai due passaggi già decisi,
+senza nuovi training/loss del FM o scelta di un modello GPT. Prevale sulla
+precedente attesa di una nuova attivazione GPT per rivedere le correzioni: resta
+la review indipendente tecnica prima del deploy.
+
+
+### 29/10/2026 — GPT: limiti e dipendenze aperte della preparazione PSD-3 (base b1c1bda)
+
+Le viste pool/dec delle cache B19618 hanno già mediato il tempo e provengono da
+strati diversi: questa matrice misura accessibilità per classificazione interna,
+non inseguimento della posa né causalità della sola media dei canali. PCA128 e MLP
+a60epoche introducono limiti espliciti; un esito negativo non prova assenza di
+informazione nel FM. Nessuna modifica alle loss del FM o scelta di una nuova
+architettura. Per il tempo servirà un lettore su rappresentazioni temporali;
+l'eventuale estrazione dei latenti interi richiede inferenza, non nuovo training.
+
+Alla verifica finale di origin Claude ha consegnato codice `22bf2cd`, piano
+`b98ece0` e prompt di review `e074659`; la review di tale consegna è il prossimo
+passo, non è inclusa nella preparazione PSD-3. I tempi CPU e
+la memoria PSD-3 non sono misurati su Leonardo;86core-ore è un preventivo provvisorio,
+non un consuntivo o una garanzia. Richiesto a semplicione un inventario read-only,
+ma il tool della chat ha restituito host durable non disponibile: nessuno stato
+remoto inferito, nessun lancio diretto sostitutivo. SHA cache da ricalcolare in
+preflight; lo stato qui si basa sugli archivi già verificati della tranche B19618.
+
+
+### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
+
+- Confusione fra controllo eseguito e prova di allineamento: gap positivo7/10, non10/10. L'audit calcola correttamente; va corretta
+  la lettura nel titolo/interpretazione di decisioni.md e nella consegna. Ridge sotto costante8/10, non7/10.
+- «Segnale debole/q piccolo» non misurato: i due casi peggiori sono trasferimenti mano/fase diversi; altri8 sono dentro recording.
+  Disallineato spesso batte ancora costante, miglior ratio0,288 anche con gap negativo. Non equiparare MAE a varianza spiegata.
+- E3 sotto soglia0,9 non equivale ad assenza di informazione. Piccolo vantaggio MAE misurato; senza controllo intercetta/E2 non e'
+  quantificata la componente dinamica. Non attribuire il mancato apprendimento del diverso R3dbg ai latenti finali R3c.
+- Dati raw:16/20 recording hanno zeri (max16,69%), non finiti assenti; la frase «0 righe a zero» va chiarita. Sui casi controllati la
+  mascheratura/ricostruzione passa: questa rettifica numerica non rivela un nuovo difetto della pipeline.
+- Non usare report inesistentiR0/J2bis o orari prospettici nei documenti per descrivere lo stato live; i due job sono cancellati e
+  l'ulteriore trainR0 finito. Nessun rilancio o altro impegno di risorse autorizzato da questa valutazione.
+
+### 2026-10-27 | GPT | aecff1a: due dettagli P3 e limiti della lettura, nessun nuovo blocco E3/J2
+
+- `decisioni.md:4972`: spread fra semi non sempre <=0,01; massimo dei ratio finali0,019865. Correggere a circa0,02/esatto.
+- `pose_head_synthetic.py:63,98`: q nominale; 1-q e' floor MSE assoluto di popolazione, non esatto rapporto sulla loss iniziale del
+  pannello finito. Rinomina `optimum_ratio_at_fixed_features` in `noise_floor_mse` e qualifica q; non richiede nuovi job.
+- Lag scan: comuni righe di feature, target e baseline ancora diversi; resta esplorativa. Contatore simultanee non universale;
+  gap temporali del loader non coperti dalla fixture; possibile differenza dei time_axis storici da interpretare sui reali.
+- Default60GB del launcher E3 da allineare in manutenzione, il job corrente ha override30GB corretto. Suite completa nel log non
+  identificata da SHA interno; non confonderla con la riesecuzione GPT dei20 test. Watcher: script/log letti, vitalita' processo non provata.
+- H1/H2/H3 restano aperte fino alla lettura dei risultati reali; nessun problema sostanziale residuo trovato che giustifichi bloccare i job.
+
+### 2026-10-27 | GPT | E3: COMPLETED non certifica lo split; train da recuperare | Claude d037a3e
+
+- La stringa di opzioni espansa in zsh e' finita nel nome del file: entrambe le cache sono val. Il solo nome train_subset o lo stato
+  COMPLETED non basta per ammettere E3. Verificare identita' contro CSV/split, disgiunzione prevista, checkpoint e statistiche.
+- L'indicazione precedente «J1 a estrazioni finite, senza nuove GPU» e' superata operativamente: serve prima una vera estrazione train,
+  tetto 0,67 GPU-ore; totale della nuova tranche 25,5 core-ore. Le 0,84 GPU-ore gia' spese sono separate, non un costo futuro.
+- Questi fatti non cambiano la review del codice e198a87, ne' dimostrano un difetto nei dati R3. J2 resta da correggere e B rinviato.
+  Lo stato cluster e' quello documentato da Claude, non verificato live da GPT. Nessuna spesa con questa consegna.
+
+### 2026-10-27 | GPT | Audit posa e198a87: false rassicurazioni e falsi allarmi possibili | J1 separato da J2
+
+- `scripts/pose_audit.py:232-246,300-301`: niente confronto raw EMG/processato; controlli assenti trattati come superati. Riprodotti entrambi
+  i casi. Prima di usare J2 per escludere H3, confronto diretto dei campioni/coordinate e stato non verificato per copertura incompleta.
+- `pose_audit.py:45-48`: NaN/Inf ignorati dall'oracle; `163-172,307`: minimo lag non certifica allineamento; `275-284`: differenze saltano
+  buchi. Test ritardo sbaglia 200/400 ms e non include il ritardo vero. Dettagli/prove/fix richiesti nella review del seguito.
+- Guardia metadati approvabile per compatibilita', senza promessa di verifica dei contenuti; split interno, pairing descrittivo, statistiche
+  per lato e sintetico hanno limiti distinti. Nessuno di questi dimostra un bug nel training R3 o blocca il rapporto E3 R3c (J1).
+- J2 da correggere prima del via nella forma presentata; B resta separato e non autorizzato. Preventivi J1/J2 corretti: 20,1667 core-ore
+  incluso checkout, 0 GPU-ora aggiuntive. Nessuna modifica a soglie o campagne in questa review.
+
+### 2026-10-27 | GPT | Collaudo R3: premesse errate e diagnosi ancora non identificata | Prompt: 921cb97; run: c5e42cb
+
+- Conteggio posa moltiplicato per4 nel prompt/lettura Claude; patch25ms confuse con griglia200ms; plateau di42 aggiornamenti. Correggere la
+  lettura, non i log. DDP corretto nel percorso analizzato; H1 rimane plausibile, non dimostrata.
+- MSE iniziale ~1 non certifica associazione dei target; E4 e' locale e non misura il gradiente globale/aggiornamento Adam; clipping variabile
+  non e' neutralizzato dall'invarianza ideale alla scala. Pannello attuale:41 finestre emg2pose nominali,32 valide,6 utenti/recording e
+  sovrapposizioni; manca misura fissa a1300. Non dichiarare generalizzazione o apprendimento esattamente nullo.
+- Nessun bug di training confermato da correggere subito. Mancano controlli di provenienza dei singoli target e supporto dinamico reale;
+  array/raw/checkpoint non presenti qui. RMS ridge negativa non implica H3; E3 R3c negativa non implica impossibilita' di R3.
+- Proposta nuova di collaudo/cancello e costi in `docs/reviews/r3_dbg_diagnosis_20261027.md`, da approvare prima di lanciare; vecchio dbg resta
+  fallito, R3 completo bloccato. Nessuna spesa o modifica al codice di prodotto con questa review.
+
+### 2026-10-27 | GPT | Limiti scientifici del margine e due difetti della valutazione E2 | Snapshot Claude: d43dbcf
+
+- `decisioni.md` (lettura del collaudo lungo, da riga 4697): la certezza «solo i primi 40 campioni sono artefatto / coda = comportamento»
+  non e' sostenuta dal profilo. R5 supera la sua soglia in 104 bin fino a 3.570 campioni, senza per questo dimostrare artefatti in tutti quei
+  bin. M3/M5 sono entrambi limitati a 300 per costruzione; la loro vicinanza non e' conferma indipendente. Variazione della posa non equivale
+  a rumore. La scelta firmata M = 280 resta ragionevole per il pilot, ma la qualita' dei target residui e' ancora incerta.
+- `harness/pose_eval.py:384-392`: gap disallineato meno allineato usa subset e maschere diversi; puo' invertire il segno. Calcolare entrambe
+  le MAE sulle stesse coppie e sulla stessa intersezione delle maschere. Il difetto e' nel gap descrittivo, non direttamente nel gate E2.
+- `harness/pose_eval.py:280-297`: il fallback ignora sessione/lato, puo' accoppiare mani simultanee; con statistiche per lato mescola anche
+  coordinate standardizzate diverse. Vincolare le coppie e/o convertire in uno spazio comune, contando fallback/esclusioni. Frequenza reale
+  e attivazione `per_side` non misurate. Riproduzioni sintetiche conservate nella review, nessun risultato R3 esistente invalidato.
+- E2 migliore del costante globale non dimostra di per se' leakage; E4 sul microbatch locale del rank 0 e' diagnostico e non prova da solo
+  che la posa non muova l'encoder. Limiti da rispettare nella lettura, senza riscrivere soglie congelate.
+- README del pilot: un IC di R5 pool P1 e2 nel paragrafo e1 e' trascritto diversamente dal JSON (-1,09/+0,05 invece di -1,0735/-0,0166
+  punti); la tabella iniziale e il JSON sono coerenti e il verdetto resta negativo per l'adozione.
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
 
@@ -5939,6 +6666,142 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   criteri, analisi in piu') prima a GPT; un job parte solo con un via esplicito di Simone su quel job dopo il parere di GPT; un «vai» generico
   non autorizza job non nominati. La parte tecnica concordata (codice, test, launcher) si fa senza chiedere ma non si lancia nulla.
 
+### 2026-10-28 | GPT | B: correzioni alla bozza prima di qualunque run
+
+- La prima bozza ammetteva finestre sovrapposte o senza posa valida e registrazioni con probabilita' di training nulla; ora selezione
+  esplicita, deduplica, supporto positivo e quote esatte. L'errore di selezione/provenienza sul rank 0 viene comunicato a tutti i rank.
+- Varianza aggregata fra tempi e giunti confondeva bias diversi con movimento: sostituita da varianza temporale per giunto. Una soglia
+  >=0,01 e un ulteriore -10% nel training dopo 2.000 non erano nel criterio GPT: rimossi dai gate e mantenuti solo descrittivi pertinenti.
+- Append dopo un crash puo' duplicare passi rispetto al checkpoint: il lettore B rifiuta log duplicati; questo collaudo parte da zero,
+  senza riuso automatico della directory (`REQUIRE_NEW_RUN=1`) e senza retry. Nessun log di run precedenti viene riscritto.
+- 75 min /5 GPU-ore non garantivano margine sufficiente al ritmo limite: presentato il tetto aggiornato di 90 min /6 GPU-ore,
+  esplicitamente ancora da approvare. Non e' una variazione applicata di nascosto a un job.
+
+### 2026-10-28 | GPT | Chiarimento: il degrado delle sonde per canale non e' una rimozione della media dal training
+
+- Le sonde `local` e `dec` erano confronti alternativi sui checkpoint congelati. Il percorso ufficiale `pool_p1p2` conserva la media
+  dei canali validi; `PoseHead` usa `latent_mean` per istante. Ripristinare qualcosa in B significherebbe cambiare una ricetta che
+  gia' usa la propria aggregazione, confondendo la diagnosi sulla dose di training. Fonte: protocollo e risultati readout del 23-25/10,
+  `model/spectral_step1.py`, `model/pose_head.py`, `training/jepa.py`. Nessun difetto o cambiamento di codice in questa verifica.
+
+### 2026-10-28 | GPT | Stato operativo di B distinto dall'avvio del training
+
+- La sottomissione e' riuscita, ma al controllo il job 62523672 e' PENDING per Priority: non e' ancora un run in esecuzione e non
+  esistono metriche o log di training. Nessuna anomalia di codice rilevata; nessuna cancellazione o risottomissione. Il costo del
+  checkout e' consuntivato, quello di B e' ancora soltanto il tetto prenotato. E3 R0 e J2 bis restano interrotti.
+
+### 2026-10-28 | GPT | Lettura B: formato del listing e limiti scientifici
+
+- Prima invocazione del lettore con `ls -l /path/checkpoint.pt`: chiave assoluta, non il basename richiesto da
+  `--listing` (documentato come elenco della directory). Il solo controllo checkpoint risultava NO; file sempre presente.
+  Raccolto `ls -l` della directory, il lettore invariato passa. Conservati entrambi gli input e il primo verdetto con nome
+  `verdetto_listing_file_assoluto.json`; applicabile `verdetto.json`. Nessun difetto del run e nessuna soglia cambiata.
+- B passa, ma nove utenti peggiorano; IC95 non prova un calo >=10% con confidenza95%. E4 e' locale al micro-batch;
+  clipping in tutti i passi non dimostra un difetto. Energia temporale delle predizioni != quota del guadagno MSE.
+  Pannello train, un seme, supporti variabili: nessuna inferenza automatica a utenti nuovi o al trasferimento P1/P2.
+- La proposta E1/E2 anticipata deve specificare student (default estrattore teacher), vista senza maschera, endpoint
+  diagnostico a5.000 e confronto sul supporto comune; non cambia il cancello gia' superato o le regole finali a49.046.
+  Nessun cambio di pooling/target/lag/pesi giustificato da questa sola lettura; nessun lancio autorizzato dalla proposta.
+
+### 2026-10-28 | GPT | E1/E2 anticipata: lacune di provenienza del launcher frozen e limiti di interpretazione
+
+- `pose_eval.py` salva gli hash delle statistiche correnti e del checkpoint ma non ne impone l'uguaglianza; non salva passo
+  e SHA256 checkpoint. Guardia esterna nel job: impedisce letture incompatibili senza modificare le funzioni scientifiche.
+- Il selettore puo' saltare registrazioni processate assenti: full val verificato contro CSV e registrazioni presenti;
+  supporti effettivi e conteggi della cache verificati prima del rapporto. E2 puo' avere copertura inferiore a 15 utenti,
+  da leggere nel JSON. Lo stdout frozen omette E2 nel riepilogo, ma il JSON lo conserva: usare quest'ultimo.
+- E2 inferiore IC95 >0,95 e' regola operativa, non prova di identita' col costante; un fallimento non prova automaticamente
+  leak o assenza di dinamica. Partner/fallback/scarto non preservano perfettamente i margini. Limiti congelati nel protocollo.
+- Gli 0,023 di B e gli ~0,26 citati da Simone non sono stati assunti come un confronto gia' verificato sullo stesso supporto.
+  Questa esecuzione non modifica soglie, target o pesi sulla base di quel rapporto.
+
+### 2026-10-28 | GPT | E1/E2: sottomesso non significa in esecuzione; IC del gap da derivare
+
+- Nell'ultimo snapshot 62539724 attende Priority e 62540295 Dependency: non ci sono ancora esiti scientifici o guardie
+  runtime verificate. Nessun errore di sottomissione; nessun rilancio.
+- Il report frozen salva il gap appaiato e i dati per utente, ma non il suo IC. IC derivabile localmente con il metodo
+  esplicitato dopo le sottomissioni e prima dei risultati; nessuna modifica al report congelato o nuova soglia.
+
+### 2026-10-28 | GPT | Limiti della lettura E1/E2 B: postura vs dinamica e supporto incompleto
+
+- Nessun difetto di esecuzione dimostrato. I booleani frozen E1=false/E2=true non diventano verdetti a 5.000.
+- E2 copre 14/15 utenti: ab228f34a5 ha 7 finestre dinamiche E1 e nessuna coppia conservata. Il gap positivo puo' includere
+  postura media della finestra; partner/filtri/margini impediscono l'interpretazione causale pura del movimento temporale.
+- 27/1.950 registrazioni senza finestre; 26 finestre E1 valide senza varianza temporale definita, fuori dai due gruppi.
+  Il contatore n_dropped_near_identical comprende anche assenza di supporto comune finito; non tutte le 4.275 sono quasi identiche.
+- Il JSON E1 non salva i conteggi validi per utente: ricalcolo indipendente del suo pooling/IC non disponibile dal solo JSON.
+  E2 pooling, rapporto/IC e gap/IC ricostruiti e concordi. Nessuna nuova soglia, tuning su val o alterazione dei risultati.
+- La raccolta SSH ha incontrato errori intermittenti e poi e' riuscita sullo stesso accesso; non e' un errore dei job.
+
+### 2026-10-28 | GPT | Limiti fissati prima dell'analisi della dinamica B
+
+- Centrare entrambi i segnali concede una correzione perfetta del bias per finestra/giunto: e' una diagnostica delle
+  fluttuazioni, non una prestazione operativa. La MSE totale e l'errore delle medie restano riportati sul medesimo supporto.
+- Pesi per elementi validi, n>=2 per le metriche temporali, mediana target E1 gia' congelata; denominatori nulli e IC
+  non definiti dichiarati senza eliminare repliche. Nessuna assunzione che ogni metrica sia valutabile per ogni utente.
+- Un solo checkpoint/seme, utenti val e selezione dinamica condizionata al target: nessuna prova di trasferimento o
+  causalita' EMG, nessuna modifica delle soglie E1/E2. E3/R0/J2 bis e training completo fuori da questo via.
+
+### 2026-10-28 | GPT | Limiti residui dopo la separazione postura/dinamica B
+
+- Nessun difetto di esecuzione rilevato. Beneficio dinamico osservabile ma modesto; sulle poco dinamiche le oscillazioni
+  introdotte peggiorano il termine centrato. Centratura e' oracolo del bias, non prestazione operativa corretta gratuitamente.
+- Non si deduce che basti amplificare le uscite, aumentare il peso della posa o proseguire a 49.046 passi per risolvere il limite.
+  Il risultato non e' causalita' EMG-movimento o trasferimento multi-dataset. Nessuna soglia aggiunta dopo la lettura.
+- Il permesso del comando fuori sandbox ha ritardato il lancio; il job ha poi richiesto 13 s. Non un blocco della coda,
+  un errore scientifico o una richiesta nuova di approvazione della proposta. Autorizzazioni utente ora esplicite nei documenti.
+
+### 2026-10-28 | GPT | Punti aperti per la review della proposta E3 B
+
+- La proposta in 9142ca6 non e' ancora un protocollo eseguibile: da definire lettore comparabile alla testa con LayerNorm,
+  obiettivo interno di selezione, pesi/supporti, confronto appaiato e preventivo. Questi sono quesiti di review, non difetti
+  dimostrati o nuove condizioni applicate ai risultati gia' letti.
+- La richiesta corrente riguarda soltanto il secondo parere di Claude; nessun esperimento avviato in attesa del confronto.
+
+### 2026-10-28 | GPT | Rettifiche alla review E3 e limiti della continuazione
+
+- M3 della review986b008: window_pose assegna mask[has]=True su tutti i giunti, _instants seleziona righe any=True; qui
+  any==all. Il 18,4% globale escluso non e' la quota di bersagli invalidi nel fit selezionato. Il nuovo codice verifica le
+  cache e supporta maschere generali, ma non si riscrive l'E3 R3c come contaminato sulla base di tale argomento.
+- «Equivalenti» con IC che include zero e «la testa esaurisce i latenti» non sono conclusioni consentite. La ridge su
+  feature comparabili resta diversa per subset, vista, penalizzazione e ottimizzazione dalla testa durante il training.
+- a2753a6: E1>=0,92 non dimostra plateau; disgiunzione di IC separati non e' confronto appaiato; E2 non e' monotono con
+  qualita'; mancata evidenza di danno non e' prova d'assenza. R3c non ha LayerNorm di testa: futura attribuzione E3 richiede
+  una trasformazione comune. Il checkpoint.pt B5000 verrebbe sovrascritto da resume nella stessa cartella, incompatibile
+  con E3 contemporanea senza snapshot immutabile. Nessuna continuazione in questa tranche.
+
+### 2026-10-28 | GPT | Limiti al momento del lancio E3 B
+
+- Sottomesso non significa risultato disponibile: la valutazione dipende dal successo dell'estrazione e delle guardie
+  M2/provenienza. Nessun esito scientifico E3 dedotto dalla sola accettazione di SLURM.
+- Il ritardo pre-lancio era il permesso runtime del comando nell'app, distinto dal consenso scientifico gia' espresso.
+  Verifica negativa di qualunque lancio parziale prima della nuova invocazione; nessun retry automatico di job.
+
+### 2026-10-28 | GPT | E3 B: limite del risultato e punti ancora aperti | Fonte 520158e, rapporto finale
+
+- Questo rifit non recupera dinamica aggiuntiva: effetto primario piccolo ma sfavorevole, non equivalenza o saturazione
+  dell'encoder. Subset, obiettivo MSE totale, regolarizzazione, vista e percorso di fit restano diversi dalla testa.
+- Poco dinamiche: ridge migliora in15/15 rispetto alla testa, ma entrambe restano peggio del piatto. Su tutte le finestre
+  il delta centrato comprende0: inconclusivo. Non cambiare ora selezione/scala in base a questa val.
+- Nessun difetto di maschere dimostrato; M3 di Claude rettificata con supporti reali. I residui centrati ~1e-32 della
+  costante del subset sono roundoff, non movimento reale. Nessun risultato storico invalidato da questa osservazione.
+- La proposta19618 richiede ancora protocollo/preventivo, verifica dose/config/stream e trasformazione comune a R3c.
+  Non applicabili plateau da E1>=0,92, equivalenza da IC sovrapposti, monotonia di E2 o assenza di danno da test inconcludente.
+  Utilita' FM e trasferimento rimangono aperti. GPT implementa/lancia, Claude rivede; nessun nuovo job in questa lettura.
+
+### 2026-10-28 | GPT | Distinguere identificazione del checkpoint e attribuzione scientifica
+
+- Il preflight compute raccoglie SHA/config/stream/firme e controlla gli ingressi, ma il suo completed non sostituisce
+  la review di tutte le differenze B/R3c. Questa e' necessaria prima del resume. Differenze attese solo posa/diagnostiche.
+- P1/P2 frozen usano teacher per entrambi; posa/dinamica/accessibilita' useranno student per entrambi. Non si mescolano
+  le due viste nello stesso confronto. La trasformazione comune E3 e i criteri appaiati sono in preparazione.
+
+### 2026-10-28 | GPT | Limiti del preflight B19618
+
+- Il preflight verifica stato e metadati, non prova uguaglianza numerica di una ripresa rispetto a un training continuo.
+  L'identita' di finestre e stream non implica identiche traiettorie RNG fra obiettivi diversi. Il confronto e' a un seme.
+- I rapporti a19618 restano descrittivi; nessun esito autorizza automaticamente49046. B5000 sorgente immutato.
+
 ### 2026-10-28 | Claude | Trovato rileggendo E3 per la review (codice mio, `pose_eval.py`, invariato da c5e42cb a 24139ab): la ridge fitta anche i giunti non validi e la griglia di alpha si e' chiusa al bordo su R3c-e2; il numero E3 di R3c (0,949) e' di un lettore handicappato; nessun esito firmato cambia
 
 - `_instants` prende gli istanti con almeno un giunto valido e `ridge_fit` usa tutte le 20 colonne: nei giunti non validi il target e' 0 con
@@ -5965,6 +6828,33 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   (copia immutabile prima, nessuna ripresa mentre E3 legge) e le letture vanno riformulate come differenze appaiate.
 - Stato: E3 B lanciata da GPT (estrazione 62561780, rapporto 62561881 con afterok); io leggo lo stato in sola lettura e i risultati con GPT.
 
+### 2026-10-28 | GPT | Limiti della consegna integrata e rettifiche del sintetico
+
+- Job sottomessi non significa training iniziato o risultati disponibili. Lo snapshot e' datato; R3completo resta escluso.
+- Il registro conserva diagnosi e proposte superate: M3 rettificata, E2 non isola da solo il movimento, IC comprendente0
+  non e' equivalenza e proposta Claudea2753a6 superata per le regole di continuazione dal protocollo B19618.
+- Rettificati descrittivamente due P3 del sintetico nella review: massimo scarto fra semi0,0198646646 (non0,01);
+ 1−q e' il floor MSE di popolazione del rumore, non il ratio/minimo empirico del pannello. JSON storici invariati;
+  vecchia chiave optimum_ratio_at_fixed_features resta un nome legacy improprio. Duplicazione importlib non risolta, non bloccante.
+
+### 2026-10-28 | GPT | Precedenza della nuova regola operatore
+
+- Le vecchie istruzioni che assegnano i lanci a GPT o leonardo-ops sono storico per questo punto: da ora si delega
+  a semplicione. Autonomia sui piani approvati, budget, ruoli scientifici e divieto di duplicare le prenotazioni invariati.
+
+### 2026-10-28 | GPT | Limiti dell'ipotesi sulla loss
+
+- Riferimento `78268d6`: nessun difetto nuovo dimostrato. MSE contiene gia' l'errore dinamico; aggiungerne un termine
+  centrato ne cambia il peso, non crea informazione. E3 negativo non dimostra saturazione dell'encoder.
+- Restano da definire, se la proposta verra' sviluppata, pesi/scale sul train, protocollo a pari dose, preventivo
+  e review; nessun tuning ripetuto sui 15 utenti di val. I risultati B19618 restano la priorita'.
+
+### 2026-10-28 | GPT | Cautele sulla nota di Claude riportata da Simone
+
+- Riferimento `6405067`: E3 non prova assenza di informazione nell'intero encoder o ottimalita' globale della testa;
+  un eventuale probe lineare negativo sui latenti completi non la proverebbe a sua volta. Costo completo del
+  probe non mediato e ruolo predominante della postura media in P1/P2 non verificati. Nessun nuovo esperimento.
+
 ### 2026-10-28 | Claude | B19618: guardia di GPT caduta sulla sonda P2 di R3c (62583157 FAILED), confronto P1/P2 cancellato | Payload 8405a0b, log del job
 
 - Job `PILOT-POSA-B19618-R3c-p2-pool-20261028` (62583157): la sonda ha finito (`epn612: S 84.40`, `uci_emg: S 77.28`, `S = 80.84 ± 2.24
@@ -5985,6 +6875,79 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   risottomissione in afterok di 62583154) e risottomettere il confronto P1/P2 in afterok dei quattro pool. Nessuna azione di Claude sul cluster;
   segnalazione da semplicione alle 19:24, lettura di Claude dal log.
 
+### 2026-10-28 | GPT | Lacuna di copertura P2 e limiti della lettura preliminare | Base a77d095
+
+- Difetto confermato nella mia guardia, non nel fit: test precedente solo etichette numeriche. La correzione aggiunge
+  il caso reale misto P2 e recupero senza rifit; non trasforma il vecchio job FAILED in un successo retroattivo.
+- SHA OOF da rapporto e SHA misurato sul file sono evidenze diverse: il piano richiede misura diretta prima del lancio
+  e ricontrollo nel validatore. Il flag generico nella raccolta dell'operatore non era sufficiente e non e' ripreso.
+- Quattro warning lbfgs/max_iter nel fit originale restano dichiarati; nessun tuning dopo il risultato. S80,84 non
+  misura il beneficio di B. Training partito22:18:26, aggiornamento dello snapshot precedente PENDING. Cancellazione
+  confronto da sacct19:20:55;19:24 era la segnalazione. R3completo, nuova loss e latenti non mediati restano rinviati.
+
+### 2026-10-28 | GPT | Parametro di lancio inizialmente incompatibile con il submitter
+
+- Il primo recovery_plan173a305 usava --agente semplicione, non ammesso dalle choices del parser.
+  Corretto a gpt, separando operatore nel piano e categoria nel ledger. Intercettato prima di azioni sul cluster.
+
+### 2026-10-28 | GPT | Distinzione fra recupero concluso e valutazioni in attesa | Piano f45a73b
+
+- Il validatore ha terminato; B-P2 e confronto sono sottomessi e attendono dipendenze, non ancora in esecuzione.
+  Dopo scancel scontrol ha mostrato temporaneamente StartTime=ora cancellazione: procedura operatore arrestata,
+  sacct ha confermato Start=None/elapsed0/AllocTRES vuoto/log assente, poi ripresa senza seconda cancellazione.
+  Evidenze conservate. Non e' un nuovo fallimento di job o un retry. Monitor generale resta nella scelta di Simone.
+
+### 2026-10-29 | GPT | Limiti ancora aperti della lettura B19618
+
+- JSON/provenance/accounting non ancora raccolti per permesso runtime: mancano IC posa, utenti, alpha/M2, E2,
+  varianza/correlazione e dettaglio dataset verificato. Non presentare questa lettura come finale.
+- Warning lbfgs/max_iter presenti in tutte e4 le sonde (righe5/4/4/5 per R3cP1/R3cP2/BP1/BP2): conteggio messaggi,
+  non prova del numero di fit distinti. Mantenerli come limite; non correggere a posteriori un solo encoder.
+- P1/P2 validazione interna, singolo seme; IC non comprendono variabilita' fra training. Nessun esito autorizza
+  automaticamente49046 e nessun dato implica dataset troppo piccolo o saturazione dell'encoder.
+
+### 2026-10-29 | GPT | Limiti finali e rettifica degli avvisi B19618
+
+- Il blocco runtime precedente e' risolto. IC della posa ricalcolati indipendentemente da somme per utente;
+  IC P1/P2 letti dal comparatore congelato con provenienza verificata, non ricalcolati localmente dagli OOF non copiati.
+- Sonde con un seme/validazione interna, test ufficiali esclusi; i dati non provano un beneficio FM generale ne'
+  insufficienza della scala del dataset. Not_harmful=true legacy P1 non e' prova di assenza di danno: l'IC include −1 pp.
+- 18 emissioni ConvergenceWarning senza attribuzione C/fold/fit finale. Warnings_summary dell'operatore ometteva
+  489 warning di classi per ciascun braccio P1 (978 messaggi, fase DB3): aggiunti nelle review. Classi assenti nel sottoinsieme
+  di scoring/bootstrap non invalidano da sole pairing o metrica; input/target/denominatori comuni verificati.
+- Una stessa riga UCI malformata esclusa in entrambi i bracci. Poco dinamiche: centered 1,005, IC [0,993; 1,017]:
+  riduzione del danno precedente, non equivalenza col piatto. Restano attenuazione temporale e limiti della vista
+  ridge normalizzata. Nessun risultato riscritto e nessun gate dell'endpoint applicato.
+
+
+### 2026-10-29 | GPT | Limiti del controllo sonde e della proposta PSD/loss | Base f7433f4
+
+- I comparatori legacy non verificano l'intera ricetta del solver: il prompt richiede firma dedicata e verifica
+  simmetrica. Warning del fit distinti dai 978 avvisi metrici DB3; guardia etichette stringa preservata.
+  I costi CPU della robustezza sono da preventivare: max_iter x4 non garantisce walltime x4, e le P1 potrebbero
+  superare le 4 ore della seriale se non suddivise per dataset. Nessuna promessa di costo GPU/CPU non verificato.
+- B19618 supera la vecchia ipotesi operativa di assenza di dinamica nei latenti mediati: resta un problema di
+  trasferimento misurato, non prova che MSE impedisca il movimento. Cambiare loss end-to-end può cambiare l'encoder.
+- Cache local/dec mediate nel tempo: primo controllo PSD-3 possibile, inseguimento temporale non misurabile da esse.
+  K latenti della posa diversi dagli elettrodi; una ridge negativa non prova assenza di informazione non lineare.
+- Contrastivo e loss di dinamica non avviati. Negativi/viste possono premiare identità di utente o cancellare
+  ampiezza/ordine utili alla regressione. Combinare più loss e impedirne il collasso non dimostra utilità del FM.
+
+### 2026-10-29 | GPT | Tre lacune riprodotte nella consegna convergenza sonde 22bf2cd
+
+- R1, scripts/probe_convergence.py:488-499: differenza val_bacc 0.75→0.50 registrata ma identical=True;
+  completare il predicato con tutti i campi scientifici confrontabili, senza tolleranze.
+- R2, scripts/probe_convergence.py:236,255-259: audit soltanto in RAM fino alla fine dello shard; un fit che
+  fallisce non lascia il record su disco. Persistenza parziale distinta dal successo; conservare separatamente
+  fase A/B e candidate/refit (oggi context.phase è sovrascritto da probe.py:159).
+- R3, scripts/probe_convergence.py:185-218: firma del solver A restituita dal gate ma non verificata prima dei
+  fit B. Seed diverso raggiunge i fit; il comparatore finale lo rileva troppo tardi. Verificare ricetta normalizzata
+  a max_iter=3000 prima dei fit e contesto numerico stabile (dtype/backend/thread), senza job ID nella firma.
+- Non sono fallimenti scientifici osservati sui dati reali: 25 test esistenti verdi, tre nuove riproduzioni sintetiche.
+  Nessuna prova di leakage o errore nei contrasti. Legacy/legacy resta consentito, legacy/nuovo rifiutato.
+  Refusi documento: totale con checkout 169.3333 core-ore; 28 fit per dataset, 84 per P1 e 56 per P2.
+  Risorse B da affinare dopo A: tetto allocato non garantisce che uno shard finisca. Dettagli e richieste a Claude
+  nella review; nessun lancio fino alla chiusura dei rilievi, senza richiedere una nuova autorizzazione scientifica.
 ### 2026-10-29 | Claude | Limiti dichiarati della consegna del controllo delle sonde | Commit 22bf2cd
 
 - I test girano con sklearn 1.7.2 sul Mac, non con l'1.4.1.post1 delle sonde: provano l'identita' audit acceso/spento e le guardie, non il

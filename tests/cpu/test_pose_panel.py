@@ -4,6 +4,7 @@ training non cambia (pesi e metriche del passo bit per bit); ripresa senza ripet
 e del launcher; `PretrainLoader.materialize` riproduce `batch` dalle stesse estrazioni."""
 
 import gzip
+import hashlib
 import importlib.util
 import json
 from dataclasses import replace
@@ -72,6 +73,7 @@ def test_panel_logs_per_window_errors_keeps_training_unchanged_and_resumes(tmp_p
     run(base, "plain")
     s = run(cfg, "panel")
     assert s["stopped"] == "max_steps" and s["steps"] == 6
+    assert s["pose_panel_timing"]["prepare_s"] >= 0 and len(s["pose_panel_timing"]["evaluations_s"]) == 3
     _same_training(tmp_path / "plain", tmp_path / "panel")  # il pannello non tocca pesi, RNG ne' metriche del passo
     assert not (tmp_path / "plain" / "pose_panel.jsonl").exists() and not (tmp_path / "plain" / "pose_panel_set.json").exists()
     ident = json.loads((tmp_path / "panel" / "pose_panel_set.json").read_text())
@@ -79,13 +81,21 @@ def test_panel_logs_per_window_errors_keeps_training_unchanged_and_resumes(tmp_p
     assert len(ident["windows"]) == 8 and len(ident["batch_sha256"]) == 4  # 2 utenti x 2 sessioni (un batch l'una) x 2 finestre
     assert [w[0].split("/")[1] for w in ident["windows"]] == [u for u in ident["users"] for _ in range(4)]
     assert all(w[2] < w[3] <= N for w in ident["windows"])
+    assert all(w[3] - w[2] == 8000 for w in ident["windows"])
+    for a, b in zip(ident["windows"], ident["windows"][1:]):
+        assert a[0] != b[0] or a[3] <= b[2]
+    ident_sha = hashlib.sha256(json.dumps(ident, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
     panel = _records(tmp_path / "panel" / "pose_panel.jsonl")
     assert [p["step"] for p in panel] == [0, 3, 6]
     for p in panel:
+        assert p["panel_sha256"] == ident_sha
+        assert [w["n_valid"] for w in p["per_window"]] == ident["n_valid"]
         assert p["n_windows"] == 8 and p["n_windows_valid"] == 8 and p["n_users"] == 2 and len(p["per_window"]) == 8
         assert [(w["session"], *w["window"]) for w in p["per_window"]] == [tuple(w) for w in ident["windows"]]  # stesse finestre a ogni passo
         for w in p["per_window"]:
             assert w["n_valid"] > 0 and w["mse"] >= 0 and w["mae"] >= 0 and w["mae"] <= np.sqrt(w["mse"]) + 1e-9 and w["pred_var"] >= 0
+            assert w["mae_rad"] == pytest.approx(0.25 * w["mae"], rel=1e-6)
+            assert sum(w["n_valid_per_joint"]) == w["n_valid"] and w["n_joints_temporal"] == 20
             assert w["user"] in ident["users"] and w["session"].startswith(f"emg2pose/{w['user']}/")
         assert p["mse"] == pytest.approx(np.mean([w["mse"] for w in p["per_window"]]))
     # al passo 0 la testa e' a zero: predice la costante (0 = media del train standardizzata), varianza delle predizioni nulla
@@ -106,6 +116,40 @@ def test_panel_logs_per_window_errors_keeps_training_unchanged_and_resumes(tmp_p
     (tmp_path / "tampered" / "pose_panel_set.json").write_text(json.dumps(bad))
     with pytest.raises(ValueError, match="pannello della posa"):
         run(cfg, "tampered")
+
+
+def test_panel_skips_ineligible_support_and_never_uses_inactive_or_duplicate_recordings(tmp_path):
+    root, mpath, pose_root = _multi_tree(tmp_path)
+    idx = L.ManifestIndex.load(mpath, [root])
+    cfg = replace(_base(pose_root), pose_panel_users=2, pose_panel_recordings=2, pose_panel_windows=2)
+    # u1 ha una registrazione senza posa valida: va sostituito con un utente che riempie le quote, non con finestre vuote.
+    np.save(pose_root / "u1" / "sessA" / PT.VALID_FILE, np.zeros(N // PT.BLOCK, dtype=bool))
+    _, ident = R._pose_panel_set(idx, cfg, {}, None)
+    assert ident["users"] == ["u2", "u3"] and all(n > 0 for n in ident["n_valid"])
+    assert all(len(n) == 20 for n in ident["n_valid_per_joint"])
+    # Un duplicato della sola registrazione attiva non soddisfa il requisito di due registrazioni.
+    row = next(r for r in idx.rows if r["subject"] == "u2")
+    duplicate = replace(idx, rows=[row, row], weights=np.array([0.5, 0.5]))
+    with pytest.raises(ValueError, match="utenti di emg2pose"):
+        R._pose_panel_set(duplicate, replace(cfg, pose_panel_users=1), {}, None)
+    # La probabilita' effettiva include le esclusioni window_seconds, non solo i pesi grezzi.
+    seconds = {R._session_key(r): (0.0 if r["subject"] == "u3" else 4.0) for r in idx.rows}
+    timed = replace(cfg, loader=replace(cfg.loader, time_weighted=True))
+    with pytest.raises(ValueError, match="supporto valido sufficiente"):
+        R._pose_panel_set(idx, timed, {}, seconds)
+    zero_weight = replace(idx, weights=np.array([0.0 if r["subject"] == "u3" else 0.25 for r in idx.rows]))
+    with pytest.raises(ValueError, match="supporto valido sufficiente"):
+        R._pose_panel_set(zero_weight, cfg, {}, None)
+
+
+def test_temporal_prediction_variance_does_not_confuse_joint_bias_with_movement():
+    pred = torch.tensor([[[1., 9.], [1., 9.], [1., 9.]]])
+    valid = torch.ones_like(pred, dtype=torch.bool)
+    assert R._pose_temporal_variance(pred, valid).item() == 0.0
+    pred[0, :, 0] = torch.tensor([0., 2., 4.])
+    pred[0, 2, 1] = 1000.  # valore mascherato: non conta
+    valid[0, 2, 1] = False
+    assert R._pose_temporal_variance(pred, valid).item() == pytest.approx((8 / 3) / 2)
 
 
 def test_panel_guards(tmp_path):

@@ -1,0 +1,352 @@
+{
+  "config_differences": [
+    {
+      "path": "jepa.pose_weight",
+      "B5000": 1.0,
+      "R3c": 0.0
+    },
+    {
+      "path": "loader.pose_root",
+      "B5000": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+      "R3c": null
+    },
+    {
+      "path": "max_steps",
+      "B5000": 5000,
+      "R3c": 49046
+    },
+    {
+      "path": "model.pose_head",
+      "B5000": true,
+      "R3c": false
+    },
+    {
+      "path": "pose_grad_every",
+      "B5000": 500,
+      "R3c": 0
+    },
+    {
+      "path": "pose_panel_every",
+      "B5000": 500,
+      "R3c": null
+    },
+    {
+      "path": "pose_panel_recordings",
+      "B5000": 2,
+      "R3c": null
+    },
+    {
+      "path": "pose_panel_users",
+      "B5000": 32,
+      "R3c": null
+    },
+    {
+      "path": "pose_panel_windows",
+      "B5000": 4,
+      "R3c": null
+    }
+  ],
+  "B_config_sha256": "f55fa6a5f117ad8898c20bbaf8b20f288c169a9a9a12e7bf3bfdad26fef1d157",
+  "R3c_config_sha256": "863c06f053cbea5f65b46d6fe94a999286e5c415a57e5ac37a61e6b923fc4794",
+  "fixed_eval_sets_byte_identical": false,
+  "fixed_eval_sha256": "ba8486c260bc47781c94bd39442d956d966c495770ae69d7c2a2be25f40bd734",
+  "accounting_references": [
+    {
+      "JobID": "62364571",
+      "JobName": "PILOT-POSA-R3C-ancore-30M-s0-j01",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-26T18:54:32",
+      "End": "2026-10-27T05:01:08",
+      "ElapsedRaw": "36396",
+      "AllocCPUS": "32",
+      "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 40.44,
+      "allocated_core_hours": 323.52
+    },
+    {
+      "JobID": "62364573",
+      "JobName": "PILOT-POSA-R3C-ancore-30M-s0-e1-j01",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T05:52:45",
+      "End": "2026-10-27T06:54:26",
+      "ElapsedRaw": "3701",
+      "AllocCPUS": "32",
+      "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 4.112222222222222,
+      "allocated_core_hours": 32.897777777777776
+    },
+    {
+      "JobID": "62412330",
+      "JobName": "PILOT-POSA-EVAL-ext-R3c-e2-p1",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T10:43:42",
+      "End": "2026-10-27T10:57:27",
+      "ElapsedRaw": "825",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.22916666666666666,
+      "allocated_core_hours": 1.8333333333333333
+    },
+    {
+      "JobID": "62412331",
+      "JobName": "PILOT-POSA-EVAL-ext-R3c-e2-p2",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T10:43:42",
+      "End": "2026-10-27T11:12:04",
+      "ElapsedRaw": "1702",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.4727777777777778,
+      "allocated_core_hours": 3.7822222222222224
+    },
+    {
+      "JobID": "62412332",
+      "JobName": "PILOT-POSA-EVAL-ext-R3c-e1-p1",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T10:43:42",
+      "End": "2026-10-27T10:57:27",
+      "ElapsedRaw": "825",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.22916666666666666,
+      "allocated_core_hours": 1.8333333333333333
+    },
+    {
+      "JobID": "62412333",
+      "JobName": "PILOT-POSA-EVAL-ext-R3c-e1-p2",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T10:43:42",
+      "End": "2026-10-27T11:12:17",
+      "ElapsedRaw": "1715",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.47638888888888886,
+      "allocated_core_hours": 3.811111111111111
+    },
+    {
+      "JobID": "62429063",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e2-p1-pool",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T13:52:32",
+      "End": "2026-10-27T15:00:46",
+      "ElapsedRaw": "4094",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 9.097777777777777
+    },
+    {
+      "JobID": "62429066",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e2-p1-dec",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T15:00:49",
+      "End": "2026-10-27T17:07:42",
+      "ElapsedRaw": "7613",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 16.91777777777778
+    },
+    {
+      "JobID": "62429083",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e2-p2-pool",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T17:08:00",
+      "End": "2026-10-27T17:23:51",
+      "ElapsedRaw": "951",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 2.1133333333333333
+    },
+    {
+      "JobID": "62429093",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e2-p2-dec",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T17:23:51",
+      "End": "2026-10-27T17:48:21",
+      "ElapsedRaw": "1470",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 3.2666666666666666
+    },
+    {
+      "JobID": "62429103",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e1-p1-pool",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T17:48:50",
+      "End": "2026-10-27T19:02:09",
+      "ElapsedRaw": "4399",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 9.775555555555556
+    },
+    {
+      "JobID": "62429112",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e1-p1-dec",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T19:02:59",
+      "End": "2026-10-27T21:24:57",
+      "ElapsedRaw": "8518",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 18.92888888888889
+    },
+    {
+      "JobID": "62429117",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e1-p2-pool",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T21:25:34",
+      "End": "2026-10-27T21:43:20",
+      "ElapsedRaw": "1066",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 2.368888888888889
+    },
+    {
+      "JobID": "62429120",
+      "JobName": "PILOT-POSA-EVAL-probe-R3c-e1-p2-dec",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-27T21:43:23",
+      "End": "2026-10-27T22:08:27",
+      "ElapsedRaw": "1504",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 3.3422222222222224
+    },
+    {
+      "JobID": "62523672",
+      "JobName": "PILOT-POSA-R3-B-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T07:52:24",
+      "End": "2026-10-28T08:55:58",
+      "ElapsedRaw": "3814",
+      "AllocCPUS": "32",
+      "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 4.237777777777778,
+      "allocated_core_hours": 33.90222222222222
+    },
+    {
+      "JobID": "62539724",
+      "JobName": "PILOT-POSA-B5000-E1E2-extract-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T10:05:40",
+      "End": "2026-10-28T10:31:47",
+      "ElapsedRaw": "1567",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=60G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.43527777777777776,
+      "allocated_core_hours": 3.482222222222222
+    },
+    {
+      "JobID": "62540295",
+      "JobName": "PILOT-POSA-B5000-E1E2-report-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T10:32:33",
+      "End": "2026-10-28T10:33:24",
+      "ElapsedRaw": "51",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 0.11333333333333333
+    },
+    {
+      "JobID": "62551730",
+      "JobName": "PILOT-POSA-B5000-dynamics-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T11:30:59",
+      "End": "2026-10-28T11:31:12",
+      "ElapsedRaw": "13",
+      "AllocCPUS": "4",
+      "AllocTRES": "billing=4,cpu=4,gres/tmpfs=10737418240,mem=16G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 0.014444444444444444
+    },
+    {
+      "JobID": "62561780",
+      "JobName": "PILOT-POSA-B5000-E3-extract-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T13:20:37",
+      "End": "2026-10-28T13:24:52",
+      "ElapsedRaw": "255",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=60G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.07083333333333333,
+      "allocated_core_hours": 0.5666666666666667
+    },
+    {
+      "JobID": "62561881",
+      "JobName": "PILOT-POSA-B5000-E3-report-20261028",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "Start": "2026-10-28T13:25:46",
+      "End": "2026-10-28T13:27:32",
+      "ElapsedRaw": "106",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "TotalCPU": "00:00:00",
+      "gpu_hours": 0.0,
+      "allocated_core_hours": 0.23555555555555555
+    }
+  ],
+  "estimates": {
+    "training_14618_steps_from_B_total_sec_per_step": 0.7628,
+    "training_wall_hours": 3.0973917777777777,
+    "training_gpu_hours_4gpu": 12.389567111111111,
+    "training_core_hours_32cpu": 99.11653688888889,
+    "training_4h_cap_gpu_hours": 16,
+    "training_4h_cap_core_hours": 128,
+    "P1P2_extract_per_endpoint_gpu_hours": 0.7019444444444445,
+    "P1P2_pool_dec_probe_per_endpoint_core_hours": 31.395555555555557
+  },
+  "budget_note": "Protocol 531 core-hour column counts CPU-only jobs; GPU-job allocated CPU must be recorded separately, not subtracted twice from that column. Relevant references are not a complete campaign accounting.",
+  "fixed_eval_key_equality": {
+    "windows": true,
+    "batch_sha256": false,
+    "seed": true
+  },
+  "fixed_eval_windows_identical": true
+}

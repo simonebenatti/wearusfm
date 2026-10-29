@@ -1,0 +1,63 @@
+{
+  "recorded_at_utc": "2026-10-28T13:45:32.404664+00:00",
+  "timezone_of_sacct": "UTC (explicit TZ=UTC)",
+  "jobs": {
+    "62561780": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "start": {
+        "utc": "2026-10-28T13:20:37+00:00",
+        "Europe/Rome": "2026-10-28T14:20:37+01:00"
+      },
+      "end": {
+        "utc": "2026-10-28T13:24:52+00:00",
+        "Europe/Rome": "2026-10-28T14:24:52+01:00"
+      },
+      "elapsed_seconds": 255,
+      "allocated_cpus": 8,
+      "allocated_gpus": 1,
+      "alloc_tres": "billing=8,cpu=8,gres/gpu=1,mem=60G,node=1",
+      "req_tres": "billing=8,cpu=8,gres/gpu=1,mem=60G,node=1",
+      "walltime_cap": "00:20:00",
+      "gpu_hours": 0.07083333333333333,
+      "core_hours": 0.5666666666666667,
+      "total_cpu": "07:11.489",
+      "total_cpu_seconds": 431.489,
+      "maxrss_batch": "4319548K",
+      "maxrss_batch_gib": 4.119441986083984
+    },
+    "62561881": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "start": {
+        "utc": "2026-10-28T13:25:46+00:00",
+        "Europe/Rome": "2026-10-28T14:25:46+01:00"
+      },
+      "end": {
+        "utc": "2026-10-28T13:27:32+00:00",
+        "Europe/Rome": "2026-10-28T14:27:32+01:00"
+      },
+      "elapsed_seconds": 106,
+      "allocated_cpus": 8,
+      "allocated_gpus": 0,
+      "alloc_tres": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "req_tres": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "walltime_cap": "00:30:00",
+      "gpu_hours": 0.0,
+      "core_hours": 0.23555555555555555,
+      "total_cpu": "05:14.690",
+      "total_cpu_seconds": 314.69,
+      "maxrss_batch": "7041472K",
+      "maxrss_batch_gib": 6.71527099609375
+    }
+  },
+  "caps": {
+    "gpu_hours": 0.3333333333333333,
+    "core_hours": 6.666666666666666
+  },
+  "totals": {
+    "gpu_hours": 0.07083333333333333,
+    "core_hours": 0.8022222222222222,
+    "total_cpu_seconds": 746.179
+  }
+}

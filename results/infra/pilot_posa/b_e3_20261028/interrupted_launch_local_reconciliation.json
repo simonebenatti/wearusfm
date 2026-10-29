@@ -1,0 +1,58 @@
+{
+  "checked_at_utc": "2026-10-28T13:06:21.876622+00:00",
+  "logical_ids": {
+    "PILOT-POSA-B5000-E3-extract-20261028": {
+      "directory_exists": false,
+      "state": null
+    },
+    "PILOT-POSA-B5000-E3-report-20261028": {
+      "directory_exists": false,
+      "state": null
+    }
+  },
+  "local_submission_files": {
+    "extract_submission.json": {
+      "exists": false,
+      "bytes": null
+    },
+    "extract_submit_stdout.txt": {
+      "exists": false,
+      "bytes": null
+    },
+    "extract_submit_stderr.txt": {
+      "exists": false,
+      "bytes": null
+    },
+    "extract_ledger_before.tsv": {
+      "exists": false,
+      "bytes": null
+    },
+    "report_submission.json": {
+      "exists": false,
+      "bytes": null
+    }
+  },
+  "ledger_matching_lines": [],
+  "completed_at_utc": "2026-10-28T13:07:45.876531+00:00",
+  "squeue": {
+    "returncode": 0,
+    "stdout": "",
+    "scope": "all sbenatti jobs with %i|%j|%T|%k"
+  },
+  "sacct": {
+    "returncode": 0,
+    "stdout": "",
+    "since": "2026-10-28",
+    "timezone": "UTC",
+    "names": [
+      "PILOT-POSA-B5000-E3-extract-20261028",
+      "PILOT-POSA-B5000-E3-report-20261028"
+    ],
+    "fields": "JobID,JobName%64,State,Comment%120,Submit,Start,End"
+  },
+  "process_check": {
+    "status": "not_completed",
+    "reason": "sandbox blocked ps; runtime escalation interrupted by root as unnecessary"
+  },
+  "conclusion": "No job evidence: both logical IDs absent from registry, no helper artifacts, queue empty, exact-name accounting empty. Common submitter reservation remains mandatory; no retry performed."
+}

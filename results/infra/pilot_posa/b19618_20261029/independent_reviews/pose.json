@@ -1,0 +1,3348 @@
+{
+  "source": "/private/tmp/wearusfm-b19618-results-20261029/reports/pose_comparison.json",
+  "source_sha256": "89ba19f72c25dcc7ae3e367ffc159d2bb47f74ad4caa60966561ba49056e8957",
+  "method": "Independent recomputation from per-user sums, no project analysis imports, no refit or jobs.",
+  "models": {
+    "B5000": {
+      "E1": {
+        "ratio": 0.937551812037424,
+        "ratio_ci95_users": [
+          0.9170379972516137,
+          0.9522620583252716
+        ],
+        "mae": 0.33487858203685944,
+        "mae_const": 0.357184080642033,
+        "median_user_ratio": 0.9473800720457791,
+        "n_valid_elements": 21750080,
+        "n_windows": 8329,
+        "n_users": 15
+      },
+      "groups": {
+        "all": {
+          "centered_ratio": 0.9495142208610967,
+          "centered_ci95": [
+            0.9351374623091298,
+            0.960796290964781
+          ],
+          "variance_ratio": 0.07635284665038322,
+          "correlation": 0.22951385928998394,
+          "means": {
+            "total": 0.9447167636199033,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.6476948923269463,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.023884281975339258,
+            "vary": 0.3128145579784926,
+            "cov": 0.019838484330437518,
+            "centered": 0.2970218712929568,
+            "gain_mean": 0.0397069136319751,
+            "gain_centered": 0.01579268668553577,
+            "total_gain": 0.05549960031750976
+          },
+          "centered_gain_signs": {
+            "negative": 1,
+            "zero": 0,
+            "positive": 14
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9703693995620173,
+              "variance_ratio": 0.07234495516035973,
+              "correlation": 0.1895666601569924,
+              "n_valid_elements": 3458280,
+              "n_windows": 1158
+            },
+            "2251681168": {
+              "centered_ratio": 0.9429701746157839,
+              "variance_ratio": 0.06407822082087544,
+              "correlation": 0.23921465363856634,
+              "n_valid_elements": 3069980,
+              "n_windows": 1338
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.8832856729279543,
+              "variance_ratio": 0.10277212241074589,
+              "correlation": 0.3423261334482029,
+              "n_valid_elements": 2433460,
+              "n_windows": 877
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.9745629225085559,
+              "variance_ratio": 0.07543137145728643,
+              "correlation": 0.183632414720274,
+              "n_valid_elements": 3097640,
+              "n_windows": 1272
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.9569592099729423,
+              "variance_ratio": 0.04781147225993022,
+              "correlation": 0.20774935867698122,
+              "n_valid_elements": 4323900,
+              "n_windows": 1499
+            },
+            "3875521008": {
+              "centered_ratio": 0.9470902783961737,
+              "variance_ratio": 0.05509221318589902,
+              "correlation": 0.23006811293418233,
+              "n_valid_elements": 1955360,
+              "n_windows": 967
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.9304045144044132,
+              "variance_ratio": 0.07071575007539822,
+              "correlation": 0.2638179719918611,
+              "n_valid_elements": 3327180,
+              "n_windows": 1302
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.9420157705441692,
+              "variance_ratio": 0.07475558282939282,
+              "correlation": 0.2427444938227732,
+              "n_valid_elements": 3002960,
+              "n_windows": 1103
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.9782313237473581,
+              "variance_ratio": 0.10967956982985197,
+              "correlation": 0.19845494768616861,
+              "n_valid_elements": 4580660,
+              "n_windows": 1520
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.9624513289749737,
+              "variance_ratio": 0.09927252863097173,
+              "correlation": 0.2171245124529513,
+              "n_valid_elements": 2834880,
+              "n_windows": 966
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.062486035650305,
+              "variance_ratio": 0.11032702411292458,
+              "correlation": 0.07201603332539955,
+              "n_valid_elements": 131180,
+              "n_windows": 112
+            },
+            "d387095792": {
+              "centered_ratio": 0.9397589408820421,
+              "variance_ratio": 0.08394283771383816,
+              "correlation": 0.2488255312576506,
+              "n_valid_elements": 1330340,
+              "n_windows": 654
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.9303470926692554,
+              "variance_ratio": 0.09027534833998153,
+              "correlation": 0.26614028544172597,
+              "n_valid_elements": 3115080,
+              "n_windows": 1174
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.9607054830208742,
+              "variance_ratio": 0.09372539567898412,
+              "correlation": 0.21724911772284955,
+              "n_valid_elements": 4360020,
+              "n_windows": 1500
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9660531981400726,
+              "variance_ratio": 0.05101932147111498,
+              "correlation": 0.1880825345878493,
+              "n_valid_elements": 3510320,
+              "n_windows": 1216
+            }
+          }
+        },
+        "dynamic": {
+          "centered_ratio": 0.927475093799516,
+          "centered_ci95": [
+            0.9124798676017459,
+            0.9391739616572153
+          ],
+          "variance_ratio": 0.06324046314103035,
+          "correlation": 0.26993642313261573,
+          "means": {
+            "total": 1.1285525736336974,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.6337418323708731,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.03373897655453556,
+            "vary": 0.5335029960058236,
+            "cov": 0.03621561564876755,
+            "centered": 0.4948107412628241,
+            "gain_mean": 0.04463975786808354,
+            "gain_centered": 0.03869225474299957,
+            "total_gain": 0.08333201261108195
+          },
+          "centered_gain_signs": {
+            "negative": 1,
+            "zero": 0,
+            "positive": 14
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9597897969856841,
+              "variance_ratio": 0.06060723456883085,
+              "correlation": 0.20475920057287544,
+              "n_valid_elements": 1982440,
+              "n_windows": 677
+            },
+            "2251681168": {
+              "centered_ratio": 0.926291371675325,
+              "variance_ratio": 0.053125815939759555,
+              "correlation": 0.2751404277002102,
+              "n_valid_elements": 1617580,
+              "n_windows": 685
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.8642802197452505,
+              "variance_ratio": 0.09541277210706899,
+              "correlation": 0.3741345904227746,
+              "n_valid_elements": 1454260,
+              "n_windows": 528
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.9461855252285704,
+              "variance_ratio": 0.0560962983761572,
+              "correlation": 0.23202947905372748,
+              "n_valid_elements": 1429840,
+              "n_windows": 626
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.9417819784312803,
+              "variance_ratio": 0.036761725327625054,
+              "correlation": 0.2476869180924156,
+              "n_valid_elements": 2068380,
+              "n_windows": 741
+            },
+            "3875521008": {
+              "centered_ratio": 0.9373359667678557,
+              "variance_ratio": 0.04929731741690591,
+              "correlation": 0.25213114129702224,
+              "n_valid_elements": 1343220,
+              "n_windows": 661
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.9057437559207517,
+              "variance_ratio": 0.06033777095277611,
+              "correlation": 0.3146792090451844,
+              "n_valid_elements": 1672980,
+              "n_windows": 660
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.9135789179996473,
+              "variance_ratio": 0.05761495864266886,
+              "correlation": 0.3000361277122887,
+              "n_valid_elements": 1314360,
+              "n_windows": 493
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.9315710024589771,
+              "variance_ratio": 0.08323117659508585,
+              "correlation": 0.26284428438209695,
+              "n_valid_elements": 1499520,
+              "n_windows": 514
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.9303570162996326,
+              "variance_ratio": 0.08833107605581028,
+              "correlation": 0.2657657570625002,
+              "n_valid_elements": 1147700,
+              "n_windows": 392
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.0120558896252123,
+              "variance_ratio": 0.07908628827786775,
+              "correlation": 0.1191766600041589,
+              "n_valid_elements": 7560,
+              "n_windows": 7
+            },
+            "d387095792": {
+              "centered_ratio": 0.9258676434121439,
+              "variance_ratio": 0.06778177465864159,
+              "correlation": 0.2725456028083215,
+              "n_valid_elements": 768660,
+              "n_windows": 385
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.9077184948511409,
+              "variance_ratio": 0.08286495937909472,
+              "correlation": 0.304218708712619,
+              "n_valid_elements": 1808920,
+              "n_windows": 680
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.9283236047102713,
+              "variance_ratio": 0.07255110670576727,
+              "correlation": 0.2677294002836734,
+              "n_valid_elements": 1805240,
+              "n_windows": 637
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9533254816495875,
+              "variance_ratio": 0.044515724167275075,
+              "correlation": 0.21610342681590797,
+              "n_valid_elements": 1829420,
+              "n_windows": 643
+            }
+          }
+        },
+        "static": {
+          "centered_ratio": 1.0594473925046126,
+          "centered_ci95": [
+            1.0458790912453937,
+            1.074216029306568
+          ],
+          "variance_ratio": 0.14175860900029574,
+          "correlation": 0.10930859272091498,
+          "means": {
+            "total": 0.7692014002817402,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.6610164339117204,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.014475612905235453,
+            "vary": 0.1021145241711934,
+            "cov": 0.004202585353204396,
+            "centered": 0.10818496637002006,
+            "gain_mean": 0.03499733094334567,
+            "gain_centered": -0.0060704421988266605,
+            "total_gain": 0.02892688874451792
+          },
+          "centered_gain_signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 1.0583048546286158,
+              "variance_ratio": 0.1699064461722838,
+              "correlation": 0.13537406322598053,
+              "n_valid_elements": 1475840,
+              "n_windows": 481
+            },
+            "2251681168": {
+              "centered_ratio": 1.0386926147832853,
+              "variance_ratio": 0.12693590459263518,
+              "correlation": 0.12383957528534542,
+              "n_valid_elements": 1452400,
+              "n_windows": 653
+            },
+            "29ddab35d7": {
+              "centered_ratio": 1.041801367326176,
+              "variance_ratio": 0.16415305937092156,
+              "correlation": 0.15099254089590938,
+              "n_valid_elements": 979200,
+              "n_windows": 349
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.0600933016778538,
+              "variance_ratio": 0.13370789750999154,
+              "correlation": 0.10065964778810908,
+              "n_valid_elements": 1667800,
+              "n_windows": 646
+            },
+            "2d0838950a": {
+              "centered_ratio": 1.051820648391602,
+              "variance_ratio": 0.11687511441912898,
+              "correlation": 0.09514502757162087,
+              "n_valid_elements": 2255520,
+              "n_windows": 758
+            },
+            "3875521008": {
+              "centered_ratio": 1.084110076750662,
+              "variance_ratio": 0.13649369798648886,
+              "correlation": 0.07089395770167606,
+              "n_valid_elements": 612140,
+              "n_windows": 306
+            },
+            "7016fd5330": {
+              "centered_ratio": 1.0474833907228989,
+              "variance_ratio": 0.11998601623279549,
+              "correlation": 0.10465462383995919,
+              "n_valid_elements": 1654200,
+              "n_windows": 642
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 1.0347971929035766,
+              "variance_ratio": 0.1306806008911644,
+              "correlation": 0.13261965834095055,
+              "n_valid_elements": 1688600,
+              "n_windows": 610
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 1.1074092129624336,
+              "variance_ratio": 0.18290126048392236,
+              "correlation": 0.0882597838904616,
+              "n_valid_elements": 3081140,
+              "n_windows": 1006
+            },
+            "a993d16f6e": {
+              "centered_ratio": 1.0392066794389,
+              "variance_ratio": 0.1254396266924358,
+              "correlation": 0.12173791448021197,
+              "n_valid_elements": 1687180,
+              "n_windows": 574
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.1204331807057097,
+              "variance_ratio": 0.14622443060012486,
+              "correlation": 0.03372348312405317,
+              "n_valid_elements": 123620,
+              "n_windows": 105
+            },
+            "d387095792": {
+              "centered_ratio": 1.0204765019778783,
+              "variance_ratio": 0.17784922747751783,
+              "correlation": 0.1865836046784137,
+              "n_valid_elements": 561680,
+              "n_windows": 269
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 1.0695840211857917,
+              "variance_ratio": 0.13587250846100135,
+              "correlation": 0.08991710505737127,
+              "n_valid_elements": 1306160,
+              "n_windows": 494
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 1.1011074914964327,
+              "variance_ratio": 0.18553330970317106,
+              "correlation": 0.09800186412247716,
+              "n_valid_elements": 2554780,
+              "n_windows": 863
+            },
+            "f3a4630adf": {
+              "centered_ratio": 1.0358956221350704,
+              "variance_ratio": 0.08670734144917457,
+              "correlation": 0.08627917018165171,
+              "n_valid_elements": 1680900,
+              "n_windows": 573
+            }
+          }
+        }
+      },
+      "E2": {
+        "aligned_mae": 0.333953840877996,
+        "misaligned_mae": 0.35160810654258395,
+        "gap": 0.017654265664587946,
+        "ci95": [
+          0.013260202947469523,
+          0.023308759963190952
+        ],
+        "n_users": 14,
+        "n_windows": 8003,
+        "n_valid_elements": 18256160,
+        "gap_signs": {
+          "negative": 0,
+          "zero": 0,
+          "positive": 14
+        },
+        "pairing": {
+          "n_windows": 18548,
+          "n_with_partner": 18544,
+          "n_kept": 14269,
+          "distance_threshold": 0.20867522656917573,
+          "min_gap_s": 8.0,
+          "n_same_recording": 18524,
+          "n_other_session": 20,
+          "n_no_candidate": 4,
+          "n_dropped_near_identical": 4275,
+          "n_kept_same_recording": 14251,
+          "n_kept_other_session": 18,
+          "constraints": "stesso utente, stessa fase, stesso lato; prima la stessa registrazione a >= min_gap_s, poi un'altra sessione; senza candidati la finestra e' esclusa (vincoli mai rilassati)",
+          "n_excluded_std_mismatch": 0
+        },
+        "misaligned_constant_ratio": 1.0074432812101086,
+        "misaligned_constant_ratio_ci95": [
+          0.9963234258630327,
+          1.0167164212976194
+        ]
+      },
+      "head_report_E1": {
+        "dynamic": {
+          "ratio": 0.9375518123853508,
+          "ci95": [
+            0.9170379979417217,
+            0.952262058888828
+          ],
+          "mae": 0.33487858214439603,
+          "median_user_ratio": 0.9473800709828267
+        },
+        "all": {
+          "ratio": 0.944309109316858,
+          "ci95": [
+            0.9167577147034482,
+            0.9673068733865468
+          ],
+          "mae": 0.30148308178111355,
+          "median_user_ratio": 0.9424657538534923
+        },
+        "static": {
+          "ratio": 0.9524499279198898,
+          "ci95": [
+            0.9053003175614274,
+            0.9900419636237231
+          ],
+          "mae": 0.2695991200737355,
+          "median_user_ratio": 0.9415508114832383
+        }
+      }
+    },
+    "B19618": {
+      "E1": {
+        "ratio": 0.8626294278978157,
+        "ratio_ci95_users": [
+          0.8454884385357151,
+          0.8779533774159037
+        ],
+        "mae": 0.3081174991384442,
+        "mae_const": 0.357184080642033,
+        "median_user_ratio": 0.8647832027743345,
+        "n_valid_elements": 21750080,
+        "n_windows": 8329,
+        "n_users": 15
+      },
+      "groups": {
+        "all": {
+          "centered_ratio": 0.8897954165092236,
+          "centered_ci95": [
+            0.8717752099415156,
+            0.9095025173740223
+          ],
+          "variance_ratio": 0.14973793464970658,
+          "correlation": 0.3358778826912536,
+          "means": {
+            "total": 0.8500763905988753,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.5717354306922539,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.04684020584006037,
+            "vary": 0.3128145579784926,
+            "cov": 0.0406569019559657,
+            "centered": 0.2783409599066215,
+            "gain_mean": 0.1156663752666677,
+            "gain_centered": 0.03447359807187101,
+            "total_gain": 0.15013997333853765
+          },
+          "centered_gain_signs": {
+            "negative": 1,
+            "zero": 0,
+            "positive": 14
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.95644820665388,
+              "variance_ratio": 0.0892310588992685,
+              "correlation": 0.22225624578496558,
+              "n_valid_elements": 3458280,
+              "n_windows": 1158
+            },
+            "2251681168": {
+              "centered_ratio": 0.8591278747479496,
+              "variance_ratio": 0.18256843504408643,
+              "correlation": 0.37848758504403823,
+              "n_valid_elements": 3069980,
+              "n_windows": 1338
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.846056095772489,
+              "variance_ratio": 0.2295148545839018,
+              "correlation": 0.40020569737656086,
+              "n_valid_elements": 2433460,
+              "n_windows": 877
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.927853072715376,
+              "variance_ratio": 0.11089616268346023,
+              "correlation": 0.27483059846593166,
+              "n_valid_elements": 3097640,
+              "n_windows": 1272
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.8661389956496003,
+              "variance_ratio": 0.11779505723469809,
+              "correlation": 0.36661806947456593,
+              "n_valid_elements": 4323900,
+              "n_windows": 1499
+            },
+            "3875521008": {
+              "centered_ratio": 0.8825650605351599,
+              "variance_ratio": 0.10498053457289963,
+              "correlation": 0.343226343260175,
+              "n_valid_elements": 1955360,
+              "n_windows": 967
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.8510393177492185,
+              "variance_ratio": 0.2015965920170744,
+              "correlation": 0.3903798516460587,
+              "n_valid_elements": 3327180,
+              "n_windows": 1302
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.859218252362245,
+              "variance_ratio": 0.11888215410359544,
+              "correlation": 0.3765505185684882,
+              "n_valid_elements": 3002960,
+              "n_windows": 1103
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.9148530985532993,
+              "variance_ratio": 0.1867447194010664,
+              "correlation": 0.3145876455158862,
+              "n_valid_elements": 4580660,
+              "n_windows": 1520
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.900910924455343,
+              "variance_ratio": 0.2042750231798331,
+              "correlation": 0.3356035557115722,
+              "n_valid_elements": 2834880,
+              "n_windows": 966
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.0107396043903052,
+              "variance_ratio": 0.0715266669554439,
+              "correlation": 0.11364417171328967,
+              "n_valid_elements": 131180,
+              "n_windows": 112
+            },
+            "d387095792": {
+              "centered_ratio": 0.896413826065336,
+              "variance_ratio": 0.1408669939013186,
+              "correlation": 0.3256574744545335,
+              "n_valid_elements": 1330340,
+              "n_windows": 654
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.8618165499891388,
+              "variance_ratio": 0.1415012968670211,
+              "correlation": 0.3717565046993145,
+              "n_valid_elements": 3115080,
+              "n_windows": 1174
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.8954786913156347,
+              "variance_ratio": 0.15997152886551885,
+              "correlation": 0.33064546653225013,
+              "n_valid_elements": 4360020,
+              "n_windows": 1500
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9393593842832687,
+              "variance_ratio": 0.136839818949856,
+              "correlation": 0.26692412843968955,
+              "n_valid_elements": 3510320,
+              "n_windows": 1216
+            }
+          }
+        },
+        "dynamic": {
+          "centered_ratio": 0.8666892141226928,
+          "centered_ci95": [
+            0.8463194386133305,
+            0.8889712976160663
+          ],
+          "variance_ratio": 0.14960843403138005,
+          "correlation": 0.36572480556672077,
+          "means": {
+            "total": 1.0487767522333407,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.5863954598929513,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.07981654778348088,
+            "vary": 0.5335029960058236,
+            "cov": 0.07546912572445752,
+            "centered": 0.46238129234038944,
+            "gain_mean": 0.0919861303460054,
+            "gain_centered": 0.07112170366543419,
+            "total_gain": 0.16310783401143855
+          },
+          "centered_gain_signs": {
+            "negative": 0,
+            "zero": 0,
+            "positive": 15
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9485057166531007,
+              "variance_ratio": 0.08029862477698384,
+              "correlation": 0.23254552779253654,
+              "n_valid_elements": 1982440,
+              "n_windows": 677
+            },
+            "2251681168": {
+              "centered_ratio": 0.8289407425552169,
+              "variance_ratio": 0.18271841068067654,
+              "correlation": 0.4138178927440871,
+              "n_valid_elements": 1617580,
+              "n_windows": 685
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.8283492942306678,
+              "variance_ratio": 0.23291099228670137,
+              "correlation": 0.41914064270082685,
+              "n_valid_elements": 1454260,
+              "n_windows": 528
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.8999286545365416,
+              "variance_ratio": 0.11022478258542567,
+              "correlation": 0.3167099119071539,
+              "n_valid_elements": 1429840,
+              "n_windows": 626
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.8469215036969013,
+              "variance_ratio": 0.11773967980790247,
+              "correlation": 0.394626629346076,
+              "n_valid_elements": 2068380,
+              "n_windows": 741
+            },
+            "3875521008": {
+              "centered_ratio": 0.8732873483879435,
+              "variance_ratio": 0.10492426243078883,
+              "correlation": 0.35755249450672855,
+              "n_valid_elements": 1343220,
+              "n_windows": 661
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.821676438364546,
+              "variance_ratio": 0.21355379059768226,
+              "correlation": 0.4240006545771003,
+              "n_valid_elements": 1672980,
+              "n_windows": 660
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.8236094809231118,
+              "variance_ratio": 0.12086217397030509,
+              "correlation": 0.42751425600187104,
+              "n_valid_elements": 1314360,
+              "n_windows": 493
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.8790366349977947,
+              "variance_ratio": 0.18796431146489506,
+              "correlation": 0.35627809641562164,
+              "n_valid_elements": 1499520,
+              "n_windows": 514
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.8601997358449288,
+              "variance_ratio": 0.21682771835998543,
+              "correlation": 0.38293760887265893,
+              "n_valid_elements": 1147700,
+              "n_windows": 392
+            },
+            "ab228f34a5": {
+              "centered_ratio": 0.9552055626488106,
+              "variance_ratio": 0.04534493398740775,
+              "correlation": 0.21165091102145797,
+              "n_valid_elements": 7560,
+              "n_windows": 7
+            },
+            "d387095792": {
+              "centered_ratio": 0.8887269933388924,
+              "variance_ratio": 0.1410831091291939,
+              "correlation": 0.33592809536822166,
+              "n_valid_elements": 768660,
+              "n_windows": 385
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.8422916048839089,
+              "variance_ratio": 0.147049568103619,
+              "correlation": 0.39736827412482467,
+              "n_valid_elements": 1808920,
+              "n_windows": 680
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.8638405367592856,
+              "variance_ratio": 0.1560582138671374,
+              "correlation": 0.3698564292548947,
+              "n_valid_elements": 1805240,
+              "n_windows": 637
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9209151586580507,
+              "variance_ratio": 0.13174564968509128,
+              "correlation": 0.29042585918746006,
+              "n_valid_elements": 1829420,
+              "n_windows": 643
+            }
+          }
+        },
+        "static": {
+          "centered_ratio": 1.0050512569919599,
+          "centered_ci95": [
+            0.9932359038322031,
+            1.0171111264530388
+          ],
+          "variance_ratio": 0.15038389552023718,
+          "correlation": 0.1873839965294646,
+          "means": {
+            "total": 0.6603692483120667,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.5577389174366729,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.015356379934059482,
+            "vary": 0.1021145241711934,
+            "cov": 0.007420286614929561,
+            "centered": 0.10263033087539378,
+            "gain_mean": 0.13827484741839297,
+            "gain_centered": -0.0005158067042003638,
+            "total_gain": 0.13775904071419157
+          },
+          "centered_gain_signs": {
+            "negative": 8,
+            "zero": 0,
+            "positive": 7
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 1.0224645307587974,
+              "variance_ratio": 0.16347559254107408,
+              "correlation": 0.1743800215427768,
+              "n_valid_elements": 1475840,
+              "n_windows": 481
+            },
+            "2251681168": {
+              "centered_ratio": 1.0323768762178227,
+              "variance_ratio": 0.18170769977721357,
+              "correlation": 0.17515913798193306,
+              "n_valid_elements": 1452400,
+              "n_windows": 653
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.9937403374998932,
+              "variance_ratio": 0.20118924082157438,
+              "correlation": 0.23124841870773008,
+              "n_valid_elements": 979200,
+              "n_windows": 349
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.0120181584472596,
+              "variance_ratio": 0.11291972368114601,
+              "correlation": 0.15013536503575145,
+              "n_valid_elements": 1667800,
+              "n_windows": 646
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.9862530575869091,
+              "variance_ratio": 0.11814117980305598,
+              "correlation": 0.1918558462034443,
+              "n_valid_elements": 2255520,
+              "n_windows": 758
+            },
+            "3875521008": {
+              "centered_ratio": 1.0128900179531752,
+              "variance_ratio": 0.10577099502349796,
+              "correlation": 0.14279515911995214,
+              "n_valid_elements": 612140,
+              "n_windows": 306
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.9904418801687945,
+              "variance_ratio": 0.14482885818350053,
+              "correlation": 0.20283977368833792,
+              "n_valid_elements": 1654200,
+              "n_windows": 642
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.9753996215001004,
+              "variance_ratio": 0.11242190822210818,
+              "correlation": 0.20433169567492138,
+              "n_valid_elements": 1688600,
+              "n_windows": 610
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 1.014010048902051,
+              "variance_ratio": 0.1833683104060417,
+              "correlation": 0.19774897887461665,
+              "n_valid_elements": 3081140,
+              "n_windows": 1006
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.9982740174495792,
+              "variance_ratio": 0.17425454797708181,
+              "correlation": 0.21078639000682886,
+              "n_valid_elements": 1687180,
+              "n_windows": 574
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.0745514198608788,
+              "variance_ratio": 0.10161098749946465,
+              "correlation": 0.042444411991773755,
+              "n_valid_elements": 123620,
+              "n_windows": 105
+            },
+            "d387095792": {
+              "centered_ratio": 0.9410793723596731,
+              "variance_ratio": 0.13961122249857041,
+              "correlation": 0.26566847889705253,
+              "n_valid_elements": 561680,
+              "n_windows": 269
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.981956269107304,
+              "variance_ratio": 0.10736200764680634,
+              "correlation": 0.1913648205349693,
+              "n_valid_elements": 1306160,
+              "n_windows": 494
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 1.0326560471676909,
+              "variance_ratio": 0.1769389598557828,
+              "correlation": 0.17150357223492924,
+              "n_valid_elements": 2554780,
+              "n_windows": 863
+            },
+            "f3a4630adf": {
+              "centered_ratio": 1.0405707388368421,
+              "variance_ratio": 0.1647937044687518,
+              "correlation": 0.15300357879765744,
+              "n_valid_elements": 1680900,
+              "n_windows": 573
+            }
+          }
+        }
+      },
+      "E2": {
+        "aligned_mae": 0.30632015650747174,
+        "misaligned_mae": 0.34965411247396855,
+        "gap": 0.043333955966496765,
+        "ci95": [
+          0.03766505664786878,
+          0.04930874087276705
+        ],
+        "n_users": 14,
+        "n_windows": 8003,
+        "n_valid_elements": 18256160,
+        "gap_signs": {
+          "negative": 0,
+          "zero": 0,
+          "positive": 14
+        },
+        "pairing": {
+          "n_windows": 18548,
+          "n_with_partner": 18544,
+          "n_kept": 14269,
+          "distance_threshold": 0.20867522656917573,
+          "min_gap_s": 8.0,
+          "n_same_recording": 18524,
+          "n_other_session": 20,
+          "n_no_candidate": 4,
+          "n_dropped_near_identical": 4275,
+          "n_kept_same_recording": 14251,
+          "n_kept_other_session": 18,
+          "constraints": "stesso utente, stessa fase, stesso lato; prima la stessa registrazione a >= min_gap_s, poi un'altra sessione; senza candidati la finestra e' esclusa (vincoli mai rilassati)",
+          "n_excluded_std_mismatch": 0
+        },
+        "misaligned_constant_ratio": 1.0018446099641354,
+        "misaligned_constant_ratio_ci95": [
+          0.9887817296173859,
+          1.0144470087675301
+        ]
+      },
+      "head_report_E1": {
+        "dynamic": {
+          "ratio": 0.8626294286389173,
+          "ci95": [
+            0.8454884390239181,
+            0.8779533773615958
+          ],
+          "mae": 0.3081174993877541,
+          "median_user_ratio": 0.8647832063551181
+        },
+        "all": {
+          "ratio": 0.8507157372891069,
+          "ci95": [
+            0.8309878486498914,
+            0.8660699499040408
+          ],
+          "mae": 0.2716021688948389,
+          "median_user_ratio": 0.8522128341737927
+        },
+        "static": {
+          "ratio": 0.8363593795825485,
+          "ci95": [
+            0.8074702366240742,
+            0.8614109325295691
+          ],
+          "mae": 0.23673869480289947,
+          "median_user_ratio": 0.8313352529201385
+        }
+      }
+    },
+    "B_ridge": {
+      "E1": {
+        "ratio": 0.861092023173905,
+        "ratio_ci95_users": [
+          0.8388771432417755,
+          0.8801015344815418
+        ],
+        "mae": 0.3075683626455594,
+        "mae_const": 0.357184080642033,
+        "median_user_ratio": 0.8648377221669847,
+        "n_valid_elements": 21750080,
+        "n_windows": 8329,
+        "n_users": 15
+      },
+      "groups": {
+        "all": {
+          "centered_ratio": 0.8907825161404449,
+          "centered_ci95": [
+            0.8722162024671047,
+            0.9092582849794015
+          ],
+          "variance_ratio": 0.14350258111396913,
+          "correlation": 0.33356453723259144,
+          "means": {
+            "total": 0.8264041028255591,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.5477543637841163,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.04488969647993903,
+            "vary": 0.3128145579784926,
+            "cov": 0.039527257708494454,
+            "centered": 0.2786497390414427,
+            "gain_mean": 0.13964744217480513,
+            "gain_centered": 0.03416481893704987,
+            "total_gain": 0.17381226111185388
+          },
+          "centered_gain_signs": {
+            "negative": 1,
+            "zero": 0,
+            "positive": 14
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9397292923555138,
+              "variance_ratio": 0.09169199835685211,
+              "correlation": 0.25092348101808865,
+              "n_valid_elements": 3458280,
+              "n_windows": 1158
+            },
+            "2251681168": {
+              "centered_ratio": 0.861454953943139,
+              "variance_ratio": 0.16465266263904113,
+              "correlation": 0.3736040196378115,
+              "n_valid_elements": 3069980,
+              "n_windows": 1338
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.8349827016478125,
+              "variance_ratio": 0.2008095298536431,
+              "correlation": 0.40818157424657936,
+              "n_valid_elements": 2433460,
+              "n_windows": 877
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.9409477500703927,
+              "variance_ratio": 0.11434936964054064,
+              "correlation": 0.2563930604521388,
+              "n_valid_elements": 3097640,
+              "n_windows": 1272
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.8758631813903016,
+              "variance_ratio": 0.125897575130681,
+              "correlation": 0.3523392895075227,
+              "n_valid_elements": 4323900,
+              "n_windows": 1499
+            },
+            "3875521008": {
+              "centered_ratio": 0.8900998692386989,
+              "variance_ratio": 0.09755411024824112,
+              "correlation": 0.33210050484606235,
+              "n_valid_elements": 1955360,
+              "n_windows": 967
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.8450362610418669,
+              "variance_ratio": 0.18034313686743422,
+              "correlation": 0.3947868277450254,
+              "n_valid_elements": 3327180,
+              "n_windows": 1302
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.8605535647810681,
+              "variance_ratio": 0.12796791220531953,
+              "correlation": 0.37376976421520564,
+              "n_valid_elements": 3002960,
+              "n_windows": 1103
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.9196243152328536,
+              "variance_ratio": 0.18342376510085653,
+              "correlation": 0.3079754425252497,
+              "n_valid_elements": 4580660,
+              "n_windows": 1520
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.9048501098830515,
+              "variance_ratio": 0.18408837976251652,
+              "correlation": 0.325410644615603,
+              "n_valid_elements": 2834880,
+              "n_windows": 966
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.0664795756310448,
+              "variance_ratio": 0.11461988379185867,
+              "correlation": 0.07109660919167629,
+              "n_valid_elements": 131180,
+              "n_windows": 112
+            },
+            "d387095792": {
+              "centered_ratio": 0.8906791712667274,
+              "variance_ratio": 0.1320742719806364,
+              "correlation": 0.3321156516668426,
+              "n_valid_elements": 1330340,
+              "n_windows": 654
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.8668462171634149,
+              "variance_ratio": 0.13195952831868096,
+              "correlation": 0.36490613160710555,
+              "n_valid_elements": 3115080,
+              "n_windows": 1174
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.9020439304542819,
+              "variance_ratio": 0.16349598172677923,
+              "correlation": 0.32330209299834045,
+              "n_valid_elements": 4360020,
+              "n_windows": 1500
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9382967927066547,
+              "variance_ratio": 0.13047548693637742,
+              "correlation": 0.26601785017860796,
+              "n_valid_elements": 3510320,
+              "n_windows": 1216
+            }
+          }
+        },
+        "dynamic": {
+          "centered_ratio": 0.8626495726017614,
+          "centered_ci95": [
+            0.841988366542783,
+            0.8832963314666258
+          ],
+          "variance_ratio": 0.13748811583357082,
+          "correlation": 0.37060823232963974,
+          "means": {
+            "total": 1.0278890349231125,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.5676629034369297,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.07335032171240574,
+            "vary": 0.5335029960058236,
+            "cov": 0.07331359311602319,
+            "centered": 0.460226131486183,
+            "gain_mean": 0.11071868680202696,
+            "gain_centered": 0.07327686451964065,
+            "total_gain": 0.18399555132166642
+          },
+          "centered_gain_signs": {
+            "negative": 0,
+            "zero": 0,
+            "positive": 15
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9277138620355386,
+              "variance_ratio": 0.08122323464300152,
+              "correlation": 0.26931761549675337,
+              "n_valid_elements": 1982440,
+              "n_windows": 677
+            },
+            "2251681168": {
+              "centered_ratio": 0.8301451787326491,
+              "variance_ratio": 0.15964792929848182,
+              "correlation": 0.4123323447243624,
+              "n_valid_elements": 1617580,
+              "n_windows": 685
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.8152997813292823,
+              "variance_ratio": 0.2002161528329551,
+              "correlation": 0.4301172212936267,
+              "n_valid_elements": 1454260,
+              "n_windows": 528
+            },
+            "2af4aec870": {
+              "centered_ratio": 0.9049742901436632,
+              "variance_ratio": 0.10387477105339606,
+              "correlation": 0.3085679375543847,
+              "n_valid_elements": 1429840,
+              "n_windows": 626
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.849830245193237,
+              "variance_ratio": 0.11939740132378582,
+              "correlation": 0.39006729985785293,
+              "n_valid_elements": 2068380,
+              "n_windows": 741
+            },
+            "3875521008": {
+              "centered_ratio": 0.8791385685082094,
+              "variance_ratio": 0.09515321379442182,
+              "correlation": 0.3501397925193461,
+              "n_valid_elements": 1343220,
+              "n_windows": 661
+            },
+            "7016fd5330": {
+              "centered_ratio": 0.8100220557982423,
+              "variance_ratio": 0.18358342912188885,
+              "correlation": 0.43592846556647663,
+              "n_valid_elements": 1672980,
+              "n_windows": 660
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.8167617299176989,
+              "variance_ratio": 0.12428788273977709,
+              "correlation": 0.4361517954690379,
+              "n_valid_elements": 1314360,
+              "n_windows": 493
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.8738040604328966,
+              "variance_ratio": 0.1750493321242882,
+              "correlation": 0.36000622823639283,
+              "n_valid_elements": 1499520,
+              "n_windows": 514
+            },
+            "a993d16f6e": {
+              "centered_ratio": 0.8594099896190884,
+              "variance_ratio": 0.18649674035536712,
+              "correlation": 0.37870176930428257,
+              "n_valid_elements": 1147700,
+              "n_windows": 392
+            },
+            "ab228f34a5": {
+              "centered_ratio": 0.9766247977161857,
+              "variance_ratio": 0.04955740972590829,
+              "correlation": 0.16380889198949014,
+              "n_valid_elements": 7560,
+              "n_windows": 7
+            },
+            "d387095792": {
+              "centered_ratio": 0.8807338473835854,
+              "variance_ratio": 0.1283038178934901,
+              "correlation": 0.3455796650873127,
+              "n_valid_elements": 768660,
+              "n_windows": 385
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.8436421361573825,
+              "variance_ratio": 0.13246985575453224,
+              "correlation": 0.39678052157232896,
+              "n_valid_elements": 1808920,
+              "n_windows": 680
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.8619155034178909,
+              "variance_ratio": 0.14955509220151372,
+              "correlation": 0.37189304898741193,
+              "n_valid_elements": 1805240,
+              "n_windows": 637
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9182921894905208,
+              "variance_ratio": 0.12321700463677036,
+              "correlation": 0.29189673203494465,
+              "n_valid_elements": 1829420,
+              "n_windows": 643
+            }
+          }
+        },
+        "static": {
+          "centered_ratio": 1.0311121989919385,
+          "centered_ci95": [
+            1.0174865347474151,
+            1.0437487203836557
+          ],
+          "variance_ratio": 0.17350328133074824,
+          "correlation": 0.1709223869586299,
+          "means": {
+            "total": 0.6340384203091131,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.5287468887419383,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.01771720501523006,
+            "vary": 0.1021145241711934,
+            "cov": 0.007270098809624391,
+            "centered": 0.10529153156717468,
+            "gain_mean": 0.16726687611312765,
+            "gain_centered": -0.00317700739598128,
+            "total_gain": 0.16408986871714526
+          },
+          "centered_gain_signs": {
+            "negative": 13,
+            "zero": 0,
+            "positive": 2
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 1.0395990488406577,
+              "variance_ratio": 0.1787061838633548,
+              "correlation": 0.1645317132926641,
+              "n_valid_elements": 1475840,
+              "n_windows": 481
+            },
+            "2251681168": {
+              "centered_ratio": 1.0411469914918208,
+              "variance_ratio": 0.19337566449092364,
+              "correlation": 0.17308744068644327,
+              "n_valid_elements": 1452400,
+              "n_windows": 653
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.9991488360768579,
+              "variance_ratio": 0.20575861312832655,
+              "correlation": 0.22774133462867163,
+              "n_valid_elements": 979200,
+              "n_windows": 349
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.0493729039774686,
+              "variance_ratio": 0.14592014337871306,
+              "correlation": 0.1263724021579445,
+              "n_valid_elements": 1667800,
+              "n_windows": 646
+            },
+            "2d0838950a": {
+              "centered_ratio": 1.0385754499048763,
+              "variance_ratio": 0.16652526375760537,
+              "correlation": 0.15677239664229742,
+              "n_valid_elements": 2255520,
+              "n_windows": 758
+            },
+            "3875521008": {
+              "centered_ratio": 1.0440743651359103,
+              "variance_ratio": 0.13127974466587586,
+              "correlation": 0.12034122255201048,
+              "n_valid_elements": 612140,
+              "n_windows": 306
+            },
+            "7016fd5330": {
+              "centered_ratio": 1.0112689342106336,
+              "variance_ratio": 0.1649595963998375,
+              "correlation": 0.1892032941370658,
+              "n_valid_elements": 1654200,
+              "n_windows": 642
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 1.0034339598596167,
+              "variance_ratio": 0.13997480950884467,
+              "correlation": 0.1824768026989932,
+              "n_valid_elements": 1688600,
+              "n_windows": 610
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 1.0464765021643077,
+              "variance_ratio": 0.20660816558109082,
+              "correlation": 0.1761462810853952,
+              "n_valid_elements": 3081140,
+              "n_windows": 1006
+            },
+            "a993d16f6e": {
+              "centered_ratio": 1.0135227083980891,
+              "variance_ratio": 0.17832865020489364,
+              "correlation": 0.19513371309144759,
+              "n_valid_elements": 1687180,
+              "n_windows": 574
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.1697278955380062,
+              "variance_ratio": 0.18938041731256658,
+              "correlation": 0.022579834575262924,
+              "n_valid_elements": 123620,
+              "n_windows": 105
+            },
+            "d387095792": {
+              "centered_ratio": 0.9484680343945169,
+              "variance_ratio": 0.15398308638748123,
+              "correlation": 0.2618648031400508,
+              "n_valid_elements": 561680,
+              "n_windows": 269
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 1.0096241742555028,
+              "variance_ratio": 0.12881941220203985,
+              "correlation": 0.1660497601815627,
+              "n_valid_elements": 1306160,
+              "n_windows": 494
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 1.0760335829022476,
+              "variance_ratio": 0.2239411748841586,
+              "correlation": 0.15627643472833222,
+              "n_valid_elements": 2554780,
+              "n_windows": 863
+            },
+            "f3a4630adf": {
+              "centered_ratio": 1.0480706064710799,
+              "variance_ratio": 0.1703058837485882,
+              "correlation": 0.14809886841635253,
+              "n_valid_elements": 1680900,
+              "n_windows": 573
+            }
+          }
+        }
+      }
+    },
+    "R3c_ridge": {
+      "E1": {
+        "ratio": 0.9697019076358644,
+        "ratio_ci95_users": [
+          0.95528404870275,
+          0.9813444858412279
+        ],
+        "mae": 0.34636208437574184,
+        "mae_const": 0.357184080642033,
+        "median_user_ratio": 0.9673962385023883,
+        "n_valid_elements": 21750080,
+        "n_windows": 8329,
+        "n_users": 15
+      },
+      "groups": {
+        "all": {
+          "centered_ratio": 1.005451351270407,
+          "centered_ci95": [
+            0.9976901119314538,
+            1.0127258733132969
+          ],
+          "variance_ratio": 0.052993533928651096,
+          "correlation": 0.10326132173782937,
+          "means": {
+            "total": 0.939388753605124,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.6248689335885935,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.016577148891609245,
+            "vary": 0.3128145579784926,
+            "cov": 0.0074359434267856385,
+            "centered": 0.31451982001653056,
+            "gain_mean": 0.06253287237032783,
+            "gain_centered": -0.0017052620380379692,
+            "total_gain": 0.060827610332288694
+          },
+          "centered_gain_signs": {
+            "negative": 10,
+            "zero": 0,
+            "positive": 5
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 1.0010911667714975,
+              "variance_ratio": 0.04984091059379965,
+              "correlation": 0.1091815757794243,
+              "n_valid_elements": 3458280,
+              "n_windows": 1158
+            },
+            "2251681168": {
+              "centered_ratio": 0.9890259289352226,
+              "variance_ratio": 0.03987525459629934,
+              "correlation": 0.1273220046202524,
+              "n_valid_elements": 3069980,
+              "n_windows": 1338
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.9716140066251536,
+              "variance_ratio": 0.05236756314755442,
+              "correlation": 0.17644139398257833,
+              "n_valid_elements": 2433460,
+              "n_windows": 877
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.023567939087648,
+              "variance_ratio": 0.0633808771001674,
+              "correlation": 0.07907061370770031,
+              "n_valid_elements": 3097640,
+              "n_windows": 1272
+            },
+            "2d0838950a": {
+              "centered_ratio": 1.0075925846997467,
+              "variance_ratio": 0.05363343668652105,
+              "correlation": 0.09940209618227477,
+              "n_valid_elements": 4323900,
+              "n_windows": 1499
+            },
+            "3875521008": {
+              "centered_ratio": 0.9999294014019178,
+              "variance_ratio": 0.03356028413449307,
+              "correlation": 0.09179001830858334,
+              "n_valid_elements": 1955360,
+              "n_windows": 967
+            },
+            "7016fd5330": {
+              "centered_ratio": 1.020128212115209,
+              "variance_ratio": 0.05559455034990123,
+              "correlation": 0.07520907457730991,
+              "n_valid_elements": 3327180,
+              "n_windows": 1302
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.9981678341415409,
+              "variance_ratio": 0.05763702922375843,
+              "correlation": 0.12385435178884809,
+              "n_valid_elements": 3002960,
+              "n_windows": 1103
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 1.019400993991928,
+              "variance_ratio": 0.0683876104866905,
+              "correlation": 0.09366098771787419,
+              "n_valid_elements": 4580660,
+              "n_windows": 1520
+            },
+            "a993d16f6e": {
+              "centered_ratio": 1.026332000221024,
+              "variance_ratio": 0.06621036991913322,
+              "correlation": 0.07748977367030481,
+              "n_valid_elements": 2834880,
+              "n_windows": 966
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.146927988623668,
+              "variance_ratio": 0.1464504112631953,
+              "correlation": -0.0006239767926725135,
+              "n_valid_elements": 131180,
+              "n_windows": 112
+            },
+            "d387095792": {
+              "centered_ratio": 1.001224157068206,
+              "variance_ratio": 0.04201459806254483,
+              "correlation": 0.09950119539683788,
+              "n_valid_elements": 1330340,
+              "n_windows": 654
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.9946444925383426,
+              "variance_ratio": 0.04581316070410532,
+              "correlation": 0.11953056981894034,
+              "n_valid_elements": 3115080,
+              "n_windows": 1174
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 1.013664772771186,
+              "variance_ratio": 0.06167694416952492,
+              "correlation": 0.09666292398129912,
+              "n_valid_elements": 4360020,
+              "n_windows": 1500
+            },
+            "f3a4630adf": {
+              "centered_ratio": 1.0148330884822978,
+              "variance_ratio": 0.05361084355936706,
+              "correlation": 0.08373872560305606,
+              "n_valid_elements": 3510320,
+              "n_windows": 1216
+            }
+          }
+        },
+        "dynamic": {
+          "centered_ratio": 0.9866934436817723,
+          "centered_ci95": [
+            0.979864474402386,
+            0.9923871128590033
+          ],
+          "variance_ratio": 0.03739565659450633,
+          "correlation": 0.13109506327076698,
+          "means": {
+            "total": 1.1645852263568426,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.6381813180133133,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.019950694830774066,
+            "vary": 0.5335029960058236,
+            "cov": 0.013524891246534363,
+            "centered": 0.5264039083435289,
+            "gain_mean": 0.04020027222564327,
+            "gain_centered": 0.0070990876622946605,
+            "total_gain": 0.04729935988793676
+          },
+          "centered_gain_signs": {
+            "negative": 4,
+            "zero": 0,
+            "positive": 11
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 0.9903601786120793,
+              "variance_ratio": 0.038777125062351474,
+              "correlation": 0.12293614673989399,
+              "n_valid_elements": 1982440,
+              "n_windows": 677
+            },
+            "2251681168": {
+              "centered_ratio": 0.9758634224739635,
+              "variance_ratio": 0.02950851989431397,
+              "correlation": 0.15614436987837574,
+              "n_valid_elements": 1617580,
+              "n_windows": 685
+            },
+            "29ddab35d7": {
+              "centered_ratio": 0.9570551648247174,
+              "variance_ratio": 0.04114607784153972,
+              "correlation": 0.20727878319411824,
+              "n_valid_elements": 1454260,
+              "n_windows": 528
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.0007751267113099,
+              "variance_ratio": 0.04236054218598483,
+              "correlation": 0.10102533380190644,
+              "n_valid_elements": 1429840,
+              "n_windows": 626
+            },
+            "2d0838950a": {
+              "centered_ratio": 0.9878799382722405,
+              "variance_ratio": 0.036753691667612304,
+              "correlation": 0.12746625129784625,
+              "n_valid_elements": 2068380,
+              "n_windows": 741
+            },
+            "3875521008": {
+              "centered_ratio": 0.9934642762878524,
+              "variance_ratio": 0.0280237566463737,
+              "correlation": 0.10322241878890168,
+              "n_valid_elements": 1343220,
+              "n_windows": 661
+            },
+            "7016fd5330": {
+              "centered_ratio": 1.0011151663904967,
+              "variance_ratio": 0.040052185194312535,
+              "correlation": 0.09727911107647325,
+              "n_valid_elements": 1672980,
+              "n_windows": 660
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 0.970857345286548,
+              "variance_ratio": 0.03761523689624448,
+              "correlation": 0.17210390153613642,
+              "n_valid_elements": 1314360,
+              "n_windows": 493
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 0.988126270131148,
+              "variance_ratio": 0.04099207260747002,
+              "correlation": 0.1305554165139958,
+              "n_valid_elements": 1499520,
+              "n_windows": 514
+            },
+            "a993d16f6e": {
+              "centered_ratio": 1.0031479136409602,
+              "variance_ratio": 0.04768077499446696,
+              "correlation": 0.10197153386794038,
+              "n_valid_elements": 1147700,
+              "n_windows": 392
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.0396072008591755,
+              "variance_ratio": 0.049304290698156776,
+              "correlation": 0.02183579788840059,
+              "n_valid_elements": 7560,
+              "n_windows": 7
+            },
+            "d387095792": {
+              "centered_ratio": 0.989012545299935,
+              "variance_ratio": 0.03283582357035464,
+              "correlation": 0.12092077169897664,
+              "n_valid_elements": 768660,
+              "n_windows": 385
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 0.9795052982376599,
+              "variance_ratio": 0.03567488571386488,
+              "correlation": 0.14869280129050783,
+              "n_valid_elements": 1808920,
+              "n_windows": 680
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 0.9840781026344172,
+              "variance_ratio": 0.03594007717327425,
+              "correlation": 0.1367821888721568,
+              "n_valid_elements": 1805240,
+              "n_windows": 637
+            },
+            "f3a4630adf": {
+              "centered_ratio": 0.9997298206578125,
+              "variance_ratio": 0.04134814068315936,
+              "correlation": 0.1023355568565497,
+              "n_valid_elements": 1829420,
+              "n_windows": 643
+            }
+          }
+        },
+        "static": {
+          "centered_ratio": 1.0990175015472639,
+          "centered_ci95": [
+            1.0884739061356337,
+            1.1104305268801253
+          ],
+          "variance_ratio": 0.13079716569037272,
+          "correlation": 0.043935962098052554,
+          "means": {
+            "total": 0.7243847196548033,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.6121590704284908,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.013356290337413155,
+            "vary": 0.1021145241711934,
+            "cov": 0.0016225826411469671,
+            "centered": 0.11222564922631263,
+            "gain_mean": 0.0838546944265752,
+            "gain_centered": -0.01011112505511922,
+            "total_gain": 0.07374356937145486
+          },
+          "centered_gain_signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "per_user": {
+            "1f6de69ab3": {
+              "centered_ratio": 1.0902849073023222,
+              "variance_ratio": 0.14180079362792475,
+              "correlation": 0.06840248031783283,
+              "n_valid_elements": 1475840,
+              "n_windows": 481
+            },
+            "2251681168": {
+              "centered_ratio": 1.064567755389441,
+              "variance_ratio": 0.09937167923694255,
+              "correlation": 0.055203536354688436,
+              "n_valid_elements": 1452400,
+              "n_windows": 653
+            },
+            "29ddab35d7": {
+              "centered_ratio": 1.0930425721765515,
+              "variance_ratio": 0.1459607818076163,
+              "correlation": 0.06925594446678933,
+              "n_valid_elements": 979200,
+              "n_windows": 349
+            },
+            "2af4aec870": {
+              "centered_ratio": 1.0922662014986906,
+              "variance_ratio": 0.12673683599015587,
+              "correlation": 0.04841365281250459,
+              "n_valid_elements": 1667800,
+              "n_windows": 646
+            },
+            "2d0838950a": {
+              "centered_ratio": 1.1308014841633014,
+              "variance_ratio": 0.15913600401828093,
+              "correlation": 0.035514167423439644,
+              "n_valid_elements": 2255520,
+              "n_windows": 758
+            },
+            "3875521008": {
+              "centered_ratio": 1.0907456653496508,
+              "variance_ratio": 0.11133244365868498,
+              "correlation": 0.030849456799907485,
+              "n_valid_elements": 612140,
+              "n_windows": 306
+            },
+            "7016fd5330": {
+              "centered_ratio": 1.1103941311588648,
+              "variance_ratio": 0.12938314241423268,
+              "correlation": 0.02639571975507216,
+              "n_valid_elements": 1654200,
+              "n_windows": 642
+            },
+            "737fb9d2eb": {
+              "centered_ratio": 1.0872742497453705,
+              "variance_ratio": 0.12296248559847554,
+              "correlation": 0.05088722494354397,
+              "n_valid_elements": 1688600,
+              "n_windows": 610
+            },
+            "9b8c99cdc2": {
+              "centered_ratio": 1.1059842557991268,
+              "variance_ratio": 0.14423144652196807,
+              "correlation": 0.05035464821329574,
+              "n_valid_elements": 3081140,
+              "n_windows": 1006
+            },
+            "a993d16f6e": {
+              "centered_ratio": 1.0817780447785086,
+              "variance_ratio": 0.11052493639028511,
+              "correlation": 0.04323453167977434,
+              "n_valid_elements": 1687180,
+              "n_windows": 574
+            },
+            "ab228f34a5": {
+              "centered_ratio": 1.2702457607545474,
+              "variance_ratio": 0.25807690421745166,
+              "correlation": -0.01197692155817254,
+              "n_valid_elements": 123620,
+              "n_windows": 105
+            },
+            "d387095792": {
+              "centered_ratio": 1.072181641141955,
+              "variance_ratio": 0.09534930581491487,
+              "correlation": 0.037514010461176625,
+              "n_valid_elements": 561680,
+              "n_windows": 269
+            },
+            "e51f6d97cf": {
+              "centered_ratio": 1.087798073311904,
+              "variance_ratio": 0.108195385243315,
+              "correlation": 0.031005488134194237,
+              "n_valid_elements": 1306160,
+              "n_windows": 494
+            },
+            "e86f1eaf2f": {
+              "centered_ratio": 1.1419472606324923,
+              "variance_ratio": 0.1732673770493474,
+              "correlation": 0.0376214016138517,
+              "n_valid_elements": 2554780,
+              "n_windows": 863
+            },
+            "f3a4630adf": {
+              "centered_ratio": 1.0977111786641676,
+              "variance_ratio": 0.12090153896769439,
+              "correlation": 0.03334736983381388,
+              "n_valid_elements": 1680900,
+              "n_windows": 573
+            }
+          }
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "A": {
+      "reference": "B5000",
+      "candidate": "B19618",
+      "E1": {
+        "delta": -0.07492238413960835,
+        "ci95": [
+          -0.08975534368887707,
+          -0.059466333144316666
+        ],
+        "signs": {
+          "negative": 15,
+          "zero": 0,
+          "positive": 0
+        },
+        "mae_change_rad": -0.026761082898415223,
+        "relative_error_reduction": 0.0799127932746373,
+        "per_user_delta": {
+          "1f6de69ab3": -0.05017416438169585,
+          "2251681168": -0.07474837242320585,
+          "29ddab35d7": -0.010273428834001634,
+          "2af4aec870": -0.0814926357754375,
+          "2d0838950a": -0.10397506491668874,
+          "3875521008": -0.07568036616682444,
+          "7016fd5330": -0.07318324243304061,
+          "737fb9d2eb": -0.09967400023685351,
+          "9b8c99cdc2": -0.06950187699523655,
+          "a993d16f6e": -0.1366120846602078,
+          "ab228f34a5": -0.07402668478991066,
+          "d387095792": -0.07746716124065105,
+          "e51f6d97cf": -0.04835054399749649,
+          "e86f1eaf2f": -0.09797502682441106,
+          "f3a4630adf": -0.07253044302851909
+        }
+      },
+      "centered": {
+        "dynamic": {
+          "delta_ratio": -0.06078587967682311,
+          "ci95": [
+            -0.07500353260345692,
+            -0.04500808935927338
+          ],
+          "signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "relative_centered_error_reduction": 0.0655390965031808,
+          "mean_error_change": -0.04734637247792184,
+          "centered_error_change": -0.032429448922434656,
+          "total_error_change": -0.07977582140035677,
+          "mean_error_reduction_share": 0.5934927606738511,
+          "centered_error_reduction_share": 0.4065072393261453,
+          "per_user_delta": {
+            "1f6de69ab3": -0.011284080332583416,
+            "2251681168": -0.09735062912010821,
+            "29ddab35d7": -0.03593092551458263,
+            "2af4aec870": -0.046256870692028794,
+            "2d0838950a": -0.09486047473437895,
+            "3875521008": -0.06404861837991212,
+            "7016fd5330": -0.08406731755620578,
+            "737fb9d2eb": -0.08996943707653555,
+            "9b8c99cdc2": -0.052534367461182396,
+            "a993d16f6e": -0.07015728045470378,
+            "ab228f34a5": -0.056850326976401556,
+            "d387095792": -0.037140650073251534,
+            "e51f6d97cf": -0.06542688996723198,
+            "e86f1eaf2f": -0.06448306795098566,
+            "f3a4630adf": -0.03241032299153669
+          },
+          "mean_error_change_signs": {
+            "negative": 12,
+            "zero": 0,
+            "positive": 3
+          }
+        },
+        "all": {
+          "delta_ratio": -0.05971880435187307,
+          "ci95": [
+            -0.071965914019462,
+            -0.04635370170954951
+          ],
+          "signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "relative_centered_error_reduction": 0.0628940599728095,
+          "mean_error_change": -0.07595946163469247,
+          "centered_error_change": -0.01868091138633532,
+          "total_error_change": -0.09464037302102801,
+          "mean_error_reduction_share": 0.8026116044345593,
+          "centered_error_reduction_share": 0.19738839556543838,
+          "per_user_delta": {
+            "1f6de69ab3": -0.013921192908137226,
+            "2251681168": -0.08384229986783429,
+            "29ddab35d7": -0.037229577155465425,
+            "2af4aec870": -0.046709849793180026,
+            "2d0838950a": -0.090820214323342,
+            "3875521008": -0.06452521786101374,
+            "7016fd5330": -0.07936519665519474,
+            "737fb9d2eb": -0.08279751818192407,
+            "9b8c99cdc2": -0.06337822519405886,
+            "a993d16f6e": -0.06154040451963064,
+            "ab228f34a5": -0.05174643125999981,
+            "d387095792": -0.043345114816706144,
+            "e51f6d97cf": -0.0685305426801166,
+            "e86f1eaf2f": -0.06522679170523948,
+            "f3a4630adf": -0.02669381385680392
+          },
+          "mean_error_change_signs": {
+            "negative": 14,
+            "zero": 0,
+            "positive": 1
+          }
+        },
+        "static": {
+          "delta_ratio": -0.05439613551265288,
+          "ci95": [
+            -0.06840729865252132,
+            -0.03905958837615086
+          ],
+          "signs": {
+            "negative": 14,
+            "zero": 0,
+            "positive": 1
+          },
+          "relative_centered_error_reduction": 0.05134387596542778,
+          "mean_error_change": -0.10327751647504746,
+          "centered_error_change": -0.005554635494626287,
+          "total_error_change": -0.10883215196967355,
+          "mean_error_reduction_share": 0.9489614475676829,
+          "centered_error_reduction_share": 0.05103855243231894,
+          "per_user_delta": {
+            "1f6de69ab3": -0.03584032386981834,
+            "2251681168": -0.006315738565462729,
+            "29ddab35d7": -0.04806102982628261,
+            "2af4aec870": -0.04807514323059395,
+            "2d0838950a": -0.06556759080469288,
+            "3875521008": -0.07122005879748677,
+            "7016fd5330": -0.0570415105541043,
+            "737fb9d2eb": -0.059397571403476276,
+            "9b8c99cdc2": -0.09339916406038265,
+            "a993d16f6e": -0.0409326619893209,
+            "ab228f34a5": -0.045881760844830935,
+            "d387095792": -0.07939712961820519,
+            "e51f6d97cf": -0.08762775207848764,
+            "e86f1eaf2f": -0.06845144432874181,
+            "f3a4630adf": 0.004675116701771858
+          },
+          "mean_error_change_signs": {
+            "negative": 14,
+            "zero": 0,
+            "positive": 1
+          }
+        }
+      },
+      "E2_gap": {
+        "delta": 0.025679690301908822,
+        "ci95": [
+          0.022502575275161144,
+          0.028798713404146945
+        ],
+        "delta_signs": {
+          "negative": 0,
+          "zero": 0,
+          "positive": 14
+        },
+        "omitted_user": [
+          "ab228f34a5"
+        ]
+      }
+    },
+    "C": {
+      "reference": "R3c_ridge",
+      "candidate": "B_ridge",
+      "E1": {
+        "delta": -0.10860988446195935,
+        "ci95": [
+          -0.12225566383077602,
+          -0.09357303659297969
+        ],
+        "signs": {
+          "negative": 14,
+          "zero": 0,
+          "positive": 1
+        },
+        "mae_change_rad": -0.03879372173018242,
+        "relative_error_reduction": 0.11200337300227714,
+        "per_user_delta": {
+          "1f6de69ab3": -0.08878830991205888,
+          "2251681168": -0.07126162508680269,
+          "29ddab35d7": -0.13266774912221196,
+          "2af4aec870": -0.041584787321021006,
+          "2d0838950a": -0.1321085527577185,
+          "3875521008": -0.10956228173381342,
+          "7016fd5330": -0.12609240423918694,
+          "737fb9d2eb": -0.13538207690924203,
+          "9b8c99cdc2": -0.07402059100439218,
+          "a993d16f6e": -0.1532140169001527,
+          "ab228f34a5": 0.03586066150775473,
+          "d387095792": -0.10614719446174721,
+          "e51f6d97cf": -0.10228176531622801,
+          "e86f1eaf2f": -0.12555328688180628,
+          "f3a4630adf": -0.1162073573325805
+        }
+      },
+      "centered": {
+        "dynamic": {
+          "delta_ratio": -0.12404387108001097,
+          "ci95": [
+            -0.14297376732721684,
+            -0.10541145721291292
+          ],
+          "signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "relative_centered_error_reduction": 0.1257167277986062,
+          "mean_error_change": -0.07051841457638364,
+          "centered_error_change": -0.06617777685734588,
+          "total_error_change": -0.13669619143373013,
+          "mean_error_reduction_share": 0.5158769519234977,
+          "centered_error_reduction_share": 0.4841230480764978,
+          "per_user_delta": {
+            "1f6de69ab3": -0.06264631657654063,
+            "2251681168": -0.1457182437413144,
+            "29ddab35d7": -0.14175538349543515,
+            "2af4aec870": -0.09580083656764664,
+            "2d0838950a": -0.13804969307900353,
+            "3875521008": -0.11432570777964302,
+            "7016fd5330": -0.19109311059225445,
+            "737fb9d2eb": -0.154095615368849,
+            "9b8c99cdc2": -0.11432220969825141,
+            "a993d16f6e": -0.14373792402187188,
+            "ab228f34a5": -0.06298240314298972,
+            "d387095792": -0.10827869791634959,
+            "e51f6d97cf": -0.13586316208027732,
+            "e86f1eaf2f": -0.12216259921652622,
+            "f3a4630adf": -0.08143763116729158
+          },
+          "mean_error_change_signs": {
+            "negative": 13,
+            "zero": 0,
+            "positive": 2
+          }
+        },
+        "all": {
+          "delta_ratio": -0.11466883512996236,
+          "ci95": [
+            -0.13115799520923707,
+            -0.09850386131390353
+          ],
+          "signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "relative_centered_error_reduction": 0.11404712419459795,
+          "mean_error_change": -0.07711456980447717,
+          "centered_error_change": -0.03587008097508787,
+          "total_error_change": -0.11298465077956488,
+          "mean_error_reduction_share": 0.6825225309137709,
+          "centered_error_reduction_share": 0.3174774690862306,
+          "per_user_delta": {
+            "1f6de69ab3": -0.061361874415983717,
+            "2251681168": -0.12757097499208359,
+            "29ddab35d7": -0.136631304977341,
+            "2af4aec870": -0.0826201890172553,
+            "2d0838950a": -0.131729403309445,
+            "3875521008": -0.10982953216321889,
+            "7016fd5330": -0.1750919510733422,
+            "737fb9d2eb": -0.13761426936047264,
+            "9b8c99cdc2": -0.09977667875907432,
+            "a993d16f6e": -0.12148189033797265,
+            "ab228f34a5": -0.0804484129926233,
+            "d387095792": -0.11054498580147874,
+            "e51f6d97cf": -0.12779827537492774,
+            "e86f1eaf2f": -0.11162084231690414,
+            "f3a4630adf": -0.0765362957756431
+          },
+          "mean_error_change_signs": {
+            "negative": 14,
+            "zero": 0,
+            "positive": 1
+          }
+        },
+        "static": {
+          "delta_ratio": -0.06790530255532506,
+          "ci95": [
+            -0.08006752232647232,
+            -0.05616763762356795
+          ],
+          "signs": {
+            "negative": 15,
+            "zero": 0,
+            "positive": 0
+          },
+          "relative_centered_error_reduction": 0.061787280420670276,
+          "mean_error_change": -0.08341218168655251,
+          "centered_error_change": -0.006934117659137956,
+          "total_error_change": -0.09034629934569027,
+          "mean_error_reduction_share": 0.923249566287094,
+          "centered_error_reduction_share": 0.07675043371290813,
+          "per_user_delta": {
+            "1f6de69ab3": -0.050685858461664644,
+            "2251681168": -0.023420763897620194,
+            "29ddab35d7": -0.0938937360996937,
+            "2af4aec870": -0.042893297521222014,
+            "2d0838950a": -0.0922260342584251,
+            "3875521008": -0.04667130021374038,
+            "7016fd5330": -0.09912519694823102,
+            "737fb9d2eb": -0.08384028988575395,
+            "9b8c99cdc2": -0.059507753634819374,
+            "a993d16f6e": -0.06825533638041942,
+            "ab228f34a5": -0.10051786521654126,
+            "d387095792": -0.12371360674743812,
+            "e51f6d97cf": -0.07817389905640133,
+            "e86f1eaf2f": -0.06591367773024483,
+            "f3a4630adf": -0.04964057219308769
+          },
+          "mean_error_change_signs": {
+            "negative": 14,
+            "zero": 0,
+            "positive": 1
+          }
+        }
+      }
+    }
+  },
+  "selection": {
+    "B": {
+      "alpha": 100000.0,
+      "cv_mse": 0.7817750071304678,
+      "grid": [
+        {
+          "alpha": 0.01,
+          "mse": 0.8918547965905946
+        },
+        {
+          "alpha": 0.1,
+          "mse": 0.8918378991863649
+        },
+        {
+          "alpha": 1.0,
+          "mse": 0.8916695008855116
+        },
+        {
+          "alpha": 10.0,
+          "mse": 0.8900407823280962
+        },
+        {
+          "alpha": 100.0,
+          "mse": 0.8776882832204835
+        },
+        {
+          "alpha": 1000.0,
+          "mse": 0.8408784995868567
+        },
+        {
+          "alpha": 10000.0,
+          "mse": 0.8057105011593219
+        },
+        {
+          "alpha": 100000.0,
+          "mse": 0.7817750071304678
+        },
+        {
+          "alpha": 1000000.0,
+          "mse": 0.7941632263059483
+        }
+      ],
+      "extensions": {
+        "lower": 0,
+        "upper": 2
+      },
+      "boundary_unresolved": false,
+      "boundary": null,
+      "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty",
+      "tie_break": "smallest alpha"
+    },
+    "R3c": {
+      "alpha": 100000.0,
+      "cv_mse": 0.9451896216234537,
+      "grid": [
+        {
+          "alpha": 0.01,
+          "mse": 1.1248152975218957
+        },
+        {
+          "alpha": 0.1,
+          "mse": 1.1247772290213316
+        },
+        {
+          "alpha": 1.0,
+          "mse": 1.1243987168515188
+        },
+        {
+          "alpha": 10.0,
+          "mse": 1.120815766997044
+        },
+        {
+          "alpha": 100.0,
+          "mse": 1.096788913555627
+        },
+        {
+          "alpha": 1000.0,
+          "mse": 1.0319624457630396
+        },
+        {
+          "alpha": 10000.0,
+          "mse": 0.9663418962537373
+        },
+        {
+          "alpha": 100000.0,
+          "mse": 0.9451896216234537
+        },
+        {
+          "alpha": 1000000.0,
+          "mse": 0.9535801490885852
+        }
+      ],
+      "extensions": {
+        "lower": 0,
+        "upper": 2
+      },
+      "boundary_unresolved": false,
+      "boundary": null,
+      "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty",
+      "tie_break": "smallest alpha"
+    }
+  },
+  "m2": {
+    "B": {
+      "train": {
+        "applicable": true,
+        "passed": true,
+        "blocks": 15,
+        "n": 5203260,
+        "max_abs": 0.00019180774688720703,
+        "rmse": 2.5940529852760854e-05,
+        "thresholds_per_block": {
+          "max_abs": 0.005,
+          "rmse": 0.0005
+        }
+      },
+      "val": {
+        "applicable": true,
+        "passed": true,
+        "blocks": 145,
+        "n": 44531760,
+        "max_abs": 0.00018846988677978516,
+        "rmse": 2.619776478464769e-05,
+        "thresholds_per_block": {
+          "max_abs": 0.005,
+          "rmse": 0.0005
+        }
+      }
+    },
+    "R3c": {
+      "train": {
+        "applicable": false,
+        "reason": "R3c has no pose head"
+      },
+      "val": {
+        "applicable": false,
+        "reason": "R3c has no pose head"
+      }
+    }
+  },
+  "checks": {
+    "passed": 1049,
+    "failed": 0,
+    "names": [
+      "hash reports/compare_p1.json",
+      "bytes reports/compare_p1.json",
+      "hash reports/compare_p1.json.provenance.json",
+      "bytes reports/compare_p1.json.provenance.json",
+      "hash reports/compare_p2.json",
+      "bytes reports/compare_p2.json",
+      "hash reports/compare_p2.json.provenance.json",
+      "bytes reports/compare_p2.json.provenance.json",
+      "hash reports/pose_comparison.json",
+      "bytes reports/pose_comparison.json",
+      "hash reports/B_p1_pool.json",
+      "bytes reports/B_p1_pool.json",
+      "hash reports/B_p1_pool.json.provenance.json",
+      "bytes reports/B_p1_pool.json.provenance.json",
+      "hash reports/B_p2_pool.json",
+      "bytes reports/B_p2_pool.json",
+      "hash reports/B_p2_pool.json.provenance.json",
+      "bytes reports/B_p2_pool.json.provenance.json",
+      "hash reports/R3c_p1_pool.json",
+      "bytes reports/R3c_p1_pool.json",
+      "hash reports/R3c_p1_pool.json.provenance.json",
+      "bytes reports/R3c_p1_pool.json.provenance.json",
+      "hash reports/R3c_p2_pool.json",
+      "bytes reports/R3c_p2_pool.json",
+      "hash reports/R3c_p2_pool.json.provenance.json",
+      "bytes reports/R3c_p2_pool.json.provenance.json",
+      "hash extraction_metadata/B/p1/extraction_receipt.json",
+      "bytes extraction_metadata/B/p1/extraction_receipt.json",
+      "hash extraction_metadata/B/p1/ninapro_db2.npz.provenance.json",
+      "bytes extraction_metadata/B/p1/ninapro_db2.npz.provenance.json",
+      "hash extraction_metadata/B/p1/ninapro_db3.npz.provenance.json",
+      "bytes extraction_metadata/B/p1/ninapro_db3.npz.provenance.json",
+      "hash extraction_metadata/B/p1/ninapro_db6.npz.provenance.json",
+      "bytes extraction_metadata/B/p1/ninapro_db6.npz.provenance.json",
+      "hash extraction_metadata/B/p2/epn612.npz.provenance.json",
+      "bytes extraction_metadata/B/p2/epn612.npz.provenance.json",
+      "hash extraction_metadata/B/p2/extraction_receipt.json",
+      "bytes extraction_metadata/B/p2/extraction_receipt.json",
+      "hash extraction_metadata/B/p2/uci_emg.npz.provenance.json",
+      "bytes extraction_metadata/B/p2/uci_emg.npz.provenance.json",
+      "hash extraction_metadata/B/pose/extraction_receipt.json",
+      "bytes extraction_metadata/B/pose/extraction_receipt.json",
+      "hash extraction_metadata/B/pose/train_subset.npz.provenance.json",
+      "bytes extraction_metadata/B/pose/train_subset.npz.provenance.json",
+      "hash extraction_metadata/B/pose/val.npz.provenance.json",
+      "bytes extraction_metadata/B/pose/val.npz.provenance.json",
+      "hash extraction_metadata/R3c/p1/extraction_receipt.json",
+      "bytes extraction_metadata/R3c/p1/extraction_receipt.json",
+      "hash extraction_metadata/R3c/p1/ninapro_db2.npz.provenance.json",
+      "bytes extraction_metadata/R3c/p1/ninapro_db2.npz.provenance.json",
+      "hash extraction_metadata/R3c/p1/ninapro_db3.npz.provenance.json",
+      "bytes extraction_metadata/R3c/p1/ninapro_db3.npz.provenance.json",
+      "hash extraction_metadata/R3c/p1/ninapro_db6.npz.provenance.json",
+      "bytes extraction_metadata/R3c/p1/ninapro_db6.npz.provenance.json",
+      "hash extraction_metadata/R3c/p2/epn612.npz.provenance.json",
+      "bytes extraction_metadata/R3c/p2/epn612.npz.provenance.json",
+      "hash extraction_metadata/R3c/p2/extraction_receipt.json",
+      "bytes extraction_metadata/R3c/p2/extraction_receipt.json",
+      "hash extraction_metadata/R3c/p2/uci_emg.npz.provenance.json",
+      "bytes extraction_metadata/R3c/p2/uci_emg.npz.provenance.json",
+      "hash extraction_metadata/R3c/pose/extraction_receipt.json",
+      "bytes extraction_metadata/R3c/pose/extraction_receipt.json",
+      "hash extraction_metadata/R3c/pose/train_subset.npz.provenance.json",
+      "bytes extraction_metadata/R3c/pose/train_subset.npz.provenance.json",
+      "hash extraction_metadata/R3c/pose/val.npz.provenance.json",
+      "bytes extraction_metadata/R3c/pose/val.npz.provenance.json",
+      "hash training/config.json",
+      "bytes training/config.json",
+      "hash training/continuation_provenance.json",
+      "bytes training/continuation_provenance.json",
+      "hash training/continuation_receipt.json",
+      "bytes training/continuation_receipt.json",
+      "hash training/fixed_eval.jsonl",
+      "bytes training/fixed_eval.jsonl",
+      "hash training/fixed_eval_set.json",
+      "bytes training/fixed_eval_set.json",
+      "hash training/metrics.jsonl",
+      "bytes training/metrics.jsonl",
+      "hash training/pip_freeze_62582916.txt",
+      "bytes training/pip_freeze_62582916.txt",
+      "hash training/pose_panel.jsonl",
+      "bytes training/pose_panel.jsonl",
+      "hash training/pose_panel_set.json",
+      "bytes training/pose_panel_set.json",
+      "hash training/pose_provenance.json",
+      "bytes training/pose_provenance.json",
+      "hash training/summary.json",
+      "bytes training/summary.json",
+      "hash preflight/preflight_receipt.json",
+      "bytes preflight/preflight_receipt.json",
+      "hash logs/pose_b19618_preflight_62575087.out",
+      "bytes logs/pose_b19618_preflight_62575087.out",
+      "hash logs/pose_b19618_62582916.out",
+      "bytes logs/pose_b19618_62582916.out",
+      "hash logs/pose_b19618_eval_62583147.out",
+      "bytes logs/pose_b19618_eval_62583147.out",
+      "hash logs/pose_b19618_eval_62583148.out",
+      "bytes logs/pose_b19618_eval_62583148.out",
+      "hash logs/pose_b19618_eval_62583149.out",
+      "bytes logs/pose_b19618_eval_62583149.out",
+      "hash logs/pose_b19618_eval_62583151.out",
+      "bytes logs/pose_b19618_eval_62583151.out",
+      "hash logs/pose_b19618_eval_62583153.out",
+      "bytes logs/pose_b19618_eval_62583153.out",
+      "hash logs/pose_b19618_eval_62583154.out",
+      "bytes logs/pose_b19618_eval_62583154.out",
+      "hash logs/pose_b19618_eval_62583155.out",
+      "bytes logs/pose_b19618_eval_62583155.out",
+      "hash logs/pose_b19618_eval_62583157.out",
+      "bytes logs/pose_b19618_eval_62583157.out",
+      "hash logs/pose_b19618_eval_62583160.out",
+      "bytes logs/pose_b19618_eval_62583160.out",
+      "hash logs/pose_b19618_report_62583164.out",
+      "bytes logs/pose_b19618_report_62583164.out",
+      "hash logs/pose_b19618_eval_62618174.out",
+      "bytes logs/pose_b19618_eval_62618174.out",
+      "hash logs/pose_b19618_eval_62618177.out",
+      "bytes logs/pose_b19618_eval_62618177.out",
+      "hash logs/pose_b19618_eval_62618179.out",
+      "bytes logs/pose_b19618_eval_62618179.out",
+      "B5000 E1 ratio",
+      "B5000 E1 ratio_ci95_users",
+      "B5000 E1 mae",
+      "B5000 E1 mae_const",
+      "B5000 E1 median_user_ratio",
+      "B5000all sum total",
+      "B5000all mean total",
+      "B5000all sum baseline_total",
+      "B5000all mean baseline_total",
+      "B5000all sum mean_error",
+      "B5000all mean mean_error",
+      "B5000all sum mean_target_squared",
+      "B5000all mean mean_target_squared",
+      "B5000all sum varp",
+      "B5000all mean varp",
+      "B5000all sum vary",
+      "B5000all mean vary",
+      "B5000all sum cov",
+      "B5000all mean cov",
+      "B5000all sum centered",
+      "B5000all mean centered",
+      "B5000all sum gain_mean",
+      "B5000all mean gain_mean",
+      "B5000all sum gain_centered",
+      "B5000all mean gain_centered",
+      "B5000all sum total_gain",
+      "B5000all mean total_gain",
+      "B5000all total identity",
+      "B5000all centered identity",
+      "B5000all gain identity",
+      "B5000all ratio",
+      "B5000all CI",
+      "B5000all gain CI",
+      "B5000all variance",
+      "B5000all correlation",
+      "B5000dynamic sum total",
+      "B5000dynamic mean total",
+      "B5000dynamic sum baseline_total",
+      "B5000dynamic mean baseline_total",
+      "B5000dynamic sum mean_error",
+      "B5000dynamic mean mean_error",
+      "B5000dynamic sum mean_target_squared",
+      "B5000dynamic mean mean_target_squared",
+      "B5000dynamic sum varp",
+      "B5000dynamic mean varp",
+      "B5000dynamic sum vary",
+      "B5000dynamic mean vary",
+      "B5000dynamic sum cov",
+      "B5000dynamic mean cov",
+      "B5000dynamic sum centered",
+      "B5000dynamic mean centered",
+      "B5000dynamic sum gain_mean",
+      "B5000dynamic mean gain_mean",
+      "B5000dynamic sum gain_centered",
+      "B5000dynamic mean gain_centered",
+      "B5000dynamic sum total_gain",
+      "B5000dynamic mean total_gain",
+      "B5000dynamic total identity",
+      "B5000dynamic centered identity",
+      "B5000dynamic gain identity",
+      "B5000dynamic ratio",
+      "B5000dynamic CI",
+      "B5000dynamic gain CI",
+      "B5000dynamic variance",
+      "B5000dynamic correlation",
+      "B5000static sum total",
+      "B5000static mean total",
+      "B5000static sum baseline_total",
+      "B5000static mean baseline_total",
+      "B5000static sum mean_error",
+      "B5000static mean mean_error",
+      "B5000static sum mean_target_squared",
+      "B5000static mean mean_target_squared",
+      "B5000static sum varp",
+      "B5000static mean varp",
+      "B5000static sum vary",
+      "B5000static mean vary",
+      "B5000static sum cov",
+      "B5000static mean cov",
+      "B5000static sum centered",
+      "B5000static mean centered",
+      "B5000static sum gain_mean",
+      "B5000static mean gain_mean",
+      "B5000static sum gain_centered",
+      "B5000static mean gain_centered",
+      "B5000static sum total_gain",
+      "B5000static mean total_gain",
+      "B5000static total identity",
+      "B5000static centered identity",
+      "B5000static gain identity",
+      "B5000static ratio",
+      "B5000static CI",
+      "B5000static gain CI",
+      "B5000static variance",
+      "B5000static correlation",
+      "B19618 E1 ratio",
+      "B19618 E1 ratio_ci95_users",
+      "B19618 E1 mae",
+      "B19618 E1 mae_const",
+      "B19618 E1 median_user_ratio",
+      "B19618all sum total",
+      "B19618all mean total",
+      "B19618all sum baseline_total",
+      "B19618all mean baseline_total",
+      "B19618all sum mean_error",
+      "B19618all mean mean_error",
+      "B19618all sum mean_target_squared",
+      "B19618all mean mean_target_squared",
+      "B19618all sum varp",
+      "B19618all mean varp",
+      "B19618all sum vary",
+      "B19618all mean vary",
+      "B19618all sum cov",
+      "B19618all mean cov",
+      "B19618all sum centered",
+      "B19618all mean centered",
+      "B19618all sum gain_mean",
+      "B19618all mean gain_mean",
+      "B19618all sum gain_centered",
+      "B19618all mean gain_centered",
+      "B19618all sum total_gain",
+      "B19618all mean total_gain",
+      "B19618all total identity",
+      "B19618all centered identity",
+      "B19618all gain identity",
+      "B19618all ratio",
+      "B19618all CI",
+      "B19618all gain CI",
+      "B19618all variance",
+      "B19618all correlation",
+      "B19618dynamic sum total",
+      "B19618dynamic mean total",
+      "B19618dynamic sum baseline_total",
+      "B19618dynamic mean baseline_total",
+      "B19618dynamic sum mean_error",
+      "B19618dynamic mean mean_error",
+      "B19618dynamic sum mean_target_squared",
+      "B19618dynamic mean mean_target_squared",
+      "B19618dynamic sum varp",
+      "B19618dynamic mean varp",
+      "B19618dynamic sum vary",
+      "B19618dynamic mean vary",
+      "B19618dynamic sum cov",
+      "B19618dynamic mean cov",
+      "B19618dynamic sum centered",
+      "B19618dynamic mean centered",
+      "B19618dynamic sum gain_mean",
+      "B19618dynamic mean gain_mean",
+      "B19618dynamic sum gain_centered",
+      "B19618dynamic mean gain_centered",
+      "B19618dynamic sum total_gain",
+      "B19618dynamic mean total_gain",
+      "B19618dynamic total identity",
+      "B19618dynamic centered identity",
+      "B19618dynamic gain identity",
+      "B19618dynamic ratio",
+      "B19618dynamic CI",
+      "B19618dynamic gain CI",
+      "B19618dynamic variance",
+      "B19618dynamic correlation",
+      "B19618static sum total",
+      "B19618static mean total",
+      "B19618static sum baseline_total",
+      "B19618static mean baseline_total",
+      "B19618static sum mean_error",
+      "B19618static mean mean_error",
+      "B19618static sum mean_target_squared",
+      "B19618static mean mean_target_squared",
+      "B19618static sum varp",
+      "B19618static mean varp",
+      "B19618static sum vary",
+      "B19618static mean vary",
+      "B19618static sum cov",
+      "B19618static mean cov",
+      "B19618static sum centered",
+      "B19618static mean centered",
+      "B19618static sum gain_mean",
+      "B19618static mean gain_mean",
+      "B19618static sum gain_centered",
+      "B19618static mean gain_centered",
+      "B19618static sum total_gain",
+      "B19618static mean total_gain",
+      "B19618static total identity",
+      "B19618static centered identity",
+      "B19618static gain identity",
+      "B19618static ratio",
+      "B19618static CI",
+      "B19618static gain CI",
+      "B19618static variance",
+      "B19618static correlation",
+      "B_ridge E1 ratio",
+      "B_ridge E1 ratio_ci95_users",
+      "B_ridge E1 mae",
+      "B_ridge E1 mae_const",
+      "B_ridge E1 median_user_ratio",
+      "B_ridgeall sum total",
+      "B_ridgeall mean total",
+      "B_ridgeall sum baseline_total",
+      "B_ridgeall mean baseline_total",
+      "B_ridgeall sum mean_error",
+      "B_ridgeall mean mean_error",
+      "B_ridgeall sum mean_target_squared",
+      "B_ridgeall mean mean_target_squared",
+      "B_ridgeall sum varp",
+      "B_ridgeall mean varp",
+      "B_ridgeall sum vary",
+      "B_ridgeall mean vary",
+      "B_ridgeall sum cov",
+      "B_ridgeall mean cov",
+      "B_ridgeall sum centered",
+      "B_ridgeall mean centered",
+      "B_ridgeall sum gain_mean",
+      "B_ridgeall mean gain_mean",
+      "B_ridgeall sum gain_centered",
+      "B_ridgeall mean gain_centered",
+      "B_ridgeall sum total_gain",
+      "B_ridgeall mean total_gain",
+      "B_ridgeall total identity",
+      "B_ridgeall centered identity",
+      "B_ridgeall gain identity",
+      "B_ridgeall ratio",
+      "B_ridgeall CI",
+      "B_ridgeall gain CI",
+      "B_ridgeall variance",
+      "B_ridgeall correlation",
+      "B_ridgedynamic sum total",
+      "B_ridgedynamic mean total",
+      "B_ridgedynamic sum baseline_total",
+      "B_ridgedynamic mean baseline_total",
+      "B_ridgedynamic sum mean_error",
+      "B_ridgedynamic mean mean_error",
+      "B_ridgedynamic sum mean_target_squared",
+      "B_ridgedynamic mean mean_target_squared",
+      "B_ridgedynamic sum varp",
+      "B_ridgedynamic mean varp",
+      "B_ridgedynamic sum vary",
+      "B_ridgedynamic mean vary",
+      "B_ridgedynamic sum cov",
+      "B_ridgedynamic mean cov",
+      "B_ridgedynamic sum centered",
+      "B_ridgedynamic mean centered",
+      "B_ridgedynamic sum gain_mean",
+      "B_ridgedynamic mean gain_mean",
+      "B_ridgedynamic sum gain_centered",
+      "B_ridgedynamic mean gain_centered",
+      "B_ridgedynamic sum total_gain",
+      "B_ridgedynamic mean total_gain",
+      "B_ridgedynamic total identity",
+      "B_ridgedynamic centered identity",
+      "B_ridgedynamic gain identity",
+      "B_ridgedynamic ratio",
+      "B_ridgedynamic CI",
+      "B_ridgedynamic gain CI",
+      "B_ridgedynamic variance",
+      "B_ridgedynamic correlation",
+      "B_ridgestatic sum total",
+      "B_ridgestatic mean total",
+      "B_ridgestatic sum baseline_total",
+      "B_ridgestatic mean baseline_total",
+      "B_ridgestatic sum mean_error",
+      "B_ridgestatic mean mean_error",
+      "B_ridgestatic sum mean_target_squared",
+      "B_ridgestatic mean mean_target_squared",
+      "B_ridgestatic sum varp",
+      "B_ridgestatic mean varp",
+      "B_ridgestatic sum vary",
+      "B_ridgestatic mean vary",
+      "B_ridgestatic sum cov",
+      "B_ridgestatic mean cov",
+      "B_ridgestatic sum centered",
+      "B_ridgestatic mean centered",
+      "B_ridgestatic sum gain_mean",
+      "B_ridgestatic mean gain_mean",
+      "B_ridgestatic sum gain_centered",
+      "B_ridgestatic mean gain_centered",
+      "B_ridgestatic sum total_gain",
+      "B_ridgestatic mean total_gain",
+      "B_ridgestatic total identity",
+      "B_ridgestatic centered identity",
+      "B_ridgestatic gain identity",
+      "B_ridgestatic ratio",
+      "B_ridgestatic CI",
+      "B_ridgestatic gain CI",
+      "B_ridgestatic variance",
+      "B_ridgestatic correlation",
+      "R3c_ridge E1 ratio",
+      "R3c_ridge E1 ratio_ci95_users",
+      "R3c_ridge E1 mae",
+      "R3c_ridge E1 mae_const",
+      "R3c_ridge E1 median_user_ratio",
+      "R3c_ridgeall sum total",
+      "R3c_ridgeall mean total",
+      "R3c_ridgeall sum baseline_total",
+      "R3c_ridgeall mean baseline_total",
+      "R3c_ridgeall sum mean_error",
+      "R3c_ridgeall mean mean_error",
+      "R3c_ridgeall sum mean_target_squared",
+      "R3c_ridgeall mean mean_target_squared",
+      "R3c_ridgeall sum varp",
+      "R3c_ridgeall mean varp",
+      "R3c_ridgeall sum vary",
+      "R3c_ridgeall mean vary",
+      "R3c_ridgeall sum cov",
+      "R3c_ridgeall mean cov",
+      "R3c_ridgeall sum centered",
+      "R3c_ridgeall mean centered",
+      "R3c_ridgeall sum gain_mean",
+      "R3c_ridgeall mean gain_mean",
+      "R3c_ridgeall sum gain_centered",
+      "R3c_ridgeall mean gain_centered",
+      "R3c_ridgeall sum total_gain",
+      "R3c_ridgeall mean total_gain",
+      "R3c_ridgeall total identity",
+      "R3c_ridgeall centered identity",
+      "R3c_ridgeall gain identity",
+      "R3c_ridgeall ratio",
+      "R3c_ridgeall CI",
+      "R3c_ridgeall gain CI",
+      "R3c_ridgeall variance",
+      "R3c_ridgeall correlation",
+      "R3c_ridgedynamic sum total",
+      "R3c_ridgedynamic mean total",
+      "R3c_ridgedynamic sum baseline_total",
+      "R3c_ridgedynamic mean baseline_total",
+      "R3c_ridgedynamic sum mean_error",
+      "R3c_ridgedynamic mean mean_error",
+      "R3c_ridgedynamic sum mean_target_squared",
+      "R3c_ridgedynamic mean mean_target_squared",
+      "R3c_ridgedynamic sum varp",
+      "R3c_ridgedynamic mean varp",
+      "R3c_ridgedynamic sum vary",
+      "R3c_ridgedynamic mean vary",
+      "R3c_ridgedynamic sum cov",
+      "R3c_ridgedynamic mean cov",
+      "R3c_ridgedynamic sum centered",
+      "R3c_ridgedynamic mean centered",
+      "R3c_ridgedynamic sum gain_mean",
+      "R3c_ridgedynamic mean gain_mean",
+      "R3c_ridgedynamic sum gain_centered",
+      "R3c_ridgedynamic mean gain_centered",
+      "R3c_ridgedynamic sum total_gain",
+      "R3c_ridgedynamic mean total_gain",
+      "R3c_ridgedynamic total identity",
+      "R3c_ridgedynamic centered identity",
+      "R3c_ridgedynamic gain identity",
+      "R3c_ridgedynamic ratio",
+      "R3c_ridgedynamic CI",
+      "R3c_ridgedynamic gain CI",
+      "R3c_ridgedynamic variance",
+      "R3c_ridgedynamic correlation",
+      "R3c_ridgestatic sum total",
+      "R3c_ridgestatic mean total",
+      "R3c_ridgestatic sum baseline_total",
+      "R3c_ridgestatic mean baseline_total",
+      "R3c_ridgestatic sum mean_error",
+      "R3c_ridgestatic mean mean_error",
+      "R3c_ridgestatic sum mean_target_squared",
+      "R3c_ridgestatic mean mean_target_squared",
+      "R3c_ridgestatic sum varp",
+      "R3c_ridgestatic mean varp",
+      "R3c_ridgestatic sum vary",
+      "R3c_ridgestatic mean vary",
+      "R3c_ridgestatic sum cov",
+      "R3c_ridgestatic mean cov",
+      "R3c_ridgestatic sum centered",
+      "R3c_ridgestatic mean centered",
+      "R3c_ridgestatic sum gain_mean",
+      "R3c_ridgestatic mean gain_mean",
+      "R3c_ridgestatic sum gain_centered",
+      "R3c_ridgestatic mean gain_centered",
+      "R3c_ridgestatic sum total_gain",
+      "R3c_ridgestatic mean total_gain",
+      "R3c_ridgestatic total identity",
+      "R3c_ridgestatic centered identity",
+      "R3c_ridgestatic gain identity",
+      "R3c_ridgestatic ratio",
+      "R3c_ridgestatic CI",
+      "R3c_ridgestatic gain CI",
+      "R3c_ridgestatic variance",
+      "R3c_ridgestatic correlation",
+      "A E1 users",
+      "A E1 support 1f6de69ab3n_valid_elements",
+      "A E1 support 1f6de69ab3n_windows",
+      "A E1 support 1f6de69ab3constant_sum_rad",
+      "A E1 support 2251681168n_valid_elements",
+      "A E1 support 2251681168n_windows",
+      "A E1 support 2251681168constant_sum_rad",
+      "A E1 support 29ddab35d7n_valid_elements",
+      "A E1 support 29ddab35d7n_windows",
+      "A E1 support 29ddab35d7constant_sum_rad",
+      "A E1 support 2af4aec870n_valid_elements",
+      "A E1 support 2af4aec870n_windows",
+      "A E1 support 2af4aec870constant_sum_rad",
+      "A E1 support 2d0838950an_valid_elements",
+      "A E1 support 2d0838950an_windows",
+      "A E1 support 2d0838950aconstant_sum_rad",
+      "A E1 support 3875521008n_valid_elements",
+      "A E1 support 3875521008n_windows",
+      "A E1 support 3875521008constant_sum_rad",
+      "A E1 support 7016fd5330n_valid_elements",
+      "A E1 support 7016fd5330n_windows",
+      "A E1 support 7016fd5330constant_sum_rad",
+      "A E1 support 737fb9d2ebn_valid_elements",
+      "A E1 support 737fb9d2ebn_windows",
+      "A E1 support 737fb9d2ebconstant_sum_rad",
+      "A E1 support 9b8c99cdc2n_valid_elements",
+      "A E1 support 9b8c99cdc2n_windows",
+      "A E1 support 9b8c99cdc2constant_sum_rad",
+      "A E1 support a993d16f6en_valid_elements",
+      "A E1 support a993d16f6en_windows",
+      "A E1 support a993d16f6econstant_sum_rad",
+      "A E1 support ab228f34a5n_valid_elements",
+      "A E1 support ab228f34a5n_windows",
+      "A E1 support ab228f34a5constant_sum_rad",
+      "A E1 support d387095792n_valid_elements",
+      "A E1 support d387095792n_windows",
+      "A E1 support d387095792constant_sum_rad",
+      "A E1 support e51f6d97cfn_valid_elements",
+      "A E1 support e51f6d97cfn_windows",
+      "A E1 support e51f6d97cfconstant_sum_rad",
+      "A E1 support e86f1eaf2fn_valid_elements",
+      "A E1 support e86f1eaf2fn_windows",
+      "A E1 support e86f1eaf2fconstant_sum_rad",
+      "A E1 support f3a4630adfn_valid_elements",
+      "A E1 support f3a4630adfn_windows",
+      "A E1 support f3a4630adfconstant_sum_rad",
+      "A E1 delta",
+      "A E1 CI",
+      "Adynamic users",
+      "Adynamic support 1f6de69ab3n_valid_elements",
+      "Adynamic support 1f6de69ab3n_window_joints",
+      "Adynamic support 1f6de69ab3n_windows",
+      "Adynamic variance sum 1f6de69ab3",
+      "Adynamic support 2251681168n_valid_elements",
+      "Adynamic support 2251681168n_window_joints",
+      "Adynamic support 2251681168n_windows",
+      "Adynamic variance sum 2251681168",
+      "Adynamic support 29ddab35d7n_valid_elements",
+      "Adynamic support 29ddab35d7n_window_joints",
+      "Adynamic support 29ddab35d7n_windows",
+      "Adynamic variance sum 29ddab35d7",
+      "Adynamic support 2af4aec870n_valid_elements",
+      "Adynamic support 2af4aec870n_window_joints",
+      "Adynamic support 2af4aec870n_windows",
+      "Adynamic variance sum 2af4aec870",
+      "Adynamic support 2d0838950an_valid_elements",
+      "Adynamic support 2d0838950an_window_joints",
+      "Adynamic support 2d0838950an_windows",
+      "Adynamic variance sum 2d0838950a",
+      "Adynamic support 3875521008n_valid_elements",
+      "Adynamic support 3875521008n_window_joints",
+      "Adynamic support 3875521008n_windows",
+      "Adynamic variance sum 3875521008",
+      "Adynamic support 7016fd5330n_valid_elements",
+      "Adynamic support 7016fd5330n_window_joints",
+      "Adynamic support 7016fd5330n_windows",
+      "Adynamic variance sum 7016fd5330",
+      "Adynamic support 737fb9d2ebn_valid_elements",
+      "Adynamic support 737fb9d2ebn_window_joints",
+      "Adynamic support 737fb9d2ebn_windows",
+      "Adynamic variance sum 737fb9d2eb",
+      "Adynamic support 9b8c99cdc2n_valid_elements",
+      "Adynamic support 9b8c99cdc2n_window_joints",
+      "Adynamic support 9b8c99cdc2n_windows",
+      "Adynamic variance sum 9b8c99cdc2",
+      "Adynamic support a993d16f6en_valid_elements",
+      "Adynamic support a993d16f6en_window_joints",
+      "Adynamic support a993d16f6en_windows",
+      "Adynamic variance sum a993d16f6e",
+      "Adynamic support ab228f34a5n_valid_elements",
+      "Adynamic support ab228f34a5n_window_joints",
+      "Adynamic support ab228f34a5n_windows",
+      "Adynamic variance sum ab228f34a5",
+      "Adynamic support d387095792n_valid_elements",
+      "Adynamic support d387095792n_window_joints",
+      "Adynamic support d387095792n_windows",
+      "Adynamic variance sum d387095792",
+      "Adynamic support e51f6d97cfn_valid_elements",
+      "Adynamic support e51f6d97cfn_window_joints",
+      "Adynamic support e51f6d97cfn_windows",
+      "Adynamic variance sum e51f6d97cf",
+      "Adynamic support e86f1eaf2fn_valid_elements",
+      "Adynamic support e86f1eaf2fn_window_joints",
+      "Adynamic support e86f1eaf2fn_windows",
+      "Adynamic variance sum e86f1eaf2f",
+      "Adynamic support f3a4630adfn_valid_elements",
+      "Adynamic support f3a4630adfn_window_joints",
+      "Adynamic support f3a4630adfn_windows",
+      "Adynamic variance sum f3a4630adf",
+      "Adynamic delta",
+      "Adynamic CI",
+      "Aall users",
+      "Aall support 1f6de69ab3n_valid_elements",
+      "Aall support 1f6de69ab3n_window_joints",
+      "Aall support 1f6de69ab3n_windows",
+      "Aall variance sum 1f6de69ab3",
+      "Aall support 2251681168n_valid_elements",
+      "Aall support 2251681168n_window_joints",
+      "Aall support 2251681168n_windows",
+      "Aall variance sum 2251681168",
+      "Aall support 29ddab35d7n_valid_elements",
+      "Aall support 29ddab35d7n_window_joints",
+      "Aall support 29ddab35d7n_windows",
+      "Aall variance sum 29ddab35d7",
+      "Aall support 2af4aec870n_valid_elements",
+      "Aall support 2af4aec870n_window_joints",
+      "Aall support 2af4aec870n_windows",
+      "Aall variance sum 2af4aec870",
+      "Aall support 2d0838950an_valid_elements",
+      "Aall support 2d0838950an_window_joints",
+      "Aall support 2d0838950an_windows",
+      "Aall variance sum 2d0838950a",
+      "Aall support 3875521008n_valid_elements",
+      "Aall support 3875521008n_window_joints",
+      "Aall support 3875521008n_windows",
+      "Aall variance sum 3875521008",
+      "Aall support 7016fd5330n_valid_elements",
+      "Aall support 7016fd5330n_window_joints",
+      "Aall support 7016fd5330n_windows",
+      "Aall variance sum 7016fd5330",
+      "Aall support 737fb9d2ebn_valid_elements",
+      "Aall support 737fb9d2ebn_window_joints",
+      "Aall support 737fb9d2ebn_windows",
+      "Aall variance sum 737fb9d2eb",
+      "Aall support 9b8c99cdc2n_valid_elements",
+      "Aall support 9b8c99cdc2n_window_joints",
+      "Aall support 9b8c99cdc2n_windows",
+      "Aall variance sum 9b8c99cdc2",
+      "Aall support a993d16f6en_valid_elements",
+      "Aall support a993d16f6en_window_joints",
+      "Aall support a993d16f6en_windows",
+      "Aall variance sum a993d16f6e",
+      "Aall support ab228f34a5n_valid_elements",
+      "Aall support ab228f34a5n_window_joints",
+      "Aall support ab228f34a5n_windows",
+      "Aall variance sum ab228f34a5",
+      "Aall support d387095792n_valid_elements",
+      "Aall support d387095792n_window_joints",
+      "Aall support d387095792n_windows",
+      "Aall variance sum d387095792",
+      "Aall support e51f6d97cfn_valid_elements",
+      "Aall support e51f6d97cfn_window_joints",
+      "Aall support e51f6d97cfn_windows",
+      "Aall variance sum e51f6d97cf",
+      "Aall support e86f1eaf2fn_valid_elements",
+      "Aall support e86f1eaf2fn_window_joints",
+      "Aall support e86f1eaf2fn_windows",
+      "Aall variance sum e86f1eaf2f",
+      "Aall support f3a4630adfn_valid_elements",
+      "Aall support f3a4630adfn_window_joints",
+      "Aall support f3a4630adfn_windows",
+      "Aall variance sum f3a4630adf",
+      "Aall delta",
+      "Aall CI",
+      "Astatic users",
+      "Astatic support 1f6de69ab3n_valid_elements",
+      "Astatic support 1f6de69ab3n_window_joints",
+      "Astatic support 1f6de69ab3n_windows",
+      "Astatic variance sum 1f6de69ab3",
+      "Astatic support 2251681168n_valid_elements",
+      "Astatic support 2251681168n_window_joints",
+      "Astatic support 2251681168n_windows",
+      "Astatic variance sum 2251681168",
+      "Astatic support 29ddab35d7n_valid_elements",
+      "Astatic support 29ddab35d7n_window_joints",
+      "Astatic support 29ddab35d7n_windows",
+      "Astatic variance sum 29ddab35d7",
+      "Astatic support 2af4aec870n_valid_elements",
+      "Astatic support 2af4aec870n_window_joints",
+      "Astatic support 2af4aec870n_windows",
+      "Astatic variance sum 2af4aec870",
+      "Astatic support 2d0838950an_valid_elements",
+      "Astatic support 2d0838950an_window_joints",
+      "Astatic support 2d0838950an_windows",
+      "Astatic variance sum 2d0838950a",
+      "Astatic support 3875521008n_valid_elements",
+      "Astatic support 3875521008n_window_joints",
+      "Astatic support 3875521008n_windows",
+      "Astatic variance sum 3875521008",
+      "Astatic support 7016fd5330n_valid_elements",
+      "Astatic support 7016fd5330n_window_joints",
+      "Astatic support 7016fd5330n_windows",
+      "Astatic variance sum 7016fd5330",
+      "Astatic support 737fb9d2ebn_valid_elements",
+      "Astatic support 737fb9d2ebn_window_joints",
+      "Astatic support 737fb9d2ebn_windows",
+      "Astatic variance sum 737fb9d2eb",
+      "Astatic support 9b8c99cdc2n_valid_elements",
+      "Astatic support 9b8c99cdc2n_window_joints",
+      "Astatic support 9b8c99cdc2n_windows",
+      "Astatic variance sum 9b8c99cdc2",
+      "Astatic support a993d16f6en_valid_elements",
+      "Astatic support a993d16f6en_window_joints",
+      "Astatic support a993d16f6en_windows",
+      "Astatic variance sum a993d16f6e",
+      "Astatic support ab228f34a5n_valid_elements",
+      "Astatic support ab228f34a5n_window_joints",
+      "Astatic support ab228f34a5n_windows",
+      "Astatic variance sum ab228f34a5",
+      "Astatic support d387095792n_valid_elements",
+      "Astatic support d387095792n_window_joints",
+      "Astatic support d387095792n_windows",
+      "Astatic variance sum d387095792",
+      "Astatic support e51f6d97cfn_valid_elements",
+      "Astatic support e51f6d97cfn_window_joints",
+      "Astatic support e51f6d97cfn_windows",
+      "Astatic variance sum e51f6d97cf",
+      "Astatic support e86f1eaf2fn_valid_elements",
+      "Astatic support e86f1eaf2fn_window_joints",
+      "Astatic support e86f1eaf2fn_windows",
+      "Astatic variance sum e86f1eaf2f",
+      "Astatic support f3a4630adfn_valid_elements",
+      "Astatic support f3a4630adfn_window_joints",
+      "Astatic support f3a4630adfn_windows",
+      "Astatic variance sum f3a4630adf",
+      "Astatic delta",
+      "Astatic CI",
+      "C E1 users",
+      "C E1 support 1f6de69ab3n_valid_elements",
+      "C E1 support 1f6de69ab3n_windows",
+      "C E1 support 1f6de69ab3constant_sum_rad",
+      "C E1 support 2251681168n_valid_elements",
+      "C E1 support 2251681168n_windows",
+      "C E1 support 2251681168constant_sum_rad",
+      "C E1 support 29ddab35d7n_valid_elements",
+      "C E1 support 29ddab35d7n_windows",
+      "C E1 support 29ddab35d7constant_sum_rad",
+      "C E1 support 2af4aec870n_valid_elements",
+      "C E1 support 2af4aec870n_windows",
+      "C E1 support 2af4aec870constant_sum_rad",
+      "C E1 support 2d0838950an_valid_elements",
+      "C E1 support 2d0838950an_windows",
+      "C E1 support 2d0838950aconstant_sum_rad",
+      "C E1 support 3875521008n_valid_elements",
+      "C E1 support 3875521008n_windows",
+      "C E1 support 3875521008constant_sum_rad",
+      "C E1 support 7016fd5330n_valid_elements",
+      "C E1 support 7016fd5330n_windows",
+      "C E1 support 7016fd5330constant_sum_rad",
+      "C E1 support 737fb9d2ebn_valid_elements",
+      "C E1 support 737fb9d2ebn_windows",
+      "C E1 support 737fb9d2ebconstant_sum_rad",
+      "C E1 support 9b8c99cdc2n_valid_elements",
+      "C E1 support 9b8c99cdc2n_windows",
+      "C E1 support 9b8c99cdc2constant_sum_rad",
+      "C E1 support a993d16f6en_valid_elements",
+      "C E1 support a993d16f6en_windows",
+      "C E1 support a993d16f6econstant_sum_rad",
+      "C E1 support ab228f34a5n_valid_elements",
+      "C E1 support ab228f34a5n_windows",
+      "C E1 support ab228f34a5constant_sum_rad",
+      "C E1 support d387095792n_valid_elements",
+      "C E1 support d387095792n_windows",
+      "C E1 support d387095792constant_sum_rad",
+      "C E1 support e51f6d97cfn_valid_elements",
+      "C E1 support e51f6d97cfn_windows",
+      "C E1 support e51f6d97cfconstant_sum_rad",
+      "C E1 support e86f1eaf2fn_valid_elements",
+      "C E1 support e86f1eaf2fn_windows",
+      "C E1 support e86f1eaf2fconstant_sum_rad",
+      "C E1 support f3a4630adfn_valid_elements",
+      "C E1 support f3a4630adfn_windows",
+      "C E1 support f3a4630adfconstant_sum_rad",
+      "C E1 delta",
+      "C E1 CI",
+      "Cdynamic users",
+      "Cdynamic support 1f6de69ab3n_valid_elements",
+      "Cdynamic support 1f6de69ab3n_window_joints",
+      "Cdynamic support 1f6de69ab3n_windows",
+      "Cdynamic variance sum 1f6de69ab3",
+      "Cdynamic support 2251681168n_valid_elements",
+      "Cdynamic support 2251681168n_window_joints",
+      "Cdynamic support 2251681168n_windows",
+      "Cdynamic variance sum 2251681168",
+      "Cdynamic support 29ddab35d7n_valid_elements",
+      "Cdynamic support 29ddab35d7n_window_joints",
+      "Cdynamic support 29ddab35d7n_windows",
+      "Cdynamic variance sum 29ddab35d7",
+      "Cdynamic support 2af4aec870n_valid_elements",
+      "Cdynamic support 2af4aec870n_window_joints",
+      "Cdynamic support 2af4aec870n_windows",
+      "Cdynamic variance sum 2af4aec870",
+      "Cdynamic support 2d0838950an_valid_elements",
+      "Cdynamic support 2d0838950an_window_joints",
+      "Cdynamic support 2d0838950an_windows",
+      "Cdynamic variance sum 2d0838950a",
+      "Cdynamic support 3875521008n_valid_elements",
+      "Cdynamic support 3875521008n_window_joints",
+      "Cdynamic support 3875521008n_windows",
+      "Cdynamic variance sum 3875521008",
+      "Cdynamic support 7016fd5330n_valid_elements",
+      "Cdynamic support 7016fd5330n_window_joints",
+      "Cdynamic support 7016fd5330n_windows",
+      "Cdynamic variance sum 7016fd5330",
+      "Cdynamic support 737fb9d2ebn_valid_elements",
+      "Cdynamic support 737fb9d2ebn_window_joints",
+      "Cdynamic support 737fb9d2ebn_windows",
+      "Cdynamic variance sum 737fb9d2eb",
+      "Cdynamic support 9b8c99cdc2n_valid_elements",
+      "Cdynamic support 9b8c99cdc2n_window_joints",
+      "Cdynamic support 9b8c99cdc2n_windows",
+      "Cdynamic variance sum 9b8c99cdc2",
+      "Cdynamic support a993d16f6en_valid_elements",
+      "Cdynamic support a993d16f6en_window_joints",
+      "Cdynamic support a993d16f6en_windows",
+      "Cdynamic variance sum a993d16f6e",
+      "Cdynamic support ab228f34a5n_valid_elements",
+      "Cdynamic support ab228f34a5n_window_joints",
+      "Cdynamic support ab228f34a5n_windows",
+      "Cdynamic variance sum ab228f34a5",
+      "Cdynamic support d387095792n_valid_elements",
+      "Cdynamic support d387095792n_window_joints",
+      "Cdynamic support d387095792n_windows",
+      "Cdynamic variance sum d387095792",
+      "Cdynamic support e51f6d97cfn_valid_elements",
+      "Cdynamic support e51f6d97cfn_window_joints",
+      "Cdynamic support e51f6d97cfn_windows",
+      "Cdynamic variance sum e51f6d97cf",
+      "Cdynamic support e86f1eaf2fn_valid_elements",
+      "Cdynamic support e86f1eaf2fn_window_joints",
+      "Cdynamic support e86f1eaf2fn_windows",
+      "Cdynamic variance sum e86f1eaf2f",
+      "Cdynamic support f3a4630adfn_valid_elements",
+      "Cdynamic support f3a4630adfn_window_joints",
+      "Cdynamic support f3a4630adfn_windows",
+      "Cdynamic variance sum f3a4630adf",
+      "Cdynamic delta",
+      "Cdynamic CI",
+      "Call users",
+      "Call support 1f6de69ab3n_valid_elements",
+      "Call support 1f6de69ab3n_window_joints",
+      "Call support 1f6de69ab3n_windows",
+      "Call variance sum 1f6de69ab3",
+      "Call support 2251681168n_valid_elements",
+      "Call support 2251681168n_window_joints",
+      "Call support 2251681168n_windows",
+      "Call variance sum 2251681168",
+      "Call support 29ddab35d7n_valid_elements",
+      "Call support 29ddab35d7n_window_joints",
+      "Call support 29ddab35d7n_windows",
+      "Call variance sum 29ddab35d7",
+      "Call support 2af4aec870n_valid_elements",
+      "Call support 2af4aec870n_window_joints",
+      "Call support 2af4aec870n_windows",
+      "Call variance sum 2af4aec870",
+      "Call support 2d0838950an_valid_elements",
+      "Call support 2d0838950an_window_joints",
+      "Call support 2d0838950an_windows",
+      "Call variance sum 2d0838950a",
+      "Call support 3875521008n_valid_elements",
+      "Call support 3875521008n_window_joints",
+      "Call support 3875521008n_windows",
+      "Call variance sum 3875521008",
+      "Call support 7016fd5330n_valid_elements",
+      "Call support 7016fd5330n_window_joints",
+      "Call support 7016fd5330n_windows",
+      "Call variance sum 7016fd5330",
+      "Call support 737fb9d2ebn_valid_elements",
+      "Call support 737fb9d2ebn_window_joints",
+      "Call support 737fb9d2ebn_windows",
+      "Call variance sum 737fb9d2eb",
+      "Call support 9b8c99cdc2n_valid_elements",
+      "Call support 9b8c99cdc2n_window_joints",
+      "Call support 9b8c99cdc2n_windows",
+      "Call variance sum 9b8c99cdc2",
+      "Call support a993d16f6en_valid_elements",
+      "Call support a993d16f6en_window_joints",
+      "Call support a993d16f6en_windows",
+      "Call variance sum a993d16f6e",
+      "Call support ab228f34a5n_valid_elements",
+      "Call support ab228f34a5n_window_joints",
+      "Call support ab228f34a5n_windows",
+      "Call variance sum ab228f34a5",
+      "Call support d387095792n_valid_elements",
+      "Call support d387095792n_window_joints",
+      "Call support d387095792n_windows",
+      "Call variance sum d387095792",
+      "Call support e51f6d97cfn_valid_elements",
+      "Call support e51f6d97cfn_window_joints",
+      "Call support e51f6d97cfn_windows",
+      "Call variance sum e51f6d97cf",
+      "Call support e86f1eaf2fn_valid_elements",
+      "Call support e86f1eaf2fn_window_joints",
+      "Call support e86f1eaf2fn_windows",
+      "Call variance sum e86f1eaf2f",
+      "Call support f3a4630adfn_valid_elements",
+      "Call support f3a4630adfn_window_joints",
+      "Call support f3a4630adfn_windows",
+      "Call variance sum f3a4630adf",
+      "Call delta",
+      "Call CI",
+      "Cstatic users",
+      "Cstatic support 1f6de69ab3n_valid_elements",
+      "Cstatic support 1f6de69ab3n_window_joints",
+      "Cstatic support 1f6de69ab3n_windows",
+      "Cstatic variance sum 1f6de69ab3",
+      "Cstatic support 2251681168n_valid_elements",
+      "Cstatic support 2251681168n_window_joints",
+      "Cstatic support 2251681168n_windows",
+      "Cstatic variance sum 2251681168",
+      "Cstatic support 29ddab35d7n_valid_elements",
+      "Cstatic support 29ddab35d7n_window_joints",
+      "Cstatic support 29ddab35d7n_windows",
+      "Cstatic variance sum 29ddab35d7",
+      "Cstatic support 2af4aec870n_valid_elements",
+      "Cstatic support 2af4aec870n_window_joints",
+      "Cstatic support 2af4aec870n_windows",
+      "Cstatic variance sum 2af4aec870",
+      "Cstatic support 2d0838950an_valid_elements",
+      "Cstatic support 2d0838950an_window_joints",
+      "Cstatic support 2d0838950an_windows",
+      "Cstatic variance sum 2d0838950a",
+      "Cstatic support 3875521008n_valid_elements",
+      "Cstatic support 3875521008n_window_joints",
+      "Cstatic support 3875521008n_windows",
+      "Cstatic variance sum 3875521008",
+      "Cstatic support 7016fd5330n_valid_elements",
+      "Cstatic support 7016fd5330n_window_joints",
+      "Cstatic support 7016fd5330n_windows",
+      "Cstatic variance sum 7016fd5330",
+      "Cstatic support 737fb9d2ebn_valid_elements",
+      "Cstatic support 737fb9d2ebn_window_joints",
+      "Cstatic support 737fb9d2ebn_windows",
+      "Cstatic variance sum 737fb9d2eb",
+      "Cstatic support 9b8c99cdc2n_valid_elements",
+      "Cstatic support 9b8c99cdc2n_window_joints",
+      "Cstatic support 9b8c99cdc2n_windows",
+      "Cstatic variance sum 9b8c99cdc2",
+      "Cstatic support a993d16f6en_valid_elements",
+      "Cstatic support a993d16f6en_window_joints",
+      "Cstatic support a993d16f6en_windows",
+      "Cstatic variance sum a993d16f6e",
+      "Cstatic support ab228f34a5n_valid_elements",
+      "Cstatic support ab228f34a5n_window_joints",
+      "Cstatic support ab228f34a5n_windows",
+      "Cstatic variance sum ab228f34a5",
+      "Cstatic support d387095792n_valid_elements",
+      "Cstatic support d387095792n_window_joints",
+      "Cstatic support d387095792n_windows",
+      "Cstatic variance sum d387095792",
+      "Cstatic support e51f6d97cfn_valid_elements",
+      "Cstatic support e51f6d97cfn_window_joints",
+      "Cstatic support e51f6d97cfn_windows",
+      "Cstatic variance sum e51f6d97cf",
+      "Cstatic support e86f1eaf2fn_valid_elements",
+      "Cstatic support e86f1eaf2fn_window_joints",
+      "Cstatic support e86f1eaf2fn_windows",
+      "Cstatic variance sum e86f1eaf2f",
+      "Cstatic support f3a4630adfn_valid_elements",
+      "Cstatic support f3a4630adfn_window_joints",
+      "Cstatic support f3a4630adfn_windows",
+      "Cstatic variance sum f3a4630adf",
+      "Cstatic delta",
+      "Cstatic CI",
+      "B5000 E2 gap",
+      "B5000 E2 CI",
+      "B5000 E2 aligned",
+      "B5000 E2 misaligned",
+      "B19618 E2 gap",
+      "B19618 E2 CI",
+      "B19618 E2 aligned",
+      "B19618 E2 misaligned",
+      "E2 users",
+      "E2 weights",
+      "E2 pairing",
+      "E2 paired delta",
+      "E2 paired CI",
+      "B alpha",
+      "B cv",
+      "R3c alpha",
+      "R3c cv",
+      "same CV folds",
+      "Btrain provenance hash",
+      "Btrain receipt hash",
+      "Btrain provenance",
+      "Btrain cache hash",
+      "Btrain step",
+      "Btrain support attested",
+      "train M2 count",
+      "Bval provenance hash",
+      "Bval receipt hash",
+      "Bval provenance",
+      "Bval cache hash",
+      "Bval step",
+      "Bval support attested",
+      "val M2 count",
+      "R3ctrain provenance hash",
+      "R3ctrain receipt hash",
+      "R3ctrain provenance",
+      "R3ctrain cache hash",
+      "R3ctrain step",
+      "R3ctrain support attested",
+      "R3cval provenance hash",
+      "R3cval receipt hash",
+      "R3cval provenance",
+      "R3cval cache hash",
+      "R3cval step",
+      "R3cval support attested",
+      "report source hash",
+      "B5000dynamic head-report E1 ratio",
+      "B5000dynamic head-report E1 CI",
+      "B5000dynamic head-report E1 median",
+      "B5000all head-report E1 ratio",
+      "B5000all head-report E1 CI",
+      "B5000all head-report E1 median",
+      "B5000static head-report E1 ratio",
+      "B5000static head-report E1 CI",
+      "B5000static head-report E1 median",
+      "B5000 misaligned E2 ratio",
+      "B5000 misaligned E2 CI",
+      "B19618dynamic head-report E1 ratio",
+      "B19618dynamic head-report E1 CI",
+      "B19618dynamic head-report E1 median",
+      "B19618all head-report E1 ratio",
+      "B19618all head-report E1 CI",
+      "B19618all head-report E1 median",
+      "B19618static head-report E1 ratio",
+      "B19618static head-report E1 CI",
+      "B19618static head-report E1 median",
+      "B19618 misaligned E2 ratio",
+      "B19618 misaligned E2 CI",
+      "B alternating fold A",
+      "B alternating fold B",
+      "B CV vs train records",
+      "B val records users",
+      "R3c alternating fold A",
+      "R3c alternating fold B",
+      "R3c CV vs train records",
+      "R3c val records users"
+    ]
+  },
+  "limitations": [
+    "Aggregate sums and provenance checked; no raw-cache reprocessing, ridge refit or M2 re-execution.",
+    "M2 per-block errors not stored in report; all-block pass attested by checked source and report.",
+    "C pertains only to mean-pooled then stateless-normalized latents; not full encoder information.",
+    "One seed and previously examined val users: no plateau, saturation, endpoint gate or FM success claim.",
+    "Shares partition additive error improvements, not causal mechanisms."
+  ]
+}

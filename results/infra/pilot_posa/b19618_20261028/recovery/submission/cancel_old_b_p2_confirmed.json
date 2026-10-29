@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-10-28T22:50:37.468580+01:00",
+  "already_cancelled": true,
+  "accounting_evidence": "cancel_accounting_confirmation.txt",
+  "never_started": true,
+  "original_preflight": "preflight.json",
+  "resume_preflight": "resume_preflight.json",
+  "note": "scontrol transiently assigns cancellation time to StartTime for an unstarted cancelled job; independent sacct reports Start=None, Elapsed=00:00:00, no allocation, and no log exists. No second scancel."
+}

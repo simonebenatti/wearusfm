@@ -1,0 +1,74 @@
+{
+  "operator": "semplicione",
+  "ledger_agent": "gpt",
+  "published_commit": "f45a73ba1c446aca2a8abea17a8ec31f5055b167",
+  "plan_sha256": "9ecd50cabf1f6012ae4b7440d4a29c6e400ef183f1aef98616fcd99750731711",
+  "all_three_submitted_unambiguously": true,
+  "old_b_p2": {
+    "job_id": 62583163,
+    "state": "CANCELLED by 127686",
+    "cancel_time_europe_rome": "2026-10-28T22:49:28+01:00",
+    "elapsed": "00:00:00",
+    "sacct_start": "None",
+    "allocated_tres": "",
+    "log_absent": true,
+    "cancelled_by_this_operator": true,
+    "note": "The first operator procedure stopped after scancel because scontrol temporarily populated StartTime with cancellation time. A separate sacct check proved Start=None/zero elapsed/no allocation/no log; resumed without issuing a second scancel. This was not a job retry. Original evidence preserved."
+  },
+  "jobs": [
+    {
+      "logical_id": "PILOT-POSA-B19618-R3c-p2-validate-r1-20261028",
+      "job_id": 62618174,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "start_europe_rome": "2026-10-28T22:51:06+01:00",
+      "end_europe_rome": "2026-10-28T22:51:17+01:00",
+      "elapsed": "00:00:11",
+      "allocated_cpu_seconds": 22,
+      "total_cpu_seconds": 4.957,
+      "max_rss": "916980K",
+      "dependencies": [],
+      "complete": true,
+      "recovery": true,
+      "refit": false,
+      "report_and_oof_unchanged": true,
+      "provenance_sha256": "e9f4f6dc2deb9b6fef5124a4a49f78354c5abf1f80b461f3d52655e6e6e47ba7"
+    },
+    {
+      "logical_id": "PILOT-POSA-B19618-B-p2-pool-r1-20261028",
+      "job_id": 62618177,
+      "state_at_225218_europe_rome": "PENDING",
+      "reason": "Dependency",
+      "dependencies": [62583154]
+    },
+    {
+      "logical_id": "PILOT-POSA-B19618-p1p2-compare-r1-20261028",
+      "job_id": 62618179,
+      "state_at_225218_europe_rome": "PENDING",
+      "reason": "Dependency",
+      "submitted_dependencies": [62618174, 62583160, 62618177],
+      "remaining_dependencies_at_225218": [62583160, 62618177]
+    }
+  ],
+  "training": {
+    "job_id": 62582916,
+    "state_at_225057_europe_rome": "RUNNING",
+    "node": "lrdn3319",
+    "start_europe_rome": "2026-10-28T22:18:26+01:00",
+    "latest_logged_step_at_225057": 7450
+  },
+  "gpu_hours_added": 0,
+  "original_failed_and_cancelled_jobs_preserved": [62583157, 62583165],
+  "checkout_or_git_modifications_by_operator": false,
+  "general_monitor": "PAUSED at user request",
+  "temporary_start_notification_followup": "Created while validator awaited priority, then PAUSED after actual start and successful completion were observed in this turn.",
+  "evidence": {
+    "submissions": "submission_summary.json",
+    "preflight": "preflight.json",
+    "cancellation": "cancel_accounting_confirmation.txt",
+    "cancellation_resume": "cancel_old_b_p2_confirmed.json",
+    "scheduler_after_submission": "status_after_submission.txt",
+    "latest_scheduler": "latest_start_status.txt",
+    "validator_provenance_and_log": "validation_result.json"
+  }
+}

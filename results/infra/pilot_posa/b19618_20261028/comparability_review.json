@@ -1,0 +1,80 @@
+{
+  "preflight_job_id": "62575087",
+  "receipt_sha256": "3a1f86c3985aebda300477afcf013ec681fe6f8afa74dc608bd3eb0bc4c5e841",
+  "training_authorized_after_full_metadata_review": true,
+  "config_differences": [
+    {
+      "field": "jepa.pose_weight",
+      "B": 1.0,
+      "R3c": 0.0
+    },
+    {
+      "field": "loader.pose_root",
+      "B": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+      "R3c": null
+    },
+    {
+      "field": "max_steps",
+      "B": 5000,
+      "R3c": 49046
+    },
+    {
+      "field": "model.pose_head",
+      "B": true,
+      "R3c": false
+    },
+    {
+      "field": "pose_grad_every",
+      "B": 500,
+      "R3c": 0
+    },
+    {
+      "field": "pose_panel_every",
+      "B": 500,
+      "R3c": "<missing>"
+    },
+    {
+      "field": "pose_panel_recordings",
+      "B": 2,
+      "R3c": "<missing>"
+    },
+    {
+      "field": "pose_panel_users",
+      "B": 32,
+      "R3c": "<missing>"
+    },
+    {
+      "field": "pose_panel_windows",
+      "B": 4,
+      "R3c": "<missing>"
+    }
+  ],
+  "data_signature_differences": [
+    {
+      "field": "loader.pose_root",
+      "B": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+      "R3c": "<missing>"
+    },
+    {
+      "field": "loader.pose_unprompted",
+      "B": true,
+      "R3c": "<missing>"
+    }
+  ],
+  "identical": [
+    "all other config fields including shared model, EMA, optimizer, clipping, masks, loader, seed and WSD",
+    "stream num_workers/segment/world_size",
+    "manifest, normalized scales and window seconds signatures",
+    "fixed-eval window identity and seeds",
+    "AdamW hyperparameters excluding parameter count"
+  ],
+  "expected_differences": [
+    "4 additional pose head tensors, 8468 parameters; optimizer state at each own endpoint",
+    "whole fixed-eval payload includes pose target data only for B"
+  ],
+  "limitations": [
+    "metadata comparison, not a numerical equivalence experiment",
+    "one pretraining seed; different supervision can consume RNG differently; not a paired trajectory proof"
+  ],
+  "reviewer": "GPT root; prior independent launcher/protocol review approved"
+}

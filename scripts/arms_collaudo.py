@@ -13,6 +13,8 @@ Uso: python scripts/arms_collaudo.py RUN_DIR --arm JEPA-only|ancore-only --steps
 from __future__ import annotations
 
 import argparse
+from collections import Counter, defaultdict
+import hashlib
 import importlib.util
 import json
 import math
@@ -34,19 +36,13 @@ POSE_GATE = {"start_steps": (1, 100), "start_min_ratio": 0.1,  # scala all'avvio
              "descent_from": (500, 599), "descent_to": (1201, 1300), "descent_factor": 0.9,  # discesa: media 1.201-1.300 <= 0,9 x media 500-599
              "min_count_fraction": 0.9}  # conteggio di posa > 0 in almeno il 90% dei passi 1-1.300
 ARM_MAX_S_PER_STEP = {"R3": 0.81, "R3-lungo": 0.81}  # soglia di ritmo congelata (mediana di t_step_s oltre l'avvio): sopra, piano rigenerato
-# collaudo lungo (B) di R3 a 5.000 passi (28/10/2026): cancello PROPOSTO (quello di GPT del 27/10 piu' le aggiunte di Claude; da firmare da
-# Simone dopo il parere di GPT, poi congelato). Sul training (metrics.jsonl, blocchi da 500 passi contro il rumore misurato sul dbg: deviazione
-# delle medie di blocco da 100 = 0,035): scala all'avvio e tetto come il dbg, discesa = media della posa pesata nei passi 4.500-4.999 <= 0,9 x
-# media nei passi 2.000-2.499, conteggio >= 90%.
-POSE_GATE_LONG = {**POSE_GATE, "mid_steps": (500, 5000), "descent_from": (2000, 2499), "descent_to": (4500, 4999)}
-# Sul pannello della posa (pose_panel.jsonl, 32 utenti x 2 sessioni x 4 finestre, valutato a 0, 500, ..., 5.000): MSE medio delle finestre al
-# 5.000 <= 0,9 x MSE al passo 0 (cancello di GPT); IC95 del rapporto delle medie per utente MSE(5.000) / MSE(0), bootstrap appaiato sugli
-# utenti (gli stessi utenti ricampionati ai due passi, 1.000 ricampionamenti, seme 20261027, percentili 2,5-97,5), limite superiore < 1 (GPT);
-# MSE al 5.000 <= 0,9 x MSE del predittore costante sulle stesse finestre (aggiunta: al passo 0 la testa e' la costante, questo lo verifica);
-# varianza delle predizioni sugli elementi validi al 5.000 >= 0,01 in unita' standardizzate (aggiunta: una testa collassata su una costante
-# ha varianza ~0); tutte le valutazioni attese presenti.
+# B: scala, tetto e conteggio restano controlli tecnici. La pendenza del training e la varianza delle predizioni sono DESCRITTIVE.
+POSE_GATE_LONG = {**POSE_GATE, "mid_steps": (500, 5000), "descent_from": (2001, 2500), "descent_to": (4501, 5000)}
+# L'apprendimento si decide solo sul pannello integro, appaiato per utente: MSE(5000) <= .9 MSE(0), IC95 superiore del rapporto < 1.
 PANEL_GATE = {"step_from": 0, "step_to": 5000, "every": 500, "factor": 0.9, "ci_upper_max": 1.0, "n_boot": 1000, "seed": 20261027,
-              "const_factor": 0.9, "min_pred_var": 0.01}
+              "users": 32, "recordings_per_user": 2, "windows_per_recording": 4}
+B_PROTOCOL = "r3-long-collaudo-v1"
+B_POSE_STATS_SHA = "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
 ARM_CHECKPOINTS = {"R3-lungo": ("checkpoint.pt",)}  # fermato a 5.000 di 49.046: ne' predecay ne' postdecay, resta il checkpoint di ripresa
 ANCHORS = ("log_rms", "band_shape", "log_env", "ms_fast", "ms_slow")  # le ancore attuali (`training/jepa.py`, anchor_losses)
 WORLD, BATCH_PER_PROCESS, WINDOWS = 4, 8, 32
@@ -114,17 +110,17 @@ POSE_GRAD_STEPS = (500, 1300)  # emendamento 1, E4: passi su cui si legge il rap
 POSE_GRAD_MIN_RATIO = 0.01  # sotto l'1% delle ancore: «la posa non muove l'encoder», si registra prima del lancio (descrittivo, non cancello)
 
 
-def pose_gradients(recs: list[dict]) -> dict | None:
-    """E4 (descrittivo): media sui passi `POSE_GRAD_STEPS` dei record che portano `shared_grad_pose`/`shared_grad_anchors` (ogni
+def pose_gradients(recs: list[dict], interval: tuple[int, int] = POSE_GRAD_STEPS) -> dict | None:
+    """E4 (descrittivo): media sui passi `interval` dei record che portano `shared_grad_pose`/`shared_grad_anchors` (ogni
     `--pose-grad-every` passi) del rapporto fra le norme e del coseno; `flag_sotto_1pct` vero se il rapporto medio sta sotto `POSE_GRAD_MIN_RATIO`."""
     rows = [r for r in recs if isinstance(r.get("shared_grad_pose"), (int, float)) and isinstance(r.get("shared_grad_anchors"), (int, float))
-            and POSE_GRAD_STEPS[0] <= r.get("step", 0) <= POSE_GRAD_STEPS[1]]
+            and interval[0] <= r.get("step", 0) <= interval[1]]
     if not rows:
         return None
     ratios = [r["shared_grad_pose"] / r["shared_grad_anchors"] for r in rows if r["shared_grad_anchors"] > 0]
     cos = [r["shared_grad_cos"] for r in rows if isinstance(r.get("shared_grad_cos"), (int, float))]
     mean_ratio = statistics.fmean(ratios) if ratios else None
-    return {"passi": list(POSE_GRAD_STEPS), "n_record": len(rows), "rapporto_norme_medio": mean_ratio,
+    return {"passi": list(interval), "n_record": len(rows), "rapporto_norme_medio": mean_ratio,
             "rapporto_norme_min_max": [min(ratios), max(ratios)] if ratios else None, "coseno_medio": statistics.fmean(cos) if cos else None,
             "flag_sotto_1pct": bool(mean_ratio is not None and mean_ratio < POSE_GRAD_MIN_RATIO), "soglia_flag": POSE_GRAD_MIN_RATIO}
 
@@ -169,63 +165,249 @@ def pose_gate(recs: list[dict], wp: float, wa: float, steps: int, gate: dict = P
     return out
 
 
+def _finite_number(value) -> bool:
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def _canonical_sha256(value) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+
+
+def _has_nonfinite(value) -> bool:
+    if isinstance(value, float):
+        return not math.isfinite(value)
+    if isinstance(value, dict):
+        return any(_has_nonfinite(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_nonfinite(v) for v in value)
+    return False
+
+
+def _strict_json(path: Path, *, lines: bool = False):
+    """B fails closed on malformed JSON, duplicate keys and non-object records; legacy readers are unchanged."""
+    def pairs(items):
+        out = {}
+        for key, value in items:
+            if key in out:
+                raise ValueError(f"chiave duplicata: {key}")
+            out[key] = value
+        return out
+
+    errors, records = [], []
+    try:
+        raw = path.read_text()
+    except OSError as exc:
+        return ([] if lines else {}), [f"{path.name}: {exc.strerror}"]
+    for index, text in enumerate(raw.splitlines() if lines else [raw], 1):
+        if lines and not text.strip():
+            continue
+        try:
+            value = json.loads(text, object_pairs_hook=pairs)
+            if not isinstance(value, dict):
+                raise ValueError("atteso oggetto JSON")
+            records.append(value)
+        except (ValueError, TypeError) as exc:
+            errors.append(f"{path.name}, record {index}: {exc}")
+    return (records if lines else (records[0] if records else {})), errors
+
+
+def _panel_window_key(row: dict):
+    window = row.get("window")
+    if not isinstance(window, list) or len(window) != 3:
+        raise ValueError("coordinate della finestra mancanti")
+    trial, start, stop = window
+    if (trial is not None and type(trial) is not int) or type(start) is not int or type(stop) is not int or not 0 <= start < stop:
+        raise ValueError("coordinate della finestra non valide")
+    if any(not isinstance(row.get(k), str) or not row[k] for k in ("user", "session")):
+        raise ValueError("utente o registrazione mancanti")
+    return row["user"], row["session"], trial, start, stop
+
+
+def _panel_integrity(panel: list[dict], manifest: dict, g: dict) -> tuple[bool, dict]:
+    """The manifest fixes identities AND valid support; aggregates never substitute for the individual windows."""
+    errors = []
+    expected_n = g["users"] * g["recordings_per_user"] * g["windows_per_recording"]
+    wanted_steps = list(range(g["step_from"], g["step_to"] + 1, g["every"]))
+    if [r.get("step") for r in panel] != wanted_steps or any(type(r.get("step")) is not int for r in panel):
+        errors.append("valutazioni mancanti, duplicate, fuori ordine o inattese")
+    if _has_nonfinite(panel):
+        errors.append("numero non finito nel pannello")
+    keys, support = [], []
+    try:
+        if manifest.get("schema_version") != 1 or manifest.get("window_s") != 4.0 or manifest.get("sampling") != "nonoverlapping_pose_valid":
+            raise ValueError("schema o campionamento del manifest diverso dal protocollo")
+        if manifest.get("mask_strategy") != "training_mask_fixed":
+            raise ValueError("maschere del pannello diverse dal protocollo")
+        if manifest.get("seed") != [0, 7272]:
+            raise ValueError("seme del pannello diverso dal protocollo")
+        windows, users, support = manifest["windows"], manifest["window_users"], manifest["n_valid"]
+        if not all(isinstance(x, list) and len(x) == expected_n for x in (windows, users, support)):
+            raise ValueError("dimensione windows/window_users/n_valid diversa dal protocollo")
+        for w, u in zip(windows, users):
+            if not isinstance(w, list) or len(w) != 4:
+                raise ValueError("coordinate del manifest non valide")
+            keys.append(_panel_window_key({"user": u, "session": w[0], "window": w[1:]}))
+        if len(set(keys)) != expected_n or len({k[1:] for k in keys}) != expected_n:
+            raise ValueError("finestre duplicate nel manifest")
+        if any(type(n) is not int or n <= 0 or n > 160 * 20 for n in support):
+            raise ValueError("supporto valido del manifest assente o impossibile")
+        by_user, by_recording, owners = defaultdict(Counter), defaultdict(list), defaultdict(set)
+        for u, rec, trial, start, stop in keys:
+            by_user[u][rec] += 1
+            by_recording[rec, trial].append((start, stop))
+            owners[rec].add(u)
+        if any(len(us) != 1 for us in owners.values()):
+            raise ValueError("registrazione assegnata a utenti diversi")
+        if len(by_user) != g["users"] or manifest.get("users") != sorted(by_user):
+            raise ValueError("utenti del manifest diversi dal protocollo")
+        if any(len(rs) != g["recordings_per_user"] or set(rs.values()) != {g["windows_per_recording"]} for rs in by_user.values()):
+            raise ValueError("quota registrazioni/finestre per utente diversa dal protocollo")
+        if any(a[1] > b[0] for spans in by_recording.values() for a, b in zip(sorted(spans), sorted(spans)[1:])):
+            raise ValueError("finestre sovrapposte nella stessa registrazione")
+        digests = manifest.get("batch_sha256")
+        if not isinstance(digests, list) or len(digests) != g["users"] * g["recordings_per_user"] or any(not _is_sha(x, 64) for x in digests):
+            raise ValueError("digest dei batch mancanti o non validi")
+        digest = _canonical_sha256(manifest)
+    except (KeyError, TypeError, ValueError) as exc:
+        errors.append(f"manifest: {exc}")
+        return False, {"errori": errors, "finestre_attese": expected_n}
+
+    baseline = None
+    for record in panel:
+        at = record.get("step")
+        per = record.get("per_window")
+        if record.get("panel_sha256") != digest:
+            errors.append(f"passo {at}: digest del pannello diverso dal manifest")
+        if not isinstance(per, list) or len(per) != expected_n:
+            errors.append(f"passo {at}: numero di finestre diverso dal manifest")
+            continue
+        try:
+            got = [_panel_window_key(w) for w in per]
+            if got != keys:
+                raise ValueError("identita'/ordine delle finestre diverso dal manifest")
+            if [w.get("n_valid") for w in per] != support or any(type(w.get("n_valid")) is not int for w in per):
+                raise ValueError("supporto valido cambiato o mancante")
+            for w in per:
+                if any(not _finite_number(w.get(k)) or w[k] < 0 for k in ("mse", "mae", "mse_const", "pred_var")):
+                    raise ValueError("metrica per finestra mancante, negativa o non finita")
+                if at == g["step_from"]:
+                    counts, means = w.get("n_valid_per_joint"), w.get("pred_mean_per_joint")
+                    if not all(isinstance(v, list) and len(v) == 20 for v in (counts, means)):
+                        raise ValueError("baseline: supporti/medie per giunto mancanti o di lunghezza diversa da 20")
+                    if any(type(c) is not int or c < 0 for c in counts) or sum(counts) != w["n_valid"]:
+                        raise ValueError("baseline: supporti per giunto non interi, negativi o incoerenti con n_valid")
+                    if any((not _finite_number(m) or abs(m) > 1e-6) if c > 0 else
+                           (m is not None and not _finite_number(m)) for c, m in zip(counts, means)):
+                        raise ValueError("baseline: media predetta per giunto non nulla, non finita o mancante sul supporto valido")
+            for k in ("mse", "mae", "mse_const", "pred_var"):
+                if not _finite_number(record.get(k)) or not math.isclose(record[k], statistics.fmean(w[k] for w in per), rel_tol=1e-6, abs_tol=1e-8):
+                    raise ValueError(f"aggregato {k} incoerente con le finestre")
+            for k, v in (("n_windows", expected_n), ("n_windows_valid", expected_n), ("n_users", g["users"])):
+                if type(record.get(k)) is not int or record[k] != v:
+                    raise ValueError(f"conteggio {k} incoerente")
+            const = [w["mse_const"] for w in per]
+            if baseline is None:
+                baseline = const
+            if any(not math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-8) for a, b in zip(const, baseline)):
+                raise ValueError("MSE del costante cambiato: target/supporto non fisso")
+        except (AttributeError, KeyError, TypeError, ValueError) as exc:
+            errors.append(f"passo {at}: {exc}")
+    return not errors, {"errori": errors, "finestre_attese": expected_n, "utenti_attesi": g["users"], "panel_sha256": digest}
+
+
+def _is_sha(value, length: int) -> bool:
+    return isinstance(value, str) and len(value) == length and all(c in "0123456789abcdef" for c in value)
+
+
 def _panel_user_means(rec: dict) -> dict[str, float]:
-    """MSE medio per utente dalle finestre valide di una valutazione del pannello (`per_window`: user, mse, n_valid)."""
-    acc: dict[str, list] = {}
-    for w in rec.get("per_window") or []:
-        if isinstance(w.get("mse"), (int, float)) and math.isfinite(w["mse"]) and (w.get("n_valid") or 0) > 0:
-            acc.setdefault(str(w.get("user")), []).append(float(w["mse"]))
+    acc = defaultdict(list)
+    for w in rec["per_window"]:
+        acc[w["user"]].append(w["mse"])
     return {u: statistics.fmean(v) for u, v in acc.items()}
 
 
-def panel_gate(panel: list[dict], g: dict = PANEL_GATE) -> list[tuple[str, bool, dict]]:
-    """I criteri del pannello della posa del collaudo lungo (`PANEL_GATE`, proposti il 28/10/2026) dai record di `pose_panel.jsonl`: valutazioni
-    attese; discesa del MSE medio fra il passo iniziale e quello finale; IC95 del rapporto delle medie per utente (bootstrap appaiato: gli stessi
-    utenti ricampionati ai due passi, le stesse finestre per costruzione del pannello); MSE finale sotto il predittore costante; varianza delle
-    predizioni finale. Ritorna [(nome, ok, dettaglio)]."""
+def panel_gate(panel: list[dict], manifest: dict | None = None, g: dict = PANEL_GATE) -> list[tuple[str, bool, dict]]:
+    """B: paired user bootstrap only after checking the complete immutable panel and zero-head baseline."""
     import numpy as np
 
-    by_step = {int(r["step"]): r for r in panel if isinstance(r.get("step"), int)}
+    have = [r.get("step") for r in panel]
     want = list(range(g["step_from"], g["step_to"] + 1, g["every"]))
-    have = sorted(by_step)
-    out = [("pannello_valutazioni", have == want, {"valutazioni": have, "attese": want})]
-    a, b = by_step.get(g["step_from"]), by_step.get(g["step_to"])
-
-    def num(r, k):
-        return r is not None and isinstance(r.get(k), (int, float)) and math.isfinite(r[k])
-
-    if not (num(a, "mse") and num(b, "mse")):
-        detail = {"motivo": f"pannello senza MSE al passo {g['step_from']} o {g['step_to']}", "valutazioni": have}
-        return out + [(n, False, detail) for n in ("pannello_discesa", "pannello_ic95_utenti", "pannello_sotto_costante",
-                                                   "pannello_varianza_predizioni")]
-    out.append(("pannello_discesa", b["mse"] <= g["factor"] * a["mse"],
-                {"passi": [g["step_from"], g["step_to"]], "mse_iniziale": a["mse"], "mse_finale": b["mse"],
-                 "rapporto": b["mse"] / a["mse"] if a["mse"] else None, "fattore": g["factor"], "mae_iniziale_finale": [a.get("mae"), b.get("mae")]}))
+    integrity, detail = _panel_integrity(panel, manifest or {}, g)
+    out = [("pannello_valutazioni", have == want, {"valutazioni": have, "attese": want}),
+           ("pannello_integrita", integrity, detail)]
+    gates = ("pannello_baseline", "pannello_bootstrap_valido", "pannello_discesa", "pannello_ic95_utenti")
+    if not integrity:
+        return out + [(name, False, {"motivo": "pannello non valutabile: integrita' non verificata"}) for name in gates]
+    by_step = {r["step"]: r for r in panel}
+    a, b = by_step[g["step_from"]], by_step[g["step_to"]]
     ua, ub = _panel_user_means(a), _panel_user_means(b)
-    users = sorted(set(ua) & set(ub))
-    if len(users) >= 2:
-        x, y = np.array([ua[u] for u in users]), np.array([ub[u] for u in users])
-        idx = np.random.default_rng(g["seed"]).integers(0, len(users), size=(g["n_boot"], len(users)))
-        ratios = y[idx].mean(axis=1) / x[idx].mean(axis=1)
-        lo, hi = float(np.percentile(ratios, 2.5)), float(np.percentile(ratios, 97.5))
-        ok = math.isfinite(hi) and hi < g["ci_upper_max"]
-        detail = {"n_utenti": len(users), "rapporto_medie_utente": float(y.mean() / x.mean()), "ic95": [lo, hi],
-                  "massimo_limite_superiore": g["ci_upper_max"], "n_boot": g["n_boot"], "seme": g["seed"],
-                  "utenti_in_discesa": int((y < x).sum()), "per_utente": {u: [ua[u], ub[u]] for u in users}}
-    else:
-        ok, detail = False, {"n_utenti": len(users), "motivo": "meno di 2 utenti con finestre valide ai due passi"}
-    out.append(("pannello_ic95_utenti", ok, detail))
-    out.append(("pannello_sotto_costante", num(b, "mse_const") and b["mse"] <= g["const_factor"] * b["mse_const"],
-                {"mse_finale": b["mse"], "mse_costante_finale": b.get("mse_const"), "fattore": g["const_factor"],
-                 "rapporto": (b["mse"] / b["mse_const"]) if num(b, "mse_const") and b["mse_const"] else None}))
-    out.append(("pannello_varianza_predizioni", num(b, "pred_var") and b["pred_var"] >= g["min_pred_var"],
-                {"varianza_predizioni_finale": b.get("pred_var"), "minimo": g["min_pred_var"], "varianza_predizioni_iniziale": a.get("pred_var")}))
+    baseline_ok = all(math.isclose(w["mse"], w["mse_const"], rel_tol=1e-6, abs_tol=1e-8) and w["pred_var"] <= 1e-12
+                      for w in a["per_window"]) and sum(ua.values()) > 0
+    out.append(("pannello_baseline", baseline_ok, {"mse_zero": a["mse"], "mse_costante": a["mse_const"],
+                                                   "motivo": "testa a zero e MSE iniziale globale positiva"}))
+    if not baseline_ok:
+        return out + [(name, False, {"motivo": "baseline iniziale incoerente o nulla"}) for name in gates[1:]]
+    # Equal quotas make window and user means identical; compute from the individual windows, never trust cached aggregates.
+    users = sorted(ua)
+    x, y = np.array([ua[u] for u in users]), np.array([ub[u] for u in users])
+    ratio = float(y.mean() / x.mean())
+    out.append(("pannello_discesa", ratio <= g["factor"], {"passi": [g["step_from"], g["step_to"]], "mse_iniziale": float(x.mean()),
+                "mse_finale": float(y.mean()), "rapporto": ratio, "fattore": g["factor"], "mae_iniziale_finale": [a["mae"], b["mae"]]}))
+    idx = np.random.default_rng(g["seed"]).integers(0, len(users), size=(g["n_boot"], len(users)))
+    denominators = x[idx].mean(axis=1)
+    valid_den = np.isfinite(denominators) & (denominators > 0)
+    out.append(("pannello_bootstrap_valido", bool(valid_den.all()),
+                {"n_boot": g["n_boot"], "repliche_denominatore_non_positivo_o_non_finito": int((~valid_den).sum()), "seme": g["seed"]}))
+    if not valid_den.all():
+        return out + [("pannello_ic95_utenti", False, {"motivo": "IC non valutabile: denominatore bootstrap nullo o non finito"})]
+    ratios = y[idx].mean(axis=1) / denominators
+    lo, hi = float(np.percentile(ratios, 2.5)), float(np.percentile(ratios, 97.5))
+    out.append(("pannello_ic95_utenti", math.isfinite(hi) and hi < g["ci_upper_max"],
+                {"n_utenti": len(users), "rapporto_medie_utente": ratio, "ic95": [lo, hi], "massimo_limite_superiore": g["ci_upper_max"],
+                 "n_boot": g["n_boot"], "seme": g["seed"], "utenti_in_discesa": int((y < x).sum()),
+                 "per_utente": {u: [ua[u], ub[u]] for u in users}}))
     return out
 
 
 def pose_panel_summary(panel: list[dict]) -> list[dict]:
     """Per ogni valutazione del pannello della posa: passo, MSE, MAE, MSE del costante, varianza delle predizioni, finestre e utenti (descrittivo)."""
     return [{k: r.get(k) for k in ("step", "mse", "mae", "mse_const", "pred_var", "n_windows_valid", "n_users")} for r in panel]
+
+
+def long_configuration(cfg: dict, summary: dict, prov: dict, manifest: dict, recs: list[dict], steps: int) -> tuple[bool, dict]:
+    """Check the effective recipe, including the real schedule truncated at 5000 rather than decayed there."""
+    expected = {"max_steps": 5000, "warmup_steps": 1962, "lr": 1e-4, "weight_decay": 0.05, "grad_clip": 1.0,
+                "batch_size": 32, "accum_steps": 1, "seed": 0, "freeze_encoder": False, "pose_grad_every": 500,
+                "pose_panel_every": 500, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
+                "nested": "1", "eval_every": 500, "amp_bf16": True, "prefetch": True,
+                "schedule.kind": "wsd", "schedule.total_steps": 49046, "schedule.decay_fraction": 0.2,
+                "schedule.keep_checkpoints": [19618], "model.pose_head": True, "model.dim": 384, "model.patch_ms": 25.0,
+                "model.n_heads": 6, "model.k_latents": 64, "model.local_layers": 2, "model.backbone_layers": 8,
+                "model.decoder_layers": 2, "model.muscle_dropout": 0.4, "model.grad_checkpoint": True,
+                "jepa.loss_per_window": True, "loader.patch_ms": 25.0, "loader.pose_unprompted": True}
+    actual = {}
+    for path in expected:
+        value = cfg
+        for part in path.split("."):
+            value = value.get(part) if isinstance(value, dict) else None
+        actual[path] = value
+    mismatch = {k: {"atteso": v, "letto": actual[k]} for k, v in expected.items()
+                if actual[k] != v or (isinstance(v, bool) != isinstance(actual[k], bool))}
+    if steps != 5000:
+        mismatch["lettore.steps"] = {"atteso": 5000, "letto": steps}
+    sha = summary.get("pose_stats_sha256")
+    if sha != B_POSE_STATS_SHA or prov.get("pose_stats_sha256") != sha or manifest.get("pose_stats_sha256") != sha:
+        mismatch["pose_stats_sha256"] = {"atteso": B_POSE_STATS_SHA, "summary": sha, "provenance": prov.get("pose_stats_sha256"),
+                                        "manifest": manifest.get("pose_stats_sha256")}
+    root = cfg.get("loader", {}).get("pose_root")
+    if not isinstance(root, str) or not root or root != prov.get("pose_root") or prov.get("pose_unprompted") is not True:
+        mismatch["provenienza_posa"] = {"pose_root_config": root, "provenance": prov}
+    bad_lr = [r.get("step") for r in recs if not _finite_number(r.get("lr")) or
+              not math.isclose(r["lr"], 1e-4 * min(1.0, r["step"] / 1962), rel_tol=1e-9, abs_tol=1e-12)]
+    if bad_lr:
+        mismatch["lr_metrics"] = {"passi_errati": bad_lr[:10]}
+    return not mismatch, {"differenze": mismatch, "warmup_da_steps_at_d": 98094,
+                          "nota": "steps_at_d congelato nel comando; config verifica il warmup effettivo 1962"}
 
 
 def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) -> dict:
@@ -239,7 +421,35 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     def put(name, ok, detail):
         crit[name] = {"ok": bool(ok), "detail": detail}
 
-    summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
+    is_long = arm == "R3-lungo"
+    input_errors = []
+    manifest, panel = {}, []
+    if is_long:
+        summary, errors = _strict_json(run_dir / "summary.json")
+        input_errors.extend(errors)
+        cfg, errors = _strict_json(run_dir / "config.json")
+        input_errors.extend(errors)
+        prov, errors = _strict_json(run_dir / "pose_provenance.json")
+        input_errors.extend(errors)
+        manifest, errors = _strict_json(run_dir / "pose_panel_set.json")
+        input_errors.extend(errors)
+        panel, errors = _strict_json(run_dir / "pose_panel.jsonl", lines=True)
+        input_errors.extend(errors)
+        recs, errors = _strict_json(run_dir / "metrics.jsonl", lines=True)
+        input_errors.extend(errors)
+        if any(type(r.get("step")) is not int for r in recs):
+            input_errors.append("metrics.jsonl: step non intero")
+            recs = [r for r in recs if type(r.get("step")) is int]
+        for key in ("jepa", "model", "loader", "schedule"):
+            if not isinstance(cfg.get(key), dict):
+                input_errors.append(f"config.json: {key} non e' un oggetto")
+                cfg[key] = {}
+        if not isinstance(summary.get("code"), dict):
+            input_errors.append("summary.json: code non e' un oggetto")
+            summary["code"] = {}
+        put("file_integri", not input_errors, {"errori": input_errors})
+    else:
+        summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
     stop = (run_dir / "STOP").read_text().strip()[:300] if (run_dir / "STOP").exists() else None
     put("completo", stop is None and summary.get("stopped") == "max_steps" and summary.get("steps") == steps,
         {"STOP": stop, "stopped": summary.get("stopped"), "steps": summary.get("steps"), "attesi": steps})
@@ -248,7 +458,8 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
            "accum_steps": summary.get("accum_steps")}
     put("codice_e_ddp", got == {"sha": expected_sha, "world_size": WORLD, "batch_per_process": BATCH_PER_PROCESS, "accum_steps": 1}, got)
 
-    cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
+    if not is_long:
+        cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
     jepa = cfg.get("jepa") or {}
     wp = ARM_POSE_WEIGHT.get(arm, 0.0)
     weights = {k: jepa.get(k) for k in ("jepa_weight", "anchor_weight", "keep_weight", "branch_weight")}
@@ -260,14 +471,16 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         # lo SHA di pose_stats.json sta in summary.json e in pose_provenance.json (il trainer lo tiene FUORI dal config, che e' l'identita' del
         # run: `training/run.py`); fino al 27/10/2026 il lettore lo cercava solo nel config e dava NO a un run configurato bene (collaudo
         # 62429050): corretto, dichiarato in decisioni.md
-        prov = json.loads((run_dir / "pose_provenance.json").read_text()) if (run_dir / "pose_provenance.json").exists() else {}
+        if not is_long:
+            prov = json.loads((run_dir / "pose_provenance.json").read_text()) if (run_dir / "pose_provenance.json").exists() else {}
         pose_sha = summary.get("pose_stats_sha256") or prov.get("pose_stats_sha256") or cfg.get("pose_stats_sha256")
         put("posa_configurata", bool(model_cfg.get("pose_head")) and bool(loader_cfg.get("pose_root")) and bool(pose_sha),
             {"pose_head": model_cfg.get("pose_head"), "pose_root": loader_cfg.get("pose_root"), "pose_stats_sha256": pose_sha,
              "sha_in": [k for k, v in (("summary.json", summary.get("pose_stats_sha256")), ("pose_provenance.json", prov.get("pose_stats_sha256")),
                                        ("config.json", cfg.get("pose_stats_sha256"))) if v]})
 
-    recs = CS._records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
+    if not is_long:
+        recs = CS._records(run_dir / "metrics.jsonl") if (run_dir / "metrics.jsonl").exists() else []
     seq = [r.get("step") for r in recs]
     bad_windows = [r.get("step") for r in recs if r.get("windows") != WINDOWS]
     non_finite = CS._non_finite(recs) if recs else []
@@ -287,12 +500,17 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     put("composizione_della_loss", bool(recs) and not missing and not off,
         {"formula": f"total = {wj:g} x jepa + {wa:g} x somma delle ancore {list(ANCHORS)}" + (f" + {wp:g} x pose" if wp > 0 else ""),
          "tolleranza_relativa": REL_TOL, "passi_senza_componenti_finite": missing[:5], "passi_fuori_tolleranza": off[:5]})
+    training_descent = None
     if wp > 0:
-        for name, ok, detail in pose_gate(recs, wp, wa, steps, POSE_GATE_LONG if arm == "R3-lungo" else POSE_GATE):
-            put(name, ok, detail)
-    panel = CS._records(run_dir / "pose_panel.jsonl") if arm == "R3-lungo" and (run_dir / "pose_panel.jsonl").exists() else []
-    if arm == "R3-lungo":
-        for name, ok, detail in panel_gate(panel):
+        for name, ok, detail in pose_gate(recs, wp, wa, steps, POSE_GATE_LONG if is_long else POSE_GATE):
+            if is_long and name == "posa_discesa":
+                training_descent = detail  # descriptive: no second 10% requirement after warmup
+            else:
+                put(name, ok, detail)
+    if is_long:
+        ok, detail = long_configuration(cfg, summary, prov, manifest, recs, steps)
+        put("configurazione_b", ok, detail)
+        for name, ok, detail in panel_gate(panel, manifest):
             put(name, ok, detail)
     max_rate = ARM_MAX_S_PER_STEP.get(arm)
     if max_rate is not None:
@@ -303,8 +521,9 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     totals = [r["total"] for r in recs if isinstance(r.get("total"), (int, float))]
     first = statistics.fmean(totals[:EDGE]) if len(totals) >= 2 * EDGE else None
     last = statistics.fmean(totals[-EDGE:]) if len(totals) >= 2 * EDGE else None
-    put("apprendimento", first is not None and last < first,
-        {"termine_allenato": "total", "media_primi": first, "media_ultimi": last, "record_mediati": EDGE})
+    total_trend = {"termine_allenato": "total", "media_primi": first, "media_ultimi": last, "record_mediati": EDGE}
+    if not is_long:
+        put("apprendimento", first is not None and last < first, total_trend)
 
     diags = [r for r in recs if "student_collapse_ratio" in r]
     alarms = [r.get("alarm") for r in recs if r.get("alarm")]
@@ -333,8 +552,8 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         "ancore_inizio_fine": {a: edge_means(a) for a in ANCHORS},
         "posa_inizio_fine": edge_means("pose") if wp > 0 else None,
         "posa_errore_pannello_fisso": pose_panel_errors(run_dir) if wp > 0 else None,
-        "pannello_posa": pose_panel_summary(panel) if arm == "R3-lungo" else None,
-        "gradienti_condivisi": pose_gradients(recs) if wp > 0 else None,
+        "pannello_posa": pose_panel_summary(panel) if is_long else None,
+        "gradienti_condivisi": pose_gradients(recs, (500, 5000) if is_long else POSE_GRAD_STEPS) if wp > 0 else None,
         "posa_finestre_medie": (statistics.fmean(r["pose_windows"] for r in recs if isinstance(r.get("pose_windows"), (int, float)))
                                 if wp > 0 and any(isinstance(r.get("pose_windows"), (int, float)) for r in recs) else None),
         "non_collasso": [{k: r.get(k) for k in ("step", "student_collapse_ratio", "teacher_collapse_ratio", "student_erank", "teacher_erank",
@@ -343,13 +562,21 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
                     "(docs/pilot_obiettivi_v1.md)" if arm == "A" else
                     "R3: ancore e testa di posa, JEPA registrata ma non allenata; il cancello della posa controlla scala, tetto, discesa e "
                     "conteggio, non quanto la testa impari (docs/pilot_posa_v1.md §2 (iii))" if arm == "R3" else
-                    "R3-lungo: la ricetta di R3 fermata a 5.000 passi; il cancello (POSE_GATE_LONG + PANEL_GATE) dice se la testa impara a lr "
-                    "pieno sul training a blocchi da 500 e sul pannello fisso della posa (discesa, IC95 per utente, sotto il costante, "
-                    "varianza); non distingue le ipotesi sul perche' (decisioni.md, 28/10/2026)" if arm == "R3-lungo" else
+                    "R3-lungo: pannello fisso integro, MSE(5000) <= 0,9 MSE(0) e IC95 appaiato per utente con limite superiore < 1. "
+                    "La baseline verifica la testa a zero; training a blocchi e varianza sono descrittivi. Non dimostra generalizzazione "
+                    "o dipendenza dinamica dall'EMG." if arm == "R3-lungo" else
                     "JEPA-only: le teste delle ancore non sono allenate, le loss delle ancore registrate non dicono nulla; "
                     "ancore-only: la JEPA registrata misura un predittore non allenato (docs/bracci_obiettivo_finestra1.md)"),
     }
-    return _clean({"protocol": PROTOCOL, "arm": arm, "run_dir": str(run_dir), "steps": steps, "passed": all(c["ok"] for c in crit.values()),
+    status = {}
+    if is_long:
+        descriptive.update(posa_training_blocchi=training_descent, total_training_inizio_fine=total_trend)
+        technical = ("file_integri", "completo", "codice_e_ddp", "configurazione_b", "record", "pannello_valutazioni", "pannello_integrita",
+                     "pannello_baseline", "pannello_bootstrap_valido")
+        evaluable = all(crit[k]["ok"] for k in technical)
+        status = {"evaluable": evaluable, "status": "non_valutabile" if not evaluable else
+                  ("superato" if all(c["ok"] for c in crit.values()) else "non_superato")}
+    return _clean({**status, "protocol": B_PROTOCOL if is_long else PROTOCOL, "arm": arm, "run_dir": str(run_dir), "steps": steps, "passed": all(c["ok"] for c in crit.values()),
                    "criteria": crit, "descriptive": descriptive})
 
 

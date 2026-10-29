@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "status": "COMPLETATO_E_LETTO",
+  "approval": {
+    "by": "Simone",
+    "request": "se approvi procedi autonomamente, e lancia i teste che devi",
+    "reconfirmed": "lancia pure quando sei pronto ti avevo gia. autorizzato",
+    "scope": "E3 B con correzioni approvate da GPT; GPT implementa e lancia, Claude revisore. Nessuna continuazione19618 in questa tranche."
+  },
+  "campaign": "pilot-posa-b-e3-20261028",
+  "scientific_protocol": "docs/e3_b_20261028.md",
+  "review_response": "docs/reviews/risposta_review_claude_e3_b_20261028.md",
+  "frozen_environment_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028/checkpoint.pt",
+  "checkpoint_sha256": "815956b98d27cd2ff71f1255d0e220e2b0e08e467e7bedf93a54d0984b10783e",
+  "val_cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz",
+  "val_sha256": "70bb551309b502565d38072abf41ffee322a06de14589d36b720570f1cfbfa46",
+  "train_cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028/train_subset.npz",
+  "r3c_train_cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/pilot_posa_20261026/pose_eval/R3c-e2/train_subset.npz",
+  "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028.json",
+  "predictions": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E3_20261028/ridge_predictions.npz",
+  "val_provenance": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json",
+  "reference_dynamics": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_dynamics_20261028.json",
+  "source_hashes": {
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_e3_b_extract.py": "21ada4640c4504f78672eb2adcbfa0bb7aa64116f28ae91453296d04c5850bd7",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "scripts/build_pose_e3_b_payloads.py": "c412cf47939a35747dd7af32a8dd82ad74bde9d579bef101ac7f8888854654d6"
+  },
+  "jobs": [
+    {
+      "mode": "extract",
+      "logical_id": "PILOT-POSA-B5000-E3-extract-20261028",
+      "gpus": 1,
+      "cpus": 8,
+      "walltime": "00:20:00",
+      "memory": "60G",
+      "gpu_hours_cap": 0.3333333333333333,
+      "core_hours_cap": 2.6666666666666665,
+      "wrapper_file": "scripts/slurm/pose_e3_b_extract.sbatch",
+      "wrapper_sha256": "3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+      "submit_argv": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "scripts/submit_job.py",
+        "--id",
+        "PILOT-POSA-B5000-E3-extract-20261028",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pilot-posa-b-e3-20261028",
+        "--gpu-ore",
+        "0.3333333333333333",
+        "--script-stdin",
+        "scripts/slurm/pose_e3_b_extract.sbatch",
+        "--",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+        "--account=IscrB_WearUsFM",
+        "--partition=boost_usr_prod",
+        "--nodes=1",
+        "--ntasks=1",
+        "--cpus-per-task=8",
+        "--mem=60G",
+        "--time=00:20:00",
+        "--gres=gpu:1",
+        "--qos=normal",
+        "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
+        "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out"
+      ],
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
+      "slurm_id": 62561780,
+      "submission_state": "sottomesso",
+      "last_observed_state": "COMPLETED",
+      "completion": {
+        "exit_code": "0:0",
+        "elapsed_seconds": 255,
+        "start": {
+          "utc": "2026-10-28T13:20:37+00:00",
+          "Europe/Rome": "2026-10-28T14:20:37+01:00"
+        },
+        "end": {
+          "utc": "2026-10-28T13:24:52+00:00",
+          "Europe/Rome": "2026-10-28T14:24:52+01:00"
+        },
+        "gpu_hours": 0.07083333333333333,
+        "core_hours": 0.5666666666666667
+      }
+    },
+    {
+      "mode": "report",
+      "logical_id": "PILOT-POSA-B5000-E3-report-20261028",
+      "gpus": 0,
+      "cpus": 8,
+      "walltime": "00:30:00",
+      "memory": "30G",
+      "gpu_hours_cap": 0,
+      "core_hours_cap": 4,
+      "wrapper_file": "scripts/slurm/pose_e3_b_report.sbatch",
+      "wrapper_sha256": "4a5532a617c4b82baa63621c376ea726418a08b5b5cd6b0b3f517de986494d28",
+      "submit_argv": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "scripts/submit_job.py",
+        "--id",
+        "PILOT-POSA-B5000-E3-report-20261028",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pilot-posa-b-e3-20261028",
+        "--gpu-ore",
+        "0",
+        "--script-stdin",
+        "scripts/slurm/pose_e3_b_report.sbatch",
+        "--dopo",
+        "PILOT-POSA-B5000-E3-extract-20261028",
+        "--",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=4a5532a617c4b82baa63621c376ea726418a08b5b5cd6b0b3f517de986494d28",
+        "--account=IscrB_WearUsFM",
+        "--partition=lrd_all_serial",
+        "--nodes=1",
+        "--ntasks=1",
+        "--cpus-per-task=8",
+        "--mem=30G",
+        "--time=00:30:00",
+        "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out",
+        "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out"
+      ],
+      "stdout_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_report_%j.out",
+      "slurm_id": 62561881,
+      "submission_state": "sottomesso",
+      "last_observed_state": "COMPLETED",
+      "completion": {
+        "exit_code": "0:0",
+        "elapsed_seconds": 106,
+        "start": {
+          "utc": "2026-10-28T13:25:46+00:00",
+          "Europe/Rome": "2026-10-28T14:25:46+01:00"
+        },
+        "end": {
+          "utc": "2026-10-28T13:27:32+00:00",
+          "Europe/Rome": "2026-10-28T14:27:32+01:00"
+        },
+        "gpu_hours": 0.0,
+        "core_hours": 0.23555555555555555
+      }
+    }
+  ],
+  "total_caps": {
+    "gpu_hours": 0.3333333333333333,
+    "core_hours": 6.666666666666667
+  },
+  "estimates": {
+    "gpu_hours": 0.1,
+    "core_hours": 2,
+    "note": "CPU nuovo non cronometrato; stime basate su estrazioni precedenti. Tetti vincolanti sopra."
+  },
+  "automatic_retry": false,
+  "automatic_training": false,
+  "execution": {
+    "plan_commit": "520158e6ee48ea0924e7b0ea5532b874ca3d4667",
+    "jobs_submitted": [
+      {
+        "mode": "extract",
+        "slurm_id": 62561780,
+        "submitted_at_utc": "2026-10-28T13:19:52.151243+00:00",
+        "evidence": "results/infra/pilot_posa/b_e3_20261028/extract_submission.json"
+      },
+      {
+        "mode": "report",
+        "slurm_id": 62561881,
+        "submitted_at_utc": "2026-10-28T13:20:41.466954+00:00",
+        "evidence": "results/infra/pilot_posa/b_e3_20261028/report_submission.json"
+      }
+    ],
+    "extra_jobs_submitted": [],
+    "note": "Prima chiamata runtime interrotta prima di qualunque prenotazione; riconciliazione ledger e SLURM vuota. Una sola sottomissione effettiva per ID, nessun retry di job.",
+    "startup_snapshot": "results/infra/pilot_posa/b_e3_20261028/startup/startup.json",
+    "startup_recorded_at_utc": "2026-10-28T13:22:33.873Z",
+    "final_evidence": "results/infra/pilot_posa/b_e3_20261028/final",
+    "queue_at_collection": "empty"
+  },
+  "verification": {
+    "cpu_tests": 41,
+    "elapsed_s": 8.4,
+    "scientific_review": "PASS: critico scientifico su source859dc19 e protocollo, senza blocchi; nessun via alla continuazione19618",
+    "technical_review": "results/infra/pilot_posa/b_e3_20261028/technical_review.json",
+    "frozen_outputs_absent": true
+  },
+  "actual_costs": {
+    "gpu_hours": 0.07083333333333333,
+    "core_hours": 0.8022222222222222,
+    "total_cpu_seconds": 746.179
+  },
+  "results": {
+    "review": "docs/reviews/e3_b_results_20261028.md",
+    "report_sha256": "761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94",
+    "primary_delta_ratio": 0.002831767845052352,
+    "primary_delta_ratio_ci95": [
+      0.0008978678459578433,
+      0.004602495328618166
+    ],
+    "interpretation": "This ridge reads slightly less dynamics than the existing head; mean-level and total MSE improve. No encoder ceiling or automatic continuation inferred."
+  }
+}

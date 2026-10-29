@@ -1,0 +1,25 @@
+{
+  "checked_at_utc": "2026-10-28T09:55:38.095230+00:00",
+  "extract": {
+    "job_id": 62539724,
+    "state": "PENDING",
+    "reason": "Priority",
+    "elapsed_s": 0,
+    "allocated_cpus": 0,
+    "log_present": false,
+    "guard_preflight_passed": null
+  },
+  "report": {
+    "job_id": 62540295,
+    "state": "PENDING",
+    "reason": "Dependency",
+    "elapsed_s": 0,
+    "allocated_cpus": 0,
+    "log_present": false,
+    "afterok": 62539724
+  },
+  "squeue_exit": 0,
+  "sacct_exit": 0,
+  "tail_exit": 1,
+  "note": "Neither job has started; no guard evaluation is yet available. No retry or mutation."
+}

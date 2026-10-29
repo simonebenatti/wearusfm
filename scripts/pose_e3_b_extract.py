@@ -1,0 +1,139 @@
+"""Guarded B5000 train extraction; the scientific extractor stays at 24139ab.
+
+Executed only on a compute node from a source-hashed stdin payload. No remote
+checkout edits. Writes a new cache plus provenance after successful extraction.
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+import numpy as np
+
+CODE_SHA = "24139ab901c052357a46a65bc20466f2eb1e8358"
+CKPT_SHA = "815956b98d27cd2ff71f1255d0e220e2b0e08e467e7bedf93a54d0984b10783e"
+CONFIG_SHA = "f55fa6a5f117ad8898c20bbaf8b20f288c169a9a9a12e7bf3bfdad26fef1d157"
+STATS_SHA = "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+MANIFEST_SHA = "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+CSV_SHA = "0e7ad04a79a0f162385d22ec8d6f43af9b8360978ca11ef9d601bbf9594b09e6"
+
+
+def require(ok, message):
+    if not ok:
+        raise ValueError(message)
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open("rb") as f:
+        for block in iter(lambda: f.read(8 * 1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def fresh(path):
+    require(path.is_absolute() and not path.exists() and not path.is_symlink(), "output must be absolute and new")
+    roots = [Path(os.environ["CODE_DIR"]), Path(os.environ["WORK"]) / "wearusfm",
+             Path(os.environ["WORK"]) / "wearusfm_campaigns"]
+    require(not any(p.resolve() == path.resolve() or p.resolve() in path.resolve().parents for p in roots), "output inside code")
+
+
+def cache_metadata(path):
+    with np.load(path, allow_pickle=False) as z:
+        return json.loads(str(z["meta_json"])), json.loads(str(z["config_json"])), int(z["n_recordings"])
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--checkpoint", type=Path, required=True)
+    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--r3c-train", type=Path, required=True)
+    ap.add_argument("--source-sha256", required=True)
+    ap.add_argument("--wrapper-sha256", required=True)
+    a = ap.parse_args(argv)
+    require(sha(__file__) == a.source_sha256, "source SHA mismatch")
+    require(os.environ.get("WEARUSFM_CODE_SHA") == CODE_SHA, "wrong frozen environment")
+    from wearusfm.harness import pose_eval as PE
+    from wearusfm.data import pose_targets as PT
+    from wearusfm.ingest.emg2pose import _SAFE_RE
+    import torch
+
+    provenance = Path(str(a.out) + ".extract_provenance.json")
+    fresh(a.out)
+    fresh(provenance)
+    work, scratch = Path(os.environ["WORK"]), Path(os.environ["SCRATCH"])
+    csv_path = work / "data/raw/emg2pose_mini/emg2pose_metadata.csv"
+    manifest = work / "wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz"
+    processed, pose = scratch / "data/processed/emg2pose", scratch / "data/processed/emg2pose_pose"
+    for p, digest in ((a.checkpoint, CKPT_SHA), (a.checkpoint.parent / "config.json", CONFIG_SHA),
+                      (csv_path, CSV_SHA), (manifest, MANIFEST_SHA), (pose / PT.STATS_FILE, STATS_SHA)):
+        require(sha(p) == digest, "input SHA mismatch: " + str(p))
+    state = torch.load(a.checkpoint, map_location="cpu", weights_only=False)
+    require(state["step"] == 5000 and state["pose_stats_sha256"] == STATS_SHA, "checkpoint step/stats mismatch")
+    require(state["config"] == json.loads((a.checkpoint.parent / "config.json").read_text()), "checkpoint/config mismatch")
+    require(state["config"]["model"]["pose_head"] is True, "missing head")
+    del state
+    normalize = lambda u: "u" + _SAFE_RE.sub("_", str(u)).removeprefix("u")
+    with gzip.open(manifest, "rt") as f:
+        mf = json.load(f)
+    train_users = {normalize(r["subject"]) for row in mf["rows"] for r in [dict(zip(mf["columns"], row))]
+                   if r["dataset"] == "emg2pose" and r["split"] == "pretraining"}
+    with csv_path.open(newline="") as f:
+        val_users = {normalize(r["user"]) for r in csv.DictReader(f) if r["split"] == "val"}
+    require(len(train_users) == 158 and len(val_users) == 15 and not train_users & val_users, "train/val identity mismatch")
+    records = PE.recordings_for(csv_path, processed, "train", n_users=40, n_recordings=200, seed=20261026)
+    selected_users = {normalize(r["user"]) for r in records}
+    require(len(records) == 200 and len(selected_users) == 40 and selected_users <= train_users, "wrong train subset")
+    for r in records:
+        p = Path(r["path"])
+        require(all(x.is_file() and x.stat().st_size > 0 for x in
+                    (p / "data_int16.npy", PT.pose_dir(pose, p) / PT.POSE_FILE, PT.pose_dir(pose, p) / PT.VALID_FILE)),
+                "missing recording arrays: " + str(p))
+    old_meta, old_cfg, old_n = cache_metadata(a.r3c_train)
+    require(old_n == 200 and old_cfg.get("split") == "train" and old_cfg.get("seed") == 20261026, "R3c subset protocol mismatch")
+    old_sha = sha(a.r3c_train)
+    command = [sys.executable, str(Path(os.environ["CODE_DIR"]) / "scripts/pose_eval.py"), "--stage", "extract",
+               "--checkpoint", str(a.checkpoint), "--which", "student", "--csv", str(csv_path),
+               "--processed-root", str(processed), "--pose-root", str(pose), "--split", "train",
+               "--n-users", "40", "--n-recordings", "200", "--n-windows", "10", "--window-s", "4",
+               "--seed", "20261026", "--batch", "32", "--device", "cuda", "--out", str(a.out)]
+    a.out.parent.mkdir(parents=True, exist_ok=True)
+    print("Frozen B5000 train extraction guards passed", flush=True)
+    subprocess.run(command, check=True)
+    meta, cfg, n = cache_metadata(a.out)
+    require(n == 200 and cfg["which"] == "student" and cfg["checkpoint_pose_stats_sha256"] == STATS_SHA, "new cache protocol mismatch")
+    fields = ("user", "session", "stage", "side", "stem", "recording", "start", "fs", "n_patches")
+    require([tuple(m[k] for k in fields) for m in meta] == [tuple(m[k] for k in fields) for m in old_meta],
+            "train subset/windows differ from R3c; no report may proceed")
+    with np.load(a.out, allow_pickle=False) as z:
+        mask = z["mask"]
+        rows = mask.any(axis=2)
+        partial = int((rows & ~mask.all(axis=2)).sum())
+        valid_elements = int(mask.sum())
+    require(sha(a.checkpoint) == CKPT_SHA, "checkpoint changed during extraction")
+    require(sha(a.r3c_train) == old_sha, "R3c cache changed during extraction")
+    result = {"mode": "extract", "cache": str(a.out), "output": str(a.out), "cache_sha256": sha(a.out),
+              "cache_bytes": a.out.stat().st_size, "checkpoint": str(a.checkpoint), "checkpoint_sha256": CKPT_SHA,
+              "checkpoint_step": 5000, "pose_stats_sha256": STATS_SHA, "which": "student", "split": "train",
+              "training_code_sha": CODE_SHA, "execution_code_sha": CODE_SHA, "source_sha256": a.source_sha256,
+              "wrapper_sha256": a.wrapper_sha256, "n_recordings": n, "n_users": len(selected_users), "n_windows": len(meta),
+              "csv_sha256": CSV_SHA, "manifest_sha256": MANIFEST_SHA, "config_file_sha256": CONFIG_SHA,
+              "r3c_subset": {"cache": str(a.r3c_train), "sha256": old_sha, "identical_window_metadata": True},
+              "mask_audit": {"selected_any_rows": int(rows.sum()), "partial_joint_rows": partial,
+                             "valid_elements": valid_elements, "invalid_elements_excluded": int(mask.size-valid_elements)},
+              "config": cfg, "command": command, "slurm_job_id": os.environ.get("SLURM_JOB_ID")}
+    with provenance.open("x") as f:
+        json.dump(result, f, indent=2, allow_nan=False)
+        f.write("\n")
+    print(json.dumps({"completed": True, "cache_sha256": result["cache_sha256"], "mask_audit": result["mask_audit"]}), flush=True)
+
+
+if __name__ == "__main__":
+    main()

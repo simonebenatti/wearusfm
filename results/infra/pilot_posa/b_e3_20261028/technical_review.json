@@ -1,0 +1,45 @@
+{
+  "checked_at_utc": "2026-10-28T12:56:04.044746+00:00",
+  "status": "TECHNICAL_REVIEW_PASS_PENDING_COMMIT",
+  "plan_sha256": "fb652995d887da48bb6a318045b2eea55dd7badb7f7bcca36d2959196e3f2cb6",
+  "source_hashes": {
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_e3_b_extract.py": "21ada4640c4504f78672eb2adcbfa0bb7aa64116f28ae91453296d04c5850bd7",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "scripts/build_pose_e3_b_payloads.py": "c412cf47939a35747dd7af32a8dd82ad74bde9d579bef101ac7f8888854654d6"
+  },
+  "jobs": [
+    {
+      "mode": "extract",
+      "wrapper_sha256": "3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+      "byte_identical_to_generation": true,
+      "bash_n": true,
+      "argv_matches_commandfile": true,
+      "ledger_directory_absent": true,
+      "argv_sha256": "228828c9225f878893cb72b2e075812dc88ab417b6cb1347eeb7f2c427a7f02a"
+    },
+    {
+      "mode": "report",
+      "wrapper_sha256": "4a5532a617c4b82baa63621c376ea726418a08b5b5cd6b0b3f517de986494d28",
+      "byte_identical_to_generation": true,
+      "bash_n": true,
+      "argv_matches_commandfile": true,
+      "ledger_directory_absent": true,
+      "argv_sha256": "d17c3b793bf7a107e398316b21cd1cbf2f98cbe42cdf23f42591e3ece6a126c5"
+    }
+  ],
+  "source_paths_equal_plan": true,
+  "code_dir_setup_precedes_modules_and_python": true,
+  "stdin_payloads_write_only_compute_tmp_and_new_outputs": true,
+  "fresh_outputs_remote_ls_at_review": {
+    "returncode": 2,
+    "all_four_paths": "No such file or directory"
+  },
+  "queue_sbenatti": "empty",
+  "total_caps": {
+    "gpu_hours": 0.3333333333333333,
+    "core_hours": 6.666666666666667
+  },
+  "submissions": [],
+  "caveat": "CPU report runtime unmeasured; 30 minutes is hard cap, no automatic retry."
+}

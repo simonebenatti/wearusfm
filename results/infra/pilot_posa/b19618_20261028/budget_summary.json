@@ -1,0 +1,41 @@
+{
+  "as_of_utc": "2026-10-28T15:13:03.626464+00:00",
+  "scope": "Second wave pilot posa including all ancillary E3/audits, unsuccessful diagnostic attempts, cancelled R0/J2bis, B5000 evaluations and B19618 preflight; conservative charge to original base caps, without using amendment extra headroom.",
+  "source": "Common ledger reconciled against sacct -X for all 37 IDs and user-wide sacct since 2026-10-26; no extra POSE/POSA job found.",
+  "job_count": 37,
+  "all_terminal": true,
+  "active_user_jobs": [],
+  "original_caps": {
+    "gpu_hours": 132,
+    "cpu_only_core_hours": 531
+  },
+  "spent": {
+    "gpu_hours": 52.92916666666667,
+    "allocated_core_hours": 495.3205555555556,
+    "cpu_only_core_hours": 71.88722222222222
+  },
+  "remaining": {
+    "gpu_hours": 79.07083333333333,
+    "cpu_only_core_hours": 459.11277777777775
+  },
+  "conservative_remaining_floor": {
+    "gpu_hours": 79,
+    "cpu_only_core_hours": 459
+  },
+  "training_4h_scenario": {
+    "gpus": 4,
+    "cpus": 32,
+    "wall_hours_cap": 4,
+    "gpu_hours_reserved": 16,
+    "gpu_job_core_hours_reserved": 128,
+    "gpu_hours_remaining_after_reservation": 63.070833333333326,
+    "cpu_only_core_hours_remaining_after_reservation": 459.11277777777775
+  },
+  "accounting_rules": [
+    "ElapsedRaw * AllocTRES gres/gpu / 3600 for GPUh.",
+    "ElapsedRaw * AllocCPUS / 3600 for allocated coreh; only jobs with zero GPUs charged to original 531-coreh column, consistent with pilot_posa_v1.md section 7.",
+    "GPU-job allocated coreh are recorded separately and are not deducted again from CPU-only cap.",
+    "Actual elapsed allocations include startup/cleanup overhead, rather than summary training seconds.",
+    "No active reservations found in this queue snapshot; these are experiment caps, not a fresh saldo for the shared CINECA account."
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "started_at_utc": "2026-10-28T13:19:23.463821+00:00",
+  "plan_commit": "520158e6ee48ea0924e7b0ea5532b874ca3d4667",
+  "plan_sha256": "db5ad2353cd1ca57df7ef48e45f70d11b02f435b94305a21974b2dc4f3d40886",
+  "job_index": 0,
+  "wrapper_sha256": "3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "scripts/submit_job.py",
+    "--id",
+    "PILOT-POSA-B5000-E3-extract-20261028",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "pilot-posa-b-e3-20261028",
+    "--gpu-ore",
+    "0.3333333333333333",
+    "--script-stdin",
+    "scripts/slurm/pose_e3_b_extract.sbatch",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+    "--account=IscrB_WearUsFM",
+    "--partition=boost_usr_prod",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=8",
+    "--mem=60G",
+    "--time=00:20:00",
+    "--gres=gpu:1",
+    "--qos=normal",
+    "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
+    "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out"
+  ],
+  "recorded_at_utc": "2026-10-28T13:19:52.151243+00:00",
+  "returncode": 0,
+  "stdout": "PILOT-POSA-B5000-E3-extract-20261028: sottomesso, job 62561780\n",
+  "stderr": "",
+  "state": {
+    "id": "PILOT-POSA-B5000-E3-extract-20261028",
+    "creato": "2026-10-28T14:19:23+01:00",
+    "agente": "gpt",
+    "campagna": "pilot-posa-b-e3-20261028",
+    "gpu_ore_stimate": 0.3333333333333333,
+    "codice_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=PILOT-POSA-B5000-E3-extract-20261028",
+      "--comment=wearusfm:PILOT-POSA-B5000-E3-extract-20261028",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028,EXPECTED_SHA=24139ab901c052357a46a65bc20466f2eb1e8358,WRAPPER_SHA256=3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+      "--account=IscrB_WearUsFM",
+      "--partition=boost_usr_prod",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--mem=60G",
+      "--time=00:20:00",
+      "--gres=gpu:1",
+      "--qos=normal",
+      "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out",
+      "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_e3_b_extract_%j.out"
+    ],
+    "dopo": null,
+    "script_stdin": "scripts/slurm/pose_e3_b_extract.sbatch",
+    "script_stdin_sha256": "3133e1eb1ee7c46bc178cd0a597b6f25454d523b9fa4508581d186092fe053c9",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-10-28T14:19:23+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-10-28T14:19:23+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-10-28T14:19:52+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 62561780,
+        "uscita": 0,
+        "stdout": "62561780\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+      }
+    ],
+    "job_slurm": 62561780,
+    "uscita": 0,
+    "stdout": "62561780\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+}

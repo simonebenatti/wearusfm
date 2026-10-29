@@ -1,0 +1,44 @@
+{
+  "collected_at_utc": "2026-10-28T11:01:17.642520+00:00",
+  "files": {
+    "report.json": {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json",
+      "bytes": 17902,
+      "sha256": "c3902e4a6095e567115065bc9ec63672f4dea755d21eb5ffc287b57d91d881d9"
+    },
+    "extract_provenance.json": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028/val.npz.extract_provenance.json",
+      "bytes": 2598137,
+      "sha256": "bc77168242b507433304426b749f4cadd52a7cead390af3f6ae02d181f24514c"
+    },
+    "report_provenance.json": {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json",
+      "bytes": 1530,
+      "sha256": "fe619d100b33618e0081fbbc151401d22f4a0dc5f300a2ce164d356f30319c3e"
+    },
+    "extract_62539724.out": {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_extract_62539724.out",
+      "bytes": 192732,
+      "sha256": "4d5b261b50d87a948603cd05f2ff9b5cddcb6b53f3c6d6d2e177a487e9f7e0a8"
+    },
+    "report_62540295.out": {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_eval_b_report_62540295.out",
+      "bytes": 2002,
+      "sha256": "4ae995075968e56dd5ad0418592707b47aefd0da5a8b5d3e3e181957ad106985"
+    }
+  },
+  "commands": {
+    "sacct_utc.txt": {
+      "command": "TZ=UTC sacct -n -P -j 62539724,62540295 --format=JobID,JobName%64,State,ExitCode,Start,End,Elapsed,ElapsedRaw,AllocCPUS,AllocTRES%100,TotalCPU,MaxRSS",
+      "exit_code": 0
+    },
+    "squeue.txt": {
+      "command": "squeue -h -j 62539724,62540295 -o '%i|%j|%T|%M|%l|%R'",
+      "exit_code": 0
+    },
+    "ls_l.txt": {
+      "command": "ls -l /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B5000_student_E1E2_20261028.json.report_provenance.json",
+      "exit_code": 0
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "report_sha256": "761276493751bcb959fa0a49efa0a51da825b8730bc6d6125b95eb1164770c94",
+  "n_bootstrap": 1000,
+  "seed": 20261009,
+  "method": "Independent pooled sums and paired resampling of users; no experiment-code import",
+  "groups": {
+    "dynamic": {
+      "delta_ratio": 0.002831767845052352,
+      "ci95": [
+        0.0008978678459578433,
+        0.004602495328618166
+      ],
+      "users_ridge_higher_error": 10,
+      "users_ridge_lower_error": 5,
+      "head_ratio": 0.927475093799516,
+      "ridge_ratio": 0.9303068616445682,
+      "mean_mse_delta": -0.012125581275218789,
+      "centered_mse_delta": 0.0015107566293283137,
+      "total_mse_delta": -0.010614824645890586
+    },
+    "all": {
+      "delta_ratio": -0.0010513231601459287,
+      "ci95": [
+        -0.003464840400740492,
+        0.0010534967106579436
+      ],
+      "users_ridge_higher_error": 7,
+      "users_ridge_lower_error": 8,
+      "head_ratio": 0.9495142208610968,
+      "ridge_ratio": 0.9484628977009507,
+      "mean_mse_delta": -0.031075588536335186,
+      "centered_mse_delta": -0.0003288691896336515,
+      "total_mse_delta": -0.03140445772596889
+    },
+    "static": {
+      "delta_ratio": -0.020420534508176165,
+      "ci95": [
+        -0.02591372599226496,
+        -0.015292288775257913
+      ],
+      "users_ridge_higher_error": 0,
+      "users_ridge_lower_error": 15,
+      "head_ratio": 1.0594473925046124,
+      "ridge_ratio": 1.0390268579964363,
+      "mean_mse_delta": -0.049167914560552806,
+      "centered_mse_delta": -0.0020852331646238342,
+      "total_mse_delta": -0.05125314772517653
+    }
+  }
+}

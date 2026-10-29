@@ -1,0 +1,502 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028 @ 24139ab901c052357a46a65bc20466f2eb1e8358
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+== moduli caricati
+Currently Loaded Modulefiles:
+ 1) profile/base(default)                          30) cineca-ai/4.3.0  
+ 2) profile/deeplrn                                
+ 3) cuda/12.1 <aL>                                 
+ 4) nccl/2.19.1-1--gcc--12.2.0-cuda-12.1 <aL>      
+ 5) cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 <aL>  
+ 6) gcc/12.2.0-binut2.41 <aL>                      
+ 7) openmpi/4.1.6--gcc--12.2.0 <aL>                
+ 8) bzip2/1.0.8-gp5wcz5 <aL>                       
+ 9) libmd/1.0.4-wja3f5q <aL>                       
+10) libbsd/0.11.7-cgxjopl <aL>                     
+11) expat/2.5.0-bptl3xw <aL>                       
+12) ncurses/6.4-asx3jea <aL>                       
+13) readline/8.2-nyw6mp6 <aL>                      
+14) gdbm/1.23-fs6otck <aL>                         
+15) libiconv/1.17-d7yvx2s <aL>                     
+16) xz/5.4.1-hubmwr5 <aL>                          
+17) zlib-ng/2.1.4-6htiapk <aL>                     
+18) libxml2/2.10.3-5eeeokp <aL>                    
+19) pigz/2.7-bopr5vp <aL>                          
+20) zstd/1.5.5-gawytfl <aL>                        
+21) tar/1.34-amqus5s <aL>                          
+22) gettext/0.22.3-2g7elif <aL>                    
+23) libffi/3.4.4-6r7brdq <aL>                      
+24) libxcrypt/4.4.35-ss2rzin <aL>                  
+25) sqlite/3.43.2 <aL>                             
+26) util-linux-uuid/2.38.1-jkdi7kv <aL>            
+27) python/3.11.6--gcc--8.5.0 <aL>                 
+28) cmake/3.27.7 <aL>                              
+29) openjdk/11.0.20.1_1(default) <aL>              
+
+Key:
+(symbolic-version)  <module-tag>  <aL>=auto-loaded  
+pip freeze: 333 righe in /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028
+== pip freeze
+# Editable Git install with no remote (flash-attn==2.5.5)
+# Editable Git install with no remote (torchdata==0.7.1+5e6f7b7)
+# Editable Git install with no remote (torchtext==0.17.0+400da5c)
+# Editable Git install with no remote (torchvision==0.17.0+b2383d4)
+# Editable Git install with no remote (wearusfm==0.1.0)
+# Editable install with no version control (torch==2.2.0a0+git6c8c5ad)
+-e /leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/data
+-e /leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/flash-attention
+-e /leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/text
+-e /leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/vision
+-e /leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages
+-e /leonardo_work/IscrB_WearUsFM/wearusfm
+Babel==2.14.0
+Deprecated==1.2.14
+GitPython==3.1.42
+Jinja2==3.1.3
+Keras-Preprocessing==1.1.2
+Markdown==3.6
+MarkupSafe==2.1.5
+PyPika==0.48.9
+PyYAML==6.0.1
+Pygments==2.17.2
+Send2Trash==1.8.2
+Sphinx==5.3.0
+Werkzeug==3.0.1
+absl-py==2.1.0
+accelerate @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/accelerate
+aiohttp==3.9.3
+aiosignal==1.3.1
+alabaster==0.7.16
+annotated-types==0.6.0
+anyio==4.3.0
+apex @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/apex
+appdirs==1.4.4
+argon2-cffi-bindings==21.2.0
+argon2-cffi==23.1.0
+arrow==1.3.0
+asgiref==3.8.1
+asttokens==2.4.1
+astunparse==1.6.3
+async-lru==2.0.4
+attrs==23.2.0
+backoff==2.2.1
+bcrypt==4.1.2
+beautifulsoup4==4.12.3
+bleach==6.1.0
+blis==0.7.11
+build==1.1.1
+cachetools==5.3.3
+catalogue==2.0.10
+certifi==2024.2.2
+cffi==1.16.0
+cfgv==3.4.0
+charset-normalizer==3.3.2
+chroma-hnswlib==0.7.3
+chromadb==0.4.24
+clang-format==16.0.2
+click==8.1.7
+cloudpathlib==0.16.0
+cloudpickle==3.0.0
+cmake==3.29.0.1
+colorama==0.4.6
+coloredlogs==15.0.1
+comm==0.2.2
+commonmark==0.9.1
+confection==0.1.4
+contourpy==1.2.0
+cryptography==42.0.5
+cycler==0.12.1
+cymem==2.0.8
+datasets==2.18.0
+debugpy==1.8.1
+decorator==5.1.1
+deepspeed @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/DeepSpeed/dist/deepspeed-0.13.2%2B18179807-cp311-cp311-linux_x86_64.whl#sha256=cc24d696eda8f4de915891f191651c6075db3e68e33c8ce347c5edeb10d0a00a
+deepspeed-kernels==0.0.1.dev1698255861
+defusedxml==0.7.1
+diffusers==0.27.2
+dill==0.3.8
+distlib==0.3.8
+dm-tree==0.1.8
+docker-pycreds==0.4.0
+docutils==0.17.1
+einops==0.7.0
+evaluate==0.4.1
+execnet==2.0.2
+executing==2.0.1
+expecttest==0.2.1
+fastapi==0.110.0
+fastjsonschema==2.19.1
+filelock==3.13.3
+fire==0.6.0
+flatbuffers==24.3.25
+flwr==1.8.0
+fonttools==4.50.0
+fqdn==1.5.1
+frozenlist==1.4.1
+fsspec==2024.2.0
+future==1.0.0
+gast==0.5.4
+gitdb==4.0.11
+google-auth-oauthlib==1.2.0
+google-auth==2.29.0
+google-pasta==0.2.0
+googleapis-common-protos==1.63.0
+grpcio==1.62.1
+h11==0.14.0
+h5py==3.10.0
+hjson==3.1.0
+httpcore==1.0.4
+httptools==0.6.1
+httpx==0.27.0
+huggingface-hub==0.22.1
+humanfriendly==10.0
+hypothesis==6.99.13
+identify==2.5.35
+idna==3.6
+imageio==2.34.0
+imagesize==1.4.1
+importlib-metadata==6.11.0
+importlib_resources==6.4.0
+iniconfig==2.0.0
+ipykernel==6.29.3
+ipython==8.22.2
+isoduration==20.11.0
+iterators==0.0.2
+jedi==0.19.1
+joblib==1.3.2
+json5==0.9.24
+jsonpointer==2.4
+jsonschema-specifications==2023.12.1
+jsonschema==4.21.1
+jupyter-events==0.10.0
+jupyter-lsp==2.2.4
+jupyter_client==8.6.1
+jupyter_core==5.7.2
+jupyter_server==2.13.0
+jupyter_server_terminals==0.5.3
+jupyterlab==4.1.5
+jupyterlab_pygments==0.3.0
+jupyterlab_server==2.25.4
+keras==2.15.0
+kiwisolver==1.4.5
+kubernetes==29.0.0
+langcodes==3.3.0
+lazy_loader==0.4
+libclang==18.1.1
+lightning-utilities==0.11.1
+markdown-it-py==3.0.0
+mat73==0.65
+matplotlib-inline==0.1.6
+matplotlib==3.8.3
+mdurl==0.1.2
+mistune==3.0.2
+ml-dtypes==0.2.0
+mmh3==4.1.0
+monotonic==1.6
+mpmath==1.3.0
+msgpack==1.0.8
+multidict==6.0.5
+multiprocess==0.70.16
+mup==1.0.0
+murmurhash==1.0.10
+nbclient==0.10.0
+nbconvert==7.16.3
+nbformat==5.10.3
+nest-asyncio==1.6.0
+networkx==3.2.1
+ninja==1.11.1.1
+nodeenv==1.8.0
+notebook==7.1.2
+notebook_shim==0.2.4
+numpy==1.26.4
+oauthlib==3.2.2
+onnxruntime==1.17.1
+opencv-python==4.9.0.80
+opentelemetry-api==1.23.0
+opentelemetry-exporter-otlp-proto-common==1.23.0
+opentelemetry-exporter-otlp-proto-grpc==1.23.0
+opentelemetry-instrumentation-asgi==0.44b0
+opentelemetry-instrumentation-fastapi==0.44b0
+opentelemetry-instrumentation==0.44b0
+opentelemetry-proto==1.23.0
+opentelemetry-sdk==1.23.0
+opentelemetry-semantic-conventions==0.44b0
+opentelemetry-util-http==0.44b0
+opt-einsum==3.3.0
+optree==0.11.0
+orjson==3.9.15
+overrides==7.7.0
+packaging==24.0
+pandas==2.2.1
+pandocfilters==1.5.1
+parso==0.8.3
+peft==0.10.0
+pexpect==4.9.0
+pillow==10.2.0
+platformdirs==4.2.0
+plotly==5.20.0
+pluggy==1.4.0
+posthog==3.5.0
+pre-commit==3.7.0
+preshed==3.0.9
+prettytable==3.10.0
+prometheus_client==0.20.0
+prompt-toolkit==3.0.43
+protobuf==4.25.3
+psutil==5.9.8
+ptyprocess==0.7.0
+pulsar-client==3.4.0
+pure-eval==0.2.2
+py-cpuinfo==9.0.0
+py==1.11.0
+pyarrow-hotfix==0.6
+pyarrow==15.0.2
+pyasn1==0.6.0
+pyasn1_modules==0.4.0
+pycparser==2.21
+pycryptodome==3.20.0
+pydantic==1.10.15
+pydantic_core==2.16.3
+pyg-lib @ git+https://github.com/pyg-team/pyg-lib.git@5043806bb5a8c15aff43ce6e732060c078942b60
+pynvml==11.5.0
+pyparsing==3.1.2
+pyproject_hooks==1.0.0
+pytest-forked==1.6.0
+pytest-randomly==3.15.0
+pytest-xdist==3.5.0
+pytest==8.1.1
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+python-json-logger==2.0.7
+pytorch-lightning-bolts==0.3.2.post1
+pytorch-lightning==2.2.0
+pytz==2024.1
+pyzmq==25.1.2
+ray==2.6.3
+recommonmark==0.7.1
+referencing==0.34.0
+regex==2023.12.25
+requests-oauthlib==2.0.0
+requests==2.31.0
+responses==0.18.0
+rfc3339-validator==0.1.4
+rfc3986-validator==0.1.1
+rich==13.7.1
+rpds-py==0.18.0
+rsa==4.9
+safetensors==0.4.2
+scikit-image==0.22.0
+scikit-learn==1.4.1.post1
+scipy==1.12.0
+seaborn==0.13.2
+sentence-transformers==2.6.1
+sentencepiece==0.2.0
+sentry-sdk==1.43.0
+setproctitle==1.3.3
+shellingham==1.5.4
+six==1.16.0
+smart-open==6.4.0
+smmap==5.0.1
+sniffio==1.3.1
+snowballstemmer==2.2.0
+sortedcontainers==2.4.0
+soupsieve==2.5
+spacy-legacy==3.0.12
+spacy-loggers==1.0.5
+spacy==3.7.4
+sphinx-rtd-theme==2.0.0
+sphinxcontrib-applehelp==1.0.8
+sphinxcontrib-devhelp==1.0.6
+sphinxcontrib-htmlhelp==2.0.5
+sphinxcontrib-jquery==4.1
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.7
+sphinxcontrib-serializinghtml==1.1.10
+srsly==2.4.8
+stack-data==0.6.3
+starlette==0.36.3
+sympy==1.12
+tabulate==0.9.0
+tenacity==8.2.3
+tensorboard-data-server==0.7.2
+tensorboard==2.15.2
+tensorflow @ https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-2.15.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl#sha256=dee8ec2b2c6c942ae65d25746e53cdc475e82d5fcbbb3009ce47f5963d69ebfc
+tensorflow-estimator==2.15.0
+tensorflow-io-gcs-filesystem==0.36.0
+termcolor==2.4.0
+terminado==0.18.1
+tfp-nightly @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/probability/wheel/tfp_nightly-0.23.0-py2.py3-none-any.whl#sha256=99bbdf53f38fa62a8a412b8ed2a810515d4fce8ddd98c41286b1d8a57b4d8493
+thinc==8.2.3
+threadpoolctl==3.4.0
+tifffile==2024.2.12
+tiktoken==0.6.0
+tinycss2==1.2.1
+tokenizers==0.15.2
+tomli==2.0.1
+torch-cluster==1.6.3
+torch-scatter @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/pytorch_scatter
+torch-sparse @ file:///leonardo/prod/build/libraries/cineca-ai/4.3.0/none/BA_WORK/cineca-ai-4.3.0/work-dir/000002/000000_cineca-ai/work/sources/pytorch_sparse
+torch-summary==1.4.5
+torch-tb-profiler==0.4.3
+torch_geometric==2.5.0
+torchfile==0.1.0
+torchmetrics==1.3.2
+tornado==6.4
+tqdm==4.66.2
+traitlets==5.14.2
+transformers==4.38.0
+tunneller==0.1.6
+typer==0.9.4
+types-dataclasses==0.6.6
+types-python-dateutil==2.9.0.20240316
+typing_extensions==4.10.0
+tzdata==2024.1
+uri-template==1.3.0
+urllib3==2.2.1
+uvicorn==0.29.0
+uvloop==0.19.0
+virtualenv==20.25.1
+wandb==0.16.5
+wasabi==1.1.2
+watchfiles==0.21.0
+wcwidth==0.2.13
+weasel==0.3.4
+webcolors==1.13
+webencodings==0.5.1
+websocket-client==1.7.0
+websockets==12.0
+wrapt==1.14.1
+xgboost==2.0.3
+xxhash==3.4.1
+yarl==1.9.4
+zipp==3.18.1
+== fine pip freeze
+NVIDIA A100-SXM-64GB, 65536 MiB
+NVIDIA A100-SXM-64GB, 65536 MiB
+NVIDIA A100-SXM-64GB, 65536 MiB
+NVIDIA A100-SXM-64GB, 65536 MiB
+[2026-10-28 08:52:47,129] torch.distributed.run: [WARNING] 
+[2026-10-28 08:52:47,129] torch.distributed.run: [WARNING] *****************************************
+[2026-10-28 08:52:47,129] torch.distributed.run: [WARNING] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+[2026-10-28 08:52:47,129] torch.distributed.run: [WARNING] *****************************************
+preset sanity: 28.4 M parametri, 5000 passi, batch 32 globale su 4 processi, dispositivo cuda, 19879 scale di sessione, ancora RVQ spenta
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+passo 1: totale 6.7652, jepa 0.0280, 3.66 s/passo (dati 2.44 s), memoria GPU max 6.9 GiB
+passo 50: totale 4.6568, jepa 0.2592, 0.60 s/passo (dati 0.01 s), memoria GPU max 8.1 GiB
+passo 100: totale 3.9800, jepa 0.6942, 0.61 s/passo (dati 0.00 s), memoria GPU max 8.2 GiB
+passo 150: totale 3.4226, jepa 0.8490, 0.73 s/passo (dati 0.01 s), memoria GPU max 8.2 GiB
+passo 200: totale 3.4056, jepa 0.7559, 0.62 s/passo (dati 0.01 s), memoria GPU max 8.5 GiB
+passo 250: totale 3.3302, jepa 0.5354, 0.75 s/passo (dati 0.00 s), memoria GPU max 8.5 GiB
+passo 300: totale 3.5167, jepa 0.3642, 0.89 s/passo (dati 0.01 s), memoria GPU max 9.6 GiB
+passo 350: totale 3.0499, jepa 0.2695, 0.67 s/passo (dati 0.01 s), memoria GPU max 9.6 GiB
+passo 400: totale 3.7108, jepa 0.2423, 0.73 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 450: totale 3.3047, jepa 0.2102, 0.78 s/passo (dati 0.01 s), memoria GPU max 9.6 GiB
+passo 500: totale 3.0122, jepa 0.1342, 1.40 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 550: totale 3.4423, jepa 0.1376, 0.73 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 600: totale 2.3919, jepa 0.1345, 0.65 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 650: totale 2.4221, jepa 0.1390, 0.66 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 700: totale 2.5428, jepa 0.1079, 0.62 s/passo (dati 0.01 s), memoria GPU max 9.6 GiB
+passo 750: totale 2.6425, jepa 0.1111, 0.62 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 800: totale 2.2761, jepa 0.1356, 0.80 s/passo (dati 0.01 s), memoria GPU max 9.6 GiB
+passo 850: totale 2.2270, jepa 0.0856, 0.69 s/passo (dati 0.00 s), memoria GPU max 9.6 GiB
+passo 900: totale 2.3504, jepa 0.1283, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 950: totale 2.9148, jepa 0.0828, 0.69 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1000: totale 2.3894, jepa 0.0758, 1.22 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1050: totale 2.3072, jepa 0.0945, 0.75 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1100: totale 2.7086, jepa 0.1136, 0.63 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1150: totale 2.3259, jepa 0.0942, 0.73 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1200: totale 2.0049, jepa 0.0633, 0.81 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1250: totale 1.9849, jepa 0.0580, 0.84 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1300: totale 2.5814, jepa 0.0632, 0.85 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1350: totale 1.8538, jepa 0.1397, 0.85 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1400: totale 2.3562, jepa 0.0693, 0.79 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1450: totale 2.6886, jepa 0.0604, 0.63 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1500: totale 2.1995, jepa 0.0579, 1.42 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1550: totale 3.0392, jepa 0.0842, 0.75 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1600: totale 2.6180, jepa 0.0590, 0.75 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1650: totale 2.2420, jepa 0.0566, 0.65 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1700: totale 1.7870, jepa 0.0368, 0.72 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1750: totale 1.8710, jepa 0.0662, 0.72 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1800: totale 2.1176, jepa 0.0610, 0.83 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 1850: totale 1.8447, jepa 0.0543, 0.73 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1900: totale 2.5384, jepa 0.0508, 0.63 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 1950: totale 2.0669, jepa 0.0704, 0.66 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2000: totale 2.1844, jepa 0.0616, 1.37 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2050: totale 2.6633, jepa 0.0488, 0.75 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2100: totale 2.6316, jepa 0.0372, 0.68 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2150: totale 2.4137, jepa 0.0720, 0.78 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2200: totale 2.0227, jepa 0.0359, 0.71 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2250: totale 2.1568, jepa 0.0455, 0.69 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2300: totale 2.7072, jepa 0.0621, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2350: totale 1.9771, jepa 0.0487, 0.74 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2400: totale 2.0686, jepa 0.0369, 0.72 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2450: totale 1.8347, jepa 0.0410, 0.70 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2500: totale 1.7717, jepa 0.0463, 1.57 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2550: totale 2.5249, jepa 0.0504, 0.67 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2600: totale 2.0497, jepa 0.0378, 0.68 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2650: totale 2.0139, jepa 0.0354, 0.71 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2700: totale 1.6523, jepa 0.0410, 0.63 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2750: totale 2.3500, jepa 0.0414, 0.62 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2800: totale 2.6543, jepa 0.0504, 0.62 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2850: totale 2.0170, jepa 0.0530, 0.69 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 2900: totale 2.4942, jepa 0.0653, 0.73 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 2950: totale 1.9772, jepa 0.0509, 0.76 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3000: totale 2.3390, jepa 0.0465, 1.27 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3050: totale 1.9599, jepa 0.0385, 0.79 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3100: totale 1.8664, jepa 0.0466, 0.81 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3150: totale 1.9857, jepa 0.0441, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3200: totale 2.6871, jepa 0.0385, 0.77 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3250: totale 1.8722, jepa 0.0362, 0.74 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3300: totale 2.5666, jepa 0.0532, 0.81 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3350: totale 2.3908, jepa 0.0435, 0.62 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3400: totale 2.0321, jepa 0.0430, 0.73 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3450: totale 2.3527, jepa 0.0547, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3500: totale 2.1480, jepa 0.0385, 1.25 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3550: totale 2.1168, jepa 0.0393, 0.77 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3600: totale 2.0082, jepa 0.0417, 0.68 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3650: totale 1.8643, jepa 0.0404, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3700: totale 2.2447, jepa 0.0506, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3750: totale 2.6327, jepa 0.0612, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3800: totale 1.9288, jepa 0.0382, 0.75 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3850: totale 2.3240, jepa 0.0502, 0.62 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 3900: totale 2.3824, jepa 0.0349, 1.00 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 3950: totale 1.9665, jepa 0.0461, 0.62 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 4000: totale 2.0919, jepa 0.0419, 1.37 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 4050: totale 2.1348, jepa 0.0392, 0.73 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 4100: totale 2.4136, jepa 0.0390, 0.69 s/passo (dati 0.00 s), memoria GPU max 11.2 GiB
+passo 4150: totale 2.3916, jepa 0.0371, 0.72 s/passo (dati 0.01 s), memoria GPU max 11.2 GiB
+passo 4200: totale 1.5925, jepa 0.0374, 0.81 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4250: totale 1.1367, jepa 0.0252, 0.81 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4300: totale 1.8860, jepa 0.0373, 0.70 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4350: totale 1.8548, jepa 0.0437, 0.68 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4400: totale 2.1692, jepa 0.0307, 0.83 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4450: totale 1.5881, jepa 0.0333, 0.77 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4500: totale 2.1776, jepa 0.0446, 1.54 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4550: totale 2.3863, jepa 0.0477, 0.75 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4600: totale 2.3897, jepa 0.0344, 0.75 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4650: totale 2.2223, jepa 0.0561, 0.71 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4700: totale 2.1508, jepa 0.0431, 0.62 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4750: totale 3.0588, jepa 0.0376, 0.69 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4800: totale 1.8987, jepa 0.0365, 0.75 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 4850: totale 2.2387, jepa 0.0536, 0.80 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4900: totale 2.4382, jepa 0.0404, 0.63 s/passo (dati 0.01 s), memoria GPU max 12.0 GiB
+passo 4950: totale 1.8690, jepa 0.0406, 0.75 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+passo 5000: totale 2.1119, jepa 0.0449, 1.43 s/passo (dati 0.00 s), memoria GPU max 12.0 GiB
+fine: max_steps, passo 5000
+{"stopped": "max_steps", "steps": 5000, "elapsed_s": 3784.605773448944, "parameters": 28356829, "device": "cuda:0", "gpu_max_memory_gib": 13.747344970703125, "code": {"dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028", "sha": "24139ab901c052357a46a65bc20466f2eb1e8358"}, "environment": {"python": "3.11.6", "torch": "2.2.0a0+git6c8c5ad", "cuda": "12.1", "pip_freeze_file": "pip_freeze_62523672.txt", "pip_freeze_sha256": "f97a0225bfecbb5d25ddc1056e9be6519b801dc4fed2186e7109134b1d2c8f36", "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"}, "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e", "world_size": 4, "batch_per_process": 8, "prefetch": true, "prefetch_audit_steps": null, "accum_steps": 1, "micro_batch": 8, "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch", "pose_panel_timing": {"prepare_s": 19.032033454976045, "evaluations_s": [3.411463852971792, 3.391299133072607, 3.3765581810148433, 3.3883266530465335, 3.387310217018239, 3.3907955680042505, 3.386622032034211, 3.3754681170685217, 3.3914231760427356, 3.3773371629649773, 3.374963192967698], "total_s": 56.283600741182454}}

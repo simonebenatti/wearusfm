@@ -4,6 +4,44 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
+### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
+
+Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».
+**Da questa istruzione, le nuove sottomissioni su Leonardo passano dalla chat `semplicione`**, gia' esistente sul Mac
+(thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`; identita' verificata nell'app).
+Simone gli ha assegnato anche il controllo dei log nella sua chat. GPT scientifico prepara codice, protocollo, review,
+piano committato/pushato, SHA, risorse, budget, output e dipendenze; poi affida la sottomissione a semplicione.
+La richiesta di Simone autorizza questa delega operativa: non serve chiedere nuovamente chi debba eseguire un piano gia' approvato.
+
+Semplicione usa sempre `scripts/submit_job.py` e il ledger comune, conserva gli SHA congelati e restituisce ID, stato e log.
+Non creare un secondo agente omonimo o duplicare un lancio: prima verificare le prenotazioni e gli ID esistenti.
+Questa regola sostituisce l'assegnazione delle sottomissioni al subagent leonardo-ops e il lancio diretto da questa chat;
+restano responsabilita' scientifica, criteri, budget e autorizzazioni gia' definite. I job B19618 e le 12 valutazioni sono
+stati sottomessi prima della nuova regola: nessuna risottomissione, cancellazione o migrazione implicita.
+
+### Autonomia operativa — istruzioni di Simone del 28/10/2026
+
+**Aggiornamento dei ruoli, successivo alla review E3 B:** Simone: «adesso sarai tu ad implementare le modifiche e a
+lanciare le cose, e clasude fara solo da revisore». GPT assume anche implementazione e sottomissioni del lavoro affidato;
+Claude resta revisore. Questa istruzione supera la precedente proprieta' esclusiva del codice tecnico assegnata a Claude.
+Restano worktree separati, un writer per checkout, review pertinenti, criteri congelati e registro condiviso.
+
+Queste istruzioni successive prevalgono sui precedenti passaggi che chiedevano un nuovo consenso prima di ogni lancio:
+
+- «se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»: per attivita' pertinenti al lavoro affidato,
+  i job con costo massimo inferiore a **5 GPU-ore** possono essere preparati e sottomessi autonomamente. Per il preventivo
+  si usa numero di GPU allocate per walltime massimo richiesto; un job solo CPU ha costo GPU nullo. Registrare anche costo CPU,
+  risorse e consuntivo, rispettando i budget della campagna. Non frazionare artificialmente una prova per aggirare la soglia.
+- «anche per leggere i log e committare/pushare puoi procedere in autonomia»: lettura dei log, commit e push della consegna
+  sul proprio ramo di origin sono autonomi. Resta il controllo dello SHA remoto e del contenuto da pubblicare.
+- «se discutiamo un test e io ti dico che la approvo la puoi sottomettere direttamente e far partire senza chidere consenso
+  un'altra volta [...] in questo caso anche se supera le 5h gpu»: **l'approvazione della proposta comprende sottomissione
+  ed esecuzione**, anche sopra 5 GPU-ore. Nessuna seconda richiesta di via per lo stesso test approvato.
+
+Restano review scientifica/tecnica pertinenti, criteri fissati prima dei risultati, checkout congelati, submitter/ledger comuni,
+un solo responsabile di lancio, registrazione e nessun retry cieco. Le autorizzazioni persistono fra turni; l'aggiornamento
+non cambia automaticamente obiettivi, architetture o perimetro di un esperimento approvato.
+
 ### Lavoro in parallelo Claude / GPT (Simone, 09/10/2026: «si a tutti e 4»)
 - Il `main` canonico sta in `/Users/simonebenatti/dev/wearusfm`: e' il punto d'integrazione. Si sviluppa in **worktree locali su branch
   separati** dello stesso repo: Claude in `.claude/worktrees/claude-training-engine` (branch `worktree-claude-training-engine`), GPT nel
@@ -51,6 +89,9 @@
 - Non fare push su origin a meno che non te lo chieda esplicitamente. **Dal 21/10/2026 Simone ha chiesto a GPT di pubblicare anche su
   GitHub le proprie consegne e i log, verificando lo SHA remoto dopo il push.** La pubblicazione del ramo di lavoro non equivale alla
   review o al merge del codice dell'altro agente; i checkout di campagna mantengono i propri riferimenti congelati.
+- **Confermato il 28/10/2026 da Simone:** «comitta e pusha sempre tutto, in modo che anche claude sia aggiornato su cosa fai».
+  Ogni consegna di GPT comprende codice, test, documenti e voci del registro sul proprio ramo di `origin`, con verifica dello SHA remoto;
+  non lasciare modifiche locali della consegna fuori dal commit. Questa regola non autorizza deploy o job sul cluster.
 - Se un push verso leonardo viene rifiutato il tree remoto e' sporco:
   fermati e segnalalo, non forzare.
 
@@ -87,7 +128,7 @@
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Lo esegue leonardo-ops dal Mac. Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 28/10/2026 lo esegue semplicione dal Mac (regola successiva sopra). Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
@@ -123,7 +164,7 @@
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Ogni interazione col cluster passa dal subagent leonardo-ops.
+- Sottomissioni e controllo operativo dei log passano da semplicione (regola successiva del 28/10 sopra); nessun lancio parallelo tramite il vecchio subagent leonardo-ops.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
