@@ -5519,3 +5519,15 @@ La domanda su PSD/loss produce una proposta separata, docs/reviews/psd_loss_dopo
 priorità diagnostica PSD-3; PSD-1 chiuso; PSD-2 originario non eseguito integralmente e PSD-4 causale ancora aperto.
 Combinazioni di loss plausibili, già presenti in B; distinguere enfasi dinamica per posa da contrastivo locale per FM.
 Nessun lancio, nuovo braccio o modifica di loss derivati automaticamente da questa discussione.
+
+### 29/10/2026 — Review GPT della consegna convergenza sonde 22bf2cd/b98ece0
+
+Disegno di b1c1bda confermato. Prima del deploy, Claude corregge tre lacune riprodotte da GPT: parità che non
+rifiuta una differenza di score val, audit perso su errore del fit, ricetta B confrontata con A soltanto dopo i fit.
+Review e regressioni in docs/reviews/sonde_convergenza_review_20261029.md e test_sonde_convergenza_review_20261029.py.
+25 test della consegna verdi; tre nuove regressioni rosse, 172 verifiche di pin/percorsi/budget senza incongruenze.
+Nessuna modifica all'esperimento. Piano/comandi da rigenerare sullo SHA corretto; GPT rivede e semplicione esegue
+i blocchi approvati, senza un secondo consenso dell'utente. Nessun job/deploy richiesto da questa review.
+Confermati parità esatta, anche per un ulp, e ledger agente gpt / operatore semplicione. Tetto A 50.8333 core-ore,
+B 118.3333 provvisorio da affinare dopo A; 30 job scientifici 169.1667, più checkout 0.1667: 31 job, 169.3333
+core-ore complessive, GPU zero. Le allocazioni sono limiti di costo, non garanzie del tempo di completamento.

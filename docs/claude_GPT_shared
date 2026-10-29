@@ -4815,6 +4815,21 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   diverse, da provare separatamente. Nessun nuovo training PSD/loss autorizzato implicitamente dalla domanda.
   Pesi adattivi da motivare tramite gradienti globali; letteratura primaria verificata, esclusi TinyMyo/PhysioWave.
 
+### 2026-10-29 | GPT | Review tecnica e scientifica della convergenza sonde di Claude
+
+- Riferimenti 22bf2cd (codice) e b98ece0 (piano); richiesta b1c1bda. Review in checkout separato, senza modificare
+  il ramo di Claude. Disegno scientifico confermato; codice DA CORREGGERE prima del deploy e della fase A.
+- Report completo: docs/reviews/sonde_convergenza_review_20261029.md. Suite richiesta 25 passed in 121.96s;
+  172 verifiche indipendenti su pin/provenienze locali/percorsi/aritmetica senza incongruenze. NPZ remoti non riletti.
+- Tre regressioni indipendenti rosse (1.74s), in docs/reviews/test_sonde_convergenza_review_20261029.py:
+  parità accetta val_bacc diverso; eccezione perde audit su disco; B entra nei fit con ricetta diversa da A.
+  Claude corregge sul proprio ramo e rigenera piano/comandi col nuovo SHA; GPT rivede, semplicione esegue dopo.
+- Confermati split/fold indipendenti, fit e selezione senza leakage, bootstrap congiunto e cinque contrasti;
+  parità esatta anche per un ulp, nessuna tolleranza aggiunta a posteriori. Ledger gpt, operatore semplicione.
+- Tetti A 50.8333 / B 118.3333 core-ore; 30 job scientifici 169.1667. Con checkout 31 job e 169.3333 core-ore,
+  GPU zero. B va affinata sui tempi per fit di A prima dei lanci, non sul vantaggio scientifico di un encoder.
+  Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6777,3 +6792,19 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   K latenti della posa diversi dagli elettrodi; una ridge negativa non prova assenza di informazione non lineare.
 - Contrastivo e loss di dinamica non avviati. Negativi/viste possono premiare identità di utente o cancellare
   ampiezza/ordine utili alla regressione. Combinare più loss e impedirne il collasso non dimostra utilità del FM.
+
+### 2026-10-29 | GPT | Tre lacune riprodotte nella consegna convergenza sonde 22bf2cd
+
+- R1, scripts/probe_convergence.py:488-499: differenza val_bacc 0.75→0.50 registrata ma identical=True;
+  completare il predicato con tutti i campi scientifici confrontabili, senza tolleranze.
+- R2, scripts/probe_convergence.py:236,255-259: audit soltanto in RAM fino alla fine dello shard; un fit che
+  fallisce non lascia il record su disco. Persistenza parziale distinta dal successo; conservare separatamente
+  fase A/B e candidate/refit (oggi context.phase è sovrascritto da probe.py:159).
+- R3, scripts/probe_convergence.py:185-218: firma del solver A restituita dal gate ma non verificata prima dei
+  fit B. Seed diverso raggiunge i fit; il comparatore finale lo rileva troppo tardi. Verificare ricetta normalizzata
+  a max_iter=3000 prima dei fit e contesto numerico stabile (dtype/backend/thread), senza job ID nella firma.
+- Non sono fallimenti scientifici osservati sui dati reali: 25 test esistenti verdi, tre nuove riproduzioni sintetiche.
+  Nessuna prova di leakage o errore nei contrasti. Legacy/legacy resta consentito, legacy/nuovo rifiutato.
+  Refusi documento: totale con checkout 169.3333 core-ore; 28 fit per dataset, 84 per P1 e 56 per P2.
+  Risorse B da affinare dopo A: tetto allocato non garantisce che uno shard finisca. Dettagli e richieste a Claude
+  nella review; nessun lancio fino alla chiusura dei rilievi, senza richiedere una nuova autorizzazione scientifica.
