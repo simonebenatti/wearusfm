@@ -39,6 +39,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import channel_readout as CR  # noqa: E402
 from wearusfm.harness import p1_cross_subject as P1  # noqa: E402
 from wearusfm.harness.downstream_ab import fingerprint  # noqa: E402
+from wearusfm.harness.probe import MAX_ITER, TIE_BREAK  # noqa: E402
 
 PROTOCOL = "readout_per_canale_v1"
 DIAG_ROWS = 8192  # righe (seme fisso) per il rango effettivo descrittivo: la SVD intera di 60.000 x 4.608 non serve a un descrittivo
@@ -165,16 +166,24 @@ def feature_diagnostics(x: np.ndarray, seed: int = 0) -> dict:
     return {**d, "rows": int(len(rows)), "constant_columns": int((x.std(0) <= 1e-6 * max(float(x.std(0).max()), 1e-12)).sum())}
 
 
-def oof_predictions(x, y, s, roles: list[dict], seed: int, k: int | None) -> dict:
+def oof_predictions(x, y, s, roles: list[dict], seed: int, k: int | None, *, max_iter: int = MAX_ITER, audit: list | None = None,
+                    folds: list[int] | None = None, context: dict | None = None) -> dict:
     """`calibration_probe.oof_predictions` con la riduzione a larghezza pari dentro ogni fold: con `k` sotto la larghezza, standardizzazione e
     PCA stimate sul solo train del fold e poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala: la penalita' L2 resta nello
     spazio delle colonne standardizzate); altrimenti le colonne cosi' come sono a `linear_probe`, lo stesso percorso della calibrazione.
-    Stesse righe, stesse classi tolte, stesso formato."""
+    Stesse righe, stesse classi tolte, stesso formato.
+
+    Controllo della convergenza delle sonde (29/10/2026, `docs/sonde_convergenza_20261029.md`; default invariati): `max_iter` per ogni fit;
+    `audit` = lista dei record per fit di `harness.probe.linear_probe` (con `context` e il numero del fold in ciascuno) e, nei record per fold,
+    i punteggi di validazione di ogni candidato e i conteggi dei fit al limite; `folds` = indici dei fold da calcolare (uno shard), nell'ordine
+    dei ruoli: le righe OOF restano quelle dei fold scelti, in quell'ordine."""
     from wearusfm.harness.probe import linear_probe
 
     ys, ps, ss, rows, per_fold = [], [], [], [], []
     reduce = k is not None and 0 < k < x.shape[1]
-    for r in roles:
+    for i, r in enumerate(roles):
+        if folds is not None and i not in folds:
+            continue
         mt, mv, mh = (np.isin(s, r[kk]) for kk in ("train", "val", "held"))
         keep_v, keep_h = P1.keep_train_classes(y[mt], y[mv], y[mh])
         if reduce:
@@ -182,20 +191,65 @@ def oof_predictions(x, y, s, roles: list[dict], seed: int, k: int | None) -> dic
             xt, xv, xh = (CR.apply_reduction(scaler, pca, v) for v in (x[mt], x[mv][keep_v], x[mh][keep_h]))
         else:
             pca, (xt, xv, xh) = None, (x[mt], x[mv][keep_v], x[mh][keep_h])
-        res = linear_probe(xt, y[mt], xv, y[mv][keep_v], xh, y[mh][keep_h], s[mh][keep_h], seed=seed, scale=not reduce)
+        ctx, n_before = None, 0
+        if audit is not None:
+            ctx = {**(context or {}), "fold": i, "roles_sha256": fingerprint(list(r["train"]), list(r["val"]), list(r["held"])),
+                   "reduced": bool(reduce)}
+            n_before = len(audit)
+        res = linear_probe(xt, y[mt], xv, y[mv][keep_v], xh, y[mh][keep_h], s[mh][keep_h], seed=seed, scale=not reduce, max_iter=max_iter,
+                           audit=audit, context=ctx)
         ys.append(y[mh][keep_h])
         ps.append(res.test_pred)
         ss.append(s[mh][keep_h])
         rows.append(np.flatnonzero(mh)[keep_h].astype(np.int64))
-        per_fold.append({**r, "held_bacc": res.test_bacc, "val_bacc": res.val_bacc, "train_bacc": res.train_bacc, "c": res.c,
-                         "n_train": res.n_train, "n_val": res.n_val, "n_held": res.n_test,
-                         "dropped_val_windows": int((~keep_v).sum()), "dropped_held_windows": int((~keep_h).sum()),
-                         "k": int(xt.shape[1]), "k_capped": bool(reduce and xt.shape[1] < k),
-                         "explained_variance": float(pca.explained_variance_ratio_.sum()) if pca is not None else 1.0})
+        rec = {**r, "held_bacc": res.test_bacc, "val_bacc": res.val_bacc, "train_bacc": res.train_bacc, "c": res.c,
+               "n_train": res.n_train, "n_val": res.n_val, "n_held": res.n_test,
+               "dropped_val_windows": int((~keep_v).sum()), "dropped_held_windows": int((~keep_h).sum()),
+               "k": int(xt.shape[1]), "k_capped": bool(reduce and xt.shape[1] < k),
+               "explained_variance": float(pca.explained_variance_ratio_.sum()) if pca is not None else 1.0}
+        if audit is not None:
+            new = audit[n_before:]
+            rec.update(fold=i, max_iter=int(max_iter), tie_break=TIE_BREAK, val_scores={str(c): v for c, v in res.val_scores.items()},
+                       n_fits=len(new), fits_reached_limit=int(sum(bool(a.get("reached_limit")) for a in new)),
+                       fits_with_convergence_warning=int(sum(int(a.get("convergence_warnings", 0)) > 0 for a in new)),
+                       fits_anomalous_stop=int(sum(bool(a.get("anomalous_stop")) for a in new)), bootstrap_warnings=res.bootstrap_warnings,
+                       roles_sha256=ctx["roles_sha256"], scaler_sha256=new[-1].get("scaler_sha256"))
+        per_fold.append(rec)
+    if not rows:
+        raise ValueError("nessun fold selezionato")
     row = np.concatenate(rows)
     if len(np.unique(row)) != len(row):
         raise ValueError("finestre ripetute nei fold di valutazione")
     return {"y": np.concatenate(ys), "pred": np.concatenate(ps), "s": np.concatenate(ss), "row": row, "folds": per_fold}
+
+
+def load_cache(features: Path, ds: str, task: str, splits: dict | None, splits_sha256: str, layer: str) -> dict:
+    """La cache di un dataset del readout per canale, controllata come la sonda l'ha sempre controllata (insieme di feature e protocollo,
+    compito e soggetti, SHA-256 degli split, ricetta di estrazione, strato richiesto, feature finite): x (float32), y, s, soggetti, dimensione
+    dell'encoder, canali, identita' del checkpoint, impronta degli ingressi e SHA del codice che ha prodotto la cache."""
+    p1 = task == "p1"
+    with np.load(features / f"{ds}.npz") as z:
+        if "feature_set" not in z.files or str(z["feature_set"]) != CR.FEATURE_SET or str(z["protocol"]) != PROTOCOL:
+            raise ValueError(f"{ds}: non e' una cache del readout per canale")
+        cache_task = str(z["task"])
+        if p1:
+            pre = CP.pretraining_subjects(splits, ds)
+        else:
+            pre = CP.p2_internal_subjects(z["all_subjects"].tolist()) if "all_subjects" in z.files else None
+        if cache_task != task or pre is None or sorted(z["subjects"].tolist()) != pre or sorted(set(z["s"].tolist())) != pre:
+            raise ValueError(f"{ds}: feature di un altro compito o di altri soggetti")
+        if str(z["splits_sha256"]) != splits_sha256:
+            raise ValueError(f"{ds}: SHA-256 degli split diverso nella cache; ripetere l'estrazione")
+        if json.loads(str(z["extraction_recipe"])) != recipe(task):
+            raise ValueError(f"{ds}: ricetta di estrazione diversa nella cache; ripetere l'estrazione")
+        if f"x_{layer}" not in z.files:
+            raise ValueError(f"{ds}: strato {layer!r} assente dalla cache")
+        out = {"x": z[f"x_{layer}"].astype(np.float32), "y": z["y"], "s": z["s"], "subjects": pre, "dim": int(z["encoder_dim"]),
+               "channels": int(z["channels"]), "checkpoint": str(z["checkpoint"]), "checkpoint_sha256": str(z["checkpoint_sha256"]),
+               "input_sha256": str(z["input_sha256"]), "code_sha": str(z["code_sha"]) if "code_sha" in z.files else ""}
+    if not np.isfinite(out["x"]).all():
+        raise ValueError(f"{ds}: feature non finite")
+    return out
 
 
 def probe(args, splits: dict | None, log) -> dict:
@@ -215,28 +269,10 @@ def probe(args, splits: dict | None, log) -> dict:
               "datasets": {}}
     parts, oof, idents = [], {}, set()
     for ds in args.datasets:
-        with np.load(args.features / f"{ds}.npz") as z:
-            if "feature_set" not in z.files or str(z["feature_set"]) != CR.FEATURE_SET or str(z["protocol"]) != PROTOCOL:
-                raise ValueError(f"{ds}: non e' una cache del readout per canale")
-            task = str(z["task"])
-            if p1:
-                pre = CP.pretraining_subjects(splits, ds)
-            else:
-                pre = CP.p2_internal_subjects(z["all_subjects"].tolist()) if "all_subjects" in z.files else None
-            if task != args.task or pre is None or sorted(z["subjects"].tolist()) != pre or sorted(set(z["s"].tolist())) != pre:
-                raise ValueError(f"{ds}: feature di un altro compito o di altri soggetti")
-            if str(z["splits_sha256"]) != report["splits_sha256"]:
-                raise ValueError(f"{ds}: SHA-256 degli split diverso nella cache; ripetere l'estrazione")
-            if json.loads(str(z["extraction_recipe"])) != recipe(args.task):
-                raise ValueError(f"{ds}: ricetta di estrazione diversa nella cache; ripetere l'estrazione")
-            if f"x_{args.layer}" not in z.files:
-                raise ValueError(f"{ds}: strato {args.layer!r} assente dalla cache")
-            x, y, s = z[f"x_{args.layer}"].astype(np.float32), z["y"], z["s"]
-            dim, channels = int(z["encoder_dim"]), int(z["channels"])
-            idents.add((str(z["checkpoint"]), str(z["checkpoint_sha256"]), dim))
-            report["datasets"][ds] = {"input_sha256": str(z["input_sha256"])}
-        if not np.isfinite(x).all():
-            raise ValueError(f"{ds}: feature non finite")
+        cache = load_cache(args.features, ds, args.task, splits, report["splits_sha256"], args.layer)
+        x, y, s, pre, dim, channels = cache["x"], cache["y"], cache["s"], cache["subjects"], cache["dim"], cache["channels"]
+        idents.add((cache["checkpoint"], cache["checkpoint_sha256"], dim))
+        report["datasets"][ds] = {"input_sha256": cache["input_sha256"]}
         k = 2 * dim if args.k is None else args.k  # default: la larghezza del readout medio
         k_eff = k if 0 < k < x.shape[1] else None
         res = oof_predictions(x, y, s, CP.fold_roles(pre), args.seed, k_eff)
@@ -287,6 +323,10 @@ def check_readout_pairing(a: dict, b: dict) -> None:
         raise ValueError("compito o split diversi: nessun confronto")
     if _probe_params(a) != _probe_params(b):
         raise ValueError("sonda non accoppiata (fold, seme, validazione o finestra diversi)")
+    if "solver_recipe_sha256" in a or "solver_recipe_sha256" in b:  # rapporti del controllo di convergenza (29/10/2026): stessa ricetta del
+        # solver, `max_iter` compreso; un rapporto senza la firma (legacy) non si accoppia con uno che ce l'ha: i suoi parametri non sono verificati
+        if not a.get("solver_recipe_sha256") or a.get("solver_recipe_sha256") != b.get("solver_recipe_sha256"):
+            raise ValueError("sonda non accoppiata: ricetta del solver diversa, o assente in uno dei due rapporti")
     if sorted(a["datasets"]) != sorted(b["datasets"]) or a.get("weights") != b.get("weights") or not a.get("weights"):
         raise ValueError("dataset o pesi diversi fra i due rapporti")
     for ds in a["datasets"]:
