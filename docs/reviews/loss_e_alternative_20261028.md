@@ -1,5 +1,7 @@
 # Loss attuale e alternative motivate — 28/10/2026
 
+**Aggiornamento 29/10:** B19618 ha migliorato anche la dinamica nei latenti mediati. La [valutazione aggiornata su PSD e loss](psd_loss_dopo_b19618_20261029.md) riprende la discussione dopo i risultati; le osservazioni sotto descrivono lo stato precedente a B19618.
+
 Risposta alla domanda di Simone dopo l'integrazione `78268d6`. Analisi e proposta, nessuna modifica al training
 o sottomissione. B19618 mantiene il protocollo congelato; le future sottomissioni spettano a semplicione.
 

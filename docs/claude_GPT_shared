@@ -4798,6 +4798,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Tranche: 14,622778 GPU-ore / 26,985 core-ore CPU-only; tolto il preflight gia' contato, incremento 26,972778 core-ore CPU.
   Residuo pilot: 64,448056 GPU-ore / 432,14 core-ore CPU. JSON/grafico/review in results/infra/pilot_posa/b19618_20261029.
 
+### 2026-10-29 | GPT | Controllo sonde approvato, implementazione affidata a Claude; proposta PSD/loss | Base f7433f4
+
+- Simone approva il controllo delle sonde e chiede istruzioni per farne scrivere il codice a Claude.
+  Assegnazione tecnica specifica: Claude prepara codice/test/preventivo, GPT rivede, semplicione esegue.
+  Il controllo è già autorizzato; nessun secondo consenso scientifico richiesto per lo stesso perimetro.
+- Prompt pubblicato: docs/prompt_claude_convergenza_sonde_20261029.md. Fase A replica con audit dei 280 fit,
+  max_iter 3000; fase B unica e simmetrica a 12000, tolleranza e resto della ricetta invariati.
+  Identità OOF e provenienza prima di B, nuovi output, nessun filtro dei C non convergenti o tuning sul test.
+  Solo CPU: storico quattro sonde 26,517778 core-ore; risorse della fase B da affinare coi tempi per fit di A,
+  entro i limiti della seriale. Nessun codice implementato o job lanciato da GPT in questa consegna.
+- Discussione PSD/loss in docs/reviews/psd_loss_dopo_b19618_20261029.md: PSD-1 chiuso, PSD-3 primo candidato
+  diagnostico su cache disponibili; PSD-2 originario non completato, PSD-4 causale sulle quote ancora aperto.
+  Regressione di trasferimento distinta complementare a PSD-4, non sostitutiva.
+- B usa già ancore + posa. Loss centrata per enfatizzare dinamica e contrastivo locale per il FM sono ipotesi
+  diverse, da provare separatamente. Nessun nuovo training PSD/loss autorizzato implicitamente dalla domanda.
+  Pesi adattivi da motivare tramite gradienti globali; letteratura primaria verificata, esclusi TinyMyo/PhysioWave.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6746,3 +6763,17 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Una stessa riga UCI malformata esclusa in entrambi i bracci. Poco dinamiche: centered 1,005, IC [0,993; 1,017]:
   riduzione del danno precedente, non equivalenza col piatto. Restano attenuazione temporale e limiti della vista
   ridge normalizzata. Nessun risultato riscritto e nessun gate dell'endpoint applicato.
+
+
+### 2026-10-29 | GPT | Limiti del controllo sonde e della proposta PSD/loss | Base f7433f4
+
+- I comparatori legacy non verificano l'intera ricetta del solver: il prompt richiede firma dedicata e verifica
+  simmetrica. Warning del fit distinti dai 978 avvisi metrici DB3; guardia etichette stringa preservata.
+  I costi CPU della robustezza sono da preventivare: max_iter x4 non garantisce walltime x4, e le P1 potrebbero
+  superare le 4 ore della seriale se non suddivise per dataset. Nessuna promessa di costo GPU/CPU non verificato.
+- B19618 supera la vecchia ipotesi operativa di assenza di dinamica nei latenti mediati: resta un problema di
+  trasferimento misurato, non prova che MSE impedisca il movimento. Cambiare loss end-to-end può cambiare l'encoder.
+- Cache local/dec mediate nel tempo: primo controllo PSD-3 possibile, inseguimento temporale non misurabile da esse.
+  K latenti della posa diversi dagli elettrodi; una ridge negativa non prova assenza di informazione non lineare.
+- Contrastivo e loss di dinamica non avviati. Negativi/viste possono premiare identità di utente o cancellare
+  ampiezza/ordine utili alla regressione. Combinare più loss e impedirne il collasso non dimostra utilità del FM.

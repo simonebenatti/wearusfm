@@ -5498,3 +5498,24 @@ Consuntivo tranche, 17 ID: 14,622778 GPU-ore, 143,967222 core-ore allocate, 26,9
 incremento netto 26,972778 core-ore CPU. Cumulato seconda ondata: 67,551944 GPU-ore / 98,86 core-ore CPU; residuo 64,448056 / 432,14
 sui tetti 132 / 531. Nessun nuovo consumo GPU per la lettura. Rettificato il conteggio degli avvisi nei documenti finali:
 978 warning di classi DB3 (489 per braccio) mancavano dal riepilogo dell'operatore; non altri fit falliti. UCI: stessa riga scartata.
+
+
+## 29/10/2026 — Controllo di convergenza sonde approvato; Claude prepara il codice
+
+Simone: «va bene, facciamo il controllo sulle sonde» e chiede il prompt affinché Claude scriva il codice.
+GPT pubblica docs/prompt_claude_convergenza_sonde_20261029.md su base f7433f4: replica strumentata a 3000,
+poi unica robustezza a 12000 iterazioni, tolleranza originale e tutte le altre scelte invariate per B e R3c.
+Fase B subordinata a riproducibilità/provenienza della fase A; non a un risultato scientifico favorevole.
+Claude implementa e testa nel proprio ramo; GPT rivede; semplicione esegue tramite submitter/ledger.
+L'approvazione persistente comprende il controllo, senza un nuovo via dell'utente dopo la review.
+
+Solo CPU, 280 fit per fase. Storico quattro sonde: 26,517778 core-ore allocate. Riferimento iniziale di tetto
+per A: 44 core-ore più preflight/rapporto; piano esatto da consegnare con il codice. Proiezione grezza B x4:
+106,07 core-ore, non un tetto garantito. Risorse e tetto B da pubblicare dopo i tempi per fit di A, mantenendo
+12000 e tolleranza fissati ora. Serial max 4 ore: eventuali shard per dataset, aggregazione invariata.
+Residuo prima di nuovi job invariato: 432,14 core-ore CPU-only / 64,448056 GPU-ore. Nessun job in questa consegna.
+
+La domanda su PSD/loss produce una proposta separata, docs/reviews/psd_loss_dopo_b19618_20261029.md:
+priorità diagnostica PSD-3; PSD-1 chiuso; PSD-2 originario non eseguito integralmente e PSD-4 causale ancora aperto.
+Combinazioni di loss plausibili, già presenti in B; distinguere enfasi dinamica per posa da contrastivo locale per FM.
+Nessun lancio, nuovo braccio o modifica di loss derivati automaticamente da questa discussione.
