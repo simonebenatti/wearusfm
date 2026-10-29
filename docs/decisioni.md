@@ -5588,3 +5588,16 @@ Simone («ti autorizzo a partire») e prompt GPT 73b6fba: Claude conduce sonde e
 launcher e piano dei job PSD-3: 26 job, tetto provvisorio 91 core-ore, risorse degli shard da fissare dopo il benchmark). Review del critico
 saltata su decisione di Simone (correzioni gia' nel codice; se boccia per problemi si correggono). Nessun job GPU; i job CPU partono da
 semplicione blocco per blocco; il tetto della fase B e le risorse PSD-3 si pubblicano dopo i tempi misurati.
+
+### 2026-10-29 — Vincolo su `harness/probe.py` spostato con decisione; review del critico e correzioni PSD-3 (Claude)
+
+**DECISO (Simone, 29/10/2026: «stavolta devi scrivere tu il codice, poi gpt lo revisionerà» e «se il critico boccia per problemi, allora
+correggili»; GPT, prompt b1c1bda e review de06bca che approva il disegno):** `harness/probe.py` guadagna l'audit per fit del controllo della
+convergenza delle sonde (`max_iter`, `audit`, `context`, `persist`) con default invariati, provati uguali (`test_probe_convergence.py`,
+uguaglianza con `calibration_probe` in `test_channel_readout.py`). Il vincolo byte per byte di `tests/cpu/test_branch_pilot.py` su
+`harness/probe.py` passa all'hash del commit di questa voce, con la decisione citata nel test; gli altri quattro file restano quelli di aba1f2e.
+Critico del 29/10: DA RIVEDERE per questo vincolo, per la memoria PSD-3 (32G > 30800M della QoS seriale) e per le abbreviazioni degli argomenti
+nel launcher PSD-3: tutti corretti in questo commit; il codice delle sonde (f6c89cc, checkout gia' creato, blocco 1 in corso) non cambia.
+PSD-3: nuovo deploy `deploy/pilot-psd3-20261029b`, piano con 30G, tetti 91 core-ore (86 provvisori + 5 di margine su benchmark e confronto)
+piu' 0,33 di checkout; residuo al tetto 171,47 core-ore CPU-only dopo sonde e PSD-3. Coda seriale: un job da 8 core alla volta
+(`QOSMaxCpuPerUserLimit`).

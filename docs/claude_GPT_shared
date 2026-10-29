@@ -4960,6 +4960,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   blocco 3; i blocchi 4-5 e i job PSD-3 solo su mio messaggio. Review indipendente del `critico` avviata su correzioni R1-R3, integrazione e
   launcher: esito da registrare; se boccia per problemi, correggo e ripubblico.
 
+### 2026-10-29 | Claude | Review del critico: DA RIVEDERE (3 bloccanti tecnici + 1 procedurale, 6 minori), correzioni fatte; coda seriale un job alla volta | Correzioni in questo commit, deploy PSD-3 «b»
+
+- Simone: «per la review del critico, siccome la correzione è già nel codice, la saltiamo. vediamo se vanno lo stesso. se la sta già facendo fallo
+  finire» e poi «se il critico boccia per problemi, allora correggili». Il critico (208 test dei file pertinenti verdi, suite intera 1.843/1.844)
+  conferma R1-R3 chiusi nella sostanza e le tre regressioni di GPT verdi, ma boccia per: (1) `tests/cpu/test_branch_pilot.py` fissa l'hash di
+  `harness/probe.py` (vincolo del 23/10: «serve una decisione, non un aggiornamento dell'hash») e il mio audit lo ha cambiato senza decisione:
+  suite intera rossa su quel test; (2) launcher e piano PSD-3 chiedevano 32G, oltre il limite della QoS `lrd_all_serial` (mem=30800M, 8 core per
+  job; sbatch avrebbe rifiutato 24 job); (3) il launcher PSD-3 fissava piano e uscita solo nelle forme esatte: le abbreviazioni di argparse
+  (`--pla`, `--ou`) le aggiravano, e `psd3_readout.py` non controlla che l'uscita sia fuori dal codice; (4) mancavano le voci di registro per
+  fusione e launcher (scritte nel frattempo, b9d4298). Minori: testi che dicono ancora «review di GPT» / «si porta a GPT», tetti PSD-3 91 contro
+  86 provvisori senza dichiararlo, walltime non controllato per inventario e confronto, docstring con 4 blocchi, nessun test con la vera
+  `source_identity()`.
+- Correzioni: (1) **decisione** in decisioni.md: il vincolo su `harness/probe.py` passa all'hash di questo commit, con la decisione citata nel test
+  (come il 23/10); nessun byte di `probe.py` cambia, il codice delle sonde resta f6c89cc. (2) 30G nel launcher e nei default di `psd3_jobs.py`,
+  controllo di cpu <= 8, memoria <= 30800M e walltime <= 4 h per OGNI job (test). (3) `allow_abbrev=False` in `psd3_readout.py` e lista esatta
+  degli argomenti ammessi nel launcher (`--model --dataset --view --reports --verify-sha`; test con `--pla`, `--p=`, `--ou`, `--outp`, `-o`).
+  Minori: testi aggiornati nel protocollo delle sonde; piano PSD-3 con `qos_limits`, prerequisito del checkout, scostamento dal provvisorio (91
+  contro 86: benchmark e confronto a 30 min invece di 15) e residuo (432,14 − 169,33 − 91,33 = 171,47 core-ore al tetto); docstring a 5 blocchi;
+  test con la `source_identity()` vera attorno a un mini `run_shard`. Non cambiati: il codice delle sonde (checkout gia' creato, blocco 1 in
+  corso; `probe_convergence.py` senza `allow_abbrev=False`, ma `fresh()` impone l'uscita fuori dal codice).
+- Il codice PSD-3 cambia (parser e launcher): nuovo deploy `deploy/pilot-psd3-20261029b` sullo SHA di questo commit; il checkout
+  `pilot-psd3-20261029` (0c78e78) resta inutilizzato; piano e comandi PSD-3 rigenerati sullo SHA nuovo con 30G.
+- leonardo-ops (sola lettura, 14:11): blocco 1 delle sonde in coda, 62732268 `B-p1-db2a` RUNNING su login08, gli altri nove PENDING con motivo
+  `QOSMaxCpuPerUserLimit`: nella seriale gira un job da 8 core alla volta. Tempo di parete atteso: fase A circa 3 ore, fase B fra 3 e 13; i tetti
+  per job non cambiano. `sacctmgr` e `sinfo` non sono fra i comandi ammessi a leonardo-ops: i limiti 8 core / 30800M restano quelli osservati
+  dai rifiuti di sbatch del 27/10.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -6991,3 +7018,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La parita' confronta i campi scientifici elencati nel protocollo; un campo nuovo aggiunto in futuro ai rapporti non entra da solo nel
   confronto (va aggiunto alle liste `PARITY_*_FIELDS`).
 - Restano quelli del 29/10: test con sklearn 1.7.2 sul Mac; tetto della fase B al caso peggiore da affinare dopo la fase A; piano legato allo SHA.
+
+### 2026-10-29 | Claude | Errori miei trovati dal critico sul materiale PSD-3 e sul vincolo di probe.py
+
+- 32G nel launcher e nel piano PSD-3 nonostante il limite 30800M registrato tre volte nel registro: 24 job sarebbero stati rifiutati da sbatch.
+- Il launcher PSD-3 dichiarava «l'operatore non puo' indicare un altro piano» ma controllava solo le forme esatte di `--plan`/`--out`: le
+  abbreviazioni di argparse le aggiravano. Corretto con lista esatta e `allow_abbrev=False`.
+- L'audit in `harness/probe.py` ha violato il vincolo byte per byte del 23/10 senza decisione: la suite intera aveva un test rosso che ne' la mia
+  consegna ne' la review di GPT (sottoinsieme) avevano visto. Ora la decisione c'e' (29/10) e il pin e' aggiornato con la decisione citata.
+- Restano: `probe_convergence.py` accetta abbreviazioni (`fresh()` protegge l'uscita, i pin sono un argomento libero); l'intestazione di
+  `comandi.txt` delle sonde dice «a GPT» (codice congelato): il destinatario operativo e' Claude.

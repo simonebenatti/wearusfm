@@ -1,6 +1,8 @@
 # Controllo della convergenza delle sonde P1/P2 di B19618 contro R3c — protocollo eseguibile e preventivo (29/10/2026)
 
-**Stato: consegna di Claude rivista dopo la review di GPT (de06bca: disegno approvato, tre correzioni R1-R3 fatte); nessun job sottomesso.**
+**Stato: in esecuzione dal 29/10 pomeriggio (checkout `pilot-posa-sonde-20261029` a f6c89cc, blocco 1 sottomesso da semplicione); consegna
+rivista dopo la review di GPT (de06bca: disegno approvato, tre correzioni R1-R3 fatte) e dopo la review del `critico` del 29/10 (vincolo
+sull'hash di `probe.py` spostato con decisione, nessun cambio al codice delle sonde).**
 Richiesta: `docs/prompt_claude_convergenza_sonde_20261029.md` (GPT, commit b1c1bda), su mandato di Simone («stavolta devi scrivere tu il
 codice, poi gpt lo revisionerà ... Non sottomettere job: GPT farà la review e semplicione li eseguirà»). Il controllo e' gia' autorizzato nel
 perimetro del prompt; dopo la review tecnica GPT lo affida a semplicione. Nessuna modifica a trainer, loss, pooling o checkpoint; nessun
@@ -101,7 +103,9 @@ results/infra/pilot_posa/sonde_convergenza_20261029/pin_ingressi.json`), e stann
 | 5 | fase B, 4 aggregati + confronto fra le fasi (afterok sui quattro) | 2 core, 16 GB, 20/30 min | guardie della ricetta (uguale fra encoder, solo `max_iter` fra le fasi), identita' delle righe, cancello; bootstrap congiunto e controllo incrociato col confronto ufficiale |
 
 Ogni blocco si sottomette quando il precedente e' interamente COMPLETED 0:0 (`leonardo_watch.py --mode all`); un job che trova un
-prerequisito mancante esce con errore senza spendere; nessun retry automatico: un job fallito si porta a GPT. Al piu' 10 job per blocco
+prerequisito mancante esce con errore senza spendere; nessun retry automatico: un job fallito si porta a Claude, che dal 29/10 conduce
+l'esecuzione (prompt GPT 73b6fba; il testo «si porta a GPT» nell'intestazione di `comandi.txt` viene dal codice congelato f6c89cc e vale come
+«a chi conduce»). Al piu' 10 job per blocco
 (limite della coda seriale). DB2 e' diviso per fold per restare sotto le 4 ore della seriale anche nel caso peggiore della fase B.
 
 ## 4. Confronti e lettura (fase `compare-phases`)
@@ -178,5 +182,7 @@ GPU-ore; questo controllo ne impegna al massimo 169,33 core-ore (residuo teorico
   confronto ufficiale e' un controllo numerico fra due implementazioni, separato dalla parita'.
 - **Ordine delle chiamate nella sonda.** Nella prima consegna il bootstrap dell'errore standard precedeva il calcolo di `test_bacc`; ora
   l'ordine e' quello di sempre (rilievo 1 della review: nessuna conseguenza numerica, il bootstrap ha un generatore locale).
+- **Coda seriale (leonardo-ops, 29/10 14:11):** con un job da 8 core in esecuzione gli altri nove restano in attesa per `QOSMaxCpuPerUserLimit`:
+  gli shard girano uno alla volta. Tempo di parete atteso per la fase A circa 3 ore, per la fase B fra 3 e 13; i tetti per job non cambiano.
 - **Fuori perimetro**, come nel prompt: nuovi training, loss, PSD, latenti non mediati, tuning sul test, aggiornamenti delle librerie,
   correzioni di un solo encoder.

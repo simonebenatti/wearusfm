@@ -4,19 +4,22 @@ docs/prompt_claude_psd3_dopo_sonde_20261029.md): un job per cella della matrice,
 comune (`scripts/submit_job.py`) e il launcher `scripts/slurm/psd3_readout.sbatch`. Nessun job viene sottomesso da qui: il file dei comandi lo
 esegue semplicione, blocco per blocco.
 
-Blocchi (al piu' 10 job per blocco, limite della coda seriale):
+Blocchi (al piu' 10 job per blocco, limite della coda seriale; ogni job al massimo 8 core, 30800 MB e 4 ore, limiti della QoS lrd_all_serial):
   1  inventario con verifica SHA delle dieci cache (1 job CPU)
   2  i quattro benchmark train-only previsti dal protocollo: B x {DB6, EPN612} x {pool, dec} (tempi e memoria per fissare le risorse degli shard)
-  3  i venti shard modello x dataset x vista (due blocchi da dieci), con le risorse fissate dopo il benchmark (--shard-*)
-  4  il confronto sui venti shard (dopo che sono tutti COMPLETED 0:0)
+  3  shard 1-10 della matrice modello x dataset x vista, con le risorse fissate dopo il benchmark (--shard-*)
+  4  shard 11-20
+  5  il confronto sui venti shard (dopo che sono tutti COMPLETED 0:0)
+Prerequisito, fuori dai 26 job: il checkout di campagna (2 core, 10 min).
 
-  python3 scripts/psd3_jobs.py --code-sha <sha a 40 caratteri> [--shard-cpus 4 --shard-mem 32G --shard-time 01:00:00] [--out-dir ...]
+  python3 scripts/psd3_jobs.py --code-sha <sha a 40 caratteri> [--shard-cpus 4 --shard-mem 30G --shard-time 01:00:00] [--out-dir ...]
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import shlex
 from pathlib import Path
 
@@ -28,7 +31,13 @@ VIEWS = ("pool", "dec")
 BENCHMARKS = tuple(("B", d, v) for d in ("ninapro_db6", "epn612") for v in VIEWS)
 MAX_QUEUED = 10
 SERIAL_WALLTIME = "04:00:00"
+SERIAL_MAX_CPUS = 8  # QoS lrd_all_serial: MaxTRESPerJob cpu=8, mem=30800M (sacctmgr, 27/10/2026; decisioni.md)
+SERIAL_MAX_MEM_MB = 30800
 PLAN_REL = "results/infra/psd3_preparation_20261029/plan.json"
+CHECKOUT_JOB = {"cpus": 2, "time": "00:10:00"}
+PROVISIONAL_ESTIMATE_CORE_HOURS = 86  # docs/psd3_readers_20261029.md §Costi: 1 + 4 + 80 + 1, con benchmark e rapporto da 15 min
+RESIDUAL_CPU_ONLY_BEFORE_PROBES = 432.14  # core-ore CPU-only registrate dopo B19618 (b19618_results_20261029.md)
+PROBE_CAPS_WITH_CHECKOUT = 169.3333  # tetto del controllo delle sonde, checkout compreso (docs/sonde_convergenza_20261029.md §6)
 
 
 def _hours(hms: str) -> float:
@@ -36,13 +45,28 @@ def _hours(hms: str) -> float:
     return h + m / 60 + s / 3600
 
 
+def _mem_mb(mem: str) -> int:
+    m = re.fullmatch(r"(\d+)([MGT])", mem)
+    if not m:
+        raise ValueError(f"memoria non valida: {mem!r} (atteso es. 30G o 30800M)")
+    return int(m.group(1)) * {"M": 1, "G": 1024, "T": 1024 * 1024}[m.group(2)]
+
+
+def check_resources(cpus: int, mem: str, time_: str) -> None:
+    """I limiti per job della QoS seriale: oltre, sbatch rifiuta («job submit limit», 27/10) e il submitter segna «rifiutato»."""
+    if not isinstance(cpus, int) or not 1 <= cpus <= SERIAL_MAX_CPUS:
+        raise ValueError(f"core per job {cpus}: la QoS lrd_all_serial ammette al massimo {SERIAL_MAX_CPUS}")
+    if _mem_mb(mem) > SERIAL_MAX_MEM_MB:
+        raise ValueError(f"memoria {mem} = {_mem_mb(mem)} MB: la QoS lrd_all_serial ammette al massimo {SERIAL_MAX_MEM_MB}M per job")
+    if _hours(time_) > _hours(SERIAL_WALLTIME):
+        raise ValueError(f"walltime {time_} oltre il limite della seriale {SERIAL_WALLTIME}")
+
+
 def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledger_campaign: str, *, shard_cpus: int, shard_mem: str,
                shard_time: str, benchmark_cpus: int, benchmark_mem: str, benchmark_time: str, inventory_time: str, compare_time: str,
                date: str = "20261029") -> dict:
     if len(code_sha) != 40 or any(c not in "0123456789abcdef" for c in code_sha):
         raise ValueError("code_sha deve essere uno SHA a 40 caratteri")
-    if _hours(shard_time) > _hours(SERIAL_WALLTIME) or _hours(benchmark_time) > _hours(SERIAL_WALLTIME):
-        raise ValueError(f"walltime oltre il limite della seriale {SERIAL_WALLTIME}")
     if shard_cpus != benchmark_cpus:
         raise ValueError("benchmark e shard devono usare gli stessi core: la firma numerica registra i thread")
     checkout = f"/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/{campaign}"
@@ -51,6 +75,7 @@ def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledg
     jobs: list[dict] = []
 
     def job(block: int, ident: str, cpus: int, mem: str, time_: str, out: str, stage: str, args: list[str], expected_min: float | None = None) -> dict:
+        check_resources(cpus, mem, time_)
         argv = ["python3", "scripts/submit_job.py", "--id", ident, "--agente", agent, "--campagna", ledger_campaign, "--gpu-ore", "0",
                 "--", export, f"--cpus-per-task={cpus}", f"--mem={mem}", f"--time={time_}", launcher, out, stage, *args]
         j = {"block": block, "id": ident, "stage": stage, "cpus": cpus, "mem": mem, "time": time_, "core_hours_cap": cpus * _hours(time_),
@@ -79,12 +104,26 @@ def build_jobs(code_sha: str, campaign: str, results_root: str, agent: str, ledg
                        + ("; prima del blocco 3 pubblicare le risorse degli shard fissate dal benchmark" if b == 3 else "")})
         if len(in_block) > MAX_QUEUED:
             raise ValueError(f"blocco {b} con {len(in_block)} job: oltre il limite della coda seriale")
-    return {"schema_version": 1, "protocol": PROTOCOL, "status": "PRONTO_PER_SEMPLICIONE_DOPO_IL_CONGELAMENTO", "analysis_code_sha": code_sha,
+    total = sum(b["core_hours_cap"] for b in blocks)
+    checkout_cap = CHECKOUT_JOB["cpus"] * _hours(CHECKOUT_JOB["time"])
+    after_probes = RESIDUAL_CPU_ONLY_BEFORE_PROBES - PROBE_CAPS_WITH_CHECKOUT
+    return {"schema_version": 2, "protocol": PROTOCOL, "status": "PRONTO_PER_SEMPLICIONE_DOPO_IL_CONGELAMENTO", "analysis_code_sha": code_sha,
             "campaign_checkout": checkout, "plan": f"{checkout}/{PLAN_REL}", "results_root": results_root, "ledger_campaign": ledger_campaign,
             "ledger_agent": agent, "gpu_hours_cap": 0,
+            "prerequisites": {"campaign_checkout": {"name": campaign, "sha": code_sha, "launcher": "scripts/slurm/campaign_checkout.sbatch",
+                                                    **CHECKOUT_JOB, "core_hours_cap": checkout_cap, "note": "fuori dai 26 job; deploy/<campaign> gia' su leonardo"}},
+            "qos_limits": {"cpus_per_job": SERIAL_MAX_CPUS, "mem_mb_per_job": SERIAL_MAX_MEM_MB, "walltime": SERIAL_WALLTIME, "max_queued_per_user": MAX_QUEUED},
             "shard_resources": {"cpus": shard_cpus, "mem": shard_mem, "time": shard_time,
-                                "note": "da fissare dopo il benchmark (blocco 2); stessi core per tutti gli shard e per i benchmark"},
-            "core_hours_cap": {f"block_{b['block']}": b["core_hours_cap"] for b in blocks} | {"total": sum(b["core_hours_cap"] for b in blocks)},
+                                "note": "da fissare dopo il benchmark (blocco 2); stessi core per tutti gli shard e per i benchmark; mai oltre i limiti della QoS"},
+            "core_hours_cap": {f"block_{b['block']}": b["core_hours_cap"] for b in blocks} | {"total": total, "checkout": checkout_cap,
+                                                                                               "total_with_checkout": total + checkout_cap},
+            "budget": {"provisional_estimate_core_hours": PROVISIONAL_ESTIMATE_CORE_HOURS,
+                       "deviation_from_provisional": total - PROVISIONAL_ESTIMATE_CORE_HOURS,
+                       "deviation_note": "benchmark e confronto a 30 min invece di 15 (tetti, non durate); gli shard restano 20 x cpus x walltime",
+                       "residual_cpu_only_core_hours_before_probes": RESIDUAL_CPU_ONLY_BEFORE_PROBES,
+                       "probe_caps_with_checkout": PROBE_CAPS_WITH_CHECKOUT,
+                       "residual_after_probe_caps": after_probes, "residual_after_psd3_caps": after_probes - total - checkout_cap,
+                       "note": "tetti di allocazione, non consumi; il consuntivo reale si legge dal ledger e da sacct"},
             "serial_partition": {"walltime_limit": SERIAL_WALLTIME, "max_queued_per_user": MAX_QUEUED},
             "automatic_retry": False, "blocks": blocks, "jobs": jobs}
 
@@ -105,17 +144,17 @@ def write_outputs(plan: dict, out_dir: Path) -> tuple[Path, Path]:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, allow_abbrev=False)
     ap.add_argument("--code-sha", required=True)
-    ap.add_argument("--campaign", default="pilot-psd3-20261029")
+    ap.add_argument("--campaign", default="pilot-psd3-20261029b")
     ap.add_argument("--results-root", default="/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/psd3_20261029")
     ap.add_argument("--agente", default="gpt", choices=["claude", "gpt", "simone"], help="categoria del ledger (l'operatore e' semplicione)")
     ap.add_argument("--ledger-campaign", default="pilot-psd3-20261029")
     ap.add_argument("--shard-cpus", type=int, default=4)
-    ap.add_argument("--shard-mem", default="32G")
+    ap.add_argument("--shard-mem", default="30G")
     ap.add_argument("--shard-time", default="01:00:00")
     ap.add_argument("--benchmark-cpus", type=int, default=4)
-    ap.add_argument("--benchmark-mem", default="32G")
+    ap.add_argument("--benchmark-mem", default="30G")
     ap.add_argument("--benchmark-time", default="00:30:00")
     ap.add_argument("--inventory-time", default="00:30:00")
     ap.add_argument("--compare-time", default="00:30:00")

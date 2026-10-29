@@ -20,7 +20,7 @@ SLURM = REPO / "scripts" / "slurm"
 
 
 def _plan(**kw):
-    base = dict(shard_cpus=4, shard_mem="32G", shard_time="01:00:00", benchmark_cpus=4, benchmark_mem="32G", benchmark_time="00:30:00",
+    base = dict(shard_cpus=4, shard_mem="30G", shard_time="01:00:00", benchmark_cpus=4, benchmark_mem="30G", benchmark_time="00:30:00",
                 inventory_time="00:30:00", compare_time="00:30:00")
     base.update(kw)
     return PJ.build_jobs("a" * 40, "pilot-psd3-20261029", "/W/psd3", "gpt", "pilot-psd3-20261029", **base)
@@ -35,7 +35,7 @@ def test_jobs_cover_the_grid_once_in_blocks_under_the_queue_limit(tmp_path):
     for j in runs:
         argv = shlex.split(j["command"])
         cells.append((argv[argv.index("--model") + 1], argv[argv.index("--dataset") + 1], argv[argv.index("--view") + 1]))
-        assert j["cpus"] == 4 and j["mem"] == "32G" and j["time"] == "01:00:00" and j["block"] in (3, 4)
+        assert j["cpus"] == 4 and j["mem"] == "30G" and j["time"] == "01:00:00" and j["block"] in (3, 4)
     assert sorted(cells) == sorted((m, d, v) for m in PJ.MODELS for d in PJ.DATASETS for v in PJ.VIEWS)
     bench = [j for j in jobs if j["stage"] == "benchmark"]
     assert len(bench) == 4 and all("--model B" in j["command"] for j in bench) and {j["block"] for j in bench} == {2}
@@ -54,11 +54,24 @@ def test_jobs_cover_the_grid_once_in_blocks_under_the_queue_limit(tmp_path):
         assert "--plan" not in argv and "--out" not in argv  # li fissa il launcher
     assert plan["core_hours_cap"]["total"] == pytest.approx(sum(j["core_hours_cap"] for j in jobs))
     assert plan["core_hours_cap"]["block_3"] + plan["core_hours_cap"]["block_4"] == pytest.approx(20 * 4 * 1.0)
-    # risorse degli shard fissate dopo il benchmark: si rigenera; mai oltre le 4 ore della seriale; stessi core di benchmark e shard
-    longer = _plan(shard_time="02:30:00", shard_mem="48G")
-    assert all(j["time"] == "02:30:00" and j["mem"] == "48G" for j in longer["jobs"] if j["stage"] == "run")
-    with pytest.raises(ValueError, match="seriale"):
-        _plan(shard_time="04:30:00")
+    assert plan["core_hours_cap"]["total_with_checkout"] == pytest.approx(plan["core_hours_cap"]["total"] + 2 / 6)
+    assert plan["budget"]["deviation_from_provisional"] == pytest.approx(plan["core_hours_cap"]["total"] - 86)
+    assert plan["budget"]["residual_after_psd3_caps"] == pytest.approx(432.14 - 169.3333 - plan["core_hours_cap"]["total_with_checkout"])
+    assert plan["qos_limits"] == {"cpus_per_job": 8, "mem_mb_per_job": 30800, "walltime": "04:00:00", "max_queued_per_user": 10}
+    # risorse degli shard fissate dopo il benchmark: si rigenera; mai oltre i limiti della QoS seriale (8 core, 30800M, 4 ore) per NESSUN job;
+    # stessi core di benchmark e shard
+    longer = _plan(shard_time="02:30:00", shard_mem="30800M")
+    assert all(j["time"] == "02:30:00" and j["mem"] == "30800M" for j in longer["jobs"] if j["stage"] == "run")
+    for bad in (dict(shard_time="04:30:00"), dict(inventory_time="04:00:01"), dict(compare_time="05:00:00"), dict(benchmark_time="04:00:30")):
+        with pytest.raises(ValueError, match="seriale"):
+            _plan(**bad)
+    for bad in (dict(shard_mem="32G"), dict(shard_mem="30801M"), dict(benchmark_mem="48G"), dict(shard_mem="1T")):
+        with pytest.raises(ValueError, match="30800M"):  # 32G = 32768M: sbatch rifiuterebbe (QoS, 27/10)
+            _plan(**bad)
+    with pytest.raises(ValueError, match="al massimo 8"):
+        _plan(shard_cpus=9, benchmark_cpus=9)
+    with pytest.raises(ValueError, match="memoria non valida"):
+        _plan(shard_mem="30GB")
     with pytest.raises(ValueError, match="stessi core"):
         _plan(shard_cpus=8)
     with pytest.raises(ValueError, match="40 caratteri"):
@@ -89,6 +102,57 @@ def test_launcher_fixes_plan_and_output_and_requires_a_frozen_checkout(work):  #
         assert r.returncode == 2 and msg in r.stdout and "VENV_PYTHON" not in r.stdout
     r = subprocess.run(["bash", str(launcher), out, "plan"], env=frozen, capture_output=True, text=True)
     assert r.returncode == 2 and "sconosciuta" in r.stdout
-    for extra in (["--plan", "/altro/plan.json"], ["--plan=/altro.json"], ["--out", "/altro.json"], ["--archive", "/x"]):
+    # piano e uscita li fissa il launcher: forme esatte, abbreviazioni di argparse e qualunque opzione fuori dalla lista sono rifiutate (critico 29/10)
+    for extra in (["--plan", "/altro/plan.json"], ["--plan=/altro.json"], ["--out", "/altro.json"], ["--archive", "/x"], ["--pla", "/altro.json"],
+                  ["--p=/altro.json"], ["--ou", "/altro.json"], ["--outp=/altro.json"], ["-o", "/altro.json"], ["--model", "B", "--view", "dec", "--ou", "/x"]):
         r = subprocess.run(["bash", str(launcher), out, "run", *extra], env=frozen, capture_output=True, text=True)
-        assert r.returncode == 2 and "non ammesso" in r.stdout and "VENV_PYTHON" not in r.stdout
+        assert r.returncode == 2 and "non ammesso" in r.stdout and "VENV_PYTHON" not in r.stdout, extra
+    r = subprocess.run(["bash", str(launcher), f"{root}/psd3/inventory.json", "inventory", "--verify-sha"], env=frozen, capture_output=True, text=True)
+    assert "VENV_PYTHON scripts/psd3_readout.py inventory --plan" in r.stdout and r.stdout.rstrip().endswith("--verify-sha")
+    assert "--mem=30G" in launcher.read_text() and "--mem=32G" not in launcher.read_text()  # limite della QoS seriale (30800M)
+
+
+def test_psd3_cli_rejects_abbreviated_options_and_keeps_its_real_source_identity(tmp_path, monkeypatch):
+    """Il parser di `psd3_readout.py` non accetta abbreviazioni (`--pla`, `--ou`); l'identita' del sorgente vera (git, versioni, thread) e' stabile
+    attraverso un mini `run_shard` (PCA, logistica, MLP reali) e finisce nel rapporto: nessuno stub, a differenza dei test del CLI di GPT."""
+    import importlib.util as iu
+
+    import numpy as np
+
+    from wearusfm.harness.downstream_ab import fingerprint
+    from wearusfm.harness.psd3_inputs import hash_file
+    from wearusfm.harness.psd3_readers import FeatureConfig, LogisticConfig, MLPConfig
+
+    spec = iu.spec_from_file_location("psd3_cli_for_jobs_test", REPO / "scripts" / "psd3_readout.py")
+    cli = iu.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="x", allow_abbrev=False)
+    parser.add_argument("--plan"), parser.add_argument("--out")
+    with pytest.raises(SystemExit):  # stesso comportamento che il CLI vero ora dichiara con allow_abbrev=False
+        parser.parse_args(["--pla", "/x", "--out", "/y"])
+    assert "allow_abbrev=False" in (REPO / "scripts" / "psd3_readout.py").read_text()
+    rng = np.random.default_rng(3)
+    s = np.repeat([f"s{i}" for i in range(8)], 6)
+    y = np.tile(["rest", "move"], 24)
+    x = rng.normal(size=(48, 4)).astype(np.float32)
+    x[:, 0] += (y == "move") * 3
+    path = tmp_path / "cache.npz"
+    np.savez(path, x_pool=x, x_dec=x.astype(np.float16), y=y, s=s)
+    roles = []
+    for i in range(4):
+        held = [f"s{2 * i}", f"s{2 * i + 1}"]
+        rest = [f"s{j}" for j in range(8) if f"s{j}" not in held]
+        roles.append({"train": rest[2:], "val": rest[:2], "held": held})
+    entry = {"path": str(path), "pins": {"sha256": hash_file(path), "bytes": path.stat().st_size, "input_sha256": "a" * 64, "checkpoint_sha256": "b" * 64},
+             "roles": roles, "subjects": sorted(set(s)), "roles_sha256": fingerprint(roles), "expected_oof_windows": 48,
+             "expected_oof_rows_sha256": fingerprint(np.arange(48, dtype=np.int64)), "model": "B", "dataset": "uci_emg", "task": "p2"}
+    original = cli.load_cache_view
+    monkeypatch.setattr(cli, "load_cache_view", lambda p, pins, view: original(p, {k: pins[k] for k in ("sha256", "bytes")}, view))
+    before = cli.source_identity()
+    report = cli.run_shard(entry, "pool", feature_config=FeatureConfig(k=2), logistic_config=LogisticConfig(feature_dim=2, c_grid=(0.1, 1.0), max_iter=50),
+                           mlp_config=MLPConfig(feature_dim=2, hidden_dim=3, epochs=2, lambdas=(0.0, 0.01)))
+    assert report["status"] == "completed" and report["runtime"]["source_sha256"] == before["source_sha256"] == cli.source_identity()["source_sha256"]
+    assert cli.numerical_identity(report["runtime"]) == cli.numerical_identity(before) and report["runtime"]["code_sha"]
+    assert report["recipe_sha256"] == fingerprint(report["recipe"], cli.numerical_identity(report["runtime"]))

@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
+#SBATCH --mem=30G
 #SBATCH --time=01:00:00
 #SBATCH -J psd3_readout
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/psd3_%j.out
@@ -13,9 +13,11 @@
 # PSD-3, lettori a encoder congelato sulle cache di B19618 (docs/psd3_readers_20261029.md, preparazione GPT d4092b8; esecuzione affidata a
 # Claude il 29/10, docs/prompt_claude_psd3_dopo_sonde_20261029.md): CPU seriale, 0 GPU-ora, nessuna estrazione nuova.
 # Il codice gira SOLO da un checkout di campagna congelato (CODE_DIR + EXPECTED_SHA obbligatori: lib_code_dir.sh verifica SHA, pulizia e sola
-# lettura). Il piano scientifico e' quello congelato nel checkout: il launcher lo fissa, l'operatore non puo' indicarne un altro.
+# lettura). Il piano scientifico e' quello congelato nel checkout e l'uscita e' il primo argomento: il launcher li fissa e ammette dopo la fase
+# SOLO --model, --dataset, --view, --reports e --verify-sha (confronto esatto: niente abbreviazioni di argparse come --pla o --ou; il parser
+# dello script ha allow_abbrev=False). Memoria al massimo 30G: la QoS lrd_all_serial ammette mem=30800M e 8 core per job.
 # Uso: sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> [--cpus-per-task=N --mem=.. --time=..] \
-#        scripts/slurm/psd3_readout.sbatch <uscita assoluta, fuori dal codice> <fase: inventory|benchmark|run|compare> [argomenti]
+#        scripts/slurm/psd3_readout.sbatch <uscita assoluta, fuori dal codice> <fase: inventory|benchmark|run|compare> [argomenti ammessi]
 # I thread BLAS/OpenMP (e quelli di torch, che legge OMP_NUM_THREADS) seguono i core allocati: la firma numerica dei rapporti li registra, e il
 # confronto esige la stessa firma per tutti e venti gli shard: stessi core per tutti gli shard.
 
@@ -26,7 +28,12 @@ case "$OUT" in /*) ;; *) echo "uscita relativa: rifiutato"; exit 2;; esac
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*|"$CODE_DIR"|"$CODE_DIR"/*) echo "uscita dentro il codice: rifiutato"; exit 2;; esac
 case "$STAGE" in inventory|benchmark|run|compare) ;; *) echo "fase sconosciuta: $STAGE"; exit 2;; esac
-for a in "$@"; do case "$a" in --plan|--plan=*|--out|--out=*|--archive|--archive=*) echo "argomento non ammesso: $a (piano e uscita li fissa il launcher)"; exit 2;; esac; done
+for a in "$@"; do
+  case "$a" in
+    --model|--dataset|--view|--reports|--verify-sha) ;;
+    -*) echo "argomento non ammesso: $a (ammessi: --model --dataset --view --reports --verify-sha; piano e uscita li fissa il launcher)"; exit 2;;
+  esac
+done
 source "$CODE_DIR/scripts/slurm/lib_code_dir.sh" && code_dir_setup || exit 2
 module purge
 module load profile/deeplrn
