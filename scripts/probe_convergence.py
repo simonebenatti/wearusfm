@@ -875,11 +875,17 @@ def _hms_to_hours(hms: str) -> float:
 
 
 def build_plan(code_sha: str, campaign: str, results_root: str, features_root: str, originals_root: str, pins_rel: str, agent: str,
-               ledger_campaign: str, pins: dict, date: str = "20261029") -> dict:
+               ledger_campaign: str, pins: dict, date: str = "20261029", b_times: dict | None = None, b_times_note: str = "") -> dict:
     """Il piano eseguibile: blocchi di job per semplicione (submitter comune), con risorse, tetti e dipendenze; ogni job gira dal checkout di
     campagna `campaign` allo SHA `code_sha` del codice di analisi. I blocchi si sottomettono uno dopo l'altro, a blocco precedente concluso: ogni
-    job controlla da solo i prerequisiti (ricevute, cancello, ricetta), quindi una sottomissione prematura fallisce senza spendere."""
+    job controlla da solo i prerequisiti (ricevute, cancello, ricetta), quindi una sottomissione prematura fallisce senza spendere.
+    `b_times`: tetti di walltime della fase B per shard (nome -> hh:mm:ss) fissati DOPO i tempi misurati della fase A (protocollo §6), con la
+    motivazione in `b_times_note`; cambiano solo le allocazioni dei blocchi 4-5, mai la ricetta numerica ne' il codice che gira."""
     require(len(code_sha) == 40 and all(c in "0123456789abcdef" for c in code_sha), "code_sha deve essere uno SHA a 40 caratteri")
+    shard_time = {"A": dict(SHARD_TIME["A"]), "B": {**SHARD_TIME["B"], **(b_times or {})}}
+    require(set(shard_time["B"]) == set(SHARD_TIME["B"]), f"nomi di shard sconosciuti in b_times: {sorted(set(b_times or {}) - set(SHARD_TIME['B']))}")
+    for name, t in shard_time["B"].items():
+        require(_hms_to_hours(t) <= 4, f"fase B, shard {name}: walltime {t} oltre le 4 ore della seriale")
     checkout = f"/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/{campaign}"
     launcher = f"{checkout}/scripts/slurm/probe_convergence.sbatch"
     pins_path = f"{checkout}/{pins_rel}"
@@ -909,7 +915,7 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
                     if phase == "B":
                         args += ["--gate", f"{results_root}/A/gate.json"]
                     exp = SHARD_EXPECTED_MIN[name] * (1 if phase == "A" else 2.5)
-                    job(b_sh, f"PILOT-POSA-SONDE-{phase}-{enc}-{task}-{name}-{date}", 8, "30G", SHARD_TIME[phase][name],
+                    job(b_sh, f"PILOT-POSA-SONDE-{phase}-{enc}-{task}-{name}-{date}", 8, "30G", shard_time[phase][name],
                         f"{base}/{enc}_{task}/shard_{name}", "probe", args, expected_min=exp)
         for enc in ENCODERS:
             for task, shards in SHARDS.items():
@@ -955,6 +961,7 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
                                     "note": "A = tempi osservati nelle sonde del 28-29/10 (8 core); B fra 1x e 4x (fit al limite x4), non una previsione: "
                                             "da affinare con elapsed_s e n_iter per fit della fase A prima dei lanci della fase B"},
             "serial_partition": {"walltime_limit": "04:00:00", "max_queued_per_user": 10, "note": "ogni blocco ha al piu' 10 job"},
+            "shard_walltime": {"A": shard_time["A"], "B": shard_time["B"], "B_overridden": sorted(b_times or {}), "B_note": b_times_note},
             "phases": {p: {"max_iter": m} for p, m in PHASES.items()}, "fits": {"per_fold": N_FITS_PER_FOLD, "per_dataset": K_FOLDS * N_FITS_PER_FOLD,
                                                                                  "p1": len(TASKS["p1"]) * K_FOLDS * N_FITS_PER_FOLD,
                                                                                  "p2": len(TASKS["p2"]) * K_FOLDS * N_FITS_PER_FOLD,
@@ -965,7 +972,13 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
 
 def run_plan(a) -> int:
     pins = load_pins(a.pins)
-    plan = build_plan(a.code_sha, a.campaign, a.results_root, a.features_root, a.originals_root, a.pins_rel, a.agente, a.ledger_campaign, pins)
+    b_times = {}
+    for item in a.b_time or []:
+        require("=" in item, f"--b-time vuole nome=hh:mm:ss: {item!r}")
+        name, t = item.split("=", 1)
+        b_times[name] = t
+    plan = build_plan(a.code_sha, a.campaign, a.results_root, a.features_root, a.originals_root, a.pins_rel, a.agente, a.ledger_campaign, pins,
+                      b_times=b_times, b_times_note=a.b_time_note or "")
     a.out_dir.mkdir(parents=True, exist_ok=True)
     plan_path, cmd_path = a.out_dir / "piano.json", a.out_dir / "comandi.txt"
     for p in (plan_path, cmd_path):
@@ -1021,6 +1034,8 @@ def main(argv=None) -> int:
     ap.add_argument("--agente", default="gpt", choices=["claude", "gpt", "simone"], help="plan: categoria del ledger (l'operatore e' semplicione)")
     ap.add_argument("--ledger-campaign", default="pilot-posa-sonde-20261029")
     ap.add_argument("--out-dir", type=Path, default=ROOT / "results" / "infra" / "pilot_posa" / "sonde_convergenza_20261029", help="plan")
+    ap.add_argument("--b-time", action="append", help="plan: tetto di walltime della fase B per shard, nome=hh:mm:ss (ripetibile), fissato dopo la fase A")
+    ap.add_argument("--b-time-note", help="plan: da dove vengono i tetti della fase B (tempi misurati, fit al limite)")
     a = ap.parse_args(argv)
     if a.stage == "plan":
         if not a.code_sha or not a.pins:

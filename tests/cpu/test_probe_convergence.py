@@ -605,6 +605,17 @@ def test_plan_covers_every_shard_once_per_phase_with_blocks_under_the_queue_limi
     assert PC.main(["--stage", "plan", "--code-sha", "f" * 40, "--pins", str(pins_path), "--out-dir", str(out_dir)]) == 0
     lines = [l for l in (out_dir / "comandi.txt").read_text().splitlines() if l and not l.startswith("#")]
     assert lines == [j["command"] for j in json.loads((out_dir / "piano.json").read_text())["jobs"]]
+    # tetti della fase B fissati dopo i tempi della fase A: cambiano solo i job dei blocchi 4-5, restano registrati nel piano, mai oltre le 4 ore
+    tuned = PC.build_plan("f" * 40, "c", "/W/r", "/S/f", "/W/o", "p.json", "gpt", "c", pins, b_times={"db6": "00:40:00", "p2": "01:00:00"},
+                          b_times_note="dai tempi per fit della fase A")
+    b4 = {shlex.split(j["command"])[shlex.split(j["command"]).index("--datasets") + 1]: j["time"] for j in tuned["jobs"] if j["block"] == 4 and "-B-p1-db6-" in j["id"] or (j["block"] == 4 and "-B-p2-" in j["id"])}
+    assert b4 == {"ninapro_db6": "00:40:00", "epn612": "01:00:00"} and tuned["shard_walltime"]["B_overridden"] == ["db6", "p2"]
+    assert [j["time"] for j in tuned["jobs"] if j["block"] == 1] == [j["time"] for j in plan["jobs"] if j["block"] == 1]  # fase A invariata
+    assert tuned["core_hours_cap"]["B"] < plan["core_hours_cap"]["B"]
+    with pytest.raises(PC.Problem, match="4 ore"):
+        PC.build_plan("f" * 40, "c", "/W/r", "/S/f", "/W/o", "p.json", "gpt", "c", pins, b_times={"db2a": "04:30:00"})
+    with pytest.raises(PC.Problem, match="sconosciuti"):
+        PC.build_plan("f" * 40, "c", "/W/r", "/S/f", "/W/o", "p.json", "gpt", "c", pins, b_times={"db9": "01:00:00"})
 
 
 def test_launcher_requires_a_frozen_checkout_and_outputs_outside_the_code(work):  # noqa: F811
