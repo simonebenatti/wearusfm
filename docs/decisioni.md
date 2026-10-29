@@ -5601,3 +5601,10 @@ nel launcher PSD-3: tutti corretti in questo commit; il codice delle sonde (f6c8
 PSD-3: nuovo deploy `deploy/pilot-psd3-20261029b`, piano con 30G, tetti 91 core-ore (86 provvisori + 5 di margine su benchmark e confronto)
 piu' 0,33 di checkout; residuo al tetto 171,47 core-ore CPU-only dopo sonde e PSD-3. Coda seriale: un job da 8 core alla volta
 (`QOSMaxCpuPerUserLimit`).
+
+### 2026-10-29 — Sonde, fase A: riproduzione esatta e cancello superato; tetti della fase B fissati (Claude)
+
+Parita' identica per i quattro rapporti, 280 record, cancello passed. I 18 fit al limite sono tutti candidati C = 100 in DB6 ed EPN612 (piu' i due
+riaddestramenti dove C = 100 e' stato scelto: R3c DB6 fold 3, B EPN612 fold 1). Tetti della fase B dai tempi misurati: DB2 45 + 45, DB3 20, DB6 45,
+P2 60 min per encoder = **57,33 core-ore** (atteso ~36); consuntivo della fase A 26,4 core-ore di shard. Nessuna modifica alla ricetta ne' al codice
+(f6c89cc); nessun job GPU.

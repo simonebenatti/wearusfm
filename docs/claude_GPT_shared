@@ -4987,6 +4987,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   per job non cambiano. `sacctmgr` e `sinfo` non sono fra i comandi ammessi a leonardo-ops: i limiti 8 core / 30800M restano quelli osservati
   dai rifiuti di sbatch del 27/10.
 
+### 2026-10-29 | Claude | Sonde, fase A eseguita: riproduzione esatta, cancello superato, 18 fit al limite tutti a C = 100 in DB6 ed EPN612; tetti della fase B fissati sui tempi misurati | Checkout f6c89cc, job 62732268-62769119
+
+- Blocchi 1-3 eseguiti da semplicione (10 shard 14:03-17:21, 4 aggregati 17:26-17:29, cancello 17:3x), tutti COMPLETED 0:0; un job da 8 core alla
+  volta (`QOSMaxCpuPerUserLimit`): 3 h 30 di parete. Consuntivo CPU allocata (elapsed x 8 core): shard 2 x (28,7+27,6+11,0+11,3+20,6) min
+  per B e (27,9+27,3+12,7+12,0+18,8) per R3c = 198 min -> **26,4 core-ore**, aggregati e cancello < 1 core-ora (tetto A 50,83).
+- **Riproduzione esatta:** i quattro aggregati hanno S identici agli originali (B P1 16,995; B P2 79,604; R3c P1 17,551; R3c P2 80,837), parita'
+  IDENTICA su predizioni, C, punteggi per fold e dataset, righe, soggetti, S_se (zero differenze, nessuna tolleranza); cancello `passed=true`,
+  280 record, una sola ricetta del solver e un solo contesto numerico (sklearn 1.4.1.post1, numpy 1.26.4, scipy 1.12.0, openblas pthreads, 8
+  thread, float32). Le sonde storiche sono dunque riproducibili al bit nell'ambiente del cluster.
+- **Attribuzione dei warning (l'audit per fit):** i 18 fit al limite di 3.000 iterazioni sono TUTTI candidati **C = 100**: DB6 4 per encoder
+  (tutti i fold) ed EPN612 4 per encoder (tutti i fold), piu' due riaddestramenti perche' C = 100 e' stato selezionato: R3c DB6 fold 3 e B EPN612
+  fold 1. In DB2 i candidati C = 100 si fermano per criterio a 2.505-2.943 iterazioni (sotto il limite, convergenti), DB3 a 750-1.600, UCI sotto
+  50. Nessun arresto anomalo. Quindi la fase B (12.000) puo' cambiare solo DB6 ed EPN612: i candidati C = 100 e, dove selezionati, i modelli finali.
+  Stessi conteggi delle 18 emissioni nei log storici (5/4/4/5 per job).
+- **Tetti della fase B dai tempi per fit** (`--b-time`, piano rigenerato, codice invariato f6c89cc): DB2 meta' 45 min (misurato 28, nessun fit al
+  limite), DB3 20 min (11-13), DB6 45 min (proiezione x4 sui fit al limite 24-27), P2 60 min (36-41). Tetto della fase B **57,33 core-ore**
+  (prima 118,33), atteso ~36 core-ore / ~4,5 h di parete. Tetto complessivo sonde 50,83 + 57,33 = 108,17 core-ore (+0,33 di checkout).
+- Semplicione intanto esegue PSD-3 blocchi 1-2 (inventario con SHA e 4 benchmark, 5 job); i blocchi 4-5 delle sonde partono dopo, per il limite
+  di 10 job in coda. Risultati A copiati sul Mac in `~/wearusfm_local/sonde_convergenza_20261029/A/` (senza NPZ).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
