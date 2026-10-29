@@ -8,10 +8,13 @@
 - **Errore standard (D12):** bootstrap sui soggetti di test (ricampionati con ripetizione, 1.000 volte, seme fisso): la deviazione standard
   dell'accuratezza bilanciata sui campioni bootstrap. Con piu' seed del modello, `combine_seeds` combina i risultati.
 - **Audit per singolo fit (29/10/2026, controllo della convergenza delle sonde di B19618, `docs/sonde_convergenza_20261029.md`):** con
-  `audit=[...]` ogni `.fit` (i sei candidati e il riaddestramento) lascia un record strutturato: fase, C, `get_params()`, dimensioni e classi del
-  train, firma dello scaler, `n_iter_`, tempo, warning emessi DENTRO la chiamata (categoria, messaggio, posizione), raggiungimento del limite,
-  eccezione. I warning catturati vengono riemessi subito dopo con gli stessi filtri dell'utente (nessuna soppressione); un'eccezione si registra
-  e si rilancia. Con `audit=None` (default) il percorso di calcolo e' identico a prima; `max_iter` resta 3000 se non si chiede altro.
+  `audit=[...]` ogni `.fit` (i sei candidati e il riaddestramento) lascia un record strutturato: `fit_phase` (candidate | refit), C,
+  `get_params()`, dimensioni e classi del train, firma dello scaler, `n_iter_`, tempo, warning emessi DENTRO la chiamata (categoria,
+  messaggio, posizione), raggiungimento del limite, eccezione. I warning catturati vengono riemessi subito dopo con gli stessi filtri
+  dell'utente (nessuna soppressione); un'eccezione si registra e si rilancia. Se l'oggetto `audit` ha un metodo `persist(record)`, viene
+  chiamato appena un record e' definitivo (candidato: dopo il punteggio di validazione; riaddestramento: dopo il fit; eccezione: prima del
+  rilancio), cosi' chi chiama puo' salvarlo su disco fit per fit. Con `audit=None` (default) il percorso di calcolo e' identico a prima;
+  `max_iter` resta 3000 se non si chiede altro.
 """
 
 from __future__ import annotations
@@ -152,13 +155,20 @@ def linear_probe(x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_
                 "dtype": str(np.asarray(xt).dtype), "classes": _json_safe(classes), "class_counts": [int(v) for v in counts],
                 "scale": bool(scale), "scaler_sha256": scaler_sha}
 
-    def fit(c: float, phase: str) -> LogisticRegression:
+    persist = getattr(audit, "persist", None) if audit is not None else None
+
+    def fit(c: float, fit_phase: str) -> LogisticRegression:
         model = LogisticRegression(C=c, max_iter=max_iter, class_weight="balanced", random_state=seed)
         if audit is None:
             return model.fit(xt, y_train)
-        record = {**base, "phase": phase, "C": float(c), "solver_params": _json_safe(model.get_params()), "selected": None}
+        record = {**base, "fit_phase": fit_phase, "C": float(c), "solver_params": _json_safe(model.get_params()), "selected": None}
         audit.append(record)  # prima del fit: un'eccezione lascia il record con `exception`
-        return _fit_audited(model, xt, y_train, record)
+        try:
+            return _fit_audited(model, xt, y_train, record)
+        except BaseException:
+            if persist is not None:
+                persist(record)  # il record del fallimento e' su disco prima del rilancio
+            raise
 
     scores: dict = {}
     mine: list = []  # i record di questa chiamata (l'audit puo' contenere quelli di altri fold e dataset)
@@ -173,11 +183,16 @@ def linear_probe(x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_
             scores[c] = balanced_accuracy_score(y_val, model.predict(xv))
         _reemit(w)
         audit[-1].update(val_bacc=float(scores[c]), scoring_warnings=_described(w))
+        if persist is not None:
+            persist(audit[-1])
     best = max(c_grid, key=lambda c: (scores[c], -c))  # a parita', la regolarizzazione piu' forte
     for record in mine:
         record["selected"] = bool(record["C"] == float(best))
     model = fit(best, "refit")
+    if persist is not None:
+        persist(audit[-1])
     pred = model.predict(xs)
+    test_bacc = float(balanced_accuracy_score(y_test, pred))  # prima del bootstrap, come sempre
     if audit is None:
         se = bootstrap_bacc_se(np.asarray(y_test), pred, np.asarray(test_subjects), n_boot, seed)
         n_bw = None
@@ -188,7 +203,7 @@ def linear_probe(x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_
         _reemit(w)
         n_bw = len(w)
     return ProbeResult(
-        test_bacc=float(balanced_accuracy_score(y_test, pred)),
+        test_bacc=test_bacc,
         test_bacc_se=se,
         val_bacc=float(scores[best]),
         train_bacc=float(balanced_accuracy_score(y_train, model.predict(xt))),

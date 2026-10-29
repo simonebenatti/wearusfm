@@ -112,6 +112,8 @@ def _campaign(tmp_path, seed=0, width=12):
             (d / "extraction_receipt.json").write_text(json.dumps({"complete": True, "checkpoint_unchanged": True, "model": enc, "mode": "channel",
                                                                    "checkpoint_step": 19618, "checkpoint": ckpt, "checkpoint_sha256": ckpt_sha,
                                                                    "code_sha": CACHE_CODE, "outputs": outputs}))
+            pins["reports"][f"{enc}_{task}"] = {"extraction_receipt": str(d / "extraction_receipt.json"),
+                                                "extraction_receipt_sha256": PC.sha256(d / "extraction_receipt.json")}
     originals = {}
     for enc in PC.ENCODERS:
         for task in PC.TASKS:
@@ -120,7 +122,7 @@ def _campaign(tmp_path, seed=0, width=12):
                             "--layer", "pool", "--k", "0", "--seed", "0", "--out", str(out)]) == 0
             rep = json.loads(out.read_text())
             originals[enc, task] = out
-            pins["reports"][f"{enc}_{task}"] = {"report": str(out), "report_sha256": PC.sha256(out), "oof": rep["oof"], "oof_sha256": rep["oof_sha256"]}
+            pins["reports"][f"{enc}_{task}"].update({"report": str(out), "report_sha256": PC.sha256(out), "oof": rep["oof"], "oof_sha256": rep["oof_sha256"]})
     pins_path = root / "pin_ingressi.json"
     pins_path.write_text(json.dumps(pins))
     return {"root": root, "splits": splits_path, "features": features, "pins": pins_path, "pins_dict": pins, "originals": originals, "base": base}
@@ -162,7 +164,7 @@ def test_audit_on_and_off_give_identical_scaler_selection_predictions_and_scores
     assert np.array_equal(off.test_pred, on.test_pred) and off.c == on.c and off.val_scores == on.val_scores and off.test_bacc == on.test_bacc
     assert off.test_bacc_se == on.test_bacc_se and off.train_bacc == on.train_bacc and off.solver_params == on.solver_params
     assert off.bootstrap_warnings is None and isinstance(on.bootstrap_warnings, int)
-    assert len(audit) == len(C_GRID) + 1 and [r["phase"] for r in audit] == ["candidate"] * len(C_GRID) + ["refit"]
+    assert len(audit) == len(C_GRID) + 1 and [r["fit_phase"] for r in audit] == ["candidate"] * len(C_GRID) + ["refit"]
     assert [r["C"] for r in audit[:-1]] == [float(c) for c in C_GRID] and audit[-1]["C"] == on.c
     assert [r["selected"] for r in audit[:-1]].count(True) == 1 and audit[[r["selected"] for r in audit[:-1]].index(True)]["C"] == on.c
     sc = StandardScaler().fit(x[tr])
@@ -216,7 +218,7 @@ def test_scaler_and_c_come_from_train_and_val_only_and_folds_are_subject_disjoin
     b: list = []
     r2 = linear_probe(x[tr], y[tr], x[va], y[va], x[te] * 7 + 3, y[te], s[te], n_boot=20, audit=b)  # held-out perturbato
     assert r1.c == r2.c and r1.val_scores == r2.val_scores and a[0]["scaler_sha256"] == b[0]["scaler_sha256"]
-    assert a[-1]["phase"] == "refit" and a[-1]["n_train"] == int(tr.sum())  # il riaddestramento usa le righe di train, non train + validazione
+    assert a[-1]["fit_phase"] == "refit" and a[-1]["n_train"] == int(tr.sum())  # il riaddestramento usa le righe di train, non train + validazione
     assert r1.n_val == int(va.sum()) and r1.n_test == int(te.sum())
     subjects = [f"S{i:02d}" for i in range(9)]
     roles = CP.fold_roles(subjects)
@@ -363,7 +365,7 @@ def test_recipe_and_identity_guards_reject_mismatches_including_textual_labels(t
         with pytest.raises(ValueError, match="ricetta del solver"):
             SC.check_readout_pairing(rep_a, other)
     good = {"max_iter": 3000, "solver_recipe": solver_recipe(3000), "solver_recipe_sha256": DA.fingerprint(solver_recipe(3000)), "checkpoint_sha256": "b",
-            "weights": {"d": 1.0}, "splits_sha256": "x", **{k: 1 for k in SC.PROBE_KEYS}, "task": "p1",
+            "numeric_sha256": "n", "weights": {"d": 1.0}, "splits_sha256": "x", **{k: 1 for k in SC.PROBE_KEYS}, "task": "p1",
             "datasets": {"d": {"input_sha256": "i", "oof_rows_sha256": "r"}}}
     reps = {("A", "R3c"): {**good, "checkpoint_sha256": "c"}, ("A", "B"): dict(good),
             ("B", "R3c"): {**good, "checkpoint_sha256": "c", "max_iter": 12000, "solver_recipe": solver_recipe(12000), "solver_recipe_sha256": DA.fingerprint(solver_recipe(12000))},
@@ -382,6 +384,8 @@ def test_recipe_and_identity_guards_reject_mismatches_including_textual_labels(t
                         ("B", "R3c"): {**reps["B", "R3c"], "solver_recipe": other, "solver_recipe_sha256": DA.fingerprint(other)}})
     with pytest.raises(PC.Problem, match="stesso checkpoint"):
         PC.phase_guard({**reps, ("A", "R3c"): dict(good)})
+    with pytest.raises(PC.Problem, match="contesto numerico"):  # dtype, backend o thread diversi fra i rapporti
+        PC.phase_guard({**reps, ("B", "B"): {**reps["B", "B"], "numeric_sha256": "altro"}})
     # etichette testuali (EPN612) e numeriche nel bootstrap congiunto; finitezza controllata sulle feature, non sulle etichette
     rng = np.random.default_rng(7)
     s = np.repeat([f"u{i}" for i in range(6)], 10)
@@ -433,6 +437,129 @@ def test_joint_bootstrap_reproduces_the_official_paired_comparison_and_the_delta
     assert all(per[d]["delta"] == pytest.approx(rows[d]["delta"], abs=1e-12) and per[d]["ci95"] == pytest.approx(rows[d]["ci95"], abs=1e-12) for d in weights)
 
 
+# ------------------------------------------------------------------------------------------- regressioni della review GPT de06bca (R1, R2, R3)
+
+def _minimal_pair(tmp_path):
+    """Un rapporto storico minimo e la sua copia «nuova» (come la riproduzione indipendente di GPT): stesse righe, ruoli, C, S."""
+    oof = tmp_path / "oof.npz"
+    rows = np.arange(4)
+    np.savez(oof, datasets=np.array(["d"]), d_y=[0, 1, 0, 1], d_pred=[0, 1, 1, 1], d_s=["u", "u", "v", "v"], d_row=rows)
+    fold = dict(train=["t"], val=["w"], held=["u", "v"], c=1.0, held_bacc=.75, val_bacc=.75, train_bacc=.8, n_train=10, n_val=4, n_held=4)
+    rep = {**{k: 0 for k in SC.PROBE_KEYS}, "kind": "aggregate", "phase": "A", "task": "p1", "weights": {"d": 1.0}, "splits_sha256": "split",
+           "extraction_recipe": {}, "feature_set": "pool", "checkpoint_sha256": "checkpoint", "S": .75, "S_se": .1, "oof": str(oof),
+           "oof_sha256": PC.sha256(oof), "datasets": {"d": {"input_sha256": "input", "oof_rows_sha256": DA.fingerprint(rows), "subjects": ["u", "v"],
+                                                            "s": .75, "folds": [fold]}}}
+    original = tmp_path / "original.json"
+    original.write_text(json.dumps(rep))
+    return rep, original, oof
+
+
+@pytest.mark.parametrize("change", [("fold", "val_bacc", .5), ("fold", "train_bacc", .9), ("fold", "held_bacc", .5), ("fold", "c", 10.0),
+                                    ("fold", "n_held", 3), ("fold", "val", ["q"]), ("dataset", "subjects", ["u", "w"]), ("dataset", "s", .74),
+                                    ("report", "S_se", .2), ("report", "weights", {"d": .9}), ("report", "fold_seed", 1)])
+def test_parity_rejects_any_single_scientific_difference(tmp_path, change):
+    """R1: una differenza sola alla volta, in un campo scientifico confrontabile, chiude la parita' e viene elencata; nessuna tolleranza."""
+    rep, original, oof = _minimal_pair(tmp_path)
+    changed = json.loads(json.dumps(rep))
+    level, key, value = change
+    if level == "fold":
+        changed["datasets"]["d"]["folds"][0][key] = value
+    elif level == "dataset":
+        changed["datasets"]["d"][key] = value
+    else:
+        changed[key] = value
+    new = tmp_path / "new.json"
+    new.write_text(json.dumps(changed))
+    same = tmp_path / "same.json"
+    same.write_text(json.dumps(rep))
+    assert PC.parity_check(original, PC.sha256(original), PC.sha256(oof), same)["identical"]
+    parity = PC.parity_check(original, PC.sha256(original), PC.sha256(oof), new)
+    assert not parity["identical"] and parity["problems"] and parity["predictions_differing_total"] == 0
+    assert any(key in p for p in parity["problems"]) or any(key in k for d in parity["differences"]["datasets"].values() for k in d)
+    if key == "val_bacc":
+        assert parity["datasets"]["d"]["val_bacc_abs_diff"] == [.25]
+
+
+def test_fit_exception_persists_the_audit_and_the_failure_on_disk_and_the_aggregator_refuses_it(tmp_path):
+    """R2: i record dei fit finiti e quello del fit fallito sono su disco prima del rilancio; nessun shard.json; l'aggregatore rifiuta lo shard."""
+    camp = _campaign(tmp_path)
+    out = tmp_path / "risultati" / "A" / "B_p2" / "shard_p2"
+    calls = {"n": 0}
+    real = LogisticRegression.fit
+
+    def boom(self, *a, **k):
+        calls["n"] += 1
+        if calls["n"] == 3:
+            raise RuntimeError("fit rotto iniettato")
+        return real(self, *a, **k)
+
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(LogisticRegression, "fit", boom)
+        with pytest.raises(RuntimeError, match="fit rotto iniettato"):
+            _run("probe", "--out", out, "--phase", "A", "--encoder", "B", "--task", "p2", "--features", camp["features"]["B", "p2"],
+                 "--pins", camp["pins"], "--splits", camp["splits"])
+    assert not (out / "shard.json").exists() and not (out / "audit.jsonl").exists()
+    progress = [json.loads(l) for l in (out / "audit_progress.jsonl").read_text().splitlines() if l.strip()]
+    assert len(progress) == 3 and progress[2]["exception"] == "RuntimeError: fit rotto iniettato" and progress[0]["exception"] is None
+    assert [r["fit_phase"] for r in progress] == ["candidate"] * 3 and all(r["experiment_phase"] == "A" for r in progress)  # due chiavi distinte
+    assert "val_bacc" in progress[0] and progress[0]["dataset"] == "epn612" and progress[0]["fold"] == 0
+    failed = json.loads((out / "shard_failed.json").read_text())
+    assert failed["complete"] is False and "fit rotto iniettato" in failed["exception"] and failed["audit"]["n_records"] == 3 and failed["datasets_completed"] == []
+    with pytest.raises(PC.Problem, match="interrotto o fallito"):
+        PC.aggregate([out / "shard.json"], "A", "B", "p2", camp["splits"], camp["pins_dict"])
+    with pytest.raises(PC.Problem, match="manca"):  # anche senza il marcatore: niente shard.json, niente aggregato
+        (out / "shard_failed.json").unlink()
+        PC.aggregate([out / "shard.json"], "A", "B", "p2", camp["splits"], camp["pins_dict"])
+    # a shard completo, il file progressivo contiene tutti i fit (senza `selected`) e l'audit completo li ha tutti con `selected`
+    ok = tmp_path / "risultati" / "A" / "R3c_p2" / "shard_p2"
+    assert _run("probe", "--out", ok, "--phase", "A", "--encoder", "R3c", "--task", "p2", "--features", camp["features"]["R3c", "p2"],
+                "--pins", camp["pins"], "--splits", camp["splits"]) == 0
+    prog = [json.loads(l) for l in (ok / "audit_progress.jsonl").read_text().splitlines() if l.strip()]
+    full = [json.loads(l) for l in (ok / "audit.jsonl").read_text().splitlines() if l.strip()]
+    assert len(prog) == len(full) == 2 * 4 * 7 and sum(r["selected"] is True for r in full) == 8
+    assert json.loads((ok / "shard.json").read_text())["complete"] is True
+
+
+def test_phase_b_stops_before_any_fit_if_recipe_context_or_attested_reports_differ(tmp_path, monkeypatch):
+    """R3: prima dei fit della fase B si confrontano la ricetta corrente (riportata a max_iter 3000) e il contesto numerico con il cancello, e i
+    rapporti attestati devono esistere con gli SHA attestati; una differenza ferma il job senza spendere un fit."""
+    reached = []
+
+    def spy(*a, **k):
+        reached.append(True)
+        raise RuntimeError("FIT RAGGIUNTO")
+
+    monkeypatch.setattr(SC, "oof_predictions", spy)
+    env = PC.environment()
+    recipe = solver_recipe(3000, seed=0)
+    report = tmp_path / "A_B_p1_pool.json"
+    report.write_text("{}")
+    good_gate = {"protocol": PC.PROTOCOL, "phase": "A", "passed": True, "solver_recipe_sha256": DA.fingerprint(recipe), "solver_recipe": recipe,
+                 "numeric_context": PC.numeric_context(env), "numeric_sha256": DA.fingerprint(PC.numeric_context(env)),
+                 "reports": {f"{e}_{t}": {"path": str(report), "sha256": PC.sha256(report)} for e in PC.ENCODERS for t in PC.TASKS}}
+    other_numeric = {**good_gate["numeric_context"], "thread_limits": {"OMP_NUM_THREADS": "99", "OPENBLAS_NUM_THREADS": "99", "MKL_NUM_THREADS": "99"}}
+    cases = {"seed": ({**good_gate}, ["--seed", "1"], "ricetta del solver diversa"),
+             "sha_only": ({**good_gate, "solver_recipe_sha256": DA.fingerprint(solver_recipe(3000, seed=1))}, [], "ricetta del solver diversa"),
+             "content": ({**good_gate, "solver_recipe": {**recipe, "tie_break": "altro"}}, [], "per esteso"),
+             "numeric": ({**good_gate, "numeric_context": other_numeric, "numeric_sha256": DA.fingerprint(other_numeric)}, [], "contesto numerico"),
+             "reports": ({k: v for k, v in good_gate.items() if k != "reports"}, [], "quattro rapporti"),
+             "closed": ({**good_gate, "passed": False}, [], "cancello")}
+    for name, (gate, extra, msg) in cases.items():
+        gate_path = tmp_path / f"gate_{name}.json"
+        gate_path.write_text(json.dumps(gate))
+        with pytest.raises(PC.Problem, match=msg):
+            _run("probe", "--out", tmp_path / f"out_{name}", "--phase", "B", "--encoder", "B", "--task", "p2", "--features", tmp_path / "nessuna",
+                 "--pins", tmp_path / "nessuno.json", "--gate", gate_path, *extra)
+        assert not reached and not (tmp_path / f"out_{name}").exists()
+    report.write_text("{ }")  # il rapporto attestato e' cambiato dopo il cancello: la fase B non parte
+    gate_path = tmp_path / "gate_changed.json"
+    gate_path.write_text(json.dumps(good_gate))
+    with pytest.raises(PC.Problem, match="attestato dal cancello"):
+        _run("probe", "--out", tmp_path / "out_changed", "--phase", "B", "--encoder", "B", "--task", "p2", "--features", tmp_path / "nessuna",
+             "--pins", tmp_path / "nessuno.json", "--gate", gate_path)
+    assert not reached
+
+
 # ------------------------------------------------------------------------------------------------------------------------- piano e launcher
 
 def test_plan_covers_every_shard_once_per_phase_with_blocks_under_the_queue_limit(tmp_path):
@@ -467,6 +594,8 @@ def test_plan_covers_every_shard_once_per_phase_with_blocks_under_the_queue_limi
     assert len(compare["depends_on"]) == 4 and all("aggregate" in d for d in compare["depends_on"]) and compare["block"] == 5
     assert all(j["time"] <= "04:00:00" for j in jobs)
     assert plan["core_hours_cap"]["A"] < 60 and plan["core_hours_cap"]["B"] < 130 and plan["core_hours_cap"]["total"] == pytest.approx(plan["core_hours_cap"]["A"] + plan["core_hours_cap"]["B"])
+    assert plan["core_hours_cap"]["total_with_checkout"] == pytest.approx(plan["core_hours_cap"]["total"] + 1 / 6)  # il checkout: 1 core x 10 min
+    assert plan["fits"] == {"per_fold": 7, "per_dataset": 28, "p1": 84, "p2": 56, "per_phase": 280}
     a_aggr = next(j for j in jobs if j["stage"] == "aggregate" and "-A-B-p1-" in j["id"])
     assert "--original /W/originali/B_p1_pool.json" in a_aggr["command"] and "--parity-out" in a_aggr["command"]
     # il comando scritto nel file e lo stesso piano

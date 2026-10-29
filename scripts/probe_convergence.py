@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Controllo della convergenza delle sonde P1/P2 di B19618 contro R3c a 19.618 (29/10/2026; prompt di GPT
-`docs/prompt_claude_convergenza_sonde_20261029.md`, protocollo `docs/sonde_convergenza_20261029.md`).
+`docs/prompt_claude_convergenza_sonde_20261029.md`, protocollo `docs/sonde_convergenza_20261029.md`, review GPT de06bca).
 
 Domanda: la conclusione sul trasferimento (P1 B−R3c = −0,556 punti, P2 = −1,233; 18 ConvergenceWarning di lbfgs nei log, senza C, fold o tipo di
 fit) e' sensibile all'arresto del solver? Non si cerca una ricetta che faccia vincere B. Due fasi fissate prima dell'esecuzione:
@@ -9,11 +9,13 @@ fit) e' sensibile all'arresto del solver? Non si cerca una ricetta che faccia vi
 Le cache dei teacher (codice 24139ab) sono in sola lettura; ogni uscita e' nuova, assoluta e fuori dal codice; il codice di analisi gira da uno SHA
 pubblicato e congelato (`WEARUSFM_CODE_SHA`, `lib_code_dir.sh`) e si registra separatamente da quello che ha prodotto le cache.
 
-  --stage probe           uno shard (fase, encoder, compito, dataset, fold) con audit per fit -> <out>/shard.json, shard.oof.npz, audit.jsonl
+  --stage probe           uno shard (fase, encoder, compito, dataset, fold) con audit per fit -> <out>/shard.json, shard.oof.npz, audit.jsonl;
+                          l'audit e' salvato fit per fit in audit_progress.jsonl: un fit fallito lascia shard_failed.json, mai shard.json
   --stage aggregate       gli shard di (fase, encoder, compito) -> rapporto nel formato di `channel_readout.py --stage probe`, OOF e audit uniti;
                           con --original anche la parita' con il rapporto storico (fase A)
-  --stage parity          rapporto nuovo contro originale: righe, fold, C, predizioni, S; conteggi esatti, nessuna tolleranza
-  --stage gate            prerequisiti della fase B: fase A completa (280 record), parita' riprodotta, stessa ricetta fra encoder
+  --stage parity          rapporto nuovo contro originale: righe, soggetti, ruoli, C, punteggi per fold e per dataset, S e S_se; conteggi
+                          esatti e differenze esplicite, nessuna tolleranza
+  --stage gate            prerequisiti della fase B: fase A completa (280 record), parita' riprodotta, stessa ricetta e stesso contesto numerico
   --stage compare-phases  B−R3c per fase, 12000−3000 per encoder, (B−R3c)_12000 − (B−R3c)_3000 sugli STESSI ricampionamenti dei soggetti
   --stage plan            piano JSON, file dei comandi (submit_job.py) e preventivo per semplicione, dallo SHA del codice pubblicato
 """
@@ -29,6 +31,7 @@ import platform
 import shlex
 import sys
 import time
+import traceback
 from pathlib import Path
 
 import numpy as np
@@ -57,8 +60,9 @@ PHASES = {"A": MAX_ITER, "B": 12000}  # fissate prima dell'esecuzione: fra le fa
 ENCODERS = ("B", "R3c")
 TASKS = {"p1": list(P1.P1_DATASETS), "p2": list(CP.P2_DATASETS)}
 K_FOLDS = CP.K_FOLDS
-N_FITS_PER_FOLD = len(C_GRID) + 1  # sei candidati + il riaddestramento
+N_FITS_PER_FOLD = len(C_GRID) + 1  # sei candidati + il riaddestramento = 7; 28 per dataset, 84 per P1, 56 per P2, 280 per fase
 LAYER, K = "pool", 0
+FEATURE_DTYPE = "float32"  # `channel_readout.load_cache` legge le feature in float32
 N_BOOT, BOOT_SEED = AC.N_BOOT, AC.BOOT_SEED
 READOUT_NOTE = ("se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi "
                 "`linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione")
@@ -68,10 +72,18 @@ SHARDS = {"p1": (("db2a", ("ninapro_db2",), (0, 1)), ("db2b", ("ninapro_db2",), 
                  ("db3", ("ninapro_db3",), (0, 1, 2, 3)), ("db6", ("ninapro_db6",), (0, 1, 2, 3))),
           "p2": (("p2", ("epn612", "uci_emg"), (0, 1, 2, 3)),)}
 # Tetti di walltime per shard (hh:mm:ss) dai tempi osservati nelle sonde del 28-29/10 (DB2 ~56 min, DB3 ~7, DB6 ~12, P2 ~20, a 8 core): fase A circa
-# 1,6x l'osservato; fase B 4x (un fit che tocca 3.000 iterazioni ne puo' fare fino a 12.000: e' il caso peggiore, non una previsione).
+# 1,6x l'osservato; fase B 4x (un fit che tocca 3.000 iterazioni ne puo' fare fino a 12.000: e' il caso peggiore, non una previsione). Sono
+# allocazioni che fermano il job, non garanzie: il tetto di B si affina coi tempi per fit della fase A prima di lanciarla.
 SHARD_TIME = {"A": {"db2a": "00:45:00", "db2b": "00:45:00", "db3": "00:20:00", "db6": "00:30:00", "p2": "00:40:00"},
               "B": {"db2a": "02:00:00", "db2b": "02:00:00", "db3": "00:40:00", "db6": "01:00:00", "p2": "01:30:00"}}
 SHARD_EXPECTED_MIN = {"db2a": 28, "db2b": 28, "db3": 7, "db6": 12, "p2": 20}  # fase A; fase B fra 1x e 4x
+CHECKOUT_JOB = {"cpus": 1, "time": "00:10:00"}  # campaign_checkout.sbatch: prerequisito, fuori dai 30 job scientifici
+
+# Campi confrontati dalla parita' con il rapporto storico (tutti esatti, nessuna tolleranza). Fuori: tempi, nuovi campi diagnostici, byte dei file.
+PARITY_REPORT_FIELDS = (*SC.PROBE_KEYS, "task", "splits_sha256", "weights", "extraction_recipe", "feature_set", "checkpoint_sha256", "S", "S_se")
+PARITY_DATASET_FIELDS = ("input_sha256", "oof_rows_sha256", "subjects", "s", "n_classes", "n_windows", "n_oof_windows", "readout")
+PARITY_FOLD_FIELDS = ("train", "val", "held", "c", "held_bacc", "val_bacc", "train_bacc", "n_train", "n_val", "n_held",
+                      "dropped_val_windows", "dropped_held_windows", "k", "k_capped", "explained_variance")
 
 
 class Problem(ValueError):
@@ -127,6 +139,7 @@ def analysis_code(allow_unfrozen: bool) -> dict:
 
 
 def environment() -> dict:
+    """Descrittivo dell'ambiente (per la provenienza): versioni, pool di thread, variabili, job SLURM."""
     import scipy
     import sklearn
     import threadpoolctl
@@ -143,6 +156,47 @@ def versions_of(env: dict) -> dict:
     return {k: env.get(k) for k in ("python", "numpy", "scipy", "sklearn")}
 
 
+def numeric_context(env: dict) -> dict:
+    """La firma stabile del contesto numerico dei fit: dtype delle feature, backend BLAS/OpenMP (API, versione, strato di threading) e limiti
+    effettivi dei thread. Niente job ID, host, orari o percorsi di installazione. Uguale fra shard, encoder e fasi; gli aggregatori a 1-2 core
+    non fanno fit e non si confrontano, conservano quella dei fit."""
+    pools = sorted({(p.get("user_api"), p.get("internal_api"), str(p.get("version")), p.get("threading_layer"), int(p.get("num_threads") or 0))
+                    for p in env["threadpools"]})
+    return {"feature_dtype": FEATURE_DTYPE, "versions": versions_of(env),
+            "threadpools": [{"user_api": a, "internal_api": b, "version": c, "threading_layer": d, "num_threads": e} for a, b, c, d, e in pools],
+            "thread_limits": {k: env["env"].get(k) for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}}
+
+
+class AuditLog(list):
+    """La lista dei record per fit che `linear_probe` riempie, con salvataggio progressivo su disco: `persist(record)` scrive una riga JSON appena
+    il record e' definitivo (la libreria la chiama dopo il punteggio di un candidato, dopo il riaddestramento e prima di rilanciare un'eccezione);
+    `flush_remaining()` scrive cio' che non e' ancora stato salvato. Dopo una terminazione del processo restano i fit gia' salvati."""
+
+    def __init__(self, path: Path):
+        super().__init__()
+        self.path = path
+        self._persisted: set[int] = set()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.touch(exist_ok=False)
+
+    def persist(self, record: dict) -> None:
+        if id(record) in self._persisted:
+            return
+        with self.path.open("a") as f:
+            f.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        self._persisted.add(id(record))
+
+    def flush_remaining(self) -> int:
+        n = 0
+        for record in self:
+            if id(record) not in self._persisted:
+                self.persist(record)
+                n += 1
+        return n
+
+
 # ----------------------------------------------------------------------------------------------------------------------------------- ingressi
 
 def load_pins(path: Path) -> dict:
@@ -153,9 +207,12 @@ def load_pins(path: Path) -> dict:
 
 def verify_cache_inputs(features: Path, encoder: str, task: str, datasets: list[str], pins: dict) -> dict:
     """Le cache del teacher a 19.618 che la fase legge: SHA-256 di ogni file uguale al pin, provenienza e ricevuta dell'estrazione presenti e
-    coerenti (completa, checkpoint invariato, encoder, modo, passo), checkpoint del pin. Ritorna i pin verificati per dataset."""
+    coerenti (ricevuta con lo SHA del pin, completa, checkpoint invariato, encoder, modo, passo), checkpoint del pin. Ritorna i pin verificati."""
     receipt_path = features / "extraction_receipt.json"
     require(receipt_path.is_file(), f"ricevuta dell'estrazione assente: {receipt_path}")
+    pinned_receipt = pins["reports"].get(f"{encoder}_{task}", {}).get("extraction_receipt_sha256")
+    require(bool(pinned_receipt), f"pin della ricevuta dell'estrazione assente per {encoder}_{task}")
+    require(sha256(receipt_path) == pinned_receipt, f"{encoder}_{task}: SHA-256 della ricevuta dell'estrazione diverso dal pin")
     receipt = json.loads(receipt_path.read_text())
     require(receipt.get("complete") is True and receipt.get("checkpoint_unchanged") is True, "ricevuta dell'estrazione incompleta")
     require(receipt.get("model") == encoder and receipt.get("mode") == "channel" and receipt.get("checkpoint_step") == 19618,
@@ -178,17 +235,38 @@ def verify_cache_inputs(features: Path, encoder: str, task: str, datasets: list[
         require(prov.get("cache_sha256") == digest and prov.get("checkpoint_sha256") == ckpt["sha256"] and prov.get("code_sha") == pin["code_sha"]
                 and prov.get("which") == "teacher", f"{key}: provenienza incoerente")
         out[ds] = {"path": str(path), "sha256": digest, "provenance_sha256": pin["provenance_sha256"], "input_sha256": pin["input_sha256"],
-                   "splits_sha256": pin["splits_sha256"], "code_sha": pin["code_sha"], "checkpoint_sha256": ckpt["sha256"]}
+                   "splits_sha256": pin["splits_sha256"], "code_sha": pin["code_sha"], "checkpoint_sha256": ckpt["sha256"],
+                   "extraction_receipt_sha256": pinned_receipt}
     return out
 
 
-def check_gate(path: Path, code: dict) -> dict:
+def read_gate(path: Path) -> dict:
     gate = json.loads(Path(path).read_text())
     require(gate.get("protocol") == PROTOCOL and gate.get("phase") == "A" and gate.get("passed") is True,
             f"la fase A non ha superato il cancello ({path}): la fase B non parte")
+    return gate
+
+
+def gate_preflight(path: Path, code: dict, seed: int, env: dict) -> dict:
+    """Prima di qualunque fit della fase B: il cancello e' superato; la ricetta corrente riportata a max_iter 3000 ha la stessa firma (e lo stesso
+    contenuto) di quella attestata dal cancello; il contesto numerico (dtype, backend, thread) e' quello della fase A; i rapporti attestati dal
+    cancello esistono ancora e hanno gli SHA attestati. Tutto questo si verifica senza spendere un fit."""
+    gate = read_gate(path)
     if code["frozen"] and gate.get("analysis_code_sha"):
         require(gate["analysis_code_sha"] == code["analysis_code_sha"], "il cancello viene da un altro codice di analisi")
-    return {"path": str(path), "sha256": sha256(path), "solver_recipe_sha256": gate.get("solver_recipe_sha256")}
+    current = solver_recipe(PHASES["A"], seed=seed)
+    require(DA.fingerprint(current) == gate.get("solver_recipe_sha256"),
+            "ricetta del solver diversa da quella attestata dal cancello della fase A (seme, parametri o versioni): la fase B non parte")
+    require(isinstance(gate.get("solver_recipe"), dict) and gate["solver_recipe"] == current, "il cancello non attesta la ricetta del solver per esteso")
+    mine = numeric_context(env)
+    require(isinstance(gate.get("numeric_context"), dict) and gate.get("numeric_sha256") == DA.fingerprint(gate["numeric_context"]),
+            "il cancello non attesta il contesto numerico della fase A")
+    require(gate["numeric_context"] == mine, f"contesto numerico diverso dalla fase A (dtype, backend o thread): {mine} contro {gate['numeric_context']}")
+    require(isinstance(gate.get("reports"), dict) and len(gate["reports"]) == len(ENCODERS) * len(TASKS), "il cancello non attesta i quattro rapporti")
+    for key, entry in gate["reports"].items():
+        p = Path(entry["path"])
+        require(p.is_file() and sha256(p) == entry["sha256"], f"rapporto della fase A {key} assente o diverso da quello attestato dal cancello")
+    return {"path": str(path), "sha256": sha256(path), "solver_recipe_sha256": gate["solver_recipe_sha256"], "numeric_sha256": gate["numeric_sha256"]}
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------- shard
@@ -200,10 +278,11 @@ def run_probe(a) -> int:
     code = analysis_code(a.allow_unfrozen)
     out = a.out
     fresh(out)
+    env = environment()
     gate = None
     if phase == "B":
         require(a.gate is not None, "la fase B richiede --gate (il cancello della fase A)")
-        gate = check_gate(a.gate, code)
+        gate = gate_preflight(a.gate, code, a.seed, env)
     datasets = list(a.datasets or TASKS[a.task])
     require(set(datasets) <= set(TASKS[a.task]) and len(set(datasets)) == len(datasets), f"dataset non del compito {a.task}: {datasets}")
     folds = sorted(set(a.folds if a.folds is not None else range(K_FOLDS)))
@@ -215,45 +294,61 @@ def run_probe(a) -> int:
     inputs = verify_cache_inputs(a.features, a.encoder, a.task, datasets, pins)
     recipe = solver_recipe(max_iter, seed=a.seed)
     recipe_sha = DA.fingerprint(recipe)
-    env = environment()
+    numeric = numeric_context(env)
+    numeric_sha = DA.fingerprint(numeric)
     t0 = time.time()
-    audit: list = []
+    out.mkdir(parents=True, exist_ok=False)
+    audit = AuditLog(out / "audit_progress.jsonl")  # un record per fit, su disco appena definitivo: sopravvive a un fit fallito
     oof: dict = {}
     entries: dict = {}
     idents = set()
-    for ds in datasets:
-        cache = SC.load_cache(a.features, ds, a.task, splits, splits_sha, LAYER)
-        require(cache["code_sha"] == inputs[ds]["code_sha"], f"{ds}: la cache dichiara un codice diverso dal pin")
-        require(cache["checkpoint_sha256"] == inputs[ds]["checkpoint_sha256"], f"{ds}: la cache dichiara un checkpoint diverso dal pin")
-        require(cache["input_sha256"] == inputs[ds]["input_sha256"] and splits_sha == inputs[ds]["splits_sha256"],
-                f"{ds}: impronta degli ingressi o SHA degli split diversi dal pin")
-        x, y, s, pre = cache["x"], cache["y"], cache["s"], cache["subjects"]
-        roles = CP.fold_roles(pre)
-        context = {"protocol": PROTOCOL, "phase": phase, "encoder": a.encoder, "task": a.task, "dataset": ds, "seed": a.seed,
-                   "checkpoint_sha256": cache["checkpoint_sha256"], "cache_sha256": inputs[ds]["sha256"], "cache_code_sha": cache["code_sha"],
-                   "analysis_code_sha": code["analysis_code_sha"], "solver_recipe_sha256": recipe_sha}
-        before = len(audit)
-        res = SC.oof_predictions(x, y, s, roles, a.seed, None, max_iter=max_iter, audit=audit, folds=folds, context=context)
-        n_new = len(audit) - before
-        require(n_new == len(folds) * N_FITS_PER_FOLD, f"{ds}: {n_new} record di audit invece di {len(folds) * N_FITS_PER_FOLD}")
-        fold_of = np.concatenate([np.full(f["n_held"] , f["fold"], dtype=np.int64) for f in res["folds"]])
-        require(len(fold_of) == len(res["row"]), f"{ds}: righe OOF e fold non allineati")
-        oof[ds] = {"y": res["y"], "pred": res["pred"], "s": res["s"], "row": res["row"], "fold": fold_of}
-        idents.add((cache["checkpoint"], cache["checkpoint_sha256"], cache["dim"]))
-        entries[ds] = {"input_sha256": cache["input_sha256"], "subjects": pre, "folds": res["folds"], "n_classes": int(len(np.unique(y))),
-                       "n_windows": int(len(y)), "n_oof_windows_shard": int(len(res["y"])), "oof_rows_sha256_shard": DA.fingerprint(res["row"]),
-                       "readout": {"layer": LAYER, "width": int(x.shape[1]), "channels": cache["channels"], "k": int(x.shape[1]), "reduced": False,
-                                   "k_capped_folds": 0, "k_by_fold": [f["k"] for f in res["folds"]]},
-                       "features": SC.feature_diagnostics(x, a.seed), "cache": inputs[ds]}
-        print(f"[{time.strftime('%H:%M:%S')}] {phase} {a.encoder} {a.task} {ds} fold {folds}: {n_new} fit, "
-              f"{sum(bool(r.get('reached_limit')) for r in audit[before:])} al limite di {max_iter}, "
-              f"{sum(int(r.get('convergence_warnings', 0)) > 0 for r in audit[before:])} con ConvergenceWarning", flush=True)
-    after = verify_cache_inputs(a.features, a.encoder, a.task, datasets, pins)
-    require(after == inputs, "le cache sono cambiate durante i fit")
-    require(len(idents) == 1, f"cache di checkpoint diversi: {sorted(idents)}")
+    done: list[str] = []
+    try:
+        for ds in datasets:
+            cache = SC.load_cache(a.features, ds, a.task, splits, splits_sha, LAYER)
+            require(cache["code_sha"] == inputs[ds]["code_sha"], f"{ds}: la cache dichiara un codice diverso dal pin")
+            require(cache["checkpoint_sha256"] == inputs[ds]["checkpoint_sha256"], f"{ds}: la cache dichiara un checkpoint diverso dal pin")
+            require(cache["input_sha256"] == inputs[ds]["input_sha256"] and splits_sha == inputs[ds]["splits_sha256"],
+                    f"{ds}: impronta degli ingressi o SHA degli split diversi dal pin")
+            x, y, s, pre = cache["x"], cache["y"], cache["s"], cache["subjects"]
+            require(str(x.dtype) == FEATURE_DTYPE, f"{ds}: feature {x.dtype}, attese {FEATURE_DTYPE}")
+            roles = CP.fold_roles(pre)
+            context = {"protocol": PROTOCOL, "experiment_phase": phase, "encoder": a.encoder, "task": a.task, "dataset": ds, "seed": a.seed,
+                       "checkpoint_sha256": cache["checkpoint_sha256"], "cache_sha256": inputs[ds]["sha256"], "cache_code_sha": cache["code_sha"],
+                       "analysis_code_sha": code["analysis_code_sha"], "solver_recipe_sha256": recipe_sha, "numeric_sha256": numeric_sha}
+            before = len(audit)
+            res = SC.oof_predictions(x, y, s, roles, a.seed, None, max_iter=max_iter, audit=audit, folds=folds, context=context)
+            n_new = len(audit) - before
+            require(n_new == len(folds) * N_FITS_PER_FOLD, f"{ds}: {n_new} record di audit invece di {len(folds) * N_FITS_PER_FOLD}")
+            fold_of = np.concatenate([np.full(f["n_held"], f["fold"], dtype=np.int64) for f in res["folds"]])
+            require(len(fold_of) == len(res["row"]), f"{ds}: righe OOF e fold non allineati")
+            oof[ds] = {"y": res["y"], "pred": res["pred"], "s": res["s"], "row": res["row"], "fold": fold_of}
+            idents.add((cache["checkpoint"], cache["checkpoint_sha256"], cache["dim"]))
+            entries[ds] = {"input_sha256": cache["input_sha256"], "subjects": pre, "folds": res["folds"], "n_classes": int(len(np.unique(y))),
+                           "n_windows": int(len(y)), "n_oof_windows_shard": int(len(res["y"])), "oof_rows_sha256_shard": DA.fingerprint(res["row"]),
+                           "readout": {"layer": LAYER, "width": int(x.shape[1]), "channels": cache["channels"], "k": int(x.shape[1]), "reduced": False,
+                                       "k_capped_folds": 0, "k_by_fold": [f["k"] for f in res["folds"]]},
+                           "features": SC.feature_diagnostics(x, a.seed), "cache": inputs[ds]}
+            done.append(ds)
+            print(f"[{time.strftime('%H:%M:%S')}] {phase} {a.encoder} {a.task} {ds} fold {folds}: {n_new} fit, "
+                  f"{sum(bool(r.get('reached_limit')) for r in audit[before:])} al limite di {max_iter}, "
+                  f"{sum(int(r.get('convergence_warnings', 0)) > 0 for r in audit[before:])} con ConvergenceWarning", flush=True)
+        after = verify_cache_inputs(a.features, a.encoder, a.task, datasets, pins)
+        require(after == inputs, "le cache sono cambiate durante i fit")
+        require(len(idents) == 1, f"cache di checkpoint diversi: {sorted(idents)}")
+    except BaseException as exc:  # noqa: BLE001 -- l'audit e il fallimento restano su disco; nessun shard.json, nessun retry
+        audit.flush_remaining()
+        failed = out / "shard_failed.json"
+        if not failed.exists():
+            write_json(failed, {"kind": "shard", "complete": False, "protocol": PROTOCOL, "phase": phase, "max_iter": max_iter, "encoder": a.encoder,
+                                "task": a.task, "datasets": datasets, "datasets_completed": done, "folds": folds, "seed": a.seed,
+                                "exception": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc(),
+                                "audit": {"path": str(audit.path), "n_records": len(audit), "expected": len(datasets) * len(folds) * N_FITS_PER_FOLD},
+                                "elapsed_s": time.time() - t0, **code})
+        raise
+    audit.flush_remaining()
     (ckpt, ckpt_sha, dim), = idents
-    out.mkdir(parents=True, exist_ok=False)
-    audit_path = out / "audit.jsonl"
+    audit_path = out / "audit.jsonl"  # completo, con `selected`: scritto solo con lo shard completo
     with audit_path.open("x") as f:
         for record in audit:
             f.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
@@ -262,14 +357,14 @@ def run_probe(a) -> int:
     for ds in datasets:
         arrays.update({f"{ds}_{k}": v for k, v in oof[ds].items()})
     np.savez(oof_path, **arrays)
-    shard = {"kind": "shard", "protocol": PROTOCOL, "phase": phase, "max_iter": max_iter, "encoder": a.encoder, "task": a.task,
+    shard = {"kind": "shard", "complete": True, "protocol": PROTOCOL, "phase": phase, "max_iter": max_iter, "encoder": a.encoder, "task": a.task,
              "datasets": datasets, "folds": folds, "seed": a.seed, "layer": LAYER, "k_requested": K, "checkpoint": ckpt, "checkpoint_sha256": ckpt_sha,
              "model_dim": dim, "features": str(a.features), "splits": str(a.splits) if p1 else None, "splits_sha256": splits_sha,
-             "solver_recipe": recipe, "solver_recipe_sha256": recipe_sha, "environment": env, **code,
-             "cache_code_sha": inputs[datasets[0]]["code_sha"], "cache_pins": inputs, "pins_file": str(a.pins), "pins_sha256": sha256(a.pins),
-             "gate": gate, "entries": entries,
+             "solver_recipe": recipe, "solver_recipe_sha256": recipe_sha, "numeric_context": numeric, "numeric_sha256": numeric_sha,
+             "environment": env, **code, "cache_code_sha": inputs[datasets[0]]["code_sha"], "cache_pins": inputs, "pins_file": str(a.pins),
+             "pins_sha256": sha256(a.pins), "gate": gate, "entries": entries,
              "audit": {"path": str(audit_path), "sha256": sha256(audit_path), "n_records": len(audit),
-                       "expected": len(datasets) * len(folds) * N_FITS_PER_FOLD},
+                       "expected": len(datasets) * len(folds) * N_FITS_PER_FOLD, "progress": str(audit.path), "progress_sha256": sha256(audit.path)},
              "oof": {"path": str(oof_path), "sha256": sha256(oof_path)}, "elapsed_s": time.time() - t0}
     write_json(out / "shard.json", shard)
     print(json.dumps({"complete": True, "stage": "probe", "phase": phase, "encoder": a.encoder, "task": a.task, "datasets": datasets,
@@ -280,8 +375,12 @@ def run_probe(a) -> int:
 # --------------------------------------------------------------------------------------------------------------------------------- aggregato
 
 def _load_shard(path: Path) -> tuple[dict, dict, list]:
+    path = Path(path)
+    require(not (path.parent / "shard_failed.json").exists(), f"shard interrotto o fallito (shard_failed.json): {path.parent}")
+    require(path.is_file(), f"shard incompleto: manca {path}")
     shard = json.loads(path.read_text())
-    require(shard.get("kind") == "shard" and shard.get("protocol") == PROTOCOL, f"non e' uno shard del controllo: {path}")
+    require(shard.get("kind") == "shard" and shard.get("protocol") == PROTOCOL and shard.get("complete") is True,
+            f"non e' uno shard completo del controllo: {path}")
     oof_path, audit_path = Path(shard["oof"]["path"]), Path(shard["audit"]["path"])
     require(sha256(oof_path) == shard["oof"]["sha256"] and sha256(audit_path) == shard["audit"]["sha256"], f"{path}: OOF o audit cambiati")
     with np.load(oof_path, allow_pickle=False) as z:
@@ -294,16 +393,18 @@ def _load_shard(path: Path) -> tuple[dict, dict, list]:
 
 
 def aggregate(shard_paths: list[Path], phase: str, encoder: str, task: str, splits_path: Path | None, pins: dict) -> tuple[dict, dict, list]:
-    """Gli shard di (fase, encoder, compito) in un rapporto completo: ogni (dataset, fold) esattamente una volta, stessa ricetta, stesse cache."""
+    """Gli shard di (fase, encoder, compito) in un rapporto completo: ogni (dataset, fold) esattamente una volta, stessa ricetta, stesso contesto
+    numerico, stesse cache."""
     datasets = TASKS[task]
     loaded = [_load_shard(p) for p in shard_paths]
     first = loaded[0][0]
     for shard, _, _ in loaded:
         require(shard["phase"] == phase and shard["encoder"] == encoder and shard["task"] == task, "shard di un'altra fase, encoder o compito")
-        for key in ("max_iter", "seed", "solver_recipe_sha256", "splits_sha256", "checkpoint_sha256", "cache_code_sha", "pins_sha256",
-                    "analysis_code_sha"):
+        for key in ("max_iter", "seed", "solver_recipe_sha256", "numeric_sha256", "splits_sha256", "checkpoint_sha256", "cache_code_sha",
+                    "pins_sha256", "analysis_code_sha"):
             require(shard[key] == first[key], f"shard con {key} diverso: {shard[key]!r} contro {first[key]!r}")
-        require(versions_of(shard["environment"]) == versions_of(first["environment"]), "shard eseguiti con versioni diverse delle librerie")
+        require(shard["solver_recipe"] == first["solver_recipe"] and shard["numeric_context"] == first["numeric_context"],
+                "shard con ricetta o contesto numerico diversi")
     covered: dict = {ds: {} for ds in datasets}
     for shard, arrays, audit in loaded:
         for ds in shard["datasets"]:
@@ -373,9 +474,11 @@ def aggregate(shard_paths: list[Path], phase: str, encoder: str, task: str, spli
                    "S_se": P1.mean_bacc_bootstrap_se(parts, seed=first["seed"], weights=w)})
     expected = len(datasets) * K_FOLDS * N_FITS_PER_FOLD
     require(len(merged_audit) == expected, f"audit unito: {len(merged_audit)} record invece di {expected}")
-    report.update({"kind": "aggregate", "control_protocol": PROTOCOL, "phase": phase, "max_iter": first["max_iter"], "encoder": encoder,
+    report.update({"kind": "aggregate", "complete": True, "control_protocol": PROTOCOL, "phase": phase, "max_iter": first["max_iter"], "encoder": encoder,
                    "solver_recipe": first["solver_recipe"], "solver_recipe_sha256": first["solver_recipe_sha256"],
-                   "environment": {"common": versions_of(first["environment"]), "shards": [sh["environment"] for sh, _, _ in loaded]},
+                   "numeric_context": first["numeric_context"], "numeric_sha256": first["numeric_sha256"],
+                   "environment": {"fits": versions_of(first["environment"]), "shards": [sh["environment"] for sh, _, _ in loaded],
+                                   "aggregator": environment()},
                    "analysis_code_sha": first["analysis_code_sha"], "cache_code_sha": first["cache_code_sha"], "cache_pins": provenance,
                    "pins_sha256": first["pins_sha256"], "gate": first.get("gate"),
                    "shards": [{"path": str(p), "sha256": sha256(p), "datasets": sh["datasets"], "folds": sh["folds"], "elapsed_s": sh["elapsed_s"],
@@ -385,8 +488,8 @@ def aggregate(shard_paths: list[Path], phase: str, encoder: str, task: str, spli
 
 
 def audit_summary(records: list[dict]) -> dict:
-    """Conteggi per il rapporto: fit al limite, con ConvergenceWarning, arresti anomali, per dataset/fold/fase (candidato o riaddestramento), e la
-    posizione di ogni fit con warning."""
+    """Conteggi per il rapporto: fit al limite, con ConvergenceWarning, arresti anomali, per dataset e fase del fit (candidato o riaddestramento),
+    e la posizione di ogni fit al limite o con warning."""
     out = {"n_records": len(records), "reached_limit": 0, "convergence_warnings": 0, "anomalous_stop": 0, "exceptions": 0,
            "by_dataset": {}, "positions": []}
     for r in records:
@@ -400,10 +503,10 @@ def audit_summary(records: list[dict]) -> dict:
         out["exceptions"] += r.get("exception") is not None
         d["reached_limit"] += lim
         d["convergence_warnings"] += cw
-        d["selected_reached_limit"] += bool(lim and r.get("phase") == "candidate" and r.get("selected"))
-        d["refit_reached_limit"] += bool(lim and r.get("phase") == "refit")
+        d["selected_reached_limit"] += bool(lim and r.get("fit_phase") == "candidate" and r.get("selected"))
+        d["refit_reached_limit"] += bool(lim and r.get("fit_phase") == "refit")
         if cw or lim:
-            out["positions"].append({"dataset": r["dataset"], "fold": r["fold"], "phase": r["phase"], "C": r["C"], "n_iter": r.get("n_iter"),
+            out["positions"].append({"dataset": r["dataset"], "fold": r["fold"], "fit_phase": r["fit_phase"], "C": r["C"], "n_iter": r.get("n_iter"),
                                      "reached_limit": lim, "convergence_warnings": int(r.get("convergence_warnings", 0)),
                                      "selected": r.get("selected")})
     return out
@@ -442,7 +545,7 @@ def run_aggregate(a) -> int:
         write_json(a.parity_out, parity)
         rc = 0 if parity["identical"] else 1
         print(f"[{time.strftime('%H:%M:%S')}] parita' con l'originale: {'IDENTICA' if parity['identical'] else 'DIVERSA'} "
-              f"({parity['predictions_differing_total']} predizioni diverse, C diversi in {parity['folds_with_different_c']} fold)", flush=True)
+              f"({parity['predictions_differing_total']} predizioni diverse, {len(parity['problems'])} campi diversi)", flush=True)
     print(json.dumps({"complete": True, "stage": "aggregate", "phase": a.phase, "encoder": a.encoder, "task": a.task, "S": report["S"],
                       "out": str(a.out), "parity_identical": None if a.original is None else rc == 0}), flush=True)
     return rc
@@ -450,9 +553,16 @@ def run_aggregate(a) -> int:
 
 # ----------------------------------------------------------------------------------------------------------------------------------- parita'
 
+def _diff(a, b) -> bool:
+    """Disuguaglianza esatta (float compresi), che tratta i numpy come liste."""
+    return json.dumps(a, sort_keys=True, default=str) != json.dumps(b, sort_keys=True, default=str)
+
+
 def parity_check(original: Path, original_sha: str | None, original_oof_sha: str | None, new: Path) -> dict:
-    """Rapporto nuovo (fase A) contro quello storico: stesse righe, soggetti, ruoli dei fold, C scelti, predizioni e S. Conteggi esatti delle
-    differenze; `identical` solo con zero differenze: una discrepanza e' un problema di riproducibilita' da capire, non da tollerare."""
+    """Rapporto nuovo (fase A) contro quello storico: stessi campi scientifici (parametri della sonda, split, pesi, ricetta, checkpoint, S, S_se;
+    per dataset impronte, righe, soggetti, punteggio, conteggi, readout; per fold ruoli, C, punteggi train/val/held, conteggi, esclusioni, k),
+    stesse righe, soggetti e predizioni OOF. Ogni differenza e' elencata in `problems` e in `differences`; `identical` solo con zero differenze:
+    una discrepanza e' un problema di riproducibilita' da capire, non da tollerare. Fuori dal confronto: tempi, campi diagnostici nuovi, byte."""
     orig = json.loads(original.read_text())
     if original_sha:
         require(sha256(original) == original_sha, "rapporto originale: SHA-256 diverso dal pin")
@@ -461,42 +571,59 @@ def parity_check(original: Path, original_sha: str | None, original_oof_sha: str
     rep = json.loads(new.read_text())
     require(rep.get("kind") == "aggregate" and rep.get("phase") == "A", "la parita' si misura sul rapporto aggregato della fase A")
     out = {"protocol": PROTOCOL, "original": str(original), "original_sha256": sha256(original), "new": str(new), "new_sha256": sha256(new),
-           "original_legacy_solver_recipe": "solver_recipe_sha256" not in orig, "task": orig.get("task"), "datasets": {}, "problems": []}
-    same_params = all(orig.get(k) == rep.get(k) for k in SC.PROBE_KEYS) and orig.get("splits_sha256") == rep.get("splits_sha256")
-    same_weights = orig.get("weights") == rep.get("weights")
-    same_recipe = orig.get("extraction_recipe") == rep.get("extraction_recipe") and orig.get("feature_set") == rep.get("feature_set")
-    same_ckpt = orig.get("checkpoint_sha256") == rep.get("checkpoint_sha256")
-    for name, ok in (("probe_params", same_params), ("weights", same_weights), ("extraction_recipe", same_recipe), ("checkpoint", same_ckpt)):
-        if not ok:
-            out["problems"].append(name)
+           "original_legacy_solver_recipe": "solver_recipe_sha256" not in orig, "task": orig.get("task"), "datasets": {}, "problems": [],
+           "differences": {"report": {}, "datasets": {}}, "compared_fields": {"report": list(PARITY_REPORT_FIELDS), "dataset": list(PARITY_DATASET_FIELDS),
+                                                                               "fold": list(PARITY_FOLD_FIELDS)}}
+    for k in PARITY_REPORT_FIELDS:
+        if _diff(orig.get(k), rep.get(k)):
+            out["differences"]["report"][k] = {"original": orig.get(k), "new": rep.get(k)}
+            out["problems"].append(f"rapporto: {k} diverso")
+    if set(orig.get("datasets", {})) != set(rep.get("datasets", {})):
+        out["problems"].append("dataset diversi fra i due rapporti")
     oof_o, oof_n = CS.load_oof(orig), CS.load_oof(rep)
     total_diff, c_diff = 0, 0
     for ds in sorted(orig["datasets"]):
         do, dn = orig["datasets"][ds], rep["datasets"].get(ds)
         if dn is None:
-            out["problems"].append(f"{ds}: assente nel rapporto nuovo")
             continue
+        diffs = {}
+        for k in PARITY_DATASET_FIELDS:
+            if _diff(do.get(k), dn.get(k)):
+                diffs[k] = {"original": do.get(k), "new": dn.get(k)}
+        fo, fn = do.get("folds", []), dn.get("folds", [])
+        if len(fo) != len(fn):
+            diffs["n_folds"] = {"original": len(fo), "new": len(fn)}
+        for i, (f, g) in enumerate(zip(fo, fn)):
+            for k in PARITY_FOLD_FIELDS:
+                if _diff(f.get(k), g.get(k)):
+                    diffs[f"fold{i}.{k}"] = {"original": f.get(k), "new": g.get(k)}
         (y_o, p_o, s_o), (y_n, p_n, s_n) = oof_o[ds], oof_n[ds]
-        rows_equal = do.get("oof_rows_sha256") == dn.get("oof_rows_sha256") and do.get("input_sha256") == dn.get("input_sha256")
         arrays_equal = y_o.shape == y_n.shape and np.array_equal(y_o, y_n) and np.array_equal(s_o, s_n)
-        roles_equal = [(f["train"], f["val"], f["held"]) for f in do["folds"]] == [(f["train"], f["val"], f["held"]) for f in dn["folds"]]
-        c_o, c_n = [f["c"] for f in do["folds"]], [f["c"] for f in dn["folds"]]
+        if not arrays_equal:
+            diffs["oof_arrays"] = {"original": [int(len(y_o))], "new": [int(len(y_n))]}
         diff = int((p_o != p_n).sum()) if arrays_equal else int(len(y_o))
-        n_c = int(sum(a != b for a, b in zip(c_o, c_n))) + abs(len(c_o) - len(c_n))
+        c_o, c_n = [f.get("c") for f in fo], [f.get("c") for f in fn]
+        n_c = int(sum(x != y for x, y in zip(c_o, c_n))) + abs(len(c_o) - len(c_n))
         total_diff += diff
         c_diff += n_c
-        out["datasets"][ds] = {"rows_identical": bool(rows_equal and arrays_equal), "subjects_identical": do.get("subjects") == dn.get("subjects"),
-                               "fold_roles_identical": roles_equal, "c_original": c_o, "c_new": c_n, "folds_with_different_c": n_c,
-                               "predictions_differing": diff, "n_oof_windows": int(len(y_o)),
-                               "s_original": do["s"], "s_new": dn["s"], "s_abs_diff": abs(do["s"] - dn["s"]),
-                               "held_bacc_abs_diff": [abs(f["held_bacc"] - g["held_bacc"]) for f, g in zip(do["folds"], dn["folds"])],
-                               "val_bacc_abs_diff": [abs(f["val_bacc"] - g["val_bacc"]) for f, g in zip(do["folds"], dn["folds"])]}
-        if not (rows_equal and arrays_equal and roles_equal):
-            out["problems"].append(f"{ds}: righe, soggetti o ruoli dei fold diversi")
-    out.update({"S_original": orig["S"], "S_new": rep["S"], "S_abs_diff": abs(orig["S"] - rep["S"]), "S_se_original": orig.get("S_se"),
-                "S_se_new": rep.get("S_se"), "predictions_differing_total": total_diff, "folds_with_different_c": c_diff})
-    out["identical"] = bool(not out["problems"] and total_diff == 0 and c_diff == 0 and orig["S"] == rep["S"]
-                            and set(orig["datasets"]) == set(rep["datasets"]))
+        out["datasets"][ds] = {"rows_identical": bool(arrays_equal and "oof_rows_sha256" not in diffs and "input_sha256" not in diffs),
+                               "subjects_identical": "subjects" not in diffs,
+                               "fold_roles_identical": not any(k.endswith((".train", ".val", ".held")) for k in diffs),
+                               "c_original": c_o, "c_new": c_n, "folds_with_different_c": n_c, "predictions_differing": diff,
+                               "n_oof_windows": int(len(y_o)), "s_original": do.get("s"), "s_new": dn.get("s"),
+                               "s_abs_diff": abs(do["s"] - dn["s"]) if "s" in do and "s" in dn else None,
+                               "held_bacc_abs_diff": [abs(f["held_bacc"] - g["held_bacc"]) for f, g in zip(fo, fn) if "held_bacc" in f and "held_bacc" in g],
+                               "val_bacc_abs_diff": [abs(f["val_bacc"] - g["val_bacc"]) for f, g in zip(fo, fn) if "val_bacc" in f and "val_bacc" in g],
+                               "train_bacc_abs_diff": [abs(f["train_bacc"] - g["train_bacc"]) for f, g in zip(fo, fn) if "train_bacc" in f and "train_bacc" in g],
+                               "fields_differing": sorted(diffs)}
+        if diffs:
+            out["differences"]["datasets"][ds] = diffs
+            out["problems"].append(f"{ds}: campi diversi: {sorted(diffs)}")
+        if diff:
+            out["problems"].append(f"{ds}: {diff} predizioni OOF diverse")
+    out.update({"S_original": orig.get("S"), "S_new": rep.get("S"), "S_abs_diff": abs(orig["S"] - rep["S"]) if "S" in orig and "S" in rep else None,
+                "S_se_original": orig.get("S_se"), "S_se_new": rep.get("S_se"), "predictions_differing_total": total_diff, "folds_with_different_c": c_diff})
+    out["identical"] = bool(not out["problems"] and total_diff == 0 and c_diff == 0)
     return out
 
 
@@ -505,7 +632,7 @@ def run_parity(a) -> int:
     result = parity_check(Path(a.original), a.original_sha256, a.original_oof_sha256, Path(a.new))
     write_json(a.out, result)
     print(json.dumps({"complete": True, "stage": "parity", "identical": result["identical"], "predictions_differing": result["predictions_differing_total"],
-                      "folds_with_different_c": result["folds_with_different_c"], "S_abs_diff": result["S_abs_diff"], "out": str(a.out)}), flush=True)
+                      "problems": len(result["problems"]), "S_abs_diff": result["S_abs_diff"], "out": str(a.out)}), flush=True)
     return 0 if result["identical"] else 1
 
 
@@ -513,11 +640,14 @@ def run_parity(a) -> int:
 
 def load_aggregate(path: Path) -> dict:
     rep = json.loads(Path(path).read_text())
-    require(rep.get("kind") == "aggregate" and rep.get("control_protocol") == PROTOCOL, f"non e' un rapporto aggregato del controllo: {path}")
+    require(rep.get("kind") == "aggregate" and rep.get("control_protocol") == PROTOCOL and rep.get("complete") is True,
+            f"non e' un rapporto aggregato completo del controllo: {path}")
     require(sha256(Path(rep["oof"])) == rep["oof_sha256"] and sha256(Path(rep["audit"]["path"])) == rep["audit"]["sha256"],
             f"{path}: OOF o audit cambiati dopo il rapporto")
     expected = len(TASKS[rep["task"]]) * K_FOLDS * N_FITS_PER_FOLD
     require(rep["audit"]["n_records"] == rep["audit_summary"]["n_records"] == expected, f"{path}: {rep['audit']['n_records']} record invece di {expected}")
+    require(rep.get("solver_recipe_sha256") == DA.fingerprint(rep.get("solver_recipe")), f"{path}: firma della ricetta del solver non corrisponde al contenuto")
+    require(rep.get("numeric_sha256") == DA.fingerprint(rep.get("numeric_context")), f"{path}: firma del contesto numerico non corrisponde al contenuto")
     return rep
 
 
@@ -532,6 +662,8 @@ def run_gate(a) -> int:
     require(set(reports) == {(e, t) for e in ENCODERS for t in TASKS}, f"rapporti della fase A incompleti: {sorted(reports)}")
     recipes = {rep["solver_recipe_sha256"] for _, rep in reports.values()}
     require(len(recipes) == 1, "ricette del solver diverse fra i rapporti della fase A")
+    numerics = {rep["numeric_sha256"] for _, rep in reports.values()}
+    require(len(numerics) == 1, "contesto numerico (dtype, backend, thread) diverso fra i rapporti della fase A")
     require(all(rep["max_iter"] == PHASES["A"] for _, rep in reports.values()), "fase A con max_iter diverso da quello fissato")
     total = sum(rep["audit"]["n_records"] for _, rep in reports.values())
     parities = {}
@@ -553,8 +685,11 @@ def run_gate(a) -> int:
             require(rep["analysis_code_sha"] == code["analysis_code_sha"], f"{p}: rapporto di un altro codice di analisi")
     expected = len(ENCODERS) * (len(TASKS["p1"]) + len(TASKS["p2"])) * K_FOLDS * N_FITS_PER_FOLD  # 2 x 5 x 4 x 7 = 280
     passed = bool(total == expected and not problems)
+    any_rep = next(iter(reports.values()))[1]
     gate = {"protocol": PROTOCOL, "phase": "A", "passed": passed, "n_records": total, "expected_records": expected,
-            "solver_recipe_sha256": next(iter(recipes)), **code, "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "solver_recipe_sha256": next(iter(recipes)), "solver_recipe": any_rep["solver_recipe"],
+            "numeric_sha256": next(iter(numerics)), "numeric_context": any_rep["numeric_context"],
+            **code, "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
             "reports": {f"{e}_{t}": {"path": str(p), "sha256": sha256(p), "oof_sha256": rep["oof_sha256"], "S": rep["S"],
                                      "audit_summary": {k: rep["audit_summary"][k] for k in ("n_records", "reached_limit", "convergence_warnings",
                                                                                               "anomalous_stop", "exceptions")}}
@@ -616,11 +751,13 @@ def _recipe_without_max_iter(recipe: dict) -> dict:
 
 def phase_guard(reps: dict) -> None:
     """Identita' e ricetta dei quattro rapporti di un compito: dentro una fase B e R3c hanno la stessa ricetta del solver (`check_readout_pairing`,
-    che ora la esige); fra le fasi e' ammessa la sola differenza di max_iter; righe, soggetti, split, fold, pesi uguali per tutti; mai report
-    legacy senza la firma."""
+    che ora la esige); fra le fasi e' ammessa la sola differenza di max_iter; stesso contesto numerico per tutti; righe, soggetti, split, fold,
+    pesi uguali per tutti; mai report legacy senza la firma."""
     for key, rep in reps.items():
         require(rep.get("solver_recipe_sha256") and rep.get("solver_recipe"), f"{key}: rapporto senza la ricetta del solver (legacy): escluso")
         require(rep["max_iter"] == PHASES[key[0]] and rep["solver_recipe"]["max_iter"] == PHASES[key[0]], f"{key}: max_iter diverso dalla fase")
+    require(len({rep.get("numeric_sha256") for rep in reps.values()}) == 1 and all(rep.get("numeric_sha256") for rep in reps.values()),
+            "contesto numerico (dtype, backend, thread) diverso fra i quattro rapporti")
     for phase in PHASES:
         SC.check_readout_pairing(reps[(phase, "R3c")], reps[(phase, "B")])
         require(reps[(phase, "R3c")]["checkpoint_sha256"] != reps[(phase, "B")]["checkpoint_sha256"], f"fase {phase}: stesso checkpoint nei due encoder")
@@ -633,11 +770,6 @@ def phase_guard(reps: dict) -> None:
                 f"{enc}: sonda non accoppiata fra le fasi")
         for ds in a["datasets"]:
             require(all(a["datasets"][ds][k] == b["datasets"][ds][k] for k in ("input_sha256", "oof_rows_sha256")), f"{enc} {ds}: righe diverse fra le fasi")
-
-
-def _load_audit(rep: dict) -> list[dict]:
-    with Path(rep["audit"]["path"]).open() as f:
-        return [json.loads(line) for line in f if line.strip()]
 
 
 def compare_task(task: str, paths: dict, out_dir: Path, run_official: bool) -> dict:
@@ -672,6 +804,7 @@ def compare_task(task: str, paths: dict, out_dir: Path, run_official: bool) -> d
     result["changes_12000_vs_3000"] = changes
     result["warnings"] = {f"{p}_{e}": reps[(p, e)]["audit_summary"] for p, e in ORDER}
     result["residual_warnings_at_12000"] = {e: reps[("B", e)]["audit_summary"]["convergence_warnings"] for e in ENCODERS}
+    result["numeric_sha256"] = reps[ORDER[0]]["numeric_sha256"]
     result["reading"] = {"note": "lettura descrittiva di robustezza, un solo seme di pretraining, nessuna nuova soglia di adozione; IC che contiene 0 = "
                                  "inconclusivo, non equivalenza; delta stabile con warning residui = insensibilita' osservata a questo aumento di "
                                  "iterazioni, non convergenza certificata",
@@ -697,7 +830,11 @@ def compare_task(task: str, paths: dict, out_dir: Path, run_official: bool) -> d
 def run_compare(a) -> int:
     code = analysis_code(a.allow_unfrozen)
     fresh(a.out)
-    gate = check_gate(a.gate, code)
+    gate_json = read_gate(a.gate)
+    gate = {"path": str(a.gate), "sha256": sha256(a.gate), "solver_recipe_sha256": gate_json.get("solver_recipe_sha256"),
+            "numeric_sha256": gate_json.get("numeric_sha256")}
+    if code["frozen"] and gate_json.get("analysis_code_sha"):
+        require(gate_json["analysis_code_sha"] == code["analysis_code_sha"], "il cancello viene da un altro codice di analisi")
     a.out.mkdir(parents=True, exist_ok=False)
     paths = {}
     for p in a.reports:
@@ -705,7 +842,7 @@ def run_compare(a) -> int:
         if code["frozen"]:
             require(rep["analysis_code_sha"] == code["analysis_code_sha"], f"{p}: rapporto di un altro codice di analisi")
         paths[(rep["phase"], rep["encoder"], rep["task"])] = Path(p)
-    gate_json = json.loads(Path(a.gate).read_text())
+    require(isinstance(gate_json.get("reports"), dict) and len(gate_json["reports"]) == len(ENCODERS) * len(TASKS), "il cancello non attesta i quattro rapporti")
     for key, entry in gate_json["reports"].items():
         enc, task = key.split("_")
         require(("A", enc, task) in paths and sha256(paths[("A", enc, task)]) == entry["sha256"],
@@ -715,6 +852,7 @@ def run_compare(a) -> int:
         task_paths = {(p, e): paths[(p, e, task)] for p, e in ORDER if (p, e, task) in paths}
         require(len(task_paths) == 4, f"{task}: servono i quattro rapporti (due fasi x due encoder), trovati {sorted(task_paths)}")
         result = compare_task(task, task_paths, a.out, run_official=not a.skip_official)
+        require(result["numeric_sha256"] == gate["numeric_sha256"], f"{task}: contesto numerico diverso da quello attestato dal cancello")
         write_json(a.out / f"confronto_{task}.json", result)
         c = result["contrasts"]
         summary["tasks"][task] = {k: c[k] for k in CONTRASTS}
@@ -740,7 +878,7 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
                ledger_campaign: str, pins: dict, date: str = "20261029") -> dict:
     """Il piano eseguibile: blocchi di job per semplicione (submitter comune), con risorse, tetti e dipendenze; ogni job gira dal checkout di
     campagna `campaign` allo SHA `code_sha` del codice di analisi. I blocchi si sottomettono uno dopo l'altro, a blocco precedente concluso: ogni
-    job controlla da solo i prerequisiti (ricevute, cancello), quindi una sottomissione prematura fallisce senza spendere."""
+    job controlla da solo i prerequisiti (ricevute, cancello, ricetta), quindi una sottomissione prematura fallisce senza spendere."""
     require(len(code_sha) == 40 and all(c in "0123456789abcdef" for c in code_sha), "code_sha deve essere uno SHA a 40 caratteri")
     checkout = f"/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/{campaign}"
     launcher = f"{checkout}/scripts/slurm/probe_convergence.sbatch"
@@ -794,7 +932,7 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
             job(5, f"PILOT-POSA-SONDE-confronto-{date}", 2, "16G", "00:30:00", f"{results_root}/confronto", "compare-phases",
                 ["--gate", f"{results_root}/A/gate.json", "--reports", *reports], deps=deps, expected_min=5)
     names = {1: "fase A: shard delle sonde a 3.000 iterazioni (10 job, 8 core)", 2: "fase A: aggregazione e parita' con gli originali (4 job)",
-             3: "cancello della fase B (1 job)", 4: "fase B: shard a 12.000 iterazioni (10 job, 8 core), ciascuno verifica il cancello",
+             3: "cancello della fase B (1 job)", 4: "fase B: shard a 12.000 iterazioni (10 job, 8 core), ciascuno verifica cancello e ricetta prima dei fit",
              5: "fase B: aggregazione (4 job) e confronto fra le fasi (1 job, afterok sui quattro aggregati)"}
     for b in sorted(names):
         in_block = [j for j in jobs if j["block"] == b]
@@ -802,17 +940,26 @@ def build_plan(code_sha: str, campaign: str, results_root: str, features_root: s
                        "expected_core_hours": sum((j["expected_minutes"] or 0) / 60 * j["cpus"] for j in in_block),
                        "submit_after": "il blocco precedente e' interamente COMPLETED 0:0 (leonardo_watch.py --mode all)" if b > 1 else "subito"})
     caps = {"A": sum(j["core_hours_cap"] for j in jobs if j["block"] in (1, 2, 3)), "B": sum(j["core_hours_cap"] for j in jobs if j["block"] in (4, 5))}
+    checkout_cap = CHECKOUT_JOB["cpus"] * _hms_to_hours(CHECKOUT_JOB["time"])
     shard_a = sum(SHARD_EXPECTED_MIN[n] for n, _, _ in SHARDS["p1"] + SHARDS["p2"]) * len(ENCODERS) / 60 * 8  # core-ore osservate (circa)
     small = sum((j["expected_minutes"] or 0) / 60 * j["cpus"] for j in jobs if j["stage"] != "probe")
-    return {"schema_version": 1, "protocol": PROTOCOL, "status": "PRONTO_PER_LA_REVIEW_DI_GPT", "analysis_code_sha": code_sha, "campaign_checkout": checkout,
+    return {"schema_version": 2, "protocol": PROTOCOL, "status": "PRONTO_PER_LA_REVIEW_DI_GPT", "analysis_code_sha": code_sha, "campaign_checkout": checkout,
             "cache_code_sha": next(iter(pins["caches"].values()))["code_sha"], "results_root": results_root, "features_root": features_root,
             "originals_root": originals_root, "pins": pins_path, "ledger_campaign": ledger_campaign, "ledger_agent": agent, "gpu_hours_cap": 0,
-            "core_hours_cap": {**caps, "total": caps["A"] + caps["B"]},
+            "prerequisites": {"campaign_checkout": {"name": campaign, "sha": code_sha, "launcher": "scripts/slurm/campaign_checkout.sbatch",
+                                                    **CHECKOUT_JOB, "core_hours_cap": checkout_cap,
+                                                    "note": "deploy/<campaign> pubblicato su leonardo dal commit rivisto, poi il job di checkout; "
+                                                            "fuori dai 30 job scientifici"}},
+            "core_hours_cap": {**caps, "total": caps["A"] + caps["B"], "checkout": checkout_cap, "total_with_checkout": caps["A"] + caps["B"] + checkout_cap},
             "expected_core_hours": {"A": shard_a + small / 2, "B_range": [shard_a + small / 2, 4 * shard_a + small / 2],
-                                    "note": "A = tempi osservati nelle sonde del 28-29/10 (8 core); B fra 1x e 4x (fit al limite x4), non una previsione"},
+                                    "note": "A = tempi osservati nelle sonde del 28-29/10 (8 core); B fra 1x e 4x (fit al limite x4), non una previsione: "
+                                            "da affinare con elapsed_s e n_iter per fit della fase A prima dei lanci della fase B"},
             "serial_partition": {"walltime_limit": "04:00:00", "max_queued_per_user": 10, "note": "ogni blocco ha al piu' 10 job"},
-            "phases": {p: {"max_iter": m} for p, m in PHASES.items()}, "shards": {t: [{"name": n, "datasets": list(d), "folds": list(f)} for n, d, f in s]
-                                                                          for t, s in SHARDS.items()},
+            "phases": {p: {"max_iter": m} for p, m in PHASES.items()}, "fits": {"per_fold": N_FITS_PER_FOLD, "per_dataset": K_FOLDS * N_FITS_PER_FOLD,
+                                                                                 "p1": len(TASKS["p1"]) * K_FOLDS * N_FITS_PER_FOLD,
+                                                                                 "p2": len(TASKS["p2"]) * K_FOLDS * N_FITS_PER_FOLD,
+                                                                                 "per_phase": len(ENCODERS) * 5 * K_FOLDS * N_FITS_PER_FOLD},
+            "shards": {t: [{"name": n, "datasets": list(d), "folds": list(f)} for n, d, f in s] for t, s in SHARDS.items()},
             "automatic_retry": False, "blocks": blocks, "jobs": jobs}
 
 
@@ -828,7 +975,7 @@ def run_plan(a) -> int:
     lines = [f"# Controllo della convergenza delle sonde B19618/R3c ({PROTOCOL}): comandi per semplicione, dal Mac, UNA riga per comando, nell'ordine.",
              f"# Codice di analisi {a.code_sha} nel checkout di campagna {plan['campaign_checkout']} (da creare prima con campaign_checkout.sbatch).",
              "# Ogni blocco si sottomette quando il precedente e' interamente COMPLETED 0:0; un job che trova un prerequisito mancante esce con errore",
-             "# senza spendere (ricevute, cancello). Nessun retry automatico: un job fallito si porta a GPT.", ""]
+             "# senza spendere (ricevute, cancello, ricetta, contesto numerico). Nessun retry automatico: un job fallito si porta a GPT.", ""]
     for b in plan["blocks"]:
         lines += [f"# ---- blocco {b['block']}: {b['title']} ({b['n_jobs']} job, tetto {b['core_hours_cap']:.2f} core-ore; sottomettere: {b['submit_after']})"]
         lines += [j["command"] for j in plan["jobs"] if j["block"] == b["block"]]
@@ -851,7 +998,7 @@ def main(argv=None) -> int:
     ap.add_argument("--datasets", nargs="+")
     ap.add_argument("--folds", nargs="+", type=int)
     ap.add_argument("--features", type=Path, help="cartella delle cache del teacher (con extraction_receipt.json e le provenienze)")
-    ap.add_argument("--pins", type=Path, help="pin_ingressi.json: SHA delle cache, dei rapporti originali e dei checkpoint")
+    ap.add_argument("--pins", type=Path, help="pin_ingressi.json: SHA delle cache, delle ricevute, dei rapporti originali e dei checkpoint")
     ap.add_argument("--splits", type=Path, default=ROOT / "splits" / "v1" / "splits_v1.json")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--gate", type=Path, help="fase B e compare-phases: il cancello della fase A")

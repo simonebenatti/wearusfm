@@ -1,9 +1,12 @@
 # Controllo della convergenza delle sonde P1/P2 di B19618 contro R3c — protocollo eseguibile e preventivo (29/10/2026)
 
-**Stato: consegna di Claude per la review di GPT; nessun job sottomesso.** Richiesta: `docs/prompt_claude_convergenza_sonde_20261029.md`
-(GPT, commit b1c1bda), su mandato di Simone («stavolta devi scrivere tu il codice, poi gpt lo revisionerà ... Non sottomettere job: GPT farà
-la review e semplicione li eseguirà»). Il controllo e' gia' autorizzato nel perimetro del prompt; dopo la review tecnica GPT lo affida a
-semplicione. Nessuna modifica a trainer, loss, pooling o checkpoint; nessun training GPU.
+**Stato: consegna di Claude rivista dopo la review di GPT (de06bca: disegno approvato, tre correzioni R1-R3 fatte); nessun job sottomesso.**
+Richiesta: `docs/prompt_claude_convergenza_sonde_20261029.md` (GPT, commit b1c1bda), su mandato di Simone («stavolta devi scrivere tu il
+codice, poi gpt lo revisionerà ... Non sottomettere job: GPT farà la review e semplicione li eseguirà»). Il controllo e' gia' autorizzato nel
+perimetro del prompt; dopo la review tecnica GPT lo affida a semplicione. Nessuna modifica a trainer, loss, pooling o checkpoint; nessun
+training GPU. Correzioni della review: R1 parita' completa su tutti i campi scientifici confrontabili; R2 audit salvato fit per fit anche in
+caso di errore, chiavi `experiment_phase` (A/B) e `fit_phase` (candidate/refit) distinte; R3 ricetta e contesto numerico verificati prima dei
+fit della fase B, rapporti attestati dal cancello ricontrollati.
 
 ## 1. Domanda e disegno (fissati prima dell'esecuzione)
 
@@ -33,32 +36,52 @@ diagnostiche del criterio configurato, non una prova di ottimalita'.
   i 978 messaggi di classi assenti della fase DB3 non sono 978 fit falliti. Un'eccezione dentro il fit si registra (`exception`) e si rilancia.
   `ProbeResult` guadagna `val_scores` (punteggio di ogni candidato), `solver_params` (`get_params()` del refit) e `bootstrap_warnings`.
   `solver_recipe(max_iter)` e' la firma della ricetta del solver (`get_params()` senza C, griglia, regola di scelta, refit, scala, versioni di
-  sklearn/numpy/scipy) registrata nell'ambiente in cui gira: i confronti la esigono uguale fra B e R3c dentro una fase.
+  sklearn/numpy/scipy) registrata nell'ambiente in cui gira: i confronti la esigono uguale fra B e R3c dentro una fase. Se l'oggetto `audit`
+  ha un metodo `persist(record)`, la libreria lo chiama appena un record e' definitivo (candidato: dopo il punteggio di validazione;
+  riaddestramento: dopo il fit; eccezione: prima del rilancio): e' il gancio del salvataggio fit per fit (R2).
 - **`scripts/channel_readout.py`.** `oof_predictions(..., max_iter=3000, audit=None, folds=None, context=None)`: passa i parametri a
   `linear_probe`, aggiunge ai record per fold (solo in audit) `fold`, `max_iter`, `val_scores`, `tie_break`, conteggi dei fit al limite e con
   warning, firme dei ruoli e dello scaler; `folds` calcola un sottoinsieme di fold (uno shard) con le stesse righe e lo stesso ordine della
   sonda intera. La lettura e il controllo della cache sono in `load_cache` (prima dentro `probe()`, testo dei controlli identico).
-  `check_readout_pairing`: se uno dei due rapporti porta `solver_recipe_sha256`, devono averlo entrambi uguale; **un rapporto legacy senza la
-  firma non si accoppia** con uno che ce l'ha (i suoi parametri non sono verificati): la parita' con gli storici si fa nella fase `parity`, non
-  nel confronto ufficiale.
+  `check_readout_pairing`: se uno dei due rapporti porta `solver_recipe_sha256`, devono averlo entrambi uguale; **legacy contro nuovo e'
+  rifiutato** (i parametri del legacy non sono verificati), **due rapporti legacy continuano ad accoppiarsi** come prima (nessuna proibizione
+  dei confronti storici): la parita' con gli storici si fa nella fase `parity`, non nel confronto ufficiale.
 - **`scripts/probe_convergence.py`** (nuovo): le fasi `probe` (uno shard), `aggregate` (rapporto nel formato di `channel_readout.py --stage
-  probe`, OOF e audit uniti, 280/2 record per encoder; con `--original` anche la parita'), `parity`, `gate`, `compare-phases` (bootstrap
-  congiunto) e `plan`. Ogni uscita e' nuova, assoluta e fuori dal codice; le cache si verificano per SHA-256 contro `pin_ingressi.json`
-  (dalle provenienze di GPT in f7433f4), con ricevuta e provenienza dell'estrazione, **prima e dopo** i fit; il codice di analisi
-  (`WEARUSFM_CODE_SHA` del checkout congelato) e' registrato separatamente dal codice che ha prodotto le cache (`cache_code_sha` 24139ab).
+  probe`, OOF e audit uniti: 7 fit per fold, **28 per dataset, 84 per P1 e 56 per P2**, 280 per fase; con `--original` anche la parita'),
+  `parity`, `gate`, `compare-phases` (bootstrap congiunto) e `plan`. Ogni uscita e' nuova, assoluta e fuori dal codice; le cache si verificano
+  per SHA-256 contro `pin_ingressi.json` (dalle provenienze di GPT in f7433f4): file, provenienza e **ricevuta dell'estrazione (anche il suo
+  SHA, `extraction_receipt_sha256`)**, **prima e dopo** i fit; il codice di analisi (`WEARUSFM_CODE_SHA` del checkout congelato) e' registrato
+  separatamente dal codice che ha prodotto le cache (`cache_code_sha` 24139ab). Lo shard salva l'audit **fit per fit** in
+  `audit_progress.jsonl` (`AuditLog.persist`); un errore lascia il record del fallimento e `shard_failed.json` (`complete: false`, eccezione,
+  traceback, dataset completati) e **mai** `shard.json`: l'aggregatore rifiuta uno shard interrotto. A shard completo si scrivono `audit.jsonl`
+  (con `selected`), `shard.oof.npz` e `shard.json` (`complete: true`). Nessun resume o retry automatico; dopo un SIGKILL restano i fit salvati.
+  **Prima dei fit della fase B** (`gate_preflight`): cancello superato, firma della ricetta corrente riportata a `max_iter` 3000 uguale a
+  quella attestata dal cancello, ricetta per esteso uguale, contesto numerico uguale (dtype delle feature, backend BLAS/OpenMP con versione e
+  strato di threading, limiti dei thread; niente job ID, host, orari o percorsi), i quattro rapporti attestati ancora presenti con gli SHA
+  attestati. Un seme diverso da riga di comando o un ambiente diverso fermano il job senza spendere un fit.
 - **`scripts/slurm/probe_convergence.sbatch`** (nuovo): CPU seriale, `CODE_DIR` ed `EXPECTED_SHA` obbligatori (`lib_code_dir.sh`), uscita
   assoluta e fuori dal codice, thread BLAS = core allocati (come le sonde originali, a 8 core).
 
-### Schema dell'audit (un record JSON per fit, `audit.jsonl`, poi `<rapporto>.audit.jsonl`)
+### Schema dell'audit (un record JSON per fit: `audit_progress.jsonl` fit per fit, `audit.jsonl` a shard completo, poi `<rapporto>.audit.jsonl`)
 
-`protocol`, `phase` della fase (A/B), `encoder`, `task`, `dataset`, `fold`, `seed`, `checkpoint_sha256`, `cache_sha256`, `cache_code_sha`,
-`analysis_code_sha`, `solver_recipe_sha256`, `roles_sha256` (train/val/held del fold), `reduced`; poi per il fit: `phase` (`candidate` |
-`refit`), `C`, `solver_params` (`get_params()` effettivo), `max_iter`, `n_train`, `n_features`, `dtype`, `classes`, `class_counts`, `scale`,
-`scaler_sha256` (media e scala dello StandardScaler), `n_iter`, `n_iter_all`, `elapsed_s`, `warnings` [{categoria, messaggio, file, riga}],
-`convergence_warnings`, `reached_limit`, `converged_by_criterion`, `anomalous_stop` (warning con iterazioni sotto il limite), `exception`,
-`val_bacc` e `scoring_warnings` (candidati), `selected` (il candidato scelto con la regola «val_bacc massima, a parita' C minore»).
-Nei rapporti aggregati: `audit_summary` (totali e posizioni dei fit al limite o con warning), `environment` (python, numpy, scipy, sklearn,
-threadpoolctl, `threadpool_info()`, variabili dei thread, job SLURM). Nessun candidato non convergente e' escluso dalla selezione.
+Contesto: `protocol`, `experiment_phase` (A/B), `encoder`, `task`, `dataset`, `fold`, `seed`, `checkpoint_sha256`, `cache_sha256`,
+`cache_code_sha`, `analysis_code_sha`, `solver_recipe_sha256`, `numeric_sha256`, `roles_sha256` (train/val/held del fold), `reduced`; poi per
+il fit: `fit_phase` (`candidate` | `refit`), `C`, `solver_params` (`get_params()` effettivo), `max_iter`, `n_train`, `n_features`, `dtype`,
+`classes`, `class_counts`, `scale`, `scaler_sha256` (media e scala dello StandardScaler), `n_iter`, `n_iter_all`, `elapsed_s`, `warnings`
+[{categoria, messaggio, file, riga}], `convergence_warnings`, `reached_limit`, `converged_by_criterion`, `anomalous_stop` (warning con
+iterazioni sotto il limite), `exception`, `val_bacc` e `scoring_warnings` (candidati), `selected` (il candidato scelto con la regola «val_bacc
+massima, a parita' C minore»; nel file progressivo e' `null`, perche' si sa solo a fine fold). Nei rapporti aggregati: `audit_summary` (totali
+e posizioni dei fit al limite o con warning), `solver_recipe`, `numeric_context` (+ `numeric_sha256`), `environment` (versioni dei fit, ambiente
+di ogni shard e dell'aggregatore: l'aggregatore gira a 2 core e non si confronta coi fit). Nessun candidato non convergente e' escluso dalla
+selezione. Il cancello (`gate.json`) attesta ricetta per esteso e firma, contesto numerico e firma, i quattro rapporti con SHA e i 280 record.
+
+### Parita' con il rapporto storico (fase A): campi confrontati, tutti esatti
+
+Rapporto: `k_folds`, `fold_seed`, `val_frac`, `probe_seed`, `window_s`, `task`, `splits_sha256`, `weights`, `extraction_recipe`, `feature_set`,
+`checkpoint_sha256`, `S`, `S_se`. Per dataset: `input_sha256`, `oof_rows_sha256`, `subjects`, `s`, `n_classes`, `n_windows`, `n_oof_windows`,
+`readout`. Per fold: `train`, `val`, `held`, `c`, `held_bacc`, `val_bacc`, `train_bacc`, `n_train`, `n_val`, `n_held`, `dropped_val_windows`,
+`dropped_held_windows`, `k`, `k_capped`, `explained_variance`. Piu' gli array OOF (y, soggetti, righe, predizioni). Ogni differenza finisce in
+`problems` e in `differences`; `identical` solo con zero differenze. Fuori dal confronto: tempi, campi diagnostici nuovi, byte dei file.
 
 ## 3. Procedura (cinque blocchi, operatore semplicione, submitter e ledger comuni)
 
@@ -73,8 +96,8 @@ results/infra/pilot_posa/sonde_convergenza_20261029/pin_ingressi.json`), e stann
 |---|---|---|---|
 | 1 | fase A, 10 shard (2 encoder x {DB2 fold 0-1, DB2 fold 2-3, DB3, DB6, P2}) | 8 core, 30 GB, tetti 45/45/20/30/40 min | SHA delle cache, ricevute e provenienze; 7 fit per fold; cache invariate alla fine |
 | 2 | fase A, 4 aggregati + parita' con gli originali | 2 core, 16 GB, 20 min | ogni (dataset, fold) una volta sola; stessa ricetta e stesse cache fra gli shard; 84/56 record; parita' esatta (SHA degli originali dal pin) |
-| 3 | cancello | 1 core, 4 GB, 10 min | 280 record, quattro parita' identiche, una sola ricetta del solver; scrive `gate.json` con gli SHA dei rapporti |
-| 4 | fase B, 10 shard a 12000 | 8 core, 30 GB, tetti 120/120/40/60/90 min | come il blocco 1, piu' `gate.json` superato (altrimenti esce senza fit) |
+| 3 | cancello | 1 core, 4 GB, 10 min | 280 record, quattro parita' identiche, una sola ricetta del solver e un solo contesto numerico; scrive `gate.json` con ricetta, contesto e SHA dei rapporti |
+| 4 | fase B, 10 shard a 12000 | 8 core, 30 GB, tetti 120/120/40/60/90 min | come il blocco 1, piu' il preflight del cancello **prima dei fit**: cancello superato, ricetta (a max_iter 3000) e contesto numerico uguali a quelli attestati, rapporti attestati intatti; altrimenti esce senza fit |
 | 5 | fase B, 4 aggregati + confronto fra le fasi (afterok sui quattro) | 2 core, 16 GB, 20/30 min | guardie della ricetta (uguale fra encoder, solo `max_iter` fra le fasi), identita' delle righe, cancello; bootstrap congiunto e controllo incrociato col confronto ufficiale |
 
 Ogni blocco si sottomette quando il precedente e' interamente COMPLETED 0:0 (`leonardo_watch.py --mode all`); un job che trova un
@@ -97,14 +120,19 @@ assenza di danno e non si usa. La lettura la facciamo insieme (Simone, GPT, Clau
 
 ## 5. Test CPU (tutti verdi sul Mac; ambiente e comandi sotto)
 
-`tests/cpu/test_probe_convergence.py` (10 test): audit acceso/spento identico (etichette numeriche e testuali), warning indotti attribuiti al
+`tests/cpu/test_probe_convergence.py` (23 test): audit acceso/spento identico (etichette numeriche e testuali), warning indotti attribuiti al
 fit giusto e separati da quelli della metrica, eccezione propagata con record, nessuna fuga di informazione (scaler e C dal solo train e
 validazione; fold disgiunti per soggetto; shard di fold con le stesse righe della sonda intera), `max_iter` propagato a tutti i fit e tie-break
 invariato, shard -> aggregato uguale alla sonda intera di `channel_readout.py` e parita' esatta con un «originale» (poi incompleto, doppio,
 manomesso rifiutati), cancello che passa e che chiude la fase B, fase B e confronto fra le fasi con controllo ufficiale incrociato, guardie
-della ricetta (legacy, max_iter, tol, checkpoint; EPN612 con etichette testuali; feature non finite), bootstrap congiunto uguale a quello
-ufficiale e differenza dei delta, piano (30 job, copertura di ogni shard una volta per fase, blocchi <= 10, dipendenze, tetti), launcher con
-la regola dei checkout. Le suite esistenti `test_harness_probe.py` e `test_channel_readout.py` restano verdi (default invariati).
+della ricetta (legacy, max_iter, tol, checkpoint, contesto numerico; EPN612 con etichette testuali; feature non finite), bootstrap congiunto
+uguale a quello ufficiale e differenza dei delta, piano (30 job, copertura di ogni shard una volta per fase, blocchi <= 10, dipendenze, tetti,
+checkout), launcher con la regola dei checkout. Regressioni della review GPT (equivalenti alle sue tre prove, adattate ai nuovi prerequisiti):
+R1 una differenza sola alla volta in undici campi scientifici (val_bacc, train_bacc, held_bacc, c, n_held, ruoli, soggetti, s, S_se, pesi,
+fold_seed) chiude la parita' e una parita' falsa chiude il cancello; R2 un fit fallito lascia su disco i record finiti e quello del fallimento
+con `shard_failed.json`, nessun `shard.json`, aggregatore che rifiuta, chiavi `experiment_phase`/`fit_phase` distinte; R3 la fase B si ferma
+prima di qualunque fit con seme diverso, firma o contenuto della ricetta diversi, contesto numerico diverso, rapporti attestati assenti o
+cambiati, cancello chiuso. Le suite esistenti `test_harness_probe.py` e `test_channel_readout.py` restano verdi (default invariati).
 
 Comando: `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python -c "import sys; sys.path.insert(0, 'src'); import pytest;
 sys.exit(pytest.main(['-q', 'tests/cpu/test_probe_convergence.py']))"` (Python 3.11, sklearn 1.7.2 / numpy 2.3.5 sul Mac; su Leonardo
@@ -125,13 +153,15 @@ le quattro sonde hanno consumato 26,52 core-ore allocate.
 | 4. fase B, shard a 12000 | 10 | 114,67 | fra ~25 (nessun fit cambia) e ~101 (ogni fit al limite x4) |
 | 5. fase B, aggregati + confronto | 5 | 3,67 | ~0,6 |
 | **Fase B** | 15 | **118,33** | **26-102** |
-| Checkout di campagna | 1 | 0,17 | |
-| **Totale** | 31 | **169,17** | **52-128** |
+| **Totale scientifico** | 30 | **169,17** | **52-128** |
+| Checkout di campagna (prerequisito) | 1 | 0,17 | |
+| **Totale con il checkout** | 31 | **169,33** | **52-128** |
 
-Il fattore quattro di `max_iter` non e' un tempo: vale solo per i fit che toccano il limite (5/4/4/5 warning su 28 fit per sonda, nella
-lettura dei log). I tempi per fit della fase A (`elapsed_s` nei record) servono ad affinare il tetto della fase B **prima** di eseguirla, senza
-toccare la ricetta numerica. Residuo registrato dopo B19618: 432,14 core-ore CPU-only / 64,45 GPU-ore; questo controllo ne impegna al massimo
-169,17 core-ore e nessuna GPU-ora.
+Il fattore quattro di `max_iter` non e' un tempo e non e' un limite rigoroso: vale solo per i fit che toccano il limite (5/4/4/5 emissioni di
+warning nei log, su 84 fit per P1 e 56 per P2, cioe' 28 per dataset). I tempi e le iterazioni per fit della fase A (`elapsed_s`, `n_iter` nei
+record) servono ad affinare il tetto della fase B **prima** di eseguirla, con margine e overhead, senza toccare la ricetta numerica; i tetti
+sono allocazioni che fermano il job, non garanzie che il lavoro finisca. Residuo registrato dopo B19618: 432,14 core-ore CPU-only / 64,45
+GPU-ore; questo controllo ne impegna al massimo 169,33 core-ore (residuo teorico al tetto completo 262,81) e nessuna GPU-ora.
 
 ## 7. Obiezioni e scelte dichiarate
 
@@ -142,8 +172,11 @@ toccare la ricetta numerica. Residuo registrato dopo B19618: 432,14 core-ore CPU
   del 25/10); dentro il blocco 5 il confronto resta in `afterok` sui quattro aggregati.
 - **Categoria del ledger `--agente gpt`**, operatore semplicione, come nel piano di recupero di GPT (`submit_job.py` ammette solo claude, gpt,
   simone). Se GPT preferisce `simone` o `claude`, basta rigenerare il piano con `--agente`.
-- **Parita' senza tolleranza.** Stesse cache, stesso ambiente (cineca-ai 4.3.0 + venv), stesso seme: ci si attende identita' delle predizioni.
-  Se la fase A non riproduce gli originali, il cancello resta chiuso e la discrepanza si studia prima (ambiente, thread, ordine): non si alza
-  una tolleranza dopo aver visto i numeri.
+- **Parita' senza tolleranza.** Stesse cache, stesso ambiente (cineca-ai 4.3.0 + venv), stesso seme: ci si attende identita' di predizioni,
+  C, punteggi e S. Se la fase A non riproduce gli originali, anche per un ulp, il cancello resta chiuso e la discrepanza si studia prima
+  (ambiente, thread, ordine): non si alza una tolleranza dopo aver visto i numeri. La tolleranza 1e-12 fra il bootstrap congiunto e il
+  confronto ufficiale e' un controllo numerico fra due implementazioni, separato dalla parita'.
+- **Ordine delle chiamate nella sonda.** Nella prima consegna il bootstrap dell'errore standard precedeva il calcolo di `test_bacc`; ora
+  l'ordine e' quello di sempre (rilievo 1 della review: nessuna conseguenza numerica, il bootstrap ha un generatore locale).
 - **Fuori perimetro**, come nel prompt: nuovi training, loss, PSD, latenti non mediati, tuning sul test, aggiornamenti delle librerie,
   correzioni di un solo encoder.
