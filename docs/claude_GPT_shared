@@ -4260,6 +4260,32 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   l'attenuazione e' calata perche' e' cresciuta l'informazione. Sostiene «non basta moltiplicare le uscite» e il rinvio dell'esplorazione
   della loss. Nessun job di Claude; nessun codice.
 
+### 2026-10-29 | Claude | Consegna: controllo della convergenza delle sonde B19618/R3c (codice, test, protocollo, preventivo) | Commit 22bf2cd, prompt GPT b1c1bda
+
+- Mandato di Simone: «stavolta devi scrivere tu il codice, poi gpt lo revisionerà ... Prepara codice, test e preventivo nel tuo ramo, poi
+  committa e pusha. Non sottomettere job: GPT farà la review e semplicione li eseguirà». Nessun job sottomesso, nessuna modifica a trainer,
+  loss, pooling, checkpoint o alle cache.
+- Codice: `harness.probe.linear_probe(max_iter=3000, audit=None, context=None)` con un record per fit (fase candidato/refit, C, `get_params()`,
+  n_iter, tempo, warning catturati attorno al solo `.fit` e riemessi, raggiungimento del limite, arresto anomalo, eccezione registrata e
+  rilanciata, firma dello scaler, classi e dimensioni del train; warning della metrica e del bootstrap a parte); `solver_recipe()` = firma della
+  ricetta del solver con le versioni; `channel_readout.oof_predictions(max_iter, audit, folds, context)` e `load_cache`; `check_readout_pairing`
+  esige la stessa firma del solver (un rapporto legacy senza firma non si accoppia). `scripts/probe_convergence.py`: fasi `probe` (shard),
+  `aggregate` (+ parita' con gli originali), `parity`, `gate`, `compare-phases` (bootstrap congiunto sugli stessi ricampionamenti: B−R3c per
+  fase, 12000−3000 per encoder, differenza dei delta, predizioni cambiate, C spostati, warning residui; controllo incrociato col confronto
+  ufficiale), `plan`. Launcher `scripts/slurm/probe_convergence.sbatch` (CODE_DIR ed EXPECTED_SHA obbligatori, uscite fuori dal codice).
+  Pin degli ingressi `results/infra/pilot_posa/sonde_convergenza_20261029/pin_ingressi.json` (SHA di cache, provenienze, rapporti e checkpoint
+  dalle provenienze di GPT in f7433f4); il codice che ha prodotto le cache (24139ab) e' registrato separatamente da quello di analisi.
+- Protocollo `docs/sonde_convergenza_20261029.md`: fase A = riproduzione a 3.000 (parita' esatta, 280 record), cancello automatico, fase B = solo
+  `max_iter` 12.000 per entrambi gli encoder; 5 blocchi per semplicione (<= 10 job per blocco), shard per dataset e per coppie di fold su DB2
+  per le 4 ore della seriale, prerequisiti verificati dai job stessi. Piano e comandi: `piano.json`, `comandi.txt` (30 job + checkout).
+- Preventivo: **0 GPU-ora; tetti 50,83 core-ore (fase A) + 118,33 (fase B) = 169,17**, attesi ~26 (A) e 26-102 (B) dai tempi osservati
+  (8 core); residuo dopo B19618 432,14 core-ore CPU-only.
+- Test: `tests/cpu/test_probe_convergence.py` (10) verdi; `test_harness_probe` e `test_channel_readout` verdi (default invariati); regressioni
+  di `arms_compare`, `readout_reference`, `probe_launchers`, `campaign_deploy`, sonde P2/spettrali verdi (67). Test CPU: 1.089 -> 1.098.
+  Ambiente del Mac: sklearn 1.7.2 / numpy 2.3.5, con `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1`, `PYTHONPATH=src`.
+- Prossimo passo: review di GPT; poi deploy `deploy/pilot-posa-sonde-20261029` dal commit rivisto, checkout di campagna, rigenerazione del piano
+  con lo SHA definitivo (`--stage plan`), lanci di semplicione blocco per blocco; lettura congiunta dei JSON di `confronto/`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
@@ -5929,3 +5955,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   sonda da rifare) o rifare la sonda su un output nuovo (20 min, ~2,7 core-ore); sostituire 62583163 con un payload corretto (cancellazione e
   risottomissione in afterok di 62583154) e risottomettere il confronto P1/P2 in afterok dei quattro pool. Nessuna azione di Claude sul cluster;
   segnalazione da semplicione alle 19:24, lettura di Claude dal log.
+
+### 2026-10-29 | Claude | Limiti dichiarati della consegna del controllo delle sonde | Commit 22bf2cd
+
+- I test girano con sklearn 1.7.2 sul Mac, non con l'1.4.1.post1 delle sonde: provano l'identita' audit acceso/spento e le guardie, non il
+  comportamento numerico del solver del cluster. La prova vera e' la parita' esatta della fase A con gli originali (SHA dal pin); se non
+  riproduce, il cancello resta chiuso e si studia la causa (ambiente, thread, ordine) senza alzare tolleranze.
+- Il piano e i comandi portano lo SHA del codice: ogni modifica dalla review di GPT cambia lo SHA e richiede di rigenerare `piano.json` e
+  `comandi.txt` (`--stage plan --code-sha`), poi deploy e checkout di campagna nuovi. I pin degli ingressi non dipendono dallo SHA.
+- Il tetto della fase B assume il caso peggiore (ogni fit al limite x4): va affinato con gli `elapsed_s` della fase A prima dei lanci della
+  fase B, senza toccare la ricetta. Il limite di 4 ore della seriale e' rispettato per shard anche nel caso peggiore.
+- Categoria del ledger `--agente gpt` con operatore semplicione, come nel piano di recupero di GPT: scelta da confermare in review.
+- I warning catturati vengono riemessi con `warn_explicit` senza registro di deduplica: in audit i log possono mostrare piu' righe di warning
+  di prima (una per fit non convergente), mai meno. I conteggi fanno fede nei record, non nelle righe del log.

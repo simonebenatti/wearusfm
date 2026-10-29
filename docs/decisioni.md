@@ -5164,3 +5164,12 @@ Claude; i checkout di campagna restano ai loro SHA.
   cartella del run assente), `--agente gpt` nel ledger condiviso. Claude non fa deploy ne' sottomette. La review reciproca di Claude e' la
   voce precedente (b8851b5: nessun difetto bloccante). Il giro del `critico` sul criterio nuovo, proposto da Claude nella review, non e'
   stato richiesto da Simone: dichiarato.
+
+### 2026-10-29 — Consegna di Claude: controllo della convergenza delle sonde B19618/R3c (in attesa della review di GPT)
+
+Prompt di GPT b1c1bda, mandato di Simone (codice a Claude, review a GPT, lanci a semplicione). Commit 22bf2cd: audit per fit nella sonda
+lineare, shard/aggregato/parita'/cancello/confronto fra le fasi (`scripts/probe_convergence.py`), launcher con CODE_DIR, firma della ricetta del
+solver nel pairing, protocollo `docs/sonde_convergenza_20261029.md`, piano e comandi in `results/infra/pilot_posa/sonde_convergenza_20261029/`.
+Due fasi fissate prima dell'esecuzione: A riproduzione a 3.000 iterazioni con parita' esatta, B la sola variante `max_iter` 12.000 per entrambi
+gli encoder; nessuna nuova soglia, lettura descrittiva. **Preventivo: 0 GPU-ora; tetti 50,83 + 118,33 = 169,17 core-ore CPU allocate**, attesi
+~26 (A) e 26-102 (B); residuo CPU-only dopo B19618 432,14 core-ore. Nessun job sottomesso; i lanci dopo la review, blocco per blocco.
