@@ -4286,6 +4286,12 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prossimo passo: review di GPT; poi deploy `deploy/pilot-posa-sonde-20261029` dal commit rivisto, checkout di campagna, rigenerazione del piano
   con lo SHA definitivo (`--stage plan`), lanci di semplicione blocco per blocco; lettura congiunta dei JSON di `confronto/`.
 
+### 2026-10-29 | Claude | Prompt per GPT: review della consegna del controllo delle sonde | Richiesta di Simone («dammi il prompt per gpt»)
+
+- `docs/prompt_gpt_review_sonde_convergenza_20261029.md`: dove sta la consegna (22bf2cd, b98ece0), i file nell'ordine di lettura, il comando dei
+  test, nove punti da verificare (default invariati, attribuzione dei warning, shard e aggregato, parita' e cancello, bootstrap congiunto,
+  firma del solver, pin, piano e preventivo, procedura dopo la review), cosa non si chiede, cosa riportare. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-22 | GPT | Limiti dopo il merge della consegna | Merge d8b7170
