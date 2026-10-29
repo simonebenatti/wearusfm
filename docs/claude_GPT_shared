@@ -4770,6 +4770,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   superata» nel log e' l'etichetta del lettore del pilot, non un cancello di questa tranche. Nessuna decisione: lettura congiunta con Simone e
   GPT, nessun job di Claude.
 
+### 2026-10-29 | GPT | Lettura preliminare B19618 e raccolta JSON pendente | Base ddcb08c
+
+- Simone autorizza lettura risultati. Semplicione conferma catena conclusa con successo08:12, nessun job in coda.
+  Letti i log locali e integrata voce Claude3bbb79f senza perderne il commit. La raccolta JSON richiesta e' ferma
+  su waitingOnApproval dell'app nella chat semplicione; nessun ulteriore consenso scientifico richiesto.
+- Posa: deltaE1 -0,0749224, centered -0,0607859, accessibilita' B-R3c -0,1240439 (IC non ancora letti).
+  Trasferimento: P1 -0,56pp IC[-1,10;-0,03], P2 -1,23pp IC[-3,00;+0,58]. Quadro preliminare compatibile con
+  specializzazione, non vantaggio FM dimostrato; raccomandato non estendere ora automaticamente a49046.
+- Rapporto preliminare docs/reviews/b19618_preliminary_20261029.md; log locali salvati sotto
+  results/infra/pilot_posa/b19618_20261029/preliminary_logs. Nessuna nuova esecuzione o cambio di ricetta.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6696,3 +6707,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Dopo scancel scontrol ha mostrato temporaneamente StartTime=ora cancellazione: procedura operatore arrestata,
   sacct ha confermato Start=None/elapsed0/AllocTRES vuoto/log assente, poi ripresa senza seconda cancellazione.
   Evidenze conservate. Non e' un nuovo fallimento di job o un retry. Monitor generale resta nella scelta di Simone.
+
+### 2026-10-29 | GPT | Limiti ancora aperti della lettura B19618
+
+- JSON/provenance/accounting non ancora raccolti per permesso runtime: mancano IC posa, utenti, alpha/M2, E2,
+  varianza/correlazione e dettaglio dataset verificato. Non presentare questa lettura come finale.
+- Warning lbfgs/max_iter presenti in tutte e4 le sonde (righe5/4/4/5 per R3cP1/R3cP2/BP1/BP2): conteggio messaggi,
+  non prova del numero di fit distinti. Mantenerli come limite; non correggere a posteriori un solo encoder.
+- P1/P2 validazione interna, singolo seme; IC non comprendono variabilita' fra training. Nessun esito autorizza
+  automaticamente49046 e nessun dato implica dataset troppo piccolo o saturazione dell'encoder.
