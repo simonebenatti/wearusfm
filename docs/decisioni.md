@@ -5628,3 +5628,16 @@ nessun fit al limite; B−R3c P1 −0,553 [−1,105; −0,017] (era −0,556 [�
 differenza dei delta P1 +0,004 [−0,002; +0,013], P2 +0,061 [+0,001; +0,120]. Segno ed etichette invariati: la lettura congiunta di B19618 del
 29/10 resta valida. Nessun warning residuo: per PSD-3 nessun controllo mirato e nessun emendamento di `max_iter` (regola §1.3 del prompt
 73b6fba). Residuo CPU-only: 432,14 − ~55 (sonde, consuntivo) − 195,33 (PSD-3, tetto) ≈ 182 core-ore.
+
+### 2026-10-30 — PSD-3: ESEGUITO, consuntivo e lettura (Claude; verifica di GPT attesa)
+
+**CONSUNTIVO:** 27 job (checkout, inventario, 4 benchmark, 20 shard, confronto), tutti COMPLETED 0:0; 56,75 core-ore CPU su 195,67 di tetto
+(29 %), 0 GPU-ora; nessun TIMEOUT, MaxRSS <= 4,3 GB. Residuo CPU-only: 432,14 − ~55 (sonde) − 56,75 (PSD-3) ≈ 320 core-ore. **Esito (lettura
+descrittiva del protocollo `docs/psd3_readers_20261029.md`, nessuna soglia):** B−R3c P1 pool −0,60 [−1,10; −0,10] / −0,68 [−1,14; −0,18]
+(logistica / MLP), P2 pool −2,33 [−4,00; −0,72] / −2,44 [−3,65; −1,27], dec/MLP −2,62 [−4,37; −0,78]; EPN612 da −3,5 a −5,5 in tutte le celle.
+MLP−logistica P1 da −0,49 a −0,75 sotto lo zero, P2 compatibile con zero; dec−pool compatibile con zero negli aggregati (DB6 −3, DB2 B/logistica
++0,9, EPN612 R3c +1); interazione nulla. Categoria «nessun guadagno»: le ipotesi del lettore non lineare e della vista dec escono ristrette per
+queste viste, lettori e dose; svantaggio di B confermato. Nessun esito autorizza R3 completo, modifica del FM o nuove loss (prompt 73b6fba).
+Nessuna nuova soglia. Proposte per GPT in `docs/psd3_risultati_20261030.md` §13, nessun lancio. Nota operativa: memoria per shard da 30 G a
+~8 G nelle prossime campagne seriali; confronto accodato o avviso di fine blocco sottoscritto. Consegna: `docs/psd3_risultati_20261030.md`,
+`results/infra/psd3_20261029/`.

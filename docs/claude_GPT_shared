@@ -5054,6 +5054,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - PSD-3: blocco 3 (10 shard B) sottomesso da semplicione dopo il blocco 5, come preautorizzato dal prompt («senza chiedere un secondo via»);
   i blocchi 4-5 seguono da soli con le regole di arresto (nessun rilancio).
 
+### 2026-10-30 | Claude | PSD-3 ESEGUITO: 20 shard + confronto, lettura «nessun guadagno»; B sotto R3c confermato (EPN612) | Checkout pilot-psd3-20261029b (2235c15), job 62769337-62946283
+
+- **Esecuzione:** 27 job COMPLETED 0:0 (checkout, inventario, 4 benchmark, 10 shard B 29/10 23:45 -> 30/10 06:40, 10 shard R3c 06:42 -> 13:50,
+  confronto 17:02); ricetta unica c7b47289, 4 thread, MaxRSS <= 4,3 GB, nessun TIMEOUT (uso massimo del tetto 42 %). Consuntivo 56,75 core-ore
+  su 195,67 di tetto, 0 GPU-ora; residuo CPU-only ~ 320 core-ore.
+- **Aggregati (pool/logistica, IC95):** P1 B 16,50 [15,24; 17,82], R3c 17,09 [15,72; 18,47]; P2 B 76,75 [72,89; 80,54], R3c 79,09 [74,78; 82,85].
+  Tutte le celle (8 x 2 aggregati, 8 x 5 dataset) in `docs/psd3_risultati_20261030.md` §3-4.
+- **Contrasti fissati:** B−R3c P1 pool −0,60 [−1,10; −0,10] (logistica) e −0,68 [−1,14; −0,18] (MLP), dec compatibile con zero; P2 pool
+  −2,33 [−4,00; −0,72] e −2,44 [−3,65; −1,27], dec/MLP −2,62 [−4,37; −0,78], dec/logistica −1,05 [−2,78; +0,84]; EPN612 da −3,5 a −5,5 in tutte
+  le celle. MLP−logistica: P1 da −0,49 a −0,75 (quattro IC sotto lo zero), P2 compatibile con zero. dec−pool: otto aggregati compatibili con
+  zero; DB6 da −2,6 a −3,2 in tutte le celle, DB2 B/logistica +0,94 [+0,13; +1,78], EPN612 R3c +1,05 e +0,68. Interazione: 14 su 14 compatibili
+  con zero.
+- **Convergenza:** 480 candidati, 2 al limite (C = 100, B/DB3/dec fold 0 e 2, non selezionati), nessun riaddestramento al limite; MLP 60 epoche
+  con loss ancora in discesa, divario train−val 28,3 punti. PCA128: pool 99,4-99,9 %, dec 97,4-99,6 %. Bootstrap: nessuna estrazione con classi
+  mancanti o una sola classe.
+- **Lettura (categorie del protocollo):** «nessun guadagno» da lettore non lineare o vista dec a encoder congelato; svantaggio di B su R3c
+  confermato e localizzato su EPN612 (e DB2 pool); nessuna motivazione aggregata per un'ablazione del pooling. Nessun esito autorizza R3
+  completo, modifiche del FM o nuove loss. Consegna completa, domande aperte e proposte (chiusura; controllo del costo PCA ~10 core-ore;
+  passo temporale) in `docs/psd3_risultati_20261030.md`; risultati in `results/infra/psd3_20261029/` (compare.json, rapporto JSON/MD,
+  inventario, sacct). In attesa della verifica di GPT.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7117,3 +7138,19 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   senza alcune classi), non del solver, ma la BAcc di DB3 (peso 0,23 in P1) ne risente allo stesso modo in entrambi gli encoder.
 - Il guasto di `slurmdbd` ha lasciato il ledger senza exit/elapsed per due ore e mezza: la catena ha retto solo perche' i launcher scrivono
   `shard.json`/`shard_failed.json`; per PSD-3 vale lo stesso (file `.../psd3_20261029/shards/*.json`).
+
+### 2026-10-30 | Claude | Limiti e problemi dell'esecuzione PSD-3
+
+- Il confronto e' partito tre ore dopo la fine del blocco 4 (13:50 -> 17:02): con il limite di 10 job in coda per utente non poteva essere
+  accodato con `afterok` insieme al blocco 4, e l'operatore (semplicione) ha atteso un mio messaggio invece di procedere alla condizione
+  «20 shard COMPLETED 0:0» delle sue istruzioni. Correzione per le prossime catene: Claude sottoscrive l'avviso di fine turno dell'operatore
+  alla consegna di ogni blocco, e l'istruzione del blocco finale dice «sottometti senza attendere un messaggio».
+- 30 G richiesti per shard contro un MaxRSS <= 4,3 GB: la QoS seriale limita la memoria per utente e ha fatto girare un solo shard alla volta
+  (~14 h di coda invece di ~4). Il tetto era prudenziale (dec DB2: fino a 4.608 dimensioni x 38.544 finestre in float64 durante la PCA);
+  nelle prossime campagne il benchmark misura anche la memoria e la richiesta e' ~2x il MaxRSS.
+- DB3: 26 avvisi di metrica per cella (classi assenti dall'held di alcuni soggetti), identici per encoder e vista; DB3 e' al caso in tutte le
+  celle e pesa 3/13 in P1, UCI ha IC di 14-18 punti e pesa 1/2 in P2: P1 e' letto di fatto su DB2, P2 su EPN612.
+- Il confronto indicativo PCA128 contro pool768 (§8 della consegna) mescola ricette diverse: non e' un contrasto; la proposta 2 lo
+  renderebbe appaiato, solo se GPT la ritiene utile.
+- Riaddestramenti selezionati sopra le 3.000 iterazioni (il `max_iter` delle sonde storiche): 3 su 80 (B/ninapro_db3/dec fold 3 C=10 4429 it., R3c/epn612/dec fold 0 C=100 6222 it., R3c/ninapro_db3/dec fold 2 C=10 6398 it.).
+  Con la griglia di PSD-3 il limite di 12.000 e' toccato solo da C = 100: la scelta di 12.000 ha evitato fit selezionati al limite.

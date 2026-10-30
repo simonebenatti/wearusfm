@@ -1,0 +1,2227 @@
+{
+  "caches": [
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U138",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 552
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U98",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 392
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            38544
+          ],
+          "uncompressed_bytes": 462528
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            32
+          ],
+          "uncompressed_bytes": 384
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            4608
+          ],
+          "uncompressed_bytes": 355221504
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            4608
+          ],
+          "uncompressed_bytes": 355221504
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            768
+          ],
+          "uncompressed_bytes": 118407168
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            38544
+          ],
+          "uncompressed_bytes": 308352
+        }
+      },
+      "bytes": 829630314,
+      "dataset": "ninapro_db2",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 12,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "B",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+      "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098"
+    },
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U138",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 552
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U98",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 392
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            9834
+          ],
+          "uncompressed_bytes": 118008
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            8
+          ],
+          "uncompressed_bytes": 96
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            4608
+          ],
+          "uncompressed_bytes": 90630144
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            4608
+          ],
+          "uncompressed_bytes": 90630144
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            768
+          ],
+          "uncompressed_bytes": 30210048
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            9834
+          ],
+          "uncompressed_bytes": 78672
+        }
+      },
+      "bytes": 211675986,
+      "dataset": "ninapro_db3",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 12,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "B",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+      "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b"
+    },
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U138",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 552
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U134",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 536
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            33961
+          ],
+          "uncompressed_bytes": 407532
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            8
+          ],
+          "uncompressed_bytes": 96
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            6144
+          ],
+          "uncompressed_bytes": 417312768
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            6144
+          ],
+          "uncompressed_bytes": 417312768
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            768
+          ],
+          "uncompressed_bytes": 104328192
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            33961
+          ],
+          "uncompressed_bytes": 271688
+        }
+      },
+      "bytes": 939642062,
+      "dataset": "ninapro_db6",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 16,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            2,
+            12
+          ],
+          [
+            2,
+            13
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            2,
+            15
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "B",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+      "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd"
+    },
+    {
+      "arrays": {
+        "all_subjects": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            612
+          ],
+          "uncompressed_bytes": 48960
+        },
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U138",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 552
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U517",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 2068
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            47100
+          ],
+          "uncompressed_bytes": 3768000
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            314
+          ],
+          "uncompressed_bytes": 25120
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            3072
+          ],
+          "uncompressed_bytes": 289382400
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            3072
+          ],
+          "uncompressed_bytes": 289382400
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            768
+          ],
+          "uncompressed_bytes": 144691200
+        },
+        "y": {
+          "dtype": "<U9",
+          "fortran_order": false,
+          "shape": [
+            47100
+          ],
+          "uncompressed_bytes": 1695600
+        }
+      },
+      "bytes": 729002818,
+      "dataset": "epn612",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 8,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "task": "p2"
+      },
+      "model": "B",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz",
+      "sha256": "88cf51fc46cb489724905f041cd67c22090af16eab769ac14cbd0b7056b92dc4"
+    },
+    {
+      "arrays": {
+        "all_subjects": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            36
+          ],
+          "uncompressed_bytes": 288
+        },
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U138",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 552
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U517",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 2068
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            364
+          ],
+          "uncompressed_bytes": 2912
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            19
+          ],
+          "uncompressed_bytes": 152
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            364,
+            3072
+          ],
+          "uncompressed_bytes": 2236416
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            364,
+            3072
+          ],
+          "uncompressed_bytes": 2236416
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            364,
+            768
+          ],
+          "uncompressed_bytes": 1118208
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            364
+          ],
+          "uncompressed_bytes": 2912
+        }
+      },
+      "bytes": 5606442,
+      "dataset": "uci_emg",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 8,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "task": "p2"
+      },
+      "model": "B",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz",
+      "sha256": "8ba7500155f706695ea2fb35cdfa57f41a5c38d96c2511e446426169358323fb"
+    },
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U130",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 520
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U98",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 392
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            38544
+          ],
+          "uncompressed_bytes": 462528
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            32
+          ],
+          "uncompressed_bytes": 384
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            4608
+          ],
+          "uncompressed_bytes": 355221504
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            4608
+          ],
+          "uncompressed_bytes": 355221504
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            38544,
+            768
+          ],
+          "uncompressed_bytes": 118407168
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            38544
+          ],
+          "uncompressed_bytes": 308352
+        }
+      },
+      "bytes": 829630282,
+      "dataset": "ninapro_db2",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 12,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "R3c",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db2.npz",
+      "sha256": "20c5fc0a30a0324a193c78db99df4a1af7c6c9351201407a5adc6e01fe6f995a"
+    },
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U130",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 520
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U98",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 392
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            9834
+          ],
+          "uncompressed_bytes": 118008
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            8
+          ],
+          "uncompressed_bytes": 96
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            4608
+          ],
+          "uncompressed_bytes": 90630144
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            4608
+          ],
+          "uncompressed_bytes": 90630144
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            9834,
+            768
+          ],
+          "uncompressed_bytes": 30210048
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            9834
+          ],
+          "uncompressed_bytes": 78672
+        }
+      },
+      "bytes": 211675954,
+      "dataset": "ninapro_db3",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 12,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "R3c",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db3.npz",
+      "sha256": "41995de8be516233ea88b9dc7593585ec494adcb91606e85cc151ba5f4249799"
+    },
+    {
+      "arrays": {
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U130",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 520
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U481",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 1924
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U134",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 536
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            33961
+          ],
+          "uncompressed_bytes": 407532
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U3",
+          "fortran_order": false,
+          "shape": [
+            8
+          ],
+          "uncompressed_bytes": 96
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            6144
+          ],
+          "uncompressed_bytes": 417312768
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            6144
+          ],
+          "uncompressed_bytes": 417312768
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            33961,
+            768
+          ],
+          "uncompressed_bytes": 104328192
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            33961
+          ],
+          "uncompressed_bytes": 271688
+        }
+      },
+      "bytes": 939642030,
+      "dataset": "ninapro_db6",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 16,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1.0
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            2,
+            12
+          ],
+          [
+            2,
+            13
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            2,
+            15
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "task": "p1"
+      },
+      "model": "R3c",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db6.npz",
+      "sha256": "a43e88a9e7b3547ff31dfc27cbe83f86b03e48dee74b825f62289738bc7aac57"
+    },
+    {
+      "arrays": {
+        "all_subjects": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            612
+          ],
+          "uncompressed_bytes": 48960
+        },
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U130",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 520
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U517",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 2068
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            47100
+          ],
+          "uncompressed_bytes": 3768000
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U20",
+          "fortran_order": false,
+          "shape": [
+            314
+          ],
+          "uncompressed_bytes": 25120
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            3072
+          ],
+          "uncompressed_bytes": 289382400
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            3072
+          ],
+          "uncompressed_bytes": 289382400
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            47100,
+            768
+          ],
+          "uncompressed_bytes": 144691200
+        },
+        "y": {
+          "dtype": "<U9",
+          "fortran_order": false,
+          "shape": [
+            47100
+          ],
+          "uncompressed_bytes": 1695600
+        }
+      },
+      "bytes": 729002786,
+      "dataset": "epn612",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 8,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "task": "p2"
+      },
+      "model": "R3c",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz",
+      "sha256": "8f7f1cbf30a9a20e809a5be7c2efe5e6ebbf220485008e932e4944bf6dadc18b"
+    },
+    {
+      "arrays": {
+        "all_subjects": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            36
+          ],
+          "uncompressed_bytes": 288
+        },
+        "calibration_protocol": {
+          "dtype": "<U28",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 112
+        },
+        "channels": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "checkpoint": {
+          "dtype": "<U130",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 520
+        },
+        "checkpoint_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "code_sha": {
+          "dtype": "<U40",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 160
+        },
+        "encoder_dim": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "extraction_recipe": {
+          "dtype": "<U517",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 2068
+        },
+        "feature_set": {
+          "dtype": "<U15",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 60
+        },
+        "input_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "montage_signature": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "protocol": {
+          "dtype": "<U21",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 84
+        },
+        "s": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            364
+          ],
+          "uncompressed_bytes": 2912
+        },
+        "splits_sha256": {
+          "dtype": "<U64",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 256
+        },
+        "subjects": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [
+            19
+          ],
+          "uncompressed_bytes": 152
+        },
+        "task": {
+          "dtype": "<U2",
+          "fortran_order": false,
+          "shape": [],
+          "uncompressed_bytes": 8
+        },
+        "x_dec": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            364,
+            3072
+          ],
+          "uncompressed_bytes": 2236416
+        },
+        "x_local": {
+          "dtype": "<f2",
+          "fortran_order": false,
+          "shape": [
+            364,
+            3072
+          ],
+          "uncompressed_bytes": 2236416
+        },
+        "x_pool": {
+          "dtype": "<f4",
+          "fortran_order": false,
+          "shape": [
+            364,
+            768
+          ],
+          "uncompressed_bytes": 1118208
+        },
+        "y": {
+          "dtype": "<i8",
+          "fortran_order": false,
+          "shape": [
+            364
+          ],
+          "uncompressed_bytes": 2912
+        }
+      },
+      "bytes": 5606410,
+      "dataset": "uci_emg",
+      "metadata": {
+        "calibration_protocol": "w1-calibrazione-selezione-v1",
+        "channels": 8,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "encoder_dim": 384,
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4.0,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "feature_set": "channel_readout",
+        "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+        "montage_signature": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "protocol": "readout_per_canale_v1",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "task": "p2"
+      },
+      "model": "R3c",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz",
+      "sha256": "4efd3793b02f317c6710c4f62d2752cf0536fe479784b0e3027b14bef8a3eeab"
+    }
+  ],
+  "feature_payload_finiteness_checked": false,
+  "plan_sha256": "b55b6562f3b7e611b67b9facef8c3fd9838841a8cbc8c7bcb0655a2a579e3786",
+  "status": "hash_and_header_verified"
+}
