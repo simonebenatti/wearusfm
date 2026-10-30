@@ -77,7 +77,8 @@ def test_report_scores_selection_limits_and_completeness(tmp_path):
 
 def test_report_with_compare_requires_same_recipe_and_cross_checks_points():
     shards = [_shard(m, d, v) for m in PR.MODELS for d in PR.DATASETS for v in PR.VIEWS]
-    cells = {f"{m}/{v}/{r}": {"bacc": 1.0 if r == "logistic" else 17 / 18,  # seme 0: una finestra della classe 1 sbagliata su tre -> (1 + 2/3 + 1)/3; seme 1 perfetto "ci95": [0.9, 1.0], "subject_bootstrap_se": 0.01,
+    # MLP: seme 0 sbaglia una finestra della classe 1 su tre -> (1 + 2/3 + 1)/3 = 8/9; seme 1 perfetto; media 17/18
+    cells = {f"{m}/{v}/{r}": {"bacc": 1.0 if r == "logistic" else 17 / 18, "ci95": [0.9, 1.0], "subject_bootstrap_se": 0.01,
                               "by_readout_seed": {}} for m in PR.MODELS for v in PR.VIEWS for r in PR.READERS}
     contrasts = {"dec_minus_pool/B/logistic": {"delta_pp": 0.0, "ci95_pp": [-1.0, 1.0], "paired_subject_se_pp": 0.5, "coefficients": {}}}
     compare = {"recipe_sha256": "r" * 64, "n_boot": 2000, "bootstrap_seed": 20261029, "units": {"contrasts": "percentage points"},
