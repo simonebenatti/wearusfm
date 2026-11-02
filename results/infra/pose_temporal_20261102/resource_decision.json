@@ -1,0 +1,53 @@
+{
+  "status": "approved_within_existing_protocol",
+  "basis": "completed train-only benchmark; no validation scientific scores inspected",
+  "code_sha": "440af702ac3ec00feb52549acb1b4935251dce38",
+  "plan_sha256": "2c1b6f431297e603c46d01f60276038fac67bc879cd8aba00954b9aa120a3b3c",
+  "benchmark_sha256": "7db651a51ed7871a676e8be917b75c6b11229bbb4bbda18d20534954b73fe785",
+  "completed_jobs": {
+    "checkout": {
+      "slurm_id": 63219091,
+      "elapsed_seconds": 19,
+      "allocated_cpus": 2
+    },
+    "validate": {
+      "slurm_id": 63227865,
+      "elapsed_seconds": 46,
+      "allocated_cpus": 2
+    },
+    "benchmark": {
+      "slurm_id": 63228323,
+      "elapsed_seconds": 24,
+      "allocated_cpus": 8,
+      "max_rss_kib": 1461632
+    }
+  },
+  "measured_fit_seconds_B": 13.798317558132112,
+  "runtime_estimate": {
+    "train_two_encoders_seconds": 27.596635116264224,
+    "hash_validation_allowance_seconds": 46,
+    "unmeasured_cv_val_metrics_allowance_seconds": 740,
+    "allowance_basis": "four times historical E3 full report 185s; conservative allowance, not measured throughput",
+    "subtotal_seconds": 813.5966351162642,
+    "safety_factor": 2,
+    "requested_minutes": 30
+  },
+  "memory_estimate": {
+    "benchmark_gib": 1.3939208984375,
+    "additional_val_gib": 4,
+    "historical_full_e3_maxrss_gib": 8.33,
+    "formula": "round_up_to_4GiB(1.5 * max(benchmark_rss+4, 8.33))",
+    "requested_gib": 16
+  },
+  "run_request": {
+    "cpus": 8,
+    "mem": "16G",
+    "walltime": "00:30:00",
+    "max_core_hours": 4,
+    "gpu_hours": 0
+  },
+  "actual_core_hours_before_run": 0.08944444444444444,
+  "max_total_core_hours_after_run": 4.089444444444444,
+  "original_chain_cap_core_hours": 20.5,
+  "dependency_note": "Each previous job verified COMPLETED 0:0 before next submission; no stale afterok dependencies needed. No change to scientific support/CV/metrics."
+}

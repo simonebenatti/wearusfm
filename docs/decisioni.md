@@ -5624,3 +5624,16 @@ Simone: «Autorizzo il lancio diretto di questa catena». GPT esegue direttament
 pose-temporal-20261102 tramite submitter/ledger; l'eccezione non si estende ad altre
 campagne. Codice440af70, ricetta, review e tetto20,5 core-ore/0GPU invariati.
 Prima checkout, validate e benchmark; confronto completo dopo verifica del timing.
+
+### 02/11/2026 — Gate tecnico superato e risorse del run temporale fissate prima del lancio
+
+Checkout63219091, validate63227865 e benchmark63228323 COMPLETED0:0; preparazione0,08944core-ore.
+Timing train-only B: F13,798s per statistiche/tre eigensistemi dei due lettori, MaxRSS1,394GiB.
+Run autorizzato già nel piano: richiesta8CPU/16GiB/30min, massimo4core-ore e0GPU.
+Preventivo2×(2F+46+740)=1627s arrotondato30min;740s è riserva CV/val/metriche, non misura.
+Memoria1,5×max(RSS+4GiB,8,33GiB), arrotondata16GiB. Catena al massimo4,08944core-ore
+con i costi già osservati, entro20,5. Codice scientifico440af70 e piano invariati.
+Documentazione: docs/reviews/pose_temporal_execution_20261102.md, resource_decision.json.
+Letto d93e22e di Claude: nessuna modifica scientifica necessaria; OOF già recuperati e
+bootstrap PCA concluso. Ogni fase sottomessa dopo verifica del precedente COMPLETED0:0,
+senza afterok obsoleti e senza retry. Nessun nuovo criterio basato sui risultati val.

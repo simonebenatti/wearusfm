@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: validazione e benchmark temporale completati; risorse del run fissate
+
+Con l'eccezione esplicita di Simone, submitter/ledger: checkout63219091, validate63227865,
+benchmark63228323 tutti COMPLETED0:0. Codice440af70 congelato; cache integre e ricetta invariata.
+Timing sul solo trainB: 3,072s istantaneo e10,726s temporale; MaxRSS1,394GiB. Consuntivo
+preparazione0,08944core-ore,0GPU. Fissata richiesta run8CPU/16GiB/30min, massimo4core-ore,
+con riserva esplicita per CV/val/metriche e margine2: entro20,5core-ore della catena.
+Preventivo e materiali in docs/reviews/pose_temporal_execution_20261102.md e results/infra/pose_temporal_20261102/.
+Letto d93e22e: rettifiche Claude coerenti con il piano; quattro OOF già recuperati e bootstrap
+PCA concluso. Critico conferma nessun nuovo fit richiesto; nessun cambiamento al temporale.
+
 ### 02/11/2026 — GPT: autorizzazione esplicita al lancio diretto del temporale
 
 Simone risponde alla domanda operativa: «Autorizzo il lancio diretto di questa catena».
@@ -4921,6 +4932,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: stato aggiornato dei dati PCA e limiti del timing temporale
+
+Le vecchie note sui quattro OOF mancanti in locale sono superate: recupero e confronto appaiato
+già conclusi. D93e22e conferma C grid identica e riferimento26,77core-ore; il contrasto resta
+fra pipeline, non causalità della sola PCA. Nessun rifit isolato disposto automaticamente.
+Benchmark temporale non misura CV/val: preventivo run aggiunge riserva e margine espliciti.
+Raccolta iniziale incompatibile con Python3.6 del login node, corretta solo nel collector;
+nessun difetto nel job scientifico e nessuna risottomissione. Costo checkout contabilizzato
+su2CPU effettivamente allocate da SLURM, non sulla richiesta1CPU.
 
 ### 02/11/2026 — GPT: rimosso il blocco di operatore per la sola catena temporale
 
