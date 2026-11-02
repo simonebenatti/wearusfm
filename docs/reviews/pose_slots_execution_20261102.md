@@ -1,5 +1,9 @@
 # Punto 6 — esecuzione, 02/11/2026
 
+**Catena conclusa: tutti i sei job COMPLETED 0:0.** Report finale 63252509 terminato alle 16:19:51 CET; risultati raccolti e verificati, nessun job residuo. Consuntivo: **1,155556 GPU-ore e 10,254444 core-ore**. [Analisi](pose_slots_results_20261102.md) e [review indipendente](pose_slots_results_critic_20261102.md). L’automazione è stata eliminata alla conclusione.
+
+Le note sottostanti conservano la sequenza delle decisioni e dei preventivi precedenti al report.
+
 Simone autorizza il lancio diretto della catena tramite submitter e ledger comuni.
 Codice scientifico congelato `c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62`;
 protocollo, 54 test e review favorevole pubblicati prima del lancio.
@@ -12,6 +16,7 @@ Autorizzazione registrata in35cd6e0, origin verificato; deploy separato verifica
 | Estrazione B | 63245968 | COMPLETED0:0 | 1996s,1GPU/8CPU | 0,554444GPU-ore /4,435556core-ore |
 | Estrazione R3c | 63246001 | COMPLETED0:0 | 1996s,1GPU/8CPU | 0,554444GPU-ore /4,435556core-ore |
 | Benchmark CPU | 63246431 | COMPLETED0:0 | 33s,8CPU | 0,073333core-ore |
+| Report finale | 63252509 | COMPLETED0:0 | 415s,8CPU | 0,922222core-ore |
 
 B e R3c sono partiti entrambi alle15:16:15 CET, con una GPU indipendente ciascuno sullo stesso nodo.
 Il benchmark è accodato con `afterok:63245968`: all'avvio verifica ricevute complete e cache B prima
@@ -74,3 +79,11 @@ nessun difetto aperto. Il codice scientifico c9d9c02 resta immutato.
 Speso fin qui **1,155556GPU-ore e9,332222core-ore**; massimo con report11,332222core-ore,
 entro i tetti2,25GPU-ore/28,333core-ore. Pubblicare questa decisione e verificare origin prima della
 sottomissione dell'unico ID mancante `POSE-SLOTS-run-20261102`; niente nuovi consensi o duplicati.
+
+## Chiusura verificata
+
+Preventivo CPU pubblicato e origin verificato al commit `62d4914f17e853ac18f495b4e12a3ec99e380dc7` prima del lancio. ID logico `POSE-SLOTS-run-20261102`, ricevuta del submitter conservata in `submission/`; codice runtime c9d9c02 invariato. Report sottomesso alle 16:12:48 CET, avvio 16:12:56, fine 16:19:51; COMPLETED 0:0. Richiesta 8 CPU / 30 GiB / 900s; consumo 415s e MaxRSS 4.084.332 KiB, circa 3,895 GiB.
+
+Il collector ha raccolto report, log e accounting in sola lettura. SHA256 report `9e775208fcd141780c2fac0f408d980150baa2b2bef4d173f7540ea22195137b`; 115 pin e hash dei file raccolti verificati. M384 replica esattamente il precedente istantaneo; il critico ha replicato 27 contrasti e IC con discrepanza massima 0,0. Nessun nuovo test o job necessario per chiudere questa consegna.
+
+Consuntivo totale **1,155556 GPU-ore e 10,254444 core-ore**, entro 2,25 / 28,333. Nessun job residuo della catena; automazione `completa-wearusfm-punto-6` eliminata con conferma dell’app. Le autorizzazioni di Simone per questa catena, letture, commit e push erano già acquisite e sono state nuovamente ribadite; non serve chiedere un nuovo consenso operativo per completare la consegna.

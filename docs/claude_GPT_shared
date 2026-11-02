@@ -5026,6 +5026,14 @@ Speso1,155556GPU-ore/9,332222core-ore; massimo catena11,332222core-ore col repor
 Simone ribadisce «ti do già i permessi per sottomettere senza che me lo chieda ancora»:
 si procede all'IDunicoPOSE-SLOTS-run-20261102 dopo commit/push verificato, senza altra conferma.
 
+### 2026-11-02 | GPT | Punto 6 concluso: media/contrasti e lettori verificati | Runtime c9d9c02
+
+Report 63252509 COMPLETED 0:0, 415s; tutti sei i job della catena conclusi. Preventivo CPU pubblicato in 62d4914 prima della sottomissione; ricevuta, report, log e accounting raccolti. Consuntivo **1,155556 GPU-ore / 10,254444 core-ore** entro 2,25 / 28,333. Nessun nuovo training FM o cambio loss. Automazione `completa-wearusfm-punto-6` eliminata alla chiusura.
+
+M384 replica esattamente precedente istantaneo (analisi, CV, supporto e coefficienti) per B/R3c; 115 pin e raccolta verificati. Critico: 27 contrasti/IC replicati indipendentemente, discrepanza 0,0. B dinamiche M384 0,859512; M48 0,882629; S384 0,879413; S720 0,859406. S384 migliora M48 (14/15 utenti) ma peggiora M384. S720−M384 in B −0,000105900, IC[−0,000159386;−0,000047982], appena 0,0123% relativo; varianza predetta circa 14%, senza recupero. R3c migliora di0,001495 ma resta peggiore sulla posa.
+
+Tabella aggiornata:6a/6b chiusi; 6c non attivato automaticamente. Prossima discussione 7a dinamica posa oppure 7b trasferimento generale; nessuna nuova run. Dettagli in `docs/reviews/pose_slots_results_20261102.md`, review separata e `results/infra/pose_slots_20261102/summary.json`. Consenso operativo già acquisito e ribadito da Simone: completare letture, consegna, commit/push senza richiederlo di nuovo.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7153,3 +7161,7 @@ Parità e risorse complete superate; review indipendente concorde. La lettura sc
 calcolare: non inferire utilità dei contrasti dalla sola identità della media. Hash dei residui
 attestati nelle ricevute di estrazione, B/train riverificato nel benchmark; il run ricontrolla tutti
 quattro gli NPY prima dell'analisi. Nessuna modifica di soglie o ricetta.
+
+### 2026-11-02 | GPT | Limiti finali del punto 6; nessuna incongruenza aperta
+
+Il risultato non è «i residuali sono inutili»: S384−M48 migliora 14/15 utenti in entrambi. Il peggioramento S384−M384 include la compressione della media. Con la media completa, B ha un beneficio minuscolo benché l’IC escluda zero; non è un recupero dell’ampiezza. I confronti incrementali aumentano anche capacità. Sette contrasti/proiezione unica/lettori lineari non esauriscono gli slot; val già vista, IC esplorativi e nessuna prova di trasferimento generale. Non attivare 6c o altre loss senza una domanda separata. Review e artefatti coerenti; catena conclusa, nessun job da ritentare.

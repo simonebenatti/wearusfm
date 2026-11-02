@@ -1,5 +1,7 @@
 # Consegna operativa punto 6 — 02/11/2026
 
+**Catena conclusa; non rieseguire i comandi sotto.** Tutti i sei ID sono già prenotati e completati 0:0, incluso il report **63252509** (415s). [Risultati](reviews/pose_slots_results_20261102.md), [esecuzione e consuntivo](reviews/pose_slots_execution_20261102.md). Monitoraggio eliminato alla conclusione. I comandi restano documentazione storica ai tetti autorizzati.
+
 **Lancio diretto autorizzato da Simone per questa catena.** Codice scientifico congelato:
 `c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62`. [Protocollo](pose_slots_protocol_20261102.md),
 [review favorevole](reviews/pose_slots_review_20261102.md), [piano macchina](../results/infra/pose_slots_20261102/job_plan.json).
@@ -79,8 +81,6 @@ Prima dell'interpretazione confrontare M384 con il precedente istantaneo. Nessun
 
 ## Lanci effettuati
 
-Checkout63242629 e preflight63242889 conclusi con successo; estrazioni B63245968 e R3c63246001
-RUNNING dal15:16:15 CET del02/11. R3c richiede55min dopo timing, contro il tetto60 del comando sopra.
-Benchmark63246431 accodato con `--dopo POSE-SLOTS-extract-B-20261102`; l'afterok e le guardie runtime
-fanno rispettare il prerequisito prima dell'esecuzione. Il report finale rimane non sottomesso.
-Ricevute del submitter e snapshot nel repository; non riutilizzare i comandi dei job già prenotati.
+Checkout 63242629, preflight 63242889, estrazioni B 63245968 e R3c 63246001, benchmark 63246431 e report 63252509 sono tutti COMPLETED 0:0. B/R3c hanno eseguito in parallelo dal 15:16:15 al 15:49:31 CET. R3c ha richiesto 55 minuti; il report 15 minuti, dopo preventivo pubblicato. Benchmark con dipendenza da B; report lanciato solo dopo completamento e verifica di entrambe le estrazioni.
+
+Ricevute del submitter, log, accounting e report sono nel repository. Consuntivo 1,155556 GPU-ore e 10,254444 core-ore. Nessun comando di questa consegna rimane da eseguire, nessun nuovo esperimento autorizzato implicitamente dalla sua chiusura.

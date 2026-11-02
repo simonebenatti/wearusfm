@@ -191,7 +191,7 @@
     {
       "logical_id": "POSE-SLOTS-run-20261102",
       "stage": "run",
-      "status": "prepared_not_submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "both extractions COMPLETED 0:0 and receipts complete",
         "benchmark examined and resource decision recorded"
@@ -220,7 +220,10 @@
         "run"
       ],
       "requested_walltime": "00:15:00",
-      "resource_decision": "readout_resource_decision.json"
+      "resource_decision": "readout_resource_decision.json",
+      "job_slurm": 63252509,
+      "exit_code": "0:0",
+      "elapsed_seconds": 415
     }
   ],
   "execution": "Stage gates are operational decisions before submission, not blind queue dependencies. B/R3c can submit in parallel after passed preflight. No new FM training. Do not execute the entire list automatically."

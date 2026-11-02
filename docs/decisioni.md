@@ -5686,3 +5686,11 @@ Estrattori63245968/63246001 e benchmark63246431 completati0:0. Ricevute e tutti 
 critico favorevole. La politica risorse congelata restituisce8CPU/30GiB/15min,zeroGPU e2core-ore.
 Si sottomette soltanto POSE-SLOTS-run-20261102 con codec9d9c02, senza nuovo consenso come ribadito
 da Simone. Cache grandi ricontrollate dal job, nessun nuovo training o cambiamento scientifico.
+
+## 2026-11-02 — Chiusura punto 6a/6b: risultati verificati, nessun nuovo training
+
+Tutta la catena completata 0:0; report 63252509 in 415s, dopo preventivo 8 CPU / 30 GiB / 15 min pubblicato in 62d4914. Consuntivo **1,155556 GPU-ore e 10,254444 core-ore** entro i tetti 2,25 / 28,333. Codice scientifico c9d9c02 invariato. Report, log, ricevute e sintesi nel repository; automazione eliminata. Le autorizzazioni di Simone alle fasi e alle letture erano già acquisite e ribadite: nessuna nuova firma richiesta per chiudere questa consegna.
+
+M384 replica esattamente l’istantaneo storico; il critico replica 27 contrasti/IC, discrepanza 0,0. B dinamiche: M384 0,859512, M48 0,882629, S384 0,879413, S720 0,859406. I contrasti aiutano oltre M48 (14/15 utenti B/R3c), ma non compensano la compressione. Oltre M384 il beneficio B è **0,0123% relativo**, senza recupero dell’ampiezza; IC del delta sottozero ma effetto minuscolo. R3c migliora di più, restando peggiore sulla posa.
+
+**Raccomandazione scientifica GPT:** chiudere 6a/6b; non attivare automaticamente 6c. Nessuna evidenza sufficiente da questa vista per motivare un cambio del pooling/FM. La prossima scelta è 7a (dinamica di posa) oppure 7b (trasferimento generale, con regressione diversa dalla posa supervisionata). Nessun nuovo braccio, loss, ricerca di proiezioni o training lanciato. Limiti: sette contrasti fissi, proiezione unica, capacità aggiuntiva nei confronti incrementali, val già osservata e IC esplorativi. [Analisi completa](reviews/pose_slots_results_20261102.md), [review indipendente](reviews/pose_slots_results_critic_20261102.md), [tabella aggiornata](piano_scientifico_20261102.md).
