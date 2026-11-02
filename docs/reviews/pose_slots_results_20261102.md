@@ -10,7 +10,7 @@ B e R3c student a 19.618 passi restano congelati. M384 usa la media completa dei
 
 Ridge FP64, intercetta non penalizzata, alpha scelto solo su 40 utenti train in due fold; tutti gli alpha sono interni alla griglia. Val: 15 utenti, 18.548 finestre; train: 1.907 finestre. Soglia dinamica congelata 0,2574231028556824; 8.329 finestre selezionate dinamiche, 8.327 con supporto sufficiente per le statistiche centrate. Supporto centrale comune al precedente temporale.
 
-## Dinamica: risultati primari
+## Dinamica: risultati delle quattro viste
 
 L’errore è SSE delle variazioni centrate divisa per la varianza dei bersagli, più basso è meglio. La varianza predetta è espressa come percentuale di quella dei bersagli. MAE riguarda gli angoli assoluti sullo stesso gruppo.
 
@@ -25,7 +25,9 @@ L’errore è SSE delle variazioni centrate divisa per la varianza dei bersagli,
 | R3c/S384 | 0.990821 | 0.107671 | 2.459% | 0.350294 | 100000 |
 | R3c/S720 | 0.985072 | 0.134882 | 3.687% | 0.346034 | 100000 |
 
-### Tutti i contrasti primari previsti
+### Contrasti previsti sulle finestre dinamiche
+
+Il protocollo distingue **S384−M384 primario**, **S384−M48 controllo** e **S720−M384 secondario**. Tutti sono riportati anche sulle finestre dinamiche, che costituiscono il gruppo principale.
 
 Negativo = meno errore nella prima vista. Le differenze delle differenze sono effetto in B meno effetto in R3c; in quelle righe il conteggio negativo non significa necessariamente miglioramento assoluto. IC95% esplorativi da 2.000 bootstrap appaiati per utente, seed 20261102, senza correzione per molteplicità.
 
@@ -58,7 +60,7 @@ Negativo = meno errore nella prima vista. Le differenze delle differenze sono ef
 | R3c/S384 | 1.004162 | 0.308533 | 1.071130 | 0.268662 |
 | R3c/S720 | 1.003576 | 0.301639 | 1.096462 | 0.259254 |
 
-Tutti i 18 contrasti secondari e relativi IC sono nella sintesi JSON; insieme ai 9 primari sono stati replicati indipendentemente. L’effetto a pari dimensione non ha lo stesso verso in tutti i gruppi: su R3c le statiche favoriscono S384 rispetto a M384. Non generalizziamo quindi la conclusione primaria a ogni regime. S720 continua a dare un beneficio piccolo in B.
+Tutti i 18 contrasti secondari e relativi IC sono nella sintesi JSON; insieme ai 9 sulle finestre dinamiche sono stati replicati indipendentemente. L’effetto a pari dimensione non ha lo stesso verso in tutti i gruppi: su R3c le statiche favoriscono S384 rispetto a M384. Non generalizziamo quindi la conclusione primaria a ogni regime. S720 continua a dare un beneficio piccolo in B.
 
 ## Integrità e review
 

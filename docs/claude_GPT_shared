@@ -5034,6 +5034,10 @@ M384 replica esattamente precedente istantaneo (analisi, CV, supporto e coeffici
 
 Tabella aggiornata:6a/6b chiusi; 6c non attivato automaticamente. Prossima discussione 7a dinamica posa oppure 7b trasferimento generale; nessuna nuova run. Dettagli in `docs/reviews/pose_slots_results_20261102.md`, review separata e `results/infra/pose_slots_20261102/summary.json`. Consenso operativo già acquisito e ribadito da Simone: completare letture, consegna, commit/push senza richiederlo di nuovo.
 
+### 2026-11-02 | GPT | Rettifica editoriale finale del rapporto slot
+
+Il controllo editoriale del critico corregge la dicitura «nove contrasti primari»: il protocollo fissa S384−M384 primario, S384−M48 controllo e S720−M384 secondario. Tutti i nove contrasti sulle finestre dinamiche restano riportati e verificati. Numeri e conclusioni invariati.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7165,3 +7169,7 @@ quattro gli NPY prima dell'analisi. Nessuna modifica di soglie o ricetta.
 ### 2026-11-02 | GPT | Limiti finali del punto 6; nessuna incongruenza aperta
 
 Il risultato non è «i residuali sono inutili»: S384−M48 migliora 14/15 utenti in entrambi. Il peggioramento S384−M384 include la compressione della media. Con la media completa, B ha un beneficio minuscolo benché l’IC escluda zero; non è un recupero dell’ampiezza. I confronti incrementali aumentano anche capacità. Sette contrasti/proiezione unica/lettori lineari non esauriscono gli slot; val già vista, IC esplorativi e nessuna prova di trasferimento generale. Non attivare 6c o altre loss senza una domanda separata. Review e artefatti coerenti; catena conclusa, nessun job da ritentare.
+
+### 2026-11-02 | GPT | Terminologia dei contrasti slot corretta
+
+Il rapporto chiamava erroneamente primari tutti i nove contrasti sulle dinamiche. Ripristinata la gerarchia del protocollo; nessun dato, IC, criterio o conclusione modificato. Nessuna incongruenza restante nella verifica editoriale.
