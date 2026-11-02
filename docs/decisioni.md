@@ -5679,3 +5679,10 @@ operativo o una nuova eccezione diretta, senza rimettere in discussione l'approv
 
 **Seguito operativo punto6,02/11:** Simone risponde «Autorizzo il lancio diretto di questa catena».
 GPT procede con submitter/ledger; nessuna ulteriore autorizzazione alle fasi già approvate.
+
+## 2026-11-02 — Punto6: via tecnico al report, entro autorizzazione già acquisita
+
+Estrattori63245968/63246001 e benchmark63246431 completati0:0. Ricevute e tutti i gate verificati;
+critico favorevole. La politica risorse congelata restituisce8CPU/30GiB/15min,zeroGPU e2core-ore.
+Si sottomette soltanto POSE-SLOTS-run-20261102 con codec9d9c02, senza nuovo consenso come ribadito
+da Simone. Cache grandi ricontrollate dal job, nessun nuovo training o cambiamento scientifico.

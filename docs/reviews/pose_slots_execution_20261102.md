@@ -9,9 +9,9 @@ Autorizzazione registrata in35cd6e0, origin verificato; deploy separato verifica
 |---|---:|---|---:|---:|
 | Checkout | 63242629 | COMPLETED0:0 | 26s,2CPU | 0,014444core-ore |
 | Preflight train | 63242889 | COMPLETED0:0 | 168s,1GPU/8CPU | 0,046667GPU-ore /0,373333core-ore |
-| Estrazione B | 63245968 | RUNNING alle15:19 | massimo60min,1GPU/8CPU | tetto1GPU-ora /8core-ore |
-| Estrazione R3c | 63246001 | RUNNING alle15:19 | massimo55min,1GPU/8CPU | tetto0,916667GPU-ore /7,333333core-ore |
-| Benchmark CPU | 63246431 | PENDING Dependency | massimo15min,8CPU | tetto2core-ore |
+| Estrazione B | 63245968 | COMPLETED0:0 | 1996s,1GPU/8CPU | 0,554444GPU-ore /4,435556core-ore |
+| Estrazione R3c | 63246001 | COMPLETED0:0 | 1996s,1GPU/8CPU | 0,554444GPU-ore /4,435556core-ore |
+| Benchmark CPU | 63246431 | COMPLETED0:0 | 33s,8CPU | 0,073333core-ore |
 
 B e R3c sono partiti entrambi alle15:16:15 CET, con una GPU indipendente ciascuno sullo stesso nodo.
 Il benchmark è accodato con `afterok:63245968`: all'avvio verifica ricevute complete e cache B prima
@@ -55,3 +55,22 @@ verifica benchmark/entrambe le cache, pubblica il preventivo CPU e sottomette il
 Poi raccoglie e rivede i risultati, aggiorna tabella/registro e committa/pusha. Nessun nuovo esperimento
 scientifico. Si disattiva alla conclusione o quando serve una nuova decisione; resta silenzioso
 finché non vi sono cambiamenti significativi. Non duplica semplicione né i job già prenotati.
+
+## Estrazioni complete verificate e preventivo del report
+
+B/R3c conclusi alle15:49:31 CET; benchmark concluso alle15:50:06.1.907 finestre train e18.548 val
+per modello, tutte con meanFP16 identica alla cache storica. Gate LayerNorm/denominatore con scarto
+zero su2.513.510.400 elementi medi totali. Parent/split/preflight/checkpoint/plan/sourcepin verificati;
+metadati e stati input raw B/R3c identici. Il collector verifica hash delle ricevute e dimensioni dei
+residui; gli hash completi dei quattro NPY saranno ricontrollati nel job CPU prima dei fit.
+Benchmark ha già riverificato B/train. Nessuna analisi scientifica val eseguita in questa fase.
+
+Tempi dei quattro lettori:19,878829s complessivi, walltime benchmark33s; RSS1,168285GiB.
+Formula preregistrata:`ceil5min(1,5×max(2×33,2×209)+180)`=**900s**.
+Richiesta finale **8CPU,30GiB,15min;2core-ore,zeroGPU**. Stima memoria13,752428GiB<30GiB.
+`readout_resource_decision.json` contiene controlli e conti. Review indipendente del critico favorevole,
+nessun difetto aperto. Il codice scientifico c9d9c02 resta immutato.
+
+Speso fin qui **1,155556GPU-ore e9,332222core-ore**; massimo con report11,332222core-ore,
+entro i tetti2,25GPU-ore/28,333core-ore. Pubblicare questa decisione e verificare origin prima della
+sottomissione dell'unico ID mancante `POSE-SLOTS-run-20261102`; niente nuovi consensi o duplicati.

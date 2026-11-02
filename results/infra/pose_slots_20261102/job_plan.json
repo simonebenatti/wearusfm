@@ -81,7 +81,7 @@
     {
       "logical_id": "POSE-SLOTS-extract-B-20261102",
       "stage": "extract-B",
-      "status": "submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "preflight COMPLETED 0:0 and receipts passed",
         "time/memory/space reviewed within cap"
@@ -112,12 +112,13 @@
         "extract",
         "B"
       ],
-      "job_slurm": 63245968
+      "job_slurm": 63245968,
+      "exit_code": "0:0"
     },
     {
       "logical_id": "POSE-SLOTS-extract-R3c-20261102",
       "stage": "extract-R3c",
-      "status": "submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "preflight COMPLETED 0:0 and receipts passed",
         "time/memory/space reviewed within cap"
@@ -149,12 +150,13 @@
         "R3c"
       ],
       "job_slurm": 63246001,
-      "requested_walltime": "00:55:00"
+      "requested_walltime": "00:55:00",
+      "exit_code": "0:0"
     },
     {
       "logical_id": "POSE-SLOTS-benchmark-20261102",
       "stage": "benchmark",
-      "status": "submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "B extraction completes 0:0 before execution (enforced by afterok)",
         "runtime validates complete parent/split receipts and cache SHA before benchmark"
@@ -183,7 +185,8 @@
         "benchmark"
       ],
       "job_slurm": 63246431,
-      "dependency": "afterok:63245968"
+      "dependency": "afterok:63245968",
+      "exit_code": "0:0"
     },
     {
       "logical_id": "POSE-SLOTS-run-20261102",
@@ -215,7 +218,9 @@
         "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
         "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
         "run"
-      ]
+      ],
+      "requested_walltime": "00:15:00",
+      "resource_decision": "readout_resource_decision.json"
     }
   ],
   "execution": "Stage gates are operational decisions before submission, not blind queue dependencies. B/R3c can submit in parallel after passed preflight. No new FM training. Do not execute the entire list automatically."
