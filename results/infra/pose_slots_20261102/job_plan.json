@@ -1,0 +1,212 @@
+{
+  "campaign": "pose-slots-20261102",
+  "code_sha": "c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+  "scientific_plan_sha256": "0dafa6d4a17cbe196b2508ec6cd4a31e32e6e117fd36d2c720ad96caf0145526",
+  "deploy_ref": "refs/heads/deploy/pose-slots-20261102",
+  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102",
+  "scientific_approval": "Simone: vai con 6? puoi parallelizzare?",
+  "submission_route": "semplicione; currently unreachable, direct exception not extended yet",
+  "gpu_hours_cap": 2.25,
+  "cpu_core_hours_cap": 28.333333333333332,
+  "cpu_only_core_hours_cap": 10.333333333333334,
+  "jobs": [
+    {
+      "logical_id": "POSE-SLOTS-checkout-20261102",
+      "stage": "checkout",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "origin and deploy ref SHA verified",
+        "no existing ledger IDs or campaign checkout"
+      ],
+      "gpu_hours_cap": 0,
+      "allocated_cpu_cap": 2,
+      "walltime_cap": "00:10:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-checkout-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "0",
+        "--script-stdin",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/slurm/campaign_checkout.sbatch",
+        "--",
+        "--cpus-per-task=2",
+        "--mem=2G",
+        "--time=00:10:00",
+        "--export=ALL,CAMPAIGN=pose-slots-20261102,CAMPAIGN_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62"
+      ]
+    },
+    {
+      "logical_id": "POSE-SLOTS-preflight-20261102",
+      "stage": "preflight",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "checkout COMPLETED 0:0 and readable frozen code"
+      ],
+      "gpu_hours_cap": 0.25,
+      "allocated_cpu_cap": 8,
+      "walltime_cap": "00:15:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-preflight-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "0.25",
+        "--",
+        "--partition=boost_usr_prod",
+        "--cpus-per-task=8",
+        "--mem=60G",
+        "--time=00:15:00",
+        "--qos=normal",
+        "--gres=gpu:1",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+        "preflight"
+      ]
+    },
+    {
+      "logical_id": "POSE-SLOTS-extract-B-20261102",
+      "stage": "extract-B",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "preflight COMPLETED 0:0 and receipts passed",
+        "time/memory/space reviewed within cap"
+      ],
+      "gpu_hours_cap": 1,
+      "allocated_cpu_cap": 8,
+      "walltime_cap": "01:00:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-extract-B-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "1",
+        "--",
+        "--partition=boost_usr_prod",
+        "--cpus-per-task=8",
+        "--mem=60G",
+        "--time=01:00:00",
+        "--qos=normal",
+        "--gres=gpu:1",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+        "extract",
+        "B"
+      ]
+    },
+    {
+      "logical_id": "POSE-SLOTS-extract-R3c-20261102",
+      "stage": "extract-R3c",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "preflight COMPLETED 0:0 and receipts passed",
+        "time/memory/space reviewed within cap"
+      ],
+      "gpu_hours_cap": 1,
+      "allocated_cpu_cap": 8,
+      "walltime_cap": "01:00:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-extract-R3c-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "1",
+        "--",
+        "--partition=boost_usr_prod",
+        "--cpus-per-task=8",
+        "--mem=60G",
+        "--time=01:00:00",
+        "--qos=normal",
+        "--gres=gpu:1",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+        "extract",
+        "R3c"
+      ]
+    },
+    {
+      "logical_id": "POSE-SLOTS-benchmark-20261102",
+      "stage": "benchmark",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "B extraction COMPLETED 0:0 and parent receipt complete"
+      ],
+      "gpu_hours_cap": 0,
+      "allocated_cpu_cap": 8,
+      "walltime_cap": "00:15:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-benchmark-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "0",
+        "--",
+        "--partition=lrd_all_serial",
+        "--cpus-per-task=8",
+        "--mem=30G",
+        "--time=00:15:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+        "benchmark"
+      ]
+    },
+    {
+      "logical_id": "POSE-SLOTS-run-20261102",
+      "stage": "run",
+      "status": "prepared_not_submitted",
+      "prerequisites": [
+        "both extractions COMPLETED 0:0 and receipts complete",
+        "benchmark examined and resource decision recorded"
+      ],
+      "gpu_hours_cap": 0,
+      "allocated_cpu_cap": 8,
+      "walltime_cap": "01:00:00",
+      "argv_at_cap": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "POSE-SLOTS-run-20261102",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "pose-slots-20261102",
+        "--gpu-ore",
+        "0",
+        "--",
+        "--partition=lrd_all_serial",
+        "--cpus-per-task=8",
+        "--mem=30G",
+        "--time=01:00:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+        "run"
+      ]
+    }
+  ],
+  "execution": "Stage gates are operational decisions before submission, not blind queue dependencies. B/R3c can submit in parallel after passed preflight. No new FM training. Do not execute the entire list automatically."
+}
