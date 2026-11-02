@@ -5707,3 +5707,8 @@ Verifica:129test distinti passati; D8 stesso segnale anche dopoGELU, gradienti a
 5.000 passi sono screening,19.618 endpoint proposto, sempre pari dose; nessuna adozione automatica o verdetto negativo dal solo5k. Criteri2%di miglioramento dinamico e1ppdi margine classificazione sono proposte nuove da congelare nel piano esecutivo, non firme pregresse. R5a150ms va ricordato come precedente senza beneficio generale chiaro; non equivale al nuovo confronto.
 
 [Audit del budget](../results/infra/frontend_window100_20261102/budget_audit.json): residuo massimo documentabile63,292500GPUh e~318,82corehCPU-only. Tre training stimati12,7GPUh a5k,49,9GPUh totali a19618 (include5k), prima dei tempi del nuovo frontend e delle valutazioni. Core allocati nei jobGPU registrati a parte. Nessun job, prenotazione o deploy in questa consegna; prima dell'esecuzione restano timing/memoriaGPU, parità/supporto sui batch train reali, valutatori e tetti completi. L'autorizzazione già ricevuta per il test non va richiesta di nuovo.
+
+
+## 02/11/2026 — Review Claude prima della prova tokenizer
+
+Simone: «bene allora la facciamo revisionare a claude poi la proviamo?» e «preparami il prompt per claude per fargli fare la revisione». Preparato [prompt di review](prompt_claude_review_tokenizer_20261102.md) sul commit scientifico c052792, senza modifiche al runtime. Consegna Claude limitata a review, test CPU pertinenti e registro/commit/push; nessun esperimento o correzione affidata implicitamente a Claude. Dopo la review GPT risolve eventuali rilievi e completa collaudo e preventivo nel perimetro già autorizzato. Nessuna nuova sottomissione in questa consegna.
