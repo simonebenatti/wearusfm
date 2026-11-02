@@ -4999,6 +4999,15 @@ Applicata la formula congelata prima del timing: B60min,R3c55min,1GPU/8CPU/60GiB
 memoria/spazio entro margini. `extraction_resource_decision.json` e ricevute/log archiviati.
 Si procede ai due job indipendenti già approvati, senza modificare codice o criteri.
 
+### 2026-11-02 | GPT | Punto6: estrazioni parallele RUNNING e benchmark accodato | Codice:c9d9c02
+
+B63245968 e R3c63246001 entrambi RUNNING dal15:16:15 CET, unaGPU ciascuno, stessa macchina
+con allocazioni distinte. Risorse1h e55min dopo preventivo pubblicato/verificato in6559e36.
+BenchmarkCPU63246431 PENDING Dependency, afterok da B: receipt/cache verificati a runtime prima
+del timing, solo train B. Snapshot15:19:34 e ricevute del submitter pubblicati.
+Report finale non sottomesso: servono benchmark letto e entrambe le cache complete, poi preventivo CPU.
+Nessun nuovo consenso necessario per quella fase. Nessun training FM, nuovo obiettivo o cambio di codice.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7112,3 +7121,7 @@ B/R3c; i risultati del controllo iniziale devono ancora essere letti.
 Punto6 preflight: nessuna discordanza di media/target trovata nelle80finestre. La parità deve ancora
 essere verificata su ogni patch delle estrazioni complete. Quattro registrazioni non garantiscono
 il tempo su tutto il corpus: i55/60min includono riferimento storico e margine, non un risultato scientifico.
+
+Punto6 alle15:19 del02/11: nessun errore osservato; i job completi sono in corso, quindi nessuna
+conclusione sulle informazioni nei contrasti. La conclusione delle sole estrazioni non equivale
+al confronto dei lettori: rimangono benchmark e report con gate e budget già approvati.

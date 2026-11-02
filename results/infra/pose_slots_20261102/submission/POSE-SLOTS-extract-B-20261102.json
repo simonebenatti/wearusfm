@@ -1,0 +1,50 @@
+{
+ "id": "POSE-SLOTS-extract-B-20261102",
+ "creato": "2026-11-02T15:14:27+01:00",
+ "agente": "gpt",
+ "campagna": "pose-slots-20261102",
+ "gpu_ore_stimate": 1.0,
+ "codice_sha": "c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=POSE-SLOTS-extract-B-20261102",
+  "--comment=wearusfm:POSE-SLOTS-extract-B-20261102",
+  "--partition=boost_usr_prod",
+  "--cpus-per-task=8",
+  "--mem=60G",
+  "--time=01:00:00",
+  "--qos=normal",
+  "--gres=gpu:1",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
+  "extract",
+  "B"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-02T15:14:27+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-02T15:14:27+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-02T15:14:38+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63245968,
+   "uscita": 0,
+   "stdout": "63245968\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 63245968,
+ "uscita": 0,
+ "stdout": "63245968\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

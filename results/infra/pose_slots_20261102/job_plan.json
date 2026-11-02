@@ -13,7 +13,7 @@
     {
       "logical_id": "POSE-SLOTS-checkout-20261102",
       "stage": "checkout",
-      "status": "prepared_not_submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "origin and deploy ref SHA verified",
         "no existing ledger IDs or campaign checkout"
@@ -39,12 +39,14 @@
         "--mem=2G",
         "--time=00:10:00",
         "--export=ALL,CAMPAIGN=pose-slots-20261102,CAMPAIGN_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62"
-      ]
+      ],
+      "job_slurm": 63242629,
+      "exit_code": "0:0"
     },
     {
       "logical_id": "POSE-SLOTS-preflight-20261102",
       "stage": "preflight",
-      "status": "prepared_not_submitted",
+      "status": "COMPLETED",
       "prerequisites": [
         "checkout COMPLETED 0:0 and readable frozen code"
       ],
@@ -72,12 +74,14 @@
         "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
         "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
         "preflight"
-      ]
+      ],
+      "job_slurm": 63242889,
+      "exit_code": "0:0"
     },
     {
       "logical_id": "POSE-SLOTS-extract-B-20261102",
       "stage": "extract-B",
-      "status": "prepared_not_submitted",
+      "status": "submitted",
       "prerequisites": [
         "preflight COMPLETED 0:0 and receipts passed",
         "time/memory/space reviewed within cap"
@@ -107,12 +111,13 @@
         "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
         "extract",
         "B"
-      ]
+      ],
+      "job_slurm": 63245968
     },
     {
       "logical_id": "POSE-SLOTS-extract-R3c-20261102",
       "stage": "extract-R3c",
-      "status": "prepared_not_submitted",
+      "status": "submitted",
       "prerequisites": [
         "preflight COMPLETED 0:0 and receipts passed",
         "time/memory/space reviewed within cap"
@@ -142,14 +147,17 @@
         "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
         "extract",
         "R3c"
-      ]
+      ],
+      "job_slurm": 63246001,
+      "requested_walltime": "00:55:00"
     },
     {
       "logical_id": "POSE-SLOTS-benchmark-20261102",
       "stage": "benchmark",
-      "status": "prepared_not_submitted",
+      "status": "submitted",
       "prerequisites": [
-        "B extraction COMPLETED 0:0 and parent receipt complete"
+        "B extraction completes 0:0 before execution (enforced by afterok)",
+        "runtime validates complete parent/split receipts and cache SHA before benchmark"
       ],
       "gpu_hours_cap": 0,
       "allocated_cpu_cap": 8,
@@ -173,7 +181,9 @@
         "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102,EXPECTED_SHA=c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
         "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102/scripts/slurm/pose_slots.sbatch",
         "benchmark"
-      ]
+      ],
+      "job_slurm": 63246431,
+      "dependency": "afterok:63245968"
     },
     {
       "logical_id": "POSE-SLOTS-run-20261102",

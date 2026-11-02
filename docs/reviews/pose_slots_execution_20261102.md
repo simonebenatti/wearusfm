@@ -8,11 +8,18 @@ Autorizzazione registrata in35cd6e0, origin verificato; deploy separato verifica
 | Fase | Job | Stato verificato | Tempo | Costo noto |
 |---|---:|---|---:|---:|
 | Checkout | 63242629 | COMPLETED0:0 | 26s,2CPU | 0,014444core-ore |
-| Preflight train | 63242889 | Sottomesso | massimo15min,1GPU/8CPU | tetto0,25GPU-ore/2core-ore |
+| Preflight train | 63242889 | COMPLETED0:0 | 168s,1GPU/8CPU | 0,046667GPU-ore /0,373333core-ore |
+| Estrazione B | 63245968 | RUNNING alle15:19 | massimo60min,1GPU/8CPU | tetto1GPU-ora /8core-ore |
+| Estrazione R3c | 63246001 | RUNNING alle15:19 | massimo55min,1GPU/8CPU | tetto0,916667GPU-ore /7,333333core-ore |
+| Benchmark CPU | 63246431 | PENDING Dependency | massimo15min,8CPU | tetto2core-ore |
 
-Nessun altro job della catena è stato sottomesso. Le due estrazioni B/R3c seguono soltanto dopo
-preflight passato e lettura di tempo, memoria e spazio. Benchmark e report mantengono i cancelli
-indicati nella [consegna](../pose_slots_handoff_20261102.md). Tetto totale2,25GPU-ore/28,333core-ore.
+B e R3c sono partiti entrambi alle15:16:15 CET, con una GPU indipendente ciascuno sullo stesso nodo.
+Il benchmark è accodato con `afterok:63245968`: all'avvio verifica ricevute complete e cache B prima
+del timing, senza aprire R3c/val. Le risorse del benchmark sono già fissate; non richiedono altri dati.
+**Report finale non ancora sottomesso:** va letto il benchmark e verificata la conclusione di entrambe
+le estrazioni prima di applicare la formula CPU e pubblicare il relativo preventivo.
+Tetto originario catena2,25GPU-ore/28,333core-ore; con preparazione misurata ed estrazioni richieste,
+massimo residuo+speso1,963333GPU-ore/25,721111core-ore mantenendo il report al tetto1h.
 
 ## Regola per le risorse, prima di leggere i timing
 

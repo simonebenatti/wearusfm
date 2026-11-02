@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-11-02T15:19:34+01:00",
+  "code_sha": "c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+  "jobs": {
+    "63245968": {
+      "state": "RUNNING",
+      "start": "2026-11-02T15:16:15+01:00",
+      "node": "lrdn3302",
+      "elapsed_seconds": 199,
+      "gpus": 1,
+      "time_limit_seconds": 3600
+    },
+    "63246001": {
+      "state": "RUNNING",
+      "start": "2026-11-02T15:16:15+01:00",
+      "node": "lrdn3302",
+      "elapsed_seconds": 199,
+      "gpus": 1,
+      "time_limit_seconds": 3300
+    },
+    "63246431": {
+      "state": "PENDING",
+      "reason": "Dependency",
+      "afterok": 63245968,
+      "cpus": 8,
+      "time_limit_seconds": 900
+    }
+  },
+  "run_report": "not_submitted_until_benchmark_and_both_caches_verified"
+}

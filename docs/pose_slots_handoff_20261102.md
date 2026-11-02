@@ -76,3 +76,11 @@ Prerequisiti: both extractions COMPLETED 0:0 and receipts complete; benchmark ex
 A fine fase: registrare ID, stato Slurm/ExitCode, tempi e CPU/GPU realmente allocate; ricopiare ricevute,
 log e report nel repository, verificare SHA. Le cache e i coefficienti dei lettori restano fuori da Git.
 Prima dell'interpretazione confrontare M384 con il precedente istantaneo. Nessun cambio FM o loss automatico.
+
+## Lanci effettuati
+
+Checkout63242629 e preflight63242889 conclusi con successo; estrazioni B63245968 e R3c63246001
+RUNNING dal15:16:15 CET del02/11. R3c richiede55min dopo timing, contro il tetto60 del comando sopra.
+Benchmark63246431 accodato con `--dopo POSE-SLOTS-extract-B-20261102`; l'afterok e le guardie runtime
+fanno rispettare il prerequisito prima dell'esecuzione. Il report finale rimane non sottomesso.
+Ricevute del submitter e snapshot nel repository; non riutilizzare i comandi dei job già prenotati.
