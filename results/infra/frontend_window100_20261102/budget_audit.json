@@ -1,0 +1,372 @@
+{
+  "protocol": "frontend_window100_local_budget_audit_20261102_v1",
+  "audit_date": "2026-11-02",
+  "scope": "Aggiornamento conservativo dei tetti originari della seconda ondata posa, includendo le diagnostiche successive note. Sola lettura locale; nessun nuovo saldo CINECA o controllo remoto della coda.",
+  "original_caps": {
+    "gpu_hours": 132.0,
+    "cpu_only_core_hours": 531.0,
+    "budget_family": "Finestra 1, Ablation a 30M",
+    "source": "original_caps_and_budget_family",
+    "source_section": "7"
+  },
+  "baseline_through_b19618": {
+    "gpu_hours": 67.55194444444444,
+    "cpu_only_core_hours": 98.86,
+    "sources": [
+      "base_before_b19618",
+      "b19618_accounting",
+      "consolidated_b19618_decision"
+    ],
+    "already_in_base_preflight_job_id": "62575087",
+    "cpu_only_overlap_removed_core_hours": 0.012222222222222223,
+    "notes": "Il cumulato include gli esperimenti, i tentativi falliti e i cancellati della base. Non riaggiungere separatamente B5000, E3, E1/E2, audit o preflight gia inclusi."
+  },
+  "subsequent_costs": {
+    "probe_convergence": {
+      "gpu_hours": 0.0,
+      "cpu_only_core_hours_estimate": 55.0,
+      "exact_cpu_accounting": false,
+      "source": "probe_convergence_delivery",
+      "source_section": "8",
+      "notes": "Consuntivo arrotondato a circa 55 core-ore; la fase B a 12000 iterazioni e gia inclusa."
+    },
+    "psd3": {
+      "gpu_hours": 0.0,
+      "cpu_only_core_hours": 56.75444444444444,
+      "parent_job_count": 27,
+      "source": "psd3_sacct",
+      "job_ids": [
+        "62769337",
+        "62769884",
+        "62770045",
+        "62770053",
+        "62770089",
+        "62770102",
+        "62822106",
+        "62822107",
+        "62822108",
+        "62822110",
+        "62822112",
+        "62822114",
+        "62822118",
+        "62822122",
+        "62822126",
+        "62822129",
+        "62871535",
+        "62871537",
+        "62871538",
+        "62871539",
+        "62871541",
+        "62871543",
+        "62871549",
+        "62871554",
+        "62871557",
+        "62871562",
+        "62946283"
+      ]
+    },
+    "temporal": {
+      "gpu_hours": 0.0,
+      "cpu_only_core_hours": 0.5538888888888889,
+      "source": "temporal_sacct",
+      "parent_jobs": [
+        {
+          "job_id": "63219091",
+          "name": "POSE-TEMP-checkout-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 19,
+          "allocated_cpus": 2,
+          "allocated_gpus": 0
+        },
+        {
+          "job_id": "63227865",
+          "name": "POSE-TEMP-validate-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 46,
+          "allocated_cpus": 2,
+          "allocated_gpus": 0
+        },
+        {
+          "job_id": "63228323",
+          "name": "POSE-TEMP-benchmark-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 24,
+          "allocated_cpus": 8,
+          "allocated_gpus": 0
+        },
+        {
+          "job_id": "63228748",
+          "name": "POSE-TEMP-run-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 209,
+          "allocated_cpus": 8,
+          "allocated_gpus": 0
+        }
+      ]
+    },
+    "pca_existing_oof": {
+      "gpu_hours": 0.0,
+      "leonardo_cpu_only_core_hours": 0.0,
+      "local_cpu_time_not_charged_to_leonardo": true,
+      "source": "pca_collection",
+      "notes": "Confronto di predizioni esistenti sul Mac, senza nuovi fit o job Leonardo."
+    },
+    "slots": {
+      "gpu_hours": 1.1555555555555554,
+      "cpu_only_core_hours": 1.01,
+      "allocated_core_hours_all_jobs": 10.254444444444445,
+      "allocated_core_hours_gpu_jobs": 9.244444444444445,
+      "sources": [
+        "slots_preflight_sacct",
+        "slots_execution_sacct"
+      ],
+      "parent_jobs": [
+        {
+          "job_id": "63242629",
+          "name": "POSE-SLOTS-checkout-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 26,
+          "allocated_cpus": 2,
+          "allocated_gpus": 0
+        },
+        {
+          "job_id": "63242889",
+          "name": "POSE-SLOTS-preflight-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 168,
+          "allocated_cpus": 8,
+          "allocated_gpus": 1
+        },
+        {
+          "job_id": "63245968",
+          "name": "POSE-SLOTS-extract-B-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 1996,
+          "allocated_cpus": 8,
+          "allocated_gpus": 1
+        },
+        {
+          "job_id": "63246001",
+          "name": "POSE-SLOTS-extract-R3c-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 1996,
+          "allocated_cpus": 8,
+          "allocated_gpus": 1
+        },
+        {
+          "job_id": "63246431",
+          "name": "POSE-SLOTS-benchmark-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 33,
+          "allocated_cpus": 8,
+          "allocated_gpus": 0
+        },
+        {
+          "job_id": "63252509",
+          "name": "POSE-SLOTS-run-20261102",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "elapsed_s": 415,
+          "allocated_cpus": 8,
+          "allocated_gpus": 0
+        }
+      ]
+    }
+  },
+  "known_totals": {
+    "gpu_hours": 68.7075,
+    "cpu_only_core_hours_estimate": 212.1783333333333
+  },
+  "remaining_max_known": {
+    "gpu_hours": 63.2925,
+    "cpu_only_core_hours_estimate": 318.821667,
+    "cpu_only_core_hours_display_approx": 318.82,
+    "interpretation": "Massimo residuo documentabile dai consumi locali noti; non saldo del progetto CINECA. Il valore CPU e approssimativo a causa del consuntivo arrotondato delle sonde."
+  },
+  "local_ledger_inventory": {
+    "root": "/Users/simonebenatti/wearusfm_local/jobs",
+    "created_since": "2026-10-29",
+    "relevant_campaign_groups": {
+      "pilot-posa-sonde-20261029": {
+        "entries": 31,
+        "estimated_gpu_hours_sum": 0.0
+      },
+      "pilot-psd3-20261029": {
+        "entries": 28,
+        "estimated_gpu_hours_sum": 0.0
+      },
+      "pose-slots-20261102": {
+        "entries": 6,
+        "estimated_gpu_hours_sum": 2.1666666666666665
+      },
+      "pose-temporal-20261102": {
+        "entries": 4,
+        "estimated_gpu_hours_sum": 0.0
+      }
+    },
+    "all_recent_positive_gpu_estimates": [
+      {
+        "logical_id": "POSE-SLOTS-extract-B-20261102",
+        "job_id": 63245968,
+        "campaign": "pose-slots-20261102",
+        "estimated_gpu_hours": 1.0,
+        "ledger_status": "sottomesso",
+        "path": "/Users/simonebenatti/wearusfm_local/jobs/POSE-SLOTS-extract-B-20261102/state.json",
+        "sha256": "1fc6061d23ba605a71503b9e82546b87b4afc4eecbc904d8cea0c7b1e28114ad"
+      },
+      {
+        "logical_id": "POSE-SLOTS-extract-R3c-20261102",
+        "job_id": 63246001,
+        "campaign": "pose-slots-20261102",
+        "estimated_gpu_hours": 0.9166666666666666,
+        "ledger_status": "sottomesso",
+        "path": "/Users/simonebenatti/wearusfm_local/jobs/POSE-SLOTS-extract-R3c-20261102/state.json",
+        "sha256": "cebe7482f1fe498f7c96b1369a65d87ee885375b5236f40614ff629eca293957"
+      },
+      {
+        "logical_id": "POSE-SLOTS-preflight-20261102",
+        "job_id": 63242889,
+        "campaign": "pose-slots-20261102",
+        "estimated_gpu_hours": 0.25,
+        "ledger_status": "sottomesso",
+        "path": "/Users/simonebenatti/wearusfm_local/jobs/POSE-SLOTS-preflight-20261102/state.json",
+        "sha256": "4bd571e3c2a7e06e725c71e86d5ba66827859b32bf6032070e0f8d37c1c0f991"
+      }
+    ],
+    "notes": "Tutti gli ID GPU recenti trovati sono i tre job slot, conclusi nei sacct archiviati. Lo stato sottomesso del ledger non e una misura della coda attuale. Le stime non sono sottratte oltre ai consuntivi."
+  },
+  "accounting_rules": [
+    "Conteggiare una sola volta ogni job parent; non sommare batch ed extern.",
+    "GPUh = ElapsedRaw per GPU allocate / 3600; CPU-only coreh = ElapsedRaw per CPU allocate / 3600 solo per job senza GPU.",
+    "Le CPU allocate nei job GPU sono registrate separatamente e non sottratte dal tetto CPU-only di 531.",
+    "Sostituire la prenotazione con il consuntivo quando conclusa; non sottrarre entrambi.",
+    "Il residuo storico 56.070833 GPUh era dopo prenotazione massima 23 GPUh; non e il saldo finale dopo B19618.",
+    "Nessun credito automatico dal job di scorta +51 GPUh, dai budget di conferma o da voci infrastruttura/finestra 1; sono voci distinte o condizionate."
+  ],
+  "preliminary_three_arm_scenarios": {
+    "arms": [
+      "A25_core2",
+      "B100_core2",
+      "C100_GELU_core2"
+    ],
+    "objective": "B: ancore 0.2 + posa 1, JEPA 0",
+    "screening_5000": {
+      "name": "Tre bracci fino a 5000 passi",
+      "arms": 3,
+      "expected_training_gpu_hours": 12.7,
+      "preliminary_margin_fraction": 0.15,
+      "training_with_preliminary_margin_gpu_hours": 14.605,
+      "remaining_after_expected_training_gpu_hours": 50.5925,
+      "remaining_after_training_with_margin_gpu_hours": 48.6875,
+      "excludes": [
+        "evaluation",
+        "deployment or preflight GPU allocations",
+        "startup/cleanup not already represented in the rough timing estimate",
+        "retries"
+      ],
+      "status": "non_executable_estimate_until_timing_and_complete_job_caps"
+    },
+    "endpoint_19618_including_5000": {
+      "name": "Tre bracci fino a 19618 passi, inclusi i primi 5000",
+      "arms": 3,
+      "expected_training_gpu_hours": 49.9,
+      "preliminary_margin_fraction": 0.15,
+      "training_with_preliminary_margin_gpu_hours": 57.385,
+      "remaining_after_expected_training_gpu_hours": 13.3925,
+      "remaining_after_training_with_margin_gpu_hours": 5.9075,
+      "excludes": [
+        "evaluation",
+        "deployment or preflight GPU allocations",
+        "startup/cleanup not already represented in the rough timing estimate",
+        "retries"
+      ],
+      "status": "non_executable_estimate_until_timing_and_complete_job_caps",
+      "expected_increment_after_completed_screening_gpu_hours": 37.2,
+      "continuation_requirement": "Riutilizzo dei checkpoint e schedule coerente definito prima del training; non aggiungere di nuovo il costo dei primi 5000 passi."
+    },
+    "restart_after_screening_warning": {
+      "expected_training_gpu_hours": 62.6,
+      "remaining_before_evaluation_and_margin_gpu_hours": 0.6925,
+      "notes": "Se i 12.7 GPUh dello screening fossero seguiti da 49.9 GPUh di nuovi run da zero, resterebbero solo 0.6925 GPUh: nessun margine credibile per valutazione e overhead."
+    },
+    "interpretation": "Lo screening entra ampiamente come stima. L endpoint totale 49.9 GPUh non obbliga aritmeticamente a un estensione, ma deve stare entro un preventivo completo di timing, valutazioni, overhead e tetti. Il presente audit non approva risorse o lanci."
+  },
+  "actions": {
+    "files_written": [
+      "results/infra/frontend_window100_20261102/budget_audit.json"
+    ],
+    "new_jobs": 0,
+    "new_reservations": 0,
+    "remote_calls": 0,
+    "new_budget_approval": false
+  },
+  "sources": {
+    "base_before_b19618": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/b19618_20261028/budget_summary.json",
+      "sha256": "e8c8f824a21e134ff6d2c6952238858d3a97ecda9436e265e1063cfa70d48eb3"
+    },
+    "b19618_accounting": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/b19618_20261029/final/accounting_summary.json",
+      "sha256": "1b7537823595ab4f66325225bbba409eb00f7eec4fcc6044fdbdf73b279db283"
+    },
+    "consolidated_b19618_decision": {
+      "kind": "local_file",
+      "path": "docs/decisioni.md",
+      "sha256": "5ad1da372cbbe42bb29c5514d38807a268dc61267ccb2d32ec8e6b548f471ce0"
+    },
+    "original_caps_and_budget_family": {
+      "kind": "local_file",
+      "path": "docs/pilot_posa_v1.md",
+      "sha256": "a16da66484693146cb0e13caf46a59b3bc0d8fb912bbf143c9fd87252e8dd310"
+    },
+    "probe_convergence_delivery": {
+      "kind": "git_blob",
+      "commit": "d93e22e984fe0b397b28b71fdf27f56ef0b51b69",
+      "path": "docs/sonde_convergenza_20261029.md",
+      "sha256": "62eb0bde733e678630fafc8f5a097d7fc23f22816fa3df7d7584459a0601db3f"
+    },
+    "psd3_delivery": {
+      "kind": "git_blob",
+      "commit": "d93e22e984fe0b397b28b71fdf27f56ef0b51b69",
+      "path": "docs/psd3_risultati_20261030.md",
+      "sha256": "ae2b75f3b52821e21a039aaf52d009dee62a34153e84f08edbb00c027a2b9b50"
+    },
+    "psd3_sacct": {
+      "kind": "git_blob",
+      "commit": "d93e22e984fe0b397b28b71fdf27f56ef0b51b69",
+      "path": "results/infra/psd3_20261029/sacct_psd3_20261030.txt",
+      "sha256": "f0f047845eba0c1dd35c1db4a96545529949a491a3fd5fefa69aa11e188a2030"
+    },
+    "slots_preflight_sacct": {
+      "kind": "local_file",
+      "path": "results/infra/pose_slots_20261102/preflight/sacct.txt",
+      "sha256": "6000e6cc53c552eb5d181e38b61b74820e90c86f40be14fc41a8167482b47d54"
+    },
+    "slots_execution_sacct": {
+      "kind": "local_file",
+      "path": "results/infra/pose_slots_20261102/execution/sacct.txt",
+      "sha256": "0af85cd409b2c18ca92087097af82863eb569363f727cbe39c02d0ab22f31559"
+    },
+    "temporal_sacct": {
+      "kind": "local_file",
+      "path": "results/infra/pose_temporal_20261102/execution/sacct.txt",
+      "sha256": "de8bd49a3180f14bd73446ae2eb2beaa38d99f3ccf67ce7b33472531e6aa6c01"
+    },
+    "pca_collection": {
+      "kind": "local_file",
+      "path": "results/infra/pca_20261102/collection_receipt.json",
+      "sha256": "1c699fb1af6976fa3a3da4d8244f4675c8f1b0b6034eb7c63523b6f4b6e73ed6"
+    }
+  }
+}

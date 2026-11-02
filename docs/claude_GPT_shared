@@ -5038,6 +5038,16 @@ Tabella aggiornata:6a/6b chiusi; 6c non attivato automaticamente. Prossima discu
 
 Il controllo editoriale del critico corregge la dicitura «nove contrasti primari»: il protocollo fissa S384−M384 primario, S384−M48 controllo e S720−M384 secondario. Tutti i nove contrasti sulle finestre dinamiche restano riportati e verificati. Numeri e conclusioni invariati.
 
+### 2026-11-02 | GPT | Tokenizer100/75 e non linearità apprendibile preparati | Base7e1c26f
+
+Simone richiede100ms con overlap, conservando l'anti-aliasing; conferma di procedere e di provare subito dopo il tokenizer temporale non lineare. Scelto passo25/overlap75,40token/s; supporto numerico circa300ms incluse code100ms per lato. Il banco esistente supporta già100ms: aggiunti collaudi specifici senza cambiare i default dei checkpoint. Nuova opzione `tokenizer_activation=gelu`: filtri apprendibili → gain fisso → GELU → proiezione, prima del Perceiver; nessun parametro aggiuntivo rispetto al100lineare.
+
+Confronto preparato25lineare/100lineare/100GELU, tre FM nuovi con obiettivo B invariato (ancore0,2+posa1,JEPA0,RVQspento). Override `masked_loss_radius=2` comune alle query delle ancore, contando allo stesso modo nella loss e nei preconteggi; supporto posa invariato. Configurazioni complete generate e verificate dalla CLI, source/hash in `results/infra/frontend_window100_20261102/comparison_configurations.json`. Default None mantiene supporto storico; guardie resume/branch/frozen proteggono la semantica dei checkpoint.
+
+129test distinti passati, inclusi due DDP (inizialmente bloccati dal socket locale in sandbox, poi passati con la regola di esecuzione già autorizzata);16 test confronto ripetuti dopo aver esplicitato JEPA0. D8 dopoGELU entro2% sullo stesso segnale a2000/1000 e2000/200Hz; gradienti/masking/inizializzazione comune verificati. Protocollo `docs/tokenizer_window_nonlinear_protocol_20261102.md`; review indipendente in `docs/reviews/tokenizer_window_nonlinear_review_20261102.md`.
+
+Preparazione locale conclusa, nessun job remoto nuovo.5.000 passi screening;19.618 endpoint proposto a pari dose, non bocciatura dal solo5k. Stime tre bracci12,7GPUh a5k e49,9GPUh totali a19618, da affinare con timing; residuo locale63,2925GPUh e~318,82coreh CPU-only. Restano collaudo sui batch train reali, tempi/memoria GPU, valutatori congelati e tetti di allocazione prima del lancio. Non serve un secondo consenso per eseguire lo stesso test già approvato; questa consegna non dichiara un lancio effettuato.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7173,3 +7183,9 @@ Il risultato non è «i residuali sono inutili»: S384−M48 migliora 14/15 uten
 ### 2026-11-02 | GPT | Terminologia dei contrasti slot corretta
 
 Il rapporto chiamava erroneamente primari tutti i nove contrasti sulle dinamiche. Ripristinata la gerarchia del protocollo; nessun dato, IC, criterio o conclusione modificato. Nessuna incongruenza restante nella verifica editoriale.
+
+### 2026-11-02 | GPT | Limiti del controllo tokenizer e della verifica locale
+
+Nessun difetto materiale aperto nel codice revisionato. Il nuovo100ms ha5.184 coefficienti frontend in più del25ms, quindi quel contrasto include la regola esistente di scala delle basi;100lineare/GELU è invece a parametri identici. I5campioni a200Hz riguardano il supporto nominale25ms, non tutte le code anti-alias. Core2 protegge il nominale, non le code né il contesto globale delteacher; la garanzia di masking è sul segnale già filtrato ricevuto dal modello. I buchi brevi perdono query: serve misurare il supporto effettivo sui batch train senza cambiare maschere solo nel candidato.
+
+R5storico150ms non aveva prodotto un vantaggio aggregato chiaro con JEPA e quote diverse: non promettere che100ms risolva da solo. Nessun risultato scientifico dei nuovi bracci ancora disponibile. Soglie2%relativo/1pp nel protocollo sono proposte nuove, non firme storiche diSimone; verifica tecnica riuscita non equivale a vantaggio sul compito. BudgetGPU massimo noto63,2925; CPU-only approssimato per consuntivo sonde arrotondato. Non sottrarre i core dei jobGPU dal tettoCPU-only e non sommare costo5k a quello19618 che già lo include. Nessun nuovo saldoCINECA interrogato.

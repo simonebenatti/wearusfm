@@ -1,0 +1,74 @@
+{
+  "status": "LOCAL_TECHNICAL_VALIDATION_PASSED",
+  "date": "2026-11-02",
+  "distinct_tests_passed": 129,
+  "groups": [
+    {
+      "files": [
+        "test_frontend.py",
+        "test_frontend_window.py",
+        "test_tokenizer_activation.py",
+        "test_tokenizer_comparison.py"
+      ],
+      "passed": 62,
+      "seconds": 18.16,
+      "execution": "delegated local agent"
+    },
+    {
+      "files": [
+        "test_tokenizer_comparison.py"
+      ],
+      "passed": 16,
+      "seconds": 4.71,
+      "execution": "rerun after explicit JEPA=0 coverage; included in62"
+    },
+    {
+      "files": [
+        "test_jepa.py",
+        "test_pose_training.py",
+        "test_training_run.py",
+        "test_objective_arms.py"
+      ],
+      "passed_in_sandbox": 65,
+      "sandbox_blocked_before_training": 2,
+      "seconds_initial": 72.58,
+      "execution": "root"
+    },
+    {
+      "files": [
+        "test_objective_arms.py -k torchrun"
+      ],
+      "passed": 2,
+      "seconds": 11.91,
+      "execution": "root, existing approved execution outside sandbox; included in67"
+    }
+  ],
+  "checks": [
+    "default identity and legacy configs preserve historical semantics",
+    "100ms nominal/25ms hop/75ms overlap, fixed antialias context",
+    "same physical signal post-GELU across2000/1000 and2000/200 Hz: each kernel family below2% relative discrepancy",
+    "hidden raw perturbations do not affect student encoded or decoded outputs",
+    "GELU changes superposition and preserves finite nonzero gradients to kernel families and projection",
+    "common initial shared-module weights and RNG state across25/100/GELU;100linear/GELU exact full state parity",
+    "common radius2 selects identical actual queries and every loss denominator, including anchors with JEPA0; pose support unchanged",
+    "radius cannot weaken nominal geometry; resume/branch/frozen cannot silently reinterpret activation",
+    "three full CLI-generated configurations differ only on registered scientific axes; same logging and checkpoint policy"
+  ],
+  "source_sha256": {
+    "src/wearusfm/model/fm.py": "6c91c1795e5506728dc1d163e0546d78c153e7674bdb11296e369337650d77b5",
+    "src/wearusfm/model/patch_tokens.py": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+    "src/wearusfm/training/jepa.py": "91c6e05123368dde56b9674a603fa1ceb7c7587eb0c2d249c60bb38a05d8d19d",
+    "src/wearusfm/training/run.py": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+    "scripts/train_jepa.py": "225c87b4c251904f4b8a43f8ce6c962f6a3b0525ff2bd5aab43f7d228b33609e",
+    "tests/cpu/test_frontend.py": "4fd2a12c3e18a2047669402c914a1883ed7500bed3df2fa66c3c523c3626c897",
+    "tests/cpu/test_frontend_window.py": "77937d9529c8bb3474532135ffcc9435cf18ebd649318e6cb79207e81310590e",
+    "tests/cpu/test_tokenizer_activation.py": "02eefa741018674965a4e4bd9141550df75f9e3b9e3cd953d834a37d3a0c330a",
+    "tests/cpu/test_tokenizer_comparison.py": "19f20462ae8376ec4da8b7a92f822e0257772c3c23b12d8db88c28b70b401699"
+  },
+  "not_yet_tested": [
+    "real train-stream support and hash parity",
+    "CUDA/bf16/DDP throughput and memory for new tokenizer",
+    "scientific performance after paired full-model training"
+  ],
+  "remote_jobs_submitted": []
+}

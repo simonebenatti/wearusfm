@@ -57,11 +57,17 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--jepa-target", choices=["a", "b"], default=None,
                     help="D11: dove si leggono i target del teacher; default quello del preset (b); a = encoder locale (R1 del pilot degli obiettivi)")
     ap.add_argument("--window-ms", type=float, default=None,
-                    help="finestra del kernel del front-end piu' lunga del passo di 25 ms (R5 del pilot degli obiettivi, p.es. 150): la griglia "
-                         "resta la patch, la perdita conta solo i token interamente nascosti; default nessuna (il banco di sempre)")
+                    help="durata nominale del kernel del tokenizer: 100 significa finestra 100 ms, passo 25 ms e overlap 75 ms; "
+                         "la griglia e il contesto anti-alias restano invariati. Le query delle loss mascherate sono ristrette "
+                         "al supporto nominale nascosto; senza flag resta il banco storico da 25 ms")
     ap.add_argument("--jepa-region-target", action="store_true",
                     help="target JEPA per regione nascosta (media del teacher sulla maschera estratta) invece che per token: R2 del pilot degli "
                          "obiettivi; default per token")
+    ap.add_argument("--tokenizer-activation", choices=["identity", "gelu"], default=None,
+                    help="attivazione dopo i filtri temporali apprendibili e il gain, prima della proiezione; default identity storico")
+    ap.add_argument("--masked-loss-radius", type=int, default=None,
+                    help="patch nascoste richieste per lato delle query JEPA/ancore/RVQ; per confronti a supporto comune, "
+                         "mai inferiore al raggio nominale del tokenizer. Default: raggio nominale. Non cambia il supporto posa")
     ap.add_argument("--pose-root", default=None,
                     help="R3 (seconda ondata del pilot degli obiettivi, firmata il 26/10/2026): albero della posa di emg2pose scritto da "
                          "scripts/ingest_emg2pose_pose.py (con pose_stats.json); accende la testa di posa e il suo termine; default nessuno")
@@ -161,6 +167,14 @@ def build_config(args, error=None) -> "R.RunConfig":
             fail(f"--window-ms: {e}")
     if getattr(args, "jepa_region_target", False):
         cfg = replace(cfg, jepa=replace(cfg.jepa, region_target=True))
+    if getattr(args, "tokenizer_activation", None) is not None:
+        cfg = replace(cfg, model=replace(cfg.model, tokenizer_activation=args.tokenizer_activation))
+    if getattr(args, "masked_loss_radius", None) is not None:
+        try:
+            cfg = replace(cfg, jepa=replace(cfg.jepa, masked_loss_radius=args.masked_loss_radius))
+            R.masked_query_radius(cfg.jepa, cfg.model)
+        except ValueError as e:
+            fail(f"--masked-loss-radius: {e}")
     if getattr(args, "mask_shares", None) is not None:
         try:
             shares = [float(x) for x in args.mask_shares.split(":")]
@@ -246,9 +260,13 @@ def main(argv=None) -> int:
     cfg = build_config(args, ap.error)  # dopo i file, come prima dell'estrazione di build_config (stesso ordine degli errori)
     scales = json.loads(args.scales.read_text())["scales"] if args.scales else {}
     if main_process:
+        kernel_ms = cfg.model.window_ms if cfg.model.window_ms is not None else cfg.model.patch_ms
         print(f"preset {args.preset}: {R.count_parameters(cfg.model) / 1e6:.1f} M parametri, {cfg.max_steps} passi, batch {cfg.batch_size}"
               + (f" globale su {ctx.world_size} processi" if ctx else "") + f", dispositivo {args.device}, {len(scales)} scale di sessione, "
-              f"ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}", flush=True)
+              f"ancora RVQ {'accesa: ' + str(args.rvq_codes) if args.rvq_codes else 'spenta'}, "
+              f"tokenizer: finestra {kernel_ms:g} ms, passo {cfg.model.patch_ms:g} ms, "
+              f"overlap {kernel_ms - cfg.model.patch_ms:g} ms, attivazione {cfg.model.tokenizer_activation}, "
+              f"raggio query {R.masked_query_radius(cfg.jepa, cfg.model)} patch", flush=True)
     try:
         summary = R.train(cfg, args.manifest, args.root, args.out_dir, scales=scales, device=args.device, num_workers=args.num_workers,
                           time_limit_s=args.time_limit_s, log=lambda m: print(m, flush=True), window_s=window_s, init_from=args.init_from,
