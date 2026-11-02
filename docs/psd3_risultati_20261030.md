@@ -200,8 +200,11 @@ la compressione e' piu' severa, e il confronto dec−pool ne risente in modo non
 
 Le sonde storiche (logistica su pool768, fase B a 12.000 iterazioni) danno S P1 B 16,995, R3c 17,547; P2 B 79,613, R3c 80,785. Le celle
 pool/logistica di PSD-3 (PCA128) danno P1 B 16,50, R3c 17,09; P2 B 76,75, R3c 79,09: la compressione a 128 costa circa 0,5 punti in P1 e
-1,7-2,9 punti in P2 a entrambi gli encoder. Ricette diverse (griglia, standardizzazione, dimensione): e' un'indicazione dell'ordine di
-grandezza del costo della PCA, non un contrasto fissato; non si attribuisce alla MLP nulla che dipenda da questo preprocessing.
+1,7-2,9 punti in P2 a entrambi gli encoder. Ricette diverse: e' un'indicazione dell'ordine di grandezza del costo della PCA, non un
+contrasto fissato; non si attribuisce alla MLP nulla che dipenda da questo preprocessing. *Correzione del 02/11 dopo la rettifica di GPT
+(63ba143), verificata nel codice:* la griglia C e' la stessa nelle due pipeline (`probe.py` e `psd3_readers.py`, sei valori 0,001-100);
+differiscono la PCA, la precisione del preprocessing (scaler e PCA in float64 contro scaler in float32) e i thread (4 contro 8). Il confronto
+appaiato con le predizioni OOF esistenti delle sonde a 12.000 (su $WORK) resta possibile senza nuovi fit.
 
 ## 9. Costi (consuntivo)
 
@@ -276,8 +279,10 @@ Nessun lancio e' proposto come automatico. In ordine di costo:
 1. **Chiusura descrittiva di PSD-3** con questa lettura nel registro e in `docs/decisioni.md` (fatto in questa consegna, in attesa della
    verifica di GPT): nessun guadagno da lettore non lineare o vista dec a encoder congelato, svantaggio di B su EPN612 confermato.
 2. **Controllo del costo della PCA** (solo se GPT lo ritiene utile): celle logistica su pool768 nella stessa pipeline PSD-3 (stessi fold,
-   stesso bootstrap, contrasto appaiato PCA128−pool768), senza MLP: ordine di 10 core-ore CPU, 0 GPU-ora. Trasformerebbe il confronto
-   indicativo del §8 in un contrasto fissato e direbbe quanto PSD-3 e' limitato dalla compressione.
+   stesso bootstrap, contrasto appaiato PCA128−pool768), senza MLP, 0 GPU-ora. *Correzione del 02/11:* la stima iniziale di ~10 core-ore
+   non era sostenuta; il riferimento osservato e' il rifit pool768 delle sonde (fase B: 26,77 core-ore a 8 thread), e il preventivo va
+   fatto su quella base dopo un timing. Prima, come indica GPT, il confronto appaiato con le predizioni OOF gia' esistenti, senza fit.
+   Trasformerebbe il confronto indicativo del §8 in un contrasto fissato e direbbe quanto PSD-3 e' limitato dalla compressione.
 3. **Passo temporale** gia' previsto come distinto dal protocollo (lettore su feature con asse temporale, cache T × 384 della posa o nuova
    inferenza dai checkpoint congelati): da disegnare e preventivare da GPT; non e' un'estensione di questa prova.
 

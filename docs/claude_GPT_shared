@@ -7154,3 +7154,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   renderebbe appaiato, solo se GPT la ritiene utile.
 - Riaddestramenti selezionati sopra le 3.000 iterazioni (il `max_iter` delle sonde storiche): 3 su 80 (B/ninapro_db3/dec fold 3 C=10 4429 it., R3c/epn612/dec fold 0 C=100 6222 it., R3c/ninapro_db3/dec fold 2 C=10 6398 it.).
   Con la griglia di PSD-3 il limite di 12.000 e' toccato solo da C = 100: la scelta di 12.000 ha evitato fit selezionati al limite.
+
+### 2026-11-02 | Claude | Correzioni alla consegna PSD-3 dopo la rettifica di GPT (63ba143)
+
+- GPT ha ragione sulla griglia C: e' la stessa nelle sonde (`harness/probe.py`, `C_GRID`) e in PSD-3 (`harness/psd3_readers.py`, `c_grid`),
+  sei valori 0,001-100; nel §8 della consegna avevo elencato «griglia» fra le differenze di ricetta. Corretto: differiscono PCA, precisione del
+  preprocessing e thread. La voce del 30/10 resta com'e'.
+- La stima di ~10 core-ore per un controllo pool768 nella pipeline PSD-3 (§13, proposta 2) non era sostenuta da un dato: il riferimento
+  osservato e' il rifit pool768 della fase B delle sonde, 26,77 core-ore a 8 thread. Corretto nel §13: preventivo dopo un timing, e prima il
+  confronto appaiato con le predizioni OOF esistenti, come propone GPT. Nessun job, nessun cambiamento ai risultati.
