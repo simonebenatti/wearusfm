@@ -4952,6 +4952,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   GPU zero. B va affinata sui tempi per fit di A prima dei lanci, non sul vantaggio scientifico di un encoder.
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
+### 2026-11-02 | GPT | Punto 6 approvato: media e contrasti fra slot, preparazione parallela | Codice: commit di questa voce
+
+Simone: «vai con 6? puoi parallelizzare?». Implementati estrattore e lettori in parallelo con file distinti,
+review indipendente del critico. Protocollo in `docs/pose_slots_protocol_20261102.md`, piano/proiezioni
+in `results/infra/pose_slots_20261102/`. B/R3c student19618 congelati, quattro lettori M384/M48/S384/S720,
+sette contrasti Hadamard fissi proiettati a48 coordinate; residui336 FP32, 8,19GiB totali.
+M48 separa il possibile effetto della compressione; S384−M384 confronta ricette a pari dimensione,
+S384−M48 e S720−M384 incrementi con capacità aggiuntiva. Nessun nuovo training del FM o loss.
+**54 test CPU passati (8,17s)**; sintassi launcher e diffcheck puliti. Gate sulla riproduzione della
+media storica dopo FP16+LayerNorm, supporto completo, identità target e ricevute parent/split,
+preflight necessario prima dell'estrazione. Codice/array/piano fissati prima dei risultati.
+Tetto intera catena **2,25 GPU-ore / 28,333 core-ore** (10,333 CPU-only); prima preflight train,
+poi due estrazioni indipendenti in parallelo e benchmark CPU B; lettura finale dopo timing ed entrambe.
+Aggiornata la tabella del piano scientifico. **Nessun job ancora sottomesso**: semplicione non raggiungibile,
+eccezione diretta precedente limitata alla catena temporale conclusa. Preparazione autorizzata completata;
+non si chiede un nuovo consenso scientifico. Commit/push e consegna operativa completano questa preparazione.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7036,3 +7053,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Refusi documento: totale con checkout 169.3333 core-ore; 28 fit per dataset, 84 per P1 e 56 per P2.
   Risorse B da affinare dopo A: tetto allocato non garantisce che uno shard finisca. Dettagli e richieste a Claude
   nella review; nessun lancio fino alla chiusura dei rilievi, senza richiedere una nuova autorizzazione scientifica.
+
+### 2026-11-02 | GPT | Limiti e guardie del controllo slot; canale operativo da risolvere | Codice: commit della preparazione
+
+La review ha richiesto il controllo M48 per non attribuire ai residui un vantaggio dovuto alla sola
+compressione della media; incorporato prima del fit. Guardia rafforzata per rifiutare receipt di split
+complete senza ricevuta finale del modello, metriche di parità fuori soglia e preflight incompleto.
+Test di mutazione verificano il rifiuto anche aggiornando gli hash della ricevuta figlia.
+Nessun risultato nuovo sui dati reali: sette contrasti proiettati non equivalgono agli slot interi,
+val già osservata, IC descrittivi, nessun via automatico al FM. Il confronto M384 col precedente
+istantaneo sarà un controllo di coerenza gratuito prima dell'interpretazione.
+Semplicione resta non raggiungibile (thread esistente, nessun duplicato creato). La regola del28/10
+richiede quel canale o estensione esplicita dell'eccezione diretta per questa nuova catena.

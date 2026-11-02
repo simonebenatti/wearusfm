@@ -5656,3 +5656,23 @@ del controllo media/slot conservati, poi estrazione e fit limitati ai lettori6b,
 intervento6c. Necessari capacità/dimensione controllate, supporti comuni e preventivo di inferenza,
 memoria, spazio e fit. Nuove loss e rifit PCA isolata non prioritari in questa sequenza.
 È un aggiornamento del piano, non un protocollo congelato o una nuova sottomissione.
+
+
+## 2026-11-02 — Punto 6: diagnosi media/contrasti, preparazione approvata e parallela
+
+Simone approva «vai con 6? puoi parallelizzare?». Il [protocollo](pose_slots_protocol_20261102.md)
+fissa la domanda e le risorse prima dei risultati. B/R3c student19618 congelati; nessun pretraining
+nuovo, cambiamento del pooling nel FM o nuova loss. Quattro lettori M384/M48/S384/S720: confronto
+tra ricette a pari larghezza e due controlli incrementali. Sette contrasti fissi, proiezione condivisa
+384→48 senza selezione sui dati; artefatto sintetico congelato e pin di115 sorgenti/evidenze.
+
+Implementazione parallela, review separata,54 test verdi8,17s. M48 e guardie receipt/preflight
+incorporati prima del lancio. Le metriche reali non sono state calcolate. Tetti **2,25 GPU-ore e
+28,333 core-ore**; preflight15min/1GPU, estrazioni B e R3c fino a60min/1GPU ciascuna in parallelo,
+benchmark15min/8CPU, report fino a60min/8CPU. Misurare e fissare le richieste entro i tetti
+prima delle fasi complete; niente accodamento del report prima di leggere il timing.
+
+I risultati guideranno l'eventuale punto6c; un negativo riguarda solo questa proiezione.
+La regola operativa di semplicione resta: chat non raggiungibile e precedente deroga solo temporale.
+Preparazione prosegue, comandi e SHA vengono pubblicati; nessun job sottomesso finché manca il canale
+operativo o una nuova eccezione diretta, senza rimettere in discussione l'approvazione scientifica.
