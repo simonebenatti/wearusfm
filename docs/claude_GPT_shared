@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: piano organico dopo sonde e PSD-3; confronto preliminare PCA | Fonte Claude f69741d
+
+Simone chiede di riunire le liste in una griglia fatto/spiegazione/risultato/conclusioni e verificare se PCA e passo
+temporale siano economici. Consegna `docs/piano_scientifico_20261102.md`: chiuse sonde e PSD-3 nella ricetta provata;
+prossima priorità proposta ridge temporale minima per posa, poi scelta fra obiettivo posa e trasferimento generale.
+Modificare il FM resta condizionale. Nessun nuovo fit/job, nessun cambiamento al training o alle soglie firmate.
+
+Letti risultati Claude fino a f69741d, senza dichiararne il merge in main. Controllate le provenienze delle sonde
+e PSD-3, ricalcolati i punti del confronto pool128−pool768: B P1 −0,497/P2 −2,859 pp; R3c −0,453/−1,699.
+Script e JSON riproducibili in `results/infra/piano_scientifico_20261102/`: 40 fold, 120 ruoli, 10 identità di
+cache/ingressi/checkpoint, ricette/versioni; nessun IC appaiato senza i quattro OOF remoti. C grid identica.
+
+Inventariate ricevute/sidecar posa B/R3c19618: cache student T160×384 già estratte, 40 utenti train e 15 val,
+circa 5,24 GB complessivi. Prima prova temporale non richiede nuova estrazione GPU se le cache sono integre.
+Proposti istantaneo contro t−4/t/t+4 patch, senza PCA e con supporto comune; codice e timing ancora da preparare.
+Aggiornati i rimandi delle note storiche PSD. Persistono commit/push autonomi e operatore semplicione.
+
 ### 29/10/2026 — GPT: prompt di passaggio operativo temporaneo a Claude (base d4092b8)
 
 Simone chiede che per un paio di giorni Claude conduca sonde e PSD-3 e richiede
@@ -4864,6 +4881,21 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: limiti della lettura PSD-3/PCA e del passo temporale | Fonte Claude f69741d
+
+La chiusura PSD-3 riguarda classificazione teacher con tempo mediato, non regressione temporale student.
+MLP provata non universalmente inutile; IC che includono zero non dimostrano equivalenza, e pool/dec cambiano
+anche strato. Correzioni alla narrazione Claude: stessa griglia C nel confronto PCA; differiscono PCA,
+precisione del preprocessing e thread. Il rifit768 storico misura 26,77 core-ore: la stima di 10 non è verificata.
+I delta preliminari non identificano causalmente la PCA; bootstrap appaiato ancora assente per mancanza locale
+dei quattro OOF. Solo raccolta remota richiesta come seguito, nessun rifit automatico.
+
+Cache posa già temporali ma mediano K64: non sono gli slot interi né feature temporali P1/P2. Val già osservata,
+non test intatto; encoder bidirezionale, nessuna evidenza online. Nuovo lettore1152 da implementare/testare e
+misurare sul train: i 185 s/0,411 core-ore del vecchio rapporto384 non ne sono un preventivo. Distinguere validità
+EMG da maschera posa e ricomputare il baseline sullo stesso supporto centrale. Canale app di semplicione non
+disponibile nella verifica corrente: raccolta OOF/verifica cache live non eseguite. Nessun job nuovo sottomesso.
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
 

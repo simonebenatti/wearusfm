@@ -5565,3 +5565,27 @@ selezionare avvio/iperparametri PSD-3; eventuale aumento simmetrico max_iter sol
 motivato da diagnostica train-only e congelato prima dei risultati. Risorse
 affinate dal timing entro il residuo. Nessun nuovo esperimento, lancio o
 modifica al runtime effettuato per scrivere questo prompt.
+
+## 02/11/2026 — Piano scientifico riordinato dopo sonde e PSD-3 (GPT)
+
+Su richiesta di Simone, letta la consegna Claude fino a f69741d e pubblicato
+`docs/piano_scientifico_20261102.md`: quadro fatto/spiegazione/risultato/conclusioni,
+separando classificazione teacher mediata nel tempo dalla regressione temporale student.
+Sonde convergenti non cambiano la lettura B/R3c; PSD-3 non mostra un guadagno aggregato
+dei lettori provati, con limiti di PCA e dose. Nessun nuovo training o via a R3 completo.
+
+Eseguito localmente solo un confronto preliminare delle pipeline pool128/pool768,
+salvato con script e provenienze in `results/infra/piano_scientifico_20261102/`.
+Delta P1/P2: B −0,497/−2,859 pp; R3c −0,453/−1,699. Griglia C uguale; PCA,
+precisione e thread diversi. Non isolato l'effetto PCA, IC appaiati ancora assenti:
+quattro OOF da raccogliere tramite semplicione. Rifit768 storico circa 27 core-ore,
+non 10: nessun nuovo rifit disposto automaticamente per questa ricognizione.
+
+Priorità proposta: piccolo lettore temporale sui latenti posa già estratti,
+istantaneo contro −4/0/+4 patch per B/R3c, senza PCA, train-only per selezione,
+supporti comuni e lettura esplorativa sui 15 utenti val già osservati. Nessuna GPU
+necessaria se le cache sono integre; codice e timing train-only da preparare.
+Il confronto PCA con output esistenti è accessorio e non un cancello per questo passo.
+Modifica della testa/FM e nuove loss restano decisioni successive guidate dalla domanda
+(posa dinamica o trasferimento generale), non una sequenza automatica di training.
+Nessun job sottomesso oggi; canale operativo semplicione non disponibile nella verifica.
