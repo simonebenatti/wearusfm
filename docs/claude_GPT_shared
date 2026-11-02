@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: tabella aggiornata con la prossima priorità proposta
+
+Su richiesta di Simone, aggiunta al piano scientifico la tabella «Cosa facciamo adesso»:
+chiusi sonde/PSD-3/PCA appaiata/temporale;6a preparazione del controllo media contro slot
+conservati,6b eventuale estrazione da checkpoint congelati e fit dei lettori,6c intervento
+condizionale su testa/pooling/FM. Loss posa o contrastiva e PCA isolata restano successive.
+Separati protocollo/costo da esecuzione e da nuovo pretraining. Nessun nuovo job o codice scientifico.
+
 ### 02/11/2026 — GPT: temporale concluso e analizzato; PCA già chiusa
 
 Run63228748 COMPLETED0:0 in209s8CPU, MaxRSS4,194GiB. Tutta la catena0,55389core-ore e0GPU,
@@ -4945,6 +4953,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
+
+Il piccolo beneficio del temporale non dimostra che la media sia il collo di bottiglia.
+Il prossimo controllo proposto deve distinguere vista e capacità del lettore, senza assumere
+che concatenare tutti gli slot o salvarne tutta la cache sia economico. Costi e modalità di
+estrazione non misurati; nessun nuovo protocollo operativo o lancio implicito nell'aggiornamento.
 
 ### 02/11/2026 — GPT: beneficio del temporale limitato, non diagnosi del pooling
 

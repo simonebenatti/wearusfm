@@ -5648,3 +5648,11 @@ questo non dimostra beneficio generale del FM né identifica la media sui64slot 
 PCA e temporale approvati sono conclusi; nessun nuovo fitPCA isolato, estrazione, modifica loss
 o trainingFM disposto automaticamente. Prossima decisione: obiettivo posa dinamica o trasferimento
 generale, con eventuale controllo dedicato degli slot prima di attribuire un effetto al pooling.
+
+### 02/11/2026 — Aggiornamento della tabella: prossima priorità proposta media/slot
+
+Simone chiede di aggiornare la tabella con il seguito. Nel piano scientifico, preparazione6a
+del controllo media/slot conservati, poi estrazione e fit limitati ai lettori6b, infine eventuale
+intervento6c. Necessari capacità/dimensione controllate, supporti comuni e preventivo di inferenza,
+memoria, spazio e fit. Nuove loss e rifit PCA isolata non prioritari in questa sequenza.
+È un aggiornamento del piano, non un protocollo congelato o una nuova sottomissione.
