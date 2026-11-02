@@ -47,3 +47,11 @@ Spazio libero verificato ampiamente maggiore dei20GiB riservati per payload e ma
 Ricevute, log, accounting e decisione macchina archiviati sotto `results/infra/pose_slots_20261102/`.
 Il preflight non misura metriche scientifiche di posa sulla val; verifica identità e risorse.
 Nessun allargamento delle soglie o cambiamento del protocollo.
+
+## Prosecuzione della catena
+
+Attivo il controllo nella stessa chat `completa-wearusfm-punto-6`: segue soltanto i job sopra,
+verifica benchmark/entrambe le cache, pubblica il preventivo CPU e sottomette il report già autorizzato.
+Poi raccoglie e rivede i risultati, aggiorna tabella/registro e committa/pusha. Nessun nuovo esperimento
+scientifico. Si disattiva alla conclusione o quando serve una nuova decisione; resta silenzioso
+finché non vi sono cambiamenti significativi. Non duplica semplicione né i job già prenotati.
