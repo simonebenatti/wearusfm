@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: implementazione parallela temporale e PCA approvata; review completata
+
+Simone approva «procedi [...] tutto tu [...] in parallelo [...] lettore temporale e PCA». Preparati
+`scripts/pose_temporal_readout.py` (validate, timing train-only, quattro celle) e
+`scripts/pca_existing_oof_compare.py` (output esistenti, nessun fit). Protocollo congelato in
+`docs/pose_temporal_pca_protocol_20261102.md`; review in `docs/reviews/pose_temporal_pca_review_20261102.md`.
+Critico senza rilievi bloccanti; 35 test CPU passati, launcher sintatticamente valido. Piano con pin
+di quattro cache temporali, 40 utenti train in 2 fold e sorgenti, generato in
+`results/infra/pose_temporal_20261102/plan.json`. Tetto catena temporale20,5 core-ore e0 GPU-ore;
+run completo subordinato al timing train-only. Nessun lancio ancora.
+
+Recuperati in sola lettura via SCP i quattro OOF delle sonde a12.000, tutti con SHA originali,
+in `/private/tmp/wearusfm-pca-inputs-20261102/` (array fuori dal repo). Validazione reale di
+righe/target/soggetti/fold rispetto ai dieci shard PSD-3 riuscita; bootstrap da eseguire dopo
+questo commit di protocollo. Il recupero dati è distinto dalle sottomissioni, affidate a semplicione.
+
 ### 02/11/2026 — GPT: piano organico dopo sonde e PSD-3; confronto preliminare PCA | Fonte Claude f69741d
 
 Simone chiede di riunire le liste in una griglia fatto/spiegazione/risultato/conclusioni e verificare se PCA e passo
@@ -4881,6 +4897,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: disponibilità operatore e limiti del confronto approvato
+
+La chat semplicione `01a18355-6241-7c53-98fe-fbc8450c2b30` non è raggiungibile via strumenti app
+(host durable non disponibile) e non compare negli elenchi attivi/archiviati consultati. Nessun
+nuovo agente omonimo, nessun lancio diretto sostitutivo. Codice, protocollo, test e output PCA
+possono avanzare autonomamente; la sottomissione temporale richiede il ripristino del canale o
+una nuova indicazione operativa di Simone. SSH in sola lettura funziona dopo l'escalation del
+sandbox di rete; questo non cambia la regola sulle sottomissioni.
+
+Il temporale legge latenti già mediati sui64 slot e usa più parametri dell'istantaneo; val già
+osservata, nessuna conclusione online. Il bootstrap PCA è esplorativo su pipeline note, non
+ablazione causale della sola PCA. Il rifit768 a implementazione identica resta separato e non
+è stato disposto automaticamente. Nessun nuovo obiettivo di training o FM è stato cambiato.
 
 ### 02/11/2026 — GPT: limiti della lettura PSD-3/PCA e del passo temporale | Fonte Claude f69741d
 

@@ -5589,3 +5589,16 @@ Il confronto PCA con output esistenti è accessorio e non un cancello per questo
 Modifica della testa/FM e nuove loss restano decisioni successive guidate dalla domanda
 (posa dinamica o trasferimento generale), non una sequenza automatica di training.
 Nessun job sottomesso oggi; canale operativo semplicione non disponibile nella verifica.
+
+### 02/11/2026 — Approvata l'esecuzione parallela di lettore temporale e controllo PCA
+
+Simone: «va bene procedi, puoi fare tutto tu? in paralello? lettore temporale e PCA?».
+GPT implementa e verifica entrambi. Protocollo `docs/pose_temporal_pca_protocol_20261102.md`,
+review indipendente favorevole del critico e35 test verdi. Temporal: cache esistenti, ridge
+istantanea contro ±4 patch, supporto comune, CV utenti train-only, bootstrap2000/20261102,
+nessuna PCA o aggiornamento dell'encoder. Tetto CPU20,5core-ore e0GPU-ore, con timing train-only
+prima di fissare risorse del run completo. Lancio tramite semplicione, senza nuovo via scientifico.
+PCA: recupero quattro OOF originali riuscito; pin e pairing reale verificati; primo seguito è
+bootstrap delle pipeline già eseguite, nessun nuovo fit. Confronto della sola PCA isolata resta
+un eventuale esperimento separato. Nessun job sottomesso in questo commit; operatore app non
+raggiungibile, preparazione e analisi locale proseguono.
