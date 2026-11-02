@@ -1,5 +1,7 @@
 # Lettore temporale e controllo PCA — protocollo del 02/11/2026
 
+**Aggiornamento operativo, senza modifica scientifica:** Simone autorizza «il lancio diretto di questa catena». GPT può quindi sottomettere il temporale attraverso submitter/ledger, in eccezione limitata alla regola di semplicione. Restano identici codice scientifico congelato, criteri e tetto di 20,5 core-ore/0 GPU.
+
 Simone approva il [piano scientifico](piano_scientifico_20261102.md), commit `63ba143`, e chiede di eseguire i due lavori in parallelo: «va bene procedi, puoi fare tutto tu? in paralello? lettore temporale e PCA?». GPT implementa, verifica, pubblica e analizza; la nuova parte scientifica passa dal critico prima dell'esecuzione. Sottomissioni Leonardo tramite semplicione e submitter/ledger, senza nuovo consenso per questo piano. Nessun training del FM, estrazione GPU, modifica alle loss o lancio di R3 completo è incluso.
 
 ## A. Lettore temporale della posa

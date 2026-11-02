@@ -1,5 +1,7 @@
 # Consegna operativa: lettore temporale approvato — 02/11/2026
 
+**Eccezione operativa autorizzata il 02/11:** Simone risponde «Autorizzo il lancio diretto di questa catena». GPT esegue questa sola catena tramite submitter e ledger comuni; protocollo, codice congelato e tetti invariati. L'indisponibilità di semplicione non blocca più questi lanci. Il testo sotto conserva la consegna originaria; ID e stati aggiornati nei materiali della campagna.
+
 Destinatario: chat esistente **semplicione**, thread `01a18355-6241-7c53-98fe-fbc8450c2b30`. L'utente ha approvato esecuzione e parallelismo con il controllo PCA; non serve un nuovo via scientifico. Questa consegna resta preparata: nessun ID prenotato/sottomesso da GPT. La chat non è attualmente raggiungibile dagli strumenti app; non creare un agente sostitutivo omonimo.
 
 Codice congelato da eseguire: **`440af702ac3ec00feb52549acb1b4935251dce38`**, già su origin, branch `codex/r3-long-collaudo-20261028`. Non eseguire da HEAD mobile. Protocollo `docs/pose_temporal_pca_protocol_20261102.md`, review `docs/reviews/pose_temporal_pca_review_20261102.md`;35 test verdi. Quattro cache temporali originali ricontrollate su Leonardo via SHA256, tutte integre. Non occorre GPU né nuovo pretraining.

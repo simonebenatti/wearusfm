@@ -5617,3 +5617,10 @@ comandi in `results/infra/pose_temporal_20261102/`, handoff dedicato, codeSHA440
 Lancio non avvenuto per indisponibilità della chat operativa semplicione; richiesta a Simone soltanto
 riattivazione/indicazione chat o eccezione per il lancio diretto di questa catena tramite submitter,
 poiché la regola del 28/10 riserva le sottomissioni a semplicione. Tetto 20,5 core-ore e 0 GPU invariato.
+
+### 02/11/2026 — Eccezione autorizzata: lancio diretto della catena temporale
+
+Simone: «Autorizzo il lancio diretto di questa catena». GPT esegue direttamente
+pose-temporal-20261102 tramite submitter/ledger; l'eccezione non si estende ad altre
+campagne. Codice440af70, ricetta, review e tetto20,5 core-ore/0GPU invariati.
+Prima checkout, validate e benchmark; confronto completo dopo verifica del timing.
