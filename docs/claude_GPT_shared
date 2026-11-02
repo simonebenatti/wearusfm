@@ -5075,6 +5075,41 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   passo temporale) in `docs/psd3_risultati_20261030.md`; risultati in `results/infra/psd3_20261029/` (compare.json, rapporto JSON/MD,
   inventario, sacct). In attesa della verifica di GPT.
 
+### 2026-11-02 | Claude | Review della proposta tokenizer di GPT (c052792): concordo con modifiche
+
+- **Richiesta di Simone** (prompt di GPT `docs/prompt_claude_review_tokenizer_20261102.md`, 532d177): «Ti chiedo una review scientifica e
+  tecnica della proposta di GPT sul tokenizer di WearUsFM, prima di provarla. Questa consegna e' SOLO DI REVIEW: non modificare il codice, non
+  lanciare job, training, estrazioni o nuovi esperimenti. Puoi rieseguire test CPU pertinenti.» Letto c052792 con `git show` (protocollo,
+  piano scientifico, i sei JSON di `results/infra/frontend_window100_20261102/`, diff di codice e test, percorsi invariati: frontend, encode e
+  azzeramento, encoder locale, Perceiver, decoder, masking, loader, resume/branch/frozen). Nessun merge, nessuna modifica al worktree di GPT,
+  nessun job, nessun dato. Il codice di modello e training in 7e1c26f e' identico al mio ramo (d93e22e).
+- **Eseguito sul Mac:** 87 test CPU di c052792 passati in 28 s (`test_frontend`, `test_frontend_window`, `test_tokenizer_activation`,
+  `test_tokenizer_comparison`, `test_jepa`; i due DDP non ripetuti). Tre misure su rumore sintetico e sul generatore di maschere del repo,
+  riproducibili con `scripts/check_tokenizer_window_review.py` (aggiunto, nessun dataset): rango effettivo del banco per fs (a 200 Hz 7-8
+  numeri indipendenti per token con 25 ms, 19-22 con 100 ms; a 2 kHz 36-40 contro 55-64; energia oltre 2,5 patch dal centro <= 0,1 %);
+  deviazione per feature dell'ingresso della GELU (banco 100 ms: 40 uscite su 64, spline e SIREN, fra 0,07 e 0,3 a 1-2 kHz, dove la GELU e'
+  quasi 0,5·x; Fourier 0,9-2,3); query con raggio 2 rispetto alle patch nascoste (77-81 %; corte 22-28 %, medie 67-70 %, lunghe 87-95 %,
+  spaziali 100 %; nessuna finestra senza query a 1-4 s, quattro montaggi).
+- **Verdetto: concordo con modifiche**, in `docs/reviews/claude_review_tokenizer_20261102.md`. Il codice fa cio' che dichiara (posizione della
+  GELU, gradienti, gain, scala delle basi, default storici, masking prima del frontend, conteggi = denominatori, posa invariata, guardie
+  resume/branch/frozen): nessun difetto d'implementazione. Difetti di disegno: (1) il raggio 2 non ha meccanismo con l'obiettivo B (token
+  nascosti mai chiavi nell'encoder locale e nel Perceiver, ancore dal grezzo, posa indipendente): cambia solo il supporto della perdita, quindi
+  il compito non e' piu' quello di B, il B storico esce dai riferimenti, e `share_short` 0,15 resta in contraddizione con lo scostamento
+  firmato per R5; (2) punto di lavoro della GELU non scelto: rettifica la sola famiglia di Fourier; (3) endpoint primario (posa a 2 kHz) dove
+  l'ipotesi dei 200 Hz predice l'effetto piu' piccolo, EPN-612 dentro un secondario, con R5 a −2,45 pp su EPN-612; (4) criteri con
+  l'incertezza sbagliata (IC per utente contro variabilita' fra pretraining a seme unico; margine di 1 pp irraggiungibile in P2 con IC di
+  semiampiezza ~1,8 pp); (5) preventivo: tre bracci a 19.618 con margine 15 % e valutazioni (~2,2 GPU-ora per modello-endpoint, da B19618)
+  superano il residuo di 63,29 GPU-ora.
+- **Correzioni indispensabili proposte (decisione e implementazione a GPT, firma a Simone):** raggio 0 nei tre bracci, con T25-L replica di B
+  come pavimento di rumore e B5k/B19618 riferimenti conservati (override sotto `core_radius` ammesso solo con `jepa_weight` 0), oppure raggio
+  2 con `share_short` 0 e quote rinormalizzate come R5 dichiarando la perdita del riferimento; co-primario congelato su EPN-612 (regola a due
+  lati) e UCI secondario; standardizzazione fissa per feature (buffer da batch train) prima dell'attivazione in tutti i bracci, oppure
+  pretesa ridotta per T100-G; criteri scritti prima (2 % piu' pavimento di rumore; P1 decide la non inferiorita', P2 descrittivo con la sola
+  regola di danno); preventivo con valutazioni e ripiego di budget dichiarato prima (T25-L a 5.000, T100-L/G a 19.618 con B19618 come
+  riferimento: ~51 GPU-ora). Facoltativi: bordo 4 patch, rango e gradienti per famiglia a inizio/fine, quadratura delle coppie di Fourier
+  come passo successivo. Confronto con la review del critico: concordo sul codice; le domande di disegno non vi erano trattate. Nessun lancio,
+  nessuna modifica al runtime; consegna sul mio ramo, push su origin.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7163,3 +7198,31 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La stima di ~10 core-ore per un controllo pool768 nella pipeline PSD-3 (§13, proposta 2) non era sostenuta da un dato: il riferimento
   osservato e' il rifit pool768 della fase B delle sonde, 26,77 core-ore a 8 thread. Corretto nel §13: preventivo dopo un timing, e prima il
   confronto appaiato con le predizioni OOF esistenti, come propone GPT. Nessun job, nessun cambiamento ai risultati.
+
+### 2026-11-02 | Claude | Problemi trovati nella proposta tokenizer di GPT (c052792)
+
+- **Raggio comune 2 senza meccanismo con l'obiettivo B.** `core_hidden` restringe solo le query; `zero_hidden_samples` azzera i campioni
+  nascosti con qualunque raggio; un token nascosto non e' mai chiave (`local_encoder.py:98-101`, `perceiver.py:57-58`), il decoder interroga
+  per identita' e istante, le ancore vengono dal grezzo: il «supporto nominale» protetto dal raggio e' un tensore che nessuna perdita legge.
+  Effetto reale: circa un quinto delle patch nascoste e tre quarti di quelle delle maschere corte escono dalla perdita (stima col generatore
+  del repo), T25-L non e' B, B non e' piu' un riferimento, `share_short` 0,15 contraddice lo scostamento firmato per R5 (24/10). Con JEPA
+  acceso il raggio tornerebbe necessario (bersaglio del teacher).
+- **Punto di lavoro della GELU.** `fe_gain` e' scalare e porta a 1 la deviazione globale; per feature, nel banco da 100 ms spline e SIREN
+  stanno a 0,07-0,3 (1-2 kHz) e Fourier a 0,9-2,3: la GELU rettifica un terzo del banco e lascia gli altri due terzi quasi lineari (0,5·x).
+  Il test D8 dopo GELU e' corretto ma per costruzione non tocca questo punto. Rimedio minimo: standardizzazione fissa per feature prima
+  dell'attivazione in tutti i bracci (come la normalizzazione prima della GELU di wav2vec 2.0), misurata sui batch train del collaudo.
+- **Endpoint e ipotesi.** La finestra lunga vale 7-8 → 19-22 gradi di liberta' per token a 200 Hz e 36-40 → 55-64 a 2 kHz: l'ipotesi di
+  Simone predice l'effetto su EPN-612 e UCI, il primario e' la posa su emg2pose a 2 kHz. R5 su EPN-612: −2,45 [−2,97; −1,92] pool e −2,89
+  dec. Senza un co-primario su EPN-612 un nullo sulla posa verra' letto come «la finestra non serve» senza averlo misurato.
+- **Criteri.** L'IC del bootstrap per utente (risoluzione ~±0,25 % relativo nel lettore temporale) non e' l'incertezza fra due pretraining a
+  seme unico (B e R3c distano il 15 %); il margine di non inferiorita' di 1 pp in P2 richiede, con semiampiezze ~1,8 pp, una stima sopra
+  +0,8 pp: in pratica un miglioramento. Il protocollo ammette «non dimostrata» ma non dice che e' l'esito atteso anche per un braccio neutro.
+- **Preventivo.** 49,9 GPU-ora di training ×1,15 = 57,4, piu' ~2,2 GPU-ora di valutazioni per modello-endpoint (B19618: 14,62 totali contro
+  12,39 di training al ritmo di B5k) e preflight: ~66 contro 63,29 di residuo. Il ripiego (T25-L a 5.000, T100-L/G a 19.618 con B19618
+  riferimento, ~51) va scritto prima, non dopo lo screening.
+- **Minori.** Soglia `radius >= core_radius` da condizionare a JEPA acceso per permettere il raggio 0; checkpoint nuovi illeggibili da checkout
+  precedenti a c052792 (campo `tokenizer_activation`): valutazioni dei nuovi bracci da checkout ≥ c052792; bordo 6 patch non necessario per
+  l'energia dei kernel (4 bastano) ma innocuo.
+- **Limiti della mia verifica.** Niente GPU, dati reali o DDP; misure su pesi iniziali, rumore sintetico e maschere generate (ordini di
+  grandezza, da rifare sui batch veri); fonti dell'audit del budget non riverificate oltre l'aritmetica; parita' dello stream fra B e un
+  T25-L a raggio 0 non verificabile dai log di B (`log_batch_origin` spento), vale per costruzione.
