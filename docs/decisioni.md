@@ -5637,3 +5637,14 @@ Documentazione: docs/reviews/pose_temporal_execution_20261102.md, resource_decis
 Letto d93e22e di Claude: nessuna modifica scientifica necessaria; OOF già recuperati e
 bootstrap PCA concluso. Ogni fase sottomessa dopo verifica del precedente COMPLETED0:0,
 senza afterok obsoleti e senza retry. Nessun nuovo criterio basato sui risultati val.
+
+### 02/11/2026 — Chiusura temporale/PCA, nessuna prosecuzione automatica del FM
+
+Run63228748 COMPLETED0:0,209s8CPU; catena0,55389core-ore e0GPU. Risultati e review indipendente
+in docs/reviews/pose_temporal_results_20261102.md. B errore dinamico0,859512→0,855321
+(delta−0,004191 IC[−0,006329;−0,001939]); R3c0,986567→0,961495. Beneficio piccolo perB,
+varianza predetta diminuisce e MAE assoluta non migliora. B resta migliore sulla posa;
+questo non dimostra beneficio generale del FM né identifica la media sui64slot come causa.
+PCA e temporale approvati sono conclusi; nessun nuovo fitPCA isolato, estrazione, modifica loss
+o trainingFM disposto automaticamente. Prossima decisione: obiettivo posa dinamica o trasferimento
+generale, con eventuale controllo dedicato degli slot prima di attribuire un effetto al pooling.

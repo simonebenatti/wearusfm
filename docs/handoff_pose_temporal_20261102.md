@@ -1,5 +1,11 @@
 # Consegna operativa: lettore temporale approvato — 02/11/2026
 
+**Catena conclusa: non rilanciare.** Checkout63219091, validate63227865, benchmark63228323
+e confronto completo63228748 tutti COMPLETED0:0. Totale0,55389core-ore e0GPU.
+Risultati in `reviews/pose_temporal_results_20261102.md`, consuntivo in
+`reviews/pose_temporal_execution_20261102.md` e `results/infra/pose_temporal_20261102/`.
+I comandi sotto sono la consegna originaria, non una richiesta di seconda esecuzione.
+
 **Eccezione operativa autorizzata il 02/11:** Simone risponde «Autorizzo il lancio diretto di questa catena». GPT esegue questa sola catena tramite submitter e ledger comuni; protocollo, codice congelato e tetti invariati. L'indisponibilità di semplicione non blocca più questi lanci. Il testo sotto conserva la consegna originaria; ID e stati aggiornati nei materiali della campagna.
 
 Destinatario: chat esistente **semplicione**, thread `01a18355-6241-7c53-98fe-fbc8450c2b30`. L'utente ha approvato esecuzione e parallelismo con il controllo PCA; non serve un nuovo via scientifico. Questa consegna resta preparata: nessun ID prenotato/sottomesso da GPT. La chat non è attualmente raggiungibile dagli strumenti app; non creare un agente sostitutivo omonimo.

@@ -1,5 +1,9 @@
 # Lettore temporale e controllo PCA — protocollo del 02/11/2026
 
+**Esecuzione conclusa:** [risultati temporali](reviews/pose_temporal_results_20261102.md) e
+[confronto appaiato PCA](reviews/pca_existing_results_20261102.md). Catena temporale0,55389core-ore,
+0GPU, quattro job COMPLETED0:0. Il disegno scientifico sotto resta quello congelato prima dei fit.
+
 **Aggiornamento operativo, senza modifica scientifica:** Simone autorizza «il lancio diretto di questa catena». GPT può quindi sottomettere il temporale attraverso submitter/ledger, in eccezione limitata alla regola di semplicione. Restano identici codice scientifico congelato, criteri e tetto di 20,5 core-ore/0 GPU.
 
 Simone approva il [piano scientifico](piano_scientifico_20261102.md), commit `63ba143`, e chiede di eseguire i due lavori in parallelo: «va bene procedi, puoi fare tutto tu? in paralello? lettore temporale e PCA?». GPT implementa, verifica, pubblica e analizza; la nuova parte scientifica passa dal critico prima dell'esecuzione. Sottomissioni Leonardo tramite semplicione e submitter/ledger, senza nuovo consenso per questo piano. Nessun training del FM, estrazione GPU, modifica alle loss o lancio di R3 completo è incluso.
@@ -49,4 +53,4 @@ Preparazione, test e letture dei due rami possono procedere in parallelo perché
 
 La PCA si analizza localmente sugli output, a un thread, senza fit o GPU. Se fosse necessaria l'esecuzione del bootstrap su Leonardo, preparare un job CPU separato e contabilizzato prima di lanciarlo; non eseguire calcolo pesante sul login node. Il residuo della campagna dopo sonde/PSD-3 era circa320 core-ore e64,45 GPU-ore: verificare il ledger prima di prenotare. Nessuna spesa già effettuata viene ricontata.
 
-Per i nuovi lanci: SHA completo pubblicato, checkout di campagna dedicato, submitter unico e ledger, output sotto `$WORK/wearusfm_runs/results/pose_temporal_20261102/`, log esterni. La chat semplicione non era raggiungibile all'avvio di questa preparazione; nessun agente omonimo è stato creato e nessuna sottomissione diretta sostitutiva è autorizzata da questo documento. Il recupero in sola lettura dei quattro OOF PCA è invece riuscito e i loro SHA coincidono con quelli originali.
+Per la catena: SHA completo pubblicato, checkout di campagna dedicato, submitter unico e ledger, output sotto `$WORK/wearusfm_runs/results/pose_temporal_20261102/`, log esterni. La chat semplicione non era raggiungibile all'avvio; Simone ha poi autorizzato direttamente GPT per questa sola catena, come registrato sopra. Nessun agente omonimo creato. Tutte le sottomissioni sono concluse: non duplicarle. Il recupero in sola lettura dei quattro OOF PCA è riuscito e i loro SHA coincidono con quelli originali.

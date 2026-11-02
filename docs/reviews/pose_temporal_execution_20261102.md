@@ -39,6 +39,15 @@ Tetto catena con preparazione già misurata: **4,08944 core-ore**, entro i 20,5 
 Nessuna modifica a supporto, lettori, griglia, selezione, bootstrap o interpretazione.
 Dettagli macchina: `results/infra/pose_temporal_20261102/resource_decision.json`.
 
+Preventivo pubblicato e SHA origin verificato in `d9374be78879aa2e5c68ad5ce82c0a6770e22799`.
+Run sottomesso tramite submitter come **63228748**, ID logico `POSE-TEMP-run-20261102`.
+Osservato RUNNING alle12:24:34 CET; nessuna GPU e nessun riaddestramento del FM.
+
+**Esito finale:** run63228748 COMPLETED0:0,12:24:02–12:27:31 CET,209s×8CPU=0,46444core-ore,
+MaxRSS4,194GiB. Catena totale0,55389core-ore e0GPU; tutti quattro i job conclusi.
+Risultati in [pose_temporal_results_20261102.md](pose_temporal_results_20261102.md),
+con replica indipendente del critico. Nessun errore scientifico, retry o nuovo run.
+
 ## Rettifiche Claude e disponibilità degli OOF
 
 Letto `d93e22e`: stessa griglia C, 26,77 core-ore come riferimento storico del rifit pool768,

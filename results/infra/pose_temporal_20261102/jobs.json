@@ -40,7 +40,17 @@
       "slurm_id": 63219091,
       "elapsed_seconds": 19,
       "allocated_cpus": 2,
-      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-checkout-20261102/state.json"
+      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-checkout-20261102/state.json",
+      "executed_sbatch_argv": [
+        "sbatch",
+        "--parsable",
+        "--job-name=POSE-TEMP-checkout-20261102",
+        "--comment=wearusfm:POSE-TEMP-checkout-20261102",
+        "--export=ALL,CAMPAIGN=pose-temporal-20261102,CAMPAIGN_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+        "--cpus-per-task=1",
+        "--mem=2G",
+        "--time=00:10:00"
+      ]
     },
     {
       "stage": "validate",
@@ -78,7 +88,20 @@
       "slurm_id": 63227865,
       "elapsed_seconds": 46,
       "allocated_cpus": 2,
-      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-validate-20261102/state.json"
+      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-validate-20261102/state.json",
+      "executed_sbatch_argv": [
+        "sbatch",
+        "--parsable",
+        "--job-name=POSE-TEMP-validate-20261102",
+        "--comment=wearusfm:POSE-TEMP-validate-20261102",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+        "--cpus-per-task=2",
+        "--mem=4G",
+        "--time=00:10:00",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+        "validate",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/validate.json"
+      ]
     },
     {
       "stage": "benchmark",
@@ -117,7 +140,20 @@
       "elapsed_seconds": 24,
       "allocated_cpus": 8,
       "max_rss_kib": 1461632,
-      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-benchmark-20261102/state.json"
+      "submission_state_file": "/Users/simonebenatti/wearusfm_local/jobs/POSE-TEMP-benchmark-20261102/state.json",
+      "executed_sbatch_argv": [
+        "sbatch",
+        "--parsable",
+        "--job-name=POSE-TEMP-benchmark-20261102",
+        "--comment=wearusfm:POSE-TEMP-benchmark-20261102",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+        "--cpus-per-task=8",
+        "--mem=30G",
+        "--time=00:30:00",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+        "benchmark",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/benchmark.json"
+      ]
     },
     {
       "stage": "run",
@@ -148,7 +184,7 @@
         "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/run.json"
       ],
       "command": "python3 scripts/submit_job.py --id POSE-TEMP-run-20261102 --agente gpt --campagna pose-temporal-20261102 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38 --cpus-per-task=8 --mem=30G --time=02:00:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch run /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/run.json",
-      "status": "resource_gate_passed_not_submitted",
+      "status": "completed",
       "gate": "manual review of completed validate/benchmark and measured cost before submission",
       "approved_request": {
         "cpus": 8,
@@ -156,12 +192,31 @@
         "walltime": "00:30:00",
         "max_core_hours": 4,
         "gpu_hours": 0
-      }
+      },
+      "slurm_id": 63228748,
+      "executed_sbatch_argv": [
+        "sbatch",
+        "--parsable",
+        "--job-name=POSE-TEMP-run-20261102",
+        "--comment=wearusfm:POSE-TEMP-run-20261102",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+        "--cpus-per-task=8",
+        "--mem=16G",
+        "--time=00:30:00",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+        "run",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/run.json"
+      ],
+      "submitted_at": "2026-11-02T12:23:59+01:00",
+      "elapsed_seconds": 209,
+      "allocated_cpus": 8,
+      "max_rss_kib": 4397516,
+      "exit_code": "0:0"
     }
   ],
   "max_cpu_core_hours": 20.5,
   "gpu_hours": 0,
-  "launch_status": "checkout_validate_benchmark_completed_run_ready",
+  "launch_status": "all_completed",
   "deployment_command": "git push leonardo 440af702ac3ec00feb52549acb1b4935251dce38:refs/heads/deploy/pose-temporal-20261102",
   "deployment_preflight": "Verify remote refs/hooks and ledger; deploy only to this new ref; never modify active checkout. Frozen campaign checkout via submitter.",
   "run_resource_gate": "No full run queued until timing and MaxRSS inspected. Include CV scoring (benchmark measures Gram/three eigensystems), validation decompression/inference/metrics/hash overhead with safety margin. Choose resources <=8 cores/30G/2h, keep protocol fixed; if projection exceeds cap, stop and report instead of blind timeout/retry.",
@@ -182,5 +237,8 @@
     "scope": "This temporal readout chain only; same submitter, ledger, scientific protocol and resource ceilings."
   },
   "actual_core_hours_before_run": 0.08944444444444444,
-  "resource_decision": "resource_decision.json"
+  "resource_decision": "resource_decision.json",
+  "status_observed_at_utc": "2026-11-02T11:29:03.639518+00:00",
+  "actual_core_hours": 0.5538888888888889,
+  "actual_gpu_hours": 0
 }

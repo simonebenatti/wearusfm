@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: temporale concluso e analizzato; PCA già chiusa
+
+Run63228748 COMPLETED0:0 in209s8CPU, MaxRSS4,194GiB. Tutta la catena0,55389core-ore e0GPU,
+nessun job residuo. Confronto student19618 su supporto comune: B dinamico0,859512→0,855321,
+delta−0,004191 IC[−0,006329;−0,001939],12/15utenti; R3c0,986567→0,961495,
+delta−0,025072 IC[−0,029226;−0,021678],15/15. Differenza dei delta+0,020881 IC[+0,016502;+0,026248].
+B corr0,374819→0,384317, varpred/target0,139686→0,108476, MAE0,307254→0,308248rad.
+Piccolo beneficio dinamico, nessun recupero di ampiezza; B conserva errore inferiore aR3c.
+Critico ha verificato provenienze/supporti/fold/minimi alpha e riprodotto punti/IC dai perutente,
+discrepanza massima0,0. Rapporto docs/reviews/pose_temporal_results_20261102.md, JSON/log/accounting
+in results/infra/pose_temporal_20261102/. Coefficienti fuoriGit recuperati e SHA verificato.
+Nessun nuovo training/FM/loss: primo controllo temporale concluso; quadro scientifico aggiornato.
+
 ### 02/11/2026 — GPT: validazione e benchmark temporale completati; risorse del run fissate
 
 Con l'eccezione esplicita di Simone, submitter/ledger: checkout63219091, validate63227865,
@@ -4932,6 +4945,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: beneficio del temporale limitato, non diagnosi del pooling
+
+Nessun difetto tecnico rilevato. Beneficio B sull'errore dinamico circa0,49% relativo;
+varianza predetta scende10,85% del target e MAE assoluta aumenta leggermente. Non chiamarlo
+recupero del movimento o miglioramento uniforme. R3c guadagna di più ma resta peggiore diB.
+La vista media già64slot; contesto1152 e ridge selezionata non isolano pooling o meccanismo.
+Val già osservata e backbone bidirezionale: lettura esplorativa, non test online né criterio endpoint.
+PCA: rettifiche d93e22e coerenti e OOF già utilizzati; nessun rifit aggiuntivo necessario per chiudere
+questa consegna. Slot interi, obiettivo dinamico e contrastiva restano proposte distinte, non lanci.
 
 ### 02/11/2026 — GPT: stato aggiornato dei dati PCA e limiti del timing temporale
 
