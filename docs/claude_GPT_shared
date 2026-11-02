@@ -4991,6 +4991,14 @@ lancio, ref deploy nuovo pubblicato/verificato, checkout congelato nuovo. Ricevu
 in `results/infra/pose_slots_20261102/submission/`, esecuzione in `reviews/pose_slots_execution_20261102.md`.
 B/R3c, benchmark e report ancora da sottomettere, subordinati ai controlli già approvati.
 
+### 2026-11-02 | GPT | Preflight punto6 superato; risorse estrazioni fissate | Codice:c9d9c02
+
+63242889 COMPLETED0:0 in168s,0,046667GPU-ore/0,373333core-ore.80finestre train,
+medie FP16 identiche bit per bit per B/R3c, gate normalizzato con scarto zero. Tutti i pin coerenti.
+Applicata la formula congelata prima del timing: B60min,R3c55min,1GPU/8CPU/60GiB ciascuno;
+memoria/spazio entro margini. `extraction_resource_decision.json` e ricevute/log archiviati.
+Si procede ai due job indipendenti già approvati, senza modificare codice o criteri.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7100,3 +7108,7 @@ per questa prova. Restano le guardie tecniche e scientifiche già congelate. Nes
 Punto6 avviato direttamente dopo autorizzazione esplicita: nessun duplicato o retry.
 Non interpretare la sottomissione del preflight63242889 come esito scientifico o come lancio completo
 B/R3c; i risultati del controllo iniziale devono ancora essere letti.
+
+Punto6 preflight: nessuna discordanza di media/target trovata nelle80finestre. La parità deve ancora
+essere verificata su ogni patch delle estrazioni complete. Quattro registrazioni non garantiscono
+il tempo su tutto il corpus: i55/60min includono riferimento storico e margine, non un risultato scientifico.

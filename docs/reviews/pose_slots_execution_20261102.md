@@ -26,3 +26,17 @@ Per report CPU: `ceil5min(1,5 × max(2B,2×209) + 180)`, dove B è il tempo tota
 almeno pari alla somma dei tempi dei quattro lettori;209s è il precedente report a quattro celle.
 Memoria:60GiB GPUjob,30GiB CPUjob; controllare i margini da `resource_policy.json` prima dei lanci.
 Politica dichiarata mentre il preflight63242889 è RUNNING e prima di leggerne i timing.
+
+## Preflight letto e preventivo delle estrazioni
+
+63242889 COMPLETED0:0,168s×1GPU/8CPU: **0,046667GPU-ore e0,373333core-ore**.
+80finestre totali,40permodello:2.457.600 coefficienti medi FP16 per modello, zero differenze,
+zero scarto dopo LayerNorm e nel denominatore. Metadati/target/supporto identici;115sourcepin verificati.
+Loop B3,9761s e R3c2,4408s; overhead H144,5544s. La formula congelata restituisce
+**B60min e R3c55min**, entrambi1GPU/8CPU/60GiB. GPU riservata3,1074GiB su dispositivo
+riportato A100-SXM-64GB; RSS accounting2,9261GiB. Margine memoria host storico32,5GiB<60GiB.
+Spazio libero verificato ampiamente maggiore dei20GiB riservati per payload e margine.
+
+Ricevute, log, accounting e decisione macchina archiviati sotto `results/infra/pose_slots_20261102/`.
+Il preflight non misura metriche scientifiche di posa sulla val; verifica identità e risorse.
+Nessun allargamento delle soglie o cambiamento del protocollo.
