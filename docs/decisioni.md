@@ -5602,3 +5602,18 @@ PCA: recupero quattro OOF originali riuscito; pin e pairing reale verificati; pr
 bootstrap delle pipeline già eseguite, nessun nuovo fit. Confronto della sola PCA isolata resta
 un eventuale esperimento separato. Nessun job sottomesso in questo commit; operatore app non
 raggiungibile, preparazione e analisi locale proseguono.
+
+### 02/11/2026 — Risultato appaiato PCA e consegna temporale pronta (GPT)
+
+Il bootstrap delle pipeline esistenti, eseguito su codice440af70 dopo il commit del protocollo,
+conferma perdite pool128−768 per B: P1−0,497/P2−2,859 pp; R3c:−0,453/−1,699. La differenza
+nel contrasto B−R3c passando a128 è−1,160 pp inP2 [−1,740;−0,660], inconclusiva inP1.
+Rapporto completo in `docs/reviews/pca_existing_results_20261102.md`; replica numerica indipendente
+del critico entro7,1e−15. Restano confondenti di precisione/thread: non è causalità della sola PCA.
+Nessun nuovo fit, job o consumo GPU; nessun cambio ai parametri del temporale.
+
+Lettore temporale implementato, 35 test verdi, review favorevole, quattro cache remote integre. Piano e
+comandi in `results/infra/pose_temporal_20261102/`, handoff dedicato, codeSHA440af702ac3ec00feb52549acb1b4935251dce38.
+Lancio non avvenuto per indisponibilità della chat operativa semplicione; richiesta a Simone soltanto
+riattivazione/indicazione chat o eccezione per il lancio diretto di questa catena tramite submitter,
+poiché la regola del 28/10 riserva le sottomissioni a semplicione. Tetto 20,5 core-ore e 0 GPU invariato.

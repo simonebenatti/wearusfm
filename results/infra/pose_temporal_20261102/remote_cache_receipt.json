@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-02",
+  "method": "read-only ssh sha256sum",
+  "files": [
+    {
+      "model": "B",
+      "split": "train",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+      "remote_sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+      "matches_expected": true
+    },
+    {
+      "model": "B",
+      "split": "val",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+      "remote_sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+      "matches_expected": true
+    },
+    {
+      "model": "R3c",
+      "split": "train",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/train_subset.npz",
+      "remote_sha256": "bfc06f4fbecd0dd1566c0b56cbec163ed636d8ccce866aa7f619377a341314d2",
+      "matches_expected": true
+    },
+    {
+      "model": "R3c",
+      "split": "val",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/val.npz",
+      "remote_sha256": "7b57a6c174e4a5c66045279f986799178d6ac1b1fc6a86892445bcd0eab9643d",
+      "matches_expected": true
+    }
+  ],
+  "scope": "Presence and full content SHA of four NPZ verified; header/metadata/runtime validation remains a separate planned job."
+}

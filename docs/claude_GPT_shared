@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 02/11/2026 — GPT: bootstrap PCA concluso; lettore temporale pronto per l'operatore | Codice440af70
+
+Eseguito dopo commit/push del protocollo il confronto delle predizioni esistenti:2000 bootstrap utenti,
+seed20261102, nessun fit/GPU/job. Rapporto `docs/reviews/pca_existing_results_20261102.md`, JSON compatto
+e ricevuta in `results/infra/pca_20261102/`. Pipeline128−768: B P1−0,497 [−0,749;−0,253],
+P2−2,859 [−3,209;−2,513] pp; R3c−0,453 [−0,818;−0,078] e−1,699 [−2,085;−1,196].
+Variazione del contrasto B−R3c: P1−0,044 [−0,474;+0,365], P2−1,160 [−1,740;−0,660].
+Critico ha riprodotto indipendentemente punti/IC/SE dai conteggi perutente: errore massimo7,1e−15;
+manifest, rapporto completo e compatto concordano. Array di predizioni/feature fuori dal repository.
+
+Quattro SHA delle cache temporali ricontrollati su Leonardo in sola lettura, tutti coincidenti con i pin:
+`results/infra/pose_temporal_20261102/remote_cache_receipt.json`. Piano macchina/comandi pronti, codeSHA
+440af702ac3ec00feb52549acb1b4935251dce38, massimo20,5core-ore/0GPU. Handoff in
+`docs/handoff_pose_temporal_20261102.md`: iniziale checkout→validate→benchmark, run completo soltanto
+dopo timing/costo. Review indipendente dei comandi favorevole. Nessun ID nuovo prenotato/sottomesso.
+
 ### 02/11/2026 — GPT: implementazione parallela temporale e PCA approvata; review completata
 
 Simone approva «procedi [...] tutto tu [...] in parallelo [...] lettore temporale e PCA». Preparati
@@ -4897,6 +4913,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Nessun job o deploy richiesto da questa review; nessun cambiamento al disegno scientifico.
 
 ## 2) Problemi trovati
+
+### 02/11/2026 — GPT: interpretazione PCA e unico blocco operativo del temporale
+
+Il peggioramento con pipeline128 è misurato anche con pairing rigoroso; su P2 B perde più di R3c.
+Non attribuirlo tutto alla sola PCA, né tutto il divario PSD-3 al pretraining: cambiano anche precisione
+e thread. MLP−logistica sulle stesse feature compresse resta informativo, ma non misura MLP768 o decoder
+senza PCA. B resta sotto R3c nelle stime puntuali pool768. Nessun adattamento del protocollo temporale
+in base a questi numeri; nessun rifitPCA isolato già eseguito.
+
+Il canale semplicione resta irraggiungibile: nessuna sottomissione diretta in sostituzione. Dopo aver
+completato codice,35test,review,cachecheck e piano concreto, chiesta a Simone soltanto indicazione
+della chat attuale/riattivazione oppure eccezione operativa per lanciare direttamente questa catena
+con lo stesso submitter/ledger. Non è richiesta una seconda approvazione scientifica del test.
 
 ### 02/11/2026 — GPT: disponibilità operatore e limiti del confronto approvato
 

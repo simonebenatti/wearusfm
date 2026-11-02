@@ -1,5 +1,7 @@
 # Piano scientifico dopo sonde e PSD-3 — 02/11/2026
 
+**Seguito approvato ed eseguito in parte:** [protocollo temporale/PCA](pose_temporal_pca_protocol_20261102.md), [risultato appaiato delle pipeline](reviews/pca_existing_results_20261102.md), [consegna operativa temporale](handoff_pose_temporal_20261102.md). I quattro OOF mancanti sono stati recuperati; bootstrap PCA concluso. Lettore temporale implementato e verificato, quattro cache remote integre, lancio ancora da effettuare tramite l'operatore. La ricognizione sotto conserva lo stato precedente a questi avanzamenti.
+
 Il percorso è: **verificare la misura → capire come leggere le rappresentazioni → scegliere se cambiare testa, rappresentazione o obiettivo**. I primi due esperimenti concordati sono conclusi: controllo delle sonde e PSD-3 sulle viste mediate nel tempo. Resta aperta la lettura temporale della posa. Le cache necessarie a una prima prova sono già state estratte: non serve ripartire dal pretraining, né fare subito nuova inferenza GPU.
 
 Questa nota riordina le due liste discusse con Simone e la consegna Claude fino a `f69741dad4f644350aa1230c41df8ca7fc262208` (30/10). Non modifica i criteri firmati, non autorizza automaticamente R3 completo e non attesta lo stato live della coda. I passi nuovi sotto sono proposte; oggi sono stati eseguiti solo letture, verifiche e calcoli locali sui risultati esistenti.
