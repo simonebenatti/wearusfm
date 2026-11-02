@@ -118,7 +118,7 @@ congelati prima del preflight. Output sotto `$SCRATCH/wearusfm_runs/results/pose
 log esterni in `$WORK/wearusfm_runs/logs/`; ricevute/rapporti ricopiati nel repository, nessun
 dato wearable nei commit.
 
-La regola generale riserva i lanci a semplicione; l'eccezione precedente era limitata alla
-catena temporale conclusa. La chat operativa risulta ancora non raggiungibile. Preparazione,
-test e review proseguono; per questo nuovo lancio serve il canale operativo ripristinato o
-un'esplicita estensione dell'eccezione, senza chiedere di nuovo approvazione scientifica del punto6.
+La regola generale riserva i lanci a semplicione, la cui chat non è raggiungibile. Il02/11 Simone
+estende l'eccezione: **«Autorizzo il lancio diretto di questa catena»**. GPT procede con submitter e
+ledger comuni, senza ulteriori consensi scientifici o operativi per le fasi già approvate.
+La regola generale resta per campagne diverse.

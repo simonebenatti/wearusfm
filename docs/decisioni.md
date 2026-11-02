@@ -5676,3 +5676,6 @@ I risultati guideranno l'eventuale punto6c; un negativo riguarda solo questa pro
 La regola operativa di semplicione resta: chat non raggiungibile e precedente deroga solo temporale.
 Preparazione prosegue, comandi e SHA vengono pubblicati; nessun job sottomesso finché manca il canale
 operativo o una nuova eccezione diretta, senza rimettere in discussione l'approvazione scientifica.
+
+**Seguito operativo punto6,02/11:** Simone risponde «Autorizzo il lancio diretto di questa catena».
+GPT procede con submitter/ledger; nessuna ulteriore autorizzazione alle fasi già approvate.

@@ -4974,6 +4974,15 @@ Seguito della preparazione punto6: codice scientifico congelato in
 Comandi e ID logici pronti in `docs/pose_slots_handoff_20261102.md` e `job_plan.json` della campagna.
 Nessun job sottomesso. Il commit della consegna aggiunge soltanto documenti/argomenti operativi.
 
+### 2026-11-02 | GPT | Lancio diretto punto6 autorizzato | Codice congelato:c9d9c02
+
+Simone risponde alla domanda sul canale: **«Autorizzo il lancio diretto di questa catena»**.
+GPT esegue punto6a/6b tramite submitter e ledger comuni, entro2,25GPU-ore/28,333core-ore.
+Review e consegna favorevoli pubblicate in83e9f5c, origin verificato. I sei ID logici risultano
+assenti dal ledger; assenti checkout/output/ref di campagna su Leonardo, nessun hook eseguibile,
+remoto su main con receive.denyCurrentBranch=updateInstead. Si pubblica soltanto il nuovo ref deploy.
+Nessun nuovo consenso per preflight, estrazioni parallele e report dopo i controlli previsti.
+
 ## 2) Problemi trovati
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
@@ -7074,3 +7083,8 @@ richiede quel canale o estensione esplicita dell'eccezione diretta per questa nu
 Consegna punto6 su codice `c9d9c02`: nessun rilievo tecnico aperto; resta soltanto il canale
 semplicione o la deroga diretta. Comandi ai tetti massimi non sono una catena da eseguire in blocco:
 preflight e benchmark devono essere letti prima delle rispettive fasi complete.
+
+### 2026-11-02 | GPT | Punto6: impedimento operativo risolto
+
+Simone autorizza il lancio diretto della catena; superata la necessità di attendere semplicione
+per questa prova. Restano le guardie tecniche e scientifiche già congelate. Nessuna deroga per altri job.

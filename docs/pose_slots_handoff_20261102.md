@@ -1,13 +1,13 @@
 # Consegna operativa punto 6 — 02/11/2026
 
-**Preparato, nessun job sottomesso.** Codice scientifico congelato:
+**Lancio diretto autorizzato da Simone per questa catena.** Codice scientifico congelato:
 `c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62`. [Protocollo](pose_slots_protocol_20261102.md),
 [review favorevole](reviews/pose_slots_review_20261102.md), [piano macchina](../results/infra/pose_slots_20261102/job_plan.json).
 
-L'approvazione scientifica è già acquisita. Sottomissioni tramite semplicione e submitter/ledger comuni;
-la chat non è raggiungibile. La deroga precedente copriva il temporale concluso: per l'esecuzione diretta
-serve l'estensione esplicita alla presente catena. Questi comandi rendono la consegna verificabile,
-non autorizzano a saltare il canale concordato o i cancelli fra fasi.
+L'approvazione scientifica è già acquisita. Alla domanda sul canale operativo Simone ha risposto
+**«Autorizzo il lancio diretto di questa catena»**. GPT usa submitter e ledger comuni, conserva i
+cancelli fra fasi e non richiede un secondo consenso per eseguirle. L'eccezione vale per punto6a/6b;
+non modifica il canale generale di altre campagne.
 
 Prima del deploy controllare ledger (ID sotto), assenza checkout/output di campagna, stato e configurazione
 del remoto, ref corrente e hook. Pubblicare soltanto il nuovo ref `deploy/pose-slots-20261102` allo SHA

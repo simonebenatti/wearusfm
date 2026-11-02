@@ -6,7 +6,7 @@ Il percorso resta: **verificare la misura → capire come leggere le rappresenta
 
 ## Cosa facciamo adesso
 
-**Punto 6a/6b approvato da Simone: preparazione parallela completata, esecuzione da avviare.** Il [protocollo media/contrasti fra slot](pose_slots_protocol_20261102.md) usa B e R3c student a 19.618 passi congelati, quattro lettori (M384, M48, S384, S720), sette contrasti fissi e selezione sui soli utenti train. Tetto 2,25 GPU-ore e 28,333 core-ore, con verifica dei tempi prima delle fasi complete. Nessun nuovo job ancora: il canale semplicione non è raggiungibile e la precedente eccezione diretta riguardava solo il temporale.
+**Punto 6a/6b approvato da Simone: preparazione parallela completata, esecuzione da avviare.** Il [protocollo media/contrasti fra slot](pose_slots_protocol_20261102.md) usa B e R3c student a 19.618 passi congelati, quattro lettori (M384, M48, S384, S720), sette contrasti fissi e selezione sui soli utenti train. Tetto 2,25 GPU-ore e 28,333 core-ore, con verifica dei tempi prima delle fasi complete. Simone ha autorizzato il lancio diretto di questa nuova catena: GPT procede attraverso submitter e ledger comuni.
 
 | Priorità / stato | Attività | Che cosa deve chiarire | Decisione successiva |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Dunque **non abbiamo dimostrato né che il FM vada rifatto, né che basti cambia
 ## Ordine consigliato ora
 
 1. Considerare **chiusi** controllo sonde, PSD-3 nella ricetta provata, bootstrap PCA e primo temporale.
-2. **6a completato:** codice, piano immutabile, proiezioni,54 test, review favorevole e preventivo. [Consegna operativa](pose_slots_handoff_20261102.md) pronta; risolvere soltanto il canale di sottomissione.
+2. **6a completato:** codice, piano immutabile, proiezioni,54 test, review favorevole e preventivo. [Consegna operativa](pose_slots_handoff_20261102.md) pronta; lancio diretto autorizzato, avvio della catena.
 3. Eseguire estrazione e fit dei lettori (6b) secondo il protocollo che ne risulterà, lasciando congelati gli encoder. I risultati guideranno l'eventuale intervento6c; nessuna catena automatica fino al pretraining.
 4. Riprendere poi la scelta dell'obiettivo: posa dinamica oppure trasferimento generale (7a/7b). Prima di investire in una nuova loss, definire la domanda e, per il FM generale, una regressione di trasferimento diversa dalla posa supervisionata.
 
@@ -65,3 +65,6 @@ La lista storica PSD-1..4 resta distinta: PSD-1 chiuso; PSD-2 originario riorien
 - Codice scientifico congelato `440af70`,35 test CPU superati e review del critico prima dei lanci; risultati verificati indipendentemente dopo l'esecuzione.
 
 L'eccezione operativa di Simone autorizzava GPT a sottomettere direttamente **questa catena** attraverso submitter/ledger. Tutti quattro i job sono conclusi, incluso il confronto63228748. La regola generale di semplicione rimane per altre campagne; nessuna nuova attività remota è disposta da questa nota.
+
+Aggiornamento operativo punto6: Simone ha esteso esplicitamente la deroga diretta a questa catena.
+La nota precedente sull'eccezione limitata al temporale resta lo stato storico prima di questo via.
