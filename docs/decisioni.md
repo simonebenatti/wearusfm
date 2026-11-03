@@ -5840,3 +5840,14 @@ temporale stileLEAF, resta un seguito eventuale sia dopo un beneficio sia dopo u
 nullo della terza, se serve affrontare direttamente la domanda sulla potenza.
 Nessun automatismo di lancio della quarta; nessuna pretesa di conclusione universale.
 Dettagli e limiti in reviews/tokenizer_logsquare_proposal_20261103.md. Monitor spento.
+
+## 03/11/2026 — Diagnostica intermedia delle loss tokenizer
+
+Su richiesta di Simone letto il grafico corrente e verificati config e pannelli già
+prodotti. JEPA ha peso0; totale = posa + ancore0,2. A14.500 passi comuni il totale
+sui batch fissi scende16–18% dal5k; MSE del pannello posa migliora4,4–7,3%.
+Nessuna evidenza di divergenza nelle misure esaminate, ma nessun verdetto su dinamica
+o generalizzazione: sono pannelli train e la varianza predetta GELU non cresce.
+Review indipendente concorde. Diagnostica, grafico e aggregati salvati; protocollo,
+endpoint19618, valutazioni e sequenza successiva invariati. Nessun nuovo job o monitor.
+Riferimento: tokenizer_training_execution_20261103.md, lettura delle22:29CET.

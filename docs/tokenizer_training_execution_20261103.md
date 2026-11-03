@@ -104,3 +104,35 @@ COMPLETED0:0 in32s; tre training e tre continuazioni sottomessi tramite ledger c
 
 Le continuazioni sono già vincolate al proprio training conafterok. Le valutazioni non sono
 ancora sottomesse: attendono i pin dei checkpoint effettivi. [Seguito operativo](tokenizer_handoff_20261103.md).
+
+## Lettura intermedia delle loss su richiesta di Simone — 03/11, 22:29 CET
+
+I tre job di continuazione sono RUNNING. Nel grafico fornito JEPA ha peso zero nei
+config effettivi: la sua salita non è un peggioramento dell'obiettivo ottimizzato.
+Totale = posa + 0,2 × somma delle ancore. Il tratto5k–14.500 è a LR costante1e-4,
+prima del decay WSD. Nessuna ricetta o dose cambiata per questa lettura.
+
+Raccolti fixed_eval.jsonl e soli aggregati di pose_panel.jsonl in sola lettura.
+Si usa l'ultimo passo comune dello snapshot,14.500. Entrambe le diagnostiche sono
+sul training, student in eval, non le valutazioni teacher su utenti esclusi.
+Pannello posa:32utenti,256finestre, stesso hash in tutti i bracci e passi
+04d32d6491d7bb29acdde18898b938f13effc513aded506af7e4e8d9f6a63a6f.
+
+| Braccio | Totale fisso 5k → 14.500 | MSE pannello posa 5k → 14.500 | Varianza temporale predetta 5k → 14.500 |
+|---|---|---|---|
+| T25-L | 2,210508 → 1,817853 (−17,76%) | 1,014895 → 0,967613 (−4,66%) | 0,024722 → 0,029588 |
+| T100-L | 2,181777 → 1,817269 (−16,71%) | 1,004347 → 0,959831 (−4,43%) | 0,025758 → 0,026412 |
+| T100-G | 2,135767 → 1,790112 (−16,18%) | 0,996475 → 0,923481 (−7,33%) | 0,026602 → 0,024422 |
+
+Non emerge divergenza dalle misure esaminate: il progresso è presente sui batch fissi.
+Restano oscillazioni visibili anche sui pannelli fissi, soprattutto per la posa:
+non attribuire tutta l'irregolarità del grafico alla composizione dei batch correnti.
+Il miglioramento della posa è moderato; GELU è favorevole sulla MSE di questo pannello,
+ma la sua variabilità temporale predetta non cresce. Non dedurre recupero del movimento
+o migliore generalizzazione. Non è salvata la varianza target: nessun rapporto con
+pannelli storici. Confronti intermedi descrittivi, un seme, nessun IC o scelta del
+checkpoint. Review indipendente concorde su pesi, schedule, lettura e limiti.
+
+[Dati aggregati](../results/infra/tokenizer_execution_20261103/loss_diagnostic_20261103.json),
+[grafico corretto](../results/infra/tokenizer_execution_20261103/loss_diagnostic_20261103.png)
+e script di rendering archiviati. Nessun nuovo job, training, monitor o test GPU.

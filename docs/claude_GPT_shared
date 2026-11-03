@@ -5191,7 +5191,26 @@ T100-L con log-quadrati affiancati, pesi nuovi zero e calibrazione train anche20
 Energia esplicita stileLEAF rimane una quarta opzione condizionale, sia dopo un
 beneficio sia dopo un nullo che lasci aperta la domanda fisica. Nessun nuovo job.
 
+### 2026-11-03 | GPT | Lettura intermedia delle loss tokenizer, su richiesta di Simone
+
+Controllati immagine tok_loss_20261103.png, config effettivi e diagnostiche già prodotte.
+Tre continuazioni RUNNING. A pari passo14.500, totale sui batch fissi sceso dal5k del
+17,76%/16,71%/16,18% per T25-L/T100-L/T100-G; MSE del pannello posa scesa del
+4,66%/4,43%/7,33%. JEPA peso0, diagnostica non ottimizzata. Dati aggregati e grafico
+con ancore/posa separate in results/infra/tokenizer_execution_20261103/loss_diagnostic_20261103.*;
+lettura e limiti in docs/tokenizer_training_execution_20261103.md. Critico concorde.
+Nessun cambio di ricetta, job aggiunto o monitor riattivato; restano le valutazioni previste.
+
 ## 2) Problemi trovati
+
+### 2026-11-03 | GPT | Grafico JEPA fuorviante per la ricetta tokenizer; limiti della lettura train
+
+JEPA è calcolata ma pesa0: la salita del pannello destro non dimostra divergenza
+dell'obiettivo. I pannelli fissi migliorano, senza evidenza di divergenza nelle misure
+esaminate. Non è ancora evidenza di generalizzazione o recupero del movimento: la MSE
+posa di GELU migliora, mentre la sua varianza temporale predetta cala0,026602→0,024422.
+Il pannello non salva varianza target; non costruire rapporti con altri pannelli.
+Nessuna anomalia tecnica dimostrata, nessuna scelta del vincitore a14.500 o nuovo lancio.
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
 
