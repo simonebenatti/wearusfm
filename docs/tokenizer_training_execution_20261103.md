@@ -90,3 +90,17 @@ Nessun risultato scientifico è ancora disponibile. Il collaudo attesta eseguibi
 comparabilità tecnica; non dimostra che100ms oGELU migliorino posa o classificazione.
 
 Verifica finale prima del deploy:107test dei quattro moduli nuovi passati; review indipendente favorevole su wrapper, launcher, risorse e valutatori. [Ricevuta](../results/infra/tokenizer_execution_20261103/training_verification.json).
+
+## Sottomissioni effettuate
+
+Codiceafb644ea10ecc2a716160b4d8a4904e805c366fb pubblicato e verificato. Checkout63385655
+COMPLETED0:0 in32s; tre training e tre continuazioni sottomessi tramite ledger comune.
+
+| Braccio | Job5.000 | Job19.618 | Stato dopo invio |
+|---|---:|---:|---|
+| T25-L |63385800|63386315|Priority; continuazione Dependency|
+| T100-L |63386190|63386337|Priority; continuazione Dependency|
+| T100-G |63386228|63386403|Priority; continuazione Dependency|
+
+Le continuazioni sono già vincolate al proprio training conafterok. Le valutazioni non sono
+ancora sottomesse: attendono i pin dei checkpoint effettivi. [Seguito operativo](tokenizer_handoff_20261103.md).

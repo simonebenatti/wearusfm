@@ -5104,6 +5104,14 @@ con collaudo reale74,471111GPUh. Estensione budget e lancio diretto già autoriz
 Piano: docs/tokenizer_training_execution_20261103.md. Commit di preparazione precede
 checkout e invii; gli ID effettivi saranno registrati dopo la sottomissione.
 
+### 2026-11-03 | GPT | Sei job tokenizer sottomessi
+
+Codiceafb644e, checkout63385655 completato0:0 in32s. Tre5k63385800/63386190/63386228,
+tre continuazioni19618 63386315/63386337/63386403 conafterok sul proprio5k. Prima lettura:
+inizialiPENDING/Priority, continuazioniPENDING/Dependency.66GPUh massime training prenotate;
+nessun duplicato, valutazioni ancora da sottomettere dopo i checkpoint. Handoff in
+docs/tokenizer_handoff_20261103.md; tutte le autorizzazioni sono già acquisite.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7289,3 +7297,9 @@ Il collaudo non misura efficacia, tutti i dataset/formati o limite del loader. I
 aumenti del tempo di update non sono una previsione esatta del costo totale: formula
 con storico,20% e riserva per fase. A5k nessuna selezione del vincitore né nuova firma
 per continuare. Gli IC finali saranno condizionati a un solo seme e a val già usata.
+
+### 2026-11-03 | GPT | Sei job tokenizer: nessun guasto al lancio
+
+Tutti gli invii hanno ID SLURM univoco e stato ledger sottomesso. L’attesaPriority non è
+un errore, e i log non esistono prima dell’avvio. Non confondere sei job in coda con training
+completati o con le dodici estrazioni, ancora da eseguire. Nessuna nuova autorizzazione richiesta.

@@ -5770,3 +5770,16 @@ preflight reale74,471111GPUh. CPU-only futura113,333333coreh;594coreh dei jobGPU
 Simone ha già autorizzato superamento del budget e lanci diretti via submitter/ledger.
 Nessuna ulteriore richiesta di consenso: il commit precede checkout congelato e lanci,
 con review/test e guardie sulla dose/provenienza/ripresa. Ricevute e ID aggiunti dopo invio.
+
+### Seguito: sottomissione dei sei training tokenizer
+
+Checkout63385655 COMPLETED0:0,32s; codiceafb644e.
+
+| Braccio | Job5.000 | Job19.618 | Stato dopo invio |
+|---|---:|---:|---|
+| T25-L |63385800|63386315|Priority; continuazione Dependency|
+| T100-L |63386190|63386337|Priority; continuazione Dependency|
+| T100-G |63386228|63386403|Priority; continuazione Dependency|
+
+Tutti sottomessi via submitter/ledger, continuazioni automaticheafterok. Nessuna nuova firma,
+nessun risultato scientifico ancora. Valutazioni autorizzate in attesa degli artefatti effettivi.
