@@ -5121,6 +5121,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (1 h 04-05 su 4 GPU), le tre estrazioni di posa a 5.000 (30 min su 1 GPU), checkout CPU, validazione, benchmark e ridge; circa 14,7 GPU-ore
   consumate, 48 prenotate come tetto per i tre 19.618. Verificato nei config di campagna `masked_loss_radius: 0` nei tre bracci. Nessun
   risultato scientifico letto.
+- Seguito (03/11 23:38, verifica mia 04/11 00:05): semplicione ha avvisato che i tre job sono finiti e ha chiuso la sorveglianza (non riavviata).
+  Verificato in sola lettura (`sacct`, log copiati in `~/wearusfm_local/logs/tok_train_<id>.txt`, ricevute e cartelle dei run): 63386315 T25-L
+  COMPLETED 0:0, 03:04:11 (lrdn2072, fine 23:22:52); 63386337 T100-L COMPLETED 0:0, 03:08:49 (lrdn2107, fine 23:27:30); 63386403 T100-G
+  COMPLETED 0:0, 03:08:54 (lrdn2122, fine 23:27:35); avvio comune 20:18:41; **37,46 GPU-ore** (Elapsed x 4 GPU) sulle 48 prenotate. Nei log
+  «fine: max_steps, passo 19618» in tutti e tre, nessun Traceback/OOM; parametri 28.356.829 (T25-L) e 28.362.013 (T100-L/G); memoria GPU max
+  13,2 / 15,8 / 15,8 GiB; 0,75-0,77 s/passo compresi i pannelli della posa (elapsed_s 11.017 / 11.295 / 11.298 per 14.618 passi). Ricevute
+  `receipt.json` con `complete: true`, `code_sha` afb644e, `plan_sha256` 04a38915… e sha256 dei checkpoint in
+  `$WORK/wearusfm_runs/results/tokenizer_training_20261103/<braccio>/19618/` (config, launch, receipt, summary). I checkpoint
+  `checkpoint_step0019618.pt` (454 MB ciascuno), con `fixed_eval.jsonl`, `pose_panel.jsonl` e `metrics.jsonl`, stanno in
+  `$SCRATCH/wearusfm_runs/runs/tokenizer_20261103/<braccio>/`: scratch a cancellazione automatica dopo 40 giorni (dal 03/11: 13/12/2026) se non
+  copiati o rinfrescati. Il ledger `~/wearusfm_local/jobs/ledger.tsv` riporta ancora `sottomesso` per i tre ID (riconciliazione a chi ha
+  sottomesso). Nessun risultato scientifico letto da me: le dodici estrazioni e la lettura dell'endpoint a 19.618 restano a GPT col via di
+  Simone.
 
 ### 2026-11-03 | Claude | `PartitionConfig` sui tre training a 19.618: etichetta di tutta la coda, non un limite dei nostri job (lettura chiesta da Simone)
 
