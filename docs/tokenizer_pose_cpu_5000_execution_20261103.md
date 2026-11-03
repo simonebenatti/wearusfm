@@ -77,3 +77,20 @@ a **420s (7min), sotto il tetto1800s**. Gate superato. La prenotazione ridge res
 8CPU/30G/30min,0GPUh e massimo4coreh già riservate. Pubblicare questo gate prima
 dell'invio; usare lo stesso checkout70fd080, senza altre modifiche scientifiche.
 Consuntivo checkout+validate+benchmark **0,072778coreh**, tutto CPU-only.
+
+## Ridge sottomessa; monitor disattivato
+
+**63405791** è la ridge dei tre bracci teacher5k, sottomessa tramite il ledger
+TOKENIZER-pose5000-ridge-20261103 dopo pubblicazione e verifica origin del gate
+49f91a244632e7546ed88618ee3300da61f443c6. Runtime congelato70fd080;8CPU/30G/30min,
+0GPUh e4coreh massime. Il report includerà il confronto appaiato.
+
+L'app conferma l'eliminazione di **completa-tokenizer-wearusfm** dopo il lancio,
+come richiesto da Simone. Nessun job SLURM cancellato. Non sono previsti controlli,
+raccolte o lanci automatici successivi. La lettura del report ridge e le valutazioni
+all'endpoint19618 restano da eseguire in una successiva attività esplicita della chat.
+Non risottomettere la ridge o le continuazioni63386315/63386337/63386403.
+
+Primo controllo dopo invio: ridge63405791 **RUNNING**,8CPU/30G; le tre
+continuazioni19618 restano **PENDING**. Nessun altro controllo di completamento
+programmato dopo questo snapshot di consegna.

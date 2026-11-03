@@ -77,7 +77,7 @@ Silenzio quando lo stato non cambia o è soltanto attesa in coda. Comunicare sol
 significativo, un problema che richiede intervento o risultati conclusivi. Disattivare il seguito
 automatico alla conclusione o quando serve una nuova scelta scientifica di Simone.
 
-Seguito automatico attivo: `completa-tokenizer-wearusfm`, controllo ogni15min nella stessa chat, silenzioso sugli stati invariati. Disattivarlo alla chiusura.
+Seguito automatico inizialmente attivo ogni15min: `completa-tokenizer-wearusfm`. **Eliminato il03/11 dopo il lancio della ridge63405791 su richiesta di Simone.**
 
 ## Aggiornamento delle11:49UTC:5k completo
 
@@ -148,3 +148,20 @@ results/infra/tokenizer_evaluation_20261103/cpu_5000/pre_ridge_gate.json.
 Previsione420s entro1800s; ridge8CPU/30G/30min autorizzata. Leggere il ledger
 TOKENIZER-pose5000-ridge-20261103 prima di inviare: il lancio segue questo commit.
 Poi disattivare il monitor come richiesto, lasciando i job attivi su Leonardo.
+
+## Ridge sottomessa; monitor disattivato
+
+**63405791** è la ridge dei tre bracci teacher5k, sottomessa tramite il ledger
+TOKENIZER-pose5000-ridge-20261103 dopo pubblicazione e verifica origin del gate
+49f91a244632e7546ed88618ee3300da61f443c6. Runtime congelato70fd080;8CPU/30G/30min,
+0GPUh e4coreh massime. Il report includerà il confronto appaiato.
+
+L'app conferma l'eliminazione di **completa-tokenizer-wearusfm** dopo il lancio,
+come richiesto da Simone. Nessun job SLURM cancellato. Non sono previsti controlli,
+raccolte o lanci automatici successivi. La lettura del report ridge e le valutazioni
+all'endpoint19618 restano da eseguire in una successiva attività esplicita della chat.
+Non risottomettere la ridge o le continuazioni63386315/63386337/63386403.
+
+Primo controllo dopo invio: ridge63405791 **RUNNING**,8CPU/30G; le tre
+continuazioni19618 restano **PENDING**. Nessun altro controllo di completamento
+programmato dopo questo snapshot di consegna.

@@ -5159,6 +5159,14 @@ solo trainT25-L,8thread: stima420s entro1800s. Pubblicati risultati del gate pri
 della ridge8CPU/30G/30min,4coreh massime già riservate. Monitor da disattivare
 dopo l'invio per richiesta corrente di Simone; continuazioni training già in coda.
 
+### 2026-11-03 | GPT | Ridge5k sottomessa e monitor eliminato
+
+Job63405791 per i tre bracci e confronto appaiato,8CPU/30G/30min,zeroGPU,
+dopo gate e review pubblicati49f91a2. Ricevuta e indice CPU aggiornati.
+Eliminata l'automazione completa-tokenizer-wearusfm dopo il lancio, come richiesto
+da Simone; nessuna cancellazione SLURM, nessuna raccolta o valutazione automatica
+successiva. Checkpoint5k completi, continuazioni19618 già sottomesse e da non duplicare.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7388,3 +7396,10 @@ consenso necessario. Disattivazione monitor richiesta da Simone dopo gli invii.
 Validazione e timing sono controlli tecnici, non evidenza di utilità del tokenizer.
 Stima420s prudente ma non garanzia matematica; walltime resta1800s. Nessuna
 consultazione degli score val per risorse/ricetta e nessun nuovo training richiesto.
+
+### 2026-11-03 | GPT | Monitor spento per scelta operativa, non per errore
+
+Ridge63405791 inviata con successo; nessun difetto rilevato nei gate. Lo spegnimento
+dei controlli è una richiesta esplicita di Simone. Non dichiarare conclusa la
+campagna scientifica: restano lettura ridge5k ed estrazioni/valutazioni19618, senza
+seguito automatico. I risultati5k restano descrittivi e non selezionano un vincitore.

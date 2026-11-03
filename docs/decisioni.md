@@ -5820,3 +5820,11 @@ sul solo trainT25-L. Formula preregistrata:420s stimati, tetto1800s rispettato.
 Si procede a ridge8CPU/30G/30min,4coreh massime già riservate e zeroGPU.
 Consuntivo delle tre fasi preparatorie0,072778coreh. Nessuna metrica scientifica
 ancora calcolata; dopo il lancio monitor da disattivare su richiesta di Simone.
+
+### Ridge5k lanciata; controlli automatici disattivati
+
+Ridge63405791 sottomessa dopo il gate pubblicato49f91a2, stesso checkout70fd080.
+Ricevuta nel registro condiviso e nel repo; nessuna modifica della ricetta.
+Eliminata dall'app l'automazione completa-tokenizer-wearusfm su richiesta di Simone.
+I job SLURM continuano; nessun controllo o seguito automatico all'endpoint19618.
+La ridge non è ancora un risultato scientifico: il report verrà letto su ripresa della chat.
