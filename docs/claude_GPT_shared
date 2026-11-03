@@ -5090,6 +5090,20 @@ Preparazione locale conclusa, nessun job remoto nuovo.5.000 passi screening;19.6
 
 Simone chiede di far revisionare la proposta a Claude prima di provarla e richiede il prompt da inoltrare. Preparato `docs/prompt_claude_review_tokenizer_20261102.md`: codice/protocollo congelati a c052792f0a796ba72d2804c81b3e5721a3010d93, sei domande su ipotesi non lineare, confronto a supporto comune, implementazione, dose, metriche e budget. Claude svolge sola review, eventuali test CPU mirati e consegna sul proprio ramo; GPT recepisce i rilievi e completa il collaudo. Nessun messaggio inviato a Claude da strumenti e nessun job lanciato; il prompt è pronto da inoltrare da Simone.
 
+
+### 2026-11-03 | GPT | Tokenizer: collaudo concluso e tre training predisposti
+
+Collaudo63370721 COMPLETED0:0,199s,0,221111GPUh. Tre bracci su2.048 finestre
+ciascuno; hash dei4rank, stream/query/target/supporto comuni verificati. Tempi medi
+aggiornamento25-L/100-L/100-G:0,6953/0,6997/0,7059s. Report e archivi senza perdita
+in results/infra/tokenizer_execution_20261103; nessun segnale grezzo pubblicato.
+Valutatori e wrapper pronti e revisionati,107test passati (35+19+20+33). Completati
+piano concreto e launcher: tre nuovi5k e tre proprie continuazioni19618, invarianti
+100 file scientifici rispetto aef8016a. Tetti futuri74,25GPUh e113,3333coreh CPU-only;
+con collaudo reale74,471111GPUh. Estensione budget e lancio diretto già autorizzati.
+Piano: docs/tokenizer_training_execution_20261103.md. Commit di preparazione precede
+checkout e invii; gli ID effettivi saranno registrati dopo la sottomissione.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7264,3 +7278,14 @@ R5storico150ms non aveva prodotto un vantaggio aggregato chiaro con JEPA e quote
 ### 2026-11-02 | GPT | Review Claude richiesta prima della prova tokenizer
 
 La review favorevole del critico e i129test restano validi; Simone richiede ora anche il parere di Claude prima della prova. Evidenziato nel prompt che GELU sulle risposte integrate non equivale a energia/RMS o rettificazione prima dell'integrazione; eventuali cancellazioni del segnale sono già avvenute. Il controllo nuovo25ms cambia il raggio delle query e non è il B storico. Restano previsti collaudo su dati reali e preventivo completo: nessuna certificazione di utilità scientifica dai soli test e nessuna seconda richiesta di consenso per il test già autorizzato dopo la review.
+
+### 2026-11-03 | GPT | Ripresa tokenizer: guardie tecniche e limiti
+
+La review del wrapper di orchestrazione ha riprodotto accettazione di RNG incompleti,
+stato optimizer non finito e ricevuta complete non strettamente booleana. Correzioni chiuse con33test passati e review favorevole
+prima del lancio; nessun training scientifico è stato esposto a quei
+controlli incompleti. I file scientifici del collaudo restano invariati.
+Il collaudo non misura efficacia, tutti i dataset/formati o limite del loader. I piccoli
+aumenti del tempo di update non sono una previsione esatta del costo totale: formula
+con storico,20% e riserva per fase. A5k nessuna selezione del vincitore né nuova firma
+per continuare. Gli IC finali saranno condizionati a un solo seme e a val già usata.

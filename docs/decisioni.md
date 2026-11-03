@@ -5755,3 +5755,18 @@ CPU-only, più16coreh allocati insieme alle GPU. Pubblicare SHA e piano, usare I
 TOKENIZER-checkout-20261103 e TOKENIZER-preflight-20261103 con submitter/ledger comuni.
 Il confronto scientifico resta di tre bracci nuovi a19.618; collaudo e preventivo aggiornato
 precedono i lanci lunghi, senza ulteriore consenso e con estensione del budget già autorizzata.
+
+## 03/11/2026 — Collaudo tokenizer concluso; piano dei tre bracci a19.618
+
+63370721 COMPLETED0:0,199s,0,221111GPUh; checkout63369832,34s,0,018889coreh CPU-only.
+64batch globali comuni,2.048 finestre per braccio; integrità/parità/gradienti verificati.
+Nessun risultato scientifico o checkpoint del collaudo riutilizzato. I tre training nuovi
+conservano ricetta e sorgenti scientifiche; la nuova consegna aggiunge orchestrazione e
+valutatori. Tutti procedono5k→19618 dal proprio stato, se integri, senza selezione dalla val.
+
+[Preventivo completo](tokenizer_training_execution_20261103.md): 3×4GPU×90min screening
+più3×4GPU×240min continuazione =66GPUh, estrazioni8,25GPUh. Totale futuro74,25; con
+preflight reale74,471111GPUh. CPU-only futura113,333333coreh;594coreh dei jobGPU separati.
+Simone ha già autorizzato superamento del budget e lanci diretti via submitter/ledger.
+Nessuna ulteriore richiesta di consenso: il commit precede checkout congelato e lanci,
+con review/test e guardie sulla dose/provenienza/ripresa. Ricevute e ID aggiunti dopo invio.

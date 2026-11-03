@@ -1,0 +1,253 @@
+{
+  "protocol": "tokenizer-full-campaign-resources-20261103-v1",
+  "authorization": "Simone 03/11: puoi anche sforare il budget, non mi importa, ti autorizzo",
+  "old_gpu_hours_remaining_reference": 63.2925,
+  "old_remaining_is_not_a_cap": true,
+  "training_jobs": [
+    {
+      "logical_id": "TOKENIZER-T25-L-5000-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 5400,
+      "additional_steps": 5000,
+      "expected_seconds_proxy": 3814.0,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 5400,
+      "gpu_hours_cap": 6.0,
+      "allocated_core_hours_cap": 48.0
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-19618-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 14400,
+      "additional_steps": 14618,
+      "expected_seconds_proxy": 11150.610400000001,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 14400,
+      "gpu_hours_cap": 16.0,
+      "allocated_core_hours_cap": 128.0
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-5000-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 5400,
+      "additional_steps": 5000,
+      "expected_seconds_proxy": 3838.5237507353536,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 5400,
+      "gpu_hours_cap": 6.0,
+      "allocated_core_hours_cap": 48.0
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-19618-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 14400,
+      "additional_steps": 14618,
+      "expected_seconds_proxy": 11222.308037649882,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 14400,
+      "gpu_hours_cap": 16.0,
+      "allocated_core_hours_cap": 128.0
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-5000-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 5400,
+      "additional_steps": 5000,
+      "expected_seconds_proxy": 3872.2748716144806,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 5400,
+      "gpu_hours_cap": 6.0,
+      "allocated_core_hours_cap": 48.0
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-19618-20261103",
+      "partition": "boost_usr_prod",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "walltime_seconds": 14400,
+      "additional_steps": 14618,
+      "expected_seconds_proxy": 11320.982814652098,
+      "calculation": "ceil_15min(historical_s_per_step * max(1, measured_ratio) * additional_steps * 1.20 + 600s)",
+      "minimum_from_policy_seconds": 14400,
+      "gpu_hours_cap": 16.0,
+      "allocated_core_hours_cap": 128.0
+    }
+  ],
+  "new_checkout": {
+    "logical_id": "TOKENIZER-train-checkout-20261103",
+    "partition": "lrd_all_serial",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "cpu_only_core_hours_cap": 0.3333333333333333
+  },
+  "evaluation_gpu_allocations": {
+    "pose_train_val": {
+      "count": 6,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "walltime_seconds": 2700
+    },
+    "P1": {
+      "count": 3,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "walltime_seconds": 1800
+    },
+    "P2": {
+      "count": 3,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "walltime_seconds": 2700
+    }
+  },
+  "evaluation_cpu_allocations": {
+    "probe_shards": {
+      "per_arm": [
+        {
+          "datasets": [
+            "ninapro_db2"
+          ],
+          "folds": [
+            0,
+            1
+          ],
+          "cpus": 8,
+          "minutes": 60
+        },
+        {
+          "datasets": [
+            "ninapro_db2"
+          ],
+          "folds": [
+            2,
+            3
+          ],
+          "cpus": 8,
+          "minutes": 60
+        },
+        {
+          "datasets": [
+            "ninapro_db3"
+          ],
+          "folds": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cpus": 8,
+          "minutes": 30
+        },
+        {
+          "datasets": [
+            "ninapro_db6"
+          ],
+          "folds": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cpus": 8,
+          "minutes": 30
+        },
+        {
+          "datasets": [
+            "epn612",
+            "uci_emg"
+          ],
+          "folds": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cpus": 8,
+          "minutes": 60
+        }
+      ],
+      "arms": 3,
+      "memory": "30G",
+      "core_hours_cap": 96
+    },
+    "aggregates": {
+      "count": 6,
+      "cpus": 2,
+      "memory": "30G",
+      "minutes": 20,
+      "core_hours_cap": 4
+    },
+    "probe_compare": {
+      "count": 1,
+      "cpus": 2,
+      "memory": "30G",
+      "minutes": 30,
+      "core_hours_cap": 1
+    },
+    "pose_ridge": {
+      "count": 2,
+      "cpus": 8,
+      "memory": "30G",
+      "minutes": 30,
+      "core_hours_cap": 8
+    },
+    "pose_benchmarks": {
+      "count": 1,
+      "cpus": 8,
+      "memory": "30G",
+      "minutes": 15,
+      "core_hours_cap": 2
+    },
+    "pose_validations": {
+      "count": 2,
+      "cpus": 2,
+      "memory": "30G",
+      "minutes": 30,
+      "core_hours_cap": 2
+    }
+  },
+  "completed_actual": {
+    "checkout_job": 63369832,
+    "checkout_seconds": 34,
+    "cpu_only_core_hours": 0.01888888888888889,
+    "preflight_job": 63370721,
+    "preflight_seconds": 199,
+    "gpu_hours": 0.22111111111111112,
+    "allocated_gpu_job_core_hours": 1.768888888888889
+  },
+  "training_gpu_hours_cap": 66,
+  "evaluation_gpu_hours_cap": 8.25,
+  "future_gpu_hours_cap": 74.25,
+  "actual_to_date_plus_future_gpu_hours_cap": 74.47111111111111,
+  "original_preflight_reservation_plus_future_gpu_hours_cap": 76.25,
+  "future_cpu_only_core_hours_cap": 113.33333333333333,
+  "future_gpu_allocated_core_hours_cap": 594.0,
+  "no_blind_retry": true,
+  "scope": "3 fresh arms, no new losses, one seed, 5000 screening and 19618 endpoint; benchmark may reduce CPU allocations but never extend frozen caps silently"
+}
