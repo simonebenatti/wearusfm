@@ -143,3 +143,16 @@ Per CPU: il controllo convergente di Claude ha consumato circa 27 core-ore di sh
 Prima del lancio scientifico occorrono: adattatore e test di parità/mismatch, prova sintetica che il checkpoint GELU sia ricaricato come GELU, fixture dei tre bracci e delle due dosi, selezione/target comuni congelati e piano DAG con risorse, hash e ricevute. I nuovi test devono verificare anche crop6 coerente tra feature/target/mask, assenza di lettura val per alpha, confronto appaiato su tre celle, convergenza attribuita ai fit e fallimento esplicito sulle celle mancanti. I nuovi checkpoint non esistono ancora: **i benchmark dei loro fit e delle loro estrazioni non sono un prerequisito al training**. Si possono allocare valutazioni conservativamente dai tempi storici e dal fattore di throughput del preflight, poi affinare i tempi quando le cache train sono disponibili, senza usare score val e senza cambiare la ricetta. Non occorre chiedere di nuovo l'autorizzazione per il confronto e l'extrabudget già approvati; restano vincolanti identità, tetti operativi dichiarati e perimetro del disegno. La conclusione di questo audit è un piano diretto per i tre bracci, non una richiesta di scegliere una variante ridotta.
 
 Il preventivo esecutivo successivo al collaudo è in [training e risorse](tokenizer_training_execution_20261103.md): sostituisce i conti illustrativi sopra senza cambiare la matrice scientifica.
+
+## Launcher CPU pronto durante le estrazioni5k
+
+Preparato scripts/slurm/tokenizer_pose_readout.sbatch senza modificare il reader
+scientifico:validate2CPU/30min, benchmark8CPU/15min, ridge8CPU/30min, memoria massima30G.
+Usa checkout congelato verificato prima/dopo, piano contenuto nel checkout, uscita nuova
+assoluta fuori dal codice; la ridge comprende già il confronto appaiato dei tre bracci.
+La CLI compare resta disponibile ma non rappresenta un job aggiuntivo prenotato.
+
+Sintassi bash e contratto CLI verificati. Nessun job CPU o checkout aggiuntivo lanciato:
+prima servono tutte e sei le cache valide con ricevute complete, poi piano con pin reali,
+preventivo del checkout e benchmark train-only. La sola presenza di train_subset.npz
+non autorizza a consumare risultati parziali della catena.

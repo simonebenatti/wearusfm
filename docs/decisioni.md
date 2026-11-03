@@ -5796,3 +5796,8 @@ l'autorizzazione esistente; continuazioni19618 già in coda e non subordinate ai
 Seguito: checkout63399280 completo18s; estrazioni teacher posa5k **63399428/63399479/63399484**
 sottomesse da f2061b8 e tutte RUNNING al controllo. Ricevute salvate; continuazioni19618
 ancora in coda. I tre job consumano la riserva già pubblicata, nessun duplicato.
+
+Preparazione CPU durante l'attesa: launcher tokenizer_pose_readout.sbatch pronto,
+API e tetti coerenti con la matrice già approvata; nessuna modifica scientifica o
+allocazione aggiuntiva. Piano con sei cache solo dopo ricevute complete, benchmark
+train-only prima della ridge. Il confronto appaiato è già incluso nel report ridge.

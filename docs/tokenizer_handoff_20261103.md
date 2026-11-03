@@ -115,3 +115,16 @@ Per stato e log preferire comandi semplici: ssh leonardo sacct/squeue/tail/cat c
 argomenti letterali. Il 03/11 gli script multilinea annidati hanno prodotto richieste
 di permesso tecnico; gli invii e le letture semplici successivi sono passati usando
 le regole persistenti esistenti. Nessuna nuova firma scientifica o operativa necessaria.
+
+## Launcher CPU pronto durante le estrazioni5k
+
+Preparato scripts/slurm/tokenizer_pose_readout.sbatch senza modificare il reader
+scientifico:validate2CPU/30min, benchmark8CPU/15min, ridge8CPU/30min, memoria massima30G.
+Usa checkout congelato verificato prima/dopo, piano contenuto nel checkout, uscita nuova
+assoluta fuori dal codice; la ridge comprende già il confronto appaiato dei tre bracci.
+La CLI compare resta disponibile ma non rappresenta un job aggiuntivo prenotato.
+
+Sintassi bash e contratto CLI verificati. Nessun job CPU o checkout aggiuntivo lanciato:
+prima servono tutte e sei le cache valide con ricevute complete, poi piano con pin reali,
+preventivo del checkout e benchmark train-only. La sola presenza di train_subset.npz
+non autorizza a consumare risultati parziali della catena.

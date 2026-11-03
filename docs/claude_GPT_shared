@@ -5131,6 +5131,14 @@ Ricevute e indice in results/infra/tokenizer_evaluation_20261103/. Continuazioni
 ancoraPENDING, nessun duplicato. Procedura autonoma già autorizzata; i comandi semplici
 SSH e submitter hanno usato le regole persistenti senza altre richieste all'utente.
 
+### 2026-11-03 | GPT | Preparazione launcher CPU durante le estrazioni5k
+
+Tre estrazioni ancora RUNNING; train terminato e con provenienza, val in corso,
+nessuna ricevuta finale ancora. Preparato il solo launcher tokenizer_pose_readout.sbatch
+per validate/benchmark/ridge, entro tetti2/8CPU,15/30min,30G. Reader scientifico
+invariato, sintassi e contratto verificati. Nessun invio CPU o nuovo checkout; piano
+con sei pin effettivi solo dopo tutte le estrazioni complete. Confronto già nella ridge.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7339,3 +7347,10 @@ senza confondere un eventuale blocco dell'ambiente con una nuova firma scientifi
 Tre estrazioni partite; nessun errore di sottomissione. Il loro stato RUNNING non è
 una ricevuta scientifica completa. Resta da verificare ogni cache e il benchmark CPU
 prima dei fit, poi lettura esplorativa comune senza selezionare i bracci da continuare.
+
+### 2026-11-03 | GPT | Letture CPU: dipendenza dalla griglia completa
+
+Nessun guasto nei log esaminati; tre val teacher in corso, continuazioni19618 ancora
+PENDING. I train già presenti non sono ricevute di completamento: non si avvia il
+benchmark su pin parziali. Il compare separato esposto dal launcher non ha una riserva
+aggiuntiva e non entra nella catena ordinaria, perché ridge contiene il confronto.
