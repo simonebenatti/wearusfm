@@ -133,19 +133,27 @@ python3 scripts/submit_job.py --id TOKENIZER-checkout-20261103 --agente gpt \
   --export="ALL,CAMPAIGN=tokenizer-preflight-20261103,CAMPAIGN_SHA=$TOKENIZER_SHA"
 
 python3 scripts/submit_job.py --id TOKENIZER-preflight-20261103 --agente gpt \
-  --campagna tokenizer-20261103 --gpu-ore 2 --dopo TOKENIZER-checkout-20261103 -- \
+  --campagna tokenizer-20261103 --gpu-ore 2 -- \
   --export="ALL,CODE_DIR=$TOKENIZER_CODE,EXPECTED_SHA=$TOKENIZER_SHA" \
   "$TOKENIZER_CODE/scripts/slurm/tokenizer_preflight.sbatch" \
   results/infra/tokenizer_execution_20261103/preflight_plan.json "$TOKENIZER_OUT"
 ```
 
-La seconda sottomissione legge il launcher dal checkout: attendere che il checkout sia creato
-e verificato, oltre alla dipendenza `afterok`. Il submitter impone job-name/comment con ID logico,
+La seconda sottomissione legge il launcher dal checkout: attendere che il checkout sia creato,
+COMPLETED0:0 e verificato. Non dipendere da un ID già completato che SLURM può aver rimosso:
+la ricevuta del checkout, lo SHA e la pulizia verificati sono il gate di questa fase.
+Il submitter impone job-name/comment con ID logico,
 prenota sotto lock e registra lo Slurm ID. In caso di risposta ambigua usare `--riconcilia`:
 non ripetere `sbatch`, non cambiare ID per aggirare la prenotazione. Un esito negativo non
 autorizza retry ciechi; conservare log/ricevute, diagnosticare e contabilizzare ogni eventuale
 nuova allocazione prima del rilancio. Raccogliere `sacct` dei job parent per il consuntivo,
 senza sommare nuovamente gli step `batch`/`extern`.
+
+**Esito operativo03/11:** checkout63369832 completato0:0 in34s, SHA ef8016a e pulizia
+confermati. Il primo invio del collaudo è stato rifiutato esplicitamente da SLURM con
+`Job dependency problem`: nessun ID GPU e nessuna allocazione. Correzione operativa:
+stesso ID logico con `--dopo-rifiuto`, senza la dipendenza dal checkout già verificato.
+Codice, output, campioni, risorse e budget invariati; non è un retry di un esperimento fallito.
 
 ## Condizioni ancora aperte prima del training scientifico
 
