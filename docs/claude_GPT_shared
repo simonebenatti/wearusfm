@@ -5122,6 +5122,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   consumate, 48 prenotate come tetto per i tre 19.618. Verificato nei config di campagna `masked_loss_radius: 0` nei tre bracci. Nessun
   risultato scientifico letto.
 
+### 2026-11-03 | Claude | `PartitionConfig` sui tre training a 19.618: etichetta di tutta la coda, non un limite dei nostri job (lettura chiesta da Simone)
+
+- Alle 19:17 semplicione ha segnalato che 63386315/63386337/63386403 (T25-L/T100-L/T100-G a 19.618) restano PENDING con motivo
+  passato da `Priority` a `PartitionConfig`, che non sapeva spiegare. Simone: «spiegami questo», «si ma cosa è prtionconfig?».
+  Letture di sola lettura 19:23–19:30, salvate in `~/wearusfm_local/logs/partitionconfig_20261103{,_b,_c}.txt`.
+- Richiesta dei job (`scontrol show job`): 1 nodo, 32 core, `mem=480G`, `gres/gpu:4`, 4 h, QOS `normal`, nessuna feature, prenotazione o
+  nodo richiesto; identica a quella dei tre 5.000 completati nel pomeriggio. Priorità 144.296 (63386337).
+- Partizione `boost_usr_prod`: State=UP, MaxTime 1-00:00:00, MaxNodes 64, MaxCPUsPerNode e MaxMemPerNode UNLIMITED, AllowQos/
+  AllowAccounts/AllowGroups ALL, AllocNodes ALL, ReqResv NO; 3.318 nodi da 514000 MB. Nessun limite della partizione è violato
+  dalla richiesta. `EnforcePartLimits=ANY`, SLURM 25.05.7, backfill con `bf_max_job_test=5000`, `bf_max_job_part=2000`,
+  `bf_max_job_user_part=20`.
+- Coda: 6.760 job in attesa con `PartitionConfig` (decine di utenti; QOS normal 5.747, lprod 783, geoin, lowprio, bprod) e 1.516 con
+  `Priority`. Il taglio è sull'ora di sottomissione: `PartitionConfig` sui job sottomessi fino alle ~17:50, `Priority` su quelli dalle
+  ~17:50–18:00 in poi (16:40–16:50: 591 PartitionConfig e 3 Priority; 18:00–18:10: 203 Priority e 0 PartitionConfig). L'etichetta è
+  stata quindi apposta a tutti i job allora in coda da un evento del cluster intorno alle 17:50 e non viene apposta ai nuovi:
+  adesso la partizione non blocca nulla.
+- L'etichetta non impedisce l'avvio: 139 job sottomessi prima delle 17:30 sono partiti dopo le 18:00, 460 avvii sulla partizione dopo
+  le 19:00, 36 job con `PartitionConfig` hanno già un'ora di avvio stimata. I nostri tre sono stati rivalutati alle 19:30:06
+  (`LastSchedEval`, scheduler Main) e restano idonei.
+- Stato reale: 0 nodi idle su 3.318 (3.027 allocati, 286 mixed, 4 planned, 1 draining: lrdn0112 «Kill task failed» 16:23); 2.824 job
+  `normal` in esecuzione. I tre job aspettano un nodo intero libero, come prima del cambio di etichetta.
+- Significato del codice: `WAIT_PART_CONFIG` è il codice generico di SLURM per «richiesta non compatibile con la configurazione della
+  partizione» quando il limite non ha un codice proprio (nodi `PartitionNodeLimit`, tempo `PartitionTimeLimit`, partizione giù o
+  inattiva). Nel ticket SchedMD 8416 (2020) lo sviluppatore M. Garey vede lo stesso motivo alternarsi tra «Resources» (scheduler
+  principale) e «PartitionConfig» (backfill) e lo definisce «mostly cosmetic», con i job che partono comunque.
+- Causa dell'evento delle 17:50: non verificata. Coincidenza plausibile, non provata: in `scontrol show reservation` compaiono
+  prenotazioni di manutenzione nuove rispetto a CLAUDE.md: `maint_4B1` 10/11 07:00 → 12/11 07:00 su lrdn[2701-3240] (540 nodi),
+  `maint_4B2` 12/11 07:00 → 14/11 07:00 su lrdn[3241-3420] (180 nodi), `maint_23112026_booster` 23/11 08:00 → 25/11 08:00 su
+  lrdn[0001-3456] (tutto il Booster) con DCGP (`maint_23112026_dcgp`, `maint_4NB-UPS`) e login/viz nelle stesse date;
+  `s_tra_mat_gpu` 05/11 10:00–17:30 su 10 nodi Booster. Nessuna tocca job da 4 h sottomessi oggi. Da riportare in CLAUDE.md
+  (riga «Manutenzione programmata», ferma a ottobre) se Simone concorda; il rinfresco di $SCRATCH del 12/11 non usa nodi Booster.
+- Conseguenze: nessuna azione (niente scancel, requeue, modifica delle risorse o risottomissione); semplicione continua ogni 15 min e
+  avvisa ad avvio e fine, trattando `PartitionConfig` come `Priority`. Spiegazione data a Simone in chat; semplicione avvisato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
