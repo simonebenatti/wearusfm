@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-03",
+  "tests": {
+    "passed": 8,
+    "seconds": 7.29,
+    "executed_by": "b19618_integrity",
+    "command": "env PYTHONPATH=src:tests/cpu PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_tokenizer_preflight.py",
+    "coverage": [
+      "feature moments independent oracle",
+      "query/target/pose support",
+      "bit-exact update and EMA vs plain trainer",
+      "masked-input perturbations",
+      "file pins",
+      "production CLI configuration reconstruction",
+      "real loader/pose tree full core run with no checkpoint"
+    ]
+  },
+  "independent_review": {
+    "reviewer": "critico",
+    "verdict": "favorable_no_material_blockers",
+    "corrected_finding": "Barrier outside each timed DDP segment prevents diagnostic imbalance contaminating measured update time; sum per-component rank maxima.",
+    "limitations": [
+      "three models resident memory is not single-arm peak",
+      "data wait measured with diagnostic slack is not full-throughput loader proof",
+      "64 batches do not exhaust training shape distribution"
+    ]
+  },
+  "launcher_syntax": "bash -n passed",
+  "diff_check": "passed",
+  "sha256": {
+    "scripts/tokenizer_preflight.py": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+    "tests/cpu/test_tokenizer_preflight.py": "fc28daebdb603fa648bd11b22348e285c50fcc33f93482044b5eed0cedba70cc",
+    "scripts/slurm/tokenizer_preflight.sbatch": "2ed4b7317e31306cd096420e21103d4b78f7f6a11a00799cd7f266a1c466b122",
+    "results/infra/tokenizer_execution_20261103/preflight_plan.json": "13ed48b6c88acc5fd6a9bc13e02d79287fc7d3225ec54b040bb8d5442dfa90e4",
+    "results/infra/tokenizer_execution_20261103/resource_policy.json": "2eca36ff192e62eb58fa23d15e2ba9c5b43fd2d6028152a1b0ec01f8b497b34c"
+  },
+  "remote_jobs_submitted": []
+}

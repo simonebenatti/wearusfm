@@ -178,6 +178,25 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 03/11/2026 — GPT: collaudo tokenizer pronto e verificato per la sottomissione
+
+Driver `scripts/tokenizer_preflight.py`, launcher e piano `docs/tokenizer_execution_20261103.md`:
+64 batch globali32, stesso stream per25lineare/100lineare/100GELU, trainer e optimizer reali,
+nessun checkpoint scientifico o lettura val.8 test passati in7,29s, incluso loader/posa reali
+su fixture e parità esatta con update non strumentato. Critico favorevole dopo correzione del
+timing DDP. Pin, configurazioni, protocollo e ricevuta test in `results/infra/tokenizer_execution_20261103/`.
+Riserva checkout2CPU/4G/10min e collaudo4GPU/32CPU/240G/30min: massimo2GPUh e0,333333coreh CPU-only.
+Lancio diretto già autorizzato; controlli anti-duplicazione e pubblicazione prima dell'invio.
+
+### 03/11/2026 — GPT: estensione del budget tokenizer autorizzata da Simone
+
+Simone: «puoi anche sforare il budget, non mi importa, ti autorizzo». Confermato il confronto
+dei tre bracci nuovi T25-L/T100-L/T100-G a19.618 passi, mantenendo controllo e dose uguali.
+Il residuo storico63,2925GPUh non è più un vincolo che impone il ripiego su B storico.
+Si pubblicano comunque tetti aggiornati di training e valutazioni dopo il timing; nessun
+secondo consenso necessario per questo confronto. Collaudo corrente massimo2GPUh invariato.
+L'estensione riguarda questa campagna, non altri esperimenti o retry senza diagnosi.
+
 ### 03/11/2026 — GPT: review Claude tokenizer risolta; avvio del collaudo autorizzato
 
 Letta la review Claude a59079a senza modificarne il ramo. Riprodotti rango, scale GELU e
@@ -5072,6 +5091,22 @@ Preparazione locale conclusa, nessun job remoto nuovo.5.000 passi screening;19.6
 Simone chiede di far revisionare la proposta a Claude prima di provarla e richiede il prompt da inoltrare. Preparato `docs/prompt_claude_review_tokenizer_20261102.md`: codice/protocollo congelati a c052792f0a796ba72d2804c81b3e5721a3010d93, sei domande su ipotesi non lineare, confronto a supporto comune, implementazione, dose, metriche e budget. Claude svolge sola review, eventuali test CPU mirati e consegna sul proprio ramo; GPT recepisce i rilievi e completa il collaudo. Nessun messaggio inviato a Claude da strumenti e nessun job lanciato; il prompt è pronto da inoltrare da Simone.
 
 ## 2) Problemi trovati
+
+### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
+
+Il critico ha individuato attese delle diagnostiche degli altri rank dentro gli all-reduce
+cronometrati. Aggiunte barriere fuori timer e somma dei massimi per componente: il costo
+delle diagnostiche resta separato. Memoria di tre modelli residenti e loader agevolato dalla
+strumentazione non certificano un training singolo a regime; limiti dichiarati nel report.
+Nessun difetto residuo rilevato prima della sottomissione. Nessun risultato di prestazione
+scientifica può essere dedotto da questi64batch tecnici.
+
+### 03/11/2026 — GPT: limite finanziario precedente superato da autorizzazione esplicita
+
+Il rischio di non far entrare tre bracci nel residuo63,2925GPUh non blocca più la campagna:
+Simone autorizza esplicitamente lo sforamento. Rimangono i gate tecnici, la contabilità e
+richieste di walltime realistiche; il preventivo completo non viene sostituito da un credito
+numerico inventato. Nessun motivo per ridurre la dose del controllo25ms per risparmio.
 
 ### 03/11/2026 — GPT: raggio corretto e limiti della review tokenizer
 

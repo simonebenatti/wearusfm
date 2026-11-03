@@ -5734,3 +5734,24 @@ train-only e alle fasi approvate entro il budget, senza nuova richiesta di conse
 ancora non raggiungibile nell'app; questa istruzione corrente autorizza GPT a eseguire direttamente
 la catena tokenizer tramite submitter e ledger comuni. Nessun job sottomesso in questo commit di
 review; piano esecutivo, SHA e ricevute vengono pubblicati prima delle rispettive sottomissioni.
+
+### Seguito03/11 — autorizzata l'estensione del budget per il confronto completo
+
+Simone: «puoi anche sforare il budget, non mi importa, ti autorizzo». Si mantengono tutti e tre
+i bracci nuovi fino a19.618 passi con valutazioni registrate, senza sacrificare il controllo25ms
+o sostituirlo con B storico. Il vecchio residuo63,2925GPUh rimane riferimento contabile,
+non cancello finanziario della campagna. Il collaudo resta limitato a2GPUh; i tetti completi
+saranno pubblicati dopo il timing senza richiedere altro consenso. L'estensione copre questo
+confronto, non nuove loss, altri esperimenti o ripartenze prive di diagnosi.
+
+### Collaudo esecutivo03/11 — codice e risorse fissati prima del lancio
+
+[Piano](tokenizer_execution_20261103.md), input e pin in
+`results/infra/tokenizer_execution_20261103/preflight_plan.json`.64batch globali32 condivisi
+dai tre bracci, aggiornamenti reali senza checkpoint o val, misure di scale/supporti/tempi.
+8 test pertinenti passati in7,29s, review indipendente favorevole dopo rettifica del timing
+DDP. Un checkout CPU2core/4G/10min, poi un job4A100/32core/240G/30min: tetto2GPUh e0,333333coreh
+CPU-only, più16coreh allocati insieme alle GPU. Pubblicare SHA e piano, usare ID unici
+TOKENIZER-checkout-20261103 e TOKENIZER-preflight-20261103 con submitter/ledger comuni.
+Il confronto scientifico resta di tre bracci nuovi a19.618; collaudo e preventivo aggiornato
+precedono i lanci lunghi, senza ulteriore consenso e con estensione del budget già autorizzata.
