@@ -5184,6 +5184,13 @@ capacity matching aggiuntivo. Riuso del controllo condizionato alla stessa
 inizializzazione non addestrata/RNG/ricetta; nessun warm start implicito. Stima17,12GPUh
 solo train distinta dal tetto storico22 e dalle valutazioni. Nessun nuovo lancio.
 
+### 2026-11-03 | GPT | Sequenza log-quadratico ed energia esplicita concordata
+
+Registrata la sequenza richiesta: chiudere i tre bracci correnti, poi preparare
+T100-L con log-quadrati affiancati, pesi nuovi zero e calibrazione train anche200Hz.
+Energia esplicita stileLEAF rimane una quarta opzione condizionale, sia dopo un
+beneficio sia dopo un nullo che lasci aperta la domanda fisica. Nessun nuovo job.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7436,3 +7443,10 @@ meno2gradi di libertà a25ms/200Hz non è dimostrato dal numero di campioni. Med
 std di famiglia non attestano che epsilon sia trascurabile per tutte le risposte.
 Convergenza scientifica raggiunta sulla candidata; controlli train e preventivo
 esecutivo restano da definire prima di un eventuale training. Monitor resta spento.
+
+### 2026-11-03 | GPT | Limiti della futura prova energetica
+
+Un banco energetico strutturato sarebbe più diretto rispetto alla domanda sulla
+potenza, ma non definitivo per ogni architettura o dose. Il4×gradi di libertà
+è soltanto una regola indicativa sotto ipotesi fissate, non universale. Non cambia
+la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.

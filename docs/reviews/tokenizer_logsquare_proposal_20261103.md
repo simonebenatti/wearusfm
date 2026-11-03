@@ -125,3 +125,25 @@ per costruire il preventivo della candidata, non nuovi job prenotati in questa n
 
 Review indipendente concorde sulla convergenza, sul riuso condizionato del controllo
 iniziale e sulla lettura secondaria esplorativa. Codice, job e monitor invariati.
+
+## Sequenza concordata e opzione energetica successiva
+
+Dopo l'ultimo riscontro riportato da Simone, la sequenza è: completare il confronto
+T25-L/T100-L/T100-G e le valutazioni previste, poi preparare l'unica candidata
+T100-L con64 risposte log-quadratiche affiancate, nuovi pesi a zero e identica
+inizializzazione non addestrata della parte condivisa. Controlli train anche a200Hz,
+preventivo separato training (stima/tetto), estrazioni e CPU.
+
+L'opzione «quarta», energie per banda esplicite in stile LEAF, resta condizionale:
+filtraggio strutturato/normalizzato, modulo quadrato, aggregazione temporale e
+compressione. Può seguire un beneficio della terza per approfondirne il meccanismo,
+oppure un suo nullo se si decide di affrontare direttamente la domanda energetica.
+Non viene implementata o lanciata automaticamente insieme alla terza. Le bande,
+le componenti apprendibili e i confronti richiedono un disegno proprio.
+
+La quarta risponde più direttamente alla domanda sulla potenza, ma un risultato
+non la chiude in senso universale: riguarda banco, dose, dati e valutazione provati.
+Anche l'aumento4× dei gradi di libertà passando25→100ms è una regola indicativa
+a banda e ipotesi fissate, non una proprietà di qualunque stimatore. Il conto
+2BT conB=70Hz dà3,5 e14; non sostituisce una stima dei gradi di libertà effettivi.
+Nessun nuovo job o ripristino del monitor automatico in questa registrazione.

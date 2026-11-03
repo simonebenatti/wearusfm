@@ -5828,3 +5828,15 @@ Ricevuta nel registro condiviso e nel repo; nessuna modifica della ricetta.
 Eliminata dall'app l'automazione completa-tokenizer-wearusfm su richiesta di Simone.
 I job SLURM continuano; nessun controllo o seguito automatico all'endpoint19618.
 La ridge non è ancora un risultato scientifico: il report verrà letto su ripresa della chat.
+
+## 03/11/2026 — Sequenza dopo il tokenizer e opzione energia
+
+Concordata la sequenza: finire il confronto a tre bracci, poi preparare T100-L più
+ramo log-quadratico a pesi inizialmente zero, stessa inizializzazione non addestrata
+e diagnostica train anche a200Hz. Base primariaT100-L fissata indipendentemente
+dai risultati correnti; non introdurre altre varianti contemporaneamente.
+La «quarta» opzione, energie esplicite con banco strutturato e aggregazione
+temporale stileLEAF, resta un seguito eventuale sia dopo un beneficio sia dopo un
+nullo della terza, se serve affrontare direttamente la domanda sulla potenza.
+Nessun automatismo di lancio della quarta; nessuna pretesa di conclusione universale.
+Dettagli e limiti in reviews/tokenizer_logsquare_proposal_20261103.md. Monitor spento.
