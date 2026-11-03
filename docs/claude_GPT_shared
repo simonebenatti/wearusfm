@@ -5167,6 +5167,14 @@ Eliminata l'automazione completa-tokenizer-wearusfm dopo il lancio, come richies
 da Simone; nessuna cancellazione SLURM, nessuna raccolta o valutazione automatica
 successiva. Checkpoint5k completi, continuazioni19618 già sottomesse e da non duplicare.
 
+### 2026-11-03 | GPT | Discussione della proposta log-quadratica di Claude
+
+Valutazione in docs/reviews/tokenizer_logsquare_proposal_20261103.md: favorevole come
+candidata separata con coefficienti lineari conservati,24.576pesi aggiuntivi. Verificati
+codice, collaudo reale e fonti primarie emg2qwerty/LEAF. Distinti quadrato del coefficiente
+ed energia aggregata; log comprime ma non standardizza. Nessuna implementazione o prova
+nuova autorizzata da questa discussione; campagna in corso e monitor spento invariati.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7403,3 +7411,11 @@ Ridge63405791 inviata con successo; nessun difetto rilevato nei gate. Lo spegnim
 dei controlli è una richiesta esplicita di Simone. Non dichiarare conclusa la
 campagna scientifica: restano lettura ridge5k ed estrazioni/valutazioni19618, senza
 seguito automatico. I risultati5k restano descrittivi e non selezionano un vincitore.
+
+### 2026-11-03 | GPT | Limiti della proposta log-quadratica
+
+Scale sintetiche non universali: nel campione iniziale reale emg2pose T100-L mediane
+std8,41/2,20/1,02. Epsilon e momenti gaussiani non si trasferiscono automaticamente.
+Overlap/code impediscono di equiparare patch nascosta e risposta nulla. Un risultato
+nullo non esclude l'utilità di energia esplicita; concatenare non recupera informazione
+persa prima della risposta. Nessun difetto dimostrato nei run già eseguiti.
