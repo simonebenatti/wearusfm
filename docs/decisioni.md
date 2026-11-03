@@ -5792,3 +5792,7 @@ ed evidenze pubblicati prima degli invii. Nessuna modifica scientifica ad afb644
 Tre extract-pose da1GPU/8CPU/100G/45min:2,25GPUh già previsti; nuovo checkout
 2CPU/4G/10min aggiunge0,333333coreh CPU-only. Review favorevole. Si procede con
 l'autorizzazione esistente; continuazioni19618 già in coda e non subordinate ai risultati5k.
+
+Seguito: checkout63399280 completo18s; estrazioni teacher posa5k **63399428/63399479/63399484**
+sottomesse da f2061b8 e tutte RUNNING al controllo. Ricevute salvate; continuazioni19618
+ancora in coda. I tre job consumano la riserva già pubblicata, nessun duplicato.

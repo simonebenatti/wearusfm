@@ -89,3 +89,29 @@ extract-pose e il nuovo checkout. Continuazioni19618 PENDING/Priority, non dupli
 Prima di inviare controllare gli ID TOKENIZER-eval5k-checkout-20261103 e
 TOKENIZER-<ARM>-pose5000-20261103 nel ledger: la sottomissione può essere avvenuta
 dopo questo documento. Ricevute e ID vanno raccolti dopo gli invii.
+
+## Sottomissioni eseguite
+
+Checkout **63399280 COMPLETED0:0**,18s,0,010000coreh CPU-only, SHA
+**f2061b8bc91a6355213793a9719121135ad48fa2** verificato, pulito e in sola lettura.
+Pubblicato prima dei lanci su origin e nuovo deploy/tokenizer-eval5k-20261103.
+
+| Braccio | Estrazione posa5k | Primo stato verificato |
+|---|---:|---|
+| T25-L |63399428|RUNNING|
+| T100-L |63399479|RUNNING|
+| T100-G |63399484|RUNNING|
+
+Tre invii riusciti tramite submitter/ledger comuni, allocazioni1GPU/8CPU/100G.
+Ricevute originali in results/infra/tokenizer_evaluation_20261103/submission/,
+indice submissions_5000.json. Continuazioni63386315/63386337/63386403 ancoraPENDING.
+Nessun risultato scientifico delle estrazioni o ridge ancora disponibile.
+
+**Non duplicare queste tre estrazioni.** Il checkout di valutazione resta f2061b8;
+le modifiche di soli documenti successive non vanno deployate sopra il checkout attivo.
+Dopo tutte e tre le ricevute complete, raccogliere e verificare cache/provenienze,
+pinnare sei cache e proseguire con benchmark train-only e ridge entro i tetti approvati.
+Per stato e log preferire comandi semplici: ssh leonardo sacct/squeue/tail/cat con
+argomenti letterali. Il 03/11 gli script multilinea annidati hanno prodotto richieste
+di permesso tecnico; gli invii e le letture semplici successivi sono passati usando
+le regole persistenti esistenti. Nessuna nuova firma scientifica o operativa necessaria.

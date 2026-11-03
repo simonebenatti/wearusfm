@@ -1,0 +1,62 @@
+{
+  "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+  "training_code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb",
+  "checkout": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103",
+  "plan": "results/infra/tokenizer_evaluation_20261103/extraction_plan_5000.json",
+  "plan_sha256": "c0e5d501cd42c81d60aaa390098644ec5e3bf351f3e06031233647934dd2e985",
+  "recorded_at_utc": "2026-11-03T11:56:23.475352+00:00",
+  "jobs": {
+    "TOKENIZER-eval5k-checkout-20261103": 63399280,
+    "TOKENIZER-T25-L-pose5000-20261103": 63399428,
+    "TOKENIZER-T100-L-pose5000-20261103": 63399479,
+    "TOKENIZER-T100-G-pose5000-20261103": 63399484
+  },
+  "gpu_hours_reserved_evaluation_5000": 2.25,
+  "checkout_actual_core_hours": 0.01,
+  "scientific_results_available": false,
+  "status_checked_at_utc": "2026-11-03T11:57:09.688131+00:00",
+  "initial_status": {
+    "63386315": {
+      "state": "PENDING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "allocated_tres": ""
+    },
+    "63386337": {
+      "state": "PENDING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "allocated_tres": ""
+    },
+    "63386403": {
+      "state": "PENDING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "allocated_tres": ""
+    },
+    "63399280": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 18,
+      "allocated_tres": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1"
+    },
+    "63399428": {
+      "state": "RUNNING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 44,
+      "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1"
+    },
+    "63399479": {
+      "state": "RUNNING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 8,
+      "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1"
+    },
+    "63399484": {
+      "state": "RUNNING",
+      "exit_code": "0:0",
+      "elapsed_seconds": 8,
+      "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1"
+    }
+  }
+}

@@ -64,3 +64,20 @@ Dopo tutte e tre le ricevute di estrazione complete: confronto supporti/target,
 piano CPU con sei cache reali, benchmark train-only e ridge a crop6 entro i tetti
 pubblicati. P1/P2 rimangono riservati a19.618. Lo screening5k è descrittivo: nessun
 verdetto finale o selezione del vincitore, nessuna nuova loss o dose. Nessun retry cieco.
+
+## Sottomissioni eseguite
+
+Checkout **63399280 COMPLETED0:0**,18s,0,010000coreh CPU-only, SHA
+**f2061b8bc91a6355213793a9719121135ad48fa2** verificato, pulito e in sola lettura.
+Pubblicato prima dei lanci su origin e nuovo deploy/tokenizer-eval5k-20261103.
+
+| Braccio | Estrazione posa5k | Primo stato verificato |
+|---|---:|---|
+| T25-L |63399428|RUNNING|
+| T100-L |63399479|RUNNING|
+| T100-G |63399484|RUNNING|
+
+Tre invii riusciti tramite submitter/ledger comuni, allocazioni1GPU/8CPU/100G.
+Ricevute originali in results/infra/tokenizer_evaluation_20261103/submission/,
+indice submissions_5000.json. Continuazioni63386315/63386337/63386403 ancoraPENDING.
+Nessun risultato scientifico delle estrazioni o ridge ancora disponibile.
