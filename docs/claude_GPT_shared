@@ -5110,6 +5110,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   come passo successivo. Confronto con la review del critico: concordo sul codice; le domande di disegno non vi erano trattate. Nessun lancio,
   nessuna modifica al runtime; consegna sul mio ramo, push su origin.
 
+### 2026-11-03 | Claude | Monitoraggio dei tre training del tokenizer a 19.618 affidato a semplicione (richiesta di Simone)
+- Simone, 03/11/2026, dopo lo stato della coda: «bene, allora lancia il monitoring su semplicione, ogni 15 minuti cosi so quando finisce».
+- Brief inviato alle 14:24 alla sessione `semplicione` (consegnato, turno avviato): sorveglianza in sola lettura ogni 15 minuti dei job
+  63386315 (T25-L), 63386337 (T100-L), 63386403 (T100-G), tutti PENDING (Priority) alla lettura, walltime 4 h su 4 GPU; avviso nella sua chat
+  e a me a ogni avvio, a ogni fine (stato, ExitCode, Elapsed, GPU-ore) e quando sono finiti tutti e tre. Nessuna sottomissione, cancellazione
+  o avvio automatico: GPT ha disattivato il proprio monitor su richiesta di Simone, questo e' solo un avviso; le dodici estrazioni e la lettura
+  dell'endpoint restano di GPT col via di Simone.
+- Stato letto oggi (squeue/sacct, sola lettura): nessun job nostro in esecuzione; COMPLETED 0:0 checkout, preflight, i tre screening a 5.000
+  (1 h 04-05 su 4 GPU), le tre estrazioni di posa a 5.000 (30 min su 1 GPU), checkout CPU, validazione, benchmark e ridge; circa 14,7 GPU-ore
+  consumate, 48 prenotate come tetto per i tre 19.618. Verificato nei config di campagna `masked_loss_radius: 0` nei tre bracci. Nessun
+  risultato scientifico letto.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
