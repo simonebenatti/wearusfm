@@ -5112,6 +5112,17 @@ inizialiPENDING/Priority, continuazioniPENDING/Dependency.66GPUh massime trainin
 nessun duplicato, valutazioni ancora da sottomettere dopo i checkpoint. Handoff in
 docs/tokenizer_handoff_20261103.md; tutte le autorizzazioni sono già acquisite.
 
+### 2026-11-03 | GPT | Tokenizer5k completo e valutazioni posa pronte
+
+T25-L63385800/T100-L63386190/T100-G63386228 COMPLETED0:0,3834/3926/3916s,
+12,973333GPUh totali. Nove ricevute/config/summary raccolte con parità SHA; checkpoint
+nominati5000 ricontrollati, configurazioni complete conformi ad afb644e, nessun STOP.
+Tre pose teacher train/val preparate con pin effettivi, codice scientifico invariato,
+launcher sottile e review del critico favorevole. Piano e risorse pubblicati prima del
+lancio:2,25GPUh già nella matrice8,25, nuovo checkout+0,333333coreh CPU-only.
+Dettagli: docs/tokenizer_evaluation_5000_execution_20261103.md. Continuazioni già in
+coda, nessun duplicato e nessuna selezione dallo screening. Nessun nuovo consenso.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7303,3 +7314,14 @@ per continuare. Gli IC finali saranno condizionati a un solo seme e a val già u
 Tutti gli invii hanno ID SLURM univoco e stato ledger sottomesso. L’attesaPriority non è
 un errore, e i log non esistono prima dell’avvio. Non confondere sei job in coda con training
 completati o con le dodici estrazioni, ancora da eseguire. Nessuna nuova autorizzazione richiesta.
+
+### 2026-11-03 | GPT | Tokenizer5k: integrità verificata, prestazioni da valutare
+
+Nessun difetto riscontrato nelle tre fasi iniziali; il completamento tecnico non
+misura efficacia della finestra o GELU. Valutazioni teacher5k ancora da eseguire;
+P1/P2 solo19618. La continuazione usa file mobili, le estrazioni usano checkpoint
+nominati e snapshot immutabili. I tetti originali restano: nessun retry automatico.
+La lettura remota di stato ha richiesto il permesso tecnico della sandbox nonostante
+l'autorizzazione operativa già presente: Simone ha contestato la richiesta ripetuta.
+La regola locale ssh/leonardo esiste; preferire invocazioni semplici riconoscibili
+senza confondere un eventuale blocco dell'ambiente con una nuova firma scientifica.

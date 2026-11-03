@@ -78,3 +78,14 @@ significativo, un problema che richiede intervento o risultati conclusivi. Disat
 automatico alla conclusione o quando serve una nuova scelta scientifica di Simone.
 
 Seguito automatico attivo: `completa-tokenizer-wearusfm`, controllo ogni15min nella stessa chat, silenzioso sugli stati invariati. Disattivarlo alla chiusura.
+
+## Aggiornamento delle11:49UTC:5k completo
+
+Tutti e tre i5k COMPLETED0:0,3834/3926/3916s. Evidenze e pin verificati in
+results/infra/tokenizer_execution_20261103/5000/ e
+results/infra/tokenizer_evaluation_20261103/extraction_plan_5000.json.
+Leggere docs/tokenizer_evaluation_5000_execution_20261103.md per i prossimi tre
+extract-pose e il nuovo checkout. Continuazioni19618 PENDING/Priority, non duplicare.
+Prima di inviare controllare gli ID TOKENIZER-eval5k-checkout-20261103 e
+TOKENIZER-<ARM>-pose5000-20261103 nel ledger: la sottomissione può essere avvenuta
+dopo questo documento. Ricevute e ID vanno raccolti dopo gli invii.

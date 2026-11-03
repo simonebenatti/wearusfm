@@ -5783,3 +5783,12 @@ Checkout63385655 COMPLETED0:0,32s; codiceafb644e.
 
 Tutti sottomessi via submitter/ledger, continuazioni automaticheafterok. Nessuna nuova firma,
 nessun risultato scientifico ancora. Valutazioni autorizzate in attesa degli artefatti effettivi.
+
+## 03/11/2026 — Tokenizer:5k completo, tre estrazioni teacher posa
+
+Tutti i tre screening COMPLETED0:0; consuntivo12,973333GPUh, checkpoint e snapshot
+verificati. [Piano di lancio](tokenizer_evaluation_5000_execution_20261103.md), hash
+ed evidenze pubblicati prima degli invii. Nessuna modifica scientifica ad afb644e.
+Tre extract-pose da1GPU/8CPU/100G/45min:2,25GPUh già previsti; nuovo checkout
+2CPU/4G/10min aggiunge0,333333coreh CPU-only. Review favorevole. Si procede con
+l'autorizzazione esistente; continuazioni19618 già in coda e non subordinate ai risultati5k.
