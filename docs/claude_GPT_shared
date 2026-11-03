@@ -5159,6 +5159,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Leonardo) in questo commit. I tre job sono partiti alle 20:18:41 con l'etichetta ancora addosso (lrdn2072, lrdn2107, lrdn2122;
   tetto del walltime 00:18): conferma pratica della lettura. Semplicione avvisa alla fine di ciascuno.
 
+### 2026-11-03 | Claude | Curve di training dei tre bracci del tokenizer (passi 1–15.300) contro B/B19618 (richiesta di Simone)
+
+- Simone (22:30 circa): «mi sembra che la loss che si vede faccia abbastanza cacare», sul grafico di semplicione `tok_loss_20261103.png`
+  (ripresa dal 5.000, valori per batch ogni 50 passi, media mobile su 10 punti). Letture di sola lettura dei log `tokenizer_train_*.out`
+  dei sei job e dei log di riferimento `train_ddp_62523672.out` (B, passi 1–5.000) e `pose_b19618_62582916.out` (B19618, 5.050–19.600),
+  salvate in `~/wearusfm_local/logs/tok_curves_20261103.txt`; analisi `~/wearusfm_local/logs/tok_curves_compare_20261103.py`, figura
+  `tok_loss_vs_ref_20261103.png`.
+- Composizione (codice afb644e, `src/wearusfm/training/jepa.py` r. 547–556; config dei bracci): totale = 0 × JEPA + 0,2 × ancore + 1,0 × posa
+  (`jepa_weight` 0, `anchor_weight` 0,2, `pose_weight` 1, target b). Il termine «jepa» dei log è calcolato ma non ottimizzato. Schedule WSD
+  con `total_steps` 49.046 e `decay_fraction` 0,2: LR costante 1e-4 dal passo 1.962 al 39.237; il checkpoint 19.618 cade a metà della fase
+  stabile, senza decadimento prima dell'endpoint, come per B19618.
+- T25-L riproduce B/B19618 passo per passo: differenza appaiata sul totale +0,003 ± 0,004 (passi 5.001–15.299, n = 204), correlazione
+  0,989; i picchi cadono agli stessi passi nei quattro run (5450, 5750, 6800, 8800, 14050, 14100): stesso seme, stessi batch. La risalita
+  13.000–15.000 c'è anche nel riferimento (1,868 contro 1,769 nel bin precedente), che poi scende a 1,79 fra 15.000 e 19.000. Il rumore per
+  punto (sd 0,3–0,4) è del batch 32 globale loggato per batch.
+- Differenze appaiate sul totale (passi 5.001–15.299, n = 199): T100-L − T25-L −0,016 ± 0,005; T100-G − T25-L −0,081 ± 0,006; T100-G − T100-L
+  −0,065 ± 0,006. Sul termine jepa (non ottimizzato): T100-L − T25-L +0,0022 ± 0,0003; T100-G − T25-L −0,0008 ± 0,0003. Il termine jepa sale
+  in tutti i run, riferimento compreso (0,040 a 4.000 → 0,063 a 19.000).
+- Lettura: curve della ricetta B alla stessa dose, nessun segno di instabilità o divergenza; T100-G adatta un po' meglio ancore e posa in
+  training, T100-L quasi non si distingue da T25-L. La loss di training non è un criterio: la lettura resta agli endpoint 19.618 sulle sonde
+  congelate (protocollo GPT). Nessuna azione, nessuna proposta di lancio.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
