@@ -1,0 +1,31 @@
+== 1. rango effettivo del banco (64 kernel) sul supporto numerico; soglie 1e-2 e 1e-3 del primo valore singolare ==
+   energia del kernel fuori dalla finestra nominale e oltre 0,5 / 1,5 / 2,5 patch dal centro della patch (raggio 0 / 1 / 2)
+finestra   25 ms  fs   200 Hz  campioni nominali   5  supporto  46  rango 1e-2  7  1e-3  8  per famiglia {'fourier': 7, 'spline': 6, 'mlp': 6}  fuori nominale  3.7%  oltre 0,5/1,5/2,5 patch  3.7%  0.5%  0.1%
+finestra   25 ms  fs  1000 Hz  campioni nominali  25  supporto 226  rango 1e-2 23  1e-3 27  per famiglia {'fourier': 22, 'spline': 16, 'mlp': 9}  fuori nominale  0.1%  oltre 0,5/1,5/2,5 patch  0.1%  0.0%  0.0%
+finestra   25 ms  fs  2000 Hz  campioni nominali  50  supporto 451  rango 1e-2 36  1e-3 40  per famiglia {'fourier': 24, 'spline': 16, 'mlp': 9}  fuori nominale  0.0%  oltre 0,5/1,5/2,5 patch  0.0%  0.0%  0.0%
+finestra  100 ms  fs   200 Hz  campioni nominali  20  supporto  62  rango 1e-2 19  1e-3 22  per famiglia {'fourier': 18, 'spline': 19, 'mlp': 13}  fuori nominale  0.2%  oltre 0,5/1,5/2,5 patch 42.7%  0.9%  0.1%
+finestra  100 ms  fs  1000 Hz  campioni nominali 100  supporto 302  rango 1e-2 53  1e-3 63  per famiglia {'fourier': 24, 'spline': 24, 'mlp': 16}  fuori nominale  0.0%  oltre 0,5/1,5/2,5 patch 41.1%  0.3%  0.0%
+finestra  100 ms  fs  2000 Hz  campioni nominali 200  supporto 601  rango 1e-2 55  1e-3 64  per famiglia {'fourier': 24, 'spline': 24, 'mlp': 16}  fuori nominale  0.0%  oltre 0,5/1,5/2,5 patch 41.2%  0.3%  0.0%
+== 2. punto di lavoro della GELU: deviazione per feature di fe_gain * e(x) su rumore a banda (20-450 Hz, adattata alla Nyquist) ==
+finestra 25 ms: fe_gain = 982.4
+   fs   200: std globale 1.19; quantili 10/50/90 per feature 0.53/0.94/1.86; fourier min/med/max 0.54/1.31/2.55; spline min/med/max 0.19/0.65/1.35; mlp min/med/max 0.50/0.86/1.79; |GELU(x)-0,5x|/|x| 0.37
+   fs  1000: std globale 0.99; quantili 10/50/90 per feature 0.29/0.56/1.62; fourier min/med/max 1.06/1.39/2.22; spline min/med/max 0.26/0.41/0.66; mlp min/med/max 0.21/0.38/0.72; |GELU(x)-0,5x|/|x| 0.35
+   fs  2000: std globale 0.99; quantili 10/50/90 per feature 0.30/0.59/1.61; fourier min/med/max 1.05/1.43/2.14; spline min/med/max 0.28/0.43/0.72; mlp min/med/max 0.22/0.40/0.75; |GELU(x)-0,5x|/|x| 0.35
+finestra 100 ms: fe_gain = 548.7
+   fs   200: std globale 1.00; quantili 10/50/90 per feature 0.19/0.44/1.75; fourier min/med/max 0.92/1.49/2.28; spline min/med/max 0.18/0.38/0.61; mlp min/med/max 0.10/0.21/0.43; |GELU(x)-0,5x|/|x| 0.35
+   fs  1000: std globale 1.00; quantili 10/50/90 per feature 0.09/0.27/1.71; fourier min/med/max 1.26/1.57/2.02; spline min/med/max 0.20/0.26/0.32; mlp min/med/max 0.07/0.09/0.18; |GELU(x)-0,5x|/|x| 0.37
+   fs  2000: std globale 1.00; quantili 10/50/90 per feature 0.09/0.28/1.70; fourier min/med/max 1.20/1.60/2.03; spline min/med/max 0.21/0.27/0.33; mlp min/med/max 0.07/0.09/0.18; |GELU(x)-0,5x|/|x| 0.37
+== 3. query con raggio 2 rispetto alle patch nascoste (raggio 0): quote D10 0.15/0.25/0.2/0.4, ratio 0.5, RVQ spento, 200 estrazioni per riga ==
+montaggio              patch  nascoste  query r2/nascoste   corte   medie  lunghe   spaz.  finestre senza query
+EPN myo8 (8 ch)           40     51.8%              77.8%     24%     69%     87%    100%                  0.0%
+EPN myo8 (8 ch)           80     51.2%              77.3%     24%     67%     91%    100%                  0.0%
+EPN myo8 (8 ch)          160     51.2%              79.3%     25%     68%     95%    100%                  0.0%
+emg2pose (16 ch)          40     51.3%              76.6%     22%     68%     87%    100%                  0.0%
+emg2pose (16 ch)          80     51.3%              78.5%     25%     68%     91%    100%                  0.0%
+emg2pose (16 ch)         160     51.1%              79.8%     25%     68%     95%    100%                  0.0%
+NinaPro DB2 (12 ch)       40     51.3%              78.4%     25%     68%     87%    100%                  0.0%
+NinaPro DB2 (12 ch)       80     51.2%              79.4%     25%     69%     91%    100%                  0.0%
+NinaPro DB2 (12 ch)      160     51.3%              80.0%     27%     68%     95%    100%                  0.0%
+CapgMyo (128 ch)          40     50.9%              79.3%     27%     70%     87%    100%                  0.0%
+CapgMyo (128 ch)          80     50.8%              80.2%     28%     69%     91%    100%                  0.0%
+CapgMyo (128 ch)         160     50.8%              80.8%     28%     69%     95%    100%                  0.0%

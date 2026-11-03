@@ -178,6 +178,25 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 03/11/2026 — GPT: review Claude tokenizer risolta; avvio del collaudo autorizzato
+
+Letta la review Claude a59079a senza modificarne il ramo. Riprodotti rango, scale GELU e
+conteggi sintetici; risposta completa in `docs/reviews/risposta_claude_tokenizer_20261103.md`.
+Accolto raggio esplicito0 con JEPA0, conservando default storico e guardia con JEPA positivo;
+validazione CLI dopo i pesi effettivi. Tre configurazioni aggiornate in
+`results/infra/tokenizer_review_20261103/`, query identiche e posa invariata.94 test passati,
+2 DDP esclusi da questa riesecuzione; critico favorevole sulla correzione e sulla lettura.
+EPN-612 diventa domanda principale distinta dalla posa; gain storico conservato, controllo
+delle scale sui dati reali prima di ogni eventuale nuova normalizzazione. Corretta la base
+del preventivo:2,395GPUh storiche erano valutazioni di due encoder, non di uno.
+
+Simone conferma: «va bene, appena fatto lancia pure, hai gia tutti i miei permessi».
+Si completa il collaudo train-only e il preventivo misurato nel perimetro approvato, senza
+richiedere un altro consenso. Chat semplicione ancora non raggiungibile; GPT procede direttamente
+per questa catena tramite submitter/ledger comuni sulla base dell'istruzione corrente.
+In questa consegna di review nessun job ancora sottomesso: il seguito esecutivo avrà SHA,
+risorse e ricevute distinti. Nessun training lungo prima del preventivo completo.
+
 ### 02/11/2026 — GPT: tabella aggiornata con la prossima priorità proposta
 
 Su richiesta di Simone, aggiunta al piano scientifico la tabella «Cosa facciamo adesso»:
@@ -5053,6 +5072,19 @@ Preparazione locale conclusa, nessun job remoto nuovo.5.000 passi screening;19.6
 Simone chiede di far revisionare la proposta a Claude prima di provarla e richiede il prompt da inoltrare. Preparato `docs/prompt_claude_review_tokenizer_20261102.md`: codice/protocollo congelati a c052792f0a796ba72d2804c81b3e5721a3010d93, sei domande su ipotesi non lineare, confronto a supporto comune, implementazione, dose, metriche e budget. Claude svolge sola review, eventuali test CPU mirati e consegna sul proprio ramo; GPT recepisce i rilievi e completa il collaudo. Nessun messaggio inviato a Claude da strumenti e nessun job lanciato; il prompt è pronto da inoltrare da Simone.
 
 ## 2) Problemi trovati
+
+### 03/11/2026 — GPT: raggio corretto e limiti della review tokenizer
+
+Raggio2 restringeva inutilmente le query della ricetta B con JEPA spento: corretto con override0
+esplicito, nessun cambio ai default o ai run passati. La CLI doveva applicare il peso JEPA prima
+di validare il raggio; regressioni pertinenti ora verdi. Parità esatta di loss e gradienti T25
+storico/override0 verificata; gli artefatti02/11 rimangono storico, usare quelli03/11.
+Standardizzare ogni feature cambierebbe inizializzazione e ottimizzazione anche del controllo25ms:
+non viene introdotto automaticamente. Replica a stesso seme non stima variabilità fra training;
+non inferiorità con margine1pp ammette esito irrisolto. EPN a200Hz non è un esperimento causale sulla
+sola frequenza. NinaPro DB5 è presente nel pretraining con quota nominale2,15%, esposizione realizzata
+ancora da misurare. Budget tre bracci ancora stretto dopo la rettifica del doppio conto valutazioni;
+nessun ripiego sul controllo storico selezionato sulla base di nuovi risultati.
 
 ### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
 

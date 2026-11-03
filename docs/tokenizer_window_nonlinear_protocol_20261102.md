@@ -1,5 +1,12 @@
 # Tokenizer: 25/100 ms e non linearità — protocollo proposto del 02/11/2026
 
+**Aggiornamento03/11 dopo la review Claude:** questo testo conserva la proposta iniziale.
+Per il seguito vale l'[emendamento e risposta punto per punto](reviews/risposta_claude_tokenizer_20261103.md):
+raggio0 esplicito nei tre bracci con JEPA0, EPN-612 come domanda principale distinta dalla posa,
+gain scalare conservato e nessun pavimento statistico da una sola replica. Usare le
+[configurazioni aggiornate](../results/infra/tokenizer_review_20261103/comparison_configurations.json),
+non i JSON del02/11 a raggio2. Nessun nuovo training è stato lanciato.
+
 **Stato: bozza scientifica concreta, prima dei nuovi risultati; non è un piano di sottomissione.**
 Simone ha autorizzato di procedere con 100 ms e passo 25 ms e di provare successivamente un tokenizer
 temporale non lineare, possibilmente apprendibile. Questa bozza traduce la direzione autorizzata in

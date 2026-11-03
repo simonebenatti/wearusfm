@@ -70,7 +70,9 @@ class JEPAConfig:
     # termine (il default). Richiede `FMConfig.pose_head` e i target di posa nel batch (`PretrainBatch.pose`)
     pose_weight: float = 0.0
     # Confronti fra tokenizer (02/11): stesso supporto delle query in tutti i bracci.
-    # None conserva il raggio nominale del modello; un override puo' solo restringere il supporto.
+    # None conserva il raggio nominale storico del modello, anche con JEPA spenta.
+    # Un override puo' ampliare il supporto sotto quel raggio solo con jepa_weight = 0:
+    # in B le query supervisionano ancore fisiche, non latenti del teacher.
     # Non cambia maschera d'ingresso, target o supporto della posa.
     masked_loss_radius: int | None = None
 
@@ -96,10 +98,16 @@ class JEPAConfig:
 
 
 def masked_query_radius(cfg: JEPAConfig, model_cfg: FMConfig) -> int:
-    """Raggio comune a conteggi e loss effettiva; mai meno della protezione nominale del tokenizer."""
+    """Raggio comune a conteggi e loss effettiva; None conserva il comportamento storico.
+
+    Con JEPA attiva il raggio non puo' scendere sotto la protezione nominale del
+    tokenizer. Con JEPA spenta un override esplicito puo' includere tutte le query
+    nascoste per le ancore; maschera d'ingresso e supporto della posa non cambiano.
+    """
     radius = model_cfg.core_radius if cfg.masked_loss_radius is None else cfg.masked_loss_radius
-    if radius < model_cfg.core_radius:
-        raise ValueError(f"masked_loss_radius {radius} inferiore al core_radius nominale {model_cfg.core_radius}")
+    if radius < model_cfg.core_radius and cfg.jepa_weight > 0:
+        raise ValueError(f"masked_loss_radius {radius} inferiore al core_radius nominale {model_cfg.core_radius}: "
+                         "consentito solo con jepa_weight = 0")
     return radius
 
 

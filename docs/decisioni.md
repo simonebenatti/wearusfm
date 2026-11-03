@@ -5712,3 +5712,25 @@ Verifica:129test distinti passati; D8 stesso segnale anche dopoGELU, gradienti a
 ## 02/11/2026 — Review Claude prima della prova tokenizer
 
 Simone: «bene allora la facciamo revisionare a claude poi la proviamo?» e «preparami il prompt per claude per fargli fare la revisione». Preparato [prompt di review](prompt_claude_review_tokenizer_20261102.md) sul commit scientifico c052792, senza modifiche al runtime. Consegna Claude limitata a review, test CPU pertinenti e registro/commit/push; nessun esperimento o correzione affidata implicitamente a Claude. Dopo la review GPT risolve eventuali rilievi e completa collaudo e preventivo nel perimetro già autorizzato. Nessuna nuova sottomissione in questa consegna.
+
+## 03/11/2026 — Review Claude tokenizer recepita e seguito autorizzato
+
+Review Claude a59079a letta e verificata; [risposta punto per punto](reviews/risposta_claude_tokenizer_20261103.md).
+Rango e scale sintetiche riprodotti. Accolto raggio0 esplicito per tutti i bracci con JEPA0;
+default invariato, guardia storica con JEPA positivo, validazione CLI dopo applicazione dei pesi.
+94 test passati e review indipendente favorevole. Le [configurazioni03/11](../results/infra/tokenizer_review_20261103/comparison_configurations.json)
+sostituiscono per l'esecuzione quelle02/11, che rimangono conservate. EPN-612 è domanda principale
+distinta dalla regressione di posa; UCI secondario. Gain scalare storico invariato: prima si misurano
+le scale GELU su train reale, nessuna standardizzazione aggiunta automaticamente.
+
+Una replica a stesso seme è un controllo tecnico, non un pavimento di rumore.2% resta grandezza
+pratica proposta, IC condizionati ai checkpoint; non inferiorità1pp ammette esito irrisolto.
+Rettifica costo: valutazioni storiche2,395GPUh riguardavano due encoder. Tre bracci completi restano
+vicini al residuo63,2925GPUh e richiedono timing e tetti di training/valutazione prima del lancio.
+Nessuna scelta automatica del disegno a due bracci con B storico.
+
+Simone: «va bene, appena fatto lancia pure, hai gia tutti i miei permessi». Si procede al collaudo
+train-only e alle fasi approvate entro il budget, senza nuova richiesta di consenso. Semplicione
+ancora non raggiungibile nell'app; questa istruzione corrente autorizza GPT a eseguire direttamente
+la catena tokenizer tramite submitter e ledger comuni. Nessun job sottomesso in questo commit di
+review; piano esecutivo, SHA e ricevute vengono pubblicati prima delle rispettive sottomissioni.

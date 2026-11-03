@@ -67,7 +67,8 @@ def build_parser() -> argparse.ArgumentParser:
                     help="attivazione dopo i filtri temporali apprendibili e il gain, prima della proiezione; default identity storico")
     ap.add_argument("--masked-loss-radius", type=int, default=None,
                     help="patch nascoste richieste per lato delle query JEPA/ancore/RVQ; per confronti a supporto comune, "
-                         "mai inferiore al raggio nominale del tokenizer. Default: raggio nominale. Non cambia il supporto posa")
+                         "con JEPA attivo non inferiore al raggio nominale; con JEPA spento e' ammesso anche 0 esplicito. "
+                         "Default: raggio nominale storico. Non cambia il supporto posa")
     ap.add_argument("--pose-root", default=None,
                     help="R3 (seconda ondata del pilot degli obiettivi, firmata il 26/10/2026): albero della posa di emg2pose scritto da "
                          "scripts/ingest_emg2pose_pose.py (con pose_stats.json); accende la testa di posa e il suo termine; default nessuno")
@@ -172,7 +173,6 @@ def build_config(args, error=None) -> "R.RunConfig":
     if getattr(args, "masked_loss_radius", None) is not None:
         try:
             cfg = replace(cfg, jepa=replace(cfg.jepa, masked_loss_radius=args.masked_loss_radius))
-            R.masked_query_radius(cfg.jepa, cfg.model)
         except ValueError as e:
             fail(f"--masked-loss-radius: {e}")
     if getattr(args, "mask_shares", None) is not None:
@@ -190,6 +190,10 @@ def build_config(args, error=None) -> "R.RunConfig":
             cfg = replace(cfg, jepa=replace(cfg.jepa, **weights))
         except ValueError as e:
             fail(f"--anchor-weight / --jepa-weight: {e}")
+    try:
+        R.masked_query_radius(cfg.jepa, cfg.model)  # validare dopo i pesi: l'override dipende dal JEPA effettivamente attivo
+    except ValueError as e:
+        fail(f"--masked-loss-radius: {e}")
     pose_root, pose_weight = getattr(args, "pose_root", None), getattr(args, "pose_weight", None)
     if pose_weight is not None and pose_root is None:
         fail("--pose-weight senza --pose-root")
