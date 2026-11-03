@@ -5151,6 +5151,14 @@ dopo lettura dei report. docs/tokenizer_pose_cpu_5000_execution_20261103.md.
 Simone chiede disattivazione del monitor dopo questa fase e i lanci: eliminare il
 seguito automatico appena inviata la ridge, lasciando attivi i job già sottomessi.
 
+### 2026-11-03 | GPT | CPU5k validata: cancello ridge superato
+
+Checkout63405286 e controlli63405498/63405502 COMPLETED0:0. Sei cache con target
+e supporti comuni, sorgenti/piano/dose/ricetta e SHA report verificati. Benchmark
+solo trainT25-L,8thread: stima420s entro1800s. Pubblicati risultati del gate prima
+della ridge8CPU/30G/30min,4coreh massime già riservate. Monitor da disattivare
+dopo l'invio per richiesta corrente di Simone; continuazioni training già in coda.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7374,3 +7382,9 @@ soltanto il prefisso delle ricevute, che include gli output e guardie, per non
 replicare11MB di inventari: il reader verifica e legge comunque gli originali remoti
 completi. Benchmark/validazione e testata temporale precedono il fit; nessun nuovo
 consenso necessario. Disattivazione monitor richiesta da Simone dopo gli invii.
+
+### 2026-11-03 | GPT | Gate CPU5k: nessun difetto aperto
+
+Validazione e timing sono controlli tecnici, non evidenza di utilità del tokenizer.
+Stima420s prudente ma non garanzia matematica; walltime resta1800s. Nessuna
+consultazione degli score val per risorse/ricetta e nessun nuovo training richiesto.

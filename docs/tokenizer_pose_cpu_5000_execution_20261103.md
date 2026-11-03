@@ -63,3 +63,17 @@ completamento in background**. Completare il cancello e l'invio della ridge in
 questa attività, quindi eliminare l'automazione completa-tokenizer-wearusfm.
 I job sottomessi rimangono attivi; nessuna cancellazione implicita e nessun seguito
 automatico alle valutazioni19618 dopo la disattivazione.
+
+## Cancello effettivo prima della ridge
+
+Checkout63405286 COMPLETED0:0 in18s, SHA70fd080149c11d10917059875d31a5a2820f176a,
+pulito e in sola lettura. Validate63405498 completo in33s, benchmark63405502 in20s.
+Report originali e SHA indipendenti raccolti in `results/infra/tokenizer_evaluation_20261103/cpu_5000/`.
+Piano, sorgenti, ricetta, dose, sei pin, riferimenti e supporti comuni verificati;
+benchmark solo T25-L/train,8thread anche nelle librerie numeriche. Nessuno score val.
+
+V=33s, S=3,305283906s, E=0,110451286s: formula congelata389,073s, arrotondata
+a **420s (7min), sotto il tetto1800s**. Gate superato. La prenotazione ridge resta
+8CPU/30G/30min,0GPUh e massimo4coreh già riservate. Pubblicare questo gate prima
+dell'invio; usare lo stesso checkout70fd080, senza altre modifiche scientifiche.
+Consuntivo checkout+validate+benchmark **0,072778coreh**, tutto CPU-only.

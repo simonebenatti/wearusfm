@@ -5811,3 +5811,12 @@ Validate+benchmark possono partire insieme; ridge solo dopo report validi e gate
 prudente<=1800s fissato prima dei nuovi tempi. Nessun cambiamento della ricetta.
 Simone richiede di disattivare i controlli di completamento in background dopo
 questa fase e i lanci: eliminare l'automazione dopo l'invio della ridge.
+
+### CPU5k: gate prima della ridge
+
+Checkout63405286, validate63405498 e benchmark63405502 conclusi0:0, rispettivamente
+18/33/20s. Hash e identità dei report verificati; supporti comuni, benchmark8thread
+sul solo trainT25-L. Formula preregistrata:420s stimati, tetto1800s rispettato.
+Si procede a ridge8CPU/30G/30min,4coreh massime già riservate e zeroGPU.
+Consuntivo delle tre fasi preparatorie0,072778coreh. Nessuna metrica scientifica
+ancora calcolata; dopo il lancio monitor da disattivare su richiesta di Simone.

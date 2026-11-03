@@ -1,8 +1,8 @@
 # Review del piano CPU posa tokenizer a 5.000 passi — 03/11/2026
 
-Esito favorevole al nuovo checkout CPU, alla validazione e al benchmark sul solo train. Non sono emersi blocchi concreti nel launcher o nel piano effettivo. La ridge dei tre bracci è già prevista e autorizzata, ma la sua sottomissione resta subordinata alla lettura dei due report preparatori e al criterio temporale congelato sotto. Non va inviata anticipatamente con la sola dipendenza `afterok`.
+Esito favorevole al lancio della ridge dei tre bracci: la verifica effettiva dei report preparatori, descritta in fondo, conferma identità, supporti e superamento del criterio temporale congelato. La precedente approvazione di checkout, validazione e benchmark era condizionata a questo controllo prima della sottomissione; non alla sola dipendenza `afterok`.
 
-Review locale, senza modifica del codice, test duplicati, fit, comandi remoti o job. Le cache e le ricevute integrali restano sul cluster: qui sono stati verificati i pin contro le evidenze raccolte dall'operatore. La fase CPU `validate` rileggerà e verificherà gli artefatti integrali.
+Review locale, senza modifica del codice, test duplicati, fit, comandi remoti o job. Le cache e le ricevute integrali restano sul cluster: qui sono stati verificati i pin contro le evidenze raccolte dall'operatore. La fase CPU `validate` ha poi riletto e verificato gli artefatti integrali, come attestato dal report completato.
 
 ## Artefatti verificati
 
@@ -62,4 +62,21 @@ La ridge può essere sottomessa soltanto dopo che validazione e benchmark risult
 
 Le **7 core-ore** delle tre analisi sono già nella matrice autorizzata. Il nuovo checkout aggiunge **0,333333 core-ore CPU-only**, portando il tetto complessivo della matrice con i tre checkout a **114 core-ore CPU-only**. Questa fase usa **0 GPU-ore**. La memoria è coerente con l'elaborazione sequenziale di una cache val FP16 D384 alla volta, predizioni FP64 e normalizzazione a batch64; non è introdotta una matrice delle similarità fra finestre né un allargamento temporale delle feature.
 
-L'esito di questa review autorizza tecnicamente la preparazione già approvata e conferma il percorso condizionale verso la ridge. Non è una valutazione scientifica dei tre modelli: i nuovi score devono ancora essere prodotti e interpretati nel perimetro di un solo seme e della validazione di sviluppo già utilizzata.
+## Verifica effettiva dei report prima della ridge
+
+Verificati localmente `cpu_5000/validate_report.json`, `benchmark_report.json`, `sacct_pre_ridge.txt` e `sha256sum_reports.txt`, sotto `results/infra/tokenizer_evaluation_20261103`. Gli hash calcolati sui due file locali coincidono con quelli dei report originali raccolti:
+
+| Report | SHA256 |
+|---|---|
+| Validazione | `1efc72832679ff97cfc42016f0441b1bdef91e479adb432bd0ebd536d905caea` |
+| Benchmark | `89c79865fe9678540b321f4b1fa467d6966119f3127f569e5f84ef1c11f2cdb8` |
+
+I job padre **63405498** e **63405502** risultano entrambi `COMPLETED 0:0`, rispettivamente in **33** e **20 secondi**. Entrambi i report sono completi e riportano codice `70fd080149c11d10917059875d31a5a2820f176a`, piano `9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba`, dose 5.000 e ricetta prevista. I quattro pin delle sorgenti, tutti i pin delle sei cache e i due riferimenti coincidono esattamente con il piano. Versioni Python, NumPy e PyTorch sono comuni.
+
+La validazione riporta sei ispezioni, con gli stessi 40 utenti train e 15 utenti val nei tre bracci. I due gruppi sono disgiunti e i fold corrispondono esattamente all'alternanza degli utenti train ordinati. Le firme di metadati, target/mask/std/pose_var e maschera centrale coincidono fra bracci per ciascuno split; identità di cache e checkpoint sono corrette. Il report dichiara esplicitamente che non sono state calcolate metriche scientifiche.
+
+Il benchmark contiene soltanto l'ispezione `T25-L/train`, identica alla corrispondente ispezione di validazione anche negli stati dei file. Usa 384 feature, 40 utenti e 4.813.620 elementi target validi, con alpha fisso e senza score di CV o val. L'ambiente, PyTorch e tutti i thread pool riportano **8 thread**; la validazione ne riporta **2**, come previsto.
+
+La replica indipendente della formula congelata usa `V = 33 s`, `S = 3,3052839059382677 s` ed `E = 0,1104512857273221 s`. Il valore prima dell'arrotondamento è **389,0729535589926 s**; arrotondato al minuto dà **420 s**, inferiore al tetto di **1.800 s**. Il tempo totale del job benchmark non viene sostituito ai due tempi interni previsti dalla formula.
+
+**Nessun blocco concreto al lancio della ridge** con 8 CPU, 30 GB e 30 minuti, inclusivo dei tre bracci e del confronto appaiato. Questo esito riguarda identità e fattibilità operativa; i nuovi score devono ancora essere prodotti e interpretati nel perimetro di un solo seme e della validazione di sviluppo già utilizzata. In accordo con l'ultima indicazione di Simone, dopo il lancio della ridge il monitor va disattivato: non è prevista una raccolta automatica finale né un seguito automatico a 19.618 passi.

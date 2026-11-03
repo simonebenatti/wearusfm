@@ -139,3 +139,12 @@ benchmark/ridge-20261103. Prima di qualunque invio leggere il ledger: nessun dup
 Completare validate+benchmark, leggere il gate, inviare ridge se valido; poi **eliminare
 completa-tokenizer-wearusfm**, come richiesto ora da Simone. Non proseguire in background
 verso i risultati o i valutatori19618 dopo l'eliminazione; i job continuano su Leonardo.
+
+## Fase CPU5k: gate superato, ridge da sottomettere
+
+Checkout63405286, validate63405498 e benchmark63405502 tutti COMPLETED0:0.
+SHA runtime70fd080149c11d10917059875d31a5a2820f176a; gate raccolto in
+results/infra/tokenizer_evaluation_20261103/cpu_5000/pre_ridge_gate.json.
+Previsione420s entro1800s; ridge8CPU/30G/30min autorizzata. Leggere il ledger
+TOKENIZER-pose5000-ridge-20261103 prima di inviare: il lancio segue questo commit.
+Poi disattivare il monitor come richiesto, lasciando i job attivi su Leonardo.

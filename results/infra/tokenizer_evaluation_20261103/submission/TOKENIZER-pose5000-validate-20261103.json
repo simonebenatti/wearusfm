@@ -1,0 +1,47 @@
+{
+ "id": "TOKENIZER-pose5000-validate-20261103",
+ "creato": "2026-11-03T13:44:52+01:00",
+ "agente": "gpt",
+ "campagna": "tokenizer-20261103",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "70fd080149c11d10917059875d31a5a2820f176a",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TOKENIZER-pose5000-validate-20261103",
+  "--comment=wearusfm:TOKENIZER-pose5000-validate-20261103",
+  "--cpus-per-task=2",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-posecpu5k-20261103,EXPECTED_SHA=70fd080149c11d10917059875d31a5a2820f176a",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-posecpu5k-20261103/scripts/slurm/tokenizer_pose_readout.sbatch",
+  "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_5000.json",
+  "validate",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/5000/validate"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-03T13:44:52+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-03T13:44:52+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-03T13:45:07+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63405498,
+   "uscita": 0,
+   "stdout": "63405498\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63405498,
+ "uscita": 0,
+ "stdout": "63405498\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

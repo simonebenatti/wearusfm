@@ -1,0 +1,266 @@
+{
+  "status": "train_only_timing",
+  "complete": true,
+  "arm": "T25-L",
+  "timings": {
+    "statistics_seconds": 3.3052839059382677,
+    "three_eigensystems_seconds": 0.1104512857273221,
+    "n_features": 384,
+    "n_users": 40,
+    "valid_fit_elements": 4813620,
+    "note": "fixed alpha 1e5; train only; no validation or CV score"
+  },
+  "protocol": "tokenizer-pose-readout-20261103-v1",
+  "step": 5000,
+  "recipe": {
+    "which": "teacher",
+    "cached_features": "mean_K64_fp16",
+    "dim": 384,
+    "normalization": "stateless LayerNorm FP32",
+    "normalization_eps": 1e-05,
+    "offset": 6,
+    "common_centers": "6 <= t and t+6 < n_patches",
+    "target_support": "central target mask only",
+    "fit_precision": "float64",
+    "intercept": "unpenalized",
+    "cv": "alternating sorted train users; two folds; pooled masked standardized SSE",
+    "alpha_exponents": [
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "max_extensions_per_side": 3,
+    "tie_break": "smallest alpha",
+    "dynamic_threshold": 0.2574231028556824,
+    "dynamic_selection": "original full-window pose_var",
+    "min_centered_points": 2,
+    "bootstrap": {
+      "unit": "user",
+      "replicates": 2000,
+      "seed": 20261102
+    },
+    "batch_windows": 64
+  },
+  "runtime": {
+    "code_sha": "70fd080149c11d10917059875d31a5a2820f176a",
+    "sources": {
+      "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+      "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+      "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+      "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8"
+    },
+    "versions": {
+      "python": "3.11.6",
+      "numpy": "1.26.4",
+      "torch": "2.2.0a0+git6c8c5ad"
+    },
+    "threads": {
+      "OMP_NUM_THREADS": "8",
+      "MKL_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8"
+    },
+    "torch_threads": 8,
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ]
+  },
+  "plan_sha256": "9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba",
+  "input_pins": {
+    "T25-L": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz",
+        "sha256": "0bbf46194ca2cc41555d7bb818e7b9aa441b3e76d8e8acc3c15e994c82f919e9",
+        "bytes": 257845980,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz.provenance.json",
+        "provenance_sha256": "354a3e3362c965e249eb30585d804b9d5c9aee8d64fb670e3bafcd2067ae879b",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/receipt.json",
+        "receipt_sha256": "eeb5c5fa02e053fa59769b99d0becc578500e3235f93d5bbd3dce45d6d1a02d7",
+        "checkpoint_sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/val.npz",
+        "sha256": "8eddcc3d17e15bdf57176af13c9354243214303d53e1ed08c9d81c3521820c41",
+        "bytes": 2486636015,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/val.npz.provenance.json",
+        "provenance_sha256": "506351b8ff5ad64d86f8654ef666fb8004e6e36e1571b70defa846cd29b58144",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/receipt.json",
+        "receipt_sha256": "eeb5c5fa02e053fa59769b99d0becc578500e3235f93d5bbd3dce45d6d1a02d7",
+        "checkpoint_sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      }
+    },
+    "T100-L": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/train_subset.npz",
+        "sha256": "c0bc0575d1d900f6e5d0d6d412073fab74fe30d6783d75fe5fb83d1d0e21f32a",
+        "bytes": 257640568,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/train_subset.npz.provenance.json",
+        "provenance_sha256": "0e6559f50fd1b5447b3e736d74b3599f4c50a18538a65d0cd1010c7f82bf1996",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/receipt.json",
+        "receipt_sha256": "f1bdd87989eebf8831469362db62a07007d7328d360c0cccbff380a124cadce6",
+        "checkpoint_sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/val.npz",
+        "sha256": "f1a9d620ce66e30314910e2779d1967589f322cb2dd4e5deec15df5a980b3d4e",
+        "bytes": 2484895155,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/val.npz.provenance.json",
+        "provenance_sha256": "42550eab3819330d44a4f1d1a63ccd27ea572cba1015a7606404c574a320869c",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/receipt.json",
+        "receipt_sha256": "f1bdd87989eebf8831469362db62a07007d7328d360c0cccbff380a124cadce6",
+        "checkpoint_sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      }
+    },
+    "T100-G": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/train_subset.npz",
+        "sha256": "145ddfa5aab88588343ca0cdd736bac8d3f2f22b0837e24af100fe0788430636",
+        "bytes": 257604748,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/train_subset.npz.provenance.json",
+        "provenance_sha256": "0ded38e7fe581c4e0ec6801b6c69fdf92e48298f4e1d239d1a97461d78e929e3",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/receipt.json",
+        "receipt_sha256": "a7594680058041d29ad86545aae5fe7cec281e896c13a727b14a4d87708a08e3",
+        "checkpoint_sha256": "49dd518b5eea632a16bc7ff88ab0fb013f30d61458164c9521867572c83daa80",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/val.npz",
+        "sha256": "a9e3a8bbfdadd967fe9cdafc5ed175045c363f3bef06d257f49d4cabbf1d96fa",
+        "bytes": 2484485292,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/val.npz.provenance.json",
+        "provenance_sha256": "5c9635a7c60423c5417facc0b15da176b8eab73d9e9acba3f6e91f92ad9da350",
+        "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-G/pose/receipt.json",
+        "receipt_sha256": "a7594680058041d29ad86545aae5fe7cec281e896c13a727b14a4d87708a08e3",
+        "checkpoint_sha256": "49dd518b5eea632a16bc7ff88ab0fb013f30d61458164c9521867572c83daa80",
+        "extraction_code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2"
+      }
+    }
+  },
+  "reference_pins": {
+    "train": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+      "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+      "bytes": 257675076,
+      "n_windows": 1907,
+      "n_users": 40,
+      "n_recordings": 200
+    },
+    "val": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+      "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+      "bytes": 2485295825,
+      "n_windows": 18548,
+      "n_users": 15,
+      "n_recordings": 1950
+    }
+  },
+  "inspections": {
+    "T25-L/train": {
+      "users": [
+        "03d49b393e",
+        "055bb1b487",
+        "06d17ebbe4",
+        "1066cc94fc",
+        "1223558697",
+        "2cc385c3cd",
+        "323f919c83",
+        "32473f0e96",
+        "32cbfe3221",
+        "342248118e",
+        "3589743749",
+        "3669295621",
+        "3f79dccf7a",
+        "47c605ad6f",
+        "5ef3a0537e",
+        "60e5a2b0a4",
+        "65228c03b3",
+        "70ad60b9a1",
+        "76bfc2d385",
+        "79d6b65fef",
+        "82f6fe243f",
+        "84a77feea6",
+        "8bd1c0ff16",
+        "8db8aaea3b",
+        "915e7ab7da",
+        "91e58c0561",
+        "9261f6ab56",
+        "9fcad1a5cc",
+        "bd64911c18",
+        "bd84652be9",
+        "c2991a87f6",
+        "ce52651f99",
+        "d8b3b209f4",
+        "e03cea741b",
+        "e5ffa40c92",
+        "e666e9de6e",
+        "eab042e9de",
+        "ec7f7bbbcd",
+        "ef59709d32",
+        "fba9f08c33"
+      ],
+      "targets": {
+        "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+        "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+        "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+      },
+      "states": {
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz": [
+          2267999710,
+          144124096827972128,
+          257845980,
+          1793707224000000000,
+          1793707224000000000
+        ],
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz.provenance.json": [
+          2267999710,
+          144124096827972129,
+          2443,
+          1793707235000000000,
+          1793707235000000000
+        ],
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/receipt.json": [
+          2267999710,
+          144124096827972133,
+          3725320,
+          1793708790000000000,
+          1793708790000000000
+        ]
+      },
+      "cache_sha256": "0bbf46194ca2cc41555d7bb818e7b9aa441b3e76d8e8acc3c15e994c82f919e9",
+      "checkpoint_sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+      "arm": "T25-L",
+      "split": "train"
+    }
+  },
+  "slurm_job_id": "63405502"
+}
