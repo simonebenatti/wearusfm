@@ -118,8 +118,10 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `rsync -a` preserva le date vecchie: dopo una copia si rinfresca
   (vedi `scripts/slurm/verify_touch_scratch_raw.sbatch`). Stato dettagliato per dataset:
   `docs/dataset_access.md`, sezione "Stato dell'ingest".
-- Manutenzione programmata di Leonardo: 30/09/2026 08:00 - 01/10/2026 08:00 (Booster, DCGP, nodi di
-  login/viz): i job sottomessi restano PENDING fino alla fine. Prossima: DCGP, 15-18/10/2026.
+- Manutenzioni programmate di Leonardo (lette in `scontrol show reservation` il 03/11/2026): 10/11 07:00 - 12/11 07:00 su 540 nodi
+  Booster (lrdn[2701-3240]) e 12/11 07:00 - 14/11 07:00 su altri 180 (lrdn[3241-3420]): la partizione resta su, ma un job che
+  finirebbe dentro la finestra non viene messo su quei nodi. **23/11/2026 08:00 - 25/11/2026 08:00 tutto Leonardo** (Booster, DCGP,
+  nodi di login/viz): i job sottomessi restano PENDING fino alla fine. Passate: 30/09-01/10 (tutto) e DCGP 15-18/10.
 - Repo remoto: $WORK/wearusfm
 - **Checkout di campagna (eccezione approvata da Simone il 09/10/2026).** Si possono creare checkout congelati del codice SOLO: da un
   commit gia' pubblicato su leonardo; con la procedura versionata nel repo, eseguita da un job CPU su `lrd_all_serial` (mai a mano sul
