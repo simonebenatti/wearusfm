@@ -69,3 +69,59 @@ quadrato e aggregazione locale, anche con parametri apprendibili.
 
 Review indipendente del critico concorde su queste rettifiche e sul confronto minimo
 con ramo nuovo a zero. Nessun difetto o modifica richiesta ai run esistenti.
+
+## Convergenza dopo il secondo riscontro di Claude
+
+Registrata il 2026-11-03T15:13:38+01:00. In questa discussione GPT non ha consultato i nuovi
+score della ridge63405791 né le prestazioni dei tre endpoint tokenizer. Si fissano
+le seguenti scelte della **proposta** prima della loro lettura; non è ancora un
+protocollo esecutivo completo e non dispone un nuovo lancio.
+
+- Ramo scelto:64 risposte log-quadratiche individuali affiancate alle64 lineari.
+  Nessuna somma/pooling fra kernel prima del log in questa candidata. L'estrazione
+  di energie di banda resta un'ipotesi distinta.
+- Base fissa:T100-L, finestra100ms/passo25ms, anche se T25-L risulterà migliore.
+  Primario: candidato contro T100-L, separatamente per dinamica della posa ed EPN-612,
+  mantenendo misure e limiti inferenziali del confronto corrente.
+- Secondari: riportare anche il confronto con T25-L; il migliore dei due lineari
+  si identifica per la metrica principale di ciascun endpoint, senza costruire un
+  vincitore unico aggregando posa ed EPN. L'evidenza rispetto al migliore scelto
+  sugli stessi risultati è esplorativa, non una validazione indipendente.
+- Nessun training di controllo aggiuntivo soltanto per pareggiare24.576pesi
+  (circa0,08% di30milioni). L'aumento di capacità resta dichiarato; la piccola quota
+  sul totale non dimostra che il suo effetto sia nullo.
+- Riusare il risultato del T100-L già avviato è sensato se la candidata parte dalla
+  **stessa inizializzazione non addestrata**, con parità della parte condivisa/RNG,
+  gain, stream, schedule, dose, maschere e valutatori. W_log inizialezero preserva la
+  funzione iniziale, da verificare numericamente. Non inserire il nuovo ramo in un
+  checkpoint5k/19618 e confrontarlo col controllo senza la stessa dose aggiuntiva:
+  sarebbe un esperimento diverso, con relativo controllo di continuazione.
+- Prima del lancio fissare epsilon e inizializzazione mediante diagnostica train,
+  includendo i dati nativi200Hz. Il campione iniziale T100-L NinaProDB5/200Hz del
+  preflight già raccolto ha2.455token unmasked_same_visible e mediane della std
+  Fourier15,2936/spline4,3657/MLP2,2248. Come per emg2pose, queste mediane non misurano
+  la frazione di risposte prossime a zero. Non calibrare su EPN-heldout o score val.
+
+### Due precisazioni scientifiche ancora necessarie
+
+La somma dei quadrati di coefficienti arbitrari è una forma quadratica positiva
+nel segnale, non automaticamente l'energia di una banda fisica. Quadratura,
+normalizzazione e struttura del banco determinano l'interpretazione; un pooling a
+pesi positivi da solo non la garantisce. Nemmeno la frase «meno di due gradi di
+libertà di potenza a25ms/200Hz» discende dal solo numero di campioni: dipende dallo
+stimatore, banda e correlazioni. Il supporto del nostro banco include inoltre code
+anti-alias. Non usare questa cifra non dimostrata come premessa della scelta100ms.
+[Documentazione primaria sulla variabilità e i gradi di libertà degli stimatori spettrali](https://www.mathworks.com/help/signal/ug/bias-and-variability-in-the-periodogram.html).
+
+### Costo: stima distinta dal preventivo esecutivo
+
+Per T100-L5000 il consuntivo parent è3.926s su4GPU. Estrapolare linearmente fino a
+19.618 dà **17,12GPUh**, quindi15–19GPUh è un ordine di grandezza plausibile del solo
+training. Non è il costo totale né una garanzia: nuovo ramo, diagnostiche e I/O vanno
+misurati. La politica corrente riserva per un braccio **22GPUh** di training
+(4GPU×90min più4GPU×240min) e **2,75GPUh** di estrazioni per la matrice completa,
+oltre a checkout/analisiCPU e all'eventuale collaudo nuovo. Questi sono riferimenti
+per costruire il preventivo della candidata, non nuovi job prenotati in questa nota.
+
+Review indipendente concorde sulla convergenza, sul riuso condizionato del controllo
+iniziale e sulla lettura secondaria esplorativa. Codice, job e monitor invariati.

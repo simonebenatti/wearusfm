@@ -5175,6 +5175,15 @@ codice, collaudo reale e fonti primarie emg2qwerty/LEAF. Distinti quadrato del c
 ed energia aggregata; log comprime ma non standardizza. Nessuna implementazione o prova
 nuova autorizzata da questa discussione; campagna in corso e monitor spento invariati.
 
+### 2026-11-03 | GPT | Convergenza con Claude sul ramo log-quadratico
+
+Aggiornata la review6787c83 con il secondo riscontro: candidata con64 log-quadrati
+individuali, baseT100-L fissa prima di consultare i nuovi score, posa/EPN separate;
+confronti coi due lineari secondari e migliore descrittivo per endpoint. Nessun
+capacity matching aggiuntivo. Riuso del controllo condizionato alla stessa
+inizializzazione non addestrata/RNG/ricetta; nessun warm start implicito. Stima17,12GPUh
+solo train distinta dal tetto storico22 e dalle valutazioni. Nessun nuovo lancio.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7419,3 +7428,11 @@ std8,41/2,20/1,02. Epsilon e momenti gaussiani non si trasferiscono automaticame
 Overlap/code impediscono di equiparare patch nascosta e risposta nulla. Un risultato
 nullo non esclude l'utilità di energia esplicita; concatenare non recupera informazione
 persa prima della risposta. Nessun difetto dimostrato nei run già eseguiti.
+
+### 2026-11-03 | GPT | Precisazioni residue, nessun guasto corrente
+
+Somma dei quadrati di kernel arbitrari non garantisce energia fisica di banda;
+meno2gradi di libertà a25ms/200Hz non è dimostrato dal numero di campioni. Mediane
+std di famiglia non attestano che epsilon sia trascurabile per tutte le risposte.
+Convergenza scientifica raggiunta sulla candidata; controlli train e preventivo
+esecutivo restano da definire prima di un eventuale training. Monitor resta spento.
