@@ -5139,6 +5139,18 @@ per validate/benchmark/ridge, entro tetti2/8CPU,15/30min,30G. Reader scientifico
 invariato, sintassi e contratto verificati. Nessun invio CPU o nuovo checkout; piano
 con sei pin effettivi solo dopo tutte le estrazioni complete. Confronto già nella ridge.
 
+### 2026-11-03 | GPT | Estrattori5k conclusi, piano CPU concreto
+
+63399428/63399479/63399484 COMPLETED0:0,1853/1814/1814s:1,5225GPUh,12,18coreh
+allocate. Sei cache/provenienze ricalcolateSHA, teacher/dose/config/target/mask/conteggi
+coerenti; ricevute integrali remote pinnate, riepiloghi locali distinti dai loro hash.
+Piano pose_readout_plan_5000 validato, SHA9efbf827, reader scientifico invariato.
+Pubblicati checkout+0,333333coreh e validate/benchmark/ridge1+2+4coreh già riservati;
+gate temporale congelato prima dei tempi. Benchmark e validate paralleli, ridge solo
+dopo lettura dei report. docs/tokenizer_pose_cpu_5000_execution_20261103.md.
+Simone chiede disattivazione del monitor dopo questa fase e i lanci: eliminare il
+seguito automatico appena inviata la ridge, lasciando attivi i job già sottomessi.
+
 ## 2) Problemi trovati
 
 ### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
@@ -7354,3 +7366,11 @@ Nessun guasto nei log esaminati; tre val teacher in corso, continuazioni19618 an
 PENDING. I train già presenti non sono ricevute di completamento: non si avvia il
 benchmark su pin parziali. Il compare separato esposto dal launcher non ha una riserva
 aggiuntiva e non entra nella catena ordinaria, perché ridge contiene il confronto.
+
+### 2026-11-03 | GPT | Fase CPU5k: nessun risultato di prestazione ancora
+
+Tutte le estrazioni integre; nessun difetto rilevato. La raccolta locale riporta
+soltanto il prefisso delle ricevute, che include gli output e guardie, per non
+replicare11MB di inventari: il reader verifica e legge comunque gli originali remoti
+completi. Benchmark/validazione e testata temporale precedono il fit; nessun nuovo
+consenso necessario. Disattivazione monitor richiesta da Simone dopo gli invii.

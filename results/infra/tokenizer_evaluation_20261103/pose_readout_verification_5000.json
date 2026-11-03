@@ -1,0 +1,113 @@
+{
+  "checked_at_utc": "2026-11-03T12:37:45.802540+00:00",
+  "checks": {
+    "T25-L": {
+      "train": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 1907,
+          "n_users": 40,
+          "n_recordings": 200
+        },
+        "targets": {
+          "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+          "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+          "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+        }
+      },
+      "val": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 18548,
+          "n_users": 15,
+          "n_recordings": 1950
+        },
+        "targets": {
+          "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+          "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+          "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+        }
+      }
+    },
+    "T100-L": {
+      "train": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 1907,
+          "n_users": 40,
+          "n_recordings": 200
+        },
+        "targets": {
+          "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+          "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+          "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+        }
+      },
+      "val": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 18548,
+          "n_users": 15,
+          "n_recordings": 1950
+        },
+        "targets": {
+          "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+          "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+          "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+        }
+      }
+    },
+    "T100-G": {
+      "train": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 1907,
+          "n_users": 40,
+          "n_recordings": 200
+        },
+        "targets": {
+          "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+          "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+          "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+        }
+      },
+      "val": {
+        "cache_sha_recomputed_remote": true,
+        "original_provenance_sha_verified_local_and_remote": true,
+        "complete_receipt_identity_verified": true,
+        "counts": {
+          "n_windows": 18548,
+          "n_users": 15,
+          "n_recordings": 1950
+        },
+        "targets": {
+          "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+          "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+          "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+        }
+      }
+    }
+  },
+  "paired_target_signatures_equal": true,
+  "fold_users_from": "results/infra/pose_temporal_20261102/plan.json",
+  "plan_sha256": "9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba",
+  "extraction_seconds_by_arm": {
+    "T25-L": 1853,
+    "T100-L": 1814,
+    "T100-G": 1814
+  },
+  "extraction_gpu_hours": 1.5225,
+  "extraction_allocated_core_hours": 12.18,
+  "full_receipts_remain_remote": "The plan pins original complete receipts, not local summaries; CPU validation opens and verifies their full contents",
+  "scientific_metrics_computed": false
+}

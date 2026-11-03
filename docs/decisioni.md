@@ -5801,3 +5801,13 @@ Preparazione CPU durante l'attesa: launcher tokenizer_pose_readout.sbatch pronto
 API e tetti coerenti con la matrice già approvata; nessuna modifica scientifica o
 allocazione aggiuntiva. Piano con sei cache solo dopo ricevute complete, benchmark
 train-only prima della ridge. Il confronto appaiato è già incluso nel report ridge.
+
+## 03/11/2026 — Estrazioni5k concluse e fase CPU fissata
+
+Tre estrazioni complete,1,5225GPUh; sei cache/provenienze verificate con hash
+indipendenti e target/supporti comuni. [Piano CPU](tokenizer_pose_cpu_5000_execution_20261103.md)
+con pin reali,7coreh di analisi già riservate e nuovo checkout0,333333coreh.
+Validate+benchmark possono partire insieme; ridge solo dopo report validi e gate
+prudente<=1800s fissato prima dei nuovi tempi. Nessun cambiamento della ricetta.
+Simone richiede di disattivare i controlli di completamento in background dopo
+questa fase e i lanci: eliminare l'automazione dopo l'invio della ridge.

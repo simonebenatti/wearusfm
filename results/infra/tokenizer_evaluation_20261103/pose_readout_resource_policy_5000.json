@@ -1,0 +1,73 @@
+{
+  "protocol": "tokenizer-pose-cpu5000-resources-20261103-v1",
+  "authorization": "Existing campaign including direct launch and operational checkout adaptations",
+  "plan": "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_5000.json",
+  "plan_sha256": "9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba",
+  "new_checkout": {
+    "logical_id": "TOKENIZER-posecpu5k-checkout-20261103",
+    "name": "tokenizer-posecpu5k-20261103",
+    "partition": "lrd_all_serial",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "cpu_only_core_hours_cap": 0.3333333333333333
+  },
+  "jobs": [
+    {
+      "logical_id": "TOKENIZER-pose5000-validate-20261103",
+      "stage": "validate",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 1.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/5000/validate",
+      "benchmark_arm": null
+    },
+    {
+      "logical_id": "TOKENIZER-pose5000-benchmark-20261103",
+      "stage": "benchmark",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 900,
+      "core_hours_cap": 2.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/5000/benchmark",
+      "benchmark_arm": "T25-L"
+    },
+    {
+      "logical_id": "TOKENIZER-pose5000-ridge-20261103",
+      "stage": "ridge",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/5000/ridge",
+      "benchmark_arm": null
+    }
+  ],
+  "gpu_hours_cap": 0,
+  "already_reserved_analysis_core_hours_cap": 7,
+  "additional_checkout_core_hours_cap": 0.3333333333333333,
+  "full_matrix_cpu_only_cap_with_three_checkouts": 114.0,
+  "parallel_preparatory_stages": [
+    "validate",
+    "benchmark"
+  ],
+  "ridge_not_submitted_until_reports_read": true,
+  "ridge_timing_gate": {
+    "definition": "ceil_60s(1.5*(2*V+3*((1+R)*S+13*E))+120)",
+    "V": "validate parent Slurm ElapsedRaw seconds",
+    "S": "benchmark statistics_seconds",
+    "E": "benchmark three_eigensystems_seconds",
+    "R": 10,
+    "max_required_seconds": 1800,
+    "interpretation": "conservative empirical proxy, not mathematical runtime guarantee; 13E is allowance for alpha scoring, not thirteen eigensystem decompositions",
+    "other_requirements": [
+      "both preceding jobs COMPLETED 0:0 and reports complete",
+      "same plan/source/dose identities and valid common support",
+      "benchmark thread environment 8",
+      "no validation score consulted for budget or recipe"
+    ]
+  },
+  "no_blind_retry": true,
+  "separate_compare_job_reserved": false
+}

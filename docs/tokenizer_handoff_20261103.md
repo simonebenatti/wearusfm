@@ -128,3 +128,14 @@ Sintassi bash e contratto CLI verificati. Nessun job CPU o checkout aggiuntivo l
 prima servono tutte e sei le cache valide con ricevute complete, poi piano con pin reali,
 preventivo del checkout e benchmark train-only. La sola presenza di train_subset.npz
 non autorizza a consumare risultati parziali della catena.
+
+## Aggiornamento: estrazioni5k complete, fase CPU e arresto monitor richiesto
+
+63399428/63399479/63399484 COMPLETED0:0; sei pin reali nel piano
+results/infra/tokenizer_evaluation_20261103/pose_readout_plan_5000.json (9efbf827).
+Leggere docs/tokenizer_pose_cpu_5000_execution_20261103.md e relativa resource_policy.
+Prossimi ID: TOKENIZER-posecpu5k-checkout-20261103 e TOKENIZER-pose5000-validate/
+benchmark/ridge-20261103. Prima di qualunque invio leggere il ledger: nessun duplicato.
+Completare validate+benchmark, leggere il gate, inviare ridge se valido; poi **eliminare
+completa-tokenizer-wearusfm**, come richiesto ora da Simone. Non proseguire in background
+verso i risultati o i valutatori19618 dopo l'eliminazione; i job continuano su Leonardo.
