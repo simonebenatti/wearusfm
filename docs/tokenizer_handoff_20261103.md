@@ -1,6 +1,20 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato attuale04/11: posa endpoint conclusa; sonde in corso
+## Stato attuale04/11, aggiornamento10:26CET:13/15fit sottomessi
+
+Liberati due posti, invii autorizzati eseguiti: T100-G DB6 **63497058** e
+T100-G DB2 fold0-1 **63497284**. Rimangono soltanto T100-G DB2 fold2-3 e P2
+(EPN+UCI), poi6aggregati e confronto finale, tutti già autorizzati. Ledger e
+indice cpu_19618/submissions.json aggiornati. Nessun duplicato.
+Tre fit COMPLETED0:0: T25-L DB3 63495005 (596s),T25-L DB6 63495008 (749s),
+T100-L DB3 63495819 (523s). Per gli ultimi due il dato è ancora solo accounting:
+leggere/verificare i report prima degli aggregati. Un fit in esecuzione e9in coda
+dopo gli ultimi invii; cap10attivi raggiunto. Nessun hold, monitorautomatico spento.
+Stima complessiva indicativa15:30–17:00CET da tempi storici, condizionata alla
+continuità della coda e al completamento degli ultimi invii/aggregazioni; non è
+una promessa di raccolta automatica mentre il monitor resta disattivato.
+
+## Stato precedente04/11: posa endpoint conclusa; sonde in corso
 
 Ridge63495299 COMPLETED0:0,142s; risultati e critica in
 reviews/tokenizer_pose_19618_{results,critic}_20261104.md. E_dyn

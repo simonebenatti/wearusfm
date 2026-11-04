@@ -174,3 +174,13 @@ QOSMaxCpuPerUserLimit, senza JobHeldUser. Seconda tranche: T100-L DB2-01
 63495895 nello spazio rimasto. Totale11/15shard inviati e massimo10attivi;
 quattroshardT100-G+seiaggregati+confronto ancora da inviare quando consentito
 dalla coda e dai report completi. Policy, runtime, cap e autorizzazione invariati.
+
+## Aggiornamento10:26CET — ultimi fit scaglionati
+
+T25-L DB6 63495008 completo749s e T100-L DB3 63495819 completo523s, entrambi
+0:0; report ancora da raccogliere. Due posti liberati sono stati occupati tramite
+submitter/ledger da T100-G DB6 **63497058** e DB2-01 **63497284**, stesso runtime
+b315dad/piano/cap. Totale13/15fit inviati; restano DB2-23 eP2 diT100-G, poi
+6aggregati/confronto. Al riempimento1running+9pending,nessunhold.
+Stima15:30–17:00CET per il quadro completo, subordinata alla continuità della
+coda e agli invii successivi; monitorautomatico resta spento come richiesto.

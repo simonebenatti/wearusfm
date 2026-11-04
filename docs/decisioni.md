@@ -5914,3 +5914,9 @@ EPN200Hz rimane aperta:11/15shard sonde inviati,1completo/convergente, resto
 in coda o da inviare secondo cap10attivi. Restano6aggregati/confronto.
 Hold tutti rilasciati. Nessuna nuova loss, dose, seme o log-quadratico avviato;
 si completa la stessa matrice autorizzata nella chat, senza monitorautomatico.
+
+### 04/11/2026,10:26CET — Scaglionamento già approvato delle sonde
+
+Due fit finiti liberano posti: sottomessi T100-G DB6 63497058 eDB2-01 63497284,
+nessun cambio scientifico o di risorse. Tredici fit inviati, due restanti piu i
+sette rapporti finali. Cap10running+pending e monitorautomatico spento invariati.
