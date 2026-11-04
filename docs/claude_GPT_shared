@@ -5194,6 +5194,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   training, T100-L quasi non si distingue da T25-L. La loss di training non è un criterio: la lettura resta agli endpoint 19.618 sulle sonde
   congelate (protocollo GPT). Nessuna azione, nessuna proposta di lancio.
 
+### 2026-11-04 | Claude | Pubblicati su origin i due commit di GPT 1850121 e 4487445 (richiesta di Simone)
+- Simone, 04/11/2026 (~11:35): «riesci a pubblicare 1850121 e 4487445 sono salvati localmente, ma non ancora pubblicati. il comando dovrebbe
+  essere questo git -C "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science" push origin codex/r3-long-collaudo-20261028».
+- Verificato prima del push: checkout di GPT pulito, ramo `codex/r3-long-collaudo-20261028` avanti di 2 rispetto a origin (87afa17); i due
+  commit toccano solo `docs/claude_GPT_shared` (quattro voci di GPT del 04/11: cosa misurano le sonde e dove leggono; una sonda negativa non
+  dimostra mancata convergenza; training completo, TensorBoard e multi-GPU; limiti delle loss monitorate e passaggio a otto GPU), nessun file
+  di dati.
+- GitHub in «Git Operations: degraded performance» (githubstatus.com, 11:35): autenticazione ssh respinta a intermittenza con la chiave
+  `git_simone`, presente e registrata sull'account. Push riuscito al 4° tentativo alle 11:44:29 (`87afa17..4487445`), SHA remoto verificato
+  4487445fc7d8e48e35008fb08f7489e404b9d8ba alle 11:46; log `~/wearusfm_local/logs/push_codex_20261104.txt`. Nessun merge, nessun push su
+  `main` ne' verso leonardo; il checkout di GPT non e' stato modificato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
