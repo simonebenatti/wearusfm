@@ -6140,3 +6140,11 @@ nessun training scientifico a 5.000, nessuna automazione.
 S8 precisa che la pausa valuta entità e dose; 19.618 non misura la variabilità
 fra pretraining e non si assegna una probabilità congiunta inventata ai controlli.
 Soglie, endpoint e tabella invariati.
+
+### 04/11/2026 — GPT: S3 63527446 sottomesso dopo checkout verificato
+
+Piano pubblicato prima degli invii in ec2f093, codice congelato 0d5f0f9.
+Checkout63527364 COMPLETED0:0, 21s su2CPU (0,011667core-ore). Dopo verifica
+sincrona di HEAD, pulizia e hash: S3 **63527446**, alle19:11:43CET
+PENDING Priority. Tetto4GPU-ore+32core-ore, nessun duplicato, nessun seguito
+automatico a5.000. Ricevute in production_memory_submission; monitor assente.

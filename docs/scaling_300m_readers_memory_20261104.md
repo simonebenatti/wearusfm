@@ -77,3 +77,12 @@ I benchmark delle letture precedono i fit CPU. La formula già fissata sul
 collaudo dà un tetto training di 19.800 s, **22 GPU-ore**, distinto dalle estrazioni
 e dai fit: non è ancora una sottomissione. Nessuna richiesta di un nuovo consenso
 per la prova già approvata da Simone.
+
+## Stato degli invii, 19:11:43 CET
+
+Codice frozen `0d5f0f90074bbaf1142be86d22490e360b632c63`; piano/prompt pubblicati
+in `ec2f093` prima del lancio. Checkout **63527364 COMPLETED 0:0**, 21 s,
+2 CPU (0,011667 core-ore), HEAD/pulizia/hash verificati. S3 **63527446**,
+sottomesso, **PENDING Priority**. Il risultato di memoria non è ancora disponibile.
+Ricevute e verifica in `results/infra/scaling_300m_20261104/production_memory_submission/`.
+Nessun training scientifico a 5.000 e nessun monitor automatico.

@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | S3 sottomesso, job 63527446
+
+Codice congelato 0d5f0f90074bbaf1142be86d22490e360b632c63, piano e prompt
+pubblicati in ec2f093, SHA origin verificato. Checkout 63527364 COMPLETED 0:0
+(21 s, 0,011667 core-ore), HEAD/tree/hash verificati; gate sincrono pubblicato,
+nessuna dipendenza scaduta. S3 63527446 sottomesso dal submitter comune, alle
+19:11:43 CET PENDING Priority. Tetto 4 GPU-ore +32 core-ore. Ricevute e stato in
+`results/infra/scaling_300m_20261104/production_memory_submission/`.
+Nessun training scientifico a 5.000 né automazione; la review Claude richiesta
+è sul commit 0d5f0f9, con prompt in
+`docs/prompt_claude_review_scaling_readers_memory_20261104.md`.
+
+
 ### 2026-11-04 | GPT scaling | Lettori e S3 completati, 425 test, review esterna richiesta
 
 Base pubblicata ab2eb4a. Implementati proiezione S5, ridge posa D384/D896,
@@ -5501,6 +5514,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | S3 in coda: nessun risultato di memoria ancora
+
+Il primo tentativo locale di checkout si è fermato alla creazione della cartella
+del ledger per sandbox, prima della prenotazione e di sbatch. Eseguito poi il
+submitter autorizzato con accesso al ledger: un checkout 63527364, un job GPU
+63527446, nessun duplicato. Nessun guasto remoto noto; PENDING Priority non è
+un esito del collaudo. Gate del training scientifico ancora separati.
+
 
 ### 2026-11-04 | GPT scaling | Correzione S3 prima dell'uso e limiti della nuova consegna
 
