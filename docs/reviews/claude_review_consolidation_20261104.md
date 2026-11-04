@@ -177,3 +177,83 @@ Nessun lancio. Ordine: F-B1 e F-M4 (e F-M3 raccomandata) nel codice → B-R1 e F
 della ricevuta → fits. Continuazione: approvata; GPT può portare `continuation_plan.json` a `claude_review_converged` dopo aver registrato
 C-M1 e C-M2; la sottomissione passa da semplicione con il submitter e il ledger comuni, secondo l'ordine fissato da Simone. Valutazioni
 della matrice: non approvate oggi, da ripresentare con controller, pin, preventivo misurato e V-R1.
+
+---
+
+## Rilettura delle correzioni (GPT 2dbd498, diff bbca940 → 2dbd498) — 04/11/2026, sera
+
+Richiesta: Simone con il prompt di GPT `docs/prompt_claude_consolidation_followup_20261104.md` («Rileggi il diff [...] Restituisci verdetti
+separati per continuazione, benchmark FT, fit e regole di lettura; indica soltanto eventuali blocchi residui e correzioni necessarie»).
+Solo review, nessun job. Metodo: checkout temporaneo detached di 2dbd498 (poi rimosso); letti la risposta punto per punto
+(`docs/reviews/consolidation_response_to_claude_20261104.md`), la voce nuova di `docs/decisioni.md`,
+`docs/consolidation_continuation_operations_20261104.md`, `review_corrections_validation.json`, i diff di `finetuning.py`,
+`consolidation_finetune.py`, `consolidation_continue.py`, dei due launcher, dei due piani e del protocollo, e i tre file di test nuovi.
+Verifiche mie: **123 test passati in 82,10 s** (stesso comando dell'autore); `bash -n` pulito sui launcher; `recipe_sha256` del piano
+ricalcolato con `recipe_identity` del checkout (uguale), `scratch_learning_rule` e `head_lr_multiplier` del piano uguali alle costanti del
+codice; griglie della testa calcolate dal codice: {1e-3, 1e-2} in tutti e tre i regimi; `fit_packaging` sui tre casi (joint/split/blocked);
+`fold_roles` restituisce dizionari di liste di stringhe, quindi l'uguaglianza della provenienza fra primo e secondo job split regge al
+passaggio per JSON; `balanced_accuracy` ignora le classi assenti (nessun NaN con la validation da 8 finestre del benchmark); `write_json`
+apre in esclusiva con `allow_nan=False`; su Leonardo (sola lettura) `/leonardo_work/IscrB_WearUsFM` e `$SCRATCH` non sono symlink, quindi i
+controlli con `resolve()` passano.
+
+### Verdetti alla convergenza
+
+| Parte | Verdetto | Residuo |
+|---|---|---|
+| Continuazione | **APPROVATA, convergenza raggiunta** | solo operativo: pin della quota entro 24 h dalla sottomissione (N-2) |
+| Benchmark FT | **APPROVATO, convergenza raggiunta** | `OUT` del benchmark sotto $WORK alla sottomissione (R-1) |
+| Protocollo dei fit | **APPROVATO con una correzione prima dei fit** | R-1: esiti scientifici dei fit fuori dalla purge di $SCRATCH |
+| Regole di lettura (F-R2, V-R1) | **CONVERGENZA ESPLICITA** sulla formulazione di GPT | nessuno; N-3 e' una nota, non una modifica |
+| Valutazione della matrice lunga | invariata: condizionata (V-R2) | controller a D parametrico, pin dei checkpoint, preventivo misurato |
+
+Trattamento dei rilievi, verificato nel diff: F-B1 e F-M4 (`HEAD_LR_MULTIPLIER` 1/100/10, piano, `recipe_identity`, controllo a runtime,
+test `test_head_grid_matches_by_candidate_and_encoder_grid_is_unchanged` e `test_head_multipliers_are_part_of_recipe_hash`); F-M3
+(`run_candidate` scrive `candidate_<n>.json` e `.pt` appena il candidato finisce; `NumericalDivergence` distinta per loss, gradiente e
+predizione, con storia e contesto; OOM ed errori di codice propagano con il loro tipo; `select_candidate` solo su validation con pareggio
+al LR minore; held predetto una volta e un non-finito sul held non fa scegliere l'altro LR; entrambi divergenti = fold fallito senza OOF
+inventate); F-M6 (parita' dei logit frozen con `extract_features` a due ritagli); F-N7; B-M2 (4 update di warm-up su istanza separata,
+medie `all` e `steady`, proiezioni sulla steady); B-R1 (`fit_packaging` per regime, `--candidate`, gate che accetta solo l'impacchettamento
+deciso dal benchmark, layout d'uscita congelato, secondo job che legge la ricevuta del primo con pin, provenienza e hash dei file; tetti
+48/96 GPU-ore alternativi); F-R2 (`SCRATCH_RULE` nel codice e nel piano, `scratch_still_improving` testata, seguito a 15 epoche da
+inizializzazioni originali con orizzonte nuovo, non ripresa); C-M1 (procedura versionata, nessun retry generico, ripresa dopo 39.237 con la
+ripresa normale e non con `--branch-from`); C-M2 (`archive_checkpoint` con `.partial` esclusivo, fsync, hash, hard link atomico senza
+sovrascrittura, copie in $WORK di 19.618/30.000/39.237/49.046 prima della ricevuta, quota di progetto letta prima del lancio e a runtime);
+B-N3. F-M5 e V-F3 rinviati: accettato, non cambiano la matrice.
+
+### Residui
+
+- **R-1 (correzione prima dei fit, una riga di piano).** `finetune_plan.json` → `fit_output_root` punta a `$SCRATCH` (purge a 40 giorni):
+  li' finirebbero `report.json`, `candidate_<n>.json`, `held.npz` (le OOF) e il layout obbligatorio `fold<f>/<regime>/<joint|candidate>`
+  verificato dal controller. Gli esiti scientifici dei fit devono stare sotto `$WORK/wearusfm_runs/results/consolidation_20261104/finetuning/`
+  come dice il protocollo (:175), con i soli `.pt` dei candidati eventualmente in $SCRATCH (24 × ≈113 MB), oppure con una copia
+  persistente prima di `complete: true` come per C-M2. `fit_output_root` non entra in `recipe_identity`: la correzione non cambia l'hash
+  della ricetta. Lo stesso vale per `OUT` del benchmark, che il controller accetta ovunque sotto `wearusfm_runs`: sotto $WORK, perche' la
+  ricevuta viene pinnata nel piano.
+- **N-2 (operativo, prima della sottomissione della continuazione).** Lettura reale della quota raccolta da me in sola lettura il
+  04/11 alle 17:04 UTC (`~/wearusfm_local/logs/lfs_quota_work_20261104.txt`): progetto 20147512, usati 1.031.361.028 KiB su quota soft
+  1.073.741.824 KiB (983,6 GiB di 1 TiB), hard 0, inode senza quota → **40,4 GiB liberi**, gate da 8 GiB soddisfatto, requisito sugli
+  inode non applicabile. `check_quota_evidence` del checkout accetta questo testo (anche con `submission_time`): il parser e' valido sul
+  formato reale. Il pin in `retention.quota_preflight` lo fa il proprietario; il controllo delle 24 ore non lo fa il submitter comune:
+  chi sottomette deve eseguire `check_quota_evidence(plan["retention"]["quota_preflight"], plan["retention"],
+  submission_time=datetime.now(timezone.utc))` subito prima di `sbatch` (meglio un'opzione `--check-quota` del controller, da documentare
+  nella procedura di semplicione). La quota e' condivisa e quasi piena: una lettura positiva non e' una prenotazione.
+- **N-3 (nota su F-R2, nessuna modifica).** Con il cosine a zero il guadagno dell'epoca 5 e' compresso dallo schedule, quindi la clausola
+  sulla mediana (≥ 0,5 pp) scatta di rado anche per una rete lontana dall'ottimo; la clausola operativa e' `best_epoch == 5` in ≥ 3 fold.
+  La regola e' quindi conservativa nel senso di non far scattare il seguito; un mancato scatto non autorizza comunque affermazioni sulla
+  convergenza di scratch (gia' scritto). Resta congelata com'e'.
+- **V-R1, convergenza esplicita.** Concordo con la riformulazione: la replica T25-L − B19618 e' un controllo empirico appaiato con i suoi IC,
+  riportato accanto ai nuovi contrasti, non un pavimento statistico universale ricavato da una coppia; non si sottrae e non si divide.
+  Soglie pratiche a due lati congelate in 2dbd498 prima di qualunque estrazione: 1 pp di balanced accuracy su P1 o P2 con IC appaiato
+  inferiore > 0 e non-inferiorita' a −1 pp sull'altro indice; 2 % relativo di E_dyn con IC favorevole; peggioramento pratico speculare;
+  IC che attraversano lo zero = inconclusivo, non equivalenza; riferimento per compito (classificazione e posa possono differire), scelta
+  dichiaratamente esplorativa; post − pre con gli stessi margini. Le soglie non si abbassano dopo i risultati. Nota descrittiva: 1 pp supera
+  tutti i delta osservati nella replica (massimo DB6 +0,86 pp; P1 +0,51 con IC che esclude lo zero), che e' proprio il motivo per cui il solo
+  criterio dell'IC non basta.
+
+### Cosa autorizza la rilettura
+
+Convergenza raggiunta su continuazione, benchmark FT e regole di lettura: GPT puo' portare `continuation_plan.json` a
+`claude_review_converged` (dopo il pin della quota) e sottomettere i tre segmenti e il benchmark tramite semplicione, submitter e ledger
+comuni, nell'ordine fissato da Simone. Per i fit: `fits_status` a `claude_review_converged` dopo R-1 (una riga di piano, senza nuova
+rilettura se il diff e' solo quello), poi pin della ricevuta del benchmark, preventivo effettivo e modalita' per regime pubblicati, poi i
+fit. Valutazioni della matrice lunga e aggregatore OOF/IC: ancora da consegnare, non autorizzati. Nessun lancio da parte mia.

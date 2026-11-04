@@ -5366,6 +5366,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Verdetto: correzioni chiuse; il SOLO collaudo preparatorio e' eseguibile com'e' a d48cad5 (2 GPU-ore massime), con via di Simone e sottomissione
   di semplicione; training NON approvato. Nessuna voce in «Problemi trovati».
 
+### 2026-11-04 | Claude | Rilettura delle correzioni di GPT (2dbd498) alla review del consolidamento: convergenza su continuazione, benchmark FT e regole di lettura; fit con una correzione di piano (richiesta di Simone)
+- Simone, 04/11/2026, con il prompt di GPT `docs/prompt_claude_consolidation_followup_20261104.md`: rilettura del solo diff bbca940 → 2dbd498
+  (ramo `codex/consolidation-20261104`). Solo review, nessun job. Appendice «Rilettura delle correzioni» in
+  `docs/reviews/claude_review_consolidation_20261104.md`; checkout temporaneo detached di 2dbd498, poi rimosso.
+- Verifiche: 123 test passati in 82,10 s (stesso comando dell'autore), `bash -n` dei launcher, `recipe_sha256` ricalcolato e uguale, piano e
+  costanti del codice coincidenti, griglie della testa {1e-3, 1e-2} nei tre regimi, `fit_packaging` sui tre casi, provenienza del job split
+  robusta al passaggio per JSON (`fold_roles` = liste di stringhe), `balanced_accuracy` senza NaN con classi assenti, nessun symlink su WORK e
+  SCRATCH (`resolve()` ok). Quota di progetto letta in sola lettura alle 17:04 UTC (`~/wearusfm_local/logs/lfs_quota_work_20261104.txt`):
+  progetto 20147512, 983,6 GiB usati su 1 TiB soft, hard 0, inode senza quota, 40,4 GiB liberi; il parser `check_quota_evidence` accetta il
+  testo reale, gate da 8 GiB soddisfatto. Il pin nel piano e il controllo delle 24 ore prima di `sbatch` restano al proprietario e a chi sottomette.
+- Verdetti: continuazione APPROVATA e convergente (C-M1 procedura versionata, C-M2 copie in WORK con hard link atomico e hash prima della
+  ricevuta, gate quota); benchmark FT APPROVATO e convergente (warm-up separato, policy joint/split/blocked per regime congelata prima della
+  misura, tetti 48/96 GPU-ore alternativi); fit APPROVATI con una correzione prima dei fit: R-1 `fit_output_root` in `finetune_plan.json`
+  punta a $SCRATCH (purge 40 giorni) e li' finirebbero report, candidate JSON e OOF `held.npz`: esiti scientifici sotto
+  `$WORK/wearusfm_runs/results/consolidation_20261104/finetuning/` (i `.pt` possono restare in SCRATCH), `OUT` del benchmark sotto WORK;
+  non cambia l'hash della ricetta. Regole di lettura: convergenza esplicita su F-R2 (nota: con il cosine a zero la clausola operativa e'
+  `best_epoch == 5` in ≥ 3 fold; regola conservativa, congelata) e su V-R1 nella formulazione di GPT (replica T25-L − B19618 come controllo
+  empirico con IC, non pavimento universale; soglie pratiche a due lati 1 pp con IC e non-inferiorita' a −1 pp sull'altro indice, 2 % relativo
+  di E_dyn; riferimento per compito; congelate in 2dbd498). Matrice lunga e aggregatore OOF/IC: condizionati come prima (V-R2).
+- Cosa autorizza: GPT puo' portare `continuation_plan.json` a `claude_review_converged` dopo il pin della quota e sottomettere i tre segmenti e
+  il benchmark via semplicione; `fits_status` convergente dopo R-1 senza nuova rilettura se il diff e' solo quello, poi pin del benchmark,
+  preventivo e modalita' per regime, poi i fit. Nessun lancio da parte mia.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
