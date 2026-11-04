@@ -5565,6 +5565,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   c'e piu, lanci sempre tu» e' riportata da GPT, non verificabile da me; N-3 review f70dc72 copiata e non fusa nel ramo di GPT.
   Consuntivo dei fit e lettura dei risultati (F-R2/V-R1, SCRATCH_RULE) restano da fare a fine matrice. Nessun lancio da parte mia.
 
+### 2026-11-04 | Claude | Adattatori di valutazione T100-LQ (GPT c8f5c12): APPROVATI con i gate di risorse; prerequisiti per il commit APPROVED_FOR_TRAINING soddisfatti; training non rilasciato (richiesta di Simone)
+- Simone: «Rivedi la consegna GPT c8f5c12 [...] Se approvi, indica se sono soddisfatti i prerequisiti per il commit dedicato
+  APPROVED_FOR_TRAINING [...] Tu non lanciare nulla». Review in `docs/reviews/claude_review_tokenizer_logsquare_adapters_20261104.md`.
+- Metodo: checkout temporaneo detached (poi rimosso); letti piano esecutivo, critico interno, readout/protocollo/handoff aggiornati, i quattro
+  adattatori, i quattro launcher, i quattro file di test, i piani e le politiche di risorse. **Test con i due comandi di GPT: 276 + 141 = 417
+  passati** (135,76 s + 15,85 s); `bash -n` pulito. Diff vuoto su controller/launcher del training, collaudo, `src/` e moduli numerici storici;
+  la mia review 1d6f96a copiata identica e pinnata in `component_review.json`; 102 sorgenti scientifici con gli stessi hash; **301 pin locali
+  verificati, 0 discrepanze** (pin remoti non aperti). Piani storici di posa (5.000 e 19.618) e sonde accettati dagli adattatori con i sorgenti
+  attuali, bootstrap storico ricalcolato identico. Verificati nel codice condiviso i percorsi reali: `pose_eval.extract` per registrazione
+  (`default_rng([seed, ri])`, batch ≤ 10, FP32 senza autocast, encode → latent_mean → pose_head) e `extract_channel_readouts` (scala dalle
+  prime 10 finestre per chiave, autocast bf16 intorno a `readouts` con decoder, ritagli 4 s: EPN 2, UCI/P1 1); lettori train-only del
+  benchmark uguali ai caricatori di produzione; config del controllo T100-L a 5.000 uguale al candidato con flag False (`canonical_config`);
+  `calibration_signature` indipendente dal modello; walltime storici 2.700/1.800/2.700 s come il launcher storico.
+- Verdetto: **APPROVATO, nessun blocco.** R1-a/R1-b e N1-N4 recepiti (norme delle 64 colonne di `W_log` student/teacher per famiglia nelle
+  ricevute e nei lettori di posa a entrambi gli endpoint, solo descrittive). Estrattore: D3 dai percorsi reali (W_log nullo = lineare, non nullo
+  diverso, a 200 e 2000 Hz con decoder), load stretto, gain e pesi dal checkpoint, soli due default legacy, pin mancanti rifiutati. Benchmark:
+  D1 in codice (tetto = walltime storico × max(1, massimo dei rapporti) a 300 s; stima = durata storica × media pesata sui conteggi storici di
+  finestre; stop se mancano gruppi, conteggi o forme uniche), ricostruzione completa in `allocation_for` senza cicli fra gli hash; D2: la
+  continuazione non dipende dal benchmark. Lettori: fit solo LQ con le funzioni storiche (bit-identico nei test), tre controlli importati e
+  riverificati senza riscrittura delle provenienze, bootstrap a quattro celle con gli stessi draw storici, tre contrasti dichiarati, solver/alpha
+  irrisolti trattati esplicitamente; contratto ricevute → lettori uguale allo storico. Risorse: benchmark 0,5 GPU-ore / 4 core-ore, posa 16
+  core-ore, sonde 34,3333 core-ore (lettori CPU 50,3333), checkout 0,3333 ciascuno, estrazioni senza tetto fino a rho_infer: APPROVATE.
+- **A5, riuso dei tempi storici per shard come gate CPU delle sonde: ACCETTATO** con condizioni: margini pubblicati (max elapsed/tetto db2-01 0,49,
+  db2-23 0,47, db3 0,33, db6 0,57, p2 0,45; T100-L 13,26 core-ore di fit su 34,33), contesto numerico e conteggi dei fold identici (gia' nel
+  runtime), shard al walltime = stop senza rilancio ne' aumento del tetto, dichiarato proxy (lbfgs puo' iterare diversamente).
+- Note non bloccanti: **A1** prima del benchmark leggere dalla cache storica i conteggi di finestre delle registrazioni 0 e 1 (servono 10 ciascuna;
+  media storica 9,5) altrimenti il job fallisce senza riselezione; **A2** il submitter passa `--time` pari al tetto misurato di ogni cella di
+  estrazione (default del launcher 45 min); **A3** la ricevuta del benchmark congela i 110 sorgenti: ogni modifica successiva richiede un nuovo
+  benchmark; **A4** dopo il rilascio aggiornare in ordine `extraction_plan.training_plan` e `inference_plan.extraction_plan`.
+- **Prerequisiti per il commit dedicato `APPROVED_FOR_TRAINING`: soddisfatti.** Il commit di GPT deve contenere stato, `training_release`
+  pinnata (report, analisi, preventivo, hash dei due file del controller invariati, review di Claude), nessun cambio di ricetta o dei 102
+  sorgenti; poi checkout congelato nuovo e sottomissione con gli override N4 sotto l'autorizzazione operativa gia' data da Simone. Training non
+  rilasciato ne' lanciato da questa review; nessun job mio. Nessuna voce in «Problemi trovati».
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
