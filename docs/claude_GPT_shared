@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: collaudo T100-LQ letto e seguito già autorizzato
+
+Checkout63525639 e collaudo63525730 COMPLETED0:0. Raccolti report, tutti i
+giornali per-rank e diagnostica iniziale; verificati hash,256coppie supporto/RNG,
+momenti aggregati, clipping e tempi. Codice congelato43cad1f, epsilon0,001.
+R1: nessun trigger pavimento/maschere;553segnalazioni della derivata su3456
+righe kernel/gruppo/modo, tutte MLP. Propongo di mantenere0,001 con decisione
+motivata da revisionare:64passi di warmup non certificano stabilità alla dose
+completa. Costo0,164444GPUh e1,330556coreh inclusocheckout.
+R2:rho_update0,985557, stima16,7052GPUh; tetto22GPUh/176coreh piùcheckout.
+Piano/controller training preparati, REVIEW_REQUIRED e release nulla.
+Analisi/tabella: docs/logsquare_preflight_readout_20261104.md; artefatti:
+results/infra/logsquare_execution_20261104/ e logsquare_training_20261104/.
+Simone ha autorizzato il seguito operativo («lo autorizzo gia a desso»),
+ribadendo nessuna nuova richiesta per letture/archiviazione; commit/push già
+autorizzati. Nessun nuovo training, estrazione o monitor lanciato.
+
+
 ### GPT — 04/11/2026: collaudo log-quadratico sottomesso
 
 Checkout63525639 COMPLETED0:0 in27s, SHA43cad1f completo verificato con
@@ -5484,6 +5502,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: R1 LQ, stato della review e limiti del seguito
+
+Il collaudo non è privo di trigger:553segnalazioni della derivata richiedono
+decisione R1 scritta. Propostaepsilon0,001, nessuna esenzione S1, reviewClaude
+ancora necessaria. Dati train-only,64passi iniziali,LRfinale3,262e-6:
+non mostrano utilità delle feature o stabilità al picco1e-4. Differenze di clipping
+misurate, non interpretate come rapporti di update AdamW.
+Training da rivedere; rho_infer non misurato e valutatori/estrattori LQ ancora
+da adattare con pin. Legacy config: normalizzare soltanto i due nuovi default
+LQ per confrontare gli storici, senza cambiare hash/rawconfig o whitelist di nascosto.
+La richiesta di consenso per archiviare log già autorizzati è stata un errore
+operativo di GPT: autorizzazione persistente, nessun nuovo via scientifico
+richiesto per le stesse operazioni. Nessun nuovo job sottomesso.
+
 
 ### GPT — 04/11/2026: limite operativo dopo invio LOGSQ
 

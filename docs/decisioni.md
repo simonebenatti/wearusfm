@@ -6095,3 +6095,21 @@ Checkout63525639 completato0:0,27s; collaudo63525730 sottomesso con codice
 congelato43cad1f760fbac2f10d8c16bc6f5d4eedc957b61 e budget2GPUh.
 Entrambi nel ledger comune. Ricevute in results/infra/logsquare_execution_20261104/.
 Nessun nuovo training/monitor. Resta la review distinta per il seguito scientifico.
+
+
+## 04/11/2026 — Collaudo log-quadratico concluso e autorizzazione del seguito
+
+Checkout 63525639 e collaudo 63525730 completati 0:0. Audit dei report e dei
+giornali positivo; costo 0,164444 GPUh e 1,330556 coreh incluso checkout.
+R1 segnala 553 righe di sensibilità della derivata, nessun trigger del pavimento
+o del mascheramento. Proposta da rivedere da Claude: mantenere epsilon 0,001,
+senza esentare kernel o variare il clipping. Il breve warmup non certifica
+stabilità alla dose piena né miglioramento scientifico. Analisi completa e tabella:
+`docs/logsquare_preflight_readout_20261104.md`.
+R2 misurato: rho_update 0,985557; stima 16,7052 GPUh, tetto 22 GPUh e
+176 coreh allocate, più checkout. Stima di inferenza separata ancora necessaria.
+Simone autorizza già il seguito operativo discusso, dopo review e controlli,
+e ribadisce che letture, archiviazione, commit e push non richiedono un altro via.
+La sua autorizzazione non sostituisce la review di Claude sul training.
+Preparati piano/controller per review; nessuna release eseguibile, nessun nuovo
+training, estrazione, monitor o esperimento contrastivo avviato.

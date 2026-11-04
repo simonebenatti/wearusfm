@@ -16,7 +16,7 @@
   "new_background_monitor": false,
   "checkout_state": "COMPLETED 0:0",
   "checkout_verified": true,
-  "status": "PREFLIGHT_RUNNING",
+  "status": "PREFLIGHT_COMPLETED_OFFLINE_AUDIT_PASSED_R1_REVIEW_PENDING",
   "initial_status": {
     "job_id": 63525730,
     "state": "RUNNING",
@@ -25,5 +25,11 @@
     "gpus": 4,
     "cpus": 32,
     "memory": "240G"
-  }
+  },
+  "preflight_state": "COMPLETED 0:0",
+  "elapsed_seconds": 148,
+  "report_sha256": "311ac329731c84f91e9199c78c92e4890cc43d2de598361f11f4e3f7465e5b08",
+  "offline_analysis": "results/infra/logsquare_execution_20261104/analysis.json",
+  "next_operations_authorized_by_simone": true,
+  "next_training_approved_by_claude": false
 }

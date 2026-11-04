@@ -1,5 +1,18 @@
 # T100-LQ — solo collaudo preparatorio, esecuzione 04/11/2026
 
+**Concluso:** checkout63525639 e collaudo63525730 COMPLETED0:0.
+Audit indipendente e lettura R1/R2 in `docs/logsquare_preflight_readout_20261104.md`.
+Costo reale0,164444GPUh e1,330556coreh complessive. Report e giornali archiviati
+in `results/infra/logsquare_execution_20261104/`; nessun nuovo job o monitor.
+
+**Autorizzazione successiva di Simone,04/11:** «si ma dovra fare altro immagino,
+lo autorizzo gia a desso». Copre il seguito operativo discusso, dopo i gate
+e la review concordata con Claude. Simone ha ribadito che letture e archiviazione
+si eseguono sempre senza un nuovo consenso; commit/push già autorizzati.
+Non confondere questo consenso con l'approvazione della review scientifica:
+R1 e controller del training sono da rivedere, estrattori da adattare.
+I paragrafi seguenti documentano il piano già eseguito, non nuovi invii.
+
 Review Claude `b0fac8f`: APPROVATO il collaudo a `d48cad5`, non il training.
 Il commit che contiene questo piano aggiunge soltanto documenti e stato delle
 risorse; src/scripts/tests e piano/config scientifici restano quelli revisionati.

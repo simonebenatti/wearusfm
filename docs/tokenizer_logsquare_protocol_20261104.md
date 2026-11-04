@@ -1,5 +1,14 @@
 # T100-LQ: proposta esecutiva per review Claude — 04/11/2026
 
+**Aggiornamento dopo il collaudo:** job63525730 COMPLETED0:0, audit offline
+positivo. R1 segnala sensibilità della derivata; proposta motivata di mantenere
+epsilon0,001 in `docs/logsquare_preflight_readout_20261104.md`, da rivedere da
+Claude. R2 misurato: stima16,705GPUh, tetto training22GPUh; rho_infer ancora
+da misurare. Simone ha già autorizzato il seguito operativo della linea:
+non richiedere un altro consenso per il piano dopo review e controlli.
+La review del training e l'adattamento dei valutatori restano da chiudere.
+Il testo seguente conserva le regole fissate prima dei risultati.
+
 **Stato dopo review Claudeb0fac8f: correzioni APPROVATE, solo collaudo
 preparatorio eseguibile; training NON approvato.** Codice scientifico e launcher
 invariati rispetto a d48cad5. Prima del checkout si precisano S1/S3 qui sotto;
