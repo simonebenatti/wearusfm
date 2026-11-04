@@ -23,3 +23,9 @@ Runtime invariato.
 Prima degli invii restano pubblicazione e verifica SHA del nuovo checkout,
 assenza di collisioni remote e nel ledger, mapping afterok tramite submitter.
 Nessun lancio, modifica al repository o nuovo test della suite dal revisore.
+
+Rilettura operativa dopo rifiuto del primo C0: approvata la sostituzione della
+dipendenza dal checkout ormai rimosso dal controller (MinJobAge 30 s) con
+prerequisito COMPLETED 0:0 verificato. Rifiuto esplicito senza ID SLURM;
+stesso ID logico ritentabile con --dopo-rifiuto. Le 12 dipendenze C1→C0,
+ricetta, runtime, output e risorse restano identici. Nessun nuovo checkout.

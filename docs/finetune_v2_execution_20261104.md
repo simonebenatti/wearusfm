@@ -107,3 +107,33 @@ il checkout runtime resta a2eeb755676a0ab780fc269f0679684eb41cd6f2.
 Primo C0 con lo stesso ID logico e `--dopo-rifiuto`; gli altri ID sono nuovi.
 La ricevuta del rifiuto è conservata in submission_v2/fits. Nessun retry cieco
 e nessuna duplicazione del checkout.
+
+## Sottomissioni completate — 04/11, ore 19:27 CET
+
+Tutti i **24 fit sottomessi** via submitter e ledger comuni, dopo pubblicazione
+e verifica dello SHA remoto del piano operativo ec6e102. Il codice eseguito
+resta a2eeb75. Ricevute complete in `submission_v2/fits/`; verificati tutti
+i nomi, 24 ID unici, risorse e dipendenze effettive SLURM.
+
+| Regime | Fold | Candidato 0 | Candidato 1 |
+|---|---:|---:|---:|
+| frozen | 0 | 63527972 | 63527973 |
+| frozen | 1 | 63527974 | 63527975 |
+| frozen | 2 | 63527976 | 63527977 |
+| frozen | 3 | 63527978 | 63527979 |
+| finetune | 0 | 63527980 | 63527981 |
+| finetune | 1 | 63527982 | 63527983 |
+| finetune | 2 | 63527986 | 63527989 |
+| finetune | 3 | 63527990 | 63527991 |
+| scratch | 0 | 63527992 | 63527993 |
+| scratch | 1 | 63527994 | 63527995 |
+| scratch | 2 | 63527996 | 63527997 |
+| scratch | 3 | 63527999 | 63528000 |
+
+Alle 18:27:32 UTC: **10 RUNNING, 14 PENDING** (2 Priority e 12 Dependency).
+Tutti i C1 dipendono dal C0 della stessa riga. Consuntivo fit ancora aperto.
+Benchmark nuovo: 0,125 GPUh / 1 coreh; due checkout v2 conclusi:
+0 GPUh / 0,018889 coreh complessive. Rifiuto iniziale: zero calcolo.
+Continuazione 63525803 → 63525805 → 63525809 ancora PENDING, invariata.
+Nessun monitor automatico creato. Matrice lunga e aggregatore OOF/IC restano
+consegne separate.

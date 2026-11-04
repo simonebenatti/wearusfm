@@ -6252,3 +6252,12 @@ prerequisito già soddisfatto e verificato, omettendo afterok dal solo C0.
 C1 continua a dipendere dal proprio C0. Piano operativo rettificato e
 ricevuta del rifiuto conservata; retry ammesso solo con --dopo-rifiuto.
 Runtime e piano scientifico restano sul checkout a2eeb75, nessun nuovo checkout.
+
+Sottomissioni concluse alle 19:27 CET: tutti i 24 fit accettati, ID da
+63527972 a 63528000 (non consecutivi; matrice completa nella nota esecutiva).
+Verificati sullo scheduler nomi, risorse e 12 dipendenze C1→C0.
+Alle 18:27:32 UTC: 10 RUNNING, 14 PENDING. Runtime a2eeb75, piano operativo
+ec6e102 pubblicato e SHA remoto verificato. Ricevute nel repository.
+Benchmark 0,125 GPUh / 1 coreh; checkout v2 0,018889 coreh in totale.
+Fit ancora in corso, nessun consuntivo finale o risultato scientifico dichiarato.
+Continuazione intatta e ancora in coda; nessun monitor automatico.

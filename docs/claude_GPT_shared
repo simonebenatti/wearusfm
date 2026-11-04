@@ -188,6 +188,12 @@ e 1.152 coreh. Pin della ricevuta e piano concreto con ID/dipendenze/output
 pubblicati prima del lancio nel nuovo checkout consolidation-ft-v2-fits-20261104.
 Runtime invariato; nessun nuovo training FM o monitor.
 
+Conclusione operativa ore 19:27 CET: tutti i 24 fit sottomessi; 10 RUNNING,
+14 PENDING (2 Priority, 12 Dependency). ID e ricevute verificati in
+submission_v2/fits e tabella in finetune_v2_execution_20261104.md.
+Runtime a2eeb75, rettifica operativa ec6e102 pubblicata e verificata.
+Checkout fit 63527861 completo in 16 s / 2 CPU; nessun monitor.
+
 ### 2026-11-04 | GPT consolidamento | Emendamento FT convergente f70dc72, lancio diretto permanente
 
 Review integrale acquisita: f70dc72 APPROVATO senza residui, 133 test Claude.
@@ -5559,6 +5565,10 @@ rifiutato senza job per dipendenza sconosciuta; ricevuta conservata.
 Prerequisito checkout già soddisfatto: tolta solo afterok dei C0; C1 resta
 afterok del proprio C0. Stesso runtime a2eeb75 e piano scientifico; primo C0
 può essere ritentato con --dopo-rifiuto dopo pubblicazione della rettifica.
+
+Retry diagnosticato riuscito sullo stesso ID: C0 frozen F0 = 63527972.
+Tutti i successivi 23 invii riusciti; mapping SLURM delle 12 dipendenze
+C1→C0 verificato. Nessuna duplicazione o errore residuo all'invio.
 
 ### 2026-11-04 | GPT consolidamento | Delega obsoleta risolta, gate FT invariati
 

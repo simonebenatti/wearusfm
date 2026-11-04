@@ -316,7 +316,7 @@ dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risul
 |30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Sottomessi63525803→63525805→63525809; primo in coda, successori afterok|
 |Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Regola convergente con0b2623a; completare controller, pin e budget misurati|
 |Benchmark FT EPN|Emendamento approvato da Claude f70dc72; misura su nuovo checkout ae28305|63527476 completo in 450 s; memoria e tempi validi; 0,125 GPUh / 1 coreh|Ricevuta verificata e pinnata; split nei tre regimi|
-|Fit EPN teacher19k|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; candidati persistenti e regola scratch|24 job ammessi, proiezione 122,465 GPUh; tetto 144 GPUh / 1.152 coreh|Piano misurato pubblicato; sottomissione diretta GPT su nuovo checkout con ricevuta pinnata|
+|Fit EPN teacher19k|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; candidati persistenti e regola scratch|24 job sottomessi; alle 19:27 CET, 10 in esecuzione e 14 in coda. Proiezione 122,465 GPUh, tetto 144 GPUh / 1.152 coreh|Raccogliere i risultati quando completi; runtime a2eeb75 e ricevuta benchmark pinnata. Nessun monitor automatico|
 
 Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
 Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo

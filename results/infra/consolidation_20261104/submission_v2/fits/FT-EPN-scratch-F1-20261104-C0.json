@@ -1,0 +1,54 @@
+{
+ "id": "FT-EPN-scratch-F1-20261104-C0",
+ "creato": "2026-11-04T19:27:07+01:00",
+ "agente": "gpt",
+ "campagna": "consolidation-ft-v2-fits-20261104",
+ "gpu_ore_stimate": 7.0,
+ "codice_sha": "a2eeb755676a0ab780fc269f0679684eb41cd6f2",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=FT-EPN-scratch-F1-20261104-C0",
+  "--comment=wearusfm:FT-EPN-scratch-F1-20261104-C0",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-fits-20261104,EXPECTED_SHA=a2eeb755676a0ab780fc269f0679684eb41cd6f2",
+  "--qos=normal",
+  "--nodes=1",
+  "--ntasks=1",
+  "--gres=gpu:1",
+  "--cpus-per-task=8",
+  "--mem=100G",
+  "--time=07:00:00",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-fits-20261104/scripts/slurm/consolidation_finetune.sbatch",
+  "fit",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/scratch/candidate0",
+  "1",
+  "scratch",
+  "0"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T19:27:07+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T19:27:07+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T19:27:08+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63527994,
+   "uscita": 0,
+   "stdout": "63527994\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63527994,
+ "uscita": 0,
+ "stdout": "63527994\n",
+ "stderr": ""
+}

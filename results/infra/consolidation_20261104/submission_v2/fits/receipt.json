@@ -1,0 +1,307 @@
+{
+  "observed_at_utc": "2026-11-04T18:27:32Z",
+  "code_sha": "a2eeb755676a0ab780fc269f0679684eb41cd6f2",
+  "operational_plan_commit": "ec6e102b5753a51a65466c38d954e1463a5165bf",
+  "origin_sha_verified": true,
+  "leonardo_runtime_sha_verified": true,
+  "finetune_plan_sha256": "2ce4927fa44f2d6a7442100562b8bebde1bd8d59a5172ff2f01fa4837167d7f6",
+  "fit_launch_plan_sha256": "7fd191e4f695a52bc8e3fc3f8d3294250f4a6a6b96f2c42d281178811c77d194",
+  "benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark_v2/report.json",
+    "sha256": "c14b78b0d593a56f272192bd2c246003e657788551936c24c9dc1fba1eb0241d"
+  },
+  "checkout": {
+    "job": 63527861,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 16,
+    "allocated_cpus": 2,
+    "allocated_core_hours": 0.008888888888888889,
+    "clean_read_only_verified": true
+  },
+  "jobs": [
+    {
+      "id": "FT-EPN-frozen-F0-20261104-C0",
+      "job_id": 63527972,
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0016",
+      "dependency": "(null)",
+      "receipt_sha256": "660c41aa982ca6d558d375b491645d41d27a2a3b0e42e403b3b464eeb7b67193"
+    },
+    {
+      "id": "FT-EPN-frozen-F0-20261104-C1",
+      "job_id": 63527973,
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527972(unfulfilled)",
+      "receipt_sha256": "0ece7e807b60804aa27aaf33dd793b4024e8fc68095f4fadc86edd08c276cc20"
+    },
+    {
+      "id": "FT-EPN-frozen-F1-20261104-C0",
+      "job_id": 63527974,
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0027",
+      "dependency": "(null)",
+      "receipt_sha256": "d261540e2576e7986fd4213e475f07c7b1dc302ca46d88bcf298a2f71e7f478f"
+    },
+    {
+      "id": "FT-EPN-frozen-F1-20261104-C1",
+      "job_id": 63527975,
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527974(unfulfilled)",
+      "receipt_sha256": "04feb30a7bd582b7ce46fdcc80f29206a89e6b04e173a95736680bec21e7c3e0"
+    },
+    {
+      "id": "FT-EPN-frozen-F2-20261104-C0",
+      "job_id": 63527976,
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0031",
+      "dependency": "(null)",
+      "receipt_sha256": "aa52c47d030524b24738bd6545a717c4dafca6c8cb5df6cd7653f791a8d3c330"
+    },
+    {
+      "id": "FT-EPN-frozen-F2-20261104-C1",
+      "job_id": 63527977,
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527976(unfulfilled)",
+      "receipt_sha256": "e80563c417becdfcc552a1dc7ab1b2bc6b0c32d4f26958a1bb461d5dcd1ef24a"
+    },
+    {
+      "id": "FT-EPN-frozen-F3-20261104-C0",
+      "job_id": 63527978,
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0101",
+      "dependency": "(null)",
+      "receipt_sha256": "12fc7c32ba2a038e9d97f4db232054adbcc51d7ea449b8f58816e2630ef45f55"
+    },
+    {
+      "id": "FT-EPN-frozen-F3-20261104-C1",
+      "job_id": 63527979,
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527978(unfulfilled)",
+      "receipt_sha256": "69d90dc8f5bdcfe6119271c63af29868c70216de1ca80a4a89134175b22ddfa1"
+    },
+    {
+      "id": "FT-EPN-finetune-F0-20261104-C0",
+      "job_id": 63527980,
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0121",
+      "dependency": "(null)",
+      "receipt_sha256": "eabaddfa13cfa88783228aab97e2597f62b74dba5c5c9cacc87a7e37f7f260a1"
+    },
+    {
+      "id": "FT-EPN-finetune-F0-20261104-C1",
+      "job_id": 63527981,
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527980(unfulfilled)",
+      "receipt_sha256": "160124bda8b6ee71b5159c5bb82d0173f432ecdb7b0d71a15306f3820ea558d2"
+    },
+    {
+      "id": "FT-EPN-finetune-F1-20261104-C0",
+      "job_id": 63527982,
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0552",
+      "dependency": "(null)",
+      "receipt_sha256": "66b35eacea75a59f4c2a20630f39c11de364bbe6e05e8883c43924bae04bc878"
+    },
+    {
+      "id": "FT-EPN-finetune-F1-20261104-C1",
+      "job_id": 63527983,
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527982(unfulfilled)",
+      "receipt_sha256": "a34b42153bd7a87e47c29c9504d58794da8f43531173a2a64a095c46d509c25a"
+    },
+    {
+      "id": "FT-EPN-finetune-F2-20261104-C0",
+      "job_id": 63527986,
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0971",
+      "dependency": "(null)",
+      "receipt_sha256": "b4e27013233a28bf508f8b012a071fe3fdddfc76f1bfca20e33074a7420c1d51"
+    },
+    {
+      "id": "FT-EPN-finetune-F2-20261104-C1",
+      "job_id": 63527989,
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527986(unfulfilled)",
+      "receipt_sha256": "6d2d66dff923b7a7ec33d20e19fcdd41e9608a97fbb0b66750ebf1f64bbe4375"
+    },
+    {
+      "id": "FT-EPN-finetune-F3-20261104-C0",
+      "job_id": 63527990,
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn0971",
+      "dependency": "(null)",
+      "receipt_sha256": "e679c52f1ea215068d6d356d471fff76cdc6dbd77fe9fb7fd955d7cc03669e32"
+    },
+    {
+      "id": "FT-EPN-finetune-F3-20261104-C1",
+      "job_id": 63527991,
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527990(unfulfilled)",
+      "receipt_sha256": "2559ae168214f8e8fe250c7d79eb5a1f8a401cad9cf820c4f42fdc77efe5a5ab"
+    },
+    {
+      "id": "FT-EPN-scratch-F0-20261104-C0",
+      "job_id": 63527992,
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn2025",
+      "dependency": "(null)",
+      "receipt_sha256": "43041ffc08a37f49ab93e84d423df69d7ec588c7b3fe440b5e6b18492c3e405d"
+    },
+    {
+      "id": "FT-EPN-scratch-F0-20261104-C1",
+      "job_id": 63527993,
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527992(unfulfilled)",
+      "receipt_sha256": "ca48335e87e623e510385b4626285f2350d7b66497417ea7bb3d6238af8a8531"
+    },
+    {
+      "id": "FT-EPN-scratch-F1-20261104-C0",
+      "job_id": 63527994,
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 0,
+      "state": "RUNNING",
+      "reason": "lrdn3221",
+      "dependency": "(null)",
+      "receipt_sha256": "590288e59ee423eb198d373afa3f263a894b4be95e1b19f67a11809e4c208aec"
+    },
+    {
+      "id": "FT-EPN-scratch-F1-20261104-C1",
+      "job_id": 63527995,
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527994(unfulfilled)",
+      "receipt_sha256": "744e1fbb3ab3e6e6dd7d72419f805a769f7513cf261f5f6425e2571e22cc863b"
+    },
+    {
+      "id": "FT-EPN-scratch-F2-20261104-C0",
+      "job_id": 63527996,
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 0,
+      "state": "PENDING",
+      "reason": "(Priority)",
+      "dependency": "(null)",
+      "receipt_sha256": "3e01f50918c7f44b5a03fc6479dcda2af59ff9ae1f418cf898e3dcd6f0711dfc"
+    },
+    {
+      "id": "FT-EPN-scratch-F2-20261104-C1",
+      "job_id": 63527997,
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527996(unfulfilled)",
+      "receipt_sha256": "5793f84ad0fe79157a07fbacb48973059d7ad59df9d943d946a5e6f1793aaa12"
+    },
+    {
+      "id": "FT-EPN-scratch-F3-20261104-C0",
+      "job_id": 63527999,
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 0,
+      "state": "PENDING",
+      "reason": "(Priority)",
+      "dependency": "(null)",
+      "receipt_sha256": "8cbb6e43fffd2c4ec8528b5e474206e46c4147573dbcaf58edd44b03e4634710"
+    },
+    {
+      "id": "FT-EPN-scratch-F3-20261104-C1",
+      "job_id": 63528000,
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 1,
+      "state": "PENDING",
+      "reason": "(Dependency)",
+      "dependency": "afterok:63527999(unfulfilled)",
+      "receipt_sha256": "db33b00a77363633e0e39dee78c3ba62ab890dfdcdca4329a32d32979b865052"
+    }
+  ],
+  "state_counts": {
+    "PENDING": 14,
+    "RUNNING": 10
+  },
+  "all_24_names_resources_dependencies_verified": true,
+  "fit_gpu_hours_cap": 144,
+  "fit_allocated_core_hours_cap": 1152,
+  "fit_projected_gpu_hours": 122.4651731590311,
+  "benchmark_actual_gpu_hours": 0.125,
+  "benchmark_actual_core_hours": 1,
+  "fit_actual_usage": "ongoing; no final consumption yet",
+  "submission_correction": {
+    "reason": "SLURM MinJobAge30s; successful checkout absent from live controller after completion, afterok rejected",
+    "first_attempt": "FT-EPN-frozen-F0-20261104-C0 explicitly rejected, no SLURM job created",
+    "resolution": "completed checkout prerequisite verified before submission; C0 no live dependency, C1 afterok own C0 unchanged; same logical C0 retry only via --dopo-rifiuto",
+    "scientific_plan_and_runtime_unchanged": true
+  },
+  "sandbox_attempt": "first command blocked before ledger mkdir; verified no reservation or submission; rerun with existing approved submitter permission",
+  "no_monitor_created": true
+}
