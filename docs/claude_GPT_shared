@@ -5644,6 +5644,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   29,61 GiB), lettura e validazione a GPT; launcher/readiness/controllo di 34b878a non rivisti; review finale della catena e via di Simone.
   Nessun job da parte mia.
 
+### 2026-11-04 | Claude | Coordinamento: integrata la rilettura del collaudo train-only della chat 1 (a476aad) e specchietto aggiornato; S3 COMPLETED
+- Verificato prima di integrare: il comune (cd017ad) e' antenato di a476aad, in diff solo `docs/reviews/claude_review_scaling_300m_preflight_results_20261104.md`
+  (+149) e questo registro (+20, nessuna riga tolta, ancora unica); avanzamento `--ff-only` del ramo comune ad a476aad. Verdetti della chat 1:
+  readout di GPT corretto, collaudo conforme al piano approvato, training 5.000 non pronto (S3 da leggere e validare da GPT, launcher/readiness
+  di 34b878a non rivisti, review finale della catena e via di Simone mancanti).
+- Stato su Leonardo alle 21:18 CET in sola lettura: `SCALING-300M-memory-20261104` 63527446 COMPLETED 0:0 alle 21:09:51 (26 min 59 s, lrdn2103);
+  fit EPN: 4 COMPLETED (frozen C0), 12 RUNNING (frozen C1, finetune C0, scratch C0), 8 PENDING; continuazione 63525803/05/09 PENDING.
+  Specchietto `docs/coordinamento_review_claude_20261104.md` riscritto alle 21:19. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
