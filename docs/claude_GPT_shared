@@ -5547,6 +5547,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   GPT via semplicione (12 C0 RUNNING, 12 C1 PENDING per dipendenza), continuazione 63525803/05/09 PENDING, S3 63527446 PENDING, checkout
   63527364 COMPLETED. Nessun job, nessuna modifica a file di GPT o a `main`.
 
+### 2026-11-04 | Claude | Review della consegna finale del consolidamento (GPT ad46a6b: benchmark v2 e 24 fit EPN sottomessi): APPROVATO, nessun problema bloccante (richiesta di Simone)
+- Simone, 04/11/2026 notte, con il prompt di GPT: verifica dei cinque punti (ricevuta 63527476, matrice, rettifica MinJobAge, runtime
+  a2eeb75, costi); solo review. Sezione «Review della consegna finale» in `docs/reviews/claude_review_consolidation_20261104.md`;
+  checkout temporaneo di ad46a6b rimosso; log delle letture in `~/wearusfm_local/logs/consolidation_final_*_20261104.txt`.
+- Verificato: codice identico a 2c2e857 (diffstat vuoto su scripts/src/tests: `source_identity` aa857fb3 e ricetta 2ba1b7f5 invariate);
+  ricevuta c14b78b0 ricalcolata (repo e WORK), provenienze, policy e limiti nella ricevuta, split nei tre regimi ricalcolato con
+  `fit_packaging`; sacct 450 s = 0,125 GPU-ore / 1 core-ora; 24 sottomissioni = 24 voci del piano = 24 della ricevuta, ID, output e job
+  SLURM distinti, risorse e TimeLimit 4 h / 7 h, 12 afterok C1 → proprio C0 con gli ID reali; `MinJobAge = 30 s`, rifiuto esplicito senza
+  job (`classify` → `rifiutato`), retry sullo stesso ID solo da `reserve(after_reject)`, piano ec6e102 cambia solo `after` dei C0 e
+  aggiunge il prerequisito completato; checkout a2eeb75, ae28305 e 17dd455 puliti e in sola lettura, deploy ref su leonardo; costi
+  122,465 GPU-ore di proiezione, tetto 144 GPU-ore / 1.152 core-ore; ledger comune: 27 `state.json` identici alle copie nel repo, un solo
+  `sottomesso` per ID.
+- Stato alle 20:41 CET: i 4 C0 frozen COMPLETED 0:0 in 1h10-1h12 (proiezione 2h13), i loro C1 partiti; 8 C0 finetune/scratch RUNNING
+  (1h13, un'epoca); 8 C1 PENDING; nessun errore nei log; nessun valore di validation letto. Continuazione ancora PENDING, 17dd455 intatto.
+- Note non bloccanti: N-1 nessuna riga di log sull'esito del gate (facoltativa, per il futuro); N-2 l'istruzione «qua semplicione non
+  c'e piu, lanci sempre tu» e' riportata da GPT, non verificabile da me; N-3 review f70dc72 copiata e non fusa nel ramo di GPT.
+  Consuntivo dei fit e lettura dei risultati (F-R2/V-R1, SCRATCH_RULE) restano da fare a fine matrice. Nessun lancio da parte mia.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)

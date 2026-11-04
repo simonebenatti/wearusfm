@@ -327,3 +327,90 @@ Convergenza sull'emendamento: GPT puo' portare gli stati a `claude_review_conver
 separato, pinnare la ricevuta e sottomettere i fit ammessi dai gate (joint o split per regime secondo la ricevuta nuova), via semplicione
 con submitter e ledger comuni, senza un'altra autorizzazione di Simone, come scritto nel prompt. Matrice lunga e aggregatore OOF/IC
 restano consegne separate, non autorizzate qui. Nessun lancio da parte mia.
+
+## Review della consegna finale del consolidamento (GPT ad46a6b, diff 2c2e857 → ad46a6b) — 04/11/2026, notte
+
+Richiesta di Simone con il prompt di GPT: «Review della consegna finale del consolidamento. […] GPT ha completato il benchmark nuovo e
+sottomesso tutti i 24 fit EPN. […] Solo review: nessun lancio, cancellazione o modifica dei checkout attivi.» Perimetro: i cinque punti
+del prompt (ricevuta del benchmark 63527476, matrice dei 24 fit, rettifica MinJobAge, runtime congelato a a2eeb75, costi). Ricetta e
+regole F-R2/V-R1 restano quelle convergenti in 0b2623a; l'emendamento dei tempi e' quello approvato in f70dc72.
+
+### Metodo
+- Checkout temporaneo detached di ad46a6b2a73a095b7476a9898fa0b38ef2f393e8 (rimosso a fine review). Cinque commit dopo 2c2e857
+  (ae28305, d0a47a9, a2eeb75, ec6e102, ad46a6b): 48 file, solo `docs/`, `results/` e `CLAUDE.md`; `scripts/`, `src/` e `tests/`
+  identici a 2c2e857 (diffstat vuoto), quindi `source_identity()` resta aa857fb3… e la ricetta 2ba1b7f5… come verificato in f70dc72.
+  Nessun test rieseguito: codice invariato.
+- Hash ricalcolati sul checkout: `benchmark_v2/report.json` = c14b78b0… (pin in `finetune_plan.json` e nel piano dei fit);
+  `finetune_plan.json` a ae28305 = c6e283a0… (= `plan_sha256` della ricevuta) e a a2eeb75 = 2ce4927f… (= `finetune_plan_sha256`
+  della ricevuta dei fit); `ft_v2_fit_launch_plan.json` a ec6e102 = 7fd191e4… (= `fit_launch_plan_sha256`, `operational_plan_commit`
+  ec6e102); i 24 `receipt_sha256` della ricevuta dei fit = sha256 dei 24 json di sottomissione.
+- Letture in sola lettura su Leonardo (20:33-20:41 CET; log in `~/wearusfm_local/logs/consolidation_final_*_20261104.txt`): squeue
+  con dipendenze, sacct dal 04/11, `scontrol show config` (MinJobAge), `scontrol show job`, HEAD, pulizia e permessi dei tre checkout
+  di campagna, `show-ref` dei deploy, sha256 della ricevuta su WORK, cartelle di output (solo nomi di file e numero di righe di
+  `metrics.jsonl`, nessun valore letto), conteggio di righe d'errore nei 24 log.
+- Ledger comune sul Mac (`~/wearusfm_local/jobs/`, sola lettura): righe di `ledger.tsv` e `state.json` dei 27 ID (24 fit, checkout e
+  benchmark v2, checkout dei fit) confrontati con le copie in `submission_v2/`.
+
+### Verifiche sui cinque punti
+1. **Ricevuta del benchmark 63527476.** `report.json`: `complete` true, modo benchmark, `code_sha` ae28305, `source_sha256` aa857fb3…
+   (uguale all'identita' del codice emendato), `recipe_sha256` 2ba1b7f5…, `checkpoint_sha256` a31c8950… (teacher 19.618) e
+   `input_sha256` ef0090cb… identici alla ricevuta vecchia; allocazioni per regime, policy joint/split, limiti {14.100, 24.900, 24.900}
+   e riserva di 300 s presenti e uguali alle costanti del controller; 4 warm-up e 32 update per regime; `resource_gate_passed` true
+   (CUDA riservata massima 6,58 GiB su 63,4; RSS proiettata 32,4 GiB su 100 GiB); forward sui soli soggetti train, nessun checkpoint
+   scientifico. Tempi: 0,1899 / 0,6307 / 0,6299 s per update (frozen / finetune / scratch); un candidato 7.972,65 / 23.583,18 /
+   23.553,49 s, due 14.695,86 / 45.916,92 / 45.857,53 s. Con la regola del controller (`fit_packaging(two, one, limit)`) nessuna coppia
+   entra e ogni singolo entra: split nei tre regimi, come nella ricevuta. Rispetto a 63525812 cambiano solo `code_sha`, `plan_sha256`,
+   `source_sha256`, i campi di policy nuovi, i tempi (differenze sotto lo 0,3 %) e la modalita' di finetune e scratch (blocked → split).
+   sacct: COMPLETED 0:0, 450 s, 1 GPU / 8 CPU / 100G, cioe' 0,125 GPU-ore e 1,0 core-ore come dichiarato. La ricevuta su WORK ha lo
+   stesso sha256 della copia nel repo. Il gate dei fit (`benchmark_packaging`) confronta protocollo, `source_sha256` con l'identita'
+   corrente, ricetta, allocazioni, policy e limiti, ricalcola la modalita' e richiede il gate di memoria; non confronta `plan_sha256`
+   ne' `code_sha`, per cui il pin aggiunto al piano in a2eeb75 non invalida la ricevuta: comportamento voluto, gia' rivisto in f70dc72.
+2. **Matrice.** 24 json di sottomissione, 24 voci in `ft_v2_fit_launch_plan.json` e 24 nella ricevuta: copertura esatta 4 fold × 3
+   regimi × 2 candidati; ID logici, cartelle di output (`epn/fold<f>/<regime>/candidate<c>`) e ID SLURM tutti distinti (63527972 …
+   63528000, non consecutivi); ogni job 1 GPU / 8 CPU / 100G, QoS normal, partizione boost_usr_prod dall'header del launcher, `--time`
+   04:00:00 per frozen e 07:00:00 per finetune e scratch (TimeLimit confermato da sacct e scontrol), `CODE_DIR` ed `EXPECTED_SHA`
+   a2eeb75, argomenti `fit <out> <fold> <regime> <candidato>` coerenti con l'ID; `gpu_ore_stimate` 4 / 7 / 7, somma 144. Dipendenze:
+   i 12 candidati 1 hanno `--dependency=afterok:<ID SLURM del proprio candidato 0>` (controllo incrociato con gli ID reali) e squeue li
+   mostrava in `(Dependency)` sul C0 giusto; i 12 candidati 0 senza dipendenza viva (punto 3).
+3. **Rettifica operativa.** `scontrol show config`: `MinJobAge = 30 sec`. Il checkout dei fit 63527861 e' COMPLETED 0:0 (16 s, 2 CPU)
+   con fine alle 19:23:27 CET; il primo invio di `FT-EPN-frozen-F0-20261104-C0` alle 19:24:56 con `afterok:63527861` e' stato
+   rifiutato da sbatch («Batch job submission failed: Job dependency problem»), uscita 1, stdout vuoto: `classify()` lo registra come
+   `rifiutato`, nessun job creato (sacct non ha job con quel nome o commento prima di 63527972). Il nuovo invio alle 19:26:55 passa da
+   `reserve(after_reject=True)`, ammesso sotto lock solo dallo stato `rifiutato` (`--dopo-rifiuto`), stesso ID logico, e ottiene
+   63527972; la storia completa (prenotato → rifiutato → prenotato_di_nuovo → sottomesso) e' nello `state.json` del ledger, identico
+   alla copia nel repo, e la ricevuta del rifiuto e' conservata a parte. Il piano operativo ec6e102 cambia solo `after` dei 12 C0
+   (→ null), aggiunge a ciascuno il blocco `completed_prerequisite` (63527861, COMPLETED 0:0, SHA a2eeb75, pulito e in sola lettura),
+   fissa `code_pin` e descrive la correzione: risorse, output e dipendenze C1 → C0 invariati. Il prerequisito resta garantito a runtime
+   dal launcher, che verifica `CODE_DIR`, lo SHA atteso e la pulizia del checkout prima di importare il codice. Nessun retry cieco,
+   nessun checkout duplicato.
+4. **Runtime congelato.** Checkout `consolidation-ft-v2-fits-20261104` su WORK a a2eeb75, pulito, unico file scrivibile il puntatore
+   `.git` del worktree; `consolidation-ft-v2-20261104` a ae28305 (benchmark) e `consolidation-20261104` a 17dd455 (continuazione)
+   nello stesso stato; i tre ref `deploy/…` sul remoto leonardo puntano a quei commit. Su origin c'e' il ramo
+   `codex/consolidation-20261104` a ad46a6b, che contiene ae28305 e a2eeb75 (nessun ref di deploy su GitHub, come da regola). ec6e102
+   e ad46a6b toccano solo documenti, piani e ricevute. La ricetta (hash, griglie, moltiplicatori della testa, regola scratch, cinque
+   epoche, batch 8, seed 0, selezione su validation, held una volta sola) e' invariata in `finetune_plan.json`: il diff 2c2e857 →
+   ad46a6b cambia solo stati, pin, testo del gate e campo `review`.
+5. **Costi.** Per regime 8 × 7.972,65 / 23.583,18 / 23.553,49 s = 17,717 / 52,407 / 52,341 GPU-ore, totale 122,465 GPU-ore (122,34 in
+   f70dc72 con i tempi del benchmark vecchio); tetto 8 × 4 h + 16 × 7 h = 144 GPU-ore e 1.152 core-ore; benchmark nuovo 0,125 GPU-ore
+   e 1 core-ora entro 0,5 e 4; checkout v2 e checkout dei fit 0,010 + 0,009 core-ore; il rifiuto non ha creato job. Partizione e QoS
+   gia' verificate compatibili con 7 h.
+
+### Stato reale alle 20:41 CET (sola lettura)
+I quattro candidati 0 frozen sono COMPLETED 0:0 in 1h10m44s, 1h11m04s, 1h10m47s e 1h11m57s (entro le 4 h, sotto la proiezione di
+2h13m); i loro candidati 1 sono partiti alle 20:38-20:39; gli 8 candidati 0 di finetune e scratch sono RUNNING da 1h13m con un'epoca
+registrata; 8 candidati 1 PENDING sul proprio C0. Nelle cartelle dei C0 frozen ci sono `candidate_0.json`, `candidate_0.pt`,
+`metrics.jsonl` e `report.json`; nessuna riga di errore nei 24 log. Non ho letto valori di validation o held. Continuazione
+63525803 → 63525805 → 63525809 ancora PENDING, checkout 17dd455 intatto.
+
+### Verdetto: APPROVATO, nessun problema bloccante
+Nessun problema concreto sui cinque punti. Note non bloccanti:
+- N-1 (minore, facoltativa): i log SLURM dei fit non riportano l'esito del gate (ricevuta, modalita', limiti); la prova che il gate e'
+  passato e' indiretta (job oltre il caricamento, output scritti, provenienza nel `report.json` finale). Una riga di log all'esito del
+  gate aiuterebbe le letture future; non si tocca il runtime in corso.
+- N-2 (nota): `CLAUDE.md` e il registro di GPT riportano un'istruzione di Simone data nella chat di GPT («qua semplicione non c'e piu,
+  lanci sempre tu»), coerente con le ricevute (`agente: gpt`). Non posso verificarla: la cito come testo di GPT.
+- N-3 (nota): la mia review f70dc72 e' copiata testualmente nel ramo di GPT (file identico), non fusa; all'integrazione su `main` gli
+  SHA originali vanno conservati come da regola.
+- Il consuntivo dei fit resta aperto: da registrare da SLURM a fine matrice, con lettura dei risultati secondo F-R2/V-R1 e, per
+  scratch, `SCRATCH_RULE` sulla sola validation. Matrice lunga e aggregatore OOF/IC restano consegne separate.
+Nessun lancio, cancellazione o modifica dei checkout da parte mia.
