@@ -62,3 +62,16 @@ precisato nel protocollo sui 112 update misurati per taglia.
 
 La disponibilità di un piano pubblicato non equivale a una sottomissione: fanno
 fede gli ID effettivi e le ricevute conservate successivamente.
+
+## Stato operativo osservato alle 17:12 CET
+
+Piano pubblicato nel commit `70cbd85`. **Nessuna sottomissione effettuata.**
+Il master SSH risponde al controllo locale e accetta una sessione, ma non arriva
+output da `hostname`; anche una connessione separata completa l'handshake senza
+restituire il comando. Le sole sessioni di lettura avviate da questa chat sono
+state interrotte. Nessun push deploy o invocazione del submitter, nessuna
+prenotazione dei due ID nel ledger. Lo stato della coda remota non è noto.
+
+Evidenza in `results/infra/scaling_300m_20261104/submission_status.json`.
+Alla ripresa dell'accesso si procede dal piano approvato, senza un nuovo consenso.
+Il codice non viene cambiato per questo problema di accesso e non si crea un monitor.

@@ -6053,3 +6053,12 @@ F1–F6differiti; rapporto tempi su112update pertaglia. S7corretto: T25−Bdescr
 nessun noise floor/margine statistico derivato dauna coppia. Nessun nuovo consenso
 per ilcollaudoapprovato; nessunmonitor. Piano esecutivo in
 docs/scaling_300m_execution_20261104.md; ricevute/IDsaranno registrati solo dopo invio.
+
+
+### 04/11/2026 — Scaling: accesso remoto non operativo prima dei job
+
+Alle17:12CET piano70cbd85 pronto, nessunjob o prenotazione. SessioniSSH
+accettate ma `hostname` senzaoutput anche suconnessioneseparata; lettureinterrotte.
+Nessunpushdeploy, submittero monitor. Stato remoto non deducibile.
+La ripresa usa lo stesso piano approvato senza nuovo consenso; nessun cambiamento
+di ricetta o retry di calcolo. Evidenza submission_status.json.

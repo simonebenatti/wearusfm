@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Invio fermo prima della prenotazione: accesso remoto
+
+Piano pubblicato70cbd85, collaudoapprovato invariato05d4bf0. Nessunjobinviato,
+nessunpushdeploy o invocazionesubmitter. Il masterSSH risponde alcontrollolocale,
+ma i comandiremoti non restituiscono output neanche da connessioneseparata.
+Sessionidilettura diquestachat interrotte; dueID assenti nelledger.
+Stato coda non verificato; nessunmonitor. Evidenza submission_status.json.
+
+
 ### 2026-11-04 | GPT scaling | Review Claude approvata e piano di esecuzione
 
 Claude approva senza blocchi nel commit befab4a, con23test rieseguiti. Simone
@@ -5430,6 +5439,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Blocco operativo, non errore del collaudo
+
+Nessun errore scientifico nuovo. SSH senzaoutput impedisce controlli deploy
+e sottomissione verificabile; non si tenta sbatch in queste condizioni.
+Non interpretare exit255 da interruzione locale come fallimentoSLURM.
+Autorizzazione persistente: alla ripresa accesso non serve un secondo via.
+
 
 ### 2026-11-04 | GPT scaling | Limiti della review e requisiti del seguito
 
