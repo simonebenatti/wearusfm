@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT | Proposta di tre linee dopo il tokenizer | Base risultati e7fe6cd
+
+Discussa la proposta di Simone: consolidamento30M100ms+GELU (schedule lungo e
+fine-tuning in parallelo), confronto300M con stesso frontend, esplorazione
+log-quadratico poi contrastiva. Piano aggiornato con controlli e dipendenze;
+review indipendente parallel_next_review concorde. Schedule corrente già49.046,
+decay da39.237; eventuali due letture temporali pre/postdecay proposte, baseline
+19.618 conservata. Chiesta distinzione tra due momenti e due livelli interni.
+Fine-tuning19k indipendente dalla continuazione; confronto congelato/FT/da zero.
+Scala5k diagnostica a pari dose,19k primo confronto completo disponibile30M.
+Log mantiene baseT100-L; contrastiva con/senza su base fissa, regressione preservata.
+Consultato TS2Vec come precedente metodologico primario, non evidenza WearUsFM.
+Nessun protocollo di lancio congelato, job o monitor nuovo dalla discussione.
+
 ### 2026-11-04 | GPT | Tokenizer concluso: classificazione raccolta e verificata | Runtime b315dad
 
 Ultimo shard G/P2 63504862 completo0:0, 56/56fit convergenti. Raccolti gli ultimi
@@ -5382,6 +5396,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Controlli necessari per le nuove linee proposte
+
+Proseguire soloG risponde alla dose diG; dimostrare persistenza del vantaggio
+GELU richiede ancheL a dose piena. Un benchmark300M breve è fattibilità, non
+generalizzazione; uno screening5k nullo non esclude beneficio successivo.
+LR adatto alla taglia va distinto dalla ricetta esattamente identica, senza
+tuning downstream asimmetrico. «Due punti» può significare momenti o livelli:
+quesito aperto a Simone prima di fissare gli estrattori. Fine-tuning richiede
+controllo da zero e separazione sviluppo/conferma; pose su nuovi utenti non è
+nuovo task di regressione. Nessuna conclusione sulla contrastiva finché coppie,
+invarianti e peso non sono definiti. Nessun guasto ai job conclusi.
 
 ### 2026-11-04 | GPT | Limiti finali tokenizer, nessun difetto tecnico aperto | Runtime b315dad
 

@@ -166,3 +166,110 @@ legge quantitativa o una garanzia per WearUsFM/EMG.
 
 Audit indipendente scaling_architecture e review scaling_design_review concordi.
 Nessuna nuova run100/300M, loss o automazione avviata dalla discussione.
+
+## Proposta del 04/11 dopo la chiusura: tre linee parallele
+
+Simone propone di separare cinque domande: ramo log-quadratico, schedule lungo
+con due letture delle sonde, fine-tuning, contrastiva e test breve300M. La
+struttura è sensata: dose/uso downstream, scala e nuove trasformazioni possono
+procedere indipendentemente. Questa è la risposta scientifica alla proposta,
+non ancora un piano di job congelato o un nuovo lancio.
+
+| Linea | Prova e riferimento | Domanda | Dipendenza |
+|---|---|---|---|
+| Consolidamento | T100-G30M da19.618 a49.046, stesso schedule/obiettivo. | Più training e completamento del decay migliorano le rappresentazioni? | Checkpoint completo già disponibile; preparare continuazione e valutatori. |
+| Uso downstream, in parallelo | Fine-tuning dal T100-G30M a19.618; encoder congelato e stessa architettura da zero come controlli. | Il pretraining aiuta quando adattiamo tutto il modello al compito? | Protocollo e implementazione downstream; non attende il training lungo. |
+| Scala | T100-G300M da zero contro T100-G30M a dose/esposizione corrispondenti. | La maggiore taglia aiuta con il frontend attuale? | Benchmark memoria/throughput e controllo train-only dell'ottimizzazione. |
+| Esplorazione, prima | T100-L30M più ramo log-quadratico contro T100-L30M. | La trasformazione affiancata migliora le rappresentazioni? | Calibrazione train anche200Hz, parità iniziale e protocollo già discusso. |
+| Esplorazione, dopo | Una base fissata con/senza termine contrastivo. | Un diverso obiettivo migliora il trasferimento? | Disegno di positivi/negativi/augmentazioni/peso e controllo appaiato. |
+
+### Schedule lungo e significato delle due letture
+
+La configurazione corrente contiene già WSD totale49.046, warmup1.962 e decay
+finale20%; non occorre inventare uno schedule nuovo o riavviare da zero. Ripresa
+con stato AdamW, teacher, RNG, contatori e stream verificati, su cartella dedicata;
+checkpoint nominato19.618 preservato e condiviso in sola lettura con il fine-tuning.
+
+Se i «due punti» sono due momenti del training, la proposta è **39.237 prima del
+decay e49.046 dopo**, mantenendo19.618 come riferimento già misurato. Le letture
+sono descrittive della traiettoria: il secondo tratto cambia sia dose sia learning
+rate, quindi non isola causalmente il decay. Usare sonde convergenti e posa sulle
+stesse popolazioni/supporti, senza scegliere il checkpoint migliore sulla val.
+
+Nella discussione precedente erano stati proposti anche due livelli interni del
+modello. È stata chiesta a Simone la distinzione tra due momenti, due livelli o
+entrambi: non congelare il significato prima della sua risposta. Se sono livelli,
+definire precisamente le rappresentazioni prima/dopo il backbone e validare il
+nuovo estrattore; non assumere che i due blocchi pool768 attuali siano quei livelli.
+
+Continuare soloG risponde alla domanda sulla sua dose. Per affermare che il
+vantaggio della GELU sul lineare persiste alla dose completa serve anche **T100-L
+lungo**, con letture comuni. Questo controllo aggiuntivo va incluso esplicitamente
+nel preventivo se vogliamo quella conclusione; non confrontare G49k con L19k.
+
+### Fine-tuning: partire dal checkpoint disponibile
+
+Tre regimi con stesso split downstream, quantità di etichette, architettura della
+testa e pari opportunità di selezione degli iperparametri: encoder preaddestrato
+congelato + testa; preaddestramento + fine-tuning completo; stessa architettura da
+inizializzazione casuale + training supervisionato. LR del fine-tuning e del
+training da zero non devono essere identici a scapito di uno dei due; il tuning
+rimane interno al train/validation downstream. Eventuali repliche appaiate
+downstream non sostituiscono semi indipendenti di pretraining.
+
+EPN è un primo compito pratico, escluso dal pretraining. Per sostenere utilità
+nella regressione occorre scegliere un compito diverso dalla posa supervisionata;
+gli utenti posa esclusi da soli non rendono nuovo il task. Le popolazioni già
+viste nelle sonde restano sviluppo, non diventano un test intatto cambiando
+lettore. Il protocollo deve separare sviluppo e conferma prima di nuovi fit.
+
+Preparazione e primo fine-tuning19.618 possono procedere durante la continuazione
+del pretraining. Il fine-tuning dal checkpoint49.046 attende soltanto quel file.
+Riutilizzabile l'infrastruttura di split/normalizzazione; non si dichiara già
+pronto un trainer completo WearUsFM downstream sulla base del solo harness storico.
+
+### Scala: test breve informativo, senza un verdetto prematuro
+
+300M usa100ms+GELU, K64, stessi dati/miscele/batch globale/obiettivo del30M;
+larghezza e profondità seguono il preset. Non riprende pesi30M con forme diverse.
+Prima fattibilità e stabilità train-only; verificare LR/clipping/aggiornamento
+relativo per taglia, senza selezionare l'ottimizzazione sugli score downstream.
+Distinguere ricetta identica da calibrazione per taglia, con pari opportunità e
+modifiche dichiarate. Stesso numero di GPU non implica stesso costo totale.
+
+Screening scientifico a5.000 confrontato con **30M a5.000**, non con30M19.618.
+La posa30M5k è già disponibile; eventuali sonde di classificazione5k richiedono
+nuove estrazioni/fit anche del riferimento. Un nullo così breve non esclude un
+vantaggio300M alla dose successiva. **19.618 è il primo punto già completo di
+valutazioni30M** e il seguito naturale per una lettura più solida, da preventivare
+separatamente dallo screening. La successiva ipotesi di dose piena non è implicita.
+
+Il benchmark storico suggerisce circa4volte il tempo, non10, ma non è un preventivo
+per la ricetta corrente. Conservare quattroGPU per run; il parallelismo riguarda
+esperimenti indipendenti, subordinato alle risorse/quote della coda.
+
+### Esplorazione: trasformazione e contrastiva separate
+
+Il log-quadratico mantiene la base **T100-L**, inizializzazione non addestrata
+comune e nuovi pesi a zero, come fissato prima dei risultati. Il confronto
+secondario con il migliore dei lineari rimane esplorativo; G è un riferimento
+descrittivo. Non innestare il ramo suG19k senza il controllo della stessa
+continuazione: risponderebbe a una domanda diversa.
+
+La contrastiva può seguire cronologicamente il log senza dipendere dal suo
+successo. Scegliere una base e confrontarla con/senza contrastiva a pari dose;
+non attribuire alla loss un confronto che cambia contemporaneamente frontend.
+Se si usa una base selezionata dopo il log, quella selezione resta esplorativa.
+Un possibile obiettivo è ancore0,2 + posa1 + lambda*contrastiva, JEPA0, ma lambda,
+normalizzazione e costruzione delle coppie non sono ancora decisi.
+
+La contrastiva non va progettata solo per separare gesti: evitare di imporre
+invarianza a variazioni di ampiezza o tempo che servono alla regressione; verificare
+negativi semanticamente simili e scorciatoie di soggetto/dataset. **TS2Vec** è un
+precedente di contrastiva temporale valutata anche su forecasting con regressione
+lineare, non una prova di efficacia per la nostra posa o una ricetta da copiare
+integralmente: [paper primario](https://arxiv.org/abs/2106.10466).
+
+Review indipendente parallel_next_review concorde sulle tre linee e sui controlli.
+Nessun nuovo job o automazione da questa discussione; i protocolli esecutivi
+dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risultati.

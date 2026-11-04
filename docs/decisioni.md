@@ -5987,3 +5987,21 @@ da preparare; nessun lancio in questa consegna. Conferma a dose completa/semi,
 fine-tuning e scala30M/300M restano alternative distinte da ordinare con Simone.
 Analisi, review e tabella aggiornate; evidenze originali in
 results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/final/.
+
+### 04/11/2026 — Proposta successiva: dose/uso, scala, esplorazione in parallelo
+
+Simone propone cinque prove e chiede parere sull'organizzazione. GPT concorda
+con tre linee: T100-G30M lungo e fine-tuning19k; T100-G300M a dose appaiata;
+log-quadratico sulla baseT100-L, poi contrastiva come confronto separato con/senza.
+Non è un cambio ai risultati appena pubblicati né un nuovo lancio.
+
+Continuazione naturale WSD19.618→49.046, possibile lettura39.237predecay e49.046;
+chiesta a Simone la distinzione tra due checkpoint e due livelli interni delle
+sonde. Per persistenza del beneficioGELU occorre ancheT100-L lungo. Fine-tuning
+iniziale può usare checkpoint19k in sola lettura, con controlli congelato e da zero;
+regressione di trasferimento ancora da scegliere, separata dalla posa supervisionata.
+300M: benchmark/train-only prima,5kdiagnostico contro30M5k,19k seguito naturale
+per confronto completo; nullo breve non è bocciatura della taglia. Costi da misurare.
+Contrastiva non automaticamente innestata sul vincitorelog: fissare base/coppie/
+augmentazioni/peso e proteggere informazione temporale/ampiezza utile alla regressione.
+Piano dettagliato e review nel piano_scientifico_20261102.md; nessun nuovo job/monitor.
