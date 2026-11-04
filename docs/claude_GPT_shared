@@ -5496,6 +5496,34 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non rilasciato il training come catena: adattatori implementati e revisionati, commit di rilascio con pin, checkout nuovo, sottomissione di GPT
   sotto l'autorizzazione operativa di Simone, rho_infer prima delle estrazioni. Nessun job da parte mia. Nessuna voce in «Problemi trovati».
 
+### 2026-11-04 | Claude | Review dei lettori scaling a due taglie (posa, P1/P2), proiezioni S5, comparatore e collaudo S3 (GPT 0d5f0f9, stato fino a 3cc3e09): APPROVATO, nessun blocco, cinque facoltativi (richiesta di Simone)
+- Simone, 04/11/2026 sera, con il prompt di GPT `docs/prompt_claude_review_scaling_readers_memory_20261104.md` (ec2f093): solo review del codice
+  0d5f0f9 su `codex/scaling-300m-20261104` (diff `ab2eb4a..0d5f0f9`, 27 file); la review offline 5e4eb8a resta acquisita. Checkout detached
+  temporaneo di 3cc3e09 nello scratchpad, poi rimosso; worktree di GPT non toccato; nessun job, allocazione o modifica al codice; su Leonardo
+  solo letture (`sacct`, `squeue`, checkout di campagna, artefatti del run storico T100-G).
+- Review in `docs/reviews/claude_review_scaling_300m_readers_memory_20261104.md`. Posa: viste naturali = funzioni del lettore storico (test di
+  uguaglianza bit a bit a 384 e 896), alpha scelto sui soli 40 utenti train con fold alternati, val letta dopo il fit, utenti disgiunti, un solo
+  fit del controllo 30M legato al checkpoint del contratto, provenienza storica accettata con `model_config` completo, bootstrap appaiato con
+  estrazioni condivise e IC ricalcolati; vista matched = padding a zero → Q backbone → LayerNorm (ordine testato). Sonde: `fit_fold` e' lo
+  stesso oggetto storico (scaler e C nel train del fold, refit, held-out), split e OOF storici, etichette testuali EPN da `cell_features` ad
+  `aggregate`, convergenza propagata fino alla lettura S8 (irrisolta → `repair_evaluation_no_scientific_reading`), benchmark senza predizioni.
+  S5: matrici FP64 → QR a segno fisso → FP32, semi 2026110401/02, nessun ingresso dati, manifest con hash di file, byte e sorgente; blocchi
+  backbone/locale nell'ordine di `pool_p1p2`; proiezione prima di LN e scaler; i primari leggono solo `natural_300m_minus_30m`. Comparatore:
+  provenienza e checkpoint condivisi, shard e OOF riletti, coefficienti e predizioni rihashati, punti/IC ricalcolati, delta della posa
+  `candidate − control` a rtol 1e-10, nessun output su artefatti incoerenti.
+- Collaudo S3: le cinque cadenze del config T100-G sono 500 (verificato sul `config.json` reale del run storico, che coincide col pin
+  `config_30m` tranne `max_steps`), quindi a 500 passi escono insieme erank/collasso, `shared_grad_*`, valutazione fissa e pannello con AdamW
+  e prefetch residenti; schema del verificatore confrontato con `run.py` e con gli artefatti reali di T100-G (metriche, `fixed_eval_set`
+  piatto a 256 righe, `pose_panel_set` 32/64/64/256, `panel_sha256` canonico, summary con `environment`); quattro misure per rank riconciliate
+  entro 1 MiB col MAX del summary; sorgenti congelati con diff vuoto; checkpoint tecnico non consumabile; tetto 4 GPU-ore + 32 core-ore
+  coerente (3600 s da `seconds_per_step` 3,035413, trainer a 3300 s). Stato letto: checkout 63527364 COMPLETED (21 s), S3 63527446 PENDING,
+  nessun output: memoria reale non attestata.
+- Precisazioni S8: due paragrafi, soglie ed endpoint invariati, `scaling_reading.py` e `scientific_reading_policy.json` fuori dal diff;
+  implementazione approvabile, memoria da misurare e gate operativi distinti anche in `readers_memory_verification.json`.
+- Test: comando del prompt 425 passati in 35,4 s; suite intera `tests/cpu` 2.456 passati e 1 fallito (il test preesistente del launcher
+  B19618, registrato il 04/11). Facoltativi F-1…F-5 (inspection con inode/mtime, uguaglianza esatta fra nodi, pin vivi di S3 e readiness,
+  manifest S5 legato ai byte del generatore, doppia lettura delle cache 300M): nessuno bloccante. Non attestata la readiness dei 5.000.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7623,3 +7651,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   un checkout ≥ 84408bf; quando il ramo tokenizer sara' integrato su `main`, la suite di `main` avra' questo fallimento. Da chiudere da GPT
   (aggiornare il controllo di ricetta del launcher B alle nuove impostazioni del trainer, o dichiarare l'incompatibilita'), separatamente
   dalla consegna scaling, che non lo introduce. Il comando del critico (sette file) non lo copre: 248 passati.
+
+### 2026-11-04 | Claude | Review lettori/S5/comparatore/S3 (GPT 0d5f0f9): nessun difetto; due rischi operativi di falso rifiuto da conoscere
+- Nessun blocco nella consegna 0d5f0f9. Registro qui, perche' operativi e non scientifici, due punti della review
+  (`docs/reviews/claude_review_scaling_300m_readers_memory_20261104.md`, §2.2). (F-1) `scaling_compare.validate_pose_outputs` l.143 pretende
+  `report["inspections"] == inspections` ricalcolate, `states` compresi (inode, mtime, ctime): un `touch`, una copia o il rinfresco dello
+  scratch fra la fase `ridge` e il confronto fa rifiutare il confronto a hash uguali; correzione minima: confrontare senza `states`. (F-3)
+  `scaling_production_memory.validate_report` l.297–299 e `scaling_train.check_evaluation_readiness` l.271 rihashano i file vivi del checkout
+  di training: qualunque modifica a `scaling_train.py`, `scaling_preflight.py`, `scaling_production_memory.py` o ai sei valutatori prima del
+  lancio dei 5.000 invalida l'evidenza S3 (4 GPU-ore) o la readiness; da dichiarare nel piano (file congelati fino al lancio, o S3 da
+  rieseguire), oppure confrontare i pin del piano con gli hash registrati nel report S3. Nessuna correzione richiesta prima di S3.
