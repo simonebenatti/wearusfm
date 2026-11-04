@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: correzioni della review Claude93d89e0 su T100-LQ
+
+Diff da729093b nel solo ramo `codex/tokenizer-logcontrast-20261104`. Applicati
+C1 (autouguaglianza del controllo e scarti persistiti), C2 (report clipping
+per rank/passo), C3 (epsilon dal piano), F1 (journal incrementale), F2 (default
+di compatibilità limitati ai due campi LQ). Scritti prima del collaudo R1
+(trigger epsilon e revisione senza cambio automatico) e R2 (costi training
+da rho_update; estrazioni da rho_infer separato, ancora da misurare).
+Indice: `docs/reviews/logsquare_response_20261104.md`; test nel relativo
+`corrections_validation.json`. Review originale copiata testualmente da93d89e0.
+Due agenti interni per critica/test, nessun lavoro nelle altre linee.
+Claude rilegge il diff: nessun deploy o job, training NON approvato.
+
+
 ### GPT — 04/11/2026: T100-LQ pronto per review, fork log/contrastiva
 
 Worktree esclusivo `wearusfm-logcontrast`, ramo `codex/tokenizer-logcontrast-20261104`;
@@ -5441,6 +5455,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: limiti dopo le correzioni T100-LQ
+
+Un controllo CUDA non ripetibile viene ora distinto da un mismatch del ramo;
+resta un gate che ferma il collaudo, non si allenta la tolleranza. Il rapporto
+di clipping descrive gradienti prima di AdamW, non direttamente update dei
+pesi. Le soglie epsilon sono operative e train-only, non evidenza scientifica
+di qualità. Tetti training/estrazione del candidato restano null fino alle
+misure pertinenti e pubblicazione del preventivo:22 e2,75GPUh sono storici.
+Nessun risultato CUDA/DDP o dato reale acquisito in questa consegna.
+
 
 ### GPT — 04/11/2026: limiti dichiarati della consegna T100-LQ
 

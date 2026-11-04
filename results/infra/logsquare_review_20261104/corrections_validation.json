@@ -1,0 +1,35 @@
+{
+  "base_commit": "729093b75017765fa24e6e4873f0c7335bee3564",
+  "claude_review_commit": "93d89e05ca745454d3d466ee5d575b6c4ce7c2dd",
+  "status": "CORRECTIONS_TESTED_PENDING_CLAUDE_DIFF_REVIEW",
+  "passed": 129,
+  "failed": 0,
+  "seconds": 25.03,
+  "tests": [
+    "tests/cpu/test_tokenizer_logsquare.py",
+    "tests/cpu/test_logsquare_preflight.py",
+    "tests/cpu/test_logsquare_review_corrections.py",
+    "tests/cpu/test_tokenizer_activation.py",
+    "tests/cpu/test_tokenizer_preflight.py",
+    "tests/cpu/test_tokenizer_comparison.py",
+    "tests/cpu/test_tokenizer_train.py"
+  ],
+  "launcher_bash_syntax": "passed",
+  "internal_critic": "No blocking issue; two editorial clarifications applied. Does not replace Claude review.",
+  "cuda_ddp_tested": false,
+  "real_train_calibration_run": false,
+  "jobs_submitted": [],
+  "deploy_performed": false,
+  "training_approved": false,
+  "source_sha256": {
+    "scripts/logsquare_preflight.py": "89c6114a302640074d77d76222049c588aa22fff774b9ccd773e3f739d7a9028",
+    "scripts/tokenizer_preflight.py": "8461cf5805db457f2f8a59d81c0d84f75afc5d264c5cb1b147b5c3b06be6aba4",
+    "tests/cpu/test_tokenizer_logsquare.py": "d8d88a6828e1e10a1fdc1af687632bc08e6beecfe569ff170aa88fe52daf461d",
+    "tests/cpu/test_logsquare_preflight.py": "c6cf6b6d75aed4880b9cc7f49a63aac776ceb0b26dbfbeb8853986580284ac34",
+    "tests/cpu/test_logsquare_review_corrections.py": "6daa33f8ad09a710e3a20873a3962f583382aa33b5102a1695139d52a46139d6",
+    "tests/cpu/test_tokenizer_activation.py": "02eefa741018674965a4e4bd9141550df75f9e3b9e3cd953d834a37d3a0c330a",
+    "tests/cpu/test_tokenizer_preflight.py": "de9e2032a3707d4fd8bac428faa8de5000db8671ee9996539c16b390b6293867",
+    "tests/cpu/test_tokenizer_comparison.py": "8d60b8a6de855d26bf3130269fe79dd16d17f011ccab83cd3b0e6e028a4800dd",
+    "tests/cpu/test_tokenizer_train.py": "1d1fd942d685a18775f2464adaac5e802a370471f6b7860d992b91bedae5bcb6"
+  }
+}

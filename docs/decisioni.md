@@ -6057,3 +6057,19 @@ Protocollo: `docs/tokenizer_logsquare_protocol_20261104.md`.
 Prompt revisore: `docs/prompt_claude_logsquare_review_20261104.md`.
 La contrastiva segue come esperimento distinto; non è implementata né approvata
 una ricetta numerica in questa consegna. Nessuna nuova loss nel candidato LQ.
+
+
+## 04/11/2026 — Seguito review Claude93d89e0: T100-LQ
+
+La review approva con correzioni il solo collaudo; non il training. GPT applica
+C1–C3 e anche F1/F2, pubblica il diff da729093b per la rilettura di Claude.
+Nessun lancio/deploy in questa consegna. Protocollo aggiornato con R1 prima
+del collaudo: p sotto floor≥0,50, derivata normalizzata≥0,50, attraversamento
+di p=0,50 o scarto medio dei log≥1std fra mascherato/non mascherato segnalano
+una revisione prima del training, senza cambio automatico di epsilon0.001.
+Sono soglie operative per LQ, non una promozione scientifica del modello.
+R2: tetto training da rapporto update LQ/L misurato; estrazioni da rapporto
+di inferenza separato, non ancora disponibile. Tetti candidato non approvati.
+Dettagli e test: `docs/reviews/logsquare_response_20261104.md`.
+Il rapporto dei fattori di clipping riguarda i gradienti pre-AdamW e non
+implica lo stesso rapporto negli aggiornamenti dei pesi. Contrastiva rinviata.

@@ -11,6 +11,7 @@ from collections import Counter
 from dataclasses import replace
 import importlib.util
 import json
+import math
 from pathlib import Path
 import sys
 import time
@@ -86,7 +87,8 @@ class LogMoments(P.FeatureMoments):
         return result
 
 
-def create_arms(configs, ctx, device, historical_hash):
+def create_arms(configs, ctx, device, historical_hash, epsilon):
+    require(configs['T100-LQ'].model.tokenizer_logsquare_eps == epsilon, 'diagnostic/model epsilon mismatch')
     arms = {}
     for name in ARMS:
         cfg = configs[name]
@@ -110,7 +112,7 @@ def create_arms(configs, ctx, device, historical_hash):
         if student.tokenizer.logsquare_weight is not None:
             groups['logsquare'] = {NEW_WEIGHT: student.tokenizer.logsquare_weight}
         arm = {'cfg': cfg, 'student': student, 'teacher': teacher, 'optimizer': optimizer, 'wrapped': wrapped,
-               'rng': P.rng_state(device), 'initial': initial, 'features': LogMoments(), 'observed': [],
+               'rng': P.rng_state(device), 'initial': initial, 'features': LogMoments(epsilon), 'observed': [],
                'groups': groups, 'records': []}
         original_decode = student.decode
 
@@ -130,16 +132,79 @@ def create_arms(configs, ctx, device, historical_hash):
     return arms
 
 
+def compare_outputs(first, second):
+    result = {}
+    for name, a, b in zip(('local', 'z'), first, second):
+        finite = bool(torch.isfinite(a).all() and torch.isfinite(b).all())
+        result[name] = {'exact': torch.equal(a, b) and finite, 'finite': finite,
+                        'max_abs_difference': float((a.double() - b.double()).abs().max()) if finite else None}
+    return result
+
+
 @torch.no_grad()
-def check_initial_function(arms, micro, device):
-    outputs = []
-    for arm in arms.values():
+def check_initial_function(arms, micro, device, diagnostic_path=None):
+    def encode(name):
+        arm = arms[name]
         arm['student'].eval()
         P.restore_rng(arm['rng'], device)
-        with torch.autocast('cuda', dtype=torch.bfloat16, enabled=str(device).startswith('cuda')):
+        with torch.autocast('cuda', dtype=torch.bfloat16,
+                            enabled=str(device).startswith('cuda') and arm['cfg'].amp_bf16):
             out = arm['student'].encode(micro.inp, micro.visible)
-        outputs.append((out.local.clone(), out.z.clone()))
-    require(all(torch.equal(a, b) for a, b in zip(*outputs)), 'initial encoder function not exactly equal')
+        return out.local.clone(), out.z.clone()
+
+    control = encode('T100-L')
+    self_check = compare_outputs(control, encode('T100-L'))
+    diagnostic = {'control_self_comparison': self_check, 'between_arms': None}
+    if not all(v['finite'] for v in self_check.values()):
+        diagnostic['status'] = 'nonfinite_control_forward'
+    elif not all(v['exact'] for v in self_check.values()):
+        diagnostic['status'] = 'nondeterministic_control_forward'
+    else:
+        diagnostic['between_arms'] = compare_outputs(control, encode('T100-LQ'))
+        diagnostic['status'] = ('passed' if all(v['exact'] for v in diagnostic['between_arms'].values())
+                                else 'initial_function_mismatch')
+    if diagnostic_path is not None:
+        P.write_json(diagnostic_path, diagnostic)  # retain diagnostics also on failure
+    require(diagnostic['status'] == 'passed', 'initial function gate: ' + json.dumps(diagnostic, allow_nan=False))
+    return diagnostic
+
+
+def clipping_summary(parts, configs):
+    """DDP ranks are replicas, not independent observations; retain every rank."""
+    result = {name: {'per_rank': {}, 'factor_formula': 'min(1, grad_clip / (g + 1e-6))',
+                     'scope': 'Factors multiply gradients before AdamW, not parameter updates.'} for name in ARMS}
+    for part in parts:
+        records = {name: part['arms'][name]['records'] for name in ARMS}
+        steps = [r['step'] for r in records['T100-L']]
+        require(steps and steps == [r['step'] for r in records['T100-LQ']], 'unpaired clipping records')
+        norms, factors = {}, {}
+        for name in ARMS:
+            norms[name] = [float(r['grad_norm_before_clip']) for r in records[name]]
+            require(all(math.isfinite(g) and g >= 0 for g in norms[name]), 'invalid gradient norm')
+            # PyTorch clip_grad_norm_ uses 1e-6 in the denominator.
+            factors[name] = [min(1., configs[name].grad_clip / (g + 1e-6)) for g in norms[name]]
+        ratios = [q / l for q, l in zip(factors['T100-LQ'], factors['T100-L'])]
+        new_norms = [float(r['gradient_norms_before_clip']['logsquare']) for r in records['T100-LQ']]
+        require(all(math.isfinite(g) and g >= 0 for g in new_norms), 'invalid log gradient norm')
+        shares = [(w / g) ** 2 if g else None for w, g in zip(new_norms, norms['T100-LQ'])]
+        for name in ARMS:
+            result[name]['per_rank'][str(part['rank'])] = {
+                'steps': steps, 'gradient_norm_before_clip': norms[name],
+                'clip_factor_per_step': factors[name], 'clip_factor_LQ_over_L_per_step': ratios,
+                'logsquare_gradient_squared_share_per_step': shares if name == 'T100-LQ' else None,
+                'fraction_steps_clipped': sum(f < 1. for f in factors[name]) / len(steps)}
+        q0, l0, w0 = norms['T100-LQ'][0], norms['T100-L'][0], new_norms[0]
+        result['T100-LQ']['per_rank'][str(part['rank'])]['first_step_norm_decomposition_relative_residual'] = (
+            (q0*q0 - l0*l0 - w0*w0) / (q0*q0) if q0 else None)
+    return result
+
+
+def journal_step(path, step, batch_hash, records):
+    # A failed run leaves the preceding completed updates available for diagnosis.
+    with Path(path).open('x' if step == 0 else 'a') as stream:
+        json.dump({'step': step + 1, 'batch_sha256': batch_hash, 'arms': records}, stream, allow_nan=False)
+        stream.write('\n')
+        stream.flush()
 
 
 def verify_pair(records):
@@ -161,7 +226,7 @@ def run(plan, configs, states, out, ctx, device, code):
     require(all(row['split'] == 'pretraining' for row in index.rows), 'not a train-only index')
     guard = P.SourceGuard(index, cfg.loader.pose_root)
     historical = json.loads(Path(states['historical_report']['path']).read_text())['arms']['T100-L']['initial']['all_sha256']
-    arms = create_arms(configs, ctx, device, historical)
+    arms = create_arms(configs, ctx, device, historical, plan['epsilon'])
     initial = {name: a['initial'] for name, a in arms.items()}
     peers = [None] * ctx.world_size
     torch.distributed.all_gather_object(peers, initial)
@@ -183,8 +248,9 @@ def run(plan, configs, states, out, ctx, device, code):
         micro, = R._stage(batch, cfg.accum_steps, device)
         digest = R._micro_digest([micro])
         if step == 0:
-            check_initial_function(arms, micro, device)
+            initial_function = check_initial_function(arms, micro, device, out / f'initial_function_rank{ctx.rank}.json')
         records = {name: P.update_arm(arms[name], micro, batch.rows, step, ctx, device) for name in ARMS}
+        journal_step(out / f'rank{ctx.rank}.jsonl', step, before, records)
         verify_pair(records)
         require(P.batch_sha256(batch) == before and R._micro_digest([micro]) == digest, 'mutated batch')
         fingerprints.append(before)
@@ -201,6 +267,7 @@ def run(plan, configs, states, out, ctx, device, code):
             require(any(r['gradient_norms_before_clip'][group] > 0 for r in arm['records']), f'zero gradients:{name}/{group}')
             require(any(r['update_norms'][group] > 0 for r in arm['records']), f'zero updates:{name}/{group}')
     raw = {'protocol': PROTOCOL, 'complete': True, 'rank': ctx.rank, 'initial': initial,
+           'initial_function': initial_function,
            'exposure_windows': dict(exposure), 'batch_sha256': fingerprints,
            'arms': {name: {'records': a['records'], 'feature_moments': a['features'].serializable()}
                     for name, a in arms.items()}, 'wall_seconds': time.perf_counter() - began}
@@ -214,13 +281,14 @@ def run(plan, configs, states, out, ctx, device, code):
             total_exposure.update(part['exposure_windows'])
         require(any(k.endswith('/200') for k in total_exposure) and any(k.endswith('/2000') for k in total_exposure),
                 'missing native200Hz or2000Hz training coverage; do not launch training')
+        clipping = clipping_summary(parts, configs)
         for name in ARMS:
-            moments = LogMoments()
+            moments = LogMoments(plan['epsilon'])
             for part in parts:
                 moments.merge(part['arms'][name]['feature_moments'])
             timing = [sum(max(part['arms'][name]['records'][i][component] for part in parts)
                           for component in ('forward_backward_s', 'clip_optimizer_ema_s')) for i in range(64)]
-            results[name] = {'initial': initial[name], 'features': moments.summary(),
+            results[name] = {'initial': initial[name], 'features': moments.summary(), 'clipping': clipping[name],
                              'update_mean_after8_s': float(np.mean(timing[8:])),
                              'update_p90_after8_s': float(np.quantile(timing[8:], .9)),
                              'max_allocated_bytes_two_arms_resident': max(r['memory_peak_allocated_bytes']
@@ -229,10 +297,15 @@ def run(plan, configs, states, out, ctx, device, code):
                   'epsilon': plan['epsilon'], 'batches': 64, 'windows_each_arm': 2048,
                   'exposure_windows': dict(total_exposure), 'arms': results,
                   'paired_support': True, 'initial_shared_weights_rng_and_function_exact': True,
+                  'initial_function_per_rank': {str(p['rank']): p['initial_function'] for p in parts},
+                  'update_mean_after8_ratio_LQ_over_L': results['T100-LQ']['update_mean_after8_s'] / results['T100-L']['update_mean_after8_s'],
                   'scope': 'Train-only diagnostic, no scientific checkpoint. Epsilon floor fractions require review before training.',
                   'timing_scope': 'Existing DDP update; excludes loader/diagnostics. Two complete models resident, not single-run memory.',
                   'runtime': {'torch': torch.__version__, 'numpy': np.__version__, 'cuda': torch.version.cuda,
                               'gpu': torch.cuda.get_device_name(device), 'world_size': ctx.world_size},
+                  'rank_journals': [P.file_identity(out / f'rank{r}.jsonl') for r in range(ctx.world_size)],
+                  'initial_function_reports': [P.file_identity(out / f'initial_function_rank{r}.json')
+                                               for r in range(ctx.world_size)],
                   'rank_reports': [P.file_identity(out / f'rank{r}.json') for r in range(ctx.world_size)]}
         P.write_json(out / 'report.json', report)
     torch.distributed.barrier()

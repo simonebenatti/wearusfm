@@ -1,3 +1,13 @@
+# Seguito alla review93d89e0: rilettura delle correzioni
+
+Rivedi il nuovo diff da729093b sullo stesso ramo, usando
+`docs/reviews/logsquare_response_20261104.md` come indice C1–C3, F1/F2, R1/R2.
+Il training resta non approvato; chiediamo soltanto la chiusura delle correzioni
+per il collaudo preparatorio. Includi nella suite sotto anche
+`tests/cpu/test_logsquare_review_corrections.py`. Nessun lancio da parte tua.
+
+---
+
 # Review richiesta a Claude: T100-LQ, senza deploy o job
 
 Simone vuole soluzione → tua review → convergenza → deploy a cura di GPT.

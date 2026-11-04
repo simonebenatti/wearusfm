@@ -1,7 +1,9 @@
 # T100-LQ: proposta esecutiva per review Claude — 04/11/2026
 
-**Stato: implementazione locale, nessun deploy o job.** Simone richiede soluzione,
-review Claude e convergenza prima del deploy. Worktree esclusivo
+**Stato dopo review Claude93d89e0: collaudo approvato con correzioni; training
+NON approvato.** Correzioni pubblicate per rilettura del diff da729093b;
+nessun deploy o job. Simone richiede soluzione, review Claude e convergenza
+prima del deploy. Worktree esclusivo
 `wearusfm-logcontrast`, ramo `codex/tokenizer-logcontrast-20261104`.
 Integrato senza riscrittura il commit `8ee6603`: controllo appaiato storico
 T25-L−B e T100-G secondario. Nessuna interferenza con scaling/schedule.
@@ -48,6 +50,22 @@ RNG e funzione iniziale uguali; parità di input/query/bersagli e RNG dopo ogni
 update; nessun dato mutato; parametri/gradienti/update finiti; W_log aggiornato;
 input e codice immutati; presenza di dati train nativi200Hz e2000Hz.
 Qualunque gate fallito ferma la fase, senza retry cieco.
+Prima del confronto fra bracci si eseguono due forward del controllo con RNG
+ripristinato. Se non sono identici, il report indica forward del controllo non
+deterministico, senza attribuire il difetto al ramo. Si conservano esito e massimo
+scarto assoluto per local/z anche quando il gate fallisce; non si introduce una
+tolleranza scelta dopo aver visto lo scarto.
+
+Per ogni rank e passo si pubblicano fattori di clipping, rapporto LQ/L,
+quota della norma al quadrato dovuta a W_log e frazione dei passi clippati.
+La ricostruzione segue PyTorch: min(1, grad_clip/(norma+1e-6)).
+Il residuo relativo di g_LQ²−g_L²−g_log² al primo passo è descrittivo, non un
+nuovo gate esatto CUDA. I rank DDP sono repliche, non osservazioni indipendenti.
+Questi fattori scalano i gradienti prima di AdamW: i momenti adattivi e il
+weight decay impediscono di interpretarli direttamente come rapporti degli
+aggiornamenti dei pesi. Non cambiare il clipping per compensarli.
+Un JSONL per rank conserva ogni coppia di update completata anche se il job
+si interrompe prima del report finale.
 
 Diagnostica separata per dataset/frequenza, inizializzazione e traiettoria:
 media/deviazione delle risposte e dei log, frazione x²<epsilon per kernel,
@@ -55,15 +73,70 @@ RMS della derivata (limite analitico1/sqrt(epsilon)), mascherato e non mascherat
 sullo stesso supporto visibile/QC. Nessun raw o checkpoint entra in Git.
 Il collaudo include il controllo storico delle famiglie e del rango.
 
-Epsilon0.001 è una proposta fissa, non un iperparametro da scegliere sulle metriche
-di sviluppo. Le frazioni sotto il pavimento sono diagnostiche, senza una soglia
-di successo inventata dopo la lettura. Se mostrano una patologia che richiede
-un altro epsilon, si documenta un emendamento e si torna alla review prima del
-training scientifico. La calibrazione non usa EPN held-out.
+### R1: regola prospettica per epsilon, prima del collaudo
+
+Epsilon resta0.001 salvo emendamento motivato e revisionato. Non è scelto sulle
+metriche di sviluppo e la calibrazione non usa EPN held-out. Le soglie sotto
+sono **segnalazioni operative**, non criteri di qualità della rappresentazione
+né prove di instabilità. Si applicano a ciascun kernel e gruppo
+dataset/fs/fase, pubblicando sempre anche il numero di token; inizializzazione e
+traiettoria dei64passi restano separate. Nessuna selezione dei soli kernel favorevoli.
+I trigger si applicano a LQ; le stesse statistiche di L sono pubblicate come controllo
+contestuale (il suo ramo log non è attivo).
+
+| Statistica già misurata | Trigger prospettico e direzione della revisione |
+| --- | --- |
+| p = frazione x²<epsilon nel modo non mascherato | p≥0,50: il pavimento domina almeno metà delle risposte; aprire una revisione verso epsilon minore, verificando prima che non sia un kernel inattivo per ragioni del banco |
+| d = RMS[2x/(epsilon+x²)], in entrambi i modi | d·sqrt(epsilon)≥0,50: sensibilità media elevata rispetto al massimo analitico; aprire una revisione verso epsilon maggiore, leggendo anche gradienti e clipping; non basta da sola a dimostrare instabilità |
+| Differenze mascherato−non mascherato sullo stesso supporto | Pubblicare delta p, delta d e delta media dei log. Se p attraversa0,50 in qualunque direzione oppure il valore assoluto di delta media log è almeno una std log non mascherata, aprire revisione dell'effetto del mascheramento prima di scegliere la direzione di epsilon |
+
+Per l'ultimo trigger, std non mascherata zero e delta media zero non segnala
+nulla; std zero e delta non zero segnala. Lo scarto è fra medie appaiate sul
+supporto, non RMSE punto per punto. I cambiamenti ai bordi delle maschere possono
+essere attesi e non dimostrano accesso ai campioni nascosti. La prima soglia
+ha un'interpretazione semplice: la sensibilità relativa del log alla potenza,
+x²/(epsilon+x²), è inferiore a metà per almeno metà delle risposte.
+La soglia della derivata e quella di una std sono convenzioni operative dichiarate.
+
+Qualunque trigger sospende il passaggio al training fino a una decisione scritta:
+motivare il mantenimento di0.001 oppure proporre l'emendamento e farlo rivedere
+prima di un nuovo collaudo. Segnali in direzioni opposte richiedono diagnosi,
+non una ricerca automatica dell'epsilon migliore. Nonfinitezza o violazione del
+limite analitico richiedono invece diagnosi tecnica, non aumento automatico di epsilon.
+In assenza di trigger o di emendamento,0.001 rimane invariato; comunque il training
+richiede la sua review, i pin e il preventivo misurato.
 
 Tempi: aggiornamenti DDP separati dalla diagnostica; RAM GPU con due modelli
 residenti esplicitamente distinta dalla memoria di un singolo training.
 Il confronto del runtime con la base servirà al preventivo finale.
+
+### R2: regola prospettica dei preventivi
+
+Definire rho_update = update_mean_after8_s(LQ)/update_mean_after8_s(L),
+sui56update dopo gli8iniziali, stessa procedura di aggregazione fra rank.
+Il report pubblica il rapporto. Prima del training pubblicare le misure,
+il preventivo calcolato e il tetto in un commit verificato su origin.
+
+Per ogni fase (5000 e continuazione14618), la stima di durata è la durata
+storica T100-L di quella fase, identificata da ricevuta/accounting, moltiplicata
+per rho_update. Il tetto proposto è il walltime storico prenotato della fase
+(5400s e14400s) moltiplicato per max(1,rho_update), arrotondato per eccesso a900s.
+GPU-ore = quattro×walltime/3600; core-ore allocate =32×walltime/3600.
+La misura è un'estrapolazione train-only breve; il margine storico resta esplicito.
+Se un walltime supera il limite di partizione o l'allocazione proposta, fermare
+la preparazione della fase e revisionare il piano, senza frazionamenti o retry impliciti.
+Le17GPUh osservate e le22prenotate sono riferimenti del controllo, non il
+preventivo finale del candidato.
+
+Per le estrazioni occorre rho_infer separato, sul percorso effettivo di inferenza
+dopo warmup e con sincronizzazione CUDA, stessa forma di batch/AMP/supporto.
+Il rapporto degli update include backward/AdamW/EMA e non lo sostituisce.
+Questo collaudo non misura rho_infer: la misura e il suo piccolo preventivo
+andranno aggiunti alla consegna degli estrattori prima del loro lancio.
+Per ciascuna estrazione applicare poi il rapporto alla durata storica omologa
+e max(1,rho_infer) al suo walltime storico, arrotondando per eccesso a300s.
+Fino alla misura,2,75GPUh resta solo riferimento storico e nessuna estrazione
+scientifica è sottomettibile. Eventuali cap oltre i limiti richiedono revisione.
 
 ## Training e lettura proposti dopo il collaudo
 
@@ -105,12 +178,12 @@ non linearità o approcci LEAF.
 | --- | ---: | ---: | --- |
 | Checkout2CPU/10min | 0 | 0,333 | Dopo review |
 | Collaudo4GPU/32CPU/30min,240GiB | 2 max | 16 allocate | Launcher pronto |
-| Training candidato | circa17 osservate sul controllo;22 tetto provvisorio | 176 allocate al tetto | Da ricalcolare dal collaudo |
-| Estrazioni posa×2,P1,P2 | 2,75 tetto di riferimento | 22 allocate | Da adattare/pinnare |
+| Training candidato | circa17 osservate sul controllo;22 prenotate storiche | 176 storiche al tetto | Nuovo tetto da rho_update |
+| Estrazioni posa×2,P1,P2 | 2,75 riferimento storico | 22 storiche allocate | Nuovo tetto da rho_infer, ancora da misurare |
 | Sonde, ridge, benchmark e confronti | 0 | 46,333 tetto di riferimento | Benchmark prima dei fit |
 
-Totale provvisorio26,75GPUh,46,667coreh soloCPU e214coreh allocate nei jobGPU.
-Non è un costo già sostenuto né un preventivo definitivo del candidato.
+Somma dei riferimenti26,75GPUh,46,667coreh soloCPU e214coreh allocate nei jobGPU.
+Non è un costo già sostenuto né un tetto approvato del candidato.
 Dettagli macchina in `resource_proposal.json`; nessuna estensione automatica.
 Solo submitter e ledger comuni, ID prefissati LOGSQ e output propri.
 Nessuna automazione di monitoraggio attivata.
@@ -136,11 +209,14 @@ la contrastiva insieme al ramo logaritmico.
 
 ## Stato della consegna e ownership
 
-112 test CPU passati nella suite combinata in28,81s; sintassi del launcher
+Consegna iniziale:112 test CPU passati. Correzioni:129 test nella suite combinata
+in25,03s; sintassi del launcher
 verificata con bash -n. Non sono test CUDA né risultati scientifici.
 Questa linea possiede tokenizer/log-square, config e preflight; non introduce
 estrattori di livelli del backbone, che appartengono alla linea di consolidamento.
 Le sole modifiche al trainer condiviso sono CLI esplicita e default di config
 per compatibilità; nessun algoritmo di loss/ottimizzazione è cambiato.
 Namespace previsto LOGSQ-*, output logsquare_20261104; futura contrastiva
-CONTRAST-* con propria data/protocollo. Nessun agente o job avviato in questo fork.
+CONTRAST-* con propria data/protocollo. Per le correzioni sono stati usati due
+agenti interni: controllo critico del protocollo e test aggiuntivi, senza accesso
+operativo al cluster. Nessun job o deploy avviato in questo fork.

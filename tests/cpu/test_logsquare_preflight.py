@@ -47,7 +47,7 @@ def test_paired_real_training_has_identical_support_rng_and_learns_new_branch():
     configs = {"T100-L": cfg, "T100-LQ": replace(cfg, model=replace(cfg.model, tokenizer_logsquare=True))}
     torch.manual_seed(cfg.seed)
     expected_hash = L.P.state_sha256(WearUsFM(cfg.model).state_dict())
-    arms = L.create_arms(configs, R.DistContext(), "cpu", expected_hash)
+    arms = L.create_arms(configs, R.DistContext(), "cpu", expected_hash, .001)
     L.check_initial_function(arms, micro, "cpu")
     for step in range(2):
         records = {name: L.P.update_arm(arm, micro, rows, step, R.DistContext(), "cpu")
@@ -65,7 +65,7 @@ def test_paired_real_training_has_identical_support_rng_and_learns_new_branch():
     with pytest.raises(ValueError, match="RNG"):
         L.verify_pair(broken)
     with pytest.raises(ValueError, match="historical"):
-        L.create_arms(configs, R.DistContext(), "cpu", "wrong")
+        L.create_arms(configs, R.DistContext(), "cpu", "wrong", .001)
 
 
 def test_cli_preserves_defaults_and_rejects_unregistered_combination():

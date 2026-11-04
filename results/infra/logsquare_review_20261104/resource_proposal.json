@@ -1,5 +1,5 @@
 {
-  "status": "PROPOSAL_PENDING_CLAUDE_REVIEW_NO_RESERVATIONS",
+  "status": "CORRECTED_PENDING_CLAUDE_DIFF_REVIEW_TRAINING_NOT_APPROVED",
   "preflight": {
     "logical_id": "LOGSQ-preflight-20261104",
     "nodes": 1,
@@ -19,7 +19,6 @@
   },
   "training_reference": {
     "observed_T100_L_gpu_hours_approx": 17,
-    "provisional_gpu_hours_cap": 22,
     "phases": {
       "5000": {
         "gpus": 4,
@@ -33,10 +32,14 @@
       }
     },
     "allocated_core_hours_cap": 176,
-    "must_recompute_after_preflight": true
+    "must_recompute_after_preflight": true,
+    "historical_gpu_hours_cap": 22,
+    "candidate_gpu_hours_cap": null,
+    "ratio": "update_mean_after8_s(T100-LQ)/update_mean_after8_s(T100-L)",
+    "candidate_walltime_rule": "ceil_to_900s(historical_phase_walltime_cap * max(1, measured_ratio))",
+    "point_estimate_rule": "historical_phase_elapsed_seconds * measured_ratio"
   },
   "extractions_reference": {
-    "gpu_hours_cap": 2.75,
     "allocated_core_hours_cap": 22,
     "pose_5000_19618": {
       "count": 2,
@@ -52,7 +55,12 @@
       "count": 1,
       "gpus": 1,
       "seconds": 2700
-    }
+    },
+    "historical_gpu_hours_cap": 2.75,
+    "candidate_gpu_hours_cap": null,
+    "ratio": "separate measured inference ratio, not the update ratio",
+    "candidate_walltime_rule": "ceil_to_300s(historical_extraction_walltime_cap * max(1, measured_inference_ratio))",
+    "inference_benchmark_prepared": false
   },
   "cpu_readers_reference": {
     "probes_core_hours_cap": 32,
@@ -64,8 +72,9 @@
     "total_core_hours_cap": 46.333333333333336,
     "must_benchmark_before_fit": true
   },
-  "provisional_total_gpu_hours": 26.75,
   "provisional_total_cpu_only_core_hours": 46.666666666666664,
-  "provisional_gpu_job_allocated_core_hours": 214,
-  "note": "Training/evaluation orchestration still to adapt after review. No job submitted; no blind retry, no automatic resource extension."
+  "note": "Historical resource references only. Corrections await Claude diff review; training needs measured preflight, adapted orchestration/pins and own review. Extraction estimate needs separately budgeted inference measurement. No jobs/deploy/retry.",
+  "reference_total_gpu_hours": 26.75,
+  "candidate_total_gpu_hours_cap": null,
+  "reference_gpu_job_allocated_core_hours": 214
 }
