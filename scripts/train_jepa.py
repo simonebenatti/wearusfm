@@ -65,6 +65,10 @@ def build_parser() -> argparse.ArgumentParser:
                          "obiettivi; default per token")
     ap.add_argument("--tokenizer-activation", choices=["identity", "gelu"], default=None,
                     help="attivazione dopo i filtri temporali apprendibili e il gain, prima della proiezione; default identity storico")
+    ap.add_argument("--tokenizer-logsquare", action="store_true",
+                    help="affianca log(epsilon+x²) alle risposte lineari, proiezione nuova inizializzata a zero")
+    ap.add_argument("--tokenizer-logsquare-eps", type=float, default=None,
+                    help="pavimento positivo nelle unità delle risposte dopo gain al quadrato; richiede --tokenizer-logsquare")
     ap.add_argument("--masked-loss-radius", type=int, default=None,
                     help="patch nascoste richieste per lato delle query JEPA/ancore/RVQ; per confronti a supporto comune, "
                          "con JEPA attivo non inferiore al raggio nominale; con JEPA spento e' ammesso anche 0 esplicito. "
@@ -170,6 +174,15 @@ def build_config(args, error=None) -> "R.RunConfig":
         cfg = replace(cfg, jepa=replace(cfg.jepa, region_target=True))
     if getattr(args, "tokenizer_activation", None) is not None:
         cfg = replace(cfg, model=replace(cfg.model, tokenizer_activation=args.tokenizer_activation))
+    if getattr(args, "tokenizer_logsquare_eps", None) is not None and not getattr(args, "tokenizer_logsquare", False):
+        fail("--tokenizer-logsquare-eps richiede --tokenizer-logsquare")
+    if getattr(args, "tokenizer_logsquare", False):
+        try:
+            eps = getattr(args, "tokenizer_logsquare_eps", None)
+            cfg = replace(cfg, model=replace(cfg.model, tokenizer_logsquare=True,
+                          tokenizer_logsquare_eps=1e-3 if eps is None else eps))
+        except ValueError as e:
+            fail(f"--tokenizer-logsquare: {e}")
     if getattr(args, "masked_loss_radius", None) is not None:
         try:
             cfg = replace(cfg, jepa=replace(cfg.jepa, masked_loss_radius=args.masked_loss_radius))

@@ -90,7 +90,8 @@ def load_plan(path, root=REPO):
         require(argv[0] == "scripts/train_jepa.py", "unexpected trainer executable")
         args = cli.build_parser().parse_args(argv[1:])
         cfg = cli.build_config(args)
-        require(R.config_to_dict(cfg) == json.loads(Path(states[name]["path"]).read_text()), "CLI/config mismatch: " + name)
+        require(R.config_to_dict(cfg) == R._config_with_defaults(json.loads(Path(states[name]["path"]).read_text())),
+                "CLI/config mismatch: " + name)
         for arg, key in (("manifest", "manifest"), ("scales", "scales"), ("window_seconds", "windows")):
             require(str(Path(getattr(args, arg)).resolve()) == states[key]["path"], f"CLI/plan input mismatch: {name}/{key}")
         require([str(p) for p in args.root] == plan["roots"], "CLI/plan roots mismatch")

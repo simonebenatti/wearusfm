@@ -25,7 +25,7 @@ from wearusfm.model.anchors import AnchorHeads, RVQHead
 from wearusfm.model.backbone import TemporalBackbone
 from wearusfm.model.channel_identity import ChannelIdentity
 from wearusfm.model.local_encoder import LocalEncoder
-from wearusfm.model.patch_tokens import PatchTokenizer
+from wearusfm.model.patch_tokens import PatchTokenizer, validate_logsquare
 from wearusfm.model.perceiver import PerceiverPooling, offsets_from_counts
 from wearusfm.model.query_decoder import QueryDecoder
 from wearusfm.model.spectral_branches import BRANCH_KINDS, SpectralBranches, branch_heads
@@ -70,10 +70,13 @@ class FMConfig:
     # Nonlinearita' opzionale sulle 64 uscite del banco, dopo fe_gain e prima della proiezione. Nessun nuovo parametro; i checkpoint senza
     # questo campo ricostruiscono il tokenizer storico. Il guadagno e il supporto temporale sono identici per identity e gelu.
     tokenizer_activation: str = "identity"
+    tokenizer_logsquare: bool = False
+    tokenizer_logsquare_eps: float = 1e-3
 
     def __post_init__(self) -> None:
         if not isinstance(self.tokenizer_activation, str) or self.tokenizer_activation not in ("identity", "gelu"):
             raise ValueError("tokenizer_activation deve essere identity o gelu")
+        validate_logsquare(self.tokenizer_logsquare, self.tokenizer_logsquare_eps, self.tokenizer_activation)
         object.__setattr__(self, "spectral_branches", tuple(self.spectral_branches))  # da JSON (checkpoint) arriva una lista
         if self.spectral_branches:
             if len(set(self.spectral_branches)) != len(self.spectral_branches) or not set(self.spectral_branches) <= set(BRANCH_KINDS):
@@ -163,6 +166,8 @@ class WearUsFM(nn.Module):
         from wearusfm.model.frontend import window_kwargs
 
         self.tokenizer = PatchTokenizer(cfg.dim, tokenizer_activation=cfg.tokenizer_activation,
+                                        tokenizer_logsquare=cfg.tokenizer_logsquare,
+                                        tokenizer_logsquare_eps=cfg.tokenizer_logsquare_eps,
                                         patch_ms=cfg.patch_ms, **window_kwargs(cfg.patch_ms, cfg.window_ms))
         self.identity = ChannelIdentity(cfg.dim, muscle_dropout=cfg.muscle_dropout)
         self.local = LocalEncoder(cfg.dim, cfg.n_heads, cfg.local_layers)

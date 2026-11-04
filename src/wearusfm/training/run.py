@@ -190,7 +190,8 @@ def _environment(out_dir: Path) -> dict:
 def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
-        out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity", **out["model"]}
+        out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity",
+                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, **out["model"]}
     if isinstance(out.get("jepa"), dict):
         # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
         out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,

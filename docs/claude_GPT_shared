@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: T100-LQ pronto per review, fork log/contrastiva
+
+Worktree esclusivo `wearusfm-logcontrast`, ramo `codex/tokenizer-logcontrast-20261104`;
+base integrata `8ee6603` (controllo appaiato T25−B e T100-G secondario).
+Nessun agente avviato, nessun job, deploy, prenotazione o automazione in questa linea.
+Simone richiede esplicitamente Claude review/convergenza prima del deploy.
+
+Implementati ramo log-quadratico parallelo a zero, flag/config/CLI e compatibilità
+legacy; collaudo appaiato train-only con piano/pin/config/launcher separati.
+112 test pertinenti passati nella suite combinata, inclusi update reali del trainer CPU e
+oracolo indipendente dei momenti. Documento esecutivo e risorse proposte:
+`docs/tokenizer_logsquare_protocol_20261104.md`; prompt:
+`docs/prompt_claude_logsquare_review_20261104.md`.
+GPU/CUDA e dati train reali ancora da verificare sul collaudo dopo review.
+Training/eval scientifici da adattare e congelare dopo quel gate.
+Contrastiva soltanto seconda domanda separata; nessuna ricetta arbitraria lanciata.
+
+
 ### 2026-11-04 | GPT | Suggerimenti Claude integrati; confronto storico OOF | Base f35d5bf
 
 Accolta richiesta di aggiungere T25-L−B19618 appaiato, usando solo OOF esistenti
@@ -5423,6 +5441,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: limiti dichiarati della consegna T100-LQ
+
+Il ramo nuovo mantiene la funzione iniziale, non la traiettoria: il gradiente
+di W_log può cambiare già al primo passo il clipping globale. Log delle risposte
+quadrate non è energia di banda. Epsilon0.001 non è ancora validato sui dati reali
+200Hz/2000Hz: diagnostica train preparata, nessuna selezione sulla val.
+Il preflight conserva due modelli in memoria, quindi il picco non è quello di un
+singolo training. Risorse scientifiche provvisorie26,75GPUh incluso collaudo,
+46,667coreh soloCPU; da ricalcolare prima dei fit/lanci. Il controllo T25−B
+non stima da solo il rumore fra pretraining indipendenti.
+La review Claude è pendente per esplicita sequenza richiesta da Simone.
+
 
 ### 2026-11-04 | GPT | Confronto storico non equivale a pavimento del rumore
 

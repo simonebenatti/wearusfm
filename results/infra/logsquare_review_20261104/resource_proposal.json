@@ -1,0 +1,71 @@
+{
+  "status": "PROPOSAL_PENDING_CLAUDE_REVIEW_NO_RESERVATIONS",
+  "preflight": {
+    "logical_id": "LOGSQ-preflight-20261104",
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "240G",
+    "walltime_seconds": 1800,
+    "gpu_hours_cap": 2,
+    "allocated_core_hours_cap": 16
+  },
+  "checkout": {
+    "logical_id": "LOGSQ-checkout-20261104",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "cpu_only_core_hours_cap": 0.3333333333333333
+  },
+  "training_reference": {
+    "observed_T100_L_gpu_hours_approx": 17,
+    "provisional_gpu_hours_cap": 22,
+    "phases": {
+      "5000": {
+        "gpus": 4,
+        "cpus": 32,
+        "seconds": 5400
+      },
+      "19618_continuation": {
+        "gpus": 4,
+        "cpus": 32,
+        "seconds": 14400
+      }
+    },
+    "allocated_core_hours_cap": 176,
+    "must_recompute_after_preflight": true
+  },
+  "extractions_reference": {
+    "gpu_hours_cap": 2.75,
+    "allocated_core_hours_cap": 22,
+    "pose_5000_19618": {
+      "count": 2,
+      "gpus": 1,
+      "seconds": 2700
+    },
+    "P1_19618": {
+      "count": 1,
+      "gpus": 1,
+      "seconds": 1800
+    },
+    "P2_19618": {
+      "count": 1,
+      "gpus": 1,
+      "seconds": 2700
+    }
+  },
+  "cpu_readers_reference": {
+    "probes_core_hours_cap": 32,
+    "aggregates_core_hours_cap": 1.3333333333333333,
+    "paired_comparison_core_hours_cap": 1,
+    "pose_ridge_core_hours_cap": 8,
+    "pose_benchmark_core_hours_cap": 2,
+    "pose_validation_core_hours_cap": 2,
+    "total_core_hours_cap": 46.333333333333336,
+    "must_benchmark_before_fit": true
+  },
+  "provisional_total_gpu_hours": 26.75,
+  "provisional_total_cpu_only_core_hours": 46.666666666666664,
+  "provisional_gpu_job_allocated_core_hours": 214,
+  "note": "Training/evaluation orchestration still to adapt after review. No job submitted; no blind retry, no automatic resource extension."
+}

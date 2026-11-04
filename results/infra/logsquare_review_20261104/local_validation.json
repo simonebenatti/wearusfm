@@ -1,0 +1,19 @@
+{
+  "status": "LOCAL_TESTS_PASSED_PENDING_CLAUDE_REVIEW",
+  "passed": 112,
+  "failed": 0,
+  "seconds": 28.81,
+  "tests": [
+    "tests/cpu/test_tokenizer_logsquare.py",
+    "tests/cpu/test_logsquare_preflight.py",
+    "tests/cpu/test_tokenizer_activation.py",
+    "tests/cpu/test_tokenizer_preflight.py",
+    "tests/cpu/test_tokenizer_comparison.py",
+    "tests/cpu/test_tokenizer_train.py"
+  ],
+  "launcher_bash_syntax": "passed",
+  "cuda_ddp_tested": false,
+  "real_train_calibration_run": false,
+  "jobs_submitted": [],
+  "deploy_performed": false
+}

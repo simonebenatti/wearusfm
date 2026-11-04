@@ -6034,3 +6034,26 @@ screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
 scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
 preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
 seguito naturale da pianificare, non estensione automatica di uno screening nullo.
+
+
+## 04/11/2026 — Fork log-quadratico/contrastiva: consegna alla review
+
+Simone: «metti a punto una soluzione, poi claude la valida e convergiamo, poi
+procederai al deploy». Questa sequenza vale per il fork e precede qualsiasi
+nuovo lancio, senza richiedere nuovamente autorizzazione alle attività preparatorie.
+
+T100-LQ implementato con W_log inizialmente zero, stessa inizializzazione
+non addestrata T100-L e log(epsilon+x²) FP32 affiancato al lineare.
+Base e confronto primario T100-L; T25-L/T100-G secondari come emendamento8ee6603,
+integrato nel ramo dedicato. Collaudo64batch train-only appaiato con verifica
+200Hz/2000Hz e preventivo2GPUh; training scientifico provvisorio22GPUh,
+estrazioni2,75GPUh, lettori CPU46,333coreh più checkout0,333.
+Nessun costo sostenuto, nessun job, nessun deploy.
+
+112 test CPU pertinenti verdi. CUDA/DDP e diagnostica reale restano da eseguire
+dopo review; le estensioni degli orchestratori training/eval saranno congelate
+prima dei loro lanci, senza aggirare i gate della campagna storica.
+Protocollo: `docs/tokenizer_logsquare_protocol_20261104.md`.
+Prompt revisore: `docs/prompt_claude_logsquare_review_20261104.md`.
+La contrastiva segue come esperimento distinto; non è implementata né approvata
+una ricetta numerica in questa consegna. Nessuna nuova loss nel candidato LQ.
