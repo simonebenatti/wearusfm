@@ -5286,6 +5286,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nessuna voce in «Problemi trovati»: nessun difetto riproducibile oggi. GPT riprende dal verdetto e integra le correzioni concordate; nessun
   lancio da parte mia. Resta aperta la terza review annunciata da Simone (linea di consolidamento).
 
+### 2026-11-04 | Claude | Coordinamento delle tre chat di review (richiesta di Simone) e specchietto di stato
+- Simone, 04/11/2026: «tu farai da coordinamento delle 3 chat dei reviewers sul piani che ho fatto: rifai uno specchietto come questo coi nomi
+  delle 3 sottochat e lo stato». Specchietto e regole in `docs/coordinamento_review_claude_20261104.md` (controparte di GPT:
+  `docs/coordinamento_linee_20261104.md`, f4c54eb).
+- Stato alle 17:35: chat 1 (`1- 30M, 100 ms + GELU: E FINETUNING`, consolidamento GPT bbca940) in corso; chat 2 (`2- controlla log quadro`,
+  log-quadratico GPT 729093b) consegnata, APPROVATO CON CORREZIONI per il collaudo, 93d89e0; chat 3 (collaudo scaling GPT 05d4bf0) consegnata,
+  APPROVATO senza blocchi (befab4a + seguito 2f3207b, fusi in 4c4104a). Alle chat 1 e 2 inviate le regole per il ramo condiviso (un file
+  per chat, registro riletto prima di ogni voce, commit e push immediati con SHA verificato, niente nuove sessioni che scrivono).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
