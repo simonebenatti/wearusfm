@@ -5226,6 +5226,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   come confronto secondario accanto a T100-L (cache e OOF gia' presenti). Restano i limiti gia' scritti da GPT: GELU al punto di lavoro della
   calibrazione (40 risposte su 64 quasi lineari, D2), manca T25-G, EPN a 200 Hz non isola la frequenza, dati di sviluppo, seme unico.
 
+### 2026-11-04 | Claude | Review del collaudo train-only 30M/300M (GPT scaling, 05d4bf0): APPROVATO, nessun blocco (richiesta di Simone)
+- Simone, 04/11/2026: «procedo con 3 rami separati e paralelli su cui fai tu le review: ecco il primo» (linee: consolidamento, scala 300M,
+  esplorazione log-quadratica); prompt di GPT `docs/prompt_claude_scaling_review_20261104.md` (31f6d03 sul ramo `codex/scaling-300m-20261104`).
+- Review in `docs/reviews/claude_review_scaling_300m_preflight_20261104.md`. Metodo: checkout temporaneo detached a 05d4bf0 fuori dai
+  worktree; letti protocollo, controller, launcher, test, piani, critico interno e tutte le funzioni riusate di `tokenizer_preflight.py`,
+  `run.py`, `lib_code_dir.sh`, `train_jepa.py`; test rieseguiti (**23 passati in 13,53 s**, 15 nuovi + 8 storici), `bash -n` pulito, sha256
+  del piano sorgente ricalcolato; LR verificato numericamente sulla configurazione T100-G reale (nativo 5,1e-8 → 6,5e-6 nei 128 passi,
+  stress 1e-4 esatto); `git diff afb644e 05d4bf0` su `src/wearusfm`, `train_jepa.py`, `tokenizer_train.sbatch`, `lib_code_dir.sh` vuoto.
+- Esito sulle sei domande: l'update e' quello di produzione (stesso AdamW, autocast bf16, `_accumulate_terms` con DDP, clip, EMA costante),
+  RNG del modello ripristinato/salvato a ogni passo, oracolo 63→64 che confronta pesi, teacher e tutti i momenti; pairing su impronte CPU
+  dei dati e sul supporto atteso/osservato del decoder, RNG del modello libero per costruzione; 128 record esatti, fasi 64/64, `complete`
+  solo a fine ciclo; picco di memoria azzerato a ogni update e misurato col solo modello residente, nessun riferimento residuo trovato
+  (chiusura `capture` spezzata, `arm` cancellato, record senza tensori); tempi delimitati da synchronize e barriere, diagnostiche fuori;
+  monitor QKV/MLP sui blocchi reali; gate, pin, launcher (dbg, TimeLimit ≤ 1.800 s, checkout congelato, output nuovo fuori dal codice) e
+  costi (2 GPU-ore + 16 core-ore) coerenti; soglia di rango assoluta 38,4 coerente con la decisione firmata del 23/10.
+- Facoltativi F1–F7: riassunto della loss per fase; baseline di memoria del primo update come prova del modello unico residente; copertura
+  delle forme (canali × patch) rispetto ai massimi del corpus; `collect_features` eseguito ma non riportato; asserzione `lr == cfg.lr` nello
+  stress; blocco `runtime` come nel preflight del tokenizer; fase usata nel rapporto dei tempi. Requisiti del seguito S1–S7: congelare
+  l'identita' del codice di training rispetto ad afb644e nel wrapper; il controllo 30M a 5.000 sta in $SCRATCH (purge 13/12); rapporto
+  memoria produzione/collaudo del 30M (15,47 GiB in produzione) per stimare il 300M; ripiego dichiarato prima (`accum_steps=2` a batch 32,
+  non batch ridotto ne' 8 GPU); controllo secondario a dimensione del readout pareggiata; LR fisso = «taglia nella stessa ricetta»;
+  pavimento di rumore della replica (0,2–0,9 pp) nella lettura del delta 300M − 30M.
+- Nessun job, allocazione o modifica al codice di GPT. Simone ha annunciato altre due review (consolidamento ed esplorazione).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
