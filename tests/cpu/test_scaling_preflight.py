@@ -65,9 +65,13 @@ def test_native_and_stress_updates_match_independent_production_update(step, pha
     grad = torch.nn.utils.clip_grad_norm_(plain.parameters(), cfg.grad_clip)
     optimizer.step()
     J.ema_update(teacher, plain, cfg.jepa.ema_momentum)
+    reference_rng = copy.deepcopy(S.P.rng_state("cpu"))
     got = S.update_arm(arm, micro, rows, step, 64, R.DistContext(), "cpu")
     assert arm["cfg"] is cfg and got["scientific_update"] is False and got["phase"] == phase
     assert got["lr"] == R._lr_at(step, expected_cfg)
+    if phase == "peak_lr_stress":
+        assert got["lr"] == cfg.lr
+    assert S.P.state_sha256(reference_rng) == got["rng_after_sha256"]
     assert got["clip_factor"] == pytest.approx(min(1, cfg.grad_clip / (float(grad) + 1e-6)))
     for name, value in plain.state_dict().items():
         assert torch.equal(value, arm["student"].state_dict()[name]), name
@@ -96,9 +100,10 @@ def test_native_to_stress_transition_preserves_adamw_moments_and_matches_oracle(
     plain.load_state_dict(arm["student"].state_dict())
     teacher = J.make_teacher(plain)
     opt = torch.optim.AdamW(plain.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+    reference_rng = copy.deepcopy(arm["rng"])
     for step in (63, 64):
         actual_cfg = cfg if step == 63 else replace(cfg, warmup_steps=0)
-        S.P.restore_rng(copy.deepcopy(arm["rng"]), "cpu")
+        S.P.restore_rng(reference_rng, "cpu")
         opt.zero_grad(set_to_none=True)
         opt.param_groups[0]["lr"] = R._lr_at(step, actual_cfg)
         failure, _ = R._accumulate_terms(None, plain, teacher, [micro], actual_cfg,
@@ -107,7 +112,11 @@ def test_native_to_stress_transition_preserves_adamw_moments_and_matches_oracle(
         torch.nn.utils.clip_grad_norm_(plain.parameters(), cfg.grad_clip)
         opt.step()
         J.ema_update(teacher, plain, cfg.jepa.ema_momentum)
-        S.update_arm(arm, micro, rows, step, 64, R.DistContext(), "cpu")
+        reference_rng = copy.deepcopy(S.P.rng_state("cpu"))
+        got = S.update_arm(arm, micro, rows, step, 64, R.DistContext(), "cpu")
+        assert S.P.state_sha256(reference_rng) == got["rng_after_sha256"]
+        if step == 64:
+            assert got["lr"] == cfg.lr
         for name, value in plain.state_dict().items():
             assert torch.equal(value, arm["student"].state_dict()[name]), name
             assert torch.equal(teacher.state_dict()[name], arm["teacher"].state_dict()[name]), name

@@ -1,0 +1,20 @@
+{
+  "protocol": "scaling-reading-5000-20261104-v1",
+  "checkpoint_step": 5000,
+  "candidate": "T100-G-300M",
+  "control": "T100-G-30M",
+  "bootstrap": {
+    "unit": "subject",
+    "replicates": 2000,
+    "seed": 20261102
+  },
+  "epn_margin_pp": 0.0,
+  "pose_practical_point_reduction": 0.02,
+  "p1_p2_noninferiority_margin_pp": 1.0,
+  "historical_pair_is_noise_floor": false,
+  "continuation_is_authorized": false,
+  "continuation_endpoint": 19618,
+  "continuation_additional_steps": 14618,
+  "budget_formula": "4/3600 * ceil900(14618 * max(trainer300M5000_seconds/5000, preflight300M_112_update_mean_seconds) * 1.20 + 1200)",
+  "budget_freeze": "numeric training, extraction GPU and reader CPU caps before opening 5000 downstream scores"
+}

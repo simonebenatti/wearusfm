@@ -241,6 +241,68 @@ condizionati ai checkpoint e alle sonde di questa prova; servono repliche di
 pretraining indipendenti per misurare la variabilità fra run. Questa precisazione
 è coerente con l'analisi già pubblicata nel commit `8ee6603`.
 
+**S8 — Lettura a due lati e conseguenza operativa a 5.000.** Complemento di Claude
+nel commit `2f3207b`, recepito prima di qualunque estrazione 300M. Si conservano
+due primari distinti; non si sceglie quello favorevole dopo i risultati.
+Entrambi usano teacher e dose 5.000 contro 5.000. `E_dyn` è l'errore della ridge
+istantanea sulle finestre dinamiche, con il supporto già fissato; non la loss di train.
+
+| Misura (300M meno 30M) | Migliore | Peggiore | Irrisolto |
+|---|---|---|---|
+| EPN-612, delta in punti percentuali | limite inferiore IC95 > 0 | limite superiore IC95 < 0 | altrimenti, compresi i limiti uguali a zero |
+| E_dyn, delta del rapporto di errore | limite superiore IC95 < 0 | limite inferiore IC95 > 0 | altrimenti, compresi i limiti uguali a zero |
+
+Per la posa, la **rilevanza pratica** è una seconda etichetta: riduzione relativa
+puntuale `(E30 − E300) / E30 ≥ 0,02` e IC del delta interamente sotto zero, come
+nel criterio tokenizer. Non richiede un IC interamente oltre il 2%, né crea un
+nuovo margine di danno del 2%. Un miglioramento inferiore al 2% resta misurato ma
+non viene chiamato movimento migliorato in misura pratica. Nessun margine di 1 pp
+viene trasferito al singolo endpoint EPN.
+
+P1 e P2 restano controlli distinti: per ciascun IC95 `[L,U]` del delta in pp,
+`L > −1` sostiene conservazione, `U < −1` sostiene perdita oltre margine;
+altrimenti la non inferiorità è irrisolta. Le uguaglianze sono irrisolte.
+Un punto sotto −1 con IC che attraversa −1 non è una perdita dimostrata oltre margine.
+
+| Esito della matrice completa e valida | Raccomandazione fissata prima dei risultati |
+|---|---|
+| Almeno un primario migliore, nessuno peggiore; nessuna perdita P1/P2 oltre margine | Proporre 19.618 come conferma alla dose più lunga. Segnalare separatamente se il guadagno di posa è sotto il 2% e se la NI è ancora irrisolta. |
+| Entrambi i primari irrisolti; nessuna perdita P1/P2 oltre margine | Proporre 19.618 per chiarire la domanda sulla dose; nessuna evidenza di beneficio a 5.000 rivendicata. |
+| Qualsiasi primario peggiore, oppure perdita P1 o P2 oltre margine | Mettere in pausa questa ricetta e rivedere diagnosi e impiego delle risorse prima di proporre la continuazione. Vale anche per primari discordanti. |
+| Artefatti, pairing o convergenza dei lettori non validi | Correggere la valutazione; nessuna lettura scientifica o decisione basata su score incompleti. |
+
+La pausa riguarda questa ricetta e questo investimento; **non boccia la taglia
+300M o lo scaling in generale**. Un esito irrisolto non diventa equivalenza.
+NI irrisolta non equivale a perdita oltre margine e non blocca da sola una
+proposta di approfondimento. I secondari a dimensione pareggiata aiutano a
+interpretare i primari ma non ne sostituiscono l'esito per cambiare riga della tabella.
+
+Bootstrap appaiato per soggetto, 2.000 estrazioni, seed 20261102; stesse popolazioni,
+righe, fold e supporti entro ciascun endpoint. Gli IC sono marginali e condizionati
+al singolo seme di pretraining e ai dati di sviluppo: nessuna garanzia congiunta
+del 95% per questa regola su più endpoint, nessuna inferenza da un noise floor T25−B.
+
+**Tetto della possibile seconda tranche.** La regola di costo viene congelata ora,
+prima delle estrazioni. Sia `t5k` il tempo completo del trainer **300M** a 5.000,
+e `u300` la media dei 112 update misurati del collaudo. Per i 14.618 update aggiuntivi:
+
+`secondi = ceil_900(14618 × max(t5k / 5000, u300) × 1,20 + 1200)`;
+`GPU-ore training = 4 × secondi / 3600`.
+
+Non si usa la misura più favorevole. Prima di aprire gli score downstream a 5.000
+vanno pubblicati il tetto numerico ottenuto, le eventuali segmentazioni imposte
+dallo scheduler e i tetti separati per estrazioni e lettori CPU, da benchmark
+tecnici senza score. Se questo passaggio manca, la lettura descrittiva può essere
+pubblicata ma la prosecuzione non può essere presentata come scelta interamente
+pre-registrata. Nessun preventivo viene aumentato perché uno score è promettente.
+
+La tabella decide **quale proposta fare**, non concede una sottomissione automatica
+a 19.618: quella tranche resta esterna alla prima autorizzazione, richiede piano
+concreto, risorse e review, e la decisione di Simone. Il protocollo non riscrive
+questa distinzione. Implementazione della lettura:
+`scripts/scaling_reading.py`; policy versionata in
+`results/infra/scaling_300m_20261104/scientific_reading_policy.json`.
+
 La matrice pre/postbackbone e39.237/49.046 approvata per lo schedule lungo30M non
 viene aggiunta automaticamente a questo screening. Qui resta la lettura storica.
 
@@ -288,10 +350,13 @@ descrittivi mantenuti, non prove definitive di superiorità di una famiglia.
 Un solo seme e dati di sviluppo; EPN positivo non isola causalmente la frequenza
 di campionamento, posa su utenti nuovi resta lo stesso task supervisionato.
 
-Un5000 negativo non boccia lo scaling: dose ancora iniziale, ottimizzazione non
-dimostrata ottimale, rappresentazioni sondate con lettori specifici. Dopo i risultati
-si propone il confronto a19.618 con il30M già disponibile. La decisione considera
-stabilità, andamento train, misure downstream e costo; non richiede necessariamente
-un IC positivo a5000. Il seguito conserva la stessa run e schedule, con altri14.618
-passi; stima iniziale circa49,40GPUh aggiuntive, da sostituire con timing effettivo.
-Il modello300M non viene proseguito implicitamente durante la lettura di5000.
+Un 5.000 negativo non boccia lo scaling: dose ancora iniziale, ottimizzazione non
+dimostrata ottimale, rappresentazioni sondate con lettori specifici. Il seguito
+si propone **secondo la tabella S8**, senza selezionare dopo gli score una regola
+più favorevole: esiti migliori o irrisolti, in assenza di peggioramenti dei primari
+o perdite P1/P2 oltre margine, motivano le due diverse proposte; un peggioramento
+richiede la pausa operativa della ricetta. Se deliberato, il confronto a 19.618
+usa il 30M già disponibile e conserva run/schedule del 300M con altri 14.618 passi.
+La vecchia stima di 49,40 GPU-ore è soltanto storica: prevalgono formula e tetti
+pubblicati prima degli score come in S8. Nessuna prosecuzione implicita durante
+la lettura di 5.000.

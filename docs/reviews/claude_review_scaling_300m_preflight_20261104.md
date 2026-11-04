@@ -22,6 +22,13 @@ modifica al codice. Prompt di GPT: `docs/prompt_claude_scaling_review_20261104.m
 - Verifica numerica dello schedule con la configurazione T100-G reale (argv validato di `comparison_configurations.json`): LR nativo
   5,10e-8 al passo 0, 3,26e-6 al 63, 6,52e-6 al 127, 1e-4 dal 1961; con `warmup_steps=0` 1e-4 a tutti i passi 0–127 (fase stabile fino al
   39.237). Parametri 28.362.013 / 292.054.847, `LADDER["300m"]` = dim 896, 14 teste, 3/18/2 blocchi: tutto coerente col protocollo.
+- Identità fra la configurazione del collaudo e il CLI del training (verifica aggiunta dalla sessione di verifica): `build_config`
+  sull'argv validato di T100-G con `--preset 300m` al posto di `--preset sanity` produce esattamente, dizionario per dizionario e senza
+  differenze, la configurazione `T100-G-300M` di `configurations()` (`ladder_config` è `sanity_config` con il solo modello sostituito);
+  parametri 292.054.847. Il wrapper può quindi «cambiare solo il preset» senza divergere dal collaudo. Il gain `fe_gain` è un buffer
+  calcolato alla costruzione del tokenizer (`patch_tokens.py:36`) e mai ricalibrato dal trainer: il confronto delle impronte banco+gain fra
+  taglie vale anche per la produzione. Scadenza: con i tempi misurati dal preflight del tokenizer (0,70 s/update del 30M; 174 s per 192
+  update più diagnostiche e impronte) il collaudo è atteso in 10–12 minuti, sotto i 1.500 s anche con un rapporto 300M/30M di 8×.
 - Identità del codice di training fra il checkout del 30M a 5.000 (afb644e) e 05d4bf0: `git diff --stat afb644e 05d4bf0 -- src/wearusfm
   scripts/train_jepa.py scripts/slurm/tokenizer_train.sbatch scripts/slurm/lib_code_dir.sh` è **vuoto**.
 
@@ -110,6 +117,10 @@ Nessuno.
 - **F7 — Fase usata nel rapporto dei tempi.** `resource_policy.formula_after_benchmark` usa «benchmark300M/benchmark30M» senza dire se è
   la media della fase nativa, dello stress o di tutti i 112 passi misurati (il calcolo per passo non dipende dal LR, quindi vanno bene
   tutti e 112): scriverlo, così il preventivo è riproducibile.
+- **F8 — RNG dell'oracolo tracciato indipendentemente.** Nei due test dell'oracolo il RNG è ripristinato da `arm["rng"]` sia per il braccio
+  sia per il modello di riferimento: la continuità è verificata nel senso che lo stato salvato dal braccio è quello consumato dopo, non
+  contro uno stato tracciato a parte. Basta far salvare al riferimento il proprio RNG dopo il passo e aggiungere
+  `assert state_sha256(rng_riferimento) == got["rng_after_sha256"]`.
 
 ### Requisiti del seguito scientifico (prima del training a 5.000)
 
@@ -141,6 +152,11 @@ Nessuno.
 - **S7 — Lettura appaiata.** Bootstrap per soggetto, 2.000 estrazioni, seme 20261102, margini descrittivi: coerente con la campagna
   tokenizer. Resta valido il pavimento di rumore misurato oggi sulla replica T25-L − B19618 (0,2–0,9 pp per dataset, 0,5 pp su P1): un
   delta 300M − 30M dentro quell'intervallo non è distinguibile dal rumore di run a seme unico.
+- **S8 — Regola di lettura a due lati, congelata prima delle estrazioni.** Il protocollo dice che un 5.000 negativo non boccia lo scaling e
+  che la seconda tranche «non richiede necessariamente un IC positivo»: così la lettura resta discrezionale. Prima di estrarre le feature
+  del 300M vanno scritti e committati i tre esiti del confronto 300M − 30M a 5.000 su EPN-612 ed E_dyn (migliore / peggiore / irrisolto,
+  con gli IC, i margini già fissati di 1 pp su P1/P2 e 2 % sulla posa e il pavimento di rumore di S7) e quale di essi autorizza la tranche a
+  19.618, con quale tetto. Una decisione presa dopo i numeri senza questa regola è post hoc.
 
 ## 3. Numeri di riferimento usati
 

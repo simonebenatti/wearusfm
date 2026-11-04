@@ -6062,3 +6062,33 @@ accettate ma `hostname` senzaoutput anche suconnessioneseparata; lettureinterrot
 Nessunpushdeploy, submittero monitor. Stato remoto non deducibile.
 La ripresa usa lo stesso piano approvato senza nuovo consenso; nessun cambiamento
 di ricetta o retry di calcolo. Evidenza submission_status.json.
+
+
+### 04/11/2026 — Preparazione offline della fase scientifica300M e regola S8
+
+Guasto del login node confermato da Simone tramite email ricevuta. Su sua richiesta
+si lavora offline sui complementi Claude2f3207b, senza riesaminare l'approvazione
+del collaudo05d4bf0 e senza cambiarne codice, risorse o dose. S4 già scritto prima
+dei risultati; F5/F8 rafforzano soltanto l'oracolo CPU.
+
+Nuovi wrapper training5000 e valutazioneD896/pool1792 con regressioneD384, contratto
+103sorgenti rispettoafb644e, cinque primitive estrazione pinnate. Review interna
+chiude i rilievi su binding/preset/readiness/retention; evidenze nella consegnaoffline.
+Non è ancora catena5000 pronta: reader ridge/sonde/aggregatore/S5 e misure reali
+rimangono gate; nessuna ricevuta fittizia e nessun nuovo job.
+
+S8 fissata prima estrazioni: EPN delta300−30 e posaE_dyn separati, tre esiti daIC95;
+2% sulla riduzione relativa puntuale della posa conICfavorevole,1ppsolosuP1/P2.
+Miglioramento senza peggioramento/perditaPoltre margine propone19kperconferma;
+dueprimariirrisolti senza tali perdite propongono19kperdose; qualunqueprimario
+peggiore o perditaPoltre margine impone pausa operativa della ricetta. Nonè un
+veto allo scaling. Fit/artifactsnonvalidi→correzionevalutazione. ICmarginalia
+semeunico, nessuna probabilitàcongiunta95% o noisefloorstorico.
+
+Tetto aggiuntivo19k inGPU-ore:4×ceil900(14618×max(t300M5000/5000,u300M112)×1,20+1200)/3600,
+con separati tetti estrazione/CPU pubblicati prima diaprire gli score5000.
+La tabella genera una proposta;19k rimane fuori dalla prima trancheautorizzata.
+Dettagli in docs/scaling_300m_protocol_20261104.md e policyversionata; nessunmonitor.
+
+Validazione finale offline:248test passati in19,52s, review indipendente favorevole;
+nove hash verificati dopo test. Nessun rilievo aperto alla consegna aClaude.

@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Preparazione offline dopo complementi Claude2f3207b
+
+Simone conferma il guasto del login node e chiede lavoro locale. Letto il complemento
+F8/S8: S4 già pubblicato; aggiunti F5/F8 ai soli test CPU, senza cambiare il collaudo
+05d4bf0. Preparati scaling_train.py e contratto di103 sorgenti identici ad afb644e,
+scaling_evaluation.py per D384/D896 e pool768/pool1792, test di regressione e pin
+delle primitive di estrazione. Nuovi controller separati dai sorgenti storici.
+Fissati protocollo S8, scientific_reading_policy.json e scaling_reading.py: due
+primari, tre esiti ciascuno, margini distinti, tabella di raccomandazione e costo
+19k deterministico prima degli score, nessuna autorizzazione implicita.
+Review indipendente favorevole,248test passati in19,52s; nove hash verificati.
+Suite integrata registrata in offline_verification.json e
+scaling_scientific_offline_critic_20261104.md. Nessun SSH/job/monitor da questa
+preparazione; operatore e namespace invariati. Consegna spiegata in
+docs/scaling_300m_offline_preparation_20261104.md.
+
+
 ### 2026-11-04 | GPT scaling | Invio fermo prima della prenotazione: accesso remoto
 
 Piano pubblicato70cbd85, collaudoapprovato invariato05d4bf0. Nessunjobinviato,
@@ -5439,6 +5456,20 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Limiti della preparazione offline e rilievi chiusi
+
+Il critico ha fatto vincolare il preset30M, il piano di estrazione al contratto
+scientifico e le cinque primitive storiche; readiness deve includere aggregatore
+appaiato e controllo S5, retention fino alla comparazione. Rilievi corretti prima
+di qualsiasi run. Le guardie strutturali optimizer/RNG non certificano da sole
+un futuro resume a19k. Cache/checkpoint reali300M e memoriaGPU non misurati.
+Restano da completare lettori/aggregatori due bracci, S5, benchmark e gate runtime;
+nessuna readiness artificiale, nessun via al training5000. F1–F4/F6 facoltativi
+differiti; F5/F8 e S8 chiusi offline. Nessuna statistica runtime inventata.
+Il summary storico corretto è lo snapshot5000, non quello mobile ora a19618.
+S7 resta rettificato: la coppiaT25−B non crea un pavimento di rumore.
+
 
 ### 2026-11-04 | GPT scaling | Blocco operativo, non errore del collaudo
 
