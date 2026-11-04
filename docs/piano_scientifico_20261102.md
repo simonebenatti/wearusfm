@@ -307,3 +307,16 @@ integralmente: [paper primario](https://arxiv.org/abs/2106.10466).
 Review indipendente parallel_next_review concorde sulle tre linee e sui controlli.
 Nessun nuovo job o automazione da questa discussione; i protocolli esecutivi
 dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risultati.
+
+
+### 04/11 — Consegna del fork consolidamento per Claude
+
+| Pezzo | Preparato | Risultato disponibile | Prossimo gate |
+|---|---|---|---|
+|30M T100-G lungo|Controller/launcher ripresa completa, WSD invariato, piano risorse|Nessun risultato nuovo; stima25,35GPUh/tetto36|Review Claude e convergenza prima del lancio|
+|Sonde a due momenti/profondità|Protocollo e libreria comune D384/D896, parità pool storico verificata|Test CPU; nessuna nuova estrazione|Completare adattatori/controller e budget misurati con checkpoint effettivi|
+|FT EPN teacher19k|Tre regimi,4fold,2LR,5epoche proposte, benchmark e launcher|Test CPU/critico; nessun fit reale|Claude valida ricetta, poi benchmark e gate costi/memoria|
+
+Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
+Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
+codex/consolidation-20261104; nessun job, checkout remoto o monitor.

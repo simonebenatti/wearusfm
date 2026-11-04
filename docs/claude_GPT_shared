@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Preparazione separata per review Claude | Base8ee6603
+
+Owner solo schedule30M T100-G e fine-tuning, worktree wearusfm-consolidation,
+branch codex/consolidation-20261104. Duplicato scaling terminato senza scritture
+o job;300M resta al thread originale. Letta nota coordinamento f4c54eb, nessun
+merge/main o lancio da questa consegna. Namespace CONSOL-* e FT-*.
+
+Controller/launcher continuazione stato completo19618→30000operativo→39237→49046,
+configurazione/WSD invariati e hash dei sorgenti storici; stima25,35GPUh, tetto36.
+Implementata libreria pre/postbackbone sul forward reale, D384/D896, pooling pari
+e parità con pool storico. FT EPN teacher19k congelato/adattato contro rete casuale:
+stessa testa,4fold,2LR,5epoche complete proposte, selezione solo val. Benchmark
+train-only con misura preprocessing/RSS/VRAM prima dei fit; tetto48GPUh fit non
+è stima osservata. Piani awaiting_claude_review impediscono l'esecuzione.
+
+54test sul pacchetto+regressioniWSD/tokenizer_train; dopo aggiunta guardia review,
+13test pacchetto verdi; bash-n dei launcher. Critico interno favorevole dopo due
+precisazioni recepite (memoria/preprocessing e loader posa). Protocollo e prompt
+in docs/consolidation_protocol_20261104.md e prompt_claude_consolidation_20261104.md.
+Valutatori completi della matrice lunga e aggregazione IC ancora da implementare:
+non confonderli con la libreria comune disponibile. Nessun job/monitor/checkout remoto.
+
 ### 2026-11-04 | GPT | Suggerimenti Claude integrati; confronto storico OOF | Base f35d5bf
 
 Accolta richiesta di aggiungere T25-L−B19618 appaiato, usando solo OOF esistenti
@@ -5423,6 +5445,20 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Limiti dichiarati e gate prima dei lanci
+
+Nessun difetto bloccante individuato dal critico nel nuovo codice dopo correzioni.
+Misure CUDA ancora mancanti; fit subordinati a benchmark con pin, stima entro4h
+per2candidati e RAM/VRAM entro85%.5epoche comparano dose uguale, non ottimi convergenti:
+scratch ancora in crescita non dimostra inutilità del training da zero. HeadLN+linear
+non è la logistica storica; split sviluppo e calibrazione non supervisionata per
+soggetto restano espliciti. Per posa mantenere preprocessing loader originale.
+
+La nuova matrice di sonde lunga ha protocollo/estrattore comune ma non ancora tutti
+i controller, i pin futuri o il preventivo CPU: consegna distinta prima delle sue
+estrazioni/fit. Claude deve validare protocollo e codice prima anche del benchmark
+o checkout; autonomia precedente non aggira questo ultimo ordine di Simone.
 
 ### 2026-11-04 | GPT | Confronto storico non equivale a pavimento del rumore
 

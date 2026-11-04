@@ -6034,3 +6034,31 @@ screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
 scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
 preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
 seguito naturale da pianificare, non estensione automatica di uno screening nullo.
+
+
+## 04/11/2026 — Preparazione consolidamento T100-G e FT, review Claude prima dei lanci
+
+Simone assegna a questa linea il30M100ms+GELU lungo e il fine-tuning, e specifica:
+«prepari la roba, poi claude la valida e convergiamo, alla fine la lanci».
+Worktree esclusivo wearusfm-consolidation, ramo codex/consolidation-20261104, base8ee6603.
+300M resta al thread originale; duplicato riattivato dal contesto terminato senza
+scrivere/lanciare. Nessun merge su main, nessun job o automazione creati.
+
+[Protocollo](consolidation_protocol_20261104.md) e
+[prompt review Claude](prompt_claude_consolidation_20261104.md). Controller e launcher
+per continuazione completa19618→30000operativo→39237→49046, WSD e codice scientifico
+invariati; stima25,35GPUh e tetto36GPUh/288coreh, più checkout0,167coreh.
+Estrattore pre/postbackbone D-indipendente con parità storico; owner questa linea.
+
+Proposto FT EPN sviluppo: frozen/fullFT/scratch, stessa testaLN+linear,4fold interni,
+2LR per regime,5epoche complete, selezione solo validation. Protocollo/confronto
+restano da validare con Claude. Benchmark train-only0,5GPUh/4coreh, misura risorse e
+preprocessing;12job di2candidati, tetto complessivo48GPUh/384coreh, costo atteso da
+misurare. Gate85%RAM/VRAM e proiezione entro14100s per job4h. Nessun test ufficiale
+valutato, nessuna pretesa di convergenza scratch o trasferimento in regressione.
+
+Critico interno favorevole dopo due correzioni;54test su pacchetto e regressioni,
+13test del pacchetto dopo nuova guardia review, launcher Bash validi. I piani
+awaiting_claude_review bloccano esecuzione. Le valutazioni lunghe hanno libreria e
+protocollo, ma adattatori/controller e preventivo CPU finale ancora da consegnare
+prima dei relativi lanci: non dichiarati già pronti.

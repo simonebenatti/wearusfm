@@ -1,0 +1,50 @@
+{
+  "protocol": "consolidation-finetune-epn-20261104-v1",
+  "status": "awaiting_claude_review",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
+  },
+  "epn_roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/trainingJSON",
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/testingJSON"
+  ],
+  "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+  "batch": 8,
+  "epochs": 5,
+  "max_updates": null,
+  "seed": 0,
+  "lr_grid": {
+    "frozen": [
+      0.001,
+      0.01
+    ],
+    "finetune": [
+      1e-05,
+      0.0001
+    ],
+    "scratch": [
+      0.0001,
+      0.001
+    ]
+  },
+  "benchmark_receipt": null,
+  "benchmark_allocation": {
+    "gpus": 1,
+    "cpus": 8,
+    "memory": "100G",
+    "seconds": 1800
+  },
+  "fit_allocation_each_fold_regime": {
+    "gpus": 1,
+    "cpus": 8,
+    "memory": "100G",
+    "seconds": 14400
+  },
+  "fits": 24,
+  "fold_regime_jobs": 12,
+  "fit_gpu_hours_cap": 48,
+  "fit_allocated_core_hours_cap": 384,
+  "gate": "Pin train-only benchmark; projected two candidates <=14100s in every regime, otherwise stop and revise estimate before launch.",
+  "recipe_sha256": "5db27e8ef221afac83ac83a0f9ebf61cbacde43461ed5dd6b02ce6c71ce5aafa"
+}

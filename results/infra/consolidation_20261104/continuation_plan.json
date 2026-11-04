@@ -1,0 +1,26 @@
+{
+  "protocol": "consolidation-t100g-20261104-v1",
+  "status": "awaiting_claude_review",
+  "phases": [
+    30000,
+    39237,
+    49046
+  ],
+  "scientific_endpoints": [
+    39237,
+    49046
+  ],
+  "source_receipt_sha256": "2ffbba1e0e3e7884456f6c54b1a2b1b4771cae508deac43c44710b4ab3fbf6db",
+  "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/consolidation_20261104/T100-G",
+  "report_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation",
+  "allocation_each": {
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "seconds": 10800
+  },
+  "training_gpu_hours_estimate": 25.352073699092443,
+  "training_gpu_hours_cap": 36,
+  "allocated_core_hours_cap": 288,
+  "note": "30000 is operational only; exact original WSD/optimizer/RNG/data recipe; no automatic launch before Claude convergence"
+}
