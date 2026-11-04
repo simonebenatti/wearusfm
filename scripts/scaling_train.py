@@ -44,7 +44,7 @@ SCRIPT_PATHS = {"scripts/train_jepa.py", "scripts/tokenizer_train.py", "scripts/
 INPUTS = {"manifest", "scales", "windows", "pose_stats"}
 GATES = {"preflight", "production_memory", "evaluation_readiness", "scientific_review"}
 REQUIRED_EVALUATORS = {"scripts/scaling_evaluation.py", "scripts/scaling_pose_readout.py", "scripts/scaling_probe.py",
-                       "scripts/scaling_compare.py"}
+                       "scripts/scaling_compare.py", "scripts/scaling_projection.py", "scripts/scaling_reading.py"}
 EXECUTION_SOURCES = {"scripts/scaling_train.py", "scripts/scaling_preflight.py"}
 
 
@@ -249,25 +249,10 @@ def check_preflight(report, context):
 
 
 def check_production_memory(report, cfg, contract_sha):
-    require(report.get("protocol") == "scaling-production-memory-20261104-v1" and report.get("complete") is True and
-            report.get("arm") == ARM and report.get("training_source_contract_sha256") == contract_sha,
-            "production memory report incomplete or wrong contract")
-    require(report.get("world_size") == 4 and report.get("global_batch_size") == 32 and report.get("accum_steps") == 1 and
-            report.get("prefetch_exercised") is True and report.get("fixed_eval_exercised") is True and
-            report.get("pose_panel_exercised") is True, "real production memory path not exercised")
-    actual = report.get("config")
-    require(isinstance(actual, dict), "production memory configuration missing")
-    expected = R.config_to_dict(cfg)
-    actual = dict(actual)
-    require(type(actual.get("max_steps")) is int and 0 < actual["max_steps"] <= 5000, "invalid technical memory dose")
-    actual["max_steps"] = expected["max_steps"]
-    require(actual == expected, "production memory recipe differs")
-    peak, total = report.get("peak_allocated_bytes_by_rank"), report.get("device_memory_bytes_by_rank")
-    require(_positive_numbers(peak, 4) and _positive_numbers(total, 4) and
-            all(p <= .9 * t for p, t in zip(peak, total)), "production memory gate failed")
-    require(type(report.get("slurm_job_id")) in (int, str) and str(report["slurm_job_id"]).isdigit() and
-            int(report["slurm_job_id"]) > 0, "production memory report lacks real job identity")
-    return max(peak)
+    # Coverage flags and a config with64 updates do not exercise the periodic
+    # diagnostics with AdamW/prefetch resident. Verify the pinned500-step evidence.
+    guard = _module("scaling_production_memory_guard", "scaling_production_memory.py")
+    return guard.validate_report(report, R.config_to_dict(cfg), contract_sha)
 
 
 def check_evaluation_readiness(report, contract_sha, states):

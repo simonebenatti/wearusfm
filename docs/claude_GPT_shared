@@ -178,6 +178,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Lettori e S3 completati, 425 test, review esterna richiesta
+
+Base pubblicata ab2eb4a. Implementati proiezione S5, ridge posa D384/D896,
+sonde P1/P2 con convergenza e comparatore appaiato; matrici casuali congelate,
+nessun dato wearable in Git. S3 usa il trainer immutato fino al passo 500:
+4 GPU-ore e 32 core-ore massime, checkout separato 0,333334 core-ore.
+Piano/launcher pronti; questa voce non dichiara un invio effettuato.
+425 test passati, review interna favorevole dopo la correzione del validatore
+fixed_eval_set. I 103 sorgenti del confronto restano identici ad afb644e.
+Ricevuta review Claude offline 5e4eb8a, copia integrale conservata; precisata S8
+senza cambiare soglie o tabella. Consegna e limiti in
+`docs/scaling_300m_readers_memory_20261104.md`; nessun training scientifico
+5.000 né monitor automatico. Prompt mirato Claude preparato sul commit consegnato.
+
+
 ### 2026-11-04 | GPT scaling | Collaudo63526191 concluso e verificato
 
 COMPLETED0:0,18:35:59–18:45:05CET,546s:0,606667GPUh+4,853333coreh.
@@ -5486,6 +5501,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Correzione S3 prima dell'uso e limiti della nuova consegna
+
+Il critico ha trovato una fixture errata in S3: supporto fixed eval interpretato
+8×32 invece di 256 righe piatte. Corretto con regressione sul produttore reale,
+prima di qualsiasi job S3. Nessun run scientifico coinvolto. La readiness ora
+richiede anche i sorgenti S5 e S8, con caso positivo reale e negativi dedicati.
+La suite completa di Claude (5e4eb8a) identifica l'unico fallimento come
+preesistente sulla base 6d80e8d, launcher B19618; non si modifica il trainer frozen
+per risolvere un problema separato. Restano da misurare memoria reale, costi delle
+letture e validare pin/retention e catena operativa prima dei 5.000.
+
 
 ### 2026-11-04 | GPT scaling | Limiti residui dopo il collaudo favorevole
 

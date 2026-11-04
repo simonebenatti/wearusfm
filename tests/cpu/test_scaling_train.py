@@ -100,14 +100,9 @@ def preflight(context):
                      for name in M.S.ARMS}}
 
 
-def memory(context):
-    return {"protocol": "scaling-production-memory-20261104-v1", "complete": True, "arm": M.ARM,
-            "training_source_contract_sha256": context["identity"]["sha256"], "world_size": 4,
-            "global_batch_size": 32, "accum_steps": 1, "prefetch_exercised": True,
-            "fixed_eval_exercised": True, "pose_panel_exercised": True,
-            "config": {**R.config_to_dict(context["config_300m"]), "max_steps": 64},
-            "peak_allocated_bytes_by_rank": [45 * 2**30] * 4,
-            "device_memory_bytes_by_rank": [64 * 2**30] * 4, "slurm_job_id": 123456}
+def memory(context, tmp_path):
+    from test_scaling_production_memory import production_memory_fixture
+    return production_memory_fixture(tmp_path, context["config_300m"], context["identity"]["sha256"])
 
 
 def test_resource_formula_uses_all112_measured_updates_not_a_favorable_phase(context):
@@ -134,8 +129,8 @@ def test_preflight_gate_rejects_incomplete_or_wrong_measurements(context, change
 
 
 @pytest.mark.parametrize("change", ["prefetch", "panel", "peak", "microbatch", "config", "job", "contract"])
-def test_production_memory_requires_real_path_and_same_scientific_recipe(context, change):
-    report = memory(context)
+def test_production_memory_requires_real_path_and_same_scientific_recipe(context, tmp_path, change):
+    report = memory(context, tmp_path)
     if change == "prefetch": report["prefetch_exercised"] = False
     if change == "panel": report["pose_panel_exercised"] = False
     if change == "peak": report["peak_allocated_bytes_by_rank"][2] = 60 * 2**30
@@ -147,8 +142,8 @@ def test_production_memory_requires_real_path_and_same_scientific_recipe(context
         M.check_production_memory(report, context["config_300m"], context["identity"]["sha256"])
 
 
-def test_valid_production_memory_measurement(context):
-    assert M.check_production_memory(memory(context), context["config_300m"], context["identity"]["sha256"]) == 45 * 2**30
+def test_valid_production_memory_measurement(context, tmp_path):
+    assert M.check_production_memory(memory(context, tmp_path), context["config_300m"], context["identity"]["sha256"]) == 45 * 2**30
 
 
 def test_extraction_alone_cannot_assert_readiness_even_with_dimension_checks(context):
@@ -167,7 +162,7 @@ def runtime(context, tmp_path, monkeypatch):
     pre = preflight(context)
     pre["arms"][M.ARM]["normal_update_rank_max_seconds"] = [3.] * 128
     plan["gates"]["preflight"] = write_json(tmp_path / "preflight.json", pre)
-    plan["gates"]["production_memory"] = write_json(tmp_path / "production_memory.json", memory(context))
+    plan["gates"]["production_memory"] = write_json(tmp_path / "production_memory.json", memory(context, tmp_path))
     # Readers are not implemented in the checkout. Isolate their separate unit
     # tests; the actual controller never stubs this readiness function.
     plan["gates"]["evaluation_readiness"] = write_json(tmp_path / "readiness.json", {

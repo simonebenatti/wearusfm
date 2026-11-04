@@ -70,3 +70,13 @@ il fallimento emerso nella sua suite completa non è ancora identificato e non
 viene classificato come regressione di questa linea senza confronto col ramo base.
 La review scritta e il relativo SHA restano da ricevere. Nessun nuovo consenso
 scientifico richiesto; restano lavoro implementativo e verifiche concrete.
+
+### Aggiornamento dopo la consegna della review
+
+Ricevuta e verificata su origin la review Claude `5e4eb8a02fb75f6756c5c2d1be53126ebd39ab37`,
+copiata integralmente in `claude_review_scaling_300m_scientific_offline_20261104.md`.
+Verdetto: **APPROVATO** sulla preparazione offline, nessun blocco. Suite completa:
+2.275 passati e un fallimento preesistente del launcher B19618, riprodotto anche
+alla base `6d80e8d`; non è una regressione introdotta dallo scaling. Il trainer
+rimane identico ai 103 sorgenti congelati per il confronto. Questa approvazione
+non copre automaticamente i lettori e il controllo S3 aggiunti successivamente.

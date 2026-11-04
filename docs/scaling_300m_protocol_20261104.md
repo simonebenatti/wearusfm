@@ -273,6 +273,12 @@ Un punto sotto −1 con IC che attraversa −1 non è una perdita dimostrata olt
 
 La pausa riguarda questa ricetta e questo investimento; **non boccia la taglia
 300M o lo scaling in generale**. Un esito irrisolto non diventa equivalenza.
+Precisazione prima degli score, dopo la review Claude `5e4eb8a`: la review della
+pausa deve pesare anche l'entità del peggioramento e la dose di soli 5.000 passi,
+non soltanto il segno. Non cambia la riga applicata dalla tabella e non introduce
+una nuova soglia. La prosecuzione a 19.618 risponde alla domanda sulla dose;
+non misura la variabilità fra training indipendenti e non elimina quel limite
+degli intervalli, anche quando restringe l'incertezza della lettura downstream.
 NI irrisolta non equivale a perdita oltre margine e non blocca da sola una
 proposta di approfondimento. I secondari a dimensione pareggiata aiutano a
 interpretare i primari ma non ne sostituiscono l'esito per cambiare riga della tabella.
@@ -281,6 +287,9 @@ Bootstrap appaiato per soggetto, 2.000 estrazioni, seed 20261102; stesse popolaz
 righe, fold e supporti entro ciascun endpoint. Gli IC sono marginali e condizionati
 al singolo seme di pretraining e ai dati di sviluppo: nessuna garanzia congiunta
 del 95% per questa regola su più endpoint, nessuna inferenza da un noise floor T25−B.
+Non attribuiamo alla regola una probabilità numerica di falsa pausa: endpoint
+correlati e margini P1/P2 diversi da zero non giustificano il semplice conto di
+quattro test indipendenti sotto una stessa ipotesi nulla.
 
 **Tetto della possibile seconda tranche.** La regola di costo viene congelata ora,
 prima delle estrazioni. Sia `t5k` il tempo completo del trainer **300M** a 5.000,

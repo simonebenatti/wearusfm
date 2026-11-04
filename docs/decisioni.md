@@ -6120,3 +6120,23 @@ guardiaoffline da precisare con artefatti verificabili, senza toccare iltrainers
 Si procede alla preparazione locale parallela, non a un lancio5000 prematuro.
 Claude comunica APPROVATO per preparazioneoffline,248test; fallimento della suite
 completa ancora da identificare. Nessun altrojob o monitor; nessun nuovo consenso.
+
+### 04/11/2026 — GPT: lettori dello scaling e prova di memoria S3
+
+Completati i lettori e il confronto a tre viste, mantenendo i due primari S8 e
+il secondario S5 congelati. Matrici 896×384 pubblicate con manifest e hash, nessuna
+selezione sui dati. 425 test passati; review interna favorevole. Claude riceve
+un prompt sul nuovo codice, senza ripetere la review offline approvata 5e4eb8a.
+
+S3: prova tecnica fresca di 500 passi, necessaria per esercitare la diagnostica
+periodica con AdamW/prefetch residenti; il checkpoint tecnico non si riusa.
+Formula sul preflight reale: ceil900(500×3,035413×1,20+1200)=3600 secondi.
+Tetto 4 GPU-ore +32 core-ore; checkout 2 CPU/4G/10min =0,333334 core-ore.
+Piano, risorse e launcher pubblicati prima dell'invio. Rientra nell'autonomia
+già autorizzata da Simone; nessun consenso aggiuntivo richiesto. Fonte operativa:
+`docs/scaling_300m_readers_memory_20261104.md`. Nessun invio attestato da questa voce,
+nessun training scientifico a 5.000, nessuna automazione.
+
+S8 precisa che la pausa valuta entità e dose; 19.618 non misura la variabilità
+fra pretraining e non si assegna una probabilità congiunta inventata ai controlli.
+Soglie, endpoint e tabella invariati.
