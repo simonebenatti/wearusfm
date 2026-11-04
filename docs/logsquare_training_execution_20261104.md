@@ -121,3 +121,34 @@ resta l'evidenza autorevole e non si dichiara completato lo shard.
 Non si cambia alcuna loss, dose, seme, soglia o architettura. T100-LQ resta
 lineare + log(0,001+x²), controllo principale T100-L a dose uguale e secondari
 T25-L/T100-G. La contrastiva non appartiene a questa tranche.
+
+## Invii effettivi
+
+Codice esecutivo congelato **b2934b07f296778eefe97d4bdb8ca08f2b4e29be**,
+pubblicato e verificato su origin e nuova ref deploy Leonardo. Release
+minimale **7954692**. Audit indipendente favorevole: minimalità della release,
+pin effettivi, controller reale e tutti i 102/110 sorgenti invariati.
+
+| Job | Fase | Stato alla verifica del 04/11, circa 21:27 CET |
+| --- | --- | --- |
+| 63531256 | Checkout | COMPLETED 0:0, 22 s; SHA, pulizia e sola lettura verificati |
+| 63532335 | T100-LQ a 5.000 | PENDING, Priority; 4 GPU, 32 CPU, 480G, 01:30:00 |
+| 63532370 | Continuazione a 19.618 | PENDING, afterok:63532335; 4 GPU, 32 CPU, 480G, 04:00:00 |
+
+La continuazione è già accodata e non richiede un invio successivo. La
+ricevuta di checkout e le prenotazioni del submitter sono archiviate in
+`results/infra/logsquare_training_20261104/`; scontrol conferma tempi,
+risorse e dipendenza. Costo checkout reale **0,012222 coreh**, zero GPU.
+Nessun tempo GPU consumato all'osservazione; 22 GPUh è il tetto prenotato.
+Non confondere sottomissione con training in esecuzione o risultato.
+
+Il primo tentativo locale di invio di checkout/5.000 è stato fermato dal
+sandbox prima di creare la prenotazione o chiamare sbatch. Il submitter è
+stato poi eseguito con accesso tecnico al ledger condiviso: un solo ID SLURM
+per fase, nessun duplicato, nessun retry di un job scientifico.
+
+Prossimo controllo: sacct e log dei due ID esistenti; nessuna risottomissione.
+Dopo 5.000 COMPLETED 0:0, verificare ricevuta e checkpoint nominato, pin e
+diagnostica W_log; preparare il benchmark sul checkout di valutazione nuovo.
+Il training continua sul checkout b2934b0 indipendentemente. Nessuna
+automazione in background attivata.

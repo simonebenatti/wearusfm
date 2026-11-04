@@ -6164,3 +6164,16 @@ commit distinto dei pin A4; checkout nuovo al discendente pubblicato;
 poi preventivi delle estrazioni; continuazione indipendente. Submitter e
 ledger comuni, unico operatore GPT come già concordato per questa linea,
 nessun nuovo consenso e nessuna automazione di completamento.
+
+### Invii del training LQ — 04/11/2026
+
+Checkout63531256 COMPLETED0:0 in22s,0,012222coreh. Release minimale7954692,
+codice esecutivo con pin A4 b2934b07f296778eefe97d4bdb8ca08f2b4e29be,
+verificati su origin/Leonardo e nel checkout nuovo. Audit indipendente
+favorevole: nessuna modifica scientifica o al controller approvato.
+Sottomessi **63532335** (5.000,1h30,6GPUh tetto) e **63532370**
+(continuazione19.618,4h,16GPUh tetto), ciascuno4GPU/32CPU/480G;
+secondo afterok sul primo. Circa21:27CET entrambi in coda, Priority/Dependency.
+Ricevute e manifest pubblicati, nessun risultato scientifico, nessun monitor.
+Benchmark a5.000 e successive estrazioni restano condizionati ai pin completi
+e al preventivo misurato; la continuazione già accodata non li aspetta.

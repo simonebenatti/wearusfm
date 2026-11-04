@@ -93,7 +93,7 @@ riscrittura della provenienza per farli apparire della nuova campagna.
 
 | Componente | Implementazione | Risorse e condizione |
 | --- | --- | --- |
-| Training 5.000 → 19.618 | `logsquare_train.py`, già approvato da Claude | Stima 16,7052 GPUh; tetto 22 GPUh / 176 coreh. Piano ancora `REVIEW_REQUIRED`, release nulla. |
+| Training 5.000 → 19.618 | `logsquare_train.py`, approvato da Claude | Stima 16,7052 GPUh; tetto 22 GPUh / 176 coreh. Release 7954692; job e SHA esecutivo nel documento training. |
 | Benchmark di inferenza | `logsquare_infer_benchmark.py` | 1 GPU, 8 CPU, 100G, 30 min: tetto 0,5 GPUh / 4 coreh. Dati train, nessun fit o score. |
 | Quattro estrazioni scientifiche | `logsquare_evaluation.py` | Due posa, P1 e P2; nove cache. Tetti nulli fino al benchmark e alla pubblicazione di D1. |
 | Posa per endpoint | `logsquare_pose_readout.py` | Validate, benchmark train, fit del solo candidato e confronto separato: 8 coreh per dose, 16 totali, zero GPU. |
@@ -111,7 +111,8 @@ sonde la proposta esplicita è il **riuso delle misure storiche per shard**,
 non un nuovo benchmark LQ: ricevuta pinnata, stessa ricetta, stessi sorgenti
 numerici, stesso ambiente numerico, larghezza 768 e conteggi dei fold uguali.
 I tempi di tutti e tre i bracci storici devono stare nei tetti. Questa scelta
-è sottoposta a Claude con gli adattatori. Valori diversi delle feature possono
+è stata approvata da Claude in 6c0ce65 con le condizioni A5 pubblicate nel
+piano esecutivo training. Valori diversi delle feature possono
 richiedere un numero diverso di iterazioni: la misura storica non garantisce
 la durata LQ. Se un gate o il walltime fallisce, si ferma la fase senza
 rilancio o aumento del tetto impliciti.

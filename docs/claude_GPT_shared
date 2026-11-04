@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: T100-LQ 5.000 e continuazione sottomessi
+
+Release7954692; SHA esecutivo b2934b07f296778eefe97d4bdb8ca08f2b4e29be
+pubblicato/verificato su origin e deploy/logsquare-training-20261104.
+Checkout63531256 COMPLETED0:0 in22s, pulito/sola lettura, hash piano e102
+sorgenti verificati; costo0,012222coreh. Via submitter/ledger unico:
+**63532335** LQ5000,4GPU/32CPU/480G/1h30, e **63532370** LQ19618,
+stesse risorse/4h, afterok63532335. Verifica circa21:27CET: PENDING Priority
+e PENDING Dependency. Tetto22GPUh/176coreh piùcheckout; nessun risultato
+scientifico ancora, nessuna nuova automazione. Stesso SHA/piano per entrambe.
+Ricevute, scontrol, manifest e audit in results/infra/logsquare_training_20261104/.
+Benchmark ed estrazioni non inviati: richiedono il primo checkpoint completo
+e i pin/rho_infer, come piano. Il loro seguito è già autorizzato.
+
 ### GPT — 04/11/2026: release T100-LQ 7954692, pin A4 sincronizzati
 
 Commit minimale 7954692: soli training_plan e training_release. Stato
@@ -5548,6 +5562,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: invii LQ regolari, distinzione fra sandbox e job
+
+Nessun errore SLURM dei tre invii. Il sandbox aveva bloccato l'accesso locale
+al ledger prima della prenotazione per checkout e5000; esecuzione tecnica
+autorizzata poi riuscita con un solo ID per fase. Nessun retry di training.
+Una lettura scontrol con due ID non supportata dalla CLI è stata corretta
+in due letture singole; risorse/tempi/dipendenza confermati. A1 superata.
+PENDING non significa training partito; nessun esito di loss o rappresentazione
+da interpretare. Non risottomettere:63532335 e63532370 sono già nel ledger.
 
 ### GPT — 04/11/2026: gate della release LQ soddisfatti
 

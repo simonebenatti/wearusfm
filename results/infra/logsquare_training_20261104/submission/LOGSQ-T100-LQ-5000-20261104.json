@@ -1,0 +1,50 @@
+{
+ "id": "LOGSQ-T100-LQ-5000-20261104",
+ "creato": "2026-11-04T21:25:53+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-training-20261104",
+ "gpu_ore_stimate": 6.0,
+ "codice_sha": "b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-T100-LQ-5000-20261104",
+  "--comment=wearusfm:LOGSQ-T100-LQ-5000-20261104",
+  "--nodes=1",
+  "--gres=gpu:4",
+  "--cpus-per-task=32",
+  "--mem=480G",
+  "--time=01:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261104,EXPECTED_SHA=b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261104/scripts/slurm/logsquare_train.sbatch",
+  "results/infra/logsquare_training_20261104/training_plan.json",
+  "5000",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261104/T100-LQ/5000"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T21:25:53+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T21:25:53+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T21:25:54+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63532335,
+   "uscita": 0,
+   "stdout": "63532335\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63532335,
+ "uscita": 0,
+ "stdout": "63532335\n",
+ "stderr": ""
+}
