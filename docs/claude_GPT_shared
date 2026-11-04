@@ -5295,6 +5295,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   APPROVATO senza blocchi (befab4a + seguito 2f3207b, fusi in 4c4104a). Alle chat 1 e 2 inviate le regole per il ramo condiviso (un file
   per chat, registro riletto prima di ogni voce, commit e push immediati con SHA verificato, niente nuove sessioni che scrivono).
 
+### 2026-11-04 | Claude | Review della linea di consolidamento (GPT bbca940): continuazione APPROVATA, benchmark FT APPROVATO, protocollo dei fit DA CORREGGERE, valutazione condizionata (richiesta di Simone)
+- Simone, 04/11/2026: «tu fai il commento sul finetuning» con il prompt di GPT `docs/prompt_claude_consolidation_20261104.md` (ramo
+  `codex/consolidation-20261104`, base 8ee6603, HEAD bbca940). Solo review: nessun job, checkout remoto, training, merge o modifica ai worktree
+  di GPT. Review in `docs/reviews/claude_review_consolidation_20261104.md`; checkout temporaneo detached di bbca940 fuori dai worktree.
+- Metodo: letti protocollo, controller e launcher di continuazione e fine-tuning, piani, estrattore `backbone_depth.py`, `finetuning.py`,
+  test, piu' il codice riusato (`run.py` ramo/ripresa/stream/RNG/checkpoint con nome, `tokenizer_train.py`, `calibration_probe.py`,
+  `fm_features.py`, `channel_identity.py`); test rieseguiti (13 passati in 4,26 s; regressioni WSD e tokenizer_train 73 passati in 88 s),
+  `bash -n` dei launcher; verifica indipendente che i 100 sorgenti scientifici pinnati nel `training_plan.json` del tokenizer sono
+  byte-identici in bbca940 (100/100) e che il diff 8ee6603→bbca940 (15 file) e' di sole aggiunte.
+- Continuazione: APPROVATA. Guardie verificate (configurazione uguale tranne `max_steps`, WSD 39.237/49.046 invariato, `_check_branch`,
+  stream 6/1.200/4 rifiutato se diverso, RNG per rank, optimizer, predecay/postdecay salvati dal trainer nel ciclo, 30.000 copia esatta,
+  fase completa solo con `stopped == max_steps`, nessun retry cieco); stima 25,35 GPU-ore (0,775 s/passo) sotto il tetto 36. Da
+  registrare prima della sottomissione: C-M1 procedura per una fase fermata dal limite di tempo (margini 23-32 %), C-M2 purge a 40 giorni
+  degli endpoint in $SCRATCH.
+- Benchmark FT: APPROVATO, ma da rifare dopo F-B1 (cambia `source_identity()`); B-R1 ripiego pre-registrato a un candidato per job se una
+  proiezione per regime supera 14.100 s (con la popolazione del 29/10 il gate passa solo sotto ≈0,18 s/update); B-M2 warm-up CUDA fuori dal
+  cronometro (4 update non misurati). Tetto 48 GPU-ore letto come limite, non stima.
+- Protocollo dei fit: DA CORREGGERE. F-B1 bloccante: griglia della testa diversa fra regimi (`finetuning.py:21,70`: frozen {1e-3, 1e-2},
+  finetune {1e-4, 1e-3}, scratch {1e-4, 1e-3}), che confonde il contrasto primario finetune − frozen; correzione a costo zero: stessa griglia
+  della testa {1e-3, 1e-2} in tutti i regimi (moltiplicatori 1/100/10), tabella del protocollo e test aggiornati. F-R2: regola pre-registrata
+  per «scratch ancora in miglioramento» (criterio, lettura a dose fissata, seguito a dose maggiore per scratch e finetune dichiarato ora).
+  F-M3 risultati per candidato persistiti e divergenza registrata come esito; F-M4 moltiplicatore della testa nella ricetta; F-M5 cache
+  delle feature frozen; F-M6 test di parita' frozen contro `extract_features`. Domanda 4 senza rilievi: scale per soggetto non supervisionate,
+  class-weight e vocabolario dal solo train, ruoli disgiunti, testa e ordine dei batch con lo stesso seme, selezione solo su validation, held
+  letto una volta, nessuna asimmetria train/eval (niente Dropout/BatchNorm, muscle dropout inattivo con anatomia sconosciuta).
+- Protocollo di valutazione: APPROVATO come disegno, condizionato: libreria pre/post verificata (hook sul forward reale, FP32, maschera
+  comune, post = prime D colonne del pool storico, D parametrico 384/896, posa solo via `depth_readouts` sugli input del loader);
+  V-R1 regola di lettura a due lati dei contrasti di dose e profondita' con pavimento di rumore della replica (0,2-0,9 pp) prima delle
+  estrazioni; V-R2 controller della matrice, pin dei checkpoint e preventivo misurato ancora da consegnare; V-F3 vista «pre normalizzata»
+  facoltativa. Nessun lancio autorizzato dalla review; ordine: correzioni → regole in `decisioni.md` → benchmark → pin → fits.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
