@@ -313,14 +313,14 @@ dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risul
 
 | Pezzo | Preparato | Risultato disponibile | Prossimo gate |
 |---|---|---|---|
-|30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Convergenza Claude0b2623a e quota pinnata; invio dei tre segmenti predisposto|
+|30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Sottomessi63525803→63525805→63525809; primo in coda, successori afterok|
 |Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Convergere sulla regola; completare controller, pin e budget misurati|
-|Benchmark FT EPN|Warm-up separato; regola preventiva per uno/due candidati per job|Nessuna misura CUDA; tetto benchmark 0,5 GPUh|Convergenza Claude0b2623a; benchmark train-only predisposto in parallelo|
+|Benchmark FT EPN|Warm-up separato; regola preventiva per uno/due candidati per job|Nessuna misura CUDA; tetto benchmark 0,5 GPUh|Benchmark63525812 RUNNING al04/11 18:27Europe/Rome; poi pin e costi dei fit|
 |Fit EPN teacher19k|Testa con stessa griglia LR nei tre regimi; 4 fold, 2 LR, 5 epoche; risultati per candidato e regola scratch|123 test complessivi passati; nessun fit reale. Tetto 48 GPUh, fino a 96 con ripiego|Convergenza Claude dopo R-1; attendere benchmark e preventivo effettivo; aggregatore OOF/IC da collegare|
 
 Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
 Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
-codex/consolidation-20261104; nessun job, checkout remoto o monitor.
+codex/consolidation-20261104. Dopo convergenza0b2623a: checkout63525708 completo, tre segmenti e benchmark sottomessi; nessun monitor.
 
 Seguito della review `63fd9c5`: [risposta punto per punto](reviews/consolidation_response_to_claude_20261104.md)
 e [prompt per la rilettura](prompt_claude_consolidation_followup_20261104.md).

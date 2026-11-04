@@ -72,3 +72,20 @@ Matrice lunga e aggregatore OOF/IC non sono inclusi in questa tranche: servono
 ancora implementazione, pin e preventivo. La convergenza sulle regole di lettura
 non equivale a completamento dei loro controller. Un mancato scatto di F-R2
 non dimostra la convergenza di scratch, come precisa N-3 nella rilettura.
+
+## Ricevute degli invii
+
+Runtime congelato `17dd455f8d40d5430f87c2154c571a2f9e683baa`, verificato su origin,
+ref deploy e checkout. Checkout63525708 completo; job training63525803 →63525805
+→63525809, benchmark63525812. Snapshot04/11 18:27:46Europe/Rome: benchmarkRUNNING,
+primo trainingPENDING Priority, successoriDependency. Ricevute ledger e pin in
+`results/infra/consolidation_20261104/submission/receipt.json`.
+
+Primo tentativo30k rifiutato da sbatch (script '-'); nessun job creato. Dopo
+checkout completo invio corretto al percorso congelato con --dopo-rifiuto,
+stessoIDlogico. Gli altri launcher usano il percorso remoto; solo checkout via stdin.
+Il ledger riserva12GPUh per segmento,0,5per benchmark; stima training25,3521 distinta.
+
+SLURM ha allocato2CPU per il checkout richiesto a1: costo effettivo24s×2=0,013333
+coreh. Massimo allocato prima tranche292,333333coreh, contro292,166667richieste;
+nessuna variazione GPU. Verifiche operative39test, sorgenti storici100/100immutati.

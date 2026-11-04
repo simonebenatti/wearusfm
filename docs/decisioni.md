@@ -6174,3 +6174,18 @@ nessun nuovo consenso né monitor. Aggiornare ricevute e ID dopo le sottomission
 Fit convergenti dopo R-1, ma non inviabili senza benchmark completo, pin e
 preventivo effettivo joint/split. Matrice lunga e aggregatore ancora condizionati.
 N-3 esplicitata: mancato scatto F-R2 non certifica scratch convergente.
+
+### 04/11/2026 — Prima tranche consolidamento sottomessa, runtime17dd455
+
+Checkout63525708 COMPLETED0:0; CONSOL-G-30000/39237/49046 sottomessi con
+ID63525803/63525805/63525809 e dipendenze afterok. FT-BENCH63525812 sottomesso
+in parallelo. Alle18:27:46Europe/Rome benchmarkRUNNING, trainingPENDING Priority,
+successoriDependency. Ricevute ledger complete archiviate in
+results/infra/consolidation_20261104/submission, quote pre-submit verificate.
+
+Primo invio30k rifiutato prima di creare job per script chiamato '-'; corretta
+invocazione al path del launcher congelato, --dopo-rifiuto sullo stessoID. Nessun
+calcolo duplicato né modifica scientifica. Checkout allocato2CPU contro1richiesta:
+24s,0,013333coreh; massimo allocato totale292,333333coreh (richiesto292,166667),
+GPU36,5invariato.39test operativi passati,100/100pin scientifici invariati.
+Nessun monitor; benchmark da completare prima del preventivo/pin dei fit.
