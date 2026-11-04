@@ -5465,6 +5465,38 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non rilasciato il training come catena: adattatori implementati e revisionati, commit di rilascio con pin, checkout nuovo, sottomissione di GPT
   sotto l'autorizzazione operativa di Simone, rho_infer prima delle estrazioni. Nessun job da parte mia. Nessuna voce in «Problemi trovati».
 
+### 2026-11-04 | Claude | Review della preparazione offline dello screening scientifico 300M (GPT 5a7b384, prompt d2691c7): APPROVATO, nessun blocco, sette facoltativi e valutazione critica di S8 (richiesta di Simone)
+- Simone, 04/11/2026 sera, con il prompt di GPT `docs/prompt_claude_review_scaling_scientific_20261104.md`: solo review del codice 5a7b384 su
+  `codex/scaling-300m-20261104` (base 6d80e8d). Checkout detached temporaneo di d2691c7 nello scratchpad, poi rimosso; worktree di GPT non
+  toccato; nessun job, allocazione o modifica al codice.
+- Review in `docs/reviews/claude_review_scaling_300m_scientific_offline_20261104.md`. Verificato in modo indipendente: 103 sorgenti uguali ad
+  `afb644e` e al checkout con inventario completo (98 file di `src/wearusfm` + 5 script, nessun file fuori contratto in nessuna direzione, diff
+  vuoto su `src/` e sugli script del trainer); cinque primitive di estrazione uguali a f2061b8 e b315dad; diff vuoto rispetto a 05d4bf0 sui
+  percorsi del collaudo; nove hash di `offline_verification.json`; `configurations(base)["T100-G-30M"] == base`, 300M diversa solo in
+  `dim/n_heads/local_layers/backbone_layers`; comando 300M derivato = argv T100-G con `--preset 300m`, `--out-dir`, `--max-steps 5000`,
+  `--time-limit-s 21300`.
+- Schemi reali compatibili con le guardie: le chiavi lette da `check_preflight` sono tutte scritte dal report del collaudo (05d4bf0); il summary
+  del trainer ha `parameters = student.parameters()` (28.362.013 sullo snapshot 30M reale); `scontrol show job -o` su Leonardo (SLURM 25.05.7)
+  stampa `AllocTRES=…` con `mem=480G`, come letto da `check_allocation_fields`.
+- Leonardo in sola lettura (sera): snapshot `$WORK/wearusfm_runs/results/tokenizer_training_20261103/T100-G/5000/` con config (dd68e900…) e
+  ricevuta (d0a50fe7…) uguali alle copie del repo pinnate dal contratto, summary `steps 5000, stopped max_steps`; summary mobile in scratch a
+  19.618, rifiutato dalle guardie per contenuto; `checkpoint_step0005000.pt` 454.381.728 B, mtime 03/11 12:34:36 CET, non toccato dalla
+  continuazione (40 giorni → 13/12 12:34 CET; il tetto `2026-12-13T00:00Z` del contratto e' conservativo); nessun checkout scaling ancora in
+  `$WORK/wearusfm_campaigns/`.
+- Test: 248 passati in 20,93 s con il comando esatto del critico (sette file); intera `tests/cpu` su d2691c7: 2.275 passati, 1 fallito
+  (`test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical`), gia' fallito alla base 6d80e8d, passa su
+  `main` 78268d6 e sul ramo di Claude 14cdfb4: problema del ramo tokenizer (`train_jepa.py` 84408bf), non della consegna (sezione 2).
+- Verdetto: APPROVATO per la consegna offline, nessun blocco. Facoltativi F-a…F-g: `code_sha` e runtime nella misura di memoria; identita'
+  torch/CUDA fra 30M e 300M; test del caso positivo di `check_evaluation_readiness`; contratto numerico `delta == candidate − control` per
+  l'aggregatore; doppio `torch.load` del checkpoint 300M; cache di posa D896 ≈ 5,7 GB FP16 nei tetti dei lettori; parsing di `scontrol`. S8:
+  coerente con protocollo e test; tre punti da decidere prima delle estrazioni: asimmetria fra «migliore» (etichetta 2 %) e «peggiore» (nessuna
+  rilevanza pratica: pausa anche per +0,1 % relativo), molteplicita' dei quattro controlli (pausa infondata fino a ~10 % sotto il nulla), la
+  tranche a 19.618 risponde alla dose e non alla variabilita' fra run lasciata non misurata da S7. Rettifica di S7 accolta: la coppia T25-L/B non
+  e' un pavimento di rumore, resta contesto descrittivo. Training 5000 non pronto, come dichiarato: lettori, S5, aggregatore, memoria di
+  produzione, benchmark, launcher, pin reali, review della catena.
+- Ramo `claude/review-scaling-300m-20261104` allineato a `worktree-claude-training-engine` (14cdfb4) prima del commit; da fondere nel ramo di
+  Claude. Nessun lancio da parte mia.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7581,3 +7613,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - **Limiti della mia verifica.** Niente GPU, dati reali o DDP; misure su pesi iniziali, rumore sintetico e maschere generate (ordini di
   grandezza, da rifare sui batch veri); fonti dell'audit del budget non riverificate oltre l'aritmetica; parita' dello stream fra B e un
   T25-L a raggio 0 non verificabile dai log di B (`log_batch_origin` spento), vale per costruzione.
+
+### 2026-11-04 | Claude | Test del launcher B19618 fallito sul ramo scaling di GPT, indipendente dalla consegna offline
+- `tests/cpu/test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical` fallisce su d2691c7 e gia' su
+  6d80e8d («continuation recipe differs beyond max_steps»), mentre passa su `main` 78268d6 e sul ramo di Claude 14cdfb4. I file del test
+  (launcher `scripts/slurm/pose_b19618_continue.sbatch`, config B congelata `results/infra/pilot_posa/collaudo_b_20261028/config.json`) sono
+  invariati; cambia `scripts/train_jepa.py` del ramo tokenizer (84408bf, lo stesso di afb644e, +25/−3 righe rispetto a `main`), che costruisce
+  dalla CLI B una configurazione diversa dalla ricetta congelata oltre `max_steps`.
+- Effetto: nessuno sui job gia' fatti (B19618 completato dal suo checkout congelato); il launcher di continuazione B rifiuterebbe, correttamente,
+  un checkout ≥ 84408bf; quando il ramo tokenizer sara' integrato su `main`, la suite di `main` avra' questo fallimento. Da chiudere da GPT
+  (aggiornare il controllo di ricetta del launcher B alle nuove impostazioni del trainer, o dichiarare l'incompatibilita'), separatamente
+  dalla consegna scaling, che non lo introduce. Il comando del critico (sette file) non lo copre: 248 passati.
