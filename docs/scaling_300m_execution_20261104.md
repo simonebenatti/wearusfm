@@ -75,3 +75,24 @@ prenotazione dei due ID nel ledger. Lo stato della coda remota non è noto.
 Evidenza in `results/infra/scaling_300m_20261104/submission_status.json`.
 Alla ripresa dell'accesso si procede dal piano approvato, senza un nuovo consenso.
 Il codice non viene cambiato per questo problema di accesso e non si crea un monitor.
+
+## Ripresa dell'accesso e dipendenza scaduta — 18:33 CET
+
+Accesso ripristinato e deploy verificato al commit completo `05d4bf0`.
+Checkout **63525937** completato `0:0` alle 18:30:18, durata 16 s, 2 CPU
+(0,008889 core-ore). Verificati messaggio «pronto», HEAD esatto, tree pulito,
+assenza di file/cartelle scrivibili e hash di launcher, controller, piano e risorse.
+Output del collaudo ancora assente.
+
+Il primo invio GPU delle 18:32:45 è stato **rifiutato esplicitamente**, senza ID,
+con `Job dependency problem`. Diagnosi: `MinJobAge = 30 sec`; il checkout è già
+stato eliminato dalla memoria del controller (`scontrol`: Invalid job id), mentre
+`sacct` conferma `COMPLETED 0:0`. Le interrogazioni per nome in `squeue` e `sacct`
+non trovano alcun collaudo. La ricevuta del rifiuto resta nel ledger e nel repo.
+
+Rettifica strettamente operativa, pubblicata prima del nuovo invio: il gate
+sincrono di completamento e integrità già superato sostituisce `afterok` scaduto.
+Si riusa lo stesso ID logico con `--dopo-rifiuto`, senza `--dopo`, attraverso il
+submitter comune. Codice, piano scientifico, launcher, output e tetti invariati;
+nessun calcolo da ripetere. Gli argv corretti e le prove sono in
+`results/infra/scaling_300m_20261104/submission_amendment.json`.

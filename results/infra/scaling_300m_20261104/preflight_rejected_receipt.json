@@ -1,0 +1,45 @@
+{
+ "id": "SCALING-300M-preflight-20261104",
+ "creato": "2026-11-04T18:32:45+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "05d4bf0663481522a56d96c0b07847924cf5bd26",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-preflight-20261104",
+  "--comment=wearusfm:SCALING-300M-preflight-20261104",
+  "--dependency=afterok:63525937",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0,EXPECTED_SHA=05d4bf0663481522a56d96c0b07847924cf5bd26",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0/scripts/slurm/scaling_preflight.sbatch",
+  "results/infra/scaling_300m_20261104/preflight_plan.json",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/preflight_05d4bf0"
+ ],
+ "dopo": "SCALING-300M-checkout-20261104",
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "rifiutato",
+ "storia": [
+  {
+   "quando": "2026-11-04T18:32:45+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T18:32:45+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T18:32:45+01:00",
+   "stato": "rifiutato",
+   "job_slurm": null,
+   "uscita": 1,
+   "stdout": "",
+   "stderr": "sbatch: error: Batch job submission failed: Job dependency problem\n"
+  }
+ ],
+ "job_slurm": null,
+ "uscita": 1,
+ "stdout": "",
+ "stderr": "sbatch: error: Batch job submission failed: Job dependency problem\n"
+}

@@ -6092,3 +6092,14 @@ Dettagli in docs/scaling_300m_protocol_20261104.md e policyversionata; nessunmon
 
 Validazione finale offline:248test passati in19,52s, review indipendente favorevole;
 nove hash verificati dopo test. Nessun rilievo aperto alla consegna aClaude.
+
+### 04/11/2026 — Scaling: accesso ripristinato e dipendenza checkout scaduta
+
+Deploy congelato05d4bf0 verificato; checkout63525937 COMPLETED0:0 in16s,
+0,008889coreh. Completamento, HEAD, pulizia, sola lettura e hash verificati.
+Il primo invio GPU è rifiutato senza ID: MinJobAge30s elimina dal controller
+il checkout già concluso, rendendo afterok invalido. Nessun job GPU creato.
+Pubblicare la rettifica submission_amendment.json prima del singolo invio corretto:
+gate sincrono completo al posto della dipendenza scaduta, stesso ID logico e
+--dopo-rifiuto tramite submitter/ledger. Codice, ricetta e tetti invariati.
+Nessun consenso scientifico nuovo necessario, nessun monitor o training5000.

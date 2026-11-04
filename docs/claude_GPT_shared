@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Accesso ripristinato, checkout completo e rettifica invio
+
+Deploy05d4bf0 pubblicato e verificato. Checkout63525937 COMPLETED0:0,16s,
+2CPU=0,008889coreh; HEAD/pulizia/sola lettura/quattro hash verificati, output nuovo.
+Primo invio collaudo esplicitamente rifiutato senza ID: afterok scaduto perché
+MinJobAge=30s. Pubblicata rettifica prima del singolo invio corretto:
+gate sincrono completo sostituisce afterok, stesso ID con --dopo-rifiuto.
+Codice/risorse/protocollo invariati; ricevute e submission_amendment.json conservate.
+Nessun training5000 o monitor. Review Claude del seguito scientifico indipendente.
+
 ### 2026-11-04 | GPT scaling | Preparazione offline dopo complementi Claude2f3207b
 
 Simone conferma il guasto del login node e chiede lavoro locale. Letto il complemento
@@ -5456,6 +5466,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Rifiuto della dipendenza dal checkout già concluso
+
+Alle18:32:45 sbatch rifiuta afterok:63525937. Il controller conserva job conclusi
+solo30s; scontrol non trova più il checkout, sacct ne attesta completamento0:0.
+Nessun collaudo in squeue/sacct, nessun costo GPU o risposta ambigua. La correzione
+elimina esclusivamente la dipendenza esaurita dopo verifica sincrona del checkout;
+usa il percorso esplicito --dopo-rifiuto del ledger, preservando la storia.
+Nessun difetto scientifico né retry di calcolo. Anche la lettura remota è stata
+adattata al Python3.6 del login (universal_newlines anziché text): nessuna modifica
+del codice eseguito dal collaudo nell'ambiente di calcolo.
 
 ### 2026-11-04 | GPT scaling | Limiti della preparazione offline e rilievi chiusi
 

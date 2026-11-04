@@ -1,31 +1,17 @@
 {
-  "observed_utc": "2026-11-04T16:12:29.604853+00:00",
-  "status": "not_submitted_remote_commands_unresponsive",
-  "execution_plan_commit": "70cbd85",
+  "observed_utc": "2026-11-04T17:34:01.253260+00:00",
+  "status": "checkout_completed_preflight_explicitly_rejected_dependency_expired",
   "frozen_code_sha": "05d4bf0663481522a56d96c0b07847924cf5bd26",
   "review_commit": "befab4a12e062260231cca3a5d563a233fd53346",
-  "logical_ids": {
-    "SCALING-300M-checkout-20261104": {
-      "exists": false
-    },
-    "SCALING-300M-preflight-20261104": {
-      "exists": false
-    }
-  },
-  "submitted_job_ids": [],
-  "deploy_attempted": false,
-  "submitter_invoked": false,
+  "checkout_job_id": 63525937,
+  "preflight_job_id": null,
+  "submitted_job_ids": [
+    63525937
+  ],
+  "deploy_attempted": true,
+  "deploy_verified": true,
+  "submitter_invoked": true,
   "new_monitors": false,
-  "observations": [
-    "Existing SSH master answers local control check, pid2362.",
-    "Multiplexed SSH debug acknowledges remote session; hostname produces no output.",
-    "Separate connection without ControlMaster completes SSH handshake, but hostname produces no output.",
-    "Own read-only sessions interrupted after waiting; exit255 from cancellation is not a measured SLURM or remote execution failure."
-  ],
-  "not_established": [
-    "remote queue state",
-    "remote repository hooks and checkout readiness",
-    "absence of remote paths"
-  ],
-  "next_action": "Recheck remote execution; publish reviewed code on a new deploy ref only after deployment checks; use frozen execution plan and global ledger. No new scientific consent required."
+  "next_action": "Publish and verify submission_amendment.json on origin; one corrected submission via shared submitter --dopo-rifiuto, after completed checkout gate.",
+  "previous_status_artifact": "submission_status_before_access_restore.json"
 }
