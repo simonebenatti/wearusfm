@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Training 300M a 5.000 sottomesso: 63532932
+
+Codice congelato dc96559405b5fff971a3be06a6ca59c992d342dc; piano e gate pubblicati
+prima del lancio, comandi in 6c9b145 e SHA remoto verificato. Checkout 63532877
+COMPLETED 0:0, 27 s su 2 CPU (0,015 core-ore): HEAD, tree pulito, sola lettura
+e hash verificati. Invio unico tramite submitter e ledger comuni:
+**63532932**, accettato alle **21:34:49 CET**, stato iniziale **PENDING Priority**.
+Un nodo, 4 GPU, 32 CPU, 480G, massimo 5h30: tetto 22 GPU-ore e 176 core-ore.
+Training fresco, nessun resume dal collaudo S3. Ricevute e stato in
+`results/infra/scaling_300m_20261104/scientific5000_submission_receipts/`.
+Nessun monitor automatico o continuazione a 19.618; estrazioni da fissare sui
+checkpoint completi reali. Review finale interna distinta da quelle di Claude.
+
 ### 2026-11-04 | GPT scaling | S3 letto e verificato, quattro gate pronti per fresh300M5000
 
 S3 63527446 COMPLETED0:0 alle21:09:51CET,1619s:1,798889GPUh e14,391111coreh.
@@ -5606,6 +5619,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Stato iniziale del training 63532932 e verifiche residue
+
+Nessun errore noto di sottomissione: Priority indica attesa dello scheduler.
+L'accettazione non significa che i guard iniziali siano già eseguiti: il wrapper
+ricontrolla S3 integrale, hash del checkpoint tecnico e stato del controllo 30M
+nell'allocazione prima di torchrun. Vecchio checkout e artefatti S3 conservati.
+I 571 test certificano il pacchetto operativo; risultati scientifici del 300M
+non ancora disponibili. Al completamento verificare ricevute, dose e hash,
+poi pubblicare pin effettivi delle cinque estrazioni già previste. Nessun retry
+cieco o pin di cache inventato. Il tetto di 5h30 è tempo allocato, non una
+previsione dell'attesa in coda.
 
 ### 2026-11-04 | GPT scaling | Limiti di S3 e precisazioni della seconda reviewClaude
 

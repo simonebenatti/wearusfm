@@ -86,3 +86,25 @@ allocate conGPU e180CPU-only; benchmark reali dopo cache e prima dei fit.
 Le autorizzazioni giàespresse da Simone coprono questo piano. Nessun nuovo
 consenso, nessun monitor automatico, nessuna continuazione a19618. Errori o
 gate incoerenti fermano la fase, senza retry cieco o modifica della ricetta.
+
+## Esito della sottomissione — 04/11/2026, 21:34 CET
+
+Piano e gate pubblicati nel commit **dc96559405b5fff971a3be06a6ca59c992d342dc**,
+codice del checkout congelato. Comandi concreti pubblicati in **6c9b145**;
+origin e riferimento deploy verificati prima degli invii.
+
+| Job | Esito osservato | Risorse / costo |
+|---|---|---|
+| Checkout **63532877** | COMPLETED 0:0, 27 s; HEAD, pulizia, sola lettura e hash verificati | 2 CPU; consuntivo 0,015 core-ore |
+| Training **63532932** | Sottomesso 21:34:49 CET; stato iniziale PENDING, motivo Priority | 4 GPU, 32 CPU, 480G; massimo 5h30, 22 GPU-ore / 176 core-ore |
+
+Ricevute del submitter e snapshot SLURM in
+`results/infra/scaling_300m_20261104/scientific5000_submission_receipts/`.
+Nessun duplicato. L'accettazione da parte di SLURM non attesta ancora i guard
+iniziali del wrapper: S3 integrale, hash del checkpoint tecnico e stato del
+controllo 30M saranno riletti nell'allocazione prima di torchrun.
+
+Il prossimo passaggio richiede checkpoint completo, ricevute e dose verificati;
+solo allora si fissano i pin reali per le cinque estrazioni pianificate.
+Nessun risultato scientifico del 300M ancora disponibile. Nessun monitor in
+background e nessuna continuazione automatica a 19.618.

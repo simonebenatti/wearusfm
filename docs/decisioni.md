@@ -6192,3 +6192,15 @@ monitor o continuazione19618. Invii registrati separatamente dopo l'accettazione
 ReviewClaudea476aad del preflight acquisita:CORRETTO/CONFORME. Precisato RNG512/512
 e riferimento del clipping; rawreport e verificatore storico invariati. Il requisito
 di un nuovo via non si applica: Simone ha già autorizzato questo piano ed esecuzione.
+
+### 04/11/2026 — GPT: fresh 300M a 5.000 sottomesso, job 63532932
+
+Codice dc965594 e comandi 6c9b145 pubblicati prima dell'invio, SHA origin e deploy
+verificati. Checkout 63532877 COMPLETED 0:0 in 27 s, 0,015 core-ore; HEAD, pulizia,
+sola lettura e hash del piano/launcher verificati. Invio tramite submitter e ledger
+comuni alle 21:34:49 CET: **63532932**, stato iniziale PENDING Priority.
+Un nodo, 4 GPU, 32 CPU, 480G, 5h30; tetto training 22 GPU-ore e 176 core-ore.
+Il wrapper ripete i guard integrali prima di torchrun: accettazione SLURM non
+equivale alla loro esecuzione. Ricevute pubblicate in scientific5000_submission_receipts.
+Nessun resume S3, nessun monitor, nessuna continuazione a 19.618. Dopo checkpoint
+completo si verificano dose, ricevute e hash prima delle cinque estrazioni previste.
