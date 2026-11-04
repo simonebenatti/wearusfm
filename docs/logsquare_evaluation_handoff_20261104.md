@@ -1,10 +1,14 @@
 # T100-LQ: consegna degli adattatori di valutazione — 04/11/2026
 
-**Stato: analisi delle lacune, non implementazione né autorizzazione di lancio.**
+**Disegno approvato da Claude in 1d6f96a; adattatori implementati, da rivedere.**
+Questo documento conserva il disegno e indica ora la sua implementazione.
+Regole definitive D1–D3 e sequenza operativa:
+`docs/logsquare_adapters_execution_20261104.md`. Nessun rilascio o lancio.
 Simone ha già autorizzato il seguito operativo; rimane la review di Claude prima
- del deploy. La review `b0fac8f` richiede orchestratori ed estrattori adattati e
+del deploy. La review `b0fac8f` richiede orchestratori ed estrattori adattati e
 verificati prima del training, e `rho_infer` misurato prima delle estrazioni.
-Questa nota specifica il lavoro necessario; non soddisfa da sola quel requisito.
+Codice, test e piani preparatori sono consegnati insieme a questa nota;
+la loro review è distinta da quella del solo disegno.
 Nessuna modifica di dose, loss, seed, readout, griglia di ricerca o criterio.
 
 ## Disegno da conservare
@@ -19,9 +23,9 @@ Quattro job di estrazione scientifica per il candidato: due posa, uno P1, uno
 P2. Producono nove cache NPZ: quattro posa e cinque classificazione. I controlli
 non si riaddestrano né si riestraggono se ricevute, pin, ricette e supporti sono
 compatibili. I numeri attesi non sono un preventivo: quest'ultimo dipende dal
-benchmark di inferenza e dai benchmark CPU previsti.
+benchmark di inferenza e dai gate CPU descritti nel piano esecutivo.
 
-## Lacune osservate nel codice attuale
+## Vincoli del codice storico risolti dagli adattatori separati
 
 | Componente | Vincolo attuale | Adattamento necessario |
 | --- | --- | --- |
@@ -38,7 +42,7 @@ LQ. Occorre provarlo con pesi log non nulli, non solo con il ramo a zero, e con
 checkpoint storici privi dei due campi. Non serve modificare il caricatore per
 ignorare chiavi, errori o differenze di configurazione.
 
-## Strategia minima proposta
+## Strategia implementata
 
 Conservare gli orchestratori storici e introdurre moduli LOGSQ separati che
 riusino le funzioni numeriche già verificate. Non cambiare `ARMS` tramite monkey
@@ -46,7 +50,7 @@ patch, non rinominare LQ in un braccio storico, non riscrivere ricevute o OOF.
 Le nuove validazioni e aggregazioni devono essere esplicite; i fit rimangono
 quelli esistenti. Il codice condiviso necessario deve essere pinnato nel piano.
 
-File da implementare e sottoporre a review:
+File implementati da sottoporre a review:
 
 - `scripts/logsquare_evaluation.py` e `scripts/slurm/logsquare_evaluation.sbatch`;
 - `scripts/logsquare_infer_benchmark.py` e relativo launcher;
@@ -58,12 +62,13 @@ File da implementare e sottoporre a review:
 
 ### 1. Estrazione e checkpoint
 
-Interfaccia proposta, parallela a quella attuale:
+Interfaccia, parallela a quella storica:
 
 ```
 logsquare_evaluation.py --stage validate|extract-pose|extract-classification
   --plan PLAN --step 5000|19618 [--task p1|p2]
   --expected-code-sha SHA --expected-plan-sha256 SHA256 --out NEW_DIR --device cuda
+  --allocated-seconds SECONDS
 ```
 
 Il braccio è fissato a `T100-LQ`, non un argomento libero. Riusare
@@ -103,7 +108,7 @@ ricalibrato sui segnali. Lo stato dei file si verifica anche a fine estrazione.
   pool/local/dec. La sonda usa poi solo pool768, ma il costo attuale include gli
   altri readout. Sostituirlo con solo `model.encode` falserebbe il preventivo.
 
-Benchmark proposto: due teacher congelati T100-L e LQ allo stesso endpoint
+Benchmark: due teacher congelati T100-L e LQ allo stesso endpoint
 (5.000 è sufficiente per prepararlo), eval e stessi ingressi, ordine dei due
 bracci alternato in modo fissato, warmup e numero di ripetizioni pubblicati
 prima del lancio. Usare selezioni deterministiche dei soli dati di train dei
@@ -112,20 +117,21 @@ inclusi EPN612 a 200 Hz e i gruppi nativi degli altri dataset. Non selezionare
 batch in base a loss o score. Ripetere le **stesse forme e lo stesso supporto**
 per i due modelli; registrare identità dell'ingresso, fs, canali, n e patch.
 
-Implementazione preferita: strumentare chiamate delle funzioni di estrazione
+Implementazione: strumentare chiamate delle funzioni di estrazione
 esistenti sul sottoinsieme dichiarato, senza duplicarne preprocessing,
 scaling, crop o batching. Cronometrare con sincronizzazione CUDA prima e dopo
-il percorso di forward e dei readout; registrare separatamente loader,
-preprocessing, trasferimenti e scrittura, oltre al totale. I payload scientifici
+il percorso di forward e dei readout; registrare il loader e il residuo della
+pipeline separati dal forward. Il residuo comprende preprocessing,
+trasferimenti e copia/impacchettamento CPU insieme, non singolarmente; non
+stima la scrittura della futura cache completa. I payload scientifici
 prodotti dal campione non entrano nei fit e non si leggono score val.
 
 Report per percorso e gruppo di forme: tempo dopo warmup, n di campioni/batch,
 memoria e rapporto LQ/L. La regola di aggregazione delle forme e dei dataset
-per ottenere i rapporti di posa, P1 e P2 va fissata nel piano **prima** del job:
-non scegliere il rapporto più favorevole dopo averli misurati. Alternativa
-conservativa da sottoporre a review: massimo dei rapporti dei gruppi
-rappresentativi del rispettivo job, con copertura obbligatoria e nessuna media
-pesata inventata dopo i dati. Non è ancora una regola approvata.
+per ottenere i rapporti di posa, P1 e P2 è ora fissata dalla review D1:
+massimo dei rapporti dei gruppi rappresentativi per il tetto; media pesata
+con conteggi storici di finestre, da fonti pinnate, per la stima puntuale.
+Copertura obbligatoria; nessun peso inventato dopo i dati.
 
 Poi R2: stima di ciascun job = durata storica omologa × rapporto; cap = walltime
 storico × max(1,rapporto), arrotondato per eccesso a 300 s. L'effetto su loader/I/O
@@ -142,7 +148,7 @@ LayerNorm stateless FP32, mean K64 salvata FP16, crop6, mask centrale, CV sui
 val dopo la selezione. Il benchmark apre solo train; alpha irrisolto ferma
 la lettura, senza cambiare griglia o scegliere un controllo diverso.
 
-Interfaccia proposta: stage `validate|benchmark|ridge|compare`, piano pinnato,
+Interfaccia: stage `validate|benchmark|ridge|compare`, piano pinnato,
 SHA codice/piano, output nuovo. `ridge` calcola solo LQ e salva coefficienti,
 predizioni e per-user sufficienti. `compare` richiede la cella LQ più il report
 storico completo alla stessa dose, pin delle cache, ricetta, source hashes,
@@ -166,7 +172,7 @@ controller storico. Restano pool768, niente PCA, scaler sul train del fold,
 C = 1e-3...100, lbfgs/12.000/tol1e-4, balanced, selezione su val del fold,
 pareggio al C minore, refit sul solo train, esclusione test ufficiali.
 
-Interfaccia proposta: `fit-shard|aggregate|compare`, SHA piano/codice e output
+Interfaccia: `fit-shard|aggregate|compare`, SHA piano/codice e output
 nuovo; i primi due operano solo su LQ, con shard storici DB2-01/DB2-23/DB3/DB6/P2.
 `compare` importa i due aggregati LQ e i sei storici, verificando per ciascuno
 il proprio protocollo/piano/codice, OOF e audit originali. Stessa ricetta e
@@ -179,9 +185,11 @@ sulle OOF. Rigenerare bootstrap appaiati sulle quattro celle con la stessa
 regola storica, pubblicando draw hash, tutti e tre i contrasti LQ, EPN612
 primario di classificazione e NI1pp per P1/P2. Se un fit resta irrisolto,
 conservare numeri descrittivi e sospendere la decisione pertinente; nessun
-retry o aumento automatico di max_iter. Prima dei fit, benchmark e cap CPU.
+retry o aumento automatico di max_iter. Prima dei fit, gate e cap CPU: la
+proposta riusa le misure storiche per shard, con identità numerica e dei
+conteggi richiesta esplicitamente; non dichiara un nuovo benchmark LQ.
 
-## Test e review necessari
+## Copertura dei test e review richiesta
 
 - Checkpoint LQ reale sintetico con W_log non nullo, gain deliberatamente
   diverso dal costruttore, strict load e uguaglianza dei pesi/output; rifiuto
@@ -201,13 +209,13 @@ retry o aumento automatico di max_iter. Prima dei fit, benchmark e cap CPU.
 - Launcher: sola lettura del checkout, SHA e piano contenuti, output nuovi
   esterni, risorse esatte dal piano, nessuna sottomissione nascosta.
 
-Prima del training: implementazione degli adattatori, regressioni storiche,
-piani strutturali, review della lettura R1/del preventivo e review di questa
-consegna effettivamente implementata. I pin dei checkpoint futuri arriveranno
+Prima del training resta la review di questa consegna implementata, poi il
+commit dedicato di rilascio: lettura R1 e preventivo R2 sono già approvati.
+I pin dei checkpoint futuri arriveranno
 alla loro produzione; non servono placeholder accettati dal runtime.
 Prima delle estrazioni: checkpoint completi verificati, pin reali pubblicati,
 `rho_infer` e cap misurati, checkout congelato. Prima dei fit: cache verificate,
-benchmark CPU, ricette e contesto numerico compatibili.
+gate CPU, ricette e contesto numerico compatibili.
 
 Nessuna di queste attività introduce contrastiva, nuovi layer, energia di
 banda o altri rami: sono preparazione e verifica della sola domanda LQ.

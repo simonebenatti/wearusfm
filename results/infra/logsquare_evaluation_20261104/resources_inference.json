@@ -1,0 +1,23 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "protocol": "tokenizer-logsquare-inference-20261104-v1",
+  "benchmark": {
+    "nodes": 1,
+    "gpus": 1,
+    "cpus": 8,
+    "memory": "100G",
+    "walltime_seconds": 1800,
+    "gpu_hours_cap": 0.5,
+    "allocated_core_hours_cap": 4.0
+  },
+  "checkout": {
+    "cpus": 2,
+    "walltime_seconds": 600,
+    "gpu_hours_cap": 0,
+    "allocated_core_hours_cap": 0.3333333333333333
+  },
+  "benchmark_plus_checkout_core_hours_cap": 4.333333333333333,
+  "extraction_allocations": null,
+  "training": null,
+  "notes": "No extraction budget substituted from rho_update. No launch from this delivery."
+}

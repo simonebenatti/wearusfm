@@ -1,7 +1,7 @@
 # T100-LQ: lettura del collaudo preparatorio del 04/11/2026
 
-**Il collaudo tecnico è completo. Proposta: mantenere epsilon=0,001, con
-decisione R1 da rivedere da Claude. Nessun training scientifico è stato avviato.**
+**Il collaudo tecnico è completo. Claude ha approvato il mantenimento di
+epsilon=0,001 nella review 1d6f96a. Nessun training scientifico è stato avviato.**
 Simone ha già autorizzato anche il seguito operativo della linea, dopo i controlli
 e la review concordata: non occorre chiedergli un altro via per letture,
 archiviazione, commit/push o lanci del piano revisionato.
@@ -24,21 +24,38 @@ I risultati e l'analisi riproducibile sono in
 | S1: frequenze | Tutte le coppie200/2000 Hz, senza esenzioni | 28 coppie disponibili, nessun contrasto con p200≥0,50 | Nessun kernel dichiarato inattivo; nessuna esclusione dai criteri |
 | Costo aggiornamento | Media dei56 update dopo warmup iniziale di8 misure | L 0,71437 s; LQ 0,70405 s; rho 0,985557 | Costo sostanzialmente uguale in questo campione breve |
 
-## Decisione R1 proposta alla review
+## Decisione R1 approvata e rettifica R1-a
 
 Mantenere epsilon 0,001. Il trigger della derivata è reale e viene riconosciuto:
 277 righe mascherate e276 non mascherate, tutte nella famiglia MLP del banco,
 14 indici distinti fra 48–63. Non sono553 osservazioni indipendenti.
-La derivata resta sotto il suo limite analitico; non emergono nonfinitezza,
-dominanza del pavimento o trigger del mascheramento. Aumentare epsilon
+Non emergono nonfinitezza, dominanza del pavimento o trigger del mascheramento.
+Il rispetto del limite analitico della derivata è vero per costruzione e
+non costituisce un argomento a favore di questa decisione (rettifica R1-a).
+Aumentare epsilon
 attenuerebbe le piccole risposte senza che questo collaudo abbia mostrato la
 necessità di farlo. La proposta conserva quindi il parametro preregistrato,
 senza cercarne uno migliore sui dati di calibrazione. Non si modifica il banco.
 
 Questa è una decisione motivata prevista da R1, **non l'assenza di trigger**.
-Prima del training Claude deve rivederla; il piano attuale non contiene una
-release che permetta di eseguirlo. Nessun secondo collaudo è proposto finché
-non si cambia il parametro o il codice scientifico.
+Claude ha approvato questa decisione, il preventivo R2 e il controller, ma
+non il rilascio della catena: gli adattatori devono essere implementati e
+revisionati prima della release. Il piano attuale non contiene una release
+che permetta di eseguirlo. Nessun secondo collaudo è proposto con parametro
+e codice scientifico invariati. Un cambio di epsilon dopo aver letto i risultati
+di training definirebbe un nuovo candidato.
+
+### R1-b: diagnostica descrittiva ai due endpoint
+
+A 5.000 e 19.618 passi si leggono dal checkpoint le norme L2 delle 64 colonne
+di `tokenizer.logsquare_weight`, separatamente per student e teacher. Per le
+famiglie Fourier (0–23), spline (24–47) e MLP (48–63) si pubblicano numero di
+colonne, minimo, mediana, media e massimo, conservando tutte le norme individuali.
+Il confronto delle medie/mediane rende leggibile la famiglia MLP senza confondere
+le diverse numerosità. È una descrizione dei pesi, non una misura causale del
+contributo delle feature, una soglia, un allarme o un criterio di selezione.
+Non richiede nuovi forward o training; gain e rappresentazioni non vengono
+ricalibrati. I meccanismi STOP e gli allarmi del trainer restano quelli storici.
 
 | Fase diagnostica | Gruppi dataset/fs | Token visibili per modo | Trigger derivata mascherato / non mascherato |
 | --- | ---: | ---: | ---: |

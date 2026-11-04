@@ -22,7 +22,7 @@
   },
   "resource_proposal": {
     "path": "results/infra/logsquare_training_20261104/resource_proposal.json",
-    "sha256": "4b46ecb0729c1dbc7daa566ed6637b5dab40033c9d402b001cb7c2b010009439"
+    "sha256": "4753f53998a0b9f03ca76467b70a952efbd40ba13801d1df0f60f613ed370c7b"
   },
   "shared_initial_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
   "required_scientific_sources": [
@@ -274,5 +274,19 @@
   "background_monitoring": false,
   "training_release": null,
   "execution_code_sha_source": "EXPECTED_SHA exported by submission; checked against clean frozen checkout HEAD before launch and after training; the same SHA is required for both phases.",
-  "operational_authorization_granted": true
+  "operational_authorization_granted": true,
+  "component_review": {
+    "path": "results/infra/logsquare_training_20261104/component_review.json",
+    "sha256": "0bc9f0df8a5b067d52bd1ace7bc5261641bb557d5e87125267a5fb1d6cdd0ea4"
+  },
+  "execution_notes": {
+    "N1_time_limit": "A partial continuation leaves checkpoint.pt beyond5000; this controller refuses retry. Revise plan, never overwrite/rewind state.",
+    "N2_release": "Dedicated published release commit after implemented adapters and Claude review; pinned release and APPROVED_FOR_TRAINING required.",
+    "N3_retention": "Run on SCRATCH with40day purge; pin endpoints and verify copies to WORK before expiry if retained longer, with quota check.",
+    "N4_submitter_time_overrides": {
+      "5000": "01:30:00",
+      "19618": "04:00:00"
+    },
+    "D2_inference": "Benchmark at5000, publish extraction budgets between phases. Continuation has no dependency on inference benchmark or extraction budget."
+  }
 }

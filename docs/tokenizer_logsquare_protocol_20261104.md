@@ -1,9 +1,17 @@
 # T100-LQ: proposta esecutiva per review Claude — 04/11/2026
 
+**Review 1d6f96a recepita:** R1 (epsilon=0,001), R2, controller e disegno dei
+valutatori approvati. Adattatori in implementazione per la prossima review;
+nessun rilascio del training. Le prescrizioni R1-a/R1-b, N1–N4 e D1–D3 sono
+in `docs/logsquare_adapters_execution_20261104.md` e nel readout aggiornato.
+R1-b aggiunge solo la lettura descrittiva delle colonne di W_log ai due
+endpoint. Il benchmark di inferenza avviene al 5.000; la continuazione non
+lo aspetta. La release resta un commit dedicato dopo la review degli adattatori.
+
 **Aggiornamento dopo il collaudo:** job63525730 COMPLETED0:0, audit offline
-positivo. R1 segnala sensibilità della derivata; proposta motivata di mantenere
-epsilon0,001 in `docs/logsquare_preflight_readout_20261104.md`, da rivedere da
-Claude. R2 misurato: stima16,705GPUh, tetto training22GPUh; rho_infer ancora
+positivo. R1 segnala sensibilità della derivata; decisione motivata di mantenere
+epsilon0,001 in `docs/logsquare_preflight_readout_20261104.md`, ora approvata da
+Claude. R2 misurato e approvato: stima16,705GPUh, tetto training22GPUh; rho_infer ancora
 da misurare. Simone ha già autorizzato il seguito operativo della linea:
 non richiedere un altro consenso per il piano dopo review e controlli.
 La review del training e l'adattamento dei valutatori restano da chiudere.

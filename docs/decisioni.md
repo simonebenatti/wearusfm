@@ -6113,3 +6113,36 @@ e ribadisce che letture, archiviazione, commit e push non richiedono un altro vi
 La sua autorizzazione non sostituisce la review di Claude sul training.
 Preparati piano/controller per review; nessuna release eseguibile, nessun nuovo
 training, estrazione, monitor o esperimento contrastivo avviato.
+
+## 04/11/2026 — T100-LQ: adattatori dopo approvazione R1/R2/controller
+
+Review Claude 1d6f96a su 6d5b353 acquisita: epsilon 0,001, preventivo R2,
+controller e disegno dei valutatori approvati; la catena non è ancora
+rilasciata. GPT recepisce R1-a/b e N1–N4 e consegna estrattore LQ, benchmark
+inferenza e lettori del solo candidato con controlli storici verificati.
+I sorgenti scientifici e il controller training approvato restano invariati.
+
+D1 fissata prima del benchmark: gruppi rappresentativi train a forme uguali,
+posa FP32 e classificazione BF16 con decoder; massimo LQ/L per il tetto,
+media pesata con conteggi storici di finestre per la stima. Tetto mai inferiore
+allo storico, arrotondamento superiore a 300 s. D2: benchmark dopo il 5.000,
+preventivi delle estrazioni pubblicati fra le fasi; continuazione a 19.618
+indipendente dal completamento del benchmark. D3 verificata in locale sui
+percorsi di estrazione reali con checkpoint sintetici: zero uguale, nonzero
+diverso. Nessun risultato CUDA dichiarato da questi test.
+
+Benchmark proposto 0,5 GPUh / 4 coreh; lettori posa 16 coreh, sonde 34,3333
+coreh. Per le sonde il gate propone riuso delle misure storiche per shard,
+da rivedere esplicitamente da Claude; resta benchmark nuovo per la ridge.
+Tetti estrazioni nulli fino a rho_infer; checkout 0,3333 coreh ciascuno da
+contare nel piano esecutivo. Training approvato R2: 16,7052 GPUh di stima,
+22 GPUh / 176 coreh di tetto. Nessun costo HPC nuovo in questa consegna.
+
+417 test locali verdi e review interna favorevole; dettagli in
+docs/reviews/logsquare_adapters_critic_20261104.md e piani sotto
+results/infra/logsquare_evaluation_20261104/. Dopo review Claude degli
+adattatori: commit dedicato APPROVED_FOR_TRAINING con release pinnata,
+checkout congelato nuovo, sottomissioni tramite submitter/ledger comuni
+sotto il consenso operativo già dato da Simone. Nessun nuovo consenso da
+chiedere per questi job. In questo commit restano REVIEW_REQUIRED e release
+nulla; nessun job, deploy o contrastiva avviato.

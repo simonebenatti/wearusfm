@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: adattatori T100-LQ consegnati dopo review Claude 1d6f96a
+
+Diff successivo a 6d5b353, solo ramo codex/tokenizer-logcontrast-20261104.
+Recepite R1-a/b e N1–N4: epsilon 0,001 confermato come decisione R1 approvata,
+norme W_log descrittive nei due readout, limiti della ripresa, conservazione
+dei checkpoint e tempi espliciti delle due fasi. Review Claude archiviata
+testualmente; approvazioni dei componenti registrate senza rilasciare la catena.
+Implementati estrattore LQ, benchmark inferenza train-only, ridge candidata e
+sonde candidate con confronto a quattro celle e controlli storici originali.
+D1 congelata: massimo dei rapporti per tetti, media pesata con conteggi di
+finestre storiche per stime. D2: benchmark a 5.000 non blocca continuazione.
+D3 provata sui loader/estrattori reali con checkpoint sintetici, zero/nonzero.
+Review incrociata e 417 test locali verdi; 102 sorgenti scientifici del piano
+training invariati. Piani preparatori e pin futuri nulli rifiutati dal runtime.
+Risorse proposte: benchmark 0,5 GPUh; lettori 50,3333 coreh, più checkout;
+tetti estrazioni ancora da misurare. Training R2 approvato: tetto 22 GPUh.
+Nessun lancio, deploy, nuovo risultato scientifico o monitor. Prossimo passo:
+review Claude degli adattatori, poi commit dedicato di rilascio sotto il via
+operativo già dato da Simone, senza ulteriore richiesta di consenso.
+Consegna: docs/logsquare_adapters_execution_20261104.md; prompt:
+docs/prompt_claude_logsquare_adapters_20261104.md.
+
 ### GPT — 04/11/2026: collaudo T100-LQ letto e seguito già autorizzato
 
 Checkout63525639 e collaudo63525730 COMPLETED0:0. Raccolti report, tutti i
@@ -5502,6 +5524,25 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: limiti e correzioni della consegna adattatori LQ
+
+La review interna ha trovato un legame insufficiente fra ricevuta rho_infer e
+piano di estrazione aggiornato. Corretto prima dei job: contesto stabile di
+input/ricetta/radici, piano/codice/sorgenti pinnati e ricalcolo di tempi,
+conteggi e tetti; nessun ciclo fra hash quando si aggiungono pin e allocazioni.
+Aggiunti controlli simmetrici protocollo/config LQ fra ricevuta e provenienza
+nei due lettori. R1-b propagata fino ai report finali, non solo all'estrazione.
+Nessun blocco residuo trovato internamente; review Claude ancora richiesta.
+Misure CUDA, checkpoint e cache del candidato non esistono ancora. I gruppi
+del benchmark sono rappresentativi, non esaustivi; residuo pipeline cumulativo.
+Le OOF storiche NPZ sono remote: pin verificati sulle ricevute, byte da
+verificare a runtime. Per le sonde è proposta esplicitamente la riutilizzazione
+dei tempi storici per shard con ricetta/ambiente/conteggi identici; le feature
+possono cambiare il numero di iterazioni, quindi nessuna garanzia di durata.
+Per la posa resta nuovo benchmark train-only. Nessun retry o tetto aumentato
+automaticamente. APPROVED_FOR_TRAINING e release restano rinviati alla
+convergenza sugli adattatori, senza nuova autorizzazione operativa da Simone.
 
 ### GPT — 04/11/2026: R1 LQ, stato della review e limiti del seguito
 
