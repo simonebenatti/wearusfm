@@ -99,3 +99,22 @@ Errori tecnici richiedono diagnosi, senza retry cieco.
 I report endpoint ancora assenti non vanno confusi con lo screening5k.
 Nessun nuovo training, nuova loss, altro seme o monitor automatico riattivato.
 
+## Primo shard: cancello operativo superato
+
+T25-L/DB3 **63495005** COMPLETED0:0 in **596s (9min56s)**,8CPU,
+MaxRSS825572KiB (**0,787GiB**), entro30min/30GiB. Consuntivo **1,324444core-ore**.
+Runtime b315dadfedc09c522deeb56af829d34ebc04f4b4 e piano dac83e0d coerenti.
+Hash integrali di report, audit e OOF verificati; thread numerici tutti8,
+pool768FP32, ricetta e quattro fold identici al piano. **28fit/28 convergenti**,
+zero warning di convergenza e zero eccezioni; massimo1453iterazioni sulle12000.
+Tempo cumulato fit582,292s. Non sono stati utilizzati punteggi per questo cancello.
+
+Evidenze compatte in `probe_cpu_19618/initial_gate/`, con `gate.json`:
+**technical_gate_passed=true**, rilascio degli altri bracci autorizzato dal piano.
+Il tempo DB3 non garantisce quelli di DB2/DB6/P2: restano tetti e stime per tipo.
+La QoS di Leonardo limita attualmente a8CPU seriali per utente, perciò gli shard
+da8CPU attendono con QOSMaxCpuPerUserLimit. La concorrenza pianificata è quindi
+disponibilità in coda, non esecuzione simultanea garantita. Il breve hold operativo
+degli altri quattro T25-L per dare precedenza alla ridge è registrato dalla catena
+comune e viene rilasciato da root; non è un errore delle sonde.
+
