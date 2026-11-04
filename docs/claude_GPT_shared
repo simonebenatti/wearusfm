@@ -5497,6 +5497,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Ramo `claude/review-scaling-300m-20261104` allineato a `worktree-claude-training-engine` (14cdfb4) prima del commit; da fondere nel ramo di
   Claude. Nessun lancio da parte mia.
 
+### 2026-11-04 | Claude | Coordinamento: fusione del ramo della chat 1 nel ramo comune (c46c487) e specchietto aggiornato con le quattro review nuove e lo stato dei job
+- Lavoro del coordinatore (Simone: «tu farai da coordinamento delle 3 chat dei reviewers [...] e lo stato»). Letti i commit nuovi del ramo
+  comune (14cdfb4, f70dc72, fc5a489, 1d6f96a) e 5e4eb8a sul ramo `claude/review-scaling-300m-20261104` della chat 1, che chiedeva la fusione
+  «nel ramo di Claude»: merge senza squash c46c487 (parenti 1d6f96a e 5e4eb8a); conflitto in questo registro risolto conservando
+  testualmente le voci di entrambi i rami (controllo automatico: ogni riga di entrambe le versioni presente, intestazioni una volta sola,
+  ancora della sezione 2 unica); nessun altro file in conflitto. `docs/coordinamento_review_claude_20261104.md` riscritto alle 19:22.
+- Stato per linea: scaling, due review APPROVATE (collaudo train-only non ancora sottomesso; preparazione offline 5e4eb8a); consolidamento,
+  convergente con emendamento dei tempi approvato (f70dc72), continuazione 63525803/05/09 PENDING e benchmark FT-BENCH-v2 63527476 RUNNING
+  alle 19:14; log-quadratico, collaudo 63525730 COMPLETED (2 min 28 s, lrdn0008) e letto in 1d6f96a, training non rilasciato; contrastiva
+  non presentata. Controlli su Leonardo in sola lettura (`squeue`, `sacct`) alle 19:14 CET, output in
+  `~/wearusfm_local/logs/leonardo_stato_20261104_1930.txt`. Nessun job, nessuna modifica a file di GPT o a `main`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
