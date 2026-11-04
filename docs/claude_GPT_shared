@@ -5342,6 +5342,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   APPROVATA come disegno e CONDIZIONATA. Log-quadratico (93d89e0): APPROVATO CON CORREZIONI per il collaudo, training non approvato; la
   contrastiva non e' ancora stata presentata. Nessun lancio autorizzato da Claude: il passo successivo di ogni linea e' dell'owner GPT.
 
+### 2026-11-04 | Claude | Rilettura delle correzioni di GPT (d48cad5) alla review T100-LQ: APPROVATO, correzioni chiuse, collaudo preparatorio eseguibile, training non approvato (richiesta di Simone)
+- Simone: «Rivedi le correzioni GPT alla tua review T100-LQ del commit 93d89e0», consegna d48cad5 su `codex/tokenizer-logcontrast-20261104`, diff da
+  729093b (14 file, +721/−39; `src/` e launcher invariati). Solo review: nessun job, deploy o modifica ai rami di GPT.
+- Review in `docs/reviews/claude_review_tokenizer_logsquare_corrections_20261104.md`. Metodo: checkout temporaneo detached (poi rimosso), diff letto
+  per intero, `logsquare_preflight.py` e protocollo riletti interi; nel codice condiviso verificati `amp_bf16` e `grad_clip` (campi reali del config),
+  `update_arm` (autocast su `cfg.amp_bf16`, `clip_grad_norm_` con norma pre-clip finita e identica fra rank), `write_json` in modo `x`, `n_tokens` nel
+  riassunto, `torchrun` nel launcher; test rieseguiti: **129 passati in 26,60 s** (17 nuovi); `bash -n` pulito; copia della mia review nel ramo di GPT
+  identica a 93d89e0.
+- Esito: C1 chiuso (doppio encode del controllo con RNG ripristinato, quattro esiti distinti, JSON per rank scritto prima del `require`, scarto massimo
+  in FP64, nessuna tolleranza; autocast allineato a `cfg.amp_bf16`); C2 chiuso (fattore `min(1, grad_clip/(g+1e-6))` uguale a `clip_grad_norm_` per
+  oracolo a 1e-14, rapporto LQ/L, quota di `W_log`, frazione clippata, residuo descrittivo; accolta la precisazione di GPT: i fattori scalano i
+  gradienti prima di AdamW, al primo passo l'update di Adam e' invariante alla scala a meno di eps, quindi il confondimento sui pesi condivisi e'
+  minore di come l'avevo scritto nel punto 5); C3 chiuso (epsilon del piano a collettori e aggregazione, gate modello/diagnostica; `load_plan` pinna
+  ancora 1e-3, giusto); F1 chiuso (JSONL per rank in modo `x` al passo 0, scritto prima di `verify_pair`); F2 chiuso (solo i due campi LQ
+  defaultati, legacy con altri campi mancanti rifiutato). R1 scritta prima del collaudo: soglie 0,50 / 0,50 / attraversamento / 1 std, direzione,
+  sospensione senza cambio automatico, per kernel e dataset/fs/fase sul braccio LQ. R2 scritta: rho_update dal report, stima = durata storica × rho,
+  tetto = walltime storico × max(1, rho) arrotondato a 900 s, tetti del candidato a null, estrazioni con rho_infer separato non ancora misurato.
+- Suggerimenti, nessun blocco: S1 fissare adesso il criterio «kernel inattivo per ragioni del banco» (per esempio p ≥ 0,50 a 200 Hz con p < 0,50 a
+  2000 Hz per lo stesso kernel e modo → inattivo per il banco, pubblicato, non trigger di ε), perche' a 200 Hz i kernel sopra Nyquist faranno
+  scattare p ≥ 0,50 quasi certamente e l'esenzione va decisa prima dei dati, meglio prima del checkout; S2 derivare i trigger R1 nel report; S3
+  dichiarare che rho_update esclude loader e diagnostica mentre la durata storica li include (margine conservativo).
+- Verdetto: correzioni chiuse; il SOLO collaudo preparatorio e' eseguibile com'e' a d48cad5 (2 GPU-ore massime), con via di Simone e sottomissione
+  di semplicione; training NON approvato. Nessuna voce in «Problemi trovati».
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
