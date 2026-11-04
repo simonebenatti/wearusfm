@@ -129,3 +129,34 @@ la ricetta o scegliere bracci: tutti15shard restano previsti.
 Ridge soltanto dopo lettura/pubblicazione del gate train-only. Aggregati/confronto
 soltanto dopo i loro ingressi completi; non basta una cache senza ricevuta.
 Monitor resta spento. Nessun nuovo training, loss, dose, seme o scelta adattiva.
+
+## Primo gruppo CPU sottomesso
+
+Piani e review pubblicati nel runtime **b315dadfedc09c522deeb56af829d34ebc04f4b4**.
+Push origin e deploy completati e riferimenti verificati prima dell'invio.
+Checkout **63494914 COMPLETED0:0**,17s,0,009444coreh; SHA,pulizia e sola lettura
+verificati. Validazione posa63494990 e benchmark63494999 sottomessi.
+Cinque shard T25-L: DB2-01 **63495003**,DB2-23 **63495004**,DB3 **63495005**,
+DB6 **63495008**,P2 **63495009**. Nessun nuovo lancio GPU.
+
+Un tentativo locale di invocare validate con il comando interamente quotato
+è stato fermato dal sandbox prima della creazione della cartella del ledger.
+Assenza di prenotazione verificata; eseguito lo stesso submitter tramite la
+regola persistente già approvata, senza duplicazione o contatto conSLURM nel
+primo tentativo. Il checkout e gli altri sei invii sono riusciti direttamente.
+Ridge e altri bracci attendono i gate tecnici previsti, non un nuovo consenso.
+
+## Priorità operativa alla ridge posa
+
+Validate63494990 e benchmark63494999 COMPLETED0:0, gate420s entro1800s,
+con tutti i controlli di identità/thread e supporto superati. Il runtime resta
+b315dad. Pubblicare il gate e inviare la ridge già prevista.
+
+La coda mostra QOSMaxCpuPerUserLimit:8CPU per utente serializzano i fit. Per
+restituire presto il risultato posa senza interrompere il lavoro in corso,
+tenere temporaneamente in hold solo i quattro shard T25-L ancora PENDING
+63495003/004/008/009, lasciare concludere DB3 63495005, quindi far partire la
+ridge e rilasciare tutti gli hold appena la ridge è RUNNING. Nessun job viene
+cancellato o duplicato, nessun parametro scientifico o risorsa cambia.
+Root deve completare i release prima di terminare la chat; nessun hold residuo.
+Il resto della matrice rimane autorizzato e il monitor automatico resta spento.

@@ -1,6 +1,16 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato ultimo04/11: estrazioni concluse, fase CPU da inviare
+## Stato ultimo04/11: primo gruppo CPU sottomesso
+
+Runtime **b315dadfedc09c522deeb56af829d34ebc04f4b4**, checkout comune verificato
+63494914 COMPLETED0:0. Validate63494990 + benchmark63494999; cinque shard T25-L
+DB2-01=63495003,DB2-23=63495004,DB3=63495005,DB6=63495008,P2=63495009.
+Non duplicare. Leggere gate posa prima ridge e primo completamento tecnico sonde
+prima degli altri due bracci. Queuecap10RUNNING+PENDING, spazio anche alla posa.
+Indice/ricevute in results/infra/tokenizer_evaluation_20261103/cpu_19618/.
+Gli aggiornamenti documentali successivi non modificano questo runtime.
+
+## Stato precedente04/11: estrazioni concluse, fase CPU da inviare
 
 Tutti9job63491925/35/37/40/41/43/45/47/48 COMPLETED0:0, ultimo08:50:01CET.
 Costo3,581111GPUh/6; la matrice12estrazioni è conclusa, non duplicare.

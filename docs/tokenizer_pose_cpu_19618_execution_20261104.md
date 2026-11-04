@@ -83,3 +83,26 @@ Benchmark: `--cpus-per-task=8 --mem=30G --time=00:15:00`.
 Ridge: `--cpus-per-task=8 --mem=30G --time=00:30:00`.
 Ogni directory di output deve essere nuova. Nessun job di confronto separato:
 il confronto appaiato è già nel report ridge. Monitor automatico lasciato spento.
+
+## Gate effettivo del 04/11, prima della ridge
+
+Checkout **63494914** verificato completo in 17 secondi, 2 CPU, SHA
+`b315dadfedc09c522deeb56af829d34ebc04f4b4`, pulito e in sola lettura.
+Validate **63494990** e benchmark **63494999** sono entrambi **COMPLETED 0:0**,
+in 32 e 20 secondi. Copie originali dei due report e SHA indipendenti raccolti
+in `results/infra/tokenizer_evaluation_20261103/cpu_19618/`.
+
+Piano, runtime, sorgenti, ricetta, dose, tutti i pin e i supporti sono coerenti;
+40 utenti train e 15 val disgiunti. Il benchmark apre solo T25-L/train, usa
+8 thread nelle variabili ambiente, in Torch e nelle librerie numeriche.
+La validazione non calcola score scientifici.
+
+Con **V=32 s**, **S=3,782790529 s**, **E=0,093883142 s**, la formula congelata
+produce 408,740295 secondi, arrotondati a **420 secondi (7 minuti)**, sotto
+il tetto di 1800 secondi. **Gate superato**: pubblicare questi dati prima del
+lancio della ridge, mantenendo il checkout scientifico `b315dad` e la richiesta
+8 CPU / 30G / 30 minuti, massimo 4 core-ore e zero GPU.
+
+Consuntivo validate+benchmark: **0,062222 core-ore**; checkout condiviso:
+**0,009444 core-ore**, da contare una volta sola per tutta la fase endpoint CPU.
+Nessun retry, modifica del protocollo o riattivazione del monitor automatico.

@@ -5245,7 +5245,25 @@ checkout comune nuovo2CPU/4G/10min. Posa7coreh, classificazione101coreh,
 zeroGPU;2coreh benchmark endpoint+0,333333checkout sono aggiunte esplicite
 alla matrice precedente. Review indipendente prima del deploy/invio.
 
+### 2026-11-04 | GPT | CPU endpoint avviata, gate posa valido
+
+Runtime b315dad, checkout63494914 verificato17s. Validate63494990 e
+benchmark63494999 completi,32/20s; gate420s entro1800. Cinque shard T25-L
+63495003/004/005/008/009 sottomessi; DB3 in esecuzione, altri in attesa.
+Gate pubblicato prima della ridge, nessuna modifica al codice congelato.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Limite di concorrenza seriale e ordine dei lettori
+
+QOSMaxCpuPerUserLimit serializza i fit da8CPU. Si dà precedenza alla breve
+ridge dopo il DB3 in esecuzione tramite hold/release dei soli quattro shard
+pendenti, senza cancellazioni, duplicati o modifica di ricetta. Gli hold devono
+essere rilasciati appena la ridge parte e comunque prima di terminare la chat.
+Un tentativo di validate interamente quotato è stato fermato dal sandbox prima
+del ledger; assenza verificata, stesso submitter eseguito con regola persistente.
+Nessun job è stato creato dal tentativo locale fallito.
+
 
 ### 2026-11-04 | GPT | Risultati endpoint ancora da calcolare
 

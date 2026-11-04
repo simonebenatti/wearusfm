@@ -5896,3 +5896,11 @@ Tempi storici e tetti prudenti restano la base, senza garanzia di runtime dai
 primi shard piu rapidi. Benchmark posa prima ridge.
 Nessun cambiamento scientifico; risultati da raccogliere e sottoporre al critico.
 Monitor spento. Piano dettagliato docs/tokenizer_endpoint_execution_20261104.md.
+
+### 04/11/2026 — Gate posa19618 e precedenza operativa
+
+Validate63494990 e benchmark63494999 completi, previsione420s<1800. Ridge
+autorizzata pronta con runtime b315dad. Cinque shard T25-L già sottomessi.
+Il limite8CPU perutente serializza i fit: dopoDB3 in corso, precedenza alla
+ridge tramite hold dei soli quattro pending e release appena essa parte.
+Nessun cambio scientifico, risorse immutate, nessun hold residuo alla consegna.
