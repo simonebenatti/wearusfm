@@ -5603,6 +5603,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sorgenti; poi checkout congelato nuovo e sottomissione con gli override N4 sotto l'autorizzazione operativa gia' data da Simone. Training non
   rilasciato ne' lanciato da questa review; nessun job mio. Nessuna voce in «Problemi trovati».
 
+### 2026-11-04 | Claude | Coordinamento: specchietto aggiornato con la consegna finale del consolidamento (2d157cc), gli adattatori T100-LQ (6c0ce65) e lo stato dei job alle 20:51; due punti aperti per Simone
+- Letti i commit nuovi del ramo comune (2d157cc, 6c0ce65) e lo stato in sola lettura su Leonardo alle 20:51 CET (`squeue`, `sacct`, output in
+  `~/wearusfm_local/logs/leonardo_stato_20261104_2045.txt`): 4 C0 frozen COMPLETED 0:0 (1h10–1h12) e i loro C1 RUNNING, 8 C0 finetune/scratch
+  RUNNING, 8 C1 PENDING, continuazione 63525803/05/09 PENDING; `SCALING-300M-preflight-20261104` 63526191 COMPLETED in 9 min 06 s alle 18:45
+  (lrdn1813), `SCALING-300M-memory-20261104` 63527446 RUNNING su lrdn2103; LOGSQ-preflight 63525730 COMPLETED. Specchietto
+  `docs/coordinamento_review_claude_20261104.md` riscritto alle 20:53.
+- Punto aperto 1: il collaudo train-only 63526191 e' stato eseguito e letto da GPT (ab2eb4a, `docs/reviews/scaling_preflight_results_20261104.md`:
+  picco 28,41 GiB sul 300M, proxy di produzione 33,52 GiB sotto il gate 57,08 GiB, ripiego S4 non attivato), ma nessuna voce di Claude rilegge
+  quel report (la review a988a72 ne usa solo `seconds_per_step`); nessuna sottochat ha ricevuto la richiesta. Decisione a Simone/GPT.
+- Punto aperto 2: la voce 2d157cc riporta da GPT l'istruzione «qua semplicione non c'e piu, lanci sempre tu», non verificabile da Claude;
+  CLAUDE.md (regola del 28/10) affida le sottomissioni a semplicione. Nessuna modifica alle regole da parte mia: conferma a Simone.
+- Nessun job, nessun messaggio alle sottochat, nessuna modifica a file di GPT o a `main`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
