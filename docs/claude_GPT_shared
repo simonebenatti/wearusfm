@@ -5250,6 +5250,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   pavimento di rumore della replica (0,2–0,9 pp) nella lettura del delta 300M − 30M.
 - Nessun job, allocazione o modifica al codice di GPT. Simone ha annunciato altre due review (consolidamento ed esplorazione).
 
+### 2026-11-04 | Claude | Review del ramo log-quadratico T100-LQ e del collaudo appaiato (GPT 729093b): APPROVATO CON CORREZIONI per il collaudo, training non approvato qui (richiesta di Simone)
+- Simone, 04/11/2026: «ok tu guardi questo :» con il prompt di GPT `docs/prompt_claude_logsquare_review_20261104.md` (729093b, punta del ramo
+  `codex/tokenizer-logcontrast-20261104`, diff contro l'emendamento 8ee6603). Solo review: nessun job, deploy, checkout o modifica ai rami di GPT.
+- Review in `docs/reviews/claude_review_tokenizer_logsquare_20261104.md`. Metodo: checkout temporaneo detached a 729093b fuori dai worktree;
+  letti protocollo, proposta con emendamento, tokenizer, `FMConfig`, CLI, default, controller del collaudo, launcher, test, piani e pin, piu' le
+  funzioni riusate di `tokenizer_preflight.py`, `run.py` e `fm.py`; test rieseguiti col comando del prompt (**112 passati in 25,34 s**, 16 + 4
+  nuovi), `bash -n` del launcher pulito; deriva di `src/` da afb644e limitata a `fm.py`, `patch_tokens.py`, `run.py` senza consumo di RNG
+  aggiunto, quindi il gate sull'hash iniziale dei pesi condivisi contro il report storico T100-L puo' passare.
+- Esito sui sette punti: ramo `W_log·log(ε + x²)` registrato a zero senza RNG, chiavi legacy invariate, log e quadrato in FP32 sotto autocast,
+  caricamenti stretti nei due versi, GELU+log rifiutato, ripresa o diramazione di un checkpoint lineare in ricetta LQ rifiutate, loss intatta;
+  collaudo con due update veri per batch sullo stesso micro, parita' di supporto e RNG dopo ogni passo, hash storico, funzione iniziale identica
+  su `local` e `z`, finitezza, gruppi aggiornati, copertura 200/2000 Hz, pin; oracolo numpy dei momenti del log e della derivata (massimo
+  analitico 1/√ε = 31,6); memoria dichiarata con due bracci residenti; tempi delimitati. Punto 5: funzione iniziale identica non implica
+  primo update identico, ma il confondimento e' quantificabile dai record gia' salvati (al passo 0 ‖g_LQ‖² = ‖g_L‖² + ‖g_Wlog‖², rapporto dei
+  fattori di clipping ‖g_L‖/‖g_LQ‖): nessuna diagnosi nuova prima del training, solo la dichiarazione accanto al risultato.
+- Correzioni prima del lancio del collaudo: C1 `torch.equal` esatto fra uscite bf16 di due istanze su CUDA (`logsquare_preflight.py:142`), un
+  kernel non deterministico darebbe un falso negativo → autouguaglianza del controllo prima del confronto e scarto massimo nel report; C2 riassunto
+  del clipping per braccio nel report (fattore per passo, rapporto LQ/L, quota di `W_log` nella norma al quadrato, frazione di passi clippati);
+  C3 `LogMoments(plan['epsilon'])` invece del default della classe (righe 113 e 218). Facoltativi: F1 JSONL per passo come nello storico;
+  F2 `tokenizer_preflight.py:93` confronto limitato ai due default nuovi. Requisiti pre-training: R1 regola di lettura di ε (statistiche e
+  direzione che farebbero scattare l'emendamento) scritta prima del collaudo; R2 preventivo e tetto del training derivati dal rapporto misurato
+  dei tempi di update LQ/L, non dalle 17 GPU-ore di T100-L.
+- Contrastiva (punto 7): scelte da fissare prima di scriverne il protocollo, non adesso: definizione dei positivi che conservi ampiezza e dinamica
+  (le ancore sono bersagli di potenza), livello di lettura e testa di proiezione, negativi con batch globale 32 (31 in-batch: coda di memoria o
+  segnale debole dichiarato), falsi negativi dello stesso soggetto o gesto, temperatura e peso fissi senza griglia, estensione del contratto DDP
+  delle loss (numeratori locali, denominatore globale) agli embedding raccolti fra rank.
+- Nessuna voce in «Problemi trovati»: nessun difetto riproducibile oggi. GPT riprende dal verdetto e integra le correzioni concordate; nessun
+  lancio da parte mia. Resta aperta la terza review annunciata da Simone (linea di consolidamento).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
