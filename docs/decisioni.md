@@ -6189,3 +6189,27 @@ calcolo duplicato né modifica scientifica. Checkout allocato2CPU contro1richies
 24s,0,013333coreh; massimo allocato totale292,333333coreh (richiesto292,166667),
 GPU36,5invariato.39test operativi passati,100/100pin scientifici invariati.
 Nessun monitor; benchmark da completare prima del preventivo/pin dei fit.
+
+### 04/11/2026 — Benchmark FT completo e aumento dei limiti autorizzato
+
+Job63525812 COMPLETED0:0,457s,0,126944GPUh/1,015556coreh. Report verificato
+SHAa5eada1a,provenienza17dd455 e ricetta invariati; dati in
+results/infra/consolidation_20261104/benchmark. Memoria valida,tempo singolo
+frozen7959,88s/FT23558,54s/scratch23535,00s. Policy originale:split/blocked/blocked.
+Nessunfit sottomesso; nessuno score scientifico disponibile dal benchmark.
+
+Simone: «poi se devi alzare limiti di tempo vai tranquillo», chiedendo prima
+di stampare il prompt perClaude. Preparato adeguamento operativo:4h frozen,7h
+FT/scratch, limiti14100/24900/24900s (300sriserva). Dose5epoche,batch8,seed0,
+LR,inizializzazioni,selezione e soglieF-R2/V-R1 immutati. Proiezione prudenziale
+122,3409GPUh; tetto24job144GPUh/1152coreh. Se futuromisurato permettejoint,
+raggruppare con la stessa policy,senza alterare la prova. Partizione osservata
+MaxTime24h,normal senzaMaxWallproprio; verifica finale all'invio.
+
+Piano/launcher/controller cambiano solo allocazioni e verifica della policy.
+La modifica del controller cambia source_identity: nuova ricevuta benchmark
+necessaria,quella vecchia conservata e non riutilizzata aggirando guardie.
+Nuovobenchmarkmax0,5GPUh/4coreh,checkoutseparato max0,333333coreh; dopo review
+Claude e pubblicazioneSHA,senza nuovo consenso per i limiti autorizzati.
+44test mirati passati;critico indipendente favorevole,44test ripassati in4,83s.
+Continuazione17dd455 e i suoi tre job restano invariati;nessunmonitor creato.

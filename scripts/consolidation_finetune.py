@@ -31,6 +31,17 @@ SCRATCH_RULE = {
     "followup_initialization": "fresh from same original teacher19618/random seed0; new 15-epoch horizon, not resume from selected5epoch",
     "followup_gate": "preregistered direction; publish measured resources and validate implementation before any extension",
 }
+FIT_ALLOCATION_BY_REGIME = {
+    regime: {"gpus": 1, "cpus": 8, "memory": "100G", "seconds": seconds}
+    for regime, seconds in (("frozen", 14400), ("finetune", 25200), ("scratch", 25200))
+}
+FIT_PACKAGING_POLICY = {
+    "seconds_reserved_per_job": 300,
+    "joint_if_two_candidates_seconds_lte": {"frozen": 14100, "finetune": 24900, "scratch": 24900},
+    "otherwise_split_if_one_candidate_seconds_lte": {"frozen": 14100, "finetune": 24900, "scratch": 24900},
+    "otherwise": "blocked; no automatic dose/batch/grid change",
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback",
+}
 
 
 def recipe_identity(plan):
@@ -61,15 +72,41 @@ def load_inputs(plan):
     return state, w, y, s, fs, montage, CP.fold_roles(internal), source
 
 
-def fit_packaging(two_seconds, one_seconds):
+def fit_packaging(two_seconds, one_seconds, limit_seconds=14100):
     """Prespecified budget rule: regroup jobs, never change scientific dose."""
+    T.require(np.isfinite(limit_seconds) and limit_seconds > 0, "invalid per-job time limit")
     T.require(np.isfinite(two_seconds) and np.isfinite(one_seconds) and
               0 < one_seconds <= two_seconds, "invalid benchmark projection")
-    if two_seconds <= 14100:
+    if two_seconds <= limit_seconds:
         return "joint"
-    if one_seconds <= 14100:
+    if one_seconds <= limit_seconds:
         return "split"
     return "blocked"
+
+
+def fit_resource_policy(plan):
+    """The reviewed operational amendment is explicit, not an implicit fallback."""
+    T.require("fit_allocation_each_fold_regime" not in plan, "ambiguous legacy fit allocation")
+    T.require(plan.get("fit_allocation_by_regime") == FIT_ALLOCATION_BY_REGIME, "fit allocation policy changed")
+    T.require(plan.get("fit_packaging_policy") == FIT_PACKAGING_POLICY, "fit packaging policy changed")
+    return {regime: allocation["seconds"] - FIT_PACKAGING_POLICY["seconds_reserved_per_job"]
+            for regime, allocation in FIT_ALLOCATION_BY_REGIME.items()}
+
+
+def benchmark_packaging(gate, plan, science_sha):
+    """A previous-source benchmark cannot authorize fits under a new controller."""
+    limits = fit_resource_policy(plan)
+    T.require(gate["complete"] is True and gate["protocol"] == PROTOCOL and gate["source_sha256"] == science_sha and
+              gate["mode"] == "benchmark" and gate["recipe_sha256"] == plan["recipe_sha256"], "benchmark provenance mismatch")
+    T.require(gate.get("fit_allocation_by_regime") == plan["fit_allocation_by_regime"] and
+              gate.get("fit_packaging_policy") == plan["fit_packaging_policy"] and
+              gate.get("fit_limit_seconds_by_regime") == limits, "benchmark resource policy mismatch")
+    packaging = {regime: fit_packaging(gate["projected_two_candidates_seconds"][regime],
+                                     gate["projected_one_candidate_seconds"][regime], limits[regime])
+                 for regime in F.REGIMES}
+    T.require(gate["fit_packaging"] == packaging, "benchmark packaging differs from measured projections")
+    T.require(gate["resource_gate_passed"] is True, "benchmark memory gate failed")
+    return packaging
 
 
 def select_candidate(results):
@@ -155,6 +192,7 @@ def execute(args):
     T.require(plan["head_lr_multiplier"] == F.HEAD_LR_MULTIPLIER, "head LR multiplier changed")
     T.require(plan["scratch_learning_rule"] == SCRATCH_RULE, "scratch reading rule changed")
     T.require(plan["recipe_sha256"] == recipe_identity(plan), "recipe hash mismatch")
+    fit_limits = fit_resource_policy(plan)
     science_sha = source_identity()
     if args.mode == "fit":
         T.require(plan.get("fits_status") == "claude_review_converged", "corrected fit protocol review still required")
@@ -162,13 +200,9 @@ def execute(args):
         T.require(isinstance(plan["benchmark_receipt"], dict), "pin benchmark receipt before fits")
         gate_pin = T.P.pinned_file(plan["benchmark_receipt"])
         gate = json.loads(Path(gate_pin["path"]).read_text())
-        T.require(gate["complete"] is True and gate["protocol"] == PROTOCOL and gate["source_sha256"] == science_sha and
-                  gate["mode"] == "benchmark" and gate["recipe_sha256"] == plan["recipe_sha256"], "benchmark provenance mismatch")
-        packaging = fit_packaging(gate["projected_two_candidates_seconds"][args.regime],
-                                  gate["projected_one_candidate_seconds"][args.regime])
+        packaging = benchmark_packaging(gate, plan, science_sha)[args.regime]
         T.require((packaging == "joint" and args.candidate is None) or
                   (packaging == "split" and args.candidate in (0, 1)), "fit packaging differs from benchmark policy or is blocked")
-        T.require(gate["resource_gate_passed"] is True, "benchmark memory gate failed")
         suffix = "joint" if args.candidate is None else f"candidate{args.candidate}"
         expected_out = Path(plan["fit_output_root"]) / f"fold{args.fold}" / args.regime / suffix
         T.require(args.out == expected_out, "fit output differs from the frozen per-fold layout")
@@ -180,6 +214,8 @@ def execute(args):
     report = {"protocol": PROTOCOL, "complete": False, "mode": args.mode, "code_sha": code,
               "plan_sha256": pin["sha256"], "recipe_sha256": plan["recipe_sha256"], "source_sha256": science_sha,
               "checkpoint_sha256": source["sha256"], "input_sha256": plan["input_sha256"],
+              "fit_allocation_by_regime": plan["fit_allocation_by_regime"],
+              "fit_packaging_policy": plan["fit_packaging_policy"], "fit_limit_seconds_by_regime": fit_limits,
               "initialization": "teacher19618 or fresh random architecture; no EMA downstream"}
     if args.mode == "benchmark":
         roles = F.role_indices(s, fold_roles[0])
@@ -240,7 +276,7 @@ def execute(args):
             v["peak_reserved_bytes"] <= .85 * v["device_memory_bytes"] for v in timings.values())
         report.update(timings=timings, projected_two_candidates_seconds=projected,
                       projected_one_candidate_seconds=projected_one,
-                      fit_packaging={r: fit_packaging(projected[r], projected_one[r]) for r in F.REGIMES},
+                      fit_packaging={r: fit_packaging(projected[r], projected_one[r], fit_limits[r]) for r in F.REGIMES},
                       load_seconds=load_seconds, train_preprocessing_seconds=preprocessing_seconds,
                       projected_full_preprocessing_seconds=preprocessing_projection, peak_rss_bytes=rss,
                       projected_full_peak_rss_bytes=projected_rss, resource_gate_passed=memory_ok,

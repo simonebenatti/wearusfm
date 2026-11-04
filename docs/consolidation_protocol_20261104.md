@@ -1,6 +1,6 @@
 # Consolidamento T100-G: proposta eseguibile da rivedere con Claude
 
-Stato: **convergenza Claude raggiunta, preparazione dei lanci**. Simone ha assegnato a questa chat schedule
+Stato: **continuazione sottomessa; benchmark FT completo, adeguamento dei tempi in review**. Simone ha assegnato a questa chat schedule
 lungo e fine-tuning; il 300M appartiene al thread originale. Worktree esclusivo
 `wearusfm-consolidation`, branch `codex/consolidation-20261104`, base `8ee6603`.
 Nessuna scrittura nei checkout `wearusfm-gpt-science` e `wearusfm-scaling-300m`.
@@ -9,11 +9,14 @@ legge soltanto questo pacchetto; non sostituisce la review esterna di Claude.
 
 Ordine richiesto da Simone: preparazione → review Claude → correzioni e convergenza
 → pubblicazione dei riferimenti esecutivi → lanci tramite submitter/ledger comune.
-La rilettura Claude `0b2623a` su `2dbd498` chiude la convergenza: i piani hanno
-`status=claude_review_converged`. Corretto R-1: output FT, compresi i pesi dei
-candidati, sotto WORK; `fits_status` convergente. N-2: quota reale pinnata nel
-piano, con verifica dell'età subito prima degli invii. Benchmark da eseguire e
-pinnare prima dei fit; matrice lunga e aggregatore restano da consegnare.
+La rilettura Claude `0b2623a` su `2dbd498` ha chiuso la convergenza scientifica.
+R-1 corretto e quota N-2 pinnata; prima tranche sottomessa da `17dd455`.
+Il benchmark63525812 è completo ma FT/scratch superano il gate delle4h anche
+con un solo candidato. Simone autorizza l'aumento dei limiti: emendamento
+operativo4h/7h/7h in `finetune_walltime_amendment_20261104.md`. Il piano FT
+torna `awaiting_claude_walltime_review`; quello della continuazione è invariato.
+Nuovo benchmark necessario dopo il cambio del controller, poi pin e fit;
+matrice lunga e aggregatore restano da consegnare.
 F-R2 e V-R1 convergenti senza modifiche alle soglie. Dettagli e costi degli invii
 in `consolidation_execution_20261104.md`.
 Niente monitor in background. Nessuna nuova autorizzazione per il lavoro approvato
@@ -207,22 +210,28 @@ Registra RSS e memoria CUDA allocata/prenotata: proiezione RSS piena (×rapporto
 finestre×1,3) entro85% di100GiB, prenotataCUDA entro85% della memoria dellaGPU.
 Proiezione tempo: costo per update, tutte le validation e held addebitate come
 training, ×1,5 della media steady dopo warm-up; si conserva anche la media all.
-Caricamento/preprocessing misurati con margine, più600s. Ogni job deve stare entro
-14100s su allocazione4h. PolicyB-R1 fissata prima della misura, per regime: se due
+Caricamento/preprocessing misurati con margine, più600s. Il limite originale era
+14100s su allocazione4h. Il benchmark63525812 misura7959,88s per candidato frozen,
+23558,54s finetune e23535,00s scratch: memoria valida, FT/scratch bloccati dal tempo.
+Emendamento operativo autorizzato da Simone, da revisionare: frozen14100s/4h,
+finetune e scratch24900s/7h, sempre300s di margine sul walltime. PolicyB-R1, per regime: se due
 candidati rientrano si usa un job; altrimenti due job da un candidato se la proiezione
 singola rientra. Il secondo legge la ricevuta del primo e poi seleziona/predice held.
 Se neanche il singolo rientra: stop e nuovo preventivo. Nessun cambio automatico di
 batch, epoche o LR. Nel benchmark OOM/nonfiniti richiedono diagnosi; nei fit solo la
 divergenza numerica prevista è un esito del candidato. Pin del report e hash dei sorgenti
-obbligatori prima dei fit. Il costo atteso dei fit **non è ancora misurato**.
+obbligatori prima dei fit. Proiezione prudenziale dal primo benchmark:122,34GPUh
+per24candidati, da confermare col nuovo benchmark sul codice aggiornato.
 
-Tetto fit congiunti:12job ×1GPU/8CPU/100GiB/4h = **48GPUh,384coreh**; nel ripiego
-completo24job = **96GPUh,768coreh**, non previsione di consumo. Nessun candidato
+Tetto aggiornato ipotetico congiunto:12job, quattro per regime, **72GPUh,576coreh**;
+ripiego completo atteso24job = **144GPUh,1152coreh** (8×4h +16×7h), non previsione
+di consumo. I tetti originali48/96GPUh sono superati dall'autorizzazione di Simone
+all'aumento dei limiti. Risorse per job1GPU/8CPU/100GiB invariate. Nessun candidato
 aggiunto; combinazione mista possibile tra regimi. Namespace `FT-BENCH-20261104`,
 poi `FT-EPN-<regime>-F<fold>-20261104` o suffisso`-C0/-C1`.
 Report sotto `wearusfm_runs/results/consolidation_20261104/finetuning/`, output nuovi,
 mai sovrascrivere una consegna incompleta. Controller e launcher implementati;
-benchmark e fit bloccati dalla review. Fine-tuning49.046 non implicito: prima leggere
+nuovo benchmark e fit bloccati dalla review dell'emendamento. Fine-tuning49.046 non implicito: prima leggere
 questa prova e il nuovo endpoint, poi fissare il confronto aggiuntivo.
 
 ## Consegna e gate ancora aperti
@@ -232,10 +241,10 @@ gradiente del tokenizer, congelamento effettivo, inizializzazione appaiata della
 testa, nessuna mutazione del checkpoint, split e assenza di letture held durante fit.
 Non sono una misuraCUDA di velocità/memoria o una verifica dei dati remoti.
 
-Da chiudere in ordine: critico locale e test → review Claude di questo diff e del
-protocollo → correzioni convergenti → piano esecutivo con SHA, deployment e ledger
-→ continuazione e benchmarkFT indipendenti → pin del benchmark e preventivoFT
-misurato → fit. I controller della matrice di sonde lunga restano una consegna
+Continuazione già sottomessa. Per FT: critico e test dell'adeguamento tempi →
+review Claude del diff operativo → piano/SHA pubblicati → nuovo benchmark → pin
+e preventivo misurato → fit. La ricetta scientifica e F-R2/V-R1 non cambiano.
+I controller della matrice di sonde lunga restano una consegna
 tecnica da completare prima delle rispettive estrazioni, con ulteriore review se
 cambiano algoritmo o criteri. Nessuna pretesa che l'intera catena sia già pronta
 solo perché la continuazione del training lo è.

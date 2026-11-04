@@ -10,14 +10,20 @@
 #SBATCH -J consolidation_ft
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft_%j.out
-# FIT requires explicit --time=04:00:00 through the shared submitter.
+# FIT requires --time=04:00:00 (frozen) or 07:00:00 (finetune/scratch)
+# through the shared submitter; the scientific dose remains five epochs.
 set -euo pipefail
 [ "$#" -ge 2 ] || { echo 'usage: consolidation_finetune.sbatch benchmark|fit OUT [FOLD REGIME [CANDIDATE]]' >&2; exit 2; }
 MODE="$1"; OUT="$2"
 case "$MODE" in
   benchmark) [ "$#" -eq 2 ] || { echo 'benchmark takes only MODE OUT' >&2; exit 2; }; EXPECTED_TIME=00:30:00; EXTRA=();;
   fit) [ "$#" -eq 4 ] || [ "$#" -eq 5 ] || { echo 'fit takes MODE OUT FOLD REGIME [CANDIDATE]' >&2; exit 2; }
-       EXPECTED_TIME=04:00:00; EXTRA=(--fold "$3" --regime "$4")
+       case "$4" in
+         frozen) EXPECTED_TIME=04:00:00;;
+         finetune|scratch) EXPECTED_TIME=07:00:00;;
+         *) echo "unknown fit regime: $4" >&2; exit 2;;
+       esac
+       EXTRA=(--fold "$3" --regime "$4")
        if [ "$#" -eq 5 ]; then EXTRA+=(--candidate "$5"); fi;;
   *) echo "unknown mode: $MODE" >&2; exit 2;;
 esac

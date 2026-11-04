@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Benchmark FT completo, adeguamento tempi autorizzato
+
+FT-BENCH63525812 COMPLETED0:0,457s:0,126944GPUh e1,015556coreh. Report,misure,
+log eaccounting raccolti conSHA; codice17dd455,ricetta,input,checkpoint,sorgenti
+verificati. Memoria passa. Proiezioni singolo: frozen7959,88s,FT23558,54s,
+scratch23535,00s: frozen split,FT/scratch bloccati dal gate14100s. Nessunfit
+sottomesso; non è un risultato scientifico negativo. Critico indipendente concorde.
+
+Simone autorizza l'aumento dei limiti e chiede promptClaude. Preparato emendamento:
+frozen4h/14100s,FT/scratch7h/24900s; stessi5epoche,batch,seed,LR,selezione.
+Proiezione prudenziale122,34GPUh;24job attesi, tetto144GPUh/1152coreh. Nuovo
+benchmark0,5GPUh dopo review perché cambia source_identity del controller;
+vecchio report conservato,nessuna guardia aggirata. Codice/piano/launcher coerenti,
+44test mirati passati. Prompt in prompt_claude_ft_walltime_20261104.md.
+Continuazione63525803→63525805→63525809 resta sulcheckout17dd455;nessunmonitor.
+
+
 ### 2026-11-04 | GPT consolidamento | Prima tranche sottomessa | Codice17dd455
 
 Checkout63525708 COMPLETED0:0, SHA e sola lettura verificati,51MiB. Training
@@ -5498,6 +5515,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Gate tempo FT, nessun fallimento scientifico
+
+Il benchmark completa ma due regimi superano4h persino con un candidato; memoria
+valida non equivale a gate tempo passato. Nessunfit destinato al timeout lanciato.
+Vecchia ricevuta resta evidenza, ma non è valida sul controller con limiti nuovi:
+benchmark_receipt=null,previous_benchmark_receipt pinnata,statoawaiting_claude_walltime_review.
+Autorizzazione aumento tempi già presente; segue review delsolo emendamento,
+non nuova scelta scientifica. V-R2 e aggregatoreOOF/IC ancora da consegnare.
+
 
 ### 2026-11-04 | GPT consolidamento | Correzione invio e accounting checkout
 

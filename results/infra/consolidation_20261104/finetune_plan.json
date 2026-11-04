@@ -1,6 +1,6 @@
 {
   "protocol": "consolidation-finetune-epn-20261104-v1",
-  "status": "claude_review_converged",
+  "status": "awaiting_claude_walltime_review",
   "checkpoint": {
     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
     "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
@@ -35,24 +35,18 @@
     "memory": "100G",
     "seconds": 1800
   },
-  "fit_allocation_each_fold_regime": {
-    "gpus": 1,
-    "cpus": 8,
-    "memory": "100G",
-    "seconds": 14400
-  },
   "fits": 24,
   "fold_regime_jobs": 12,
-  "fit_gpu_hours_cap": 96,
-  "fit_allocated_core_hours_cap": 768,
-  "gate": "Pinned corrected benchmark; choose joint/split per regime from prospective timing rule; <=14100s/job and memory <=85%; corrected fit review required.",
+  "fit_gpu_hours_cap": 144,
+  "fit_allocated_core_hours_cap": 1152,
+  "gate": "New benchmark on corrected source required; per-regime joint/split limits 14100/24900/24900s and memory<=85%; walltime amendment review required.",
   "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
   "head_lr_multiplier": {
     "frozen": 1,
     "finetune": 100,
     "scratch": 10
   },
-  "fits_status": "claude_review_converged",
+  "fits_status": "awaiting_claude_walltime_review",
   "fit_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
   "scratch_learning_rule": {
     "folds": 4,
@@ -67,18 +61,66 @@
     "followup_gate": "preregistered direction; publish measured resources and validate implementation before any extension"
   },
   "fit_packaging_policy": {
-    "joint_if_two_candidates_seconds_lte": 14100,
-    "otherwise_split_if_one_candidate_seconds_lte": 14100,
+    "joint_if_two_candidates_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
+    "otherwise_split_if_one_candidate_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
     "otherwise": "blocked; no automatic dose/batch/grid change",
-    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback"
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback",
+    "seconds_reserved_per_job": 300
   },
-  "fit_gpu_hours_cap_joint": 48,
-  "fit_gpu_hours_cap_fallback": 96,
+  "fit_gpu_hours_cap_joint": 72,
+  "fit_gpu_hours_cap_fallback": 144,
   "max_candidate_jobs": 24,
   "review": {
     "commit": "0b2623a12e1b4e597974d97ef0ad67a8b4c468e1",
     "path": "docs/reviews/claude_review_consolidation_20261104.md",
     "benchmark": "approved and converged; benchmark OUT must be WORK",
-    "fits": "approved and converged after R-1 output root corrected to WORK; benchmark gate still mandatory"
+    "fits": "approved and converged after R-1 output root corrected to WORK; benchmark gate still mandatory",
+    "walltime_amendment": "pending Claude; Simone authorizes increasing limits, 04/11; no change to scientific recipe"
+  },
+  "previous_benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark/report.json",
+    "sha256": "a5eada1ab8cc0b265c3c7b2ba03a0b7f43ca9b1e819db2011362a00971f80c72"
+  },
+  "fit_allocation_by_regime": {
+    "frozen": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 14400
+    },
+    "finetune": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    },
+    "scratch": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    }
+  },
+  "walltime_amendment": {
+    "motivated_by_job": 63525812,
+    "old_per_job_seconds": 14400,
+    "projected_single_candidate_seconds": {
+      "frozen": 7959.877150932498,
+      "finetune": 23558.540223664175,
+      "scratch": 23535.002877678966
+    },
+    "reason": "even single candidates exceed old 14100s gate for finetune and scratch",
+    "scientific_recipe_unchanged": true,
+    "existing_training_checkout_unchanged": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+    "requires_new_benchmark_due_to_source_identity": true,
+    "user_authorization": "poi se devi alzare limiti di tempo vai tranquillo"
   }
 }

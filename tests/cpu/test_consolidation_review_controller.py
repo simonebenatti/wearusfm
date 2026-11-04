@@ -1,6 +1,8 @@
 """Persisted candidate outcomes and the prespecified timing/reading policies."""
+import copy
 import json
 from pathlib import Path
+import subprocess
 import sys
 from types import SimpleNamespace
 
@@ -23,6 +25,87 @@ def test_packaging_never_changes_dose_or_exceeds_single_job_gate(two, one, expec
 def test_invalid_costs_cannot_pass_gate(two, one):
     with pytest.raises(ValueError):
         C.fit_packaging(two, one)
+
+
+@pytest.mark.parametrize("two,one,expected", [
+    (24900, 15000, "joint"), (24901, 24900, "split"), (50000, 24901, "blocked"),
+])
+def test_seven_hour_amendment_has_its_own_fixed_gate(two, one, expected):
+    assert C.fit_packaging(two, one, 24900) == expected
+    # These costs must still fail the unamended four-hour allocation.
+    assert C.fit_packaging(two, one) == "blocked"
+
+
+@pytest.mark.parametrize("limit", [0, -1, float("nan"), float("inf")])
+def test_invalid_job_limit_never_authorizes_a_fit(limit):
+    with pytest.raises(ValueError, match="time limit"):
+        C.fit_packaging(2, 1, limit)
+
+
+def walltime_plan():
+    plan = json.loads((ROOT / "results/infra/consolidation_20261104/finetune_plan.json").read_text())
+    plan.pop("fit_allocation_each_fold_regime", None)
+    plan["fit_allocation_by_regime"] = copy.deepcopy(C.FIT_ALLOCATION_BY_REGIME)
+    plan["fit_packaging_policy"] = copy.deepcopy(C.FIT_PACKAGING_POLICY)
+    return plan
+
+
+def test_resource_amendment_is_explicit_and_does_not_change_scientific_recipe():
+    original = json.loads((ROOT / "results/infra/consolidation_20261104/finetune_plan.json").read_text())
+    assert C.fit_resource_policy(original) == {"frozen": 14100, "finetune": 24900, "scratch": 24900}
+    plan = walltime_plan()
+    assert C.recipe_identity(plan) == C.recipe_identity(original) == plan["recipe_sha256"]
+    assert C.fit_resource_policy(plan) == {"frozen": 14100, "finetune": 24900, "scratch": 24900}
+    plan["fit_allocation_by_regime"]["finetune"]["seconds"] = 28800
+    with pytest.raises(ValueError, match="allocation policy"):
+        C.fit_resource_policy(plan)
+    plan = walltime_plan()
+    plan["fit_packaging_policy"]["joint_if_two_candidates_seconds_lte"]["frozen"] = 24900
+    with pytest.raises(ValueError, match="packaging policy"):
+        C.fit_resource_policy(plan)
+    plan = walltime_plan()
+    plan["fit_allocation_each_fold_regime"] = {"seconds": 14400}
+    with pytest.raises(ValueError, match="legacy"):
+        C.fit_resource_policy(plan)
+
+
+def test_benchmark_gate_rejects_old_source_and_wrong_operational_limits():
+    plan = walltime_plan()
+    gate = {
+        "complete": True, "protocol": C.PROTOCOL, "mode": "benchmark",
+        "source_sha256": "current-controller", "recipe_sha256": plan["recipe_sha256"],
+        "fit_allocation_by_regime": copy.deepcopy(plan["fit_allocation_by_regime"]),
+        "fit_packaging_policy": copy.deepcopy(plan["fit_packaging_policy"]),
+        "fit_limit_seconds_by_regime": C.fit_resource_policy(plan),
+        "projected_two_candidates_seconds": {"frozen": 20000, "finetune": 40000, "scratch": 45000},
+        "projected_one_candidate_seconds": {"frozen": 10000, "finetune": 21000, "scratch": 23000},
+        "fit_packaging": {regime: "split" for regime in F.REGIMES},
+        "resource_gate_passed": True,
+    }
+    assert C.benchmark_packaging(gate, plan, "current-controller") == gate["fit_packaging"]
+    with pytest.raises(ValueError, match="provenance"):
+        C.benchmark_packaging(gate, plan, "new-controller")
+    wrong_limits = copy.deepcopy(gate)
+    wrong_limits["fit_limit_seconds_by_regime"]["finetune"] = 14100
+    with pytest.raises(ValueError, match="resource policy"):
+        C.benchmark_packaging(wrong_limits, plan, "current-controller")
+    wrong_packaging = copy.deepcopy(gate)
+    wrong_packaging["fit_packaging"]["finetune"] = "joint"
+    with pytest.raises(ValueError, match="measured projections"):
+        C.benchmark_packaging(wrong_packaging, plan, "current-controller")
+    wrong_memory = copy.deepcopy(gate)
+    wrong_memory["resource_gate_passed"] = False
+    with pytest.raises(ValueError, match="memory"):
+        C.benchmark_packaging(wrong_memory, plan, "current-controller")
+
+
+def test_launcher_rejects_unknown_regime_before_python_or_cluster_setup(tmp_path):
+    launcher = ROOT / "scripts/slurm/consolidation_finetune.sbatch"
+    result = subprocess.run(["bash", str(launcher), "fit", str(tmp_path / "out"), "0", "unknown"],
+                            capture_output=True, text=True, env={"PATH": "/usr/bin:/bin"})
+    assert result.returncode == 2
+    assert "unknown fit regime" in result.stderr
+    assert "WORK" not in result.stderr
 
 
 def candidate(number, score=None, best=3, delta=.0):

@@ -89,3 +89,13 @@ Il ledger riserva12GPUh per segmento,0,5per benchmark; stima training25,3521 dis
 SLURM ha allocato2CPU per il checkout richiesto a1: costo effettivo24s×2=0,013333
 coreh. Massimo allocato prima tranche292,333333coreh, contro292,166667richieste;
 nessuna variazione GPU. Verifiche operative39test, sorgenti storici100/100immutati.
+
+## Aggiornamento: benchmark completo, fit in adeguamento operativo
+
+63525812 COMPLETED0:0 in457s (0,126944GPUh,1,015556coreh). Report raccolto e
+verificato. Memoria valida,ma FT/scratch oltre14100s anche da soli; nessun fit
+inviato. [Emendamento autorizzato dei tempi](finetune_walltime_amendment_20261104.md):
+4h frozen,7hFT/scratch,senza cambiare la ricetta. I tetti48/96GPUh riportati sopra
+sono quelli originali della prima consegna: nuova proposta massimo144GPUh per
+i fit,da rivedere conClaude. Nuovo benchmark dopo cambio controller obbligatorio.
+La continuazione usa sempre17dd455,nessuncheckout attivo viene modificato.

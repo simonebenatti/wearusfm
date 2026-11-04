@@ -314,9 +314,9 @@ dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risul
 | Pezzo | Preparato | Risultato disponibile | Prossimo gate |
 |---|---|---|---|
 |30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Sottomessi63525803→63525805→63525809; primo in coda, successori afterok|
-|Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Convergere sulla regola; completare controller, pin e budget misurati|
-|Benchmark FT EPN|Warm-up separato; regola preventiva per uno/due candidati per job|Nessuna misura CUDA; tetto benchmark 0,5 GPUh|Benchmark63525812 RUNNING al04/11 18:27Europe/Rome; poi pin e costi dei fit|
-|Fit EPN teacher19k|Testa con stessa griglia LR nei tre regimi; 4 fold, 2 LR, 5 epoche; risultati per candidato e regola scratch|123 test complessivi passati; nessun fit reale. Tetto 48 GPUh, fino a 96 con ripiego|Convergenza Claude dopo R-1; attendere benchmark e preventivo effettivo; aggregatore OOF/IC da collegare|
+|Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Regola convergente con0b2623a; completare controller, pin e budget misurati|
+|Benchmark FT EPN|Warm-up separato; regola preventiva per uno/due candidati per job|63525812 completo in457s; memoria valida, FT/scratch superano4h|Rifare benchmark dopo review del nuovo limite7h e cambio controller|
+|Fit EPN teacher19k|Testa con stessa griglia LR nei tre regimi; 4 fold, 2 LR, 5 epoche; risultati per candidato e regola scratch|Nessun fit reale; proiezione122,34GPUh, tetto aggiornato144GPUh con24job|Review adeguamento4h/7h/7h già autorizzato da Simone; nuovo benchmark prima dei fit|
 
 Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
 Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
@@ -327,3 +327,5 @@ e [prompt per la rilettura](prompt_claude_consolidation_followup_20261104.md).
 Convergenza raggiunta con0b2623a: prima tranche nel [piano esecutivo](consolidation_execution_20261104.md). La replica
 T25-L/B resta un riferimento empirico, non una soglia statistica universale;
 1 pp e 2% E_dyn sono margini pratici proposti per la lettura futura.
+
+[Misura FT e adeguamento dei tempi](finetune_walltime_amendment_20261104.md): problema operativo, nessun risultato scientifico negativo; promptClaude pronto.
