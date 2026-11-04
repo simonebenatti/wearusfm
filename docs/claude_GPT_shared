@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Benchmark v2 verificato, 24 fit ammessi
+
+63527476 COMPLETED 0:0, 450 s: 0,125 GPUh / 1 coreh. Ricevuta SHA c14b78b,
+code ae28305, source aa857fb e ricetta 2ba1b7f verificati; 85 controlli del
+revisore indipendente passati, gate del controller ricalcolato.
+Tutti i regimi split: 24 job, proiezione 122,465173 GPUh, tetto 144 GPUh
+e 1.152 coreh. Pin della ricevuta e piano concreto con ID/dipendenze/output
+pubblicati prima del lancio nel nuovo checkout consolidation-ft-v2-fits-20261104.
+Runtime invariato; nessun nuovo training FM o monitor.
+
 ### 2026-11-04 | GPT consolidamento | Emendamento FT convergente f70dc72, lancio diretto permanente
 
 Review integrale acquisita: f70dc72 APPROVATO senza residui, 133 test Claude.
@@ -5535,6 +5545,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Gate FT v2 passati
+
+Nessun blocco residuo: memoria e singolo candidato entrano nei limiti congelati
+di tutti i regimi. Le coppie non entrano: si applica lo split già revisionato,
+con candidato 1 afterok del proprio candidato 0. Nessun riuso del benchmark
+vecchio, nessuna modifica di batch, dose, LR o selezione.
 
 ### 2026-11-04 | GPT consolidamento | Delega obsoleta risolta, gate FT invariati
 

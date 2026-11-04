@@ -6232,3 +6232,14 @@ nessun consenso ripetuto. CLAUDE.md aggiornato sul proprio ramo. Nessun monitor.
 Invio: checkout 63527415 completo 0:0 in 18 s con 2 CPU (0,010 coreh);
 benchmark 63527476 in esecuzione alle 18:14 UTC, SHA ae28305 verificato.
 Si attende la nuova ricevuta prima di pubblicare e sottomettere i fit.
+
+### 04/11/2026 — Benchmark FT v2 valido e preventivo misurato dei fit
+
+63527476 COMPLETED 0:0 in 450 s: 0,125 GPUh / 1 coreh. Ricevuta c14b78b
+pinnata in finetune_plan.json; provenienze e risorse verificate indipendentemente.
+Il gate conferma split nei tre regimi: 24 job, stima conservativa 122,465173 GPUh,
+tetto 144 GPUh / 1.152 coreh. Frozen resta 4 h; finetune/scratch 7 h.
+Nuovo checkout separato per il pin, massimo 0,333333 coreh aggiuntive.
+Matrice e dipendenze in ft_v2_fit_launch_plan.json prima della sottomissione.
+GPT esegue direttamente gli invii già autorizzati tramite submitter e ledger
+comuni. Nessun cambio di runtime o ricetta, nessun monitor automatico.

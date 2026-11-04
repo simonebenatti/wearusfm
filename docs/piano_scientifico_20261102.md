@@ -315,8 +315,8 @@ dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risul
 |---|---|---|---|
 |30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Sottomessi63525803→63525805→63525809; primo in coda, successori afterok|
 |Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Regola convergente con0b2623a; completare controller, pin e budget misurati|
-|Benchmark FT EPN|Warm-up separato; regola preventiva per uno/due candidati per job|63525812 completo in457s; memoria valida, FT/scratch superano4h|Rifare benchmark dopo review del nuovo limite7h e cambio controller|
-|Fit EPN teacher19k|Testa con stessa griglia LR nei tre regimi; 4 fold, 2 LR, 5 epoche; risultati per candidato e regola scratch|Nessun fit reale; proiezione122,34GPUh, tetto aggiornato144GPUh con24job|Review adeguamento4h/7h/7h già autorizzato da Simone; nuovo benchmark prima dei fit|
+|Benchmark FT EPN|Emendamento approvato da Claude f70dc72; misura su nuovo checkout ae28305|63527476 completo in 450 s; memoria e tempi validi; 0,125 GPUh / 1 coreh|Ricevuta verificata e pinnata; split nei tre regimi|
+|Fit EPN teacher19k|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; candidati persistenti e regola scratch|24 job ammessi, proiezione 122,465 GPUh; tetto 144 GPUh / 1.152 coreh|Piano misurato pubblicato; sottomissione diretta GPT su nuovo checkout con ricevuta pinnata|
 
 Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
 Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
@@ -328,4 +328,5 @@ Convergenza raggiunta con0b2623a: prima tranche nel [piano esecutivo](consolidat
 T25-L/B resta un riferimento empirico, non una soglia statistica universale;
 1 pp e 2% E_dyn sono margini pratici proposti per la lettura futura.
 
-[Misura FT e adeguamento dei tempi](finetune_walltime_amendment_20261104.md): problema operativo, nessun risultato scientifico negativo; promptClaude pronto.
+[Misura FT e adeguamento dei tempi](finetune_walltime_amendment_20261104.md):
+review f70dc72 convergente. [Benchmark v2 e piano dei fit](finetune_v2_execution_20261104.md).

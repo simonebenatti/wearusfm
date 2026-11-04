@@ -1,0 +1,472 @@
+{
+  "campaign": "consolidation-ft-v2-fits-20261104",
+  "status": "measured_gates_passed_ready_to_submit",
+  "campaign_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-fits-20261104",
+  "deploy_ref": "refs/heads/deploy/consolidation-ft-v2-fits-20261104",
+  "code_pin": "commit containing this plan; exact SHA in submission receipt",
+  "benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark_v2/report.json",
+    "sha256": "c14b78b0d593a56f272192bd2c246003e657788551936c24c9dc1fba1eb0241d"
+  },
+  "benchmark_job": 63527476,
+  "source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
+  "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
+  "review_commit": "f70dc72a1b219bd41168ea0de6c7fe5265c824d3",
+  "fit_packaging": {
+    "frozen": "split",
+    "finetune": "split",
+    "scratch": "split"
+  },
+  "checkout": {
+    "id": "FT-checkout-v2-fits-20261104",
+    "gpus": 0,
+    "cpus_requested": 1,
+    "cpus_budgeted": 2,
+    "memory": "2G",
+    "seconds": 600,
+    "gpu_hours_cap": 0,
+    "allocated_core_hours_cap": 0.3333333333333333
+  },
+  "jobs": [
+    {
+      "id": "FT-EPN-frozen-F0-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/frozen/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F0-20261104-C1",
+      "after": "FT-EPN-frozen-F0-20261104-C0",
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/frozen/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F1-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/frozen/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F1-20261104-C1",
+      "after": "FT-EPN-frozen-F1-20261104-C0",
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/frozen/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F2-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/frozen/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F2-20261104-C1",
+      "after": "FT-EPN-frozen-F2-20261104-C0",
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/frozen/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F3-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/frozen/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-frozen-F3-20261104-C1",
+      "after": "FT-EPN-frozen-F3-20261104-C0",
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/frozen/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 14400
+      },
+      "gpu_hours_cap": 4.0,
+      "allocated_core_hours_cap": 32.0,
+      "projected_seconds": 7972.654956011097
+    },
+    {
+      "id": "FT-EPN-finetune-F0-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/finetune/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F0-20261104-C1",
+      "after": "FT-EPN-finetune-F0-20261104-C0",
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/finetune/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F1-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/finetune/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F1-20261104-C1",
+      "after": "FT-EPN-finetune-F1-20261104-C0",
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/finetune/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F2-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/finetune/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F2-20261104-C1",
+      "after": "FT-EPN-finetune-F2-20261104-C0",
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/finetune/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F3-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/finetune/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-finetune-F3-20261104-C1",
+      "after": "FT-EPN-finetune-F3-20261104-C0",
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/finetune/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23583.18277979224
+    },
+    {
+      "id": "FT-EPN-scratch-F0-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/scratch/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F0-20261104-C1",
+      "after": "FT-EPN-scratch-F0-20261104-C0",
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold0/scratch/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F1-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/scratch/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F1-20261104-C1",
+      "after": "FT-EPN-scratch-F1-20261104-C0",
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold1/scratch/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F2-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/scratch/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F2-20261104-C1",
+      "after": "FT-EPN-scratch-F2-20261104-C0",
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold2/scratch/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F3-20261104-C0",
+      "after": "FT-checkout-v2-fits-20261104",
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 0,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/scratch/candidate0",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    },
+    {
+      "id": "FT-EPN-scratch-F3-20261104-C1",
+      "after": "FT-EPN-scratch-F3-20261104-C0",
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 1,
+      "packaging": "split",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn/fold3/scratch/candidate1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 25200
+      },
+      "gpu_hours_cap": 7.0,
+      "allocated_core_hours_cap": 56.0,
+      "projected_seconds": 23553.49018576067
+    }
+  ],
+  "fit_job_count": 24,
+  "fit_gpu_hours_cap": 144.0,
+  "fit_allocated_core_hours_cap": 1152.0,
+  "fit_projected_gpu_hours": 122.4651731590311,
+  "direct_submission_authorized": true,
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs/",
+  "monitor_created": false
+}

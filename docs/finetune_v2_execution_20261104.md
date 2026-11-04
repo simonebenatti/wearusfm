@@ -56,3 +56,34 @@ Ricevute del submitter in `results/infra/consolidation_20261104/submission_v2/`.
 Alle 18:13:41 UTC WORK ha circa 39,8 GiB liberi nella quota di progetto;
 nessun output EPN fit né checkout dei fit già esistente. Ledger senza ID fit
 duplicati. Nessun monitor automatico attivato.
+
+## Misura conclusiva e piano dei fit, prima degli invii
+
+Benchmark **63527476 COMPLETED 0:0**, 450 s: **0,125 GPUh / 1,000 coreh**.
+Ricevuta locale e remota identiche:
+`c14b78b0d593a56f272192bd2c246003e657788551936c24c9dc1fba1eb0241d`.
+Il pin è in finetune_plan.json; vecchia ricevuta conservata separatamente.
+Verificate provenienze di codice, piano, sorgenti, ricetta, checkpoint e input,
+policy e limiti, 4 warm-up / 32 update per regime, forward sul solo train.
+Controllo indipendente favorevole: 85 verifiche positive, aritmetica ricostruita,
+gate del controller ricalcolato. Nessun dato di qualità scientifica dal benchmark.
+
+| Regime | Singolo candidato, proiezione | Gate | Modalità | Job | GPUh proiettate | Tetto GPUh |
+|---|---:|---:|---|---:|---:|---:|
+| frozen | 7.972,65 s | 14.100 s | split | 8 | 17,717 | 32 |
+| finetune | 23.583,18 s | 24.900 s | split | 8 | 52,407 | 56 |
+| scratch | 23.553,49 s | 24.900 s | split | 8 | 52,341 | 56 |
+| Totale | | | | **24** | **122,465** | **144** |
+
+Memoria host proiettata **32,385 GiB** su soglia 85 GiB; massimo CUDA riservato
+**6,584 GiB**, sotto l'85% dei 63,423 GiB disponibili. Cap CPU dei fit:
+**1.152 coreh**. Nuovo checkout CPU aggiuntivo: massimo **0,333333 coreh**.
+La proiezione comprende margini conservativi; il consuntivo verrà da SLURM.
+
+Piano concreto: `results/infra/consolidation_20261104/ft_v2_fit_launch_plan.json`.
+Checkout nuovo `consolidation-ft-v2-fits-20261104`, con pin della ricevuta
+e sorgenti invariati (aa857fb). Tutti i 24 ID, output, risorse e dipendenze
+sono pubblicati prima del lancio. Per ciascuna delle 12 coppie, candidato 0
+dopo il checkout, candidato 1 dopo il proprio candidato 0.
+Ogni job usa 1 GPU, 8 CPU, 100 GiB, 4 h frozen oppure 7 h finetune/scratch.
+Nessuna selezione sul held-out e nessuna variazione di ricetta.
