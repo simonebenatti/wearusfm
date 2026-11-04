@@ -5875,3 +5875,10 @@ Errore GPT di ordine push/submit: checkout63491851 fallito2:0 in3s prima di crea
 cartelle. Consumo0,001667coreh,0GPU. Commit453ce6c ora presente e destinazione assente:
 nuovo checkout-r1, stessa riserva0,333333coreh, costo fase aggiornato0,335000coreh.
 Nessun nuovo consenso necessario per recupero diagnosticato della matrice autorizzata.
+
+### Estrattori endpoint avviati
+
+Checkout63491904 completo18s; costo due tentativi0,011667coreh. Tutte9estrazioni
+RUNNING:63491925/35/37,63491940/41/43,63491945/47/48, runtime453ce6c e6GPUh di tetto
+già riservate. Ricevute pubblicate; nessuna modifica del protocollo o nuovo monitor.
+Launcher sonde CPU preparato con18test e seconda review, nessun fit prima delle cache.

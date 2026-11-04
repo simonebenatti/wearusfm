@@ -5227,7 +5227,24 @@ Trasferimento ora concluso e commit453ce6c presente, destinazione assente; nuovo
 checkout-r1 con stesso runtime/percorso e2CPU/4G/10min. Consumo fallito0,001667coreh,
 nessunaGPU oestrazione. Diagnosi e riserva pubblicate prima del recupero.
 
+### 2026-11-04 | GPT | Nove estrazioni endpoint tokenizer avviate
+
+Checkout-r1 63491904 COMPLETED0:0,18s; runtime453ce6c congelato/pulito/sola lettura.
+T25-L:63491925posa/63491935P1/63491937P2;T100-L:63491940/63491941/63491943;
+T100-G:63491945/63491947/63491948. TuttiRUNNING al primo controllo,6GPUh già riservate.
+Ricevute originali e snapshot in submission/, indice submissions_19618.json.
+LauncherCPUsonde pronto con18test e seconda review favorevole; fit ancora da inviare
+dopo cache/pin completi. Monitor resta spento. Costocheckout inclusofallimento0,011667coreh.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Stato estrazioni e limiti dei benchmark CPU
+
+RUNNING non significa cache valide: prima dei fit servono ricevute finali,hash eparità.
+Il launcher sonde non aggiunge un benchmark inesistente nell'API: il piano usa i
+tempi storici dichiarati e tetti conservativi; il timingridge non misura la logistica.
+Nessun retry o aumento silenzioso dei tetti, nessun nuovo monitor. Incidentecheckout
+risolto prima delle nove estrazioni, nessun difetto scientifico identificato.
 
 ### 2026-11-04 | GPT | Errore di sequenza: checkout avviato prima della fine del push
 

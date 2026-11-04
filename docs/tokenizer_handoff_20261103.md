@@ -1,5 +1,19 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
+## Stato ultimo04/11: nove estrazioni endpoint in esecuzione
+
+RuntimeGPU453ce6c496745f2d73aa3007406721586e6dd767, checkout63491904 completo18s.
+Il precedente63491851 è fallito3s prima di creare cartelle per invio anticipato
+rispetto alla fine del push; recupero diagnosticato e pubblicato904187c.
+Estrattori tutti RUNNING al primo controllo: T25-L posa63491925/P163491935/P263491937;
+T100-L posa63491940/P163491941/P263491943; T100-G posa63491945/P163491947/P263491948.
+**Non duplicare nessuno di questi job.** SeiGPUh già nella matrice autorizzata.
+Indice/ricevute in results/infra/tokenizer_evaluation_20261103/submissions_19618.json
+e submission/. Piano/policy e seguito in docs/tokenizer_endpoint_execution_20261104.md.
+Il launcher CPUsonde è pronto e revisionato,18test passati; i fit non sono ancora
+sottomessi, perché servono tutte le cache/provenienze reali e il relativo piano.
+Monitor spento. Lo screening5k è letto/revisionato e pubblicato453ce6c.
+
 ## Ripresa esplicita del04/11: endpoint pronto per le estrazioni
 
 Simone: «han finito, provvedi / procedi». Training63386315/63386337/63386403 tutti

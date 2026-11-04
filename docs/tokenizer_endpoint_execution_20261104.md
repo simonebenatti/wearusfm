@@ -82,3 +82,23 @@ fra consumo fallito e nuova riserva. Recupero diagnosticato, nessun retry cieco;
 la diagnosi viene pubblicata prima del secondo invio. Le nove estrazioni non sono
 state sottomesse e non vengono duplicate. Attendere esplicitamente il completamento
 di ogni push/comando dipendente, anche quando il tool restituisce una sessione attiva.
+
+## Nove estrazioni sottomesse e avviate
+
+Checkout-r1 **63491904 COMPLETED0:0**,18s,0,010000coreh. Totale dei due tentativi
+checkout0,011667coreh. SHA453ce6c496745f2d73aa3007406721586e6dd767 verificato sul
+checkout pulito e in sola lettura; nessuna modifica successiva al runtime.
+
+| Braccio | Posa | P1 | P2 |
+|---|---:|---:|---:|
+| T25-L |63491925|63491935|63491937|
+| T100-L |63491940|63491941|63491943|
+| T100-G |63491945|63491947|63491948|
+
+Tutti i nove job risultano **RUNNING** al primo controllo dopo gli invii del04/11,
+intorno alle08:21CET. Invii tramite submitter/ledger, nessun duplicato. Ricevute
+originali in results/infra/tokenizer_evaluation_20261103/submission/, indice
+submissions_19618.json, snapshot squeue e attestazione checkout nella stessa cartella.
+Ridge e sonde CPU non ancora sottomesse: attendono le cache complete con pin reali.
+Launcher sonde preparato e revisionato separatamente,18test passati; non modifica
+il checkoutGPU corrente. Monitor automatico resta spento.
