@@ -184,3 +184,14 @@ b315dad/piano/cap. Totale13/15fit inviati; restano DB2-23 eP2 diT100-G, poi
 6aggregati/confronto. Al riempimento1running+9pending,nessunhold.
 Stima15:30–17:00CET per il quadro completo, subordinata alla continuità della
 coda e agli invii successivi; monitorautomatico resta spento come richiesto.
+
+## Aggiornamento12:19CET — tutti i fit inviati e aggregati T25-L
+
+Ultimi fitT100-G DB2-23 **63504830** eP2 **63504862**, tutti15sottomessi.
+Otto shard completi e raccolti,224fitconvergenti/224,18,242222coreh. Gate di
+identita e hash in probe_cpu_19618/completed_shards, nessuna modifica di ricetta.
+Aggregati T25-L P1 **63505189** eP2 **63505230** sottomessi dopo il gate degli
+input completi. Accounting0:0 e hash sostituiscono afterok su IDgia finiti/scaduti.
+Snapshot1fitrunning+6fitpending+2aggregatipending, entrocap10. Restano4aggregati
+T100 e confronto finale. Classificazione non ancora interpretabile fra bracci;
+ETA15:30-17:00CET condizionata a coda e completamento invii. Monitor spento.

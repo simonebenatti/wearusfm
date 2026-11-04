@@ -5920,3 +5920,14 @@ si completa la stessa matrice autorizzata nella chat, senza monitorautomatico.
 Due fit finiti liberano posti: sottomessi T100-G DB6 63497058 eDB2-01 63497284,
 nessun cambio scientifico o di risorse. Tredici fit inviati, due restanti piu i
 sette rapporti finali. Cap10running+pending e monitorautomatico spento invariati.
+
+### 04/11/2026,12:19CET — Tutti i fit tokenizer inviati; aggregati T25-L
+
+UltimiT100-G DB2-23/P2 **63504830/63504862**; tutti15fit sottomessi. Otto shard
+conclusi0:0 e verificati,224fitconvergenti,18,242222coreh. T25-L ha tutti gli
+input: sottomessi aggregatiP1/P2 **63505189/63505230**, stessa policy2CPU/30G/20min.
+Vecchi IDscaduti a scontrol, gate su sacct/report/hash completi; niente rilanci.
+Novejobattivi (1fitrunning,6fitpending,2aggregatipending). Restano4aggregati dei
+dueT100 e confronto, nessuna nuova autorizzazione necessaria. Nessuna decisione
+scientifica dalla classificazione incompleta; monitorautomatico spento.
+Multinodo accantonato da Simone, eventuali training restano4GPUperrun.

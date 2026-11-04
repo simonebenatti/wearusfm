@@ -1,6 +1,25 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato attuale04/11, aggiornamento10:26CET:13/15fit sottomessi
+## Stato attuale04/11, aggiornamento12:19CET: tutti15fit sottomessi
+
+Tutti i15shard delle sonde sono ora inviati. Ultimi due T100-G: DB2 fold2-3
+**63504830**, P2 **63504862**. Otto shard COMPLETED0:0 e raccolti: tutti5diT25-L,
+DB3/DB6 diT100-L e DB3 diT100-G. Verificati hash report/audit/OOF, identita
+runtime/piano/cache e224fit/224convergenti.36warning di scoring per classi assenti
+nei target di fold DB3, previsti dalla convenzione del protocollo; zero warning
+di convergenza. Evidenze in probe_cpu_19618/completed_shards/.
+
+Aggregati T25-L P1 **63505189** e P2 **63505230** accodati dopo la verifica degli
+input completi. I vecchi ID non sono piu tutti disponibili a scontrol: accounting
+e hash verificati sostituiscono afterok su job gia finiti, nessun rilancio.
+Snapshot:1fitRUNNING+6fitPENDING+2aggregatiPENDING,9attivi entrocap10.
+Restano da inviare4aggregati dei dueT100 e confronto finale su input completi.
+Consuntivo8fitcompleti18,242222coreh; zeroGPU. ETA15:30-17:00CET resta indicativa
+e condizionata a coda/invii. Nessun risultato finale classificazione ancora.
+Monitorautomatico spento. Multinodo accantonato su richiesta di Simone:
+per eventuali training successivi resta la configurazione4GPUperrun.
+
+## Stato precedente04/11, aggiornamento10:26CET:13/15fit sottomessi
 
 Liberati due posti, invii autorizzati eseguiti: T100-G DB6 **63497058** e
 T100-G DB2 fold0-1 **63497284**. Rimangono soltanto T100-G DB2 fold2-3 e P2

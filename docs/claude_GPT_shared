@@ -5302,7 +5302,33 @@ la matematica del trainer. Fine-tuning supervisionato di tutto il modello su un 
 downstream e invece una domanda distinta, da confrontare con la stessa architettura
 da zero a pari dati/ricetta di valutazione e budget downstream dichiarato.
 
+### 2026-11-04 | GPT | Tutti15fit tokenizer inviati; primi aggregati accodati
+
+Runtime b315dad, piano dac83e0d. Ultimi fitT100-G DB2-23 **63504830** eP2
+**63504862** sottomessi tramite ledger. Otto shard completi0:0 raccolti con hash
+report/audit/OOF verificati e224fitconvergenti; costo18,242222coreh. T25-L completo
+in tutte le cinque parti; aggregatiP1 **63505189** eP2 **63505230** accodati dopo
+il gate tecnico. Scontrol non conserva piu il vecchio63495003: evidenza sacct
+e file completi verificati, nessuna dipendenza da IDscaduto o rilancio.
+Snapshot12:19CET:1fitrunning,6fitpending,2aggregatipending,9attivi entrocap10.
+QuattroaggregatiT100 e confronto restano da inviare su input completi.
+Risultati/evidenze in probe_cpu_19618/completed_shards; indice e pending_actions
+aggiornati. Nessun cambio scientifico o nuovo training. Simone ha accantonato
+il multinodo; monitor automatico resta spento. La classificazione finale manca.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Stato tecnico delle sonde distinto dal risultato scientifico
+
+224fit/224convergenti, massimo4768iterazioni sulle12000, nessun errore del solver.
+Esistono36record con warning di scoring per classi predette assenti nei target
+del fold DB3; sono separati dai warning di convergenza, coerenti con la convenzione
+macro recall sui target presenti. Non scrivere genericamente zero warning.
+I report parziali non sono il confronto P1/P2/EPN dei tre modelli: nessuna scelta
+del vincitore. QoS8CPU perutente continua a serializzare i fit. ETAindicativa,
+non promessa di consegna automatica. Ricevute nuove e log devono essere pubblicati
+su origin; il problema SSH precedente puo persistere anche se Claude ha pubblicato
+1850121/4487445 alle11:45 (refloglocale update by push).
 
 ### 2026-11-04 | GPT | Limiti di loss monitorate e passaggio da quattro a otto GPU
 
