@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Review Claude approvata e piano di esecuzione
+
+Claude approva senza blocchi nel commit befab4a, con23test rieseguiti. Simone
+trasmette il via: preparati checkout e collaudo frozen05d4bf0, namespaceSCALING-300M,
+submitter/ledger comuni,4GPU×30min=2GPUh +16coreh echeckout0,333coreh.
+Piano docs/scaling_300m_execution_20261104.md e execution_plan.json conargv/hash.
+Codice invariato; F1–F6 facoltativi differiti, F7precisato. Protocolloaggiornato
+conS1–S6 prima5000; S7rettificato secondo8ee6603. Nessun monitor otraining5000.
+Questa voce prepara gli invii; gli ID e lo stato osservato saranno registrati
+separatamente. Connessione remota in verifica, nessun esitoSLURM dedotto.
+
+
 ### 2026-11-04 | GPT | Chiarimento sonde: due momenti e due livelli
 
 Simone risponde «Entrambi». Aggiornato il piano:39.237/49.046 e rappresentazioni
@@ -5418,6 +5430,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Limiti della review e requisiti del seguito
+
+Nessun blocco del collaudo rilevato daClaude. I picchi del collaudo noncertificano
+pannelli/prefetch della produzione: prima5000 servono stima e controllo reale.
+Ripiego dichiarato prima dei risultati: accum2/globalbatch32, test di equivalenza
+delle riduzioni/gradiente e nuovo collaudo revisionato; nessun retry automatico.
+Il controllo30M in scratch va verificato/conservato; la data13dicembre indicata
+daClaude è da ricontrollare sugli artefatti. Readout a dimensione naturale primario,
+proiezione casuale fissa secondaria da implementare/preventivare. Non accolta
+la letturaS7 come rumore tra run: una coppiaT25−B non stima quella distribuzione,
+non definisce soglie0,2–0,9pp e non corregge i contrasti300M.
+
 
 ### 2026-11-04 | GPT scaling | Limiti e correzioni prima del collaudo300M
 

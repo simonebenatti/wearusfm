@@ -6035,3 +6035,21 @@ D896/pool1792, duebracci e dose5000. Controllo30M5000posa giàmisurato; classifi
 richiede estrazione. Inviluppi provvisori separati24GPUhtrain,8,25GPUhestrazioni,
 180corehCPU; non prenotazioni o viaalrun.19.618restapropostadasecondatranche,
 nessunveto sul300Mda unrisultatonulloabrevedose. Rootcoordina i lanci doporeviewClaude.
+
+
+### 04/11/2026 — Scaling: Claude approva il collaudo, preparazione degli invii
+
+Reviewbefab4a APPROVATOsenza blocchi; Simone porta il verdetto e conferma che
+il collaudo può essere sottomesso così com'è. GPT mantiene codice05d4bf0, piano
+e launcher immutati; pubblica esecuzione concreta e hash prima dei job.
+Due IDSCALING-300M-checkout/preflight-20261104, afterok echeckoutdetachednuovo;
+2GPUh+16coreh collaudo e0,333coreh checkout. Nonè iltraining5000.
+
+Protocollo aggiornato prima risultati: salvaguardia controllo30M5000, identità
+codice rispettoafb644e, proxy memoria produzione e prova reale separata, fallback
+accum2/global32 contest e nuovo collaudo, secondario a dimensione pareggiata
+conproiezioni casuali fisse. LR1e-4/clip1misurano taglia nella ricetta; nonottimalità.
+F1–F6differiti; rapporto tempi su112update pertaglia. S7corretto: T25−Bdescrittivo,
+nessun noise floor/margine statistico derivato dauna coppia. Nessun nuovo consenso
+per ilcollaudoapprovato; nessunmonitor. Piano esecutivo in
+docs/scaling_300m_execution_20261104.md; ricevute/IDsaranno registrati solo dopo invio.

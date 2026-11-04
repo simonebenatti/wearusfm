@@ -6,10 +6,14 @@ tranche, non un lancio già disposto. L'operatore dei job resta GPT root tramite
 submitter e ledger comuni; l'agente scaling prepara in un worktree separato.
 Nessuna automazione, multinodo, nuova loss o innesto del checkpoint30M nel300M.
 
-Stato: codice del collaudo implementato e23test CPU superati; review indipendente
-favorevole alla consegna aClaude. Simone ha chiesto la review diClaude prima dei lanci. **Non è ancora un via al training scientifico:** occorrono risultato del
+Stato: **Claude ha approvato il collaudo senza blocchi**, review del 04/11 nel commit
+`befab4a`; ha rieseguito i 23 test, tutti passati in 13,53 s. Codice del collaudo
+congelato `05d4bf0663481522a56d96c0b07847924cf5bd26`, invariato dopo la review.
+Le precisazioni sotto riguardano la lettura del collaudo e il seguito a 5.000.
+**Non è ancora un via al training scientifico:** occorrono risultato del
 collaudo, preventivo misurato e valutatori che trattino esplicitamente la larghezza
-del300M. Nessun job è stato sottomesso da questa consegna.
+del300M. Le sottomissioni del collaudo approvato sono coordinate da GPT root; questa
+nota non afferma uno stato SLURM e non modifica il codice o la policy già approvati.
 
 ## Domanda e confronto
 
@@ -93,6 +97,20 @@ quindi è conservativo, ma128batch non esauriscono tutte le forme del corpus.
 Timing: non include checkpoint/pannelli, e le diagnostiche danno tempo al loader;
 la stima del training include overhead storico e margine, non solo kernel timing.
 
+**Ripiego dichiarato prima della lettura del collaudo (S4):** se il gate di memoria
+fallisce, oppure la stima del percorso di produzione descritta sotto non lascia
+il margine richiesto, il candidato tecnico è `accum_steps=2`, sempre batch globale
+32, quattro rank e stessi batch/esposizione. Ogni rank divide le sue otto finestre
+in due microbatch da quattro. Non si riduce il batch globale e non si aggiungono GPU.
+È una variante da implementare, testare, revisionare e sottoporre a un **nuovo
+collaudo da 128 batch**, con nuovo piano, SHA e costo pubblicati; nessun retry
+automatico del job fallito. I denominatori della loss devono riferirsi allo stesso
+batch globale; la loro equivalenza e quella del gradiente vanno verificate in un
+test deterministico della ricetta, con tolleranze numeriche dichiarate. Non si
+promette equivalenza bit a bit: ordine delle somme e consumo RNG del dropout possono
+cambiare suddividendo il batch. L'eventuale confronto manterrà esplicito questo
+scostamento tecnico dal controllo storico a `accum_steps=1`.
+
 ## Training scientifico5.000 e valutazioni necessarie
 
 Il wrapper futuro ricostruirà il CLI T100-G cambiando solo preset300m e cartella
@@ -126,6 +144,103 @@ D896/pool1792 e dose5000, con regressioni contro gli stessi calcoli aD384.
 Il training scientifico non viene lanciato finché queste letture e i loro costi non
 sono concretamente pronti e revisionati. Questo documento non afferma che lo siano.
 
+### Requisiti prima dei 5.000 passi, dopo la review di Claude
+
+**S1 — Identità del training.** Il piano esecutivo del 300M deve includere un
+dizionario `scientific_source_sha256` verificato rispetto al commit
+`afb644ea10ecc2a716160b4d8a4904e805c366fb`, che ha prodotto il controllo 30M.
+Si vincolano tutti i file `src/wearusfm`, `scripts/train_jepa.py` e i file di
+launcher/setup riusati che possono influire sull'esecuzione. Il diff è vuoto nel
+collaudo `05d4bf0`, ma questo non basta per un futuro commit: il wrapper ricontrolla
+i byte al lancio. I nuovi wrapper e valutatori hanno pin propri; non sono esentati
+dalla review perché riusano il trainer. Variazioni necessarie vanno enumerate e
+testate, senza dichiarare identità con il controllo se non sussiste.
+
+**S2 — Disponibilità del controllo.** Il checkpoint nominato
+`$SCRATCH/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0005000.pt`,
+compreso il teacher, e le cache di posa sono soggetti alla retention dello scratch.
+La data di scadenza indicata nella review è **13 dicembre 2026**: la si tratta come
+limite operativo da verificare sui metadati reali di ciascun artefatto, non come
+garanzia che tutti abbiano identica data. Prima di inviare il 300M si verifica
+l'esistenza e lo SHA del controllo, degli snapshot di configurazione, ricevute e
+cache necessarie. Le estrazioni P1/P2 del 30M5000 vengono completate e verificate
+entro quel limite; se il calendario non lo garantisce, si conserva prima una
+copia in storage con retention adeguata, verificando quota e spazio e poi SHA
+identico all'originale. Il piano registra il nuovo percorso e la catena di
+provenienza. Non basta un log del checkpoint: senza il controllo verificato la
+fase scientifica non parte.
+
+**S3 — Memoria della produzione.** Nel summary storico T100-G30M5000 la memoria
+massima allocata, ridotta con MAX fra i rank, è **15,473958969 GiB**. Il collaudo
+nuovo non esercita prefetch, pannelli di posa e valutazione fissa come il trainer.
+Dai massimi del collaudo, nelle medesime unità, si calcola e si pubblica:
+
+`M300_prod_proxy = M300_preflight × max(1, 15.473958969 / M30_preflight)`.
+
+Il fattore non riduce la stima se il collaudo30M ha copie diagnostiche che lo rendono
+più oneroso della produzione. La stima deve stare entro il 90% della memoria GPU
+effettivamente rilevata; non si assume esattamente 64 GiB dal nome del nodo.
+Questo è un controllo prudenziale, **non una prova del picco massimo**: forme del
+corpus e attivazioni dei pannelli possono scalare diversamente. Prima dei 5.000
+serve anche una verifica breve del percorso reale con prefetch e diagnostiche
+abilitati, comprese le fasi che producono il picco, e relativo preventivo separato.
+Se la stima o la verifica superano il margine, si valuta il ripiego S4; non si
+spengono i pannelli o si cambia batch per far passare silenziosamente il gate.
+
+**S5 — Controllo secondario a dimensione pareggiata.** Lo fissiamo ora, prima dei
+risultati300M, senza sostituire i primari a dimensione naturale. Si usa una
+proiezione casuale fissa, indipendente da segnali, etichette, soggetti e fold:
+
+- Generare in FP64 due matrici gaussiane standard di forma896×384, con NumPy
+  `Generator(PCG64(seed))`, semi **2026110401** per il blocco backbone e
+  **2026110402** per il blocco locale. QR ridotta; rendere positiva la diagonale
+  diR cambiando coerentemente il segno delle colonne diQ. Le colonne diQ sono
+  ortonormali; nessuna riscalatura aggiuntiva.
+- Salvare le due Q in FP32, con manifest di algoritmo/versioni/seed e SHA dei byte,
+  prima delle letture downstream. Tutti i dataset e fold usano gli stessi file
+  congelati; non si rigenera o sceglie una matrice in base agli score.
+- Per la classificazione300M, separare esplicitamente i blocchi backbone e locale
+  di pool1792, applicare ciascuna Q al proprio blocco, poi concatenare a768 valori.
+  Verificare ordine/identità dei blocchi nell'estrattore. Lo StandardScaler viene
+  stimato **dopo** la proiezione, solo sul train del fold, come per il controllo
+  30M a768. C-grid, selezione e convergenza rimangono invariati.
+- Per la posa300M, applicare la stessa Q del backbone a ogni patch della cache
+  media-slot, convertita FP32, passando896→384 **prima** della LayerNorm stateless
+  FP32. Seguono lo stesso crop6, supporto, ridge e selezione alpha train-only del
+  controllo30M. Il tempo resta conservato. Il 30M usa le viste originali a384/768,
+  senza una nuova trasformazione o un nuovo training.
+
+La proiezione non è stimata sui dati e non crea leakage; scaler, scelta diC/alpha
+e fit rimangono interni al train come nelle letture principali. I confronti
+secondari sono300M compresso−30M originale e300M naturale−300M compresso sugli
+stessi soggetti/OOF, con bootstrap appaiato. Un beneficio che sopravvive alla
+compressione sostiene che non dipende soltanto dalla maggiore larghezza della
+sonda; non isola in senso assoluto «quantità di informazione» e «capacità». Un nullo
+può dipendere dalla proiezione, quindi non esclude informazione nel300M naturale.
+Una sola proiezione fissata, nessuna ricerca del seed o passaggio aPCA dopo gli score.
+Questo aggiunge fit CPU, **nessuna estrazione GPU**; implementazione, regressioni
+numeriche e benchmark/costo separati entrano nel gate prima dei5.000. L'inviluppo
+CPU provvisorio attuale non è automaticamente sufficiente per la nuova lettura.
+
+**S6 — Ottimizzazione e significato.** LR1e-4 eclip1 restano fissati nella prima
+ricetta; il risultato riguarda «maggiore taglia con questa ricetta», non l'effetto
+della capacità indipendentemente dall'ottimizzatore né il miglior300M possibile.
+Lo stress vede instabilità grossolane. Un problema concreto apre una calibrazione
+train-only con piano separato, mai una scelta suEPN o posa val. Soglia di rango
+assoluta38,4 invariata. Sono limiti di lettura e gate di stabilità, non un veto
+basato sulle vecchie sonde30M.
+
+**S7 — Appaiamento e rumore fra run.** Confermati bootstrap per soggetto,2000
+estrazioni, seed20261102, supporti comuni e margini descrittivi già fissati.
+La coppia storicaT25-L−B19618 è un confronto di contesto, **non una stima del
+pavimento di rumore fra training**: un'unica coppia a seme nominale uguale non
+stima la distribuzione della variabilità fra run. Non si sottrae il suo delta,
+non si introducono soglie0,2–0,9pp e non si dichiara «indistinguibile dal rumore»
+un delta300M−30M soltanto perché ha quell'ordine di grandezza. Gli IC rimangono
+condizionati ai checkpoint e alle sonde di questa prova; servono repliche di
+pretraining indipendenti per misurare la variabilità fra run. Questa precisazione
+è coerente con l'analisi già pubblicata nel commit `8ee6603`.
+
 La matrice pre/postbackbone e39.237/49.046 approvata per lo schedule lungo30M non
 viene aggiunta automaticamente a questo screening. Qui resta la lettura storica.
 
@@ -149,6 +264,15 @@ misura SLURM completa. Dopo il collaudo si usa il rapporto misurato e il massimo
 fra tempo perupdate300M e tempo completo30M×rapporto, +20% e1200s di margine,
 arrotondato ai15min superiori. Il nuovo preventivo è pubblicato con commit/push
 prima della sottomissione. CPU nei jobGPU contabilizzata separatamente.
+
+Precisazione F7, senza cambiare la policy del collaudo: il rapporto misurato usa
+la **media dei112 aggiornamenti** conservati per taglia,56nativi+56stress, dopo
+aver escluso i primi8di ciascuna fase. Per ogni aggiornamento il tempo è la somma
+del massimo fra rank del forward/backward e del massimo fra rank di
+clip/AdamW/EMA; poi si fa la media e infine il rapporto300M/30M. Non si sceglie
+la fase con il rapporto più favorevole. I due riassunti di fase restano disponibili
+come diagnostica. Nel preventivo futuro questa definizione entra anche nel piano
+esecutivo; nessuna modifica al JSON già approvato per il collaudo.
 
 L'estrazione300M e la ridge possono costare più del rapporto dei parametri: per la
 ridge D896/D384 implica circa12,7× nel termine cubico, mentre il classificatore
