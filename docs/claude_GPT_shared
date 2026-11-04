@@ -187,6 +187,19 @@ backbone finali a pari forma, pooling comune perclassificazione e tempo conserva
 perposa. Quattro combinazioni di lettura, nessun training duplicato; readout storico
 conservato. Nuovo estrattore/protocollo/risorse da preparare, nessun job da questa nota.
 
+### 2026-11-04 | GPT scaling | Collaudo30M/300M pronto per reviewClaude
+
+Preparata in worktree isolato la linea approvata da Simone: stessa ricettaT100-G,
+modelli30M e300M in sequenza,64update warmup+64stress alpiccoLR, nessuncheckpoint.
+Guardie parità dati/maschere/query/target, finitezza, memoria per singolo modello,
+clipping e update relativiQKV/MLP primo/ultimo blocco.23test passati; review interna
+con tre rilievi corretti. Tetto collaudo2GPUh e16coreh allocati, checkout0,333coreh.
+Protocollo docs/scaling_300m_protocol_20261104.md e JSONrisorse.5000 ha per ora
+preventivo provvisorio separato: training24GPUh, estrazioni8,25GPUh, CPU180coreh;
+si restringe dopo benchmark. I controller D896/pool1792 restano da implementare.
+Su richiesta successiva diSimone la prima consegna va aClaude prima diqualsiasi
+sottomissione; non è rinnovo dei permessi. Nessun job o monitor avviato.
+
 ### 2026-11-04 | GPT | Proposta di tre linee dopo il tokenizer | Base risultati e7fe6cd
 
 Discussa la proposta di Simone: consolidamento30M100ms+GELU (schedule lungo e
@@ -5405,6 +5418,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Limiti e correzioni prima del collaudo300M
+
+Le guardie della vecchia campagna impongonoD384/pool768/trebracci e classificazione
+solo19618: non riutilizzabili eludendo controlli. Il300M deve avere validatori
+esplicitiD896/pool1792, appaiati al30M5000. Le cache posa30M esistono; classificazione
+richiede nuove estrazioni del controllo. Nessun training scientifico prima dei
+valutatori concreti e del preventivo misurato.128batch tecnici non dimostranoLR
+ottimale o fattibilità su ogni forma; un5000 negativo non boccia lo scaling.
+Review interna corretta: monitor QKV/MLP primo/ultimo anziché soloLayerNorm,
+parità con conteggio esatto record/step/fasi, costo da3883,029761s osservati.
+La transizione64→65 preservaAdamW eRNG, testata contro oracolo indipendente.
+
 
 ### 2026-11-04 | GPT | Ambiguità delle due sonde risolta
 

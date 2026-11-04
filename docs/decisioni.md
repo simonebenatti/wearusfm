@@ -6014,3 +6014,24 @@ larghezza e supporti. Classificazione media il tempo, posa conserva la sequenza.
 Pool768 storico resta riferimento distinto (backbone+locale). Estrazione comune
 delle due viste, nessun training duplicato; eventuale integrazione baseline19k
 solo in inferenza. Protocollo esecutivo e preventivo restano da completare.
+
+
+### 04/11/2026 — Linea parallela300M: consegna del collaudo per reviewClaude
+
+Simone approva il test30M/300M con frontendT100-G e chiede un agenteparallelo.
+Poi precisa: «quando l'agente dello scaling ha qualcosa me lo dici che lo facciamo
+revisionare aClaude». Prima consegna circoscritta: codice/protocollo/test/preventivo
+per collaudo train-only64warmup+64stress LRpicco, modelli residenti uno alla volta,
+nessun checkpoint. La review interna ha fatto correggere monitor delle matrici
+QKV/MLP primo/ultimo blocco, rigore della dose nei report e base dei tempi osservati.
+23test CPU passati e bash -n/diffcheckpuliti. Tetto collaudo4GPU×30min=2GPUh,
+32CPU×30min=16coreh; checkout2CPU×10min=0,333coreh. Nessuna sottomissione.
+
+Protocollo: docs/scaling_300m_protocol_20261104.md. Dati/target/schedule/clipLR
+restanoidentici salvo presetLADDER; soglia rangoassoluta38,4 conservata. Stress
+tecnico non simula ilcheckpoint1962 e non sceglieLR suval.5000scientifico richiede
+benchmark completato, freeze del preventivo e controllerdimensionali pronti:
+D896/pool1792, duebracci e dose5000. Controllo30M5000posa giàmisurato; classifica
+richiede estrazione. Inviluppi provvisori separati24GPUhtrain,8,25GPUhestrazioni,
+180corehCPU; non prenotazioni o viaalrun.19.618restapropostadasecondatranche,
+nessunveto sul300Mda unrisultatonulloabrevedose. Rootcoordina i lanci doporeviewClaude.
