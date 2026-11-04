@@ -5436,6 +5436,65 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   produzione, benchmark, launcher, pin reali, review della catena.
 - Ramo `claude/review-scaling-300m-20261104` allineato a `worktree-claude-training-engine` (14cdfb4) prima del commit; da fondere nel ramo di
   Claude. Nessun lancio da parte mia.
+### 2026-11-04 | Claude | Verifica dell'emendamento dei tempi del fine-tuning EPN (GPT 2c2e857): APPROVATO, nessun blocco residuo (richiesta di Simone)
+- Simone, 04/11/2026, con il prompt di GPT `docs/prompt_claude_ft_walltime_20261104.md`: verifica tecnica del solo emendamento operativo
+  (diff 5b3ac37 → 2c2e857); ricetta e regole F-R2/V-R1 restano quelle convergenti in 0b2623a. Solo review, nessun job. Sezione «Verifica
+  dell'emendamento dei tempi» in `docs/reviews/claude_review_consolidation_20261104.md`; checkout temporaneo detached di 2c2e857, poi rimosso.
+- Fatti: FT-BENCH 63525812 COMPLETED 0:0 in 457 s, memoria entro i gate, 0,189 / 0,630 / 0,629 s per update (frozen / finetune / scratch),
+  un candidato 7.960 / 23.559 / 23.535 s con i margini pre-registrati: col limite originale di 14.100 s finetune e scratch bloccati anche da
+  soli. Autorizzazione di Simone citata alla lettera nel piano, in `decisioni.md` e nell'emendamento: «poi se devi alzare limiti di tempo vai
+  tranquillo». Emendamento: frozen 4 h / gate 14.100 s, finetune e scratch 7 h / gate 24.900 s, 300 s di riserva, 1 GPU / 8 CPU / 100 GiB.
+- Verificato: 133 test passati in 90,01 s; `bash -n`; `recipe_sha256` invariato; `source_identity()` del checkout uguale al nuovo hash;
+  `finetuning.py` non toccato; limiti per regime {14.100, 24.900, 24.900} da piano e costanti coerenti; launcher con TimeLimit 04:00:00 per
+  frozen e 07:00:00 per gli altri; `fit_packaging` coi numeri misurati e i limiti nuovi = split nei tre regimi; vecchia ricevuta conservata
+  come `previous_benchmark_receipt` e rifiutata dal gate («benchmark provenance mismatch»), `benchmark_receipt` nullo e stati in
+  `awaiting_claude_walltime_review`: benchmark nuovo obbligatorio, nessuna guardia aggirata; costi 122,34 GPU-ore di proiezione (≈ 83 senza
+  margini), tetto 144 GPU-ore / 1.152 core-ore alternativo ai 72 tutto joint; `continuation_plan.json` invariato. Su Leonardo in sola lettura:
+  `boost_usr_prod` MaxTime 24 h e QoS normal senza MaxWall (7 h ammesso); 63525803/05/09 PENDING, 63525812 COMPLETED.
+- Note facoltative: N-1 benchmark nuovo su checkout separato e cartella `OUT` nuova; N-2 frozen a 5 h darebbe joint con la stessa regola (4 job
+  invece di 8, 20 GPU-ore allocate invece di 32), scelta del proprietario; N-3 il costo per update e' quello della ricetta congelata a batch 8.
+- Cosa autorizza: convergenza sull'emendamento; GPT porta gli stati a `claude_review_converged`, esegue il benchmark nuovo, pinna la ricevuta e
+  sottomette i fit ammessi dai gate via semplicione, senza un'altra autorizzazione di Simone (come nel prompt). Matrice lunga e aggregatore
+  OOF/IC restano consegne separate. Nessun lancio da parte mia.
+- Seguito (04/11, notte): su richiesta di Simone («dammi il prompt») ho scritto in chat il prompt per GPT con verdetto, commit f70dc72,
+  percorsi di review e registro, le tre note facoltative e i passi successivi come da suo prompt (stati a convergenza, checkout separato dello
+  SHA emendato, benchmark nuovo entro 0,5 GPU-ore, pin della ricevuta, fit ammessi dai gate via semplicione, registro/commit/push con SHA
+  verificato, riporto di ID, stati, ricevuta e consuntivo; continuazione su 17dd455 e consegne separate invariate). Simone: «Mandato».
+  In attesa della ricevuta del benchmark nuovo e degli ID di sottomissione da GPT; nessun lancio da parte mia.
+
+### 2026-11-04 | Claude | Collaudo T100-LQ eseguito (63525730) e seguito di GPT (6d5b353): R1 APPROVATA, preventivo APPROVATO, controller APPROVATO, disegno dei valutatori APPROVATO; training non rilasciato (richiesta di Simone)
+- Simone: «Rivedi il commit 6d5b353 [...] Solo review: nessun lancio». Tre commit dopo d48cad5 (43cad1f con S1/S3 e piano esecutivo, 4750938
+  ricevute, 6d5b353 lettura/analisi/controller/handoff); `git diff --stat d48cad5 43cad1f` tocca solo documenti: il codice eseguito dal collaudo
+  e' quello approvato in b0fac8f. Review in `docs/reviews/claude_review_tokenizer_logsquare_preflight_results_20261104.md`.
+- Metodo: checkout temporaneo detached (poi rimosso); letti readout, critico interno, handoff, piano esecutivo, protocollo, controller, analisi
+  offline, launcher, test, piani e ricevute; **ricalcolo indipendente dal `report.json.gz` con un mio script**: 1.728 righe, 0 trigger del
+  pavimento (p max 0,29606), 276/277 trigger della derivata (max 0,66035) su 14 kernel tutti MLP, 0 trigger di maschera (max 0,16605 std), fasi
+  10 gruppi/67.563 token/105-102 e 17 gruppi/3.884.083 token/172-174, DB5 200 Hz kernel 58 e 50+58, 28 coppie senza contrasto, clipping LQ/L
+  0,987554/0,995062/1,001502, quota `W_log` mediana 1,67 %, rho 0,9855573781, stime 4,2992 + 12,4060 = 16,7052 GPU-ore, tetti 22 GPU-ore e
+  176 core-ore: tutto uguale al readout e ad `analysis.json`. Test: **171 passati in 28,08 s**; `bash -n` pulito. Sola lettura su Leonardo:
+  `sacct` dei due job identico al file archiviato (27 s; 148 s, 4 GPU, lrdn0008, COMPLETED 0:0), sha256 del report remoto = 311ac329…, checkout
+  di campagna a 43cad1f pulito; ledger locale con le due sottomissioni via `submit_job.py`.
+- R1: APPROVATA la decisione motivata di mantenere epsilon 0,001 (non assenza di trigger). Il trigger segue l'ampiezza dei kernel MLP dopo il
+  gain condiviso (std scalata mediana 0,569 contro 5,955 Fourier e 1,382 spline nel gruppo piu' grande; con trigger i kernel con std 0,40-0,69,
+  senza i due a 1,08 e 0,80), pavimento 0,11-0,19 e std del log 1,9-2,1 contro 2,4-2,6: feature non degeneri; aumentare epsilon comprimerebbe
+  proprio quei kernel senza una patologia osservata. R1-a: togliere l'argomento «sotto il limite analitico» (vero per costruzione). R1-b: nel
+  readout del 5.000 e del 19.618 le norme delle 64 colonne di `W_log` dal checkpoint, MLP contro altre famiglie, come lettura descrittiva.
+- R2: APPROVATO; durate storiche 3.926 e 11.329 s dai job 63386190/63386337, tetti con max(1, rho) e 900 s, margini del limite interno del
+  trainer 32 % e 26 %, consuntivo del collaudo 0,164444 GPU-ore; rho_infer non misurato, nessuna estrazione preventivabile.
+- Controller `scripts/logsquare_train.py` + launcher + 31 test: APPROVATO. Cancello di review con release pinnata (oggi REVIEW_REQUIRED, release
+  nulla, `load_plan` fallisce); prerequisiti del collaudo verificati sul report reale; allocazioni R2 esatte (480G come lo storico); parita'
+  della ricetta (argv storico di T100-L + soli flag LQ, dose, cartella, limite di tempo; nessun warm start); init condivisa a seme 0 con `W_log`
+  (384, 64) a zero; ripresa 5.000 → 19.618 solo dal proprio stato verificato (ricevuta, STOP, identita' dei checkpoint, 4 RNG, AdamW a gruppo
+  unico come `run.py:1358`, inventario completo di student/teacher/momenti, firma dei dati); 102 sorgenti scientifici pinnati. Note N1-N4:
+  arresto per `time_limit` nella continuazione = revisione del piano, non rilancio; la release e' il cambio di stato in un commit dedicato dopo
+  gli adattatori; `run_dir` in `$SCRATCH` (purga 40 giorni) → pin e copia dei checkpoint; `--time=04:00:00` da passare per il 19.618.
+- Disegno dei valutatori: APPROVATO come disegno; verificate le premesse (posa FP32 senza autocast per registrazione, `pose_eval.py:129,169`;
+  classificazione bf16 con decoder, `channel_readout.py:75-79,110`; `fm_features.load_model` stretto con i due default dalla dataclass,
+  `fm_features.py:216-218`). Prerequisiti D1 regola di aggregazione di rho_infer scritta prima del benchmark (massimo per i tetti, media pesata
+  sui conteggi storici per la stima); D2 preventivi delle estrazioni fra le due fasi, la continuazione non li aspetta; D3 test che con `W_log`
+  non nullo l'estrazione LQ differisca dalla lineare e con `W_log` nullo coincida.
+- Non rilasciato il training come catena: adattatori implementati e revisionati, commit di rilascio con pin, checkout nuovo, sottomissione di GPT
+  sotto l'autorizzazione operativa di Simone, rho_infer prima delle estrazioni. Nessun job da parte mia. Nessuna voce in «Problemi trovati».
 
 ## 2) Problemi trovati
 
