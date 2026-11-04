@@ -5220,7 +5220,21 @@ varianza predetta5,34/8,36/7,08%, dinamica ancora attenuata. Nessuna scelta di b
 o estensione. Analisi docs/reviews/tokenizer_pose_5000_results_20261104.md;
 evidenze cpu_5000/final/, senza segnali o NPZ nel repo.
 
+### 2026-11-04 | GPT | Recupero diagnosticato del checkout endpoint
+
+Checkout63491851 fermato prima della creazione: push ancora in corso al primo invio.
+Trasferimento ora concluso e commit453ce6c presente, destinazione assente; nuovo ID
+checkout-r1 con stesso runtime/percorso e2CPU/4G/10min. Consumo fallito0,001667coreh,
+nessunaGPU oestrazione. Diagnosi e riserva pubblicate prima del recupero.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Errore di sequenza: checkout avviato prima della fine del push
+
+GPT ha continuato dopo un tool gitpush che restituiva session_id anziché exit_code.
+Il checkout63491851 ha trovato il commit non ancora disponibile ed è fallito2:0
+dopo3s, prima di creare cartelle. Correzione: attendere exit0 e verificare oggetto
+remoto prima del secondo invio, nuovoIDr1; nessun training o estrazione toccato.
 
 ### 2026-11-04 | GPT | Limiti dello screening tokenizer5k
 

@@ -66,3 +66,19 @@ entro i tetti pubblicati; nessun retry cieco o ampliamento scientifico.
 Lo screening5k, raccolto separatamente oggi, è descrittivo e non seleziona quali
 bracci valutare all'endpoint. Posa ed EPN-612 rimangono domande distinte; P1/P2
 aggregati secondari. Nessun nuovo training FM, loss, seme o dose.
+
+## Correzione operativa prima delle estrazioni
+
+Il primo checkout63491851 è FAILED2:0 dopo3s: GPT ha sottomesso il job mentre il
+git push versoLeonardo era ancora in corso. Il launcher ha rifiutato il commit
+non ancora disponibile, prima di creare cartelle. Nessuna GPU, nessuna estrazione,
+costo2CPU×3s=0,001667coreh. Errore di sequenza dell'operatore, non dei training.
+
+Prima del recupero: push concluso0, riferimento remoto e oggetto commit453ce6c
+verificati, checkout destinazione ancora assente. Si ripete solo il checkout con
+nuovo ID TOKENIZER-eval19618-checkout-r1-20261104, stesso codice/runtime e percorso,
+2CPU/4G/10min=0,333333coreh massime. Costo fasecheckout aggiornato:0,335000coreh
+fra consumo fallito e nuova riserva. Recupero diagnosticato, nessun retry cieco;
+la diagnosi viene pubblicata prima del secondo invio. Le nove estrazioni non sono
+state sottomesse e non vengono duplicate. Attendere esplicitamente il completamento
+di ogni push/comando dipendente, anche quando il tool restituisce una sessione attiva.

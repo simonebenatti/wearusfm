@@ -5868,3 +5868,10 @@ Ridge63405791 verificata e revisionata: E_dyn0,921457/0,910612/0,899816 per
 combinato secondario2,35%, tuttiIC appaiati sottozero. Varianza predetta ancora5–8%
 del target. Nessuna promozione, selezione dei bracci o cambio della ricetta a metà.
 Si mantiene il confronto endpoint e la domanda EPN200Hz distinta dalla posa2kHz.
+
+### Recupero del checkout endpoint
+
+Errore GPT di ordine push/submit: checkout63491851 fallito2:0 in3s prima di creare
+cartelle. Consumo0,001667coreh,0GPU. Commit453ce6c ora presente e destinazione assente:
+nuovo checkout-r1, stessa riserva0,333333coreh, costo fase aggiornato0,335000coreh.
+Nessun nuovo consenso necessario per recupero diagnosticato della matrice autorizzata.
