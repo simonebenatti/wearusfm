@@ -106,3 +106,14 @@ stato osservato `RUNNING` su `lrdn1813`. Verificati in SLURM 1 nodo, 4 GPU,
 del precedente rifiuto. Ricevuta completa e snapshot risorse conservati nel repo.
 Nessun monitor riattivato. Il collaudo non è ancora concluso: nessun esito di
 memoria, parità, gradiente o fattibilità scientifica viene anticipato.
+
+## Esito finale del collaudo — 18:45 CET
+
+Job63526191 `COMPLETED 0:0` alle18:45:05, durata546s;0,606667GPUh e4,853333coreh.
+Report e12file di rank/stream raccolti e verificati contro13SHA remoti. L'audit
+indipendente ricostruisce parità, dose, LR, finitezza e tempi. Memoria massima300M
+28,4057GiB; proxy di produzione33,5224GiB sotto il limite57,0804GiB.
+Analisi in `docs/reviews/scaling_preflight_results_20261104.md`, artefatti compressi
+lossless in `results/infra/scaling_300m_20261104/preflight_63526191/`.
+Nessun training5000 avviato: si completano lettori e controllo realeS3 a500passi,
+con relativo piano/review prima dell'invio. Nessun monitor.

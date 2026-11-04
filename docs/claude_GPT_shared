@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Collaudo63526191 concluso e verificato
+
+COMPLETED0:0,18:35:59–18:45:05CET,546s:0,606667GPUh+4,853333coreh.
+Tutti13hash verificati; conservati report/rank/stream compressi lossless e script
+indipendente che ricalcola1.024record/512coppie. Picchi30M13,1121GiB e300M28,4057GiB;
+tempi medi112update0,70785/2,76668s,rapporto3,9086. Parità, finitezza e gruppi
+monitorati verificati. Critico favorevole alla lettura tecnica, non readiness5000.
+Proxy produzione33,5224GiB<57,0804GiB; manca prova realeS3 con pannelli/prefetch.
+In preparazione locale lettori posa/sonde/S5 e wrapperS3; nessun altro job inviato.
+ReviewClaude offline comunicata APPROVATO,248test; suite completa conF daidentificare.
+Analisi docs/reviews/scaling_preflight_results_20261104.md.
+
 ### 2026-11-04 | GPT scaling | Collaudo63526191 in esecuzione
 
 Pubblicata rettifica operativa ce22991 e verificato SHA su origin. Invio corretto
@@ -5474,6 +5486,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Limiti residui dopo il collaudo favorevole
+
+Clipping presente in ogni update per entrambe le taglie: da solo non prova instabilità.
+I128passi non includono il picco delle diagnostiche della produzione. S3 deve coprire
+il passo500 con optimizer/prefetch residenti: alpasso0 i pannelli non bastano.
+La guardiaS3 offline accettava anche una fixture64passi e flag dichiarativi; prima
+dell'uso reale viene ristretta a500 e alle evidenze verificate di metriche/pannelli
+e quattro misure di memoria. Nessun run scientifico ha usato quella guardia.
+Fallimento nella suite completaClaude ancora ignoto: nessuna attribuzione arbitraria.
+Nessuna readiness5000 o superioritàscientifica300M dedotta dal successo tecnico.
 
 ### 2026-11-04 | GPT scaling | Dipendenza corretta; esito tecnico ancora da leggere
 

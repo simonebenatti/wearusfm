@@ -1,6 +1,6 @@
 {
-  "observed_utc": "2026-11-04T17:36:05+00:00",
-  "status": "preflight_running",
+  "observed_utc": "2026-11-04T17:45:06+00:00",
+  "status": "preflight_completed_verified",
   "frozen_code_sha": "05d4bf0663481522a56d96c0b07847924cf5bd26",
   "review_commit": "befab4a12e062260231cca3a5d563a233fd53346",
   "original_execution_plan_commit": "70cbd85",
@@ -11,7 +11,7 @@
   "checkout_elapsed_seconds": 16,
   "checkout_core_hours": 0.008888888888888889,
   "preflight_job_id": 63526191,
-  "preflight_state": "RUNNING",
+  "preflight_state": "COMPLETED",
   "preflight_submit_cet": "2026-11-04T18:35:41+01:00",
   "preflight_start_cet": "2026-11-04T18:35:59+01:00",
   "preflight_node": "lrdn1813",
@@ -30,7 +30,13 @@
   "submitter_invoked": true,
   "new_monitors": false,
   "scientific_5000_submitted": false,
-  "next_action": "Collect preflight report, rank files, hashes, pairing, finite updates, memory and timing after completion. No automatic scientific training.",
+  "next_action": "Prepare and review real production memory S3 check at500; complete dimension-aware readers/paired comparison/S5 and runtime resource plan before scientific5000. No automatic continuation or monitor.",
   "previous_status_artifact": "submission_status_before_access_restore.json",
-  "explicit_rejection_artifact": "preflight_rejected_receipt.json"
+  "explicit_rejection_artifact": "preflight_rejected_receipt.json",
+  "preflight_exit_code": "0:0",
+  "preflight_end_cet": "2026-11-04T18:45:05+01:00",
+  "preflight_elapsed_seconds": 546,
+  "preflight_gpu_hours": 0.6066666666666667,
+  "preflight_core_hours": 4.8533333333333335,
+  "report_sha256": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831"
 }

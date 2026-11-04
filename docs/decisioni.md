@@ -6108,3 +6108,15 @@ Invio corretto dopo pubblicazione ce22991: job **63526191**, accettato18:35:41,
 RUNNING dalle18:35:59 su lrdn1813. Risorse effettive4GPU/32CPU/480G/30min
 verificate, tetti invariati; ricevuta e snapshot versionati. Nessun verdetto tecnico
 anticipato, nessun training5000 o monitor. Review Claude del seguito separata.
+
+### 04/11/2026 — Scaling: collaudo favorevole, chiusura dei requisiti scientifici
+
+Job63526191 COMPLETED0:0 in546s,0,606667GPUh e4,853333coreh. Verificati13hash,
+1.024record e512coppie rank/passo. 300M picco28,4057GiB, contro13,1121del30M;
+ratio tempi3,9086. Proxy prespecificato33,5224GiB sotto57,0804GiB: non si attiva
+accum2 dalproxy. Restano misura realeS3 e valutatori/confronti pronti prima5000.
+Per coprire le diagnostiche con stati residenti S3 deve raggiungere500passi dazero;
+guardiaoffline da precisare con artefatti verificabili, senza toccare iltrainerstorico.
+Si procede alla preparazione locale parallela, non a un lancio5000 prematuro.
+Claude comunica APPROVATO per preparazioneoffline,248test; fallimento della suite
+completa ancora da identificare. Nessun altrojob o monitor; nessun nuovo consenso.
