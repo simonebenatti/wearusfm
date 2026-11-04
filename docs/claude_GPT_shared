@@ -5271,7 +5271,34 @@ T25-L DB6 63495008 (749s),T100-L DB3 63495819 (523s). Accodati T100-G DB6
 63497058 eDB2-01 63497284, sempre tramite ledger e cap10attivi. Ora13/15fit
 sottomessi; restanoT100-G DB2-23/P2 e6aggregati/confronto. Nessun nuovo consenso.
 
+### 2026-11-04 | GPT | Che cosa misurano le sonde e dove leggono
+
+Discussione richiesta da Simone, codice verificato su 87afa17; nessuna nuova sottomissione.
+P1/P2 usa il teacher congelato e x_pool: prime 384 colonne dalla media dei latenti
+dopo gli 8 blocchi del backbone, ultime 384 dall'uscita dei 2 blocchi locali mediata
+su tempo e canali validi (spectral_step1.pool_p1p2). Una sola logistica legge la
+concatenazione; non sono due valutazioni indipendenti. La ridge di posa legge il
+backbone per istante, mediando K=64 ma conservando il tempo. Le cache di classificazione
+contengono inoltre local/dec per canale, gia mediati nel tempo.
+Proposta diagnostica, ancora non protocollo esecutivo: separare le due meta di x_pool,
+stessi split, scaler train-only e selezione C, mantenendo il controllo congiunto768.
+Solo fit CPU su cache esistenti; non misura direttamente l'uscita del tokenizer.
+Per tokenizer puro/blocchi intermedi servono nuove estrazioni, non nuovo pretraining.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Una sonda negativa non dimostra mancata convergenza del FM
+
+Un esito negativo riguarda l'accessibilita con quel lettore, aggregazione, task e dose;
+non dimostra assenza di informazione nei tensori interi, impossibilita di migliorare
+proseguendo il training o assenza di beneficio con fine-tuning. Anche un buon risultato
+su un layer non attribuisce da solo il merito al pretraining senza controllo iniziale.
+Sondare le due meta separatamente localizza il contributo: il modello lineare congiunto
+puo gia usare ciascuna meta, quindi separarle non garantisce un recupero prestazionale.
+Il confronto corrente resta congelato. Eventuale confronto pretrain/fine-tuning contro
+inizializzazione casuale richiede un disegno distinto, con stessi dati e budget.
+Riferimenti metodologici: Alain/Bengio https://arxiv.org/abs/1610.01644;
+Kornblith et al. https://arxiv.org/abs/2010.16402 (evidenza su immagini, non risultato EMG).
 
 ### 2026-11-04 | GPT | Tempi sonde condizionati alla coda
 
