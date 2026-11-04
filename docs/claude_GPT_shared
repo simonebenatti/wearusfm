@@ -5389,6 +5389,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   il benchmark via semplicione; `fits_status` convergente dopo R-1 senza nuova rilettura se il diff e' solo quello, poi pin del benchmark,
   preventivo e modalita' per regime, poi i fit. Nessun lancio da parte mia.
 
+### 2026-11-04 | Claude | Coordinamento: specchietto aggiornato con la convergenza del consolidamento (0b2623a), le correzioni T100-LQ chiuse (b0fac8f) e lo stato del collaudo scaling
+- Lavoro del coordinatore, senza nuova richiesta di Simone oltre a «tu farai da coordinamento delle 3 chat dei reviewers [...] e lo stato»:
+  letti i commit nuovi del ramo comune (e09d597, b0fac8f, 0b2623a), le righe di chiusura delle sottochat e il loro transcript dove serviva;
+  `docs/coordinamento_review_claude_20261104.md` riscritto alle 18:11 con lo stato per linea e una sezione «Seguiti dopo le 17:40».
+- Stato: consolidamento convergente su continuazione, benchmark FT e regole di lettura, fit approvati con la correzione R-1 prima dei fit,
+  matrice lunga condizionata (V-R2); T100-LQ: correzioni d48cad5 chiuse, solo collaudo preparatorio eseguibile, training non approvato,
+  S1 passato a GPT tramite Simone; scaling: approvato, collaudo da sottomettere (secondo la chat 3, la sottochat ha risposto a GPT «quando
+  il cluster torna su», con il ripiego di memoria S4 scritto prima nel protocollo).
+- Controllo in sola lettura su Leonardo alle 18:08 CET: nodo di login e `sinfo` rispondono (boost_usr_prod `up`), `squeue -u` vuoto; verso le
+  17 la sottochat scaling aveva trovato `sacct` muto. Nessun job, nessuna modifica a file altrui, nessun messaggio alle sottochat.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
