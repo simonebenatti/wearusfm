@@ -125,6 +125,59 @@ La GELU peggiora leggermente alcuni secondari statici rispetto a T100-L.
 **T100-G è un candidato promettente su EPN e moderatamente migliore nella lettura
 dinamica; non è una soluzione al problema generale del FM o del movimento.**
 
+## Aggiunta del 04/11: controllo storico T25-L − B19618
+
+Su suggerimento di Claude riportato da Simone, aggiunto il contrasto appaiato
+fra le OOF già disponibili di **T25-L e B19618**, usando per B le sonde della
+fase B di convergenza a12.000 iterazioni. È un **controllo storico della
+riproducibilità della ricetta**, non un pavimento statistico del rumore: una sola
+coppia con lo stesso seme non stima la variabilità fra training indipendenti.
+Questa distinzione era già fissata nell'emendamento del03/11.
+
+Le configurazioni scientifiche sono funzionalmente equivalenti: stesso modello
+lineare25ms, seme0, dati, obiettivo, batch32, quattro processi, schedule49.046 e
+dose19.618. Cambiano i checkout e quattro campi di configurazione: attivazione
+identity e raggio0 ora espliciti ma equivalenti ai vecchi default, log delle
+origini dei batch e lista di checkpoint conservati. Non è dimostrato un
+confondente scientifico; non sono però certificabili retroattivamente l'identità
+bit per bit dei pesi/gain iniziali e di tutti i batch consumati. B non registrava
+le origini dei batch; manca inoltre l'hash integrale dell'ambiente di T25.
+
+Verificati hash dei quattro OOF, stessi input/split/ricette di estrazione per i
+cinque dataset, righe/target nativi/soggetti/fold identici e gli stessi ruoli
+train/val/held nei20fold. **280/280 fit convergenti**, stessa ricetta pool768FP32
+senzaPCA e stessa griglia C. Il C selezionato differisce in12/20fold: il contrasto
+comprende anche il rifit della sonda secondo la medesima regola di selezione.
+
+Bootstrap appaiato per soggetto,2.000repliche,seed20261102, stessi draw del
+confronto tokenizer. Punti, IC marginali e hash dei draw diT25 replicano il report
+già pubblicato. IC condizionati ai checkpoint e alle sonde fittate, su sviluppo,
+senza correzione per molteplicità. Nessuna soglia di adozione o equivalenza nuova.
+
+| Misura | T25-L − B19618, pp | IC95% appaiato, pp |
+|---|---:|---:|
+| EPN-612 | −0,236 | [−0,764; +0,274] |
+| UCI | +0,049 | [−2,477; +2,326] |
+| NinaPro DB2 | +0,444 | [+0,022; +0,867] |
+| NinaPro DB3 | +0,453 | [−0,210; +0,984] |
+| NinaPro DB6 | +0,863 | [−1,162; +2,689] |
+| **P1** | **+0,510** | **[+0,090; +0,926]** |
+| **P2** | **−0,093** | **[−1,382; +1,065]** |
+
+P1 mostra uno scostamento osservabile anche tra due esecuzioni della stessa
+ricetta nominale; non è una replica numericamente esatta. Per EPN/P2 lo
+scostamento puntuale è piccolo e gli IC includono zero, senza dimostrare
+equivalenza. Questo invita a non generalizzare differenze piccole da un solo
+pretraining. Il risultato non va sottratto dai contrasti GELU/finestra e non
+diventa una soglia di rumore; i confronti appaiati dei tre bracci restano quelli
+originari, con gli stessi limiti di seme unico e dati di sviluppo.
+
+Calcolo locale su predizioni esistenti: **nessun nuovo job, fit o estrazione di
+feature**. Due OOF recuperati in sola lettura, gli altri due già sul Mac; NPZ
+fuoriGit. [Report numerico](../../results/infra/tokenizer_evaluation_20261103/t25_b_repeatability_20261104/paired_report.json),
+[script riproducibile](../../scripts/tokenizer_b_repeatability.py),
+[review indipendente](tokenizer_b_repeatability_critic_20261104.md).
+
 ## Seguito proposto, senza nuovi lanci
 
 Il confronto a tre bracci è chiuso. Conservare T100-G come riferimento empirico
@@ -133,6 +186,14 @@ già discusso: risposte log-quadratiche affiancate alle lineari sulla finestra
 100 ms, inizializzazione non addestrata condivisa e nuovi pesi a zero. Il suo
 confronto primario rimane con T100-L; quello con il migliore dei lineari è
 secondario. Non spostare la base su GELU dopo aver visto il risultato.
+
+**Emendamento del 04/11 richiesto da Claude e riportato da Simone:** includere
+anche T100-G come confronto secondario appaiato della candidata log-quadratica,
+riusando cache/OOF esistenti. La scelta avviene dopo questi risultati ed è
+esplorativa; non cambia il primario T100-L o l'inizializzazione da zero. Dettagli
+nell'[emendamento della proposta](tokenizer_logsquare_proposal_20261103.md).
+Il beneficio GELU osservato riguarda il gain e la calibrazione storici mantenuti
+invariati, non ottimizzati per questa attivazione.
 
 L'eventuale preparazione comprende verifica delle scale sul train anche a
 200 Hz, maschere, epsilon e preventivo separato training/estrazioni/CPU. Non è

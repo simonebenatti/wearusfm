@@ -6014,3 +6014,23 @@ larghezza e supporti. Classificazione media il tempo, posa conserva la sequenza.
 Pool768 storico resta riferimento distinto (backbone+locale). Estrazione comune
 delle due viste, nessun training duplicato; eventuale integrazione baseline19k
 solo in inferenza. Protocollo esecutivo e preventivo restano da completare.
+
+### 04/11/2026 — Convergenza con Claude: controllo storico e secondario GELU
+
+Su richiesta riportata da Simone, aggiunto all'analisi il contrasto OOF appaiato
+T25-L−B19618 con sondeconvergenti: P1+0,510pp IC[0,090;0,926], P2−0,093pp
+[−1,382;1,065], EPN−0,236pp [−0,764;0,274].280fit verificati e pairingesatto;
+bootstrap appaiato2000seed20261102 e verifica indipendente. Nessunjob/fit nuovo,
+solo letturaOOF esistenti e calcoloMac. È un controllo storico di riproducibilità,
+non un pavimento statistico o una nuova soglia, come già precisato il03/11.
+
+T100-G aggiunto fra i secondari del log-quadratico, insieme ai riferimenti lineari;
+primario/baseT100-L invariati. Emendamento dopo i risultatiGELU e prima delnuovo
+candidato; riuso di cache/OOF, nessun trainingdi controllo richiesto per l'aggiunta.
+Restano semeunico, sviluppo, nessunT25-G, gain/calibrazione storici non sceltiGELU.
+
+Simone approva inoltre agente parallelo per300M100ms+GELU: collaudotecnico,
+screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
+scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
+preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
+seguito naturale da pianificare, non estensione automatica di uno screening nullo.

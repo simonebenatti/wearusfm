@@ -55,6 +55,13 @@ Dunque **non abbiamo dimostrato né che il FM vada rifatto, né che basti cambia
 
 Il controllo tokenizer aggiunge un risultato specifico: GELU su100ms migliora EPN rispetto ai due lineari, con IC appaiati sopra zero. Non attribuisce il guadagno alla sola frequenza200Hz, non cambia la conclusione storica B−R3c sulla supervisione di posa e non dimostra trasferimento generale. Manca il braccio25ms+GELU: l'interazione completa fra finestra e attivazione non è identificata.
 
+**Controllo storico aggiunto il04/11, senza nuovi job:** OOF appaiate T25-L−B19618
+con sonde convergenti: P1 **+0,510pp [0,090;0,926]**, P2 **−0,093pp
+[−1,382;1,065]**, EPN **−0,236pp [−0,764;0,274]**. Stessa ricetta nominale e
+stesso seme, pairing/280fit verificati. È uno scostamento osservato fra due run,
+non un pavimento statistico o una soglia da sottrarre ai contrasti tokenizer.
+[Analisi pubblicata aggiornata](reviews/tokenizer_classification_results_20261104.md).
+
 ## Ordine consigliato ora
 
 1. Considerare **chiusi** controllo sonde, PSD-3 nella ricetta provata, bootstrap PCA, primo temporale e diagnosi media/contrasti 6a/6b.
@@ -277,6 +284,11 @@ comune e nuovi pesi a zero, come fissato prima dei risultati. Il confronto
 secondario con il migliore dei lineari rimane esplorativo; G è un riferimento
 descrittivo. Non innestare il ramo suG19k senza il controllo della stessa
 continuazione: risponderebbe a una domanda diversa.
+
+Aggiornamento successivo del04/11, suggerimento Claude riportato da Simone:
+**T100-G entra anche come confronto secondario appaiato**, riusando cache/OOF,
+senza spostare la baseT100-L o cancellareT25-L. Emendamento esplicitamente
+successivo ai risultati lineare/GELU; [proposta aggiornata](reviews/tokenizer_logsquare_proposal_20261103.md).
 
 La contrastiva può seguire cronologicamente il log senza dipendere dal suo
 successo. Scegliere una base e confrontarla con/senza contrastiva a pari dose;

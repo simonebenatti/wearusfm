@@ -147,3 +147,33 @@ Anche l'aumento4× dei gradi di libertà passando25→100ms è una regola indica
 a banda e ipotesi fissate, non una proprietà di qualunque stimatore. Il conto
 2BT conB=70Hz dà3,5 e14; non sostituisce una stima dei gradi di libertà effettivi.
 Nessun nuovo job o ripristino del monitor automatico in questa registrazione.
+
+## Emendamento del 04/11 dopo i risultati: aggiungere T100-G fra i secondari
+
+Claude concorda con l'analisi e Simone ne riporta la richiesta: includere anche
+**T100-G come confronto secondario** della candidata log-quadratica. Accolto.
+Questo emendamento è successivo ai risultati del confronto lineare/GELU e
+precede qualunque risultato della candidata log-quadratica. Non riscrive la
+pre-registrazione del 03/11 né trasforma il secondario scelto dopo quei risultati
+in un confronto confermativo indipendente.
+
+- **Primario invariato:** candidata T100-L + ramo log-quadratico contro T100-L,
+  stessa inizializzazione non addestrata della parte condivisa, nuovi pesi a zero,
+  stessi dati/dose/obiettivo e protocollo di lettura. Non spostare la base suGELU.
+- **Secondari:** conservare T25-L e il riferimento al migliore dei due lineari
+  per endpoint; aggiungere il contrasto appaiato candidata − T100-G. Per la
+  classificazione usare OOF con righe/soggetti/fold/supporti identici; per la posa
+  stessi supporti temporali, utenti e target. Riportare tutti i confronti previsti.
+- Le cache e le OOF di T100-G esistono già: nessun nuovo training o fit di controllo
+  richiesto per aggiungere questo riferimento. Il futuro candidato necessita
+  comunque del proprio training e delle proprie valutazioni; i confronti locali
+  hanno un costo piccolo, non letteralmente nullo. Nessun lancio da questa modifica.
+- Restano seme unico, dati di sviluppo riutilizzati, assenza diT25-G e limiti di
+  molteplicità. Il guadagno della GELU è misurato al punto di lavoro dato dalla
+  calibrazione/gain storici conservati, non scelti o ottimizzati per la GELU:
+  non è una conclusione universale sulle non linearità o sulla loro calibrazione.
+
+Il controllo appaiato T25-L − B19618 usa OOF già esistenti e viene pubblicato
+nell'analisi come controllo empirico di ripetibilità della ricetta. Una sola
+coppia con lo stesso seme non stima un pavimento statistico del rumore fra
+training indipendenti e non introduce nuove soglie per promuovere la candidata.
