@@ -218,9 +218,16 @@ compressione sostiene che non dipende soltanto dalla maggiore larghezza della
 sonda; non isola in senso assoluto «quantità di informazione» e «capacità». Un nullo
 può dipendere dalla proiezione, quindi non esclude informazione nel300M naturale.
 Una sola proiezione fissata, nessuna ricerca del seed o passaggio aPCA dopo gli score.
-Questo aggiunge fit CPU, **nessuna estrazione GPU**; implementazione, regressioni
-numeriche e benchmark/costo separati entrano nel gate prima dei5.000. L'inviluppo
-CPU provvisorio attuale non è automaticamente sufficiente per la nuova lettura.
+Questo aggiunge fit CPU, **nessuna estrazione GPU**. Prima dei 5.000 si congelano
+implementazioni, regressioni numeriche, matrici, launcher, formule e tetti cumulativi
+che comprendono le tre viste. I benchmark sulle cache reali del 300M richiedono
+il checkpoint a 5.000: si eseguono dopo le estrazioni, sul solo train, prima dei fit
+scientifici. Il preventivo misurato deve rientrare nei tetti già pubblicati;
+altrimenti la fase CPU si ferma prima dei fit. Questa precisazione operativa,
+coerente con la review Claude `a988a72` §2.3, elimina una dipendenza circolare;
+non dichiara un benchmark già eseguito, non anticipa gli score e non cambia le sonde.
+La readiness precedente al training attesta preparazione e limiti, non tempi
+misurati su rappresentazioni che ancora non esistono.
 
 **S6 — Ottimizzazione e significato.** LR1e-4 eclip1 restano fissati nella prima
 ricetta; il risultato riguarda «maggiore taglia con questa ricetta», non l'effetto

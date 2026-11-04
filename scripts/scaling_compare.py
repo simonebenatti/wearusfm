@@ -140,7 +140,14 @@ def validate_pose_outputs(plan, report, plan_sha, states):
             inspections[arm + "/" + split] = inspection
             for path_key, hash_key in (("path", "sha256"), ("provenance_path", "provenance_sha256"), ("receipt_path", "receipt_sha256")):
                 _pin({"path": pin[path_key], "sha256": pin[hash_key]}, states)
-    require(report.get("inspections") == inspections, "pose inspection receipt differs")
+    recorded = report.get("inspections")
+    require(isinstance(recorded, dict) and set(recorded) == set(inspections), "pose inspection receipt differs")
+    # Files may be touched or restored between stages. Content pins above and
+    # check_unchanged below still protect identity and changes during this run.
+    require(all(isinstance(recorded[key], dict) and
+                {k: v for k, v in recorded[key].items() if k != "states"} ==
+                {k: v for k, v in current.items() if k != "states"}
+                for key, current in inspections.items()), "pose inspection receipt differs")
     cells = copy.deepcopy(report["cells"])
     train_support = {a: P.Q.arrays_hash(P.Q.read_targets(plan["caches"][a]["train"]["path"])["central_mask"]) for a in P.ARMS}
     for name, (arm, view) in P.CELLS.items():

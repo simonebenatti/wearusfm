@@ -1,0 +1,154 @@
+{
+  "protocol": "scaling-evaluation-envelope-20261104-v1",
+  "complete": true,
+  "scope": "complete pretraining budget envelope, not measured fit resource plan",
+  "checkpoint_step": 5000,
+  "includes_30m_classification_extraction": true,
+  "includes_dimension_matched_secondary": true,
+  "gpu_hours_cap": 8.25,
+  "cpu_core_hours_cap": 180.0,
+  "allocated_cpu_core_hours_in_gpu_jobs_cap": 66.0,
+  "checkpoint_and_cache_pins": "bind only after actual completed outputs; no placeholders",
+  "observed_benchmarks_300m": false,
+  "cpu_node": "login08",
+  "cpu_partition": "lrd_all_serial",
+  "runtime_modules": [
+    "profile/deeplrn",
+    "cineca-ai/4.3.0"
+  ],
+  "fit_and_compare_threads": 8,
+  "extractions": [
+    {
+      "arm": "T100-G-300M",
+      "stage": "extract-pose",
+      "task": null,
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 9000,
+      "gpu_hours_cap": 2.5
+    },
+    {
+      "arm": "T100-G-300M",
+      "stage": "extract-classification",
+      "task": "p1",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 7200,
+      "gpu_hours_cap": 2.0
+    },
+    {
+      "arm": "T100-G-300M",
+      "stage": "extract-classification",
+      "task": "p2",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 9000,
+      "gpu_hours_cap": 2.5
+    },
+    {
+      "arm": "T100-G-30M",
+      "stage": "extract-classification",
+      "task": "p1",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 1800,
+      "gpu_hours_cap": 0.5
+    },
+    {
+      "arm": "T100-G-30M",
+      "stage": "extract-classification",
+      "task": "p2",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 2700,
+      "gpu_hours_cap": 0.75
+    }
+  ],
+  "cpu_stages": {
+    "checkout": {
+      "jobs": 1,
+      "cpus": 2,
+      "memory": "4G",
+      "seconds": 600,
+      "core_hours_cap": 0.3333333333333333
+    },
+    "pose_validate": {
+      "jobs": 1,
+      "cpus": 2,
+      "memory": "30G",
+      "seconds": 1800,
+      "core_hours_cap": 1.0
+    },
+    "pose_benchmark": {
+      "jobs": 3,
+      "cpus": 8,
+      "memory": "30G",
+      "seconds_each": 600,
+      "core_hours_cap": 4.0
+    },
+    "probe_benchmark": {
+      "jobs": 3,
+      "datasets_per_job": 5,
+      "cpus": 8,
+      "memory": "30G",
+      "seconds_by_cell": {
+        "T100-G-30M-natural": 2700,
+        "T100-G-300M-matched": 2700,
+        "T100-G-300M-natural": 5400
+      },
+      "core_hours_cap": 24.0
+    },
+    "pose_ridge": {
+      "jobs": 1,
+      "cpus": 8,
+      "memory": "30G",
+      "seconds": 3600,
+      "core_hours_cap": 8.0
+    },
+    "probe_fit": {
+      "maximum_shards": 15,
+      "cpus": 8,
+      "memory": "30G",
+      "maximum_seconds_each": 7200,
+      "core_hours_cap": 136.0
+    },
+    "probe_aggregate": {
+      "jobs": 6,
+      "cpus": 2,
+      "memory": "30G",
+      "seconds_each": 600,
+      "core_hours_cap": 2.0
+    },
+    "compare": {
+      "jobs": 1,
+      "cpus": 8,
+      "memory": "30G",
+      "seconds": 1800,
+      "core_hours_cap": 4.0
+    },
+    "reserve": {
+      "core_hours_cap": 0.6666666666666666,
+      "submitted": false,
+      "use": "documented operational use only, inside180 total"
+    }
+  },
+  "measured_fit_gates": {
+    "probe_formula": "120 + 1.5 * sum_dataset((sum(C_times) + max(C_times)) * sum_fold(max(1,n_train_fold/n_train_fold0)))",
+    "probe_memory_minimum": "1.3 * measured peak RSS; <=30GiB",
+    "pose_formula": "ceil60(1.5*(2*V + sum_cell(11*S + 13*E)) + 120)",
+    "pose_required_evidence": [
+      "completed validate report and pinned SLURM accounting with positive MaxRSS_bytes<=30GiB",
+      "three completed train-only benchmark reports with same plan/code/runtime",
+      "three pinned benchmark SLURM accounting receipts: matching JobIDRaw, COMPLETED0:0,8CPUs,0<ElapsedRaw<=600,0<MaxRSS_bytes<=30GiB",
+      "cumulative resource check; benchmark RSS is not a guarantee of fit/predict peak"
+    ],
+    "on_excess": "stop before fit; no automatic cap increase or recipe change"
+  },
+  "frozen_source_manifest": "results/infra/scaling_300m_20261104/scientific_runtime_freeze.json",
+  "monitor": false
+}

@@ -1,0 +1,21 @@
+{
+  "protocol": "scaling-scientific-runtime-freeze-20261104-v1",
+  "until": "scientific 5000 launch; keep immutable active checkouts afterwards",
+  "review_commit": "a988a72d96f209cd89bc7f7b85b088a619022264",
+  "reviewed_code": "0d5f0f90074bbaf1142be86d22490e360b632c63",
+  "post_review_change": "F-1 only in scaling_compare; ignores cross-stage states, keeps content/support and intra-stage guards",
+  "files": {
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+    "scripts/scaling_production_memory.py": "12448d045364f2a8fb137259006937749a2a06b36a645cc49242a86323859091",
+    "scripts/scaling_evaluation.py": "395849450dc24a804a71133e272a2b76dd502a5466d7ca3a2d79c42bb292323e",
+    "scripts/scaling_pose_readout.py": "238a5cd479e37310235c42dcb0b930d232230ff0d2a8d1d1309b05b7292900cf",
+    "scripts/scaling_probe.py": "0b3d40994ea7b6ee189a5831e22a5b298cc0cf2ceaa24908c80242642b5d26b0",
+    "scripts/scaling_compare.py": "a3610519b453a3d37747f5a4ce926b2164a40dd503546b22b6c45829085eb938",
+    "scripts/scaling_projection.py": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+    "scripts/scaling_reading.py": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5"
+  },
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "projection_manifest_sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d",
+  "s3_evidence_producers_unchanged": true
+}

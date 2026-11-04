@@ -6148,3 +6148,27 @@ Checkout63527364 COMPLETED0:0, 21s su2CPU (0,011667core-ore). Dopo verifica
 sincrona di HEAD, pulizia e hash: S3 **63527446**, alle19:11:43CET
 PENDING Priority. Tetto4GPU-ore+32core-ore, nessun duplicato, nessun seguito
 automatico a5.000. Ricevute in production_memory_submission; monitor assente.
+
+
+### 04/11/2026 — GPT: review lettori acquisita e pacchetto operativo congelato
+
+ReviewClaudea988a72 APPROVATO, nessun blocco: copia integrale e voci conservate.
+F-1 corretto senza indebolire hash/supporti; F-2 risolto nei launcher con bootstrap
+numerico comune, F-3/F-4 congelando sorgenti e matrici; F-5 differito. Review
+operativa indipendente favorevole dopo correzioni concrete su OpenMP/runpy e
+accounting/RSS. Verifica finale571test passati/154,95s, 103sorgenti identici.
+
+S5: prima del training si fissano codice/test/launcher/formule/tetti; i benchmark
+sulle cache300M reali seguono le estrazioni e precedono i fit, che devono rientrare
+nei limiti già pubblicati. Nessuna selezione dagli score o benchmark inventato.
+Tetti: trainingfresh5000 22GPUh+176coreh; cinque estrazioni8,25GPUh+66coreh;
+CPU180coreh, incluse tre viste/420fit scientifici e90fit tecnici dei benchmark.
+Massimo15shard,136coreh cumulativi nei fit; confronto8CPU/30min. RiservaCPU2/3h.
+Risorse dettagliate e gate in `docs/scaling_300m_evaluation_execution_20261104.md`.
+
+S3 63527446 è in corso, avviato20:42:52CET; la readiness dei lettori pubblicata
+non sostituisce l'esito S3 né la review legata ai quattro gate finali. Controllo30M
+rihashato, orizzonte11novembre. Nessun nuovo job o monitor in questa consegna.
+22GPUh sono il tetto dei primi5000, non della tranche19618: rettifica materiale
+alla review§2.3; la continuazione resta separata. Autorizzazioni di Simone
+persistenti, nessuna nuova richiesta per lo stesso piano già approvato.

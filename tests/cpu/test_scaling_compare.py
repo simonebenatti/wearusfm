@@ -5,7 +5,9 @@ file/provenance guards, dimensions and bootstrap calculations remain real.
 """
 import copy
 import json
+import os
 from pathlib import Path
+import shutil
 import sys
 
 import numpy as np
@@ -242,3 +244,44 @@ def test_aggregate_cannot_hide_a_different_shard_fit_audit(scene, tmp_path):
     inputs["probe_reports"][0] = save_json(tmp_path/"probe_report.json", r)
     with pytest.raises(ValueError, match="source shards"):
         M.compare(inputs, tmp_path/"summary.json", CODE)
+
+
+@pytest.mark.parametrize("operation", ["touch", "restore_copy"])
+def test_pose_inspection_accepts_same_content_after_filesystem_metadata_changes(scene, tmp_path, operation):
+    path = Path(scene["pose"]["caches"][M.C.ARMS[1]]["val"]["path"])
+    before, content_sha = path.stat(), M.C.sha(path)
+    if operation == "touch":
+        os.utime(path, ns=(before.st_atime_ns, before.st_mtime_ns + 1_000_000_000))
+        assert path.stat().st_mtime_ns != before.st_mtime_ns
+    else:
+        restored = path.with_name("restored-cache.npz")
+        shutil.copyfile(path, restored)
+        restored.replace(path)
+        assert path.stat().st_ino != before.st_ino
+    assert M.C.sha(path) == content_sha
+    result = M.compare(scene["inputs"], tmp_path/"summary.json", CODE)
+    assert result["complete"] and result["quality"]["artifact_integrity"]
+
+
+def test_pose_inspection_still_rejects_changed_cache_bytes(scene, tmp_path):
+    path = Path(scene["pose"]["caches"][M.C.ARMS[1]]["val"]["path"])
+    original = path.read_bytes()
+    altered = bytearray(original)
+    altered[-1] ^= 1
+    try:
+        path.write_bytes(altered)
+        with pytest.raises(ValueError, match="SHA"):
+            M.compare(scene["inputs"], tmp_path/"summary.json", CODE)
+        assert not (tmp_path/"summary.json").exists()
+    finally:
+        path.write_bytes(original)
+
+
+def test_pose_inspection_still_rejects_nonvolatile_support_identity_change(scene, tmp_path):
+    inputs = copy.deepcopy(scene["inputs"])
+    report = copy.deepcopy(scene["pose_report"])
+    report["inspections"][M.C.ARMS[1]+"/val"]["targets"]["central_mask"] = "a"*64
+    inputs["pose_report"] = save_json(tmp_path/"pose_report.json", report)
+    with pytest.raises(ValueError, match="inspection receipt"):
+        M.compare(inputs, tmp_path/"summary.json", CODE)
+    assert not (tmp_path/"summary.json").exists()
