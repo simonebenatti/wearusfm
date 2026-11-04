@@ -5339,7 +5339,27 @@ una regressione diversa dalla posa allenata. Energia esplicita, loss dinamica,
 contrastiva e PSD-4 restano opzioni motivate dalla diagnosi, non una catena obbligatoria.
 Review indipendente next_steps_review concorde. Discussione soltanto, nessun nuovo job.
 
+### 2026-11-04 | GPT | T100-G P1 completo, resta un fit
+
+Nuovi shard63497284/63504830 completi0:0,1583/1641s;28fitconvergenti,pin/hash validi.
+Totale14shard/364fit/38,204444coreh. Aggregati T25-L63505189/63505230 completi16/8s,
+0,013333coreh; tecnicamente verificati e conservati senza lettura scientifica anticipata.
+Sottomesso T100-G P1 aggregate63516081 dopo gate, stessa policy2CPU/30G/20min.
+Snapshot14:52: fitG P2 63504862 RUNNING e treaggregatiPENDING,cap10 rispettato.
+RestanoG P2 aggregate e confronto su input completi. Nessun duplicato o nuovo monitor.
+Confermato a Simone: tutti i bracci tokenizer correnti usano preset30M, non300M.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | ETA e accounting delle ultime sonde
+
+I due nuovi shardG hanno0warning e28fit convergenti; restano i36warning di scoring
+DB3 già documentati. Nessun nuovo difetto dimostrato. ETAultimoP2 15:05–15:15
+indicativa daP2precedenti, non garanzia. Il confronto finale deve ancora essere
+sottomesso dopo gli input completi; gli aggregatiT25 da8/16s non garantiscono
+il tempo del bootstrap finale. Monitor automatico sempre spento.
+
+
 
 ### 2026-11-04 | GPT | Limiti da preservare nella proposta di seguito
 

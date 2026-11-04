@@ -14,21 +14,27 @@
     "63495821",
     "63495823",
     "63495895",
-    "63497058"
+    "63497058",
+    "63497284",
+    "63504830"
   ],
   "remaining_logical_ids_not_submitted": [
-    "TOKENIZER-T100-G-probe19618-p1-aggregate-20261104",
     "TOKENIZER-T100-G-probe19618-p2-aggregate-20261104",
     "TOKENIZER-probe19618-compare-20261104"
   ],
-  "queue_policy": "at most10RUNNING+PENDING; all15fitshards and T25-L/T100-L fouraggregates submitted; remaining2T100-G aggregates and comparison on complete inputs",
+  "queue_policy": "at most10RUNNING+PENDING;14fitshards complete, only T100-G P2 running. Fiveaggregates submitted, twoT25 complete. Submit remainingG P2 aggregate and finalcomparison after complete-input verification.",
   "authorization": "already granted; no new consent",
   "automatic_monitor": "disabled at user request; do not recreate",
   "holds_remaining": [],
   "no_new_fm_training_or_loss": true,
-  "probe_aggregates_submitted": 4,
-  "snapshot_cet": "2026-11-04T13:55:00+01:00",
-  "fits_verified_convergent": 336,
-  "completed_fit_core_hours": 31.04,
-  "aggregate_dependencies": "Completed T25-L and T100-L inputs verified via sacct and report/audit/OOF hashes; submit aggregates without afterok on already completed jobs. No resubmission."
+  "probe_aggregates_submitted": 5,
+  "snapshot_cet": "2026-11-04T14:52:44+01:00",
+  "fits_verified_convergent": 364,
+  "completed_fit_core_hours": 38.20444444444444,
+  "aggregate_dependencies": "Completed T25-L/T100-L/P1 T100-G inputs verified via sacct and report/audit/OOF hashes; no afterok on already completed jobs; no resubmission.",
+  "probe_aggregates_completed_verified": [
+    "63505189",
+    "63505230"
+  ],
+  "completed_aggregate_core_hours": 0.013333333333333334
 }

@@ -5946,3 +5946,13 @@ Sette job attivi: un fit T100-G in esecuzione, due fit e quattro aggregati in co
 Restano i due aggregati T100-G e il confronto finale su input completi. Simone
 preferisce discutere a quadro completo; nessuna lettura scientifica parziale.
 Monitor spento, nessuna modifica a training, dose, loss o protocollo.
+
+### 04/11/2026, 14:52 CET — quattordici shard verificati e T100-G P1 accodato
+
+T100-G DB2-01/DB2-23 COMPLETED0:0; nuovi28fit convergenti senza warning e pin/hash
+validi. Totale14shard,364fitconvergenti,38,204444coreh. T25-L aggregati completi e
+tecnicamente verificati (16s/8s,0,013333coreh); score non interpretati separatamente.
+Sottomesso T100-G P1 aggregate **63516081**, policy invariata2CPU/30G/20min.
+Resta solo il fit T100-G P2 **63504862** in esecuzione; T100-L P1/P2 e T100-G P1
+aggregate attendono la QoS. Restano da inviare T100-G P2 aggregate e confronto.
+Nessun nuovo esperimento o monitor; la campagna riguarda sempre il preset30M.

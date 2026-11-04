@@ -1,6 +1,23 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato attuale 04/11, aggiornamento 13:55 CET: 12/15 shard verificati
+## Stato attuale 04/11, aggiornamento 14:52 CET: resta un fit
+
+T100-G DB2-01 **63497284** e DB2-23 **63504830** conclusi 0:0 in 1583/1641s,
+report/audit/OOF verificati e 28/28 fit convergenti. Totale **14/15 shard verificati,
+364 fit convergenti, 38,204444 core-ore**. Gate aggiuntivo completed_shards/gate_1450.json.
+L'ultimo fit T100-G P2 **63504862** è RUNNING (inizio14:38:53); nessun fit da inviare.
+
+T25-L aggregati P1/P2 **63505189/63505230** COMPLETED0:0 in16/8s, hash e riferimenti
+agli shard verificati, 140/140 fit convergenti. Copie in probe_cpu_19618/completed_aggregates/.
+Non è ancora stato analizzato il confronto scientifico. Due T100-L aggregati in coda;
+aggiunto T100-G P1 **63516081**, input completi verificati, stessa policy2CPU/30G/20min.
+Snapshot14:52: quattro job attivi, un fit e tre aggregati in attesa. Nessun duplicato.
+
+Restano da inviare T100-G P2 aggregate e confronto finale, dopo verifica degli input
+completi. ETA ultimo fit15:05–15:15 indicativa dai precedenti P2 da25–27min, non una
+promessa; aggregati già eseguiti durano pochi secondi. Monitor sempre spento.
+
+## Stato precedente 04/11, aggiornamento 13:55 CET: 12/15 shard verificati
 
 T25-L e T100-L hanno concluso tutti i cinque shard; T100-G ha concluso DB3/DB6.
 I quattro nuovi completamenti sono T100-L DB2-01 **63495813**, DB2-23 **63495814**,
