@@ -12,9 +12,9 @@
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_%j.out
 set -euo pipefail
 [ "$#" -eq 1 ] || { echo 'usage: consolidation_continue.sbatch 30000|39237|49046' >&2; exit 2; }
-case "$1" in 30000|39237|49046) ;; *) exit 2;; esac
+case "$1" in 30000|39237|49046) ;; *) echo 'unregistered continuation endpoint' >&2; exit 2;; esac
 : "${WORK:?}" "${CODE_DIR:?}" "${EXPECTED_SHA:?}" "${SLURM_JOB_ID:?}"
-[ "${SLURM_JOB_NUM_NODES:-0}" -eq 1 ] && [ "${SLURM_CPUS_PER_TASK:-0}" -eq 32 ] || exit 2
+[ "${SLURM_JOB_NUM_NODES:-0}" -eq 1 ] && [ "${SLURM_CPUS_PER_TASK:-0}" -eq 32 ] || { echo 'allocation requires one node and 32 CPUs' >&2; exit 2; }
 source "$CODE_DIR/scripts/slurm/lib_code_dir.sh"
 code_dir_setup
 module purge

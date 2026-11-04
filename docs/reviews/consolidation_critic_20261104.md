@@ -29,3 +29,19 @@ Verifiche autore:54test passati sul nuovo pacchetto e sulle regressioni WSD e
 tokenizer_train; dopo l'aggiunta del test che blocca piani non revisionati,13test
 del pacchetto passati. Sintassi Bash dei due launcher valida. Le verifiche CPU
 non sostituiscono il collaudo CUDA e non misurano tempo/memoria dei fit reali.
+
+## Seguito dopo review Claude63fd9c5
+
+Critico `review_followup_critic`, sola lettura, nessun job/commit. Correzioni FT:
+nessun difetto bloccante trovato; griglia testa, persistenza e distinzione numerica,
+selezione validation-only, ricevute split, warm-up separato e regola scratch verificati.
+21test nuovi +13originali passati nella sua verifica. La funzione scratch richiede
+ancora collegamento all'aggregatore finale, limite mantenuto nella consegna.
+
+Continuazione:15test operativi passati nella sua verifica, archivioatomico confsync
+e SHA, nessunoverwrite, quota numerica/progetto e recovery coerenti. Root ha aggiunto
+anche verifica esplicita dell'età della quota con parametro submission_time (solo
+pre-submit, non gate sulla durata della coda) e relativo test. Evidenza realequota
+ancora nulla. Test autore complessivi dopo correzioni:123passati, inclusoWSD/wsd_chain/
+tokenizer_train;100/100sorgenti scientifici storici byte-identici. Questi controlli
+non sostituiscono il follow-up Claude né autorizzano lanci.

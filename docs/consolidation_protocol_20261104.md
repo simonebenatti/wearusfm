@@ -10,6 +10,10 @@ legge soltanto questo pacchetto; non sostituisce la review esterna di Claude.
 Ordine richiesto da Simone: preparazione → review Claude → correzioni e convergenza
 → pubblicazione dei riferimenti esecutivi → lanci tramite submitter/ledger comune.
 I due piani hanno `status=awaiting_claude_review`: i controller rifiutano l'esecuzione.
+La review Claude `63fd9c5` approva continuazione e benchmark con condizioni; le
+correzioni integrate richiedono la sua rilettura del diff, come precisato nella
+consegna successiva di Simone. `fits_status` mantiene un gate distinto per i fit.
+Il critico interno non sostituisce questa firma.
 Niente monitor in background. Nessuna nuova autorizzazione per il lavoro approvato
 dopo la convergenza, ma nessun lancio anticipato, neppure di checkout o benchmark.
 
@@ -61,6 +65,14 @@ osservati per14.618 passi di T100-G: **25,35GPUh**, circa6h20min senza coda; tet
 I segmenti si concatenano soltanto a ricevute complete; SLURM0:0 da solo non basta.
 Namespace `CONSOL-G-30000-20261104`, `CONSOL-G-39237-20261104`, `CONSOL-G-49046-20261104`.
 
+RilieviC-M1/C-M2: [procedura operativa](consolidation_continuation_operations_20261104.md)
+per timeout/hash/copia incompleti: niente retry cieco; recupero con piano revisionato
+e stato parziale verificato, oppure sola verifica CPU se training già completo.
+Copie persistenti in WORK di19.618,30.000,39.237,49.046 prima delle ricevute complete,
+SHA verificato e date di purge stimate dai file reali. Gate quota Lustre di progetto
+prima del lancio e delle copie; evidenza remota pending, nessuna quota assunta.
+Spazio aggiuntivo circa1,8GB, margine richiesto8GiB.
+
 ## 2. Sonde nei due momenti e ai due livelli
 
 `harness/backbone_depth.py` osserva con un hook temporaneo il Perceiver nel forward
@@ -96,6 +108,13 @@ Posa: E_dyn, livello, correlazione, varianza predetta/target ed E2 sul supporto
 comune; gli stessi bersagli/split delle valutazioni19.618. Non usare il pannello
 train come evidenza su utenti esclusi. Seme unico e dati di sviluppo rimangono.
 
+La [risposta alla review](reviews/consolidation_response_to_claude_20261104.md)
+pre-registra lettura a due lati e scelta del riferimento per compito. Il controllo
+T25-L/B si riporta con i propri IC, senza trasformare una coppia in una stima
+universale del rumore. Soglie pratiche proposte:1pp classificazione,2% relativo
+E_dyn posa, oltre a IC appaiato favorevole; da confermare con Claude prima delle
+estrazioni, non applicate retroattivamente come verdetto.
+
 La libreria comune e i controlli di parità sono in questa consegna. **I controller
 di estrazione/fitting della matrice lunga non sono ancora in questa consegna**:
 serviranno piani dedicati con pin dei checkpoint effettivi, adattatori alle cache
@@ -122,8 +141,11 @@ Test ufficiali non valutati. Questo è sviluppo del protocollo, non conferma fin
 | Regime | Encoder | Testa | LR candidati |
 |---|---|---|---|
 |frozen|teacher19.618 immutato, eval|LayerNorm768 + Linear alle classi|testa1e-3,1e-2|
-|finetune|teacher19.618, tokenizer→backbone aggiornabili|stessa testa, stessa inizializzazione|encoder1e-5,1e-4; testa10×|
-|scratch|architettura identica, pesi casuali seed0|stessa testa, stessa inizializzazione|encoder e testa1e-4,1e-3|
+|finetune|teacher19.618, tokenizer→backbone aggiornabili|stessa testa, stessa inizializzazione|encoder1e-5,1e-4; testa100× =1e-3,1e-2|
+|scratch|architettura identica, pesi casuali seed0|stessa testa, stessa inizializzazione|encoder1e-4,1e-3; testa10× =1e-3,1e-2|
+
+Griglia della testa identica per indice nei tre regimi (F-B1); moltiplicatori
+registrati nel piano, nella firma della ricetta e nei test (F-M4).
 
 Decoder, ancore e testa posa non appartengono al percorso classificazione e non
 ricevono aggiornamenti. «Fine-tuning completo» significa tutti i moduli dell'encoder
@@ -136,12 +158,28 @@ Proposta da far validare a Claude: **5epoche complete**, batch8, seed0, AdamW
 weight_decay0,01, clipping1, warmup fino100update (10% se dose più corta), cosine
 fino alla dose prestabilita; nessuna augmentation aggiunta. Class-weight dal solo
 fit, cross-entropy pesata con riduzione per esempio. Due LR per regime:24candidati
-in12job fold×regime, selezione della migliore epoca su validation; pareggi prima
+in12job fold×regime oppure24job nel ripiego preregistrato, selezione della migliore epoca su validation; pareggi prima
 epoca e LR minore. Tutti completano la stessa esposizione supervisionata, nessun
 early-stop dipendente dal held.5epoche sono uno screening a dose fissata, non una
 garanzia di convergenza per la rete casuale. Curve loss/validation, norme gradiente
 e budget effettivo vengono salvati; una sconfitta da zero ancora in discesa non
 dimostra inferiorità del suo ottimo né chiude il confronto a dose maggiore.
+
+F-R2: sui candidati scratch selezionati nei4fold completi, «ancora in miglioramento»
+se almeno3fold hanno la prima epoca migliore alla5, oppure mediana del guadagno
+validation5−4 ≥0,005 (0,5pp). Se un fold non completa5epoche la regola non è valutabile,
+non diventa falsa. Se scatta, seguito dichiarato a15epoche per scratch e finetune,
+dagli stessi pesi iniziali originali e seed0, stessa griglia/split/testa, cosine con
+orizzonte15epoche; non ripresa dal checkpoint downstream selezionato a5. Preventivo
+training circa3× il misurato, con costi fissi/valutazione espliciti. Prima del seguito
+servono piano esecutivo, budget misurato e review; nessuna estensione sottomessa oggi.
+
+F-M3: ogni candidato scrive subito report e stato migliore finito; nonfiniti come
+esiti `stopped=nonfinite`, con scoreJSON `null` (evita Infinity non standard).
+Si continua con l'altro; held solo se esiste un candidato selezionabile. Se entrambi
+divergono il fold rimane fallito scientificamente, senza inventare OOF o cancellarlo
+dalla matrice. OOM/errori di codice restano errori del job. Un nonfinito sul held
+non permette di scegliere l'altro LR.
 
 Preprocessing storico: filtro adattato aNyquist, notches50/60, prime10finestre
 senza etichette per scala del singolo soggetto, due ritagli4s EPN mediati prima
@@ -158,20 +196,28 @@ Riportare entrambi i contrasti, distribuzione soggetto, curve e classi. Non este
 il risultato a regressione o a «FM utile in generale»; la posa era già supervisionata.
 
 Benchmark prima dei fit: solo soggetti train del fold0,128finestre distribuite
-nell'ordine train, fino32update per regime, piccoli controlli sullo stesso train,
+nell'ordine train,4update warm-up CUDA su istanza separata e poi fino32update per
+regime su istanza nuova, piccoli controlli sullo stesso train,
 nessun checkpoint scientifico.1GPU/8CPU/100GiB/30min: **0,5GPUh e4coreh** massimi.
 Misura anche caricamento dati e preprocessing dell'intero train fold0; il tempo
 di preprocessing viene proporzionato al dataset interno completo con margine1,5.
 Registra RSS e memoria CUDA allocata/prenotata: proiezione RSS piena (×rapporto
 finestre×1,3) entro85% di100GiB, prenotataCUDA entro85% della memoria dellaGPU.
 Proiezione tempo: costo per update, tutte le validation e held addebitate come
-training, ×1,5, caricamento/preprocessing misurati con margine, più600s. Ogni job con due candidati deve stare entro
-14100s di lavoro su allocazione4h. Se OOM/nonfinito/sovracosto: stop e diagnosi,
-nessun cambio automatico di batch, epoche o LR. Pin del report e hash dei sorgenti
+training, ×1,5 della media steady dopo warm-up; si conserva anche la media all.
+Caricamento/preprocessing misurati con margine, più600s. Ogni job deve stare entro
+14100s su allocazione4h. PolicyB-R1 fissata prima della misura, per regime: se due
+candidati rientrano si usa un job; altrimenti due job da un candidato se la proiezione
+singola rientra. Il secondo legge la ricevuta del primo e poi seleziona/predice held.
+Se neanche il singolo rientra: stop e nuovo preventivo. Nessun cambio automatico di
+batch, epoche o LR. Nel benchmark OOM/nonfiniti richiedono diagnosi; nei fit solo la
+divergenza numerica prevista è un esito del candidato. Pin del report e hash dei sorgenti
 obbligatori prima dei fit. Il costo atteso dei fit **non è ancora misurato**.
 
-Tetto proposto fit:12job ×1GPU/8CPU/100GiB/4h = **48GPUh,384coreh**, non previsione
-di consumo. Namespace `FT-BENCH-20261104`, poi `FT-EPN-<regime>-F<fold>-20261104`.
+Tetto fit congiunti:12job ×1GPU/8CPU/100GiB/4h = **48GPUh,384coreh**; nel ripiego
+completo24job = **96GPUh,768coreh**, non previsione di consumo. Nessun candidato
+aggiunto; combinazione mista possibile tra regimi. Namespace `FT-BENCH-20261104`,
+poi `FT-EPN-<regime>-F<fold>-20261104` o suffisso`-C0/-C1`.
 Report sotto `wearusfm_runs/results/consolidation_20261104/finetuning/`, output nuovi,
 mai sovrascrivere una consegna incompleta. Controller e launcher implementati;
 benchmark e fit bloccati dalla review. Fine-tuning49.046 non implicito: prima leggere

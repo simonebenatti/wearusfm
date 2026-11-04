@@ -178,6 +178,34 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Correzioni alla review Claude63fd9c5 | Basebbca940
+
+Accolta la review e il successivo esito trasmesso da Simone: Claude rilegge il diff
+delle correzioni prima della convergenza e di qualsiasi lancio. Tutto nel solo
+worktree wearusfm-consolidation; nessuna sottomissione, checkout remoto o monitor.
+
+Testa ora1e-3/1e-2 nei3regimi con moltiplicatori1/100/10 pinnati nella ricetta;
+eccezione numerica specifica, risultato/stato candidato persistito subito,
+OOM/bug distinti. Test di parità frozen con feature storiche su2crop e seed esplicito.
+Benchmark4update warm-up su istanza separata +32misurati, all/steady salvati.
+Ripiego preregistrato congiunto/split implementato: secondo job legge ricevuta del
+primo, sceglie solo suval e poiheld, senza cambiare24candidati/5epoche. Tetto48GPUh
+congiunto, fino96GPUh nello split completo, costo effettivo da misurare.
+
+F-R2 fissata: almeno3fold scratch con prima migliore epoca5 oppure mediana val5−4
+≥0,5pp; seguito15epoche per scratch+finetune dichiarato, dagli stessi pesi iniziali
+e con preventivo/review prima di estendere. RegoleV-R1 a due lati proposte:1pp
+classificazione e2% relativoE_dyn, IC appaiati, scelta riferimento per compito;
+replicaT25-L/B conservata come contesto empirico, non pavimento universale delrumore.
+
+C-M1 procedura nuova revisione per timeout/archivio incompleto; C-M2 copieWORK di
+19.618/30.000/39.237/49.046 conhash/fsync/pubblicazione senza overwrite e datepurge.
+GatequotaLustre conpin+controllolive; evidenza quota ancora null, non inventata.
+123test passati,100/100SHA scientifici tokenizer invariati, Bash valido, critico
+interno favorevole; reviewClaude originale conservata byteidentica. Risposta in
+docs/reviews/consolidation_response_to_claude_20261104.md e prompt di rilettura in
+docs/prompt_claude_consolidation_followup_20261104.md.
+
 ### 2026-11-04 | GPT consolidamento | Preparazione separata per review Claude | Base8ee6603
 
 Owner solo schedule30M T100-G e fine-tuning, worktree wearusfm-consolidation,
@@ -5445,6 +5473,22 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Blocchi e limiti dopo correzioni Claude
+
+RilievoF-B1 risolto e testato: prima la headgrid differiva10× fraregimi, ora è uguale.
+F-M3 persistenza/divergenza e B-R1 split risolti, nessun blocco tecnico trovato dal
+critico. Nuova riletturaClaude ancora richiesta: statuspiani awaiting_claude_review,
+fits_status distinto; nessun consenso nuovamente chiesto, nessun lancio anticipato.
+Quota realeWORK non letta: SSH sola lettura non ha restituito output utile ed è
+stato interrotto, nessuna scrittura remota. Resta gate operativo prima del lancio.
+
+Non accolto come fatto un pavimento statistico universale0,2–0,9pp da una coppia:
+UCIosservato0,049pp eIC della replica piùampi; margini pratici eIC separati, da
+convergere conClaude. Cachefrozen e terzavista prenormalizzata rinviate. Controller
+matrice lunga, pinendpoint epreventivoCPU ancora da consegnare; funzione lettura
+scratch testata maaggregatoreFT finale non ancora collegato. Nessun risultatoGPU
+nuovo e nessuna dichiarazione di efficacia/convergenza dai testCPU.
 
 ### 2026-11-04 | GPT consolidamento | Limiti dichiarati e gate prima dei lanci
 

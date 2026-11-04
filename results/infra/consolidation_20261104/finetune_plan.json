@@ -43,8 +43,42 @@
   },
   "fits": 24,
   "fold_regime_jobs": 12,
-  "fit_gpu_hours_cap": 48,
-  "fit_allocated_core_hours_cap": 384,
-  "gate": "Pin train-only benchmark; projected two candidates <=14100s in every regime, otherwise stop and revise estimate before launch.",
-  "recipe_sha256": "5db27e8ef221afac83ac83a0f9ebf61cbacde43461ed5dd6b02ce6c71ce5aafa"
+  "fit_gpu_hours_cap": 96,
+  "fit_allocated_core_hours_cap": 768,
+  "gate": "Pinned corrected benchmark; choose joint/split per regime from prospective timing rule; <=14100s/job and memory <=85%; corrected fit review required.",
+  "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
+  "head_lr_multiplier": {
+    "frozen": 1,
+    "finetune": 100,
+    "scratch": 10
+  },
+  "fits_status": "awaiting_claude_corrected_fit_review",
+  "fit_output_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
+  "scratch_learning_rule": {
+    "folds": 4,
+    "best_epoch5_folds_at_least": 3,
+    "or_median_validation_bacc_epoch5_minus4_at_least": 0.005,
+    "followup_epochs": 15,
+    "followup_regimes": [
+      "finetune",
+      "scratch"
+    ],
+    "followup_initialization": "fresh from same original teacher19618/random seed0; new 15-epoch horizon, not resume from selected5epoch",
+    "followup_gate": "preregistered direction; publish measured resources and validate implementation before any extension"
+  },
+  "fit_packaging_policy": {
+    "joint_if_two_candidates_seconds_lte": 14100,
+    "otherwise_split_if_one_candidate_seconds_lte": 14100,
+    "otherwise": "blocked; no automatic dose/batch/grid change",
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback"
+  },
+  "fit_gpu_hours_cap_joint": 48,
+  "fit_gpu_hours_cap_fallback": 96,
+  "max_candidate_jobs": 24,
+  "review": {
+    "commit": "63fd9c5",
+    "path": "docs/reviews/claude_review_consolidation_20261104.md",
+    "benchmark": "approved after F-B1 and B-R1; conditions implemented, awaiting verification",
+    "fits": "new split controller pending Claude verification"
+  }
 }

@@ -6062,3 +6062,94 @@ Critico interno favorevole dopo due correzioni;54test su pacchetto e regressioni
 awaiting_claude_review bloccano esecuzione. Le valutazioni lunghe hanno libreria e
 protocollo, ma adattatori/controller e preventivo CPU finale ancora da consegnare
 prima dei relativi lanci: non dichiarati già pronti.
+
+### 04/11/2026 — Correzioni alla review Claude 63fd9c5, in attesa di rilettura
+
+Review su `bbca940`, ricevuta da Simone e conservata integralmente in
+`docs/reviews/claude_review_consolidation_20261104.md`. Risposta a ogni rilievo in
+`docs/reviews/consolidation_response_to_claude_20261104.md`; prompt per la rilettura
+in `docs/prompt_claude_consolidation_followup_20261104.md`. Perimetro invariato:
+continuazione 30M T100-G e fine-tuning EPN dal teacher 19.618. Nessun lancio o
+checkout remoto; entrambi i piani restano `awaiting_claude_review`. L'allegato
+richiede convergenza sul diff delle correzioni prima di procedere.
+
+**F-B1/F-M4:** griglia della testa `{1e-3, 1e-2}` identica nei tre regimi, con
+moltiplicatori frozen/finetune/scratch pari a 1/100/10; griglie dell'encoder
+invariate. Moltiplicatori inclusi nella ricetta, nel suo hash e nel controllo
+runtime. Rimangono 24 candidati, senza costo aggiuntivo per questa correzione.
+Persistenza immediata del report e dei pesi di ogni candidato; divergenza numerica
+registrata come esito con score JSON `null`. OOM ed errori di codice non sono
+assorbiti come divergenza. Se nessun candidato è finito, nessuna predizione held
+inventata e nessuna esclusione silenziosa del fold. Test di parità frozen con le
+feature storiche e seed esplicito nella ricostruzione del selezionato.
+
+**B-R1/B-M2, prima del benchmark:** quattro update di warm-up su un modello
+separato, poi nuova istanza per i 32 update misurati. Report dei tempi all/steady;
+proiezione sulla steady con fattore 1,5 e costi fissi dichiarati. Per ciascun
+regime, due candidati nello stesso job se la proiezione è ≤14.100 s; altrimenti
+un candidato per job solo se la proiezione del singolo è ≤14.100 s. Se anche il
+singolo supera il limite, stop: nessuna riduzione automatica di epoche, batch o
+griglia. Nel caso split il secondo job verifica ricevuta/hash/pesi del primo,
+sceglie su validation dopo entrambi e predice held una volta; non cambia scelta
+dopo aver letto held. Benchmark: tetto 0,5 GPU-ore e 4 core-ore. Fit congiunti:
+12 job, tetto 48 GPU-ore e 384 core-ore; ripiego completo: 24 job, 96 GPU-ore e
+768 core-ore. Sono tetti alternativi, non da sommare. Preventivo effettivo e
+modalità per regime saranno pubblicati dopo il benchmark corretto e prima dei fit.
+
+**F-R2, prima dei fit:** la regola «scratch ancora in miglioramento» usa i quattro
+candidati scratch selezionati su validation, con cinque epoche complete ciascuno.
+Scatta se almeno 3 fold hanno la prima epoca migliore alla quinta, oppure se la
+mediana sui quattro fold di validation balanced accuracy(epoca 5 − epoca 4) è
+≥0,005 (0,5 punti percentuali). Un fold incompleto/divergente rende la regola non
+valutabile. A cinque epoche si legge il vantaggio a dose fissata, senza dichiarare
+l'ottimo di scratch o la necessità del pretraining. Se scatta, il seguito previsto
+confronta scratch e finetune entrambi a 15 epoche, stessi dati, seed, griglie e
+inizializzazioni originali; nuovo cosine a 15 epoche, non ripresa dal checkpoint
+selezionato a cinque. Stima del training circa 3× il misurato, più costi fissi e
+valutazione. Implementazione, preventivo e review dell'estensione restano da
+chiudere: nessun job a 15 epoche è incluso in questa consegna. La funzione della
+regola è testata; il suo collegamento all'aggregatore finale FT è ancora da fare.
+
+**C-M1/C-M2, prima della continuazione:** recovery solo con nuova revisione del
+piano, nuovo ID logico, pin del checkpoint e consuntivo residuo. Se il training è
+già completo e fallisce la verifica/copia finale, si recupera quella fase senza
+ripetere gli update. Se è parziale, servono `summary.stopped == "limite di tempo"`,
+assenza di STOP, dose nella fase e stato completo verificato; niente retry cieco
+o riavvio del warm-up. Procedura in `consolidation_continuation_operations_20261104.md`.
+Il wrapper copia atomicamente in WORK, senza sovrascrivere, il sorgente 19.618 e
+gli endpoint 30.000/39.237/49.046; SHA e metadati nella ricevuta, completa solo dopo
+copia verificata. Stima purge SCRATCH da mtime +40 giorni, senza considerarla una
+garanzia: la protezione è la copia persistente. Circa 1,8 GB di checkpoint; quota
+di progetto richiesta libera almeno 8 GiB e 1.000 inode. Evidenza quota reale
+ancora assente: da raccogliere e pinnare prima del lancio, entro 24 ore dalla
+sottomissione, e da verificare nuovamente a runtime. Il tempo in coda non invalida
+da solo la ricevuta. Stima training 25,35 GPU-ore e tetto 36 GPU-ore/288 core-ore
+invariati; nessuna quota dichiarata verificata senza misura.
+
+**V-R1, proposta per la convergenza prima delle estrazioni:** la replica storica
+T25-L − B19618 resta un confronto empirico appaiato con IC, non un pavimento
+statistico universale. Soglie pratiche proposte: 1 pp di balanced accuracy e 2%
+relativo di E_dyn, con IC appaiato favorevole. Primario di dose 49.046 − 19.618;
+secondari 39.237 − 19.618 e 49.046 − 39.237, tutti riportati. Classificazione:
+beneficio se P1 o P2 guadagna ≥1 pp con IC inferiore >0 e l'altro mantiene IC
+inferiore >−1 pp; peggioramento pratico se uno perde ≥1 pp con IC superiore <0.
+Esiti misti restano compromessi, IC irrisolti non sono equivalenza. Riferimento:
+19.618 se nessun beneficio, unico endpoint favorevole se uno solo, altrimenti
+39.237 salvo ulteriore beneficio pratico di 49.046 contro 39.237. Per la posa usare
+`100*(1 − E_dyn_nuovo/E_dyn_riferimento)`: beneficio ≥2% con IC inferiore >0,
+peggioramento ≤−2% con IC superiore <0; stessa preferenza per la dose minore se
+l'incremento finale non aggiunge beneficio pratico. Correlazione, varianza,
+livello ed E2 sul supporto comune sempre visibili; una regressione chiara degli
+altri indicatori rinvia la scelta e impone di esplicitare il compromesso.
+Post − pre usa gli stessi margini a pari D/supporto/lettore, senza dedurre perdita
+irreversibile d'informazione dal solo readout. Classificazione e posa possono
+richiedere riferimenti diversi. Scelte esplorative su sviluppo, un solo seme,
+nessuna correzione dei nuovi contrasti sottraendo la replica storica.
+
+Restano da consegnare controller/pin/preventivo della matrice lunga (V-R2) e
+aggregatore OOF/IC FT. Rinviate le ottimizzazioni facoltative cache frozen (F-M5)
+e terza vista prenormalizzata (V-F3), senza cambiare la matrice corrente.
+Critico interno senza nuovi rilievi bloccanti; 123 test passati su pacchetto e
+regressioni WSD/tokenizer, più verifica mirata dopo l'aggiunta del riferimento
+alla ricevuta split. Sorgenti scientifici storici invariati: 100/100 hash uguali.
+I controlli locali non sostituiscono la rilettura Claude né il benchmark CUDA.
