@@ -1,0 +1,49 @@
+{
+  "status": "verified",
+  "training_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb",
+  "arms": {
+    "T25-L": {
+      "job_id": 63386315,
+      "completed": true,
+      "steps": 19618,
+      "exact_training_sha": true,
+      "exact_config": true,
+      "collected_file_hashes_verified": true,
+      "checkpoint_hash_verified": true,
+      "immutable_5000_unchanged": true,
+      "no_STOP_verified": true,
+      "continuation_gpu_hours": 12.278888888888888
+    },
+    "T100-L": {
+      "job_id": 63386337,
+      "completed": true,
+      "steps": 19618,
+      "exact_training_sha": true,
+      "exact_config": true,
+      "collected_file_hashes_verified": true,
+      "checkpoint_hash_verified": true,
+      "immutable_5000_unchanged": true,
+      "no_STOP_verified": true,
+      "continuation_gpu_hours": 12.587777777777777
+    },
+    "T100-G": {
+      "job_id": 63386403,
+      "completed": true,
+      "steps": 19618,
+      "exact_training_sha": true,
+      "exact_config": true,
+      "collected_file_hashes_verified": true,
+      "checkpoint_hash_verified": true,
+      "immutable_5000_unchanged": true,
+      "no_STOP_verified": true,
+      "continuation_gpu_hours": 12.593333333333334
+    }
+  },
+  "source_file_hash_count": 15,
+  "exact_config_changed_only_max_steps": true,
+  "old_plan_inputs_references_unchanged": true,
+  "no_STOP_check": "ssh leonardo find three known run roots -maxdepth 1 -name STOP -print: exit0, empty output",
+  "prelaunch_inventory": "No jobs in squeue; endpoint output root and new checkout absent; no endpoint extraction IDs in ledger.",
+  "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+  "full_training_gpu_hours": 50.43333333333334
+}

@@ -1,0 +1,63 @@
+{
+ "stopped": "max_steps",
+ "steps": 19618,
+ "elapsed_s": 11294.777352571487,
+ "parameters": 28362013,
+ "device": "cuda:0",
+ "gpu_max_memory_gib": 15.779504776000977,
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-training-20261103",
+  "sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb"
+ },
+ "environment": {
+  "python": "3.11.6",
+  "torch": "2.2.0a0+git6c8c5ad",
+  "cuda": "12.1",
+  "pip_freeze_file": null,
+  "pip_freeze_sha256": null,
+  "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+ },
+ "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+ "world_size": 4,
+ "batch_per_process": 8,
+ "prefetch": true,
+ "prefetch_audit_steps": null,
+ "accum_steps": 1,
+ "micro_batch": 8,
+ "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+ "pose_panel_timing": {
+  "prepare_s": 20.842367829056457,
+  "evaluations_s": [
+   3.440700927982107,
+   3.4545765907969326,
+   3.4540799539536238,
+   3.4411373620387167,
+   3.452152949059382,
+   3.460346617968753,
+   3.454892620909959,
+   3.440020623849705,
+   3.443435831926763,
+   3.443972063018009,
+   3.4489377290010452,
+   3.4423383821267635,
+   3.4449477209709585,
+   3.458782095927745,
+   3.445954520953819,
+   3.4623559559695423,
+   3.449065004941076,
+   3.4460933569353074,
+   3.4400361960288137,
+   3.4381940509192646,
+   3.4530673751141876,
+   3.4527536800596863,
+   3.4390955069102347,
+   3.442226172890514,
+   3.445835896069184,
+   3.4450129880569875,
+   3.4342570800799876,
+   3.4432829299475998,
+   3.443084992002696
+  ],
+  "total_s": 120.80300500546582
+ }
+}

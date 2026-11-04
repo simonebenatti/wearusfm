@@ -5851,3 +5851,20 @@ o generalizzazione: sono pannelli train e la varianza predetta GELU non cresce.
 Review indipendente concorde. Diagnostica, grafico e aggregati salvati; protocollo,
 endpoint19618, valutazioni e sequenza successiva invariati. Nessun nuovo job o monitor.
 Riferimento: tokenizer_training_execution_20261103.md, lettura delle22:29CET.
+
+## 04/11/2026 — Ripresa autorizzata e valutazioni endpoint tokenizer
+
+Simone chiede di procedere dopo la fine dei training: tutte le tre continuazioni
+COMPLETED0:0 a19618,50,433333GPUh per l'intero training. Gate di ricevute, codice,
+configurazione e hash superato; nessun STOP, checkpoint5k invariati. Si prepara il
+nuovo checkout e si avviano9estrazioni residue (3posa/3P1/3P2),6GPUh già nella
+matrice approvata, più0,333333coreh del checkout. Nessun nuovo consenso, nessun
+nuovo training. Piano docs/tokenizer_endpoint_execution_20261104.md; monitor spento.
+
+### Screening teacher5k letto senza cambiare il disegno
+
+Ridge63405791 verificata e revisionata: E_dyn0,921457/0,910612/0,899816 per
+25lineare/100lineare/100GELU. I due passaggi principali migliorano circa1,18% ciascuno;
+combinato secondario2,35%, tuttiIC appaiati sottozero. Varianza predetta ancora5–8%
+del target. Nessuna promozione, selezione dei bracci o cambio della ricetta a metà.
+Si mantiene il confronto endpoint e la domanda EPN200Hz distinta dalla posa2kHz.

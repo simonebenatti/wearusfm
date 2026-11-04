@@ -1,0 +1,151 @@
+{
+  "protocol": "tokenizer-evaluation-20261103-v1",
+  "comparison": {
+    "path": "results/infra/tokenizer_review_20261103/comparison_configurations.json",
+    "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071"
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "windows": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    },
+    "csv": {
+      "path": "/leonardo_work/IscrB_WearUsFM/data/raw/emg2pose_mini/emg2pose_metadata.csv",
+      "sha256": "0e7ad04a79a0f162385d22ec8d6f43af9b8360978ca11ef9d601bbf9594b09e6"
+    },
+    "splits": {
+      "path": "splits/v1/splits_v1.json",
+      "sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    }
+  },
+  "paths": {
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "processed_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose",
+    "uci_root": "/leonardo_work/IscrB_WearUsFM/data/raw/uci_emg",
+    "roots": [
+      "/leonardo_work/IscrB_WearUsFM/data/processed",
+      "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+    ],
+    "epn_roots": [
+      "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/trainingJSON",
+      "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/testingJSON"
+    ]
+  },
+  "pose_references": {
+    "train": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+      "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+      "bytes": 257675076,
+      "n_windows": 1907,
+      "n_users": 40,
+      "n_recordings": 200
+    },
+    "val": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+      "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+      "bytes": 2485295825,
+      "n_windows": 18548,
+      "n_users": 15,
+      "n_recordings": 1950
+    }
+  },
+  "classification_references": {
+    "ninapro_db2": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+      "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+      "bytes": 829630314
+    },
+    "ninapro_db3": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+      "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b",
+      "bytes": 211675986
+    },
+    "ninapro_db6": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+      "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd",
+      "bytes": 939642062
+    },
+    "epn612": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz",
+      "sha256": "88cf51fc46cb489724905f041cd67c22090af16eab769ac14cbd0b7056b92dc4",
+      "bytes": 729002818
+    },
+    "uci_emg": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz",
+      "sha256": "8ba7500155f706695ea2fb35cdfa57f41a5c38d96c2511e446426169358323fb",
+      "bytes": 5606442
+    }
+  },
+  "checkpoints": {
+    "5000": {
+      "T25-L": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T25-L/checkpoint_step0005000.pt",
+        "sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+        "bytes": 454215840,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/config.json",
+        "config_sha256": "8430471dd76d83541c3d799ac39c8751dda6b21387466e27c6e5f2b110b0ea80",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/receipt.json",
+        "receipt_sha256": "f87b9ed7f8fc59c21a448cac153c5c78c5baf078820115bdf4bc27c456f785e6"
+      },
+      "T100-L": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-L/checkpoint_step0005000.pt",
+        "sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+        "bytes": 454381728,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-L/5000/config.json",
+        "config_sha256": "580e991aff3e300cd3e0e556096fd948db967e57cbc4a124f5fa8486db0df96f",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-L/5000/receipt.json",
+        "receipt_sha256": "3ed0360dd96508e6ea8b67e14cc30e5ecffcc51bd5ff488f4aee29423807b0fe"
+      },
+      "T100-G": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0005000.pt",
+        "sha256": "49dd518b5eea632a16bc7ff88ab0fb013f30d61458164c9521867572c83daa80",
+        "bytes": 454381728,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/5000/config.json",
+        "config_sha256": "dd68e9008b853b12ee38111c4c37370157f166aa70375cfb308bd22d5b6ab0fd",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/5000/receipt.json",
+        "receipt_sha256": "d0a50fe777d1bf66df7670158324b48444875c645c1a9bbcb3d55e40560d96c7"
+      }
+    },
+    "19618": {
+      "T25-L": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T25-L/checkpoint_step0019618.pt",
+        "sha256": "bf87d87c4ba68412652b5f049c2e22ffb85782cf4b2a9291440610994a9506db",
+        "bytes": 454215840,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/19618/config.json",
+        "config_sha256": "eaf87657163b92b56c733488850f447b35bc41ce4630b2ea738cfbec2aa6d736",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/19618/receipt.json",
+        "receipt_sha256": "726b0c57dbdae39eef01455f645b965b1fcd32448bcbf5086cd9bda5ae8e522e"
+      },
+      "T100-L": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-L/checkpoint_step0019618.pt",
+        "sha256": "c6a55d1b1fdcd226e6f31ad6ecb4bb118e0ed6e6567da66dc2a0ddeaaa11d7ee",
+        "bytes": 454381728,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-L/19618/config.json",
+        "config_sha256": "ee02cf3f8ece7aa4a85316b0420c4b2c370ba9e66286720d63516639487ee592",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-L/19618/receipt.json",
+        "receipt_sha256": "2b0cb807f42dd4972146f89963ca6e686db832ee9be1a598c8a111d141d3d32e"
+      },
+      "T100-G": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+        "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+        "bytes": 454381728,
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/19618/config.json",
+        "config_sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa",
+        "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/19618/receipt.json",
+        "receipt_sha256": "2ffbba1e0e3e7884456f6c54b1a2b1b4771cae508deac43c44710b4ab3fbf6db"
+      }
+    }
+  }
+}

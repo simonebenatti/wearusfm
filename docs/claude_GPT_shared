@@ -5201,7 +5201,42 @@ con ancore/posa separate in results/infra/tokenizer_execution_20261103/loss_diag
 lettura e limiti in docs/tokenizer_training_execution_20261103.md. Critico concorde.
 Nessun cambio di ricetta, job aggiunto o monitor riattivato; restano le valutazioni previste.
 
+### 2026-11-04 | GPT | Training tokenizer completi; nove estrazioni endpoint predisposte
+
+Su richiesta esplicita di Simone ripresa la campagna. Tre continuazioni19618
+COMPLETED0:0; training totale50,433333GPUh/66. Verificate ricevute, config integrali,
+codiceafb644e,15hash remoti e invarianza checkpoint5k. Piano concreto e policy19618
+pubblicati prima del lancio:9estrazioni teacher (3posa+3P1+3P2),6GPUh già riservate,
+checkout aggiuntivo0,333333coreh. Le3estrazioni5k non si ripetono. Nessuna modifica
+scientifica; monitor resta spento. Riferimento docs/tokenizer_endpoint_execution_20261104.md.
+
+### 2026-11-04 | GPT | Ridge teacher tokenizer5k raccolta e revisionata
+
+Job63405791 completo134s,0,297778coreh; catenaCPU5k0,370556coreh. Report e hash
+verificati, seconda review indipendente ha replicato9contrasti/IC. E_dyn dinamiche:
+T25-L0,921457;T100-L0,910612;T100-G0,899816. Benefici relativi dei due primari1,177%
+e1,186%, combinato secondario2,349%; IC appaiati sottozero. Screening descrittivo,
+varianza predetta5,34/8,36/7,08%, dinamica ancora attenuata. Nessuna scelta di braccio
+o estensione. Analisi docs/reviews/tokenizer_pose_5000_results_20261104.md;
+evidenze cpu_5000/final/, senza segnali o NPZ nel repo.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Limiti dello screening tokenizer5k
+
+Il booleano automatico2percent del contrasto combinato non è un verdetto: confronto
+secondario e dose intermedia. Primari sotto2% puntuale; IC esplorativi senza correzione
+globale, condizionati al seme e utenti val riusati. Statiche peggiorano con100lineare;
+posa2kHz non risponde a EPN200Hz. Nessun recupero completo del movimento; tutti i
+bracci restano nella matrice endpoint approvata. Critico concorde, due formulazioni chiarite.
+
+### 2026-11-04 | GPT | Guardie endpoint e distinzione dodici/nove estrazioni
+
+Le12estrazioni sono la matrice totale:3posa5k già concluse,9residue a19618.
+Nessun difetto dei training o checkpoint. Il controller controlla formato delloSHA
+training ma non l'uguaglianza al commitatteso: l'attestazione esterna19618 verifica
+esplicitamente afb644e e sacct COMPLETED0:0, prima del freeze. Nessuna correzione del
+runtime necessaria. Non usare lo screening5k per selezionare bracci o modificare ricetta.
 
 ### 2026-11-03 | GPT | Grafico JEPA fuorviante per la ricetta tokenizer; limiti della lettura train
 

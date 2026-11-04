@@ -1,5 +1,16 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
+## Ripresa esplicita del04/11: endpoint pronto per le estrazioni
+
+Simone: «han finito, provvedi / procedi». Training63386315/63386337/63386403 tutti
+COMPLETED0:0 a19618; ricevute, config,15hash e checkpoint5k immutabili verificati.
+Vedi docs/tokenizer_endpoint_execution_20261104.md e piano/policy/verification_19618.json
+in results/infra/tokenizer_evaluation_20261103/. Restano nove estrazioni, non dodici
+nuove: le tre5k sono concluse. Nuovo checkout congelato prima dei nove invii.
+ID da riconciliare nel ledger: TOKENIZER-eval19618-checkout-20261104 e
+TOKENIZER-<ARM>-<pose|p1|p2>19618-20261104. Il seguito avviene nella chat attiva;
+il monitor automatico resta spento. Nessun nuovo consenso richiesto.
+
 Simone ha autorizzato tutti e tre i bracci nuovi fino a19.618, valutazioni incluse, lancio
 diretto tramite submitter/ledger e superamento del precedente budget. **Nessun nuovo consenso**
 per letture, commit/push, prosecuzioni o valutazioni di questo confronto. Non introdurre loss,
