@@ -5206,6 +5206,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   4487445fc7d8e48e35008fb08f7489e404b9d8ba alle 11:46; log `~/wearusfm_local/logs/push_codex_20261104.txt`. Nessun merge, nessun push su
   `main` ne' verso leonardo; il checkout di GPT non e' stato modificato.
 
+### 2026-11-04 | Claude | Lettura dei risultati finali del tokenizer (GPT e7fe6cd) e replica T25-L contro B19618 sulle stesse sonde (Simone: «ecco i risultati»)
+- Letti `docs/reviews/tokenizer_classification_results_20261104.md`, `tokenizer_pose_19618_results_20261104.md`, il piano aggiornato e le regole
+  congelate del protocollo del 02/11 (EPN-612 primario della classificazione; non inferiorita' a 1 pp solo su P1/P2; 2 % relativo su E_dyn).
+  La lettura di GPT e' coerente con le regole scritte prima dei risultati: GELU − lineare a 100 ms su EPN-612 +1,476 pp [0,828; 2,121];
+  finestra sola −0,499 [−1,074; +0,113]; P1/P2 senza miglioramento dimostrato, P2 di T100-G − T25-L sostenuta al margine (−0,986);
+  posa −1,53 % combinato, sotto il 2 %. Concordo con «candidato promettente su EPN, non soluzione generale» e con il prossimo candidato
+  (risposte log-quadratiche contro T100-L come primario, base non spostata su GELU dopo il risultato).
+- Replica a seme unico, il dato che mancava (mia review del 02/11, §6): T25-L e' la stessa ricetta di B19618 (stesso seme e stream; loss
+  appaiata +0,003 ± 0,004). Sulle sonde convergenti del 29/10 (`results/infra/pilot_posa/sonde_convergenza_20261029/confronto/`, fase B a
+  12.000 iterazioni, teacher a 19.618, pool768 senza PCA, stessa griglia C e quattro fold) B19618 vale EPN-612 81,837 %, UCI 77,389 %, DB2
+  18,116 %, DB3 2,699 %, DB6 33,953 %, P1 16,995 %, P2 79,613 %. Scarti T25-L − B19618: EPN −0,24 pp, UCI +0,05, DB2 +0,44, DB3 +0,45,
+  DB6 +0,86, P1 +0,51, P2 −0,09. Lettura: fra due run identici le sonde si muovono di 0,2-0,9 pp per dataset e 0,5 pp su P1; l'effetto GELU
+  su EPN (+1,48 pp) e' 4-6 volte lo scarto di replica su EPN, mentre le differenze fra bracci su P1 e sui singoli NinaPro (0,1-1,1 pp) stanno
+  dentro lo scarto di replica, in accordo con gli IC di GPT. E' una coppia sola, non una distribuzione; l'identita' completa delle due ricette
+  di sonda (scaler, tol, assegnazione dei fold) l'ho letta nei due piani, non ricontrollata sui file: GPT puo' confermarla.
+- Suggerimenti, nessun lancio: (1) aggiungere all'analisi pubblicata il contrasto appaiato T25-L − B19618 con bootstrap per soggetto sulle
+  OOF gia' esistenti (nessun nuovo fit, zero GPU) come pavimento di rumore dichiarato; (2) nel protocollo del ramo log-quadratico tenere T100-G
+  come confronto secondario accanto a T100-L (cache e OOF gia' presenti). Restano i limiti gia' scritti da GPT: GELU al punto di lavoro della
+  calibrazione (40 risposte su 64 quasi lineari, D2), manca T25-G, EPN a 200 Hz non isola la frequenza, dati di sviluppo, seme unico.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
