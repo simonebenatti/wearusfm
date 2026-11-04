@@ -1,6 +1,28 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato attuale04/11, aggiornamento12:19CET: tutti15fit sottomessi
+## Stato attuale 04/11, aggiornamento 13:55 CET: 12/15 shard verificati
+
+T25-L e T100-L hanno concluso tutti i cinque shard; T100-G ha concluso DB3/DB6.
+I quattro nuovi completamenti sono T100-L DB2-01 **63495813**, DB2-23 **63495814**,
+P2 **63495823**, T100-G DB6 **63497058**: tutti COMPLETED 0:0, hash report/audit/OOF
+e identità verificati. In totale **336/336 fit convergenti**, massimo 5.916/12.000
+iterazioni e **31,04 core-ore** per i 12 shard completi. Evidenze aggiuntive:
+probe_cpu_19618/completed_shards/{gate_1351,independent_checks_1351}.json.
+Restano i 36 warning di scoring DB3 già documentati, nessun warning di convergenza.
+
+Sottomessi anche aggregati T100-L P1 **63512083** e P2 **63512096**, tramite ledger,
+con input completi verificati e stessa politica 2 CPU/30G/20min. T25-L P1/P2
+**63505189/63505230** restano in coda. Snapshot 13:55: **1 fit RUNNING + 2 fit
+PENDING + 4 aggregati PENDING**, sette attivi entro il limite dieci. T100-G
+DB2-01 **63497284** gira; DB2-23 **63504830** e P2 **63504862** attendono la QoS.
+
+Restano da inviare soltanto i due aggregati T100-G e il confronto finale, dopo
+verifica degli input completi. Nessun nuovo consenso, nessun duplicato o modifica
+scientifica. Simone conferma di attendere il quadro completo prima di discuterlo.
+Monitor automatico sempre spento: nessun controllo futuro programmato da questa
+consegna. Classificazione finale ancora assente; non selezionare un vincitore.
+
+## Stato precedente 04/11, aggiornamento 12:19 CET: tutti15fit sottomessi
 
 Tutti i15shard delle sonde sono ora inviati. Ultimi due T100-G: DB2 fold2-3
 **63504830**, P2 **63504862**. Otto shard COMPLETED0:0 e raccolti: tutti5diT25-L,

@@ -5316,7 +5316,31 @@ Risultati/evidenze in probe_cpu_19618/completed_shards; indice e pending_actions
 aggiornati. Nessun cambio scientifico o nuovo training. Simone ha accantonato
 il multinodo; monitor automatico resta spento. La classificazione finale manca.
 
+### 2026-11-04 | GPT | Dodici shard verificati; aggregati T100-L sottomessi
+
+Runtime b315dad, piano dac83e0d invariati. Raccolti quattro nuovi shard:
+T100-L DB2-01/DB2-23/P2 e T100-G DB6, tutti COMPLETED 0:0. Hash report/audit/OOF
+e pin verificati indipendentemente; totale 336 fit convergenti su 12 shard,
+31,04 core-ore. Gate aggiuntivo e audit conservati accanto agli otto precedenti.
+Aggregati T100-L P1 **63512083** e P2 **63512096** inviati tramite submitter/ledger,
+2 CPU/30G/20min ciascuno, input completi verificati. Snapshot 13:55: sette job attivi,
+un fit T100-G RUNNING, due fit e quattro aggregati PENDING; limite dieci rispettato.
+Restano soltanto due aggregati T100-G e confronto finale, già autorizzati.
+Simone: «ok aspettiamo di avere tutto». Nessuna decisione scientifica parziale,
+nuovo training o monitor automatico. Ricevute, indice e handoff aggiornati.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Controlli tecnici positivi, confronto ancora incompleto
+
+I quattro nuovi shard aggiungono 112/112 fit convergenti senza warning; totale
+336/336 e massimo 5.916/12.000 iterazioni. I 36 warning di scoring dei precedenti
+DB3 restano distinti dalla convergenza: non dichiarare zero warning complessivi.
+QoS a otto CPU per utente: i fit restano serializzati e i quattro aggregati attendono.
+Nessuna accuratezza finale dei tre bracci ancora disponibile; lettura rimandata
+al confronto completo. Nessun nuovo difetto del codice dimostrato.
+
+
 
 ### 2026-11-04 | GPT | Stato tecnico delle sonde distinto dal risultato scientifico
 

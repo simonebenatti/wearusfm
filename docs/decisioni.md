@@ -5931,3 +5931,18 @@ Novejobattivi (1fitrunning,6fitpending,2aggregatipending). Restano4aggregati dei
 dueT100 e confronto, nessuna nuova autorizzazione necessaria. Nessuna decisione
 scientifica dalla classificazione incompleta; monitorautomatico spento.
 Multinodo accantonato da Simone, eventuali training restano4GPUperrun.
+
+### 04/11/2026, 13:55 CET — T100-L completo e aggregati inviati
+
+Dodici shard COMPLETED 0:0, 336/336 fit convergenti e 31,04 core-ore consumate.
+Nuovi file verificati: T100-L DB2-01/DB2-23/P2 e T100-G DB6; massimo osservato
+5.916/12.000 iterazioni. Hash integrali e pin coerenti; nessun nuovo warning.
+I 36 warning di scoring DB3 precedenti restano documentati separatamente.
+
+Aggregati T100-L P1 **63512083** e P2 **63512096** sottomessi tramite ledger,
+2 CPU/30G/20min ciascuno, dentro la politica già pubblicata. I cinque input sono
+completi e verificati; nessuna dipendenza da ID conclusi, nessun rilancio.
+Sette job attivi: un fit T100-G in esecuzione, due fit e quattro aggregati in coda.
+Restano i due aggregati T100-G e il confronto finale su input completi. Simone
+preferisce discutere a quadro completo; nessuna lettura scientifica parziale.
+Monitor spento, nessuna modifica a training, dose, loss o protocollo.

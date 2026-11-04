@@ -8,25 +8,27 @@
     "63495005",
     "63495008",
     "63495009",
+    "63495813",
+    "63495814",
     "63495819",
     "63495821",
-    "63495895"
+    "63495823",
+    "63495895",
+    "63497058"
   ],
   "remaining_logical_ids_not_submitted": [
-    "TOKENIZER-T100-L-probe19618-p1-aggregate-20261104",
-    "TOKENIZER-T100-L-probe19618-p2-aggregate-20261104",
     "TOKENIZER-T100-G-probe19618-p1-aggregate-20261104",
     "TOKENIZER-T100-G-probe19618-p2-aggregate-20261104",
     "TOKENIZER-probe19618-compare-20261104"
   ],
-  "queue_policy": "at most10RUNNING+PENDING; all15fitshards and T25-L twoaggregates submitted; remaining4aggregates and comparison on complete inputs",
+  "queue_policy": "at most10RUNNING+PENDING; all15fitshards and T25-L/T100-L fouraggregates submitted; remaining2T100-G aggregates and comparison on complete inputs",
   "authorization": "already granted; no new consent",
   "automatic_monitor": "disabled at user request; do not recreate",
   "holds_remaining": [],
   "no_new_fm_training_or_loss": true,
-  "probe_aggregates_submitted": 2,
-  "snapshot_cet": "2026-11-04T12:19:00+01:00",
-  "fits_verified_convergent": 224,
-  "completed_fit_core_hours": 18.24222222222222,
-  "aggregate_dependencies": "Completed T25 inputs verified via sacct and report/audit/OOF hashes; old scontrol job63495003 expired, so no afterok on completed IDs. No resubmission."
+  "probe_aggregates_submitted": 4,
+  "snapshot_cet": "2026-11-04T13:55:00+01:00",
+  "fits_verified_convergent": 336,
+  "completed_fit_core_hours": 31.04,
+  "aggregate_dependencies": "Completed T25-L and T100-L inputs verified via sacct and report/audit/OOF hashes; submit aggregates without afterok on already completed jobs. No resubmission."
 }
