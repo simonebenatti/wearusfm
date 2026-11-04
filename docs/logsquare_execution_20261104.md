@@ -59,3 +59,18 @@ non viene toccato. Queste osservazioni vanno ricontrollate prima dell'invio.
 
 Nessun job di training, estrazione, contrastiva o nuova automazione fa parte
 di questo piano. Training resta non approvato anche con collaudo superato.
+
+## Invii effettivi
+
+SHA congelato **43cad1f760fbac2f10d8c16bc6f5d4eedc957b61**, pubblicato e
+verificato su origin e sulla nuova ref deploy Leonardo. Nessuna differenza
+in src/scripts/tests/config/piano scientifico rispetto al codice approvato d48cad5.
+
+- Checkout **63525639**, COMPLETED0:0 in27s,2CPU:0,015coreh. Ricevuta e
+  code_dir_setup verificano SHA, pulizia e sola lettura.
+- Collaudo **63525730**, sottomesso tramite submitter condiviso solo dopo
+  verifica del checkout. Tetto2GPUh/16coreh allocate, nessun training.
+
+Ricevute integrali e manifest in results/infra/logsquare_execution_20261104/.
+Nessuna automazione di completamento creata. Il ramo origin può avanzare
+con ricevute/analisi: il job usa esclusivamente il checkout congelato43cad1f.

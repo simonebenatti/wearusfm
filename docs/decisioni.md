@@ -6087,3 +6087,11 @@ Piano operativo docs/logsquare_execution_20261104.md: checkout2CPU/10min,
 collaudo4GPU/32CPU/30min, tetti0,333coreh CPU-only+2GPUh e16coreh allocate.
 Un solo submitter/ledger, nessun monitor, nessun retry cieco. Resta necessaria
 review scientifica propria prima del training, con collaudo letto e preventivi.
+
+
+### Invio operativo LOGSQ — 04/11/2026
+
+Checkout63525639 completato0:0,27s; collaudo63525730 sottomesso con codice
+congelato43cad1f760fbac2f10d8c16bc6f5d4eedc957b61 e budget2GPUh.
+Entrambi nel ledger comune. Ricevute in results/infra/logsquare_execution_20261104/.
+Nessun nuovo training/monitor. Resta la review distinta per il seguito scientifico.
