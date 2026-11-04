@@ -6073,3 +6073,17 @@ di inferenza separato, non ancora disponibile. Tetti candidato non approvati.
 Dettagli e test: `docs/reviews/logsquare_response_20261104.md`.
 Il rapporto dei fattori di clipping riguarda i gradienti pre-AdamW e non
 implica lo stesso rapporto negli aggiornamenti dei pesi. Contrastiva rinviata.
+
+
+## 04/11/2026 — T100-LQ: convergenza sul solo collaudo
+
+Review Claude b0fac8f APPROVATO per il collaudo a d48cad5; training non
+approvato. Prima del checkout, S1 precisato senza esenzioni dai trigger R1:
+risposte200/2000Hz compatibili con attenuazione non certificano inattività
+del banco, perché le uscite mescolano componenti e i dati provengono da
+dataset diversi. S3 esplicita il margine conservativo sui costi; S2 manuale.
+Codice e launcher restano esattamente quelli approvati.
+Piano operativo docs/logsquare_execution_20261104.md: checkout2CPU/10min,
+collaudo4GPU/32CPU/30min, tetti0,333coreh CPU-only+2GPUh e16coreh allocate.
+Un solo submitter/ledger, nessun monitor, nessun retry cieco. Resta necessaria
+review scientifica propria prima del training, con collaudo letto e preventivi.

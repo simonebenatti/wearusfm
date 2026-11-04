@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: review finale T100-LQ approvata, preparazione collaudo
+
+Claude b0fac8f approva il solo collaudo di d48cad5, C1–C3/F1–F2 chiusi; training
+non approvato. Review archiviata testualmente. Prima del checkout precisati S1
+e S3: nessuna esenzione automatica dai trigger per kernel a200Hz; le uscite
+sono miscele spettrali e il confronto fra dataset/fs non certifica inattività.
+R1 resta conservato; rho_update applicato alla durata storica comprende un
+margine su loader/I/O quando rho>1. Codice, launcher, config e piano scientifico
+invariati. S2 resta lettura manuale.
+
+Piano esecutivo: docs/logsquare_execution_20261104.md. Percorsi LOGSQ assenti
+al controllo remoto, nessuna prenotazione LOGSQ nel ledger. Semplicione non
+raggiungibile tramite thread storico né presente nell'inventario; per questa
+linea GPT mantiene l'unica sottomissione, come autorizzazioni dirette di Simone
+e coordinamento pubblicato, usando submitter/ledger comuni. Nessun nuovo
+monitor automatico. Gli ID reali saranno registrati dopo ogni invio.
+
+
 ### GPT — 04/11/2026: correzioni della review Claude93d89e0 su T100-LQ
 
 Diff da729093b nel solo ramo `codex/tokenizer-logcontrast-20261104`. Applicati
@@ -5455,6 +5473,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: precisazione scientifica S1 prima del collaudo
+
+Non si attribuisce al banco la differenza p200>=0,50/p2000<0,50 come fatto
+dimostrato: diverse sorgenti/spettri/scale e kernel a miscela non lo consentono.
+Nessun kernel esentato da R1; il contrasto è un indizio riportato integralmente.
+Questa precisazione non cambia il codice approvato né richiede nuovi dati.
+Training ed estrazioni restano fuori dall'approvazione del collaudo.
+
 
 ### GPT — 04/11/2026: limiti dopo le correzioni T100-LQ
 

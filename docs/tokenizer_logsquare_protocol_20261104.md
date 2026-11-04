@@ -1,9 +1,10 @@
 # T100-LQ: proposta esecutiva per review Claude — 04/11/2026
 
-**Stato dopo review Claude93d89e0: collaudo approvato con correzioni; training
-NON approvato.** Correzioni pubblicate per rilettura del diff da729093b;
-nessun deploy o job. Simone richiede soluzione, review Claude e convergenza
-prima del deploy. Worktree esclusivo
+**Stato dopo review Claudeb0fac8f: correzioni APPROVATE, solo collaudo
+preparatorio eseguibile; training NON approvato.** Codice scientifico e launcher
+invariati rispetto a d48cad5. Prima del checkout si precisano S1/S3 qui sotto;
+S2 resta una lettura manuale dei report già previsti. La convergenza sul collaudo
+è raggiunta; autorizzazioni operative di Simone già presenti nella conversazione. Worktree esclusivo
 `wearusfm-logcontrast`, ramo `codex/tokenizer-logcontrast-20261104`.
 Integrato senza riscrittura il commit `8ee6603`: controllo appaiato storico
 T25-L−B e T100-G secondario. Nessuna interferenza con scaling/schedule.
@@ -86,7 +87,7 @@ contestuale (il suo ramo log non è attivo).
 
 | Statistica già misurata | Trigger prospettico e direzione della revisione |
 | --- | --- |
-| p = frazione x²<epsilon nel modo non mascherato | p≥0,50: il pavimento domina almeno metà delle risposte; aprire una revisione verso epsilon minore, verificando prima che non sia un kernel inattivo per ragioni del banco |
+| p = frazione x²<epsilon nel modo non mascherato | p≥0,50: il pavimento domina almeno metà delle risposte; aprire una revisione verso epsilon minore, leggendo anche attenuazione del banco e contrasto fra frequenze descritto sotto, senza esenzioni automatiche |
 | d = RMS[2x/(epsilon+x²)], in entrambi i modi | d·sqrt(epsilon)≥0,50: sensibilità media elevata rispetto al massimo analitico; aprire una revisione verso epsilon maggiore, leggendo anche gradienti e clipping; non basta da sola a dimostrare instabilità |
 | Differenze mascherato−non mascherato sullo stesso supporto | Pubblicare delta p, delta d e delta media dei log. Se p attraversa0,50 in qualunque direzione oppure il valore assoluto di delta media log è almeno una std log non mascherata, aprire revisione dell'effetto del mascheramento prima di scegliere la direzione di epsilon |
 
@@ -106,6 +107,23 @@ limite analitico richiedono invece diagnosi tecnica, non aumento automatico di e
 In assenza di trigger o di emendamento,0.001 rimane invariato; comunque il training
 richiede la sua review, i pin e il preventivo misurato.
 
+**S1, precisazione prospettica prima del collaudo.** Per lo stesso indice di
+kernel, fase e modo, p≥0,50 a200Hz e p<0,50 a2000Hz è un contrasto compatibile
+con attenuazione dipendente dalla frequenza di campionamento. Riportare tutte le
+coppie di gruppi disponibili, con dataset e numero di token; non scegliere
+soltanto il gruppo2000Hz favorevole. Il contrasto non certifica inattività:
+le24uscite Fourier mescolano104armoniche nella finestra100ms, le altre24spline
+e16MLP sono kernel generici; l'anti-aliasing rimuove componenti spettrali, non
+necessariamente intere uscite. I gruppi200/2000Hz appartengono inoltre a dataset
+diversi, con spettri e scale differenti.
+
+**Nessun kernel è esentato dai trigger R1 in questo collaudo.** L'annotazione
+non impone di modificare epsilon: la decisione documentata può motivare il
+mantenimento di0.001. Una futura esenzione richiederebbe certificazione
+indipendente dai dati del kernel filtrato (per esempio operatore identicamente
+nullo), che i metadata attuali non forniscono. Così la clausola non apre
+esclusioni scelte dopo aver letto i dati. Nessuna nuova misura o soglia del banco.
+
 Tempi: aggiornamenti DDP separati dalla diagnostica; RAM GPU con due modelli
 residenti esplicitamente distinta dalla memoria di un singolo training.
 Il confronto del runtime con la base servirà al preventivo finale.
@@ -123,6 +141,11 @@ per rho_update. Il tetto proposto è il walltime storico prenotato della fase
 (5400s e14400s) moltiplicato per max(1,rho_update), arrotondato per eccesso a900s.
 GPU-ore = quattro×walltime/3600; core-ore allocate =32×walltime/3600.
 La misura è un'estrapolazione train-only breve; il margine storico resta esplicito.
+S3: rho_update esclude loader e diagnostica, mentre la durata storica comprende
+loader, I/O e controlli del training (non la nuova diagnostica del collaudo).
+Applicare rho>1 all'intera durata include un margine conservativo su quelle
+componenti. Con rho<1 la stima puntuale può sovrastimare il risparmio: il tetto
+usa comunque max(1,rho), senza scontare loader/I/O.
 Se un walltime supera il limite di partizione o l'allocazione proposta, fermare
 la preparazione della fase e revisionare il piano, senza frazionamenti o retry impliciti.
 Le17GPUh osservate e le22prenotate sono riferimenti del controllo, non il

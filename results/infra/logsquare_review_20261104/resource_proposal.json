@@ -1,5 +1,5 @@
 {
-  "status": "CORRECTED_PENDING_CLAUDE_DIFF_REVIEW_TRAINING_NOT_APPROVED",
+  "status": "PREPARATORY_PREFLIGHT_APPROVED_TRAINING_NOT_APPROVED",
   "preflight": {
     "logical_id": "LOGSQ-preflight-20261104",
     "nodes": 1,
@@ -73,7 +73,7 @@
     "must_benchmark_before_fit": true
   },
   "provisional_total_cpu_only_core_hours": 46.666666666666664,
-  "note": "Historical resource references only. Corrections await Claude diff review; training needs measured preflight, adapted orchestration/pins and own review. Extraction estimate needs separately budgeted inference measurement. No jobs/deploy/retry.",
+  "note": "Claude b0fac8f approves only preparatory preflight at d48cad5. Scientific code unchanged. S1/S3 prospective protocol clarification before checkout/readout. Historical training/extraction references remain unapproved; no retry or scientific extension.",
   "reference_total_gpu_hours": 26.75,
   "candidate_total_gpu_hours_cap": null,
   "reference_gpu_job_allocated_core_hours": 214
