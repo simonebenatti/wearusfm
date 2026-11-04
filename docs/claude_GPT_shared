@@ -5252,7 +5252,29 @@ benchmark63494999 completi,32/20s; gate420s entro1800. Cinque shard T25-L
 63495003/004/005/008/009 sottomessi; DB3 in esecuzione, altri in attesa.
 Gate pubblicato prima della ridge, nessuna modifica al codice congelato.
 
+### 2026-11-04 | GPT | Posa tokenizer19618 conclusa e revisionata; sonde in corso
+
+Riferimento runtime b315dad, gate57a2ba9. Ridge63495299 COMPLETED0:0,142s,
+0,315556coreh. ReportSHAe1011f7a91645ce07399654950a7230084e8d22dbf248cca277e76e487f2e446;
+seconda replica indipendente dei9contrasti/bootstrap riuscita. E_dyn
+0,851975/0,843363/0,838933; benefici finestra1,01%,GELU0,53%,combinato1,53%.
+IC favorevoli ma nessuno raggiunge2% pratico. Varianza migliore16,88%,corr0,401.
+Risultati e limiti nelle due review tokenizer_pose_19618, tabella aggiornata.
+Sonde: DB3T25-L63495005 completo596s,28/28fit convergenti; gate3526a95.
+Undici shard sottomessi, dieci attivi al riempimento coda; altri4shardT100-G
+piu6aggregati/confronto da inviare. Tutti gli hold rilasciati, monitor spento.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Risultato posa piccolo; classificazione ancora incompleta
+
+Beneficio presente ma sotto2% pratico, movimento ancora attenuato. Il vantaggio
+combinato si restringe da2,35% a5k a1,53% a19618. GELU peggiora lievemente il
+secondario statico rispetto100lineare. Un seme,val di sviluppo gia osservata;
+questa e posa2kHz supervisionata, non trasferimento a nuova regressione o
+risposta200Hz. EPN/P1/P2 attendono i loro fit. QOS8CPU perutente serializza
+le sonde, coda limitata10attivi; restanti lanci già autorizzati, no nuovo consenso.
+
 
 ### 2026-11-04 | GPT | Limite di concorrenza seriale e ordine dei lettori
 

@@ -1,0 +1,26 @@
+{
+  "pose_analysis": "complete, independently reviewed",
+  "runtime_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "probe_shards_submitted": 11,
+  "probe_shards_completed_verified": [
+    "63495005"
+  ],
+  "remaining_logical_ids_not_submitted": [
+    "TOKENIZER-T25-L-probe19618-p1-aggregate-20261104",
+    "TOKENIZER-T25-L-probe19618-p2-aggregate-20261104",
+    "TOKENIZER-T100-L-probe19618-p1-aggregate-20261104",
+    "TOKENIZER-T100-L-probe19618-p2-aggregate-20261104",
+    "TOKENIZER-T100-G-probe19618-db2-01-20261104",
+    "TOKENIZER-T100-G-probe19618-db2-23-20261104",
+    "TOKENIZER-T100-G-probe19618-db6-20261104",
+    "TOKENIZER-T100-G-probe19618-p2-20261104",
+    "TOKENIZER-T100-G-probe19618-p1-aggregate-20261104",
+    "TOKENIZER-T100-G-probe19618-p2-aggregate-20261104",
+    "TOKENIZER-probe19618-compare-20261104"
+  ],
+  "queue_policy": "at most10RUNNING+PENDING including all serial jobs; submit remaining4T100-Gshards as capacity frees, then6aggregates and comparison on complete inputs",
+  "authorization": "already granted; no new consent",
+  "automatic_monitor": "disabled at user request; do not recreate",
+  "holds_remaining": [],
+  "no_new_fm_training_or_loss": true
+}

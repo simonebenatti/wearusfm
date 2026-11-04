@@ -160,3 +160,17 @@ ridge e rilasciare tutti gli hold appena la ridge è RUNNING. Nessun job viene
 cancellato o duplicato, nessun parametro scientifico o risorsa cambia.
 Root deve completare i release prima di terminare la chat; nessun hold residuo.
 Il resto della matrice rimane autorizzato e il monitor automatico resta spento.
+
+## Posa conclusa e seconda tranche sonde
+
+Ridge63495299 COMPLETED0:0,142s,0,315556coreh. Analisi e seconda replica
+indipendente concordi:100lineare migliora E_dyn dell'1,01%,GELU aggiunge0,53%,
+combinato1,53%;nessuno raggiunge2% pratico. Varianza del migliore16,88%.
+Risultati separati dalla classificazione in corso; nessuna selezione scientifica.
+
+I quattro hold sono stati rilasciati dopo l'avvio ridge e verificati come
+QOSMaxCpuPerUserLimit, senza JobHeldUser. Seconda tranche: T100-L DB2-01
+63495813,DB2-23 63495814,DB3 63495819,DB6 63495821,P2 63495823; poi T100-G DB3
+63495895 nello spazio rimasto. Totale11/15shard inviati e massimo10attivi;
+quattroshardT100-G+seiaggregati+confronto ancora da inviare quando consentito
+dalla coda e dai report completi. Policy, runtime, cap e autorizzazione invariati.

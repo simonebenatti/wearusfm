@@ -1,5 +1,27 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
+## Stato attuale04/11: posa endpoint conclusa; sonde in corso
+
+Ridge63495299 COMPLETED0:0,142s; risultati e critica in
+reviews/tokenizer_pose_19618_{results,critic}_20261104.md. E_dyn
+0,851975/0,843363/0,838933; benefici1,01%/0,53%/1,53%, sotto2% pratico.
+Non inferire EPN200Hz da questa regressione2kHz. Cache/fit scientifici invariati.
+
+Runtime CPU **b315dadfedc09c522deeb56af829d34ebc04f4b4**. Primo shard
+T25-L/DB3 **63495005 COMPLETED0:0**,596s,28/28fit convergenti, gate3526a95.
+T25-L ancora: DB2-01=63495003,DB2-23=63495004,DB6=63495008,P2=63495009.
+T100-L: DB2-01=63495813,DB2-23=63495814,DB3=63495819,DB6=63495821,P2=63495823.
+T100-G: soloDB3=63495895 sottomesso. In totale11/15shard sottomessi.
+**Tutti gli hold temporanei sono stati rilasciati**, verifica registrata.
+
+Restano da sottomettere, quando la coda ha spazio, T100-G DB2-01/DB2-23/DB6/P2,
+poi6aggregati e confronto secondo probe_resource_policy_19618.json. Non duplicare
+job esistenti. Indice/ricevute e pending_actions.json in cpu_19618/. Non superare
+10job RUNNING+PENDING complessivi sulla seriale; QOSMaxCpuPerUserLimit permette
+un solo fit8CPU alla volta. Autorizzazione già acquisita, nessun nuovo consenso.
+Nessun monitor automatico attivo o da ricreare; le raccolte avvengono nella chat.
+
+
 ## Stato ultimo04/11: primo gruppo CPU sottomesso
 
 Runtime **b315dadfedc09c522deeb56af829d34ebc04f4b4**, checkout comune verificato

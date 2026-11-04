@@ -5904,3 +5904,13 @@ autorizzata pronta con runtime b315dad. Cinque shard T25-L già sottomessi.
 Il limite8CPU perutente serializza i fit: dopoDB3 in corso, precedenza alla
 ridge tramite hold dei soli quattro pending e release appena essa parte.
 Nessun cambio scientifico, risorse immutate, nessun hold residuo alla consegna.
+
+### 04/11/2026 — Posa tokenizer endpoint letta; decisione complessiva sospesa alle sonde
+
+Ridge63495299 completa e analisi replicata indipendentemente. Finestra100ms
+migliora dell'1,01%;GELU0,53%;combinato1,53%. IC favorevoli ma nessuno supera
+2% pratico. Non equivale a effetto nullo; non risolve la dinamica. La domanda
+EPN200Hz rimane aperta:11/15shard sonde inviati,1completo/convergente, resto
+in coda o da inviare secondo cap10attivi. Restano6aggregati/confronto.
+Hold tutti rilasciati. Nessuna nuova loss, dose, seme o log-quadratico avviato;
+si completa la stessa matrice autorizzata nella chat, senza monitorautomatico.
