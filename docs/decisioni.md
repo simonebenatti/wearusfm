@@ -5882,3 +5882,17 @@ Checkout63491904 completo18s; costo due tentativi0,011667coreh. Tutte9estrazioni
 RUNNING:63491925/35/37,63491940/41/43,63491945/47/48, runtime453ce6c e6GPUh di tetto
 già riservate. Ricevute pubblicate; nessuna modifica del protocollo o nuovo monitor.
 Launcher sonde CPU preparato con18test e seconda review, nessun fit prima delle cache.
+
+### 04/11/2026 —Tokenizer: nove estrazioni endpoint complete, lettori CPU
+
+Tutti9jobGPU19618 COMPLETED0:0,3,581111GPUh/6. Matrice12estrazioni finita.
+Si procede nella chat attiva con i lettori già autorizzati: posevalidate/benchmark/
+ridge e15shard sonde convergenti/6aggregati/confronto. Checkout nuovo congelato
+comune, pubblicazione e verifica push prima dell'invio. Budget fase108,333333coreh
+CPU-only, con2coreh benchmark endpoint e0,333333checkout aggiuntive esplicite.
+Sonde: cinque shard T25-L previsti in parallelo, lettura tecnica del primo
+concluso, poi restanti senza selezione sui risultati; coda seriale entro10 job RUNNING+PENDING.
+Tempi storici e tetti prudenti restano la base, senza garanzia di runtime dai
+primi shard piu rapidi. Benchmark posa prima ridge.
+Nessun cambiamento scientifico; risultati da raccogliere e sottoporre al critico.
+Monitor spento. Piano dettagliato docs/tokenizer_endpoint_execution_20261104.md.

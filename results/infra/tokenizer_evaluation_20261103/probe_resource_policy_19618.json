@@ -1,0 +1,482 @@
+{
+  "protocol": "tokenizer-probe19618-resources-20261104-v1",
+  "authorization": "Already approved tokenizer matrix, direct launches and extra historical budget; no new scientific extension.",
+  "plan": "results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json",
+  "plan_sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+  "launcher": "scripts/slurm/tokenizer_probe.sbatch",
+  "new_checkout": "tokenizer-endpointcpu-20261104",
+  "checkout_budget_recorded_in_common_policy": true,
+  "fit_core_hours_cap": 96,
+  "aggregate_core_hours_cap": 4,
+  "comparison_core_hours_cap": 1,
+  "cpu_only_core_hours_cap": 101,
+  "gpu_hours_cap": 0,
+  "jobs": [
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-db2-01-20261104",
+      "stage": "fit-shard",
+      "arm": "T25-L",
+      "shard": "db2-01",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-01",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-01",
+        "T25-L",
+        "db2-01"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-db2-23-20261104",
+      "stage": "fit-shard",
+      "arm": "T25-L",
+      "shard": "db2-23",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-23",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-23",
+        "T25-L",
+        "db2-23"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-db3-20261104",
+      "stage": "fit-shard",
+      "arm": "T25-L",
+      "shard": "db3",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db3",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db3",
+        "T25-L",
+        "db3"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-db6-20261104",
+      "stage": "fit-shard",
+      "arm": "T25-L",
+      "shard": "db6",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db6",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db6",
+        "T25-L",
+        "db6"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-p2-20261104",
+      "stage": "fit-shard",
+      "arm": "T25-L",
+      "shard": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2",
+        "T25-L",
+        "p2"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-p1-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T25-L",
+      "task": "p1",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p1.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T25-L-probe19618-db2-01-20261104",
+        "TOKENIZER-T25-L-probe19618-db2-23-20261104",
+        "TOKENIZER-T25-L-probe19618-db3-20261104",
+        "TOKENIZER-T25-L-probe19618-db6-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p1.json",
+        "T25-L",
+        "p1",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-01/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db2-23/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db3/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db6/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T25-L-probe19618-p2-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T25-L",
+      "task": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T25-L-probe19618-p2-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2.json",
+        "T25-L",
+        "p2",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-db2-01-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-L",
+      "shard": "db2-01",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-01",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-01",
+        "T100-L",
+        "db2-01"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-db2-23-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-L",
+      "shard": "db2-23",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-23",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-23",
+        "T100-L",
+        "db2-23"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-db3-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-L",
+      "shard": "db3",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db3",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db3",
+        "T100-L",
+        "db3"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-db6-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-L",
+      "shard": "db6",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db6",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db6",
+        "T100-L",
+        "db6"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-p2-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-L",
+      "shard": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2",
+        "T100-L",
+        "p2"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-p1-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T100-L",
+      "task": "p1",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p1.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T100-L-probe19618-db2-01-20261104",
+        "TOKENIZER-T100-L-probe19618-db2-23-20261104",
+        "TOKENIZER-T100-L-probe19618-db3-20261104",
+        "TOKENIZER-T100-L-probe19618-db6-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p1.json",
+        "T100-L",
+        "p1",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-01/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-23/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db3/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db6/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-L-probe19618-p2-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T100-L",
+      "task": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T100-L-probe19618-p2-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2.json",
+        "T100-L",
+        "p2",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-db2-01-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-G",
+      "shard": "db2-01",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-01",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-01",
+        "T100-G",
+        "db2-01"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-db2-23-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-G",
+      "shard": "db2-23",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-23",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-23",
+        "T100-G",
+        "db2-23"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-db3-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-G",
+      "shard": "db3",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db3",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db3",
+        "T100-G",
+        "db3"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-db6-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-G",
+      "shard": "db6",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 4.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db6",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db6",
+        "T100-G",
+        "db6"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-p2-20261104",
+      "stage": "fit-shard",
+      "arm": "T100-G",
+      "shard": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 8,
+      "memory": "30G",
+      "walltime_seconds": 3600,
+      "core_hours_cap": 8.0,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2",
+      "launcher_tail": [
+        "fit-shard",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2",
+        "T100-G",
+        "p2"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-p1-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T100-G",
+      "task": "p1",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T100-G-probe19618-db2-01-20261104",
+        "TOKENIZER-T100-G-probe19618-db2-23-20261104",
+        "TOKENIZER-T100-G-probe19618-db3-20261104",
+        "TOKENIZER-T100-G-probe19618-db6-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+        "T100-G",
+        "p1",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-01/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-23/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db3/shard.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db6/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-T100-G-probe19618-p2-aggregate-20261104",
+      "stage": "aggregate",
+      "arm": "T100-G",
+      "task": "p2",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1200,
+      "core_hours_cap": 0.6666666666666666,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T100-G-probe19618-p2-20261104"
+      ],
+      "launcher_tail": [
+        "aggregate",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json",
+        "T100-G",
+        "p2",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2/shard.json"
+      ]
+    },
+    {
+      "logical_id": "TOKENIZER-probe19618-compare-20261104",
+      "stage": "compare",
+      "partition": "lrd_all_serial",
+      "cpus": 2,
+      "memory": "30G",
+      "walltime_seconds": 1800,
+      "core_hours_cap": 1,
+      "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/comparison.json",
+      "dependency_logical_ids": [
+        "TOKENIZER-T25-L-probe19618-p1-aggregate-20261104",
+        "TOKENIZER-T25-L-probe19618-p2-aggregate-20261104",
+        "TOKENIZER-T100-L-probe19618-p1-aggregate-20261104",
+        "TOKENIZER-T100-L-probe19618-p2-aggregate-20261104",
+        "TOKENIZER-T100-G-probe19618-p1-aggregate-20261104",
+        "TOKENIZER-T100-G-probe19618-p2-aggregate-20261104"
+      ],
+      "launcher_tail": [
+        "compare",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/comparison.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p1.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p1.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json"
+      ]
+    }
+  ],
+  "timing_basis": "Previously published historical convergent probes approximately27 core-hours for2encoders, approximately40.5 for3; conservative per-shard caps above, not runtime guarantees.",
+  "benchmark_api": null,
+  "release_policy": {
+    "initial_parallel_arm": "T25-L",
+    "initial_shards": [
+      "db2-01",
+      "db2-23",
+      "db3",
+      "db6",
+      "p2"
+    ],
+    "other_arms_gate": "Read first completed T25-L shard technical identity, completeness, timing and audit before release. No score-based selection. Historical per-type estimates remain budget basis; one shorter shard does not prove other-type timings.",
+    "queue_cap": "At most10serialjobs RUNNING+PENDING across shared account; reserve space for pose CPU chain; submit as capacity frees.",
+    "then": "Complete same registered15shards,6aggregates,1comparison."
+  },
+  "no_blind_retry": true,
+  "no_recipe_changes": true,
+  "reports_read_when_requested_no_background_monitor": true
+}

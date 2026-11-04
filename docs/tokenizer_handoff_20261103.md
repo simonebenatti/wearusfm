@@ -1,6 +1,21 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato ultimo04/11: nove estrazioni endpoint in esecuzione
+## Stato ultimo04/11: estrazioni concluse, fase CPU da inviare
+
+Tutti9job63491925/35/37/40/41/43/45/47/48 COMPLETED0:0, ultimo08:50:01CET.
+Costo3,581111GPUh/6; la matrice12estrazioni è conclusa, non duplicare.
+Piani CPU19618 con pin reali in results/infra/tokenizer_evaluation_20261103/:
+pose_readout_plan_19618.json e probe_plan_19618.json, con policy/verifiche.
+Checkout unico nuovo tokenizer-endpointcpu-20261104,2CPU/4G/10min; SHA da
+pubblicare/verificare prima del deploy. Posa7coreh, sonde101coreh, zeroGPU;
+aggiunte esplicite2coreh persecondobenchmark e0,333333checkout.
+Leggere docs/tokenizer_{pose,probe}_cpu_19618_execution_20261104.md e review
+reviews/tokenizer_endpoint_cpu_prelaunch_20261104.md prima degli invii.
+Ledger prima di ogni invio; gate pose da leggere prima ridge, shard in gruppi
+entro10 job seriali RUNNING+PENDING. Seguito nella chat attiva, monitor sempre spento.
+Nessun nuovo consenso, training, loss, seme, dose o candidato log-quadratico.
+
+## Stato storico04/11: nove estrazioni endpoint in esecuzione
 
 RuntimeGPU453ce6c496745f2d73aa3007406721586e6dd767, checkout63491904 completo18s.
 Il precedente63491851 è fallito3s prima di creare cartelle per invio anticipato

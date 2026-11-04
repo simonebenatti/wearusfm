@@ -102,3 +102,30 @@ submissions_19618.json, snapshot squeue e attestazione checkout nella stessa car
 Ridge e sonde CPU non ancora sottomesse: attendono le cache complete con pin reali.
 Launcher sonde preparato e revisionato separatamente,18test passati; non modifica
 il checkoutGPU corrente. Monitor automatico resta spento.
+
+## Estrazioni concluse e lettori CPU19618 —04/11
+
+Tutti i nove job sono **COMPLETED0:0**, ultimo termine08:50:01CET. Consuntivo
+**3,581111GPUh /28,648889coreh allocate conGPU** contro6GPUh prenotate.
+Le dodici estrazioni dell'intera matrice (tre5k+nove19618) sono dunque concluse,
+**5,103611GPUh** complessive. Evidenze in completed_19618/sacct_completed.txt.
+
+Lettori ancora da eseguire: nuova checkout comune tokenizer-endpointcpu-20261104,
+2CPU/4G/10min=0,333333coreh. Posa validate/benchmark/ridge entro7coreh; sonde15shard,
+6aggregati e confronto entro101coreh. Totale fase108,333333coreh, zeroGPU.
+Rispetto alla matrice precedente si aggiungono esplicitamente2coreh per un secondo
+benchmark posa e0,333333coreh per il checkout comune; autorizzazione extrabudget
+già acquisita. Il costo atteso dei fit sonde è circa40,5coreh dai precedenti,
+non il tetto96. Policy comune endpoint_cpu_resource_policy_19618.json.
+
+Piani specifici: docs/tokenizer_pose_cpu_19618_execution_20261104.md e
+docs/tokenizer_probe_cpu_19618_execution_20261104.md; nessuna modifica scientifica.
+Prima inviare validate+benchmark e i cinque shard T25-L pianificati in parallelo.
+Leggere timing e ricevuta tecnica del primo concluso prima di inviare gli altri
+due bracci, sempre in gruppi entro10 job seriali RUNNING+PENDING. I tempi storici e i tetti
+conservativi pubblicati restano la base del preventivo; uno shard rapido non
+garantisce la durata di quelli piu grandi. Nessun uso degli score per adattare
+la ricetta o scegliere bracci: tutti15shard restano previsti.
+Ridge soltanto dopo lettura/pubblicazione del gate train-only. Aggregati/confronto
+soltanto dopo i loro ingressi completi; non basta una cache senza ricevuta.
+Monitor resta spento. Nessun nuovo training, loss, dose, seme o scelta adattiva.
