@@ -114,3 +114,53 @@ contrasti fra slot non richiedono una ripetizione senza una nuova domanda precis
 Review indipendente del subagent next_steps_review concorde su sequenza, appaiamento,
 separazione delle alternative e limiti delle validazioni già osservate. Nessun nuovo
 training, estrattore, fit o monitor avviato da questa proposta.
+
+## Discussione del 04/11: la taglia 30M non è una garanzia o un veto allo scaling
+
+Simone chiede come aumentare i parametri e se non convenga già provare300M.
+Questa è una proposta di priorità, non un protocollo esecutivo o una sottomissione.
+Rettifica del criterio storico H3: richiedere un beneficio replicabile a30M era una
+scelta di allocazione del calcolo, non una prova che un risultato debole a30M
+escluda300M. Le vecchie misure di rango nei primi passi non valutavano downstream300M.
+
+Preset reali in src/wearusfm/training/run.py:LADDER; conteggio CPU del modello con
+ricetta T100-G corrente, cambiando solo i valori del preset (student, decoder e teste;
+esclusi teacher EMA duplicato e stati dell'ottimizzatore):
+
+| Preset | Parametri | D | Teste | Encoder locale | Backbone | Decoder | K |
+|---|---:|---:|---:|---:|---:|---:|---:|
+|30M|28.362.013|384|6|2|8|2|64|
+|100M|104.820.757|640|10|2|12|2|64|
+|300M|292.054.847|896|14|3|18|2|64|
+
+Si allarga la rappresentazione condivisa dal tokenizer al decoder e si approfondisce
+soprattutto il backbone. Ogni testa conserva64dimensioni; non è il solo aumento del
+numero di teste a produrre il maggior numero di pesi. Finestra, passo, K, dati e loss
+si possono mantenere invariati nel confronto. Aumentare la taglia richiede un nuovo
+training; il checkpoint30M non si riprende direttamente con forme dei tensori diverse.
+
+**Proposta:** dopo il confronto corrente, inserire una prova mirata di taglia prima
+di accumulare molte ulteriori varianti tutte a30M. Per la domanda specifica di Simone,
+un confronto30M/300M è legittimo;100M è un punto intermedio utile, non obbligatorio.
+Fissare una sola ricetta frontend/obiettivo, benchmark di memoria/throughput e
+calibrazione train-only dell'ottimizzazione per taglia; confrontare esposizione ai
+dati e checkpoint comuni, includendo una lettura dopo decay. Stesso costoGPU e stessa
+esposizione sono domande diverse, da distinguere. Non concludere contro300M da un
+solo checkpoint breve. Leggere validazione e compiti finali oltre alla loss di train.
+La proposta non cancella la candidata log-quadratica concordata: scala e nuova
+trasformazione vanno confrontate separatamente, senza cambiare entrambe insieme.
+
+Il vecchio benchmark4A100/batch32 del15/10 dava0,707/1,390/2,769s perpasso e28,7GiB/GPU
+per300M: fattibilità storica, non preventivo della ricetta tokenizer/posa attuale.
+Il modello più grande era circa3,9volte più lento, non assumere costo10volte o tempi
+attuali identici. Non serve riaprire il multinodo come prerequisito della discussione.
+
+Riferimenti primari consultati: TimesFM, studio17/70/200M e curve rispetto al calcolo
+(https://arxiv.org/html/2310.10688v4#S6.SS2); Scaling-laws for Large Time-series Models
+(https://arxiv.org/abs/2405.13867), dipendenza congiunta da parametri/dati/calcolo.
+Moirai2.0 riporta anche plateau con l'aumento dei parametri
+(https://arxiv.org/abs/2511.11698). Questi lavori di forecasting non forniscono una
+legge quantitativa o una garanzia per WearUsFM/EMG.
+
+Audit indipendente scaling_architecture e review scaling_design_review concordi.
+Nessuna nuova run100/300M, loss o automazione avviata dalla discussione.

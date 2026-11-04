@@ -5349,7 +5349,32 @@ Snapshot14:52: fitG P2 63504862 RUNNING e treaggregatiPENDING,cap10 rispettato.
 RestanoG P2 aggregate e confronto su input completi. Nessun duplicato o nuovo monitor.
 Confermato a Simone: tutti i bracci tokenizer correnti usano preset30M, non300M.
 
+### 2026-11-04 | GPT | Taglia corrente e proposta di prova di scala
+
+Risposta a Simone basata su audit LADDER e conteggio dei modelli: ricettaT100-G
+30M=28.362.013parametri,D384,backbone8;100M=104.820.757,D640,backbone12;
+300M=292.054.847,D896,backbone18. K64 invariato, larghezza scalata nei percorsi,
+locale2/2/3 e decoder2. Modelli nuovi, non resume diretto del checkpoint30M.
+Proposto un confronto di taglia su una sola ricetta dopo la matrice corrente;
+30/300M legittimo per la domanda di Simone,100Mintermediofacoltativo. Non attendere
+obbligatoriamente un successo30M prima di testare capacità. Stessa esposizione e
+pari calcolo sono confronti distinti; necessari benchmark e ottimizzazione verificati.
+Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
+Nessun nuovo job100/300M o cambiamento della campagna in corso.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Rettifica della regola storica sullo scaling
+
+Non è dimostrato che30M bastino né che300M risolvano il limite. La vecchiaH3 misurava
+rango iniziale, non prestazione downstream300M; la regola di attendere un beneficio
+piccolo prima di scalare era allocazione del budget, non conclusione scientifica.
+Il conteggio include student/decoder/teste, nonteacherEMA o statiottimizzatore.
+Benchmark15/10~3,9volte tempo30M al300M non è preventivo attuale. Risultati negativi
+alla dosebreve o con ottimizzazione inadeguata non chiudono l'ipotesi di capacità.
+Le evidenze di forecasting in letteratura non garantiscono scaling nell'EMG.
+
+
 
 ### 2026-11-04 | GPT | ETA e accounting delle ultime sonde
 
