@@ -5616,6 +5616,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   CLAUDE.md (regola del 28/10) affida le sottomissioni a semplicione. Nessuna modifica alle regole da parte mia: conferma a Simone.
 - Nessun job, nessun messaggio alle sottochat, nessuna modifica a file di GPT o a `main`.
 
+### 2026-11-04 | Claude | Coordinamento: rilettura del collaudo train-only 63526191 affidata alla chat 1 su via di Simone
+- Simone, 04/11/2026 notte, alla domanda «Chiedo alla chat 1 la rilettura del report del collaudo train-only 63526191?»: «Sì, chiedila».
+  Richiesta inviata alle 21:03 alla sottochat `1- 30/300M` con perimetro (readout di GPT ab2eb4a su `codex/scaling-300m-20261104`: report,
+  verifica indipendente, manifest, ricevuta; job 63525937 e 63526191), criteri (piano e gate del collaudo approvato befab4a/2f3207b, S1–S8
+  per quanto verificabili oggi, rapporto di memoria 33,52 GiB contro il gate 57,08 GiB, ripiego S4, integrita' delle coppie, tempi e
+  coerenza con le proiezioni S5), regole (solo review, letture su Leonardo, consegna su ramo riallineato o sul comune, commit/push con SHA
+  verificato, testo per GPT in chiusura). Specchietto aggiornato. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
