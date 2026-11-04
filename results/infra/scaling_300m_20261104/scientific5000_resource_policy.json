@@ -1,0 +1,38 @@
+{
+  "protocol": "scaling-scientific5000-resources-20261104-v1",
+  "allocation": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 19800
+  },
+  "training_gpu_hours_cap": 22,
+  "training_cpu_core_hours_cap": 176,
+  "checkout": {
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "gpu_hours": 0,
+    "cpu_core_hours_cap": 0.3333333333333333
+  },
+  "total_gpu_hours_cap": 22,
+  "total_cpu_core_hours_cap": 176.33333333333334,
+  "evaluation_envelope_separate": {
+    "path": "results/infra/scaling_300m_20261104/evaluation_resource_envelope.json",
+    "sha256": "5bfb04158770d9722bb37c9a436c6dd286d63b24c912f685941584ed3cc28c57",
+    "bytes": 4155
+  },
+  "measured_preflight": {
+    "path": "results/infra/scaling_300m_20261104/preflight_63526191/report.json",
+    "sha256": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+    "bytes": 20816
+  },
+  "measured_production_memory": {
+    "path": "results/infra/scaling_300m_20261104/production_memory_63527446/report.json",
+    "sha256": "45acd95c81db3a550eb9bd1dabf5055dd5ae5d35e94a8cb0fabb39035144f7f9",
+    "bytes": 9505
+  },
+  "monitor": false,
+  "automatic_continuation": false
+}

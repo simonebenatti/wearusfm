@@ -23,9 +23,10 @@ otto passi di ogni fase. Non include tutto il tempo del loader, i pannelli,
 il checkpointing o la diagnostica. Non va moltiplicata ingenuamente per5.000
 per promettere la durata del training.
 
-Il clipping interviene in ogni aggiornamento di entrambi i modelli. Nel300M è
-più forte nella fase di stress, ma non si osservano NaN/Inf o gruppi diagnostici
-senza aggiornamento. Questo non dimostra che LR1e-4/clip1 siano ottimali, né
+Il clipping interviene in ogni aggiornamento di entrambi i modelli. Nella fase
+di stress è più forte nel300M che nel30M (fattore mediano0,120 contro0,216).
+Nel300M, però, è più forte nella fase nativa che nello stress (0,079 contro0,120).
+Non si osservano NaN/Inf o gruppi diagnostici senza aggiornamento. Questo non dimostra che LR1e-4/clip1 siano ottimali, né
 impone di cambiarli. Le loss del prefisso tecnico, con passaggio anticipato al
 picco LR e dati di train, non stabiliscono utilità downstream o convergenza.
 
@@ -48,7 +49,7 @@ Il subagent revisore ha ricalcolato direttamente dai quattro rank medie, rapport
 dei tempi e memoria: lettura tecnica favorevole, nessuna obiezione aperta.
 La verifica riesce sia sugli originali raccolti sia sulle copie compresse.
 
-## Cosa manca prima dei 5.000
+## Cosa mancava prima dei 5.000 alla pubblicazione di ab2eb4a
 
 Il proxy prespecificato di memoria della produzione è
 `28,405681 × max(1, 15,473959 / 13,112072) = 33,522417GiB`.
@@ -80,3 +81,20 @@ Verdetto: **APPROVATO** sulla preparazione offline, nessun blocco. Suite complet
 alla base `6d80e8d`; non è una regressione introdotta dallo scaling. Il trainer
 rimane identico ai 103 sorgenti congelati per il confronto. Questa approvazione
 non copre automaticamente i lettori e il controllo S3 aggiunti successivamente.
+
+
+### Precisazioni dopo la review indipendente Claude a476aad
+
+Readout **CORRETTO** e collaudo **CONFORME**: numeri riprodotti dai quattro rank
+e dagli otto stream, inclusi13hash,1.024record e512coppie. P1: verificato anche da
+GPT `rng_after_sha256` identico fra taglie in512/512coppie. Il dropout del muscolo
+usa una forma che dipende dal batch; i transformer di questa ricetta non hanno
+dropout. Le maschere casuali del muscolo sono quindi appaiate fra taglie. La frase
+`rng_scope` del report frozen è troppo generale per questo caso: si precisa qui,
+senza alterare il report originale. P2: riformulato sopra il confronto del clipping
+fra taglie nella stessa fase, distinto dal confronto nativo/stress del300M.
+
+La review Claude conserva il proprio perimetro: stato dei gate alle21:10CET,
+nessuna attestazione della lettura completaS3 o dei launcher34b878a. S3 e la
+review finale della catena sono registrati separatamente. Le autorizzazioni di
+Simone già conferite restano valide; la review non aggiunge un nuovo consenso.

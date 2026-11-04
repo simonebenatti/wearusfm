@@ -178,6 +178,47 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | S3 letto e verificato, quattro gate pronti per fresh300M5000
+
+S3 63527446 COMPLETED0:0 alle21:09:51CET,1619s:1,798889GPUh e14,391111coreh.
+15copie con hash verificati, audit indipendente e review favorevoli.500update,
+32finestre/update,4rank; pannelli0/500 e diagnostiche500. Picchi29,611/31,242/
+29,710/34,544GiB; massimo54,466% del dispositivo, sotto90%/57,080GiB. Il proxy
+33,522GiB sottostimava di1,022GiB; nessun ripiego accum2 necessario. Checkpoint
+tecnico non scaricato né usato: producer ha eseguito inspect_evidence/validate_report
+sul compute; il wrapper scientifico ripete il guard integrale prima di torchrun.
+
+Ricevuta anche reviewClaudea476aad: preflight CORRETTO/CONFORME, copia e voce
+originali conservate. Precisati P1 (RNG appaiato512/512, ricontato) e P2 (clipping
+stress300Mvs30M, distinto da nativevsstress300M) senza alterare artefatti frozen.
+La review finale interna dei gate reali è APPROVATA: sorgenti/lettori/risorse/
+controllo/retention, non attribuita aClaude per launcher successivi. Piano pronto
+fresh300M5000:4GPU/32CPU/480G/19800s,22GPUh+176coreh, checkout0,333333coreh.
+Questa voce precede gli invii: nessun ID scientifico dichiarato. Le autorizzazioni
+persistono; nessun monitor e nessuna tranche19618. Documento operativo:
+`docs/scaling_300m_scientific5000_execution_20261104.md`.
+
+
+### 2026-11-04 | Claude | Rilettura dell'esito del collaudo train-only 30M/300M (job 63526191, readout GPT ab2eb4a): letture CORRETTE, collaudo CONFORME al piano approvato, training 5.000 non pronto (richiesta della chat madre col via di Simone)
+- Simone, 04/11/2026 sera («Sì, chiedila»), tramite la sessione madre: rilettura del risultato del collaudo eseguito e letto da GPT contro
+  la review approvata del piano (befab4a + 2f3207b). Solo review; checkout temporaneo di `origin/codex/scaling-300m-20261104` (34b878a,
+  readout identico a 3cc3e09) poi rimosso; su Leonardo solo letture (`sacct`, `sha256sum` dei 13 file remoti, checkout di campagna, log).
+- Review in `docs/reviews/claude_review_scaling_300m_preflight_results_20261104.md`. Riprodotto con codice mio dai quattro rank e dagli otto
+  stream: 13 hash = lista remota = hash freschi = manifest; 512 coppie rank/passo con impronte, supporto, LR (1e-4·(j+1)/1962, poi 1e-4
+  esatto) e fasi 64/64 identici fra taglie e diversi fra rank; tempi rank-max uguali al report, medie su 112 passi 0,70785/2,76668 s,
+  rapporto 3,908563; picchi 13,112/28,406 GiB su gate 57,080 (0,9 × 63,423 reali); baseline del 300M 3,33 GiB = un solo modello residente
+  per misura; clipping in ogni update, loss in calo in entrambe le fasi, nessuna divergenza; proxy 33,522 GiB < 57,080, ripiego accum 2 non
+  attivato, formula e ripiego scritti in 70cbd85 (17:11) prima del lancio (18:35); `seconds_per_step` 3,035413 = piano S3 (3.600 s) e
+  19.800 s per i 5.000. Script di GPT rieseguito: JSON identico. Codice: report 05d4bf0 = checkout pulito = `PREFLIGHT_CODE_SHA`, sorgenti
+  eseguiti identici fino a 34b878a. Prima `sbatch` rifiutata per `afterok` su job gia' purgato (`MinJobAge` 30 s), documentata, seconda
+  identica senza dipendenza: un solo job per nome. Costi 0,6067 GPU-ore + 4,853 core-ore + 0,0089 core-ore, entro i tetti.
+- Precisazioni (non errori): lo stato RNG dopo l'update e' identico fra taglie in 512/512 coppie (dropout del muscolo su forma del batch,
+  transformer senza dropout): appaiamento piu' forte della frase `rng_scope`; «clipping piu' forte nella fase di stress» vale rispetto al
+  30M, non alla fase nativa del 300M. Facoltativi: correggere le frasi, aggiungere allo script la distinzione fra rank e la baseline.
+- Gate residui: S3 63527446 COMPLETED 0:0 alle 21:09:51 (27 min, `lrdn2103`) con `report.json` e quattro rank scritti (rank 0: picco
+  29,61 GiB), lettura e validazione a GPT; launcher/readiness/controllo di 34b878a non rivisti; review finale della catena e via di Simone.
+  Nessun job da parte mia.
+
 ### 2026-11-04 | GPT scaling | Review Claude a988a72 acquisita, preparazione operativa chiusa
 
 Conservate integralmente review Claude e sue due voci di registro. Accolto F-1:
@@ -5565,6 +5606,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Limiti di S3 e precisazioni della seconda reviewClaude
+
+S3 supera il limite sulla memoria realmente misurata, non il proxy (34,544contro
+33,522GiB; gate57,080). L'audit locale verifica15file piccoli, non il checkpoint
+tecnico4,67GB né l'assenza remota diSTOP: la validazione integrale resta nel
+producer e nel wrappercompute, prima del training. Nessun risultato scientifico
+dedotto da500passi. Registrate le precisazioni RNG/clipping richieste daClaude;
+le estensioni facoltative dello script preflight sono differite, senza modificarne
+il report storico. La notaClaude sui gate è uno snapshotalle21:10: successivamente
+GPT ha raccoltoS3 e il critico ha revisionato i pin reali. Il via operativo di
+Simone era già conferito e non viene richiesto di nuovo.
+
 
 ### 2026-11-04 | GPT scaling | Falsi rifiuti operativi chiusi; S3 resta gate reale
 

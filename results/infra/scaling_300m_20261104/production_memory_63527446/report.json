@@ -1,0 +1,323 @@
+{
+  "protocol": "scaling-production-memory-20261104-v1",
+  "complete": true,
+  "arm": "T100-G-300M",
+  "technical_only": true,
+  "scientific_checkpoints_written": false,
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "code_sha": "0d5f0f90074bbaf1142be86d22490e360b632c63",
+  "slurm_job_id": "63527446",
+  "plan": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/results/infra/scaling_300m_20261104/production_memory_plan.json",
+    "sha256": "8a3b85416609bde2a684f04a9c73e94fdce03bb30f9b7ea30c72d6ef928f5351",
+    "bytes": 1719
+  },
+  "artifacts": {
+    "config": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/config.json",
+      "sha256": "ecd424ac744151cf78b7886d0b44ea1e0727a78707b03921b321677bf27c1234",
+      "bytes": 3213
+    },
+    "summary": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/summary.json",
+      "sha256": "db318f03872a3fbed8c01a2a8d06eec8c1e10a242fc69877741d8d497b6ef1cc",
+      "bytes": 1690
+    },
+    "metrics": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/metrics.jsonl",
+      "sha256": "c20be6e405ffeab63624ec94882d6f05ec166e8aa8a7826e96a55abedd35e71c",
+      "bytes": 776654
+    },
+    "fixed_eval": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/fixed_eval.jsonl",
+      "sha256": "93a60e1838a0e382eb8e040c60831675ff6971ed72f0e395e251a0a7d52b9d90",
+      "bytes": 3109
+    },
+    "fixed_set": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/fixed_eval_set.json",
+      "sha256": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5",
+      "bytes": 22232
+    },
+    "pose_panel": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/pose_panel.jsonl",
+      "sha256": "702fb57b13ffab5c8eacf916caa065303db5454588abba8acdaefea3832105ab",
+      "bytes": 643265
+    },
+    "pose_set": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/pose_panel_set.json",
+      "sha256": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018",
+      "bytes": 83267
+    },
+    "technical_marker": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/TECHNICAL_ONLY.json",
+      "sha256": "a3d38acfa69d502eee007d8c8030e51efdd9eec05e5d9c7b94c1314f2d3da01d",
+      "bytes": 414
+    },
+    "technical_checkpoint": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/checkpoint.pt",
+      "sha256": "3abe7deda256532cad9440eb384e246516cd2669192e849c0d454d32d2d23a6d",
+      "bytes": 4673783740
+    }
+  },
+  "ranks": [
+    {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/production_memory_v1/rank_0.json",
+      "sha256": "00d647f5f71e4e27938e6ce48d6ec37aa4a0c6ddcc2dfea3984fb79d235c7caa",
+      "bytes": 793
+    },
+    {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/production_memory_v1/rank_1.json",
+      "sha256": "094dcf730d46b122684b4fd0f38efbef564859322e72dffdad6fcb6bf3326a51",
+      "bytes": 793
+    },
+    {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/production_memory_v1/rank_2.json",
+      "sha256": "02d700fe7dba53123193f421682c720a48a6ce0ecff9e5eba0c83eaf3629fbf9",
+      "bytes": 793
+    },
+    {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/production_memory_v1/rank_3.json",
+      "sha256": "4d961108b4b5cf1e2ec0f2004019ad15d46362b01551e1872bc9ed4e78ae759f",
+      "bytes": 793
+    }
+  ],
+  "config": {
+    "model": {
+      "dim": 896,
+      "n_heads": 14,
+      "k_latents": 64,
+      "local_layers": 3,
+      "backbone_layers": 18,
+      "decoder_layers": 2,
+      "muscle_dropout": 0.4,
+      "patch_ms": 25.0,
+      "window_ms": 100.0,
+      "n_bands": 5,
+      "rvq_codes": null,
+      "grad_checkpoint": true,
+      "multiscale_anchor": true,
+      "keep_readout": false,
+      "spectral_branches": [],
+      "branch_dim": 128,
+      "branch_hidden": 48,
+      "wavelet_learnable": false,
+      "branch_alpha": 0.5,
+      "branch_objective": "readout",
+      "branch_freeze_output": false,
+      "pose_head": true,
+      "tokenizer_activation": "gelu"
+    },
+    "jepa": {
+      "target": "b",
+      "anchor_weight": 0.2,
+      "ema_momentum": 0.996,
+      "loss_per_window": true,
+      "rvq_targets": "slab",
+      "keep_weight": 0.0,
+      "branch_weight": 0.0,
+      "jepa_weight": 0.0,
+      "region_target": false,
+      "pose_weight": 1.0,
+      "masked_loss_radius": 0
+    },
+    "loader": {
+      "min_window_s": 1.0,
+      "max_window_s": 4.0,
+      "split_at_gaps": true,
+      "mask": {
+        "ratio": 0.5,
+        "share_short": 0.15,
+        "share_medium": 0.25,
+        "share_long": 0.2,
+        "share_spatial": 0.4,
+        "short": [
+          1,
+          2
+        ],
+        "medium": [
+          4,
+          12
+        ],
+        "long": [
+          20,
+          80
+        ],
+        "slab_fraction": 0.5,
+        "max_spatial_fraction": 0.5
+      },
+      "k_neighbors": 8,
+      "filter_band_hz": [
+        20.0,
+        450.0
+      ],
+      "patch_ms": 25.0,
+      "align_ms": 200.0,
+      "notch_hz": [
+        50.0,
+        60.0
+      ],
+      "filter_margin_s": 0.5,
+      "run_margin_s": 0.2,
+      "max_window_attempts": 20,
+      "max_session_attempts": 20,
+      "scale_chunks": 32,
+      "scale_chunk_s": 2.0,
+      "open_sessions": 64,
+      "block_s": 30.0,
+      "windows_per_block": 8,
+      "block_pool": 16,
+      "rvq_codes_root": null,
+      "anchor_edge_guard_s": 0.1,
+      "time_weighted": true,
+      "multiscale_anchor": true,
+      "virtual": {
+        "p": 0.5,
+        "p_bipolar": 0.5,
+        "shapes": [
+          [
+            4,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "strides": [
+          1,
+          2
+        ],
+        "classes": [
+          "C"
+        ],
+        "exclude_datasets": [
+          "capgmyo"
+        ],
+        "no_bipolar_datasets": [
+          "csl_hdemg"
+        ]
+      },
+      "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+      "pose_unprompted": true
+    },
+    "datasets": null,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "warmup_steps": 1962,
+    "weight_decay": 0.05,
+    "grad_clip": 1.0,
+    "max_steps": 500,
+    "eval_every": 500,
+    "ckpt_every": 500,
+    "seed": 0,
+    "alarm": {
+      "collapse_ratio_min": 0.05,
+      "erank_fraction_min": 0.1,
+      "patience": 3,
+      "erank_min": 38.4
+    },
+    "amp_bf16": true,
+    "target_version": "step1_psd_power_shape_energy_v1",
+    "readout_version": "p1p2_qc_equal_channel_v1",
+    "keep_calibration": null,
+    "keep_calibration_sha256": null,
+    "keep_grad_every": 0,
+    "pose_grad_every": 500,
+    "pairing_audit": false,
+    "stream_segment": 1200,
+    "schedule": {
+      "kind": "wsd",
+      "total_steps": 49046,
+      "decay_fraction": 0.2,
+      "keep_checkpoints": [
+        5000,
+        19618
+      ]
+    },
+    "accum_steps": 1,
+    "branch_calibration_batches": 16,
+    "freeze_encoder": false,
+    "branch_monitor": false,
+    "fixed_eval_every": 500,
+    "fixed_eval_batches": 8,
+    "log_batch_origin": true,
+    "pose_panel_every": 500,
+    "pose_panel_users": 32,
+    "pose_panel_recordings": 2,
+    "pose_panel_windows": 4,
+    "prefetch": true,
+    "prefetch_audit": false,
+    "nested": "1"
+  },
+  "world_size": 4,
+  "global_batch_size": 32,
+  "accum_steps": 1,
+  "prefetch_exercised": true,
+  "fixed_eval_exercised": true,
+  "pose_panel_exercised": true,
+  "pose_gradient_diagnostic_exercised": true,
+  "steps": 500,
+  "start_step": 0,
+  "peak_allocated_bytes_by_rank": [
+    31794550272,
+    33545462272,
+    31901354496,
+    37091371520
+  ],
+  "device_memory_bytes_by_rank": [
+    68099571712,
+    68099571712,
+    68099571712,
+    68099571712
+  ],
+  "peak_reserved_bytes_by_rank": [
+    40049311744,
+    49698308096,
+    52292485120,
+    58504249344
+  ],
+  "elapsed_s": 1568.9162013530731,
+  "runtime": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "cudnn": 8907
+  },
+  "runtime_comparison": {
+    "matched_fields": [
+      "python",
+      "torch",
+      "cuda"
+    ],
+    "unavailable_in_reference": [
+      "cudnn"
+    ],
+    "reference": {
+      "python": "3.11.6",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "cuda": "12.1"
+    }
+  },
+  "reference_runtime_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/results/infra/tokenizer_execution_20261103/5000/T100-G/summary.json",
+    "sha256": "4fbfa43be38ce5741650c9a4e5eab97fdc58121d6d2f2eaf0df7b2afa83d32ca",
+    "bytes": 1887
+  },
+  "coverage_steps": {
+    "fixed_eval": [
+      0,
+      500
+    ],
+    "pose_panel": [
+      0,
+      500
+    ],
+    "gradient_diagnostics": [
+      500
+    ]
+  }
+}

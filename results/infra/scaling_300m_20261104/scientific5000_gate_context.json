@@ -1,0 +1,64 @@
+{
+  "protocol": "scaling-scientific5000-final-gate-context-20261104-v1",
+  "scope": "fresh300M5000",
+  "source_contract": {
+    "path": "results/infra/scaling_300m_20261104/training_source_contract.json",
+    "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+    "bytes": 13685
+  },
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "execution_source_sha256": {
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04"
+  },
+  "gates": {
+    "preflight": {
+      "path": "results/infra/scaling_300m_20261104/preflight_63526191/report.json",
+      "sha256": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+      "bytes": 20816
+    },
+    "production_memory": {
+      "path": "results/infra/scaling_300m_20261104/production_memory_63527446/report.json",
+      "sha256": "45acd95c81db3a550eb9bd1dabf5055dd5ae5d35e94a8cb0fabb39035144f7f9",
+      "bytes": 9505
+    },
+    "evaluation_readiness": {
+      "path": "results/infra/scaling_300m_20261104/evaluation_readiness.json",
+      "sha256": "7b30f54c8527e2fee251101b926d2dec4e9b99b5b32a777afb6554a1bf059b8b",
+      "bytes": 4893
+    }
+  },
+  "allocation": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 19800
+  },
+  "control": {
+    "checkpoint": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0005000.pt",
+      "sha256": "49dd518b5eea632a16bc7ff88ab0fb013f30d61458164c9521867572c83daa80",
+      "bytes": 454381728
+    },
+    "receipt": {
+      "path": "results/infra/tokenizer_execution_20261103/5000/T100-G/receipt.json",
+      "sha256": "d0a50fe777d1bf66df7670158324b48444875c645c1a9bbcb3d55e40560d96c7"
+    },
+    "retention_verified_until_utc": "2026-11-11T00:00:00Z",
+    "required_until_utc": "2026-11-11T00:00:00Z"
+  },
+  "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000",
+  "receipt_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/scientific5000_v1",
+  "planned_code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_scientific5000_20261104_v1",
+  "deploy_ref": "refs/heads/deploy/scaling_300m_scientific5000_20261104_v1",
+  "source_preparation_commit": "34b878a23fe84e6a294ab6f5cd4827b686606bbc",
+  "s3_independent_audit": {
+    "path": "results/infra/scaling_300m_20261104/production_memory_63527446/independent_verification.json",
+    "sha256": "55e13354aa18508dbc55ceea885c2446bf8d2334054d552e3bc410d260db7482",
+    "bytes": 3212
+  },
+  "remaining_compute_guard": "full validate_report and full30M checkpoint structural identity before torchrun",
+  "automatic_continuation": false,
+  "monitor": false
+}
