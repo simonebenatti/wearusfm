@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT scaling | Collaudo63526191 in esecuzione
+
+Pubblicata rettifica operativa ce22991 e verificato SHA su origin. Invio corretto
+accettato alle18:35:41 tramite submitter/ledger, avvio18:35:59 su lrdn1813.
+Risorse effettive verificate:4GPU/32CPU/480G/30min, tetto2GPUh+16coreh.
+Unico job GPU63526191, codice approvato05d4bf0; ricevuta, storia del rifiuto e
+snapshot SLURM conservati. Coordinatore informato; nessun training5000 o monitor.
+
 ### 2026-11-04 | GPT scaling | Accesso ripristinato, checkout completo e rettifica invio
 
 Deploy05d4bf0 pubblicato e verificato. Checkout63525937 COMPLETED0:0,16s,
@@ -5466,6 +5474,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT scaling | Dipendenza corretta; esito tecnico ancora da leggere
+
+Correzione operativa verificata dal subagent e invio accettato, senza duplicati.
+Il solo stato RUNNING non supera alcun gate: attesi report completi per entrambe
+le taglie, parità/rank/hash, finitezza, memoria e tempi. Il collaudo non include
+pannelli/prefetch della produzione; review e guardie della fase5000 restano aperte.
 
 ### 2026-11-04 | GPT scaling | Rifiuto della dipendenza dal checkout già concluso
 

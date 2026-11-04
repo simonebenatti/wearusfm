@@ -6103,3 +6103,8 @@ Pubblicare la rettifica submission_amendment.json prima del singolo invio corret
 gate sincrono completo al posto della dipendenza scaduta, stesso ID logico e
 --dopo-rifiuto tramite submitter/ledger. Codice, ricetta e tetti invariati.
 Nessun consenso scientifico nuovo necessario, nessun monitor o training5000.
+
+Invio corretto dopo pubblicazione ce22991: job **63526191**, accettato18:35:41,
+RUNNING dalle18:35:59 su lrdn1813. Risorse effettive4GPU/32CPU/480G/30min
+verificate, tetti invariati; ricevuta e snapshot versionati. Nessun verdetto tecnico
+anticipato, nessun training5000 o monitor. Review Claude del seguito separata.

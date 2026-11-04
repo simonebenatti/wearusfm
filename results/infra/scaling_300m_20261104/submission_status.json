@@ -1,17 +1,36 @@
 {
-  "observed_utc": "2026-11-04T17:34:01.253260+00:00",
-  "status": "checkout_completed_preflight_explicitly_rejected_dependency_expired",
+  "observed_utc": "2026-11-04T17:36:05+00:00",
+  "status": "preflight_running",
   "frozen_code_sha": "05d4bf0663481522a56d96c0b07847924cf5bd26",
   "review_commit": "befab4a12e062260231cca3a5d563a233fd53346",
+  "original_execution_plan_commit": "70cbd85",
+  "operational_amendment_commit": "ce22991d464c736a5c7dc8b6f338c52944b06044",
   "checkout_job_id": 63525937,
-  "preflight_job_id": null,
+  "checkout_state": "COMPLETED",
+  "checkout_exit_code": "0:0",
+  "checkout_elapsed_seconds": 16,
+  "checkout_core_hours": 0.008888888888888889,
+  "preflight_job_id": 63526191,
+  "preflight_state": "RUNNING",
+  "preflight_submit_cet": "2026-11-04T18:35:41+01:00",
+  "preflight_start_cet": "2026-11-04T18:35:59+01:00",
+  "preflight_node": "lrdn1813",
+  "gpu_count": 4,
+  "cpu_count": 32,
+  "memory": "480G",
+  "time_limit_seconds": 1800,
+  "gpu_hour_cap": 2,
+  "allocated_core_hour_cap": 16,
   "submitted_job_ids": [
-    63525937
+    63525937,
+    63526191
   ],
-  "deploy_attempted": true,
   "deploy_verified": true,
+  "checkout_gate_passed": true,
   "submitter_invoked": true,
   "new_monitors": false,
-  "next_action": "Publish and verify submission_amendment.json on origin; one corrected submission via shared submitter --dopo-rifiuto, after completed checkout gate.",
-  "previous_status_artifact": "submission_status_before_access_restore.json"
+  "scientific_5000_submitted": false,
+  "next_action": "Collect preflight report, rank files, hashes, pairing, finite updates, memory and timing after completion. No automatic scientific training.",
+  "previous_status_artifact": "submission_status_before_access_restore.json",
+  "explicit_rejection_artifact": "preflight_rejected_receipt.json"
 }

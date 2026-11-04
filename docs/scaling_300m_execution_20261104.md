@@ -96,3 +96,13 @@ Si riusa lo stesso ID logico con `--dopo-rifiuto`, senza `--dopo`, attraverso il
 submitter comune. Codice, piano scientifico, launcher, output e tetti invariati;
 nessun calcolo da ripetere. Gli argv corretti e le prove sono in
 `results/infra/scaling_300m_20261104/submission_amendment.json`.
+
+## Collaudo sottomesso e in esecuzione — 18:36 CET
+
+Rettifica pubblicata in `ce22991`, SHA verificato su origin prima dell'invio.
+Il submitter ha accettato **63526191** alle 18:35:41; avvio alle **18:35:59**,
+stato osservato `RUNNING` su `lrdn1813`. Verificati in SLURM 1 nodo, 4 GPU,
+32 CPU, 480G e limite 30 minuti. Un solo job GPU accettato, ledger con la storia
+del precedente rifiuto. Ricevuta completa e snapshot risorse conservati nel repo.
+Nessun monitor riattivato. Il collaudo non è ancora concluso: nessun esito di
+memoria, parità, gradiente o fattibilità scientifica viene anticipato.
