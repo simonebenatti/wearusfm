@@ -1,0 +1,15 @@
+{
+  "training_approved": true,
+  "epsilon": 0.001,
+  "preflight_report_sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
+  "r1_analysis_sha256": "5a1330f518943e3396723a5f758b2882d360f3839723edb914fc48dfd990d59f",
+  "resource_proposal_sha256": "9261f209c3fd2fc5f7d5c6e449255a0713554bed6d57d9c3bf6805d1f91450df",
+  "controller_sha256": {
+    "scripts/logsquare_train.py": "cb3ff4451eb90c8a9dfe3eef6b3511008f234219c825b0a6865ad936246bd63c",
+    "scripts/slurm/logsquare_train.sbatch": "bb005017df622353d5059e9d189718ec4f02b7afafe6970a619b476e66f4ae04"
+  },
+  "claude_review": {
+    "path": "docs/reviews/claude_review_tokenizer_logsquare_adapters_20261104.md",
+    "sha256": "097bc5b1bc23b6d8bbc27fd3783919f69abe87b40f5c73986346d89c09d8cbed"
+  }
+}

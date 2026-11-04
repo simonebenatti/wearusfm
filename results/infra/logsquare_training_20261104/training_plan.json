@@ -1,6 +1,6 @@
 {
   "protocol": "tokenizer-logsquare-training-20261104-v1",
-  "status": "REVIEW_REQUIRED",
+  "status": "APPROVED_FOR_TRAINING",
   "arm": "T100-LQ",
   "endpoints": [
     5000,
@@ -272,7 +272,10 @@
   "additional_scientific_changes": null,
   "evaluation_status": "ADAPTERS_APPROVED_6c0ce65: actual candidate checkpoint/cache pins and measured rho_infer still required before evaluation submissions.",
   "background_monitoring": false,
-  "training_release": null,
+  "training_release": {
+    "path": "results/infra/logsquare_training_20261104/training_release.json",
+    "sha256": "7ded8919e7e21e915c41fdf3c2dd25bf8af9b58046151161c85fcb17964d611b"
+  },
   "execution_code_sha_source": "EXPECTED_SHA exported by submission; checked against clean frozen checkout HEAD before launch and after training; the same SHA is required for both phases.",
   "operational_authorization_granted": true,
   "component_review": {
