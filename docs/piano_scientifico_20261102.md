@@ -85,3 +85,32 @@ Aggiornamento03/11: [collaudo e piano esecutivo completo](tokenizer_training_exe
 [Valutazioni posa5k: piano effettivo, pin e risorse](tokenizer_evaluation_5000_execution_20261103.md).
 
 [Fase CPU5k e richiesta di spegnere il monitor dopo i lanci](tokenizer_pose_cpu_5000_execution_20261103.md).
+
+## Proposta del 04/11: seguito se emerge un beneficio utile del tokenizer
+
+Discussione richiesta da Simone, prima del confronto finale di classificazione.
+Questa sezione ordina le possibilità; non modifica il protocollo o i job correnti.
+Non assume un vincitore unico fra posa a 2 kHz e classificazione a 200 Hz.
+
+| Ordine / ruolo | Prova | Che cosa deve stabilire |
+|---|---|---|
+| Prossimo candidato già concordato | T100-L più 64 risposte log-quadratiche affiancate alle lineari. | Se questa trasformazione facilita l'apprendimento; confronto primario con T100-L, anche se GELU risultasse migliore. Stessa inizializzazione non addestrata della parte condivisa, nuovi pesi a zero, dati/loss/dose invariati e controlli train anche a 200 Hz. |
+| Consolidamento della ricetta promettente | Candidato e riferimento pertinente fino a 49.046 passi, includendo il decay; repliche con semi indipendenti. | Se il beneficio persiste alla dose completa e oltre il singolo pretraining. Il confronto deve restare a pari dose; non è necessario estendere ogni variante esplorata. |
+| Utilità sul compito finale | Encoder congelato e fine-tuning completo, con riferimento della stessa architettura da zero, su classificazione e una regressione distinta dalla posa supervisionata. | Se il pretraining migliora prestazioni o efficienza nelle etichette; split e budget downstream comparabili, test finale intatto. Gli utenti val attuali restano sviluppo. |
+| Opzione energetica, condizionale | Filtraggio strutturato, modulo quadrato, aggregazione temporale e compressione; eventuali componenti apprendibili. | Domanda fisica diversa dal quadrato di singole risposte integrate. Un successo del ramo log-quadratico non rende questa prova obbligatoria; un nullo non la esclude. |
+| Opzione posa, condizionale | Un termine dinamico (variazioni oppure velocità) accanto agli angoli assoluti. | Se spostare la supervisione sul movimento riduce l'attenuazione senza perdere la posa assoluta. Una ipotesi alla volta, con controllo a pari ricetta. |
+| Opzione FM generale, condizionale | Termine contrastivo con ancore ed eventuale posa, positivi e negativi definiti per il trasferimento desiderato. | Se cambia utilmente la rappresentazione generale. Le invarianti imposte devono conservare l'informazione necessaria alla regressione. |
+| PSD-4, dopo aver fissato frontend e valutazione | Quote del corpus/esposizione controllate. | Se specializzazione e trasferimento dipendono dalla composizione dei dati. Non coincide con valutare semplicemente più dataset; anticiparlo solo se il risultato indica una forte specificità per dataset/frequenza. |
+
+Kernel e proiezione sono già apprendibili; GELU e log sono trasformazioni fisse.
+Il candidato log-quadratico conserva il primario contro T100-L; il confronto con
+un altro vincitore selezionato resta secondario. Non chiamarlo energia di banda.
+
+Il probing separato dei due blocchi delle cache pool768 rimane una diagnostica
+facoltativa a basso costo, se serve ad attribuire un effetto; non un passaggio
+obbligatorio. Sonde, PSD-3 nella ricetta provata, PCA appaiata, temporale minimo e
+contrasti fra slot non richiedono una ripetizione senza una nuova domanda precisa.
+
+Review indipendente del subagent next_steps_review concorde su sequenza, appaiamento,
+separazione delle alternative e limiti delle validazioni già osservate. Nessun nuovo
+training, estrattore, fit o monitor avviato da questa proposta.

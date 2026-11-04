@@ -5329,7 +5329,29 @@ Restano soltanto due aggregati T100-G e confronto finale, già autorizzati.
 Simone: «ok aspettiamo di avere tutto». Nessuna decisione scientifica parziale,
 nuovo training o monitor automatico. Ricevute, indice e handoff aggiornati.
 
+### 2026-11-04 | GPT | Proposta dei prossimi passi dopo un eventuale beneficio tokenizer
+
+Su richiesta di Simone, riordinata la sequenza nel piano_scientifico_20261102.md:
+finire il confronto corrente; candidata log-quadratica T100-L già concordata;
+consolidare la ricetta promettente con riferimento a pari dose completa e semi;
+valutare trasferimento/fine-tuning contro la stessa architettura da zero, includendo
+una regressione diversa dalla posa allenata. Energia esplicita, loss dinamica,
+contrastiva e PSD-4 restano opzioni motivate dalla diagnosi, non una catena obbligatoria.
+Review indipendente next_steps_review concorde. Discussione soltanto, nessun nuovo job.
+
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Limiti da preservare nella proposta di seguito
+
+La classificazione tokenizer non è ancora letta: nessun vincitore assunto.
+Kernel/proiezione sono già apprendibili; GELU/log fissi. Il ramo log-quadratico
+non equivale a energia di banda e conserva T100-L come controllo primario anche
+se un altro braccio risultasse migliore. Dose completa significa confronto abbinato,
+non candidato lungo contro riferimento corto. Gli IC sui soggetti non includono
+variabilità tra pretraining; la val attuale è sviluppo. PSD-4 richiede esposizione
+controllata, distinta da una semplice valutazione multi-dataset.
+
+
 
 ### 2026-11-04 | GPT | Controlli tecnici positivi, confronto ancora incompleto
 
