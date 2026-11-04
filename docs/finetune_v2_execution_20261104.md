@@ -87,3 +87,23 @@ sono pubblicati prima del lancio. Per ciascuna delle 12 coppie, candidato 0
 dopo il checkout, candidato 1 dopo il proprio candidato 0.
 Ogni job usa 1 GPU, 8 CPU, 100 GiB, 4 h frozen oppure 7 h finetune/scratch.
 Nessuna selezione sul held-out e nessuna variazione di ricetta.
+
+## Rettifica operativa delle dipendenze, prima dei fit
+
+Checkout fit **63527861 COMPLETED 0:0**, 16 s / 2 CPU, SHA a2eeb75, pulito
+e in sola lettura. SHA del piano remoto identico al locale (2ce4927), ricevuta
+benchmark c14b78b verificata nuovamente.
+
+Il primo invio di FT-EPN-frozen-F0-20261104-C0 è stato **esplicitamente
+rifiutato**, senza ID SLURM: `Job dependency problem`. Diagnosi verificata:
+`MinJobAge = 30 sec`; il checkout completato alle 19:23:27 non era più nel
+controller all'invio delle 19:24:56, pur restando COMPLETED 0:0 in sacct.
+La dipendenza dal checkout è già soddisfatta e non serve un nuovo job.
+
+Rettifica pubblicata nel piano operativo: C0 parte dopo verifica documentata
+del checkout completato, senza afterok verso l'ID eliminato; **ogni C1 conserva
+afterok verso il proprio C0**. Nessun cambio di sorgenti o piano scientifico:
+il checkout runtime resta a2eeb755676a0ab780fc269f0679684eb41cd6f2.
+Primo C0 con lo stesso ID logico e `--dopo-rifiuto`; gli altri ID sono nuovi.
+La ricevuta del rifiuto è conservata in submission_v2/fits. Nessun retry cieco
+e nessuna duplicazione del checkout.

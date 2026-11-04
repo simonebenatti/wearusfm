@@ -5553,6 +5553,13 @@ di tutti i regimi. Le coppie non entrano: si applica lo split già revisionato,
 con candidato 1 afterok del proprio candidato 0. Nessun riuso del benchmark
 vecchio, nessuna modifica di batch, dose, LR o selezione.
 
+Rettifica operativa: checkout fit 63527861 completo 0:0 e verificato, ma
+MinJobAge=30 s lo elimina dal controller prima del primo invio. C0 esplicitamente
+rifiutato senza job per dipendenza sconosciuta; ricevuta conservata.
+Prerequisito checkout già soddisfatto: tolta solo afterok dei C0; C1 resta
+afterok del proprio C0. Stesso runtime a2eeb75 e piano scientifico; primo C0
+può essere ritentato con --dopo-rifiuto dopo pubblicazione della rettifica.
+
 ### 2026-11-04 | GPT consolidamento | Delega obsoleta risolta, gate FT invariati
 
 Chat semplicione non raggiungibile; Simone conferma che non esiste più e assegna

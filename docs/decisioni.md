@@ -6243,3 +6243,12 @@ Nuovo checkout separato per il pin, massimo 0,333333 coreh aggiuntive.
 Matrice e dipendenze in ft_v2_fit_launch_plan.json prima della sottomissione.
 GPT esegue direttamente gli invii già autorizzati tramite submitter e ledger
 comuni. Nessun cambio di runtime o ricetta, nessun monitor automatico.
+
+Rettifica operativa prima degli invii: checkout fit 63527861 COMPLETED 0:0
+in 16 s, SHA/pulizia/sola lettura e pin verificati. SLURM MinJobAge=30 s:
+il primo C0, inviato dopo la rimozione del checkout dalla memoria del
+controller, è stato esplicitamente rifiutato senza job. Si mantiene il
+prerequisito già soddisfatto e verificato, omettendo afterok dal solo C0.
+C1 continua a dipendere dal proprio C0. Piano operativo rettificato e
+ricevuta del rifiuto conservata; retry ammesso solo con --dopo-rifiuto.
+Runtime e piano scientifico restano sul checkout a2eeb75, nessun nuovo checkout.
