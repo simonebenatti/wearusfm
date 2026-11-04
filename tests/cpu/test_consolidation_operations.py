@@ -137,10 +137,13 @@ def test_partial_or_changed_source_is_not_published(tmp_path, monkeypatch):
     assert partial.read_bytes() == b"original"
 
 
-def test_operations_plan_remains_gated_by_claude_followup_and_quota():
+def test_released_operations_plan_has_review_and_pinned_real_quota():
     plan = json.loads((ROOT / "results/infra/consolidation_20261104/continuation_plan.json").read_text())
-    assert plan["status"] == "awaiting_claude_review"
-    assert plan["retention"]["quota_preflight"] is None
+    assert plan["status"] == "claude_review_converged"
+    assert plan["review_followup"]["review_commit"].startswith("0b2623a")
+    evidence = plan["retention"]["quota_preflight"]
+    assert digest(ROOT / evidence["source_file"]) == evidence["source_sha256"]
+    assert C.check_quota_evidence(evidence, plan["retention"])["project_id"] == 20147512
     assert plan["retention"]["protected_steps"] == [19618, *C.PHASES]
     assert plan["training_gpu_hours_cap"] == 36
 

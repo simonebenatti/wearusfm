@@ -1,6 +1,6 @@
 # Consolidamento T100-G: proposta eseguibile da rivedere con Claude
 
-Stato: **preparazione, nessun lancio**. Simone ha assegnato a questa chat schedule
+Stato: **convergenza Claude raggiunta, preparazione dei lanci**. Simone ha assegnato a questa chat schedule
 lungo e fine-tuning; il 300M appartiene al thread originale. Worktree esclusivo
 `wearusfm-consolidation`, branch `codex/consolidation-20261104`, base `8ee6603`.
 Nessuna scrittura nei checkout `wearusfm-gpt-science` e `wearusfm-scaling-300m`.
@@ -9,11 +9,13 @@ legge soltanto questo pacchetto; non sostituisce la review esterna di Claude.
 
 Ordine richiesto da Simone: preparazione → review Claude → correzioni e convergenza
 → pubblicazione dei riferimenti esecutivi → lanci tramite submitter/ledger comune.
-I due piani hanno `status=awaiting_claude_review`: i controller rifiutano l'esecuzione.
-La review Claude `63fd9c5` approva continuazione e benchmark con condizioni; le
-correzioni integrate richiedono la sua rilettura del diff, come precisato nella
-consegna successiva di Simone. `fits_status` mantiene un gate distinto per i fit.
-Il critico interno non sostituisce questa firma.
+La rilettura Claude `0b2623a` su `2dbd498` chiude la convergenza: i piani hanno
+`status=claude_review_converged`. Corretto R-1: output FT, compresi i pesi dei
+candidati, sotto WORK; `fits_status` convergente. N-2: quota reale pinnata nel
+piano, con verifica dell'età subito prima degli invii. Benchmark da eseguire e
+pinnare prima dei fit; matrice lunga e aggregatore restano da consegnare.
+F-R2 e V-R1 convergenti senza modifiche alle soglie. Dettagli e costi degli invii
+in `consolidation_execution_20261104.md`.
 Niente monitor in background. Nessuna nuova autorizzazione per il lavoro approvato
 dopo la convergenza, ma nessun lancio anticipato, neppure di checkout o benchmark.
 
@@ -61,7 +63,7 @@ Il30.000 è solo un confine operativo per tenere le allocazioni entro3h, non un
 endpoint selezionato dopo i risultati. Salva una copia esatta dello stato finale.
 39.237 e49.046 conservano i checkpoint nativi predecay/postdecay. Stima dai11334s
 osservati per14.618 passi di T100-G: **25,35GPUh**, circa6h20min senza coda; tetto
-**36GPUh e288coreh allocate**. Deployment iniziale: 1CPU,1GiB,10min,0GPUh,0,167coreh.
+**36GPUh e288coreh allocate**. Deployment iniziale: 1CPU,2GiB,10min,0GPUh,0,167coreh.
 I segmenti si concatenano soltanto a ricevute complete; SLURM0:0 da solo non basta.
 Namespace `CONSOL-G-30000-20261104`, `CONSOL-G-39237-20261104`, `CONSOL-G-49046-20261104`.
 
@@ -70,7 +72,7 @@ per timeout/hash/copia incompleti: niente retry cieco; recupero con piano revisi
 e stato parziale verificato, oppure sola verifica CPU se training già completo.
 Copie persistenti in WORK di19.618,30.000,39.237,49.046 prima delle ricevute complete,
 SHA verificato e date di purge stimate dai file reali. Gate quota Lustre di progetto
-prima del lancio e delle copie; evidenza remota pending, nessuna quota assunta.
+prima del lancio e delle copie; evidenza reale del04/11 17:04:12UTC pinnata nel piano.
 Spazio aggiuntivo circa1,8GB, margine richiesto8GiB.
 
 ## 2. Sonde nei due momenti e ai due livelli

@@ -128,8 +128,9 @@ il runtime ricontrolla la quota reale e non fallisce per la sola età del pin.
 La quota è condivisa: una lettura positiva non è una prenotazione; errori
 EDQUOT o query fallite bloccano il completamento senza retry cieco.
 
-**Stato della preparazione:** `quota_preflight: null` è intenzionale e blocca
-l'esecuzione. La prima query SSH in sola lettura del 04/11 non ha restituito
-`project-id` né quota ed è stata interrotta (exit 255), senza scritture remote.
-Nessuna quota è stata assunta o dichiarata verificata. La chiusura documentale
-C-M2 e la review scientifica restano distinte da questo gate operativo.
+**Aggiornamento del 04/11 dopo review 0b2623a:** il primo tentativo SSH era
+inconcludente; la lettura reale di Claude alle 17:04:12 UTC è ora pinnata nel
+piano, testo originale conservato nei risultati. Circa 40,42 GiB disponibili,
+progetto 20147512, inode senza quota. Gate verificato anche con submission_time;
+la sua età viene ricontrollata immediatamente prima degli invii. Rilettura GPT
+alle 17:19 UTC ancora sopra 40 GiB. Nessuna prenotazione di spazio implicita.

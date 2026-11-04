@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Convergenza Claude0b2623a e piano esecutivo
+
+Rilettura 0b2623a acquisita integralmente, continuazione/benchmark/F-R2/V-R1
+convergenti. R-1 corretto: fit_output_root sotto WORK, compresi i .pt; ricetta
+invariata. Quota reale Claude17:04:12UTC pinnata,40,42GiB liberi, inode senza quota;
+check con submission_time passato, rilettura remota GPT ancora sopra40GiB.
+Piani convergenti, nessuna modifica ai sorgenti runtime revisionati. Test del
+blocco pre-review reso indipendente dallo stato del piano reale, tramite fixture.
+Piano prima degli invii: CONSOL-checkout +3 segmenti30k/39237/49046 +FT-BENCH,
+tetto36,5GPUh/292,166667coreh, checkout2GiB. FT in parallelo dopo checkout.
+Dettagli in consolidation_execution_20261104.md e launch_plan.json. Lancio diretto
+owner tramite submitter/ledger comune, autorizzazione già presente; nessun monitor.
+
+
 ### 2026-11-04 | GPT consolidamento | Correzioni alla review Claude63fd9c5 | Basebbca940
 
 Accolta la review e il successivo esito trasmesso da Simone: Claude rilegge il diff
@@ -5473,6 +5487,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Residui dopo convergenza
+
+Chiuso R-1 con sola destinazione persistente; N-2 quota pinnata e ricontrollata,
+non prenotata. Nessun difetto runtime nuovo. F-R2 invariata: mancato scatto non
+prova convergenza scratch. Fit ancora condizionati a benchmark misurato e pin;
+matrice lunga e aggregatore OOF/IC ancora da consegnare. Le ricevute/ID saranno
+registrati dopo gli invii, senza dichiarare un job avviato dal solo preventivo.
+
 
 ### 2026-11-04 | GPT consolidamento | Blocchi e limiti dopo correzioni Claude
 

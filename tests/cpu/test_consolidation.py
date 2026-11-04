@@ -175,11 +175,15 @@ def test_recipe_hash_cannot_be_changed_by_adding_a_benchmark_receipt():
     assert S.recipe_identity(plan) != plan["recipe_sha256"]
 
 
-def test_draft_plans_cannot_execute_before_claude_review(monkeypatch):
+def test_draft_plans_cannot_execute_before_claude_review(monkeypatch, tmp_path):
     from types import SimpleNamespace
     monkeypatch.setattr(C.T.P, "code_identity", lambda code: code)
     directory = ROOT / "results/infra/consolidation_20261104"
+    for name in ("continuation_plan.json", "finetune_plan.json"):
+        plan = json.loads((directory / name).read_text())
+        plan["status"] = "awaiting_claude_review"
+        (tmp_path / name).write_text(json.dumps(plan))
     with pytest.raises(ValueError, match="Claude review"):
-        C.execute(directory / "continuation_plan.json", 30000, "a" * 40)
+        C.execute(tmp_path / "continuation_plan.json", 30000, "a" * 40)
     with pytest.raises(ValueError, match="Claude review"):
-        S.execute(SimpleNamespace(plan=directory / "finetune_plan.json", expected_code="a" * 40))
+        S.execute(SimpleNamespace(plan=tmp_path / "finetune_plan.json", expected_code="a" * 40))

@@ -6153,3 +6153,24 @@ Critico interno senza nuovi rilievi bloccanti; 123 test passati su pacchetto e
 regressioni WSD/tokenizer, più verifica mirata dopo l'aggiunta del riferimento
 alla ricevuta split. Sorgenti scientifici storici invariati: 100/100 hash uguali.
 I controlli locali non sostituiscono la rilettura Claude né il benchmark CUDA.
+
+### 04/11/2026 — Convergenza Claude0b2623a e invii del consolidamento
+
+Rilettura di2dbd498 acquisita. Continuazione, benchmark FT e regole F-R2/V-R1
+convergenti. R-1 corretto prima dei fit: fit_output_root sotto WORK, inclusi i
+pesi dei candidati; nessuna modifica della ricetta/hash o del codice runtime.
+Quota reale del04/11 17:04:12UTC pinnata con testo originale eSHA: progetto20147512,
+40,4175GiB liberi, inode senza quota. Gate età≤24h da richiamare immediatamente
+prima di ogni invio; runtime ripete la query. Rilettura GPT ancora sopra40GiB.
+
+Piano esecutivo pubblicato prima di sbatch in consolidation_execution_20261104.md
+e results/infra/consolidation_20261104/launch_plan.json. Cinque ID: checkout CPU,
+CONSOL-G-30000/39237/49046-20261104 concatenati, FT-BENCH-20261104 indipendente
+dalla continuazione dopo checkout. Tetto prima tranche36,5GPUh/292,166667coreh;
+training atteso25,3521GPUh. Checkout2GiB allineato al launcher. Nessun cambio
+a dose/schedule/seed/loss. Submitter comune, ledger unico, owner di questa linea;
+nessun nuovo consenso né monitor. Aggiornare ricevute e ID dopo le sottomissioni.
+
+Fit convergenti dopo R-1, ma non inviabili senza benchmark completo, pin e
+preventivo effettivo joint/split. Matrice lunga e aggregatore ancora condizionati.
+N-3 esplicitata: mancato scatto F-R2 non certifica scratch convergente.

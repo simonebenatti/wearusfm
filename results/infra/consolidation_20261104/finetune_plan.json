@@ -1,6 +1,6 @@
 {
   "protocol": "consolidation-finetune-epn-20261104-v1",
-  "status": "awaiting_claude_review",
+  "status": "claude_review_converged",
   "checkpoint": {
     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
     "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
@@ -52,8 +52,8 @@
     "finetune": 100,
     "scratch": 10
   },
-  "fits_status": "awaiting_claude_corrected_fit_review",
-  "fit_output_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
+  "fits_status": "claude_review_converged",
+  "fit_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
   "scratch_learning_rule": {
     "folds": 4,
     "best_epoch5_folds_at_least": 3,
@@ -76,9 +76,9 @@
   "fit_gpu_hours_cap_fallback": 96,
   "max_candidate_jobs": 24,
   "review": {
-    "commit": "63fd9c5",
+    "commit": "0b2623a12e1b4e597974d97ef0ad67a8b4c468e1",
     "path": "docs/reviews/claude_review_consolidation_20261104.md",
-    "benchmark": "approved after F-B1 and B-R1; conditions implemented, awaiting verification",
-    "fits": "new split controller pending Claude verification"
+    "benchmark": "approved and converged; benchmark OUT must be WORK",
+    "fits": "approved and converged after R-1 output root corrected to WORK; benchmark gate still mandatory"
   }
 }
