@@ -30,6 +30,12 @@ stessi byte del piano training**. I futuri commit con pin di checkpoint e
 cache servono checkout di valutazione distinti; non aggiornano quello del
 training e non cambiano la continuazione.
 
+Commit dedicato di rilascio: **79546926886e566a14fab62abd3fd8272d857cb4**,
+due soli file (stato/pin del piano e JSON release). Questa successiva consegna
+sincronizza i pin A4; il suo SHA completo pubblicato sarà registrato nelle
+ricevute di checkout e lancio come SHA esecutivo comune alle due fasi.
+Audit: `results/infra/logsquare_training_20261104/release_validation.json`.
+
 ## Job di questa tranche
 
 | ID logico | Risorse | Walltime esplicito | Tetto |

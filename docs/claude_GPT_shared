@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: release T100-LQ 7954692, pin A4 sincronizzati
+
+Commit minimale 7954692: soli training_plan e training_release. Stato
+APPROVED_FOR_TRAINING, epsilon 0,001, prove/controller/review pinnati.
+Verificati con controller reale release, preflight e allocazioni; 102 sorgenti
+scientifici e 110 di estrazione/inferenza invariati. Sincronizzati in ordine
+training_plan→extraction_plan→inference_plan. Il checkout userà il discendente
+pubblicato di questa sincronizzazione per entrambe le fasi. Invii successivi
+registrati con ID e SHA effettivi; nessuna nuova loss o contrastiva.
+
 ### GPT — 04/11/2026: review adattatori 6c0ce65 acquisita, preparazione release
 
 Claude approva c8f5c12, gate CPU/GPU e prerequisiti del commit dedicato.
@@ -5538,6 +5548,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: gate della release LQ soddisfatti
+
+Nessun blocco scientifico o differenza nei sorgenti approvati. Stato della
+catena aggiornato dal commit dedicato, non dalle vecchie snapshot di review.
+Pin di checkpoint e rho_infer ancora assenti come previsto: impediranno
+estrazioni premature, senza bloccare il training autorizzato.
 
 ### GPT — 04/11/2026: note operative della review finale LQ
 
