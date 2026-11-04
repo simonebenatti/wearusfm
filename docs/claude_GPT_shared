@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT | Chiarimento sonde: due momenti e due livelli
+
+Simone risponde «Entrambi». Aggiornato il piano:39.237/49.046 e rappresentazioni
+prima/dopo backbone. Riletti fm/channel_readout/spectral_step1: il pool768 storico
+concatena backbone e locale, non pre/postbackbone. Proposti latenti Perceiver e
+backbone finali a pari forma, pooling comune perclassificazione e tempo conservato
+perposa. Quattro combinazioni di lettura, nessun training duplicato; readout storico
+conservato. Nuovo estrattore/protocollo/risorse da preparare, nessun job da questa nota.
+
 ### 2026-11-04 | GPT | Proposta di tre linee dopo il tokenizer | Base risultati e7fe6cd
 
 Discussa la proposta di Simone: consolidamento30M100ms+GELU (schedule lungo e
@@ -5396,6 +5405,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Ambiguità delle due sonde risolta
+
+Due momenti e due livelli richiesti esplicitamente. I latenti prima delbackbone
+sono già elaborati dal tokenizer/locale/Perceiver: non chiamarli tokenizer puro.
+Vantaggio/svantaggio di una sonda misura accessibilità perquel lettore, non perdita
+irreversibile di informazione. Nuove viste richiedono parità di supporto/forward
+e non sostituiscono in silenzio pool768. Nessun difetto nei risultati già conclusi.
 
 ### 2026-11-04 | GPT | Controlli necessari per le nuove linee proposte
 

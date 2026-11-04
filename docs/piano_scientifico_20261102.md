@@ -190,17 +190,39 @@ finale20%; non occorre inventare uno schedule nuovo o riavviare da zero. Ripresa
 con stato AdamW, teacher, RNG, contatori e stream verificati, su cartella dedicata;
 checkpoint nominato19.618 preservato e condiviso in sola lettura con il fine-tuning.
 
-Se i «due punti» sono due momenti del training, la proposta è **39.237 prima del
-decay e49.046 dopo**, mantenendo19.618 come riferimento già misurato. Le letture
+Simone ha chiarito **«Entrambi»**: due momenti del training e due livelli interni.
+I due momenti proposti sono **39.237 prima del decay e49.046 dopo**,
+mantenendo19.618 come riferimento già misurato. Le letture
 sono descrittive della traiettoria: il secondo tratto cambia sia dose sia learning
 rate, quindi non isola causalmente il decay. Usare sonde convergenti e posa sulle
 stesse popolazioni/supporti, senza scegliere il checkpoint migliore sulla val.
 
-Nella discussione precedente erano stati proposti anche due livelli interni del
-modello. È stata chiesta a Simone la distinzione tra due momenti, due livelli o
-entrambi: non congelare il significato prima della sua risposta. Se sono livelli,
-definire precisamente le rappresentazioni prima/dopo il backbone e validare il
-nuovo estrattore; non assumere che i due blocchi pool768 attuali siano quei livelli.
+Per i livelli, la scelta proposta dopo la rilettura del codice è: **uscita del
+Perceiver immediatamente prima del backbone**, e **uscita finale del backbone**.
+Entrambe hanno forma batch×patch×64×D (D384 nel30M): si può applicare la stessa
+aggregazione e lo stesso supporto senza confondere profondità e cambio di larghezza.
+La prima contiene già tokenizer ed encoder locale; non è il segnale grezzo o
+l'uscita immediata del tokenizer. Il confronto misura accessibilità con questi
+lettori, non dimostra perdita irreversibile di informazione se la sonda peggiora.
+Il post include anche la LayerNorm finale del backbone: si valuta l'intero blocco,
+non la sola attention. Aggregazione FP32 e identica maschera key_time_valid;
+la larghezza è D896 se il protocollo viene applicato anche al300M. Review del
+codice indipendente parallel_next_review concorde con queste precisazioni.
+
+| Momento | Prima del backbone | Dopo il backbone |
+|---|---|---|
+|39.237, prima del decay|Sonda classificazione e ridge posa|Stessi lettori/supporti|
+|49.046, dopo il decay|Sonda classificazione e ridge posa|Stessi lettori/supporti|
+
+Quattro combinazioni per modello/endpoint, senza quattro training. Classificazione:
+media su slot e tempo valido, D valori; regressione: media soltanto sugli slot,
+sequenza patch×D preservata, stesso crop e target. Teacher congelato, split e
+preprocessing train-only comuni. Il readout storico pool768 resta come riferimento
+di continuità, non viene sostituito o reinterpretato: concatena backbone medio e
+encoder locale medio, non i due lati del backbone. L'estrattore va implementato e
+verificato contro il forward esistente, salvando entrambe le viste nella stessa
+inferenza. Eventuali viste mancanti a19.618 si recuperano dal checkpoint congelato,
+senza riaddestramento; calcolo e storage entrano nel preventivo delle valutazioni.
 
 Continuare soloG risponde alla domanda sulla sua dose. Per affermare che il
 vantaggio della GELU sul lineare persiste alla dose completa serve anche **T100-L

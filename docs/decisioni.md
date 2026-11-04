@@ -6005,3 +6005,12 @@ per confronto completo; nullo breve non è bocciatura della taglia. Costi da mis
 Contrastiva non automaticamente innestata sul vincitorelog: fissare base/coppie/
 augmentazioni/peso e proteggere informazione temporale/ampiezza utile alla regressione.
 Piano dettagliato e review nel piano_scientifico_20261102.md; nessun nuovo job/monitor.
+
+### 04/11/2026 — Chiarimento di Simone: sonde in entrambi i sensi
+
+Risposta «Entrambi»: due momenti del training e due livelli del modello. Piano
+aggiornato con momenti proposti39.237/49.046 e latenti pre/postbackbone, stessa
+larghezza e supporti. Classificazione media il tempo, posa conserva la sequenza.
+Pool768 storico resta riferimento distinto (backbone+locale). Estrazione comune
+delle due viste, nessun training duplicato; eventuale integrazione baseline19k
+solo in inferenza. Protocollo esecutivo e preventivo restano da completare.
