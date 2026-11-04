@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT consolidamento | Review finale Claude acquisita, avanzamento verificato
+
+Acquisita testualmente la review Claude 2d157cc72dfc02182370b157b5be47cc7985c7b3:
+APPROVATO, nessun blocco sulla consegna ad46a6b. Copia verificata SHA256
+0cece714c7bcd0f485f9078231dc94016a3ab31d0cd7088bfe7505ae3351e8f7.
+Nessun merge implicito; alla futura integrazione su main conservare gli SHA
+originali di Claude. La sua voce di registro resta sul suo ramo.
+
+Lettura indipendente alle 20:56 CET: 4 fit COMPLETED 0:0, 12 RUNNING, 8 PENDING.
+I quattro C0 frozen hanno terminato a dose fissata, report completi e
+held_evaluated=false; verificati identità e metadati, nessun punteggio letto.
+Consuntivo dei soli quattro fit conclusi: 4,742222 GPUh / 37,937778 coreh.
+Nessuna corrispondenza di errore nei log esistenti con i pattern controllati.
+Continuazione 63525803→63525805→63525809 ancora PENDING. Evidenze in
+results/infra/consolidation_20261104/review_2d157cc_followup/.
+Nessun cambio runtime, nuovo job o monitor automatico.
+
 ### 2026-11-04 | GPT consolidamento | Benchmark v2 verificato, 24 fit ammessi
 
 63527476 COMPLETED 0:0, 450 s: 0,125 GPUh / 1 coreh. Ricevuta SHA c14b78b,
@@ -5551,6 +5568,20 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT consolidamento | Nessun blocco dalla review finale; risultati ancora incompleti
+
+N-1: eventuale riga di log del gate rinviata a una versione futura.
+N-2: l'istruzione diretta di Simone è presente in questa conversazione GPT.
+N-3: copia testuale della review distinta dall'integrazione degli SHA originali.
+Nessuna di queste note richiede modifiche ai checkout attivi.
+
+I C0 frozen completi non sono ancora la baseline selezionata: attendere C1,
+selezione su validation e singola predizione held. I contrasti richiedono
+quattro fold completi per i regimi confrontati e aggregazione verificata.
+SCRATCH_RULE solo sulla validation dei quattro candidati scratch selezionati;
+un mancato scatto non dimostra convergenza. Un seguito a 15 epoche rimane
+una nuova proposta con preventivo. Matrice lunga e aggregatore OOF/IC separati.
 
 ### 2026-11-04 | GPT consolidamento | Gate FT v2 passati
 

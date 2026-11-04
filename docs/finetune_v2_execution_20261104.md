@@ -137,3 +137,30 @@ Benchmark nuovo: 0,125 GPUh / 1 coreh; due checkout v2 conclusi:
 Continuazione 63525803 → 63525805 → 63525809 ancora PENDING, invariata.
 Nessun monitor automatico creato. Matrice lunga e aggregatore OOF/IC restano
 consegne separate.
+
+## Review finale e avanzamento — 04/11, ore 20:56 CET
+
+Claude approva la consegna ad46a6b senza blocchi nel commit
+`2d157cc72dfc02182370b157b5be47cc7985c7b3`.
+Review acquisita testualmente; gli SHA originali andranno conservati alla futura
+integrazione su main. Nessuna modifica ai runtime in corso.
+
+| Regime | Completati | In esecuzione | In coda |
+|---|---:|---:|---:|
+| frozen | 4 | 4 | 0 |
+| finetune | 0 | 4 | 4 |
+| scratch | 0 | 4 | 4 |
+| Totale fit | **4** | **12** | **8** |
+
+I quattro conclusi sono i C0 frozen: COMPLETED 0:0, stopped=fixed_budget,
+report completi, held_evaluated=false. Durate 4.244 / 4.264 / 4.247 / 4.317 s;
+consuntivo dei soli quattro conclusi **4,742222 GPUh / 37,937778 coreh**.
+Il consuntivo dell'intera matrice resta aperto. Nessun errore individuato con
+la ricerca dei pattern nei log esistenti; nessun punteggio scientifico letto.
+Evidenze: `results/infra/consolidation_20261104/review_2d157cc_followup/`.
+
+Attendere C1 e selezione su validation prima della baseline frozen finale;
+confronti solo con fold completi e aggregazione verificata.
+SCRATCH_RULE sulla validation dei quattro scratch selezionati; eventuali
+15 epoche richiedono una nuova proposta con preventivo.
+Continuazione ancora PENDING; nessun job aggiunto o monitor automatico.

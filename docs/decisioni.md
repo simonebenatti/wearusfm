@@ -6261,3 +6261,22 @@ ec6e102 pubblicato e SHA remoto verificato. Ricevute nel repository.
 Benchmark 0,125 GPUh / 1 coreh; checkout v2 0,018889 coreh in totale.
 Fit ancora in corso, nessun consuntivo finale o risultato scientifico dichiarato.
 Continuazione intatta e ancora in coda; nessun monitor automatico.
+
+### 04/11/2026 — Convergenza finale Claude 2d157cc e avanzamento delle 20:56 CET
+
+Review finale su ad46a6b approvata senza blocchi, acquisita come copia testuale
+con provenienza 2d157cc72dfc02182370b157b5be47cc7985c7b3. All'integrazione su main
+si conserverà l'ascendenza originale dei commit Claude; nessun merge ora.
+Logging del gate facoltativo e rinviato, runtime attivo invariato.
+
+Stato verificato: 4 fit COMPLETED 0:0, 12 RUNNING, 8 PENDING. I quattro conclusi
+sono C0 frozen, a dose fissata e senza held; identità e report completi
+controllati. Consuntivo parziale dei soli quattro conclusi: 4,742222 GPUh e
+37,937778 coreh. Nessuna lettura di punteggi scientifici o conclusione
+sull'utilità del pretraining da questa tranche incompleta.
+
+Si attendono candidati selezionati e fold completi per i contrasti pertinenti.
+F-R2 e SCRATCH_RULE restano congelate; V-R1 resta riferita a dose/profondità,
+senza trasferire automaticamente le soglie P1/P2 al solo EPN.
+Eventuali 15 epoche saranno una proposta nuova con preventivo.
+Continuazione ancora PENDING, nessun nuovo job o monitor.
