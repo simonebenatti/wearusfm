@@ -5326,6 +5326,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   estrazioni; V-R2 controller della matrice, pin dei checkpoint e preventivo misurato ancora da consegnare; V-F3 vista «pre normalizzata»
   facoltativa. Nessun lancio autorizzato dalla review; ordine: correzioni → regole in `decisioni.md` → benchmark → pin → fits.
 
+### 2026-11-04 | Claude | Specchietto di coordinamento aggiornato dopo la rinomina delle sottochat e il verdetto del consolidamento (richiesta di Simone)
+- Simone, 04/11/2026: «devo rinomonarle, porta pazienza poi mi aggiorni lo schema» e poi «fatto cambiati i nomi, rimettimi qua la tabella
+  agiornata». Aggiornato `docs/coordinamento_review_claude_20261104.md` (versione delle 17:40) con i nomi nuovi delle sottochat e lo stato
+  di ciascuna linea. Attenzione alla numerazione: nelle voci precedenti di oggi 1 = consolidamento, 2 = log-quadratico, 3 = scaling; da ora
+  `1- 30/300M` = scaling, `2- schedule lungo (consolida) 30M, 100 ms + GELU: E FINETUNING` = consolidamento, `3- log quadro e conrtrastive`
+  = log-quadratico e contrastiva.
+- Stato: le tre review sono consegnate. Scaling: APPROVATO senza blocchi (befab4a + 2f3207b, fusi in 4c4104a). Consolidamento (63fd9c5):
+  continuazione APPROVATA, benchmark FT APPROVATO dopo F-B1, protocollo dei fit DA CORREGGERE (F-B1 griglia della testa), valutazione
+  APPROVATA come disegno e CONDIZIONATA. Log-quadratico (93d89e0): APPROVATO CON CORREZIONI per il collaudo, training non approvato; la
+  contrastiva non e' ancora stata presentata. Nessun lancio autorizzato da Claude: il passo successivo di ogni linea e' dell'owner GPT.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
