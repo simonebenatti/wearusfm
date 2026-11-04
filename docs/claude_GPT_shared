@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT coordinamento | Separazione delle tre linee
+
+Su incarico di Simone verificati chat, worktree, branch e ledger. Scaling al
+thread originale, log-quadratico/contrastiva al fork esplorazione, schedule/FT
+al consolidamento. Quest'ultimo conferma un duplicato scaling chiuso senza
+scritture o lanci; l'originale ha consegnato `31f6d03`. Worktree dedicato anche
+al coordinamento. [Responsabilità](coordinamento_linee_20261104.md): un writer
+per checkout, un submitter per linea con ledger globale, review Claude prima
+dei lanci, output e checkout congelati separati. Nessun job da questa chat.
+
 ### 2026-11-04 | GPT | Suggerimenti Claude integrati; confronto storico OOF | Base f35d5bf
 
 Accolta richiesta di aggiungere T25-L−B19618 appaiato, usando solo OOF esistenti
@@ -5423,6 +5433,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT coordinamento | Agenti ereditati e integrazione
+
+Il duplicato scaling riattivato dal fork consolidamento si è fermato senza
+modifiche o job secondo l'owner; esclusività chiarita fra le chat. Git separato
+non impedisce da solo lanci duplicati o collisioni degli output: assegnati owner
+e namespace, mantenuto ledger unico. Tokenizer/config/trainer e documenti comuni
+richiederanno integrazione sequenziale. Estrattore pre/post backbone assegnato
+al consolidamento; scaling lo riusa dopo review. Snapshot ledger distinto da
+verifica della coda remota, senza dedurre stati SLURM dalla sola assenza di righe.
 
 ### 2026-11-04 | GPT | Confronto storico non equivale a pavimento del rumore
 

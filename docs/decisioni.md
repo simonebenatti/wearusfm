@@ -6034,3 +6034,15 @@ screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
 scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
 preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
 seguito naturale da pianificare, non estensione automatica di uno screening nullo.
+
+### 04/11/2026 — Coordinamento esclusivo dei tre fork
+
+Simone assegna alla chat coordinamento la verifica delle interferenze. Owner
+scaling: thread originale; esplorazione: fork log-quadratico/contrastiva;
+consolidamento: fork schedule/FT. Worktree separati verificati. Un duplicato
+scaling dal fork consolidamento è stato chiuso senza scritture/lanci secondo
+l'owner; la consegna originale `31f6d03` è pronta per Claude. Review Claude prima
+dei lanci, un submitter per linea e ledger globale unico. Coordinamento integra
+i rami revisionati e non sottomette copie degli esperimenti. Estrattore comune
+pre/post backbone assegnato al consolidamento, riuso da scaling dopo review.
+Dettagli in `docs/coordinamento_linee_20261104.md`; nessun job o merge main qui.
