@@ -5249,6 +5249,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   non batch ridotto ne' 8 GPU); controllo secondario a dimensione del readout pareggiata; LR fisso = «taglia nella stessa ricetta»;
   pavimento di rumore della replica (0,2–0,9 pp) nella lettura del delta 300M − 30M.
 - Nessun job, allocazione o modifica al codice di GPT. Simone ha annunciato altre due review (consolidamento ed esplorazione).
+- Seguito (sessione di verifica, 04/11 sera): rilettura indipendente del codice riusato (`tokenizer_preflight.py` per intero, `run.py`,
+  `patch_tokens.py`, launcher e `lib_code_dir.sh`, test rieseguiti: 23 passati) conferma il verdetto APPROVATO senza blocchi. Aggiunti alla
+  review: identità verificata fra `--preset 300m` nel CLI e la configurazione del collaudo (nessuna differenza, 292.054.847 parametri);
+  `fe_gain` buffer di costruzione mai ricalibrato; stima della scadenza con i tempi misurati dal preflight del tokenizer (collaudo atteso in
+  10–12 minuti, sotto i 1.500 s anche con rapporto 8×); F8 (RNG dell'oracolo tracciato a parte) e S8 (regola di lettura a due lati del 5.000
+  congelata prima delle estrazioni, con cio' che autorizza la tranche a 19.618). Ramo `claude/review-scaling-300m-20261104`, da fondere in
+  `worktree-claude-training-engine`.
 
 ### 2026-11-04 | Claude | Review del ramo log-quadratico T100-LQ e del collaudo appaiato (GPT 729093b): APPROVATO CON CORREZIONI per il collaudo, training non approvato qui (richiesta di Simone)
 - Simone, 04/11/2026: «ok tu guardi questo :» con il prompt di GPT `docs/prompt_claude_logsquare_review_20261104.md` (729093b, punta del ramo
