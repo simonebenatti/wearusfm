@@ -43,3 +43,16 @@ nessun retry ambiguo. Riportare stato reale distinguendo completamento e coda.
 
 Continuazione 63525803 → 63525805 → 63525809 su 17dd455 intatta. Matrice lunga e
 aggregatore OOF/IC sono consegne separate; questo lancio non li dichiara pronti.
+
+## Invio del benchmark, 04/11 ore 19:12 CET
+
+Codice congelato `ae283052da086c814890d8e8e5b57505395b37a1`, pubblicato e
+verificato su origin e sul ref di deploy Leonardo.
+Checkout **63527415 COMPLETED 0:0**, 18 s con 2 CPU allocate: **0,010 coreh**.
+Verificati SHA, pulizia e codice in sola lettura.
+Benchmark **63527476 RUNNING** alla lettura delle 18:13:23 UTC.
+Ricevute del submitter in `results/infra/consolidation_20261104/submission_v2/`.
+
+Alle 18:13:41 UTC WORK ha circa 39,8 GiB liberi nella quota di progetto;
+nessun output EPN fit né checkout dei fit già esistente. Ledger senza ID fit
+duplicati. Nessun monitor automatico attivato.
