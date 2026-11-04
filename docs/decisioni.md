@@ -5956,3 +5956,34 @@ Sottomesso T100-G P1 aggregate **63516081**, policy invariata2CPU/30G/20min.
 Resta solo il fit T100-G P2 **63504862** in esecuzione; T100-L P1/P2 e T100-G P1
 aggregate attendono la QoS. Restano da inviare T100-G P2 aggregate e confronto.
 Nessun nuovo esperimento o monitor; la campagna riguarda sempre il preset30M.
+
+### 04/11/2026 — Tokenizer: confronto completo letto, campagna chiusa
+
+Ultimo fit G/P2 63504862 concluso0:0; verificati tutti15shard/420fit convergenti.
+Sottomessi tramite submitter/ledger G/P2 aggregate63518881 (11s2CPU) e confronto
+63519077 (20s2CPU), entrambi COMPLETED0:0; sei aggregati completi con hash
+remoto/locale/riferimento coerenti. Tutti22ID sonde assenti dalla coda15:41:59.
+Ricalcolo indipendente di punti, IC, bootstrap e NI passato (max8,9e-16),
+senza cambiare criteri, seed o numero di draw. Zero warning solver; conservati
+36 record con warning di scoringDB3. Consuntivo sonde41,871667coreh su101,
+0GPU aggiuntive; checkout comune e fase posa contabilizzati separatamente.
+
+**EPN primario:** T25-L81,601%, T100-L81,102%, T100-G82,577%.
+G−L+1,476pp IC95[0,828;2,121], G−T25+0,977pp [0,399;1,546] (secondario).
+Finestra sola−0,499pp [−1,074;0,113]: nessun beneficio classificazione dimostrato.
+P1/P2 senza miglioramento aggregato con IC tutto positivo. NI1pp sostenuta perG
+contro entrambi i lineari, ma P2 G−T25 passa per0,014062pp: conclusione al margine,
+non conservazione robusta. T100-L NI P1 sostenuta, P2 irrisolta.
+
+**Posa primario distinto:** combinato−1,53% relativo E_dyn, sotto2% pratico;
+varianza predetta16,88% dei target. Segnale favorevole ma dinamica attenuata.
+Nessun vincitore universale; T100-G candidato promettente suEPN. Un seme,
+sviluppo già osservato, IC senza molteplicità; EPN positivo non isola200Hz.
+Manca T25-G: nessuna conclusione sull'interazione completa finestra×attivazione.
+
+Matrice autorizzata chiusa, monitor rimane spento. Prossimo candidato già discusso
+log-quadratico sulla baseT100-L, con controlli train anche200Hz e protocollo/costi
+da preparare; nessun lancio in questa consegna. Conferma a dose completa/semi,
+fine-tuning e scala30M/300M restano alternative distinte da ordinare con Simone.
+Analisi, review e tabella aggiornate; evidenze originali in
+results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/final/.

@@ -178,6 +178,25 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-04 | GPT | Tokenizer concluso: classificazione raccolta e verificata | Runtime b315dad
+
+Ultimo shard G/P2 63504862 completo0:0, 56/56fit convergenti. Raccolti gli ultimi
+quattro aggregati L/G; G/P2 aggregate63518881 e confronto63519077 sottomessi tramite
+submitter/ledger, solo dopo input completi verificati. Tutti22job sonde completi,
+420/420fit convergenti, nessun ID in coda alle15:41:59; nessun rilancio o duplicato.
+Report finale SHA25620e899455889b37fe12747acbbba688f204bdcb29bf480a270f8fc748a1128e4,
+sei hash riferiti coerenti remoto/locale. Ricalcolo indipendente di punti/IC/draw/NI
+passato con differenza massima8,9e-16; review pubblicata. Coreh sonde41,871667/101,
+GPU aggiuntive0; checkout comune contabilizzato separatamente.
+
+EPN T25-L/T100-L/T100-G81,601/81,102/82,577%; G−L+1,476pp [0,828;2,121],
+G−T25+0,977pp [0,399;1,546]. Finestra sola senza beneficio classificazione
+dimostrato. P1/P2 IC del miglioramento includono zero; NI1pp di G sostenuta,
+P2 vsT25 al margine. Posa beneficio combinato1,53% sotto2%, varianza16,88%.
+Aggiornati tabella, handoff, decisioni e analisi completa:
+docs/reviews/tokenizer_classification_results_20261104.md. Matrice autorizzata
+chiusa, monitor spento; nessun nuovo training/loss/log-quadratico/scaling avviato.
+
 ### 03/11/2026 — GPT: collaudo tokenizer pronto e verificato per la sottomissione
 
 Driver `scripts/tokenizer_preflight.py`, launcher e piano `docs/tokenizer_execution_20261103.md`:
@@ -5363,6 +5382,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-04 | GPT | Limiti finali tokenizer, nessun difetto tecnico aperto | Runtime b315dad
+
+Tutti420fit convergenti, max5916/12000; 36 record con warning di scoring DB3
+restano distinti dai warning solver, assenti. NI P2 G−T25 soddisfatta per soli
+0,014062pp oltre il margine: non descriverla come garanzia robusta di trasferimento.
+IC condizionati a un seme e a sviluppo già osservato, senza correzione multipla;
+EPN positivo non isola la frequenza200Hz. Soggetti P1 visti dall'encoder nel
+pretraining, esclusi soltanto dai fit della sonda; EPN/UCI esclusi dal pretraining.
+Posa su utenti esclusi ma task supervisionato, non regressione di trasferimento.
+Manca T25-G, quindi interazione completa finestra×GELU non identificata. Posa
+ancora attenuata; nessun vantaggio su ogni metrica. Nessun impedimento tecnico
+alla pubblicazione dopo ricalcolo indipendente, nessun nuovo esperimento implicito.
 
 ### 2026-11-04 | GPT | Rettifica della regola storica sullo scaling
 

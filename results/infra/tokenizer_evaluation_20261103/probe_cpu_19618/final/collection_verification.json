@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "job_id": 63519077,
+  "sacct": "63519077|COMPLETED|0:0|20|2|2026-11-04T15:34:35|2026-11-04T15:34:55",
+  "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/comparison.json",
+  "sha256": "20e899455889b37fe12747acbbba688f204bdcb29bf480a270f8fc748a1128e4",
+  "complete": true,
+  "code_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "plan_sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+  "step": 19618,
+  "fits": 420,
+  "aggregates": 6,
+  "report_references_verified_remote_and_local": [
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p1.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T25-L/p1.json",
+      "sha256": "93b19b701378c66afecc7755d643925fd71ea09a5230cd9cb4c2f4e9cc5093ce"
+    },
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/p2.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T25-L/p2.json",
+      "sha256": "ad8c9df75e6a8c46ca78a40756c151a064351137fb406cdac25ca7e644640010"
+    },
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p1.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T100-L/p1.json",
+      "sha256": "79037f0f7405cdf5302260b3b76f639457f2c9cfa97177c2b187a57b207d659d"
+    },
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/p2.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T100-L/p2.json",
+      "sha256": "c4c601fb5743e027078dad9f4c0b639e980443bfd8994a86a19d32994c8781ee"
+    },
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T100-G/p1.json",
+      "sha256": "4ded85b93946d93dc09b5a5ad64452ad319708aa608545796fcd6ef126172031"
+    },
+    {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json",
+      "local_path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T100-G/p2.json",
+      "sha256": "ef53b8ab6a7fccb675b14db10ebb74be68e82e5a250214b618edad7d7c9d8d5c"
+    }
+  ],
+  "checks": [
+    "complete_comparison",
+    "source_plan_content_and_step_identity",
+    "420_converged_fits",
+    "six_aggregate_hashes_remote_and_local",
+    "fit_audits_identical_to_aggregates",
+    "recipe_identical_to_aggregates"
+  ],
+  "scope": "Operational verification only; independent scientific recomputation handled separately"
+}

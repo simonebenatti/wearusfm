@@ -1,6 +1,27 @@
 # Seguito automatico della campagna tokenizer — 03/11/2026
 
-## Stato attuale 04/11, aggiornamento 14:52 CET: resta un fit
+## Stato finale 04/11: campagna conclusa, nessun job residuo
+
+Confronto **63519077 COMPLETED 0:0**, terminato alle 15:34:55 CET; 20s su 2 CPU.
+Tutti i 15 shard e 6 aggregati completati e verificati; **420/420 fit convergenti**.
+I 22 ID sono assenti dalla coda alle 15:41:59. Report, hash, risorse e ricalcolo
+indipendente in `results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/final/`.
+Consuntivo sonde completo **41,871667 core-ore / 101**, zero GPU aggiuntive.
+
+EPN T25-L/T100-L/T100-G: **81,601 / 81,102 / 82,577%**. GELU−lineare100:
+**+1,476 pp [0,828; 2,121]**; combinato vs T25: +0,977 pp [0,399; 1,546].
+Finestra sola senza beneficio dimostrato in classificazione. P1/P2 non mostrano
+un miglioramento aggregato con IC tutto positivo. NI1pp sostenuta per G rispetto
+a T25 su entrambi, ma P2 al margine (limite inferiore −0,985938 pp).
+Posa: combinato −1,53% relativo di E_dyn, sotto2% pratico; varianza16,88% dei
+target. [Analisi completa](reviews/tokenizer_classification_results_20261104.md),
+[review indipendente](reviews/tokenizer_classification_critic_20261104.md).
+
+Matrice training/12estrazioni/posa5k+19618/sonde19618 chiusa. Nessun prossimo
+invio implicito: log-quadratico, nuova loss, dose completa o scala maggiore
+sono passi distinti. Monitor automatico resta spento; non ricrearlo.
+
+## Stato precedente 04/11, aggiornamento 14:52 CET: resta un fit
 
 T100-G DB2-01 **63497284** e DB2-23 **63504830** conclusi 0:0 in 1583/1641s,
 report/audit/OOF verificati e 28/28 fit convergenti. Totale **14/15 shard verificati,

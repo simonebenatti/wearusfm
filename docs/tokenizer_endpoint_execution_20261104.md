@@ -1,5 +1,16 @@
 # Tokenizer: estrazioni all'endpoint 19.618 — 04/11/2026
 
+**Aggiornamento finale:** matrice conclusa, inclusi tutti i lettori CPU e il
+confronto **63519077**, COMPLETED0:0 alle 15:34:55 CET. Tutte le 12 estrazioni
+della campagna (3 a5k e9 endpoint) e i relativi controlli sono conclusi; sonde:
+15shard+6aggregati+confronto, 420/420fit convergenti, **41,871667coreh/101**,
+zero GPU aggiuntive in questa fase CPU. Accounting e verifiche in
+`results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/final/`.
+[Risultati completi](reviews/tokenizer_classification_results_20261104.md) e
+[review indipendente](reviews/tokenizer_classification_critic_20261104.md).
+Nessun job residuo o nuovo esperimento sottomesso; monitor spento.
+Il seguito del documento conserva il piano e la cronologia di esecuzione.
+
 Simone ha chiesto «han finito, provvedi / procedi». La campagna completa, incluse
 valutazioni, sottomissioni dirette e superamento del vecchio budget, è già autorizzata.
 Nessun nuovo consenso: si avviano le nove estrazioni residue della matrice pubblicata.
