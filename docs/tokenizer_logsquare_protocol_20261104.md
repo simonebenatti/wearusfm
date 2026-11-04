@@ -1,4 +1,10 @@
-# T100-LQ: proposta esecutiva per review Claude — 04/11/2026
+# T100-LQ: protocollo revisionato — 04/11/2026
+
+**Review finale 6c0ce65: adattatori e gate APPROVATI.** I prerequisiti per
+il commit dedicato di rilascio sono soddisfatti. Procedura, note A1–A5 e
+invii: `docs/logsquare_training_execution_20261104.md`; stato eseguibile
+nel piano training e nella sua release pinnata. Nessun cambio scientifico.
+I paragrafi seguenti conservano le tappe e le regole precedenti.
 
 **Review 1d6f96a recepita:** R1 (epsilon=0,001), R2, controller e disegno dei
 valutatori approvati. Adattatori in implementazione per la prossima review;
@@ -14,7 +20,7 @@ epsilon0,001 in `docs/logsquare_preflight_readout_20261104.md`, ora approvata da
 Claude. R2 misurato e approvato: stima16,705GPUh, tetto training22GPUh; rho_infer ancora
 da misurare. Simone ha già autorizzato il seguito operativo della linea:
 non richiedere un altro consenso per il piano dopo review e controlli.
-La review del training e l'adattamento dei valutatori restano da chiudere.
+La successiva review 6c0ce65 chiude l'approvazione degli adattatori.
 Il testo seguente conserva le regole fissate prima dei risultati.
 
 **Stato dopo review Claudeb0fac8f: correzioni APPROVATE, solo collaudo

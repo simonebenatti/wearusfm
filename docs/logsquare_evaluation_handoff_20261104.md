@@ -1,11 +1,11 @@
 # T100-LQ: consegna degli adattatori di valutazione — 04/11/2026
 
-**Disegno approvato da Claude in 1d6f96a; adattatori implementati, da rivedere.**
+**Disegno approvato in 1d6f96a; adattatori e gate approvati in 6c0ce65.**
 Questo documento conserva il disegno e indica ora la sua implementazione.
 Regole definitive D1–D3 e sequenza operativa:
-`docs/logsquare_adapters_execution_20261104.md`. Nessun rilascio o lancio.
-Simone ha già autorizzato il seguito operativo; rimane la review di Claude prima
-del deploy. La review `b0fac8f` richiede orchestratori ed estrattori adattati e
+`docs/logsquare_adapters_execution_20261104.md`. Rilascio e invii documentati
+in `docs/logsquare_training_execution_20261104.md`.
+Simone ha già autorizzato il seguito operativo. La review `b0fac8f` richiede orchestratori ed estrattori adattati e
 verificati prima del training, e `rho_infer` misurato prima delle estrazioni.
 Codice, test e piani preparatori sono consegnati insieme a questa nota;
 la loro review è distinta da quella del solo disegno.

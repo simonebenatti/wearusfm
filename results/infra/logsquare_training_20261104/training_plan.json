@@ -22,7 +22,7 @@
   },
   "resource_proposal": {
     "path": "results/infra/logsquare_training_20261104/resource_proposal.json",
-    "sha256": "4753f53998a0b9f03ca76467b70a952efbd40ba13801d1df0f60f613ed370c7b"
+    "sha256": "9261f209c3fd2fc5f7d5c6e449255a0713554bed6d57d9c3bf6805d1f91450df"
   },
   "shared_initial_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
   "required_scientific_sources": [
@@ -270,14 +270,14 @@
   "continuation": "Only own complete and verified 5000-step checkpoint; same code/plan, optimizer, teacher EMA and all four rank RNG states. Technical failures stop continuation.",
   "control": "Historical T100-L at matching endpoint, shared nontrained initialization, data, schedule and loss.",
   "additional_scientific_changes": null,
-  "evaluation_status": "NOT_READY: adapt/validate whitelists and candidate input pins; rho_infer required before extraction budgets/submissions.",
+  "evaluation_status": "ADAPTERS_APPROVED_6c0ce65: actual candidate checkpoint/cache pins and measured rho_infer still required before evaluation submissions.",
   "background_monitoring": false,
   "training_release": null,
   "execution_code_sha_source": "EXPECTED_SHA exported by submission; checked against clean frozen checkout HEAD before launch and after training; the same SHA is required for both phases.",
   "operational_authorization_granted": true,
   "component_review": {
     "path": "results/infra/logsquare_training_20261104/component_review.json",
-    "sha256": "0bc9f0df8a5b067d52bd1ace7bc5261641bb557d5e87125267a5fb1d6cdd0ea4"
+    "sha256": "c4bc2418235d334b68ab81e44469e8cc9bb10336c921d671012d611e5d96f621"
   },
   "execution_notes": {
     "N1_time_limit": "A partial continuation leaves checkpoint.pt beyond5000; this controller refuses retry. Revise plan, never overwrite/rewind state.",

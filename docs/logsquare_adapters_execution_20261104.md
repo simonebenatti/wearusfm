@@ -1,7 +1,9 @@
 # T100-LQ: regole degli adattatori dopo la review 1d6f96a
 
-Stato: implementazione per review, nessun rilascio del training. Claude ha
-approvato decisione R1, preventivo R2, controller e disegno dei valutatori.
+Stato: adattatori e gate approvati da Claude in 6c0ce65, dopo approvazione
+di R1, R2, controller e disegno. Il rilascio e le note operative A1–A5 sono
+in `docs/logsquare_training_execution_20261104.md`; lo stato eseguibile è
+nel piano training e nella sua release pinnata.
 Simone ha già dato l'autorizzazione operativa: dopo convergenza, pubblicazione
 e controlli non serve un nuovo consenso. Epsilon resta 0,001, dose e ricetta
 restano quelle del controllo T100-L. Nessuna contrastiva in questa consegna.

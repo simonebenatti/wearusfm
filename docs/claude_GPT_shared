@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 04/11/2026: review adattatori 6c0ce65 acquisita, preparazione release
+
+Claude approva c8f5c12, gate CPU/GPU e prerequisiti del commit dedicato.
+Archiviata review esatta; A1 verificata in sola lettura su cache T100-L5000:
+registrazioni 0 e 1 hanno 10 finestre ciascuna, SHA e 1.907 meta verificati.
+Percorsi della nuova campagna/run/ricevute liberi, nessun ID training LOGSQ
+nel ledger; ref deploy nuova assente, repo remoto main senza hook attivi.
+Pubblicate A2–A4 e margini esatti A5 nel piano esecutivo training. Nessuna
+modifica a controller, 102 sorgenti training o 110 di estrazione/inferenza.
+Test negativo del gate reso indipendente dallo stato mobile del piano
+pubblicato: 31 test controller verdi. Autorizzazione operativa già presente.
+Prossimo: commit minimale release, sincronizzazione pin A4, checkout e invii.
+
+
 ### GPT — 04/11/2026: adattatori T100-LQ consegnati dopo review Claude 1d6f96a
 
 Diff successivo a 6d5b353, solo ramo codex/tokenizer-logcontrast-20261104.
@@ -5524,6 +5538,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 04/11/2026: note operative della review finale LQ
+
+A1 soddisfatta, nessuna riselezione. Pubblicati rapporti storici esatti:
+db2-01 0,495; db2-23 0,469722; db3 0,331111; db6 0,575; p2 0,452222.
+Non sono garanzie di durata con feature LQ. Il launcher scrive failed.json
+sulle eccezioni Python; un kill SLURM può impedirlo. Per TIMEOUT il collector
+archivia failed.json locale con accounting/provenienza esplicita, senza
+modificare output del job, rilanciare o aumentare tetti. Sorgenti invariati.
+Release minimale e successivo commit dei pin sono distinti; entrambe le
+fasi training useranno lo stesso SHA esecutivo finale, mai i checkout eval.
+
 
 ### GPT — 04/11/2026: limiti e correzioni della consegna adattatori LQ
 

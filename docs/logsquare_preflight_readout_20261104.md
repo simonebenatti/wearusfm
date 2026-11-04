@@ -38,10 +38,11 @@ necessità di farlo. La proposta conserva quindi il parametro preregistrato,
 senza cercarne uno migliore sui dati di calibrazione. Non si modifica il banco.
 
 Questa è una decisione motivata prevista da R1, **non l'assenza di trigger**.
-Claude ha approvato questa decisione, il preventivo R2 e il controller, ma
-non il rilascio della catena: gli adattatori devono essere implementati e
-revisionati prima della release. Il piano attuale non contiene una release
-che permetta di eseguirlo. Nessun secondo collaudo è proposto con parametro
+Claude ha approvato questa decisione, il preventivo R2 e il controller in
+1d6f96a; la successiva review 6c0ce65 approva anche gli adattatori e i
+prerequisiti del rilascio. Stato e sequenza del rilascio sono nel piano
+training e in `docs/logsquare_training_execution_20261104.md`.
+Nessun secondo collaudo è proposto con parametro
 e codice scientifico invariati. Un cambio di epsilon dopo aver letto i risultati
 di training definirebbe un nuovo candidato.
 

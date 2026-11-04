@@ -63,11 +63,16 @@ def test_fresh_initialization_matches_preflight_shared_weights_and_preserves_rng
         T.verify_initialization(cfg, '0' * 64)
 
 
-def test_review_only_plan_is_not_executable():
+def test_review_only_plan_is_not_executable(tmp_path):
     plan = json.loads(PLAN.read_text())
-    assert plan['status'] == 'REVIEW_REQUIRED'
+    # The published campaign can advance to released; the negative fixture
+    # must keep exercising an unreviewed plan independently of that state.
+    plan['status'] = 'REVIEW_REQUIRED'
+    plan['training_release'] = None
+    pending = tmp_path / 'pending_plan.json'
+    pending.write_text(json.dumps(plan))
     with pytest.raises(ValueError, match='review/release pending'):
-        T.load_plan(PLAN)
+        T.load_plan(pending)
 
 
 def test_pinned_gzip_json(tmp_path):

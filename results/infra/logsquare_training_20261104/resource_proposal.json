@@ -1,5 +1,5 @@
 {
-  "status": "R2_APPROVED_TRAINING_CHAIN_AWAITS_ADAPTER_REVIEW",
+  "status": "CLAUDE_CHAIN_APPROVED_RELEASE_PENDING",
   "authorization": {
     "date": "2026-11-04",
     "user_text": "si ma dovra fare altro immagino, lo autorizzo gia a desso",
@@ -48,8 +48,9 @@
   },
   "rho_infer": null,
   "extraction_budget_finalized": false,
-  "training_approved_by_claude": false,
+  "training_approved_by_claude": true,
   "note": "Update excludes loader and diagnostics; historical time includes I/O. Ratio below one is not demonstrated speedup; caps use max(1,rho).",
   "R2_approved_by_claude": true,
-  "component_review_commit": "1d6f96a1ded55c3594d091c4f078e54ad39f9ed4"
+  "component_review_commit": "1d6f96a1ded55c3594d091c4f078e54ad39f9ed4",
+  "adapters_review_commit": "6c0ce6500b88341bb86de62733e6a315c6282271"
 }

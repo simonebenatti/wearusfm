@@ -6146,3 +6146,21 @@ checkout congelato nuovo, sottomissioni tramite submitter/ledger comuni
 sotto il consenso operativo già dato da Simone. Nessun nuovo consenso da
 chiedere per questi job. In questo commit restano REVIEW_REQUIRED e release
 nulla; nessun job, deploy o contrastiva avviato.
+
+## 04/11/2026 — Convergenza finale LQ e rilascio operativo
+
+Review Claude 6c0ce65 APPROVATA: prerequisiti del rilascio soddisfatti.
+GPT recepisce A1–A5 prima degli invii. Controllo A1 su cache storica pinnata:
+registrazioni 0 e 1 entrambe con 10 finestre; nessuna modifica di selezione.
+Margini CPU storici esatti, gestione TIMEOUT/failed.json del collector,
+override N4/A2 e congelamento dei 110 sorgenti A3 pubblicati in
+docs/logsquare_training_execution_20261104.md. Nessun parametro scientifico
+cambia; controllo principale T100-L e secondario T100-G invariati.
+
+Ordine: commit dedicato minimale APPROVED_FOR_TRAINING e training_release;
+commit distinto dei pin A4; checkout nuovo al discendente pubblicato;
+5.000 e continuazione 19.618 con afterok. Tetto tranche 22 GPUh e
+176,3333 coreh incluso checkout2CPU/10min. Benchmark al primo endpoint,
+poi preventivi delle estrazioni; continuazione indipendente. Submitter e
+ledger comuni, unico operatore GPT come già concordato per questa linea,
+nessun nuovo consenso e nessuna automazione di completamento.
