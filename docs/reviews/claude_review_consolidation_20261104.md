@@ -257,3 +257,73 @@ Convergenza raggiunta su continuazione, benchmark FT e regole di lettura: GPT pu
 comuni, nell'ordine fissato da Simone. Per i fit: `fits_status` a `claude_review_converged` dopo R-1 (una riga di piano, senza nuova
 rilettura se il diff e' solo quello), poi pin della ricevuta del benchmark, preventivo effettivo e modalita' per regime pubblicati, poi i
 fit. Valutazioni della matrice lunga e aggregatore OOF/IC: ancora da consegnare, non autorizzati. Nessun lancio da parte mia.
+
+---
+
+## Verifica dell'emendamento dei tempi del fine-tuning (GPT 2c2e857, diff 5b3ac37 → 2c2e857) — 04/11/2026, notte
+
+Richiesta: Simone con il prompt di GPT `docs/prompt_claude_ft_walltime_20261104.md` («Rivedi l'adeguamento operativo dei tempi del
+fine-tuning EPN [...] Restituisci il verdetto sull'emendamento e gli eventuali blocchi residui»). Solo verifica tecnica: ricetta e regole
+F-R2/V-R1 restano quelle convergenti in 0b2623a. Nessun job da parte mia.
+
+Fatti: benchmark FT-BENCH 63525812 COMPLETED 0:0 in 457 s (0,127 GPU-ore) sul checkout 17dd455; memoria entro i gate (CUDA riservata
+7,07 GB su 68,1; RSS proiettata 32,4 GiB su 100); secondi per update a regime 0,189 / 0,630 / 0,629 (frozen / finetune / scratch);
+proiezione prudenziale per un candidato 7.960 / 23.559 / 23.535 s, per due 14.667 / 45.864 / 45.817 s. Col limite originale di
+14.100 s: frozen split, finetune e scratch bloccati anche da soli. Autorizzazione di Simone citata alla lettera nel piano, in
+`decisioni.md` e nell'emendamento: «poi se devi alzare limiti di tempo vai tranquillo». Emendamento: frozen 4 h (gate 14.100 s),
+finetune e scratch 7 h (gate 24.900 s), 300 s di riserva; dose, batch, seme, griglie, inizializzazioni, selezione e held invariati.
+
+Metodo: checkout temporaneo detached di 2c2e857 (poi rimosso); letti emendamento, review del critico, `walltime_amendment_validation.json`,
+la cartella del benchmark (misure, report, lettura verificata, sacct, log SLURM), il piano FT, il diff di controller, launcher, test, piani,
+`decisioni.md`, protocollo e registro, piu' il diff intermedio 2dbd498 → 5b3ac37 (R-1 chiuso con `fit_output_root` sotto $WORK, quota
+pinnata col testo della mia lettura, stati convergenti, prima tranche sottomessa). Verifiche mie: **133 test passati in 90,01 s** (pacchetto e
+regressioni WSD/tokenizer, stesso comando delle riletture precedenti; i 44 mirati sono compresi); `bash -n` del launcher;
+`recipe_sha256` invariato e ricalcolato uguale; `source_identity()` del checkout uguale al nuovo hash dichiarato; hash dei tre file
+runtime uguali a quelli dichiarati; `finetuning.py` non toccato dal diff; `fit_resource_policy` → {14.100, 24.900, 24.900};
+`fit_packaging` coi numeri misurati e i limiti nuovi → split in tutti e tre i regimi; la vecchia ricevuta e' rifiutata da
+`benchmark_packaging` («benchmark provenance mismatch»); aritmetica dei costi: 24 candidati 122,34 GPU-ore di proiezione, tetto 24 job
+144 GPU-ore e 1.152 core-ore, joint ipotetico 72 GPU-ore; `continuation_plan.json` non cambia nel diff. Su Leonardo, in sola lettura
+(`~/wearusfm_local/logs/consolidation_jobs_20261104b.txt`): partizione `boost_usr_prod` MaxTime 1-00:00:00, QoS `normal` senza MaxWall,
+quindi 7 h e' ammesso; checkout 63525708 COMPLETED, 63525803/05/09 PENDING (Priority, Dependency), 63525812 COMPLETED 7:37.
+
+### Verdetto: APPROVATO, nessun blocco residuo
+
+1. Piano, controller e launcher coerenti: `fit_allocation_by_regime` 14.400 / 25.200 / 25.200 s = costanti del controller; policy per
+   regime nel piano = `FIT_PACKAGING_POLICY`; limiti = allocazione − 300 s; launcher con `TimeLimit` 04:00:00 per frozen e 07:00:00 per
+   finetune e scratch, regime sconosciuto rifiutato prima di qualsiasi setup (test); chiave legacy `fit_allocation_each_fold_regime`
+   rimossa e rifiutata se ricompare.
+2. Ricetta invariata: `recipe_identity` non include le allocazioni; hash identico a 0b2623a; `finetuning.py`, `run_candidate`,
+   `select_candidate`, `prior_candidate`, `SCRATCH_RULE` e il layout d'uscita non sono toccati; held predetto una volta, dopo la selezione.
+3. Policy nella ricevuta: il report del benchmark registra allocazioni, policy e limiti per regime e il `fit_packaging` calcolato con
+   quei limiti; `benchmark_packaging` ricontrolla provenienza, limiti, policy, ricalcolo del packaging dalle proiezioni e gate memoria;
+   `blocked` resta non eseguibile (nessun job se anche il singolo candidato supera il limite del suo regime).
+4. Vecchio benchmark conservato come `previous_benchmark_receipt` (SHA a5eada1a) e inutilizzabile per i fit: `source_sha256` diverso e
+   campi di policy assenti; `benchmark_receipt: null`, `status` e `fits_status` in `awaiting_claude_walltime_review`. Nessuna guardia
+   aggirata; il benchmark nuovo sul codice corretto e' obbligatorio.
+5. Costi: proiezione 122,34 GPU-ore con i margini pre-registrati (×1,5 sul training, validation e held addebitati come training,
+   +600 s); stima grezza senza margini ≈ 5.500 / 15.900 / 15.850 s per candidato, cioe' ≈ 83 GPU-ore attese; tetto allocato 144 GPU-ore
+   e 1.152 core-ore (8 job × 4 h + 16 × 7 h), alternativo ai 72 GPU-ore tutto joint, al posto dei 48/96 originali; benchmark nuovo ≤ 0,5
+   GPU-ore e checkout separato. La conseguenza sul tetto e' scritta in `decisioni.md` accanto all'autorizzazione.
+
+L'emendamento e' successivo al benchmark di risorse e precedente a qualunque score: cambia solo quanto tempo si alloca per eseguire la
+stessa ricetta, non la ricetta; e' dichiarato come tale, non come pre-registrato.
+
+### Note, nessuna obbligatoria
+
+- N-1 (operativo): il benchmark nuovo richiede un checkout di campagna separato dallo SHA emendato e una cartella `OUT` nuova (il
+  controller rifiuta una destinazione esistente); la ricevuta da pinnare deve avere `source_sha256` del codice emendato e i campi di
+  policy; prima del benchmark `status` a `claude_review_converged`, prima dei fit anche `fits_status`.
+- N-2 (economia, facoltativa): con frozen a 5 h (gate 17.700 s) la stessa regola darebbe joint (14.667 ≤ 17.700): 4 job invece di 8,
+  20 GPU-ore allocate invece di 32. Rientra nell'autorizzazione di Simone; se adottata va cambiata coerentemente in costanti, piano e
+  launcher prima del benchmark nuovo (che cambia comunque `source_identity`). Scelta del proprietario, non richiesta.
+- N-3: il tempo per update (0,63 s a batch 8 per 28 M parametri) e' il costo della ricetta congelata a batch piccolo; non si cambia ora.
+  Un eventuale protocollo futuro a batch maggiore sarebbe una ricetta nuova, da pre-registrare.
+- N-4: la continuazione (63525803 → 63525805 → 63525809, checkout 17dd455) e' indipendente e invariata; al momento della verifica era
+  in coda per priorita'.
+
+### Cosa autorizza questa verifica
+
+Convergenza sull'emendamento: GPT puo' portare gli stati a `claude_review_converged`, eseguire il benchmark nuovo sul checkout
+separato, pinnare la ricevuta e sottomettere i fit ammessi dai gate (joint o split per regime secondo la ricevuta nuova), via semplicione
+con submitter e ledger comuni, senza un'altra autorizzazione di Simone, come scritto nel prompt. Matrice lunga e aggregatore OOF/IC
+restano consegne separate, non autorizzate qui. Nessun lancio da parte mia.

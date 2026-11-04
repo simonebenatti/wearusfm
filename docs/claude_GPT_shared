@@ -5405,6 +5405,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Controllo in sola lettura su Leonardo alle 18:08 CET: nodo di login e `sinfo` rispondono (boost_usr_prod `up`), `squeue -u` vuoto; verso le
   17 la sottochat scaling aveva trovato `sacct` muto. Nessun job, nessuna modifica a file altrui, nessun messaggio alle sottochat.
 
+### 2026-11-04 | Claude | Verifica dell'emendamento dei tempi del fine-tuning EPN (GPT 2c2e857): APPROVATO, nessun blocco residuo (richiesta di Simone)
+- Simone, 04/11/2026, con il prompt di GPT `docs/prompt_claude_ft_walltime_20261104.md`: verifica tecnica del solo emendamento operativo
+  (diff 5b3ac37 → 2c2e857); ricetta e regole F-R2/V-R1 restano quelle convergenti in 0b2623a. Solo review, nessun job. Sezione «Verifica
+  dell'emendamento dei tempi» in `docs/reviews/claude_review_consolidation_20261104.md`; checkout temporaneo detached di 2c2e857, poi rimosso.
+- Fatti: FT-BENCH 63525812 COMPLETED 0:0 in 457 s, memoria entro i gate, 0,189 / 0,630 / 0,629 s per update (frozen / finetune / scratch),
+  un candidato 7.960 / 23.559 / 23.535 s con i margini pre-registrati: col limite originale di 14.100 s finetune e scratch bloccati anche da
+  soli. Autorizzazione di Simone citata alla lettera nel piano, in `decisioni.md` e nell'emendamento: «poi se devi alzare limiti di tempo vai
+  tranquillo». Emendamento: frozen 4 h / gate 14.100 s, finetune e scratch 7 h / gate 24.900 s, 300 s di riserva, 1 GPU / 8 CPU / 100 GiB.
+- Verificato: 133 test passati in 90,01 s; `bash -n`; `recipe_sha256` invariato; `source_identity()` del checkout uguale al nuovo hash;
+  `finetuning.py` non toccato; limiti per regime {14.100, 24.900, 24.900} da piano e costanti coerenti; launcher con TimeLimit 04:00:00 per
+  frozen e 07:00:00 per gli altri; `fit_packaging` coi numeri misurati e i limiti nuovi = split nei tre regimi; vecchia ricevuta conservata
+  come `previous_benchmark_receipt` e rifiutata dal gate («benchmark provenance mismatch»), `benchmark_receipt` nullo e stati in
+  `awaiting_claude_walltime_review`: benchmark nuovo obbligatorio, nessuna guardia aggirata; costi 122,34 GPU-ore di proiezione (≈ 83 senza
+  margini), tetto 144 GPU-ore / 1.152 core-ore alternativo ai 72 tutto joint; `continuation_plan.json` invariato. Su Leonardo in sola lettura:
+  `boost_usr_prod` MaxTime 24 h e QoS normal senza MaxWall (7 h ammesso); 63525803/05/09 PENDING, 63525812 COMPLETED.
+- Note facoltative: N-1 benchmark nuovo su checkout separato e cartella `OUT` nuova; N-2 frozen a 5 h darebbe joint con la stessa regola (4 job
+  invece di 8, 20 GPU-ore allocate invece di 32), scelta del proprietario; N-3 il costo per update e' quello della ricetta congelata a batch 8.
+- Cosa autorizza: convergenza sull'emendamento; GPT porta gli stati a `claude_review_converged`, esegue il benchmark nuovo, pinna la ricevuta e
+  sottomette i fit ammessi dai gate via semplicione, senza un'altra autorizzazione di Simone (come nel prompt). Matrice lunga e aggregatore
+  OOF/IC restano consegne separate. Nessun lancio da parte mia.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
