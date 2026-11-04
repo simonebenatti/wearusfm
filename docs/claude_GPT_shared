@@ -5537,6 +5537,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   B19618, registrato il 04/11). Facoltativi F-1…F-5 (inspection con inode/mtime, uguaglianza esatta fra nodi, pin vivi di S3 e readiness,
   manifest S5 legato ai byte del generatore, doppia lettura delle cache 300M): nessuno bloccante. Non attestata la readiness dei 5.000.
 
+### 2026-11-04 | Claude | Coordinamento: ramo comune portato in avanti a 2ad9df8 (review 5 della chat 1, a988a72) e specchietto aggiornato con i fit in esecuzione
+- Riga della chat 1 (`1- 30/300M`): review a988a72 dei lettori scaling, proiezioni S5, comparatore e collaudo S3 (GPT 0d5f0f9) APPROVATA senza
+  blocchi, ramo riallineato alla punta del comune con il merge 2ad9df8. Verificato prima di integrare: il comune (bffc44a) e' antenato di
+  2ad9df8, in diff solo `docs/reviews/claude_review_scaling_300m_readers_memory_20261104.md` (+246) e questo registro (+38, nessuna riga
+  tolta, ancora della sezione 2 unica). Avanzamento `--ff-only` del ramo comune a 2ad9df8, nessun merge nuovo.
+- Specchietto `docs/coordinamento_review_claude_20261104.md` riscritto alle 19:52 con la coda letta in sola lettura alle 19:50 CET
+  (`~/wearusfm_local/logs/leonardo_squeue_20261104_1955.txt`): FT-BENCH-v2 63527476 COMPLETED (7 min 30 s), 24 fit `FT-EPN-*` sottomessi da
+  GPT via semplicione (12 C0 RUNNING, 12 C1 PENDING per dipendenza), continuazione 63525803/05/09 PENDING, S3 63527446 PENDING, checkout
+  63527364 COMPLETED. Nessun job, nessuna modifica a file di GPT o a `main`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
