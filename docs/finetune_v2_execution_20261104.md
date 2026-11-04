@@ -1,0 +1,45 @@
+# Fine-tuning EPN — esecuzione dell'emendamento approvato
+
+Claude f70dc72 approva 2c2e857 senza residui, 133 test CPU passati. Frozen resta 4 h,
+FT/scratch 7 h; N-2 facoltativo non adottato. Nessun cambio di codice runtime,
+ricetta o benchmark rispetto alla versione revisionata; solo stati convergenti,
+nuovi percorsi operativi e successivo pin della ricevuta.
+
+Simone conferma: «qua semplicione non c'e piu, lanci sempre tu». Lanci diretti
+GPT, stesso submitter/ledger, nessun nuovo consenso. Nessun monitor automatico.
+
+## Benchmark nuovo
+
+Piano `results/infra/consolidation_20261104/ft_v2_launch_plan.json`.
+Nuovo ref/checkout `consolidation-ft-v2-20261104`, SHA pubblicato su origin e
+leonardo prima del checkout; completamento 0:0, SHA/pulizia/sola lettura verificati.
+OUT nuovo e persistente: WORK/wearusfm_runs/results/consolidation_20261104/
+finetuning/benchmark_v2. Stato del piano e fits_status convergenti; pin ancora nullo.
+
+| ID | Risorse | Durata massima | Tetto |
+|---|---|---|---|
+| FT-checkout-v2-20261104 | 1 CPU richiesta, 2 CPU prudenziali, 2 GiB | 10 min | 0 GPUh, 0,333333 coreh |
+| FT-BENCH-v2-20261104 | 1 GPU, 8 CPU, 100 GiB | 30 min | 0,5 GPUh, 4 coreh |
+
+Benchmark dipende afterok dal checkout. Source_identity deve coincidere con
+walltime_amendment_validation.json, ricetta 2ba1b7f invariata. Verificare report
+completo, SLURM 0:0, input/checkpoint/piano/SHA, policy/limiti, 32 update + 4 warm-up
+per regime, tempi finiti e gate memoria. Ricalcolo joint/split con benchmark_packaging.
+
+## Fit
+
+Solo dopo gate: pubblicare ricevuta con SHA, modalità per regime, tempi e tetti;
+nuovo checkout per il pin senza cambiare sorgenti. Quattro fold per regime,
+due candidati, 5 epoche, batch 8, seed 0. Layout WORK/finetuning/epn/foldN/regime/
+joint o candidate0/candidate1; nello split candidate1 dipende afterok da 0 e
+verifica ricevuta/pesi prima di selezionare sulla validation e predire held.
+
+Limiti frozen 14.100 s / 4 h, FT/scratch 24.900 s / 7 h, riserva 300 s. Policy invariata:
+joint se entra la coppia; altrimenti split se entra il singolo; altrimenti stop
+del regime. Tetto massimo 24 fit, 144 GPUh / 1.152 coreh, da ridurre se il nuovo
+benchmark consente joint. Non sottomettere candidati ai quali il gate dice blocked.
+Tutti gli ID prima degli invii nel piano misurato, submitter con prenotazione unica;
+nessun retry ambiguo. Riportare stato reale distinguendo completamento e coda.
+
+Continuazione 63525803 → 63525805 → 63525809 su 17dd455 intatta. Matrice lunga e
+aggregatore OOF/IC sono consegne separate; questo lancio non li dichiara pronti.

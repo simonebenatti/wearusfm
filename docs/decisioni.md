@@ -6213,3 +6213,17 @@ Nuovobenchmarkmax0,5GPUh/4coreh,checkoutseparato max0,333333coreh; dopo review
 Claude e pubblicazioneSHA,senza nuovo consenso per i limiti autorizzati.
 44test mirati passati;critico indipendente favorevole,44test ripassati in4,83s.
 Continuazione17dd455 e i suoi tre job restano invariati;nessunmonitor creato.
+
+### 04/11/2026 — Reviewf70dc72 convergente, nuovo benchmark e regola lanci
+
+Claude approva2c2e857 senzaresidui,133testCPU. StatiFT aclaude_review_converged,
+frozen4hconfermato(N2nonadottato),FT/scratch7h. Pubblicatoft_v2_launch_plan.json:
+checkoutFT-checkout-v2-20261104 separato,benchmarkFT-BENCH-v2-20261104 suOUTnuova
+WORK/finetuning/benchmark_v2. Tetto0,5GPUh e4,333333coreh incl.checkout.
+Dopo ricevuta/policy/provenienze eCOMPLETED0:0:pin epreventivo misurato prima dei
+fit. Nessunriuso delpinold,nessuna modificaalcheckouttraining17dd455.
+
+Alla richiesta della chatattuale di semplicione,Simone risponde: «qua semplicione
+non c'e piu, lanci sempre tu». Daora l'ownerGPT esegue direttamente tutti i lanci
+autorizzati tramite submitter/ledgercomuni;superata la delega obbligatoria,
+nessunconsenso ripetuto. CLAUDE.md aggiornato sulproprioramo. Nessunmonitor.

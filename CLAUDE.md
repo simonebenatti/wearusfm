@@ -4,7 +4,17 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
-### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
+### Lanci diretti GPT — istruzione successiva del 04/11/2026
+
+Simone: «qua semplicione non c'e piu, lanci sempre tu».
+**GPT esegue direttamente i lanci autorizzati**, usando sempre `scripts/submit_job.py`
+e il ledger comune. Questa istruzione sostituisce tutti i riferimenti alla delega
+obbligatoria a semplicione qui sotto e nei documenti storici. Non cercare di nuovo
+quella chat e non chiedere un secondo consenso per un piano già approvato.
+Restano review concordate, piani pubblicati, SHA verificati, un owner per linea,
+controllo dei duplicati e nessun retry cieco. Nessun monitor automatico implicito.
+
+### Sottomissioni affidate a semplicione — regola storica del 28/10/2026, superata il 04/11
 
 Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».
 **Da questa istruzione, le nuove sottomissioni su Leonardo passano dalla chat `semplicione`**, gia' esistente sul Mac

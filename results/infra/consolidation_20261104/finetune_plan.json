@@ -1,6 +1,6 @@
 {
   "protocol": "consolidation-finetune-epn-20261104-v1",
-  "status": "awaiting_claude_walltime_review",
+  "status": "claude_review_converged",
   "checkpoint": {
     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
     "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
@@ -39,14 +39,14 @@
   "fold_regime_jobs": 12,
   "fit_gpu_hours_cap": 144,
   "fit_allocated_core_hours_cap": 1152,
-  "gate": "New benchmark on corrected source required; per-regime joint/split limits 14100/24900/24900s and memory<=85%; walltime amendment review required.",
+  "gate": "Converged amendment; new benchmark on corrected source required; per-regime joint/split limits14100/24900/24900s and memory<=85%.",
   "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
   "head_lr_multiplier": {
     "frozen": 1,
     "finetune": 100,
     "scratch": 10
   },
-  "fits_status": "awaiting_claude_walltime_review",
+  "fits_status": "claude_review_converged",
   "fit_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
   "scratch_learning_rule": {
     "folds": 4,
@@ -79,11 +79,11 @@
   "fit_gpu_hours_cap_fallback": 144,
   "max_candidate_jobs": 24,
   "review": {
-    "commit": "0b2623a12e1b4e597974d97ef0ad67a8b4c468e1",
+    "commit": "f70dc72a1b219bd41168ea0de6c7fe5265c824d3",
     "path": "docs/reviews/claude_review_consolidation_20261104.md",
     "benchmark": "approved and converged; benchmark OUT must be WORK",
     "fits": "approved and converged after R-1 output root corrected to WORK; benchmark gate still mandatory",
-    "walltime_amendment": "pending Claude; Simone authorizes increasing limits, 04/11; no change to scientific recipe"
+    "walltime_amendment": "approved without blocking remarks, f70dc72; frozen remains4h; new benchmark required"
   },
   "previous_benchmark_receipt": {
     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark/report.json",
