@@ -6109,6 +6109,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `bacdd054…`, cinque pin di evidenza corretti; 82 job, 4 checkout, endpoint e tetti identici a `e2f19ee`; `validate_plan` rifiuta
   ancora. Test: 252 passati.
 
+### 2026-11-05 | Claude | Coordinamento: stato delle tre linee alle 21:00, review 8 della chat 1 integrata (4e6542f), quota letta alle 20:58
+- Richiesta di Simone: «status, aggiorna la tabella». Sola lettura su Leonardo (`squeue --me`, `sacct -X` dalle 19:00, `lfs quota`;
+  `~/wearusfm_local/logs/leonardo_stato_20261105_2057.txt` e `leonardo_quota_20261105_2058.txt`). Nessun job, nessuna review nuova mia.
+- **Integrazione:** review 8 della chat 1 nel comune per avanzamento semplice a 4e6542f dopo verifica (comune 44cfa85 antenato, due
+  file, registro +36 senza righe tolte, ancora della sezione 2 unica).
+- **Linea 1, scaling:** dispatcher del recupero approvato dalla review 8 con una correzione ai comandi d'invio; GPT l'ha applicata
+  (5275b0d) e ha lanciato il recupero EPN612 63620780, RUNNING dalle 20:26:23 su `login08`, limite 2 h. UCI dopo l'accettazione di
+  EPN612; nessun fit prima dei 15 report e del piano misurato.
+- **Linea 2, consolidamento:** EPN15 con gli otto fit frozen COMPLETED 0:0, otto fit finetune e scratch C0 RUNNING da 7 h 43–7 h 55,
+  otto C1 in attesa. Valutazione lunga: terza lettura della chat 2 consegnata alle 20:59 (24860d7), convergenza su codice e piano, R-1b
+  chiuso. Il lancio resta fermo su C-1: la mia lettura delle 20:58 da' 33,13 GiB liberi, quella della chat 2 delle 20:55 da' 33,136,
+  contro i 33,724 richiesti; mancano circa 0,59 GiB e aspettare non basta. Decisione di Simone: liberare spazio o cambiare il margine.
+- **Linea 3, log-quadratico:** R-1 chiuso dalla chat 3 (158b784). Estrazione della posa a 5.000 63615952 COMPLETED 0:0 in 31 min 06 s.
+  Continuazione 63593128 in coda per priorita' dalle 16:37. GPT riporta che Simone ha rinviato le letture scientifiche alla fine.
+- Specchietto aggiornato nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
