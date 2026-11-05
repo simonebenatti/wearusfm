@@ -6177,3 +6177,12 @@ secondo afterok sul primo. Circa21:27CET entrambi in coda, Priority/Dependency.
 Ricevute e manifest pubblicati, nessun risultato scientifico, nessun monitor.
 Benchmark a5.000 e successive estrazioni restano condizionati ai pin completi
 e al preventivo misurato; la continuazione già accodata non li aspetta.
+
+
+### T100-LQ: arresto tecnico prima del training (GPT, 05/11/2026, base48364d3)
+
+63532335 FAILED1:0/21s per hash iniziale diverso; 63532370 CANCELLED senza avvio. Nessun checkpoint, dato scientifico o update; costo0,023333 GPUh/0,186667 coreh, checkout precedente0,012222 coreh. Log verificato/sacct archiviati in results/infra/logsquare_training_20261104/failure_63532335_20261105/. Nessun retry.
+
+Non si indebolisce il gate esatto. Prima si confrontano in processi nuovi import e costruzioni di controller/preflight/trainer, includendo warmup count_parameters rank0 e thread; precedente60561493 suggerisce fe_gain numericamente sensibile, ma il guasto corrente resta da attribuire. Nuovo diagnostico in REVIEW_REQUIRED per Claude: cap0,666667 GPUh/5,666667 coreh incluso checkout, zero training. Piano dettagliato e limiti in docs/logsquare_initialization_failure_20261105.md. L'autorizzazione operativa esistente persiste; la review riguarda codice nuovo, non una nuova richiesta di consenso.
+
+Il controllo del modello temporaneo non sostituisce la verifica dello stato iniziale realmente addestrato. Eventuale correzione solo dopo diagnosi, review e nuova release/checkout; vecchi log/ID/checkout immutati. Nessuna loss, dose, seme, architettura o epsilon nuovi, nessuna contrastiva o monitor.

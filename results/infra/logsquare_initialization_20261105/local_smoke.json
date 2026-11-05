@@ -1,0 +1,94 @@
+{
+  "platform": "local Mac CPU only",
+  "cuda_tested": false,
+  "code_identity_check": "bypassed only for this explicitly local uncommitted smoke; all102source and provenance pins validated",
+  "production_plan_status": "REVIEW_REQUIRED unchanged",
+  "real_models_in_fresh_processes": true,
+  "variants": {
+    "controller": {
+      "variant": "controller",
+      "construction_order": [
+        "T100-LQ",
+        "T100-L"
+      ],
+      "warmups": 0,
+      "paired": true,
+      "classification": {
+        "T100-LQ": "difference_not_explained_by_gain_alone",
+        "T100-L": "difference_not_explained_by_gain_alone"
+      },
+      "gain": {
+        "T100-LQ": 548.6939187567017,
+        "T100-L": 548.6939187567017
+      }
+    },
+    "preflight": {
+      "variant": "preflight",
+      "construction_order": [
+        "T100-L",
+        "T100-LQ"
+      ],
+      "warmups": 0,
+      "paired": true,
+      "classification": {
+        "T100-L": "difference_not_explained_by_gain_alone",
+        "T100-LQ": "difference_not_explained_by_gain_alone"
+      },
+      "gain": {
+        "T100-L": 548.6939187567017,
+        "T100-LQ": 548.6939187567017
+      }
+    },
+    "trainer": {
+      "variant": "trainer",
+      "construction_order": [
+        "T100-LQ",
+        "T100-L"
+      ],
+      "warmups": 0,
+      "paired": true,
+      "classification": {
+        "T100-LQ": "difference_not_explained_by_gain_alone",
+        "T100-L": "difference_not_explained_by_gain_alone"
+      },
+      "gain": {
+        "T100-LQ": 548.6939187567017,
+        "T100-L": 548.6939187567017
+      }
+    },
+    "trainer_rank0": {
+      "variant": "trainer_rank0",
+      "construction_order": [
+        "T100-LQ",
+        "T100-L"
+      ],
+      "warmups": 1,
+      "paired": true,
+      "classification": {
+        "T100-LQ": "difference_not_explained_by_gain_alone",
+        "T100-L": "difference_not_explained_by_gain_alone"
+      },
+      "gain": {
+        "T100-LQ": 548.6939187567017,
+        "T100-L": 548.6939187567017
+      }
+    },
+    "controller_threads1": {
+      "variant": "controller_threads1",
+      "construction_order": [
+        "T100-LQ",
+        "T100-L"
+      ],
+      "warmups": 0,
+      "paired": true,
+      "classification": {
+        "T100-LQ": "difference_not_explained_by_gain_alone",
+        "T100-L": "difference_not_explained_by_gain_alone"
+      },
+      "gain": {
+        "T100-LQ": 548.6939187567017,
+        "T100-L": 548.6939187567017
+      }
+    }
+  }
+}

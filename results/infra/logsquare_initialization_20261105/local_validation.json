@@ -1,0 +1,12 @@
+{
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_logsquare_initialization_diagnostic.py tests/cpu/test_logsquare_train.py",
+  "passed": 56,
+  "elapsed_seconds": 4.55,
+  "scientific_sources_102_unchanged": true,
+  "original_controller_release_hashes_match": true,
+  "original_training_plan_release_unchanged": true,
+  "launcher_bash_n": "passed",
+  "cuda_tested": false,
+  "diagnostic_status": "REVIEW_REQUIRED",
+  "internal_critic": "APPROVED for Claude diagnostic review; first model order, rank0warmup, deferred introspection checked; no training release"
+}

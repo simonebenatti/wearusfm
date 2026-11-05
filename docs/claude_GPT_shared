@@ -178,6 +178,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026: T100-LQ fermo prima del training; diagnosi proposta (base 48364d3)
+
+Raccolti log integrale/hash/sacct e percorsi: 63532335 FAILED1:0 in21s, 63532370 CANCELLED senza avvio; nessun run/receipt/checkpoint. Checkout b2934b0 pulito, nessun aggiornamento di pesi. Costo0,023333 GPUh/0,186667 coreh. Aggiornato launch_manifest; evidenze in results/infra/logsquare_training_20261104/failure_63532335_20261105/.
+
+Preparata diagnostica isolata di import/costruzione per controller, preflight, trainer e rank0, più thread espliciti. Nuovo piano REVIEW_REQUIRED e prompt per Claude; niente job o monitor. Massimo0,666667 GPUh/5,666667 coreh incluso checkout; vecchi controller/ricetta/pin di training invariati. docs/logsquare_initialization_failure_20261105.md descrive provenienza, limiti e seguito.
+
+
 ### GPT — 04/11/2026: T100-LQ 5.000 e continuazione sottomessi
 
 Release7954692; SHA esecutivo b2934b07f296778eefe97d4bdb8ca08f2b4e29be
@@ -5562,6 +5569,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: hash iniziale LQ diverso, causa da isolare (base 48364d3)
+
+verify_initialization fallisce prima di torchrun; l'errore non stampa hash osservato/gain, quindi causa NON ancora provata. Precedente cluster60561493: ordine import→pochi ULP del bufferfe_gain. Qui import diversi sono una pista, non una conclusione; nessuna correzione dei thread o tolleranza alla cieca. Critico: replicare ordine prima costruzione e count_parameters del rank0, evitare introspezione Torch prima del costruttore. Il diagnostico non riproduce DDP/optimizer/teacher e non autorizza training. Correggere solo il modello temporaneo dell'audit non garantirebbe lo stato usato dal trainer: verifica necessaria prima di qualunque release nuova. Consegna da rivedere da Claude; nessun nuovo consenso operativo richiesto a Simone.
+
 
 ### GPT — 04/11/2026: invii LQ regolari, distinzione fra sandbox e job
 

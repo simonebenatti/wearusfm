@@ -18,7 +18,7 @@
   "background_monitoring": false,
   "benchmark_waits_for_5000": true,
   "continuation_waits_for_benchmark": false,
-  "phase": "training_chain_submitted",
+  "phase": "failed_before_training_diagnostic_review_pending",
   "checkout_state": "COMPLETED 0:0",
   "checkout_elapsed_seconds": 22,
   "checkout_actual_core_hours": 0.012222222222222223,
@@ -30,5 +30,13 @@
   "continuation_afterok_job": 63532335,
   "training_not_yet_running": true,
   "benchmark_submitted": false,
-  "extractions_submitted": false
+  "extractions_submitted": false,
+  "training_started": false,
+  "latest_states": {
+    "63532335": "FAILED 1:0",
+    "63532370": "CANCELLED 0:0; never started"
+  },
+  "failure_evidence": "results/infra/logsquare_training_20261104/failure_63532335_20261105/summary.json",
+  "training_actual_gpu_hours": 0.023333333333333334,
+  "training_actual_core_hours": 0.18666666666666668
 }

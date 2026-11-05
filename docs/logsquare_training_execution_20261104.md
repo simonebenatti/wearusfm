@@ -1,5 +1,10 @@
 # T100-LQ: rilascio e training dopo review 6c0ce65
 
+**Aggiornamento05/11:** 63532335 FAILED1:0 prima del training (21s);
+63532370 CANCELLED senza avvio. Nessun checkpoint. I dettagli sotto sugli
+invii04/11 sono storici. Diagnosi proposta e seguito in
+`docs/logsquare_initialization_failure_20261105.md`; nessun rilancio.
+
 Claude approva gli adattatori di c8f5c12, i gate di risorse e i prerequisiti
 per il rilascio. Review archiviata testualmente in
 `docs/reviews/claude_review_tokenizer_logsquare_adapters_20261104.md`.

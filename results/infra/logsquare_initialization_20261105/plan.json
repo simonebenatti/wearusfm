@@ -1,0 +1,41 @@
+{
+  "protocol": "logsquare-initialization-diagnostic-20261105-v1",
+  "status": "REVIEW_REQUIRED",
+  "training_plan": {
+    "path": "results/infra/logsquare_training_20261104/training_plan.json",
+    "sha256": "07a7531fdd4ab3f4a9be2b6900c4c3464fe61329ab5e75e890637a936dcd804c",
+    "bytes": 19803
+  },
+  "preflight_report": {
+    "path": "results/infra/logsquare_execution_20261104/report.json.gz",
+    "sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
+    "bytes": 593778
+  },
+  "candidate_config": {
+    "path": "results/infra/logsquare_review_20261104/config_T100-LQ.json",
+    "sha256": "76152dcd966b5e49578dd95de57f0a3637dc854c6470a6dce4fc72485b2be3a2",
+    "bytes": 3668
+  },
+  "comparison": {
+    "path": "results/infra/tokenizer_review_20261103/comparison_configurations.json",
+    "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
+    "bytes": 8792
+  },
+  "variants": [
+    "controller",
+    "preflight",
+    "trainer",
+    "trainer_rank0",
+    "controller_threads1"
+  ],
+  "cuda_required": true,
+  "child_timeout_seconds": 90,
+  "expected_scientific_sources": 102,
+  "failed_training_code_sha": "b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
+  "failed_job": 63532335,
+  "cancelled_continuation_job": 63532370,
+  "training_authorized_by_report": false,
+  "background_monitoring": false,
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_initialization_20261105/diagnostic",
+  "interpretation": "Descriptive only. No hash relaxation, new reference hash, model mutation or training restart. A recovered hash after replacing only a cloned gain diagnoses sufficiency of that scalar, never corrects the actual model."
+}
