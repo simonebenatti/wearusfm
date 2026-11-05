@@ -81,3 +81,10 @@ La verifica iniziale sopra e' storica: stato e confronto dei rami aggiornati in
 [Audit di allineamento GPT / Claude](reviews/allineamento_gpt_claude_20261105.md).
 Su conferma diretta di Simone, main `7616f33` assegna formalmente a GPT sia sottomissioni sia controllo operativo dei log,
 un owner per linea; semplicione non e' piu' operativo. Nessun cambiamento ai checkout congelati o alle review richieste.
+
+### Seguito serale del 05/11
+
+Audit Claude ef0d987 e stato19:03 recepiti in [seguito](reviews/seguito_audit_claude_20261105.md).
+Chat1: stop scalingCPU dopoTIMEOUT; diagnosi/promptClaude03cbd18, nessun recupero lanciato sotto il piano fallito.
+Chat2: EPN15in corso; valutazione lungo implementata e consegnata per reviewClaude a6f5d909.
+Chat3: LQ5000completo,19618Priority. D-5 corretto nel solo test a d2f2f08 (15verdi), integrazione main ancora distinta.

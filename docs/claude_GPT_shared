@@ -5440,6 +5440,19 @@ Nessun nuovo job100/300M o cambiamento della campagna in corso.
   conservata testualmente. GPT sottomette e controlla stato/log, un owner per linea; chiuse N-2 e N-3 sull'operatore.
 - Nessun job o deploy; nessuna modifica alle cartelle delle linee o di Claude. Nessun merge dei rami sperimentali.
 
+### 2026-11-05 | GPT coordinamento | Seguito audit Claude ef0d987, stop scaling e correzione del test B19618
+
+- Accolto l'audit Claude, acquisito testualmente da ef0d987 in `docs/coordinamento_allineamento_claude_gpt_20261105.md`.
+  Rilettura indipendente SLURM19:03: scaling63593508 TIMEOUT, LQ5000 completo, continuazione Priority, EPN15 incompleto.
+- Avvisata la chat1 dello stop. L'owner ha pubblicato diagnosi/consuntivo/prompt di recupero a03cbd18; nessun rilancio da coordinamento.
+  Benchmark fallito e nuovo preventivo richiedono emendamento e review, senza attribuire al300M un esito scientifico.
+- D-5 riprodotto: il test usava runtime attuale invece di24139ab imposto dal launcher. Correzione solo-test d2f2f08:
+  isolamento del runtime storico e regressione del confine fra schema attuale e guard congelato.15test passati in3,40s.
+  Test/launcher originali sulruntime congelato14verdi; non e' invalidata la campagna storica B19618.
+- Dettagli e punti D-1/D-2/D-6 ancora aperti in `docs/reviews/seguito_audit_claude_20261105.md`.
+  Pacchetto lungo della chat2 ora implementato e consegnato aClaude a6f5d909; ancora nessun lancio di quella valutazione.
+  Nessun merge su main, deploy o modifica ai worktree/checkout delle altre linee in questa consegna.
+
 ## 2) Problemi trovati
 
 ### 2026-11-04 | GPT coordinamento | Agenti ereditati e integrazione
@@ -7922,3 +7935,14 @@ la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
   ma GPT ha chiuso R-TIMEOUT a 1dc6ded e registrato il job 63591184 a 4f8291a. Nessun training LQ autorizzato da quel diagnostico.
 - Reviewer sul worktree comune Claude: mantenere un writer per volta. Nessuna perdita di commit osservata;
   non si confonde l'identita' del documento di review con l'approvazione delle consegne successive.
+
+### 2026-11-05 | GPT coordinamento | D-5 riconosciuto; audit precedente non era una verifica della suite
+
+- c77d133 non aveva eseguito il file test_pose_b19618_launcher: la separazione del codice fra rami non dimostrava suite verde.
+  Il rilievo Claude era concreto e mancava una mia voce. Origine c052792, non l'ultimo autore84408bf.
+- Non allentata check_recipe per ignorare campi nuovi: si testa il codice realmente imposto da CODE_SHA24139ab.
+  Patch d2f2f08 separata per adozione nei rami di sviluppo prima dell'integrazione; checkout attivi immutabili.
+  Verifica su copie scratch delle tre linee (6f5d909/03cbd18/cc81430):15test verdi in ciascuna, senza edit dei worktree.
+- D-1/D-2 restano integrazione dedicata, inclusa l'unione testuale delle voci Claude e delle60righe di decisioni.
+  D-6: MONALISA usa lo stesso account ma non e' il ledger WearUsFM; tenerne separata la contabilita' di campagna
+  e includerla nel consumo complessivo dell'account. Nessuna cancellazione/attribuzione automatica del suo budget.

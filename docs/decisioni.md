@@ -6054,3 +6054,17 @@ Su richiesta di Simone verificati rami, origin, review Claude e ledger comune; d
 su main e aggiornamento degli snapshot. Main `7616f33` recepisce la conferma «Sì, sottomette GPT» e
 «semplici9one non c'e piu» (fonte Claude 3099836 e messaggio diretto di Simone): GPT sottomette e controlla i log,
 un owner per linea. Invariati budget, criteri, review, submitter/ledger e approvazioni. Nessun job, deploy o merge scientifico.
+
+### 2026-11-05 — Seguito audit Claude, stop CPU scaling e test del runtime congelato B19618
+
+Audit Claude ef0d987 accolto, copia testuale acquisita sul ramo di coordinamento. ConfermaSLURM19:03:
+63593508TIMEOUT,63593091COMPLETED,63593128Priority; EPN15ancora incompleto. Chat1 fermata secondo76a3126:
+nessun nuovo invio sotto il piano fallito, diagnosi/consuntivo/prompt recupero pubblicati dall'owner a03cbd18.
+Qualunque recupero richiede emendamento esplicito e reviewClaude; nessun nuovo esperimento o retry da coordinamento.
+
+D-5 riprodotto e corretto in d2f2f08, SOLO test: il launcher B19618 impone24139ab, mentre il test leggeva il
+trainer/schema attuale introdotto da c052792. Il test ora importa24139ab in subprocess isolato e mantiene la
+verifica rigorosa; regressione aggiuntiva su default neutri/rifiuto schema diverso.15test passati in3,40s.
+Launcher, trainer e checkpoint storici intatti. Patch da integrare prima del merge delle campagne su main.
+D-1/D-2 (main e unione dei registri/decisioni) restano aperti; i job MONALISA restano distinguibili dal budget
+WearUsFM ma consumano la quota complessiva dello stesso account, senza cancellazioni o ripartizioni automatiche.
