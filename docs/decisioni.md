@@ -6204,3 +6204,16 @@ Il wrapper ripete i guard integrali prima di torchrun: accettazione SLURM non
 equivale alla loro esecuzione. Ricevute pubblicate in scientific5000_submission_receipts.
 Nessun resume S3, nessun monitor, nessuna continuazione a 19.618. Dopo checkpoint
 completo si verificano dose, ricevute e hash prima delle cinque estrazioni previste.
+
+### 05/11/2026 — GPT: 300M a 5.000 concluso e verificato; rilascio delle cinque estrazioni
+
+63532932 COMPLETED 0:0, 07:16:12–11:22:13 CET, 14.761 s; consuntivo 16,401111 GPU-ore
+e 131,208889 core-ore contro tetti 22/176. Il log certifica termine max_steps a 5.000,
+quattro rank, batch globale 32, accum 1; riepilogo memoria 37,751831 GiB.
+Quattro ricevute raccolte, 13 hash riconciliati; audit dei log conferma 160.000
+finestre, passi/LR/cadenze regolari. Accesso SSH intermittente poi ripristinato;
+nessuna modifica ai sorgenti congelati. Review indipendente APPROVATO su prove
+e piano estrazioni SHA8b358951. Cinque celle già previste, 8,25 GPU-ore/66 core-ore
+associate alle GPU; checkout0,333333 core-ore nell'inviluppo CPU180. Pubblicare
+pin e comandi esatti prima dell'invio, via submitter/ledger. Nessun nuovo consenso,
+monitor o seguito a19.618. La lettura scientifica resta successiva ai fit CPU.

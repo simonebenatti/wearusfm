@@ -108,3 +108,16 @@ Il prossimo passaggio richiede checkpoint completo, ricevute e dose verificati;
 solo allora si fissano i pin reali per le cinque estrazioni pianificate.
 Nessun risultato scientifico del 300M ancora disponibile. Nessun monitor in
 background e nessuna continuazione automatica a 19.618.
+
+## Aggiornamento 5 novembre 2026 — training concluso
+
+**63532932 COMPLETED 0:0**, dalle 07:16:12 alle 11:22:13 CET. Durata SLURM 4h06m01;
+consuntivo **16,401111 GPU-ore e 131,208889 core-ore**. Il log finale riporta 5.000
+update e 292.054.847 parametri, quattro rank e batch globale 32, accum 1, prefetch.
+Memoria massima nel riepilogo 37,751831 GiB. Le quattro ricevute sono presenti,
+così come checkpoint nominato e finale. Raccolte quattro copie esatte e verificati
+13 hash remoti, inclusi i due checkpoint 300M e il controllo 30M. Audit dei log:
+5.000 passi contigui, 160.000 finestre, LR e cadenze regolari. Review indipendente
+APPROVATO sul completamento e sul piano di estrazione con pin reali.
+Il rilascio successivo è documentato in
+`docs/scaling_300m_extractions_execution_20261105.md`. Il training non va ripetuto.

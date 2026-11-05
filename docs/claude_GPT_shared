@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT scaling | Training 63532932 concluso e verificato; cinque estrazioni pronte
+
+Verificati sacct, log e directory: COMPLETED 0:0, dalle 07:16:12 alle 11:22:13 CET,
+14.761 s su 4 GPU / 32 CPU: **16,401111 GPU-ore e 131,208889 core-ore**, entro 22/176.
+Il log finale riporta max_steps, 5.000 update, 292.054.847 parametri, quattro rank,
+batch per processo 8, accum 1, prefetch; memoria massima riepilogata 37,751831 GiB.
+Ricevute launch/config/summary/receipt presenti e due checkpoint da 4.673.783.740 byte.
+Raccolte quattro copie esatte, 13 hash remoti riconciliati, checkpoint 300M37279995
+e controllo 30M49dd518b confermati. Audit dei log: 5.000 update contigui, 160.000
+finestre, LR/cadenze/finitezza corretti. Piani e software delle cinque estrazioni
+riesaminati in parallelo: 132 sorgenti/test/launcher coerenti, nessun cambio di
+ricetta. Review indipendente APPROVATO, piano estrazioni SHA8b358951 con pin reali.
+Tetto già fissato 8,25 GPU-ore/66 core-ore GPU, checkout0,333333 core-ore dentro
+l'inviluppo CPU180. Questa voce precede gli invii. Stato e prove in
+`results/infra/scaling_300m_20261104/scientific5000_completion_20261105/`.
+
 ### 2026-11-04 | GPT scaling | Training 300M a 5.000 sottomesso: 63532932
 
 Codice congelato dc96559405b5fff971a3be06a6ca59c992d342dc; piano e gate pubblicati
@@ -5619,6 +5635,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT scaling | Accesso SSH ripristinato; limiti della verifica post-training
+
+Dopo sacct/log/listing riusciti, raccolta rallentata da timeout e chiusure SSH,
+poi completata. Corretto soltanto il comando locale di raccolta per Python3.6
+del login (universal_newlines al posto di text); nessun codice scientifico cambiato.
+Le copie attestano le ricevute e gli hash, non ricaricano i checkpoint sul Mac.
+Il producer li ha verificati e gli estrattori ripetono i guard sul compute.
+Nessun risultato sul trasferimento disponibile; nessuna nuova soglia sulla loss.
+Pip freeze assente anche nello storico: confrontati Python/Torch/CUDA e moduli,
+non dichiarata identità dell'intero ambiente. Nessun monitor o seguito a19.618.
 
 ### 2026-11-04 | GPT scaling | Stato iniziale del training 63532932 e verifiche residue
 
