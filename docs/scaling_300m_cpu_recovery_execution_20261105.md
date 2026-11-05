@@ -120,3 +120,24 @@ EPN612 **63620780**, sottomesso20:22:50; snapshot20:23:27 **PENDING(Resources)**
 8CPU/30GiB/2h, zeroGPU. Ricevuta comune e hashdispatcher verificati, log ancora
 assente perché il job non è iniziato. UCI non ancora sottomesso: resta il gate
 sull'esitoEPN. Nessuna duplicazione, fit o automazione.
+
+### 05/11/2026 — GPT scaling: EPN recuperato e accettato, UCI pronto
+
+Job63620780 COMPLETED0:0 alle21:13:23:2820s,8CPU=6,266667coreh,
+MaxRSS4,065578GiB. SeiC convergenti, nessun warning/limite; C1008933iter.
+Report4b52dc33, audit, log, sacct-P originale e accounting hash-bound raccolti in
+cpu_recovery_20261105/epn612_completed. Piano/code/ricetta/runtime1ac848 invariati;
+primi5fit identici al parziale eccetto tempi, supporto e ruoli uguali alle altre viste.
+Ricevuta dispatcher c2bd verificata; audit offline riproducibile e controllo
+indipendente del critico concordi. Matrice14/15, CPU cumulativa28,294444/310.
+Simone conferma di verificare EPN e avviare UCI senza nuovo consenso. Dopo questo
+commit/push verificato si invia il solo UCI con argv5275b0d,8CPU/30GiB/10min.
+
+### 05/11/2026 — GPT scaling: il recupero EPN chiude il report mancante, non la valutazione
+
+Nessun nuovo gate fallito. Il TIMEOUT originale resta registrato; il suo parziale
+non sostituisce il nuovo report completo. Questi benchmark misurano risorse e
+convergenza sul train: nessun punteggio downstream disponibile e nessun verdetto
+30M/300M. Restano UCI e il piano completo dei fit entro240coreh/15shard/3h.
+Le cache remote non sono rilette da questo audit offline; valgono i controlli
+precedenti di estrazione/validazione. Nessun training o estensione19.618.

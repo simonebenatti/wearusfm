@@ -15,7 +15,7 @@
   "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Read EPN result and accounting; require complete report and receipt dispatcher pin; submit UCI only after EPN acceptance. No blind retry. Then full measured fit plan.",
+  "next": "Submit exact published UCI recovery argv after publication of EPN acceptance. Then complete measured fit plan from all15 accepted reports.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -78,8 +78,8 @@
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 22.027777777777782,
-  "last_checked_at": "2026-11-05T20:41:06+01:00",
+  "cpu_actual_core_hours_completed_so_far": 28.294444444444444,
+  "last_checked_at": "2026-11-05T21:29:55.158909",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,13 +87,13 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "RECOVERY_EPN_RUNNING",
-  "classification_benchmark_reports_complete": 13,
+  "status": "RECOVERY_EPN_ACCEPTED_UCI_READY",
+  "classification_benchmark_reports_complete": 14,
   "classification_benchmark_reports_expected": 15,
-  "completed_benchmark_fits_converged": 83,
+  "completed_benchmark_fits_converged": 89,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
   "fit_cap_core_hours": 240,
-  "active_jobs_in_this_cpu_chain": 1,
+  "active_jobs_in_this_cpu_chain": 0,
   "pose_ridge_blocked_by_chain_stop": true,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
@@ -122,11 +122,17 @@
       "dispatcher_receipt_hash_verified": true,
       "requested_core_hours": 16,
       "budget_core_hours_with_overtime": 16.4,
-      "slurm_state": "RUNNING",
+      "slurm_state": "COMPLETED",
       "started_at": "2026-11-05T20:26:23+01:00",
-      "elapsed_seconds_observed": 884
+      "elapsed_seconds_observed": 884,
+      "exit_code": "0:0",
+      "ended_at": "2026-11-05T21:13:23+01:00",
+      "elapsed_seconds": 2820,
+      "actual_core_hours": 6.266666666666667,
+      "accepted": true,
+      "acceptance_path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/acceptance.json"
     }
   ],
-  "recovery_running_jobs": 1,
+  "recovery_running_jobs": 0,
   "recovery_pending_jobs": 0
 }

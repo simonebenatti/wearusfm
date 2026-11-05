@@ -2,7 +2,7 @@
   "protocol": "scaling-benchmark-reuse-20261105-v1",
   "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
   "matrix_complete": false,
-  "known_complete_reports": 13,
+  "known_complete_reports": 14,
   "expected_reports": 15,
   "reports": [
     {
@@ -589,10 +589,58 @@
       "parent_success_required": true,
       "timeout_parent_not_promoted_to_success": false,
       "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "epn612",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-epn612-20261105/epn612/benchmark.json",
+        "bytes": 12114,
+        "sha256": "4b52dc330b1d91cec3abf37e19f616e7669559ba52a5c2776c513c0ae29bdc51"
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/benchmark.json",
+        "sha256": "4b52dc330b1d91cec3abf37e19f616e7669559ba52a5c2776c513c0ae29bdc51",
+        "bytes": 12114
+      },
+      "parent_job": 63620780,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/accounting.json",
+        "sha256": "5dca61f6640ed36e1bdda28e423e89dfca1091a2cc09696a1e56b33881e6062b",
+        "bytes": 686
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/sacct.txt",
+        "sha256": "4869d3820d62fa3826eb263c2313f40ce59e58bb00b5ff9ed65eb3a7478654f6",
+        "bytes": 575
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/submissions/SCALING-probe-recover-epn612-20261105.json",
+        "sha256": "275750dacbcb7cfefaa7cc640ce8690985f65c91b9da023ce34a65a7bf2564b3",
+        "bytes": 1913
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/scaling_readers_recovery_63620780.out",
+          "sha256": "58cb28300acb2de954d8c5fec80b4d9d706489ad851fff99517269e1db6a5c0c",
+          "bytes": 1149
+        },
+        "line": 13,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-epn612-20261105/epn612\"}"
+      },
+      "parent_success_required": true,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "acceptance": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/acceptance.json",
+        "sha256": "e1346f18753d01bca7f03b39eb08aa2377e67c246d3d4fc59a917bbb624d2848",
+        "bytes": 2143
+      },
+      "accepted_under_claude_review8": true
     }
   ],
   "missing": [
-    "T100-G-300M-natural/epn612",
     "T100-G-300M-natural/uci_emg"
   ],
   "new_report_acceptance": [
