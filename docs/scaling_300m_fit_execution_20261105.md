@@ -68,3 +68,21 @@ corretto nel piano prima del commit ec221a6 e di ogni invio; nessunjob coinvolto
 Rieseguito parsing reale dei15comandi e controllati pin/risorse/copertura. Nessun
 blocco residuo al rilascio. Le verifiche live dei lettori restano attive; afterok
 arresta i successivi su errore ma non sostituisce la lettura prima delle nuove tranche.
+
+### 05/11/2026 — GPT scaling: fit avviati, prima tranche di10job
+
+Dopo9e1e24e pubblicato e SHAorigin verificato, sottomessi tramite submitter comune
+ridge63626871 e9sonde63626931/63626956/63626966/63626971/63626975/63626978/
+63627028/63627047/63627052. Ricevute copiate e pin/argv verificati; coda e stati
+precedenti controllati prima di ogni invio. Alle21:48:58 ridgeRUNNING dal21:47:31,
+9fitPENDINGDependency, catenaafterok corretta. Altri5fit10..14 ancora non inviati
+per il cap10sottomessi seriali. Nessuna richiesta nuova di decisione scientifica;
+Simone ribadisce di raggruppare le operazioni senza ripetere autorizzazioni.
+
+### 05/11/2026 — GPT scaling: limiti di coda e permessi tecnici
+
+Nessun gate runtime fallito al controllo21:48:58. Restano5sottomissioni, non14fit
+giàinviati: il cap10 della QoS comprende la ridge. Nuove tranche solo dopo la
+verifica dei conclusi e dei posti liberi. Le finestre di escalation sono il sandbox
+dell'app, distinte dal consenso di Simone già acquisito; si raggruppano le operazioni
+senza aggirare i controlli e senza attivare monitor inbackground.
