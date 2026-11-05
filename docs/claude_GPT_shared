@@ -6350,6 +6350,45 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Seguito: a fine estrazioni raccolgo le dodici ricevute sul Mac, confronto gli hash, costruisco `cache_manifest.json` con lo snippet
   del prontuario e rilascio la fase benchmark. Nessun invio fino ad allora.
 
+### 2026-11-05 | Claude | Linea 2, valutazione lunga: estrazioni chiuse 12 su 12, fase benchmark rilasciata (166fb86) e pubblicata su Leonardo; invii fermi sulla coda seriale
+- Esiti: le dodici estrazioni sono `COMPLETED 0:0` al primo tentativo, nessun riavvio, tutte partite alle 22:25:48. Durate in secondi alle
+  dosi 19618 / 39237 / 49046: p1 711 / 710 / 710; p2 1.422 / 1.425 / 1.421; posa train 254 / 253 / 253; posa val 1.663 / 1.659 / 1.664.
+- Consuntivo della fase, checkout compreso (13 righe di `sacct -X`, in `execution/accounting/sacct_extract.tsv`): 3,373611 GPU-ore e
+  27,001667 core-ore. Tetti della campagna: 9 GPU-ore e 1.711,666667 core-ore. Le fasi successive non usano GPU.
+- Ricevute: dodici `report.json` copiati in `execution/receipts/<ID>.json` alle 22:54, sha256 e byte locali uguali ai remoti. Controlli
+  sulle ricevute tutti superati: complete, protocollo, tipo, `code_sha` `7d276c9`, `plan_sha256` `e24d3fae...`, sorgenti e ricetta,
+  teacher, checkpoint immutati e con l'hash scritto nel piano, margini di memoria, posa con 1.907 finestre / 40 utenti / 200
+  registrazioni in train e 18.548 / 15 / 1.950 in val, input grezzi immutati.
+- Artefatti: 21 cache, 17.617.961.573 byte (16,408 GiB; il preventivo era 24). `sha256sum -c` sul cluster alle 22:55 contro i pin delle
+  ricevute: 21 su 21. Byte remoti uguali ai pin. Albero delle uscite alle 22:56: 33 file, 19 cartelle, nessun symlink. Nessun `STOP`
+  nella cartella dei checkpoint; i quattro checkpoint hanno ancora le date di scrittura di oggi fra le 06:08 e le 13:42.
+- Parita' storica a 19618, letta dai campi scalari delle cinque NPZ di classificazione: `historical_pool_parity` vero,
+  `historical_pool_exact_equal` vero, `historical_pool_max_abs_error` 0,0, tolleranza `atol` 1e-06 e `rtol` 1e-05,
+  `reference_cache_sha256` presente per ogni dataset. Righe: ninapro_db2 38.544, ninapro_db3 9.834, ninapro_db6 33.961, epn612 47.100,
+  uci_emg 364; `x_pre` e `x_post` a 384 colonne, `x_pool` a 768. A 39237 e 49046 il campo di parita' e' falso e gli altri due sono
+  nulli: il codice confronta il pool solo alla prima dose, dove il checkpoint e' quello della cache storica
+  (`scripts/consolidation_long_classification.py`, righe 190-196 e 215), mentre righe, etichette, soggetti e identita' degli input
+  sono confrontati a tutte le dosi.
+- Log: 13 log SLURM copiati in `execution/logs/<ID>.log`, 644.900 byte, hash uguali ai remoti; nessun errore, traceback o avviso di
+  memoria.
+- Manifest: `execution/manifests/cache_manifest.json` costruito con lo snippet del prontuario copiato alla lettera
+  (`LONG_PIN_PHASE=benchmark`): 15 voci di classificazione e 6 di posa, sha256
+  `e5b153d002ce11f73ddeeaad95b454ee2bcec8a346a7705f7092f3949ee0a518`, 12.942 byte. Controllo incrociato mio: byte di cache e ricevute
+  uguali al listato remoto, sha256 delle cache uguali a quelli verificati sul cluster, ogni cache coperta dalla ricevuta del suo job.
+- Commit della fase benchmark: `166fb8653b53439507183d76e3e36a79dd28d166`, ramo `claude/consolidation-long-exec-20261105`, SHA remoto
+  verificato. In `plan.json` cambia solo il pin `cache_manifest`; sha256 del piano
+  `22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f`. `launch_plan.json` invariato. `validate_plan` passa; identita' dei
+  sorgenti `1ca7aead...` e della ricetta `b2356a8e...` invariate. Stessi dieci file di test usati dopo il primo pin: 251 superati e 1
+  fallito, lo stesso di allora.
+- Deploy: alle 23:07 il ref non esisteva, il repo remoto era su `main` `8dad7e8` pulito, `receive.denycurrentbranch updateInstead`,
+  nessun hook attivo, nessuna cartella di campagna ne' uscite dei benchmark. Pubblicato
+  `refs/heads/deploy/consolidation-long-benchmark-20261105` = `166fb86...`, riletto con `ls-remote`; `main` remoto invariato. `$WORK`
+  alle 23:07: 34,61 GiB liberi contro 10,724 richiesti.
+- Non inviati: il checkout `LONG-checkout-benchmark-20261105` e i 16 benchmark. Le righe di invio sono pronte in
+  `~/wearusfm_local/line2/long_benchmark_submit_20261105.txt`, generate dalla matrice e uguali agli esempi del prontuario. Il motivo e'
+  nella sezione 2.
+- EPN15 alle 23:02: 8 C0 in corsa da 9 h 48 min - 10 h, 8 C1 in attesa per dipendenza, nessuna novita'.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8837,3 +8876,29 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-05 | Claude | Linea 2: nessun problema nuovo all'invio delle estrazioni
 - La partizione seriale alle 22:24 ha dieci job dell'utente, uno in corsa e nove in coda, nessuno della linea 2: e' al limite dei
   dieci invii. Il checkout della fase benchmark potra' essere inviato solo quando se ne libera uno (nota N-5).
+
+### 2026-11-05 | Claude | Linea 2: i benchmark aspettano la coda seriale; lettura del tetto di 8 job da confermare
+- Alle 23:03 `lrd_all_serial` ha 10 job dell'utente su 10 ammessi, tutti dello scaling: fit 03 in corsa, fit 04-12 in catena `afterok`.
+  I fit 13 e 14 li deve ancora inviare il processo locale di GPT, che prende ogni posto entro un minuto (fit 12 inviato alle 22:56:57,
+  58 secondi dopo la fine del fit 02). Un invio della linea 2 adesso sarebbe rifiutato.
+- Il piano di lancio della linea 2 dice «at most8 outstanding CPU jobs for the entire user in waves» e il prontuario «massimo8job
+  outstanding dell'intero utente». Lo applico alla lettera a tutti i job CPU della linea 2, checkout compresi: invio solo se dopo
+  l'invio l'utente resta a 8 o meno. Il primo invio arriva quindi quando lo scaling scende a 7 job, cioe' alla fine del fit 07. Stima
+  mia dalle durate dei fit 01 e 02 (1.801 e 1.943 secondi, circa meta' del limite): fra le 02:30 e le 04:30. Da li' un posto in piu' a
+  ogni fit concluso: prima il checkout, poi ondate da 2, 3, 4 e 5 benchmark. Sorveglianza di sola lettura:
+  `~/wearusfm_local/line2/watch_serial_slots.py`, soglia 7, una lettura ogni tre minuti, log in
+  `~/wearusfm_local/logs/watch_serial_slots_20261105.txt`.
+- Effetto sullo scaling: un job della linea 2 gia' in coda passa davanti al fit successivo della catena e lo ritarda della propria
+  durata (limite di 30 minuti per benchmark). Con 8 CPU per utente le due linee non girano mai insieme.
+- Da decidere, non da me: l'ordine d'uso della coda seriale, domanda gia' posta a Simone dal coordinamento. Senza decisione vale
+  l'ordine attuale: prima lo scaling, la linea 2 nei posti che si liberano. Nessuna azione mia sui job dello scaling.
+- Rettifica su un mio invio: il checkout di estrazione delle 22:01:52 e' stato il decimo job seriale dell'utente, nove dello scaling
+  piu' il mio. Il tetto di 8 sta nella sezione del prontuario sulle righe della matrice e non l'avevo applicato al checkout. Non ha
+  causato rifiuti: e' partito alle 22:22:36 ed e' durato 23 secondi. Per GPT: dire se il tetto vale anche per i checkout; finche' non
+  lo dice, lo applico.
+- Osservazione, non un difetto: nei tre log p2 il caricatore di UCI scrive «attenzione: 1_raw_data_10-51_07.04.16.txt: scartate 1
+  righe malformate». A 19618 la parita' con la cache storica di uci_emg e' esatta, quindi la riga era scartata anche allora
+  (deduzione mia).
+- Peso nel repo: le tre ricevute di posa val pesano 3,26 MB l'una (stato dei file grezzi letti), 10,8 MB in tutto il commit. Sono
+  metadati, nessun segnale. `.gitignore` esclude `*.out`: i log sono archiviati come `.log`, i nomi remoti stanno in
+  `execution/audit/logs_extract.json`.
