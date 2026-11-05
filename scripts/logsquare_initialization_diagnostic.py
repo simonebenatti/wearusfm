@@ -311,8 +311,12 @@ def child(plan_path, variant, expected_code):
 # parent, so a worker that its launcher started in another session (as torchrun does) stays tracked when the launcher
 # is gone. Signals go only to processes that the current process table lists as members: never to a group, a stored
 # identifier or anything outside the invocation.
-SUPERVISION = {'poll_seconds': .5, 'cleanup_poll_seconds': .1, 'settle_seconds': 2., 'term_grace_seconds': 5.,
-               'kill_wait_seconds': 5., 'process_table_seconds': 2.}
+# The cleanup asks before it kills, and asks launchers first: SIGTERM goes to the topmost members only (those whose
+# parent is not a running member), so that each launcher closes its own processes in order, as torchrun does with its
+# workers; a member left without its parent becomes topmost and is asked in its turn. After orderly_seconds every
+# member still running is asked; after term_grace_seconds more, whoever is still running gets SIGKILL.
+SUPERVISION = {'poll_seconds': .5, 'cleanup_poll_seconds': .1, 'settle_seconds': 2., 'orderly_seconds': 5.,
+               'term_grace_seconds': 3., 'kill_wait_seconds': 5., 'process_table_seconds': 2.}
 CLEANUP_BOUND_SECONDS = 15  # one absolute deadline for the cleanup of a command; the plan declares it
 REPORT_SECONDS = 20         # kept by the rank-entry child for its own start, the records and the report after torchrun
 MIN_LAUNCH_SECONDS = 30     # torchrun is not started with less time than this
@@ -357,21 +361,25 @@ class Invocation:
         # An empty group is forgotten at once, so its number can never name a later, unrelated group. The root's own
         # number cannot be reused while the root is not reaped.
         self.groups = {table[pid][1] for pid in members} | (set() if root_reaped else {self.root})
-        self.names.update((pid, table[pid][3]) for pid in members)
+        for pid in members:  # the name it had while it ran, not the placeholder of an entry that is being removed
+            if pid not in self.names or not (table[pid][2].startswith('Z') or table[pid][3].startswith(('<', '('))):
+                self.names[pid] = table[pid][3]
         return sorted(pid for pid in members if not table[pid][2].startswith('Z'))
 
 
 def clean_up(proc, invocation, forced, timing):
     """End what the invocation left running, inside one absolute deadline, and say what had to be done.
 
-    forced: the bound expired, or the supervisor was interrupted. SIGTERM goes at once to every member, so that a
-    launcher with a handler closes its own workers in order; whoever is still running after the grace gets SIGKILL.
-    Not forced: the command returned by itself. Members still running get a short time to end by themselves, then the
-    same two steps. Nothing waits past the deadline: a survivor is reported, never awaited.
+    forced: the bound expired, or the supervisor was interrupted. SIGTERM goes at once to the topmost members, so
+    that a launcher with a handler closes its own workers in order; then to every member still running; whoever is
+    still running after that gets SIGKILL. Not forced: the command returned by itself. Members still running get a
+    short time to end by themselves, then the same steps. Nothing waits past the deadline: a survivor is reported,
+    never awaited.
     """
     begun = time.monotonic()
     term_at = begun + (0 if forced else timing['settle_seconds'])
-    kill_at = term_at + timing['term_grace_seconds']
+    all_at = term_at + timing['orderly_seconds']
+    kill_at = all_at + timing['term_grace_seconds']
     end_at = min(kill_at + timing['kill_wait_seconds'], begun + CLEANUP_BOUND_SECONDS)
     done = {'forced': forced, 'terminated': [], 'killed': [], 'survivors': [], 'process_table_unavailable': False}
     while True:
@@ -394,7 +402,11 @@ def clean_up(proc, invocation, forced, timing):
         signum = signal.SIGKILL if now >= kill_at else signal.SIGTERM if now >= term_at else None
         if signum is not None:
             sent = done['killed' if signum == signal.SIGKILL else 'terminated']
+            # Until all_at only the topmost members are asked: the others still have a parent that may close them.
+            running = set(alive) if table is not None and now < all_at else ()
             for pid in alive:
+                if running and table[pid][0] in running:
+                    continue
                 if signum == signal.SIGKILL or pid not in sent:
                     try:
                         (os.killpg if table is None else os.kill)(pid, signum)
@@ -460,8 +472,9 @@ def run_bounded(command, seconds, stdout_path, stderr_path, record=None, **timin
                 except subprocess.TimeoutExpired:
                     timed_out = time.monotonic() >= deadline
                     # While the command runs, each table adopts the groups its descendants create. At the bound the
-                    # cleanup takes its own table before any signal.
-                    table = None if timed_out else process_table(timing['process_table_seconds'])
+                    # cleanup takes its own table before any signal. Reading a table never outlasts the bound.
+                    table = None if timed_out else process_table(
+                        min(timing['process_table_seconds'], max(deadline - time.monotonic(), .1)))
                     if table is not None:
                         invocation.alive(table, False)
             interrupted = False

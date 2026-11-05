@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import gzip
 import hashlib
 import importlib.util
+import inspect
 import json
 import math
 import os
@@ -666,10 +667,11 @@ def test_published_plan_fixes_the_reading_and_resources_and_never_authorizes_tra
                                                   'fix_dry_run_passed'}
     assert set(plan['reading']['statements']) < set(D.reading(reading_rows()))
     # The declared limit of a context includes the cleanup of its processes: the timeout is when waiting stops, and
-    # the cleanup has one absolute deadline that holds its three steps.
+    # the cleanup has one absolute deadline that holds all of its steps, also after a command that returned.
     timing = D.SUPERVISION
     assert plan['cleanup_bound_seconds'] == D.CLEANUP_BOUND_SECONDS == 15
-    assert timing['settle_seconds'] + timing['term_grace_seconds'] + timing['kill_wait_seconds'] <= D.CLEANUP_BOUND_SECONDS
+    assert sum(timing[step + '_seconds'] for step in ('settle', 'orderly', 'term_grace', 'kill_wait')) <= D.CLEANUP_BOUND_SECONDS
+    assert 'first to the launcher of the context alone' in plan['time_limits']
     construction = plan['child_timeout_seconds'] + plan['cleanup_bound_seconds']
     dry_run = plan['rank_entry_timeout_seconds'] + plan['cleanup_bound_seconds']
     assert (construction, dry_run) == (90, 300) and 'cleanup included' in plan['time_limits']
@@ -747,15 +749,97 @@ def test_supervision_bound_ends_a_worker_in_a_session_of_its_own(tmp_path, own_p
     record, started = {}, time.monotonic()
     status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
     elapsed = time.monotonic() - started
+    launched = pids(files)
     assert timed_out and status == -signal.SIGTERM
     assert not still_working(files['worker.heartbeat']), 'the worker kept working after the bound'
-    # SIGTERM was enough, it went to both processes, and the two sessions were both seen as this invocation's.
+    # SIGTERM was enough. The launcher was asked first; it has no handler and left its worker behind, so the worker
+    # was asked next. The two sessions were both seen as this invocation's.
     assert record['forced'] is True and record['timed_out'] is True and record['bound_seconds'] == 1
-    assert set(record['terminated']) == set(pids(files).values()) and len(record['terminated']) == 2
+    assert record['terminated'] == [launched['launcher'], launched['worker']]
     assert record['killed'] == record['survivors'] == [] and record['process_table_unavailable'] is False
-    assert record['observed_processes'] == 2 and set(record['names']) == {str(pid) for pid in pids(files).values()}
+    assert record['observed_processes'] == 2 and set(record['names']) == {str(pid) for pid in launched.values()}
+    # The names are the ones the processes had while they ran, not the placeholder of an entry that is being removed.
+    assert all(name and not name.startswith(('<', '(')) for name in record['names'].values())
     assert D.supervision_problem(record) is None
-    assert 1 <= elapsed < 1 + D.CLEANUP_BOUND_SECONDS and record['cleanup_seconds'] < D.SUPERVISION['term_grace_seconds']
+    assert 1 <= elapsed < 1 + D.CLEANUP_BOUND_SECONDS and record['cleanup_seconds'] < D.SUPERVISION['orderly_seconds']
+
+
+def test_supervision_asks_the_launcher_first_so_that_it_closes_its_worker_in_order(tmp_path, own_processes):
+    """torchrun's agent ends its workers itself when it receives SIGTERM: the cleanup lets a launcher do that."""
+    # As torch does: the handler only raises, and the launcher closes its worker where it catches the exception.
+    asked = ('class Asked(Exception):\n'
+             '    pass\n'
+             'def ask(signum, frame):\n'
+             '    raise Asked(signum)\n'
+             'signal.signal(signal.SIGTERM, ask)\n')
+    closing = ('try:\n'
+               '    worker.wait()\n'
+               'except Asked as asked:\n'
+               '    os.killpg(worker.pid, asked.args[0])\n'  # the group of each worker, with the signal it received
+               '    worker.wait()\n'
+               '    print("closed in order, worker status", worker.returncode, flush=True)\n'
+               '    raise SystemExit(7)\n')
+    launcher, files = elastic_like(tmp_path, own_processes, launcher_setup=asked, launcher_end=closing)
+    record = {}
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    launched = pids(files)
+    assert timed_out and status == 7  # the launcher's own status, after its own closing
+    assert (tmp_path / 'stdout').read_text() == f'closed in order, worker status {-signal.SIGTERM}\n'
+    assert not still_working(files['worker.heartbeat'])
+    # Only the launcher was asked: its worker was ended by the launcher itself, and nothing was killed.
+    assert record['terminated'] == [launched['launcher']] and record['killed'] == record['survivors'] == []
+    assert record['observed_processes'] == 2 and D.supervision_problem(record) is None
+    assert record['cleanup_seconds'] < D.SUPERVISION['orderly_seconds']
+
+
+def test_supervision_lets_the_elastic_launcher_of_the_installed_torch_close_its_workers(tmp_path, monkeypatch, own_processes):
+    """The real process context of torch's elastic agent, which torchrun uses for its workers.
+
+    Its workers run in sessions of their own, and SIGTERM to the launcher is its orderly shutdown: the handler torch
+    installs raises SignalException, and the agent closes the workers with the signal it received. Asking the
+    workers at the same moment breaks that closing, so the launcher is asked alone. The cleanup is triggered by
+    interrupting the supervisor as soon as both workers are working, because the time torch takes to import is not
+    this test's subject; an interruption and an expired bound enter the same forced cleanup.
+    """
+    elastic = pytest.importorskip('torch.distributed.elastic.multiprocessing')
+    if 'logs_specs' not in inspect.signature(elastic.start_processes).parameters:
+        pytest.skip('the elastic process context of this torch is started with another signature')
+    files = {f'worker{rank}.{kind}': tmp_path / f'worker{rank}.{kind}' for rank in range(2) for kind in ('pid', 'heartbeat')}
+    files['launcher.pid'] = tmp_path / 'launcher.pid'
+    own_processes += [path for name, path in files.items() if name.endswith('.pid')]
+    workers = {rank: HEARTBEAT.format(setup='', pid=str(files[f'worker{rank}.pid']),
+                                      beat=str(files[f'worker{rank}.heartbeat'])) for rank in range(2)}
+    launcher = ('import os, signal, sys\n'
+                'from torch.distributed.elastic.multiprocessing import DefaultLogsSpecs, SignalException, start_processes\n'
+                f'open({str(files["launcher.pid"])!r}, "w").write(str(os.getpid()))\n'
+                f'workers = {workers!r}\n'
+                'context = start_processes(name="rank", entrypoint=sys.executable,\n'
+                '                          args={rank: ("-c", code) for rank, code in workers.items()},\n'
+                '                          envs={rank: {} for rank in workers},\n'
+                f'                          logs_specs=DefaultLogsSpecs(log_dir={str(tmp_path / "logs")!r}))\n'
+                'try:\n'
+                '    while context.wait(1) is None:\n'
+                '        pass\n'
+                'except SignalException as error:\n'  # what the agent does: close the workers with that signal
+                '    context.close(error.sigval)\n'
+                '    print("closed in order after", error.sigval.name, flush=True)\n'
+                '    raise SystemExit(7)\n')
+    real, interrupted, record = D.process_table, [], {}
+    def table(*seconds):
+        if not interrupted and all(files[f'worker{rank}.heartbeat'].is_file() for rank in range(2)):
+            interrupted.append(True)
+            raise KeyboardInterrupt
+        return real(*seconds)
+    monkeypatch.setattr(D, 'process_table', table)
+    with pytest.raises(KeyboardInterrupt):
+        D.run_bounded([sys.executable, '-c', launcher], 120, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    launched = pids(files)
+    assert len(set(launched.values())) == 3
+    assert not still_working(files['worker0.heartbeat']) and not still_working(files['worker1.heartbeat'])
+    assert (tmp_path / 'stdout').read_text() == 'closed in order after SIGTERM\n', (tmp_path / 'stderr').read_text()[-2000:]
+    assert record['forced'] is True and record['terminated'] == [launched['launcher']]
+    assert record['killed'] == record['survivors'] == [] and record['observed_processes'] >= 3
+    assert record['cleanup_seconds'] < D.SUPERVISION['orderly_seconds'] and D.supervision_problem(record) is None
 
 
 @pytest.mark.parametrize('child', ['waiting', 'cleaning'])
@@ -792,6 +876,9 @@ def test_supervision_parent_bound_ends_the_nested_launcher_and_its_worker(tmp_pa
     monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
     monkeypatch.setattr(D, 'validate_plan',
                         lambda _: ({'child_timeout_seconds': 1, 'rank_entry_timeout_seconds': 1.5}, None, None, {}, None))
+    # The parent's own steps, shortened: the nested helper keeps the timings of the file it loads.
+    monkeypatch.setitem(D.SUPERVISION, 'orderly_seconds', 1.)
+    monkeypatch.setitem(D.SUPERVISION, 'term_grace_seconds', 1.)
     started = time.monotonic()
     report = D.execute(plan, 'a' * 40, out)
     elapsed = time.monotonic() - started
@@ -802,13 +889,14 @@ def test_supervision_parent_bound_ends_the_nested_launcher_and_its_worker(tmp_pa
     supervision, launched = row['supervision'], pids(files)
     assert supervision['forced'] is True and supervision['timed_out'] is True and supervision['survivors'] == []
     assert supervision['observed_processes'] >= 3 and row['process_returncode'] == -signal.SIGTERM
-    if child == 'waiting':  # SIGTERM to the three of them was enough
-        assert set(supervision['terminated']) >= set(launched.values()) and supervision['killed'] == []
-        assert elapsed < 1.5 + D.SUPERVISION['term_grace_seconds']
+    asked = [pid for pid in supervision['terminated'] if pid in launched.values()]
+    if child == 'waiting':  # SIGTERM was enough: each of the three was asked when the one above it was gone
+        assert asked == [launched['helper'], launched['launcher'], launched['worker']] and supervision['killed'] == []
+        assert supervision['cleanup_seconds'] < 1 and elapsed < 1.5 + 1
     else:  # the child had already ended its launcher; the parent ends the child and, with SIGKILL, the deaf worker
-        assert set(supervision['terminated']) >= {launched['helper'], launched['worker']}
-        assert supervision['killed'] == [launched['worker']] and launched['launcher'] not in supervision['terminated']
-        assert 1.5 + D.SUPERVISION['term_grace_seconds'] <= elapsed < 1.5 + D.CLEANUP_BOUND_SECONDS
+        assert asked == [launched['helper'], launched['worker']]
+        assert supervision['killed'] == [launched['worker']]
+        assert 1 + 1 <= supervision['cleanup_seconds'] < D.CLEANUP_BOUND_SECONDS and elapsed < 1.5 + D.CLEANUP_BOUND_SECONDS
     # Output and error stay: the files of the child and of its launcher, and their ends inside the report.
     assert row['output_tails'] == {D.RANK_VARIANT + '.stdout': 'child output\n', D.RANK_VARIANT + '.stderr': 'child note',
                                    D.RANK_VARIANT + '.torchrun.stdout': 'launcher output\n',
@@ -858,22 +946,27 @@ def test_supervision_failed_command_keeps_its_error_and_leaves_no_worker(tmp_pat
     assert D.supervision_problem(record).startswith(f'processes outlived the command and were ended: {worker} (')
 
 
-@pytest.mark.parametrize('deaf', ['worker', 'launcher and worker'])
-def test_supervision_escalates_to_sigkill_on_processes_that_ignore_sigterm(tmp_path, own_processes, deaf):
-    ignore = 'signal.signal(signal.SIGTERM, signal.SIG_IGN)\n'
-    launcher, files = elastic_like(tmp_path, own_processes, worker_setup=ignore,
-                                   launcher_setup=ignore if deaf == 'launcher and worker' else '')
+@pytest.mark.parametrize('deaf', ['worker', 'launcher', 'launcher and worker'])
+def test_supervision_escalates_step_by_step_on_processes_that_ignore_sigterm(tmp_path, own_processes, deaf):
+    """Launcher first; after orderly_seconds everyone still running; after term_grace_seconds more, SIGKILL."""
+    # A handler that does nothing is not inherited by the worker; an ignored signal would be.
+    launcher, files = elastic_like(
+        tmp_path, own_processes, worker_setup='signal.signal(signal.SIGTERM, signal.SIG_IGN)\n' if 'worker' in deaf else '',
+        launcher_setup='signal.signal(signal.SIGTERM, lambda *_: None)\n' if 'launcher' in deaf else '')
     record, started = {}, time.monotonic()
     status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record,
-                                      term_grace_seconds=.5)
+                                      orderly_seconds=.5, term_grace_seconds=.5)
     elapsed = time.monotonic() - started
-    assert not still_working(files['worker.heartbeat']), 'a worker that ignores SIGTERM kept working'
+    assert not still_working(files['worker.heartbeat']), 'a worker kept working after the cleanup'
     launched = pids(files)
-    assert timed_out and status == (-signal.SIGKILL if deaf == 'launcher and worker' else -signal.SIGTERM)
-    assert set(record['terminated']) == set(launched.values())  # everyone was asked first
-    assert set(record['killed']) == ({launched['worker']} if deaf == 'worker' else set(launched.values()))
+    # A deaf launcher does not close its worker: the worker is asked after the orderly step, ends, and the launcher
+    # then returns by itself. A deaf worker is killed after the grace, and so is a deaf launcher that still waits for it.
+    expected = {'worker': (-signal.SIGTERM, {launched['worker']}, 1.), 'launcher': (0, set(), .5),
+                'launcher and worker': (-signal.SIGKILL, set(launched.values()), 1.)}[deaf]
+    assert timed_out and (status, set(record['killed'])) == expected[:2]
+    assert record['terminated'] == [launched['launcher'], launched['worker']]  # everyone was asked, the launcher first
     assert record['survivors'] == [] and D.supervision_problem(record) is None
-    assert 1.5 <= elapsed < 1.5 + D.SUPERVISION['kill_wait_seconds'] and .5 <= record['cleanup_seconds'] < 2.5
+    assert expected[2] <= record['cleanup_seconds'] < expected[2] + 2 and elapsed < 1 + expected[2] + 2
 
 
 def test_supervision_is_bounded_and_reports_survivors_when_signals_have_no_effect(tmp_path, monkeypatch, own_processes):
@@ -883,10 +976,11 @@ def test_supervision_is_bounded_and_reports_survivors_when_signals_have_no_effec
     with monkeypatch.context() as patched:
         patched.setattr(D.os, 'kill', lambda pid, signum: signalled.append((pid, signum)))
         status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr',
-                                          record, term_grace_seconds=.4, kill_wait_seconds=.4)
+                                          record, orderly_seconds=.4, term_grace_seconds=.4, kill_wait_seconds=.4)
     elapsed = time.monotonic() - started
     launched = set(pids(files).values())
-    assert timed_out and status is None and 1.8 <= elapsed < 3.5
+    # Three steps of .4 s after the bound of 1 s; the recorded time is rounded, so the lower limits leave .05 s.
+    assert timed_out and status is None and 2.15 <= elapsed < 4 and 1.15 <= record['cleanup_seconds'] < 3
     assert set(record['survivors']) == set(record['terminated']) == set(record['killed']) == launched
     assert {pid for pid, signum in signalled if signum == signal.SIGTERM} == launched
     assert {pid for pid, signum in signalled if signum == signal.SIGKILL} == launched
@@ -906,7 +1000,7 @@ def test_supervision_signals_only_the_processes_of_its_own_invocation(tmp_path, 
         launcher, files = elastic_like(tmp_path, own_processes, worker_setup='signal.signal(signal.SIGTERM, signal.SIG_IGN)\n')
         record = {}
         status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record,
-                                          term_grace_seconds=.5)
+                                          orderly_seconds=.5, term_grace_seconds=.5)
         assert timed_out and not still_working(files['worker.heartbeat'])
         named = {*record['terminated'], *record['killed'], *record['survivors']}
         assert named == set(pids(files).values()) and not named & {proc.pid for proc, _ in bystanders}
@@ -932,7 +1026,7 @@ def test_supervision_cleans_up_when_the_supervisor_itself_is_interrupted(tmp_pat
         D.run_bounded([sys.executable, '-c', launcher], 30, tmp_path / 'stdout', tmp_path / 'stderr', record)
     assert not still_working(files['worker.heartbeat']), 'an interrupted supervisor left its worker running'
     assert record['forced'] is True and record['timed_out'] is False and record['survivors'] == []
-    assert set(record['terminated']) == set(pids(files).values())
+    assert record['terminated'] == [pids(files)['launcher'], pids(files)['worker']] and record['killed'] == []
 
 
 def test_supervision_without_a_process_table_starts_nothing_and_never_claims_a_verified_cleanup(tmp_path, monkeypatch,
@@ -974,10 +1068,11 @@ def test_supervision_tracks_groups_by_membership_and_never_adopts_a_foreign_one(
     orphaned = {pid: ((1,) + row[1:] if row[0] == 100 else row) for pid, row in table.items() if pid != 100}
     assert invocation.alive(orphaned, True) == [101, 200, 201, 300] and invocation.groups == {100, 200, 300}
     # A zombie is a member that no longer runs; an emptied group is forgotten, so its number can never name a later one.
-    later = {1: table[1], 200: (1, 200, 'Z', 'worker'), 300: (1, 300, 'Ss', 'detached'), 100: (1, 100, 'Ss', 'reused number')}
+    later = {1: table[1], 200: (1, 200, 'Z', '<defunct>'), 300: (1, 300, 'Ss', 'detached'), 100: (1, 100, 'Ss', 'reused number')}
     assert invocation.alive({key: later[key] for key in (1, 200, 300)}, True) == [300] and invocation.groups == {200, 300}
     assert invocation.alive(later, True) == [300] and 100 not in invocation.groups
-    assert set(invocation.names) == {100, 101, 200, 201, 300}
+    # Every member ever seen keeps the name it had while it ran: the placeholder of a zombie does not replace it.
+    assert invocation.names == {100: 'launcher', 101: 'helper', 200: 'worker', 201: 'loader', 300: 'detached'}
     # A command that has no session of its own is refused before anything is tracked.
     with pytest.raises(ValueError, match='session of its own'):
         D.Invocation(os.getpid())
