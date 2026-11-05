@@ -5724,6 +5724,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   10:58 CET. Simone: «Mandato». In attesa della risposta di GPT (recepimento di L1-L4 ed eventuale proposta a 15 epoche con
   preventivo per Simone); nessun lancio da parte mia.
 
+### 2026-11-05 | Claude | Review della preparazione EPN a 15 epoche (GPT dcf3bf8): cinque verdetti, nessun difetto bloccante nel codice; quattro richieste da chiudere prima del checkout dei fit (R-1...R-4)
+- Richiesta: prompt di GPT `docs/prompt_claude_finetune15_20261105.md`, incollato da Simone («Solo review, nessun lancio»). Review in
+  `docs/reviews/claude_review_finetune15_20261105.md`; checkout temporaneo di dcf3bf8 rimosso; lettura di Leonardo in
+  `~/wearusfm_local/logs/ft15_review_leonardo_20261105.txt`. Nessun lancio, benchmark, sottomissione o modifica di runtime da parte mia.
+- Metodo: 102 test passati con il comando di GPT (12,63 s) e `bash -n` del launcher; sorgenti storici invariati da db89202; identita'
+  ricalcolate (sorgenti a cinque epoche aa857fb3…, ricetta 975fa69d…); sei pin del piano uguali ai file; `reference_five` e
+  `resource_projection` rieseguiti; piano di lancio controllato (24 ID e 24 output distinti, 12 dipendenze C1 dopo C0, totali);
+  aggregatore eseguito sulle OOF reali a cinque epoche con un bootstrap mio di confronto (differenza 0,0 su primario e secondari).
+- Verdetti: (1) scienza e selezione APPROVATO; (2) risorse APPROVATO per formula, conti e gate: proiezioni 17.547 / 50.697 / 51.023 s
+  contro limiti 21.300 / 57.300 / 57.300 s, atteso circa 205 GPU-ore, tetto 304,5 GPU-ore / 2.436,667 core-ore; (3) aggregazione
+  APPROVATO; (4) regole di lettura APPROVATO CON UN'INTEGRAZIONE (R-1); (5) operativita' APPROVATO, proposta sui prossimi dataset
+  approvata come ricognizione con quattro osservazioni (M-1...M-4).
+- Per convergere: scelta di GPT su R-1, due frasi per R-2 e R-4, cifra confermata da Simone e registrata con il residuo (R-3).
+  Con questi punti chiusi non ho obiezioni al lancio della catena da parte di GPT. Dettaglio di richieste, note e limiti nella voce
+  di sezione 2.
+- Stato su Leonardo alle 11:44 CET, sola lettura: progetto a 1.303.196 ore locali consumate su 2.000.000, residuo 696.804;
+  manutenzioni Booster parziali 10/11 07:00-12/11 07:00 (540 nodi) e 12/11 07:00-14/11 07:00 (180 nodi), fermo dell'intero Booster
+  23/11 08:00-25/11 08:00; checkpoint del teacher presente su SCRATCH; namespace `finetune15_20261105` non esistente.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7897,3 +7916,37 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - **Limiti della mia verifica:** nessun checkpoint caricato e nessuna predizione held rigenerata; i log non hanno righe per epoca, quindi
   l'unicita' della predizione held poggia su codice, inventario, date dei file e accounting; 82,577% letto dall'aggregato pinnato;
   controlli di robustezza miei e descrittivi; suite CPU completa non rieseguita (runtime invariato da a2eeb75).
+
+### 2026-11-05 | Claude | Preparazione EPN a 15 epoche (GPT dcf3bf8): nessun difetto nel codice; R-1...R-4 da chiudere prima del checkout dei fit, note N-1...N-5, osservazioni M-1...M-4 sui prossimi dataset
+- Dettaglio in `docs/reviews/claude_review_finetune15_20261105.md`.
+- **R-1 (lettura, da decidere prima del checkout dei fit):** manca il contrasto appaiato sulla variazione del vantaggio,
+  (FT15 − scratch15) − (FT5 − scratch5). L'aggregatore ha le sei celle sulle stesse estrazioni ma pubblica solo i tre 15−5 per regime;
+  dai loro intervalli quello della differenza non si ricava. O lo si aggiunge come quarto secondario (cambia `READING_RULE15` e
+  l'hash della ricetta), o si scrive che non si faranno affermazioni sulla variazione del vantaggio fra 5 e 15. Dopo i risultati
+  sarebbe post hoc. Gia' consigliato in 0968bd1, §4 punto 3.
+- **R-2 (risorse):** il gate e' per regime. Con un benchmark piu' lento del 13% scratch e' bloccato e gli altri due passano; con il
+  20% passa solo il frozen. Va scritto che se un regime e' bloccato non parte nessun fit, altrimenti si spendono fino a 128 GPU-ore
+  senza il primario FT−scratch. Il rumore del benchmark non e' il problema: v1 e v2 differiscono dello 0,10-0,24% per update.
+- **R-3 (budget, decisione di Simone):** tetto 304,5 GPU-ore / 2.436,667 core-ore, atteso circa 205; 4,5 volte i 24 fit a cinque
+  epoche e piu' del doppio del tetto di 144. La frase di Simone riportata in `decisioni.md` approva la sequenza e non nomina la
+  cifra; il residuo non e' dichiarato. Da registrare cifra confermata e residuo. Se la contabilita' addebita i core allocati (ipotesi
+  mia), il tetto vale circa 2.437 ore locali, lo 0,35% del residuo del progetto.
+- **R-4 (operativita'):** manca la regola per i fallimenti operativi (TIMEOUT, guasto di nodo) su job fino a 16 ore senza ripresa:
+  dire ora se la cella si riesegue identica e a quali condizioni. Decisa con 23 risultati su 24 visibili sarebbe post hoc. Gia'
+  segnalato in 0968bd1, §4 punto 5.
+- **N-1:** `validation_tail` informa poco per costruzione: nell'ultima epoca il LR scende dall'1,09% del picco a zero (media 0,37%,
+  contro 3,2% a cinque epoche); a cinque epoche l'ultima epoca era la migliore in 20 candidati su 24. La regola puo' restare, perche'
+  non ha conseguenze; va dichiarato che descrive la coda dello schedule. **N-2:** frozen contro logistica senza verdetto «recuperato».
+  **N-3:** il protocollo dice «il relativo confronto non e' valutabile», l'aggregatore non pubblica nessun contrasto se una cella
+  fallisce: allineare il testo. **N-4:** limiti ereditati (bordo della griglia in 12 celle su 12, seme unico, secondo sguardo sui 314
+  held), gia' dichiarati. **N-5 (facoltativa):** il frozen costa 29 GPU-ore attese e 48 a tetto con feature che non cambiano durante
+  l'addestramento; una testa su feature in cache costerebbe una frazione, ma richiederebbe codice nuovo e un test di uguaglianza.
+- **M-1:** la ricognizione non cita Kaifosh, unico dataset con ruolo `benchmark` negli split firmati (100 partecipanti, nessuno nel
+  pretraining, split ufficiale 80/10/10; etichette non ancora caricate; stessa famiglia di dispositivo dei dataset Meta del
+  pretraining): metterlo fra i candidati o escluderlo con motivazione. **M-2:** su UCI il contrasto storico T25-L − B19618 aveva IC
+  [−2,477; +2,326] pp: un vantaggio di +1,4 pp non si risolve con 19 soggetti e un seme. **M-3:** su DB2 e Hyser i soggetti del
+  pretraining sono gia' stati visti dal fine-tuning senza etichette; le popolazioni pulite sono le riservate, 8 e 4 soggetti.
+  **M-4:** griglia con almeno tre punti o regola di estensione dichiarata prima.
+- **Limiti della mia verifica:** benchmark CUDA a 15 epoche non ancora eseguito (verificata la regola, non la misura); snapshot Git
+  dell'aggregatore provato solo sui test sintetici di GPT; hash del teacher, quota e inode di WORK non letti; frasi di Simone
+  riportate da GPT non verificabili da me; «19 soggetti» di UCI non ricalcolati; conversione in ore locali e N-5 sono stime mie.
