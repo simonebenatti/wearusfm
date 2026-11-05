@@ -1,12 +1,53 @@
 {
-  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_logsquare_initialization_diagnostic.py tests/cpu/test_logsquare_train.py",
-  "passed": 56,
-  "elapsed_seconds": 4.55,
+  "replaces": "the record GPT wrote at 4d5a3ef (56 tests on two files, five-context diagnostic); that record stays in git history",
+  "code_sha": "b8689e18ba793bd2136e893b55155c2e8c4975c0",
+  "environment": "~/.venvs/wearusfm-tok, OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1, local Mac CPU",
+  "logsquare_files": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_logsquare_initialization_diagnostic.py tests/cpu/test_logsquare_train.py tests/cpu/test_logsquare_initial_state.py tests/cpu/test_logsquare_train_rank.py",
+    "passed": 154,
+    "per_file": {
+      "test_logsquare_initialization_diagnostic.py": 66,
+      "test_logsquare_train.py": 52,
+      "test_logsquare_initial_state.py": 27,
+      "test_logsquare_train_rank.py": 9
+    },
+    "at_4d5a3ef": {
+      "test_logsquare_initialization_diagnostic.py": 25,
+      "test_logsquare_train.py": 31
+    }
+  },
+  "full_suite": {
+    "how": "tests/cpu in four parallel processes, test files dealt in alphabetical order, same interpreter invocation as CLAUDE.md",
+    "collected": 2447,
+    "passed": 2446,
+    "failed": 1,
+    "failure": "tests/cpu/test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical",
+    "failure_error": "ValueError: continuation recipe differs beyond max_steps (scripts/slurm/pose_b19618_continue.sbatch:27)",
+    "failure_preexisting_at_4d5a3ef": true,
+    "failure_files_untouched_by_this_branch": true,
+    "collected_at_4d5a3ef": 2349,
+    "new_tests": 98
+  },
+  "regression_before_and_after": {
+    "test": "tests/cpu/test_logsquare_train.py::test_training_context_gain_passes_the_exact_initialization_check",
+    "before": {
+      "controller": "scripts/logsquare_train.py at 4d5a3ef, SHA-256 cb3ff445...",
+      "result": "FAILED",
+      "error": "ValueError: fresh shared initialization differs from historical T100-L"
+    },
+    "after": {
+      "controller": "scripts/logsquare_train.py at b8689e1",
+      "result": "passed"
+    },
+    "real_parameter_change": "tests/cpu/test_logsquare_train.py::test_one_ulp_of_one_real_parameter_is_still_rejected: passed before and after"
+  },
+  "trained_model": "four real ranks in one process group on CPU: two steps behind the guarded entry give student, teacher, optimizer and generators bit-identical to the plain trainer; four attestations; checkpoint gain equal to the verified gain; a rejected student stops every rank before any update",
   "scientific_sources_102_unchanged": true,
-  "original_controller_release_hashes_match": true,
-  "original_training_plan_release_unchanged": true,
+  "src_unchanged_since_4d5a3ef": true,
+  "original_training_plan_release_and_failure_artifacts_unchanged": true,
   "launcher_bash_n": "passed",
   "cuda_tested": false,
+  "torchrun_tested_locally": false,
   "diagnostic_status": "REVIEW_REQUIRED",
-  "internal_critic": "APPROVED for Claude diagnostic review; first model order, rank0warmup, deferred introspection checked; no training release"
+  "review": "pending: GPT reviews this delivery before any submission"
 }

@@ -1,12 +1,28 @@
 {
   "platform": "local Mac CPU only",
+  "replaces": "the smoke GPT recorded at 4d5a3ef for the five-context diagnostic; that record stays in git history",
   "cuda_tested": false,
-  "code_identity_check": "bypassed only for this explicitly local uncommitted smoke; all102source and provenance pins validated",
+  "code_sha": "b8689e18ba793bd2136e893b55155c2e8c4975c0",
+  "code_identity_check": "real: clean committed checkout at code_sha, no bypass",
+  "local_plan": "copy of plan.json outside the repository with status APPROVED_FOR_DIAGNOSTIC, cuda_required false and rank_entry_timeout_seconds 60; every pin read from the repository, 102 scientific sources validated",
   "production_plan_status": "REVIEW_REQUIRED unchanged",
   "real_models_in_fresh_processes": true,
+  "report_sha256": "b988dd94d57a8b5e54c493116c3676084e53ad9b7c901feacc028da427b4055f",
+  "complete": false,
+  "exit_status": 1,
+  "expected_locally": "incomplete by construction. The five construction contexts run; this platform builds other tensors than the cluster, so diagnostic and guard both report a difference beyond the gain, coherently. rank_entry_torchrun cannot run here: torchrun --standalone does not start on this machine and the production arguments point to cluster files. Its process tree was killed at the bound and the report says so. The controller pre-check of that context ran on the real model and was refused with the new diagnostic message.",
+  "reading": {
+    "computable": false,
+    "reason": "ValueError: failed contexts: rank_entry_torchrun",
+    "cause_demonstrated": false,
+    "trainer_builds_the_registered_training_state": false,
+    "fix_dry_run_passed": false,
+    "training_authorized_by_reading": false
+  },
+  "training_authorized_by_report": false,
   "variants": {
     "controller": {
-      "variant": "controller",
+      "process_returncode": 0,
       "construction_order": [
         "T100-LQ",
         "T100-L"
@@ -17,13 +33,29 @@
         "T100-LQ": "difference_not_explained_by_gain_alone",
         "T100-L": "difference_not_explained_by_gain_alone"
       },
-      "gain": {
-        "T100-LQ": 548.6939187567017,
-        "T100-L": 548.6939187567017
+      "gain_hex": {
+        "T100-LQ": "0x1.1258d2546f0ebp+9",
+        "T100-L": "0x1.1258d2546f0ebp+9"
+      },
+      "gain_ulps": {
+        "T100-LQ": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        },
+        "T100-L": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        }
+      },
+      "guard": {
+        "T100-LQ": {
+          "classification": "tensor_difference_beyond_gain",
+          "passed": false
+        }
       }
     },
     "preflight": {
-      "variant": "preflight",
+      "process_returncode": 0,
       "construction_order": [
         "T100-L",
         "T100-LQ"
@@ -34,13 +66,29 @@
         "T100-L": "difference_not_explained_by_gain_alone",
         "T100-LQ": "difference_not_explained_by_gain_alone"
       },
-      "gain": {
-        "T100-L": 548.6939187567017,
-        "T100-LQ": 548.6939187567017
+      "gain_hex": {
+        "T100-L": "0x1.1258d2546f0ebp+9",
+        "T100-LQ": "0x1.1258d2546f0ebp+9"
+      },
+      "gain_ulps": {
+        "T100-L": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        },
+        "T100-LQ": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        }
+      },
+      "guard": {
+        "T100-LQ": {
+          "classification": "tensor_difference_beyond_gain",
+          "passed": false
+        }
       }
     },
     "trainer": {
-      "variant": "trainer",
+      "process_returncode": 0,
       "construction_order": [
         "T100-LQ",
         "T100-L"
@@ -51,13 +99,29 @@
         "T100-LQ": "difference_not_explained_by_gain_alone",
         "T100-L": "difference_not_explained_by_gain_alone"
       },
-      "gain": {
-        "T100-LQ": 548.6939187567017,
-        "T100-L": 548.6939187567017
+      "gain_hex": {
+        "T100-LQ": "0x1.1258d2546f0ebp+9",
+        "T100-L": "0x1.1258d2546f0ebp+9"
+      },
+      "gain_ulps": {
+        "T100-LQ": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        },
+        "T100-L": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        }
+      },
+      "guard": {
+        "T100-LQ": {
+          "classification": "tensor_difference_beyond_gain",
+          "passed": false
+        }
       }
     },
     "trainer_rank0": {
-      "variant": "trainer_rank0",
+      "process_returncode": 0,
       "construction_order": [
         "T100-LQ",
         "T100-L"
@@ -68,13 +132,29 @@
         "T100-LQ": "difference_not_explained_by_gain_alone",
         "T100-L": "difference_not_explained_by_gain_alone"
       },
-      "gain": {
-        "T100-LQ": 548.6939187567017,
-        "T100-L": 548.6939187567017
+      "gain_hex": {
+        "T100-LQ": "0x1.1258d2546f0ebp+9",
+        "T100-L": "0x1.1258d2546f0ebp+9"
+      },
+      "gain_ulps": {
+        "T100-LQ": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        },
+        "T100-L": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        }
+      },
+      "guard": {
+        "T100-LQ": {
+          "classification": "tensor_difference_beyond_gain",
+          "passed": false
+        }
       }
     },
     "controller_threads1": {
-      "variant": "controller_threads1",
+      "process_returncode": 0,
       "construction_order": [
         "T100-LQ",
         "T100-L"
@@ -85,10 +165,53 @@
         "T100-LQ": "difference_not_explained_by_gain_alone",
         "T100-L": "difference_not_explained_by_gain_alone"
       },
-      "gain": {
-        "T100-LQ": 548.6939187567017,
-        "T100-L": 548.6939187567017
+      "gain_hex": {
+        "T100-LQ": "0x1.1258d2546f0ebp+9",
+        "T100-L": "0x1.1258d2546f0ebp+9"
+      },
+      "gain_ulps": {
+        "T100-LQ": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        },
+        "T100-L": {
+          "from_preflight_reference": -5,
+          "from_historical_training": -4
+        }
+      },
+      "guard": {
+        "T100-LQ": {
+          "classification": "tensor_difference_beyond_gain",
+          "passed": false
+        }
       }
+    },
+    "rank_entry_torchrun": {
+      "process_returncode": 1,
+      "error": "torchrun timed out",
+      "torchrun_returncode": -9,
+      "torchrun_timed_out": true,
+      "attestation": {
+        "passed": false,
+        "reason": "missing initial-state record of rank 0"
+      },
+      "run_dir_entries": null,
+      "rank_records": [],
+      "controller_precheck": {
+        "passed": false,
+        "classification": "tensor_difference_beyond_gain",
+        "fe_gain_hex": "0x1.1258d2546f0ebp+9",
+        "other_tensors_match_reference": false,
+        "tensors": 269,
+        "message_first_line": "fresh shared initialization differs from historical T100-L: tensor_difference_beyond_gain (controller pre-check, temporary CPU model)"
+      },
+      "command_starts_with": [
+        "torchrun",
+        "--standalone",
+        "--nproc_per_node=4",
+        "scripts/logsquare_train_rank.py",
+        "--verify-only"
+      ]
     }
   }
 }
