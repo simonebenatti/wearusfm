@@ -5695,6 +5695,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   review dei risultati dei fit, parte non rivista dello scaling). Nota operativa: `ssh leonardo` si e' appeso due volte dopo il banner; la
   connessione condivisa e' stata chiusa con `ssh -O exit` e ha risposto `login02-ext`. Nessun job, nessuna scrittura sul cluster.
 
+### 2026-11-05 | Claude | Review dei risultati del fine-tuning EPN a cinque epoche (GPT db89202): APPROVATO, cinque punti confermati con ricalcolo indipendente, nessun difetto bloccante; parere favorevole con condizioni sul seguito a 15 epoche (richiesta di Simone)
+- Richiesta: prompt di GPT `docs/prompt_claude_finetune_results_20261105.md`, incollato da Simone. Review in
+  `docs/reviews/claude_review_finetune_results_20261105.md`; checkout temporaneo di db89202 rimosso; letture di Leonardo in
+  `~/wearusfm_local/logs/consolidation_ft_results_leonardo_20261105.txt` e `…leonardo2_20261105.txt`. Nessun fit, inferenza held,
+  sottomissione o modifica di runtime, soglie e candidati da parte mia.
+- Metodo: 15 test passati con il comando di GPT; aggregatore rieseguito, `report.json` identico byte per byte (3c4b3601…); ricalcolo con
+  codice mio di inventario, provenienze, selezione, pairing, macrorecall, bootstrap, F-R2 e consuntivo; su Leonardo in sola lettura
+  (10:58 e 11:01 CET) `sacct`, elenco dei file e `sha256sum` dei 108 file. Paragrafi del protocollo su metrica, bootstrap, contrasti e
+  F-R2 identici da 2dbd498 (prima dei fit) a db89202; runtime dei fit e `finetune_plan.json` invariati da a2eeb75.
+- Esito: (1) provenienze, selezione di LR ed epoca sulla sola validation, C0 senza held, un solo `held.npz` per cella scritto a fine
+  job C1 e pairing dei tre regimi confermati; 108 hash remoti uguali al manifest, 24 hash dei checkpoint uguali a quelli scritti dal
+  runtime. (2) frozen 70,575%, FT 93,766%, scratch 92,363%; FT−scratch +1,403 pp [0,930; 1,837], FT−frozen +23,191 pp [21,945; 24,395];
+  2.000 repliche, seed 20261102, nessuno scarto: riprodotti esattamente. (3) lettura «vantaggio alla dose fissata» corretta; quattro
+  fold su quattro positivi (da +1,11 a +1,69 pp), sei classi su sei, 176 soggetti meglio / 36 pari / 102 peggio. (4) F-R2 scatta per la
+  prima clausola ([4,5,5,5], mediana +0,389 pp); il +23,191 non e' presentato come guadagno sul miglior frozen (logistica storica
+  82,577%). (5) consuntivo 68,271667 GPU-ore / 546,173333 core-ore per i 24 fit e 68,523611 / 548,221111 per le 29 voci: il mio `sacct`
+  coincide campo per campo con quello di GPT.
+- Rilievi non bloccanti L1-L4 e limiti nella voce di sezione 2. Parere sul seguito a 15 epoche: favorevole al disegno pre-registrato
+  (inizializzazioni originali, stessa griglia, coseno su 15 epoche) come proposta nuova; prima del lancio vanno scritti contrasto
+  primario, lettura a due lati, regola di arresto e il secondo sguardo sul held; costo indicativo circa 176 GPU-ore / 1.405 core-ore per
+  16 fit contro un residuo del tetto di 75,7 GPU-ore: serve una decisione di budget di Simone.
+- Stato alle 10:58 CET: continuazione 63525803 COMPLETED, 63525805 RUNNING dalle 09:24, 63525809 PENDING per dipendenza. Nota operativa:
+  `ssh leonardo` andava in timeout nel comando proxy pur con certificato valido; ho letto con la connessione diretta
+  (`-o ProxyCommand=none`), con sessioni lente ad aprirsi.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7849,3 +7874,22 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   sul Mac l'ordine degli import non cambia il guadagno. Costo del guasto 0,023333 GPU-ore, nessun dato scientifico toccato.
 - Seguito: R1 e gli elementi per la correzione sono nella review `docs/reviews/claude_review_logsquare_initialization_diagnostic_20261105.md`;
   la correzione e il nuovo riferimento li decide GPT dopo la misura. Nessun lancio mio.
+
+### 2026-11-05 | Claude | Risultati FT EPN a cinque epoche (GPT db89202): nessun difetto; quattro limiti di lettura da dichiarare e rettifica della mia nota N-3 su F-R2
+- Nessun difetto nell'aggregatore, nei numeri o nel consuntivo. Dettaglio in `docs/reviews/claude_review_finetune_results_20261105.md`, §3.
+- **L1 (minore):** LR scelto al bordo della griglia a due punti in 12 celle su 12 (frozen e FT al LR alto, scratch al LR basso; margini di
+  validation da 1,6 a 13,0 pp). L'ottimo di validation non e' delimitato; i selezionati di FT e scratch hanno lo stesso LR dell'encoder
+  (1e-4) e LR della testa diverso (1e-2 contro 1e-3). Il +1,40 e' fra pipeline «migliore di due candidati», non a parita' di
+  ottimizzatore. Da aggiungere ai limiti; nessun candidato nuovo chiesto o scelto.
+- **L2 (minore):** errore Monte Carlo sui limiti dell'IC circa ±0,03 pp (altri 20 semi di bootstrap: inferiore 0,921-0,974, superiore
+  1,841-1,881); la terza cifra decimale non e' informativa. Conclusione invariata.
+- **L3 (nota e rettifica):** F-R2 scatta alla lettera, ma su differenze di 5-19 finestre su 3.600 e con LR sotto il 10% nell'ultima
+  epoca. Su validation e train: FT saturo (mediana 5−4 −0,056 pp, loss 0,02), scratch in lento miglioramento (+0,389 pp, loss
+  0,11-0,14), testa frozen lontana dall'adattamento (+1,319 pp, loss 0,72-0,74). Direzione attesa a dose maggiore: divario ridotto,
+  entita' ignota. La mia nota N-3 in 0b2623a («regola conservativa nel senso di non far scattare il seguito») era incompleta: lo
+  schedule comprime la clausola sulla mediana ma favorisce «migliore epoca = 5». Regola invariata.
+- **L4 (facoltativo):** accanto al +23,19 riportare la distanza descrittiva dalla logistica storica (+11,19 pp, non appaiata) e la
+  distribuzione per soggetto nel testo dell'analisi.
+- **Limiti della mia verifica:** nessun checkpoint caricato e nessuna predizione held rigenerata; i log non hanno righe per epoca, quindi
+  l'unicita' della predizione held poggia su codice, inventario, date dei file e accounting; 82,577% letto dall'aggregato pinnato;
+  controlli di robustezza miei e descrittivi; suite CPU completa non rieseguita (runtime invariato da a2eeb75).
