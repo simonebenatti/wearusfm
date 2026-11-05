@@ -9,6 +9,9 @@ worktree di GPT o ai checkout in uso. Su Leonardo soltanto letture.
 **Aggiornamento delle 21:00:** la terza lettura, sulla correzione `f8cb53f`, e' in fondo al file: convergenza su codice e
 piano, lancio fermo su C-1.
 
+**Aggiornamento delle 22:05:** la quarta lettura, sulla consegna `9d195e7` (uscite su scratch e passaggio operativo), e' in
+fondo al file: convergenza, C-1 soddisfatta alle 21:55.
+
 Ramo `codex/consolidation-20261104`. Codice e piano `e9d9d7b`, consegna `6f5d909`, base del diff `19c3166`. A review in
 corso GPT ha pubblicato `857d6f9` e `c66148b` (punta alle 19:14): toccano solo `tests/cpu/test_pose_b19618_launcher.py` e il
 registro. A `c66148b` `source_identity()` vale ancora `2ab63f44…`, uguale al pin del piano. I test sono rieseguiti anche li'.
@@ -406,3 +409,123 @@ non del codice.
 - Nessuna misura di uguaglianza delle predizioni fra processo con e senza torch. Che le sonde usino le stesse librerie e' un
   fatto; che il risultato sia identico bit per bit resta un ragionamento. La regola di GPT lo dichiara allo stesso modo.
 - Non ho riaperto R-2 ne' le parti gia' approvate, come chiesto.
+
+# Quarta lettura — uscite su scratch e passaggio operativo, consegna `9d195e7` — 05/11/2026, ore 22:05
+
+Richiesta: prompt di GPT incollato da Simone («Quarta review e passaggio operativo — linea 2: EPN15 e valutazione lunga»),
+dopo il suo «direi che ha fatto :». Ho letto il solo diff `51b4574..9d195e7`, un commit. Nessun job durante la lettura. Su
+Leonardo soltanto letture, alle 21:55.
+
+**Esito: convergenza.** Nessun difetto aperto. Il commit che contiene questa quarta lettura e' quello da pinnare come
+`claude_review_converged`; `24860d7` resta la review del codice precedente. **C-1 e' soddisfatta** con le letture delle 21:55
+e va riletta subito prima del primo invio di estrazione. C-2 resta com'era.
+
+| Punto del prompt | Verdetto |
+|---|---|
+| 1. `OUTPUT_ROOT` su scratch, piano e percorsi rigenerati | **APPROVATO** |
+| 2. Controlli di percorso e symlink | **APPROVATO**. Invariati nel codice e raggiungibili sul cluster. |
+| 3. Conservazione sotto i 40 giorni e copia dei metadati sul Mac | **APPROVATO** |
+| 4. Quota scratch e fabbisogno residuo su `$WORK` | **APPROVATO**. Stima verificata, letture fresche sotto. |
+| 5. Owner Claude, stato `awaiting_claude_rereview` | **APPROVATO**. Nessuna convergenza anticipata. |
+| 6. N-4 | **CHIUSO**, correzione nel solo test. |
+| 7. Prontuario, compresa la sintesi senza quinto checkout | **APPROVATO**, con le note N-5, N-6, N-7. |
+
+## Cosa cambia e cosa no
+
+- **Sorgenti coperti dall'identita':** una riga, `OUTPUT_ROOT` in `scripts/consolidation_long_common.py:25`. Launcher,
+  `lib_code_dir.sh` e tutto `src/` invariati.
+- **Identita' ricalcolate:** sorgenti `1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1`, uguale in piano e
+  matrice; ricetta `b2356a8e…`, invariata; `plan.json` `6a46b8eb…`, `launch_plan.json` `6e85e450…`, uguali a
+  `handoff_validation.json`. `validate_plan` rifiuta il piano con «external Claude review has not converged» e lo accetta con
+  `require_review=False`.
+- **`plan.json`, 40 chiavi diverse da `51b4574`:** blocco `review`, `output_root`, `retention`, i due campi dell'owner,
+  `summary_plan_release`, `freeze_period`, `authorization.operator_change`, `source_sha256`. Uguali: protocollo, dosi, viste,
+  teacher, le due ricette, regola di lettura, politica della baseline, batch di estrazione, endpoint, risorse, politica dei
+  fallimenti.
+- **`launch_plan.json`:** 82 job con gli stessi ID nello stesso ordine, stessi stadi e allocazioni. Nei job cambiano 164
+  campi, tutti `out` e l'argomento `--out`, e tutti per pura sostituzione della radice. Fuori dai job: `owner`, regola della
+  quota, `freeze_period`, `source_sha256`, `storage_policy`, `summary_plan_release`. Tetti invariati: 9 GPU-ore,
+  1.711,666667 core-ore, 4 checkout.
+- **Test:** 252 passati con il comando di `CLAUDE.md`, `MKL_NUM_THREADS` assente. Il test nuovo rifiuta la vecchia radice su
+  `$WORK`. L'unica occorrenza rimasta del vecchio percorso in `scripts/`, `src/`, `tests/` e nei piani e' quel test.
+
+## Controlli di percorso: raggiungibili sul cluster
+
+`begin_output` non cambia: l'uscita deve essere assoluta, nuova, sotto la radice anche dopo `resolve()`, senza symlink fra i
+genitori. Con una radice nuova questo controllo poteva fermare tutte le estrazioni al primo secondo, quindi l'ho provato prima.
+Alle 21:55, da `login05`: `/leonardo_scratch`, `large`, `userexternal`, `sbenatti`, `wearusfm_runs`, `results` sono cartelle
+vere, nessun symlink; `resolve()` restituisce il percorso letterale per quattro uscite tipo; `consolidation_long_20261105`
+non esiste ancora. La frase del protocollo esecutivo «È una directory reale, senza symlink» GPT non l'aveva verificata, perche'
+non ha fatto letture remote: e' vera.
+
+## Prontuario contro il codice
+
+- **Submitter:** `scripts/submit_job.py` ha le opzioni usate (`--id`, `--agente`, `--campagna`, `--gpu-ore`, `--timeout`,
+  `--script-stdin`, `--dopo`, `--riconcilia`, `--dopo-rifiuto`). `codice_sha` viene da `EXPECTED_SHA` nella riga di `sbatch`,
+  quindi lo snippet che registra SHA e ID regge. Il file e' identico byte per byte nella consegna, nel worktree di GPT indicato
+  dal prontuario, sul `main` locale e nel mio worktree (`814da4bc…`).
+- **Checkout e launcher:** `campaign_checkout.sbatch` legge `CAMPAIGN` e `CAMPAIGN_SHA` e porta account e log
+  nell'intestazione. Il launcher controlla walltime, CPU, RAM e GPU contro `resources` del piano: le righe del prontuario
+  coincidono per i dieci stadi.
+- **Manifest:** gli snippet producono le strutture che il runtime legge.
+
+  | Fase del pin | File scritto | Dove lo legge il runtime |
+  |---|---|---|
+  | benchmark | `cache_manifest.json` | `load_context`, `_cache`, `_manifest`, `verified_extraction` |
+  | fit | `classification_benchmark_receipts.json`, pin della ricevuta di posa | `_benchmarks`, `_benchmark_gate` |
+  | aggregate | `classification_fit_manifest.json`, `pose_fit_manifest.json` | i due stadi di confronto |
+  | summary | `final_reports` nel piano esterno | stadio `summary` |
+
+  I pin dei manifest sono relativi e `pinned_file` li risolve contro il checkout; i pin di ricevute e cache sono i percorsi
+  assoluti su scratch.
+- **Sintesi senza quinto checkout:** regge. `load_context` non vincola la posizione del piano; `finish_output` ricontrolla
+  il piano a fine corsa, compresi inode e date. Il piano esterno differisce da quello del quarto checkout solo per
+  `final_reports`, quindi i manifest relativi si trovano nel checkout. Il controllo di allocazione legge `resources.summary`,
+  2 CPU, 2 GiB e 10 minuti, come la riga di `sbatch`. La materializzazione gira prima dei moduli, con il Python di sistema:
+  sui nodi di login e' 3.6.8 e il programma non usa nulla di piu' recente. Il piano in base64 pesa circa 30 kB, sotto il limite
+  di 128 kB di una variabile d'ambiente.
+
+## Condizioni operative
+
+**C-1, letture delle 21:55.**
+
+| Filesystem | Libero | Richiesto | Esito |
+|---|---|---|---|
+| Scratch grande | 5,24 PiB, 28,0 miliardi di inode; nessuna quota utente o di progetto configurata | 32 GiB | passa |
+| `$WORK`, progetto 20147512 | 34,72 GiB, usati 1.037.332.788 kB su 1.073.741.824 | 10,724 GiB: 8 di margine, 1 per codice e log, 1,724 di EPN15 ancora da scrivere | passa, 24,0 GiB oltre il richiesto |
+
+Il checkout di EPN15 gia' presente misura 89.352 kB: quattro copie fanno 0,34 GiB, come stimato da GPT. I 24,0 GiB oltre il
+richiesto coprono anche le scritture ancora attese dalle altre linee, che non conosco nel dettaglio. Su `$WORK` lo spazio
+libero e' salito di 1,59 GiB dalle 21:11, non per opera mia.
+
+**C-2** invariata: sorgenti fermi sul ramo di esecuzione fra le fasi; un cambio coperto invalida le dodici estrazioni.
+
+## Note, nessuna blocca
+
+- **N-5, per il coordinamento.** La partizione seriale e' condivisa con la linea dello scaling. Alle 21:55 ci sono nove job
+  `SCALING-probe-fit`, uno in corsa e otto in catena, con limiti che sommano 12 ore e 44 minuti. Occupano nove dei dieci
+  invii ammessi per utente su `lrd_all_serial`. Al checkout di estrazione basta il posto rimasto. Benchmark, 16 job, e fit,
+  51 job, vanno a ondate concordate con quella linea.
+- **N-6.** `authorization_quote` riporta la domanda di Simone senza l'inizio («per C-1») e senza la fine («o è qualcosa di
+  memoria?»). La conferma e' «Sì, scratch», nella mia voce `766e2f5`. Leggere «no li terremo» come «non li terremo» e'
+  un'interpretazione, mia e di GPT, confermata da quella risposta.
+- **N-7.** Sul ramo di esecuzione cambio solo pin, stati e metadati raccolti. Le mie voci di registro restano su
+  `worktree-claude-training-engine`, per non dare all'integratore due versioni del registro. Il `git add` di registro e
+  decisioni previsto dal prontuario su quel ramo resta senza effetto.
+
+## Cosa ho eseguito
+
+- Checkout temporaneo di `9d195e7`; diff di sorgenti, test, piani e documenti; confronto chiave per chiave dei due piani con
+  `51b4574`.
+- I dieci file di test, 252 passati senza `MKL_NUM_THREADS`; `bash -n` di launcher e checkout; `git diff --check` pulito.
+- Lettura di submitter, checkout, launcher, modulo comune e dei punti dei due runtime che leggono manifest e ricevute.
+- Su Leonardo, una connessione di sola lettura: componenti del percorso, quote, riferimenti di deploy, coda, checkpoint di
+  origine, `sacct` di EPN15. Log in `~/wearusfm_local/logs/line2_long4_checks_20261105_2155.txt`.
+- Punta del ramo di GPT ricontrollata prima del verdetto: `9d195e7`.
+
+## Limiti
+
+- Gli snippet dei manifest e il wrapper della sintesi non sono stati eseguiti: le ricevute non esistono ancora. Li ho
+  confrontati con il codice. Il primo uso reale e' a fine estrazioni.
+- La regola di cancellazione a 40 giorni dello scratch la prendo da `CLAUDE.md`, non l'ho riverificata.
+- Restano i limiti della terza lettura sulla regola numerica.

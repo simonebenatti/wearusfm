@@ -6244,6 +6244,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - **Quota di `$WORK`:** 34,72 GiB liberi alle 21:54 (36,05 alle 21:35): `wearusfm_runs/results/scaling_300m_20261105` e' passata da
   quasi zero a 1,23 GiB con le uscite della ridge. MONALISA: 6 job in esecuzione, 30 in attesa. Specchietto aggiornato nello stesso commit.
 
+### 2026-11-05 | Claude | Quarta lettura della valutazione lunga (GPT 9d195e7): convergenza; C-1 soddisfatta alle 21:55; primo consuntivo di EPN15
+- Richiesta: prompt di GPT incollato da Simone («Quarta review e passaggio operativo — linea 2: EPN15 e valutazione lunga»), dopo il suo
+  «direi che ha fatto :». Letto il solo diff `51b4574..9d195e7`. Testo in `docs/reviews/claude_review_consolidation_long_20261105.md`,
+  sezione «Quarta lettura». **Esito: convergenza, nessun difetto aperto.** Il commit di questa voce e' la review da pinnare.
+- Verificato: nei sorgenti coperti cambia la sola riga `OUTPUT_ROOT`; sorgenti `1ca7aead…`, ricetta `b2356a8e…` invariata; 82 job con
+  stessi ID, stadi e allocazioni, 164 campi cambiati per pura sostituzione della radice; tetti 9 GPU-ore e 1.711,666667 core-ore; 252 test
+  passati senza `MKL_NUM_THREADS`, N-4 chiuso; stato `awaiting_claude_rereview` e `validate_plan` che rifiuta. Prontuario confrontato con
+  submitter, checkout, launcher e runtime, compresa la sintesi con piano esterno e quarto checkout.
+- Leonardo, sola lettura alle 21:55 (`~/wearusfm_local/logs/line2_long4_checks_20261105_2155.txt`). Percorso su scratch: sei componenti
+  esistenti, nessun symlink, `resolve()` uguale al percorso letterale, radice della campagna assente. **C-1:** scratch 5,24 PiB liberi,
+  nessuna quota utente o di progetto; `$WORK` 34,72 GiB liberi contro 10,724 richiesti (8 di margine, 1 per codice e log, 1,724 di EPN15).
+  Canonico su Leonardo pulito, `receive.denycurrentbranch updateInstead`, nessun hook, nessun riferimento `deploy/consolidation-long-*`.
+  Ledger: nessun ID `LONG`, nessun lock.
+- EPN15 preso in carico senza reinvii. `sacct` dei 27 ID alle 21:55:47: 11 job chiusi `COMPLETED 0:0` (benchmark, due checkout, otto
+  frozen), 8 C0 in corsa da 8 h 41-8 h 53, 8 C1 in attesa per dipendenza, nessun riavvio. Consumo: chiusi 27,005000 GPU-ore e 216,071667
+  core-ore; in corsa finora 70,651111 e 565,208889; totale 97,656111 GPU-ore e 781,280556 core-ore. Massimo possibile a limiti pieni
+  283,005 GPU-ore e 2.264,071667 core-ore, sotto il tetto di 304,5 e 2.436,666667.
+- Seguito, gia' autorizzato: ramo di esecuzione figlio di `9d195e7`, pin di questa review, checkout e dodici estrazioni. Simone, al mio
+  «Dopo la consegna di GPT faccio una quarta lettura breve, poi pin, checkout e lancio. Non ti chiedo un altro via: è la catena già
+  approvata, 82 job e 4 checkout, con tetto di 9 GPU-ore e 1.711,67 core-ore»: «va bene».
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8697,3 +8718,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Finche' GPT non consegna la radice delle uscite su `$SCRATCH` e io non la rileggo, il piano scrive ancora su `$WORK` e C-1 resta non
   soddisfatta: nessun lancio della valutazione lunga.
 - La fine dei C0 di EPN15 e' una stima, non una misura: tre job letti su otto, ritmo delle prime 11 epoche.
+
+### 2026-11-05 | Claude | Valutazione lunga, quarta lettura: nessun difetto; partizione seriale condivisa con lo scaling
+- **N-5, per il coordinamento.** Alle 21:55 su `lrd_all_serial` ci sono nove job `SCALING-probe-fit`, uno in corsa e otto in catena, con
+  limiti che sommano 12 ore e 44 minuti: occupano nove dei dieci invii ammessi per utente. Al checkout di estrazione basta il posto
+  rimasto. Benchmark, 16 job, e fit, 51 job, della linea 2 vanno a ondate concordate con la linea dello scaling.
+- N-6: `authorization_quote` del piano riporta la domanda di Simone senza inizio e fine; la conferma e' «Sì, scratch» (voce `766e2f5`).
+- N-7: sul ramo di esecuzione cambio solo pin, stati e metadati raccolti; le mie voci di registro restano su questo ramo.
+- Limiti: snippet dei manifest e wrapper della sintesi confrontati con il codice, non eseguiti, perche' le ricevute non esistono ancora.
