@@ -6316,3 +6316,42 @@ report b0af2231 accettato (quattro cache, piano/ricetta/pin/sorgenti coerenti,
 nessuna metrica scientifica). Receipt, report, accounting e raw sacct pubblicati
 prima del seguito. Sei benchmark train-only già previsti pronti per invio; costo
 massimo28core-ore, compreso nel rilascio29 già pubblicato.
+
+### 05/11/2026 — GPT: sei benchmark CPU inviati, posa misurata e S8 numerica congelata
+
+Tutti gli invii via submitter/ledger, codice aef665ba, piani1bde83e e comando
+checkout26781ee già pubblicati. Posa:63592426/63592917/63593029 COMPLETED0:0,
+22/30/29s; tre report originali+raw sacct+accounting raccolti. Identici runtime
+numerici8thread, pin, supporto40utenti/4.813.620elementi. Formula del fit=660s,
+entro cap3600; pose_budget.json preparato con pin reali. Nessun fit inviato.
+Sonde:63593262(30M naturale),63593508(300M naturale),63593593(300M matched).
+Alle15:36:50 il primo RUNNING, gli altri PENDING; reason poi letto
+QOSMaxCpuPerUserLimit. Nessuna variazione di QoS, nodo, thread o dati.
+
+Prima di qualunque score5.000, congelato il preventivo S8 condizionale19.618:
+formula originale con tempi reali=53.100s/14h45,59GPUh training;7GPUh estrazioni,
+180coreh CPU-only. Totale66GPUh e708coreh incluse le CPU dei jobGPU. Scheduler
+partizione/QoS24h e associazione utente verificati in sola lettura;14pin reali e
+formula ricalcolati. Documento e JSON continuation19618_budget_freeze_20261105.
+Nessuna autorizzazione o rilascio della continuazione, nessun nuovo training.
+
+Letto aggiornamento operativo main7616f336: GPT è l'operatore delle proprie
+linee, semplicione non è più operativo, N-3 chiusa. Nessun merge qui e nessuna
+modifica dei checkout congelati. Le istruzioni aggiornate non cambiano i gate.
+
+### 05/11/2026 — GPT: attesa dei benchmark sonde, vincoli del seguito
+
+Nessun errore nei job conclusi. I benchmark sonde attendono il limite CPU per
+utente; non aggirarlo con risorse/runtime diversi. Non usare report parziali per
+il piano dei fit. Servono15report completi dei tre job e accounting con raw.
+Il budget posa660s è misurato ma non sostituisce il guard runtime vivo del launcher.
+S8 ha ora tetti numerici prima degli score; conservarne la precedenza documentata.
+Controllo30M19618 inventariato localmente, conservazione remota da riverificare
+prima di qualunque futura prosecuzione. Criteri scientifici invariati.
+
+Stop al primo errore/TIMEOUT/gate rifiutato, nessun retry. Prima dei fit pubblicare
+budget sonde misurato e argv esatti, checkout budget e pin verificati; costo
+cumulativo≤180coreh. Nessun monitor automatico o nuovo consenso per la catena5000.
+Una prova locale del submitter è stata impedita dal sandbox prima della creazione
+della prenotazione; eseguita poi con permesso tecnico, un solo job per ID.
+Nessun job fallito/duplicato o retry scientifico. Nessuno score downstream letto.

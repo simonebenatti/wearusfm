@@ -72,3 +72,29 @@ prima delle tranche successive, comprendendo eventuali tentativi falliti.
 
 Nessun training nuovo o seguito a 19.618, nessun monitor automatico. L'esecuzione
 di questa catena è già autorizzata da Simone; non serve un ulteriore consenso.
+
+## Invii effettivi e misure al 05/11, 15:36:50 CET
+
+Piani **1bde83e**, comando checkout **26781ee**, verifica iniziale **8cdabd6**;
+SHA origin/deploy verificati. Checkout63591447 COMPLETED0:0/44s e validazione
+63591791 COMPLETED0:0/45s, MaxRSS2,171GiB; accettate le quattro cache posa.
+
+| Job | Operazione | Stato osservato |
+|---|---|---|
+|63592426|Benchmark posa30M naturale|COMPLETED0:0,22s|
+|63592917|Benchmark posa300M naturale|COMPLETED0:0,30s|
+|63593029|Benchmark posa300M matched|COMPLETED0:0,29s|
+|63593262|Benchmark sonde30M naturale|RUNNING|
+|63593508|Benchmark sonde300M naturale|PENDING|
+|63593593|Benchmark sonde300M matched|PENDING|
+
+Le due attese hanno reason `QOSMaxCpuPerUserLimit`. Non è un errore del modello.
+Tre report posa accettati, runtime numerico identico a8thread e supporto corretto;
+la formula congelata deriva **660s** per il fit, entro3600. Budget misurato in
+`cpu_readers_20261105/pose_budget.json`, ancora da distribuire nel checkout budget
+prima del fit. Guard del runtime vivo e dei file ancora obbligatori.
+
+Ricevute submitter di tutti i job raccolte. I tre benchmark sonde devono produrre
+quindici report completi prima di dimensionare i fit. Nessun fit, score o seguito
+19.618 avviato. Il freeze numerico S8 condizionale è pubblicato separatamente in
+`docs/scaling_300m_continuation_budget_freeze_20261105.md`, prima degli score.

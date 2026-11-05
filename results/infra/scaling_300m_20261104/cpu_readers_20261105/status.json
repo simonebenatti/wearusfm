@@ -9,13 +9,76 @@
   "validation_state": "COMPLETED0:0",
   "validation_accepted": true,
   "validation_report_sha256": "b0af2231601d33f60006205681b9943e21c26ff6346b28a4d584ca7840774c63",
-  "benchmarks_submitted": false,
+  "benchmarks_submitted": true,
   "fits_submitted": false,
   "scientific_scores_available": false,
-  "cpu_actual_core_hours_so_far": 0.07888888888888888,
-  "cpu_reserved_core_hours_so_far": 1.5,
+  "cpu_reserved_core_hours_so_far": 29.5,
   "cpu_total_hard_cap": 180,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Submit six published train-only benchmarks, collect reports and raw accounting, then publish actual fit budgets."
+  "next": "Collect three classification benchmark jobs; freeze measured fit budgets, publish and deploy before fits. No scientific score exists yet.",
+  "stage_jobs": [
+    {
+      "id": "SCALING-pose-validate-20261105",
+      "job_id": 63591791,
+      "stage": "pose-validate",
+      "cell": null,
+      "core_hours_cap": 1.0
+    },
+    {
+      "id": "SCALING-pose-bench-30M-20261105",
+      "job_id": 63592426,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-30M-natural",
+      "core_hours_cap": 1.3333333333333333
+    },
+    {
+      "id": "SCALING-pose-bench-300M-20261105",
+      "job_id": 63592917,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-300M-natural",
+      "core_hours_cap": 1.3333333333333333
+    },
+    {
+      "id": "SCALING-pose-bench-matched-20261105",
+      "job_id": 63593029,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-300M-matched",
+      "core_hours_cap": 1.3333333333333333
+    },
+    {
+      "id": "SCALING-probe-bench-30M-20261105",
+      "job_id": 63593262,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-30M-natural",
+      "core_hours_cap": 6.0
+    },
+    {
+      "id": "SCALING-probe-bench-300M-20261105",
+      "job_id": 63593508,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-300M-natural",
+      "core_hours_cap": 12.0
+    },
+    {
+      "id": "SCALING-probe-bench-matched-20261105",
+      "job_id": 63593593,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-300M-matched",
+      "core_hours_cap": 6.0
+    }
+  ],
+  "pose_benchmarks_completed_accepted": 3,
+  "pose_ridge_estimated_seconds": 660,
+  "pose_ridge_cap_seconds": 3600,
+  "pose_ridge_live_runtime_gate_pending": true,
+  "cpu_actual_core_hours_completed_so_far": 0.2588888888888889,
+  "last_checked_at": "2026-11-05T15:36:50+01:00",
+  "classification_benchmark_states": {
+    "63593262": "RUNNING",
+    "63593508": "PENDING (QOSMaxCpuPerUserLimit)",
+    "63593593": "PENDING (QOSMaxCpuPerUserLimit)"
+  },
+  "pose_budget_prepared": true,
+  "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105.json"
 }
