@@ -86,3 +86,28 @@ giàinviati: il cap10 della QoS comprende la ridge. Nuove tranche solo dopo la
 verifica dei conclusi e dei posti liberi. Le finestre di escalation sono il sandbox
 dell'app, distinte dal consenso di Simone già acquisito; si raggruppano le operazioni
 senza aggirare i controlli e senza attivare monitor inbackground.
+
+### 05/11/2026 — GPT scaling: completamento dei soli cinque invii senza monitor AI
+
+Simone chiarisce che vuole evitare il consumo di token durante l'attesa. I dieci
+invii iniziali restano invariati. Preparato finish_submissions.py: avvio unico di
+un processo locale indipendente, senza AI, limitato agli esatti cinque argv10..14
+già pubblicati. Controlla ogni60s, massimo8h; raccoglie e verifica report/audit/hash/
+accounting dei conclusi, rispetta10job seriali/8CPU e310coreh, poi termina appena
+sono tutti15sottomessi. STOP senza retry su errore/ambiguità; prenotazione e lock
+impediscono doppio avvio. Non osserva il completamento finale della campagna.
+
+42test passati, anche10ricevute/ledger reali controllati. Nuova operazione solo
+logistica: runtimeaef, dispatcher c2bd e piano0370cdf invariati. Solver unresolved
+resta flag, nessuna nuova soglia; validazione OOF/scientifica sarà eseguita dagli
+aggregatori congelati. Fonte e comando esatto in finish_execution.json pubblicati
+prima dell'avvio. Mac deve restare non sospeso; schermo spento consentito.
+
+### 05/11/2026 — GPT scaling: attesa senza token, distinta dalla review finale
+
+Il processo locale chiude soltanto le cinque sottomissioni: non modifica budget,
+protocollo, modelli o risultati e non riattiva automazioni della chat. LLM non resta
+in polling. Un errore SSH ferma il processo senza ritentare invii; si conserva STOP.
+Raccolta operativa usa hash OOF remoto senza scaricare dati; contenuto/score OOF
+saranno verificati dall'aggregatore già rivisto. Limite8h o Mac sospeso possono
+ritardare/interrompere i nuovi invii, senza fermare job già affidati a SLURM.
