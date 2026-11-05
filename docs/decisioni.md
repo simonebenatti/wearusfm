@@ -5444,3 +5444,14 @@ La regola del 28/10 e' superata. Sottomette e controlla stato/log l'owner GPT di
 su main e non duplica i lanci. Claude rivede il lavoro e non sottomette. N-2 (2d157cc) e N-3 (c0a4f58) chiuse.
 CLAUDE.md riallineato; invariati submitter e ledger comuni, budget, criteri, review e approvazioni dei singoli test.
 Nessun nuovo job, deploy o modifica ai checkpoint e ai checkout in uso; i registri storici restano conservati.
+
+### 2026-11-05 sera — Claude unico operatore della linea 2 (EPN15 e valutazione lunga)
+
+Simone, sulle due righe della linea2: «da ora in poi questa parte la gestisci tu» e
+«riscrivimi il prompt in modo che sarai tu a fare il deployment e a gestirlo , dimmi se serve un feedback da chat gpt o puoilanciare tu adesso».
+Fonte Claude3566c8dd805a7ce7513481e5df1fdba77b31f5d8, confermata dal messaggio diretto di Simone nella chat GPT consolidamento.
+Deployment, invii, stato/log e raccolta della sola linea2 passano aClaude; GPT mantiene codice e responsabilita' scientifica.
+La disposizione supera la regola delle14:57 solo per questo perimetro; linee1/3 restanoGPT, coordinamento integratore main.
+ConsegnaGPT: uscite lunghe suSCRATCH grande, ownerclaude nei piani, N-4 e handoff; successiva quarta reviewClaude prima dei pin/deploy.
+Nessun nuovo consenso per il piano gia' autorizzato, nessun duplicato o retry cieco; invariati submitter/ledger, tetti e criteri.
+Aggiornati CLAUDE.md e tabella operatori; nessun job, deploy o modifica di sorgenti scientifici da coordinamento.

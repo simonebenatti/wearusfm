@@ -4704,6 +4704,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Citazioni di Simone conservate alla lettera. Semplicione non e' piu' operativo; chiuse N-2 (2d157cc) e N-3 (c0a4f58).
 - Invariati submitter/ledger, budget, criteri, review e approvazioni dei singoli test. Nessun job, deploy o modifica ai checkout attivi.
 
+### 2026-11-05 | Claude | Linea 2 (EPN15 e valutazione lunga): Simone affida a Claude deployment e gestione; stato letto alle 21:05; nessun job
+- Simone, 05/11 verso le 21:05, incollando le righe «2 — EPN15» e «2 — Valutazione lungo» dello specchietto: «da ora in poi questa parte
+  la gestisci tu» e «riscrivimi il prompt in modo che sarai tu a fare il deployment e a gestirlo , dimmi se serve un feedback da chat gpt
+  o puoilanciare tu adesso».
+- Lettura mia: passano a questa chat deployment, sottomissioni, controllo di stato e log e raccolta degli esiti di EPN15 e della
+  valutazione lunga. Codice e responsabilita' scientifica restano a GPT; le altre linee non cambiano. Per la sola linea 2 la disposizione
+  supera la regola del 05/11 ore 14:57 in `CLAUDE.md` («Claude resta revisore e non lancia job»): `CLAUDE.md` su `main` lo aggiorna
+  l'integratore.
+- Stato letto alle 21:05 CET, sola lettura. EPN15: otto C0 in esecuzione da circa 8 ore su 16 (finetune F0-F3 63581718, 63581735,
+  63581742, 63581750; scratch F0-F3 63581768, 63581887, 63582244, 63582258); otto C1 in attesa con `afterok` sul rispettivo C0 (63581725,
+  63581741, 63581745, 63581751, 63581837, 63582180, 63582253, 63582269); checkout `1359b924…` dal ledger. Valutazione lunga: nessuna riga
+  `LONG-` nel ledger. Quota: 33,133 GiB liberi.
+- Non ho lanciato nulla e non ho toccato job o file. Prompt per GPT consegnato a Simone in chat.
+
+### 2026-11-05 | GPT coordinamento | Eccezione operativa linea 2 recepita su main
+
+- Verificato il messaggio diretto di Simone nella chat 2 e acquisita testualmente la fonte Claude3566c8d nelle due sezioni.
+- CLAUDE.md aggiornato: Claude unico operatore EPN15/valutazione lunga per deployment, invii, stato/log e raccolta;
+  GPT consolidamento mantiene codice e responsabilita' scientifica e prepara la sola consegna richiesta.
+- Linee1/3 restano aGPT. Coordinamento integra su main e non duplica i lanci. Invariati submitter/ledger, criteri,
+  budget, review e checkout attivi. Eccezione suSCRATCH per le uscite lunghe recepita documentalmente, non implementata qui.
+- Nessun job, cancellazione, deploy o cambiamento ai piani scientifici da questa consegna.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6582,3 +6605,27 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   La chiusura riguarda l'operatore; non estende la copertura delle review scientifiche o tecniche dei singoli pacchetti.
 - I checkout congelati e i rami sperimentali non vengono aggiornati in corsa. Le loro copie precedenti di CLAUDE.md
   possono conservare il vecchio testo: prevale l'istruzione attuale, da recepire nei successivi aggiornamenti di sviluppo.
+
+
+### 2026-11-05 | Claude | Passaggio della linea 2: cosa serve prima del lancio della valutazione lunga; le uscite su $SCRATCH richiedono una modifica ai sorgenti
+- **Non lanciabile ora, tre motivi.** (1) C-1 non soddisfatta. (2) Senza pin ogni job si ferma all'avvio: `consolidation_long.py:19`
+  chiama `load_context`, che rifiuta il piano non convergente; in piu' `launch_plan.json` dichiara `owner: gpt_consolidation` e i quattro
+  `code_sha` di fase sono nulli. (3) Serve il fermo di GPT sulla linea 2 e la sua consegna operativa, per non avere due responsabili di
+  lancio.
+- **Scratch.** Simone: «per C-1 si puo scrivere sullo scratch grande? no li terremo per piu di 40 giorni, cosi nonabbimao problemi di
+  spazio, o è qualcosa di memoria?». C-1 e' spazio su disco (quota di progetto di `$WORK`), non RAM. Scrivere su `$SCRATCH` la risolve,
+  ma oggi il pacchetto non lo consente: `OUTPUT_ROOT` e' una costante di `scripts/consolidation_long_common.py:25`, `validate_plan` la
+  confronta col piano (`:105`) e la riga `:197` risolve il percorso di uscita e lo vuole sotto quella radice, quindi anche un
+  collegamento simbolico verrebbe rifiutato. Serve una modifica ai sorgenti: cambiano `source_sha256`, piano e percorsi dei job, e ci
+  vuole una quarta lettura breve. Nessuna estrazione e' partita: non si perde nulla. Con le uscite su `$SCRATCH` ricevute, report e
+  manifest vanno copiati sul Mac e committati a fine fase; cache e OOF restano rigenerabili dai checkpoint in `$WORK`.
+- **Proposta, che GPT puo' rifiutare:** una sola consegna di GPT (radice su `$SCRATCH`, owner del piano, N-4, nota di consegna
+  operativa), poi quarta lettura mia sul solo diff; il pin della review e i pin di fase li faccio io su un ramo di esecuzione figlio del
+  commit di GPT, senza toccare i sorgenti, e GPT verifica dopo.
+
+### 2026-11-05 | GPT coordinamento | Unico operatore linea 2, regola generale limitata
+
+- Il precedente divieto a Claude di sottomettere e' superato solo per la linea2; il riferimento generale aGPT non va usato
+  per riprendere l'operativita' EPN15/lungo. Il trasferimento non equivale alla convergenza sul futuro pacchettoSCRATCH.
+- Restano da verificare nella consegna di GPT consolidamento radice/piani/owner, N-4, pin e istruzioni operative;
+  Claude fa la quarta lettura e i successivi pin/deploy nel perimetro autorizzato.
