@@ -6331,6 +6331,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Punte lette: scaling 25eca17, consolidamento 9d195e7, logcontrast 63eba9a, coordinamento 2cf7e8c, `main` fe66e2d, esecuzione della
   linea 2 7d276c9.
 
+### 2026-11-05 | Claude | Linea 2, valutazione lunga: checkout di estrazione verificato, dodici estrazioni sottomesse (63629743-63629759)
+- Checkout `LONG-checkout-extract-20261105`, job 63628160: `COMPLETED 0:0`, 23 secondi, 2 CPU contabilizzate, 0,012778 core-ore, nessun
+  riavvio; partito alle 22:22:36. Log «checkout di campagna pronto». Verifica mia alle 22:24
+  (`~/wearusfm_local/logs/line2_long_checkout_extract_verify_20261105_2224.txt`): HEAD `7d276c98fc54d66dab1226226eb6c5e447422c69`, nessuna
+  modifica, nessun file scrivibile, 1.876 file tracciati, worktree bloccato, 90.140 kB. `plan.json`, launcher e modulo comune hanno gli
+  stessi sha256 del ramo di esecuzione.
+- Controlli riletti alle 22:24, subito prima del primo invio: `$WORK` 34,63 GiB liberi contro 10,724 richiesti; scratch 5,23 PiB liberi,
+  radice della campagna assente, cartella madre scrivibile; nessun job `LONG` in coda.
+- Dodici estrazioni inviate fra le 22:24:56 e le 22:25:09 con il submitter comune, agente `claude`, una alla volta con arresto al primo
+  esito diverso da `sottomesso`: tutte `sottomesso`. Ciascuna: `boost_usr_prod`, 1 GPU, 8 CPU, 100 GiB, 45 minuti, `--no-requeue`, 0,75
+  GPU-ore dichiarate; 9 GPU-ore in tutto, pari al tetto. ID: 19618 p1 63629743, p2 63629744, posa train 63629745, posa val 63629746;
+  39237 p1 63629747, p2 63629748, posa train 63629749, posa val 63629750; 49046 p1 63629753, p2 63629757, posa train 63629758, posa val
+  63629759. Alle 22:25:27 tutte PENDING per `Priority`.
+- Commit documentale sul ramo di esecuzione: `0a4fa39b5fdbef180b8b31ca9844522477f334bf`. Registra `code_sha` della fase extract e i
+  dodici ID in `launch_plan.json`, piu' la copia dei tredici stati del ledger in `execution/submission/`. `plan.json` e sorgenti
+  invariati: i job eseguono `7d276c9`.
+- Seguito: a fine estrazioni raccolgo le dodici ricevute sul Mac, confronto gli hash, costruisco `cache_manifest.json` con lo snippet
+  del prontuario e rilascio la fase benchmark. Nessun invio fino ad allora.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8814,3 +8833,7 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   `DependencyParameters = kill_invalid_depend` un fit fallito fa cancellare allo scheduler il resto della catena.
 - **N-3:** la ridge ha scritto 1,3 GB in `$WORK` (tre file di predizioni da 439 MB); progetto a 989,3G su 1T alle 22:04, circa
   34,7 GiB liberi. Dimensione degli OOF dei fit non ancora misurabile (primo shard in corso).
+
+### 2026-11-05 | Claude | Linea 2: nessun problema nuovo all'invio delle estrazioni
+- La partizione seriale alle 22:24 ha dieci job dell'utente, uno in corsa e nove in coda, nessuno della linea 2: e' al limite dei
+  dieci invii. Il checkout della fase benchmark potra' essere inviato solo quando se ne libera uno (nota N-5).
