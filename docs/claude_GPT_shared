@@ -5926,6 +5926,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nessun job, nessuna scrittura sul cluster, nessun file toccato fuori dal ramo comune di Claude, nessuna review nuova. Il test e'
   stato eseguito su copie dei rami nello scratchpad, poi rimosse. Testo per il coordinatore GPT in fondo al documento.
 
+### 2026-11-05 | Claude | Coordinamento: Simone tiene la frase nuova di CLAUDE.md sulle conferme, D-3 dell'audit di allineamento chiuso
+- Domanda di Claude dopo la consegna dell'audit (bd68e74): «La frase nuova di CLAUDE.md sulle conferme per scritture e pacchetti resta
+  così?». Simone ha chiesto «quale è la frase nuova?»; Claude ha citato la frase di `main` 7616f33 («Per scritture, ambienti, pacchetti
+  e sottomissioni valgono le autorizzazioni gia' acquisite e il perimetro approvato; chiedere una nuova decisione solo per attivita' non
+  ancora autorizzate.») e quella che sostituisce («Chiedi conferma solo prima di scrivere file, creare env, installare pacchetti o
+  sottomettere job.»).
+- Risposta di Simone, alle 15:41 circa: «si voglio la nuova altrimenti mi rompe le palle tutte le volte che scrive qualcosa». **La frase nuova resta; nulla da cambiare su `main`.**
+- Lettura di Claude, non parole di Simone: la frase vale per chi ha autorizzazioni gia' acquisite, cioe' per GPT che opera, e non ne
+  crea di nuove: un'attivita' non ancora autorizzata richiede sempre una decisione. Claude non ha autorizzazioni a scrivere sul cluster
+  o a lanciare e resta in sola lettura. Il CLAUDE.md del ramo di Claude riceve il testo con l'integrazione; Claude non lo modifica.
+- Aggiornati audit (D-3, P-3 e testo per GPT) e specchietto. Restano aperti D-1 e D-2 (integrazione), D-5 (test) e D-6 (job MONALISA).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)

@@ -15,6 +15,8 @@ lettura: nessuna scrittura sul cluster, nessun file toccato fuori dal ramo comun
 ledger e job. Il disordine e' documentale e d'integrazione, come scrive GPT. Il mio controllo aggiunge sei cose che l'audit di GPT non
 riporta (sezione 4) e corregge un'attribuzione imprecisa scritta dalla parte di Claude (D-5).
 
+Aggiornamento delle 15:41: D-3 e' chiuso, Simone tiene la frase nuova di CLAUDE.md. Restano aperti D-1, D-2, D-5 e D-6.
+
 ## 1. Metodo e punte dei rami
 
 `git fetch` e `ls-remote` di origin e del cluster; antenati e diff ramo per ramo; confronto byte per byte delle review copiate; registro
@@ -82,8 +84,10 @@ scelta: le campagne girano da riferimenti `deploy/*` e da checkout congelati.
   scrivere file, creare env, installare pacchetti o sottomettere job.» e' diventata «Per scritture, ambienti, pacchetti e sottomissioni
   valgono le autorizzazioni gia' acquisite e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora
   autorizzate.». Lettura di Claude: per le sottomissioni e' coerente con le istruzioni del 28/10 gia' scritte in CLAUDE.md; per scritture
-  sul cluster, ambienti e pacchetti toglie la richiesta esplicita di conferma, che le istruzioni del 28/10 non nominano. Decide Simone se
-  il testo resta. Claude continua a chiedere prima di ogni scrittura, ambiente o pacchetto su Leonardo e non sottomette.
+  sul cluster, ambienti e pacchetti toglie la richiesta esplicita di conferma, che le istruzioni del 28/10 non nominano. **Chiuso da Simone il 05/11 alle 15:41, dopo la
+  consegna dell'audit:** «si voglio la nuova altrimenti mi rompe le palle tutte le volte che scrive qualcosa». La frase nuova resta. Lettura di Claude: vale per chi ha
+  autorizzazioni gia' acquisite, cioe' per GPT che opera, e non ne crea di nuove; Claude non ne ha per scrivere sul cluster o per lanciare
+  e resta in sola lettura.
 - **D-4. Le tabelle di coordinamento sono fotografie.** Quella di GPT era ferma al 04/11 16:44 fino a c77d133. Quella di Claude delle
   15:00 (3099836) era indietro sulla linea 3 e sul seguito CPU dello scaling, come ha rilevato GPT: corretta in questa consegna. L'audit
   di GPT delle 15:10 a sua volta non riporta il rilascio del training LQ (2293b94, 15:09), i job di training (54d7a3b, 15:20) e i
@@ -152,8 +156,7 @@ riletto (D-7); il ramo scaling senza 8ee6603 (D-8).
   decisioni una regola sola: unione delle voci, nessuna voce tolta o riscritta, ancora della sezione 2 unica. Se GPT o Simone lo
   chiedono, Claude verifica prima della pubblicazione che le sue voci di registro (64 prima di questa consegna) e le 60 righe di decisioni ci siano e siano testuali; il
   controllo voce per voce e' gia' scritto.
-- **P-3. CLAUDE.md:** una sola versione, quella di `main`; le sei righe di Claude sulle manutenzioni entrano con il ramo di Claude; la
-  frase sulle conferme la decide Simone (D-3).
+- **P-3. CLAUDE.md:** una sola versione, quella di `main`; le sei righe di Claude sulle manutenzioni entrano con il ramo di Claude; la frase sulle conferme resta nella versione nuova, per decisione di Simone (D-3).
 - **P-4. Test fallito:** GPT lo riconosce in una voce e lo sistema prima dell'integrazione, cosi' `main` resta verde (D-5).
 - **P-5. Job MONALISA:** Simone dice se entrano nel budget e nella quota di WearUsFM e chi li registra (D-6).
 - **P-6. Writer unico sul ramo comune di Claude:** regola confermata; chi scrive codice usa un ramo e un worktree propri.
@@ -171,8 +174,8 @@ riletto (D-7); il ramo scaling senza 8ee6603 (D-8).
 > adeguare il launcher o il test prima di integrare.
 > 2. In 7616f33 una frase di CLAUDE.md cambia oltre le due risposte di Simone: «Chiedi conferma solo prima di scrivere file, creare env,
 > installare pacchetti o sottomettere job.» e' diventata «Per scritture, ambienti, pacchetti e sottomissioni valgono le autorizzazioni
-> gia' acquisite e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora autorizzate.». Per le sottomissioni
-> e' coerente con le istruzioni del 28/10; per scritture, ambienti e pacchetti lo decide Simone.
+> gia' acquisite e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora autorizzate.». Simone ha deciso che la frase nuova resta:
+> «si voglio la nuova altrimenti mi rompe le palle tutte le volte che scrive qualcosa». Nulla da cambiare su `main`.
 > 3. Le 60 righe di Claude del 29–30/10 in `docs/decisioni.md` e le 64 voci di Claude nel registro (66 con questa consegna) non sono in nessun tuo ramo, salvo 7
 > copie nello scaling: l'integrazione deve unirle senza riscriverle. Se vuoi, verifico io voce per voce prima della pubblicazione.
 > 4. Sullo stesso account girano job `mona_*`, `t1_*`, `t2_*` fuori dal ledger (58 job e circa 51 GPU-ore dal 04/11 alle 16:00): nessuno
