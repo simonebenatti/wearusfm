@@ -5908,6 +5908,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Chiuse: nota N-2 della review 2d157cc (chat 2) e nota N-3 della review 6 c0a4f58 (chat 1). Specchietto
   `docs/coordinamento_review_claude_20261104.md` aggiornato alle 15:00: nessun punto aperto per Simone. Nessun job.
 
+### 2026-11-05 | Claude | Coordinamento: audit di allineamento Claude / GPT su commit e compiti, confrontato con l'audit del coordinatore GPT (c77d133)
+- Richiesta di Simone: «Verifica bene tutto quello cghe hai fatto tu e quello che ha fatto gpt e vedi se qalcosa non tornaa livello di
+  allineamento committ e compiti . Anche di la c'e uan chat coordinatrice e voglio che convegiamo»; poi, con il resoconto di GPT
+  incollato, «confermi?». Documento: `docs/coordinamento_allineamento_claude_gpt_20261105.md`. Fotografia delle 15:23, sola lettura.
+- **Confermo l'audit di GPT in tutti i punti:** 12 review di Claude recepite identiche byte per byte; correzione LQ con i commit
+  conservati (ff08483 antenato di 1dc6ded); nessuna modifica concorrente al codice fra le linee di GPT; ledger dal 04/11 alle 16:00, letto alle 15:26, con
+  186 righe, tutte `gpt`, 89 ID logici e nessuna associazione duplicata; codice eseguito uguale al codice rivisto nelle tre linee;
+  `main` e registri da integrare con una consegna dedicata. Lo specchietto delle 15:00 era indietro sulla linea 3 e sul seguito CPU
+  dello scaling, come ha rilevato GPT: corretto in questo commit.
+- Sei aggiunte rispetto all'audit di GPT, dettagli in sezione 2: frase di CLAUDE.md cambiata oltre le risposte di Simone; test che
+  fallisce in tutti i rami di GPT e passa su `main`; voci e decisioni di Claude assenti dai rami di GPT; job MONALISA sullo stesso
+  account; elenco di cio' che Claude non ha riletto; ramo scaling senza 8ee6603.
+- Stato delle 15:23: training LQ corretto sottomesso da GPT alle 15:18 (63593091 e 63593128 PENDING, GPT 54d7a3b); seguito CPU dello
+  scaling in corso (63593262 RUNNING); 12 fit EPN15 RUNNING e 12 PENDING. Output in `~/wearusfm_local/logs/leonardo_stato_20261105_1520.txt`
+  e `leonardo_stato_20261105_1540.txt`.
+- Nessun job, nessuna scrittura sul cluster, nessun file toccato fuori dal ramo comune di Claude, nessuna review nuova. Il test e'
+  stato eseguito su copie dei rami nello scratchpad, poi rimosse. Testo per il coordinatore GPT in fondo al documento.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8196,3 +8214,23 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-05 | Claude | Review 6 scaling: O-4 chiusa (posa 300M conclusa senza TIMEOUT), nessun problema nuovo dalle ultime due ricevute
 - La posa 300M 63580385 e' finita alle 14:43:18, 32 minuti prima del limite; resta solo il consiglio di `PYTHONUNBUFFERED=1` nel
   prossimo launcher. Le ricevute di 300M P2 e posa non aggiungono problemi; O-1...O-3 e O-5...O-8 restano come registrate.
+
+### 2026-11-05 | Claude | Coordinamento, audit di allineamento: cosa non torna fra i due ambienti (D-1…D-8)
+- **D-1/D-2, integrazione:** `main` 7616f33 non contiene le campagne (mancano 71–96 commit per ramo di GPT e 90 di Claude; ultima
+  fusione incrociata 980ab36 del 29/10). Registro e `docs/decisioni.md` esistono in sette versioni, nessuna completa: 64 voci nuove di
+  Claude e le sue 60 righe di decisioni del 29–30/10 non sono nei rami di GPT, salvo 7 copie nello scaling.
+- **D-3, CLAUDE.md:** in 7616f33 la frase «Chiedi conferma solo prima di scrivere file, creare env, installare pacchetti o sottomettere job.» e' diventata «Per scritture, ambienti, pacchetti e sottomissioni valgono le autorizzazioni gia' acquisite e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora autorizzate.». Va oltre le due risposte di Simone; per le
+  sottomissioni e' coerente con le istruzioni del 28/10, per scritture, ambienti e pacchetti decide Simone. Fusioni di prova con `main`
+  senza conflitti dopo 19c3166.
+- **D-5, test:** `tests/cpu/test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical` passa su `main`
+  7616f33, sul comune di Claude e sull'antenato 73b6fba (14 passati) e fallisce sulle punte delle tre linee di GPT (8cdabd6, 19c3166,
+  26cf367: 1 fallito, 13 passati). Origine: c052792 di GPT (02/11 20:37), non 84408bf come scritto nella review 4 della chat 1, che
+  indicava l'ultimo commit del file. Entrera' in `main` con l'integrazione; nessuna voce di GPT lo riconosce. Nessun job in corso ne
+  dipende (launcher della campagna B19618, conclusa).
+- **D-6, altro progetto:** job `mona_*`, `t1_*`, `t2_*` sullo stesso utente e account, fuori dal ledger: 58 job e circa 51 GPU-ore dal
+  04/11 alle 16:00, 30 job da 24 ore in attesa (15:06). Nessun coordinatore li conta.
+- **D-4/D-7/D-8:** tabelle di coordinamento sono fotografie, anche l'audit di GPT delle 15:10 non ha gli invii del training LQ; Claude
+  non ha riletto piani CPU dello scaling, chiusura di R-2 con i 24 invii EPN15, lettura della diagnostica e rilascio del training LQ;
+  il ramo scaling non contiene 8ee6603.
+- **Limiti di questo audit:** il consumo e i job MONALISA sono letture delle 15:03–15:06; i 15 prompt e i 12 file di review sono stati
+  contati alle 15:10; l'intera `tests/cpu` non e' stata rieseguita, solo il file del test fallito.
