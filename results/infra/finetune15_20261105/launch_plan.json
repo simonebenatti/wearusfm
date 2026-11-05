@@ -1,6 +1,6 @@
 {
   "protocol": "finetune15-launch-plan-20261105-v1",
-  "status": "awaiting_claude_review",
+  "status": "review_converged_awaiting_benchmark",
   "campaign": "finetune15-20261105",
   "owner": "gpt",
   "submitter": "scripts/submit_job.py",
@@ -31,7 +31,7 @@
   "fit_checkout": {
     "id": "FT15-checkout-fits-20261105",
     "checkout_campaign": "finetune15-fits-20261105",
-    "precondition": "new benchmark complete0:0; report/hash/source/recipe/input/checkpoint verified; pin + measured resource projection published and remote SHA verified",
+    "precondition": "new benchmark complete0:0; report/hash/source/recipe/input/checkpoint verified; pin + measured resource projection published and remote SHA verified; ALL THREE regime gates must pass before any fit",
     "slurm_job_id": null
   },
   "checkout_allocation_each": {
@@ -51,7 +51,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -80,7 +80,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -107,7 +107,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -136,7 +136,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -163,7 +163,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -192,7 +192,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -219,7 +219,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -248,7 +248,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -275,7 +275,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -304,7 +304,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -331,7 +331,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -360,7 +360,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -387,7 +387,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -416,7 +416,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -443,7 +443,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -472,7 +472,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -499,7 +499,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -528,7 +528,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -555,7 +555,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -584,7 +584,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -611,7 +611,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -640,7 +640,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -667,7 +667,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -696,7 +696,7 @@
       "prerequisites": [
         "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
         "fresh quota and no existing logical ID in shared ledger",
-        "benchmark pin valid and regime gate passed"
+        "benchmark pin valid and ALL frozen/finetune/scratch gates passed; if any blocked submit no fit"
       ],
       "allocation": {
         "gpus": 1,
@@ -733,5 +733,30 @@
     "automatic_retry": false,
     "recovery": "diagnosis and reviewed concrete amendment before any new attempt; new output namespace and logical ID linked to failed attempt; original initialization and full dose; no held-based retry or candidate replacement",
     "current_job_cap_includes_retries": false
+  },
+  "review_commit": "ceaf95b66519b93e4f2bcfdda2d3cafd2f9f5e24",
+  "budget_authorization": {
+    "confirmed_at": "2026-11-05T11:59:00+01:00",
+    "question": "Confermi il tetto di 304,5 GPU-ore per il confronto EPN a 15 epoche?",
+    "answer": "Confermo il tetto",
+    "source": "Claude addendum ceaf95b, transmitted by Simone in this chat",
+    "total_gpu_hours_cap": 304.5,
+    "total_allocated_core_hours_cap": 2436.6666666666665,
+    "scope": "24 fits, benchmark and two checkouts; no additional attempts",
+    "project_budget_local_hours": 2000000,
+    "project_consumed_local_hours": 1303196,
+    "project_remaining_local_hours": 696804,
+    "balance_observation": "Claude 11:44 CET; independently checked by GPT 12:05 CET",
+    "gpu_hours_not_equated_to_local_hours": true
+  },
+  "matrix_submission_gate": {
+    "required_regimes": [
+      "frozen",
+      "finetune",
+      "scratch"
+    ],
+    "require_all_regime_gates_passed_before_any_fit": true,
+    "if_any_regime_blocked": "submit no fit in any regime; diagnose and publish amendment before proceeding",
+    "enforcement": "owner pre-submission check using benchmark_packaging for all three regimes; per-job runtime guard unchanged"
   }
 }

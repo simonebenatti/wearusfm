@@ -1,6 +1,6 @@
 # EPN a 15 epoche: frozen, fine-tuning e scratch
 
-**Preparazione per la review di Claude; nessun job sottomesso, neppure il benchmark.**
+**Review Claude convergente, commit ceaf95b; pronti ai controlli prima del benchmark.**
 Simone approva di preparare tutto, farlo revisionare da Claude e poi lanciare.
 L'owner resta GPT, con submitter e ledger comuni. Questa consegna non cambia
 i runtime della continuazione lunga, i risultati a cinque epoche o le altre linee.
@@ -23,9 +23,15 @@ prima della prima campagna. I criteri sotto sono fissati prima dei nuovi fit.
 La review Claude `0968bd1` approva i risultati a cinque epoche e propone un
 seguito FT/scratch. Il presente piano comprende anche frozen per la successiva
 istruzione di Simone; non attribuisce questa estensione alla vecchia F-R2.
-L'autorizzazione operativa e al superamento del vecchio budget è già disponibile;
-resta da chiudere la review di questo codice e preventivo, non da richiedere
-un secondo consenso per lo stesso esperimento.
+La review esecutiva `ceaf95b` approva il codice `90ffcd4`. Il 05/11 alle
+11:59 CET, alla domanda «Confermi il tetto di 304,5 GPU-ore per il confronto
+EPN a 15 epoche?», Simone risponde «Confermo il tetto», come riportato
+nell'addendum di Claude trasmesso da Simone. Sono inclusi 24 fit, benchmark
+e due checkout, massimo 2.436,667 core-ore allocate; esclusi tentativi aggiuntivi.
+Il saldo letto da Claude alle 11:44 e verificato da GPT alle 12:05 è
+1.303.196 ore locali consumate su 2.000.000: **residuo 696.804 ore locali**.
+GPU-ore e ore locali non sono unità intercambiabili. Questa registrazione
+sostituisce la precedente frase generica «budget già autorizzato».
 
 ## Disegno fissato
 
@@ -72,7 +78,8 @@ ciascuna nuova cella, non per tutta la storia del progetto. Il confronto non è
 una conferma su un test intatto; la dose non viene selezionata in base al held.
 
 Nonfiniti restano esiti espliciti; OOM/errori software non diventano divergenze
-scientifiche. Se manca una cella, il relativo confronto non è valutabile:
+scientifiche. Finché la matrice non è completa e valida non si pubblica
+nessun contrasto, nemmeno fra i soli regimi completati:
 nessuna eliminazione silenziosa di soggetti, fold, candidati o repliche bootstrap.
 Report, curve, OOF e pesi persistono sotto WORK in directory nuove.
 
@@ -100,7 +107,9 @@ pretraining in questa ricetta; un IC che include zero lascia il vantaggio
 irrisolto; un IC negativo favorisce scratch. Non sono affermazioni sui rispettivi
 ottimi. Per frozen15−frozen5 vale la stessa lettura della differenza;
 avvicinarsi alla logistica sostiene un ruolo dell'ottimizzazione, senza
-identificare quale parte della ricetta abbia causato il recupero.
+identificare quale parte della ricetta abbia causato la variazione. Si riportano
+il contrasto appaiato frozen15−frozen5 e la distanza residua dall'82,577%
+storico, senza un verdetto «recuperato/non recuperato».
 
 Per Δ15−Δ5: un IC interamente negativo sostiene un restringimento del
 vantaggio FT−scratch; interamente positivo, un ampliamento; se include zero,
@@ -115,6 +124,8 @@ validation15−validation14 ≥0,005 (0,5pp). Se incompleto/divergente: non valu
 Flag falso non prova convergenza; flag vero non avvia altre epoche e non
 garantisce ulteriori guadagni. È l'adattamento dichiarato della diagnostica
 precedente, non una soglia di utilità o una regola di arresto durante il fit.
+Il flag descrive la coda dello schedule: nell'ultima epoca il LR scende da
+circa l'1,09% del picco a zero. Non misura il potenziale residuo del modello.
 Si mostrano inoltre le validation dei selezionati a 5 e 15 per fold/regime,
 senza convertirle in un nuovo gate. **La catena termina alla dose 15**: nessuna
 terza dose, nuova griglia o nuovo seme automatici, anche se la migliore epoca
@@ -162,7 +173,11 @@ Prima dei fit: benchmark completo0:0, pin/hash/codice/ricetta/input/checkpoint
 validi,32update+4warm-up, gate tempo ricalcolato per regime e memoria sotto85%
 di host/GPU come prima. L'equivalenza dei sorgenti scientifici5epoche viene
 controllata; il nuovo controller ha identità distinta. Se un gate fallisce si
-ferma la fase interessata e si documenta il problema, senza retry cieco,
+**blocca l'intera matrice: se un solo regime è bloccato, non parte nessun fit**.
+Prima di inviare il primo candidato il responsabile ricalcola i gate di tutti
+e tre i regimi con la stessa ricevuta; soltanto tre esiti `split` consentono
+gli invii. Il controllo per singolo job resta una protezione aggiuntiva.
+Si documenta il problema, senza retry cieco,
 riduzione di epoche/batch/griglia o uso della vecchia ricevuta come autorizzazione.
 
 ## Esecuzione e consegne
@@ -186,7 +201,11 @@ effettivamente eseguiti, manifest, ricevute, selezione, dose e OOF5/15 prima
 dei contrasti. I pin di esecuzione effettivi saranno pubblicati dopo la review
 e la misura; non sono sostituiti da SHA fittizi nella preparazione.
 Nessun monitor automatico. Nessuna ulteriore autorizzazione per la stessa
-catena dopo convergenza; nessun lancio prima della review richiesta da Simone.
+catena dopo la convergenza registrata e la conferma del tetto.
+
+La proposta facoltativa N-5 di allenare frozen su cache è rinviata: richiede
+codice nuovo e una verifica di uguaglianza. Manteniamo il runtime revisionato;
+frozen costa circa 29,23 GPU-ore attese, 48 al tetto, comprese nel totale.
 
 ## TIMEOUT, guasto del nodo e ripetizioni
 
@@ -226,6 +245,7 @@ eventuale conferma indipendente va identificata esplicitamente. Nessuna nuova
 campagna su altri dataset è inclusa nei24fit o nel budget di questa consegna.
 
 [Ricognizione e sequenza proposta](downstream_multidataset_next_20261105.md):
-UCI-EMG escluso dal pretraining, NinaPro DB2 per diverso montaggio/compito,
-Hyser-forza subordinato all'audit dei bersagli. Nessuno dei tre è già autorizzato
+UCI-EMG escluso dal pretraining, Kaifosh benchmark previo audit delle etichette,
+NinaPro DB2 per diverso montaggio/compito, Hyser-forza previo audit dei bersagli.
+Nessuno dei quattro è già autorizzato
 come nuova campagna dal solo inserimento in questa nota.

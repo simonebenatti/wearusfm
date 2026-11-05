@@ -6370,3 +6370,41 @@ La ricetta15 cambia in db975bd1… prima di qualsiasi esecuzione. La review5
 non abilita il nuovo runtime15: prompt aggiornato per chiudere la review
 Claude richiesta da Simone. Budget già autorizzato, nessun nuovo consenso
 operativo da richiedere. Nessun job/monitor avviato. DopoEPN15, altri dataset.
+
+### 05/11/2026 — EPN15: convergenza Claude ceaf95b, tetto confermato e gate globale
+
+Review finale ceaf95b66519b93e4f2bcfdda2d3cafd2f9f5e24 approva90ffcd4;
+R1/R4 già chiuse. R2 ora scritta in protocollo e piano di lancio: se il
+benchmark blocca anche un solo regime, non si sottomette nessun fit. Prima
+del primo candidato l'owner deve verificare tre esiti split con la stessa
+ricevuta; nessun sottoinsieme di regimi o di fold. Codice invariato.
+
+R3: il 05/11 alle11:59CET Claude chiede a Simone: «Confermi il tetto di
+304,5 GPU-ore per il confronto EPN a 15 epoche?». Simone risponde:
+**«Confermo il tetto»**. Fonte: addendum ceaf95b, trasmesso da Simone in questa
+chat. Vale per24fit, benchmark e due checkout: massimo304,5GPUh e
+2.436,667coreh allocate, atteso dai tempi precedenti204,815GPUh per i fit,
+proiezione prudenziale265,038GPUh. Tentativi aggiuntivi esclusi. Questa
+conferma numerica sostituisce le precedenti frasi generiche sul budget, senza
+estendere a FT15 la vecchia autorizzazione limitata alla campagna tokenizer.
+
+Saldo progetto alle11:44CET secondoClaude, verificato dall'owner alle12:05CET:
+1.303.196 ore locali consumate su2.000.000, residuo696.804 ore locali.
+Il tettoFT5 era144GPUh, consuntivo24fit68,271667, residuo75,728333GPUh:
+FT15 ha dunque un tetto aggiuntivo distinto, non entra nel residuoFT5. Non
+si convertono automaticamente GPU-ore in ore locali: billing da consuntivare.
+
+N1/N2/N3 recepite: flag di validation descrive coda dello schedule, confronto
+frozen con logistica soltanto numerico, nessun contrasto finché la matrice
+non è completa e valida. N5 cachefrozen rinviata per conservare il runtime
+revisionato; costo atteso29,23GPUh, tetto48 incluso nel totale. M1–M4 nella
+ricognizione multi-dataset: Kaifosh incluso con audit etichette e10test
+ufficiali (100totali non100test); UCI19 con precisione da motivare, DB2/Hyser
+soggetti esposti distinti da8/4riservati; nuove griglie>=3punti o estensione
+validation-only predefinita, senza cambiare EPN15.
+
+Review indipendente del diff favorevole: solo piani/documenti/stati, ricetta
+db975bd1… e sorgenti13de2f31… invariati. Nessuna nuova suite scientifica
+necessaria dopo107test già passati e rieseguiti daClaude. Segue benchmark
+nuovo; fit solo dopo ricevuta pinnata, gate globale, quota e pubblicazione.
+Nessun nuovo consenso per la catena, nessun monitor automatico.

@@ -31,8 +31,8 @@
     "scratch": 10
   },
   "protocol": "consolidation-finetune15-epn-20261105-v1",
-  "status": "awaiting_claude_review",
-  "fits_status": "awaiting_claude_review",
+  "status": "claude_review_converged",
+  "fits_status": "claude_review_converged",
   "epochs": 15,
   "reading_rule15": {
     "epochs": 15,
@@ -155,14 +155,18 @@
     "minimum_free_bytes_before_each_submission": 6442450944,
     "quota_evidence_max_age_seconds": 3600,
     "inodes_must_have_headroom": true,
-    "quota_evidence": null,
+    "quota_evidence": {
+      "path": "results/infra/finetune15_20261105/preflight_20261105.json",
+      "sha256": "c47792e99041c3c133149bbb5e150f1ed910eb5bc29f97d69f9a9c7cfe698dea",
+      "observed_at_utc": "2026-11-05T11:15:14.980697+00:00"
+    },
     "science_outputs": "WORK; no SCRATCH-only result/checkpoint",
     "fresh_checkpoint_pin_check_before_benchmark": true
   },
   "review": {
-    "status": "awaiting_claude_review",
-    "commit": null,
-    "scope": "all3regimes15epochs; new resource policy and read-only report; no submission including benchmark before convergence"
+    "status": "claude_review_converged",
+    "commit": "ceaf95b66519b93e4f2bcfdda2d3cafd2f9f5e24",
+    "scope": "all3regimes15epochs; runtime90ffcd4 unchanged; R2 all-or-none submission documented; R3 explicit cap confirmation recorded"
   },
   "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
   "fold_regime_cells": 12,
@@ -192,5 +196,29 @@
     "automatic_retry": false,
     "recovery": "diagnosis and reviewed concrete amendment before any new attempt; new output namespace and logical ID linked to failed attempt; original initialization and full dose; no held-based retry or candidate replacement",
     "current_job_cap_includes_retries": false
+  },
+  "budget_authorization": {
+    "confirmed_at": "2026-11-05T11:59:00+01:00",
+    "question": "Confermi il tetto di 304,5 GPU-ore per il confronto EPN a 15 epoche?",
+    "answer": "Confermo il tetto",
+    "source": "Claude addendum ceaf95b, transmitted by Simone in this chat",
+    "total_gpu_hours_cap": 304.5,
+    "total_allocated_core_hours_cap": 2436.6666666666665,
+    "scope": "24 fits, benchmark and two checkouts; no additional attempts",
+    "project_budget_local_hours": 2000000,
+    "project_consumed_local_hours": 1303196,
+    "project_remaining_local_hours": 696804,
+    "balance_observation": "Claude 11:44 CET; independently checked by GPT 12:05 CET",
+    "gpu_hours_not_equated_to_local_hours": true
+  },
+  "matrix_submission_gate": {
+    "required_regimes": [
+      "frozen",
+      "finetune",
+      "scratch"
+    ],
+    "require_all_regime_gates_passed_before_any_fit": true,
+    "if_any_regime_blocked": "submit no fit in any regime; diagnose and publish amendment before proceeding",
+    "enforcement": "owner pre-submission check using benchmark_packaging for all three regimes; per-job runtime guard unchanged"
   }
 }

@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | EPN15 convergente con Claude ceaf95b
+
+Acquisita review ceaf95b (copia testuale con provenienza, SHAoriginale da
+conservare all'integrazione). R2 chiusa: tutti e tre i regimi devono superare
+il benchmark prima di qualsiasi fit. R3 confermata daSimone05/11 11:59CET:
+alla domanda sul tetto304,5GPUh risponde «Confermo il tetto». Registrato in
+decisioni.md con2.436,667coreh e residuo696.804orelocali; esclude tentativi
+aggiuntivi. Codice90ffcd4 invariato, stati convergenti e pinreviewceaf95b.
+
+N1–N3 recepite, cachefrozen rinviata. Ricognizione aggiornata conKaifosh,
+precisioneUCI e popolazioniDB2/Hyser; grigliaFT15 invariata. Review interna
+del diff favorevole. Benchmark e checkout nuovi secondo piano; pubblicare
+ricevuta e gate globale prima dei24fit. Nessun monitor automatico.
+
 ### 2026-11-05 | GPT consolidamento | Review Claude dei risultati5 acquisita; emendamento FT15 pronto
 
 Acquisita testualmente la review0968bd1c45353c19ee518c55c9a0494c68db79a1
@@ -5633,6 +5647,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | EPN15: nessun blocco scientifico, gate prima dei fit
+
+R2/R3 risolte, nessun nuovo codice da sottoporre aClaude. Il tetto è ora
+confermato con cifra esplicita, non dedotto dalla vecchia campagna tokenizer.
+Se un gate per regime fallisce, si ferma tutta la matrice: non spendere su
+frozen/FT senza scratch. Resta da misurare il nuovo benchmark, verificare
+memoria/provenienze e pinnare i risultati prima dei fit. Quota, checkpoint
+e ledger verificati prima delle sottomissioni; nessun retry o monitor automatico.
 
 ### 2026-11-05 | GPT consolidamento | Limiti accettati da Claude e confine della review FT15
 

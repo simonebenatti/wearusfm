@@ -1,0 +1,36 @@
+{
+  "observed_at_utc": "2026-11-05T11:15:14.980697+00:00",
+  "method": "normalized readonly output from saldo -b, lfs project/quota, df, sacct, checkpoint SHA256",
+  "project_id": 20147512,
+  "quota_used_kbytes": 1036554732,
+  "quota_soft_kbytes": 1073741824,
+  "quota_hard_kbytes": 0,
+  "free_bytes_under_soft_quota": 38079582208,
+  "project_inode_usage": 1483675,
+  "project_inode_quota": 0,
+  "project_inode_limit": 0,
+  "filesystem_free_inodes": 29810943574,
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+    "bytes": 454381728,
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "is_symlink": false
+  },
+  "project_balance": {
+    "total_local_hours": 2000000,
+    "consumed_local_hours": 1303196,
+    "remaining_local_hours": 696804
+  },
+  "namespace_exists": false,
+  "benchmark_checkout_exists": false,
+  "ledger": {
+    "logical_ids_checked": 27,
+    "existing": []
+  },
+  "continuation_sacct": [
+    "63525803|COMPLETED|0:0|7994|32|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+    "63525805|COMPLETED|0:0|7186|32|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+    "63525809|RUNNING|0:0|2362|32|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1"
+  ],
+  "quota_scope": "project soft quota effective; shared, not reserved; refresh before submissions"
+}
