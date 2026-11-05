@@ -22,6 +22,7 @@ SPEC = importlib.util.spec_from_file_location('initialization_diagnostic_test', 
 D = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(D)
 REFERENCE_GAIN, TRAINING_GAIN = 548.6939187567023, 548.6939187567021
+STATUSES = ('REVIEW_REQUIRED', 'APPROVED_FOR_DIAGNOSTIC')
 
 
 @pytest.fixture
@@ -404,9 +405,9 @@ def test_run_bounded_returns_the_status_and_kills_the_whole_process_tree(tmp_pat
 
 
 def approved_copy(tmp_path):
-    """The real diagnostic plan, approved only inside this test; every pin is read from the repository."""
+    """The real diagnostic plan, approved and CPU-only inside this test; every pin is read from the repository."""
     plan = json.loads((ROOT / 'results/infra/logsquare_initialization_20261105/plan.json').read_text())
-    assert plan['status'] == 'REVIEW_REQUIRED' and plan['cuda_required'] is True  # the published plan stays unapproved
+    assert plan['status'] in STATUSES and plan['cuda_required'] is True  # the status is the reviewer's to set
     path = tmp_path / 'plan.json'
     path.write_text(json.dumps({**plan, 'status': 'APPROVED_FOR_DIAGNOSTIC', 'cuda_required': False}))
     return path, plan
@@ -574,11 +575,13 @@ def test_reading_needs_every_context(broken):
     assert 'trainer' in D.reading(variants)['reason']
 
 
-def test_published_plan_fixes_the_reading_resources_and_stays_unapproved():
+def test_published_plan_fixes_the_reading_and_resources_and_never_authorizes_training():
     base = ROOT / 'results/infra/logsquare_initialization_20261105'
     plan = json.loads((base / 'plan.json').read_text())
     resources = json.loads((base / 'resources.json').read_text())
-    assert plan['status'] == resources['status'] == 'REVIEW_REQUIRED' and plan['training_authorized_by_report'] is False
+    # Approving the diagnostic is the reviewer's step and must not break this file; training is never authorized here.
+    assert plan['status'] in STATUSES and plan['training_authorized_by_report'] is False
+    assert resources['training_submissions'] is False
     assert plan['variants'] == list(D.VARIANTS) and plan['child_timeout_seconds'] == 90
     assert set(plan['reading']['statements']) == {'cause_demonstrated', 'trainer_builds_the_registered_training_state',
                                                   'fix_dry_run_passed'}
