@@ -6231,6 +6231,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   mattino. Rilanciare non aiuta, perche' azzera l'eta'. Accorciare il limite aiuterebbe il backfill ma tocca un piano congelato ed
   espone a un TIMEOUT: e' una decisione dell'operatore GPT e di Simone, che non propongo.
 
+### 2026-11-05 | Claude | Coordinamento: stato delle tre linee alle 21:54; fit dello scaling avviati, consegna di GPT sulla linea 2 in attesa della quarta lettura
+- Richiesta di Simone: «aggiornami la tabellina». Sola lettura su Leonardo alle 21:53–21:54 (`squeue`, `sacct`, `lfs quota`, `du`;
+  `~/wearusfm_local/logs/leonardo_stato_20261105_2153*.txt`). Nessun job, nessuna review nuova mia.
+- **Linea 1, scaling (GPT ff93003, non rivisto):** UCI accettato, 15 report; rilascio misurato dei fit ec221a6 (14 shard, 205,9
+  core-ore, 255,8 con il consumato, entro 310); ridge della posa 63626871 COMPLETED 0:0 in 4 min 49 s; fit 01 63626931 RUNNING dalle
+  21:52:31, fit 02–09 in catena `afterok`, fit 10–14 da inviare.
+- **Linea 2 (operatore: sottochat 2 di Claude):** consegna di GPT 9d195e7 delle 21:42 con `OUTPUT_ROOT` su `$SCRATCH` e nota
+  `docs/handoff_line2_claude_20261105.md`; quarta lettura non ancora sul ramo comune, sottochat al lavoro alle 21:54. EPN15: otto C0
+  RUNNING da 8 h 39–8 h 51, otto C1 in attesa.
+- **Linea 3:** continuazione 63593128 PENDING per priorita'; diagnosi nella voce precedente.
+- **Quota di `$WORK`:** 34,72 GiB liberi alle 21:54 (36,05 alle 21:35): `wearusfm_runs/results/scaling_300m_20261105` e' passata da
+  quasi zero a 1,23 GiB con le uscite della ridge. MONALISA: 6 job in esecuzione, 30 in attesa. Specchietto aggiornato nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
