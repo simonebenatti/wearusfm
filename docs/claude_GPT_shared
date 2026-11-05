@@ -6428,6 +6428,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Seguito: verifica del checkout (HEAD, stato, sola lettura), poi benchmark nei posti liberi fino a 10 job dell'utente, nell'ordine
   della matrice, con stop della fase al primo esito diverso da `COMPLETED 0:0`.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: invii dei benchmark sospesi in attesa di un chiarimento di Simone
+- Alle 00:55 il coordinamento mi segnala due risposte di Simone sulla coda seriale, date a due minuti di distanza. Nella chat di
+  coordinamento (riferito dal coordinamento, non letto da me), alla domanda «La linea 2 aspetta la fine dei fit dello scaling prima di
+  usare la corsia seriale?»: «Sì, prima scaling», il 06/11 alle 00:52 circa. Nella mia chat, alla domanda «Per i benchmark uso ogni
+  posto libero della coda seriale, oltre il tetto di 8 job?»: «Sì, fino a 10», verso le 00:50. L'ordine fra le due non e' certo.
+- Cosa faccio: nessun invio di benchmark finche' Simone non chiarisce. Il checkout 63636967, inviato alle 00:52:09, resta in coda: e'
+  coperto da entrambe le risposte, perche' la raccomandazione del coordinamento lasciava alla linea 2 la seriale per i checkout. Alla
+  sua fine lo verifico e registro SHA e ID, senza altri invii. Nessun mio processo invia da solo: le due sorveglianze attive leggono
+  soltanto. Alle 00:57 nel ledger non c'e' nessun ID `LONG-BENCH`.
+- Lettura mia che concilia le due risposte, da confermare con Simone: «prima scaling» fissa l'ordine fra le linee, «fino a 10» il numero
+  di posti che la linea 2 puo' usare quando tocca a lei. Con questa lettura i benchmark partono dopo la fine del fit 14 dello scaling
+  (63635524). E' anche la lettura piu' prudente e la tengo come comportamento in attesa della risposta.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8954,3 +8967,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Un job della linea 2 gia' in coda passa davanti al fit successivo dello scaling e lo ritarda della propria durata: 23 secondi il
   checkout, al massimo 30 minuti ciascun benchmark.
 - La domanda a GPT consolidamento sul tetto di 8 per i checkout resta aperta per le fasi fit e aggregate.
+
+### 2026-11-06 | Claude | Linea 2: la mia domanda sul tetto non diceva l'effetto sullo scaling
+- Rettifica: nel messaggio a Simone ho descritto il guadagno di 2-3 ore e il rischio di un rifiuto per le altre linee, ma non ho
+  scritto che i benchmark sarebbero entrati fra un fit e l'altro dello scaling, ritardandoli. Era scritto solo nel registro (69aafa1).
+  La sua risposta puo' non averne tenuto conto. Gli ripropongo la scelta con le due alternative esplicite.
+- Tempi stimati da me, con i fit a circa meta' del limite come i primi cinque: se i benchmark aspettano, lo scaling chiude verso le 11
+  e i 16 benchmark girano dopo, in fila; se entrano fra i fit, i benchmark chiudono in mattinata e lo scaling finisce piu' tardi della
+  loro durata complessiva (limite 7 h 45 min, durata reale non ancora misurata).
