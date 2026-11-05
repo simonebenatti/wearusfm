@@ -3026,7 +3026,7 @@ Riferimento operativo: blocco «Coordinamento attivo: numerazione unica dei sei 
 screening locale-backbone Claude); 6 finestra1 (scienza/piano/reviewGPT, fattibilita'/GPU/dataloader/calibrazione/launcherClaude).
 
 Tranche immediata: GPT diagnosi/test baseline e review; Claude protocolloGPU/dati, bozza della regola di stabilita' e fattibilita'.
-Sonde separate ancora in attesa come da registroClaude12585fd; nessun lancio implicito. SCRATCH entro22/10 coordinato daClaude.
+Sonde separate ancora in attesa come da registro Claude12585fd; nessun lancio implicito. SCRATCH entro22/10 coordinato daClaude.
 Un writer per file, passaggio harness limitato ed esclusivo prima delle modifiche, ledger/submitter comuni. Firma finale di default,
 configurazioni e budget resta di Simone; la numerazione non altera soglie, budget, autorizzazioni di job o campagne gia' congelate.
 
@@ -3292,7 +3292,7 @@ quota, senza superare il tetto; controlli sulla distribuzione campionata. Costru
 `hash` del v1.1 e' rimasto quello di v1 (contenuto: 52549ef8...), segnalato. Dettagli in `docs/manifest_annidati_d16.md`. Prossimi: review di
 GPT, poi costruzione sul cluster (job CPU da autorizzare).
 
-### Lettura della consegna WSD/manifest e priorita' successive (GPT, 15/10/2026, fonteClaude225b380)
+### Lettura della consegna WSD/manifest e priorita' successive (GPT, 15/10/2026, fonte Claude225b380)
 
 Artefatto results/infra/w1cat_20261015.json sul ramoClaude: collaudo w1_catena_v1 PASS sui criteri congelati, codice df4d2f5;
 tronco990->1400, ramo1100->1375, scorte uscite gia' complete. Costo registrato1,55GPUh, infrastruttura9,26/25usate e15,74residue.
@@ -3310,7 +3310,7 @@ non un nuovo valore finale di passi approvato. Distinguere ore nominali/campiona
 Nessuna soglia«1% di loss» adottata dal confronto bf16; norme dei gradienti non attribuiscono causalmente l'apprendimento alle ancore.
 Queste cautele non cambiano verdetti, soglie pregresse o architettura; nessun lancio, nuovo budget o decisione scientifica firmata.
 
-### Parere sulla proposta nested D9 e calendario a 8 nodi (GPT, 15/10/2026, fonteClaude ecdfc50)
+### Parere sulla proposta nested D9 e calendario a 8 nodi (GPT, 15/10/2026, fonte Claude ecdfc50)
 
 Favorevole a manifest congelati per frazione con D9 riapplicata, stessi ingressi e provenienza completa; non ancora adozione delle
 quote finali. Al25% il residuoC rende la massa totale0,99974648745: la normalizzazione globale porta il cap atteso a8,00203.
@@ -6068,3 +6068,10 @@ verifica rigorosa; regressione aggiuntiva su default neutri/rifiuto schema diver
 Launcher, trainer e checkpoint storici intatti. Patch da integrare prima del merge delle campagne su main.
 D-1/D-2 (main e unione dei registri/decisioni) restano aperti; i job MONALISA restano distinguibili dal budget
 WearUsFM ma consumano la quota complessiva dello stesso account, senza cancellazioni o ripartizioni automatiche.
+
+### 2026-11-05 sera — Owner operativo linea2 Claude
+
+Verificata la disposizione diretta di Simone nella chat2 e il registro Claude3566c8d: deployment, invii, stato/log e
+raccolta di EPN15 e valutazione lunga passano aClaude. Codice e responsabilita' scientifica restanoGPT consolidamento;
+linee1/3 invariate. Main **fe66e2d** aggiornaCLAUDE e conserva testualmente le voci Claude. Tabella operatori riallineata.
+Un solo operatore e ledger comune; nessun job/deploy da coordinamento, nessun nuovo esperimento o sblocco implicito dei gate.

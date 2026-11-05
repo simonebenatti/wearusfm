@@ -4,16 +4,23 @@ Simone affida alla chat `coordinamento` il controllo delle interferenze tra i tr
 fork. Base documentale comune `8ee6603`; nessun cambio scientifico con questa nota.
 Worktree sotto `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/`.
 
-| Owner | Perimetro | Worktree | Branch |
-|---|---|---|---|
-| Proponi soluzione per parte scientifica | Scaling 300M, collaudo e screening | `wearusfm-scaling-300m` | `codex/scaling-300m-20261104` |
-| log quadratico e contrastive loss | Log-quadratico su T100-L; contrastiva successiva separata | `wearusfm-logcontrast` | `codex/tokenizer-logcontrast-20261104` |
-| schedule lungo e consolidamento | T100-G 30M lungo, sonde a due momenti/livelli, fine-tuning | `wearusfm-consolidation` | `codex/consolidation-20261104` |
-| coordinamento | Responsabilità e integrazione dei rami revisionati | `wearusfm-coordination` | `codex/coordination-20261104` |
+| Linea | Codice e responsabilita' scientifica | Gestione operativa attuale | Worktree di sviluppo GPT | Branch di sviluppo |
+|---|---|---|---|---|
+| **1 — Proponi soluzione / scaling 300M** | GPT scaling | GPT scaling | `wearusfm-scaling-300m` | `codex/scaling-300m-20261104` |
+| **2 — Schedule lungo e consolidamento (EPN15 e valutazione lunga)** | GPT consolidamento | **Claude: deployment, invii, stato/log e raccolta** | `wearusfm-consolidation` | `codex/consolidation-20261104` |
+| **3 — Log quadratico e contrastive loss** | GPT logcontrast | GPT logcontrast | `wearusfm-logcontrast` | `codex/tokenizer-logcontrast-20261104` |
+| Coordinamento | GPT integratore | Coordinamento dei responsabili, nessun invio duplicato | `wearusfm-coordination` | `codex/coordination-20261104` |
 
-Thread locali, rispettivamente: `01a177ab-e433-7b33-aa9a-7515e750f20f`,
-`01a1a725-89e9-7300-99f8-8df0975cf7dd`, `01a1a72a-070b-7bc1-8eea-452c4c53cff9`,
-`01a1a72c-1ad9-7cd3-b1ad-0f8b77ac0d52`.
+**Aggiornamento degli operatori del 05/11 sera:** eccezione della sola linea 2,
+fonte Claude3566c8d e messaggio diretto di Simone nella chat2. Le verifiche di stato
+successive spettano al suo operatore Claude; i resoconti precedenti sotto sono snapshot storici.
+Codice e responsabilita' scientifica restanoGPT. Regola canonica pubblicata su main **fe66e2d**.
+
+
+Thread locali: **1** `01a177ab-e433-7b33-aa9a-7515e750f20f`;
+**2** `01a1a72a-070b-7bc1-8eea-452c4c53cff9`;
+**3** `01a1a725-89e9-7300-99f8-8df0975cf7dd`;
+**coordinamento** `01a1a72c-1ad9-7cd3-b1ad-0f8b77ac0d52`.
 
 ## Verifica
 
@@ -48,7 +55,7 @@ owner, non su una coda remota osservata vuota.
 - Preparazione, test e preventivo, poi review Claude e convergenza, poi lanci:
   è l'ultima istruzione di Simone nelle tre chat. Dopo la review il piano già
   approvato non richiede un secondo via. Nessun monitor automatico nuovo.
-- Un submitter per linea: il rispettivo owner. Coordinamento non duplica lanci.
+- Un submitter per linea: GPT per 1/3; Claude per EPN15 e valutazione lunga della 2 (eccezione del 05/11 sera). Coordinamento non duplica lanci.
   Tutti usano `scripts/submit_job.py` e `~/wearusfm_local/jobs/`, prenotazione
   sotto lock, controllo ID esistente e riconciliazione delle risposte ambigue.
 - Namespace assegnati: `SCALING-300M-*` (confermato dall'owner), `LOGSQ-*` /
@@ -88,3 +95,11 @@ Audit Claude ef0d987 e stato19:03 recepiti in [seguito](reviews/seguito_audit_cl
 Chat1: stop scalingCPU dopoTIMEOUT; diagnosi/promptClaude03cbd18, nessun recupero lanciato sotto il piano fallito.
 Chat2: EPN15in corso; valutazione lungo implementata e consegnata per reviewClaude a6f5d909.
 Chat3: LQ5000completo,19618Priority. D-5 corretto nel solo test a d2f2f08 (15verdi), integrazione main ancora distinta.
+
+### Passaggio operativo della linea 2 a Claude — 05/11 sera
+
+Verificato il messaggio diretto di Simone nella chat2: «c'e un cambio di programma. i task di questa chat d'ora in poi li lancia claude».
+Citazioni e fonte Claude3566c8d recepite su main **fe66e2d**; copia canonica CLAUDE.md allineata anche in questo ramo.
+GPT consolidamento consegna modifica radiceSCRATCH, ownerclaude, N-4 e istruzioni operative; non esegue nuovi deploy/invii
+sulla linea2. Claude rivede il diff e prepara pin/deploy secondo il passaggio concordato. Nessun nuovo esperimento implicito.
+Riepiloghi futuri della linea2 devono citare gli esiti raccolti dall'operatore Claude, senza attivare un secondo ciclo operativo.
