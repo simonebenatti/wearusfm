@@ -6295,3 +6295,15 @@ oltre ai checkout. Si rilascia ora soltanto posa 5.000, con stima proxy di 1.801
 tetto 0,833333 GPU-ore e 7 core-ore incluso checkout. Nuovo piano e checkout,
 inference_plan eseguito immutabile. Nessun cambiamento scientifico o monitor.
 Correzione separata del solo test storico B19618 adottata (99efdef), 15 test verdi.
+
+### 05/11/2026 — Posa LQ inviata; review Claude e contabilità
+
+Estrazione 63615952 RUNNING dalle 19:24:49 CET sullo SHA 9720fc8, dopo checkout
+63615611 completo e verificato. Allocazione 1 GPU / 8 CPU / 100G / 50 min.
+Review Claude 49f9438 APPROVATA per rilancio ed esito 5.000; R-1 corretto solo nel test.
+La contabilità della tranche di training comprende tentativo fallito, 5.000 e 19.618:
+massimo finale possibile 20,434444 GPU-ore, entro il tetto 22. Diagnostica, benchmark,
+checkout e valutazioni hanno preventivi separati. Nessun cambio di guard o release.
+
+R-1 chiuso: 363 test passati nei 12 file LQ (113,37 s fuori sandbox), oltre ai
+15 test del launcher storico. Confermati invariati i 110 sorgenti scientifici.

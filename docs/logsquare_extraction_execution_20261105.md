@@ -30,3 +30,13 @@ La continuazione del training 63593128 resta indipendente. Nessun monitor in bac
 Adottato dal coordinamento d2f2f08 come 99efdef: il test B19618 usa ora il runtime
 storico pinnato dal launcher invece dello schema corrente. 15 test passati in 3,86 s.
 Nessun launcher, trainer, sorgente scientifico o checkout già in esecuzione modificato.
+
+## Invio
+
+Codice congelato 9720fc8f7510bd8e7640164630da30515a8b3210, pubblicato e verificato
+su origin. Checkout 63615611 COMPLETED 0:0 in 30 s (0,016667 core-ore); SHA, piano,
+110 sorgenti, pulizia e sola lettura verificati. Estrazione 63615952 sottomessa tramite
+submitter e ledger comuni, RUNNING dalle 19:24:49 CET. Allocazione osservata corretta:
+1 GPU, 8 CPU, 100G, 50 minuti. Continuazione 63593128 ancora PENDING Priority.
+Il successivo test R-1 viene corretto solo nel ramo di sviluppo: questo checkout
+congelato e i job già avviati rimangono invariati.

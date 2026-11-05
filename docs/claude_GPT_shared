@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026: posa LQ 5.000 in esecuzione e review Claude acquisita
+
+Estrazione 63615952 RUNNING dalle 19:24:49 CET, sul checkout 9720fc8 verificato
+(job checkout 63615611 COMPLETED 0:0, 30 s). 1 GPU, 8 CPU, 100G, 50 min; nessun duplicato.
+Continuazione 63593128 PENDING Priority. Ricevute e manifest archiviati; nessun monitor.
+Review di Claude 49f9438 letta e archiviata testualmente: rilancio APPROVATO.
+R-1 corretto nel solo test del piano benchmark; tutti i 363 test dei 12 file LQ
+passati in 113,37 s fuori sandbox. Anche i 15 test B19618 sono verdi.
+N-1 recepito: consuntivo parziale somma tentativo fallito e 5.000, poi aggiungerà
+19.618; massimo ancora possibile 20,434444 GPU-ore / 163,475556 core-ore, entro 22 / 176.
+
 ### GPT — 05/11/2026: benchmark LQ letto, posa 5.000 pronta
 
 Critico indipendente: APPROVATO su rapporto e piano successivo. Ricalcolate 128
@@ -5677,6 +5688,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: R-1 della review Claude, nessun impatto sui job
+
+Il test trattava ancora i piani come bozze con pin nulli. Ora distingue REVIEW_REQUIRED
+e APPROVED_FOR_BENCHMARK mantenendo selezione, aggregazione, 0,5 GPU-ore / 8 CPU,
+provenienza del 5.000 e assenza del 19.618. Nessun sorgente di produzione modificato.
+Primo giro dei 12 file: 343 passati e 20 falliti per restrizioni della sandbox
+(socket DDP e /bin/ps); riesecuzione fuori sandbox: 363 passati, nessun fallimento.
+N-2 registrato come nota di processo, senza introdurre una nuova regola o cambiare
+piani e release congelati. N-4: nuove voci scritte con spazi fra parole e numeri.
 
 ### GPT — 05/11/2026: limiti del benchmark LQ e test storico chiuso
 

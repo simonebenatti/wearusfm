@@ -1,5 +1,6 @@
 """Independent timing/aggregation oracles and train-only sampling gates."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -116,10 +117,55 @@ def test_p2_train_only_file_reader_does_not_open_excluded_subjects(tmp_path, mon
 def test_review_plan_freezes_selection_aggregation_and_null_candidate_pins():
     root = B.V.REPO / 'results/infra/logsquare_evaluation_20261104'
     plan = json.loads((root / 'inference_plan.json').read_text())
-    assert plan['status'] == 'REVIEW_REQUIRED' and plan['selection'] == B.SELECTION and plan['aggregation'] == B.POLICY
-    assert plan['allocation']['gpu_hours_cap'] == .5 and plan['allocation']['cpus'] == 8
-    e = json.loads((root / 'extraction_plan.json').read_text())
-    assert e['checkpoints'] == {'5000': None, '19618': None} and e['inference_receipt'] is None
+    assert plan['protocol'] == B.PROTOCOL
+    assert plan['status'] in ('REVIEW_REQUIRED', 'APPROVED_FOR_BENCHMARK')
+    assert plan['selection'] == B.SELECTION and plan['aggregation'] == B.POLICY
+    assert plan['allocation'] == {'nodes': 1, 'gpus': 1, 'cpus': 8, 'memory': '100G',
+        'walltime_seconds': 1800, 'gpu_hours_cap': .5, 'allocated_core_hours_cap': 4.}
+
+    def pinned_local_json(pin):
+        path = B.V.REPO / pin['path']
+        raw = path.read_bytes()
+        assert hashlib.sha256(raw).hexdigest() == pin['sha256']
+        if 'bytes' in pin:
+            assert type(pin['bytes']) is int and len(raw) == pin['bytes']
+        return json.loads(raw)
+
+    assert B.V.REPO / plan['extraction_plan']['path'] == root / 'extraction_plan.json'
+    e = pinned_local_json(plan['extraction_plan'])
+    assert e['protocol'] == B.V.PROTOCOL and e['arm'] == 'T100-LQ'
+    assert e['status'] == plan['status']
+    assert set(e['checkpoints']) == {'5000', '19618'}
+    assert e['checkpoints']['19618'] is None
+    assert e['inference_receipt'] is None and e['allocations'] == {}
+    assert e['source_sha256'] == plan['source_sha256']
+    if plan['status'] == 'REVIEW_REQUIRED':
+        assert e['checkpoints']['5000'] is None
+    else:
+        # Approval requires the immutable 5k endpoint and its full provenance;
+        # accepting the new state must not also accept the old placeholders.
+        cp = e['checkpoints']['5000']
+        assert isinstance(cp, dict)
+        assert set(cp) == {'path', 'sha256', 'bytes', 'config_path', 'config_sha256',
+            'receipt_path', 'receipt_sha256', 'training_code_sha',
+            'training_plan_sha256', 'release_sha256'}
+        for key in ('sha256', 'config_sha256', 'receipt_sha256',
+                    'training_plan_sha256', 'release_sha256', 'training_code_sha'):
+            digest = cp[key]
+            assert isinstance(digest, str) and len(digest) == (40 if key == 'training_code_sha' else 64)
+            assert set(digest) <= set('0123456789abcdef')
+        assert type(cp['bytes']) is int and cp['bytes'] > 0
+        assert all(Path(cp[key]).is_absolute() for key in ('path', 'config_path', 'receipt_path'))
+        training = pinned_local_json(e['training_plan'])
+        assert training['status'] == 'APPROVED_FOR_TRAINING'
+        assert cp['path'] == str(Path(training['run_dir']) / 'checkpoint_step0005000.pt')
+        assert cp['receipt_path'] == training['phase_receipts']['5000']
+        assert cp['config_path'] == str(Path(cp['receipt_path']).with_name('config.json'))
+        assert cp['training_plan_sha256'] == e['training_plan']['sha256']
+        assert cp['release_sha256'] == training['training_release']['sha256']
+        pinned_local_json(training['training_release'])
+        assert cp['config_sha256'] == e['candidate_config']['sha256']
+        pinned_local_json(e['candidate_config'])
 
 
 @pytest.mark.parametrize('name', ['logsquare_infer_benchmark', 'logsquare_evaluation'])
