@@ -5872,6 +5872,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `docs/logsquare_initialization_fix_20261105.md`, sezione 7 nuova; `local_smoke.json` e `local_validation.json` aggiornati.
 - A GPT: chiusura della review sul diff mirato; poi stato del piano, checkout congelato e diagnostica, sotto l'autorizzazione che ha gia'.
 
+### 2026-11-05 | Claude | Review 6 scaling, aggiunta: ricevute di 300M P2 e 300M posa verificate, le cinque estrazioni sono concluse e conformi (seguito della richiesta di Simone)
+- Le due estrazioni in corso alla consegna di c0a4f58 sono COMPLETED 0:0: 63580771 (300M P2) in 1:38:25 su 2:30:00, 63580385 (300M
+  posa) in 1:57:33 su 2:30:00. Solo letture (`sacct`, `ls`, copia di ricevute e provenienza in `~/wearusfm_local/logs/review6_remote/`);
+  nessun job, nessuna modifica. Dettaglio nel §9 aggiunto a `docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md`.
+- Ricevute `172aa79b…` e `a57c9420…`: complete, checkpoint invariato 37279995…, piano 8b358951…, guadagno dal buffer salvato, input
+  grezzi invariati. P2: provenienza uguale al 30M tranne braccio, cache, checkpoint, modello e pool (47.100/314 e 364/19). Posa: stessi
+  bersagli (`metadata`, `arrays`, `central_mask`), finestre, utenti e riferimenti B19618 delle cache 30M riusate (1.907/40 e 18.548/15).
+- Dodici cache nuove e due riusate presenti, con supporti uguali fra i bracci; consuntivo delle cinque estrazioni 4,853 GPU-ore su
+  8,25 e 38,83 core-ore su 66. Verdetto invariato. La punta di GPT e' passata a c3b2ab6 (due commit di sole registrazioni, nessun
+  file di codice): non rivista; i suoi quattro hash delle ricevute di classificazione coincidono con i miei.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8156,3 +8167,7 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   (49 nello smoke locale): e' il numero di processi dell'invocazione, non di worker.
 - **Suite `tests/cpu` completa non rieseguita** dopo questa correzione: i file cambiati sono letti solo da tre file di test LQ, tutti
   rieseguiti. Resta il fallimento preesistente gia' segnalato (`test_pose_b19618_launcher.py`).
+
+### 2026-11-05 | Claude | Review 6 scaling: O-4 chiusa (posa 300M conclusa senza TIMEOUT), nessun problema nuovo dalle ultime due ricevute
+- La posa 300M 63580385 e' finita alle 14:43:18, 32 minuti prima del limite; resta solo il consiglio di `PYTHONUNBUFFERED=1` nel
+  prossimo launcher. Le ricevute di 300M P2 e posa non aggiungono problemi; O-1...O-3 e O-5...O-8 restano come registrate.
