@@ -269,9 +269,11 @@ sono cambiati. Il piano resta `REVIEW_REQUIRED`. Nessun job, training, retry o r
   durante l'attesa e ogni 0,1 s durante la pulizia.
 - L'appartenenza a un gruppo sopravvive alla morte del padre. Un worker resta tracciato
   anche quando il suo launcher è terminato.
-- I segnali vanno per PID, solo a membri elencati nella tabella corrente. Mai a un
-  gruppo, a un identificatore memorizzato o a un nome di programma. Un gruppo vuoto
-  viene dimenticato subito: il suo numero non può indicare un processo successivo.
+- Con tabella disponibile i segnali vanno per PID, solo a membri elencati nella tabella
+  corrente, non a nomi di programma. Senza tabella resta il fallback al solo gruppo
+  della radice viva e non raccolta, descritto sotto. Un gruppo osservato vuoto viene
+  dimenticato subito: riduce il rischio di riuso del numero, senza escludere ogni gara
+  fra snapshot o fra lettura e segnale (precisazione della review GPT di chiusura).
 - Lo stesso `run_bounded` serve i due livelli. Se scade prima il limite esterno, il
   genitore chiude figlio, launcher e worker.
 - Senza tabella dei processi non parte nessun comando. Una lettura fallita durante la
@@ -406,8 +408,9 @@ secondi. Durata 97 secondi, uscita 1 come atteso in locale.
 - Il test con il contesto elastic reale usa torch 2.14 e viene saltato con un'altra
   firma. Per torch 2.2 di Leonardo il comportamento è stato letto nel sorgente.
 - Limite residuo: non viene tracciato un discendente che passa in una sessione propria e
-  perde il padre prima che una tabella lo mostri come figlio di un membro. La finestra è
-  al più 0,5 secondi in attesa e 0,1 in pulizia. I worker di torchrun restano figli
+  perde il padre prima che una tabella lo mostri come figlio di un membro. Gli intervalli
+  nominali sono 0,5 secondi in attesa e 0,1 in pulizia; il tempo di lettura di ps si
+  aggiunge, quindi non sono limiti rigidi della finestra cieca. I worker di torchrun restano figli
   dell'agente per tutta la loro vita. Walltime e cgroup di SLURM restano la protezione
   esterna.
 - I 75 secondi di attesa di un contesto di costruzione non hanno una durata misurata

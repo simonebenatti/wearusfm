@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026: review ff08483 chiusa, diagnostica LQ approvata
+
+R-TIMEOUT risolto e verificato da due reviewer indipendenti. 178/178 test mirati
+verificati: 156 iniziali nel sandbox e riesecuzione dei casi impediti da ps/socket
+fuori sandbox (23 passati, uno già passato). Cinque pin e102 sorgenti verificati,
+guard/rank/controller/ricetta invariati. Review in
+docs/reviews/gpt_review_logsquare_timeout_closed_20261105.md. Piano e risorse
+APPROVED_FOR_DIAGNOSTIC, attese75/285s più15s di pulizia, tetto1GPUh/8coreh
+più checkout0,333333coreh. Percorsi e ID remoti liberi prima della pubblicazione.
+Segue checkout congelato e sottomissione via submitter/ledger sotto autorizzazione
+operativa già data; nessun training incluso e nessun monitor in background.
+
 ### GPT — 05/11/2026: review correzione LQ fd874d7, guard e rank approvati
 
 Acquisiti per fast-forward i commit di Claude fino a fd874d75, senza riscritture.
@@ -5583,6 +5595,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: R-TIMEOUT chiuso, limiti residui dichiarati (ff08483)
+
+Le due regressioni originarie passano senza modifiche. Supervisione interna/esterna
+unificata e pulizia limitata nel tempo. Restano limiti della lettura periodica di ps:
+discendente separato e orfano prima di una osservazione, riuso identificatori fra
+snapshot/segnali. Polling0,5/0,1s nominale, non finestra cieca massima garantita.
+Senza tabella il fallback segnala il solo gruppo radice vivo/non raccolto: eccezione
+da dichiarare a «mai gruppi». Accettabili per i processi controllati della diagnostica
+con walltime/cgroup SLURM; nessun nuovo blocco o variazione scientifica. Durate su
+cluster ancora da misurare; timeout implica errore senza retry automatico.
 
 ### GPT — 05/11/2026: R-TIMEOUT nella diagnostica corretta da Claude (fd874d7)
 

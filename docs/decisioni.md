@@ -6206,3 +6206,16 @@ i propri processi. Dettagli in docs/reviews/gpt_review_logsquare_initialization_
 Nessun job sottomesso, piano REVIEW_REQUIRED, nessuna release nuova. Dopo la correzione
 e review mirata GPT procede alla diagnostica già autorizzata; la sua lettura precede
 qualunque rilascio del training. Il blocco è tecnico, non un consenso operativo mancante.
+
+### 05/11/2026 — Chiusura R-TIMEOUT e rilascio del solo diagnostico LQ
+
+Review di ff08483 favorevole, due verifiche indipendenti e178/178 test mirati verificati.
+Piano e risorse APPROVED_FOR_DIAGNOSTIC; attese75/285s e pulizia15s mantenute, tetto
+900s/4GPU/32CPU/240G =1GPUh/8coreh più0,333333coreh checkout. Nessuna durata cluster
+ancora osservata: un timeout non produce lettura e non autorizza retry. Limiti residui
+del polling ps dichiarati nella review gpt_review_logsquare_timeout_closed_20261105.md.
+
+Checkout nuovo logsquare-initdiag-20261105, ID logici LOGSQ-initdiag-checkout-20261105
+e LOGSQ-initdiag-run-20261105, dopo pubblicazione del commit; submitter e ledger comuni,
+nessun monitor. Le autorizzazioni persistenti di Simone coprono questa sottomissione.
+Guard/controller/rank e102 sorgenti invariati; nessun rilascio training in questo commit.

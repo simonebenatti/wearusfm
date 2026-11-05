@@ -1,6 +1,6 @@
 {
   "protocol": "logsquare-initialization-diagnostic-20261105-v1",
-  "status": "REVIEW_REQUIRED",
+  "status": "APPROVED_FOR_DIAGNOSTIC",
   "training_plan": {
     "path": "results/infra/logsquare_training_20261104/training_plan.json",
     "sha256": "07a7531fdd4ab3f4a9be2b6900c4c3464fe61329ab5e75e890637a936dcd804c",
@@ -63,5 +63,14 @@
       "any context failed or timed out": "No reading: computable is false whenever a context reports an error, including processes that outlived their context or survived the cleanup. No relaunch, no automatic rerun."
     },
     "informative_only": "controller_threads1, and the guard's refusal of the preflight context: expected by design, since no T100 training ran in that numeric context. Neither enters the three statements."
+  },
+  "diagnostic_approval": {
+    "reviewed_code_sha": "ff08483fd04aa5668d97ba54d6b4153a14ff33fe",
+    "review": {
+      "path": "docs/reviews/gpt_review_logsquare_timeout_closed_20261105.md",
+      "sha256": "1fb8ede7a88b6fc426aaea35c5efa80fd890fbfc46a5dbd15a7cff89af56c8b5",
+      "bytes": 4279
+    },
+    "training_approved": false
   }
 }
