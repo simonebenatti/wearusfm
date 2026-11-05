@@ -337,16 +337,22 @@ T25-L/B resta un riferimento empirico, non una soglia statistica universale;
 review f70dc72 convergente. [Benchmark v2 e piano dei fit](finetune_v2_execution_20261104.md).
 
 
-### 05/11 — Valutazione del lungo: correzioni dopo la review Claude
+### 05/11 sera — Linea 2: gestione operativa passata a Claude
+
+Per disposizione diretta di Simone, Claude gestisce EPN15 e valutazione lunga:
+deployment, invii, stato/log e raccolta. GPT mantiene codice e responsabilità
+scientifica; nessuna operazione da GPT dopo il passaggio. Fonte Claude3566c8d,
+regola canonica mainfe66e2d. [Consegna operativa](handoff_line2_claude_20261105.md).
 
 | Attività | Che cosa è pronto | Risultato attuale | Conclusione / prossimo passo |
 |---|---|---|---|
 |Training lungo T100-G30M|Tre segmenti e copie persistenti19k/39k/49k|COMPLETED0:0, hash e dosi verificati;25,283GPUh|Endpoint utilizzabili dopo i gate di caricamento, prestazioni ancora da valutare|
-|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|R-1b corretto: contesto storico preservato più soli poolOpenMP8 dichiarati; prova reale con/senzaTorch compatibile, non identica|Terza lettura Claude sul diff; poi12estrazioni, benchmarkCPU e gate globale48shard soltanto con quota sufficiente|
+|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|Review24860d converge su51b4574; R-1b chiuso, nuovi outputSCRATCH e ownerclaude preparati|Quarta lettura sul cambio minimo, poi Claude pinna e lancia12estrazioni, benchmarkCPU e gate48shard|
 |Posa e dinamica del lungo|Testa allenata e ridgepre/post su crop6 comune;E2 con pairing storico|Disegno approvato da Claude; entrambi i pannelli primari restano affiancati, nessuno score nuovo|Benchmark posa e poi3fit/analisi +confronto, lettori CPU8thread|
-|Risorse e qualità|82jobcalcolo+4checkout; tetti e shard conservati|Tetto9GPUh/1711,667coreh; R-2 chiuso. Quota33,143GiB contro33,724necessari includendo FT15 ancora da scrivere|[Pacchetto corretto](consolidation_long_execution_20261105.md); C-1 aperta: nessuna estrazione con margine insufficiente, sorgenti congelati fra fasi|
+|Risorse e qualità|82jobcalcolo+4checkout; tetti e shard conservati|Tetto9GPUh/1711,667coreh;24GiB output suSCRATCH per meno40giorni, WORK1GiB aggiuntivo stimato per codice/log|[Pacchetto aggiornato](consolidation_long_execution_20261105.md); Claude verifica quoteSCRATCH/WORK fresche, esporta metadata a fine fase e mantiene sorgenti congelati|
 
-FT15 resta separato e già in corso. Nessun nuovo job/monitor dalla preparazione
-del lungo. Seconda review Claude `44cfa85`: non convergente; correzioni R-1b
-e uscita reale Leonardo pronte per terza lettura. Nessuna approvazione attribuita
-in anticipo; problema di quota dichiarato separatamente dalla correzione numerica.
+FT15 già in corso: ultimo stato diClaude21:05CET,8frozen completi,8C0FT/scratch
+in esecuzione,8C1 in attesa. Nessun controllo remoto aggiuntivo diGPT. Nessun
+IDLONG nelledger e nessuna operazione sospesa. Nuovo stato del pacchetto
+awaiting_claude_rereview perSCRATCH/handoff; la review24860d resta riferita al
+codice precedente51b4574, non è anticipatamente pinnata sul codice modificato.

@@ -22,7 +22,7 @@ from wearusfm.training.pairing import state_sha256
 
 PROTOCOL = 'consolidation-long-evaluation-20261105-v1'
 DOSES = (19618, 39237, 49046)
-OUTPUT_ROOT = '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105'
+OUTPUT_ROOT = '/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105'
 require = T.require
 READING_RULE = {
     'dose_contrasts': [[49046, 19618], [39237, 19618], [49046, 39237]],

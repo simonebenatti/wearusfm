@@ -1,12 +1,19 @@
 # Valutazione del lungo T100-G — pacchetto per Claude
 
-Stato: **correzione R-1b della seconda review Claude44cfa85, per terza lettura**.
-La review `44cfa85fac79135b34990018f85a66bf45323d7f` non è una convergenza:
-nessun checkout delle estrazioni prima della chiusura esplicita dei rilievi.
-Incarico di Simone tramite coordinamento: completare questa valutazione, farla
-revisionare a Claude, poi lanciarla appena convergente. Il lancio della catena è
-già autorizzato; questa consegna al revisore non chiede un secondo consenso.
-La matrice FT15 è una campagna separata.
+Stato: **handoff a Claude e uscite su SCRATCH, awaiting_claude_rereview**.
+La terza review `24860d7447a8aa77fadf51f7ea62f074408e91e4` converge sul pacchetto
+`51b4574` (R-1b chiuso, condizioni operative C-1/C-2). La presente modifica
+minima di storage passa dalla quarta lettura prima del checkout.
+
+Simone,05/11 sera: «da ora in poi questa parte la gestisci tu» e «sarai tu a
+fare il deployment e a gestirlo». **Claude è l'unico owner operativo di EPN15
+e della valutazione lunga**: deployment, invii, stato/log e raccolta. GPT
+mantiene codice e responsabilità scientifica, verifica dopo senza bloccare.
+Disposizione canonica in main `fe66e2d`, fonte registro Claude `3566c8d`.
+Nessun altro job, deploy o controllo remoto da GPT durante questo handoff.
+La nuova autorizzazione SCRATCH riguarda il lungo; FT15 in corso resta suWORK.
+
+Consegna operativa in un solo file: [linea2, comandi del lungo e gestioneEPN15](handoff_line2_claude_20261105.md).
 
 ## Endpoint verificati
 
@@ -145,7 +152,9 @@ dei fit sono persistenti; un bordo alpha irrisolto non viene nascosto.
 ## Esecuzione dopo review e pubblicazione
 
 Piano/82ID/output in results/infra/consolidation_long_20261105/launch_plan.json.
-Un solo owner, submitter scripts/submit_job.py e ledger comune.
+Owner operativo Claude, submitter scripts/submit_job.py e ledger comune.
+Claude crea il ramo di esecuzione figlio della consegna, pinna la quarta
+review e i commit di fase; cambia solo metadata/pin/stati, non i sorgenti.
 
 1. Convergenza reale di Claude; pin del suo commit nel piano e degli SHA
    esecutivi, commit/push verificato. Nuovo checkout immutabile per estrazioni.
@@ -154,7 +163,11 @@ Un solo owner, submitter scripts/submit_job.py e ledger comune.
 3. Nuovo checkout per16benchmark CPU. Pubblicare ricevute, proiezioni e
    ammissione di tutti i48shard classificazione e della posa prima dei fit.
 4. Nuovo checkout con pin misurati per48sonde +3fit posa. A fine matrice
-   pin dei report/OOF/audit, nuovo checkout per confronti e sintesi.
+   pin dei report/OOF/audit, quarto checkout per i due confronti. Dopo averne
+   raccolto i report, pubblicare il piano finale con i due pin. Il jobSUMMARY
+   già previsto usa lo stesso quarto checkout e un pianoJSON esterno, copiato
+   dal payload pubblicato e verificato per hash in un wrapper operativo.
+   Nessun quinto checkout o modifica del quarto; procedura completa nella nota.
 5. Registro in entrambe le sezioni, tabella, decisioni, consuntivo SLURM e review
    della lettura. Nessun giudizio finale su una matrice incompleta.
 
@@ -183,28 +196,45 @@ coda comune prima di ciascun invio per rispettare il limite seriale10.
 Le ricevute di prerequisiti già completati valgono anche dopo purge dell'ID
 dalla memoria SLURM; non rilanciare un checkout per questo motivo.
 
-Artefatti stimati24GiB; prima estrazione richiede32GiB liberi in WORK.
-Prima di ogni invio: quota di progetto fresca≤1h, almeno8GiB di margine più
-la stima conservativa degli output ammessi ancora da scrivere; tenere conto
-dei job pending/running senza contare due volte byte già prodotti.
-**C-1:** il controllo è dell'owner e non è automatizzato nel submitter. La
-quota si rilegge immediatamente prima del primo invio di estrazione, anche
-se esiste una lettura recente; sotto32GiB liberi non si invia nessuna
-estrazione. I33,59GiB rilevati da Claude alle19:22 del05/11 sono evidenza
-storica, non un via valido per il lancio. Nessuno spostamento implicito su
-SCRATCH o abbassamento della soglia. È quota condivisa, nessuna prenotazione
-implicita. Nessun dato su SCRATCH come
-unica copia scientifica nuova; nessun raw/NPZ/checkpoint in Git.
+**Storage autorizzato da Simone,05/11 sera:** «si puo scrivere sullo scratch
+ grande? no li terremo per piu di 40 giorni, cosi nonabbimao problemi di spazio».
+Tutti i nuovi artefatti scientifici (cache, OOF, coefficienti, ricevute, report
+ e manifest) vanno sotto:
+`/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105`.
+È una directory reale, senza symlink; controlli su percorsi freschi, assenza
+ di overwrite e identità sono invariati. Le fonti e i checkpoint inWORK non
+ si spostano. I log SLURM rimangono nella directoryWORK esistente per consentire
+ l'apertura del log prima dell'avvio dello script.
 
-L'inventario mirato delle20:22CET rileva8checkpoint frozen FT15 già scritti
-e16checkpoint FT/scratch ancora assenti,113.593.316byte ciascuno: almeno
-1,693GiB di ulteriori scritture già ammesse, più report/OOF. Con una riserva
-prudente32MiB per questi ultimi, il controllo combinato richiede circa
-33,724GiB (24nuove cache +8margine +residuo FT15), contro33,143GiB liberi.
-Passa la sola soglia32GiB ma non il controllo delle scritture pendenti:
-**C-1 resta aperta e a questa lettura non si ammettono estrazioni**. Nessun
-file cancellato/spostato o riduzione della riserva; l'inventario identifica
-scritture nostre future, non l'autore del precedente calo dell'intero progetto.
+**Retention:** uso previsto inferiore a40giorni. Cache e OOF sono rigenerabili
+ dai checkpoint inWORK insieme a dati originali, calibrazione e codice/ricetta
+ pinnati; rigenerarle è un nuovo costo, non un retry automatico. Nessuna promessa
+ di disponibilità dopo la purge. A fine di ogni fase Claude copia sul Mac
+ ricevute, report, manifest, audit e accounting; committa i metadata prima di
+ rilasciare la fase successiva, verifica SHA remoto e copie locali. PayloadNPZ/PT
+ non entrano inGit; eventuale archivio pesante Mac resta esterno al repository.
+ Se la catena rischia di superare40giorni, fermare e dichiarare il problema di
+ conservazione prima della scadenza, senza modificare in silenzio la retention.
+
+**C-1 aggiornata:** sono due controlli distinti dell'owner, non del submitter.
+Per SCRATCH la stima rimane24GiB: prima estrazione almeno32GiB liberi, poi
+8GiB di margine più gli output già ammessi ancora da scrivere sulla stessa
+filesystem. Verificare spazio e inode reali e l'eventuale quota personale/
+progetto vigente; se esiste un limite usare quello più stretto, non il solo df.
+SuWORK restano quattro checkout e log: i blob tracciati a51b4574 occupano
+87.146.517byte, quattro copie348.586.068byte (0,325GiB). Riserva log128MiB;
+**budget aggiuntivo prudenteWORK1GiB** complessivo per checkout, metadataGit
+ e log, da ricontrollare ai commit di fase. Prima degli invii servono8GiB
+ di margineWORK +1GiB preventivati +outputWORK già ammessi ancora da scrivere,
+ inclusi i checkpoint FT15. Non contare due volte byte già presenti.
+Le letture devono essere fresche≤1h e ripetute immediatamente prima del primo
+invio di estrazione. Nessun gate dichiarato passato con la vecchia lettura.
+
+Il precedente blocco33,143GiBcontro33,724GiB riguardava24GiBnuovi suWORK;
+la decisione di Simone cambia esplicitamente la destinazione, non abbassa
+la riserva. Con lo stesso inventario storico FT15 il nuovo requisitoWORK
+sarebbe10,724GiB, ma Claude deve verificarlo e verificare SCRATCH al lancio.
+Nessun file cancellato/spostato daGPT, nessun cambio ai jobEPN15 esistenti.
 
 TIMEOUT/OOM/errore/pin o gate fallito: conservare evidenze, fermare la fase,
 diagnosticare. No requeue, retry ciechi, overwrite, dose/seme/loss aggiunti,
@@ -228,3 +258,6 @@ results/infra/consolidation_long_20261105/rereview_validation.json; i190test
 sopra descrivono la consegna originale, non il conteggio della rilettura.
 La correzione R-1b e la verifica reale sono documentate in
 results/infra/consolidation_long_20261105/third_review_validation.json.
+
+Le verifiche della consegna SCRATCH/owner/N-4 sono in
+results/infra/consolidation_long_20261105/handoff_validation.json.

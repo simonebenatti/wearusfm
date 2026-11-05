@@ -4,8 +4,9 @@
   "review": {
     "status": "awaiting_claude_rereview",
     "commit": null,
-    "previous_review_commit": "44cfa85fac79135b34990018f85a66bf45323d7f",
-    "previous_review_verdict": "not converged; R-1b corrected for thirdpass; R-2closed; C-1/C-2operationalconditions remain"
+    "previous_review_commit": "24860d7447a8aa77fadf51f7ea62f074408e91e4",
+    "previous_review_verdict": "code/plan convergence on51b4574; SCRATCH relocation and operationalhandoff await fourthreview",
+    "handoff_register_commit": "3566c8dd805a7ce7513481e5df1fdba77b31f5d8"
   },
   "doses": [
     19618,
@@ -466,7 +467,7 @@
     "classification": null,
     "pose": null
   },
-  "output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105",
+  "output_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105",
   "background_monitor": false,
   "phase_release": {
     "order": [
@@ -488,7 +489,7 @@
         "scripts/slurm/consolidation_long.sbatch",
         "scripts/slurm/lib_code_dir.sh"
       ],
-      "freeze_period": "before first extraction checkout through chain completion; unrelated FT15 source development on separate branch/worktree",
+      "freeze_period": "Claude execution childbranch: before first extraction checkout through chain completion; GPTdevelopment isolated and not merged during the chain",
       "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
       "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
       "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
@@ -530,28 +531,44 @@
       "path": "results/infra/consolidation_long_20261105/numeric_preflight_20261105.json",
       "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
       "bytes": 14374
-    }
+    },
+    "summary_plan_release": "same fourth frozen code checkout; after comparison reports, publish final plan with real pins; existing SUMMARYjob materializes the exact published JSON outside CODE_DIR with SHA256 verification; no extra job/checkout; wrapper described for fourthreview"
   },
   "retention": {
-    "persistent_outputs": "WORK",
+    "artifact_storage": "personal large SCRATCH; all new scientific outputs including caches/OOF/receipts/reports/manifests underoutput_root",
+    "root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105",
+    "scratch_purge_days": 40,
+    "intended_retention": "less than40days, authorized bySimone05/11evening; owner must complete/export before purge",
+    "authorization_quote": "si puo scrivere sullo scratch grande? no li terremo per piu di 40 giorni, cosi nonabbimao problemi di spazio",
+    "checkpoint_inputs": "durable pinned checkpoints remain in WORK; no movement or modification",
+    "regenerable_artifacts": [
+      "feature caches",
+      "OOF predictions",
+      "ridge coefficients and predictions"
+    ],
+    "regeneration_requires": "pinned WORKcheckpoints plus original data, calibration, frozen code/config and environment; regeneration is a new compute operation, not an automatic retry or promise of future availability",
+    "phase_export": "Claude copies receipts, reports, manifests, audits and SLURMaccounting toMac and commits non-payload metadata at end of eachphase before releasingnext; codeSHAandreviewpins preserved",
+    "large_payload_policy": "cache/OOF/checkpointNPZorPT never committed; optional Macarchive outsideGit, no retention claim beyond SCRATCHpurge without verifiedcopy",
     "estimated_new_artifacts_bytes": 25769803776,
-    "minimum_project_free_bytes_before_first_extraction": 34359738368,
-    "base_headroom_bytes_before_each_submission": 8589934592,
-    "submission_rule": "fresh free bytes >=8GiB plus conservative remaining bytes of admitted unfinished outputs; track pending/running jobs without double counting already-written bytes",
+    "scratch_minimum_free_bytes_before_first_extraction": 34359738368,
+    "scratch_base_headroom_bytes_before_each_submission": 8589934592,
+    "scratch_check": "fresh filesystem freebytes and inodes; check user/project quota if configured and use tighter availablelimit; include other admitted unfinished outputs tosamefilesystem",
+    "work_outputs": "four immutable code checkouts and SLURMlogs only; phase metadata also exists as tracked localGitblobs published tocanonicalrepo",
+    "work_tracked_blob_reference_commit": "51b4574c1c8377a4a7b7f35934052f71b77ff899",
+    "work_tracked_blob_bytes_at_reference": 87146517,
+    "work_four_checkout_reference_bytes": 348586068,
+    "work_log_reserve_bytes": 134217728,
+    "work_additional_allocation_budget_bytes": 1073741824,
+    "work_base_headroom_bytes": 8589934592,
+    "work_check": "fresh project quota plusinodes; >=8GiBheadroom +1GiBnewcode/log allowance +already-admitted unfinishedWORKoutputs includingFT15; no doublecountbytesalreadywritten",
     "quota_max_age_seconds": 3600,
-    "quota_evidence": {
-      "path": "results/infra/consolidation_long_20261105/historical_artifacts_verification.json",
-      "sha256": "38737c92af8a0b0d4f051a44b8604f7437a61c11f33330b52586f725d2afdf60",
-      "bytes": 6009
-    },
-    "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback",
-    "other_campaigns_rule": "include already-admitted unfinished outputs of our other campaigns in the shared quota margin; minimum32GiB alone is not sufficient",
+    "first_submission_rule": "Claude refreshes both filesystem/quota checks immediately before first extraction submission; no automatic lowering oflimits or retentionextension",
     "latest_diagnostic_quota": {
       "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
       "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
       "bytes": 1138
     },
-    "diagnostic_admission_status": "blocked_at_observation_by_pending_output_margin; refresh before submission"
+    "diagnostic_admission_status": "historical WORK-only block superseded by explicit SCRATCHdecision; fresh SCRATCHandWORKchecks still required fromClaude"
   },
   "failure_policy": {
     "no_requeue": true,
@@ -563,7 +580,8 @@
   "authorization": {
     "source": "Simone via coordination 2026-11-05: complete long evaluation, Claude review, launch when ready",
     "review_does_not_replace": null,
-    "requires_second_user_consent": false
+    "requires_second_user_consent": false,
+    "operator_change": "Simone05/11evening: da ora in poi questa parte la gestisci tu; sarai tu a fare il deployment e a gestirlo; applies only EPN15 andlong evaluation; Claudeoperates,GPTcodescience"
   },
   "historical_context": {
     "replica": {
@@ -573,6 +591,8 @@
     },
     "use": "paired T25-L minus B19618 context remains descriptive; not a universal noise floor"
   },
-  "source_sha256": "a2ff16087d06ff22c483b5702ffb10e94842a9919847cc8e1b3e49dee815956f",
-  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422"
+  "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "operational_owner": "claude",
+  "scientific_owner": "gpt_consolidation"
 }

@@ -6528,3 +6528,33 @@ Nessuna cancellazione/spostamento o riduzione delle riserve; quota da
 ricontrollare e condizione da risolvere prima del lancio già autorizzato.
 Review.commit null;44cfa85 citata soltanto come review precedente. Rilettura
 Claude sul solo diff incrementale da e2f19ee e uscita del controllo cluster.
+
+### 05/11/2026 sera — Linea 2 a Claude, lungo su SCRATCH e consegna unica
+
+Simone: «da ora in poi questa parte la gestisci tu», «sarai tu a fare il
+deployment e a gestirlo». Per EPN15 e valutazione lunga Claude esegue
+deployment, sottomissioni, stato/log e raccolta; GPT mantiene codice e
+responsabilità scientifica. Fonte registroClaude3566c8d e disposizione
+diretta nella chat consolidamento. Il coordinamento ha aggiornato mainfe66e2d;
+CLAUDE.md locale allineato. Altre linee invariate. GPT ferma le operazioni,
+nessuna prenotazione aperta né86IDLONG presenti;27FT15 tutti sottomessi.
+
+Simone suSCRATCH: «si puo scrivere sullo scratch grande? no li terremo per
+piu di 40 giorni, cosi nonabbimao problemi di spazio». Output del lungo su
+SCRATCH grande permeno40giorni; tutte cache/OOF/report/manifest sotto la nuova
+radice, dati/checkpoint origine eEPN15 inWORKimmutati. Metadata copiatiMac e
+committati a finefase, payload grandi fuoriGit. Rigenerazione da checkpoint
+WORK richiede ancheinput/codice/ambiente pinnati e non è automatica.
+
+La vecchia richiesta32GiBWORK è sostituita da gateSCRATCH32GiB iniziali e
+8GiBmargine+outputammessi; suWORK8GiBmargine+1GiB nuovi checkout/log+pendenti
+FT15.1GiB prudente comprende quattro copie del codice (0,325GiB misurati sul
+tree51b4574),128MiB log e margine metadataGit. Claude verifica fresco spazio,
+eventuali quote e inode suentrambe le destinazioni. Nessuna cancellazione.
+
+Review24860d converge su51b4574; nuovo source cambia soltantoOUTPUT_ROOT,
+correttoN4neltest.252test passano senzaMKLenv; ricetta/endpoint/82job/4checkout
+e tetti9GPUh/1711,666667coreh invariati. Consegna awaiting_claude_rereview,
+review.commit null. Claude farà quarta lettura sul diff da51b4574 e pin su
+ramofiglio senza modificare sorgenti, poi eseguirà la catena già autorizzata.
+GPT verifica dopo senza bloccare; nessun nuovo job/deploy/monitor daGPT.

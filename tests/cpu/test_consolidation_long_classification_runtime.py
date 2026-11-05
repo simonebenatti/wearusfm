@@ -224,6 +224,7 @@ def test_default_benchmark_uses_all_train_rows_and_no_scores(tmp_path, monkeypat
 
 
 def test_extract_uses_original_t100g_reference_and_one_teacher(tmp_path, monkeypatch):
+    monkeypatch.setenv("MKL_NUM_THREADS", "1")
     ctx, ds = context(tmp_path), "ninapro_db2"
     ctx["legacy"] = {"inputs": {"splits": {}}, "paths": {"roots": [], "epn_roots": [], "uci_root": "none"}}
     old = {name: {"path": "T100-G-original", "sha256": "b"*64} for name in M.TASKS["p1"]}

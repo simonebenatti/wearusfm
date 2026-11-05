@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 sera | GPT consolidamento | Consegna della linea 2 a Claude e output del lungo su SCRATCH
+
+Recepite le disposizioni dirette di Simone: «da ora in poi questa parte la
+gestisci tu», «sarai tu a fare il deployment e a gestirlo». Claude assume
+deployment, invii, stato/log e raccolta di EPN15 e del lungo; GPT conserva
+codice e responsabilità scientifica. Fonte Claude3566c8d, regola canonica
+mainfe66e2d; CLAUDE.md allineato byte per byte. Nessuna nuova operazione
+remota o pubblicazione deploy daGPT dopo il passaggio.
+
+La review24860d converge su51b4574. Preparata la consegna richiesta per
+quarta lettura: unica modifica runtime, OUTPUT_ROOT reale suSCRATCH grande;
+82percorsi rigenerati, ownerclaude, retention<40giorni e gateSCRATCH/WORK
+distinti. Endpoint/ricetta/ID/allocazioni/tetti invariati. N-4 corretto nel
+solo test; **252 test passati senza MKL_NUM_THREADS in10,66s**, bash−n/diffcheck
+verdi. Stato awaiting_claude_rereview e review.commit null sul codice nuovo.
+
+Nota completa in docs/handoff_line2_claude_20261105.md, con prontuari lungo
+edEPN15: comandi, pin e manifest,4checkout, sintesi con piano esterno
+verificato e stesso quarto checkout, gate, fallimenti, copieMac e consuntivi.
+Claude creerà ramofiglio/pinreview/pinfase; verificaGPT successiva nonblocca.
+Ledgerlocale:27FT15 sottomessi, nessuna prenotazione aperta;86IDLONG assenti.
+
 ### 2026-11-05 | GPT consolidamento | R-1b corretto e misurato su Leonardo prima delle estrazioni
 
 Letta la seconda review Claude `44cfa85fac79135b34990018f85a66bf45323d7f`,
@@ -5758,6 +5780,28 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 sera | GPT consolidamento | Limiti e controlli al passaggio operativo
+
+C-1 precedente riguardava24GiBnuoviWORK. Simone autorizza esplicitamente
+SCRATCH permeno40giorni: nessuna soglia abbassata o cancellazione. Claude
+verifica spazio/inode/eventuali quoteSCRATCH (32GiBmin iniziale) e quotaWORK
+(8GiBmargine+1GiBcodice/log+outputpendentiFT15); le letture storiche non
+certificano il gate nuovo. Cache/OOF rigenerabili solo concheckpointWORK,
+dati/codice/ambiente pinnati; metadata esportatiMac/committati a finefase,
+payload non inGit e nessuna garanzia oltre purge. EPN15 già in corso non cambia.
+
+La sintesi richiede i pin dei due confronti, disponibili dopo il quarto
+checkout. La procedura consegnata usa il solo jobSUMMARY già previsto:
+piano finale committato/pushato, materializzato fuoriCODE_DIR dawrapper
+verificato perhash, poi launcher congelato; nessun quinto checkout e
+nessuna modifica dei quattro checkout. Questa procedura va inclusa nella
+quarta lettura operativa. Nessuna ripetizione/nuovo esperimento autorizzati.
+
+ConsumoFT15 corrente non raccolto dopo il cambiooperatore: la nota separa
+0,125833GPUh/1,038333coreh verificati prima dei fit dal totale ancora da
+aggiornare con8frozencompleti eC0attivi. Ultima coda è quella diClaude21:05;
+nessuna differenza nota e nessuna invocazione di controllo cluster daGPT.
 
 ### 2026-11-05 | GPT consolidamento | R-1b confermato; C-1 non soddisfatta con le scritture FT15 pendenti
 

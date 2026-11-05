@@ -121,6 +121,8 @@ def test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned():
     plan=json.loads((ROOT/'results/infra/consolidation_long_20261105/plan.json').read_text())
     C.validate_plan(plan,require_review=False)
     assert plan['source_sha256']==C.source_identity()
+    assert plan['output_root']==C.OUTPUT_ROOT
+    assert plan['output_root'].startswith('/leonardo_scratch/large/userexternal/sbenatti/')
     with pytest.raises(ValueError,match='Claude'):C.validate_plan(plan)
     for step in C.DOSES:
         pin=plan['endpoints'][str(step)]['checkpoint']
@@ -129,11 +131,16 @@ def test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned():
     changed=copy.deepcopy(plan);changed['reading_rule']['pose_practical_relative_percent']=1
     changed['recipe_sha256']=C.recipe_identity(changed)
     with pytest.raises(ValueError,match='policy'):C.validate_plan(changed,require_review=False)
+    changed=copy.deepcopy(plan)
+    changed['output_root']='/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105'
+    with pytest.raises(ValueError,match='output'):C.validate_plan(changed,require_review=False)
 
 
 def test_concrete_launch_matrix_dose_fold_coverage_and_resource_caps():
     launch=json.loads((ROOT/'results/infra/consolidation_long_20261105/launch_plan.json').read_text())
     jobs=launch['jobs'];assert len(jobs)==len({r['id'] for r in jobs})==len({r['out'] for r in jobs})==82
+    assert launch['owner']=='claude'
+    assert all(row['out'].startswith(C.OUTPUT_ROOT+'/') and row['args'][row['args'].index('--out')+1]==row['out'] for row in jobs)
     fits=[j for j in jobs if j['stage']=='fit-classification'];assert len(fits)==48
     logical={}
     for row in fits:

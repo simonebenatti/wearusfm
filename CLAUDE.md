@@ -11,10 +11,10 @@ Simone, 05/11/2026 alle 14:57 circa, alla domanda di Claude «Confermi che ora l
 Fonte: `origin/worktree-claude-training-engine`, commit `3099836061809ed478ea06ff7b252a2d2087cc98`,
 voce di Claude in `docs/claude_GPT_shared`; conferma trasmessa anche alla chat GPT di coordinamento.
 
-**GPT esegue direttamente le sottomissioni su Leonardo e il controllo operativo dei log.** Nelle tre linee parallele,
+**GPT esegue direttamente le sottomissioni su Leonardo e il controllo operativo dei log, salvo l'eccezione della linea 2 del 05/11 sera descritta sotto.** Nelle linee parallele,
 l'owner GPT di ciascuna linea prepara e sottomette i propri job, ne legge stato e log e raccoglie gli esiti. GPT coordinamento
-controlla le interferenze e integra su `main`, senza duplicare le sottomissioni degli owner. Claude resta revisore e non lancia job;
-eventuali correzioni tecniche affidategli esplicitamente restano soggette alla review di GPT.
+controlla le interferenze e integra su `main`, senza duplicare le sottomissioni degli owner. Nelle linee 1 e 3 Claude resta revisore e non lancia job;
+eventuali correzioni tecniche affidategli esplicitamente restano soggette alla review di GPT. Per la linea 2 opera Claude, come indicato sotto.
 
 La regola del 28/10 «Sottomissioni affidate a semplicione» e' superata: quella chat non e' piu' operativa e non deve essere
 ricreata o sostituita con un secondo submitter. Nessuna delega al precedente subagent leonardo-ops.
@@ -23,6 +23,35 @@ ID logici univoci, checkout congelati, budget, criteri, review e approvazioni de
 comprende il lancio gia' autorizzato, senza una seconda richiesta di consenso; non autorizza nuovi esperimenti o retry ciechi.
 Chiuse le note N-2 della review `2d157cc` e N-3 della review 6 `c0a4f58` sull'identita' dell'operatore.
 Questa disposizione prevale sui riferimenti storici a semplicione conservati nei registri, nelle decisioni e nei vecchi checkout.
+
+### Eccezione: gestione operativa della sola linea 2 affidata a Claude — 05/11/2026 sera
+
+Simone, riferendosi alle righe «2 — EPN15» e «2 — Valutazione lungo»:
+«da ora in poi questa parte la gestisci tu» e «riscrivimi il prompt in modo che sarai tu a fare il deployment e a gestirlo , dimmi se serve un feedback da chat gpt o puoilanciare tu adesso».
+Fonte: voce Claude `3566c8dd805a7ce7513481e5df1fdba77b31f5d8`,
+`origin/worktree-claude-training-engine`; disposizione confermata direttamente da Simone nella chat GPT
+`2-schedule lungo e consolidamento` (`01a1a72a-070b-7bc1-8eea-452c4c53cff9`).
+
+**Solo per EPN15 e valutazione lunga della linea 2, Claude e' l'unico operatore:** deployment, sottomissioni,
+controllo di stato/log e raccolta degli esiti. GPT consolidamento conserva codice e responsabilita' scientifica,
+prepara la consegna operativa, rivede il seguito concordato e non fa deploy, invii, cancellazioni o rilanci su questa linea.
+I job EPN15 gia' inviati da GPT restano gli stessi: il cambio di operatore non autorizza duplicati o migrazioni.
+GPT coordinamento resta integratore su main e tiene il quadro delle tre linee senza diventare un secondo operatore.
+
+La disposizione supera, **per la sola linea 2**, la regola delle 14:57 «Claude resta revisore e non lancia job».
+Linee 1 e 3 invariate. Restano submitter e ledger comuni, prenotazione sotto lock, budget e criteri approvati,
+review previste, checkout congelati, nessun retry cieco e nessun nuovo esperimento implicito.
+Il cambio di operatore non converte un piano in review in un piano eseguibile: la modifica delle uscite lunghe
+su SCRATCH, richiesta da Simone, va consegnata da GPT e riletta da Claude prima del pin e del deployment.
+Ricevute, report e manifest si raccolgono sul Mac e si committano; cache/OOF su SCRATCH sono rigenerabili
+ dai checkpoint persistenti in WORK e soggetti alla cancellazione automatica a 40 giorni.
+
+| Linea | Codice e responsabilita' scientifica | Deployment, invii, stato/log e raccolta |
+|---|---|---|
+| 1 — Scaling 30M/300M | GPT scaling | GPT scaling |
+| 2 — EPN15 e valutazione lunga | GPT consolidamento | **Claude** |
+| 3 — Log-quadratico e contrastiva | GPT logcontrast | GPT logcontrast |
+| Coordinamento | GPT integratore su main | Coordinamento dei responsabili, nessun invio duplicato |
 
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
@@ -133,7 +162,7 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 05/11/2026 lo esegue direttamente GPT dal Mac; lo stesso owner controlla stato e log (regola sopra). Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 05/11/2026 lo esegue GPT dal Mac per le linee 1 e 3; dalla sera del 05/11 lo esegue Claude per la sola linea 2 (EPN15 e valutazione lunga), con stato/log e raccolta allo stesso operatore. Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
@@ -162,14 +191,15 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   dentro `$WORK/wearusfm/` puo' creare file non tracciati che il prossimo
   `git push leonardo main` dal Mac rifiuta (tree remoto "sporco"). Un risultato entra nel
   repo (`results/<passo>/...`) solo quando viene copiato deliberatamente sul Mac e
-  committato da li'.
+  committato da li'. Per la valutazione lunga della linea 2, Simone ha autorizzato invece le uscite su `$SCRATCH` grande:
+  vale la consegna revisionata con radice esplicita e raccolta di ricevute/report/manifest sul Mac, come descritto nell'eccezione sopra.
 
 ## Vincoli non negoziabili
 - Login node: limite di 10 minuti di CPU time. Tutto il resto va in srun o sbatch.
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Sottomissioni e controllo operativo dei log sono di GPT, un owner per linea (conferma del 05/11 sopra); semplicione non e' piu' operativo. Nessun submitter parallelo, duplicato o lancio tramite il vecchio subagent leonardo-ops.
+- Un solo operatore per linea: GPT per 1 e 3; **Claude per la sola linea 2, EPN15 e valutazione lunga** (eccezione del 05/11 sera). Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
