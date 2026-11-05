@@ -6350,6 +6350,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Seguito: a fine estrazioni raccolgo le dodici ricevute sul Mac, confronto gli hash, costruisco `cache_manifest.json` con lo snippet
   del prontuario e rilascio la fase benchmark. Nessun invio fino ad allora.
 
+### 2026-11-05 | Claude | Review 9 scaling, aggiunta: processo locale dei cinque invii senza blocchi (GPT ef8db2b, 25eca17) (richiesta di Simone)
+- Seguito della richiesta di Simone delle 22:00 circa («Il rilascio dei fit non è stato rivisto, vuoi controllare?»). Aggiunta al §4
+  di `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`; controllo delle ricevute in
+  `docs/reviews/claude_review_scaling_300m_fit_release_20261105_check_tranche2.py`. Solo lettura: nessun job, nessuna cancellazione,
+  processo e checkout di GPT non toccati; letture di Leonardo in `~/wearusfm_local/logs/claude_review9_leonardo_{4,5}.txt`.
+- Rettifica della voce precedente: «punta al verdetto» `ff93003` era sbagliato. Alla pubblicazione di `c5efb80` la punta era gia'
+  `ef8db2b` (22:07:38), poi `25eca17` (22:10:52). Il verdetto precedente copre `5275b0d...ff93003`, questa aggiunta i due
+  commit successivi. Punta riletta alle 22:29 prima di pubblicare: `25eca17`.
+- Oggetto: `finish_submissions.py`, processo locale senza AI avviato da GPT alle 22:08:47 (PID 2321), 69 secondi dopo la
+  pubblicazione; al massimo 8 ore (06:08 del 06/11), un solo avvio, STOP senza ritentare. File in esecuzione = file pubblicato
+  (sha256 `30b8b9b9…`); 42 test rieseguiti da me, passati. Puo' inviare solo i job 10-14 del piano `0370cdf8…` col submitter
+  comune, un tentativo per ID, con predecessore in coda, meno di 10 job seriali, al piu' 8 CPU in corso e inviluppo entro 310.
+  Non cancella, non usa git, non scrive in remoto a parte l'invio. I campi che verifica sui fit sono quelli scritti dal codice
+  congelato aef665b (confronto mio, campo per campo).
+- Osservato fra le 22:22 e le 22:30: fit 01 (63626931) COMPLETED 0:0 in 1.801 s su 3.540, 4,002222 core-ore, picco 4,02 GiB;
+  accettato dal processo, che ha inviato il fit 10 (63629605) e il fit 11 (63629606). Sullo scheduler `afterok` su 63627052 e
+  63629605, limiti 02:19:00 e 02:21:00, `login08`, script registrato `c2bd7979…`; ricevute = argv pubblicati = ledger, 12 su 12.
+  Inviluppo del processo 255,54 su 310; conto mio: consumate 33,018333 core-ore, al piu' 243,49. Fit 02 in corso dalle 22:23:36.
+- Restano i fit 12, 13 e 14, alla fine dei fit 02, 03 e 04: stima mia verso le 22:55, le 23:30 e le 00:15, coi limiti pieni entro
+  le 02:00. Alle 22:29 processo attivo senza STOP; certificati SSH validi almeno fino alle 07:35 del 06/11, Mac alimentato e
+  senza sospensione finche' il coperchio resta aperto.
+- Non ho aperto gli score (`report.json` della posa raccolto da GPT, `val_bacc` nell'audit). Note nella sezione 2; testo per GPT
+  nel §4 della review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8837,3 +8861,22 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-05 | Claude | Linea 2: nessun problema nuovo all'invio delle estrazioni
 - La partizione seriale alle 22:24 ha dieci job dell'utente, uno in corsa e nove in coda, nessuno della linea 2: e' al limite dei
   dieci invii. Il checkout della fase benchmark potra' essere inviato solo quando se ne libera uno (nota N-5).
+
+### 2026-11-05 | Claude | Review 9 scaling, aggiunta: N-1 e N-3 superate; N-4 falso STOP possibile a fine fit, N-5 decimo posto conteso con la linea 2, N-6 avvio senza review indipendente
+- Dettaglio nel §4 di `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`. Nessun blocco, niente da fermare.
+- **Superate:** N-1 (l'accodamento lo fa il processo locale di GPT: due invii su cinque gia' fatti) e N-3 (l'OOF di un fit pesa
+  0,4 MB: 436.444 byte per un dataset e un fold). N-2 resta, estesa dalla N-5.
+- **N-4:** `status()` si ferma con «ambiguous completion» se `sacct` da' COMPLETED mentre `squeue` elenca ancora il job in
+  COMPLETING. Deduzione mia dal codice e dal funzionamento di Slurm, non osservata; nessun test copre il caso. Finestra stretta
+  (il fit 02 e' diventato eleggibile 2 secondi dopo la fine del fit 01; il processo legge una volta al minuto): qualche punto
+  percentuale per ciascuno dei tre fit ancora attesi. Se succede i job in coda proseguono, e i fit non inviati si accodano a mano
+  col comando pubblicato finche' il fit 11 e' in coda.
+- **N-5 (coordinamento):** alle 22:22 `LONG-checkout-extract-20261105` della linea 2 e' partito per primo (23 secondi), poi il
+  processo ha preso i due posti liberi: QoS seriale a 10 su 10, tutti dello scaling. Finche' il processo e' attivo prende ogni
+  posto entro un minuto circa. Un invio seriale della linea 2 a QoS piena viene rifiutato (limite di 10 job sottomessi per
+  utente), e uno negli stessi secondi dell'invio di GPT fa rifiutare uno dei due; se tocca a GPT: STOP, ID `rifiutato`, da
+  ripetere a mano con `--dopo-rifiuto`. Proposta mia: la linea 2 aspetta `all_15_submitted` in `finish_result.json`, atteso dopo
+  mezzanotte; da li' ogni fit concluso libera un posto.
+- **N-6 (procedura):** avvio 69 secondi dopo la pubblicazione, con il «PASS independent critic» di GPT e senza la mia lettura. Il
+  contenuto dei cinque invii era gia' rivisto e la mia review non blocca i lanci di GPT (lettura mia); decide Simone se strumenti
+  che inviano job da soli devono passare prima da me.
