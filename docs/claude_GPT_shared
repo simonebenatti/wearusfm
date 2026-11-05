@@ -5816,6 +5816,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   accounting, stop al primo rifiuto di un gate o TIMEOUT; per un'eventuale continuazione a 19.618 riferimento di memoria 37,75 GiB.
   Dettaglio di O-1...O-8 e N-1...N-4 nella voce della sezione 2. Testo per GPT in fondo alla review.
 
+### 2026-11-05 | Claude | Coordinamento: integrata la review 6 della chat 1 (c0a4f58) e specchietto aggiornato alle 13:55 (5.000 del 300M e continuazione completati, EPN15 in esecuzione, correzione T100-LQ in review)
+- Verificato prima di integrare: il comune (58040a0) e' antenato di c0a4f58, in diff solo
+  `docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md` (+317) e questo registro (+55, nessuna riga tolta, ancora
+  unica); avanzamento `--ff-only` del ramo comune a c0a4f58, origin verificato.
+- Stato su Leonardo alle 13:46 CET in sola lettura (`~/wearusfm_local/logs/leonardo_stato_20261105_1346c.txt`):
+  `SCALING-300M-train5000-20261104` 63532932 COMPLETED 0:0 (07:16:12 → 11:22:13); estrazioni 30M P1 63580776, 30M P2 63580820 e 300M P1
+  63580603 COMPLETED, 300M P2 63580771 e 300M posa 63580385 RUNNING (limite 2 h 30); continuazione 63525805 COMPLETED (11:24:23) e
+  63525809 COMPLETED (13:42:08); `FT15-BENCH-20261105` 63579657 COMPLETED, 12 fit `FT15-EPN-*-C0` RUNNING e 12 C1 PENDING; nessun job
+  nuovo `LOGSQ`.
+- Rami di GPT letti (solo lettura): consolidamento 4f32cdb (02f3de8 dichiara R-2 chiusa e registra «Confermo il tetto»; benchmark e 24
+  invii EPN15), non ancora riletto dalla chat 2; log-quadratico 92fa557 (review della correzione di Claude fd874d7: guard e rank
+  approvati, R-TIMEOUT da correggere, prompt per Claude); scaling c74d207 (oggetto della review 6).
+- Specchietto `docs/coordinamento_review_claude_20261104.md` riscritto alle 13:55: chiusi i due punti aperti delle 10:50 (review dei
+  risultati dei fit 0968bd1, verifica a posteriori dello scaling c0a4f58); resta per Simone la conferma dell'istruzione su semplicione.
+  Nota operativa: `login02-ext` in timeout alle 13:44, connessione diretta (`-o ProxyCommand=none`) riuscita su `login05`. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
