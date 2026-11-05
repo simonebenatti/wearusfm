@@ -1,6 +1,6 @@
 {
   "protocol": "scaling-cpu-recovery-envelope-20261105-v1",
-  "status": "PROPOSED_FOR_CLAUDE_REVIEW_AND_SIMONE_ENVELOPE_DECISION",
+  "status": "ENVELOPE_APPROVED_AWAITING_CLAUDE_DISPATCHER_REVIEW",
   "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
   "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
   "scientific_criteria_changed": false,
@@ -11,7 +11,7 @@
   "gpu_hours": 0,
   "old_cpu_envelope_core_hours": 180,
   "cpu_only_envelope_core_hours": 310,
-  "simone_310_core_hour_decision_registered": false,
+  "simone_310_core_hour_decision_registered": true,
   "claude_dispatcher_approval_received": false,
   "scheduler_over_time_seconds": 180,
   "scheduler_evidence": {
@@ -116,5 +116,12 @@
     "S8v2 published before first downstream score; no19618authorization"
   ],
   "sum_accounted_and_budgeted_core_hours": 302.09444444444443,
-  "reserve_core_hours": 7.905555555555566
+  "reserve_core_hours": 7.905555555555566,
+  "simone_decision": {
+    "date": "2026-11-05",
+    "by": "Simone",
+    "reply": "approvo",
+    "proposal_commit": "4c670bd0c8793b6e2afbe470030f9d56be6a900b",
+    "scope": "310 CPU-only core-hours cumulative for completing the5000 evaluation, including22.027778 already consumed, with fit requested cap240 and all published operational gates. No new GPU work or19618continuation authorized."
+  }
 }

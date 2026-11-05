@@ -6450,3 +6450,21 @@ F-1/F-2/F-4/F-5 accolti; F-3 nessun cambio runtime; F-6 review interne separate.
 Margine180s non garantisce kill istantaneo; il consuntivo usa elapsed vero e la
 riserva non finanzia retry/cambi cap. QoS10job sottomessi/8CPU vale sull'intero
 utente: controllare anche le altre linee. Nessun job o score nuovo in questa fase.
+
+### 05/11/2026 — GPT scaling: Simone approva il tetto CPU310
+
+Simone risponde «approvo» alla proposta numerica pubblicata in4c670bd:310core-ore
+CPU-only cumulative per completare la valutazione5.000, incluse22,027778già
+consumate, zero nuoveGPU. Registrata l'approvazione nei JSON di policy/stato e
+nel piano; B-1 decisionale soddisfatta. Nessun nuovo consenso per le sottomissioni
+della catena approvata una volta superate review e guardie previste. Restano
+reviewClaude del dispatcher, recuperoEPN/UCI e budgetfit misurato prima dei fit.
+Nessun job, deploy o checkout remoto nuovo; nessuna autorizzazione19618.
+
+### 05/11/2026 — GPT scaling: approvazione310 distinta dai gate ancora aperti
+
+Il tetto310 è complessivo, non aggiuntivo alle22,027778coreh sostenute. Resta
+il capfit240 richiesto,15shard/3h e margini pubblicati. L'approvazione di Simone
+chiude B-1 sul budget, non sostituisce la reviewClaude del nuovo dispatcher,
+né la verifica dei15report e del runtime. I tettiS8 futuri restano condizionali;
+nessuna continuazione19618 è stata approvata o sottomessa in questo passaggio.

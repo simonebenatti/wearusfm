@@ -12,10 +12,10 @@
   "benchmarks_submitted": true,
   "fits_submitted": false,
   "scientific_scores_available": false,
-  "cpu_total_hard_cap": 180,
+  "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Claude review of concrete dispatcher/policy; register310CPUenvelope decision before any downstream fit. Recovery only after dispatcher review. No19618release.",
+  "next": "Await Claude review of the concrete dispatcher. Simone approved the310CPUenvelope; no repeated user consent for this chain. Then recover EPN/UCI and publish measured fit plans before downstream fits. No19618release.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -92,17 +92,24 @@
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 83,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
-  "fit_cap_core_hours": 136,
-  "fit_cap_infeasible": true,
+  "fit_cap_core_hours": 240,
   "active_jobs_in_this_cpu_chain": 0,
   "pose_ridge_blocked_by_chain_stop": true,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
   "latest_claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
   "latest_claude_review_scope": "Executed CPU release and diagnosis; recovery outline approved; new dispatcher not covered",
-  "proposed_cpu_total_hard_cap": 310,
-  "proposed_fit_requested_core_hours_cap": 240,
-  "simone_310_core_hour_decision_registered": false,
+  "simone_310_core_hour_decision_registered": true,
   "claude_recovery_dispatcher_approval_received": false,
-  "recovery_prepared_not_submitted": true
+  "recovery_prepared_not_submitted": true,
+  "previous_fit_cap_core_hours": 136,
+  "previous_fit_cap_proven_infeasible": true,
+  "measured_full_fit_budget_available": false,
+  "simone_decision": {
+    "date": "2026-11-05",
+    "by": "Simone",
+    "reply": "approvo",
+    "proposal_commit": "4c670bd0c8793b6e2afbe470030f9d56be6a900b",
+    "scope": "310 CPU-only core-hours cumulative for completing the5000 evaluation, including22.027778 already consumed, with fit requested cap240 and all published operational gates. No new GPU work or19618continuation authorized."
+  }
 }

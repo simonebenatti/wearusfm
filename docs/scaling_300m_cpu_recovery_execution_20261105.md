@@ -1,19 +1,19 @@
-# Recupero CPU scaling 5.000 — proposta dopo review Claude 7
+# Recupero CPU scaling 5.000 — budget approvato, dispatcher in review
 
-**Stato: preparato per review, nessun nuovo job inviato.** Review Claude
+**Stato: budget approvato da Simone il 05/11 («approvo»), dispatcher in review; nessun nuovo job inviato.** Review Claude
 `1c21047c77f956a1819fe09e8520d3a36dd7a4ae` acquisita integralmente con le due voci
 originali del registro. Il recupero dei soli EPN612/UCI è approvato nell'impostazione;
-il dispatcher nuovo richiede la review prima dell'uso. Il tetto CPU qui proposto
-richiede la decisione numerica di Simone prima del primo fit, come B-1.
+il dispatcher nuovo richiede la review prima dell'uso. Simone ha approvato il
+tetto CPU pubblicato in4c670bd: la condizione decisionale B-1 è soddisfatta.
 
-Non attribuiamo retroattivamente a Simone il numero310. Le autorizzazioni ai
-lanci e alle letture restano valide: non richiediamo di nuovo il via ai singoli
-job del piano una volta chiuso l'emendamento. Non si invia alcun fit in attesa
-della decisione e non si avvia il seguito19.618.
+L'approvazione riguarda310 core-ore cumulative, incluse quelle già consumate.
+Le autorizzazioni ai lanci e alle letture restano valide: nessun nuovo consenso
+ai singoli job di questo piano. Restano review del dispatcher e gate tecnici
+prima degli invii; il seguito19.618 non è autorizzato.
 
 ## B-1: inviluppo concreto
 
-La proposta è **310 core-ore CPU-only cumulative** per completare la valutazione
+Il tetto approvato è **310 core-ore CPU-only cumulative** per completare la valutazione
 a5.000, incluse le22,027778 già consumate. Zero nuove GPU-ore. Il tetto dei fit
 è240core-ore di walltime prenotato; ciascuno usa8CPU,30GiB,al massimo3ore,
 con massimo15shard. Non sono240core-ore aggiuntive per ciascun modello.

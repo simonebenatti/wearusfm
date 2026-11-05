@@ -14,10 +14,11 @@ Consegna da rivedere:
   resource_policy, submission_plan, accepted_benchmarks, scheduler raw e conti;
 - `docs/scaling_300m_continuation_budget_freeze_20261105_v2.md` e relativo JSONv2.
 
-**B-1:** proposta310coreh CPU-only cumulative, incluse22,027778 spese. Fit240coreh
+**B-1:** Simone ha approvato310coreh CPU-only cumulative, incluse22,027778 spese,
+con «approvo» dopo la pubblicazione4c670bd. Fit240coreh
 di richieste +6 di margine per15job; somma delle voci302,094444, riserva7,905556.
-La decisione numerica di Simone su310 non viene data per acquisita: è un gate
-prima di pose-ridge/probe-fit. I due recuperi costano al massimo18,133333coreh
+La decisione numerica B-1 è registrata; restano review del dispatcher e gate
+misurati prima di pose-ridge/probe-fit. I due recuperi costano al massimo18,133333coreh
 con margine180s/job e restano dentro180cumulative. Nessuna nuovaGPU.
 
 **B-2:** un dispatcher separato con diff minimo e test della lista chiusa delle
