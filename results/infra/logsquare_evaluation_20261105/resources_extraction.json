@@ -1,0 +1,94 @@
+{
+  "status": "APPROVED_FOR_EXTRACTION",
+  "measured_benchmark_job": 63614514,
+  "receipt_sha256": "7e6e665eb4fb321b81266d0f35806c61814958e758c236a8266baae945db4e9a",
+  "extractions": {
+    "jobs": {
+      "pose_5000": {
+        "nodes": 1,
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "partition": "boost_usr_prod",
+        "walltime_seconds": 3000,
+        "gpu_hours_cap": 0.8333333333333334,
+        "allocated_core_hours_cap": 6.666666666666667,
+        "rho_infer_cap": 1.0028254049654926,
+        "rho_infer_point": 1.0028254049654926,
+        "historical_window_counts": {
+          "pose": 20455
+        },
+        "expected_seconds_proxy": 1801.2827041526011
+      },
+      "pose_19618": {
+        "nodes": 1,
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "partition": "boost_usr_prod",
+        "walltime_seconds": 3000,
+        "gpu_hours_cap": 0.8333333333333334,
+        "allocated_core_hours_cap": 6.666666666666667,
+        "rho_infer_cap": 1.0028254049654926,
+        "rho_infer_point": 1.0028254049654926,
+        "historical_window_counts": {
+          "pose": 20455
+        },
+        "expected_seconds_proxy": 1718.8546838695256
+      },
+      "p1_19618": {
+        "nodes": 1,
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "partition": "boost_usr_prod",
+        "walltime_seconds": 2100,
+        "gpu_hours_cap": 0.5833333333333334,
+        "allocated_core_hours_cap": 4.666666666666667,
+        "rho_infer_cap": 1.0128042222216593,
+        "rho_infer_point": 1.0125736816290811,
+        "historical_window_counts": {
+          "ninapro_db2": 38544,
+          "ninapro_db3": 9834,
+          "ninapro_db6": 33961
+        },
+        "expected_seconds_proxy": 891.1131955802775
+      },
+      "p2_19618": {
+        "nodes": 1,
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "partition": "boost_usr_prod",
+        "walltime_seconds": 3000,
+        "gpu_hours_cap": 0.8333333333333334,
+        "allocated_core_hours_cap": 6.666666666666667,
+        "rho_infer_cap": 1.0134049376380538,
+        "rho_infer_point": 1.0063510304224776,
+        "historical_window_counts": {
+          "epn612": 47100,
+          "uci_emg": 364
+        },
+        "expected_seconds_proxy": 1678.1262501114065
+      }
+    },
+    "gpu_hours_cap": 3.0833333333333335,
+    "allocated_core_hours_cap": 24.666666666666668,
+    "gpu_hours_point_proxy": 1.6914935649205032,
+    "interpretation": "forward ratio scales historical walltime including I/O/loader; proxy, not measured speedup; representative shapes, not exhaustive tails"
+  },
+  "checkout_per_frozen_endpoint": {
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "gpu_hours_cap": 0,
+    "allocated_core_hours_cap": 0.3333333333333333
+  },
+  "current_scope": [
+    "pose_5000"
+  ],
+  "current_gpu_hours_cap": 0.8333333333333334,
+  "current_core_hours_cap_including_checkout": 7.0,
+  "future_19618_requires_complete_checkpoint_pin": true,
+  "note": "All four extraction budgets published from measured rho; only pose5000 can be submitted now. No scientific recipe change."
+}

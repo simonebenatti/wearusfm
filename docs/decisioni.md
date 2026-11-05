@@ -6284,3 +6284,14 @@ scientifica sottomessa e nessun monitor in background.
 
 Benchmark concluso alle 19:08:50 CET: 110 s, 0,030556 GPU-ore / 0,244444 core-ore.
 Ricevuta originale verificata per byte e SHA; lettura indipendente in corso.
+
+### 05/11/2026 — Benchmark LQ approvato e tetti delle estrazioni
+
+Rapporto 63614514 ricalcolato dal critico; piano successivo APPROVATO. Verifica runtime
+delle ricevute storiche e di allocation_for superata in sola lettura sul cluster.
+Pubblicati i quattro tetti: posa 5.000 e 19.618 3.000 s ciascuna, P1 2.100 s,
+P2 3.000 s, sempre 1 GPU / 8 CPU / 100G. Totale 3,083333 GPU-ore / 24,666667 core-ore
+oltre ai checkout. Si rilascia ora soltanto posa 5.000, con stima proxy di 1.801 s;
+tetto 0,833333 GPU-ore e 7 core-ore incluso checkout. Nuovo piano e checkout,
+inference_plan eseguito immutabile. Nessun cambiamento scientifico o monitor.
+Correzione separata del solo test storico B19618 adottata (99efdef), 15 test verdi.
