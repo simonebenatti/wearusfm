@@ -1038,20 +1038,41 @@ def test_supervision_without_a_process_table_starts_nothing_and_never_claims_a_v
             D.run_bounded([sys.executable, '-c', f'open({str(marker)!r}, "w")'], 30, tmp_path / 'stdout', tmp_path / 'stderr')
     time.sleep(.3)
     assert not marker.exists()
-    # The table is lost after the start. The root's own group is still ended, because its number cannot have been
-    # reused while the root is not reaped; the worker in another session cannot be named, and the record says so.
+    # The table is lost after the start, for good. The root's own group is still ended, because its number cannot
+    # have been reused while the root is not reaped; the worker in another session cannot be named. The table is read
+    # again until the deadline of the cleanup, and the record says that the end was not verified.
     launcher, files = elastic_like(tmp_path, own_processes)
     real, calls, record = D.process_table, [], {}
     def table(*seconds):
         calls.append(seconds)
         return real(*seconds) if len(calls) == 1 else None
     monkeypatch.setattr(D, 'process_table', table)
-    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record,
+                                      orderly_seconds=.3, term_grace_seconds=.3, kill_wait_seconds=.3)
     launched = pids(files)
     assert timed_out and status == -signal.SIGTERM and record['terminated'] == [launched['launcher']]
-    assert record['process_table_unavailable'] is True and record['survivors'] == []
+    assert record['process_table_unavailable'] is True and record['survivors'] == [] and record['killed'] == []
+    assert .85 <= record['cleanup_seconds'] < 3 and len(calls) > 4
     assert D.supervision_problem(record) == 'process table unavailable during the cleanup: descendants were not verified'
     assert still_working(files['worker.heartbeat'])  # unverified means unverified: the fixture ends it
+
+
+def test_supervision_reads_the_process_table_again_after_a_failed_read(tmp_path, monkeypatch, own_processes):
+    """A failed read neither abandons the descendants nor marks as unverified a cleanup that a later table verified."""
+    launcher, files = elastic_like(tmp_path, own_processes)
+    real, calls, record = D.process_table, [], {}
+    def table(*seconds):
+        calls.append(seconds)
+        # 1: before the start. 2: while waiting, when the worker is adopted. 3 and 4: the first two of the cleanup.
+        return None if len(calls) in (3, 4) else real(*seconds)
+    monkeypatch.setattr(D, 'process_table', table)
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    launched = pids(files)
+    assert timed_out and status == -signal.SIGTERM and len(calls) >= 6
+    assert not still_working(files['worker.heartbeat']), 'a failed read of the process table left the worker running'
+    # Without a table only the root's group could be asked; the worker was named by the next table and asked then.
+    assert record['terminated'] == [launched['launcher'], launched['worker']] and record['killed'] == record['survivors'] == []
+    assert record['process_table_unavailable'] is False and D.supervision_problem(record) is None
 
 
 def test_supervision_tracks_groups_by_membership_and_never_adopts_a_foreign_one():

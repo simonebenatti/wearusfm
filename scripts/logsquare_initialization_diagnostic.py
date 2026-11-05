@@ -381,22 +381,20 @@ def clean_up(proc, invocation, forced, timing):
     all_at = term_at + timing['orderly_seconds']
     kill_at = all_at + timing['term_grace_seconds']
     end_at = min(kill_at + timing['kill_wait_seconds'], begun + CLEANUP_BOUND_SECONDS)
-    done = {'forced': forced, 'terminated': [], 'killed': [], 'survivors': [], 'process_table_unavailable': False}
+    done = {'forced': forced, 'terminated': [], 'killed': [], 'survivors': []}
     while True:
         table = process_table(min(timing['process_table_seconds'], max(end_at - time.monotonic(), .1)))
         if table is None:
             # Without a table no descendant can be named safely. What remains is the root's own group, and only
-            # while the root is not reaped, because until then its number cannot have been reused.
-            done['process_table_unavailable'] = True
+            # while the root is not reaped, because until then its number cannot have been reused. The table is
+            # read again until the deadline: one failed read neither ends the cleanup nor marks it unverified.
             proc.poll()
             alive = [] if proc.returncode is not None else [proc.pid]
         else:
             alive = invocation.alive(table, proc.returncode is not None)
             proc.poll()
         now = time.monotonic()
-        if not alive:
-            break
-        if now >= end_at:
+        if now >= end_at or (not alive and table is not None):
             done['survivors'] = alive
             break
         signum = signal.SIGKILL if now >= kill_at else signal.SIGTERM if now >= term_at else None
@@ -415,6 +413,8 @@ def clean_up(proc, invocation, forced, timing):
                     if pid not in sent:
                         sent.append(pid)
         time.sleep(max(min(timing['cleanup_poll_seconds'], end_at - time.monotonic()), 0))
+    # The last table read is the one the cleanup ended on: without it, the end of the descendants was not verified.
+    done['process_table_unavailable'] = table is None
     proc.poll()
     if proc.returncode is None and proc.pid not in done['survivors']:
         done['survivors'].append(proc.pid)
