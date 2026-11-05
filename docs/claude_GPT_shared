@@ -5971,6 +5971,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   TIMEOUT (sezione 2). Unico commit nuovo sui rami dalle 16:00: 76a3126 di GPT (15:42, non rivisto da Claude: sei benchmark inviati,
   posa misurata, preventivo condizionale S8 della continuazione 300M a 19.618 congelato a 66 GPU-ore e 708 core-ore).
 - Ledger: nessuna riga nuova dalle 15:25. Specchietto aggiornato nello stesso commit. Nessun job di Claude.
+### 2026-11-05 | Claude | Review di T100-LQ dopo la correzione dei timeout (GPT 1dc6ded..54d7a3b, piu' cc81430): APPROVATO, un test da correggere (R-1); nessun job
+- Richiesta di Simone: alla domanda «Vuoi che riveda i commit di GPT dopo la mia consegna?» ha risposto «Sì, rivedili»; a review in corso:
+  «non so che casino ha fato gpt...». Review: `docs/reviews/claude_review_logsquare_relaunch_20261105.md`, con i due script di verifica
+  accanto. Solo letture: nessun job, nessuna modifica a codice o piani, un comando in sola lettura su Leonardo alle 19:08.
+- **Verdetto: APPROVATO, nessun blocco.** Dopo ff08483 GPT non ha toccato codice (`scripts`, `src`, `tests`, `configs` identici). Fra il
+  codice del tentativo fallito (b2934b0) e quello rilanciato (26cf367) cambiano solo i nove file della correzione gia' rivista.
+- **Diagnostica 63591184 ricalcolata da zero** (campi grezzi e hash per tensore, senza `reading()`): dieci costruzioni da 269 tensori,
+  differisce solo `tokenizer.fe_gain` di 1 ULP; con il solo gain sostituito torna `38cb4cce…` in 10 su 10; il guard accetta controller e
+  trainer e rifiuta il preflight; quattro rank su un solo stato `0b6abc83…`, W_log nullo, nessun update; 7 supervisioni senza timeout,
+  segnali o superstiti. I tre enunciati fissati prima dell'esecuzione sono veri: la lettura di GPT e' corretta.
+- **Rilascio:** piano del 05/11 uguale a quello del 04/11 in 254 foglie su 263; le 9 diverse sono ID, percorsi e pin. Pin ricalcolati a
+  2293b94, 26cf367 e cc81430: tutti uguali ai file (114, 11, 1, 113 e 115).
+- **Invii:** ricevute, ledger comune e `sacct` coincidono. 63593091 COMPLETED 0:0 in 1 h 06 min 10 s, 4,4111 GPU-ore; nel training vero i
+  quattro rank attestano `0b6abc83…` con il guard `9cc3c37e…`. 63593128 PENDING (Priority) alle 19:08. Massimo ormai possibile della
+  tranche: 20,4344 GPU-ore su 22 e 163,4756 core-ore su 176.
+- **Test:** a 26cf367, il codice eseguito, 365 passati; a cc81430 364 passati e 1 fallito (R-1, sezione 2).
+- Non verificati: SHA del checkpoint a 5.000 (solo la dimensione), controllo A1 e resto del rilascio d'inferenza di cc81430, ricalcolo
+  interno del critico di GPT.
 
 ## 2) Problemi trovati
 
@@ -8290,3 +8308,17 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - La regola e' di GPT (76a3126): «Stop al primo errore/TIMEOUT/gate rifiutato, nessun retry» e «Servono15report completi dei tre job»:
   il piano dei fit CPU non puo' partire dai report parziali. Diagnosi, lettura dei log e ogni decisione sul seguito sono dell'owner GPT
   della linea scaling. Claude non ha letto i log e non propone rilanci.
+
+### 2026-11-05 | Claude | Review T100-LQ rilanciato: R-1 test rotto a cc81430; note N-1 contabilita', N-2 review prima del deploy, N-3 pulizia forzata mai provata sul cluster, N-4 forma
+- **R-1, da correggere da GPT prima dell'integrazione su `main`, non blocca i job.** A cc81430 fallisce
+  `tests/cpu/test_logsquare_infer_benchmark.py::test_review_plan_freezes_selection_aggregation_and_null_candidate_pins`: pretende
+  `REVIEW_REQUIRED` e pin dei checkpoint nulli, mentre il rilascio ha messo `APPROVED_FOR_BENCHMARK` e il pin del 5.000. Selezione,
+  aggregazione, tetto 0,5 GPU-ore e 8 CPU sono invariati; il codice chiede proprio `APPROVED_FOR_BENCHMARK`. Stesso tipo di D-5.
+- **N-1.** `resource_proposal.json` ripete il tetto di 22 GPU-ore per il rilancio e tiene a parte le 0,0233 del tentativo fallito: nel
+  consuntivo finale la somma va fatta insieme. Oggi il massimo possibile e' 20,4344.
+- **N-2.** Il piano conserva «Claude review before deployment remains required»; per il rilancio GPT ha usato la mia review del 04/11
+  sulla ricetta e le sue due sulla correzione, e ha rilasciato e inviato in circa venti minuti dalla fine della diagnostica. Lettura
+  sostenibile con i ruoli del 05/11; a posteriori non trovo nulla che una review preventiva avrebbe fermato. Decisione di Simone se
+  per i prossimi rilanci vuole un passaggio da Claude prima del deploy.
+- **N-3.** Sul cluster la pulizia forzata dei processi non e' mai scattata: della mia correzione e' provato solo il percorso normale.
+- **N-4.** Nelle voci di GPT fino a 54d7a3b molti numeri sono attaccati alle parole; in cc81430 non piu'.
