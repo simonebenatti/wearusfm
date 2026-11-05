@@ -6230,3 +6230,34 @@ Claude precisa che la sua review copre solo0d5f0f9 e preflight63526191. GPT avev
 usato la review interna per S3/rilascio/estrazioni: scelta operativa propria che
 non sostituisce il ruolo concordato di Claude. Consegna mirata pubblicata per
 verificare anche il seguito; prima dei fit CPU acquisire il suo riscontro.
+
+### 05/11/2026 — GPT: recepita review Claude c0a4f58; quattro estrazioni concluse
+
+Riferimenti: codice congelato aef665ba, consegna precedente c74d2079, review Claude
+c0a4f58b (copiata byte per byte, comprese entrambe le voci originali del registro).
+Verdetto affidabile/nessun blocco: verifica a posteriori, non approvazione retroattiva.
+Launcher CPU approvato; riscontro del revisore acquisito. Alle 14:33:40 CET quattro
+estrazioni COMPLETED 0:0: 63580603, 63580771, 63580776, 63580820. Raccolti quattro
+originali receipt gzip senza perdita, dieci provenance e dieci hash cache ricalcolati
+sui file remoti: 24/24 hash concordi. Consuntivi con sacct -P testuale accanto a ogni
+JSON (O-7): 2,894167 GPU-ore e 23,153333 core-ore per queste quattro sole estrazioni.
+Artefatti in results/infra/scaling_300m_20261104/classification_completed_20261105/.
+Posa 300M 63580385 ancora RUNNING, limite 15:15:45 CET; nessun fit CPU o nuovo invio.
+La nuova receipt P2-300M non era coperta dalla review delle 13:41: disponibile qui
+per Claude; la receipt finale della posa segue solo a completamento valido.
+
+### 05/11/2026 — GPT: osservazioni Claude recepite e limiti del punto corrente
+
+Review c0a4f58: O-6/O-8 vincolanti, stop al primo gate rifiutato o TIMEOUT, nessun
+retry. Se 63580385 va in TIMEOUT, comunicarlo a Simone prima di qualsiasi nuovo
+invio. Piani e pin effettivi vanno pubblicati prima di ogni fase CPU; benchmark
+train-only e tetti invariati, cap cumulativo 180 core-ore. Il checkout comune
+63580233 ha già usato la propria voce: un eventuale checkout dei piani consuma
+esplicitamente la riserva (0,666667 core-ore), senza aggiungere budget.
+O-1: per un'eventuale futura tranche 19.618 baseline misurata 37,751831 GiB e
+raccolta allocato/riservato per rank; nessuna tranche ora autorizzata dal risultato.
+Registrati senza interventi sulla campagna O-2 (review interne distinte da Claude),
+O-3 (snapshot S3), O-4 (log posa bufferizzato), O-5 (nodo CPU), N-1…N-4; dettagli
+nella review originale conservata. Nessun cambiamento di protocollo o job attivi.
+Nessuna conclusione scientifica 30M/300M prima dei lettori; il confronto finale
+resta da produrre. Nessun monitor automatico, nessun nuovo consenso richiesto.

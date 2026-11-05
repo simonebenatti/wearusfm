@@ -64,7 +64,8 @@
   "automatic_training_continuation": false,
   "state_evidence": "initial_status.txt",
   "next": "After complete extraction receipts, validate cache identity/support and measure CPU benchmarks before fitting within existing caps.",
-  "claude_review_coverage": "code0d5f0f9 and preflight63526191; later completion/release/extractions internally reviewed only",
-  "cpu_fits_wait_for_claude_review": true,
-  "review_prompt": "docs/prompt_claude_review_scaling_completion_extractions_20261105.md"
+  "claude_review_coverage": "c0a4f58 retrospective verification of completion/S3/release/extraction code; CPU launcher approved. Complete300M P2 and pose receipts not covered at13:41.",
+  "cpu_fits_wait_for_claude_review": false,
+  "review_prompt": "docs/prompt_claude_review_scaling_completion_extractions_20261105.md",
+  "latest_status": "../classification_completed_20261105/status.json"
 }

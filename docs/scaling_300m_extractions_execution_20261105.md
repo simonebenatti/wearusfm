@@ -80,3 +80,31 @@ le review successive citate qui sono interne. GPT ha preparato una consegna
 specifica per la sua verifica, riconoscendo la sostituzione del passaggio del
 revisore concordato. Prima dei fit CPU acquisire il riscontro di Claude, oltre
 ai benchmark e ai guard previsti. Nessun nuovo consenso ai lanci della catena.
+
+## Aggiornamento 05/11, 14:33:40 CET — review ricevuta e quattro estrazioni complete
+
+Review Claude **c0a4f58b** acquisita integralmente: lavoro affidabile, nessun blocco;
+launcher dei lettori CPU approvato. È una verifica successiva, non un'approvazione
+retroattiva dei lanci. Il requisito di riscontro del revisore è ora soddisfatto.
+
+| Job | Cella | Stato | Termine CET |
+|---|---|---|---|
+|63580385|Posa 300M|RUNNING|Limite 15:15:45|
+|63580603|P1 300M|COMPLETED 0:0|13:19:47|
+|63580771|P2 300M|COMPLETED 0:0|14:26:17|
+|63580776|P1 30M|COMPLETED 0:0|13:03:02|
+|63580820|P2 30M|COMPLETED 0:0|13:16:44|
+
+Quattro ricevute originali compresse e dieci provenance raccolte; 24 hash remoti
+concordi (4 ricevute, 10 provenance, 10 cache). Dati e accounting raw/JSON affiancati
+in `results/infra/scaling_300m_20261104/classification_completed_20261105/`.
+Quattro estrazioni: **2,894167 GPU-ore / 23,153333 core-ore**; posa esclusa finché
+attiva. La verifica numerica delle cache sarà eseguita nella fase CPU prevista.
+
+Nessun nuovo job in questo aggiornamento. Dopo la receipt completa della posa:
+pubblicare piani con pin reali, validazione, benchmark train-only, e solo dopo
+fit se i gate accettano. Il checkout eventuale dei piani usa la riserva CPU già
+pubblicata, non un budget aggiuntivo. Stop al primo gate rifiutato o TIMEOUT,
+nessun retry. Un TIMEOUT della posa va comunicato a Simone prima di nuovi invii.
+La receipt P2-300M è appena disponibile per la verifica di Claude; quella della
+posa segue a completamento. Nessun risultato scientifico del confronto ancora.
