@@ -1,5 +1,10 @@
 # Tetto condizionale del seguito scaling a 19.618 — 5 novembre 2026
 
+**Versione1 storica, superata prima degli score dalla
+[versione2](scaling_300m_continuation_budget_freeze_20261105_v2.md).** La reviewClaude7
+ha rilevato MinTRES incompatibile della QoSbprod e limitiCPU insufficienti.
+Il JSONv1 resta inalterato per audit; per ogni piano futuro usare la v2.
+
 Fissiamo prima degli score downstream a 5.000 il costo massimo dell'eventuale prosecuzione **300M da 5.000 a 19.618**, confrontata con il 30M già disponibile alla stessa dose. La regola scientifica S8 resta immutata. Questo documento e il [JSON dei tetti](../results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105.json) non rilasciano l'esecuzione e non autorizzano nuovi job.
 
 | Voce aggiuntiva | Tetto GPU-ore | Core-ore allocate nei job GPU | Core-ore solo CPU |

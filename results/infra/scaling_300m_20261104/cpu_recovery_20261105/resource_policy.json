@@ -1,0 +1,120 @@
+{
+  "protocol": "scaling-cpu-recovery-envelope-20261105-v1",
+  "status": "PROPOSED_FOR_CLAUDE_REVIEW_AND_SIMONE_ENVELOPE_DECISION",
+  "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
+  "scientific_criteria_changed": false,
+  "fits_submitted": false,
+  "recovery_submitted": false,
+  "new_training": false,
+  "new_extractions": false,
+  "gpu_hours": 0,
+  "old_cpu_envelope_core_hours": 180,
+  "cpu_only_envelope_core_hours": 310,
+  "simone_310_core_hour_decision_registered": false,
+  "claude_dispatcher_approval_received": false,
+  "scheduler_over_time_seconds": 180,
+  "scheduler_evidence": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/scheduler_review7.txt",
+    "sha256": "4fd014e77f64fd78124a3dacdf1043a66e39874a5d415683e0a2a4fd910e6817",
+    "bytes": 2938
+  },
+  "shutdown_slack_not_a_requested_runtime": true,
+  "actual_cpu_only_core_hours_at_amendment": 22.02777777777778,
+  "maximum_submitted_jobs_for_user": 10,
+  "maximum_active_reader_cpus": 8,
+  "partition": "lrd_all_serial",
+  "node": "login08",
+  "maximum_memory_gib": 30,
+  "numeric_threads": 8,
+  "fit_limits": {
+    "maximum_shards": 15,
+    "maximum_walltime_seconds_per_shard": 10800,
+    "maximum_allocated_core_hours": 240,
+    "scheduler_overtime_allowance_core_hours": 6,
+    "accounting_ceiling_including_overtime_core_hours": 246,
+    "frozen_before_recovery_measurements": true,
+    "actual_shards_and_allocations_require_all_15_reports": true,
+    "allocation_rounding_seconds": 60,
+    "formula_unchanged": true,
+    "on_budget_or_cover_infeasible": "STOP; no automatic changes to caps, grid, folds, tolerance or formula"
+  },
+  "budget_lines": [
+    {
+      "stage": "already_consumed_cpu_only",
+      "core_hours_including_scheduler_margin": 22.02777777777778
+    },
+    {
+      "stage": "two_recovery_benchmarks",
+      "jobs": 2,
+      "cpus": 8,
+      "walltime_seconds": [
+        7200,
+        600
+      ],
+      "requested_core_hours": 17.333333333333332,
+      "scheduler_margin_core_hours": 0.8,
+      "core_hours_including_scheduler_margin": 18.133333333333333
+    },
+    {
+      "stage": "probe_fits",
+      "maximum_jobs": 15,
+      "cpus": 8,
+      "requested_core_hours": 240,
+      "scheduler_margin_core_hours": 6,
+      "core_hours_including_scheduler_margin": 246
+    },
+    {
+      "stage": "pose_ridge",
+      "jobs": 1,
+      "cpus": 8,
+      "walltime_seconds": 3600,
+      "requested_core_hours": 8,
+      "scheduler_margin_core_hours": 0.4,
+      "core_hours_including_scheduler_margin": 8.4
+    },
+    {
+      "stage": "probe_aggregate",
+      "jobs": 6,
+      "cpus": 2,
+      "walltime_seconds": 600,
+      "requested_core_hours": 2,
+      "scheduler_margin_core_hours": 0.6,
+      "core_hours_including_scheduler_margin": 2.6
+    },
+    {
+      "stage": "compare",
+      "jobs": 1,
+      "cpus": 8,
+      "walltime_seconds": 1800,
+      "requested_core_hours": 4,
+      "scheduler_margin_core_hours": 0.4,
+      "core_hours_including_scheduler_margin": 4.4
+    },
+    {
+      "stage": "remaining_metadata_checkouts",
+      "jobs": 2,
+      "cpus": 2,
+      "memory_gib": 4,
+      "walltime_seconds": 300,
+      "requested_core_hours": 0.3333333333333333,
+      "scheduler_margin_core_hours": 0.2,
+      "core_hours_including_scheduler_margin": 0.5333333333333333
+    }
+  ],
+  "stop_on_first_new_failure": true,
+  "no_automatic_retry": true,
+  "background_monitor": false,
+  "reserve_use": "Accounting/shutdown contingency only; cannot expand stage caps, add retries or new science. Stop and record if exceeded.",
+  "release_gates": [
+    "Published reviewed dispatcher and policy before recovery benchmarks",
+    "Original code aef665ba and plan pin unchanged; common submitter/ledger, no duplicate IDs",
+    "Live remaining submitted jobs capacity before every submit; <=10 total user jobs, no alternate QoS",
+    "All15 complete reports, correct parent status or explicit accepted partial-parent provenance, identical live numeric runtime",
+    "All actual reports and accounting pins published before fit; same frozen formula, exact3x5x4coverage",
+    "Simone numerical310envelope decision registered before first pose-ridge or probe-fit",
+    "S8v2 published before first downstream score; no19618authorization"
+  ],
+  "sum_accounted_and_budgeted_core_hours": 302.09444444444443,
+  "reserve_core_hours": 7.905555555555566
+}

@@ -1,5 +1,9 @@
 # Lettori CPU 30M/300M a 5.000 — rilascio del 5 novembre 2026
 
+**Seguito della review Claude7:** dispatcher, comandi e proposta di budget
+in [recupero CPU](scaling_300m_cpu_recovery_execution_20261105.md).
+Preparati e da rivedere; nessun nuovo invio. Il rilascio originario sotto resta storico.
+
 **Aggiornamento 05/11,18:44: STOP.** Il benchmark300M naturale63593508 è in
 TIMEOUT;13report su15 completi. I fit downstream non sono avviati. La formula
 applicata ai13report richiede già148,134869core-ore senza overhead né i due

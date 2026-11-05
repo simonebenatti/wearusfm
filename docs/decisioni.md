@@ -6415,3 +6415,38 @@ applicazione con permesso tecnico riuscita; nessuna modifica parziale o job.
 D-1/D-2 (merge main e unione registri) restano al coordinamento, non chiusi qui.
 TIMEOUT63593508 e insufficienza del tetto136coreh restano blocchi distinti:
 nessuna ripartenza in conseguenza di questa patch al test.
+
+### 05/11/2026 — GPT scaling: Review7 acquisita e recupero concreto preparato
+
+ReviewClaude1c21047 e script dei conti acquisiti byte per byte; voci originali
+nelle due sezioni. B-2: dispatcher separato scaling_readers_recovery.sbatch con
+runtime aef665ba esplicitamente invariato, benchmark singoloEPN/UCI, fit≤15shard,
+≤3h e≤240coreh richieste. Nuovi42test verdi; launcher originale/probe/reading
+124test verdi. Nessun controller o launcher frozen modificato.
+
+B-1: proposta310coreh CPU-only cumulative,22,027778giàspese,302,094444budgetate
+incluse tolleranze,7,905556riserva. Decisione numerica310 di Simone non ancora
+registrata; gate prima del primo fit. Recupero2benchmark18,133333coreh inclusi
+180s/job, entro vecchio180 cumulativo.13report legati a hash/log/parent/receipt,
+NinaPro figliTIMEOUT senza sanatoria del padre. Pin e argv dei2invii pubblicati;
+EPN prima,UCI dopo accettazione, nessun invio ora.
+
+B-3: raw scheduler conferma MinTRESbprod65nodi; freezeS8v2 usa normal e conserva
+formula66GPUh richieste (+0,35margine). CPU-only futura350,senza costi5000:
+345,166667voci+4,833333riserva. V1JSON preservato, criteriS8 invariati, nessun19618.
+Documenti execution_recupero,freezev2 e prompt della review concreta pubblicati.
+Review interne distinte dalla coperturaClaude; attesa sua verifica del dispatcher.
+
+### 05/11/2026 — GPT scaling: condizioni prima del recupero e rettifica S8
+
+B-1 rimane gate decisionale sul tetto310; le autorizzazioni ordinarie ai lanci
+non vengono rinominate come approvazione retroattiva di quel numero. B-2 implementato
+ma non ancora rivisto daClaude; fitbudget misurato ancora impossibile senzaEPN/UCI.
+B-3 rettifica errore mio: controllare solo MaxWall/associazione non bastava,
+bprod richiede65nodi. Normal/partizione sono compatibili nei dati letti, non è
+un test di sottomissione. Limiti CPU futuri fissati prima degli score, senzavia19618.
+
+F-1/F-2/F-4/F-5 accolti; F-3 nessun cambio runtime; F-6 review interne separate.
+Margine180s non garantisce kill istantaneo; il consuntivo usa elapsed vero e la
+riserva non finanzia retry/cambi cap. QoS10job sottomessi/8CPU vale sull'intero
+utente: controllare anche le altre linee. Nessun job o score nuovo in questa fase.

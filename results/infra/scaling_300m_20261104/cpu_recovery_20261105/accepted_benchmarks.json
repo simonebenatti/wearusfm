@@ -1,0 +1,605 @@
+{
+  "protocol": "scaling-benchmark-reuse-20261105-v1",
+  "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
+  "matrix_complete": false,
+  "known_complete_reports": 13,
+  "expected_reports": 15,
+  "reports": [
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "epn612",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/epn612/benchmark.json",
+        "sha256": "639aee302f053ad892be591df018cbdcbb37be8b1f5848cb0cbb27a81d1eae4f",
+        "bytes": 12103
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/epn612/benchmark.json",
+        "sha256": "639aee302f053ad892be591df018cbdcbb37be8b1f5848cb0cbb27a81d1eae4f",
+        "bytes": 12103
+      },
+      "parent_job": 63593593,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/accounting.json",
+        "sha256": "f6ec846d04c5d1a3e4a464b25f270d3a440e0ad6e84d4f484fb9f8e1201ca647",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/sacct.txt",
+        "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-matched-20261105.json",
+        "sha256": "019e3c6c70a625b446a64bd0b92b11d9d44a3ef47a6ce692d4cf0f90c3bcee14",
+        "bytes": 1781
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593593.out",
+          "sha256": "013af46d4d99268e7510ef5458d164dd840ce1db6c3813cde517a83aa579a127",
+          "bytes": 1813
+        },
+        "line": 16,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/epn612\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db2",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db2/benchmark.json",
+        "sha256": "85532e30aeee8912c9db70230a1ecfe7ce8b9816ffd835210165d77c723f2b0b",
+        "bytes": 18285
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/ninapro_db2/benchmark.json",
+        "sha256": "85532e30aeee8912c9db70230a1ecfe7ce8b9816ffd835210165d77c723f2b0b",
+        "bytes": 18285
+      },
+      "parent_job": 63593593,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/accounting.json",
+        "sha256": "f6ec846d04c5d1a3e4a464b25f270d3a440e0ad6e84d4f484fb9f8e1201ca647",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/sacct.txt",
+        "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-matched-20261105.json",
+        "sha256": "019e3c6c70a625b446a64bd0b92b11d9d44a3ef47a6ce692d4cf0f90c3bcee14",
+        "bytes": 1781
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593593.out",
+          "sha256": "013af46d4d99268e7510ef5458d164dd840ce1db6c3813cde517a83aa579a127",
+          "bytes": 1813
+        },
+        "line": 13,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db2\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db3",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db3/benchmark.json",
+        "sha256": "782724571866809d8b7c910a93d62ff7f84c2b10945b0be78fd08fc44b17dfa3",
+        "bytes": 18249
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/ninapro_db3/benchmark.json",
+        "sha256": "782724571866809d8b7c910a93d62ff7f84c2b10945b0be78fd08fc44b17dfa3",
+        "bytes": 18249
+      },
+      "parent_job": 63593593,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/accounting.json",
+        "sha256": "f6ec846d04c5d1a3e4a464b25f270d3a440e0ad6e84d4f484fb9f8e1201ca647",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/sacct.txt",
+        "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-matched-20261105.json",
+        "sha256": "019e3c6c70a625b446a64bd0b92b11d9d44a3ef47a6ce692d4cf0f90c3bcee14",
+        "bytes": 1781
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593593.out",
+          "sha256": "013af46d4d99268e7510ef5458d164dd840ce1db6c3813cde517a83aa579a127",
+          "bytes": 1813
+        },
+        "line": 14,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db3\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db6",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db6/benchmark.json",
+        "sha256": "39da54eae1e567019e624df5f8b4287ae3a83a85e991bfef5079457c95d75db0",
+        "bytes": 12051
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/ninapro_db6/benchmark.json",
+        "sha256": "39da54eae1e567019e624df5f8b4287ae3a83a85e991bfef5079457c95d75db0",
+        "bytes": 12051
+      },
+      "parent_job": 63593593,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/accounting.json",
+        "sha256": "f6ec846d04c5d1a3e4a464b25f270d3a440e0ad6e84d4f484fb9f8e1201ca647",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/sacct.txt",
+        "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-matched-20261105.json",
+        "sha256": "019e3c6c70a625b446a64bd0b92b11d9d44a3ef47a6ce692d4cf0f90c3bcee14",
+        "bytes": 1781
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593593.out",
+          "sha256": "013af46d4d99268e7510ef5458d164dd840ce1db6c3813cde517a83aa579a127",
+          "bytes": 1813
+        },
+        "line": 15,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/ninapro_db6\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "uci_emg",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/uci_emg/benchmark.json",
+        "sha256": "78144d752c99b213a43a1dc2b4e524bdf5c9dc176eb6524ecc1027859f03987b",
+        "bytes": 11771
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/uci_emg/benchmark.json",
+        "sha256": "78144d752c99b213a43a1dc2b4e524bdf5c9dc176eb6524ecc1027859f03987b",
+        "bytes": 11771
+      },
+      "parent_job": 63593593,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/accounting.json",
+        "sha256": "f6ec846d04c5d1a3e4a464b25f270d3a440e0ad6e84d4f484fb9f8e1201ca647",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-matched/sacct.txt",
+        "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-matched-20261105.json",
+        "sha256": "019e3c6c70a625b446a64bd0b92b11d9d44a3ef47a6ce692d4cf0f90c3bcee14",
+        "bytes": 1781
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593593.out",
+          "sha256": "013af46d4d99268e7510ef5458d164dd840ce1db6c3813cde517a83aa579a127",
+          "bytes": 1813
+        },
+        "line": 17,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-matched/uci_emg\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db2",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db2/benchmark.json",
+        "sha256": "ed2690813e01ad4c09db13080d43aa9af12f1912a7aa872d3b07d70411286ae5",
+        "bytes": 18293
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/ninapro_db2/benchmark.json",
+        "sha256": "ed2690813e01ad4c09db13080d43aa9af12f1912a7aa872d3b07d70411286ae5",
+        "bytes": 18293
+      },
+      "parent_job": 63593508,
+      "parent_state": "TIMEOUT",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/accounting.json",
+        "sha256": "bee0fc629cf71adcbdf2b51948fa3ac14055125f10ee48c9b4d0e987e9a4fdad",
+        "bytes": 787
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/sacct.txt",
+        "sha256": "16e894cfc95a9f99d4852419e6f2f0bcad8577b7ad8b8af740d63b67e22caf38",
+        "bytes": 592
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-300M-20261105.json",
+        "sha256": "e9fcc713f5b74467b9d2d954ca6f00c8ebda140aec777f97568d4b03e653fbdd",
+        "bytes": 1772
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593508.out",
+          "sha256": "b42de48dfe4de4b2790d90c27a9ce9eb399438e030599a165b86af43dfe70e3a",
+          "bytes": 1450
+        },
+        "line": 13,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db2\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": false,
+      "timeout_parent_not_promoted_to_success": true,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db3",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db3/benchmark.json",
+        "sha256": "d0d2deb4595dd26b0f253c1252d9caf7fefbe7bf6efd035509817d3a197dac8c",
+        "bytes": 18259
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/ninapro_db3/benchmark.json",
+        "sha256": "d0d2deb4595dd26b0f253c1252d9caf7fefbe7bf6efd035509817d3a197dac8c",
+        "bytes": 18259
+      },
+      "parent_job": 63593508,
+      "parent_state": "TIMEOUT",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/accounting.json",
+        "sha256": "bee0fc629cf71adcbdf2b51948fa3ac14055125f10ee48c9b4d0e987e9a4fdad",
+        "bytes": 787
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/sacct.txt",
+        "sha256": "16e894cfc95a9f99d4852419e6f2f0bcad8577b7ad8b8af740d63b67e22caf38",
+        "bytes": 592
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-300M-20261105.json",
+        "sha256": "e9fcc713f5b74467b9d2d954ca6f00c8ebda140aec777f97568d4b03e653fbdd",
+        "bytes": 1772
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593508.out",
+          "sha256": "b42de48dfe4de4b2790d90c27a9ce9eb399438e030599a165b86af43dfe70e3a",
+          "bytes": 1450
+        },
+        "line": 14,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db3\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": false,
+      "timeout_parent_not_promoted_to_success": true,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db6",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db6/benchmark.json",
+        "sha256": "09fb98aa950bb3b8fe58b2659a719d81e989aa57584b2f78657fecffd025576d",
+        "bytes": 12060
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/ninapro_db6/benchmark.json",
+        "sha256": "09fb98aa950bb3b8fe58b2659a719d81e989aa57584b2f78657fecffd025576d",
+        "bytes": 12060
+      },
+      "parent_job": 63593508,
+      "parent_state": "TIMEOUT",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/accounting.json",
+        "sha256": "bee0fc629cf71adcbdf2b51948fa3ac14055125f10ee48c9b4d0e987e9a4fdad",
+        "bytes": 787
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-300M-natural/sacct.txt",
+        "sha256": "16e894cfc95a9f99d4852419e6f2f0bcad8577b7ad8b8af740d63b67e22caf38",
+        "bytes": 592
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-300M-20261105.json",
+        "sha256": "e9fcc713f5b74467b9d2d954ca6f00c8ebda140aec777f97568d4b03e653fbdd",
+        "bytes": 1772
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593508.out",
+          "sha256": "b42de48dfe4de4b2790d90c27a9ce9eb399438e030599a165b86af43dfe70e3a",
+          "bytes": 1450
+        },
+        "line": 15,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-300M-natural/ninapro_db6\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": false,
+      "timeout_parent_not_promoted_to_success": true,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "epn612",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/epn612/benchmark.json",
+        "sha256": "d4f9532351212a0f805236972aa7e78d2b0d31a3ff969548e6d67c26dd448cfe",
+        "bytes": 12087
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/epn612/benchmark.json",
+        "sha256": "d4f9532351212a0f805236972aa7e78d2b0d31a3ff969548e6d67c26dd448cfe",
+        "bytes": 12087
+      },
+      "parent_job": 63593262,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/accounting.json",
+        "sha256": "0a2052589dec4bd906a8ad4c790014fccfe531a29241bccba22554c1ffb05444",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/sacct.txt",
+        "sha256": "b64e339262571fa68358edb0fa50a93c58496987d1bbd4db357538f341cbfa8c",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-30M-20261105.json",
+        "sha256": "75a70977e906f20cf03b00f27e4ef76dc4e1d37cedac96824ab3bbada8c136c2",
+        "bytes": 1767
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593262.out",
+          "sha256": "682d81de84978d5e37c7ac2053476c9d4fc1e11b1428b6ea2da194aa19ebfe8d",
+          "bytes": 1808
+        },
+        "line": 16,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/epn612\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db2",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db2/benchmark.json",
+        "sha256": "24d405d037024cc95ec66e05fbbb3e2a0bd5698ed675d875e768844a9b3d1753",
+        "bytes": 18273
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/ninapro_db2/benchmark.json",
+        "sha256": "24d405d037024cc95ec66e05fbbb3e2a0bd5698ed675d875e768844a9b3d1753",
+        "bytes": 18273
+      },
+      "parent_job": 63593262,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/accounting.json",
+        "sha256": "0a2052589dec4bd906a8ad4c790014fccfe531a29241bccba22554c1ffb05444",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/sacct.txt",
+        "sha256": "b64e339262571fa68358edb0fa50a93c58496987d1bbd4db357538f341cbfa8c",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-30M-20261105.json",
+        "sha256": "75a70977e906f20cf03b00f27e4ef76dc4e1d37cedac96824ab3bbada8c136c2",
+        "bytes": 1767
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593262.out",
+          "sha256": "682d81de84978d5e37c7ac2053476c9d4fc1e11b1428b6ea2da194aa19ebfe8d",
+          "bytes": 1808
+        },
+        "line": 13,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db2\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db3",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db3/benchmark.json",
+        "sha256": "3b017a3bb1c34d54c5dd3312583c0d1d30676a6a9a5f7554b57db2b0241536b5",
+        "bytes": 18234
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/ninapro_db3/benchmark.json",
+        "sha256": "3b017a3bb1c34d54c5dd3312583c0d1d30676a6a9a5f7554b57db2b0241536b5",
+        "bytes": 18234
+      },
+      "parent_job": 63593262,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/accounting.json",
+        "sha256": "0a2052589dec4bd906a8ad4c790014fccfe531a29241bccba22554c1ffb05444",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/sacct.txt",
+        "sha256": "b64e339262571fa68358edb0fa50a93c58496987d1bbd4db357538f341cbfa8c",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-30M-20261105.json",
+        "sha256": "75a70977e906f20cf03b00f27e4ef76dc4e1d37cedac96824ab3bbada8c136c2",
+        "bytes": 1767
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593262.out",
+          "sha256": "682d81de84978d5e37c7ac2053476c9d4fc1e11b1428b6ea2da194aa19ebfe8d",
+          "bytes": 1808
+        },
+        "line": 14,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db3\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db6",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db6/benchmark.json",
+        "sha256": "d71706669fdc57cb82e7e22f63f9ec4bc24aeaeb715bae703791260855c2415f",
+        "bytes": 12040
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/ninapro_db6/benchmark.json",
+        "sha256": "d71706669fdc57cb82e7e22f63f9ec4bc24aeaeb715bae703791260855c2415f",
+        "bytes": 12040
+      },
+      "parent_job": 63593262,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/accounting.json",
+        "sha256": "0a2052589dec4bd906a8ad4c790014fccfe531a29241bccba22554c1ffb05444",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/sacct.txt",
+        "sha256": "b64e339262571fa68358edb0fa50a93c58496987d1bbd4db357538f341cbfa8c",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-30M-20261105.json",
+        "sha256": "75a70977e906f20cf03b00f27e4ef76dc4e1d37cedac96824ab3bbada8c136c2",
+        "bytes": 1767
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593262.out",
+          "sha256": "682d81de84978d5e37c7ac2053476c9d4fc1e11b1428b6ea2da194aa19ebfe8d",
+          "bytes": 1808
+        },
+        "line": 15,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/ninapro_db6\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "uci_emg",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/uci_emg/benchmark.json",
+        "sha256": "7be23087d1f308c29274c4e54a42f4c485626d8cd371670a84a28f2a00df2a0a",
+        "bytes": 11758
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/uci_emg/benchmark.json",
+        "sha256": "7be23087d1f308c29274c4e54a42f4c485626d8cd371670a84a28f2a00df2a0a",
+        "bytes": 11758
+      },
+      "parent_job": 63593262,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/accounting.json",
+        "sha256": "0a2052589dec4bd906a8ad4c790014fccfe531a29241bccba22554c1ffb05444",
+        "bytes": 788
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/T100-G-30M-natural/sacct.txt",
+        "sha256": "b64e339262571fa68358edb0fa50a93c58496987d1bbd4db357538f341cbfa8c",
+        "bytes": 593
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/submissions/SCALING-probe-bench-30M-20261105.json",
+        "sha256": "75a70977e906f20cf03b00f27e4ef76dc4e1d37cedac96824ab3bbada8c136c2",
+        "bytes": 1767
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_benchmark/logs/scaling_readers_63593262.out",
+          "sha256": "682d81de84978d5e37c7ac2053476c9d4fc1e11b1428b6ea2da194aa19ebfe8d",
+          "bytes": 1808
+        },
+        "line": 17,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark/T100-G-30M-natural/uci_emg\"}"
+      },
+      "reuse_accepted_by_claude_review7": true,
+      "parent_success_required": true,
+      "timeout_parent_not_promoted_to_success": false,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    }
+  ],
+  "missing": [
+    "T100-G-300M-natural/epn612",
+    "T100-G-300M-natural/uci_emg"
+  ],
+  "new_report_acceptance": [
+    "COMPLETED0:0parent",
+    "same plan/code/recipe/fold0 and all6C",
+    "same numeric_sha2561ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+    "fresh directory; old partialaudit untouched; no failed.json",
+    "sha,size,submitter receipt, raw sacct plus accounting published"
+  ]
+}
