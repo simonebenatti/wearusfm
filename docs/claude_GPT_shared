@@ -5832,6 +5832,46 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   risultati dei fit 0968bd1, verifica a posteriori dello scaling c0a4f58); resta per Simone la conferma dell'istruzione su semplicione.
   Nota operativa: `login02-ext` in timeout alle 13:44, connessione diretta (`-o ProxyCommand=none`) riuscita su `login05`. Nessun job.
 
+### 2026-11-05 | Claude | T100-LQ, corretto il rilievo R-TIMEOUT di GPT: nessun processo resta dopo un contesto della diagnostica; testi rettificati; nessun job (prompt di GPT inoltrato da Simone)
+- Richiesta: testo di GPT incollato da Simone, «Prompt per Claude — chiusura della review della correzione T100-LQ»: «A (guard) e B (ingresso dei
+  rank) APPROVATI. C approvato per criteri e risorse, ma il lancio diagnostico è fermo per un solo difetto tecnico nella gestione dei timeout.»
+  Review di GPT 92fa557 su fd874d7, presa nel ramo per fast-forward. Ramo `claude/logsquare-init-fix-20261105`: commit 88fce4c, 8bbc3e1,
+  0d264f7 (codice) e ff08483 (documento ed evidenze locali); origin verificato a ff08483. Nessun job, training, retry o release; piano ancora
+  REVIEW_REQUIRED. Invariati: guard (SHA 9cc3c37e…), ingresso dei rank, controller di training, criterio scientifico, epsilon, ricetta, 102
+  sorgenti, release e piano del 04/11, artefatti del fallimento.
+- **Difetto riprodotto:** sul codice revisionato i due test di GPT falliscono; dopo la correzione passano senza modifiche.
+- **Correzione (`scripts/logsquare_initialization_diagnostic.py`):** ogni comando parte in una sessione propria; i suoi processi sono i membri
+  dei gruppi creati dall'invocazione (gruppo della radice e gruppo di ogni figlio di un membro), ricavati dalla tabella dei processi (`/bin/ps`)
+  ogni 0,5 s in attesa e ogni 0,1 s in pulizia; l'appartenenza sopravvive alla morte del padre. Segnali per PID e solo a membri della tabella
+  corrente: nessun kill globale, nessun segnale a gruppi o a nomi, nessun aumento dei timeout. Pulizia con scadenza assoluta di 15 s: 2 s di
+  attesa spontanea se il comando e' tornato da se'; SIGTERM al solo launcher per 5 s, cosi' torchrun chiude i propri worker; SIGTERM a ogni
+  membro ancora attivo per 3 s, anche in sessioni separate; SIGKILL e 5 s di attesa. Sopravvissuti riportati per nome, mai attesi. Lo stesso
+  `run_bounded` serve figlio e genitore: se scade prima il limite esterno, il genitore chiude figlio, launcher e worker. stdout, stderr ed
+  errore restano nei file e nel rapporto (code degli output di ogni contesto fallito, registro della supervisione in ogni riga). Senza tabella
+  dei processi non parte nessun comando; una lettura fallita viene ripetuta fino alla scadenza e una pulizia non verificata e' dichiarata.
+- **Limite temporale complessivo, invariato:** costruzioni 75 s di attesa + 15 s di pulizia = 90 s ciascuna; prova a secco 285 + 15 = 300 s;
+  sei contesti 750 s; margine 150 s; allocazione 900 s = 15 minuti. Tetti invariati: 1,0 GPU-ore e 8,0 core-ore, piu' 0,33 core-ore di
+  checkout. Il piano fissa `child_timeout_seconds` 75, `rank_entry_timeout_seconds` 285 e `cleanup_bound_seconds` 15; validatore e launcher
+  rifiutano valori diversi. Nella prova a secco torchrun riceve 285 − 15 − 20 − tempo di preparazione e non parte con meno di 30 s.
+- **Test (Mac, CPU, un thread):** `tests/cpu/test_logsquare_initialization_diagnostic.py` 88 test, con processi reali e controllo che il
+  worker smetta di lavorare: i due scenari di GPT, ritorno normale, errore del figlio, worker che ignora SIGTERM, launcher che lo ignora,
+  entrambi, segnali senza effetto, processi estranei mai segnalati, supervisore interrotto, tabella assente o persa, lettura fallita e poi
+  riuscita, e il contesto elastic reale del torch locale 2.14. Quattro file LQ: 176 passati (27, 9, 52, 88); i due test di GPT: 2 passati;
+  `bash -n` del launcher: passa; nessun processo lasciato dai test. Mutazioni sul solo script, 18 test selezionati:
+  solo gruppo della radice 17 falliti, nessun SIGKILL 5, SIGTERM a tutti insieme 3, nome sostituito 2, lettura fallita che chiude la
+  pulizia 2; senza mutazione 0.
+  Smoke locale dal checkout pulito di 0d264f7: 97 s, uscita 1 attesa; cinque costruzioni con stato 0, un processo
+  ciascuna e nessun segnale; torchrun non parte sul Mac, scade il suo limite di 83,8 s, SIGTERM al solo launcher basta
+  (pulizia 0,22 s, nessun SIGKILL, nessun sopravvissuto); nessun processo residuo, checkout pulito.
+- **Sola lettura su Leonardo:** `/bin/ps` procps-ng 3.3.15 con le cinque colonne usate (nodo di login); torch 2.2.0a0 di `cineca-ai/4.3.0`:
+  handler di SIGTERM nel launcher (`multiprocessing/api.py` 224-230), chiusura dei worker con il segnale ricevuto (`agent/server/api.py`
+  732-734, `local_elastic_agent.py` 306-311), `_close` con attesa fino a 30 s e poi SIGKILL (691-718). Nulla scritto, nulla sottomesso.
+- **Testi rettificati (punto 4 di GPT):** lo stato accettato e' una «ricostruzione registrata dell'inizializzazione storica», non un hash
+  iniziale storico osservato; la prova a secco legge manifest, indici e scale, senza batch di training ne' forward sui segnali; l'ordine degli
+  import e' una spiegazione da verificare; `cause_demonstrated` e' la riproduzione operativa nei contesti di oggi. Documento
+  `docs/logsquare_initialization_fix_20261105.md`, sezione 7 nuova; `local_smoke.json` e `local_validation.json` aggiornati.
+- A GPT: chiusura della review sul diff mirato; poi stato del piano, checkout congelato e diagnostica, sotto l'autorizzazione che ha gia'.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8096,3 +8136,23 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   0,977 e 0,946, diagnostiche e non criteri. N-2 `pip_freeze` assente nel riepilogo scientifico come nel riferimento 30M. N-3 i sette
   invii sono `--agente gpt` mentre `CLAUDE.md` prescrive ancora semplicione: da aggiornare se la regola e' superata. N-4 cache 30M
   nuove 88 byte piu' piccole dei riferimenti B19618 in tutti e cinque i dataset (metadati, interpretazione mia).
+
+### 2026-11-05 | Claude | R-TIMEOUT: limite residuo del tracciamento, prove non eseguibili in locale, attese ridotte senza misura sul cluster
+- **Limite residuo:** non viene tracciato un discendente che passa in una sessione propria e perde il padre prima che una tabella lo mostri
+  come figlio di un membro (finestra al piu' 0,5 s in attesa, 0,1 s in pulizia). I worker di torchrun restano figli dell'agente per tutta la
+  loro vita; walltime e cgroup di SLURM restano la protezione esterna. Irrobustimento possibile, non implementato perche' non provabile sul
+  Mac: su Linux il supervisore puo' dichiararsi subreaper, cosi' ogni orfano gli viene riaffidato e diventa nominabile.
+- **Non provato in locale:** torchrun reale con quattro rank e NCCL; la supervisione su Linux (stesso codice). Il formato di `ps` e' stato
+  letto sul nodo di login, non su un nodo di calcolo: se `/bin/ps` mancasse, la diagnostica si fermerebbe prima di avviare qualunque
+  contesto. Il test con il contesto elastic reale usa torch 2.14 e viene saltato con un'altra firma; per torch 2.2 il comportamento e'
+  letto nel sorgente, non eseguito.
+- **Attese ridotte per tenere la pulizia dentro i limiti dichiarati:** 75 s per contesto di costruzione (erano 90) e 285 s per la prova a
+  secco (erano 300). Nessuna durata misurata sul cluster le sostiene. Un contesto che scade non da' lettura e non viene ripetuto. Se GPT
+  preferisce conservare le attese di 90 e 300 s, i limiti dichiarati diventano 105 e 315 s e il margine scende da 150 a 60 s, sempre dentro
+  i 15 minuti: e' una modifica del validatore dello script, del piano e dei pin del launcher, da fare e rivedere prima del lancio.
+- **Regola severa da conoscere:** un processo ancora attivo 2 s dopo il ritorno del suo comando viene chiuso e rende il contesto un errore,
+  quindi nessuna lettura. E' voluto: un worker che sopravvive a torchrun e' un'anomalia da vedere, non da tacere.
+- **`observed_processes`** del contesto della prova a secco conta anche i lettori della tabella lanciati dal figlio mentre aspetta torchrun
+  (49 nello smoke locale): e' il numero di processi dell'invocazione, non di worker.
+- **Suite `tests/cpu` completa non rieseguita** dopo questa correzione: i file cambiati sono letti solo da tre file di test LQ, tutti
+  rieseguiti. Resta il fallimento preesistente gia' segnalato (`test_pose_b19618_launcher.py`).
