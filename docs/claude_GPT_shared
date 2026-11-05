@@ -6265,6 +6265,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   «Dopo la consegna di GPT faccio una quarta lettura breve, poi pin, checkout e lancio. Non ti chiedo un altro via: è la catena già
   approvata, 82 job e 4 checkout, con tetto di 9 GPU-ore e 1.711,67 core-ore»: «va bene».
 
+### 2026-11-05 | Claude | Linea 2, valutazione lunga: review pinnata, ramo di esecuzione, deploy della fase di estrazione, checkout sottomesso (63628160)
+- Ramo di esecuzione `claude/consolidation-long-exec-20261105`, figlio di `9d195e7`. Commit di fase
+  `7d276c98fc54d66dab1226226eb6c5e447422c69` («Release reviewed long extraction phase»): cambiano solo tre stati e
+  `review.commit = 032e188d571b29832418866e557557a838a37256` in `plan.json` e `launch_plan.json`. `validate_plan` accetta; sorgenti
+  `1ca7aead…` e ricetta `b2356a8e…` invariati. `plan.json` del commit di fase: sha256
+  `e24d3fae8642695dcf0dd1ff45347d985eed0c8e47f7e85c1c1e138db11d058a`. Pubblicato su origin, SHA remoto verificato.
+- Letture fresche alle 22:01 (`~/wearusfm_local/logs/line2_long_predeploy_20261105_2201.txt`): `$WORK` 34,72 GiB liberi, scratch 5,23 PiB;
+  radice della campagna e checkout assenti; nessun `LONG` in coda o in accounting; riferimento di deploy assente.
+- `git push leonardo 7d276c98…:refs/heads/deploy/consolidation-long-extract-20261105`: riferimento nuovo, `ls-remote` uguale. Il
+  canonico non e' toccato: il riferimento non e' estratto in nessun checkout.
+- Checkout: ID logico `LONG-checkout-extract-20261105`, agente `claude`, job SLURM **63628160**, `lrd_all_serial`, 1 CPU, 2 GiB, 10
+  minuti, 0 GPU-ore, al massimo 0,333333 core-ore. Submitter comune (sha256 `814da4bc…`), `campaign_checkout.sbatch` su stdin (sha256
+  `eaafc432…`). Alle 22:02 e' PENDING per `QOSMaxCpuPerUserLimit`.
+- Le dodici estrazioni si inviano dopo la verifica del checkout: `sbatch` legge il launcher dal checkout al momento dell'invio. Le righe
+  sono gia' generate dalla matrice pinnata, in `~/wearusfm_local/line2/long_extract_submit_20261105.txt`: 12 righe da 0,75 GPU-ore,
+  9 GPU-ore in tutto, pari al tetto.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8726,3 +8743,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - N-6: `authorization_quote` del piano riporta la domanda di Simone senza inizio e fine; la conferma e' «Sì, scratch» (voce `766e2f5`).
 - N-7: sul ramo di esecuzione cambio solo pin, stati e metadati raccolti; le mie voci di registro restano su questo ramo.
 - Limiti: snippet dei manifest e wrapper della sintesi confrontati con il codice, non eseguiti, perche' le ricevute non esistono ancora.
+
+### 2026-11-05 | Claude | Linea 2: attesa sulla partizione seriale; un test fallisce per costruzione dopo il pin
+- Il checkout aspetta: le 8 CPU per utente di `lrd_all_serial` sono occupate da `SCALING-probe-fit-01`, limite 59 minuti, partito alle
+  21:52. E' la nota N-5 in atto. Nessuna azione sui job dello scaling.
+- Dopo il pin `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` fallisce sul ramo di esecuzione, 251 passati e 1
+  fallito: il test pretende che il piano sia ancora in attesa di review. Non riguarda il runtime e sul ramo di esecuzione i test non li
+  modifico. Per GPT, al prossimo giro: il test dovrebbe accettare entrambi gli stati.
+- Scostamento dal prontuario: nel submitter uso `--timeout 480` invece di 600. Il mio strumento chiude un comando dopo 10 minuti e
+  un'interruzione a meta' lascerebbe una prenotazione ambigua.
