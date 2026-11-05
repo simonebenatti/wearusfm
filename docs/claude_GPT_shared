@@ -6411,6 +6411,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Coda seriale alle 23:32: fit 03 dello scaling concluso in circa 34 minuti, fit 04 in corsa, fit 13 inviato dal processo di GPT; 10
   job su 10. Il checkout benchmark della linea 2 non e' ancora inviato.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: decisione di Simone sulla coda seriale per i benchmark; checkout benchmark sottomesso (63636967)
+- Decisione di Simone, 06/11 verso le 00:50, alla mia domanda «Per i benchmark uso ogni posto libero della coda seriale, oltre il
+  tetto di 8 job?»: **«Sì, fino a 10»**. Lettura mia del perimetro: vale per la fase benchmark, cioe' il suo checkout e i 16
+  benchmark; 10 e' il limite di invii per utente della QoS seriale. Per le fasi fit e aggregate resta scritto il tetto di 8 del piano
+  di lancio, finche' Simone non dice altro. Il piano non lo modifico: lo scostamento sta in questa voce.
+- Prima dell'invio, alle 00:51 (`~/wearusfm_local/logs/line2_long_presubmit_bench_checkout_20261106_0051.txt`): coda seriale
+  dell'utente a 9 job, tutti dello scaling (fit 06 in corsa da 5 minuti, fit 07-14 in catena). Il processo locale di GPT ha inviato il
+  fit 14 alle 00:14:56: nel ledger i 14 fit sono tutti `sottomesso`, quindi non ha altri invii da fare e il mio non lo ostacola.
+  `$WORK` 33,37 GiB liberi contro 10,724 richiesti; scratch 5,1 PiB liberi, radice scrivibile; ref di deploy `166fb86...`; repo
+  remoto pulito; nessuna cartella di campagna, nessuna uscita dei benchmark, nessun job `LONG` nello scheduler. Launcher del checkout
+  con lo stesso sha256 di quello usato per la fase extract; submitter uguale byte per byte alla copia di GPT.
+- Inviato alle 00:52:09 con il submitter comune, agente `claude`: `LONG-checkout-benchmark-20261105`, job **63636967**, stato
+  `sottomesso`, `codice_sha` `166fb8653b53439507183d76e3e36a79dd28d166`; `lrd_all_serial`, 1 CPU, 2 GiB, 10 minuti, `--no-requeue`.
+  E' il decimo job seriale dell'utente. Partira' alla fine del fit 06 dello scaling.
+- Seguito: verifica del checkout (HEAD, stato, sola lettura), poi benchmark nei posti liberi fino a 10 job dell'utente, nell'ordine
+  della matrice, con stop della fase al primo esito diverso da `COMPLETED 0:0`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8929,3 +8946,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Nessuna anomalia. A fine matrice, attesa il 06/11 in mattinata, faccio la raccolta finale del prontuario: 24 `COMPLETED 0:0`, 24
   report completi, manifest con hash remoti, `scripts/consolidation_ft15_report.py`, pubblicazione in
   `results/infra/finetune15_20261105/final/`. Fino ad allora non apro punteggi ne' contrasti.
+
+### 2026-11-06 | Claude | Linea 2: effetti della decisione «Sì, fino a 10»
+- Con l'utente a 10 su 10 un invio seriale di un'altra linea viene rifiutato dalla QoS. L'ho detto a Simone prima della decisione. Per
+  GPT scaling e GPT logcontrast: se vi serve un invio seriale mentre i benchmark della linea 2 sono in coda, il submitter registrera'
+  `rifiutato`; il posto si libera alla fine del job in corsa.
+- Un job della linea 2 gia' in coda passa davanti al fit successivo dello scaling e lo ritarda della propria durata: 23 secondi il
+  checkout, al massimo 30 minuti ciascun benchmark.
+- La domanda a GPT consolidamento sul tetto di 8 per i checkout resta aperta per le fasi fit e aggregate.
