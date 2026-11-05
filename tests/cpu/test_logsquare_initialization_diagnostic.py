@@ -8,6 +8,7 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import time
@@ -18,7 +19,8 @@ import torch
 from wearusfm.training.pairing import state_sha256
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location('initialization_diagnostic_test', ROOT / 'scripts/logsquare_initialization_diagnostic.py')
+SCRIPT = ROOT / 'scripts/logsquare_initialization_diagnostic.py'
+SPEC = importlib.util.spec_from_file_location('initialization_diagnostic_test', SCRIPT)
 D = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(D)
 REFERENCE_GAIN, TRAINING_GAIN = 548.6939187567023, 548.6939187567021
@@ -73,8 +75,8 @@ def fixture_plan(tmp_path):
     plan = {'protocol': D.PROTOCOL, 'status': 'APPROVED_FOR_DIAGNOSTIC', 'training_plan': training_pin,
             'preflight_report': report, 'candidate_config': candidate, 'comparison': comparison,
             'initial_state_guard': pin('guard.json', guard),
-            'variants': list(D.VARIANTS), 'cuda_required': False, 'child_timeout_seconds': 90,
-            'rank_entry_timeout_seconds': 300, 'expected_scientific_sources': 102}
+            'variants': list(D.VARIANTS), 'cuda_required': False, 'child_timeout_seconds': 75,
+            'rank_entry_timeout_seconds': 285, 'cleanup_bound_seconds': 15, 'expected_scientific_sources': 102}
     path = root / 'diagnostic.json'
     def save():
         path.write_text(json.dumps(plan))
@@ -92,7 +94,8 @@ def test_valid_plan_uses_only_local_provenance_and_all_102_sources(fixture_plan)
 
 @pytest.mark.parametrize('mutation', ['plan_pin', 'source', 'source_inventory', 'candidate_provenance',
                                      'report_provenance', 'comparison_provenance', 'variants', 'timeout', 'status',
-                                     'old_variants', 'rank_timeout', 'rank_timeout_missing', 'guard_missing', 'guard_pin',
+                                     'old_variants', 'rank_timeout', 'rank_timeout_missing', 'cleanup_bound',
+                                     'cleanup_bound_missing', 'cleanup_bound_type', 'guard_missing', 'guard_pin',
                                      'guard_size', 'guard_outside', 'guard_reference', 'guard_reference_gain',
                                      'guard_training_gain', 'guard_group'])
 def test_mutations_rejected_before_construction(fixture_plan, mutation):
@@ -121,10 +124,16 @@ def test_mutations_rejected_before_construction(fixture_plan, mutation):
         plan['initial_state_guard'] = {**plan['initial_state_guard'], 'path': '../guard.json'}
     elif mutation == 'old_variants':
         plan['variants'] = list(D.CONSTRUCTION_VARIANTS)
-    elif mutation == 'rank_timeout':
-        plan['rank_entry_timeout_seconds'] = 301
+    elif mutation == 'rank_timeout':    # one second more than the declared 300 s limit less the cleanup
+        plan['rank_entry_timeout_seconds'] = 286
     elif mutation == 'rank_timeout_missing':
         del plan['rank_entry_timeout_seconds']
+    elif mutation == 'cleanup_bound':   # a plan that declares another cleanup than the supervisor performs
+        plan['cleanup_bound_seconds'] = 14
+    elif mutation == 'cleanup_bound_missing':
+        del plan['cleanup_bound_seconds']
+    elif mutation == 'cleanup_bound_type':
+        plan['cleanup_bound_seconds'] = 15.0
     elif mutation == 'plan_pin':
         plan['training_plan']['sha256'] = '0' * 64
     elif mutation == 'source':
@@ -138,8 +147,8 @@ def test_mutations_rejected_before_construction(fixture_plan, mutation):
         plan[key] = {**plan[key], 'sha256': '0' * 64}
     elif mutation == 'variants':
         plan['variants'].reverse()
-    elif mutation == 'timeout':
-        plan['child_timeout_seconds'] = 91
+    elif mutation == 'timeout':         # one second more than the declared 90 s limit less the cleanup
+        plan['child_timeout_seconds'] = 76
     else:
         plan['status'] = 'REVIEW_REQUIRED'
     save()
@@ -263,21 +272,35 @@ def test_parent_retains_errors_and_launches_each_context_separately(tmp_path, mo
     monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
     monkeypatch.setattr(D, 'validate_plan', lambda path: ({'child_timeout_seconds': 2, 'rank_entry_timeout_seconds': 7},
                                                           {}, {}, {}, {}))
-    commands = []
-    def run(command, **kwargs):
+    commands, records = [], {}
+    def bounded(command, seconds, stdout, stderr, record):
         commands.append(command)
         variant = command[command.index('--child') + 1]
         destination = Path(command[command.index('--child-output') + 1])
-        assert kwargs['timeout'] == (7 if variant == D.RANK_VARIANT else 2) and kwargs['env']['PYTHONDONTWRITEBYTECODE'] == '1'
-        assert destination.parent == out
-        if variant == 'trainer':
-            raise subprocess.TimeoutExpired(command, 2, output=b'partial', stderr=b'timeout evidence')
+        assert seconds == (7 if variant == D.RANK_VARIANT else 2)
+        assert destination.parent == out and (stdout, stderr) == (out / (variant + '.stdout'), out / (variant + '.stderr'))
+        record.update(forced=False, timed_out=False, terminated=[], killed=[], survivors=[], names={},
+                      process_table_unavailable=False)
+        records[variant] = record
+        if variant == 'trainer':  # the bound expired: the supervisor ended the child; what it wrote stays in the files
+            stdout.write_bytes(b'partial')
+            stderr.write_bytes(b'timeout evidence')
+            record.update(forced=True, timed_out=True, terminated=[41], names={'41': 'python'})
+            return -signal.SIGTERM, True
+        stdout.write_text('diagnostic stdout')
+        stderr.write_text('diagnostic stderr')
         row = {'variant': variant, 'original_matches_historical': False}
         if variant == 'preflight':
             row['error'] = 'retained exception'
+        elif variant == 'trainer_rank0':  # it returned, but a process of its own was still running and had to be ended
+            record.update(terminated=[42], names={'42': 'python'})
+        elif variant == 'controller_threads1':  # a process that not even SIGKILL ended inside the cleanup bound
+            record.update(terminated=[43], killed=[43], survivors=[43], names={'43': 'python'})
+        elif variant == D.RANK_VARIANT:  # the process table was lost during the cleanup: descendants unverified
+            record.update(process_table_unavailable=True)
         destination.write_text(json.dumps(row))
-        return subprocess.CompletedProcess(command, int('error' in row), stdout='diagnostic stdout', stderr='diagnostic stderr')
-    monkeypatch.setattr(D.subprocess, 'run', run)
+        return int('error' in row), False
+    monkeypatch.setattr(D, 'run_bounded', bounded)
     result = D.execute(plan_path, 'a' * 40, out)
     assert len(commands) == 6 and len({tuple(command) for command in commands}) == 6
     assert [command[command.index('--child') + 1] for command in commands] == list(D.VARIANTS)
@@ -285,13 +308,31 @@ def test_parent_retains_errors_and_launches_each_context_separately(tmp_path, mo
     # Failed contexts: no reading, and never an authorization.
     assert result['reading']['computable'] is False and not result['reading']['cause_demonstrated']
     assert not result['reading']['fix_dry_run_passed'] and result['reading']['training_authorized_by_reading'] is False
-    assert result['variants']['preflight']['error'] == 'retained exception'
-    assert result['variants']['trainer']['error'] == 'child timed out'
+    rows = result['variants']
+    assert all(rows[variant]['supervision'] == records[variant] for variant in D.VARIANTS)
+    assert 'error' not in rows['controller'] and 'output_tails' not in rows['controller']
+    assert rows['preflight']['error'] == 'retained exception' and rows['preflight']['process_returncode'] == 1
+    # The error of a failed context comes with the end of what it wrote; the whole output stays in the files.
+    assert rows['preflight']['output_tails'] == {'preflight.stdout': 'diagnostic stdout', 'preflight.stderr': 'diagnostic stderr'}
+    assert rows['trainer']['error'] == 'child timed out' and rows['trainer']['timeout_seconds'] == 2
+    assert rows['trainer']['process_returncode'] == -signal.SIGTERM and 'cleanup_error' not in rows['trainer']
+    assert rows['trainer']['output_tails'] == {'trainer.stdout': 'partial', 'trainer.stderr': 'timeout evidence'}
     assert (out / 'trainer.stdout').read_bytes() == b'partial'
     assert (out / 'trainer.stderr').read_bytes() == b'timeout evidence'
+    # A context that left something behind is failed, even with a clean status and a complete child report.
+    assert rows['trainer_rank0']['process_returncode'] == 0
+    assert rows['trainer_rank0']['error'] == rows['trainer_rank0']['cleanup_error'] == \
+        'processes outlived the command and were ended: 42 (python)'
+    assert rows['controller_threads1']['error'] == 'processes survived the cleanup: 43 (python)'
+    assert rows[D.RANK_VARIANT]['error'] == 'process table unavailable during the cleanup: descendants were not verified'
     assert json.loads((out / 'report.json').read_text()) == result
     with pytest.raises(ValueError, match='new absolute'):
         D.execute(plan_path, 'a' * 40, out)
+    # Nothing is launched by a parent that cannot see its processes.
+    monkeypatch.setattr(D, 'process_table', lambda *seconds: None)
+    with pytest.raises(ValueError, match='cannot supervise'):
+        D.execute(plan_path, 'a' * 40, tmp_path / 'unsupervised')
+    assert len(commands) == 6 and not (tmp_path / 'unsupervised').exists()
 
 
 def test_false_historical_match_is_descriptive_not_process_failure(tmp_path, monkeypatch):
@@ -300,12 +341,16 @@ def test_false_historical_match_is_descriptive_not_process_failure(tmp_path, mon
     monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
     monkeypatch.setattr(D, 'validate_plan', lambda path: ({'child_timeout_seconds': 2, 'rank_entry_timeout_seconds': 7},
                                                           {}, {}, {}, {}))
-    def run(command, **kwargs):
+    def bounded(command, seconds, stdout, stderr, record):
         Path(command[command.index('--child-output') + 1]).write_text(json.dumps({'original_matches_historical': False}))
-        return subprocess.CompletedProcess(command, 0, '', '')
-    monkeypatch.setattr(D.subprocess, 'run', run)
+        stdout.write_text('')
+        stderr.write_text('')
+        record.update(forced=False, timed_out=False, terminated=[], killed=[], survivors=[], process_table_unavailable=False)
+        return 0, False
+    monkeypatch.setattr(D, 'run_bounded', bounded)
     report = D.execute(path, 'a' * 40, tmp_path / 'results')
     assert report['complete'] and report['diagnostic_only']
+    assert all('error' not in row and 'output_tails' not in row for row in report['variants'].values())
     assert not report['training_authorized_by_report']
 
 
@@ -430,7 +475,7 @@ def rank_rows(records, guard_sha256, mode):
         (records / f'rank{rank}.json').write_text(json.dumps(row))
 
 
-@pytest.mark.parametrize('mode', ['passed', 'rejected', 'missing', 'timeout', 'trained'])
+@pytest.mark.parametrize('mode', ['passed', 'rejected', 'missing', 'timeout', 'trained', 'left_behind'])
 def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reader(tmp_path, monkeypatch, mode):
     """Real plan, real pins, real controller: only torchrun is replaced, by the records four ranks would leave."""
     plan_path, plan = approved_copy(tmp_path)
@@ -438,20 +483,26 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
     workspace.mkdir()
     monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
     seen = {}
-    def torchrun(command, seconds, stdout, stderr):
-        seen.update(command=command, seconds=seconds)
+    def torchrun(command, seconds, stdout, stderr, record):
+        seen.update(command=command, seconds=seconds, record=record)
         stdout.write_text('')
         stderr.write_text('rank output')
         records = Path(command[command.index('--initial-state-records') + 1])
         assert records.is_dir() and not list(records.iterdir())
         rank_rows(records, command[command.index('--initial-state-guard-sha256') + 1], mode)
         Path(command[command.index('--out-dir') + 1]).mkdir()
+        record.update(forced=mode == 'timeout', timed_out=mode == 'timeout', terminated=[], killed=[], survivors=[],
+                      names={}, process_table_unavailable=False)
+        if mode == 'timeout':
+            record.update(terminated=[51, 52, 53, 54, 55])
+        if mode == 'left_behind':  # torchrun returned with four accepted records, but a rank was still running
+            record.update(terminated=[56], names={'56': 'python'})
         return (1 if mode == 'rejected' else 0, mode == 'timeout')
     monkeypatch.setattr(D, 'run_bounded', torchrun)
     # The controller's pre-check builds the real model: on this machine it is refused (another platform, other
     # tensors), which must be recorded without stopping the ranks. For the accepted case the real model is still
     # built and only the verdict of the controller's guard is replaced.
-    if mode == 'passed':
+    if mode in ('passed', 'left_behind'):
         original_import = D.import_file
         def imported(relative, name):
             module = original_import(relative, name)
@@ -460,10 +511,12 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
                     'context': context, 'classification': D.G.PASSED, 'passed': True, 'tensors': len(state) - 1})
             return module
         monkeypatch.setattr(D, 'import_file', imported)
+    before = time.monotonic()
     result = D.rank_entry_child(plan_path, 'a' * 40, workspace)
+    preparation = time.monotonic() - before
     command = seen['command']
     precheck = result['controller_precheck']
-    if mode == 'passed':
+    if mode in ('passed', 'left_behind'):
         assert precheck['passed'] is True and precheck['classification'] == D.G.PASSED and precheck['tensors'] == 269
         assert precheck['context'] == 'controller pre-check, temporary CPU model' and 'temporary model' in precheck['scope']
     else:
@@ -484,7 +537,11 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
                                         workspace / (D.RANK_VARIANT + '_initial_state'))
     assert [word for word in command if word != '--verify-only'] == production
     assert command[command.index(controller.RANK_ENTRY) + 1] == '--verify-only' and command.count('--verify-only') == 1
-    assert seen['seconds'] == plan['rank_entry_timeout_seconds'] - 30 == 270
+    # torchrun gets what the preparation left of the context's timeout, less the cleanup bound and the time kept for
+    # the report: its bound expires before the parent's whatever the preparation took.
+    whole = plan['rank_entry_timeout_seconds'] - D.CLEANUP_BOUND_SECONDS - D.REPORT_SECONDS
+    assert whole == 250 and 0 < whole - seen['seconds'] <= preparation
+    assert result['torchrun_bound_seconds'] == round(seen['seconds'], 3) and result['torchrun_supervision'] is seen['record']
     assert result['command'] == command and result['torchrun_stderr_tail'] == 'rank output'
     assert result['run_dir_entries'] == [] and result['variant'] == D.RANK_VARIANT
     if mode == 'passed':
@@ -497,10 +554,32 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
     elif mode == 'missing':
         assert result['error'].startswith('not every rank judged') and result['ranks']['3'] is None
         assert result['attestation']['passed'] is False
-    else:
+    elif mode == 'timeout':
         assert result['error'] == 'torchrun timed out' and result['torchrun_timed_out'] is True
+        assert 'cleanup_error' not in result  # ending the ranks at the bound is the cleanup doing its work
+    else:  # accepted records do not excuse a rank that outlived torchrun
+        assert result['attestation']['passed'] is True and result['torchrun_returncode'] == 0
+        assert result['error'] == result['cleanup_error'] == 'processes outlived the command and were ended: 56 (python)'
+        assert D.reading({**reading_rows(), D.RANK_VARIANT: result})['computable'] is False
     with pytest.raises(ValueError, match='new rank-entry workspace'):
         D.rank_entry_child(plan_path, 'a' * 40, workspace)
+
+
+def test_rank_entry_dry_run_launches_nothing_when_the_preparation_used_its_time(tmp_path, monkeypatch):
+    """The race with the parent's bound: torchrun is started only if its own bound can expire, and be cleaned up, first."""
+    plan_path, plan = approved_copy(tmp_path)
+    workspace = tmp_path / 'out'
+    workspace.mkdir()
+    monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
+    monkeypatch.setattr(D, 'run_bounded', lambda *args, **kwargs: pytest.fail('torchrun was launched'))
+    whole = plan['rank_entry_timeout_seconds'] - D.CLEANUP_BOUND_SECONDS - D.REPORT_SECONDS
+    # The child began so long ago that fewer than MIN_LAUNCH_SECONDS would remain for torchrun.
+    result = D.rank_entry_child(plan_path, 'a' * 40, workspace, started=time.monotonic() - (whole - D.MIN_LAUNCH_SECONDS + 1))
+    assert result['error'].startswith('nothing launched: the preparation left ') and result['torchrun_bound_seconds'] < D.MIN_LAUNCH_SECONDS
+    assert result['torchrun_returncode'] is None and result['torchrun_timed_out'] is False and 'torchrun_supervision' not in result
+    assert result['ranks'] == {str(rank): None for rank in range(4)} and result['attestation']['passed'] is False
+    assert result['run_dir_entries'] is None and 'controller_precheck' in result  # what was observed is still reported
+    assert D.reading({**reading_rows(), D.RANK_VARIANT: result})['computable'] is False
 
 
 def reading_rows():
@@ -582,17 +661,330 @@ def test_published_plan_fixes_the_reading_and_resources_and_never_authorizes_tra
     # Approving the diagnostic is the reviewer's step and must not break this file; training is never authorized here.
     assert plan['status'] in STATUSES and plan['training_authorized_by_report'] is False
     assert resources['training_submissions'] is False
-    assert plan['variants'] == list(D.VARIANTS) and plan['child_timeout_seconds'] == 90
+    assert plan['variants'] == list(D.VARIANTS)
     assert set(plan['reading']['statements']) == {'cause_demonstrated', 'trainer_builds_the_registered_training_state',
                                                   'fix_dry_run_passed'}
     assert set(plan['reading']['statements']) < set(D.reading(reading_rows()))
+    # The declared limit of a context includes the cleanup of its processes: the timeout is when waiting stops, and
+    # the cleanup has one absolute deadline that holds its three steps.
+    timing = D.SUPERVISION
+    assert plan['cleanup_bound_seconds'] == D.CLEANUP_BOUND_SECONDS == 15
+    assert timing['settle_seconds'] + timing['term_grace_seconds'] + timing['kill_wait_seconds'] <= D.CLEANUP_BOUND_SECONDS
+    construction = plan['child_timeout_seconds'] + plan['cleanup_bound_seconds']
+    dry_run = plan['rank_entry_timeout_seconds'] + plan['cleanup_bound_seconds']
+    assert (construction, dry_run) == (90, 300) and 'cleanup included' in plan['time_limits']
     # Five construction contexts, the bounded torchrun dry run, and the registered margin fill the allocation.
     run = resources['jobs'][1]
-    assert 5 * plan['child_timeout_seconds'] + plan['rank_entry_timeout_seconds'] + 150 == run['walltime_seconds'] == 900
+    assert 5 * construction + dry_run + 150 == run['walltime_seconds'] == 900
+    # Inside the dry run torchrun still has several times its minimum, after the cleanup bound and the report.
+    assert plan['rank_entry_timeout_seconds'] - D.CLEANUP_BOUND_SECONDS - D.REPORT_SECONDS >= 4 * D.MIN_LAUNCH_SECONDS
     assert run['allocated_gpu_hours_cap'] == run['gpus'] * run['walltime_seconds'] / 3600 == resources['total_gpu_hours_cap'] == 1.0
     assert resources['total_core_hours_cap'] == sum(job['allocated_core_hours_cap'] for job in resources['jobs'])
     launcher = (ROOT / 'scripts/slurm/logsquare_initialization_diagnostic.sbatch').read_text()
-    assert '#SBATCH --time=00:15:00' in launcher and "!= '00:15:00'" in launcher and 'rank_entry_timeout_seconds' in launcher
+    assert '#SBATCH --time=00:15:00' in launcher and "!= '00:15:00'" in launcher
+    for key in ('child_timeout_seconds', 'rank_entry_timeout_seconds', 'cleanup_bound_seconds'):
+        assert f"p.get('{key}') != {plan[key]}" in launcher
     guard = D.G.load_guard(ROOT / plan['initial_state_guard']['path'], plan['initial_state_guard']['sha256'])
     assert D.G.validate_provenance(guard) is guard and guard['reference']['shared_sha256'] == \
         json.loads((ROOT / plan['training_plan']['path']).read_text())['shared_initial_sha256']
+
+
+# --- Supervision of a context's processes (review of GPT on fd874d7, R-TIMEOUT) ---------------------------------------
+# Real processes. A launcher starts its worker in a session of its own, as torchrun's elastic agent does, so the worker
+# is outside the launcher's process group. What is checked is that the worker stops working (its heartbeat stops), not
+# that a PID disappears: a zombie has a PID and does nothing. Every process a test starts writes its PID to a file, and
+# the fixture kills whatever is left, also when the test fails.
+
+HEARTBEAT = ('import os, signal, sys, time\n'
+             '{setup}'
+             'open({pid!r}, "w").write(str(os.getpid()))\n'
+             'while True:\n'
+             '    open({beat!r}, "w").write(str(time.monotonic_ns()))\n'
+             '    time.sleep(.02)\n')
+
+
+@pytest.fixture
+def own_processes():
+    files = []
+    yield files
+    for path in files:
+        if path.is_file() and path.read_text().strip().isdigit():
+            pid = int(path.read_text())
+            assert pid > 1 and pid != os.getpid() and pid != os.getpgid(0)
+            for kill in (os.killpg, os.kill):  # the group it leads, if it leads one; otherwise the process alone
+                try:
+                    kill(pid, signal.SIGKILL)
+                except (ProcessLookupError, PermissionError):
+                    pass
+
+
+def elastic_like(directory, own_processes, worker_setup='', launcher_setup='', launcher_end='worker.wait()'):
+    """Scripts of a launcher and of the worker it starts in a session of its own; the files they write."""
+    files = {name: directory / name for name in ('launcher.pid', 'worker.pid', 'worker.heartbeat')}
+    own_processes += [files['launcher.pid'], files['worker.pid']]
+    worker = HEARTBEAT.format(setup=worker_setup, pid=str(files['worker.pid']), beat=str(files['worker.heartbeat']))
+    launcher = ('import os, signal, subprocess, sys, time\n' + launcher_setup +
+                f'open({str(files["launcher.pid"])!r}, "w").write(str(os.getpid()))\n'
+                f'worker = subprocess.Popen([sys.executable, "-c", {worker!r}], start_new_session=True)\n' +
+                launcher_end + '\n')
+    return launcher, files
+
+
+def still_working(heartbeat):
+    assert heartbeat.is_file(), 'the worker never started: this scenario proves nothing'
+    before = heartbeat.read_text()
+    time.sleep(.3)
+    return heartbeat.read_text() != before
+
+
+def pids(files):
+    return {name.split('.')[0]: int(path.read_text()) for name, path in files.items() if name.endswith('.pid')}
+
+
+def test_supervision_bound_ends_a_worker_in_a_session_of_its_own(tmp_path, own_processes):
+    """First scenario of GPT: the bound of the command expires while its worker runs outside its process group."""
+    launcher, files = elastic_like(tmp_path, own_processes)
+    record, started = {}, time.monotonic()
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    elapsed = time.monotonic() - started
+    assert timed_out and status == -signal.SIGTERM
+    assert not still_working(files['worker.heartbeat']), 'the worker kept working after the bound'
+    # SIGTERM was enough, it went to both processes, and the two sessions were both seen as this invocation's.
+    assert record['forced'] is True and record['timed_out'] is True and record['bound_seconds'] == 1
+    assert set(record['terminated']) == set(pids(files).values()) and len(record['terminated']) == 2
+    assert record['killed'] == record['survivors'] == [] and record['process_table_unavailable'] is False
+    assert record['observed_processes'] == 2 and set(record['names']) == {str(pid) for pid in pids(files).values()}
+    assert D.supervision_problem(record) is None
+    assert 1 <= elapsed < 1 + D.CLEANUP_BOUND_SECONDS and record['cleanup_seconds'] < D.SUPERVISION['term_grace_seconds']
+
+
+@pytest.mark.parametrize('child', ['waiting', 'cleaning'])
+def test_supervision_parent_bound_ends_the_nested_launcher_and_its_worker(tmp_path, monkeypatch, own_processes, child):
+    """Second scenario of GPT: the parent's bound expires first, and the child cannot finish its own supervision.
+
+    The real execute and the real run_bounded on both levels. The helper stands for the rank-entry child. 'waiting':
+    its preparation used more than the margin, so its own bound (30 s) is far away when the parent's expires.
+    'cleaning': its own bound expired first, but its worker ignores SIGTERM and the child is still inside its cleanup.
+    A child that is stopped cannot clean up after itself, so the parent must end the helper, its launcher and the worker.
+    """
+    out = tmp_path / 'output'
+    bound, timing = ('30', '') if child == 'waiting' else ('.5', ', term_grace_seconds=30, kill_wait_seconds=30')
+    launcher, files = elastic_like(tmp_path, own_processes,
+                                   worker_setup='' if child == 'waiting' else 'signal.signal(signal.SIGTERM, signal.SIG_IGN)\n',
+                                   launcher_setup='print("launcher output", flush=True)\n'
+                                                  'sys.stderr.write("launcher note"); sys.stderr.flush()\n')
+    files['helper.pid'] = tmp_path / 'helper.pid'
+    own_processes.append(files['helper.pid'])
+    nested = [str(out / (D.RANK_VARIANT + '.torchrun.' + suffix)) for suffix in ('stdout', 'stderr')]
+    helper = tmp_path / 'rank_entry_helper.py'
+    helper.write_text('import importlib.util, os, sys\n'
+                      f'open({str(files["helper.pid"])!r}, "w").write(str(os.getpid()))\n'
+                      'print("child output", flush=True)\n'
+                      'sys.stderr.write("child note"); sys.stderr.flush()\n'
+                      f's = importlib.util.spec_from_file_location("nested_diagnostic", {str(SCRIPT)!r})\n'
+                      'd = importlib.util.module_from_spec(s); s.loader.exec_module(d)\n'
+                      f'd.run_bounded([sys.executable, "-c", {launcher!r}], {bound}, {nested[0]!r}, {nested[1]!r}'
+                      f'{timing})\n')
+    plan = tmp_path / 'plan.json'
+    plan.write_text('{}')
+    monkeypatch.setattr(D, 'VARIANTS', (D.RANK_VARIANT,))
+    monkeypatch.setattr(D, '__file__', str(helper))
+    monkeypatch.setattr(D, 'code_identity', lambda expected: expected)
+    monkeypatch.setattr(D, 'validate_plan',
+                        lambda _: ({'child_timeout_seconds': 1, 'rank_entry_timeout_seconds': 1.5}, None, None, {}, None))
+    started = time.monotonic()
+    report = D.execute(plan, 'a' * 40, out)
+    elapsed = time.monotonic() - started
+    row = report['variants'][D.RANK_VARIANT]
+    assert report['complete'] is False and report['reading']['computable'] is False
+    assert row['error'] == 'child timed out' and row['timeout_seconds'] == 1.5 and 'cleanup_error' not in row
+    assert not still_working(files['worker.heartbeat']), 'the nested worker kept working after the parent returned'
+    supervision, launched = row['supervision'], pids(files)
+    assert supervision['forced'] is True and supervision['timed_out'] is True and supervision['survivors'] == []
+    assert supervision['observed_processes'] >= 3 and row['process_returncode'] == -signal.SIGTERM
+    if child == 'waiting':  # SIGTERM to the three of them was enough
+        assert set(supervision['terminated']) >= set(launched.values()) and supervision['killed'] == []
+        assert elapsed < 1.5 + D.SUPERVISION['term_grace_seconds']
+    else:  # the child had already ended its launcher; the parent ends the child and, with SIGKILL, the deaf worker
+        assert set(supervision['terminated']) >= {launched['helper'], launched['worker']}
+        assert supervision['killed'] == [launched['worker']] and launched['launcher'] not in supervision['terminated']
+        assert 1.5 + D.SUPERVISION['term_grace_seconds'] <= elapsed < 1.5 + D.CLEANUP_BOUND_SECONDS
+    # Output and error stay: the files of the child and of its launcher, and their ends inside the report.
+    assert row['output_tails'] == {D.RANK_VARIANT + '.stdout': 'child output\n', D.RANK_VARIANT + '.stderr': 'child note',
+                                   D.RANK_VARIANT + '.torchrun.stdout': 'launcher output\n',
+                                   D.RANK_VARIANT + '.torchrun.stderr': 'launcher note'}
+    assert (out / (D.RANK_VARIANT + '.stderr')).read_text() == 'child note'
+    assert json.loads((out / 'report.json').read_text()) == report
+
+
+def test_supervision_normal_return_keeps_status_and_output_and_signals_nothing(tmp_path, own_processes):
+    out, err, record = tmp_path / 'out', tmp_path / 'err', {}
+    code = ('import os, sys; print(os.environ["PYTHONDONTWRITEBYTECODE"], os.getsid(0) == os.getpid() == os.getpgid(0)); '
+            'sys.stderr.write("note")')
+    started = time.monotonic()
+    assert D.run_bounded([sys.executable, '-c', code], 30, out, err, record) == (0, False)
+    assert time.monotonic() - started < 5 and out.read_text() == '1 True\n' and err.read_text() == 'note'
+    clean = {'forced': False, 'timed_out': False, 'terminated': [], 'killed': [], 'survivors': [], 'names': {},
+             'process_table_unavailable': False, 'bound_seconds': 30}
+    assert {key: record[key] for key in clean} == clean and D.supervision_problem(record) is None
+    # A worker in its own session that is still running when the launcher returns, and ends by itself a moment later:
+    # it is seen, it is given the time to end, and nothing is signalled.
+    worker_setup = ('import threading\n'
+                    'threading.Timer(1.8, lambda: os._exit(0)).start()\n')
+    launcher, files = elastic_like(tmp_path, own_processes, worker_setup=worker_setup, launcher_end='time.sleep(1.2)')
+    record = {}
+    assert D.run_bounded([sys.executable, '-c', launcher], 30, out, err, record) == (0, False)
+    assert {key: record[key] for key in clean} == clean and record['observed_processes'] == 2
+    assert 0 < record['cleanup_seconds'] < D.SUPERVISION['settle_seconds'] and D.supervision_problem(record) is None
+    assert not still_working(files['worker.heartbeat'])
+
+
+def test_supervision_failed_command_keeps_its_error_and_leaves_no_worker(tmp_path, own_processes):
+    out, err, record = tmp_path / 'out', tmp_path / 'err', {}
+    assert D.run_bounded([sys.executable, '-c', 'import sys; sys.stderr.write("broken"); raise SystemExit(3)'],
+                         30, out, err, record) == (3, False)
+    assert err.read_text() == 'broken' and record['terminated'] == [] and D.supervision_problem(record) is None
+    # A launcher that fails and leaves its worker running in another session: the status and the error are the
+    # launcher's own, the worker is ended, and the context is reported as one that left something behind.
+    launcher, files = elastic_like(tmp_path, own_processes,
+                                   launcher_end='time.sleep(1.2); sys.stderr.write("launcher failed"); raise SystemExit(3)')
+    record, started = {}, time.monotonic()
+    assert D.run_bounded([sys.executable, '-c', launcher], 30, out, err, record, settle_seconds=.3) == (3, False)
+    assert time.monotonic() - started < 1.2 + D.CLEANUP_BOUND_SECONDS and err.read_text() == 'launcher failed'
+    assert not still_working(files['worker.heartbeat']), 'the worker outlived its failed launcher'
+    worker = pids(files)['worker']
+    assert record['forced'] is False and record['timed_out'] is False
+    assert record['terminated'] == [worker] and record['killed'] == record['survivors'] == []
+    assert D.supervision_problem(record).startswith(f'processes outlived the command and were ended: {worker} (')
+
+
+@pytest.mark.parametrize('deaf', ['worker', 'launcher and worker'])
+def test_supervision_escalates_to_sigkill_on_processes_that_ignore_sigterm(tmp_path, own_processes, deaf):
+    ignore = 'signal.signal(signal.SIGTERM, signal.SIG_IGN)\n'
+    launcher, files = elastic_like(tmp_path, own_processes, worker_setup=ignore,
+                                   launcher_setup=ignore if deaf == 'launcher and worker' else '')
+    record, started = {}, time.monotonic()
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record,
+                                      term_grace_seconds=.5)
+    elapsed = time.monotonic() - started
+    assert not still_working(files['worker.heartbeat']), 'a worker that ignores SIGTERM kept working'
+    launched = pids(files)
+    assert timed_out and status == (-signal.SIGKILL if deaf == 'launcher and worker' else -signal.SIGTERM)
+    assert set(record['terminated']) == set(launched.values())  # everyone was asked first
+    assert set(record['killed']) == ({launched['worker']} if deaf == 'worker' else set(launched.values()))
+    assert record['survivors'] == [] and D.supervision_problem(record) is None
+    assert 1.5 <= elapsed < 1.5 + D.SUPERVISION['kill_wait_seconds'] and .5 <= record['cleanup_seconds'] < 2.5
+
+
+def test_supervision_is_bounded_and_reports_survivors_when_signals_have_no_effect(tmp_path, monkeypatch, own_processes):
+    """Nothing waits for a process that cannot be ended: the cleanup returns at its deadline and names what is left."""
+    launcher, files = elastic_like(tmp_path, own_processes)
+    record, signalled, started = {}, [], time.monotonic()
+    with monkeypatch.context() as patched:
+        patched.setattr(D.os, 'kill', lambda pid, signum: signalled.append((pid, signum)))
+        status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr',
+                                          record, term_grace_seconds=.4, kill_wait_seconds=.4)
+    elapsed = time.monotonic() - started
+    launched = set(pids(files).values())
+    assert timed_out and status is None and 1.8 <= elapsed < 3.5
+    assert set(record['survivors']) == set(record['terminated']) == set(record['killed']) == launched
+    assert {pid for pid, signum in signalled if signum == signal.SIGTERM} == launched
+    assert {pid for pid, signum in signalled if signum == signal.SIGKILL} == launched
+    assert D.supervision_problem(record).startswith('processes survived the cleanup: ')
+    assert still_working(files['worker.heartbeat'])  # they really were left running: the fixture ends them
+
+
+def test_supervision_signals_only_the_processes_of_its_own_invocation(tmp_path, own_processes):
+    """Bystanders of the same user, the same parent and the same program are never signalled."""
+    bystanders = []
+    try:
+        for name, session in (('same_group', False), ('own_session', True)):
+            files = {key: tmp_path / f'{name}.{key}' for key in ('pid', 'heartbeat')}
+            own_processes.append(files['pid'])
+            code = HEARTBEAT.format(setup='', pid=str(files['pid']), beat=str(files['heartbeat']))
+            bystanders.append((subprocess.Popen([sys.executable, '-c', code], start_new_session=session), files['heartbeat']))
+        launcher, files = elastic_like(tmp_path, own_processes, worker_setup='signal.signal(signal.SIGTERM, signal.SIG_IGN)\n')
+        record = {}
+        status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record,
+                                          term_grace_seconds=.5)
+        assert timed_out and not still_working(files['worker.heartbeat'])
+        named = {*record['terminated'], *record['killed'], *record['survivors']}
+        assert named == set(pids(files).values()) and not named & {proc.pid for proc, _ in bystanders}
+        assert os.getpid() not in named and record['observed_processes'] == 2
+        for proc, heartbeat in bystanders:
+            assert proc.poll() is None and still_working(heartbeat), 'a process outside the invocation was signalled'
+    finally:
+        for proc, _ in bystanders:
+            proc.kill()
+            proc.wait()
+
+
+def test_supervision_cleans_up_when_the_supervisor_itself_is_interrupted(tmp_path, monkeypatch, own_processes):
+    launcher, files = elastic_like(tmp_path, own_processes)
+    real, calls, record = D.process_table, [], {}
+    def table(*seconds):
+        calls.append(seconds)
+        if len(calls) == 3:  # the second table taken while waiting: by then the worker is running
+            raise KeyboardInterrupt
+        return real(*seconds)
+    monkeypatch.setattr(D, 'process_table', table)
+    with pytest.raises(KeyboardInterrupt):
+        D.run_bounded([sys.executable, '-c', launcher], 30, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    assert not still_working(files['worker.heartbeat']), 'an interrupted supervisor left its worker running'
+    assert record['forced'] is True and record['timed_out'] is False and record['survivors'] == []
+    assert set(record['terminated']) == set(pids(files).values())
+
+
+def test_supervision_without_a_process_table_starts_nothing_and_never_claims_a_verified_cleanup(tmp_path, monkeypatch,
+                                                                                                own_processes):
+    marker = tmp_path / 'started'
+    with monkeypatch.context() as patched:
+        patched.setattr(D, 'process_table', lambda *seconds: None)
+        with pytest.raises(ValueError, match='no command is started unsupervised'):
+            D.run_bounded([sys.executable, '-c', f'open({str(marker)!r}, "w")'], 30, tmp_path / 'stdout', tmp_path / 'stderr')
+    time.sleep(.3)
+    assert not marker.exists()
+    # The table is lost after the start. The root's own group is still ended, because its number cannot have been
+    # reused while the root is not reaped; the worker in another session cannot be named, and the record says so.
+    launcher, files = elastic_like(tmp_path, own_processes)
+    real, calls, record = D.process_table, [], {}
+    def table(*seconds):
+        calls.append(seconds)
+        return real(*seconds) if len(calls) == 1 else None
+    monkeypatch.setattr(D, 'process_table', table)
+    status, timed_out = D.run_bounded([sys.executable, '-c', launcher], 1, tmp_path / 'stdout', tmp_path / 'stderr', record)
+    launched = pids(files)
+    assert timed_out and status == -signal.SIGTERM and record['terminated'] == [launched['launcher']]
+    assert record['process_table_unavailable'] is True and record['survivors'] == []
+    assert D.supervision_problem(record) == 'process table unavailable during the cleanup: descendants were not verified'
+    assert still_working(files['worker.heartbeat'])  # unverified means unverified: the fixture ends it
+
+
+def test_supervision_tracks_groups_by_membership_and_never_adopts_a_foreign_one():
+    """The rule itself, on tables: members are named by their group; a group is adopted only from a member's child."""
+    own = os.getpgid(0)
+    invocation = D.Invocation.__new__(D.Invocation)
+    invocation.root, invocation.groups, invocation.names, invocation.never = 100, {100}, {}, {0, 1, own}
+    table = {1: (0, 1, 'Ss', 'init'), 100: (50, 100, 'Ss', 'launcher'), 101: (100, 100, 'S', 'helper'),
+             200: (100, 200, 'Ss', 'worker'), 201: (200, 200, 'S', 'loader'), 300: (201, 300, 'Ss', 'detached'),
+             400: (1, 400, 'Ss', 'bystander'), 401: (400, 400, 'S', 'bystander child'),
+             500: (100, own, 'S', 'cannot happen'), 50: (1, own, 'S', 'supervisor')}
+    assert invocation.alive(table, False) == [100, 101, 200, 201, 300] and invocation.groups == {100, 200, 300}
+    # The launcher is gone and its orphans now belong to init: they are still members, by their groups.
+    orphaned = {pid: ((1,) + row[1:] if row[0] == 100 else row) for pid, row in table.items() if pid != 100}
+    assert invocation.alive(orphaned, True) == [101, 200, 201, 300] and invocation.groups == {100, 200, 300}
+    # A zombie is a member that no longer runs; an emptied group is forgotten, so its number can never name a later one.
+    later = {1: table[1], 200: (1, 200, 'Z', 'worker'), 300: (1, 300, 'Ss', 'detached'), 100: (1, 100, 'Ss', 'reused number')}
+    assert invocation.alive({key: later[key] for key in (1, 200, 300)}, True) == [300] and invocation.groups == {200, 300}
+    assert invocation.alive(later, True) == [300] and 100 not in invocation.groups
+    assert set(invocation.names) == {100, 101, 200, 201, 300}
+    # A command that has no session of its own is refused before anything is tracked.
+    with pytest.raises(ValueError, match='session of its own'):
+        D.Invocation(os.getpid())
+
+
+def test_process_table_lists_this_process_with_its_parent_group_and_state():
+    table = D.process_table()
+    ppid, pgid, state, name = table[os.getpid()]
+    assert (ppid, pgid) == (os.getppid(), os.getpgid(0)) and state and not state.startswith('Z') and name
+    assert all(type(pid) is int and len(row) == 4 for pid, row in table.items())

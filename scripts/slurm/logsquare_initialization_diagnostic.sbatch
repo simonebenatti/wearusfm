@@ -17,8 +17,12 @@
 # pre-check and the production fresh-phase command under torchrun with
 # --verify-only. Four ranks build and verify their student and stop inside the
 # constructor.
-# No model reaches the trainer: no DDP wrapper, data forward, optimizer or training;
-# only constructor synthetic calibration. No training restart here.
+# No model reaches the trainer: no DDP wrapper, optimizer or training. The ranks read
+# manifest, index and scales as the trainer does; no training batch is drawn and no
+# forward runs on the signals; only constructor synthetic calibration. No training
+# restart here.
+# Every context is bounded and leaves no process running: 75 s (construction) or
+# 285 s (torchrun dry run) of waiting plus at most 15 s of cleanup, 750 s in all.
 # 4 GPUs preserve the failed controller's allocation context; the construction
 # children use only cuda:0, the torchrun dry run starts one rank per GPU.
 # Submit only after diagnostic review, via submit_job.py and a fresh frozen checkout.
@@ -59,9 +63,10 @@ if not code.is_relative_to(work / 'wearusfm_campaigns') or not plan.is_relative_
 if fields.get('TimeLimit') != '00:15:00' or torch.cuda.device_count() != 4:
     raise SystemExit('exactly fifteen minutes and four visible GPUs required')
 p = json.loads(plan.read_text())
-if (not p.get('cuda_required') or p.get('child_timeout_seconds') != 90 or p.get('rank_entry_timeout_seconds') != 300
-        or len(p.get('variants', ())) != 6):
-    raise SystemExit('production diagnostic requires CUDA, five bounded 90s children and one bounded 300s torchrun dry run')
+if (not p.get('cuda_required') or p.get('child_timeout_seconds') != 75 or p.get('rank_entry_timeout_seconds') != 285
+        or p.get('cleanup_bound_seconds') != 15 or len(p.get('variants', ())) != 6):
+    raise SystemExit('production diagnostic requires CUDA, five construction contexts within 90s and one torchrun '
+                     'dry run within 300s, the 15s cleanup of their processes included')
 PY
 exec python3 scripts/logsquare_initialization_diagnostic.py \
   --plan "$CODE_DIR/$PLAN_REL" --expected-code-sha "$EXPECTED_SHA" --out "$OUT"

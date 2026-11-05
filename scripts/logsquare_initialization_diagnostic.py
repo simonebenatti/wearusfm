@@ -9,8 +9,16 @@ Completed on 05/11/2026 with the dry run of the proposed correction
 every T100-LQ model built here also receives the verdict of the reviewed guard,
 and one more context starts the production fresh-phase command under torchrun
 with --verify-only: four real ranks build and verify their student and stop
-inside the constructor, so no model reaches the trainer. The reading of the
-report is fixed in the plan before the run; it never authorizes training.
+inside the constructor, so no model reaches the trainer. The ranks read the
+manifest, the index and the scales as the trainer does; no training batch is
+drawn and no forward runs on the signals. The reading of the report is fixed
+in the plan before the run; it never authorizes training.
+
+Every context is one bounded command (run_bounded): when its bound expires,
+or when it returns, none of its processes is left running, including the
+workers torchrun starts in sessions of their own. The cleanup has one
+absolute deadline, declared in the plan, and names only processes of that
+invocation.
 """
 from __future__ import annotations
 
@@ -28,6 +36,7 @@ import signal
 import socket
 import subprocess
 import sys
+import time
 import traceback
 
 REPO = Path(__file__).resolve().parents[1]
@@ -81,10 +90,14 @@ def validate_plan(path, root=REPO):
             'diagnostic plan not approved')
     require(plan.get('variants') == list(VARIANTS), 'wrong import contexts')
     require(type(plan.get('cuda_required')) is bool, 'explicit CUDA policy required')
-    require(type(plan.get('child_timeout_seconds')) is int and 1 <= plan['child_timeout_seconds'] <= 90,
-            'unbounded child timeout')
-    require(type(plan.get('rank_entry_timeout_seconds')) is int and 60 <= plan['rank_entry_timeout_seconds'] <= 300,
-            'unbounded rank-entry timeout')
+    # Each timeout is when waiting stops; the cleanup bound is added to it. Together they stay inside the declared
+    # limits of a context: 90 s for a construction child, 300 s for the torchrun dry run.
+    require(type(plan.get('cleanup_bound_seconds')) is int and plan['cleanup_bound_seconds'] == CLEANUP_BOUND_SECONDS,
+            'cleanup bound differs from the supervisor')
+    require(type(plan.get('child_timeout_seconds')) is int and
+            1 <= plan['child_timeout_seconds'] <= 90 - CLEANUP_BOUND_SECONDS, 'unbounded child timeout')
+    require(type(plan.get('rank_entry_timeout_seconds')) is int and
+            60 <= plan['rank_entry_timeout_seconds'] <= 300 - CLEANUP_BOUND_SECONDS, 'unbounded rank-entry timeout')
     require(plan.get('expected_scientific_sources') == 102, 'wrong source inventory size')
     training = read_pin(plan['training_plan'], root)
     require(training.get('protocol') == 'tokenizer-logsquare-training-20261104-v1' and
@@ -292,31 +305,192 @@ def child(plan_path, variant, expected_code):
     return result
 
 
-def run_bounded(command, seconds, stdout_path, stderr_path):
-    """Run a process tree under a hard bound: a timeout kills the whole session, not only its leader."""
+# One bounded command and all of its processes ------------------------------------------------------------------------
+# The command starts in a session of its own. Its processes are the members of the process groups this invocation
+# created: the root's group, and the group of every child of a member. Group membership survives the death of a
+# parent, so a worker that its launcher started in another session (as torchrun does) stays tracked when the launcher
+# is gone. Signals go only to processes that the current process table lists as members: never to a group, a stored
+# identifier or anything outside the invocation.
+SUPERVISION = {'poll_seconds': .5, 'cleanup_poll_seconds': .1, 'settle_seconds': 2., 'term_grace_seconds': 5.,
+               'kill_wait_seconds': 5., 'process_table_seconds': 2.}
+CLEANUP_BOUND_SECONDS = 15  # one absolute deadline for the cleanup of a command; the plan declares it
+REPORT_SECONDS = 20         # kept by the rank-entry child for its own start, the records and the report after torchrun
+MIN_LAUNCH_SECONDS = 30     # torchrun is not started with less time than this
+PS = ('/bin/ps', '-A', '-o', 'pid=', '-o', 'ppid=', '-o', 'pgid=', '-o', 'stat=', '-o', 'comm=')
+
+
+def process_table(seconds=SUPERVISION['process_table_seconds']):
+    """pid -> (ppid, pgid, state, name) of every visible process; None when the table cannot be read."""
+    try:
+        listing = subprocess.run(PS, capture_output=True, text=True, errors='replace', timeout=max(seconds, .1),
+                                 stdin=subprocess.DEVNULL, env={'LC_ALL': 'C'})
+    except (OSError, subprocess.SubprocessError):
+        return None
+    table = {}
+    for line in listing.stdout.splitlines():
+        fields = line.split(None, 4)
+        if len(fields) >= 4 and all(field.isdigit() for field in fields[:3]):
+            table[int(fields[0])] = (int(fields[1]), int(fields[2]), fields[3], fields[4] if len(fields) == 5 else '')
+    return table if listing.returncode == 0 and os.getpid() in table else None
+
+
+class Invocation:
+    """The processes of one bounded command: the members of the process groups it created."""
+
+    def __init__(self, root):
+        try:
+            own_session = os.getpgid(root) == root
+        except ProcessLookupError:  # it has already exited: only its unreaped entry is left
+            own_session = True
+        self.never = {0, 1, os.getpgid(0)}  # no group of the kernel, of init or of the supervisor is ever adopted
+        require(root > 1 and own_session and root not in self.never, 'bounded command without a session of its own')
+        self.root, self.groups, self.names = root, {root}, {}
+
+    def alive(self, table, root_reaped):
+        """Take one process table: adopt the new groups, forget the empty ones, return the members still running."""
+        while True:
+            members = {pid for pid, row in table.items() if row[1] in self.groups}
+            created = {row[1] for row in table.values() if row[0] in members} - self.groups - self.never
+            if not created:
+                break
+            self.groups |= created
+        # An empty group is forgotten at once, so its number can never name a later, unrelated group. The root's own
+        # number cannot be reused while the root is not reaped.
+        self.groups = {table[pid][1] for pid in members} | (set() if root_reaped else {self.root})
+        self.names.update((pid, table[pid][3]) for pid in members)
+        return sorted(pid for pid in members if not table[pid][2].startswith('Z'))
+
+
+def clean_up(proc, invocation, forced, timing):
+    """End what the invocation left running, inside one absolute deadline, and say what had to be done.
+
+    forced: the bound expired, or the supervisor was interrupted. SIGTERM goes at once to every member, so that a
+    launcher with a handler closes its own workers in order; whoever is still running after the grace gets SIGKILL.
+    Not forced: the command returned by itself. Members still running get a short time to end by themselves, then the
+    same two steps. Nothing waits past the deadline: a survivor is reported, never awaited.
+    """
+    begun = time.monotonic()
+    term_at = begun + (0 if forced else timing['settle_seconds'])
+    kill_at = term_at + timing['term_grace_seconds']
+    end_at = min(kill_at + timing['kill_wait_seconds'], begun + CLEANUP_BOUND_SECONDS)
+    done = {'forced': forced, 'terminated': [], 'killed': [], 'survivors': [], 'process_table_unavailable': False}
+    while True:
+        table = process_table(min(timing['process_table_seconds'], max(end_at - time.monotonic(), .1)))
+        if table is None:
+            # Without a table no descendant can be named safely. What remains is the root's own group, and only
+            # while the root is not reaped, because until then its number cannot have been reused.
+            done['process_table_unavailable'] = True
+            proc.poll()
+            alive = [] if proc.returncode is not None else [proc.pid]
+        else:
+            alive = invocation.alive(table, proc.returncode is not None)
+            proc.poll()
+        now = time.monotonic()
+        if not alive:
+            break
+        if now >= end_at:
+            done['survivors'] = alive
+            break
+        signum = signal.SIGKILL if now >= kill_at else signal.SIGTERM if now >= term_at else None
+        if signum is not None:
+            sent = done['killed' if signum == signal.SIGKILL else 'terminated']
+            for pid in alive:
+                if signum == signal.SIGKILL or pid not in sent:
+                    try:
+                        (os.killpg if table is None else os.kill)(pid, signum)
+                    except OSError:  # already gone, or not ours to signal: the next table says which
+                        pass
+                    if pid not in sent:
+                        sent.append(pid)
+        time.sleep(max(min(timing['cleanup_poll_seconds'], end_at - time.monotonic()), 0))
+    proc.poll()
+    if proc.returncode is None and proc.pid not in done['survivors']:
+        done['survivors'].append(proc.pid)
+    named = sorted({*done['terminated'], *done['killed'], *done['survivors']})
+    done.update(observed_processes=len(invocation.names), cleanup_seconds=round(time.monotonic() - begun, 3),
+                names={str(pid): invocation.names.get(pid, '') for pid in named})
+    return done
+
+
+def supervision_problem(record):
+    """What the supervision could not guarantee, or had to end after a command that had returned by itself."""
+    def named(pids):
+        return ', '.join(f"{pid} ({record.get('names', {}).get(str(pid), '')})" for pid in pids)
+    if record.get('survivors'):
+        return 'processes survived the cleanup: ' + named(record['survivors'])
+    if record.get('process_table_unavailable'):
+        return 'process table unavailable during the cleanup: descendants were not verified'
+    if record.get('terminated') and not record.get('forced'):
+        return 'processes outlived the command and were ended: ' + named(record['terminated'])
+    return None
+
+
+def output_tails(out, variant, characters=4000):
+    """The end of every output file of a failed context, kept inside the report next to its error."""
+    names = [variant + suffix for suffix in ('.stdout', '.stderr', '.torchrun.stdout', '.torchrun.stderr')]
+    return {name: (out / name).read_text(errors='replace')[-characters:] for name in names if (out / name).is_file()}
+
+
+def run_bounded(command, seconds, stdout_path, stderr_path, record=None, **timing):
+    """Run one command under a bound and leave none of its processes running: (status, timed_out).
+
+    The bound is when waiting stops. Ending the processes then takes at most CLEANUP_BOUND_SECONDS more, whether the
+    command timed out, returned or failed. `record` receives what the supervision saw and did. The status is None
+    only if the command itself survived SIGKILL. Output goes to the two files, which outlive every process.
+    """
+    deadline = time.monotonic() + seconds
+    timing = {**SUPERVISION, **timing}
+    record = {} if record is None else record
+    require(process_table(timing['process_table_seconds']) is not None,
+            'process table unavailable: no command is started unsupervised')
     with open(stdout_path, 'wb') as stdout, open(stderr_path, 'wb') as stderr:
         proc = subprocess.Popen(command, cwd=REPO, stdout=stdout, stderr=stderr, start_new_session=True,
                                 env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
         try:
-            return proc.wait(timeout=seconds), False
-        except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL)
-            return proc.wait(), True
+            invocation = Invocation(proc.pid)
+        except BaseException:
+            proc.kill()
+            proc.wait()
+            raise
+        timed_out, interrupted = False, True
+        try:
+            while proc.returncode is None and not timed_out:
+                try:
+                    proc.wait(timeout=max(min(timing['poll_seconds'], deadline - time.monotonic()), 0))
+                except subprocess.TimeoutExpired:
+                    timed_out = time.monotonic() >= deadline
+                    # While the command runs, each table adopts the groups its descendants create. At the bound the
+                    # cleanup takes its own table before any signal.
+                    table = None if timed_out else process_table(timing['process_table_seconds'])
+                    if table is not None:
+                        invocation.alive(table, False)
+            interrupted = False
+        finally:
+            record.update(clean_up(proc, invocation, timed_out or interrupted, timing), timed_out=timed_out,
+                          bound_seconds=seconds)
+    return proc.returncode, timed_out
 
 
-def rank_entry_child(plan_path, expected_code, workspace):
+def rank_entry_child(plan_path, expected_code, workspace, started=None):
     """The corrected launch up to the student's construction: nothing is trained.
 
     As the controller does: its pre-check on a temporary CPU model, then its own
     fresh-phase command (command_for) with the production allocation, guard and
     trainer arguments; only the directories are the diagnostic's and
     --verify-only is added. Every rank imports the production entry, joins the
-    process group, reads the same inputs, builds its student through the
-    trainer's own code path and verifies it; the constructor then raises, so
-    the trainer never receives a model. The controller's own reader judges the
-    four records. Unlike the controller, a refused pre-check does not stop the
-    ranks: both observations are recorded.
+    process group, reads the same inputs as the trainer (manifest, index and
+    scales: no training batch is drawn, no forward runs on the signals), builds
+    its student through the trainer's own code path and verifies it; the
+    constructor then raises, so the trainer never receives a model. The
+    controller's own reader judges the four records. Unlike the controller, a
+    refused pre-check does not stop the ranks: both observations are recorded.
+
+    `started` is when this child began. torchrun gets what is left of the
+    context's timeout after the preparation, less the cleanup bound and the
+    time kept for the report: its own bound therefore always expires before
+    the parent's, whatever the preparation took.
     """
+    started = time.monotonic() if started is None else started
     code_identity(expected_code)
     plan, candidate, comparison, expected, guard = validate_plan(plan_path)
     training = read_pin(plan['training_plan'])
@@ -340,14 +514,23 @@ def rank_entry_child(plan_path, expected_code, workspace):
     position = command.index(controller.RANK_ENTRY) + 1
     command = command[:position] + ['--verify-only'] + command[position:]
     outputs = [workspace / (RANK_VARIANT + '.torchrun.' + suffix) for suffix in ('stdout', 'stderr')]
-    returncode, timed_out = run_bounded(command, plan['rank_entry_timeout_seconds'] - 30, *outputs)
     result = {'variant': RANK_VARIANT, 'imported_entrypoint': controller.RANK_ENTRY,
-              'scope': ('production fresh-phase command with --verify-only under torchrun: four ranks, process group, trainer '
-                        'inputs and model construction; the constructor raises after verification, so no model reaches the '
-                        'trainer: no teacher, optimizer, DDP wrapper, data forward, update or checkpoint'),
-              'expected': expected, 'controller_precheck': precheck, 'command': command,
-              'torchrun_returncode': returncode, 'torchrun_timed_out': timed_out,
-              'torchrun_stderr_tail': outputs[1].read_text(errors='replace')[-4000:], 'ranks': {}}
+              'scope': ('production fresh-phase command with --verify-only under torchrun: four ranks, process group, the '
+                        'trainer inputs read as the trainer reads them (manifest, index, scales) and model construction; '
+                        'the constructor raises after verification, so no model reaches the trainer: no teacher, optimizer, '
+                        'DDP wrapper, training batch, forward on signals, update or checkpoint'),
+              'expected': expected, 'controller_precheck': precheck, 'command': command, 'torchrun_returncode': None,
+              'torchrun_timed_out': False, 'torchrun_stderr_tail': '', 'ranks': {}}
+    supervision, timed_out = {}, False
+    seconds = plan['rank_entry_timeout_seconds'] - CLEANUP_BOUND_SECONDS - REPORT_SECONDS - (time.monotonic() - started)
+    result['torchrun_bound_seconds'] = round(seconds, 3)
+    if seconds < MIN_LAUNCH_SECONDS:
+        result['error'] = (f'nothing launched: the preparation left {seconds:.1f}s for torchrun, '
+                           f'fewer than {MIN_LAUNCH_SECONDS}s')
+    else:
+        returncode, timed_out = run_bounded(command, seconds, *outputs, record=supervision)
+        result.update(torchrun_returncode=returncode, torchrun_timed_out=timed_out, torchrun_supervision=supervision,
+                      torchrun_stderr_tail=outputs[1].read_text(errors='replace')[-4000:])
     for rank in range(4):
         path = records / f'rank{rank}.json'
         result['ranks'][str(rank)] = json.loads(path.read_text()) if path.is_file() else None
@@ -358,10 +541,17 @@ def rank_entry_child(plan_path, expected_code, workspace):
     result['run_dir_entries'] = sorted(path.name for path in run_dir.iterdir()) if run_dir.is_dir() else None
     judged = all(row is not None and [c.get('role') for c in row.get('constructions', ())][-1:] == ['student']
                  for row in result['ranks'].values())
-    if timed_out:
+    problem = supervision_problem(supervision)
+    if problem:
+        result['cleanup_error'] = problem
+    if 'error' in result:
+        pass
+    elif timed_out:
         result['error'] = 'torchrun timed out'
     elif not judged:
         result['error'] = 'not every rank judged a student; see the torchrun output'
+    elif problem:
+        result['error'] = problem
     validate_plan(plan_path)
     code_identity(expected_code)
     return result
@@ -423,6 +613,7 @@ def execute(plan_path, expected_code, out):
     forbidden = (REPO, REPO.parent, Path('/leonardo_work/IscrB_WearUsFM/wearusfm'),
                  Path('/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns'))
     require(not any(out.resolve().is_relative_to(root.resolve()) for root in forbidden), 'output inside code workspace')
+    require(process_table() is not None, 'process table unavailable: the diagnostic cannot supervise its processes')
     out.mkdir(parents=True, exist_ok=False)
     report = {'protocol': PROTOCOL, 'code_sha': code, 'plan_sha256': hashlib.sha256(plan_path.read_bytes()).hexdigest(),
               'expected': expected, 'variants': {}, 'diagnostic_only': True,
@@ -432,19 +623,26 @@ def execute(plan_path, expected_code, out):
         command = [sys.executable, str(Path(__file__).resolve()), '--plan', str(plan_path),
                    '--expected-code-sha', expected_code, '--child', variant, '--child-output', str(destination)]
         seconds = plan['rank_entry_timeout_seconds' if variant == RANK_VARIANT else 'child_timeout_seconds']
+        supervision = {}
         try:
-            proc = subprocess.run(command, cwd=REPO, capture_output=True, text=True,
-                                  timeout=seconds, env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
-            (out / (variant + '.stdout')).write_text(proc.stdout)
-            (out / (variant + '.stderr')).write_text(proc.stderr)
-            row = json.loads(destination.read_text()) if destination.exists() else {'error': 'child produced no report'}
-            row['process_returncode'] = proc.returncode
-        except subprocess.TimeoutExpired as error:
-            row = {'error': 'child timed out', 'timeout_seconds': seconds}
-            for suffix, captured in (('stdout', error.stdout), ('stderr', error.stderr)):
-                (out / (variant + '.' + suffix)).write_bytes(captured.encode() if isinstance(captured, str) else captured or b'')
+            # The child and whatever it started end here: a child that is stopped at the bound cannot clean up
+            # after itself, so this supervisor ends its launcher and its workers too.
+            returncode, timed_out = run_bounded(command, seconds, out / (variant + '.stdout'), out / (variant + '.stderr'),
+                                                supervision)
+            if timed_out:
+                row = {'error': 'child timed out', 'timeout_seconds': seconds}
+            else:
+                row = json.loads(destination.read_text()) if destination.exists() else {'error': 'child produced no report'}
+            row['process_returncode'] = returncode
         except Exception as error:
             row = {'error': str(error), 'traceback': traceback.format_exc()}
+        problem = supervision_problem(supervision)
+        if problem:
+            row['cleanup_error'] = problem
+            row.setdefault('error', problem)
+        row['supervision'] = supervision
+        if 'error' in row:
+            row['output_tails'] = output_tails(out, variant)
         report['variants'][variant] = row
     try:
         validate_plan(plan_path)
@@ -460,6 +658,7 @@ def execute(plan_path, expected_code, out):
 
 
 def main(argv=None):
+    started = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--plan', type=Path, required=True)
     parser.add_argument('--expected-code-sha', required=True)
@@ -471,7 +670,7 @@ def main(argv=None):
         if args.child_output is None or args.child_output.exists():
             parser.error('new child output required')
         try:
-            report = (rank_entry_child(args.plan, args.expected_code_sha, args.child_output.parent)
+            report = (rank_entry_child(args.plan, args.expected_code_sha, args.child_output.parent, started)
                       if args.child == RANK_VARIANT else child(args.plan, args.child, args.expected_code_sha))
         except Exception as error:
             report = {'variant': args.child, 'error': str(error), 'traceback': traceback.format_exc()}

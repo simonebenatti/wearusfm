@@ -1,6 +1,6 @@
 {
   "status": "REVIEW_REQUIRED",
-  "estimate": "No reliable measured runtime yet; allocation cap is published, not an observed estimate. Five construction children at most 90s each; the torchrun dry run at most 300s (its process tree is killed at 270s); 150s for launcher, parent, I/O and provenance.",
+  "estimate": "No reliable measured runtime yet; allocation cap is published, not an observed estimate. Five construction contexts at most 90s each and the torchrun dry run at most 300s, the cleanup of their processes included (75s and 285s of waiting, 15s of cleanup); 150s for launcher, parent, I/O and provenance.",
   "jobs": [
     {
       "logical_id": "LOGSQ-initdiag-checkout-20261105",
