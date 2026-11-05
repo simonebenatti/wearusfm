@@ -6184,6 +6184,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Le cancellazioni restano di Simone dal suo terminale, come il 04/10 («l'agente non esegue cancellazioni definitive»). Dopo, la quota
   va riletta prima del controllo di C-1: su Lustre l'aggiornamento puo' arrivare in ritardo. Specchietto aggiornato nello stesso commit.
 
+### 2026-11-05 | Claude | Coordinamento: specchietto allineato al passaggio operativo della linea 2 e alle uscite su `$SCRATCH`; l'inventario di `$WORK` non serve piu' al lancio
+- Letti dopo il mio commit 43ea335: le voci della sottochat 2 (3566c8d, 766e2f5), `main` fe66e2d (CLAUDE.md e `docs/decisioni.md`) e
+  a9d2a92 del coordinamento GPT. Quando ho scritto l'inventario non le avevo lette: «mancano 0,59» resta vero per `$WORK`, ma il blocco
+  del lancio si scioglie con le uscite su `$SCRATCH` (Simone: «Sì, scratch»), non con le cancellazioni.
+- Specchietto: riga 2 e sezione «Cosa autorizzano le review» aggiornate. Per la sola linea 2 l'unico operatore e' la sottochat 2 di
+  Claude; linee 1 e 3 invariate; il coordinatore non lancia e non opera su nessuna linea.
+- L'inventario resta un'opzione per il margine di `$WORK` (33,13 GiB liberi su un progetto condiviso): la cache di pip, 2,93 GiB, si
+  puo' togliere senza perdita. Decisione di Simone, non urgente.
+- Promemoria sul rinfresco di `$SCRATCH`: prossimo giro firmato il 12/11. I 40 giorni dal giro del 15/10 scadono il 24/11, dentro la
+  manutenzione del 23–25/11 che ferma tutti i nodi Booster e `login[08,13]`; le prenotazioni del 10–14/11 toccano solo
+  `lrdn[2701-3420]` (`scontrol show reservation`, lettura delle 21:19).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
