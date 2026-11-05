@@ -6495,3 +6495,23 @@ puntuale dei2argv senza presentarlo come nuovo collaudo SLURM. Prima letturaSSH
 chiusa senza dati, seconda riuscita; nessuna sottomissione ambigua o retrydi job.
 Le condizioni della Review8 sono soddisfatte per il recupero; nuova misuraEPN,
 runtime vivo, convergenza e budgetfit restano gate reali, non risultati acquisiti.
+
+### 05/11/2026 — GPT scaling: EPN612 recupero sottomesso63620780
+
+Piano corretto5275b0d pubblicato con SHAorigin verificato prima dell'invio.
+Submitter/ledger comune: SCALING-probe-recover-epn612-20261105,job63620780,
+sottomesso20:22:50,8CPU/30GiB/2h/zeroGPU. Ricevuta copiata byte per byte in
+cpu_recovery_20261105/submissions; argv esatto con/dev/stdin, codiceaef e
+script_stdin_sha256 c2bd7979 verificati. Tetto16coreh richieste,16,4con margine.
+Alle20:23:27 PENDING(Resources), non ancora in esecuzione; log non ancora creato.
+UCI non inviato: segue solo EPNCOMPLETED0:0, report completo e accettazione.
+Nessun fit anticipato, nessun nuovo training, nessun monitor in background.
+
+### 05/11/2026 — GPT scaling: attesa risorse del recupero, non un errore
+
+63620780 accettato daSLURM e in attesa(Resources); il filelog assente mentre il
+job èPENDING non è un fallimento del dispatcher. Il limite di10sottomessi si
+controlla sulla partizione/QoSseriale: la colonnaQOSdel job riporta normal, mentre
+la partizione applica lrd_all_serial. Non filtrare erroneamente soloQOS=serial
+nella colonna del job. Prossima lettura conserva ID63620780: non risottomettere.
+Al primo errore/TIMEOUT stop; primaUCI servono report e accountingEPN verificati.

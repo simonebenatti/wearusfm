@@ -1,6 +1,6 @@
 # Recupero CPU scaling 5.000 — budget e dispatcher approvati
 
-**Stato: budget approvato da Simone e dispatcher approvato dalla Review Claude8 (4e6542f); correzione `/dev/stdin` applicata, invii da registrare.** Review Claude
+**Stato: budget approvato da Simone e dispatcher approvato dalla Review Claude8 (4e6542f); correzione `/dev/stdin` applicata; EPN612 sottomesso63620780.** Review Claude
 `1c21047c77f956a1819fe09e8520d3a36dd7a4ae` acquisita integralmente con le due voci
 originali del registro. Il recupero dei soli EPN612/UCI è approvato nell'impostazione;
 Review8 approva il dispatcher, subordinatamente alla correzione degli argv qui applicata. Simone ha approvato il
@@ -112,3 +112,11 @@ senza cambiare runtime; F-4 conserva la regola sulla convergenza; F-5 elimina
 review interne dalla reviewClaude7. La Review8 copre il dispatcher concreto; la sua unica correzione obbligatoria
 agli argv è applicata. Review7 non viene estesa retroattivamente al nuovo codice.
 I tetti S8 v2 sono una proposta condizionale, non budget autorizzato da Simone.
+
+## Invio effettivo dopo Review8
+
+Piano5275b0d pubblicato e SHA remoto verificato prima del lancio.
+EPN612 **63620780**, sottomesso20:22:50; snapshot20:23:27 **PENDING(Resources)**,
+8CPU/30GiB/2h, zeroGPU. Ricevuta comune e hashdispatcher verificati, log ancora
+assente perché il job non è iniziato. UCI non ancora sottomesso: resta il gate
+sull'esitoEPN. Nessuna duplicazione, fit o automazione.

@@ -15,7 +15,7 @@
   "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Publish corrected plan and verify remote SHA/pins and serial QoS queue; submit EPN through common submitter. UCI after EPN acceptance. No further user approval for this5000chain.",
+  "next": "Read EPN result and accounting; require complete report and receipt dispatcher pin; submit UCI only after EPN acceptance. No blind retry. Then full measured fit plan.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -79,7 +79,7 @@
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
   "cpu_actual_core_hours_completed_so_far": 22.027777777777782,
-  "last_checked_at": "2026-11-05T18:44:27+01:00",
+  "last_checked_at": "2026-11-05T20:23:27+01:00",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,13 +87,13 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "RECOVERY_APPROVED_READY_FOR_EPN_SUBMISSION",
+  "status": "RECOVERY_EPN_PENDING_RESOURCES",
   "classification_benchmark_reports_complete": 13,
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 83,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
   "fit_cap_core_hours": 240,
-  "active_jobs_in_this_cpu_chain": 0,
+  "active_jobs_in_this_cpu_chain": 1,
   "pose_ridge_blocked_by_chain_stop": true,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
@@ -101,7 +101,7 @@
   "latest_claude_review_scope": "Review8 approves dispatcher, reuse,310envelope and S8v2; mandatory /dev/stdin argv correction applied; no additional review required.",
   "simone_310_core_hour_decision_registered": true,
   "claude_recovery_dispatcher_approval_received": true,
-  "recovery_prepared_not_submitted": true,
+  "recovery_prepared_not_submitted": false,
   "previous_fit_cap_core_hours": 136,
   "previous_fit_cap_proven_infeasible": true,
   "measured_full_fit_budget_available": false,
@@ -111,5 +111,21 @@
     "reply": "approvo",
     "proposal_commit": "4c670bd0c8793b6e2afbe470030f9d56be6a900b",
     "scope": "310 CPU-only core-hours cumulative for completing the5000 evaluation, including22.027778 already consumed, with fit requested cap240 and all published operational gates. No new GPU work or19618continuation authorized."
-  }
+  },
+  "recovery_jobs": [
+    {
+      "id": "SCALING-probe-recover-epn612-20261105",
+      "job_id": 63620780,
+      "dataset": "epn612",
+      "submission_state": "sottomesso",
+      "submitted_at": "2026-11-05T20:22:50+01:00",
+      "dispatcher_receipt_hash_verified": true,
+      "requested_core_hours": 16,
+      "budget_core_hours_with_overtime": 16.4,
+      "slurm_state": "PENDING",
+      "reason": "Resources"
+    }
+  ],
+  "recovery_running_jobs": 0,
+  "recovery_pending_jobs": 1
 }
