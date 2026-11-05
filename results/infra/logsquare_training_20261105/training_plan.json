@@ -1,6 +1,6 @@
 {
   "protocol": "tokenizer-logsquare-training-20261104-v1",
-  "status": "REVIEW_REQUIRED",
+  "status": "APPROVED_FOR_TRAINING",
   "arm": "T100-LQ",
   "endpoints": [
     5000,
@@ -275,8 +275,8 @@
   "background_monitoring": false,
   "training_release": {
     "path": "results/infra/logsquare_training_20261105/training_release.json",
-    "sha256": "6e2a86d85c6eea160de4c0c2bea47691adbe4389bf621bcdb25d1d138db8b607",
-    "bytes": 2810
+    "sha256": "ee08185d8bded517c77b652b22bb468d395727fd78fcea040780ebc359b2be00",
+    "bytes": 2771
   },
   "execution_code_sha_source": "EXPECTED_SHA exported by submission; checked against clean frozen checkout HEAD before launch and after training; the same SHA is required for both phases.",
   "operational_authorization_granted": true,

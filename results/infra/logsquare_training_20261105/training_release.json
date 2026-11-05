@@ -1,5 +1,5 @@
 {
-  "training_approved": false,
+  "training_approved": true,
   "epsilon": 0.001,
   "preflight_report_sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
   "r1_analysis_sha256": "5a1330f518943e3396723a5f758b2882d360f3839723edb914fc48dfd990d59f",
@@ -46,6 +46,6 @@
     "sha256": "201a9887528e12aefb1728e64e7a78fdc1405d9ecde81a1af1814d3c3b2bfec5",
     "bytes": 3904
   },
-  "status": "DRAFT_READY_FOR_EXPLICIT_RELEASE",
-  "approval_scope_note": "Claude pin preserves approved recipe/adapters. GPT reviews approve the corrected guard/rank entry and timeout fix. The pinned diagnostic and readout support the explicit GPT release decision; training_approved remains false until the dedicated release commit."
+  "status": "APPROVED_FOR_TRAINING",
+  "approval_scope_note": "Claude pin preserves approved recipe/adapters. GPT reviews approve the corrected guard/rank entry and timeout fix. Pinned diagnostic and readout support the explicit GPT release decision, now released for the same registered recipe."
 }
