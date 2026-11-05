@@ -6275,3 +6275,12 @@ Rilasciato solo il benchmark già approvato: 1 GPU, 8 CPU, 100G, 30 min;
 Endpoint 19.618 e allocazioni delle estrazioni rimangono inattivi finché mancanti.
 D1 e R1-b invariati, nessuna nuova loss o monitor.
 Piano operativo: `docs/logsquare_inference_execution_20261105.md`.
+
+Benchmark 63614514 inviato sul checkout nuovo cc81430, dopo checkout 63614193
+COMPLETED 0:0 e controlli di integrità. Prenotazione unica nel ledger comune,
+nessun cambiamento alla continuazione 63593128. Costi di checkout: 0,015556 core-ore.
+Ricevute e manifest in results/infra/logsquare_inference_20261105; nessuna estrazione
+scientifica sottomessa e nessun monitor in background.
+
+Benchmark concluso alle 19:08:50 CET: 110 s, 0,030556 GPU-ore / 0,244444 core-ore.
+Ricevuta originale verificata per byte e SHA; lettura indipendente in corso.

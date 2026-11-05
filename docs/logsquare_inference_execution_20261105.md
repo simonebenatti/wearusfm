@@ -42,3 +42,39 @@ student/teacher e le famiglie, come lettura descrittiva R1-b.
 Dopo il benchmark: verificare tempi, supporti e provenienze, pubblicare rho_infer e
 tetti prima di qualunque estrazione. La continuazione a 19.618 non aspetta questo job.
 Nessun monitor in background e nessuna nuova richiesta di consenso.
+
+## Raccolta e passaggio alle estrazioni
+
+Il benchmark produce `receipt.json`, che contiene anche il rapporto dei tempi;
+non è previsto un file `report.json` distinto. Raccogliere ricevuta, log e accounting.
+Verificare completezza, SHA di checkout/piano, checkpoint 5.000, controllo storico,
+contesto e 110 sorgenti. Ricalcolare i sei gruppi dai sei confronti successivi ai due
+di riscaldamento e verificare conteggi storici e `resource_proposal`.
+
+Pubblicare le quattro celle pose_5000, pose_19618, p1_19618, p2_19618.
+Il tetto temporale è ceil(walltime storico × max(1, rho_cap) / 300) × 300 secondi;
+la stima usa il rapporto ponderato dai conteggi storici. Copiare integralmente
+`resource_proposal.jobs[cell]` nelle allocazioni. Resta un proxy: rho misura il
+forward, mentre le durate storiche comprendono anche le altre operazioni.
+
+Conservare immutabile l'inference_plan eseguito. Preparare un nuovo extraction_plan
+con stato APPROVED_FOR_EXTRACTION, ricevuta JSON pinnata, riferimento al piano
+benchmark immutabile, inference_code_sha e allocazioni. Non aggiornare a ritroso
+l'inference_plan: si creerebbe un ciclo e si invaliderebbe la ricevuta.
+Le celle a 19.618 aspettano il rispettivo checkpoint completo; quella di posa a
+5.000 può partire dopo verifica e pubblicazione dei tetti. Ogni estrazione riceve
+il walltime esatto della cella. Qualunque errore ferma la fase, senza retry automatici.
+
+## Invio del 05/11/2026
+
+Codice congelato `cc814303e52d8e4067cf12fb1a291459a402c78c`, pubblicato su origin
+e sul nuovo riferimento di deploy. Checkout 63614193 COMPLETED 0:0 in 28 secondi
+(0,015556 core-ore), SHA, pulizia, 110 sorgenti, pin e sola lettura verificati.
+Benchmark 63614514 sottomesso tramite submitter e ledger comuni; ricevute archiviate.
+Nessuna dipendenza SLURM dal checkout concluso: il suo esito è verificato prima
+dell'invio. La continuazione 63593128 mantiene il proprio checkout e piano.
+
+Benchmark 63614514 COMPLETED 0:0 alle 19:08:50 CET, durata SLURM 110 secondi,
+0,030556 GPU-ore / 0,244444 core-ore. Ricevuta originale da 198.900 byte raccolta,
+SHA256 `7e6e665eb4fb321b81266d0f35806c61814958e758c236a8266baae945db4e9a`.
+Il rapporto è ora sottoposto al ricalcolo indipendente dei tempi e dei tetti.

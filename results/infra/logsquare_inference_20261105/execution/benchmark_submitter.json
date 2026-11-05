@@ -1,0 +1,50 @@
+{
+ "id": "LOGSQ-infer-5000-20261105",
+ "creato": "2026-11-05T19:06:44+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-infer-5000-20261105",
+ "gpu_ore_stimate": 0.5,
+ "codice_sha": "cc814303e52d8e4067cf12fb1a291459a402c78c",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-infer-5000-20261105",
+  "--comment=wearusfm:LOGSQ-infer-5000-20261105",
+  "--nodes=1",
+  "--gres=gpu:1",
+  "--cpus-per-task=8",
+  "--mem=100G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105,EXPECTED_SHA=cc814303e52d8e4067cf12fb1a291459a402c78c",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105/scripts/slurm/logsquare_infer_benchmark.sbatch",
+  "results/infra/logsquare_evaluation_20261104/inference_plan.json",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_inference_20261105/5000",
+  "71fe65bf4d7dded2f946c040eb957d9e2a59f5665a6e914991bb88d2b4554cf0"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-05T19:06:44+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-05T19:06:44+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-05T19:06:45+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63614514,
+   "uscita": 0,
+   "stdout": "63614514\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63614514,
+ "uscita": 0,
+ "stdout": "63614514\n",
+ "stderr": ""
+}
