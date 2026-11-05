@@ -5949,6 +5949,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Sullo stesso account, fuori dal ledger: 6 job `mona_*` RUNNING da 8 h 24 min (una GPU ciascuno, limite 24 ore) e 30 in attesa.
   GPU occupate in tutto alle 16:00: 16 per WearUsFM e 6 per l'altro progetto. Specchietto aggiornato nello stesso commit.
 
+### 2026-11-05 | Claude | Coordinamento: stato alle 18:45 alla ripresa di Simone, training T100-LQ a 5.000 completato e un benchmark scaling in TIMEOUT
+- Simone: «ecco ho ripreso». Sola lettura (`squeue --me`, `sacct -X` dalle 15:50), output in
+  `~/wearusfm_local/logs/leonardo_stato_20261105_1845.txt`. Nessuna lettura dei log dei job, che resta agli owner GPT.
+- Linea 3: `LOGSQ-T100-LQ-5000-20261105` 63593091 COMPLETED 0:0 in 1 h 06 min 10 s su 4 GPU (15:31:30 → 16:37:40, circa 4,41 GPU-ore su un
+  tetto di 6); `LOGSQ-T100-LQ-19618-20261105` 63593128 PENDING per priorita', dipendenza soddisfatta dalle 16:37.
+- Linea 2: quattro fit EPN15 frozen C0 COMPLETED 0:0 (da 3 h 18 a 3 h 21 ciascuno), quattro frozen C1 RUNNING da 2 h 23–2 h 25, otto fit
+  finetune e scratch C0 RUNNING da 5 h 32–5 h 44 con limite 16 h, otto C1 in attesa.
+- Linea 1: `SCALING-probe-bench-matched-20261105` 63593593 COMPLETED 0:0 in 36 min 34 s; `SCALING-probe-bench-300M-20261105` 63593508
+  TIMEOUT (sezione 2). Unico commit nuovo sui rami dalle 16:00: 76a3126 di GPT (15:42, non rivisto da Claude: sei benchmark inviati,
+  posa misurata, preventivo condizionale S8 della continuazione 300M a 19.618 congelato a 66 GPU-ore e 708 core-ore).
+- Ledger: nessuna riga nuova dalle 15:25. Specchietto aggiornato nello stesso commit. Nessun job di Claude.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8257,3 +8269,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   il ramo scaling non contiene 8ee6603.
 - **Limiti di questo audit:** il consumo e i job MONALISA sono letture delle 15:03–15:06; i 15 prompt e i 12 file di review sono stati
   contati alle 15:10; l'intera `tests/cpu` non e' stata rieseguita, solo il file del test fallito.
+
+### 2026-11-05 | Claude | Coordinamento: `SCALING-probe-bench-300M-20261105` 63593508 in TIMEOUT alle 18:04:40, non ancora registrato da GPT alle 18:45
+- Partito alle 16:31:36, chiuso da SLURM dopo 1 h 33 min 04 s con limite 1 h 30 (`--time=01:30:00` nella sottomissione). Gli altri due
+  benchmark delle sonde erano finiti in 33 min 38 s (30M naturale, 63593262) e 36 min 34 s (300M matched, 63593593).
+- La regola e' di GPT (76a3126): «Stop al primo errore/TIMEOUT/gate rifiutato, nessun retry» e «Servono15report completi dei tre job»:
+  il piano dei fit CPU non puo' partire dai report parziali. Diagnosi, lettura dei log e ogni decisione sul seguito sono dell'owner GPT
+  della linea scaling. Claude non ha letto i log e non propone rilanci.
