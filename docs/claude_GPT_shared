@@ -6042,6 +6042,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - **Audit di allineamento:** il coordinatore GPT lo ha accolto (fdf773d). D-5 chiuso: patch del solo test d2f2f08 adottata nelle tre linee,
   rieseguita da me su copie delle quattro punte di GPT, 15 passati in ciascuna. D-1 e D-2 restano all'integrazione dedicata; D-6 alla
   decisione di Simone. Specchietto e audit aggiornati nello stesso commit.
+### 2026-11-05 | Claude | T100-LQ: R-1 chiuso, il test corretto da GPT a 5b03e0c passa e protegge ancora i vincoli; nessun job
+- Richiesta di Simone: «DIREI CHE HA FATTO , QUETO IL SUO MESSAGGIO», con il testo di GPT: «Commit 5b03e0c, ramo
+  codex/tokenizer-logcontrast-20261104. Corregge R-1 [...] Tutti i 363 test dei 12 file LQ sono passati.» Verificata la sola correzione.
+- **R-1 CHIUSO.** A 5b03e0c `test_review_plan_freezes_selection_aggregation_and_null_candidate_pins` accetta i due stati del piano e tiene
+  fermi selezione, aggregazione e l'intera allocazione (1 GPU, 8 CPU, 100G, 1.800 s, 0,5 GPU-ore, 4 core-ore). Nello stato approvato
+  pretende il pin completo del 5.000, legato per SHA a piano, release e configurazione. Dopo cc81430 cambiano solo due file di test.
+- **Rieseguiti** in un checkout temporaneo: i 12 file LQ piu' le due regressioni di GPT, **365 passati**, cioe' 363 nei 12 file come
+  dichiara GPT; `bash -n` dei sette launcher LQ passa; nessun processo rimasto.
+- **Prova per mutazione** su una copia, script `docs/reviews/claude_review_logsquare_relaunch_20261105_r1_mutations.py`: 3 controlli
+  passano (file invariati; stesso contenuto riscritto con pin aggiornato; ritorno allo stato di review con pin nullo) e 15 vincoli rotti
+  uno alla volta fanno fallire il test: stato non previsto, selezione, aggregazione, tetto, CPU, durata, piano di estrazione cambiato
+  senza pin, pin del 5.000 tolto nello stato approvato o presente nello stato di review, pin del 19.618 riempito, ricevuta d'inferenza,
+  allocazioni delle estrazioni, percorso del checkpoint, hash della release, stati diversi fra i due piani.
+- GPT ha recepito N-1 (consuntivo parziale con gli stessi numeri: massimo 20,434444 GPU-ore e 163,475556 core-ore) e N-4. La mia review
+  e' archiviata sul suo ramo con lo stesso blob. Non rivisti: 99efdef (test B19618: qui 15 passati), 9720fc8 (costi d'inferenza e
+  rilascio dell'estrazione di posa a 5.000) e il resto di 5b03e0c (estrazione 63615952).
 
 ## 2) Problemi trovati
 
@@ -8421,3 +8437,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   `cpu_reserved_core_hours_so_far` superato; F-6 le due review interne di GPT non sostituiscono questa.
 - **Omissione mia nella review 6:** ho approvato il launcher senza segnalare che il limite di 5.400 s del benchmark 300M naturale era
   una stima fissata nel codice prima di ogni misura (rapporto presunto 2; misurati 1,6 / 2,1 / 6,1 e 5,4 sui cinque C di EPN612).
+
+### 2026-11-05 | Claude | Review T100-LQ rilanciato: R-1 chiuso da GPT a 5b03e0c; N-1 e N-4 recepite; restano N-2 (di Simone) e N-3 (limite)
+- R-1 chiuso: verifica nella voce della sezione 1. Nessun problema nuovo dalla correzione.
+- Restano: N-2, se un rilancio dopo un arresto tecnico debba ripassare da Claude prima del deploy (decisione di Simone; GPT scrive che non
+  ne deduce regole nuove), e N-3, pulizia forzata dei processi mai esercitata sul cluster.
