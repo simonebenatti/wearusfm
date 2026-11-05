@@ -6304,6 +6304,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   pubblicato prima degli invii). Consumato 29,016111 core-ore alle 22:07; al piu' 247,75 contro 310.
 - Note operative N-1...N-3 nella voce della sezione 2; testo per GPT in fondo alla review.
 
+### 2026-11-05 | Claude | Coordinamento: tabella dei job alle 22:13 (chi ha lanciato cosa), review 9 integrata, D-6 chiuso da Simone, corsia seriale condivisa
+- Richieste di Simone: «parlavo della tabella dei job, chi ha lanciato osa e come è messo»; sui job MONALISA: «che c'entrano, sono di un a ltro progetto».
+  Sola lettura su Leonardo alle 22:09–22:13 (`squeue`, `sacct`, `scontrol show job`, `sacctmgr show qos`;
+  `~/wearusfm_local/logs/leonardo_stato_20261105_2209_job.txt`, `leonardo_seriale_priorita_20261105_2213.txt`). Nessun job mio.
+- **Tabella dei job** in `docs/coordinamento_review_claude_20261104.md`, sezione «Job su Leonardo»: chi ha inviato (agente e campagna
+  del ledger comune) e stato. Linea 1, GPT scaling: ridge e recuperi conclusi, fit 01 63626931 RUNNING dalle 21:52:31, fit 02–09 in
+  catena, fit 10–14 da inviare. Linea 2: EPN15 inviato da GPT consolidamento e seguito dalla sottochat 2 di Claude (otto frozen
+  conclusi, otto C0 RUNNING da 8 h 55–9 h 07, otto C1 in catena); valutazione lunga inviata dalla sottochat 2: checkout 63628160
+  PENDING dalle 22:01:52, estrazioni e fasi CPU non inviate. Linea 3, GPT logcontrast: training a 5.000, inferenza e posa conclusi;
+  continuazione 63593128 PENDING per priorita' dalle 16:37.
+- **Review 9 della sottochat 1 integrata nel ramo comune** (c5efb80, avanzamento semplice): rilascio dei fit conforme, nessun blocco.
+- **D-6 chiuso da Simone:** i job MONALISA sono di un altro progetto. Lettura mia: restano fuori da consuntivi, budget, ledger e
+  tabelle del coordinamento WearUsFM, e non li elenco piu'. Dato letto alle 22:08, per completezza: girano con lo stesso account
+  SLURM `iscrb_wearusfm`. Audit aggiornato (`docs/coordinamento_allineamento_claude_gpt_20261105.md`): restano aperti D-1 e D-2.
+- **Corsia seriale condivisa (N-5 della sottochat 2, N-2 della review 9).** Limiti per utente della QoS `lrd_all_serial` letti alle
+  22:13: 8 CPU, 30.800 MB, 2 job in esecuzione, 10 sottomessi, rifiuto all'invio oltre il limite. Un fit dello scaling (8 CPU, 30 GiB)
+  la occupa da solo. Priorita' lette: checkout della linea 2 141.902, fit 02 141.713; un job in catena matura anzianita' solo quando
+  la dipendenza e' soddisfatta, quindi un job seriale gia' in attesa passa davanti al fit successivo a ogni cambio. Conseguenze:
+  il checkout della linea 2 dovrebbe partire alla fine del fit 01, entro le 22:52 se il fit chiude nel suo limite; ogni job seriale
+  della linea 2 messo in coda ritarda la catena dello scaling della propria durata; il processo locale di GPT scaling (ef8db2b,
+  25eca17, non rivisti) ha bisogno di posti liberi per accodare i fit 10–14 mentre il fit 09 e' ancora in coda (N-1 della review 9).
+  Carico seriale previsto: scaling 14 fit per 25 h 44 min di limiti; linea 2, dal piano di lancio, 16 benchmark (7 h 45 min), 51 fit
+  (195 h di limiti, da rimisurare col benchmark) e 3 aggregati (2 h 10 min). **Chi passa prima sulla corsia lo decide Simone: la
+  domanda gli e' stata posta, nessuna istruzione data alle sottochat.**
+- Punte lette: scaling 25eca17, consolidamento 9d195e7, logcontrast 63eba9a, coordinamento 2cf7e8c, `main` fe66e2d, esecuzione della
+  linea 2 7d276c9.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
