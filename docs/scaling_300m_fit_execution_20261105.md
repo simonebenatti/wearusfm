@@ -49,3 +49,22 @@ Al primo errore/TIMEOUT si ferma la fase e si raccolgono evidenze; nessun nuovo 
 
 Gli argv in submission_plan.json hanno tutti i pin effettivi, inclusi quelli dei15benchmark. Il checkout del budget conterrà questo piano e gli accounting della posa. Si pubblica separatamente il comando esatto con il commit metadata completo.
 La prima dipendenza afterok è sul job ridge ancora presente; il checkout già verificato non viene usato come dipendenza per evitare MinJobAge=30s. Le dipendenze non sostituiscono le verifiche prima delle nuove tranche.
+
+### 05/11/2026 — GPT scaling: checkout budget63626623 accettato
+
+Piano fit ec221a6, comando esatto5e20d8c pubblicati suorigin; deploy metadata
+verificato ec221a6, canonical main intatto. Job63626623 COMPLETED0:0/27s,
+2CPU=0,015coreh, checkout metadata pulito e hash effettivi uguali ai pin.
+Raccolti log originale con hash, sacct-P e accounting. Verificati27input remoti
+(piani,15benchmark,report/accounting posa,budget), tutti15output ancora assenti,
+runtimeaef pulito e coda seriale vuota. CPU consumata28,373889coreh.
+Pronta prima tranche ridge+9fit, entro10sottomessi; altri5fit da inviare solo
+quando liberi gli slot e verificati gli esiti precedenti. Tutti gli argv già pubblicati.
+
+### 05/11/2026 — GPT scaling: correzione operativa prima dei fit
+
+Review indipendente ha trovato --out posa trattato come file anziché directory:
+corretto nel piano prima del commit ec221a6 e di ogni invio; nessunjob coinvolto.
+Rieseguito parsing reale dei15comandi e controllati pin/risorse/copertura. Nessun
+blocco residuo al rilascio. Le verifiche live dei lettori restano attive; afterok
+arresta i successivi su errore ma non sostituisce la lettura prima delle nuove tranche.

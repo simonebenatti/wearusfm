@@ -6595,3 +6595,22 @@ Il packing è operativo, non selezione dei risultati: fold e griglia restano int
 25h44m sono walltime richiesto prudenziale, non durata misurata né scadenza garantita;
 la coda si aggiunge. Il limite10job richiede più tranche per15job totali (ridge+14fit).
 Al primo errore/TIMEOUT si ferma la fase e si raccolgono evidenze; nessun nuovo training.
+
+### 05/11/2026 — GPT scaling: checkout budget63626623 accettato
+
+Piano fit ec221a6, comando esatto5e20d8c pubblicati suorigin; deploy metadata
+verificato ec221a6, canonical main intatto. Job63626623 COMPLETED0:0/27s,
+2CPU=0,015coreh, checkout metadata pulito e hash effettivi uguali ai pin.
+Raccolti log originale con hash, sacct-P e accounting. Verificati27input remoti
+(piani,15benchmark,report/accounting posa,budget), tutti15output ancora assenti,
+runtimeaef pulito e coda seriale vuota. CPU consumata28,373889coreh.
+Pronta prima tranche ridge+9fit, entro10sottomessi; altri5fit da inviare solo
+quando liberi gli slot e verificati gli esiti precedenti. Tutti gli argv già pubblicati.
+
+### 05/11/2026 — GPT scaling: correzione operativa prima dei fit
+
+Review indipendente ha trovato --out posa trattato come file anziché directory:
+corretto nel piano prima del commit ec221a6 e di ogni invio; nessunjob coinvolto.
+Rieseguito parsing reale dei15comandi e controllati pin/risorse/copertura. Nessun
+blocco residuo al rilascio. Le verifiche live dei lettori restano attive; afterok
+arresta i successivi su errore ma non sostituisce la lettura prima delle nuove tranche.

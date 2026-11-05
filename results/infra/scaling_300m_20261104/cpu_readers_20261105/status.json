@@ -78,7 +78,7 @@
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 28.358888888888888,
+  "cpu_actual_core_hours_completed_so_far": 28.37388888888889,
   "last_checked_at": "2026-11-05T21:37:33.211125",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
@@ -87,7 +87,7 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "ALL15_BENCHMARKS_ACCEPTED_FIT_PLAN_PREPARATION",
+  "status": "METADATA_CHECKOUT_ACCEPTED_FITS_READY",
   "classification_benchmark_reports_complete": 15,
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 95,
@@ -156,5 +156,8 @@
   "measured_fit_shards": 14,
   "measured_fit_requested_core_hours": 205.86666666666667,
   "probe_complete_fits_converged": 90,
-  "historical_partial_fits_converged": 5
+  "historical_partial_fits_converged": 5,
+  "fit_metadata_commit": "ec221a64f47b66c6c7ac0b04444f5421b3e58e7a",
+  "fit_metadata_checkout_job": 63626623,
+  "fit_metadata_checkout_accepted": true
 }

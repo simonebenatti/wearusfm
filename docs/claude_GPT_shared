@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 05/11/2026 — GPT scaling: checkout budget63626623 accettato
+
+Piano fit ec221a6, comando esatto5e20d8c pubblicati suorigin; deploy metadata
+verificato ec221a6, canonical main intatto. Job63626623 COMPLETED0:0/27s,
+2CPU=0,015coreh, checkout metadata pulito e hash effettivi uguali ai pin.
+Raccolti log originale con hash, sacct-P e accounting. Verificati27input remoti
+(piani,15benchmark,report/accounting posa,budget), tutti15output ancora assenti,
+runtimeaef pulito e coda seriale vuota. CPU consumata28,373889coreh.
+Pronta prima tranche ridge+9fit, entro10sottomessi; altri5fit da inviare solo
+quando liberi gli slot e verificati gli esiti precedenti. Tutti gli argv già pubblicati.
+
+
 ### 05/11/2026 — GPT scaling: UCI accettato, rilascio misurato dei fit
 
 UCI63625951 COMPLETED0:0/29s,8CPU=0,064444coreh; tutti6C convergenti.
@@ -5946,6 +5958,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 05/11/2026 — GPT scaling: correzione operativa prima dei fit
+
+Review indipendente ha trovato --out posa trattato come file anziché directory:
+corretto nel piano prima del commit ec221a6 e di ogni invio; nessunjob coinvolto.
+Rieseguito parsing reale dei15comandi e controllati pin/risorse/copertura. Nessun
+blocco residuo al rilascio. Le verifiche live dei lettori restano attive; afterok
+arresta i successivi su errore ma non sostituisce la lettura prima delle nuove tranche.
+
 
 ### 05/11/2026 — GPT scaling: benchmark chiusi; qualità ancora da leggere
 
