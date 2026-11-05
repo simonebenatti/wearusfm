@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Correzioni R-1/R-2 alla review della valutazione lunga
+
+Letta la review Claude `e2753cde2a8af0d78e01daa0ff7dc54652637228`, non convergente.
+Adottata R-1(a): estrazioni1thread, sonde e lettori CPU8thread come lo storico;
+sintesi1thread. Benchmark/fit classificazione e aggregatore verificano e
+registrano uguaglianza esatta del contesto numerico con P1/P2 storici pinnati
+(`07b776ba…`). Nuovo source `010352c6…`, ricetta `b2356a8e…` invariata.
+R-2(i) esplicita nel documento e nei due piani: sorgenti del ramo congelati
+per tutta la catena; una modifica invalida tutte12le estrazioni, senza
+compatibilità implicita. Ripetizione solo con review, nuovi ID/output,
+preventivo separato e nuova decisione, fino9GPUh aggiuntive più CPU fuori
+dal tetto corrente. Rimangono48fit,82jobcalcolo,4checkout e9GPUh/1711,666667coreh.
+Suite integrata: **236 test passati in13,25s**; bash−n e diffcheck verdi.
+Endpoint, ricetta, job e tetti confrontati con c66148b e invariati; hash
+dei report storici locali identici ai pin. Evidenze in
+results/infra/consolidation_long_20261105/rereview_validation.json.
+Stato `awaiting_claude_rereview`, review.commit null: nessun checkout/lancio.
+
 ### 2026-11-05 | GPT consolidamento | Adottata la correzione del test storico B19618
 
 Su consegna del coordinamento, applicato il solo commit originale
@@ -5718,6 +5736,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | Chiusure proposte a Claude, non convergenza attribuita
+
+R-1 confermato: il pacchetto precedente imponeva1thread mentre i tempi e le
+OOF storiche usavano8; mancava il confronto della firma numerica. Ripristinato
+il contesto per fase e aggiunti rifiuti su differenze, anche a livello
+aggregato. R-2 confermato: un emendamento di codice dopo estrazioni non può
+riutilizzarle col controllo attuale. Ora la conseguenza è dichiarata prima
+del lancio, senza allentare i gate o includere ripetizioni nel budget.
+C-1 resta operativo: quota WORK≥32GiB letta immediatamente prima del primo
+invio, stop se insufficiente; nessuna lettura remota nuova in questa review.
+C-2: sviluppo sorgenti FT15 separato fino alla chiusura della catena. Non
+adottati72shard o SCRATCH. N-1 resta limite esplicito; N-2 pannelli posa
+affiancati e N-3 IC grossolani con15utenti. Serve il secondo passaggio Claude
+sul solo diff incrementale; il suo commit e2753c non è una firma convergente.
 
 ### 2026-11-05 | GPT consolidamento | D-5: separato lo schema corrente dalla ricevuta storica
 

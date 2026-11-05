@@ -6480,3 +6480,27 @@ nessun aumento di dose/semi/loss/FT. Quota fresca e ondateCPUglobali≤8.
 I dettagli sono in docs/consolidation_long_execution_20261105.md e nei piani
 results/infra/consolidation_long_20261105. Stato awaiting_claude_review;
 nessun nuovo job da questo pacchetto e nessun monitor automatico.
+
+### 05/11/2026 — Valutazione lunga: correzioni alla review Claude e2753c
+
+Rilettura richiesta prima del checkout delle estrazioni. R-1(a): ripristinati
+8thread per benchmark/fit/confronti CPU di classificazione e posa,1per
+estrazioni/sintesi. Sonde nuove e report storici P1/P2 devono avere lo stesso
+numeric_sha256, registrato nelle ricevute e nel confronto. Ricetta invariata,
+source aggiornato; nessun refit19k/pool aggiuntivo o nuovo disegno scientifico.
+
+R-2(i): stessa firma completa dei sorgenti per tutte le fasi. Dopo le
+estrazioni un cambio coperto invalida tutte12le ricevute/cache rispetto al
+nuovo codice: si ferma la catena. Nessuna riscrittura di hash, whitelist o
+riuso non verificato. Eventuale ripetizione richiederebbe review, nuovi
+ID/output, preventivo completo e nuova decisione di Simone, fino9GPUh
+aggiuntive più CPU non incluse nel tetto corrente. Sorgenti del ramo fermi
+fino alla chiusura; eventuale sviluppo FT15 su ramo/worktree separato.
+
+Conservati48fit/82jobcalcolo/4checkout e tetto9GPUh/1711,666667coreh.
+Non adottati gli shard facoltativi a72job né spostamenti su SCRATCH. Quota
+di progetto riletta immediatamente prima del primo invio: sotto32GiB liberi
+nessuna estrazione; la lettura storica di Claude non vale come gate attuale.
+236test passati in13,25s, bash−n e diffcheck verdi, ricetta/endpoint/ID/tetti
+invariati. Stato awaiting_claude_rereview, review.commit null; nessun nuovo
+checkout/job/monitor. Il lancio originario resta autorizzato dopo convergenza.

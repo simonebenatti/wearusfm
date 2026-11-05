@@ -248,6 +248,25 @@ def test_pairing_rejects_changed_oof_support(field):
         M.compare_arrays(cells, convergence=convergence, n_boot=20)
 
 
+@pytest.mark.parametrize("mismatch", ["new_vs_historical", "historical_tasks", "new_cells"])
+def test_report_aggregation_rejects_numeric_mismatch_across_entire_matrix(monkeypatch, mismatch):
+    hashes = {"old-p1": "a"*64, "old-p2": "a"*64}
+    new = [{"protocol": M.PROTOCOL, "kind": "probe", "numeric_sha256": "a"*64,
+            "step": step, "view": "post", "dataset": "epn612", "task": "p2"} for step in (19618, 49046)]
+    old = ["old-p1", "old-p2"]
+    if mismatch == "new_vs_historical":
+        new[0]["numeric_sha256"] = "b"*64
+    elif mismatch == "historical_tasks":
+        hashes["old-p2"] = "b"*64
+    else:
+        old = []
+        new[-1]["numeric_sha256"] = "b"*64
+    monkeypatch.setattr(M, "read_historical_pool", lambda pin, *args, **kwargs: {"numeric_sha256": hashes[pin]})
+    monkeypatch.setattr(M, "_read_pinned_report", lambda pin: (new[pin], {}))
+    with pytest.raises(ValueError, match="numeric environment"):
+        M.compare_reports([0, 1], cache_pins={}, historical_report_pins=old)
+
+
 def test_vr1_tradeoff_is_not_a_win():
     cells, convergence = matrix()
     result = M.compare_arrays(cells, convergence=convergence, n_boot=50)

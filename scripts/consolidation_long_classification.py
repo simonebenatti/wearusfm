@@ -571,7 +571,8 @@ def read_historical_pool(report_pin, cache_pins, *, expected_plan=None):
         cells[ds], convergence[ds] = a, all(r["converged_by_criterion"] for r in fits)
     require(len(records) == 28*len(TASKS[task]), "extra/missing historical audit fits")
     return {"cells": cells, "convergence": convergence, "identities": identities,
-            "reports": [r for r, _ in loaded], "records": records}
+            "reports": [r for r, _ in loaded], "records": records,
+            "numeric_sha256": loaded[0][0]["numeric_sha256"]}
 
 
 def _verify_support(a, y, s, roles, folds):
@@ -624,12 +625,21 @@ def compare_reports(report_pins, *, cache_pins, historical_report_pins=(), histo
     """
     require(historical_baseline_policy in ("exact", "declared_historical_cache"), "unregistered historical baseline policy")
     cells, convergence, identities, pending = {}, {}, {}, {}
+    historical_items = [read_historical_pool(pin, historical_cache_pins, expected_plan=historical_plan)
+                        for pin in historical_report_pins]
+    old_numeric = {item["numeric_sha256"] for item in historical_items}
+    new_numeric = set()
+    require(not historical_items or len(old_numeric) == 1, "mixed historical P1/P2 numeric environments")
     for pin in report_pins:
         report, arrays = _read_pinned_report(pin)
         require(report.get("protocol") == PROTOCOL and report.get("kind") == "probe", "wrong probe report")
+        new_numeric.add(report["numeric_sha256"])
+        require(not old_numeric or report["numeric_sha256"] in old_numeric,
+                "new/historical classification numeric environment differs")
         name, ds = cell_name(report["step"], report["view"]), report["dataset"]
         require(ds in DATASETS and report["task"] == _task(ds), "report dataset/task differs")
         pending.setdefault((name, ds), []).append((report, arrays))
+    require(len(new_numeric) == 1, "mixed numeric environments across new classification fits")
     for (name, ds), parts in pending.items():
         pin = cache_pins[name][ds]
         _, y, s, meta = load_cache(pin["path"], name.split("/")[1], expected=pin)
@@ -658,8 +668,7 @@ def compare_reports(report_pins, *, cache_pins, historical_report_pins=(), histo
         cells.setdefault(name, {})[ds] = {k: np.concatenate(v) for k, v in joined.items()}
         convergence.setdefault(name, {})[ds] = all(r["converged_by_criterion"] for r in records)
         identities.setdefault(name, {})[ds] = meta
-    for pin in historical_report_pins:
-        item = read_historical_pool(pin, historical_cache_pins, expected_plan=historical_plan)
+    for item in historical_items:
         name = cell_name(19618, "pool")
         for ds in item["cells"]:
             require(ds not in cells.get(name, {}), "duplicate historical pool dataset")
@@ -685,6 +694,10 @@ def compare_reports(report_pins, *, cache_pins, historical_report_pins=(), histo
     result = {"protocol": PROTOCOL, "kind": "comparison", "complete": True, **(identity or {}),
               **compare_arrays(cells, convergence=convergence), "convergence": convergence,
               "reports": list(report_pins), "historical_reports": list(historical_report_pins),
+              "numeric_comparison": {"numeric_sha256": next(iter(new_numeric)),
+                  "historical_numeric_sha256": next(iter(old_numeric)) if old_numeric else None,
+                  "exact_match": new_numeric == old_numeric if old_numeric else None,
+                  "historical_reports": list(historical_report_pins)},
               "historical_baseline_policy": historical_baseline_policy,
               "historical_baseline_scope": "pool19618 is the pinned historical feature cache and its fitted OOF; tolerance parity alone does not establish identical new probe predictions"}
     if out is not None:

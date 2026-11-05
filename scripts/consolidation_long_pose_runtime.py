@@ -32,6 +32,7 @@ BENCHMARK_POLICY = {
     "other_work": "2 * (read_validate * (1+r) + fixed_alpha_fit + predict * r + summary * r + E2_pairing * r**2 + bootstrap_diagnostic * r + artifact_write * r) + 120; r=18548/1907",
     "memory_projection": "max_RSS_bytes * (18548/1907)",
     "data_policy": "train payload only; held cache/reference payload is never opened, hashed or scored",
+    "blas_threads": 8,
 }
 
 
@@ -41,6 +42,20 @@ def environment():
             "thread_environment": {k: os.environ.get(k) for k in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")},
             "threadpools": [{k: p.get(k) for k in ("internal_api", "prefix", "version", "num_threads", "architecture", "threading_layer")}
                             for p in threadpool_info()]}
+
+
+def _threads(stage):
+    """Match the historical extraction/reader contexts before any payload read."""
+    C.require(stage in STAGES, "unregistered pose stage")
+    expected = 1 if stage.startswith("extract-pose-") else BENCHMARK_POLICY["blas_threads"]
+    C.require(all(os.environ.get(k) == str(expected) for k in
+                  ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")),
+              f"pose {stage} requires {expected} BLAS/OpenMP threads")
+    numeric = environment()
+    C.require(numeric["torch_threads"] == expected
+              and all(p["num_threads"] == expected for p in numeric["threadpools"]),
+              "active pose numeric thread count differs")
+    return numeric
 
 
 def peak_rss_bytes():
@@ -323,6 +338,7 @@ def execute(stage, ctx, out, step=None):
         C.require(type(step) is int and step in P.DOSES, "pose stage requires registered dose")
     else:
         C.require(step is None, "pose benchmark/compare does not accept a selected dose")
+    numeric = _threads(stage)
     benchmark = _benchmark_gate(ctx) if stage == "fit-pose" else None
     report = C.begin_output(ctx, out, stage)
     started = perf_counter()
@@ -334,4 +350,5 @@ def execute(stage, ctx, out, step=None):
         details = _fit(ctx, out, step, benchmark)
     else:
         details = _compare(ctx)
-    return C.finish_output(ctx, out, {**report, **details, "elapsed_seconds": perf_counter()-started})
+    return C.finish_output(ctx, out, {**report, **details, "execution_environment": numeric,
+                                      "elapsed_seconds": perf_counter()-started})

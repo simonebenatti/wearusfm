@@ -286,10 +286,44 @@ def test_invalid_stage_or_dose_fails_before_creating_output(tmp_path, monkeypatc
 
 def test_dispatch_uses_shared_begin_finish_and_gates_fit_first(tmp_path, monkeypatch):
     events = []
+    monkeypatch.setattr(U, "_threads", lambda stage: events.append("threads:"+stage) or {"torch_threads": 8})
     monkeypatch.setattr(U, "_benchmark_gate", lambda ctx: events.append("gate") or {"pin": True})
     monkeypatch.setattr(U.C, "begin_output", lambda ctx, out, stage: events.append("begin") or {"kind": stage})
     monkeypatch.setattr(U, "_fit", lambda ctx, out, step, gate: events.append("fit") or {"step": step, "gate": gate})
     monkeypatch.setattr(U.C, "finish_output", lambda ctx, out, report: events.append("finish") or report)
     result = U.execute("fit-pose", {}, tmp_path/"out", 49046)
-    assert events == ["gate", "begin", "fit", "finish"]
+    assert events == ["threads:fit-pose", "gate", "begin", "fit", "finish"]
     assert result["step"] == 49046 and result["gate"] == {"pin": True}
+    assert result["execution_environment"] == {"torch_threads": 8}
+
+
+@pytest.mark.parametrize("stage,expected", [("extract-pose-train", 1), ("extract-pose-val", 1),
+                                           ("benchmark-pose", 8), ("fit-pose", 8), ("compare-pose", 8)])
+def test_pose_threads_match_historical_stage_and_actual_libraries(monkeypatch, stage, expected):
+    for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+        monkeypatch.setenv(name, str(expected))
+    numeric = {"torch_threads": expected, "threadpools": [{"num_threads": expected}]}
+    monkeypatch.setattr(U, "environment", lambda: numeric)
+    assert U._threads(stage) == numeric
+    numeric["threadpools"][0]["num_threads"] = 3
+    with pytest.raises(ValueError, match="active pose numeric"):
+        U._threads(stage)
+    numeric["threadpools"][0]["num_threads"] = expected
+    numeric["torch_threads"] = 3
+    with pytest.raises(ValueError, match="active pose numeric"):
+        U._threads(stage)
+    numeric["torch_threads"] = expected
+    monkeypatch.setenv("OPENBLAS_NUM_THREADS", "3")
+    with pytest.raises(ValueError, match="requires"):
+        U._threads(stage)
+
+
+@pytest.mark.parametrize("stage,step", [("benchmark-pose", None), ("fit-pose", 49046)])
+def test_wrong_pose_threads_fail_before_benchmark_gate_payload_or_output(monkeypatch, tmp_path, stage, step):
+    for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+        monkeypatch.setenv(name, "1")
+    monkeypatch.setattr(U, "_benchmark_gate", lambda *a: pytest.fail("gate read before thread policy"))
+    monkeypatch.setattr(U, "_read", lambda *a: pytest.fail("payload read before thread policy"))
+    monkeypatch.setattr(U.C, "begin_output", lambda *a: pytest.fail("output created before thread policy"))
+    with pytest.raises(ValueError, match="requires 8"):
+        U.execute(stage, {}, tmp_path/"out", step)

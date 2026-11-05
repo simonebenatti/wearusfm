@@ -1,7 +1,7 @@
 {
   "protocol": "consolidation-long-evaluation-20261105-v1",
-  "status": "awaiting_claude_review",
-  "source_sha256": "2ab63f44c330f94c7902820f7758e0befc3bef1ad1aee37f615db0f60198923c",
+  "status": "awaiting_claude_rereview",
+  "source_sha256": "010352c65d139c03651a876fa883d185666aab1acb7444dc898bd196b3b95a66",
   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
   "submitter": "scripts/submit_job.py",
   "ledger": "~/wearusfm_local/jobs",
@@ -2476,5 +2476,30 @@
       "name": "consolidation-long-aggregate-20261105",
       "code_sha": null
     }
-  ]
+  ],
+  "phase_source_policy": {
+    "choice": "R-2(i): exact source identity, no cross-source cache reuse",
+    "frozen_paths": [
+      "src/**/*.py",
+      "scripts/*.py",
+      "scripts/slurm/consolidation_long.sbatch",
+      "scripts/slurm/lib_code_dir.sh"
+    ],
+    "freeze_period": "before first extraction checkout through chain completion; unrelated FT15 source development on separate branch/worktree",
+    "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
+    "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
+    "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
+    "additional_extraction_gpu_hours_cap": 9.0,
+    "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
+    "additional_cost_in_current_cap": false,
+    "repeat_authorized": false
+  },
+  "numeric_thread_policy": {
+    "extraction": 1,
+    "classification_cpu": 8,
+    "pose_cpu": 8,
+    "summary": 1,
+    "classification_baseline_comparison": "exact numeric_sha256 equality with both pinned historical P1/P2 reports; mismatch stops execution"
+  },
+  "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback"
 }

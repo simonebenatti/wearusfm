@@ -33,14 +33,19 @@ def measurements():
                 "fold_train_rows": [100, 100, 120, 80], "fold_train_classes": [2]*4,
                 "load_s": 1., "scale_s": 1., "input_sha256": "1"*64, "splits_sha256": "2"*64,
                 "roles_sha256": "3"*64, "ordered_rows_sha256": "4"*64, "checkpoint_sha256": "5"*64,
-                "numeric_context": {"threads": 1}, "subjects": ["a", "b"], "fold0_train_subjects": ["a", "b"],
+                "numeric_context": {"threads": 8}, "subjects": ["a", "b"], "fold0_train_subjects": ["a", "b"],
                 "fits": [{"C": c, "fit_phase": "benchmark_train_only", "exception": None,
                     "max_iter": 12000, "n_iter": 25, "n_train": 100, "elapsed_s": 1.,
                     "convergence_warnings": 0, "converged_by_criterion": True} for c in M.C_GRID]}
-            old = {"dataset": ds, "folds": [{"fold": f, "fit_seconds": 20., "train_rows": n, "classes": 2}
+            old = {"dataset": ds, "numeric_sha256": M.jhash(bench["numeric_context"]), "folds": [{"fold": f, "fit_seconds": 20., "train_rows": n, "classes": 2}
                     for f, n in enumerate(bench["fold_train_rows"])]}
-            result[ds][view] = {"benchmark": bench, "historical_timing": old, "peak_rss_bytes": 1024**3}
+            result[ds][view] = {"benchmark": bench, "historical_timing": old, "peak_rss_bytes": 1024**3,
+                "historical_numeric_match": R._numeric_match(bench["numeric_context"], historical_numeric())}
     return result
+
+
+def historical_numeric():
+    return {"numeric_sha256": M.jhash({"threads": 8}), "reports": {t: [] for t in M.TASKS}}
 
 
 def context(tmp_path):
@@ -72,6 +77,77 @@ def test_global_gate_covers40_logical_cells_and48_fixed_jobs_with_historical_cos
     assert len(db2["shards"]) == 2 and db2["projected_seconds"] == 1568.
     assert all(gate["shards"][key]["folds"] in ([0, 1], [2, 3]) for key in db2["shards"])
     assert gate["projected_core_hours"] == pytest.approx((32*964+8*1568)*8/3600)
+
+
+@pytest.mark.parametrize("active,environment,expected,passes", [
+    (8, 8, 8, True), (1, 1, 1, True), (1, 8, 8, False), (8, 1, 8, False)])
+def test_threads_match_historical_phase_in_environment_and_loaded_libraries(monkeypatch, active, environment, expected, passes):
+    numeric = {"threadpools": [{"internal_api": "openblas", "num_threads": active}]}
+    monkeypatch.setattr(M.TP, "numeric_context", lambda: numeric)
+    for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+        monkeypatch.setenv(name, str(environment))
+    if passes:
+        assert R._threads(expected) == numeric
+    else:
+        with pytest.raises(ValueError, match="threads|thread count"):
+            R._threads(expected)
+
+
+@pytest.mark.parametrize("mutation", ["timing", "evidence", "all_benchmarks_one_thread"])
+def test_resource_gate_rejects_historical_context_mismatch_even_when_new_contexts_agree(mutation):
+    reports = measurements()
+    if mutation == "timing":
+        reports["ninapro_db2"]["pool"]["historical_timing"]["numeric_sha256"] = "a"*64
+    elif mutation == "evidence":
+        reports["epn612"]["pre"]["historical_numeric_match"]["exact_match"] = False
+    else:
+        for views in reports.values():
+            for item in views.values():
+                item["benchmark"]["numeric_context"] = {"threads": 1}
+    with pytest.raises(ValueError, match="benchmark/historical"):
+        R.resource_gate(reports)
+
+
+def test_historical_numeric_reference_requires_pinned_plan_recipe_and_matching_p1_p2(tmp_path):
+    historical = {"identity": "frozen"}
+    ctx = context(tmp_path)
+    ctx["plan"]["historical_classification_reports"] = {}
+    for task in M.TASKS:
+        path = tmp_path/(task+".json")
+        R.C.write_json(path, {"complete": True, "protocol": M.TP.PROTOCOL, "kind": "aggregate",
+            "step": 19618, "arm": "T100-G", "task": task, "recipe": M.TP.recipe(),
+            "plan_content_sha256": M.jhash(historical), "numeric_context": {"threads": 8},
+            "numeric_sha256": M.jhash({"threads": 8})})
+        ctx["plan"]["historical_classification_reports"][task] = R.C.file_pin(path)
+    reference = R._historical_numeric(ctx, historical)
+    match = R._numeric_match({"threads": 8}, reference)
+    assert match["exact_match"] and match["numeric_sha256"] == match["historical_numeric_sha256"]
+    assert set(match["historical_reports"]) == {"p1", "p2"}
+    with pytest.raises(ValueError, match="new/historical"):
+        R._numeric_match({"threads": 1}, reference)
+    with pytest.raises(ValueError, match="historical timing source"):
+        R._historical_numeric(ctx, {"identity": "different-plan"})
+    pin = ctx["plan"]["historical_classification_reports"]["p2"]
+    changed = json.loads(Path(pin["path"]).read_text())
+    changed.update(numeric_context={"threads": 1}, numeric_sha256=M.jhash({"threads": 1}))
+    different = tmp_path/"different-p2.json"
+    R.C.write_json(different, changed)
+    ctx["plan"]["historical_classification_reports"]["p2"] = R.C.file_pin(different)
+    with pytest.raises(ValueError, match="historical P1/P2"):
+        R._historical_numeric(ctx, historical)
+
+
+def test_benchmark_numeric_mismatch_stops_before_fit_or_output_creation(tmp_path, monkeypatch):
+    ctx = context(tmp_path)
+    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8, "library": "different"})
+    monkeypatch.setattr(R, "_cache", lambda *args: ({}, {}, {}, {}))
+    monkeypatch.setattr(R, "_historical_numeric", lambda *args: historical_numeric())
+    def forbidden(*args, **kwargs):
+        raise AssertionError("unmatched benchmark started")
+    monkeypatch.setattr(M, "benchmark_cache", forbidden)
+    with pytest.raises(ValueError, match="new/historical"):
+        R.execute("benchmark-classification", ctx, tmp_path/"blocked", step=19618, dataset="epn612", view="post")
+    assert not (tmp_path/"blocked").exists()
 
 
 @pytest.mark.parametrize("mutation", ["missing", "sample", "held", "nonconverged", "mixed_numeric", "mixed_cache", "support"])
@@ -160,7 +236,9 @@ def test_extract_uses_original_t100g_reference_and_one_teacher(tmp_path, monkeyp
 
 def test_fit_requires_whole_matrix_gate_and_forbids_pool_reuse_or_automatic_shards(tmp_path, monkeypatch):
     ctx = context(tmp_path)
-    monkeypatch.setattr(R, "_threads", lambda: {"threads": 1})
+    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8})
+    monkeypatch.setattr(R, "_historical", lambda ctx: ({}, {}))
+    monkeypatch.setattr(R, "_historical_numeric", lambda ctx, historical: historical_numeric())
     monkeypatch.setattr(R, "_benchmarks", lambda ctx: measurements())
     called = []
     monkeypatch.setattr(M, "fit_cache", lambda *args, **kwargs: called.append(True))
@@ -181,17 +259,22 @@ def test_fit_requires_whole_matrix_gate_and_forbids_pool_reuse_or_automatic_shar
 def test_fit_receipt_covers_real_probe_oof_and_durable_audit(tmp_path, monkeypatch):
     ctx = context(tmp_path)
     pin, _, _, _ = F.cache(tmp_path)
-    monkeypatch.setattr(R, "_threads", lambda: {"threads": 1})
+    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8})
+    monkeypatch.setattr(R, "_historical", lambda ctx: ({}, {}))
+    monkeypatch.setattr(R, "_historical_numeric", lambda ctx, historical: historical_numeric())
     monkeypatch.setattr(R, "_benchmarks", lambda ctx: measurements())
     monkeypatch.setattr(R, "_cache", lambda *args: ({"receipt": {"path": "/extraction.json"}}, pin, {}, {}))
     monkeypatch.setattr(R.C, "finish_output", finish)
     ctx["plan"]["benchmark_receipts"] = {"classification": {"path": "/benchmarkmanifest.json"}}
     out = tmp_path/"fit"
+    monkeypatch.setattr(M.TP, "numeric_context", lambda: {"threads": 8})
     receipt = R.execute("fit-classification", ctx, out, step=39237, dataset="ninapro_db2", view="pre", folds=[0, 1])
     assert set(receipt["artifacts"]) == {"probe", "oof", "audit"}
     report, oof = M._read_pinned_report(receipt["artifacts"]["probe"])
     assert report["fold_indices"] == receipt["fold_indices"] == [0, 1] and len(report["fit_audit"]) == 14
     assert len(oof["row"]) == 24 and receipt["global_resource_gate_passed"]
+    assert receipt["historical_numeric_match"]["exact_match"] is True
+    assert report["numeric_sha256"] == receipt["historical_numeric_match"]["historical_numeric_sha256"]
 
 
 def test_receipt_requires_same_reviewed_recipe_and_source(tmp_path):
@@ -206,6 +289,8 @@ def test_receipt_requires_same_reviewed_recipe_and_source(tmp_path):
 
 def test_benchmark_manifest_checks_all_receipt_pins_and_same_reviewed_recipe(tmp_path, monkeypatch):
     ctx, values, pins = context(tmp_path), measurements(), {}
+    monkeypatch.setattr(R, "_historical", lambda ctx: ({}, {}))
+    monkeypatch.setattr(R, "_historical_numeric", lambda ctx, historical: historical_numeric())
     for ds in M.DATASETS:
         pins[ds] = {}
         for view in M.VIEWS:

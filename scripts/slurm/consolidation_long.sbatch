@@ -19,7 +19,24 @@ module purge
 module load profile/deeplrn
 module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
-export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+# Set numeric threads before importing any scientific module. The historical
+# extraction uses one thread; both historical CPU readers use eight. Summary
+# has only two allocated CPUs and does not fit a reader.
+NUMERIC_THREADS=$(python3 - "$@" <<'THREAD_POLICY'
+import argparse
+threads = {
+    'extract-classification': 1, 'extract-pose-train': 1, 'extract-pose-val': 1,
+    'benchmark-classification': 8, 'benchmark-pose': 8,
+    'fit-classification': 8, 'fit-pose': 8,
+    'compare-classification': 8, 'compare-pose': 8, 'summary': 1,
+}
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('--stage', required=True, choices=threads)
+args, _ = parser.parse_known_args()
+print(threads[args.stage])
+THREAD_POLICY
+)
+export OMP_NUM_THREADS="$NUMERIC_THREADS" OPENBLAS_NUM_THREADS="$NUMERIC_THREADS" MKL_NUM_THREADS="$NUMERIC_THREADS"
 python3 - "$@" <<'PY'
 import sys,os,json,subprocess
 from pathlib import Path
@@ -44,6 +61,7 @@ if policy['gpus']:
  import torch
  if torch.cuda.device_count()!=1:raise SystemExit('one GPU required')
 elif 'gres/gpu=' in info:raise SystemExit('CPU stage must not allocate GPUs')
-print(json.dumps({'event':'allocation_accepted','stage':args.stage,'allocation':policy}),flush=True)
+print(json.dumps({'event':'allocation_accepted','stage':args.stage,'allocation':policy,
+                  'numeric_threads':int(os.environ['OMP_NUM_THREADS'])}),flush=True)
 PY
 exec python3 scripts/consolidation_long.py "$@"

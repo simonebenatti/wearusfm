@@ -1,9 +1,11 @@
 {
   "protocol": "consolidation-long-evaluation-20261105-v1",
-  "status": "awaiting_claude_review",
+  "status": "awaiting_claude_rereview",
   "review": {
-    "status": "awaiting_claude_review",
-    "commit": null
+    "status": "awaiting_claude_rereview",
+    "commit": null,
+    "previous_review_commit": "e2753cde2a8af0d78e01daa0ff7dc54652637228",
+    "previous_review_verdict": "not converged; R-1/R-2 corrections submitted for second pass"
   },
   "doses": [
     19618,
@@ -319,7 +321,7 @@
     "cpus": 8,
     "memory_gib": 30,
     "memory_fraction": 0.85,
-    "blas_threads": 1,
+    "blas_threads": 8,
     "fixed_folds_by_dataset": {
       "ninapro_db2": [
         [
@@ -394,7 +396,8 @@
     "fit_floor": "project_fit_seconds(max_depth_statistics_and_eigensystems, n_readers=2, safety_factor=2, fixed_seconds=0)",
     "other_work": "2 * (read_validate * (1+r) + fixed_alpha_fit + predict * r + summary * r + E2_pairing * r**2 + bootstrap_diagnostic * r + artifact_write * r) + 120; r=18548/1907",
     "memory_projection": "max_RSS_bytes * (18548/1907)",
-    "data_policy": "train payload only; held cache/reference payload is never opened, hashed or scored"
+    "data_policy": "train payload only; held cache/reference payload is never opened, hashed or scored",
+    "blas_threads": 8
   },
   "resources": {
     "extract": {
@@ -476,7 +479,31 @@
     "same_scientific_source_sha256_required": true,
     "pins_published_before_each_phase": true,
     "max_outstanding_cpu_jobs_for_entire_user": 8,
-    "cpu_gate": "all forty classification cells pass before any classification fit; pose gate separately; failed phase has no automatic retry"
+    "cpu_gate": "all forty classification cells / forty-eight fixed shards pass before any classification fit; pose gate separately; failed phase has no automatic retry",
+    "source_change_policy": {
+      "choice": "R-2(i): exact source identity, no cross-source cache reuse",
+      "frozen_paths": [
+        "src/**/*.py",
+        "scripts/*.py",
+        "scripts/slurm/consolidation_long.sbatch",
+        "scripts/slurm/lib_code_dir.sh"
+      ],
+      "freeze_period": "before first extraction checkout through chain completion; unrelated FT15 source development on separate branch/worktree",
+      "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
+      "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
+      "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
+      "additional_extraction_gpu_hours_cap": 9.0,
+      "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
+      "additional_cost_in_current_cap": false,
+      "repeat_authorized": false
+    },
+    "numeric_thread_policy": {
+      "extraction": 1,
+      "classification_cpu": 8,
+      "pose_cpu": 8,
+      "summary": 1,
+      "classification_baseline_comparison": "exact numeric_sha256 equality with both pinned historical P1/P2 reports; mismatch stops execution"
+    }
   },
   "retention": {
     "persistent_outputs": "WORK",
@@ -489,7 +516,8 @@
       "path": "results/infra/consolidation_long_20261105/historical_artifacts_verification.json",
       "sha256": "38737c92af8a0b0d4f051a44b8604f7437a61c11f33330b52586f725d2afdf60",
       "bytes": 6009
-    }
+    },
+    "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback"
   },
   "failure_policy": {
     "no_requeue": true,
@@ -511,6 +539,6 @@
     },
     "use": "paired T25-L minus B19618 context remains descriptive; not a universal noise floor"
   },
-  "source_sha256": "2ab63f44c330f94c7902820f7758e0befc3bef1ad1aee37f615db0f60198923c",
+  "source_sha256": "010352c65d139c03651a876fa883d185666aab1acb7444dc898bd196b3b95a66",
   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422"
 }

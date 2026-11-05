@@ -26,7 +26,7 @@ BENCHMARK_POLICY = {
     "safety_factor": 3.0, "data_and_prediction_multiplier": 1.5,
     "fixed_seconds_per_job": 600.0, "memory_multiplier": 3.0,
     "max_projected_seconds": 13800.0, "walltime_seconds": 14400,
-    "cpus": 8, "memory_gib": 30, "memory_fraction": .85, "blas_threads": 1,
+    "cpus": 8, "memory_gib": 30, "memory_fraction": .85, "blas_threads": 8,
     "fixed_folds_by_dataset": {ds: [[0, 1], [2, 3]] if ds == "ninapro_db2" else [[0, 1, 2, 3]] for ds in M.DATASETS},
     "max_projected_seconds_by_dataset": {ds: 13800.0 for ds in M.DATASETS},
     "walltime_seconds_by_dataset": {ds: 14400 for ds in M.DATASETS},
@@ -41,12 +41,13 @@ def _policy(ctx):
     return BENCHMARK_POLICY
 
 
-def _threads():
-    C.require(all(os.environ.get(k) == "1" for k in
+def _threads(expected=8):
+    C.require(expected in (1, 8) and all(os.environ.get(k) == str(expected) for k in
                   ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")),
-              "classification requires one BLAS/OpenMP thread")
+              "classification BLAS/OpenMP threads differ from the historical phase")
     numeric = M.TP.numeric_context()
-    C.require(all(p["num_threads"] == 1 for p in numeric["threadpools"]), "active numeric thread count differs")
+    C.require(numeric["threadpools"] and all(p["num_threads"] == expected for p in numeric["threadpools"]),
+              "active numeric thread count differs")
     return numeric
 
 
@@ -63,17 +64,45 @@ def _historical_reports(ctx, task):
     return pins if isinstance(pins, list) else [pins]
 
 
+def _historical_report(ctx, pin, task, historical):
+    """Verify a pinned report header without opening its held predictions."""
+    r = C.read_pin(pin)
+    C.require(r.get("complete") is True and r.get("protocol") == M.TP.PROTOCOL
+              and r.get("kind") in ("aggregate", "shard") and r.get("step") == 19618
+              and r.get("arm") == "T100-G" and r.get("task") == task
+              and r.get("recipe") == M.TP.recipe()
+              and r.get("plan_content_sha256") == M.jhash(historical), "historical timing source differs")
+    C.require(M.jhash(r["numeric_context"]) == r["numeric_sha256"], "historical numeric identity differs")
+    return r
+
+
+def _historical_numeric(ctx, historical):
+    reports, signatures = {}, set()
+    for task in M.TASKS:
+        pins = _historical_reports(ctx, task)
+        C.require(pins, "missing historical numeric reference")
+        reports[task] = pins
+        for pin in pins:
+            r = _historical_report(ctx, pin, task, historical)
+            signatures.add(r["numeric_sha256"])
+    C.require(len(signatures) == 1, "mixed historical P1/P2 numeric environments")
+    return {"numeric_sha256": next(iter(signatures)), "reports": reports}
+
+
+def _numeric_match(numeric, historical_numeric):
+    current = M.jhash(numeric)
+    C.require(current == historical_numeric["numeric_sha256"],
+              "new/historical classification numeric environment differs")
+    return {"numeric_sha256": current, "historical_numeric_sha256": historical_numeric["numeric_sha256"],
+            "exact_match": True, "historical_reports": historical_numeric["reports"]}
+
+
 def _historical_timing(ctx, dataset, historical):
     """Read archived fit costs, never evaluate historical held/validation scores."""
-    task, records, sources = M._task(dataset), [], []
+    task, records, sources, signatures = M._task(dataset), [], [], set()
     for pin in _historical_reports(ctx, task):
-        r = C.read_pin(pin)
-        C.require(r.get("complete") is True and r.get("protocol") == M.TP.PROTOCOL
-                  and r.get("kind") in ("aggregate", "shard") and r.get("step") == 19618
-                  and r.get("arm") == "T100-G" and r.get("task") == task
-                  and r.get("recipe") == M.TP.recipe()
-                  and r.get("plan_content_sha256") == M.jhash(historical), "historical timing source differs")
-        C.require(M.jhash(r["numeric_context"]) == r["numeric_sha256"], "historical numeric identity differs")
+        r = _historical_report(ctx, pin, task, historical)
+        signatures.add(r["numeric_sha256"])
         audit = C.pinned({"path": r["audit"], "sha256": r["audit_sha256"]})
         entries = [json.loads(line) for line in audit.read_text().splitlines()]
         C.require(r["audit_summary"] == M.TP.audit_summary(entries), "historical timing audit differs")
@@ -83,6 +112,7 @@ def _historical_timing(ctx, dataset, historical):
         records.extend(v for v in entries if v["dataset"] == dataset)
         sources.append(pin)
     C.require(len(records) == 28, "historical timing lacks complete four-fold grid")
+    C.require(len(signatures) == 1, "mixed historical timing numeric environments")
     folds = []
     for f in range(4):
         values = [r for r in records if r["fold"] == f]
@@ -98,6 +128,7 @@ def _historical_timing(ctx, dataset, historical):
         folds.append({"fold": f, "fit_seconds": sum(r["elapsed_s"] for r in values),
                       "train_rows": values[0]["n_train"], "classes": len(values[0]["classes"])})
     return {"dataset": dataset, "folds": folds, "reports": sources,
+            "numeric_sha256": next(iter(signatures)),
             "scope": "archived completed fitting elapsed times only; no validation or held scoring"}
 
 
@@ -151,7 +182,13 @@ def resource_gate(reports, policy=BENCHMARK_POLICY):
         for view in M.VIEWS:
             item, bench = references[view], references[view]["benchmark"]
             _check_benchmark(bench, ds, view)
-            numeric.add(M.jhash(bench["numeric_context"]))
+            signature = M.jhash(bench["numeric_context"])
+            numeric.add(signature)
+            C.require(item["historical_timing"]["numeric_sha256"] == signature
+                      and item["historical_numeric_match"]["numeric_sha256"] == signature
+                      and item["historical_numeric_match"]["historical_numeric_sha256"] == signature
+                      and item["historical_numeric_match"]["exact_match"] is True,
+                      "benchmark/historical classification numeric environment differs")
             C.require(np.isfinite(item["peak_rss_bytes"]) and item["peak_rss_bytes"] > 0,
                       "invalid benchmark memory measurement")
             C.require(item["historical_timing"]["dataset"] == ds
@@ -212,6 +249,8 @@ def _benchmarks(ctx):
     manifest = C.read_pin(ctx["plan"]["benchmark_receipts"]["classification"])
     C.require(set(manifest["reports"]) == set(M.DATASETS), "benchmark manifest lacks datasets")
     reports = {}
+    historical, _ = _historical(ctx)
+    reference = _historical_numeric(ctx, historical)
     for ds in M.DATASETS:
         C.require(set(manifest["reports"][ds]) == set(M.VIEWS), "benchmark manifest lacks views")
         reports[ds] = {}
@@ -220,6 +259,8 @@ def _benchmarks(ctx):
             report = C.read_pin(manifest["reports"][ds][view])
             _receipt(ctx, report, "benchmark-classification")
             C.require(report["policy"] == _policy(ctx), "benchmark receipt policy differs")
+            C.require(report["historical_numeric_match"] == _numeric_match(report["benchmark"]["numeric_context"], reference),
+                      "benchmark historical numeric evidence differs")
             C.require(report["benchmark"]["cache_sha256"] == expected["sha256"]
                       and report["benchmark"]["checkpoint_sha256"] == expected["checkpoint_sha256"],
                       "benchmark receipt cache/checkpoint differs")
@@ -242,6 +283,7 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     if stage == "extract-classification":
         C.require(step in M.DOSES and task in M.TASKS and dataset is None and view is None and folds is None,
                   "extraction requires one task and dose")
+        _threads(1)
         historical, old = _historical(ctx)
         split_pin = ctx["legacy"]["inputs"]["splits"]
         splits = C.read_pin(split_pin)
@@ -264,8 +306,9 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     if stage == "benchmark-classification":
         C.require(step == 19618 and dataset in M.DATASETS and view in M.VIEWS and task is None and folds is None,
                   "benchmark requires one dataset/view at19618")
-        _threads()
+        numeric = _threads()
         entry, expected, historical, _ = _cache(ctx, step, dataset)
+        match = _numeric_match(numeric, _historical_numeric(ctx, historical))
         timing = _historical_timing(ctx, dataset, historical)
         report = C.begin_output(ctx, out, stage, dataset=dataset, view=view, checkpoint_step=step,
                                 checkpoint_sha256=expected["checkpoint_sha256"])
@@ -273,8 +316,11 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
         bench = M.benchmark_cache(expected["path"], view, expected=expected)
         peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         peak_bytes = int(peak if sys.platform == "darwin" else peak*1024)
-        _threads()
+        C.require(M.jhash(_threads()) == match["numeric_sha256"]
+                  and M.jhash(bench["numeric_context"]) == match["numeric_sha256"],
+                  "numeric environment changed during benchmark")
         return C.finish_output(ctx, out, {**report, "policy": BENCHMARK_POLICY, "benchmark": bench,
+            "historical_numeric_match": match,
             "historical_timing": timing, "extraction_receipt": entry["receipt"],
             "peak_rss_bytes": peak_bytes, "elapsed_seconds": time.perf_counter()-start,
             "artifacts": {}})
@@ -286,21 +332,28 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
         chosen = registered[0] if folds is None else folds
         C.require(chosen in registered and all(type(f) is int for f in chosen), "unregistered fit fold shard")
         numeric = _threads()
+        historical, _ = _historical(ctx)
+        match = _numeric_match(numeric, _historical_numeric(ctx, historical))
         gate = resource_gate(_benchmarks(ctx), _policy(ctx))
         C.require(gate["all_passed"], "classification matrix resource gate failed; reviewed resource amendment required")
         C.require(M.jhash(numeric) == gate["numeric_sha256"], "fit/benchmark numeric environment differs")
         entry, expected, _, _ = _cache(ctx, step, dataset)
         report = C.begin_output(ctx, out, stage, dataset=dataset, view=view, fold_indices=chosen, checkpoint_step=step,
                                 checkpoint_sha256=expected["checkpoint_sha256"])
-        M.fit_cache(expected["path"], view, out / "probe.json", expected=expected,
+        probe = M.fit_cache(expected["path"], view, out / "probe.json", expected=expected,
                     identity={"code_sha": ctx["code_sha"], "plan_sha256": ctx["plan_pin"]["sha256"]}, folds=chosen)
-        C.require(M.jhash(_threads()) == gate["numeric_sha256"], "numeric environment changed during fit")
+        C.require(M.jhash(_threads()) == gate["numeric_sha256"] == probe["numeric_sha256"],
+                  "numeric environment changed during fit")
         artifacts = {"probe": C.file_pin(out/"probe.json"), "oof": C.file_pin(out/"probe.oof.npz"),
                      "audit": C.file_pin(out/"probe.audit.jsonl")}
         return C.finish_output(ctx, out, {**report, "artifacts": artifacts, "extraction_receipt": entry["receipt"],
+            "historical_numeric_match": match,
             "benchmark_manifest": ctx["plan"]["benchmark_receipts"]["classification"],
             "resource_gate": gate["shards"][shard_key(step, view, dataset, chosen)], "global_resource_gate_passed": True})
     C.require(all(value is None for value in (step, task, dataset, view, folds)), "comparison takes only pinned manifests")
+    _threads()
+    historical, old = _historical(ctx)
+    reference = _historical_numeric(ctx, historical)
     manifest = C.read_pin(ctx["plan"]["classification_fit_manifest"])
     probes, numeric = [], set()
     for pin in manifest["reports"]:
@@ -309,6 +362,8 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
         for artifact in r["artifacts"].values():
             C.pinned(artifact)
         probe = C.read_pin(r["artifacts"]["probe"])
+        C.require(r["historical_numeric_match"] == _numeric_match(probe["numeric_context"], reference),
+                  "fit historical numeric evidence differs")
         C.require(probe["dataset"] in M.DATASETS and probe["view"] in M.VIEWS
                   and probe["fold_indices"] in BENCHMARK_POLICY["fixed_folds_by_dataset"][probe["dataset"]]
                   and not (probe["step"] == 19618 and probe["view"] == "pool"), "unregistered fit receipt cell/shard")
@@ -328,7 +383,6 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     by_dose = {s: {ds: _cache(ctx, s, ds)[1] for ds in M.DATASETS} for s in M.DOSES}
     cache_pins = {M.cell_name(s, v): by_dose[s]
                   for s in M.DOSES for v in M.VIEWS}
-    historical, old = _historical(ctx)
     reports = [_historical_reports(ctx, t) for t in M.TASKS]
     report = C.begin_output(ctx, out, stage)
     result = M.compare_reports(probes, cache_pins=cache_pins, historical_report_pins=reports,
@@ -336,4 +390,5 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
         historical_baseline_policy=ctx["plan"]["classification_baseline_policy"], out=out/"comparison.json",
         identity={"code_sha": ctx["code_sha"], "plan_sha256": ctx["plan_pin"]["sha256"]})
     return C.finish_output(ctx, out, {**report, "artifacts": {"comparison": C.file_pin(out/"comparison.json")},
+                                    "historical_numeric_match": result["numeric_comparison"],
                                     "reading": result["reading"]})

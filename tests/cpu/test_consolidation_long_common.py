@@ -3,12 +3,38 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+import subprocess
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT/'src'), str(ROOT/'scripts')]
 import consolidation_long_common as C
+
+
+@pytest.mark.parametrize('stage,expected', [
+    ('extract-classification', 1), ('extract-pose-train', 1), ('extract-pose-val', 1),
+    ('benchmark-classification', 8), ('benchmark-pose', 8), ('fit-classification', 8),
+    ('fit-pose', 8), ('compare-classification', 8), ('compare-pose', 8), ('summary', 1),
+])
+def test_launcher_configures_historical_threads_before_scientific_imports(stage, expected):
+    text = (ROOT/'scripts/slurm/consolidation_long.sbatch').read_text()
+    policy = text.split("<<'THREAD_POLICY'\n", 1)[1].split('\nTHREAD_POLICY\n', 1)[0]
+    result = subprocess.run([sys.executable, '-c', policy, '--stage', stage, '--out', '/unused'],
+                            check=True, capture_output=True, text=True)
+    assert result.stdout.strip() == str(expected)
+    assert text.index('export OMP_NUM_THREADS="$NUMERIC_THREADS"') < text.index('from consolidation_long import parser')
+    key = ('summary' if stage == 'summary' else 'extract' if stage.startswith('extract')
+           else '_'.join(reversed(stage.split('-'))))
+    allocation = C.RESOURCE_POLICY[key]
+    assert expected <= allocation['cpus']
+
+
+def test_launcher_rejects_unregistered_thread_stage_before_imports():
+    text = (ROOT/'scripts/slurm/consolidation_long.sbatch').read_text()
+    policy = text.split("<<'THREAD_POLICY'\n", 1)[1].split('\nTHREAD_POLICY\n', 1)[0]
+    result = subprocess.run([sys.executable, '-c', policy, '--stage', 'unexpected'], capture_output=True, text=True)
+    assert result.returncode != 0 and not result.stdout.strip()
 
 
 def test_receipt_binds_durable_reference(monkeypatch):
@@ -73,6 +99,22 @@ def test_json_writer_refuses_nan_and_overwrite(tmp_path):
     with pytest.raises(ValueError):C.write_json(tmp_path/'bad.json',{'x':float('nan')})
     p=tmp_path/'ok.json';C.write_json(p,{'x':1})
     with pytest.raises(FileExistsError):C.write_json(p,{'x':2})
+
+
+def test_extraction_cannot_be_reused_after_source_amendment_with_same_recipe_and_checkpoint(monkeypatch):
+    ctx = {'source_sha256': 'old-source', 'plan': {'recipe_sha256': 'recipe',
+            'endpoints': {'19618': {'checkpoint': {'sha256': 'checkpoint'}}}}}
+    entry = {'receipt': {'path': 'receipt'}, 'cache': {'path': 'cache', 'sha256': 'cache-sha'}}
+    report = {'complete': True, 'source_sha256': 'old-source', 'recipe_sha256': 'recipe',
+              'checkpoint_step': 19618, 'kind': 'extract-pose-train', 'checkpoint_sha256': 'checkpoint',
+              'which': 'teacher', 'checkpoint_unchanged': True, 'frozen_teacher_unchanged': True,
+              'artifacts': {'cache': entry['cache']}}
+    monkeypatch.setattr(C, 'read_pin', lambda pin: report)
+    monkeypatch.setattr(C, 'pinned', lambda pin: pin)
+    assert C.verified_extraction(ctx, entry, 19618, 'extract-pose-train') is report
+    ctx['source_sha256'] = 'new-source'
+    with pytest.raises(ValueError, match='extraction receipt differs'):
+        C.verified_extraction(ctx, entry, 19618, 'extract-pose-train')
 
 
 def test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned():

@@ -1,6 +1,8 @@
 # Valutazione del lungo T100-G — pacchetto per Claude
 
-Stato: **implementato e testato, in attesa della review esterna di Claude**.
+Stato: **correzioni R-1/R-2 della review Claude e2753c, in attesa della rilettura**.
+La review `e2753cde2a8af0d78e01daa0ff7dc54652637228` non è una convergenza:
+nessun checkout delle estrazioni prima della chiusura esplicita dei rilievi.
 Incarico di Simone tramite coordinamento: completare questa valutazione, farla
 revisionare a Claude, poi lanciarla appena convergente. Il lancio della catena è
 già autorizzato; questa consegna al revisore non chiede un secondo consenso.
@@ -47,7 +49,9 @@ E2 sceglie i partner storici sui bersagli completi, poi valuta sul supporto
 comune crop6. Questa E2 è esplicitamente diversa dall'E2 storica a supporto
 intero; si riportano conteggi/hash del supporto, E_dyn, livello, correlazione,
 varianza predetta/target e gap E2. Nessuna scelta globale di un unico lettore
-posa: le proposte di riferimento restano per pannello, da convergere con Claude.
+posa: i due pannelli primari sono sempre riportati affiancati. Un eventuale
+disaccordo resta tale, senza scegliere il pannello favorevole. Disegno e
+lettura approvati dalla review e2753c; con15utenti held gli IC restano grossolani.
 
 Riutilizzo19k/pool: cache e OOF storiche T100-G, con hash e audit verificati;
 le nuove estrazioni19k devono rispettare identità degli input/ordine/supporto e
@@ -56,6 +60,17 @@ declared_historical_cache: tolleranza numerica non è identità delle nuove
 predizioni di sonda. Il riferimento è il cache/lettore storico nominato.
 Vengono anche registrati uguaglianza esatta e scarto di parità.
 I13artefatti storici sono stati riletti e verificati il05/11 alle16:11CET.
+
+**R-1, contesto numerico:** estrazioni con1thread; benchmark, fit e confronti
+di classificazione e posa con8thread, come i launcher storici della stessa
+fase. La sintesi JSON usa1thread entro le2CPU assegnate. OMP/MKL/OpenBLAS
+e i pool attivi sono verificati; le sonde nuove richiedono uguaglianza esatta
+del `numeric_sha256` con entrambi i report storici P1/P2 pinnati. Il confronto
+viene registrato nelle ricevute e nel report finale; una differenza blocca
+benchmark/fit/confronto, non viene accettata con una tolleranza. La posa
+verifica gli8thread e il medesimo ambiente fra il proprio benchmark e i fit;
+non si dichiara identico lo schema di ambiente della posa a quello delle sonde.
+Nessun refit19k/pool aggiuntivo: resta il riferimento storico dichiarato.
 
 Lettura V-R1: tutte le differenze, bootstrap appaiato per soggetto2000/seed20261102,
 1pp e non-inferiorità−1pp per classificazione,2% relativo di E_dyn per posa,
@@ -95,6 +110,11 @@ validation/held. Costo misurato più refit al costo del candidato più lento,
 scalato per righe/classi dei fold, con pavimento dai costi storici completi,
 ×3 e ×1,5 per dati/predizione, +600s per job. Memoria RSS×3 entro85% di30GiB.
 Tutti48shard devono passare prima di qualsiasi fit classificazione.
+La misura e il pavimento storico ora usano entrambi8thread. Manteniamo i
+48shard fissati: nessun passaggio facoltativo a72job o aumento del tetto.
+Il margine del pavimento è limitato (DB2 prima coppia circa1,25×, EPN1,33×
+rispetto ai tempi storici); un gate fallito ferma la fase, non autorizza a
+ridurre i margini, cambiare shard o ritoccare il runtime dopo le estrazioni.
 È una proiezione empirica, non una garanzia temporale su nuovi checkpoint.
 
 Benchmark posa: solo train19k, statistiche/eigensistemi, fit a alpha fisso,
@@ -120,9 +140,26 @@ Un solo owner, submitter scripts/submit_job.py e ledger comune.
 5. Registro in entrambe le sezioni, tabella, decisioni, consuntivo SLURM e review
    della lettura. Nessun giudizio finale su una matrice incompleta.
 
-Ogni fase usa lo stesso source_sha256 scientifico; i piani aggiornano soltanto
-pin reali e stati. Cambi del codice richiedono review pertinente e benchmark
-nuovo se cambia la fonte della misura. Nessuna modifica di checkout in uso.
+**R-2 / C-2, congelamento e invalidazione:** ogni fase usa esattamente lo
+stesso `source_sha256`; i piani aggiornano soltanto pin reali e stati.
+Da prima del primo checkout fino alla chiusura della catena, nessun commit
+del ramo di esecuzione modifica `src/**/*.py`, `scripts/*.py`,
+`scripts/slurm/consolidation_long.sbatch` o `scripts/slurm/lib_code_dir.sh`.
+Anche codice destinato a FT15 va sviluppato su un ramo/worktree separato e
+non integrato in questo ramo durante la catena. Documentazione, test e
+risultati possono essere registrati: non appartengono alla firma dei sorgenti.
+
+È scelta la regola R-2(i), non una nuova compatibilità delle cache. Un cambio
+di uno qualsiasi dei sorgenti coperti **invalida tutte le ricevute/cache di
+estrazione rispetto al nuovo codice**, anche se la modifica riguarda solo
+tempi, thread, shard o lettori. La catena si ferma. Non si riscrivono hash o
+ricevute e non si introducono elenchi di sorgenti alternativi accettati.
+Ripartire con codice modificato richiederebbe nuova review, piano con nuovi
+ID/output e ripetizione delle12estrazioni (fino a9GPUh aggiuntive, più checkout,
+benchmark e CPU da preventivare). Questa spesa **non è inclusa** nel tetto
+9GPUh/1711,666667coreh corrente e non è autorizzata automaticamente: serve una
+nuova decisione di Simone sulla ripetizione e sul preventivo completo.
+Nessuna modifica dei checkout già creati o dei run FT15 in corso.
 CPU a ondate, al massimo8job outstanding dell'intero utente; verificare la
 coda comune prima di ciascun invio per rispettare il limite seriale10.
 Le ricevute di prerequisiti già completati valgono anche dopo purge dell'ID
@@ -132,7 +169,13 @@ Artefatti stimati24GiB; prima estrazione richiede32GiB liberi in WORK.
 Prima di ogni invio: quota di progetto fresca≤1h, almeno8GiB di margine più
 la stima conservativa degli output ammessi ancora da scrivere; tenere conto
 dei job pending/running senza contare due volte byte già prodotti.
-È quota condivisa, nessuna prenotazione implicita. Nessun dato su SCRATCH come
+**C-1:** il controllo è dell'owner e non è automatizzato nel submitter. La
+quota si rilegge immediatamente prima del primo invio di estrazione, anche
+se esiste una lettura recente; sotto32GiB liberi non si invia nessuna
+estrazione. I33,59GiB rilevati da Claude alle19:22 del05/11 sono evidenza
+storica, non un via valido per il lancio. Nessuno spostamento implicito su
+SCRATCH o abbassamento della soglia. È quota condivisa, nessuna prenotazione
+implicita. Nessun dato su SCRATCH come
 unica copia scientifica nuova; nessun raw/NPZ/checkpoint in Git.
 
 TIMEOUT/OOM/errore/pin o gate fallito: conservare evidenze, fermare la fase,
@@ -150,3 +193,8 @@ il costo di scrittura/hash delle predizioni nel benchmark posa.
 Nessuna misura CUDA delle nuove viste e nessun benchmark nuovo eseguiti prima
 della review esterna. Gli SHA di checkpoint e degli artefatti storici sono reali;
 i pin futuri rimangono null e impediscono l'esecuzione delle fasi successive.
+La vista pre della posa è conservata in FP16 e controllata per finitezza;
+non è stata aggiunta una misura dell'errore di arrotondamento (nota N-1).
+Le verifiche della correzione R-1/R-2 sono riportate separatamente in
+results/infra/consolidation_long_20261105/rereview_validation.json; i190test
+sopra descrivono la consegna originale, non il conteggio della rilettura.
