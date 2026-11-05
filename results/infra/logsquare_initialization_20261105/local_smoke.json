@@ -1,16 +1,19 @@
 {
   "platform": "local Mac CPU only",
-  "replaces": "the smoke GPT recorded at 4d5a3ef for the five-context diagnostic; that record stays in git history",
+  "replaces": "the smoke recorded at b8689e1 for the delivery reviewed by GPT, and before it the one GPT recorded at 4d5a3ef; both stay in git history",
   "cuda_tested": false,
-  "code_sha": "b8689e18ba793bd2136e893b55155c2e8c4975c0",
+  "code_sha": "0d264f71cf359c9a0a6cdbfde8da88cde95eeb10",
   "code_identity_check": "real: clean committed checkout at code_sha, no bypass",
-  "local_plan": "copy of plan.json outside the repository with status APPROVED_FOR_DIAGNOSTIC, cuda_required false and rank_entry_timeout_seconds 60; every pin read from the repository, 102 scientific sources validated",
+  "local_plan": "copy of plan.json outside the repository with status APPROVED_FOR_DIAGNOSTIC, cuda_required false and rank_entry_timeout_seconds 120; every pin read from the repository, 102 scientific sources validated",
   "production_plan_status": "REVIEW_REQUIRED unchanged",
   "real_models_in_fresh_processes": true,
-  "report_sha256": "b988dd94d57a8b5e54c493116c3676084e53ad9b7c901feacc028da427b4055f",
+  "report_sha256": "d67b3c4446179a989740e6a0e64781b576fb159d526d5b6fdf87e4dc0c7ba6e9",
   "complete": false,
   "exit_status": 1,
-  "expected_locally": "incomplete by construction. The five construction contexts run; this platform builds other tensors than the cluster, so diagnostic and guard both report a difference beyond the gain, coherently. rank_entry_torchrun cannot run here: torchrun --standalone does not start on this machine and the production arguments point to cluster files. Its process tree was killed at the bound and the report says so. The controller pre-check of that context ran on the real model and was refused with the new diagnostic message.",
+  "seconds": 97,
+  "processes_left_after_the_run": 0,
+  "checkout_clean_after_the_run": true,
+  "expected_locally": "incomplete by construction. The five construction contexts run; this platform builds other tensors than the cluster, so diagnostic and guard both report a difference beyond the gain, coherently. rank_entry_torchrun cannot run here: torchrun --standalone does not start on this machine and the production arguments point to cluster files. Its bound expired; SIGTERM to the launcher alone ended it, nothing was killed and nothing survived, and the report keeps the error and the ends of the output files. The controller pre-check of that context ran on the real model and was refused with the diagnostic message.",
   "reading": {
     "computable": false,
     "reason": "ValueError: failed contexts: rank_entry_torchrun",
@@ -52,6 +55,17 @@
           "classification": "tensor_difference_beyond_gain",
           "passed": false
         }
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 75,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.029
       }
     },
     "preflight": {
@@ -85,6 +99,17 @@
           "classification": "tensor_difference_beyond_gain",
           "passed": false
         }
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 75,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.029
       }
     },
     "trainer": {
@@ -118,6 +143,17 @@
           "classification": "tensor_difference_beyond_gain",
           "passed": false
         }
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 75,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.029
       }
     },
     "trainer_rank0": {
@@ -151,6 +187,17 @@
           "classification": "tensor_difference_beyond_gain",
           "passed": false
         }
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 75,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.026
       }
     },
     "controller_threads1": {
@@ -184,13 +231,57 @@
           "classification": "tensor_difference_beyond_gain",
           "passed": false
         }
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 75,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.029
       }
     },
     "rank_entry_torchrun": {
       "process_returncode": 1,
       "error": "torchrun timed out",
-      "torchrun_returncode": -9,
+      "cleanup_error": null,
+      "torchrun_returncode": -15,
       "torchrun_timed_out": true,
+      "torchrun_bound_seconds": 83.781,
+      "torchrun_supervision": {
+        "forced": true,
+        "timed_out": true,
+        "bound_seconds": 83.781,
+        "terminated": [
+          "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python"
+        ],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 1,
+        "cleanup_seconds": 0.22
+      },
+      "supervision": {
+        "forced": false,
+        "timed_out": false,
+        "bound_seconds": 120,
+        "terminated": [],
+        "killed": [],
+        "survivors": [],
+        "process_table_unavailable": false,
+        "observed_processes": 49,
+        "cleanup_seconds": 0.028
+      },
+      "supervision_note": "observed_processes of the parent counts every process of the context, including the process-table readers its child started while it waited for torchrun",
+      "output_tails_kept_in_report": {
+        "rank_entry_torchrun.stdout": 0,
+        "rank_entry_torchrun.stderr": 0,
+        "rank_entry_torchrun.torchrun.stdout": 0,
+        "rank_entry_torchrun.torchrun.stderr": 2517
+      },
       "attestation": {
         "passed": false,
         "reason": "missing initial-state record of rank 0"
