@@ -67,3 +67,16 @@ tutti3split. Memoria host32,386GiB e GPU6,584GiB valide. Preventivo24fit
 Nessun blocco al pin, pubblicazione e secondo checkout. Prima dei fit restano
 verifica checkout, quota fresca, assenza duplicati/output e dipendenzeC1→C0.
 Nessuna SSH, modifica o sottomissione del critico; ownerGPT esegue.
+
+## Audit indipendente delle 24 sottomissioni
+
+Sola lettura locale su ricevute e ledger canonico: nessun rilievo.
+24ID logici/24SLURM unici,12afterok esatti C1→proprioC0, CODE_DIR e
+EXPECTED_SHA1359b924 coerenti, launcher/output/allocazioni e tetto fit
+304GPUh/2432coreh corretti. Checkout immutabile e pin verificati; quota
+35,23GiB con evidenza fresca per tutti gli invii. SHA e contenuti delle
+24ricevute coincidono con il ledger salvo le redazioni dello stderr dichiarate;
+una sola sequenza prenotato→in_sottomissione→sottomesso per ID, nessun retry.
+I due percorsi del submitter contengono gli stessi byte (814da4bc…).
+Snapshot delle13:15:17CET:12RUNNING/12PENDING per dipendenza; il critico
+ha letto lo snapshot, senza eseguire una nuova SSH. Nessuna azione sui job.

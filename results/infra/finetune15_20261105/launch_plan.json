@@ -1,13 +1,13 @@
 {
   "protocol": "finetune15-launch-plan-20261105-v1",
-  "status": "all_regime_gates_passed_pending_fit_checkout",
+  "status": "all_24_fits_submitted",
   "campaign": "finetune15-20261105",
   "owner": "gpt",
   "submitter": "scripts/submit_job.py",
   "ledger": "~/wearusfm_local/jobs",
   "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
   "no_submission_before_external_review": true,
-  "runtime_code_sha": null,
+  "runtime_code_sha": "1359b924d25601f92e9035b8bd621c2c6a93f947",
   "benchmark_code_sha": "02f3de8547e0e50ee8d66f6ea43a356518c18e70",
   "benchmark": {
     "id": "FT15-BENCH-20261105",
@@ -33,7 +33,7 @@
     "id": "FT15-checkout-fits-20261105",
     "checkout_campaign": "finetune15-fits-20261105",
     "precondition": "new benchmark complete0:0; report/hash/source/recipe/input/checkpoint verified; pin + measured resource projection published and remote SHA verified; ALL THREE regime gates must pass before any fit",
-    "slurm_job_id": null
+    "slurm_job_id": 63581502
   },
   "checkout_allocation_each": {
     "cpus_requested": 1,
@@ -68,7 +68,7 @@
         "frozen",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581664
     },
     {
       "id": "FT15-EPN-frozen-F0-20261105-C1",
@@ -97,7 +97,7 @@
         "frozen",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581670
     },
     {
       "id": "FT15-EPN-frozen-F1-20261105-C0",
@@ -124,7 +124,7 @@
         "frozen",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581672
     },
     {
       "id": "FT15-EPN-frozen-F1-20261105-C1",
@@ -153,7 +153,7 @@
         "frozen",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581673
     },
     {
       "id": "FT15-EPN-frozen-F2-20261105-C0",
@@ -180,7 +180,7 @@
         "frozen",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581674
     },
     {
       "id": "FT15-EPN-frozen-F2-20261105-C1",
@@ -209,7 +209,7 @@
         "frozen",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581677
     },
     {
       "id": "FT15-EPN-frozen-F3-20261105-C0",
@@ -236,7 +236,7 @@
         "frozen",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581682
     },
     {
       "id": "FT15-EPN-frozen-F3-20261105-C1",
@@ -265,7 +265,7 @@
         "frozen",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581713
     },
     {
       "id": "FT15-EPN-finetune-F0-20261105-C0",
@@ -292,7 +292,7 @@
         "finetune",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581718
     },
     {
       "id": "FT15-EPN-finetune-F0-20261105-C1",
@@ -321,7 +321,7 @@
         "finetune",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581725
     },
     {
       "id": "FT15-EPN-finetune-F1-20261105-C0",
@@ -348,7 +348,7 @@
         "finetune",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581735
     },
     {
       "id": "FT15-EPN-finetune-F1-20261105-C1",
@@ -377,7 +377,7 @@
         "finetune",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581741
     },
     {
       "id": "FT15-EPN-finetune-F2-20261105-C0",
@@ -404,7 +404,7 @@
         "finetune",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581742
     },
     {
       "id": "FT15-EPN-finetune-F2-20261105-C1",
@@ -433,7 +433,7 @@
         "finetune",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581745
     },
     {
       "id": "FT15-EPN-finetune-F3-20261105-C0",
@@ -460,7 +460,7 @@
         "finetune",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581750
     },
     {
       "id": "FT15-EPN-finetune-F3-20261105-C1",
@@ -489,7 +489,7 @@
         "finetune",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581751
     },
     {
       "id": "FT15-EPN-scratch-F0-20261105-C0",
@@ -516,7 +516,7 @@
         "scratch",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581768
     },
     {
       "id": "FT15-EPN-scratch-F0-20261105-C1",
@@ -545,7 +545,7 @@
         "scratch",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581837
     },
     {
       "id": "FT15-EPN-scratch-F1-20261105-C0",
@@ -572,7 +572,7 @@
         "scratch",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63581887
     },
     {
       "id": "FT15-EPN-scratch-F1-20261105-C1",
@@ -601,7 +601,7 @@
         "scratch",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63582180
     },
     {
       "id": "FT15-EPN-scratch-F2-20261105-C0",
@@ -628,7 +628,7 @@
         "scratch",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63582244
     },
     {
       "id": "FT15-EPN-scratch-F2-20261105-C1",
@@ -657,7 +657,7 @@
         "scratch",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63582253
     },
     {
       "id": "FT15-EPN-scratch-F3-20261105-C0",
@@ -684,7 +684,7 @@
         "scratch",
         "0"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63582258
     },
     {
       "id": "FT15-EPN-scratch-F3-20261105-C1",
@@ -713,7 +713,7 @@
         "scratch",
         "1"
       ],
-      "slurm_job_id": null
+      "slurm_job_id": 63582269
     }
   ],
   "caps": {

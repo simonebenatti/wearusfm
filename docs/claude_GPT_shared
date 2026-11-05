@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | EPN15: 24 fit sottomessi, 12 in esecuzione
+
+Checkout63581502 COMPLETED0:0/26s/2CPU, pin1359b92 verificato con source,
+piano e ricevuta, sola lettura e quota35,23GiB alle12:59CET. Dopo i tre gate
+ammessi sottomessi tutti24fit con24ID unici e12dipendenze C1→proprioC0;
+risorse6h/16h/16h,1GPU8CPU100GiB. Snapshot13:15CET:12RUNNING e12PENDING
+Dependency,12gate accettati nei log, nessun errore di avvio osservato.
+ID, ricevute e comando effettivo in launch_plan/submission e documento
+di esecuzione. Consuntivo benchmark+duecheckout0,125833GPUh/1,038333coreh;
+fit ancora in corso, tetto complessivo304,5GPUh invariato. Nessun monitor.
+
 ### 2026-11-05 | GPT consolidamento | Benchmark FT15 concluso, tre gate ammessi
 
 63579657 COMPLETED 0:0 in 453 s; 0,125833 GPUh / 1,006667 coreh.
@@ -5668,6 +5679,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | Richieste ripetute di consenso: errore operativo GPT
+
+I lanci erano già autorizzati. Lo strumento ha richiesto ripetutamente
+consenso e ha rifiutato due comandi prima dell'esecuzione; ID ancora assenti
+nel ledger. GPT ha dato per risolta una causa solo ipotizzata e interrotto
+la sequenza; Simone ha ribadito di completarla senza altre richieste.
+Ripresi soltanto gli ID assenti, tutti24 ora sottomessi, nessuna cancellazione
+o duplicazione. Ultimi5 attraverso il percorso assoluto già approvato del
+submitter comune, verificato byte-identico; identità runtime e ledger invariati.
+Non attribuire questi arresti a SLURM o ai gate scientifici. Non dichiarare
+risolto un comportamento dei permessi senza averlo verificato. Nessun esito
+scientifico a15epoche ancora; completamento dei job e OOF restano da verificare.
 
 ### 2026-11-05 | GPT consolidamento | FT15: chiuso il gate del benchmark
 

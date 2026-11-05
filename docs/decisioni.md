@@ -6424,3 +6424,20 @@ consumato265,190278GPUh. Inclusi primo checkout reale e secondo al tetto,
 Nessuna modifica di ricetta o sorgenti scientifici. Dopo pubblicazione
 verificata: nuovo checkout immutabile, quota/duplicati/output e24fit con
 C1 dipendente dal proprioC0. Nessun altro consenso richiesto, nessun monitor.
+
+### 05/11/2026 — EPN15: matrice interamente sottomessa
+
+Checkoutfit63581502 COMPLETED0:0/26s/2CPU; codice1359b924d25601f92e9035b8bd621c2c6a93f947,
+piano8a07e975/source13de2f31/benchmark772bc487 verificati. Quota35,23GiB,
+output assenti e24ID liberi prima degli invii. Tutti24fit sottomessi con
+12dipendenze C1→proprioC0; alle13:15CET12RUNNING e12PENDING Dependency,
+12guardie accettate nei log, nessun errore di avvio osservato. Comandi,
+ID e ricevute in launch_plan e submission, elenco nel documento di esecuzione.
+
+Il consenso della catena era già acquisito. Le richieste ripetute dello
+strumento hanno interrotto due comandi prima del submitter; nessun job
+creato per quegli ID, nessun rifiuto SLURM. Simone ha ribadito di proseguire;
+ripresa dai soli ID assenti, senza cancellazioni o duplicati. Nessuna nuova
+scelta scientifica o modifica del tetto304,5GPUh/2436,667coreh. Consuntivo
+benchmark+duecheckout0,125833GPUh/1,038333coreh; fit ancora in corso.
+Nessun monitor automatico, nessuna terza dose o nuovo dataset lanciato.

@@ -85,3 +85,57 @@ iniziale reale e secondo checkout al tetto: 2.121,872778 core-ore. Tetto
 complessivo invariato 304,5 / 2.436,667. Quota alle 12:48 CET: 35,27 GiB liberi.
 Il runtime scientifico resta invariato: pubblicazione di questi pin e poi
 checkout nuovo per i 24 fit, con controllo finale di duplicati e output.
+
+## Matrice interamente sottomessa, verifica delle 13:15 CET
+
+Checkout fit **63581502 COMPLETED 0:0**, 26 s, 2 CPU allocate:
+0,014444 core-ore. SHA `1359b924d25601f92e9035b8bd621c2c6a93f947`,
+piano 8a07e975…, source 13de2f31…, ricevuta benchmark 772bc487…;
+checkout pulito e non scrivibile, nessun output preesistente o symlink nei
+genitori. Quota alle 12:59 CET: 35,23 GiB liberi, evidenza valida durante
+tutti gli invii; 24 ID logici inizialmente assenti.
+
+**24/24 fit sottomessi, 24 ID SLURM distinti, 12 dipendenze C1→proprio C0.**
+Stato SLURM alle 13:15:17 CET: **12 RUNNING / 12 PENDING Dependency**.
+Ogni job attivo ha 1 GPU, 8 CPU e 100 GiB; le 12 righe di accettazione del
+gate compaiono nei log, senza traceback o errori di avvio osservati.
+Queste sono verifiche operative, non esiti scientifici.
+
+| Regime | Fold | C0: RUNNING | C1: PENDING Dependency |
+|---|---:|---:|---:|
+| frozen | 0 | 63581664 | 63581670 |
+| frozen | 1 | 63581672 | 63581673 |
+| frozen | 2 | 63581674 | 63581677 |
+| frozen | 3 | 63581682 | 63581713 |
+| finetune | 0 | 63581718 | 63581725 |
+| finetune | 1 | 63581735 | 63581741 |
+| finetune | 2 | 63581742 | 63581745 |
+| finetune | 3 | 63581750 | 63581751 |
+| scratch | 0 | 63581768 | 63581837 |
+| scratch | 1 | 63581887 | 63582180 |
+| scratch | 2 | 63582244 | 63582253 |
+| scratch | 3 | 63582258 | 63582269 |
+
+Ricevute in `submission/`, controllo completo del ledger in
+`matrix_submission_verification.json`, stato/log in `matrix_status.json`.
+Sottomissioni tutte tramite submitter e ledger comune. Nessun job duplicato,
+annullato o risottomesso. Nessun monitor automatico.
+
+Durante gli invii lo strumento ha richiesto ripetutamente un consenso già
+acquisito e due comandi sono stati rifiutati prima di eseguire il submitter:
+gli ID corrispondenti erano assenti nel ledger, nessun rifiuto di SLURM.
+GPT ha dichiarato troppo presto risolta la causa delle richieste; la prima
+ipotesi sulla forma dei comandi non era stata verificata. Simone ha ribadito:
+«non voglio che fermi la sequenza, devi solo lanciare senza chiedrrmi e tutto corretto».
+Ripresa dai soli ID assenti. Per gli ultimi cinque invii è stato usato il
+percorso assoluto del submitter comune già presente fra i prefissi approvati,
+nel worktree science: verificato byte-identico a quello di consolidamento
+(SHA256 814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82).
+Lo SHA scientifico proviene da EXPECTED_SHA, invariato; stesso ledger.
+Non si deduce da questo una garanzia generale sul comportamento futuro dei
+dialoghi dell'app: il fatto verificato è l'accettazione di tutti i 24 invii.
+
+Consuntivo delle tre attività concluse (benchmark e due checkout):
+**0,125833 GPU-ore / 1,038333 core-ore**. I fit sono ancora in corso,
+quindi non esiste un consuntivo finale della matrice. Tetto autorizzato
+304,5 GPU-ore / 2.436,667 core-ore invariato; nessuna estensione automatica.
