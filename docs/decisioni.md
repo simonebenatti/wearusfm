@@ -6515,3 +6515,16 @@ controlla sulla partizione/QoSseriale: la colonnaQOSdel job riporta normal, ment
 la partizione applica lrd_all_serial. Non filtrare erroneamente soloQOS=serial
 nella colonna del job. Prossima lettura conserva ID63620780: non risottomettere.
 Al primo errore/TIMEOUT stop; primaUCI servono report e accountingEPN verificati.
+
+### 05/11/2026 — GPT scaling: EPN recupero in esecuzione, controllo20:41
+
+Su richiesta di Simone verificato63620780: RUNNING su login08,8CPU, avvio20:26:23;
+alle20:41:06 elapsed884s. Log iniziale coerente con runtimeaef e moduli congelati,
+nessun errore riportato. Snapshot originale pubblicato in cpu_recovery_20261105.
+UCI non ancora inviato, subordinato al completamento e accettazioneEPN.
+
+### 05/11/2026 — GPT scaling: RUNNING non è completamento del benchmark
+
+63620780 sta eseguendo il recupero; nessun report finale ancora presente alla
+lettura20:41. Nessuna stima nuova di convergenza o qualità del FM dal log iniziale.
+GateEPN→UCI e stop al primo errore restano invariati; nessun invio aggiuntivo.

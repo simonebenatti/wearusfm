@@ -79,7 +79,7 @@
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
   "cpu_actual_core_hours_completed_so_far": 22.027777777777782,
-  "last_checked_at": "2026-11-05T20:23:27+01:00",
+  "last_checked_at": "2026-11-05T20:41:06+01:00",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,7 +87,7 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "RECOVERY_EPN_PENDING_RESOURCES",
+  "status": "RECOVERY_EPN_RUNNING",
   "classification_benchmark_reports_complete": 13,
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 83,
@@ -122,10 +122,11 @@
       "dispatcher_receipt_hash_verified": true,
       "requested_core_hours": 16,
       "budget_core_hours_with_overtime": 16.4,
-      "slurm_state": "PENDING",
-      "reason": "Resources"
+      "slurm_state": "RUNNING",
+      "started_at": "2026-11-05T20:26:23+01:00",
+      "elapsed_seconds_observed": 884
     }
   ],
-  "recovery_running_jobs": 0,
-  "recovery_pending_jobs": 1
+  "recovery_running_jobs": 1,
+  "recovery_pending_jobs": 0
 }
