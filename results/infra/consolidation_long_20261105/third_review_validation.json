@@ -1,0 +1,115 @@
+{
+  "scope": "R-1b(B) incremental correction with actual Leonardo import measurements; C-1 remains unsatisfied at last observation",
+  "observed_at_utc": "2026-11-05T19:32:42.357464+00:00",
+  "base_code_commit": "e2f19ee1e474dd5ea7cca6d6f14df35d81c74b56",
+  "previous_claude_review_commit": "44cfa85fac79135b34990018f85a66bf45323d7f",
+  "claude_review_status": "awaiting_claude_rereview",
+  "source_sha256": "a2ff16087d06ff22c483b5702ffb10e94842a9919847cc8e1b3e49dee815956f",
+  "previous_source_sha256": "010352c65d139c03651a876fa883d185666aab1acb7444dc898bd196b3b95a66",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "recipe_unchanged": true,
+  "plan_sha256": "3bb834bb40067aff659b30c6dbfba8971fe2b2d0955eec0dc96d4830637d5bde",
+  "launch_plan_sha256": "bacdd054efba0b62b46b18483f95007b19a83909dab57c830d7d204c34169c3c",
+  "endpoint_pins_unchanged": true,
+  "compute_jobs": 82,
+  "phase_checkout_jobs": 4,
+  "job_definitions_and_caps_unchanged": true,
+  "caps": {
+    "gpu_hours": 9.0,
+    "allocated_core_hours": 1711.6666666666665,
+    "checkout_count": 4,
+    "checkout_each": {
+      "gpus": 0,
+      "cpus_requested": 1,
+      "cpus_accounting_cap": 2,
+      "memory_gib": 2,
+      "seconds": 600
+    },
+    "classification_fit_expected_core_hours_from_historical": 114.24,
+    "gpu_extraction_expected_hours_from_historical": 3.5933333333333333
+  },
+  "numeric_preflight": {
+    "path": "results/infra/consolidation_long_20261105/numeric_preflight_20261105.json",
+    "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
+    "bytes": 14374
+  },
+  "compatibility_policy": {
+    "name": "historical-libraries-plus-openmp8-v1",
+    "equal_fields": [
+      "python",
+      "numpy",
+      "scipy",
+      "sklearn",
+      "features_dtype"
+    ],
+    "historical_pools": "multiset inclusion with exact equality of all six fields",
+    "pool_fields": [
+      "internal_api",
+      "prefix",
+      "version",
+      "num_threads",
+      "architecture",
+      "threading_layer"
+    ],
+    "extra_pools": "only internal_api=openmp and integer num_threads=8",
+    "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+    "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+  },
+  "cluster_checks": {
+    "without_torch": {
+      "compatible": true,
+      "exact_match": true,
+      "numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "historical_numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "extra_threadpools": []
+    },
+    "with_torch": {
+      "compatible": true,
+      "exact_match": false,
+      "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "historical_numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "extra_threadpools": [
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libgomp",
+          "threading_layer": null,
+          "version": null
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libomp",
+          "threading_layer": null,
+          "version": null
+        }
+      ]
+    }
+  },
+  "cluster_probe_cpu_seconds_sum": 6.295807,
+  "cluster_probe_scope": "two readonly login-node import processes, same modules/venv/8threads as launcher; new helper evaluates captured contexts locally; not prediction equivalence or compute-node validation",
+  "quota_diagnostic": {
+    "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
+    "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
+    "bytes": 1138
+  },
+  "quota_gate_passed": false,
+  "fresh_quota_required_before_submission": true,
+  "validation": {
+    "tests_passed": 252,
+    "seconds": 10.56,
+    "same_ten_file_suite_as_rereview_validation": true,
+    "launcher_bash_n": true,
+    "git_diff_check": true
+  },
+  "new_jobs_submitted": 0,
+  "new_checkouts_created": 0,
+  "remote_files_changed": false,
+  "independent_review": {
+    "R-1b": "no residual defect found in incremental patch and real-context compatibility checks",
+    "C-1": "operational gate not satisfied by latest observation; no extraction permitted",
+    "external_Claude_third_review_still_required": true
+  }
+}

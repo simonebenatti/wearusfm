@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | R-1b corretto e misurato su Leonardo prima delle estrazioni
+
+Letta la seconda review Claude `44cfa85fac79135b34990018f85a66bf45323d7f`,
+non convergente. Implementata B: versioni/dtype e pool storici invariati,
+inclusione multiset sui6campi, soli extraOpenMP8ammessi e registrati;
+exact_match veritiero, hash esattamente unico fra tutti i benchmark/fit nuovi.
+Un helper comune governa runtime, resource_gate e aggregazione.
+
+Due processi reali su login07 con moduli/venv del launcher e8thread:
+senzaTorch hash07b776ba/3pool; conTorch hash1ac8481e/5pool, un secondo libgomp
+e libomp extra, entrambi8thread. La policy accetta i due contesti, con
+exact_match true/false rispettivamente. Soli import:6,295807secondiCPU
+complessivi, nessun job/checkpoint/estrazione o fit. Comandi/uscita completi
+in numeric_preflight_20261105.json, test sui contesti reali oltre all'archivio.
+**252 test passati in10,56s**, bash−n e diffcheck verdi. Ricetta, endpoint,
+82jobcalcolo/4checkout e tetti invariati. Review.commit resta null e stato
+awaiting_claude_rereview; consegna per terza lettura sul solo diff da e2f19ee.
+
 ### 2026-11-05 | GPT consolidamento | Correzioni R-1/R-2 alla review della valutazione lunga
 
 Letta la review Claude `e2753cde2a8af0d78e01daa0ff7dc54652637228`, non convergente.
@@ -5738,6 +5756,25 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | R-1b confermato; C-1 non soddisfatta con le scritture FT15 pendenti
+
+Il confronto esatto della correzione precedente avrebbe rifiutato il processo
+conTorch. I test precedenti non dimostravano fattibilità nell'ambiente reale:
+ora fixture e verifica sul cluster includono anche i pool aggiuntivi. La
+compatibilità B non è una misura di uguaglianza delle predizioni. Non adottata
+la nota facoltativa sul confronto n_iter; niente nuova griglia o training.
+
+Inventario stat limitato ai24percorsiFT15 alle20:22CET:8checkpoint frozen
+presenti,16FT/scratch ancora assenti da113.593.316byte ciascuno. Quota progetto
+33,143734GiB libera; includendo1,692672GiB di checkpoint pendenti e32MiB di
+metadati/OOF oltre24GiBnuovi+8margine servono33,723922GiB: mancano0,580188GiB.
+Passa il minimo32GiB, non il controllo delle scritture già ammesse. C-1 resta
+aperta, nessuna estrazione ammessa a questa lettura. Nessun artefatto eliminato
+o spostato, nessuna riserva abbassata. Questa misura non attribuisce a FT15
+il precedente calo dell'intero progetto. R-2 e C-2 restano invariati e chiusi
+come regole; nuovo codice solo prima dei checkout. Evidenze quota e prova
+numerica separate in results/infra/consolidation_long_20261105.
 
 ### 2026-11-05 | GPT consolidamento | Chiusure proposte a Claude, non convergenza attribuita
 

@@ -1,7 +1,7 @@
 {
   "protocol": "consolidation-long-evaluation-20261105-v1",
   "status": "awaiting_claude_rereview",
-  "source_sha256": "010352c65d139c03651a876fa883d185666aab1acb7444dc898bd196b3b95a66",
+  "source_sha256": "a2ff16087d06ff22c483b5702ffb10e94842a9919847cc8e1b3e49dee815956f",
   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
   "submitter": "scripts/submit_job.py",
   "ledger": "~/wearusfm_local/jobs",
@@ -2499,7 +2499,39 @@
     "classification_cpu": 8,
     "pose_cpu": 8,
     "summary": 1,
-    "classification_baseline_comparison": "exact numeric_sha256 equality with both pinned historical P1/P2 reports; mismatch stops execution"
+    "classification_baseline_comparison": "historical-libraries-plus-openmp8-v1: same versions/dtype and all historical pools unchanged; only extraOpenMP8allowed; exact_match descriptive; oneexactnumeric_sha256 acrossnewbenchmarks/fits"
   },
-  "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback"
+  "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback",
+  "classification_numeric_compatibility": {
+    "name": "historical-libraries-plus-openmp8-v1",
+    "equal_fields": [
+      "python",
+      "numpy",
+      "scipy",
+      "sklearn",
+      "features_dtype"
+    ],
+    "historical_pools": "multiset inclusion with exact equality of all six fields",
+    "pool_fields": [
+      "internal_api",
+      "prefix",
+      "version",
+      "num_threads",
+      "architecture",
+      "threading_layer"
+    ],
+    "extra_pools": "only internal_api=openmp and integer num_threads=8",
+    "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+    "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+  },
+  "numeric_preflight": {
+    "path": "results/infra/consolidation_long_20261105/numeric_preflight_20261105.json",
+    "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
+    "bytes": 14374
+  },
+  "shared_quota_diagnostic": {
+    "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
+    "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
+    "bytes": 1138
+  }
 }

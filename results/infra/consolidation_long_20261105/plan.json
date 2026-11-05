@@ -4,8 +4,8 @@
   "review": {
     "status": "awaiting_claude_rereview",
     "commit": null,
-    "previous_review_commit": "e2753cde2a8af0d78e01daa0ff7dc54652637228",
-    "previous_review_verdict": "not converged; R-1/R-2 corrections submitted for second pass"
+    "previous_review_commit": "44cfa85fac79135b34990018f85a66bf45323d7f",
+    "previous_review_verdict": "not converged; R-1b corrected for thirdpass; R-2closed; C-1/C-2operationalconditions remain"
   },
   "doses": [
     19618,
@@ -502,7 +502,34 @@
       "classification_cpu": 8,
       "pose_cpu": 8,
       "summary": 1,
-      "classification_baseline_comparison": "exact numeric_sha256 equality with both pinned historical P1/P2 reports; mismatch stops execution"
+      "classification_baseline_comparison": "historical-libraries-plus-openmp8-v1: same versions/dtype and all historical pools unchanged; only extraOpenMP8allowed; exact_match descriptive; oneexactnumeric_sha256 acrossnewbenchmarks/fits"
+    },
+    "classification_numeric_compatibility": {
+      "name": "historical-libraries-plus-openmp8-v1",
+      "equal_fields": [
+        "python",
+        "numpy",
+        "scipy",
+        "sklearn",
+        "features_dtype"
+      ],
+      "historical_pools": "multiset inclusion with exact equality of all six fields",
+      "pool_fields": [
+        "internal_api",
+        "prefix",
+        "version",
+        "num_threads",
+        "architecture",
+        "threading_layer"
+      ],
+      "extra_pools": "only internal_api=openmp and integer num_threads=8",
+      "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+      "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+    },
+    "numeric_preflight": {
+      "path": "results/infra/consolidation_long_20261105/numeric_preflight_20261105.json",
+      "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
+      "bytes": 14374
     }
   },
   "retention": {
@@ -517,7 +544,14 @@
       "sha256": "38737c92af8a0b0d4f051a44b8604f7437a61c11f33330b52586f725d2afdf60",
       "bytes": 6009
     },
-    "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback"
+    "first_extraction_quota_rule": "owner reads fresh project quota immediately before first extraction submission; below32GiB no extraction is submitted; no implicit SCRATCH fallback",
+    "other_campaigns_rule": "include already-admitted unfinished outputs of our other campaigns in the shared quota margin; minimum32GiB alone is not sufficient",
+    "latest_diagnostic_quota": {
+      "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
+      "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
+      "bytes": 1138
+    },
+    "diagnostic_admission_status": "blocked_at_observation_by_pending_output_margin; refresh before submission"
   },
   "failure_policy": {
     "no_requeue": true,
@@ -539,6 +573,6 @@
     },
     "use": "paired T25-L minus B19618 context remains descriptive; not a universal noise floor"
   },
-  "source_sha256": "010352c65d139c03651a876fa883d185666aab1acb7444dc898bd196b3b95a66",
+  "source_sha256": "a2ff16087d06ff22c483b5702ffb10e94842a9919847cc8e1b3e49dee815956f",
   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422"
 }

@@ -342,10 +342,11 @@ review f70dc72 convergente. [Benchmark v2 e piano dei fit](finetune_v2_execution
 | Attività | Che cosa è pronto | Risultato attuale | Conclusione / prossimo passo |
 |---|---|---|---|
 |Training lungo T100-G30M|Tre segmenti e copie persistenti19k/39k/49k|COMPLETED0:0, hash e dosi verificati;25,283GPUh|Endpoint utilizzabili dopo i gate di caricamento, prestazioni ancora da valutare|
-|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|Claude approva il riuso storico ma richiede parità del contesto numerico: correzione8thread ed equality dei relativi hash|Rilettura incrementale Claude prima del checkout; poi12estrazioni, benchmarkCPU e gate globale48shard|
+|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|R-1b corretto: contesto storico preservato più soli poolOpenMP8 dichiarati; prova reale con/senzaTorch compatibile, non identica|Terza lettura Claude sul diff; poi12estrazioni, benchmarkCPU e gate globale48shard soltanto con quota sufficiente|
 |Posa e dinamica del lungo|Testa allenata e ridgepre/post su crop6 comune;E2 con pairing storico|Disegno approvato da Claude; entrambi i pannelli primari restano affiancati, nessuno score nuovo|Benchmark posa e poi3fit/analisi +confronto, lettori CPU8thread|
-|Risorse e qualità|82jobcalcolo+4checkout; tetti e shard conservati|Tetto9GPUh/1711,667coreh; R-2 esplicita invalidazione delle estrazioni a ogni cambio sorgente|[Pacchetto corretto](consolidation_long_execution_20261105.md); sorgenti congelati fra fasi, quota≥32GiB ricontrollata prima del primo invio|
+|Risorse e qualità|82jobcalcolo+4checkout; tetti e shard conservati|Tetto9GPUh/1711,667coreh; R-2 chiuso. Quota33,143GiB contro33,724necessari includendo FT15 ancora da scrivere|[Pacchetto corretto](consolidation_long_execution_20261105.md); C-1 aperta: nessuna estrazione con margine insufficiente, sorgenti congelati fra fasi|
 
 FT15 resta separato e già in corso. Nessun nuovo job/monitor dalla preparazione
-del lungo. Review Claude `e2753c`: non convergente; correzioni pronte per
-seconda lettura, senza attribuire un'approvazione ancora non ricevuta.
+del lungo. Seconda review Claude `44cfa85`: non convergente; correzioni R-1b
+e uscita reale Leonardo pronte per terza lettura. Nessuna approvazione attribuita
+in anticipo; problema di quota dichiarato separatamente dalla correzione numerica.

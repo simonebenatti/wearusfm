@@ -18,7 +18,7 @@ import consolidation_long_classification as M
 import test_consolidation_long_classification as F
 
 
-def measurements():
+def measurements(numeric=None):
     """Complete timing evidence with simple explicit costs for projection tests."""
     result = {}
     for ds in M.DATASETS:
@@ -33,11 +33,11 @@ def measurements():
                 "fold_train_rows": [100, 100, 120, 80], "fold_train_classes": [2]*4,
                 "load_s": 1., "scale_s": 1., "input_sha256": "1"*64, "splits_sha256": "2"*64,
                 "roles_sha256": "3"*64, "ordered_rows_sha256": "4"*64, "checkpoint_sha256": "5"*64,
-                "numeric_context": {"threads": 8}, "subjects": ["a", "b"], "fold0_train_subjects": ["a", "b"],
+                "numeric_context": copy.deepcopy(numeric or F.historical_numeric_context()), "subjects": ["a", "b"], "fold0_train_subjects": ["a", "b"],
                 "fits": [{"C": c, "fit_phase": "benchmark_train_only", "exception": None,
                     "max_iter": 12000, "n_iter": 25, "n_train": 100, "elapsed_s": 1.,
                     "convergence_warnings": 0, "converged_by_criterion": True} for c in M.C_GRID]}
-            old = {"dataset": ds, "numeric_sha256": M.jhash(bench["numeric_context"]), "folds": [{"fold": f, "fit_seconds": 20., "train_rows": n, "classes": 2}
+            old = {"dataset": ds, "numeric_sha256": M.jhash(F.historical_numeric_context()), "folds": [{"fold": f, "fit_seconds": 20., "train_rows": n, "classes": 2}
                     for f, n in enumerate(bench["fold_train_rows"])]}
             result[ds][view] = {"benchmark": bench, "historical_timing": old, "peak_rss_bytes": 1024**3,
                 "historical_numeric_match": R._numeric_match(bench["numeric_context"], historical_numeric())}
@@ -45,7 +45,8 @@ def measurements():
 
 
 def historical_numeric():
-    return {"numeric_sha256": M.jhash({"threads": 8}), "reports": {t: [] for t in M.TASKS}}
+    return {"numeric_sha256": M.jhash(F.historical_numeric_context()),
+            "numeric_context": F.historical_numeric_context(), "reports": {t: [] for t in M.TASKS}}
 
 
 def context(tmp_path):
@@ -79,6 +80,23 @@ def test_global_gate_covers40_logical_cells_and48_fixed_jobs_with_historical_cos
     assert gate["projected_core_hours"] == pytest.approx((32*964+8*1568)*8/3600)
 
 
+def test_global_gate_accepts_archived_extra_openmp_but_requires_one_new_context():
+    preflight = json.loads((ROOT/"results/infra/consolidation_long_20261105/numeric_preflight_20261105.json").read_text())
+    current = next(p["numeric_context"] for p in preflight["probes"] if p["probe"] == "with_torch")
+    reports = measurements(current)
+    gate = R.resource_gate(reports)
+    assert gate["all_passed"] and gate["numeric_sha256"] == M.jhash(current)
+    assert all(item["historical_numeric_match"]["compatible"] is True
+               and item["historical_numeric_match"]["exact_match"] is False
+               for views in reports.values() for item in views.values())
+    # Both are individually compatible with the old report, but new cells must
+    # run in one exact environment rather than silently mixing import contexts.
+    old_item = measurements()["epn612"]["post"]
+    reports["epn612"]["post"] = old_item
+    with pytest.raises(ValueError, match="mixed numeric environments"):
+        R.resource_gate(reports)
+
+
 @pytest.mark.parametrize("active,environment,expected,passes", [
     (8, 8, 8, True), (1, 1, 1, True), (1, 8, 8, False), (8, 1, 8, False)])
 def test_threads_match_historical_phase_in_environment_and_loaded_libraries(monkeypatch, active, environment, expected, passes):
@@ -103,8 +121,8 @@ def test_resource_gate_rejects_historical_context_mismatch_even_when_new_context
     else:
         for views in reports.values():
             for item in views.values():
-                item["benchmark"]["numeric_context"] = {"threads": 1}
-    with pytest.raises(ValueError, match="benchmark/historical"):
+                item["benchmark"]["numeric_context"]["threadpools"][0]["num_threads"] = 1
+    with pytest.raises(ValueError, match="numeric"):
         R.resource_gate(reports)
 
 
@@ -116,20 +134,21 @@ def test_historical_numeric_reference_requires_pinned_plan_recipe_and_matching_p
         path = tmp_path/(task+".json")
         R.C.write_json(path, {"complete": True, "protocol": M.TP.PROTOCOL, "kind": "aggregate",
             "step": 19618, "arm": "T100-G", "task": task, "recipe": M.TP.recipe(),
-            "plan_content_sha256": M.jhash(historical), "numeric_context": {"threads": 8},
-            "numeric_sha256": M.jhash({"threads": 8})})
+            "plan_content_sha256": M.jhash(historical), "numeric_context": F.historical_numeric_context(),
+            "numeric_sha256": M.jhash(F.historical_numeric_context())})
         ctx["plan"]["historical_classification_reports"][task] = R.C.file_pin(path)
     reference = R._historical_numeric(ctx, historical)
-    match = R._numeric_match({"threads": 8}, reference)
+    match = R._numeric_match(F.historical_numeric_context(), reference)
     assert match["exact_match"] and match["numeric_sha256"] == match["historical_numeric_sha256"]
     assert set(match["historical_reports"]) == {"p1", "p2"}
     with pytest.raises(ValueError, match="new/historical"):
-        R._numeric_match({"threads": 1}, reference)
+        R._numeric_match({**F.historical_numeric_context(), "numpy": "different"}, reference)
     with pytest.raises(ValueError, match="historical timing source"):
         R._historical_numeric(ctx, {"identity": "different-plan"})
     pin = ctx["plan"]["historical_classification_reports"]["p2"]
     changed = json.loads(Path(pin["path"]).read_text())
-    changed.update(numeric_context={"threads": 1}, numeric_sha256=M.jhash({"threads": 1}))
+    altered = {**F.historical_numeric_context(), "numpy": "different"}
+    changed.update(numeric_context=altered, numeric_sha256=M.jhash(altered))
     different = tmp_path/"different-p2.json"
     R.C.write_json(different, changed)
     ctx["plan"]["historical_classification_reports"]["p2"] = R.C.file_pin(different)
@@ -139,7 +158,7 @@ def test_historical_numeric_reference_requires_pinned_plan_recipe_and_matching_p
 
 def test_benchmark_numeric_mismatch_stops_before_fit_or_output_creation(tmp_path, monkeypatch):
     ctx = context(tmp_path)
-    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8, "library": "different"})
+    monkeypatch.setattr(R, "_threads", lambda: {**F.historical_numeric_context(), "numpy": "different"})
     monkeypatch.setattr(R, "_cache", lambda *args: ({}, {}, {}, {}))
     monkeypatch.setattr(R, "_historical_numeric", lambda *args: historical_numeric())
     def forbidden(*args, **kwargs):
@@ -164,7 +183,7 @@ def test_partial_contaminated_or_incompatible_benchmarks_fail_closed(mutation):
     elif mutation == "nonconverged":
         bench["fits"][-1]["converged_by_criterion"] = False
     elif mutation == "mixed_numeric":
-        bench["numeric_context"]["threads"] = 2
+        bench["numeric_context"]["threadpools"][0]["num_threads"] = 2
     elif mutation == "mixed_cache":
         bench["cache_sha256"] = "f"*64
     else:
@@ -236,7 +255,7 @@ def test_extract_uses_original_t100g_reference_and_one_teacher(tmp_path, monkeyp
 
 def test_fit_requires_whole_matrix_gate_and_forbids_pool_reuse_or_automatic_shards(tmp_path, monkeypatch):
     ctx = context(tmp_path)
-    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8})
+    monkeypatch.setattr(R, "_threads", lambda: F.historical_numeric_context())
     monkeypatch.setattr(R, "_historical", lambda ctx: ({}, {}))
     monkeypatch.setattr(R, "_historical_numeric", lambda ctx, historical: historical_numeric())
     monkeypatch.setattr(R, "_benchmarks", lambda ctx: measurements())
@@ -256,25 +275,29 @@ def test_fit_requires_whole_matrix_gate_and_forbids_pool_reuse_or_automatic_shar
             R.execute("fit-classification", ctx, tmp_path/"invalid-db2", step=39237, dataset="ninapro_db2", view="post", folds=folds)
 
 
-def test_fit_receipt_covers_real_probe_oof_and_durable_audit(tmp_path, monkeypatch):
+@pytest.mark.parametrize("extra_openmp", [False, True])
+def test_fit_receipt_covers_real_probe_oof_and_durable_audit(tmp_path, monkeypatch, extra_openmp):
     ctx = context(tmp_path)
+    numeric = F.torch_numeric_context() if extra_openmp else F.historical_numeric_context()
     pin, _, _, _ = F.cache(tmp_path)
-    monkeypatch.setattr(R, "_threads", lambda: {"threads": 8})
+    monkeypatch.setattr(R, "_threads", lambda: numeric)
     monkeypatch.setattr(R, "_historical", lambda ctx: ({}, {}))
     monkeypatch.setattr(R, "_historical_numeric", lambda ctx, historical: historical_numeric())
-    monkeypatch.setattr(R, "_benchmarks", lambda ctx: measurements())
+    monkeypatch.setattr(R, "_benchmarks", lambda ctx: measurements(numeric))
     monkeypatch.setattr(R, "_cache", lambda *args: ({"receipt": {"path": "/extraction.json"}}, pin, {}, {}))
     monkeypatch.setattr(R.C, "finish_output", finish)
     ctx["plan"]["benchmark_receipts"] = {"classification": {"path": "/benchmarkmanifest.json"}}
     out = tmp_path/"fit"
-    monkeypatch.setattr(M.TP, "numeric_context", lambda: {"threads": 8})
+    monkeypatch.setattr(M.TP, "numeric_context", lambda: numeric)
     receipt = R.execute("fit-classification", ctx, out, step=39237, dataset="ninapro_db2", view="pre", folds=[0, 1])
     assert set(receipt["artifacts"]) == {"probe", "oof", "audit"}
     report, oof = M._read_pinned_report(receipt["artifacts"]["probe"])
     assert report["fold_indices"] == receipt["fold_indices"] == [0, 1] and len(report["fit_audit"]) == 14
     assert len(oof["row"]) == 24 and receipt["global_resource_gate_passed"]
-    assert receipt["historical_numeric_match"]["exact_match"] is True
-    assert report["numeric_sha256"] == receipt["historical_numeric_match"]["historical_numeric_sha256"]
+    assert receipt["historical_numeric_match"]["compatible"] is True
+    assert receipt["historical_numeric_match"]["exact_match"] is (not extra_openmp)
+    assert report["numeric_sha256"] == M.jhash(numeric)
+    assert receipt["historical_numeric_match"]["historical_numeric_sha256"] == M.jhash(F.historical_numeric_context())
 
 
 def test_receipt_requires_same_reviewed_recipe_and_source(tmp_path):

@@ -6,6 +6,8 @@ teacher and source pins; this module preserves historical inputs, fits the
 """
 from __future__ import annotations
 
+from collections import Counter
+
 import hashlib
 import json
 from pathlib import Path
@@ -32,6 +34,45 @@ TASKS, DATASETS, WEIGHTS = TP.TASKS, TP.DATASETS, TP.WEIGHTS
 C_GRID, MAX_ITER, N_BOOT, SEED = TP.C_GRID, TP.MAX_ITER, TP.N_BOOT, TP.SEED
 OOF_KEYS = ("row", "y", "pred", "s", "fold")
 require, sha, jhash = TP.require, TP.sha, TP.jhash
+NUMERIC_FIELDS = ("python", "numpy", "scipy", "sklearn", "features_dtype")
+POOL_FIELDS = ("internal_api", "prefix", "version", "num_threads", "architecture", "threading_layer")
+NUMERIC_COMPATIBILITY_POLICY = {
+    "name": "historical-libraries-plus-openmp8-v1",
+    "equal_fields": list(NUMERIC_FIELDS),
+    "historical_pools": "multiset inclusion with exact equality of all six fields",
+    "pool_fields": list(POOL_FIELDS),
+    "extra_pools": "only internal_api=openmp and integer num_threads=8",
+    "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+    "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions",
+}
+
+
+def numeric_compatibility(numeric, historical):
+    """Check the reviewed historical-library rule without erasing extra pools.
+
+    Pool matching is a multiset operation: duplicating one library cannot hide
+    another missing historical library. The exact hashes remain descriptive.
+    """
+    require(isinstance(numeric, dict) and isinstance(historical, dict)
+            and all(k in numeric and k in historical and numeric[k] == historical[k]
+                    for k in NUMERIC_FIELDS), "new/historical numeric versions or feature dtype differ")
+    def pools(context):
+        values = context.get("threadpools")
+        require(isinstance(values, list) and values and all(isinstance(p, dict)
+                and set(p) == set(POOL_FIELDS) and type(p["num_threads"]) is int
+                and p["num_threads"] == 8 for p in values),
+                "numeric pool schema or eight-thread requirement differs")
+        return Counter(json.dumps(p, sort_keys=True) for p in values)
+    current, old = pools(numeric), pools(historical)
+    require(not (old-current), "new/historical numeric pool missing or changed")
+    extras = [json.loads(encoded) for encoded, count in sorted((current-old).items())
+              for _ in range(count)]
+    require(all(p["internal_api"] == "openmp" and p["num_threads"] == 8 for p in extras),
+            "new/historical numeric extra pool is not an eight-thread OpenMP runtime")
+    return {"numeric_sha256": jhash(numeric), "historical_numeric_sha256": jhash(historical),
+            "compatible": True, "exact_match": jhash(numeric) == jhash(historical),
+            "extra_threadpools": extras, "historical_numeric_context": historical,
+            "policy": NUMERIC_COMPATIBILITY_POLICY}
 
 
 def extraction_recipe(task):
@@ -572,7 +613,8 @@ def read_historical_pool(report_pin, cache_pins, *, expected_plan=None):
     require(len(records) == 28*len(TASKS[task]), "extra/missing historical audit fits")
     return {"cells": cells, "convergence": convergence, "identities": identities,
             "reports": [r for r, _ in loaded], "records": records,
-            "numeric_sha256": loaded[0][0]["numeric_sha256"]}
+            "numeric_sha256": loaded[0][0]["numeric_sha256"],
+            "numeric_context": loaded[0][0]["numeric_context"]}
 
 
 def _verify_support(a, y, s, roles, folds):
@@ -628,14 +670,14 @@ def compare_reports(report_pins, *, cache_pins, historical_report_pins=(), histo
     historical_items = [read_historical_pool(pin, historical_cache_pins, expected_plan=historical_plan)
                         for pin in historical_report_pins]
     old_numeric = {item["numeric_sha256"] for item in historical_items}
-    new_numeric = set()
+    new_numeric, numeric_match = set(), None
     require(not historical_items or len(old_numeric) == 1, "mixed historical P1/P2 numeric environments")
     for pin in report_pins:
         report, arrays = _read_pinned_report(pin)
         require(report.get("protocol") == PROTOCOL and report.get("kind") == "probe", "wrong probe report")
         new_numeric.add(report["numeric_sha256"])
-        require(not old_numeric or report["numeric_sha256"] in old_numeric,
-                "new/historical classification numeric environment differs")
+        if historical_items:
+            numeric_match = numeric_compatibility(report["numeric_context"], historical_items[0]["numeric_context"])
         name, ds = cell_name(report["step"], report["view"]), report["dataset"]
         require(ds in DATASETS and report["task"] == _task(ds), "report dataset/task differs")
         pending.setdefault((name, ds), []).append((report, arrays))
@@ -694,9 +736,9 @@ def compare_reports(report_pins, *, cache_pins, historical_report_pins=(), histo
     result = {"protocol": PROTOCOL, "kind": "comparison", "complete": True, **(identity or {}),
               **compare_arrays(cells, convergence=convergence), "convergence": convergence,
               "reports": list(report_pins), "historical_reports": list(historical_report_pins),
-              "numeric_comparison": {"numeric_sha256": next(iter(new_numeric)),
-                  "historical_numeric_sha256": next(iter(old_numeric)) if old_numeric else None,
-                  "exact_match": new_numeric == old_numeric if old_numeric else None,
+              "numeric_comparison": {**(numeric_match or {"numeric_sha256": next(iter(new_numeric)),
+                  "historical_numeric_sha256": None, "compatible": None, "exact_match": None,
+                  "extra_threadpools": [], "policy": NUMERIC_COMPATIBILITY_POLICY}),
                   "historical_reports": list(historical_report_pins)},
               "historical_baseline_policy": historical_baseline_policy,
               "historical_baseline_scope": "pool19618 is the pinned historical feature cache and its fitted OOF; tolerance parity alone does not establish identical new probe predictions"}

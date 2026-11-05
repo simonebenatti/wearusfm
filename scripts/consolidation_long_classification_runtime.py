@@ -77,7 +77,7 @@ def _historical_report(ctx, pin, task, historical):
 
 
 def _historical_numeric(ctx, historical):
-    reports, signatures = {}, set()
+    reports, signatures, numeric = {}, set(), None
     for task in M.TASKS:
         pins = _historical_reports(ctx, task)
         C.require(pins, "missing historical numeric reference")
@@ -85,16 +85,16 @@ def _historical_numeric(ctx, historical):
         for pin in pins:
             r = _historical_report(ctx, pin, task, historical)
             signatures.add(r["numeric_sha256"])
+            numeric = r["numeric_context"]
     C.require(len(signatures) == 1, "mixed historical P1/P2 numeric environments")
-    return {"numeric_sha256": next(iter(signatures)), "reports": reports}
+    return {"numeric_sha256": next(iter(signatures)), "numeric_context": numeric, "reports": reports}
 
 
 def _numeric_match(numeric, historical_numeric):
-    current = M.jhash(numeric)
-    C.require(current == historical_numeric["numeric_sha256"],
-              "new/historical classification numeric environment differs")
-    return {"numeric_sha256": current, "historical_numeric_sha256": historical_numeric["numeric_sha256"],
-            "exact_match": True, "historical_reports": historical_numeric["reports"]}
+    C.require(M.jhash(historical_numeric["numeric_context"]) == historical_numeric["numeric_sha256"],
+              "historical numeric identity differs")
+    return {**M.numeric_compatibility(numeric, historical_numeric["numeric_context"]),
+            "historical_reports": historical_numeric["reports"]}
 
 
 def _historical_timing(ctx, dataset, historical):
@@ -176,7 +176,7 @@ def resource_gate(reports, policy=BENCHMARK_POLICY):
     C.require(policy == BENCHMARK_POLICY and set(reports) == set(M.DATASETS)
               and all(set(reports[d]) == set(M.VIEWS) for d in reports), "all fifteen benchmark cells required")
     cells, shards = {}, {}
-    numeric = set()
+    numeric, historical_signatures = set(), set()
     for ds in M.DATASETS:
         references = reports[ds]
         for view in M.VIEWS:
@@ -184,11 +184,14 @@ def resource_gate(reports, policy=BENCHMARK_POLICY):
             _check_benchmark(bench, ds, view)
             signature = M.jhash(bench["numeric_context"])
             numeric.add(signature)
-            C.require(item["historical_timing"]["numeric_sha256"] == signature
-                      and item["historical_numeric_match"]["numeric_sha256"] == signature
-                      and item["historical_numeric_match"]["historical_numeric_sha256"] == signature
-                      and item["historical_numeric_match"]["exact_match"] is True,
-                      "benchmark/historical classification numeric environment differs")
+            evidence = item["historical_numeric_match"]
+            historical_signatures.add(item["historical_timing"]["numeric_sha256"])
+            expected_match = _numeric_match(bench["numeric_context"], {
+                "numeric_sha256": item["historical_timing"]["numeric_sha256"],
+                "numeric_context": evidence["historical_numeric_context"],
+                "reports": evidence["historical_reports"]})
+            C.require(evidence == expected_match,
+                      "benchmark/historical classification numeric compatibility evidence differs")
             C.require(np.isfinite(item["peak_rss_bytes"]) and item["peak_rss_bytes"] > 0,
                       "invalid benchmark memory measurement")
             C.require(item["historical_timing"]["dataset"] == ds
@@ -237,6 +240,7 @@ def resource_gate(reports, policy=BENCHMARK_POLICY):
                     "projected_seconds": sum(shards[k]["projected_seconds"] for k in keys),
                     "shards": keys, "passed": all(shards[k]["passed"] for k in keys), "reference_step": 19618}
     C.require(len(numeric) == 1, "mixed numeric environments across benchmark cells")
+    C.require(len(historical_signatures) == 1, "mixed historical numeric environments across benchmark cells")
     C.require(len(cells) == 40 and len(shards) == 48, "registered physical/logical matrix differs")
     return {"policy": policy, "cells": cells, "shards": shards, "all_passed": all(c["passed"] for c in shards.values()),
             "physical_fit_jobs": len(shards),

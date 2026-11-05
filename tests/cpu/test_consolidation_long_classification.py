@@ -18,6 +18,76 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import consolidation_long_classification as M
 
 
+def historical_numeric_context():
+    path = ROOT/"results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates/T100-G/p1.json"
+    report = json.loads(path.read_text())
+    assert report["numeric_sha256"] == "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908"
+    assert M.jhash(report["numeric_context"]) == report["numeric_sha256"]
+    return report["numeric_context"]
+
+
+def torch_numeric_context():
+    old = historical_numeric_context()
+    archived = json.loads((ROOT/"results/infra/pose_slots_20261102/execution/R3c/receipt.json").read_text())["runtime"]
+    extras = [{k: p.get(k) for k in M.POOL_FIELDS} for p in archived["threadpools"] if p["prefix"] == "libomp"]
+    assert len(extras) == 1 and extras[0]["num_threads"] == 8
+    old["threadpools"] = sorted(old["threadpools"]+extras, key=lambda p: json.dumps(p, sort_keys=True))
+    return old
+
+
+def test_real_historical_context_with_archived_torch_openmp_is_compatible_not_exact():
+    old, current = historical_numeric_context(), torch_numeric_context()
+    exact = M.numeric_compatibility(old, old)
+    assert exact["compatible"] and exact["exact_match"] and exact["extra_threadpools"] == []
+    value = M.numeric_compatibility(current, old)
+    assert value["compatible"] is True and value["exact_match"] is False
+    assert value["numeric_sha256"] != value["historical_numeric_sha256"]
+    assert value["policy"] == M.NUMERIC_COMPATIBILITY_POLICY
+    assert len(value["extra_threadpools"]) == 1
+    assert value["extra_threadpools"][0]["prefix"] == "libomp"
+    assert set(value["extra_threadpools"][0]) == set(M.POOL_FIELDS)
+
+
+def test_measured_leonardo_imports_preserve_both_extra_openmp_instances():
+    path = ROOT/"results/infra/consolidation_long_20261105/numeric_preflight_20261105.json"
+    probes = {p["probe"]: p for p in json.loads(path.read_text())["probes"]}
+    old = historical_numeric_context()
+    without, with_torch = (probes[k] for k in ("without_torch", "with_torch"))
+    assert without["torch_loaded"] is False and with_torch["torch_loaded"] is True
+    assert M.numeric_compatibility(without["numeric_context"], old)["exact_match"] is True
+    current = with_torch["numeric_context"]
+    assert len(current["threadpools"]) == 5
+    value = M.numeric_compatibility(current, old)
+    assert value["compatible"] is True and value["exact_match"] is False
+    assert sorted(p["prefix"] for p in value["extra_threadpools"]) == ["libgomp", "libomp"]
+    assert all(p["num_threads"] == 8 for p in value["extra_threadpools"])
+
+
+@pytest.mark.parametrize("mutation", ["python", "numpy", "scipy", "sklearn", "features_dtype", "missing_version",
+    "missing_pool", "changed_pool", "extra_blas", "extra_openmp_wrong_threads", "duplicate_instead_of_missing", "missing_historical_multiplicity"])
+def test_numeric_compatibility_rejects_real_context_drift_and_multiset_bypass(mutation):
+    old, current = historical_numeric_context(), torch_numeric_context()
+    if mutation in M.NUMERIC_FIELDS:
+        current[mutation] = "different"
+    elif mutation == "missing_version":
+        del current["numpy"]
+    elif mutation == "missing_pool":
+        current["threadpools"].remove(old["threadpools"][0])
+    elif mutation == "changed_pool":
+        current["threadpools"][current["threadpools"].index(old["threadpools"][0])]["version"] = "changed"
+    elif mutation == "extra_blas":
+        current["threadpools"].append(copy.deepcopy(old["threadpools"][0]))
+    elif mutation == "extra_openmp_wrong_threads":
+        next(p for p in current["threadpools"] if p["prefix"] == "libomp")["num_threads"] = 1
+    elif mutation == "duplicate_instead_of_missing":
+        current["threadpools"].remove(old["threadpools"][1])
+        current["threadpools"].append(copy.deepcopy(old["threadpools"][0]))
+    else:
+        old["threadpools"].append(copy.deepcopy(old["threadpools"][0]))
+    with pytest.raises(ValueError, match="numeric"):
+        M.numeric_compatibility(current, old)
+
+
 def sample(width=8, strings=False):
     s = np.repeat([f"s{i:02}" for i in range(8)], 6)
     y = np.tile([0, 1, 0, 1, 0, 1], 8)
@@ -248,23 +318,24 @@ def test_pairing_rejects_changed_oof_support(field):
         M.compare_arrays(cells, convergence=convergence, n_boot=20)
 
 
-@pytest.mark.parametrize("mismatch", ["new_vs_historical", "historical_tasks", "new_cells"])
+@pytest.mark.parametrize("mismatch", ["new_old", "historical", "new_new"])
 def test_report_aggregation_rejects_numeric_mismatch_across_entire_matrix(monkeypatch, mismatch):
-    hashes = {"old-p1": "a"*64, "old-p2": "a"*64}
-    new = [{"protocol": M.PROTOCOL, "kind": "probe", "numeric_sha256": "a"*64,
-            "step": step, "view": "post", "dataset": "epn612", "task": "p2"} for step in (19618, 49046)]
-    old = ["old-p1", "old-p2"]
-    if mismatch == "new_vs_historical":
-        new[0]["numeric_sha256"] = "b"*64
-    elif mismatch == "historical_tasks":
-        hashes["old-p2"] = "b"*64
+    old_contexts = {"p1": historical_numeric_context(), "p2": historical_numeric_context()}
+    contexts = [historical_numeric_context(), historical_numeric_context()]
+    if mismatch == "new_old":
+        contexts[0]["numpy"] = "different"
+    elif mismatch == "historical":
+        old_contexts["p2"]["numpy"] = "different"
     else:
-        old = []
-        new[-1]["numeric_sha256"] = "b"*64
-    monkeypatch.setattr(M, "read_historical_pool", lambda pin, *args, **kwargs: {"numeric_sha256": hashes[pin]})
+        contexts[-1] = torch_numeric_context()  # Individually compatible, globally different.
+    new = [{"protocol": M.PROTOCOL, "kind": "probe", "numeric_sha256": M.jhash(numeric),
+            "numeric_context": numeric, "step": 39237, "view": "post", "dataset": "epn612", "task": "p2"}
+           for numeric in contexts]
+    monkeypatch.setattr(M, "read_historical_pool", lambda pin, *args, **kwargs:
+        {"numeric_sha256": M.jhash(old_contexts[pin]), "numeric_context": old_contexts[pin]})
     monkeypatch.setattr(M, "_read_pinned_report", lambda pin: (new[pin], {}))
-    with pytest.raises(ValueError, match="numeric environment"):
-        M.compare_reports([0, 1], cache_pins={}, historical_report_pins=old)
+    with pytest.raises(ValueError, match="numeric"):
+        M.compare_reports([0, 1], cache_pins={}, historical_report_pins=["p1", "p2"])
 
 
 def test_vr1_tradeoff_is_not_a_win():

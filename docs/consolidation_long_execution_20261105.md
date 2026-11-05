@@ -1,7 +1,7 @@
 # Valutazione del lungo T100-G — pacchetto per Claude
 
-Stato: **correzioni R-1/R-2 della review Claude e2753c, in attesa della rilettura**.
-La review `e2753cde2a8af0d78e01daa0ff7dc54652637228` non è una convergenza:
+Stato: **correzione R-1b della seconda review Claude44cfa85, per terza lettura**.
+La review `44cfa85fac79135b34990018f85a66bf45323d7f` non è una convergenza:
 nessun checkout delle estrazioni prima della chiusura esplicita dei rilievi.
 Incarico di Simone tramite coordinamento: completare questa valutazione, farla
 revisionare a Claude, poi lanciarla appena convergente. Il lancio della catena è
@@ -61,16 +61,34 @@ predizioni di sonda. Il riferimento è il cache/lettore storico nominato.
 Vengono anche registrati uguaglianza esatta e scarto di parità.
 I13artefatti storici sono stati riletti e verificati il05/11 alle16:11CET.
 
-**R-1, contesto numerico:** estrazioni con1thread; benchmark, fit e confronti
+**R-1b(B), contesto numerico:** estrazioni con1thread; benchmark, fit e confronti
 di classificazione e posa con8thread, come i launcher storici della stessa
 fase. La sintesi JSON usa1thread entro le2CPU assegnate. OMP/MKL/OpenBLAS
-e i pool attivi sono verificati; le sonde nuove richiedono uguaglianza esatta
-del `numeric_sha256` con entrambi i report storici P1/P2 pinnati. Il confronto
-viene registrato nelle ricevute e nel report finale; una differenza blocca
-benchmark/fit/confronto, non viene accettata con una tolleranza. La posa
+e i pool attivi sono verificati. Le sonde nuove richiedono le stesse versioni
+di Python, numpy, scipy, sklearn e lo stesso features_dtype dei report storici
+P1/P2 pinnati. Ciascun pool storico deve essere presente, con almeno la
+molteplicità storica e gli stessi sei campi (internal_api, prefix, version,
+num_threads, architecture, threading_layer). Sono ammessi in più soltanto
+runtime OpenMP a8thread, anche per le occorrenze eccedenti di un pool storico,
+elencati integralmente nella ricevuta e nel report.
+Un solo `numeric_sha256` resta obbligatorio fra tutti i benchmark e fit nuovi.
+`exact_match` con lo storico è registrato per ciò che misura: può essere false
+pur passando la compatibilità esplicita. Nel processo nuovo è caricato anche
+Torch; questa regola non dimostra che le predizioni siano numericamente identiche.
+Versioni/pool storici mancanti o modificati, extraBLAS e extraOpenMP con thread
+diversi bloccano benchmark/fit/confronto. La posa
 verifica gli8thread e il medesimo ambiente fra il proprio benchmark e i fit;
 non si dichiara identico lo schema di ambiente della posa a quello delle sonde.
 Nessun refit19k/pool aggiuntivo: resta il riferimento storico dichiarato.
+
+Verifica reale prima del checkout: due processi sul login node Leonardo,
+moduli profile/deeplrn e cineca-ai/4.3.0, venvWORK e8thread, import numpy/scipy/
+sklearn.linear_model con e senza Torch. Senza Torch: tre pool e hash storico
+07b776ba…; con Torch: cinque pool, dueOpenMP aggiuntivi (un secondo libgomp e
+libomp), entrambi8thread. La regola B li accetta e exact_match è false.
+Uscita e comandi in numeric_preflight_20261105.json. Sono soli import di pochi
+secondi CPU, non benchmark o prove di equivalenza delle predizioni; le fasi
+compute verificano nuovamente il contesto. Nessun checkout/job aggiuntivo.
 
 Lettura V-R1: tutte le differenze, bootstrap appaiato per soggetto2000/seed20261102,
 1pp e non-inferiorità−1pp per classificazione,2% relativo di E_dyn per posa,
@@ -178,6 +196,16 @@ SCRATCH o abbassamento della soglia. È quota condivisa, nessuna prenotazione
 implicita. Nessun dato su SCRATCH come
 unica copia scientifica nuova; nessun raw/NPZ/checkpoint in Git.
 
+L'inventario mirato delle20:22CET rileva8checkpoint frozen FT15 già scritti
+e16checkpoint FT/scratch ancora assenti,113.593.316byte ciascuno: almeno
+1,693GiB di ulteriori scritture già ammesse, più report/OOF. Con una riserva
+prudente32MiB per questi ultimi, il controllo combinato richiede circa
+33,724GiB (24nuove cache +8margine +residuo FT15), contro33,143GiB liberi.
+Passa la sola soglia32GiB ma non il controllo delle scritture pendenti:
+**C-1 resta aperta e a questa lettura non si ammettono estrazioni**. Nessun
+file cancellato/spostato o riduzione della riserva; l'inventario identifica
+scritture nostre future, non l'autore del precedente calo dell'intero progetto.
+
 TIMEOUT/OOM/errore/pin o gate fallito: conservare evidenze, fermare la fase,
 diagnosticare. No requeue, retry ciechi, overwrite, dose/seme/loss aggiunti,
 scarto di fold o cambi delle soglie dopo gli score. Nessun monitor automatico.
@@ -195,6 +223,8 @@ della review esterna. Gli SHA di checkpoint e degli artefatti storici sono reali
 i pin futuri rimangono null e impediscono l'esecuzione delle fasi successive.
 La vista pre della posa è conservata in FP16 e controllata per finitezza;
 non è stata aggiunta una misura dell'errore di arrotondamento (nota N-1).
-Le verifiche della correzione R-1/R-2 sono riportate separatamente in
+Le verifiche storiche della correzione R-1/R-2 sono riportate separatamente in
 results/infra/consolidation_long_20261105/rereview_validation.json; i190test
 sopra descrivono la consegna originale, non il conteggio della rilettura.
+La correzione R-1b e la verifica reale sono documentate in
+results/infra/consolidation_long_20261105/third_review_validation.json.

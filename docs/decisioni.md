@@ -6504,3 +6504,27 @@ nessuna estrazione; la lettura storica di Claude non vale come gate attuale.
 236test passati in13,25s, bash−n e diffcheck verdi, ricetta/endpoint/ID/tetti
 invariati. Stato awaiting_claude_rereview, review.commit null; nessun nuovo
 checkout/job/monitor. Il lancio originario resta autorizzato dopo convergenza.
+
+### 05/11/2026 — Terza consegna valutazione lunga: R-1b(B) e quota condivisa
+
+La seconda review Claude44cfa85 non converge: l'hash esatto storico non
+ammette il processo nuovo conTorch. Adottata la sua alternativa B, non una
+normalizzazione opaca: stesse versioni/dtype, inclusione multiset dei pool
+storici su tutti6campi, solo extraOpenMP8 dichiarati. exact_match può essere
+false; tra tutti i nuovi benchmark e fit resta un solo hash numerico.
+Nessuna prova di uguaglianza delle predizioni dedotta da questa compatibilità.
+
+Verifica reale prima di checkout: due processi login07, moduli/venv del
+launcher,8thread; tre pool senzaTorch e cinque conTorch, aggiuntivi libgomp
+e libomp. Entrambi compatibili, esattezza solo senzaTorch.252test passati,
+fixture reali, bash−n e diffcheck. Source rigenerato, ricetta/endpoint/job/tetti
+invariati; nessun nuovo job o checkout e nessun file remoto modificato.
+
+Alle20:22CET la quota è33,143734GiB;16checkpointFT15 ancora da scrivere
+richiedono1,692672GiB più metadati. La soglia combinata24GiB+8GiB+FT15pendente
+con32MiB di riserva metadati è33,723922GiB: C-1 non soddisfatta, differenza
+0,580188GiB. Non autorizza estrazioni il solo superamento dei32GiB minimi.
+Nessuna cancellazione/spostamento o riduzione delle riserve; quota da
+ricontrollare e condizione da risolvere prima del lancio già autorizzato.
+Review.commit null;44cfa85 citata soltanto come review precedente. Rilettura
+Claude sul solo diff incrementale da e2f19ee e uscita del controllo cluster.
