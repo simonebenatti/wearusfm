@@ -1,0 +1,47 @@
+{
+  "review_date": "2026-11-05",
+  "reviewed_code_sha": "fd874d75dcc5252076399c3c8d2d5ae97584570c",
+  "purpose": "Expected-failing CPU-only regression of detached worker cleanup. No production edits, cluster, CUDA or training.",
+  "passed": false,
+  "expected_current_result": "2 failures: detached worker continues executing after both inner and outer timeouts",
+  "test_command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider docs/reviews/test_logsquare_detached_timeout_20261105.py",
+  "exit_code": 1,
+  "pytest_summary": "2 failed in 2.49s",
+  "wall_time_seconds": 2.881808667,
+  "evidence_method": "Worker changes a heartbeat file after the timeout returns; this proves execution, not merely PID existence. Finally cleanup SIGKILLs only process groups created by the tests.",
+  "cleanup": [
+    {
+      "test": "test_inner_timeout_terminates_0",
+      "heartbeat_stopped_after_cleanup": true,
+      "pids": {
+        "launcher.pid": {
+          "pid": 8459,
+          "exists_after_cleanup": false
+        },
+        "worker.pid": {
+          "pid": 8460,
+          "exists_after_cleanup": false
+        }
+      }
+    },
+    {
+      "test": "test_outer_execute_timeout_ter0",
+      "heartbeat_stopped_after_cleanup": true,
+      "pids": {
+        "launcher.pid": {
+          "pid": 8464,
+          "exists_after_cleanup": false
+        },
+        "worker.pid": {
+          "pid": 8465,
+          "exists_after_cleanup": false
+        }
+      }
+    }
+  ],
+  "sha256": {
+    "scripts/logsquare_initialization_diagnostic.py": "969167b630daa7bad41502206d1860a7ebf75b772d913429577fa93069600e4e",
+    "docs/reviews/test_logsquare_detached_timeout_20261105.py": "41bc6b769f35dbf01c6faef6f2f3d823a3d118b9aff626a70ecd4b3ef188b4c3"
+  },
+  "stdout": "FF                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_inner_timeout_terminates_detached_elastic_like_worker __________\n\ntmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-331/test_inner_timeout_terminates_0')\n\n    def test_inner_timeout_terminates_detached_elastic_like_worker(tmp_path):\n        launcher, pid_files, heartbeat = elastic_like_launcher(tmp_path)\n        try:\n            status, timed_out = D.run_bounded(\n                [sys.executable, \"-c\", launcher], 1,\n                tmp_path / \"stdout\", tmp_path / \"stderr\",\n            )\n            assert timed_out and status != 0\n>           assert not worker_is_still_executing(heartbeat), (\n                \"run_bounded returned after its timeout, but the detached \"\n                \"elastic-like worker is still executing\"\n            )\nE           AssertionError: run_bounded returned after its timeout, but the detached elastic-like worker is still executing\nE           assert not True\nE            +  where True = worker_is_still_executing(PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-331/test_inner_timeout_terminates_0/worker.heartbeat'))\n\ndocs/reviews/test_logsquare_detached_timeout_20261105.py:74: AssertionError\n_______ test_outer_execute_timeout_terminates_nested_launcher_and_worker _______\n\ntmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-331/test_outer_execute_timeout_ter0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1047b4e50>\n\n    def test_outer_execute_timeout_terminates_nested_launcher_and_worker(tmp_path, monkeypatch):\n        launcher, pid_files, heartbeat = elastic_like_launcher(tmp_path)\n        # This child stands in for rank_entry_child, using the real production\n        # run_bounded with a longer inner deadline. The real execute's outer\n        # subprocess.run timeout fires first, as when preparation consumed the\n        # unbounded 30-second gap between the real 300/270-second deadlines.\n        helper = tmp_path / \"rank_entry_helper.py\"\n        helper.write_text(\n            \"import importlib.util,sys\\n\"\n            f\"s = importlib.util.spec_from_file_location('nested_diagnostic', {str(SOURCE)!r})\\n\"\n            \"d = importlib.util.module_from_spec(s); s.loader.exec_module(d)\\n\"\n            f\"d.run_bounded([sys.executable, '-c', {launcher!r}], 30, \"\n            f\"{str(tmp_path / 'nested.stdout')!r}, {str(tmp_path / 'nested.stderr')!r})\\n\"\n        )\n        plan = tmp_path / \"plan.json\"\n        plan.write_text(json.dumps({\"test\": \"outer_timeout\"}))\n        monkeypatch.setattr(D, \"VARIANTS\", (D.RANK_VARIANT,))\n        monkeypatch.setattr(D, \"__file__\", str(helper))\n        monkeypatch.setattr(D, \"code_identity\", lambda expected: expected)\n        monkeypatch.setattr(\n            D, \"validate_plan\",\n            lambda _: ({\"child_timeout_seconds\": 1, \"rank_entry_timeout_seconds\": 1}, None, None, {}, None),\n        )\n        try:\n            report = D.execute(plan, \"a\" * 40, tmp_path / \"output\")\n            assert report[\"complete\"] is False\n            assert report[\"variants\"][D.RANK_VARIANT][\"error\"] == \"child timed out\"\n>           assert not worker_is_still_executing(heartbeat), (\n                \"execute returned after its outer timeout, but the nested \"\n                \"launcher's detached worker is still executing\"\n            )\nE           AssertionError: execute returned after its outer timeout, but the nested launcher's detached worker is still executing\nE           assert not True\nE            +  where True = worker_is_still_executing(PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-331/test_outer_execute_timeout_ter0/worker.heartbeat'))\n\ndocs/reviews/test_logsquare_detached_timeout_20261105.py:109: AssertionError\n=========================== short test summary info ============================\nFAILED docs/reviews/test_logsquare_detached_timeout_20261105.py::test_inner_timeout_terminates_detached_elastic_like_worker\nFAILED docs/reviews/test_logsquare_detached_timeout_20261105.py::test_outer_execute_timeout_terminates_nested_launcher_and_worker\n2 failed in 2.49s\n"
+}

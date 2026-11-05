@@ -6186,3 +6186,23 @@ e al preventivo misurato; la continuazione già accodata non li aspetta.
 Non si indebolisce il gate esatto. Prima si confrontano in processi nuovi import e costruzioni di controller/preflight/trainer, includendo warmup count_parameters rank0 e thread; precedente60561493 suggerisce fe_gain numericamente sensibile, ma il guasto corrente resta da attribuire. Nuovo diagnostico in REVIEW_REQUIRED per Claude: cap0,666667 GPUh/5,666667 coreh incluso checkout, zero training. Piano dettagliato e limiti in docs/logsquare_initialization_failure_20261105.md. L'autorizzazione operativa esistente persiste; la review riguarda codice nuovo, non una nuova richiesta di consenso.
 
 Il controllo del modello temporaneo non sostituisce la verifica dello stato iniziale realmente addestrato. Eventuale correzione solo dopo diagnosi, review e nuova release/checkout; vecchi log/ID/checkout immutati. Nessuna loss, dose, seme, architettura o epsilon nuovi, nessuna contrastiva o monitor.
+
+### 05/11/2026 — Review GPT della correzione Claude fd874d7: A/B approvati, timeout da correggere
+
+Approvato l'emendamento esatto del riferimento: tutti i tensori condivisi del preflight,
+gain bit-uguale ai checkpoint storici T100-L e W_log nullo; hash controllato dopo
+sostituzione del gain su una copia, mai nel modello. Approvato il wrapper nel costruttore
+usato dal trainer su ogni rank e le attestazioni obbligatorie. Lo stato completo è una
+ricostruzione registrata: il vecchio training non ne aveva salvato l'hash iniziale.
+
+Approvati lettura prefissata e tetto diagnostico 1 GPUh/8 coreh più 0,333333 coreh
+di checkout. Il lancio resta fermo: due regressioni indipendenti dimostrano che i timeout
+interno ed esterno possono lasciare worker elastic in esecuzione. Sessioni separate
+confermate anche nel codice Torch 2.2 su Leonardo. Claude deve correggere la pulizia
+dei discendenti entro il limite dichiarato; nessuna variazione scientifica richiesta.
+154 test originali verificati; due test aggiunti falliscono come previsto e ripuliscono
+i propri processi. Dettagli in docs/reviews/gpt_review_logsquare_initialization_fix_20261105.md.
+
+Nessun job sottomesso, piano REVIEW_REQUIRED, nessuna release nuova. Dopo la correzione
+e review mirata GPT procede alla diagnostica già autorizzata; la sua lettura precede
+qualunque rilascio del training. Il blocco è tecnico, non un consenso operativo mancante.
