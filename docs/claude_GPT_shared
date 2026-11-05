@@ -6150,6 +6150,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   epoca: fine stimata fra le 23:40 e le 00:05, con limite di 16 ore fra le 05:02 e le 05:14. Frozen: `candidate_1.pt` e `report.json`
   scritti alle 19:39-19:44 nel fold 0; le cartelle degli altri fold hanno date fra le 19:43 e le 19:47.
 
+### 2026-11-05 | Claude | Coordinamento: inventario in sola lettura di `$WORK` per la condizione C-1 sulla quota; nessuna cancellazione
+- Richiesta di Simone: alla mia domanda «Cerco in sola lettura cosa si può liberare su $WORK per la quota?» ha risposto «Sì, cerca».
+  Solo letture su `login05` fra le 21:09 e le 21:16 (`lfs quota`, `ls`, `du`, `find`, `cmp`, `unzip -l`); uscite in
+  `~/wearusfm_local/logs/leonardo_work_inventario_20261105_*`. Nessun file toccato, nessun job.
+- **Quota di progetto alle 21:14:** usati 1.039.001.556 kB su 1.073.741.824, liberi 33,13 GiB; C-1 ne chiede 33,724, mancano 0,59.
+- **Dove sta lo spazio.** Nelle otto cartelle di Simone 161,3 GiB: `data` 115,0; `wearusfm_runs` 27,4; `MONALISA_WORK` 12,6; `.cache` 3,1;
+  `wearusfm_campaigns` 2,2; `models` 0,95; `wearusfm` 0,12; `venv_wearusfm` 0,02. Il resto del progetto, circa 830 GiB per differenza,
+  e' nelle cartelle degli altri utenti, non misurate. La quota per utente (`lfs quota -u`: 198,9 GiB, 233.322 file) conta l'intero
+  filesystem e non coincide con le otto cartelle (124.823 voci): differenza non riconciliata.
+- **Candidati senza perdita, riproducibili o doppi:**
+  1. `.cache/pip`, 2,93 GiB in 519 file: cache dei download di pip (`PIP_CACHE_DIR` in `scripts/setup_env.sh` e nel `.bashrc`), ultima
+     scrittura il 04/11 fra le 12:14 e le 12:23. I job non la leggono: i nodi di calcolo non installano pacchetti. Da sola porta i liberi
+     a circa 36,06 GiB, 2,33 sopra il richiesto.
+  2. `data/raw/neurorvq_checkpoint`, 0,95 GiB: copia di scaricamento dei due file NeuroRVQ, identica byte per byte (`cmp`) a `models/`,
+     che e' la copia letta dal codice (`cp -n` in `scripts/slurm/download_small_public.sbatch`).
+  3. `data/raw/epn612/EMG-EPN612_Dataset.zip`, 5,11 GiB: archivio pubblico (Zenodo 4421500) gia' estratto accanto. Indice dello zip ed
+     estratto coincidono: 1.224 file e 11.677.190.838 byte. Lo cita solo lo script di download. Non e' un confronto per checksum file
+     per file.
+- **Candidati che chiedono una decisione scientifica** (dati derivati, rigenerabili solo con calcolo): `wearusfm_runs/results/passo6`,
+  18,56 GiB di feature di sonda di ottobre (`step2c_1410` 12,91; `step1_downstream_0910` 2,28; `step1_random_20261014_r3` 1,56;
+  `step2a_20261014` 1,33; `rvq_codes` 0,34), escluse le sottocartelle piccole che il codice corrente legge (`derived_v1_1`, `loader_*`,
+  `capgmyo_grid_fix`, `step1_0710`); `wearusfm_runs/runs/step2c_1410`, 2,15 GiB di checkpoint, di cui 0,43 del collaudo;
+  `wearusfm_runs/runs/sanity_0310_c3`, 0,42; `results/consolidation_20261104/finetuning/epn`, 2,56 GiB: i 24 candidati a cinque
+  epoche della linea in corso, su cui decide GPT.
+- **Da non toccare:** `results/consolidation_20261104/continuation/checkpoints` (1,69 GiB, ingressi della valutazione lunga),
+  `results/finetune15_20261105` (campagna in esecuzione), l'estratto di EPN612 (in uso), `data/processed` (44,75 GiB, ingressi del
+  manifest), `zhang2026`, `csl_hdemg` e `camargo2021_emg_converted` (non riottenibili), i 55 checkout di campagna (2,16 GiB),
+  `MONALISA_WORK` (altro progetto di Simone, nella stessa quota, con job in esecuzione).
+- **CLAUDE.md non aggiornato su un punto:** «gli originali in $WORK/data/raw restano finche' Simone non lancia
+  `scripts/slurm/delete_verified_raw.sbatch`» e' superato dal 04/10 (`docs/decisioni.md`, «Spazio su `$WORK`: originali verificati
+  tolti da Simone»). Quella strada e' gia' stata usata.
+- Le cancellazioni restano di Simone dal suo terminale, come il 04/10 («l'agente non esegue cancellazioni definitive»). Dopo, la quota
+  va riletta prima del controllo di C-1: su Lustre l'aggiornamento puo' arrivare in ritardo. Specchietto aggiornato nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
