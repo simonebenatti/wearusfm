@@ -40,3 +40,22 @@ submitter e ledger comuni, RUNNING dalle 19:24:49 CET. Allocazione osservata cor
 1 GPU, 8 CPU, 100G, 50 minuti. Continuazione 63593128 ancora PENDING Priority.
 Il successivo test R-1 viene corretto solo nel ramo di sviluppo: questo checkout
 congelato e i job già avviati rimangono invariati.
+
+## Completamento e letture differite
+
+Estrazione 63615952 COMPLETED 0:0 alle 19:55:55 CET, durata 1.866 s:
+0,518333 GPU-ore e 4,146667 core-ore, entro i tetti. Ricevuta completa;
+SHA e byte delle due cache e SHA delle provenienze ricalcolati sul cluster e
+coincidenti con la ricevuta. Prodotte 1.907 finestre train (200 registrazioni,
+40 utenti) e 18.548 finestre val (1.950 registrazioni, 15 utenti).
+La verifica locale archivia un riepilogo tecnico e i digest; il JSON originale
+completo resta sul cluster e non è ancora copiato nell'archivio locale.
+
+Simone, 05/11: «possiamo anche fare tutte le letture alla fine».
+Le letture scientifiche CPU sono quindi differite fino alla disponibilità degli
+endpoint e delle estrazioni finali, per leggerli insieme. Nessun lettore CPU della
+posa 5.000 sottomesso. La continuazione 63593128 resta in coda (Priority alle 20:41 CET).
+Questo rinvio non modifica ricetta, checkpoint, cache, criteri o job già sottomessi.
+Per la lettura CPU serviranno i gate già approvati e un nuovo checkout dopo la
+pubblicazione della release del fit, successiva a validate e benchmark. Il numero
+effettivo di checkout, eventualmente condivisi fra endpoint, sarà conteggiato nel piano.

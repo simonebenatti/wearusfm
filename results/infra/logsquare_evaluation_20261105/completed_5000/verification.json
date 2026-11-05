@@ -1,0 +1,214 @@
+{
+  "observed_utc": "2026-11-05T19:46:32.616741Z",
+  "job": 63615952,
+  "slurm_state": "COMPLETED 0:0",
+  "start_cet": "2026-11-05 19:24:49",
+  "end_cet": "2026-11-05 19:55:55",
+  "elapsed_seconds": 1866,
+  "gpu_hours": 0.5183333333333333,
+  "core_hours": 4.1466666666666665,
+  "receipt_summary": {
+    "complete": true,
+    "stage": "extract-pose",
+    "checkpoint_step": 5000,
+    "which": "teacher",
+    "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+    "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79",
+    "elapsed_seconds": 1848.466681342572,
+    "outputs": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz",
+        "sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+        "bytes": 257774193,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz.provenance.json",
+        "provenance_sha256": "409d08653b4557894c75c97130f3145c0c3fe46d3d979da3ec1243c152c26760"
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz",
+        "sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+        "bytes": 2485995330,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz.provenance.json",
+        "provenance_sha256": "126edd42dd1a675087b50fb598bec8d3a8aeafc0a0f6ac7784b0f2b707ecb704"
+      }
+    },
+    "postload_recipe_passed": true
+  },
+  "hash_verification": {
+    "utc": "2026-11-05T19:46:32.616741Z",
+    "receipt": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/receipt.json",
+      "sha256": "3dca283a6cb70f1bff435471027c63381ee3d2049acdcbd78349d103a1195946",
+      "bytes": 3793503
+    },
+    "cache_verification": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz",
+        "sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+        "bytes": 257774193,
+        "expected_sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+        "expected_bytes": 257774193,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz.provenance.json",
+        "provenance_sha256": "409d08653b4557894c75c97130f3145c0c3fe46d3d979da3ec1243c152c26760",
+        "expected_provenance_sha256": "409d08653b4557894c75c97130f3145c0c3fe46d3d979da3ec1243c152c26760",
+        "provenance": {
+          "protocol": "tokenizer-logsquare-evaluation-20261104-v1",
+          "arm": "T100-LQ",
+          "which": "teacher",
+          "checkpoint_step": 5000,
+          "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+          "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+          "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79",
+          "postload_recipe_passed": true,
+          "model_config": {
+            "dim": 384,
+            "n_heads": 6,
+            "k_latents": 64,
+            "local_layers": 2,
+            "backbone_layers": 8,
+            "decoder_layers": 2,
+            "muscle_dropout": 0.4,
+            "patch_ms": 25,
+            "window_ms": 100,
+            "n_bands": 5,
+            "rvq_codes": null,
+            "grad_checkpoint": true,
+            "multiscale_anchor": true,
+            "keep_readout": false,
+            "spectral_branches": [],
+            "branch_dim": 128,
+            "branch_hidden": 48,
+            "wavelet_learnable": false,
+            "branch_alpha": 0.5,
+            "branch_objective": "readout",
+            "branch_freeze_output": false,
+            "pose_head": true,
+            "tokenizer_activation": "identity",
+            "tokenizer_logsquare": true,
+            "tokenizer_logsquare_eps": 0.001
+          },
+          "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+          "split": "train",
+          "config": {
+            "n_windows": 10,
+            "window_s": 4,
+            "seed": 20261026,
+            "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+            "per_side": false,
+            "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+            "which": "teacher",
+            "split": "train",
+            "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+            "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+            "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+          },
+          "n_windows": 1907,
+          "n_users": 40,
+          "n_recordings": 200,
+          "targets": {
+            "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+            "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+            "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+          },
+          "reference_cache_sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+          "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz",
+          "cache_sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+          "cache_bytes": 257774193
+        }
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz",
+        "sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+        "bytes": 2485995330,
+        "expected_sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+        "expected_bytes": 2485995330,
+        "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz.provenance.json",
+        "provenance_sha256": "126edd42dd1a675087b50fb598bec8d3a8aeafc0a0f6ac7784b0f2b707ecb704",
+        "expected_provenance_sha256": "126edd42dd1a675087b50fb598bec8d3a8aeafc0a0f6ac7784b0f2b707ecb704",
+        "provenance": {
+          "protocol": "tokenizer-logsquare-evaluation-20261104-v1",
+          "arm": "T100-LQ",
+          "which": "teacher",
+          "checkpoint_step": 5000,
+          "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+          "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+          "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79",
+          "postload_recipe_passed": true,
+          "model_config": {
+            "dim": 384,
+            "n_heads": 6,
+            "k_latents": 64,
+            "local_layers": 2,
+            "backbone_layers": 8,
+            "decoder_layers": 2,
+            "muscle_dropout": 0.4,
+            "patch_ms": 25,
+            "window_ms": 100,
+            "n_bands": 5,
+            "rvq_codes": null,
+            "grad_checkpoint": true,
+            "multiscale_anchor": true,
+            "keep_readout": false,
+            "spectral_branches": [],
+            "branch_dim": 128,
+            "branch_hidden": 48,
+            "wavelet_learnable": false,
+            "branch_alpha": 0.5,
+            "branch_objective": "readout",
+            "branch_freeze_output": false,
+            "pose_head": true,
+            "tokenizer_activation": "identity",
+            "tokenizer_logsquare": true,
+            "tokenizer_logsquare_eps": 0.001
+          },
+          "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+          "split": "val",
+          "config": {
+            "n_windows": 10,
+            "window_s": 4,
+            "seed": 20261026,
+            "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+            "per_side": false,
+            "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+            "which": "teacher",
+            "split": "val",
+            "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+            "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+            "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+          },
+          "n_windows": 18548,
+          "n_users": 15,
+          "n_recordings": 1950,
+          "targets": {
+            "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+            "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+            "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+          },
+          "reference_cache_sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+          "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz",
+          "cache_sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+          "cache_bytes": 2485995330
+        }
+      }
+    },
+    "metadata_files": {
+      "train.log": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train.log",
+        "sha256": "a1b7f758287f877b102380560d932b8d7c254c006ad6b2c13a4ff9bce85c5c1e",
+        "bytes": 19700
+      },
+      "val.log": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.log",
+        "sha256": "8d769119ec6da5154bbc18da644e0c0c63c5801e0410b295d446de3d8a059a67",
+        "bytes": 190914
+      },
+      "logsquare_evaluation_63615952.out": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_evaluation_63615952.out",
+        "sha256": "7ede833d5144ae04b8a325b3c1f2047410adcc0f669d9271dbb4b5c9ad7c5b68",
+        "bytes": 799
+      }
+    }
+  },
+  "full_original_receipt_archived_locally": false,
+  "receipt_remote_preserved": true,
+  "scientific_readouts_deferred_until_final_endpoints": true
+}

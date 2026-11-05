@@ -6307,3 +6307,12 @@ checkout e valutazioni hanno preventivi separati. Nessun cambio di guard o relea
 
 R-1 chiuso: 363 test passati nei 12 file LQ (113,37 s fuori sandbox), oltre ai
 15 test del launcher storico. Confermati invariati i 110 sorgenti scientifici.
+
+### 05/11/2026 — Letture LQ riunite alla fine
+
+Simone: «possiamo anche fare tutte le letture alla fine». Dopo il completamento
+e la verifica tecnica dell'estrazione posa a 5.000 (63615952, 1.866 s), si differiscono
+le letture scientifiche fino alla disponibilità anche dell'endpoint finale e delle
+relative estrazioni. Nessun lettore CPU 5.000 sottomesso; nessun nuovo job.
+Continuazione 63593128 ancora PENDING Priority alle 20:41 CET. Cache e ricevuta
+sono complete e verificate; la decisione cambia il momento della lettura, non i criteri.
