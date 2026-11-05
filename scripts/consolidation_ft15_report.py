@@ -26,12 +26,13 @@ MANIFEST_PROTOCOL = 'consolidation-ft15-results-manifest-20261105-v1'
 FIT_PROTOCOL = 'consolidation-finetune15-epn-20261105-v1'
 PRIOR_REPORT_SHA = '3c4b3601c12836ba7e13a7012458810ca450cfa373a83ba880c4fa36d4d7b87a'
 PLAN_PATH = 'results/infra/finetune15_20261105/plan.json'
-RECIPE = '975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b'
+RECIPE = 'db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1'
 RECIPE_KEYS = ('protocol', 'checkpoint', 'epn_roots', 'input_sha256', 'batch', 'epochs',
                'max_updates', 'seed', 'lr_grid', 'head_lr_multiplier', 'reading_rule15')
 READING_RULE15 = {
     'epochs': 15, 'primary_contrasts': ['finetune_minus_scratch', 'finetune_minus_frozen'],
-    'secondary_contrasts': ['frozen15_minus_frozen5', 'finetune15_minus_finetune5', 'scratch15_minus_scratch5'],
+    'secondary_contrasts': ['frozen15_minus_frozen5', 'finetune15_minus_finetune5', 'scratch15_minus_scratch5',
+                            'transfer_gap15_minus_gap5'],
     'bootstrap': {'replicates': 2000, 'seed': 20261102, 'unit': 'subject', 'paired': True},
     'validation_tail': {'regimes': ['frozen', 'finetune', 'scratch'], 'folds': 4,
         'best_epoch15_folds_at_least': 3, 'or_median_validation_bacc_epoch15_minus14_at_least': .005,
@@ -136,6 +137,17 @@ def dose_statistics(fifteen, five, n_boot=N_BOOT, seed=SEED):
         contrasts[f'{r}15_minus_{r}5'] = {'delta_pp': float(100 * (points[i] - points[i + 3])),
                                       'ci95_pp': np.quantile(delta, [.025, .975]).tolist(),
                                       'paired_subject_se_pp': float(np.std(delta, ddof=1))}
+    gap15 = points[1] - points[2]
+    gap5 = points[4] - points[5]
+    # This difference-in-differences has its own paired sampling distribution.
+    # Keep all six cells on exactly the same draw; never subtract CI bounds.
+    gap_change = 100 * ((draws[:, 1] - draws[:, 2]) - (draws[:, 4] - draws[:, 5]))
+    contrasts['transfer_gap15_minus_gap5'] = {
+        'delta5_pp': float(100 * gap5), 'delta15_pp': float(100 * gap15),
+        'delta_pp': float(100 * (gap15 - gap5)),
+        'ci95_pp': np.quantile(gap_change, [.025, .975]).tolist(),
+        'paired_subject_se_pp': float(np.std(gap_change, ddof=1)),
+    }
     return {'secondary': True, 'interpretation': 'fresh fifteen-epoch cosine versus fresh five-epoch cosine; not an isolated dose effect',
             'cells': {name: {'balanced_accuracy': float(points[i])} for i, name in enumerate(names)},
             'contrasts': contrasts, 'n_rows': len(ref['y']), 'n_subjects': ns,

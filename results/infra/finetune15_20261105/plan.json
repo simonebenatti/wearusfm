@@ -43,7 +43,8 @@
     "secondary_contrasts": [
       "frozen15_minus_frozen5",
       "finetune15_minus_finetune5",
-      "scratch15_minus_scratch5"
+      "scratch15_minus_scratch5",
+      "transfer_gap15_minus_gap5"
     ],
     "bootstrap": {
       "replicates": 2000,
@@ -163,7 +164,7 @@
     "commit": null,
     "scope": "all3regimes15epochs; new resource policy and read-only report; no submission including benchmark before convergence"
   },
-  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
+  "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
   "fold_regime_cells": 12,
   "next_scientific_priority": {
     "after_this_experiment": "extend beyond EPN with other classification datasets and regression distinct from supervised emg2pose pose",
@@ -173,5 +174,23 @@
       "preregister per-dataset split, metrics and fair tuning before new outcomes",
       "distinguish development reuse from untouched confirmation"
     ]
+  },
+  "held_reuse": {
+    "population": "same 314 development subjects and 47100 windows as five-epoch OOF",
+    "new_prediction_per_cell": 1,
+    "interpretation": "second dose-specific look at development held; not untouched confirmatory evaluation",
+    "dose_selection_on_held": false,
+    "automatic_third_dose": false
+  },
+  "operational_failure_policy": {
+    "slurm_requeue": false,
+    "restart_count_must_equal": 0,
+    "partial_output": "preserve with logs and accounting; not an admissible completed scientific result",
+    "dependent_job": "afterok remains unsatisfied; no dependency bypass",
+    "checkpoint_resume": false,
+    "reason": "candidate checkpoint has selected model weights, not full optimizer, schedule and RNG state",
+    "automatic_retry": false,
+    "recovery": "diagnosis and reviewed concrete amendment before any new attempt; new output namespace and logical ID linked to failed attempt; original initialization and full dose; no held-based retry or candidate replacement",
+    "current_job_cap_includes_retries": false
   }
 }

@@ -130,6 +130,24 @@ def test_launcher_rejects_invalid_regime_before_cluster_setup(tmp_path):
     assert "WORK" not in failed.stderr
 
 
+@pytest.mark.parametrize("restart_count", ["1", "2"])
+@pytest.mark.parametrize("mode_args", [["benchmark"], ["fit", "0", "finetune", "0"]])
+def test_launcher_forbids_requeue_before_cluster_setup(tmp_path, restart_count, mode_args):
+    launcher = ROOT / "scripts/slurm/consolidation_finetune15.sbatch"
+    assert "#SBATCH --no-requeue" in launcher.read_text().splitlines()
+    argv = ["bash", str(launcher), mode_args[0], str(tmp_path / "out"), *mode_args[1:]]
+    failed = subprocess.run(argv, capture_output=True, text=True,
+                            env={"PATH": "/usr/bin:/bin", "SLURM_RESTART_COUNT": restart_count})
+    assert failed.returncode == 2
+    assert "automatic restart/requeue is forbidden" in failed.stderr
+    assert "WORK" not in failed.stderr  # No cluster variables, setup or Python reached.
+    assert not (tmp_path / "out").exists()
+    fresh = subprocess.run(argv, capture_output=True, text=True,
+                           env={"PATH": "/usr/bin:/bin", "SLURM_RESTART_COUNT": "0"})
+    assert "automatic restart/requeue is forbidden" not in fresh.stderr
+    assert "WORK" in fresh.stderr  # A fresh job proceeds to the normal environment guard.
+
+
 def published_plan():
     return json.loads((ROOT / 'results/infra/finetune15_20261105/plan.json').read_text())
 

@@ -29,7 +29,7 @@ PROTOCOL = "consolidation-finetune15-epn-20261105-v1"
 READING_RULE15 = {
     "epochs": 15,
     "primary_contrasts": ["finetune_minus_scratch", "finetune_minus_frozen"],
-    "secondary_contrasts": ["frozen15_minus_frozen5", "finetune15_minus_finetune5", "scratch15_minus_scratch5"],
+    "secondary_contrasts": ["frozen15_minus_frozen5", "finetune15_minus_finetune5", "scratch15_minus_scratch5", "transfer_gap15_minus_gap5"],
     "bootstrap": {"replicates": 2000, "seed": 20261102, "unit": "subject", "paired": True},
     "validation_tail": {
         "regimes": ["frozen", "finetune", "scratch"], "folds": 4, "best_epoch15_folds_at_least": 3,

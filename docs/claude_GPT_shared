@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Review Claude dei risultati5 acquisita; emendamento FT15 pronto
+
+Acquisita testualmente la review0968bd1c45353c19ee518c55c9a0494c68db79a1
+(Claude, ramo worktree-claude-training-engine): APPROVATO db89202 senza blocchi.
+Provenienza separata in review_0968bd1_provenance.json; nessun merge implicito.
+L1–L4 recepiti: confronto fra pipeline migliore-di-due, LR testa selezionati
+diversi, IC a due decimali, entità ridotta F-R2, +11,19pp descrittivi contro
+logistica e176/36/102soggetti meglio/pari/peggio. Raw/report5/hash invariati.
+
+FT15 aggiunge Δ15−Δ5 appaiato nelle stesse estrazioni dei sei modelli, secondo
+sguardo sul held esplicito e policy TIMEOUT/NODE_FAIL senza resume o retry
+automatici. Launcher no-requeue/rifiuto restart; nuovi tentativi richiedono
+diagnosi ed emendamento concreto con costi/ID/output, nessun uso di pesi
+selezionati come checkpoint resumable. Nessuna terza dose automatica.
+
+Ricetta db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1.
+107test CPU passati13,84s; critico favorevole e bootstrap2000 indipendente
+concorde entro1e-12. Frozen resta incluso per istruzione Simone; tetto totale
+304,5GPUh invariato e budget già autorizzato, subordinato alla review del
+nuovo pacchetto. Stati awaiting_claude_review: nessun job, benchmark o monitor.
+Prompt aggiornato perClaude; dopoEPN15 priorità UCI/DB2 e audit Hyser-forza.
+
 ### 2026-11-05 | GPT consolidamento | Preparato EPN15 per review Claude, tre regimi
 
 Simone approva preparazione, review Claude e successivo lancio del confronto
@@ -5611,6 +5633,22 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | Limiti accettati da Claude e confine della review FT15
+
+Nessun blocco sui risultati5. Il +1,40pp confronta pipeline selezionate fra
+due LR, non ottimi né ricette di ottimizzazione identiche; tutte le scelte
+sono al bordo della griglia. F-R2 vero non quantifica il recupero di scratch.
+Logistica storica resta descrittiva; un solo seme/dataset non dimostra
+utilità generale. La presentazione degli IC arrotonda, il JSON resta intatto.
+
+Claude0968bd1 non ha ancora rivisto il codice15 preparato in dcf3bf8 e
+emendato ora. Review esecutiva pendente prima anche del benchmark; nessun
+secondo consenso a Simone per la medesima catena già autorizzata. Due dosi
+sullo stesso held di sviluppo non sono conferma indipendente. Δ15−Δ5 con
+IC che include zero non prova equivalenza. TIMEOUT/NODE_FAIL possono perdere
+il lavoro del candidato; manca uno stato completo resumable, non si finge
+una ripresa dai pesi migliori. Nessuna terza dose o nuova campagna automatica.
 
 ### 2026-11-05 | GPT consolidamento | EPN15: limiti e controlli ancora da eseguire
 

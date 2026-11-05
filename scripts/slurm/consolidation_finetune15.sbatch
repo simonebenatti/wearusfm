@@ -7,12 +7,19 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=100G
 #SBATCH --time=00:30:00
+#SBATCH --no-requeue
 #SBATCH -J consolidation_ft15
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_%j.out
 # FIT requires --time=06:00:00 (frozen) or 16:00:00 (finetune/scratch)
 # through the shared submitter; the scientific dose is fifteen epochs from the original initialization.
 set -euo pipefail
+# Saved best-model weights are not resumable optimizer/RNG state. A restart
+# requires diagnosis and a separately reviewed fresh run, never an automatic retry.
+if [ "${SLURM_RESTART_COUNT:-0}" != 0 ]; then
+  echo 'automatic restart/requeue is forbidden for the fifteen-epoch campaign' >&2
+  exit 2
+fi
 [ "$#" -ge 2 ] || { echo 'usage: consolidation_finetune15.sbatch benchmark|fit OUT [FOLD REGIME CANDIDATE]' >&2; exit 2; }
 MODE="$1"; OUT="$2"
 case "$MODE" in

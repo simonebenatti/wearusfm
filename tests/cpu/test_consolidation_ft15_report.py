@@ -251,10 +251,52 @@ def test_six_cell_bootstrap_matches_explicit_subject_resampling():
         old = np.mean([np.mean(pred[y == label] == label) for label in np.unique(y)])
         differences.append(100 * (1 - old))
     expected = np.quantile(differences, [.025, .975])
-    for value in output['contrasts'].values():
-        assert np.allclose(value['ci95_pp'], expected)
+    for r in R.REGIMES:
+        assert np.allclose(output['contrasts'][f'{r}15_minus_{r}5']['ci95_pp'], expected)
     assert output['bootstrap']['draws_with_missing_classes'] > 0
     assert output['bootstrap']['discarded_draws'] == 0
+
+
+def test_transfer_gap_change_uses_correlated_doses_and_direct_paired_interval():
+    subjects = ['u0'] * 3 + ['u1'] * 4 + ['u2'] * 5 + ['u3'] * 3 + ['u4'] * 4
+    y = ['a', 'a', 'b', 'a', 'b', 'b', 'b', 'c', 'c', 'a', 'a', 'a', 'a', 'c', 'b', 'b', 'c', 'c', 'c']
+    ft5 = ['a', 'a', 'b', 'a', 'a', 'b', 'b', 'c', 'a', 'a', 'a', 'b', 'b', 'c', 'b', 'b', 'c', 'c', 'c']
+    scratch5 = ['b', 'b', 'b', 'a', 'b', 'a', 'b', 'a', 'a', 'b', 'a', 'a', 'a', 'b', 'b', 'a', 'c', 'a', 'c']
+    ft15, scratch15 = ft5.copy(), scratch5.copy()
+    ft15[8] = y[8]
+    scratch15[0] = y[0]
+    five = {r: SUPPORT.cell(subjects, y, p) for r, p in zip(R.REGIMES, [ft5, ft5, scratch5])}
+    fifteen = {r: SUPPORT.cell(subjects, y, p) for r, p in zip(R.REGIMES, [ft5, ft15, scratch15])}
+    n_boot, seed = 257, 1911  # includes the boundary between bootstrap chunks
+    result = R.dose_statistics(fifteen, five, n_boot=n_boot, seed=seed)
+    gap = result['contrasts']['transfer_gap15_minus_gap5']
+    target = np.asarray(y)
+    unique = sorted(set(subjects))
+    def gap_on_indices(table, indices):
+        recalls = []
+        for r in ('finetune', 'scratch'):
+            pred, truth = table[r]['pred'][indices], target[indices]
+            recalls.append(sum(np.mean(pred[truth == c] == c) for c in set(truth)) / len(set(truth)))
+        return recalls[0] - recalls[1]
+    def rows(picks):
+        return np.concatenate([np.flatnonzero(np.asarray(subjects) == unique[p]) for p in picks])
+    picks = np.random.default_rng(seed).integers(len(unique), size=(n_boot, len(unique)))
+    unpaired_picks = np.random.default_rng(seed + 1).integers(len(unique), size=(n_boot, len(unique)))
+    paired, unpaired = [], []
+    for pick, independently_picked in zip(picks, unpaired_picks):
+        indices = rows(pick)
+        paired.append(100 * (gap_on_indices(fifteen, indices) - gap_on_indices(five, indices)))
+        unpaired.append(100 * (gap_on_indices(fifteen, indices) - gap_on_indices(five, rows(independently_picked))))
+    expected = np.quantile(paired, [.025, .975])
+    independent_interval = np.quantile(unpaired, [.025, .975])
+    assert np.allclose(gap['ci95_pp'], expected, rtol=0, atol=1e-12)
+    assert not np.allclose(expected, independent_interval)
+    assert np.ptp(independent_interval) > np.ptp(expected)
+    all_rows = np.arange(len(y))
+    assert gap['delta5_pp'] == pytest.approx(100 * gap_on_indices(five, all_rows))
+    assert gap['delta15_pp'] == pytest.approx(100 * gap_on_indices(fifteen, all_rows))
+    assert gap['delta_pp'] == pytest.approx(gap['delta15_pp'] - gap['delta5_pp'])
+    assert gap['paired_subject_se_pp'] == pytest.approx(np.std(paired, ddof=1))
 
 
 @pytest.mark.parametrize('key', ['rows', 'y', 's', 'fold'])

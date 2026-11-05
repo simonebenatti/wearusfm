@@ -5,7 +5,7 @@
   "owner": "gpt",
   "submitter": "scripts/submit_job.py",
   "ledger": "~/wearusfm_local/jobs",
-  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
+  "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
   "no_submission_before_external_review": true,
   "runtime_code_sha": null,
   "benchmark_code_sha": null,
@@ -722,5 +722,16 @@
     "campaign_allocated_core_hours": 2436.6666666666665
   },
   "failure_policy": "stop affected phase; no blind retry, resume from downstream5 checkpoint, omitted candidate, altered dose/batch/LR or autoextension",
-  "background_monitor": false
+  "background_monitor": false,
+  "operational_failure_policy": {
+    "slurm_requeue": false,
+    "restart_count_must_equal": 0,
+    "partial_output": "preserve with logs and accounting; not an admissible completed scientific result",
+    "dependent_job": "afterok remains unsatisfied; no dependency bypass",
+    "checkpoint_resume": false,
+    "reason": "candidate checkpoint has selected model weights, not full optimizer, schedule and RNG state",
+    "automatic_retry": false,
+    "recovery": "diagnosis and reviewed concrete amendment before any new attempt; new output namespace and logical ID linked to failed attempt; original initialization and full dose; no held-based retry or candidate replacement",
+    "current_job_cap_includes_retries": false
+  }
 }

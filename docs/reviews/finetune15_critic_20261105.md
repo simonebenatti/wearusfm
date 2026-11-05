@@ -35,3 +35,20 @@ pubblicazione e checkout. Quota corrente, benchmark CUDA, pin operativi e
 consuntivi restano controlli prima delle relative fasi. IC descrittivi,
 condizionati a modelli/fold e seme unico;15−5 cambia anche l'orizzonte cosine.
 Nessuna modifica, SSH, sottomissione o commit da parte del revisore.
+
+## Rilettura dell'emendamento dopo Claude 0968bd1
+
+Il medesimo critico ha rivisto il nuovo contrasto `transfer_gap15_minus_gap5`,
+la policy TIMEOUT/NODE_FAIL e i limiti L1–L4 recepiti nell'analisi5.
+**Favorevole, nessun difetto sostanziale.** Oracolo indipendente su sei soggetti
+sbilanciati, 2.000 campionamenti e seed20261102: punto, IC e SE di Δ15−Δ5
+riprodotti entro1e-12. Le sei celle condividono le estrazioni; non si
+sottraggono estremi degli IC. Ricetta db975bd1… concorde nei quattro artefatti.
+
+Rieseguiti dal critico32test in8,48s e bash-n; dall'owner il pacchetto completo
+**107test in13,84s**, includendo regressioni5 e operazioni. Launcher con
+no-requeue e rifiuto restart prima del setup; nessuna falsa ripresa da pesi
+privi di optimizer/RNG. Secondo sguardo sul held e nessuna terza dose dichiarati.
+Due refusi editoriali segnalati e corretti; nessun cambiamento di algoritmo
+dopo questa rilettura. Provenienze/risorse di preparazione rigenerate dall'owner.
+La review esterna del codice FT15 resta necessaria; Claude0968bd1 approva5.

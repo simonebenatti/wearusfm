@@ -21,14 +21,14 @@ soggetto, seed 20261102, stessi campionamenti nei tre regimi, zero scarti.
 
 | Regime | Che cosa viene allenato | Balanced accuracy | IC95% |
 |---|---|---:|---:|
-| Frozen | Nuova testa LayerNorm + lineare, teacher 19.618 congelato | 70,575% | [69,176; 71,977] |
-| Fine-tuning | Testa ed encoder inizializzato dal teacher 19.618 | 93,766% | [92,921; 94,601] |
-| Scratch | Stessa architettura, inizializzazione casuale | 92,363% | [91,427; 93,270] |
+| Frozen | Nuova testa LayerNorm + lineare, teacher 19.618 congelato | 70,58% | [69,18; 71,98] |
+| Fine-tuning | Testa ed encoder inizializzato dal teacher 19.618 | 93,77% | [92,92; 94,60] |
+| Scratch | Stessa architettura, inizializzazione casuale | 92,36% | [91,43; 93,27] |
 
 | Contrasto predefinito | Differenza in punti percentuali | IC95% appaiato |
 |---|---:|---:|
-| Fine-tuning − frozen | +23,191 | [21,945; 24,395] |
-| Fine-tuning − scratch | +1,403 | [0,930; 1,837] |
+| Fine-tuning − frozen | +23,19 | [21,94; 24,39] |
+| Fine-tuning − scratch | +1,40 | [0,93; 1,84] |
 
 **Il confronto con scratch è l'evidenza pertinente al contributo del
 pretraining.** A pari cinque epoche e con la selezione concordata, partire dal
@@ -36,6 +36,22 @@ teacher aiuta. Scratch raggiunge già un punteggio alto: non abbiamo dimostrato
 che il pretraining sia indispensabile, né che il vantaggio persista a dose maggiore.
 I costi di pretraining non entrano nella parità delle cinque epoche downstream:
 questa non è una dimostrazione di maggiore efficienza di calcolo complessiva.
+
+È il confronto fra pipeline selezionate ciascuna come **migliore di due
+candidati sulla validation**. Tutte le 12 scelte sono a un estremo della griglia
+a due punti: non abbiamo delimitato un ottimo di LR. I selezionati FT e scratch
+hanno lo stesso LR dell'encoder, 1e-4, ma LR della testa diversi, 1e-2 e 1e-3.
+Il +1,40 non isola quindi l'inizializzazione a parità di ottimizzatore e non
+confronta gli ottimi di tuning. Le opportunità di selezione restano quelle
+concordate; non vengono aggiunti candidati dopo i risultati.
+
+Descrittivamente, FT−scratch è positivo nei quattro fold (+1,67 / +1,11 /
++1,14 / +1,69 pp) e nelle sei classi. Fra i soggetti, 176 migliorano, 36
+pareggiano e 102 peggiorano: il beneficio medio non è un miglioramento per tutti.
+I conteggi derivano dalle statistiche aggregate del report, confermate dalla
+review Claude 0968bd1. Le tabelle usano due decimali: il controllo Monte Carlo
+di Claude segnala variazioni dei limiti dell'IC di circa 0,03 pp. I valori
+completi e il seed prescritti restano invariati nel JSON di riferimento.
 
 **Il +23,19 riguarda soltanto il nuovo controllo frozen.** La logistica storica
 sul medesimo teacher e sulla stessa popolazione raggiungeva **82,577%**:
@@ -45,6 +61,9 @@ hanno la migliore validation alla quinta epoca. Il 70,575% non è quindi un
 limite dimostrato delle rappresentazioni congelate, e il contrasto di 23 punti
 non quantifica il vantaggio rispetto al miglior lettore congelato disponibile.
 La causa specifica del divario con la logistica non è isolata da questa prova.
+La distanza descrittiva FT−logistica storica è **+11,19 pp**: deriva dai due
+aggregati, fra lettori diversi, senza un nuovo IC appaiato. Non sostituisce
+nessuno dei contrasti primari.
 
 ## Selezione e regola sulla dose
 
@@ -66,10 +85,19 @@ validation(epoca5) − validation(epoca4) è +0,389 punti, inferiore alla soglia
 alternativa di +0,5; basta la prima clausola della regola OR. Non è una prova
 che ogni run stia ancora migliorando, né dell'entità del possibile seguito.
 
+Nelle sole curve train/validation, la mediana del guadagno 5−4 è +1,32 pp
+per frozen, −0,06 pp per FT e +0,39 pp per scratch; le loss finali sono circa
+0,72–0,74 / 0,018–0,020 / 0,11–0,14. FT mostra un plateau finale, scratch un
+piccolo miglioramento e frozen un adattamento ancora incompleto in questa
+ricetta. Il LR molto basso alla fine del cosine e le piccole differenze di
+validation impediscono di dedurne una convergenza generale o il guadagno a 15.
+
 Il seguito previsto come direzione è un nuovo confronto FT/scratch a 15 epoche,
 dalle stesse inizializzazioni originali e con schedule a 15 epoche, senza ripresa
-dai modelli selezionati a cinque. **È una nuova proposta per Simone, con preventivo
-e review prima di qualunque lancio.** Nessuna estensione eseguita in questa lettura.
+dai modelli selezionati a cinque. Simone ha poi approvato la preparazione e
+aggiunto frozen, con review Claude prima dei lanci: il nuovo
+[protocollo a 15 epoche](../finetune15_protocol_20261105.md) è separato dalla
+campagna conclusa. Nessuna estensione eseguita in questa lettura.
 
 ## Provenienza e verifiche
 
@@ -79,6 +107,12 @@ Runtime fit `a2eeb755676a0ab780fc269f0679684eb41cd6f2`, sorgenti
 Checkpoint teacher `a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056`.
 Le review Claude f70dc72 e 2d157cc restano le approvazioni del runtime;
 questa analisi successiva ha la propria [review indipendente](finetune_results_critic_20261105.md).
+La [review esterna Claude](claude_review_finetune_results_20261105.md), commit
+`0968bd1c45353c19ee518c55c9a0494c68db79a1`, approva i risultati senza blocchi:
+ricalcolo indipendente e report rigenerato identico byte per byte. I limiti
+L1–L4 sono recepiti qui senza modificare raw, aggregatore, report o selezioni.
+Il documento è copiato testualmente con provenienza; non è un merge del ramo
+Claude. Questa approvazione riguarda le cinque epoche, non il codice FT15.
 
 Verificati 84 file contro hash e dimensioni remoti; 24 identità dei checkpoint
 contro SHA256 calcolati sui file remoti, senza scaricare/caricare i pesi.

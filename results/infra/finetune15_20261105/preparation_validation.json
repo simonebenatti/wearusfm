@@ -1,8 +1,8 @@
 {
   "protocol": "finetune15-preparation-validation-20261105-v1",
   "status": "ready_for_claude_review_not_execution",
-  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
-  "source_sha256_at_preparation": "bb28d2a3c8575020d842759c0855c3f484fda2d531ccc1841d55ff73744d0f4d",
+  "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
+  "source_sha256_at_preparation": "13de2f317997e497f6d40a53d04dbc6b2061a6d2244c0a809898968362091469",
   "five_epoch_source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
   "reading_rules_equal": true,
   "reference_candidates_verified": 24,
@@ -30,13 +30,12 @@
     "scratch": 57300
   },
   "tests": {
-    "passed": 102,
-    "seconds": 12.31,
+    "passed": 107,
+    "seconds": 13.84,
     "scope": "FT15 controller/report and FT5/controller/harness/operations regressions"
   },
-  "critic": "ft_walltime_critic; no blocking findings; independent literal paired bootstrap matches within1e-12",
+  "critic": "ft_walltime_critic; no blocking findings; independent literal transfer-gap bootstrap with 2000 draws seed20261102 matches within1e-12",
   "bash_n_passed": true,
-  "old_runtime_plan_and_analysis_unchanged": true,
   "scientific_results_15_exist": false,
   "gpu_jobs_submitted": 0,
   "pending": [
@@ -47,13 +46,17 @@
     "fit gate and effective job receipts"
   ],
   "hashes": {
-    "scripts/consolidation_finetune15.py": "01b2e9d4c824296236b5aa38d9355e6c37f849e7396a51aba5736404c464d5da",
-    "scripts/slurm/consolidation_finetune15.sbatch": "282ce0910db89c77c95ecbacdaed8e185b11847615bc41f356831ca027a3ad39",
-    "scripts/consolidation_ft15_report.py": "6d76df3285635b5e8ac1627d5da1d6ff2c1ef7ecd418dcaafdb27f522f06952e",
-    "tests/cpu/test_consolidation_finetune15.py": "7ab9610b8318641b6344676dc425d36cc67f38accd61f15c34989697c22a80ee",
-    "tests/cpu/test_consolidation_ft15_report.py": "b3bf28a674ee75fac8851edc8dcf2c86a0b32837dbccd231fe1c10ad9bdf5bbc",
-    "results/infra/finetune15_20261105/plan.json": "0c0d71cc8f73028a7101d107ee68d10e93622bb09aec75fdb32a8246a9fb7c47",
+    "scripts/consolidation_finetune15.py": "e49e4a51c5005d282c16b743f024107a2b8cd06adb4bc91845fea640400a3e42",
+    "scripts/slurm/consolidation_finetune15.sbatch": "1dbc1f4e1542ed022b1d20325f03db1646a6e079f4d6677454b1ef67ddfea373",
+    "scripts/consolidation_ft15_report.py": "f477725067603a0f361a0ebff96e77f57bce90e5289b8b23246d08aee33588bf",
+    "tests/cpu/test_consolidation_finetune15.py": "b8fcb0cca8b93d3ed4df952412775d0ab6b8054a1936b67f137254f11248f3bd",
+    "tests/cpu/test_consolidation_ft15_report.py": "e7557098dc49bae4ff07c7f6c658430f9654e79b1721c6a7ed03b8faa7180f86",
+    "results/infra/finetune15_20261105/plan.json": "f01a05d9dbc2825f7de3f80eac08d1a83e23fdf05684b218fb362dd7f73078f4",
     "results/infra/finetune15_20261105/resource_projection.json": "de77c760cf5d5c1291fb2295c16663beea1d1fba188e88edda5362b62d310d71",
-    "results/infra/finetune15_20261105/launch_plan.json": "3f57c617a8af5ee59e61dd003ae82042727a386db2cc1768674372f95b51aff6"
-  }
+    "results/infra/finetune15_20261105/launch_plan.json": "ee6b5efdb823c4f52dcd64f4048ec3797b638442544e90cff422dc9d8785a75f"
+  },
+  "five_epoch_runtime_plan_and_json_report_unchanged": true,
+  "five_epoch_prose_limits_updated_from_review": "0968bd1c45353c19ee518c55c9a0494c68db79a1",
+  "transfer_gap15_minus_gap5_paired": true,
+  "automatic_requeue_refused": true
 }

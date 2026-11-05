@@ -6343,3 +6343,30 @@ NinaPro DB2 per altro montaggio/compito su corpus già visto, Hyser-forza come
 candidato regressione subordinato ad audit. Dati già osservati nelle sonde
 restano sviluppo; la disponibilità remota attuale non è stata verificata.
 Questa ricognizione non autorizza nuovi training o target non ancora validati.
+
+### 05/11/2026 — Review Claude dei risultati5 e integrazione nel piano15
+
+Review0968bd1 approva db89202: provenienze, score, bootstrap, selezione e
+consuntivi confermati. Accolti L1–L4 nell'analisi senza cambiare report/raw5:
++1,40pp [0,93;1,84] fra pipeline migliore-di-due; LR testa selezionati FT1e-2
+e scratch1e-3, entrambi encoder1e-4. Tuning non delimitato, seme unico.
+Distanza dalla logistica +11,19pp solo descrittiva; per soggetto176/36/102.
+
+Prima di qualunque fit15 si congela anche Δ15−Δ5, differenza dei contrasti
+FT−scratch calcolata dentro le stesse repliche bootstrap delle sei celle.
+Negativo/positivo sostiene restringimento/ampliamento; zero incluso lascia
+la variazione irrisolta, non equivale a equivalenza. Dichiarato secondo
+sguardo sul held di sviluppo, nessuna selezione della dose su held e nessuna
+terza dose automatica. Frozen resta l'aggiunta esplicita approvata da Simone.
+
+TIMEOUT/NODE_FAIL/OOM: preservare parziali/log/accounting, fermare la cella
+e non aggirare afterok; no-requeue/rifiuto restart nel launcher. Checkpoint
+selezionati non resumable; nessun retry automatico. Eventuale recupero passa
+da diagnosi/emendamento concreto e nuovi ID/output/costi. Il tetto attuale
+304,5GPUh non comprende tentativi aggiuntivi. Risorse e griglie invariate.
+
+107test13,84s e review indipendente favorevoli; oracolo2000draw entro1e-12.
+La ricetta15 cambia in db975bd1… prima di qualsiasi esecuzione. La review5
+non abilita il nuovo runtime15: prompt aggiornato per chiudere la review
+Claude richiesta da Simone. Budget già autorizzato, nessun nuovo consenso
+operativo da richiedere. Nessun job/monitor avviato. DopoEPN15, altri dataset.
