@@ -5747,6 +5747,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   ricalcolata db975bd1…, nuovo contrasto `transfer_gap15_minus_gap5` identico al mio calcolo indipendente. **I verdetti valgono
   per 90ffcd4: R-1 e R-4 chiuse, restano R-2 (una frase) e R-3 (cifra confermata da Simone).** Review aggiornata nello stesso file;
   secondo checkout temporaneo rimosso.
+- Seguito (05/11, 11:59 CET): ho scritto in chat il prompt per GPT con verdetti, commit 9338c04, richieste, note e limiti, e ho
+  chiesto a Simone: «Confermi il tetto di 304,5 GPU-ore per il confronto EPN a 15 epoche?». Simone: «Confermo il tetto».
+  Interpretazione mia: vale per il tetto di `plan.json` su 90ffcd4 (304,5 GPU-ore in tutto, 2.436,667 core-ore allocate), senza
+  tentativi aggiuntivi; non e' un via a me, i lanci restano di GPT. R-3 confermata: a GPT resta la registrazione in
+  `decisioni.md` con queste parole e con il residuo. Resta aperta R-2. Review aggiornata; punta del ramo di GPT ancora 90ffcd4.
 
 ## 2) Problemi trovati
 
@@ -7960,3 +7965,5 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   **Aperte R-2 e R-3.** Su R-3: GPT scrive «budget gia' autorizzato» senza citazione letterale; l'autorizzazione del 03/11 («puoi
   anche sforare il budget, non mi importa, ti autorizzo») e' registrata da GPT stesso come limitata al confronto dei tokenizer.
   Decide Simone, con la cifra davanti: tetto 304,5 GPU-ore, atteso circa 205.
+- Seguito (05/11, 11:59 CET): **R-3 confermata da Simone** («Confermo il tetto», in risposta a «Confermi il tetto di 304,5
+  GPU-ore per il confronto EPN a 15 epoche?»); manca solo la registrazione di GPT in `decisioni.md`. **Resta aperta R-2.**

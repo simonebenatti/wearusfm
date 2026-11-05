@@ -18,7 +18,7 @@ di una richiesta lo dico nel punto.
 |---|---|
 | R-1, contrasto sulla variazione del vantaggio | **Chiusa.** `transfer_gap15_minus_gap5` in `READING_RULE15` e in `dose_statistics`, con lettura a due lati; ricetta nuova `db975bd1...`. Il mio ricalcolo indipendente coincide con il modulo (differenza 0,0). |
 | R-2, nessun fit se un regime e' bloccato | **Aperta.** Protocollo e piano di lancio non cambiano su questo punto. |
-| R-3, cifra come decisione di budget | **Aperta: decide Simone.** GPT scrive «budget gia' autorizzato» senza citazione letterale. L'autorizzazione del 03/11 («puoi anche sforare il budget, non mi importa, ti autorizzo») e' registrata da GPT stesso come limitata al confronto dei tokenizer («non nuove loss, altri esperimenti»). |
+| R-3, cifra come decisione di budget | **Confermata da Simone il 05/11 alle 11:59, in chat con me; resta la registrazione di GPT.** Vedi il paragrafo qui sotto. Su `90ffcd4` GPT scriveva «budget gia' autorizzato» senza citazione letterale, e l'autorizzazione del 03/11 («puoi anche sforare il budget, non mi importa, ti autorizzo») e' registrata da GPT stesso come limitata al confronto dei tokenizer («non nuove loss, altri esperimenti»). |
 | R-4, regola per i fallimenti operativi | **Chiusa.** Sezione «TIMEOUT, guasto del nodo e ripetizioni», `operational_failure_policy` nei due piani, `--no-requeue` e rifiuto del restart nel launcher, con test. |
 
 Altri cambi dell'emendamento: secondo sguardo sui 314 soggetti held dichiarato (`held_reuse`); validation dei selezionati a 5 e 15
@@ -34,18 +34,24 @@ preparazione; proiezioni delle risorse invariate; con il mio «15 epoche» sinte
 Nota su R-4: un nuovo tentativo chiede «nuovi ID/output», mentre controller e aggregatore accettano solo il layout congelato.
 E' coerente con la regola scritta: una riesecuzione passa da un emendamento del codice e da una review.
 
+**Conferma di Simone sul tetto (05/11, 11:59 CET).** Alla mia domanda «Confermi il tetto di 304,5 GPU-ore per il confronto EPN a 15
+epoche?» Simone ha risposto: «Confermo il tetto». Interpretazione mia: la conferma riguarda il tetto del piano `plan.json` di
+`90ffcd4`, cioe' 304,5 GPU-ore in tutto per i 24 fit, il benchmark e i due checkout, che in core allocati sono 2.436,667 core-ore.
+Non comprende tentativi aggiuntivi, che il piano esclude dal tetto, e non sostituisce R-2. La conferma non e' un via a me: i lanci
+restano di GPT. A GPT resta da registrarla in `decisioni.md` con queste parole e con il residuo.
+
 ## Verdetti
 
 | # | Punto | Verdetto su 90ffcd4 |
 |---|---|---|
 | 1 | Scienza e selezione | **APPROVATO** |
-| 2 | Risorse | **APPROVATO** per formula, conti e gate, con R-2 aperta; la cifra e' una decisione di budget di Simone (R-3) |
+| 2 | Risorse | **APPROVATO** per formula, conti e gate, con R-2 aperta; tetto confermato da Simone il 05/11 (R-3) |
 | 3 | Aggregazione | **APPROVATO**, compreso il nuovo contrasto |
 | 4 | Regole di lettura | **APPROVATO** (su `dcf3bf8` mancava R-1, chiusa dall'emendamento) |
 | 5 | Operativita' e seguito | **APPROVATO** (R-4 chiusa dall'emendamento); proposta multi-dataset approvata come ricognizione, con quattro osservazioni |
 
-**Nessun difetto bloccante nel codice.** Delle quattro richieste (R-1...R-4) restano aperte R-2, una frase, e R-3, che decide
-Simone. Cinque note (N-1...N-5) non bloccanti.
+**Nessun difetto bloccante nel codice.** Delle quattro richieste (R-1...R-4) resta aperta R-2, una frase. R-3 e' confermata da
+Simone e va solo registrata da GPT. Cinque note (N-1...N-5) non bloccanti.
 
 ## 1. Scienza e selezione: APPROVATO
 
@@ -203,11 +209,12 @@ I numeri degli split (DB2 32 + 8, Hyser 16 + 4) corrispondono a `splits/v1/split
 
 1. R-1 e R-4: chiuse in `90ffcd4`, verificate.
 2. R-2: una frase nel protocollo e nel piano di lancio («se un regime e' bloccato non parte nessun fit»).
-3. R-3: la cifra confermata da Simone, registrata con le sue parole e con il residuo.
+3. R-3: Simone ha confermato il tetto il 05/11 alle 11:59 («Confermo il tetto»). GPT la registra in `decisioni.md` con queste
+   parole e con il residuo.
 4. N-1, N-2, N-3: frasi nel protocollo, a discrezione di GPT. N-4 e' coperta. N-5 e' un'informazione.
 
-Con R-2 scritta e R-3 confermata non ho obiezioni al lancio della catena da parte di GPT, da `90ffcd4` o da un successore che cambi
-solo quelle frasi e gli stati. Il commit di review da citare in `plan.review.commit` e' quello che contiene questo file.
+Con R-2 scritta e la conferma registrata non ho obiezioni al lancio della catena da parte di GPT, da `90ffcd4` o da un successore
+che cambi solo quelle frasi e gli stati. Il commit di review da citare in `plan.review.commit` e' l'ultimo che contiene questo file.
 
 ## Verifiche eseguite
 
