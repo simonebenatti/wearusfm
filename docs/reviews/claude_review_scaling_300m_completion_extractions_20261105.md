@@ -13,6 +13,8 @@ job attivi, nessuna obiezione all'avvio del seguito CPU nell'ordine previsto.
 
 Otto osservazioni non bloccanti (O-1…O-8) e quattro note (N-1…N-4), nessuna delle quali tocca la validità di un risultato.
 
+**Aggiunta del 05/11, 14:50:** anche le ultime due estrazioni (300M P2 e 300M posa) sono concluse e verificate; dettaglio in §9.
+
 **Natura di questa review.** È una verifica a posteriori dell'affidabilità di ciò che è stato eseguito, non un'autorizzazione
 retroattiva. S3, il rilascio scientifico e l'invio delle estrazioni sono stati decisi con review interne di GPT: nessuna di
 quelle approvazioni è mia (O-2). La mia copertura precedente arrivava al codice `0d5f0f9` (review `a988a72`) e all'esito
@@ -315,3 +317,32 @@ una decisione registrata. Correzione minima: nessuna nel codice; fermarsi al pri
 > 37,75 GiB come picco misurato e registrare allocato e riservato per rank (O-1).
 > Da registrare senza azione: O-2 (i gate di review del rilascio puntavano a review interne), O-3, O-4, O-5, N-1…N-4.
 > Se il job della posa `63580385` andasse in TIMEOUT, segnalalo a Simone prima di qualunque nuovo invio.
+
+## 9. Aggiunta del 05/11/2026, 14:50 — esiti delle ultime due estrazioni
+
+Le due estrazioni in corso alla consegna sono concluse senza errori. Ho letto le loro ricevute con gli stessi controlli delle
+altre tre: sono conformi. Le righe corrispondenti di §4.3 e l'osservazione O-4 vanno lette con questa aggiunta; il verdetto
+non cambia e l'area 4 è confermata per tutti e cinque gli invii.
+
+| Job | Cella | Stato | Durata / limite | MaxRSS | Ricevuta |
+|---|---|---|---|---|---|
+| `63580771` | 300M P2 | COMPLETED 0:0 | 1:38:25 / 2:30:00 | 32,3 GiB | `172aa79b…` |
+| `63580385` | 300M posa | COMPLETED 0:0 | 1:57:33 / 2:30:00 | 28,9 GiB | `a57c9420…` |
+
+- **Entrambe:** `complete`, `checkpoint_unchanged`, `postload_recipe_passed`, piano `8b358951…`, contratto `14b044de…`, codice
+  `aef665b`, checkpoint `37279995…`, guadagno `548.6939187567021` dal buffer salvato, input grezzi invariati.
+- **P2.** `epn612.npz` `0c327ceb…` (1.693.610.782 byte) e `uci_emg.npz` `39e121da…` (13.061.126 byte). La provenienza è uguale
+  a quella del 30M in tutti i campi tranne braccio, cache, checkpoint, configurazione del modello e forma del pool: stesse
+  righe ordinate, stessi fold, 47.100 finestre / 314 utenti e 364 / 19.
+- **Posa.** `train_subset.npz` `1e5bdabc…` (549.144.173 byte) e `val.npz` `c1b57991…` (5.321.137.625 byte; 18.548 finestre,
+  15 utenti, 1.950 registrazioni, 6.194,5 s). Rispetto alle cache 30M riusate (`145ddfa5…`, `a9e3a8bb…`): stessi split,
+  finestre, utenti e registrazioni, stessi hash dei bersagli (`metadata`, `arrays`, `central_mask`) e stessi riferimenti
+  B19618 (`c7bc296e…`, `2e1a9d59…`); la configurazione differisce solo per checkpoint e SHA del codice.
+- **Insieme completo.** Le dodici cache nuove e le due riusate sono presenti, con supporti uguali fra i bracci. Consuntivo
+  delle cinque estrazioni: 17.472 s = **4,853 GPU-ore** su 8,25 e 38,83 core-ore su 66.
+- **O-4 chiusa.** Nessun TIMEOUT: la posa è finita alle 14:43:18, 32 minuti prima del limite. Resta il consiglio per il
+  prossimo launcher. La riga sul TIMEOUT del testo per GPT (§8) è superata.
+- **Punta di GPT dopo la consegna.** Alle 14:38 il ramo di GPT è passato a `c3b2ab6` (due commit: registrazione di questa
+  review e raccolta delle ricevute di classificazione). Cambiano solo documenti e risultati, nessun file in `src/`,
+  `scripts/`, `tests/`. Non li ho rivisti; constato soltanto che i quattro hash delle ricevute di classificazione e il
+  consuntivo che riportano (2,894167 GPU-ore) coincidono con i miei.

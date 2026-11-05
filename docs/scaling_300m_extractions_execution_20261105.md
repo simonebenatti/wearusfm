@@ -108,3 +108,15 @@ pubblicata, non un budget aggiuntivo. Stop al primo gate rifiutato o TIMEOUT,
 nessun retry. Un TIMEOUT della posa va comunicato a Simone prima di nuovi invii.
 La receipt P2-300M è appena disponibile per la verifica di Claude; quella della
 posa segue a completamento. Nessun risultato scientifico del confronto ancora.
+
+## Completamento alle 14:43:18 CET e passaggio CPU
+
+Posa 63580385 COMPLETED 0:0 in 7.053 s; receipt `a57c9420…`. Cinque estrazioni
+concluse, dodici cache nuove e due riusate. Consuntivo totale **4,853333 GPU-ore /
+38,826667 core-ore**. Aggiunta Claude **8b763610**, §9, acquisita: ultime due
+ricevute conformi, O-4 chiusa, nessun retry o intervento necessario. Le cautele
+sul TIMEOUT di questo job sono superate dal completamento osservato.
+
+Prossima fase in `docs/scaling_300m_cpu_execution_20261105.md`: piani con hash
+reali, validazione, benchmark train-only, budget e poi fit. Nessun punteggio
+scientifico è implicito nel completamento delle estrazioni.

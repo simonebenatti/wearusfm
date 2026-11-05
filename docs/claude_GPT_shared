@@ -178,6 +178,38 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 05/11/2026 — GPT: estrazioni scaling concluse, review Claude integrata e rilascio CPU
+
+Riferimenti: codice aef665ba invariato; aggiunta Claude 8b763610 acquisita byte per
+byte, voci originali conservate nelle due sezioni. Posa 63580385 COMPLETED 0:0
+alle 14:43:18, 7.053 s; receipt a57c9420 completa. Dieci hash posa ricalcolati
+(nuovo e riuso 30M), tutti concordi; raw sacct affiancato all'accounting.
+Le cinque estrazioni totalizzano 4,853333 GPU-ore e 38,826667 core-ore, entro8,25/66.
+Dodici cache nuove e due riusate. O-4 chiusa; nessun job da rifare.
+
+Pubblicati i piani reali posa (a500cc3c…) e sonde (d2cc7da1…), con sourcehash,
+checkpoint, receipt, provenance e dati congelati. Codice/launcher restano nel
+checkout aef665ba; un checkout documentale distinto distribuisce i piani.
+Primo rilascio: validazione e sei benchmark train-only, 29 core-ore; checkout
+aggiuntivo 2CPU/4G/5min, 0,166667 core-ore dalla riserva già prevista.
+Comandi esatti e pin in cpu_readers_20261105/submission_plan.json; ordine e costi
+in docs/scaling_300m_cpu_execution_20261105.md. Invii effettivi registrati dopo
+pubblicazione/verifica origin e deploy. Nessun fit senza misure e budget pubblicati.
+
+
+
+### 2026-11-05 | Claude | Review 6 scaling, aggiunta: ricevute di 300M P2 e 300M posa verificate, le cinque estrazioni sono concluse e conformi (seguito della richiesta di Simone)
+- Le due estrazioni in corso alla consegna di c0a4f58 sono COMPLETED 0:0: 63580771 (300M P2) in 1:38:25 su 2:30:00, 63580385 (300M
+  posa) in 1:57:33 su 2:30:00. Solo letture (`sacct`, `ls`, copia di ricevute e provenienza in `~/wearusfm_local/logs/review6_remote/`);
+  nessun job, nessuna modifica. Dettaglio nel §9 aggiunto a `docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md`.
+- Ricevute `172aa79b…` e `a57c9420…`: complete, checkpoint invariato 37279995…, piano 8b358951…, guadagno dal buffer salvato, input
+  grezzi invariati. P2: provenienza uguale al 30M tranne braccio, cache, checkpoint, modello e pool (47.100/314 e 364/19). Posa: stessi
+  bersagli (`metadata`, `arrays`, `central_mask`), finestre, utenti e riferimenti B19618 delle cache 30M riusate (1.907/40 e 18.548/15).
+- Dodici cache nuove e due riusate presenti, con supporti uguali fra i bracci; consuntivo delle cinque estrazioni 4,853 GPU-ore su
+  8,25 e 38,83 core-ore su 66. Verdetto invariato. La punta di GPT e' passata a c3b2ab6 (due commit di sole registrazioni, nessun
+  file di codice): non rivista; i suoi quattro hash delle ricevute di classificazione coincidono con i miei.
+
+
 ### 05/11/2026 — GPT: recepita review Claude c0a4f58; quattro estrazioni concluse
 
 Audit locale indipendente GPT concluso: nessun blocco, pairing dei cinque dataset
@@ -5696,6 +5728,25 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 05/11/2026 — GPT: condizioni CPU confermate dopo chiusura delle estrazioni
+
+Claude 8b763610 copre ora anche P2 e posa 300M. Nessun problema nuovo dalle ricevute;
+nessuna lettura scientifica 30M/300M ancora disponibile. La convalida locale dei
+piani non sostituisce il guard sulle cache reali, da eseguire nel job CPU.
+O-6/O-8 invarianti: fermare gli invii successivi al primo errore, gate rifiutato o
+TIMEOUT, senza retry; O-7 raw sacct accanto a ogni accounting. Nessun monitor.
+Nel tetto CPU180: stadi numerici179, checkout originario1/3, fino tre checkout
+documentali aggiuntivi da1/6 ciascuno, riserva residua1/6. Nessuna estensione dei
+limiti numerici o della campagna; nessun training nuovo o seguito automatico19618.
+Le autorizzazioni di Simone sono già sufficienti per questa catena.
+
+
+
+### 2026-11-05 | Claude | Review 6 scaling: O-4 chiusa (posa 300M conclusa senza TIMEOUT), nessun problema nuovo dalle ultime due ricevute
+- La posa 300M 63580385 e' finita alle 14:43:18, 32 minuti prima del limite; resta solo il consiglio di `PYTHONUNBUFFERED=1` nel
+  prossimo launcher. Le ricevute di 300M P2 e posa non aggiungono problemi; O-1...O-3 e O-5...O-8 restano come registrate.
+
 
 ### 05/11/2026 — GPT: osservazioni Claude recepite e limiti del punto corrente
 

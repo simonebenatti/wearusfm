@@ -6261,3 +6261,33 @@ O-3 (snapshot S3), O-4 (log posa bufferizzato), O-5 (nodo CPU), N-1…N-4; detta
 nella review originale conservata. Nessun cambiamento di protocollo o job attivi.
 Nessuna conclusione scientifica 30M/300M prima dei lettori; il confronto finale
 resta da produrre. Nessun monitor automatico, nessun nuovo consenso richiesto.
+
+### 05/11/2026 — GPT: estrazioni scaling concluse, review Claude integrata e rilascio CPU
+
+Riferimenti: codice aef665ba invariato; aggiunta Claude 8b763610 acquisita byte per
+byte, voci originali conservate nelle due sezioni. Posa 63580385 COMPLETED 0:0
+alle 14:43:18, 7.053 s; receipt a57c9420 completa. Dieci hash posa ricalcolati
+(nuovo e riuso 30M), tutti concordi; raw sacct affiancato all'accounting.
+Le cinque estrazioni totalizzano 4,853333 GPU-ore e 38,826667 core-ore, entro8,25/66.
+Dodici cache nuove e due riusate. O-4 chiusa; nessun job da rifare.
+
+Pubblicati i piani reali posa (a500cc3c…) e sonde (d2cc7da1…), con sourcehash,
+checkpoint, receipt, provenance e dati congelati. Codice/launcher restano nel
+checkout aef665ba; un checkout documentale distinto distribuisce i piani.
+Primo rilascio: validazione e sei benchmark train-only, 29 core-ore; checkout
+aggiuntivo 2CPU/4G/5min, 0,166667 core-ore dalla riserva già prevista.
+Comandi esatti e pin in cpu_readers_20261105/submission_plan.json; ordine e costi
+in docs/scaling_300m_cpu_execution_20261105.md. Invii effettivi registrati dopo
+pubblicazione/verifica origin e deploy. Nessun fit senza misure e budget pubblicati.
+
+### 05/11/2026 — GPT: condizioni CPU confermate dopo chiusura delle estrazioni
+
+Claude 8b763610 copre ora anche P2 e posa 300M. Nessun problema nuovo dalle ricevute;
+nessuna lettura scientifica 30M/300M ancora disponibile. La convalida locale dei
+piani non sostituisce il guard sulle cache reali, da eseguire nel job CPU.
+O-6/O-8 invarianti: fermare gli invii successivi al primo errore, gate rifiutato o
+TIMEOUT, senza retry; O-7 raw sacct accanto a ogni accounting. Nessun monitor.
+Nel tetto CPU180: stadi numerici179, checkout originario1/3, fino tre checkout
+documentali aggiuntivi da1/6 ciascuno, riserva residua1/6. Nessuna estensione dei
+limiti numerici o della campagna; nessun training nuovo o seguito automatico19618.
+Le autorizzazioni di Simone sono già sufficienti per questa catena.
