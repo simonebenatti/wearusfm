@@ -4684,6 +4684,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Snapshot delle 17:32:26, Roma: 62582916 PENDING Priority, 62583147/148/149 RUNNING, 9 job Dependency, nessun fallimento.
   Evidenza copiata in results/infra/pilot_posa/b19618_20261028/submission/final_status.json.
 
+### 2026-11-05 | Claude | Coordinamento: Simone conferma che sottomette GPT e che semplicione non c'e' piu'; chiuse le note N-2 (review 2d157cc) e N-3 (review 6)
+- Domanda mia a Simone nel riquadro di chiusura del turno: «Confermi che ora le sottomissioni le fa GPT e non più semplicione?».
+  Risposte di Simone il 05/11 alle 14:57 circa: «Sì, sottomette GPT» e subito dopo «semplici9one non c'e piu».
+- Interpretazione mia: riguarda chi esegue le sottomissioni su Leonardo, cioe' GPT direttamente con `scripts/submit_job.py` e il ledger
+  comune; supera la regola del 28/10 in CLAUDE.md («le nuove sottomissioni su Leonardo passano dalla chat `semplicione`») e conferma
+  l'istruzione che GPT riportava («qua semplicione non c'e piu, lanci sempre tu»). Con semplicione decade anche la sua assegnazione del
+  controllo operativo dei log: chi lo fa lo scrive GPT nell'aggiornamento (lettura mia: lo stesso GPT). Non cambiano budget, criteri,
+  review, approvazioni dei singoli test, submitter e ledger; Claude continua a non lanciare nulla.
+- A GPT, integratore su `main`: aggiornare CLAUDE.md citando le parole di Simone (sezione «Sottomissioni affidate a semplicione», riga
+  «Sottomissioni» della sezione Leonardo, ultimo punto dei «Vincoli non negoziabili»). Io non modifico CLAUDE.md.
+- Chiuse: nota N-2 della review 2d157cc (chat 2) e nota N-3 della review 6 c0a4f58 (chat 1). Specchietto
+  `docs/coordinamento_review_claude_20261104.md` aggiornato alle 15:00: nessun punto aperto per Simone. Nessun job.
+
+### 2026-11-05 | GPT coordinamento | Operatore aggiornato su main dopo conferma di Simone
+
+- Acquisita testualmente la voce Claude del commit 3099836, riportata sopra, senza integrare implicitamente i rami sperimentali.
+- CLAUDE.md aggiornato: GPT sottomette e controlla operativamente stato/log, un owner per linea; coordinamento integra e non duplica.
+  Citazioni di Simone conservate alla lettera. Semplicione non e' piu' operativo; chiuse N-2 (2d157cc) e N-3 (c0a4f58).
+- Invariati submitter/ledger, budget, criteri, review e approvazioni dei singoli test. Nessun job, deploy o modifica ai checkout attivi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -6555,3 +6575,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 
 - Le vecchie istruzioni che assegnano i lanci a GPT o leonardo-ops sono storico per questo punto: da ora si delega
   a semplicione. Autonomia sui piani approvati, budget, ruoli scientifici e divieto di duplicare le prenotazioni invariati.
+
+### 2026-11-05 | GPT coordinamento | Rimossa la regola operatore obsoleta
+
+- Le istruzioni storiche che assegnavano i lanci e i log a semplicione sono superate dalla conferma diretta di Simone del 05/11.
+  La chiusura riguarda l'operatore; non estende la copertura delle review scientifiche o tecniche dei singoli pacchetti.
+- I checkout congelati e i rami sperimentali non vengono aggiornati in corsa. Le loro copie precedenti di CLAUDE.md
+  possono conservare il vecchio testo: prevale l'istruzione attuale, da recepire nei successivi aggiornamenti di sviluppo.

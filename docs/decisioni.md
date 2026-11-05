@@ -5435,3 +5435,12 @@ review, pubblicazione e verifica; semplicione esegue il piano pubblicato con sub
 L'istruzione supera l'assegnazione precedente dei lanci a leonardo-ops. Nessun nuovo esperimento, duplicato, cancellazione
 od obbligo di ripetere l'approvazione dei piani gia' autorizzati. B19618 e 12 valutazioni erano gia' stati sottomessi.
 Affidato a semplicione un controllo puntuale in sola lettura di stato/log per il riepilogo dopo il merge.
+
+### 2026-11-05 — GPT esegue sottomissioni e controllo operativo dei log
+
+Simone conferma alle 14:57 circa a Claude: «Sì, sottomette GPT», in risposta a «Confermi che ora le sottomissioni le fa GPT e non più semplicione?»,
+e aggiunge «semplici9one non c'e piu». Fonte: commit Claude 3099836 e messaggio diretto alla chat GPT di coordinamento.
+La regola del 28/10 e' superata. Sottomette e controlla stato/log l'owner GPT di ciascuna linea; GPT coordinamento e' l'integratore
+su main e non duplica i lanci. Claude rivede il lavoro e non sottomette. N-2 (2d157cc) e N-3 (c0a4f58) chiuse.
+CLAUDE.md riallineato; invariati submitter e ledger comuni, budget, criteri, review e approvazioni dei singoli test.
+Nessun nuovo job, deploy o modifica ai checkpoint e ai checkout in uso; i registri storici restano conservati.
