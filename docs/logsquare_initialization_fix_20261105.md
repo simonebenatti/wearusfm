@@ -23,14 +23,15 @@ il piano e la release del 04/11 non sono stati toccati.
 
 ### Dimostrato dai registri del repository, senza job
 
-| Braccio | Preflight (03/11 e 04/11) | Checkpoint del training storico (5000 e 19618) | Scarto |
+| Braccio | Preflight | Checkpoint del training storico (5000 e 19618) | Scarto |
 | --- | --- | --- | --- |
 | T100-L | 548.6939187567023 `0x1.1258d2546f0f0p+9` | 548.6939187567021 `0x1.1258d2546f0efp+9` | 1 ULP |
 | T100-G | 548.6939187567023 | 548.6939187567021 | 1 ULP |
 | T25-L | 982.425066637557 `0x1.eb3668956576dp+9` | 982.4250666375573 `0x1.eb3668956576fp+9` | 2 ULP |
 
 Fonti: `results/infra/tokenizer_execution_20261103/tokenizer_preflight_20261103/report.json`
-(codice ef8016a), `results/infra/logsquare_execution_20261104/report.json.gz` (codice 43cad1f),
+(codice ef8016a, i tre bracci), `results/infra/logsquare_execution_20261104/report.json.gz`
+(codice 43cad1f, lo stesso valore per T100-L e T100-LQ),
 `results/infra/tokenizer_evaluation_20261103/completed_5000/*/receipt_summary.json` e
 `completed_19618/pose/*/receipt_summary.json` (training col codice afb644e).
 
@@ -53,6 +54,10 @@ Fonti: `results/infra/tokenizer_execution_20261103/tokenizer_preflight_20261103/
 - Il gain e i tensori del modello temporaneo nel job 63532335. Il vecchio messaggio non
   li stampava. Atteso: tensori del riferimento e gain del training.
 - Che il trainer di oggi costruisca ancora il gain dei checkpoint storici.
+- Che nel contesto del trainer gli altri tensori di T100 siano quelli del riferimento. Per
+  T25 lo ha misurato il precedente del 14/10. I registri del training storico salvano il
+  gain, non l'hash dello stato di partenza: quello stato è ricostruito da riferimento e
+  gain, e i contesti `trainer` della diagnostica lo confermano o lo smentiscono.
 - Il precedente del 14/10 mostra che contano anche i thread: con otto thread usciva un
   terzo valore. I launcher del training storico, di T100-LQ e della diagnostica esportano
   tutti un thread e caricano lo stesso ambiente.
@@ -109,7 +114,8 @@ I tre punti sollevati da GPT:
 - I 102 sorgenti scientifici del piano sono identici byte per byte: lo verifica la
   diagnostica contro il piano del 04/11. Epsilon, dati, loss, seed, schedule, dose e
   architettura non cambiano. La stringa di protocollo non cambia.
-- T100-LQ parte dallo stato da cui è partito T100-L, più `W_log` nullo. È il confronto
+- T100-LQ parte dallo stato che i registri attribuiscono alla partenza di T100-L, cioè
+  tensori del riferimento e gain dei suoi checkpoint, più `W_log` nullo. È il confronto
   approvato: T100-L più `log(0,001 + x²)`.
 - Dietro l'ingresso il trainer addestra lo stesso stato. Con quattro rank reali su CPU,
   gruppo di processi e DDP compresi, due passi danno studente, teacher, optimizer e
