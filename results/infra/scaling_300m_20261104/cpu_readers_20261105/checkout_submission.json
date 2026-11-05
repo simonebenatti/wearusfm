@@ -1,0 +1,44 @@
+{
+  "status": "published command; not yet submitted",
+  "plans_commit": "1bde83e5be036ad6168ad25f6ffa80069ea58700",
+  "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "plans": {
+    "pose": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_plan.json",
+      "sha256": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198",
+      "bytes": 9233
+    },
+    "probe": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+      "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+      "bytes": 42708
+    }
+  },
+  "deploy_ref": "refs/heads/deploy/scaling_300m_cpu_plans_20261105_v1",
+  "checkout_argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-300m/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "60",
+    "--id",
+    "SCALING-cpu-plans-checkout-20261105",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-300m/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=4G",
+    "--time=00:05:00",
+    "--export=ALL,CAMPAIGN=scaling_300m_cpu_plans_20261105_v1,CAMPAIGN_SHA=1bde83e5be036ad6168ad25f6ffa80069ea58700,EXPECTED_SHA=1bde83e5be036ad6168ad25f6ffa80069ea58700"
+  ],
+  "core_hours_cap": 0.16666666666666666,
+  "funding": "existing CPU180 reserve",
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "checkout_launcher_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+  "stop_on_failure": true
+}
