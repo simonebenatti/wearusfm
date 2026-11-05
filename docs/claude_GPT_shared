@@ -5938,6 +5938,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   o a lanciare e resta in sola lettura. Il CLAUDE.md del ramo di Claude riceve il testo con l'integrazione; Claude non lo modifica.
 - Aggiornati audit (D-3, P-3 e testo per GPT) e specchietto. Restano aperti D-1 e D-2 (integrazione), D-5 (test) e D-6 (job MONALISA).
 
+### 2026-11-05 | Claude | Coordinamento: stato dei job su Leonardo alle 16:00, letto su richiesta di Simone
+- Richiesta: «dimmi cosa c'e di lanciato che gira sul server». Sola lettura (`squeue --me`, `sacct -X` dalle 15:15), output in
+  `~/wearusfm_local/logs/leonardo_stato_20261105_1600.txt`. Nessuna lettura dei log dei job, che resta agli owner GPT.
+- In esecuzione: 12 fit EPN15 C0 da 2 h 47–2 h 59 (4 frozen con limite 6 h, 4 finetune e 4 scratch con limite 16 h, una GPU ciascuno);
+  `LOGSQ-T100-LQ-5000-20261105` 63593091 dalle 15:31:30 su 4 GPU (29 minuti alle 16:00, limite 1 h 30; il tentativo del mattino 63532335
+  era fallito dopo 21 s); `SCALING-probe-bench-matched-20261105` 63593593 dalle 15:54:57, solo CPU.
+- In attesa: 12 fit EPN15 C1 e `LOGSQ-T100-LQ-19618-20261105` 63593128 per dipendenza; `SCALING-probe-bench-300M-20261105` 63593508 per
+  il limite di CPU per utente della coda seriale. Concluso `SCALING-probe-bench-30M-20261105` 63593262, COMPLETED 0:0 in 33 min 38 s.
+- Sullo stesso account, fuori dal ledger: 6 job `mona_*` RUNNING da 8 h 24 min (una GPU ciascuno, limite 24 ore) e 30 in attesa.
+  GPU occupate in tutto alle 16:00: 16 per WearUsFM e 6 per l'altro progetto. Specchietto aggiornato nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
