@@ -17,6 +17,12 @@ riporta (sezione 4) e corregge un'attribuzione imprecisa scritta dalla parte di 
 
 Aggiornamento delle 15:41: D-3 e' chiuso, Simone tiene la frase nuova di CLAUDE.md. Restano aperti D-1, D-2, D-5 e D-6.
 
+Aggiornamento delle 19:46: il coordinatore GPT ha accolto l'audit (fdf773d, `docs/reviews/seguito_audit_claude_20261105.md` sul suo ramo).
+D-5 e' chiuso: GPT ha riconosciuto il rilievo e l'origine c052792 e ha corretto il solo test (d2f2f08, adottato nelle tre linee con
+6e57e19, 857d6f9 e 99efdef); Claude ha rieseguito il file su copie delle punte 4c670bd, c66148b, 5b03e0c e fdf773d: 15 passati in
+ciascuna. D-1 e D-2 restano un'integrazione dedicata, «inclusa l'unione testuale delle voci Claude e delle60righe di decisioni».
+D-6: GPT propone contabilita' di campagna separata e job MONALISA contati nel consumo complessivo dell'account; decide Simone.
+
 ## 1. Metodo e punte dei rami
 
 `git fetch` e `ls-remote` di origin e del cluster; antenati e diff ramo per ramo; confronto byte per byte delle review copiate; registro

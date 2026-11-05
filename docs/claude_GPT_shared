@@ -6023,6 +6023,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   minuti, formula invariata. Condizioni B-1, B-2, B-3 e facoltativi F-1...F-6 nella voce della sezione 2; testo per GPT in fondo alla
   review. La review non e' un via ai job: il dispatcher del recupero non esiste ancora e va rivisto quando c'e'.
 
+### 2026-11-05 | Claude | Coordinamento: stato delle tre linee alle 19:40, review 7 della chat 1 integrata (d619b55), D-5 dell'audit chiuso
+- Richiesta di Simone: «fammi un check dello statu delle 3 direzioni». Sola lettura su Leonardo (`squeue --me`, `sacct -X` dalle 16:00;
+  `~/wearusfm_local/logs/leonardo_stato_20261105_1940.txt`), rilettura dei rami e del ledger. Nessun job, nessuna review nuova mia.
+- **Integrazione:** il ramo della chat 1 (1c21047, review 7) e' nel comune con il merge senza squash d619b55; il comune era avanzato con
+  e2753cd, quindi niente avanzamento semplice. Conflitto nel registro risolto tenendo le voci dei due rami: nessuna riga tolta, ancora
+  della sezione 2 unica, 42 righe non vuote aggiunte.
+- **Linea 1, scaling:** seguito CPU fermo dopo il TIMEOUT di 63593508. Review 7 della chat 1: rilascio conforme, diagnosi confermata,
+  recupero approvato con B-1, B-2 e B-3. GPT (4c670bd, 19:40): dispatcher del recupero pronto e prompt per Claude pubblicato, congelamento
+  S8 corretto; 3d76ae3 (19:45) registra «approvo» di Simone sul tetto CPU di 310 core-ore, non verificato da me alla fonte. Resta la
+  review del dispatcher. Nessun job SCALING in coda.
+- **Linea 2, consolidamento:** EPN15 con 4 fit conclusi, 12 in esecuzione e 8 in attesa. Valutazione lunga del 30M rivista dalla chat 2
+  (e2753cd): R-1 e R-2 da correggere prima delle estrazioni, C-1 quota a 33,59 GiB liberi alle 19:22 contro 32. GPT ha pubblicato le
+  correzioni e la consegna per la rilettura incrementale (e2f19ee, ef5589f, 19:44–19:45), non ancora rilette; nessun job della valutazione lunga.
+- **Linea 3, log-quadratico:** rilancio approvato dalla chat 3 (49f9438), R-1 corretto da GPT (5b03e0c) e da chiudere dopo la
+  riesecuzione della sottochat. 5.000 passi e benchmark d'inferenza conclusi, estrazione della posa 63615952 in esecuzione dalle 19:24:49,
+  continuazione 63593128 in coda per priorita' dalle 16:37.
+- **Audit di allineamento:** il coordinatore GPT lo ha accolto (fdf773d). D-5 chiuso: patch del solo test d2f2f08 adottata nelle tre linee,
+  rieseguita da me su copie delle quattro punte di GPT, 15 passati in ciascuna. D-1 e D-2 restano all'integrazione dedicata; D-6 alla
+  decisione di Simone. Specchietto e audit aggiornati nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
