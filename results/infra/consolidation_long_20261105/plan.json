@@ -1,0 +1,516 @@
+{
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "status": "awaiting_claude_review",
+  "review": {
+    "status": "awaiting_claude_review",
+    "commit": null
+  },
+  "doses": [
+    19618,
+    39237,
+    49046
+  ],
+  "views": [
+    "pre",
+    "post",
+    "pool"
+  ],
+  "teacher": "teacher",
+  "endpoints": {
+    "19618": {
+      "checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_step0019618.pt",
+        "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+        "bytes": 454381728
+      },
+      "receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/19618/receipt.json",
+        "sha256": "2ffbba1e0e3e7884456f6c54b1a2b1b4771cae508deac43c44710b4ab3fbf6db"
+      },
+      "archive_receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/30000/receipt.json",
+        "sha256": "c12943f6a3a84259cb2cfb04aebd4cc07c28accce2deadf25848c52ec64c2b84",
+        "bytes": 5641
+      },
+      "training_code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb"
+    },
+    "39237": {
+      "checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_predecay.pt",
+        "sha256": "5369425f92096f5e4763da5137f1983a3809ef15433c4811736ce287a3eaa5e1",
+        "bytes": 454381728
+      },
+      "receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/39237/receipt.json",
+        "sha256": "cb4ee9512b1ca057d3872b1ca313d41b847ec21fab0b3bfec0e1f85d8c0bb3b2",
+        "bytes": 5551
+      },
+      "reference_checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_step0019618.pt",
+        "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+        "bytes": 454381728
+      },
+      "training_code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+      "training_plan_sha256": "1ce5372071ea99b61da0ec17d5f6a3d367cdeafc1ceb0249012f199e9afca5b1"
+    },
+    "49046": {
+      "checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+        "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+        "bytes": 454381728
+      },
+      "receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/49046/receipt.json",
+        "sha256": "c0245ccf3a201fb4ab111c8ade106d54063e6123a503379c347c82c22336ccc3",
+        "bytes": 5609
+      },
+      "reference_checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_step0019618.pt",
+        "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+        "bytes": 454381728
+      },
+      "training_code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+      "training_plan_sha256": "1ce5372071ea99b61da0ec17d5f6a3d367cdeafc1ceb0249012f199e9afca5b1"
+    }
+  },
+  "historical_extraction_plan": {
+    "path": "results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json",
+    "sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+    "bytes": 8574
+  },
+  "historical_pose_reader_plan": {
+    "path": "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_19618.json",
+    "sha256": "7a469c694637b870280ce6fcc8f9dcac1181e6b16644bc0042d1f942dc206e49",
+    "bytes": 8953
+  },
+  "historical_classification_plan": {
+    "path": "results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json",
+    "sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+    "bytes": 47238
+  },
+  "historical_classification_reports": {
+    "p1": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+      "sha256": "4ded85b93946d93dc09b5a5ad64452ad319708aa608545796fcd6ef126172031",
+      "bytes": 20533
+    },
+    "p2": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json",
+      "sha256": "ef53b8ab6a7fccb675b14db10ebb74be68e82e5a250214b618edad7d7c9d8d5c",
+      "bytes": 57166
+    }
+  },
+  "classification_baseline_policy": "declared_historical_cache",
+  "classification_recipe": {
+    "pre": {
+      "encoder": "teacher",
+      "layer": "pre",
+      "width": 384,
+      "features_dtype": "float32",
+      "pca": false,
+      "scaler": "StandardScaler fitted only on fold train",
+      "solver": "lbfgs",
+      "penalty": "l2",
+      "class_weight": "balanced",
+      "max_iter": 12000,
+      "tol": 0.0001,
+      "seed": 0,
+      "C_grid": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0
+      ],
+      "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+      "k_folds": 4,
+      "fold_seed": 20261015,
+      "val_frac": 0.1,
+      "bootstrap": {
+        "unit": "subject within dataset",
+        "seed": 20261102,
+        "replicates": 2000,
+        "missing_classes": "macro recall over present target classes; no discarded draws"
+      }
+    },
+    "post": {
+      "encoder": "teacher",
+      "layer": "post",
+      "width": 384,
+      "features_dtype": "float32",
+      "pca": false,
+      "scaler": "StandardScaler fitted only on fold train",
+      "solver": "lbfgs",
+      "penalty": "l2",
+      "class_weight": "balanced",
+      "max_iter": 12000,
+      "tol": 0.0001,
+      "seed": 0,
+      "C_grid": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0
+      ],
+      "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+      "k_folds": 4,
+      "fold_seed": 20261015,
+      "val_frac": 0.1,
+      "bootstrap": {
+        "unit": "subject within dataset",
+        "seed": 20261102,
+        "replicates": 2000,
+        "missing_classes": "macro recall over present target classes; no discarded draws"
+      }
+    },
+    "pool": {
+      "encoder": "teacher",
+      "layer": "pool",
+      "width": 768,
+      "features_dtype": "float32",
+      "pca": false,
+      "scaler": "StandardScaler fitted only on fold train",
+      "solver": "lbfgs",
+      "penalty": "l2",
+      "class_weight": "balanced",
+      "max_iter": 12000,
+      "tol": 0.0001,
+      "seed": 0,
+      "C_grid": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0
+      ],
+      "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+      "k_folds": 4,
+      "fold_seed": 20261015,
+      "val_frac": 0.1,
+      "bootstrap": {
+        "unit": "subject within dataset",
+        "seed": 20261102,
+        "replicates": 2000,
+        "missing_classes": "macro recall over present target classes; no discarded draws"
+      }
+    }
+  },
+  "pose_recipe": {
+    "protocol": "consolidation-long-pose-20261105-v1",
+    "doses": [
+      19618,
+      39237,
+      49046
+    ],
+    "readers": [
+      "pre_ridge",
+      "post_ridge",
+      "trained_head"
+    ],
+    "extraction": "original pose_eval.extract ModelInputs; one unmasked FP32 teacher forward; same-forward pre/post",
+    "cache": "pre/post mean_K FP16; trained post-head predictions FP32; original targets/masks unchanged",
+    "ridge": {
+      "which": "teacher",
+      "cached_features": "mean_K64_fp16",
+      "normalization": "stateless LayerNorm FP32",
+      "normalization_eps": 1e-05,
+      "offset": 6,
+      "common_centers": "6 <= t and t+6 < n_patches",
+      "target_support": "central target mask only",
+      "fit_precision": "float64",
+      "intercept": "unpenalized",
+      "cv": "alternating sorted train users; two folds; pooled masked standardized SSE",
+      "alpha_exponents": [
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "max_extensions_per_side": 3,
+      "tie_break": "smallest alpha",
+      "dynamic_threshold": 0.2574231028556824,
+      "dynamic_selection": "original full-window pose_var",
+      "min_centered_points": 2,
+      "bootstrap": {
+        "unit": "user",
+        "replicates": 2000,
+        "seed": 20261102
+      },
+      "batch_windows": 64
+    },
+    "head": "existing trained post pose head; separately identified, no supervised updates",
+    "support": "common crop6 central target mask; original full-window pose_var threshold",
+    "e2": "historical full-window pairing and std exclusions; errors on intersection of crop6 masks",
+    "bootstrap": {
+      "unit": "user",
+      "replicates": 2000,
+      "seed": 20261102,
+      "relative_improvement": "100 * (1 - pooled_E_dyn_candidate / pooled_E_dyn_control) in each draw"
+    },
+    "practical_relative_improvement_percent": 2.0
+  },
+  "reading_rule": {
+    "dose_contrasts": [
+      [
+        49046,
+        19618
+      ],
+      [
+        39237,
+        19618
+      ],
+      [
+        49046,
+        39237
+      ]
+    ],
+    "primary_dose_contrast": [
+      49046,
+      19618
+    ],
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 20261102,
+    "classification_primary_view": "pool",
+    "depth_contrast": "post_minus_pre_same_D_reader",
+    "classification_practical_pp": 1.0,
+    "classification_other_index_lower_margin_pp": -1.0,
+    "pose_practical_relative_percent": 2.0,
+    "pose_primary_panels": [
+      "post_ridge",
+      "trained_head"
+    ],
+    "global_pose_reference": null,
+    "pose_support": "crop6, original full-window dynamic selection; E2 historical pairing then crop6 common mask",
+    "scope": "development, one pretraining seed; no multiplicity correction; no official test or universal FM claim"
+  },
+  "extraction_batch": {
+    "classification": 64,
+    "pose": 32
+  },
+  "classification_benchmark_policy": {
+    "protocol": "consolidation-classification-resources-20261105-v1",
+    "reference_step": 19618,
+    "population": "complete fold0 train only",
+    "C_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "max_iter": 12000,
+    "validation_or_held_scored": false,
+    "requires_all_15_benchmarks": true,
+    "projection": "measured six converged full-train fits plus slowest candidate refit; fold rows/classes scaling; historical completed pool-fold costs scaled by measured view/pool ratio as a floor",
+    "safety_factor": 3.0,
+    "data_and_prediction_multiplier": 1.5,
+    "fixed_seconds_per_job": 600.0,
+    "memory_multiplier": 3.0,
+    "max_projected_seconds": 13800.0,
+    "walltime_seconds": 14400,
+    "cpus": 8,
+    "memory_gib": 30,
+    "memory_fraction": 0.85,
+    "blas_threads": 1,
+    "fixed_folds_by_dataset": {
+      "ninapro_db2": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "ninapro_db3": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "ninapro_db6": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "epn612": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "uci_emg": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    "max_projected_seconds_by_dataset": {
+      "ninapro_db2": 13800.0,
+      "ninapro_db3": 13800.0,
+      "ninapro_db6": 13800.0,
+      "epn612": 13800.0,
+      "uci_emg": 13800.0
+    },
+    "walltime_seconds_by_dataset": {
+      "ninapro_db2": 14400,
+      "ninapro_db3": 14400,
+      "ninapro_db6": 14400,
+      "epn612": 14400,
+      "uci_emg": 14400
+    },
+    "new_fit_cells": 40,
+    "physical_fit_jobs": 48,
+    "limitation": "empirical planning estimate, not a runtime guarantee; later checkpoint conditioning can change solver cost; no automatic shard, retry, or budget extension"
+  },
+  "pose_benchmark_policy": {
+    "reference_step": 19618,
+    "safety_factor": 2.0,
+    "fixed_seconds": 120.0,
+    "max_seconds_per_dose": 3300.0,
+    "memory_fraction": 0.85,
+    "memory_bytes": 32212254720,
+    "train_windows": 1907,
+    "held_windows": 18548,
+    "fit_floor": "project_fit_seconds(max_depth_statistics_and_eigensystems, n_readers=2, safety_factor=2, fixed_seconds=0)",
+    "other_work": "2 * (read_validate * (1+r) + fixed_alpha_fit + predict * r + summary * r + E2_pairing * r**2 + bootstrap_diagnostic * r + artifact_write * r) + 120; r=18548/1907",
+    "memory_projection": "max_RSS_bytes * (18548/1907)",
+    "data_policy": "train payload only; held cache/reference payload is never opened, hashed or scored"
+  },
+  "resources": {
+    "extract": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory_gib": 100,
+      "seconds": 2700
+    },
+    "classification_benchmark": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 1800
+    },
+    "pose_benchmark": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 900
+    },
+    "classification_fit": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 14400
+    },
+    "classification_fit_db2": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 14400
+    },
+    "pose_fit": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 3600
+    },
+    "classification_compare": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 3600
+    },
+    "pose_compare": {
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 3600
+    },
+    "summary": {
+      "gpus": 0,
+      "cpus": 2,
+      "memory_gib": 2,
+      "seconds": 600
+    }
+  },
+  "cache_manifest": null,
+  "benchmark_receipts": {
+    "classification": null,
+    "pose": null
+  },
+  "classification_fit_manifest": null,
+  "pose_fit_manifest": null,
+  "final_reports": {
+    "classification": null,
+    "pose": null
+  },
+  "output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105",
+  "background_monitor": false,
+  "phase_release": {
+    "order": [
+      "extract",
+      "benchmark",
+      "fit",
+      "aggregate"
+    ],
+    "checkouts": 4,
+    "same_scientific_source_sha256_required": true,
+    "pins_published_before_each_phase": true,
+    "max_outstanding_cpu_jobs_for_entire_user": 8,
+    "cpu_gate": "all forty classification cells pass before any classification fit; pose gate separately; failed phase has no automatic retry"
+  },
+  "retention": {
+    "persistent_outputs": "WORK",
+    "estimated_new_artifacts_bytes": 25769803776,
+    "minimum_project_free_bytes_before_first_extraction": 34359738368,
+    "base_headroom_bytes_before_each_submission": 8589934592,
+    "submission_rule": "fresh free bytes >=8GiB plus conservative remaining bytes of admitted unfinished outputs; track pending/running jobs without double counting already-written bytes",
+    "quota_max_age_seconds": 3600,
+    "quota_evidence": {
+      "path": "results/infra/consolidation_long_20261105/historical_artifacts_verification.json",
+      "sha256": "38737c92af8a0b0d4f051a44b8604f7437a61c11f33330b52586f725d2afdf60",
+      "bytes": 6009
+    }
+  },
+  "failure_policy": {
+    "no_requeue": true,
+    "no_overwrite": true,
+    "no_blind_retry": true,
+    "timeout_or_nonfinite": "preserve evidence, stop affected phase, diagnose; no automatic resource/dose/seed/grid amendment",
+    "incomplete_matrix": "no final contrast or dropped folds"
+  },
+  "authorization": {
+    "source": "Simone via coordination 2026-11-05: complete long evaluation, Claude review, launch when ready",
+    "review_does_not_replace": null,
+    "requires_second_user_consent": false
+  },
+  "historical_context": {
+    "replica": {
+      "path": "results/infra/tokenizer_evaluation_20261103/t25_b_repeatability_20261104/paired_report.json",
+      "sha256": "26886cd3c1106af252037d79d51e0517cba424c7a9b13385d9a7e30d1597beb7",
+      "bytes": 443902
+    },
+    "use": "paired T25-L minus B19618 context remains descriptive; not a universal noise floor"
+  },
+  "source_sha256": "2ab63f44c330f94c7902820f7758e0befc3bef1ad1aee37f615db0f60198923c",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422"
+}

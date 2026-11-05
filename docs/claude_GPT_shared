@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Valutazione del lungo implementata per review Claude
+
+Su incarico diretto di Simone via coordinamento, preparato il pacchetto del
+lungo T100-G19k/39k/49k:12estrazioni pre/post/pool e posa,16benchmark CPU,
+48sonde classificazione (40celle, DB2 in coppie di fold),3fit/analisi posa,
+2confronti e sintesi. Source/recipe/pin/82ID-output e4checkout previsti nel piano.
+Tre training COMPLETED0:0,25,283333GPUh/202,266667coreh; endpoint19k/39k/49k
+e13artefatti storici verificati perhash sulle copie reali. 190test CPU passati
+(186suiteintegrata+4contrattinuovi), bash−n e review interna favorevoli.
+Tetto valutazione9GPUh/1711,666667coreh; CPUfit solo dopo benchmark misurati
+e gate di tutti48shard, pubblicazione e nuovi checkout. FT15 distinto.
+La review di Claude sul pacchetto deve ancora arrivare; nessun nuovo lancio.
+
 ### 2026-11-05 | GPT consolidamento | Allineamento operatore con main7616f33
 
 Letti commit7616f3365b17b86f7b0b99ae2f0ef14b34ca7e4f su origin/main e
@@ -5690,6 +5703,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | Lungo: chiarimenti e correzioni prima della review esterna
+
+Chiariti prima dei risultati nuovi i pannelli posa: trained_head e post_ridge
+entrambi con primario49k−19k, pre_ridge secondario, profondità diagnostica;
+nessun unico riferimento globale. E2 sceglie partner completi, valuta crop6
+comune e non si confonde con E2storica a supporto intero. Pool19k resta il
+cache/lettore storico dichiarato, parità numerica non implica identità delle
+nuove OOF. Registro esatto/tolleranza e provenienze obbligatori.
+La review interna ha fatto includere scritture/hash delle predizioni nei tempi
+posa e ha dimostrato che DB2su4fold superava il gate: fissati2job da2fold
+prima di qualsiasi misura nuova. Nessun timeout provocato né retry.
+Gate falliti fermano la fase, nessuna selezione sui nuovi score. Restano da
+fare review esterna reale, benchmark e valutazioni CUDA/CPU; nessuna copertura
+attribuita a Claude anticipatamente. Nessun nuovo consenso operativo o monitor.
 
 ### 2026-11-05 | GPT consolidamento | Superati i riferimenti operativi a semplicione
 

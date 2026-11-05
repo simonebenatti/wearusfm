@@ -335,3 +335,16 @@ T25-L/B resta un riferimento empirico, non una soglia statistica universale;
 
 [Misura FT e adeguamento dei tempi](finetune_walltime_amendment_20261104.md):
 review f70dc72 convergente. [Benchmark v2 e piano dei fit](finetune_v2_execution_20261104.md).
+
+
+### 05/11 — Valutazione del lungo pronta per review esterna
+
+| Attività | Che cosa è pronto | Risultato attuale | Conclusione / prossimo passo |
+|---|---|---|---|
+|Training lungo T100-G30M|Tre segmenti e copie persistenti19k/39k/49k|COMPLETED0:0, hash e dosi verificati;25,283GPUh|Endpoint utilizzabili dopo i gate di caricamento, prestazioni ancora da valutare|
+|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|Codice e piano pronti; riferimento19kpool/OOF storico verificato|Review Claude,12estrazioni, benchmarkCPU e gate globale48shard prima dei fit|
+|Posa e dinamica del lungo|Testa allenata e ridgepre/post su crop6 comune;E2 con pairing storico|Pannelli49k−19k distinti, bootstrap e lettura congelati; nessuno score nuovo|Review Claude sui chiarimenti, benchmark posa e poi3fit/analisi +confronto|
+|Risorse e qualità|82jobcalcolo+4checkout;190testCPU, review interna e conti indipendenti|Tetto9GPUh/1711,667coreh; CPUmisurata prima dei fit|[Pacchetto concreto](consolidation_long_execution_20261105.md); nessun nuovo consenso per la catena già assegnata|
+
+FT15 resta separato e già in corso. Nessun nuovo job/monitor dalla preparazione
+del lungo. La review esterna di Claude deve ancora arrivare.

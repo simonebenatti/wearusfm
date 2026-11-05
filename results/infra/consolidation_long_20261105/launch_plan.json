@@ -1,0 +1,2480 @@
+{
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "status": "awaiting_claude_review",
+  "source_sha256": "2ab63f44c330f94c7902820f7758e0befc3bef1ad1aee37f615db0f60198923c",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs",
+  "owner": "gpt_consolidation",
+  "jobs": [
+    {
+      "id": "LONG-G19618-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/p1",
+        "--step",
+        "19618",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G19618-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/p2",
+        "--step",
+        "19618",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G19618-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G19618-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G39237-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/p1",
+        "--step",
+        "39237",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G39237-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/p2",
+        "--step",
+        "39237",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G39237-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G39237-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G49046-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/p1",
+        "--step",
+        "49046",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G49046-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/p2",
+        "--step",
+        "49046",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G49046-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-G49046-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-epn612-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-epn612-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-epn612-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-BENCH-pose-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-pose",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 900
+      },
+      "args": [
+        "--stage",
+        "benchmark-pose",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F01",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F23",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db3/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F01",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F23",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db3/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G19618-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/19618",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/19618",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G39237-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/39237",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/39237",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-FIT-G49046-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-COMPARE-classification-20261105",
+      "phase": "aggregate",
+      "stage": "compare-classification",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/comparison/classification",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "compare-classification",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/comparison/classification"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-COMPARE-pose-20261105",
+      "phase": "aggregate",
+      "stage": "compare-pose",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/comparison/pose",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "compare-pose",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/comparison/pose"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "LONG-SUMMARY-20261105",
+      "phase": "aggregate",
+      "stage": "summary",
+      "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/summary",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 2,
+        "memory_gib": 2,
+        "seconds": 600
+      },
+      "args": [
+        "--stage",
+        "summary",
+        "--out",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/summary"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null
+    }
+  ],
+  "caps": {
+    "gpu_hours": 9.0,
+    "allocated_core_hours": 1711.6666666666665,
+    "checkout_count": 4,
+    "checkout_each": {
+      "gpus": 0,
+      "cpus_requested": 1,
+      "cpus_accounting_cap": 2,
+      "memory_gib": 2,
+      "seconds": 600
+    },
+    "classification_fit_expected_core_hours_from_historical": 114.24,
+    "gpu_extraction_expected_hours_from_historical": 3.5933333333333333
+  },
+  "cpu_submission": "at most8 outstanding CPU jobs for the entire user in waves; inspect accepted/completed IDs, no dependency bypass or duplicate; serial user limit10 respected",
+  "phase_checkouts": [
+    {
+      "id": "LONG-checkout-extract-20261105",
+      "name": "consolidation-long-extract-20261105",
+      "code_sha": null
+    },
+    {
+      "id": "LONG-checkout-benchmark-20261105",
+      "name": "consolidation-long-benchmark-20261105",
+      "code_sha": null
+    },
+    {
+      "id": "LONG-checkout-fit-20261105",
+      "name": "consolidation-long-fit-20261105",
+      "code_sha": null
+    },
+    {
+      "id": "LONG-checkout-aggregate-20261105",
+      "name": "consolidation-long-aggregate-20261105",
+      "code_sha": null
+    }
+  ]
+}

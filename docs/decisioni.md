@@ -6451,3 +6451,32 @@ owner del consolidamento esegue lanci e letture già autorizzati, senza
 secondo consenso. N-2 della review2d157cc chiusa anche per il revisore.
 Nessuna variazione a EPN15, al lungo, ai tetti o ai checkout congelati;
 nessun merge sperimentale, nuovo job o monitor da questo aggiornamento.
+
+### 05/11/2026 — Preparazione della valutazione lunga, per review Claude
+
+Simone tramite coordinamento: «ok, fai completare alla chat 2 la valutazione
+ del lungo, falla revisionare a claude e poi lanciatela appena pronta».
+Questa istruzione autorizza preparazione e lancio dopo convergenza, senza
+secondo consenso. Pacchetto completo sul ramo di consolidamento: controller,
+estrazioni pre/post/pool, posa/ridge, classificazione e aggregazione appaiata.
+Endpoint19.618/39.237/49.046 su WORK verificati contro le ricevute complete;
+training25,283333GPUh contro36massime, non costo delle nuove valutazioni.
+
+Precisazioni da convergere con Claude prima dei risultati: posa con primario
+49k−19k separato in trained_head e post_ridge, pre_ridge secondario; E2 sul
+crop6comune con pairing completo storico. Il pool19k usa cache/OOF storiche
+esplicitamente dichiarate; parità tollerata non certifica OOF identiche.
+Regole V-R1, bootstrap e soglie pratiche congelate; sviluppo e seme unico.
+
+Piano di82jobcalcolo+4checkout:12GPUextract,16CPUbenchmark,48classfit
+(40cellelogiche, DB2duecoppiefold),3posefit,2confronti+1sintesi. Tetto
+9GPUh/1711,666667coreh, espresso come allocazioni massime, non previsione.
+Riferimenti storici3,5933GPUh per estrazioni e114,24coreh per8celleclass;
+nuovi benchmark determinano il preventivo e ammettono i fit soltanto dopo
+pubblicazione dei pin reali. DB2shard4h/gate13800s derivati dai costi storici;
+nessun aumento di dose/semi/loss/FT. Quota fresca e ondateCPUglobali≤8.
+
+190testCPU passati, launcher bash−n, review interna e conti indipendenti.
+I dettagli sono in docs/consolidation_long_execution_20261105.md e nei piani
+results/infra/consolidation_long_20261105. Stato awaiting_claude_review;
+nessun nuovo job da questo pacchetto e nessun monitor automatico.

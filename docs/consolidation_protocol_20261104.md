@@ -1,7 +1,12 @@
 # Consolidamento T100-G: protocollo convergente e stato esecutivo
 
-Stato al 05/11: **24 fit FT conclusi e analizzati; continuazione lunga sottomessa,
-matrice delle valutazioni lunghe ancora da consegnare**. [Risultati FT a cinque
+Stato al 05/11, consegna della valutazione lunga: **24 fit FT5 conclusi e analizzati;
+FT15 separato in corso; lungo completo con endpoint persistenti verificati;
+matrice delle valutazioni implementata, in attesa della review esterna di Claude**.
+[Piano concreto, pin, costi e chiarimenti di lettura](consolidation_long_execution_20261105.md).
+Le frasi sotto sui controller ancora da consegnare conservano lo stato della
+proposta originale: sono ora superate dal pacchetto dedicato, senza dichiarare
+eseguite le nuove valutazioni. [Risultati FT a cinque
 epoche](reviews/finetune_results_20261105.md): FT93,766%, scratch92,363%, frozen70,575%;
 F-R2 scatta, nessuna estensione automatica. Simone ha assegnato a questa chat schedule
 lungo e fine-tuning; il 300M appartiene al thread originale. Worktree esclusivo
