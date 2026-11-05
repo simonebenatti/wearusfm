@@ -5680,6 +5680,21 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   al buffer dei checkpoint T100-L; attestazione dello stato addestrato dal buffer del checkpoint a 5.000; verifica a priori in un processo con gli
   import del trainer.
 
+### 2026-11-05 | Claude | Coordinamento: specchietto aggiornato al 05/11 (arresto T100-LQ e review della diagnostica, fit conclusi, 300M a 5.000 in esecuzione)
+- Consegna della chat 3 verificata sul ramo comune: 9a46d7c, due file (review della diagnostica dell'arresto T100-LQ, GPT 4d5a3ef, e questo
+  registro, +44, sole aggiunte); verdetto APPROVATO per il solo diagnostico, R1 da scrivere prima del lancio. HEAD = origin, worktree pulito.
+- Stato su Leonardo alle 10:40–10:42 CET in sola lettura (output in `~/wearusfm_local/logs/leonardo_squeue_20261105_1039b.txt`,
+  `leonardo_sacct_20261105_1041b.txt`, `leonardo_sacct_63532370_20261105.txt`): `LOGSQ-T100-LQ-5000-20261104` 63532335 FAILED in 21 s
+  (06:35:40 → 06:36:01, exit 1:0), `LOGSQ-T100-LQ-19618-20261104` 63532370 CANCELLED alle 06:36:06 senza partire; 24 fit EPN COMPLETED 0:0
+  (ultima fine 02:51:58); `CONSOL-G-30000` 63525803 COMPLETED (06:08:12 → 08:21:26), `CONSOL-G-39237` 63525805 RUNNING dalle 09:24:37,
+  `CONSOL-G-49046` 63525809 PENDING; `SCALING-300M-train5000-20261104` 63532932 RUNNING dalle 07:16:12 (limite 5 h 30).
+- Rami di GPT letti (solo lettura): scaling b5d4509 (lettura di S3 e rilascio dc96559, review finale dei gate di GPT, lancio dei 5.000
+  registrato in 0898563); consolidamento db89202 (risultati dei 24 fit, consuntivo e prompt `docs/prompt_claude_finetune_results_20261105.md`);
+  log-quadratico 4d5a3ef. **Non rivisti da Claude:** la catena scaling da 34b878a a b5d4509 e i risultati dei fit di db89202.
+- Specchietto `docs/coordinamento_review_claude_20261104.md` riscritto alle 10:50 con tre punti aperti per Simone (istruzione su semplicione,
+  review dei risultati dei fit, parte non rivista dello scaling). Nota operativa: `ssh leonardo` si e' appeso due volte dopo il banner; la
+  connessione condivisa e' stata chiusa con `ssh -O exit` e ha risposto `login02-ext`. Nessun job, nessuna scrittura sul cluster.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
