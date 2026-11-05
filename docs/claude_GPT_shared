@@ -5883,6 +5883,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   8,25 e 38,83 core-ore su 66. Verdetto invariato. La punta di GPT e' passata a c3b2ab6 (due commit di sole registrazioni, nessun
   file di codice): non rivista; i suoi quattro hash delle ricevute di classificazione coincidono con i miei.
 
+### 2026-11-05 | Claude | Coordinamento: integrata l'aggiunta alla review 6 della chat 1 (8b76361), specchietto aggiornato alle 14:55 (cinque estrazioni concluse, R-TIMEOUT corretto in attesa di GPT)
+- Verificato prima di integrare: il comune (789249a) e' antenato di 8b76361, in diff solo la review 6 (+31, §9) e questo registro (+15),
+  nessuna riga tolta, ancora unica; avanzamento `--ff-only` del ramo comune a 8b76361, origin verificato.
+- Stato su Leonardo alle 14:49 CET in sola lettura (`~/wearusfm_local/logs/leonardo_stato_20261105_1448.txt`): `SCALING-300M-eval-p2`
+  63580771 COMPLETED 0:0 (12:47:52 → 14:26:17) e `SCALING-300M-eval-pose` 63580385 COMPLETED 0:0 (12:45:45 → 14:43:18); le cinque
+  estrazioni sommano 4,853 ore a una GPU per job, come nel consuntivo della chat 1; 12 fit `FT15-EPN-*-C0` RUNNING da 1 h 35–1 h 47 e
+  12 C1 PENDING; nessun job `LOGSQ` dalle 11:00.
+- Specchietto `docs/coordinamento_review_claude_20261104.md` aggiornato alle 14:55: riga scaling con l'aggiunta 8b76361 e O-4 chiusa;
+  riga log-quadratica con la correzione di R-TIMEOUT della chat 3 (ramo `claude/logsquare-init-fix-20261105` a ff08483, voce 789249a),
+  in attesa della chiusura della review di GPT. Punte di GPT lette: scaling c3b2ab6 (sole registrazioni, non riviste), log-quadratico
+  92fa557, consolidamento 4f32cdb. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
