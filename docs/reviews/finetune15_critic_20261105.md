@@ -52,3 +52,18 @@ privi di optimizer/RNG. Secondo sguardo sul held e nessuna terza dose dichiarati
 Due refusi editoriali segnalati e corretti; nessun cambiamento di algoritmo
 dopo questa rilettura. Provenienze/risorse di preparazione rigenerate dall'owner.
 La review esterna del codice FT15 resta necessaria; Claude0968bd1 approva5.
+
+## Verifica operativa indipendente dopo Claude ceaf95b e benchmark63579657
+
+Il critico ha verificato in sola lettura locale: review copiata esattamente,
+R2/R3 registrate, ricetta db975bd1 e sorgenti13de2f31 invariati,24ricevute
+storiche valide. Report benchmark772bc487…/5018byte uguale alla raccolta
+remota, codice02f3de8/piano76a6c87d… corretti, COMPLETED0:0/453s/1GPU8CPU.
+
+Ricalcolo col controller e formula indipendente concordanti: q=1 per tutti,
+D=4,161388635s; proiezioni17.551/50.701/51.027s sotto21.300/57.300/57.300,
+tutti3split. Memoria host32,386GiB e GPU6,584GiB valide. Preventivo24fit
+265,064444GPUh/2.120,515556coreh, benchmark0,125833GPUh/1,006667coreh.
+Nessun blocco al pin, pubblicazione e secondo checkout. Prima dei fit restano
+verifica checkout, quota fresca, assenza duplicati/output e dipendenzeC1→C0.
+Nessuna SSH, modifica o sottomissione del critico; ownerGPT esegue.

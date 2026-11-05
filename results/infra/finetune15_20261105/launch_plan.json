@@ -1,6 +1,6 @@
 {
   "protocol": "finetune15-launch-plan-20261105-v1",
-  "status": "review_converged_awaiting_benchmark",
+  "status": "all_regime_gates_passed_pending_fit_checkout",
   "campaign": "finetune15-20261105",
   "owner": "gpt",
   "submitter": "scripts/submit_job.py",
@@ -8,7 +8,7 @@
   "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
   "no_submission_before_external_review": true,
   "runtime_code_sha": null,
-  "benchmark_code_sha": null,
+  "benchmark_code_sha": "02f3de8547e0e50ee8d66f6ea43a356518c18e70",
   "benchmark": {
     "id": "FT15-BENCH-20261105",
     "checkout_id": "FT15-checkout-bench-20261105",
@@ -26,7 +26,8 @@
       "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark"
     ],
     "precondition": "verified completed immutable checkout; use completed prerequisite receipt if SLURM has purged dependency ID; no new checkout duplicate",
-    "slurm_job_id": null
+    "slurm_job_id": 63579657,
+    "checkout_slurm_job_id": 63578395
   },
   "fit_checkout": {
     "id": "FT15-checkout-fits-20261105",
@@ -758,5 +759,28 @@
     "require_all_regime_gates_passed_before_any_fit": true,
     "if_any_regime_blocked": "submit no fit in any regime; diagnose and publish amendment before proceeding",
     "enforcement": "owner pre-submission check using benchmark_packaging for all three regimes; per-job runtime guard unchanged"
-  }
+  },
+  "benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark/report.json",
+    "sha256": "772bc48777d7e898b6a7db38b297ec502db339ee47287ea3690798912e308b55"
+  },
+  "measured_projection": {
+    "max_elapsed_seconds_by_regime": {
+      "frozen": 4519,
+      "finetune": 13359,
+      "scratch": 13446
+    },
+    "slowdown_by_regime": {
+      "frozen": 1.0,
+      "finetune": 1.0,
+      "scratch": 1.0
+    },
+    "additional_fixed_seconds": 4.161388634878904,
+    "projected_one_candidate_seconds": {
+      "frozen": 17551,
+      "finetune": 50701,
+      "scratch": 51027
+    }
+  },
+  "measured_prudential_fit_gpu_hours": 265.06444444444446
 }

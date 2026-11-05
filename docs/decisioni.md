@@ -6408,3 +6408,19 @@ db975bd1… e sorgenti13de2f31… invariati. Nessuna nuova suite scientifica
 necessaria dopo107test già passati e rieseguiti daClaude. Segue benchmark
 nuovo; fit solo dopo ricevuta pinnata, gate globale, quota e pubblicazione.
 Nessun nuovo consenso per la catena, nessun monitor automatico.
+
+### 05/11/2026 — EPN15: benchmark concluso e preventivo misurato prima dei fit
+
+Consegna esecutiva02f3de8 pubblicata su origin e deploy. Checkout63578395
+COMPLETED0:0,31s/2CPU,0,017222coreh. Benchmark63579657 COMPLETED0:0,453s,
+0,125833GPUh/1,006667coreh; report772bc487… da WORK pinnato nel piano.
+Provenienze,32update dopo4warm-up, memoria e accounting verificati.
+Owner e critico indipendente concordi: proiezioni17.551/50.701/51.027s,
+limiti21.300/57.300/57.300; tutti3split. Applicata R2 prima di qualsiasi fit.
+
+Preventivo prudenziale24fit265,064444GPUh/2.120,515556coreh; con benchmark
+consumato265,190278GPUh. Inclusi primo checkout reale e secondo al tetto,
+2.121,872778coreh. Massimi autorizzati304,5GPUh/2.436,667coreh invariati.
+Nessuna modifica di ricetta o sorgenti scientifici. Dopo pubblicazione
+verificata: nuovo checkout immutabile, quota/duplicati/output e24fit con
+C1 dipendente dal proprioC0. Nessun altro consenso richiesto, nessun monitor.

@@ -178,6 +178,27 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Benchmark FT15 concluso, tre gate ammessi
+
+63579657 COMPLETED 0:0 in 453 s; 0,125833 GPUh / 1,006667 coreh.
+Report772bc487… verificato e pinnato sotto WORK nel piano. Codice02f3de8,
+source13de2f31, ricettadb975bd1, input/teacher/piano e memoria coerenti.
+Owner e critico ricalcolano 17.551 / 50.701 / 51.027 s, tre esiti split.
+Preventivo24fit 265,064444 GPUh / 2.120,515556 coreh, tetto invariato.
+Documenti e ricevute pubblicati prima del secondo checkout e dei fit;
+nessun cambiamento di codice scientifico, dose, griglia o nuovo dataset.
+
+### 2026-11-05 | GPT consolidamento | Checkout FT15 verificato e benchmark sottomesso
+
+Codice esecutivo 02f3de8547e0e50ee8d66f6ea43a356518c18e70 pubblicato e
+verificato su origin/deploy. Checkout63578395 COMPLETED0:0, 31s/2CPU,
+0,017222coreh; SHA, pulizia, sola lettura, sorgenti e piano verificati.
+Benchmark63579657 sottomesso tramite submitter/ledger, RUNNING alle12:44CET
+da405s. Tetto0,5GPUh, output persistente WORK. Nessun fit ancora sottomesso:
+prima ricevuta completa, tre gate ammessi, pin/preventivo pubblicati e
+secondo checkout. Evidenze in finetune15_20261105/submission e documento
+di esecuzione. Nessun monitor automatico.
+
 ### 2026-11-05 | GPT consolidamento | EPN15 convergente con Claude ceaf95b
 
 Acquisita review ceaf95b (copia testuale con provenienza, SHAoriginale da
@@ -5647,6 +5668,24 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | FT15: chiuso il gate del benchmark
+
+Nessun blocco nei tre regimi; ricevuta reale e ricalcolo indipendente concordi.
+Le stime diagnostiche del microbenchmark non sono il gate: si applica la
+formula firmata sui tempi completi dei24fit storici. Quota raccolta12:48CET
+con35,27GiB disponibili; da mantenere fresca prima degli invii. Resta da
+verificare il nuovo checkout con il pin, senza modificare quello del benchmark.
+Nessun risultato scientifico a15epoche ancora e nessun monitor automatico.
+
+### 2026-11-05 | GPT consolidamento | FT15: attesa della misura, nessun errore del job
+
+Una lettura da login07 non raggiungeva il controller SLURM per errore DNS;
+lettura da login05 riuscita, benchmark63579657 RUNNING senza errori nei log.
+Nessuna risottomissione. Il controllo indipendente conferma R2/R3 e
+invarianza del codice; nessun fit ammesso prima di tre gate passati e pin
+della ricevuta. Il test sullo snapshot Git pubblicato è una verifica di
+provenienza, non un risultato scientifico a15epoche.
 
 ### 2026-11-05 | GPT consolidamento | EPN15: nessun blocco scientifico, gate prima dei fit
 

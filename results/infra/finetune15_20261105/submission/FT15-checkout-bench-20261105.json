@@ -1,0 +1,46 @@
+{
+ "id": "FT15-checkout-bench-20261105",
+ "creato": "2026-11-05T12:25:11+01:00",
+ "agente": "gpt",
+ "campagna": "finetune15-20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "02f3de8547e0e50ee8d66f6ea43a356518c18e70",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=FT15-checkout-bench-20261105",
+  "--comment=wearusfm:FT15-checkout-bench-20261105",
+  "--export=ALL,CAMPAIGN=finetune15-bench-20261105,CAMPAIGN_SHA=02f3de8547e0e50ee8d66f6ea43a356518c18e70,EXPECTED_SHA=02f3de8547e0e50ee8d66f6ea43a356518c18e70",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=1",
+  "--mem=2G",
+  "--time=00:10:00"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-05T12:25:11+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-05T12:25:11+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-05T12:27:20+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63578395,
+   "uscita": 0,
+   "stdout": "63578395\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63578395,
+ "uscita": 0,
+ "stdout": "63578395\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

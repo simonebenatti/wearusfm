@@ -1,0 +1,60 @@
+{
+  "id": "FT15-BENCH-20261105",
+  "creato": "2026-11-05T12:36:55+01:00",
+  "agente": "gpt",
+  "campagna": "finetune15-20261105",
+  "gpu_ore_stimate": 0.5,
+  "codice_sha": "02f3de8547e0e50ee8d66f6ea43a356518c18e70",
+  "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=FT15-BENCH-20261105",
+    "--comment=wearusfm:FT15-BENCH-20261105",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-bench-20261105,EXPECTED_SHA=02f3de8547e0e50ee8d66f6ea43a356518c18e70",
+    "--qos=normal",
+    "--nodes=1",
+    "--ntasks=1",
+    "--gres=gpu:1",
+    "--cpus-per-task=8",
+    "--mem=100G",
+    "--time=00:30:00",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-bench-20261105/scripts/slurm/consolidation_finetune15.sbatch",
+    "benchmark",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark"
+  ],
+  "dopo": null,
+  "script_stdin": null,
+  "script_stdin_sha256": null,
+  "stato": "sottomesso",
+  "storia": [
+    {
+      "quando": "2026-11-05T12:36:55+01:00",
+      "stato": "prenotato"
+    },
+    {
+      "quando": "2026-11-05T12:36:55+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "quando": "2026-11-05T12:37:18+01:00",
+      "stato": "sottomesso",
+      "job_slurm": 63579657,
+      "uscita": 0,
+      "stdout": "63579657\n",
+      "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+    }
+  ],
+  "job_slurm": 63579657,
+  "uscita": 0,
+  "stdout": "63579657\n",
+  "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n",
+  "publication_provenance": {
+    "canonical_local_path": "/Users/simonebenatti/wearusfm_local/jobs/FT15-BENCH-20261105/state.json",
+    "canonical_sha256": "f0a3d088ce74c0ffbbacf3c3c703492b9f0d7a0fd830c67d4d0461a0057b589d",
+    "redacted_fields": [
+      "/storia/2/stderr",
+      "/stderr"
+    ],
+    "redaction": "Public SSH certificate announcement omitted; job command, status, ID and history preserved. Canonical ledger unchanged."
+  }
+}

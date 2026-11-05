@@ -67,7 +67,10 @@
     },
     "interpretation": "development; fixed15epoch recipe including new cosine horizon; not isolated dose effect; historical logistic reference descriptive only; no V-R1 adoption gate"
   },
-  "benchmark_receipt": null,
+  "benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark/report.json",
+    "sha256": "772bc48777d7e898b6a7db38b297ec502db339ee47287ea3690798912e308b55"
+  },
   "benchmark_allocation": {
     "gpus": 1,
     "cpus": 8,
@@ -156,9 +159,9 @@
     "quota_evidence_max_age_seconds": 3600,
     "inodes_must_have_headroom": true,
     "quota_evidence": {
-      "path": "results/infra/finetune15_20261105/preflight_20261105.json",
-      "sha256": "c47792e99041c3c133149bbb5e150f1ed910eb5bc29f97d69f9a9c7cfe698dea",
-      "observed_at_utc": "2026-11-05T11:15:14.980697+00:00"
+      "path": "results/infra/finetune15_20261105/submission/benchmark_completed.json",
+      "sha256": "fe89b3eb14ecb8dd5246d95f6634d6bbbd13d6398d958fb9a294be4fd48c81ed",
+      "observed_at_utc": "2026-11-05T11:48:30.062742+00:00"
     },
     "science_outputs": "WORK; no SCRATCH-only result/checkpoint",
     "fresh_checkpoint_pin_check_before_benchmark": true
