@@ -5990,6 +5990,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non verificati: SHA del checkpoint a 5.000 (solo la dimensione), controllo A1 e resto del rilascio d'inferenza di cc81430, ricalcolo
   interno del critico di GPT.
 
+### 2026-11-05 | Claude | Review 7 scaling: rilascio CPU conforme (GPT 1bde83e...76a3126), diagnosi del TIMEOUT confermata e piano di recupero approvato con tre condizioni (GPT 03cbd18) (richieste di Simone)
+- Richieste del 05/11 sera: «Sì, rivedili» di Simone sui quattro commit del rilascio CPU e, a review in corso, il prompt di GPT
+  `docs/prompt_claude_scaling_cpu_recovery_20261105.md` incollato da Simone («Solo review, nessun lancio: GPT implementa e riparte dopo
+  convergenza»). Review in `docs/reviews/claude_review_scaling_300m_cpu_release_recovery_20261105.md`, conto dei fit riproducibile con
+  `docs/reviews/claude_review_scaling_300m_cpu_release_recovery_20261105_fits.py`. Nessun job e nessuna modifica a codice o dati da
+  parte mia; letture di Leonardo in `~/wearusfm_local/logs/claude_review7_leonardo_{1,2,3}.txt`,
+  `claude_review7_leonardo_cache_sha.txt` e `~/wearusfm_local/logs/review7_remote/`.
+- Copertura: `1bde83e`, `26781ee`, `8cdabd6`, `76a3126`, `03cbd18`; fuori copertura `6e57e19` e `d2c099b` (test storico B19618,
+  arrivati a review in corso). In `c74d207..03cbd18` cambiano solo `docs/` e `results/`: codice e launcher sono quelli della review 6.
+- Rilascio CPU conforme: piani `a500cc3c…` e `d2cc7da1…` uguali nel checkout remoto (HEAD 1bde83e, pulito; codice aef665b, pulito);
+  14 cache con sha256 ricalcolato da me su Leonardo uguale ai pin; otto job letti con `sacct`; gate della posa replicato fuori linea
+  (660 s); nessuno score aperto e nessun fit partito (coda senza job SCALING alle 19:06). Test: 571 passati in 177,83 s su 76a3126.
+- Diagnosi confermata: 27 file raccolti uguali alle mie copie, 13 `benchmark.json` uguali agli originali remoti, 83 fit convergenti,
+  21,768889 e 22,027778 core-ore, limite inferiore dei fit 148,134869 core-ore riprodotto e indipendente dal numero di shard.
+- Piano di recupero approvato nell'impostazione: riuso dei tre NinaPro, recupero dei soli EPN612 e UCI 300M naturale, tetti 120 e 10
+  minuti, formula invariata. Condizioni B-1, B-2, B-3 e facoltativi F-1...F-6 nella voce della sezione 2; testo per GPT in fondo alla
+  review. La review non e' un via ai job: il dispatcher del recupero non esiste ancora e va rivisto quando c'e'.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8322,3 +8340,29 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   per i prossimi rilanci vuole un passaggio da Claude prima del deploy.
 - **N-3.** Sul cluster la pulizia forzata dei processi non e' mai scattata: della mia correzione e' provato solo il percorso normale.
 - **N-4.** Nelle voci di GPT fino a 54d7a3b molti numeri sono attaccati alle parole; in cc81430 non piu'.
+
+### 2026-11-05 | Claude | Review 7 scaling: B-1 tetto CPU da decidere (fit almeno 187,9 core-ore, totale almeno 241,6 contro 180), B-2 limiti cablati anche per i fit (almeno 16 shard), B-3 congelamento S8 (QoS bprod non ammissibile, tetti dei lettori superati); sei facoltativi
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_cpu_release_recovery_20261105.md`. Niente da rifare: piani, validazione,
+  benchmark della posa e i 13 report delle sonde restano validi.
+- **B-1 (decisione di Simone):** con la formula congelata i fit richiedono almeno 187,90 core-ore (limite inferiore con l'audit
+  parziale di EPN612: C=100 in corso da almeno 559 s alla cancellazione, inferenza mia dai tempi dei file; 198-213 negli scenari)
+  contro il tetto 136; il totale dei tetti CPU-only e' almeno 241,6 (252-267 negli scenari) contro 180; la riga «benchmark sonde»
+  passa da 24 a 39,1 col recupero. `CLAUDE.md`: «Superare il budget di un passo richiede una decisione registrata, non una conferma
+  al volo». Serve l'inviluppo emendato approvato da Simone in `docs/decisioni.md` prima del primo fit; i due benchmark di recupero
+  restano dentro il totale 180 (cumulato fino a 39,4).
+- **B-2 (launcher):** i limiti sono cablati in `scripts/slurm/scaling_readers.sbatch` (l.116 e l.249 per il benchmark; l.125 massimo
+  15 shard, l.129 7.200 s per shard, l.137 136 core-ore per i fit). Partizione minima per forza bruta: almeno 16 shard a 7.200 s
+  (12 a 10.800 s, 10 a 14.400 s). Il dispatcher deve coprire anche i fit: diff minimo dal launcher, `EXPECTED_SHA` fermo ad aef665b
+  (altrimenti i 13 report non passano `validate_resources`), regola dei limiti pubblicata prima di misurare EPN612, review prima
+  dell'uso. QoS `lrd_all_serial`: 8 CPU per utente (un job alla volta), al massimo 10 job sottomessi, 4 ore per job.
+- **B-3 (congelamento S8, 76a3126):** `boost_qos_bprod` ha `MinTRES = cpu=2080,gres/gpu=260,mem=31280G,node=65` con `DenyOnLimit`: un
+  job da un nodo non e' ammissibile (la lettura pubblicata non interrogava `MinTRES`); i tetti dei lettori nel JSON (180/24/136) sono
+  smentiti dalle misure a 5.000. Da correggere prima del primo fit. Parte GPU confermata dal ricalcolo: 53.100 s, 66 GPU-ore.
+- **Facoltativi:** F-1 guardie per il riuso dei tre report del job in TIMEOUT (stato del padre registrato, prova che il figlio era
+  finito, directory nuove per il recupero, `numeric_sha256` dei report nuovi uguale a `1ac8481e…`); F-2 `OverTimeLimit = 3 min` spiega
+  i 184 s: casi peggiori come CPU x (walltime + 180 s), recupero 18,13 core-ore; F-3 tempo di sistema al 53,7 / 59,4 / 55,2 % nei
+  tre job, `login08` con due thread per core e carico 183,9 su 128 CPU alle 19:12: ipotesi non misurata di 8 thread su 4 core
+  fisici; F-4 C=100 di EPN612 300M naturale puo' avvicinarsi a 12.000 iterazioni; F-5 `status.json` con
+  `cpu_reserved_core_hours_so_far` superato; F-6 le due review interne di GPT non sostituiscono questa.
+- **Omissione mia nella review 6:** ho approvato il launcher senza segnalare che il limite di 5.400 s del benchmark 300M naturale era
+  una stima fissata nel codice prima di ogni misura (rapporto presunto 2; misurati 1,6 / 2,1 / 6,1 e 5,4 sui cinque C di EPN612).
