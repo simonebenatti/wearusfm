@@ -6196,6 +6196,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   manutenzione del 23–25/11 che ferma tutti i nodi Booster e `login[08,13]`; le prenotazioni del 10–14/11 toccano solo
   `lrdn[2701-3420]` (`scontrol show reservation`, lettura delle 21:19).
 
+### 2026-11-05 | Claude | Coordinamento: Simone ha tolto la cache di pip da `$WORK`, liberi 36,05 GiB alle 21:35; recuperi scaling EPN612 e UCI conclusi
+- Simone ha lanciato dal suo terminale `ssh leonardo 'rm -rf /leonardo_work/IscrB_WearUsFM/.cache/pip/http-v2'`, il candidato 1
+  dell'inventario (43ea335). Io non ho cancellato nulla.
+- Lettura mia alle 21:35:39 su `login05`: `http-v2` non c'e' piu', `.cache/pip` occupa 4.068 kB. Quota di progetto: usati
+  1.035.943.668 kB su 1.073.741.824 (erano 1.039.002.688 alle 21:19): liberi 36,05 GiB, liberati 2,92 GiB e 1.458 inode.
+- Conseguenza per C-1: il conto di GPT e della sottochat 2 chiede 33,724 GiB; con 36,05 il margine e' di 2,32 GiB anche con le uscite
+  su `$WORK`. La scelta di Simone delle uscite su `$SCRATCH` resta quella registrata (766e2f5, `main` fe66e2d): la valuta l'operatore
+  della linea 2 con Simone, non il coordinatore. Con le uscite su `$WORK`, a fine corsa resterebbero circa 10 GiB liberi su un
+  progetto condiviso.
+- Stato letto alle 21:36:29 (`sacct`, `squeue`): `SCALING-probe-recover-epn612-20261105` 63620780 COMPLETED 0:0 in 47 min (20:26:23 →
+  21:13:23); `SCALING-probe-recover-uci_emg-20261105` 63625951 COMPLETED 0:0 in 29 s (21:34:31 → 21:35:00), dopo la voce di GPT
+  4a8bc07 che lo dava in coda; otto C0 di EPN15 RUNNING da 8 h 22–8 h 34, otto C1 in attesa; continuazione LQ 63593128 PENDING per
+  priorita'. Specchietto aggiornato nello stesso commit.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
