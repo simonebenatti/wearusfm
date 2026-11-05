@@ -1,0 +1,702 @@
+{
+  "utc": "2026-11-05T17:47:53.018484+00:00",
+  "receipt_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000",
+  "receipt_files": {
+    "launch.json": {
+      "sha256": "8ee4b631e86007ddc392921103f82c8e1ab1be2b11a290893ba68aa1a1e2f848",
+      "bytes": 3857,
+      "json": {
+        "arm": "T100-LQ",
+        "step": 5000,
+        "plan_sha256": "d90b55ee5ca645ced5b75293edc7e614bc1c8d71dd1d5dbce411f94ca2cc3d79",
+        "code_sha": "26cf367364f39778e019a53fba3529847c740b5e",
+        "command": [
+          "torchrun",
+          "--standalone",
+          "--nproc_per_node=4",
+          "scripts/logsquare_train_rank.py",
+          "--initial-state-guard",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105/results/infra/logsquare_initialization_20261105/initial_state_guard.json",
+          "--initial-state-guard-sha256",
+          "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+          "--initial-state-records",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000/initial_state",
+          "scripts/train_jepa.py",
+          "--preset",
+          "sanity",
+          "--manifest",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+          "--root",
+          "/leonardo_work/IscrB_WearUsFM/data/processed",
+          "--root",
+          "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+          "--scales",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+          "--out-dir",
+          "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ",
+          "--num-workers",
+          "6",
+          "--distributed",
+          "--max-steps",
+          "5000",
+          "--window1-rules",
+          "--datasets",
+          "all",
+          "--prefetch",
+          "--fixed-eval-every",
+          "500",
+          "--manifest-sha256",
+          "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+          "--erank-min",
+          "38.4",
+          "--window-seconds",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+          "--batch-size",
+          "32",
+          "--accum-steps",
+          "1",
+          "--seed",
+          "0",
+          "--schedule",
+          "wsd",
+          "--total-steps",
+          "49046",
+          "--steps-at-d",
+          "98094",
+          "--keep-checkpoints",
+          "5000:19618",
+          "--lr",
+          "0.0001",
+          "--nested",
+          "1",
+          "--jepa-weight",
+          "0",
+          "--pose-root",
+          "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+          "--pose-weight",
+          "1.0",
+          "--pose-unprompted",
+          "on",
+          "--pose-grad-every",
+          "500",
+          "--pose-panel-every",
+          "500",
+          "--pose-panel-users",
+          "32",
+          "--pose-panel-recordings",
+          "2",
+          "--pose-panel-windows",
+          "4",
+          "--log-batch-origin",
+          "--masked-loss-radius",
+          "0",
+          "--tokenizer-activation",
+          "identity",
+          "--window-ms",
+          "100.0",
+          "--tokenizer-logsquare",
+          "--tokenizer-logsquare-eps",
+          "0.001",
+          "--time-limit-s",
+          "5100"
+        ],
+        "previous_checkpoint": null,
+        "initialization": {
+          "context": "controller pre-check, temporary CPU model",
+          "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+          "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+          "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+          "fe_gain": 548.6939187567021,
+          "fe_gain_hex": "0x1.1258d2546f0efp+9",
+          "reference_gain": {
+            "fe_gain": 548.6939187567023,
+            "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+            "observed_minus_registered_ulps": -1
+          },
+          "historical_training_gain": {
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9",
+            "observed_minus_registered_ulps": 0
+          },
+          "new_parameters": 24576,
+          "logsquare_weight_zero": true,
+          "tensors": 269,
+          "other_tensors_match_reference": true,
+          "classification": "historical_training_state",
+          "passed": true,
+          "scope": "pre-check on a temporary model; the trained model is verified in every training rank"
+        },
+        "initial_state_guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c"
+      }
+    },
+    "config.json": {
+      "sha256": "76152dcd966b5e49578dd95de57f0a3637dc854c6470a6dce4fc72485b2be3a2",
+      "bytes": 3668,
+      "json": {
+        "model": {
+          "dim": 384,
+          "n_heads": 6,
+          "k_latents": 64,
+          "local_layers": 2,
+          "backbone_layers": 8,
+          "decoder_layers": 2,
+          "muscle_dropout": 0.4,
+          "patch_ms": 25,
+          "window_ms": 100,
+          "n_bands": 5,
+          "rvq_codes": null,
+          "grad_checkpoint": true,
+          "multiscale_anchor": true,
+          "keep_readout": false,
+          "spectral_branches": [],
+          "branch_dim": 128,
+          "branch_hidden": 48,
+          "wavelet_learnable": false,
+          "branch_alpha": 0.5,
+          "branch_objective": "readout",
+          "branch_freeze_output": false,
+          "pose_head": true,
+          "tokenizer_activation": "identity",
+          "tokenizer_logsquare": true,
+          "tokenizer_logsquare_eps": 0.001
+        },
+        "jepa": {
+          "target": "b",
+          "anchor_weight": 0.2,
+          "ema_momentum": 0.996,
+          "loss_per_window": true,
+          "rvq_targets": "slab",
+          "keep_weight": 0,
+          "branch_weight": 0,
+          "jepa_weight": 0,
+          "region_target": false,
+          "pose_weight": 1,
+          "masked_loss_radius": 0
+        },
+        "loader": {
+          "min_window_s": 1,
+          "max_window_s": 4,
+          "split_at_gaps": true,
+          "mask": {
+            "ratio": 0.5,
+            "share_short": 0.15,
+            "share_medium": 0.25,
+            "share_long": 0.2,
+            "share_spatial": 0.4,
+            "short": [
+              1,
+              2
+            ],
+            "medium": [
+              4,
+              12
+            ],
+            "long": [
+              20,
+              80
+            ],
+            "slab_fraction": 0.5,
+            "max_spatial_fraction": 0.5
+          },
+          "k_neighbors": 8,
+          "filter_band_hz": [
+            20,
+            450
+          ],
+          "patch_ms": 25,
+          "align_ms": 200,
+          "notch_hz": [
+            50,
+            60
+          ],
+          "filter_margin_s": 0.5,
+          "run_margin_s": 0.2,
+          "max_window_attempts": 20,
+          "max_session_attempts": 20,
+          "scale_chunks": 32,
+          "scale_chunk_s": 2,
+          "open_sessions": 64,
+          "block_s": 30,
+          "windows_per_block": 8,
+          "block_pool": 16,
+          "rvq_codes_root": null,
+          "anchor_edge_guard_s": 0.1,
+          "time_weighted": true,
+          "multiscale_anchor": true,
+          "virtual": {
+            "p": 0.5,
+            "p_bipolar": 0.5,
+            "shapes": [
+              [
+                4,
+                8
+              ],
+              [
+                8,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ],
+            "strides": [
+              1,
+              2
+            ],
+            "classes": [
+              "C"
+            ],
+            "exclude_datasets": [
+              "capgmyo"
+            ],
+            "no_bipolar_datasets": [
+              "csl_hdemg"
+            ]
+          },
+          "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+          "pose_unprompted": true
+        },
+        "datasets": null,
+        "batch_size": 32,
+        "lr": 0.0001,
+        "warmup_steps": 1962,
+        "weight_decay": 0.05,
+        "grad_clip": 1,
+        "max_steps": 5000,
+        "eval_every": 500,
+        "ckpt_every": 500,
+        "seed": 0,
+        "alarm": {
+          "collapse_ratio_min": 0.05,
+          "erank_fraction_min": 0.1,
+          "patience": 3,
+          "erank_min": 38.4
+        },
+        "amp_bf16": true,
+        "target_version": "step1_psd_power_shape_energy_v1",
+        "readout_version": "p1p2_qc_equal_channel_v1",
+        "keep_calibration": null,
+        "keep_calibration_sha256": null,
+        "keep_grad_every": 0,
+        "pose_grad_every": 500,
+        "pairing_audit": false,
+        "stream_segment": 1200,
+        "schedule": {
+          "kind": "wsd",
+          "total_steps": 49046,
+          "decay_fraction": 0.2,
+          "keep_checkpoints": [
+            5000,
+            19618
+          ]
+        },
+        "accum_steps": 1,
+        "branch_calibration_batches": 16,
+        "freeze_encoder": false,
+        "branch_monitor": false,
+        "fixed_eval_every": 500,
+        "fixed_eval_batches": 8,
+        "log_batch_origin": true,
+        "pose_panel_every": 500,
+        "pose_panel_users": 32,
+        "pose_panel_recordings": 2,
+        "pose_panel_windows": 4,
+        "prefetch": true,
+        "prefetch_audit": false,
+        "nested": "1"
+      }
+    },
+    "receipt.json": {
+      "sha256": "bce5a1de4d16ca6776989d4366d7735131e70b73e94eb53fb443812efb31d129",
+      "bytes": 4739,
+      "json": {
+        "protocol": "tokenizer-logsquare-training-20261104-v1",
+        "complete": true,
+        "arm": "T100-LQ",
+        "checkpoint_step": 5000,
+        "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+        "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+        "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000/config.json",
+        "config_file_sha256": "76152dcd966b5e49578dd95de57f0a3637dc854c6470a6dce4fc72485b2be3a2",
+        "resume_checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint.pt",
+        "resume_checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+        "code_sha": "26cf367364f39778e019a53fba3529847c740b5e",
+        "plan_sha256": "d90b55ee5ca645ced5b75293edc7e614bc1c8d71dd1d5dbce411f94ca2cc3d79",
+        "command": [
+          "torchrun",
+          "--standalone",
+          "--nproc_per_node=4",
+          "scripts/logsquare_train_rank.py",
+          "--initial-state-guard",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105/results/infra/logsquare_initialization_20261105/initial_state_guard.json",
+          "--initial-state-guard-sha256",
+          "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+          "--initial-state-records",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000/initial_state",
+          "scripts/train_jepa.py",
+          "--preset",
+          "sanity",
+          "--manifest",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+          "--root",
+          "/leonardo_work/IscrB_WearUsFM/data/processed",
+          "--root",
+          "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+          "--scales",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+          "--out-dir",
+          "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ",
+          "--num-workers",
+          "6",
+          "--distributed",
+          "--max-steps",
+          "5000",
+          "--window1-rules",
+          "--datasets",
+          "all",
+          "--prefetch",
+          "--fixed-eval-every",
+          "500",
+          "--manifest-sha256",
+          "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+          "--erank-min",
+          "38.4",
+          "--window-seconds",
+          "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+          "--batch-size",
+          "32",
+          "--accum-steps",
+          "1",
+          "--seed",
+          "0",
+          "--schedule",
+          "wsd",
+          "--total-steps",
+          "49046",
+          "--steps-at-d",
+          "98094",
+          "--keep-checkpoints",
+          "5000:19618",
+          "--lr",
+          "0.0001",
+          "--nested",
+          "1",
+          "--jepa-weight",
+          "0",
+          "--pose-root",
+          "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+          "--pose-weight",
+          "1.0",
+          "--pose-unprompted",
+          "on",
+          "--pose-grad-every",
+          "500",
+          "--pose-panel-every",
+          "500",
+          "--pose-panel-users",
+          "32",
+          "--pose-panel-recordings",
+          "2",
+          "--pose-panel-windows",
+          "4",
+          "--log-batch-origin",
+          "--masked-loss-radius",
+          "0",
+          "--tokenizer-activation",
+          "identity",
+          "--window-ms",
+          "100.0",
+          "--tokenizer-logsquare",
+          "--tokenizer-logsquare-eps",
+          "0.001",
+          "--time-limit-s",
+          "5100"
+        ],
+        "slurm_job_id": "63593091",
+        "preflight_report_sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
+        "release_sha256": "ee08185d8bded517c77b652b22bb468d395727fd78fcea040780ebc359b2be00",
+        "initial_state_guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+        "trained_initial_state": {
+          "verified_on": "the student each of the four training ranks built and trained",
+          "classification": "historical_training_state",
+          "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+          "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+          "fe_gain": 548.6939187567021,
+          "fe_gain_hex": "0x1.1258d2546f0efp+9",
+          "models_built_per_rank": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "unjudged_parameter_count_gain_hex": "0x1.1258d2546f0efp+9",
+          "records": {
+            "rank0.json": "b30eb3370ac95c1aa8ce3fc5301994d71db6d0a013a69b075e7f6ff2710d8cff",
+            "rank1.json": "3b620be123744aa7102f381df7ac19f34739cc4a18be4419f6b057da53d41774",
+            "rank2.json": "f13739f633b19463e5ea8473de4f8766e9211a2fb95a9dcf74d795969a93d1af",
+            "rank3.json": "f603fbf0e53a7f5df168828326751dd9c153cf38422185fe1d35741a0798eb37"
+          }
+        },
+        "checkpoint_gain_is_historical_training_gain": true
+      }
+    },
+    "summary.json": {
+      "sha256": "1cf798785c4f4e8b18737e843ef1bdb3f59e3bc7b55d27da98fdaf260317d764",
+      "bytes": 1886,
+      "json": {
+        "stopped": "max_steps",
+        "steps": 5000,
+        "elapsed_s": 3930.702612400055,
+        "parameters": 28386589,
+        "device": "cuda:0",
+        "gpu_max_memory_gib": 15.523401260375977,
+        "code": {
+          "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105",
+          "sha": "26cf367364f39778e019a53fba3529847c740b5e"
+        },
+        "environment": {
+          "python": "3.11.6",
+          "torch": "2.2.0a0+git6c8c5ad",
+          "cuda": "12.1",
+          "pip_freeze_file": null,
+          "pip_freeze_sha256": null,
+          "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+        },
+        "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+        "world_size": 4,
+        "batch_per_process": 8,
+        "prefetch": true,
+        "prefetch_audit_steps": null,
+        "accum_steps": 1,
+        "micro_batch": 8,
+        "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+        "pose_panel_timing": {
+          "prepare_s": 21.423709847033024,
+          "evaluations_s": [
+            3.488529434427619,
+            3.468017028644681,
+            3.4678541999310255,
+            3.4809036944061518,
+            3.47147155739367,
+            3.4786762800067663,
+            3.4785826541483402,
+            3.495505951344967,
+            3.477732814848423,
+            3.480397082865238,
+            3.4667210821062326
+          ],
+          "total_s": 59.67810162715614
+        }
+      }
+    },
+    "initial_state/rank1.json": {
+      "sha256": "3b620be123744aa7102f381df7ac19f34739cc4a18be4419f6b057da53d41774",
+      "bytes": 1256,
+      "json": {
+        "rank": 1,
+        "world_size": 4,
+        "guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+        "passed": true,
+        "verify_only": false,
+        "trainer_returned": true,
+        "constructions": [
+          {
+            "role": "student",
+            "context": "training rank 1 of 4, model construction 1, the student",
+            "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+            "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9",
+            "reference_gain": {
+              "fe_gain": 548.6939187567023,
+              "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+              "observed_minus_registered_ulps": -1
+            },
+            "historical_training_gain": {
+              "fe_gain": 548.6939187567021,
+              "fe_gain_hex": "0x1.1258d2546f0efp+9",
+              "observed_minus_registered_ulps": 0
+            },
+            "new_parameters": 24576,
+            "logsquare_weight_zero": true,
+            "tensors": 269,
+            "other_tensors_match_reference": true,
+            "classification": "historical_training_state",
+            "passed": true
+          }
+        ]
+      }
+    },
+    "initial_state/rank2.json": {
+      "sha256": "f13739f633b19463e5ea8473de4f8766e9211a2fb95a9dcf74d795969a93d1af",
+      "bytes": 1256,
+      "json": {
+        "rank": 2,
+        "world_size": 4,
+        "guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+        "passed": true,
+        "verify_only": false,
+        "trainer_returned": true,
+        "constructions": [
+          {
+            "role": "student",
+            "context": "training rank 2 of 4, model construction 1, the student",
+            "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+            "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9",
+            "reference_gain": {
+              "fe_gain": 548.6939187567023,
+              "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+              "observed_minus_registered_ulps": -1
+            },
+            "historical_training_gain": {
+              "fe_gain": 548.6939187567021,
+              "fe_gain_hex": "0x1.1258d2546f0efp+9",
+              "observed_minus_registered_ulps": 0
+            },
+            "new_parameters": 24576,
+            "logsquare_weight_zero": true,
+            "tensors": 269,
+            "other_tensors_match_reference": true,
+            "classification": "historical_training_state",
+            "passed": true
+          }
+        ]
+      }
+    },
+    "initial_state/rank3.json": {
+      "sha256": "f603fbf0e53a7f5df168828326751dd9c153cf38422185fe1d35741a0798eb37",
+      "bytes": 1256,
+      "json": {
+        "rank": 3,
+        "world_size": 4,
+        "guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+        "passed": true,
+        "verify_only": false,
+        "trainer_returned": true,
+        "constructions": [
+          {
+            "role": "student",
+            "context": "training rank 3 of 4, model construction 1, the student",
+            "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+            "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9",
+            "reference_gain": {
+              "fe_gain": 548.6939187567023,
+              "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+              "observed_minus_registered_ulps": -1
+            },
+            "historical_training_gain": {
+              "fe_gain": 548.6939187567021,
+              "fe_gain_hex": "0x1.1258d2546f0efp+9",
+              "observed_minus_registered_ulps": 0
+            },
+            "new_parameters": 24576,
+            "logsquare_weight_zero": true,
+            "tensors": 269,
+            "other_tensors_match_reference": true,
+            "classification": "historical_training_state",
+            "passed": true
+          }
+        ]
+      }
+    },
+    "initial_state/rank0.json": {
+      "sha256": "b30eb3370ac95c1aa8ce3fc5301994d71db6d0a013a69b075e7f6ff2710d8cff",
+      "bytes": 1405,
+      "json": {
+        "rank": 0,
+        "world_size": 4,
+        "guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+        "passed": true,
+        "verify_only": false,
+        "trainer_returned": true,
+        "constructions": [
+          {
+            "role": "parameter_count",
+            "judged": false,
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9"
+          },
+          {
+            "role": "student",
+            "context": "training rank 0 of 4, model construction 2, the student",
+            "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+            "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+            "fe_gain": 548.6939187567021,
+            "fe_gain_hex": "0x1.1258d2546f0efp+9",
+            "reference_gain": {
+              "fe_gain": 548.6939187567023,
+              "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+              "observed_minus_registered_ulps": -1
+            },
+            "historical_training_gain": {
+              "fe_gain": 548.6939187567021,
+              "fe_gain_hex": "0x1.1258d2546f0efp+9",
+              "observed_minus_registered_ulps": 0
+            },
+            "new_parameters": 24576,
+            "logsquare_weight_zero": true,
+            "tensors": 269,
+            "other_tensors_match_reference": true,
+            "classification": "historical_training_state",
+            "passed": true
+          }
+        ]
+      }
+    }
+  },
+  "run_files": [
+    {
+      "name": "origin_sessions.json",
+      "bytes": 1757497
+    },
+    {
+      "name": "checkpoint.pt",
+      "bytes": 454776554
+    },
+    {
+      "name": "config.json",
+      "bytes": 3283
+    },
+    {
+      "name": "pose_panel_set.json",
+      "bytes": 83267
+    },
+    {
+      "name": "pose_provenance.json",
+      "bytes": 210
+    },
+    {
+      "name": "metrics.jsonl",
+      "bytes": 7761921
+    },
+    {
+      "name": "fixed_eval.jsonl",
+      "bytes": 17134
+    },
+    {
+      "name": "summary.json",
+      "bytes": 1808
+    },
+    {
+      "name": "pose_panel.jsonl",
+      "bytes": 3916268
+    },
+    {
+      "name": "checkpoint_step0005000.pt",
+      "bytes": 454776554
+    },
+    {
+      "name": "fixed_eval_set.json",
+      "bytes": 22232
+    }
+  ]
+}

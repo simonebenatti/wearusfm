@@ -6260,3 +6260,18 @@ Training63593091 (5000,1h30) e63593128 (19618,4h,afterok63593091) accettati tram
 submitter/ledgercomuni. Snapshot:PENDING Priority/Dependency. Stessa ricetta e dose,
 nessun nuovo consenso o monitor. Tetto22GPUh/176,333333coreh checkout incluso.
 Ricevute conservate; nessun risultato training né estrazione in questo momento.
+
+### 05/11/2026 — Endpoint 5.000 LQ verificato e rilascio benchmark inferenza
+
+63593091 COMPLETED 0:0 in 3.970 s, fine a 5.000 per max_steps;
+4,411111 GPU-ore / 35,288889 core-ore. Ricevuta, configurazione, piano, release e
+quattro rank verificati; checkpoint nominato SHA 6233b070… verificato in sola lettura.
+Nessun punteggio scientifico dedotto dalla loss. A1 superato sul riferimento train
+esatto e selezione ricostruita: dieci finestre per ciascuna delle prime due registrazioni.
+Pin reali acquisiti prima del benchmark.
+
+Rilasciato solo il benchmark già approvato: 1 GPU, 8 CPU, 100G, 30 min;
+0,5 GPU-ore / 4 core-ore più 0,333333 core-ore di checkout. 110 sorgenti invariati.
+Endpoint 19.618 e allocazioni delle estrazioni rimangono inattivi finché mancanti.
+D1 e R1-b invariati, nessuna nuova loss o monitor.
+Piano operativo: `docs/logsquare_inference_execution_20261105.md`.

@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026: LQ5000 completo, benchmark inferenza pronto
+
+Ripresa richiesta da Simone. Job 63593091 COMPLETED 0:0 in 3.970 s, 5.000 passi,
+4,411111 GPU-ore e 35,288889 core-ore. Ricevute originali e log completo archiviati,
+quattro attestazioni corrette; checkpoint nominato verificato per SHA 6233b0705e8d…
+e 454.776.554 byte. Continuazione 63593128 PENDING Priority all'ultima lettura, 18:44 CET.
+A1 sul riferimento train B19618 esatto: registrazioni 0 e 1 con dieci finestre ciascuna
+e identità coincidenti con la selezione congelata. Piani di inferenza/estrazione in stato
+APPROVED_FOR_BENCHMARK, pin reali del 5.000; endpoint 19.618 e budget delle estrazioni
+ancora mancanti. 110 sorgenti invariati, review indipendente favorevole. Piano in
+`docs/logsquare_inference_execution_20261105.md`, tetto 0,5 GPU-ore / 4,333333 core-ore,
+checkout incluso.
+
 ### GPT — 05/11/2026, 15:19 CET: T100-LQ corretto sottomesso, due fasi in coda
 
 Codice esecutivo26cf367364f39778e019a53fba3529847c740b5e, pubblicato e verificato su
@@ -5642,6 +5655,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: nessun errore nel 5.000 LQ; inferenza non ancora valutazione
+
+Il training è completo, non fermato dal tempo. Gain iniziale e guard sono quelli
+previsti; nessun STOP. Loss di training da sola non conclude sul beneficio del ramo.
+Il benchmark misura soltanto risorse e non produce uno score o cache per i fit.
+Una lettura metadata iniziale aveva sovrascritto PYTHONPATH del modulo numerico:
+fallita prima di leggere dati, corretta preservando il percorso del modulo; nessun
+job, checkout o sorgente scientifico modificato da quel comando di sola lettura.
 
 ### GPT — 05/11/2026: nuova catena LQ inviata senza errori o duplicati
 

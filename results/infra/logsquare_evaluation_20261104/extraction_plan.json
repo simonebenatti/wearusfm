@@ -1,6 +1,6 @@
 {
   "protocol": "tokenizer-logsquare-evaluation-20261104-v1",
-  "status": "REVIEW_REQUIRED",
+  "status": "APPROVED_FOR_BENCHMARK",
   "arm": "T100-LQ",
   "training_plan": {
     "path": "results/infra/logsquare_training_20261105/training_plan.json",
@@ -96,7 +96,18 @@
     }
   },
   "checkpoints": {
-    "5000": null,
+    "5000": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+      "sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+      "bytes": 454776554,
+      "config_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000/config.json",
+      "config_sha256": "76152dcd966b5e49578dd95de57f0a3637dc854c6470a6dce4fc72485b2be3a2",
+      "receipt_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/5000/receipt.json",
+      "receipt_sha256": "bce5a1de4d16ca6776989d4366d7735131e70b73e94eb53fb443812efb31d129",
+      "training_code_sha": "26cf367364f39778e019a53fba3529847c740b5e",
+      "training_plan_sha256": "d90b55ee5ca645ced5b75293edc7e614bc1c8d71dd1d5dbce411f94ca2cc3d79",
+      "release_sha256": "ee08185d8bded517c77b652b22bb468d395727fd78fcea040780ebc359b2be00"
+    },
     "19618": null
   },
   "inference_receipt": null,
