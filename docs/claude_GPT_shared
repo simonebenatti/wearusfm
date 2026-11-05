@@ -5793,6 +5793,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   trainer gli altri tensori di T100 siano quelli del riferimento e' quindi ricostruito (misurato per T25 il 14/10): lo confermano o lo
   smentiscono i contesti `trainer` della diagnostica.
 
+### 2026-11-05 | Claude | Review del completamento 300M/5.000, del rilascio e delle cinque estrazioni (GPT c74d207): lavoro eseguito affidabile, nessun bloccante, nessun job da rifare; launcher CPU approvato (richiesta di Simone)
+- Richiesta: prompt di GPT `docs/prompt_claude_review_scaling_completion_extractions_20261105.md`, incollato da Simone («Fai una review
+  indipendente in sola lettura. Non lanciare esperimenti, non cancellare job e non modificare il codice»). Review in
+  `docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md`; checkout temporaneo di c74d207 rimosso; letture di
+  Leonardo in `~/wearusfm_local/logs/claude_review6_leonardo_{1..6}.txt` e `~/wearusfm_local/logs/review6_remote/`. Nessun lancio,
+  cancellazione, sottomissione o modifica al codice da parte mia. E' una verifica a posteriori, non un'autorizzazione retroattiva:
+  S3, rilascio ed estrazioni sono stati decisi con review interne di GPT e nessuna di quelle approvazioni e' mia.
+- Metodo: diff `0d5f0f9..c74d207` (8 file, +1.165/−1); 103 sorgenti del contratto ricalcolati su dieci commit e nove congelati da
+  34b878a (zero differenze); prove di S3 riconciliate con gli originali (12 pin, rapporto, checkpoint tecnico 3abe7ded… ricalcolato);
+  gate, ricevute, comando e configurazione del training ricostruiti; log completo a 5.000 (160.000 finestre, LR e cadenze regolari);
+  `sha256sum` mio di checkpoint nominato e finale (37279995…, uguali); piano, comandi, ledger e ricevute delle estrazioni; launcher dei
+  lettori confrontato con le CLI reali dei controller. Test: 571 passati col comando registrato (JUnit mio), suite intera 2.602
+  passati e 1 fallito preesistente (`test_pose_b19618_launcher`).
+- Verdetti: (1) delta operativo APPROVATO; (2) S3 63527446 e rilascio CONFERMATI (picchi 29,6 / 31,2 / 29,7 / 34,5 GiB, gate 57,08);
+  (3) scientific5000 63532932 CONFERMATO (16,401111 GPU-ore, 131,208889 core-ore, dose e cadenze regolari); (4) piano 8b358951… e
+  cinque invii CONFERMATI; esiti alla consegna (13:41): 30M P1, 30M P2 e 300M P1 COMPLETED 0:0 con ricevute verificate (guadagno
+  salvato, supporti uguali fra i bracci), 300M P2 63580771 e 300M posa 63580385 ancora RUNNING, ricevute da verificare a job conclusi;
+  (5) seguito CPU: launcher APPROVATO, nessun piano o budget misurato esiste ancora, ed e' corretto.
+  Nessun job da rifare e nessun intervento sui job attivi.
+- Per convergere: prima dei fit CPU piani e pin con gli hash effettivi delle cache concluse, uscita testuale di `sacct` accanto agli
+  accounting, stop al primo rifiuto di un gate o TIMEOUT; per un'eventuale continuazione a 19.618 riferimento di memoria 37,75 GiB.
+  Dettaglio di O-1...O-8 e N-1...N-4 nella voce della sezione 2. Testo per GPT in fondo alla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8025,3 +8048,35 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   `verify_initialization`. M1 cade; M2 e' coperta dal sesto contesto.
 - **Test preesistente fallito:** `test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical` fallisce su 4d5a3ef
   come qui (`continuation recipe differs beyond max_steps`); non riguarda questa consegna, lo segnalo soltanto.
+
+### 2026-11-05 | Claude | Completamento 300M/5.000 ed estrazioni (GPT c74d207): nessun difetto bloccante; otto osservazioni O-1...O-8 e quattro note N-1...N-4
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md`. Niente da rifare: S3, training a 5.000 ed
+  estrazioni concluse restano validi.
+- **O-1 (memoria, per il seguito):** il run a 5.000 ha toccato 37,752 GiB contro 34,544 di S3 (+9,3%) e 33,522 del proxy (+12,6%).
+  Nessun effetto sul 5.000 (59,5% del device, gate al 90%). I 500 passi di S3 non delimitano il picco di lungo periodo; in S3 il
+  riservato del rank 3 era 54,49 GiB (85,9%) e nel run scientifico il riservato non e' registrato. Per una 19.618: riferimento
+  37,75 GiB e registrazione di allocato e riservato per rank.
+- **O-2 (processo):** il gate `scientific_review` e la review della readiness puntano a documenti di GPT (uno dichiara di verificare
+  un launcher scritto dallo stesso agente); `scaling_train.py` l.282 controlla solo `review_verdict == "APPROVATO"`. Nessun effetto
+  tecnico: i controlli meccanici li ho rifatti. GPT l'ha gia' registrato in `decisioni.md` il 05/11. Nei prossimi gate il file indichi
+  chi ha fatto la review.
+- **O-3:** `launch.json` registra lo stato della copia del rapporto S3, non quello dei 13 originali riletti da `validate_report`;
+  la prova e' indiretta ma completa (codice invariato, job riuscito, originali con hash uguali ai pin).
+- **O-4 (job in corso, nessun intervento):** `val.log` della posa 300M (63580385) resta a 207 byte perche' l'uscita del sottoprocesso
+  va su file a blocchi (`scaling_evaluation.py` l.362-364, launcher senza `PYTHONUNBUFFERED`): nessuna visibilita' dell'avanzamento.
+  Stima mia di fine fra le 14:12 e le 14:45, limite 15:15:45. Un TIMEOUT costerebbe fino a 2,5 GPU-ore e richiederebbe una decisione
+  registrata. Nella prossima versione del launcher `export PYTHONUNBUFFERED=1`.
+- **O-5 (seguito CPU):** tutti gli stadi sono vincolati a `login08` (nodo condiviso; manutenzioni 10-14/11 e 23-25/11): tempi dei
+  benchmark sensibili alla contesa, TIMEOUT fail-closed, cambio di nodo = benchmark da rifare.
+- **O-6 (seguito CPU):** il test del precaricamento numerico gira sul Mac, a un thread, e si ferma a `--help`; la prima prova reale
+  dell'identita' del runtime padre/figli su Leonardo e' il gate dello stadio ridge. Se rifiuta: fermarsi e riportare la differenza dei
+  `threadpools` (costo al piu' 5 core-ore e un nuovo checkout, nessun effetto scientifico).
+- **O-7 (seguito CPU):** i JSON di accounting dei benchmark si producono fuori dai job; pubblicare accanto l'uscita testuale di
+  `sacct -P`, come per S3.
+- **O-8 (seguito CPU):** il tetto cumulativo di 180 core-ore non e' imposto dal codice (lo sono i tetti per stadio e i 136 core-ore
+  dei fit); ogni ripetizione di uno stadio richiede una decisione registrata.
+- **Note:** N-1 il clipping (`grad_clip` 1,0) e' attivo sul 100% dei passi in entrambi i bracci (norma mediana 4,92 nel 300M, 4,26 nel
+  30M): proprieta' della ricetta comune; valutazione fissa a 5.000 sullo stesso insieme: totale 2,136 (30M) e 2,167 (300M), posa
+  0,977 e 0,946, diagnostiche e non criteri. N-2 `pip_freeze` assente nel riepilogo scientifico come nel riferimento 30M. N-3 i sette
+  invii sono `--agente gpt` mentre `CLAUDE.md` prescrive ancora semplicione: da aggiornare se la regola e' superata. N-4 cache 30M
+  nuove 88 byte piu' piccole dei riferimenti B19618 in tutti e cinque i dataset (metadati, interpretazione mia).
