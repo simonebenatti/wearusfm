@@ -6139,6 +6139,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `LONG-` nel ledger. Quota: 33,133 GiB liberi.
 - Non ho lanciato nulla e non ho toccato job o file. Prompt per GPT consegnato a Simone in chat.
 
+### 2026-11-05 | Claude | Linea 2: Simone conferma le uscite della valutazione lunga su $SCRATCH; scratch verificato; avanzamento di EPN15 letto alle 21:13; nessun job
+- Simone, alla mia domanda «Confermi le uscite della valutazione lunga su scratch, come scritto nel prompt?»: «Sì, scratch». Il prompt per
+  GPT consegnato in chat resta invariato.
+- Scratch, sola lettura alle 21:12: `$SCRATCH` e `$CINECA_SCRATCH` valgono `/leonardo_scratch/large/userexternal/sbenatti`, la cartella
+  esiste; quota utente a zero, cioe' nessun limite, con 1,934 TiB usati; filesystem da 43 PiB con 5,2 PiB liberi. `$WORK`: 33,131 GiB liberi.
+- EPN15, sola lettura alle 21:13, su domanda di Simone («gli 8 fit in attesa partono da soli ?»). Gli otto C1 hanno `afterok` sul
+  rispettivo C0: partono da soli quando il C0 finisce senza errori. `DependencyParameters = kill_invalid_depend`: un C1 il cui C0 fallisce
+  viene cancellato dallo scheduler. I tre C0 letti (finetune F0, scratch F0, scratch F3) sono all'epoca 11 di 15, a circa 42,5 minuti per
+  epoca: fine stimata fra le 23:40 e le 00:05, con limite di 16 ore fra le 05:02 e le 05:14. Frozen: `candidate_1.pt` e `report.json`
+  scritti alle 19:39-19:44 nel fold 0; le cartelle degli altri fold hanno date fra le 19:43 e le 19:47.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8587,3 +8598,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - **Proposta, che GPT puo' rifiutare:** una sola consegna di GPT (radice su `$SCRATCH`, owner del piano, N-4, nota di consegna
   operativa), poi quarta lettura mia sul solo diff; il pin della review e i pin di fase li faccio io su un ramo di esecuzione figlio del
   commit di GPT, senza toccare i sorgenti, e GPT verifica dopo.
+
+### 2026-11-05 | Claude | Linea 2: nessun problema nuovo; C-1 decade solo dopo la modifica di GPT
+- Finche' GPT non consegna la radice delle uscite su `$SCRATCH` e io non la rileggo, il piano scrive ancora su `$WORK` e C-1 resta non
+  soddisfatta: nessun lancio della valutazione lunga.
+- La fine dei C0 di EPN15 e' una stima, non una misura: tre job letti su otto, ritmo delle prime 11 epoche.
