@@ -6291,3 +6291,28 @@ Nel tetto CPU180: stadi numerici179, checkout originario1/3, fino tre checkout
 documentali aggiuntivi da1/6 ciascuno, riserva residua1/6. Nessuna estensione dei
 limiti numerici o della campagna; nessun training nuovo o seguito automatico19618.
 Le autorizzazioni di Simone sono già sufficienti per questa catena.
+
+### 05/11/2026 — GPT: primi invii CPU dello scaling 5.000
+
+Piani pubblicati 1bde83e, comando checkout 26781ee; origin e deploy verificati.
+Review operativa indipendente APPROVATO, docs/reviews/scaling_cpu_release_20261105.md,
+oltre alla review Claude già acquisita. Checkout documentale 63591447 COMPLETED
+0:0 in 44 s (0,024444 core-ore); HEAD1bde83e, pulizia, sola lettura e hash dei due
+piani/launcher verificati. Sottomessa validazione posa **63591791** via submitter
+comune, codice aef665ba,2CPU/30G/30min, cap1core-ora. Ricevute in
+cpu_readers_20261105/submissions, raw sacct e accounting checkout affiancati.
+I sei benchmark vengono inviati solo dopo esito valido; nessun fit già in coda.
+
+### 05/11/2026 — GPT: validazione CPU in attesa, nessuno score scientifico
+
+63591791 è il primo stadio CPU; l'accettazione SLURM non equivale al passaggio
+del guard. Al primo errore/TIMEOUT si ferma il seguito, senza retry. Restano da
+misurare i sei benchmark prima del piano risorse dei fit; nessun risultato
+scientifico letto, nessuna continuazione19618 o automazione. Verificare e congelare
+anche il preventivo numerico condizionale S8 prima dell'apertura degli score.
+
+Validazione63591791 conclusa COMPLETED0:0 in45s, MaxRSS2,171310GiB,
+report b0af2231 accettato (quattro cache, piano/ricetta/pin/sorgenti coerenti,
+nessuna metrica scientifica). Receipt, report, accounting e raw sacct pubblicati
+prima del seguito. Sei benchmark train-only già previsti pronti per invio; costo
+massimo28core-ore, compreso nel rilascio29 già pubblicato.
