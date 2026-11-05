@@ -6389,6 +6389,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   nella sezione 2.
 - EPN15 alle 23:02: 8 C0 in corsa da 9 h 48 min - 10 h, 8 C1 in attesa per dipendenza, nessuna novita'.
 
+### 2026-11-05 | Claude | Linea 2, EPN15: 8 C0 conclusi `COMPLETED 0:0`, 8 C1 partiti; consuntivo a 113,43 GPU-ore su 304,5
+- Lettura delle 23:54 (`~/wearusfm_local/logs/line2_ft15_c0_done_20261105_2354.txt`): gli 8 C0 di finetune e scratch sono
+  `COMPLETED 0:0`, nessun riavvio, durate fra 38.009 e 38.426 secondi (10 h 33 min - 10 h 40 min) su un limite di 16 ore; conclusi fra
+  le 23:37:13 e le 23:53:12.
+- Gli 8 C1 sono partiti da soli per `afterok` fra le 23:38:02 e le 23:53:35 e sono tutti RUNNING. Nessun invio e nessuna modifica di
+  dipendenze da parte mia.
+- Controllo operativo dei 16 report presenti (8 frozen, 8 C0 di finetune e scratch), senza leggere i punteggi
+  (`~/wearusfm_local/logs/line2_ft15_c0_reports_20261105_2355.txt`): tutti `complete`; protocollo, `code_sha` `1359b924`, piano
+  `8a07e975...`, sorgenti `13de2f31...`, ricetta `db975bd1...`, input `ef0090cb...` e teacher `a31c8950...` uguali ai riferimenti della
+  consegna; fold e regime corretti. I C0 hanno `scientific_status` `first_candidate_recorded`, `held_evaluated` falso, un candidato e
+  nessun `held.npz`; i quattro C1 frozen hanno `held_evaluated` vero, due candidati e `held.npz`. File di ogni C0: `candidate_0.json`,
+  `candidate_0.pt` (113.593.316 byte), `metrics.jsonl`, `report.json`. Nei log degli 8 C0 e degli 8 C1 nessun traceback, errore o
+  avviso di memoria.
+- Consuntivo da `sacct -X` sui 27 ID: chiusi 19 job, 111,935833 GPU-ore e 895,518333 core-ore (benchmark e due checkout 0,125833 e
+  1,038333; 8 frozen 26,879167 e 215,033333; 8 C0 84,930833 e 679,446667). In corso 8 C1: 1,495833 GPU-ore alle 23:54. Massimo
+  possibile, se ogni C1 usasse le 16 ore: 239,935833 GPU-ore e 1.919,518333 core-ore, sotto il tetto di 304,5 e 2.436,666667.
+- Fine attesa dei C1, se durano quanto i loro C0: 06/11 fra le 10:11 e le 10:34. Sorveglianza:
+  `~/wearusfm_local/logs/watch_ft15_c1_20261105.txt`, una lettura ogni cinque minuti.
+- `$WORK` alle 23:54: 33,40 GiB liberi.
+- Coda seriale alle 23:32: fit 03 dello scaling concluso in circa 34 minuti, fit 04 in corsa, fit 13 inviato dal processo di GPT; 10
+  job su 10. Il checkout benchmark della linea 2 non e' ancora inviato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8902,3 +8924,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Peso nel repo: le tre ricevute di posa val pesano 3,26 MB l'una (stato dei file grezzi letti), 10,8 MB in tutto il commit. Sono
   metadati, nessun segnale. `.gitignore` esclude `*.out`: i log sono archiviati come `.log`, i nomi remoti stanno in
   `execution/audit/logs_extract.json`.
+
+### 2026-11-05 | Claude | Linea 2, EPN15: nessun problema alla fine dei C0
+- Nessuna anomalia. A fine matrice, attesa il 06/11 in mattinata, faccio la raccolta finale del prontuario: 24 `COMPLETED 0:0`, 24
+  report completi, manifest con hash remoti, `scripts/consolidation_ft15_report.py`, pubblicazione in
+  `results/infra/finetune15_20261105/final/`. Fino ad allora non apro punteggi ne' contrasti.
