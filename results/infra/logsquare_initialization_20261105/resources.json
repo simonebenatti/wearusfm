@@ -1,6 +1,6 @@
 {
   "status": "REVIEW_REQUIRED",
-  "estimate": "No reliable measured runtime yet; allocation cap is published, not an observed estimate. Five children at most90s each;150s for launcher, parent, I/O and provenance.",
+  "estimate": "No reliable measured runtime yet; allocation cap is published, not an observed estimate. Five construction children at most 90s each; the torchrun dry run at most 300s (its process tree is killed at 270s); 150s for launcher, parent, I/O and provenance.",
   "jobs": [
     {
       "logical_id": "LOGSQ-initdiag-checkout-20261105",
@@ -19,13 +19,13 @@
       "gpus": 4,
       "cpus": 32,
       "memory": "240G",
-      "walltime_seconds": 600,
-      "allocated_gpu_hours_cap": 0.6666666666666666,
-      "allocated_core_hours_cap": 5.333333333333333
+      "walltime_seconds": 900,
+      "allocated_gpu_hours_cap": 1.0,
+      "allocated_core_hours_cap": 8.0
     }
   ],
-  "total_gpu_hours_cap": 0.6666666666666666,
-  "total_core_hours_cap": 5.666666666666667,
+  "total_gpu_hours_cap": 1.0,
+  "total_core_hours_cap": 8.333333333333334,
   "training_submissions": false,
-  "reason_for_four_gpus": "Preserve failed controller visible-device/allocation context, although diagnostic copies use only cuda:0. No data forward or update; original synthetic constructor calibration only."
+  "reason_for_four_gpus": "Preserve failed controller visible-device/allocation context for the construction children, which copy to cuda:0 only; the torchrun dry run starts the four production ranks, one per GPU, and stops each inside the constructor. No data forward or update; original synthetic constructor calibration only."
 }

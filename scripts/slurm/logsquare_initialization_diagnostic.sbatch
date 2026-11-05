@@ -7,15 +7,18 @@
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=240G
-#SBATCH --time=00:10:00
+#SBATCH --time=00:15:00
 #SBATCH -J logsquare_initialization_diagnostic
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_initialization_diagnostic_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_initialization_diagnostic_%j.out
 
-# Diagnostic only: five fresh Python processes, CPU construction and CUDA copy.
-# No DDP, data forward, optimizer or training; only constructor synthetic calibration.
-# No training restart here.
-# 4 GPUs preserve the failed controller's allocation context; only cuda:0 is used.
+# Diagnostic only: five fresh Python processes, CPU construction and CUDA copy;
+# then the production fresh-phase command under torchrun with --verify-only:
+# four ranks build and verify their student and stop inside the constructor.
+# No model reaches the trainer: no DDP wrapper, data forward, optimizer or training;
+# only constructor synthetic calibration. No training restart here.
+# 4 GPUs preserve the failed controller's allocation context; the construction
+# children use only cuda:0, the torchrun dry run starts one rank per GPU.
 # Submit only after diagnostic review, via submit_job.py and a fresh frozen checkout.
 set -euo pipefail
 if [ "$#" -ne 2 ]; then
@@ -51,11 +54,12 @@ work = Path(sys.argv[3]).resolve()
 fields = dict(word.split('=', 1) for word in sys.argv[4].split() if '=' in word)
 if not code.is_relative_to(work / 'wearusfm_campaigns') or not plan.is_relative_to(code):
     raise SystemExit('frozen campaign and contained plan required')
-if fields.get('TimeLimit') != '00:10:00' or torch.cuda.device_count() != 4:
-    raise SystemExit('exactly ten minutes and four visible GPUs required')
+if fields.get('TimeLimit') != '00:15:00' or torch.cuda.device_count() != 4:
+    raise SystemExit('exactly fifteen minutes and four visible GPUs required')
 p = json.loads(plan.read_text())
-if not p.get('cuda_required') or p.get('child_timeout_seconds') != 90:
-    raise SystemExit('production diagnostic requires CUDA and five bounded90s children')
+if (not p.get('cuda_required') or p.get('child_timeout_seconds') != 90 or p.get('rank_entry_timeout_seconds') != 300
+        or len(p.get('variants', ())) != 6):
+    raise SystemExit('production diagnostic requires CUDA, five bounded 90s children and one bounded 300s torchrun dry run')
 PY
 exec python3 scripts/logsquare_initialization_diagnostic.py \
   --plan "$CODE_DIR/$PLAN_REL" --expected-code-sha "$EXPECTED_SHA" --out "$OUT"

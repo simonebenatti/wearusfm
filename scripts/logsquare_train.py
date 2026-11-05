@@ -3,6 +3,11 @@
 Fresh seed-zero initialization, then own resumable 5000 -> 19618 continuation.
 A review-only plan cannot execute: the release must pin the R1 reading, Claude
 review, measured R2 budget and the exact controller/scientific source files.
+
+Initial state (05/11/2026, after job 63532335): the reviewed guard is verified
+on the model every training rank actually builds (scripts/logsquare_train_rank.py),
+not only on the temporary model of the pre-check here. See
+scripts/logsquare_initial_state.py for the rule.
 """
 from __future__ import annotations
 
@@ -31,10 +36,13 @@ def module(name, relative):
 L = module('logsquare_train_preflight', 'scripts/logsquare_preflight.py')
 T = module('logsquare_train_reference', 'scripts/tokenizer_train.py')
 CLI = module('logsquare_train_cli', 'scripts/train_jepa.py')
+G = module('logsquare_train_initial_state', 'scripts/logsquare_initial_state.py')
 P, R, require = L.P, L.R, L.require
 PROTOCOL = 'tokenizer-logsquare-training-20261104-v1'
 ARM = 'T100-LQ'
-CONTROLLER_FILES = ('scripts/logsquare_train.py', 'scripts/slurm/logsquare_train.sbatch')
+RANK_ENTRY = 'scripts/logsquare_train_rank.py'
+CONTROLLER_FILES = ('scripts/logsquare_train.py', 'scripts/slurm/logsquare_train.sbatch', RANK_ENTRY,
+                    'scripts/logsquare_initial_state.py')
 
 
 def read_pinned_json(pin):
@@ -94,8 +102,11 @@ def validate_allocations(plan, rho):
         require(all(allocation.get(k) == v for k, v in expected.items()), 'allocation does not follow R2')
 
 
-def command_for(comparison, cfg, run_dir, step, seconds):
+def command_for(comparison, cfg, run_dir, step, seconds, guard=None, records=None):
+    """The historical T100-L trainer arguments plus the branch; the fresh phase starts every rank behind the guard."""
     require(step in (5000, 19618) and seconds > 300, 'unregistered phase or insufficient walltime')
+    require((guard is not None and records is not None) if step == 5000 else (guard is None and records is None),
+            'the guard belongs to the fresh phase, and only to it')
     argv = list(comparison['arm_configurations']['T100-L']['validated_trainer_argv'])
     require(argv[0] == 'scripts/train_jepa.py' and argv.count('--max-steps') == 1 and
             argv.count('--out-dir') == 1 and not any(x in argv for x in
@@ -109,20 +120,72 @@ def command_for(comparison, cfg, run_dir, step, seconds):
     require(R.config_to_dict(effective) == R.config_to_dict(replace(cfg, max_steps=step)), 'candidate CLI/config mismatch')
     require(args.num_workers == 6 and args.distributed and args.init_from is None and args.branch_from is None,
             'wrong stream or warm start')
-    return ['torchrun', '--standalone', '--nproc_per_node=4', *argv]
+    entry = [] if step != 5000 else [RANK_ENTRY, '--initial-state-guard', guard['path'],
+                                     '--initial-state-guard-sha256', guard['sha256'],
+                                     '--initial-state-records', str(records)]
+    return ['torchrun', '--standalone', '--nproc_per_node=4', *entry, *argv]
 
 
-def verify_initialization(cfg, expected):
-    """Audit construction on CPU; trainer still constructs its own fresh model."""
+def verify_initialization(cfg, guard):
+    """Pre-check on a temporary CPU model, before any output exists.
+
+    It fails early and says why. It is not the guarantee: the trainer builds its
+    own models, and every training rank verifies those (RANK_ENTRY).
+    """
+    require(G.NEW_WEIGHT == L.NEW_WEIGHT, 'guard written for another branch')
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(cfg.seed)
         student = P.WearUsFM(cfg.model)
-        values = student.state_dict()
-        new = values[L.NEW_WEIGHT]
-        require(new.shape == (cfg.model.dim, 64) and not bool(new.count_nonzero()), 'new branch not zero initialized')
-        shared = P.state_sha256({k: v for k, v in values.items() if k != L.NEW_WEIGHT})
-        require(shared == expected, 'fresh shared initialization differs from historical T100-L')
-    return {'shared_sha256': shared, 'logsquare_weight_zero': True, 'new_parameters': new.numel()}
+        record = G.verify(student.state_dict(), guard, 'controller pre-check, temporary CPU model')
+    return {**record, 'scope': 'pre-check on a temporary model; the trained model is verified in every training rank'}
+
+
+def rank_attestation(directory, guard_sha256, verify_only=False):
+    """After the fresh phase: all four ranks verified every model they built, and it is one state.
+
+    `verify_only` reads the records of the diagnostic dry run (the entry's --verify-only): the same
+    requirements, on ranks that stopped before the trainer received the student. Such records are
+    never a training attestation, and training records are never a dry run.
+    """
+    rows = []
+    for rank in range(4):
+        path = Path(directory) / f'rank{rank}.json'
+        require(path.is_file(), f'missing initial-state record of rank {rank}')
+        row = json.loads(path.read_text())
+        require(row.get('rank') == rank and row.get('world_size') == 4 and row.get('guard_sha256') == guard_sha256 and
+                row.get('passed') is True and row.get('verify_only') is verify_only and
+                row.get('trainer_returned') is (not verify_only), f'unverified initial state: rank {rank}')
+        # Rank zero first counts parameters on an unseeded model that is never trained (recorded, not judged);
+        # then every rank builds exactly one student, the model it trains.
+        roles = [c.get('role') for c in row.get('constructions', ())]
+        require(roles == (['parameter_count', 'student'] if rank == 0 else ['student']) and
+                row['constructions'][-1].get('passed') is True and
+                row['constructions'][-1].get('classification') == G.PASSED, f'unexpected model constructions: rank {rank}')
+        rows.append(row)
+    students = [row['constructions'][-1] for row in rows]
+    require(len({(c['shared_sha256'], c['fe_gain_hex']) for c in students}) == 1, 'ranks did not start from one state')
+    first = students[0]
+    return {'verified_on': ('the student each of the four ranks built in verification-only mode; nothing was trained' if verify_only
+                            else 'the student each of the four training ranks built and trained'),
+            'classification': first['classification'], 'shared_sha256': first['shared_sha256'],
+            'reference_gain_shared_sha256': first['reference_gain_shared_sha256'],
+            'fe_gain': first['fe_gain'], 'fe_gain_hex': first['fe_gain_hex'],
+            'models_built_per_rank': [len(row['constructions']) for row in rows],
+            'unjudged_parameter_count_gain_hex': rows[0]['constructions'][0]['fe_gain_hex'],
+            'records': {f'rank{rank}.json': P.file_identity(Path(directory) / f'rank{rank}.json')['sha256']
+                        for rank in range(4)}}
+
+
+def plan_guard(plan):
+    """The pinned guard, bound to this plan's reference and re-read from its historical records."""
+    require(isinstance(plan.get('initial_state_guard'), dict),
+            'plan without the reviewed initial-state guard: new release required')
+    identity = P.pinned_file(plan['initial_state_guard'])
+    guard = G.load_guard(identity['path'], identity['sha256'])
+    require(guard['reference']['shared_sha256'] == plan['shared_initial_sha256'] and
+            G.same_pin(guard['reference']['source'], plan['preflight_report']), 'guard reference is not the plan reference')
+    G.validate_provenance(guard)
+    return identity
 
 
 def load_plan(path):
@@ -130,6 +193,7 @@ def load_plan(path):
     require(plan.get('protocol') == PROTOCOL and plan.get('arm') == ARM and plan.get('endpoints') == [5000, 19618],
             'wrong training protocol/arm/dose')
     identities = validate_release(plan)
+    identities['initial_state_guard'] = plan_guard(plan)
     reference = P.pinned_file(plan['preflight_plan'])
     _, configs, inputs = L.load_plan(reference['path'])
     identities.update(inputs)
@@ -147,7 +211,7 @@ def load_plan(path):
     return plan, configs[ARM], identities
 
 
-def checkpoint_identity(path, cfg, step, signature):
+def checkpoint_identity(path, cfg, step, signature, guard=None):
     # Reuse the tested four-rank RNG/AdamW/data-signature completeness checks.
     identity = T.checkpoint_identity(path, cfg, step, signature)
     state = torch.load(path, map_location='cpu', weights_only=False)
@@ -160,6 +224,9 @@ def checkpoint_identity(path, cfg, step, signature):
         require(all(isinstance(actual[k], torch.Tensor) and actual[k].shape == v.shape and
                     actual[k].dtype == v.dtype for k, v in expected_state.items()),
                 'model state shape/dtype mismatch: ' + kind)
+        # The gain is a buffer no update touches: the saved one is the one training started with.
+        require(guard is None or G.bits(actual[G.GAIN].item()) == G.bits(guard['training_gain']['fe_gain']),
+                'checkpoint gain is not the registered historical T100-L training gain: ' + kind)
     parameters = [(name, p) for name, p in expected_model.named_parameters() if p.requires_grad]
     optimizer = state['optimizer']
     # AdamW state_dict assigns integer IDs in group parameter order. The trainer
@@ -186,7 +253,11 @@ def execute(plan_path, step, expected_code, out, allocated_seconds):
     require(allocated_seconds == plan['allocations'][str(step)]['walltime_seconds'], 'allocation differs from plan')
     comparison = json.loads(Path(inputs['comparison']['path']).read_text())
     run_dir = Path(plan['run_dir'])
-    command = command_for(comparison, base_cfg, run_dir, step, allocated_seconds)
+    guard_file = inputs['initial_state_guard']
+    guard = G.load_guard(guard_file['path'], guard_file['sha256'])
+    records = out / 'initial_state'
+    command = (command_for(comparison, base_cfg, run_dir, step, allocated_seconds, guard_file, records) if step == 5000
+               else command_for(comparison, base_cfg, run_dir, step, allocated_seconds))
     roots = (REPO, Path('/leonardo_work/IscrB_WearUsFM/wearusfm'), Path('/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns'))
     require(run_dir.is_absolute() and out.is_absolute(), 'absolute output paths required')
     require(not any(run_dir.resolve().is_relative_to(r) or out.resolve().is_relative_to(r) for r in roots), 'output inside code')
@@ -196,10 +267,11 @@ def execute(plan_path, step, expected_code, out, allocated_seconds):
     windows = json.loads(Path(inputs['windows']['path']).read_text())['window_s']
     signature = json.loads(json.dumps(R.calibration_signature(cfg, inputs['manifest']['path'], scales, windows)))
     plan_hash = inputs['training_plan']['sha256']
-    old_checkpoint = initial = None
+    old_checkpoint = precheck = initial = None
     if step == 5000:
         require(not run_dir.exists() and not run_dir.is_symlink(), 'fresh training requires new run directory')
-        initial = verify_initialization(base_cfg, plan['shared_initial_sha256'])
+        require(guard['new_parameter']['shape'] == [base_cfg.model.dim, 64], 'guard written for another model width')
+        precheck = verify_initialization(base_cfg, guard)
     else:
         rec = json.loads(Path(plan['phase_receipts']['5000']).read_text())
         named = run_dir / 'checkpoint_step0005000.pt'
@@ -207,22 +279,31 @@ def execute(plan_path, step, expected_code, out, allocated_seconds):
                 rec.get('checkpoint_step') == 5000 and rec.get('code_sha') == code and rec.get('plan_sha256') == plan_hash,
                 'missing completed same-arm/code/plan screening receipt')
         require(not (run_dir / 'STOP').exists(), 'STOP present')
-        old_checkpoint = checkpoint_identity(named, base_cfg, 5000, signature)
-        resume = checkpoint_identity(run_dir / 'checkpoint.pt', base_cfg, 5000, signature)
+        initial = rec.get('trained_initial_state')
+        require(isinstance(initial, dict) and initial.get('classification') == G.PASSED and
+                rec.get('initial_state_guard_sha256') == guard_file['sha256'],
+                'screening phase without the verified initial state of this guard')
+        old_checkpoint = checkpoint_identity(named, base_cfg, 5000, signature, guard)
+        resume = checkpoint_identity(run_dir / 'checkpoint.pt', base_cfg, 5000, signature, guard)
         require(rec.get('checkpoint') == str(named) and old_checkpoint['sha256'] == rec.get('checkpoint_sha256') and
                 rec.get('resume_checkpoint') == str(run_dir / 'checkpoint.pt') and resume['sha256'] == rec.get('resume_checkpoint_sha256') and
                 old_checkpoint['trained_state_sha256'] == resume['trained_state_sha256'], 'not own verified 5000 state')
     out.mkdir(parents=True, exist_ok=False)
+    if step == 5000:
+        records.mkdir()
     P.write_json(out / 'launch.json', {'arm': ARM, 'step': step, 'plan_sha256': plan_hash, 'code_sha': code,
-                                     'command': command, 'previous_checkpoint': old_checkpoint, 'initialization': initial})
+                                     'command': command, 'previous_checkpoint': old_checkpoint, 'initialization': precheck,
+                                     'initial_state_guard_sha256': guard_file['sha256']})
     subprocess.run(command, cwd=REPO, check=True)
+    if step == 5000:
+        initial = rank_attestation(records, guard_file['sha256'])
     summary = json.loads((run_dir / 'summary.json').read_text())
     require(summary.get('stopped') == 'max_steps' and summary.get('steps') == step, 'training phase incomplete')
     require(not (run_dir / 'STOP').exists(), 'STOP present after phase')
     require(json.loads((run_dir / 'config.json').read_text()) == R.config_to_dict(cfg), 'final config mismatch')
     named = run_dir / f'checkpoint_step{step:07d}.pt'
-    identity = checkpoint_identity(named, cfg, step, signature)
-    last = checkpoint_identity(run_dir / 'checkpoint.pt', cfg, step, signature)
+    identity = checkpoint_identity(named, cfg, step, signature, guard)
+    last = checkpoint_identity(run_dir / 'checkpoint.pt', cfg, step, signature, guard)
     require(identity['trained_state_sha256'] == last['trained_state_sha256'], 'named/final trained states differ')
     if old_checkpoint is not None:
         old_now = P.file_identity(old_checkpoint['path'])
@@ -234,7 +315,9 @@ def execute(plan_path, step, expected_code, out, allocated_seconds):
     P.write_json(out / 'summary.json', summary)
     receipt = T.receipt_for(ARM, step, named, run_dir / 'checkpoint.pt', config_file, code, plan_hash, command)
     receipt.update(protocol=PROTOCOL, preflight_report_sha256=plan['preflight_report']['sha256'],
-                   release_sha256=inputs['training_release']['sha256'])
+                   release_sha256=inputs['training_release']['sha256'],
+                   initial_state_guard_sha256=guard_file['sha256'], trained_initial_state=initial,
+                   checkpoint_gain_is_historical_training_gain=True)
     P.write_json(out / 'receipt.json', receipt)
 
 

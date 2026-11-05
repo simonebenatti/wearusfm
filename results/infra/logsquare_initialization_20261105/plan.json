@@ -21,15 +21,22 @@
     "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
     "bytes": 8792
   },
+  "initial_state_guard": {
+    "path": "results/infra/logsquare_initialization_20261105/initial_state_guard.json",
+    "sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+    "bytes": 2967
+  },
   "variants": [
     "controller",
     "preflight",
     "trainer",
     "trainer_rank0",
-    "controller_threads1"
+    "controller_threads1",
+    "rank_entry_torchrun"
   ],
   "cuda_required": true,
   "child_timeout_seconds": 90,
+  "rank_entry_timeout_seconds": 300,
   "expected_scientific_sources": 102,
   "failed_training_code_sha": "b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
   "failed_job": 63532335,
@@ -37,5 +44,22 @@
   "training_authorized_by_report": false,
   "background_monitoring": false,
   "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_initialization_20261105/diagnostic",
-  "interpretation": "Descriptive only. No hash relaxation, new reference hash, model mutation or training restart. A recovered hash after replacing only a cloned gain diagnoses sufficiency of that scalar, never corrects the actual model."
+  "interpretation": "Descriptive only. No hash relaxation, new reference hash, model mutation or training restart. A recovered hash after replacing only a cloned gain diagnoses sufficiency of that scalar, never corrects the actual model.",
+  "dry_run_of_the_correction": "Added on 05/11/2026 by Claude on the task forwarded by Simone; GPT reviews it and sets the status. Every T100-LQ model built by the five construction contexts also receives the verdict of the pinned guard (scripts/logsquare_initial_state.py). The sixth context runs the controller's own fresh-phase command (command_for, production allocation, guard and trainer arguments) under torchrun with --verify-only and the diagnostic's directories: four real ranks join the process group, read the trainer inputs, build their student through the unchanged trainer and verify it; the constructor then raises, so no model reaches the trainer: no teacher, optimizer, DDP wrapper, data forward, update or checkpoint.",
+  "reading": {
+    "fixed_before_the_run": "05/11/2026, before any cluster execution of this diagnostic. Computed by reading() on the report. Bit-exact comparisons only, no tolerance. The report never authorizes training.",
+    "statements": {
+      "cause_demonstrated": "The preflight context rebuilds both arms with the reference hash and the reference gain. The controller context builds both arms with every other tensor equal to the reference (hash recovered by replacing only the gain on a copy) and with the gain bit-equal to the one saved by the historical T100-L training. Then job 63532335 stopped because the gate compared a controller-context model with a preflight-context hash, and the only difference is tokenizer.fe_gain.",
+      "trainer_builds_the_registered_training_state": "In the trainer contexts, with and without the rank-zero parameter count, both arms have the reference tensors and the historical training gain. Then the unchanged trainer starts T100-L and T100-LQ from the same registered state.",
+      "fix_dry_run_passed": "The guard accepts the T100-LQ model of the controller and of both trainer contexts. The production fresh-phase command with --verify-only ends with status zero, four rank records accepted by the controller's own reader, one state across ranks and an empty run directory. That state has the hash observed in the rank-zero trainer context."
+    },
+    "consequences": {
+      "all three true": "The evidence asked for the review of the relaunch is complete. Release, pins and launch remain GPT's, after its review.",
+      "cause_demonstrated false": "The import-order explanation is not established on the cluster. No relaunch. The per-tensor hashes of each context say where the states differ.",
+      "trainer_builds_the_registered_training_state false": "The trainer context no longer rebuilds the gain of the historical checkpoints. No relaunch: the guard would stop every rank. A numeric environment changed since the historical training is a new finding, to be reviewed.",
+      "fix_dry_run_passed false with the other two true": "The correction does not behave on the cluster as tested locally. No relaunch. The rank records and the torchrun output carry the reason.",
+      "any context failed or timed out": "No reading (computable false or complete false). No relaunch, no automatic rerun."
+    },
+    "informative_only": "controller_threads1, and the guard's refusal of the preflight context: expected by design, since no T100 training ran in that numeric context. Neither enters the three statements."
+  }
 }

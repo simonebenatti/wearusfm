@@ -9,6 +9,7 @@ import subprocess
 
 import pytest
 import torch
+from wearusfm.model.patch_tokens import PatchTokenizer
 from wearusfm.training import run as R
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,7 +17,11 @@ SPEC = importlib.util.spec_from_file_location('logsquare_training_test', ROOT / 
 T = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(T)
 PLAN = ROOT / 'results/infra/logsquare_training_20261104/training_plan.json'
+GUARD_FILE = 'results/infra/logsquare_initialization_20261105/initial_state_guard.json'
 SIGNATURE = {'test': 'data'}
+# The two values of the one calibrated buffer on the cluster, one ULP apart: the preflights
+# (NumPy imported first) and every T100 training checkpoint (Torch imported first).
+PREFLIGHT_GAIN, TRAINING_GAIN = 548.6939187567023, 548.6939187567021
 
 
 def candidate():
@@ -29,38 +34,159 @@ def candidate():
 def test_registered_command_changes_only_branch_output_dose_and_timeout():
     comparison, cfg = candidate()
     assert R.config_to_dict(cfg) == json.loads((ROOT / 'results/infra/logsquare_review_20261104/config_T100-LQ.json').read_text())
+    guard, records = {'path': '/code/guard.json', 'sha256': 'a' * 64}, Path('/tmp/phase/initial_state')
     for step, cap in ((5000, 5400), (19618, 14400)):
-        command = T.command_for(comparison, cfg, Path('/tmp/own-candidate'), step, cap)
+        fresh = (guard, records) if step == 5000 else ()
+        command = T.command_for(comparison, cfg, Path('/tmp/own-candidate'), step, cap, *fresh)
         assert command[:3] == ['torchrun', '--standalone', '--nproc_per_node=4']
         assert command[-5:] == ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '0.001', '--time-limit-s', str(cap - 300)]
-        recovered = command[3:-5]
+        # Only the fresh phase starts its ranks behind the guard; the trainer arguments after it are untouched.
+        entry = ['scripts/logsquare_train_rank.py', '--initial-state-guard', '/code/guard.json',
+                 '--initial-state-guard-sha256', 'a' * 64, '--initial-state-records', str(records)] if step == 5000 else []
+        assert command[3:3 + len(entry)] == entry and '--verify-only' not in command  # the dry-run switch never trains
+        with pytest.raises(ValueError, match='fresh phase'):
+            T.command_for(comparison, cfg, Path('/tmp/own-candidate'), step, cap, *(() if step == 5000 else (guard, records)))
+        recovered = command[3 + len(entry):-5]
         original = comparison['arm_configurations']['T100-L']['validated_trainer_argv']
         recovered[recovered.index('--out-dir') + 1] = original[original.index('--out-dir') + 1]
         recovered[recovered.index('--max-steps') + 1] = '5000'
         assert recovered == original
         with pytest.raises(ValueError, match='CLI/config'):
-            T.command_for(comparison, replace(cfg, lr=cfg.lr * 2), Path('/tmp/new'), step, cap)
+            T.command_for(comparison, replace(cfg, lr=cfg.lr * 2), Path('/tmp/new'), step, cap, *fresh)
     for flag in ('--init-from', '--branch-from', '--branch-state-from', '--tokenizer-logsquare'):
         changed = copy.deepcopy(comparison)
         changed['arm_configurations']['T100-L']['validated_trainer_argv'] += [flag, 'unexpected']
         with pytest.raises(ValueError, match='arguments'):
-            T.command_for(changed, cfg, Path('/tmp/new'), 5000, 5400)
+            T.command_for(changed, cfg, Path('/tmp/new'), 5000, 5400, guard, records)
 
 
-def test_fresh_initialization_matches_preflight_shared_weights_and_preserves_rng():
-    _, cfg = candidate()
-    # Mac/cluster PyTorch versions need not have bit-identical initialization;
-    # production checks the cluster preflight hash, locally check the exact control.
+def calibrated(monkeypatch, gain):
+    """Stand in for a numeric context of the cluster: the constructor's calibration returns this gain.
+    The Mac does not reproduce the import-order effect, so the regression injects its measured values."""
+    monkeypatch.setattr(PatchTokenizer, '_calibrate_gain', lambda self, *args, **kwargs: gain)
+
+
+def preflight_reference(cfg, monkeypatch):
+    """SHA-256 of the control model as the preflight built it: seed, weights, and the preflight's gain."""
+    calibrated(monkeypatch, PREFLIGHT_GAIN)
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(cfg.seed)
-        control = T.P.WearUsFM(replace(cfg.model, tokenizer_logsquare=False))
-        expected = T.P.state_sha256(control.state_dict())
+        return T.P.state_sha256(T.P.WearUsFM(replace(cfg.model, tokenizer_logsquare=False)).state_dict())
+
+
+def expected_for(reference):
+    """What verify_initialization compares against: the reviewed guard, or the bare hash before the correction
+    (b2934b0, job 63532335), so that the two regressions below can be run unchanged on the old controller."""
+    if not hasattr(T, 'G'):
+        return reference
+    guard = json.loads((ROOT / GUARD_FILE).read_text())
+    guard['reference']['shared_sha256'] = reference
+    assert (guard['reference']['fe_gain'], guard['training_gain']['fe_gain']) == (PREFLIGHT_GAIN, TRAINING_GAIN)
+    return guard
+
+
+def test_training_context_gain_passes_the_exact_initialization_check(monkeypatch):
+    """Regression for job 63532335: fails on the controller of b2934b0, passes after the correction.
+
+    The reviewed hash is the preflight's state. Controller and trainer build the same weights with the gain of
+    the historical T100-L training, one ULP below: the old full-hash comparison stopped there."""
+    _, cfg = candidate()
+    expected = expected_for(preflight_reference(cfg, monkeypatch))
+    calibrated(monkeypatch, TRAINING_GAIN)
     before = torch.get_rng_state().clone()
     result = T.verify_initialization(cfg, expected)
     assert result['new_parameters'] == 24576 and result['logsquare_weight_zero'] is True
     assert torch.equal(torch.get_rng_state(), before)
+
+
+def test_one_ulp_of_one_real_parameter_is_still_rejected(monkeypatch):
+    """The check is not loosened: the smallest possible change of one weight stops it, before and after."""
+    _, cfg = candidate()
+    expected = expected_for(preflight_reference(cfg, monkeypatch))
+    calibrated(monkeypatch, TRAINING_GAIN)
+    original = T.P.WearUsFM
+
+    def changed(model_cfg):
+        model = original(model_cfg)
+        with torch.no_grad():
+            weight = model.tokenizer.proj.weight
+            weight[0, 0] = torch.nextafter(weight[0, 0], torch.tensor(float('inf')))
+        return model
+
+    monkeypatch.setattr(T.P, 'WearUsFM', changed)
     with pytest.raises(ValueError, match='historical T100-L'):
-        T.verify_initialization(cfg, '0' * 64)
+        T.verify_initialization(cfg, expected)
+
+
+@pytest.mark.parametrize('case', ['preflight_gain', 'other_gain', 'parameter', 'new_weight'])
+def test_rejection_reports_hashes_gain_and_where_the_difference_is(monkeypatch, case):
+    """Job 63532335 said only that a hash differed. Every rejection now carries what is needed to read it."""
+    _, cfg = candidate()
+    guard = expected_for(preflight_reference(cfg, monkeypatch))
+    other = float(torch.nextafter(torch.tensor(TRAINING_GAIN, dtype=torch.float64), torch.tensor(0., dtype=torch.float64)))
+    calibrated(monkeypatch, {'preflight_gain': PREFLIGHT_GAIN, 'other_gain': other}.get(case, TRAINING_GAIN))
+    original = T.P.WearUsFM
+
+    def changed(model_cfg):
+        model = original(model_cfg)
+        with torch.no_grad():
+            if case == 'parameter':
+                model.tokenizer.proj.bias[3] += 1.
+            if case == 'new_weight':
+                model.tokenizer.logsquare_weight[0, 0] = 1e-6
+        return model
+
+    monkeypatch.setattr(T.P, 'WearUsFM', changed)
+    with pytest.raises(T.G.InitialStateError) as caught:
+        T.verify_initialization(cfg, guard)
+    message, record = str(caught.value), caught.value.record
+    classification = {'preflight_gain': T.G.PREFLIGHT_STATE, 'other_gain': T.G.UNREGISTERED_GAIN,
+                      'parameter': T.G.OTHER_TENSORS, 'new_weight': T.G.PASSED}[case]
+    assert record['classification'] == classification and record['passed'] is False
+    assert 'historical T100-L: ' + classification in message and 'controller pre-check' in message
+    for value in (guard['reference']['shared_sha256'], record['shared_sha256'], record['reference_gain_shared_sha256'],
+                  record['fe_gain_hex'], guard['training_gain']['fe_gain_hex'], guard['reference']['fe_gain_hex'], 'reading:'):
+        assert value in message
+    ulps = {'preflight_gain': (1, 0), 'other_gain': (-1, -2)}.get(case, (0, -1))
+    assert (record['historical_training_gain']['observed_minus_registered_ulps'],
+            record['reference_gain']['observed_minus_registered_ulps']) == ulps
+    assert f'observed is {ulps[0]:+d} ULP' in message
+    assert record['other_tensors_match_reference'] is (case != 'parameter')
+    assert ('every other tensor DIFFER' in message) is (case == 'parameter')
+    assert record['logsquare_weight_zero'] is (case != 'new_weight')
+    # Every observed tensor hash is in the record; the changed one is identifiable against any other record.
+    tensors = record['localization']['per_tensor']
+    assert len(tensors) == record['tensors'] and T.L.NEW_WEIGHT not in tensors and T.G.GAIN in tensors
+    if case == 'preflight_gain':  # exactly the state the old check demanded: now refused, with the reason
+        assert record['shared_sha256'] == guard['reference']['shared_sha256'] and 'not in the trainer numeric context' in message
+
+
+def test_released_plan_without_guard_is_refused_and_the_guard_is_bound_to_the_plan(tmp_path):
+    plan = json.loads(PLAN.read_text())
+    # The release of 04/11 pins two controller files and no guard: the corrected controller cannot run it.
+    with pytest.raises(ValueError, match='controller review incomplete'):
+        T.load_plan(PLAN)
+    with pytest.raises(ValueError, match='new release required'):
+        T.plan_guard(plan)
+    plan['initial_state_guard'] = {'path': GUARD_FILE, 'sha256': R.sha256_file(ROOT / GUARD_FILE)}
+    identity = T.plan_guard(plan)
+    assert identity['sha256'] == plan['initial_state_guard']['sha256'] and Path(identity['path']) == ROOT / GUARD_FILE
+    guard = json.loads((ROOT / GUARD_FILE).read_text())
+    for mutation in ('pin', 'reference', 'report', 'training_gain', 'receipt', 'groups'):
+        bad_plan, bad = copy.deepcopy(plan), copy.deepcopy(guard)
+        if mutation == 'pin': bad_plan['initial_state_guard']['sha256'] = '0' * 64
+        if mutation == 'reference': bad_plan['shared_initial_sha256'] = '0' * 64
+        if mutation == 'report': bad_plan['preflight_report'] = {**plan['preflight_report'], 'sha256': '0' * 64}
+        if mutation == 'training_gain':  # a gain taken from anywhere but the historical checkpoints
+            bad['training_gain'].update(fe_gain=PREFLIGHT_GAIN, fe_gain_hex=PREFLIGHT_GAIN.hex())
+        if mutation == 'receipt': bad['training_gain']['sources'][1]['checkpoint_sha256'] = '0' * 64
+        if mutation == 'groups': bad['group_references']['frontend_and_gain_sha256'] = '0' * 64
+        if bad != guard:
+            path = tmp_path / (mutation + '.json')
+            path.write_text(json.dumps(bad))
+            bad_plan['initial_state_guard'] = {'path': str(path), 'sha256': R.sha256_file(path)}
+        with pytest.raises(ValueError):
+            T.plan_guard(bad_plan)
 
 
 def test_review_only_plan_is_not_executable(tmp_path):
@@ -168,15 +294,16 @@ def execution(tmp_path, monkeypatch):
     plan_path.write_text(json.dumps(plan))
     release_path = tmp_path / 'release.json'
     release_path.write_text('{}')
-    inputs.update(training_plan=T.P.file_identity(plan_path), training_release=T.P.file_identity(release_path))
+    inputs.update(training_plan=T.P.file_identity(plan_path), training_release=T.P.file_identity(release_path),
+                  initial_state_guard=T.P.file_identity(ROOT / GUARD_FILE))
     monkeypatch.setattr(T.P, 'code_identity', lambda expected: expected)
     monkeypatch.setattr(T, 'load_plan', lambda path: (copy.deepcopy(plan), cfg, copy.deepcopy(inputs)))
     monkeypatch.setattr(T.R, 'calibration_signature', lambda *args: SIGNATURE)
     monkeypatch.setattr(T, 'verify_initialization', lambda *args: {'checked': True})
     commands, checks, behavior = [], [], {'failure': None}
-    def checkpoint(path, expected_cfg, step, signature):
+    def checkpoint(path, expected_cfg, step, signature, guard):
         data = json.loads(Path(path).read_text())
-        assert signature == SIGNATURE
+        assert signature == SIGNATURE and guard['training_gain']['fe_gain'] == TRAINING_GAIN
         T.require(data['step'] == step and data['config'] == R.config_to_dict(expected_cfg), 'mock identity mismatch')
         checks.append((str(path), step))
         return {**T.P.file_identity(path), 'trained_state_sha256': str(step)}
@@ -187,6 +314,30 @@ def execution(tmp_path, monkeypatch):
         if behavior['failure'] == 'subprocess':
             raise subprocess.CalledProcessError(1, command)
         step = int(command[command.index('--max-steps') + 1])
+        assert (T.RANK_ENTRY in command) is (step == 5000)
+        if step == 5000:  # what the four guarded ranks leave next to the launch record
+            records = Path(command[command.index('--initial-state-records') + 1])
+            assert records.is_dir() and not list(records.iterdir())
+            student = {'role': 'student', 'passed': True, 'classification': T.G.PASSED, 'shared_sha256': 'b' * 64,
+                       'reference_gain_shared_sha256': 'c' * 64, 'fe_gain': TRAINING_GAIN, 'fe_gain_hex': TRAINING_GAIN.hex()}
+            counted = {'role': 'parameter_count', 'judged': False, 'fe_gain': TRAINING_GAIN, 'fe_gain_hex': TRAINING_GAIN.hex()}
+            for rank in range(4):
+                row = {'rank': rank, 'world_size': 4, 'guard_sha256': command[command.index('--initial-state-guard-sha256') + 1],
+                       'passed': True, 'verify_only': False, 'trainer_returned': True,
+                       'constructions': ([dict(counted)] if rank == 0 else []) + [dict(student)]}
+                failure = behavior['failure']
+                if failure == 'rank_missing' and rank == 3: continue
+                if failure == 'rank_failed' and rank == 2: row['passed'] = False
+                if failure == 'rank_unreturned' and rank == 1: row['trainer_returned'] = False
+                if failure == 'rank_dry' and rank == 1: row.update(verify_only=True, trainer_returned=False)
+                if failure == 'rank_unmarked' and rank == 2: del row['verify_only']
+                if failure == 'rank_guard' and rank == 1: row['guard_sha256'] = '0' * 64
+                if failure == 'rank_count' and rank == 0: row['constructions'].pop()
+                if failure == 'rank_extra' and rank == 2: row['constructions'].append(dict(student))
+                if failure == 'rank_unjudged' and rank == 1: row['constructions'] = [dict(counted)]
+                if failure == 'rank_state' and rank == 3: row['constructions'][-1]['fe_gain_hex'] = PREFLIGHT_GAIN.hex()
+                if failure == 'rank_class' and rank == 3: row['constructions'][-1]['classification'] = T.G.PREFLIGHT_STATE
+                (records / f'rank{rank}.json').write_text(json.dumps(row))
         run_dir.mkdir(exist_ok=True)
         effective = R.config_to_dict(replace(cfg, max_steps=step))
         (run_dir / 'config.json').write_text(json.dumps(effective))
@@ -213,12 +364,25 @@ def test_own_continuation_keeps_5000_checkpoint_and_phase_receipt(execution):
     execute(x, 19618)
     final = json.loads((x['outputs']['19618'] / 'receipt.json').read_text())
     assert final['complete'] is True and final['protocol'] == T.PROTOCOL and final['checkpoint_step'] == 19618
+    screening = json.loads(first)
+    guard_sha = R.sha256_file(ROOT / GUARD_FILE)
+    # The receipt states the state the four ranks trained, not the pre-check; the continuation carries it on.
+    assert screening['trained_initial_state'] == final['trained_initial_state']
+    assert screening['trained_initial_state']['classification'] == T.G.PASSED
+    assert screening['trained_initial_state']['models_built_per_rank'] == [2, 1, 1, 1]
+    assert screening['trained_initial_state']['fe_gain'] == TRAINING_GAIN and len(screening['trained_initial_state']['records']) == 4
+    assert screening['initial_state_guard_sha256'] == final['initial_state_guard_sha256'] == guard_sha
+    launch = json.loads((x['outputs']['5000'] / 'launch.json').read_text())
+    assert launch['initialization'] == {'checked': True} and launch['initial_state_guard_sha256'] == guard_sha
+    assert not (x['outputs']['19618'] / 'initial_state').exists()
     assert len(x['commands']) == 2 and len(x['checks']) == 6
     assert T.P.file_identity(x['run'] / 'checkpoint_step0005000.pt') == old
     assert (x['outputs']['5000'] / 'receipt.json').read_bytes() == first
 
 
-@pytest.mark.parametrize('failure', ['incomplete', 'subprocess', 'source', 'stop'])
+@pytest.mark.parametrize('failure', ['incomplete', 'subprocess', 'source', 'stop', 'rank_missing', 'rank_failed',
+                                     'rank_unreturned', 'rank_guard', 'rank_count', 'rank_extra', 'rank_unjudged',
+                                     'rank_state', 'rank_class', 'rank_dry', 'rank_unmarked'])
 def test_failed_phase_never_claims_completion(execution, failure):
     x = execution
     x['behavior']['failure'] = failure
@@ -227,7 +391,30 @@ def test_failed_phase_never_claims_completion(execution, failure):
     assert not (x['outputs']['5000'] / 'receipt.json').exists()
 
 
-@pytest.mark.parametrize('failure', ['arm', 'code', 'plan', 'complete', 'checkpoint', 'resume', 'stop'])
+def test_dry_run_records_and_training_records_are_never_exchanged(tmp_path):
+    """The diagnostic dry run (--verify-only) and a training phase leave the same record format: the reader of one
+    refuses the other, so a dry run is never a training attestation and a training is never read as a dry run."""
+    student = {'role': 'student', 'passed': True, 'classification': T.G.PASSED, 'shared_sha256': 'b' * 64,
+               'reference_gain_shared_sha256': 'c' * 64, 'fe_gain': TRAINING_GAIN, 'fe_gain_hex': TRAINING_GAIN.hex()}
+    counted = {'role': 'parameter_count', 'judged': False, 'fe_gain': TRAINING_GAIN, 'fe_gain_hex': TRAINING_GAIN.hex()}
+    for name, dry in (('dry', True), ('trained', False)):
+        (tmp_path / name).mkdir()
+        for rank in range(4):
+            row = {'rank': rank, 'world_size': 4, 'guard_sha256': 'a' * 64, 'passed': True, 'verify_only': dry,
+                   'trainer_returned': not dry, 'constructions': ([counted] if rank == 0 else []) + [student]}
+            (tmp_path / name / f'rank{rank}.json').write_text(json.dumps(row))
+    dry = T.rank_attestation(tmp_path / 'dry', 'a' * 64, verify_only=True)
+    trained = T.rank_attestation(tmp_path / 'trained', 'a' * 64)
+    assert 'nothing was trained' in dry['verified_on'] and 'built and trained' in trained['verified_on']
+    assert {key: dry[key] for key in ('classification', 'shared_sha256', 'fe_gain_hex', 'models_built_per_rank')} == \
+        {key: trained[key] for key in ('classification', 'shared_sha256', 'fe_gain_hex', 'models_built_per_rank')}
+    with pytest.raises(ValueError, match='unverified initial state: rank 0'):
+        T.rank_attestation(tmp_path / 'dry', 'a' * 64)
+    with pytest.raises(ValueError, match='unverified initial state: rank 0'):
+        T.rank_attestation(tmp_path / 'trained', 'a' * 64, verify_only=True)
+
+
+@pytest.mark.parametrize('failure', ['arm', 'code', 'plan', 'complete', 'checkpoint', 'resume', 'stop', 'initial', 'guard'])
 def test_continuation_requires_own_completed_provenance(execution, failure):
     x = execution
     execute(x, 5000)
@@ -240,6 +427,8 @@ def test_continuation_requires_own_completed_provenance(execution, failure):
     if failure == 'checkpoint': rec['checkpoint_sha256'] = '0' * 64
     if failure == 'resume': rec['resume_checkpoint_sha256'] = '0' * 64
     if failure == 'stop': (x['run'] / 'STOP').write_text('stop')
+    if failure == 'initial': rec['trained_initial_state'] = None
+    if failure == 'guard': rec['initial_state_guard_sha256'] = '0' * 64
     path.write_text(json.dumps(rec))
     with pytest.raises(ValueError):
         execute(x, 19618)
@@ -314,3 +503,17 @@ def test_checkpoint_rejects_incomplete_model_or_optimizer_inventory(full_checkpo
     torch.save(state, path)
     with pytest.raises(ValueError):
         T.checkpoint_identity(path, cfg, 5000, SIGNATURE)
+
+
+def test_checkpoint_gain_must_be_the_registered_training_gain(full_checkpoint):
+    """The gain is a buffer no update touches: what a checkpoint saves is what training started with."""
+    cfg, state, path = full_checkpoint
+    saved = state['student'][T.G.GAIN].item()
+    below = float(torch.nextafter(torch.tensor(saved, dtype=torch.float64), torch.tensor(0., dtype=torch.float64)))
+    assert T.checkpoint_identity(path, cfg, 5000, SIGNATURE, {'training_gain': {'fe_gain': saved}})['sha256'] == R.sha256_file(path)
+    with pytest.raises(ValueError, match='checkpoint gain is not the registered historical T100-L training gain: student'):
+        T.checkpoint_identity(path, cfg, 5000, SIGNATURE, {'training_gain': {'fe_gain': below}})
+    state['teacher'][T.G.GAIN] = torch.tensor(below, dtype=torch.float64)
+    torch.save(state, path)
+    with pytest.raises(ValueError, match='training gain: teacher'):
+        T.checkpoint_identity(path, cfg, 5000, SIGNATURE, {'training_gain': {'fe_gain': saved}})
