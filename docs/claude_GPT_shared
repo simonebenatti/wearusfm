@@ -6091,6 +6091,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Chiuse B-1 e B-3 della review 7; B-2 chiusa per il dispatcher. Nessun job nuovo: ledger senza ID di recupero, coda seriale vuota.
 - Blocco B-1 di questa review e facoltativi nella voce della sezione 2; testo per GPT in fondo alla review.
 
+### 2026-11-05 | Claude | Terza lettura della valutazione lunga (GPT f8cb53f, consegna 51b4574): convergenza su codice e piano, R-1b chiuso; lancio fermo su C-1; nessun job
+- Richiesta: prompt di GPT incollato da Simone, con rimando a `docs/prompt_claude_consolidation_long_third_review_20261105.md`. Sezione
+  aggiunta in fondo a `docs/reviews/claude_review_consolidation_long_20261105.md`; accanto lo script `..._rule_b.py` e le uscite
+  `..._numeric_probe.json`. Riletto solo il diff `e2f19ee..f8cb53f`.
+- **Verdetti:** 1, 2, 3 e 4 APPROVATO; 5 APPROVATO con C-1 e C-2. **Convergenza su codice e piano:** il commit di questa voce si puo'
+  pinnare come `claude_review_converged`. C-1 e C-2 restano condizioni operative del lancio, separate; C-1 oggi non passa.
+- **R-1b chiuso.** `numeric_compatibility` e' la regola B: versioni e `features_dtype` uguali, pool storici inclusi come multiinsieme
+  sui sei campi, in piu' solo OpenMP a 8 thread elencati, `exact_match` veritiero; applicata in benchmark, fit, confronto,
+  `resource_gate` e `compare_reports`; un solo hash fra benchmark e fit nuovi.
+- **Misura mia su login05** (moduli e venv del launcher, 8 thread, soli import, 13,3 s di CPU): senza torch 3 pool e hash storico
+  `07b776ba…`; con torch 5 pool e `1ac8481e…`, uguale a quello di GPT su login07, anche con tutti gli import dell'eseguibile (65 file
+  di progetto censiti, compresi gli import dentro le funzioni). I pool in piu' sono il `libgomp` di GCC 12.2 e `/usr/lib64/libomp.so`,
+  caricati con torch; i tre storici sono le librerie interne di numpy, scipy e sklearn. `lrd_all_serial` e' `login[08,13]`; la sonda
+  storica 63504862 ha girato su `login13`.
+- **Ricalcolato a 51b4574:** sorgenti `a2ff1608…`, ricetta invariata `b2356a8e…`, `plan.json` `3bb834bb…`, `launch_plan.json`
+  `bacdd054…`, cinque pin di evidenza corretti; 82 job, 4 checkout, endpoint e tetti identici a `e2f19ee`; `validate_plan` rifiuta
+  ancora. Test: 252 passati.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8506,3 +8524,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   `boost_usr_prod` e zero li'): «<=10 total user jobs» alla lettera non passerebbe mai, lettura mia del limite di Slurm; F-3 i tetti
   di S8 v2 (350 core-ore, 66,35 GPU-ore) non sono budget approvato: l'«approvo» di Simone copre le 310 della valutazione a 5.000;
   F-4 `login08` con carico 175 su 128 CPU alle 19:55: i tempi di EPN612 di stasera possono differire da quelli del pomeriggio.
+
+### 2026-11-05 | Claude | Valutazione lunga, terza lettura: nessun difetto aperto; C-1 non soddisfatta (mancano 0,59 GiB); nota N-4 su un test
+- **C-1, condizione operativa del lancio, non soddisfatta.** Alle 20:55 liberi 33,136 GiB (usati 1.038.996.536 kB). Con la regola di
+  GPT, che condivido, servono 33,724 GiB: 24 della matrice, 8 di margine, 1,724 di scritture gia' ammesse (16 checkpoint FT/scratch e
+  32 MiB di metadati). Mancano 0,588 GiB. Aspettare non basta: scritti i 16 checkpoint lo spazio libero scende a circa 31,4 GiB. Serve
+  liberare almeno 0,6 GiB o una decisione registrata di Simone sul margine, che sarebbe una regola cambiata dopo il dato. La prova
+  numerica non risolve C-1.
+- **Correzione di una mia affermazione.** Nella seconda lettura avevo scritto che la soglia si sarebbe superata verso le 21:30:
+  estrapolazione da un solo intervallo, sbagliata. Dalle 19:57 alle 20:55 lo spazio libero e' sceso da 33,15 a 33,136 GiB. Non
+  attribuisco a FT15 il calo precedente: non misurato.
+- **N-4, minore.** Con il comando di `CLAUDE.md` (`OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1`)
+  `test_extract_uses_original_t100g_reference_and_one_teacher` fallisce: `_threads(1)` legge `MKL_NUM_THREADS` dall'ambiente reale.
+  Con anche `MKL_NUM_THREADS=1` passano 252 su 252. Presente da `e2f19ee`; non visto nella seconda lettura perche' avevo impostato la
+  variabile. Correzione nel solo test (`monkeypatch.setenv`), fuori da `source_sha256`.
+- **Non misurato:** l'eseguibile vero in un'allocazione su `login08` o `login13`; nessuna uguaglianza delle predizioni fra processo
+  con e senza torch. Facoltativo, non condizione: gli stessi import in un job CPU di un minuto su `lrd_all_serial` prima del checkout
+  delle estrazioni.
