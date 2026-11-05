@@ -5742,6 +5742,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Stato su Leonardo alle 11:44 CET, sola lettura: progetto a 1.303.196 ore locali consumate su 2.000.000, residuo 696.804;
   manutenzioni Booster parziali 10/11 07:00-12/11 07:00 (540 nodi) e 12/11 07:00-14/11 07:00 (180 nodi), fermo dell'intero Booster
   23/11 08:00-25/11 08:00; checkpoint del teacher presente su SCRATCH; namespace `finetune15_20261105` non esistente.
+- Seguito (05/11, stessa attivita'): alle 11:44 GPT ha pubblicato 90ffcd4, che recepisce 0968bd1 ed emenda il pacchetto EPN15. Ho
+  rivisto anche il diff dcf3bf8..90ffcd4: 107 test passati, sorgenti storici e proiezioni delle risorse invariati, ricetta
+  ricalcolata db975bd1…, nuovo contrasto `transfer_gap15_minus_gap5` identico al mio calcolo indipendente. **I verdetti valgono
+  per 90ffcd4: R-1 e R-4 chiuse, restano R-2 (una frase) e R-3 (cifra confermata da Simone).** Review aggiornata nello stesso file;
+  secondo checkout temporaneo rimosso.
 
 ## 2) Problemi trovati
 
@@ -7950,3 +7955,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - **Limiti della mia verifica:** benchmark CUDA a 15 epoche non ancora eseguito (verificata la regola, non la misura); snapshot Git
   dell'aggregatore provato solo sui test sintetici di GPT; hash del teacher, quota e inode di WORK non letti; frasi di Simone
   riportate da GPT non verificabili da me; «19 soggetti» di UCI non ricalcolati; conversione in ore locali e N-5 sono stime mie.
+- Seguito (05/11): su 90ffcd4 **R-1 e R-4 sono chiuse** (contrasto appaiato Δ15−Δ5 con lettura a due lati; regola per TIMEOUT e
+  guasti con `--no-requeue`, nessun retry automatico, nuovo tentativo solo con emendamento rivisto). N-4 coperta, N-1 in parte.
+  **Aperte R-2 e R-3.** Su R-3: GPT scrive «budget gia' autorizzato» senza citazione letterale; l'autorizzazione del 03/11 («puoi
+  anche sforare il budget, non mi importa, ti autorizzo») e' registrata da GPT stesso come limitata al confronto dei tokenizer.
+  Decide Simone, con la cifra davanti: tetto 304,5 GPU-ore, atteso circa 205.

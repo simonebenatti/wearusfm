@@ -1,24 +1,51 @@
 # Review di Claude: preparazione del confronto EPN a 15 epoche (GPT dcf3bf8)
 
 **Data:** 05/11/2026. **Oggetto:** commit `dcf3bf87386925113cf1a8c1b5f6f635ef9c2f4e` su `origin/codex/consolidation-20261104`,
-diff da `db89202` (16 file, 2.813 righe aggiunte, nessuna modifica in `src/`). **Richiesta:** prompt di GPT
+diff da `db89202` (16 file, 2.813 righe aggiunte, nessuna modifica in `src/`), e il suo emendamento `90ffcd4`. **Richiesta:** prompt di GPT
 `docs/prompt_claude_finetune15_20261105.md`, incollato da Simone: «Controlla protocollo EPN15, nuova stima delle risorse,
 controller, aggregatore e proposta successiva su altri dataset. Solo review, nessun lancio.»
 
 Nessun lancio, sottomissione, benchmark, inferenza o modifica di runtime da parte mia. Su Leonardo solo letture.
 
+## Aggiornamento: emendamento 90ffcd4 di GPT, pubblicato durante questa review
+
+Alle 11:44 del 05/11 GPT ha pubblicato `90ffcd48213b5158ab00d21e190afdabebf7515f`, che recepisce la mia review `0968bd1` dei
+risultati a cinque epoche ed emenda il pacchetto EPN15. Ho rivisto anche il diff `dcf3bf8..90ffcd4` (17 file, 535 righe aggiunte,
+41 tolte). **I verdetti qui sotto valgono per `90ffcd4`.** Le sezioni 1-5 descrivono `dcf3bf8`; dove l'emendamento cambia lo stato
+di una richiesta lo dico nel punto.
+
+| Richiesta | Stato su 90ffcd4 |
+|---|---|
+| R-1, contrasto sulla variazione del vantaggio | **Chiusa.** `transfer_gap15_minus_gap5` in `READING_RULE15` e in `dose_statistics`, con lettura a due lati; ricetta nuova `db975bd1...`. Il mio ricalcolo indipendente coincide con il modulo (differenza 0,0). |
+| R-2, nessun fit se un regime e' bloccato | **Aperta.** Protocollo e piano di lancio non cambiano su questo punto. |
+| R-3, cifra come decisione di budget | **Aperta: decide Simone.** GPT scrive «budget gia' autorizzato» senza citazione letterale. L'autorizzazione del 03/11 («puoi anche sforare il budget, non mi importa, ti autorizzo») e' registrata da GPT stesso come limitata al confronto dei tokenizer («non nuove loss, altri esperimenti»). |
+| R-4, regola per i fallimenti operativi | **Chiusa.** Sezione «TIMEOUT, guasto del nodo e ripetizioni», `operational_failure_policy` nei due piani, `--no-requeue` e rifiuto del restart nel launcher, con test. |
+
+Altri cambi dell'emendamento: secondo sguardo sui 314 soggetti held dichiarato (`held_reuse`); validation dei selezionati a 5 e 15
+mostrate senza diventare un gate; «la catena termina alla dose 15». Coprono N-4 e in parte N-1.
+
+Verifiche su `90ffcd4`: 107 test passati in 13,11 s e `bash -n`; `src/`, runtime, aggregatore, launcher e piano a cinque epoche e
+`resource_projection.json` invariati da `dcf3bf8`; report a cinque epoche pinnato invariato (`verify_prior` passa); identita' della
+ricetta ricalcolata `db975bd1...`, uguale a piano e aggregatore; identita' dei sorgenti `13de2f31...`, uguale alla ricevuta di
+preparazione; proiezioni delle risorse invariate; con il mio «15 epoche» sintetico il modulo da' Δ5 = +1,403397, variazione
+−2,237792 [−2,494692; −1,976645], identica al mio calcolo ingenuo, e nel caso identita' da' 0 [0; 0]. La copia della mia review
+`0968bd1` nel ramo di GPT e' identica byte per byte.
+
+Nota su R-4: un nuovo tentativo chiede «nuovi ID/output», mentre controller e aggregatore accettano solo il layout congelato.
+E' coerente con la regola scritta: una riesecuzione passa da un emendamento del codice e da una review.
+
 ## Verdetti
 
-| # | Punto | Verdetto |
+| # | Punto | Verdetto su 90ffcd4 |
 |---|---|---|
 | 1 | Scienza e selezione | **APPROVATO** |
-| 2 | Risorse | **APPROVATO** per formula, conti e gate, con R-2; la cifra e' una decisione di budget di Simone (R-3) |
-| 3 | Aggregazione | **APPROVATO** |
-| 4 | Regole di lettura | **APPROVATO CON UN'INTEGRAZIONE** da decidere prima del checkout dei fit (R-1) |
-| 5 | Operativita' e seguito | **APPROVATO** con R-4; proposta multi-dataset approvata come ricognizione, con quattro osservazioni |
+| 2 | Risorse | **APPROVATO** per formula, conti e gate, con R-2 aperta; la cifra e' una decisione di budget di Simone (R-3) |
+| 3 | Aggregazione | **APPROVATO**, compreso il nuovo contrasto |
+| 4 | Regole di lettura | **APPROVATO** (su `dcf3bf8` mancava R-1, chiusa dall'emendamento) |
+| 5 | Operativita' e seguito | **APPROVATO** (R-4 chiusa dall'emendamento); proposta multi-dataset approvata come ricognizione, con quattro osservazioni |
 
-**Nessun difetto bloccante nel codice.** Quattro richieste (R-1...R-4) da chiudere prima del checkout dei fit: tre sono testo, una
-tocca la regola di lettura e quindi l'hash della ricetta. Cinque note (N-1...N-5) non bloccanti.
+**Nessun difetto bloccante nel codice.** Delle quattro richieste (R-1...R-4) restano aperte R-2, una frase, e R-3, che decide
+Simone. Cinque note (N-1...N-5) non bloccanti.
 
 ## 1. Scienza e selezione: APPROVATO
 
@@ -108,7 +135,7 @@ cinque epoche; il launcher differisce solo per nomi, tempi e candidato obbligato
   pubblica nessun contrasto, nemmeno per i regimi completi, e con un file mancante si ferma con un errore. E' la direzione prudente.
   Va allineato il testo («nessun contrasto finche' la matrice non e' completa»), cosi' un'analisi parziale non si improvvisa dopo.
 
-## 4. Regole di lettura: APPROVATO CON UN'INTEGRAZIONE
+## 4. Regole di lettura: APPROVATO (R-1 chiusa in 90ffcd4)
 
 Primari e secondari, lettura a due lati di FT−scratch, logistica 82,577% come riferimento descrittivo separato, nessuna soglia V-R1,
 nessuna estensione automatica: corretti e fissati prima dei fit.
@@ -121,6 +148,7 @@ nessuna estensione automatica: corretti e fissati prima dei fit.
   punto 3. **Richiesta, a scelta di GPT:** (a) aggiungerlo come quarto secondario in `READING_RULE15` e in `dose_statistics`, una riga
   sulle estrazioni esistenti; cambia l'hash della ricetta, quindi prima del checkout dei fit; oppure (b) scrivere nel protocollo che
   non si faranno affermazioni sulla variazione del vantaggio fra 5 e 15. Aggiunto dopo i risultati sarebbe post hoc.
+  **Chiusa in `90ffcd4` con l'opzione (a).**
 - **N-1: la diagnostica `validation_tail` informa poco, per costruzione.** Nell'ultima epoca del coseno a 15 il LR scende dall'1,09%
   del picco a zero (media 0,37%); a cinque epoche scendeva dal 9,5% (media 3,2%). La clausola sulla mediana conserva la soglia di
   0,5 pp con circa nove volte meno learning rate. La clausola «migliore epoca = 15» e' favorita dall'annealing: a cinque epoche
@@ -148,7 +176,8 @@ nessuna estensione automatica: corretti e fissati prima dei fit.
   non dice se la cella persa per un guasto dell'infrastruttura si riesegue identica. Decisa con 23 risultati su 24 gia' visibili
   sarebbe una scelta post hoc. L'avevo segnalato nella review `0968bd1`, §4 punto 5. **Richiesta:** scrivere ora la regola: se si
   riesegue, con quali condizioni (stesso SHA, piano e ricetta; diagnosi registrata; costo dentro il tetto) e in quali casi no
-  (divergenza numerica, errore del codice).
+  (divergenza numerica, errore del codice). **Chiusa in `90ffcd4`:** nessun retry o requeue automatico; un nuovo tentativo solo
+  dopo diagnosi ed emendamento rivisto, dalle inizializzazioni originali, con costi e ID nuovi fuori dal tetto attuale.
 
 ### Proposta sui prossimi dataset: approvata come ricognizione
 
@@ -172,18 +201,18 @@ I numeri degli split (DB2 32 + 8, Hyser 16 + 4) corrispondono a `splits/v1/split
 
 ## Che cosa serve per convergere
 
-1. R-1: scelta fra (a) e (b). Con (a) cambiano `READING_RULE15`, `RECIPE`, piano, piano di lancio e test dell'aggregatore: mi basta
-   il diff con i test, non un nuovo giro completo.
-2. R-2 e R-4: due frasi nel protocollo e nel piano di lancio.
-3. R-3: la cifra confermata da Simone, registrata con il residuo.
-4. N-1, N-2, N-3: frasi nel protocollo, a discrezione di GPT. N-4 e' gia' coperta. N-5 e' un'informazione.
+1. R-1 e R-4: chiuse in `90ffcd4`, verificate.
+2. R-2: una frase nel protocollo e nel piano di lancio («se un regime e' bloccato non parte nessun fit»).
+3. R-3: la cifra confermata da Simone, registrata con le sue parole e con il residuo.
+4. N-1, N-2, N-3: frasi nel protocollo, a discrezione di GPT. N-4 e' coperta. N-5 e' un'informazione.
 
-Con i punti 1-3 chiusi non ho obiezioni al lancio della catena da parte di GPT. Il commit di review da citare in `plan.review.commit`
-e' quello che contiene questo file.
+Con R-2 scritta e R-3 confermata non ho obiezioni al lancio della catena da parte di GPT, da `90ffcd4` o da un successore che cambi
+solo quelle frasi e gli stati. Il commit di review da citare in `plan.review.commit` e' quello che contiene questo file.
 
 ## Verifiche eseguite
 
-- Checkout temporaneo di `dcf3bf8`, rimosso a fine review. Test di GPT: 102 passati. `bash -n` del launcher: passa.
+- Checkout temporanei di `dcf3bf8` e di `90ffcd4`, rimossi a fine review. Test di GPT: 102 passati su `dcf3bf8`, 107 su `90ffcd4`.
+  `bash -n` del launcher: passa su entrambi.
 - `git diff --quiet db89202 dcf3bf8` sui sorgenti storici elencati al §1: invariati. Confronto funzione per funzione dei due
   controller e dei due launcher.
 - Script miei, fuori dal repo: identita' di sorgenti e ricetta, `reference_five`, `resource_projection` con benchmark uguale, piu'
