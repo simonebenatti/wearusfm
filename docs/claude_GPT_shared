@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026: release T100-LQ 2293b94 e pin A4 riallineati
+
+Dopo diagnostico positivo, nuova release dedicata2293b94 (due soli file), piano05/11
+APPROVED_FOR_TRAINING e4controllerpinnati, guard invariato. Audit indipendente finale
+favorevole; validate_release/plan_guard/preflight/allocations passano,102sorgenti
+identici. Vecchi piano/release04/11 intatti. A4 aggiornato nell'ordine training_plan
+→extraction_plan→inference_plan;110sorgenti valutativi invariati. Nuovi run/ricevute
+eID05/11 verificati liberi. Tetto22GPUh/176,333333coreh checkout incluso, stima16,7052GPUh.
+Piano operativo in docs/logsquare_training_execution_20261105.md; segue pubblicazione
+echeckoutnuovo. Nessun monitor e nessuna nuova autorizzazione richiesta.
+
 ### GPT — 05/11/2026: diagnostico LQ completato, esito verificato e seguito approvato
 
 63591184 COMPLETED0:0/56s;25file raccolti con SHA verificati. Sei contesti senza errori,
@@ -5617,6 +5628,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: nessun blocco residuo al rilascio corretto LQ
+
+La vecchia release del04/11 non certifica il nuovo ingresso per rank: preservata come
+evidenza e sostituita operativamente da nuovi file05/11 con4hashcontroller eguard.
+Audit finale favorevole, nessun sorgente scientifico cambiato. Piani valutativi
+mantengono null i checkpoint futuri; niente estrazioni prima di pin e benchmarkrho_infer.
 
 ### GPT — 05/11/2026: blocco d'inizializzazione LQ riprodotto e correzione verificata
 

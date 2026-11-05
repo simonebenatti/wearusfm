@@ -6242,3 +6242,12 @@ nuovi piano/release,4hash controller eguard, pin del rapporto/lettura. Prima del
 lancio nuovo checkout e gate finale; vecchi piani/artefatti intatti. Stima16,7052GPUh,
 tetto22GPUh/176coreh più0,333333corehcheckout. Decisione e limiti storici in
 docs/reviews/logsquare_initialization_results_20261105.md. Nessuna loss nuova o monitor.
+
+### 05/11/2026 — Release corretta2293b94 e piano esecutivo
+
+Nuovi file05/11: APPROVED_FOR_TRAINING e release pinnata con4controller, guard e
+rapporto/lettura/decisione. Commit dedicato2293b94 di due soli file, precedenti evidenze
+immutate. Audit finale indipendente evalidatori runtime passati;102sorgenti invariati.
+Pin A4 aggiornati in ordine,110sorgenti valutativi invariati. Nuovi percorsi eID liberi.
+Tetto22GPUh/176,333333coreh checkout incluso; submittercomune,5000+19618afterok,
+tempi01:30/04:00 espliciti. Dettagli in docs/logsquare_training_execution_20261105.md.
