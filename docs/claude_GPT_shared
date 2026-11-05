@@ -6210,6 +6210,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   4a8bc07 che lo dava in coda; otto C0 di EPN15 RUNNING da 8 h 22–8 h 34, otto C1 in attesa; continuazione LQ 63593128 PENDING per
   priorita'. Specchietto aggiornato nello stesso commit.
 
+### 2026-11-05 | Claude | Coordinamento: perche' la continuazione LQ 63593128 e' in coda dalle 16:38; sola lettura, nessun intervento
+- Domanda di Simone: «come mai cosi tanto? E' molto che è in priority». Letture su `login05` fra le 21:41 e le 21:44 (`scontrol show job`,
+  `sprio`, `squeue`, `sinfo`, `sshare`, `saldo -b`, `sacct`, `scontrol show config`); uscite in
+  `~/wearusfm_local/logs/leonardo_priorita_63593128_20261105_*`. Nessun job toccato.
+- **Il job e' sano.** Chiede un nodo intero (4 GPU, 32 core, 480 GB) per 4 ore. Priorita' 142.320: QOS `normal` 120.000, fair-share
+  21.710 (fattore 0,87), eta' 595, taglia 8. L'eta' conta dalle 16:38, quando si e' chiusa la dipendenza, e cresce di 119 punti l'ora
+  (peso 20.000 su 7 giorni). Nessuna penalita': fair-share alto, consumo del mese 3.055 ore locali su 164.383 (`saldo -b`).
+- **La partizione e' satura:** 2.984 nodi allocati, 316 parziali, 8 liberi, 6 pianificati. Fra i job che aspettano risorse, 1.830 hanno
+  priorita' maggiore; 410 sono a nodo intero con QOS `normal` e priorita' intorno a 146.500, in coda da circa 71 ore. Fra le 20:07 e le
+  21:42 sono partiti 1.500 job: 1.326 a una GPU, che entrano nei nodi parziali, e solo 5 a nodo intero con QOS `normal`, quattro dopo
+  circa 71 ore e uno corto (limite 1:30) dopo 12 minuti.
+- **Nessuna stima dallo scheduler** (`StartTime=Unknown`): con `bf_job_part_count_reserve=40` solo i primi 40 job della partizione
+  hanno una partenza pianificata; gli altri partono quando un nodo resta libero per tutto il loro limite senza ritardare quelli. Un
+  limite di 4 ore passa piu' di rado di uno corto: il training a 5.000 passi, stessa forma ma limite 1:30, era partito in 13 minuti.
+- **Storico dei nostri job a nodo intero dal 25/10** (30 partiti): mediana 15 minuti, ma quelli con limite da 3 a 5,5 ore diventati
+  eleggibili di pomeriggio o di sera hanno aspettato da 5 a 12 ore (28/10: 4,9 h; 03/11: tre job, 7,8 h; 04/11: 11,7 h e 9,7 h,
+  partiti alle 06:08 e alle 07:15). Alle 21:44 questo job aspetta da 5 h 06.
+- Lettura mia, non una stima dello scheduler: l'attesa e' nella norma di questa settimana e la partenza e' plausibile nella notte o al
+  mattino. Rilanciare non aiuta, perche' azzera l'eta'. Accorciare il limite aiuterebbe il backfill ma tocca un piano congelato ed
+  espone a un TIMEOUT: e' una decisione dell'operatore GPT e di Simone, che non propongo.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
