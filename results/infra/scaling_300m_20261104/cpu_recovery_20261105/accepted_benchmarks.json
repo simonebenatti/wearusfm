@@ -1,8 +1,8 @@
 {
   "protocol": "scaling-benchmark-reuse-20261105-v1",
   "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
-  "matrix_complete": false,
-  "known_complete_reports": 14,
+  "matrix_complete": true,
+  "known_complete_reports": 15,
   "expected_reports": 15,
   "reports": [
     {
@@ -638,11 +638,58 @@
         "bytes": 2143
       },
       "accepted_under_claude_review8": true
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "uci_emg",
+      "report": {
+        "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-uci_emg-20261105/uci_emg/benchmark.json",
+        "bytes": 11775,
+        "sha256": "b97ef2cc89d23ecc07db21738b6e5b13a24af3849a3b3558569237752ca2be44"
+      },
+      "local_report": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/uci_emg_completed/benchmark.json",
+        "sha256": "b97ef2cc89d23ecc07db21738b6e5b13a24af3849a3b3558569237752ca2be44",
+        "bytes": 11775
+      },
+      "parent_job": 63625951,
+      "parent_state": "COMPLETED",
+      "parent_exit_code": "0:0",
+      "parent_accounting": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/uci_emg_completed/accounting.json",
+        "sha256": "c4a5fe8d9e496eb0cf772c197f4b0bbb6e34589f3cd713cec3ae729772c6b1b4",
+        "bytes": 686
+      },
+      "raw_sacct": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/uci_emg_completed/sacct.txt",
+        "sha256": "0fe2609863d6a90e4799f237e3cec9430434d69cd3c1d460dee1655d015149e9",
+        "bytes": 568
+      },
+      "submitter_receipt": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/submissions/SCALING-probe-recover-uci_emg-20261105.json",
+        "sha256": "ea2bdf2d7714de913103997a1c9852979e19ee1ef72561762abba127387a94e3",
+        "bytes": 2366
+      },
+      "complete_log_evidence": {
+        "log": {
+          "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/uci_emg_completed/scaling_readers_recovery_63625951.out",
+          "sha256": "a0455bd8896394f49901faff248ca3d20cb02525a10b7be76105e89494abddd0",
+          "bytes": 1151
+        },
+        "line": 13,
+        "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-uci_emg-20261105/uci_emg\"}"
+      },
+      "parent_success_required": true,
+      "required_numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "acceptance": {
+        "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/uci_emg_completed/acceptance.json",
+        "sha256": "20c6155870853981a17bcfaf274bf18533142deccc3391ca207f20128be892ba",
+        "bytes": 2145
+      },
+      "accepted_under_claude_review8": true
     }
   ],
-  "missing": [
-    "T100-G-300M-natural/uci_emg"
-  ],
+  "missing": [],
   "new_report_acceptance": [
     "COMPLETED0:0parent",
     "same plan/code/recipe/fold0 and all6C",

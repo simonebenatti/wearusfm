@@ -15,7 +15,7 @@
   "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Collect UCI63625951 after completion; verify complete report and runtime/receipt/accounting. Then publish measured fit plan from all15 reports. No duplicate or blind retry.",
+  "next": "Publish measured fit budget and argv, metadata checkout; start approved ridge/probe fits within310 cumulative CPU cap.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -78,8 +78,8 @@
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 28.294444444444444,
-  "last_checked_at": "2026-11-05T21:33:40.502830",
+  "cpu_actual_core_hours_completed_so_far": 28.358888888888888,
+  "last_checked_at": "2026-11-05T21:37:33.211125",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,13 +87,13 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "RECOVERY_UCI_SUBMITTED_PENDING_RESOURCES",
-  "classification_benchmark_reports_complete": 14,
+  "status": "ALL15_BENCHMARKS_ACCEPTED_FIT_PLAN_PREPARATION",
+  "classification_benchmark_reports_complete": 15,
   "classification_benchmark_reports_expected": 15,
-  "completed_benchmark_fits_converged": 89,
+  "completed_benchmark_fits_converged": 95,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
   "fit_cap_core_hours": 240,
-  "active_jobs_in_this_cpu_chain": 1,
+  "active_jobs_in_this_cpu_chain": 0,
   "pose_ridge_blocked_by_chain_stop": true,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
@@ -104,7 +104,7 @@
   "recovery_prepared_not_submitted": false,
   "previous_fit_cap_core_hours": 136,
   "previous_fit_cap_proven_infeasible": true,
-  "measured_full_fit_budget_available": false,
+  "measured_full_fit_budget_available": true,
   "simone_decision": {
     "date": "2026-11-05",
     "by": "Simone",
@@ -141,11 +141,20 @@
       "dispatcher_receipt_hash_verified": true,
       "requested_core_hours": 1.3333333333333333,
       "budget_core_hours_with_overtime": 1.7333333333333334,
-      "slurm_state": "PENDING",
+      "slurm_state": "COMPLETED",
       "pending_reason": "Resources",
-      "epn_acceptance_commit": "6e58861ad50fdf8bb6bd31d142c0db2f2d5ea8f1"
+      "epn_acceptance_commit": "6e58861ad50fdf8bb6bd31d142c0db2f2d5ea8f1",
+      "exit_code": "0:0",
+      "ended_at": "2026-11-05T21:35:00+01:00",
+      "elapsed_seconds": 29,
+      "actual_core_hours": 0.06444444444444444,
+      "accepted": true
     }
   ],
   "recovery_running_jobs": 0,
-  "recovery_pending_jobs": 1
+  "recovery_pending_jobs": 0,
+  "measured_fit_shards": 14,
+  "measured_fit_requested_core_hours": 205.86666666666667,
+  "probe_complete_fits_converged": 90,
+  "historical_partial_fits_converged": 5
 }
