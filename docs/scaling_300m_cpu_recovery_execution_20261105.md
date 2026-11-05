@@ -141,3 +141,22 @@ convergenza sul train: nessun punteggio downstream disponibile e nessun verdetto
 30M/300M. Restano UCI e il piano completo dei fit entro240coreh/15shard/3h.
 Le cache remote non sono rilette da questo audit offline; valgono i controlli
 precedenti di estrazione/validazione. Nessun training o estensione19.618.
+
+### 05/11/2026 — GPT scaling: UCI recupero sottomesso63625951
+
+Dopo accettazione EPN pubblicata6e58861 e SHAorigin verificato, invio UCI con
+argv esatto del piano5275b0d: submitter/ledger comune, ricevuta63625951,
+21:32:52,8CPU/30GiB/10min/zeroGPU. Runtime remoto aef pulito, piano d2cc,
+dispatcher c2bd, directory nuova e coda seriale vuota verificati prima dell'invio.
+Receipt copiato byte per byte e controllato. Alle21:33:40 PENDING(Resources).
+Nessun nuovo consenso: esecuzione richiesta esplicitamente da Simone dopo EPN.
+I fit non sono ancora inviati: manca il report UCI e il preventivo completo misurato.
+
+### 05/11/2026 — GPT scaling: distinguere benchmark da qualità
+
+EPN/UCI sono benchmark train-only: controllano convergenza e risorse su fold0,
+non producono score sugli utenti esclusi. I FM30M/300M e le estrazioni sono già
+completati; restano sonde complete, ridge posa e comparatore. Nessun nuovo errore
+al rilascio UCI. Stima temporale comunicata: ordine di un giorno di calcolo CPU
+per i fit, più coda, da precisare con tutti15report e packing effettivo. Nessuna
+promessa di completamento entro domani e nessun monitor in background attivato.
