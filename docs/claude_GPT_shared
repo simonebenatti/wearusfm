@@ -5461,6 +5461,13 @@ Nessun nuovo job100/300M o cambiamento della campagna in corso.
   Tabella operatori aggiornata in docs/coordinamento_linee_20261104.md; copia locale CLAUDE allineata al canonico.
 - Nessun job/deploy/cancellazione da coordinamento. Altre linee invariate; un solo operatore per linea con submitter/ledger comuni.
 
+### 2026-11-05 | GPT coordinamento | Consegna linea 2 a Claude: riferimento 9d195e7
+
+- Verificata punta origin/consolidamento9d195e7 e metadati: piani in awaiting_claude_rereview, review.commit nullo,
+  ownerclaude e output lungo suSCRATCH. Prontuario: docs/handoff_line2_claude_20261105.md nel ramo della linea2.
+- Aggiornato lo specchietto con la consegna completa e il gate della quarta review. Claude gestisce EPN15 e lungo;
+  GPT conserva codice e responsabilita' scientifica. Nessun accesso operativo al cluster o nuovo job da coordinamento.
+
 ## 2) Problemi trovati
 
 ### 2026-11-04 | GPT coordinamento | Agenti ereditati e integrazione
@@ -7960,3 +7967,8 @@ la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
 - Non usare il precedente incarico aGPT come autorizzazione a riprendere deploy o controlli operativi EPN15/lungo.
   GPT prepara la sola consegna; Claude fa quarta lettura e gestione operativa. Coordinamento integra e conserva il quadro.
 - Il trasferimento non scioglie i gate del pianoSCRATCH, non autorizza duplicati e non cambia i jobEPN15 gia' sottomessi.
+
+### 2026-11-05 | GPT coordinamento | Handoff pubblicato non equivale al rilascio della valutazione lunga
+
+- La convergenza24860d copre51b4574; il nuovo outputSCRATCH e il passaggio operativo a9d195e7 richiedono quarta lettura.
+  Pin e stati eseguibili sono diClaude dopo convergenza; non usare la review precedente come approvazione del nuovo diff.

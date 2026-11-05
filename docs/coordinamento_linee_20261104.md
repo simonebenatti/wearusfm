@@ -103,3 +103,19 @@ Citazioni e fonte Claude3566c8d recepite su main **fe66e2d**; copia canonica CLA
 GPT consolidamento consegna modifica radiceSCRATCH, ownerclaude, N-4 e istruzioni operative; non esegue nuovi deploy/invii
 sulla linea2. Claude rivede il diff e prepara pin/deploy secondo il passaggio concordato. Nessun nuovo esperimento implicito.
 Riepiloghi futuri della linea2 devono citare gli esiti raccolti dall'operatore Claude, senza attivare un secondo ciclo operativo.
+
+### Consegna operativa della linea 2 pubblicata — 05/11, 21:42 CET
+
+GPT consolidamento ha consegnato **9d195e7bf96e8d8bc4b602434a8c0fcfc75ac7d5**, verificato su origin,
+con il prontuario unico `docs/handoff_line2_claude_20261105.md` nel ramo `codex/consolidation-20261104`.
+Piani verificati: `status=awaiting_claude_rereview`, `review.commit=null`, `owner=claude`.
+Nuova radice lunga su SCRATCH grande; owner, percorsi e retention aggiornati. N-4 corretta nel solo test.
+Ricetta, endpoint, 82 job di calcolo e 4 checkout invariati; test dichiarati:252 passati con MKL_NUM_THREADS assente.
+
+| Parte della linea 2 | Responsabile operativo | Stato della consegna |
+|---|---|---|
+| EPN15 gia' in corso | Claude | Inventario, istruzioni di raccolta e aggregazione nel prontuario; nessun nuovo controllo SLURM da coordinamento |
+| Valutazione lunga | Claude | Attende quarta review sul diff da51b4574; dopo convergenza Claude prepara pin, checkout e lanci |
+
+Questa registrazione verifica pubblicazione e metadati del passaggio; non sostituisce la quarta review e non dichiara
+nuovi invii o nuove misure di coda. GPT consolidamento ha dichiarato nessuna prenotazione aperta nel ledger.
