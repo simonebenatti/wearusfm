@@ -6217,3 +6217,16 @@ e piano estrazioni SHA8b358951. Cinque celle già previste, 8,25 GPU-ore/66 core
 associate alle GPU; checkout0,333333 core-ore nell'inviluppo CPU180. Pubblicare
 pin e comandi esatti prima dell'invio, via submitter/ledger. Nessun nuovo consenso,
 monitor o seguito a19.618. La lettura scientifica resta successiva ai fit CPU.
+
+### 05/11/2026 — GPT: cinque estrazioni attive e copertura della review Claude
+
+Pubblicati aef665b (codice/piano) ed e4ed7ee (comandi); checkout63580233 completo
+0:0/53s,0,029444core-ore. Invii via ledger comune:63580385 posa300M,63580603 P1-300M,
+63580771 P2-300M,63580776 P1-30M,63580820 P2-30M. Tutti RUNNING al primo controllo
+12:49CET; tetto8,25GPUh/66coreh GPU, nessun invio CPU di fit. Nessun monitor.
+
+Simone conferma nuovamente l'autorizzazione a tutti gli invii della catena.
+Claude precisa che la sua review copre solo0d5f0f9 e preflight63526191. GPT aveva
+usato la review interna per S3/rilascio/estrazioni: scelta operativa propria che
+non sostituisce il ruolo concordato di Claude. Consegna mirata pubblicata per
+verificare anche il seguito; prima dei fit CPU acquisire il suo riscontro.

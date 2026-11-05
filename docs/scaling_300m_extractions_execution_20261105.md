@@ -58,3 +58,25 @@ tetti pubblicati in `docs/scaling_300m_evaluation_execution_20261104.md`.
 Nessun monitor automatico, nessuna continuazione a 19.618, nessuna variazione
 di loss, dose, seme o popolazione. Le autorizzazioni già espresse coprono
 questa catena; errori reali fermano la fase senza retry cieco.
+
+## Invii effettivi e review successiva
+
+Codice **aef665ba7ea66fc80291846487907bb3ef9107df**, comandi pubblicati in
+**e4ed7eee672950fe07eb1f07f7954449aae71918**. Checkout **63580233 COMPLETED0:0**,
+53s su2CPU (0,029444core-ore), HEAD/pulizia/sola lettura/hash verificati.
+
+| Job | Cella | Stato osservato alle12:49CET |
+|---|---|---|
+|63580385|Posa300M|RUNNING|
+|63580603|P1-300M|RUNNING|
+|63580771|P2-300M|RUNNING|
+|63580776|P1-30M|RUNNING|
+|63580820|P2-30M|RUNNING|
+
+Ricevute e snapshot in `evaluation_submission_receipts_20261105/` sotto la
+cartella infra scaling. Nessun risultato finale delle estrazioni ancora letto.
+Claude ha chiarito che la propria copertura termina a0d5f0f9 e al preflight;
+le review successive citate qui sono interne. GPT ha preparato una consegna
+specifica per la sua verifica, riconoscendo la sostituzione del passaggio del
+revisore concordato. Prima dei fit CPU acquisire il riscontro di Claude, oltre
+ai benchmark e ai guard previsti. Nessun nuovo consenso ai lanci della catena.

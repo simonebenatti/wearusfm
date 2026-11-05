@@ -48,10 +48,10 @@
   },
   "collection_complete": true,
   "remote_hashes_reverified": true,
-  "extractions_submitted": false,
+  "extractions_submitted": true,
   "collection_obstacle": null,
   "scientific_comparison_available": false,
-  "next": "Finish receipt collection and remote SHA verification, review actual extraction plan, publish frozen checkout, submit five approved extractions. No new permission required.",
+  "next": "Wait for five extraction jobs to complete, verify receipts and cache support, then CPU benchmarks before fits.",
   "background_monitor": false,
   "transient_collection_issue": "SSH timeouts/closed connections resolved for required receipts and hashes; a Python3.6 diagnostic collector was corrected (text=True unsupported); no job affected.",
   "receipt_files_collected": [
@@ -63,5 +63,6 @@
   "remote_hash_inventory": "remote_sha256.txt",
   "training_log_audit": "diagnostics.json",
   "local_checkpoint_state_reloaded": false,
-  "checkpoint_state_guard": "Producer validated before final receipt; each extraction validates again on compute."
+  "checkpoint_state_guard": "Producer validated before final receipt; each extraction validates again on compute.",
+  "evaluation_submission_status": "../evaluation_submission_receipts_20261105/submission_status.json"
 }

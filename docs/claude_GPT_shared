@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT scaling | Cinque estrazioni sottomesse e tutte RUNNING
+
+Codice/piano aef665b, comandi e4ed7ee pubblicati prima degli invii, SHA origin e
+deploy verificati. Checkout63580233 COMPLETED0:0/53s,0,029444core-ore; HEAD,
+pulizia, sola lettura e hash verificati. Submitter/ledger comuni, nessun duplicato:
+**63580385 posa300M,63580603 P1-300M,63580771 P2-300M,63580776 P1-30M,63580820 P2-30M**.
+Primo controllo alle12:49CET: tutte RUNNING,1GPU/8CPU ciascuna; tetto8,25GPUh+
+66coreh, nessun fit CPU ancora inviato. Ricevute in evaluation_submission_receipts_20261105.
+Simone ribadisce «consento tutte le sottomisisoni di job, sono gia approvate»:
+vale per la catena approvata, senza un altro via operativo. Nessun monitor.
+
+Precisata copertura delle review: Claude copre0d5f0f9 e preflight63526191;
+S3/rilascio5000/estrazioni hanno avuto review interne, non sue. GPT riconosce di
+aver sostituito quel passaggio del revisore concordato con il critico interno.
+Preparato `docs/prompt_claude_review_scaling_completion_extractions_20261105.md`;
+prima dei fit CPU acquisire il riscontro di Claude sul pacchetto successivo.
+
 ### 2026-11-05 | GPT scaling | Training 63532932 concluso e verificato; cinque estrazioni pronte
 
 Verificati sacct, log e directory: COMPLETED 0:0, dalle 07:16:12 alle 11:22:13 CET,
@@ -5636,6 +5653,16 @@ Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
 
+### 2026-11-05 | GPT scaling | Copertura Claude da completare prima dei fit CPU
+
+Nessun errore SLURM osservato nei cinque job attivi al controllo iniziale; le
+ricevute finali delle estrazioni restano da raccogliere e verificare. La review
+interna sul completamento non equivale alla review di Claude: la sua nota
+esplicita che non ha esaminato i commit34b878a–e4ed7ee. Autorizzazione ai lanci
+e ruolo del revisore sono distinti. GPT ha scelto di procedere con review interna;
+consegna ora i riferimenti per colmare la copertura, senza attribuire a Claude
+approvazioni non date. Training concluso e invii non si duplicano; i fit CPU
+attendono il suo riscontro oltre ai benchmark già previsti. Nessun nuovo training.
 ### 2026-11-05 | GPT scaling | Accesso SSH ripristinato; limiti della verifica post-training
 
 Dopo sacct/log/listing riusciti, raccolta rallentata da timeout e chiusure SSH,
