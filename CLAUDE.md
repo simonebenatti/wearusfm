@@ -4,30 +4,25 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
-### Lanci diretti GPT — istruzione successiva del 04/11/2026
+### Sottomissioni e controllo operativo dei log affidati a GPT — aggiornamento del 05/11/2026
 
-Simone: «qua semplicione non c'e piu, lanci sempre tu».
-**GPT esegue direttamente i lanci autorizzati**, usando sempre `scripts/submit_job.py`
-e il ledger comune. Questa istruzione sostituisce tutti i riferimenti alla delega
-obbligatoria a semplicione qui sotto e nei documenti storici. Non cercare di nuovo
-quella chat e non chiedere un secondo consenso per un piano già approvato.
-Restano review concordate, piani pubblicati, SHA verificati, un owner per linea,
-controllo dei duplicati e nessun retry cieco. Nessun monitor automatico implicito.
+Simone, 05/11/2026 alle 14:57 circa, alla domanda di Claude «Confermi che ora le sottomissioni le fa GPT e non più semplicione?»:
+«Sì, sottomette GPT», seguito da «semplici9one non c'e piu».
+Fonte: `origin/worktree-claude-training-engine`, commit `3099836061809ed478ea06ff7b252a2d2087cc98`,
+voce di Claude in `docs/claude_GPT_shared`; conferma trasmessa anche alla chat GPT di coordinamento.
 
-### Sottomissioni affidate a semplicione — regola storica del 28/10/2026, superata il 04/11
+**GPT esegue direttamente le sottomissioni su Leonardo e il controllo operativo dei log.** Nelle tre linee parallele,
+l'owner GPT di ciascuna linea prepara e sottomette i propri job, ne legge stato e log e raccoglie gli esiti. GPT coordinamento
+controlla le interferenze e integra su `main`, senza duplicare le sottomissioni degli owner. Claude resta revisore e non lancia job;
+eventuali correzioni tecniche affidategli esplicitamente restano soggette alla review di GPT.
 
-Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».
-**Da questa istruzione, le nuove sottomissioni su Leonardo passano dalla chat `semplicione`**, gia' esistente sul Mac
-(thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`; identita' verificata nell'app).
-Simone gli ha assegnato anche il controllo dei log nella sua chat. GPT scientifico prepara codice, protocollo, review,
-piano committato/pushato, SHA, risorse, budget, output e dipendenze; poi affida la sottomissione a semplicione.
-La richiesta di Simone autorizza questa delega operativa: non serve chiedere nuovamente chi debba eseguire un piano gia' approvato.
-
-Semplicione usa sempre `scripts/submit_job.py` e il ledger comune, conserva gli SHA congelati e restituisce ID, stato e log.
-Non creare un secondo agente omonimo o duplicare un lancio: prima verificare le prenotazioni e gli ID esistenti.
-Questa regola sostituisce l'assegnazione delle sottomissioni al subagent leonardo-ops e il lancio diretto da questa chat;
-restano responsabilita' scientifica, criteri, budget e autorizzazioni gia' definite. I job B19618 e le 12 valutazioni sono
-stati sottomessi prima della nuova regola: nessuna risottomissione, cancellazione o migrazione implicita.
+La regola del 28/10 «Sottomissioni affidate a semplicione» e' superata: quella chat non e' piu' operativa e non deve essere
+ricreata o sostituita con un secondo submitter. Nessuna delega al precedente subagent leonardo-ops.
+Restano invariati `scripts/submit_job.py`, il ledger comune `~/wearusfm_local/jobs/ledger.tsv`, prenotazioni sotto lock,
+ID logici univoci, checkout congelati, budget, criteri, review e approvazioni dei singoli test. L'approvazione di un test
+comprende il lancio gia' autorizzato, senza una seconda richiesta di consenso; non autorizza nuovi esperimenti o retry ciechi.
+Chiuse le note N-2 della review `2d157cc` e N-3 della review 6 `c0a4f58` sull'identita' dell'operatore.
+Questa disposizione prevale sui riferimenti storici a semplicione conservati nei registri, nelle decisioni e nei vecchi checkout.
 
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
@@ -138,14 +133,14 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 28/10/2026 lo esegue semplicione dal Mac (regola successiva sopra). Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 05/11/2026 lo esegue direttamente GPT dal Mac; lo stesso owner controlla stato e log (regola sopra). Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
   Anche i job CPU di deployment richiedono risorse, durata massima e costo CPU approvati: 0 GPU-ora non significa costo nullo.
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
-  procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
-  installare pacchetti o sottomettere job.
+  procedi senza chiedermi conferma. Per scritture, ambienti, pacchetti e sottomissioni valgono le autorizzazioni gia' acquisite
+  e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora autorizzate.
 
 ## Progetto FM sEMG
 - Documento di riferimento: `docs/fm_emg_reference_v10.md`. Piano operativo:
@@ -174,7 +169,7 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Sottomissioni e controllo operativo dei log passano da semplicione (regola successiva del 28/10 sopra); nessun lancio parallelo tramite il vecchio subagent leonardo-ops.
+- Sottomissioni e controllo operativo dei log sono di GPT, un owner per linea (conferma del 05/11 sopra); semplicione non e' piu' operativo. Nessun submitter parallelo, duplicato o lancio tramite il vecchio subagent leonardo-ops.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.

@@ -6441,3 +6441,13 @@ ripresa dai soli ID assenti, senza cancellazioni o duplicati. Nessuna nuova
 scelta scientifica o modifica del tetto304,5GPUh/2436,667coreh. Consuntivo
 benchmark+duecheckout0,125833GPUh/1,038333coreh; fit ancora in corso.
 Nessun monitor automatico, nessuna terza dose o nuovo dataset lanciato.
+
+### 05/11/2026 — Consolidamento: conferma canonica dell'operatore GPT
+
+Recepito il commit main7616f3365b17b86f7b0b99ae2f0ef14b34ca7e4f, fonte
+Claude3099836061809ed478ea06ff7b252a2d2087cc98: «Sì, sottomette GPT» e
+«semplici9one non c'e piu». CLAUDE.md allineato alla copia canonica; GPT
+owner del consolidamento esegue lanci e letture già autorizzati, senza
+secondo consenso. N-2 della review2d157cc chiusa anche per il revisore.
+Nessuna variazione a EPN15, al lungo, ai tetti o ai checkout congelati;
+nessun merge sperimentale, nuovo job o monitor da questo aggiornamento.
