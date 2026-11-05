@@ -1,0 +1,726 @@
+{
+  "protocol": "finetune15-launch-plan-20261105-v1",
+  "status": "awaiting_claude_review",
+  "campaign": "finetune15-20261105",
+  "owner": "gpt",
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs",
+  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
+  "no_submission_before_external_review": true,
+  "runtime_code_sha": null,
+  "benchmark_code_sha": null,
+  "benchmark": {
+    "id": "FT15-BENCH-20261105",
+    "checkout_id": "FT15-checkout-bench-20261105",
+    "checkout_campaign": "finetune15-bench-20261105",
+    "allocation": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 1800
+    },
+    "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark",
+    "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+    "args": [
+      "benchmark",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark"
+    ],
+    "precondition": "verified completed immutable checkout; use completed prerequisite receipt if SLURM has purged dependency ID; no new checkout duplicate",
+    "slurm_job_id": null
+  },
+  "fit_checkout": {
+    "id": "FT15-checkout-fits-20261105",
+    "checkout_campaign": "finetune15-fits-20261105",
+    "precondition": "new benchmark complete0:0; report/hash/source/recipe/input/checkpoint verified; pin + measured resource projection published and remote SHA verified",
+    "slurm_job_id": null
+  },
+  "checkout_allocation_each": {
+    "cpus_requested": 1,
+    "cpus_accounting_cap": 2,
+    "gpus": 0,
+    "memory": "2G",
+    "seconds": 600
+  },
+  "fits": [
+    {
+      "id": "FT15-EPN-frozen-F0-20261105-C0",
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/frozen/candidate0",
+        "0",
+        "frozen",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F0-20261105-C1",
+      "fold": 0,
+      "regime": "frozen",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-frozen-F0-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/frozen/candidate1",
+        "0",
+        "frozen",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F1-20261105-C0",
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/frozen/candidate0",
+        "1",
+        "frozen",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F1-20261105-C1",
+      "fold": 1,
+      "regime": "frozen",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-frozen-F1-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/frozen/candidate1",
+        "1",
+        "frozen",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F2-20261105-C0",
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/frozen/candidate0",
+        "2",
+        "frozen",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F2-20261105-C1",
+      "fold": 2,
+      "regime": "frozen",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-frozen-F2-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/frozen/candidate1",
+        "2",
+        "frozen",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F3-20261105-C0",
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/frozen/candidate0",
+        "3",
+        "frozen",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-frozen-F3-20261105-C1",
+      "fold": 3,
+      "regime": "frozen",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-frozen-F3-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 21600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/frozen/candidate1",
+        "3",
+        "frozen",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F0-20261105-C0",
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/finetune/candidate0",
+        "0",
+        "finetune",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F0-20261105-C1",
+      "fold": 0,
+      "regime": "finetune",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-finetune-F0-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/finetune/candidate1",
+        "0",
+        "finetune",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F1-20261105-C0",
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/finetune/candidate0",
+        "1",
+        "finetune",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F1-20261105-C1",
+      "fold": 1,
+      "regime": "finetune",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-finetune-F1-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/finetune/candidate1",
+        "1",
+        "finetune",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F2-20261105-C0",
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/finetune/candidate0",
+        "2",
+        "finetune",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F2-20261105-C1",
+      "fold": 2,
+      "regime": "finetune",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-finetune-F2-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/finetune/candidate1",
+        "2",
+        "finetune",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F3-20261105-C0",
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/finetune/candidate0",
+        "3",
+        "finetune",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-finetune-F3-20261105-C1",
+      "fold": 3,
+      "regime": "finetune",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-finetune-F3-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/finetune/candidate1",
+        "3",
+        "finetune",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F0-20261105-C0",
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/scratch/candidate0",
+        "0",
+        "scratch",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F0-20261105-C1",
+      "fold": 0,
+      "regime": "scratch",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-scratch-F0-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold0/scratch/candidate1",
+        "0",
+        "scratch",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F1-20261105-C0",
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/scratch/candidate0",
+        "1",
+        "scratch",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F1-20261105-C1",
+      "fold": 1,
+      "regime": "scratch",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-scratch-F1-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold1/scratch/candidate1",
+        "1",
+        "scratch",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F2-20261105-C0",
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/scratch/candidate0",
+        "2",
+        "scratch",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F2-20261105-C1",
+      "fold": 2,
+      "regime": "scratch",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-scratch-F2-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold2/scratch/candidate1",
+        "2",
+        "scratch",
+        "1"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F3-20261105-C0",
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 0,
+      "after": [],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/scratch/candidate0",
+        "3",
+        "scratch",
+        "0"
+      ],
+      "slurm_job_id": null
+    },
+    {
+      "id": "FT15-EPN-scratch-F3-20261105-C1",
+      "fold": 3,
+      "regime": "scratch",
+      "candidate": 1,
+      "after": [
+        "FT15-EPN-scratch-F3-20261105-C0"
+      ],
+      "prerequisites": [
+        "FT15-checkout-fits-20261105 COMPLETED0:0; SHA/read-only/source/plan verified",
+        "fresh quota and no existing logical ID in shared ledger",
+        "benchmark pin valid and regime gate passed"
+      ],
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory": "100G",
+        "seconds": 57600
+      },
+      "launcher": "scripts/slurm/consolidation_finetune15.sbatch",
+      "args": [
+        "fit",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/scratch/candidate1",
+        "3",
+        "scratch",
+        "1"
+      ],
+      "slurm_job_id": null
+    }
+  ],
+  "caps": {
+    "fit_gpu_hours": 304,
+    "fit_allocated_core_hours": 2432,
+    "campaign_gpu_hours": 304.5,
+    "campaign_allocated_core_hours": 2436.6666666666665
+  },
+  "failure_policy": "stop affected phase; no blind retry, resume from downstream5 checkpoint, omitted candidate, altered dose/batch/LR or autoextension",
+  "background_monitor": false
+}

@@ -1,0 +1,177 @@
+{
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
+  },
+  "epn_roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/trainingJSON",
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/testingJSON"
+  ],
+  "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+  "batch": 8,
+  "max_updates": null,
+  "seed": 0,
+  "lr_grid": {
+    "frozen": [
+      0.001,
+      0.01
+    ],
+    "finetune": [
+      1e-05,
+      0.0001
+    ],
+    "scratch": [
+      0.0001,
+      0.001
+    ]
+  },
+  "head_lr_multiplier": {
+    "frozen": 1,
+    "finetune": 100,
+    "scratch": 10
+  },
+  "protocol": "consolidation-finetune15-epn-20261105-v1",
+  "status": "awaiting_claude_review",
+  "fits_status": "awaiting_claude_review",
+  "epochs": 15,
+  "reading_rule15": {
+    "epochs": 15,
+    "primary_contrasts": [
+      "finetune_minus_scratch",
+      "finetune_minus_frozen"
+    ],
+    "secondary_contrasts": [
+      "frozen15_minus_frozen5",
+      "finetune15_minus_finetune5",
+      "scratch15_minus_scratch5"
+    ],
+    "bootstrap": {
+      "replicates": 2000,
+      "seed": 20261102,
+      "unit": "subject",
+      "paired": true
+    },
+    "validation_tail": {
+      "regimes": [
+        "frozen",
+        "finetune",
+        "scratch"
+      ],
+      "folds": 4,
+      "best_epoch15_folds_at_least": 3,
+      "or_median_validation_bacc_epoch15_minus14_at_least": 0.005,
+      "missing_or_diverged": "not_evaluable",
+      "false_does_not_establish_convergence": true,
+      "automatic_extension": false
+    },
+    "interpretation": "development; fixed15epoch recipe including new cosine horizon; not isolated dose effect; historical logistic reference descriptive only; no V-R1 adoption gate"
+  },
+  "benchmark_receipt": null,
+  "benchmark_allocation": {
+    "gpus": 1,
+    "cpus": 8,
+    "memory": "100G",
+    "seconds": 1800
+  },
+  "fits": 24,
+  "fit_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn",
+  "reference_five": {
+    "accounting": {
+      "path": "results/infra/consolidation_20261104/final_20261105/accounting.json",
+      "sha256": "aa88916e072b395f9ec9df94f411f0e8785e034a76f0dbff3d991342528c3c36"
+    },
+    "manifest": {
+      "path": "results/infra/consolidation_20261104/final_20261105/manifest.json",
+      "sha256": "7881ba3efd578c9cd6bd8a6182d8ce93c26a9d829d297b9b8d0e53d7da009ebd"
+    },
+    "benchmark": {
+      "path": "results/infra/consolidation_20261104/benchmark_v2/report.json",
+      "sha256": "c14b78b0d593a56f272192bd2c246003e657788551936c24c9dc1fba1eb0241d"
+    },
+    "plan": {
+      "path": "results/infra/consolidation_20261104/finetune_plan.json",
+      "sha256": "2ce4927fa44f2d6a7442100562b8bebde1bd8d59a5172ff2f01fa4837167d7f6"
+    }
+  },
+  "reference_source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
+  "reference_report_root": "results/infra/consolidation_20261104/final_20261105/fit_reports",
+  "fit_allocation_by_regime": {
+    "frozen": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 21600
+    },
+    "finetune": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 57600
+    },
+    "scratch": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 57600
+    }
+  },
+  "fit_packaging_policy": {
+    "mode": "split_only",
+    "seconds_reserved_per_job": 300,
+    "otherwise": "blocked; no automatic dose/batch/grid change",
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback"
+  },
+  "resource_projection_policy": {
+    "reference_epochs": 5,
+    "target_epochs": 15,
+    "elapsed_multiplier": 1.25,
+    "extra_seconds": 600,
+    "throughput": "seconds_per_update_steady",
+    "slowdown_floor": 1,
+    "load_multiplier": 1.5,
+    "formula": "ceil(3*M*1.25*q+600+D)"
+  },
+  "fit_gpu_hours_cap": 304,
+  "fit_allocated_core_hours_cap": 2432,
+  "max_candidate_jobs": 24,
+  "total_gpu_hours_cap": 304.5,
+  "total_allocated_core_hours_cap": 2436.6666666666665,
+  "prior_five_results": {
+    "report": {
+      "path": "results/infra/consolidation_20261104/final_20261105/report.json",
+      "sha256": "3c4b3601c12836ba7e13a7012458810ca450cfa373a83ba880c4fa36d4d7b87a"
+    },
+    "manifest": {
+      "path": "results/infra/consolidation_20261104/final_20261105/manifest.json",
+      "sha256": "7881ba3efd578c9cd6bd8a6182d8ce93c26a9d829d297b9b8d0e53d7da009ebd"
+    },
+    "local_oof_root_at_preparation": "/private/tmp/wearusfm-ft-results-20261105/epn",
+    "remote_oof_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn"
+  },
+  "retention": {
+    "root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105",
+    "estimated_checkpoint_bytes": 2726239584,
+    "minimum_free_bytes_before_each_submission": 6442450944,
+    "quota_evidence_max_age_seconds": 3600,
+    "inodes_must_have_headroom": true,
+    "quota_evidence": null,
+    "science_outputs": "WORK; no SCRATCH-only result/checkpoint",
+    "fresh_checkpoint_pin_check_before_benchmark": true
+  },
+  "review": {
+    "status": "awaiting_claude_review",
+    "commit": null,
+    "scope": "all3regimes15epochs; new resource policy and read-only report; no submission including benchmark before convergence"
+  },
+  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
+  "fold_regime_cells": 12,
+  "next_scientific_priority": {
+    "after_this_experiment": "extend beyond EPN with other classification datasets and regression distinct from supervised emg2pose pose",
+    "scope_now": "planning only; no additional experiments or automatic extension",
+    "requirements": [
+      "identify pretraining inclusion/exclusion",
+      "preregister per-dataset split, metrics and fair tuning before new outcomes",
+      "distinguish development reuse from untouched confirmation"
+    ]
+  }
+}

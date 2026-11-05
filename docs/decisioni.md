@@ -6311,3 +6311,35 @@ La direzione15epoche FT/scratch richiede nuova proposta,preventivo,review e
 decisione di Simone: nessuna estensione automatica. Il lungo già approvato
 resta sui treID/SHAoriginari,matricevalutazioni ancora da consegnare.
 Prompt perClaude preparato; nessun nuovojob o monitor automatico.
+
+### 05/11/2026 — Preparazione approvata del confronto a 15 epoche, poi altri dataset
+
+Simone: «va bene, procedi, prepara tutto poi facciamo fare un giro a Claude
+per revisione e poi lanciamo». Il seguito comprende ora frozen, fine-tuning
+e scratch, con quattro fold e due LR ciascuno:24candidati dalle inizializzazioni
+originali, seed0/batch8/griglie/testa/dati invariati. Il solo nuovo orizzonte15
+cambia anche il cosine:15−5 non è un effetto isolato della dose. Il checkpoint
+sorgente resta T100-G19.618, senza ripresa dai downstream selezionati a5.
+
+Piani/controller/launcher/aggregatore separati, protocollo e promptClaude
+pubblicati; runtime5 e training lungo invariati. Primari FT−scratch e
+FT−frozen a15, secondari15−5 per regime sulle rawOOF appaiate; diagnostica
+validation15 descrittiva, nessuna estensione automatica.102test CPU passati
+in12,31s, critico indipendente favorevole, ricalcolo bootstrap entro1e-12.
+
+Nuova policy risorse proposta per la review: massimo dei tempi degli otto
+fit5 per regime, triplicato e maggiorato25%, più600s; nuovo benchmark per
+rallentamento q>=1 e aumento dei costi fissi D>=0. Formula e pin espliciti,
+gate ricalcolato prima dei fit. Triplicazione osservata204,815GPUh,
+proiezione prudenziale265,038GPUh a q=1,D=0;24split6h/16h/16h,
+tettofit304GPUh e tetto totale304,5GPUh/2436,667coreh con benchmark/duecheckout.
+Prima dei lanci restano review Claude, quota/inode/checkpoint/ledger freschi,
+nuovo benchmark CUDA e pin esecutivi reali. Nessuna sottomissione oggi,
+neppure del benchmark. Nessun monitor automatico.
+
+Simone aggiunge: dopo questo giro usare altri dataset per non valutare tutto
+soltanto su EPN. Priorità registrata: UCI-EMG come secondo dataset escluso,
+NinaPro DB2 per altro montaggio/compito su corpus già visto, Hyser-forza come
+candidato regressione subordinato ad audit. Dati già osservati nelle sonde
+restano sviluppo; la disponibilità remota attuale non è stata verificata.
+Questa ricognizione non autorizza nuovi training o target non ancora validati.

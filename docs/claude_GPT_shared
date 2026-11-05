@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Preparato EPN15 per review Claude, tre regimi
+
+Simone approva preparazione, review Claude e successivo lancio del confronto
+15 epoche, includendo frozen oltre a FT/scratch. Nuovo protocollo, piano,
+controller/launcher e aggregatore separati; runtime e risultati5 invariati.
+24 candidati, griglie/split/inizializzazioni originali, nessun resume dai5;
+15−5 comprende anche il nuovo orizzonte cosine. Primari FT−scratch/FT−frozen,
+secondari15−5 appaiati, diagnostica validation15 senza estensione automatica.
+
+Risorse dai24fit completi e nuovo benchmark per rallentamento: proiezione
+265,038GPUh a q=1,D=0, tetto24fit304GPUh, totale304,5GPUh/2436,667coreh
+inclusi benchmark e due checkout. Nuova policy da revisionare, non vecchia
+ricevuta riutilizzata come gate. 24ID/output unici e12dipendenze C1→C0.
+102test CPU passati in12,31s; critico indipendente favorevole e bootstrap
+ricalcolato. Stati awaiting_claude_review, benchmark_receipt=null, nessun job.
+Prompt in docs/prompt_claude_finetune15_20261105.md; nessun monitor.
+
+Ulteriore istruzione Simone: dopo questo giro ampliare oltre EPN. Ricognizione
+locale propone UCI (escluso dal pretraining), DB2 (corpus già visto), Hyser-forza
+subordinato ad audit dei bersagli. Proposta in downstream_multidataset_next;
+nessun nuovo dataset assunto pronto o nuova campagna sottomessa.
+
 ### 2026-11-05 | GPT consolidamento | Fine-tuning EPN a cinque epoche concluso e letto
 
 24/24 fit COMPLETED0:0, ultimo05/11 02:51:58CET. Verificati84file contro
@@ -5589,6 +5611,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | EPN15: limiti e controlli ancora da eseguire
+
+Nessun blocco trovato dal critico. I nuovi fit non esistono ancora; review
+Claude, quota/inode freschi, checkpoint, benchmark CUDA e pin esecutivi reali
+precedono i lanci. I test Git dell'aggregatore usano snapshot sintetici:
+verificare la snapshot effettiva dopo pubblicazione. Tutti i candidati5
+completi restano la base dei tempi; q>=1 e D>=0 impediscono sconti opportunistici.
+
+15−5 non isola la dose perché cambia l'orizzonte cosine. Flag validation15
+non prova convergenza se falso e non autorizza altro training se vero.
+Sviluppo EPN e seme unico; logistica storica distinta, nessuna conclusione
+di utilità generale. La prossima priorità è ampliare dataset/compiti:
+UCI/DB2 già osservati nelle sonde non diventano test intatti; Hyser-forza
+non ha ancora pipeline bersagli. Nessuna disponibilità remota attuale verificata.
 
 ### 2026-11-05 | GPT consolidamento | Limiti del risultato FT: dose breve e frozen debole
 

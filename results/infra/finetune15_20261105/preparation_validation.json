@@ -1,0 +1,59 @@
+{
+  "protocol": "finetune15-preparation-validation-20261105-v1",
+  "status": "ready_for_claude_review_not_execution",
+  "recipe_sha256": "975fa69d633a8504a2589f720f7f5b3f19f2e4ffdd66a0f68500c1256376e56b",
+  "source_sha256_at_preparation": "bb28d2a3c8575020d842759c0855c3f484fda2d531ccc1841d55ff73744d0f4d",
+  "five_epoch_source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
+  "reading_rules_equal": true,
+  "reference_candidates_verified": 24,
+  "projection_at_reference_benchmark": {
+    "max_elapsed_seconds_by_regime": {
+      "frozen": 4519,
+      "finetune": 13359,
+      "scratch": 13446
+    },
+    "slowdown_by_regime": {
+      "frozen": 1.0,
+      "finetune": 1.0,
+      "scratch": 1.0
+    },
+    "additional_fixed_seconds": 0.0,
+    "projected_one_candidate_seconds": {
+      "frozen": 17547,
+      "finetune": 50697,
+      "scratch": 51023
+    }
+  },
+  "gate_seconds": {
+    "frozen": 21300,
+    "finetune": 57300,
+    "scratch": 57300
+  },
+  "tests": {
+    "passed": 102,
+    "seconds": 12.31,
+    "scope": "FT15 controller/report and FT5/controller/harness/operations regressions"
+  },
+  "critic": "ft_walltime_critic; no blocking findings; independent literal paired bootstrap matches within1e-12",
+  "bash_n_passed": true,
+  "old_runtime_plan_and_analysis_unchanged": true,
+  "scientific_results_15_exist": false,
+  "gpu_jobs_submitted": 0,
+  "pending": [
+    "external Claude review",
+    "fresh quota/inodes and checkpoint availability",
+    "published execution SHA and immutable checkout",
+    "new CUDA benchmark and hash pin",
+    "fit gate and effective job receipts"
+  ],
+  "hashes": {
+    "scripts/consolidation_finetune15.py": "01b2e9d4c824296236b5aa38d9355e6c37f849e7396a51aba5736404c464d5da",
+    "scripts/slurm/consolidation_finetune15.sbatch": "282ce0910db89c77c95ecbacdaed8e185b11847615bc41f356831ca027a3ad39",
+    "scripts/consolidation_ft15_report.py": "6d76df3285635b5e8ac1627d5da1d6ff2c1ef7ecd418dcaafdb27f522f06952e",
+    "tests/cpu/test_consolidation_finetune15.py": "7ab9610b8318641b6344676dc425d36cc67f38accd61f15c34989697c22a80ee",
+    "tests/cpu/test_consolidation_ft15_report.py": "b3bf28a674ee75fac8851edc8dcf2c86a0b32837dbccd231fe1c10ad9bdf5bbc",
+    "results/infra/finetune15_20261105/plan.json": "0c0d71cc8f73028a7101d107ee68d10e93622bb09aec75fdb32a8246a9fb7c47",
+    "results/infra/finetune15_20261105/resource_projection.json": "de77c760cf5d5c1291fb2295c16663beea1d1fba188e88edda5362b62d310d71",
+    "results/infra/finetune15_20261105/launch_plan.json": "3f57c617a8af5ee59e61dd003ae82042727a386db2cc1768674372f95b51aff6"
+  }
+}
