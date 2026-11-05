@@ -5757,6 +5757,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   registrazione della conferma, stati convergenti e lancio della catena da parte sua. Punta del ramo di GPT alle 12:10: ancora
   90ffcd4. Nessun lancio da parte mia.
 
+### 2026-11-05 | Claude | Correzione dell'arresto T100-LQ all'inizializzazione: stato verificato sul modello che ogni rank addestra, diagnostica completata con prova a secco; nessun job (compito di GPT inoltrato da Simone)
+- Richiesta: Simone, «il controllo pare andato male, ora te o faccio sistemare», con il testo di GPT: «Ti affido diagnosi e correzione del blocco di
+  inizializzazione T100-LQ. Questa volta puoi modificare il codice: GPT rivedrà la tua soluzione prima del rilancio.» Lavoro nel worktree nuovo
+  `.claude/worktrees/claude-logsquare-init-fix`, ramo `claude/logsquare-init-fix-20261105` da 4d5a3ef di GPT: commit d378acb, b8689e1, b2e75c5,
+  8a655c2 (origin verificato a 8a655c2). Documento: `docs/logsquare_initialization_fix_20261105.md` su quel ramo. Nessun job, training o retry;
+  artefatti del fallimento, piano e release del 04/11 intatti; nessun file di GPT o checkout congelato toccato.
+- **Causa (dai registri, senza job):** `38cb4cce…` e' lo stato del preflight (gain 548,6939187567023); i checkpoint storici T100-L a 5.000 e
+  19.618 salvano 548,6939187567021, un ULP sotto, e il gain e' un buffer che nessun aggiornamento tocca. Il training storico non e' mai partito
+  dallo stato del riferimento. Preflight: NumPy prima di Torch; controller, trainer e ingresso nuovo: Torch prima (test con registratore degli
+  import). Non osservato: gain e tensori del modello del controller nel job 63532335, e il contesto del trainer di oggi; li misura la diagnostica.
+- **Correzione:** `scripts/logsquare_initial_state.py` accetta un solo stato: hash `38cb4cce…` con il solo gain sostituito su una copia, gain
+  uguale bit per bit a quello dei checkpoint storici T100-L, `W_log` nullo. Valori in
+  `results/infra/logsquare_initialization_20261105/initial_state_guard.json` (SHA 9cc3c37e…), riletti dai file storici a ogni esecuzione. Nessun
+  ripristino, tolleranza o hash nuovo. `scripts/logsquare_train_rank.py` e' l'ingresso torchrun della fase fresca: verifica lo studente che il
+  trainer costruisce (`run.WearUsFM`, `run.py:1337`) prima che il trainer lo riceva, in ogni rank; il modello non seminato di `count_parameters`
+  sul rank 0 e' registrato e non giudicato. Il controller (`scripts/logsquare_train.py`) tiene il suo controllo come pre-controllo, pretende le
+  quattro attestazioni e il gain registrato nei checkpoint, rifiuta un piano senza guard. I 102 sorgenti scientifici sono invariati.
+- **Diagnostica di GPT completata** (stesso script, piano REVIEW_REQUIRED): verdetto del guard su ogni modello LQ dei cinque contesti; sesto
+  contesto `rank_entry_torchrun` = pre-controllo del controller + comando di produzione sotto torchrun con `--verify-only` (quattro rank reali
+  costruiscono e verificano lo studente e si fermano nel costruttore: nessun modello arriva al trainer); lettura fissata nel piano prima
+  dell'esecuzione (`cause_demonstrated`, `trainer_builds_the_registered_training_state`, `fix_dry_run_passed`), mai autorizzazione al training.
+  Risorse: 15 minuti su `boost_qos_dbg`, tetto 1,0 GPU-ore e 8,0 core-ore, piu' 0,33 core-ore di checkout (prima 10 minuti, 0,67 GPU-ore).
+- **Test (Mac, CPU, un thread):** regressione `test_training_context_gain_passes_the_exact_initialization_check` FALLITA sul controller di
+  4d5a3ef (SHA cb3ff445…) con l'errore del job, passata sul corretto; un ULP su un parametro reale rifiutato prima e dopo. Quattro rank reali
+  con gruppo di processi e DDP: due passi identici bit per bit al trainer normale, quattro attestazioni, gain dei checkpoint uguale al
+  verificato; studente rifiutato = nessun aggiornamento. Quattro file LQ: 154 passati. `tests/cpu` su b8689e1: 2446 su 2447; l'unico fallito
+  (`test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical`) fallisce uguale su 4d5a3ef. Smoke locale della
+  diagnostica dal checkout pulito: cinque contesti eseguiti, torchrun non parte sul Mac (rapporto incompleto, dichiarato). CUDA non provata.
+- A GPT: review della correzione; decisione sul punto della voce di sezione 2; poi stato del piano, checkout, sottomissione della diagnostica,
+  release e piano nuovi (elenco nel documento, sezione 5).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7971,3 +8002,21 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Decide Simone, con la cifra davanti: tetto 304,5 GPU-ore, atteso circa 205.
 - Seguito (05/11, 11:59 CET): **R-3 confermata da Simone** («Confermo il tetto», in risposta a «Confermi il tetto di 304,5
   GPU-ore per il confronto EPN a 15 epoche?»); manca solo la registrazione di GPT in `decisioni.md`. **Resta aperta R-2.**
+
+### 2026-11-05 | Claude | Correzione T100-LQ: lo stato esatto del preflight ora e' rifiutato (punto da decidere in review); limiti della prova locale; nota M1 errata
+- **Punto da decidere (GPT):** il guard accetta lo stato del training storico (tensori del riferimento, gain …7021) e rifiuta lo stato esatto
+  del preflight (…7023, classificazione `preflight_reference_state`), perche' nessun training T100 e' partito da li'. L'hash registrato resta
+  uno solo, `38cb4cce…`, e il gain viene dai registri storici: chiedo a GPT di confermare che questo rispetta «Non adottare un nuovo hash
+  atteso». Alternativa non implementata: scrivere nel modello il gain del preflight; recupera l'hash ma modifica lo stato costruito dal trainer
+  e allontana T100-LQ di un ULP da T100-L.
+- **Limiti:** nulla e' stato osservato sul cluster; sul Mac lo stato del cluster non si riproduce (differiscono anche altri tensori) e torchrun
+  non parte, quindi il sesto contesto e' provato in locale solo a pezzi (comando di produzione, limite di tempo sull'albero dei processi,
+  lettura dei record, quattro rank reali avviati senza il launcher di torchrun). Il precedente del 14/10 mostra che contano anche i thread:
+  i launcher di training storico, LQ e diagnostica esportano un thread e lo stesso ambiente. Se il contesto del trainer di oggi desse un altro
+  gain, i rank si fermerebbero prima di ogni aggiornamento: la prova a secco serve a saperlo prima del lancio.
+- **Dopo un rifiuto dei rank** restano la cartella del run e quella della ricevuta: un secondo lancio richiede una decisione, non un retry.
+- **Correzione a una mia nota:** nella review 9a46d7c (M1) avevo scritto che il controller fallito non interrogava CUDA prima del controllo.
+  E' sbagliato: `command_for` costruisce il parser del trainer, il cui default di `--device` chiama `torch.cuda.is_available()`, prima di
+  `verify_initialization`. M1 cade; M2 e' coperta dal sesto contesto.
+- **Test preesistente fallito:** `test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical` fallisce su 4d5a3ef
+  come qui (`continuation recipe differs beyond max_steps`); non riguarda questa consegna, lo segnalo soltanto.
