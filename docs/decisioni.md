@@ -6280,3 +6280,34 @@ F-R2 e SCRATCH_RULE restano congelate; V-R1 resta riferita a dose/profondità,
 senza trasferire automaticamente le soglie P1/P2 al solo EPN.
 Eventuali 15 epoche saranno una proposta nuova con preventivo.
 Continuazione ancora PENDING, nessun nuovo job o monitor.
+
+### 05/11/2026 — Fine-tuning EPN a cinque epoche: risultato e limiti
+
+Chiusa la matrice dei24fit: tutti COMPLETED0:0, ultimo alle02:51:58CET.
+Raccolti e verificati84file/24hashcheckpoint, provenienze/ruoli/selezione e
+12OOF su47.100finestre/314soggetti. Aggregatore locale di sola lettura
+consegnato con15test passati; review indipendente favorevole, risultati
+ricalcolati da zero concordi entro1e-12. Nessuna nuova inferenza o fit.
+
+Balanced accuracy pooled: frozen70,575%,FT93,766%,scratch92,363%.
+FT−scratch+1,403pp IC95[0,930;1,837], FT−frozen+23,191pp[21,945;24,395].
+Bootstrap2000 per soggetto appaiato,seed20261102,condizionato ai modelli/fold.
+Lettura favorevole al pretraining alla dose breve; non prova di un vantaggio
+a convergenza. F-R2 scatta con scratch[4,5,5,5],mediana val5−4+0,389pp:
+tre migliori epoche all'ultima bastano per la regola OR congelata.
+
+Frozen è12,002pp sotto la logistica storica82,577%,con migliorevalidation5
+in4/4fold. Il grande contrasto FT−frozen riguarda quel controllo e non il
+miglior lettorecongelato; nessun limite delle rappresentazioni dedotto.
+SviluppoEPN,sememodello unico,nessun testufficiale o regressione: nessuna
+applicazione impropria delle soglieV-R1 e nessuna utilitàgenerale dichiarata.
+
+Consuntivo24fit68,271667GPUh/546,173333coreh su144/1152massimi; entrambi
+i benchmark più trecheckout portano il totale29job a68,523611GPUh e
+548,221111coreh. Checkoutinizialecondiviso contato una volta; traininglungo
+escluso. Evidenze in final_20261105, analisi e review in docs/reviews.
+
+La direzione15epoche FT/scratch richiede nuova proposta,preventivo,review e
+decisione di Simone: nessuna estensione automatica. Il lungo già approvato
+resta sui treID/SHAoriginari,matricevalutazioni ancora da consegnare.
+Prompt perClaude preparato; nessun nuovojob o monitor automatico.

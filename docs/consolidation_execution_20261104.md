@@ -1,5 +1,11 @@
 # Consolidamento — esecuzione dopo convergenza, 04/11/2026
 
+**Aggiornamento del 05/11:** FT a cinque epoche concluso, aggregatore di sola
+lettura consegnato e verificato. [Risultati](reviews/finetune_results_20261105.md)
+e [consuntivo FT](finetune_v2_execution_20261104.md). La continuazione mantiene
+17dd455 e i tre ID originari; matrice lunga e relativo aggregatore ancora
+consegne separate. Le sezioni sotto conservano piano iniziale e cronologia.
+
 Review Claude `0b2623a` su `2dbd498`, conservata integralmente nel ramo.
 Continuazione, benchmark FT e regole F-R2/V-R1 convergenti. R-1 risolto con
 la sola destinazione `fit_output_root` sotto WORK: anche i `.pt` restano lì,

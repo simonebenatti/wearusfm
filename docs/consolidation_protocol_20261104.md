@@ -1,6 +1,9 @@
-# Consolidamento T100-G: proposta eseguibile da rivedere con Claude
+# Consolidamento T100-G: protocollo convergente e stato esecutivo
 
-Stato: **continuazione sottomessa; benchmark FT completo, adeguamento dei tempi in review**. Simone ha assegnato a questa chat schedule
+Stato al 05/11: **24 fit FT conclusi e analizzati; continuazione lunga sottomessa,
+matrice delle valutazioni lunghe ancora da consegnare**. [Risultati FT a cinque
+epoche](reviews/finetune_results_20261105.md): FT93,766%, scratch92,363%, frozen70,575%;
+F-R2 scatta, nessuna estensione automatica. Simone ha assegnato a questa chat schedule
 lungo e fine-tuning; il 300M appartiene al thread originale. Worktree esclusivo
 `wearusfm-consolidation`, branch `codex/consolidation-20261104`, base `8ee6603`.
 Nessuna scrittura nei checkout `wearusfm-gpt-science` e `wearusfm-scaling-300m`.
@@ -11,12 +14,12 @@ Ordine richiesto da Simone: preparazione → review Claude → correzioni e conv
 → pubblicazione dei riferimenti esecutivi → lanci tramite submitter/ledger comune.
 La rilettura Claude `0b2623a` su `2dbd498` ha chiuso la convergenza scientifica.
 R-1 corretto e quota N-2 pinnata; prima tranche sottomessa da `17dd455`.
-Il benchmark63525812 è completo ma FT/scratch superano il gate delle4h anche
-con un solo candidato. Simone autorizza l'aumento dei limiti: emendamento
-operativo4h/7h/7h in `finetune_walltime_amendment_20261104.md`. Il piano FT
-torna `awaiting_claude_walltime_review`; quello della continuazione è invariato.
-Nuovo benchmark necessario dopo il cambio del controller, poi pin e fit;
-matrice lunga e aggregatore restano da consegnare.
+Il benchmark63525812 ha richiesto l'emendamento operativo4h/7h/7h autorizzato
+da Simone e approvato da Claude f70dc72. Benchmark nuovo63527476 verificato,
+24 fit sul checkout a2eeb75 e consegna finale approvata da Claude2d157cc.
+L'aggregatore FT di sola lettura è ora consegnato e verificato; i controller
+della matrice lunga e il suo aggregatore restano da consegnare. I piani e le
+regole scientifiche sotto non cambiano con questo aggiornamento di stato.
 F-R2 e V-R1 convergenti senza modifiche alle soglie. Dettagli e costi degli invii
 in `consolidation_execution_20261104.md`.
 Niente monitor in background. Nessuna nuova autorizzazione per il lavoro approvato

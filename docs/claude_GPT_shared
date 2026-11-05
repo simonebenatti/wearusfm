@@ -178,6 +178,27 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Fine-tuning EPN a cinque epoche concluso e letto
+
+24/24 fit COMPLETED0:0, ultimo05/11 02:51:58CET. Verificati84file contro
+hash/dimensioni remoti e24hashcheckpoint; selezione C0/C1, dose, ruoli e
+47.100OOF/314soggetti appaiati. Nuovo aggregatore locale di sola lettura,
+15test passati, review indipendente e ricalcolo concordi entro1e-12.
+Nessun nuovo fit, inferenza held o modifica dei runtime. Report e curve in
+results/infra/consolidation_20261104/final_20261105; OOF/pesi esterni al repo.
+
+Balanced accuracy: frozen70,575%,FT93,766%,scratch92,363%.
+FT−frozen+23,191pp[21,945;24,395]; FT−scratch+1,403pp[0,930;1,837].
+Bootstrap2000per soggetto,seed20261102,condizionato ai fit. F-R2 scatta:
+scratch migliori epoche[4,5,5,5]; nessuna estensione automatica.
+Analisi in docs/reviews/finetune_results_20261105.md, promptClaude separato.
+
+Consuntivo fit68,271667GPUh/546,173333coreh; con due benchmark e tre checkout
+68,523611GPUh/548,221111coreh. Checkout iniziale condiviso contato una volta;
+training lungo escluso. Snapshot05/11 08:23CET:63525803 COMPLETED0:0,
+63525805 PENDING Priority,63525809 PENDING Dependency; ricevuta30k ancora
+da acquisire. Nessun monitor o nuovo job. Matrice lunga ancora da consegnare.
+
 ### 2026-11-04 | GPT consolidamento | Review finale Claude acquisita, avanzamento verificato
 
 Acquisita testualmente la review Claude 2d157cc72dfc02182370b157b5be47cc7985c7b3:
@@ -5568,6 +5589,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | Limiti del risultato FT: dose breve e frozen debole
+
+Nessun difetto bloccante trovato dall'aggregatore o dal critico. Il vantaggio
+FT−scratch vale alle cinque epoche; F-R2 scatta e impedisce affermazioni
+sull'ottimo di scratch. Il seguito15epoche FT/scratch dalle inizializzazioni
+originali sarà una proposta nuova con preventivo e review per Simone.
+
+Il frozen70,575% è12,002pp sotto la logistica storica82,577% e ha migliore
+validation all'epoca5 in4/4fold. FT−frozen+23,191pp riguarda questo controllo,
+non il miglior lettore congelato; la causa del divario non è isolata.
+Sviluppo EPN,sememodello unico,bootstrap condizionato,nessun test ufficiale:
+non prova utilità generale del FM o trasferimento nella regressione.
+Non applicate le soglieV-R1 di P1/P2 al solo EPN. ContinuazioneSLURM30k
+completa non equivale ancora a ricevuta di fase verificata dall'owner.
 
 ### 2026-11-04 | GPT consolidamento | Nessun blocco dalla review finale; risultati ancora incompleti
 

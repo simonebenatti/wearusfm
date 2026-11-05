@@ -309,18 +309,21 @@ Nessun nuovo job o automazione da questa discussione; i protocolli esecutivi
 dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risultati.
 
 
-### 04/11 — Consegna del fork consolidamento per Claude
+### 05/11 — Consolidamento: fine-tuning concluso, training lungo in corso di completamento
 
 | Pezzo | Preparato | Risultato disponibile | Prossimo gate |
 |---|---|---|---|
-|30M T100-G lungo|Ripresa completa e WSD invariato; dopo review aggiunti recovery e copia persistente degli endpoint|Nessun risultato nuovo; stima 25,35 GPUh/tetto 36. Review iniziale favorevole|Sottomessi63525803→63525805→63525809; primo in coda, successori afterok|
+|30M T100-G lungo|Ripresa completa e WSD invariato; recovery e copia persistente degli endpoint|Alle 08:23 CET del 05/11:63525803 COMPLETED0:0; ricevuta di fase ancora da acquisire|63525805 PENDING Priority e63525809 PENDING Dependency; nessun rilancio|
 |Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Regola convergente con0b2623a; completare controller, pin e budget misurati|
 |Benchmark FT EPN|Emendamento approvato da Claude f70dc72; misura su nuovo checkout ae28305|63527476 completo in 450 s; memoria e tempi validi; 0,125 GPUh / 1 coreh|Ricevuta verificata e pinnata; split nei tre regimi|
-|Fit EPN teacher19k|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; review finale Claude 2d157cc approvata|Alle 20:56 CET: 4 C0 frozen completi, 12 fit in esecuzione, 8 in coda. Consuntivo dei soli conclusi: 4,742222 GPUh|Attendere selezione dei candidati e fold completi prima dei contrasti; runtime a2eeb75 invariato, nessun monitor automatico|
+|Fit EPN teacher19k, conclusi|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; runtime approvato da Claude2d157cc|24/24 COMPLETED0:0. FT93,766%, scratch92,363%, nuovo frozen70,575%. FT−scratch+1,403pp IC95[0,930;1,837]. Fit68,271667GPUh|Vantaggio del pretraining a dose breve; F-R2 scatta. Frozen sotto logistica storica82,577%: non è il limite delle feature. Eventuali15epoche sono una nuova proposta|
+|Aggregatore FT, concluso|Verifica84file/24hashcheckpoint, selezione e OOF; bootstrap appaiato per soggetto|15test passati; critico indipendente concorde entro1e-12.314soggetti/47.100finestre, nessuno scarto|[Analisi e limiti](reviews/finetune_results_20261105.md); nessuna nuova inferenza o estensione automatica|
 
 Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
 Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
-codex/consolidation-20261104. Dopo convergenza0b2623a: checkout63525708 completo, tre segmenti e benchmark sottomessi; nessun monitor.
+codex/consolidation-20261104. Dopo convergenza0b2623a: checkout63525708 completo,
+tre segmenti sottomessi; FT5epoche concluso. Nessun monitor. Gli stati delle
+altre linee in questa copia della tabella non vengono aggiornati dal consolidamento.
 
 Seguito della review `63fd9c5`: [risposta punto per punto](reviews/consolidation_response_to_claude_20261104.md)
 e [prompt per la rilettura](prompt_claude_consolidation_followup_20261104.md).

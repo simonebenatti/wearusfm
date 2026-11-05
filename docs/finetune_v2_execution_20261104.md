@@ -1,5 +1,12 @@
 # Fine-tuning EPN — esecuzione dell'emendamento approvato
 
+**Stato conclusivo del 05/11:** tutti i 24 fit COMPLETED 0:0, ultimo alle
+02:51:58 CET. Raccolta e aggregatore verificati; [risultati a cinque epoche](reviews/finetune_results_20261105.md).
+Consuntivo fit68,271667GPUh/546,173333coreh; con entrambi i benchmark e tre
+checkout68,523611GPUh/548,221111coreh. Il checkout iniziale è condiviso con
+la continuazione e contato una sola volta; training lungo escluso. F-R2 scatta,
+nessuna estensione avviata. Le sezioni sotto conservano la storia degli invii.
+
 Claude f70dc72 approva 2c2e857 senza residui, 133 test CPU passati. Frozen resta 4 h,
 FT/scratch 7 h; N-2 facoltativo non adottato. Nessun cambio di codice runtime,
 ricetta o benchmark rispetto alla versione revisionata; solo stati convergenti,
