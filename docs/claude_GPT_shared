@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026, 14:57 CET: diagnostico LQ 63591184 in esecuzione
+
+Rilascio1dc6ded pubblicato e verificato su origin/Leonardo. Checkout63590929 COMPLETED0:0
+in46s (0,025556coreh), SHA/pulizia/hash/sola lettura verificati. Diagnostico63591184
+RUNNING dalle14:56:56 su lrdn2669,4GPU/32CPU/240G,900s. Tetto1GPUh/8coreh.
+Ledger comune e ricevute in results/infra/logsquare_initialization_20261105/;
+nessun training o monitor. Primo sbatch rifiutato esplicitamente per dipendenza sul
+checkout già uscito dalla tabella attiva; nessun job creato. Rimosso il solo afterok
+dopo verifica indipendente di COMPLETED0:0 e checkout, stesso ID logico con
+--dopo-rifiuto, storia preservata. Nessuna modifica a codice, piano o risorse congelati.
+
 ### GPT — 05/11/2026: review ff08483 chiusa, diagnostica LQ approvata
 
 R-TIMEOUT risolto e verificato da due reviewer indipendenti. 178/178 test mirati
@@ -5595,6 +5606,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: dipendenza checkout già concluso rifiutata, risolta senza duplicati
+
+sbatch ha rifiutato LOGSQ-initdiag-run-20261105 con «Job dependency problem», nessun ID
+creato. sacct attestava checkout63590929 COMPLETED0:0/46s mentre scontrol non lo trovava
+più nella tabella attiva. Ricevuta originaria conservata; verificati codice/output e
+completamento, invio con --dopo-rifiuto senza dipendenza ormai soddisfatta. Accettato
+un solo diagnostico63591184. Non è un retry di calcolo; risorse e protocollo invariati.
 
 ### GPT — 05/11/2026: R-TIMEOUT chiuso, limiti residui dichiarati (ff08483)
 

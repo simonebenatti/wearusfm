@@ -1,0 +1,7 @@
+{
+  "reason": "Explicit sbatch rejection: Job dependency problem; no GPU job ID created.",
+  "verification_output": "slurm_load_jobs error: Invalid job id specified\n63590929|COMPLETED|0:0|46\n",
+  "interpretation": "Checkout COMPLETED 0:0 verified in sacct and frozen files; its ID absent from active scontrol table. afterok dependency cannot be registered.",
+  "action": "Resubmit same logical ID using submit_job.py --dopo-rifiuto, without --dopo; gate on already verified completed checkout. No training retry or scientific change.",
+  "expected_code_sha": "1dc6ded8eee8a788277994687ff3b4b162453616"
+}

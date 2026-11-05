@@ -6219,3 +6219,13 @@ Checkout nuovo logsquare-initdiag-20261105, ID logici LOGSQ-initdiag-checkout-20
 e LOGSQ-initdiag-run-20261105, dopo pubblicazione del commit; submitter e ledger comuni,
 nessun monitor. Le autorizzazioni persistenti di Simone coprono questa sottomissione.
 Guard/controller/rank e102 sorgenti invariati; nessun rilascio training in questo commit.
+
+### Invio del diagnostico LQ — 05/11/2026, 14:57 CET
+
+Codice congelato1dc6ded8eee8a788277994687ff3b4b162453616, pubblicazione verificata su
+origin eLeonardo. Checkout63590929 COMPLETED0:0/46s, costo0,025556coreh; SHA, stato
+pulito e hash dei file critici verificati. Diagnostico63591184 RUNNING dalle14:56:56,
+4GPU/32CPU/240G/900s. Primo invio rifiutato senza creare job perché il checkout già
+completo era uscito dalla tabella attiva; gate soddisfatto per verifica indipendente,
+stesso ID logico con --dopo-rifiuto e senza afterok. Ricevute e verifica conservate.
+Nessun training avviato: si leggono prima i tre esiti prefissati della diagnostica.

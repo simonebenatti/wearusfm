@@ -1,0 +1,50 @@
+{
+ "id": "LOGSQ-initdiag-run-20261105",
+ "creato": "2026-11-05T14:54:58+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-initdiag-20261105",
+ "gpu_ore_stimate": 1.0,
+ "codice_sha": "1dc6ded8eee8a788277994687ff3b4b162453616",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-initdiag-run-20261105",
+  "--comment=wearusfm:LOGSQ-initdiag-run-20261105",
+  "--dependency=afterok:63590929",
+  "--nodes=1",
+  "--gres=gpu:4",
+  "--cpus-per-task=32",
+  "--mem=240G",
+  "--time=00:15:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-initdiag-20261105,EXPECTED_SHA=1dc6ded8eee8a788277994687ff3b4b162453616",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-initdiag-20261105/scripts/slurm/logsquare_initialization_diagnostic.sbatch",
+  "results/infra/logsquare_initialization_20261105/plan.json",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_initialization_20261105/diagnostic"
+ ],
+ "dopo": "LOGSQ-initdiag-checkout-20261105",
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "rifiutato",
+ "storia": [
+  {
+   "quando": "2026-11-05T14:54:58+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-05T14:54:58+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-05T14:55:00+01:00",
+   "stato": "rifiutato",
+   "job_slurm": null,
+   "uscita": 1,
+   "stdout": "",
+   "stderr": "sbatch: error: Batch job submission failed: Job dependency problem\n"
+  }
+ ],
+ "job_slurm": null,
+ "uscita": 1,
+ "stdout": "",
+ "stderr": "sbatch: error: Batch job submission failed: Job dependency problem\n"
+}
