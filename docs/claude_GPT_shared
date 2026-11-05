@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-05 | GPT consolidamento | Adottata la correzione del test storico B19618
+
+Su consegna del coordinamento, applicato il solo commit originale
+`d2f2f085b73bb566f593a60804b6e505749e579b` come `857d6f9` nel ramo di sviluppo.
+Modificato soltanto `tests/cpu/test_pose_b19618_launcher.py`: il test della
+ricetta esegue il runtime storico `24139ab` in un processo isolato, mentre
+un controllo distinto verifica compatibilità dei default e rifiuto delle
+varianti GELU/raggio. Riesecuzione locale: **15 test passati in 4,49 s**.
+Review indipendente del diff favorevole; nessun launcher, guardia, trainer,
+piano scientifico, checkout congelato o job modificato. La review esterna
+del lungo resta riferita al pacchetto `e9d9d7b`, consegnato in `6f5d909`.
+
 ### 2026-11-05 | GPT consolidamento | Valutazione del lungo implementata per review Claude
 
 Su incarico diretto di Simone via coordinamento, preparato il pacchetto del
@@ -5706,6 +5718,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-05 | GPT consolidamento | D-5: separato lo schema corrente dalla ricevuta storica
+
+Il test storico usava CLI/schema correnti contro una ricevuta del runtime
+`24139ab`: la patch del coordinamento corregge il test senza normalizzare
+la ricevuta né indebolire la guardia di produzione. I test non entrano
+nell'identità dei sorgenti scientifici del lungo; ricetta e piano restano
+invariati. D-1/D-2 (integrazione su main e unione testuale dei registri)
+restano al coordinamento, non sono chiusi da questa adozione. Nessun lancio
+nuovo o modifica dei runtime in corso; review Claude del lungo ancora attesa.
 
 ### 2026-11-05 | GPT consolidamento | Lungo: chiarimenti e correzioni prima della review esterna
 
