@@ -6072,6 +6072,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   al file di validazione di GPT; 82 job e tetti invariati. Test: dieci file di GPT 236 passati, cinque file nuovi 138; `bash -n` OK.
 - Su Leonardo solo una lettura di quota e coda alle 19:57. Nessun Python eseguito sul cluster.
 
+### 2026-11-05 | Claude | Review 8 scaling: dispatcher di recupero CPU approvato, riuso dei 13 report, tetto 310 e S8 v2 approvati; una correzione obbligatoria ai comandi d'invio (GPT 4c670bd, 3d76ae3) (richiesta di Simone)
+- Richiesta di Simone del 05/11 sera: «mi fai una veloce review sul dispatcher? B-1 chiusa: 310 core-ore complessive approvate.»; a
+  review in corso Simone ha incollato il prompt di GPT coi cinque punti (`docs/prompt_claude_scaling_cpu_dispatcher_review_20261105.md`:
+  «Solo review, nessun lancio»). Review in `docs/reviews/claude_review_scaling_300m_cpu_dispatcher_20261105.md`. Nessun job e nessuna
+  modifica a codice, dati o file remoti da parte mia; letture di Leonardo in `~/wearusfm_local/logs/claude_review8_leonardo_{1,2}.txt`.
+- Copertura: `4c670bd` e `3d76ae3` (punta al verdetto). Fuori copertura: `6e57e19`, `d2c099b`, il piano misurato dei fit (non esiste
+  ancora) e i wrapper per 19.618. L'«approvo» di Simone sul tetto 310 e' riportato da GPT in `docs/decisioni.md`; non ho letto la sua chat.
+- Dispatcher approvato: launcher congelato `2da66c15…` piu' 13 sostituzioni dichiarate (diff mio e test dell'elenco chiuso), sha256
+  `c2bd7979…`, uguale nel checkout di GPT; codice numerico, submitter e `src/` identici ad aef665b; su Leonardo `CODE_DIR` ad aef665b
+  pulito e piano `d2cc7da1…`. Test: 166 passati in 118,10 s su 3d76ae3 (42 + 72 + 36 + 16).
+- Riuso approvato: 13/13 report uguali alle mie copie della review 7, ricevute, accounting e righe di log coerenti coi pin; i tre NinaPro
+  restano figli del TIMEOUT 63593508; `validate_resources` pinna ogni report per percorso e non guarda lo stato del padre.
+- Tetti dei fit: nei miei quattro scenari 12-14 shard e 186,84-212,81 core-ore (piu' al massimo 1,87 di arrotondamento) contro 15 e
+  240; benchmark di EPN612 circa 3.000 s contro 7.200. Non e' una garanzia: EPN612 non e' misurato; oltre i tetti la regola e' fermarsi.
+- Tetto 310 e S8 v2: conti riprodotti (302,094444 + 7,905556; 345,166667 + 4,833333; 66 + 0,35 GPU-ore; 53.100 s), JSON v1 e regola
+  scientifica intatti, pubblicazione prima di qualunque score (su Leonardo solo `pose_validate`, `pose_benchmark`, `probe_benchmark`).
+  Chiuse B-1 e B-3 della review 7; B-2 chiusa per il dispatcher. Nessun job nuovo: ledger senza ID di recupero, coda seriale vuota.
+- Blocco B-1 di questa review e facoltativi nella voce della sezione 2; testo per GPT in fondo alla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8470,3 +8489,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - **C-1.** Alle 19:57 liberi 33,15 GiB, margine 1,15 sulla soglia di 32; calo di 0,75 GiB/ora nell'ultima mezz'ora. A quel ritmo la
   soglia si supera verso le 21:30. Va trovato chi scrive o liberato spazio prima del lancio.
 - Non misurato: il contesto reale del processo nuovo su Leonardo, dedotto dalle ricevute archiviate e dagli import.
+
+### 2026-11-05 | Claude | Review 8 scaling: B-1 i due comandi d'invio del recupero mancano del nome dello script per sbatch (inserire `/dev/stdin`); quattro facoltativi
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_cpu_dispatcher_20261105.md`.
+- **B-1 (prima del primo invio):** `submission_plan.json` usa `--script-stdin` e subito dopo le opzioni passa gli argomenti del
+  dispatcher (`probe-benchmark <piano> ...`); il submitter non aggiunge nulla. Per `sbatch` il primo argomento non opzione e' il file
+  dello script (letto su Leonardo, Slurm 25.05.7: `sbatch [OPTIONS(0)...] [ : [OPTIONS(N)...]] script(0) [args(0)...]`; lo stdin si
+  legge solo senza nome di file): `probe-benchmark` verrebbe cercato come file e l'invio rifiutato. Nel registro dei job i 12 invii su
+  stdin con argomenti posizionali (14/10, `step1_random_*`, per esempio 60563048) mettono tutti `/dev/stdin` come nome dello script;
+  gli invii CPU di oggi passavano il launcher per percorso. Costo CPU nullo, ma ID logico consumato e correzione fuori review.
+  Correzione: `/dev/stdin` subito prima di `probe-benchmark` nei due `argv` (e nei comandi successivi su stdin), ripubblicando il
+  piano; il pin del dispatcher non cambia. Con questa sola correzione il piano e' approvato senza un altro giro. E' una deduzione da
+  sintassi e precedenti: non ho eseguito `sbatch`; i test non possono vederlo perche' eseguono il dispatcher, non la riga di `sbatch`.
+- **Facoltativi:** F-1 accettare i report nuovi solo se `script_stdin_sha256` della ricevuta e' `c2bd7979…` (il `code_sha` copre
+  `CODE_DIR`, non lo script su stdin); F-2 il limite dei 10 job e' della QoS `lrd_all_serial` (alle 19:55 l'utente aveva 53 job su
+  `boost_usr_prod` e zero li'): «<=10 total user jobs» alla lettera non passerebbe mai, lettura mia del limite di Slurm; F-3 i tetti
+  di S8 v2 (350 core-ore, 66,35 GPU-ore) non sono budget approvato: l'«approvo» di Simone copre le 310 della valutazione a 5.000;
+  F-4 `login08` con carico 175 su 128 CPU alle 19:55: i tempi di EPN612 di stasera possono differire da quelli del pomeriggio.
