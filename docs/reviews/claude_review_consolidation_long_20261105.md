@@ -4,6 +4,8 @@ Richiesta: prompt di GPT incollato da Simone il 05/11 (due volte, testo identico
 esecutivo della valutazione lunga, senza lanciare job.» Solo review: nessun job, nessuna misura CUDA, nessuna modifica al
 worktree di GPT o ai checkout in uso. Su Leonardo soltanto letture.
 
+**Aggiornamento delle 20:00:** la seconda lettura, sulle correzioni `e2f19ee`, e' in fondo al file, con i verdetti aggiornati.
+
 Ramo `codex/consolidation-20261104`. Codice e piano `e9d9d7b`, consegna `6f5d909`, base del diff `19c3166`. A review in
 corso GPT ha pubblicato `857d6f9` e `c66148b` (punta alle 19:14): toccano solo `tests/cpu/test_pose_b19618_launcher.py` e il
 registro. A `c66148b` `source_identity()` vale ancora `2ab63f44…`, uguale al pin del piano. I test sono rieseguiti anche li'.
@@ -170,3 +172,108 @@ pacchetto dopo quella frase, e li riporto a Simone nella chiusura.
 - L'equivalenza delle estrazioni con gli estrattori storici e' verificata sul codice e sui test, non su un'estrazione reale.
 - Le stime di memoria e di spazio sono mie e approssimate.
 - Una sola lettura della quota non dice chi sta scrivendo: il calo va attribuito dal coordinamento.
+
+---
+
+# Seconda lettura — correzioni di GPT `e2f19ee`, consegna `ef5589f` — 05/11/2026, ore 20:00
+
+Richiesta: prompt di GPT incollato da Simone, che rimanda a `docs/prompt_claude_consolidation_long_rereview_20261105.md`.
+Simone, a rilettura in corso: «se convergiamo io poi farei lanciare». Ho riletto solo il diff `c66148b..e2f19ee`.
+Nessun job, nessun benchmark; su Leonardo una lettura di quota e coda alle 19:57.
+
+**Esito: non convergiamo ancora.** Tutto il resto e' chiuso. Resta un difetto solo, **R-1b**, e blocca: cosi' com'e' la
+catena si fermerebbe al primo benchmark di classificazione, cioe' dopo le 12 estrazioni. Il commit di questa rilettura non
+va pinnato come `claude_review_converged`.
+
+| Punto | Verdetto dopo la seconda lettura |
+|---|---|
+| 1. Estrazioni e provenienze | **APPROVATO** |
+| 2. Classificazione e riuso storico | **DA CORREGGERE** (R-1b) |
+| 3. Posa, aggregazione e lettura | **APPROVATO** |
+| 4. Risorse e gate | **DA CORREGGERE**, solo perche' `resource_gate` contiene lo stesso confronto di R-1b. R-2 chiuso. |
+| 5. Esecuzione e completezza | **APPROVATO con C-1 e C-2**. C-1 e' piu' stretta di prima. |
+
+## Chiusi
+
+- **R-1, thread.** Launcher: 1 thread per le tre estrazioni e la sintesi, 8 per benchmark, fit e confronti di
+  classificazione e posa, fissati prima di ogni import scientifico e uguali ai launcher storici di ogni fase. `_threads()`
+  di classificazione e di posa li impongono su variabili d'ambiente e pool attivi. Un valore di `--stage` non registrato
+  ferma il launcher.
+- **R-1, risorse.** Misura e pavimento storico ora sono entrambi a 8 thread. Il margine 1,25 su DB2 fold 0-1 e 1,33 su EPN
+  e' dichiarato, con la regola che un gate fallito ferma la fase. Scelta legittima di GPT: 48 shard, tetti invariati.
+- **R-2.** Scelta la regola (i), scritta in piano, piano di lancio, documento e `decisioni.md`: ogni cambio a un sorgente
+  coperto invalida le 12 estrazioni, la catena si ferma, la ripetizione richiede review, nuovi ID, preventivo e una nuova
+  decisione di Simone; nessuna ripetizione automatica. C'e' il test che lo fissa.
+- **C-2** adottata: sorgenti fermi sul ramo, FT15 su ramo separato. **N-2** adottata nel documento. **N-1** non adottata:
+  va bene, era facoltativa.
+- Identita' ricalcolate a `ef5589f`: `source_sha256` `010352c6…`, ricetta invariata `b2356a8e…`, `plan.json` `712d3a80…`,
+  `launch_plan.json` `cf03b78e…`, uguali al file di validazione di GPT. Gli 82 job e i tetti non cambiano: nel diff del piano
+  di lancio cambiano solo stato, hash dei sorgenti e i blocchi di policy aggiunti in coda. `validate_plan` rifiuta ancora il
+  piano senza convergenza.
+
+## R-1b — L'uguaglianza esatta del contesto numerico non e' raggiungibile
+
+L'uguaglianza di `numeric_sha256` l'avevo raccomandata io in R-1(a), senza verificare che fosse raggiungibile con gli
+import del codice nuovo. Non lo e'.
+
+**Fatti.**
+
+1. Il contesto storico (`07b776ba…`) ha tre pool: openblas 0.3.21.dev, openblas 0.3.23.dev, libgomp. Lo ha scritto
+   `tokenizer_probe.py`, in un processo senza torch: nessun modulo della sua catena di import carica torch al livello di
+   modulo, e quei file non sono cambiati da `b315dadf`.
+2. Il processo nuovo carica torch all'import: `consolidation_long_common.py:16` e `consolidation_long_classification.py:16`.
+3. Su Leonardo ogni contesto archiviato di un processo con torch elenca anche il runtime `libomp`: 14 registrazioni su 14.
+   Le tre con anche scipy caricato hanno quattro pool (`results/infra/pose_slots_20261102/execution/R3c/receipt.json`, `B` e
+   `preflight`: openblas 0.3.23.dev, libgomp, libomp, openblas 0.3.21.dev, tutti a 8 thread; stesso python 3.11.6, numpy
+   1.26.4, torch 2.2.0a0). Le 34 registrazioni senza torch ne hanno tre.
+4. `_numeric_match` di GPT, alimentata con il contesto storico piu' quel pool `libomp`, rifiuta: «new/historical
+   classification numeric environment differs». Script: `docs/reviews/claude_review_consolidation_long_20261105_numeric_match.py`.
+5. Stesso meccanismo in locale: `TP.numeric_context()` da' due pool in un processo che importa solo `tokenizer_probe`, tre in
+   uno che importa `consolidation_long_classification_runtime`.
+6. I test nuovi usano contesti finti (`{"threads": 8}`): nessuno confronta il contesto reale con quello storico.
+
+**Conseguenza.** Il confronto e' in `benchmark-classification`, `fit-classification`, `compare-classification`, in
+`resource_gate` e in `compare_reports`: tutti dopo le estrazioni, che non lo eseguono. Le 12 estrazioni partirebbero e
+finirebbero; il primo benchmark di classificazione si fermerebbe. Con R-2(i) correggere a quel punto invalida le estrazioni:
+fino a 9 GPU-ore perse e una nuova decisione di Simone.
+
+**Correzione richiesta, una delle due.**
+
+- **(B), che raccomando.** Sostituire l'uguaglianza dell'hash con una regola scritta: versioni di python, numpy, scipy e
+  sklearn e `features_dtype` uguali allo storico; ogni pool storico presente nel processo nuovo con gli stessi sei campi;
+  pool in piu' ammessi solo se sono runtime OpenMP a 8 thread, elencati nel report; `exact_match` registrato com'e'. La
+  lettura dichiara: stesse librerie numeriche, stesse versioni, stesso numero di thread; nel processo nuovo e' caricato
+  anche torch. Resta l'obbligo, gia' presente, di un solo `numeric_sha256` fra tutti i benchmark e i fit nuovi.
+- **(A').** Tenere l'uguaglianza esatta e non caricare torch nelle fasi CPU di classificazione. Piu' invasivo.
+
+**In entrambi i casi, prima del checkout delle estrazioni:** verificare nell'ambiente reale (moduli e venv del launcher,
+8 thread) che il contesto del processo nuovo soddisfi la regola, e registrare l'uscita nel file di validazione. Minimo: due
+comandi di pochi secondi sul login node, con e senza `import torch`, che stampano `threadpool_info()`. Meglio: un job CPU di
+preflight su `lrd_all_serial` che precede le estrazioni. Con R-2(i) ogni controllo che puo' fallire per ragioni d'ambiente
+va provato prima della spesa GPU, non dopo.
+
+Facoltativo, senza job in piu': registrare nelle ricevute dei benchmark 19k/pool il confronto di `n_iter` con l'audit
+storico del fold 0. Se la cache nuova e' identica alla storica, valori uguali indicano che la numerica coincide.
+
+## Condizioni
+
+- **C-1, piu' stretta.** Alle 19:57 i GiB liberi sono 33,15: margine 1,15 sulla soglia di 32. Nell'ultima mezz'ora il calo e'
+  stato di 0,75 GiB/ora (33,59 alle 19:22). A quel ritmo la soglia si supera verso le 21:30. La regola di GPT e' corretta e
+  ora e' scritta nel piano: rilettura subito prima del primo invio, sotto 32 GiB nessuna estrazione. Va trovato chi sta
+  scrivendo, o liberato spazio, prima del lancio.
+- **C-2** invariata.
+
+## Cosa ho eseguito
+
+- Checkout temporaneo di `ef5589f`. I dieci file di GPT: 236 test passati. I cinque file nuovi: 138 passati. `bash -n` del
+  launcher e `git diff --check`: puliti.
+- Identita' di sorgenti e ricetta e hash dei due piani ricalcolati.
+- Censimento di tutti i `threadpools` archiviati in `results/`: 48 registrazioni, 6 firme distinte.
+- Lo script indicato al punto 4 e il confronto locale del punto 5.
+
+## Limiti
+
+- Il contesto reale del processo nuovo su Leonardo non e' misurato: e' dedotto da 14 ricevute archiviate e dal grafo degli
+  import. Non ho eseguito Python sul cluster: la verifica diretta e' il comando chiesto a GPT.
+- Che torch caricato non cambi i risultati del fit e' un ragionamento, non una misura: sklearn, numpy e scipy usano le
+  proprie librerie.

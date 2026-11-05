@@ -6059,6 +6059,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   e' archiviata sul suo ramo con lo stesso blob. Non rivisti: 99efdef (test B19618: qui 15 passati), 9720fc8 (costi d'inferenza e
   rilascio dell'estrazione di posa a 5.000) e il resto di 5b03e0c (estrazione 63615952).
 
+### 2026-11-05 | Claude | Seconda lettura della valutazione lunga (GPT e2f19ee, consegna ef5589f): R-2 e la parte thread di R-1 chiuse, non convergente per R-1b; nessun job
+- Richiesta: prompt di GPT incollato da Simone, con rimando a `docs/prompt_claude_consolidation_long_rereview_20261105.md`. Simone, a
+  rilettura in corso: «se convergiamo io poi farei lanciare». Sezione aggiunta in fondo a
+  `docs/reviews/claude_review_consolidation_long_20261105.md`; script di prova accanto. Riletto solo il diff `c66148b..e2f19ee`.
+- **Verdetti:** 1 APPROVATO; 2 DA CORREGGERE (R-1b); 3 APPROVATO; 4 DA CORREGGERE solo perche' `resource_gate` contiene lo stesso
+  confronto, R-2 chiuso; 5 APPROVATO con C-1 e C-2. **Non e' una convergenza:** il commit non va pinnato.
+- **Chiusi:** thread per fase uguali ai launcher storici (estrazioni e sintesi 1, lettori CPU 8), imposti da launcher e `_threads()`;
+  misura e pavimento del gate entrambi a 8 thread, margine dichiarato; R-2 con la regola (i) scritta in piano, documento e
+  `decisioni.md`; C-2 e N-2 adottate.
+- **Ricalcolato a ef5589f:** `source_sha256` `010352c6…`, ricetta invariata `b2356a8e…`, hash di `plan.json` e `launch_plan.json` uguali
+  al file di validazione di GPT; 82 job e tetti invariati. Test: dieci file di GPT 236 passati, cinque file nuovi 138; `bash -n` OK.
+- Su Leonardo solo una lettura di quota e coda alle 19:57. Nessun Python eseguito sul cluster.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8442,3 +8455,18 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - R-1 chiuso: verifica nella voce della sezione 1. Nessun problema nuovo dalla correzione.
 - Restano: N-2, se un rilancio dopo un arresto tecnico debba ripassare da Claude prima del deploy (decisione di Simone; GPT scrive che non
   ne deduce regole nuove), e N-3, pulizia forzata dei processi mai esercitata sul cluster.
+
+### 2026-11-05 | Claude | Valutazione lunga, seconda lettura: R-1b, l'uguaglianza esatta del contesto numerico non e' raggiungibile e fermerebbe la catena dopo le estrazioni; C-1 piu' stretta
+- **R-1b, bloccante, da correggere prima del checkout delle estrazioni.** L'uguaglianza di `numeric_sha256` con i report storici
+  l'avevo raccomandata io senza verificarne la fattibilita'. Il contesto storico (`07b776ba…`) ha tre pool e viene da un processo
+  senza torch; il processo nuovo carica torch all'import (`consolidation_long_common.py:16`,
+  `consolidation_long_classification.py:16`). Su Leonardo le 14 registrazioni archiviate di processi con torch elencano tutte anche
+  `libomp`; le tre con scipy hanno quattro pool (`pose_slots_20261102/execution/R3c/receipt.json`); le 34 senza torch ne hanno tre.
+  `_numeric_match` di GPT rifiuta il contesto storico piu' quel pool. Il confronto scatta in benchmark, fit, confronto e
+  `resource_gate`, cioe' dopo le 12 estrazioni: con R-2(i) andrebbero perse, fino a 9 GPU-ore. I test nuovi usano contesti finti.
+  Correzione raccomandata: regola scritta al posto dell'hash (stesse versioni, ogni pool storico presente con gli stessi campi,
+  pool in piu' ammessi solo se runtime OpenMP a 8 thread ed elencati nel report), e verifica nell'ambiente reale prima delle
+  estrazioni, registrata nel file di validazione. Alternativa: niente torch nelle fasi CPU di classificazione.
+- **C-1.** Alle 19:57 liberi 33,15 GiB, margine 1,15 sulla soglia di 32; calo di 0,75 GiB/ora nell'ultima mezz'ora. A quel ritmo la
+  soglia si supera verso le 21:30. Va trovato chi scrive o liberato spazio prima del lancio.
+- Non misurato: il contesto reale del processo nuovo su Leonardo, dedotto dalle ricevute archiviate e dagli import.
