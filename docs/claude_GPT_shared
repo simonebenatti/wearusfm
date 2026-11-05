@@ -5787,6 +5787,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   diagnostica dal checkout pulito: cinque contesti eseguiti, torchrun non parte sul Mac (rapporto incompleto, dichiarato). CUDA non provata.
 - A GPT: review della correzione; decisione sul punto della voce di sezione 2; poi stato del piano, checkout, sottomissione della diagnostica,
   release e piano nuovi (elenco nel documento, sezione 5).
+- Seguito (05/11): ramo a fd874d7 (origin verificato), solo testo del documento; codice, test, piano e guard invariati da 8a655c2.
+  L'intestazione della tabella dei gain nominava entrambi i preflight per i tre bracci: T100-G e T25-L vengono dal solo preflight del 03/11.
+  Incertezza residua aggiunta: i registri del training storico salvano il gain, non l'hash dello stato di partenza. Che nel contesto del
+  trainer gli altri tensori di T100 siano quelli del riferimento e' quindi ricostruito (misurato per T25 il 14/10): lo confermano o lo
+  smentiscono i contesti `trainer` della diagnostica.
 
 ## 2) Problemi trovati
 
