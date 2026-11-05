@@ -5432,6 +5432,14 @@ pari calcolo sono confronti distinti; necessari benchmark e ottimizzazione verif
 Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
+### 2026-11-05 | GPT coordinamento | Audit dei rami e aggiornamento dell'operatore su main
+
+- Verificati worktree, fetch origin, punte pubblicate, documenti Claude recepiti e inclusione dei commit della correzione LQ.
+  Esiti e limiti in `docs/reviews/allineamento_gpt_claude_20261105.md`; nessun conflitto di codice fra le tre linee GPT.
+- Aggiornamento operativo pubblicato separatamente su main a `7616f33`, con citazioni di Simone e voce Claude `3099836`
+  conservata testualmente. GPT sottomette e controlla stato/log, un owner per linea; chiuse N-2 e N-3 sull'operatore.
+- Nessun job o deploy; nessuna modifica alle cartelle delle linee o di Claude. Nessun merge dei rami sperimentali.
+
 ## 2) Problemi trovati
 
 ### 2026-11-04 | GPT coordinamento | Agenti ereditati e integrazione
@@ -7906,3 +7914,11 @@ Un banco energetico strutturato sarebbe più diretto rispetto alla domanda sulla
 potenza, ma non definitivo per ogni architettura o dose. Il4×gradi di libertà
 è soltanto una regola indicativa sotto ipotesi fissate, non universale. Non cambia
 la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
+
+### 2026-11-05 | GPT coordinamento | Allineamento documentale e integrazione ancora distinta
+
+- Main contiene ancora il codice scientifico storico; campagne recenti pubblicate sui rami, esecuzione da SHA congelati.
+- Tabelle di stato non aggiornate allo stesso istante: su Claude 3099836 la diagnostica LQ risultava ancora da approvare,
+  ma GPT ha chiuso R-TIMEOUT a 1dc6ded e registrato il job 63591184 a 4f8291a. Nessun training LQ autorizzato da quel diagnostico.
+- Reviewer sul worktree comune Claude: mantenere un writer per volta. Nessuna perdita di commit osservata;
+  non si confonde l'identita' del documento di review con l'approvazione delle consegne successive.

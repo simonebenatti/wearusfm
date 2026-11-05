@@ -6046,3 +6046,11 @@ dei lanci, un submitter per linea e ledger globale unico. Coordinamento integra
 i rami revisionati e non sottomette copie degli esperimenti. Estrattore comune
 pre/post backbone assegnato al consolidamento, riuso da scaling dopo review.
 Dettagli in `docs/coordinamento_linee_20261104.md`; nessun job o merge main qui.
+
+### 2026-11-05 — Audit di coordinamento delle tre linee e operatore GPT
+
+Su richiesta di Simone verificati rami, origin, review Claude e ledger comune; dettagli in
+`reviews/allineamento_gpt_claude_20261105.md`. Codice separato fra le tre linee; restano integrazione dei registri
+su main e aggiornamento degli snapshot. Main `7616f33` recepisce la conferma «Sì, sottomette GPT» e
+«semplici9one non c'e piu» (fonte Claude 3099836 e messaggio diretto di Simone): GPT sottomette e controlla i log,
+un owner per linea. Invariati budget, criteri, review, submitter/ledger e approvazioni. Nessun job, deploy o merge scientifico.

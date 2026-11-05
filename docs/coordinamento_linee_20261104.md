@@ -73,3 +73,11 @@ del diff e test di retrocompatibilità. Nessun merge incrociato automatico.
 Registro, decisioni e piano si aggiornano sul proprio ramo; coordinamento conserva
 le voci di tutti. Il fork log incorpora l'amendamento `8ee6603` (T25-L/B e T100-G
 secondario) preservando il lavoro locale. Questa nota non modifica i protocolli.
+
+## Aggiornamento del 05/11/2026
+
+Numerazione da usare sempre: **1 scaling**, **2 schedule lungo e consolidamento**, **3 log-quadratico e contrastiva**.
+La verifica iniziale sopra e' storica: stato e confronto dei rami aggiornati in
+[Audit di allineamento GPT / Claude](reviews/allineamento_gpt_claude_20261105.md).
+Su conferma diretta di Simone, main `7616f33` assegna formalmente a GPT sia sottomissioni sia controllo operativo dei log,
+un owner per linea; semplicione non e' piu' operativo. Nessun cambiamento ai checkout congelati o alle review richieste.
