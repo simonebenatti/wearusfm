@@ -6391,3 +6391,27 @@ esplicita revisionata, audit parziale non promosso a report. Proposta EPN120min
 poi budget fit completo e cumulativo da pubblicare, nessun nuovo totale inventato.
 S8/19.618 non autorizzato; impatto della nuova evidenza sul budget condizionale
 da dichiarare prima degli score. Codice numerico e criteri scientifici invariati.
+
+### 05/11/2026 — GPT scaling: adottata correzione del test storico B19618
+
+Su consegna del coordinamento, cherry-pick del solo commit d2f2f085 come6e57e19;
+modificato unicamente tests/cpu/test_pose_b19618_launcher.py. Il test legge ora
+CLI e src del runtime congelato24139ab tramite git archive e subprocess isolato,
+conservando il confronto esatto della ricetta. Nuova regressione: default attuali
+compatibili con resume, ma ricevuta storica rigorosa; GELU/raggio diversi rifiutati.
+Review indipendente del diff senza rilievi. File rieseguito sul ramo scaling:
+15passati in4,31s. Prima della patch riprodotto il fallimento noto:1fallito/13passati.
+Nessuna modifica di launcher, guardie, trainer o checkout remoti; runtime della
+campagna aef665ba e riferimenti scientifici invariati. Recupero CPU sempre fermo
+alla review Claude richiesta da Simone; nessun nuovo job o monitor.
+
+### 05/11/2026 — GPT scaling: falso fallimento B19618 risolto, stop CPU invariato
+
+Il test storico importava lo schema corrente invece del runtime24139ab imposto
+dal launcher: nuovi campi neutrali rendevano diverso il JSON della ricetta.
+Corretto solo il test, non normalizzata né allentata la guardia di produzione.
+Prima applicazione del cherry-pick impedita dal sandbox sull'indice Git, poi
+applicazione con permesso tecnico riuscita; nessuna modifica parziale o job.
+D-1/D-2 (merge main e unione registri) restano al coordinamento, non chiusi qui.
+TIMEOUT63593508 e insufficienza del tetto136coreh restano blocchi distinti:
+nessuna ripartenza in conseguenza di questa patch al test.
