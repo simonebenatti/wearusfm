@@ -6282,6 +6282,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   sono gia' generate dalla matrice pinnata, in `~/wearusfm_local/line2/long_extract_submit_20261105.txt`: 12 righe da 0,75 GPU-ore,
   9 GPU-ore in tutto, pari al tetto.
 
+### 2026-11-05 | Claude | Review 9 scaling: rilascio dei fit CPU a 5.000 conforme, nessun blocco (GPT 5275b0d...ff93003) (richiesta di Simone)
+- Richiesta di Simone del 05/11 alle 22:00 circa: «Review 7 e 8 consegnate. Il rilascio dei fit non è stato rivisto, vuoi controllare?
+  riesci ad avere tutte le info dai log e dai file?». Review in `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`,
+  controlli riproducibili con `docs/reviews/claude_review_scaling_300m_fit_release_20261105_check.py`. Solo lettura: nessun job, nessuna
+  cancellazione, nessuna modifica; letture di Leonardo (22:03-22:07) in `~/wearusfm_local/logs/claude_review9_leonardo_{1,2,3}.txt`.
+  Non ho aperto gli score (report della posa, `val_bacc` nell'audit dei fit): la lettura e' di GPT.
+- Copertura: da `5275b0d` a `ff93003` (punta al verdetto); dopo `3d76ae3` nessun cambio in `scripts/`, `src/`, `tests/`. Non coperti:
+  aggregati e confronto (non pubblicati), l'esecuzione dei fit 10-14 (non ancora inviati), l'esito dei fit in corso.
+- Correzione della review 8 applicata alle 20:10:45, prima del primo invio (20:22:48): `/dev/stdin` nei 17 comandi; 12 ricevute con
+  `script_stdin_sha256` = `c2bd7979…`; lo script registrato dallo scheduler per il fit 01 (63626931) ha lo stesso sha256.
+- Recuperi: EPN612 63620780 COMPLETED 0:0 in 2.820 s, UCI 63625951 in 29 s, inviato dopo l'accettazione di EPN. 15 report con sha256
+  ricalcolato da me su Leonardo uguale ai pin e alle copie pubblicate; 90 fit di benchmark convergenti, codice aef665b, contesto
+  numerico `1ac8481e…`. EPN612 300M naturale: C=100 in 1.238 s, 8.933 iterazioni su 12.000.
+- Piano misurato: formula congelata ricalcolata shard per shard senza lo script di GPT, valori uguali; 14 shard, copertura 60/60,
+  massimo 10.680 s, 205,866667 core-ore (211,466667 col margine); la mia forza bruta da' lo stesso minimo (14 shard, 92.640 s).
+  14 comandi = 14 shard; 10 righe `sbatch` inviate = argv pubblicati; catena `afterok` ridge, fit 01...09.
+- Su Leonardo: checkout dei budget a ec221a6 pulito, `CODE_DIR` ad aef665b pulito, piano risorse `92726f54…`, `main` canonico non
+  toccato. Ridge 63626871 COMPLETED in 289 s. Fit 01 in corso: stesse iterazioni del benchmark (212, 313, 494, 1.135), tempi al 96 %
+  con `login08` a carico 235 su 128 CPU. Sequenza dei gate rispettata (S8 v2 prima del primo score, tetto 310 registrato, piano
+  pubblicato prima degli invii). Consumato 29,016111 core-ore alle 22:07; al piu' 247,75 contro 310.
+- Note operative N-1...N-3 nella voce della sezione 2; testo per GPT in fondo alla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8752,3 +8774,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   modifico. Per GPT, al prossimo giro: il test dovrebbe accettare entrambi gli stati.
 - Scostamento dal prontuario: nel submitter uso `--timeout 480` invece di 600. Il mio strumento chiude un comando dopo 10 minuti e
   un'interruzione a meta' lascerebbe una prenotazione ambigua.
+
+### 2026-11-05 | Claude | Review 9 scaling: nessun blocco; N-1 fit 10-14 da accodare prima che il fit 09 esca dallo scheduler, N-2 QoS seriale piena e condivisa con la linea 2, N-3 spazio in $WORK
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`. Niente da fermare o da rifare.
+- **N-1:** i cinque comandi rimasti dipendono ciascuno dal fit precedente; con `MinJobAge = 30 sec` un job concluso non puo' piu' fare
+  da dipendenza, quindi vanno accodati mentre il fit 09 e' ancora in coda, altrimenti serve l'argv emendato (GPT lo ha scritto nella
+  `dependency_note`). Senza monitor in background la catena si ferma dopo il fit 09: stima mia fra le 6:30 e le 10:30 del 06/11,
+  attese in coda escluse; restano al massimo 13 ore di walltime da accodare.
+- **N-2 (coordinamento):** alle 22:07 la QoS `lrd_all_serial` aveva 10 job dell'utente su 10, nove dello scaling e
+  `LONG-checkout-extract-20261105` della linea 2 fermo per il limite di 8 CPU per utente. Finche' la catena gira, ogni job seriale
+  delle altre linee aspetta la fine del fit in corso (fino a 3 ore) e ogni posto liberato e' conteso. Con
+  `DependencyParameters = kill_invalid_depend` un fit fallito fa cancellare allo scheduler il resto della catena.
+- **N-3:** la ridge ha scritto 1,3 GB in `$WORK` (tre file di predizioni da 439 MB); progetto a 989,3G su 1T alle 22:04, circa
+  34,7 GiB liberi. Dimensione degli OOF dei fit non ancora misurabile (primo shard in corso).
