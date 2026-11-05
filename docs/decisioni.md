@@ -6251,3 +6251,12 @@ immutate. Audit finale indipendente evalidatori runtime passati;102sorgenti inva
 Pin A4 aggiornati in ordine,110sorgenti valutativi invariati. Nuovi percorsi eID liberi.
 Tetto22GPUh/176,333333coreh checkout incluso; submittercomune,5000+19618afterok,
 tempi01:30/04:00 espliciti. Dettagli in docs/logsquare_training_execution_20261105.md.
+
+### Invii T100-LQ corretto — 05/11/2026, 15:19 CET
+
+Runtime26cf367364f39778e019a53fba3529847c740b5e verificato su origin/Leonardo;
+checkout63592939 COMPLETED0:0/24s (0,013333coreh), hash e sola lettura verificati.
+Training63593091 (5000,1h30) e63593128 (19618,4h,afterok63593091) accettati tramite
+submitter/ledgercomuni. Snapshot:PENDING Priority/Dependency. Stessa ricetta e dose,
+nessun nuovo consenso o monitor. Tetto22GPUh/176,333333coreh checkout incluso.
+Ricevute conservate; nessun risultato training né estrazione in questo momento.

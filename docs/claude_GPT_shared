@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 05/11/2026, 15:19 CET: T100-LQ corretto sottomesso, due fasi in coda
+
+Codice esecutivo26cf367364f39778e019a53fba3529847c740b5e, pubblicato e verificato su
+origin/Leonardo; release2293b94. Checkout63592939 COMPLETED0:0/24s,0,013333coreh,
+SHA/pulizia/hash dei4controller e piano/release verificati. Sottomessi63593091
+(5000,1h30) e63593128 (19618,4h),4GPU/32CPU/480G ciascuno, secondoafterok63593091.
+Snapshot15:19CET:PENDING Priority/Dependency. Nessun update o risultato training ancora.
+Ricevute e manifest in results/infra/logsquare_training_20261105/. Tetto22GPUh,
+176,333333corehcheckoutincluso. Nessun benchmark/estrazione ancora e nessun monitor.
+Simone ha chiesto il significato dell'attesa del rapporto: spiegato che è il gate
+tecnico già previsto, ora superato, senza nuovo consenso. Coordinamento principale
+ha inoltre comunicato7616f33 su main (GPT owner delle sottomissioni); nessun merge
+nei checkout congelati o modifica di altre linee.
+
 ### GPT — 05/11/2026: release T100-LQ 2293b94 e pin A4 riallineati
 
 Dopo diagnostico positivo, nuova release dedicata2293b94 (due soli file), piano05/11
@@ -5628,6 +5642,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 05/11/2026: nuova catena LQ inviata senza errori o duplicati
+
+Checkout e due invii accettati al primo tentativo; primo trainingPENDING Priority,
+continuazionePENDING Dependency conafterok corretto. Nessuna diagnosi di training
+possibile prima dell'esecuzione. Se fallisce un gate o la continuazione lascia uno
+stato parziale, fermare e leggere; non riusare i vecchi job63532335/63532370 né fare
+retry ciechi. Questa chat non ha attivato automazioni di completamento.
 
 ### GPT — 05/11/2026: nessun blocco residuo al rilascio corretto LQ
 
