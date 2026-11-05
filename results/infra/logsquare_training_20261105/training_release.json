@@ -1,0 +1,51 @@
+{
+  "training_approved": false,
+  "epsilon": 0.001,
+  "preflight_report_sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
+  "r1_analysis_sha256": "5a1330f518943e3396723a5f758b2882d360f3839723edb914fc48dfd990d59f",
+  "resource_proposal_sha256": "fd694da61389bf8bcfa899d02b65c0826400a25fd7392bc6ce159716199a3b57",
+  "controller_sha256": {
+    "scripts/logsquare_train.py": "136c424dcbb369b75ecfbc4690752681233089b63c7e609c7655a98b6301b5f2",
+    "scripts/slurm/logsquare_train.sbatch": "bb005017df622353d5059e9d189718ec4f02b7afafe6970a619b476e66f4ae04",
+    "scripts/logsquare_train_rank.py": "202b3f182c664d229b8585453a80afb81a20c505199e5c5d3f61894959e9682a",
+    "scripts/logsquare_initial_state.py": "8c5fae5c95b2b085227a0bf811f7f658ffdd913dd135c4e10d1d170013eaeefd"
+  },
+  "claude_review": {
+    "path": "docs/reviews/claude_review_tokenizer_logsquare_adapters_20261104.md",
+    "sha256": "097bc5b1bc23b6d8bbc27fd3783919f69abe87b40f5c73986346d89c09d8cbed"
+  },
+  "gpt_initialization_correction_review": {
+    "path": "docs/reviews/gpt_review_logsquare_initialization_fix_20261105.md",
+    "sha256": "d3e1df4a06f5cb80136eda0597b84647a9681c212026ff57f0fc577d8a88a983",
+    "bytes": 7441
+  },
+  "gpt_initialization_correction_review_commit": "92fa557a8ebee57039b5ea4d156733c2fae86e17",
+  "gpt_timeout_review": {
+    "path": "docs/reviews/gpt_review_logsquare_timeout_closed_20261105.md",
+    "sha256": "1fb8ede7a88b6fc426aaea35c5efa80fd890fbfc46a5dbd15a7cff89af56c8b5",
+    "bytes": 4279
+  },
+  "gpt_timeout_review_commit": "1dc6ded8eee8a788277994687ff3b4b162453616",
+  "initial_state_guard": {
+    "path": "results/infra/logsquare_initialization_20261105/initial_state_guard.json",
+    "sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+    "bytes": 2967
+  },
+  "initialization_diagnostic": {
+    "path": "results/infra/logsquare_initialization_20261105/completed/report.json.gz",
+    "sha256": "50611320be80ec8bf5e92de745dda1a9ebef021b17c24516d110fdc38970ccae",
+    "bytes": 202958
+  },
+  "initialization_diagnostic_readout": {
+    "path": "results/infra/logsquare_initialization_20261105/results_summary.json",
+    "sha256": "5767816ccb7b0368321d14e6c409906175f476e3e1b537a74ab7135789cfdc1e",
+    "bytes": 1607
+  },
+  "release_decision": {
+    "path": "docs/reviews/logsquare_initialization_results_20261105.md",
+    "sha256": "201a9887528e12aefb1728e64e7a78fdc1405d9ecde81a1af1814d3c3b2bfec5",
+    "bytes": 3904
+  },
+  "status": "DRAFT_READY_FOR_EXPLICIT_RELEASE",
+  "approval_scope_note": "Claude pin preserves approved recipe/adapters. GPT reviews approve the corrected guard/rank entry and timeout fix. The pinned diagnostic and readout support the explicit GPT release decision; training_approved remains false until the dedicated release commit."
+}

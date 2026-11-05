@@ -1,0 +1,40 @@
+{
+  "job": 63591184,
+  "frozen_code_sha": "1dc6ded8eee8a788277994687ff3b4b162453616",
+  "report": {
+    "path": "results/infra/logsquare_initialization_20261105/completed/report.json.gz",
+    "sha256": "50611320be80ec8bf5e92de745dda1a9ebef021b17c24516d110fdc38970ccae",
+    "bytes": 202958,
+    "original_sha256": "270ef5135d2e0d9baeddcba03ef2e60f6345c3e4fdbe11e103c9c6df6355eddf"
+  },
+  "reading": {
+    "computable": true,
+    "preflight_context_reproduces_the_reference": true,
+    "controller_context_builds_reference_tensors_with_training_gain": true,
+    "trainer_contexts_build_reference_tensors_with_training_gain": true,
+    "guard_accepts_controller_and_trainer_models": true,
+    "guard_refuses_the_preflight_context": true,
+    "controller_precheck_passes": true,
+    "four_real_ranks_verified_one_state": true,
+    "real_ranks_state_is_the_trainer_context_state": true,
+    "cause_demonstrated": true,
+    "trainer_builds_the_registered_training_state": true,
+    "fix_dry_run_passed": true,
+    "informative_controller_one_thread": {
+      "diagnostic_classification": "only_gain_substitution_recovers_exact_hash",
+      "gain_ulps": {
+        "from_preflight_reference": -1,
+        "from_historical_training": 0
+      }
+    },
+    "training_authorized_by_reading": false
+  },
+  "all_six_contexts_returned_zero": true,
+  "all_original_file_hashes_verified": true,
+  "diagnostic_elapsed_seconds": 56,
+  "gpu_hours": 0.06222222222222222,
+  "core_hours": 0.49777777777777776,
+  "checkout_core_hours": 0.025555555555555557,
+  "total_core_hours": 0.5233333333333333,
+  "training_started": false
+}

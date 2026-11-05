@@ -6229,3 +6229,16 @@ pulito e hash dei file critici verificati. Diagnostico63591184 RUNNING dalle14:5
 completo era uscito dalla tabella attiva; gate soddisfatto per verifica indipendente,
 stesso ID logico con --dopo-rifiuto e senza afterok. Ricevute e verifica conservate.
 Nessun training avviato: si leggono prima i tre esiti prefissati della diagnostica.
+
+### 05/11/2026 — Diagnostica LQ positiva e decisione esplicita di rilascio
+
+63591184 COMPLETED0:0/56s, tutti e tre i criteri veri e confermati da ricalcolo
+indipendente.25file verificati per SHA;10costruzioni,268tensori identici e solo gain
+diverso di1ULP;4rank attestano lo stato previsto, nessun update o timeout. Tranche:
+0,062222GPUh/0,523333coreh checkout incluso. Rapporto e consuntivo archiviati.
+
+GPT approva il seguito già autorizzato: stessa ricetta T100-LQ e stessa dose,
+nuovi piano/release,4hash controller eguard, pin del rapporto/lettura. Prima del
+lancio nuovo checkout e gate finale; vecchi piani/artefatti intatti. Stima16,7052GPUh,
+tetto22GPUh/176coreh più0,333333corehcheckout. Decisione e limiti storici in
+docs/reviews/logsquare_initialization_results_20261105.md. Nessuna loss nuova o monitor.
