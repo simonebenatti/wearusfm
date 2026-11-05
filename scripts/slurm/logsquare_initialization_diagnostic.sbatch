@@ -13,8 +13,10 @@
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_initialization_diagnostic_%j.out
 
 # Diagnostic only: five fresh Python processes, CPU construction and CUDA copy;
-# then the production fresh-phase command under torchrun with --verify-only:
-# four ranks build and verify their student and stop inside the constructor.
+# then the corrected launch up to the student's construction: the controller
+# pre-check and the production fresh-phase command under torchrun with
+# --verify-only. Four ranks build and verify their student and stop inside the
+# constructor.
 # No model reaches the trainer: no DDP wrapper, data forward, optimizer or training;
 # only constructor synthetic calibration. No training restart here.
 # 4 GPUs preserve the failed controller's allocation context; the construction

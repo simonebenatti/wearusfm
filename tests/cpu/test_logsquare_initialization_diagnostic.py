@@ -447,8 +447,28 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
         Path(command[command.index('--out-dir') + 1]).mkdir()
         return (1 if mode == 'rejected' else 0, mode == 'timeout')
     monkeypatch.setattr(D, 'run_bounded', torchrun)
+    # The controller's pre-check builds the real model: on this machine it is refused (another platform, other
+    # tensors), which must be recorded without stopping the ranks. For the accepted case the real model is still
+    # built and only the verdict of the controller's guard is replaced.
+    if mode == 'passed':
+        original_import = D.import_file
+        def imported(relative, name):
+            module = original_import(relative, name)
+            if relative == 'scripts/logsquare_train.py':
+                monkeypatch.setattr(module.G, 'verify', lambda state, guard, context: {
+                    'context': context, 'classification': D.G.PASSED, 'passed': True, 'tensors': len(state) - 1})
+            return module
+        monkeypatch.setattr(D, 'import_file', imported)
     result = D.rank_entry_child(plan_path, 'a' * 40, workspace)
     command = seen['command']
+    precheck = result['controller_precheck']
+    if mode == 'passed':
+        assert precheck['passed'] is True and precheck['classification'] == D.G.PASSED and precheck['tensors'] == 269
+        assert precheck['context'] == 'controller pre-check, temporary CPU model' and 'temporary model' in precheck['scope']
+    else:
+        assert precheck['passed'] is False and precheck['classification'] == D.G.OTHER_TENSORS
+        assert precheck['message'].startswith('fresh shared initialization differs from historical T100-L: ')
+        assert len(precheck['localization']['per_tensor']) == precheck['tensors']
     # The controller's own command for the fresh phase, with its production allocation; only the directories are the
     # diagnostic's, and the one added word is the switch that keeps every model away from the trainer.
     controller = D.import_file('scripts/logsquare_train.py', 'logsquare_diagnostic_test_controller')
@@ -494,6 +514,7 @@ def reading_rows():
     return {'preflight': {'arms': {'T100-L': row(True, 0, 1), 'T100-LQ': row(True, 0, 1, D.G.PREFLIGHT_STATE)}},
             'controller': training(), 'trainer': training(), 'trainer_rank0': training(), 'controller_threads1': training(),
             D.RANK_VARIANT: {'torchrun_returncode': 0, 'run_dir_entries': [],
+                             'controller_precheck': {'passed': True, 'classification': D.G.PASSED},
                              'attestation': {'passed': True, 'shared_sha256': 'b' * 64, 'classification': D.G.PASSED}}}
 
 
@@ -519,6 +540,8 @@ def test_reading_states_cause_trained_state_and_dry_run_and_never_authorizes():
     (lambda v: v['trainer']['arms']['T100-L'].update(hypothetical_pinned_gain_matches_historical=False), True, False, True),
     # The guard refuses a trainer-context model.
     (lambda v: v['trainer']['arms']['T100-LQ']['guard'].update(passed=False), True, True, False),
+    # The controller pre-check of the corrected launch refuses its temporary model.
+    (lambda v: v[D.RANK_VARIANT]['controller_precheck'].update(passed=False), True, True, False),
     # The real ranks: refused records, a non-zero launcher, something written by the trainer, or another state.
     (lambda v: v[D.RANK_VARIANT]['attestation'].update(passed=False), True, True, False),
     (lambda v: v[D.RANK_VARIANT].update(torchrun_returncode=1), True, True, False),
@@ -542,6 +565,13 @@ def test_reading_needs_every_context(broken):
     assert result == {'computable': False, 'reason': result['reason'], 'cause_demonstrated': False,
                       'trainer_builds_the_registered_training_state': False, 'fix_dry_run_passed': False,
                       'training_authorized_by_reading': False}
+    assert 'failed contexts: ' + (D.RANK_VARIANT if broken == 'rank' else broken) in result['reason']
+    # A context that reported an error gives no reading even when every field of the reading is present.
+    variants = reading_rows()
+    variants[D.RANK_VARIANT]['error'] = 'torchrun timed out'
+    assert D.reading(variants)['computable'] is False
+    del variants['trainer']
+    assert 'trainer' in D.reading(variants)['reason']
 
 
 def test_published_plan_fixes_the_reading_resources_and_stays_unapproved():

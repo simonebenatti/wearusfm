@@ -305,15 +305,17 @@ def run_bounded(command, seconds, stdout_path, stderr_path):
 
 
 def rank_entry_child(plan_path, expected_code, workspace):
-    """The production fresh-phase command with --verify-only: four real ranks, nothing trained.
+    """The corrected launch up to the student's construction: nothing is trained.
 
-    The command is the controller's own (command_for), with the production
-    allocation, guard and trainer arguments; only the directories are the
-    diagnostic's and --verify-only is added. Every rank imports the production
-    entry, joins the process group, reads the same inputs, builds its student
-    through the trainer's own code path and verifies it; the constructor then
-    raises, so the trainer never receives a model. The controller's own reader
-    judges the four records.
+    As the controller does: its pre-check on a temporary CPU model, then its own
+    fresh-phase command (command_for) with the production allocation, guard and
+    trainer arguments; only the directories are the diagnostic's and
+    --verify-only is added. Every rank imports the production entry, joins the
+    process group, reads the same inputs, builds its student through the
+    trainer's own code path and verifies it; the constructor then raises, so
+    the trainer never receives a model. The controller's own reader judges the
+    four records. Unlike the controller, a refused pre-check does not stop the
+    ranks: both observations are recorded.
     """
     code_identity(expected_code)
     plan, candidate, comparison, expected, guard = validate_plan(plan_path)
@@ -326,6 +328,11 @@ def rank_entry_child(plan_path, expected_code, workspace):
     require(cli.R.config_to_dict(cfg) == candidate, 'CLI candidate differs from pinned recipe')
     run_dir, records = workspace / (RANK_VARIANT + '_run'), workspace / (RANK_VARIANT + '_initial_state')
     require(workspace.is_dir() and not run_dir.exists() and not records.exists(), 'new rank-entry workspace required')
+    require(guard['new_parameter']['shape'] == [cfg.model.dim, 64], 'guard written for another model width')
+    try:
+        precheck = {'passed': True, **controller.verify_initialization(cfg, guard)}
+    except controller.G.InitialStateError as error:
+        precheck = {'passed': False, 'message': str(error), **error.record}
     records.mkdir()
     pin = {'path': str((REPO / plan['initial_state_guard']['path']).resolve()), 'sha256': plan['initial_state_guard']['sha256']}
     command = controller.command_for(comparison, cfg, run_dir, 5000, training['allocations']['5000']['walltime_seconds'],
@@ -338,7 +345,8 @@ def rank_entry_child(plan_path, expected_code, workspace):
               'scope': ('production fresh-phase command with --verify-only under torchrun: four ranks, process group, trainer '
                         'inputs and model construction; the constructor raises after verification, so no model reaches the '
                         'trainer: no teacher, optimizer, DDP wrapper, data forward, update or checkpoint'),
-              'expected': expected, 'command': command, 'torchrun_returncode': returncode, 'torchrun_timed_out': timed_out,
+              'expected': expected, 'controller_precheck': precheck, 'command': command,
+              'torchrun_returncode': returncode, 'torchrun_timed_out': timed_out,
               'torchrun_stderr_tail': outputs[1].read_text(errors='replace')[-4000:], 'ranks': {}}
     for rank in range(4):
         path = records / f'rank{rank}.json'
@@ -368,7 +376,9 @@ def reading(variants):
         return all(row['hypothetical_pinned_gain_matches_historical'] and not row['original_matches_historical'] and
                    row['gain_ulps']['from_historical_training'] == 0 for row in rows(variant))
 
+    failed = [name for name in VARIANTS if 'error' in variants.get(name, {'error': 'missing'})]
     try:
+        require(not failed, 'failed contexts: ' + ', '.join(failed))
         entry = variants[RANK_VARIANT]
         facts = {
             'preflight_context_reproduces_the_reference': all(row['original_matches_historical'] and
@@ -380,6 +390,7 @@ def reading(variants):
                                                                for variant in ('controller', 'trainer', 'trainer_rank0')),
             'guard_refuses_the_preflight_context': variants['preflight']['arms']['T100-LQ']['guard']['classification'] ==
                                                    G.PREFLIGHT_STATE,
+            'controller_precheck_passes': entry['controller_precheck']['passed'] is True,
             'four_real_ranks_verified_one_state': entry['attestation']['passed'] is True and entry['torchrun_returncode'] == 0 and
                                                   entry['run_dir_entries'] == [],
         }
@@ -394,6 +405,7 @@ def reading(variants):
                 # What the unchanged trainer builds, for T100-L as for T100-LQ: the state the correction requires.
                 'trainer_builds_the_registered_training_state': facts['trainer_contexts_build_reference_tensors_with_training_gain'],
                 'fix_dry_run_passed': facts['guard_accepts_controller_and_trainer_models'] and
+                                      facts['controller_precheck_passes'] and
                                       facts['real_ranks_state_is_the_trainer_context_state'],
                 'informative_controller_one_thread': {'diagnostic_classification': threads['diagnostic_classification'],
                                                       'gain_ulps': threads['gain_ulps']},
