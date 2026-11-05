@@ -5756,6 +5756,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Simone da registrare in `decisioni.md`, R-2 ancora aperta. Simone: «mandato». In attesa della risposta di GPT: frase su R-2,
   registrazione della conferma, stati convergenti e lancio della catena da parte sua. Punta del ramo di GPT alle 12:10: ancora
   90ffcd4. Nessun lancio da parte mia.
+- Seguito (05/11, 18:52 CET), alla ripresa della chat (Simone: «ecco ho ripreso»): controllo in sola lettura, nessuna review
+  nuova. Dopo 90ffcd4 GPT ha pubblicato 02f3de8, 1359b92, 4f32cdb e 19c3166; `git diff --stat 90ffcd4 19c3166 -- src scripts
+  tests` e' vuoto, quindi il codice dei fit (checkout 1359b92) e' quello che ho approvato. In `plan.json` di 1359b92:
+  `review.commit` ceaf95b, `budget_authorization` con la mia domanda e la risposta di Simone alla lettera (11:59, 304,5 GPU-ore,
+  senza tentativi aggiuntivi), `matrix_submission_gate` tutto-o-niente sui tre regimi; la conferma e' anche in `decisioni.md`.
+  R-2 e R-3 chiuse da GPT; il protocollo recepisce N-1, N-2 e N-3 e rinvia N-5. Benchmark 63579657: rallentamento 1,0 nei tre
+  regimi, D = 4,2 s, proiezioni 17.551 / 50.701 / 51.027 s, uguali al mio ricalcolo con lo stesso D. `sacct` alle 18:46: frozen
+  C0 dei quattro fold COMPLETED in 3:17-3:21 h (attesa 3,65 h); frozen C1 RUNNING dalle 16:20-16:23; fine-tuning e scratch C0
+  RUNNING dalle 13:02-13:14; gli otto C1 di fine-tuning e scratch PENDING per dipendenza. Consumo fino alle 18:46: circa 68,5
+  GPU-ore su 304,5 (somma mia dei tempi di `sacct`, una GPU per job). Non ho letto i log dei fit: il controllo operativo e' di
+  GPT. Nessun lancio da parte mia.
 
 ### 2026-11-05 | Claude | Correzione dell'arresto T100-LQ all'inizializzazione: stato verificato sul modello che ogni rank addestra, diagnostica completata con prova a secco; nessun job (compito di GPT inoltrato da Simone)
 - Richiesta: Simone, «il controllo pare andato male, ora te o faccio sistemare», con il testo di GPT: «Ti affido diagnosi e correzione del blocco di
@@ -8175,6 +8186,9 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Decide Simone, con la cifra davanti: tetto 304,5 GPU-ore, atteso circa 205.
 - Seguito (05/11, 11:59 CET): **R-3 confermata da Simone** («Confermo il tetto», in risposta a «Confermi il tetto di 304,5
   GPU-ore per il confronto EPN a 15 epoche?»); manca solo la registrazione di GPT in `decisioni.md`. **Resta aperta R-2.**
+- Seguito (05/11, 18:52 CET): **R-2 e R-3 chiuse da GPT in 02f3de8** (regola tutto-o-niente sui tre regimi; conferma di Simone
+  registrata alla lettera in `plan.json`, nel protocollo e in `decisioni.md`). N-1, N-2 e N-3 recepite, N-5 rinviata. Il codice
+  dei 24 fit (checkout 1359b92) coincide con 90ffcd4 in `src`, `scripts` e `tests`. Nessun problema nuovo.
 
 ### 2026-11-05 | Claude | Correzione T100-LQ: lo stato esatto del preflight ora e' rifiutato (punto da decidere in review); limiti della prova locale; nota M1 errata
 - **Punto da decidere (GPT):** il guard accetta lo stato del training storico (tensori del riferimento, gain …7021) e rifiuta lo stato esatto
