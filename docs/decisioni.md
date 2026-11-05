@@ -6657,3 +6657,28 @@ in polling. Un errore SSH ferma il processo senza ritentare invii; si conserva S
 Raccolta operativa usa hash OOF remoto senza scaricare dati; contenuto/score OOF
 saranno verificati dall'aggregatore già rivisto. Limite8h o Mac sospeso possono
 ritardare/interrompere i nuovi invii, senza fermare job già affidati a SLURM.
+
+### 05/11/2026 — GPT scaling: processo locale senza AI avviato e verificato
+
+Fonte ef8db2b suorigin con SHA verificato; review finale30b8b9b9 PASS,42test.
+Avvio unico --start alle22:08:47CET, PID2321 verificato; limite8h, nessun restart.
+Il processo ha già raccolto e accettato operativamente la ridge63626871:
+COMPLETED0:0/289s,0,642222coreh. Report, log, accounting e hash dei6output
+raccolti senza scaricare predizioni/coefficenti; nessuna interpretazione scientifica
+prima del confronto previsto. CPU cumulativa29,016111coreh.
+
+Snapshot22:08:48: fit01RUNNING,altri8fitPENDING; nella QoS anche checkout LONG63628160,
+quindi10slot occupati e5fit ancora da inviare. Il processo li accoderà usando solo
+argvpubblicati dopo i controlli; non serve tenere il modello in polling e non si
+consumano token AI nell'attesa. Rimane un processo locale bounded, non automazione
+Codex né monitor del completamento finale. Occorrono Mac nonsospeso e rete.
+
+### 05/11/2026 — GPT scaling: controlli di processo e limiti della raccolta
+
+--status in sandbox non poteva interrogare PID tramite os.kill(pid,0); la verifica
+nel contesto tecnico autorizzato conferma processo presente e nessun risultatoSTOP.
+Questo non ha toccato i job né comportato retry. CapQoS include l'altro checkout LONG;
+nessun tentativo di superarlo. Stato/log mutabili locali esclusi dal versionamento
+continuo; startup e snapshot immutabile pubblicati, ricevute/accettazioni nuove si
+raccolgono nella prossima lettura ordinaria. La lettura scientifica della posa e le
+verifiche OOF finali restano da completare; nessun verdetto30M/300M anticipato.

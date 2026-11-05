@@ -15,7 +15,7 @@
   "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "After completed job acceptance, replenish only free serial queue slots with exact remaining fit10..14 argv; stop first failure. Then aggregate and compare when reports are complete.",
+  "next": "Non-AI local process completes only five remaining fit submissions after accepting completed evidence/free serial slots. No LLM polling. Later normal review collects final probe outputs, aggregates and compares.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -78,8 +78,8 @@
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 28.37388888888889,
-  "last_checked_at": "2026-11-05T21:48:58.035334",
+  "cpu_actual_core_hours_completed_so_far": 29.016111111111112,
+  "last_checked_at": "2026-11-05T21:09:53.621141Z",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,13 +87,13 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "FITS_FIRST_TRANCHE_SUBMITTED",
+  "status": "LOCAL_NON_AI_RUNNER_ACTIVE_FOR_FIVE_REMAINING_SUBMISSIONS",
   "classification_benchmark_reports_complete": 15,
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 95,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
   "fit_cap_core_hours": 240,
-  "active_jobs_in_this_cpu_chain": 10,
+  "active_jobs_in_this_cpu_chain": 9,
   "pose_ridge_blocked_by_chain_stop": false,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
@@ -245,5 +245,11 @@
       "submitted_at": "2026-11-05T21:48:36+01:00",
       "receipt_dispatcher_verified": true
     }
-  ]
+  ],
+  "pose_ridge_completed": true,
+  "pose_ridge_operational_accepted": true,
+  "local_runner_pid": 2321,
+  "local_runner_started_utc": "2026-11-05T21:08:47.402380+00:00",
+  "local_runner_deadline_seconds": 28800,
+  "local_bounded_submission_process": true
 }
