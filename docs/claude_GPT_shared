@@ -5653,6 +5653,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   fit EPN: 4 COMPLETED (frozen C0), 12 RUNNING (frozen C1, finetune C0, scratch C0), 8 PENDING; continuazione 63525803/05/09 PENDING.
   Specchietto `docs/coordinamento_review_claude_20261104.md` riscritto alle 21:19. Nessun job.
 
+### 2026-11-05 | Claude | Diagnostica dell'arresto T100-LQ (GPT 4d5a3ef): APPROVATA per il solo diagnostico, R1 da scrivere prima del lancio; guadagno dei checkpoint storici diverso dal preflight (richiesta inoltrata da Simone)
+- Richiesta: prompt di GPT `docs/prompt_claude_logsquare_initialization_20261105.md` inoltrato da Simone (job 63532335 FAILED prima del training,
+  63532370 CANCELLED). Review in `docs/reviews/claude_review_logsquare_initialization_diagnostic_20261105.md`. Nessun lancio mio.
+- Metodo: checkout temporaneo detached (poi rimosso); letti documento del guasto, evidenze, piano, risorse, script, launcher, test. **Test con il
+  comando di GPT: 56 passati** (4,31 s); `bash -n` pulito; `validate_plan` su copia con soli stato/`cuda_required` cambiati: pin e 102 sorgenti
+  ok, piano REVIEW_REQUIRED rifiutato dal runtime. **Smoke locale replicato** (cinque processi nuovi, moduli reali, CPU): completo, stessi valori
+  di `local_smoke.json`, 269 tensori condivisi identici fra le varianti, checkout pulito. Diff vuoto rispetto al checkout fallito b2934b0 su
+  controller, launcher, preflight, trainer e `src/`: la vecchia soluzione non e' stata applicata. Contesti reali confrontati nel codice
+  (`verify_initialization`, `create_arms`, `train_jepa.main`, `run.py:1333-1337`, `_calibrate_gain`, `pairing._update`). Ramo CUDA non eseguibile qui.
+- **Verdetto: APPROVATO per il solo diagnostico**, nessun blocco: isolamento dei cinque processi e ordine delle costruzioni conformi ai contesti
+  reali (rank0 con `count_parameters` prima del seme), pin e confronti senza tolleranza ne' hash nuovi, test adeguati, risorse 0,666667 GPU-ore /
+  5,666667 core-ore con il checkout, limiti dichiarati.
+- **Evidenza dal repository:** guadagno nei checkpoint dei training storici (ricevute di valutazione, `checkpoint_guard.fe_gain`) 548,6939187567021
+  per T100-L/G e 982,4250666375573 per T25-L, a 5.000 e 19.618; nel preflight (NumPy prima di Torch) 548,6939187567023 e 982,425066637557.
+  Per T25-L sono esattamente i due valori della diagnostica del 14/10 (60561493: sklearn/scipy per primi contro Torch per primo). Il trainer e il
+  controller importano Torch per primo. Dettaglio e conseguenze nella voce di sezione 2.
+- **R1 (prima del lancio, solo testo):** scrivere nel piano o in `decisioni.md` i due riferimenti (stato del preflight `38cb4cce…`/…7023 e guadagno del
+  run T100-L …7021) e la lettura per esito: atteso `preflight` = match esatto e `controller`/`controller_threads1`/`trainer`/`trainer_rank0` =
+  guadagno …7021 con `only_gain_substitution_recovers_exact_hash`; controller diverso dal trainer, preflight che non ritrova lo SHA, o un tensore
+  diverso dal guadagno = stop senza conclusione. Il rapporto ha gia' i campi: non serve codice.
+- Note minori facoltative: M1 `torch.cuda.is_available()` prima della costruzione (il controller fallito non interrogava CUDA); M2 `set_device(0)`
+  replicabile nelle varianti trainer (`run.py:1260`), NCCL limite dichiarato; M3 conservare le osservazioni CPU se il ramo CUDA fallisce; M4 240G
+  contro i 480G del job fallito, irrilevante per i numeri.
+- Elementi per la correzione (decide GPT dopo la misura): gate esatto = tensori diversi dal guadagno uguali al preflight + guadagno uguale bit a bit
+  al buffer dei checkpoint T100-L; attestazione dello stato addestrato dal buffer del checkpoint a 5.000; verifica a priori in un processo con gli
+  import del trainer.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -7790,3 +7817,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   di training: qualunque modifica a `scaling_train.py`, `scaling_preflight.py`, `scaling_production_memory.py` o ai sei valutatori prima del
   lancio dei 5.000 invalida l'evidenza S3 (4 GPU-ore) o la readiness; da dichiarare nel piano (file congelati fino al lancio, o S3 da
   rieseguire), oppure confrontare i pin del piano con gli hash registrati nel report S3. Nessuna correzione richiesta prima di S3.
+
+### 2026-11-05 | Claude | Il riferimento `38cb4cce…` del gate LQ e' lo stato del preflight, non l'inizializzazione del run storico T100-L; limite della mia review 1d6f96a
+- **Fatto (dal repository, nessun job):** i checkpoint dei training storici registrano `fe_gain` 548,6939187567021 (T100-L, T100-G) e
+  982,4250666375573 (T25-L), a 5.000 e 19.618 (`results/infra/tokenizer_evaluation_20261103/completed_*/…/receipt_summary.json`,
+  `checkpoint_guard.fe_gain`, letto dal buffer del checkpoint in `tokenizer_evaluation.py:109-110`). Il preflight del 03/11 e il collaudo LQ del
+  04/11 registrano 548,6939187567023 e 982,425066637557. Distanza 1 e 2 ULP. I due valori di T25-L coincidono con quelli della diagnostica del
+  14/10 (60561493): scipy/sklearn prima di Torch contro Torch per primo. I preflight importano NumPy prima di Torch; `train_jepa.py` e
+  `logsquare_train.py` importano Torch per primo.
+- **Conseguenza (mia lettura, da confermare con la diagnostica di GPT):** `shared_initial_sha256 = 38cb4cce…` non e' lo stato da cui e' partito il
+  training T100-L. Il controller, nel contesto del trainer, non puo' ritrovarlo; riportare il solo modello temporaneo del controller a quello SHA
+  farebbe passare il gate su uno stato che ne' il run storico ne' il trainer LQ usano. L'appaiamento con il run addestrato sta nel contesto del
+  trainer (guadagno …7021).
+- **Limite mio:** in 1d6f96a ho approvato `verify_initialization` contro lo SHA del preflight senza verificare la riproducibilita' di quel
+  riferimento nel contesto d'import del controller e del trainer sul cluster, pur essendo noto il precedente del 14/10. I test CPU non lo mostrano:
+  sul Mac l'ordine degli import non cambia il guadagno. Costo del guasto 0,023333 GPU-ore, nessun dato scientifico toccato.
+- Seguito: R1 e gli elementi per la correzione sono nella review `docs/reviews/claude_review_logsquare_initialization_diagnostic_20261105.md`;
+  la correzione e il nuovo riferimento li decide GPT dopo la misura. Nessun lancio mio.
