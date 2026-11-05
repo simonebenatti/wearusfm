@@ -16,69 +16,87 @@
   "cpu_total_hard_cap": 180,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Collect three classification benchmark jobs; freeze measured fit budgets, publish and deploy before fits. No scientific score exists yet.",
+  "next": "Await Claude review of timeout evidence and proposed targeted EPN/UCI recovery; no new job or downstream fit before reviewed operational amendment.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
       "job_id": 63591791,
       "stage": "pose-validate",
       "cell": null,
-      "core_hours_cap": 1.0
+      "core_hours_cap": 1.0,
+      "state": "COMPLETED0:0"
     },
     {
       "id": "SCALING-pose-bench-30M-20261105",
       "job_id": 63592426,
       "stage": "pose-benchmark",
       "cell": "T100-G-30M-natural",
-      "core_hours_cap": 1.3333333333333333
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
     },
     {
       "id": "SCALING-pose-bench-300M-20261105",
       "job_id": 63592917,
       "stage": "pose-benchmark",
       "cell": "T100-G-300M-natural",
-      "core_hours_cap": 1.3333333333333333
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
     },
     {
       "id": "SCALING-pose-bench-matched-20261105",
       "job_id": 63593029,
       "stage": "pose-benchmark",
       "cell": "T100-G-300M-matched",
-      "core_hours_cap": 1.3333333333333333
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
     },
     {
       "id": "SCALING-probe-bench-30M-20261105",
       "job_id": 63593262,
       "stage": "probe-benchmark",
       "cell": "T100-G-30M-natural",
-      "core_hours_cap": 6.0
+      "core_hours_cap": 6.0,
+      "state": "COMPLETED0:0"
     },
     {
       "id": "SCALING-probe-bench-300M-20261105",
       "job_id": 63593508,
       "stage": "probe-benchmark",
       "cell": "T100-G-300M-natural",
-      "core_hours_cap": 12.0
+      "core_hours_cap": 12.0,
+      "state": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)"
     },
     {
       "id": "SCALING-probe-bench-matched-20261105",
       "job_id": 63593593,
       "stage": "probe-benchmark",
       "cell": "T100-G-300M-matched",
-      "core_hours_cap": 6.0
+      "core_hours_cap": 6.0,
+      "state": "COMPLETED0:0"
     }
   ],
   "pose_benchmarks_completed_accepted": 3,
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 0.2588888888888889,
-  "last_checked_at": "2026-11-05T15:36:50+01:00",
+  "cpu_actual_core_hours_completed_so_far": 22.027777777777782,
+  "last_checked_at": "2026-11-05T18:44:27+01:00",
   "classification_benchmark_states": {
-    "63593262": "RUNNING",
-    "63593508": "PENDING (QOSMaxCpuPerUserLimit)",
-    "63593593": "PENDING (QOSMaxCpuPerUserLimit)"
+    "63593262": "COMPLETED0:0",
+    "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
+    "63593593": "COMPLETED0:0"
   },
   "pose_budget_prepared": true,
-  "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105.json"
+  "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105.json",
+  "status": "HALTED_TIMEOUT_AND_INSUFFICIENT_FIT_CAP",
+  "classification_benchmark_reports_complete": 13,
+  "classification_benchmark_reports_expected": 15,
+  "completed_benchmark_fits_converged": 83,
+  "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
+  "fit_cap_core_hours": 136,
+  "fit_cap_infeasible": true,
+  "active_jobs_in_this_cpu_chain": 0,
+  "pose_ridge_blocked_by_chain_stop": true,
+  "retry_submitted": false,
+  "claude_review_requested_by_user": true
 }

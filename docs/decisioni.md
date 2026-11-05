@@ -6355,3 +6355,39 @@ cumulativo≤180coreh. Nessun monitor automatico o nuovo consenso per la catena5
 Una prova locale del submitter è stata impedita dal sandbox prima della creazione
 della prenotazione; eseguita poi con permesso tecnico, un solo job per ID.
 Nessun job fallito/duplicato o retry scientifico. Nessuno score downstream letto.
+
+### 05/11/2026 — GPT scaling: TIMEOUT raccolto, 13 benchmark conservati; recupero alla review Claude
+
+Riferimenti: piano76a3126, runtime aef665ba invariato. Alla ripresa delle18:44:27,
+63593262(30M) e63593593(matched) COMPLETED0:0,2018/2194s;
+63593508(300M naturale) TIMEOUT,5584s su5400, batchCANCELLED0:15.
+Raccolti30file originali con manifest/hash:13benchmark,14audit,3log; raw sacct
+accanto a ogni accounting. Consuntivo tre benchmark21,768889coreh; CPU-only
+cumulativo22,027778coreh. Nessun fit downstream, retry, nuovo job o monitor.
+
+Audit offline riproducibile e review indipendente concordi:13report coerenti,
+83fit registrati convergenti; EPN300M parziale con5C, UCI300M non iniziato.
+Checkpoint5k e14cache restano acquisiti, nessun training/estrazione da ripetere.
+Diagnosi docs/reviews/scaling_cpu_timeout_20261105.md e review del critico;
+artefatti in cpu_readers_20261105/probe_benchmark. Simone chiede log e prompt,
+poi ripartenza dopo convergenza con Claude: docs/prompt_claude_scaling_cpu_recovery_20261105.md.
+Proposti soltanto recupero EPN/UCI e correzione risorse, nessun invio rilasciato.
+
+
+### 05/11/2026 — GPT scaling: STOP per TIMEOUT e preventivo fit insufficiente
+
+O-6/O-8 applicate all'intera catena, inclusa posa già dimensionata660s.
+Il parentTIMEOUT resta fallito anche con ExitCode0:0. RSS3,839GiB su30GiB,
+nessun OOM/traceback e nessun fallimento di convergenza nei fit terminati:
+nessuna conclusione scientifica sul300M. Il consuntivo include5584s e il
+fallimento; non troncare5400 né sommare parent e batch.
+
+Secondo blocco: formula congelata sui soli13report completi richiede almeno
+148,134869coreh, senza overhead/shard e senzaEPN/UCI300M: cap136 già impossibile.
+Errore di preventivo operativo, non motivo per ridurre griglia/fold/tolleranze.
+I3report completi del parent fallito non sanano il job; riuso solo con decisione
+esplicita revisionata, audit parziale non promosso a report. Proposta EPN120min
++UCI10min,8CPU/30GiB,17,333333coreh/zeroGPU, ancora da rivedere e implementare;
+poi budget fit completo e cumulativo da pubblicare, nessun nuovo totale inventato.
+S8/19.618 non autorizzato; impatto della nuova evidenza sul budget condizionale
+da dichiarare prima degli score. Codice numerico e criteri scientifici invariati.

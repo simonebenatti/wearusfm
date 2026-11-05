@@ -1,5 +1,13 @@
 # Lettori CPU 30M/300M a 5.000 — rilascio del 5 novembre 2026
 
+**Aggiornamento 05/11,18:44: STOP.** Il benchmark300M naturale63593508 è in
+TIMEOUT;13report su15 completi. I fit downstream non sono avviati. La formula
+applicata ai13report richiede già148,134869core-ore senza overhead né i due
+dataset mancanti, quindi supera il tetto136. Simone chiede log e review Claude
+prima della ripartenza. [Diagnosi](reviews/scaling_cpu_timeout_20261105.md),
+[prompt](prompt_claude_scaling_cpu_recovery_20261105.md). Il piano originario
+conservato sotto non autorizza nuovi invii dopo questo stop.
+
 Le cinque estrazioni sono COMPLETED 0:0; posa 300M terminata alle 14:43:18 CET.
 Dodici cache nuove e due riusate, con ricevute complete. Consuntivo estrazioni:
 4,853333 GPU-ore e 38,826667 core-ore, su tetti 8,25 e 66. Ricalcolati gli hash
@@ -73,7 +81,7 @@ prima delle tranche successive, comprendendo eventuali tentativi falliti.
 Nessun training nuovo o seguito a 19.618, nessun monitor automatico. L'esecuzione
 di questa catena è già autorizzata da Simone; non serve un ulteriore consenso.
 
-## Invii effettivi e misure al 05/11, 15:36:50 CET
+## Invii effettivi e misure al 05/11, 18:44:27 CET
 
 Piani **1bde83e**, comando checkout **26781ee**, verifica iniziale **8cdabd6**;
 SHA origin/deploy verificati. Checkout63591447 COMPLETED0:0/44s e validazione
@@ -84,17 +92,23 @@ SHA origin/deploy verificati. Checkout63591447 COMPLETED0:0/44s e validazione
 |63592426|Benchmark posa30M naturale|COMPLETED0:0,22s|
 |63592917|Benchmark posa300M naturale|COMPLETED0:0,30s|
 |63593029|Benchmark posa300M matched|COMPLETED0:0,29s|
-|63593262|Benchmark sonde30M naturale|RUNNING|
-|63593508|Benchmark sonde300M naturale|PENDING|
-|63593593|Benchmark sonde300M matched|PENDING|
+|63593262|Benchmark sonde30M naturale|COMPLETED0:0,2018s,5report|
+|63593508|Benchmark sonde300M naturale|TIMEOUT,5584s,3report completi|
+|63593593|Benchmark sonde300M matched|COMPLETED0:0,2194s,5report|
 
-Le due attese hanno reason `QOSMaxCpuPerUserLimit`. Non è un errore del modello.
+Le precedenti attese `QOSMaxCpuPerUserLimit` sono terminate. Nessun job di questa
+catena CPU è ancora attivo. Consuntivo21,768889coreh per i tre benchmark sonde,
+22,027778coreh cumulativoCPU-only, incluso il tentativo fallito. Raw sacct,
+accounting e30file originali raccolti sotto `probe_benchmark/`.
 Tre report posa accettati, runtime numerico identico a8thread e supporto corretto;
 la formula congelata deriva **660s** per il fit, entro3600. Budget misurato in
 `cpu_readers_20261105/pose_budget.json`, ancora da distribuire nel checkout budget
-prima del fit. Guard del runtime vivo e dei file ancora obbligatori.
+prima del fit. Guard del runtime vivo e dei file ancora obbligatori; lo stop
+della catena impedisce per ora anche il fit posa.
 
 Ricevute submitter di tutti i job raccolte. I tre benchmark sonde devono produrre
-quindici report completi prima di dimensionare i fit. Nessun fit, score o seguito
+quindici report completi prima di dimensionare i fit: EPN/UCI300M mancanti.
+I13report disponibili hanno già dimostrato l'insufficienza del cap136coreh.
+Nessun fit, score o seguito
 19.618 avviato. Il freeze numerico S8 condizionale è pubblicato separatamente in
 `docs/scaling_300m_continuation_budget_freeze_20261105.md`, prima degli score.
