@@ -349,7 +349,6 @@
     "partition": "lrd_all_serial",
     "node": "login08",
     "fit_and_compare_threads": 8,
-    "maximum_submitted_jobs_for_user": 10,
     "real_19618_train_only_benchmarks_required_before_fit": true,
     "5000_benchmarks_are_not19618_measurements": true,
     "old_30m_oof_reuse_is_not_assumed_to_save_budget": true,
@@ -357,7 +356,9 @@
     "stop_on_first_failure_timeout_or_runtime_gate": true,
     "no_automatic_retry": true,
     "reserve_cannot_expand_stage_caps": true,
-    "future_dispatcher_required": "The5000recovery dispatcher does not release19618 or all15benchmarks. Future endpoint-pinned wrapper requires review before use."
+    "future_dispatcher_required": "The5000recovery dispatcher does not release19618 or all15benchmarks. Future endpoint-pinned wrapper requires review before use.",
+    "maximum_submitted_jobs_per_user_in_serial_qos": 10,
+    "submitted_job_limit_qos": "lrd_all_serial"
   },
   "ceilings": {
     "additional_training_gpu_hours": 59.0,
@@ -380,5 +381,6 @@
     "bytes": 13134
   },
   "reason": "Claude review7 B3: bprod MinTRES invalid for1node; measured CPU timings invalidate180/24/136. Technical amendment before downstream scores.",
-  "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae"
+  "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
+  "conditional_budget_approved_by_simone": false
 }

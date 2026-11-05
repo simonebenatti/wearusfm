@@ -1,14 +1,14 @@
-# Recupero CPU scaling 5.000 — budget approvato, dispatcher in review
+# Recupero CPU scaling 5.000 — budget e dispatcher approvati
 
-**Stato: budget approvato da Simone il 05/11 («approvo»), dispatcher in review; nessun nuovo job inviato.** Review Claude
+**Stato: budget approvato da Simone e dispatcher approvato dalla Review Claude8 (4e6542f); correzione `/dev/stdin` applicata, invii da registrare.** Review Claude
 `1c21047c77f956a1819fe09e8520d3a36dd7a4ae` acquisita integralmente con le due voci
 originali del registro. Il recupero dei soli EPN612/UCI è approvato nell'impostazione;
-il dispatcher nuovo richiede la review prima dell'uso. Simone ha approvato il
+Review8 approva il dispatcher, subordinatamente alla correzione degli argv qui applicata. Simone ha approvato il
 tetto CPU pubblicato in4c670bd: la condizione decisionale B-1 è soddisfatta.
 
 L'approvazione riguarda310 core-ore cumulative, incluse quelle già consumate.
 Le autorizzazioni ai lanci e alle letture restano valide: nessun nuovo consenso
-ai singoli job di questo piano. Restano review del dispatcher e gate tecnici
+ai singoli job di questo piano. Restano i gate tecnici
 prima degli invii; il seguito19.618 non è autorizzato.
 
 ## B-1: inviluppo concreto
@@ -82,14 +82,18 @@ Il vecchio audit parzialeEPN resta intatto. I due report nuovi devono avere anch
    confronto nell'ordine previsto. Nessuna dipendenzaSLURM sostituisce i gate.
 
 Comandi esatti dei due recuperi in `submission_plan.json`: `--script-stdin` del
-dispatcher pubblicato/pinnato, vecchi piano e runtime remoti. Non serve un
+dispatcher pubblicato/pinnato e **`/dev/stdin` prima dello stadio** dopo le opzioni
+di sbatch; vecchi piano e runtime remoti. Questa forma è obbligatoria anche per
+fit/ridge/aggregati/confronto su stdin. La ricevuta deve riportare lo stesso
+`script_stdin_sha256` del pin pubblicato. Non serve un
 checkout per i due benchmark; budget e manifest del confronto richiedono i due
 checkout metadata già contabilizzati. Ogni output è in una nuova directory sotto
 `cpu/probe_benchmark_recovery_20261105/`, fuori dagli output del tentativo fallito.
 
-La QoS seriale consente10job sottomessi complessivi per utente e8CPU attive:
-si legge la coda dell'utente prima di ogni invio e si considerano anche le altre
-linee. Si inviano solo gli slot disponibili, verificando gli esiti prima della
+La QoS seriale consente10job sottomessi per utente **nella QoS lrd_all_serial**
+e8CPU attive. Si legge `squeue -u sbenatti -p lrd_all_serial` e si considerano
+tutte le linee nella stessa QoS, senza contare i job GPU in altre QoS. Si inviano
+solo gli slot disponibili, verificando gli esiti prima della
 tranche seguente. Nessun cambio di thread, QoS o nodo per aggirare questi limiti.
 Il recupero è sequenziale; non si accodano fit prima delle misure.
 
@@ -105,5 +109,6 @@ autorizzata. Questo emendamento precede qualsiasi fit a5.000.
 F-1 accolto nel manifest del riuso; F-2 accolto con margini scheduler; F-3 annotato
 senza cambiare runtime; F-4 conserva la regola sulla convergenza; F-5 elimina
 `cpu_reserved_core_hours_so_far` obsoleto dallo stato corrente; F-6 distingue
-review interne dalla reviewClaude7. Questa consegna richiede una nuova review
-Claude del dispatcher concreto, non attribuisce a Review7 copertura del nuovo codice.
+review interne dalla reviewClaude7. La Review8 copre il dispatcher concreto; la sua unica correzione obbligatoria
+agli argv è applicata. Review7 non viene estesa retroattivamente al nuovo codice.
+I tetti S8 v2 sono una proposta condizionale, non budget autorizzato da Simone.

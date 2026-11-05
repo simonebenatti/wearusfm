@@ -1,6 +1,6 @@
 {
   "protocol": "scaling-cpu-recovery-envelope-20261105-v1",
-  "status": "ENVELOPE_APPROVED_AWAITING_CLAUDE_DISPATCHER_REVIEW",
+  "status": "APPROVED_FOR_RECOVERY_AFTER_CLAUDE8_CORRECTION",
   "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
   "claude_review_commit": "1c21047c77f956a1819fe09e8520d3a36dd7a4ae",
   "scientific_criteria_changed": false,
@@ -12,7 +12,7 @@
   "old_cpu_envelope_core_hours": 180,
   "cpu_only_envelope_core_hours": 310,
   "simone_310_core_hour_decision_registered": true,
-  "claude_dispatcher_approval_received": false,
+  "claude_dispatcher_approval_received": true,
   "scheduler_over_time_seconds": 180,
   "scheduler_evidence": {
     "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/scheduler_review7.txt",
@@ -21,7 +21,6 @@
   },
   "shutdown_slack_not_a_requested_runtime": true,
   "actual_cpu_only_core_hours_at_amendment": 22.02777777777778,
-  "maximum_submitted_jobs_for_user": 10,
   "maximum_active_reader_cpus": 8,
   "partition": "lrd_all_serial",
   "node": "login08",
@@ -109,11 +108,12 @@
   "release_gates": [
     "Published reviewed dispatcher and policy before recovery benchmarks",
     "Original code aef665ba and plan pin unchanged; common submitter/ledger, no duplicate IDs",
-    "Live remaining submitted jobs capacity before every submit; <=10 total user jobs, no alternate QoS",
+    "Live remaining submitted capacity in lrd_all_serial QoS before every submit; <=10 submitted jobs for this user in this QoS across all lines, no alternate QoS",
     "All15 complete reports, correct parent status or explicit accepted partial-parent provenance, identical live numeric runtime",
     "All actual reports and accounting pins published before fit; same frozen formula, exact3x5x4coverage",
     "Simone numerical310envelope decision registered before first pose-ridge or probe-fit",
-    "S8v2 published before first downstream score; no19618authorization"
+    "S8v2 published before first downstream score; no19618authorization",
+    "Every stdin dispatcher invocation includes /dev/stdin before its stage; receipt script_stdin_sha256 equals the published dispatcher hash."
   ],
   "sum_accounted_and_budgeted_core_hours": 302.09444444444443,
   "reserve_core_hours": 7.905555555555566,
@@ -123,5 +123,9 @@
     "reply": "approvo",
     "proposal_commit": "4c670bd0c8793b6e2afbe470030f9d56be6a900b",
     "scope": "310 CPU-only core-hours cumulative for completing the5000 evaluation, including22.027778 already consumed, with fit requested cap240 and all published operational gates. No new GPU work or19618continuation authorized."
-  }
+  },
+  "claude_dispatcher_approval_commit": "4e6542fa785599af4be879918a50de8abe76404e",
+  "maximum_submitted_jobs_per_user_in_serial_qos": 10,
+  "submitted_job_limit_qos": "lrd_all_serial",
+  "required_script_stdin_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5"
 }

@@ -6468,3 +6468,30 @@ il capfit240 richiesto,15shard/3h e margini pubblicati. L'approvazione di Simone
 chiude B-1 sul budget, non sostituisce la reviewClaude del nuovo dispatcher,
 né la verifica dei15report e del runtime. I tettiS8 futuri restano condizionali;
 nessuna continuazione19618 è stata approvata o sottomessa in questo passaggio.
+
+### 05/11/2026 — GPT scaling: Review8 recepita, correzione stdin e rilascio del recupero
+
+ReviewClaude4e6542f acquisita integralmente e voci originali preservate. Dispatcher,
+riuso13report, inviluppo310 e freezeS8v2 approvati; applicata l'unica correzione
+obbligatoria ai2argv: /dev/stdin prima di probe-benchmark. La stessa forma diventa
+obbligatoria per ogni stadio successivo su stdin. Pin dispatcher c2bd7979 invariato,
+nessun cambio numerico o al submitter; controllo locale dei2argv e hash superato.
+F-1 recepito: ricevute nuove accettate solo con script_stdin_sha256 coincidente.
+F-2: limite10 per utente nella QoSseriale, non conteggio di jobGPU; F-3:350CPUh/
+66,35GPUh S8restano proposta futura non approvata daSimone; F-4nessun cambio runtime.
+
+Simone autorizza partire dopo queste correzioni, senza altra review. Lettura20:08:
+coda lrd_all_serial vuota, runtimeaef pulito, piano d2cc7da1, outputrecoveryassente;
+ledger senza IDrecupero. Pubblicazione e verificaSHA precedono il primo invio.
+EPN prima; UCI solo dopo accettazioneEPN. Nessun fit senza15report e piano misurato.
+
+### 05/11/2026 — GPT scaling: B-1 Review8 chiusa senza cambiare dispatcher
+
+Il submitter non inserisce automaticamente il nome dello script: su stdin con
+argomenti serve /dev/stdin. L'omissione era nei comandi preparati, nessun job
+rifiutato né IDconsumato per questo difetto; corretti prima dell'invio. I166test
+già passati coprono il dispatcher, non la sintassi di sbatch: aggiunto controllo
+puntuale dei2argv senza presentarlo come nuovo collaudo SLURM. Prima letturaSSH
+chiusa senza dati, seconda riuscita; nessuna sottomissione ambigua o retrydi job.
+Le condizioni della Review8 sono soddisfatte per il recupero; nuova misuraEPN,
+runtime vivo, convergenza e budgetfit restano gate reali, non risultati acquisiti.

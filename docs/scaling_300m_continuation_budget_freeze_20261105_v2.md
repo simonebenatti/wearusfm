@@ -1,6 +1,6 @@
 # S8: correzione tecnica del freeze prima degli score — versione2
 
-**Nessuna continuazione a19.618 autorizzata.** Questa versione sostituisce i tetti
+**Nessuna continuazione a19.618 autorizzata. I tetti350CPUh/66,35GPUh restano una proposta futura, non un budget approvato da Simone.** Questa versione sostituisce i tetti
 e la QoS della v1, prima del primo fit downstream a5.000, su sola evidenza tecnica
 e reviewClaude7 B-3. Il JSONv1 resta inalterato come storico; il riferimento
 aggiornato è `results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json`.
