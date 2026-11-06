@@ -1,0 +1,317 @@
+{
+ "checks": {
+  "control_checkpoint_equals_freeze_v2": true,
+  "control_resume_checkpoint_equals_named": true,
+  "control_scratch_retention_covers_required_until": true,
+  "control_two_pose_and_five_classification_caches_equal_inventories": true,
+  "identity_files_equal_between_candidate_and_control": true,
+  "previous_named_and_resume_checkpoints_byte_identical": true,
+  "previous_receipts_equal_repository_copies": true,
+  "previous_run_has_exactly_the_eleven_pinned_files": true,
+  "training_inputs_equal_source_contract": true
+ },
+ "control_caches_and_pose_references": {
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz": {
+   "bytes": 257675076,
+   "mtime_cet": "2026-10-29 01:27",
+   "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz": {
+   "bytes": 2485295825,
+   "mtime_cet": "2026-10-29 01:52",
+   "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db2.npz": {
+   "bytes": 829630226,
+   "mtime_cet": "2026-11-04 08:28",
+   "sha256": "d9ef65ccfbdc4fcdd381ca60a052f4e66d0206de181e89e70532853499e32c57"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db2.npz.provenance.json": {
+   "bytes": 2558,
+   "mtime_cet": "2026-11-04 08:35",
+   "sha256": "9b31c642b31a47e2f47eb2c221c0efd8de507ae075397bbe05d919acdec92691"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db3.npz": {
+   "bytes": 211675898,
+   "mtime_cet": "2026-11-04 08:30",
+   "sha256": "e853c11cccb007ba7dae8e1c011f55a599421cd3a1cc386601dcca76836f895e"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db3.npz.provenance.json": {
+   "bytes": 2555,
+   "mtime_cet": "2026-11-04 08:35",
+   "sha256": "3259e083fa97f639e1924df1769161eb36f48f7149cedb15f322af530c5840b1"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db6.npz": {
+   "bytes": 939641974,
+   "mtime_cet": "2026-11-04 08:35",
+   "sha256": "6d8524e99d91c7da292ffbc31f0f5faf3fd9e511cf7a4ce02a1d0ac93f47be52"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db6.npz.provenance.json": {
+   "bytes": 2557,
+   "mtime_cet": "2026-11-04 08:36",
+   "sha256": "e1a0e23f167a48922259d129b8427b89aaef6913d71dd54d4f4e23e4776a4d83"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/receipt.json": {
+   "bytes": 110345,
+   "mtime_cet": "2026-11-04 08:36",
+   "sha256": "9fb776049e9fe0c7c065c56ffad2d6078e792c4c4438497090dbb82328f21631"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/epn612.npz": {
+   "bytes": 729002730,
+   "mtime_cet": "2026-11-04 08:48",
+   "sha256": "ea9cb4289982d3d536e590c75b8e9638a703bfe25ef63d50b744ef30bb66e699"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/epn612.npz.provenance.json": {
+   "bytes": 2585,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "7eadcfcc10ba1b34d8c554c9ac0b768fd5a337371cedbbc1b15cea7e1aa1fff8"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/receipt.json": {
+   "bytes": 199863,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "1bcca82e3a232a1442e6cce02b46c5d833c4157371015fa7780ece9c1da6b315"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/uci_emg.npz": {
+   "bytes": 5606354,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "97ac45717cf75991d631c243c12db7cf12428dcb1f5141d90376370ca20c8a46"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/uci_emg.npz.provenance.json": {
+   "bytes": 2580,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "de913e25633006e759a38e62c9aae9b379bc7866343eb61b77ca651e5d543f98"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/receipt.json": {
+   "bytes": 3725360,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "bc02048ba49c575860209860712d3488152c70a4bee81dddc1935341bde83057"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/train_subset.npz": {
+   "bytes": 257737302,
+   "mtime_cet": "2026-11-04 08:24",
+   "sha256": "951198bd5c62e02e9ba224f698bb3cbeb2b9eac9d144a653e809010d85e37cab"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/train_subset.npz.provenance.json": {
+   "bytes": 2445,
+   "mtime_cet": "2026-11-04 08:24",
+   "sha256": "33b619b567dd35e905db14a89b179b3ee5cde5a8daf9b050fe65be5737869b2a"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/val.npz": {
+   "bytes": 2485853898,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "af0810f0f5c181d88e57861ff92d927ad4b0527de666f64157e5136f94457152"
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/val.npz.provenance.json": {
+   "bytes": 2435,
+   "mtime_cet": "2026-11-04 08:49",
+   "sha256": "c1bb472068d25720182d43a21d3929d25d05b08093b52d44403ed77ae2549435"
+  }
+ },
+ "control_earliest_scratch_expiry_cet": "2026-12-08 01:27",
+ "control_required_until_utc": "2026-11-22T00:00:00Z",
+ "directories": {
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000": {
+   "checkpoint.pt": {
+    "bytes": 4673783740,
+    "mtime_cet": "2026-11-05 11:21",
+    "sha256": "37279995d0d484e241b032eb9b6b23a31c16a5947a0e2cf0c575da0cb70641aa"
+   },
+   "checkpoint_step0005000.pt": {
+    "bytes": 4673783740,
+    "mtime_cet": "2026-11-05 11:21",
+    "sha256": "37279995d0d484e241b032eb9b6b23a31c16a5947a0e2cf0c575da0cb70641aa"
+   },
+   "config.json": {
+    "bytes": 3214,
+    "mtime_cet": "2026-11-05 07:16",
+    "sha256": "9ce530a0f847f4c8d3291968c186be51dafbc11acf1d68a5d1fdf31655d0f4a3"
+   },
+   "fixed_eval.jsonl": {
+    "bytes": 17136,
+    "mtime_cet": "2026-11-05 11:20",
+    "sha256": "ad51fd7036e964cfdb42ee1925f071f8119361695872c9951be9b32948818208"
+   },
+   "fixed_eval_set.json": {
+    "bytes": 22232,
+    "mtime_cet": "2026-11-05 07:17",
+    "sha256": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5"
+   },
+   "metrics.jsonl": {
+    "bytes": 7765417,
+    "mtime_cet": "2026-11-05 11:20",
+    "sha256": "06873e1d800409fd02c592b5d151c0e83c32b00c1ed0c2d5c75248c4333d693c"
+   },
+   "origin_sessions.json": {
+    "bytes": 1757497,
+    "mtime_cet": "2026-11-05 07:17",
+    "sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d"
+   },
+   "pose_panel.jsonl": {
+    "bytes": 3914601,
+    "mtime_cet": "2026-11-05 11:21",
+    "sha256": "c762ebf4b643bef8f45631b01b5d2a9c4b0c4f0786d5cdded53de49e1263a08b"
+   },
+   "pose_panel_set.json": {
+    "bytes": 83267,
+    "mtime_cet": "2026-11-05 07:17",
+    "sha256": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018"
+   },
+   "pose_provenance.json": {
+    "bytes": 210,
+    "mtime_cet": "2026-11-05 07:16",
+    "sha256": "0463d2b9ac3cc49abf1667e91ff9594581dc623997a8318b1b9a457c8a03322e"
+   },
+   "summary.json": {
+    "bytes": 1824,
+    "mtime_cet": "2026-11-05 11:21",
+    "sha256": "8ca3a46da40b04ed8ff9b8100078bfd7110aca6bb2ddc92e17d6bee534bb4ef0"
+   }
+  },
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G": {
+   "checkpoint.pt": {
+    "bytes": 454381728,
+    "mtime_cet": "2026-11-03 23:27",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
+   },
+   "checkpoint_step0019618.pt": {
+    "bytes": 454381728,
+    "mtime_cet": "2026-11-03 23:27",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
+   },
+   "config.json": {
+    "bytes": 3213,
+    "mtime_cet": "2026-11-03 20:19",
+    "sha256": "2f7a2899214273275e45be99317650206db4f85951d62f070788abfbde60b265"
+   },
+   "fixed_eval_set.json": {
+    "bytes": 22232,
+    "mtime_cet": "2026-11-03 11:30",
+    "sha256": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5"
+   },
+   "origin_sessions.json": {
+    "bytes": 1757497,
+    "mtime_cet": "2026-11-03 11:30",
+    "sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d"
+   },
+   "pose_panel_set.json": {
+    "bytes": 83267,
+    "mtime_cet": "2026-11-03 11:30",
+    "sha256": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018"
+   },
+   "summary.json": {
+    "bytes": 2220,
+    "mtime_cet": "2026-11-03 23:27",
+    "sha256": "46f89b1414385d246d32f0f4c0b6c04e62294de72d9fc07a9a69a8158d1a3eea"
+   }
+  },
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/scientific5000_v1": {
+   "config.json": {
+    "bytes": 3595,
+    "mtime_cet": "2026-11-05 11:22",
+    "sha256": "6120b82627160df67fc5ef7b7a9760d5f2def03175dd7e9677213c20ee2b76e0"
+   },
+   "launch.json": {
+    "bytes": 65641,
+    "mtime_cet": "2026-11-05 07:16",
+    "sha256": "f1521ce7464bb7e43ef5e1f1ae31e20db226c4464284c824e566b39058bd23e9"
+   },
+   "receipt.json": {
+    "bytes": 15217,
+    "mtime_cet": "2026-11-05 11:22",
+    "sha256": "0ac5fe8130da2759113fe14af33c7326c42a20d2e7df5426da96ba9e7f415aa8"
+   },
+   "summary.json": {
+    "bytes": 1902,
+    "mtime_cet": "2026-11-05 11:22",
+    "sha256": "f0975c4de0f810b0b5782984e699b50c41c1c67ad930aa9dd0bd650979182af9"
+   }
+  }
+ },
+ "host": "login05.leonardo.local",
+ "method": "read-only ssh from the Mac: ls -l, sha256sum, scontrol, sacctmgr, sacct, squeue of this project, saldo, lfs quota",
+ "not_verified_here": [
+  "content of the caches beyond SHA-256 and size (folds, supports): re-verified by the evaluation stage",
+  "retention is recomputed from the real modification times by the wrapper at job start"
+ ],
+ "previous_training_job": [
+  "JobID|JobName|Partition|QOS|State|ExitCode|Elapsed|Timelimit|Submit|Start|End|ReqTRES|AllocTRES|NodeList",
+  "63532932|SCALING-300M-train5000-20261104|boost_usr_prod|normal|COMPLETED|0:0|04:06:01|05:30:00|2026-11-04T21:34:49|2026-11-05T07:16:12|2026-11-05T11:22:13|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|lrdn1310"
+ ],
+ "protocol": "scaling-continuation-remote-verification-20261106-v1",
+ "raw": [
+  "remote_listing.txt",
+  "remote_sha256.txt"
+ ],
+ "read_at_cet": {
+  "listing": "2026-11-06 17:39:34 CET",
+  "sha256_end": "2026-11-06 17:41:15 CET",
+  "sha256_start": "2026-11-06 17:40:47 CET"
+ },
+ "scheduler": {
+  "assoc": [
+   "iscrb_wearusfm||boost_qos_bprod,boost_qos_dbg,boost_qos_lprod,normal|||"
+  ],
+  "partition": [
+   "PartitionName=boost_usr_prod",
+   "AllowQos=ALL",
+   "QoS=boost_usr_prod",
+   "DefaultTime=00:30:00",
+   "MaxNodes=64",
+   "MaxTime=1-00:00:00",
+   "State=UP",
+   "TotalNodes=3330",
+   "DefMemPerCPU=15400",
+   "MaxMemPerNode=UNLIMITED"
+  ],
+  "qos normal": [
+   "normal|40|||||||"
+  ],
+  "quota work": [
+   "Disk quotas for prj 20147512 (pid 20147512):",
+   "     Filesystem    used   quota   limit   grace   files   quota   limit   grace",
+   "/leonardo_work/IscrB_WearUsFM",
+   "                  1005G      1T      0k       - 1512174       0       0       -"
+  ],
+  "reservations": [
+   "ReservationName=s_int_SNC StartTime=2026-07-22T18:17:48 EndTime=2027-07-22T18:17:48 Duration=365-00:00:00",
+   "   Nodes=lrdn[0944,1416,1590,3320,4574,4586,4945,4948] NodeCnt=8 CoreCnt=576 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES",
+   "ReservationName=maint_dcgp_PB1 StartTime=2027-01-15T08:00:00 EndTime=2027-01-18T08:00:00 Duration=3-00:00:00",
+   "   Nodes=lrdn[3745-4992] NodeCnt=1248 CoreCnt=139776 Features=(null) PartitionName=dcgp_usr_prod Flags=SPEC_NODES",
+   "ReservationName=maint_4B1 StartTime=2026-11-10T07:00:00 EndTime=2026-11-12T07:00:00 Duration=2-00:00:00",
+   "   Nodes=lrdn[2701-3240] NodeCnt=540 CoreCnt=17280 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES",
+   "ReservationName=maint_4B2 StartTime=2026-11-12T07:00:00 EndTime=2026-11-14T07:00:00 Duration=2-00:00:00",
+   "   Nodes=lrdn[3241-3420] NodeCnt=180 CoreCnt=5760 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES",
+   "ReservationName=maint_23112026_booster StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00",
+   "   Nodes=lrdn[0001-3456] NodeCnt=3456 CoreCnt=110592 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES",
+   "ReservationName=maint_4NB-UPS StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00",
+   "   Nodes=lrdn[3457-3744,3793-3822,3871-3900,3949-3978,4027-4056,4105-4134,4183-4212,4261-4290,4339-4368,4417-4446,4495-4524,4573-4602,4651-4680,4729-4758,4807-4836,4885-4914,4963-4992] NodeCnt=768 CoreCnt=86016 Features=(null) Par",
+   "ReservationName=maint_23112026_dcgp StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00",
+   "   Nodes=lrdn[3745-3792,3823-3870,3901-3948,3979-4026,4057-4104,4135-4182,4213-4260,4291-4338,4369-4416,4447-4494,4525-4572,4603-4650,4681-4728,4759-4806,4837-4884,4915-4962] NodeCnt=768 CoreCnt=86016 Features=(null) PartitionName",
+   "ReservationName=maint_23112026_vizser StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00",
+   "   Nodes=login[08,13],viz[02-16] NodeCnt=17 CoreCnt=1088 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES"
+  ],
+  "saldo": [
+   "-----------------------------------------------------------------------------------------------------------------------------------------",
+   "account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed",
+   "-----------------------------------------------------------------------------------------------------------------------------------------",
+   "IscrB_WearUsFM      20260107    20270107       2000000             1303867       1303867            65.2        164383               4811"
+  ],
+  "sinfo boost": [
+   "      1 allocated 3018",
+   "      1 completing 21",
+   "      1 mixed 247",
+   "      1 mixed- 38",
+   "      1 planned 6"
+  ],
+  "squeue mio": [
+   "63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|normal|PENDING|0:00|4:00:00|N/A|PartitionConfig|wearusfm:LOGSQ-T100-LQ-19618-20261105",
+   "63684847|LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1|lrd_all_serial|normal|RUNNING|3:19|3:15:00|2026-11-06T17:36:19|None|wearusfm:LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1"
+  ]
+ },
+ "training_inputs_sha256": {
+  "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+ }
+}

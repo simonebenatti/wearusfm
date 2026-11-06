@@ -6714,3 +6714,29 @@ distinte, nessuna approvazione retroattiva né nuova regola imposta a Simone.
 Aggregati/confronto non sono coperti daClaude9 e richiedono i propri piani concreti
 con pin dei risultati finali. Score non interpretati in questa verifica; nessuna
 estensione scientifica, nuovi training, retry o pollingAI.
+
+### 06/11/2026 — Claude, linea 1: seguito del 300M a 19.618 autorizzato; piano e lettura dell'endpoint prima dei lanci
+
+- Autorizzazione di Simone, alla lettera. A Claude, verso le 17:22: «si autorizzo maq non voglio una ennersima review di
+  gpt prima di ogni lancio, ne facciamo una poi lancio.» A GPT (commit `2d58e98`): «va bene, approvo la continuazione
+  del 300M a 19.618 passi. Preparami il prompt per claude, cosi' prepara il piano e poi claude lancia».
+- I freeze storici non si riscrivono. Il freeze v2 dichiara ancora `continuation_authorized: false`: era vero quando e'
+  stato scritto; l'autorizzazione e' questa voce. Tetti invariati: training 59 GPU-ore, estrazioni 7 GPU-ore (66,35 in
+  tutto con le tolleranze), letture 350 core-ore solo CPU. Le CPU allegate ai job GPU si rendicontano a parte: 472
+  core-ore il training, 56 le estrazioni.
+- Perimetro: ripresa esatta del run accettato a 5.000 fino a 19.618 (14.618 aggiornamenti), stessa ricetta, stesso seme,
+  schedule originale; confronto con il 30M gia' esistente a 19.618. Nessun passo oltre 19.618, nessuna nuova loss o
+  architettura, nessun nuovo training del 30M, un solo segmento di training, nessun retry.
+- Piano dello stadio di training e della catena: `results/infra/scaling_300m_20261104/continuation19618_20261106/`
+  (`training_plan.json` con i pin reali letti su Leonardo il 06/11, `chain_plan.md`).
+- Lettura dell'endpoint a 19.618, pubblicata prima di ogni job e sottoposta alla review di GPT, che ne ha la
+  responsabilita' scientifica: `endpoint19618_reading.md` nella stessa cartella. Definizioni di S8 invariate: EPN-612 e
+  `E_dyn` primari con tre esiti dall'IC95; posa migliorata in misura pratica con riduzione puntuale di almeno il 2% e IC
+  sotto zero; P1 e P2 con margine di 1 pp; bootstrap appaiato per soggetto, 2.000 repliche, seme 20261102. La lettura
+  descrive il 19.618: non riapplica la tabella delle conseguenze di S8, non sceglie il checkpoint migliore fra 5.000 e
+  19.618, non autorizza altro training. Un solo seme. E' scritta dopo gli esiti a 5.000 e prima di qualunque dato a
+  19.618; non introduce soglie nuove.
+- Preventivo dello stadio di training: al massimo 14 ore 45 minuti su un nodo con 4 GPU, cioe' 59 GPU-ore (tutto il
+  tetto del training) e 472 core-ore allegate; atteso circa 12 ore 15 minuti, cioe' circa 49 GPU-ore. Checkout di
+  campagna: 2 CPU per 5 minuti. Dopo il training restano 7,35 GPU-ore per le estrazioni.
+- Stato: consegna in review da GPT. Nessun deploy, nessun checkout, nessun job. Consuntivo a fine stadio.
