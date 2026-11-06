@@ -7104,6 +7104,68 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   fine-tuning passando alla ricetta a 15: +0,127 pp, IC95 [−0,187; +0,450]». La correggo nel mio documento col prossimo commit
   del ramo di esecuzione.
 
+### 2026-11-06 | Claude | Linea 2: emendamento delle risorse A1 implementato, verificato e pubblicato (`2dea7ca`); fase fit ferma fino alla decisione di Simone
+- Richiesta: lo stesso prompt di GPT consolidamento del 06/11 («Dopo la review favorevole della proposta, implementa
+  direttamente tu l'emendamento. Esegui i test e una verifica indipendente del diff […] pubblica codice, piani e registro»).
+  Ramo di esecuzione `claude/consolidation-long-exec-20261105`, commit `2dea7ca037b55023c50254735ae69eb08945ec72` (su
+  `2a20316`, dopo il commit separato `c04d10b` della rettifica EPN15), SHA remoto verificato.
+  Documento dell'operatore: `docs/consolidation_long_amendment_a1_execution_20261106.md` di quel ramo; voce del 06/11 in
+  `docs/decisioni.md` dello stesso ramo.
+- Sorgenti coperti cambiati, elenco chiuso: modulo nuovo `scripts/consolidation_long_amendment.py` (forme dei fold, formula
+  di W, elenco chiuso, controlli); `consolidation_long_common.py` (`validate_plan`, `load_context`, `begin_output`,
+  `verified_extraction`, nuovo `verified_input`); `consolidation_long_classification_runtime.py` (`_benchmarks`, `execute`,
+  nuovo `amended_gate`); `consolidation_long_pose_runtime.py` (`_manifest`, `_read`, `_benchmark_gate`, `execute`); launcher,
+  righe 52-53. Byte-identici a `166fb86`: `consolidation_long_classification.py`, `consolidation_long_pose.py`,
+  `consolidation_long.py` e tutto `src/`. `BENCHMARK_POLICY` e `resource_gate` originali non sono toccati.
+- Identita': source nuova `77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88` (228 file) per fit, confronti e
+  sintesi; ricetta invariata `b2356a8e...`; manifest dei 28 input
+  `results/infra/consolidation_long_20261105/amendment_a1/input_compatibility.json`, sha256
+  `983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95`, 65.919 byte, con il pin scritto nel sorgente.
+- Riuso delle 28 ricevute: ogni lettura di input passa da `C.verified_input` (pin elencato alla lettera e del tipo giusto;
+  report con source originale, ricetta, commit e piano della fase originale e campi elencati). A ogni avvio `load_context`
+  verifica che i sorgenti differiscano dall'originale solo nell'elenco chiuso: mappa dei file; nei tre file Python cambiati
+  il testo e' diviso in regioni che lo coprono byte per byte (ogni istruzione di primo livello con i decoratori, i
+  commenti e le righe vuote che la precedono), l'ordine delle istruzioni e' quello originale con ogni definizione
+  aggiunta subito dopo la sua ancora dichiarata, e ogni regione fuori dalle definizioni emendate ha l'hash originale; i due
+  rami di estrazione e benchmark dentro `execute`; la cornice del launcher. Estrazioni e benchmark sono stadi chiusi per il
+  codice nuovo. Nessuna ricevuta riscritta, nessun elenco generico di source accettate.
+- Copertura dei fold e gate: il fit accetta solo `--folds` espliciti e registrati; il confronto pretende 69 report della
+  source nuova col record dell'emendamento, uno per chiave della tabella; `amended_gate` riusa le proiezioni per fold del
+  gate originale e la tabella dei 69 W e' congelata in `plan.amendment.fit_shards`: runtime e launcher si fermano se
+  differisce. Nessun adattamento automatico.
+- Piani rigenerati dai piani di `2a20316`, dalle 15 ricevute e dal modulo (`amendment_a1/apply_to_plans.py --check`): 103
+  righe di calcolo; le 48 righe originali dei fit restano in `superseded_jobs` (nessuna prenotata o inviata). Numeri uguali
+  alla proposta: gate originale 15 su 48 respinti; emendato 69 su 69; 1.276 core-ore per i 69 fit, 1.317 future, 1.359,218889
+  col consumato, 1.451,666667 nel conto prudenziale su 1.711,666667; 0 GPU-ore nuove; scarto minimo 40,48 s oltre la riserva
+  di 600 s; memoria proiettata massima 4,078 GiB su 25,5.
+- Test (Mac, ambiente `wearusfm-tok`): gli undici file della valutazione lunga e dei moduli collegati, 342 superati; suite
+  completa `tests/cpu` sull'albero pubblicato: 2.456 superati, nessun fallimento, in 26 minuti e 30 secondi. Nuovo
+  `tests/cpu/test_consolidation_long_amendment.py` (64 test su V-1...V-8, anche sulle 28 ricevute vere e sul piano
+  concreto). La source ricalcolata dagli oggetti Git del commit pubblicato e' quella dei piani. Due test dei rami di
+  estrazione e benchmark della classificazione, non piu' raggiungibili
+  (`test_benchmark_numeric_mismatch_stops_before_fit_or_output_creation`,
+  `test_extract_uses_original_t100g_reference_and_one_teacher`), sono sostituiti da test di rifiuto degli stadi chiusi; il
+  testo di quei rami resta congelato per hash.
+- Altri controlli: `build_inputs.py --check`, `apply_to_plans.py --check`, `pin_phase.py fit --dry-run`. Prova a secco del
+  rilascio in una copia di lavoro separata e poi rimossa: decisione fittizia, pin, controlli e gli undici file passano
+  anche in quello stato; lo script vero del preflight, eseguito sul piano cosi' pinnato, legge dal ponte tutte e 28 le
+  ricevute vere e non chiede nessuna cache held della posa. Le 72 righe d'invio, generate senza inviare, sono uguali alla
+  tabella. Parita' fra Mac (Python 3.11.14) e nodo di login di Leonardo con l'ambiente dei job (Python 3.11.6), in sola
+  lettura alle 15:04: `validate_inputs` completo accetta i testi correnti, chiavi, ordine e hash uguali, nove modifiche di
+  controllo rifiutate con gli stessi messaggi.
+- Verifica indipendente del diff (subagent `critico`), due passaggi. Primo esito «VERDETTO: DA RIVEDERE»: un difetto
+  bloccante (il controllo dell'elenco chiuso non copriva i decoratori ne' l'ordine delle istruzioni di primo livello; il
+  diff non li usava) e quattro rilievi minori; fold, gate, piani, posa e conti ricalcolati da lui senza differenze.
+  Difetto corretto prima di pubblicare (voce nella sezione 2). Riverifica del delta «VERDETTO: APPROVATO»: dieci
+  modifiche di prova sue, rifiutate tutte quelle fuori dalle definizioni emendate; i quattro file coperti gia' rivisti
+  invariati; gate, tabella dei tempi e copertura ricalcolati di nuovo (160 fold su 160, ognuno una volta); due rilievi
+  minori di documentazione, corretti.
+- Stato: `plan.amendment.decision` e' `null` e `validate_plan` rifiuta ogni stadio. Nessun pin della fase fit, nessun commit
+  di fase, ref di deploy, checkout o job; nessuna scrittura sul cluster. La linea 2 non tiene job in corsia seriale.
+- EPN15: formulazione rettificata in `docs/decisioni.md` e nel README della raccolta, in un commit separato (`c04d10b`),
+  come da verifica di GPT `bb08cd0`: «non emerge un guadagno risolto del fine-tuning passando alla ricetta a 15 (+0,127
+  pp, IC95 [−0,187; +0,450])».
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9822,3 +9884,44 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Implementazione: il prompt di GPT la affida a me per questo emendamento («implementa direttamente tu l'emendamento»), con
   verifica successiva di GPT. La faccio sul ramo di esecuzione; test e verifica del diff prima di pubblicare. Pin, deployment e
   invii restano fermi fino alla decisione di Simone.
+
+### 2026-11-06 | Claude | Linea 2: emendamento A1, punti aperti e limiti dopo l'implementazione (per Simone e per GPT consolidamento)
+- Decisione di Simone ancora da registrare: eccezione a R-2(i) limitata ai 28 input e catena emendata (69 fit di
+  classificazione, 3 di posa, 2 confronti, 1 sintesi, 2 checkout; al massimo 1.317 core-ore future e 0 GPU-ore, dentro il
+  tetto). Il runtime la pretende nel piano, con le parole alla lettera (`amendment_a1/record_decision.py`). Finche' manca non
+  rilascio la fase fit: nessun pin, checkout o invio.
+- Emendamento post hoc rispetto ai tempi dei sedici benchmark (solo train) e anteriore a qualunque fit, punteggio o
+  predizione del confronto lungo: e' scritto cosi' nel modulo, nei piani e nei documenti. Non e' una regola pre-registrata.
+- Difetto bloccante trovato dalla verifica indipendente e corretto prima di pubblicare: il controllo dell'elenco chiuso
+  confrontava il testo delle definizioni di primo livello ma non copriva i decoratori ne' l'ordine delle istruzioni. Il
+  diff non usava quel varco, ma i documenti affermavano piu' di quanto il controllo garantisse. Ora il testo dei tre file
+  Python cambiati e' diviso in regioni che lo coprono byte per byte e l'ordine e' fissato; manifest e source sono stati
+  rigenerati di conseguenza e i valori di questa voce sono quelli finali.
+- Rilievi minori della stessa verifica, tutti chiusi: la voce di registro mancava (e' questa, scritta dopo la
+  pubblicazione perche' sta su un altro ramo); la rettifica EPN15 stava nello stesso albero dell'emendamento (ora in un
+  commit separato, `c04d10b`); mancava una prova con il Python dei job (parita' Mac/Leonardo rifatta in sola lettura alle
+  15:04); nella riverifica, una frase del documento su quando il runtime controlla la source incorporata nelle cache held
+  della posa (ora: all'apertura, dopo le due ridge e prima di qualunque predizione o punteggio) e il secondo esito, che
+  mancava nella voce di `docs/decisioni.md` (aggiunto).
+- Preesistente, non toccato da A1 (rilievo minore della verifica): gli stadi `compare-pose` e `summary` creano la directory
+  di uscita prima dei controlli d'identita'. Un errore di configurazione lascerebbe una directory vuota e consumerebbe
+  l'ID. Rimedio operativo: controllo del contesto in sola lettura nel checkout prima di inviare quei due stadi. Un cambio
+  di codice sarebbe un'altra source: da valutare con GPT, fuori da A1.
+- Limiti dichiarati: (i) P e' una stima di pianificazione misurata a 19.618; un TIMEOUT ferma la fase, senza rilancio ne'
+  tempo nuovo (N-1 della review: lo shard piu' stretto ha 40,48 s oltre la riserva di 600 s); (ii) la source incorporata
+  nelle sei NPZ della posa la verifica il runtime alla lettura, sul cluster: per le tre train prima dei fit, per le tre
+  held all'apertura, dopo le due ridge e prima di qualunque predizione o punteggio; (iii) dentro le definizioni emendate e
+  aggiunte la garanzia e' il diff rivisto, non un hash.
+- Errori miei corretti durante il lavoro, senza effetto su codice e piani pubblicati: quattro asserzioni sbagliate nel nuovo
+  file di test (una chiave `selected_C` che non esiste, le righe del launcher, il testo `post_hoc`); nomi di file
+  collidenti in un test della posa; in `docs/decisioni.md` una parafrasi della regola congelata, sostituita con la
+  citazione letterale; la prima versione del preflight calcolava l'hash anche delle tre cache held della posa (12,8 GiB),
+  che il runtime congelato apre solo dopo le due ridge: ora verifica solo le loro ricevute dal ponte.
+- Per GPT consolidamento (verifica successiva, non blocca): il diff delle definizioni emendate; i due test sostituiti;
+  `amendment_a1/pin_phase.py` al posto dello snippet di pin della sezione 3 del prontuario; la regola dei tempi (N-1).
+- Per la sottochat 1 e il coordinamento: nessun job della linea 2 in corsia seriale fino alla decisione. Letto alle 14:44: il
+  ledger comune mostra `SCALING-compare-20261106` `sottomesso` alle 14:36 (63671773): la regola «Due fit per volta» cade, come
+  da decisione di Simone, e per i fit valgono le ondate entro il limite del piano di otto job CPU in sospeso per tutto
+  l'utente; lo rileggo nel ledger prima del primo invio. Ogni fit tiene la corsia da 30 a 225 minuti (8 CPU, uno alla
+  volta). Stima mia, non misurata sui checkpoint 39.237 e 49.046: circa 28 ore di calcolo in sequenza per i 69 fit se i
+  tempi dei benchmark si confermano; somma dei limiti richiesti 159,5 ore.
