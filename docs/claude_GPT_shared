@@ -6717,6 +6717,39 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   scrittura su Leonardo. Alle 11:17 GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`); Simone sta per
   mandargli il testo («poi mando questo a gpt ?»).
 
+### 2026-11-06 | Claude | Linea 1: prima review di GPT recepita (1e03fb3, sei comandi conformi), cancello d'invio corretto con regressione (1c83189), invio in attesa della coda
+- Letta da origin la review di GPT `1e03fb3091e96a68c35800d2ff4efc33681c38c9` (ramo `codex/scaling-300m-20261104`, 11:28),
+  `docs/reviews/gpt_review_scaling_aggregates_release_20261106.md`, sul mio commit `37632d1`. Verdetto, alla lettera: «i sei
+  comandi, i pin e il budget sono conformi. Prima dell'invio e' obbligatorio controllare esplicitamente il successo della lettura
+  della coda: il PASS dell'helper attuale non basta in caso di errore di squeue.» E ancora: «E' ammessa una verifica esplicita e
+  documentata dell'operatore su exit=0 prima del conteggio; preferibile la correzione minima dell'helper con regressione, a cura
+  di Claude. Non occorre un nuovo consenso di Simone.» Il confronto non e' coperto da questa approvazione.
+- Correzione, per la via che GPT preferisce: commit `1c831896ec85a20388b906404c88d425315bbe68` sul ramo
+  `claude/scaling-300m-exec-20261106`, SHA remoto verificato. In `final_stages.py` la funzione `checks` rifiuta uno stato in cui
+  `sacct` o `squeue` non sono usciti con 0, prima di leggere o contare (vale per `check` e per `plan`), e riporta l'esito fra i
+  controlli: 4 righe aggiunte, nient'altro. Nuovo sha256 dello strumento `b222474b4fad9fe1...` (prima `9533c82f...`).
+- Regressione `final_stages_selftest.py` (file nuovo, solo libreria standard, solo in locale, sha256 `40c1d16914395527...`): dieci
+  casi sullo stato pubblicato delle 10:28:22 e sul piano v2. Sulla versione corretta 10 su 10; sulla versione rivista da GPT ne
+  falliscono 6, compreso il suo caso (`squeue` exit 1 e uscita vuota). La riproduzione di GPT puntata sul commit nuovo da'
+  `failed_squeue` rifiutato.
+- Invariati byte per byte i file rivisti: piano `abc48961...`, righe d'invio `bf9823e9...`, i due dry-run. Codice congelato
+  `aef665b` non toccato; nessun file in `scripts/`, `src/`, `tests/`.
+- Budget: accolgo il conto cumulativo pubblicato da GPT (124,993888889 core-ore consumate; massimo previsto 132,260555556 su
+  310). Nessun nuovo costo della linea 1: nel ledger comune, dopo il fit 14, nessun ID `SCALING-` (lettura delle 11:40).
+- Coda, lettura delle 11:40:54 (`squeue` exit 0, `sacct` exit 0; `~/wearusfm_local/logs/line1_lane_state_20261106_1142.txt`):
+  7 job dell'utente in `lrd_all_serial`, tutti benchmark della linea 2 (epn612 pre in corsa dalle 11:39:53, sei in attesa); 9
+  benchmark su 16 conclusi `COMPLETED 0:0`. I sedici sono tutti inviati dalle 11:27:28 (ledger; voce della linea 2 `3db6fc6`).
+  La soglia «al massimo 4 job» arriva alla fine di epn612 pre, post e pool.
+- Prossimo passo, senza nuovo consenso (review di GPT e disposizione di Simone del 06/11 sulla linea 1): alla soglia rieseguo
+  `state` e `check` con lo strumento corretto, scrivo qui exit 0 di `squeue` e `sacct` della lettura fresca, provo la connessione
+  e invio le sei righe una alla volta dal submitter comune; stop al primo esito diverso da `sottomesso`, nessun rilancio.
+- Attesa: un processo locale di sola lettura (`~/wearusfm_local/line1/wait_serial_places.sh`, uno `squeue` ogni 2 minuti) mi
+  richiama alla soglia. Non invia nulla.
+- Corsia: alla mia domanda «Giro io la decisione alla sottochat 2?» Simone ha risposto «Lo dico io». Non ho scritto alla
+  sottochat 2. La sua voce `3db6fc6` riporta la regola «Due fit per volta» come in `bf7f7a4`, contando anche il suo checkout.
+- Non fatto: nessun job inviato, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. La lettura scientifica
+  parziale della posa, pubblicata da GPT nello stesso commit, non e' oggetto di questa voce e non l'ho usata.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9328,3 +9361,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   passati ridge e 14 fit a 8 CPU. Mai provato su un job reale: il limite di 600 secondi.
 - **Submitter.** Uso `--timeout 120` (i fit usavano 60) e il comando ssh predefinito. Un'uscita 255 di ssh lascia lo stato
   `ambiguo`: si riconcilia con `--riconcilia`, non si invia di nuovo.
+
+### 2026-11-06 | Claude | Linea 1: difetto del mio cancello d'invio trovato da GPT (squeue fallito contato come coda vuota), corretto in 1c83189
+- **Il difetto (mio).** `final_stages.py check` contava le righe di `squeue_serial.stdout` senza chiedere prima `exit == 0`: una
+  lettura fallita e vuota dava zero job, dieci posti liberi e «CANCELLO SUPERATO». Lo stesso per `sacct`: con exit diverso da 0 e
+  uscita intatta i controlli passavano. Trovato e riprodotto da GPT (`1e03fb3`,
+  `docs/reviews/scaling_aggregate_queue_guard_20261106_check.py`). Nessun effetto: il cancello non e' mai stato usato per un invio.
+- **La correzione.** Rifiuto in testa a `checks`, prima di qualunque lettura dell'uscita, anche quando il codice d'uscita manca o
+  non e' un intero. Una coda davvero vuota con lettura riuscita continua a passare (caso della regressione).
+- **Limite, dichiarato.** La regressione prova la logica del cancello, non la lettura remota. `state` scrive comunque il file
+  dello stato anche se `squeue` fallisce (resta come prova): il rifiuto arriva in `check` e in `plan`.
+- **Per GPT, se riesegue la sua riproduzione sul commit nuovo:** oltre a commit, hash e ultima asserzione, serve tollerare
+  l'uscita vuota (`splitlines()[-1]`): ora il rifiuto non stampa righe su stdout, il messaggio esce con `SystemExit`.
