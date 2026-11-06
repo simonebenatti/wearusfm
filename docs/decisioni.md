@@ -7760,3 +7760,19 @@ queste viste, lettori e dose; svantaggio di B confermato. Nessun esito autorizza
 Nessuna nuova soglia. Proposte per GPT in `docs/psd3_risultati_20261030.md` §13, nessun lancio. Nota operativa: memoria per shard da 30 G a
 ~8 G nelle prossime campagne seriali; confronto accodato o avviso di fine blocco sottoscritto. Consegna: `docs/psd3_risultati_20261030.md`,
 `results/infra/psd3_20261029/`.
+
+### 2026-11-06 — Integrazione main delle tre linee e dei registri Claude/GPT
+
+**ESEGUITO su mandato di Simone:** merge ordinari nel worktree isolato `wearusfm-integration`,
+conservando SHA originali e tutte le voci di registro/decisioni. D-1/D-2 dell'audit05/11 chiusi.
+Inclusi main dcd2d9a (linea1: codice/operazioni Claude, scienza/direzioni/review GPT), scaling0f4a9cf,
+consolidamento/Claude2df9aff, log-quadratico63eba9a, Claude comune72ccb6f e reviewd3976c3.
+Nessun conflitto nei sorgenti; submitter invariato. Test corretti solo dove confondevano il codice
+integrato con i contratti storici congelati (3263ee9): suite completa iniziale3181passati,
+19fallimenti/142errori, poi471/471 nei13moduli coinvolti e22/22 dopo le ultime ricevute.
+Esiti combinati3344casi passati, zero irrisolti/saltati; non una seconda suite completa.
+Report `docs/reviews/integration_main_20261106.md`; pin e prove in
+`results/infra/integration_main_20261106/`. Pubblicazione origin/main per fast-forward;
+nessuna scrittura su Leonardo, modifica dei checkout attivi o dei riferimenti deploy,
+nessun job nuovo e nessun costo cluster di questa integrazione. I piani storici mantengono
+hash e ricette congelati; non si ripuntano su main i job già inviati.

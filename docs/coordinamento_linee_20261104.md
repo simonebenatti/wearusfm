@@ -6,15 +6,15 @@ Worktree sotto `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/`.
 
 | Linea | Codice e responsabilita' scientifica | Gestione operativa attuale | Worktree di sviluppo GPT | Branch di sviluppo |
 |---|---|---|---|---|
-| **1 — Proponi soluzione / scaling 300M** | GPT scaling | GPT scaling | `wearusfm-scaling-300m` | `codex/scaling-300m-20261104` |
+| **1 — Proponi soluzione / scaling 300M** | **Claude: codice; GPT: scienza, direzioni e review** | **Claude** | `wearusfm-scaling-300m` | `codex/scaling-300m-20261104` |
 | **2 — Schedule lungo e consolidamento (EPN15 e valutazione lunga)** | GPT consolidamento | **Claude: deployment, invii, stato/log e raccolta** | `wearusfm-consolidation` | `codex/consolidation-20261104` |
 | **3 — Log quadratico e contrastive loss** | GPT logcontrast | GPT logcontrast | `wearusfm-logcontrast` | `codex/tokenizer-logcontrast-20261104` |
 | Coordinamento | GPT integratore | Coordinamento dei responsabili, nessun invio duplicato | `wearusfm-coordination` | `codex/coordination-20261104` |
 
-**Aggiornamento degli operatori del 05/11 sera:** eccezione della sola linea 2,
+**Aggiornamento degli operatori del 06/11:** linea1 codice/operazioni Claude, GPT scienza/direzioni/review (main dcd2d9a). Per la linea2 resta l’eccezione del 05/11 sera,
 fonte Claude3566c8d e messaggio diretto di Simone nella chat2. Le verifiche di stato
 successive spettano al suo operatore Claude; i resoconti precedenti sotto sono snapshot storici.
-Codice e responsabilita' scientifica restanoGPT. Regola canonica pubblicata su main **fe66e2d**.
+Per la linea2 codice e responsabilita' scientifica restanoGPT. Regole canoniche in CLAUDE.md su main **fe66e2d** e **dcd2d9a**.
 
 
 Thread locali: **1** `01a177ab-e433-7b33-aa9a-7515e750f20f`;
@@ -55,7 +55,7 @@ owner, non su una coda remota osservata vuota.
 - Preparazione, test e preventivo, poi review Claude e convergenza, poi lanci:
   è l'ultima istruzione di Simone nelle tre chat. Dopo la review il piano già
   approvato non richiede un secondo via. Nessun monitor automatico nuovo.
-- Un submitter per linea: GPT per 1/3; Claude per EPN15 e valutazione lunga della 2 (eccezione del 05/11 sera). Coordinamento non duplica lanci.
+- Un submitter per linea: Claude per1 e per EPN15/valutazione lunga della2; GPT per3. Coordinamento non duplica lanci.
   Tutti usano `scripts/submit_job.py` e `~/wearusfm_local/jobs/`, prenotazione
   sotto lock, controllo ID esistente e riconciliazione delle risposte ambigue.
 - Namespace assegnati: `SCALING-300M-*` (confermato dall'owner), `LOGSQ-*` /
@@ -119,3 +119,16 @@ Ricetta, endpoint, 82 job di calcolo e 4 checkout invariati; test dichiarati:252
 
 Questa registrazione verifica pubblicazione e metadati del passaggio; non sostituisce la quarta review e non dichiara
 nuovi invii o nuove misure di coda. GPT consolidamento ha dichiarato nessuna prenotazione aperta nel ledger.
+
+### Integrazione main completata — 06/11/2026
+
+| Attività di integrazione | Esito | Evidenza |
+|---|---|---|
+| Tre linee e consegne/review Claude | Merge con SHA originali conservati | `results/infra/integration_main_20261106/inputs.json` |
+| Registro e decisioni | Tutti i blocchi delle14versioni presenti; D-1/D-2 chiusi | `verify_documents.py`, prove JSON nella stessa directory |
+| Codice di produzione delle tre linee | Identico ai rispettivi pin; submitter invariato | `code_union_proof.json` |
+| Verifica CPU | 3344casi con esito finale passato; suite completa più riesecuzione471/471 e controllo22/22 | `test_summary.json` |
+| Job in corso/in coda | Checkout e riferimenti congelati non modificati | Nessuna operazione sul cluster da questa integrazione |
+
+Rapporto `docs/reviews/integration_main_20261106.md`. Questa tabella riguarda l'integrazione;
+lo stato SLURM rimane quello raccolto e pubblicato dagli operatori delle linee.

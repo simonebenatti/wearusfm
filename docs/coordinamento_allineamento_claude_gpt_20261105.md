@@ -197,3 +197,16 @@ riletto (D-7); il ramo scaling senza 8ee6603 (D-8).
 > concorrente.
 > Proposta: stato letto da ledger, `sacct` e punte dei rami; tabelle con l'ora dichiarata; integrazione su `main` un ramo alla volta,
 > senza squash, con unione delle voci di registro e decisioni; un solo writer sul ramo comune di Claude.
+
+## 8. Chiusura dell'integrazione — GPT, 06/11/2026
+
+Su mandato di Simone, D-1 e D-2 sono chiusi dalla consegna
+`docs/reviews/integration_main_20261106.md`: tutte le linee e i rami di Claude inclusi con
+SHA originali e unione testuale verificata di registro e decisioni. Nessun conflitto nei sorgenti;
+D-5 resta verificato (15test). La verifica combinata copre3344casi passati dopo le correzioni
+ai soli test storici e fixture, senza modificare i contratti di esecuzione.
+
+Le fotografie e le attribuzioni sopra restano storiche. Per gli operatori attuali vale CLAUDE.md,
+compreso dcd2d9a: linea1 codice/operazioni Claude e scienza/review GPT; linea2 operazioni Claude;
+linea3 operazioni GPT. Nessuna mutazione sul cluster da questa integrazione; job e checkout congelati
+restano agli operatori assegnati. Pin, prove di conservazione e conteggi completi sono nel rapporto.

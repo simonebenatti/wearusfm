@@ -1,0 +1,35 @@
+{
+  "purpose": "Integrate published work into main without changing running or pending campaigns",
+  "main_before": "fe66e2db76001316b5750f3b25b76420dce73a35",
+  "code_merge_head": "633d8216460c1701160a8c914dbf41713e8d9e7a",
+  "merge_strategy": "ordinary no-ff merges; no squash/rebase",
+  "conflicts_resolved": [
+    "docs/claude_GPT_shared",
+    "docs/decisioni.md",
+    "docs/coordinamento_allineamento_claude_gpt_20261105.md"
+  ],
+  "code_conflicts": [],
+  "submitter_blob_unchanged": true,
+  "register_sections_unique": true,
+  "all_source_journal_and_decision_blocks_preserved": true,
+  "cluster_mutations": [],
+  "deploy_refs_updated": [],
+  "new_slurm_submissions": [],
+  "checkpoints_modified": [],
+  "existing_campaigns_repointed": false,
+  "raw_log_whitespace_preserved": true,
+  "projection_artifact": "projections.npz contains only seeded projection matrices (7x64 and384x48), no wearable signals",
+  "test_status": "all cases pass using full-suite plus affected-module rerun",
+  "main_latest_before_final_ff": "dcd2d9a2e15972026fc2a6813e78b028170f8208",
+  "merge_head": "f953d3ef1b239ca2f1102b97e5895a315766e44a",
+  "active_track_production_code_equal_to_inputs": true,
+  "test_only_followup_commit": "3263ee9",
+  "initial_test_failures_corrected_without_production_changes": true,
+  "combined_passing_cases": 3344,
+  "register_source_versions": 14,
+  "role_updates_preserved": [
+    "main fe66e2d line 2",
+    "main dcd2d9a line 1"
+  ],
+  "publication": "ready for fast-forward on origin/main; remote SHA verified after push"
+}

@@ -8414,6 +8414,19 @@ con una consegna dedicata ai ruoli, senza integrare o distribuire codice di esec
 - Specchietto aggiornato (tabella dei job e righe 1-4). Nessun job lanciato, nessuna scrittura su Leonardo, nessun messaggio alle
   sottochat.
 
+### GPT coordinamento — 06/11/2026 — Integrazione main: tre linee e consegne Claude
+
+Su richiesta di Simone integro in `codex/integration-main-20261106` coordinamento/scienza, scaling,
+consolidamento, log-quadratico e rami Claude con merge ordinari, conservando gli SHA originali.
+Inclusi gli aggiornamenti main fe66e2d e dcd2d9a sui ruoli, la consegna scaling0f4a9cf,
+Claude comune72ccb6f e le ricevute lunghe2df9aff. Registro e decisioni: tutti i blocchi delle14versioni
+sorgenti conservati testualmente, sezioni1/2 uniche; nessun conflitto nei sorgenti di produzione.
+Prima suite CPU:3181passati/19fallimenti/142errori; corretti soltanto test e fixture storici a3263ee9.
+Riesecuzione dei13moduli coinvolti:471passati; ulteriori22test dopo il merge delle ricevute lunghe.
+Copertura combinata3344casi, nessuno irrisolto o saltato; non è una seconda suite completa.
+Report `docs/reviews/integration_main_20261106.md` e prove in `results/infra/integration_main_20261106/`.
+Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione sul cluster.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12361,3 +12374,14 @@ eseguita durante questo passaggio. Le verifiche dei manifest finali restano da f
   resta a 9-10 job finche' i sedici non sono tutti dentro, poi scende di uno a ogni benchmark concluso.
 - Chiuso il caso aperto della mia voce precedente: la catena dello scaling non si e' fermata, i quattordici fit sono `COMPLETED 0:0`.
 - Nessuna azione mia sui job delle altre linee.
+
+### GPT coordinamento — 06/11/2026 — Chiusura D-1/D-2 e separazione dei contratti storici
+
+D-1/D-2 chiusi: codice, review e registri delle tre linee e di Claude confluiscono su main senza
+riscrittura dei commit o perdita di voci. Le iniziali anomalie della suite erano assunzioni nei test
+sulla coincidenza fra albero corrente e sorgenti storici congelati: correzione solo test a3263ee9,
+con controlli positivi sugli archivi Git e negativi sul codice diverso. Nessuna guardia di produzione
+allentata e tutti i161casi inizialmente falliti/in errore passano nella riesecuzione471/471.
+Main integrato non sostituisce i checkout dei job attivi; nessun intervento su checkpoint, cache,
+ambienti, ledger o riferimenti deploy. D-5 già corretto e verificato; nessun seguito scientifico
+nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main_20261106.md`.
