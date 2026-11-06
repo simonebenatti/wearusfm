@@ -1,0 +1,80 @@
+{
+  "complete": true,
+  "job_id": 63526191,
+  "checked_artifacts": {
+    "rank0.json": "a54add89d4090101a5232ddbde6e455a9d6c8ed37e5f2955fcbc989f85cedd2c",
+    "rank1.json": "40a13adad08ae37fe866c2f35e9845b862b80dccb56c16aab97632829dba611b",
+    "rank2.json": "3bf859f02ceaac6df796170ee3469aed754c4ef8e23b12a3227d13837aa2f0d4",
+    "rank3.json": "f364f08d0f596f33433ad2485289a802f812bac97791880789ea0a03aea72ea0",
+    "report.json": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+    "T100-G-300M.rank0.jsonl": "5f33c411894a09e0fd270722a325e9bbc22e277a042e04e01146a3ec5f1e85bb",
+    "T100-G-300M.rank1.jsonl": "bcfcf9eeaf1a00b52a179fd9c106d62cfcacfec477dcde8bd00ae8cfcacb5003",
+    "T100-G-300M.rank2.jsonl": "f0f21e31a38fff8e5fc77dac515e3539cf484b60ced4336240d3820c15c69ab8",
+    "T100-G-300M.rank3.jsonl": "1051eba5d52d5697fb9d5d93a62d97e28b28ff3fd84c5b3a2e2e55e479275884",
+    "T100-G-30M.rank0.jsonl": "4e0492194c9b5d5668452866b6f1ebc46bbf65a19813c28b03b3ed75ee5af9d9",
+    "T100-G-30M.rank1.jsonl": "a773fae929f4248b2b04666f7c94c02b4a6d0279cc3a19d98d8f9ec59e0c00bd",
+    "T100-G-30M.rank2.jsonl": "6528c619567988ff9a2146e88f578efcc6ed2e5422f3e3b5e89b6251905f4bf0",
+    "T100-G-30M.rank3.jsonl": "5adc32cbd5424c79e21b36d842a167282557a889653c4643128ba445f0659537"
+  },
+  "paired_rank_updates": 512,
+  "records_checked": 1024,
+  "cells": {
+    "T100-G-30M": {
+      "peak_allocated_gib": 13.112071990966797,
+      "device_gib": 63.42266845703125,
+      "measured_updates": 112,
+      "mean_update_s": 0.7078506508839512,
+      "phases": {
+        "native_warmup": {
+          "normal_update_mean_s": 0.7108762228573531,
+          "grad_norm_median": 17.327946669569386,
+          "clip_factor_median": 0.05775002801603807,
+          "fraction_clipped": 1.0,
+          "loss_total_mean": 5.866050566717141,
+          "loss_pose_mean": 1.0104115980919017
+        },
+        "peak_lr_stress": {
+          "normal_update_mean_s": 0.7048250789105494,
+          "grad_norm_median": 4.626125501651739,
+          "clip_factor_median": 0.2161657834977477,
+          "fraction_clipped": 1.0,
+          "loss_total_mean": 3.40162132238376,
+          "loss_pose_mean": 1.0909632489451624
+        }
+      }
+    },
+    "T100-G-300M": {
+      "peak_allocated_gib": 28.405681133270264,
+      "device_gib": 63.42266845703125,
+      "measured_updates": 112,
+      "mean_update_s": 2.7666786608873997,
+      "phases": {
+        "native_warmup": {
+          "normal_update_mean_s": 2.783123726714361,
+          "grad_norm_median": 12.714211031061959,
+          "clip_factor_median": 0.07865831912092434,
+          "fraction_clipped": 1.0,
+          "loss_total_mean": 4.749173716630444,
+          "loss_pose_mean": 1.0101116087172473
+        },
+        "peak_lr_stress": {
+          "normal_update_mean_s": 2.7502335950604384,
+          "grad_norm_median": 8.326357082940904,
+          "clip_factor_median": 0.1201011000794878,
+          "fraction_clipped": 1.0,
+          "loss_total_mean": 3.399858004167839,
+          "loss_pose_mean": 1.1002846137691322
+        }
+      }
+    }
+  },
+  "production_memory_proxy_gib": 33.52241694896408,
+  "production_memory_proxy_limit_gib": 57.08040161132813,
+  "production_memory_proxy_passed": true,
+  "real_production_memory_exercised": false,
+  "time_ratio_300m_30m": 3.908562713663428,
+  "allocated_gpu_hours": 0.6066666666666667,
+  "allocated_core_hours": 4.8533333333333335,
+  "scientific_5000_ready": false,
+  "scope": "Technical completion, pairing, finite updates and sampled memory; no downstream result or learning-rate optimality."
+}

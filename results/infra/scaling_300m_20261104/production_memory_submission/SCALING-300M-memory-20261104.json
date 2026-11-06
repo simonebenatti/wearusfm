@@ -1,0 +1,43 @@
+{
+ "id": "SCALING-300M-memory-20261104",
+ "creato": "2026-11-04T19:11:35+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 4.0,
+ "codice_sha": "0d5f0f90074bbaf1142be86d22490e360b632c63",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-memory-20261104",
+  "--comment=wearusfm:SCALING-300M-memory-20261104",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1,EXPECTED_SHA=0d5f0f90074bbaf1142be86d22490e360b632c63",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/scripts/slurm/scaling_production_memory.sbatch",
+  "results/infra/scaling_300m_20261104/production_memory_plan.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T19:11:35+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T19:11:35+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T19:11:36+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63527446,
+   "uscita": 0,
+   "stdout": "63527446\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63527446,
+ "uscita": 0,
+ "stdout": "63527446\n",
+ "stderr": ""
+}

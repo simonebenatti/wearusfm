@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-11-05T14:33:40+01:00",
+  "training_5000_complete": true,
+  "classification_extractions_complete": 4,
+  "classification_caches": 10,
+  "pose_300m_job_id": 63580385,
+  "pose_300m_state": "RUNNING",
+  "pose_300m_deadline": "2026-11-05T15:15:45+01:00",
+  "scientific_comparison_available": false,
+  "claude_review_commit": "c0a4f58b6428f6d0a6e33da51cf5eddbfca1eb73",
+  "claude_review_file": "docs/reviews/claude_review_scaling_300m_completion_extractions_20261105.md",
+  "claude_review_sha256": "07e55e976e70528bcf39debde68ff74ccd3674c474ba6d2529ec9c6d161cbd34",
+  "claude_verdict": "Reliable work; no blocking issue; CPU launcher approved. Retrospective verification, not retroactive release approval.",
+  "cpu_launcher_review_satisfied": true,
+  "cpu_stage_jobs_submitted": false,
+  "cpu_fit_gates_remaining": [
+    "complete pose receipt and real cache pins",
+    "publish concrete plans before submissions",
+    "pose validation and train-only resource benchmarks within frozen limits"
+  ],
+  "claude_receipt_review_pending": [
+    "T100-G-300M/p2 (completed14:26:17, exact receipt now collected)",
+    "T100-G-300M/pose (not complete at this snapshot)"
+  ],
+  "new_submissions_this_update": [],
+  "background_monitor": false,
+  "stop_on_first_gate_failure_or_timeout": true,
+  "allocated_cpu_budget_core_hours": 180,
+  "future_19618_memory_baseline_gib": 37.7518310546875,
+  "next": "Collect complete pose receipt, publish plans with actual pins, then approved validation and train-only benchmarks before any fit; no new user approval."
+}

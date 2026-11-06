@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-04",
+  "tests": {
+    "passed": 23,
+    "seconds": 12.99,
+    "command": "env PYTHONPATH=src:tests/cpu PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_scaling_preflight.py tests/cpu/test_tokenizer_preflight.py",
+    "coverage": [
+      "production LADDER-only configuration difference",
+      "exact production warmup and stress updates versus independent oracle",
+      "native-to-stress continuity of AdamW moments/model/EMA",
+      "same frontend initialization with shape-dependent model RNG allowed",
+      "data/support/record count/step/phase parity",
+      "single-arm rank-max memory and component-max timing",
+      "resource/dose guard constraints",
+      "historical tokenizer preflight regressions"
+    ]
+  },
+  "launcher_syntax": "passed",
+  "diff_check": "passed",
+  "review_status": "internal favorable, await Claude review requested by Simone",
+  "remote_jobs_submitted": [],
+  "sha256": {
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+    "scripts/slurm/scaling_preflight.sbatch": "ee57748ac2eca36ffa72db45f27ad4c74fb8ff3c2d4785288464f1d3637d7040",
+    "tests/cpu/test_scaling_preflight.py": "7e034a34733e9b20d0e2e83e994d29cb4a9b0d79b615282e22e78778db3455ad",
+    "results/infra/scaling_300m_20261104/preflight_plan.json": "79c208ed280715bfa499f8c4f4d73de113c6533bedc4c9bb8094ba973ecf92fa",
+    "results/infra/scaling_300m_20261104/resource_policy.json": "ea3a288696c09fc7cdf050365e60c4bc8fde3246edf30b3587b4297c5ed7e45d"
+  }
+}

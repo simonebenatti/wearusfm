@@ -1,0 +1,58 @@
+{
+  "allocated_cpus": 8,
+  "core_hours": 4.317777777777778,
+  "elapsed_seconds": 1943,
+  "exit_code": "0:0",
+  "job_slurm": 63626956,
+  "peak_rss_bytes": 2899570688.0,
+  "requested_seconds": 3840,
+  "rows": [
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "1943",
+      "End": "2026-11-05T22:55:59",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626956",
+      "JobName": "SCALING-probe-fit-02-20261105",
+      "MaxRSS": "",
+      "NodeList": "login08",
+      "Partition": "lrd_all_serial",
+      "Start": "2026-11-05T22:23:36",
+      "State": "COMPLETED",
+      "Timelimit": "01:04:00"
+    },
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "1943",
+      "End": "2026-11-05T22:55:59",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626956.batch",
+      "JobName": "batch",
+      "MaxRSS": "2831612K",
+      "NodeList": "login08",
+      "Partition": "",
+      "Start": "2026-11-05T22:23:36",
+      "State": "COMPLETED",
+      "Timelimit": ""
+    },
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "1943",
+      "End": "2026-11-05T22:55:59",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626956.extern",
+      "JobName": "extern",
+      "MaxRSS": "",
+      "NodeList": "login08",
+      "Partition": "",
+      "Start": "2026-11-05T22:23:36",
+      "State": "COMPLETED",
+      "Timelimit": ""
+    }
+  ],
+  "sacct_raw_sha256": "2c9ad83836b986bb702c4a402af7834ad3a09f9c1acdde15a746082526ae54a7",
+  "state": "COMPLETED"
+}

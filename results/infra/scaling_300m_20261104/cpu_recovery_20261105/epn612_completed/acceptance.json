@@ -1,0 +1,54 @@
+{
+  "accepted": true,
+  "dataset": "epn612",
+  "job_id": 63620780,
+  "report": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/benchmark.json",
+    "sha256": "4b52dc330b1d91cec3abf37e19f616e7669559ba52a5c2776c513c0ae29bdc51",
+    "bytes": 12114
+  },
+  "audit": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/audit_progress.jsonl",
+    "sha256": "d5362c8838cdefa603abc705945d163a652f3d66f332464f2a17687d58ce3ea2",
+    "bytes": 5950
+  },
+  "accounting": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/accounting.json",
+    "sha256": "5dca61f6640ed36e1bdda28e423e89dfca1091a2cc09696a1e56b33881e6062b",
+    "bytes": 686
+  },
+  "receipt": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/submissions/SCALING-probe-recover-epn612-20261105.json",
+    "sha256": "275750dacbcb7cfefaa7cc640ce8690985f65c91b9da023ce34a65a7bf2564b3",
+    "bytes": 1913
+  },
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "train_only": true,
+  "scientific_scores_computed": false,
+  "all_six_C_converged": true,
+  "n_iterations": [
+    748,
+    1245,
+    1378,
+    2379,
+    5163,
+    8933
+  ],
+  "complete_log_evidence": {
+    "log": {
+      "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/scaling_readers_recovery_63620780.out",
+      "sha256": "58cb28300acb2de954d8c5fec80b4d9d706489ad851fff99517269e1db6a5c0c",
+      "bytes": 1149
+    },
+    "line": 13,
+    "text": "{\"complete\": true, \"kind\": \"benchmark\", \"out\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-epn612-20261105/epn612\"}"
+  },
+  "elapsed_seconds": 2820,
+  "actual_core_hours": 6.266666666666667,
+  "max_rss_gib": 4.065578460693359,
+  "local_remote_bytes_and_sha_verified": true,
+  "limitations": [
+    "Does not rehash raw caches or reconstruct folds; those retain the accepted extraction/validation evidence."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "protocol": "scaling-production-memory-resource-policy-20261104-v1",
+  "technical_only": true,
+  "measured_preflight_sha256": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+  "formula": "ceil_900(500 * max(u300, historical30m_elapsed/5000 * max(1, ratio300_to30)) * 1.20 + 1200)",
+  "estimate": {
+    "walltime_seconds": 3600,
+    "gpu_hours_cap": 4.0,
+    "cpu_core_hours_cap": 32.0,
+    "seconds_per_step": 3.035413067851017,
+    "startup_diagnostics_checkpoint_reserve_seconds": 1200,
+    "checkout_included": false
+  },
+  "allocation": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 3600
+  },
+  "checkout": {
+    "cpus": 2,
+    "memory": "4G",
+    "seconds": 600,
+    "gpu_hours_cap": 0,
+    "cpu_core_hours_cap": 0.3333333333333333
+  },
+  "failure_policy": "stop; no blind retry or automatic scientific training",
+  "monitor": false
+}

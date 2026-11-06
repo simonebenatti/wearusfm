@@ -1,0 +1,74 @@
+{
+  "protocol": "scaling-offline-verification-20261104-v1",
+  "created_at_utc": "2026-11-04T17:00:24.850676+00:00",
+  "source_review_commits": [
+    "befab4a12e062260231cca3a5d563a233fd53346",
+    "2f3207bed3570d3107965521192e0ae231dc03b4"
+  ],
+  "cpu_suite": {
+    "passed": 248,
+    "failed": 0,
+    "elapsed_seconds": 19.52,
+    "executor": "independent critic /root/t25_b_comparability",
+    "python": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "argv": [
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/cpu/test_scaling_preflight.py",
+      "tests/cpu/test_tokenizer_preflight.py",
+      "tests/cpu/test_scaling_train.py",
+      "tests/cpu/test_tokenizer_train.py",
+      "tests/cpu/test_scaling_evaluation.py",
+      "tests/cpu/test_tokenizer_evaluation.py",
+      "tests/cpu/test_scaling_reading.py"
+    ],
+    "environment": {
+      "PYTHONPATH": "src:tests/cpu",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "review": {
+    "path": "docs/reviews/scaling_scientific_offline_critic_20261104.md",
+    "sha256": "eae3a088d402e60e00df5a0dcd222b0fd0138b726ec5c8e34e2f5218b4bcffef",
+    "verdict": "favourable for offline delivery; scientific runtime not ready"
+  },
+  "reviewed_file_sha256": {
+    "scripts/scaling_train.py": "3184f78ded0d3c33fbd9fd5b3c2fa0da71a98ed2139e21522ebd504edbb33194",
+    "scripts/scaling_evaluation.py": "395849450dc24a804a71133e272a2b76dd502a5466d7ca3a2d79c42bb292323e",
+    "scripts/scaling_reading.py": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5",
+    "results/infra/scaling_300m_20261104/training_source_contract.json": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+    "results/infra/scaling_300m_20261104/scientific_reading_policy.json": "da58ec3a7965da8db29e97a1089ae1d1d7e652dba4250f24dcb1b8e608602960",
+    "tests/cpu/test_scaling_preflight.py": "b026d65e7b5a3edebc8d2b18fb91f605ed4562daa4d1d936ccc79ec852ab2d91",
+    "tests/cpu/test_scaling_train.py": "92a17ec447f0cd34a53a3ab9f5245bbdd07889dbbe0919ba86475ab4606fa149",
+    "tests/cpu/test_scaling_evaluation.py": "2006f66ac82f92d59852ebe5f579f7acf14a6be1abe5941061fc189e10464f08",
+    "tests/cpu/test_scaling_reading.py": "60f7978c81b885fdffcd6280c8ad6df12ede45e57eff2da70f9663bf67ce661f"
+  },
+  "preflight_unchanged_against": "05d4bf0663481522a56d96c0b07847924cf5bd26",
+  "preflight_diff_checked_paths": [
+    "src/wearusfm",
+    "scripts/train_jepa.py",
+    "scripts/scaling_preflight.py",
+    "scripts/slurm/scaling_preflight.sbatch",
+    "results/infra/scaling_300m_20261104/preflight_plan.json",
+    "results/infra/scaling_300m_20261104/resource_policy.json"
+  ],
+  "cluster_access_performed": false,
+  "jobs_submitted": [],
+  "monitors_created": false,
+  "scientific_5000_runtime_ready": false,
+  "remaining_gates": [
+    "completed preflight",
+    "production memory measurement",
+    "pose ridge/classification reader and paired aggregation controllers",
+    "dimension-matched secondary S5",
+    "benchmark and concrete resource caps",
+    "verified control retention and all actual pins",
+    "full-chain review"
+  ]
+}

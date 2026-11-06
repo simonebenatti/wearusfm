@@ -1,0 +1,20 @@
+{
+  "protocol": "scaling-control-file-verification-20261104-v1",
+  "verified_date": "2026-11-04",
+  "verification": "remote sha256sum and stat; no checkpoint state load on login node",
+  "complete_file_identity": true,
+  "full_state_validation": "performed by guarded training/extraction on compute allocation",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0005000.pt",
+    "sha256": "49dd518b5eea632a16bc7ff88ab0fb013f30d61458164c9521867572c83daa80",
+    "bytes": 454381728,
+    "mtime": "2026-11-03T12:34:36+01:00"
+  },
+  "phase_snapshot_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T100-G/5000",
+  "summary_sha256": "4fbfa43be38ce5741650c9a4e5eab97fdc58121d6d2f2eaf0df7b2afa83d32ca",
+  "config_sha256": "dd68e9008b853b12ee38111c4c37370157f166aa70375cfb308bd22d5b6ab0fd",
+  "receipt_sha256": "d0a50fe777d1bf66df7670158324b48444875c645c1a9bbcb3d55e40560d96c7",
+  "required_until_utc": "2026-11-11T00:00:00Z",
+  "retention_contract_not_after_utc": "2026-12-13T00:00:00Z",
+  "retention_guarantee": "operational deadline under documented40day policy, not immunity from loss; recheck existence/hash at launch"
+}

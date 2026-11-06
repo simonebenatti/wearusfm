@@ -1,0 +1,258 @@
+{
+  "plans_commit": "1bde83e5be036ad6168ad25f6ffa80069ea58700",
+  "checkout_commands_commit": "26781eec13e4cf4cf8dc6fd80c6de35d79efd5f9",
+  "code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "checkout_job": 63591447,
+  "checkout_state": "COMPLETED0:0",
+  "checkout_gate_passed": true,
+  "validation_job": 63591791,
+  "validation_state": "COMPLETED0:0",
+  "validation_accepted": true,
+  "validation_report_sha256": "b0af2231601d33f60006205681b9943e21c26ff6346b28a4d584ca7840774c63",
+  "benchmarks_submitted": true,
+  "fits_submitted": true,
+  "scientific_scores_available": false,
+  "cpu_total_hard_cap": 310,
+  "stop_on_first_failure": true,
+  "background_monitor": false,
+  "next": "Collect and validate all14completed shards; publish pinned aggregate/compare plans before their submissions. No new training or continuation19618. No LLM/background polling.",
+  "stage_jobs": [
+    {
+      "id": "SCALING-pose-validate-20261105",
+      "job_id": 63591791,
+      "stage": "pose-validate",
+      "cell": null,
+      "core_hours_cap": 1.0,
+      "state": "COMPLETED0:0"
+    },
+    {
+      "id": "SCALING-pose-bench-30M-20261105",
+      "job_id": 63592426,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-30M-natural",
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
+    },
+    {
+      "id": "SCALING-pose-bench-300M-20261105",
+      "job_id": 63592917,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-300M-natural",
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
+    },
+    {
+      "id": "SCALING-pose-bench-matched-20261105",
+      "job_id": 63593029,
+      "stage": "pose-benchmark",
+      "cell": "T100-G-300M-matched",
+      "core_hours_cap": 1.3333333333333333,
+      "state": "COMPLETED0:0"
+    },
+    {
+      "id": "SCALING-probe-bench-30M-20261105",
+      "job_id": 63593262,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-30M-natural",
+      "core_hours_cap": 6.0,
+      "state": "COMPLETED0:0"
+    },
+    {
+      "id": "SCALING-probe-bench-300M-20261105",
+      "job_id": 63593508,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-300M-natural",
+      "core_hours_cap": 12.0,
+      "state": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)"
+    },
+    {
+      "id": "SCALING-probe-bench-matched-20261105",
+      "job_id": 63593593,
+      "stage": "probe-benchmark",
+      "cell": "T100-G-300M-matched",
+      "core_hours_cap": 6.0,
+      "state": "COMPLETED0:0"
+    }
+  ],
+  "pose_benchmarks_completed_accepted": 3,
+  "pose_ridge_estimated_seconds": 660,
+  "pose_ridge_cap_seconds": 3600,
+  "pose_ridge_live_runtime_gate_pending": true,
+  "cpu_actual_core_hours_completed_so_far": 104.38055555555555,
+  "last_checked_at": "2026-11-06T08:22:50.089545",
+  "classification_benchmark_states": {
+    "63593262": "COMPLETED0:0",
+    "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
+    "63593593": "COMPLETED0:0"
+  },
+  "pose_budget_prepared": true,
+  "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
+  "status": "ALL_FITS_SUBMITTED_12_OF14_CLASSIFICATION_COMPLETE",
+  "classification_benchmark_reports_complete": 15,
+  "classification_benchmark_reports_expected": 15,
+  "completed_benchmark_fits_converged": 95,
+  "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
+  "fit_cap_core_hours": 240,
+  "active_jobs_in_this_cpu_chain": 2,
+  "pose_ridge_blocked_by_chain_stop": false,
+  "retry_submitted": false,
+  "claude_review_requested_by_user": true,
+  "latest_claude_review_commit": "b66a3e6f59441e0e2d7d90d7ecedd179bd41a1a1",
+  "latest_claude_review_scope": "Review9 confirms release through25eca17; final readers/aggregates/comparison not covered",
+  "simone_310_core_hour_decision_registered": true,
+  "claude_recovery_dispatcher_approval_received": true,
+  "recovery_prepared_not_submitted": false,
+  "previous_fit_cap_core_hours": 136,
+  "previous_fit_cap_proven_infeasible": true,
+  "measured_full_fit_budget_available": true,
+  "simone_decision": {
+    "date": "2026-11-05",
+    "by": "Simone",
+    "reply": "approvo",
+    "proposal_commit": "4c670bd0c8793b6e2afbe470030f9d56be6a900b",
+    "scope": "310 CPU-only core-hours cumulative for completing the5000 evaluation, including22.027778 already consumed, with fit requested cap240 and all published operational gates. No new GPU work or19618continuation authorized."
+  },
+  "recovery_jobs": [
+    {
+      "id": "SCALING-probe-recover-epn612-20261105",
+      "job_id": 63620780,
+      "dataset": "epn612",
+      "submission_state": "sottomesso",
+      "submitted_at": "2026-11-05T20:22:50+01:00",
+      "dispatcher_receipt_hash_verified": true,
+      "requested_core_hours": 16,
+      "budget_core_hours_with_overtime": 16.4,
+      "slurm_state": "COMPLETED",
+      "started_at": "2026-11-05T20:26:23+01:00",
+      "elapsed_seconds_observed": 884,
+      "exit_code": "0:0",
+      "ended_at": "2026-11-05T21:13:23+01:00",
+      "elapsed_seconds": 2820,
+      "actual_core_hours": 6.266666666666667,
+      "accepted": true,
+      "acceptance_path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/epn612_completed/acceptance.json"
+    },
+    {
+      "id": "SCALING-probe-recover-uci_emg-20261105",
+      "job_id": 63625951,
+      "dataset": "uci_emg",
+      "submission_state": "sottomesso",
+      "submitted_at": "2026-11-05T21:32:52+01:00",
+      "dispatcher_receipt_hash_verified": true,
+      "requested_core_hours": 1.3333333333333333,
+      "budget_core_hours_with_overtime": 1.7333333333333334,
+      "slurm_state": "COMPLETED",
+      "pending_reason": "Resources",
+      "epn_acceptance_commit": "6e58861ad50fdf8bb6bd31d142c0db2f2d5ea8f1",
+      "exit_code": "0:0",
+      "ended_at": "2026-11-05T21:35:00+01:00",
+      "elapsed_seconds": 29,
+      "actual_core_hours": 0.06444444444444444,
+      "accepted": true
+    }
+  ],
+  "recovery_running_jobs": 0,
+  "recovery_pending_jobs": 0,
+  "measured_fit_shards": 14,
+  "measured_fit_requested_core_hours": 205.86666666666667,
+  "probe_complete_fits_converged": 90,
+  "historical_partial_fits_converged": 5,
+  "fit_metadata_commit": "ec221a64f47b66c6c7ac0b04444f5421b3e58e7a",
+  "fit_metadata_checkout_job": 63626623,
+  "fit_metadata_checkout_accepted": true,
+  "pose_ridge_submitted": true,
+  "probe_fit_shards_submitted": 14,
+  "probe_fit_shards_total": 14,
+  "probe_fit_shards_remaining": 0,
+  "fit_jobs": [
+    {
+      "id": "SCALING-pose-ridge-20261105",
+      "job_id": 63626871,
+      "stage": "pose-ridge",
+      "shard": null,
+      "submitted_at": "2026-11-05T21:47:26+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-01-20261105",
+      "job_id": 63626931,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-natural-p1-01",
+      "submitted_at": "2026-11-05T21:47:56+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-02-20261105",
+      "job_id": 63626956,
+      "stage": "probe-fit",
+      "shard": "T100-G-30M-natural-p1-02",
+      "submitted_at": "2026-11-05T21:48:05+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-03-20261105",
+      "job_id": 63626966,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-matched-p2-01",
+      "submitted_at": "2026-11-05T21:48:09+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-04-20261105",
+      "job_id": 63626971,
+      "stage": "probe-fit",
+      "shard": "T100-G-30M-natural-p2-01",
+      "submitted_at": "2026-11-05T21:48:12+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-05-20261105",
+      "job_id": 63626975,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-matched-p1-02",
+      "submitted_at": "2026-11-05T21:48:15+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-06-20261105",
+      "job_id": 63626978,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-natural-p2-01",
+      "submitted_at": "2026-11-05T21:48:20+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-07-20261105",
+      "job_id": 63627028,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-natural-p2-02",
+      "submitted_at": "2026-11-05T21:48:26+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-08-20261105",
+      "job_id": 63627047,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-natural-p2-03",
+      "submitted_at": "2026-11-05T21:48:29+01:00",
+      "receipt_dispatcher_verified": true
+    },
+    {
+      "id": "SCALING-probe-fit-09-20261105",
+      "job_id": 63627052,
+      "stage": "probe-fit",
+      "shard": "T100-G-300M-natural-p2-04",
+      "submitted_at": "2026-11-05T21:48:36+01:00",
+      "receipt_dispatcher_verified": true
+    }
+  ],
+  "pose_ridge_completed": true,
+  "pose_ridge_operational_accepted": true,
+  "local_runner_pid": 2321,
+  "local_runner_started_utc": "2026-11-05T21:08:47.402380+00:00",
+  "local_runner_deadline_seconds": 28800,
+  "local_bounded_submission_process": false,
+  "probe_fit_shards_completed_scheduler": 12,
+  "local_runner_result": "all_15_submitted",
+  "local_runner_completed": true
+}

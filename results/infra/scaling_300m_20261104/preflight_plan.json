@@ -1,0 +1,21 @@
+{
+  "protocol": "scaling-300m-preflight-20261104-v1",
+  "arms": [
+    "T100-G-30M",
+    "T100-G-300M"
+  ],
+  "source_plan": {
+    "path": "results/infra/tokenizer_execution_20261103/preflight_plan.json",
+    "sha256": "13ed48b6c88acc5fd6a9bc13e02d79287fc7d3225ec54b040bb8d5442dfa90e4"
+  },
+  "native_warmup_batches": 64,
+  "peak_stress_batches": 64,
+  "world_size": 4,
+  "global_batch_size": 32,
+  "num_workers": 6,
+  "max_memory_fraction": 0.9,
+  "deadline_seconds": 1500,
+  "scientific_endpoint": 5000,
+  "followup_endpoint_not_submitted": 19618,
+  "lr_policy": "Keep native peak1e-4/clip1 if train-only review accepts; stress is not optimality tuning or scientific training."
+}

@@ -1,0 +1,21 @@
+{
+  "complete": true,
+  "all_extractions_completed_0_0": true,
+  "new_caches": 12,
+  "reused_caches": 2,
+  "gpu_hours": 4.8533333333333335,
+  "allocated_core_hours": 38.82666666666667,
+  "gpu_hours_cap": 8.25,
+  "allocated_core_hours_cap": 66,
+  "accounting_evidence": [
+    "classification_completed_20261105/T100-G-300M/p1/accounting.json",
+    "classification_completed_20261105/T100-G-300M/p2/accounting.json",
+    "classification_completed_20261105/T100-G-30M/p1/accounting.json",
+    "classification_completed_20261105/T100-G-30M/p2/accounting.json",
+    "pose_completed_20261105/accounting.json"
+  ],
+  "claude_review_commit": "8b763610c65890349cbe6d96a9abb053270b59b1",
+  "scientific_comparison_available": false,
+  "O4": "closed: pose completed14:43:18 without timeout",
+  "next": "publish actual CPU plans, validate, train-only benchmarks, then resource-gated fits"
+}

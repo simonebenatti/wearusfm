@@ -1,0 +1,34 @@
+{
+  "protocol": "scaling-scientific-review-20261104-v1",
+  "complete": true,
+  "verdict": "APPROVATO",
+  "scope": "fresh300M5000",
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "execution_source_sha256": {
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04"
+  },
+  "allocation": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 19800
+  },
+  "gates_sha256": {
+    "preflight": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+    "production_memory": "45acd95c81db3a550eb9bd1dabf5055dd5ae5d35e94a8cb0fabb39035144f7f9",
+    "evaluation_readiness": "7b30f54c8527e2fee251101b926d2dec4e9b99b5b32a777afb6554a1bf059b8b"
+  },
+  "review": {
+    "path": "docs/reviews/scaling_scientific5000_gate_review_20261104.md",
+    "sha256": "7bfe8d4c42af7200dcfec585e379108898306e117357aa976532c87020e1d211",
+    "bytes": 6547
+  },
+  "reviewed_context": {
+    "path": "results/infra/scaling_300m_20261104/scientific5000_gate_context.json",
+    "sha256": "a8e1d7764857476859326222e21172843f5475d399a9e91c354207c658566361",
+    "bytes": 2957
+  },
+  "runtime_reread_required": true
+}

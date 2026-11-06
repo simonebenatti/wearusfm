@@ -1,0 +1,63 @@
+{
+  "schema": "scaling-preflight-submission-amendment-v1",
+  "recorded_utc": "2026-11-04T17:34:01.253260+00:00",
+  "original_execution_plan_commit": "70cbd85",
+  "frozen_code_sha": "05d4bf0663481522a56d96c0b07847924cf5bd26",
+  "review_commit": "befab4a12e062260231cca3a5d563a233fd53346",
+  "reason": "Explicit rejection: afterok checkout ID purged from controller; MinJobAge=30 seconds. No preflight job created.",
+  "evidence": {
+    "checkout_job_id": 63525937,
+    "checkout_state": "COMPLETED",
+    "checkout_exit_code": "0:0",
+    "checkout_start_cet": "2026-11-04T18:30:02+01:00",
+    "checkout_end_cet": "2026-11-04T18:30:18+01:00",
+    "checkout_elapsed_seconds": 16,
+    "allocated_cpu_core_hours": 0.008888888888888889,
+    "rejected_submission_cet": "2026-11-04T18:32:45+01:00",
+    "controller_query": "slurm_load_jobs error: Invalid job id specified",
+    "MinJobAge_seconds": 30,
+    "preflight_squeue_empty": true,
+    "preflight_sacct_empty": true,
+    "remote_checkout_head": "05d4bf0663481522a56d96c0b07847924cf5bd26",
+    "remote_checkout_status": "",
+    "remote_writable_paths": [],
+    "output_exists": false,
+    "remote_verified_sha256": {
+      "scripts/slurm/scaling_preflight.sbatch": "ee57748ac2eca36ffa72db45f27ad4c74fb8ff3c2d4785288464f1d3637d7040",
+      "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+      "results/infra/scaling_300m_20261104/preflight_plan.json": "79c208ed280715bfa499f8c4f4d73de113c6533bedc4c9bb8094ba973ecf92fa",
+      "results/infra/scaling_300m_20261104/resource_policy.json": "ea3a288696c09fc7cdf050365e60c4bc8fde3246edf30b3587b4297c5ed7e45d"
+    }
+  },
+  "operational_change": "Replace expired afterok with completed synchronous gate: sacct COMPLETED 0:0, checkout completion log, exact HEAD, clean read-only files and matching hashes. Same logical ID using --dopo-rifiuto; no --dopo.",
+  "unchanged": [
+    "scientific protocol",
+    "code SHA",
+    "resource caps",
+    "launcher",
+    "plan",
+    "output directory",
+    "shared submitter and ledger"
+  ],
+  "preflight_argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-300m/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "60",
+    "--id",
+    "SCALING-300M-preflight-20261104",
+    "--gpu-ore",
+    "2",
+    "--dopo-rifiuto",
+    "--",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0,EXPECTED_SHA=05d4bf0663481522a56d96c0b07847924cf5bd26",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0/scripts/slurm/scaling_preflight.sbatch",
+    "results/infra/scaling_300m_20261104/preflight_plan.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/preflight_05d4bf0"
+  ],
+  "new_monitors": false
+}

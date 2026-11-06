@@ -1,0 +1,71 @@
+{
+  "code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "publication_commit": "e4ed7eee672950fe07eb1f07f7954449aae71918",
+  "plan_sha256": "8b358951182f02dc6af8fafd2621f2dc1ae2eb98939e67c5c914ecc09933528d",
+  "checkout": {
+    "job_id": 63580233,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 53,
+    "cpus": 2,
+    "actual_core_hours": 0.029444444444444443
+  },
+  "jobs": [
+    {
+      "id": "SCALING-300M-eval-p1-20261105",
+      "job_id": 63580603,
+      "submitted_at": "2026-11-05T12:46:29+01:00",
+      "initial_observed_state": "RUNNING",
+      "gpus": 1,
+      "cpus": 8,
+      "gpu_hours_cap": 2.0
+    },
+    {
+      "id": "SCALING-30M-eval-p2-20261105",
+      "job_id": 63580820,
+      "submitted_at": "2026-11-05T12:48:13+01:00",
+      "initial_observed_state": "RUNNING",
+      "gpus": 1,
+      "cpus": 8,
+      "gpu_hours_cap": 0.75
+    },
+    {
+      "id": "SCALING-300M-eval-p2-20261105",
+      "job_id": 63580771,
+      "submitted_at": "2026-11-05T12:47:31+01:00",
+      "initial_observed_state": "RUNNING",
+      "gpus": 1,
+      "cpus": 8,
+      "gpu_hours_cap": 2.5
+    },
+    {
+      "id": "SCALING-30M-eval-p1-20261105",
+      "job_id": 63580776,
+      "submitted_at": "2026-11-05T12:47:50+01:00",
+      "initial_observed_state": "RUNNING",
+      "gpus": 1,
+      "cpus": 8,
+      "gpu_hours_cap": 0.5
+    },
+    {
+      "id": "SCALING-300M-eval-pose-20261105",
+      "job_id": 63580385,
+      "submitted_at": "2026-11-05T12:45:11+01:00",
+      "initial_observed_state": "RUNNING",
+      "gpus": 1,
+      "cpus": 8,
+      "gpu_hours_cap": 2.5
+    }
+  ],
+  "gpu_hours_cap": 8.25,
+  "allocated_cpu_core_hours_in_gpu_jobs_cap": 66,
+  "cpu_fit_jobs_submitted": false,
+  "background_monitor": false,
+  "automatic_training_continuation": false,
+  "state_evidence": "initial_status.txt",
+  "next": "After complete extraction receipts, validate cache identity/support and measure CPU benchmarks before fitting within existing caps.",
+  "claude_review_coverage": "c0a4f58 retrospective verification of completion/S3/release/extraction code; CPU launcher approved. Complete300M P2 and pose receipts not covered at13:41.",
+  "cpu_fits_wait_for_claude_review": false,
+  "review_prompt": "docs/prompt_claude_review_scaling_completion_extractions_20261105.md",
+  "latest_status": "../classification_completed_20261105/status.json"
+}

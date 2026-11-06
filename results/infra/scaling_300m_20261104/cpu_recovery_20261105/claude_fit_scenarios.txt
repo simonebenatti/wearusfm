@@ -1,0 +1,48 @@
+EPN612 300M naturale: cinque C = 1422.5s, massimo 674.9s; rapporti dei fold ['1.0000', '1.0000', '1.0047', '1.0047']
+   limite inferiore C=100 >= 559 s              : t100=  559.0s  per fold= 3984.6s  quattro fold= 15976.0s = 35.50 core-ore  (un fold solo entra in 7200 s: True)
+   C=100 = 1,5 x C=10                           : t100= 1012.3s  per fold= 5170.7s  quattro fold= 20731.8s = 46.07 core-ore  (un fold solo entra in 7200 s: True)
+   C=100 = 2 x C=10                             : t100= 1349.8s  per fold= 6183.0s  quattro fold= 24790.7s = 55.09 core-ore  (un fold solo entra in 7200 s: True)
+   C=100 a 12.000 iterazioni al ritmo di C=10   : t100= 1568.6s  per fold= 6839.5s  quattro fold= 27422.7s = 60.94 core-ore  (un fold solo entra in 7200 s: True)
+==========================================================================================
+tetto per shard 7200 s
+  T100-G-30M-natural     p1: shard minimi = 2; walltime sommato =  13054.1s
+        ninapro_db2+ninapro_db3+ninapro_db6 fold [0, 1]   6600.0s
+        ninapro_db2+ninapro_db3+ninapro_db6 fold [2, 3]   6454.1s
+  T100-G-30M-natural     p2: shard minimi = 1; walltime sommato =   4721.3s
+        epn612+uci_emg               fold [0, 1, 2, 3]   4721.3s
+  T100-G-300M-natural    p1: shard minimi = 5; walltime sommato =  31074.3s
+        ninapro_db2                  fold [0, 2]   6958.6s
+        ninapro_db2+ninapro_db6      fold [1]   7194.1s
+        ninapro_db2+ninapro_db6      fold [3]   6893.6s
+        ninapro_db3                  fold [0, 1, 2, 3]   3199.4s
+        ninapro_db6                  fold [0, 2]   6828.6s
+  T100-G-300M-natural    p2: shard minimi = 4; walltime sommato =  16456.0s (LIMITE INFERIORE: EPN612 parziale, UCI escluso)
+        epn612                       fold [0]   4104.6s
+        epn612                       fold [1]   4104.6s
+        epn612                       fold [2]   4123.4s
+        epn612                       fold [3]   4123.4s
+  T100-G-300M-matched    p1: shard minimi = 3; walltime sommato =  15142.7s
+        ninapro_db2                  fold [0, 1]   5198.8s
+        ninapro_db2                  fold [2, 3]   4991.6s
+        ninapro_db3+ninapro_db6      fold [0, 1, 2, 3]   4952.3s
+  T100-G-300M-matched    p2: shard minimi = 1; walltime sommato =   4108.3s
+        epn612+uci_emg               fold [0, 1, 2, 3]   4108.3s
+  TOTALE: shard minimi = 16; walltime sommato >=   84556.7s = 187.90 core-ore
+==========================================================================================
+tetto per shard 10800 s
+  T100-G-30M-natural     p1: shard minimi = 2; walltime sommato =  13054.1s
+  T100-G-30M-natural     p2: shard minimi = 1; walltime sommato =   4721.3s
+  T100-G-300M-natural    p1: shard minimi = 4; walltime sommato =  30954.3s
+  T100-G-300M-natural    p2: shard minimi = 2; walltime sommato =  16216.0s (LIMITE INFERIORE: EPN612 parziale, UCI escluso)
+  T100-G-300M-matched    p1: shard minimi = 2; walltime sommato =  15022.7s
+  T100-G-300M-matched    p2: shard minimi = 1; walltime sommato =   4108.3s
+  TOTALE: shard minimi = 12; walltime sommato >=   84076.7s = 186.84 core-ore
+==========================================================================================
+tetto per shard 14400 s
+  T100-G-30M-natural     p1: shard minimi = 1; walltime sommato =  12934.1s
+  T100-G-30M-natural     p2: shard minimi = 1; walltime sommato =   4721.3s
+  T100-G-300M-natural    p1: shard minimi = 3; walltime sommato =  30834.3s
+  T100-G-300M-natural    p2: shard minimi = 2; walltime sommato =  16216.0s (LIMITE INFERIORE: EPN612 parziale, UCI escluso)
+  T100-G-300M-matched    p1: shard minimi = 2; walltime sommato =  15022.7s
+  T100-G-300M-matched    p2: shard minimi = 1; walltime sommato =   4108.3s
+  TOTALE: shard minimi = 10; walltime sommato >=   83836.7s = 186.30 core-ore

@@ -1,0 +1,24 @@
+{
+  "protocol": "scaling-production-memory-submission-20261104-v1",
+  "code_sha": "0d5f0f90074bbaf1142be86d22490e360b632c63",
+  "checkout": {
+    "job_id": 63527364,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 21,
+    "cpu_core_hours": 0.011666666666666667,
+    "gate": "checkout_gate.json"
+  },
+  "memory": {
+    "job_id": 63527446,
+    "submitted": true,
+    "last_observed_state": "PENDING",
+    "reason": "Priority",
+    "gpu_hours_cap": 4,
+    "cpu_core_hours_cap": 32,
+    "walltime_seconds": 3600
+  },
+  "monitor": false,
+  "local_note": "First sandbox attempt failed on ledger directory creation before reservation or sbatch; the authorized submitter then reserved and submitted once.",
+  "observed_at": "2026-11-04T19:11:43+01:00"
+}

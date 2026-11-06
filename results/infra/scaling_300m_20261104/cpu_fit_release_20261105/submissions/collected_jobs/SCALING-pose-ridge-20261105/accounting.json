@@ -1,0 +1,58 @@
+{
+  "allocated_cpus": 8,
+  "core_hours": 0.6422222222222222,
+  "elapsed_seconds": 289,
+  "exit_code": "0:0",
+  "job_slurm": 63626871,
+  "peak_rss_bytes": 7727443968.0,
+  "requested_seconds": 3600,
+  "rows": [
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "289",
+      "End": "2026-11-05T21:52:20",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626871",
+      "JobName": "SCALING-pose-ridge-20261105",
+      "MaxRSS": "",
+      "NodeList": "login08",
+      "Partition": "lrd_all_serial",
+      "Start": "2026-11-05T21:47:31",
+      "State": "COMPLETED",
+      "Timelimit": "01:00:00"
+    },
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "289",
+      "End": "2026-11-05T21:52:20",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626871.batch",
+      "JobName": "batch",
+      "MaxRSS": "7546332K",
+      "NodeList": "login08",
+      "Partition": "",
+      "Start": "2026-11-05T21:47:31",
+      "State": "COMPLETED",
+      "Timelimit": ""
+    },
+    {
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+      "ElapsedRaw": "289",
+      "End": "2026-11-05T21:52:20",
+      "ExitCode": "0:0",
+      "JobIDRaw": "63626871.extern",
+      "JobName": "extern",
+      "MaxRSS": "",
+      "NodeList": "login08",
+      "Partition": "",
+      "Start": "2026-11-05T21:47:31",
+      "State": "COMPLETED",
+      "Timelimit": ""
+    }
+  ],
+  "sacct_raw_sha256": "200f17f6f947fc8fe5bcb69f0449b051b30fe21f3f8800cfe55762a426ae7361",
+  "state": "COMPLETED"
+}
