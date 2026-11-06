@@ -7210,6 +7210,42 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Corsia: ondata di quattro job, limiti sommati 6 h 15. Le successive restano entro otto job CPU in sospeso per tutto
   l'utente e, per mia scelta, entro otto ore di limiti sommati.
 
+### 2026-11-06 | Claude | Linea 2: prima ondata della fase fit conclusa (4 su 4 `COMPLETED 0:0`); seconda ondata inviata
+- Ondata 1 (righe 1-4 di 72), chiusa alle 17:58:52:
+
+  | ID logico | Job | Esito | Durata | Limite |
+  |---|---|---|---|---|
+  | `LONG-FIT-G19618-pose-20261105` | 63684760 | `COMPLETED 0:0` | 3 min 16 s | 1 h |
+  | `LONG-FIT-G39237-pose-20261105` | 63684842 | `COMPLETED 0:0` | 3 min 7 s | 1 h |
+  | `LONG-FIT-G49046-pose-20261105` | 63684845 | `COMPLETED 0:0` | 3 min 19 s | 1 h |
+  | `LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1` | 63684847 | `COMPLETED 0:0` | 22 min 33 s | 3 h 15 |
+
+- Dei quattro report ho letto solo la provenienza, nessun punteggio: `complete`, protocollo, `code_sha` `a70e29e`,
+  source nuova `77e09626...`, ricetta `b2356a8e...`, record A1 con il manifest dei 28 input (`983df484...`); per il fit
+  di classificazione anche `fold_indices` [0] e `global_resource_gate_passed` vero. sha256 e dimensioni dei report
+  nella lettura archiviata.
+- Consumo dell'ondata: 1.935 s di esecuzione per 8 CPU, 4,300 core-ore; con il checkout (0,025) la fase e' a 4,325
+  core-ore, 0 GPU-ore.
+- Letture prima dell'ondata 2 (18:03, `execution/audit/precheck_fit_wave2_20261106.log`): `$WORK` 18,62 GiB liberi
+  (soglia 10,724), SCRATCH scrivibile, corsia seriale vuota, ID dell'ondata liberi nel ledger, punte dei rami gia'
+  lette (`main` `abb2b3e`, ramo di GPT `30b8ae1`, registro `a3917e9`).
+- Ondata 2 (righe 5-6), inviata alle 18:04 con submitter e ledger comuni, `--agente claude`:
+
+  | ID logico | Job | Limite |
+  |---|---|---|
+  | `LONG-FIT-G19618-pre-ninapro_db2-F1-20261105-A1` | 63687063 | 3 h 30 |
+  | `LONG-FIT-G19618-pre-ninapro_db2-F2-20261105-A1` | 63687064 | 3 h 15 |
+
+- Commit documentale `581b2858bd045c31d05c5c17dfb23b15bd159d32` sul ramo `claude/consolidation-long-exec-20261105`
+  (SHA remoto verificato): ID nel `launch_plan.json`, stati del ledger, lettura pre-invio e log d'invio. Tre controlli
+  e 342 test a posto; nessun file coperto toccato.
+- Prerequisito dello scaling riletto, come chiede la review di GPT `30b8ae1`: il launch plan limita la linea 2 a due
+  job in corsia finche' il ledger non mostra un ID `SCALING-compare-` inviato. `SCALING-compare-20261106` e'
+  `sottomesso` (63671773) dalle 14:36:12 del 06/11: da allora valgono le ondate entro otto job CPU in sospeso.
+- Strumenti (fuori dal repo, `~/wearusfm_local/line2/`): file delle 24 ondate tagliati e verificati contro le 72 righe
+  (al massimo 8 job e 8 ore di limiti sommati per ondata); una lettura unica prima di ogni invio (esito e provenienza
+  dell'ondata precedente, spazio, ledger, certificato, punte dei rami).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9990,3 +10026,27 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   punti gia' elencati nella voce precedente restano gli stessi.
 - Per la sottochat 1 e il coordinamento: dalle 17:25 la corsia seriale e' occupata dai fit della linea 2, uno alla
   volta. Tempi reali del primo fit di posa: 3 min 16 s su un'ora di limite.
+
+### 2026-11-06 | Claude | Linea 2: scelta di Simone per la notte, review di GPT ricevuta, una mia svista, spazio in `$WORK` (per Simone, GPT consolidamento e coordinamento)
+- Scelta di Simone (sottochat 2, 06/11 alle 17:41 circa): alla domanda «Come uso la corsia stanotte, dopo la scadenza
+  del certificato ssh?» ha risposto «Rinnovo il certificato»; l'altra risposta proposta era «Accoda 8 fit». Restano
+  quindi le ondate corte, anche di notte. Il certificato vale fino alle 05:50:43 del 07/11; dopo non invio ne' leggo
+  finche' Simone non lo rinnova. Chiude il punto aperto della mia voce precedente.
+- Review di GPT sull'implementazione A1 ricevuta: `30b8ae1` su `codex/consolidation-20261104` (17:03), APPROVATO sul
+  piano tecnico e scientifico, nessun difetto bloccante; verifica successiva, non un nuovo cancello. Avvertenze prese:
+  (i) il preflight dei fit non copre i controlli finali dei confronti: prima di `compare-pose` e `summary` faccio in
+  sola lettura i controlli di contesto, pin e artefatti; (ii) prerequisito dello scaling riletto (voce in sezione 1).
+  Sull'autorizzazione: il record nei piani cita la domanda e la risposta reali di Simone nella sottochat 2 («Sì,
+  approvo», 16:49 circa), non una frase ricostruita.
+- Svista mia, senza effetti: la review di GPT e' arrivata alle 17:03, mentre girava la suite completa. Avevo riletto
+  le punte dei rami alle 16:49; ho fatto il push di deploy alle 17:20 e gli invii alle 17:25-17:26 senza rileggere il
+  ramo di GPT, e la review l'ho letta alle 17:42. Era favorevole e non bloccante. Rimedio: la lettura prima di ogni
+  ondata confronta le punte di `main`, ramo di GPT e registro con le ultime lette e non da' il via se una si e' mossa.
+- `$WORK`: 18,62 GiB liberi alle 18:03 (29,8 alle 10:31, 19,2 alle 17:23). Fra le 17:52 e le 18:01 l'uso del progetto
+  e' cresciuto di 0,23 GiB e quello dell'utente `sbenatti` di 2,7 MB: in quell'intervallo scrivono altri utenti del
+  progetto, non i job nostri. Soglia C-1 10,724 GiB: sotto la soglia non invio e lo segnalo.
+- Tempi reali: il primo fit di classificazione (DB2 pre, dose 19618, fold 0) ha impiegato 22 min 33 s su 3 h 15 di
+  limite. E' un solo dato: non ne ricavo una durata della fase.
+- Per il coordinamento e le altre linee: in corsia seriale gira un fit della linea 2 alla volta e in coda c'e' al
+  massimo l'ondata corrente (ora due job). Nella coda dell'utente c'e' un job con nome nuovo, `evalf_smoke`: e' di
+  MONALISA (fuori perimetro), da filtrare come `mona_*`.
