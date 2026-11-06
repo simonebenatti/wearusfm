@@ -178,6 +178,31 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: passaggio della linea 1 a Claude, fermo operativo confermato
+
+Istruzione diretta di Simone: Claude scrive il codice e gestisce deployment, invii, stato/log e raccolta della
+linea 1 scaling 30M/300M; GPT svolge ragionamento scientifico, valutazione delle direzioni e review e resta
+integratore su main. Linee 2 e 3 invariate. GPT conferma da subito il fermo: nessun invio, deploy,
+cancellazione, rilancio, runner, monitoraggio operativo o raccolta della linea 1. Nessuna operazione cluster
+eseguita per questa consegna; solo controllo locale, registrazione e pubblicazione su origin.
+
+Ultimo commit del ramo GPT prima di questa consegna: `97125bd8bb8b14590958501ba91986c8456037f9`, base del
+ramo di esecuzione di Claude. Ultimo invio GPT: `SCALING-probe-fit-14-20261105`, job **63635524**, accettato
+il 06/11 alle 00:14:56 CET, dipendenza `afterok:63634004`. I job gia' inviati restano invariati; nessun duplicato.
+`cpu_fit_release_20261105/submissions/finish_result.json` attesta `all_15_submitted` (ridge + 14 fit):
+il processo locale ha terminato e non si riavvia. Questo non attesta il completamento dei job sul cluster.
+
+**Conferma richiesta per il passaggio a Claude:** nel ramo GPT a `97125bd` non sono stati preparati ne'
+pubblicati comandi concreti, piani di invio o manifest finali per i sei aggregati e il confronto. Sono presenti
+solo codice, interfacce e budget generici. Nessun aggregato o confronto e' stato inviato da GPT.
+Claude puo' preparare la consegna dal proprio ramo; gli invii restano preceduti dalla review GPT richiesta da Simone.
+
+Review 10 Claude `d3976c36172bbae7bb51daf17b94f317b1f97fc0` recepita: codice APPROVATO, nessun blocco,
+ultimo commit coperto `97125bd`, numerica congelata `aef665ba7ea66fc80291846487907bb3ef9107df`.
+S-1...S-4 rinviati al prossimo giro; nessuna modifica al codice congelato. CLAUDE.md su main viene allineato
+con una consegna dedicata ai ruoli, senza integrare o distribuire codice di esecuzione.
+
+
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -8341,6 +8366,21 @@ Contrastiva soltanto seconda domanda separata; nessuna ricetta arbitraria lancia
   peggiore del fit 14 e dei due stadi si resta sotto 150 contro il tetto di 310.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: confini e prossime review della linea 1 affidata a Claude
+
+Il fermo GPT e la conferma di consegna non approvano comandi o manifest futuri. Prima degli invii GPT
+rivede quanto Claude pubblica sul ramo di esecuzione da `97125bd`: (1) accettazione del fit 14, hash e sei
+comandi degli aggregati; (2) sei aggregati raccolti e validati, manifest e comando del confronto; (3) esito
+finale. Ancore, mappatura shard, impronte OOF e pin: sezioni 3 e 5 della Review 10 `d3976c3`.
+Gli hash del manifest del confronto richiedono aggregati reali: nessun afterok sostituisce la raccolta e la review.
+
+Invariati: 310 core-ore CPU cumulative, 14 fit, sei aggregati, un confronto; submitter/ledger comuni,
+checkout congelati, S8 congelata, nessun retry cieco e nessun duplicato. Il seguito a 19.618 NON e'
+autorizzato e resta decisione di Simone. Nessuna modifica alle linee 2 e 3. I controlli di stato/log e la raccolta
+sono di Claude; GPT valuta le evidenze pubblicate. Nessuna nuova lettura remota o interpretazione scientifica
+eseguita durante questo passaggio. Le verifiche dei manifest finali restano da fare.
+
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
