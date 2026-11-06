@@ -8441,6 +8441,19 @@ proposto; corpus di pretraining invariato. Report `docs/reviews/scaling_consolid
 due figure PNG/SVG, dati e script riproducibile pubblicati con questa consegna.
 Verifica dei7hash e rilettura indipendente favorevole; nessun nuovo calcolo sul cluster.
 
+### GPT coordinamento — 06/11/2026 — Sparring sulla sintesi Claude9b38c20 delle linee1/2
+
+Verificata su richiesta di Simone la voce Claude «Coordinamento: lettura d'insieme delle linee1 e2»
+a9b38c2097eeaad34f7cf024c118cade3eee31a8d. Ricalcolo locale dei costi cumulativi e degli aggregati,
+con due verifiche indipendenti: numeri confermati, precisazioni interpretative pubblicate in
+`docs/reviews/claude_synthesis_response_20261106.md`. Trainer30M19k16,8678GPUh e300M5k16,2945
+quasi pari costo;30M49k42,0202 contro300M19k63,9331proiettate NON pari costo, ma circa34,3%meno.
+Rapporto reale a5k3,7767, collaudo3,9086. P1+0,601[0,135;1,026] resta un piccolo segnale
+positivo condizionato; storicoT25−B+0,510[0,090;0,926] invita alla prudenza senza diventare
+soglia di rumore o correzione. EPNFT15+0,834pp confermato: beneficio modesto, convenienzaFM
+non ancora dimostrata. Lungo misura già posa/NinaPro; mancaFT−scratch fuoriEPN/conpocheetichette.
+Script e fonti in `results/infra/review_claude_synthesis_20261106/`. Nessun job/cluster/nuovoIC.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12409,3 +12422,13 @@ rende meno della logistica storica82,58%. Scaling positivo nella classificazione
 esposizione, non a pari costo; compressione matched non isola causalmente la capacità della
 testa. Nessun verdetto sul lungo senza i confronti ancora mancanti. Fonti e grafici verificati;
 nessun lancio, modifica di runtime, soglia, loss, budget o checkout delle campagne.
+
+### GPT coordinamento — 06/11/2026 — Precisazioni alla lettura d'insieme Claude, nessun cambio ai criteri
+
+Nessun difetto numerico bloccante nella voce9b38c20. Accostamenti dose/taglia e costo restano
+posthoc descrittivi;300M19k/30M49k differisce anche per fase dello schedule e non sostituisce
+il primario a pari dose. Lo storicoT25/B non quantifica la variabilità tra semi e non annulla
+P1; ancheEPN resta a seme unico. «Nessuna prova in corso» va riferito al valoreFT−scratch
+conpocheetichette/fuoriEPN, non genericamente a posa/NinaPro/utenti esclusi. Dati completi,
+limiti e formulazioni di convergenza nella review; nessuna modifica a codice, piani, soglie,
+budget o ruoli operativi.

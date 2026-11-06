@@ -1,0 +1,99 @@
+{
+  "claude_reviewed_commit": "9b38c2097eeaad34f7cf024c118cade3eee31a8d",
+  "source_sha256": {
+    "results/infra/tokenizer_execution_20261103/5000/T100-G/summary.json": "4fbfa43be38ce5741650c9a4e5eab97fdc58121d6d2f2eaf0df7b2afa83d32ca",
+    "results/infra/tokenizer_execution_20261103/19618/T100-G/summary.json": "46f89b1414385d246d32f0f4c0b6c04e62294de72d9fc07a9a69a8158d1a3eea",
+    "results/infra/scaling_300m_20261104/scientific5000_completion_20261105/summary.json": "f0975c4de0f810b0b5782984e699b50c41c1c67ad930aa9dd0bd650979182af9",
+    "results/infra/consolidation_long_20261105/continuation/30000/receipt.json": "c12943f6a3a84259cb2cfb04aebd4cc07c28accce2deadf25848c52ec64c2b84",
+    "results/infra/consolidation_long_20261105/continuation/39237/receipt.json": "cb4ee9512b1ca057d3872b1ca313d41b847ec21fab0b3bfec0e1f85d8c0bb3b2",
+    "results/infra/consolidation_long_20261105/continuation/49046/receipt.json": "c0245ccf3a201fb4ab111c8ade106d54063e6123a503379c347c82c22336ccc3",
+    "results/infra/scaling_consolidation_synthesis_20261106/data.json": "aa1a8f64c022105f441af12830e1319473aed00310749462142071c89f8d3d2f",
+    "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/final/comparison.json": "20e899455889b37fe12747acbbba688f204bdcb29bf480a270f8fc748a1128e4",
+    "results/infra/tokenizer_evaluation_20261103/t25_b_repeatability_20261104/paired_report.json": "26886cd3c1106af252037d79d51e0517cba424c7a9b13385d9a7e30d1597beb7",
+    "results/infra/tokenizer_evaluation_20261103/cpu_19618/final/dose_comparison.json": "ac9d54c70a6a590f2138b9104d90b7ff1992153fa7204ae3b5e93e9bf91c2785"
+  },
+  "training_gpu_hours_cumulative": {
+    "30m_5000_measured": 4.314477512041727,
+    "30m_19618_measured": 16.867774082819622,
+    "30m_49046_measured": 42.02019736395942,
+    "300m_5000_measured": 16.294503951867423,
+    "300m_19618_linear_extrapolation_NOT_actual": 63.93311570554702
+  },
+  "cost_scope": "Trainer elapsed time \u00d74GPUs; excludes SLURM overhead, technical pilots, extraction, readouts and downstream fitting.",
+  "actual_runtime_ratio_at_5000": 3.776703878138056,
+  "30m19618_cost_above_300m5000_percent": 3.51818093171532,
+  "30m49046_saving_vs_projected300m19618_percent": 34.274754326866585,
+  "descriptive_dose_classification": {
+    "epn612": {
+      "30m_5000_percent": 76.31422505307856,
+      "30m_19618_percent": 82.57749469214436,
+      "delta_pp": 6.263269639065797
+    },
+    "p1": {
+      "30m_5000_percent": 15.359194341844033,
+      "30m_19618_percent": 17.18658769968897,
+      "delta_pp": 1.8273933578449384
+    },
+    "p2": {
+      "30m_5000_percent": 77.47102256348852,
+      "30m_19618_percent": 80.51745663605598,
+      "delta_pp": 3.0464340725674646
+    },
+    "uci_emg": {
+      "30m_5000_percent": 78.62782007389849,
+      "30m_19618_percent": 78.45741857996761,
+      "delta_pp": -0.170401493930882
+    }
+  },
+  "descriptive_dose_pose": {
+    "E_5000": 0.8998158173809316,
+    "E_19618": 0.8389325042798939,
+    "E_delta": -0.060883313101037784,
+    "relative_E_reduction": 0.06766197251149586,
+    "variance_ratio_5000": 0.0707971841711717,
+    "variance_ratio_19618": 0.16881523543935756,
+    "correlation_5000": 0.3213000523970336,
+    "correlation_19618": 0.40144288627557545,
+    "mae_rad_5000": 0.3253098881047205,
+    "mae_rad_19618": 0.30006818952115694
+  },
+  "p1_scaling": {
+    "delta_pp": 0.6014477878441005,
+    "ci95_pp": [
+      0.13463314621907224,
+      1.0261951541759056
+    ]
+  },
+  "p1_historical": {
+    "name": "T25-L_minus_B19618",
+    "delta_pp": 0.5103711275108391,
+    "ci95_pp": [
+      0.08984067234337215,
+      0.925892179921504
+    ]
+  },
+  "epn_ft15": {
+    "finetune_percent": 93.89384288747348,
+    "scratch_percent": 93.05944798301486,
+    "contrast": {
+      "delta_pp": 0.834394904458613,
+      "ci95_pp": [
+        0.4160828025477664,
+        1.2632696390658116
+      ],
+      "paired_subject_se_pp": 0.21336788126726539
+    },
+    "relative_balanced_error_reduction_percent": 12.022025084123888,
+    "change_in_gap": {
+      "delta5_pp": 1.40339702760085,
+      "delta15_pp": 0.834394904458613,
+      "delta_pp": -0.5690021231422371,
+      "ci95_pp": [
+        -1.0509554140127224,
+        -0.05090233545646973
+      ],
+      "paired_subject_se_pp": 0.2512204054597008
+    }
+  },
+  "scope": "Post hoc descriptive review only; no new confidence intervals, thresholds or protocol decisions."
+}

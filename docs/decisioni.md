@@ -7787,3 +7787,14 @@ dataset ancora proposta, senza cambi al corpus. Sintesi e dati in
 `docs/reviews/scaling_consolidation_synthesis_20261106.md` e
 `results/infra/scaling_consolidation_synthesis_20261106/`. Questa voce registra la lettura;
 non aggiunge esperimenti, soglie o autorizzazioni e non riassegna gli operatori.
+
+### 2026-11-06 — Review descrittiva della sintesi Claude9b38c20: nessun criterio modificato
+
+Su richiesta di Simone, verificati numeri e letture dose/taglia, P1 e fine-tuning EPN.
+Convergenza sostanziale; risposta in `docs/reviews/claude_synthesis_response_20261106.md`.
+Il futuro300M19k/30M49k è un accostamento prestazioni/costo diverso, non iso-compute;
+il primario resta a pari dose. StoricoT25/B non è soglia di rumore, P1 resta favorevole
+condizionatamente ai training osservati; beneficioFT−scratch EPN modesto e misurato,
+convenienza generale non acquisita. Nessun nuovo job, bootstrap, soglia, criterio o decisione
+scientifica; nessuna modifica ai piani già approvati. Ricalcolo locale e hash delle fonti in
+`results/infra/review_claude_synthesis_20261106/`.
