@@ -6755,3 +6755,24 @@ snapshot novejob -> rifiuto, identico snapshot con squeue exit1/stdoutvuoto -> C
 Il PASS attuale non basta: prima degli invii Claude attesta exit0 della lettura fresca o corregge il solo
 helper e aggiunge regressione. Nessuna correzione richiesta ai sei argv o al codice numerico congelato.
 Review di confronto/esito ancora da fare; condizioni di coda/ledger/pin sempre da rileggere dall'operatore.
+
+### 06/11/2026 — Simone approva il seguito scaling 300M fino a 19.618
+
+Dopo il confronto finale `7fdb2e8` e la terza review GPT `5e15009`, Simone:
+«va bene, approvo la continuazione del 300M a 19.618 passi. Preparami il prompt
+per claude, cosi' prepara il piano e poi claude lancia».
+
+Esito accettato a5000: EPN +1,917pp IC[1,329;2,527], E_dyn posa sostanzialmente
+invariato, NI P1/P2 sostenuta. La nuova decisione autorizza la proposta S8 di
+continuazione: 14.618update aggiuntivi, stessa ricetta/schedule/seme, valutazioni
+teacher posa/P1/P2 contro30M19618 e controllo matched secondario.
+L'operatore resta Claude; GPT rivede piano, codice e rilasci pertinenti prima
+degli invii. Nessun ulteriore consenso di Simone per i passaggi della catena
+approvata e conformi al piano rivisto. Nessun seguito oltre19618 incluso.
+
+Si conserva il freezev2 come limite di pianificazione: 59GPUh training e7GPUh
+estrazioni (66,35 con tolleranze), 350coreh CPU-only, conti separati delle CPU
+nei jobGPU. Nessun ampliamento automatico. Stato reale dei controlli, pin,
+continuita' della ripresa e benchmark dell'endpoint restano da verificare.
+Non si riscrivono i freeze storici, correttamente non autorizzati alla loro data.
+Prompt operativo: `docs/prompt_claude_scaling_continuation19618_20261106.md`.

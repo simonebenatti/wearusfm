@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: Simone approva la continuazione 300M a 19.618, prompt operativo a Claude
+
+Decisione successiva alla review finale5e15009: Simone «va bene, approvo la continuazione del 300M a
+19.618 passi. Preparami il prompt per claude, cosi' prepara il piano e poi claude lancia».
+Registrata approvazione della catena prevista: ripresa5000->19618, estrazioni teacher e lettori
+posa/P1/P2 contro30M alla stessa dose. Claude prepara e opera, GPT rivede i rilasci prima degli invii;
+dopo review favorevole nessuna nuova richiesta del consenso di Simone per gli stessi passaggi conformi.
+Prompt: docs/prompt_claude_scaling_continuation19618_20261106.md. Stessa ricetta, nessun nuovo
+seme/loss/architettura; freezev2 mantenuto come limite di pianificazione, nessun ampliamento automatico.
+Riletti protocollo e budget, secondo controllo indipendente dei vincoli. Nessun job o deploy da GPT.
+
 ### 06/11/2026 — GPT: terza review scaling, esito accettato e lettura scientifica indipendente
 
 Consegna Claude 7fdb2e85945b23930de5347cc8999492b5d12bec ACCETTATA: nessun blocco tecnico
@@ -6197,6 +6208,16 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: autorizzazione 19.618 acquisita, restano i requisiti tecnici della ripresa
+
+Superata dalla nuova decisione di Simone la precedente assenza di autorizzazione alla continuazione:
+non va richiesta di nuovo. I documenti storici restano immutati. Il via non certifica wrapper o pin
+futuri: trainer/validatori/lettori/comparatore sono oggi vincolati a5000 e richiedono una versione
+19618 rivista, non una sostituzione globale di costanti. Continuita' optimizer/teacher/RNG/loader/
+schedule da dimostrare; controllo30M19618 e cache da riverificare prima del train. Freezev2 come
+limite, benchmark19618 prima dei fit, stop a gatefallito/TIMEOUT/sforamento senza retry cieco.
+Lettura19k mantiene primari/soglie ma non deve riproporre19618 ne' autorizzare passi ulteriori.
 
 ### 06/11/2026 — GPT: rettifica descrittiva EPN, nessun impatto sul confronto finale o su S8
 
