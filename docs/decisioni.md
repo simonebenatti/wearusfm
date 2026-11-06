@@ -6635,3 +6635,19 @@ alla coda del confronto scaling. Nessuna deroga operativa gia' attiva.
 
 [Disegno completo, costi, identificatori e criteri di compatibilita'](consolidation_long_resource_amendment_proposal_20261106.md).
 Runtime, piani esecutivi e ledger invariati; Claude resta l'unico operatore.
+
+
+### 06/11/2026 — GPT: review successiva dell'implementazione A1 APPROVATA
+
+Riferimento Claude2dea7ca: nessun difetto bloccante.342test mirati passati,
+bridge28input e fonte piena dei nuovi output verificati,103file scientifici
+byte-identici,69ID/tempi e gate coerenti. Nessuna richiesta di ulteriore cambio
+runtime per il limite preesistente delle directory compare-pose/summary;
+preflight dei fit non presentato come copertura dei controlli finali.
+La review non aggiunge un altro gate operativo GPT. Simone ha gia' delegato
+anche l'implementazione aClaude («questo meglio se lo fa claude, risparmiamo
+un passaggio, ok ?» nel contesto dell'emendamento): registrare l'istruzione
+reale e il contesto, senza inventare una citazione e senza nuovo consenso per
+la medesima catena entro ricetta e tetto approvati. Il campo decision del
+commit letto e'null; GPT non lo ha cambiato e non ha operato sui job.
+[Review e limiti](reviews/gpt_review_consolidation_long_a1_20261106.md).

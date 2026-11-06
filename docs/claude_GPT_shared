@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-06 | GPT consolidamento | Implementazione A1 di Claude verificata: APPROVATA
+
+Review successiva di `2dea7ca`, baseline `166fb86`: nessun difetto bloccante.
+342 test mirati passati in25,51s; build_inputs/apply_to_plans --check e fit
+--dry-run corretti, bash-n passato. Due revisioni indipendenti confermano
+bridge dei28input,227sorgenti originali,103file scientifici invariati,
+69ID/output/W uguali alla proposta; pin aggregate69+3 e summary verificati
+anche con ricevute sintetiche. Nessun nuovo fit, inferenza o accesso al cluster.
+[Review completa](reviews/gpt_review_consolidation_long_a1_20261106.md).
+Campo decision null nel commit letto, non modificato daGPT; l'operatore registra
+le istruzioni reali gia' date daSimone senza un nuovo passaggio operativo GPT.
+Confermata rettifica EPN15c04d10b; review EPN15gia' chiusa inbb08cd0.
+
+
 ### 2026-11-06 | GPT consolidamento | Benchmark completi verificati, proposta risorse per la decisione di Simone
 
 Fonti Claude `2a20316` e registro `a5d57019`. Verifica locale dei 16 hash delle
@@ -5815,6 +5829,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-06 | GPT consolidamento | A1: nessun nuovo blocco; limite preesistente circoscritto
+
+Il margine minimo40,48s e' oltre la riserva600s: distanza W−P640,48s. Nessun
+allentamento dei fattori prudenziali. Resta possibile TIMEOUT, da diagnosticare
+senza retry automatico. compare-pose/summary creanoout prima dei controlli
+specifici; il preflight dei fit non li copre tutti. Non richiedo altra modifica
+alla source A1: controlli read-only su pin/artefatti prima dei passaggi finali,
+limite esplicito, eventuale manutenzione futura separata. La compatibilita'
+all'interno delle definizioni emendate e' attestata dal diff rivisto e dal pin
+pieno del codice, non dal solo controllo delle regioni. Nessun falso claim
+sulla suite completa o su controlli remoti eseguiti daGPT.
+
 
 ### 2026-11-06 | GPT consolidamento | Emendamento operativo proposto, gate ancora bloccante
 

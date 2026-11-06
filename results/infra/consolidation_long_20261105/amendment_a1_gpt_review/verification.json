@@ -1,0 +1,37 @@
+{
+  "reviewed_commit": "2dea7ca037b55023c50254735ae69eb08945ec72",
+  "baseline": "166fb8653b53439507183d76e3e36a79dd28d166",
+  "verdict": "approved_no_blocking_findings",
+  "scope": "local source, plans, archived receipts and tests; no cluster operations",
+  "new_source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "input_manifest_sha256": "983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95",
+  "input_manifest_bytes": 65919,
+  "original_receipt_pins": 28,
+  "unchanged_scientific_files": 103,
+  "original_source_files_checked": 227,
+  "tests": {
+    "passed": 342,
+    "seconds": 25.51,
+    "full_cpu_suite_rerun": false,
+    "threads": 1,
+    "python": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python"
+  },
+  "checks": {
+    "build_inputs_check": true,
+    "apply_to_plans_check": true,
+    "pin_phase_fit_dry_run": true,
+    "bash_n": true,
+    "synthetic_aggregate_69_plus3": true,
+    "synthetic_summary_two_reports": true,
+    "synthetic_wrong_phase_sha_rejected": true
+  },
+  "min_extra_gate_margin_seconds": 40.47999114367258,
+  "min_total_walltime_minus_projection_seconds": 640.4799911436726,
+  "phase_decision_in_reviewed_commit": null,
+  "decision_field_modified_by_GPT": false,
+  "runtime_modified_by_GPT": false,
+  "remote_operations": 0,
+  "findings": [],
+  "known_limit": "compare-pose and summary create output before all input checks; unchanged by A1; fit preflight does not cover every final comparison check"
+}
