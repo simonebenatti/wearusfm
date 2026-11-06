@@ -1,0 +1,48 @@
+{
+ "id": "INFRA-move-work-to-scratch-20261106",
+ "creato": "2026-11-06T18:30:11+01:00",
+ "agente": "claude",
+ "campagna": "infra_storage_20261106",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "8c935e774da0c67f30094794413bb41262d4fa4e",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=INFRA-move-work-to-scratch-20261106",
+  "--comment=wearusfm:INFRA-move-work-to-scratch-20261106",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=1",
+  "--mem=2G",
+  "--time=00:20:00",
+  "--no-requeue",
+  "--export=ALL,MOVE_MODE=move,EXPECTED_SHA=8c935e774da0c67f30094794413bb41262d4fa4e"
+ ],
+ "dopo": null,
+ "script_stdin": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/scripts/slurm/move_verified_to_scratch.sbatch",
+ "script_stdin_sha256": "9fae1a3d5ef73099438c82e50f7cf19be981095b6ace99983a09074a4273ff65",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T18:30:11+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T18:30:11+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T18:30:12+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63688163,
+   "uscita": 0,
+   "stdout": "63688163\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63688163,
+ "uscita": 0,
+ "stdout": "63688163\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

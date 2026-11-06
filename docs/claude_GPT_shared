@@ -7327,6 +7327,47 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   ogni 500 passi sugli stessi batch del 30M; il confronto con la curva del 30M agli stessi passi dice presto se la taglia
   si stacca. Decide chi opera la linea (sottochat 1) con GPT.
 
+### 2026-11-06 | Claude | Linea 2: ondata 2 conclusa (2 su 2 `COMPLETED 0:0`), ondata 3 inviata; due voci doppie di `$WORK` spostate su SCRATCH (istruzione di Simone)
+- Ondata 2 (righe 5-6 di 72), chiusa alle 18:47:35:
+
+  | ID logico | Job | Esito | Durata | Limite |
+  |---|---|---|---|---|
+  | `LONG-FIT-G19618-pre-ninapro_db2-F1-20261105-A1` | 63687063 | `COMPLETED 0:0` | 20 min 46 s | 3 h 30 |
+  | `LONG-FIT-G19618-pre-ninapro_db2-F2-20261105-A1` | 63687064 | `COMPLETED 0:0` | 22 min 10 s | 3 h 15 |
+
+- Provenienza dei due report a posto (stessi pin della fase, `fold_indices` [1] e [2], `global_resource_gate_passed`
+  vero); nessun punteggio letto. Consumo dell'ondata: 2.576 s per 8 CPU, 5,724 core-ore; fase a 10,049 core-ore, 0 GPU-ore.
+- Letture prima dell'ondata 3 (18:51, `execution/audit/precheck_fit_wave3_20261106.log`): `$WORK` 23,97 GiB liberi
+  (soglia 10,724), SCRATCH scrivibile, corsia seriale vuota, ID liberi nel ledger; letti prima dell'invio i commit
+  nuovi del coordinamento su questo ramo (`982c3d1`...`91b3dae`): nulla che tocchi la linea 2.
+- Ondata 3 (righe 7-8), inviata alle 18:51 con submitter e ledger comuni, `--agente claude`:
+
+  | ID logico | Job | Limite |
+  |---|---|---|
+  | `LONG-FIT-G19618-pre-ninapro_db2-F3-20261105-A1` | 63689033 | 3 h 15 |
+  | `LONG-FIT-G39237-pre-ninapro_db2-F0-20261105-A1` | 63689035 | 3 h 15 |
+
+- Commit documentale `6e4996f2d2f8bc1579a6ed8077c0b66a54948ff2` sul ramo `claude/consolidation-long-exec-20261105`
+  (SHA remoto verificato); tre controlli e 342 test a posto; nessun file coperto toccato.
+- Spostamento su SCRATCH (istruzione di Simone, voce in sezione 2): job `INFRA-move-work-to-scratch-20261106`,
+  63688163, campagna `infra_storage_20261106`, submitter e ledger comuni; 1 CPU, 2 GB, limite 20 minuti;
+  `COMPLETED 0:0` in 1 min 1 s (18:47:36-18:48:37, fra un fit e l'altro): 0,017 core-ore, 0 GPU-ore.
+
+  | File | Byte | sha256, originale = copia | Ora sta in |
+  |---|---|---|---|
+  | `data/raw/neurorvq_checkpoint/NeuroRVQ_EMG_foundation_model_v1.pt` | 445.073.272 | `a0bb153c...6907` | `$SCRATCH/data/raw/neurorvq_checkpoint/` |
+  | `data/raw/neurorvq_checkpoint/NeuroRVQ_EMG_tokenizer_v1.pt` | 574.583.162 | `0d255bcc...ce49` | `$SCRATCH/data/raw/neurorvq_checkpoint/` |
+  | `data/raw/epn612/EMG-EPN612_Dataset.zip` | 5.483.385.161 | `4ee8db03...3c21` | `$SCRATCH/data/raw/epn612/` |
+
+- Controlli dopo il job (18:52): originali assenti da `$WORK`; copie rilette da me con gli stessi sha256 e data di
+  oggi; `$WORK/models/*.pt` intatti, stessi sha256 (e' la copia letta dal codice); cartella estratta
+  `data/raw/epn612/EMG-EPN612 Dataset` intatta (1.224 file, 11.677.190.838 byte). Quota di progetto: 17,99 GiB
+  liberi alle 18:47, 23,96 alle 18:52.
+- Script e prove sul ramo `worktree-claude-training-engine`: `scripts/slurm/move_verified_to_scratch.sbatch` (elenco
+  chiuso di due voci, copia senza conservare le date, sha256 di ogni file, originale tolto solo dopo la verifica,
+  predefinito `dry-run`) e `results/infra/storage_move_20261106/` (prova in cartella finta con 37 controlli, prova a
+  secco sui percorsi veri, esito, stato del ledger), commit `8c935e7` e questo.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -10142,3 +10183,38 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Toglierle dalla storia richiede una riscrittura con push forzato, che non faccio senza una decisione di Simone.
 - Decisione di Simone, 06/11 alle 18:47 circa, alla domanda «Tolgo quelle 12 righe anche dalla storia, con un push forzato?»:
   «No, lasciale». Punto chiuso: nessuna riscrittura della storia, il ramo resta com'e'.
+
+### 2026-11-06 | Claude | Spazio in `$WORK`: istruzione di Simone sullo spostamento, mia correzione su `passo6`, domanda aperta (per Simone, GPT e coordinamento)
+- Parole di Simone nella sottochat 2. Alla mia domanda «Liberi tu spazio in $WORK prima delle 23:30?» ha risposto «Sì,
+  lo libero» (18:17); poi, a turno in corso, fra le 18:18 e le 18:29: «anzi io non libero niente. sposta tu la roba
+  sullo scratch al massimo». Lettura mia: non cancella nulla; al piu' sposto io su SCRATCH le voci che gli avevo
+  elencato. Non lo leggo come un via generale a togliere file da `$WORK`.
+- Ho spostato solo le due voci senza copie uniche: il doppione NeuroRVQ (sha256 uguali a `$WORK/models`) e lo zip
+  pubblico di EPN-612, gia' estratto. Copia, verifica per sha256, poi rimozione dell'originale, dentro un job; le
+  copie stanno sotto `$SCRATCH/data/raw`, nel perimetro predefinito di `refresh_scratch.sbatch` (prossimo giro 12/11).
+- Correzione di un mio errore: a Simone avevo indicato come liberabili «le feature del passo 6 (18,6 GiB)». Impreciso
+  due volte. (i) `wearusfm_runs/results/passo6` contiene ingressi letti dai launcher correnti di tutte le linee
+  (`window_seconds_59425316.json`, `loader_59623700/session_scales.json`, `derived_v1_1/manifest_v1_1_nested_*.json.gz`,
+  `capgmyo_grid_fix/`, `step1_0710/calibration.npz`): la cartella non si sposta. (ii) Le feature di sonda di ottobre
+  sono quattro sottocartelle (`step2c_1410` 12,91 GiB, `step1_downstream_0910` 2,28, `step1_random_20261014_r3` 1,56,
+  `step2a_20261014` 1,33; 18,08 in tutto), copie uniche; nell'inventario del 05/11 stavano fra i «Candidati che
+  chiedono una decisione scientifica» (dati derivati, rigenerabili solo con calcolo). La correzione l'ho scritta a
+  Simone alle 18:32. Nel codice e nei test le nominano nove file, gli stessi su `main` e sui rami di lavoro delle tre
+  linee: script e launcher di ottobre (`scripts/branch_pilot.py`, `scripts/spectral_diagnostic.py`,
+  `scripts/slurm/branch_pilot_cpu.sbatch`, `branch_pilot_train.sbatch`, `spectral_diagnostic.sbatch`,
+  `step2c_cpu_chain.sh`, `step2c_gpu_chain.sh`) e due test (`tests/cpu/test_branch_pilot.py`,
+  `test_probe_launchers.py`); nessun piano o launcher delle linee in corso. `rvq_codes` (0,34 GiB, nella stessa
+  cartella, nominata da `scripts/precompute_rvq_codes.py` e da due launcher) resta fuori dalla domanda.
+- Domanda aperta a Simone (18:32): «Sposto sullo scratch anche le feature di sonda di ottobre (18,1 GiB)?».
+  Senza il suo si' non le tocco. Con il si': stesso metodo e un link al vecchio percorso. Per GPT: se quelle feature
+  servono ancora a una verifica, va detto ora.
+- Stato dello spazio: 23,96 GiB liberi alle 18:52. Fra le 10:31 e le 18:08 i liberi sono scesi da 29,8 a 18,51 GiB,
+  circa 1,5 GiB l'ora in media; fra le 18:08 e le 18:47, prima dello spostamento, da 18,51 a 17,99, circa 0,8 GiB
+  l'ora. Fra le 17:52 e le 18:08 l'uso dell'utente `sbenatti` e' rimasto fermo (+0,004 GiB contro +0,36 del
+  progetto): scrivono altri utenti del progetto. La soglia C-1 (10,724 GiB) cadrebbe verso le 03:40 del 07/11 con
+  1,5 GiB l'ora e verso le 11:30 con 0,8; sotto la soglia non invio e lo segnalo.
+- Per chi usava quei percorsi: `data/raw/neurorvq_checkpoint` e `data/raw/epn612/EMG-EPN612_Dataset.zip` non sono piu'
+  in `$WORK`. Il codice legge `$WORK/models` e la cartella estratta: nessun launcher cambia. I due percorsi li
+  nominano solo gli script di scaricamento (`download_small_public.sbatch`, `download_neurorvq_retry.sbatch`):
+  rieseguiti, riscaricherebbero in `$WORK`. Il commento di `scripts/slurm/delete_verified_raw.sbatch` che elenca
+  `neurorvq_checkpoint` fra le cartelle mai toccate vale per quello script: la cartella l'ha spostata questo job.

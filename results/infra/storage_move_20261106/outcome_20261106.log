@@ -1,0 +1,68 @@
+2026-11-06 18:52:12 CET
+@@SACCT
+63688163|INFRA-move-work-to-scratch-20261106|COMPLETED|0:0|2026-11-06T18:47:36|2026-11-06T18:48:37|00:01:01|00:20:00|1|login13
+@@JOBLOG
+modo: move; da /leonardo_work/IscrB_WearUsFM a /leonardo_scratch/large/userexternal/sbenatti; 2026-11-06 18:47:38 CET su login13.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+/leonardo_work/IscrB_WearUsFM
+                1054879856  1073741824       0       - 1512532       0       0       -
+=== data/raw/neurorvq_checkpoint
+sorgente (cartella): 2 file, 1019656434 byte
+VERIFICATO: 2 file, 1019656434 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/data/raw/neurorvq_checkpoint -> /leonardo_scratch/large/userexternal/sbenatti/data/raw/neurorvq_checkpoint
+=== data/raw/epn612/EMG-EPN612_Dataset.zip
+sorgente (file): 1 file, 5483385161 byte
+VERIFICATO: 1 file, 5483385161 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612_Dataset.zip -> /leonardo_scratch/large/userexternal/sbenatti/data/raw/epn612/EMG-EPN612_Dataset.zip
+--- quota di progetto dopo
+/leonardo_work/IscrB_WearUsFM
+                1053852360  1073741824       0       - 1512546       0       0       -
+=== riepilogo (move): riuscite=2 problemi=0 su 2 voci; 18:48:37 ===
+@@MANIFESTS
+## data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sha256 (91 bytes)
+4ee8db037385e7bee1e6ac6f9e9eea4f0869e25f7825f5eb7e5be0dff4f93c21  ./EMG-EPN612_Dataset.zip
+## data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sizes (36 bytes)
+5483385161 ./EMG-EPN612_Dataset.zip
+## data_raw_epn612_EMG-EPN612_Dataset.zip.source.sha256 (91 bytes)
+4ee8db037385e7bee1e6ac6f9e9eea4f0869e25f7825f5eb7e5be0dff4f93c21  ./EMG-EPN612_Dataset.zip
+## data_raw_epn612_EMG-EPN612_Dataset.zip.source.sizes (36 bytes)
+5483385161 ./EMG-EPN612_Dataset.zip
+## data_raw_neurorvq_checkpoint.copy.sha256 (201 bytes)
+a0bb153cea45f61179c7ffe8d5aa0d41c7a7f800129cb23974caf653c7266907  ./NeuroRVQ_EMG_foundation_model_v1.pt
+0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49  ./NeuroRVQ_EMG_tokenizer_v1.pt
+## data_raw_neurorvq_checkpoint.copy.sizes (89 bytes)
+445073272 ./NeuroRVQ_EMG_foundation_model_v1.pt
+574583162 ./NeuroRVQ_EMG_tokenizer_v1.pt
+## data_raw_neurorvq_checkpoint.source.sha256 (201 bytes)
+a0bb153cea45f61179c7ffe8d5aa0d41c7a7f800129cb23974caf653c7266907  ./NeuroRVQ_EMG_foundation_model_v1.pt
+0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49  ./NeuroRVQ_EMG_tokenizer_v1.pt
+## data_raw_neurorvq_checkpoint.source.sizes (89 bytes)
+445073272 ./NeuroRVQ_EMG_foundation_model_v1.pt
+574583162 ./NeuroRVQ_EMG_tokenizer_v1.pt
+@@AFTER
+ls: cannot access '/leonardo_work/IscrB_WearUsFM/data/raw/neurorvq_checkpoint': No such file or directory
+ls: cannot access '/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612_Dataset.zip': No such file or directory
+--- copies on scratch
+/leonardo_scratch/large/userexternal/sbenatti/data/raw/epn612:
+total 5354880
+-rw-r--r--. 1 sbenatti interactive 5483385161 2026-11-06 18:48 EMG-EPN612_Dataset.zip
+
+/leonardo_scratch/large/userexternal/sbenatti/data/raw/neurorvq_checkpoint:
+total 995772
+-rw-r--r--. 1 sbenatti interactive 445073272 2026-11-06 18:47 NeuroRVQ_EMG_foundation_model_v1.pt
+-rw-r--r--. 1 sbenatti interactive 574583162 2026-11-06 18:47 NeuroRVQ_EMG_tokenizer_v1.pt
+a0bb153cea45f61179c7ffe8d5aa0d41c7a7f800129cb23974caf653c7266907  neurorvq_checkpoint/NeuroRVQ_EMG_foundation_model_v1.pt
+0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49  neurorvq_checkpoint/NeuroRVQ_EMG_tokenizer_v1.pt
+4ee8db037385e7bee1e6ac6f9e9eea4f0869e25f7825f5eb7e5be0dff4f93c21  epn612/EMG-EPN612_Dataset.zip
+--- copy read by the code, and the extracted folder read by the harness
+a0bb153cea45f61179c7ffe8d5aa0d41c7a7f800129cb23974caf653c7266907  models/NeuroRVQ_EMG_foundation_model_v1.pt
+0d255bcc9f1c75ccc374cba06eab476f15bf5fb2a87115d6dc8d2dc0adadce49  models/NeuroRVQ_EMG_tokenizer_v1.pt
+extracted EPN612: 1224 files, 11677190838 bytes
+drwxr-xr-x.  3 sbenatti interactive 4096 Nov  6 18:48 .
+drwxr-xr-x. 10 sbenatti interactive 4096 Nov  6 18:47 ..
+drwxr-xr-x.  4 sbenatti interactive 4096 Jan  6  2021 EMG-EPN612 Dataset
+--- quota
+/leonardo_work/IscrB_WearUsFM
+                1048620320  1073741824       0       - 1512577       0       0       -
+ /leonardo_work 203139960       0       0       -  243470       0       0       -
+18:52:23
