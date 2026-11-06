@@ -7303,7 +7303,7 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 ### 2026-11-06 | Claude | Coordinamento: indizi sulla posa del 300M dai log di training (domanda di Simone); sola lettura, nessun job
 - Domanda di Simone dopo la lettura d'insieme: «si , c'e da dire che il 300M ha solo un punto, non sappiamo come cresce in
   proporzione coi passi. magari aiuta la regressione. Ci sono indizi su quello ?».
-- Letti da Leonardo, in sola lettura (`ls`, `head`, `grep`, `sed`), verso le 18:50: `metrics.jsonl`, `fixed_eval.jsonl` e
+- Letti da Leonardo, in sola lettura (`ls`, `head`, `grep`, `sed`), alle 18:32 e alle 18:33: `metrics.jsonl`, `fixed_eval.jsonl` e
   `pose_panel.jsonl` di `$SCRATCH/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000`,
   `.../tokenizer_20261103/T100-G` (30M fino a 19.618) e `.../consolidation_20261104/T100-G` (30M da 19.619 a 49.046).
   Sono log di training: nessun punteggio su utenti esclusi, nessun report della valutazione lunga aperto.
