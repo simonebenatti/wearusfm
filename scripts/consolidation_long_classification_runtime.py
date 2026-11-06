@@ -249,6 +249,46 @@ def resource_gate(reports, policy=BENCHMARK_POLICY):
             "numeric_sha256": next(iter(numeric))}
 
 
+def amended_gate(reports, table=None):
+    """Amendment A1 admission on the same fifteen receipts: 69 registered shards.
+
+    The per-fold projection, the per-job overhead and the memory limit are those
+    of the original gate; only the fold packaging and the walltime of each job
+    differ. ``table`` is the walltime table frozen in the plan before any fit.
+    """
+    original, policy = resource_gate(reports), C.A.FIT_POLICY
+    memory_limit = BENCHMARK_POLICY["memory_gib"]*1024**3*BENCHMARK_POLICY["memory_fraction"]
+    shards = {}
+    for cell in original["cells"].values():
+        step, view, ds = cell["step"], cell["view"], cell["dataset"]
+        bench = reports[ds][view]["benchmark"]
+        for indices in C.A.fit_shapes(ds, view):
+            projection = sum(cell["projected_fit_seconds_by_fold"][f] for f in indices) + BENCHMARK_POLICY["fixed_seconds_per_job"] + 2*(bench["load_s"] + bench["scale_s"])
+            walltime = C.A.walltime_seconds(projection)
+            shards[shard_key(step, view, ds, indices)] = {"step": step, "view": view, "dataset": ds, "folds": indices,
+                "projected_seconds": projection, "projected_peak_rss_bytes": cell["projected_peak_rss_bytes"],
+                "max_projected_seconds": walltime - policy["walltime_reserve_seconds"], "walltime_seconds": walltime,
+                "passed": bool(cell["projected_peak_rss_bytes"] <= memory_limit
+                               and projection <= walltime - policy["walltime_reserve_seconds"]
+                               and walltime <= policy["max_walltime_seconds"])}
+    C.require(len(original["cells"]) == policy["new_fit_cells"] and len(shards) == policy["physical_fit_jobs"],
+              "amended physical/logical matrix differs")
+    if table is not None:
+        C.require(set(table) == set(shards) and all(
+            table[key]["folds"] == shard["folds"] and table[key]["walltime_seconds"] == shard["walltime_seconds"]
+            and abs(table[key]["projected_seconds"] - shard["projected_seconds"]) <= 1e-6
+            for key, shard in shards.items()), "frozen amendment walltime table differs from the benchmark receipts")
+    return {"policy": policy, "original_policy": BENCHMARK_POLICY["protocol"],
+            "original_gate": {"all_passed": original["all_passed"], "physical_fit_jobs": original["physical_fit_jobs"],
+                              "rejected_shards": sorted(k for k, s in original["shards"].items() if not s["passed"])},
+            "shards": shards, "all_passed": all(s["passed"] for s in shards.values()),
+            "physical_fit_jobs": len(shards), "new_fit_cells": len(original["cells"]),
+            "projected_seconds": sum(s["projected_seconds"] for s in shards.values()),
+            "projected_core_hours": policy["cpus"]*sum(s["projected_seconds"] for s in shards.values())/3600,
+            "allocated_core_hours": policy["cpus"]*sum(s["walltime_seconds"] for s in shards.values())/3600,
+            "numeric_sha256": original["numeric_sha256"]}
+
+
 def _benchmarks(ctx):
     manifest = C.read_pin(ctx["plan"]["benchmark_receipts"]["classification"])
     C.require(set(manifest["reports"]) == set(M.DATASETS), "benchmark manifest lacks datasets")
@@ -260,8 +300,8 @@ def _benchmarks(ctx):
         reports[ds] = {}
         _, expected, _, _ = _cache(ctx, 19618, ds)
         for view in M.VIEWS:
-            report = C.read_pin(manifest["reports"][ds][view])
-            _receipt(ctx, report, "benchmark-classification")
+            # Amendment A1: a listed original receipt, verified against its original source and policy.
+            report = C.verified_input(ctx, manifest["reports"][ds][view], "benchmark-classification")
             C.require(report["policy"] == _policy(ctx), "benchmark receipt policy differs")
             C.require(report["historical_numeric_match"] == _numeric_match(report["benchmark"]["numeric_context"], reference),
                       "benchmark historical numeric evidence differs")
@@ -282,6 +322,8 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     """Execute exactly one registered stage, without submission or mutation of inputs."""
     C.require(stage in ("extract-classification", "benchmark-classification", "fit-classification", "compare-classification"),
               "unknown classification execution stage")
+    C.require(stage not in C.A.CLOSED_STAGES,
+              "stage closed by amendment A1: its original receipts are reused, never repeated by this source")
     _policy(ctx)
     out = Path(out)
     if stage == "extract-classification":
@@ -331,14 +373,14 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     if stage == "fit-classification":
         C.require(step in M.DOSES and dataset in M.DATASETS and view in M.VIEWS and task is None
                   and not (step == 19618 and view == "pool"), "fit requires one of40 new logical cells")
-        registered = BENCHMARK_POLICY["fixed_folds_by_dataset"][dataset]
-        C.require(folds is not None or len(registered) == 1, "DB2 requires an explicit registered fold pair")
-        chosen = registered[0] if folds is None else folds
-        C.require(chosen in registered and all(type(f) is int for f in chosen), "unregistered fit fold shard")
+        registered = C.A.fit_shapes(dataset, view)
+        C.require(folds is not None and all(type(f) is int for f in folds) and list(folds) in registered,
+                  "amendment A1 requires an explicit registered fit fold shard")
+        chosen = list(folds)
         numeric = _threads()
         historical, _ = _historical(ctx)
         match = _numeric_match(numeric, _historical_numeric(ctx, historical))
-        gate = resource_gate(_benchmarks(ctx), _policy(ctx))
+        gate = amended_gate(_benchmarks(ctx), ctx["plan"]["amendment"]["fit_shards"])
         C.require(gate["all_passed"], "classification matrix resource gate failed; reviewed resource amendment required")
         C.require(M.jhash(numeric) == gate["numeric_sha256"], "fit/benchmark numeric environment differs")
         entry, expected, _, _ = _cache(ctx, step, dataset)
@@ -359,17 +401,18 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
     historical, old = _historical(ctx)
     reference = _historical_numeric(ctx, historical)
     manifest = C.read_pin(ctx["plan"]["classification_fit_manifest"])
-    probes, numeric = [], set()
+    probes, numeric, shards = [], set(), []
     for pin in manifest["reports"]:
         r = C.read_pin(pin)
         _receipt(ctx, r, "fit-classification")
+        C.require(r.get("amendment") == ctx["amendment"], "fit receipt was not written under amendment A1")
         for artifact in r["artifacts"].values():
             C.pinned(artifact)
         probe = C.read_pin(r["artifacts"]["probe"])
         C.require(r["historical_numeric_match"] == _numeric_match(probe["numeric_context"], reference),
                   "fit historical numeric evidence differs")
         C.require(probe["dataset"] in M.DATASETS and probe["view"] in M.VIEWS
-                  and probe["fold_indices"] in BENCHMARK_POLICY["fixed_folds_by_dataset"][probe["dataset"]]
+                  and probe["fold_indices"] in C.A.fit_shapes(probe["dataset"], probe["view"])
                   and not (probe["step"] == 19618 and probe["view"] == "pool"), "unregistered fit receipt cell/shard")
         C.require(probe["step"] == r["checkpoint_step"] and probe["view"] == r["view"]
                   and probe["dataset"] == r["dataset"] and probe["checkpoint_sha256"] == r["checkpoint_sha256"]
@@ -382,7 +425,10 @@ def execute(stage, ctx, out, step=None, task=None, dataset=None, view=None, fold
                   and r["global_resource_gate_passed"] is True, "probe/stage receipt identity differs")
         probes.append(r["artifacts"]["probe"])
         numeric.add(probe["numeric_sha256"])
-    C.require(len(probes) == 48, "complete forty-eight-job fit manifest required")
+        shards.append(shard_key(probe["step"], probe["view"], probe["dataset"], probe["fold_indices"]))
+    C.require(len(probes) == C.A.FIT_POLICY["physical_fit_jobs"]
+              and set(shards) == set(ctx["plan"]["amendment"]["fit_shards"]),
+              "complete sixty-nine-job amended fit manifest required")
     C.require(len(numeric) == 1, "mixed numeric environments across new classification fits")
     by_dose = {s: {ds: _cache(ctx, s, ds)[1] for ds in M.DATASETS} for s in M.DOSES}
     cache_pins = {M.cell_name(s, v): by_dose[s]

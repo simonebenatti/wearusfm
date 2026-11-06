@@ -484,23 +484,107 @@
     "same_scientific_source_sha256_required": true,
     "pins_published_before_each_phase": true,
     "max_outstanding_cpu_jobs_for_entire_user": 8,
-    "cpu_gate": "all forty classification cells / forty-eight fixed shards pass before any classification fit; pose gate separately; failed phase has no automatic retry",
+    "cpu_gate": "amendment A1: all forty classification cells / sixty-nine registered shards pass, with the walltime table frozen in the plan, before any classification fit; pose gate separately; failed phase has no automatic retry",
     "source_change_policy": {
-      "choice": "R-2(i): exact source identity, no cross-source cache reuse",
+      "choice": "R-2(i) with amendment A1: exact source identity for every new output; explicit exception limited to the 28 original receipts of the input-compatibility manifest",
       "frozen_paths": [
         "src/**/*.py",
         "scripts/*.py",
         "scripts/slurm/consolidation_long.sbatch",
         "scripts/slurm/lib_code_dir.sh"
       ],
-      "freeze_period": "Claude execution childbranch: before first extraction checkout through chain completion; GPTdevelopment isolated and not merged during the chain",
-      "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
-      "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
-      "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
+      "freeze_period": "amended source frozen from the fit checkout through chain completion; GPT development isolated and not merged during the chain",
+      "amendment_A1": {
+        "exception": "the 12 extraction and 16 benchmark receipts written by the original source are read by the amended source through the pinned manifest; fits, comparisons and summary share the amended source and record the manifest pin",
+        "not_allowed": "receipt rewrite; generic accepted-source list; any input not listed; extraction or benchmark by the amended source; a covered source difference outside the closed list",
+        "input_compatibility": {
+          "path": "results/infra/consolidation_long_20261105/amendment_a1/input_compatibility.json",
+          "sha256": "983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95",
+          "bytes": 65919
+        },
+        "original_source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+        "amended_source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
+        "changed_paths": [
+          "scripts/consolidation_long_common.py",
+          "scripts/consolidation_long_classification_runtime.py",
+          "scripts/consolidation_long_pose_runtime.py",
+          "scripts/slurm/consolidation_long.sbatch"
+        ],
+        "added_paths": [
+          "scripts/consolidation_long_amendment.py"
+        ],
+        "amended_definitions": {
+          "scripts/consolidation_long_common.py": [
+            "validate_plan",
+            "load_context",
+            "begin_output",
+            "verified_extraction"
+          ],
+          "scripts/consolidation_long_classification_runtime.py": [
+            "_benchmarks",
+            "execute"
+          ],
+          "scripts/consolidation_long_pose_runtime.py": [
+            "_manifest",
+            "_read",
+            "_benchmark_gate",
+            "execute"
+          ]
+        },
+        "added_definitions": {
+          "scripts/consolidation_long_common.py": [
+            "import consolidation_long_amendment as A",
+            "verified_input"
+          ],
+          "scripts/consolidation_long_classification_runtime.py": [
+            "amended_gate"
+          ],
+          "scripts/consolidation_long_pose_runtime.py": []
+        },
+        "added_after": {
+          "scripts/consolidation_long_common.py": {
+            "import consolidation_long_amendment as A": "from wearusfm.training.pairing import state_sha256",
+            "verified_input": "finish_output"
+          },
+          "scripts/consolidation_long_classification_runtime.py": {
+            "amended_gate": "resource_gate"
+          },
+          "scripts/consolidation_long_pose_runtime.py": {}
+        },
+        "frozen_text": "in the changed Python files every region outside the amended and added definitions keeps its original bytes (decorators, comments and blank lines included) and the top-level statements keep their original order; in the launcher only the replaced lines differ",
+        "closed_stages": [
+          "extract-classification",
+          "extract-pose-train",
+          "extract-pose-val",
+          "benchmark-classification",
+          "benchmark-pose"
+        ],
+        "decision": null
+      },
+      "invalidation": "any further covered source change is another source: the exception and the 28 inputs are not valid under it without a new review and decision",
+      "action": "stop chain; preserve all artifacts; no receipt rewrite or automatic resubmission",
+      "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions and sixteen benchmarks repeated",
       "additional_extraction_gpu_hours_cap": 9.0,
       "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
       "additional_cost_in_current_cap": false,
-      "repeat_authorized": false
+      "repeat_authorized": false,
+      "original_r2i": {
+        "choice": "R-2(i): exact source identity, no cross-source cache reuse",
+        "frozen_paths": [
+          "src/**/*.py",
+          "scripts/*.py",
+          "scripts/slurm/consolidation_long.sbatch",
+          "scripts/slurm/lib_code_dir.sh"
+        ],
+        "freeze_period": "Claude execution childbranch: before first extraction checkout through chain completion; GPTdevelopment isolated and not merged during the chain",
+        "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
+        "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
+        "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
+        "additional_extraction_gpu_hours_cap": 9.0,
+        "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
+        "additional_cost_in_current_cap": false,
+        "repeat_authorized": false
+      }
     },
     "numeric_thread_policy": {
       "extraction": 1,
@@ -536,7 +620,8 @@
       "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
       "bytes": 14374
     },
-    "summary_plan_release": "same fourth frozen code checkout; after comparison reports, publish final plan with real pins; existing SUMMARYjob materializes the exact published JSON outside CODE_DIR with SHA256 verification; no extra job/checkout; wrapper described for fourthreview"
+    "summary_plan_release": "same fourth frozen code checkout; after comparison reports, publish final plan with real pins; existing SUMMARYjob materializes the exact published JSON outside CODE_DIR with SHA256 verification; no extra job/checkout; wrapper described for fourthreview",
+    "source_sha256_scope": "one amended source for every new output; the 28 inputs keep the original source through the input-compatibility manifest"
   },
   "retention": {
     "artifact_storage": "personal large SCRATCH; all new scientific outputs including caches/OOF/receipts/reports/manifests underoutput_root",
@@ -585,7 +670,8 @@
     "source": "Simone via coordination 2026-11-05: complete long evaluation, Claude review, launch when ready",
     "review_does_not_replace": null,
     "requires_second_user_consent": false,
-    "operator_change": "Simone05/11evening: da ora in poi questa parte la gestisci tu; sarai tu a fare il deployment e a gestirlo; applies only EPN15 andlong evaluation; Claudeoperates,GPTcodescience"
+    "operator_change": "Simone05/11evening: da ora in poi questa parte la gestisci tu; sarai tu a fare il deployment e a gestirlo; applies only EPN15 andlong evaluation; Claudeoperates,GPTcodescience",
+    "amendment_A1": "implemented_awaiting_simone_decision"
   },
   "historical_context": {
     "replica": {
@@ -595,8 +681,998 @@
     },
     "use": "paired T25-L minus B19618 context remains descriptive; not a universal noise floor"
   },
-  "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+  "source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
   "operational_owner": "claude",
-  "scientific_owner": "gpt_consolidation"
+  "scientific_owner": "gpt_consolidation",
+  "amendment": {
+    "id": "A1",
+    "title": "resource amendment after the complete benchmark phase",
+    "status": "implemented_awaiting_simone_decision",
+    "post_hoc": "fixed after the sixteen train-only benchmark timings (15 of 48 original shards over the 13800 s limit) and before any fit, score or prediction of the long comparison; it concerns resources and provenance only and is not a pre-registered rule",
+    "unchanged": "forty scientific cells, four folds each, recipe, C grid, selection, solver, numeric context, data, endpoints, reading rule, per-fold projection and safety factors",
+    "proposal": {
+      "branch": "codex/consolidation-20261104",
+      "commit": "4bb39d254c26bd3b9666dff0e1b1464f96bfe4db",
+      "document": "docs/consolidation_long_resource_amendment_proposal_20261106.md"
+    },
+    "design_review": {
+      "branch": "worktree-claude-training-engine",
+      "commit": "7ceedbb5d891168f585229e826baf6535f35c1cc",
+      "document": "docs/reviews/claude_review_consolidation_long_resource_amendment_20261106.md",
+      "verdict": "design approved; implementation verifications V-1...V-8; decision of Simone before pin"
+    },
+    "base_commit": "2a20316a0bf77c93e354d4ce3f5acee94db459df",
+    "fit_policy": {
+      "protocol": "consolidation-classification-resources-20261106-a1",
+      "amends": "consolidation-classification-resources-20261105-v1",
+      "status": "post hoc resource amendment: fixed after the sixteen train-only benchmark timings, before any fit, score or prediction of the long comparison; not a pre-registered rule",
+      "projection": "unchanged per-fold projection of the original policy on the same fifteen receipts, plus the original fixed seconds and twice load and scale for every job",
+      "fold_shards": {
+        "ninapro_db2": {
+          "pre": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "post": [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "pool": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ]
+        },
+        "ninapro_db3": {
+          "pre": [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "post": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "pool": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "ninapro_db6": {
+          "pre": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "post": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "pool": [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        },
+        "epn612": {
+          "pre": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "post": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "pool": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "uci_emg": {
+          "pre": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "post": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "pool": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      },
+      "walltime_rule": "W = 900 * ceil((P + 600) / 900); admitted when P <= W - 600 and W <= 14400",
+      "walltime_quantum_seconds": 900,
+      "walltime_reserve_seconds": 600.0,
+      "max_walltime_seconds": 14400,
+      "memory": "unchanged original admission: three times the measured peak within 85% of 30 GiB",
+      "cpus": 8,
+      "memory_gib": 30,
+      "new_fit_cells": 40,
+      "physical_fit_jobs": 69,
+      "limitation": "empirical planning estimate, not a runtime guarantee; a timeout stops the phase; no automatic shard, retry, walltime or budget extension"
+    },
+    "closed_stages": [
+      "extract-classification",
+      "extract-pose-train",
+      "extract-pose-val",
+      "benchmark-classification",
+      "benchmark-pose"
+    ],
+    "input_compatibility": {
+      "path": "results/infra/consolidation_long_20261105/amendment_a1/input_compatibility.json",
+      "sha256": "983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95",
+      "bytes": 65919
+    },
+    "release": {
+      "order": "three pose fits first, then the 69 classification fits; the pose gate is independent",
+      "lane": "at most two line-2 jobs running or pending in lrd_all_serial, phase checkout and pose fits included, until the common ledger shows a submitted identifier starting with SCALING-compare- (decision of Simone, 2026-11-06: \u00abDue fit per volta\u00bb); afterwards waves within the plan limit of eight outstanding CPU jobs",
+      "timeout": "a timeout stops the phase: no requeue, new walltime or new shard"
+    },
+    "fit_shards": {
+      "19618/pre/ninapro_db2/folds0": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 10631.761877438985,
+        "walltime_seconds": 11700
+      },
+      "19618/pre/ninapro_db2/folds1": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 11484.880253615936,
+        "walltime_seconds": 12600
+      },
+      "19618/pre/ninapro_db2/folds2": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 10429.589534111816,
+        "walltime_seconds": 11700
+      },
+      "19618/pre/ninapro_db2/folds3": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 10625.647794475462,
+        "walltime_seconds": 11700
+      },
+      "39237/pre/ninapro_db2/folds0": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 10631.761877438985,
+        "walltime_seconds": 11700
+      },
+      "39237/pre/ninapro_db2/folds1": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 11484.880253615936,
+        "walltime_seconds": 12600
+      },
+      "39237/pre/ninapro_db2/folds2": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 10429.589534111816,
+        "walltime_seconds": 11700
+      },
+      "39237/pre/ninapro_db2/folds3": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 10625.647794475462,
+        "walltime_seconds": 11700
+      },
+      "49046/pre/ninapro_db2/folds0": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 10631.761877438985,
+        "walltime_seconds": 11700
+      },
+      "49046/pre/ninapro_db2/folds1": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 11484.880253615936,
+        "walltime_seconds": 12600
+      },
+      "49046/pre/ninapro_db2/folds2": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 10429.589534111816,
+        "walltime_seconds": 11700
+      },
+      "49046/pre/ninapro_db2/folds3": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db2",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 10625.647794475462,
+        "walltime_seconds": 11700
+      },
+      "19618/post/ninapro_db2/folds0-1": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.557275052482,
+        "walltime_seconds": 9000
+      },
+      "19618/post/ninapro_db2/folds2-3": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.338909742144,
+        "walltime_seconds": 9000
+      },
+      "39237/post/ninapro_db2/folds0-1": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.557275052482,
+        "walltime_seconds": 9000
+      },
+      "39237/post/ninapro_db2/folds2-3": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.338909742144,
+        "walltime_seconds": 9000
+      },
+      "49046/post/ninapro_db2/folds0-1": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.557275052482,
+        "walltime_seconds": 9000
+      },
+      "49046/post/ninapro_db2/folds2-3": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.338909742144,
+        "walltime_seconds": 9000
+      },
+      "39237/pool/ninapro_db2/folds0": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 8066.368014429696,
+        "walltime_seconds": 9000
+      },
+      "39237/pool/ninapro_db2/folds1": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 8701.259745828258,
+        "walltime_seconds": 9900
+      },
+      "39237/pool/ninapro_db2/folds2": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 7915.911111050008,
+        "walltime_seconds": 9000
+      },
+      "39237/pool/ninapro_db2/folds3": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 8061.817906464585,
+        "walltime_seconds": 9000
+      },
+      "49046/pool/ninapro_db2/folds0": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 8066.368014429696,
+        "walltime_seconds": 9000
+      },
+      "49046/pool/ninapro_db2/folds1": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 8701.259745828258,
+        "walltime_seconds": 9900
+      },
+      "49046/pool/ninapro_db2/folds2": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 7915.911111050008,
+        "walltime_seconds": 9000
+      },
+      "49046/pool/ninapro_db2/folds3": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db2",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 8061.817906464585,
+        "walltime_seconds": 9000
+      },
+      "19618/pre/ninapro_db3/folds0": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 7047.195981492754,
+        "walltime_seconds": 8100
+      },
+      "19618/pre/ninapro_db3/folds1": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 6942.27496714424,
+        "walltime_seconds": 8100
+      },
+      "19618/pre/ninapro_db3/folds2": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 7818.001849280863,
+        "walltime_seconds": 9000
+      },
+      "19618/pre/ninapro_db3/folds3": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 6516.357978204717,
+        "walltime_seconds": 7200
+      },
+      "39237/pre/ninapro_db3/folds0": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 7047.195981492754,
+        "walltime_seconds": 8100
+      },
+      "39237/pre/ninapro_db3/folds1": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 6942.27496714424,
+        "walltime_seconds": 8100
+      },
+      "39237/pre/ninapro_db3/folds2": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 7818.001849280863,
+        "walltime_seconds": 9000
+      },
+      "39237/pre/ninapro_db3/folds3": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 6516.357978204717,
+        "walltime_seconds": 7200
+      },
+      "49046/pre/ninapro_db3/folds0": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0
+        ],
+        "projected_seconds": 7047.195981492754,
+        "walltime_seconds": 8100
+      },
+      "49046/pre/ninapro_db3/folds1": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          1
+        ],
+        "projected_seconds": 6942.27496714424,
+        "walltime_seconds": 8100
+      },
+      "49046/pre/ninapro_db3/folds2": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          2
+        ],
+        "projected_seconds": 7818.001849280863,
+        "walltime_seconds": 9000
+      },
+      "49046/pre/ninapro_db3/folds3": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db3",
+        "folds": [
+          3
+        ],
+        "projected_seconds": 6516.357978204717,
+        "walltime_seconds": 7200
+      },
+      "19618/post/ninapro_db3/folds0-1-2-3": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.02794689637,
+        "walltime_seconds": 13500
+      },
+      "39237/post/ninapro_db3/folds0-1-2-3": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.02794689637,
+        "walltime_seconds": 13500
+      },
+      "49046/post/ninapro_db3/folds0-1-2-3": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.02794689637,
+        "walltime_seconds": 13500
+      },
+      "39237/pool/ninapro_db3/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 11940.869676614493,
+        "walltime_seconds": 12600
+      },
+      "49046/pool/ninapro_db3/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db3",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 11940.869676614493,
+        "walltime_seconds": 12600
+      },
+      "19618/pre/ninapro_db6/folds0-1-2-3": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.349455599127,
+        "walltime_seconds": 5400
+      },
+      "39237/pre/ninapro_db6/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.349455599127,
+        "walltime_seconds": 5400
+      },
+      "49046/pre/ninapro_db6/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.349455599127,
+        "walltime_seconds": 5400
+      },
+      "19618/post/ninapro_db6/folds0-1-2-3": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5200088563274,
+        "walltime_seconds": 2700
+      },
+      "39237/post/ninapro_db6/folds0-1-2-3": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5200088563274,
+        "walltime_seconds": 2700
+      },
+      "49046/post/ninapro_db6/folds0-1-2-3": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5200088563274,
+        "walltime_seconds": 2700
+      },
+      "39237/pool/ninapro_db6/folds0-1": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8811.92526581768,
+        "walltime_seconds": 9900
+      },
+      "39237/pool/ninapro_db6/folds2-3": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "ninapro_db6",
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 8648.008989233482,
+        "walltime_seconds": 9900
+      },
+      "49046/pool/ninapro_db6/folds0-1": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db6",
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8811.92526581768,
+        "walltime_seconds": 9900
+      },
+      "49046/pool/ninapro_db6/folds2-3": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "ninapro_db6",
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 8648.008989233482,
+        "walltime_seconds": 9900
+      },
+      "19618/pre/epn612/folds0-1-2-3": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6086.976130086276,
+        "walltime_seconds": 7200
+      },
+      "39237/pre/epn612/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6086.976130086276,
+        "walltime_seconds": 7200
+      },
+      "49046/pre/epn612/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6086.976130086276,
+        "walltime_seconds": 7200
+      },
+      "19618/post/epn612/folds0-1-2-3": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.1989224067675,
+        "walltime_seconds": 4500
+      },
+      "39237/post/epn612/folds0-1-2-3": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.1989224067675,
+        "walltime_seconds": 4500
+      },
+      "49046/post/epn612/folds0-1-2-3": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.1989224067675,
+        "walltime_seconds": 4500
+      },
+      "39237/pool/epn612/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12386.407846609454,
+        "walltime_seconds": 13500
+      },
+      "49046/pool/epn612/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "epn612",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12386.407846609454,
+        "walltime_seconds": 13500
+      },
+      "19618/pre/uci_emg/folds0-1-2-3": {
+        "step": 19618,
+        "view": "pre",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1138334272727,
+        "walltime_seconds": 1800
+      },
+      "39237/pre/uci_emg/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pre",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1138334272727,
+        "walltime_seconds": 1800
+      },
+      "49046/pre/uci_emg/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pre",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1138334272727,
+        "walltime_seconds": 1800
+      },
+      "19618/post/uci_emg/folds0-1-2-3": {
+        "step": 19618,
+        "view": "post",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.1536544279563,
+        "walltime_seconds": 1800
+      },
+      "39237/post/uci_emg/folds0-1-2-3": {
+        "step": 39237,
+        "view": "post",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.1536544279563,
+        "walltime_seconds": 1800
+      },
+      "49046/post/uci_emg/folds0-1-2-3": {
+        "step": 49046,
+        "view": "post",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.1536544279563,
+        "walltime_seconds": 1800
+      },
+      "39237/pool/uci_emg/folds0-1-2-3": {
+        "step": 39237,
+        "view": "pool",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 614.2584681688091,
+        "walltime_seconds": 1800
+      },
+      "49046/pool/uci_emg/folds0-1-2-3": {
+        "step": 49046,
+        "view": "pool",
+        "dataset": "uci_emg",
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 614.2584681688091,
+        "walltime_seconds": 1800
+      }
+    },
+    "decision": null
+  }
 }

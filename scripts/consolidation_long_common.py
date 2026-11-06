@@ -19,6 +19,7 @@ import tokenizer_evaluation as E
 import train_jepa as J
 from wearusfm.harness import fm_features as FF
 from wearusfm.training.pairing import state_sha256
+import consolidation_long_amendment as A
 
 PROTOCOL = 'consolidation-long-evaluation-20261105-v1'
 DOSES = (19618, 39237, 49046)
@@ -101,6 +102,10 @@ def validate_plan(plan, *, require_review=True):
     import consolidation_long_pose_runtime as PR
     require(plan['classification_benchmark_policy'] == CR.BENCHMARK_POLICY
             and plan['pose_benchmark_policy'] == PR.BENCHMARK_POLICY, 'benchmark policy changed')
+    # Amendment A1: registered fit shards, frozen walltimes, closed input list, recorded decision.
+    A.validate_block(plan['amendment'], {CR.shard_key(*shard): shard for shard in
+                                         A.registered_shards(C.DOSES, C.VIEWS, C.DATASETS)},
+                     require_decision=require_review)
     require(plan['recipe_sha256'] == recipe_identity(plan), 'evaluation recipe hash mismatch')
     require(plan['output_root'] == OUTPUT_ROOT and plan['background_monitor'] is False, 'output/monitor policy changed')
     if require_review:
@@ -115,16 +120,24 @@ def load_context(plan_path, expected_code):
     code = T.P.code_identity(expected_code)
     plan_pin = T.P.file_identity(plan_path)
     plan = validate_plan(json.loads(Path(plan_path).read_text()))
-    require(plan['source_sha256'] == source_identity(), 'evaluation sources differ from reviewed plan')
+    files = A.source_files(ROOT, T.R.sha256_file)
+    require(plan['source_sha256'] == source_identity() == digest(files), 'evaluation sources differ from reviewed plan')
+    # Amendment A1: the new source may read the 28 original receipts only if it differs
+    # from the original source inside the closed list; new outputs carry the new source.
+    inputs = A.validate_inputs(read_pin(plan['amendment']['input_compatibility']), files,
+                               {path: (ROOT / path).read_text() for path in A.CHANGED_PATHS}, digest)
+    require(inputs['protocol'] == PROTOCOL and inputs['recipe_sha256'] == plan['recipe_sha256']
+            and inputs['source_sha256'] != plan['source_sha256']
+            and plan['cache_manifest'] == inputs['cache_manifest'], 'amendment inputs differ from this evaluation')
     legacy = read_pin(plan['historical_extraction_plan'])
     for key, pin in legacy['inputs'].items():
         legacy['inputs'][key] = {**pin, 'path': str(pinned(pin))}
     ctx = {'plan': plan, 'plan_pin': plan_pin, 'code_sha': code, 'source_sha256': plan['source_sha256'],
+           'inputs': inputs, 'amendment': A.record(),
            'legacy': legacy, 'pose_reader': read_pin(plan['historical_pose_reader_plan'])}
-    if plan.get('cache_manifest') is not None:
-        ctx['caches'] = read_pin(plan['cache_manifest'])
-        require(ctx['caches']['recipe_sha256'] == plan['recipe_sha256']
-                and ctx['caches']['source_sha256'] == ctx['source_sha256'], 'cache manifest recipe/source differs')
+    ctx['caches'] = read_pin(plan['cache_manifest'])
+    require(ctx['caches']['recipe_sha256'] == plan['recipe_sha256']
+            and ctx['caches']['source_sha256'] == inputs['source_sha256'], 'cache manifest recipe/source differs')
     return ctx
 
 
@@ -204,7 +217,7 @@ def begin_output(ctx, out, kind, **fields):
         torch.cuda.reset_peak_memory_stats()
     return {'protocol': PROTOCOL, 'complete': False, 'kind': kind, 'code_sha': ctx['code_sha'],
             'plan_sha256': ctx['plan_pin']['sha256'], 'source_sha256': ctx['source_sha256'],
-            'recipe_sha256': ctx['plan']['recipe_sha256'], **fields}
+            'recipe_sha256': ctx['plan']['recipe_sha256'], 'amendment': ctx['amendment'], **fields}
 
 
 def finish_output(ctx, out, report):
@@ -230,9 +243,24 @@ def finish_output(ctx, out, report):
     return value
 
 
+def verified_input(ctx, pin, kind):
+    """Amendment A1: read one of the 28 listed original receipts; nothing else is an input."""
+    inputs = ctx['inputs']
+    listed = [r for r in inputs['receipts'] if pin == {k: r[k] for k in ('path', 'sha256', 'bytes')}]
+    require(len(listed) == 1 and listed[0]['kind'] == kind, 'receipt is not a listed amendment input of this kind')
+    report, phase = read_pin(pin), inputs['phases'][listed[0]['phase']]
+    require(report.get('protocol') == PROTOCOL and report.get('complete') is True and report.get('kind') == kind
+            and report.get('source_sha256') == inputs['source_sha256'] != ctx['source_sha256']
+            and report.get('recipe_sha256') == inputs['recipe_sha256'] == ctx['plan']['recipe_sha256']
+            and report.get('code_sha') == phase['code_sha'] and report.get('plan_sha256') == phase['plan_sha256']
+            and all(report.get(k) == v for k, v in listed[0]['fields'].items()),
+            'amendment input receipt provenance differs')
+    return report
+
+
 def verified_extraction(ctx, entry, step, kind):
-    report = read_pin(entry['receipt'])
-    require(report['complete'] is True and report['source_sha256'] == ctx['source_sha256']
+    report = verified_input(ctx, entry['receipt'], kind)
+    require(report['complete'] is True and report['source_sha256'] == ctx['inputs']['source_sha256']
             and report['recipe_sha256'] == ctx['plan']['recipe_sha256']
             and report['checkpoint_step'] == step and report['kind'] == kind
             and report['checkpoint_sha256'] == ctx['plan']['endpoints'][str(step)]['checkpoint']['sha256'],

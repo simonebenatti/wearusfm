@@ -18,9 +18,23 @@ def json_pin(path, value):
     return U.C.file_pin(path)
 
 
+def admit(ctx, pin, kind, fields=None):
+    """List one receipt pin among the inputs of the amendment, as the manifest does."""
+    ctx["inputs"]["receipts"].append({"id": pin["path"], "phase": kind.split("-")[0], "kind": kind,
+                                      "fields": fields or {}, **{k: pin[k] for k in ("path", "sha256", "bytes")}})
+    return pin
+
+
 def context(tmp_path):
+    """Amendment A1: caches and their receipts keep the original source b..., new outputs carry f..."""
     plan = {"recipe_sha256": "a"*64, "endpoints": {}}
     caches = {"recipe_sha256": "a"*64, "source_sha256": "b"*64, "pose": {}}
+    ctx = {"plan": plan, "caches": caches, "source_sha256": "f"*64, "code_sha": "c"*40,
+           "amendment": U.C.A.record(),
+           "inputs": {"source_sha256": "b"*64, "recipe_sha256": "a"*64, "receipts": [],
+                      "phases": {"extract": {"code_sha": "1"*40, "plan_sha256": "2"*64},
+                                 "benchmark": {"code_sha": "3"*40, "plan_sha256": "4"*64}}},
+           "pose_reader": {"fold_users": [["a", "c"], ["b", "d"]]}}
     for step in U.P.DOSES:
         plan["endpoints"][str(step)] = {"checkpoint": {"path": str(tmp_path/f"checkpoint{step}.pt"), "sha256": str(U.P.DOSES.index(step)+1)*64}}
         caches["pose"][str(step)] = {}
@@ -31,11 +45,12 @@ def context(tmp_path):
             report = {"protocol": U.C.PROTOCOL, "complete": True, "kind": "extract-pose-"+split,
                       "which": "teacher", "checkpoint_unchanged": True, "frozen_teacher_unchanged": True,
                       "source_sha256": "b"*64, "recipe_sha256": "a"*64, "checkpoint_step": step,
+                      **ctx["inputs"]["phases"]["extract"],
                       "checkpoint_sha256": plan["endpoints"][str(step)]["checkpoint"]["sha256"], "artifacts": {"cache": cache}}
-            caches["pose"][str(step)][split] = {"cache": cache, "receipt": json_pin(tmp_path/f"{step}.{split}.json", report)}
+            caches["pose"][str(step)][split] = {"cache": cache, "receipt": admit(
+                ctx, json_pin(tmp_path/f"{step}.{split}.json", report), "extract-pose-"+split)}
     plan["cache_manifest"] = json_pin(tmp_path/"caches.json", caches)
-    return {"plan": plan, "caches": caches, "source_sha256": "b"*64, "code_sha": "c"*40,
-            "pose_reader": {"fold_users": [["a", "c"], ["b", "d"]]}}
+    return ctx
 
 
 def timing():
@@ -49,7 +64,8 @@ def benchmark(ctx):
     artifact = ctx["caches"]["pose"]["19618"]["train"]["cache"]
     return {"complete": True, "protocol": U.C.PROTOCOL, "kind": "benchmark-pose", "checkpoint_step": 19618,
             "checkpoint_sha256": ctx["plan"]["endpoints"]["19618"]["checkpoint"]["sha256"],
-            "source_sha256": ctx["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
+            "source_sha256": ctx["inputs"]["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
+            **ctx["inputs"]["phases"]["benchmark"],
             "benchmark_policy": U.BENCHMARK_POLICY, "fit_resources": U.FIT_RESOURCES,
             "cache_manifest": ctx["plan"]["cache_manifest"], "train_cache": ctx["caches"]["pose"]["19618"]["train"],
             "held_payload_opened": False, "held_scored": False, "training_scores_persisted": False,
@@ -77,26 +93,64 @@ def test_projection_exact_policy_and_not_admitted_for_time_or_memory():
         U.project_benchmark(t, 100_000)
 
 
-@pytest.mark.parametrize("field", ["source_sha256", "recipe_sha256", "checkpoint_step", "cache_manifest", "train_cache",
-                                     "benchmark_policy", "fit_resources", "held_payload_opened", "held_scored", "environment", "projection"])
-def test_fit_gate_rejects_changed_benchmark_contract(tmp_path, field):
+PROVENANCE = "amendment input receipt provenance differs"
+
+
+@pytest.mark.parametrize("field,message", [
+    ("source_sha256", PROVENANCE), ("recipe_sha256", PROVENANCE), ("code_sha", PROVENANCE), ("plan_sha256", PROVENANCE),
+    ("protocol", PROVENANCE), ("complete", PROVENANCE), ("kind", PROVENANCE),
+    ("checkpoint_step", "data identity differs"), ("cache_manifest", "data identity differs"),
+    ("train_cache", "data identity differs"), ("benchmark_policy", "policy/resources differ"),
+    ("fit_resources", "policy/resources differ"), ("held_payload_opened", "used scoring payload"),
+    ("held_scored", "used scoring payload"), ("environment", "numeric environment differs"),
+    ("projection", "time/memory admission")])
+def test_fit_gate_rejects_changed_benchmark_contract(tmp_path, field, message):
     ctx = context(tmp_path)
     report = benchmark(ctx)
     report[field] = "changed"
-    ctx["plan"]["benchmark_receipts"] = {"pose": json_pin(tmp_path/"benchmark.json", report)}
-    with pytest.raises(ValueError):
+    ctx["plan"]["benchmark_receipts"] = {"pose": admit(ctx, json_pin(tmp_path/"benchmark.json", report), "benchmark-pose")}
+    with pytest.raises(ValueError, match=message):
+        U._benchmark_gate(ctx)
+
+
+def test_fit_gate_reads_only_the_listed_original_benchmark_never_one_of_the_running_source(tmp_path):
+    ctx = context(tmp_path)
+    pin = json_pin(tmp_path/"benchmark.json", benchmark(ctx))
+    ctx["plan"]["benchmark_receipts"] = {"pose": pin}
+    with pytest.raises(ValueError, match="not a listed amendment input"):
+        U._benchmark_gate(ctx)
+    # Listed under another kind or with other pinned fields: still not this input.
+    admit(ctx, pin, "extract-pose-train")
+    with pytest.raises(ValueError, match="not a listed amendment input"):
+        U._benchmark_gate(ctx)
+    ctx["inputs"]["receipts"].pop()
+    admit(ctx, pin, "benchmark-pose", {"checkpoint_step": 39237})
+    with pytest.raises(ValueError, match=PROVENANCE):
+        U._benchmark_gate(ctx)
+    ctx["inputs"]["receipts"].pop()
+    admit(ctx, pin, "benchmark-pose", {"checkpoint_step": 19618, "cache_manifest": ctx["plan"]["cache_manifest"]})
+    assert U._benchmark_gate(ctx) == pin
+    # A benchmark written by the running source is a new measurement, not an input of the amendment.
+    report = {**benchmark(ctx), "source_sha256": ctx["source_sha256"]}
+    ctx["plan"]["benchmark_receipts"]["pose"] = admit(ctx, json_pin(tmp_path/"new-source.json", report), "benchmark-pose")
+    with pytest.raises(ValueError, match=PROVENANCE):
+        U._benchmark_gate(ctx)
+    # The same source on both sides is not an amendment bridge at all.
+    ctx["plan"]["benchmark_receipts"]["pose"] = pin
+    ctx["source_sha256"] = ctx["inputs"]["source_sha256"]
+    with pytest.raises(ValueError, match=PROVENANCE):
         U._benchmark_gate(ctx)
 
 
 def test_fit_gate_recomputes_admission_and_checks_file_pin(tmp_path):
     ctx = context(tmp_path)
     report = benchmark(ctx)
-    pin = json_pin(tmp_path/"benchmark.json", report)
+    pin = admit(ctx, json_pin(tmp_path/"benchmark.json", report), "benchmark-pose")
     ctx["plan"]["benchmark_receipts"] = {"pose": pin}
     assert U._benchmark_gate(ctx) == pin
     report["timings_seconds"]["read_validate"] = 10_000
     report["projection"] = U.project_benchmark(report["timings_seconds"], report["peak_rss_bytes"])
-    ctx["plan"]["benchmark_receipts"]["pose"] = json_pin(tmp_path/"large.json", report)
+    ctx["plan"]["benchmark_receipts"]["pose"] = admit(ctx, json_pin(tmp_path/"large.json", report), "benchmark-pose")
     with pytest.raises(ValueError, match="admission"):
         U._benchmark_gate(ctx)
     Path(pin["path"]).write_text("tampered")
@@ -210,7 +264,7 @@ def test_fit_leakage_is_fatal(tmp_path, monkeypatch):
 
 def test_compare_validates_all_extraction_receipts_and_cell_artifacts_before_aggregate(tmp_path, monkeypatch):
     ctx = context(tmp_path)
-    ctx["plan"]["benchmark_receipts"] = {"pose": json_pin(tmp_path/"benchmark.json", benchmark(ctx))}
+    ctx["plan"]["benchmark_receipts"] = {"pose": admit(ctx, json_pin(tmp_path/"benchmark.json", benchmark(ctx)), "benchmark-pose")}
     train, held = data(), data(seed=90, users=("held_a", "held_b"))
     monkeypatch.setattr(U, "_read", lambda c, s, split: (train if split == "train" else held, ctx["caches"]["pose"][str(s)][split]))
     fits = {}
@@ -233,10 +287,19 @@ def test_compare_validates_all_extraction_receipts_and_cell_artifacts_before_agg
     ctx["plan"]["pose_fit_manifest"] = json_pin(tmp_path/"changed-fits.json", {"fits": fits})
     with pytest.raises(ValueError, match="control provenance"):
         U._compare(ctx)
+    # Amendment A1: the three pose fits carry the amended source; a fit of the original source is not one of them.
+    report = U.C.read_pin(pin)
+    assert report["source_sha256"] == ctx["source_sha256"] != ctx["inputs"]["source_sha256"]
+    report["source_sha256"] = ctx["inputs"]["source_sha256"]
+    fits["39237"]["report"] = json_pin(tmp_path/"original-source-fit.json", report)
+    ctx["plan"]["pose_fit_manifest"] = json_pin(tmp_path/"original-source-fits.json", {"fits": fits})
+    with pytest.raises(ValueError, match="provenance/dose differs"):
+        U._compare(ctx)
     assert len(calls) == 1
 
 
-@pytest.mark.parametrize("mutation", ["checkpoint_sha256", "split", "recipe_sha256", "source_sha256", "dimension", "geometry"])
+@pytest.mark.parametrize("mutation", ["checkpoint_sha256", "split", "recipe_sha256", "source_sha256", "running_source",
+                                      "dimension", "geometry"])
 def test_read_rejects_embedded_cache_identity_or_geometry(tmp_path, monkeypatch, mutation):
     ctx = context(tmp_path)
     ctx["legacy"] = {"inputs": {"pose_stats": {"sha256": "d"*64}}}
@@ -246,7 +309,7 @@ def test_read_rejects_embedded_cache_identity_or_geometry(tmp_path, monkeypatch,
     d["config"] = {"which": "teacher", "split": "train", "checkpoint_step": 19618,
                    "checkpoint": ctx["plan"]["endpoints"]["19618"]["checkpoint"]["path"],
                    "checkpoint_sha256": ctx["plan"]["endpoints"]["19618"]["checkpoint"]["sha256"],
-                   "source_sha256": ctx["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
+                   "source_sha256": ctx["inputs"]["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
                    "pose_stats_sha256": "d"*64, "checkpoint_pose_stats_sha256": "d"*64,
                    "n_windows": 10, "window_s": 4., "seed": U.P.PE.SEED_WINDOWS, "per_side": False}
     monkeypatch.setattr(U, "_reference", lambda ctx, split: ({}, {}))
@@ -256,6 +319,9 @@ def test_read_rejects_embedded_cache_identity_or_geometry(tmp_path, monkeypatch,
         d["dim"] = 4
     elif mutation == "geometry":
         d["target"] = d["target"][:, :159]
+    elif mutation == "running_source":
+        # The configuration embedded in the cache names the source that extracted it: the original one.
+        d["config"]["source_sha256"] = ctx["source_sha256"]
     else:
         d["config"][mutation] = "changed"
     with pytest.raises(ValueError, match="identity|geometry"):
@@ -265,15 +331,41 @@ def test_read_rejects_embedded_cache_identity_or_geometry(tmp_path, monkeypatch,
 def test_cache_receipt_rejects_source_recipe_dose_and_uncovered_cache(tmp_path):
     ctx = context(tmp_path)
     assert U._entry(ctx, 19618, "train") == ctx["caches"]["pose"]["19618"]["train"]
-    for field, value in (("source_sha256", "0"*64), ("recipe_sha256", "0"*64), ("checkpoint_step", 49046), ("artifacts", {})):
-        changed = copy.deepcopy(ctx)
-        entry = changed["caches"]["pose"]["19618"]["train"]
-        report = U.C.read_pin(entry["receipt"])
-        report[field] = value
-        entry["receipt"] = json_pin(tmp_path/(field+".json"), report)
-        changed["plan"]["cache_manifest"] = json_pin(tmp_path/(field+"-manifest.json"), changed["caches"])
-        with pytest.raises(ValueError):
-            U._entry(changed, 19618, "train")
+    cases = (("source_sha256", "0"*64, PROVENANCE), ("source_sha256", ctx["source_sha256"], PROVENANCE),
+             ("recipe_sha256", "0"*64, PROVENANCE), ("code_sha", "0"*40, PROVENANCE),
+             ("plan_sha256", "0"*64, PROVENANCE), ("checkpoint_step", 49046, "extraction receipt differs"),
+             ("frozen_teacher_unchanged", False, "immutability attestation missing"),
+             ("artifacts", {}, "cache not covered by extraction receipt"))
+    for index, (field, value, message) in enumerate(cases):
+        for listed, expected in ((True, message), (False, "not a listed amendment input")):
+            changed = copy.deepcopy(ctx)
+            entry = changed["caches"]["pose"]["19618"]["train"]
+            report = U.C.read_pin(entry["receipt"])
+            report[field] = value
+            entry["receipt"] = json_pin(tmp_path/f"case{index}-{listed}.json", report)
+            if listed:
+                admit(changed, entry["receipt"], "extract-pose-train")
+            changed["plan"]["cache_manifest"] = json_pin(tmp_path/f"case{index}-{listed}-manifest.json", changed["caches"])
+            with pytest.raises(ValueError, match=expected):
+                U._entry(changed, 19618, "train")
+    # The cache manifest itself keeps the original source: one that names the running source is refused.
+    changed = copy.deepcopy(ctx)
+    changed["caches"]["source_sha256"] = ctx["source_sha256"]
+    changed["plan"]["cache_manifest"] = json_pin(tmp_path/"running-source-manifest.json", changed["caches"])
+    with pytest.raises(ValueError, match="pose cache manifest recipe/source differs"):
+        U._entry(changed, 19618, "train")
+
+
+@pytest.mark.parametrize("stage,step", [("extract-pose-train", 19618), ("extract-pose-val", 49046), ("benchmark-pose", None)])
+def test_closed_pose_stages_are_refused_before_threads_gate_or_output(tmp_path, monkeypatch, stage, step):
+    """Amendment A1 reuses the original receipts: this source never extracts or benchmarks again."""
+    for name in ("_threads", "_benchmark_gate", "_read", "_extract", "_benchmark"):
+        monkeypatch.setattr(U, name, lambda *a, **k: pytest.fail("closed stage started"))
+    for name in ("begin_output", "load_teacher", "read_pin"):
+        monkeypatch.setattr(U.C, name, lambda *a, **k: pytest.fail("closed stage started"))
+    with pytest.raises(ValueError, match="closed by amendment A1"):
+        U.execute(stage, context(tmp_path), tmp_path/"output", step)
+    assert not (tmp_path/"output").exists() and stage in U.C.A.CLOSED_STAGES
 
 
 @pytest.mark.parametrize("stage,step", [("unknown", None), ("fit-pose", None), ("fit-pose", 30000),
@@ -318,7 +410,7 @@ def test_pose_threads_match_historical_stage_and_actual_libraries(monkeypatch, s
         U._threads(stage)
 
 
-@pytest.mark.parametrize("stage,step", [("benchmark-pose", None), ("fit-pose", 49046)])
+@pytest.mark.parametrize("stage,step", [("fit-pose", 49046), ("compare-pose", None)])
 def test_wrong_pose_threads_fail_before_benchmark_gate_payload_or_output(monkeypatch, tmp_path, stage, step):
     for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
         monkeypatch.setenv(name, "1")

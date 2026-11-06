@@ -65,8 +65,9 @@ def peak_rss_bytes():
 
 def _manifest(ctx):
     manifest = C.read_pin(ctx["plan"]["cache_manifest"])
+    # Amendment A1: the cache manifest keeps the original source that wrote the caches.
     C.require(manifest == ctx["caches"] and manifest["recipe_sha256"] == ctx["plan"]["recipe_sha256"]
-              and manifest["source_sha256"] == ctx["source_sha256"], "pose cache manifest recipe/source differs")
+              and manifest["source_sha256"] == ctx["inputs"]["source_sha256"], "pose cache manifest recipe/source differs")
     C.require(set(manifest["pose"]) == set(map(str, P.DOSES)), "pose cache manifest doses differ")
     C.require(all(set(v) == {"train", "val"} for v in manifest["pose"].values()), "pose cache split missing")
     return manifest
@@ -95,7 +96,8 @@ def _read(ctx, step, split):
     expected = {"which": "teacher", "split": split, "checkpoint_step": step,
                 "checkpoint": ctx["plan"]["endpoints"][str(step)]["checkpoint"]["path"],
                 "checkpoint_sha256": ctx["plan"]["endpoints"][str(step)]["checkpoint"]["sha256"],
-                "source_sha256": ctx["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
+                # Amendment A1: the configuration embedded in the cache names the original source.
+                "source_sha256": ctx["inputs"]["source_sha256"], "recipe_sha256": ctx["plan"]["recipe_sha256"],
                 "pose_stats_sha256": ctx["legacy"]["inputs"]["pose_stats"]["sha256"],
                 "checkpoint_pose_stats_sha256": ctx["legacy"]["inputs"]["pose_stats"]["sha256"],
                 "n_windows": 10, "window_s": 4., "seed": P.PE.SEED_WINDOWS, "per_side": False}
@@ -221,9 +223,10 @@ def _benchmark(ctx, out):
 
 def _benchmark_gate(ctx, *, check_environment=True):
     pin = ctx["plan"]["benchmark_receipts"]["pose"]
-    report = C.read_pin(pin)
+    # Amendment A1: the listed original receipt, verified against its original source.
+    report = C.verified_input(ctx, pin, "benchmark-pose")
     C.require(report.get("complete") is True and report.get("protocol") == C.PROTOCOL
-              and report.get("kind") == "benchmark-pose" and report.get("source_sha256") == ctx["source_sha256"]
+              and report.get("kind") == "benchmark-pose" and report.get("source_sha256") == ctx["inputs"]["source_sha256"]
               and report.get("recipe_sha256") == ctx["plan"]["recipe_sha256"], "pose benchmark provenance differs")
     C.require(report.get("checkpoint_step") == 19618
               and report.get("checkpoint_sha256") == ctx["plan"]["endpoints"]["19618"]["checkpoint"]["sha256"]
@@ -334,6 +337,8 @@ def _compare(ctx):
 
 def execute(stage, ctx, out, step=None):
     C.require(stage in STAGES, "unregistered pose stage")
+    C.require(stage not in C.A.CLOSED_STAGES,
+              "stage closed by amendment A1: its original receipts are reused, never repeated by this source")
     if stage in ("extract-pose-train", "extract-pose-val", "fit-pose"):
         C.require(type(step) is int and step in P.DOSES, "pose stage requires registered dose")
     else:

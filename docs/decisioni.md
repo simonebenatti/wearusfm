@@ -6591,3 +6591,50 @@ Controlli e riproduzione: completezza verificata prima di leggere i punteggi; ag
 ricalcolo indipendente di celle e contrasti dalle predizioni con differenza 0,0 pp; report riprodotto identico byte
 per byte dal manifest pubblicato. Consegna: `results/infra/finetune15_20261105/final/` (README, manifest, report,
 verifica, consuntivo, 24 ricevute con curve, 27 log); OOF fuori da Git, checkpoint solo su WORK.
+
+### 06/11/2026 — Valutazione lunga: emendamento delle risorse A1 implementato; fase fit ferma fino alla decisione di Simone
+
+Voce di Claude, operatore della linea 2. Proposta di GPT consolidamento `4bb39d2` (ramo `codex/consolidation-20261104`);
+review del disegno di Claude `7ceedbb` (approvato, verifiche V-1...V-8 sull'implementazione). GPT ha chiesto a Claude,
+nel prompt incollato da Simone, di implementare l'emendamento, provarlo, pubblicarlo e procedere.
+
+**NATURA DELLA REGOLA:** post hoc rispetto ai tempi dei sedici benchmark (solo train: 15 shard di fit su 48 oltre
+13.800 s, 10 celle su 40), anteriore a qualunque fit, punteggio o predizione del confronto lungo. Riguarda risorse,
+impacchettamento dei job e provenienza degli input. Non e' una regola pre-registrata.
+
+**CONGELATO PRIMA DEI FIT (in `plan.json`, blocco `amendment`, e nel modulo `scripts/consolidation_long_amendment.py`):**
+- forme dei fold: DB2 pre e pool un fold per job, DB3 pre un fold per job, DB6 pool coppie [0,1] e [2,3], gli altri
+  invariati: 69 fit di classificazione sulle stesse 40 celle x 4 fold;
+- walltime per shard: `W = 900 * ceil((P + 600)/900)`, ammesso se `P <= W - 600` e `W <= 14400`, con P la proiezione
+  per fold della politica originale sulle stesse 15 ricevute; 8 CPU, 30 GiB; tabella dei 69 valori (da 30 a 225 minuti);
+- ammissione globale: tutti i 69 oppure nessuno; nessun adattamento automatico; un TIMEOUT ferma la fase;
+- eccezione esplicita a R-2(i), limitata alle 28 ricevute originali (12 estrazioni, 16 benchmark) del manifest
+  `amendment_a1/input_compatibility.json` (sha256 `983df484...`): lette dal codice nuovo, mai riscritte; nessuna lista
+  generica di source accettate; estrazioni e benchmark non ripetibili dal codice nuovo;
+- source dei nuovi output `77e09626...` (originale `1ca7aead...`), ricetta `b2356a8e...` invariata.
+
+**COSTI:** 69 fit 1.276 core-ore allocate (proiezione 1.115,658874); altre allocazioni future 41; massimo futuro
+1.317 core-ore e 0 GPU-ore; consumato 42,218889 core-ore e 3,373611 GPU-ore; totale prudenziale 1.451,666667
+core-ore sul tetto invariato di 1.711,666667 (margine 260). 103 job di calcolo piu' quattro checkout, 77 allocazioni
+da eseguire. Nessun superamento del tetto approvato, nessun cambiamento scientifico.
+
+**STATO:** nessun pin della fase fit, nessun deployment, nessun job. La catena approvata da Simone il 05/11 nominava
+82 job e 4 checkout. La politica congelata R-2(i) diceva: «any covered source change invalidates all twelve
+extraction receipts under the amended code, including resource-only changes» e «no receipt rewrite, accepted-source
+whitelist or automatic resubmission». L'eccezione cambia quindi una regola congelata dopo aver visto i tempi dei
+benchmark: la decide Simone. Il piano porta `amendment.decision: null` e il runtime rifiuta di partire finche' la
+decisione non e' registrata con le sue parole. Alla decisione seguono, senza un altro passaggio: registrazione, pin,
+commit di fase, checkout, preflight in sola lettura, tre fit di posa e poi i 69 di classificazione. Corsia seriale:
+«Due fit per volta» valeva finche' il confronto dello scaling non era sottomesso; il 06/11 alle 14:36 il ledger
+mostra `SCALING-compare-20261106` sottomesso, quindi valgono le ondate entro otto job CPU in sospeso per tutto
+l'utente. Procedura e verifiche: `docs/consolidation_long_amendment_a1_execution_20261106.md`.
+
+**VERIFICA INDIPENDENTE (subagent `critico`, 06/11):** primo esito «DA RIVEDERE» per un difetto del controllo
+dell'elenco chiuso: non copriva i decoratori ne' l'ordine delle istruzioni di primo livello. Il diff non li usava, ma
+l'affermazione era piu' forte del controllo. Corretto prima di pubblicare: il testo dei tre file Python cambiati e'
+diviso in regioni che lo coprono byte per byte e l'ordine e' fissato. Nessun altro difetto bloccante: fold, gate,
+piani, posa e conti ricalcolati in modo indipendente. Riverifica del delta: «APPROVATO»; il revisore ha provato
+dieci modifiche sue e tutte quelle fuori dalle definizioni emendate sono rifiutate; dentro una definizione emendata
+la garanzia resta il diff rivisto. Due rilievi minori di documentazione, corretti (quando il runtime controlla la
+source incorporata nelle cache held della posa: all'apertura, dopo le due ridge; questo secondo esito mancava nella
+voce).

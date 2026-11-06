@@ -1,0 +1,1145 @@
+{
+ "protocol": "consolidation-long-evaluation-20261105-v1",
+ "amendment": "A1",
+ "kind": "input-compatibility",
+ "scope": "exception to R-2(i) limited to the 28 receipts listed here: they were written by the original source and are read, never rewritten, by the amended source; no other source, receipt or input is admitted",
+ "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+ "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+ "phases": {
+  "extract": {
+   "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+   "plan_sha256": "e24d3fae8642695dcf0dd1ff45347d985eed0c8e47f7e85c1c1e138db11d058a"
+  },
+  "benchmark": {
+   "code_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+   "plan_sha256": "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f"
+  }
+ },
+ "cache_manifest": {
+  "path": "results/infra/consolidation_long_20261105/execution/manifests/cache_manifest.json",
+  "sha256": "e5b153d002ce11f73ddeeaad95b454ee2bcec8a346a7705f7092f3949ee0a518",
+  "bytes": 12942
+ },
+ "cache_payloads": 21,
+ "receipts": [
+  {
+   "id": "LONG-G19618-p1-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+   "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2",
+   "bytes": 5988,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "task": "p1",
+    "artifacts": {
+     "ninapro_db2": {
+      "bytes": 237601268,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/ninapro_db2.npz",
+      "sha256": "b9f6b518b63ca519d5b539b2c58bd2a256b3e2fcdfbf119b5df1dd674c0d157b"
+     },
+     "ninapro_db3": {
+      "bytes": 60632540,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/ninapro_db3.npz",
+      "sha256": "6bbeda49b8833786f26b2b23d916860778892e38ac2fe8ae29ca999c4675b43c"
+     },
+     "ninapro_db6": {
+      "bytes": 209351512,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/ninapro_db6.npz",
+      "sha256": "fbff8fcb90b4426f7915c53552ae6189fe299732d2fcca1273eef9eca65917cb"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G19618-p2-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+   "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b",
+   "bytes": 5697,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "task": "p2",
+    "artifacts": {
+     "epn612": {
+      "bytes": 294936136,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/epn612.npz",
+      "sha256": "f279befb71842c7a2c2319566e5fa37ba8e09aa5a0fa937ffb6df5db89704134"
+     },
+     "uci_emg": {
+      "bytes": 2258740,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/uci_emg.npz",
+      "sha256": "989bb037b214be040bf29cdb7d7ef3d9832e5c447dd161fab7aa654805930ac8"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G19618-pose-train-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-train",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/report.json",
+   "sha256": "4343caeb7112fa23232582d25b3a6dc78c822ea1ed94099cd43de49162724a6a",
+   "bytes": 342031,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "split": "train",
+    "artifacts": {
+     "cache": {
+      "bytes": 474335937,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/train.npz",
+      "sha256": "44532070c37056f0230c06dd97deb64338c64415e3703f751889b29cce4f338f"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G19618-pose-val-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-val",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val/report.json",
+   "sha256": "3af7a906590a3f47804d14491951f216e7a740e620710c17d738d7f012dd903c",
+   "bytes": 3258394,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "split": "val",
+    "artifacts": {
+     "cache": {
+      "bytes": 4592450388,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val/val.npz",
+      "sha256": "c0e7eede7283b6defc0eb71ad2445c7b0831e768f66e598e4421fab6d9fdbd7c"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G39237-p1-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1/report.json",
+   "sha256": "7d94761d0283df12585da1d8c4994cf9cecaf6264144299395b73232c86213d3",
+   "bytes": 5985,
+   "fields": {
+    "checkpoint_step": 39237,
+    "checkpoint_sha256": "5369425f92096f5e4763da5137f1983a3809ef15433c4811736ce287a3eaa5e1",
+    "task": "p1",
+    "artifacts": {
+     "ninapro_db2": {
+      "bytes": 237601279,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1/ninapro_db2.npz",
+      "sha256": "6c2f882ed456209d6df9b0da12a71df8142d4bfd0a8e68199997d75d37837ab6"
+     },
+     "ninapro_db3": {
+      "bytes": 60632551,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1/ninapro_db3.npz",
+      "sha256": "25fa581c08f0a5964c3d393e125ea10cf47dfc7d24df43d13076373a33e3691b"
+     },
+     "ninapro_db6": {
+      "bytes": 209351523,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1/ninapro_db6.npz",
+      "sha256": "2b1068e8061e826f3655b021252d0e04a775fdaf5299a1f1bd5a5420224b3aac"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G39237-p2-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2/report.json",
+   "sha256": "2781586d8f04abf5fb9ae95e2759606e1c37f1b9ba308b42345f6a13df4415a7",
+   "bytes": 5694,
+   "fields": {
+    "checkpoint_step": 39237,
+    "checkpoint_sha256": "5369425f92096f5e4763da5137f1983a3809ef15433c4811736ce287a3eaa5e1",
+    "task": "p2",
+    "artifacts": {
+     "epn612": {
+      "bytes": 294936147,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2/epn612.npz",
+      "sha256": "fce320c11cad27463bb26a595ce917ce9c9667021afbba115ed654e454734c26"
+     },
+     "uci_emg": {
+      "bytes": 2258751,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2/uci_emg.npz",
+      "sha256": "db5bdbd08dca5eda3e6a382392488c97f74924242efa6d7f768348594c53949e"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G39237-pose-train-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-train",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train/report.json",
+   "sha256": "ec620574b4653dbdd32792ded49e490a72fa649bcdbf4d44aaf13c76f224462a",
+   "bytes": 342028,
+   "fields": {
+    "checkpoint_step": 39237,
+    "checkpoint_sha256": "5369425f92096f5e4763da5137f1983a3809ef15433c4811736ce287a3eaa5e1",
+    "split": "train",
+    "artifacts": {
+     "cache": {
+      "bytes": 474444307,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train/train.npz",
+      "sha256": "9ae253ec3c64c8399c0547ed2ed7f588e7e8660f4d87bbf2eb9308b934ef5fbf"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G39237-pose-val-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-val",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val/report.json",
+   "sha256": "2bfa6d761aa779bc17fa76fdf2b9e613c54d9918bdf297d39204f70ff20ac0c8",
+   "bytes": 3258391,
+   "fields": {
+    "checkpoint_step": 39237,
+    "checkpoint_sha256": "5369425f92096f5e4763da5137f1983a3809ef15433c4811736ce287a3eaa5e1",
+    "split": "val",
+    "artifacts": {
+     "cache": {
+      "bytes": 4594000029,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val/val.npz",
+      "sha256": "2525073ec70064abe5118f49437e6813076e4b0d77b4a31aa65dcdf2bcf7202e"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G49046-p1-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/report.json",
+   "sha256": "21a243cc470bcdafef54b147c7bfe479f0a3d477bcbc25ae8ffdb11a7ec07e39",
+   "bytes": 5986,
+   "fields": {
+    "checkpoint_step": 49046,
+    "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "task": "p1",
+    "artifacts": {
+     "ninapro_db2": {
+      "bytes": 237601283,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/ninapro_db2.npz",
+      "sha256": "a8bf84144dfcb949a11c128d280e780d0ccac86fc3c653fb437c89fe43dac893"
+     },
+     "ninapro_db3": {
+      "bytes": 60632555,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/ninapro_db3.npz",
+      "sha256": "9f453ca0109e8cd13c8be70d5c7ee1d62a0d3711792eba0f7546c43e050f7a36"
+     },
+     "ninapro_db6": {
+      "bytes": 209351527,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/ninapro_db6.npz",
+      "sha256": "ab36ade319e735d4b1def7629a590a177a6d3ae02904440ea962eb150f43a97c"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G49046-p2-20261105",
+   "phase": "extract",
+   "kind": "extract-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/report.json",
+   "sha256": "69dbf4b076c2fe36025278e9d22d79df6b63c37b7c46290c48355f5a0562531a",
+   "bytes": 5695,
+   "fields": {
+    "checkpoint_step": 49046,
+    "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "task": "p2",
+    "artifacts": {
+     "epn612": {
+      "bytes": 294936151,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/epn612.npz",
+      "sha256": "f7339e8950b27bb649b7b09dcc4f76b154f99891157c446b00aa5d21931fe70b"
+     },
+     "uci_emg": {
+      "bytes": 2258755,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/uci_emg.npz",
+      "sha256": "3ee6ea8ced098937601a1b1e0af60c5a317c9411b415664e66b9995c9897c33e"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G49046-pose-train-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-train",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/report.json",
+   "sha256": "27297241e4bf0f12a61edb2e5cf5d8cef28262f6f26caee44f98af263b3a1f36",
+   "bytes": 342030,
+   "fields": {
+    "checkpoint_step": 49046,
+    "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "split": "train",
+    "artifacts": {
+     "cache": {
+      "bytes": 474412856,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+      "sha256": "30c0b50d09fa55e39085e547e923593378e490e86f1b70c1e1ffe8bfdd1eec7e"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-G49046-pose-val-20261105",
+   "phase": "extract",
+   "kind": "extract-pose-val",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/report.json",
+   "sha256": "1321038a8e0f50da56e57543c9b5a662c391af523d7094c6984cad1a396a755c",
+   "bytes": 3258392,
+   "fields": {
+    "checkpoint_step": 49046,
+    "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "split": "val",
+    "artifacts": {
+     "cache": {
+      "bytes": 4593977338,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/val.npz",
+      "sha256": "36bab32e5a53cf73640f3ee567404a5a70aa8ecbcb27ce843f24666e4804ce4f"
+     }
+    }
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db2-pre-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pre/report.json",
+   "sha256": "31f0c9e8e87701045fe2001bb02a20cccb2591ee11c7faa7b644ee69e61f545b",
+   "bytes": 17042,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db2",
+    "view": "pre",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db2-post-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/post/report.json",
+   "sha256": "a90dc39b921ce30cd46be53c79ecd5f0f6815a69ed0003e6971e25416b036628",
+   "bytes": 17043,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db2",
+    "view": "post",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db2-pool-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pool/report.json",
+   "sha256": "a15a6a7ec1a462433082e19c9adf5b21049d52d7d501af0f3098b491af935cd6",
+   "bytes": 17049,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db2",
+    "view": "pool",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db3-pre-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pre/report.json",
+   "sha256": "a1b94358a10fd1a71ed6fab6d3ce9fd7e55097cb44e0834807922e05eb6234fc",
+   "bytes": 16609,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db3",
+    "view": "pre",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db3-post-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/post/report.json",
+   "sha256": "5dca339d321c9d03ccc32902315201e7299e7767602575ae37203c26088686e5",
+   "bytes": 16614,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db3",
+    "view": "post",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db3-pool-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool/report.json",
+   "sha256": "eb4fe315f7a309e8530a992ef02cd0c8c731dbbda3904cd171ac987525eff56a",
+   "bytes": 16616,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db3",
+    "view": "pool",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db6-pre-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pre/report.json",
+   "sha256": "c202800ea591568a676d80d187fa6b1cdeec98bdeaad1db77394340dea08fe40",
+   "bytes": 16622,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db6",
+    "view": "pre",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db6-post-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/post/report.json",
+   "sha256": "30254c78430a7c04ec5b8d778b7365ffc3b82df2da634f54753fa08d003ba638",
+   "bytes": 16619,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db6",
+    "view": "post",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-ninapro_db6-pool-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pool/report.json",
+   "sha256": "c845d78f7e03e6b6c24a6d10b7c7bbf7463ad63fa19daa52dcd4fb6e008f3d80",
+   "bytes": 16627,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "ninapro_db6",
+    "view": "pool",
+    "extraction_receipt": {
+     "bytes": 5988,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+     "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-epn612-pre-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pre/report.json",
+   "sha256": "45503faeb923a28ed7478d682d0f305f627a406a74fbb584713f46590c072e8b",
+   "bytes": 28765,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "epn612",
+    "view": "pre",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-epn612-post-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/post/report.json",
+   "sha256": "244cee8690132ef2e645c2ff36eb10bc1ac8d8240943c2e3646512e2aae77eb5",
+   "bytes": 28765,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "epn612",
+    "view": "post",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-epn612-pool-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pool/report.json",
+   "sha256": "c9b01477177b1982702048fca4fa4f18d937c6c8ae3c53f285a4d0948fb9ca3b",
+   "bytes": 28768,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "epn612",
+    "view": "pool",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-uci_emg-pre-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pre/report.json",
+   "sha256": "2b10e0057aefdf61b096e9aace6776bc3b08832fccdfdb439d355f25e6989c06",
+   "bytes": 16742,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "uci_emg",
+    "view": "pre",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-uci_emg-post-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/post/report.json",
+   "sha256": "ce68f46057238f949f6185eb68f6dd553c225b6a706736aadf56a3b66d287c6f",
+   "bytes": 16744,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "uci_emg",
+    "view": "post",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-uci_emg-pool-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-classification",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pool/report.json",
+   "sha256": "b5ddb804126d70591cf47c8e60154345d8ac208dc10ba22d58e45bc4b177a3b3",
+   "bytes": 16740,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "dataset": "uci_emg",
+    "view": "pool",
+    "extraction_receipt": {
+     "bytes": 5697,
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+     "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b"
+    },
+    "artifacts": {}
+   }
+  },
+  {
+   "id": "LONG-BENCH-pose-20261105",
+   "phase": "benchmark",
+   "kind": "benchmark-pose",
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/report.json",
+   "sha256": "7900c6d725f7bb2fb95a85c089ed20a153cb05ccb4392db8bc915df8a04aa0f0",
+   "bytes": 8512,
+   "fields": {
+    "checkpoint_step": 19618,
+    "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "cache_manifest": {
+     "bytes": 12942,
+     "path": "results/infra/consolidation_long_20261105/execution/manifests/cache_manifest.json",
+     "sha256": "e5b153d002ce11f73ddeeaad95b454ee2bcec8a346a7705f7092f3949ee0a518"
+    },
+    "train_cache": {
+     "cache": {
+      "bytes": 474335937,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/train.npz",
+      "sha256": "44532070c37056f0230c06dd97deb64338c64415e3703f751889b29cce4f338f"
+     },
+     "receipt": {
+      "bytes": 342031,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/report.json",
+      "sha256": "4343caeb7112fa23232582d25b3a6dc78c822ea1ed94099cd43de49162724a6a"
+     }
+    },
+    "artifacts": {
+     "post_coefficients": {
+      "bytes": 59377,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/post.timing.coefficients.npz",
+      "sha256": "d7657ba6b6c0b89d430f8b740363082cee7ecc761a02bf59bb1221109b9b9106"
+     },
+     "post_predictions": {
+      "bytes": 43028984,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/post.timing.predictions.npz",
+      "sha256": "50df7f7d8858c0c6626fbae849a146de37fcef850287e2f523ac30974898417e"
+     },
+     "pre_coefficients": {
+      "bytes": 59362,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/pre.timing.coefficients.npz",
+      "sha256": "79b66ff7a38fc240f01aa39ce657e6822bee6ee7dd13bec0a8b2a2f93ac938a6"
+     },
+     "pre_predictions": {
+      "bytes": 43145292,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/pre.timing.predictions.npz",
+      "sha256": "26b6e9507b975e0c185af2fed9dea8f885ed1e5bd906a37d5e8d5d1dfa178060"
+     },
+     "report_io_surrogate": {
+      "bytes": 227853,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/report_io_surrogate.json",
+      "sha256": "5c8e645c3c635dc4cf67def4a423ca17e96caba5e59cc628e71d6621bf47313d"
+     },
+     "trained_head_predictions": {
+      "bytes": 24031771,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/head.timing.predictions.npz",
+      "sha256": "6b98388b92d47baa736673245a491ab8611874b8d04c7df6daf4b63672e2fc17"
+     }
+    }
+   }
+  }
+ ],
+ "launcher": {
+  "path": "scripts/slurm/consolidation_long.sbatch",
+  "lines": 67,
+  "replaced_lines": [
+   52,
+   53
+  ],
+  "prefix_lines": 51,
+  "suffix_lines": 15,
+  "prefix_sha256": "10fe76f8dc30b54241bb779c389a509469532207eabffe45f59e57145be1182a",
+  "suffix_sha256": "93f64116dd3ddeb0cd8856fd174687ccf949f56a6d63dc333573a0d1da4f084b"
+ },
+ "blocks": {
+  "scripts/consolidation_long_classification_runtime.py": {
+   "execute": {
+    "stage == 'extract-classification'": "31f6d1119baf2cfc5a9699764f0816887db2c6a9f27758178f8449ab05ba30fa",
+    "stage == 'benchmark-classification'": "2cacef129c3465522505f259e5ba1b46cb47a7f4a540c3da52706c9a71919e43"
+   }
+  }
+ },
+ "definitions": {
+  "scripts/consolidation_long_common.py": {
+   "docstring": "550f04045d4eaac478f569391f968e1c1ff0de4596875427f9b43e24102e232e",
+   "from __future__ import annotations": "a6284e6d3d43bdfbf0da732945adb2b4f31147c92bea47aee100d7f556c22d00",
+   "from dataclasses import asdict, replace": "4bdf6d1a9665afba1527fc669166bfb705bc9266e0e27feab483229477771868",
+   "import gc": "28a6b0b61821d9c66a56cad38fae48b5562d0b5f93961aba31f6ccfac826edec",
+   "import hashlib": "ada1d9e0a360cda0fd1c8757d297aa74a4fc8d7193a69d3c28b43afc6950e9f9",
+   "import json": "ff3e4d4dcf7250cae8d622d77c9a6d69aefcf4ab04ef9920218fafe93c0f1991",
+   "from pathlib import Path": "6d69f2ac09017b8a49d050ab336e953b8fa02ae08c24396916ea7ea42418e627",
+   "import sys": "9e77b3746ea081eb4c557e71cc84ca29dc66a89d18a07e85dba66a336e7310ae",
+   "import resource": "5f8dec24dd7827571bb8190590b6682a34c2ec55609776ec26be69455a224c7f",
+   "import time": "4f9b8491ba4deee622e6c29ca383c71279fa604b7aff389b0bf5ba279f4453c3",
+   "ROOT": "10d8b07935d95cbdfbe4f69f390b2dfe321cd787f36e54e2bb50f462026d2cbc",
+   "sys.path[:0]": "62f1f313b51be4e742b55a6f280e805b2a8e30558c9f3f51d6b87f5d6081ba57",
+   "import numpy as np": "6f11581db2b4487aaaf6eb8704a9acbe89cddd1ccde4652211c1a838bc70efde",
+   "import torch": "cf1070d3a16f24b230d83777452aa96250d11504c641f4eb878cc10f347d1afa",
+   "import tokenizer_train as T": "0bdb065b5e5841befe9ac0ca178a3dbae574e01127692d1263e5af7747dc60fd",
+   "import tokenizer_evaluation as E": "61f367e5f9b5fe38c439c8d06b5f813d28b4dc9c6d867deadb0f947992b05667",
+   "import train_jepa as J": "0a8a092040bf408b5b96705b32bb7f7c04674447f7e387be3a624a115cf59101",
+   "from wearusfm.harness import fm_features as FF": "b38e7921e5e0529bf6bd2196551fd62038bd68faaf2b182bf147d60293d3678b",
+   "from wearusfm.training.pairing import state_sha256": "428a49ac30dc6425ab91c262f8a4f464880d15583530a510f6006561c8f0e798",
+   "PROTOCOL": "24eb436467fb6371ebb5a6d9e209f78f03d7dc045d4dbbad9caeff9e42f8e546",
+   "DOSES": "ad3dbcbf79c4f9234eced4dbc6a45e6cf56b258f5e1b53fbf29ba0c0db16df9f",
+   "OUTPUT_ROOT": "6b78b1932818b895c792a41bf3e289b686313c243e3f3e92b87ad6dd9d8ba77f",
+   "require": "ca7f1c1302c62f05704895167980715cc0abb4b37de623558ed5eb39d95b3503",
+   "READING_RULE": "45d810e8c53557468c0c0d40f0b1073d7ddf27b6187e53bb87d44ccec0ab232e",
+   "RESOURCE_POLICY": "9ff54dfc9b51c8aa656154cdb73471627d9a42277a9ccccd754c29059619a2e2",
+   "canonical": "f96136259cbc597544d0943b294bb50faaaa73c946c627d6afb66cd9ad444e77",
+   "digest": "603ce168ade094ce79bcf6558c46287dd1944db2b8b764681145124ab9cfd47f",
+   "file_pin": "c4a9946ee1728eb2d63c59a8a1d354ce67e023c599cb02f0ab81c579e8f16f6f",
+   "pinned": "269b61ff288c15c6cb5eb6337c02eebbc3f48f9ef5ce1568f9ff427d09985249",
+   "read_pin": "f104f597ea1229fa441b4268e752fb2a6fcb4c7509f5ea71d2d297011835ca52",
+   "write_json": "37de6d22316eb8e0adad462afc38236662ed0b70b35dde621d0ecaf3eea6b6cf",
+   "source_identity": "7a966c5e8738b0f8c5e60beeef6990ebacbe7347949559525d08a7301db9e4ef",
+   "recipe_identity": "92b98b7bef21421801709a68a2056d17528b24a637de8d8c54b466d97d10b08d",
+   "validate_plan": "78385a1708331c6a2dafe9e850313d34d79cf16588852642d046f2ea4974f1e7",
+   "load_context": "7a6656bdb16bf8325e05d4d76d52b0f2b56baf34513d143171b99783743449d4",
+   "verify_training_receipt": "4d928d859b3042a3fd1e32449086a1ceff1d287a3f1c87d6aa81a40f502375da",
+   "load_teacher": "5ec2c2f3f6ef38f193c94d146dd16196b12588dd38844930f4da882c55076842",
+   "begin_output": "6c32201fdb5252fefd95c2d347f192349acd4e24f0a988889c5961de42bb038c",
+   "finish_output": "0cd7b03f0fa01d1d09dafcb37c13fa006b0de306e5dcab7f66f28277e908ed6f",
+   "verified_extraction": "8219c29db1a754191ec383b5312af40ab582ee181c2dae05e98fc4f500c08a0b",
+   "<end of file>": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  "scripts/consolidation_long_classification_runtime.py": {
+   "docstring": "49e298f8ffd36fda21d6481d2ac66b493e1417a11771cfa92233c793d262f0d1",
+   "from __future__ import annotations": "a6284e6d3d43bdfbf0da732945adb2b4f31147c92bea47aee100d7f556c22d00",
+   "import json": "55623722f3a716b73b40bd146a4a922d149dd6e93cf504b702087a67c354ed43",
+   "import os": "de2abade832c8e350a1bdc98cfcdb1e202ac4749c5fc51a4a970d41736b6df5c",
+   "from pathlib import Path": "6d69f2ac09017b8a49d050ab336e953b8fa02ae08c24396916ea7ea42418e627",
+   "import resource": "5f8dec24dd7827571bb8190590b6682a34c2ec55609776ec26be69455a224c7f",
+   "import sys": "9e77b3746ea081eb4c557e71cc84ca29dc66a89d18a07e85dba66a336e7310ae",
+   "import time": "4f9b8491ba4deee622e6c29ca383c71279fa604b7aff389b0bf5ba279f4453c3",
+   "import numpy as np": "94a5e16e3e7d384f83acbc3ca58ecfad4cb8b9bf5e21f80db552d3a1af30a2d5",
+   "import consolidation_long_common as C": "5f59909568b4ddf761d61ee82883bd8036978dc430535d08cf0c5d935810dae1",
+   "import consolidation_long_classification as M": "234d1914d3c875353ce6b402d19c19a47f66ed5b5999f20feed961a5a59ed0c5",
+   "BENCHMARK_POLICY": "c2c3e97e894c5136be47f09b21bee7c97d39ab9fec079b799e90a0c847a0e021",
+   "_policy": "b7ab5cb2eecea82b401493026bfed24424d3456877a928f8de52a52c3801abb8",
+   "_threads": "17f72a65d0292d26dd52bc5bb724eba28c3d03603e8c3e41ad90cd16192ae28c",
+   "_historical": "e3c25309e101206800cbae864ffb4b62d23dab6edf1ebec70796a7a028dae514",
+   "_historical_reports": "05de5aaf45bc18fbd98c21c1e759c0be8dab81bc6f73a114c5bb8d0ac8e04e41",
+   "_historical_report": "9f21d745536dc68ee85bad350a9021b4e97927462406fb97bc6c09b2a6c9ff13",
+   "_historical_numeric": "c631625f26cec69f0d0244d1683d1f58f20e1be7ed4c90813474186ff063c5fb",
+   "_numeric_match": "086de925dd400cf9c67f7f1f1bd82a55f23cf1aaa5d4e94c2dde8a4a8014b70d",
+   "_historical_timing": "30abbd9e19eb2c32702938087c960c3f01707eaaaf80115db98c548505d4aa01",
+   "_cache": "945964edf4e48f302c53ec8f7b9733aee3821b8caab1f22048a26bb501d94b80",
+   "_check_benchmark": "2abcaecb8f289fa0b33ab5e5b5fc7575ccc927648723b7ec2305836fa513936f",
+   "shard_key": "8889012cc211b744f1d7e9bd215eabfb9f190411f6cbd0c63fb32c8f6c689793",
+   "resource_gate": "d775d45e27d6d4f3507e8a517589fec0b71c65300056326cfca4a8420f1e0a7c",
+   "_benchmarks": "38990e58c1bba4fc9a4fff8d61161a9e23c3601fe9ad44326d2b2735a9016e69",
+   "_receipt": "3f8579042a369606aba810408bc5506603bdcd3b86c124de8640f9ccc65a0f74",
+   "execute": "cc6c773e88000f063525ae8c12f5de19d7b3faa1e2c2839cc3efb506ca4d7de5",
+   "<end of file>": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  "scripts/consolidation_long_pose_runtime.py": {
+   "docstring": "cc30df41954dd018f38d082723fdeb0f50700f244733f150797736cb40dde142",
+   "from __future__ import annotations": "a6284e6d3d43bdfbf0da732945adb2b4f31147c92bea47aee100d7f556c22d00",
+   "from dataclasses import asdict": "faebec63a3b7a81ab3360382e264f2941e9e8dca79a2d1b40da17ad3c9f1dd90",
+   "import gc": "28a6b0b61821d9c66a56cad38fae48b5562d0b5f93961aba31f6ccfac826edec",
+   "import json": "ff3e4d4dcf7250cae8d622d77c9a6d69aefcf4ab04ef9920218fafe93c0f1991",
+   "import os": "de2abade832c8e350a1bdc98cfcdb1e202ac4749c5fc51a4a970d41736b6df5c",
+   "from pathlib import Path": "6d69f2ac09017b8a49d050ab336e953b8fa02ae08c24396916ea7ea42418e627",
+   "import platform": "817f6e305a609b53ea004d4cf456114738d1f8adc1eb8905cddf675e198017cb",
+   "import resource": "5f8dec24dd7827571bb8190590b6682a34c2ec55609776ec26be69455a224c7f",
+   "import sys": "9e77b3746ea081eb4c557e71cc84ca29dc66a89d18a07e85dba66a336e7310ae",
+   "from time import perf_counter": "4dc49a4afb756537dada3d7b0f4ed5fe227d0054b2bce5b962ad283f7a56c88e",
+   "import numpy as np": "94a5e16e3e7d384f83acbc3ca58ecfad4cb8b9bf5e21f80db552d3a1af30a2d5",
+   "import torch": "cf1070d3a16f24b230d83777452aa96250d11504c641f4eb878cc10f347d1afa",
+   "from threadpoolctl import threadpool_info": "d1af5868595dc6a988b5badefb8a24a4d989e1a7364cfa9aaee63bd815f3b891",
+   "import consolidation_long_common as C": "5f59909568b4ddf761d61ee82883bd8036978dc430535d08cf0c5d935810dae1",
+   "import consolidation_long_pose as P": "fd350f572ef12401d090255d6b6e4682a1c57592c08d716e5335a305f7ca2c56",
+   "STAGES": "ced1af15870048746419dda164bb14e93e4abbb8f5367c7dd1985d4700c19320",
+   "FIT_RESOURCES": "87cd30415df71d41b7d3f7774cfad3c1d2c602a637f755f93802a59f20c95f74",
+   "BENCHMARK_POLICY": "d0848a07915dc63af1c9428273770f51be73691555d57ea2bae668ae7f1738a5",
+   "environment": "d9e01f379a20ef6a2bd533d29749b65f996f1c3654d5c8599a3e58592be998ef",
+   "_threads": "260faf8ad414529a37ed34983b8c2ca9b739ebb40269378326a0b7f181ac6cf2",
+   "peak_rss_bytes": "3230cec0c47cd1a22ae3b4a33cc5cc496da821914af6d0efdc7c738f11b70988",
+   "_manifest": "4e6b666ad9c18ddde49b0030a5241ca792208b7a0e234bef67c1aca90fd6edd2",
+   "_entry": "9fbc7bdf0a5e141a229fd539df49a969ff139b42f3f5e33808262b39909e6fdb",
+   "_reference": "2a20ece054f64a61c0eed29bb4710ca1a41b53ab83d11707edb2635de72443d7",
+   "_read": "5e0a2264de25680d1fc28f419122cc8e20912b392da89b9da7e0b9087774de17",
+   "_extract": "6a52e47d7ce492b0dbdbe3c7f44f2a8796bcc7494a0759849db11602ce1ee219",
+   "project_benchmark": "cde9bc56d3e909057113d557f313ffeaa6a1d1fc9a03d2347752b12ffd360fbc",
+   "_benchmark": "19ef00742fe2baf84cd27ebe7e40ed72e07f2ff7a808f83200e7ce2c4959a28b",
+   "_benchmark_gate": "3bb4b4626fbc352052cde21a45dcd11b540a61f31b5db6d80d65854bdb6b29c8",
+   "_save_array": "a8e3998613c8c14998e1d45e8f19a4448d0ae1732f29dd15490c5afb9265a3dd",
+   "_fit": "94e12dd858f39aad1f5f86287be8cd21125f282435d88e675c01a7dcefff86d6",
+   "_compare": "fd40acd4c384b1b562292a66df3a1642753e99e4b100bb396cdd1ae957f34de6",
+   "execute": "cf5dd11c96ca581741516095d707a22d2a613eaecdb59b9f1aa2de9418e3ad03",
+   "<end of file>": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  }
+ },
+ "order": {
+  "scripts/consolidation_long_common.py": [
+   "docstring",
+   "from __future__ import annotations",
+   "from dataclasses import asdict, replace",
+   "import gc",
+   "import hashlib",
+   "import json",
+   "from pathlib import Path",
+   "import sys",
+   "import resource",
+   "import time",
+   "ROOT",
+   "sys.path[:0]",
+   "import numpy as np",
+   "import torch",
+   "import tokenizer_train as T",
+   "import tokenizer_evaluation as E",
+   "import train_jepa as J",
+   "from wearusfm.harness import fm_features as FF",
+   "from wearusfm.training.pairing import state_sha256",
+   "PROTOCOL",
+   "DOSES",
+   "OUTPUT_ROOT",
+   "require",
+   "READING_RULE",
+   "RESOURCE_POLICY",
+   "canonical",
+   "digest",
+   "file_pin",
+   "pinned",
+   "read_pin",
+   "write_json",
+   "source_identity",
+   "recipe_identity",
+   "validate_plan",
+   "load_context",
+   "verify_training_receipt",
+   "load_teacher",
+   "begin_output",
+   "finish_output",
+   "verified_extraction",
+   "<end of file>"
+  ],
+  "scripts/consolidation_long_classification_runtime.py": [
+   "docstring",
+   "from __future__ import annotations",
+   "import json",
+   "import os",
+   "from pathlib import Path",
+   "import resource",
+   "import sys",
+   "import time",
+   "import numpy as np",
+   "import consolidation_long_common as C",
+   "import consolidation_long_classification as M",
+   "BENCHMARK_POLICY",
+   "_policy",
+   "_threads",
+   "_historical",
+   "_historical_reports",
+   "_historical_report",
+   "_historical_numeric",
+   "_numeric_match",
+   "_historical_timing",
+   "_cache",
+   "_check_benchmark",
+   "shard_key",
+   "resource_gate",
+   "_benchmarks",
+   "_receipt",
+   "execute",
+   "<end of file>"
+  ],
+  "scripts/consolidation_long_pose_runtime.py": [
+   "docstring",
+   "from __future__ import annotations",
+   "from dataclasses import asdict",
+   "import gc",
+   "import json",
+   "import os",
+   "from pathlib import Path",
+   "import platform",
+   "import resource",
+   "import sys",
+   "from time import perf_counter",
+   "import numpy as np",
+   "import torch",
+   "from threadpoolctl import threadpool_info",
+   "import consolidation_long_common as C",
+   "import consolidation_long_pose as P",
+   "STAGES",
+   "FIT_RESOURCES",
+   "BENCHMARK_POLICY",
+   "environment",
+   "_threads",
+   "peak_rss_bytes",
+   "_manifest",
+   "_entry",
+   "_reference",
+   "_read",
+   "_extract",
+   "project_benchmark",
+   "_benchmark",
+   "_benchmark_gate",
+   "_save_array",
+   "_fit",
+   "_compare",
+   "execute",
+   "<end of file>"
+  ]
+ },
+ "source_files": {
+  "scripts/account_node_usage.py": "4932d2c46783f86a7d5542fd59480fc4a7067e5aeb0aac95d8ff82633b31acd0",
+  "scripts/analyze_step1_gradients.py": "514c13ccc7fa24f4269ec4354532837b013d1009fbce88a4c254f6c407268668",
+  "scripts/anchor_candidates.py": "a192a11d8adba9fe2cc86dab6d078da7621e12fd3e7390b71a706e2810b8f8b2",
+  "scripts/arms_collaudo.py": "f3af378012f2140c5dbf2ffa7b0795740d7c3c9ce0c1feeb47dafb6e68ea6405",
+  "scripts/arms_compare.py": "6b01ccb106bd2a7c4861b165b880eb5059399948d9e3fbccfb7e3a937e3881f8",
+  "scripts/arms_plan.py": "695443582be218d7c4441b092a98139b76ebe0d7dd9e1a129b34f346fbe3f0aa",
+  "scripts/audit_training_stability.py": "442eb576a83966f1c0f8006707c206cf0ffd1eaafca78c5359a3c480ae33864b",
+  "scripts/branch_mask_leak.py": "c289f95d3c93b4e6a84cd9cca2e8b9a5252d456b47ce8b7125a5ce0f9a2e4530",
+  "scripts/branch_pilot.py": "69662d4390b04c3c1a38987da8ddd1ad1fd0e7b2bcb658a10faea8eb7f469788",
+  "scripts/build_manifest.py": "8512b74368c703cdda16ca3c5949daf065373a7ec9c0d32805355d537bff57c8",
+  "scripts/build_nested_manifests.py": "79551f67640ffbdc455f462cdb1133c28d1fa81f10408353676bc58032fa600d",
+  "scripts/build_pose_b19618_eval_payloads.py": "cb0750e2b7c5c476eb40aad517fc1cb5002bc279bd988e8c255274fb4cdc9597",
+  "scripts/build_pose_b19618_preflight_payload.py": "5fe992d14536cb4c05cb34f2b1e4d53f1ef0f5ca298aa2d14b4b95d17dc168cb",
+  "scripts/build_pose_b19618_report_payload.py": "05e6c655ee73cbe8d63646b7fac971ded3b80de9e9762375fec6f147a88aaf1b",
+  "scripts/build_pose_dynamics_payload.py": "846670bd68807f7e391ea69530cd604a4ea0d602d53bbd4ea1dbcf9cc377c891",
+  "scripts/build_pose_e3_b_payloads.py": "c412cf47939a35747dd7af32a8dd82ad74bde9d579bef101ac7f8888854654d6",
+  "scripts/calibration_plan.py": "7f3ce4778066345fcdd6f8630f04821f7a5c6174550d5772596c98d51c1c1aa2",
+  "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
+  "scripts/calibration_select.py": "4f1558abae313dd14288da590d86655aa5548a2c02df2573ed8f0135a994b381",
+  "scripts/channel_readout.py": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+  "scripts/check_capgmyo_grid.py": "78635b782ebe871f6bd9a152378f1988696991f4e7b68c12f9273af087e341a2",
+  "scripts/check_checkpoint.py": "5a5bfa7d37f74acd66218d0a06dc24fa210f59d90972fc25829200b083850a99",
+  "scripts/check_long_mask_positions.py": "ac70e60fc16b16b5eb7d6967b168ee47cec0e4710136385dca7433f12279b589",
+  "scripts/check_perceiver_cuda.py": "157219bd365d0b1d1f023036f02f86900ba1ef9b2e93b9b3a8ecfd319fbe670e",
+  "scripts/check_processed_layout.py": "5b017f6ba2fc09ffdd1ad3d5a3613a701aa8e324a456889476333b3a82fe74bb",
+  "scripts/check_quotes.py": "417afdf60cb9972a844765d1fd85f546b8c2cbb4214a3155953e04611444ad38",
+  "scripts/check_step1_cuda.py": "6e60507bfacdd94e304361e51f88fb7b56cea0786270d509c8f2dde1a07e57c6",
+  "scripts/classical_baseline.py": "4412988b1f777efb46874c64e3379c62116252873d41ae2b8cfb003be9daf85a",
+  "scripts/compare_step2_closed_reports.py": "f9bb7cd5d70eaa36c994e83030ef46a42c312b0c089cfa74627db81ad8d1be80",
+  "scripts/consolidation_continue.py": "f8f35ccbc3ae4cb924e28aa63c52d7b8030b40061cd7cf472fca6225f4682d09",
+  "scripts/consolidation_finetune.py": "e7240aef85580735ebfe55ffe84ac838b7e0d6f7d7352e3c765b177f3027386a",
+  "scripts/consolidation_finetune15.py": "e49e4a51c5005d282c16b743f024107a2b8cd06adb4bc91845fea640400a3e42",
+  "scripts/consolidation_ft15_report.py": "f477725067603a0f361a0ebff96e77f57bce90e5289b8b23246d08aee33588bf",
+  "scripts/consolidation_ft_report.py": "c6d713fdd07e49dd7b24480623d20f961c216eccdaf2699a65d4a68f6f5ed6bb",
+  "scripts/consolidation_long.py": "8ea087749bf1c37950d4734dabf6901b195b78fbe5de8268c175dcd171821a4a",
+  "scripts/consolidation_long_classification.py": "2f31087af637bb8523be34154dd23b63b628617d5fe8e5f3a400bda8c0b03f81",
+  "scripts/consolidation_long_classification_runtime.py": "729c35f9a4441c2c04ed067755ba9ec8d0aad0895342fb36f9439d34807eb22a",
+  "scripts/consolidation_long_common.py": "547586041275cf01a9122a4de8b02d8557bd5114862aca3907742f2162083f1a",
+  "scripts/consolidation_long_pose.py": "be00c3d8cfa4768149e43d541e9d7e36c304961791220a9c92cf0e4546a57052",
+  "scripts/consolidation_long_pose_runtime.py": "59cf958ffadd10d84d0c6a061a7132a432f36ea42a28856f0b0dc7301b766a48",
+  "scripts/corpus_inventory.py": "12a0d542b6185cb489bf77b7d27fa736836604d2f2263b87ba10bdd7c2e810b2",
+  "scripts/dataverse_download.py": "ffc3e63fcbe56e8a2a4c2a0ea8e74043c018af5c1d7e86686be32e0ec2d299ba",
+  "scripts/ddp_equivalence.py": "98191d560b2e4057f547ab6d535ec6c0365f9f0420d68bb747d8e932303c2b1f",
+  "scripts/diagnose_initial_state.py": "fc91abc0619d7cb2ae9725e9f1713e4f81cffc581a1def604d9fdbd93471e8db",
+  "scripts/eval_wavelet_vs_gabor.py": "bd24c7365a1cae7e3e2c73e30cca7257a97480cfd6a6661d95fa1daf4cda8aa7",
+  "scripts/evaluation_chain.py": "7361032e1d1eb862c5c5ce6d500dab89c1889cf9e157b9106026c923cd967852",
+  "scripts/export_metadata_schema.py": "6129328f2f9b9e8f9df1ce1d8d9e6709819cadbc81830268919aaab50a27bc69",
+  "scripts/finestra1_calendario.py": "d4fed09e92c8c722561a34b27867bb24c5c62637ead90fc4bc1170905bb48487",
+  "scripts/fix_capgmyo_grid.py": "e1de0d3880f00acf57a2e14efd709e782f3a596a2c3595fa72ef909bd2221336",
+  "scripts/gate_d8.py": "968d029c736bd9764724267845d303ef9128132ee3dfb25a22a1f9565109c6b9",
+  "scripts/ingest_camargo.py": "d3189ac89c6f42c082a7bf2ce161670d3957b917b416a6760897d390b4462b5b",
+  "scripts/ingest_capgmyo.py": "9f73b7869f1dfc63cc3aea62557a5e8b2983b656c2dd0160e31d5cea03a4e31f",
+  "scripts/ingest_csl_hdemg.py": "ca48c1dd0cb2ae7fb3ee1ba329ba710e335bcd33458fc8f339c9d17914189119",
+  "scripts/ingest_emg2pose_pose.py": "9c010b6a44e674bf7ecb3ab29c3bea01aadd870ce1cbe7928e1236917ea7760c",
+  "scripts/ingest_grabmyo.py": "4aa59fc91f42937354fd68cd94d13f909e864a3f22d1cae4b8d1c3f1f5bb9e8b",
+  "scripts/ingest_hyser.py": "b09cb4b4f5ad5932c382a32278f284eb07d83c21aa5d536457c06b872ce8237a",
+  "scripts/ingest_kaifosh.py": "590f2d4d03474fb23aa9f990ec9bc4efc81c9e2188d90345ab087a6faca06a32",
+  "scripts/ingest_meta_bracelet.py": "a5b22e54ef467300fe77dc5427ffd7aa0d8f1e702afe294fc2dff49c06d89c99",
+  "scripts/ingest_ninapro_db10.py": "e107e3ed1b45ea01df00da48cad0404c8792812a56b5a38d98d9fdad850a0172",
+  "scripts/ingest_ninapro_db5.py": "3279b99eb536c304e236c4234df4aef140e4c15828d240b8da4c9ef7a9baadf1",
+  "scripts/ingest_ninapro_db6.py": "6147fb6b0b2bfef6485ef6ebb9db13e05d5ec78f4fbd5f188b78748c1d41adcd",
+  "scripts/ingest_ninapro_db8.py": "1bcd10eb6dc5d0f5f2f0d36b0032105b038d8298c7c866701783e4b842fe54a5",
+  "scripts/ingest_ninapro_std.py": "ba1f53f972f044474b152bef3bbb84ff64f2ba4d14dde7258b0c1787980f1202",
+  "scripts/ingest_putemg.py": "b42ed77fc1372737b9fa3bfe5f1119a23aa34bf0f43d30d6726cb2234d14baec",
+  "scripts/ingest_zhang2026.py": "a186331754847fc58864b24186a169c79fba07934b8a66efdae69f01aff27b9c",
+  "scripts/inspect_mat.py": "62e03809ab141a130e963ac7d3fc3b55b2bcb79596c5d91cf025fa1b47c47ff3",
+  "scripts/inspect_zhang_csv.py": "6db2a04f64acb07ec346eadcc41bfed4d0f40df2e7f3e22f2a6fc8a33ab35b3a",
+  "scripts/leonardo_feed.py": "65cafa4347e1a60abbb5b8b11785164289d723863bad274c6cc0162203d44dc5",
+  "scripts/leonardo_watch.py": "b2aa05e2dd3cbf7c4a19f9e4f8fc1a79d74ff868dc5e961920d326fb9cb6665b",
+  "scripts/make_splits_draft.py": "66eae973c749719c01a049df904774543906b3d47df619ee18951f0f62ffc18d",
+  "scripts/manifest_table.py": "6452f51cda675fb2103eda02a764ac767fea99d1e909c53a492a3980a4c4f356",
+  "scripts/measure_loader.py": "9bb86ca98518e877f37b6ea0adea8c4523baa79c01727636c73baddba9c25c1d",
+  "scripts/nested_manifest_d9_weights.py": "0658518cc901b7918603a7bdda0fc9a8550adcfc37add97c4133ab9490d0a94c",
+  "scripts/nested_manifest_report.py": "160511ff569b005bb8aa24afe583644584dcfcbba8d58ad278a5df638ba61183",
+  "scripts/pca_existing_oof_compare.py": "c6c57e57638b304f81cc3a170e4c24334fa018a2baffba7283746d5992c50f67",
+  "scripts/pose_audit.py": "b692cd80525bc330e74f7ab9de3051730cebd7bb91dd14975012279300c258e2",
+  "scripts/pose_b19618_eval_guard.py": "16b44fd39432ae7a605e098a8eabe972959a175c081b68ef1ba452f46bef3e64",
+  "scripts/pose_b19618_preflight.py": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+  "scripts/pose_b19618_report.py": "ad92f589fa9fff65bd96d80551f4634b22e010e10e52a3e59b569455eadb4962",
+  "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+  "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+  "scripts/pose_e3_b_extract.py": "21ada4640c4504f78672eb2adcbfa0bb7aa64116f28ae91453296d04c5850bd7",
+  "scripts/pose_eval.py": "044037f0c351db467775cb03209defb2fd4c4b3bd95c017f247f44933a5d49a9",
+  "scripts/pose_head_synthetic.py": "caba2473629ef4a8f58bef90db13dc6d94808dd3c4305a0f6925e7d000c2320e",
+  "scripts/pose_slot_extract.py": "5dc97126f3ed60306f07078110831b049df488fc8ff7b7fd3f3cd2134b3960d9",
+  "scripts/pose_slot_features.py": "7cc239c0bc4d8688ce0b74016e9c20de624cde17586557d30473495da11bbba5",
+  "scripts/pose_slot_plan.py": "39f4c2ce7aaf8db8d1b08cc17968c7b15a16dd1ab6842c4f0de6367bcc545939",
+  "scripts/pose_slot_readout.py": "e8770188d943bed1b55cbd1c4488c320d1b5b561bf256ad7bbe43a43a1e4a2f9",
+  "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+  "scripts/precompute_rvq_codes.py": "8a62f19a1ac58f1c1b38eb66b5027ca5f8e6a521b9ccd8114f94cd2c519c89bb",
+  "scripts/probe_memory.py": "87c451257da7da7e1145e0c88ccbb08aba3f1ab8fd83546d0fedc0a04c4a395a",
+  "scripts/probe_p1.py": "14e2fc4179f3169671b8db0d52ce5ac4b8886d8594a9f64ec84bfc9f1cf59d59",
+  "scripts/probe_p2.py": "8e9f492dc4e8b57013226003e78d06a9d81478ac6489b64d5fe7e80e42a3c8fb",
+  "scripts/psd3_readout.py": "211b1542d6d1fd9d107f5f6d02a7707cd35ef8fc9c70745a609b978a1296603a",
+  "scripts/qc_relative_check.py": "298ca3be015ae3921be6429ce0bfa3bafa5d368961ced7eddc4545bf9eed81e4",
+  "scripts/random_checkpoint.py": "1a734e96018a911b48be6e0a7e6e58f08dc1228d152eba6def4dc2fde236223b",
+  "scripts/replicate_neurorvq.py": "b8ec1422120c40c8af420806c02aa59a57abe68df24a4e514392ebb6f5e44ee8",
+  "scripts/rvq_branch_confirm.py": "74cc5a86c3f7f6aa7a6df13417fdb212a7097789553b10c3fa5f68fbdaf10317",
+  "scripts/rvq_branch_probe.py": "0859c9da2cb57e34134bf8c605286d7a7da0322e4a373e23393c81e76b12561e",
+  "scripts/s3_bucket_download.py": "5ca0581901eda2db91e52c314c7973e00c1e2ccd78de1083d9683dc8cfc0ea4c",
+  "scripts/select_emg2pose_reference.py": "25b4ac37935c65a4282ea66f6a97a5092873d22e2cfde763bfa0478b7263ef8f",
+  "scripts/slurm/consolidation_long.sbatch": "66a762e9c14edd2b7246335e58ae1a9ea97c74c427209905c34ea8172d13c787",
+  "scripts/slurm/lib_code_dir.sh": "0f961f459516f146ffe935d757f71f054e5b5ee62b4c68e88ff34153d708ee19",
+  "scripts/spectral_diagnostic.py": "2c5615e37c18487c79945343a53f29f8656065b7456ca7b149eef8cc238cfa88",
+  "scripts/spectral_step1.py": "88b6ced5c06606140dedb4e186fb19e8adf73f19ac402f0526e65c6ef7e9c8cc",
+  "scripts/step1_ab.py": "9864437e4a210b5c15c7a7ee06fc47b62d7c5d81f6c52ca53f0311aef9713f18",
+  "scripts/step1_downstream.py": "5c7cef5f847e053c9ba5caca5853f9e9f45f394b807ed70f83d913ba55e74171",
+  "scripts/step1_random_downstream.py": "dea335e9a5fac189ddc909f5d71d33f02a4d42b1738fed5ebeb3b84e9e048482",
+  "scripts/step1bis_continuous_features.py": "0f1113eb2582ccbf9cb9d9e2393ff4fcfe310db016b114af57f6cac0cd8866dc",
+  "scripts/step1bis_cpu_vs_gpu.py": "b0a7663a2c57ccb2bda03716d0f44ee308c8683657e29c5fef3e44fe4a5ffa9b",
+  "scripts/step1bis_feature_stability.py": "b5781efc0fd75f17b807f4c6ab0a8c20ae26cdcc3b379233a96c2a8b7a282c6c",
+  "scripts/step1bis_margins.py": "6d566aac297e6a351d17a2eb11cf6dc684905e8a3184153aa4cbeada931e638f",
+  "scripts/step1bis_run.py": "50c3db70bb6dad549cfe753fe050b158a68c2a51126047492f0c54061331af8d",
+  "scripts/step1bis_scale_sweep.py": "2d06fc0588125c423257070e9fd22c75ea4b67dededb7b7945d80080fb42b818",
+  "scripts/step1bis_v3_extras.py": "5f50b547a74a6dbe7d5e6b42f6dcf280111c3985ce840452dabb3143f96de947",
+  "scripts/step2a.py": "6d1e2ecf15f02b3b35ea3a37e315f067ca82e8931831c51c3645e54b9a0a5abc",
+  "scripts/step2c.py": "bd7659c5c3f89dcd3fa4d7db9b33694c4c15cd4ab139e05d5d8d25acbd3dc523",
+  "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "scripts/tokenizer_b_repeatability.py": "0fa2fba40718d8e60e8e51399f5a6427ff0b84340b90d08896c141beefb01b37",
+  "scripts/tokenizer_evaluation.py": "00d5f42583bc3203df5041558486647dd05f66f59df8adf3ae7728cf3e6c127b",
+  "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+  "scripts/tokenizer_preflight.py": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+  "scripts/tokenizer_probe.py": "0bdf7ab248fb7a5b48bffd2e3dc805259e9b5282d0907de0f00718fe4fc0f0fd",
+  "scripts/tokenizer_train.py": "d948fe30ad35543bdf7aa05fb174fd550cc398f0f2b63efc546592a1a3e2dda2",
+  "scripts/train_jepa.py": "b9f7fcfccd68034d4cc566c1ef29008e9ab4d7233529f501f2076cda207f8006",
+  "scripts/window_seconds.py": "896397ad978bb3665d270361e12f62115748b193abbec1ecba1fbf47e2c0f1e4",
+  "scripts/wsd_chain.py": "593c3b1fd14114877444be53321facad510b33846b190dfa60a879d6b0f36337",
+  "src/wearusfm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/data/collate.py": "0e4279b057b3fe3878fc14b9cf6532443807b15ae23e85ada7da2cacfd871f93",
+  "src/wearusfm/data/consumer.py": "575f0ebcb6f635372674571a19c0c9c8b5bac0bcf59421469a71ad980cb41c09",
+  "src/wearusfm/data/manifest.py": "489b99030660ebadd79bea89e1c3be4dd1a9383e50127a855937d43840f64430",
+  "src/wearusfm/data/masking.py": "4612b363c69dbb501ee646dc525e9c5568e9b51da0f89d5e97ad20eadef1a61d",
+  "src/wearusfm/data/pipeline.py": "d53fcb3464f24211e774e1dc1440e8aa26ec9d980e67cb97c3dcfedaaf109744",
+  "src/wearusfm/data/pose_targets.py": "8453b16c72124603d95019d988e0c6c8e131f3ededf0b073555c6d90fc0519b9",
+  "src/wearusfm/data/pretraining_loader.py": "851e881a7cb216f3623f1ded585ce2d7517abd7c39966f803f74b8e88abc01b2",
+  "src/wearusfm/data/pretraining_manifest.py": "73d9dd681d5b66d9a1e8006f7931ccb34e1f47dfb7589e27ab0521f8217262d3",
+  "src/wearusfm/data/processed.py": "8329dc5ba8bb7d88796640f6dd4757c4e13c9ffad129ea2a320cd9e7dbadb9e9",
+  "src/wearusfm/data/rvq_codes.py": "fa4dba6f4e9e85946042fe6b0f0b77a7e80cee9c6e516c041393b67b02a0c67f",
+  "src/wearusfm/data/shards.py": "b10457010b08c12e3c33c7a68d303cb2459584ba7df3356b3928ac18076fd4e2",
+  "src/wearusfm/data/synthetic.py": "f881e775d0d1a815de36b0e1b8ba91ac9cb82600ed3dcf398082f17bf777f50f",
+  "src/wearusfm/data/transforms.py": "a6707882a3f6b6d29846016f266b458f5b538cf01d9d471c4488196bd96691fd",
+  "src/wearusfm/data/virtual_montage.py": "40c352b91c60248e1aad5faf140cf89e56c6c3edba94f2571d58faaa62a4b8d5",
+  "src/wearusfm/gate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/gate/consistency.py": "2b756bc46c205a3ee593cd37316c15e169cd45e20bc3f55bb01c407111b51e58",
+  "src/wearusfm/harness/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/harness/anchor_candidates.py": "ab44587869a98376e379249e8143cdf112e382e192515da3eaf97c0a9b7eb47a",
+  "src/wearusfm/harness/backbone_depth.py": "db46035b774bbb59712749513c7e9e6d1e36b3c1958cf98fba4428b0a6dada7c",
+  "src/wearusfm/harness/baselines.py": "ba3dbe19f596e51c4466f925fec59d886aa287f314af39f5810432a9e8fe589f",
+  "src/wearusfm/harness/benchmarks.py": "8f9baf3c4fc1c81af06bdbea27c8a93db95bff28a91f51b6333899d3c973de9f",
+  "src/wearusfm/harness/channel_readout.py": "e82a0796be2e10338b4c9a4615d92eed87666adc351d7e20a69342c5d35fed98",
+  "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+  "src/wearusfm/harness/feature_sets.py": "9c16fc817ebc9acb11c25b1d96a0f469a4fb7d7cea68b43afaa75e9e452d7b4b",
+  "src/wearusfm/harness/features_hudgins.py": "86678ba36d20dced450d673f3869e642be8dc76ed9cccdaab4e5ac1b26bec252",
+  "src/wearusfm/harness/finetuning.py": "3109c3146dae1c16947e6477307bb7f1e2305050481f749697e60e90692f8aac",
+  "src/wearusfm/harness/fm_features.py": "2561f2de0a6e8d797195041b2fa3695815adb44d202098d4c408c4175e11bcfc",
+  "src/wearusfm/harness/normalization.py": "d449bd524a2e69b456af3b9655e97b14e7932213235a98404ed3947291847df5",
+  "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+  "src/wearusfm/harness/pose_eval.py": "b333d59656f1b5d4fa0863aa967cc0158e8de0ad2cc040c7b8341579f3075f59",
+  "src/wearusfm/harness/probe.py": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
+  "src/wearusfm/harness/protocol.py": "07ac9fa1ada8f43e1aaf82f53145e47ee7dfef33d2c53415ad46f8acf0f2456c",
+  "src/wearusfm/harness/psd3_compare.py": "068549c829c2d5f75e54615400bb62fd9510cc1876ff17d117c5d3904b2f7703",
+  "src/wearusfm/harness/psd3_inputs.py": "c50c94bc9bd5c40fcc2ebe36abd2576c85591476de885e3d182d4f90248e159d",
+  "src/wearusfm/harness/psd3_readers.py": "73e0214a94e9888c2ff4d022818e2430afae2c4ed91d8fe407f28117fffec56b",
+  "src/wearusfm/harness/random_encoder.py": "6cdb50a5f2bda7974b16e41adcef645c780f33863a1bcabd4cb0adc2195591cc",
+  "src/wearusfm/harness/spectral_ab.py": "63ec613c59896fde42a333cae7acf37c8958813ff1a3bbaf37896dab8a84e3ea",
+  "src/wearusfm/harness/spectral_probe.py": "05fb15da39ccbac658bfb4b35d8504b64b4b4e75adb69c3794c7228ef35f2cea",
+  "src/wearusfm/harness/splits.py": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e",
+  "src/wearusfm/harness/training_stability.py": "00f74e4e4c779258e4d2692bd921f196a517695ab6e18d7a16617ca585cceb52",
+  "src/wearusfm/harness/traps.py": "85f14e44a660a1ab744b84907682851df8f58b46a4ec6488a132755e85f0db24",
+  "src/wearusfm/ingest/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/ingest/camargo.py": "5b60789de19e0e37179445ca78fc7b09010b5205ad483c9b6e6efba5442721bb",
+  "src/wearusfm/ingest/capgmyo.py": "66325bdbd3e7c95c3364dc5b96f4aa34936b67ee8779ed329c0b85141abcd081",
+  "src/wearusfm/ingest/common.py": "4ef13d98e7440092b192848fb007acdc78bb8701f5d535126bc48f3ffb5ced04",
+  "src/wearusfm/ingest/csl_hdemg.py": "e18d22dc592b20a69a60cd985ea2ce02bf2d9028670935487b3e3782e60c53a9",
+  "src/wearusfm/ingest/emg2pose.py": "93f50ff29828ded0818db348a04fb981890e3054f8fdc3de1589db1d5d23e5fb",
+  "src/wearusfm/ingest/emg2pose_pose.py": "82aaff5c997ab69c1cc09cb0a9cf2dabf85bca90cbabec72fded1c0789d97a85",
+  "src/wearusfm/ingest/emg2qwerty.py": "a271e9f21aebcb742bf5008ada2e5383dcd912544d05b77498b35a1c900d629f",
+  "src/wearusfm/ingest/grabmyo.py": "930ecbccf36b2e23ca85e840eeedb93b0f735723bf7c7eacb247ecc3261ecc0d",
+  "src/wearusfm/ingest/hyser.py": "11ff8c7aa34323dd1d769af8c493efe8da821b523baa0582239324cfe6dab12e",
+  "src/wearusfm/ingest/kaifosh.py": "6e2e0380b8962b7eb352a718c5d948a25c08a2f9ccdd4581b2deb8ed2756b52a",
+  "src/wearusfm/ingest/ninapro_db10.py": "e173696be5a628bc0ebb4fca73b9e6565d73cdf33e98f3d1517a9112c92b22fd",
+  "src/wearusfm/ingest/ninapro_db5.py": "3c9e7586c31f77c40e0972fc99ccbe33f2299daed88debb17daa759d1007e6cc",
+  "src/wearusfm/ingest/ninapro_db6.py": "fb3206e0d957a261c00bcd4a47c920c61a291d07f7b65bdc681209402f9ac5a1",
+  "src/wearusfm/ingest/ninapro_db8.py": "e00c5bb19302197d95dc2b024f99cf147b6a1e68bc1865cd97d5f8d17e17d832",
+  "src/wearusfm/ingest/ninapro_std.py": "d3d8818c7543959301420bb16b6fc6bfd4c30c6eb0d28126dc6d1e650301c40e",
+  "src/wearusfm/ingest/putemg.py": "f06b0b2bbf213cd5dce51eb917c2ad30af5fca7dac75181154e49536836afa4b",
+  "src/wearusfm/ingest/zhang2026.py": "a019cc20e0a04bfcb8db6475bd8c3c0aceb3561b7a7e93400b33e793a510077c",
+  "src/wearusfm/metadata/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/metadata/schema.py": "690d022f934e6a82bcf1c32e9ec1df43efdd2655222de01afa9323c9df52afc4",
+  "src/wearusfm/metadata/taxonomy.py": "64f8ab4472a006d33f99202a0e9d6e3937e02bc971b82df3af8485ea33815af2",
+  "src/wearusfm/model/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/wearusfm/model/anchor_targets.py": "d3394896bf7c1aada47687f8d230a02edd526f20e3c2dd55f1c78b5ee7052f58",
+  "src/wearusfm/model/anchors.py": "d820d973d2967a0121e96dbbec3bf6d51f50f06aa68adb64a22228d13f771adc",
+  "src/wearusfm/model/backbone.py": "fb6317751f6c4fe57327896419f479498d2e5e1ba92e3ca43634d5e7b75b5e89",
+  "src/wearusfm/model/branch_masking.py": "db4e99584e6e51b0ad1dc6a0138100be356dadbfdc77daff16bca313c49bae16",
+  "src/wearusfm/model/channel_codes.py": "390480ca460c852a52e8c1885c2725e1e1e0af95bd7f2bb1e3b36b15fdee36fb",
+  "src/wearusfm/model/channel_identity.py": "8c0d2f9ecf387f7967c7492bf3373c82e924edc959520bbdde9522715608be12",
+  "src/wearusfm/model/fm.py": "6c91c1795e5506728dc1d163e0546d78c153e7674bdb11296e369337650d77b5",
+  "src/wearusfm/model/frontend.py": "42cb6ae3f1084b6c2e1350416f9d356552d6009ed9a889b3c6dc8226d94a8ad0",
+  "src/wearusfm/model/geometry.py": "f2a5da0c3d570cbb333b59f7cbb90304611e2f27987d84a0c20c7893079c0d1e",
+  "src/wearusfm/model/local_encoder.py": "b861eb53e7300248a1999765c078ffb17f9abaf14dd92a0124014bfa5ff4992b",
+  "src/wearusfm/model/patch_tokens.py": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+  "src/wearusfm/model/perceiver.py": "1ffb562901c4c8280128c8d4aa37afba92da5db2ffe919709ea26bc129f51481",
+  "src/wearusfm/model/pose_head.py": "01fe3d4d3b1dde0235fbfd53c95e5297a31ee28cdffbd04c5c6b8e8344e56717",
+  "src/wearusfm/model/proxy.py": "759279987f2bd3c0b3fd4d50145de4287090b2f57c5ef236f359408f3f422537",
+  "src/wearusfm/model/query_decoder.py": "a766a9a2528844a8cc1c09db6fb8645e581cecdc3f660d92ff759ed0990af0af",
+  "src/wearusfm/model/spectral_branches.py": "5ac9b30c6442a4c93d19bd708ca35cfeb454de83f249ede28332060bbd70599f",
+  "src/wearusfm/model/spectral_step1.py": "4a4173f7110287d9dd34635458decf4d84cffe2cdcc0b7e1c5f5249ff45f6b56",
+  "src/wearusfm/model/spectral_targets.py": "292582fb50c2583b8fc3181457cfa568d3480c2781f39b4c48df96fb2e5b205c",
+  "src/wearusfm/preprocessing/__init__.py": "8ee00fefea175bb6eb63a8efdf3a7846c5e2e282eeb7228091520c5cc77116e4",
+  "src/wearusfm/preprocessing/canonical_view.py": "d01994231e6588f47d7445554e0f4a9b21baacdd3c8b639684fbd3bb066bd7ca",
+  "src/wearusfm/tokenizer_checks/__init__.py": "fd22070f64cac8f6a0c38e017bfb5f678abb6f860d865d0e26828778bb673629",
+  "src/wearusfm/tokenizer_checks/branch_probe.py": "cdee56c465f5eb4c1cc1e20756990771bee34ffb08b9cbb91d2056231397ce1d",
+  "src/wearusfm/tokenizer_checks/continuous_features.py": "d3d4fa7f7d805e67b10ebacd3c6968e3ca37f3d749c9d425d9615d617f602049",
+  "src/wearusfm/tokenizer_checks/emg2pose.py": "0d8f7ed0d719b624e3fe11112a2b76ecbd217a95970e9f5dda731144c53e4d5c",
+  "src/wearusfm/tokenizer_checks/metrics.py": "8067b9d0d00a36e2a13b0672d832d4b8dbba7c3ae1bc7f8560ab29de9ab5b701",
+  "src/wearusfm/tokenizer_checks/neurorvq.py": "8eda3ae7ae2a48fb1289129758eaa1ff6a8454d9acf3acadecc868523c873492",
+  "src/wearusfm/tokenizer_checks/pipeline.py": "dd7e1567cadda3e1b351771c063987566698f631e09359a6c1969ef5003f6bb0",
+  "src/wearusfm/tokenizer_checks/run_io.py": "9bda5451e2d16730fab0fe444e26b391bcf4aeb35a16d658c13f25372fa91518",
+  "src/wearusfm/tokenizer_checks/sessions.py": "4e3b25b5f341ced08056554ddfb89e14592100088cdafd30bfcff14f53f15a88",
+  "src/wearusfm/training/__init__.py": "e9477c745cfaa543b2abd30ffdcb0fb64673b5bc1177c552262a5fe5f945eaf1",
+  "src/wearusfm/training/jepa.py": "98c715597360ad133d3d5f26b10077f4e9c5ca3a6c80b58fac8bc2e5c8375f29",
+  "src/wearusfm/training/masking.py": "6049614839ecf692564b05fc09fcdb5af8ade8c84116a8b4e0893cb489267f79",
+  "src/wearusfm/training/pairing.py": "fba0b9d21f916c14d91b297e9a7705738279a68b98ac689b86a70b6f7e540a4b",
+  "src/wearusfm/training/run.py": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+  "src/wearusfm/training/spectral_calibration.py": "51ac24b23c791a7701f357b4090d3e97c81d7bf8cb903b037b635282cc701318"
+ }
+}

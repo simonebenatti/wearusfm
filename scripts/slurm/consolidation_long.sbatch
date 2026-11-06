@@ -49,8 +49,12 @@ key={'extract-classification':'extract','extract-pose-train':'extract','extract-
      'fit-classification':'classification_fit','fit-pose':'pose_fit',
      'compare-classification':'classification_compare','compare-pose':'pose_compare','summary':'summary'}[args.stage]
 policy=plan['resources'][key]
-if args.stage=='fit-classification' and args.dataset=='ninapro_db2':
- policy=plan['resources']['classification_fit_db2']
+if args.stage=='fit-classification':
+ # Amendment A1: each registered fold shard has its own walltime, frozen in the plan before any fit.
+ shard='%s/%s/%s/folds%s'%(args.step,args.view,args.dataset,'-'.join(map(str,args.folds or [])))
+ table=plan['amendment']['fit_shards']
+ if shard not in table:raise SystemExit('unregistered amendment fit shard')
+ policy={**policy,'seconds':table[shard]['walltime_seconds']}
 info=subprocess.check_output(['scontrol','show','job','-o',os.environ['SLURM_JOB_ID']],text=True)
 def hhmmss(seconds):return '%02d:%02d:%02d'%(seconds//3600,seconds//60%60,seconds%60)
 if ('TimeLimit='+hhmmss(policy['seconds'])) not in info.split():raise SystemExit('wrong walltime')
