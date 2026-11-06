@@ -7368,6 +7368,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   predefinito `dry-run`) e `results/infra/storage_move_20261106/` (prova in cartella finta con 37 controlli, prova a
   secco sui percorsi veri, esito, stato del ledger), commit `8c935e7` e questo.
 
+### 2026-11-06 | Claude | Linea 2: ondata 3 conclusa (2 su 2 `COMPLETED 0:0`), ondata 4 inviata
+- Ondata 3 (righe 7-8 di 72), chiusa alle 19:41:25:
+
+  | ID logico | Job | Esito | Durata | Limite |
+  |---|---|---|---|---|
+  | `LONG-FIT-G19618-pre-ninapro_db2-F3-20261105-A1` | 63689033 | `COMPLETED 0:0` | 23 min 38 s | 3 h 15 |
+  | `LONG-FIT-G39237-pre-ninapro_db2-F0-20261105-A1` | 63689035 | `COMPLETED 0:0` | 26 min 2 s | 3 h 15 |
+
+- Provenienza dei due report a posto (stessi pin della fase, dosi 19.618 e 39.237, `fold_indices` [3] e [0],
+  `global_resource_gate_passed` vero); nessun punteggio letto. Consumo dell'ondata: 2.980 s per 8 CPU, 6,622
+  core-ore; fase a 16,67 core-ore, 0 GPU-ore; conclusi 8 fit su 72.
+- Letture prima dell'ondata 4 (19:42, `execution/audit/precheck_fit_wave4_20261106.log`): `$WORK` 23,74 GiB liberi
+  (soglia 10,724; erano 23,96 alle 18:52), SCRATCH scrivibile, corsia seriale vuota, ID liberi nel ledger. Letto
+  prima dell'invio il commit nuovo di `main`, `e114a78` (CLAUDE.md, review unica del pacchetto per la linea 1): la
+  linea 2 non cambia.
+- Ondata 4 (righe 9-10), inviata alle 19:43 con submitter e ledger comuni, `--agente claude`:
+
+  | ID logico | Job | Limite |
+  |---|---|---|
+  | `LONG-FIT-G39237-pre-ninapro_db2-F1-20261105-A1` | 63693568 | 3 h 30 |
+  | `LONG-FIT-G39237-pre-ninapro_db2-F2-20261105-A1` | 63693570 | 3 h 15 |
+
+- Commit documentale `a5e6106034316e4607f72d16776d4c696289cda0` sul ramo `claude/consolidation-long-exec-20261105`
+  (SHA remoto verificato); tre controlli e 342 test a posto; nessun file coperto toccato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
