@@ -6904,6 +6904,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto: nessun riferimento di deploy, nessun checkout, nessun confronto, nessuna scrittura su Leonardo oltre ai sei job.
   Aspetto la seconda review di GPT; la regola «Due fit per volta» resta in vigore.
 
+### 2026-11-06 | Claude | Linea 1: seconda review di GPT approvata; riferimento di deploy, checkout del manifest COMPLETED 0:0, confronto SOTTOMESSO alle 14:36 (job 63671773); cade «Due fit per volta»
+- Seconda review di GPT letta su origin alle 14:25: `codex/scaling-300m-20261104` @ `01308218d1271802a55886c7b13fcca5ff30e17d`
+  (14:22:37), `docs/reviews/gpt_review_scaling_comparison_release_20261106.md`: «APPROVATO, nessun blocco.» sulla consegna
+  `cf6983c`. Commit protetto in locale (`refs/keep/gpt-scaling-review2-0130821`). Il testo della richiesta l'aveva girato
+  Simone verso le 14:14 («Girato a GPT»).
+- Verso le 14:17 Simone ha incollato anche la risposta di GPT alla prima review (`098d2b0`): era gia' stata letta su origin
+  alle 13:09 ed eseguita alle 13:13 (sei aggregati). Nessuna azione nuova.
+- `pre-deploy` fresco alle 14:26:36: 12 controlli superati (nove file del manifest invariati, uscita del confronto e cartella
+  del checkout assenti, ID logici mai usati, nessun hook nel canonico, riferimento non estratto, 0 job in corsia).
+- Riferimento di deploy pubblicato fra le 14:29:02 e le 14:29:40, come ramo nuovo e nient'altro:
+  `git push leonardo 2b7b4551c6059d5456e6e12d171ef687eb0818f4:refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1`.
+  `git ls-remote leonardo` restituisce lo stesso SHA. Nessun push forzato, `main` di Leonardo non toccato.
+- `gate-checkout` fresco alle 14:29:48: 13 controlli superati. Prima riga rivista inviata alle 14:30:13:
+  `SCALING-inputs-checkout-20261106` = job 63671405, `COMPLETED 0:0` in 40 secondi (14:30:43-14:31:23), 2 CPU, 4G, memoria
+  massima 176 MB. Log: «checkout di campagna pronto» per la cartella e il commit attesi, 2.040 file.
+- `gate-compare` fresco alle 14:35:02: 11 controlli superati (checkout con HEAD uguale al commit e albero pulito; manifest
+  con percorso, sha256 e dimensione del piano; nove pin invariati; uscita assente; ID del confronto mai usato) e guardia degli
+  argomenti del dispatcher reale: confronto accettato, tre alterazioni rifiutate. E' la prima esecuzione reale dei due cancelli.
+- **Confronto sottomesso alle 14:36:12:** `SCALING-compare-20261106` = job 63671773 (seconda riga rivista: 8 CPU, 30G, 30
+  minuti, codice congelato `aef665b`, manifest `162da7fb...`). `RUNNING` dalle 14:36:30. Stato nel ledger comune: `sottomesso`.
+- **Corsia seriale: da adesso cade la regola «Due fit per volta» della linea 2** (decisione di Simone delle 11:17, registro
+  `bf7f7a4`): nel ledger comune compare sottomesso un ID che comincia con `SCALING-compare-`. Non ho scritto alla sottochat 2
+  (Simone: «Lo dico io»). Finche' gira, il confronto occupa tutti i 30G dell'utente in `lrd_all_serial`: al piu' fino alle
+  15:07, oltre alla tolleranza dello scheduler.
+- Pubblicato sul ramo di esecuzione, punta `1d12ebe6dda23e184db29ddbbdae7ae61734f87c` (SHA remoto verificato): stati dei tre
+  cancelli, prova della guardia, due ricevute (copie degli `state.json` del ledger) e la lettura
+  `comparison_submission_reading_20261106.txt`.
+- Budget: consumate 125,112 core-ore (125,089 + 0,022 misurate dal checkout); confronto richiesto 4,0, massimo 4,4; caso
+  peggiore 129,512 su 310.
+- Nessun retry, nessun rilancio, nessuna dipendenza fra i due job; nessuno score aperto. Restano: fine del confronto, raccolta
+  e validazione tecnica dell'esito (punti D della Review 10), terza review di GPT, poi la mia analisi scientifica separata.
+- In preparazione e non ancora pubblicato: `outcome_stage.py` (raccolta e validazione dell'esito senza stampare score), da
+  provare in locale sulla scena sintetica prima dell'uso.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
