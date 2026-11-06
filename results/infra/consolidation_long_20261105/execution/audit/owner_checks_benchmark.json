@@ -1,0 +1,989 @@
+{
+  "phase_code_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+  "phase_plan_sha256": "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f",
+  "problems": [
+    "global gate not passed for 48 shards"
+  ],
+  "classification": {
+    "cells": [
+      {
+        "id": "LONG-BENCH-ninapro_db2-pre-20261105",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "train_rows": 24609,
+        "width": 384,
+        "six_fits_seconds": 1399.339,
+        "slowest_fit_seconds": 829.72,
+        "max_n_iter": 3113,
+        "elapsed_seconds": 1401.034,
+        "peak_rss_gib": 0.886
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db2-post-20261105",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "train_rows": 24609,
+        "width": 384,
+        "six_fits_seconds": 568.34,
+        "slowest_fit_seconds": 240.658,
+        "max_n_iter": 1094,
+        "elapsed_seconds": 569.171,
+        "peak_rss_gib": 0.887
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db2-pool-20261105",
+        "dataset": "ninapro_db2",
+        "view": "pool",
+        "train_rows": 24609,
+        "width": 768,
+        "six_fits_seconds": 1178.056,
+        "slowest_fit_seconds": 480.812,
+        "max_n_iter": 2424,
+        "elapsed_seconds": 1179.608,
+        "peak_rss_gib": 1.335
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db3-pre-20261105",
+        "dataset": "ninapro_db3",
+        "view": "pre",
+        "train_rows": 6206,
+        "width": 384,
+        "six_fits_seconds": 906.274,
+        "slowest_fit_seconds": 526.377,
+        "max_n_iter": 3085,
+        "elapsed_seconds": 906.896,
+        "peak_rss_gib": 0.471
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db3-post-20261105",
+        "dataset": "ninapro_db3",
+        "view": "post",
+        "train_rows": 6206,
+        "width": 384,
+        "six_fits_seconds": 447.417,
+        "slowest_fit_seconds": 220.184,
+        "max_n_iter": 1191,
+        "elapsed_seconds": 449.921,
+        "peak_rss_gib": 0.471
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db3-pool-20261105",
+        "dataset": "ninapro_db3",
+        "view": "pool",
+        "train_rows": 6206,
+        "width": 768,
+        "six_fits_seconds": 466.784,
+        "slowest_fit_seconds": 159.962,
+        "max_n_iter": 1035,
+        "elapsed_seconds": 468.323,
+        "peak_rss_gib": 0.599
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db6-pre-20261105",
+        "dataset": "ninapro_db6",
+        "view": "pre",
+        "train_rows": 21508,
+        "width": 384,
+        "six_fits_seconds": 149.993,
+        "slowest_fit_seconds": 80.056,
+        "max_n_iter": 5739,
+        "elapsed_seconds": 151.906,
+        "peak_rss_gib": 0.8
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db6-post-20261105",
+        "dataset": "ninapro_db6",
+        "view": "post",
+        "train_rows": 21508,
+        "width": 384,
+        "six_fits_seconds": 60.154,
+        "slowest_fit_seconds": 21.582,
+        "max_n_iter": 1622,
+        "elapsed_seconds": 60.767,
+        "peak_rss_gib": 0.799
+      },
+      {
+        "id": "LONG-BENCH-ninapro_db6-pool-20261105",
+        "dataset": "ninapro_db6",
+        "view": "pool",
+        "train_rows": 21508,
+        "width": 768,
+        "six_fits_seconds": 598.935,
+        "slowest_fit_seconds": 312.049,
+        "max_n_iter": 4569,
+        "elapsed_seconds": 602.961,
+        "peak_rss_gib": 1.194
+      },
+      {
+        "id": "LONG-BENCH-epn612-pre-20261105",
+        "dataset": "epn612",
+        "view": "pre",
+        "train_rows": 31650,
+        "width": 384,
+        "six_fits_seconds": 201.108,
+        "slowest_fit_seconds": 102.933,
+        "max_n_iter": 5595,
+        "elapsed_seconds": 202.131,
+        "peak_rss_gib": 0.926
+      },
+      {
+        "id": "LONG-BENCH-epn612-post-20261105",
+        "dataset": "epn612",
+        "view": "post",
+        "train_rows": 31650,
+        "width": 384,
+        "six_fits_seconds": 100.1,
+        "slowest_fit_seconds": 33.521,
+        "max_n_iter": 1701,
+        "elapsed_seconds": 103.777,
+        "peak_rss_gib": 0.926
+      },
+      {
+        "id": "LONG-BENCH-epn612-pool-20261105",
+        "dataset": "epn612",
+        "view": "pool",
+        "train_rows": 31650,
+        "width": 768,
+        "six_fits_seconds": 464.43,
+        "slowest_fit_seconds": 188.725,
+        "max_n_iter": 4645,
+        "elapsed_seconds": 466.483,
+        "peak_rss_gib": 1.359
+      },
+      {
+        "id": "LONG-BENCH-uci_emg-pre-20261105",
+        "dataset": "uci_emg",
+        "view": "pre",
+        "train_rows": 238,
+        "width": 384,
+        "six_fits_seconds": 0.347,
+        "slowest_fit_seconds": 0.098,
+        "max_n_iter": 251,
+        "elapsed_seconds": 0.482,
+        "peak_rss_gib": 0.343
+      },
+      {
+        "id": "LONG-BENCH-uci_emg-post-20261105",
+        "dataset": "uci_emg",
+        "view": "post",
+        "train_rows": 238,
+        "width": 384,
+        "six_fits_seconds": 0.18,
+        "slowest_fit_seconds": 0.047,
+        "max_n_iter": 109,
+        "elapsed_seconds": 0.325,
+        "peak_rss_gib": 0.343
+      },
+      {
+        "id": "LONG-BENCH-uci_emg-pool-20261105",
+        "dataset": "uci_emg",
+        "view": "pool",
+        "train_rows": 238,
+        "width": 768,
+        "six_fits_seconds": 0.587,
+        "slowest_fit_seconds": 0.196,
+        "max_n_iter": 227,
+        "elapsed_seconds": 0.735,
+        "peak_rss_gib": 0.349
+      }
+    ],
+    "numeric_sha256": [
+      "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+    ],
+    "historical_numeric_sha256": [
+      "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908"
+    ],
+    "max_cell_elapsed_seconds": 1401.034,
+    "max_peak_rss_gib": 1.359
+  },
+  "gate": {
+    "all_passed": false,
+    "physical_fit_jobs": 48,
+    "new_fit_cells": 40,
+    "projected_seconds_total": 489429.772,
+    "projected_core_hours": 1087.621716,
+    "max_projected_seconds": 26523.029,
+    "limit_projected_seconds": 13800.0,
+    "min_projected_seconds": 604.154,
+    "max_projected_peak_rss_gib": 4.078,
+    "limit_projected_peak_rss_gib": 25.5,
+    "slowest_shards": [
+      {
+        "shard": "19618/pre/ninapro_db3/folds0-1-2-3",
+        "projected_seconds": 26523.0
+      },
+      {
+        "shard": "39237/pre/ninapro_db3/folds0-1-2-3",
+        "projected_seconds": 26523.0
+      },
+      {
+        "shard": "49046/pre/ninapro_db3/folds0-1-2-3",
+        "projected_seconds": 26523.0
+      },
+      {
+        "shard": "19618/pre/ninapro_db2/folds0-1",
+        "projected_seconds": 21515.6
+      },
+      {
+        "shard": "39237/pre/ninapro_db2/folds0-1",
+        "projected_seconds": 21515.6
+      },
+      {
+        "shard": "49046/pre/ninapro_db2/folds0-1",
+        "projected_seconds": 21515.6
+      },
+      {
+        "shard": "19618/pre/ninapro_db2/folds2-3",
+        "projected_seconds": 20454.2
+      },
+      {
+        "shard": "39237/pre/ninapro_db2/folds2-3",
+        "projected_seconds": 20454.2
+      }
+    ],
+    "projected_seconds_by_dataset": {
+      "ninapro_db2": 236988.2,
+      "ninapro_db3": 141490.9,
+      "ninapro_db6": 54015.0,
+      "epn612": 52070.3,
+      "uci_emg": 4865.3
+    },
+    "shards_by_dataset": {
+      "ninapro_db2": 16,
+      "ninapro_db3": 8,
+      "ninapro_db6": 8,
+      "epn612": 8,
+      "uci_emg": 8
+    },
+    "shards_over_limit": 15,
+    "cells_over_limit": 10,
+    "factors": {
+      "safety_factor": 3.0,
+      "data_and_prediction_multiplier": 1.5,
+      "fixed_seconds_per_job": 600.0,
+      "memory_multiplier": 3.0,
+      "walltime_seconds": 14400
+    },
+    "shards": [
+      {
+        "shard": "39237/pool/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12386.4,
+        "passed": true
+      },
+      {
+        "shard": "49046/pool/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12386.4,
+        "passed": true
+      },
+      {
+        "shard": "19618/post/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.2,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.2,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 3012.2,
+        "passed": true
+      },
+      {
+        "shard": "19618/pre/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6087.0,
+        "passed": true
+      },
+      {
+        "shard": "39237/pre/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6087.0,
+        "passed": true
+      },
+      {
+        "shard": "49046/pre/epn612/folds0-1-2-3",
+        "dataset": "epn612",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 6087.0,
+        "passed": true
+      },
+      {
+        "shard": "39237/pool/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 16166.2,
+        "passed": false
+      },
+      {
+        "shard": "49046/pool/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 16166.2,
+        "passed": false
+      },
+      {
+        "shard": "39237/pool/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 15376.3,
+        "passed": false
+      },
+      {
+        "shard": "49046/pool/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 15376.3,
+        "passed": false
+      },
+      {
+        "shard": "19618/post/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.6,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.6,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 8191.6,
+        "passed": true
+      },
+      {
+        "shard": "19618/post/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.3,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.3,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 7806.3,
+        "passed": true
+      },
+      {
+        "shard": "19618/pre/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 21515.6,
+        "passed": false
+      },
+      {
+        "shard": "39237/pre/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 21515.6,
+        "passed": false
+      },
+      {
+        "shard": "49046/pre/ninapro_db2/folds0-1",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          0,
+          1
+        ],
+        "projected_seconds": 21515.6,
+        "passed": false
+      },
+      {
+        "shard": "19618/pre/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 20454.2,
+        "passed": false
+      },
+      {
+        "shard": "39237/pre/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 20454.2,
+        "passed": false
+      },
+      {
+        "shard": "49046/pre/ninapro_db2/folds2-3",
+        "dataset": "ninapro_db2",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          2,
+          3
+        ],
+        "projected_seconds": 20454.2,
+        "passed": false
+      },
+      {
+        "shard": "39237/pool/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 11940.9,
+        "passed": true
+      },
+      {
+        "shard": "49046/pool/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 11940.9,
+        "passed": true
+      },
+      {
+        "shard": "19618/post/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.0,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.0,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 12680.0,
+        "passed": true
+      },
+      {
+        "shard": "19618/pre/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 26523.0,
+        "passed": false
+      },
+      {
+        "shard": "39237/pre/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 26523.0,
+        "passed": false
+      },
+      {
+        "shard": "49046/pre/ninapro_db3/folds0-1-2-3",
+        "dataset": "ninapro_db3",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 26523.0,
+        "passed": false
+      },
+      {
+        "shard": "39237/pool/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 16858.7,
+        "passed": false
+      },
+      {
+        "shard": "49046/pool/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 16858.7,
+        "passed": false
+      },
+      {
+        "shard": "19618/post/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 2059.5,
+        "passed": true
+      },
+      {
+        "shard": "19618/pre/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.3,
+        "passed": true
+      },
+      {
+        "shard": "39237/pre/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.3,
+        "passed": true
+      },
+      {
+        "shard": "49046/pre/ninapro_db6/folds0-1-2-3",
+        "dataset": "ninapro_db6",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 4706.3,
+        "passed": true
+      },
+      {
+        "shard": "39237/pool/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "pool",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 614.3,
+        "passed": true
+      },
+      {
+        "shard": "49046/pool/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "pool",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 614.3,
+        "passed": true
+      },
+      {
+        "shard": "19618/post/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "post",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.2,
+        "passed": true
+      },
+      {
+        "shard": "39237/post/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "post",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.2,
+        "passed": true
+      },
+      {
+        "shard": "49046/post/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "post",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 604.2,
+        "passed": true
+      },
+      {
+        "shard": "19618/pre/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "pre",
+        "step": 19618,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1,
+        "passed": true
+      },
+      {
+        "shard": "39237/pre/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "pre",
+        "step": 39237,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1,
+        "passed": true
+      },
+      {
+        "shard": "49046/pre/uci_emg/folds0-1-2-3",
+        "dataset": "uci_emg",
+        "view": "pre",
+        "step": 49046,
+        "folds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "projected_seconds": 608.1,
+        "passed": true
+      }
+    ],
+    "projected_fit_seconds_by_fold_of_cells_over_limit": {
+      "19618/pre/ninapro_db2": [
+        10030.8,
+        10883.9,
+        9828.6,
+        10024.7
+      ],
+      "39237/pre/ninapro_db2": [
+        10030.8,
+        10883.9,
+        9828.6,
+        10024.7
+      ],
+      "49046/pre/ninapro_db2": [
+        10030.8,
+        10883.9,
+        9828.6,
+        10024.7
+      ],
+      "39237/pool/ninapro_db2": [
+        7464.9,
+        8099.8,
+        7314.5,
+        7460.4
+      ],
+      "49046/pool/ninapro_db2": [
+        7464.9,
+        8099.8,
+        7314.5,
+        7460.4
+      ],
+      "19618/pre/ninapro_db3": [
+        6446.9,
+        6342.0,
+        7217.7,
+        5916.1
+      ],
+      "39237/pre/ninapro_db3": [
+        6446.9,
+        6342.0,
+        7217.7,
+        5916.1
+      ],
+      "49046/pre/ninapro_db3": [
+        6446.9,
+        6342.0,
+        7217.7,
+        5916.1
+      ],
+      "39237/pool/ninapro_db6": [
+        4099.4,
+        4111.2,
+        3969.6,
+        4077.1
+      ],
+      "49046/pool/ninapro_db6": [
+        4099.4,
+        4111.2,
+        3969.6,
+        4077.1
+      ]
+    },
+    "pin_step_fit": "refused on 2026-11-06: the runbook section 3 snippet with LONG_PIN_PHASE=fit stops with AssertionError at the assertion on gate['all_passed']; no manifest written, plan.json unchanged"
+  },
+  "pose": {
+    "elapsed_seconds": 39.492,
+    "peak_rss_gib": 1.288,
+    "seconds_per_dose": 583.269,
+    "limit_seconds_per_dose": 3300.0,
+    "projected_peak_rss_gib": 12.53,
+    "limit_projected_peak_rss_gib": 25.5,
+    "admitted": true,
+    "fit_walltime_seconds": 3600,
+    "artifacts": 6
+  },
+  "accounting": {
+    "rows": 17,
+    "gpu_hours": 0.0,
+    "allocated_core_hours": 15.217222
+  }
+}

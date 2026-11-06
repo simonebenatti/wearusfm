@@ -1,0 +1,245 @@
+{
+  "artifacts": {
+    "post_coefficients": {
+      "bytes": 59377,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/post.timing.coefficients.npz",
+      "sha256": "d7657ba6b6c0b89d430f8b740363082cee7ecc761a02bf59bb1221109b9b9106"
+    },
+    "post_predictions": {
+      "bytes": 43028984,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/post.timing.predictions.npz",
+      "sha256": "50df7f7d8858c0c6626fbae849a146de37fcef850287e2f523ac30974898417e"
+    },
+    "pre_coefficients": {
+      "bytes": 59362,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/pre.timing.coefficients.npz",
+      "sha256": "79b66ff7a38fc240f01aa39ce657e6822bee6ee7dd13bec0a8b2a2f93ac938a6"
+    },
+    "pre_predictions": {
+      "bytes": 43145292,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/pre.timing.predictions.npz",
+      "sha256": "26b6e9507b975e0c185af2fed9dea8f885ed1e5bd906a37d5e8d5d1dfa178060"
+    },
+    "report_io_surrogate": {
+      "bytes": 227853,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/report_io_surrogate.json",
+      "sha256": "5c8e645c3c635dc4cf67def4a423ca17e96caba5e59cc628e71d6621bf47313d"
+    },
+    "trained_head_predictions": {
+      "bytes": 24031771,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/head.timing.predictions.npz",
+      "sha256": "6b98388b92d47baa736673245a491ab8611874b8d04c7df6daf4b63672e2fc17"
+    }
+  },
+  "benchmark_policy": {
+    "blas_threads": 8,
+    "data_policy": "train payload only; held cache/reference payload is never opened, hashed or scored",
+    "fit_floor": "project_fit_seconds(max_depth_statistics_and_eigensystems, n_readers=2, safety_factor=2, fixed_seconds=0)",
+    "fixed_seconds": 120.0,
+    "held_windows": 18548,
+    "max_seconds_per_dose": 3300.0,
+    "memory_bytes": 32212254720,
+    "memory_fraction": 0.85,
+    "memory_projection": "max_RSS_bytes * (18548/1907)",
+    "other_work": "2 * (read_validate * (1+r) + fixed_alpha_fit + predict * r + summary * r + E2_pairing * r**2 + bootstrap_diagnostic * r + artifact_write * r) + 120; r=18548/1907",
+    "reference_step": 19618,
+    "safety_factor": 2.0,
+    "train_windows": 1907
+  },
+  "cache_manifest": {
+    "bytes": 12942,
+    "path": "results/infra/consolidation_long_20261105/execution/manifests/cache_manifest.json",
+    "sha256": "e5b153d002ce11f73ddeeaad95b454ee2bcec8a346a7705f7092f3949ee0a518"
+  },
+  "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+  "checkpoint_step": 19618,
+  "checkpoint_unchanged": false,
+  "code_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+  "complete": true,
+  "elapsed_seconds": 39.23809865768999,
+  "environment": {
+    "machine": "x86_64",
+    "numpy": "1.26.4",
+    "python": "3.11.6",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8"
+    },
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.23.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.21.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "torch": "2.2.0a0+git6c8c5ad",
+    "torch_threads": 8
+  },
+  "execution_environment": {
+    "machine": "x86_64",
+    "numpy": "1.26.4",
+    "python": "3.11.6",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8"
+    },
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.23.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.21.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "torch": "2.2.0a0+git6c8c5ad",
+    "torch_threads": 8
+  },
+  "fit_resources": {
+    "cpus": 8,
+    "gpus": 0,
+    "memory_gib": 30,
+    "seconds": 3600
+  },
+  "frozen_teacher_unchanged": false,
+  "held_payload_opened": false,
+  "held_scored": false,
+  "kind": "benchmark-pose",
+  "measured_resources": {
+    "elapsed_seconds": 39.491638354957104,
+    "peak_rss_bytes": 1383280640
+  },
+  "peak_rss_bytes": 1383280640,
+  "plan_sha256": "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f",
+  "projection": {
+    "admitted": true,
+    "fit_floor": {
+      "complete_resource_plan": false,
+      "excludes": [
+        "cache validation and I/O",
+        "held prediction and aggregation"
+      ],
+      "fit_seconds": 37.2061261087656,
+      "fixed_seconds": 0.0,
+      "formula": "safety_factor * n_readers * (statistics_seconds + 27 * three_eigensystems_seconds) + fixed_seconds",
+      "n_readers": 2,
+      "safety_factor": 2.0
+    },
+    "projected_peak_rss_bytes": 13454163246.313581,
+    "seconds_per_dose": 583.2689406151289
+  },
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+  "timing_artifacts_only": true,
+  "timings_seconds": {
+    "E2_pairing": 0.13084547221660614,
+    "artifact_write": 4.563920367509127,
+    "bootstrap_diagnostic": 0.02242826111614704,
+    "fixed_alpha_fit": 10.737827129662037,
+    "predict": 6.719503216445446,
+    "read_validate": 5.938640302978456,
+    "ridge_by_depth": {
+      "post": {
+        "n_features": 384,
+        "n_users": 40,
+        "note": "fixed alpha 1e5; train only; no validation or CV score",
+        "statistics_seconds": 4.873087884858251,
+        "three_eigensystems_seconds": 0.16401643119752407,
+        "valid_fit_elements": 4813620
+      },
+      "pre": {
+        "n_features": 384,
+        "n_users": 40,
+        "note": "fixed alpha 1e5; train only; no validation or CV score",
+        "statistics_seconds": 4.207039947621524,
+        "three_eigensystems_seconds": 0.14911245461553335,
+        "valid_fit_elements": 4813620
+      }
+    },
+    "summary": 1.6709687858819962
+  },
+  "train_cache": {
+    "cache": {
+      "bytes": 474335937,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/train.npz",
+      "sha256": "44532070c37056f0230c06dd97deb64338c64415e3703f751889b29cce4f338f"
+    },
+    "receipt": {
+      "bytes": 342031,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/report.json",
+      "sha256": "4343caeb7112fa23232582d25b3a6dc78c822ea1ed94099cd43de49162724a6a"
+    }
+  },
+  "training_scores_persisted": false
+}
