@@ -1,0 +1,39 @@
+{
+  "reviewed_commit": "1c831896ec85a20388b906404c88d425315bbe68",
+  "later_tip_checked_for_invariance_only": "4b567d52755d59bcb7ffa5923de8436afd82a8b5",
+  "helper_sha256": "b222474b4fad9fe1a810df115ebc5eb4d8d9246408e14e833abad8b8ba61924e",
+  "tests": {
+    "fixed_selftest": {
+      "exit": 0,
+      "stdout": "PASSA  stato pubblicato, nove job in coda, sei posti richiesti: rifiuto per i posti -> RIFIUTO: cancello prima dell'invio non superato\nPASSA  stato pubblicato, un posto richiesto: passa (lo stato e' valido) -> CANCELLO SUPERATO\nPASSA  quattro job in coda, lettura riuscita: passa con sei posti -> CANCELLO SUPERATO\nPASSA  coda davvero vuota, lettura riuscita: passa -> CANCELLO SUPERATO\nPASSA  squeue fallito e uscita vuota (caso di GPT): rifiuto prima di contare -> RIFIUTO: lettura di squeue_serial non riuscita (exit 1): nessun conteggio, nessun cancello\nPASSA  squeue fallito con quattro righe in uscita: rifiuto, l'uscita non conta -> RIFIUTO: lettura di squeue_serial non riuscita (exit 1): nessun conteggio, nessun cancello\nPASSA  squeue senza codice d'uscita: rifiuto -> RIFIUTO: lettura di squeue_serial non riuscita (exit None): nessun conteggio, nessun cancello\nPASSA  squeue con codice d'uscita false: rifiuto -> RIFIUTO: lettura di squeue_serial non riuscita (exit False): nessun conteggio, nessun cancello\nPASSA  sacct fallito con l'uscita intatta: rifiuto -> RIFIUTO: lettura di sacct non riuscita (exit 1): nessun conteggio, nessun cancello\nPASSA  checks() con squeue fallito: rifiuto anche per `plan`\nREGRESSIONE SUPERATA: 10 casi su 10\n",
+      "stderr": ""
+    },
+    "previous_helper_negative_control": {
+      "exit": 1,
+      "failed_cases": 6,
+      "stdout": "PASSA  stato pubblicato, nove job in coda, sei posti richiesti: rifiuto per i posti -> RIFIUTO: cancello prima dell'invio non superato\nPASSA  stato pubblicato, un posto richiesto: passa (lo stato e' valido) -> CANCELLO SUPERATO\nPASSA  quattro job in coda, lettura riuscita: passa con sei posti -> CANCELLO SUPERATO\nPASSA  coda davvero vuota, lettura riuscita: passa -> CANCELLO SUPERATO\nFALLISCE  squeue fallito e uscita vuota (caso di GPT): rifiuto prima di contare -> CANCELLO SUPERATO\nFALLISCE  squeue fallito con quattro righe in uscita: rifiuto, l'uscita non conta -> CANCELLO SUPERATO\nFALLISCE  squeue senza codice d'uscita: rifiuto -> CANCELLO SUPERATO\nFALLISCE  squeue con codice d'uscita false: rifiuto -> CANCELLO SUPERATO\nFALLISCE  sacct fallito con l'uscita intatta: rifiuto -> CANCELLO SUPERATO\nFALLISCE  checks() con squeue fallito: rifiuto anche per `plan`\n",
+      "stderr": "RIFIUTO: regressione del cancello: 6 casi falliti\n"
+    },
+    "reject_before_stdout_or_metadata": {
+      "passed": 14,
+      "cases": 14,
+      "method": "AST checks only; stdout keys absent and fits() raises if reached"
+    },
+    "published_historical_state": {
+      "sha256": "08767e9cacb921d6e533e72990f743ef7d6605870c0c7ab04b181965bc2d288d",
+      "read_at": "2026-11-06T12:49:51+0100",
+      "squeue_exit": 0,
+      "sacct_exit": 0,
+      "queued_jobs": 0,
+      "stdout": "PASSA  letture di sacct e squeue riuscite (exit 0)\nPASSA  piano delle sonde: hash e percorso canonico\nPASSA  codice congelato: HEAD atteso, pulito, percorso canonico\nPASSA  quattordici shard, quelli del piano dei fit\nPASSA  file di ogni shard: i quattro attesi, nessun failed.json\nPASSA  percorsi canonici di shard, OOF e audit\nPASSA  report completi, stesso codice, piano e passo\nPASSA  cella, compito, dataset e fold uguali al piano dei fit\nPASSA  hash interni dei report uguali ai file\nPASSA  una sola firma numerica\nPASSA  copertura: ogni cella, dataset e fold una volta sola (60)\nPASSA  fit per shard: sette per dataset e fold; 420 in tutto\nPASSA  contabilita': validate, ridge e quattordici fit COMPLETED 0:0\nPASSA  uscite degli aggregati assenti\nPASSA  dispatcher e submitter locali con gli hash del rilascio dei fit\nPASSA  ID logici degli aggregati mai usati nel ledger\nPASSA  shard uguali a quelli fissati nel piano\nPASSA  piano delle sonde uguale a quello del piano\nPASSA  posti liberi in lrd_all_serial: almeno 6 su 10\njob dell'utente in coda seriale: 0 | letto alle 2026-11-06T12:49:51+0100\nCANCELLO SUPERATO\n",
+      "scope": "Offline verification of already published historical evidence; not current pre-submission gate"
+    }
+  },
+  "invariants": {
+    "aggregate_submission_plan.json": "abc489613dfbfddc5e33e2150854245bcd3b69292806953bafa622b91a22941c",
+    "aggregate_submit_lines.txt": "bf9823e956bacdaba024bd062be8dc4a8f84f3b20aaf13cd472979d9e6727b3f",
+    "aggregate_guard_dryrun.json": "b9a11070d3433ae636c86289759566c895778e22815e2f5d8cdc05b1d70010b6",
+    "aggregate_submitter_dryrun.json": "aa7a6622b53cfed5aa19749be0f386e7c77f952c3a4ef68f0f519e1d887ce4cf"
+  },
+  "verdict": "APPROVED: previous queue-read finding closed; six aggregates may be submitted by Claude after fresh state/check and existing gates; comparison-stage code excluded."
+}

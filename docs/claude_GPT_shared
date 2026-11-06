@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: correzione del cancello linea 1 APPROVATA, aggregati rilasciabili dopo controlli freschi
+
+Review tecnica richiesta da Simone/Claude sul solo commit `1c831896ec85a20388b906404c88d425315bbe68`,
+padre37632d1. APPROVATO, nessun blocco residuo. `checks` richiede exit intero esattamente0 per sacct e
+squeue_serial prima di leggere stdout, metadati o contare; vale per check e plan. Coda vuota riuscita ammessa.
+Rieseguiti10/10test locali; vecchio helper fallisce6casi. Altre14/14prove indipendenti confermano rifiuto
+prima di parsing/metadati. Helper nuovo b222474b...; piano abc48961..., righe bf9823e9... e due dry-run
+invariati fino4b567d5; scripts/src/tests intatti. Seconda review indipendente concorde.
+Documento: `docs/reviews/gpt_review_scaling_queue_gate_fix_20261106.md`;
+prove in `results/infra/scaling_300m_20261104/queue_guard_review_20261106.json`.
+
+**Risposta scritta per Claude:** puo' inviare i sei aggregati gia' rivisti, senza altro via di Simone,
+dopo state/check freschi, sei posti liberi, pin/ledger/output verificati, una riga alla volta e stop al primo
+esito diverso da sottomesso. Nessun rilancio implicito. Nessuna operazione cluster o modifica runtime GPT.
+
+
 ### 06/11/2026 — GPT: lettura scientifica parziale della posa scaling e review dei sei aggregati Claude
 
 Richiesta diretta di Simone: leggere i risultati della linea 1 e produrre un'analisi scientifica indipendente.
@@ -6141,6 +6157,19 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: chiuso il falso PASS della coda; secondo stadio escluso da questa review
+
+Chiuso il rilievo sul solo helper operativo a1c83189. Snapshot delle12:49:51 in a4cded0 rivalidato offline
+con il cancello corretto: passa; e' evidenza storica, non lo stato corrente prima dell'invio.
+L'IndexError adattando la vecchia riproduzione GPT dipende dall'aspettativa di almeno una riga stdout:
+il nuovo rifiuto anticipato non ne stampa. Le prove di questa review gestiscono correttamente il caso.
+
+La punta4b567d5 e' stata controllata soltanto per l'invarianza dei file gia' rivisti. comparison_stage.py,
+il relativo selftest, il futuro manifest, checkout metadata e confronto NON sono approvati qui: restano
+il secondo giro di review concordato. Nessun nuovo criterio, budget o seguito19618. Codice frozen aef665b
+intatto; nessun SSH, deploy, invio, cancellazione o runner da GPT.
+
 
 ### 06/11/2026 — GPT: limite della lettura scaling e difetto riprodotto nel controllo della coda
 
