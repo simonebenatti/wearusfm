@@ -7107,6 +7107,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   rinnova. Il job non ne dipende.
 - Stadio di valutazione a 19.618: codice e test ancora in scrittura, non committati. Nulla di quello stadio e' inviato.
 
+### 2026-11-06 | Claude | Linea 1: pacchetto dello stadio di valutazione a 19.618 pubblicato per la review unica (f6dc8ec)
+- Pubblicato alle 20:58 sul ramo `claude/scaling-300m-exec-20261106`: commit `98cf9a6` (pacchetto) e `f6dc8ec`
+  (correzione del costo massimo dei fit), SHA remoto verificato. E' il pacchetto unico previsto dal giudizio g della
+  review `213ca5f` e dalla regola di Simone delle 17:22: una review, poi la catena con i cancelli meccanici.
+- Contenuto: 15 file derivati dai file congelati a 5.000 (`scripts/scaling_derive19618.py`: 7 di codice, 8 di
+  test, sorgenti intoccate, pin del commit rivisto `97125bd`); `scripts/scaling_plans19618.py` (costruttori dei
+  documenti della catena dalle sole evidenze raccolte, tabelle dei job e righe d'invio dal freeze v2, raccolta in
+  sola lettura, cancelli, verbale di ogni cancello in `evidence/gates/`); `tests/cpu/test_scaling_plans19618.py` e
+  `tests/cpu/test_scaling_gates19618.py`; piano `evaluation_chain_plan.md`; `scientific_reading_policy_19618.json`;
+  `control19618_identity/`; prima raccolta reale `evidence/checkout-training/` (job 63695634); voce in
+  `docs/decisioni.md`.
+- Test: 615 nuovi passano (3 minuti); suite completa `tests/cpu` del worktree:
+  3458 passati, 1 avviso, 38 minuti (2.843 preesistenti invariati + 615 nuovi).
+- Cancelli provati sui dati reali del 5.000: i 14 fit e i 6 aggregati accettati passano; il manifest del confronto
+  ricostruito e' uguale byte per byte a `final_stages_20261106/comparison_inputs.json`; 16 + 36 mutazioni fermano
+  la catena con il messaggio atteso. Un errore trovato cosi' e corretto prima della pubblicazione: fit per dataset e
+  fold = 7 (sei candidati piu' il refit), non 6.
+- Differenza dichiarata rispetto al freeze v2 (`checkout: jobs 3, 2 CPU`): cinque job di checkout (A0 a 2 CPU, gia'
+  fatto, e quattro a 1 CPU) nelle stesse core-ore, 0,5 richieste e 0,8 con margine, uguale al tetto dello stadio.
+  Da confermare nella review; se non accettata, si ferma tutto prima del checkout del codice.
+- Costi: letture solo CPU al massimo 345,17 core-ore con margine su 350 (come nel freeze); estrazioni 7 GPU-ore
+  piu' 0,15; 56 core-ore allegate. Uscite CPU su `$WORK` (circa 1,4 GiB) con cancello a 5 GiB liberi.
+- Per Simone: corsia seriale condivisa con la linea 2 (fino a circa 43 ore di orologio ai limiti; tengo al massimo
+  4 job della linea 1 sottomessi insieme, lettura mia); rinfresco dello scratch del 12/11 senza job della linea 1 in
+  esecuzione; certificato ssh valido fino alle 05:50 del 07/11.
+- Training 63696864 alle 21:19: `PENDING` per `Priority`; nessun job dello stadio B inviato.
+- Chiedo a GPT la review unica del pacchetto (`f6dc8ec`); testo pronto consegnato a Simone. Nessun invio prima
+  dell'esito favorevole.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
