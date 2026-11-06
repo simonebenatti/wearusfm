@@ -6492,6 +6492,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   loro limiti: la fine del fit 14 ora la stimo fra le 10:15 e le 10:45. Sorveglianza di sola lettura sulla coda seriale vuota in
   `~/wearusfm_local/logs/watch_serial_empty_20261106.txt`.
 
+### 2026-11-06 | Claude | Coordinamento: corsia seriale decisa da Simone (prima lo scaling); un mio messaggio sbagliato alla sottochat 2, corretto; aggiunta alla review 9 integrata; tabella dei job alle 08:20
+- **Decisione di Simone sulla corsia seriale.** Alla mia domanda del 05/11 alle 22:23, «La linea 2 aspetta la fine dei fit dello scaling prima di usare la corsia seriale?»,
+  ha risposto il 06/11 alle 00:52 circa: «Sì, prima scaling». Alla sottochat 2 aveva risposto verso le 00:50 «Sì, fino a 10» (voce 2e30fb8)
+  e verso le 08:17 «Aspettano lo scaling» (voce 023b8e2). Regola che ne risulta, scritta dalla sottochat 2 e che condivido: nessun
+  benchmark della linea 2 finche' nella coda seriale ci sono fit dello scaling; poi fino a 10 posti; per fit e aggregati della linea 2
+  resta il tetto di 8 del piano di lancio.
+- **Cronaca e un mio errore.** Alle 00:55 ho segnalato alla sottochat 2 le due risposte in apparente contrasto e le ho chiesto di non
+  inviare benchmark; verso le 00:57 ho posto a Simone una domanda di chiarimento, rimasta aperta fino al mattino. La sua risposta a
+  quella domanda, verso le 08:17, e' stata «[No preference]». Senza rileggere il ramo comune ho scritto alla sottochat 2, alle 08:18, che
+  valeva «Sì, fino a 10» e che i benchmark potevano entrare nei posti liberi: era sbagliato, perche' Simone le aveva appena detto
+  «Aspettano lo scaling». Mi sono corretto alle 08:19 con un secondo messaggio. Verificato alle 08:20 su ledger, `squeue` e `sacct`:
+  nessun benchmark inviato; l'unico job `LONG` del 06/11 e' il checkout 63636967. La mia raccomandazione delle 00:57 («Subito, fra i
+  fit») e' ritirata. Regola che ne ricavo per me: dopo una domanda rimasta aperta rileggo ora, ramo comune e registro prima di
+  riferire qualcosa a una sottochat.
+- **Aggiunta alla review 9 della sottochat 1 integrata** (b66a3e6, merge 227717d): conflitto nel solo registro, risolto tenendo
+  le voci dei due lati, prima quelle della sottochat 1 e poi quelle della sottochat 2. Verdetto dell'aggiunta: processo locale dei
+  cinque invii senza blocchi; N-1 e N-3 superate; note N-4, N-5, N-6.
+- **Tabella dei job alle 08:20** (`~/wearusfm_local/logs/leonardo_stato_20261106_0818_job.txt`), sezione «Job su Leonardo» dello
+  specchietto. Scaling: fit 01–12 COMPLETED 0:0 (durate da 30 min a 1 h 07, circa meta' dei limiti), fit 13 63634004 RUNNING dalle
+  07:21:20, fit 14 63635524 in catena; aggregati e confronto non ancora pubblicati ne' inviati. Linea 2: EPN15 otto C0 conclusi, otto
+  C1 RUNNING da 8 h 25–8 h 41; estrazioni 12 su 12 e checkout dei benchmark conclusi; 16 benchmark non inviati. Linea 3:
+  continuazione 63593128 PENDING per priorita' da 15 h 43 min. Quota di `$WORK` alle 08:19: 993,4 GiB usati su 1 TiB, circa 30,6 GiB
+  liberi (erano 34,72 alle 21:54 del 05/11).
+- **Punto aperto per Simone, gia' posto:** dopo il fit 14 allo scaling mancano aggregati e confronto, ancora da pubblicare. Se la
+  linea 2 riempie i 10 posti appena la coda seriale si svuota, gli invii dello scaling vengono rifiutati dalla QoS e poi restano
+  dietro i benchmark gia' in coda, fino a 7 h 45 min di limiti. Nessuna istruzione nuova data alle sottochat su questo.
+- Punte lette alle 08:22: scaling 25eca17, consolidamento 9d195e7, logcontrast 63eba9a, coordinamento 2cf7e8c, `main` fe66e2d,
+  esecuzione della linea 2 166fb86. Nessun job mio.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
