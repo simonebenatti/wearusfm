@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-06",
+  "operator": "Claude (line 2 operator since 2026-11-05 evening); GPT verifies afterwards, non-blocking",
+  "procedure": "docs/handoff_line2_claude_20261105.md, section \"Raccolta finale e aggregazione: procedura concreta per Claude\"",
+  "completeness_checks_before_reading_scores": {
+    "slurm": "27 of 27 COMPLETED 0:0, restarts 0 (sacct -X, sacct.txt)",
+    "reports": "24 of 24 report.json complete; protocol, code_sha, plan_sha256, source_sha256, recipe_sha256, input_sha256 and teacher checkpoint sha256 equal to the pinned values",
+    "candidate_files": "C0: candidate_0.json, candidate_0.pt, metrics.jsonl, report.json, no held.npz, held_evaluated false; C1: the same plus held.npz, held_evaluated true",
+    "c1_uses_own_c0": "12 of 12 C1 reports pin the report.json of candidate0 of the same fold and regime with the sha256 read on the cluster; C0 record identical in both reports",
+    "checkpoint_hashes": "24 candidate checkpoints hashed on the cluster equal the checkpoint_sha256 of the candidate records; no payload loaded",
+    "dose": "24 of 24 candidates complete, updates equal to planned_updates (59355 folds 0-1, 59625 folds 2-3), 15 epochs, stop reason fixed_budget",
+    "folds": "held subjects 79, 79, 78, 78, pairwise disjoint, union 314; roles identical across the three regimes in every fold",
+    "logs": "27 SLURM logs copied with remote sha256 and size; 24 fit logs of 15 lines without error markers"
+  },
+  "aggregator": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python scripts/consolidation_ft15_report.py --input-root <collection>/epn15 --input-root-five <collection>/epn5 --plan <collection>/executed_plan.json --manifest <collection>/manifest.json --out <collection>/report.json",
+    "exit": 0,
+    "complete": true,
+    "scientifically_complete": true,
+    "verified_files": 84,
+    "verified_remote_checkpoint_hashes": 24,
+    "checkpoint_payloads_loaded": false,
+    "failed_cells": [],
+    "unchanged_since_executed_commit": "git diff 1359b924 HEAD -- scripts/consolidation_ft15_report.py scripts/consolidation_ft_report.py is empty"
+  },
+  "tests": {
+    "passed": 32,
+    "command": "tests/cpu/test_consolidation_ft15_report.py tests/cpu/test_consolidation_ft_report.py with ~/.venvs/wearusfm-tok, single thread"
+  },
+  "operator_independent_check": {
+    "max_abs_difference_point_estimates_pp": 0.0,
+    "max_abs_difference_contrast_ci_bounds_pp": 0.0,
+    "note": "point estimates recomputed from the predictions with separate code. Bootstrap draws generated here with numpy default_rng(20261102).integers over the sorted subjects; they coincide with the aggregator draws (interval bounds equal to rounding), so the interval comparison checks the estimator and the pairing, not the draw scheme"
+  },
+  "runbook_manifest_snippet_sha256": "cbfd3c9ce67f41a0aea65e0ac7ad4c421239f262984ffecbafd1fbd145fd46fa",
+  "hashes": {
+    "scripts/consolidation_ft15_report.py": "f477725067603a0f361a0ebff96e77f57bce90e5289b8b23246d08aee33588bf",
+    "scripts/consolidation_ft_report.py": "c6d713fdd07e49dd7b24480623d20f961c216eccdaf2699a65d4a68f6f5ed6bb",
+    "tests/cpu/test_consolidation_ft15_report.py": "e7557098dc49bae4ff07c7f6c658430f9654e79b1721c6a7ed03b8faa7180f86",
+    "executed_plan.json (git show 1359b924:results/infra/finetune15_20261105/plan.json)": "8a07e975f1df709729222a3a3c79f5f28713b5613584b87b3428213d896054d2",
+    "results/infra/finetune15_20261105/final/manifest.json": "6e71383f005f30f3e6a37a792c43d75a94fa626fbf43c5d783e1db4e6cff502e",
+    "results/infra/finetune15_20261105/final/remote_inventory.json": "9ea86d937030e2fb0754be357c13a19c4d61193e15d12061cf6164c0d7b3f456",
+    "results/infra/finetune15_20261105/final/report.json": "b7927ea34bfe9bb3adda1eef0338ae3b8f4dd9c35739d5352e44c1151f865688",
+    "results/infra/finetune15_20261105/final/operator_independent_check.json": "72600f00d503ce5bac549220b79a9dc7dcf35cf4b9d930a291ab3004e09591d9",
+    "results/infra/finetune15_20261105/final/accounting.json": "83dacdd69dacc0efe76fa3bfde6bcd3a529a52c81734c50d54699940ba6c04a9",
+    "results/infra/finetune15_20261105/final/sacct.txt": "313a21ba99226ec8dc79d7c6ded80abd73c23f508d6053edcfa40e7b771893c1"
+  },
+  "logs": {
+    "FT15-BENCH-20261105": {
+      "job": 63579657,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63579657.out",
+      "sha256": "fc84745c6f66dd2ac11b538ea52a51ad3ca5dece86c11efee42faf1191a4768a",
+      "bytes": 1094
+    },
+    "FT15-EPN-frozen-F0-20261105-C0": {
+      "job": 63581664,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581664.out",
+      "sha256": "0170a1eeb73740288258b8c35a3204d0ef7cb37374826043129d958fd2cfd98c",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F0-20261105-C1": {
+      "job": 63581670,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581670.out",
+      "sha256": "f1465d38e4230babdb9de1903b239eee9d638b7cc8b5d91076f73baa0ac003b5",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F1-20261105-C0": {
+      "job": 63581672,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581672.out",
+      "sha256": "1ceb4fbe0453ab642d558479742749520393a5ae56c38d6b5c6f4a60be4d7e47",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F1-20261105-C1": {
+      "job": 63581673,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581673.out",
+      "sha256": "841e6fd5cecd2941b5fb4a7e09d62ccb2fb3e6d693e4a4b982e043fca5fb8f4e",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F2-20261105-C0": {
+      "job": 63581674,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581674.out",
+      "sha256": "d918ba95a23ea3e606173ceb4cdf9eed416d63fb5bfd755ef3587e9347026b97",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F2-20261105-C1": {
+      "job": 63581677,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581677.out",
+      "sha256": "da064c3c45966ba5078a95bf9d424585b1c4152854ca3d2c9ee26499231e0107",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F3-20261105-C0": {
+      "job": 63581682,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581682.out",
+      "sha256": "d9915c3e24cd8c6c40d1490bfe83bfc35aa024c8e4312ac196d61d63c1300969",
+      "bytes": 1751
+    },
+    "FT15-EPN-frozen-F3-20261105-C1": {
+      "job": 63581713,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581713.out",
+      "sha256": "82ee270b0bdcfcac2e34a5ec2aea9d72234c91d1ff8b990ec6a3244c7bc1b302",
+      "bytes": 1751
+    },
+    "FT15-EPN-finetune-F0-20261105-C0": {
+      "job": 63581718,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581718.out",
+      "sha256": "d59b79eae4389ca59181bc46002b4b496665c1c9402d02e874620760412de079",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F0-20261105-C1": {
+      "job": 63581725,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581725.out",
+      "sha256": "c97c6c632424410076de34454eb5a40fad5681fcb8a443b5a9f3384e07964210",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F1-20261105-C0": {
+      "job": 63581735,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581735.out",
+      "sha256": "b00e7aecf7709771e33a7c8aa6bcca48d430f0b3fe03cd7f1654799eb8250f21",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F1-20261105-C1": {
+      "job": 63581741,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581741.out",
+      "sha256": "b133788e4f5edf8ea5a33e90badda9936fc981c0a6a371db056becc0c1f0f1a7",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F2-20261105-C0": {
+      "job": 63581742,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581742.out",
+      "sha256": "7ff6b9f2d5d5e13ad071ce20821091594fec197741d4d193012ea11265428d48",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F2-20261105-C1": {
+      "job": 63581745,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581745.out",
+      "sha256": "77ec2e654703f4f1399fefb279545b174a94484a7fcf820871d2e47c29facf8a",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F3-20261105-C0": {
+      "job": 63581750,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581750.out",
+      "sha256": "a2893b3b4c2e42eab733523c572e0647e778de0793888a15f290dbb06088004e",
+      "bytes": 1753
+    },
+    "FT15-EPN-finetune-F3-20261105-C1": {
+      "job": 63581751,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581751.out",
+      "sha256": "15c0933cc7ae6674f4c8a8c50403e284995bfa37ef890ca5d0d65808c6ef22a2",
+      "bytes": 1753
+    },
+    "FT15-EPN-scratch-F0-20261105-C0": {
+      "job": 63581768,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581768.out",
+      "sha256": "99f21039f1150b93a5f65b4393f3208c9e5fdbf0bce7df58ab21c1fc5868282e",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F0-20261105-C1": {
+      "job": 63581837,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581837.out",
+      "sha256": "fc4678ce5d4701b6d0fda666d039183c92520baf650456253ab2b3b432a97a89",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F1-20261105-C0": {
+      "job": 63581887,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63581887.out",
+      "sha256": "e236eb0581a7a36d0c07185f7bc76550fd1fe3cb29b90c61d807468fd7894a66",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F1-20261105-C1": {
+      "job": 63582180,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63582180.out",
+      "sha256": "cd1cf51a72cdd7c090215e40daffd47a54bdc2fffb63cf98dd7c8da826eac1f6",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F2-20261105-C0": {
+      "job": 63582244,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63582244.out",
+      "sha256": "e9be4e108487e040b618afea28a004125bac19da77e3b037ce9cc55bd4111de6",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F2-20261105-C1": {
+      "job": 63582253,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63582253.out",
+      "sha256": "0bce26da7f62cf5ec8f7ee42f09f752c7c1f4ae249016c6e5f0256f37ee4fa8d",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F3-20261105-C0": {
+      "job": 63582258,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63582258.out",
+      "sha256": "ea32e124a0e87ba2203d4f7016975ed9292bdbaad0c8d736d6817efa324509f4",
+      "bytes": 1752
+    },
+    "FT15-EPN-scratch-F3-20261105-C1": {
+      "job": 63582269,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_ft15_63582269.out",
+      "sha256": "962369e88e3805d23fd98d87a4b21fec05b76f75a412e69d36b1edfa57fc85fc",
+      "bytes": 1752
+    },
+    "FT15-checkout-bench-20261105": {
+      "job": 63578395,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63578395.out",
+      "sha256": "bec27e0ffba796e1e0ba83558284c32c21b656679a1a3bc2d9011a9249a7220d",
+      "bytes": 3901
+    },
+    "FT15-checkout-fits-20261105": {
+      "job": 63581502,
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63581502.out",
+      "sha256": "09f17184fdb4e1ec7a2155bae906dc9abc331fd9478ef2375f995eee438e1157",
+      "bytes": 3958
+    }
+  },
+  "not_in_git": "held.npz predictions (local temporary copy, originals on WORK) and the 24 checkpoints (WORK only)"
+}

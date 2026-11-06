@@ -6558,3 +6558,33 @@ e tetti9GPUh/1711,666667coreh invariati. Consegna awaiting_claude_rereview,
 review.commit null. Claude farà quarta lettura sul diff da51b4574 e pin su
 ramofiglio senza modificare sorgenti, poi eseguirà la catena già autorizzata.
 GPT verifica dopo senza bloccare; nessun nuovo job/deploy/monitor daGPT.
+
+### 06/11/2026 — EPN15: matrice conclusa, raccolta finale, consuntivo e lettura nei limiti congelati
+
+Voce di Claude, operatore della linea 2 dal 05/11 sera; GPT verifica dopo, senza bloccare. Nessuna decisione nuova.
+
+**CONSUNTIVO:** 27 job (24 fit, benchmark, due checkout), tutti `COMPLETED 0:0`, nessun riavvio, nessun rilancio:
+**197,272500 GPU-ore / 1.578,211667 core-ore** su un tetto di 304,5 / 2.436,666667. Fit: 197,146667 GPU-ore
+(preventivo prudenziale 265,064444). Residuo del tetto non usato: 107,227500 GPU-ore; non e' un budget
+riassegnato ad altro.
+
+**ESITO (held di sviluppo, 314 soggetti, 47.100 finestre, bootstrap appaiato per soggetto, 2.000 repliche):**
+frozen 71,420 % [70,042; 72,873], finetune 93,894 % [93,051; 94,737], scratch 93,059 % [92,149; 93,947].
+Primari: finetune − scratch +0,834 pp [+0,416; +1,263]; finetune − frozen +22,473 pp [+21,212; +23,641].
+Secondari 15 − 5: frozen +0,845 [+0,637; +1,043], finetune +0,127 [−0,187; +0,450], scratch +0,696 [+0,293; +1,093];
+distacco finetune − scratch da +1,403 a +0,834 pp, differenza −0,569 [−1,051; −0,051].
+Coda di validation: segnale assente nei tre regimi (fold con epoca migliore 15: 2, 0, 1; mediane 15 − 14: +0,0019,
+−0,0001, +0,0007; soglie 3 fold oppure 0,005). Per la regola congelata non prova la convergenza e non autorizza una
+terza dose. LR scelti: finetune 1e−4 e scratch 1e−4 in quattro fold su quattro, cioe' sull'estremo della griglia a due
+punti; frozen 0,01 in tre su quattro.
+
+Lettura dell'operatore nei limiti del protocollo, da verificare da GPT: i due primari sono positivi; con 15 epoche
+salgono scratch e frozen, finetune resta dov'era e il distacco finetune − scratch si riduce; frozen resta sotto la
+logistica storica 82,577 % (solo descrittivo). Non e' un effetto isolato della dose (cambia l'orizzonte del coseno),
+un seme, secondo sguardo sui held di sviluppo, nessun test ufficiale, nessun verdetto generale FM/P1/P2/regressione
+ne' applicazione di V-R1. Nessuna estensione, nessun nuovo job.
+
+Controlli e riproduzione: completezza verificata prima di leggere i punteggi; aggregatore invariato da 1359b924;
+ricalcolo indipendente di celle e contrasti dalle predizioni con differenza 0,0 pp; report riprodotto identico byte
+per byte dal manifest pubblicato. Consegna: `results/infra/finetune15_20261105/final/` (README, manifest, report,
+verifica, consuntivo, 24 ricevute con curve, 27 log); OOF fuori da Git, checkpoint solo su WORK.

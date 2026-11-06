@@ -139,3 +139,51 @@ Consuntivo delle tre attività concluse (benchmark e due checkout):
 **0,125833 GPU-ore / 1,038333 core-ore**. I fit sono ancora in corso,
 quindi non esiste un consuntivo finale della matrice. Tetto autorizzato
 304,5 GPU-ore / 2.436,667 core-ore invariato; nessuna estensione automatica.
+
+## Chiusura del 06/11/2026: 24 fit conclusi, raccolta finale e consuntivo
+
+Sezione scritta da Claude, operatore della linea 2 dal 05/11 sera. GPT verifica dopo, senza bloccare.
+
+**24/24 fit `COMPLETED 0:0`, nessun riavvio.** Ultimo C1 concluso il 06/11 alle 10:33:31 CET. Le 12 dipendenze
+C1→proprio C0 si sono risolte tutte da sole: nessuna cancellazione, nessun rilancio, nessun job aggiunto.
+
+| Regime | Fold | C0 | C0, secondi | C1 | C1, secondi | Fine C0 | Fine C1 |
+|---|---:|---:|---:|---:|---:|---|---|
+| frozen | 0 | 63581664 | 11.860 | 63581670 | 12.213 | 11-05 16:19 | 11-05 19:44 |
+| frozen | 1 | 63581672 | 11.906 | 63581673 | 12.198 | 11-05 16:19 | 11-05 19:43 |
+| frozen | 2 | 63581674 | 12.048 | 63581677 | 12.264 | 11-05 16:22 | 11-05 19:47 |
+| frozen | 3 | 63581682 | 12.012 | 63581713 | 12.264 | 11-05 16:22 | 11-05 19:47 |
+| finetune | 0 | 63581718 | 38.117 | 63581725 | 38.285 | 11-05 23:37 | 11-06 10:16 |
+| finetune | 1 | 63581735 | 38.236 | 63581741 | 38.324 | 11-05 23:39 | 11-06 10:19 |
+| finetune | 2 | 63581742 | 38.426 | 63581745 | 38.552 | 11-05 23:42 | 11-06 10:25 |
+| finetune | 3 | 63581750 | 38.257 | 63581751 | 38.339 | 11-05 23:40 | 11-06 10:19 |
+| scratch | 0 | 63581768 | 38.058 | 63581837 | 38.411 | 11-05 23:37 | 11-06 10:18 |
+| scratch | 1 | 63581887 | 38.009 | 63582180 | 38.478 | 11-05 23:39 | 11-06 10:22 |
+| scratch | 2 | 63582244 | 38.344 | 63582253 | 38.396 | 11-05 23:53 | 11-06 10:33 |
+| scratch | 3 | 63582258 | 38.304 | 63582269 | 38.427 | 11-05 23:52 | 11-06 10:33 |
+
+Controlli fatti prima di leggere i punteggi: 24 report completi con identità di codice, piano, sorgenti, ricetta,
+input e teacher uguali ai pin; i C0 senza held; ognuno dei 12 C1 fissa il report del proprio C0 con l'hash riletto
+sul cluster; 24 hash dei checkpoint candidati riletti sul cluster uguali a quelli dei report, senza caricare i pesi;
+dose completa per tutti i 24 candidati; log senza errori.
+
+Raccolta e aggregazione con la procedura del prontuario `docs/handoff_line2_claude_20261105.md`: 84 file senza
+checkpoint copiati sul Mac con hash e dimensioni uguali al cluster, manifest costruito con lo snippet del prontuario,
+`scripts/consolidation_ft15_report.py` invariato dal commit eseguito 1359b924, report completo con 84 file e 24 hash
+di checkpoint verificati e nessuna cella fallita. Tutto in `results/infra/finetune15_20261105/final/`, risultati e
+lettura nel `README.md` di quella cartella.
+
+Consuntivo finale dei 27 ID (`final/sacct.txt`, `final/accounting.json`, una riga per allocazione):
+
+| Gruppo | Job | GPU-ore | Core-ore |
+|---|---:|---:|---:|
+| frozen | 8 | 26,879167 | 215,033333 |
+| finetune | 8 | 85,148889 | 681,191111 |
+| scratch | 8 | 85,118611 | 680,948889 |
+| benchmark | 1 | 0,125833 | 1,006667 |
+| checkout | 2 | 0 | 0,031667 |
+| **Totale** | **27** | **197,272500** | **1.578,211667** |
+
+Tetto autorizzato 304,5 GPU-ore / 2.436,666667 core-ore: usato il 64,8 % delle GPU-ore e il
+64,8 % delle core-ore. Preventivo prudenziale dei fit 265,064444 GPU-ore: consumate
+197,146667. Nessun tentativo fallito da contare.

@@ -1,0 +1,179 @@
+{
+  "protocol": "ft15-operator-independent-check-20261106",
+  "aggregator_report_sha256": "b7927ea34bfe9bb3adda1eef0338ae3b8f4dd9c35739d5352e44c1151f865688",
+  "n_rows": 47100,
+  "n_subjects": 314,
+  "classes": [
+    "fist",
+    "noGesture",
+    "open",
+    "pinch",
+    "waveIn",
+    "waveOut"
+  ],
+  "held_files_sha256": {
+    "epn15/fold0/frozen/candidate1/held.npz": "2da866b28739730696fbbf7c3553536aaf10d3d9fccab0cf53609fa9c5752e65",
+    "epn15/fold1/frozen/candidate1/held.npz": "4cef844b09786c05cf7cddcbdab74983f92bfe7fbd876503699e85d6a3cbe692",
+    "epn15/fold2/frozen/candidate1/held.npz": "e9b6ec40c17333696f42dc115ab85d5414a80f13ae31e329a7c15fcf1a097cc3",
+    "epn15/fold3/frozen/candidate1/held.npz": "f4d565871ae344e2969902a20815df703300b9cd6b325a6fd31d61f6756ebe9c",
+    "epn15/fold0/finetune/candidate1/held.npz": "f68f864e272f5c2324afe721d17aacf3d38c95a28f450fec3ce1413d120b77a4",
+    "epn15/fold1/finetune/candidate1/held.npz": "8457dd293e570a6c3f91100445f248322e01b9247f38f676e556996c6c4c0ce9",
+    "epn15/fold2/finetune/candidate1/held.npz": "80e4757c66f6c5c68eca406961a2de7ea617b4da92d85fcd4bc722c0ffc0df7b",
+    "epn15/fold3/finetune/candidate1/held.npz": "cc785786b815cdeea2546682bf6329bf33ba224c2f27c4028f5c39d3b51e6f45",
+    "epn15/fold0/scratch/candidate1/held.npz": "9801e8e023d6cb1a2713083590e2d218fb627c2be572ce86ac51ab75c63aac83",
+    "epn15/fold1/scratch/candidate1/held.npz": "0aeb820cec228a2d01cab1c0e03977219604fb95aaba433911b7ec1e8a79de6a",
+    "epn15/fold2/scratch/candidate1/held.npz": "564b4456c6232a62e4dc778bace104e45cb310dd4b2375fbb5cdb4d73d7e106e",
+    "epn15/fold3/scratch/candidate1/held.npz": "1d90ad6e880ee13833806d6155987bb91c018e32b9857135d7206b65893df832",
+    "epn5/fold0/frozen/candidate1/held.npz": "c4c8bc06d6e3c75f81ec5a1b33a0b89df11c4ebeadc01a6d2d2eb4475e5d01d2",
+    "epn5/fold1/frozen/candidate1/held.npz": "c88c1240a5cb6cf4ec6f365548512834a83bf7d6e6e4800305ab2fbd7d6f2914",
+    "epn5/fold2/frozen/candidate1/held.npz": "08eb665268d583e27fc8110728ade4913590b7dbbe07994b1bd59c6b09737b9d",
+    "epn5/fold3/frozen/candidate1/held.npz": "7e4ac9904dbb9594222a7cf9bae8c5bc4d918a3d6cba00ec53cf292717d3dd63",
+    "epn5/fold0/finetune/candidate1/held.npz": "f98705a34fd90e208fd6082f3afc040308b231d915c8ce1af6cf06394bdac91d",
+    "epn5/fold1/finetune/candidate1/held.npz": "0f722b79c6f349cef2bcdd718bd3d6a9e92ffd4a705a40d47831f6bdbe076c24",
+    "epn5/fold2/finetune/candidate1/held.npz": "123843d36102d739ed4c6291a3b6ea8fba5e5141750f2b70b356cd69cf5df908",
+    "epn5/fold3/finetune/candidate1/held.npz": "7d69bb3b1dfdf729c887a6d7645f19b598dada9f4fc3abeeb4c3ed41ca9afe84",
+    "epn5/fold0/scratch/candidate1/held.npz": "fc5e9aa89b419cdda0f2decad3bd0202c794788fe7e67361c8c018370fb38e98",
+    "epn5/fold1/scratch/candidate1/held.npz": "0e92deea6ce2f11309efb7c2193f9f81980ade6d3f6fa2a7d8e0940987a12250",
+    "epn5/fold2/scratch/candidate1/held.npz": "738c8eda2f42c47578f57e4de36e439cfa26818c8d824211b8223c786cea1333",
+    "epn5/fold3/scratch/candidate1/held.npz": "a2ab90059ac22676dbb5d43b710a033c62964be60f0c3103408d3a82e7146d55"
+  },
+  "independent": {
+    "cells_percent": {
+      "15/frozen": 71.4203821656051,
+      "15/finetune": 93.89384288747348,
+      "15/scratch": 93.05944798301486,
+      "5/frozen": 70.57537154989384,
+      "5/finetune": 93.76645435244161,
+      "5/scratch": 92.36305732484075
+    },
+    "cells_ci95_percent": {
+      "15/frozen": [
+        70.04214437367304,
+        72.87314225053078
+      ],
+      "15/finetune": [
+        93.05090233545647,
+        94.73683651804672
+      ],
+      "15/scratch": [
+        92.14851380042464,
+        93.94708067940552
+      ],
+      "5/frozen": [
+        69.17611464968152,
+        71.97733545647557
+      ],
+      "5/finetune": [
+        92.92139065817409,
+        94.601008492569
+      ],
+      "5/scratch": [
+        91.42669851380045,
+        93.2697983014862
+      ]
+    },
+    "contrasts": {
+      "finetune_minus_scratch": {
+        "delta_pp": 0.834394904458613,
+        "ci95_pp": [
+          0.4160828025477664,
+          1.2632696390658116
+        ]
+      },
+      "finetune_minus_frozen": {
+        "delta_pp": 22.473460721868378,
+        "ci95_pp": [
+          21.21220806794056,
+          23.64140127388535
+        ]
+      },
+      "frozen15_minus_frozen5": {
+        "delta_pp": 0.8450106157112502,
+        "ci95_pp": [
+          0.6369426751592353,
+          1.0425159235668795
+        ]
+      },
+      "finetune15_minus_finetune5": {
+        "delta_pp": 0.1273885350318693,
+        "ci95_pp": [
+          -0.18683651804671797,
+          0.45010615711251784
+        ]
+      },
+      "scratch15_minus_scratch5": {
+        "delta_pp": 0.6963906581741064,
+        "ci95_pp": [
+          0.29288747346069816,
+          1.093418259023349
+        ]
+      },
+      "transfer_gap15_minus_gap5": {
+        "delta_pp": -0.5690021231422371,
+        "ci95_pp": [
+          -1.0509554140127224,
+          -0.05090233545646973
+        ]
+      }
+    }
+  },
+  "aggregator": {
+    "cells_percent": {
+      "15/frozen": 71.4203821656051,
+      "15/finetune": 93.89384288747348,
+      "15/scratch": 93.05944798301486,
+      "5/frozen": 70.57537154989384,
+      "5/finetune": 93.76645435244161,
+      "5/scratch": 92.36305732484075
+    },
+    "contrasts": {
+      "finetune_minus_frozen": {
+        "delta_pp": 22.473460721868378,
+        "ci95_pp": [
+          21.21220806794056,
+          23.64140127388535
+        ]
+      },
+      "finetune_minus_scratch": {
+        "delta_pp": 0.834394904458613,
+        "ci95_pp": [
+          0.4160828025477664,
+          1.2632696390658116
+        ]
+      },
+      "frozen15_minus_frozen5": {
+        "delta_pp": 0.8450106157112502,
+        "ci95_pp": [
+          0.6369426751592353,
+          1.0425159235668795
+        ]
+      },
+      "finetune15_minus_finetune5": {
+        "delta_pp": 0.1273885350318693,
+        "ci95_pp": [
+          -0.18683651804671797,
+          0.45010615711251784
+        ]
+      },
+      "scratch15_minus_scratch5": {
+        "delta_pp": 0.6963906581741064,
+        "ci95_pp": [
+          0.29288747346069816,
+          1.093418259023349
+        ]
+      },
+      "transfer_gap15_minus_gap5": {
+        "delta_pp": -0.5690021231422371,
+        "ci95_pp": [
+          -1.0509554140127224,
+          -0.05090233545646973
+        ]
+      }
+    }
+  },
+  "max_abs_difference_point_estimates_pp": 0.0,
+  "max_abs_difference_contrast_ci_bounds_pp": 0.0,
+  "max_abs_difference_cell_ci_bounds_pp": 1.4210854715202004e-14,
+  "intervals_exclude_zero_identically": true,
+  "note": "point estimates recomputed from the predictions with separate code. Bootstrap draws generated here with numpy default_rng(20261102).integers over the sorted subjects; they coincide with the aggregator draws (interval bounds equal to rounding), so the interval comparison checks the estimator and the pairing, not the draw scheme"
+}

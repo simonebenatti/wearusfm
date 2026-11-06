@@ -1,0 +1,15 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-fits-20261105 @ 1359b924d25601f92e9035b8bd621c2c6a93f947
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+{"allocation": {"cpus": 8, "gpus": 1, "memory": "100G", "seconds": 21600}, "benchmark_receipt": {"path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/benchmark/report.json", "sha256": "772bc48777d7e898b6a7db38b297ec502db339ee47287ea3690798912e308b55"}, "candidate": 1, "event": "fit_gate_accepted", "fold": 3, "limit_seconds": 21300, "memory_gate_passed": true, "packaging": "split", "protocol": "consolidation-finetune15-epn-20261105-v1", "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1", "regime": "frozen", "source_sha256": "13de2f317997e497f6d40a53d04dbc6b2061a6d2244c0a809898968362091469"}
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
