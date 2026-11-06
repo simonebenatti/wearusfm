@@ -1,0 +1,48 @@
+{
+ "id": "INFRA-move-october-features-to-scratch-20261106",
+ "creato": "2026-11-06T20:12:48+01:00",
+ "agente": "claude",
+ "campagna": "infra_storage_20261106",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "8fc1a5a6e4bb72d05b17a75d4f0dc78633c40737",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=INFRA-move-october-features-to-scratch-20261106",
+  "--comment=wearusfm:INFRA-move-october-features-to-scratch-20261106",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=1",
+  "--mem=2G",
+  "--time=01:00:00",
+  "--no-requeue",
+  "--export=ALL,MOVE_MODE=move,MOVE_SET=october-features,EXPECTED_SHA=8fc1a5a6e4bb72d05b17a75d4f0dc78633c40737"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/move_verified_to_scratch.sbatch",
+ "script_stdin_sha256": "8dc45689f0efbbbfe0d216b749d1d443900fb1e1121986fe82f25967b93a73db",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T20:12:48+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T20:12:48+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T20:12:50+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63695632,
+   "uscita": 0,
+   "stdout": "63695632\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63695632,
+ "uscita": 0,
+ "stdout": "63695632\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

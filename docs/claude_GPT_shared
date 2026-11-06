@@ -7393,6 +7393,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Commit documentale `a5e6106034316e4607f72d16776d4c696289cda0` sul ramo `claude/consolidation-long-exec-20261105`
   (SHA remoto verificato); tre controlli e 342 test a posto; nessun file coperto toccato.
 
+### 2026-11-06 | Claude | `$WORK`: inviato lo spostamento su SCRATCH delle quattro cartelle di feature di ottobre (decisione di Simone)
+- Decisione di Simone nella sottochat 2, alle 20:03, alla domanda «Sposto sullo scratch anche le feature di sonda di
+  ottobre (18,1 GiB)?»: «Sì, spostale». Vale per le quattro cartelle della domanda; il resto di `passo6` non si tocca.
+- Stato letto alle 20:05 in sola lettura (`results/infra/storage_move_20261106/october_features_readonly_20261106.log`):
+
+  | Cartella sotto `wearusfm_runs/results/passo6` | File | Cartelle | Byte |
+  |---|---|---|---|
+  | `step2c_1410` | 201 | 59 | 13.864.508.239 |
+  | `step1_downstream_0910` | 37 | 11 | 2.443.563.572 |
+  | `step1_random_20261014_r3` | 23 | 7 | 1.676.205.962 |
+  | `step2a_20261014` | 41 | 15 | 1.422.892.105 |
+  | totale | 302 | 92 | 19.407.169.878 (18,07 GiB) |
+
+  Nessun link, file speciale o hard link; tutto dell'utente `sbenatti`; ultima modifica il 15/10, ultimo accesso il
+  23/10; destinazione assente su SCRATCH.
+- Script esteso nel commit `8fc1a5a6e4bb72d05b17a75d4f0dc78633c40737` (questo ramo, SHA remoto verificato):
+  `scripts/slurm/move_verified_to_scratch.sbatch` ha ora due elenchi chiusi, scelti con `MOVE_SET`. Per
+  `october-features`: copia senza conservare le date; confronto di elenco, dimensioni, albero delle cartelle e sha256
+  di ogni file; poi originale rinominato a lato, link al vecchio percorso, rilettura dell'elenco attraverso il link, e
+  solo allora rimozione dell'originale. Un link non valido viene tolto e l'originale torna al suo nome.
+- Prove prima dell'invio: cartella finta sul login (91 controlli superati, `FAILS=0`: contenuto, dimensione e link
+  alterati, seconda esecuzione, link dentro una cartella, destinazione esistente, cartelle vicine intatte); prova a
+  secco sui percorsi veri (uscita 0, nessuna scrittura, quota invariata, stessi conteggi della tabella).
+- Invio alle 20:12 con submitter e ledger comuni, `--agente claude`: `INFRA-move-october-features-to-scratch-20261106`,
+  job 63695632, campagna `infra_storage_20261106`, `lrd_all_serial`, 1 CPU, 2 GB, limite 1 ora: al massimo 1 core-ora,
+  0 GPU-ore. E' in coda dietro il fit in corso (limite di 8 CPU per utente) e parte quando la corsia si libera.
+- Destinazione: `$SCRATCH/wearusfm_runs/results/passo6/<cartella>`, dentro il perimetro predefinito di
+  `refresh_scratch.sbatch`. L'esito va in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -10243,3 +10272,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   nominano solo gli script di scaricamento (`download_small_public.sbatch`, `download_neurorvq_retry.sbatch`):
   rieseguiti, riscaricherebbero in `$WORK`. Il commento di `scripts/slurm/delete_verified_raw.sbatch` che elenca
   `neurorvq_checkpoint` fra le cartelle mai toccate vale per quello script: la cartella l'ha spostata questo job.
+
+### 2026-11-06 | Claude | Feature di ottobre su SCRATCH: cosa cambia per chi le usa (per GPT e coordinamento)
+- A job riuscito i quattro percorsi sotto `$WORK/wearusfm_runs/results/passo6` saranno link alle copie su SCRATCH. Per
+  l'utente `sbenatti` gli script di ottobre continuano a funzionare senza modifiche; un altro utente del progetto non
+  legge lo scratch personale di Simone.
+- Sono copie uniche: da ora dipendono dal rinfresco di SCRATCH. Con la data di oggi scadrebbero dal 16/12; i rinfreschi
+  firmati del 12/11 e del 03/12 le coprono, e nessuno dei due va saltato.
+- In corsia seriale e' in coda anche `SCALING-300M-cont19618-checkout-20261106` (63695634, linea 1): non e' mio e non lo
+  tocco. I due job da 1 CPU possono girare insieme; i fit della linea 2 aspettano pochi minuti.
+- Soglia C-1 e passo delle ondate invariati.
