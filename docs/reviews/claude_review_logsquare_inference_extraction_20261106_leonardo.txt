@@ -1,0 +1,477 @@
+# Letture in sola lettura su Leonardo per la review di Claude del 06/11/2026 (benchmark d'inferenza ed estrazione di posa T100-LQ)
+# Due comandi ssh, alle 11:07 e alle 11:12 CET. Solo sacct, squeue, ls, stat, sha256sum, cat, grep, tail, git rev-parse.
+
+################ comandi del primo collegamento
+set -u
+R=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results
+O=$R/logsquare_evaluation_20261105/5000/pose
+W=/leonardo_work/IscrB_WearUsFM/wearusfm_runs
+H=$R/tokenizer_evaluation_20261103
+C=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns
+echo "### date"; date '+%Y-%m-%d %H:%M:%S %Z'
+echo "### sacct"
+sacct -X -n -P -j 63614193,63614514,63615611,63615952,63593128 -o JobID,JobName%40,State,ExitCode,ElapsedRaw,Timelimit,Submit,Start,End,AllocTRES%70,Partition,QOS
+echo "### squeue 63593128"
+squeue -j 63593128 -h -o '%i|%j|%T|%r|%S|%l|%Q|%V' 2>&1
+echo "### output dir"
+ls -la --time-style=long-iso "$O"
+echo "### stat outputs (size|mtime|atime)"
+stat -c '%n|%s|mtime=%y|atime=%x' "$O"/* 
+echo "### sha256 outputs"
+sha256sum "$O/receipt.json" "$O/train_subset.npz.provenance.json" "$O/val.npz.provenance.json" "$O/train.log" "$O/val.log" "$O/train_subset.npz" "$O/val.npz"
+echo "### sha256 benchmark receipt and logs"
+sha256sum "$W/results/logsquare_inference_20261105/5000/receipt.json" "$W/logs/logsquare_infer_benchmark_63614514.out" "$W/logs/logsquare_evaluation_63615952.out"
+echo "### extraction log"
+cat "$W/logs/logsquare_evaluation_63615952.out"
+echo "### historical receipts: sha256, elapsed"
+for f in "$H/5000/T100-L/pose/receipt.json" "$H/19618/T100-L/pose/receipt.json" "$H/19618/T100-L/p1/receipt.json" "$H/19618/T100-L/p2/receipt.json"; do
+  sha256sum "$f"; stat -c '%s|mtime=%y|atime=%x' "$f"; grep -o '"elapsed_seconds": *[0-9.eE+-]*' "$f" | tail -3
+done
+echo "### provenance LQ train"; cat "$O/train_subset.npz.provenance.json"; echo
+echo "### provenance L 5000 train"; cat "$H/5000/T100-L/pose/train_subset.npz.provenance.json"; echo
+echo "### provenance LQ val"; cat "$O/val.npz.provenance.json"; echo
+echo "### provenance L 5000 val"; cat "$H/5000/T100-L/pose/val.npz.provenance.json"; echo
+echo "### checkouts"
+for c in logsquare-pose-5000-20261105 logsquare-infer-5000-20261105; do
+  ls -ld --time-style=long-iso "$C/$c"; cat "$C/$c/.git" 2>&1 | head -2
+  git -C "$C/$c" rev-parse HEAD 2>&1
+done
+ls -l --time-style=long-iso "$C/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261105/extraction_plan_5000.json" "$C/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261104/inference_plan.json" "$C/logsquare-pose-5000-20261105/scripts/slurm/logsquare_evaluation.sbatch"
+sha256sum "$C/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261105/extraction_plan_5000.json" "$C/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261104/inference_plan.json" "$C/logsquare-pose-5000-20261105/scripts/logsquare_evaluation.py" "$C/logsquare-pose-5000-20261105/scripts/slurm/logsquare_evaluation.sbatch" "$C/logsquare-infer-5000-20261105/scripts/logsquare_infer_benchmark.py"
+echo "### retention dates on scratch (size|mtime|atime)"
+stat -c '%n|%s|mtime=%y|atime=%x' /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt "$R/pilot_posa/B19618_20261028/B/pose/train_subset.npz" "$R/pilot_posa/B19618_20261028/B/pose/val.npz" "$R/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz" "$R/pilot_posa/B19618_20261028/B/p2/epn612.npz"
+ls -la --time-style=long-iso /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/ | head -30
+echo "### end"
+
+################ output del primo collegamento
+### date
+2026-11-06 11:07:12 CET
+### sacct
+63593128|LOGSQ-T100-LQ-19618-20261105|PENDING|0:0|0|04:00:00|2026-11-05T15:18:42|Unknown|Unknown||boost_usr_prod|normal
+63614193|LOGSQ-infer-checkout-20261105|COMPLETED|0:0|28|00:10:00|2026-11-05T19:02:40|2026-11-05T19:02:51|2026-11-05T19:03:19|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|lrd_all_serial|normal
+63614514|LOGSQ-infer-5000-20261105|COMPLETED|0:0|110|00:30:00|2026-11-05T19:06:45|2026-11-05T19:07:00|2026-11-05T19:08:50|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|boost_usr_prod|normal
+63615611|LOGSQ-pose-checkout-20261105|COMPLETED|0:0|30|00:10:00|2026-11-05T19:19:44|2026-11-05T19:19:52|2026-11-05T19:20:22|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|lrd_all_serial|normal
+63615952|LOGSQ-pose-5000-20261105|COMPLETED|0:0|1866|00:50:00|2026-11-05T19:24:02|2026-11-05T19:24:49|2026-11-05T19:55:55|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|boost_usr_prod|normal
+### squeue 63593128
+63593128|LOGSQ-T100-LQ-19618-20261105|PENDING|Priority|N/A|4:00:00|142903|2026-11-05T15:18:42
+### output dir
+total 2683408
+drwxr-xr-x. 2 sbenatti interactive       4096 2026-11-05 19:55 .
+drwxr-xr-x. 3 sbenatti interactive       4096 2026-11-05 19:25 ..
+-rw-r--r--. 1 sbenatti interactive    3793503 2026-11-05 19:55 receipt.json
+-rw-r--r--. 1 sbenatti interactive      19700 2026-11-05 19:28 train.log
+-rw-r--r--. 1 sbenatti interactive  257774193 2026-11-05 19:28 train_subset.npz
+-rw-r--r--. 1 sbenatti interactive       2523 2026-11-05 19:28 train_subset.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive     190914 2026-11-05 19:55 val.log
+-rw-r--r--. 1 sbenatti interactive 2485995330 2026-11-05 19:55 val.npz
+-rw-r--r--. 1 sbenatti interactive       2513 2026-11-05 19:55 val.npz.provenance.json
+### stat outputs (size|mtime|atime)
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/receipt.json|3793503|mtime=2026-11-05 19:55:55.000000000 +0100|atime=2026-11-05 20:46:32.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train.log|19700|mtime=2026-11-05 19:28:17.000000000 +0100|atime=2026-11-05 20:46:36.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz|257774193|mtime=2026-11-05 19:28:17.000000000 +0100|atime=2026-11-05 20:46:33.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz.provenance.json|2523|mtime=2026-11-05 19:28:28.000000000 +0100|atime=2026-11-05 20:46:32.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.log|190914|mtime=2026-11-05 19:55:26.000000000 +0100|atime=2026-11-05 20:46:36.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz|2485995330|mtime=2026-11-05 19:55:26.000000000 +0100|atime=2026-11-05 20:46:36.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz.provenance.json|2513|mtime=2026-11-05 19:55:54.000000000 +0100|atime=2026-11-05 20:46:33.000000000 +0100
+### sha256 outputs
+3dca283a6cb70f1bff435471027c63381ee3d2049acdcbd78349d103a1195946  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/receipt.json
+409d08653b4557894c75c97130f3145c0c3fe46d3d979da3ec1243c152c26760  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz.provenance.json
+126edd42dd1a675087b50fb598bec8d3a8aeafc0a0f6ac7784b0f2b707ecb704  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz.provenance.json
+a1b7f758287f877b102380560d932b8d7c254c006ad6b2c13a4ff9bce85c5c1e  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train.log
+8d769119ec6da5154bbc18da644e0c0c63c5801e0410b295d446de3d8a059a67  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.log
+881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz
+ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz
+### sha256 benchmark receipt and logs
+7e6e665eb4fb321b81266d0f35806c61814958e758c236a8266baae945db4e9a  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_inference_20261105/5000/receipt.json
+577ab9a0ea90d5dc15c2a86d31fc550851d3582e37184019f35ab315b01288c1  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_infer_benchmark_63614514.out
+7ede833d5144ae04b8a325b3c1f2047410adcc0f669d9271dbb4b5c9ad7c5b68  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_evaluation_63615952.out
+### extraction log
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105 @ 9720fc8f7510bd8e7640164630da30515a8b3210
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+### historical receipts: sha256, elapsed
+f1bdd87989eebf8831469362db62a07007d7328d360c0cccbff380a124cadce6  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/receipt.json
+3725337|mtime=2026-11-03 13:26:28.000000000 +0100|atime=2026-11-06 11:07:19.000000000 +0100
+"elapsed_seconds": 1796.2076900261454
+835cfda49e61a329f9631ceb7644bdded6ff0f3ea1853019731b360709816b03  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-L/pose/receipt.json
+3725368|mtime=2026-11-04 08:49:59.000000000 +0100|atime=2026-11-06 11:07:19.000000000 +0100
+"elapsed_seconds": 1714.0119061190635
+369f5d67c5e43c7765dd53872feff5e99b537462cd80ca3058cff78961a85a10  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-L/p1/receipt.json
+110353|mtime=2026-11-04 08:36:04.000000000 +0100|atime=2026-11-06 11:07:19.000000000 +0100
+"elapsed_seconds": 880.0477552869124
+65ca3b03ce312cb33c767790a5b0531be14f7578ffee892ddc4270efe1759cbe  /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-L/p2/receipt.json
+199872|mtime=2026-11-04 08:49:12.000000000 +0100|atime=2026-11-06 11:07:19.000000000 +0100
+"elapsed_seconds": 1667.5356802754104
+### provenance LQ train
+{
+  "protocol": "tokenizer-logsquare-evaluation-20261104-v1",
+  "arm": "T100-LQ",
+  "which": "teacher",
+  "checkpoint_step": 5000,
+  "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+  "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+  "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "identity",
+    "tokenizer_logsquare": true,
+    "tokenizer_logsquare_eps": 0.001
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "split": "train",
+  "config": {
+    "n_windows": 10,
+    "window_s": 4.0,
+    "seed": 20261026,
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "per_side": false,
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+    "which": "teacher",
+    "split": "train",
+    "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "n_windows": 1907,
+  "n_users": 40,
+  "n_recordings": 200,
+  "targets": {
+    "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+    "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+    "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+  },
+  "reference_cache_sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz",
+  "cache_sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+  "cache_bytes": 257774193
+}
+
+### provenance L 5000 train
+{
+  "protocol": "tokenizer-evaluation-20261103-v1",
+  "arm": "T100-L",
+  "which": "teacher",
+  "checkpoint_step": 5000,
+  "checkpoint_sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+  "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+  "plan_sha256": "c0e5d501cd42c81d60aaa390098644ec5e3bf351f3e06031233647934dd2e985",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "identity"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "split": "train",
+  "config": {
+    "n_windows": 10,
+    "window_s": 4.0,
+    "seed": 20261026,
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "per_side": false,
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-L/checkpoint_step0005000.pt",
+    "which": "teacher",
+    "split": "train",
+    "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "n_windows": 1907,
+  "n_users": 40,
+  "n_recordings": 200,
+  "targets": {
+    "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+    "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+    "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032"
+  },
+  "reference_cache_sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/train_subset.npz",
+  "cache_sha256": "c0bc0575d1d900f6e5d0d6d412073fab74fe30d6783d75fe5fb83d1d0e21f32a",
+  "cache_bytes": 257640568
+}
+
+### provenance LQ val
+{
+  "protocol": "tokenizer-logsquare-evaluation-20261104-v1",
+  "arm": "T100-LQ",
+  "which": "teacher",
+  "checkpoint_step": 5000,
+  "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+  "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+  "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "identity",
+    "tokenizer_logsquare": true,
+    "tokenizer_logsquare_eps": 0.001
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "split": "val",
+  "config": {
+    "n_windows": 10,
+    "window_s": 4.0,
+    "seed": 20261026,
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "per_side": false,
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+    "which": "teacher",
+    "split": "val",
+    "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210",
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "n_windows": 18548,
+  "n_users": 15,
+  "n_recordings": 1950,
+  "targets": {
+    "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+    "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+    "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+  },
+  "reference_cache_sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz",
+  "cache_sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+  "cache_bytes": 2485995330
+}
+
+### provenance L 5000 val
+{
+  "protocol": "tokenizer-evaluation-20261103-v1",
+  "arm": "T100-L",
+  "which": "teacher",
+  "checkpoint_step": 5000,
+  "checkpoint_sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+  "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+  "plan_sha256": "c0e5d501cd42c81d60aaa390098644ec5e3bf351f3e06031233647934dd2e985",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "identity"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "split": "val",
+  "config": {
+    "n_windows": 10,
+    "window_s": 4.0,
+    "seed": 20261026,
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "per_side": false,
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-L/checkpoint_step0005000.pt",
+    "which": "teacher",
+    "split": "val",
+    "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "n_windows": 18548,
+  "n_users": 15,
+  "n_recordings": 1950,
+  "targets": {
+    "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+    "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+    "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924"
+  },
+  "reference_cache_sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T100-L/pose/val.npz",
+  "cache_sha256": "f1a9d620ce66e30314910e2779d1967589f322cb2dd4e5deec15df5a980b3d4e",
+  "cache_bytes": 2484895155
+}
+
+### checkouts
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 19:20 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105
+gitdir: /leonardo_work/IscrB_WearUsFM/wearusfm/.git/worktrees/logsquare-pose-5000-20261105
+9720fc8f7510bd8e7640164630da30515a8b3210
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 19:03 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105
+gitdir: /leonardo_work/IscrB_WearUsFM/wearusfm/.git/worktrees/logsquare-infer-5000-20261105
+cc814303e52d8e4067cf12fb1a291459a402c78c
+-r--r--r--. 1 sbenatti interactive 17450 2026-11-05 19:20 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261104/inference_plan.json
+-r--r--r--. 1 sbenatti interactive 20636 2026-11-05 19:20 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261105/extraction_plan_5000.json
+-r--r--r--. 1 sbenatti interactive  2608 2026-11-05 19:20 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/scripts/slurm/logsquare_evaluation.sbatch
+56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79  /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261105/extraction_plan_5000.json
+71fe65bf4d7dded2f946c040eb957d9e2a59f5665a6e914991bb88d2b4554cf0  /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/results/infra/logsquare_evaluation_20261104/inference_plan.json
+6c79f9ec1d2d1737dbd7b697b8c603ba084bff5823330bf713ef73c4de558bb8  /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/scripts/logsquare_evaluation.py
+207857e78909e34b842628d705bdadf4bc9f61ce146bb9a0d12436fd4547fc82  /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105/scripts/slurm/logsquare_evaluation.sbatch
+c5b8658af71af6a91b5bb60d25263c005cdcc158f2e4e6438e4b08b4b49adba9  /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105/scripts/logsquare_infer_benchmark.py
+### retention dates on scratch (size|mtime|atime)
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt|454776554|mtime=2026-11-05 16:37:25.000000000 +0100|atime=2026-11-05 19:55:54.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz|257675076|mtime=2026-10-29 01:27:03.000000000 +0100|atime=2026-11-05 22:26:05.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz|2485295825|mtime=2026-10-29 01:52:22.000000000 +0100|atime=2026-11-05 22:26:08.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz|829630314|mtime=2026-10-29 01:29:10.000000000 +0100|atime=2026-11-06 09:56:04.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz|729002818|mtime=2026-10-29 01:50:19.000000000 +0100|atime=2026-11-06 04:06:18.000000000 +0100
+total 901536
+drwxr-xr-x. 2 sbenatti interactive      4096 2026-11-05 16:37 .
+drwxr-xr-x. 3 sbenatti interactive      4096 2026-11-05 15:31 ..
+-rw-r--r--. 1 sbenatti interactive 454776554 2026-11-05 16:37 checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 454776554 2026-11-05 16:37 checkpoint_step0005000.pt
+-rw-r--r--. 1 sbenatti interactive      3283 2026-11-05 15:31 config.json
+-rw-r--r--. 1 sbenatti interactive     17134 2026-11-05 16:37 fixed_eval.jsonl
+-rw-r--r--. 1 sbenatti interactive     22232 2026-11-05 15:32 fixed_eval_set.json
+-rw-r--r--. 1 sbenatti interactive   7761921 2026-11-05 16:37 metrics.jsonl
+-rw-r--r--. 1 sbenatti interactive   1757497 2026-11-05 15:33 origin_sessions.json
+-rw-r--r--. 1 sbenatti interactive   3916268 2026-11-05 16:37 pose_panel.jsonl
+-rw-r--r--. 1 sbenatti interactive     83267 2026-11-05 15:33 pose_panel_set.json
+-rw-r--r--. 1 sbenatti interactive       210 2026-11-05 15:31 pose_provenance.json
+-rw-r--r--. 1 sbenatti interactive      1808 2026-11-05 16:37 summary.json
+### end
+
+################ comandi del secondo collegamento
+set -u
+O=/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose
+echo "### date"; date '+%Y-%m-%d %H:%M:%S %Z'
+echo "### LQ pose receipt: top-level scalar fields (grep, last occurrences)"
+for k in complete stage checkpoint_unchanged checkpoint_step which arm protocol code_sha plan_sha256 checkpoint_sha256 postload_recipe_passed elapsed_seconds; do
+  printf '%s: ' "$k"; grep -o "\"$k\": *[^,}]*" "$O/receipt.json" | sort | uniq -c | tr '\n' ';'; echo
+done
+echo "### LQ pose receipt: tail"
+tail -c 700 "$O/receipt.json"; echo
+echo "### logs: last lines"
+tail -n 3 "$O/train.log" | cut -c1-300; tail -n 3 "$O/val.log" | cut -c1-300
+echo "### end"
+
+################ output del secondo collegamento
+### date
+2026-11-06 11:12:23 CET
+### LQ pose receipt: top-level scalar fields (grep, last occurrences)
+complete:       1 "complete": true;
+stage:       1 "stage": "extract-pose";
+checkpoint_unchanged:       1 "checkpoint_unchanged": true;
+checkpoint_step:       2 "checkpoint_step": 5000;
+which:       1 "which": "teacher";
+arm:       1 "arm": "T100-LQ";
+protocol:       1 "protocol": "tokenizer-logsquare-evaluation-20261104-v1";
+code_sha:       1 "code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210";
+plan_sha256:       1 "plan_sha256": "56a9b51e5f323953baeb9e212af143523270c665cd1f549a9684e53fefa52c79";
+checkpoint_sha256:       2 "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9";
+postload_recipe_passed:       2 "postload_recipe_passed": true;
+elapsed_seconds:       1 "elapsed_seconds": 1848.466681342572;
+### LQ pose receipt: tail
+ "mean": 0.10694221694369105,
+          "median": 0.10663533787035107,
+          "min": 0.08389327748759487,
+          "max": 0.14107381164364283,
+          "sum_squared_norms": 0.1870238523402602
+        },
+        "non_mlp": {
+          "n": 48,
+          "mean": 0.10190920831838897,
+          "median": 0.10096864627003077,
+          "min": 0.041248292246958564,
+          "max": 0.20232916220319777,
+          "sum_squared_norms": 0.5788531186318112
+        }
+      },
+      "descriptive_only": true
+    }
+  },
+  "elapsed_seconds": 1848.466681342572,
+  "runtime": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "device": "cuda"
+  }
+}
+
+### logs: last lines
+  [199/200] 2022-11-02-1667376000-55f6f-cv-emg-pose-demonstration@2-recording-6_left: 10 finestre
+  [200/200] 2022-11-02-1667376000-d1993-cv-emg-pose-demonstration@2-recording-1_right: 10 finestre
+{"windows": 1907, "recordings": 200, "has_head": true, "elapsed_s": 172.6846513748169, "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz"}
+  [1949/1950] 2022-11-21-1669017600-b61c8-cv-emg-pose-demonstration@2-recording-9_left: 10 finestre
+  [1950/1950] 2022-11-21-1669017600-b61c8-cv-emg-pose-demonstration@2-recording-9_right: 10 finestre
+{"windows": 18548, "recordings": 1950, "has_head": true, "elapsed_s": 1546.7141017913818, "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz"}
+### end

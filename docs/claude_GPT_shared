@@ -6695,6 +6695,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   l'integratore se Simone lo chiede.
 - Nella stessa risposta, sui commit di GPT del benchmark d'inferenza e dell'estrazione di posa a 5.000: «controllali, tanto qua c'e tempo
   da quanto capisco». Review in corso, voce separata. Nessun job.
+### 2026-11-06 | Claude | Review di benchmark d'inferenza ed estrazione di posa a 5.000 di T100-LQ (GPT cc81430..63eba9a): APPROVATO, nessun job
+- Richiesta di Simone, 06/11: «controllali, tanto qua c'e tempo da quanto capisco». Review:
+  `docs/reviews/claude_review_logsquare_inference_extraction_20261106.md`, con due script di ricalcolo e le letture di Leonardo.
+- **APPROVATO, nessun problema.** Ricalcolati dalle 128 chiamate grezze della ricevuta 63614514 i sei rapporti LQ/L (posa 1,002825,
+  classificazione fino a 1,013405) e i quattro tetti (3.000, 3.000, 2.100 e 3.000 s; 3,0833 GPU-ore in tutto): identici a GPT.
+- Piano nuovo `extraction_plan_5000.json`: 176 foglie su 181 uguali al piano del benchmark; allocazioni uguali alla ricevuta; hash del
+  contesto `9e1a7bb9…` uguale; 114 pin uguali ai file a 9720fc8. I due piani eseguiti dal benchmark non sono stati toccati.
+- Leonardo in sola lettura alle 11:07: 63614193, 63614514, 63615611 e 63615952 COMPLETED 0:0 (28, 110, 30 e 1.866 s) con risorse e
+  limiti dei piani; sette file dell'estrazione e ricevuta del benchmark con gli SHA256 dichiarati; checkout a 9720fc8 e cc81430.
+- Le provenienze LQ hanno gli stessi tre hash dei target di T100-L a 5.000: stesse 1.907 finestre train e 18.548 val.
+- Consumo delle due fasi: 0,548889 GPU-ore e 4,423333 core-ore. Continuazione 63593128 ancora PENDING Priority alle 11:07 del 06/11.
+- Test non rieseguiti: `src/`, `scripts/` e `tests/` identici per albero git a 5b03e0c, dove il 05/11 erano 365 passati.
 
 ## 2) Problemi trovati
 
@@ -9304,3 +9316,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-06 | Claude | Review T100-LQ rilanciato: N-2 chiusa dalla decisione di Simone («ripassa da te»); resta N-3 come limite noto
 - N-2 chiusa: da ora un rilancio dopo un arresto tecnico passa da una review di Claude prima del deploy (voce della sezione 1).
 - Resta N-3: pulizia forzata dei processi mai esercitata sul cluster.
+
+### 2026-11-06 | Claude | Review benchmark ed estrazione T100-LQ: nessun problema; tre note informative E-1, E-2, E-3
+- E-1: cache, ricevuta completa e checkpoint solo su `$SCRATCH`; con le letture rimandate devono durare fino alla fine. Li copre il
+  rinfresco del 12/11 (`refresh_scratch.sbatch` tocca `wearusfm_runs`); senza, scadenze verso l'8/12 e il 15/12.
+- E-2: tetti saliti di 300 s per cella per la regola congelata; posa a 5.000 al 2,6% sopra la stima proxy, tetto usato al 62%.
+- E-3: il piano nuovo non ha un test locale; lo protegge `allocation_for` dentro il job. Da ripetere prima degli invii a 19.618.
+- Non verificati: frase di Simone riportata da GPT sulle letture alla fine; hash dei riferimenti storici; modo di esecuzione di
+  `prelaunch_gate.json`.
