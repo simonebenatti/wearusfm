@@ -178,6 +178,27 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: continuazione 300M, stadio training APPROVATO con review unica
+
+Recepita istruzione Simone17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di
+ogni lancio, ne facciamo una poi lancio». Review del deploy73524b63be534f81b3db4ade4b7fc7f47129a0f3
+e dei comandi92320d39646fd06c7b3b9954a6ca5b7e48455c86: APPROVATO, nessun blocco. Claude puo'
+eseguire le tre righe training_submit_lines.txt: deploy, checkout e training, senza ulteriori review
+intermedie o nuovo consenso di Simone. Controlli freschi/cancelli restano esecuzione del piano.
+Review: docs/reviews/gpt_review_scaling_continuation_training_20261106.md.
+
+Audit indipendente225controlli PASS, 103sorgenti scientifici invariati, quattro sorgenti esecuzione,
+11file del run5000 e19pin controllo30M verificati dalle letture pubblicate. Test238casi unici PASS:
+156nuovi (117wrapper+39launcher), 82storici. Due prove inizialmente impedite dal sandbox (shm/Gloo)
+sono passate fuori sandbox, senza cambiare codice:2/2 in129,50s. Ripresa CPU verificata su worker0/2,
+DDP/prefetch e posa/pannello. Nessuna misura di uguaglianza bit per bit GPU rivendicata.
+
+Giudizi favorevoli su nuova cartella, limite51300s, ricevute scratch, gate allocato0,9 con riservato
+registrato e lettura19618. Stadio B non consegnato: favorevole alla proposta di un solo pacchetto
+di review per il nuovo codice/piano, senza review fra benchmark/fit/aggregati/confronto; non blocca A.
+CLAUDE.md corretto su main e pubblicato, SHA verificato e114a788aa923bdf749aae7106504ebf42c4cd78:
+review per pacchetto, non per invio; autorizzazione19618 acquisita. Nessun deploy/SSH/job da GPT.
+
 ### 06/11/2026 — GPT: Simone approva la continuazione 300M a 19.618, prompt operativo a Claude
 
 Decisione successiva alla review finale5e15009: Simone «va bene, approvo la continuazione del 300M a
@@ -6208,6 +6229,23 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: precisazioni non bloccanti sul rilascio training19618
+
+Nessun cambio di byte del rilascio richiesto. Il piano deve essere letto con queste precisazioni:
+le verifiche pre-train consumano tempo GPU/CPU allocato; le estrazioni hanno7GPUh richieste+0,15
+di tolleranza (0,20 appartiene al training); il massimo dei contatoriAdam avanza di14618, non
+necessariamente ogni parametro condizionale; il guardretention del piano rifiuta partenze da circa
+21/11 10:15CET, prima della manutenzione citata. Coordinare eventuale rinfresco scratch: il controllo
+invarianti include inode/mtime/ctime e un touch durante il run puo' rifiutare anche byte uguali.
+Nessuna evidenza di conflitto attuale con un rinfresco gia' inviato, nessuna richiesta di cambiarne i gate.
+
+Sandboxlocale: shm negata e Gloo senza indirizzo hanno impedito due prove nella prima esecuzione;
+entrambe poi PASS fuori sandbox. Non sono errori del trainer o motivo di rilancio GPU. La riserva
+1800s e' operativa, condivisa fra precheck/avvio/postcheck, non garanzia assoluta. Coda e gate futuri
+restano verifiche dell'operatore; non chiedono ulteriori review. Codice valutazione assente non attestato
+oggi, nessun seguito oltre19618 o ampliamento automatico. La regola17:22 supera i passaggi per-invio
+del prompt2d58e98; le linee2/3 non cambiano.
 
 ### 06/11/2026 — GPT: autorizzazione 19.618 acquisita, restano i requisiti tecnici della ripresa
 

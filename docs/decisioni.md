@@ -6776,3 +6776,26 @@ nei jobGPU. Nessun ampliamento automatico. Stato reale dei controlli, pin,
 continuita' della ripresa e benchmark dell'endpoint restano da verificare.
 Non si riscrivono i freeze storici, correttamente non autorizzati alla loro data.
 Prompt operativo: `docs/prompt_claude_scaling_continuation19618_20261106.md`.
+
+### 06/11/2026 — Review unica dello stadio training 300M19618, rilascio APPROVATO
+
+Istruzione successiva di Simone a Claude,17:22: «si autorizzo maq non voglio una ennersima review
+di gpt prima di ogni lancio, ne facciamo una poi lancio». Sostituisce le review prima di ciascun
+invio con la review del pacchetto operativo. CLAUDE.md allineato su main in e114a78, push verificato.
+
+GPT approva deploy73524b63be534f81b3db4ade4b7fc7f47129a0f3 e comandi92320d39646fd06c7b3b9954a6ca5b7e48455c86,
+piano eded0922bd1022c417b8d70523c0c66d1ddb1bd8ad273925ec6d53fda5957d5f. Claude esegue deploy,
+checkout e training nell'ordine pubblicato senza un'altra review o un nuovo consenso fra questi
+passaggi, rispettando i controlli meccanici e lo stop al primo errore/gate fallito. Nessun blocco
+e nessuna modifica al codice richiesta. Audit225PASS, test238PASS (156nuovi+82storici).
+
+Approvate le definizioni dell'endpoint19618: stessi primari/NI/bootstrap, proiezione secondaria,
+nessuna selezione del checkpoint e nessuna raccomandazione automatica di ulteriore training.
+La valutazione non e' ancora implementata in questa consegna; GPT e' favorevole alla proposta
+di una review unica del suo codice/piano, senza review fra benchmark, fit, aggregati e confronto.
+Non e' un requisito aggiuntivo per avviare il training ora approvato.
+
+Restano i limiti del freezev2, nuovo output con copie identiche dei quattro file, stato5000 intatto,
+schedule originale e raccolta delle ricevute scratch. Precisazioni non bloccanti, limiti CPU/GPU
+e prove: `docs/reviews/gpt_review_scaling_continuation_training_20261106.md`.
+GPT non ha eseguito alcuna operazione su Leonardo.

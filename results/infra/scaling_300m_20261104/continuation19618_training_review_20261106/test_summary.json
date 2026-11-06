@@ -1,0 +1,23 @@
+{
+  "new_wrapper_unique_passed": 117,
+  "new_launcher_passed": 39,
+  "new_tests_total_passed": 156,
+  "historical_passed": 82,
+  "total_unique_passed": 238,
+  "launcher_seconds": 40.5,
+  "historical_seconds": 35.06,
+  "sandbox_environment_failures_resolved": true,
+  "outside_sandbox_recheck": {
+    "tests": [
+      "tests/cpu/test_scaling_continue.py::test_resume_in_new_directory_equals_uninterrupted_run[2]",
+      "tests/cpu/test_scaling_continue.py::test_ddp_resume_in_new_directory_equals_uninterrupted_run_with_prefetch"
+    ],
+    "passed": 2,
+    "exit_code": 0,
+    "duration_seconds": 129.5,
+    "final_stdout_excerpt": ".. [100%]\n2 passed in 129.50s (0:02:09)",
+    "faulthandler_60s_dump": "Diagnostic only: active frontend/fixed_eval computation during resumed run; test completed successfully."
+  },
+  "gpu_bitwise_equality_measured": false,
+  "remote_operations": false
+}

@@ -1,0 +1,40 @@
+{
+  "reviewed_deploy": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+  "reviewed_tip": "92320d39646fd06c7b3b9954a6ca5b7e48455c86",
+  "verdict": "No blocking code defect identified; two environment-limited CPU cases not independently reproduced",
+  "unique_tests_passed": 115,
+  "new_file_tests_total": 117,
+  "environment_limited_tests": [
+    {
+      "case": "test_resume_in_new_directory_equals_uninterrupted_run[2]",
+      "error": "torch_shm_manager: Operation not permitted",
+      "execution": "same python -c invocation as chain_plan, interrupted by own watchdog after110s"
+    },
+    {
+      "case": "test_ddp_resume_in_new_directory_equals_uninterrupted_run_with_prefetch",
+      "error": "init_process_group(gloo): Cannot resolve127.0.0.1toa(local)address",
+      "execution": "failed before training"
+    }
+  ],
+  "passed_runs": [
+    {
+      "file": "/private/tmp/resume_19618_review_pytest.txt",
+      "passed_before_interruption": 53,
+      "includes": "resume0worker exactCPU"
+    },
+    {
+      "file": "/private/tmp/resume19618_review_nonspawn.txt",
+      "passed": 114,
+      "deselected": 3,
+      "seconds": 32.2,
+      "includes": "pose panel exactCPU and output/optimizer/identity/memory/recipe guards"
+    }
+  ],
+  "nonblocking_precision_notes": [
+    "Adam continuity gate: no per-parameter regression, advancement<=14618, maximum exactly19618; not every conditional parameter necessarily advances14618",
+    "51300trainer-relative seconds leaves1800nominal allocation seconds shared by prechecks/startup/postchecks, not an absolute deadline guarantee",
+    "Prechecks run inside allocated4GPU job and incur allocatedGPU/CPU time; failuredoesnotcostonlyqueuewait"
+  ],
+  "remote_operations": false,
+  "production_edits": false
+}

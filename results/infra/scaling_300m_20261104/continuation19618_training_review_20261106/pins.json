@@ -1,0 +1,58 @@
+{
+  "deploy_commit": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+  "commands_commit": "92320d39646fd06c7b3b9954a6ca5b7e48455c86",
+  "registry_commit": "69f85b4ec5e20bc987c708b08a2505843f26d459",
+  "main_policy_commit": "e114a788aa923bdf749aae7106504ebf42c4cd78",
+  "files": {
+    "scripts/scaling_continue.py": {
+      "sha256": "0628ad6eb83e1f9c0be873925798f8cc9a320c1bcac98a001763f6345c7db863",
+      "bytes": 36645,
+      "matches_reviewed_tip": true
+    },
+    "scripts/slurm/scaling_continue.sbatch": {
+      "sha256": "66cadb957c4bf1c77351b860f2c4baf56c7750cbdee4419d05d998a45b7f7aa0",
+      "bytes": 3994,
+      "matches_reviewed_tip": true
+    },
+    "tests/cpu/test_scaling_continue.py": {
+      "sha256": "d399ce7140ec1549c448bf8ca3e04bb893e122961347bceef4392a5d74aad452",
+      "bytes": 48704,
+      "matches_reviewed_tip": true
+    },
+    "tests/cpu/test_scaling_continue_launcher.py": {
+      "sha256": "7f34206a3440b188b587cd65acf7023b66b4ea85b87cbd69c507551b037f7fb3",
+      "bytes": 8005,
+      "matches_reviewed_tip": true
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/training_plan.json": {
+      "sha256": "eded0922bd1022c417b8d70523c0c66d1ddb1bd8ad273925ec6d53fda5957d5f",
+      "bytes": 20789,
+      "matches_reviewed_tip": true
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/remote_verification.json": {
+      "sha256": "d54fe893fb6307c237e532134eed5c2f6e31958a09f9c7330c7eaa74b76ceb26",
+      "bytes": 15870,
+      "matches_reviewed_tip": true
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/chain_plan.md": {
+      "sha256": "3bc805cc097737e8208f88e58b026420a7c1811a500aee3954bb6d751c09e84c",
+      "bytes": 13807,
+      "matches_reviewed_tip": true
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/endpoint19618_reading.md": {
+      "sha256": "58865c1bff332d52221fc18ac55ce7f7af11f1073dff1a87808d221876d34396",
+      "bytes": 4675,
+      "matches_reviewed_tip": true
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/training_submit_lines.txt": {
+      "sha256": "2f048a8e4ecfdcde9d3b18649e14204b7ead585e93c9d142284ef6f51888253a",
+      "bytes": 2731,
+      "matches_reviewed_tip": true
+    }
+  },
+  "scope": "Local review only; no SSH, deployment, submission, cluster mutation or Claude code edits",
+  "future_live_gates_not_attested": true,
+  "reviewed_files_unchanged_after_tests": true,
+  "later_untracked_evaluation_work_excluded": true,
+  "later_untracked_scope_note": "Claude started untracked endpoint19618 evaluation files while review ran; they are not part of deploy73524b6 or this approval. All nine reviewed files still match reviewed pins."
+}

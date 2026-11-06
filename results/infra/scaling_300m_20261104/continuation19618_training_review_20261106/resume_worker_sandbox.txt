@@ -1,0 +1,303 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-8.4.2, pluggy-1.5.0 -- /Users/simonebenatti/.venvs/wearusfm-tok/bin/python
+rootdir: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec
+configfile: pyproject.toml
+plugins: anyio-4.10.0
+collecting ... collected 1 item
+
+tests/cpu/test_scaling_continue.py::test_resume_in_new_directory_equals_uninterrupted_run[2] [18:55:10] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[18:55:10] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[18:55:10] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 602, in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 540, in _share_filename_cpu_
+    return super()._share_filename_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x105453f18 in libc10.dylib)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x105451584 in libc10.dylib)
+frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x1052cfb14 in libshm.dylib)
+frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x1052d0114 in libshm.dylib)
+frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x1075434d4 in libtorch_python.dylib)
+frame #5: cfunction_vectorcall_NOARGS + 88 (0x10438f7bc in python3.11)
+frame #6: _PyEval_EvalFrameDefault + 209024 (0x10447cea0 in python3.11)
+frame #7: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #8: _PyEval_EvalFrameDefault + 207824 (0x10447c9f0 in python3.11)
+frame #9: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #10: PyObject_CallOneArg + 108 (0x10432ab7c in python3.11)
+frame #11: save + 8840 (0x104cf463c in _pickle.cpython-311-darwin.so)
+frame #12: save + 1232 (0x104cf2884 in _pickle.cpython-311-darwin.so)
+frame #13: save_reduce + 448 (0x104cf6a90 in _pickle.cpython-311-darwin.so)
+frame #14: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #15: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #16: save_reduce + 448 (0x104cf6a90 in _pickle.cpython-311-darwin.so)
+frame #17: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #18: save + 5244 (0x104cf3830 in _pickle.cpython-311-darwin.so)
+frame #19: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #20: save_reduce + 828 (0x104cf6c0c in _pickle.cpython-311-darwin.so)
+frame #21: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #22: save + 2560 (0x104cf2db4 in _pickle.cpython-311-darwin.so)
+frame #23: save + 6108 (0x104cf3b90 in _pickle.cpython-311-darwin.so)
+frame #24: save_reduce + 828 (0x104cf6c0c in _pickle.cpython-311-darwin.so)
+frame #25: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #26: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #27: dump + 204 (0x104cf2044 in _pickle.cpython-311-darwin.so)
+frame #28: _pickle_Pickler_dump + 104 (0x104cf1c7c in _pickle.cpython-311-darwin.so)
+frame #29: method_vectorcall_O + 104 (0x10433c540 in python3.11)
+frame #30: _PyEval_EvalFrameDefault + 190916 (0x1044787e4 in python3.11)
+frame #31: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #32: _PyEval_EvalFrameDefault + 207824 (0x10447c9f0 in python3.11)
+frame #33: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #34: method_vectorcall + 340 (0x104330854 in python3.11)
+frame #35: thread_run + 236 (0x104569780 in python3.11)
+frame #36: pythread_wrapper + 48 (0x1044f3f6c in python3.11)
+frame #37: _pthread_start + 136 (0x1884fbc58 in libsystem_pthread.dylib)
+frame #38: thread_start + 8 (0x1884f6c1c in libsystem_pthread.dylib)
+
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 602, in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 540, in _share_filename_cpu_
+    return super()._share_filename_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x101c8ff18 in libc10.dylib)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x101c8d584 in libc10.dylib)
+frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x101b0bb14 in libshm.dylib)
+frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x101b0c114 in libshm.dylib)
+frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x103d7f4d4 in libtorch_python.dylib)
+frame #5: cfunction_vectorcall_NOARGS + 88 (0x1001db7bc in python3.11)
+frame #6: _PyEval_EvalFrameDefault + 209024 (0x1002c8ea0 in python3.11)
+frame #7: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #8: _PyEval_EvalFrameDefault + 207824 (0x1002c89f0 in python3.11)
+frame #9: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #10: PyObject_CallOneArg + 108 (0x100176b7c in python3.11)
+frame #11: save + 8840 (0x100acc63c in _pickle.cpython-311-darwin.so)
+frame #12: save + 1232 (0x100aca884 in _pickle.cpython-311-darwin.so)
+frame #13: save_reduce + 448 (0x100acea90 in _pickle.cpython-311-darwin.so)
+frame #14: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #15: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #16: save_reduce + 448 (0x100acea90 in _pickle.cpython-311-darwin.so)
+frame #17: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #18: save + 5244 (0x100acb830 in _pickle.cpython-311-darwin.so)
+frame #19: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #20: save_reduce + 828 (0x100acec0c in _pickle.cpython-311-darwin.so)
+frame #21: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #22: save + 2560 (0x100acadb4 in _pickle.cpython-311-darwin.so)
+frame #23: save + 6108 (0x100acbb90 in _pickle.cpython-311-darwin.so)
+frame #24: save_reduce + 828 (0x100acec0c in _pickle.cpython-311-darwin.so)
+frame #25: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #26: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #27: dump + 204 (0x100aca044 in _pickle.cpython-311-darwin.so)
+frame #28: _pickle_Pickler_dump + 104 (0x100ac9c7c in _pickle.cpython-311-darwin.so)
+frame #29: method_vectorcall_O + 104 (0x100188540 in python3.11)
+frame #30: _PyEval_EvalFrameDefault + 190916 (0x1002c47e4 in python3.11)
+frame #31: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #32: _PyEval_EvalFrameDefault + 207824 (0x1002c89f0 in python3.11)
+frame #33: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #34: method_vectorcall + 340 (0x10017c854 in python3.11)
+frame #35: thread_run + 236 (0x1003b5780 in python3.11)
+frame #36: pythread_wrapper + 48 (0x10033ff6c in python3.11)
+frame #37: _pthread_start + 136 (0x1884fbc58 in libsystem_pthread.dylib)
+frame #38: thread_start + 8 (0x1884f6c1c in libsystem_pthread.dylib)
+
+Traceback (most recent call last):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 602, in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 540, in _share_filename_cpu_
+    return super()._share_filename_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x101c8ff18 in libc10.dylib)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x101c8d584 in libc10.dylib)
+frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x101b0bb14 in libshm.dylib)
+frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x101b0c114 in libshm.dylib)
+frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x103d7f4d4 in libtorch_python.dylib)
+frame #5: cfunction_vectorcall_NOARGS + 88 (0x1001db7bc in python3.11)
+frame #6: _PyEval_EvalFrameDefault + 209024 (0x1002c8ea0 in python3.11)
+frame #7: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #8: _PyEval_EvalFrameDefault + 207824 (0x1002c89f0 in python3.11)
+frame #9: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #10: PyObject_CallOneArg + 108 (0x100176b7c in python3.11)
+frame #11: save + 8840 (0x100acc63c in _pickle.cpython-311-darwin.so)
+frame #12: save + 1232 (0x100aca884 in _pickle.cpython-311-darwin.so)
+frame #13: save_reduce + 448 (0x100acea90 in _pickle.cpython-311-darwin.so)
+frame #14: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #15: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #16: save_reduce + 448 (0x100acea90 in _pickle.cpython-311-darwin.so)
+frame #17: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #18: save + 5244 (0x100acb830 in _pickle.cpython-311-darwin.so)
+frame #19: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #20: save_reduce + 828 (0x100acec0c in _pickle.cpython-311-darwin.so)
+frame #21: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #22: save + 2560 (0x100acadb4 in _pickle.cpython-311-darwin.so)
+frame #23: save + 6108 (0x100acbb90 in _pickle.cpython-311-darwin.so)
+frame #24: save_reduce + 828 (0x100acec0c in _pickle.cpython-311-darwin.so)
+frame #25: save + 1820 (0x100acaad0 in _pickle.cpython-311-darwin.so)
+frame #26: save + 1264 (0x100aca8a4 in _pickle.cpython-311-darwin.so)
+frame #27: dump + 204 (0x100aca044 in _pickle.cpython-311-darwin.so)
+frame #28: _pickle_Pickler_dump + 104 (0x100ac9c7c in _pickle.cpython-311-darwin.so)
+frame #29: method_vectorcall_O + 104 (0x100188540 in python3.11)
+frame #30: _PyEval_EvalFrameDefault + 190916 (0x1002c47e4 in python3.11)
+frame #31: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #32: _PyEval_EvalFrameDefault + 207824 (0x1002c89f0 in python3.11)
+frame #33: _PyFunction_Vectorcall + 472 (0x10017711c in python3.11)
+frame #34: method_vectorcall + 340 (0x10017c854 in python3.11)
+frame #35: thread_run + 236 (0x1003b5780 in python3.11)
+frame #36: pythread_wrapper + 48 (0x10033ff6c in python3.11)
+frame #37: _pthread_start + 136 (0x1884fbc58 in libsystem_pthread.dylib)
+frame #38: thread_start + 8 (0x1884f6c1c in libsystem_pthread.dylib)
+
+Traceback (most recent call last):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 602, in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py", line 540, in _share_filename_cpu_
+    return super()._share_filename_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x105453f18 in libc10.dylib)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x105451584 in libc10.dylib)
+frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x1052cfb14 in libshm.dylib)
+frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x1052d0114 in libshm.dylib)
+frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x1075434d4 in libtorch_python.dylib)
+frame #5: cfunction_vectorcall_NOARGS + 88 (0x10438f7bc in python3.11)
+frame #6: _PyEval_EvalFrameDefault + 209024 (0x10447cea0 in python3.11)
+frame #7: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #8: _PyEval_EvalFrameDefault + 207824 (0x10447c9f0 in python3.11)
+frame #9: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #10: PyObject_CallOneArg + 108 (0x10432ab7c in python3.11)
+frame #11: save + 8840 (0x104cf463c in _pickle.cpython-311-darwin.so)
+frame #12: save + 1232 (0x104cf2884 in _pickle.cpython-311-darwin.so)
+frame #13: save_reduce + 448 (0x104cf6a90 in _pickle.cpython-311-darwin.so)
+frame #14: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #15: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #16: save_reduce + 448 (0x104cf6a90 in _pickle.cpython-311-darwin.so)
+frame #17: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #18: save + 5244 (0x104cf3830 in _pickle.cpython-311-darwin.so)
+frame #19: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #20: save_reduce + 828 (0x104cf6c0c in _pickle.cpython-311-darwin.so)
+frame #21: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #22: save + 2560 (0x104cf2db4 in _pickle.cpython-311-darwin.so)
+frame #23: save + 6108 (0x104cf3b90 in _pickle.cpython-311-darwin.so)
+frame #24: save_reduce + 828 (0x104cf6c0c in _pickle.cpython-311-darwin.so)
+frame #25: save + 1820 (0x104cf2ad0 in _pickle.cpython-311-darwin.so)
+frame #26: save + 1264 (0x104cf28a4 in _pickle.cpython-311-darwin.so)
+frame #27: dump + 204 (0x104cf2044 in _pickle.cpython-311-darwin.so)
+frame #28: _pickle_Pickler_dump + 104 (0x104cf1c7c in _pickle.cpython-311-darwin.so)
+frame #29: method_vectorcall_O + 104 (0x10433c540 in python3.11)
+frame #30: _PyEval_EvalFrameDefault + 190916 (0x1044787e4 in python3.11)
+frame #31: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #32: _PyEval_EvalFrameDefault + 207824 (0x10447c9f0 in python3.11)
+frame #33: _PyFunction_Vectorcall + 472 (0x10432b11c in python3.11)
+frame #34: method_vectorcall + 340 (0x104330854 in python3.11)
+frame #35: thread_run + 236 (0x104569780 in python3.11)
+frame #36: pythread_wrapper + 48 (0x1044f3f6c in python3.11)
+frame #37: _pthread_start + 136 (0x1884fbc58 in libsystem_pthread.dylib)
+frame #38: thread_start + 8 (0x1884f6c1c in libsystem_pthread.dylib)
+
+Timeout (0:00:40)!
+Thread 0x000000017e807000 (most recent call first):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 327 in wait
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 231 in _feed
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 982 in run
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 1045 in _bootstrap_inner
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 1002 in _bootstrap
+
+Thread 0x000000016f25b000 (most recent call first):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 327 in wait
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 231 in _feed
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 982 in run
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 1045 in _bootstrap_inner
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/threading.py", line 1002 in _bootstrap
+
+Thread 0x00000001f4f461c0 (most recent call first):
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/selectors.py", line 415 in select
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/connection.py", line 948 in wait
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/connection.py", line 440 in _poll
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/connection.py", line 257 in poll
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 113 in get
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1293 in _try_get_data
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1466 in _get_data
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1507 in _next_data
+  File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 725 in __next__
+  File "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/src/wearusfm/training/run.py", line 1500 in fetch
+  File "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/src/wearusfm/training/run.py", line 1531 in train
+  File "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/tests/cpu/test_scaling_continue.py", line 331 in run
+  File "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/tests/cpu/test_scaling_continue.py", line 296 in _check_continuation
+  File "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/tests/cpu/test_scaling_continue.py", line 333 in test_resume_in_new_directory_equals_uninterrupted_run
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/python.py", line 157 in pytest_pyfunc_call
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_callers.py", line 103 in _multicall
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py", line 513 in __call__
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/python.py", line 1671 in runtest
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 178 in pytest_runtest_call
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_callers.py", line 103 in _multicall
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py", line 513 in __call__
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 246 in <lambda>
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 344 in from_call
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 245 in call_and_report
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 136 in runtestprotocol
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/runner.py", line 117 in pytest_runtest_protocol
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_callers.py", line 103 in _multicall
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py", line 513 in __call__
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/main.py", line 367 in pytest_runtestloop
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_callers.py", line 103 in _multicall
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py", line 513 in __call__
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/main.py", line 343 in _main
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/main.py", line 289 in wrap_session
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/main.py", line 336 in pytest_cmdline_main
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_callers.py", line 103 in _multicall
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py", line 513 in __call__
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/config/__init__.py", line 175 in main
+  File "<string>", line 1 in <module>
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/Users/simonebenatti/anaconda3/lib/python3.11/selectors.py:415: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)
+====================== no tests ran in 110.07s (0:01:50) =======================
