@@ -6455,6 +6455,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   coda in `~/wearusfm_local/logs/watch_serial_empty_20261106.txt`.
 - `$WORK` alle 01:44: 30,85 GiB liberi contro 10,724 richiesti.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: i benchmark aspettano la fine dei fit dello scaling (decisione di Simone)
+- Decisione di Simone, 06/11 verso le 08:17, alla mia domanda «I benchmark aspettano la fine dei fit dello scaling o entrano fra un
+  fit e l'altro?»: **«Aspettano lo scaling»**. Chiude la sospensione della voce `db76a93` e coincide con la sua risposta al
+  coordinamento «Sì, prima scaling».
+- Regola operativa che ne ricavo, mettendo insieme le sue risposte (lettura mia): nessun benchmark finche' nella coda seriale
+  dell'utente ci sono fit dello scaling; alla fine del fit 14 (63635524) invio i benchmark usando fino a 10 posti («Sì, fino a 10»,
+  voce `2e30fb8`): prima dieci, poi i sei restanti man mano che i posti si liberano. Per le fasi fit e aggregate torna il tetto di 8
+  del piano di lancio, finche' Simone non dice altro.
+- Stato alle 08:17: checkout benchmark verificato (voce `6fb0c59`); nessun ID `LONG-BENCH` nel ledger; coda seriale con due job dello
+  scaling, fit 13 in corsa dalle 07:21 circa e fit 14 in attesa. I fit 07-12 sono durati in tutto 5 h 38 min, meno della meta' dei
+  loro limiti: la fine del fit 14 ora la stimo fra le 10:15 e le 10:45. Sorveglianza di sola lettura sulla coda seriale vuota in
+  `~/wearusfm_local/logs/watch_serial_empty_20261106.txt`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8994,3 +9007,7 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Fra le 00:51 e le 01:44 lo spazio libero del progetto e' passato da 33,37 a 30,85 GiB. Il checkout della linea 2 pesa 0,1 GiB; il
   resto non l'ho attribuito (quota condivisa da 11 utenti, C1 di EPN15 e fit dello scaling in corsa). Il requisito della linea 2 resta
   soddisfatto; rileggo prima di ogni invio.
+
+### 2026-11-06 | Claude | Linea 2: caso non coperto dalla decisione sulla coda seriale
+- Se la catena dello scaling si ferma su un fit non riuscito, i fit successivi restano in coda senza poter partire e la coda non si
+  svuota. In quel caso non invio i benchmark e chiedo al coordinamento come procedere.
