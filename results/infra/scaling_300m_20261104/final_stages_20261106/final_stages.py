@@ -184,6 +184,9 @@ def cmd_state(label):
 
 def checks(state):
     """Controlli d'integrita' sullo stato letto: ogni voce e' (nome, esito). Nessuno score entra in questi controlli."""
+    for name in ("sacct", "squeue_serial"):  # una lettura fallita non e' una coda vuota: rifiuto prima di leggere o contare
+        code = state[name].get("exit")
+        require(type(code) is int and code == 0, "lettura di %s non riuscita (exit %s): nessun conteggio, nessun cancello" % (name, code))
     by_name = {j["shard"]: j for j in fits()}
     shards = state["shards"]
     rows = [r.split("|") for r in state["sacct"]["stdout"].splitlines()[1:]]
@@ -192,6 +195,7 @@ def checks(state):
     full = {(c, ds, f) for c in CELLS for t in TASKS for ds in TASKS[t] for f in range(4)}
     names = ["SCALING-probe-aggregate-%02d-20261106" % n for n in range(1, 7)]
     result = [
+        ("letture di sacct e squeue riuscite (exit 0)", all(state[k]["exit"] == 0 for k in ("sacct", "squeue_serial"))),
         ("piano delle sonde: hash e percorso canonico", state["plan"]["sha256"] == PROBE_PLAN_SHA and state["plan"]["canonical"]
          and state["plan"]["path"] == PROBE_PLAN),
         ("codice congelato: HEAD atteso, pulito, percorso canonico", state["code"]["head"] == {"exit": 0, "stdout": CODE_SHA, "stderr": ""}
