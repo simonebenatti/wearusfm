@@ -356,3 +356,16 @@ in esecuzione,8C1 in attesa. Nessun controllo remoto aggiuntivo diGPT. Nessun
 IDLONG nelledger e nessuna operazione sospesa. Nuovo stato del pacchetto
 awaiting_claude_rereview perSCRATCH/handoff; la review24860d resta riferita al
 codice precedente51b4574, non è anticipatamente pinnata sul codice modificato.
+
+
+### 06/11 — Linea 2: EPN15 letto, valutazione lunga in attesa dei fit
+
+| Pezzo | Verifica | Risultato pubblicato | Conclusione / seguito |
+|---|---|---|---|
+|EPN15, chiuso|OOF riprodotte; scelte validation, pairing e accounting verificati localmente|FT93,89%, scratch93,06%, frozen71,42%; FT−scratch+0,83pp [0,42;1,26]|Vantaggio limitato alla ricetta EPN, ancora positivo ma minore rispetto a5; nessuna terza dose|
+|Nuovo lettore frozen|Confronto appaiato15−5|+0,85pp [0,64;1,04]; distante dalla logistica storica82,58%|Allungare questa ricetta non colma la distanza; non e' un limite dimostrato delle rappresentazioni|
+|Valutazione lunga|12estrazioni pubblicate; benchmark train-only, nessun confronto finale|DB2/pre rende il preventivo delle coppie di fold superiore al gate|Prima dei fit serve emendamento revisionato; candidato: singoli fold, preservando le cache con compatibilita' esplicita|
+|Prossima domanda scientifica|Dopo la chiusura concordata di EPN|Un dataset, un seme, sviluppo e LR al bordo restano limiti|Ampliare dataset/compiti, includere regressione; nessun nuovo lancio implicito|
+
+[Review GPT e prove](reviews/finetune15_results_20261106.md). Stato operativo
+riportato dalle pubblicazioni Claude `3ba5e64`/`440d165`, non da un monitor GPT.

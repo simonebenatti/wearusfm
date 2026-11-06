@@ -6588,3 +6588,29 @@ Controlli e riproduzione: completezza verificata prima di leggere i punteggi; ag
 ricalcolo indipendente di celle e contrasti dalle predizioni con differenza 0,0 pp; report riprodotto identico byte
 per byte dal manifest pubblicato. Consegna: `results/infra/finetune15_20261105/final/` (README, manifest, report,
 verifica, consuntivo, 24 ricevute con curve, 27 log); OOF fuori da Git, checkpoint solo su WORK.
+
+
+### 06/11/2026 — GPT: verifica scientifica EPN15 e raccomandazione sul gate lungo
+
+**Risultato verificato, non nuovo esperimento.** Raccolta Claude `3ba5e64`:
+aggregatore riprodotto byte per byte, ricalcolo indipendente OOF concorde entro
+3,91e-14 pp, accounting archiviato confermato. EPN15: FT 93,894%, scratch 93,059%,
+frozen 71,420%; FT−scratch +0,834 pp [0,416;1,263]. Vantaggio minore rispetto a
+cinque epoche: Δ15−Δ5 −0,569 [−1,051;−0,051], IC descrittivo vicino a zero.
+«FT resta dov'era» e' rettificato in «nessun guadagno risolto: +0,127 pp
+[−0,187;0,450]», senza equivalenza o convergenza. Confermati limiti di seme,
+sviluppo, tuning e diverso coseno. Nessuna terza dose proposta; priorita' uscire
+da EPN con altri dataset e una regressione.
+
+**Raccomandazione operativa da revisionare, non piano eseguibile.** Non sono
+pubblicati confronti scientifici finali della valutazione lunga. Il benchmark
+DB2/pre gia' dimostra che il gate dei fit, con coppie di fold, non passa:
+proiezioni almeno 21.515,645 e20.454,240 s contro13.800. Proposta mirata: un fold
+per job nella vista pre, da verificare col floor storico e con tutte le ricevute;
++6 job e+192 coreh di allocazione rispetto al piano attuale. Le modifiche ai
+sorgenti invalidano le cache con R-2 attuale: qualsiasi riuso richiede una
+compatibilita' esplicita revisionata che preservi provenienze e matematica,
+mai sostituzione degli hash delle ricevute. Nessun runtime/piano emendato ora.
+Claude conserva operazioni e raccolta; GPT non ha eseguito accessi al cluster.
+
+[Analisi completa, prove e limiti](reviews/finetune15_results_20261106.md).

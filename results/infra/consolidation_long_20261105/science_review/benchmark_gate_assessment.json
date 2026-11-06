@@ -1,0 +1,179 @@
+{
+  "amendment_options_not_authorized_or_implemented": {
+    "all_db2_singlefold": {
+      "checkout_count": 4,
+      "extra_allocation_core_hours_at4h": 512,
+      "extra_fit_jobs": 16,
+      "extra_projection_overhead_core_hours": 21.333333333333332,
+      "new_compute_job_count": 98,
+      "new_total_allocation_core_hours": 2223.6666666666665,
+      "requires": "existing per-dataset policy changed; full pool/post benchmark checking"
+    },
+    "benchmark_30to60min": {
+      "all15_max_extra_core_hours": 60,
+      "extra_allocation_core_hours_per_job": 4,
+      "requires": "source and resource-plan amendment; existing12 extraction compatibility invalid under current strict policy"
+    },
+    "cache_preserving_policy_change": "Possible only by explicitly replacing R-2(i) after review/approval: pin original extraction+benchmark source/recipe and immutable receipts, audit frozen extraction and fit math unchanged, separate operational from scientific identity. Never rewrite or relabel old hashes. Not possible as launch_plan-only edit, and explicitly forbidden by current rule.",
+    "only_pre_singlefold": {
+      "checkout_count": 4,
+      "extra_allocation_core_hours_at4h": 192,
+      "extra_fit_jobs": 6,
+      "extra_projection_overhead_core_hours": 8,
+      "new_compute_job_count": 88,
+      "new_total_allocation_core_hours": 1903.6666666666665,
+      "requires": "new per-view shard policy/code, complete benchmark check; same40 logical cells and frozen scientific recipe"
+    },
+    "strict_source_repeat": {
+      "additional_extraction_cap_gpu_hours": 9,
+      "observed_prior_extraction_and_checkout_core_hours": 27.001667,
+      "observed_prior_extraction_gpu_hours": 3.373611,
+      "requires": "new reviewed campaign, IDs, outputs and full budget/user decision under existing R-2(i)"
+    }
+  },
+  "benchmark_allocation_seconds": 1800,
+  "conclusion": "All six DB2/pre paired-fold fit shards (two per dose) necessarily fail the frozen gate. Because all48 fit shards must pass globally, no classification fit can be admitted unchanged. This is a resource-policy issue, not evidence of worse representations.",
+  "fit_allocation_seconds": 14400,
+  "frozen_gate_seconds": 13800,
+  "limitation": "SLURM elapsed 1422/595s are operator-reported, not from a local sacct benchmark export; internal receipt timing verified below. Only DB2/pre and DB2/post receipts available. Full resource gate still requires all15 receipts.",
+  "proof": "actual projection = sum(max(measured_work*row_ratio*class_ratio, historical_fit_seconds*measured_work/pool_work)*3*1.5) + 600 + 2*(load+scale); values below omit historical max floor and therefore are lower bounds",
+  "scope": "local read only; no cluster/status calls, job actions, worktree edits or score analysis",
+  "sources": {
+    "scripts/consolidation_long_classification_runtime.py": "729c35f9a4441c2c04ed067755ba9ec8d0aad0895342fb36f9439d34807eb22a",
+    "scripts/consolidation_long_common.py": "547586041275cf01a9122a4de8b02d8557bd5114862aca3907742f2162083f1a",
+    "scripts/slurm/consolidation_long.sbatch": "66a762e9c14edd2b7246335e58ae1a9ea97c74c427209905c34ea8172d13c787"
+  },
+  "views": {
+    "post": {
+      "benchmark_admissible_slowdown_factor": 3.0252100840336134,
+      "benchmark_internal_elapsed_seconds": 569.1712963907048,
+      "benchmark_unused_seconds": 1205,
+      "candidate_sum_seconds": 568.339788781479,
+      "candidate_times_iterations": [
+        {
+          "C": 0.001,
+          "elapsed_s": 13.363822783343494,
+          "n_iter": 70
+        },
+        {
+          "C": 0.01,
+          "elapsed_s": 23.391285724006593,
+          "n_iter": 121
+        },
+        {
+          "C": 0.1,
+          "elapsed_s": 34.769138931296766,
+          "n_iter": 176
+        },
+        {
+          "C": 1.0,
+          "elapsed_s": 82.9811071511358,
+          "n_iter": 418
+        },
+        {
+          "C": 10.0,
+          "elapsed_s": 173.17620693612844,
+          "n_iter": 802
+        },
+        {
+          "C": 100.0,
+          "elapsed_s": 240.6582272555679,
+          "n_iter": 1094
+        }
+      ],
+      "classes": 49,
+      "code_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+      "hypothetical_single_fold_lower_bounds_seconds": [
+        4241.441764101386,
+        4551.066202885771,
+        4168.066837375607,
+        4239.222764301211
+      ],
+      "measured_work_seconds": 808.9980160370469,
+      "numeric_compatible": true,
+      "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "pair_shard_projection_lower_bounds_seconds": {
+        "0,1": 8191.5572750524825,
+        "2,3": 7806.338909742143
+      },
+      "pair_shards_proven_fail": [],
+      "projected_ram_gib": 2.6597671508789062,
+      "projection_overhead_seconds": 600.950691934675,
+      "receipt": "/Users/simonebenatti/wearusfm_local/line2/bench_peek/ninapro_db2_post_report.json",
+      "receipt_sha256": "a90dc39b921ce30cd46be53c79ecd5f0f6815a69ed0003e6971e25416b036628",
+      "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+      "single_fold_rule_sufficient_if_pool_work_seconds_at_least": 242.2498489561958,
+      "slowest_refit_proxy_seconds": 240.6582272555679,
+      "slurm_elapsed_seconds_operator_reported": 595,
+      "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+      "train_rows": 24609
+    },
+    "pre": {
+      "benchmark_admissible_slowdown_factor": 1.2658227848101267,
+      "benchmark_internal_elapsed_seconds": 1401.0341769279912,
+      "benchmark_unused_seconds": 378,
+      "candidate_sum_seconds": 1399.3389984872192,
+      "candidate_times_iterations": [
+        {
+          "C": 0.001,
+          "elapsed_s": 19.857714870013297,
+          "n_iter": 79
+        },
+        {
+          "C": 0.01,
+          "elapsed_s": 30.348137186840177,
+          "n_iter": 125
+        },
+        {
+          "C": 0.1,
+          "elapsed_s": 43.17366047203541,
+          "n_iter": 213
+        },
+        {
+          "C": 1.0,
+          "elapsed_s": 132.1429747575894,
+          "n_iter": 607
+        },
+        {
+          "C": 10.0,
+          "elapsed_s": 344.0967296976596,
+          "n_iter": 1519
+        },
+        {
+          "C": 100.0,
+          "elapsed_s": 829.7197815030813,
+          "n_iter": 3113
+        }
+      ],
+      "classes": 49,
+      "code_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+      "hypothetical_single_fold_lower_bounds_seconds": [
+        10631.761877438985,
+        11484.880253615936,
+        10429.589534111816,
+        10625.647794475462
+      ],
+      "measured_work_seconds": 2229.0587799903005,
+      "numeric_compatible": true,
+      "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "pair_shard_projection_lower_bounds_seconds": {
+        "0,1": 21515.644763572287,
+        "2,3": 20454.239961104646
+      },
+      "pair_shards_proven_fail": [
+        "0,1",
+        "2,3"
+      ],
+      "projected_ram_gib": 2.659412384033203,
+      "projection_overhead_seconds": 600.9973674826324,
+      "receipt": "/Users/simonebenatti/wearusfm_local/line2/bench_peek/ninapro_db2_pre_report.json",
+      "receipt_sha256": "31f0c9e8e87701045fe2001bb02a20cccb2591ee11c7faa7b644ee69e61f545b",
+      "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+      "single_fold_rule_sufficient_if_pool_work_seconds_at_least": 667.481318399878,
+      "slowest_refit_proxy_seconds": 829.7197815030813,
+      "slurm_elapsed_seconds_operator_reported": 1422,
+      "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+      "train_rows": 24609
+    }
+  }
+}

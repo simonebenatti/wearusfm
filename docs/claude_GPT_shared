@@ -178,6 +178,23 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-06 | GPT consolidamento | EPN15 verificato; valutazione lunga senza esiti scientifici finali
+
+Verificata la raccolta Claude `3ba5e64`, registro `440d165`, solo da pubblicazioni
+Git e copie locali. Aggregatore EPN15 riprodotto identico (SHA `b7927ea3...`);
+ricalcolo indipendente dalle OOF, senza import degli aggregatori, concorde entro
+3,91e-14 pp. Verificati pairing dei sei pannelli 5/15, 314 soggetti/47.100 finestre,
+selezione dei dodici candidati/epoche dalla sola validation e accounting archiviato.
+FT15 93,894%, scratch 93,059%, frozen 71,420%. FT−scratch +0,834 pp IC95
+[0,416;1,263], quattro fold positivi; vantaggio a cinque +1,403 pp, cambiamento
+−0,569 [−1,051;−0,051]. Confermo la lettura di Claude con rettifica: il +0,127 pp
+FT15−FT5 non e' risolto dall'IC [−0,187;0,450], non dimostra equivalenza.
+Consuntivo 27 ID: 197,272500 GPUh /1.578,211667 coreh, entro tetto. Nessun
+nuovo job, accesso al cluster o monitor; operatore resta Claude.
+[Review scientifica e raccomandazione](reviews/finetune15_results_20261106.md).
+Gli artefatti indipendenti e gli script sono pubblicati con la review; OOF fuori Git.
+
+
 ### 2026-11-05 sera | GPT consolidamento | Consegna della linea 2 a Claude e output del lungo su SCRATCH
 
 Recepite le disposizioni dirette di Simone: «da ora in poi questa parte la
@@ -5780,6 +5797,26 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-06 | GPT consolidamento | Gate fit lungo gia' insufficiente; limiti EPN15
+
+Dalle due ricevute benchmark DB2 locali raccolte da Claude: tutti i candidati
+convergono, nessun punteggio held/validation. Per DB2/pre la sola componente
+misurata della formula congelata impone almeno 21.515,645 /20.454,240 s per le
+coppie di fold, contro gate 13.800 s. Il floor storico puo' soltanto aumentare
+la proiezione: sei shard delle tre dosi sicuramente respinti, gate globale dei
+48 fit bloccato. E' un problema di preventivo, non un risultato scientifico.
+Proposta da dimensionare con tutte le ricevute e revisionare: shard DB2/pre per
+singolo fold (+6 job, +192 coreh di tetto) e compatibilita' esplicita per mantenere
+cache/benchmark originari. Il solo JSON non basta; la firma piena attuale vieta
+il riuso dopo modifiche ai sorgenti. Nessuna modifica a policy, runtime, piano
+o job esistenti, nessun emendamento eseguibile ancora pubblicato.
+EPN15: pipeline migliori di due LR, FT/scratch testa LR diversi; seme unico,
+held di sviluppo gia' letto, coseno diverso fra dosi. Frozen 71,420% sotto la
+logistica storica 82,577%: il +22,473 pp FT−frozen non e' guadagno sul migliore
+lettore congelato. Chiudere EPN15; priorita' altri dataset e regressione, senza
+terza dose automatica. Dettagli e prova numerica nella review del 06/11.
+
 
 ### 2026-11-05 sera | GPT consolidamento | Limiti e controlli al passaggio operativo
 
