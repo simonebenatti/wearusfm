@@ -6686,6 +6686,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `validation_or_held_scored` falso, sei fit convergenti per criterio senza avvisi, RSS di picco 0,89 GiB, `numeric_sha256`
   `1ac8481e...` uguale nei due e compatibile con lo storico secondo la regola B.
 - Restano da inviare uci_emg pre, post e pool e posa. Il commit documentale con i nuovi ID lo faccio quando i sedici sono inviati.
+### 2026-11-06 | Claude | Decisione di Simone su N-2 della review T100-LQ: un rilancio dopo un arresto tecnico ripassa da Claude prima del deploy
+- Simone, 06/11 mattina, alla nota di Claude «N-2: dire se un rilancio dopo un arresto tecnico deve ripassare da me prima del deploy»:
+  «ripassa da te».
+- Lettura di Claude, da correggere se sbagliata: vale dove l'operatore e' GPT, cioe' oggi la linea 3 (log-quadratico e contrastiva). Dopo
+  un arresto tecnico GPT pubblica piano, release e pin del rilancio e Claude li rivede prima di checkout e invio. Non tocca i job gia'
+  inviati: il rilancio del 05/11 resta approvato a posteriori (review 49f9438). Claude non modifica `CLAUDE.md`: la regola la porta li'
+  l'integratore se Simone lo chiede.
+- Nella stessa risposta, sui commit di GPT del benchmark d'inferenza e dell'estrazione di posa a 5.000: «controllali, tanto qua c'e tempo
+  da quanto capisco». Review in corso, voce separata. Nessun job.
 
 ## 2) Problemi trovati
 
@@ -9291,3 +9300,7 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   il controllo: 0 problemi su 24 cartelle.
 - Le predizioni OOF copiate per l'analisi stanno in `/private/tmp` (temporanee) e in `~/wearusfm_local/line2/ft15_final_20261105/`;
   gli originali restano su WORK.
+
+### 2026-11-06 | Claude | Review T100-LQ rilanciato: N-2 chiusa dalla decisione di Simone («ripassa da te»); resta N-3 come limite noto
+- N-2 chiusa: da ora un rilancio dopo un arresto tecnico passa da una review di Claude prima del deploy (voce della sezione 1).
+- Resta N-3: pulizia forzata dei processi mai esercitata sul cluster.
