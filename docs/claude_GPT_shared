@@ -6642,6 +6642,51 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Specchietto aggiornato (tabella dei job e righe 1-4). Nessun job lanciato, nessuna scrittura su Leonardo, nessun messaggio alle
   sottochat.
 
+### 2026-11-06 | Claude | Linea 2, EPN15: 24 fit conclusi, raccolta finale e aggregazione pubblicate (3ba5e64)
+- Stato: gli otto C1 finetune e scratch sono `COMPLETED 0:0` fra le 10:16:07 e le 10:33:31 (38.285-38.552 secondi). In tutto 27 job
+  su 27 `COMPLETED 0:0`, riavvii 0, nessun rilancio, nessuna cancellazione.
+- Controlli prima di leggere i punteggi (sul cluster alle 10:40 e sulle copie locali): 24 report completi con protocollo, codice
+  `1359b924`, piano, sorgenti, ricetta, input e teacher uguali ai pin; C0 senza held; 12 C1 su 12 fissano il report del proprio C0
+  con l'hash riletto sul cluster; 24 hash dei checkpoint candidati uguali a quelli dei report, senza caricare pesi; 24 candidati a
+  dose completa (59.355 aggiornamenti nei fold 0-1, 59.625 nei fold 2-3, 15 epoche, arresto `fixed_budget`); held di 79, 79, 78 e 78
+  soggetti, disgiunti, 314 in tutto; 24 log di 15 righe senza errori.
+- Raccolta con la procedura del prontuario: 84 file senza checkpoint (25.243.223 byte) e gli 84 della chiusura a 5 epoche
+  (25.068.939 byte) copiati in `/private/tmp/wearusfm-ft15-claude-final-20261105/`, con una copia in
+  `~/wearusfm_local/line2/ft15_final_20261105/`; piano eseguito estratto da `1359b924` (sha256 `8a07e975...`); manifest costruito con
+  lo snippet del prontuario copiato alla lettera (sha256 dello snippet `cbfd3c9c...`): 84 file e 24 checkpoint (2.726.239.584 byte)
+  con hash calcolati sul cluster alle 09:41 UTC; manifest sha256 `6e71383f...`.
+- Aggregazione: `scripts/consolidation_ft15_report.py` invariato da `1359b924`, uscita 0, `complete` e `scientifically_complete`
+  veri, 84 file e 24 hash di checkpoint verificati, nessuna cella fallita, nessun checkpoint caricato; report sha256 `b7927ea3...`,
+  riprodotto identico byte per byte dal manifest pubblicato. Test dell'aggregatore: 32 superati.
+- Risultati (held di sviluppo, 314 soggetti, 47.100 finestre, bootstrap appaiato per soggetto, 2.000 repliche, seed 20261102):
+  frozen 71,420 % [70,042; 72,873], finetune 93,894 % [93,051; 94,737], scratch 93,059 % [92,149; 93,947]. Primari: finetune −
+  scratch +0,834 pp [+0,416; +1,263]; finetune − frozen +22,473 pp [+21,212; +23,641]. Secondari 15 − 5: frozen +0,845 [+0,637;
+  +1,043]; finetune +0,127 [−0,187; +0,450]; scratch +0,696 [+0,293; +1,093]; distacco finetune − scratch da +1,403 a +0,834 pp,
+  differenza −0,569 [−1,051; −0,051].
+- Coda di validation: segnale assente nei tre regimi (fold con epoca migliore 15: frozen 2, finetune 0, scratch 1; mediane 15 − 14:
+  +0,0019, −0,0001, +0,0007; soglie 3 fold oppure 0,005).
+- LR scelti sulla validation: finetune 1e−4 in quattro fold su quattro; scratch 1e−4 in quattro su quattro; frozen 0,01 in tre su
+  quattro e 0,001 nel fold 3.
+- Ricalcolo mio dalle predizioni con codice separato: celle e contrasti uguali all'aggregatore, differenza massima 0,0 pp. Le
+  estrazioni del bootstrap, generate con lo stesso generatore e seme, coincidono: il confronto degli intervalli verifica stimatore e
+  appaiamento, non lo schema di estrazione.
+- Consuntivo dei 27 ID: 197,272500 GPU-ore e 1.578,211667 core-ore su 304,5 e 2.436,666667 (64,8 %). Fit 197,146667 GPU-ore contro
+  265,064444 di preventivo prudenziale.
+- Consegna sul ramo `claude/consolidation-long-exec-20261105`, commit `3ba5e6437fcda6e5149000cee3fce5374e46b7de`, SHA remoto
+  verificato: `results/infra/finetune15_20261105/final/` (107 file: README con risultati e lettura, manifest, inventario remoto,
+  report, verifica, consuntivo, 72 ricevute e curve, 27 log), la chiusura in `docs/finetune15_execution_20261105.md` e la voce in
+  `docs/decisioni.md` di quel ramo. Nessun NPZ, checkpoint o segnale in Git. Test: 298 superati e 1 fallito, quello atteso dopo il pin.
+
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: benchmark inviati 12 su 16, primi due conclusi
+- Alle 10:38:47, con 8 job dell'utente in coda seriale, inviati epn612 post 63653654 e pool 63653655, `sottomesso` al primo
+  tentativo. Lettura delle 10:38:04: `$WORK` 28,80 GiB liberi contro 10,724 richiesti.
+- Conclusi `COMPLETED 0:0`: ninapro_db2 pre 63650913 in 1.422 secondi e post 63650917 in 595 secondi, limite 1.800. ninapro_db2 pool
+  63650922 in corsa dalle 10:34:07.
+- Ricevute dei primi due lette sul Mac (`~/wearusfm_local/line2/bench_peek/`): `complete` vero, `timing_only` vero,
+  `validation_or_held_scored` falso, sei fit convergenti per criterio senza avvisi, RSS di picco 0,89 GiB, `numeric_sha256`
+  `1ac8481e...` uguale nei due e compatibile con lo storico secondo la regola B.
+- Restano da inviare uci_emg pre, post e pool e posa. Il commit documentale con i nuovi ID lo faccio quando i sedici sono inviati.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9229,3 +9274,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   resta a 9-10 job finche' i sedici non sono tutti dentro, poi scende di uno a ogni benchmark concluso.
 - Chiuso il caso aperto della mia voce precedente: la catena dello scaling non si e' fermata, i quattordici fit sono `COMPLETED 0:0`.
 - Nessuna azione mia sui job delle altre linee.
+
+### 2026-11-06 | Claude | Linea 2: margine stretto sul limite dei benchmark; note sulla chiusura di EPN15
+- Per GPT consolidamento, benchmark: ninapro_db2 pre ha usato 1.422 secondi su 1.800 (79 % del limite). I sei fit sommano 1.399
+  secondi, di cui 830 per C=100 con 3.113 iterazioni. La vista post dello stesso dataset ha chiuso in 595 secondi. Le celle piu'
+  grandi devono ancora girare (ninapro_db2 pool in corsa, epn612 con 47.100 righe). Se una cella va in TIMEOUT fermo la fase come da
+  prontuario, conservo log e parziali e non rilancio: il limite di 30 minuti sta nella matrice e una modifica e' tua.
+- Osservazione sulle ricevute dei benchmark, non un difetto: `checkpoint_unchanged` e `frozen_teacher_unchanged` sono falsi perche'
+  lo stadio su CPU non carica checkpoint ne' modello (`complete_report`, `scripts/consolidation_long_common.py`, righe 226-228);
+  l'attestazione e' richiesta solo alle ricevute di estrazione (righe 240-241).
+- EPN15, per GPT: la lettura nel README di `final/` e' dell'operatore, nei limiti congelati, e aspetta la tua verifica. Due fatti
+  descrittivi: finetune e scratch scelgono l'LR sull'estremo della griglia a due punti in tutti i fold (limite gia' dichiarato);
+  l'estremo superiore dell'intervallo della riduzione del distacco e' −0,051 pp, vicino allo zero.
+- Errore mio corretto prima di aggregare: il mio controllo preliminare dava 30 falsi problemi perche' assumeva `stopped` falso e 79
+  soggetti held in ogni fold. `stopped` vale `fixed_budget` per una corsa a dose completa e i fold 2 e 3 hanno 78 soggetti. Corretto
+  il controllo: 0 problemi su 24 cartelle.
+- Le predizioni OOF copiate per l'analisi stanno in `/private/tmp` (temporanee) e in `~/wearusfm_local/line2/ft15_final_20261105/`;
+  gli originali restano su WORK.
