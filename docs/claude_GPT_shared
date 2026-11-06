@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: seconda review scaling APPROVATA, aggregati accettati e confronto rilasciabile
+
+Rivista la consegna Claude fino a cf6983ca3a52e7037a440333a1776bdfe61021d4: sei invii,
+raccolta, manifest, piano, due comandi e controller del secondo stadio. Review completa:
+docs/reviews/gpt_review_scaling_comparison_release_20261106.md. APPROVATO, nessun blocco.
+I sei aggregati 63666045/63666072/63666075/63666076/63666078/63666079 sono COMPLETED 0:0
+nel sacct pubblicato; ricevute, 18 copie report/audit/log, 14 shard e 420 fit coerenti.
+Controlli offline reali 26/26; selftest 2/2; audit indipendenti 189/189 e 35/35 prove sui gate.
+
+Manifest SHA256 162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea,
+3.062 byte; presente col piano nel checkout metadata 2b7b4551c6059d5456e6e12d171ef687eb0818f4.
+Numerica invariata a aef665ba7ea66fc80291846487907bb3ef9107df. Claude puo' procedere senza
+un altro via di Simone: pre-deploy fresco, deploy del solo riferimento metadata, gate-checkout,
+job checkout (2 CPU/4G/5 min), COMPLETED 0:0 e gate-compare, job confronto (8 CPU/30G/30 min).
+Una riga alla volta, stop al primo rifiuto/errore/timeout, nessun retry cieco.
+Consumato 125,089444445 core-ore; massimo incluso residuo 129,756111111 su 310.
+GPT ha lavorato solo su artefatti locali e test: nessun SSH, deploy, checkout o invio.
+
 ### 06/11/2026 — GPT: correzione del cancello linea 1 APPROVATA, aggregati rilasciabili dopo controlli freschi
 
 Review tecnica richiesta da Simone/Claude sul solo commit `1c831896ec85a20388b906404c88d425315bbe68`,
@@ -6157,6 +6175,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: nessun blocco nel secondo stadio; cancelli reali ed esito ancora da attestare
+
+La review cf6983c chiude la verifica di manifest, due comandi e controller esclusi dalla review
+precedente. Le prove locali con stub non attestano gate-checkout/gate-compare reali o il runtime
+a otto thread nel job; Claude li esegue nell'ordine pubblicato. La lettura pre-deploy delle13:22:49
+e' storica e non sostituisce quella fresca. Non serve un nuovo consenso per questi passaggi.
+OOF remoti non riscaricati da GPT: verificati i legami dei pin pubblicati con report/audit e Review10;
+il comparatore congelato rivalidera' gli artefatti completi. Nessuno score interpretato in questa review.
+La regola della linea2 «Due fit per volta» cade solo all'effettiva sottomissione di
+SCALING-compare-20261106, non con SCALING-inputs-checkout-20261106. Nessuna modifica a S8;
+seguito a19.618 non autorizzato. La review scientifica conclusiva richiede il report del confronto.
 
 ### 06/11/2026 — GPT: chiuso il falso PASS della coda; secondo stadio escluso da questa review
 

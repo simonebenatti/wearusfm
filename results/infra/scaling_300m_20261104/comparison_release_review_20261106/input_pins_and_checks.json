@@ -1,0 +1,79 @@
+{
+  "reviewed_tip": "cf6983ca3a52e7037a440333a1776bdfe61021d4",
+  "manifest_checkout_commit": "2b7b4551c6059d5456e6e12d171ef687eb0818f4",
+  "frozen_numeric_commit": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "files": {
+    "comparison_stage.py": {
+      "sha256": "0e3edb29eb845b89e8ccd72cc3ba0f477ef1d8d2f5d466d12ee16a0499806df7",
+      "bytes": 47298
+    },
+    "comparison_stage_selftest.py": {
+      "sha256": "f5457d8c1c910b240809df093dbb0e21b89517c8c0387ea469b701d4a1fb30f1",
+      "bytes": 14555
+    },
+    "final_stages.py": {
+      "sha256": "b222474b4fad9fe1a810df115ebc5eb4d8d9246408e14e833abad8b8ba61924e",
+      "bytes": 25511
+    },
+    "comparison_inputs.json": {
+      "sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+      "bytes": 3062
+    },
+    "comparison_plan.json": {
+      "sha256": "1b445cfb9701bfb9fe907800a1192ff5c0e1b124c59bd25f46a20b144ea81765",
+      "bytes": 10043
+    },
+    "comparison_submit_lines.txt": {
+      "sha256": "b146f42f3588ae56793f390b39dd902bfb8b884e35c4ee6593acba8b6a1e66d7",
+      "bytes": 1565
+    },
+    "comparison_submitter_dryrun.json": {
+      "sha256": "af6ad91d531501a7a1439b36e3f07779a684fa1d12add436a5cce97777a3f78d",
+      "bytes": 1686
+    },
+    "aggregates_state_20261106_1319.json": {
+      "sha256": "9ca3bc9df4e12aa768f3d1a9891d7d2d29cc6bd566940eac0f3bb7736bd731c7",
+      "bytes": 54381
+    },
+    "comparison_gate_20261106_1322_predeploy_rehearsal.json": {
+      "sha256": "b690c503e8af1890e0d19fd055edac2aaac59c9db9e589ea5bb172e9a5e6a477",
+      "bytes": 19214
+    }
+  },
+  "manifest_and_plan_present_in_checkout_commit": true,
+  "submission_lines_match_plan_and_commit": true,
+  "sources_match_frozen_bytes": true,
+  "runtime_unchanged": true,
+  "budget_recomputed": {
+    "consumed_before_aggregates": 124.993888889,
+    "aggregates_measured": 0.09555555555555556,
+    "consumed": 125.08944444455555,
+    "checkout_requested": 0.16666666666666666,
+    "checkout_maximum": 0.26666666666666666,
+    "compare_requested": 4.0,
+    "compare_maximum": 4.4,
+    "worst_case": 129.75611111122222,
+    "cap": 310.0
+  },
+  "tests": {
+    "independent_artifact_audit": {
+      "reviewer": "compare_manifest_artifacts_review",
+      "passed": 189,
+      "verdict": "PASS, no blockers",
+      "scope": "Published local artifacts only: six receipts, raw accounting, 18 copied artifacts, 14 shards, 420 converged audit records, 15 dataset identities, manifest and source pins, budget; no remote OOF reread or score interpretation"
+    },
+    "independent_controller_audit": {
+      "reviewer": "compare_gate_controller_review",
+      "passed": 35,
+      "verdict": "PASS, no blockers",
+      "scope": "Local published predeploy fixture and synthetic subsequent states; remote reads and writes stubbed; successful and rejected predeploy, checkout and compare conditions; not actual remote gate execution"
+    },
+    "comparison_stage_selftest": {
+      "passed": 2,
+      "duration_seconds": 11.6,
+      "exit": 0,
+      "scope": "Local synthetic chain, temp folders, fake scheduler/ssh/ledger; real remote gates not executed"
+    }
+  },
+  "scope": "Read-only published artifacts and local tests; no SSH, deploy, checkout or submission; scientific scores not interpreted"
+}
