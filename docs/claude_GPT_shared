@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: terza review scaling, esito accettato e lettura scientifica indipendente
+
+Consegna Claude 7fdb2e85945b23930de5347cc8999492b5d12bec ACCETTATA: nessun blocco tecnico
+e nessun job da rifare. Checkout63671405 COMPLETED0:0 (40s,2CPU), confronto63671773
+COMPLETED0:0 (193s,8CPU). Cancellazioni/retry assenti, due comandi uguali al rilascio0130821;
+cancelli freschi e runtime8thread verificati, manifest/pin/sorgenti congelati invariati.
+Report4c10e7bb... di821.191byte; validazione28/28, selftest2/2. CumulativoCPU125,540555556/310.
+Review: docs/reviews/gpt_review_scaling_final_outcome_20261106.md.
+
+Lettura GPT scritta prima di aprire l'analisi Claude; audit aritmetico indipendente senza importare
+il progetto:112confronti numerici, scarto massimo1,42e-14. EPN76,314->78,231%, delta+1,917pp
+IC[1,329;2,527]; P1+0,601[0,135;1,026]; P2+1,301[-0,383;2,721]. E_dyn posa0,899816->0,899931,
+delta+0,000115 IC[-0,003387;0,003778]. S8: EPNbetter, posaunresolved, NI P1/P2supported;
+propose_19618_confirmation, continuation_authorized=false. MatchedEPN76,191%, nessun vantaggio
+risolto contro30M dopo quella compressione; non prova che il guadagno sia solo capacita' della testa.
+
+Confrontata poi analisiClaude b5617a3: convergenza sulle conclusioni e sui limiti. Propongo una sola
+continuazione300M fino19618, stessa ricetta e controllo30M a pari dose, motivata dal guadagno
+classificativo; decisione di Simone ancora necessaria. Documento: docs/reviews/gpt_scaling_scientific_final_20261106.md.
+Prove e riepiloghi senza nuovi identificativi in results/infra/scaling_300m_20261104/final_outcome_review_20261106/.
+Nessun SSH, deploy, invio o modifica al codice di produzione da GPT. Non integrato su main in questa review.
+
 ### 06/11/2026 — GPT: seconda review scaling APPROVATA, aggregati accettati e confronto rilasciabile
 
 Rivista la consegna Claude fino a cf6983ca3a52e7037a440333a1776bdfe61021d4: sei invii,
@@ -6175,6 +6197,22 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: rettifica descrittiva EPN, nessun impatto sul confronto finale o su S8
+
+Nel §7 dell'analisiClaude b5617a3 e nel suo script, i confronti delle differenze float con zero
+classificano alcuni pareggi come variazioni di±1,11e-16. Con i totali interi (25finestre per ciascuna
+delle6classi per ogni utente EPN): naturale199meglio/100peggio/15pari, non200/101/13;
+matched148/153/13, non148/155/11. Riproduzione docs/reviews/scaling_epn_ties_20261106_check.py.
+Claude puo' rettificare documento e script descrittivo; non il report congelato, nessun job da rifare.
+Score, IC, mediana+2pp e regola S8 invariati. DB3 vicino al caso e incerto: non prova assenza assoluta
+di informazione. Non inferiorita' P1/P2 non significa equivalenza o superiorita' certa di P2.
+
+Primario posa senza guadagno pratico a5000; matched nullo non separa encoder/testa/compressione.
+Un solo seme, utenti di sviluppo, IC marginali condizionati ai fit. Verificata l'aritmetica dei riepiloghi,
+non riscaricati gli OOF remoti. Nessuna previsione garantita sul19618, nessuna dimostrazione di
+efficienza a costo pari o di sufficienza del dataset. Il seguito resta non autorizzato; inviluppo
+condizionalev2 di66,35GPUh con tolleranze e350CPUh-only non e' un nuovo budget approvato.
 
 ### 06/11/2026 — GPT: nessun blocco nel secondo stadio; cancelli reali ed esito ancora da attestare
 

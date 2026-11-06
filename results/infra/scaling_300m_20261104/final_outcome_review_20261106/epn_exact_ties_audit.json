@@ -1,0 +1,37 @@
+{
+  "source_sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664",
+  "cells": {
+    "T100-G-300M-natural": {
+      "integer_counts": {
+        "improved": 199,
+        "worse": 100,
+        "ties": 15
+      },
+      "float_counts": {
+        "improved": 200,
+        "worse": 101,
+        "ties": 13
+      },
+      "false_nonzero_ties": [
+        1.1102230246251565e-16,
+        -1.1102230246251565e-16
+      ]
+    },
+    "T100-G-300M-matched": {
+      "integer_counts": {
+        "improved": 148,
+        "worse": 153,
+        "ties": 13
+      },
+      "float_counts": {
+        "improved": 148,
+        "worse": 155,
+        "ties": 11
+      },
+      "false_nonzero_ties": [
+        -1.1102230246251565e-16,
+        -1.1102230246251565e-16
+      ]
+    }
+  }
+}

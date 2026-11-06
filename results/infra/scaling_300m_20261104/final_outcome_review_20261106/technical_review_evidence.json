@@ -1,0 +1,87 @@
+{
+  "verdict": "accepted_no_blocking_technical_issue_no_rerun",
+  "reviewed_tip": "7fdb2e85945b23930de5347cc8999492b5d12bec",
+  "files": {
+    "outcome_stage.py": {
+      "sha256": "aaef8cb82815e07b98b3ad247ee4f13a2a17ef80cdedb3092ed03f92ed0ec8d4",
+      "bytes": 26207,
+      "matches_reviewed_commit": true
+    },
+    "outcome_stage_selftest.py": {
+      "sha256": "0a21c7484e4df9e4911527ece448710430f0f793b658f06fa26dad323088352b",
+      "bytes": 15197,
+      "matches_reviewed_commit": true
+    },
+    "outcome_state_20261106_1441.json": {
+      "sha256": "bbdc2aaf8dfc1877dfde1580db799a944a83a365c3bd99dce7a20e069e19e56d",
+      "bytes": 13102,
+      "matches_reviewed_commit": true
+    },
+    "collected_outcome_20261106_1441/report.json": {
+      "sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664",
+      "bytes": 821191,
+      "matches_reviewed_commit": true
+    },
+    "collected_outcome_20261106_1441/sacct.txt": {
+      "sha256": "e6376c03386e6505eb555274e6dada1ad27f414af3e3b9885889b6cce6dacc34",
+      "bytes": 662,
+      "matches_reviewed_commit": true
+    },
+    "collected_outcome_20261106_1441/campaign_checkout_63671405.out": {
+      "sha256": "5b0c95167b4bc5d4ad1d6053dd490d89f321094d4c708dd3a3aef521b75f3b6b",
+      "bytes": 4092,
+      "matches_reviewed_commit": true
+    },
+    "collected_outcome_20261106_1441/scaling_readers_recovery_63671773.out": {
+      "sha256": "13afff5fccf8d5827203e5a898109270897a13ccbe0985ca745573915f4a5f87",
+      "bytes": 1095,
+      "matches_reviewed_commit": true
+    }
+  },
+  "independent_technical_reviewer": "outcome_technical_review",
+  "offline_validation": {
+    "passed": 28,
+    "failed": 0
+  },
+  "selftest": {
+    "passed": 2,
+    "failed": 0,
+    "duration_seconds": 11.29,
+    "scope": "Local synthetic fixtures, remote functions mocked; no collect, SSH or submission"
+  },
+  "independent_numeric_audit": {
+    "checks": 112,
+    "maximum_absolute_difference": 1.4210854715202004e-14
+  },
+  "jobs": {
+    "checkout": {
+      "id": 63671405,
+      "state": "COMPLETED",
+      "exit": "0:0",
+      "cpus": 2,
+      "elapsed_seconds": 40
+    },
+    "compare": {
+      "id": 63671773,
+      "state": "COMPLETED",
+      "exit": "0:0",
+      "cpus": 8,
+      "elapsed_seconds": 193,
+      "max_rss_kib": 3143208
+    }
+  },
+  "cpu_hours": {
+    "checkout": 0.022222222222222223,
+    "compare": 0.4288888888888889,
+    "cumulative": 125.54055555566667,
+    "cap": 310
+  },
+  "independent_memo_prefix_preserved": true,
+  "claude_analysis_read_after_independent_memo": {
+    "commit": "b5617a332ca30a372c52a558dc6060e436ece411",
+    "path": "docs/reviews/claude_analysis_scaling_300m_5000_20261106.md",
+    "sha256": "2ce651f4f09fb669c25f38dcb0473351ad3558bc128dd516e90557aee1b4f544"
+  },
+  "scope": "Local published artifacts only; no raw OOF reread, no remote operations, no production code edits",
+  "continuation_authorized": false
+}
