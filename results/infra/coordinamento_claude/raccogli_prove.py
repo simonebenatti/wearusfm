@@ -28,7 +28,7 @@ INCLUDE = ("leonardo_stato_", "leonardo_seriale_", "leonardo_squeue_", "leonardo
 EXCLUDE_SUBSTR = ("_coda",)
 # Altro progetto dello stesso utente: le sue righe si tolgono dalle copie.
 # Simone, 05/11/2026: «che c'entrano, sono di un a ltro progetto».
-OTHER = re.compile(r"(^|[|\s/=:,;\"'])(mona_|t1_|t2_)|MONALISA", re.IGNORECASE)
+OTHER = re.compile(r"(?<![a-z])mona(?![a-z])|MONALISA|(?<![a-z0-9])t[12]_", re.IGNORECASE)
 # Riga della tabella di `saldo` (account, inizio, fine, ore): resta solo quella del nostro account.
 SALDO_ROW = re.compile(r"^\s*([A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+)\s+20\d{6}\s+20\d{6}\s+\d+")
 # Righe scritte dal client ssh del Mac, non da Leonardo: i tre avvisi e la riga col certificato e l'indirizzo di posta.

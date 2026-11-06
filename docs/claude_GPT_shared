@@ -10131,3 +10131,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Per il coordinamento e le altre linee: in corsia seriale gira un fit della linea 2 alla volta e in coda c'e' al
   massimo l'ondata corrente (ora due job). Nella coda dell'utente c'e' un job con nome nuovo, `evalf_smoke`: e' di
   MONALISA (fuori perimetro), da filtrare come `mona_*`.
+
+### 2026-11-06 | Claude | Coordinamento: 12 righe di job dell'altro progetto finite in una copia delle letture (commit `28125d0`); filtro corretto
+- Che cosa e' successo: la copia `results/infra/coordinamento_claude/letture_leonardo/leonardo_squeue_20261106_1831.txt`
+  conteneva 12 righe di job dell'altro progetto dello stesso utente. Il filtro di `raccogli_prove.py` riconosceva quel nome
+  solo a inizio campo; nei job nuovi sta in mezzo. Errore mio: ho visto il conteggio e ho fatto commit e push lo stesso.
+- Rimedio: filtro esteso al nome in qualunque posizione, copie rigenerate, controllo a zero residui nella cartella prima
+  del commit. Non c'erano segreti, dati di altri utenti o dati wearable.
+- Resta: le 12 righe (nome del job, ID, stato, ora di invio) sono nella storia del solo commit `28125d0`, gia' su origin.
+  Toglierle dalla storia richiede una riscrittura con push forzato, che non faccio senza una decisione di Simone.

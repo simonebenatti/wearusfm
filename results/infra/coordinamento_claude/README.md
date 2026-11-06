@@ -22,7 +22,7 @@ Decisione di Simone, 06/11/2026. Alla domanda di Claude «Metto nei commit anche
 
 ## Cosa viene tolto dalle copie
 
-- Le righe dei job di un altro progetto dello stesso utente (nomi `mona_*`, `t1_*`, `t2_*`, percorsi `MONALISA`) e la riga di
+- Le righe dei job di un altro progetto dello stesso utente (nomi che contengono `mona`, `t1_` o `t2_` come parola, anche in mezzo al nome; percorsi `MONALISA`) e la riga di
   `saldo` di un account diverso da `IscrB_WearUsFM`. Simone, 05/11/2026: «che c'entrano, sono di un a ltro progetto».
 - Le righe scritte dal client ssh del Mac: tre righe di avviso e, in alcune letture, una riga con il certificato ssh e
   l'indirizzo di posta di Simone.
