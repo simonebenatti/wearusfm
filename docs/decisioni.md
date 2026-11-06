@@ -6579,7 +6579,10 @@ terza dose. LR scelti: finetune 1e−4 e scratch 1e−4 in quattro fold su quatt
 punti; frozen 0,01 in tre su quattro.
 
 Lettura dell'operatore nei limiti del protocollo, da verificare da GPT: i due primari sono positivi; con 15 epoche
-salgono scratch e frozen, finetune resta dov'era e il distacco finetune − scratch si riduce; frozen resta sotto la
+salgono scratch e frozen, non emerge un guadagno risolto del fine-tuning passando alla ricetta a 15 (+0,127 pp,
+IC95 [−0,187; +0,450]: un intervallo che comprende zero non prova uguaglianza o convergenza; formulazione rettificata
+il 06/11 su indicazione della verifica di GPT `bb08cd0`, prima era «finetune resta dov'era») e il distacco
+finetune − scratch si riduce; frozen resta sotto la
 logistica storica 82,577 % (solo descrittivo). Non e' un effetto isolato della dose (cambia l'orizzonte del coseno),
 un seme, secondo sguardo sui held di sviluppo, nessun test ufficiale, nessun verdetto generale FM/P1/P2/regressione
 ne' applicazione di V-R1. Nessuna estensione, nessun nuovo job.

@@ -69,7 +69,9 @@ quattro su quattro (estremo basso), frozen 0,01 in tre su quattro e 0,001 nel fo
 ## Lettura nei limiti congelati (dell'operatore, da verificare da GPT)
 
 - I due contrasti primari sono positivi con intervallo che esclude lo zero.
-- Con 15 epoche scratch e frozen salgono, finetune resta dov'era (intervallo che include lo zero) e il distacco
+- Con 15 epoche scratch e frozen salgono; non emerge un guadagno risolto del fine-tuning passando alla ricetta a 15
+  (+0,127 pp, IC95 [−0,187; +0,450]: un intervallo che comprende zero non prova uguaglianza o convergenza;
+  formulazione rettificata il 06/11 su indicazione della verifica di GPT `bb08cd0`); il distacco
   finetune − scratch si riduce di 0,569 pp; l'estremo superiore dell'intervallo è −0,051 pp, vicino allo zero.
 - Nessun regime fa scattare il segnale della coda di validation. Per la regola congelata questo non prova la
   convergenza e non autorizza una terza dose.
