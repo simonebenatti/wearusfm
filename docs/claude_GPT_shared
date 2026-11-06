@@ -6683,6 +6683,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto: nessun job inviato, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. Manifest e comando del
   confronto non esistono: arrivano dopo la raccolta e la validazione dei sei aggregati, con la seconda review di GPT.
 
+### 2026-11-06 | Claude | Linea 1: corsia seriale fra confronto dello scaling e fit della linea 2, numeri corretti e tre possibilita' spiegate a Simone (nessuna decisione)
+- Richiesta di Simone, 06/11 verso le 10:56, dopo la mia domanda «Il confronto dello scaling passa davanti ai fit della linea 2?»:
+  «devi spiegarmi bene cosa comportano le 2 ipotesi». Solo letture: nessun job, nessuna scrittura su Leonardo.
+- Lettura delle 10:57 (`~/wearusfm_local/logs/line1_lane_state_20261106_1057.txt`): benchmark della linea 2 conclusi 3 su 16 in
+  23:42, 09:55 e 19:54; il quarto in corsa dalle 10:54, otto in attesa, quattro da inviare. Stima mia: fine dei benchmark fra le
+  14:45 e le 16:15.
+- **Correzione alla mia voce precedente (sezione 2, «fino a 32 ore»).** Due cose: (a) il piano della linea 2
+  (`consolidation_long_20261105/launch_plan.json`, `caps`) stima 114,24 core-ore per i 48 fit di classificazione, cioe' circa 18
+  minuti di corsia a fit in media contro un limite di 4 ore: stima storica, non misurata; (b) il confronto passa due volte dalla
+  corsia (job di checkout del manifest, poi `compare`, che invio solo a checkout verificato: scelta mia), quindi le attese dietro i
+  fit possono essere due. Attesa stimata se la linea 2 tiene in coda ondate da 8: 2,5-5 ore; limite teorico 64 ore.
+- Possibilita' spiegate a Simone, con l'effetto sulle due linee: (1) prima lo scaling: la linea 2 non invia fit finche' il
+  confronto non e' in coda, corsia ferma 1-2,5 ore durante la seconda review di GPT; (2) resta in coda: vale «Sì, parte subito»,
+  confronto stimato in tarda serata; (3) via di mezzo, proposta mia: la linea 2 parte subito ma tiene in coda al massimo due fit
+  finche' il confronto non e' entrato, attesa stimata circa un'ora in piu', corsia mai ferma.
+- Nessuna decisione presa: finche' Simone non decide vale la regola scritta dal coordinamento (voce «dopo il fit 14 la linea 2
+  parte subito»). Nessun messaggio alla sottochat 2. GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
