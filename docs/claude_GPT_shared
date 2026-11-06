@@ -7300,6 +7300,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   e le 17:25, e la copia aggiornata del ledger (1.309 righe). Lo specchietto resta fermo alle 10:32: lo stato dei job del pomeriggio e' nelle voci
   delle linee 1 e 2 qui sopra.
 
+### 2026-11-06 | Claude | Coordinamento: indizi sulla posa del 300M dai log di training (domanda di Simone); sola lettura, nessun job
+- Domanda di Simone dopo la lettura d'insieme: «si , c'e da dire che il 300M ha solo un punto, non sappiamo come cresce in
+  proporzione coi passi. magari aiuta la regressione. Ci sono indizi su quello ?».
+- Letti da Leonardo, in sola lettura (`ls`, `head`, `grep`, `sed`), verso le 18:50: `metrics.jsonl`, `fixed_eval.jsonl` e
+  `pose_panel.jsonl` di `$SCRATCH/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000`,
+  `.../tokenizer_20261103/T100-G` (30M fino a 19.618) e `.../consolidation_20261104/T100-G` (30M da 19.619 a 49.046).
+  Sono log di training: nessun punteggio su utenti esclusi, nessun report della valutazione lunga aperto.
+- 300M contro 30M fino a 5.000 passi: stessa origine dei batch e stesso numero di finestre di posa in 5.000 passi su 5.000,
+  stesso pannello fisso di posa (256 finestre, 32 utenti, stesso sha256).
+  - Loss di posa in training, media sui passi 4.001-5.000: 0,9134 (300M) e 0,9080 (30M); differenza 300M meno 30M nelle
+    cinque finestre da 1.000 passi: -0,0034, +0,0005, +0,0046, +0,0035, +0,0054.
+  - Pannello fisso, testa di posa del modello, `mse` a 5.000 passi: 1,0128 (300M) e 0,9965 (30M); costante 1,1601.
+  - `fixed_eval` a 5.000 passi (32 elementi di posa, rumoroso), 300M e 30M: `pose` 0,9462 e 0,9770; `log_rms` 0,4901 e
+    0,4614; `band_shape` 0,4096 e 0,3954. Loss totale in training sui passi 4.501-5.000: 2,0380 e 1,9770.
+  - Tempo medio per passo nei log: 2,796 s (300M) e 0,733 s (30M), rapporto 3,82.
+- 30M lungo tutto lo schedule: loss di posa in training (media sugli ultimi 1.000 passi) 0,9080 a 5.000, 0,8346 a 10.000,
+  0,7946 a 19.618, 0,7397 a 30.000, 0,7186 a 39.237, 0,7111 a 49.046; pannello fisso `mse`/costante 0,859 a 5.000, 0,769 a
+  19.500, 0,740 a 39.000, 0,639 a 49.000.
+- Lettura mia, da verificare da GPT: (i) fino a 5.000 passi il 300M non impara la posa piu' in fretta del 30M su nessuna
+  delle tre misure (loss di training, pannello fisso, ridge sugli utenti esclusi 0,8999 contro 0,8998); (ii) sul lato
+  training il 30M sulla posa non e' saturo fino a 49.046; (iii) l'attesa piu' semplice per il 300M a 19.618 sulla posa e'
+  quindi «circa dove sta il 30M», senza che questo sia una previsione: un punto, un seme. Non e' evidenza su utenti
+  esclusi oltre i 19.618: quella arriva dalla valutazione lunga.
+- Spunto per la linea 1, senza job in piu': durante il seguito autorizzato, loss di posa e pannello fisso del 300M escono
+  ogni 500 passi sugli stessi batch del 30M; il confronto con la curva del 30M agli stessi passi dice presto se la taglia
+  si stacca. Decide chi opera la linea (sottochat 1) con GPT.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
