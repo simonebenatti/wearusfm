@@ -7021,6 +7021,40 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prossimo passo mio: piano concreto e strumenti del seguito sul ramo di esecuzione, poi il testo dell'unica review.
   Nulla inviato finora.
 
+### 2026-11-06 | Claude | Linea 1: consegna del seguito a 19.618 pubblicata per la review di GPT (stadio di training); nulla inviato
+- Letta la consegna di GPT `2d58e98` (`docs/prompt_claude_scaling_continuation19618_20261106.md`). Simone me l'ha girata
+  con le parole: «intanto gpt m scrive, non so se hai letto :».
+- Pubblicato su `claude/scaling-300m-exec-20261106`: codice, test, piano e documenti `73524b6`
+  (`73524b63be534f81b3db4ade4b7fc7f47129a0f3`); comandi d'invio `92320d3`.
+  - `scripts/scaling_continue.py`: ripresa esatta 5.000 -> 19.618 in una cartella nuova. Il trainer e i 103 sorgenti
+    scientifici restano identici al contratto; cambiano solo `--out-dir`, `--max-steps 19618` e il limite operativo.
+    La cartella del run a 5.000 e' in sola lettura: 11 file con SHA-256, verificati prima e dopo.
+  - `scripts/slurm/scaling_continue.sbatch`: 1 nodo, 4 GPU, 32 CPU, 480G, 14:45:00, QoS `normal` esplicita (59 GPU-ore).
+  - `tests/cpu/test_scaling_continue.py` e `test_scaling_continue_launcher.py`: 156 test. Continuita' bit per bit
+    contro una corsa ininterrotta (un processo con 0 e 2 worker; DDP a due processi con prefetch; testa e pannello
+    di posa con i quattro file copiati dal job vero); prova completa del job con il trainer simulato; wrapper e
+    test a 5.000 invariati.
+  - `results/infra/scaling_300m_20261104/continuation19618_20261106/`: `training_plan.json` con i pin reali
+    (SHA-256 `eded0922bd1022c4...`), letture di Leonardo, `chain_plan.md`, `endpoint19618_reading.md`,
+    `training_submit_lines.txt`.
+  - `docs/decisioni.md` sul ramo di esecuzione: autorizzazione, tetti, perimetro e lettura dell'endpoint.
+- Verifiche in sola lettura su Leonardo (17:39-17:45, ricontrollo alle 18:18): run a 5.000 con 11 file e checkpoint
+  `37279995...`; controllo 30M a 19.618 `a31c8950...` con 19 pin di cache uguali agli inventari; scadenza piu' vicina su
+  scratch 08/12; ingressi uguali al contratto; QoS `normal` ammessa per l'account; percorsi nuovi canonici e liberi.
+- Costi dello stadio: training al massimo 59 GPU-ore (atteso circa 49) e 472 core-ore allegate; checkout 0,17
+  core-ore. Dopo restano 7,35 GPU-ore per le estrazioni e 350 core-ore solo CPU per le letture.
+- Limite dichiarato: l'uguaglianza bit per bit e' provata su CPU con modelli piccoli; su GPU non si misura, perche' nel
+  budget non c'e' un collaudo GPU in piu'. Sul run reale si verificano stato ripristinato, record 5.001-19.618 sul
+  learning rate originale, contatori di AdamW avanzati di 14.618 esatti, cartella a 5.000 intatta.
+- Non fatto: codice della valutazione a 19.618; i wrapper esistenti sono vincolati a 5.000. Lo scrivo mentre gira il
+  training.
+- Review: Simone ha chiesto una sola review prima dei lanci; la consegna di GPT prevede review dei rilasci successivi.
+  Lettura mia, da confermare con Simone: questa review sblocca il training; il codice della valutazione passa da una
+  sola altra review mentre il training gira; nessuna review fra benchmark, fit, aggregati e confronto.
+- Corsia seriale: alle 18:18 la linea 2 la occupa (un fit in corso, uno in attesa per il limite di CPU per utente). Il
+  checkout chiede 2 CPU per 5 minuti. Non tocco i job di altre linee: lo segnalo a Simone.
+- Nessun deploy, checkout o job. Prossimo passo: review di GPT; poi deploy, checkout e training.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
