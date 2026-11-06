@@ -6715,6 +6715,34 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   63eba9a. Restano, in ordine: training a 19.618, pin del checkpoint finale, tre estrazioni GPU, letture CPU, lettura e review.
 - Nessun job e nessuna modifica di codice o piani; su Leonardo solo letture.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: sedici benchmark su sedici inviati (11:27); recepita la regola «Due fit per volta»
+- Letture delle 11:26:24 (`~/wearusfm_local/logs/line2_long_presubmit_bench_20261106_1127.txt`): 6 job dell'utente in
+  `lrd_all_serial`, tutti benchmark della linea 2 (ninapro_db6 pre in corsa dalle 11:25:27, cinque in attesa); `$WORK`
+  1.044.085.480 kB su 1.073.741.824, cioe' 28,28 GiB liberi contro 10,724 richiesti; radice delle uscite su SCRATCH scrivibile;
+  cartelle di uci_emg pre, post, pool e della posa assenti; i quattro nomi assenti dallo storico dello scheduler dal 05/11 e dal
+  ledger; checkout dei benchmark su HEAD `166fb86`, pulito. Conteggio riletto alle 11:27:25: 6.
+- Invii fra le 11:27:26 e le 11:27:28, uno alla volta dal submitter comune, tutti `sottomesso` al primo tentativo, senza
+  dipendenze: uci_emg pre 63657462, post 63657466, pool 63657468 (limite 30 minuti); posa 63657489 (limite 15 minuti). Dopo gli
+  invii l'utente ha 10 job in corsia seriale. Con epn612 post 63653654 e pool 63653655 delle 10:38 i benchmark inviati sono 16 su 16.
+- Conclusi finora 6 su 16, tutti `COMPLETED 0:0`, limite 1.800 secondi: ninapro_db2 pre 1.422, post 595, pool 1.194; ninapro_db3
+  pre 921, post 465, pool 480 secondi.
+- Ramo di esecuzione: commit documentale `5cbcdc22311cb90ef3f83668c28f5134c5eb5d8d`, SHA remoto verificato. Cambiano solo sei ID in
+  `launch_plan.json` e sei stati del ledger in `execution/submission/`. Stessi dieci file di test: 251 superati e 1 fallito, lo
+  stesso di prima.
+- Regola di corsia: verso le 11:20 Simone ha incollato in questa chat il testo preparato dalla sottochat 1 con la sua decisione
+  delle 11:17 circa, alla domanda «Come dividiamo la corsia fra il confronto dello scaling e i fit della linea 2?»: «Due fit per
+  volta». L'ho riletta nel registro della linea 1 (ramo `claude/review-scaling-300m-20261104` a `bf7f7a4`, voce «decisione di
+  Simone sulla corsia seriale»). Torna con il mio piano di invio e la applico cosi':
+  - benchmark invariati («Sì, fino a 10»); dalle 11:27:28 non aggiungo altro in corsia fino alla fine dei benchmark;
+  - dalla fine dei benchmark tengo in `lrd_all_serial` al massimo due job miei fra in corsa e in attesa; conto anche il checkout
+    della fase fit (lettura mia, la piu' stretta);
+  - la regola cade quando nel ledger comune compare `sottomesso` un ID che comincia con `SCALING-compare-`; da li' torno alle
+    ondate del piano di lancio, con il tetto di 8 job CPU fra in corsa e in attesa per tutto l'utente;
+  - ogni nuovo fit parte dopo letture nuove di spazio e coda, quando la sorveglianza mi richiama alla fine di un fit; nessun
+    processo automatico invia al posto mio.
+- Sorveglianza di sola lettura sui sedici ID (`~/wearusfm_local/logs/watch_long_bench_16_20261106.txt`): mi richiama a fine fase
+  o al primo esito diverso da `COMPLETED 0:0`; in quel caso la fase si ferma, senza rilanci.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9331,3 +9359,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - E-3: il piano nuovo non ha un test locale; lo protegge `allocation_for` dentro il job. Da ripetere prima degli invii a 19.618.
 - Non verificati: frase di Simone riportata da GPT sulle letture alla fine; hash dei riferimenti storici; modo di esecuzione di
   `prelaunch_gate.json`.
+
+### 2026-11-06 | Claude | Linea 2: note per la sottochat 1, per GPT e per il coordinamento (corsia seriale, review della linea 1, margini)
+- Per la sottochat 1: i sedici benchmark sono tutti in coda dalle 11:27:28 e l'utente ha 10 job in corsia. La coda scende di uno a
+  ogni benchmark concluso: «al massimo 4 job» arriva dopo altri sei benchmark conclusi (ninapro_db6 pre, post, pool ed epn612 pre,
+  post, pool). Stima mia dalle sei durate misurate (da 465 a 1.422 secondi l'una): fra le 12:10 e le 13:50; le celle di epn612
+  non sono ancora misurate. I sei aggregati, piu' giovani, girano dopo gli ultimi quattro benchmark (lettura mia dell'ordine per
+  anzianita').
+- Review della linea 1: verso le 11:18 Simone ha incollato in questa chat, con le parole «da gpt», la richiesta di review scritta
+  dalla sottochat 1 per GPT (accettazione del fit 14 e sei comandi degli aggregati, commit `37632d1`). Non l'ho eseguita e non ho
+  scritto alcun via libera: per `CLAUDE.md` su `main` la review prima dell'invio della linea 1 spetta a GPT. L'ho detto a Simone.
+  La sottochat 1 non conti su una risposta da questa chat.
+- Chiusa la mia domanda aperta sull'ordine in corsia per la fase fit: l'ha decisa Simone («Due fit per volta»). Resta per GPT
+  consolidamento la lettura del tetto di 8 del piano di lancio rispetto ai checkout di fase; nel dubbio li conto.
+- Limite pratico della regola dei due fit: il rifornimento dipende dal richiamo di questa chat dal Mac. Se il Mac va in pausa la
+  corsia puo' restare vuota dopo i due fit in coda; in nessun caso ne tengo piu' di due.
+- Margini dei benchmark, per GPT consolidamento: dopo ninapro_db2 pre (1.422 secondi su 1.800) le altre cinque celle sono rimaste
+  fra 465 e 1.194 secondi. Le celle di epn612 devono ancora girare. Regola invariata: un TIMEOUT ferma la fase, senza rilanci.
