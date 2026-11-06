@@ -1,0 +1,259 @@
+{
+ "protocol": "scaling5000-comparison-release-20261106-v1",
+ "status": "PREPARED_NOT_SUBMITTED",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1",
+ "aggregate_plan": {
+  "path": "results/infra/scaling_300m_20261104/final_stages_20261106/aggregate_submission_plan.json",
+  "sha256": "abc489613dfbfddc5e33e2150854245bcd3b69292806953bafa622b91a22941c"
+ },
+ "aggregates_state": {
+  "path": "results/infra/scaling_300m_20261104/final_stages_20261106/aggregates_state_20261106_1319.json",
+  "sha256": "9ca3bc9df4e12aa768f3d1a9891d7d2d29cc6bd566940eac0f3bb7736bd731c7",
+  "read_at": "2026-11-06T13:19:14+0100"
+ },
+ "manifest": {
+  "path": "results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+  "sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+  "bytes": 3062,
+  "published_at": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1/results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+  "inputs_protocol": "scaling-comparison-inputs-20261104-v1"
+ },
+ "integrity_checks": [
+  {
+   "check": "letture di sacct e squeue riuscite (exit 0)",
+   "passed": true
+  },
+  {
+   "check": "ledger: sei aggregati sottomessi da claude nella campagna",
+   "passed": true
+  },
+  {
+   "check": "contabilita': sei aggregati COMPLETED 0:0 con 2 CPU e il nome atteso",
+   "passed": true
+  },
+  {
+   "check": "piano delle sonde, piano della posa, budget e report della ridge: hash attesi, percorsi canonici",
+   "passed": true
+  },
+  {
+   "check": "report della ridge: protocollo, completo, passo 5000, piano della posa",
+   "passed": true
+  },
+  {
+   "check": "runtime della ridge uguale a quello dei tre benchmark della posa (chiavi del controllo del dispatcher)",
+   "passed": true
+  },
+  {
+   "check": "codice congelato: HEAD atteso, pulito, percorso canonico",
+   "passed": true
+  },
+  {
+   "check": "sei sorgenti del comparatore: checkout congelato e copia locale uguali agli hash della Review 10",
+   "passed": true
+  },
+  {
+   "check": "shard dei fit (14) invariati rispetto al piano degli aggregati",
+   "passed": true
+  },
+  {
+   "check": "sei report presenti, alle uscite del piano",
+   "passed": true
+  },
+  {
+   "check": "cartelle delle uscite: i tre file attesi e nient'altro",
+   "passed": true
+  },
+  {
+   "check": "percorsi canonici di report, OOF e audit",
+   "passed": true
+  },
+  {
+   "check": "report completi: protocollo, tipo, passo, codice e piano",
+   "passed": true
+  },
+  {
+   "check": "cella, compito, braccio e lettura uguali al piano",
+   "passed": true
+  },
+  {
+   "check": "una sola firma numerica, quella dei quattordici fit",
+   "passed": true
+  },
+  {
+   "check": "contenuto del piano e proiezione uguali nei sei report",
+   "passed": true
+  },
+  {
+   "check": "shard dei report: percorsi e hash del piano, nello stesso ordine",
+   "passed": true
+  },
+  {
+   "check": "fit nell'audit: 28 per dataset (84 per p1, 56 per p2), righe dell'audit uguali",
+   "passed": true
+  },
+  {
+   "check": "hash interni dei report uguali ai file accanto (OOF e audit)",
+   "passed": true
+  },
+  {
+   "check": "dataset di ogni report: quelli del compito, quattro fold da 0 a 3",
+   "passed": true
+  },
+  {
+   "check": "identita' degli OOF: impronta, finestre e utenti uguali alle ancore della Review 10 in tutte le celle",
+   "passed": true
+  },
+  {
+   "check": "solutore: convergenza per criterio in tutti i report, nessun fit irrisolto",
+   "passed": true
+  },
+  {
+   "check": "file raccolti sul Mac: report e audit di ogni aggregato, uguali ai file remoti",
+   "passed": true
+  },
+  {
+   "check": "uscita del confronto e cartella del checkout del manifest assenti",
+   "passed": true
+  },
+  {
+   "check": "ID logici del checkout e del confronto mai usati nel ledger",
+   "passed": true
+  },
+  {
+   "check": "dispatcher, submitter e script di checkout locali con gli hash attesi",
+   "passed": true
+  }
+ ],
+ "recorded_facts": {
+  "aggregate_core_hours": 0.09555555555555556,
+  "aggregate_elapsed_seconds": {
+   "SCALING-probe-aggregate-01-20261106": 41,
+   "SCALING-probe-aggregate-02-20261106": 22,
+   "SCALING-probe-aggregate-03-20261106": 34,
+   "SCALING-probe-aggregate-04-20261106": 24,
+   "SCALING-probe-aggregate-05-20261106": 28,
+   "SCALING-probe-aggregate-06-20261106": 23
+  },
+  "aggregate_max_rss": {
+   "SCALING-probe-aggregate-01-20261106": "1982788K",
+   "SCALING-probe-aggregate-02-20261106": "1044704K",
+   "SCALING-probe-aggregate-03-20261106": "1417764K",
+   "SCALING-probe-aggregate-04-20261106": "1107724K",
+   "SCALING-probe-aggregate-05-20261106": "1661600K",
+   "SCALING-probe-aggregate-06-20261106": "1280484K"
+  },
+  "reading_status": {
+   "SCALING-probe-aggregate-01-20261106": "solver_converged_by_criterion",
+   "SCALING-probe-aggregate-02-20261106": "solver_converged_by_criterion",
+   "SCALING-probe-aggregate-03-20261106": "solver_converged_by_criterion",
+   "SCALING-probe-aggregate-04-20261106": "solver_converged_by_criterion",
+   "SCALING-probe-aggregate-05-20261106": "solver_converged_by_criterion",
+   "SCALING-probe-aggregate-06-20261106": "solver_converged_by_criterion"
+  },
+  "scoring_warnings": 0,
+  "serial_queue_jobs": 0
+ },
+ "budget_core_hours": {
+  "consumed_before_aggregates": 124.993888889,
+  "aggregates_measured": 0.09555555555555556,
+  "consumed": 125.08944444455555,
+  "checkout_requested": 0.16666666666666666,
+  "checkout_maximum": 0.26666666666666666,
+  "compare_requested": 4.0,
+  "compare_maximum": 4.4,
+  "worst_case": 129.75611111122222,
+  "cap": 310.0
+ },
+ "order": "Two jobs, never chained. First the campaign checkout that publishes this manifest on Leonardo, from the commit that contains it (deploy reference, then the checkout job). The comparison is submitted only after the checkout is verified: HEAD equal to the commit, clean tree, manifest with the pinned sha256 and size, dispatcher argument guard passed on the real paths. No afterok, no retry, no background resubmission.",
+ "submission_rule": "Submit only after GPT's review of the collected aggregates, of this manifest and of the two commands. Before each job: fresh read with exit 0 of every command, pins unchanged, outputs absent, logical IDs unused, a free place in lrd_all_serial. Common submitter and ledger, one line at a time, stop at the first outcome other than `sottomesso`.",
+ "lane_rule": "The checkout ID does not begin with SCALING-compare-: the rule «Due fit per volta» of line 2 falls only when the comparison job itself is `sottomesso` in the common ledger.",
+ "comparison_reading": "The operator does not open or interpret scores: the frozen comparator applies the frozen reading S8.",
+ "jobs": [
+  {
+   "id": "SCALING-inputs-checkout-20261106",
+   "stage": "campaign-checkout",
+   "campaign": "scaling_300m_comparison_inputs_20261106_v1",
+   "campaign_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1",
+   "script": {
+    "path": "scripts/slurm/campaign_checkout.sbatch",
+    "sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc"
+   },
+   "cpus": 2,
+   "memory_gib": 4,
+   "seconds": 300,
+   "requested_core_hours": 0.16666666666666666,
+   "depends_on": null,
+   "argv_template": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-inputs-checkout-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=4G",
+    "--time=00:05:00",
+    "--export=ALL,CAMPAIGN=scaling_300m_comparison_inputs_20261106_v1,CAMPAIGN_SHA=<COMMIT>,EXPECTED_SHA=<COMMIT>",
+    "/dev/stdin"
+   ],
+   "commit_placeholder": "<COMMIT>"
+  },
+  {
+   "id": "SCALING-compare-20261106",
+   "stage": "compare",
+   "manifest": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1/results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+    "sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+    "bytes": 3062
+   },
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json",
+   "script": {
+    "path": "scripts/slurm/scaling_readers_recovery.sbatch",
+    "sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5"
+   },
+   "cpus": 8,
+   "memory_gib": 30,
+   "seconds": 1800,
+   "requested_core_hours": 4.0,
+   "depends_on": null,
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-compare-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--",
+    "--cpus-per-task=8",
+    "--mem=30G",
+    "--time=00:30:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "compare",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1/results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+    "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json"
+   ]
+  }
+ ]
+}

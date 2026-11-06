@@ -1,0 +1,79 @@
+# Linea 1 (scaling), 06/11/2026: raccolta e validazione dei sei aggregati, manifest del confronto.
+# Uscite degli strumenti (comparison_stage.py); letture di sola lettura su Leonardo; nessuno score letto o stampato.
+
+## collect
+=== 2026-11-06 13:19:13 collect 20261106_1319
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/aggregates_state_20261106_1319.json 9ca3bc9df4e12aa768f3d1a9891d7d2d29cc6bd566940eac0f3bb7736bd731c7
+raccolti 18 file in results/infra/scaling_300m_20261104/final_stages_20261106/collected_aggregates_20261106_1319
+exit collect: 0
+=== 13:19:19 fine
+
+## validate
+=== 2026-11-06 13:19:31 validate aggregates_state_20261106_1319.json
+PASSA  letture di sacct e squeue riuscite (exit 0)
+PASSA  ledger: sei aggregati sottomessi da claude nella campagna
+PASSA  contabilita': sei aggregati COMPLETED 0:0 con 2 CPU e il nome atteso
+PASSA  piano delle sonde, piano della posa, budget e report della ridge: hash attesi, percorsi canonici
+PASSA  report della ridge: protocollo, completo, passo 5000, piano della posa
+PASSA  runtime della ridge uguale a quello dei tre benchmark della posa (chiavi del controllo del dispatcher)
+PASSA  codice congelato: HEAD atteso, pulito, percorso canonico
+PASSA  sei sorgenti del comparatore: checkout congelato e copia locale uguali agli hash della Review 10
+PASSA  shard dei fit (14) invariati rispetto al piano degli aggregati
+PASSA  sei report presenti, alle uscite del piano
+PASSA  cartelle delle uscite: i tre file attesi e nient'altro
+PASSA  percorsi canonici di report, OOF e audit
+PASSA  report completi: protocollo, tipo, passo, codice e piano
+PASSA  cella, compito, braccio e lettura uguali al piano
+PASSA  una sola firma numerica, quella dei quattordici fit
+PASSA  contenuto del piano e proiezione uguali nei sei report
+PASSA  shard dei report: percorsi e hash del piano, nello stesso ordine
+PASSA  fit nell'audit: 28 per dataset (84 per p1, 56 per p2), righe dell'audit uguali
+PASSA  hash interni dei report uguali ai file accanto (OOF e audit)
+PASSA  dataset di ogni report: quelli del compito, quattro fold da 0 a 3
+PASSA  identita' degli OOF: impronta, finestre e utenti uguali alle ancore della Review 10 in tutte le celle
+PASSA  solutore: convergenza per criterio in tutti i report, nessun fit irrisolto
+PASSA  file raccolti sul Mac: report e audit di ogni aggregato, uguali ai file remoti
+PASSA  uscita del confronto e cartella del checkout del manifest assenti
+PASSA  ID logici del checkout e del confronto mai usati nel ledger
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi
+fatti registrati: {"aggregate_core_hours": 0.09555555555555556, "aggregate_elapsed_seconds": {"SCALING-probe-aggregate-01-20261106": 41, "SCALING-probe-aggregate-02-20261106": 22, "SCALING-probe-aggregate-03-20261106": 34, "SCALING-probe-aggregate-04-20261106": 24, "SCALING-probe-aggregate-05-20261106": 28, "SCALING-probe-aggregate-06-20261106": 23}, "aggregate_max_rss": {"SCALING-probe-aggregate-01-20261106": "1982788K", "SCALING-probe-aggregate-02-20261106": "1044704K", "SCALING-probe-aggregate-03-20261106": "1417764K", "SCALING-probe-aggregate-04-20261106": "1107724K", "SCALING-probe-aggregate-05-20261106": "1661600K", "SCALING-probe-aggregate-06-20261106": "1280484K"}, "reading_status": {"SCALING-probe-aggregate-01-20261106": "solver_converged_by_criterion", "SCALING-probe-aggregate-02-20261106": "solver_converged_by_criterion", "SCALING-probe-aggregate-03-20261106": "solver_converged_by_criterion", "SCALING-probe-aggregate-04-20261106": "solver_converged_by_criterion", "SCALING-probe-aggregate-05-20261106": "solver_converged_by_criterion", "SCALING-probe-aggregate-06-20261106": "solver_converged_by_criterion"}, "scoring_warnings": 0, "serial_queue_jobs": 0}
+AGGREGATI ACCETTATI
+exit validate: 0
+
+## manifest e frozen (comparatore congelato: validate_inputs e make_inputs)
+=== 2026-11-06 13:20:51 manifest
+PASSA  letture di sacct e squeue riuscite (exit 0)
+PASSA  ledger: sei aggregati sottomessi da claude nella campagna
+PASSA  contabilita': sei aggregati COMPLETED 0:0 con 2 CPU e il nome atteso
+PASSA  piano delle sonde, piano della posa, budget e report della ridge: hash attesi, percorsi canonici
+PASSA  report della ridge: protocollo, completo, passo 5000, piano della posa
+PASSA  runtime della ridge uguale a quello dei tre benchmark della posa (chiavi del controllo del dispatcher)
+PASSA  codice congelato: HEAD atteso, pulito, percorso canonico
+PASSA  sei sorgenti del comparatore: checkout congelato e copia locale uguali agli hash della Review 10
+PASSA  shard dei fit (14) invariati rispetto al piano degli aggregati
+PASSA  sei report presenti, alle uscite del piano
+PASSA  cartelle delle uscite: i tre file attesi e nient'altro
+PASSA  percorsi canonici di report, OOF e audit
+PASSA  report completi: protocollo, tipo, passo, codice e piano
+PASSA  cella, compito, braccio e lettura uguali al piano
+PASSA  una sola firma numerica, quella dei quattordici fit
+PASSA  contenuto del piano e proiezione uguali nei sei report
+PASSA  shard dei report: percorsi e hash del piano, nello stesso ordine
+PASSA  fit nell'audit: 28 per dataset (84 per p1, 56 per p2), righe dell'audit uguali
+PASSA  hash interni dei report uguali ai file accanto (OOF e audit)
+PASSA  dataset di ogni report: quelli del compito, quattro fold da 0 a 3
+PASSA  identita' degli OOF: impronta, finestre e utenti uguali alle ancore della Review 10 in tutte le celle
+PASSA  solutore: convergenza per criterio in tutti i report, nessun fit irrisolto
+PASSA  file raccolti sul Mac: report e audit di ogni aggregato, uguali ai file remoti
+PASSA  uscita del confronto e cartella del checkout del manifest assenti
+PASSA  ID logici del checkout e del confronto mai usati nel ledger
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json 162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_plan.json 1b445cfb9701bfb9fe907800a1192ff5c0e1b124c59bd25f46a20b144ea81765
+exit manifest: 0
+=== 13:20:51 frozen
+PASSA  validate_inputs del comparatore congelato
+PASSA  make_inputs del comparatore congelato restituisce lo stesso manifest
+manifest 162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea | contenuto bfa36e7f9af32dace3c976130d352615c96abd91ae64f7c8f19b8ea88ffcd14f
+exit frozen: 0
+=== 13:20:54 fine

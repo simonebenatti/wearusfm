@@ -1,0 +1,59 @@
+{
+ "protocol": "scaling-comparison-inputs-20261104-v1",
+ "checkpoint_step": 5000,
+ "sources": {
+  "scripts/scaling_probe.py": "0b3d40994ea7b6ee189a5831e22a5b298cc0cf2ceaa24908c80242642b5d26b0",
+  "scripts/scaling_pose_readout.py": "238a5cd479e37310235c42dcb0b930d232230ff0d2a8d1d1309b05b7292900cf",
+  "scripts/scaling_projection.py": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+  "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+  "scripts/scaling_reading.py": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5",
+  "scripts/scaling_compare.py": "a3610519b453a3d37747f5a4ce926b2164a40dd503546b22b6c45829085eb938"
+ },
+ "probe_plan": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+  "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+  "bytes": 42708
+ },
+ "pose_plan": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_plan.json",
+  "sha256": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198",
+  "bytes": 9233
+ },
+ "probe_reports": [
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+   "sha256": "d9ef3a4c7d1504f8e0765ba19bd4cf960f4959a22876e67afe7570969c6f5578",
+   "bytes": 21429
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.json",
+   "sha256": "80c3981d42d6af608e200cd8a2056812be0cd1b27984fae2c1222d23718dd1b6",
+   "bytes": 58558
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.json",
+   "sha256": "0721fe9c7480f53c1f1e80397edffa6ee89bf5ecc91e2e5953301c6e22bd4013",
+   "bytes": 21905
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.json",
+   "sha256": "e0230cf0a6a5913ed206e53206232600dccd4112c252ce35fed82b747265b506",
+   "bytes": 59236
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.json",
+   "sha256": "8c77e54d625af90ca551f5139702adfabe1bbfb5e2e7784187b5f4fc2b2b3b73",
+   "bytes": 21431
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.json",
+   "sha256": "2afa31c34170974e29e6c5676d6f35176c097297fc5ff3e90f157b993df6ed16",
+   "bytes": 58505
+  }
+ ],
+ "pose_report": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_ridge/report.json",
+  "sha256": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff",
+  "bytes": 205178
+ }
+}
