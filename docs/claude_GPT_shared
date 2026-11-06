@@ -6615,6 +6615,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (la fase si ferma, nessun rilancio) e comunque quando i posti liberi sono sei.
 - EPN15 alle 09:58:44: gli otto C1 in corsa da 10 h 05 min - 10 h 21 min, limite 16 h.
 
+### 2026-11-06 | Claude | Coordinamento: tabella dei job alle 10:31 (richiesta di Simone); review 10 integrata; letto il passaggio della linea 1 a Claude
+- Richiesta di Simone, 06/11 verso le 10:20: «ok ridammi lo tato della tabellina». Letture di Leonardo alle 10:23:11, 10:24:57 e
+  10:30:53, senza scrivere nulla (`~/wearusfm_local/logs/leonardo_stato_20261106_{1023,1024,1030}_job.txt`, copiate in
+  `results/infra/coordinamento_claude/letture_leonardo/`); ledger comune a 1.267 righe, copia aggiornata in questo commit.
+- Linea 1, scaling: i 14 fit inviati da GPT scaling sono `COMPLETED 0:0`; fit 13 dalle 07:21 alle 08:36 (1 h 15), fit 14 dalle 08:36
+  alle 09:56 (1 h 19). Sei aggregati e confronto non inviati: nessuna riga nel ledger, nessun job nello scheduler.
+- Linea 2, EPN15 (inviati da GPT consolidamento, seguiti dalla sottochat 2): 22 fit su 24 `COMPLETED 0:0`. Sei C1 chiusi fra le 10:16
+  e le 10:26 con durate di 10 h 38–10 h 43; due C1 in corsa (63582253, 63582269) da 10 h 37–10 h 38, limite 16 h.
+- Linea 2, valutazione lunga (sottochat 2): dieci benchmark inviati alle 10:00 (voce b5374e2). Il primo, 63650913, `COMPLETED 0:0`
+  in 23 min 42 s su un limite di 30; il secondo, 63650917, in corsa dalle 10:24:12; otto in attesa col motivo
+  `QOSMaxCpuPerUserLimit`; sei benchmark, 51 fit e 3 aggregati non inviati. Coda seriale dell'utente alle 10:31: 9 job su 10.
+- Linea 3 (GPT logcontrast): continuazione 63593128 ancora `PENDING` per priorita', in coda da 17 h 54 min, priorita' 142.875.
+- `$WORK` alle 10:23: 994,2 GiB usati su 1 TiB, circa 29,8 GiB liberi (30,6 alle 08:19); 1.506.011 file.
+- Letto dal repo, non ricevuto in questa chat: alle 10:25 GPT ha registrato su `main` (dcd2d9a, CLAUDE.md e registro) e sul ramo dello
+  scaling (0f4a9cf) l'istruzione diretta di Simone «Da ora Claude scrive il codice e fa deployment, invii, stato/log e raccolta della
+  linea 1. Tu fai le review di questa linea e resti integratore su main. Linee 2 e 3 invariate», con il fermo operativo di GPT e la
+  review di GPT prima di ogni invio. Nello specchietto ho segnato la linea 1 a Claude e, come lettura mia, la sottochat 1 come chat
+  della linea. Io resto coordinatore: non lancio e non preparo nulla.
+- Stima mia, non una misura: i benchmark chiedono 8 CPU e girano uno alla volta; se durano tutti come il primo, i sedici finiscono
+  fra le 16:10 e le 16:30. Fino ad allora gli aggregati e il confronto dello scaling entrano solo con meno di 10 job dell'utente in
+  coda e girano dopo i benchmark gia' in attesa (nota R-2 della review 10). Dalle 10:25 i due utenti della corsia seriale sono le
+  sottochat 1 e 2 di Claude. Nessuna decisione nuova: vale «Sì, parte subito» di Simone. Lo riferisco a Simone insieme alla tabella.
+- Integrazione: review 10 della sottochat 1 (d3976c3, richiesta di Simone: codice di aggregazione e confronto dello scaling
+  approvato, nessun blocco) integrata nel ramo comune con il merge 60afe2d; conflitto nel solo registro, tenute le voci dei due lati.
+- Specchietto aggiornato (tabella dei job e righe 1-4). Nessun job lanciato, nessuna scrittura su Leonardo, nessun messaggio alle
+  sottochat.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
