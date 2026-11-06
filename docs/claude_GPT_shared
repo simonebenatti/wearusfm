@@ -6568,6 +6568,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di posta; i job rimasti sono delle famiglie FT15, FT, SCALING, LOGSQ, CONSOL, LONG, PILOT e TOKENIZER; copia del ledger identica al
   sorgente; seconda passata dello script senza differenze. Nessun dato da wearable. Nessun job lanciato, nessuna scrittura su Leonardo.
 
+### 2026-11-06 | Claude | Review 10 scaling: codice di aggregazione e confronto approvato, nessun blocco (GPT 97125bd, codice aef665b) (richiesta di Simone)
+- Richiesta di Simone, 06/11: «si mandato. in ealta gpt mi dice che il codice è gia fatto e mi hciede la tua reviione :», con il
+  prompt di GPT («Fai una review mirata del codice che conclude la valutazione scaling 30M/300M a 5.000 passi: aggregazione dei
+  fit e confronto finale. Solo review, senza modificare il codice né lanciare job.»). Solo lettura: nessun job, nessuna modifica.
+- Documento: `docs/reviews/claude_review_scaling_300m_final_stages_code_20261106.md`, con tre script accanto (`..._checks.py`,
+  `..._oof_identity.py`, `..._real_metadata.py`). Ultimo commit coperto di GPT: `97125bd` (riletto sul remoto alle 09:20).
+- **Verdetto: codice APPROVATO, nessun blocco.** Riguarda il codice esistente e le interfacce `probe-aggregate` e `compare` del
+  dispatcher; non approva manifest o comandi non ancora pubblicati e non autorizza il seguito a 19.618.
+- Copertura di oggi, distinta da quella del 04/11 (`a988a72`, codice `0d5f0f9`, lettura e test sintetici): identita' con `aef665b`
+  confermata (in `scripts/`, `src/`, `tests/` cambiano solo il dispatcher di recupero e tre test dei launcher); unica differenza
+  numerica da `0d5f0f9` la correzione della mia F-1 nel comparatore; 165 test di GPT passati; nove prove mie sulla disposizione
+  reale dei 14 fit; artefatti reali letti senza aprire gli score.
+- Prove mie (9 passate): aggregati e confronto identici a quelli costruiti da un solo shard; otto rifiuti di buchi, doppioni e
+  shard estranei; il comparatore rilegge gli shard (aggregato che ne tace uno, shard con una predizione diversa); punti, pesi,
+  segni e intervalli ricalcolati per un'altra via entro 1e-9, anche su array con le dimensioni reali ed etichette testuali.
+- Dati reali (Leonardo 08:50-09:11, `~/wearusfm_local/logs/claude_review10_leonardo_{1,2,3}.txt`): 13 fit su 14 conclusi, 399 fit
+  convergenti, una sola firma numerica, hash interni coerenti; righe, etichette e utenti degli OOF identici fra le celle in tutti
+  i fold disponibili; EPN612 con etichette testuali `<U9`. Fit 14 (63635524) in corso: 11 fit su 21 alle 09:11.
+- Non verificati perche' non esistono: uscita del fit 14, sei aggregati, manifest e uscita del confronto, comandi dei due stadi.
+  Le verifiche da fare sui manifest sono nel §5 del documento, con gli sha256 dei 13 `shard.json` e le cinque impronte
+  `identity_sha256` attese.
+- Budget: 114,42 core-ore consumate alle 09:00 (28,37 prima della ridge, cifra di GPT non ricalcolata oggi); anche col caso
+  peggiore del fit 14 e dei due stadi si resta sotto 150 contro il tetto di 310.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9130,3 +9154,20 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-06 | Claude | Linea 2: caso non coperto dalla decisione sulla coda seriale
 - Se la catena dello scaling si ferma su un fit non riuscito, i fit successivi restano in coda senza poter partire e la coda non si
   svuota. In quel caso non invio i benchmark e chiedo al coordinamento come procedere.
+
+### 2026-11-06 | Claude | Review 10 scaling: nessun blocco; quattro suggerimenti facoltativi (S-1...S-4) e quattro note per il rilascio (R-1...R-4)
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_final_stages_code_20261106.md`. Niente da correggere prima dell'uso.
+- **Facoltativi, da non applicare ora al codice congelato.** S-1: il comparatore non ricontrolla la firma numerica dei singoli
+  shard (lo fa `aggregate`; sui dati reali 13 firme uguali). S-2: il campo `bootstrap` del riepilogo e' copiato dalla regola di
+  lettura, quindi il controllo su quel campo non puo' fallire; i valori usati coincidono per costruzione (2.000 repliche, seme
+  20261102). S-3: `probe-aggregate` riceve i percorsi degli shard senza hash; il legame con gli shard accettati si chiude sui
+  manifest. S-4: il punto di ogni cella e' calcolato due volte per vie diverse senza confronto; nelle mie prove coincidono
+  entro 1e-12.
+- **R-1:** il manifest del confronto contiene gli sha256 degli aggregati, quindi il confronto non si accoda con `afterok`.
+- **R-2 (coordinamento):** dopo il fit 14 la coda seriale e' della linea 2 fino a dieci posti (Simone: «Sì, parte subito»); prima
+  di ogni invio servono posti liberi, e i job da 30G girano uno alla volta (30.800 MB per utente, lettura mia del 05/11): i sei
+  aggregati vanno in fila dietro ai job gia' in attesa.
+- **R-3:** l'intestazione del dispatcher chiede 8 CPU e 3 ore; senza `--cpus-per-task=2 --time=00:10:00` (aggregati) e
+  `--time=00:30:00` (confronto) sulla riga di `sbatch` il dispatcher rifiuta.
+- **R-4:** i limiti di 600 e 1.800 s sono fissi nel dispatcher: un TIMEOUT o uno stop del controllo sul runtime non si ripetono
+  alla cieca. Tempi stimati e non misurati: aggregati sotto i 2 minuti, confronto 6-12 minuti.
