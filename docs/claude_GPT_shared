@@ -7082,6 +7082,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `73524b6` (GPT lo ha visto come file non tracciati e lo ha escluso). Passera' da una sola review di GPT del pacchetto,
   senza review fra benchmark, fit, aggregati e confronto (giudizio g della review; `CLAUDE.md` su main `e114a78`).
 
+### 2026-11-06 | Claude | Linea 1: checkout di campagna verificato; training 5.000 -> 19.618 inviato (63696864)
+- Checkout `SCALING-300M-cont19618-checkout-20261106`, job 63695634: `COMPLETED 0:0`, dalle 20:24:16 alle 20:25:25,
+  1:09 su 2 CPU (0,04 core-ore; richieste 0,17). Log: «checkout di campagna pronto: [...] @ 73524b63be53[...]»,
+  2.070 file, 97M. E' partito prima del previsto: la corsia seriale si e' liberata alle 20:24.
+- Verifica in sola lettura alle 20:32: HEAD del checkout `73524b63be534f81b3db4ade4b7fc7f47129a0f3`; `git status
+  --porcelain --untracked-files=all` vuoto (con `GIT_OPTIONAL_LOCKS=0`); SHA-256 del piano nel checkout
+  `eded0922bd1022c417b8d70523c0c66d1ddb1bd8ad273925ec6d53fda5957d5f`; cartelle del run e delle ricevute ancora assenti;
+  run a 5.000 con i suoi 11 file; nessun job `SCALING` in coda; ID del training mai usato nel ledger; file dei comandi
+  uguale a quello del commit `92320d3`.
+- Riga 3, 20:33:43, eseguita cosi' com'e': `SCALING-300M-train19618-20261106` `sottomesso`, job **63696864**.
+  Lette in coda le risorse: `boost_usr_prod`, QoS `normal`, 1 nodo, 4 GPU, 32 CPU, 480G, limite 14:45:00. Costo
+  massimo 59 GPU-ore (tetto 59) e 472 core-ore al seguito delle GPU, rendicontate a parte. Alle 20:34 e' `PENDING`
+  per `Priority`, senza stima d'avvio dallo scheduler.
+- Rami riletti alle 20:35, subito dopo l'invio: GPT fermo a `213ca5f`, main a `e114a78`. Nessun emendamento e'
+  arrivato dopo la review favorevole.
+- Ricevute dei due invii (copie degli stati del ledger comune) nel ramo d'esecuzione: commit `d7361b0`, pubblicato,
+  SHA remoto verificato. Il commit di deploy `73524b6` e il checkout non sono toccati.
+- Attesa: una lettura di `sacct` ogni 10 minuti dal Mac, in sola lettura, fino allo stato finale. Nessun runner e
+  nessun invio automatico. A qualunque esito diverso da `COMPLETED 0:0`: stop, raccolta e diagnosi, nessun retry.
+  A job riuscito: raccolta delle nove ricevute, pin del checkpoint a 19.618 e consuntivo, poi il piano d'estrazione.
+- `$WORK` alle 20:32: 41,7 GiB liberi (1.030.021.376 KB usati su 1.073.741.824), dopo gli spostamenti su scratch.
+- Certificato ssh valido fino alle 05:50 del 07/11: oltre quell'ora le mie letture falliscono finche' Simone non lo
+  rinnova. Il job non ne dipende.
+- Stadio di valutazione a 19.618: codice e test ancora in scrittura, non committati. Nulla di quello stadio e' inviato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
