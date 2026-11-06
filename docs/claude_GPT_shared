@@ -7055,6 +7055,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   checkout chiede 2 CPU per 5 minuti. Non tocco i job di altre linee: lo segnalo a Simone.
 - Nessun deploy, checkout o job. Prossimo passo: review di GPT; poi deploy, checkout e training.
 
+### 2026-11-06 | Claude | Linea 1: review di GPT favorevole sul training a 19.618; deploy fatto, checkout inviato (63695634)
+- Letta alle 20:10 la review di GPT `213ca5f` (`docs/reviews/gpt_review_scaling_continuation_training_20261106.md`):
+  «APPROVATO. Nessun rilievo bloccante.» sul deploy `73524b6` e sui comandi `92320d3`, piano `eded0922...`.
+  Vale l'istruzione di Simone delle 17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di ogni
+  lancio, ne facciamo una poi lancio.». Eseguo le tre righe di `training_submit_lines.txt` cosi' come sono.
+- Controlli in sola lettura prima del deploy, alle 20:12: ramo d'esecuzione `92320d3` senza modifiche ai file
+  tracciati; codice e piano uguali fra `73524b6` e `92320d3`; riferimento di deploy assente su leonardo; cartelle del
+  checkout, del run e delle ricevute assenti; run a 5.000 con i suoi 11 file; ID logici mai usati nel ledger; `$WORK`
+  con 23,72 GiB liberi.
+- Riga 1, 20:12: `git push leonardo 73524b6...:refs/heads/deploy/scaling_300m_continuation19618_20261106_v1`, nuovo
+  ramo; `git ls-remote leonardo` restituisce `73524b63be534f81b3db4ade4b7fc7f47129a0f3`.
+- Riga 2, 20:12:52: `SCALING-300M-cont19618-checkout-20261106` `sottomesso`, job **63695634** (2 CPU, 4G, 5 minuti,
+  0 GPU-ore). Alle 20:13 e' in attesa per `QOSMaxCpuPerUserLimit`: nella corsia seriale gira da 6 minuti il fit della
+  linea 2 63693570 (8 CPU, limite 3:15:00). Non tocco i job di altre linee: il checkout parte quando si liberano le CPU.
+- Riga 3 (training, al massimo 59 GPU-ore): NON ancora inviata. La invio dopo `COMPLETED 0:0` del checkout e la
+  verifica in sola lettura di HEAD, albero pulito e SHA-256 del piano, con cartelle nuove assenti e run a 5.000 intatto.
+- Precisazioni non bloccanti di GPT recepite senza cambiare i byte del rilascio: (1) un arresto prima del training
+  consuma anche il tempo allocato dei controlli; (2) estrazioni entro 7 GPU-ore richieste piu' 0,15 di tolleranza, lo
+  0,20 e' del training; (3) il controllo su AdamW chiede che il massimo dei contatori avanzi di 14.618; (4) il piano
+  rifiuta partenze dal 21/11 alle 10:15 circa; (5) `check_unchanged` confronta anche inode, mtime e ctime.
+- Per il coordinamento, dal punto (5): un rinfresco dello scratch con `touch` mentre gira un job della linea 1 puo'
+  farlo rifiutare a contenuto invariato. Il giro firmato del 12/11 va lanciato quando nessun job della linea 1 e' in
+  esecuzione, oppure escludendo i file pinnati: lo segnalo a Simone e alla chat di coordinamento, non lo decido io.
+- Stadio di valutazione a 19.618: codice in scrittura nel worktree d'esecuzione, non committato e fuori dal deploy
+  `73524b6` (GPT lo ha visto come file non tracciati e lo ha escluso). Passera' da una sola review di GPT del pacchetto,
+  senza review fra benchmark, fit, aggregati e confronto (giudizio g della review; `CLAUDE.md` su main `e114a78`).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
