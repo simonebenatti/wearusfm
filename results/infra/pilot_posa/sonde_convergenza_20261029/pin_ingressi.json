@@ -1,0 +1,259 @@
+{
+ "source": {
+  "commit": "f7433f441d6bbdc3cc97da47df253c8bf9b24152",
+  "branch": "origin/codex/r3-long-collaudo-20261028",
+  "files": "results/infra/pilot_posa/b19618_20261029/final/reports/*.provenance.json, results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/*/*/*.provenance.json"
+ },
+ "checkpoints": {
+  "B": {
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+   "sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "step": 19618,
+   "config_file_sha256": "d12e7805c9cfb8525f05bae81949deba1f6c5e7a1148a222f08d06236978e47e"
+  },
+  "R3c": {
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+   "sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "step": 19618,
+   "config_file_sha256": "863c06f053cbea5f65b46d6fe94a999286e5c415a57e5ac37a61e6b923fc4794"
+  }
+ },
+ "reports": {
+  "B_p1": {
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.json",
+   "report_sha256": "da91929063c004a335a3cc72d68a93feb5fd5e8bd7ddba7c917fc2a007304362",
+   "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.oof.npz",
+   "oof_sha256": "691b72854426fdf2eeadb1af5030dcf3108fb1f320fa80aff63094387f037a6d",
+   "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/extraction_receipt.json",
+   "extraction_receipt_sha256": "a760b3bc5f6f516b82d057f171a6cb5b155fad9625436ea55185c52c20c62215",
+   "recovery": false,
+   "feature_inputs": {
+    "ninapro_db2": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+     "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+     "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db3": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+     "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b",
+     "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db6": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+     "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd",
+     "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    }
+   }
+  },
+  "B_p2": {
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.json",
+   "report_sha256": "4c2eff1dbc74e8c8f25d857facc41e040ef8e8c828dba0e7869ca9fc1ee85370",
+   "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.oof.npz",
+   "oof_sha256": "9f6f72bf887c5f6ef8b180844a2f05e1459beca99a8bb791fe42391e766cb3f4",
+   "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/extraction_receipt.json",
+   "extraction_receipt_sha256": "545b460140fa8c55a86c8457b2b7d75a5e7153b0e78d277f04c50df255a13b9e",
+   "recovery": false,
+   "feature_inputs": {
+    "epn612": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz",
+     "sha256": "88cf51fc46cb489724905f041cd67c22090af16eab769ac14cbd0b7056b92dc4",
+     "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+     "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    },
+    "uci_emg": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz",
+     "sha256": "8ba7500155f706695ea2fb35cdfa57f41a5c38d96c2511e446426169358323fb",
+     "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+     "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    }
+   }
+  },
+  "R3c_p1": {
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.json",
+   "report_sha256": "3eca8b46ab286d808a2210bd226b75c14b90c8475c81c42ee33df372d569f10b",
+   "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.oof.npz",
+   "oof_sha256": "96ef515ab6ae9d5ec5de63c7e56b2d3bbf955ab5c8a857656c0f39832598ca21",
+   "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/extraction_receipt.json",
+   "extraction_receipt_sha256": "a4f1327d517c1952f74258198bb6607efd10303d9d707160156fe70c7e192f44",
+   "recovery": false,
+   "feature_inputs": {
+    "ninapro_db2": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db2.npz",
+     "sha256": "20c5fc0a30a0324a193c78db99df4a1af7c6c9351201407a5adc6e01fe6f995a",
+     "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db3": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db3.npz",
+     "sha256": "41995de8be516233ea88b9dc7593585ec494adcb91606e85cc151ba5f4249799",
+     "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db6": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db6.npz",
+     "sha256": "a43e88a9e7b3547ff31dfc27cbe83f86b03e48dee74b825f62289738bc7aac57",
+     "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+     "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    }
+   }
+  },
+  "R3c_p2": {
+   "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json",
+   "report_sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+   "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.oof.npz",
+   "oof_sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7",
+   "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/extraction_receipt.json",
+   "extraction_receipt_sha256": "93ad49e988fdc752ffb0ef6e79330996dd297927b866599ab08744088f1de413",
+   "recovery": true,
+   "feature_inputs": {
+    "epn612": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz",
+     "sha256": "8f7f1cbf30a9a20e809a5be7c2efe5e6ebbf220485008e932e4944bf6dadc18b",
+     "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+     "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    },
+    "uci_emg": {
+     "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz",
+     "sha256": "4efd3793b02f317c6710c4f62d2752cf0536fe479784b0e3027b14bef8a3eeab",
+     "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+     "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    }
+   }
+  }
+ },
+ "caches": {
+  "B/p1/ninapro_db2": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+   "cache_sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+   "cache_bytes": 829630314,
+   "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 38544,
+   "n_subjects": 32,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz.provenance.json",
+   "provenance_sha256": "3d3de78d9bb619957f3d8752377daf324b03a6cd912223834d4f26b96f6b73a2"
+  },
+  "B/p1/ninapro_db3": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+   "cache_sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b",
+   "cache_bytes": 211675986,
+   "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 9834,
+   "n_subjects": 8,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz.provenance.json",
+   "provenance_sha256": "ef555cdb86b5a47528da934924f86c5501a0c3617d7ef7c831ac896e39818ae0"
+  },
+  "B/p1/ninapro_db6": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+   "cache_sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd",
+   "cache_bytes": 939642062,
+   "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 33961,
+   "n_subjects": 8,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz.provenance.json",
+   "provenance_sha256": "d7ae2c3a43059530aea41a6fe332edb4770a4d2505cd0046193ed559acd3dcc5"
+  },
+  "B/p2/epn612": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz",
+   "cache_sha256": "88cf51fc46cb489724905f041cd67c22090af16eab769ac14cbd0b7056b92dc4",
+   "cache_bytes": 729002818,
+   "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+   "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+   "n_windows": 47100,
+   "n_subjects": 314,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz.provenance.json",
+   "provenance_sha256": "78dc8c69ef4e7b1ac6d85a138c8be6663942b0f2ae8ed842fc52be3fa0a06164"
+  },
+  "B/p2/uci_emg": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz",
+   "cache_sha256": "8ba7500155f706695ea2fb35cdfa57f41a5c38d96c2511e446426169358323fb",
+   "cache_bytes": 5606442,
+   "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+   "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+   "n_windows": 364,
+   "n_subjects": 19,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz.provenance.json",
+   "provenance_sha256": "a6c89c80a67e4da5c9e736181ab484a29ad14a5dc62d54aa7299c2f6e57ad2f2"
+  },
+  "R3c/p1/ninapro_db2": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db2.npz",
+   "cache_sha256": "20c5fc0a30a0324a193c78db99df4a1af7c6c9351201407a5adc6e01fe6f995a",
+   "cache_bytes": 829630282,
+   "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 38544,
+   "n_subjects": 32,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db2.npz.provenance.json",
+   "provenance_sha256": "f9ac0a7d06b45da63e4d9a3881a8be0a30db5ecbfad2d2bea715d006807bab3a"
+  },
+  "R3c/p1/ninapro_db3": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db3.npz",
+   "cache_sha256": "41995de8be516233ea88b9dc7593585ec494adcb91606e85cc151ba5f4249799",
+   "cache_bytes": 211675954,
+   "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 9834,
+   "n_subjects": 8,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db3.npz.provenance.json",
+   "provenance_sha256": "7f6785c0fe5f7fa3b8ec966c8919dd0045caa1311241571d579d1a0da8bd93b6"
+  },
+  "R3c/p1/ninapro_db6": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db6.npz",
+   "cache_sha256": "a43e88a9e7b3547ff31dfc27cbe83f86b03e48dee74b825f62289738bc7aac57",
+   "cache_bytes": 939642030,
+   "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "n_windows": 33961,
+   "n_subjects": 8,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db6.npz.provenance.json",
+   "provenance_sha256": "6b0dafa1eb1cbdc870edfcb5da1cb24ac3ed426a1a704b6f8ea171da6cf71434"
+  },
+  "R3c/p2/epn612": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz",
+   "cache_sha256": "8f7f1cbf30a9a20e809a5be7c2efe5e6ebbf220485008e932e4944bf6dadc18b",
+   "cache_bytes": 729002786,
+   "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+   "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+   "n_windows": 47100,
+   "n_subjects": 314,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz.provenance.json",
+   "provenance_sha256": "36f73e75c8f68089c305fda080aa7aeb1a87af4d973e672f3e99be15184508fb"
+  },
+  "R3c/p2/uci_emg": {
+   "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz",
+   "cache_sha256": "4efd3793b02f317c6710c4f62d2752cf0536fe479784b0e3027b14bef8a3eeab",
+   "cache_bytes": 5606410,
+   "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+   "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+   "n_windows": 364,
+   "n_subjects": 19,
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "provenance_file": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz.provenance.json",
+   "provenance_sha256": "5837d58f79fd1736014ca896833eb2ad4b40cdf3bb41df404ebc8ad36c901f24"
+  }
+ }
+}

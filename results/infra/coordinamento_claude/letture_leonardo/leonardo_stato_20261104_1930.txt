@@ -1,0 +1,12 @@
+Wed Nov  4 19:14:21 CET 2026
+--- squeue
+63525803 CONSOL-G-30000-20261104 PENDING 0:00 3:00:00 (Priority) normal
+63527446 SCALING-300M-memory-20261104 PENDING 0:00 1:00:00 (Priority) normal
+63525809 CONSOL-G-49046-20261104 PENDING 0:00 3:00:00 (Dependency) normal
+63525805 CONSOL-G-39237-20261104 PENDING 0:00 3:00:00 (Dependency) normal
+63527476 FT-BENCH-v2-20261104 RUNNING 1:58 30:00 lrdn0182 normal
+--- sacct
+    63525730           LOGSQ-preflight-20261104    COMPLETED   00:02:28   00:30:00 2026-11-04T18:26:05 2026-11-04T18:28:33     lrdn0008        wearusfm:LOGSQ-preflight-20261104 
+    63525803            CONSOL-G-30000-20261104      PENDING   00:00:00   03:00:00             Unknown             Unknown None assign+                                          
+    63525805            CONSOL-G-39237-20261104      PENDING   00:00:00   03:00:00             Unknown             Unknown None assign+                                          
+    63525809            CONSOL-G-49046-20261104      PENDING   00:00:00   03:00:00             Unknown             Unknown None assign+                                          

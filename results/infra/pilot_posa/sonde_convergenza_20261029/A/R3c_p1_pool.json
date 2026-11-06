@@ -1,0 +1,1357 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "calibration_protocol": "w1-calibrazione-selezione-v1",
+ "task": "p1",
+ "k_folds": 4,
+ "fold_seed": 20261015,
+ "val_frac": 0.1,
+ "probe_seed": 0,
+ "feature_set": "channel_readout/pool",
+ "window_s": 1.0,
+ "splits": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-sonde-20261029/splits/v1/splits_v1.json",
+ "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+ "extraction_recipe": {
+  "base": {
+   "encoder": "teacher",
+   "feature_set": "model",
+   "window_s": 1.0,
+   "extractor": "probe_p1.dataset_features",
+   "input_audit": "downstream_ab.fingerprint-v1"
+  },
+  "extractor": "harness.channel_readout.extract_channel_readouts",
+  "layers": [
+   "pool",
+   "local",
+   "dec"
+  ],
+  "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+  "dtype": "float16 per canale, float32 pool",
+  "crop_s": 4.0,
+  "k_neighbors": 8,
+  "edge_guard_s": 0.1,
+  "encoder": "teacher"
+ },
+ "features": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1",
+ "code_sha": "f6c89cc1cfb07734345b3adde8bec68b69594fb5",
+ "readout": {
+  "layer": "pool",
+  "k_requested": 0,
+  "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+ },
+ "datasets": {
+  "ninapro_db2": {
+   "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s07",
+    "s08",
+    "s10",
+    "s11",
+    "s14",
+    "s17",
+    "s18",
+    "s19",
+    "s20",
+    "s22",
+    "s23",
+    "s24",
+    "s25",
+    "s26",
+    "s27",
+    "s28",
+    "s29",
+    "s30",
+    "s31",
+    "s32",
+    "s34",
+    "s35",
+    "s36",
+    "s37",
+    "s38",
+    "s39"
+   ],
+   "s": 0.18807368892893647,
+   "folds": [
+    {
+     "train": [
+      "s02",
+      "s04",
+      "s05",
+      "s06",
+      "s07",
+      "s08",
+      "s11",
+      "s17",
+      "s20",
+      "s22",
+      "s23",
+      "s24",
+      "s25",
+      "s26",
+      "s27",
+      "s29",
+      "s30",
+      "s31",
+      "s34",
+      "s36",
+      "s39"
+     ],
+     "val": [
+      "s10",
+      "s18",
+      "s28"
+     ],
+     "held": [
+      "s01",
+      "s03",
+      "s14",
+      "s19",
+      "s32",
+      "s35",
+      "s37",
+      "s38"
+     ],
+     "held_bacc": 0.19728300297936238,
+     "val_bacc": 0.23217958457240195,
+     "train_bacc": 0.39535509409396086,
+     "c": 0.01,
+     "n_train": 24609,
+     "n_val": 4046,
+     "n_held": 9889,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 0,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.20753073403716854,
+      "0.01": 0.23217958457240195,
+      "0.1": 0.21996085005497634,
+      "1.0": 0.19995825959693928,
+      "10.0": 0.18909344556904092,
+      "100.0": 0.17640920071938812
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "7aa3d5295ae6c66efa90873ed0cf91b174be2c22a611305ca392893afe40dd43",
+     "scaler_sha256": "8fef512965937ffdc669cd03bbb796b2d835b6620ece90f7c1e3482b619959ec"
+    },
+    {
+     "train": [
+      "s04",
+      "s05",
+      "s07",
+      "s10",
+      "s11",
+      "s14",
+      "s17",
+      "s18",
+      "s19",
+      "s24",
+      "s25",
+      "s26",
+      "s27",
+      "s28",
+      "s29",
+      "s31",
+      "s35",
+      "s36",
+      "s37",
+      "s38",
+      "s39"
+     ],
+     "val": [
+      "s01",
+      "s03",
+      "s32"
+     ],
+     "held": [
+      "s02",
+      "s06",
+      "s08",
+      "s20",
+      "s22",
+      "s23",
+      "s30",
+      "s34"
+     ],
+     "held_bacc": 0.1756665720341707,
+     "val_bacc": 0.23944897549199262,
+     "train_bacc": 0.5328365182559752,
+     "c": 0.1,
+     "n_train": 26702,
+     "n_val": 3368,
+     "n_held": 8474,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 1,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.21019557475189746,
+      "0.01": 0.225179082460556,
+      "0.1": 0.23944897549199262,
+      "1.0": 0.2316300621739654,
+      "10.0": 0.20860248323659566,
+      "100.0": 0.1973610179747518
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "6db711d75e3271ee5d45a95f2a2b958067f022477d4561f54f9348f3843a17af",
+     "scaler_sha256": "c462f1cc85205ba6061e66df93abd20c737accbdbbd9ec66c097bbcbba9022b9"
+    },
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s03",
+      "s06",
+      "s08",
+      "s14",
+      "s19",
+      "s20",
+      "s22",
+      "s23",
+      "s24",
+      "s27",
+      "s28",
+      "s29",
+      "s30",
+      "s32",
+      "s34",
+      "s35",
+      "s36",
+      "s37",
+      "s38"
+     ],
+     "val": [
+      "s11",
+      "s17",
+      "s39"
+     ],
+     "held": [
+      "s04",
+      "s05",
+      "s07",
+      "s10",
+      "s18",
+      "s25",
+      "s26",
+      "s31"
+     ],
+     "held_bacc": 0.17576211927680493,
+     "val_bacc": 0.18724907882342193,
+     "train_bacc": 0.5625068050856966,
+     "c": 0.1,
+     "n_train": 24113,
+     "n_val": 4398,
+     "n_held": 10033,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 2,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.16250873066369567,
+      "0.01": 0.17896331423744757,
+      "0.1": 0.18724907882342193,
+      "1.0": 0.18194795376658957,
+      "10.0": 0.1700810410603102,
+      "100.0": 0.16332028715993527
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "18991bfce7d3aa09a81a88d773476a790b10d6c4f13b7639b9b87fd8ef916f34",
+     "scaler_sha256": "d0b0f78304de3d57c8263904e59437cafe7829cc9eaff09ba857d36d690d04d6"
+    },
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s03",
+      "s04",
+      "s05",
+      "s06",
+      "s07",
+      "s08",
+      "s10",
+      "s14",
+      "s18",
+      "s20",
+      "s22",
+      "s23",
+      "s25",
+      "s26",
+      "s30",
+      "s31",
+      "s32",
+      "s34",
+      "s35"
+     ],
+     "val": [
+      "s19",
+      "s37",
+      "s38"
+     ],
+     "held": [
+      "s11",
+      "s17",
+      "s24",
+      "s27",
+      "s28",
+      "s29",
+      "s36",
+      "s39"
+     ],
+     "held_bacc": 0.20462922176548234,
+     "val_bacc": 0.21810090811465155,
+     "train_bacc": 0.5554714094735652,
+     "c": 0.1,
+     "n_train": 24594,
+     "n_val": 3802,
+     "n_held": 10148,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 3,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.1761933345578207,
+      "0.01": 0.20439552208393327,
+      "0.1": 0.21810090811465155,
+      "1.0": 0.2089018535234604,
+      "10.0": 0.19333421875664952,
+      "100.0": 0.1850065702434159
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "7ab157850c6f3750c13c9007584256b322cc4022a5fcf9f4f9ec21ebbbfad0a6",
+     "scaler_sha256": "8d1705f76617a18bba4001cdb5ac5d19c322cd52f4eaf95f2babcdb9cfa4504f"
+    }
+   ],
+   "n_classes": 49,
+   "n_windows": 38544,
+   "n_oof_windows": 38544,
+   "oof_rows_sha256": "15a028ca725354ac3adaeab6bce235a0bfdc4e31aa05dc0386e4154dd17b6037",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 12,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 105.91573560131967,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  },
+  "ninapro_db3": {
+   "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s10",
+    "s11"
+   ],
+   "s": 0.027647143550483734,
+   "folds": [
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s05",
+      "s06",
+      "s11"
+     ],
+     "val": [
+      "s10"
+     ],
+     "held": [
+      "s03",
+      "s04"
+     ],
+     "held_bacc": 0.025109597375453763,
+     "val_bacc": 0.03281647640355815,
+     "train_bacc": 0.8574902382089159,
+     "c": 1.0,
+     "n_train": 6206,
+     "n_val": 1224,
+     "n_held": 2404,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 0,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.01188306839516517,
+      "0.01": 0.022700591885499718,
+      "0.1": 0.023650519347523956,
+      "1.0": 0.03281647640355815,
+      "10.0": 0.023992819349962207,
+      "100.0": 0.027568027210884354
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "55038135b04a73a60518141c30c16e131d2ba9f78bf8666ab90cd68a7556c0a2",
+     "scaler_sha256": "ef8055f9f778057bcf28b34ed82e4c28076c471fcff54f725005106e96c7d6c4"
+    },
+    {
+     "train": [
+      "s02",
+      "s03",
+      "s04",
+      "s05",
+      "s11"
+     ],
+     "val": [
+      "s01"
+     ],
+     "held": [
+      "s06",
+      "s10"
+     ],
+     "held_bacc": 0.027011881203352878,
+     "val_bacc": 0.038947276963760144,
+     "train_bacc": 0.35533078400411233,
+     "c": 0.01,
+     "n_train": 6105,
+     "n_val": 950,
+     "n_held": 2779,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 1,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.032405888692387294,
+      "0.01": 0.038947276963760144,
+      "0.1": 0.03330239817025746,
+      "1.0": 0.03614598443352313,
+      "10.0": 0.03100173175637572,
+      "100.0": 0.0259357579984515
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 260,
+     "roles_sha256": "9634a8315e7c4adba55b5731b2119ee047197c9c93f002da779c9856091a68df",
+     "scaler_sha256": "5c861b159f0b04143309efe69aca02001292a9191757ab85ace89034d6616fa8"
+    },
+    {
+     "train": [
+      "s02",
+      "s04",
+      "s05",
+      "s06",
+      "s10"
+     ],
+     "val": [
+      "s03"
+     ],
+     "held": [
+      "s01",
+      "s11"
+     ],
+     "held_bacc": 0.04844191248834297,
+     "val_bacc": 0.024148782056945324,
+     "train_bacc": 0.9866060614116839,
+     "c": 10.0,
+     "n_train": 6948,
+     "n_val": 819,
+     "n_held": 2067,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 2,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.015903351307078012,
+      "0.01": 0.01574864059336109,
+      "0.1": 0.017302397149335926,
+      "1.0": 0.02292554384391119,
+      "10.0": 0.024148782056945324,
+      "100.0": 0.02208610550447285
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 217,
+     "roles_sha256": "ff8474a154ab95dfb1b81d338e2b42cc11bab912ad8939d5735039e7a56a2f35",
+     "scaler_sha256": "75872df65746a374a08a8649039675a52bed595e615b507fd07a0a81f55f8f3c"
+    },
+    {
+     "train": [
+      "s01",
+      "s03",
+      "s04",
+      "s10",
+      "s11"
+     ],
+     "val": [
+      "s06"
+     ],
+     "held": [
+      "s02",
+      "s05"
+     ],
+     "held_bacc": 0.020946730521563938,
+     "val_bacc": 0.025279319939119343,
+     "train_bacc": 0.8213331387684876,
+     "c": 1.0,
+     "n_train": 5695,
+     "n_val": 1555,
+     "n_held": 2584,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 3,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.01171595575808874,
+      "0.01": 0.021400642368384303,
+      "0.1": 0.023621765421711207,
+      "1.0": 0.025279319939119343,
+      "10.0": 0.02040816326530612,
+      "100.0": 0.022742430305455516
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 0,
+     "fits_with_convergence_warning": 0,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "6d1db6aea1ddacef2029d0c6917d51b3fb58fef307d8f8878bbe2b9fce3fba97",
+     "scaler_sha256": "ac31af9d23fe0fdcdc30bde44cb9103267051aa0265a30b4a4a48893cf64be10"
+    }
+   ],
+   "n_classes": 49,
+   "n_windows": 9834,
+   "n_oof_windows": 9834,
+   "oof_rows_sha256": "5ff054011b40dd8919ccff88e69301a7ef495d843ddafc93cddf064a80d5aeed",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 12,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 92.04466568127206,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  },
+  "ninapro_db6": {
+   "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s06",
+    "s07",
+    "s08",
+    "s09",
+    "s10"
+   ],
+   "s": 0.3470427529772203,
+   "folds": [
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s07",
+      "s08",
+      "s10"
+     ],
+     "val": [
+      "s09"
+     ],
+     "held": [
+      "s03",
+      "s06"
+     ],
+     "held_bacc": 0.37030663562261523,
+     "val_bacc": 0.3680102897070149,
+     "train_bacc": 0.6401091050155043,
+     "c": 0.01,
+     "n_train": 21508,
+     "n_val": 3925,
+     "n_held": 8528,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 0,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.3654081540835037,
+      "0.01": 0.3680102897070149,
+      "0.1": 0.3389366645586134,
+      "1.0": 0.29428132149194014,
+      "10.0": 0.27451819381134684,
+      "100.0": 0.26717139430639214
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 1,
+     "fits_with_convergence_warning": 1,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "d201006f078c976a773c3933c3186f192cabd67b1ee08e452a142cce0016df24",
+     "scaler_sha256": "47edce2317087138a5a89c87a41e73daa90e16a207f1b94f4de12a70949247ef"
+    },
+    {
+     "train": [
+      "s02",
+      "s03",
+      "s06",
+      "s07",
+      "s10"
+     ],
+     "val": [
+      "s01"
+     ],
+     "held": [
+      "s08",
+      "s09"
+     ],
+     "held_bacc": 0.3711923726072551,
+     "val_bacc": 0.3589481379821157,
+     "train_bacc": 0.6457149398099998,
+     "c": 0.01,
+     "n_train": 21570,
+     "n_val": 4452,
+     "n_held": 7939,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 1,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.35487211909531985,
+      "0.01": 0.3589481379821157,
+      "0.1": 0.35320118055918626,
+      "1.0": 0.35045700022911397,
+      "10.0": 0.3440287798785634,
+      "100.0": 0.33903350828348117
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 1,
+     "fits_with_convergence_warning": 1,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "9b90c79a5bf1ad49b107131e9afbbd0e2f7aa5c38709147739813baffefd4a51",
+     "scaler_sha256": "1b2bd466dfdee41918bc95e6650fe569867d7e4084db03ca468060a8e86327f7"
+    },
+    {
+     "train": [
+      "s02",
+      "s06",
+      "s07",
+      "s08",
+      "s09"
+     ],
+     "val": [
+      "s03"
+     ],
+     "held": [
+      "s01",
+      "s10"
+     ],
+     "held_bacc": 0.2995680648087115,
+     "val_bacc": 0.36970822758614225,
+     "train_bacc": 0.7127082712740587,
+     "c": 0.1,
+     "n_train": 20827,
+     "n_val": 4196,
+     "n_held": 8938,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 2,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.33096627189382,
+      "0.01": 0.3420489999349857,
+      "0.1": 0.36970822758614225,
+      "1.0": 0.3682903168846128,
+      "10.0": 0.36913252330773727,
+      "100.0": 0.36528880895376786
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 1,
+     "fits_with_convergence_warning": 1,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "5f92ac02dc1afa310d4eea3511b7794982a3a953f274191e296c4dd0f01c66a6",
+     "scaler_sha256": "b49b3b45201929ad6c35ac57b4d4a4b27d0df2e769d3c1d36efb01ff34e898c9"
+    },
+    {
+     "train": [
+      "s01",
+      "s03",
+      "s06",
+      "s09",
+      "s10"
+     ],
+     "val": [
+      "s08"
+     ],
+     "held": [
+      "s02",
+      "s07"
+     ],
+     "held_bacc": 0.35656849447097355,
+     "val_bacc": 0.4047609998065786,
+     "train_bacc": 0.7951384323820063,
+     "c": 100.0,
+     "n_train": 21391,
+     "n_val": 4014,
+     "n_held": 8556,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0,
+     "fold": 3,
+     "max_iter": 3000,
+     "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+     "val_scores": {
+      "0.001": 0.3585577786643546,
+      "0.01": 0.37445321272172727,
+      "0.1": 0.39060648955414184,
+      "1.0": 0.3993558826369976,
+      "10.0": 0.4045358853501085,
+      "100.0": 0.4047609998065786
+     },
+     "n_fits": 7,
+     "fits_reached_limit": 2,
+     "fits_with_convergence_warning": 2,
+     "fits_anomalous_stop": 0,
+     "bootstrap_warnings": 0,
+     "roles_sha256": "5e00df3180d832821e46125179450492aaeb3ee3968634a850420ddc827036fd",
+     "scaler_sha256": "3a0e6699c6d1588e42004e39d0f9811e040121d3a71b2349256663960d412e9e"
+    }
+   ],
+   "n_classes": 7,
+   "n_windows": 33961,
+   "n_oof_windows": 33961,
+   "oof_rows_sha256": "ae80150dc25cfbde54c4f3b07fe818adea7f2861b032a5129b3b70c0b9399e79",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 16,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 107.06135307317534,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  }
+ },
+ "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+ "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+ "model_dim": 384,
+ "weights": {
+  "ninapro_db2": 0.6153846153846154,
+  "ninapro_db3": 0.23076923076923078,
+  "ninapro_db6": 0.15384615384615385
+ },
+ "S": 0.17550895754133722,
+ "S_se": 0.00702010962199905,
+ "kind": "aggregate",
+ "complete": true,
+ "control_protocol": "sonde_convergenza_v1",
+ "phase": "A",
+ "max_iter": 3000,
+ "encoder": "R3c",
+ "solver_recipe": {
+  "estimator": "sklearn.linear_model.LogisticRegression",
+  "params": {
+   "class_weight": "balanced",
+   "dual": false,
+   "fit_intercept": true,
+   "intercept_scaling": 1,
+   "l1_ratio": null,
+   "max_iter": 3000,
+   "multi_class": "auto",
+   "n_jobs": null,
+   "penalty": "l2",
+   "random_state": 0,
+   "solver": "lbfgs",
+   "tol": 0.0001,
+   "verbose": 0,
+   "warm_start": false
+  },
+  "c_grid": [
+   0.001,
+   0.01,
+   0.1,
+   1.0,
+   10.0,
+   100.0
+  ],
+  "max_iter": 3000,
+  "tie_break": "accuratezza bilanciata di validazione massima; a parita' il C minore (regolarizzazione piu' forte)",
+  "refit": "sul solo train del fold, col C scelto sulla validazione",
+  "scaler": "StandardScaler stimato sul solo train del fold",
+  "versions": {
+   "sklearn": "1.4.1.post1",
+   "numpy": "1.26.4",
+   "scipy": "1.12.0"
+  }
+ },
+ "solver_recipe_sha256": "bd5e7b7776bc8465799ebf6b216c3b55076d44a32129b692f16ef2e4e5de3454",
+ "numeric_context": {
+  "feature_dtype": "float32",
+  "versions": {
+   "python": "3.11.6",
+   "numpy": "1.26.4",
+   "scipy": "1.12.0",
+   "sklearn": "1.4.1.post1"
+  },
+  "threadpools": [
+   {
+    "user_api": "blas",
+    "internal_api": "openblas",
+    "version": "0.3.21.dev",
+    "threading_layer": "pthreads",
+    "num_threads": 8
+   },
+   {
+    "user_api": "blas",
+    "internal_api": "openblas",
+    "version": "0.3.23.dev",
+    "threading_layer": "pthreads",
+    "num_threads": 8
+   },
+   {
+    "user_api": "openmp",
+    "internal_api": "openmp",
+    "version": "None",
+    "threading_layer": null,
+    "num_threads": 8
+   }
+  ],
+  "thread_limits": {
+   "OMP_NUM_THREADS": "8",
+   "OPENBLAS_NUM_THREADS": "8",
+   "MKL_NUM_THREADS": "8"
+  }
+ },
+ "numeric_sha256": "e5b710ec622035ebd6fbe9ed8d3424d734b44a33e38f897041fbd78fde5a7215",
+ "environment": {
+  "fits": {
+   "python": "3.11.6",
+   "numpy": "1.26.4",
+   "scipy": "1.12.0",
+   "sklearn": "1.4.1.post1"
+  },
+  "shards": [
+   {
+    "python": "3.11.6",
+    "platform": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpoolctl": "3.4.0",
+    "threadpools": [
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+      "version": "0.3.23.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     },
+     {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 8,
+      "prefix": "libgomp",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scikit_learn.libs/libgomp-a34b3233.so.1.0.0",
+      "version": null
+     },
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so",
+      "version": "0.3.21.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     }
+    ],
+    "env": {
+     "OMP_NUM_THREADS": "8",
+     "OPENBLAS_NUM_THREADS": "8",
+     "MKL_NUM_THREADS": "8",
+     "SLURM_CPUS_PER_TASK": "8",
+     "SLURM_JOB_ID": "62732284",
+     "SLURM_JOB_NAME": "PILOT-POSA-SONDE-A-R3c-p1-db2a-20261029"
+    }
+   },
+   {
+    "python": "3.11.6",
+    "platform": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpoolctl": "3.4.0",
+    "threadpools": [
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+      "version": "0.3.23.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     },
+     {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 8,
+      "prefix": "libgomp",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scikit_learn.libs/libgomp-a34b3233.so.1.0.0",
+      "version": null
+     },
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so",
+      "version": "0.3.21.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     }
+    ],
+    "env": {
+     "OMP_NUM_THREADS": "8",
+     "OPENBLAS_NUM_THREADS": "8",
+     "MKL_NUM_THREADS": "8",
+     "SLURM_CPUS_PER_TASK": "8",
+     "SLURM_JOB_ID": "62732286",
+     "SLURM_JOB_NAME": "PILOT-POSA-SONDE-A-R3c-p1-db2b-20261029"
+    }
+   },
+   {
+    "python": "3.11.6",
+    "platform": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpoolctl": "3.4.0",
+    "threadpools": [
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+      "version": "0.3.23.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     },
+     {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 8,
+      "prefix": "libgomp",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scikit_learn.libs/libgomp-a34b3233.so.1.0.0",
+      "version": null
+     },
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so",
+      "version": "0.3.21.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     }
+    ],
+    "env": {
+     "OMP_NUM_THREADS": "8",
+     "OPENBLAS_NUM_THREADS": "8",
+     "MKL_NUM_THREADS": "8",
+     "SLURM_CPUS_PER_TASK": "8",
+     "SLURM_JOB_ID": "62732288",
+     "SLURM_JOB_NAME": "PILOT-POSA-SONDE-A-R3c-p1-db3-20261029"
+    }
+   },
+   {
+    "python": "3.11.6",
+    "platform": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpoolctl": "3.4.0",
+    "threadpools": [
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+      "version": "0.3.23.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     },
+     {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 8,
+      "prefix": "libgomp",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scikit_learn.libs/libgomp-a34b3233.so.1.0.0",
+      "version": null
+     },
+     {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 8,
+      "prefix": "libopenblas",
+      "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so",
+      "version": "0.3.21.dev",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+     }
+    ],
+    "env": {
+     "OMP_NUM_THREADS": "8",
+     "OPENBLAS_NUM_THREADS": "8",
+     "MKL_NUM_THREADS": "8",
+     "SLURM_CPUS_PER_TASK": "8",
+     "SLURM_JOB_ID": "62732290",
+     "SLURM_JOB_NAME": "PILOT-POSA-SONDE-A-R3c-p1-db6-20261029"
+    }
+   }
+  ],
+  "aggregator": {
+   "python": "3.11.6",
+   "platform": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+   "numpy": "1.26.4",
+   "scipy": "1.12.0",
+   "sklearn": "1.4.1.post1",
+   "threadpoolctl": "3.4.0",
+   "threadpools": [
+    {
+     "user_api": "blas",
+     "internal_api": "openblas",
+     "num_threads": 2,
+     "prefix": "libopenblas",
+     "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+     "version": "0.3.23.dev",
+     "threading_layer": "pthreads",
+     "architecture": "SkylakeX"
+    },
+    {
+     "user_api": "openmp",
+     "internal_api": "openmp",
+     "num_threads": 2,
+     "prefix": "libgomp",
+     "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scikit_learn.libs/libgomp-a34b3233.so.1.0.0",
+     "version": null
+    },
+    {
+     "user_api": "blas",
+     "internal_api": "openblas",
+     "num_threads": 2,
+     "prefix": "libopenblas",
+     "filepath": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so",
+     "version": "0.3.21.dev",
+     "threading_layer": "pthreads",
+     "architecture": "SkylakeX"
+    }
+   ],
+   "env": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "SLURM_CPUS_PER_TASK": "2",
+    "SLURM_JOB_ID": "62768227",
+    "SLURM_JOB_NAME": "PILOT-POSA-SONDE-A-R3c-p1-aggregate-20261029"
+   }
+  }
+ },
+ "analysis_code_sha": "f6c89cc1cfb07734345b3adde8bec68b69594fb5",
+ "cache_code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+ "cache_pins": {
+  "ninapro_db2": {
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db2.npz",
+   "sha256": "20c5fc0a30a0324a193c78db99df4a1af7c6c9351201407a5adc6e01fe6f995a",
+   "provenance_sha256": "f9ac0a7d06b45da63e4d9a3881a8be0a30db5ecbfad2d2bea715d006807bab3a",
+   "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "extraction_receipt_sha256": "a4f1327d517c1952f74258198bb6607efd10303d9d707160156fe70c7e192f44"
+  },
+  "ninapro_db3": {
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db3.npz",
+   "sha256": "41995de8be516233ea88b9dc7593585ec494adcb91606e85cc151ba5f4249799",
+   "provenance_sha256": "7f6785c0fe5f7fa3b8ec966c8919dd0045caa1311241571d579d1a0da8bd93b6",
+   "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "extraction_receipt_sha256": "a4f1327d517c1952f74258198bb6607efd10303d9d707160156fe70c7e192f44"
+  },
+  "ninapro_db6": {
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/ninapro_db6.npz",
+   "sha256": "a43e88a9e7b3547ff31dfc27cbe83f86b03e48dee74b825f62289738bc7aac57",
+   "provenance_sha256": "6b0dafa1eb1cbdc870edfcb5da1cb24ac3ed426a1a704b6f8ea171da6cf71434",
+   "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "extraction_receipt_sha256": "a4f1327d517c1952f74258198bb6607efd10303d9d707160156fe70c7e192f44"
+  }
+ },
+ "pins_sha256": "0413d1a8cdd844c4d8000af09abc7a1eea26dfe6fd143df27646cd601f7125c5",
+ "gate": null,
+ "shards": [
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1/shard_db2a/shard.json",
+   "sha256": "3f7f5842e018d0c31555c1504e24b25df3a56d97dc410edae20d9bfe48785640",
+   "datasets": [
+    "ninapro_db2"
+   ],
+   "folds": [
+    0,
+    1
+   ],
+   "elapsed_s": 1656.951643705368,
+   "oof_sha256": "81917bf5024c16c4bf2930c466d5010ae8b86432f9899f0ac822251505ad74fa",
+   "audit_sha256": "56587ed4c40f5ce6e093ec4a3bf713fe5f5d79787a7660466ca377e279a44fe4"
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1/shard_db2b/shard.json",
+   "sha256": "c459697c211fca5d85b4f3f9f2da11505fdee0981f3c8cf9aae39d0d98e8f61b",
+   "datasets": [
+    "ninapro_db2"
+   ],
+   "folds": [
+    2,
+    3
+   ],
+   "elapsed_s": 1627.4540882110596,
+   "oof_sha256": "4986904f98d90e5b7d8ecaaaa1aba04768f4889e08f5c5246dbc19e9375b4070",
+   "audit_sha256": "b4613da8320536a2a3e31cd573f868f371dafe56fdc3b2756e2e156e469d5416"
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1/shard_db3/shard.json",
+   "sha256": "4ac401050ed6c447938616158974d790ba494bb710a85b9ebd3a65afac09633b",
+   "datasets": [
+    "ninapro_db3"
+   ],
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "elapsed_s": 751.4038963317871,
+   "oof_sha256": "2e2c62df8b5ecd5a6eb383af6a5e97f9c2a76b5bbf80a7c58e9eb8f0fd7e120c",
+   "audit_sha256": "34c23613aa6cddcb6043aa66f0e5a07ddf876d286f0c18d98cb2ccff518062bc"
+  },
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1/shard_db6/shard.json",
+   "sha256": "5be04c43cf63f419fa3ccce26c85b4a251e87bc5d58ffa76c0ef1ae6239aa8da",
+   "datasets": [
+    "ninapro_db6"
+   ],
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "elapsed_s": 712.0309545993805,
+   "oof_sha256": "0658029dcfdfead1bb5b984daf6a3918d3e887c0717d1be4faf4c42aa93db533",
+   "audit_sha256": "d35ff1014d10184184ad58273f196ed0758bd49b31c4c9544626a253c3280ba4"
+  }
+ ],
+ "elapsed_s": 4747.840582847595,
+ "audit_summary": {
+  "n_records": 84,
+  "reached_limit": 5,
+  "convergence_warnings": 5,
+  "anomalous_stop": 0,
+  "exceptions": 0,
+  "by_dataset": {
+   "ninapro_db2": {
+    "n_fits": 28,
+    "reached_limit": 0,
+    "convergence_warnings": 0,
+    "selected_reached_limit": 0,
+    "refit_reached_limit": 0
+   },
+   "ninapro_db3": {
+    "n_fits": 28,
+    "reached_limit": 0,
+    "convergence_warnings": 0,
+    "selected_reached_limit": 0,
+    "refit_reached_limit": 0
+   },
+   "ninapro_db6": {
+    "n_fits": 28,
+    "reached_limit": 5,
+    "convergence_warnings": 5,
+    "selected_reached_limit": 1,
+    "refit_reached_limit": 1
+   }
+  },
+  "positions": [
+   {
+    "dataset": "ninapro_db6",
+    "fold": 0,
+    "fit_phase": "candidate",
+    "C": 100.0,
+    "n_iter": 3000,
+    "reached_limit": true,
+    "convergence_warnings": 1,
+    "selected": false
+   },
+   {
+    "dataset": "ninapro_db6",
+    "fold": 1,
+    "fit_phase": "candidate",
+    "C": 100.0,
+    "n_iter": 3000,
+    "reached_limit": true,
+    "convergence_warnings": 1,
+    "selected": false
+   },
+   {
+    "dataset": "ninapro_db6",
+    "fold": 2,
+    "fit_phase": "candidate",
+    "C": 100.0,
+    "n_iter": 3000,
+    "reached_limit": true,
+    "convergence_warnings": 1,
+    "selected": false
+   },
+   {
+    "dataset": "ninapro_db6",
+    "fold": 3,
+    "fit_phase": "candidate",
+    "C": 100.0,
+    "n_iter": 3000,
+    "reached_limit": true,
+    "convergence_warnings": 1,
+    "selected": true
+   },
+   {
+    "dataset": "ninapro_db6",
+    "fold": 3,
+    "fit_phase": "refit",
+    "C": 100.0,
+    "n_iter": 3000,
+    "reached_limit": true,
+    "convergence_warnings": 1,
+    "selected": null
+   }
+  ]
+ },
+ "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1_pool.oof.npz",
+ "oof_sha256": "a28db1a460b772c23335b81b0fab010578b76ac322460d4dd0d734b2abd44f7d",
+ "audit": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p1_pool.json.audit.jsonl",
+  "sha256": "9e11d6a5ee1515d1faad179d99d3a388dc1a18455cbca07a9d4bed121e97542d",
+  "n_records": 84
+ }
+}

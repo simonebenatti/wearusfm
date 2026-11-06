@@ -329,7 +329,8 @@ def validate_report(report, entry, plan_sha):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    # allow_abbrev=False (critico, 29/10): `--pla`/`--ou` non devono sostituire il piano e l'uscita fissati dal launcher.
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("stage", choices=("plan", "inventory", "benchmark", "run", "compare"))
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--archive", type=Path, default=ROOT / "results/infra/pilot_posa/b19618_20261029/final")

@@ -1,0 +1,106 @@
+{
+ "protocol": "sonde_convergenza_v1",
+ "gate": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/gate.json",
+  "sha256": "adb6550bc5416ca923d1279b25674648be49ff9dc6bf20ae16be1b6aec72144e",
+  "solver_recipe_sha256": "bd5e7b7776bc8465799ebf6b216c3b55076d44a32129b692f16ef2e4e5de3454",
+  "numeric_sha256": "e5b710ec622035ebd6fbe9ed8d3424d734b44a33e38f897041fbd78fde5a7215"
+ },
+ "analysis_code_sha": "f6c89cc1cfb07734345b3adde8bec68b69594fb5",
+ "analysis_code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-sonde-20261029",
+ "frozen": true,
+ "tasks": {
+  "p1": {
+   "B_minus_R3c_A": {
+    "delta": -0.005562426500025336,
+    "ci95": [
+     -0.011038182674065302,
+     -0.00026464330835547164
+    ],
+    "paired_subject_se": 0.0027315935273928365
+   },
+   "B_minus_R3c_B": {
+    "delta": -0.005526558035394674,
+    "ci95": [
+     -0.01105344462990066,
+     -0.00017161131445000955
+    ],
+    "paired_subject_se": 0.002744392363262164
+   },
+   "R3c_B_minus_A": {
+    "delta": -3.5868464630661734e-05,
+    "ci95": [
+     -0.0001274678170324034,
+     2.2931397056524095e-05
+    ],
+    "paired_subject_se": 4.190959646399373e-05
+   },
+   "B_B_minus_A": {
+    "delta": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "paired_subject_se": 0.0
+   },
+   "delta_of_deltas": {
+    "delta": 3.5868464630661734e-05,
+    "ci95": [
+     -2.293139705652411e-05,
+     0.00012746781703240338
+    ],
+    "paired_subject_se": 4.190959646399373e-05
+   },
+   "residual_warnings_at_12000": {
+    "B": 0,
+    "R3c": 0
+   }
+  },
+  "p2": {
+   "B_minus_R3c_A": {
+    "delta": -0.012327652664037902,
+    "ci95": [
+     -0.02997250474260461,
+     0.005761470977837396
+    ],
+    "paired_subject_se": 0.009198583782076298
+   },
+   "B_minus_R3c_B": {
+    "delta": -0.011722557122636701,
+    "ci95": [
+     -0.0295552104293206,
+     0.006506697201183001
+    ],
+    "paired_subject_se": 0.009201570080288437
+   },
+   "R3c_B_minus_A": {
+    "delta": -0.0005201698513799258,
+    "ci95": [
+     -0.0009129511677282737,
+     -0.00015923566878983387
+    ],
+    "paired_subject_se": 0.00019133394301519509
+   },
+   "B_B_minus_A": {
+    "delta": 8.492569002127581e-05,
+    "ci95": [
+     -0.0004248938428875776,
+     0.0006050955414014236
+    ],
+    "paired_subject_se": 0.00026376588324203935
+   },
+   "delta_of_deltas": {
+    "delta": 0.0006050955414012016,
+    "ci95": [
+     1.0615711252714988e-05,
+     0.0012001061571126454
+    ],
+    "paired_subject_se": 0.00031238642801648564
+   },
+   "residual_warnings_at_12000": {
+    "B": 0,
+    "R3c": 0
+   }
+  }
+ }
+}

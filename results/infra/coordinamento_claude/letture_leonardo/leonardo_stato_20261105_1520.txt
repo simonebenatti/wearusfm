@@ -1,0 +1,48 @@
+login07.leonardo.local
+05/11 15:16:23
+--- squeue
+  63581718           FT15-EPN-finetune-F0-20261105-C0   RUNNING    2:14:12   16:00:00 lrdn0060
+  63581725           FT15-EPN-finetune-F0-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63581735           FT15-EPN-finetune-F1-20261105-C0   RUNNING    2:14:12   16:00:00 lrdn0103
+  63581741           FT15-EPN-finetune-F1-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63581742           FT15-EPN-finetune-F2-20261105-C0   RUNNING    2:14:12   16:00:00 lrdn0244
+  63581745           FT15-EPN-finetune-F2-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63581750           FT15-EPN-finetune-F3-20261105-C0   RUNNING    2:13:29   16:00:00 lrdn0076
+  63581751           FT15-EPN-finetune-F3-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63581664             FT15-EPN-frozen-F0-20261105-C0   RUNNING    2:14:55    6:00:00 lrdn0010
+  63581670             FT15-EPN-frozen-F0-20261105-C1   PENDING       0:00    6:00:00 (Dependency)
+  63581672             FT15-EPN-frozen-F1-20261105-C0   RUNNING    2:14:55    6:00:00 lrdn0014
+  63581673             FT15-EPN-frozen-F1-20261105-C1   PENDING       0:00    6:00:00 (Dependency)
+  63581674             FT15-EPN-frozen-F2-20261105-C0   RUNNING    2:14:55    6:00:00 lrdn0015
+  63581677             FT15-EPN-frozen-F2-20261105-C1   PENDING       0:00    6:00:00 (Dependency)
+  63581682             FT15-EPN-frozen-F3-20261105-C0   RUNNING    2:14:12    6:00:00 lrdn0034
+  63581713             FT15-EPN-frozen-F3-20261105-C1   PENDING       0:00    6:00:00 (Dependency)
+  63581768            FT15-EPN-scratch-F0-20261105-C0   RUNNING    2:13:29   16:00:00 lrdn0058
+  63581837            FT15-EPN-scratch-F0-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63581887            FT15-EPN-scratch-F1-20261105-C0   RUNNING    2:09:54   16:00:00 lrdn0124
+  63582180            FT15-EPN-scratch-F1-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63582244            FT15-EPN-scratch-F2-20261105-C0   RUNNING    2:02:16   16:00:00 lrdn0050
+  63582253            FT15-EPN-scratch-F2-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+  63582258            FT15-EPN-scratch-F3-20261105-C0   RUNNING    2:02:16   16:00:00 lrdn0165
+  63582269            FT15-EPN-scratch-F3-20261105-C1   PENDING       0:00   16:00:00 (Dependency)
+--- sacct dalle 14:30
+  63580385              SCALING-300M-eval-pose-20261105    COMPLETED    0:0  2026-11-05T12:45:45  2026-11-05T14:43:18   01:57:33                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581664               FT15-EPN-frozen-F0-20261105-C0      RUNNING    0:0  2026-11-05T13:01:29              Unknown   02:14:55                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581672               FT15-EPN-frozen-F1-20261105-C0      RUNNING    0:0  2026-11-05T13:01:29              Unknown   02:14:55                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581674               FT15-EPN-frozen-F2-20261105-C0      RUNNING    0:0  2026-11-05T13:01:29              Unknown   02:14:55                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581682               FT15-EPN-frozen-F3-20261105-C0      RUNNING    0:0  2026-11-05T13:02:12              Unknown   02:14:12                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581718             FT15-EPN-finetune-F0-20261105-C0      RUNNING    0:0  2026-11-05T13:02:12              Unknown   02:14:12                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581735             FT15-EPN-finetune-F1-20261105-C0      RUNNING    0:0  2026-11-05T13:02:12              Unknown   02:14:12                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581742             FT15-EPN-finetune-F2-20261105-C0      RUNNING    0:0  2026-11-05T13:02:12              Unknown   02:14:12                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581750             FT15-EPN-finetune-F3-20261105-C0      RUNNING    0:0  2026-11-05T13:02:55              Unknown   02:13:29                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581768              FT15-EPN-scratch-F0-20261105-C0      RUNNING    0:0  2026-11-05T13:02:55              Unknown   02:13:29                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63581887              FT15-EPN-scratch-F1-20261105-C0      RUNNING    0:0  2026-11-05T13:06:30              Unknown   02:09:54                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63582244              FT15-EPN-scratch-F2-20261105-C0      RUNNING    0:0  2026-11-05T13:14:08              Unknown   02:02:16                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63582258              FT15-EPN-scratch-F3-20261105-C0      RUNNING    0:0  2026-11-05T13:14:08              Unknown   02:02:16                   billing=8,cpu=8,gres/gpu=1,mem=100G,node=1 
+  63590929             LOGSQ-initdiag-checkout-20261105    COMPLETED    0:0  2026-11-05T14:52:39  2026-11-05T14:53:25   00:00:46         billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1 
+  63591184                  LOGSQ-initdiag-run-20261105    COMPLETED    0:0  2026-11-05T14:56:56  2026-11-05T14:57:52   00:00:56                 billing=32,cpu=32,gres/gpu=4,mem=240G,node=1 
+  63591447          SCALING-cpu-plans-checkout-20261105    COMPLETED    0:0  2026-11-05T14:59:44  2026-11-05T15:00:28   00:00:44         billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1 
+  63591791               SCALING-pose-validate-20261105    COMPLETED    0:0  2026-11-05T15:03:45  2026-11-05T15:04:30   00:00:45        billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1 
+  63592426              SCALING-pose-bench-30M-20261105    COMPLETED    0:0  2026-11-05T15:11:00  2026-11-05T15:11:22   00:00:22        billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1 
+  63592917             SCALING-pose-bench-300M-20261105    COMPLETED    0:0  2026-11-05T15:15:05  2026-11-05T15:15:35   00:00:30        billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1 
+  63592939             LOGSQ-training-checkout-20261105    COMPLETED    0:0  2026-11-05T15:15:43  2026-11-05T15:16:07   00:00:24         billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1 

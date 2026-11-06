@@ -1,0 +1,31 @@
+Wed Nov  4 20:51:06 CET 2026
+--- squeue per stato (solo le tre linee)
+CONSOL-G PENDING 3
+FT-EPN PENDING 8
+FT-EPN RUNNING 12
+SCALING-300M RUNNING 1
+--- sacct FT-EPN / CONSOL / SCALING / LOGSQ (oggi)
+    63525708           CONSOL-checkout-20261104    COMPLETED   00:00:24 2026-11-04T18:26:27    login13 
+    63525803            CONSOL-G-30000-20261104      PENDING   00:00:00             Unknown None assi+ 
+    63527980     FT-EPN-finetune-F0-20261104-C0      RUNNING   01:23:47             Unknown   lrdn0121 
+    63527982     FT-EPN-finetune-F1-20261104-C0      RUNNING   01:23:47             Unknown   lrdn0552 
+    63527986     FT-EPN-finetune-F2-20261104-C0      RUNNING   01:23:47             Unknown   lrdn0971 
+    63527990     FT-EPN-finetune-F3-20261104-C0      RUNNING   01:23:47             Unknown   lrdn0971 
+    63527972       FT-EPN-frozen-F0-20261104-C0    COMPLETED   01:10:44 2026-11-04T20:38:04   lrdn0016 
+    63527973       FT-EPN-frozen-F0-20261104-C1      RUNNING   00:12:52             Unknown   lrdn0016 
+    63527974       FT-EPN-frozen-F1-20261104-C0    COMPLETED   01:11:04 2026-11-04T20:38:24   lrdn0027 
+    63527975       FT-EPN-frozen-F1-20261104-C1      RUNNING   00:12:11             Unknown   lrdn0101 
+    63527976       FT-EPN-frozen-F2-20261104-C0    COMPLETED   01:10:47 2026-11-04T20:38:07   lrdn0031 
+    63527977       FT-EPN-frozen-F2-20261104-C1      RUNNING   00:12:52             Unknown   lrdn0031 
+    63527978       FT-EPN-frozen-F3-20261104-C0    COMPLETED   01:11:57 2026-11-04T20:39:17   lrdn0101 
+    63527979       FT-EPN-frozen-F3-20261104-C1      RUNNING   00:11:31             Unknown   lrdn0101 
+    63527992      FT-EPN-scratch-F0-20261104-C0      RUNNING   01:23:47             Unknown   lrdn2025 
+    63527994      FT-EPN-scratch-F1-20261104-C0      RUNNING   01:23:47             Unknown   lrdn3221 
+    63527996      FT-EPN-scratch-F2-20261104-C0      RUNNING   01:23:08             Unknown   lrdn0001 
+    63527999      FT-EPN-scratch-F3-20261104-C0      RUNNING   01:23:08             Unknown   lrdn0004 
+    63525639            LOGSQ-checkout-20261104    COMPLETED   00:00:27 2026-11-04T18:24:49    login08 
+    63525730           LOGSQ-preflight-20261104    COMPLETED   00:02:28 2026-11-04T18:28:33   lrdn0008 
+    63525937     SCALING-300M-checkout-20261104    COMPLETED   00:00:16 2026-11-04T18:30:18    login08 
+    63527364 SCALING-300M-checkout-memory-2026+    COMPLETED   00:00:21 2026-11-04T19:10:30    login08 
+    63527446       SCALING-300M-memory-20261104      RUNNING   00:08:15             Unknown   lrdn2103 
+    63526191    SCALING-300M-preflight-20261104    COMPLETED   00:09:06 2026-11-04T18:45:05   lrdn1813 

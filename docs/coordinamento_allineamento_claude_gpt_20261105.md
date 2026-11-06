@@ -17,6 +17,17 @@ riporta (sezione 4) e corregge un'attribuzione imprecisa scritta dalla parte di 
 
 Aggiornamento delle 15:41: D-3 e' chiuso, Simone tiene la frase nuova di CLAUDE.md. Restano aperti D-1, D-2, D-5 e D-6.
 
+Aggiornamento delle 19:46: il coordinatore GPT ha accolto l'audit (fdf773d, `docs/reviews/seguito_audit_claude_20261105.md` sul suo ramo).
+D-5 e' chiuso: GPT ha riconosciuto il rilievo e l'origine c052792 e ha corretto il solo test (d2f2f08, adottato nelle tre linee con
+6e57e19, 857d6f9 e 99efdef); Claude ha rieseguito il file su copie delle punte 4c670bd, c66148b, 5b03e0c e fdf773d: 15 passati in
+ciascuna. D-1 e D-2 restano un'integrazione dedicata, «inclusa l'unione testuale delle voci Claude e delle60righe di decisioni».
+D-6: GPT propone contabilita' di campagna separata e job MONALISA contati nel consumo complessivo dell'account; decide Simone.
+
+Aggiornamento delle 22:15: D-6 e' chiuso da Simone. Alla riga del coordinatore sul conteggio dei job MONALISA ha risposto: «che c'entrano, sono di un a ltro progetto».
+Lettura del coordinatore: quei job restano fuori da consuntivi, budget, ledger e tabelle del coordinamento WearUsFM e non vengono
+piu' elencati. Dato letto alle 22:08, per completezza: girano con lo stesso account SLURM `iscrb_wearusfm`. Restano aperti D-1 e D-2,
+cioe' l'integrazione su `main`.
+
 ## 1. Metodo e punte dei rami
 
 `git fetch` e `ls-remote` di origin e del cluster; antenati e diff ramo per ramo; confronto byte per byte delle review copiate; registro
@@ -107,7 +118,7 @@ scelta: le campagne girano da riferimenti `deploy/*` e da checkout congelati.
   `/leonardo_work/IscrB_WearUsFM/MONALISA_WORK/...`) girano con lo stesso utente e lo stesso account `IscrB_WearUsFM`: 58 job dal 04/11
   alle 16:00, circa 51 GPU-ore, 45 FAILED, 30 job da 24 ore in attesa (lettura delle 15:06). Nessuno dei due coordinatori li conta nei
   consuntivi; l'audit di GPT precisa che il suo controllo del ledger «non e' una prova universale di assenza di calcolo duplicato fuori
-  ledger». `saldo`: 1.303.196 ore locali consumate su 2.000.000 (65,2%). Chiude: Simone, che dice se e da chi vanno contati.
+  ledger». `saldo`: 1.303.196 ore locali consumate su 2.000.000 (65,2%). **Chiuso da Simone il 05/11 sera:** «che c'entrano, sono di un a ltro progetto». Fuori dal perimetro del coordinamento WearUsFM.
 - **D-7. Lavoro di GPT non riletto da Claude.** Non e' un difetto: nessuna di queste riletture e' stata chiesta, e le sottochat non ne
   aprono di propria iniziativa. Linea 1: piani CPU reali (1bde83e, 26781ee), validazione, benchmark e review interna di GPT (8cdabd6);
   Claude ha approvato solo il launcher. Linea 2: chiusura di R-2 (02f3de8), benchmark e 24 invii EPN15 (4f32cdb). Linea 3: lettura della
@@ -158,7 +169,7 @@ riletto (D-7); il ramo scaling senza 8ee6603 (D-8).
   controllo voce per voce e' gia' scritto.
 - **P-3. CLAUDE.md:** una sola versione, quella di `main`; le sei righe di Claude sulle manutenzioni entrano con il ramo di Claude; la frase sulle conferme resta nella versione nuova, per decisione di Simone (D-3).
 - **P-4. Test fallito:** GPT lo riconosce in una voce e lo sistema prima dell'integrazione, cosi' `main` resta verde (D-5).
-- **P-5. Job MONALISA:** Simone dice se entrano nel budget e nella quota di WearUsFM e chi li registra (D-6).
+- **P-5. Job MONALISA:** Simone dice se entrano nel budget e nella quota di WearUsFM e chi li registra (D-6). **Chiuso il 05/11 sera: altro progetto, fuori perimetro.**
 - **P-6. Writer unico sul ramo comune di Claude:** regola confermata; chi scrive codice usa un ramo e un worktree propri.
 
 ## 7. Testo per il coordinatore GPT
