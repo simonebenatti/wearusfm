@@ -6751,8 +6751,8 @@ estensione scientifica, nuovi training, retry o pollingAI.
   per derivazione dichiarata dai file congelati a 5.000 (`scripts/scaling_derive19618.py`), `scripts/scaling_plans19618.py`
   (costruttori, raccolta, cancelli), 615 test su CPU. Controllo: 30M gia' esistente a 19.618, mai riestratto.
 - Preventivo, dentro il freeze v2 (`continuation19618_budget_freeze_20261105_v2.json`, invariato): estrazioni 7 GPU-ore
-  (+0,15 di tolleranza) e 56 core-ore allegate; letture solo CPU 343,17 core-ore con margine dello scheduler su 350
-  (fit al caso peggiore 244 su 246). I fit veri si fissano dai 15 benchmark reali a 19.618 e non superano 15 blocchi,
+  (+0,15 di tolleranza) e 56 core-ore allegate; letture solo CPU al massimo 345,17 core-ore con margine dello scheduler
+  su 350 (fit al caso peggiore 246 su 246), come nel freeze. I fit veri si fissano dai 15 benchmark reali a 19.618 e non superano 15 blocchi,
   3 ore l'uno, 240 core-ore richieste.
 - Differenza dichiarata rispetto al freeze (`checkout: jobs 3`): cinque job di checkout (A0 a 2 CPU, gia' fatto, e
   quattro a 1 CPU) nelle stesse core-ore, 0,5 richieste e 0,8 con margine, uguale al tetto dello stadio. Motivo: ogni

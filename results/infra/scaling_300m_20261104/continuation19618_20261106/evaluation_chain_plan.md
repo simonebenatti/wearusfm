@@ -79,10 +79,13 @@ Campagna `scaling-300m-20261104`, agente `claude`, submitter e ledger comuni. Ri
 | benchmark posa | 3 | 4,00 | 5,20 | 5,20 |
 | benchmark classificazione | 15 | 70,67 | 76,67 | 76,67 |
 | ridge di posa | 1 | 8,00 | 8,40 | 8,40 |
-| fit (caso peggiore) | <= 15 | <= 240,00 | <= 244,00 | 246,00 |
+| fit (caso peggiore) | <= 15 | <= 240,00 | <= 246,00 | 246,00 |
 | aggregati | 6 | 2,00 | 2,60 | 2,60 |
 | confronto | 1 | 4,00 | 4,40 | 4,40 |
-| **totale** | | | **343,17** | **350** |
+| **totale** | | | **<= 345,17** | **350** |
+
+`budget-table` stampa 343,17 con il caso peggiore dei fit in 10 job; con 15 job il margine sale di 2 core-ore: 345,17,
+lo stesso numero del freeze (`budgeted_core_hours_with_scheduler_margin`), riserva 4,83.
 
 - Estrazioni: 7 GPU-ore richieste (2,5 + 2 + 2,5), tolleranza 0,15 (lo 0,20 e' del training); 56 core-ore allegate,
   rendicontate a parte. Fit: il piano reale nasce dai 15 benchmark a 19.618 (formula, arrotondamento e packing a
