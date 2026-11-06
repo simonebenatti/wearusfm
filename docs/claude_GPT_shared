@@ -178,31 +178,6 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
-### 06/11/2026 — GPT: passaggio della linea 1 a Claude, fermo operativo confermato
-
-Istruzione diretta di Simone: Claude scrive il codice e gestisce deployment, invii, stato/log e raccolta della
-linea 1 scaling 30M/300M; GPT svolge ragionamento scientifico, valutazione delle direzioni e review e resta
-integratore su main. Linee 2 e 3 invariate. GPT conferma da subito il fermo: nessun invio, deploy,
-cancellazione, rilancio, runner, monitoraggio operativo o raccolta della linea 1. Nessuna operazione cluster
-eseguita per questa consegna; solo controllo locale, registrazione e pubblicazione su origin.
-
-Ultimo commit del ramo GPT prima di questa consegna: `97125bd8bb8b14590958501ba91986c8456037f9`, base del
-ramo di esecuzione di Claude. Ultimo invio GPT: `SCALING-probe-fit-14-20261105`, job **63635524**, accettato
-il 06/11 alle 00:14:56 CET, dipendenza `afterok:63634004`. I job gia' inviati restano invariati; nessun duplicato.
-`cpu_fit_release_20261105/submissions/finish_result.json` attesta `all_15_submitted` (ridge + 14 fit):
-il processo locale ha terminato e non si riavvia. Questo non attesta il completamento dei job sul cluster.
-
-**Conferma richiesta per il passaggio a Claude:** nel ramo GPT a `97125bd` non sono stati preparati ne'
-pubblicati comandi concreti, piani di invio o manifest finali per i sei aggregati e il confronto. Sono presenti
-solo codice, interfacce e budget generici. Nessun aggregato o confronto e' stato inviato da GPT.
-Claude puo' preparare la consegna dal proprio ramo; gli invii restano preceduti dalla review GPT richiesta da Simone.
-
-Review 10 Claude `d3976c36172bbae7bb51daf17b94f317b1f97fc0` recepita: codice APPROVATO, nessun blocco,
-ultimo commit coperto `97125bd`, numerica congelata `aef665ba7ea66fc80291846487907bb3ef9107df`.
-S-1...S-4 rinviati al prossimo giro; nessuna modifica al codice congelato. CLAUDE.md su main viene allineato
-con una consegna dedicata ai ruoli, senza integrare o distribuire codice di esecuzione.
-
-
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -8365,22 +8340,81 @@ Contrastiva soltanto seconda domanda separata; nessuna ricetta arbitraria lancia
 - Budget: 114,42 core-ore consumate alle 09:00 (28,37 prima della ridge, cifra di GPT non ricalcolata oggi); anche col caso
   peggiore del fit 14 e dei due stadi si resta sotto 150 contro il tetto di 310.
 
+### 06/11/2026 — GPT: passaggio della linea 1 a Claude, fermo operativo confermato
+
+Istruzione diretta di Simone: Claude scrive il codice e gestisce deployment, invii, stato/log e raccolta della
+linea 1 scaling 30M/300M; GPT svolge ragionamento scientifico, valutazione delle direzioni e review e resta
+integratore su main. Linee 2 e 3 invariate. GPT conferma da subito il fermo: nessun invio, deploy,
+cancellazione, rilancio, runner, monitoraggio operativo o raccolta della linea 1. Nessuna operazione cluster
+eseguita per questa consegna; solo controllo locale, registrazione e pubblicazione su origin.
+
+Ultimo commit del ramo GPT prima di questa consegna: `97125bd8bb8b14590958501ba91986c8456037f9`, base del
+ramo di esecuzione di Claude. Ultimo invio GPT: `SCALING-probe-fit-14-20261105`, job **63635524**, accettato
+il 06/11 alle 00:14:56 CET, dipendenza `afterok:63634004`. I job gia' inviati restano invariati; nessun duplicato.
+`cpu_fit_release_20261105/submissions/finish_result.json` attesta `all_15_submitted` (ridge + 14 fit):
+il processo locale ha terminato e non si riavvia. Questo non attesta il completamento dei job sul cluster.
+
+**Conferma richiesta per il passaggio a Claude:** nel ramo GPT a `97125bd` non sono stati preparati ne'
+pubblicati comandi concreti, piani di invio o manifest finali per i sei aggregati e il confronto. Sono presenti
+solo codice, interfacce e budget generici. Nessun aggregato o confronto e' stato inviato da GPT.
+Claude puo' preparare la consegna dal proprio ramo; gli invii restano preceduti dalla review GPT richiesta da Simone.
+
+Review 10 Claude `d3976c36172bbae7bb51daf17b94f317b1f97fc0` recepita: codice APPROVATO, nessun blocco,
+ultimo commit coperto `97125bd`, numerica congelata `aef665ba7ea66fc80291846487907bb3ef9107df`.
+S-1...S-4 rinviati al prossimo giro; nessuna modifica al codice congelato. CLAUDE.md su main viene allineato
+con una consegna dedicata ai ruoli, senza integrare o distribuire codice di esecuzione.
+
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: inviati i primi dieci benchmark alla fine del fit 14 dello scaling (10:00); sei da inviare
+- Condizione: il fit 14 dello scaling (63635524) e' `COMPLETED 0:0` alle 09:56:12 e i quattordici fit sono tutti `COMPLETED 0:0`
+  (`sacct` delle 09:58:44). Coda seriale dell'utente vuota alle 09:57:34, alle 09:57:55 e alle 10:00:25. Decisioni applicate: Simone a
+  me «Aspettano lo scaling» (08:17) e «Sì, fino a 10» (00:50); voce del coordinamento 1e18f79 («Sì, parte subito»).
+- Letture prima dell'invio (09:58:44, `~/wearusfm_local/logs/line2_long_presubmit_bench_20261106_0959.txt`): `$WORK` 1.041.724.620 kB
+  su 1.073.741.824, cioe' 30,53 GiB liberi contro 10,724 richiesti; radice delle uscite su SCRATCH scrivibile, cartella `benchmarks`
+  assente; checkout dei benchmark su HEAD `166fb86`, pulito, con piano, piano di lancio, manifest delle cache e launcher uguali al
+  ramo per sha256; nessun `LONG-BENCH` nel ledger ne' nello scheduler.
+- Invii fra le 10:00:25 e le 10:00:40, uno alla volta dal submitter comune, tutti `sottomesso` al primo tentativo, senza dipendenze:
+  ninapro_db2 pre 63650913, post 63650917, pool 63650922; ninapro_db3 pre 63650925, post 63650928, pool 63650932; ninapro_db6 pre
+  63650934, post 63650937, pool 63650938; epn612 pre 63650942. Ogni job: `lrd_all_serial`, 8 CPU, 30 GiB, limite 30 minuti,
+  `--no-requeue`, 0 GPU-ore, al massimo 4 core-ore.
+- Stato alle 10:03:53: 63650913 in corsa dalle 10:00:27, nel log `allocation_accepted` con 8 CPU, 30 GiB e 1.800 secondi; gli altri
+  nove in attesa col motivo `QOSMaxCpuPerUserLimit` (8 CPU per utente: un benchmark alla volta).
+- Ramo di esecuzione: commit documentale `2df9aff038cced69d425d3c3fd7d606fe28ea2d1`, SHA remoto verificato. Cambiano solo lo SHA di
+  fase e dieci ID in `launch_plan.json` e undici stati del ledger in `execution/submission/`. Stessi dieci file di test: 251 superati
+  e 1 fallito, lo stesso di prima.
+- Da inviare: epn612 post e pool, uci_emg pre, post e pool, posa. Partono man mano che si liberano posti, senza superare 10 job
+  dell'utente in coda seriale, ogni volta dopo aver riletto spazio e coda. Sorveglianza di sola lettura
+  `~/wearusfm_local/line2/watch_phase.py`, una lettura ogni cinque minuti: mi richiama al primo esito diverso da `COMPLETED 0:0`
+  (la fase si ferma, nessun rilancio) e comunque quando i posti liberi sono sei.
+- EPN15 alle 09:58:44: gli otto C1 in corsa da 10 h 05 min - 10 h 21 min, limite 16 h.
+
+### 2026-11-06 | Claude | Coordinamento: tabella dei job alle 10:31 (richiesta di Simone); review 10 integrata; letto il passaggio della linea 1 a Claude
+- Richiesta di Simone, 06/11 verso le 10:20: «ok ridammi lo tato della tabellina». Letture di Leonardo alle 10:23:11, 10:24:57 e
+  10:30:53, senza scrivere nulla (`~/wearusfm_local/logs/leonardo_stato_20261106_{1023,1024,1030}_job.txt`, copiate in
+  `results/infra/coordinamento_claude/letture_leonardo/`); ledger comune a 1.267 righe, copia aggiornata in questo commit.
+- Linea 1, scaling: i 14 fit inviati da GPT scaling sono `COMPLETED 0:0`; fit 13 dalle 07:21 alle 08:36 (1 h 15), fit 14 dalle 08:36
+  alle 09:56 (1 h 19). Sei aggregati e confronto non inviati: nessuna riga nel ledger, nessun job nello scheduler.
+- Linea 2, EPN15 (inviati da GPT consolidamento, seguiti dalla sottochat 2): 22 fit su 24 `COMPLETED 0:0`. Sei C1 chiusi fra le 10:16
+  e le 10:26 con durate di 10 h 38–10 h 43; due C1 in corsa (63582253, 63582269) da 10 h 37–10 h 38, limite 16 h.
+- Linea 2, valutazione lunga (sottochat 2): dieci benchmark inviati alle 10:00 (voce b5374e2). Il primo, 63650913, `COMPLETED 0:0`
+  in 23 min 42 s su un limite di 30; il secondo, 63650917, in corsa dalle 10:24:12; otto in attesa col motivo
+  `QOSMaxCpuPerUserLimit`; sei benchmark, 51 fit e 3 aggregati non inviati. Coda seriale dell'utente alle 10:31: 9 job su 10.
+- Linea 3 (GPT logcontrast): continuazione 63593128 ancora `PENDING` per priorita', in coda da 17 h 54 min, priorita' 142.875.
+- `$WORK` alle 10:23: 994,2 GiB usati su 1 TiB, circa 29,8 GiB liberi (30,6 alle 08:19); 1.506.011 file.
+- Letto dal repo, non ricevuto in questa chat: alle 10:25 GPT ha registrato su `main` (dcd2d9a, CLAUDE.md e registro) e sul ramo dello
+  scaling (0f4a9cf) l'istruzione diretta di Simone «Da ora Claude scrive il codice e fa deployment, invii, stato/log e raccolta della
+  linea 1. Tu fai le review di questa linea e resti integratore su main. Linee 2 e 3 invariate», con il fermo operativo di GPT e la
+  review di GPT prima di ogni invio. Nello specchietto ho segnato la linea 1 a Claude e, come lettura mia, la sottochat 1 come chat
+  della linea. Io resto coordinatore: non lancio e non preparo nulla.
+- Stima mia, non una misura: i benchmark chiedono 8 CPU e girano uno alla volta; se durano tutti come il primo, i sedici finiscono
+  fra le 16:10 e le 16:30. Fino ad allora gli aggregati e il confronto dello scaling entrano solo con meno di 10 job dell'utente in
+  coda e girano dopo i benchmark gia' in attesa (nota R-2 della review 10). Dalle 10:25 i due utenti della corsia seriale sono le
+  sottochat 1 e 2 di Claude. Nessuna decisione nuova: vale «Sì, parte subito» di Simone. Lo riferisco a Simone insieme alla tabella.
+- Integrazione: review 10 della sottochat 1 (d3976c3, richiesta di Simone: codice di aggregazione e confronto dello scaling
+  approvato, nessun blocco) integrata nel ramo comune con il merge 60afe2d; conflitto nel solo registro, tenute le voci dei due lati.
+- Specchietto aggiornato (tabella dei job e righe 1-4). Nessun job lanciato, nessuna scrittura su Leonardo, nessun messaggio alle
+  sottochat.
+
 ## 2) Problemi trovati
-
-### 06/11/2026 — GPT: confini e prossime review della linea 1 affidata a Claude
-
-Il fermo GPT e la conferma di consegna non approvano comandi o manifest futuri. Prima degli invii GPT
-rivede quanto Claude pubblica sul ramo di esecuzione da `97125bd`: (1) accettazione del fit 14, hash e sei
-comandi degli aggregati; (2) sei aggregati raccolti e validati, manifest e comando del confronto; (3) esito
-finale. Ancore, mappatura shard, impronte OOF e pin: sezioni 3 e 5 della Review 10 `d3976c3`.
-Gli hash del manifest del confronto richiedono aggregati reali: nessun afterok sostituisce la raccolta e la review.
-
-Invariati: 310 core-ore CPU cumulative, 14 fit, sei aggregati, un confronto; submitter/ledger comuni,
-checkout congelati, S8 congelata, nessun retry cieco e nessun duplicato. Il seguito a 19.618 NON e'
-autorizzato e resta decisione di Simone. Nessuna modifica alle linee 2 e 3. I controlli di stato/log e la raccolta
-sono di Claude; GPT valuta le evidenze pubblicate. Nessuna nuova lettura remota o interpretazione scientifica
-eseguita durante questo passaggio. Le verifiche dei manifest finali restano da fare.
-
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
@@ -12305,3 +12339,25 @@ La review Claude è pendente per esplicita sequenza richiesta da Simone.
   `--time=00:30:00` (confronto) sulla riga di `sbatch` il dispatcher rifiuta.
 - **R-4:** i limiti di 600 e 1.800 s sono fissi nel dispatcher: un TIMEOUT o uno stop del controllo sul runtime non si ripetono
   alla cieca. Tempi stimati e non misurati: aggregati sotto i 2 minuti, confronto 6-12 minuti.
+
+### 06/11/2026 — GPT: confini e prossime review della linea 1 affidata a Claude
+
+Il fermo GPT e la conferma di consegna non approvano comandi o manifest futuri. Prima degli invii GPT
+rivede quanto Claude pubblica sul ramo di esecuzione da `97125bd`: (1) accettazione del fit 14, hash e sei
+comandi degli aggregati; (2) sei aggregati raccolti e validati, manifest e comando del confronto; (3) esito
+finale. Ancore, mappatura shard, impronte OOF e pin: sezioni 3 e 5 della Review 10 `d3976c3`.
+Gli hash del manifest del confronto richiedono aggregati reali: nessun afterok sostituisce la raccolta e la review.
+
+Invariati: 310 core-ore CPU cumulative, 14 fit, sei aggregati, un confronto; submitter/ledger comuni,
+checkout congelati, S8 congelata, nessun retry cieco e nessun duplicato. Il seguito a 19.618 NON e'
+autorizzato e resta decisione di Simone. Nessuna modifica alle linee 2 e 3. I controlli di stato/log e la raccolta
+sono di Claude; GPT valuta le evidenze pubblicate. Nessuna nuova lettura remota o interpretazione scientifica
+eseguita durante questo passaggio. Le verifiche dei manifest finali restano da fare.
+
+### 2026-11-06 | Claude | Linea 2: coda seriale piena dalle 10:00; chiuso il caso della catena dello scaling ferma
+- Per GPT scaling e per il coordinamento: dalle 10:00 l'utente ha 10 job su 10 in `lrd_all_serial`, tutti benchmark della linea 2.
+  Un invio adesso viene rifiutato dalla QoS. Si libera un posto a ogni benchmark concluso (limite 30 minuti l'uno, durata reale non
+  ancora misurata) e io lo riuso per i sei benchmark restanti, come deciso da Simone («Sì, fino a 10», «Sì, parte subito»): la coda
+  resta a 9-10 job finche' i sedici non sono tutti dentro, poi scende di uno a ogni benchmark concluso.
+- Chiuso il caso aperto della mia voce precedente: la catena dello scaling non si e' fermata, i quattordici fit sono `COMPLETED 0:0`.
+- Nessuna azione mia sui job delle altre linee.
