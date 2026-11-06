@@ -7166,6 +7166,50 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   come da verifica di GPT `bb08cd0`: «non emerge un guadagno risolto del fine-tuning passando alla ricetta a 15 (+0,127
   pp, IC95 [−0,187; +0,450])».
 
+### 2026-11-06 | Claude | Linea 2: decisione di Simone su A1 registrata; fase fit rilasciata (`a70e29e`), checkout e prima ondata di quattro fit
+- Decisione: alla domanda «Approvi l'eccezione a R-2(i) sui 28 input e la catena emendata A1?» Simone ha risposto
+  «Sì, approvo» (sottochat 2, 06/11 alle 16:49 circa). Registrata alla lettera nei due piani con
+  `amendment_a1/record_decision.py`. Perimetro scritto nei piani: eccezione a R-2(i) limitata alle 28 ricevute
+  originali; catena emendata di 69 fit di classificazione, 3 di posa, 2 confronti, 1 sintesi e 2 checkout entro i tetti
+  invariati di 9 GPU-ore e 1.711,666667 core-ore; nessun altro esperimento, input o rilancio.
+- Prima di procedere ho riletto ora, rami, registro e ledger (16:49): nessuna novita' dalla mia domanda delle 15:35.
+- Pin della fase fit (`amendment_a1/pin_phase.py fit`): copie raccolte uguali ai pin del manifest; gate originale
+  ricalcolato negativo (15 su 48); gate emendato 69 su 69, uguale alla tabella congelata (1.276 core-ore); posa
+  ammessa (583,269 s per dose). Manifest nuovi: `classification_benchmark_receipts.json` (sha256 `cf2f9eb8...3080`) e
+  `measured_resource_gates_a1.json` (sha256 `23bd23cc...9d6b`).
+- Controlli sull'albero del commit di fase: `build_inputs.py --check`, `apply_to_plans.py --check` e
+  `pin_phase.py fit --dry-run` a posto; undici file della valutazione lunga 342 superati; suite completa `tests/cpu`
+  2.456 superati in 26 min 19 s.
+- Commit di fase «Release amended long fit phase (A1)»: `a70e29e4abb09e6e23fad34ca6b7b9e28874952a` sul ramo
+  `claude/consolidation-long-exec-20261105`, SHA remoto verificato. Nessun file coperto toccato: source `77e09626...` e
+  ricetta `b2356a8e...` invariate. Voce del 06/11 in `docs/decisioni.md` dello stesso ramo.
+- Deployment: ref `refs/heads/deploy/consolidation-long-fit-20261105` vuoto prima, pubblicato alle 17:20 a `a70e29e`;
+  `main` di leonardo intatto (`8dad7e8`, albero pulito). Checkout `LONG-checkout-fit-20261105`, job 63684639,
+  `COMPLETED 0:0` in 45 s (0,025 core-ore). Controlli del responsabile: HEAD uguale al commit di fase, albero pulito,
+  sola lettura, 2.090 file tracciati, sedici hash uguali al commit locale; checkout precedenti e canonico intatti.
+- Preflight in sola lettura nel checkout, sul nodo di login con l'ambiente dei job: superato in 19 s. 28 ricevute
+  lette dal ponte, 69 fit ammessi, gate originale negativo, pin del benchmark della posa verificato, nessuna cache held
+  della posa letta, nessuna uscita creata.
+- Letture C-1 prima degli invii (17:21-17:23): `$WORK` 19,2 GiB liberi (soglia 10,724), SCRATCH scrivibile con 5,5 PB
+  liberi, corsia seriale vuota, ledger senza ID della fase fit.
+- Invii con submitter e ledger comuni, `--agente claude`: prima un solo fit di posa (17:25), visto partire e superare
+  ammissione e controlli (allocazione accettata e directory di uscita presente alle 17:25:58); poi gli altri tre (17:26).
+
+  | ID logico | Job | Limite | Stato alle 17:29 |
+  |---|---|---|---|
+  | `LONG-FIT-G19618-pose-20261105` | 63684760 | 1 h | `COMPLETED 0:0`, 3 min 16 s |
+  | `LONG-FIT-G39237-pose-20261105` | 63684842 | 1 h | in corsa dalle 17:29:17 |
+  | `LONG-FIT-G49046-pose-20261105` | 63684845 | 1 h | in attesa |
+  | `LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1` | 63684847 | 3 h 15 | in attesa |
+
+- Primo report (letti solo i campi di provenienza, nessun punteggio): `complete`, `fit-pose`, `code_sha` `a70e29e`,
+  source nuova, record dell'emendamento, cache held aperte dopo le due ridge, 175,7 s di esecuzione.
+- Commit documentale `f58f5ff12efa192328d92212f5bd037ac1db11e0` (SHA remoto verificato): SHA di fase e ID nel
+  `launch_plan.json`, stati del ledger, prove di deployment, checkout, preflight e invii sotto `execution/audit/`.
+- Consumo della fase fin qui: 0,025 core-ore di checkout piu' 0,436 del primo fit di posa (196 s per 8 CPU).
+- Corsia: ondata di quattro job, limiti sommati 6 h 15. Le successive restano entro otto job CPU in sospeso per tutto
+  l'utente e, per mia scelta, entro otto ore di limiti sommati.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9925,3 +9969,24 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   l'utente; lo rileggo nel ledger prima del primo invio. Ogni fit tiene la corsia da 30 a 225 minuti (8 CPU, uno alla
   volta). Stima mia, non misurata sui checkpoint 39.237 e 49.046: circa 28 ore di calcolo in sequenza per i 69 fit se i
   tempi dei benchmark si confermano; somma dei limiti richiesti 159,5 ore.
+
+### 2026-11-06 | Claude | Linea 2: rilascio della fase fit, errore corretto e punti aperti (per Simone, GPT consolidamento e coordinamento)
+- Errore mio, senza effetti: il primo tentativo di preflight (17:23) si e' fermato a `import numpy`, prima di ogni
+  controllo. Il comando che avevo documentato sostituiva `PYTHONPATH`, da cui sul cluster il modulo `cineca-ai` fornisce
+  numpy. Diagnosi in sola lettura, comando corretto anteponendo `src:scripts`, secondo tentativo superato (17:24).
+  Checkout e uscite non toccati (stato pulito, nessun `__pycache__`); i job non usano quel comando (il launcher
+  inserisce i percorsi dentro Python). Corrette la docstring di `amendment_a1/preflight.py` e la sezione 5 del documento
+  dell'operatore nel commit `f58f5ff`. La parita' Mac/Leonardo del pomeriggio non lo aveva visto perche' usava solo la
+  libreria standard.
+- Certificato ssh valido fino alle 20:40:05 del 06/11: dopo non posso ne' inviare ne' leggere finche' Simone non lo
+  rinnova. Con ondate corte la corsia resterebbe vuota nella notte. A chiusura di questo turno chiedo a Simone se
+  rinnova il certificato o se prima della scadenza posso mettere in coda un'ondata piu' lunga (al massimo otto job,
+  limite del piano).
+- `$WORK`: 19,2 GiB liberi alle 17:23, contro 29,8 delle 10:31. La fase fit scrive in `$WORK` solo checkout e log; la
+  soglia C-1 e' 10,724 GiB e la rileggo prima di ogni ondata. Se scende sotto, non invio e lo segnalo.
+- Arresti, invariati: TIMEOUT, OOM, valore non finito, errore, pin o gate negativo fermano la fase; nessun requeue,
+  sovrascrittura, fold scartato, walltime o shard nuovo; un rilancio dopo un arresto tecnico e' una nuova decisione.
+- Per GPT consolidamento (verifica successiva, non blocca): commit di fase `a70e29e`, commit documentale `f58f5ff`; i
+  punti gia' elencati nella voce precedente restano gli stessi.
+- Per la sottochat 1 e il coordinamento: dalle 17:25 la corsia seriale e' occupata dai fit della linea 2, uno alla
+  volta. Tempi reali del primo fit di posa: 3 min 16 s su un'ora di limite.
