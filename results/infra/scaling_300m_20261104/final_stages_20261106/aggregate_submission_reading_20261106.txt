@@ -1,0 +1,70 @@
+# Linea 1 (scaling), invio dei sei aggregati del 06/11/2026: cancello, invii e prima lettura della coda.
+# File generato dai log locali e da una lettura di sola lettura su Leonardo; nessuno score.
+
+## Cancello prima dell'invio (final_stages.py state + check, sei posti)
+=== 2026-11-06 13:12:39 state 20261106_1312_presubmit
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/live_state_20261106_1312_presubmit.json aa5c51c1d9047dab4fd44eaeed7d6618d2bf3822cc25c4479df320b42341dc15
+exit state: 0
+=== 13:12:43 check (6 posti)
+PASSA  letture di sacct e squeue riuscite (exit 0)
+PASSA  piano delle sonde: hash e percorso canonico
+PASSA  codice congelato: HEAD atteso, pulito, percorso canonico
+PASSA  quattordici shard, quelli del piano dei fit
+PASSA  file di ogni shard: i quattro attesi, nessun failed.json
+PASSA  percorsi canonici di shard, OOF e audit
+PASSA  report completi, stesso codice, piano e passo
+PASSA  cella, compito, dataset e fold uguali al piano dei fit
+PASSA  hash interni dei report uguali ai file
+PASSA  una sola firma numerica
+PASSA  copertura: ogni cella, dataset e fold una volta sola (60)
+PASSA  fit per shard: sette per dataset e fold; 420 in tutto
+PASSA  contabilita': validate, ridge e quattordici fit COMPLETED 0:0
+PASSA  uscite degli aggregati assenti
+PASSA  dispatcher e submitter locali con gli hash del rilascio dei fit
+PASSA  ID logici degli aggregati mai usati nel ledger
+PASSA  shard uguali a quelli fissati nel piano
+PASSA  piano delle sonde uguale a quello del piano
+PASSA  posti liberi in lrd_all_serial: almeno 6 su 10
+job dell'utente in coda seriale: 0 | letto alle 2026-11-06T13:12:40+0100
+CANCELLO SUPERATO
+exit check: 0
+=== 13:12:43 fine
+
+## Invii (scripts/submit_job.py, righe di aggregate_submit_lines.txt una alla volta)
+=== 2026-11-06 13:13:02 riga 1 SCALING-probe-aggregate-01-20261106
+SCALING-probe-aggregate-01-20261106: sottomesso, job 63666045
+exit submitter: 0
+=== 2026-11-06 13:13:19 riga 2 SCALING-probe-aggregate-02-20261106
+SCALING-probe-aggregate-02-20261106: sottomesso, job 63666072
+exit submitter: 0
+=== 2026-11-06 13:13:20 riga 3 SCALING-probe-aggregate-03-20261106
+SCALING-probe-aggregate-03-20261106: sottomesso, job 63666075
+exit submitter: 0
+=== 2026-11-06 13:13:21 riga 4 SCALING-probe-aggregate-04-20261106
+SCALING-probe-aggregate-04-20261106: sottomesso, job 63666076
+exit submitter: 0
+=== 2026-11-06 13:13:22 riga 5 SCALING-probe-aggregate-05-20261106
+SCALING-probe-aggregate-05-20261106: sottomesso, job 63666078
+exit submitter: 0
+=== 2026-11-06 13:13:23 riga 6 SCALING-probe-aggregate-06-20261106
+SCALING-probe-aggregate-06-20261106: sottomesso, job 63666079
+exit submitter: 0
+
+## Coda e accounting dopo gli invii
+letto alle 2026-11-06T13:14:59+0100 su login05.leonardo.local
+--- squeue -u sbenatti -p lrd_all_serial -h -o %i|%j|%T|%M|%l|%C|%m|%r
+63666079|SCALING-probe-aggregate-06-20261106|PENDING|0:00|10:00|2|30G|QOSMaxMemoryPerUser
+63666078|SCALING-probe-aggregate-05-20261106|PENDING|0:00|10:00|2|30G|QOSMaxMemoryPerUser
+63666076|SCALING-probe-aggregate-04-20261106|PENDING|0:00|10:00|2|30G|QOSMaxMemoryPerUser
+63666075|SCALING-probe-aggregate-03-20261106|PENDING|0:00|10:00|2|30G|QOSMaxMemoryPerUser
+63666072|SCALING-probe-aggregate-02-20261106|RUNNING|0:17|10:00|2|30G|None
+exit squeue: 0
+--- sacct -X -P -j 63666045,63666072,63666075,63666076,63666078,63666079
+JobID|JobName|State|ExitCode|Elapsed|Submit|Start|End|ReqCPUS|ReqMem|Timelimit|Partition|QOS
+63666045|SCALING-probe-aggregate-01-20261106|COMPLETED|0:0|00:00:41|2026-11-06T13:13:05|2026-11-06T13:13:40|2026-11-06T13:14:21|2|30G|00:10:00|lrd_all_serial|normal
+63666072|SCALING-probe-aggregate-02-20261106|RUNNING|0:0|00:00:18|2026-11-06T13:13:20|2026-11-06T13:14:42|Unknown|2|30G|00:10:00|lrd_all_serial|normal
+63666075|SCALING-probe-aggregate-03-20261106|PENDING|0:0|00:00:00|2026-11-06T13:13:21|Unknown|Unknown|2|30G|00:10:00|lrd_all_serial|normal
+63666076|SCALING-probe-aggregate-04-20261106|PENDING|0:0|00:00:00|2026-11-06T13:13:22|Unknown|Unknown|2|30G|00:10:00|lrd_all_serial|normal
+63666078|SCALING-probe-aggregate-05-20261106|PENDING|0:0|00:00:00|2026-11-06T13:13:23|Unknown|Unknown|2|30G|00:10:00|lrd_all_serial|normal
+63666079|SCALING-probe-aggregate-06-20261106|PENDING|0:0|00:00:00|2026-11-06T13:13:24|Unknown|Unknown|2|30G|00:10:00|lrd_all_serial|normal
+exit sacct: 0

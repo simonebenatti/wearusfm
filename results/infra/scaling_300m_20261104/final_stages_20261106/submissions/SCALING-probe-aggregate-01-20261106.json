@@ -1,0 +1,56 @@
+{
+ "id": "SCALING-probe-aggregate-01-20261106",
+ "creato": "2026-11-06T13:13:02+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-probe-aggregate-01-20261106",
+  "--comment=wearusfm:SCALING-probe-aggregate-01-20261106",
+  "--cpus-per-task=2",
+  "--mem=30G",
+  "--time=00:10:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+  "/dev/stdin",
+  "probe-aggregate",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+  "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+  "--cell",
+  "T100-G-30M-natural",
+  "--task",
+  "p1",
+  "--shards",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.json",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-02/shard.json"
+ ],
+ "dopo": null,
+ "script_stdin": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+ "script_stdin_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T13:13:02+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T13:13:02+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T13:13:05+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63666045,
+   "uscita": 0,
+   "stdout": "63666045\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63666045,
+ "uscita": 0,
+ "stdout": "63666045\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
