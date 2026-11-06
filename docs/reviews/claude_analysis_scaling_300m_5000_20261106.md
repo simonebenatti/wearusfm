@@ -1,6 +1,7 @@
 # Analisi scientifica di Claude: 300M contro 30M a 5.000 passi (linea 1, scaling)
 
 **Data:** 06/11/2026. **Autore:** Claude, operatore della linea 1. **Stato:** analisi separata dalla validazione tecnica.
+Rettificata il 06/11/2026 dopo la terza review di GPT: due conteggi della sezione 7 e due formulazioni (sezione 11).
 Non autorizza nulla: la continuazione a 19.618 la decide Simone; ragionamento scientifico e direzioni restano di GPT, che
 fa una lettura indipendente. Simone, alla domanda «Vuoi anche la mia analisi scientifica finale, come chiede GPT?»:
 «Sì, anche la tua».
@@ -93,8 +94,9 @@ Accuratezza bilanciata in percentuale; delta = 300M naturale meno 30M, in punti,
 
 - «Caso» e' l'accuratezza di chi tira a indovinare (100 diviso il numero di classi): la aggiungo io per dare la scala.
 - Tutti i delta puntuali del 300M naturale sono positivi; solo EPN-612, DB2 e P1 hanno l'intervallo sopra zero.
-- DB3 e' al livello del caso in tutte e tre le celle: a questa dose nessuna taglia legge quei dati. Il suo delta non si
-  interpreta. P1 pesa DB2 per 8/13, quindi il suo +0,60 e' quasi tutto DB2.
+- DB3 resta vicino al livello del caso in tutte e tre le celle (gli intervalli delle celle comprendono il 2,04% di chi
+  tira a indovinare fra 49 classi) ed e' incerto: questo non prova che l'informazione manchi. Il suo delta e' stimabile
+  ma non risolto. P1 pesa DB2 per 8/13, quindi il suo +0,60 e' quasi tutto DB2.
 - Sono secondari, senza correzione per confronti multipli: da soli non sostengono una conclusione.
 
 ## 6. Posa
@@ -110,7 +112,8 @@ Rapporto d'errore (piu' basso e' meglio), 15 utenti; delta = 300M naturale meno 
 - Sulle finestre dinamiche il delta e' quasi zero e 9 utenti su 15 hanno un delta favorevole al 300M, 6 sfavorevole:
   nessuna direzione. «Irrisolto» non vuol dire equivalenza; pero' l'intervallo e' stretto (lettura mia dell'IC95): esclude
   variazioni relative oltre circa ±0,4%, molto sotto la soglia pratica del 2%.
-- Sulle statiche il rapporto e' sopra 1 per tutti (la ridge fa peggio della media) e il 300M e' un po' peggiore:
+- Sulle statiche il rapporto e' sopra 1 per tutti (la ridge fa peggio di una previsione senza variazioni nel tempo: e'
+  una misura centrata, non il confronto con una media globale) e il 300M e' un po' peggiore:
   +0,0054 con il naturale, +0,0255 [+0,0192; +0,0335] con il compresso (sfavorevole in 15 utenti su 15). E' un secondario,
   su un gruppo dove la lettura non funziona per nessuna cella: lo segnalo, non ne traggo una conclusione.
 - In tutte le celle la lettura lineare spiega circa il 10% del movimento sulle finestre dinamiche. La taglia, a 5.000
@@ -118,8 +121,9 @@ Rapporto d'errore (piu' basso e' meglio), 15 utenti; delta = 300M naturale meno 
 
 ## 7. Descrittive post hoc (calcolate dopo aver visto i risultati; non cambiano la lettura S8)
 
-- EPN-612 per soggetto, 300M naturale contro 30M: 200 soggetti meglio, 101 peggio, 13 uguali; mediana +2,00 punti.
-  Con il compresso: 148 meglio, 155 peggio, 11 uguali; mediana 0,00.
+- EPN-612 per soggetto, 300M naturale contro 30M: 199 soggetti meglio, 100 peggio, 15 uguali; mediana +2,00 punti.
+  Con il compresso: 148 meglio, 153 peggio, 13 uguali; mediana 0,00. (Rettificato: prima 200, 101, 13 e 148, 155, 11;
+  vedi sezione 11.)
 - EPN-612 per classe (recall in percentuale, 30M -> 300M naturale): fist 66,4 -> 70,8; pinch 72,6 -> 75,8;
   waveIn 78,8 -> 81,2; waveOut 80,4 -> 81,7; open 60,3 -> 60,6; noGesture 99,4 -> 99,4. Il guadagno sta soprattutto in
   fist e pinch; open resta la classe piu' debole in tutte le celle.
@@ -154,7 +158,7 @@ non l'ho ricalcolato.
 - Solo letture lineari (sonda logistica, ridge): dicono che cosa e' leggibile linearmente, non tutto cio' che il modello sa.
 - Una sola proiezione fissa per il controllo pareggiato: il suo nullo vale per quella proiezione.
 - Dose iniziale: 5.000 passi, contro i 19.618 a cui il 30M e' gia' disponibile.
-- Livelli assoluti bassi su NinaPro (DB3 al caso) e sulla posa (`E_dyn` 0,90): su quei dati le differenze sono piccole
+- Livelli assoluti bassi su NinaPro (DB3 vicino al caso) e sulla posa (`E_dyn` 0,90): su quei dati le differenze sono piccole
   perche' entrambe le taglie leggono poco.
 
 ## 10. Domande aperte per GPT e Simone (non sono proposte di esperimento)
@@ -165,3 +169,31 @@ non l'ho ricalcolato.
    (lettura mia).
 3. La variabilita' fra corse non e' misurata: quanto pesa su un delta di due punti lo puo' dire solo una replica.
 4. La continuazione resta non autorizzata: «decide Simone».
+
+## 11. Dopo la terza review di GPT (06/11/2026, commit `5e150092f9588e94dab4fad93e170699b6c8416d`)
+
+Esito della review tecnica: «ESITO ACCETTATO. Nessun problema tecnico bloccante e nessun job da rifare.» La lettura
+scientifica di GPT, scritta prima di aprire questo documento, e' in `docs/reviews/gpt_scaling_scientific_final_20261106.md`
+(ramo `codex/scaling-300m-20261104`): «Convergiamo su tutti i punti che decidono il seguito».
+
+Rettifiche a questo documento e allo script dei numeri. Il report congelato non cambia e nessun job e' da rifare.
+
+- **Sezione 7, conteggi per soggetto su EPN-612: errore mio, trovato da GPT.** Avevo scritto 200 meglio, 101 peggio, 13
+  uguali con il naturale e 148, 155, 11 con il compresso. I valori giusti sono 199, 100, 15 e 148, 153, 13. Causa: lo
+  script confrontava con zero differenze di medie in virgola mobile, e quattro pareggi (due per contrasto) uscivano come
+  differenze di circa 1e-16. Ora lo script usa frazioni esatte. Ricontrollato da me su tutti i dataset: cambia solo
+  EPN-612; mediane, medie, score, intervalli e lettura S8 restano uguali.
+- **Sezione 5, DB3.** Avevo scritto «a questa dose nessuna taglia legge quei dati» e «Il suo delta non si interpreta»:
+  troppo. Gli intervalli delle tre celle comprendono il livello del caso, ma questo non prova che l'informazione manchi;
+  il delta e' stimabile, solo non risolto (precisazione di GPT, che condivido).
+- **Sezione 6, finestre statiche.** «La ridge fa peggio della media» era impreciso: il rapporto e' una misura centrata
+  nel tempo e il riferimento 1 e' una previsione senza variazioni temporali, non una media globale (precisazione di GPT;
+  ricontrollato sulla definizione in `scripts/pose_dynamics.py` del codice congelato).
+
+Risposta di GPT alla domanda 1 della sezione 10: no, non serve spiegare prima il controllo pareggiato; «Non userei il
+nullo dopo compressione come nuovo veto a posteriori». Sono d'accordo (lettura mia): la regola fissata prima dei
+risultati e' S8, e usare ora il controllo pareggiato come condizione sarebbe una regola scritta dopo i dati. Il nullo
+resta un limite d'interpretazione: se la continuazione si fa, lo stesso controllo va riletto a 19.618.
+
+Raccomandazione di GPT: «una sola continuazione 300M fino a 19.618», stessa ricetta, motivata dal guadagno in
+classificazione, con la posa come domanda aperta. Non e' autorizzata: decide Simone.

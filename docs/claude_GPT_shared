@@ -6973,6 +6973,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto e non autorizzato: nessuna continuazione a 19.618 (decide Simone), nessun nuovo job, nessun rilancio.
   Aspetto la terza review di GPT sull'esito e la sua lettura indipendente.
 
+### 2026-11-06 | Claude | Linea 1: terza review di GPT ricevuta (5e15009), ESITO ACCETTATO e letture convergenti; rettificati due conteggi e due formulazioni della mia analisi; continuazione non autorizzata
+- Simone, 06/11 verso le 16:49: «Girato a GPT». Verso le 16:51: «si ma convergiamo o continuate a rimpallarvi cose?».
+  Risposta mia: mancava solo la terza review; dopo quella resta una sola decisione, sua, sul seguito a 19.618.
+- Terza review di GPT letta su origin: ramo `codex/scaling-300m-20261104`, commit
+  `5e150092f9588e94dab4fad93e170699b6c8416d` delle 17:00:29 (punta riletta in un passo separato alle 17:08:09; commit
+  protetto con `refs/keep/gpt-scaling-review3-5e15009`). Documenti: `docs/reviews/gpt_review_scaling_final_outcome_20261106.md`
+  e `docs/reviews/gpt_scaling_scientific_final_20261106.md`.
+- Esito tecnico, alla lettera: «ESITO ACCETTATO. Nessun problema tecnico bloccante e nessun job da rifare.» GPT ha
+  rieseguito offline la validazione (28 su 28) e il selftest (2 su 2), e ha fatto un audit aritmetico separato (112
+  confronti, scarto massimo 1,42e-14). Consuntivo confermato: 125,540555556 core-ore su 310.
+- Lettura scientifica di GPT, scritta prima di aprire la mia (congelamento delle 16:54:42 in
+  `results/infra/scaling_300m_20261104/final_outcome_review_20261106/independent_reading_freeze.json`): stessi numeri e
+  stessa lettura S8. Alla lettera: «Convergiamo su tutti i punti che decidono il seguito». Alla mia domanda 1 (serve prima
+  spiegare il controllo pareggiato?) risponde di no: «Non userei il nullo dopo compressione come nuovo veto a posteriori».
+  Sono d'accordo (lettura mia): la regola fissata prima dei risultati e' S8; il nullo resta un limite d'interpretazione.
+- Raccomandazione di GPT: «una sola continuazione 300M fino a 19.618», stessa ricetta, con la posa come domanda aperta.
+  Tetti condizionali del freeze v2 (`docs/scaling_300m_continuation_budget_freeze_20261105_v2.md`, ramo di GPT): 66 GPU-ore
+  richieste (59 di training, 7 di estrazione; 66,35 con i margini) e 350 core-ore CPU per le letture. Il documento stesso
+  dice che non sono un budget approvato e che servono piano concreto, review e decisione di Simone.
+- Rettifiche fatte sul mio ramo, nel commit di questa voce: `docs/reviews/claude_analysis_scaling_300m_5000_20261106.md`
+  (sezioni 5, 6, 7 e nuova sezione 11) e lo script dei numeri accanto (frazioni esatte). Dettaglio nella sezione 2.
+- Non fatto e non autorizzato: nessuna continuazione a 19.618 (decide Simone), nessun piano eseguibile, nessun job.
+  Il perimetro approvato della linea 1 e' concluso: 14 fit, sei aggregati, un confronto.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9596,3 +9620,21 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   dello stato anche se `squeue` fallisce (resta come prova): il rifiuto arriva in `check` e in `plan`.
 - **Per GPT, se riesegue la sua riproduzione sul commit nuovo:** oltre a commit, hash e ultima asserzione, serve tollerare
   l'uscita vuota (`splitlines()[-1]`): ora il rifiuto non stampa righe su stdout, il messaggio esce con `SystemExit`.
+
+### 2026-11-06 | Claude | Linea 1: errore mio nei conteggi per soggetto dell'analisi (pareggi contati come differenze), trovato da GPT e corretto
+- **L'errore (mio).** Nella sezione 7 dell'analisi pubblicata in `b5617a3` avevo scritto, per EPN-612, 200 soggetti meglio,
+  101 peggio, 13 uguali (300M naturale contro 30M) e 148, 155, 11 (300M compresso contro 30M). Lo script confrontava con
+  zero la differenza di due medie in virgola mobile: quattro pareggi, due per contrasto, uscivano come differenze di circa
+  1e-16.
+- **Trovato da GPT** nella terza review (`5e15009`, `docs/reviews/scaling_epn_ties_20261106_check.py`): i valori giusti sono
+  199, 100, 15 e 148, 153, 13.
+- **Verifica mia, con codice mio** (frazioni esatte, senza eseguire lo script di GPT): stessi valori. Per EPN-612 ogni
+  soggetto ha 25 finestre per ciascuna delle 6 classi, quindi coincidono anche con i totali interi. Negli altri quattro
+  dataset virgola mobile e frazioni danno gli stessi conteggi. Mediane e medie invariate.
+- **Correzione.** Lo script dei numeri usa `fractions.Fraction`; la sua uscita cambia solo nelle due righe di EPN-612. Nel
+  documento la sezione 7 porta i valori giusti e la sezione 11 dice che cosa c'era prima.
+- **Effetto.** Nessuno su score, intervalli, lettura S8, validazione tecnica o report congelato: erano descrittive post hoc.
+- **Due formulazioni corrette nello stesso commit** (precisazioni di GPT, che condivido): DB3 «vicino al livello del caso»
+  con delta «stimabile ma non risolto», al posto di «nessuna taglia legge quei dati»; sulle finestre statiche il
+  riferimento 1 e' una previsione senza variazioni temporali, non una media globale (ricontrollato su
+  `scripts/pose_dynamics.py` del codice congelato).
