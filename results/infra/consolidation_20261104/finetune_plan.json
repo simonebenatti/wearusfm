@@ -1,0 +1,129 @@
+{
+  "protocol": "consolidation-finetune-epn-20261104-v1",
+  "status": "claude_review_converged",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056"
+  },
+  "epn_roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/trainingJSON",
+    "/leonardo_work/IscrB_WearUsFM/data/raw/epn612/EMG-EPN612 Dataset/testingJSON"
+  ],
+  "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+  "batch": 8,
+  "epochs": 5,
+  "max_updates": null,
+  "seed": 0,
+  "lr_grid": {
+    "frozen": [
+      0.001,
+      0.01
+    ],
+    "finetune": [
+      1e-05,
+      0.0001
+    ],
+    "scratch": [
+      0.0001,
+      0.001
+    ]
+  },
+  "benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark_v2/report.json",
+    "sha256": "c14b78b0d593a56f272192bd2c246003e657788551936c24c9dc1fba1eb0241d"
+  },
+  "benchmark_allocation": {
+    "gpus": 1,
+    "cpus": 8,
+    "memory": "100G",
+    "seconds": 1800
+  },
+  "fits": 24,
+  "fold_regime_jobs": 12,
+  "fit_gpu_hours_cap": 144,
+  "fit_allocated_core_hours_cap": 1152,
+  "gate": "New benchmark63527476 complete0:0; source/recipe/input/checkpoint/policy verified; all regimes split; memory passed; fits authorized under reviewed4h/7h/7h limits.",
+  "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
+  "head_lr_multiplier": {
+    "frozen": 1,
+    "finetune": 100,
+    "scratch": 10
+  },
+  "fits_status": "claude_review_converged",
+  "fit_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/epn",
+  "scratch_learning_rule": {
+    "folds": 4,
+    "best_epoch5_folds_at_least": 3,
+    "or_median_validation_bacc_epoch5_minus4_at_least": 0.005,
+    "followup_epochs": 15,
+    "followup_regimes": [
+      "finetune",
+      "scratch"
+    ],
+    "followup_initialization": "fresh from same original teacher19618/random seed0; new 15-epoch horizon, not resume from selected5epoch",
+    "followup_gate": "preregistered direction; publish measured resources and validate implementation before any extension"
+  },
+  "fit_packaging_policy": {
+    "joint_if_two_candidates_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
+    "otherwise_split_if_one_candidate_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
+    "otherwise": "blocked; no automatic dose/batch/grid change",
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback",
+    "seconds_reserved_per_job": 300
+  },
+  "fit_gpu_hours_cap_joint": 72,
+  "fit_gpu_hours_cap_fallback": 144,
+  "max_candidate_jobs": 24,
+  "review": {
+    "commit": "f70dc72a1b219bd41168ea0de6c7fe5265c824d3",
+    "path": "docs/reviews/claude_review_consolidation_20261104.md",
+    "benchmark": "approved and converged; benchmark OUT must be WORK",
+    "fits": "approved and converged after R-1 output root corrected to WORK; benchmark gate still mandatory",
+    "walltime_amendment": "approved without blocking remarks, f70dc72; frozen remains4h; new benchmark required"
+  },
+  "previous_benchmark_receipt": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark/report.json",
+    "sha256": "a5eada1ab8cc0b265c3c7b2ba03a0b7f43ca9b1e819db2011362a00971f80c72"
+  },
+  "fit_allocation_by_regime": {
+    "frozen": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 14400
+    },
+    "finetune": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    },
+    "scratch": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    }
+  },
+  "walltime_amendment": {
+    "motivated_by_job": 63525812,
+    "old_per_job_seconds": 14400,
+    "projected_single_candidate_seconds": {
+      "frozen": 7959.877150932498,
+      "finetune": 23558.540223664175,
+      "scratch": 23535.002877678966
+    },
+    "reason": "even single candidates exceed old 14100s gate for finetune and scratch",
+    "scientific_recipe_unchanged": true,
+    "existing_training_checkout_unchanged": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+    "requires_new_benchmark_due_to_source_identity": true,
+    "user_authorization": "poi se devi alzare limiti di tempo vai tranquillo"
+  }
+}

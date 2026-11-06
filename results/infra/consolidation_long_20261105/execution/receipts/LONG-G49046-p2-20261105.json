@@ -1,0 +1,209 @@
+{
+  "artifacts": {
+    "epn612": {
+      "bytes": 294936151,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/epn612.npz",
+      "sha256": "f7339e8950b27bb649b7b09dcc4f76b154f99891157c446b00aa5d21931fe70b"
+    },
+    "uci_emg": {
+      "bytes": 2258755,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/uci_emg.npz",
+      "sha256": "3ee6ea8ced098937601a1b1e0af60c5a317c9411b415664e66b9995c9897c33e"
+    }
+  },
+  "checkpoint": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+  "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "checkpoint_step": 49046,
+  "checkpoint_unchanged": true,
+  "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+  "complete": true,
+  "config": {
+    "accum_steps": 1,
+    "alarm": {
+      "collapse_ratio_min": 0.05,
+      "erank_fraction_min": 0.1,
+      "erank_min": 38.4,
+      "patience": 3
+    },
+    "amp_bf16": true,
+    "batch_size": 32,
+    "branch_calibration_batches": 16,
+    "branch_monitor": false,
+    "ckpt_every": 500,
+    "datasets": null,
+    "eval_every": 500,
+    "fixed_eval_batches": 8,
+    "fixed_eval_every": 500,
+    "freeze_encoder": false,
+    "grad_clip": 1.0,
+    "jepa": {
+      "anchor_weight": 0.2,
+      "branch_weight": 0.0,
+      "ema_momentum": 0.996,
+      "jepa_weight": 0.0,
+      "keep_weight": 0.0,
+      "loss_per_window": true,
+      "masked_loss_radius": 0,
+      "pose_weight": 1.0,
+      "region_target": false,
+      "rvq_targets": "slab",
+      "target": "b"
+    },
+    "keep_calibration": null,
+    "keep_calibration_sha256": null,
+    "keep_grad_every": 0,
+    "loader": {
+      "align_ms": 200.0,
+      "anchor_edge_guard_s": 0.1,
+      "block_pool": 16,
+      "block_s": 30.0,
+      "filter_band_hz": [
+        20.0,
+        450.0
+      ],
+      "filter_margin_s": 0.5,
+      "k_neighbors": 8,
+      "mask": {
+        "long": [
+          20,
+          80
+        ],
+        "max_spatial_fraction": 0.5,
+        "medium": [
+          4,
+          12
+        ],
+        "ratio": 0.5,
+        "share_long": 0.2,
+        "share_medium": 0.25,
+        "share_short": 0.15,
+        "share_spatial": 0.4,
+        "short": [
+          1,
+          2
+        ],
+        "slab_fraction": 0.5
+      },
+      "max_session_attempts": 20,
+      "max_window_attempts": 20,
+      "max_window_s": 4.0,
+      "min_window_s": 1.0,
+      "multiscale_anchor": true,
+      "notch_hz": [
+        50.0,
+        60.0
+      ],
+      "open_sessions": 64,
+      "patch_ms": 25.0,
+      "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+      "pose_unprompted": true,
+      "run_margin_s": 0.2,
+      "rvq_codes_root": null,
+      "scale_chunk_s": 2.0,
+      "scale_chunks": 32,
+      "split_at_gaps": true,
+      "time_weighted": true,
+      "virtual": {
+        "classes": [
+          "C"
+        ],
+        "exclude_datasets": [
+          "capgmyo"
+        ],
+        "no_bipolar_datasets": [
+          "csl_hdemg"
+        ],
+        "p": 0.5,
+        "p_bipolar": 0.5,
+        "shapes": [
+          [
+            4,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "strides": [
+          1,
+          2
+        ]
+      },
+      "windows_per_block": 8
+    },
+    "log_batch_origin": true,
+    "lr": 0.0001,
+    "max_steps": 49046,
+    "model": {
+      "backbone_layers": 8,
+      "branch_alpha": 0.5,
+      "branch_dim": 128,
+      "branch_freeze_output": false,
+      "branch_hidden": 48,
+      "branch_objective": "readout",
+      "decoder_layers": 2,
+      "dim": 384,
+      "grad_checkpoint": true,
+      "k_latents": 64,
+      "keep_readout": false,
+      "local_layers": 2,
+      "multiscale_anchor": true,
+      "muscle_dropout": 0.4,
+      "n_bands": 5,
+      "n_heads": 6,
+      "patch_ms": 25.0,
+      "pose_head": true,
+      "rvq_codes": null,
+      "spectral_branches": [],
+      "tokenizer_activation": "gelu",
+      "wavelet_learnable": false,
+      "window_ms": 100.0
+    },
+    "nested": "1",
+    "pairing_audit": false,
+    "pose_grad_every": 500,
+    "pose_panel_every": 500,
+    "pose_panel_recordings": 2,
+    "pose_panel_users": 32,
+    "pose_panel_windows": 4,
+    "prefetch": true,
+    "prefetch_audit": false,
+    "readout_version": "p1p2_qc_equal_channel_v1",
+    "schedule": {
+      "decay_fraction": 0.2,
+      "keep_checkpoints": [
+        5000,
+        19618
+      ],
+      "kind": "wsd",
+      "total_steps": 49046
+    },
+    "seed": 0,
+    "stream_segment": 1200,
+    "target_version": "step1_psd_power_shape_energy_v1",
+    "warmup_steps": 1962,
+    "weight_decay": 0.05
+  },
+  "frozen_teacher_unchanged": true,
+  "kind": "extract-classification",
+  "measured_resources": {
+    "device_memory_bytes": 68099571712,
+    "elapsed_seconds": 1397.8202430140227,
+    "peak_reserved_bytes": 10921967616,
+    "peak_rss_bytes": 20706787328
+  },
+  "plan_sha256": "e24d3fae8642695dcf0dd1ff45347d985eed0c8e47f7e85c1c1e138db11d058a",
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "restored_state_verified": true,
+  "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+  "task": "p2",
+  "training_code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+  "which": "teacher"
+}

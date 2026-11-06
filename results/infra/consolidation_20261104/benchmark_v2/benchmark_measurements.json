@@ -1,0 +1,110 @@
+{
+  "protocol": "consolidation-finetune-epn-20261104-v1",
+  "complete": false,
+  "mode": "benchmark",
+  "code_sha": "ae283052da086c814890d8e8e5b57505395b37a1",
+  "plan_sha256": "c6e283a058fb435c9a3df8515efa9406e80e6a552463cfb833fa958d6cf6d7af",
+  "recipe_sha256": "2ba1b7f523385342535d89e0132c34bd97bf26f9d900677872d7aac92301b13a",
+  "source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
+  "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+  "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+  "fit_allocation_by_regime": {
+    "frozen": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 14400
+    },
+    "finetune": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    },
+    "scratch": {
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 25200
+    }
+  },
+  "fit_packaging_policy": {
+    "joint_if_two_candidates_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
+    "otherwise_split_if_one_candidate_seconds_lte": {
+      "frozen": 14100,
+      "finetune": 24900,
+      "scratch": 24900
+    },
+    "otherwise": "blocked; no automatic dose/batch/grid change",
+    "selection": "second split job loads first candidate receipt; held only after both results; no held-based fallback",
+    "seconds_reserved_per_job": 300
+  },
+  "fit_limit_seconds_by_regime": {
+    "frozen": 14100,
+    "finetune": 24900,
+    "scratch": 24900
+  },
+  "initialization": "teacher19618 or fresh random architecture; no EMA downstream",
+  "timings": {
+    "frozen": {
+      "seconds": 6.075672299601138,
+      "updates": 32,
+      "warmup_seconds": 3.680674698203802,
+      "warmup_updates": 4,
+      "seconds_per_update_all": 0.271009638827915,
+      "seconds_per_update_steady": 0.18986475936253555,
+      "peak_allocated_bytes": 1419040768,
+      "peak_reserved_bytes": 1744830464,
+      "device_memory_bytes": 68099571712
+    },
+    "finetune": {
+      "seconds": 20.182699603959918,
+      "updates": 32,
+      "warmup_seconds": 2.8457800671458244,
+      "warmup_updates": 4,
+      "seconds_per_update_all": 0.6396799908640484,
+      "seconds_per_update_steady": 0.6307093626237474,
+      "peak_allocated_bytes": 6609924608,
+      "peak_reserved_bytes": 7069499392,
+      "device_memory_bytes": 68099571712
+    },
+    "scratch": {
+      "seconds": 20.155866799876094,
+      "updates": 32,
+      "warmup_seconds": 2.6747724153101444,
+      "warmup_updates": 4,
+      "seconds_per_update_all": 0.6341844226440622,
+      "seconds_per_update_steady": 0.6298708374961279,
+      "peak_allocated_bytes": 6611171840,
+      "peak_reserved_bytes": 7069499392,
+      "device_memory_bytes": 68099571712
+    }
+  },
+  "projected_two_candidates_seconds": {
+    "frozen": 14695.861017418163,
+    "finetune": 45916.91666498045,
+    "scratch": 45857.531476917306
+  },
+  "projected_one_candidate_seconds": {
+    "frozen": 7972.654956011097,
+    "finetune": 23583.18277979224,
+    "scratch": 23553.49018576067
+  },
+  "fit_packaging": {
+    "frozen": "split",
+    "finetune": "split",
+    "scratch": "split"
+  },
+  "load_seconds": 255.1205217251554,
+  "train_preprocessing_seconds": 119.50758309010416,
+  "projected_full_preprocessing_seconds": 266.7681120162989,
+  "peak_rss_bytes": 17974312960,
+  "projected_full_peak_rss_bytes": 34773054740.625595,
+  "resource_gate_passed": true,
+  "forward_and_preprocessing_train_subjects_only": true,
+  "scientific_checkpoint_written": false
+}

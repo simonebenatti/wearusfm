@@ -1,0 +1,281 @@
+{
+  "scope": "Read-only login-node import checks before extraction checkout; no fitting, inference or job submission",
+  "collected_at_utc": "2026-11-05T19:10:35.505Z",
+  "modules": [
+    "profile/deeplrn",
+    "cineca-ai/4.3.0"
+  ],
+  "venv": "/leonardo_work/IscrB_WearUsFM/venv_wearusfm",
+  "command": "module purge && module load profile/deeplrn && module load cineca-ai/4.3.0 && source \"$WORK/venv_wearusfm/bin/activate\" && export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8 PYTHONDONTWRITEBYTECODE=1 && python3 -c 'import os,sys,json,platform,resource,socket\nimport numpy as np\nimport scipy\nimport sklearn\nimport sklearn.linear_model\nfrom threadpoolctl import threadpool_info\nkeys=(\"internal_api\",\"prefix\",\"version\",\"num_threads\",\"architecture\",\"threading_layer\")\npools=sorted([{k:p.get(k) for k in keys} for p in threadpool_info()],key=lambda p:json.dumps(p,sort_keys=True))\ncontext={\"python\":platform.python_version(),\"numpy\":np.__version__,\"scipy\":scipy.__version__,\"sklearn\":sklearn.__version__,\"threadpools\":pools,\"features_dtype\":\"float32\"}\nu=resource.getrusage(resource.RUSAGE_SELF)\nprint(json.dumps({\"probe\":\"without_torch\",\"hostname\":socket.gethostname(),\"python_executable\":sys.executable,\"numeric_context\":context,\"torch_loaded\":\"torch\" in sys.modules,\"torch_version\":getattr(sys.modules.get(\"torch\"),\"__version__\",None),\"thread_environment\":{k:os.environ.get(k) for k in (\"OMP_NUM_THREADS\",\"MKL_NUM_THREADS\",\"OPENBLAS_NUM_THREADS\")},\"cpu_seconds\":u.ru_utime+u.ru_stime},sort_keys=True))' && python3 -c 'import os,sys,json,platform,resource,socket\nimport numpy as np\nimport torch\nimport scipy\nimport sklearn\nimport sklearn.linear_model\nfrom threadpoolctl import threadpool_info\nkeys=(\"internal_api\",\"prefix\",\"version\",\"num_threads\",\"architecture\",\"threading_layer\")\npools=sorted([{k:p.get(k) for k in keys} for p in threadpool_info()],key=lambda p:json.dumps(p,sort_keys=True))\ncontext={\"python\":platform.python_version(),\"numpy\":np.__version__,\"scipy\":scipy.__version__,\"sklearn\":sklearn.__version__,\"threadpools\":pools,\"features_dtype\":\"float32\"}\nu=resource.getrusage(resource.RUSAGE_SELF)\nprint(json.dumps({\"probe\":\"with_torch\",\"hostname\":socket.gethostname(),\"python_executable\":sys.executable,\"numeric_context\":context,\"torch_loaded\":\"torch\" in sys.modules,\"torch_version\":getattr(sys.modules.get(\"torch\"),\"__version__\",None),\"thread_environment\":{k:os.environ.get(k) for k in (\"OMP_NUM_THREADS\",\"MKL_NUM_THREADS\",\"OPENBLAS_NUM_THREADS\")},\"cpu_seconds\":u.ru_utime+u.ru_stime},sort_keys=True))'",
+  "probes": [
+    {
+      "cpu_seconds": 2.440765,
+      "hostname": "login07.leonardo.local",
+      "numeric_context": {
+        "features_dtype": "float32",
+        "numpy": "1.26.4",
+        "python": "3.11.6",
+        "scipy": "1.12.0",
+        "sklearn": "1.4.1.post1",
+        "threadpools": [
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 8,
+            "prefix": "libopenblas",
+            "threading_layer": "pthreads",
+            "version": "0.3.21.dev"
+          },
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 8,
+            "prefix": "libopenblas",
+            "threading_layer": "pthreads",
+            "version": "0.3.23.dev"
+          },
+          {
+            "architecture": null,
+            "internal_api": "openmp",
+            "num_threads": 8,
+            "prefix": "libgomp",
+            "threading_layer": null,
+            "version": null
+          }
+        ]
+      },
+      "probe": "without_torch",
+      "python_executable": "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+      "thread_environment": {
+        "MKL_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8"
+      },
+      "torch_loaded": false,
+      "torch_version": null
+    },
+    {
+      "cpu_seconds": 3.855042,
+      "hostname": "login07.leonardo.local",
+      "numeric_context": {
+        "features_dtype": "float32",
+        "numpy": "1.26.4",
+        "python": "3.11.6",
+        "scipy": "1.12.0",
+        "sklearn": "1.4.1.post1",
+        "threadpools": [
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 8,
+            "prefix": "libopenblas",
+            "threading_layer": "pthreads",
+            "version": "0.3.21.dev"
+          },
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 8,
+            "prefix": "libopenblas",
+            "threading_layer": "pthreads",
+            "version": "0.3.23.dev"
+          },
+          {
+            "architecture": null,
+            "internal_api": "openmp",
+            "num_threads": 8,
+            "prefix": "libgomp",
+            "threading_layer": null,
+            "version": null
+          },
+          {
+            "architecture": null,
+            "internal_api": "openmp",
+            "num_threads": 8,
+            "prefix": "libgomp",
+            "threading_layer": null,
+            "version": null
+          },
+          {
+            "architecture": null,
+            "internal_api": "openmp",
+            "num_threads": 8,
+            "prefix": "libomp",
+            "threading_layer": null,
+            "version": null
+          }
+        ]
+      },
+      "probe": "with_torch",
+      "python_executable": "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+      "thread_environment": {
+        "MKL_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8"
+      },
+      "torch_loaded": true,
+      "torch_version": "2.2.0a0+git6c8c5ad"
+    }
+  ],
+  "raw_stdout_and_module_messages": "Loading cineca-ai/4.3.0\n  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1\n    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41\n    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q\n    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea\n    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s\n    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp\n    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif\n    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2\n    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7\n    openjdk/11.0.20.1_1\n{\"cpu_seconds\": 2.440765, \"hostname\": \"login07.leonardo.local\", \"numeric_context\": {\"features_dtype\": \"float32\", \"numpy\": \"1.26.4\", \"python\": \"3.11.6\", \"scipy\": \"1.12.0\", \"sklearn\": \"1.4.1.post1\", \"threadpools\": [{\"architecture\": \"SkylakeX\", \"internal_api\": \"openblas\", \"num_threads\": 8, \"prefix\": \"libopenblas\", \"threading_layer\": \"pthreads\", \"version\": \"0.3.21.dev\"}, {\"architecture\": \"SkylakeX\", \"internal_api\": \"openblas\", \"num_threads\": 8, \"prefix\": \"libopenblas\", \"threading_layer\": \"pthreads\", \"version\": \"0.3.23.dev\"}, {\"architecture\": null, \"internal_api\": \"openmp\", \"num_threads\": 8, \"prefix\": \"libgomp\", \"threading_layer\": null, \"version\": null}]}, \"probe\": \"without_torch\", \"python_executable\": \"/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3\", \"thread_environment\": {\"MKL_NUM_THREADS\": \"8\", \"OMP_NUM_THREADS\": \"8\", \"OPENBLAS_NUM_THREADS\": \"8\"}, \"torch_loaded\": false, \"torch_version\": null}\n{\"cpu_seconds\": 3.855042, \"hostname\": \"login07.leonardo.local\", \"numeric_context\": {\"features_dtype\": \"float32\", \"numpy\": \"1.26.4\", \"python\": \"3.11.6\", \"scipy\": \"1.12.0\", \"sklearn\": \"1.4.1.post1\", \"threadpools\": [{\"architecture\": \"SkylakeX\", \"internal_api\": \"openblas\", \"num_threads\": 8, \"prefix\": \"libopenblas\", \"threading_layer\": \"pthreads\", \"version\": \"0.3.21.dev\"}, {\"architecture\": \"SkylakeX\", \"internal_api\": \"openblas\", \"num_threads\": 8, \"prefix\": \"libopenblas\", \"threading_layer\": \"pthreads\", \"version\": \"0.3.23.dev\"}, {\"architecture\": null, \"internal_api\": \"openmp\", \"num_threads\": 8, \"prefix\": \"libgomp\", \"threading_layer\": null, \"version\": null}, {\"architecture\": null, \"internal_api\": \"openmp\", \"num_threads\": 8, \"prefix\": \"libgomp\", \"threading_layer\": null, \"version\": null}, {\"architecture\": null, \"internal_api\": \"openmp\", \"num_threads\": 8, \"prefix\": \"libomp\", \"threading_layer\": null, \"version\": null}]}, \"probe\": \"with_torch\", \"python_executable\": \"/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3\", \"thread_environment\": {\"MKL_NUM_THREADS\": \"8\", \"OMP_NUM_THREADS\": \"8\", \"OPENBLAS_NUM_THREADS\": \"8\"}, \"torch_loaded\": true, \"torch_version\": \"2.2.0a0+git6c8c5ad\"}\n",
+  "limitations": [
+    "Minimal launcher-equivalent imports with and without torch, not the full campaign executable on a compute node",
+    "No prediction equality measured; compute jobs revalidate the numeric policy",
+    "Shared project quota must be checked again immediately before extraction submission"
+  ],
+  "quota_observation": {
+    "observed_at_utc": "2026-11-05T19:07:04Z",
+    "project_id": 20147512,
+    "kbytes": 1038984068,
+    "quota_kbytes": 1073741824,
+    "limit_kbytes": 0,
+    "files": 1500277,
+    "free_bytes": 35591942144,
+    "minimum_free_bytes": 34359738368,
+    "source": "lfs quota -p 20147512 /leonardo_work/IscrB_WearUsFM"
+  },
+  "compatibility_checks": {
+    "without_torch": {
+      "numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "historical_numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "compatible": true,
+      "exact_match": true,
+      "extra_threadpools": [],
+      "historical_numeric_context": {
+        "python": "3.11.6",
+        "numpy": "1.26.4",
+        "scipy": "1.12.0",
+        "sklearn": "1.4.1.post1",
+        "threadpools": [
+          {
+            "internal_api": "openblas",
+            "prefix": "libopenblas",
+            "version": "0.3.21.dev",
+            "num_threads": 8,
+            "architecture": "SkylakeX",
+            "threading_layer": "pthreads"
+          },
+          {
+            "internal_api": "openblas",
+            "prefix": "libopenblas",
+            "version": "0.3.23.dev",
+            "num_threads": 8,
+            "architecture": "SkylakeX",
+            "threading_layer": "pthreads"
+          },
+          {
+            "internal_api": "openmp",
+            "prefix": "libgomp",
+            "version": null,
+            "num_threads": 8,
+            "architecture": null,
+            "threading_layer": null
+          }
+        ],
+        "features_dtype": "float32"
+      },
+      "policy": {
+        "name": "historical-libraries-plus-openmp8-v1",
+        "equal_fields": [
+          "python",
+          "numpy",
+          "scipy",
+          "sklearn",
+          "features_dtype"
+        ],
+        "historical_pools": "multiset inclusion with exact equality of all six fields",
+        "pool_fields": [
+          "internal_api",
+          "prefix",
+          "version",
+          "num_threads",
+          "architecture",
+          "threading_layer"
+        ],
+        "extra_pools": "only internal_api=openmp and integer num_threads=8",
+        "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+        "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+      }
+    },
+    "with_torch": {
+      "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+      "historical_numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+      "compatible": true,
+      "exact_match": false,
+      "extra_threadpools": [
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libgomp",
+          "threading_layer": null,
+          "version": null
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libomp",
+          "threading_layer": null,
+          "version": null
+        }
+      ],
+      "historical_numeric_context": {
+        "python": "3.11.6",
+        "numpy": "1.26.4",
+        "scipy": "1.12.0",
+        "sklearn": "1.4.1.post1",
+        "threadpools": [
+          {
+            "internal_api": "openblas",
+            "prefix": "libopenblas",
+            "version": "0.3.21.dev",
+            "num_threads": 8,
+            "architecture": "SkylakeX",
+            "threading_layer": "pthreads"
+          },
+          {
+            "internal_api": "openblas",
+            "prefix": "libopenblas",
+            "version": "0.3.23.dev",
+            "num_threads": 8,
+            "architecture": "SkylakeX",
+            "threading_layer": "pthreads"
+          },
+          {
+            "internal_api": "openmp",
+            "prefix": "libgomp",
+            "version": null,
+            "num_threads": 8,
+            "architecture": null,
+            "threading_layer": null
+          }
+        ],
+        "features_dtype": "float32"
+      },
+      "policy": {
+        "name": "historical-libraries-plus-openmp8-v1",
+        "equal_fields": [
+          "python",
+          "numpy",
+          "scipy",
+          "sklearn",
+          "features_dtype"
+        ],
+        "historical_pools": "multiset inclusion with exact equality of all six fields",
+        "pool_fields": [
+          "internal_api",
+          "prefix",
+          "version",
+          "num_threads",
+          "architecture",
+          "threading_layer"
+        ],
+        "extra_pools": "only internal_api=openmp and integer num_threads=8",
+        "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+        "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+      }
+    }
+  },
+  "source_sha256_checked": "a2ff16087d06ff22c483b5702ffb10e94842a9919847cc8e1b3e49dee815956f"
+}

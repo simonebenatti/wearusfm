@@ -1,0 +1,70 @@
+{
+  "protocol": "finetune15-preparation-validation-20261105-v1",
+  "status": "claude_review_converged_ready_benchmark",
+  "recipe_sha256": "db975bd1c46f6fbf3259c0ebd73edbdd68b541bf1cc452e4ad6084f6e4a7b4d1",
+  "source_sha256_at_preparation": "13de2f317997e497f6d40a53d04dbc6b2061a6d2244c0a809898968362091469",
+  "five_epoch_source_sha256": "aa857fb321bae83fd4b6463092c89dd2dba27e248cbe063f25a30032bf529b98",
+  "reading_rules_equal": true,
+  "reference_candidates_verified": 24,
+  "projection_at_reference_benchmark": {
+    "max_elapsed_seconds_by_regime": {
+      "frozen": 4519,
+      "finetune": 13359,
+      "scratch": 13446
+    },
+    "slowdown_by_regime": {
+      "frozen": 1.0,
+      "finetune": 1.0,
+      "scratch": 1.0
+    },
+    "additional_fixed_seconds": 0.0,
+    "projected_one_candidate_seconds": {
+      "frozen": 17547,
+      "finetune": 50697,
+      "scratch": 51023
+    }
+  },
+  "gate_seconds": {
+    "frozen": 21300,
+    "finetune": 57300,
+    "scratch": 57300
+  },
+  "tests": {
+    "passed": 107,
+    "seconds": 13.84,
+    "scope": "FT15 controller/report and FT5/controller/harness/operations regressions"
+  },
+  "critic": "ft_walltime_critic; no blocking findings; independent literal transfer-gap bootstrap with 2000 draws seed20261102 matches within1e-12",
+  "bash_n_passed": true,
+  "scientific_results_15_exist": false,
+  "gpu_jobs_submitted": 0,
+  "pending": [
+    "published execution SHA and immutable checkout",
+    "new CUDA benchmark and hash pin",
+    "all-three-regime fit gate and fresh quota before submissions",
+    "effective job receipts"
+  ],
+  "hashes": {
+    "scripts/consolidation_finetune15.py": "e49e4a51c5005d282c16b743f024107a2b8cd06adb4bc91845fea640400a3e42",
+    "scripts/slurm/consolidation_finetune15.sbatch": "1dbc1f4e1542ed022b1d20325f03db1646a6e079f4d6677454b1ef67ddfea373",
+    "scripts/consolidation_ft15_report.py": "f477725067603a0f361a0ebff96e77f57bce90e5289b8b23246d08aee33588bf",
+    "tests/cpu/test_consolidation_finetune15.py": "b8fcb0cca8b93d3ed4df952412775d0ab6b8054a1936b67f137254f11248f3bd",
+    "tests/cpu/test_consolidation_ft15_report.py": "e7557098dc49bae4ff07c7f6c658430f9654e79b1721c6a7ed03b8faa7180f86",
+    "results/infra/finetune15_20261105/plan.json": "76a6c87d43c16d362b86c20a4b83a883b78ff3966ef052e779d5d69aad2f48ae",
+    "results/infra/finetune15_20261105/resource_projection.json": "de77c760cf5d5c1291fb2295c16663beea1d1fba188e88edda5362b62d310d71",
+    "results/infra/finetune15_20261105/launch_plan.json": "f8b37bb83fe82374c0a7ff36f5ce4e4ab61c76f8ce2edf9a5e9b1f7385a0db1f"
+  },
+  "five_epoch_runtime_plan_and_json_report_unchanged": true,
+  "five_epoch_prose_limits_updated_from_review": "0968bd1c45353c19ee518c55c9a0494c68db79a1",
+  "transfer_gap15_minus_gap5_paired": true,
+  "automatic_requeue_refused": true,
+  "external_review_commit": "ceaf95b66519b93e4f2bcfdda2d3cafd2f9f5e24",
+  "budget_confirmation_recorded": true,
+  "all_regimes_gate_before_any_fit": true,
+  "operational_preflight": {
+    "path": "results/infra/finetune15_20261105/preflight_20261105.json",
+    "sha256": "c47792e99041c3c133149bbb5e150f1ed910eb5bc29f97d69f9a9c7cfe698dea",
+    "observed_at_utc": "2026-11-05T11:15:14.980697+00:00"
+  },
+  "source_unchanged_from_reviewed_commit": "90ffcd48213b5158ab00d21e190afdabebf7515f"
+}

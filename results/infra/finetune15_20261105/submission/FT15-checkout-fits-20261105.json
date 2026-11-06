@@ -1,0 +1,55 @@
+{
+  "id": "FT15-checkout-fits-20261105",
+  "creato": "2026-11-05T12:58:05+01:00",
+  "agente": "gpt",
+  "campagna": "finetune15-20261105",
+  "gpu_ore_stimate": 0.0,
+  "codice_sha": "1359b924d25601f92e9035b8bd621c2c6a93f947",
+  "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=FT15-checkout-fits-20261105",
+    "--comment=wearusfm:FT15-checkout-fits-20261105",
+    "--export=ALL,CAMPAIGN=finetune15-fits-20261105,CAMPAIGN_SHA=1359b924d25601f92e9035b8bd621c2c6a93f947,EXPECTED_SHA=1359b924d25601f92e9035b8bd621c2c6a93f947",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=1",
+    "--mem=2G",
+    "--time=00:10:00"
+  ],
+  "dopo": null,
+  "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+  "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+  "stato": "sottomesso",
+  "storia": [
+    {
+      "quando": "2026-11-05T12:58:05+01:00",
+      "stato": "prenotato"
+    },
+    {
+      "quando": "2026-11-05T12:58:05+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "quando": "2026-11-05T12:58:06+01:00",
+      "stato": "sottomesso",
+      "job_slurm": 63581502,
+      "uscita": 0,
+      "stdout": "63581502\n",
+      "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+    }
+  ],
+  "job_slurm": 63581502,
+  "uscita": 0,
+  "stdout": "63581502\n",
+  "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n",
+  "publication_provenance": {
+    "canonical_local_path": "/Users/simonebenatti/wearusfm_local/jobs/FT15-checkout-fits-20261105/state.json",
+    "canonical_sha256": "5a531325e9a7a02296a0d9116e4d022938717f476dc39c428f2285dfc2df8521",
+    "redacted_fields": [
+      "/storia/2/stderr",
+      "/stderr"
+    ],
+    "redaction": "Public SSH certificate announcement omitted; canonical ledger unchanged."
+  }
+}

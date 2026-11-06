@@ -1,0 +1,32 @@
+{
+  "observed_time_utc_text": "Wed Nov  4 19:56:14 UTC 2026",
+  "review_commit": "2d157cc72dfc02182370b157b5be47cc7985c7b3",
+  "review_copy_sha256": "0cece714c7bcd0f485f9078231dc94016a3ab31d0cd7088bfe7505ae3351e8f7",
+  "fit_state_counts": {
+    "COMPLETED": 4,
+    "RUNNING": 12,
+    "PENDING": 8
+  },
+  "completed_fit_jobs": [
+    63527972,
+    63527974,
+    63527976,
+    63527978
+  ],
+  "completed_fit_gpu_hours": 4.742222222222222,
+  "completed_fit_allocated_core_hours": 37.937777777777775,
+  "accounting_scope": "only four completed frozen C0 fits; not total campaign or running fits",
+  "completed_candidates_verified": true,
+  "held_evaluated_for_completed_candidates": false,
+  "scientific_scores_read": false,
+  "observed_log_error_matches": 0,
+  "runtime_changed": false,
+  "new_jobs_submitted": false,
+  "monitors_created": false,
+  "notes": {
+    "N1": "defer optional gate logging to future version; leave active runtime immutable",
+    "N2": "direct user instruction is present in GPT conversation and remains effective",
+    "N3": "textual review copy; preserve original Claude commit ancestry at future main integration"
+  },
+  "next": "wait for selected candidates and full folds before scientific contrasts; final accounting at completion; any15epoch followup is a new proposal"
+}

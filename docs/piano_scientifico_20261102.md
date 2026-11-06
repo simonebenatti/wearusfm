@@ -307,3 +307,52 @@ integralmente: [paper primario](https://arxiv.org/abs/2106.10466).
 Review indipendente parallel_next_review concorde sulle tre linee e sui controlli.
 Nessun nuovo job o automazione da questa discussione; i protocolli esecutivi
 dovranno riportare risorse, cap, checkpoint, confronti e criteri prima dei risultati.
+
+
+### 05/11 — Consolidamento: fine-tuning concluso, training lungo in corso di completamento
+
+| Pezzo | Preparato | Risultato disponibile | Prossimo gate |
+|---|---|---|---|
+|30M T100-G lungo|Ripresa completa e WSD invariato; recovery e copia persistente degli endpoint|Alle 08:23 CET del 05/11:63525803 COMPLETED0:0; ricevuta di fase ancora da acquisire|63525805 PENDING Priority e63525809 PENDING Dependency; nessun rilancio|
+|Sonde a due momenti/profondità|Protocollo e libreria D384/D896; proposta regola a due lati e scelta del riferimento|Parità pool storico verificata; nessuna nuova estrazione|Regola convergente con0b2623a; completare controller, pin e budget misurati|
+|Benchmark FT EPN|Emendamento approvato da Claude f70dc72; misura su nuovo checkout ae28305|63527476 completo in 450 s; memoria e tempi validi; 0,125 GPUh / 1 coreh|Ricevuta verificata e pinnata; split nei tre regimi|
+|Fit EPN teacher19k, conclusi|Stessa griglia LR della testa; 4 fold, 2 LR, 5 epoche; runtime approvato da Claude2d157cc|24/24 COMPLETED0:0. FT93,766%, scratch92,363%, nuovo frozen70,575%. FT−scratch+1,403pp IC95[0,930;1,837]. Fit68,271667GPUh|Vantaggio del pretraining a dose breve; F-R2 scatta. Frozen sotto logistica storica82,577%: non è il limite delle feature. Piano15 con frozen approvato da Simone, review esecutiva ancora pendente|
+|Aggregatore FT, concluso|Verifica84file/24hashcheckpoint, selezione e OOF; bootstrap appaiato per soggetto|Claude0968bd1 approva e riproduce score/IC esatti.314soggetti/47.100finestre, nessuno scarto; limiti L1–L4 recepiti|[Analisi e limiti](reviews/finetune_results_20261105.md); nessuna nuova inferenza o estensione automatica|
+|EPN a15 epoche, tutti24fit sottomessi|Frozen, FT e scratch dalle inizializzazioni originali; Δ15−Δ5 appaiato, secondo uso del held e policy TIMEOUT espliciti|Claude ceaf95b convergente; benchmark63579657 COMPLETED0:0, tutti3gate passati. Alle13:15CET:12RUNNING/12PENDING Dependency. Preventivo fit265,064GPUh, tetto totale304,5GPUh|[Esecuzione, ID e ricevute](finetune15_execution_20261105.md): codice1359b92 congelato; attendere matrice completa e OOF prima dei contrasti; nessun risultato15 ancora|
+|Dopo EPN15: ampliare dataset e compiti|Richiesta esplicita di Simone: classificazione oltre EPN e nuova regressione|Ricognizione aggiornata: UCI/Kaifosh esclusi come sorgenti; DB2/Hyser esposti separati dai riservati; audit nuovi bersagli|[Proposta della fase successiva](downstream_multidataset_next_20261105.md); congelare criteri e opportunità di tuning prima dei nuovi risultati|
+
+Dettagli: [protocollo consolidamento](consolidation_protocol_20261104.md).
+Questa chat non possiede300M né log-quadratico/contrastiva. Tutto su ramo
+codex/consolidation-20261104. Dopo convergenza0b2623a: checkout63525708 completo,
+tre segmenti sottomessi; FT5epoche concluso. Nessun monitor. Gli stati delle
+altre linee in questa copia della tabella non vengono aggiornati dal consolidamento.
+
+Seguito della review `63fd9c5`: [risposta punto per punto](reviews/consolidation_response_to_claude_20261104.md)
+e [prompt per la rilettura](prompt_claude_consolidation_followup_20261104.md).
+Convergenza raggiunta con0b2623a: prima tranche nel [piano esecutivo](consolidation_execution_20261104.md). La replica
+T25-L/B resta un riferimento empirico, non una soglia statistica universale;
+1 pp e 2% E_dyn sono margini pratici proposti per la lettura futura.
+
+[Misura FT e adeguamento dei tempi](finetune_walltime_amendment_20261104.md):
+review f70dc72 convergente. [Benchmark v2 e piano dei fit](finetune_v2_execution_20261104.md).
+
+
+### 05/11 sera — Linea 2: gestione operativa passata a Claude
+
+Per disposizione diretta di Simone, Claude gestisce EPN15 e valutazione lunga:
+deployment, invii, stato/log e raccolta. GPT mantiene codice e responsabilità
+scientifica; nessuna operazione da GPT dopo il passaggio. Fonte Claude3566c8d,
+regola canonica mainfe66e2d. [Consegna operativa](handoff_line2_claude_20261105.md).
+
+| Attività | Che cosa è pronto | Risultato attuale | Conclusione / prossimo passo |
+|---|---|---|---|
+|Training lungo T100-G30M|Tre segmenti e copie persistenti19k/39k/49k|COMPLETED0:0, hash e dosi verificati;25,283GPUh|Endpoint utilizzabili dopo i gate di caricamento, prestazioni ancora da valutare|
+|Dose e profondità classificazione|Pre/postD e pool2D, stessi5dataset/split/sonde;48job per40celle nuove|Review24860d converge su51b4574; R-1b chiuso, nuovi outputSCRATCH e ownerclaude preparati|Quarta lettura sul cambio minimo, poi Claude pinna e lancia12estrazioni, benchmarkCPU e gate48shard|
+|Posa e dinamica del lungo|Testa allenata e ridgepre/post su crop6 comune;E2 con pairing storico|Disegno approvato da Claude; entrambi i pannelli primari restano affiancati, nessuno score nuovo|Benchmark posa e poi3fit/analisi +confronto, lettori CPU8thread|
+|Risorse e qualità|82jobcalcolo+4checkout; tetti e shard conservati|Tetto9GPUh/1711,667coreh;24GiB output suSCRATCH per meno40giorni, WORK1GiB aggiuntivo stimato per codice/log|[Pacchetto aggiornato](consolidation_long_execution_20261105.md); Claude verifica quoteSCRATCH/WORK fresche, esporta metadata a fine fase e mantiene sorgenti congelati|
+
+FT15 già in corso: ultimo stato diClaude21:05CET,8frozen completi,8C0FT/scratch
+in esecuzione,8C1 in attesa. Nessun controllo remoto aggiuntivo diGPT. Nessun
+IDLONG nelledger e nessuna operazione sospesa. Nuovo stato del pacchetto
+awaiting_claude_rereview perSCRATCH/handoff; la review24860d resta riferita al
+codice precedente51b4574, non è anticipatamente pinnata sul codice modificato.

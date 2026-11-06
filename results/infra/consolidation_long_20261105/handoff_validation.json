@@ -1,0 +1,229 @@
+{
+  "scope": "single requested line2 handoff; no operational remote actions byGPT",
+  "observed_at_utc": "2026-11-05T20:29:54.613161+00:00",
+  "base_commit": "51b4574c1c8377a4a7b7f35934052f71b77ff899",
+  "previous_converged_review": "24860d7447a8aa77fadf51f7ea62f074408e91e4",
+  "handoff_register": "3566c8dd805a7ce7513481e5df1fdba77b31f5d8",
+  "canonical_role_update": "fe66e2db76001316b5750f3b25b76420dce73a35",
+  "status": "awaiting_claude_rereview",
+  "review_commit": null,
+  "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "plan_sha256": "6a46b8eb3c314c9b45d473d8633b9983be65ba65d7581acc9264f8a6a0260c41",
+  "launch_plan_sha256": "6e85e450d6963a56c513fed113ffaa97e6653611c76fd9bb4cb80dc9f17d234d",
+  "runtime_change": "OUTPUT_ROOT constant only; launcher and algorithms unchanged",
+  "operational_owner": "claude",
+  "scientific_owner": "gpt_consolidation",
+  "output_root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105",
+  "recipe_endpoints_and_caps_unchanged": true,
+  "compute_jobs": 82,
+  "phase_checkouts": 4,
+  "job_ids_stages_and_allocations_unchanged": true,
+  "changed_job_fields": "out and corresponding --out argument prefix only",
+  "validation": {
+    "tests_passed": 252,
+    "seconds": 10.66,
+    "same_ten_file_suite_as_third_review": true,
+    "MKL_NUM_THREADS_unset": true,
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "launcher_bash_n": true,
+    "git_diff_check": true
+  },
+  "local_ledger": {
+    "path": "/Users/simonebenatti/wearusfm_local/jobs",
+    "FT15": [
+      {
+        "id": "FT15-BENCH-20261105",
+        "state": "sottomesso",
+        "slurm_job_id": 63579657,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F0-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581718,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F0-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581725,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F1-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581735,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F1-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581741,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F2-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581742,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F2-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581745,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F3-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581750,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-finetune-F3-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581751,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F0-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581664,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F0-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581670,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F1-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581672,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F1-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581673,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F2-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581674,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F2-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581677,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F3-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581682,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-frozen-F3-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581713,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F0-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581768,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F0-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63581837,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F1-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63581887,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F1-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63582180,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F2-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63582244,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F2-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63582253,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F3-20261105-C0",
+        "state": "sottomesso",
+        "slurm_job_id": 63582258,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-EPN-scratch-F3-20261105-C1",
+        "state": "sottomesso",
+        "slurm_job_id": 63582269,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-checkout-bench-20261105",
+        "state": "sottomesso",
+        "slurm_job_id": 63578395,
+        "operation_lock": false
+      },
+      {
+        "id": "FT15-checkout-fits-20261105",
+        "state": "sottomesso",
+        "slurm_job_id": 63581502,
+        "operation_lock": false
+      }
+    ],
+    "LONG_ids_checked": 86,
+    "LONG_ids_present": [],
+    "open_reservations_or_half_operations": []
+  },
+  "last_live_state_source": "Claude21:05CET viaSimone; no new operational reading byGPT",
+  "remote_reads_since_transfer": 0,
+  "remote_mutations_since_transfer": 0,
+  "new_jobs_submitted": 0,
+  "jobs_cancelled": 0,
+  "new_deploy_refs_published": 0,
+  "claude_will_pin_review_and_phase_commits_after_fourth_review": true,
+  "storage_gates_require_fresh_checks_by_Claude": true,
+  "summary_reuses_fourth_checkout_with_published_hash_verified_external_plan": true,
+  "handoff_documents": {
+    "single_file": "docs/handoff_line2_claude_20261105.md",
+    "embedded_sections_sha256_before_concatenation": {
+      "handoff_long_commands_claude_20261105.md": "b69bfd46aa823f3b65fc70e8e582bdc185df8826a5d63d2f80aec08b8d448384",
+      "handoff_epn15_claude_20261105.md": "6f80a733a76118248c07a23542101a285d6afc1fc0a18236efc1e8518cfd224e"
+    },
+    "bash_blocks_verified": 17,
+    "python_heredocs_verified": 6,
+    "submission_examples_compared_to_long_launch_plan": 12,
+    "no_commands_from_handoff_executed": true
+  },
+  "independent_handoff_audit": {
+    "reviewer": "GPT handoff_scratch_critic",
+    "verdict": "no material blockers; fourth Claude review still required",
+    "scope": "runtime diff, plan identities, unchanged matrix and caps, storage, operational commands, EPN15 handoff",
+    "no_remote_operations": true
+  }
+}
