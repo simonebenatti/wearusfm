@@ -6772,6 +6772,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   entreranno allora in una corsia dove la linea 2 tiene al massimo due job («Due fit per volta»).
 - Non fatto: nessun invio, nessuna scrittura su Leonardo, score non aperti.
 
+### 2026-11-06 | Claude | Linea 1: strumento del secondo stadio pronto e provato in locale (non ancora pubblicato); lettura di Leonardo delle 11:59, corsia vuota
+- In attesa della verifica di GPT su `1c83189` ho preparato `comparison_stage.py` e `comparison_stage_selftest.py` nella cartella
+  `final_stages_20261106` del worktree di esecuzione. **Non sono ancora committati**: li pubblico dopo l'invio degli aggregati,
+  per non muovere la punta del ramo mentre GPT verifica la correzione. Copia in `~/wearusfm_local/line1/stage2_backup/`.
+- Cosa fa lo strumento, senza inviare nulla: `collect` (lettura remota dei sei aggregati, copia sul Mac di report, audit, log e
+  dell'uscita originale di `sacct -P`, verificata con sha256), `validate` (26 controlli: i punti B della Review 10, sezione 5),
+  `manifest` (manifest del confronto con i pin effettivi e piano dei due job), `frozen` (il manifest passa da `validate_inputs` e
+  `make_inputs` del codice congelato), `lines`, `submitter` (ssh finto), e tre cancelli di sola lettura: `pre-deploy`,
+  `gate-checkout`, `gate-compare`. Gli score non vengono letti ne' stampati.
+- Due job, mai concatenati: `SCALING-inputs-checkout-20261106` (checkout di campagna `scaling_300m_comparison_inputs_20261106_v1`
+  che pubblica il manifest: 2 CPU, 4G, 5 minuti, come l'ultimo checkout di GPT) e `SCALING-compare-20261106` (8 CPU, 30G, 30
+  minuti, uscita nuova `cpu/comparison/report.json`). L'ID del checkout non comincia con `SCALING-compare-`.
+- Prova locale sulla scena sintetica dei test del confronto (fixture di GPT in `tests/cpu/test_scaling_compare.py`): 2 test
+  superati. Catena completa fino al comparatore congelato, che sul manifest prodotto dallo strumento da' la stessa lettura che
+  sul manifest della fixture; oltre venti stati alterati, ognuno rifiutato dal controllo atteso. Limiti: identita' di codice
+  finta nella fixture; i tre cancelli che leggono Leonardo non sono provati in locale.
+- Lettura reale di sola lettura alle 11:59:34 (lo script di raccolta eseguito su Leonardo senza aggregati): piano delle sonde,
+  piano della posa, budget e report della ridge con gli hash attesi e percorsi canonici; codice congelato pulito; sei sorgenti
+  uguali agli hash della Review 10; uscita del confronto e cartella del checkout assenti. Il runtime registrato nel report
+  della ridge e' uguale a quello dei tre benchmark della posa su tutte le chiavi che il dispatcher confronta nello stadio
+  `compare`: lettura mia, il controllo del runtime e' superabile se l'ambiente non cambia.
+- Corsia alle 11:59:34 (`squeue` exit 0): 0 job dell'utente in `lrd_all_serial`. I sedici benchmark della linea 2 non sono piu'
+  in coda. I sei aggregati partono dopo la verifica di GPT; la linea 2 nel frattempo tiene al massimo due job.
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
