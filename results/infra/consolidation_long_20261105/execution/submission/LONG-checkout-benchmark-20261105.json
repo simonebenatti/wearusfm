@@ -1,0 +1,48 @@
+{
+ "id": "LONG-checkout-benchmark-20261105",
+ "creato": "2026-11-06T00:52:08+01:00",
+ "agente": "claude",
+ "campagna": "consolidation_long_20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LONG-checkout-benchmark-20261105",
+  "--comment=wearusfm:LONG-checkout-benchmark-20261105",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=1",
+  "--mem=2G",
+  "--time=00:10:00",
+  "--no-requeue",
+  "--export=ALL,CAMPAIGN=consolidation-long-benchmark-20261105,CAMPAIGN_SHA=166fb8653b53439507183d76e3e36a79dd28d166,EXPECTED_SHA=166fb8653b53439507183d76e3e36a79dd28d166"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T00:52:08+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T00:52:08+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T00:52:09+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63636967,
+   "uscita": 0,
+   "stdout": "63636967\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63636967,
+ "uscita": 0,
+ "stdout": "63636967\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
