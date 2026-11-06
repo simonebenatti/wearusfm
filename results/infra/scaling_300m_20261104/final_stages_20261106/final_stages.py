@@ -246,16 +246,20 @@ def cmd_plan(state_path):
         shards = [{"name": k, "fit_id": by_name[k]["id"], "datasets": by_name[k]["datasets"], "folds": by_name[k]["folds"],
                    **{f: live[k]["shard"][f] for f in ("path", "sha256", "bytes")}} for k in names]
         job_id, out = "SCALING-probe-aggregate-%02d-20261106" % n, out_of(cell, task)
-        after = jobs[-1]["id"] if jobs else None
         argv = [PYTHON, str(SUBMITTER), "--agente", "claude", "--campagna", CAMPAIGN, "--timeout", "120", "--id", job_id, "--gpu-ore", "0",
-                "--script-stdin", str(DISPATCHER), *(["--dopo", after] if after else []), "--",
+                "--script-stdin", str(DISPATCHER), "--",
                 "--cpus-per-task=%d" % CPUS, "--mem=%dG" % MEMORY_GIB, "--time=00:10:00",
                 "--export=ALL,CODE_DIR=%s,EXPECTED_SHA=%s" % (CODE_DIR, CODE_SHA), "/dev/stdin",
                 "probe-aggregate", PROBE_PLAN, PROBE_PLAN_SHA, out, "--cell", cell, "--task", task, "--shards", *[s["path"] for s in shards]]
         jobs.append({"id": job_id, "stage": "probe-aggregate", "cell": cell, "task": task, "shards": shards, "out": out,
                      "sidecars": sidecars(out), "cpus": CPUS, "memory_gib": MEMORY_GIB, "walltime_seconds": SECONDS,
-                     "requested_core_hours": CPUS * SECONDS / 3600, "depends_on": after, "argv": argv})
-    plan = {"protocol": "scaling5000-aggregates-release-20261106-v1", "status": "PREPARED_NOT_SUBMITTED", "agente": "claude",
+                     "requested_core_hours": CPUS * SECONDS / 3600, "depends_on": None, "argv": argv})
+    plan = {"protocol": "scaling5000-aggregates-release-20261106-v2", "status": "PREPARED_NOT_SUBMITTED", "agente": "claude",
+            "revision": ("v2 replaces v1 (commit 21447b50340f9653395d55f5726daae1edd5c12c, plan sha256 "
+                         "a117f7b60fc3e79151f1d8dbb085943150c4c636b4e93b3884e24f1691d7c430), never submitted. Same six jobs, pins, "
+                         "resources and outputs; only the afterok chain between the aggregates is removed. Reason: a dependent job "
+                         "becomes eligible only when its predecessor ends, so jobs already waiting pass ahead, and line 2 fits on "
+                         "the same serial lane have a 4-hour limit each."),
             "campagna": CAMPAIGN, "runtime_code_sha": CODE_SHA, "code_dir": CODE_DIR,
             "probe_plan": {f: state["plan"][f] for f in ("path", "sha256", "bytes")},
             "dispatcher": {"path": str(DISPATCHER.relative_to(ROOT)), "sha256": sha(DISPATCHER), "bytes": DISPATCHER.stat().st_size},
@@ -266,7 +270,9 @@ def cmd_plan(state_path):
             "resources": {"partition": "lrd_all_serial", "node": "login08", "cpus": CPUS, "memory_gib": MEMORY_GIB, "walltime_seconds": SECONDS},
             "requested_core_hours": sum(j["requested_core_hours"] for j in jobs),
             "maximum_charged_core_hours": len(jobs) * CPUS * (SECONDS + TIMEOUT_GRACE) / 3600,
-            "order": "Cells in reader order, p1 then p2. One afterok chain: a refusal, failure or TIMEOUT stops the following jobs.",
+            "order": ("Cells in reader order, p1 then p2. Six independent jobs, no dependency between them: each aggregate reads only "
+                      "the shards of its own cell and task. They run one at a time anyway, because each asks 30G of the 30,800 MB "
+                      "allowed to the user in lrd_all_serial. A failure does not stop the others and is never resubmitted blindly."),
             "submission_rule": ("Submit only after the operator handover is confirmed and this plan is reviewed. Before the first job: rerun "
                                 "`state` and `check` (pins unchanged, outputs absent, code clean, logical IDs unused, six free places in "
                                 "lrd_all_serial without taking places from jobs already waiting). Common submitter and ledger, one line at a "
@@ -327,13 +333,13 @@ def cmd_submitter(plan_path):
             r = subprocess.run(argv, capture_output=True, text=True, stdin=subprocess.DEVNULL)
             require(r.returncode == 0 and r.stdout.strip() == "%s: sottomesso, job %d" % (job["id"], 90000000 + n), "submitter: " + r.stdout + r.stderr)
             s = json.loads((registry / job["id"] / "state.json").read_text())
-            dep = ["--dependency=afterok:%d" % (90000000 + n - 1)] if n > 1 else []
-            expected = ["sbatch", "--parsable", "--job-name=" + job["id"], "--comment=wearusfm:" + job["id"], *dep,
+            require(job["depends_on"] is None and "--dopo" not in job["argv"], "il piano non prevede dipendenze fra gli aggregati")
+            expected = ["sbatch", "--parsable", "--job-name=" + job["id"], "--comment=wearusfm:" + job["id"],
                         *job["argv"][job["argv"].index("--") + 1:]]
             require(s["sbatch"] == expected and s["script_stdin_sha256"] == DISPATCHER_SHA and s["codice_sha"] == CODE_SHA
-                    and s["agente"] == "claude" and s["campagna"] == CAMPAIGN and s["gpu_ore_stimate"] == 0, "comando di sbatch inatteso")
-            previews.append({"id": job["id"], "sbatch": " ".join(shlex.quote(x) for x in s["sbatch"]).replace(
-                "afterok:%d" % (90000000 + n - 1), "afterok:<job SLURM di %s>" % (job["depends_on"],))})
+                    and s["agente"] == "claude" and s["campagna"] == CAMPAIGN and s["gpu_ore_stimate"] == 0
+                    and not any("dependency" in x for x in s["sbatch"]), "comando di sbatch inatteso")
+            previews.append({"id": job["id"], "sbatch": " ".join(shlex.quote(x) for x in s["sbatch"])})
             print("PASSA ", job["id"])
         require(len((registry / "ledger.tsv").read_text().splitlines()) == 1 + 2 * len(plan["jobs"]), "ledger temporaneo inatteso")
     write_new(HERE / "aggregate_submitter_dryrun.json", {
