@@ -7492,6 +7492,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   lo farebbe fallire. La catena prosegue (10 fit su 72 conclusi, ondata 5 in corso); nessuna nuova richiesta di via a
   GPT per questi lanci; EPN15 resta chiuso (`3ba5e64`, `c04d10b`).
 
+### 2026-11-06 | Claude | Linea 2, fase fit A1: ondata 5 conclusa, ondata 6 inviata (righe 13-14 di 72)
+- Ondata 5, entrambi `COMPLETED 0:0`: `63696565` LONG-FIT-G39237-pre-ninapro_db2-F3 (20:29:07-20:47:05, 00:17:58 su 03:15:00) e
+  `63696566` LONG-FIT-G49046-pre-ninapro_db2-F0 (20:47:06-21:07:18, 00:20:12 su 03:15:00); il secondo ha atteso il primo per
+  `QOSMaxCpuPerUserLimit`, come previsto (8 CPU per utente sulla seriale). Report letti solo nei campi di provenienza
+  (sha256 `b0ba8fb22a36…` e `f22c92edd3d6…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto.
+  Consumo: 8 CPU x 38:10 = 5,09 core-ore; fase fit 27,22 core-ore (22,13 + 5,09), 0 GPU-ore.
+- C-1 alle 21:09 (`PRECHECK_OK`, pre-controllo in `execution/audit/precheck_fit_wave6_20261106.log`): `$WORK` 41,69 GiB liberi
+  (soglia 10,724; utente sbenatti 175,8 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi
+  dall'ultimo riscontro, certificato ssh valido fino alle 05:50:43 del 07/11. Fuori linea 2, in coda su `boost_usr_prod`:
+  `63593128` (linea 3) e `63696864` SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 6 inviata alle 21:10:21-23 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`): `63699138` LONG-FIT-G49046-pre-ninapro_db2-F1 e `63699141` LONG-FIT-G49046-pre-ninapro_db2-F2,
+  limite 03:15:00, 03:30:00 ciascuno, 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`). Sorvegliante in
+  sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`: commit `93af5ab`
+  (ID nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run`
+  OK; 342 test superati). Stato: 12 fit su 72 conclusi; prossima ondata la 7 (righe 15-16) allo stesso C-1.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
