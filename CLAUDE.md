@@ -63,17 +63,25 @@ ultimo job inviato da GPT fit 14, **63635524**. I job gia' inviati restano gli s
 GPT conferma nel registro il fermo e l'assenza di piani/comandi/manifest eseguibili degli stadi finali;
 Claude non invia prima di questa conferma. Il precedente runner ha terminato tutti i suoi invii e non si riavvia.
 
-**Prima di ogni invio Claude pubblica la consegna sul proprio ramo e GPT la rivede:** prima i sei comandi
-degli aggregati e le evidenze del fit 14, poi gli aggregati raccolti e il manifest/comando del confronto;
-infine GPT rivede l'esito. Ancore e controlli: Review 10 Claude `d3976c3`,
+Per la chiusura dello screening a 5.000 sono state riviste le consegne dei sei aggregati,
+del manifest/comando del confronto e dell'esito. Ancore e controlli: Review 10 Claude `d3976c3`,
 `docs/reviews/claude_review_scaling_300m_final_stages_code_20261106.md`, sezioni 3 e 5.
 La Review 10 approva il codice congelato `aef665b` fino alla consegna `97125bd`, non i manifest futuri.
-I suggerimenti S-1...S-4 restano per il prossimo giro; il codice congelato non si modifica ora.
+I suggerimenti S-1...S-4 restano per il prossimo giro; i checkout scientifici congelati non si modificano.
 
-Invariati: **310 core-ore CPU cumulative**, 14 fit, sei aggregati e un confronto, submitter/ledger comuni,
-checkout congelati, nessun retry cieco e regola di lettura S8 congelata. La continuazione a **19.618 non e'
-autorizzata**: decide Simone. Le linee 2 e 3 non cambiano. Questa disposizione prevale sulle assegnazioni
-storiche e, per la linea 1, richiede review GPT prima dell'invio anche rispetto alla regola generale del 16/10.
+**Aggiornamento di Simone, 06/11 alle 17:22:** «si autorizzo maq non voglio una ennersima review di gpt prima
+di ogni lancio, ne facciamo una poi lancio». Per la linea 1 questa istruzione sostituisce la review prima di
+ogni invio con **una review del pacchetto operativo pubblicato**. Dopo l'esito favorevole Claude esegue i
+lanci inclusi, rispettando i cancelli meccanici, senza nuove review o richieste di consenso fra i passaggi.
+Per lo stadio di training della continuazione, il pacchetto comprende deploy, checkout e training.
+Questo non attesta codice di valutazione ancora non consegnato: il suo rilascio e' distinto dai controlli
+meccanici fra i job gia' coperti. Nessun retry cieco, modifica di perimetro o dose ulteriore impliciti.
+
+Lo screening a 5.000 (14 fit, sei aggregati e un confronto, tetto **310 core-ore CPU**) e' concluso e
+accettato nella review GPT `5e15009`. **La continuazione del 300M fino a 19.618 e' autorizzata da Simone
+il 06/11**, registrata da GPT in `2d58e98`; si applicano piano e risorse propri della tranche. Restano
+submitter/ledger comuni, checkout congelati e definizioni scientifiche fissate prima dei risultati.
+Le linee 2 e 3 non cambiano. Questa disposizione prevale sulle assegnazioni storiche per la linea 1.
 
 | Linea | Codice e responsabilita' scientifica | Deployment, invii, stato/log e raccolta |
 |---|---|---|
@@ -231,7 +239,7 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Un solo operatore per linea: **Claude per la linea 1 e per EPN15 e valutazione lunga della linea 2; GPT per la linea 3**. Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. GPT rivede la linea 1 prima degli invii e resta integratore su main. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
+- Un solo operatore per linea: **Claude per la linea 1 e per EPN15 e valutazione lunga della linea 2; GPT per la linea 3**. Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. Per la linea 1 GPT rivede il pacchetto operativo una volta prima dei lanci inclusi, non ogni invio, e resta integratore su main. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
