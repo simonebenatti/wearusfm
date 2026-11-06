@@ -1,0 +1,32 @@
+{
+  "reviewed_commit": "37632d18e0078069c54d131c9ba235891712c1b5",
+  "reviewed_files_sha256": {
+    "aggregate_submission_plan.json": "abc489613dfbfddc5e33e2150854245bcd3b69292806953bafa622b91a22941c",
+    "final_stages.py": "9533c82fa4e4cde93860fc62218bd1fd586f6919021ac2870b1b27330d60b9b8",
+    "live_state_20261106_fits_complete.json": "b75506fd9fbb806886f490d67c22e57d60ae09f559500e6811d41bb600aa5e2c"
+  },
+  "accounting_source": "sacct stdout inside the published Claude snapshot, parent jobs only; base already accepted including metadata checkout",
+  "cpu_core_hours": {
+    "base_before_ridge": 28.37388888888889,
+    "ridge": 0.6422222222222222,
+    "fits": 95.97777777777777,
+    "completed_cumulative": 124.99388888888888,
+    "maximum_with_final_stages_and_checkout": 132.26055555555556,
+    "approved_cap": 310
+  },
+  "queue_guard_reproduction": {
+    "reviewed_commit": "37632d18e0078069c54d131c9ba235891712c1b5",
+    "scope": "Local synthetic evidence only; no SSH, submitter or operational CLI execution",
+    "reproduction": {
+      "original_9_jobs": {
+        "accepted": false,
+        "last_output": "job dell'utente in coda seriale: 9 | letto alle 2026-11-06T10:28:22+0100"
+      },
+      "failed_squeue": {
+        "accepted": true,
+        "last_output": "CANCELLO SUPERATO"
+      }
+    }
+  },
+  "verdict": "Six argv/pins/resources conform; before submission require successful fresh squeue exit=0 explicitly; helper PASS alone insufficient on squeue failure. No comparison manifest reviewed."
+}

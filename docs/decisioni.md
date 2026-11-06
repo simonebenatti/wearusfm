@@ -6714,3 +6714,44 @@ distinte, nessuna approvazione retroattiva né nuova regola imposta a Simone.
 Aggregati/confronto non sono coperti daClaude9 e richiedono i propri piani concreti
 con pin dei risultati finali. Score non interpretati in questa verifica; nessuna
 estensione scientifica, nuovi training, retry o pollingAI.
+
+
+### 06/11/2026 — GPT: lettura scientifica parziale della posa scaling e review dei sei aggregati Claude
+
+Richiesta diretta di Simone: leggere i risultati della linea 1 e produrre un'analisi scientifica indipendente.
+Riferimenti remoti verificati: esecuzione Claude `37632d1`, review/coda `bf7f7a4`. Gli aggregati e il confronto
+non sono ancora pubblicati; nessuna lettura scientifica finale Claude disponibile. La Review 10 e' tecnica.
+Report posa `8f70ff3b...` verificato localmente: ricalcolati indipendentemente nove contrasti/IC dai riepiloghi
+per utente, concordanza entro 1e-12. Primario dinamiche 30M 0,899815817 -> 300M 0,899930725;
+delta +0,000114908, IC95 [-0,003386818; +0,003777880]. Correlazione 0,3213 -> 0,3194;
+varianza predetta/target 7,08% -> 7,58%. Nessun vantaggio dinamico osservabile in questa lettura a 5.000.
+Non equivale a giudicare tutta l'informazione dell'encoder, il fine-tuning o lo scaling a convergenza.
+Documento: `docs/reviews/gpt_scaling_scientific_partial_20261106.md`, con script e JSON riproducibile.
+
+Rivisti anche i sei comandi Claude `37632d1`: argv, pin, mappatura14->6, fit14 accettato e 420fit convergenti
+conformi. Review: `docs/reviews/gpt_review_scaling_aggregates_release_20261106.md`. Conto cumulativo
+pubblicato: 124,993888889coreh consumate; massimo finale con margini/checkout 132,260555556 su310.
+Rilievo sul solo helper operativo: una lettura squeue fallita e vuota puo' produrre CANCELLO SUPERATO.
+Prima dell'invio verificare esplicitamente exit=0 prima del conteggio, o correggere helper con regressione
+(a cura di Claude). Nessun nuovo consenso di Simone necessario. Numerica/dispatcher/submitter congelati intatti.
+Nessun invio, deploy, runner, raccolta o verifica remota eseguiti da GPT; solo review e calcoli locali leggeri.
+
+Recepita la notifica della linea3: ReviewClaude `f040086` APPROVATA, nessuna azione attuale.
+E-1 conservazione SCRATCH/rinfresco12/11, E-2 proxy2,6% sotto il tetto, E-3 allocation_for da riverificare
+prima degli invii19618. Registrata la lettura di Claude della decisione «ripassa da te» (`7f976ec`):
+review prima di un rilancio dopo arresto tecnico; nessun effetto retroattivo sui job/fasi gia' approvati.
+Nessun cambio di ruoli o intervento sulla linea3 in questa consegna.
+
+### 06/11/2026 — GPT: limite della lettura scaling e difetto riprodotto nel controllo della coda
+
+La classificazione finale EPN/P1/P2 e la matrice S8 completa mancano: non stimarle dalla media dei fold
+ne' sostituirle con il risultato posa. La sola posa ha primario irrisolto; i secondari descrittivi non diventano
+nuovi criteri di arresto. Ipotesi dose/obiettivo/pooling restano distinte, nessuna causalita' dimostrata.
+Un solo seme e utenti di sviluppo; IC condizionati al training, non alla variabilita' fra pretraining.
+Nessun seguito19.618 autorizzato. Si completa prima la classificazione gia' prevista, poi decide Simone.
+
+HelperClaude `final_stages.py` a37632d1: riproduzione locale AST delle sole checks/cmd_check;
+snapshot novejob -> rifiuto, identico snapshot con squeue exit1/stdoutvuoto -> CANCELLO SUPERATO.
+Il PASS attuale non basta: prima degli invii Claude attesta exit0 della lettura fresca o corregge il solo
+helper e aggiunge regressione. Nessuna correzione richiesta ai sei argv o al codice numerico congelato.
+Review di confronto/esito ancora da fare; condizioni di coda/ledger/pin sempre da rileggere dall'operatore.

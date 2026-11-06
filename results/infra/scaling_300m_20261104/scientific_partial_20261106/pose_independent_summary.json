@@ -1,0 +1,224 @@
+{
+  "source": "results/infra/scaling_300m_20261104/cpu_fit_release_20261105/submissions/collected_jobs/SCALING-pose-ridge-20261105/report.json",
+  "source_sha256": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff",
+  "scope": "Published pose report only; no final classification or S8 verdict. Raw predictions not revalidated here.",
+  "independent_paired_recomputations": 9,
+  "groups": {
+    "dynamic": {
+      "metrics": {
+        "T100-G-30M-natural": {
+          "E_centered": 0.8998158173809316,
+          "centered_correlation": 0.3213000523970335,
+          "predicted_target_variance_ratio": 0.0707971841711717,
+          "predicted_target_std_ratio": 0.26607740259400403,
+          "total_standardized_mse_on_centered_support": 1.0822319979940824,
+          "mean_level_standardized_mse": 0.6095185350095531,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8327
+        },
+        "T100-G-300M-natural": {
+          "E_centered": 0.8999307254166932,
+          "centered_correlation": 0.31937975261769,
+          "predicted_target_variance_ratio": 0.07584557856372122,
+          "predicted_target_std_ratio": 0.2754007599185616,
+          "total_standardized_mse_on_centered_support": 1.0913261551998512,
+          "mean_level_standardized_mse": 0.6185523258887243,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8327
+        },
+        "T100-G-300M-matched": {
+          "E_centered": 0.8993119454690455,
+          "centered_correlation": 0.31760499085486765,
+          "predicted_target_variance_ratio": 0.09242091940905306,
+          "predicted_target_std_ratio": 0.30400809102563875,
+          "total_standardized_mse_on_centered_support": 1.092474679934583,
+          "mean_level_standardized_mse": 0.6200259233841566,
+          "alpha_train_selected": 100000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8327
+        }
+      },
+      "contrasts": {
+        "natural_300m_minus_30m": {
+          "delta_E": 0.00011490803576162098,
+          "ci95": [
+            -0.003386818430945198,
+            0.003777879657532
+          ],
+          "relative_error_reduction": -0.00012770172911172036,
+          "users_improved": 9,
+          "users_total": 15
+        },
+        "matched_300m_minus_30m": {
+          "delta_E": -0.0005038719118861171,
+          "ci95": [
+            -0.0034733035563386996,
+            0.0024246632396470714
+          ],
+          "relative_error_reduction": 0.0005599722767184986,
+          "users_improved": 8,
+          "users_total": 15
+        },
+        "natural_300m_minus_matched_300m": {
+          "delta_E": 0.0006187799476477381,
+          "ci95": [
+            -0.0006625292902340345,
+            0.0018737717878857315
+          ],
+          "relative_error_reduction": -0.0006880592999629366,
+          "users_improved": 5,
+          "users_total": 15
+        }
+      }
+    },
+    "all": {
+      "metrics": {
+        "T100-G-30M-natural": {
+          "E_centered": 0.9238172534769691,
+          "centered_correlation": 0.2762019980455328,
+          "predicted_target_variance_ratio": 0.0820473284861777,
+          "predicted_target_std_ratio": 0.28643904846612256,
+          "total_standardized_mse_on_centered_support": 0.8741297892064182,
+          "mean_level_standardized_mse": 0.5899691633403674,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 16620
+        },
+        "T100-G-300M-natural": {
+          "E_centered": 0.924810835762462,
+          "centered_correlation": 0.27501990163894974,
+          "predicted_target_variance_ratio": 0.08770904056620328,
+          "predicted_target_std_ratio": 0.29615712141733697,
+          "total_standardized_mse_on_centered_support": 0.8906751413621733,
+          "mean_level_standardized_mse": 0.606208895566388,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 16620
+        },
+        "T100-G-300M-matched": {
+          "E_centered": 0.9276331305345586,
+          "centered_correlation": 0.2742807108191883,
+          "predicted_target_variance_ratio": 0.1074450272608945,
+          "predicted_target_std_ratio": 0.3277880828536854,
+          "total_standardized_mse_on_centered_support": 0.8913552130450252,
+          "mean_level_standardized_mse": 0.6060208463673245,
+          "alpha_train_selected": 100000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 16620
+        }
+      },
+      "contrasts": {
+        "natural_300m_minus_30m": {
+          "delta_E": 0.0009935822854930327,
+          "ci95": [
+            -0.002432158792746379,
+            0.004668362402324523
+          ],
+          "relative_error_reduction": -0.0010755182172161096,
+          "users_improved": 9,
+          "users_total": 15
+        },
+        "matched_300m_minus_30m": {
+          "delta_E": 0.003815877057589787,
+          "ci95": [
+            0.0008615405044158701,
+            0.00670161036078757
+          ],
+          "relative_error_reduction": -0.004130554006463918,
+          "users_improved": 5,
+          "users_total": 15
+        },
+        "natural_300m_minus_matched_300m": {
+          "delta_E": -0.0028222947720967545,
+          "ci95": [
+            -0.004245619596273588,
+            -0.001284108437917266
+          ],
+          "relative_error_reduction": 0.0030424687079366997,
+          "users_improved": 12,
+          "users_total": 15
+        }
+      }
+    },
+    "static": {
+      "metrics": {
+        "T100-G-30M-natural": {
+          "E_centered": 1.0445482062134643,
+          "centered_correlation": 0.12634825589223933,
+          "predicted_target_variance_ratio": 0.13863730235853147,
+          "predicted_target_std_ratio": 0.3723403045045372,
+          "total_standardized_mse_on_centered_support": 0.6754549936876764,
+          "mean_level_standardized_mse": 0.5713054142070829,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8293
+        },
+        "T100-G-300M-natural": {
+          "E_centered": 1.0499616564972987,
+          "centered_correlation": 0.12688307603333807,
+          "predicted_target_variance_ratio": 0.14738409769952732,
+          "predicted_target_std_ratio": 0.3839063657970877,
+          "total_standardized_mse_on_centered_support": 0.699113987941144,
+          "mean_level_standardized_mse": 0.5944246453675245,
+          "alpha_train_selected": 1000000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8293
+        },
+        "T100-G-300M-matched": {
+          "E_centered": 1.0700930917595668,
+          "centered_correlation": 0.13198194001890545,
+          "predicted_target_variance_ratio": 0.18301862409529923,
+          "predicted_target_std_ratio": 0.4278067602262723,
+          "total_standardized_mse_on_centered_support": 0.6993468283580011,
+          "mean_level_standardized_mse": 0.5926502251290725,
+          "alpha_train_selected": 100000.0,
+          "alpha_boundary_unresolved": false,
+          "n_users": 15,
+          "n_windows": 8293
+        }
+      },
+      "contrasts": {
+        "natural_300m_minus_30m": {
+          "delta_E": 0.005413450283834236,
+          "ci95": [
+            0.0003113308064928843,
+            0.011985794838437543
+          ],
+          "relative_error_reduction": -0.005182575827168612,
+          "users_improved": 6,
+          "users_total": 15
+        },
+        "matched_300m_minus_30m": {
+          "delta_E": 0.025544885546102646,
+          "ci95": [
+            0.019193112592698597,
+            0.03347193552346066
+          ],
+          "relative_error_reduction": -0.024455439580624082,
+          "users_improved": 0,
+          "users_total": 15
+        },
+        "natural_300m_minus_matched_300m": {
+          "delta_E": -0.020131435262268408,
+          "ci95": [
+            -0.023709991113451154,
+            -0.016395041701180186
+          ],
+          "relative_error_reduction": 0.018812788735198777,
+          "users_improved": 15,
+          "users_total": 15
+        }
+      }
+    }
+  }
+}
