@@ -6701,6 +6701,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nessuna decisione presa: finche' Simone non decide vale la regola scritta dal coordinamento (voce «dopo il fit 14 la linea 2
   parte subito»). Nessun messaggio alla sottochat 2. GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`).
 
+### 2026-11-06 | Claude | Linea 1: decisione di Simone sulla corsia seriale, «Due fit per volta» finche' il confronto dello scaling non e' in coda
+- Decisione di Simone, 06/11 alle 11:17 circa, alla mia domanda «Come dividiamo la corsia fra il confronto dello scaling e i fit
+  della linea 2?»: «Due fit per volta». E' la terza possibilita' della voce precedente (`31f0ea6`), che gli avevo descritto cosi':
+  «La linea 2 parte subito, ma tiene in coda al massimo due fit per volta finché il confronto non è entrato».
+- In pratica (lettura mia, da correggere se Simone o la sottochat 2 la intendono diversamente): dalla fine dei benchmark la linea
+  2 tiene in `lrd_all_serial` al massimo due job propri fra in corsa e in attesa. La regola cade quando nel ledger comune compare
+  `sottomesso` il job del confronto dello scaling (ID logico che comincia con `SCALING-compare-`): lo scrivo anche qui. Da quel
+  momento la linea 2 torna alle sue ondate.
+- Non cambia: i benchmark della linea 2 («Sì, fino a 10»), i sei aggregati dello scaling (entrano con sei posti liberi, quando i
+  sedici benchmark sono tutti inviati), le review di GPT prima di ogni invio, il budget.
+- Effetto atteso, stime della voce precedente: corsia mai ferma; il confronto aspetta al massimo quattro fit della linea 2, circa
+  un'ora in piu' se durano 18 minuti l'uno.
+- Non ho scritto alla sottochat 2: ho dato a Simone il testo da incollare e gli ho chiesto se devo girarlo io. Nessun job, nessuna
+  scrittura su Leonardo. Alle 11:17 GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`); Simone sta per
+  mandargli il testo («poi mando questo a gpt ?»).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
