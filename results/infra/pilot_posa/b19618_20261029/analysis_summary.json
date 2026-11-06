@@ -1,0 +1,1686 @@
+{
+  "scope": "Exploratory single-seed intermediate endpoint at19618; pose on15 held-out users; P1/P2 internal calibration probes, not official tests.",
+  "report_sha256": {
+    "R3c_p1_pool.json": "3eca8b46ab286d808a2210bd226b75c14b90c8475c81c42ee33df372d569f10b",
+    "pose_comparison.json": "89ba19f72c25dcc7ae3e367ffc159d2bb47f74ad4caa60966561ba49056e8957",
+    "compare_p1.json": "c3efa1cad5d51ced7ada3c0ebf2e970ea7949c47702fa98386026d63cd0df62c",
+    "compare_p1.json.provenance.json": "89bc2fce5d857769f8d557e5411e7139538b057d4aa2eeea9b3146dbde569795",
+    "B_p2_pool.json": "4c2eff1dbc74e8c8f25d857facc41e040ef8e8c828dba0e7869ca9fc1ee85370",
+    "R3c_p2_pool.json.provenance.json": "e9f4f6dc2deb9b6fef5124a4a49f78354c5abf1f80b461f3d52655e6e6e47ba7",
+    "B_p1_pool.json.provenance.json": "67fba347dca0d623daec85e00ec4a68f96964d3d46dd156eccbc8c3ebd221b49",
+    "compare_p2.json.provenance.json": "191be3f176b769b8d0f684d71a1c72fbd1d952663890c8c36a7cdc55f2fddf0b",
+    "B_p1_pool.json": "da91929063c004a335a3cc72d68a93feb5fd5e8bd7ddba7c917fc2a007304362",
+    "compare_p2.json": "6cf3961be981761c6fb5b84606c22998da167f9b8735a953b54934eed510eda8",
+    "B_p2_pool.json.provenance.json": "79d8dfead04aa7f6677e33b7bbabf344e34c4ce49c373da51de805f98c6298f7",
+    "R3c_p2_pool.json": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+    "R3c_p1_pool.json.provenance.json": "02c7d2429daf6265964547ca6a541ea8da60c384bea07d1681eba0abe7352ab6"
+  },
+  "head": {
+    "B5000": {
+      "E1": {
+        "mae": 0.33487858203685944,
+        "mae_const": 0.357184080642033,
+        "ratio": 0.937551812037424,
+        "ratio_ci95_users": [
+          0.9170379972516137,
+          0.9522620583252716
+        ],
+        "median_user_ratio": 0.9473800720457791
+      },
+      "groups": {
+        "all": {
+          "n_windows": 16658,
+          "n_valid_elements": 44531240,
+          "centered_mse_ratio": 0.9495142208610968,
+          "variance_ratio": 0.07635284665038322,
+          "pooled_centered_correlation": 0.22951385928998394,
+          "user_centered_gain_signs": {
+            "positive": 14,
+            "zero": 0,
+            "negative": 1
+          },
+          "ratio_ci95": [
+            0.9351374623091298,
+            0.960796290964781
+          ],
+          "means": {
+            "total": 0.9447167636199033,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.6476948923269463,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.023884281975339258,
+            "vary": 0.3128145579784926,
+            "cov": 0.019838484330437518,
+            "centered": 0.2970218712929568,
+            "gain_mean": 0.0397069136319751,
+            "gain_centered": 0.01579268668553577,
+            "total_gain": 0.05549960031750976
+          }
+        },
+        "dynamic": {
+          "n_windows": 8329,
+          "n_valid_elements": 21750080,
+          "centered_mse_ratio": 0.927475093799516,
+          "variance_ratio": 0.06324046314103036,
+          "pooled_centered_correlation": 0.26993642313261573,
+          "user_centered_gain_signs": {
+            "positive": 14,
+            "zero": 0,
+            "negative": 1
+          },
+          "ratio_ci95": [
+            0.9124798676017459,
+            0.9391739616572153
+          ],
+          "means": {
+            "total": 1.1285525736336974,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.6337418323708731,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.03373897655453556,
+            "vary": 0.5335029960058236,
+            "cov": 0.03621561564876755,
+            "centered": 0.4948107412628241,
+            "gain_mean": 0.04463975786808354,
+            "gain_centered": 0.03869225474299957,
+            "total_gain": 0.08333201261108195
+          }
+        },
+        "static": {
+          "n_windows": 8329,
+          "n_valid_elements": 22781160,
+          "centered_mse_ratio": 1.0594473925046124,
+          "variance_ratio": 0.14175860900029572,
+          "pooled_centered_correlation": 0.10930859272091498,
+          "user_centered_gain_signs": {
+            "positive": 0,
+            "zero": 0,
+            "negative": 15
+          },
+          "ratio_ci95": [
+            1.0458790912453937,
+            1.074216029306568
+          ],
+          "means": {
+            "total": 0.7692014002817402,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.6610164339117204,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.014475612905235453,
+            "vary": 0.1021145241711934,
+            "cov": 0.004202585353204396,
+            "centered": 0.10818496637002006,
+            "gain_mean": 0.03499733094334567,
+            "gain_centered": -0.0060704421988266605,
+            "total_gain": 0.02892688874451792
+          }
+        }
+      }
+    },
+    "B19618": {
+      "E1": {
+        "mae": 0.3081174991384442,
+        "mae_const": 0.357184080642033,
+        "ratio": 0.8626294278978157,
+        "ratio_ci95_users": [
+          0.8454884385357151,
+          0.8779533774159037
+        ],
+        "median_user_ratio": 0.8647832027743345
+      },
+      "groups": {
+        "all": {
+          "n_windows": 16658,
+          "n_valid_elements": 44531240,
+          "centered_mse_ratio": 0.8897954165092236,
+          "variance_ratio": 0.14973793464970656,
+          "pooled_centered_correlation": 0.3358778826912536,
+          "user_centered_gain_signs": {
+            "positive": 14,
+            "zero": 0,
+            "negative": 1
+          },
+          "ratio_ci95": [
+            0.8717752099415156,
+            0.9095025173740223
+          ],
+          "means": {
+            "total": 0.8500763905988753,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.5717354306922539,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.04684020584006037,
+            "vary": 0.3128145579784926,
+            "cov": 0.0406569019559657,
+            "centered": 0.2783409599066215,
+            "gain_mean": 0.1156663752666677,
+            "gain_centered": 0.03447359807187101,
+            "total_gain": 0.15013997333853765
+          }
+        },
+        "dynamic": {
+          "n_windows": 8329,
+          "n_valid_elements": 21750080,
+          "centered_mse_ratio": 0.8666892141226928,
+          "variance_ratio": 0.14960843403138005,
+          "pooled_centered_correlation": 0.36572480556672077,
+          "user_centered_gain_signs": {
+            "positive": 15,
+            "zero": 0,
+            "negative": 0
+          },
+          "ratio_ci95": [
+            0.8463194386133305,
+            0.8889712976160663
+          ],
+          "means": {
+            "total": 1.0487767522333407,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.5863954598929513,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.07981654778348088,
+            "vary": 0.5335029960058236,
+            "cov": 0.07546912572445752,
+            "centered": 0.46238129234038944,
+            "gain_mean": 0.0919861303460054,
+            "gain_centered": 0.07112170366543419,
+            "total_gain": 0.16310783401143855
+          }
+        },
+        "static": {
+          "n_windows": 8329,
+          "n_valid_elements": 22781160,
+          "centered_mse_ratio": 1.0050512569919596,
+          "variance_ratio": 0.15038389552023718,
+          "pooled_centered_correlation": 0.18738399652946458,
+          "user_centered_gain_signs": {
+            "positive": 7,
+            "zero": 0,
+            "negative": 8
+          },
+          "ratio_ci95": [
+            0.9932359038322031,
+            1.0171111264530388
+          ],
+          "means": {
+            "total": 0.6603692483120667,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.5577389174366729,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.015356379934059482,
+            "vary": 0.1021145241711934,
+            "cov": 0.007420286614929561,
+            "centered": 0.10263033087539378,
+            "gain_mean": 0.13827484741839297,
+            "gain_centered": -0.0005158067042003638,
+            "total_gain": 0.13775904071419157
+          }
+        }
+      }
+    }
+  },
+  "ridge_common": {
+    "B": {
+      "E1": {
+        "mae": 0.3075683626455594,
+        "mae_const": 0.357184080642033,
+        "ratio": 0.861092023173905,
+        "ratio_ci95_users": [
+          0.8388771432417755,
+          0.8801015344815418
+        ],
+        "median_user_ratio": 0.8648377221669847
+      },
+      "groups": {
+        "all": {
+          "n_windows": 16658,
+          "n_valid_elements": 44531240,
+          "centered_mse_ratio": 0.8907825161404448,
+          "variance_ratio": 0.14350258111396913,
+          "pooled_centered_correlation": 0.33356453723259144,
+          "user_centered_gain_signs": {
+            "positive": 14,
+            "zero": 0,
+            "negative": 1
+          },
+          "ratio_ci95": [
+            0.8722162024671047,
+            0.9092582849794015
+          ],
+          "means": {
+            "total": 0.8264041028255591,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.5477543637841163,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.04488969647993903,
+            "vary": 0.3128145579784926,
+            "cov": 0.039527257708494454,
+            "centered": 0.2786497390414427,
+            "gain_mean": 0.13964744217480513,
+            "gain_centered": 0.03416481893704987,
+            "total_gain": 0.17381226111185388
+          }
+        },
+        "dynamic": {
+          "n_windows": 8329,
+          "n_valid_elements": 21750080,
+          "centered_mse_ratio": 0.8626495726017614,
+          "variance_ratio": 0.13748811583357082,
+          "pooled_centered_correlation": 0.37060823232963974,
+          "user_centered_gain_signs": {
+            "positive": 15,
+            "zero": 0,
+            "negative": 0
+          },
+          "ratio_ci95": [
+            0.841988366542783,
+            0.8832963314666258
+          ],
+          "means": {
+            "total": 1.0278890349231125,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.5676629034369297,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.07335032171240574,
+            "vary": 0.5335029960058236,
+            "cov": 0.07331359311602319,
+            "centered": 0.460226131486183,
+            "gain_mean": 0.11071868680202696,
+            "gain_centered": 0.07327686451964065,
+            "total_gain": 0.18399555132166642
+          }
+        },
+        "static": {
+          "n_windows": 8329,
+          "n_valid_elements": 22781160,
+          "centered_mse_ratio": 1.0311121989919383,
+          "variance_ratio": 0.17350328133074824,
+          "pooled_centered_correlation": 0.1709223869586299,
+          "user_centered_gain_signs": {
+            "positive": 2,
+            "zero": 0,
+            "negative": 13
+          },
+          "ratio_ci95": [
+            1.0174865347474151,
+            1.0437487203836557
+          ],
+          "means": {
+            "total": 0.6340384203091131,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.5287468887419383,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.01771720501523006,
+            "vary": 0.1021145241711934,
+            "cov": 0.007270098809624391,
+            "centered": 0.10529153156717468,
+            "gain_mean": 0.16726687611312765,
+            "gain_centered": -0.00317700739598128,
+            "total_gain": 0.16408986871714526
+          }
+        }
+      }
+    },
+    "R3c": {
+      "E1": {
+        "mae": 0.34636208437574184,
+        "mae_const": 0.357184080642033,
+        "ratio": 0.9697019076358644,
+        "ratio_ci95_users": [
+          0.95528404870275,
+          0.9813444858412279
+        ],
+        "median_user_ratio": 0.9673962385023883
+      },
+      "groups": {
+        "all": {
+          "n_windows": 16658,
+          "n_valid_elements": 44531240,
+          "centered_mse_ratio": 1.0054513512704073,
+          "variance_ratio": 0.052993533928651096,
+          "pooled_centered_correlation": 0.10326132173782936,
+          "user_centered_gain_signs": {
+            "positive": 5,
+            "zero": 0,
+            "negative": 10
+          },
+          "ratio_ci95": [
+            0.9976901119314538,
+            1.0127258733132969
+          ],
+          "means": {
+            "total": 0.939388753605124,
+            "baseline_total": 1.000216363937413,
+            "mean_error": 0.6248689335885935,
+            "mean_target_squared": 0.6874018059589214,
+            "varp": 0.016577148891609245,
+            "vary": 0.3128145579784926,
+            "cov": 0.0074359434267856385,
+            "centered": 0.31451982001653056,
+            "gain_mean": 0.06253287237032783,
+            "gain_centered": -0.0017052620380379692,
+            "total_gain": 0.060827610332288694
+          }
+        },
+        "dynamic": {
+          "n_windows": 8329,
+          "n_valid_elements": 21750080,
+          "centered_mse_ratio": 0.9866934436817723,
+          "variance_ratio": 0.03739565659450633,
+          "pooled_centered_correlation": 0.13109506327076695,
+          "user_centered_gain_signs": {
+            "positive": 11,
+            "zero": 0,
+            "negative": 4
+          },
+          "ratio_ci95": [
+            0.979864474402386,
+            0.9923871128590033
+          ],
+          "means": {
+            "total": 1.1645852263568426,
+            "baseline_total": 1.2118845862447791,
+            "mean_error": 0.6381813180133133,
+            "mean_target_squared": 0.6783815902389566,
+            "varp": 0.019950694830774066,
+            "vary": 0.5335029960058236,
+            "cov": 0.013524891246534363,
+            "centered": 0.5264039083435289,
+            "gain_mean": 0.04020027222564327,
+            "gain_centered": 0.0070990876622946605,
+            "total_gain": 0.04729935988793676
+          }
+        },
+        "static": {
+          "n_windows": 8329,
+          "n_valid_elements": 22781160,
+          "centered_mse_ratio": 1.0990175015472636,
+          "variance_ratio": 0.13079716569037272,
+          "pooled_centered_correlation": 0.043935962098052554,
+          "user_centered_gain_signs": {
+            "positive": 0,
+            "zero": 0,
+            "negative": 15
+          },
+          "ratio_ci95": [
+            1.0884739061356337,
+            1.1104305268801253
+          ],
+          "means": {
+            "total": 0.7243847196548033,
+            "baseline_total": 0.7981282890262582,
+            "mean_error": 0.6121590704284908,
+            "mean_target_squared": 0.6960137648550659,
+            "varp": 0.013356290337413155,
+            "vary": 0.1021145241711934,
+            "cov": 0.0016225826411469671,
+            "centered": 0.11222564922631263,
+            "gain_mean": 0.0838546944265752,
+            "gain_centered": -0.01011112505511922,
+            "total_gain": 0.07374356937145486
+          }
+        }
+      }
+    }
+  },
+  "head_evolution": {
+    "E1": {
+      "estimand": "candidate minus reference E1 MAE/constant, dynamic windows",
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "ab228f34a5",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ],
+      "n_bootstrap": 1000,
+      "seed": 20261009,
+      "per_user": {
+        "1f6de69ab3": {
+          "numerator": -35746.2504852718,
+          "denominator": 712443.3645438541,
+          "ratio": -0.05017416438169585
+        },
+        "2251681168": {
+          "numerator": -44708.605499361234,
+          "denominator": 598121.4580329955,
+          "ratio": -0.07474837242320585
+        },
+        "29ddab35d7": {
+          "numerator": -5817.35989574407,
+          "denominator": 566252.9998251939,
+          "ratio": -0.010273428834001634
+        },
+        "2af4aec870": {
+          "numerator": -36851.49545863521,
+          "denominator": 452206.4491837498,
+          "ratio": -0.0814926357754375
+        },
+        "2d0838950a": {
+          "numerator": -80017.80650591012,
+          "denominator": 769586.5020139717,
+          "ratio": -0.10397506491668874
+        },
+        "3875521008": {
+          "numerator": -39773.28822970693,
+          "denominator": 525543.0205244186,
+          "ratio": -0.07568036616682444
+        },
+        "7016fd5330": {
+          "numerator": -44850.25520905387,
+          "denominator": 612848.7030359422,
+          "ratio": -0.07318324243304061
+        },
+        "737fb9d2eb": {
+          "numerator": -43801.43574920489,
+          "denominator": 439446.9535196775,
+          "ratio": -0.09967400023685351
+        },
+        "9b8c99cdc2": {
+          "numerator": -32659.557092093746,
+          "denominator": 469908.9938870591,
+          "ratio": -0.06950187699523655
+        },
+        "a993d16f6e": {
+          "numerator": -52943.60036096437,
+          "denominator": 387546.976481984,
+          "ratio": -0.1366120846602078
+        },
+        "ab228f34a5": {
+          "numerator": -195.82556712285077,
+          "denominator": 2645.3375249561423,
+          "ratio": -0.07402668478991066
+        },
+        "d387095792": {
+          "numerator": -21452.494876068085,
+          "denominator": 276923.7252598698,
+          "ratio": -0.07746716124065105
+        },
+        "e51f6d97cf": {
+          "numerator": -31263.680128816166,
+          "denominator": 646604.5165993364,
+          "ratio": -0.04835054399749649
+        },
+        "e86f1eaf2f": {
+          "numerator": -65663.81258584035,
+          "denominator": 670209.692348661,
+          "ratio": -0.09797502682441106
+        },
+        "f3a4630adf": {
+          "numerator": -46310.2262833697,
+          "denominator": 638493.6359089996,
+          "ratio": -0.07253044302851909
+        }
+      },
+      "delta": -0.07492238413960835,
+      "evaluable": true,
+      "ci95": [
+        -0.08975534368887707,
+        -0.059466333144316666
+      ],
+      "direction": "negative"
+    },
+    "centered": {
+      "dynamic": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.06078587967682311,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -12886.623928678222,
+            "target_variance_sum": 1142018.095304353,
+            "delta_ratio": -0.011284080332583416
+          },
+          "2251681168": {
+            "delta_centered_sse": -91343.01226226182,
+            "target_variance_sum": 938288.874841945,
+            "delta_ratio": -0.09735062912010821
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -30447.469470328302,
+            "target_variance_sum": 847388.9562897884,
+            "delta_ratio": -0.03593092551458263
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -29756.725287594134,
+            "target_variance_sum": 643293.090138109,
+            "delta_ratio": -0.046256870692028794
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -108641.79216262221,
+            "target_variance_sum": 1145279.8699019023,
+            "delta_ratio": -0.09486047473437895
+          },
+          "3875521008": {
+            "delta_centered_sse": -58184.92216617544,
+            "target_variance_sum": 908449.294269621,
+            "delta_ratio": -0.06404861837991212
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -73886.17672383843,
+            "target_variance_sum": 878892.9975604321,
+            "delta_ratio": -0.08406731755620578
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -60295.321840785444,
+            "target_variance_sum": 670175.6040720048,
+            "delta_ratio": -0.08996943707653555
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -38016.660203219624,
+            "target_variance_sum": 723653.1444165594,
+            "delta_ratio": -0.052534367461182396
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -33498.67841636803,
+            "target_variance_sum": 477479.71699096943,
+            "delta_ratio": -0.07015728045470378
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -184.06182708901224,
+            "target_variance_sum": 3237.656437146191,
+            "delta_ratio": -0.056850326976401556
+          },
+          "d387095792": {
+            "delta_centered_sse": -15619.2804700181,
+            "target_variance_sum": 420544.07877117395,
+            "delta_ratio": -0.037140650073251534
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -64489.78192762099,
+            "target_variance_sum": 985677.0199518835,
+            "delta_ratio": -0.06542688996723198
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -58560.043260431616,
+            "target_variance_sum": 908146.0470358483,
+            "delta_ratio": -0.06448306795098566
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": -29532.558471835684,
+            "target_variance_sum": 911208.3973846086,
+            "delta_ratio": -0.03241032299153669
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.07500353260345692,
+          -0.04500808935927338
+        ],
+        "interpretation": "candidate lower error"
+      },
+      "all": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.05971880435187307,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -17810.98907905235,
+            "target_variance_sum": 1279415.434911577,
+            "delta_ratio": -0.013921192908137226
+          },
+          "2251681168": {
+            "delta_centered_sse": -92375.56401401013,
+            "target_variance_sum": 1101777.553330805,
+            "delta_ratio": -0.08384229986783429
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -35330.41449046077,
+            "target_variance_sum": 948987.7992147474,
+            "delta_ratio": -0.037229577155465425
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -40017.53506194672,
+            "target_variance_sum": 856725.8348963812,
+            "delta_ratio": -0.046709849793180026
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -120656.23699945002,
+            "target_variance_sum": 1328517.4220122905,
+            "delta_ratio": -0.090820214323342
+          },
+          "3875521008": {
+            "delta_centered_sse": -62790.84143921046,
+            "target_variance_sum": 973120.9520975335,
+            "delta_ratio": -0.06452521786101374
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -84445.95760412095,
+            "target_variance_sum": 1064017.4933478686,
+            "delta_ratio": -0.07936519665519474
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -72495.82671345968,
+            "target_variance_sum": 875579.7070411055,
+            "delta_ratio": -0.08279751818192407
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -62430.32536411355,
+            "target_variance_sum": 985043.7618433947,
+            "delta_ratio": -0.06337822519405886
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -41670.97910137579,
+            "target_variance_sum": 677132.0310070965,
+            "delta_ratio": -0.06154040451963064
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -313.3411355831013,
+            "target_variance_sum": 6055.318752489801,
+            "delta_ratio": -0.05174643125999981
+          },
+          "d387095792": {
+            "delta_centered_sse": -21365.617639599834,
+            "target_variance_sum": 492918.6998338521,
+            "delta_ratio": -0.043345114816706144
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -78526.95037964219,
+            "target_variance_sum": 1145867.919741805,
+            "delta_ratio": -0.0685305426801166
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -72897.33191348636,
+            "target_variance_sum": 1117597.999345271,
+            "delta_ratio": -0.06522679170523948
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": -28756.237428116146,
+            "target_variance_sum": 1077262.2294579514,
+            "delta_ratio": -0.02669381385680392
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.071965914019462,
+          -0.04635370170954951
+        ],
+        "interpretation": "candidate lower error"
+      },
+      "static": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.05439613551265288,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -4924.365150374331,
+            "target_variance_sum": 137397.3396072241,
+            "delta_ratio": -0.03584032386981834
+          },
+          "2251681168": {
+            "delta_centered_sse": -1032.5517517486296,
+            "target_variance_sum": 163488.67848885994,
+            "delta_ratio": -0.006315738565462729
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -4882.945020132262,
+            "target_variance_sum": 101598.84292495911,
+            "delta_ratio": -0.04806102982628261
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -10260.809774352732,
+            "target_variance_sum": 213432.74475827214,
+            "delta_ratio": -0.04807514323059395
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -12014.444836827519,
+            "target_variance_sum": 183237.55211038815,
+            "delta_ratio": -0.06556759080469288
+          },
+          "3875521008": {
+            "delta_centered_sse": -4605.919273034895,
+            "target_variance_sum": 64671.6578279128,
+            "delta_ratio": -0.07122005879748677
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -10559.780880282284,
+            "target_variance_sum": 185124.4957874363,
+            "delta_ratio": -0.0570415105541043
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -12200.504872674152,
+            "target_variance_sum": 205404.1029691007,
+            "delta_ratio": -0.059397571403476276
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -24413.665160893695,
+            "target_variance_sum": 261390.61742683518,
+            "delta_ratio": -0.09339916406038265
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -8172.300685007882,
+            "target_variance_sum": 199652.314016127,
+            "delta_ratio": -0.0409326619893209
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -129.27930849408813,
+            "target_variance_sum": 2817.6623153436103,
+            "delta_ratio": -0.045881760844830935
+          },
+          "d387095792": {
+            "delta_centered_sse": -5746.3371695819515,
+            "target_variance_sum": 72374.62106267828,
+            "delta_ratio": -0.07939712961820519
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -14037.168452021084,
+            "target_variance_sum": 160190.89978992133,
+            "delta_ratio": -0.08762775207848764
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -14337.28865305474,
+            "target_variance_sum": 209451.9523094228,
+            "delta_ratio": -0.06845144432874181
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": 776.3210437193047,
+            "target_variance_sum": 166053.8320733429,
+            "delta_ratio": 0.004675116701771858
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.06840729865252132,
+          -0.03905958837615086
+        ],
+        "interpretation": "candidate lower error"
+      }
+    },
+    "E2_gap": {
+      "estimand": "candidate minus reference E2 gap; positive is greater association, not a quality gate",
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ],
+      "n_bootstrap": 1000,
+      "seed": 20261009,
+      "per_user": {
+        "1f6de69ab3": {
+          "numerator": 44345.52968692775,
+          "denominator": 1798580.0,
+          "ratio": 0.02465585611255977
+        },
+        "2251681168": {
+          "numerator": 41269.49780178078,
+          "denominator": 1225800.0,
+          "ratio": 0.03366739908776373
+        },
+        "29ddab35d7": {
+          "numerator": 27844.31198215491,
+          "denominator": 1260240.0,
+          "ratio": 0.022094451836281115
+        },
+        "2af4aec870": {
+          "numerator": 28949.28311491014,
+          "denominator": 1123280.0,
+          "ratio": 0.025772098777606778
+        },
+        "2d0838950a": {
+          "numerator": 60803.98124599455,
+          "denominator": 1830600.0,
+          "ratio": 0.03321532898830687
+        },
+        "3875521008": {
+          "numerator": 19645.438142776522,
+          "denominator": 803240.0,
+          "ratio": 0.02445774381601579
+        },
+        "7016fd5330": {
+          "numerator": 46602.52757406229,
+          "denominator": 1336940.0,
+          "ratio": 0.03485760585670433
+        },
+        "737fb9d2eb": {
+          "numerator": 34587.77640104294,
+          "denominator": 1122700.0,
+          "ratio": 0.030807674713675015
+        },
+        "9b8c99cdc2": {
+          "numerator": 24053.085763931264,
+          "denominator": 1380700.0,
+          "ratio": 0.01742093558624702
+        },
+        "a993d16f6e": {
+          "numerator": 29327.69468879693,
+          "denominator": 1060380.0,
+          "ratio": 0.02765772146664114
+        },
+        "d387095792": {
+          "numerator": 13073.44367933277,
+          "denominator": 522040.0,
+          "ratio": 0.025042992259851293
+        },
+        "e51f6d97cf": {
+          "numerator": 31349.04998445504,
+          "denominator": 1554040.0,
+          "ratio": 0.02017261459451175
+        },
+        "e86f1eaf2f": {
+          "numerator": 34205.195116996765,
+          "denominator": 1622900.0,
+          "ratio": 0.02107658827838854
+        },
+        "f3a4630adf": {
+          "numerator": 32755.71971893305,
+          "denominator": 1614720.0,
+          "ratio": 0.020285696417294052
+        }
+      },
+      "delta": 0.025679690301908822,
+      "evaluable": true,
+      "ci95": [
+        0.022502575275161144,
+        0.028798713404146945
+      ],
+      "direction": "positive"
+    }
+  },
+  "ridge_B_minus_R3c": {
+    "E1": {
+      "estimand": "candidate minus reference E1 MAE/constant, dynamic windows",
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "ab228f34a5",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ],
+      "n_bootstrap": 1000,
+      "seed": 20261009,
+      "per_user": {
+        "1f6de69ab3": {
+          "numerator": -63256.642245909665,
+          "denominator": 712443.3645438541,
+          "ratio": -0.08878830991205888
+        },
+        "2251681168": {
+          "numerator": -42623.107098719105,
+          "denominator": 598121.4580329955,
+          "ratio": -0.07126162508680269
+        },
+        "29ddab35d7": {
+          "numerator": -75123.51092050876,
+          "denominator": 566252.9998251939,
+          "ratio": -0.13266774912221196
+        },
+        "2af4aec870": {
+          "numerator": -18804.90901450033,
+          "denominator": 452206.4491837498,
+          "ratio": -0.041584787321021006
+        },
+        "2d0838950a": {
+          "numerator": -101668.9590029408,
+          "denominator": 769586.5020139717,
+          "ratio": -0.1321085527577185
+        },
+        "3875521008": {
+          "numerator": -57579.692477935634,
+          "denominator": 525543.0205244186,
+          "ratio": -0.10956228173381342
+        },
+        "7016fd5330": {
+          "numerator": -77275.56640066946,
+          "denominator": 612848.7030359422,
+          "ratio": -0.12609240423918694
+        },
+        "737fb9d2eb": {
+          "numerator": -59493.24125893309,
+          "denominator": 439446.9535196775,
+          "ratio": -0.13538207690924203
+        },
+        "9b8c99cdc2": {
+          "numerator": -34782.94144579943,
+          "denominator": 469908.9938870591,
+          "ratio": -0.07402059100439218
+        },
+        "a993d16f6e": {
+          "numerator": -59377.629004313785,
+          "denominator": 387546.976481984,
+          "ratio": -0.1532140169001527
+        },
+        "ab228f34a5": {
+          "numerator": 94.8635535562139,
+          "denominator": 2645.3375249561423,
+          "ratio": 0.03586066150775473
+        },
+        "d387095792": {
+          "numerator": -29394.67651623086,
+          "denominator": 276923.7252598698,
+          "ratio": -0.10614719446174721
+        },
+        "e51f6d97cf": {
+          "numerator": -66135.85141922638,
+          "denominator": 646604.5165993364,
+          "ratio": -0.10228176531622801
+        },
+        "e86f1eaf2f": {
+          "numerator": -84147.02977441857,
+          "denominator": 670209.692348661,
+          "ratio": -0.12555328688180628
+        },
+        "f3a4630adf": {
+          "numerator": -74197.65810265567,
+          "denominator": 638493.6359089996,
+          "ratio": -0.1162073573325805
+        }
+      },
+      "delta": -0.10860988446195935,
+      "evaluable": true,
+      "ci95": [
+        -0.12225566383077602,
+        -0.09357303659297969
+      ],
+      "direction": "negative"
+    },
+    "centered": {
+      "dynamic": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.12404387108001097,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -71543.22713457444,
+            "target_variance_sum": 1142018.095304353,
+            "delta_ratio": -0.06264631657654063
+          },
+          "2251681168": {
+            "delta_centered_sse": -136725.80696398218,
+            "target_variance_sum": 938288.874841945,
+            "delta_ratio": -0.1457182437413144
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -120121.94646865549,
+            "target_variance_sum": 847388.9562897884,
+            "delta_ratio": -0.14175538349543515
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -61628.01619341737,
+            "target_variance_sum": 643293.090138109,
+            "delta_ratio": -0.09580083656764664
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -158105.53452951869,
+            "target_variance_sum": 1145279.8699019023,
+            "delta_ratio": -0.13804969307900353
+          },
+          "3875521008": {
+            "delta_centered_sse": -103859.10854929162,
+            "target_variance_sum": 908449.294269621,
+            "delta_ratio": -0.11432570777964302
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -167950.39678157365,
+            "target_variance_sum": 878892.9975604321,
+            "delta_ratio": -0.19109311059225445
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -103271.12211466569,
+            "target_variance_sum": 670175.6040720048,
+            "delta_ratio": -0.154095615368849
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -82729.62652478891,
+            "target_variance_sum": 723653.1444165594,
+            "delta_ratio": -0.11432220969825141
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -68631.94328283286,
+            "target_variance_sum": 477479.71699096943,
+            "delta_ratio": -0.14373792402187188
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -203.91538296283716,
+            "target_variance_sum": 3237.656437146191,
+            "delta_ratio": -0.06298240314298972
+          },
+          "d387095792": {
+            "delta_centered_sse": -45535.96526577347,
+            "target_variance_sum": 420544.07877117395,
+            "delta_ratio": -0.10827869791634959
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -133917.19672052749,
+            "target_variance_sum": 985677.0199518835,
+            "delta_ratio": -0.13586316208027732
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -110941.4815741129,
+            "target_variance_sum": 908146.0470358483,
+            "delta_ratio": -0.12216259921652622
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": -74206.65338274662,
+            "target_variance_sum": 911208.3973846086,
+            "delta_ratio": -0.08143763116729158
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.14297376732721684,
+          -0.10541145721291292
+        ],
+        "interpretation": "candidate lower error"
+      },
+      "all": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.11466883512996236,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -78507.32924291538,
+            "target_variance_sum": 1279415.434911577,
+            "delta_ratio": -0.061361874415983717
+          },
+          "2251681168": {
+            "delta_centered_sse": -140554.83670280315,
+            "target_variance_sum": 1101777.553330805,
+            "delta_ratio": -0.12757097499208359
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -129661.4414142858,
+            "target_variance_sum": 948987.7992147474,
+            "delta_ratio": -0.136631304977341
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -70782.85041510488,
+            "target_variance_sum": 856725.8348963812,
+            "delta_ratio": -0.0826201890172553
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -175004.80728788115,
+            "target_variance_sum": 1328517.4220122905,
+            "delta_ratio": -0.131729403309445
+          },
+          "3875521008": {
+            "delta_centered_sse": -106877.41890709824,
+            "target_variance_sum": 973120.9520975335,
+            "delta_ratio": -0.10982953216321889
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -186300.8988864452,
+            "target_variance_sum": 1064017.4933478686,
+            "delta_ratio": -0.1750919510733422
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -120492.2616513184,
+            "target_variance_sum": 875579.7070411055,
+            "delta_ratio": -0.13761426936047264
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -98284.39498907852,
+            "target_variance_sum": 985043.7618433947,
+            "delta_ratio": -0.09977667875907432
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -82259.27913513279,
+            "target_variance_sum": 677132.0310070965,
+            "delta_ratio": -0.12148189033797265
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -487.140783802276,
+            "target_variance_sum": 6055.318752489801,
+            "delta_ratio": -0.0804484129926233
+          },
+          "d387095792": {
+            "delta_centered_sse": -54489.690674416546,
+            "target_variance_sum": 492918.6998338521,
+            "delta_ratio": -0.11054498580147874
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -146439.94395045878,
+            "target_variance_sum": 1145867.919741805,
+            "delta_ratio": -0.12779827537492774
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -124747.23005860602,
+            "target_variance_sum": 1117597.999345271,
+            "delta_ratio": -0.11162084231690414
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": -82449.66062172246,
+            "target_variance_sum": 1077262.2294579514,
+            "delta_ratio": -0.0765362957756431
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.13115799520923707,
+          -0.09850386131390353
+        ],
+        "interpretation": "candidate lower error"
+      },
+      "static": {
+        "users": [
+          "1f6de69ab3",
+          "2251681168",
+          "29ddab35d7",
+          "2af4aec870",
+          "2d0838950a",
+          "3875521008",
+          "7016fd5330",
+          "737fb9d2eb",
+          "9b8c99cdc2",
+          "a993d16f6e",
+          "ab228f34a5",
+          "d387095792",
+          "e51f6d97cf",
+          "e86f1eaf2f",
+          "f3a4630adf"
+        ],
+        "n_bootstrap": 1000,
+        "seed": 20261009,
+        "estimand": "(candidate centered SSE - reference centered SSE) / target variance sum",
+        "delta_ratio": -0.06790530255532506,
+        "per_user": {
+          "1f6de69ab3": {
+            "delta_centered_sse": -6964.1021083410305,
+            "target_variance_sum": 137397.3396072241,
+            "delta_ratio": -0.050685858461664644
+          },
+          "2251681168": {
+            "delta_centered_sse": -3829.029738821526,
+            "target_variance_sum": 163488.67848885994,
+            "delta_ratio": -0.023420763897620194
+          },
+          "29ddab35d7": {
+            "delta_centered_sse": -9539.494945630344,
+            "target_variance_sum": 101598.84292495911,
+            "delta_ratio": -0.0938937360996937
+          },
+          "2af4aec870": {
+            "delta_centered_sse": -9154.834221687604,
+            "target_variance_sum": 213432.74475827214,
+            "delta_ratio": -0.042893297521222014
+          },
+          "2d0838950a": {
+            "delta_centered_sse": -16899.27275836261,
+            "target_variance_sum": 183237.55211038815,
+            "delta_ratio": -0.0922260342584251
+          },
+          "3875521008": {
+            "delta_centered_sse": -3018.310357806811,
+            "target_variance_sum": 64671.6578279128,
+            "delta_ratio": -0.04667130021374038
+          },
+          "7016fd5330": {
+            "delta_centered_sse": -18350.502104871586,
+            "target_variance_sum": 185124.4957874363,
+            "delta_ratio": -0.09912519694823102
+          },
+          "737fb9d2eb": {
+            "delta_centered_sse": -17221.139536652656,
+            "target_variance_sum": 205404.1029691007,
+            "delta_ratio": -0.08384028988575395
+          },
+          "9b8c99cdc2": {
+            "delta_centered_sse": -15554.768464289431,
+            "target_variance_sum": 261390.61742683518,
+            "delta_ratio": -0.059507753634819374
+          },
+          "a993d16f6e": {
+            "delta_centered_sse": -13627.335852299875,
+            "target_variance_sum": 199652.314016127,
+            "delta_ratio": -0.06825533638041942
+          },
+          "ab228f34a5": {
+            "delta_centered_sse": -283.2254008394366,
+            "target_variance_sum": 2817.6623153436103,
+            "delta_ratio": -0.10051786521654126
+          },
+          "d387095792": {
+            "delta_centered_sse": -8953.725408643033,
+            "target_variance_sum": 72374.62106267828,
+            "delta_ratio": -0.12371360674743812
+          },
+          "e51f6d97cf": {
+            "delta_centered_sse": -12522.74722993141,
+            "target_variance_sum": 160190.89978992133,
+            "delta_ratio": -0.07817389905640133
+          },
+          "e86f1eaf2f": {
+            "delta_centered_sse": -13805.748484493903,
+            "target_variance_sum": 209451.9523094228,
+            "delta_ratio": -0.06591367773024483
+          },
+          "f3a4630adf": {
+            "delta_centered_sse": -8243.007238975639,
+            "target_variance_sum": 166053.8320733429,
+            "delta_ratio": -0.04964057219308769
+          }
+        },
+        "evaluable": true,
+        "delta_ratio_ci95": [
+          -0.08006752232647232,
+          -0.05616763762356795
+        ],
+        "interpretation": "candidate lower error"
+      }
+    }
+  },
+  "E2": {
+    "B5000": {
+      "estimand": "misaligned minus aligned MAE, radians, common dynamic support",
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ],
+      "n_bootstrap": 1000,
+      "seed": 20261009,
+      "per_user": {
+        "1f6de69ab3": {
+          "numerator": 26426.051627159122,
+          "denominator": 1798580.0,
+          "ratio": 0.014692730724882475
+        },
+        "2251681168": {
+          "numerator": 22754.611557483622,
+          "denominator": 1225800.0,
+          "ratio": 0.018563070286738148
+        },
+        "29ddab35d7": {
+          "numerator": 52418.66289615628,
+          "denominator": 1260240.0,
+          "ratio": 0.0415941907066561
+        },
+        "2af4aec870": {
+          "numerator": 13144.388039112071,
+          "denominator": 1123280.0,
+          "ratio": 0.011701791217783697
+        },
+        "2d0838950a": {
+          "numerator": 13014.303175926181,
+          "denominator": 1830600.0,
+          "ratio": 0.0071093101583776805
+        },
+        "3875521008": {
+          "numerator": 14568.554650306667,
+          "denominator": 803240.0,
+          "ratio": 0.018137237501004266
+        },
+        "7016fd5330": {
+          "numerator": 26765.98259067539,
+          "denominator": 1336940.0,
+          "ratio": 0.02002033194509506
+        },
+        "737fb9d2eb": {
+          "numerator": 20629.710617065448,
+          "denominator": 1122700.0,
+          "ratio": 0.01837508739384114
+        },
+        "9b8c99cdc2": {
+          "numerator": 5263.876838684086,
+          "denominator": 1380700.0,
+          "ratio": 0.003812469644878747
+        },
+        "a993d16f6e": {
+          "numerator": 27683.980983734167,
+          "denominator": 1060380.0,
+          "ratio": 0.026107603862515483
+        },
+        "d387095792": {
+          "numerator": 16081.133390426616,
+          "denominator": 522040.0,
+          "ratio": 0.03080440845610799
+        },
+        "e51f6d97cf": {
+          "numerator": 25646.98825883871,
+          "denominator": 1554040.0,
+          "ratio": 0.016503428649737917
+        },
+        "e86f1eaf2f": {
+          "numerator": 39191.75133609772,
+          "denominator": 1622900.0,
+          "ratio": 0.02414920903080764
+        },
+        "f3a4630adf": {
+          "numerator": 18709.102693557794,
+          "denominator": 1614720.0,
+          "ratio": 0.011586592532177588
+        }
+      },
+      "delta": 0.017654265664587946,
+      "evaluable": true,
+      "ci95": [
+        0.013260202947469523,
+        0.023308759963190952
+      ],
+      "direction": "positive"
+    },
+    "B19618": {
+      "estimand": "misaligned minus aligned MAE, radians, common dynamic support",
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ],
+      "n_bootstrap": 1000,
+      "seed": 20261009,
+      "per_user": {
+        "1f6de69ab3": {
+          "numerator": 70771.58131408687,
+          "denominator": 1798580.0,
+          "ratio": 0.039348586837442245
+        },
+        "2251681168": {
+          "numerator": 64024.109359264396,
+          "denominator": 1225800.0,
+          "ratio": 0.052230469374501876
+        },
+        "29ddab35d7": {
+          "numerator": 80262.97487831119,
+          "denominator": 1260240.0,
+          "ratio": 0.06368864254293721
+        },
+        "2af4aec870": {
+          "numerator": 42093.67115402221,
+          "denominator": 1123280.0,
+          "ratio": 0.037473889995390475
+        },
+        "2d0838950a": {
+          "numerator": 73818.28442192073,
+          "denominator": 1830600.0,
+          "ratio": 0.04032463914668455
+        },
+        "3875521008": {
+          "numerator": 34213.99279308319,
+          "denominator": 803240.0,
+          "ratio": 0.04259498131702006
+        },
+        "7016fd5330": {
+          "numerator": 73368.51016473769,
+          "denominator": 1336940.0,
+          "ratio": 0.0548779378017994
+        },
+        "737fb9d2eb": {
+          "numerator": 55217.48701810838,
+          "denominator": 1122700.0,
+          "ratio": 0.049182762107516154
+        },
+        "9b8c99cdc2": {
+          "numerator": 29316.96260261535,
+          "denominator": 1380700.0,
+          "ratio": 0.021233405231125768
+        },
+        "a993d16f6e": {
+          "numerator": 57011.6756725311,
+          "denominator": 1060380.0,
+          "ratio": 0.05376532532915662
+        },
+        "d387095792": {
+          "numerator": 29154.577069759383,
+          "denominator": 522040.0,
+          "ratio": 0.05584740071595928
+        },
+        "e51f6d97cf": {
+          "numerator": 56996.038243293755,
+          "denominator": 1554040.0,
+          "ratio": 0.03667604324424967
+        },
+        "e86f1eaf2f": {
+          "numerator": 73396.94645309448,
+          "denominator": 1622900.0,
+          "ratio": 0.04522579730919618
+        },
+        "f3a4630adf": {
+          "numerator": 51464.822412490845,
+          "denominator": 1614720.0,
+          "ratio": 0.03187228894947164
+        }
+      },
+      "delta": 0.043333955966496765,
+      "evaluable": true,
+      "ci95": [
+        0.03766505664786878,
+        0.04930874087276705
+      ],
+      "direction": "positive"
+    }
+  },
+  "transfer": {
+    "p1": {
+      "A": 0.17550895754133722,
+      "B": 0.16994653104131188,
+      "delta": -0.005562426500025332,
+      "ci95": [
+        -0.011038182674065273,
+        -0.000264643308355437
+      ],
+      "datasets": {
+        "ninapro_db2": {
+          "A": 0.18807368892893647,
+          "B": 0.1811577348748858,
+          "delta": -0.0069159540540506825,
+          "delta_by_model_seed": [
+            -0.0069159540540506825,
+            -0.0069159540540506825
+          ],
+          "ci95": [
+            -0.013331448580024765,
+            -0.0004563828493115949
+          ],
+          "paired_subject_se": 0.00324856456317066
+        },
+        "ninapro_db3": {
+          "A": 0.027647143550483734,
+          "B": 0.026994356207674562,
+          "delta": -0.0006527873428091718,
+          "delta_by_model_seed": [
+            -0.0006527873428091718,
+            -0.0006527873428091718
+          ],
+          "ci95": [
+            -0.009973313629332747,
+            0.011763189060015503
+          ],
+          "paired_subject_se": 0.0057792093259806145
+        },
+        "ninapro_db6": {
+          "A": 0.3470427529772203,
+          "B": 0.33952997795747214,
+          "delta": -0.007512775019748175,
+          "delta_by_model_seed": [
+            -0.007512775019748175,
+            -0.007512775019748175
+          ],
+          "ci95": [
+            -0.024419263841142957,
+            0.0096915705612451
+          ],
+          "paired_subject_se": 0.00835970315583044
+        }
+      }
+    },
+    "p2": {
+      "A": 0.8083719637436697,
+      "B": 0.7960443110796318,
+      "delta": -0.012327652664037958,
+      "ci95": [
+        -0.02997250474260461,
+        0.005761470977837396
+      ],
+      "datasets": {
+        "epn612": {
+          "A": 0.8439915074309977,
+          "B": 0.8181953290870488,
+          "delta": -0.025796178343948872,
+          "delta_by_model_seed": [
+            -0.025796178343948872,
+            -0.025796178343948872
+          ],
+          "ci95": [
+            -0.03172027600849282,
+            -0.02031847133757969
+          ],
+          "paired_subject_se": 0.0029848086209265435
+        },
+        "uci_emg": {
+          "A": 0.7727524200563417,
+          "B": 0.7738932930722147,
+          "delta": 0.0011408730158729563,
+          "delta_by_model_seed": [
+            0.0011408730158729563,
+            0.0011408730158729563
+          ],
+          "ci95": [
+            -0.033921266940603725,
+            0.03591112060307696
+          ],
+          "paired_subject_se": 0.01809783261900869
+        }
+      }
+    }
+  },
+  "head_dynamic_window_absolute_error_reduction": {
+    "mean_level_component": 0.04734637247792184,
+    "centered_component": 0.032429448922434656,
+    "total": 0.07977582140035677,
+    "interpretation": "Additive standardized MSE components on common support; not causal attribution.",
+    "E1_relative_to_B5000": 0.0799127932746373,
+    "centered_dynamic_relative_to_B5000": 0.0655390965031808
+  }
+}

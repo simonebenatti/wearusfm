@@ -1,0 +1,21 @@
+{
+  "complete": true,
+  "report_sha256": "26886cd3c1106af252037d79d51e0517cba424c7a9b13385d9a7e30d1597beb7",
+  "verification_script_sha256": "e5daecb4d4a64a426b7749b74c306e70e618b2837ba672268a14c95507e51132",
+  "method": "independent direct subject-draw indexing and summation, versus multinomial-count matrix products in implementation",
+  "checks": [
+    "epn612: independent direct-draw count bootstrap agrees",
+    "ninapro_db2: independent direct-draw count bootstrap agrees",
+    "ninapro_db3: independent direct-draw count bootstrap agrees",
+    "ninapro_db6: independent direct-draw count bootstrap agrees",
+    "uci_emg: independent direct-draw count bootstrap agrees",
+    "p1: fixed-weight paired contrast agrees",
+    "p2: fixed-weight paired contrast agrees",
+    "guard rejects changed row",
+    "guard rejects changed y",
+    "guard rejects changed s",
+    "guard rejects changed fold",
+    "guard rejects wrong file hash",
+    "native text EPN-like labels accepted without numeric isfinite"
+  ]
+}

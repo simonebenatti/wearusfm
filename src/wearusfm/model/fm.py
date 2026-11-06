@@ -67,8 +67,13 @@ class FMConfig:
     # testa di posa sulla media dei latenti del backbone per istante (R3, seconda ondata del pilot degli obiettivi, 26/10/2026;
     # `model/pose_head.py`): inizializzata a zero, fuori dal percorso di encode/decode. False = il modello di sempre
     pose_head: bool = False
+    # Nonlinearita' opzionale sulle 64 uscite del banco, dopo fe_gain e prima della proiezione. Nessun nuovo parametro; i checkpoint senza
+    # questo campo ricostruiscono il tokenizer storico. Il guadagno e il supporto temporale sono identici per identity e gelu.
+    tokenizer_activation: str = "identity"
 
     def __post_init__(self) -> None:
+        if not isinstance(self.tokenizer_activation, str) or self.tokenizer_activation not in ("identity", "gelu"):
+            raise ValueError("tokenizer_activation deve essere identity o gelu")
         object.__setattr__(self, "spectral_branches", tuple(self.spectral_branches))  # da JSON (checkpoint) arriva una lista
         if self.spectral_branches:
             if len(set(self.spectral_branches)) != len(self.spectral_branches) or not set(self.spectral_branches) <= set(BRANCH_KINDS):
@@ -94,8 +99,10 @@ class FMConfig:
 
     @property
     def core_radius(self) -> int:
-        """Patch per lato che un token nascosto deve avere nascoste perche' la sua finestra non contenga campioni visibili: 0 senza finestra;
-        con 150 ms su 25: la finestra eccede la patch di 62,5 ms per lato, cioe' 2,5 patch -> 3."""
+        """Patch nascoste per lato per proteggere il supporto NOMINALE del kernel: 0 senza finestra;
+        con 100 ms su 25: 37,5 ms per lato -> 2 patch; con 150 ms: 62,5 ms -> 3.
+        Non include le code anti-alias: non afferma che tutto il supporto numerico del teacher sia nascosto.
+        Nello studente i campioni delle patch occultate sono comunque azzerati prima del tokenizer."""
         if self.window_ms is None:
             return 0
         return int(math.ceil((self.window_ms - self.patch_ms) / 2.0 / self.patch_ms - 1e-9))
@@ -155,7 +162,8 @@ class WearUsFM(nn.Module):
         self.cfg = cfg
         from wearusfm.model.frontend import window_kwargs
 
-        self.tokenizer = PatchTokenizer(cfg.dim, patch_ms=cfg.patch_ms, **window_kwargs(cfg.patch_ms, cfg.window_ms))
+        self.tokenizer = PatchTokenizer(cfg.dim, tokenizer_activation=cfg.tokenizer_activation,
+                                        patch_ms=cfg.patch_ms, **window_kwargs(cfg.patch_ms, cfg.window_ms))
         self.identity = ChannelIdentity(cfg.dim, muscle_dropout=cfg.muscle_dropout)
         self.local = LocalEncoder(cfg.dim, cfg.n_heads, cfg.local_layers)
         self.pool = PerceiverPooling(cfg.dim, cfg.n_heads, cfg.k_latents)

@@ -1,0 +1,68 @@
+{
+  "protocol": "tokenizer-probe-initial-gate-20261104-v1",
+  "technical_gate_passed": true,
+  "job_id": "63495005",
+  "arm": "T25-L",
+  "shard": "db3",
+  "runtime_code_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "plan_sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+  "full_remote_report_sha256": "9d5e70774a71138dff4c06ca4c380e78c88b2b0ce5c75a2b5f07dd19154f30d6",
+  "report_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T25-L/db3/shard.json",
+  "expected_fit_count": 28,
+  "audit_summary": {
+    "fits": 28,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "elapsed_seconds": 596,
+  "walltime_cap_seconds": 1800,
+  "max_rss_bytes": 845385728.0,
+  "memory_cap_bytes": 32212254720,
+  "cpu_only_core_hours": 1.3244444444444445,
+  "fit_elapsed_seconds": 582.2921853065491,
+  "release_remaining_arms": true,
+  "scores_used_for_release": false,
+  "timing_limitation": "One completed shard does not prove the other shard types fit their caps; historical per-type estimates and conservative reservations remain the basis.",
+  "solver_policy": "Nonconvergence is preserved as descriptive unresolved evidence, not a technical failure or reason to change the recipe.",
+  "source_files": {
+    "audit_technical.json": "8805d32857f1cfaa259604c034b657b165e4faabad48d664402cb87231feee86",
+    "sacct.txt": "e0d244584e8ed69f648b40ca4d9d1b2f118bd5fd4db629fa286918d99ab318cb",
+    "sha256sum.txt": "7a46a94b4aee2c3c86ad859a2c9e6c64a586a3249494e43e27d2f2f4b0419cb0",
+    "report_technical.json": "cfa2c50f45db5ce274b4ef548385466ec7c7fc0d3aeae0c5449ee809c3944c84"
+  }
+}

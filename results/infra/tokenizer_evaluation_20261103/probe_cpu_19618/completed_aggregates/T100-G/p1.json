@@ -1,0 +1,718 @@
+{
+  "protocol": "tokenizer-probe-20261103-v1",
+  "kind": "aggregate",
+  "complete": true,
+  "arm": "T100-G",
+  "task": "p1",
+  "step": 19618,
+  "plan_content_sha256": "719afbd702ce08308a082ae9dccc504eac63a10c3ff29f5f90a0209d3974f9fd",
+  "recipe": {
+    "encoder": "teacher",
+    "layer": "pool",
+    "width": 768,
+    "features_dtype": "float32",
+    "pca": false,
+    "scaler": "StandardScaler fitted only on fold train",
+    "solver": "lbfgs",
+    "penalty": "l2",
+    "class_weight": "balanced",
+    "max_iter": 12000,
+    "tol": 0.0001,
+    "seed": 0,
+    "C_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+    "k_folds": 4,
+    "fold_seed": 20261015,
+    "val_frac": 0.1,
+    "bootstrap": {
+      "unit": "subject within dataset",
+      "seed": 20261102,
+      "replicates": 2000,
+      "missing_classes": "macro recall over present target classes; no discarded draws"
+    }
+  },
+  "code_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "plan_sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+  "plan_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104/results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json",
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+  "datasets": {
+    "ninapro_db2": {
+      "balanced_accuracy": 0.18223724514473194,
+      "n_oof_windows": 38544,
+      "n_oof_subjects": 32,
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s02",
+            "s04",
+            "s05",
+            "s06",
+            "s07",
+            "s08",
+            "s11",
+            "s17",
+            "s20",
+            "s22",
+            "s23",
+            "s24",
+            "s25",
+            "s26",
+            "s27",
+            "s29",
+            "s30",
+            "s31",
+            "s34",
+            "s36",
+            "s39"
+          ],
+          "val": [
+            "s10",
+            "s18",
+            "s28"
+          ],
+          "held": [
+            "s01",
+            "s03",
+            "s14",
+            "s19",
+            "s32",
+            "s35",
+            "s37",
+            "s38"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.20380932547620162,
+          "held_bacc": 0.19979530301738146,
+          "train_bacc": 0.40113435731107644,
+          "val_scores": {
+            "0.001": 0.1853688861121265,
+            "0.01": 0.20380932547620162,
+            "0.1": 0.20122628904496395,
+            "1.0": 0.1903712332323979,
+            "10.0": 0.18237610254778716,
+            "100.0": 0.15801923379178
+          },
+          "n_train": 24609,
+          "n_val": 4046,
+          "n_held": 9889,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "f747a80b38a99a8962d0a0e7f7a511e0c08fadb0ae26fd10725cb3a5d61a01c9",
+          "scaler_sha256": "478d9a75a012aa157079b11d5e72b2a1d6e7a9798e6246f5c875c2a77398e83f"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s04",
+            "s05",
+            "s07",
+            "s10",
+            "s11",
+            "s14",
+            "s17",
+            "s18",
+            "s19",
+            "s24",
+            "s25",
+            "s26",
+            "s27",
+            "s28",
+            "s29",
+            "s31",
+            "s35",
+            "s36",
+            "s37",
+            "s38",
+            "s39"
+          ],
+          "val": [
+            "s01",
+            "s03",
+            "s32"
+          ],
+          "held": [
+            "s02",
+            "s06",
+            "s08",
+            "s20",
+            "s22",
+            "s23",
+            "s30",
+            "s34"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.2345822826046691,
+          "held_bacc": 0.17294707743666005,
+          "train_bacc": 0.39137150287200345,
+          "val_scores": {
+            "0.001": 0.2039998443459359,
+            "0.01": 0.2345822826046691,
+            "0.1": 0.22746333323331602,
+            "1.0": 0.2197309813434811,
+            "10.0": 0.19423456821988042,
+            "100.0": 0.18402569025249269
+          },
+          "n_train": 26702,
+          "n_val": 3368,
+          "n_held": 8474,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "3b4120b2a5d3d8a61d50d18a401404df0a3ce13f51bf32eb313af653d52405cd",
+          "scaler_sha256": "fa379b7bd9d4ee75d56e2a548b477f170c863bd534c04b39bdb15c0c520d5272"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s01",
+            "s02",
+            "s03",
+            "s06",
+            "s08",
+            "s14",
+            "s19",
+            "s20",
+            "s22",
+            "s23",
+            "s24",
+            "s27",
+            "s28",
+            "s29",
+            "s30",
+            "s32",
+            "s34",
+            "s35",
+            "s36",
+            "s37",
+            "s38"
+          ],
+          "val": [
+            "s11",
+            "s17",
+            "s39"
+          ],
+          "held": [
+            "s04",
+            "s05",
+            "s07",
+            "s10",
+            "s18",
+            "s25",
+            "s26",
+            "s31"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.19064959498760223,
+          "held_bacc": 0.17135851779210304,
+          "train_bacc": 0.4250716179678098,
+          "val_scores": {
+            "0.001": 0.18507025467148283,
+            "0.01": 0.19064959498760223,
+            "0.1": 0.18084584536219106,
+            "1.0": 0.17099245924966458,
+            "10.0": 0.15869926384229402,
+            "100.0": 0.14306892537133029
+          },
+          "n_train": 24113,
+          "n_val": 4398,
+          "n_held": 10033,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2ce87c7abfc083693cb97268cdb13440966942a686b53512f1c1cdc7c6321d0f",
+          "scaler_sha256": "04112cabd0ef9da7ad073927eea3c65feb10659bbbe32a895bcd2ec5be9136f9"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s02",
+            "s03",
+            "s04",
+            "s05",
+            "s06",
+            "s07",
+            "s08",
+            "s10",
+            "s14",
+            "s18",
+            "s20",
+            "s22",
+            "s23",
+            "s25",
+            "s26",
+            "s30",
+            "s31",
+            "s32",
+            "s34",
+            "s35"
+          ],
+          "val": [
+            "s19",
+            "s37",
+            "s38"
+          ],
+          "held": [
+            "s11",
+            "s17",
+            "s24",
+            "s27",
+            "s28",
+            "s29",
+            "s36",
+            "s39"
+          ],
+          "c": 1.0,
+          "val_bacc": 0.19809781002673565,
+          "held_bacc": 0.18697847388527283,
+          "train_bacc": 0.6988431912588221,
+          "val_scores": {
+            "0.001": 0.15310918048545877,
+            "0.01": 0.17298273767963995,
+            "0.1": 0.18998324829210367,
+            "1.0": 0.19809781002673565,
+            "10.0": 0.19050565850102952,
+            "100.0": 0.17803573719958316
+          },
+          "n_train": 24594,
+          "n_val": 3802,
+          "n_held": 10148,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "787a60a3095f05b36d3b42f9a9cc0282485f8db0b7b6b3a9420d7f59bf1f46e2",
+          "scaler_sha256": "a1eb9b0ed842deefe8ffc903f2cec1a31edbc7fad4485ee2201aea736a0e057a"
+        }
+      ],
+      "identity_sha256": "b8d6e69fde0fa57dcc7623c7355c5b119f3526f418ba3f4a3b670822358b4367",
+      "scoring_warnings": []
+    },
+    "ninapro_db3": {
+      "balanced_accuracy": 0.033797019271144965,
+      "n_oof_windows": 9834,
+      "n_oof_subjects": 8,
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s01",
+            "s02",
+            "s05",
+            "s06",
+            "s11"
+          ],
+          "val": [
+            "s10"
+          ],
+          "held": [
+            "s03",
+            "s04"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.042761753202421406,
+          "held_bacc": 0.019892680643372223,
+          "train_bacc": 0.44219841815311495,
+          "val_scores": {
+            "0.001": 0.02681369876070337,
+            "0.01": 0.042761753202421406,
+            "0.1": 0.035744085024038946,
+            "1.0": 0.02883142025194703,
+            "10.0": 0.033519407113976475,
+            "100.0": 0.036532295373964685
+          },
+          "n_train": 6206,
+          "n_val": 1224,
+          "n_held": 2404,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "458a4ad67431fde6506de6486ba02ae6b6c1d5440db3f14fbc7e5a5a32b960d7",
+          "scaler_sha256": "95d5cd40444e5018a51d8ab88fdbc59502b11eb42456f5cdd04363466637f5f3"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s02",
+            "s03",
+            "s04",
+            "s05",
+            "s11"
+          ],
+          "val": [
+            "s01"
+          ],
+          "held": [
+            "s06",
+            "s10"
+          ],
+          "c": 0.001,
+          "val_bacc": 0.03565900044228218,
+          "held_bacc": 0.029673367432220973,
+          "train_bacc": 0.20245534551332284,
+          "val_scores": {
+            "0.001": 0.03565900044228218,
+            "0.01": 0.034470560399352965,
+            "0.1": 0.021258443568815087,
+            "1.0": 0.02120860305844826,
+            "10.0": 0.019613706726709822,
+            "100.0": 0.020436075147762457
+          },
+          "n_train": 6105,
+          "n_val": 950,
+          "n_held": 2779,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "95599c9d2b024790c8430d5672364f8ef929e84f8806f07d5e4af4f4e781924c",
+          "scaler_sha256": "1e5d2eb8ddff75abd67ec46824391fb626854a6f45c7462551cc5acbc49f45dd"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s02",
+            "s04",
+            "s05",
+            "s06",
+            "s10"
+          ],
+          "val": [
+            "s03"
+          ],
+          "held": [
+            "s01",
+            "s11"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.03547783183985491,
+          "held_bacc": 0.0492292608780643,
+          "train_bacc": 0.6124980562231626,
+          "val_scores": {
+            "0.001": 0.012012831888608288,
+            "0.01": 0.015752215840946986,
+            "0.1": 0.03547783183985491,
+            "1.0": 0.03438575621361779,
+            "10.0": 0.011420965901888704,
+            "100.0": 0.029655378634970475
+          },
+          "n_train": 6948,
+          "n_val": 819,
+          "n_held": 2067,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2dbad213746494e2df5912c745d4b11af6f38c744a9c74f9974737a994386e98",
+          "scaler_sha256": "9088e39418fb9b258cd670bc653c060e7413a24e3537a5042051642b7013c302"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s03",
+            "s04",
+            "s10",
+            "s11"
+          ],
+          "val": [
+            "s06"
+          ],
+          "held": [
+            "s02",
+            "s05"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.02412225887422418,
+          "held_bacc": 0.03651332522986013,
+          "train_bacc": 0.6075990680834028,
+          "val_scores": {
+            "0.001": 0.023102747592543514,
+            "0.01": 0.021048302018754718,
+            "0.1": 0.02412225887422418,
+            "1.0": 0.018824664344162467,
+            "10.0": 0.0216268325512023,
+            "100.0": 0.0216268325512023
+          },
+          "n_train": 5695,
+          "n_val": 1555,
+          "n_held": 2584,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2bfc5e5c3c41292cd1750dd46bd2e3cfa04984f642869fc4b48a76548e31a934",
+          "scaler_sha256": "fa7dc84cf47e903a3478aecc4b1fb18eb93061581940218ef86af88360fc1018"
+        }
+      ],
+      "identity_sha256": "056d02fd70736c75d54ec2610e541da808368f154f1ea9cf359ea27bc1cd41d6",
+      "scoring_warnings": []
+    },
+    "ninapro_db6": {
+      "balanced_accuracy": 0.33748369099413783,
+      "n_oof_windows": 33961,
+      "n_oof_subjects": 8,
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s01",
+            "s02",
+            "s07",
+            "s08",
+            "s10"
+          ],
+          "val": [
+            "s09"
+          ],
+          "held": [
+            "s03",
+            "s06"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.3632183481753072,
+          "held_bacc": 0.38109276869663916,
+          "train_bacc": 0.640258665718277,
+          "val_scores": {
+            "0.001": 0.34731586419063726,
+            "0.01": 0.3632183481753072,
+            "0.1": 0.32750340300870295,
+            "1.0": 0.2884916270331212,
+            "10.0": 0.27415069577645984,
+            "100.0": 0.2735560115076368
+          },
+          "n_train": 21508,
+          "n_val": 3925,
+          "n_held": 8528,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "43584b4d96188742215b7d41e55df21ae3e84d47b2da29915c8c4578c734dc5f",
+          "scaler_sha256": "fbf8754a834094d69507dc657f5982082f037aaf9dea24370f23c92c404979db"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s02",
+            "s03",
+            "s06",
+            "s07",
+            "s10"
+          ],
+          "val": [
+            "s01"
+          ],
+          "held": [
+            "s08",
+            "s09"
+          ],
+          "c": 10.0,
+          "val_bacc": 0.3745560778208552,
+          "held_bacc": 0.3769836879357073,
+          "train_bacc": 0.7770264907865622,
+          "val_scores": {
+            "0.001": 0.3406687374408182,
+            "0.01": 0.3465806037519012,
+            "0.1": 0.3520425023924654,
+            "1.0": 0.3673555287764036,
+            "10.0": 0.3745560778208552,
+            "100.0": 0.3683963682437535
+          },
+          "n_train": 21570,
+          "n_val": 4452,
+          "n_held": 7939,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "aa11f3a3f108f3e2f67b7f294d02206ebefeadad2c8260931128a9395c7ff694",
+          "scaler_sha256": "1cae1804e01848f5008f45a7becf5a1f14bbd8e46a1a3ef52c7bae88b2fc9b7d"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s02",
+            "s06",
+            "s07",
+            "s08",
+            "s09"
+          ],
+          "val": [
+            "s03"
+          ],
+          "held": [
+            "s01",
+            "s10"
+          ],
+          "c": 10.0,
+          "val_bacc": 0.36134439501567867,
+          "held_bacc": 0.2820163417284803,
+          "train_bacc": 0.7725386851020818,
+          "val_scores": {
+            "0.001": 0.3407552724399179,
+            "0.01": 0.34624043696855183,
+            "0.1": 0.3601445977288535,
+            "1.0": 0.3607735575905164,
+            "10.0": 0.36134439501567867,
+            "100.0": 0.3591695803613901
+          },
+          "n_train": 20827,
+          "n_val": 4196,
+          "n_held": 8938,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "0005cc600f5b5f56380bc04bd525260e7158ef5824bc1cdb889bfae7bc10665f",
+          "scaler_sha256": "8f71e1a983bf5bec421d1b0151ba76a70c98acf3123fb2f97d4101e7b141adf8"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s03",
+            "s06",
+            "s09",
+            "s10"
+          ],
+          "val": [
+            "s08"
+          ],
+          "held": [
+            "s02",
+            "s07"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.3935528494150012,
+          "held_bacc": 0.320438234273619,
+          "train_bacc": 0.6482947830803107,
+          "val_scores": {
+            "0.001": 0.3775898677792788,
+            "0.01": 0.3935528494150012,
+            "0.1": 0.3913647287910305,
+            "1.0": 0.38855405687356553,
+            "10.0": 0.38370015210462594,
+            "100.0": 0.38387219443273285
+          },
+          "n_train": 21391,
+          "n_val": 4014,
+          "n_held": 8556,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "708e11ba7d58c499963cb9bd76098bf0d42e6b41f9c8826f09f2cd2f62953a77",
+          "scaler_sha256": "4af5505eba46c6cac0e70d0dc3ef02020219a091575a0d0070d3bfce4304101b"
+        }
+      ],
+      "identity_sha256": "3ee565080f079dfbecba717ef0c8238e2772efd41768c87548c973b4100b8f8e",
+      "scoring_warnings": []
+    }
+  },
+  "weights": {
+    "ninapro_db2": 0.6153846153846154,
+    "ninapro_db3": 0.23076923076923078,
+    "ninapro_db6": 0.15384615384615385
+  },
+  "balanced_accuracy": 0.1718658769968897,
+  "audit_summary": {
+    "fits": 84,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "audit": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.audit.jsonl",
+  "audit_sha256": "054191514b265dee96e4dab6747f82297e729986ad07e539455890e3cc641cac",
+  "oof": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.oof.npz",
+  "oof_sha256": "f600daad6190c53f78951a4504609aaf8e1f5adc26c1840066a917489e869054",
+  "shards": [
+    {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-01/shard.json",
+      "sha256": "0bec72918f46ac485ce41303dc887f934794e59478235debf6304be936974a07"
+    },
+    {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db2-23/shard.json",
+      "sha256": "6a74d3dbc6035b30f1fda77ae643479a272eacb6890bd1937f12101017579590"
+    },
+    {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db3/shard.json",
+      "sha256": "ae3d243ac41b9f13f5e43a132a4cd4f2209ee47399d0a3fa9f57afda79a8baec"
+    },
+    {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/db6/shard.json",
+      "sha256": "0326606dfc3a8a5bcd83cf2d972d6035357ae76978e63aff95a8b4b26b69739b"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "declared_before_timing_read": true,
+  "date": "2026-11-02",
+  "gpu": {
+    "window_count_per_model": 20455,
+    "historic_full_seconds": 1800,
+    "formula": "ceil_to_300(1.5 * max(1800, 20455 / n_pre_model * loop_seconds_model) + H + 180)",
+    "H": "max(0, elapsed_preflight - loop_seconds_B - loop_seconds_R3c), entire amount assigned conservatively to each model",
+    "cap_seconds": 3600,
+    "gpus": 1,
+    "cpus": 8,
+    "memory_GiB": 60,
+    "memory_guard": "require observed GPU reservation <= 0.90 * device capacity; host estimate max(1.5 * observed_peak_GiB, 1.5 * 19 + 4) <= 60",
+    "limitation": "four train records are not representative of all sessions; estimate is not a runtime bound"
+  },
+  "cpu": {
+    "formula": "ceil_to_300(1.5 * max(2 * B, 2 * 209) + 180)",
+    "B": "entire benchmark job elapsed seconds; at least the sum of statistics and three-eigensystem seconds for all four readers",
+    "historic_four_cell_run_seconds": 209,
+    "cap_seconds": 3600,
+    "cpus": 8,
+    "memory_GiB": 30,
+    "memory_guard": "require max(1.5 * (benchmark_peak_GiB + 8), 1.5 * 4.194) <= 30"
+  },
+  "stop": "If the rounded estimate exceeds the cap, stop instead of truncating the request. No val performance influences resources."
+}

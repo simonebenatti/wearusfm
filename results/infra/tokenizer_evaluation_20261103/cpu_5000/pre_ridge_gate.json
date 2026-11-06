@@ -1,0 +1,57 @@
+{
+  "protocol": "tokenizer-pose-cpu5000-gate-20261103-v1",
+  "gate_pass": true,
+  "plan_sha256": "9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba",
+  "runtime_code_sha": "70fd080149c11d10917059875d31a5a2820f176a",
+  "resource_policy_sha256": "ddc9c2e9b8ff6f352194c8034cbd32e23f8f0363ea73dd3f77d96934c3fd5742",
+  "preceding_jobs": {
+    "validate": {
+      "job_id": 63405498,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 33,
+      "allocated_core_hours": 0.018333333333333333,
+      "report_sha256": "1efc72832679ff97cfc42016f0441b1bdef91e479adb432bd0ebd536d905caea"
+    },
+    "benchmark": {
+      "job_id": 63405502,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 20,
+      "allocated_core_hours": 0.044444444444444446,
+      "report_sha256": "89c79865fe9678540b321f4b1fa467d6966119f3127f569e5f84ef1c11f2cdb8"
+    }
+  },
+  "timing": {
+    "formula": "ceil_60s(1.5*(2*V+3*((1+R)*S+13*E))+120)",
+    "V": 33,
+    "S": 3.3052839059382677,
+    "E": 0.1104512857273221,
+    "R": 10,
+    "raw_required_seconds": 389.0729535589926,
+    "rounded_required_seconds": 420,
+    "walltime_ceiling_seconds": 1800
+  },
+  "verified": {
+    "original_report_sha256": true,
+    "complete_reports": true,
+    "same_source_plan_dose_recipe": true,
+    "cache_reference_pins": true,
+    "common_targets_metadata_support": true,
+    "train_val_users_disjoint": true,
+    "benchmark_only_T25_L_train": true,
+    "benchmark_threads_environment_torch_and_pools_8": true,
+    "validation_metrics_not_computed": true
+  },
+  "ridge": {
+    "logical_id": "TOKENIZER-pose5000-ridge-20261103",
+    "cpus": 8,
+    "memory": "30G",
+    "walltime_seconds": 1800,
+    "gpu_hours_cap": 0,
+    "core_hours_cap": 4,
+    "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/5000/ridge",
+    "submitted": false
+  },
+  "after_submission": "Disable completa-tokenizer-wearusfm as requested; jobs remain on Leonardo."
+}

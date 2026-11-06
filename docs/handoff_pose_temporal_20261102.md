@@ -1,0 +1,24 @@
+# Consegna operativa: lettore temporale approvato — 02/11/2026
+
+**Catena conclusa: non rilanciare.** Checkout63219091, validate63227865, benchmark63228323
+e confronto completo63228748 tutti COMPLETED0:0. Totale0,55389core-ore e0GPU.
+Risultati in `reviews/pose_temporal_results_20261102.md`, consuntivo in
+`reviews/pose_temporal_execution_20261102.md` e `results/infra/pose_temporal_20261102/`.
+I comandi sotto sono la consegna originaria, non una richiesta di seconda esecuzione.
+
+**Eccezione operativa autorizzata il 02/11:** Simone risponde «Autorizzo il lancio diretto di questa catena». GPT esegue questa sola catena tramite submitter e ledger comuni; protocollo, codice congelato e tetti invariati. L'indisponibilità di semplicione non blocca più questi lanci. Il testo sotto conserva la consegna originaria; ID e stati aggiornati nei materiali della campagna.
+
+Destinatario: chat esistente **semplicione**, thread `01a18355-6241-7c53-98fe-fbc8450c2b30`. L'utente ha approvato esecuzione e parallelismo con il controllo PCA; non serve un nuovo via scientifico. Questa consegna resta preparata: nessun ID prenotato/sottomesso da GPT. La chat non è attualmente raggiungibile dagli strumenti app; non creare un agente sostitutivo omonimo.
+
+Codice congelato da eseguire: **`440af702ac3ec00feb52549acb1b4935251dce38`**, già su origin, branch `codex/r3-long-collaudo-20261028`. Non eseguire da HEAD mobile. Protocollo `docs/pose_temporal_pca_protocol_20261102.md`, review `docs/reviews/pose_temporal_pca_review_20261102.md`;35 test verdi. Quattro cache temporali originali ricontrollate su Leonardo via SHA256, tutte integre. Non occorre GPU né nuovo pretraining.
+
+Piano macchina: `results/infra/pose_temporal_20261102/jobs.json`; comandi pronti: `commands.txt` nella stessa cartella. Il piano sperimentale con i pin delle cache è già nel commit scientifico. Piano macchina/comandi possono essere letti dal commit di consegna successivo, ma passano sempre il codice congelato sopra.
+
+1. Leggi il ledger comune e controlla i quattro ID logici `POSE-TEMP-{checkout,validate,benchmark,run}-20261102`. Se presenti, riconcilia con submitter/accounting; mai duplicare o rilanciare alla cieca. Verifica il residuo CPU e che non vi siano altri job di questa campagna.
+2. Verifica il nuovo ref di deploy e gli hook del repo remoto secondo CLAUDE.md; pubblica solo `440af70…:refs/heads/deploy/pose-temporal-20261102`. Non aggiornare main, checkout attivi o un ref già usato da altri job. Crea il checkout congelato tramite il job versionato `campaign_checkout.sbatch`, submitter/ledger, mai editing remoto.
+3. Sottometti la catena iniziale **checkout → validate → benchmark**, con afterok tramite ID logici. Tetto totale iniziale **4,5 core-ore,0GPU**: checkout1core/2G/10min; validate2core/4G/10min; benchmark8core/30G/30min. Solo il benchmark legge i bersagli train per statistiche e timing; non apre la val né calcola score val.
+4. Leggi esito, JSON del benchmark, tempi, MaxRSS e accounting. Proietta il run completo includendo due encoder, CV/risoluzioni dopo i Gram, decompressione/hash/inferenza della val e metriche, con margine esplicito. Il benchmark misura statistiche e tre eigensistemi, non tutto il costo del run. Il segno di un risultato scientifico non entra in questa decisione.
+5. **Solo dopo successo tecnico e verifica del costo**, sottometti il run: massimo8core/30G/2h, **16 core-ore**, accorciando walltime/riducendo memoria se le misure lo supportano. La riga run è commentata in commands.txt per evitare un accodamento automatico prima del timing. Se la proiezione supera il tetto o un controllo fallisce, riporta il problema e non fare retry ciechi. L'approvazione già ricevuta copre il run entro il piano, senza chiedere un'altra firma.
+6. Restituisci ID e stato effettivo (sottomesso ≠ avviato), poi log, validate.json, benchmark.json, run.json, SHA e accounting. Recupera i JSON sul Mac sotto una cartella esterna al codice; coefficienti `.npz` restano fuori dal repo. Tetto complessivo catena **20,5 core-ore e0GPU**. Il job salva risultati in `$WORK/wearusfm_runs/results/pose_temporal_20261102/` e log esterni.
+
+Il controllo PCA sulle predizioni esistenti è già concluso localmente e non richiede sottomissioni. Non lanciare ulteriori sonde, MLP, nuove estrazioni, R3 completo o varianti di loss da questa consegna. La review scientifica del risultato temporale resta a GPT.

@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-03",
+  "review_commit": "a59079a44b482b85c9ffa26efb2b4851ac6e68a6",
+  "review_file": "docs/reviews/claude_review_tokenizer_20261102.md",
+  "review_sha256": "a0ca657e5d37a08faa4fd74e487c2291ec4926850c3ce4a7eb3bd48858950721",
+  "reproduction_script": "scripts/check_tokenizer_window_review.py",
+  "reproduction_script_sha256": "372fc8c0e4876d230ae6e511bd62f64a34bf8161e904d2a5e190f6dc413b10e8",
+  "reproduction_result": "claude_synthetic_reproduction.txt",
+  "synthetic_reproduction_exit_code": 0,
+  "reproduction_runtime_base": "532d177ecf10ac7918b1ef9884e3de1a4e7a3cf4 (runtime c052792 unchanged, before radius correction)",
+  "correction_tests": {
+    "passed": 94,
+    "deselected": 2,
+    "seconds": 34.9,
+    "files": [
+      "test_tokenizer_comparison.py",
+      "test_frontend_window.py",
+      "test_jepa.py",
+      "test_objective_arms.py"
+    ],
+    "selection": "not torchrun",
+    "executed_by": "b19618_integrity local subagent",
+    "ddp_not_rerun": "unchanged default distributed path; previous two DDP passed, not counted here"
+  },
+  "verified": [
+    "explicit override0 allowed with JEPA0;positiveJEPA retains nominal guard",
+    "None100/JEPA0 stillradius2",
+    "same actual queries and counts in three arms radius0/2, pose independent",
+    "25ms B defaultNone vs explicit0: bit-identical loss and every gradient",
+    "CLI validates radius after effective weights",
+    "three full CLI configs match originals except registered radius and output path"
+  ],
+  "source_sha256": {
+    "src/wearusfm/training/jepa.py": "98c715597360ad133d3d5f26b10077f4e9c5ca3a6c80b58fac8bc2e5c8375f29",
+    "scripts/train_jepa.py": "b9f7fcfccd68034d4cc566c1ef29008e9ab4d7233529f501f2076cda207f8006",
+    "tests/cpu/test_tokenizer_comparison.py": "8d60b8a6de855d26bf3130269fe79dd16d17f011ccab83cd3b0e6e028a4800dd"
+  },
+  "remote_jobs_submitted": [],
+  "independent_review": {
+    "agent": "critico",
+    "verdict": "favorable_no_material_findings",
+    "scope": [
+      "runtime correction",
+      "CLI order",
+      "regression tests",
+      "scientific response",
+      "three config hashes and CLI reconstruction",
+      "essential budget arithmetic"
+    ],
+    "tests_rerun_by_critic": false
+  }
+}

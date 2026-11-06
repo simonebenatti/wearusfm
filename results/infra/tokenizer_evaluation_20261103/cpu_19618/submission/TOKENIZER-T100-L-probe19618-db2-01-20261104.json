@@ -1,0 +1,51 @@
+{
+ "id": "TOKENIZER-T100-L-probe19618-db2-01-20261104",
+ "creato": "2026-11-04T10:02:24+01:00",
+ "agente": "gpt",
+ "campagna": "tokenizer-20261103",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TOKENIZER-T100-L-probe19618-db2-01-20261104",
+  "--comment=wearusfm:TOKENIZER-T100-L-probe19618-db2-01-20261104",
+  "--cpus-per-task=8",
+  "--mem=30G",
+  "--time=01:00:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104,EXPECTED_SHA=b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104/scripts/slurm/tokenizer_probe.sbatch",
+  "results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json",
+  "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+  "fit-shard",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-L/db2-01",
+  "T100-L",
+  "db2-01"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T10:02:24+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T10:02:24+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T10:02:27+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63495813,
+   "uscita": 0,
+   "stdout": "63495813\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63495813,
+ "uscita": 0,
+ "stdout": "63495813\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

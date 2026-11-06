@@ -1,0 +1,24 @@
+{
+  "stage": "released_after_ridge_running",
+  "held_jobs": [
+    "63495003",
+    "63495004",
+    "63495008",
+    "63495009"
+  ],
+  "running_job_unchanged": "63495005",
+  "priority_ridge_job": "63495299",
+  "release_required_when_ridge_starts": true,
+  "released": true,
+  "resources_or_science_changed": false,
+  "rationale": "QOS8CPUperuser; deliver short pose report before remaining long probes; never leave holds at handoff",
+  "release_command_exit_code": 0,
+  "post_release_reasons": {
+    "63495003": "QOSMaxCpuPerUserLimit",
+    "63495004": "QOSMaxCpuPerUserLimit",
+    "63495008": "QOSMaxCpuPerUserLimit",
+    "63495009": "QOSMaxCpuPerUserLimit"
+  },
+  "ridge_state_at_release": "RUNNING",
+  "checked_at_utc": "2026-11-04T09:00:00.941820+00:00"
+}

@@ -1,0 +1,14 @@
+# CHAIN COMPLETED: checkout 63219091, validate 63227865, benchmark 63228323, run 63228748.
+# Historical prepared commands below: do not resubmit. Actual commands/accounting are in execution/ and jobs.json.
+# Prepared commands. Direct operator GPT authorized by Simone on 02/11/2026 for this chain only.
+# Verify ledger and deploy preflight before publishing this NEW deploy ref.
+git push leonardo 440af702ac3ec00feb52549acb1b4935251dce38:refs/heads/deploy/pose-temporal-20261102
+
+# Initial chain: checkout -> validate -> train-only benchmark.
+python3 scripts/submit_job.py --id POSE-TEMP-checkout-20261102 --agente gpt --campagna pose-temporal-20261102 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch -- --export=ALL,CAMPAIGN=pose-temporal-20261102,CAMPAIGN_SHA=440af702ac3ec00feb52549acb1b4935251dce38 --cpus-per-task=1 --mem=2G --time=00:10:00
+python3 scripts/submit_job.py --id POSE-TEMP-validate-20261102 --agente gpt --campagna pose-temporal-20261102 --gpu-ore 0 --dopo POSE-TEMP-checkout-20261102 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38 --cpus-per-task=2 --mem=4G --time=00:10:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch validate /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/validate.json
+python3 scripts/submit_job.py --id POSE-TEMP-benchmark-20261102 --agente gpt --campagna pose-temporal-20261102 --gpu-ore 0 --dopo POSE-TEMP-validate-20261102 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38 --cpus-per-task=8 --mem=30G --time=00:30:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/benchmark.json
+
+# DO NOT run automatically: inspect successful benchmark and resource projection first.
+# Full-run command below uses the maximum ceiling; shorten resource requests if measured timing supports it.
+# python3 scripts/submit_job.py --id POSE-TEMP-run-20261102 --agente gpt --campagna pose-temporal-20261102 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38 --cpus-per-task=8 --mem=30G --time=02:00:00 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch run /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/run.json

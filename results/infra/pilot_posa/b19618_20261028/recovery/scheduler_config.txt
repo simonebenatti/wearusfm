@@ -1,0 +1,9 @@
+AccountingStoreFlags    = job_comment,job_script
+DependencyParameters    = kill_invalid_depend
+JobAcctGatherParams     = NoOverMemoryKill
+KillOnBadExit           = 0
+KillWait                = 180 sec
+MinJobAge               = 30 sec
+SchedulerParameters     = spec_cores_first,pack_serial_at_end,sched_min_interval=2000000,max_rpc_cnt=150,bf_continue,bf_interval=30,bf_yield_interval=2000000,bf_yield_sleep=500000,bf_max_job_part=2000,bf_max_job_user_part=20,bf_max_job_test=5000,bf_resolution=300,bf_max_time=150,default_queue_depth=2000,bf_job_part_count_reserve=40,enable_user_top
+UnkillableStepProgram   = (null)
+UnkillableStepTimeout   = 120 sec

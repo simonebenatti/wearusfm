@@ -1,0 +1,255 @@
+{
+  "protocol": "tokenizer_budget_reconciliation_20261103_v1",
+  "audit_date": "2026-11-03",
+  "scope": "Verifica locale della stima di costo nella review Claude a59079a, sezione 7. Nessun accesso remoto, nuovo saldo CINECA, job, prenotazione o approvazione di budget.",
+  "prior_budget": {
+    "remaining_max_known_gpu_hours": 63.2925,
+    "cpu_only_core_hours_estimate": 318.821667,
+    "source": "previous_budget_audit_unchanged",
+    "notes": "Saldo locale dell audit 02/11, non nuova verifica della coda o del saldo CINECA. Audit originale lasciato invariato."
+  },
+  "observed_b19618_accounting": {
+    "source": "b19618_accounting",
+    "total_gpu_hours": 14.622777777777777,
+    "training_steps_increment": 14618,
+    "training": {
+      "job_id": "62582916",
+      "name": "PILOT-POSA-B19618-train-20261028",
+      "state": "COMPLETED",
+      "elapsed_seconds": 11005,
+      "allocated_gpus": 4,
+      "allocated_cpus": 32,
+      "gpu_hours": 12.227777777777778,
+      "allocated_core_hours": 97.82222222222222
+    },
+    "B_evaluation_jobs": [
+      {
+        "job_id": "62583151",
+        "name": "PILOT-POSA-B19618-B-pose-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 1800,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.5,
+        "allocated_core_hours": 4.0
+      },
+      {
+        "job_id": "62583153",
+        "name": "PILOT-POSA-B19618-B-p1-ext-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 826,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.22944444444444445,
+        "allocated_core_hours": 1.8355555555555556
+      },
+      {
+        "job_id": "62583154",
+        "name": "PILOT-POSA-B19618-B-p2-ext-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 1678,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.4661111111111111,
+        "allocated_core_hours": 3.7288888888888887
+      }
+    ],
+    "B_evaluation_gpu_hours": 1.1955555555555555,
+    "R3c_evaluation_jobs": [
+      {
+        "job_id": "62583147",
+        "name": "PILOT-POSA-B19618-R3c-pose-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 1805,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.5013888888888889,
+        "allocated_core_hours": 4.011111111111111
+      },
+      {
+        "job_id": "62583148",
+        "name": "PILOT-POSA-B19618-R3c-p1-ext-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 833,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.2313888888888889,
+        "allocated_core_hours": 1.8511111111111112
+      },
+      {
+        "job_id": "62583149",
+        "name": "PILOT-POSA-B19618-R3c-p2-ext-20261028",
+        "state": "COMPLETED",
+        "elapsed_seconds": 1680,
+        "allocated_gpus": 1,
+        "allocated_cpus": 8,
+        "gpu_hours": 0.4666666666666667,
+        "allocated_core_hours": 3.7333333333333334
+      }
+    ],
+    "R3c_evaluation_gpu_hours": 1.1994444444444445,
+    "both_encoders_evaluation_gpu_hours": 2.395,
+    "allocation_convention": "Somma dei job parent soltanto; ElapsedRaw include startup, controlli, scrittura e chiusura dentro l allocazione. Non sommare gli step batch/extern.",
+    "encoder_choice": "Le estrazioni della posa usavano student, quelle di P1/P2 teacher; verifica in extraction_wrapper, pose_command e channel_command.",
+    "cpu_only_jobs_gpu_hours": 0.0
+  },
+  "review_claim_reconciliation": {
+    "claim": "Circa 2.2 GPUh di valutazioni/overhead per singolo modello-endpoint, ottenute da 14.62 meno training estrapolato 12.39; tre bracci completi circa 66 GPUh.",
+    "finding": "La tranche 14.622778 GPUh include estrazioni di DUE encoder, B e R3c. Il costo osservato per encoder e circa 1.20 GPUh, non 2.2. Sottrarre un training estrapolato dal totale misurato non identifica l overhead.",
+    "actual_subtraction_gpu_hours": 2.3949999999999996,
+    "training_extrapolated_from_b5000_gpu_hours": 12.389567111111111,
+    "residual_using_extrapolated_training_gpu_hours": 2.2332106666666665,
+    "implication": "La fonte citata non dimostra 66 GPUh. Tre bracci restano al limite del residuo sotto gli assunti illustrativi qui esplicitati; timing, valutazioni effettive e tetti possono cambiare il totale."
+  },
+  "observed_pose_cost_references": {
+    "student_val_only": {
+      "job_id": "62539724",
+      "elapsed_seconds": 1567,
+      "gpu_hours": 0.43527777777777776,
+      "source": "b5000_pose_val_accounting"
+    },
+    "student_train_subset_only": {
+      "job_id": "62561780",
+      "elapsed_seconds": 255,
+      "gpu_hours": 0.07083333333333333,
+      "source": "b5000_pose_train_accounting"
+    },
+    "student_train_plus_val_separate_jobs_gpu_hours": 0.5061111111111111,
+    "B19618_student_train_plus_val_single_job_gpu_hours": 0.5,
+    "teacher_pose_projection_is_estimate": true,
+    "notes": "Riferimenti osservati su student e frontend storico. Il futuro teacher ha un passaggio distinto; il costo deve essere misurato nel nuovo valutatore, non dichiarato gia verificato."
+  },
+  "illustrative_assumptions": {
+    "training_reference_gpu_hours_per_5000": 4.237777777777778,
+    "training_reference_elapsed_seconds": 3814,
+    "training_reference_gpus": 4,
+    "training_margin_fraction": 0.15,
+    "pose_screening_train_plus_val_gpu_hours_per_model": 0.5,
+    "endpoint_teacher_pose_plus_p1_p2_gpu_hours_per_model": 1.1955555555555555,
+    "endpoint_reference_mixes_historical_student_pose_and_teacher_classification": true,
+    "preflight_gpu_hours": 1.0,
+    "preflight_is_not_measured_or_authorized": true,
+    "scope": "P1/P2 completi soltanto all endpoint. La riga 19618 include i primi 5000 passi, con continuazione coerente dello schedule. La stima base non include una seconda estrazione student della val oltre alla posa teacher.",
+    "not_included_or_not_measured": [
+      "variazione del throughput dei nuovi frontend",
+      "margine aggiuntivo specifico delle estrazioni",
+      "arrotondamento dei tetti di walltime dei singoli job",
+      "eventuali ulteriori collaudi",
+      "retry non previsti",
+      "conferme con nuovi semi"
+    ],
+    "queue_note": "L attesa prima dell allocazione non consuma GPUh; non giustifica un margine di GPUh per le code. Un margine non autorizza automaticamente ripartenze o retry."
+  },
+  "illustrative_scenarios": {
+    "2_fresh_arms_to_19618": {
+      "fresh_arms": 2,
+      "training_steps_per_arm": 19618,
+      "screening_checkpoint_step": 5000,
+      "training_includes_screening_steps": true,
+      "expected_training_gpu_hours": 33.25468977777778,
+      "training_with_15_percent_margin_gpu_hours": 38.24289324444444,
+      "screening_pose_gpu_hours_assumed": 1.0,
+      "endpoint_pose_and_p1_p2_gpu_hours_estimated": 2.391111111111111,
+      "preflight_gpu_hours_assumed": 1.0,
+      "total_gpu_hours_estimated": 42.63400435555555,
+      "remaining_gpu_hours_after_scenario": 20.65849564444445,
+      "student_val_forward_additional_to_teacher_pose_included": false,
+      "status": "illustrative_not_an_allocation_request"
+    },
+    "3_fresh_arms_to_19618": {
+      "fresh_arms": 3,
+      "training_steps_per_arm": 19618,
+      "screening_checkpoint_step": 5000,
+      "training_includes_screening_steps": true,
+      "expected_training_gpu_hours": 49.88203466666667,
+      "training_with_15_percent_margin_gpu_hours": 57.36433986666667,
+      "screening_pose_gpu_hours_assumed": 1.5,
+      "endpoint_pose_and_p1_p2_gpu_hours_estimated": 3.5866666666666664,
+      "preflight_gpu_hours_assumed": 1.0,
+      "total_gpu_hours_estimated": 63.451006533333334,
+      "remaining_gpu_hours_after_scenario": -0.15850653333333753,
+      "student_val_forward_additional_to_teacher_pose_included": false,
+      "status": "illustrative_not_an_allocation_request"
+    },
+    "two_full_arms_plus_t25_replica_5000": {
+      "fresh_full_arms": 2,
+      "replica_arms_at_5000": 1,
+      "expected_training_gpu_hours": 37.49246755555556,
+      "training_with_15_percent_margin_gpu_hours": 43.11633768888888,
+      "three_screening_pose_extractions_gpu_hours_assumed": 1.5,
+      "two_endpoint_pose_and_p1_p2_gpu_hours_estimated": 2.391111111111111,
+      "historical_B5000_and_B19618_teacher_pose_extractions_gpu_hours_assumed": 1.0,
+      "historical_teacher_pose_cost_assumption": {
+        "checkpoints": 2,
+        "gpu_hours_per_checkpoint": 0.5
+      },
+      "preflight_gpu_hours_assumed": 1.0,
+      "total_gpu_hours_estimated": 49.00744879999999,
+      "remaining_gpu_hours_after_scenario": 14.285051200000005,
+      "status": "illustrative_alternative_design_not_automatically_authorized"
+    }
+  },
+  "optional_additional_student_val_passes": {
+    "condition": "Soltanto se, oltre al teacher per la ridge, si richiede anche la testa student su tutta la val per tre bracci a entrambi gli endpoint.",
+    "arms": 3,
+    "endpoints": 2,
+    "extra_forward_passes": 6,
+    "historical_gpu_hours_per_val_pass": 0.43527777777777776,
+    "additional_gpu_hours_estimated": 2.6116666666666664,
+    "three_arm_total_including_these_passes_gpu_hours_estimated": 66.0626732,
+    "remaining_gpu_hours_after_this_extended_scenario": -2.770173200000004,
+    "notes": "Circa 66 GPUh diventano plausibili con questo perimetro piu ampio, per ragioni diverse dal conto per modello della review. Non e un costo gia impegnato ne un nuovo requisito."
+  },
+  "conclusion": "Richiedere un preventivo misurato e completo prima della fase lunga. L impossibilita dei tre bracci non e dimostrata dall aritmetica di Claude; il margine e pero stretto. Due bracci completi con replica breve hanno piu margine solo come scenario scientifico distinto, non come risparmio garantito o autorizzazione implicita.",
+  "actions": {
+    "only_file_written": "results/infra/tokenizer_review_20261103/budget_reconciliation.json",
+    "previous_audit_modified": false,
+    "remote_calls": 0,
+    "new_jobs": 0,
+    "new_reservations": 0,
+    "new_budget_approval": false
+  },
+  "sources": {
+    "b19618_accounting": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/b19618_20261029/final/accounting_summary.json",
+      "sha256": "1b7537823595ab4f66325225bbba409eb00f7eec4fcc6044fdbdf73b279db283"
+    },
+    "b5000_training_accounting": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/collaudo_b_20261028/accounting.json",
+      "sha256": "cef5a7d8e513c36050eb4de4fcad214df2cb163d0736e92c7aa49378eb7d29fb"
+    },
+    "b5000_pose_val_accounting": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/b_e1e2_20261028/final/accounting.json",
+      "sha256": "66ab61f3a4716b05a1a4a625893b1289db1c2240efe62d75486c8d7845ca9a57"
+    },
+    "b5000_pose_train_accounting": {
+      "kind": "local_file",
+      "path": "results/infra/pilot_posa/b_e3_20261028/final/accounting.json",
+      "sha256": "e679b97c196691eff1c604f55197a2e65daca906f8884f1845cc4902c4f22bc5"
+    },
+    "previous_budget_audit_unchanged": {
+      "kind": "local_file",
+      "path": "results/infra/frontend_window100_20261102/budget_audit.json",
+      "sha256": "89022748d156ea7a60a0d6aea8a1cad4291ed20efb4de3856e2f179a4c547d99"
+    },
+    "extraction_wrapper": {
+      "kind": "local_file",
+      "path": "scripts/pose_b19618_eval_guard.py",
+      "sha256": "16b44fd39432ae7a605e098a8eabe972959a175c081b68ef1ba452f46bef3e64"
+    },
+    "claude_review": {
+      "kind": "git_blob",
+      "commit": "a59079a44b482b85c9ffa26efb2b4851ac6e68a6",
+      "path": "docs/reviews/claude_review_tokenizer_20261102.md",
+      "sha256": "a0ca657e5d37a08faa4fd74e487c2291ec4926850c3ce4a7eb3bd48858950721"
+    },
+    "tokenizer_protocol_at_review": {
+      "kind": "local_file",
+      "path": "docs/tokenizer_window_nonlinear_protocol_20261102.md",
+      "sha256": "0d3ceae970b8c8be7e9fbaf5e9da88340cdc7acbdb1914dc95f3f3ae77b77a74"
+    }
+  }
+}

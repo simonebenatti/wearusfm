@@ -1,0 +1,976 @@
+{
+  "protocol": "existing-pool-pipelines-paired-subject-20261102-v1",
+  "descriptive_only": true,
+  "comparison": "Existing pool768 and PSD3 pool128 pipelines; NOT a causal PCA-only ablation.",
+  "n_boot": 2000,
+  "seed": 20261102,
+  "datasets": {
+    "ninapro_db2": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.1811577348748858,
+          "ci95": [
+            0.16054589945856004,
+            0.20228452899318952
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.17365819903189106,
+          "ci95": [
+            0.15467928670369896,
+            0.19389759669161125
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.18807368892893647,
+          "ci95": [
+            0.16651015355249096,
+            0.20997018244181687
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.18272945526337453,
+          "ci95": [
+            0.1625571785403808,
+            0.20384381705247878
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -0.7499535842994731,
+          "ci95_pp": [
+            -1.088107167389876,
+            -0.42474491395475766
+          ],
+          "paired_subject_se_pp": 0.17243780830969438,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -0.5344233665561943,
+          "ci95_pp": [
+            -0.9872796718356264,
+            -0.10969531414445541
+          ],
+          "paired_subject_se_pp": 0.222198386379344,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -0.6915954054050683,
+          "ci95_pp": [
+            -1.411153351432627,
+            -0.03908421013486133
+          ],
+          "paired_subject_se_pp": 0.34775646425279394,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -0.9071256231483471,
+          "ci95_pp": [
+            -1.5453277149674458,
+            -0.28834225895472226
+          ],
+          "paired_subject_se_pp": 0.32050813394220945,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": -0.21553021774327885,
+          "ci95_pp": [
+            -0.6580427918824471,
+            0.293195553867425
+          ],
+          "paired_subject_se_pp": 0.24296267121965961,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "n_rows": 38544,
+      "n_subjects": 32,
+      "n_classes": 49,
+      "paired_rows_targets_subjects_folds_sha256": "289a5e56f8b3ddc3e7d147209137467c83f1106fa91f476fbdf7bb47cea69b30",
+      "bootstrap_draws_with_missing_classes": 0,
+      "bootstrap_single_class_draws": 0,
+      "per_subject_class_counts_sha256": "ea7019213ec2de1623ee52f3c6866e3fe475d989231f4f7620d2a251124e2533"
+    },
+    "ninapro_db3": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.026994356207674562,
+          "ci95": [
+            0.0208406114394344,
+            0.03630720358531875
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.026933482247589367,
+          "ci95": [
+            0.017991176982637903,
+            0.03776902692759698
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.027647143550483734,
+          "ci95": [
+            0.02136055921109284,
+            0.035230484901583474
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.0242816164539724,
+          "ci95": [
+            0.019837816010368613,
+            0.030512194428014675
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -0.006087396008519486,
+          "ci95_pp": [
+            -0.558510125242593,
+            0.6263423408323366
+          ],
+          "paired_subject_se_pp": 0.3039076528094354,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -0.3365527096511334,
+          "ci95_pp": [
+            -0.7892137014756349,
+            0.16541922200900666
+          ],
+          "paired_subject_se_pp": 0.24301543247572896,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -0.06527873428091718,
+          "ci95_pp": [
+            -0.9972362549215913,
+            1.1658554209496454
+          ],
+          "paired_subject_se_pp": 0.5618577468561118,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": 0.2651865793616967,
+          "ci95_pp": [
+            -0.8977191612062853,
+            1.536579758790067
+          ],
+          "paired_subject_se_pp": 0.6362744304859299,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": 0.3304653136426139,
+          "ci95_pp": [
+            -0.41274652784586385,
+            1.082841486112537
+          ],
+          "paired_subject_se_pp": 0.38258289062422235,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "n_rows": 9834,
+      "n_subjects": 8,
+      "n_classes": 49,
+      "paired_rows_targets_subjects_folds_sha256": "a1fec218f5e086b48522f2c3700d154f34feb00bb0b14885e6bed2f6db9f6279",
+      "bootstrap_draws_with_missing_classes": 0,
+      "bootstrap_single_class_draws": 0,
+      "per_subject_class_counts_sha256": "bf0f13f682cf580bf822ee3bea9d6016f0129d7d4a4c326913b07a7237bd3a5d"
+    },
+    "ninapro_db6": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.33952997795747214,
+          "ci95": [
+            0.3085858221430201,
+            0.3689831976020163
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.3373216629273004,
+          "ci95": [
+            0.3061312800036314,
+            0.36681697062846064
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.346809607957121,
+          "ci95": [
+            0.3248516878151866,
+            0.3667841935386096
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.3438073715589508,
+          "ci95": [
+            0.31720346545899347,
+            0.37162250472460284
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -0.22083150301717147,
+          "ci95_pp": [
+            -0.5492604343768619,
+            0.0721598336285878
+          ],
+          "paired_subject_se_pp": 0.16142127384403535,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -0.30022363981702105,
+          "ci95_pp": [
+            -1.7139919470694598,
+            1.2462506210644209
+          ],
+          "paired_subject_se_pp": 0.7502101556678462,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -0.7279629999648873,
+          "ci95_pp": [
+            -2.607670814563459,
+            0.9446901982716378
+          ],
+          "paired_subject_se_pp": 0.9059092629103055,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -0.6485708631650378,
+          "ci95_pp": [
+            -1.9769459497492783,
+            0.5559109954669506
+          ],
+          "paired_subject_se_pp": 0.6445676847808121,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": 0.07939213679984958,
+          "ci95_pp": [
+            -1.650549242601132,
+            1.6303111269548567
+          ],
+          "paired_subject_se_pp": 0.827733498479697,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "n_rows": 33961,
+      "n_subjects": 8,
+      "n_classes": 7,
+      "paired_rows_targets_subjects_folds_sha256": "7c1a817bbdfaeede067d37084c1e692ade8ea66cd70dbee9dac184d4d7bda111",
+      "bootstrap_draws_with_missing_classes": 0,
+      "bootstrap_single_class_draws": 0,
+      "per_subject_class_counts_sha256": "f272594faa82a6b4da310ffe6499cf494bf7faeda724d808f3446f3a2f6e0091"
+    },
+    "epn612": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.8183651804670914,
+          "ci95": [
+            0.805901804670913,
+            0.8308736730360933
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.7635668789808917,
+          "ci95": [
+            0.7503789808917197,
+            0.7765398089171973
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.8429511677282377,
+          "ci95": [
+            0.8301889596602972,
+            0.8557553078556263
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.8035031847133758,
+          "ci95": [
+            0.7903391719745222,
+            0.816328025477707
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -5.4798301486199685,
+          "ci95_pp": [
+            -6.093471337579627,
+            -4.885297239915086
+          ],
+          "paired_subject_se_pp": 0.30589805408844084,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -3.9447983014861965,
+          "ci95_pp": [
+            -4.42043524416136,
+            -3.469214437367318
+          ],
+          "paired_subject_se_pp": 0.2465554169004115,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -2.458598726114636,
+          "ci95_pp": [
+            -3.0255838641189112,
+            -1.857749469214442
+          ],
+          "paired_subject_se_pp": 0.30106261542905255,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -3.993630573248408,
+          "ci95_pp": [
+            -4.698513800424631,
+            -3.2907643312101804
+          ],
+          "paired_subject_se_pp": 0.36821707901475853,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": -1.535031847133772,
+          "ci95_pp": [
+            -2.2611995753715655,
+            -0.8703821656050845
+          ],
+          "paired_subject_se_pp": 0.35850488211357623,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "n_rows": 47100,
+      "n_subjects": 314,
+      "n_classes": 6,
+      "paired_rows_targets_subjects_folds_sha256": "dbaa48bef002ceefc8a2cba6b2319b715179f75a0d5b96d6d129d21f7394bdcc",
+      "bootstrap_draws_with_missing_classes": 0,
+      "bootstrap_single_class_draws": 0,
+      "per_subject_class_counts_sha256": "210090287c4f4e2364d8aaf1edcff30ed7d4b0c9c4b65d7a1609e2e01e02870f"
+    },
+    "uci_emg": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.7738932930722147,
+          "ci95": [
+            0.6935468616043516,
+            0.8415152294041303
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.7715123406912623,
+          "ci95": [
+            0.6932727885745551,
+            0.8396428580248505
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.7727524200563417,
+          "ci95": [
+            0.681782625853968,
+            0.8478437579681672
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.7782197921903804,
+          "ci95": [
+            0.6910717943109956,
+            0.8505684419414931
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -0.23809523809523725,
+          "ci95_pp": [
+            -0.6493506493506551,
+            0.0
+          ],
+          "paired_subject_se_pp": 0.2093596039388452,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": 0.5467372134038695,
+          "ci95_pp": [
+            0.0,
+            1.4090611317049802
+          ],
+          "paired_subject_se_pp": 0.3763648722581804,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": 0.11408730158729563,
+          "ci95_pp": [
+            -3.490990594006449,
+            3.6267786823650026
+          ],
+          "paired_subject_se_pp": 1.8180353423449596,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -0.6707451499118111,
+          "ci95_pp": [
+            -3.995588413072389,
+            2.3354287553752746
+          ],
+          "paired_subject_se_pp": 1.5765137121557535,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": -0.7848324514991067,
+          "ci95_pp": [
+            -1.6239322256641375,
+            0.0
+          ],
+          "paired_subject_se_pp": 0.39776060498032406,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "n_rows": 364,
+      "n_subjects": 19,
+      "n_classes": 6,
+      "paired_rows_targets_subjects_folds_sha256": "a09dd706785eecda82185cf3d81399c1da748c6c34443c2f66c128c77aebf7c5",
+      "bootstrap_draws_with_missing_classes": 0,
+      "bootstrap_single_class_draws": 0,
+      "per_subject_class_counts_sha256": "a531560cfa00b9a253e0937d0219bfaa604a1f6b2e376034a22526c7bde732c7"
+    }
+  },
+  "tasks": {
+    "p1": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.16994653104131188,
+          "ci95": [
+            0.1561558805387721,
+            0.18425673089170588
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.1649776434501921,
+          "ci95": [
+            0.1519447919779378,
+            0.17874927392807574
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.17547308907670656,
+          "ci95": [
+            0.1618425530894009,
+            0.18963811421035562
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.17094578727590884,
+          "ci95": [
+            0.15753082788497627,
+            0.18489378046844912
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -0.49688875911197694,
+          "ci95_pp": [
+            -0.7486816535010837,
+            -0.25305472687462577
+          ],
+          "paired_subject_se_pp": 0.12879409927269958,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -0.4527301800797717,
+          "ci95_pp": [
+            -0.8182131876158413,
+            -0.07821340468224065
+          ],
+          "paired_subject_se_pp": 0.18842115242465132,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -0.5526558035394674,
+          "ci95_pp": [
+            -1.105002993314948,
+            -0.02270687433129431
+          ],
+          "paired_subject_se_pp": 0.2824724668620534,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -0.5968143825716726,
+          "ci95_pp": [
+            -1.1378785493588726,
+            -0.08801198159705087
+          ],
+          "paired_subject_se_pp": 0.26349300616667515,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": -0.044158579032205214,
+          "ci95_pp": [
+            -0.4742632057265125,
+            0.36507153787226804
+          ],
+          "paired_subject_se_pp": 0.21616313607613324,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "weights": {
+        "ninapro_db2": 0.6153846153846154,
+        "ninapro_db3": 0.23076923076923078,
+        "ninapro_db6": 0.15384615384615385
+      }
+    },
+    "p2": {
+      "cells": {
+        "B/pool768": {
+          "bacc": 0.7961292367696531,
+          "ci95": [
+            0.7560113120345753,
+            0.8302969583804307
+          ]
+        },
+        "B/pool128": {
+          "bacc": 0.7675396098360769,
+          "ci95": [
+            0.7278550710335081,
+            0.8027118082280941
+          ]
+        },
+        "R3c/pool768": {
+          "bacc": 0.8078517938922898,
+          "ci95": [
+            0.7623080744897711,
+            0.846689637283138
+          ]
+        },
+        "R3c/pool128": {
+          "bacc": 0.7908614884518781,
+          "ci95": [
+            0.746942390232286,
+            0.8281622859927238
+          ]
+        }
+      },
+      "contrasts": {
+        "pool128_minus_pool768/B": {
+          "delta_pp": -2.858962693357614,
+          "ci95_pp": [
+            -3.2091189705336096,
+            -2.512712314225051
+          ],
+          "paired_subject_se_pp": 0.1836957266770549,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "pool128_minus_pool768/R3c": {
+          "delta_pp": -1.699030544041169,
+          "ci95_pp": [
+            -2.084988246891116,
+            -1.1958274263116555
+          ],
+          "paired_subject_se_pp": 0.22703567064361435,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 1.0
+          }
+        },
+        "B_minus_R3c/pool768": {
+          "delta_pp": -1.17225571226367,
+          "ci95_pp": [
+            -3.0542756551612302,
+            0.6132772916839466
+          ],
+          "paired_subject_se_pp": 0.9256363644088049,
+          "coefficients": {
+            "B/pool768": 1.0,
+            "B/pool128": 0.0,
+            "R3c/pool768": -1.0,
+            "R3c/pool128": 0.0
+          }
+        },
+        "B_minus_R3c/pool128": {
+          "delta_pp": -2.332187861580115,
+          "ci95_pp": [
+            -4.043199620626887,
+            -0.812464785615242
+          ],
+          "paired_subject_se_pp": 0.8109366115103109,
+          "coefficients": {
+            "B/pool768": 0.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 0.0,
+            "R3c/pool128": -1.0
+          }
+        },
+        "difference_of_B_minus_R3c": {
+          "delta_pp": -1.159932149316445,
+          "ci95_pp": [
+            -1.740040413353912,
+            -0.6598883691613566
+          ],
+          "paired_subject_se_pp": 0.2728864926906196,
+          "coefficients": {
+            "B/pool768": -1.0,
+            "B/pool128": 1.0,
+            "R3c/pool768": 1.0,
+            "R3c/pool128": -1.0
+          }
+        }
+      },
+      "weights": {
+        "epn612": 0.5,
+        "uci_emg": 0.5
+      }
+    }
+  },
+  "bootstrap": "Resample subjects within each dataset; one shared draw for all pipelines and encoders; independent draws across datasets. Pooled macro recall, fixed P1/P2 weights. Keep all draws, including those missing classes, with the same present-class support for every cell.",
+  "uncertainty": "Conditional on one fixed checkpoint per encoder, fitted readers and folds; no refits or pretraining-seed uncertainty. Descriptive percentile intervals, no multiplicity adjustment and no adoption gate.",
+  "units": {
+    "bacc": "fraction",
+    "ci95": "fraction",
+    "contrasts": "percentage points"
+  },
+  "provenance": {
+    "manifest": {
+      "path": "results/infra/piano_scientifico_20261102/comparison.json",
+      "sha256": "4f38571cfcd5096a9afe3cf60616421d9c6f2659aff42fab5c792913e93340b2",
+      "bytes": 22473
+    },
+    "git_inputs": [
+      {
+        "path": "results/infra/psd3_20261029/report_completo.json",
+        "sha256": "24a51342a3a0b96f0b1cac2497a59afdc94c525f79a3c4812ff6a6bc1bb43eac",
+        "bytes": 789525,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/B_p1_pool.json",
+        "sha256": "9156ee3de6365dd26dfb777d68c259f916c4686c15c137828359bdb636064d52",
+        "bytes": 36701,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/B_p1_pool.json.audit.jsonl",
+        "sha256": "31536973adcd9972ed63dd2c93fb586cb356830dcd6fd993d39749d1f6434268",
+        "bytes": 158417,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/B_p2_pool.json",
+        "sha256": "0e4fb91451391b4677d8035d5d1fde92785ccdc369f4d935b60da56ce573fb48",
+        "bytes": 67218,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/B_p2_pool.json.audit.jsonl",
+        "sha256": "8f52c940a1752494456f6a6b4b5106048f3f0bdfe03ccc64b7a362593285e498",
+        "bytes": 89921,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/R3c_p1_pool.json",
+        "sha256": "17f2fad1936f062de258bd989488cdb4cb576c196530ff8158151a81df0dfa90",
+        "bytes": 36720,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/R3c_p1_pool.json.audit.jsonl",
+        "sha256": "213018dfd434800b4f9914f7bc61301991a126128c95143dcb1bd0d01d92ffb4",
+        "bytes": 158574,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/R3c_p2_pool.json",
+        "sha256": "618bcf5a8b87b37fcef251fc6ad8c7b54063fa6b9028a55d648d85765f0821d6",
+        "bytes": 67262,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      },
+      {
+        "path": "results/infra/pilot_posa/sonde_convergenza_20261029/B/R3c_p2_pool.json.audit.jsonl",
+        "sha256": "8211cbfe539a2e83f1e7ee77be4898c55e3351a06211979133e1dc61261ec34c",
+        "bytes": 90059,
+        "ref": "f69741dad4f644350aa1230c41df8ca7fc262208"
+      }
+    ],
+    "shards": [
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/B_ninapro_db2_pool.json",
+        "sha256": "3b2a2d82a7b68c614a014c04209035fb844e368f978277aa728ef8b77e4ec3b5",
+        "bytes": 3088278
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/B_ninapro_db3_pool.json",
+        "sha256": "5cc015a7432576884490b80486a5c57b4751651f96c7e1150e68c9348dd6cd44",
+        "bytes": 1214074
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/B_ninapro_db6_pool.json",
+        "sha256": "801e91a5864e4c0eabae2d2964ee4d0eb421446a575dae8e442d12f06ea0c98a",
+        "bytes": 2635711
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/B_epn612_pool.json",
+        "sha256": "f0f26f4c94035135e253827942888a79847a05b8f93f75f988fa7197c47de7c3",
+        "bytes": 5502301
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/B_uci_emg_pool.json",
+        "sha256": "96f23fe5966c004f0528aaf06e13d4593dfafcf4d73aed64331347dbdf6948c6",
+        "bytes": 528551
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/R3c_ninapro_db2_pool.json",
+        "sha256": "4440f9dcadc0599ce078f93f330d8fef96c528494d24790a042dcdfcda70ce28",
+        "bytes": 3088922
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/R3c_ninapro_db3_pool.json",
+        "sha256": "f8a2ed7f68fcc87c77eceaf7666eb9de28614710b43c03a2e035a71fc71143f2",
+        "bytes": 1212414
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/R3c_ninapro_db6_pool.json",
+        "sha256": "41be1fcedd1d34b9db0a94dff2ee739152e5bd12adcfd7e88de00e60fb32a815",
+        "bytes": 2636465
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/R3c_epn612_pool.json",
+        "sha256": "77dfc0cc2f4100cc83a640d8752639a7b26e7b0e0a3c193a7a1a67e11ab9752a",
+        "bytes": 5502900
+      },
+      {
+        "path": "/Users/simonebenatti/wearusfm_local/psd3_20261029/shards/R3c_uci_emg_pool.json",
+        "sha256": "81a1630470a198df1dc6ba6584af5410c8ad1e30ac6e88c0dd7a2fda1ff329c0",
+        "bytes": 528578
+      }
+    ],
+    "oof": [
+      {
+        "path": "/private/tmp/wearusfm-pca-inputs-20261102/B_p1_pool.oof.npz",
+        "sha256": "2f0419a02ab66e89e9c793f971d011cf6f1a738980441f4f4139fe853ed00a37",
+        "bytes": 3627236,
+        "model": "B",
+        "task": "p1",
+        "original_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/B/B_p1_pool.oof.npz"
+      },
+      {
+        "path": "/private/tmp/wearusfm-pca-inputs-20261102/B_p2_pool.oof.npz",
+        "sha256": "039d536311ff5da6ae090f2cc2997b17eb617cf09314eadad0e7b80eb554dfa1",
+        "bytes": 7930208,
+        "model": "B",
+        "task": "p2",
+        "original_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/B/B_p2_pool.oof.npz"
+      },
+      {
+        "path": "/private/tmp/wearusfm-pca-inputs-20261102/R3c_p1_pool.oof.npz",
+        "sha256": "6f0023aafdd1fa6601a3574702b68c7baf7bfa30cdbb1ab54a808603ad5507b2",
+        "bytes": 3627236,
+        "model": "R3c",
+        "task": "p1",
+        "original_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/B/R3c_p1_pool.oof.npz"
+      },
+      {
+        "path": "/private/tmp/wearusfm-pca-inputs-20261102/R3c_p2_pool.oof.npz",
+        "sha256": "6fe4f680adfb3895f81d9d25feb0666fc67320dd3bf039a8b51cf35419e76c1e",
+        "bytes": 7930208,
+        "model": "R3c",
+        "task": "p2",
+        "original_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/B/R3c_p2_pool.oof.npz"
+      }
+    ],
+    "psd3_recipe_sha256": "c7b47289f66792b5a061c524d5b33d7ece44b5fdcb96bee32d7c8bc8cb79c68a",
+    "checkpoints": {
+      "B": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+      "R3c": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29"
+    },
+    "label_mapping": "PSD3 stored predictions are already mapped back to native classes. Decode UTF-8 bytes; preserve numeric labels; never infer integer-to-string mappings.",
+    "existing_pipeline_differences": [
+      {
+        "component": "feature representation",
+        "original": "768 colonne standardizzate senza PCA",
+        "psd3": "PCA randomized train-only a 128 componenti; whiten=False, seed 20261029, iterated_power 7, oversamples 10"
+      },
+      {
+        "component": "numeric preprocessing",
+        "original": "Input/uscita dello scaler float32",
+        "psd3": "Input/scaler/PCA float64, coordinate finali float32"
+      },
+      {
+        "component": "thread limits",
+        "original": 8,
+        "psd3": 4
+      },
+      {
+        "component": "implementation",
+        "original_analysis_sha": "f6c89cc1cfb07734345b3adde8bec68b69594fb5",
+        "psd3_code_sha": "2235c15106a61066c035da95648971219e34dce7",
+        "note": "PSD3 ricodifica le etichette in interi ordinati e le riconverte; stesso problema di classificazione."
+      }
+    ]
+  },
+  "runtime": {
+    "python": "3.11.14",
+    "numpy": "2.3.5",
+    "script_sha256": "c6c57e57638b304f81cc3a170e4c24334fa018a2baffba7283746d5992c50f67"
+  },
+  "archive_note": "Compact scientific report: per-subject class-count arrays omitted; all point estimates, intervals, support counts and provenance retained. No prediction or wearable feature arrays committed.",
+  "full_report_sha256": "4f72b363b97ca223f3d8492deca5fc09487899b300ce7e15777d4c7bf2e1a956",
+  "analysis_code_commit": "440af702ac3ec00feb52549acb1b4935251dce38"
+}

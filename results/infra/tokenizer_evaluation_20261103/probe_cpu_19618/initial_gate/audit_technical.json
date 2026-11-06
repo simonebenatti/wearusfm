@@ -1,0 +1,95 @@
+{
+  "audit_summary": {
+    "fits": 28,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "identities": [
+    {
+      "arm": "T25-L",
+      "dataset": "ninapro_db3",
+      "code_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+      "plan_sha256": "dac83e0d3206da9f0c9c9cd3290cc1e7430fa40d496ba73bb01915cc0b573010",
+      "checkpoint_sha256": "bf87d87c4ba68412652b5f049c2e22ffb85782cf4b2a9291440610994a9506db",
+      "cache_sha256": "f5c3cb4be5db55e971092eaeb6d10f8aee8b68c033a794fdd487539837b518f0",
+      "n_features": 768,
+      "dtype": "float32",
+      "max_iter": 12000
+    }
+  ],
+  "groups": [
+    {
+      "dataset": "ninapro_db3",
+      "fold": 0,
+      "fit_count": 7,
+      "candidate_C": [
+        0.001,
+        0.01,
+        0.1,
+        1,
+        10,
+        100
+      ],
+      "refit_count": 1,
+      "roles_sha256": [
+        "458a4ad67431fde6506de6486ba02ae6b6c1d5440db3f14fbc7e5a5a32b960d7"
+      ]
+    },
+    {
+      "dataset": "ninapro_db3",
+      "fold": 1,
+      "fit_count": 7,
+      "candidate_C": [
+        0.001,
+        0.01,
+        0.1,
+        1,
+        10,
+        100
+      ],
+      "refit_count": 1,
+      "roles_sha256": [
+        "95599c9d2b024790c8430d5672364f8ef929e84f8806f07d5e4af4f4e781924c"
+      ]
+    },
+    {
+      "dataset": "ninapro_db3",
+      "fold": 2,
+      "fit_count": 7,
+      "candidate_C": [
+        0.001,
+        0.01,
+        0.1,
+        1,
+        10,
+        100
+      ],
+      "refit_count": 1,
+      "roles_sha256": [
+        "2dbad213746494e2df5912c745d4b11af6f38c744a9c74f9974737a994386e98"
+      ]
+    },
+    {
+      "dataset": "ninapro_db3",
+      "fold": 3,
+      "fit_count": 7,
+      "candidate_C": [
+        0.001,
+        0.01,
+        0.1,
+        1,
+        10,
+        100
+      ],
+      "refit_count": 1,
+      "roles_sha256": [
+        "2bfc5e5c3c41292cd1750dd46bd2e3cfa04984f642869fc4b48a76548e31a934"
+      ]
+    }
+  ],
+  "exceptions": 0,
+  "max_n_iter": 1453,
+  "elapsed_fit_seconds": 582.2921853065491
+}

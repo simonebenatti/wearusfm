@@ -1,0 +1,191 @@
+[
+  {
+    "stage": "checkout",
+    "id": "POSE-TEMP-checkout-20261102",
+    "creato": "2026-11-02T10:42:46+01:00",
+    "agente": "gpt",
+    "campagna": "pose-temporal-20261102",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": null,
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=POSE-TEMP-checkout-20261102",
+      "--comment=wearusfm:POSE-TEMP-checkout-20261102",
+      "--export=ALL,CAMPAIGN=pose-temporal-20261102,CAMPAIGN_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+      "--cpus-per-task=1",
+      "--mem=2G",
+      "--time=00:10:00"
+    ],
+    "dopo": null,
+    "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+    "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-11-02T10:42:46+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-11-02T10:42:46+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-11-02T10:42:50+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 63219091,
+        "uscita": 0,
+        "stdout": "63219091\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 63219091,
+    "uscita": 0,
+    "stdout": "63219091\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  },
+  {
+    "stage": "validate",
+    "id": "POSE-TEMP-validate-20261102",
+    "creato": "2026-11-02T12:13:29+01:00",
+    "agente": "gpt",
+    "campagna": "pose-temporal-20261102",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "440af702ac3ec00feb52549acb1b4935251dce38",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=POSE-TEMP-validate-20261102",
+      "--comment=wearusfm:POSE-TEMP-validate-20261102",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+      "--cpus-per-task=2",
+      "--mem=4G",
+      "--time=00:10:00",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+      "validate",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/validate.json"
+    ],
+    "dopo": null,
+    "script_stdin": null,
+    "script_stdin_sha256": null,
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-11-02T12:13:29+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-11-02T12:13:29+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-11-02T12:13:32+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 63227865,
+        "uscita": 0,
+        "stdout": "63227865\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 63227865,
+    "uscita": 0,
+    "stdout": "63227865\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  },
+  {
+    "stage": "benchmark",
+    "id": "POSE-TEMP-benchmark-20261102",
+    "creato": "2026-11-02T12:19:59+01:00",
+    "agente": "gpt",
+    "campagna": "pose-temporal-20261102",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "440af702ac3ec00feb52549acb1b4935251dce38",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=POSE-TEMP-benchmark-20261102",
+      "--comment=wearusfm:POSE-TEMP-benchmark-20261102",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+      "--cpus-per-task=8",
+      "--mem=30G",
+      "--time=00:30:00",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+      "benchmark",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/benchmark.json"
+    ],
+    "dopo": null,
+    "script_stdin": null,
+    "script_stdin_sha256": null,
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-11-02T12:19:59+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-11-02T12:19:59+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-11-02T12:20:00+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 63228323,
+        "uscita": 0,
+        "stdout": "63228323\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 63228323,
+    "uscita": 0,
+    "stdout": "63228323\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  },
+  {
+    "stage": "run",
+    "id": "POSE-TEMP-run-20261102",
+    "creato": "2026-11-02T12:23:59+01:00",
+    "agente": "gpt",
+    "campagna": "pose-temporal-20261102",
+    "gpu_ore_stimate": 0.0,
+    "codice_sha": "440af702ac3ec00feb52549acb1b4935251dce38",
+    "sbatch": [
+      "sbatch",
+      "--parsable",
+      "--job-name=POSE-TEMP-run-20261102",
+      "--comment=wearusfm:POSE-TEMP-run-20261102",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102,EXPECTED_SHA=440af702ac3ec00feb52549acb1b4935251dce38",
+      "--cpus-per-task=8",
+      "--mem=16G",
+      "--time=00:30:00",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102/scripts/slurm/pose_temporal_readout.sbatch",
+      "run",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temporal_20261102/run.json"
+    ],
+    "dopo": null,
+    "script_stdin": null,
+    "script_stdin_sha256": null,
+    "stato": "sottomesso",
+    "storia": [
+      {
+        "quando": "2026-11-02T12:23:59+01:00",
+        "stato": "prenotato"
+      },
+      {
+        "quando": "2026-11-02T12:23:59+01:00",
+        "stato": "in_sottomissione"
+      },
+      {
+        "quando": "2026-11-02T12:24:00+01:00",
+        "stato": "sottomesso",
+        "job_slurm": 63228748,
+        "uscita": 0,
+        "stdout": "63228748\n",
+        "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+      }
+    ],
+    "job_slurm": 63228748,
+    "uscita": 0,
+    "stdout": "63228748\n",
+    "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+]

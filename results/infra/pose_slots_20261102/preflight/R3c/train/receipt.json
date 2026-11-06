@@ -1,0 +1,357 @@
+{
+  "code_sha": "c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+  "plan_sha256": "0dafa6d4a17cbe196b2508ec6cd4a31e32e6e117fd36d2c720ad96caf0145526",
+  "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+  "reference_cache_sha256": "bfc06f4fbecd0dd1566c0b56cbec163ed636d8ccce866aa7f619377a341314d2",
+  "protocol": "pose-slot-readout-20261102-v1",
+  "complete": true,
+  "model": "R3c",
+  "split": "train",
+  "which": "student",
+  "checkpoint_step": 19618,
+  "projection_record": {
+    "slot_count": 64,
+    "embedding_dim": 384,
+    "residual_slot_modes": 7,
+    "channel_dim": 48,
+    "slot_basis": "Sylvester Hadamard64; no slot permutation; row0 mean is implicit",
+    "slot_seed": 20261102,
+    "slot_rng": "numpy.Generator(PCG64)",
+    "non_dc_rows_in_order": [
+      13,
+      26,
+      3,
+      44,
+      40,
+      43,
+      51
+    ],
+    "slot_weight_scale": "each coefficient +/-1/64, same row norm as mean weights",
+    "channel_seed": 20261103,
+    "channel_rng": "numpy.Generator(PCG64)",
+    "channel_basis": "float64 Gaussian384x48 reduced QR, positive diagonal R; cast float32",
+    "slot_weights_sha256": "7e7684abbd36c6e4375e62037c2fe362080406f14f6d3e9f9160fcfb13e69674",
+    "channel_projection_sha256": "e9a4932e1b39c2a3b0a8d9cbcd3896eb9944ca98948e518d0b21fb2b27640097",
+    "residual_extraction": "FP32: center z by its slot mean, apply slot weights then shared channel projection",
+    "residual_storage": "float32 raw contrasts, shape(window,patch,336); no normalization in extraction",
+    "mean_source": "original validated float16 mean cache",
+    "normalization": "M is historical FP32 torch LayerNorm(mean_FP16); residuals divided by sqrt(var_feature(mean_FP16_FP32)+eps); no separate residual LayerNorm, PCA or scaler",
+    "normalization_eps": 1e-05,
+    "readers": [
+      "M384",
+      "M48",
+      "S384",
+      "S720"
+    ],
+    "widths": {
+      "M384": 384,
+      "M48": 48,
+      "S384": 384,
+      "S720": 720
+    },
+    "M48_control": "normalized mean projected to the same 48 channels; no residual modes",
+    "S384_order": "mean@channel_projection, residual slot modes in frozen row order",
+    "S720_order": "full normalized mean, residual slot modes in frozen row order"
+  },
+  "reference_row_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+  ],
+  "selected_original_recording_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "n_windows": 40,
+  "metadata_sha256": "18a3abe974ada2c8fcd9d9a037153d687f3e8dcd864376bd77753f111c40a3c5",
+  "mean_parity_gate": {
+    "normalized_patch_rms_max": 0.001,
+    "normalized_max_abs": 0.01,
+    "denominator_relative_max": 0.001,
+    "eps": 1e-05,
+    "support": "every real patch; never filtered by target mask"
+  },
+  "mean_parity": {
+    "n_elements": 2457600,
+    "n_unequal_fp16": 0,
+    "max_absolute_fp16_difference": 0.0,
+    "max_absolute_fp32_to_reference": 0.0009765625,
+    "max_ulp_fp16_difference": 0,
+    "raw_squared_difference_sum": 0.0,
+    "normalized_patch_rms_max": 0.0,
+    "normalized_max_abs": 0.0,
+    "denominator_relative_max": 0.0,
+    "passed": true,
+    "raw_rmse": 0.0
+  },
+  "raw_inputs_states": {
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-04-13-1649836800-9aadd-cv-emg-pose-train@2-recording-6_left/metadata.json": {
+      "state": [
+        2267999710,
+        162139461839285666,
+        17285,
+        1792071206000000000,
+        1792071206000000000
+      ],
+      "sha256": "720dc7da3ac65f7377e46fd802864fb185ccb7fc688366301f13a034e5cf8e40"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-04-13-1649836800-9aadd-cv-emg-pose-train@2-recording-6_left/data_int16.npy": {
+      "state": [
+        2267999710,
+        162139461839285665,
+        3902912,
+        1792071206000000000,
+        1792071206000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-9aadd-cv-emg-pose-train@2-recording-6_left/pose_200hz_f16.npy": {
+      "state": [
+        2267999710,
+        216180508743231283,
+        487968,
+        1793097317000000000,
+        1793097317000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-9aadd-cv-emg-pose-train@2-recording-6_left/pose_valid.npy": {
+      "state": [
+        2267999710,
+        216180508743231284,
+        12324,
+        1793097317000000000,
+        1793097317000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-9aadd-cv-emg-pose-train@2-recording-6_left/pose_meta.json": {
+      "state": [
+        2267999710,
+        216180508743231285,
+        5621,
+        1793097317000000000,
+        1793097317000000000
+      ],
+      "sha256": "b3587218c0dad8df6b803c26be4fd17bec576bb97f573b3551474bcdb9ce845b"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-04-13-1649836800-c9b78-cv-emg-pose-train@2-recording-3_right/metadata.json": {
+      "state": [
+        2267999710,
+        234195180671031294,
+        17068,
+        1792071206000000000,
+        1792071206000000000
+      ],
+      "sha256": "78e8dd1300db068b64fda4c771e1d134ec5239dee1e9a07885ce4e0213d63c28"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-04-13-1649836800-c9b78-cv-emg-pose-train@2-recording-3_right/data_int16.npy": {
+      "state": [
+        2267999710,
+        234195180671031293,
+        4117216,
+        1792071206000000000,
+        1792071206000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-c9b78-cv-emg-pose-train@2-recording-3_right/pose_200hz_f16.npy": {
+      "state": [
+        2267999710,
+        144124114494384099,
+        514728,
+        1793097330000000000,
+        1793097330000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-c9b78-cv-emg-pose-train@2-recording-3_right/pose_valid.npy": {
+      "state": [
+        2267999710,
+        144124114494384100,
+        12993,
+        1793097330000000000,
+        1793097330000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-04-13-1649836800-c9b78-cv-emg-pose-train@2-recording-3_right/pose_meta.json": {
+      "state": [
+        2267999710,
+        144124114494384101,
+        5396,
+        1793097330000000000,
+        1793097330000000000
+      ],
+      "sha256": "a382aa3e537a1880ae0087baec6b7b978c6c82b133e37f86f6da7071eb323b5b"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-05-18-1652860800-999d8-cv-emg-pose-demonstration@2-recording-4_right/metadata.json": {
+      "state": [
+        2267999710,
+        4161333240617072946,
+        17122,
+        1792071206000000000,
+        1792071206000000000
+      ],
+      "sha256": "f4092006564be659becf5f3f100cbe78931be15974174635a2e7ea30cc254973"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-05-18-1652860800-999d8-cv-emg-pose-demonstration@2-recording-4_right/data_int16.npy": {
+      "state": [
+        2267999710,
+        4161333240617072945,
+        4046560,
+        1792071206000000000,
+        1792071206000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-999d8-cv-emg-pose-demonstration@2-recording-4_right/pose_200hz_f16.npy": {
+      "state": [
+        2267999710,
+        162139590872823828,
+        505928,
+        1793097467000000000,
+        1793097467000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-999d8-cv-emg-pose-demonstration@2-recording-4_right/pose_valid.npy": {
+      "state": [
+        2267999710,
+        162139590872823829,
+        12773,
+        1793097467000000000,
+        1793097467000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-999d8-cv-emg-pose-demonstration@2-recording-4_right/pose_meta.json": {
+      "state": [
+        2267999710,
+        162139590872823830,
+        5461,
+        1793097467000000000,
+        1793097467000000000
+      ],
+      "sha256": "1631f448dc54237f8d5e3a116a39d3c3d43378d869ce4df0300a0c918a5cc196"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-05-18-1652860800-f5fe0-cv-emg-pose-demonstration@2-recording-19_left/metadata.json": {
+      "state": [
+        2267999710,
+        198169100302772201,
+        17085,
+        1792071206000000000,
+        1792071206000000000
+      ],
+      "sha256": "71e8a432f9aca72b895eda189bae9416a2d8a2c937f8accb793523ed86e376c2"
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u03d49b393e/2022-05-18-1652860800-f5fe0-cv-emg-pose-demonstration@2-recording-19_left/data_int16.npy": {
+      "state": [
+        2267999710,
+        198169100302772200,
+        5605760,
+        1792071206000000000,
+        1792071206000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-f5fe0-cv-emg-pose-demonstration@2-recording-19_left/pose_200hz_f16.npy": {
+      "state": [
+        2267999710,
+        144124114494384548,
+        700808,
+        1793097468000000000,
+        1793097468000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-f5fe0-cv-emg-pose-demonstration@2-recording-19_left/pose_valid.npy": {
+      "state": [
+        2267999710,
+        144124114494384549,
+        17645,
+        1793097468000000000,
+        1793097468000000000
+      ]
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u03d49b393e/2022-05-18-1652860800-f5fe0-cv-emg-pose-demonstration@2-recording-19_left/pose_meta.json": {
+      "state": [
+        2267999710,
+        144124114494384550,
+        5408,
+        1793097468000000000,
+        1793097468000000000
+      ],
+      "sha256": "9834f79450d18017df81de5d702be041a4be3cec7240481edb2aa59bef0a65ad"
+    }
+  },
+  "record_audit": [
+    {
+      "recording": 0,
+      "n_windows": 10,
+      "scale": 6.7867431640625
+    },
+    {
+      "recording": 1,
+      "n_windows": 10,
+      "scale": 8.869742393493652
+    },
+    {
+      "recording": 2,
+      "n_windows": 10,
+      "scale": 6.659726619720459
+    },
+    {
+      "recording": 3,
+      "n_windows": 10,
+      "scale": 2.7670159339904785
+    }
+  ],
+  "loop_seconds": 2.4408304216340184,
+  "elapsed_seconds": 3.9777508080005646,
+  "resources": {
+    "process_peak_rss_bytes": 1866231808,
+    "gpu_peak_allocated_bytes": 2253302784,
+    "gpu_peak_reserved_bytes": 3336568832,
+    "gpu_name": "NVIDIA A100-SXM-64GB"
+  },
+  "residual": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_slots_20261102/preflight/R3c/train/residual.npy",
+    "sha256": "709922eba1ebba74b0908a1a6ef17f7fbecb1d574da9d5f4710c5d4862f0eb35",
+    "bytes": 8601728,
+    "shape": [
+      40,
+      160,
+      336
+    ],
+    "dtype": "<f4"
+  }
+}

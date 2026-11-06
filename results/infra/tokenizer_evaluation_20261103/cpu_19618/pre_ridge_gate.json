@@ -1,0 +1,57 @@
+{
+  "protocol": "tokenizer-pose-cpu19618-gate-20261104-v1",
+  "gate_pass": true,
+  "plan_sha256": "7a469c694637b870280ce6fcc8f9dcac1181e6b16644bc0042d1f942dc206e49",
+  "runtime_code_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "resource_policy_sha256": "529fe828ba248bd8a571afff47cd9ec7b1aef4141af86ed98b2e2d8a5af38ec9",
+  "preceding_jobs": {
+    "validate": {
+      "job_id": 63494990,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 32,
+      "allocated_core_hours": 0.017777777777777778,
+      "report_sha256": "712867d30c5e50d51e46f77b106c9e5b9727f0449d763becb7813781edd38e0c"
+    },
+    "benchmark": {
+      "job_id": 63494999,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 20,
+      "allocated_core_hours": 0.044444444444444446,
+      "report_sha256": "068cb3ce1ab803e2defe427357fdaced834df1de834e4bc640fcb64b23443f2f"
+    }
+  },
+  "timing": {
+    "formula": "ceil_60s(1.5*(2*V+3*((1+R)*S+13*E))+120)",
+    "V": 32,
+    "S": 3.7827905286103487,
+    "E": 0.09388314187526703,
+    "R": 10,
+    "raw_required_seconds": 408.7402949659154,
+    "rounded_required_seconds": 420,
+    "walltime_ceiling_seconds": 1800
+  },
+  "verified": {
+    "original_report_sha256": true,
+    "complete_reports": true,
+    "same_source_plan_dose_recipe": true,
+    "cache_reference_pins": true,
+    "common_targets_metadata_support": true,
+    "train_val_users_disjoint": true,
+    "benchmark_only_T25_L_train": true,
+    "benchmark_threads_environment_torch_and_pools_8": true,
+    "validation_metrics_not_computed": true
+  },
+  "ridge": {
+    "logical_id": "TOKENIZER-pose19618-ridge-20261104",
+    "stage": "ridge",
+    "cpus": 8,
+    "memory": "30G",
+    "walltime_seconds": 1800,
+    "core_hours_cap": 4.0,
+    "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge",
+    "benchmark_arm": null
+  },
+  "after_submission": "No background monitoring reactivated."
+}

@@ -1,5 +1,10 @@
 # Sintesi scientifica e prossimi passi — 28/10/2026
 
+**Aggiornamento del 29/10: [B19618 conclusa e analizzata](b19618_results_20261029.md).**
+La posa migliora ancora sui 15 utenti esclusi, e diventa piu' accessibile nei latenti; P1/P2 non migliorano a pari passo.
+B resta un ramo utile per la posa, senza adozione come miglioramento generale o continuazione automatica a 49046.
+La sintesi sotto conserva lo stato del 28/10; il rapporto nuovo aggiorna esiti, budget e seguito raccomandato.
+
 **La ricetta di R3 apprende la posa e una componente dinamica anche su utenti esclusi dal training. Il beneficio e' ancora
 modesto, le predizioni temporali sono attenuate e l'utilita' come foundation model rimane da dimostrare.**
 

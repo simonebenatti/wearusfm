@@ -1,0 +1,129 @@
+{
+  "collection_complete": true,
+  "remote_timestamp": "2026-10-29T09:13:53.430150+01:00",
+  "files_collected": 60,
+  "bytes_collected": 28764519,
+  "all_remote_hashes_match": true,
+  "no_binary_data_copied": true,
+  "categories": {
+    "reports": 13,
+    "extraction_metadata": 20,
+    "training": 11,
+    "preflight": 1,
+    "logs": 15
+  },
+  "job_states": {
+    "completed_exit_zero": [
+      "62575087",
+      "62582916",
+      "62583147",
+      "62583148",
+      "62583149",
+      "62583151",
+      "62583153",
+      "62583154",
+      "62583155",
+      "62583160",
+      "62583164",
+      "62618174",
+      "62618177",
+      "62618179"
+    ],
+    "failed_historical": [
+      "62583157"
+    ],
+    "cancelled_never_started": [
+      "62583163",
+      "62583165"
+    ]
+  },
+  "training_complete_step": 19618,
+  "training_source_unchanged": true,
+  "final_comparison_job": "62618179",
+  "final_completion_europe_rome": "2026-10-29T03:19:22+01:00",
+  "provenance_report_checks": [
+    {
+      "provenance": "reports/B_p1_pool.json.provenance.json",
+      "complete": true,
+      "report": "reports/B_p1_pool.json",
+      "report_hash_match": true
+    },
+    {
+      "provenance": "reports/B_p2_pool.json.provenance.json",
+      "complete": true,
+      "report": "reports/B_p2_pool.json",
+      "report_hash_match": true
+    },
+    {
+      "provenance": "reports/R3c_p1_pool.json.provenance.json",
+      "complete": true,
+      "report": "reports/R3c_p1_pool.json",
+      "report_hash_match": true
+    },
+    {
+      "provenance": "reports/R3c_p2_pool.json.provenance.json",
+      "complete": true,
+      "report": "reports/R3c_p2_pool.json",
+      "report_hash_match": true
+    },
+    {
+      "provenance": "reports/compare_p1.json.provenance.json",
+      "complete": true,
+      "report": "reports/compare_p1.json",
+      "report_hash_match": true
+    },
+    {
+      "provenance": "reports/compare_p2.json.provenance.json",
+      "complete": true,
+      "report": "reports/compare_p2.json",
+      "report_hash_match": true
+    }
+  ],
+  "accounting": {
+    "gpu_hours": 14.622777777777777,
+    "allocated_core_hours_all_jobs": 143.96722222222223,
+    "allocated_core_hours_cpu_only_jobs": 26.984999999999996,
+    "allocated_core_hours_gpu_jobs": 116.98222222222222,
+    "actual_cpu_hours": 49.068416388888885,
+    "method": "Sum parent allocation rows only, no double-count of batch/extern steps. GPUh=AllocTRES gres/gpu count times ElapsedRaw/3600; allocated coreh=CPUTimeRAW/3600. Failed jobs included, cancelled zero-time jobs preserved. TotalCPU is actual CPU usage, distinct from allocation."
+  },
+  "warning_counts": {
+    "pose_b19618_62582916.out": {
+      "torch_omp_default_warning": 1,
+      "deprecated_pytree_warning": 4
+    },
+    "pose_b19618_eval_62583149.out": {
+      "malformed_row_warning": 1
+    },
+    "pose_b19618_eval_62583154.out": {
+      "malformed_row_warning": 1
+    },
+    "pose_b19618_eval_62583155.out": {
+      "logistic_convergence_warning": 5
+    },
+    "pose_b19618_eval_62583157.out": {
+      "logistic_convergence_warning": 4,
+      "traceback": 1,
+      "type_error": 1
+    },
+    "pose_b19618_eval_62583160.out": {
+      "logistic_convergence_warning": 4
+    },
+    "pose_b19618_eval_62618177.out": {
+      "logistic_convergence_warning": 5
+    }
+  },
+  "notes": [
+    "Historical FAILED 62583157: guard TypeError after completed P2 probe, recovered by validator 62618174 without refit.",
+    "No stdout/stderr files for original jobs 62583163 and 62583165, both cancelled before execution; absence recorded in manifest.",
+    "All wrappers combine stdout and stderr in each collected .out file.",
+    "Convergence warnings preserved without changing fit recipe. Same malformed UCI row warning appears in B and R3c P2 extraction logs.",
+    "Legacy interpretation text in compare logs is preserved; no scientific interpretation was made by the operator.",
+    "Checkpoint, OOF, NPZ/NPY/cache and biosignals were neither copied nor hashed in this collection. Their paths and stored hashes can appear in provenance.",
+    "Ledger, Git, checkouts and cluster results were not modified. No jobs or monitors created."
+  ],
+  "manifest": "manifest.json",
+  "file_list_and_remote_hashes": "files.tsv",
+  "accounting_details": "accounting_summary.json",
+  "warning_details": "warnings_summary.json"
+}

@@ -1,0 +1,36 @@
+{
+  "checked_date": "2026-11-03",
+  "future_logical_ids": [
+    "TOKENIZER-train-checkout-20261103",
+    "TOKENIZER-T25-L-5000-20261103",
+    "TOKENIZER-T25-L-19618-20261103",
+    "TOKENIZER-T100-L-5000-20261103",
+    "TOKENIZER-T100-L-19618-20261103",
+    "TOKENIZER-T100-G-5000-20261103",
+    "TOKENIZER-T100-G-19618-20261103"
+  ],
+  "none_reserved": true,
+  "squeue_for_user_empty": true,
+  "observed_completed": [
+    {
+      "job": 63369832,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 34,
+      "cpus": 2,
+      "gpus": 0
+    },
+    {
+      "job": 63370721,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 199,
+      "cpus": 32,
+      "gpus": 4
+    }
+  ],
+  "remote_canonical_branch": "main",
+  "remote_receive_denyCurrentBranch": "updateInstead",
+  "new_deploy_ref_absent": true,
+  "new_checkout_and_outputs_absent": true
+}

@@ -1,0 +1,29 @@
+{
+  "model": "R3c",
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+  "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+  "checkpoint_step": 19618,
+  "config_file_sha256": "863c06f053cbea5f65b46d6fe94a999286e5c415a57e5ac37a61e6b923fc4794",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "source_sha256": "ea8efec4f96511f7631b172e7ea6de13703235a9f7b642c95b40d5af426088ee",
+  "wrapper_sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "receipt": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_preflight_20261028.json",
+  "receipt_sha256": "3a1f86c3985aebda300477afcf013ec681fe6f8afa74dc608bd3eb0bc4c5e841",
+  "mode": "pose",
+  "slurm_job_id": "62583147",
+  "complete": true,
+  "outputs": {
+    "train": {
+      "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/train_subset.npz",
+      "sha256": "bfc06f4fbecd0dd1566c0b56cbec163ed636d8ccce866aa7f619377a341314d2",
+      "provenance_sha256": "8cc10c3615497cc596b2efc0f6d57260bfb6e133ec19e540ec7d756f5cd3c46a"
+    },
+    "val": {
+      "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/val.npz",
+      "sha256": "7b57a6c174e4a5c66045279f986799178d6ac1b1fc6a86892445bcd0eab9643d",
+      "provenance_sha256": "bb5100ccbba689febd9071d447998e5a7141d0737ff1cd90196580a8e36c8b3d"
+    }
+  },
+  "checkpoint_unchanged": true
+}

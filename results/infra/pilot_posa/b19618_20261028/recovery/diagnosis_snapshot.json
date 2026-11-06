@@ -1,0 +1,125 @@
+{
+  "timestamp_europe_rome": "2026-10-28T22:34:43.887348+01:00",
+  "collection_scope": "Read only; no job/checkouts/results/ledger/Git modifications. User subsequently authorized recovery after correction.",
+  "failed_job": {
+    "id": 62583157,
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:20:31",
+    "end_europe_rome": "2026-10-28T19:20:52+01:00",
+    "exception": "TypeError: ufunc 'isfinite' not supported for the input types",
+    "location": "check_probe_report, old guard line 258; called from run_probe line 277",
+    "log_sha256": "f016415aeb47a089298eca92828b42cca7ab1b033d11ea0379ec8be1a10d85ad"
+  },
+  "cancelled_job": {
+    "id": 62583165,
+    "state": "CANCELLED",
+    "elapsed": "00:00:00",
+    "start": "None",
+    "end_europe_rome": "2026-10-28T19:20:55+01:00",
+    "log_exists": false,
+    "evidence": "DependencyParameters=kill_invalid_depend; original dependency afterok:62583155:62583157:62583160:62583163; cancellation 3 seconds after failed prerequisite. No cancelling user/process identified in sacct; AdminComment/SystemComment empty."
+  },
+  "original_wrapper_sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+  "actual_sbatch_payloads": {
+    "62583157": {
+      "sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+      "matches_original_plan": true
+    },
+    "62583165": {
+      "sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+      "matches_original_plan": true
+    }
+  },
+  "original_guard_sha256": "ea8efec4f96511f7631b172e7ea6de13703235a9f7b642c95b40d5af426088ee",
+  "frozen_code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "report_sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+  "oof_sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7",
+  "outputs": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json": {
+      "exists": true,
+      "bytes": 52886,
+      "mtime": 1793211652.0,
+      "sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+      "keys": [
+        "protocol",
+        "calibration_protocol",
+        "task",
+        "k_folds",
+        "fold_seed",
+        "val_frac",
+        "probe_seed",
+        "feature_set",
+        "window_s",
+        "splits",
+        "splits_sha256",
+        "extraction_recipe",
+        "features",
+        "code_sha",
+        "readout",
+        "datasets",
+        "checkpoint",
+        "checkpoint_sha256",
+        "model_dim",
+        "weights",
+        "S",
+        "S_se",
+        "oof",
+        "oof_sha256",
+        "elapsed_s"
+      ],
+      "metadata": {
+        "task": "p2",
+        "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.oof.npz",
+        "oof_sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+      }
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.oof.npz": {
+      "exists": true,
+      "bytes": 7549986,
+      "mtime": 1793211652.0
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json.provenance.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p1.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p2.json": {
+      "exists": false
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/extraction_receipt.json": {
+      "exists": true
+    }
+  },
+  "training": {
+    "id": 62582916,
+    "state": "RUNNING",
+    "start_europe_rome": "2026-10-28T22:18:26+01:00",
+    "node": "lrdn3319",
+    "last_step_at_223443": 6150,
+    "latest_observed_elapsed": "00:17:07"
+  },
+  "b_p2_original": {
+    "id": 62583163,
+    "state": "PENDING",
+    "reason": "Dependency",
+    "dependency": "afterok:62583154(unfulfilled)",
+    "same_defective_payload": true
+  },
+  "ledger": "Current common ledger states copied unchanged; both original logical IDs remain sottomesso, no recovery reservations created.",
+  "artifacts": [
+    "62583157_failure.log",
+    "62583157_launch_metadata.json",
+    "R3c_p2_extraction_receipt.json",
+    "original_payload.sbatch",
+    "sacct_20261028_2232.txt",
+    "scheduler_config.txt",
+    "training_tail_20261028_2234.txt"
+  ],
+  "report_sha256_evidence": "Measured remotely in successful read-only collection.",
+  "oof_sha256_evidence": "Declared by original report; independent sha256sum required before submission and repeated by validate-probe."
+}

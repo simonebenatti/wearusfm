@@ -1,0 +1,211 @@
+{
+  "protocol": "tokenizer-evaluation-20261103-v1",
+  "arm": "T25-L",
+  "which": "teacher",
+  "checkpoint_step": 5000,
+  "checkpoint_sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+  "code_sha": "f2061b8bc91a6355213793a9719121135ad48fa2",
+  "plan_sha256": "c0e5d501cd42c81d60aaa390098644ec5e3bf351f3e06031233647934dd2e985",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": null,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "identity"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "complete": true,
+  "stage": "extract-pose",
+  "checkpoint_unchanged": true,
+  "outputs": {
+    "train": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz",
+      "sha256": "0bbf46194ca2cc41555d7bb818e7b9aa441b3e76d8e8acc3c15e994c82f919e9",
+      "bytes": 257845980,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/train_subset.npz.provenance.json",
+      "provenance_sha256": "354a3e3362c965e249eb30585d804b9d5c9aee8d64fb670e3bafcd2067ae879b"
+    },
+    "val": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/val.npz",
+      "sha256": "8eddcc3d17e15bdf57176af13c9354243214303d53e1ed08c9d81c3521820c41",
+      "bytes": 2486636015,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/5000/T25-L/pose/val.npz.provenance.json",
+      "provenance_sha256": "506351b8ff5ad64d86f8654ef666fb8004e6e36e1571b70defa846cd29b58144"
+    }
+  },
+  "checkpoint_guard": {
+    "states": {
+      "checkpoint": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T25-L/checkpoint_step0005000.pt",
+        "sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+        "bytes": 454215840,
+        "inode": 4161333331918660787,
+        "mtime_ns": 1793705242000000000,
+        "ctime_ns": 1793705242000000000
+      },
+      "config": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/config.json",
+        "sha256": "8430471dd76d83541c3d799ac39c8751dda6b21387466e27c6e5f2b110b0ea80",
+        "bytes": 3596,
+        "inode": 270223026874770526,
+        "mtime_ns": 1793705249000000000,
+        "ctime_ns": 1793705249000000000
+      },
+      "receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/receipt.json",
+        "sha256": "f87b9ed7f8fc59c21a448cac153c5c78c5baf078820115bdf4bc27c456f785e6",
+        "bytes": 2843,
+        "inode": 270223026874770528,
+        "mtime_ns": 1793705249000000000,
+        "ctime_ns": 1793705249000000000
+      }
+    },
+    "model_config": {
+      "dim": 384,
+      "n_heads": 6,
+      "k_latents": 64,
+      "local_layers": 2,
+      "backbone_layers": 8,
+      "decoder_layers": 2,
+      "muscle_dropout": 0.4,
+      "patch_ms": 25.0,
+      "window_ms": null,
+      "n_bands": 5,
+      "rvq_codes": null,
+      "grad_checkpoint": true,
+      "multiscale_anchor": true,
+      "keep_readout": false,
+      "spectral_branches": [],
+      "branch_dim": 128,
+      "branch_hidden": 48,
+      "wavelet_learnable": false,
+      "branch_alpha": 0.5,
+      "branch_objective": "readout",
+      "branch_freeze_output": false,
+      "pose_head": true,
+      "tokenizer_activation": "identity"
+    },
+    "fe_gain": 982.4250666375573,
+    "checkpoint_sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+    "checkpoint_step": 5000,
+    "training_code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb",
+    "postload_recipe_passed": true,
+    "gain_policy": "standard constructor initialization overwritten by exact checkpoint buffer; no data calibration"
+  },
+  "source_states": {
+    "plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103/results/infra/tokenizer_evaluation_20261103/extraction_plan_5000.json",
+      "sha256": "c0e5d501cd42c81d60aaa390098644ec5e3bf351f3e06031233647934dd2e985",
+      "bytes": 6393,
+      "inode": 144121838178403360,
+      "mtime_ns": 1793706843000000000,
+      "ctime_ns": 1793706852000000000
+    },
+    "comparison": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103/results/infra/tokenizer_review_20261103/comparison_configurations.json",
+      "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
+      "bytes": 8792,
+      "inode": 144121838178403415,
+      "mtime_ns": 1793706845000000000,
+      "ctime_ns": 1793706852000000000
+    },
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+      "bytes": 1688959,
+      "inode": 270223356144401172,
+      "mtime_ns": 1792085383000000000,
+      "ctime_ns": 1792085383000000000
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+      "bytes": 2234011,
+      "inode": 270223339937658928,
+      "mtime_ns": 1791379314000000000,
+      "ctime_ns": 1791379314000000000
+    },
+    "windows": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+      "bytes": 2156652,
+      "inode": 270223339937655074,
+      "mtime_ns": 1791219393000000000,
+      "ctime_ns": 1791219393000000000
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+      "bytes": 7377,
+      "inode": 162139590872838380,
+      "mtime_ns": 1793104228000000000,
+      "ctime_ns": 1793104228000000000
+    },
+    "csv": {
+      "path": "/leonardo_work/IscrB_WearUsFM/data/raw/emg2pose_mini/emg2pose_metadata.csv",
+      "sha256": "0e7ad04a79a0f162385d22ec8d6f43af9b8360978ca11ef9d601bbf9594b09e6",
+      "bytes": 5674462,
+      "inode": 144121785397329917,
+      "mtime_ns": 1718203862000000000,
+      "ctime_ns": 1790002473000000000
+    },
+    "splits": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103/splits/v1/splits_v1.json",
+      "sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+      "bytes": 291942,
+      "inode": 144121838178403936,
+      "mtime_ns": 1793706848000000000,
+      "ctime_ns": 1793706852000000000
+    },
+    "expected_config": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103/results/infra/tokenizer_review_20261103/config_T25-L.json",
+      "sha256": "8430471dd76d83541c3d799ac39c8751dda6b21387466e27c6e5f2b110b0ea80",
+      "bytes": 3596,
+      "inode": 144121838178403418,
+      "mtime_ns": 1793706845000000000,
+      "ctime_ns": 1793706852000000000
+    },
+    "checkpoint": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T25-L/checkpoint_step0005000.pt",
+      "sha256": "bfde1d69a85338875a45b4802979d235045e40e1bea7cfc0596c98ac021f4deb",
+      "bytes": 454215840,
+      "inode": 4161333331918660787,
+      "mtime_ns": 1793705242000000000,
+      "ctime_ns": 1793705242000000000
+    },
+    "config": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/config.json",
+      "sha256": "8430471dd76d83541c3d799ac39c8751dda6b21387466e27c6e5f2b110b0ea80",
+      "bytes": 3596,
+      "inode": 270223026874770526,
+      "mtime_ns": 1793705249000000000,
+      "ctime_ns": 1793705249000000000
+    },
+    "receipt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_training_20261103/T25-L/5000/receipt.json",
+      "sha256": "f87b9ed7f8fc59c21a448cac153c5c78c5baf078820115bdf4bc27c456f785e6",
+      "bytes": 2843,
+      "inode": 270223026874770528,
+      "mtime_ns": 1793705249000000000,
+      "ctime_ns": 1793705249000000000
+    }
+  },

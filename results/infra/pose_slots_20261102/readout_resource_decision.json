@@ -1,0 +1,55 @@
+{
+  "code_sha": "c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62",
+  "plan_sha256": "0dafa6d4a17cbe196b2508ec6cd4a31e32e6e117fd36d2c720ad96caf0145526",
+  "receipts_verified": {
+    "B/train": {
+      "n_windows": 1907,
+      "metadata_sha256": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+      "receipt_sha256": "b3efc0c30f0d25e5ceac1871eec729a041d85cc90e0ed1fe2725807697357ff7",
+      "residual_sha256": "6b6ec4cad8cf3d76f27ecc4742736c6f5e366a5efd493510da84c6589f396377",
+      "residual_file_bytes": 410081408,
+      "exact_mean_FP16": true
+    },
+    "B/val": {
+      "n_windows": 18548,
+      "metadata_sha256": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+      "receipt_sha256": "b79e5fe5f3c8aae4909c74615510d823ca1ea70f4541f1e9c30c755cf1303b9b",
+      "residual_sha256": "bef75dad48acb8fd510f09635ce95ac516ba536683f325ae6cc805b065e88812",
+      "residual_file_bytes": 3988562048,
+      "exact_mean_FP16": true
+    },
+    "R3c/train": {
+      "n_windows": 1907,
+      "metadata_sha256": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337",
+      "receipt_sha256": "19376d1224e22b21f026d54260fcba08027d1302f809ad2a2c40560bfa9385aa",
+      "residual_sha256": "a2ece2389ac18d9820d8114285ea2d0db4e372fad2529a0e256dda955eac7d9d",
+      "residual_file_bytes": 410081408,
+      "exact_mean_FP16": true
+    },
+    "R3c/val": {
+      "n_windows": 18548,
+      "metadata_sha256": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a",
+      "receipt_sha256": "71948ec67a44ba752ff49961ac901ac89a109810f89bbefb99cde19de080879b",
+      "residual_sha256": "1392937950ee36045ed055305fa556be46a2e2f193d66a523b8b20fcfab7ce12",
+      "residual_file_bytes": 3988562048,
+      "exact_mean_FP16": true
+    }
+  },
+  "complete_extractions_and_benchmark": true,
+  "benchmark_elapsed_seconds": 33,
+  "benchmark_components_sum_seconds": 19.878828742541373,
+  "benchmark_parameter_B_seconds": 33,
+  "benchmark_peak_rss_GiB": 1.1682853698730469,
+  "host_estimate_GiB": 13.75242805480957,
+  "formula_unrounded_seconds": 807.0,
+  "requested_walltime_seconds": 900,
+  "requested_cpus": 8,
+  "requested_mem_GiB": 30,
+  "requested_gpu_hours": 0,
+  "max_report_core_hours": 2.0,
+  "spent_gpu_hours": 1.1555555555555554,
+  "spent_core_hours": 9.332222222222223,
+  "max_chain_core_hours_with_report": 11.332222222222223,
+  "decision": "submit final readout once through shared submitter after commit/push verified",
+  "residual_hash_scope": "Extraction receipts attest full residual hashes; B/train was rehashed in benchmark. Final run rehashes all four residual files before analysis. Collector checks current sizes, not full residual hashes on login."
+}

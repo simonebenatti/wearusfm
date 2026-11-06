@@ -1,0 +1,67 @@
+{
+  "commands": {
+    "squeue": "JOBID|NAME|STATE|TIME|DEPENDENCY|NODELIST(REASON)\n62583154|PILOT-POSA-B19618-B-p2-ext-20261028|PENDING|0:00|afterok:62582916(unfulfilled)|(Dependency)\n62583151|PILOT-POSA-B19618-B-pose-20261028|PENDING|0:00|afterok:62582916(unfulfilled)|(Dependency)\n62583153|PILOT-POSA-B19618-B-p1-ext-20261028|PENDING|0:00|afterok:62582916(unfulfilled)|(Dependency)\n62582916|PILOT-POSA-B19618-train-20261028|RUNNING|30:58|(null)|lrdn3319\n62583164|PILOT-POSA-B19618-pose-report-20261028|PENDING|0:00|afterok:62583151(unfulfilled)|(Dependency)\n62583163|PILOT-POSA-B19618-B-p2-pool-20261028|PENDING|0:00|afterok:62583154(unfulfilled)|(Dependency)\n62583160|PILOT-POSA-B19618-B-p1-pool-20261028|PENDING|0:00|afterok:62583153(unfulfilled)|(Dependency)\n",
+    "sacct": "JobIDRaw|State|Elapsed|ExitCode|Start|End\n62582916|RUNNING|00:30:59|0:0|2026-10-28T22:18:26|Unknown\n62583147|COMPLETED|00:30:05|0:0|2026-10-28T17:25:25|2026-10-28T17:55:30\n62583148|COMPLETED|00:13:53|0:0|2026-10-28T17:25:26|2026-10-28T17:39:19\n62583149|COMPLETED|00:28:00|0:0|2026-10-28T17:25:25|2026-10-28T17:53:25\n62583151|PENDING|00:00:00|0:0|Unknown|Unknown\n62583153|PENDING|00:00:00|0:0|Unknown|Unknown\n62583154|PENDING|00:00:00|0:0|Unknown|Unknown\n62583155|COMPLETED|01:19:04|0:0|2026-10-28T17:41:15|2026-10-28T19:00:19\n62583157|FAILED|00:20:31|1:0|2026-10-28T19:00:21|2026-10-28T19:20:52\n62583160|PENDING|00:00:00|0:0|Unknown|Unknown\n62583163|PENDING|00:00:00|0:0|Unknown|Unknown\n62583164|PENDING|00:00:00|0:0|Unknown|Unknown\n62583165|CANCELLED|00:00:00|0:0|None|2026-10-28T19:20:55\n",
+    "old_b_scontrol": "JobId=62583163 JobName=PILOT-POSA-B19618-B-p2-pool-20261028 UserId=sbenatti(127686) GroupId=interactive(25200) MCS_label=N/A Priority=141918 Nice=0 Account=iscrb_wearusfm QOS=normal JobState=PENDING Reason=Dependency Dependency=afterok:62583154(unfulfilled) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=04:00:00 TimeMin=N/A SubmitTime=2026-10-28T17:25:15 EligibleTime=Unknown AccrueTime=Unknown StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-28T17:25:15 Scheduler=Main Partition=lrd_all_serial AllocNode:Sid=login02-interconnect-1:2050562 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=30G,node=1,billing=8,gres/tmpfs=10737418240 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=30G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=(null) WorkDir=/leonardo/home/userexternal/sbenatti Comment=wearusfm:PILOT-POSA-B19618-B-p2-pool-20261028  StdErr=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_b19618_eval_62583163.out StdIn=/dev/null StdOut=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/pose_b19618_eval_62583163.out TresPerNode=gres/tmpfs:10g TresPerTask=cpu=8 \n"
+  },
+  "files": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.oof.npz": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.json.provenance.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p1.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p2.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p1.json.provenance.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p2.json.provenance.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json.provenance.json": {
+      "exists": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json": {
+      "exists": true,
+      "sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+      "bytes": 52886
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.oof.npz": {
+      "exists": true,
+      "sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7",
+      "bytes": 7549986
+    }
+  },
+  "receipts": {
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1/extraction_receipt.json": {
+      "sha256": "a4f1327d517c1952f74258198bb6607efd10303d9d707160156fe70c7e192f44",
+      "complete": true,
+      "checkpoint_step": 19618
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/extraction_receipt.json": {
+      "sha256": "93ad49e988fdc752ffb0ef6e79330996dd297927b866599ab08744088f1de413",
+      "complete": true,
+      "checkpoint_step": 19618
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.json.provenance.json": {
+      "sha256": "02c7d2429daf6265964547ca6a541ea8da60c384bea07d1681eba0abe7352ab6",
+      "complete": true,
+      "report_sha256": "3eca8b46ab286d808a2210bd226b75c14b90c8475c81c42ee33df372d569f10b",
+      "oof_sha256": "96ef515ab6ae9d5ec5de63c7e56b2d3bbf955ab5c8a857656c0f39832598ca21"
+    }
+  },
+  "attested_completed": [
+    "62583147",
+    "62583148",
+    "62583149",
+    "62583155"
+  ]
+}

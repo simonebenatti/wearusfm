@@ -1,0 +1,18 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028 @ 24139ab901c052357a46a65bc20466f2eb1e8358
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+[17:25:46] modello /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt (teacher, sha256 ee78d2a96264), P2 interna ['epn612', 'uci_emg']
+[17:53:03]   epn612: 314 soggetti interni su 612, 47100 finestre, 8 canali x 384 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz
+  attenzione: 1_raw_data_10-51_07.04.16.txt: scartate 1 righe malformate
+[17:53:21]   uci_emg: 19 soggetti interni su 36, 364 finestre, 8 canali x 384 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz
+[17:53:21] estrazione finita in 1659 s
+{"complete": true, "output": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2", "model": "R3c", "mode": "channel"}

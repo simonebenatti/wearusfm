@@ -1,0 +1,45 @@
+{
+  "mode": "compare",
+  "complete": true,
+  "task": "p1",
+  "checkpoint_step": 19618,
+  "reference": "R3c",
+  "candidate": "B",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "source_sha256": "16b44fd39432ae7a605e098a8eabe972959a175c081b68ef1ba452f46bef3e64",
+  "wrapper_sha256": "219f88cccd10f32fc869e8aadef676ebd55108ea600af124035b1fdff9420591",
+  "command": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/scripts/channel_readout.py",
+    "--stage",
+    "compare",
+    "--single-seed",
+    "--models",
+    "--reference",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.json",
+    "--candidate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.json",
+    "--out",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p1.json"
+  ],
+  "inputs": {
+    "B": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.json",
+      "sha256": "da91929063c004a335a3cc72d68a93feb5fd5e8bd7ddba7c917fc2a007304362",
+      "provenance_sha256": "67fba347dca0d623daec85e00ec4a68f96964d3d46dd156eccbc8c3ebd221b49",
+      "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.oof.npz",
+      "oof_sha256": "691b72854426fdf2eeadb1af5030dcf3108fb1f320fa80aff63094387f037a6d",
+      "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229"
+    },
+    "R3c": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.json",
+      "sha256": "3eca8b46ab286d808a2210bd226b75c14b90c8475c81c42ee33df372d569f10b",
+      "provenance_sha256": "02c7d2429daf6265964547ca6a541ea8da60c384bea07d1681eba0abe7352ab6",
+      "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.oof.npz",
+      "oof_sha256": "96ef515ab6ae9d5ec5de63c7e56b2d3bbf955ab5c8a857656c0f39832598ca21",
+      "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29"
+    }
+  },
+  "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/compare_p1.json",
+  "report_sha256": "c3efa1cad5d51ced7ada3c0ebf2e970ea7949c47702fa98386026d63cd0df62c"
+}

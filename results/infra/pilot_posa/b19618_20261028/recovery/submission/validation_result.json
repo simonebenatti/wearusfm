@@ -1,0 +1,79 @@
+{
+  "provenance": {
+    "model": "R3c",
+    "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+    "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+    "checkpoint_step": 19618,
+    "config_file_sha256": "863c06f053cbea5f65b46d6fe94a999286e5c415a57e5ac37a61e6b923fc4794",
+    "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+    "mode": "probe",
+    "complete": true,
+    "task": "p2",
+    "which": "teacher",
+    "layer": "pool",
+    "k": 0,
+    "seed": 0,
+    "source_sha256": "16b44fd39432ae7a605e098a8eabe972959a175c081b68ef1ba452f46bef3e64",
+    "wrapper_sha256": "219f88cccd10f32fc869e8aadef676ebd55108ea600af124035b1fdff9420591",
+    "recovery": true,
+    "validator_mode": "validate-probe",
+    "recovery_evidence": {
+      "original_job_id": "62583157",
+      "original_source_sha256": "ea8efec4f96511f7631b172e7ea6de13703235a9f7b642c95b40d5af426088ee",
+      "original_wrapper_sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+      "failure_log_sha256": "f016415aeb47a089298eca92828b42cca7ab1b033d11ea0379ec8be1a10d85ad",
+      "report_sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+      "oof_sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7"
+    },
+    "validation_job_id": "62618174",
+    "original_probe_command": [
+      "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/scripts/channel_readout.py",
+      "--stage",
+      "probe",
+      "--task",
+      "p2",
+      "--features",
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2",
+      "--out",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json",
+      "--layer",
+      "pool",
+      "--k",
+      "0",
+      "--seed",
+      "0",
+      "--datasets",
+      "epn612",
+      "uci_emg"
+    ],
+    "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.json",
+    "report_sha256": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+    "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p2_pool.oof.npz",
+    "oof_sha256": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7",
+    "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/extraction_receipt.json",
+    "extraction_receipt_sha256": "93ad49e988fdc752ffb0ef6e79330996dd297927b866599ab08744088f1de413",
+    "feature_inputs": {
+      "epn612": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/epn612.npz",
+        "sha256": "8f7f1cbf30a9a20e809a5be7c2efe5e6ebbf220485008e932e4944bf6dadc18b",
+        "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+      },
+      "uci_emg": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p2/uci_emg.npz",
+        "sha256": "4efd3793b02f317c6710c4f62d2752cf0536fe479784b0e3027b14bef8a3eeab",
+        "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+      }
+    }
+  },
+  "provenance_sha256": "e9f4f6dc2deb9b6fef5124a4a49f78354c5abf1f80b461f3d52655e6e6e47ba7",
+  "unchanged_output_sha256": {
+    "R3c_p2_pool.json": "207e0808778c7e934d48b24ba7b81ba475a98f5f765c554ebeab5578b484287b",
+    "R3c_p2_pool.oof.npz": "e7249776ececa2529b2eac80d604a663169ed26ea546dbbe16e7815d9b6db9e7"
+  },
+  "full_validation_log": "codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028 @ 24139ab901c052357a46a65bc20466f2eb1e8358\nLoading cineca-ai/4.3.0\n  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1\n    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41\n    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q\n    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea\n    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s\n    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp\n    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif\n    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2\n    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7\n    openjdk/11.0.20.1_1\n",
+  "sacct": "JobIDRaw|State|Elapsed|ExitCode|Start|End|AllocCPUS|CPUTimeRAW|TotalCPU|MaxRSS\n62618174|COMPLETED|00:00:11|0:0|2026-10-28T22:51:06|2026-10-28T22:51:17|2|22|00:04.957|\n62618174.batch|COMPLETED|00:00:11|0:0|2026-10-28T22:51:06|2026-10-28T22:51:17|2|22|00:04.957|916980K\n62618174.extern|COMPLETED|00:00:12|0:0|2026-10-28T22:51:06|2026-10-28T22:51:18|2|24|00:00:00|\n"
+}
+

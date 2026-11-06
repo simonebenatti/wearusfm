@@ -44,7 +44,7 @@ from wearusfm.model.spectral_targets import TARGET_VERSION
 from wearusfm.model.spectral_step1 import READOUT_VERSION
 from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
 from wearusfm.model.query_decoder import probe_query_collapse
-from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, jepa_loss_terms, jepa_losses, loss_counts, make_teacher
+from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, jepa_loss_terms, jepa_losses, loss_counts, make_teacher, masked_query_radius
 
 
 # soglia assoluta del rango effettivo per la ripetizione di C4 e i run della finestra 1 (Simone, 23/10/2026: «firmo,»; decisioni.md): la
@@ -173,7 +173,7 @@ _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_e
                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
-                       "window_ms": None}  # finestra del kernel (R5 del pilot degli obiettivi, 23/10): assente = la patch, il banco di sempre
+                       "window_ms": None}  # finestra del kernel: assente = patch storica
 
 
 def _environment(out_dir: Path) -> dict:
@@ -190,10 +190,11 @@ def _environment(out_dir: Path) -> dict:
 def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
-        out["model"] = {**BRANCH_MODEL_FIELDS, **out["model"]}
+        out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity", **out["model"]}
     if isinstance(out.get("jepa"), dict):
         # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
-        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0, **out["jepa"]}
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,
+                       "masked_loss_radius": None, **out["jepa"]}
     if isinstance(out.get("model"), dict):
         out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
     if isinstance(out.get("loader"), dict):
@@ -1209,6 +1210,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("target_version incompatible with this code")
     if cfg.readout_version != READOUT_VERSION:
         raise ValueError("readout_version incompatible with this code")
+    masked_query_radius(cfg.jepa, cfg.model)  # valida prima di caricare dati o costruire il modello
     if cfg.keep_grad_every < 0:
         raise ValueError("keep_grad_every must be nonnegative")
     if cfg.pose_grad_every < 0 or (cfg.pose_grad_every and cfg.jepa.pose_weight <= 0):

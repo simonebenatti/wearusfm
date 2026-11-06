@@ -1,0 +1,45 @@
+{
+  "protocol": "tokenizer-execution-20261103-v1",
+  "scope": "Only frozen checkout and technical train-only preflight. No scientific checkpoint or validation; long-training allocations await measured complete budget.",
+  "authorization": "Simone 2026-11-03: va bene, appena fatto lancia pure, hai gia tutti i miei permessi",
+  "operator": "GPT direct via shared submitter/ledger; existing semplicione chat unavailable",
+  "remaining_before_gpu_hours": 63.2925,
+  "remaining_before_cpu_only_core_hours_approx": 318.821667,
+  "jobs": [
+    {
+      "logical_id": "TOKENIZER-checkout-20261103",
+      "partition": "lrd_all_serial",
+      "nodes": 1,
+      "gpus": 0,
+      "cpus": 2,
+      "memory": "4G",
+      "walltime_seconds": 600,
+      "gpu_hours_cap": 0,
+      "cpu_only_core_hours_cap": 0.3333333333333333
+    },
+    {
+      "logical_id": "TOKENIZER-preflight-20261103",
+      "partition": "boost_usr_prod",
+      "qos": "boost_qos_dbg",
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "240G",
+      "walltime_seconds": 1800,
+      "gpu_hours_cap": 2,
+      "allocated_core_hours_cap": 16
+    }
+  ],
+  "remaining_after_reserved_gpu_hours": 61.2925,
+  "remaining_after_reserved_cpu_only_core_hours_approx": 318.488334,
+  "scientific_training_jobs_reserved": [],
+  "retry_policy": "No blind retry or duplicate submission; diagnose and record corrections, declare and account for every additional allocation under the authorized campaign extension.",
+  "queue_note": "No queued tokenizer jobs or reservations found in prelaunch read-only inventory on 2026-11-03.",
+  "budget_extension_authorization": {
+    "user_text": "puoi anche sforare il budget, non mi importa, ti autorizzo",
+    "date": "2026-11-03",
+    "scope": "All three fresh tokenizer arms through 19618 steps and their registered evaluations; retain matched T25 control.",
+    "prior_remaining_is_not_a_hard_gate": true,
+    "new_full_allocation_caps": "To publish after measured preflight. No second approval required for this comparison; no unrelated experiments or blind retries."
+  }
+}

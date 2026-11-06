@@ -69,8 +69,16 @@ class JEPAConfig:
     # peso del termine di posa (R3, seconda ondata del pilot degli obiettivi, firmato il 26/10/2026: 1,0 sul target standardizzato); 0 = nessun
     # termine (il default). Richiede `FMConfig.pose_head` e i target di posa nel batch (`PretrainBatch.pose`)
     pose_weight: float = 0.0
+    # Confronti fra tokenizer (02/11): stesso supporto delle query in tutti i bracci.
+    # None conserva il raggio nominale storico del modello, anche con JEPA spenta.
+    # Un override puo' ampliare il supporto sotto quel raggio solo con jepa_weight = 0:
+    # in B le query supervisionano ancore fisiche, non latenti del teacher.
+    # Non cambia maschera d'ingresso, target o supporto della posa.
+    masked_loss_radius: int | None = None
 
     def __post_init__(self) -> None:
+        if self.masked_loss_radius is not None and (type(self.masked_loss_radius) is not int or self.masked_loss_radius < 0):
+            raise ValueError("masked_loss_radius deve essere un intero non negativo o None")
         for name in ("jepa_weight", "anchor_weight", "pose_weight"):
             v = getattr(self, name)
             if not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0:
@@ -89,6 +97,20 @@ class JEPAConfig:
             raise ValueError("ema_momentum in [0, 1)")
 
 
+def masked_query_radius(cfg: JEPAConfig, model_cfg: FMConfig) -> int:
+    """Raggio comune a conteggi e loss effettiva; None conserva il comportamento storico.
+
+    Con JEPA attiva il raggio non puo' scendere sotto la protezione nominale del
+    tokenizer. Con JEPA spenta un override esplicito puo' includere tutte le query
+    nascoste per le ancore; maschera d'ingresso e supporto della posa non cambiano.
+    """
+    radius = model_cfg.core_radius if cfg.masked_loss_radius is None else cfg.masked_loss_radius
+    if radius < model_cfg.core_radius and cfg.jepa_weight > 0:
+        raise ValueError(f"masked_loss_radius {radius} inferiore al core_radius nominale {model_cfg.core_radius}: "
+                         "consentito solo con jepa_weight = 0")
+    return radius
+
+
 def make_teacher(student: WearUsFM) -> WearUsFM:
     teacher = copy.deepcopy(student).eval()
     for p in teacher.parameters():
@@ -105,9 +127,10 @@ def ema_update(teacher: torch.nn.Module, student: torch.nn.Module, momentum: flo
 
 
 def core_hidden(hidden: torch.Tensor, visible: torch.Tensor, radius: int) -> torch.Tensor:
-    """Con una finestra del kernel piu' lunga della patch (`FMConfig.window_ms`, R5), un token nascosto al bordo di una regione contiene campioni
-    visibili: predirlo e' banale. Restano «nascosti per la perdita» solo i token con nessuna patch visibile entro `radius` patch per lato
-    (`FMConfig.core_radius`); le patch oltre il segnale o di padding contano come nascoste (il front-end vi legge zeri). radius 0: invariato."""
+    """Con una finestra del kernel piu' lunga della patch (`FMConfig.window_ms`, R5), il supporto nominale di un token nascosto al bordo
+    puo' includere campioni visibili. Restano query della perdita solo i token con nessuna patch visibile entro `radius` patch per lato
+    (`FMConfig.core_radius`); le patch oltre il segnale o di padding contano come nascoste (il front-end vi legge zeri).
+    Il raggio protegge il supporto nominale, non le code anti-alias o il contesto del teacher. radius 0: invariato."""
     if radius <= 0:
         return hidden
     vis = visible.to(torch.float32)[:, None, :]  # (C_tot, 1, P)
@@ -328,8 +351,9 @@ def loss_counts(inp: ModelInputs, visible: torch.Tensor, cfg: JEPAConfig,
     n_ch = torch.repeat_interleave(torch.as_tensor(lengths, device=visible.device), torch.as_tensor(inp.counts, device=visible.device))
     patch_valid = torch.arange(max(lengths), device=visible.device)[None, :] < n_ch[:, None]
     hidden = ~visible & patch_valid & inp.qc_valid[:, None]
-    if model_cfg.core_radius:  # come in _jepa_compute: `enc.visible` e' visible & patch_valid & qc_valid
-        hidden = core_hidden(hidden, visible & patch_valid & inp.qc_valid[:, None], model_cfg.core_radius)
+    radius = masked_query_radius(cfg, model_cfg)
+    if radius:  # come in _jepa_compute: `enc.visible` e' visible & patch_valid & qc_valid
+        hidden = core_hidden(hidden, visible & patch_valid & inp.qc_valid[:, None], radius)
     ch, qt, _ = hidden_queries(hidden, inp.counts)
     sq = _sample_index(ch, inp.counts) if cfg.loss_per_window else None
     ns = len(inp.counts)
@@ -398,9 +422,9 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4).
     regions: (C_tot, P) regione di ogni token nascosto (`generate_mask_regions`), richiesta da `cfg.region_target` e ignorata altrimenti."""
+    radius = masked_query_radius(cfg, student.cfg)
     enc = student.encode(inp, visible, generator)
     hidden = ~enc.visible & enc.patch_valid & inp.qc_valid[:, None]
-    radius = student.cfg.core_radius
     if radius:  # finestra piu' lunga della patch (R5): solo i token interamente nascosti, per JEPA, ancore e RVQ
         all_hidden = hidden
         hidden = core_hidden(hidden, enc.visible, radius)

@@ -1,0 +1,635 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "calibration_protocol": "w1-calibrazione-selezione-v1",
+ "task": "p1",
+ "k_folds": 4,
+ "fold_seed": 20261015,
+ "val_frac": 0.1,
+ "probe_seed": 0,
+ "feature_set": "channel_readout/pool",
+ "window_s": 1.0,
+ "splits": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/splits/v1/splits_v1.json",
+ "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+ "extraction_recipe": {
+  "base": {
+   "encoder": "teacher",
+   "feature_set": "model",
+   "window_s": 1.0,
+   "extractor": "probe_p1.dataset_features",
+   "input_audit": "downstream_ab.fingerprint-v1"
+  },
+  "extractor": "harness.channel_readout.extract_channel_readouts",
+  "layers": [
+   "pool",
+   "local",
+   "dec"
+  ],
+  "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+  "dtype": "float16 per canale, float32 pool",
+  "crop_s": 4.0,
+  "k_neighbors": 8,
+  "edge_guard_s": 0.1,
+  "encoder": "teacher"
+ },
+ "features": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/p1",
+ "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+ "readout": {
+  "layer": "pool",
+  "k_requested": 0,
+  "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+ },
+ "datasets": {
+  "ninapro_db2": {
+   "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s07",
+    "s08",
+    "s10",
+    "s11",
+    "s14",
+    "s17",
+    "s18",
+    "s19",
+    "s20",
+    "s22",
+    "s23",
+    "s24",
+    "s25",
+    "s26",
+    "s27",
+    "s28",
+    "s29",
+    "s30",
+    "s31",
+    "s32",
+    "s34",
+    "s35",
+    "s36",
+    "s37",
+    "s38",
+    "s39"
+   ],
+   "s": 0.18807368892893647,
+   "folds": [
+    {
+     "train": [
+      "s02",
+      "s04",
+      "s05",
+      "s06",
+      "s07",
+      "s08",
+      "s11",
+      "s17",
+      "s20",
+      "s22",
+      "s23",
+      "s24",
+      "s25",
+      "s26",
+      "s27",
+      "s29",
+      "s30",
+      "s31",
+      "s34",
+      "s36",
+      "s39"
+     ],
+     "val": [
+      "s10",
+      "s18",
+      "s28"
+     ],
+     "held": [
+      "s01",
+      "s03",
+      "s14",
+      "s19",
+      "s32",
+      "s35",
+      "s37",
+      "s38"
+     ],
+     "held_bacc": 0.19728300297936238,
+     "val_bacc": 0.23217958457240195,
+     "train_bacc": 0.39535509409396086,
+     "c": 0.01,
+     "n_train": 24609,
+     "n_val": 4046,
+     "n_held": 9889,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s04",
+      "s05",
+      "s07",
+      "s10",
+      "s11",
+      "s14",
+      "s17",
+      "s18",
+      "s19",
+      "s24",
+      "s25",
+      "s26",
+      "s27",
+      "s28",
+      "s29",
+      "s31",
+      "s35",
+      "s36",
+      "s37",
+      "s38",
+      "s39"
+     ],
+     "val": [
+      "s01",
+      "s03",
+      "s32"
+     ],
+     "held": [
+      "s02",
+      "s06",
+      "s08",
+      "s20",
+      "s22",
+      "s23",
+      "s30",
+      "s34"
+     ],
+     "held_bacc": 0.1756665720341707,
+     "val_bacc": 0.23944897549199262,
+     "train_bacc": 0.5328365182559752,
+     "c": 0.1,
+     "n_train": 26702,
+     "n_val": 3368,
+     "n_held": 8474,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s03",
+      "s06",
+      "s08",
+      "s14",
+      "s19",
+      "s20",
+      "s22",
+      "s23",
+      "s24",
+      "s27",
+      "s28",
+      "s29",
+      "s30",
+      "s32",
+      "s34",
+      "s35",
+      "s36",
+      "s37",
+      "s38"
+     ],
+     "val": [
+      "s11",
+      "s17",
+      "s39"
+     ],
+     "held": [
+      "s04",
+      "s05",
+      "s07",
+      "s10",
+      "s18",
+      "s25",
+      "s26",
+      "s31"
+     ],
+     "held_bacc": 0.17576211927680493,
+     "val_bacc": 0.18724907882342193,
+     "train_bacc": 0.5625068050856966,
+     "c": 0.1,
+     "n_train": 24113,
+     "n_val": 4398,
+     "n_held": 10033,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s03",
+      "s04",
+      "s05",
+      "s06",
+      "s07",
+      "s08",
+      "s10",
+      "s14",
+      "s18",
+      "s20",
+      "s22",
+      "s23",
+      "s25",
+      "s26",
+      "s30",
+      "s31",
+      "s32",
+      "s34",
+      "s35"
+     ],
+     "val": [
+      "s19",
+      "s37",
+      "s38"
+     ],
+     "held": [
+      "s11",
+      "s17",
+      "s24",
+      "s27",
+      "s28",
+      "s29",
+      "s36",
+      "s39"
+     ],
+     "held_bacc": 0.20462922176548234,
+     "val_bacc": 0.21810090811465155,
+     "train_bacc": 0.5554714094735652,
+     "c": 0.1,
+     "n_train": 24594,
+     "n_val": 3802,
+     "n_held": 10148,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    }
+   ],
+   "n_classes": 49,
+   "n_windows": 38544,
+   "n_oof_windows": 38544,
+   "oof_rows_sha256": "15a028ca725354ac3adaeab6bce235a0bfdc4e31aa05dc0386e4154dd17b6037",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 12,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 105.91573560131967,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  },
+  "ninapro_db3": {
+   "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s10",
+    "s11"
+   ],
+   "s": 0.027647143550483734,
+   "folds": [
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s05",
+      "s06",
+      "s11"
+     ],
+     "val": [
+      "s10"
+     ],
+     "held": [
+      "s03",
+      "s04"
+     ],
+     "held_bacc": 0.025109597375453763,
+     "val_bacc": 0.03281647640355815,
+     "train_bacc": 0.8574902382089159,
+     "c": 1.0,
+     "n_train": 6206,
+     "n_val": 1224,
+     "n_held": 2404,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s02",
+      "s03",
+      "s04",
+      "s05",
+      "s11"
+     ],
+     "val": [
+      "s01"
+     ],
+     "held": [
+      "s06",
+      "s10"
+     ],
+     "held_bacc": 0.027011881203352878,
+     "val_bacc": 0.038947276963760144,
+     "train_bacc": 0.35533078400411233,
+     "c": 0.01,
+     "n_train": 6105,
+     "n_val": 950,
+     "n_held": 2779,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s02",
+      "s04",
+      "s05",
+      "s06",
+      "s10"
+     ],
+     "val": [
+      "s03"
+     ],
+     "held": [
+      "s01",
+      "s11"
+     ],
+     "held_bacc": 0.04844191248834297,
+     "val_bacc": 0.024148782056945324,
+     "train_bacc": 0.9866060614116839,
+     "c": 10.0,
+     "n_train": 6948,
+     "n_val": 819,
+     "n_held": 2067,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s01",
+      "s03",
+      "s04",
+      "s10",
+      "s11"
+     ],
+     "val": [
+      "s06"
+     ],
+     "held": [
+      "s02",
+      "s05"
+     ],
+     "held_bacc": 0.020946730521563938,
+     "val_bacc": 0.025279319939119343,
+     "train_bacc": 0.8213331387684876,
+     "c": 1.0,
+     "n_train": 5695,
+     "n_val": 1555,
+     "n_held": 2584,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    }
+   ],
+   "n_classes": 49,
+   "n_windows": 9834,
+   "n_oof_windows": 9834,
+   "oof_rows_sha256": "5ff054011b40dd8919ccff88e69301a7ef495d843ddafc93cddf064a80d5aeed",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 12,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 92.04466568127206,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  },
+  "ninapro_db6": {
+   "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+   "subjects": [
+    "s01",
+    "s02",
+    "s03",
+    "s06",
+    "s07",
+    "s08",
+    "s09",
+    "s10"
+   ],
+   "s": 0.3470427529772203,
+   "folds": [
+    {
+     "train": [
+      "s01",
+      "s02",
+      "s07",
+      "s08",
+      "s10"
+     ],
+     "val": [
+      "s09"
+     ],
+     "held": [
+      "s03",
+      "s06"
+     ],
+     "held_bacc": 0.37030663562261523,
+     "val_bacc": 0.3680102897070149,
+     "train_bacc": 0.6401091050155043,
+     "c": 0.01,
+     "n_train": 21508,
+     "n_val": 3925,
+     "n_held": 8528,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s02",
+      "s03",
+      "s06",
+      "s07",
+      "s10"
+     ],
+     "val": [
+      "s01"
+     ],
+     "held": [
+      "s08",
+      "s09"
+     ],
+     "held_bacc": 0.3711923726072551,
+     "val_bacc": 0.3589481379821157,
+     "train_bacc": 0.6457149398099998,
+     "c": 0.01,
+     "n_train": 21570,
+     "n_val": 4452,
+     "n_held": 7939,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s02",
+      "s06",
+      "s07",
+      "s08",
+      "s09"
+     ],
+     "val": [
+      "s03"
+     ],
+     "held": [
+      "s01",
+      "s10"
+     ],
+     "held_bacc": 0.2995680648087115,
+     "val_bacc": 0.36970822758614225,
+     "train_bacc": 0.7127082712740587,
+     "c": 0.1,
+     "n_train": 20827,
+     "n_val": 4196,
+     "n_held": 8938,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    },
+    {
+     "train": [
+      "s01",
+      "s03",
+      "s06",
+      "s09",
+      "s10"
+     ],
+     "val": [
+      "s08"
+     ],
+     "held": [
+      "s02",
+      "s07"
+     ],
+     "held_bacc": 0.35656849447097355,
+     "val_bacc": 0.4047609998065786,
+     "train_bacc": 0.7951384323820063,
+     "c": 100.0,
+     "n_train": 21391,
+     "n_val": 4014,
+     "n_held": 8556,
+     "dropped_val_windows": 0,
+     "dropped_held_windows": 0,
+     "k": 768,
+     "k_capped": false,
+     "explained_variance": 1.0
+    }
+   ],
+   "n_classes": 7,
+   "n_windows": 33961,
+   "n_oof_windows": 33961,
+   "oof_rows_sha256": "ae80150dc25cfbde54c4f3b07fe818adea7f2861b032a5129b3b70c0b9399e79",
+   "readout": {
+    "layer": "pool",
+    "width": 768,
+    "channels": 16,
+    "k": 768,
+    "reduced": false,
+    "k_capped_folds": 0,
+    "k_by_fold": [
+     768,
+     768,
+     768,
+     768
+    ]
+   },
+   "features": {
+    "effective_rank": 107.06135307317534,
+    "columns": 768,
+    "constant_columns": 0,
+    "finite": true,
+    "rows": 8192
+   }
+  }
+ },
+ "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+ "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+ "model_dim": 384,
+ "weights": {
+  "ninapro_db2": 0.6153846153846154,
+  "ninapro_db3": 0.23076923076923078,
+  "ninapro_db6": 0.15384615384615385
+ },
+ "S": 0.17550895754133722,
+ "S_se": 0.00702010962199905,
+ "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c_p1_pool.oof.npz",
+ "oof_sha256": "96ef515ab6ae9d5ec5de63c7e56b2d3bbf955ab5c8a857656c0f39832598ca21",
+ "elapsed_s": 4727.66580414772
+}

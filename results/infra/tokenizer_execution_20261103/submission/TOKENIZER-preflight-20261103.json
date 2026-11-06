@@ -1,0 +1,60 @@
+{
+  "id": "TOKENIZER-preflight-20261103",
+  "creato": "2026-11-03T09:14:38+01:00",
+  "agente": "gpt",
+  "campagna": "tokenizer-20261103",
+  "gpu_ore_stimate": 2.0,
+  "codice_sha": "ef8016a520f12a71eb9890202e836f56622d000b",
+  "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=TOKENIZER-preflight-20261103",
+    "--comment=wearusfm:TOKENIZER-preflight-20261103",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-preflight-20261103,EXPECTED_SHA=ef8016a520f12a71eb9890202e836f56622d000b",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-preflight-20261103/scripts/slurm/tokenizer_preflight.sbatch",
+    "results/infra/tokenizer_execution_20261103/preflight_plan.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_preflight_20261103"
+  ],
+  "dopo": null,
+  "script_stdin": null,
+  "script_stdin_sha256": null,
+  "stato": "sottomesso",
+  "storia": [
+    {
+      "quando": "2026-11-03T09:14:38+01:00",
+      "stato": "prenotato"
+    },
+    {
+      "quando": "2026-11-03T09:14:38+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "quando": "2026-11-03T09:14:41+01:00",
+      "stato": "rifiutato",
+      "job_slurm": null,
+      "uscita": 1,
+      "stdout": "",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: error: Batch job submission failed: Job dependency problem\n"
+    },
+    {
+      "quando": "2026-11-03T09:16:27+01:00",
+      "stato": "prenotato_di_nuovo"
+    },
+    {
+      "quando": "2026-11-03T09:16:27+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "quando": "2026-11-03T09:16:33+01:00",
+      "stato": "sottomesso",
+      "job_slurm": 63370721,
+      "uscita": 0,
+      "stdout": "63370721\n",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+    }
+  ],
+  "job_slurm": 63370721,
+  "uscita": 0,
+  "stdout": "63370721\n",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

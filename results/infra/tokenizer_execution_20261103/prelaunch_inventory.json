@@ -1,0 +1,34 @@
+{
+  "checked_at_utc": "2026-11-03T08:01:15.266976+00:00",
+  "queue_jobs_for_sbenatti": [],
+  "recent_accounting_since": "2026-11-02T16:00",
+  "recent_accounting_parent_jobs": [
+    {
+      "job_id": "63252509",
+      "logical_id": "POSE-SLOTS-run-20261102",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 415,
+      "cpus": 8,
+      "already_in_previous_budget": true
+    }
+  ],
+  "tokenizer_ledger_matches": [],
+  "remote_repository": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm",
+    "head_branch": "main",
+    "receive_denyCurrentBranch": "updateInstead",
+    "hooks": "only .sample hooks found; no executable custom hook",
+    "deploy_destination": "new deploy/tokenizer-preflight-20261103 ref, not main"
+  },
+  "required_paths_exist": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs",
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose"
+  ],
+  "operator_chat_check": {
+    "thread_id": "01a18355-6241-7c53-98fe-fbc8450c2b30",
+    "error": "Could not determine whether Codex thread exists; unavailable host durable",
+    "action": "current direct launch authorization recorded; no duplicate operator created"
+  }
+}

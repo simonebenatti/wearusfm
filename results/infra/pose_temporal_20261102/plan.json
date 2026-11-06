@@ -1,0 +1,140 @@
+{
+  "protocol": "pose-temporal-readout-20261102-v1",
+  "recipe": {
+    "lags_patches": [
+      -4,
+      0,
+      4
+    ],
+    "patch_ms": 25.0,
+    "features": "FP32 stateless LayerNorm independently at each real input patch; no PCA/scaler",
+    "normalization_eps": 1e-05,
+    "common_centers": "4 <= t and t+4 < n_patches",
+    "target_support": "center target mask only; neighboring target masks never define input validity",
+    "cv": "alternating sorted train users, two folds; masked pooled standardized SSE; E3 alpha grid/extension",
+    "fit": "float64 sufficient statistics; unpenalized intercept; refit all 40 train users",
+    "dynamic_threshold": 0.2574231028556824,
+    "dynamic_selection": "original full-window cached pose_var >= frozen median",
+    "bootstrap": {
+      "unit": "user",
+      "replicates": 2000,
+      "seed": 20261102
+    },
+    "batch_windows": 64
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "dynamic_threshold": 0.2574231028556824,
+  "fold_users": [
+    [
+      "03d49b393e",
+      "06d17ebbe4",
+      "1223558697",
+      "323f919c83",
+      "32cbfe3221",
+      "3589743749",
+      "3f79dccf7a",
+      "5ef3a0537e",
+      "65228c03b3",
+      "76bfc2d385",
+      "82f6fe243f",
+      "8bd1c0ff16",
+      "915e7ab7da",
+      "9261f6ab56",
+      "bd64911c18",
+      "c2991a87f6",
+      "d8b3b209f4",
+      "e5ffa40c92",
+      "eab042e9de",
+      "ef59709d32"
+    ],
+    [
+      "055bb1b487",
+      "1066cc94fc",
+      "2cc385c3cd",
+      "32473f0e96",
+      "342248118e",
+      "3669295621",
+      "47c605ad6f",
+      "60e5a2b0a4",
+      "70ad60b9a1",
+      "79d6b65fef",
+      "84a77feea6",
+      "8db8aaea3b",
+      "91e58c0561",
+      "9fcad1a5cc",
+      "bd84652be9",
+      "ce52651f99",
+      "e03cea741b",
+      "e666e9de6e",
+      "ec7f7bbbcd",
+      "fba9f08c33"
+    ]
+  ],
+  "sources": {
+    "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "results/infra/pilot_posa/b19618_20261029/final/reports/pose_comparison.json": "89ba19f72c25dcc7ae3e367ffc159d2bb47f74ad4caa60966561ba49056e8957",
+    "scripts/slurm/pose_temporal_readout.sbatch": "e8dd9287de3b4b2996cc3bce6a93b544ba1be0a68ef02d0fac4e3a243b183563",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/B/pose/train_subset.npz.provenance.json": "01a03ffff6bb3b4ae69c8ea80cc2256f1541018a481df406a595930af482e347",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/B/pose/val.npz.provenance.json": "8cd2e798701324152cd172f4d658890183787d13c374ec495bdfbb6956c177c4",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/B/pose/extraction_receipt.json": "a51bfc19bc1e41b33e90469dd898419d6929e1d4ed3cee5f4ff74ddbe0f3276a",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/R3c/pose/train_subset.npz.provenance.json": "8cc10c3615497cc596b2efc0f6d57260bfb6e133ec19e540ec7d756f5cd3c46a",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/R3c/pose/val.npz.provenance.json": "bb5100ccbba689febd9071d447998e5a7141d0737ff1cd90196580a8e36c8b3d",
+    "results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/R3c/pose/extraction_receipt.json": "96fd3c84cdca782339b805236d303066ee86b735e738afe681b4c12b98908d81"
+  },
+  "caches": {
+    "B": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+        "original_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+        "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+        "bytes": 257675076,
+        "provenance_sha256": "01a03ffff6bb3b4ae69c8ea80cc2256f1541018a481df406a595930af482e347",
+        "receipt_sha256": "a51bfc19bc1e41b33e90469dd898419d6929e1d4ed3cee5f4ff74ddbe0f3276a",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "n_windows": 1907,
+        "n_users": 40,
+        "n_recordings": 200
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+        "original_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+        "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+        "bytes": 2485295825,
+        "provenance_sha256": "8cd2e798701324152cd172f4d658890183787d13c374ec495bdfbb6956c177c4",
+        "receipt_sha256": "a51bfc19bc1e41b33e90469dd898419d6929e1d4ed3cee5f4ff74ddbe0f3276a",
+        "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+        "n_windows": 18548,
+        "n_users": 15,
+        "n_recordings": 1950
+      }
+    },
+    "R3c": {
+      "train": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/train_subset.npz",
+        "original_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/train_subset.npz",
+        "sha256": "bfc06f4fbecd0dd1566c0b56cbec163ed636d8ccce866aa7f619377a341314d2",
+        "bytes": 234643310,
+        "provenance_sha256": "8cc10c3615497cc596b2efc0f6d57260bfb6e133ec19e540ec7d756f5cd3c46a",
+        "receipt_sha256": "96fd3c84cdca782339b805236d303066ee86b735e738afe681b4c12b98908d81",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "n_windows": 1907,
+        "n_users": 40,
+        "n_recordings": 200
+      },
+      "val": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/val.npz",
+        "original_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/R3c/pose/val.npz",
+        "sha256": "7b57a6c174e4a5c66045279f986799178d6ac1b1fc6a86892445bcd0eab9643d",
+        "bytes": 2261385131,
+        "provenance_sha256": "bb5100ccbba689febd9071d447998e5a7141d0737ff1cd90196580a8e36c8b3d",
+        "receipt_sha256": "96fd3c84cdca782339b805236d303066ee86b735e738afe681b4c12b98908d81",
+        "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+        "n_windows": 18548,
+        "n_users": 15,
+        "n_recordings": 1950
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb",
+  "checkout": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-training-20261103",
+  "checkout_result": {
+    "job": 63385655,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 32,
+    "cpu_only_core_hours": 0.017777777777777778
+  },
+  "jobs": {
+    "TOKENIZER-train-checkout-20261103": 63385655,
+    "TOKENIZER-T25-L-5000-20261103": 63385800,
+    "TOKENIZER-T25-L-19618-20261103": 63386315,
+    "TOKENIZER-T100-L-5000-20261103": 63386190,
+    "TOKENIZER-T100-L-19618-20261103": 63386337,
+    "TOKENIZER-T100-G-5000-20261103": 63386228,
+    "TOKENIZER-T100-G-19618-20261103": 63386403
+  },
+  "gpu_hours_reserved_training": 66,
+  "evaluation_jobs_submitted": false,
+  "evaluation_scope": "already authorized; pin produced checkpoints and caches before extraction/CPU reports",
+  "status_checked_at_utc": "2026-11-03T10:21:00.940396+00:00",
+  "initial_status": {
+    "63385800": {
+      "state": "PENDING",
+      "reason": "Priority"
+    },
+    "63386315": {
+      "state": "PENDING",
+      "reason": "Dependency"
+    },
+    "63386190": {
+      "state": "PENDING",
+      "reason": "Priority"
+    },
+    "63386337": {
+      "state": "PENDING",
+      "reason": "Dependency"
+    },
+    "63386228": {
+      "state": "PENDING",
+      "reason": "Priority"
+    },
+    "63386403": {
+      "state": "PENDING",
+      "reason": "Dependency"
+    }
+  }
+}

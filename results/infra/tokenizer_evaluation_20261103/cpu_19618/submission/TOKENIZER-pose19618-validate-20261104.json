@@ -1,0 +1,48 @@
+{
+ "id": "TOKENIZER-pose19618-validate-20261104",
+ "creato": "2026-11-04T09:47:57+01:00",
+ "agente": "gpt",
+ "campagna": "tokenizer-20261103",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "b315dadfedc09c522deeb56af829d34ebc04f4b4",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TOKENIZER-pose19618-validate-20261104",
+  "--comment=wearusfm:TOKENIZER-pose19618-validate-20261104",
+  "--cpus-per-task=2",
+  "--mem=30G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104,EXPECTED_SHA=b315dadfedc09c522deeb56af829d34ebc04f4b4",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104/scripts/slurm/tokenizer_pose_readout.sbatch",
+  "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_19618.json",
+  "validate",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/validate"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T09:47:57+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T09:47:57+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T09:48:02+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63494990,
+   "uscita": 0,
+   "stdout": "63494990\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63494990,
+ "uscita": 0,
+ "stdout": "63494990\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

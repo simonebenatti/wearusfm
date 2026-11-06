@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-03",
+  "scientific_runtime_unchanged_from": "ef8016a520f12a71eb9890202e836f56622d000b",
+  "test_results": {
+    "evaluation_guard": {
+      "passed": 35,
+      "seconds": 3.18,
+      "review": "critico favorable"
+    },
+    "pose_readout": {
+      "passed": 19,
+      "review": "critico favorable"
+    },
+    "classification_probe": {
+      "passed": 20,
+      "seconds": 1.81,
+      "review": "critico favorable; independent bootstrap replica max error 0 pp"
+    },
+    "training_wrapper": {
+      "passed": 33,
+      "seconds": 2.4,
+      "review": "root fixes; audit_architecture integrated tests; critico independent review favorable"
+    }
+  },
+  "launcher_bash_n_passed": true,
+  "launcher_and_resources_review": "docs/reviews/tokenizer_training_launch_20261103.md",
+  "preflight_results_review": "docs/reviews/tokenizer_preflight_results_20261103.md",
+  "file_sha256": {
+    "scripts/tokenizer_evaluation.py": "00d5f42583bc3203df5041558486647dd05f66f59df8adf3ae7728cf3e6c127b",
+    "tests/cpu/test_tokenizer_evaluation.py": "a912c31230c40ce13d717b5a4f9de14a00ac277ddae5cfba38364507218b1c2a",
+    "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+    "tests/cpu/test_tokenizer_pose_readout.py": "caf01722d619efbe0bdda9a54dd16e5dc24467d4c3dc522f3ef78a3d4a485594",
+    "scripts/tokenizer_probe.py": "0bdf7ab248fb7a5b48bffd2e3dc805259e9b5282d0907de0f00718fe4fc0f0fd",
+    "tests/cpu/test_tokenizer_probe.py": "0ee91ad52815c3ee21afc016c0e4b7f5ae3e660384b44b2739f40cc36f7115d9",
+    "scripts/slurm/tokenizer_train.sbatch": "d9e7680777d3083a362bf4b2537c13e9c1d6ff716a4a7ce50c3e5576cb6a2381",
+    "scripts/tokenizer_train.py": "d948fe30ad35543bdf7aa05fb174fd550cc398f0f2b63efc546592a1a3e2dda2",
+    "tests/cpu/test_tokenizer_train.py": "1d1fd942d685a18775f2464adaac5e802a370471f6b7860d992b91bedae5bcb6"
+  },
+  "training_wrapper_review": "closed; RNG/AdamW/signature/alarm_counts and typed receipt verified, integrated fresh5000 to own19618 plus negative paths",
+  "new_module_total_tests_passed": 107
+}

@@ -1,0 +1,24 @@
+{
+  "protocol": "tokenizer-endpoint-cpu19618-operations-20261104-v1",
+  "authorization": "Current campaign explicitly authorized by Simone, direct submissions and extra budget included; no renewed consent",
+  "new_checkout": {
+    "logical_id": "TOKENIZER-endpointcpu-checkout-20261104",
+    "name": "tokenizer-endpointcpu-20261104",
+    "partition": "lrd_all_serial",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "core_hours_cap": 0.3333333333333333
+  },
+  "pose_validate_benchmark_ridge_core_hours_cap": 7,
+  "probe_fits_aggregates_compare_core_hours_cap": 101,
+  "phase_core_hours_cap": 108.33333333333333,
+  "gpu_hours_cap": 0,
+  "already_reserved_analysis_core_hours": 106,
+  "additional_endpoint_benchmark_core_hours": 2,
+  "additional_common_checkout_core_hours": 0.3333333333333333,
+  "submission_policy": "First five planned T25-L shards in parallel. Inspect first completed shard technical receipt/timing before releasing the remaining planned shards, in batches within 10 serial RUNNING+PENDING jobs, including the pose chain. Historic per-shard timing and published conservative caps remain the basis for all shards; a fast DB6 does not certify DB2/P2 duration. No score-based adaptation. Pose validate+benchmark concurrently; ridge only after published measured timing gate. Six aggregates after complete corresponding shards, comparison after all six. No duplicate benchmark or retry.",
+  "frozen_scientific_design": "teacher19618; pose crop6 D384; classification pool768, native labels, original folds, 12000 iterations",
+  "monitor": "disabled; active-chat execution only",
+  "serial_user_active_limit": 10
+}

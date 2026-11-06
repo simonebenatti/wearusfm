@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "expected_step": 19618,
+  "complete": true,
+  "source_run": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B-30M-s0-20261028",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "wrapper_sha256": "881909f4c5d0d2426bca44756a93f77555e865eb5f0ee46af531b5595cbc4ff7",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "pip_freeze_sha256": "f97a0225bfecbb5d25ddc1056e9be6519b801dc4fed2186e7109134b1d2c8f36",
+    "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+  },
+  "source_unchanged": true,
+  "provenance_sha256": "f9cc7c068e11cbf8c2b885ec8379999252d8393708d512f48782c1cb52362066",
+  "trainer_exit_code": 0,
+  "summary": {
+    "stopped": "max_steps",
+    "steps": 19618,
+    "elapsed_s": 10968.08475637436,
+    "parameters": 28356829,
+    "device": "cuda:0",
+    "gpu_max_memory_gib": 13.169767379760742,
+    "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028",
+      "sha": "24139ab901c052357a46a65bc20466f2eb1e8358"
+    },
+    "environment": {
+      "python": "3.11.6",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "cuda": "12.1",
+      "pip_freeze_file": "pip_freeze_62582916.txt",
+      "pip_freeze_sha256": "f97a0225bfecbb5d25ddc1056e9be6519b801dc4fed2186e7109134b1d2c8f36",
+      "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+    },
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "world_size": 4,
+    "batch_per_process": 8,
+    "prefetch": true,
+    "prefetch_audit_steps": null,
+    "accum_steps": 1,
+    "micro_batch": 8,
+    "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+    "pose_panel_timing": {
+      "prepare_s": 23.843906505033374,
+      "evaluations_s": [
+        3.3843633788637817,
+        3.3860466200858355,
+        3.3991812989115715,
+        3.3889829758554697,
+        3.3852387769147754,
+        3.391621262067929,
+        3.397657734109089,
+        3.4058450090233237,
+        3.40318273101002,
+        3.395708241034299,
+        3.4014137908816338,
+        3.399669033009559,
+        3.3909060389269143,
+        3.3945340011268854,
+        3.3955365009605885,
+        3.3849743271712214,
+        3.3898775142151862,
+        3.395278505049646,
+        3.3850066252052784,
+        3.3983182210940868,
+        3.397255839779973,
+        3.3912067969795316,
+        3.388845241861418,
+        3.3881994171533734,
+        3.406575318891555,
+        3.3919694020878524,
+        3.3887146750930697,
+        3.400411264039576,
+        3.3860028670169413
+      ],
+      "total_s": 122.25642991345376
+    }
+  },
+  "outputs": {
+    "checkpoint.pt": {
+      "sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+      "bytes": 454215776
+    },
+    "checkpoint_step0019618.pt": {
+      "sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+      "bytes": 454215776
+    },
+    "config.json": {
+      "sha256": "d12e7805c9cfb8525f05bae81949deba1f6c5e7a1148a222f08d06236978e47e",
+      "bytes": 3143
+    },
+    "summary.json": {
+      "sha256": "71fe3a61a36d577991b80fe49522b6fe57cf1b46ce7ecb10e569eccba6fe0834",
+      "bytes": 2297
+    }
+  }
+}

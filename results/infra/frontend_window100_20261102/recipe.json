@@ -1,0 +1,37 @@
+{
+  "status": "configuration_ready_not_a_training_submission_plan",
+  "decision_date": "2026-11-02",
+  "user_request": "100 ms with overlap; choose 75 ms overlap, retain anti-aliasing",
+  "frontend_cli_args": [
+    "--window-ms",
+    "100"
+  ],
+  "required_model_config": {
+    "window_ms": 100.0,
+    "patch_ms": 25.0
+  },
+  "required_loader_config": {
+    "patch_ms": 25.0
+  },
+  "nominal_overlap_ms": 75.0,
+  "tokens_per_second": 40,
+  "anti_alias_context_ms_per_side": 100.0,
+  "numerical_support_ms_approx": 300.0,
+  "core_radius_nominal": 2,
+  "nominal_samples_at_200hz": 20,
+  "hop_samples_at_200hz": 5,
+  "basis_parameters": {
+    "window_ms": 100.0,
+    "n_harmonics": 104,
+    "n_knots": 80,
+    "mlp_omega0": 24.0
+  },
+  "initialization": "fresh run; no direct resume/init-from of 25 ms checkpoint",
+  "legacy_presets_and_checkpoint_interpretation": "unchanged: omitted or null window_ms means nominal patch support",
+  "masking_note": "Default core rule erodes masked losses by two patches per side at100ms. Comparison configurations explicitly use radius2 in all three arms; raw masks and pose support unchanged. Anti-alias tails are not included in core_radius. Real train query coverage remains to measure.",
+  "not_a_launch_plan": [
+    "This artifact defines the linear 100 ms geometry; full paired configurations are in comparison_configurations.json.",
+    "No job submitted. GPU timing, real-data support checks and allocation caps still pending.",
+    "Optional nonlinear tokenizer implemented separately as tokenizer_activation=gelu, not enabled by --window-ms alone."
+  ]
+}

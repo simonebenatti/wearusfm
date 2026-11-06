@@ -1,0 +1,17 @@
+{
+  "reviewer": "critico",
+  "read_only_independent_review": true,
+  "code_sha": "440af702ac3ec00feb52549acb1b4935251dce38",
+  "report_sha256": "f247d0b4d8724fa02b2c2ad92b27e179a6ba9430a343012b179363a34e919690",
+  "checks": [
+    "source SHA at frozen commit",
+    "input pins and receipts",
+    "identical central support and targets",
+    "train folds and interior alpha minima",
+    "summary matches original",
+    "point estimates and bootstrap intervals independently reproduced from per-user sufficient statistics without paired_comparison"
+  ],
+  "max_absolute_numeric_difference": 0.0,
+  "material_findings": [],
+  "scientific_limit": "Small dynamic benefit for B; variance decreases and absolute MAE does not improve. No identification of pooling as cause or automatic FM continuation."
+}

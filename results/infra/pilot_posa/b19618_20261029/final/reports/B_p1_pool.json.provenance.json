@@ -1,0 +1,65 @@
+{
+  "model": "B",
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+  "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+  "checkpoint_step": 19618,
+  "config_file_sha256": "d12e7805c9cfb8525f05bae81949deba1f6c5e7a1148a222f08d06236978e47e",
+  "code_sha": "24139ab901c052357a46a65bc20466f2eb1e8358",
+  "mode": "probe",
+  "complete": true,
+  "task": "p1",
+  "which": "teacher",
+  "layer": "pool",
+  "k": 0,
+  "seed": 0,
+  "source_sha256": "ea8efec4f96511f7631b172e7ea6de13703235a9f7b642c95b40d5af426088ee",
+  "wrapper_sha256": "01a509e22339fec1812003bbb0b9bb0e99242c844b334864e88bc73189670773",
+  "command": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028/scripts/channel_readout.py",
+    "--stage",
+    "probe",
+    "--task",
+    "p1",
+    "--features",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1",
+    "--out",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.json",
+    "--layer",
+    "pool",
+    "--k",
+    "0",
+    "--seed",
+    "0",
+    "--datasets",
+    "ninapro_db2",
+    "ninapro_db3",
+    "ninapro_db6"
+  ],
+  "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.json",
+  "report_sha256": "da91929063c004a335a3cc72d68a93feb5fd5e8bd7ddba7c917fc2a007304362",
+  "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p1_pool.oof.npz",
+  "oof_sha256": "691b72854426fdf2eeadb1af5030dcf3108fb1f320fa80aff63094387f037a6d",
+  "extraction_receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/extraction_receipt.json",
+  "extraction_receipt_sha256": "a760b3bc5f6f516b82d057f171a6cb5b155fad9625436ea55185c52c20c62215",
+  "feature_inputs": {
+    "ninapro_db2": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+      "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+      "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db3": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+      "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b",
+      "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db6": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+      "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd",
+      "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    }
+  }
+}
