@@ -1,0 +1,20 @@
+=== 2026-11-06 13:22:48 pre-deploy 20261106_1322_predeploy_rehearsal (sola lettura, prova prima della review: nessun push)
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_gate_20261106_1322_predeploy_rehearsal.json b690c503e8af1890e0d19fd055edac2aaac59c9db9e589ea5bb172e9a5e6a477
+configurazione di ricezione del canonico: receive.denycurrentbranch updateInstead
+PASSA  lettura di squeue riuscita (exit 0)
+PASSA  commit del manifest pubblicato su origin, nel ramo di esecuzione
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi; manifest uguale al piano
+PASSA  i nove file fissati nel manifest: presenti, canonici, hash e dimensioni invariati
+PASSA  uscita del confronto assente
+PASSA  ID logico del confronto mai usato nel ledger
+PASSA  cartella del checkout di campagna assente
+PASSA  repository canonico: nessun hook attivo
+PASSA  il riferimento di deploy non e' estratto in alcun worktree (un push non aggiorna checkout)
+PASSA  ID logico del checkout mai usato nel ledger
+PASSA  riferimento di deploy non ancora presente su Leonardo
+PASSA  posti liberi in lrd_all_serial: almeno 1 su 10
+job dell'utente in coda seriale: 0 | letto alle 2026-11-06T13:22:49+0100
+CANCELLO SUPERATO
+push ammesso: git push leonardo 2b7b4551c6059d5456e6e12d171ef687eb0818f4:refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1
+exit pre-deploy: 0
+=== 13:22:56 fine

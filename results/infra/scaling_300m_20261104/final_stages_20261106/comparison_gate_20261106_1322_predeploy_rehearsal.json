@@ -1,0 +1,128 @@
+{
+ "campaign_dir": {
+  "canonical": true,
+  "exists": false,
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1"
+ },
+ "canonical_branch": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": "main"
+ },
+ "commit_in_canonical": {
+  "exit": 128,
+  "stderr": "fatal: git cat-file: could not get object info",
+  "stdout": ""
+ },
+ "compare_out": {
+  "exists": false,
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json"
+ },
+ "deploy_ref": {
+  "exit": 1,
+  "stderr": "",
+  "stdout": ""
+ },
+ "hooks": [],
+ "host": "login05.leonardo.local",
+ "pins": [
+  {
+   "bytes": 42708,
+   "canonical": true,
+   "expected": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+   "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63"
+  },
+  {
+   "bytes": 9233,
+   "canonical": true,
+   "expected": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_plan.json",
+   "sha256": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198"
+  },
+  {
+   "bytes": 205178,
+   "canonical": true,
+   "expected": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_ridge/report.json",
+   "sha256": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff"
+  },
+  {
+   "bytes": 21429,
+   "canonical": true,
+   "expected": "d9ef3a4c7d1504f8e0765ba19bd4cf960f4959a22876e67afe7570969c6f5578",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+   "sha256": "d9ef3a4c7d1504f8e0765ba19bd4cf960f4959a22876e67afe7570969c6f5578"
+  },
+  {
+   "bytes": 58558,
+   "canonical": true,
+   "expected": "80c3981d42d6af608e200cd8a2056812be0cd1b27984fae2c1222d23718dd1b6",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.json",
+   "sha256": "80c3981d42d6af608e200cd8a2056812be0cd1b27984fae2c1222d23718dd1b6"
+  },
+  {
+   "bytes": 21905,
+   "canonical": true,
+   "expected": "0721fe9c7480f53c1f1e80397edffa6ee89bf5ecc91e2e5953301c6e22bd4013",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.json",
+   "sha256": "0721fe9c7480f53c1f1e80397edffa6ee89bf5ecc91e2e5953301c6e22bd4013"
+  },
+  {
+   "bytes": 59236,
+   "canonical": true,
+   "expected": "e0230cf0a6a5913ed206e53206232600dccd4112c252ce35fed82b747265b506",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.json",
+   "sha256": "e0230cf0a6a5913ed206e53206232600dccd4112c252ce35fed82b747265b506"
+  },
+  {
+   "bytes": 21431,
+   "canonical": true,
+   "expected": "8c77e54d625af90ca551f5139702adfabe1bbfb5e2e7784187b5f4fc2b2b3b73",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.json",
+   "sha256": "8c77e54d625af90ca551f5139702adfabe1bbfb5e2e7784187b5f4fc2b2b3b73"
+  },
+  {
+   "bytes": 58505,
+   "canonical": true,
+   "expected": "2afa31c34170974e29e6c5676d6f35176c097297fc5ff3e90f157b993df6ed16",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.json",
+   "sha256": "2afa31c34170974e29e6c5676d6f35176c097297fc5ff3e90f157b993df6ed16"
+  }
+ ],
+ "read_at": "2026-11-06T13:22:49+0100",
+ "receive_config": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": "receive.denycurrentbranch updateInstead"
+ },
+ "sacct": null,
+ "squeue_serial": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": ""
+ },
+ "worktrees": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": "worktree /leonardo_work/IscrB_WearUsFM/wearusfm\nHEAD 8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7\nbranch refs/heads/main\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/baseline-td-20261023\nHEAD 56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca\ndetached\nlocked campagna baseline-td-20261023, commit 56984cfeedfb7fc9cb16769a5e207ecd6fb8e9ca (job 61971050)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/collaudo-infra-1\nHEAD cd335c9740702e10e0823973f386a92bc0ef7eec\ndetached\nlocked campagna collaudo-infra-1, commit cd335c9740702e10e0823973f386a92bc0ef7eec (job 60150574)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-20261104\nHEAD 17dd455f8d40d5430f87c2154c571a2f9e683baa\ndetached\nlocked campagna consolidation-20261104, commit 17dd455f8d40d5430f87c2154c571a2f9e683baa (job 63525708)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-20261104\nHEAD ae283052da086c814890d8e8e5b57505395b37a1\ndetached\nlocked campagna consolidation-ft-v2-20261104, commit ae283052da086c814890d8e8e5b57505395b37a1 (job 63527415)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-fits-20261104\nHEAD a2eeb755676a0ab780fc269f0679684eb41cd6f2\ndetached\nlocked campagna consolidation-ft-v2-fits-20261104, commit a2eeb755676a0ab780fc269f0679684eb41cd6f2 (job 63527861)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-benchmark-20261105\nHEAD 166fb8653b53439507183d76e3e36a79dd28d166\ndetached\nlocked campagna consolidation-long-benchmark-20261105, commit 166fb8653b53439507183d76e3e36a79dd28d166 (job 63636967)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-extract-20261105\nHEAD 7d276c98fc54d66dab1226226eb6c5e447422c69\ndetached\nlocked campagna consolidation-long-extract-20261105, commit 7d276c98fc54d66dab1226226eb6c5e447422c69 (job 63628160)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/derived-20261015\nHEAD 11f868b8ad8a949381a5cbb8519733e7dbc538bf\ndetached\nlocked campagna derived-20261015, commit 11f868b8ad8a949381a5cbb8519733e7dbc538bf (job 60661456)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/diag-initial-20261014\nHEAD 977e7672805537ed92d84b3f66299748d6b2d89e\ndetached\nlocked campagna diag-initial-20261014, commit 977e7672805537ed92d84b3f66299748d6b2d89e (job 60561424)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-bench-20261105\nHEAD 02f3de8547e0e50ee8d66f6ea43a356518c18e70\ndetached\nlocked campagna finetune15-bench-20261105, commit 02f3de8547e0e50ee8d66f6ea43a356518c18e70 (job 63578395)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-fits-20261105\nHEAD 1359b924d25601f92e9035b8bd621c2c6a93f947\ndetached\nlocked campagna finetune15-fits-20261105, commit 1359b924d25601f92e9035b8bd621c2c6a93f947 (job 63581502)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105\nHEAD cc814303e52d8e4067cf12fb1a291459a402c78c\ndetached\nlocked campagna logsquare-infer-5000-20261105, commit cc814303e52d8e4067cf12fb1a291459a402c78c (job 63614193)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-initdiag-20261105\nHEAD 1dc6ded8eee8a788277994687ff3b4b162453616\ndetached\nlocked campagna logsquare-initdiag-20261105, commit 1dc6ded8eee8a788277994687ff3b4b162453616 (job 63590929)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-pose-5000-20261105\nHEAD 9720fc8f7510bd8e7640164630da30515a8b3210\ndetached\nlocked campagna logsquare-pose-5000-20261105, commit 9720fc8f7510bd8e7640164630da30515a8b3210 (job 63615611)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-preflight-20261104\nHEAD 43cad1f760fbac2f10d8c16bc6f5d4eedc957b61\ndetached\nlocked campagna logsquare-preflight-20261104, commit 43cad1f760fbac2f10d8c16bc6f5d4eedc957b61 (job 63525639)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261104\nHEAD b2934b07f296778eefe97d4bdb8ca08f2b4e29be\ndetached\nlocked campagna logsquare-training-20261104, commit b2934b07f296778eefe97d4bdb8ca08f2b4e29be (job 63531256)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105\nHEAD 26cf367364f39778e019a53fba3529847c740b5e\ndetached\nlocked campagna logsquare-training-20261105, commit 26cf367364f39778e019a53fba3529847c740b5e (job 63592939)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-obiettivi-20261024\nHEAD 705ec0465420e80d5d818a8bbc7acc3a92c06efc\ndetached\nlocked campagna pilot-obiettivi-20261024, commit 705ec0465420e80d5d818a8bbc7acc3a92c06efc (job 62148779)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-20261026\nHEAD c5e42cb99b4dc0a105495de70946a411b0523dbc\ndetached\nlocked campagna pilot-posa-20261026, commit c5e42cb99b4dc0a105495de70946a411b0523dbc (job 62341827)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-audit-20261027\nHEAD aecff1a652096e8320f169d26dbea01d283ef29f\ndetached\nlocked campagna pilot-posa-audit-20261027, commit aecff1a652096e8320f169d26dbea01d283ef29f (job 62447995)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-b-20261028\nHEAD 24139ab901c052357a46a65bc20466f2eb1e8358\ndetached\nlocked campagna pilot-posa-b-20261028, commit 24139ab901c052357a46a65bc20466f2eb1e8358 (job 62523525)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-collaudo-20261027\nHEAD 41f6ac15f9f9cf50bc9b06a9d57ded3725326f04\ndetached\nlocked campagna pilot-posa-collaudo-20261027, commit 41f6ac15f9f9cf50bc9b06a9d57ded3725326f04 (job 62409314)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-posa-sonde-20261029\nHEAD f6c89cc1cfb07734345b3adde8bec68b69594fb5\ndetached\nlocked campagna pilot-posa-sonde-20261029, commit f6c89cc1cfb07734345b3adde8bec68b69594fb5 (job 62732007)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-psd3-20261029\nHEAD 0c78e784599f202c1815006ff0855108301e943e\ndetached\nlocked campagna pilot-psd3-20261029, commit 0c78e784599f202c1815006ff0855108301e943e (job 62732025)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pilot-psd3-20261029b\nHEAD 2235c15106a61066c035da95648971219e34dce7\ndetached\nlocked campagna pilot-psd3-20261029b, commit 2235c15106a61066c035da95648971219e34dce7 (job 62769337)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-slots-20261102\nHEAD c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62\ndetached\nlocked campagna pose-slots-20261102, commit c9d9c02de2597e2ab5e3907d7ffe06ffb544bb62 (job 63242629)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose-temporal-20261102\nHEAD 440af702ac3ec00feb52549acb1b4935251dce38\ndetached\nlocked campagna pose-temporal-20261102, commit 440af702ac3ec00feb52549acb1b4935251dce38 (job 63219091)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/rami-diag-20261021\nHEAD aba1f2ef3a94b68b8e44bce005adf7b005a92011\ndetached\nlocked campagna rami-diag-20261021, commit aba1f2ef3a94b68b8e44bce005adf7b005a92011 (job 61582077)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/readout-canale-20261023\nHEAD 6242bc3c1f40636691610f8f9e7a076ef64fe741\ndetached\nlocked campagna readout-canale-20261023, commit 6242bc3c1f40636691610f8f9e7a076ef64fe741 (job 61982223)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1\nHEAD ec221a64f47b66c6c7ac0b04444f5421b3e58e7a\ndetached\nlocked campagna scaling_300m_cpu_budgets_20261105_v1, commit ec221a64f47b66c6c7ac0b04444f5421b3e58e7a (job 63626623)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1\nHEAD 1bde83e5be036ad6168ad25f6ffa80069ea58700\ndetached\nlocked campagna scaling_300m_cpu_plans_20261105_v1, commit 1bde83e5be036ad6168ad25f6ffa80069ea58700 (job 63591447)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1\nHEAD aef665ba7ea66fc80291846487907bb3ef9107df\ndetached\nlocked campagna scaling_300m_evaluation_20261105_v1, commit aef665ba7ea66fc80291846487907bb3ef9107df (job 63580233)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1\nHEAD 0d5f0f90074bbaf1142be86d22490e360b632c63\ndetached\nlocked campagna scaling_300m_memory_20261104_v1, commit 0d5f0f90074bbaf1142be86d22490e360b632c63 (job 63527364)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0\nHEAD 05d4bf0663481522a56d96c0b07847924cf5bd26\ndetached\nlocked campagna scaling_300m_preflight_20261104_05d4bf0, commit 05d4bf0663481522a56d96c0b07847924cf5bd26 (job 63525937)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_scientific5000_20261104_v1\nHEAD dc96559405b5fff971a3be06a6ca59c992d342dc\ndetached\nlocked campagna scaling_300m_scientific5000_20261104_v1, commit dc96559405b5fff971a3be06a6ca59c992d342dc (job 63532877)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step1-random-20261014\nHEAD ad9b6ad5d3196b1d6e96e0cb7f44fc0abedd7122\ndetached\nlocked campagna step1-random-20261014, commit ad9b6ad5d3196b1d6e96e0cb7f44fc0abedd7122 (job 60508432)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step1-random-20261014-r2\nHEAD 4fb4208071cd9d641762d683ae581dab6e0432ac\ndetached\nlocked campagna step1-random-20261014-r2, commit 4fb4208071cd9d641762d683ae581dab6e0432ac (job 60509955)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step1-random-20261014-r3\nHEAD 7863c5da34bfa4c261acd41fff742707d2a45f6d\ndetached\nlocked campagna step1-random-20261014-r3, commit 7863c5da34bfa4c261acd41fff742707d2a45f6d (job 60562932)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step2a-20261014\nHEAD 3dba14c1176f9ac525aee0e851590ca7db4b4c39\ndetached\nlocked campagna step2a-20261014, commit 3dba14c1176f9ac525aee0e851590ca7db4b4c39 (job 60506850)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/step2c-20261014\nHEAD 1c9485260aaf32d5936346b50225f5cff1d1b8ea\ndetached\nlocked campagna step2c-20261014, commit 1c9485260aaf32d5936346b50225f5cff1d1b8ea (job 60477316)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-endpointcpu-20261104\nHEAD b315dadfedc09c522deeb56af829d34ebc04f4b4\ndetached\nlocked campagna tokenizer-endpointcpu-20261104, commit b315dadfedc09c522deeb56af829d34ebc04f4b4 (job 63494914)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval19618-20261104\nHEAD 453ce6c496745f2d73aa3007406721586e6dd767\ndetached\nlocked campagna tokenizer-eval19618-20261104, commit 453ce6c496745f2d73aa3007406721586e6dd767 (job 63491904)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-eval5k-20261103\nHEAD f2061b8bc91a6355213793a9719121135ad48fa2\ndetached\nlocked campagna tokenizer-eval5k-20261103, commit f2061b8bc91a6355213793a9719121135ad48fa2 (job 63399280)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-posecpu5k-20261103\nHEAD 70fd080149c11d10917059875d31a5a2820f176a\ndetached\nlocked campagna tokenizer-posecpu5k-20261103, commit 70fd080149c11d10917059875d31a5a2820f176a (job 63405286)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-preflight-20261103\nHEAD ef8016a520f12a71eb9890202e836f56622d000b\ndetached\nlocked campagna tokenizer-preflight-20261103, commit ef8016a520f12a71eb9890202e836f56622d000b (job 63369832)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/tokenizer-training-20261103\nHEAD afb644ea10ecc2a716160b4d8a4904e805c366fb\ndetached\nlocked campagna tokenizer-training-20261103, commit afb644ea10ecc2a716160b4d8a4904e805c366fb (job 63385655)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1arm-eval-20261022\nHEAD 23efccbf4a2089dfe9b966b30986a7dc10189a14\ndetached\nlocked campagna w1arm-eval-20261022, commit 23efccbf4a2089dfe9b966b30986a7dc10189a14 (job 61761132)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-20261016\nHEAD 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec\ndetached\nlocked campagna w1cal-20261016, commit 72cf24abec5b8332011d83ce2b2fc7ae6bcc9cec (job 60714885)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261019\nHEAD 9ab781e98a44810f3223e5dec1eac52988f374fc\ndetached\nlocked campagna w1cal-eval-20261019, commit 9ab781e98a44810f3223e5dec1eac52988f374fc (job 61378990)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261020\nHEAD 62bec0b71e89cdcff54de7c7e0f93d7046019213\ndetached\nlocked campagna w1cal-eval-20261020, commit 62bec0b71e89cdcff54de7c7e0f93d7046019213 (job 61540094)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cal-eval-20261021\nHEAD 98c5832379167d83336ba2f5dfd721070ee47a6c\ndetached\nlocked campagna w1cal-eval-20261021, commit 98c5832379167d83336ba2f5dfd721070ee47a6c (job 61624224)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1cat-20261015\nHEAD df4d2f5c48909c1d5f23af9ece09860ff9948e44\ndetached\nlocked campagna w1cat-20261015, commit df4d2f5c48909c1d5f23af9ece09860ff9948e44 (job 60623582)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1gd-20261014\nHEAD d7e25098927e8b8ee4d5fb1b3a5c3308387add6b\ndetached\nlocked campagna w1gd-20261014, commit d7e25098927e8b8ee4d5fb1b3a5c3308387add6b (job 60564394)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1pf-20261015\nHEAD 02307753c321e028fbb73aec9329d7f5c852bf19\ndetached\nlocked campagna w1pf-20261015, commit 02307753c321e028fbb73aec9329d7f5c852bf19 (job 60608218)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1sel-20261016\nHEAD 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967\ndetached\nlocked campagna w1sel-20261016, commit 7cf4f08c93f63f8b7e1a2ee64c9e62fde303d967 (job 60688786)\n\nworktree /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/w1val-20261015\nHEAD 51f5826e3223c15f30130b8cd41bd5fb741ec5de\ndetached\nlocked campagna w1val-20261015, commit 51f5826e3223c15f30130b8cd41bd5fb741ec5de (job 60664574)"
+ },
+ "remote_script_sha256": "7604374896ad286abb1fc3bc6aba60dd00d468f4e6429d5dae4334f36842f18f",
+ "commit": "2b7b4551c6059d5456e6e12d171ef687eb0818f4",
+ "local": {
+  "read_at": "2026-11-06T13:22:56+01:00",
+  "repo_head": "b12a86e25b707d67dead0507654d9c516b8a666f",
+  "origin_branch": "claude/scaling-300m-exec-20261106",
+  "origin_tip": "b12a86e25b707d67dead0507654d9c516b8a666f",
+  "origin_has_commit": true,
+  "dispatcher_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "checkout_script_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+  "plan_sha256": "1b445cfb9701bfb9fe907800a1192ff5c0e1b124c59bd25f46a20b144ea81765",
+  "manifest_sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea"
+ },
+ "ledger": {
+  "SCALING-inputs-checkout-20261106": null,
+  "SCALING-compare-20261106": null
+ }
+}
