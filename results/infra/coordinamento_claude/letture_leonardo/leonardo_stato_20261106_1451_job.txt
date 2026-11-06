@@ -1,0 +1,12 @@
+2026-11-06 14:51:32
+== squeue
+63593128|LOGSQ-T100-LQ-19618-20261105|PENDING|0:00|4:00:00|142840|PartitionConfig|boost_usr_prod|32|2026-11-05T15:18:42|N/A
+== sacct dalle 14 del 06/11
+63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|PENDING|00:00:00|04:00:00|2026-11-05T15:18:42|Unknown|Unknown|0:0
+63671405|SCALING-inputs-checkout-20261106|lrd_all_serial|COMPLETED|00:00:40|00:05:00|2026-11-06T14:30:14|2026-11-06T14:30:43|2026-11-06T14:31:23|0:0
+63671773|SCALING-compare-20261106|lrd_all_serial|COMPLETED|00:03:13|00:30:00|2026-11-06T14:36:12|2026-11-06T14:36:30|2026-11-06T14:39:43|0:0
+== quota
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem    used   quota   limit   grace   files   quota   limit   grace
+/leonardo_work/IscrB_WearUsFM
+                 998.1G      1T      0k       - 1509029       0       0       -

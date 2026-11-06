@@ -1,0 +1,37 @@
+2026-11-06 14:49:20
+== motivo adesso
+63593128|PENDING|PartitionConfig|142841|N/A
+== job in attesa in boost_usr_prod per motivo (solo conteggi)
+   5644 PartitionConfig
+   3840 Dependency
+    814 job requeued in held state
+    663 JobHeldUser
+    255 Priority
+     54 MaxNodePerAccount
+     38 JobHeldAdmin
+     35 JobArrayTaskLimit
+     21 QOSMaxNodePerUserLimit
+     21 BeginTime
+      5 QOSMaxJobsPerUserLimit
+      1 Resources
+== job in attesa a nodo intero con 4 GPU, per motivo (solo conteggi)
+   3119 PartitionConfig
+   1065 Dependency
+    387 JobHeldUser
+     62 Priority
+     11 JobArrayTaskLimit
+      4 QOSMaxJobsPerUserLimit
+== partizione
+MaxNodes=64
+MinNodes=0
+MaxCPUsPerNode=UNLIMITED
+Nodes=lrdn[0001-0012,0014-0038,0040-0053,0055-0113,0115-0131,0133-0152,0154-0159,0161-0181,0183-0187,0189-0201,0203-0273
+OverSubscribe=NO
+PreemptMode=OFF
+State=UP
+TotalCPUs=106560
+TotalNodes=3330
+DefMemPerCPU=15400
+MaxMemPerNode=UNLIMITED
+== start stimato
+63593128|N/A|PartitionConfig

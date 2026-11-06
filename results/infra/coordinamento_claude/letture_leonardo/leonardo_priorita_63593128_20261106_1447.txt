@@ -1,0 +1,41 @@
+2026-11-06 14:47:23
+== scontrol
+Priority=142841
+QOS=normal
+JobState=PENDING
+Reason=PartitionConfig
+Dependency=(null)
+TimeLimit=04:00:00
+SubmitTime=2026-11-05T15:18:42
+EligibleTime=2026-11-05T16:38:00
+StartTime=Unknown
+LastSchedEval=2026-11-06T14:47:24
+Partition=boost_usr_prod
+NumNodes=1
+ReqTRES=cpu=32,mem=480G,node=1,billing=32,gres/gpu=4
+== sprio job
+63593128|142841|2632|20201|8|120000
+== partizione
+AllowQos=ALL
+QoS=boost_usr_prod
+DefaultTime=00:30:00
+MaxTime=1-00:00:00
+State=UP
+TotalNodes=3330
+== nodi boost_usr_prod per stato
+allocated 2918
+completing 11
+idle 3
+mixed- 12
+mixed 366
+planned 20
+== prenotazioni
+ReservationName=s_int_SNC	StartTime=2026-07-22T18:17:48	EndTime=2027-07-22T18:17:48	NodeCnt=8	Flags=MAINT,SPEC_NODES
+ReservationName=maint_dcgp_PB1	StartTime=2027-01-15T08:00:00	EndTime=2027-01-18T08:00:00	NodeCnt=1248	Flags=SPEC_NODES
+ReservationName=maint_4B1	StartTime=2026-11-10T07:00:00	EndTime=2026-11-12T07:00:00	NodeCnt=540	Flags=MAINT,SPEC_NODES
+ReservationName=maint_4B2	StartTime=2026-11-12T07:00:00	EndTime=2026-11-14T07:00:00	NodeCnt=180	Flags=MAINT,SPEC_NODES
+ReservationName=maint_23112026_booster	StartTime=2026-11-23T08:00:00	EndTime=2026-11-25T08:00:00	NodeCnt=3456	Flags=MAINT,SPEC_NODES
+ReservationName=maint_4NB-UPS	StartTime=2026-11-23T08:00:00	EndTime=2026-11-25T08:00:00	NodeCnt=768	Flags=MAINT,IGNORE_JOBS,SPEC_NODES
+ReservationName=maint_23112026_dcgp	StartTime=2026-11-23T08:00:00	EndTime=2026-11-25T08:00:00	NodeCnt=768	Flags=MAINT,SPEC_NODES
+ReservationName=maint_23112026_vizser	StartTime=2026-11-23T08:00:00	EndTime=2026-11-25T08:00:00	NodeCnt=17	Flags=MAINT,SPEC_NODES
+ReservationName=s_res_cmcc	StartTime=2026-11-06T09:00:00	EndTime=2026-11-09T09:00:00	NodeCnt=63	Flags=OVERLAP,SPEC_NODES

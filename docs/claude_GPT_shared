@@ -7246,6 +7246,60 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (al massimo 8 job e 8 ore di limiti sommati per ondata); una lettura unica prima di ogni invio (esito e provenienza
   dell'ondata precedente, spazio, ledger, certificato, punte dei rami).
 
+### 2026-11-06 | Claude | Coordinamento: lettura d'insieme delle linee 1 e 2 chiesta da Simone (che cosa si e' visto, che cosa manca, spunti); nessun job, nessuna decisione
+- Richiesta di Simone alla chat di coordinamento, 06/11 pomeriggio: «intanto che sei qua, ok, adesso facciamo una ragionata. prendi
+  i risultati che abbiamo avuto finora sulle tracce 1 (scaling) e 2 (schedule lungo e more dataset). Mi dici cosa bbiamo visto
+  finora con qualche grafico, cosa manca ancora e poi ragioniamo sulle conclusioni». Lettura consegnata nella chat verso le 18:20.
+  Alla mia domanda «Scrivo questa lettura nel registro condiviso, così la vede anche GPT?» ha risposto: «Sì, registrala».
+- Che cosa ho fatto: solo lettura di documenti e report gia' pubblicati sui rami, piu' il ledger locale. Tre grafici mostrati a
+  Simone nella chat (non sono nel repo). Nessun job, nessuna lettura di score su Leonardo, nessun numero ricalcolato da me.
+- Fonti: `docs/reviews/claude_analysis_scaling_300m_5000_20261106.md` (`claude/review-scaling-300m-20261104`, punta 876f5b7);
+  `docs/reviews/gpt_scaling_scientific_final_20261106.md` e `docs/scaling_300m_protocol_20261104.md`
+  (`codex/scaling-300m-20261104`, punta 2d58e98); `results/infra/finetune15_20261105/final/README.md`
+  (`claude/consolidation-long-exec-20261105`, punta 581b285); `docs/reviews/finetune_results_20261105.md`,
+  `docs/reviews/tokenizer_classification_results_20261104.md`, `docs/reviews/tokenizer_pose_19618_results_20261104.md`,
+  `docs/consolidation_long_execution_20261105.md` (`codex/consolidation-20261104`, punta 30b8ae1).
+- Linea 1, 300M contro 30M a 5.000 passi (dai due documenti di analisi): EPN-612 78,23 contro 76,31, +1,92 [1,33; 2,53];
+  P1 +0,60 [0,13; 1,03]; P2 +1,30 [-0,38; 2,72]; posa `E_dyn` 0,8999 contro 0,8998; controllo a larghezza pareggiata su
+  EPN-612 -0,12 [-0,68; +0,40]. Seguito a 19.618 autorizzato da Simone alle 17:22 (voce della linea 1, 876f5b7).
+- Linea 2, fine-tuning su EPN-612 dal teacher 30M a 19.618: a 5 epoche finetune 93,77, scratch 92,36, frozen 70,58, finetune
+  meno scratch +1,40 [0,93; 1,84]; a 15 epoche 93,89, 93,06, 71,42, finetune meno scratch +0,83 [0,42; 1,26]; il distacco
+  cala di 0,57 [-1,05; -0,05]. Schedule lungo: training fino a 49.046 concluso il 05/11 (25,28 GPU-ore); valutazione lunga
+  nella fase fit (ledger alle 18:10: inviati 6 fit su 72, cioe' 3 di posa e 3 di classificazione; prima ondata 4 su 4
+  `COMPLETED 0:0`, voce della linea 2 83253e2); nessun esito scientifico ancora.
+- **Accostamento mio, descrittivo e fatto dopo i dati (post hoc): dose contro taglia.** Lo stesso 30M T100-G fra 5.000 e
+  19.618 passi: EPN-612 76,31 e 82,58 (+6,26), P1 15,36 e 17,19 (+1,83), P2 77,47 e 80,52 (+3,05), `E_dyn` 0,8998 e 0,8389
+  (-6,77%, confronto gia' presente nel documento di posa di GPT). Il 300M a 5.000 passi da' +1,92, +0,60, +1,30 e nulla
+  sulla posa. Rapporto dei tempi del collaudo del 04/11: 3,9086; 19.618/5.000 = 3,92: i due punti costano circa lo stesso
+  tempo GPU.
+  - Limiti che dichiaro: il protocollo dello scaling dice «Non si confronta 300M5000 con sonde30M19618». Non uso
+    l'accostamento per giudicare la taglia ne' come criterio: serve solo a parlare di dose e di costo. I valori a 5.000 e a
+    19.618 vengono da due campagne di sonde con la stessa ricetta dichiarata (pool 768, stessa griglia di C, stessi fold),
+    senza un intervallo appaiato fra le due; un seme per corsa; soggetti di sviluppo. Non dice nulla su che cosa fara' il
+    300M a 19.618.
+- Spunti dati a Simone come letture mie, da verificare da GPT (responsabilita' scientifica sua); non sono proposte di
+  esperimento:
+  1. la dose e' la leva piu' forte vista finora; la valutazione lunga dice se continua a 39.237 e a 49.046. Il 300M a 19.618
+     si puo' leggere anche contro il 30M a 49.046, che per il rapporto dei tempi costa circa un terzo in meno (49.046 passi
+     contro 19.618 x 3,9086 = 76.679 passi equivalenti del 30M);
+  2. del guadagno del 300M mi sembra solido solo EPN-612: il +0,60 su P1 ha la taglia dello scostamento fra due esecuzioni
+     della stessa ricetta nominale (T25-L meno B a 19.618: P1 +0,510 [0,090; 0,926]; EPN-612 -0,236 [-0,764; +0,274]). E'
+     una sola coppia, non una soglia di rumore, come gia' scrive il documento di GPT. A 19.618 il controllo pareggiato va
+     riletto, come gia' concordato nella linea 1;
+  3. su EPN-612 con tutte le etichette chi parte da zero arriva a 93,06: il preaddestramento vale +0,83 a 15 epoche, e le
+     differenze fra sonde (1-2 punti a quota 76-83) stanno piu' di dieci punti sotto il modello addestrato per intero.
+     Resta aperto dove il modello dovrebbe fare la differenza (poche etichette, soggetti nuovi, NinaPro, posa): nessuna
+     prova in corso lo misura;
+  4. la posa non si muove con la taglia a 5.000 passi; si e' mossa con la dose e poco con il tokenizer. I due pannelli di
+     posa della valutazione lunga sono il prossimo dato.
+- Che cosa manca, detto a Simone: fit, confronti e sintesi della valutazione lunga; piano, unica review di GPT ed
+  esecuzione del seguito del 300M; variabilita' fra corse, soggetti di test, fine-tuning fuori da EPN-612 o con poche
+  etichette (non misurati da nessuna prova in corso).
+- Nulla di deciso: Simone ha scritto «poi ragioniamo sulle conclusioni». Non lancio nulla e non propongo job.
+- Pulizie di coordinamento nello stesso commit: raccolte nella cartella delle prove cinque letture di Leonardo del 06/11, fra le 14:45
+  e le 17:25, e la copia aggiornata del ledger (1.309 righe). Lo specchietto resta fermo alle 10:32: lo stato dei job del pomeriggio e' nelle voci
+  delle linee 1 e 2 qui sopra.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
