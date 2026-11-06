@@ -216,6 +216,9 @@ def inference_scene(tmp_path):
     records = all_group_records()
     groups = B.group_ratios(records)
     plan = json.loads((B.V.REPO / 'results/infra/logsquare_evaluation_20261104/extraction_plan.json').read_text())
+    # Synthetic execution fixture: pin the current test sources, not an old release.
+    import hashlib
+    plan['source_sha256']={name:hashlib.sha256((B.V.REPO/name).read_bytes()).hexdigest() for name in B.V.source_files()}
     plan['checkpoints']['5000'] = {'sha256': 'd' * 64}
     plan['_benchmark_context_sha256'] = B.V.context_sha256(plan)
     infer = {'protocol': B.PROTOCOL, 'status': 'APPROVED_FOR_BENCHMARK', 'historical_jobs': specs, 'selection': B.SELECTION,

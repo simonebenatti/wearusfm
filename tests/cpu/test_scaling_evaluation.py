@@ -13,6 +13,7 @@ import sys
 
 import numpy as np
 import pytest
+from frozen_campaign_support import archive
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
@@ -280,15 +281,17 @@ def test_command_builder_is_unchanged_and_supports_both_endpoint_paths(tmp_path)
 
 
 def test_extraction_primitive_bytes_match_historical_baseline_and_mutation_is_rejected(tmp_path):
-    states = S.extraction_source_states()
+    historical_root=archive(tmp_path,S.EXTRACTION_REFERENCE_CODE,*S.EXTRACTION_SOURCE_SHA256)
+    states = S.extraction_source_states(historical_root)
     assert len(states) == 5
+    with pytest.raises(ValueError,match='SHA'):S.extraction_source_states()
     for path, expected in S.EXTRACTION_SOURCE_SHA256.items():
         historical = S.subprocess.check_output(["git", "show", S.EXTRACTION_REFERENCE_CODE + ":" + path], cwd=S.ROOT)
         import hashlib
         assert hashlib.sha256(historical).hexdigest() == expected
         destination = tmp_path / path
         destination.parent.mkdir(exist_ok=True)
-        shutil.copyfile(S.ROOT / path, destination)
+        shutil.copyfile(historical_root / path, destination)
     S.extraction_source_states(tmp_path)
     (tmp_path / "scripts/pose_eval.py").write_text("# changed extractor\n")
     with pytest.raises(ValueError, match="SHA"):
@@ -314,6 +317,9 @@ def context(tmp_path, monkeypatch):
     """Local source-contract boundary + real reconstructed CLI/full configurations."""
     import scaling_train as ST
     import train_jepa
+    historical_root=archive(tmp_path,S.EXTRACTION_REFERENCE_CODE,*S.EXTRACTION_SOURCE_SHA256)
+    actual_source_check=S.extraction_source_states
+    monkeypatch.setattr(S,'extraction_source_states',lambda:actual_source_check(historical_root))
     frozen = json.loads((S.ROOT / "results/infra/tokenizer_review_20261103/comparison_configurations.json").read_text())
     argv = list(frozen["arm_configurations"]["T100-G"]["validated_trainer_argv"])
     inputs = {}

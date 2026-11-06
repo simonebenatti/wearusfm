@@ -6,6 +6,7 @@ import sys
 import subprocess
 
 import pytest
+from frozen_campaign_support import git_source_identity
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT/'src'), str(ROOT/'scripts')]
@@ -120,10 +121,14 @@ def test_extraction_cannot_be_reused_after_source_amendment_with_same_recipe_and
 def test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned():
     plan=json.loads((ROOT/'results/infra/consolidation_long_20261105/plan.json').read_text())
     C.validate_plan(plan,require_review=False)
-    assert plan['source_sha256']==C.source_identity()
+    assert plan['source_sha256']==git_source_identity('166fb8653b53439507183d76e3e36a79dd28d166')
+    # The merged source tree must not pretend to be that immutable campaign.
+    assert plan['source_sha256']!=C.source_identity()
     assert plan['output_root']==C.OUTPUT_ROOT
     assert plan['output_root'].startswith('/leonardo_scratch/large/userexternal/sbenatti/')
-    with pytest.raises(ValueError,match='Claude'):C.validate_plan(plan)
+    C.validate_plan(plan)
+    unreviewed=copy.deepcopy(plan);unreviewed['review']['status']='awaiting_claude_review';unreviewed['review']['commit']=None
+    with pytest.raises(ValueError,match='Claude'):C.validate_plan(unreviewed)
     for step in C.DOSES:
         pin=plan['endpoints'][str(step)]['checkpoint']
         assert pin['path'].startswith('/leonardo_work/') and pin['bytes']==454381728

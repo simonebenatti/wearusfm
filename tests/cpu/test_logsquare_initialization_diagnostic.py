@@ -16,6 +16,7 @@ import time
 from types import SimpleNamespace
 
 import pytest
+from frozen_campaign_support import archive
 import torch
 from wearusfm.training.pairing import state_sha256
 
@@ -476,8 +477,24 @@ def rank_rows(records, guard_sha256, mode):
         (records / f'rank{rank}.json').write_text(json.dumps(row))
 
 
+@pytest.fixture(scope='module')
+def archived_rank_root(tmp_path_factory):
+    return archive(tmp_path_factory.mktemp('archived_lq_diag'),
+                   '63eba9a80e729a2ec989b2b63b07e21cd24a5152','src','scripts','results/infra')
+
+
+@pytest.fixture
+def archived_rank_diagnostic(monkeypatch, archived_rank_root):
+    spec=importlib.util.spec_from_file_location('archived_lq_diagnostic_test',
+        archived_rank_root/'scripts/logsquare_initialization_diagnostic.py')
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(sys.modules[__name__],'D',module)
+    return module
+
+
 @pytest.mark.parametrize('mode', ['passed', 'rejected', 'missing', 'timeout', 'trained', 'left_behind'])
-def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reader(tmp_path, monkeypatch, mode):
+def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reader(tmp_path, monkeypatch, mode, archived_rank_diagnostic):
     """Real plan, real pins, real controller: only torchrun is replaced, by the records four ranks would leave."""
     plan_path, plan = approved_copy(tmp_path)
     workspace = tmp_path / 'out'
@@ -527,12 +544,12 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
     # The controller's own command for the fresh phase, with its production allocation; only the directories are the
     # diagnostic's, and the one added word is the switch that keeps every model away from the trainer.
     controller = D.import_file('scripts/logsquare_train.py', 'logsquare_diagnostic_test_controller')
-    comparison = json.loads((ROOT / plan['comparison']['path']).read_text())
+    comparison = json.loads((D.REPO / plan['comparison']['path']).read_text())
     argv = list(comparison['arm_configurations']['T100-L']['validated_trainer_argv'])
     cfg = controller.CLI.build_config(controller.CLI.build_parser().parse_args(
         argv[1:] + ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '.001']))
-    training = json.loads((ROOT / plan['training_plan']['path']).read_text())
-    pin = {'path': str(ROOT / plan['initial_state_guard']['path']), 'sha256': plan['initial_state_guard']['sha256']}
+    training = json.loads((D.REPO / plan['training_plan']['path']).read_text())
+    pin = {'path': str(D.REPO / plan['initial_state_guard']['path']), 'sha256': plan['initial_state_guard']['sha256']}
     production = controller.command_for(comparison, cfg, workspace / (D.RANK_VARIANT + '_run'), 5000,
                                         training['allocations']['5000']['walltime_seconds'], pin,
                                         workspace / (D.RANK_VARIANT + '_initial_state'))
@@ -566,7 +583,7 @@ def test_rank_entry_dry_run_uses_the_production_command_and_the_controller_reade
         D.rank_entry_child(plan_path, 'a' * 40, workspace)
 
 
-def test_rank_entry_dry_run_launches_nothing_when_the_preparation_used_its_time(tmp_path, monkeypatch):
+def test_rank_entry_dry_run_launches_nothing_when_the_preparation_used_its_time(tmp_path, monkeypatch, archived_rank_diagnostic):
     """The race with the parent's bound: torchrun is started only if its own bound can expire, and be cleaned up, first."""
     plan_path, plan = approved_copy(tmp_path)
     workspace = tmp_path / 'out'

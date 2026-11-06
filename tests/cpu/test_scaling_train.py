@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from frozen_campaign_support import synthetic_scaling_contract
 
 from wearusfm.training import run as R
 
@@ -26,13 +27,13 @@ def write_json(path, value):
 
 
 @pytest.fixture
-def context():
-    return M.check_source_contract(CONTRACT)
+def context(tmp_path):
+    return M.check_source_contract(synthetic_scaling_contract(M, tmp_path))
 
 
 def plan_for(context, tmp_path):
     return {"protocol": M.PROTOCOL, "arm": M.ARM, "checkpoint_step": 5000,
-            "source_contract": pin(CONTRACT),
+            "source_contract": pin(context["identity"]["path"]),
             "scientific_source_sha256": context["contract"]["scientific_source_sha256"],
             "execution_source_sha256": {p: R.sha256_file(ROOT / p) for p in M.EXECUTION_SOURCES},
             "allocation": {"nodes": 1, "gpus": 4, "cpus": 32, "memory": "480G", "walltime_seconds": 21600},
@@ -44,7 +45,7 @@ def plan_for(context, tmp_path):
 
 
 def test_complete_source_contract_and_cli_exactly_match_preflight_without_remote_reads(context, tmp_path):
-    assert len(context["contract"]["scientific_source_sha256"]) == 103
+    assert len(context["contract"]["scientific_source_sha256"]) == len(context["states"]) - 4
     assert context["contract"]["reference_code_sha"] == M.BASE_CODE_SHA
     cfg, command = M.validate_plan(plan_for(context, tmp_path), context)
     assert cfg.model.dim == 896 and cfg.model.n_heads == 14 and cfg.batch_size == 32
@@ -102,7 +103,7 @@ def preflight(context):
 
 def memory(context, tmp_path):
     from test_scaling_production_memory import production_memory_fixture
-    return production_memory_fixture(tmp_path, context["config_300m"], context["identity"]["sha256"])
+    return production_memory_fixture(tmp_path, context["config_300m"], context["identity"]["sha256"], context["identity"]["path"])
 
 
 def test_resource_formula_uses_all112_measured_updates_not_a_favorable_phase(context):

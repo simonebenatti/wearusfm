@@ -6,6 +6,7 @@ import sys
 
 import numpy as np
 import pytest
+from frozen_campaign_support import synthetic_scaling_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -38,7 +39,7 @@ def projection(tmp_path_factory):
 
 @pytest.fixture
 def plan(tmp_path, projection):
-    contract = pin(ROOT / "results/infra/scaling_300m_20261104/training_source_contract.json")
+    contract = pin(synthetic_scaling_contract(M.ST, tmp_path))
     context = M.ST.check_source_contract(contract["path"])
     p1_subjects = [f"s{i:02}" for i in range(8)]
     all_p2 = [f"p{i:02}" for i in range(24)]

@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from frozen_campaign_support import synthetic_scaling_contract
 from wearusfm.training import run as R
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -23,13 +24,13 @@ def write(path, value, lines=False):
     return M.pin(path)
 
 
-def production_memory_fixture(tmp_path, cfg, contract_sha):
+def production_memory_fixture(tmp_path, cfg, contract_sha, contract_path):
     """500 tiny log rows exercise real pins/coverage; checkpoint bytes are only an I/O fixture."""
     run, out = tmp_path / "technical_run", tmp_path / "technical_receipts"
     run.mkdir(); out.mkdir()
-    source_pin = M.pin(CONTRACT)
+    source_pin = M.pin(contract_path)
     assert source_pin["sha256"] == contract_sha
-    stats = json.loads(CONTRACT.read_text())["inputs"]["pose_stats"]["sha256"]
+    stats = json.loads(Path(contract_path).read_text())["inputs"]["pose_stats"]["sha256"]
     environment = json.loads(REFERENCE.read_text())["environment"]
     runtime = {**{k: environment[k] for k in M.RUNTIME_FIELDS}, "cudnn": 8907}
     config = R.config_to_dict(replace(cfg, max_steps=500))
@@ -81,13 +82,14 @@ def production_memory_fixture(tmp_path, cfg, contract_sha):
 
 
 @pytest.fixture
-def context():
-    return M.module("scaling_train").check_source_contract(CONTRACT)
+def context(tmp_path):
+    train = M.module("scaling_train")
+    return train.check_source_contract(synthetic_scaling_contract(train, tmp_path))
 
 
 @pytest.fixture
 def scene(context, tmp_path):
-    return production_memory_fixture(tmp_path, context["config_300m"], context["identity"]["sha256"]), context
+    return production_memory_fixture(tmp_path, context["config_300m"], context["identity"]["sha256"], context["identity"]["path"]), context
 
 
 def check(scene):

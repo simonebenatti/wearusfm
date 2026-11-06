@@ -5,6 +5,7 @@ import sys
 
 import numpy as np
 import pytest
+from frozen_campaign_support import run_frozen
 import torch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,14 +34,28 @@ def data():
 
 
 @pytest.mark.parametrize("step", C.PHASES)
-def test_continuation_is_exact_recipe_and_global_lr(step):
+def test_continuation_is_exact_recipe_and_global_lr(step, tmp_path):
+    # The controller is byte-identical; its actual campaign uses the pre-LQ runtime.
+    import subprocess
+    sha = '17dd455f8d40d5430f87c2154c571a2f9e683baa'
+    assert subprocess.check_output(['git','show',sha+':scripts/consolidation_continue.py'],cwd=ROOT) == (ROOT/'scripts/consolidation_continue.py').read_bytes()
+    observed = run_frozen(tmp_path, sha,
+        ['src', 'scripts', 'results/infra/tokenizer_execution_20261103/19618/T100-G'],
+        """import json
+import consolidation_continue as C
+from wearusfm.training import run as R
+assert Path(R.__file__).resolve().is_relative_to(root)
+receipt=json.loads(C.SOURCE.read_text())
+cmd,cfg=C.command_for(receipt,int(sys.argv[2]),'/tmp/new-run')
+print(json.dumps({'cmd':cmd,'config':R.config_to_dict(cfg),'lrs':{str(s):R._lr_at(s,cfg) for s in (19618,39237,49045)}}))
+""", step)
     receipt = json.loads(C.SOURCE.read_text())
-    cmd, cfg = C.command_for(receipt, step, "/tmp/new-run")
+    cmd = observed['cmd']
     old = json.loads((C.BASE / "19618/T100-G/config.json").read_text())
-    assert {**R.config_to_dict(cfg), "max_steps": 19618} == old
-    assert R._lr_at(19618, cfg) == 1e-4
-    assert R._lr_at(39237, cfg) == 1e-4
-    assert R._lr_at(49045, cfg) < 1e-7
+    assert {**observed["config"], "max_steps": 19618} == old
+    assert observed["lrs"]["19618"] == 1e-4
+    assert observed["lrs"]["39237"] == 1e-4
+    assert observed["lrs"]["49045"] < 1e-7
     assert ("--branch-from" in cmd) == (step == 30000)
     assert receipt["command"][receipt["command"].index("--max-steps") + 1] == "19618"
 

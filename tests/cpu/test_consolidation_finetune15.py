@@ -7,6 +7,7 @@ import sys
 
 import numpy as np
 import pytest
+from frozen_campaign_support import archive
 import torch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -170,19 +171,28 @@ def test_published_recipe_and_operational_policy_are_explicit():
         C.fit_resource_policy(changed)
 
 
-def test_reference_verifies_all_twentyfour_fits_without_opening_oof(monkeypatch):
+def archived_reference(plan, tmp_path, monkeypatch):
+    root=archive(tmp_path,'a2eeb755676a0ab780fc269f0679684eb41cd6f2','src','scripts')
+    # Measure the actual files of the original five-epoch runtime, not a stubbed digest.
+    with monkeypatch.context() as scoped:
+        scoped.setattr(C.FIVE,'ROOT',root)
+        scoped.setattr(C.FIVE,'__file__',str(root/'scripts/consolidation_finetune.py'))
+        return C.reference_five(plan)
+
+
+def test_reference_verifies_all_twentyfour_fits_without_opening_oof(monkeypatch, tmp_path):
     def no_predictions(*args, **kwargs):
         raise AssertionError('held predictions must not enter the resource gate')
     monkeypatch.setattr(np, 'load', no_predictions)
-    reference = C.reference_five(published_plan())
+    reference = archived_reference(published_plan(), tmp_path, monkeypatch)
     assert reference['max_elapsed_seconds_by_regime'] == {'frozen': 4519, 'finetune': 13359, 'scratch': 13446}
     monkeypatch.setattr(C.FIVE, 'source_identity', lambda: 'changed-source')
     with pytest.raises(ValueError, match='source equivalence'):
         C.reference_five(published_plan())
 
 
-def test_complete_job_projection_never_discounts_faster_microbenchmark():
-    reference = C.reference_five(published_plan())
+def test_complete_job_projection_never_discounts_faster_microbenchmark(tmp_path, monkeypatch):
+    reference = archived_reference(published_plan(), tmp_path, monkeypatch)
     measurements = copy.deepcopy(reference['benchmark'])
     expected = {'frozen': 17547, 'finetune': 50697, 'scratch': 51023}
     projection = C.resource_projection(measurements, reference)
@@ -220,9 +230,9 @@ def benchmark_fixture(plan, reference):
     return gate
 
 
-def test_gate_recomputes_rule_and_rejects_five_epoch_receipt_or_changed_limits():
+def test_gate_recomputes_rule_and_rejects_five_epoch_receipt_or_changed_limits(tmp_path, monkeypatch):
     plan = published_plan()
-    reference = C.reference_five(plan)
+    reference = archived_reference(plan, tmp_path, monkeypatch)
     gate = benchmark_fixture(plan, reference)
     assert C.benchmark_packaging(gate, plan, 'fifteen-controller', reference) == dict.fromkeys(F.REGIMES, 'split')
     with pytest.raises(ValueError, match='provenance'):

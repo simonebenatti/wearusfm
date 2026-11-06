@@ -1,5 +1,6 @@
 """Synthetic CPU guards for the candidate-only LQ adapter; no scientific fits/jobs."""
 import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -8,6 +9,7 @@ import sys
 
 import numpy as np
 import pytest
+from frozen_campaign_support import run_frozen
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -76,16 +78,30 @@ def test_unresolved_solver_retains_estimates_but_removes_decision():
     assert result["datasets"]["epn612"]["contrasts"]["T100-LQ_minus_T100-L"]["delta_pp"] == 0
 
 
-def test_preparatory_plan_is_closed_and_real_sources_pinned():
-    p = ROOT / "results/infra/logsquare_evaluation_20261104/probe_plan_19618.json"
-    plan = json.loads(p.read_text())
-    assert plan["sources"] == M.source_hashes()
-    assert plan["caches"][M.CANDIDATE] is None and plan["release"] is None
-    with pytest.raises(ValueError, match="not released"):
-        M.validate_plan(plan)
-    plan["status"] = "APPROVED_FOR_PROBES"
-    with pytest.raises(ValueError, match="missing candidate"):
-        M.validate_plan(plan)
+def test_preparatory_plan_is_closed_and_real_sources_pinned(tmp_path):
+    relative='results/infra/logsquare_evaluation_20261104/probe_plan_19618.json'
+    plan=json.loads((ROOT/relative).read_text())
+    assert plan['caches'][M.CANDIDATE] is None and plan['release'] is None
+    with pytest.raises(ValueError,match='not released'):M.validate_plan(plan)
+    plan['status']='APPROVED_FOR_PROBES'
+    # A historical plan must still reject the different merged source tree.
+    with pytest.raises(ValueError,match='recipe/source'):M.validate_plan(plan)
+    observed=run_frozen(tmp_path,'63eba9a80e729a2ec989b2b63b07e21cd24a5152',
+        ['src','scripts','results/infra','splits'],
+        """import json
+import logsquare_probe as M
+plan=json.loads((root/sys.argv[2]).read_text())
+assert plan['sources']==M.source_hashes()
+try:M.validate_plan(plan)
+except ValueError as e:assert 'not released' in str(e)
+else:raise AssertionError('unreviewed plan was executable')
+plan['status']='APPROVED_FOR_PROBES'
+try:M.validate_plan(plan)
+except ValueError as e:assert 'missing candidate' in str(e)
+else:raise AssertionError('missing candidate was accepted')
+print(json.dumps({'closed':True,'historical_sources_verified':True}))
+""",relative)
+    assert observed=={'closed':True,'historical_sources_verified':True}
 
 
 @pytest.fixture(scope="module")
