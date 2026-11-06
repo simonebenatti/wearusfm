@@ -1,0 +1,60 @@
+# Linea 1 (scaling), 06/11/2026: esito del confronto, raccolta e validazione tecnica (punti D della Review 10, d3976c3).
+# File generato dai log locali e da letture di sola lettura su Leonardo. Nessuno score, contrasto o raccomandazione:
+# la validazione tecnica e' separata dall'analisi scientifica, che sta in un documento a parte.
+
+## Attesa del confronto (sacct, sola lettura)
+14:36:32 finali 0/1 (righe lette 1), non riusciti 0
+14:40:10 finali 1/1 (righe lette 1), non riusciti 0
+63671773|SCALING-compare-20261106|COMPLETED|0:0|00:03:13|2026-11-06T14:36:30|2026-11-06T14:39:43
+14:40:10 TUTTI I JOB IN STATO FINALE
+
+## Raccolta (outcome_stage.py collect comparison_plan.json comparison_submit_lines.txt 20261106_1441; strumento del commit 6712a6c)
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/outcome_state_20261106_1441.json bbdc2aaf8dfc1877dfde1580db799a944a83a365c3bd99dce7a20e069e19e56d
+raccolti 3 file in results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441
+
+## Validazione tecnica (outcome_stage.py validate outcome_state_20261106_1441.json)
+PASSA  letture di sacct e squeue riuscite (exit 0)
+PASSA  piano, righe d'invio e manifest locali uguali a quelli della raccolta
+PASSA  ledger: checkout e confronto sottomessi da claude nella campagna, comando di sbatch e script uguali al piano
+PASSA  ricevute d'invio nel repository uguali al ledger letto alla raccolta
+PASSA  D.1 contabilita': checkout COMPLETED 0:0 (2 CPU, 4G, entro 5 minuti) e confronto COMPLETED 0:0 (8 CPU, 30G, entro 30 minuti), nomi uguali agli ID
+PASSA  codice congelato: HEAD atteso, pulito, percorso canonico
+PASSA  sei sorgenti del comparatore: checkout congelato e copia locale uguali agli hash della Review 10
+PASSA  checkout del manifest: presente, canonico, HEAD uguale al commit, pulito
+PASSA  manifest nel checkout: percorso, hash e dimensione del piano, percorso canonico
+PASSA  i nove file fissati nel manifest: presenti, canonici, hash e dimensioni invariati dopo il confronto
+PASSA  cartella d'uscita del confronto: canonica, con il solo report.json all'uscita del piano
+PASSA  D.7 file raccolti sul Mac (report e due log) uguali ai file remoti; uscita originale di sacct conservata
+PASSA  log del checkout: «checkout di campagna pronto» per la cartella e il commit attesi
+PASSA  budget: core-ore misurate entro i massimi del piano, consumo cumulativo entro il tetto
+PASSA  D.1 report: chiavi attese, protocollo, completo, passo 5000, candidato e controllo
+PASSA  D.1 report: `inputs` uguale al manifest inviato, `inputs_content_sha256` ricalcolato
+PASSA  D.1 report: sorgenti della Review 10, codice congelato e firma numerica dei fit
+PASSA  report: runtime della posa e proiezione uguali a quelli raccolti con gli aggregati
+PASSA  D.2 qualita': tre esiti booleani espliciti; lettura valida se e solo se tutti veri
+PASSA  D.3 bootstrap: 2000 repliche e seme 20261102 nella politica, nella classificazione e nei tre gruppi della posa
+PASSA  D.4 utenti per dataset uguali alle ancore della Review 10 (314, 32, 8, 8, 19); conteggi delle repliche interi fra 0 e 2000
+PASSA  utenti della posa nel gruppo dinamico: 15 distinti
+PASSA  D.5 punti di ogni cella, per dataset e per compito, uguali ai `balanced_accuracy` dei sei aggregati entro 1e-12
+PASSA  D.5 `epn`, `p1` e `p2` uguali ai contrasti natural_300m_minus_30m
+PASSA  D.5 blocco `pose` uguale al gruppo dinamico: rapporti delle due celle, differenza e intervallo
+PASSA  lettura S8 uguale al ricalcolo con scripts/scaling_reading.py congelato
+PASSA  D.6 continuazione non autorizzata, nella lettura e nella politica
+PASSA  log del confronto: codice congelato prima e dopo, una sola riga finale coerente col report
+fatti registrati: {"core_hours": {"SCALING-compare-20261106": 0.4288888888888889, "SCALING-inputs-checkout-20261106": 0.022222222222222223}, "core_hours_cap": 310.0, "core_hours_consumed": 125.54055555566667, "elapsed_seconds": {"SCALING-compare-20261106": 193, "SCALING-inputs-checkout-20261106": 40}, "failed_quality_checks": null, "max_rss": {"SCALING-compare-20261106": "3143208K", "SCALING-inputs-checkout-20261106": "176312K"}, "pose_users": {"all": 15, "dynamic": 15, "static": 15}, "quality": {"artifact_integrity": true, "paired_support": true, "solver_converged": true}, "reading_valid": true, "replicates_missing_classes": {"epn612": 0, "ninapro_db2": 0, "ninapro_db3": 0, "ninapro_db6": 0, "uci_emg": 0}, "report": {"bytes": 821191, "sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664"}, "serial_queue_jobs": 0, "single_class_replicates": {"epn612": 0, "ninapro_db2": 0, "ninapro_db3": 0, "ninapro_db6": 0, "uci_emg": 0}, "subjects": {"epn612": 314, "ninapro_db2": 32, "ninapro_db3": 8, "ninapro_db6": 8, "uci_emg": 19}}
+ESITO ACCETTATO: confronto completo e coerente con il manifest inviato; lettura S8 valida
+
+## Contabilita' originale (collected_outcome_20261106_1441/sacct.txt)
+JobIDRaw|JobName|State|ExitCode|ElapsedRaw|AllocCPUS|ReqMem|MaxRSS|Start|End|Timelimit
+63671405|SCALING-inputs-checkout-20261106|COMPLETED|0:0|40|2|4G||2026-11-06T14:30:43|2026-11-06T14:31:23|00:05:00
+63671405.batch|batch|COMPLETED|0:0|40|2||176312K|2026-11-06T14:30:43|2026-11-06T14:31:23|
+63671405.extern|extern|COMPLETED|0:0|40|2|||2026-11-06T14:30:43|2026-11-06T14:31:23|
+63671773|SCALING-compare-20261106|COMPLETED|0:0|193|8|30G||2026-11-06T14:36:30|2026-11-06T14:39:43|00:30:00
+63671773.batch|batch|COMPLETED|0:0|193|8||3143208K|2026-11-06T14:36:30|2026-11-06T14:39:43|
+63671773.extern|extern|COMPLETED|0:0|193|8|||2026-11-06T14:36:30|2026-11-06T14:39:43|
+
+## File raccolti (sha256, byte)
+4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664  821191  report.json
+5b0c95167b4bc5d4ad1d6053dd490d89f321094d4c708dd3a3aef521b75f3b6b  4092  campaign_checkout_63671405.out
+13afff5fccf8d5827203e5a898109270897a13ccbe0985ca745573915f4a5f87  1095  scaling_readers_recovery_63671773.out
+e6376c03386e6505eb555274e6dada1ad27f414af3e3b9885889b6cce6dacc34  662  sacct.txt

@@ -1,0 +1,287 @@
+{
+ "campaign": {
+  "canonical": true,
+  "exists": true,
+  "head": {
+   "exit": 0,
+   "stderr": "",
+   "stdout": "2b7b4551c6059d5456e6e12d171ef687eb0818f4"
+  },
+  "manifest": {
+   "bytes": 3062,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1/results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+   "sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea"
+  },
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1",
+  "status": {
+   "exit": 0,
+   "stderr": "",
+   "stdout": ""
+  }
+ },
+ "code": {
+  "canonical": true,
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1",
+  "head": {
+   "exit": 0,
+   "stderr": "",
+   "stdout": "aef665ba7ea66fc80291846487907bb3ef9107df"
+  },
+  "status": {
+   "exit": 0,
+   "stderr": "",
+   "stdout": ""
+  }
+ },
+ "host": "login05.leonardo.local",
+ "logs": [
+  {
+   "id": "SCALING-inputs-checkout-20261106",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63671405.out",
+   "pin": {
+    "bytes": 4092,
+    "canonical": true,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63671405.out",
+    "sha256": "5b0c95167b4bc5d4ad1d6053dd490d89f321094d4c708dd3a3aef521b75f3b6b"
+   }
+  },
+  {
+   "id": "SCALING-compare-20261106",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers_recovery_63671773.out",
+   "pin": {
+    "bytes": 1095,
+    "canonical": true,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers_recovery_63671773.out",
+    "sha256": "13afff5fccf8d5827203e5a898109270897a13ccbe0985ca745573915f4a5f87"
+   }
+  }
+ ],
+ "output": {
+  "canonical": true,
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison",
+  "exists": true,
+  "files": [
+   "report.json"
+  ],
+  "report": {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json",
+   "pin": {
+    "bytes": 821191,
+    "canonical": true,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json",
+    "sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664"
+   }
+  }
+ },
+ "pins": [
+  {
+   "bytes": 42708,
+   "canonical": true,
+   "expected": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+   "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63"
+  },
+  {
+   "bytes": 9233,
+   "canonical": true,
+   "expected": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_plan.json",
+   "sha256": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198"
+  },
+  {
+   "bytes": 205178,
+   "canonical": true,
+   "expected": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_ridge/report.json",
+   "sha256": "8f70ff3b58c8f54413f6c8a89a861a4fdb7e6c9d934a65e73a11d4172a47e4ff"
+  },
+  {
+   "bytes": 21429,
+   "canonical": true,
+   "expected": "d9ef3a4c7d1504f8e0765ba19bd4cf960f4959a22876e67afe7570969c6f5578",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+   "sha256": "d9ef3a4c7d1504f8e0765ba19bd4cf960f4959a22876e67afe7570969c6f5578"
+  },
+  {
+   "bytes": 58558,
+   "canonical": true,
+   "expected": "80c3981d42d6af608e200cd8a2056812be0cd1b27984fae2c1222d23718dd1b6",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.json",
+   "sha256": "80c3981d42d6af608e200cd8a2056812be0cd1b27984fae2c1222d23718dd1b6"
+  },
+  {
+   "bytes": 21905,
+   "canonical": true,
+   "expected": "0721fe9c7480f53c1f1e80397edffa6ee89bf5ecc91e2e5953301c6e22bd4013",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.json",
+   "sha256": "0721fe9c7480f53c1f1e80397edffa6ee89bf5ecc91e2e5953301c6e22bd4013"
+  },
+  {
+   "bytes": 59236,
+   "canonical": true,
+   "expected": "e0230cf0a6a5913ed206e53206232600dccd4112c252ce35fed82b747265b506",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.json",
+   "sha256": "e0230cf0a6a5913ed206e53206232600dccd4112c252ce35fed82b747265b506"
+  },
+  {
+   "bytes": 21431,
+   "canonical": true,
+   "expected": "8c77e54d625af90ca551f5139702adfabe1bbfb5e2e7784187b5f4fc2b2b3b73",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.json",
+   "sha256": "8c77e54d625af90ca551f5139702adfabe1bbfb5e2e7784187b5f4fc2b2b3b73"
+  },
+  {
+   "bytes": 58505,
+   "canonical": true,
+   "expected": "2afa31c34170974e29e6c5676d6f35176c097297fc5ff3e90f157b993df6ed16",
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.json",
+   "sha256": "2afa31c34170974e29e6c5676d6f35176c097297fc5ff3e90f157b993df6ed16"
+  }
+ ],
+ "read_at": "2026-11-06T14:41:53+0100",
+ "sacct": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": "JobIDRaw|JobName|State|ExitCode|ElapsedRaw|AllocCPUS|ReqMem|MaxRSS|Start|End|Timelimit\n63671405|SCALING-inputs-checkout-20261106|COMPLETED|0:0|40|2|4G||2026-11-06T14:30:43|2026-11-06T14:31:23|00:05:00\n63671405.batch|batch|COMPLETED|0:0|40|2||176312K|2026-11-06T14:30:43|2026-11-06T14:31:23|\n63671405.extern|extern|COMPLETED|0:0|40|2|||2026-11-06T14:30:43|2026-11-06T14:31:23|\n63671773|SCALING-compare-20261106|COMPLETED|0:0|193|8|30G||2026-11-06T14:36:30|2026-11-06T14:39:43|00:30:00\n63671773.batch|batch|COMPLETED|0:0|193|8||3143208K|2026-11-06T14:36:30|2026-11-06T14:39:43|\n63671773.extern|extern|COMPLETED|0:0|193|8|||2026-11-06T14:36:30|2026-11-06T14:39:43|"
+ },
+ "sources": {
+  "scripts/scaling_compare.py": {
+   "bytes": 17160,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_compare.py",
+   "sha256": "a3610519b453a3d37747f5a4ce926b2164a40dd503546b22b6c45829085eb938"
+  },
+  "scripts/scaling_pose_readout.py": {
+   "bytes": 22939,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_pose_readout.py",
+   "sha256": "238a5cd479e37310235c42dcb0b930d232230ff0d2a8d1d1309b05b7292900cf"
+  },
+  "scripts/scaling_probe.py": {
+   "bytes": 38402,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_probe.py",
+   "sha256": "0b3d40994ea7b6ee189a5831e22a5b298cc0cf2ceaa24908c80242642b5d26b0"
+  },
+  "scripts/scaling_projection.py": {
+   "bytes": 8476,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_projection.py",
+   "sha256": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d"
+  },
+  "scripts/scaling_reading.py": {
+   "bytes": 5329,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_reading.py",
+   "sha256": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5"
+  },
+  "scripts/scaling_train.py": {
+   "bytes": 27444,
+   "canonical": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1/scripts/scaling_train.py",
+   "sha256": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac"
+  }
+ },
+ "squeue_serial": {
+  "exit": 0,
+  "stderr": "",
+  "stdout": ""
+ },
+ "remote_script_sha256": "bca3425005897a415b51048e22798792baec5f369528b962dd6ad5c1f148174d",
+ "commit": "2b7b4551c6059d5456e6e12d171ef687eb0818f4",
+ "collected": {
+  "report.json": {
+   "path": "results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441/report.json",
+   "sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664",
+   "bytes": 821191,
+   "remote": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json"
+  },
+  "campaign_checkout_63671405.out": {
+   "path": "results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441/campaign_checkout_63671405.out",
+   "sha256": "5b0c95167b4bc5d4ad1d6053dd490d89f321094d4c708dd3a3aef521b75f3b6b",
+   "bytes": 4092,
+   "remote": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63671405.out"
+  },
+  "scaling_readers_recovery_63671773.out": {
+   "path": "results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441/scaling_readers_recovery_63671773.out",
+   "sha256": "13afff5fccf8d5827203e5a898109270897a13ccbe0985ca745573915f4a5f87",
+   "bytes": 1095,
+   "remote": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers_recovery_63671773.out"
+  }
+ },
+ "accounting_file": {
+  "path": "results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441/sacct.txt",
+  "sha256": "e6376c03386e6505eb555274e6dada1ad27f414af3e3b9885889b6cce6dacc34"
+ },
+ "local": {
+  "read_at": "2026-11-06T14:42:59+01:00",
+  "repo_head": "6712a6ca82de914f94d7bd6047b78a2791c2f60e",
+  "plan": {
+   "path": "results/infra/scaling_300m_20261104/final_stages_20261106/comparison_plan.json",
+   "sha256": "1b445cfb9701bfb9fe907800a1192ff5c0e1b124c59bd25f46a20b144ea81765"
+  },
+  "lines": {
+   "path": "results/infra/scaling_300m_20261104/final_stages_20261106/comparison_submit_lines.txt",
+   "sha256": "b146f42f3588ae56793f390b39dd902bfb8b884e35c4ee6593acba8b6a1e66d7"
+  },
+  "manifest_sha256": "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+  "dispatcher_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "checkout_script_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+  "sources": {
+   "scripts/scaling_probe.py": "0b3d40994ea7b6ee189a5831e22a5b298cc0cf2ceaa24908c80242642b5d26b0",
+   "scripts/scaling_pose_readout.py": "238a5cd479e37310235c42dcb0b930d232230ff0d2a8d1d1309b05b7292900cf",
+   "scripts/scaling_projection.py": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+   "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+   "scripts/scaling_reading.py": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5",
+   "scripts/scaling_compare.py": "a3610519b453a3d37747f5a4ce926b2164a40dd503546b22b6c45829085eb938"
+  }
+ },
+ "ledger": {
+  "SCALING-inputs-checkout-20261106": {
+   "stato": "sottomesso",
+   "job_slurm": 63671405,
+   "agente": "claude",
+   "campagna": "scaling-300m-20261104",
+   "codice_sha": "2b7b4551c6059d5456e6e12d171ef687eb0818f4",
+   "gpu_ore_stimate": 0.0,
+   "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=SCALING-inputs-checkout-20261106",
+    "--comment=wearusfm:SCALING-inputs-checkout-20261106",
+    "--cpus-per-task=2",
+    "--mem=4G",
+    "--time=00:05:00",
+    "--export=ALL,CAMPAIGN=scaling_300m_comparison_inputs_20261106_v1,CAMPAIGN_SHA=2b7b4551c6059d5456e6e12d171ef687eb0818f4,EXPECTED_SHA=2b7b4551c6059d5456e6e12d171ef687eb0818f4",
+    "/dev/stdin"
+   ],
+   "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc"
+  },
+  "SCALING-compare-20261106": {
+   "stato": "sottomesso",
+   "job_slurm": 63671773,
+   "agente": "claude",
+   "campagna": "scaling-300m-20261104",
+   "codice_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+   "gpu_ore_stimate": 0.0,
+   "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=SCALING-compare-20261106",
+    "--comment=wearusfm:SCALING-compare-20261106",
+    "--cpus-per-task=8",
+    "--mem=30G",
+    "--time=00:30:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "compare",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1/results/infra/scaling_300m_20261104/final_stages_20261106/comparison_inputs.json",
+    "162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/comparison/report.json"
+   ],
+   "script_stdin_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5"
+  }
+ }
+}
