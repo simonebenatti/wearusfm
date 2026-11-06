@@ -6638,3 +6638,37 @@ dieci modifiche sue e tutte quelle fuori dalle definizioni emendate sono rifiuta
 la garanzia resta il diff rivisto. Due rilievi minori di documentazione, corretti (quando il runtime controlla la
 source incorporata nelle cache held della posa: all'apertura, dopo le due ridge; questo secondo esito mancava nella
 voce).
+
+### 06/11/2026 — Valutazione lunga: decisione di Simone su A1 registrata; fase fit rilasciata
+
+**DECISIONE (06/11/2026, 16:49 circa, sottochat 2).** Alla domanda di Claude «Approvi l'eccezione a R-2(i) sui 28
+input e la catena emendata A1?» Simone ha risposto: «Sì, approvo». La domanda era stata posta a fine implementazione
+(15:35 circa) insieme a: natura post hoc della regola rispetto ai tempi dei benchmark; catena emendata (103 job di
+calcolo piu' quattro checkout, 77 allocazioni da eseguire, 69 fit di classificazione sulle stesse 40 celle x 4 fold);
+costo futuro massimo 1.317 core-ore e 0 GPU-ore, totale prudenziale 1.451,67 su 1.711,67; alternativa senza
+eccezione (ripetere 12 estrazioni e 16 benchmark, fino a 9 GPU-ore nuove fuori dal tetto attuale); effetto sulle
+altre linee (un fit alla volta in corsia seriale, ondate corte).
+
+**PERIMETRO, come scritto nei due piani da `amendment_a1/record_decision.py`:** eccezione esplicita a R-2(i)
+limitata alle 28 ricevute originali del manifest degli input; catena emendata di 69 fit di classificazione, 3 fit
+di posa, 2 confronti, 1 sintesi e 2 checkout entro i tetti invariati di 9 GPU-ore e 1.711,666667 core-ore; nessun
+altro esperimento, input o rilancio.
+
+**PIN DELLA FASE FIT (`amendment_a1/pin_phase.py fit`, prima di qualunque fit):** le copie raccolte delle quindici
+ricevute dei benchmark di classificazione e di quella della posa coincidono con i pin del manifest; gate originale
+ricalcolato negativo (15 shard su 48); gate emendato 69 su 69, uguale alla tabella dei tempi congelata nel piano
+(1.276 core-ore allocate); ammissione della posa 583,269 s per dose. File nuovi:
+`execution/manifests/classification_benchmark_receipts.json` (sha256 `cf2f9eb8...3080`, 4.671 byte) e
+`execution/manifests/measured_resource_gates_a1.json` (sha256 `23bd23cc...9d6b`, 82.345 byte). Source `77e09626...`
+e ricetta `b2356a8e...` invariate: nessun file coperto da `source_identity()` e' toccato.
+
+**CONTROLLI SULL'ALBERO DI QUESTO COMMIT** (a meno di questa voce: nessun test legge `docs/decisioni.md`):
+`build_inputs.py --check`, `apply_to_plans.py --check` e
+`pin_phase.py fit --dry-run` a posto; undici file della valutazione lunga 342 superati; suite completa `tests/cpu`
+2.456 superati, un avviso estraneo, 26 min 19 s; `git diff --check` pulito.
+
+**ARRESTI, invariati:** TIMEOUT, OOM, valore non finito, errore, pin o gate negativo: conservare log e parziali,
+fermare la fase, nessun requeue, sovrascrittura, fold scartato, walltime o shard nuovo. Un rilancio dopo un arresto
+tecnico e' una nuova decisione. Ordine: i tre fit di posa, poi i 69 di classificazione, a ondate entro otto job CPU
+in sospeso per tutto l'utente; ondate corte (somma dei limiti entro otto ore) per non tenere a lungo la corsia
+seriale.

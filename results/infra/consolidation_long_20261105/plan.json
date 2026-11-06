@@ -462,8 +462,16 @@
     "bytes": 12942
   },
   "benchmark_receipts": {
-    "classification": null,
-    "pose": null
+    "classification": {
+      "path": "results/infra/consolidation_long_20261105/execution/manifests/classification_benchmark_receipts.json",
+      "sha256": "cf2f9eb8232c15d3990ee315b91b6feec8ed3c15e0fd21bb0b24c98ae3383080",
+      "bytes": 4671
+    },
+    "pose": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose/report.json",
+      "sha256": "7900c6d725f7bb2fb95a85c089ed20a153cb05ccb4392db8bc915df8a04aa0f0",
+      "bytes": 8512
+    }
   },
   "classification_fit_manifest": null,
   "pose_fit_manifest": null,
@@ -559,7 +567,13 @@
           "benchmark-classification",
           "benchmark-pose"
         ],
-        "decision": null
+        "decision": {
+          "by": "Simone",
+          "date": "2026-11-06",
+          "question": "Approvi l'eccezione a R-2(i) sui 28 input e la catena emendata A1?",
+          "quote": "S\u00ec, approvo",
+          "scope": "explicit exception to R-2(i) limited to the 28 original receipts of the pinned input-compatibility manifest; amended chain of 69 classification fits, 3 pose fits, 2 comparisons, 1 summary and 2 checkouts within the unchanged caps of 9 GPU-hours and 1711.666667 core-hours; no other experiment, input or retry"
+        }
       },
       "invalidation": "any further covered source change is another source: the exception and the 28 inputs are not valid under it without a new review and decision",
       "action": "stop chain; preserve all artifacts; no receipt rewrite or automatic resubmission",
@@ -671,7 +685,7 @@
     "review_does_not_replace": null,
     "requires_second_user_consent": false,
     "operator_change": "Simone05/11evening: da ora in poi questa parte la gestisci tu; sarai tu a fare il deployment e a gestirlo; applies only EPN15 andlong evaluation; Claudeoperates,GPTcodescience",
-    "amendment_A1": "implemented_awaiting_simone_decision"
+    "amendment_A1": "approved_by_simone"
   },
   "historical_context": {
     "replica": {
@@ -688,7 +702,7 @@
   "amendment": {
     "id": "A1",
     "title": "resource amendment after the complete benchmark phase",
-    "status": "implemented_awaiting_simone_decision",
+    "status": "approved_by_simone",
     "post_hoc": "fixed after the sixteen train-only benchmark timings (15 of 48 original shards over the 13800 s limit) and before any fit, score or prediction of the long comparison; it concerns resources and provenance only and is not a pre-registered rule",
     "unchanged": "forty scientific cells, four folds each, recipe, C grid, selection, solver, numeric context, data, endpoints, reading rule, per-fold projection and safety factors",
     "proposal": {
@@ -1673,6 +1687,12 @@
         "walltime_seconds": 1800
       }
     },
-    "decision": null
+    "decision": {
+      "by": "Simone",
+      "date": "2026-11-06",
+      "question": "Approvi l'eccezione a R-2(i) sui 28 input e la catena emendata A1?",
+      "quote": "S\u00ec, approvo",
+      "scope": "explicit exception to R-2(i) limited to the 28 original receipts of the pinned input-compatibility manifest; amended chain of 69 classification fits, 3 pose fits, 2 comparisons, 1 summary and 2 checkouts within the unchanged caps of 9 GPU-hours and 1711.666667 core-hours; no other experiment, input or retry"
+    }
   }
 }

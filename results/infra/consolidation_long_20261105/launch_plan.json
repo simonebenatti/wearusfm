@@ -3316,7 +3316,13 @@
         "benchmark-classification",
         "benchmark-pose"
       ],
-      "decision": null
+      "decision": {
+        "by": "Simone",
+        "date": "2026-11-06",
+        "question": "Approvi l'eccezione a R-2(i) sui 28 input e la catena emendata A1?",
+        "quote": "S\u00ec, approvo",
+        "scope": "explicit exception to R-2(i) limited to the 28 original receipts of the pinned input-compatibility manifest; amended chain of 69 classification fits, 3 pose fits, 2 comparisons, 1 summary and 2 checkouts within the unchanged caps of 9 GPU-hours and 1711.666667 core-hours; no other experiment, input or retry"
+      }
     },
     "invalidation": "any further covered source change is another source: the exception and the 28 inputs are not valid under it without a new review and decision",
     "action": "stop chain; preserve all artifacts; no receipt rewrite or automatic resubmission",
@@ -5188,7 +5194,7 @@
     }
   ],
   "amendment_A1": {
-    "status": "implemented_awaiting_simone_decision",
+    "status": "approved_by_simone",
     "proposal": {
       "branch": "codex/consolidation-20261104",
       "commit": "4bb39d254c26bd3b9666dff0e1b1464f96bfe4db",
