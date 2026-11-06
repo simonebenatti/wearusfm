@@ -7422,6 +7422,53 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Destinazione: `$SCRATCH/wearusfm_runs/results/passo6/<cartella>`, dentro il perimetro predefinito di
   `refresh_scratch.sbatch`. L'esito va in una voce successiva.
 
+### 2026-11-06 | Claude | Linea 2: ondata 4 conclusa (2 su 2 `COMPLETED 0:0`), ondata 5 inviata
+- Ondata 4 (righe 9-10 di 72), chiusa alle 20:24:14:
+
+  | ID logico | Job | Esito | Durata | Limite |
+  |---|---|---|---|---|
+  | `LONG-FIT-G39237-pre-ninapro_db2-F1-20261105-A1` | 63693568 | `COMPLETED 0:0` | 23 min 29 s | 3 h 30 |
+  | `LONG-FIT-G39237-pre-ninapro_db2-F2-20261105-A1` | 63693570 | `COMPLETED 0:0` | 17 min 25 s | 3 h 15 |
+
+- Provenienza dei due report a posto (stessi pin della fase, dose 39.237, `fold_indices` [1] e [2],
+  `global_resource_gate_passed` vero); nessun punteggio letto. Consumo dell'ondata: 2.454 s per 8 CPU, 5,453
+  core-ore; fase a 22,13 core-ore, 0 GPU-ore; conclusi 10 fit su 72.
+- Letture prima dell'ondata 5 (20:28, `execution/audit/precheck_fit_wave5_20261106.log`): `$WORK` 41,70 GiB liberi
+  (soglia 10,724), dopo lo spostamento delle feature di ottobre (voce seguente); SCRATCH scrivibile, corsia seriale
+  vuota, ID liberi nel ledger, rami invariati dall'ultima lettura.
+- Ondata 5 (righe 11-12), inviata alle 20:29 con submitter e ledger comuni, `--agente claude`:
+
+  | ID logico | Job | Limite |
+  |---|---|---|
+  | `LONG-FIT-G39237-pre-ninapro_db2-F3-20261105-A1` | 63696565 | 3 h 15 |
+  | `LONG-FIT-G49046-pre-ninapro_db2-F0-20261105-A1` | 63696566 | 3 h 15 |
+
+- Commit documentale `affe3dfde3925f29ca70be54448dd52746997c7f` sul ramo `claude/consolidation-long-exec-20261105`
+  (SHA remoto verificato); tre controlli e 342 test a posto; nessun file coperto toccato.
+
+### 2026-11-06 | Claude | `$WORK`: feature di ottobre spostate su SCRATCH e verificate; 41,70 GiB liberi
+- Job `INFRA-move-october-features-to-scratch-20261106` (63695632): `COMPLETED 0:0` in 4 min 25 s (20:24:16-20:28:41,
+  `login13`). `sacct` segna 2 CPU allocate su 1 chiesta: 0,147 core-ore, 0 GPU-ore.
+- Per ognuna delle quattro cartelle il log del job dice `VERIFICATO`, `LINK VERIFICATO`, `SPOSTATO`:
+
+  | Cartella sotto `wearusfm_runs/results/passo6` | File | Cartelle | Byte | sha256 originale = copia | Mia rilettura attraverso il link |
+  |---|---|---|---|---|---|
+  | `step2c_1410` | 201 | 59 | 13.864.508.239 | si' | uguale |
+  | `step1_downstream_0910` | 37 | 11 | 2.443.563.572 | si' | uguale |
+  | `step1_random_20261014_r3` | 23 | 7 | 1.676.205.962 | si' | uguale |
+  | `step2a_20261014` | 41 | 15 | 1.422.892.105 | si' | uguale |
+
+- Controlli miei dopo il job (20:30-20:31, sola lettura): i quattro vecchi percorsi sono link alle copie sotto
+  `$SCRATCH/wearusfm_runs/results/passo6/`; ho ricalcolato lo sha256 di tutti i 302 file attraverso i link e coincide
+  con il manifest degli originali; conteggi e byte uguali alla lettura delle 20:05; copie con la data di oggi, senza
+  link o file speciali; nessun residuo rinominato a lato; le altre 16 voci del primo livello di `passo6` hanno tipo,
+  dimensione e data di prima.
+- Quota di progetto: 23,72 GiB liberi prima del job (20:24), 41,70 alle 20:31. Uso dell'utente `sbenatti` da 193,75
+  a 175,78 GiB.
+- Prove in `results/infra/storage_move_20261106/`: `outcome_october_20261106.log` (accounting, log del job, i 28
+  manifest, stato dopo, mia rilettura); stato del ledger e riga d'invio sono nel commit `5441666`.
+- Resta vero quanto scritto in sezione 2 alle 20:14: le copie dipendono dai rinfreschi di SCRATCH del 12/11 e del 03/12.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)

@@ -1,0 +1,2127 @@
+2026-11-06 20:30:40 CET
+login05.leonardo.local
+@@SACCT
+63695632|INFRA-move-october-features-to-scratch-20261106|COMPLETED|0:0|2026-11-06T20:24:16|2026-11-06T20:28:41|00:04:25|01:00:00|2|login13
+@@JOBLOG
+modo: move; elenco: october-features; da /leonardo_work/IscrB_WearUsFM a /leonardo_scratch/large/userexternal/sbenatti; 2026-11-06 20:24:22 CET su login13.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+/leonardo_work/IscrB_WearUsFM
+                1048865868  1073741824       0       - 1512721       0       0       -
+=== wearusfm_runs/results/passo6/step2c_1410
+sorgente (cartella): 201 file, 13864508239 byte
+VERIFICATO: 201 file, 13864508239 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step1_downstream_0910
+sorgente (cartella): 37 file, 2443563572 byte
+VERIFICATO: 37 file, 2443563572 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step1_random_20261014_r3
+sorgente (cartella): 23 file, 1676205962 byte
+VERIFICATO: 23 file, 1676205962 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step2a_20261014
+sorgente (cartella): 41 file, 1422892105 byte
+VERIFICATO: 41 file, 1422892105 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014 (al vecchio percorso resta un link)
+--- quota di progetto dopo
+/leonardo_work/IscrB_WearUsFM
+                1031409532  1073741824       0       - 1514705       0       0       -
+=== riepilogo (move, october-features): riuscite=4 problemi=0 su 4 voci; 20:28:41 ===
+@@MANIFESTS
+## wearusfm_runs_results_passo6_step1_downstream_0910.copy.dirs (116 bytes, 11 lines)
+.
+./p1
+./p1/A_seed0
+./p1/A_seed1
+./p1/B_seed0
+./p1/B_seed1
+./p2
+./p2/A_seed0
+./p2/A_seed1
+./p2/B_seed0
+./p2/B_seed1
+## wearusfm_runs_results_passo6_step1_downstream_0910.copy.sha256 (3380 bytes, 37 lines)
+7c93c1b700b7462ce46eeb27a3de65abd38d95caef38b6dc03c76520957527c1  ./comparison.json
+9ce5ce267b748ca768a03d49a4b796f61db3c6ac15fd1c83e72de9e703ce6823  ./p1/A_seed0.json
+8a009ddf49876e4c05733e644a08abb5866d616d12f1decb2194e69aed66dd67  ./p1/A_seed0/ninapro_db2.npz
+c7a81c379978539a267d8fb647d3c431b1eb0d97743c447ba62e9a859d56c296  ./p1/A_seed0/ninapro_db3.npz
+cac9462a18cba48cd1cf4e8f590c72d86b013630edfcc4dafbca28183aeb7063  ./p1/A_seed0/ninapro_db6.npz
+6d90190b6468a8da3e39de0f7f78c3f64847ce31144cb8a1eb77d21dc1a6b7ee  ./p1/A_seed0/provenance.json
+fc3c1ca69d88c7aa48dc10d2b75ce05213757f187d26076d8e88e7baab7c9181  ./p1/A_seed1.json
+68588c47ab63b0ec27d22c1b40d6b21567745f75c37d3b5ca2ff44f4f292d843  ./p1/A_seed1/ninapro_db2.npz
+9fbf55705590f9a3be38d69b3e4f3be01e7c54d98a07775fbc36d9ab135fc9be  ./p1/A_seed1/ninapro_db3.npz
+856afee73814c9ea9b8fd77e829326053f87f4671c52ca7be4c0ed74015c9356  ./p1/A_seed1/ninapro_db6.npz
+0f7a3fbb476cad40e5e58a05385515ca412ee3db516bd7f781e5b734005e6800  ./p1/A_seed1/provenance.json
+aa2aeb7d4e005f3cb97b4f15ffc16274d1c478c837ca0930ec05128352b34fa0  ./p1/B_seed0.json
+c488e60118188acc2f3065d28bf46f6ce1e8557b7414849d6e5c4acb61dd2a9e  ./p1/B_seed0/ninapro_db2.npz
+1fcbaa016ee0087ef552080e0b1ce23ceb02fd49f74a80f710cfe9a67754dea9  ./p1/B_seed0/ninapro_db3.npz
+254a5f37822860184944d3586599a76bb82076147d5cd511750f3f595e10cc96  ./p1/B_seed0/ninapro_db6.npz
+1c6cd8df78860f6d951f1186e4a291867224473a62e65a57d03199b8d20d11ee  ./p1/B_seed0/provenance.json
+e27f4404b40cafde5996e4985938fd14a722e993ef6453d06efa799f887b71c2  ./p1/B_seed1.json
+74fa89d4d42d121233930bb5fe9d1494c99d08a3a1ce0ca00c6a9ad003c2a7c0  ./p1/B_seed1/ninapro_db2.npz
+af860886e56a99d8698775b9d65bdff45940774cbaecf3836b6116daee7cdb2d  ./p1/B_seed1/ninapro_db3.npz
+ea473b7837e387389f38f1a029c146c7c2b3dc64d55dc0260e0ad717a26f7df7  ./p1/B_seed1/ninapro_db6.npz
+8719b3bf8fc325dc2d4d9ec39aa4ae32078777f59e126eece99e8edb82c196fe  ./p1/B_seed1/provenance.json
+5ffd172e21848ce9b8ad8876ffeb7ffe2c3da0a842ada1b441c16126fbab9c8b  ./p2/A_seed0.json
+b3d93fdeee1381fd80bbcc46483186ce89bec767f868875df0a871419decdbbf  ./p2/A_seed0/epn612.npz
+6af4f8a12c5e03610bb362b2ae337acde8775c4f373799dcdcf8b325c5039018  ./p2/A_seed0/provenance.json
+fd2ad566487d4c49d7a85669c333b889a43e0434e915a037d094d3fe4bb10d10  ./p2/A_seed0/uci_emg.npz
+e9b51873c7788959dfbd86e9e701fab8a7c03d098f35284d3b9c9ea95d5766f0  ./p2/A_seed1.json
+b67a88e8c719f223daa7485e2f36c68331f29e04d4258380f3fbcc359f40ad9a  ./p2/A_seed1/epn612.npz
+d5bb55a144b2ca650d576e5d4e0b656e501cb90bbcb2dfef52775f488c616301  ./p2/A_seed1/provenance.json
+5f139c961c697e87349a8f792f92955421169a523441cffc1d0f1fcece043a1b  ./p2/A_seed1/uci_emg.npz
+354952fa23bcc2244cd97064e3c336470c99b114a2faa101e6fdca2c0afa76a0  ./p2/B_seed0.json
+2bab9d03d54ea7c498bb135b87c2f3e9c2fc1b23fc25b6b785c633435e547f8c  ./p2/B_seed0/epn612.npz
+4d19ef8a9338657889f618d8201461d2f0a402f46945bf8dbf2dfd1c6179668f  ./p2/B_seed0/provenance.json
+a53fcbf0aa7656443db2080b56460edcf4258844129c4074e91db96a0b50682c  ./p2/B_seed0/uci_emg.npz
+3ae6258c7d16bce70587a5e90ea26cf3e46b271cb2007555172aa410235cd7bc  ./p2/B_seed1.json
+58e655482f7e6a5d268934bc4c6a9bd11eb36826960f1e67760872ee5e058e7b  ./p2/B_seed1/epn612.npz
+0720d7ab71d1a0f9503b156ea7465c2521e375d6fd07f87887747c1908219046  ./p2/B_seed1/provenance.json
+2cb8628f0298e09135a5c09e8c8c72d6cab0c90560df77c244105fc4de3647fc  ./p2/B_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_downstream_0910.copy.sizes (1227 bytes, 37 lines)
+7460 ./comparison.json
+29870 ./p1/A_seed0.json
+143632314 ./p1/A_seed0/ninapro_db2.npz
+42304382 ./p1/A_seed0/ninapro_db3.npz
+130002778 ./p1/A_seed0/ninapro_db6.npz
+4027 ./p1/A_seed0/provenance.json
+29875 ./p1/A_seed1.json
+143632314 ./p1/A_seed1/ninapro_db2.npz
+42304382 ./p1/A_seed1/ninapro_db3.npz
+130002778 ./p1/A_seed1/ninapro_db6.npz
+4027 ./p1/A_seed1/provenance.json
+29862 ./p1/B_seed0.json
+143632314 ./p1/B_seed0/ninapro_db2.npz
+42304382 ./p1/B_seed0/ninapro_db3.npz
+130002778 ./p1/B_seed0/ninapro_db6.npz
+4027 ./p1/B_seed0/provenance.json
+29870 ./p1/B_seed1.json
+143632314 ./p1/B_seed1/ninapro_db2.npz
+42304382 ./p1/B_seed1/ninapro_db3.npz
+130002778 ./p1/B_seed1/ninapro_db6.npz
+4027 ./p1/B_seed1/provenance.json
+187078 ./p2/A_seed0.json
+292659636 ./p2/A_seed0/epn612.npz
+23450 ./p2/A_seed0/provenance.json
+2045492 ./p2/A_seed0/uci_emg.npz
+187072 ./p2/A_seed1.json
+292659636 ./p2/A_seed1/epn612.npz
+23450 ./p2/A_seed1/provenance.json
+2045492 ./p2/A_seed1/uci_emg.npz
+187089 ./p2/B_seed0.json
+292659636 ./p2/B_seed0/epn612.npz
+23450 ./p2/B_seed0/provenance.json
+2045492 ./p2/B_seed0/uci_emg.npz
+187080 ./p2/B_seed1.json
+292659636 ./p2/B_seed1/epn612.npz
+23450 ./p2/B_seed1/provenance.json
+2045492 ./p2/B_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_downstream_0910.link.sizes (1227 bytes, 37 lines)
+7460 ./comparison.json
+29870 ./p1/A_seed0.json
+143632314 ./p1/A_seed0/ninapro_db2.npz
+42304382 ./p1/A_seed0/ninapro_db3.npz
+130002778 ./p1/A_seed0/ninapro_db6.npz
+4027 ./p1/A_seed0/provenance.json
+29875 ./p1/A_seed1.json
+143632314 ./p1/A_seed1/ninapro_db2.npz
+42304382 ./p1/A_seed1/ninapro_db3.npz
+130002778 ./p1/A_seed1/ninapro_db6.npz
+4027 ./p1/A_seed1/provenance.json
+29862 ./p1/B_seed0.json
+143632314 ./p1/B_seed0/ninapro_db2.npz
+42304382 ./p1/B_seed0/ninapro_db3.npz
+130002778 ./p1/B_seed0/ninapro_db6.npz
+4027 ./p1/B_seed0/provenance.json
+29870 ./p1/B_seed1.json
+143632314 ./p1/B_seed1/ninapro_db2.npz
+42304382 ./p1/B_seed1/ninapro_db3.npz
+130002778 ./p1/B_seed1/ninapro_db6.npz
+4027 ./p1/B_seed1/provenance.json
+187078 ./p2/A_seed0.json
+292659636 ./p2/A_seed0/epn612.npz
+23450 ./p2/A_seed0/provenance.json
+2045492 ./p2/A_seed0/uci_emg.npz
+187072 ./p2/A_seed1.json
+292659636 ./p2/A_seed1/epn612.npz
+23450 ./p2/A_seed1/provenance.json
+2045492 ./p2/A_seed1/uci_emg.npz
+187089 ./p2/B_seed0.json
+292659636 ./p2/B_seed0/epn612.npz
+23450 ./p2/B_seed0/provenance.json
+2045492 ./p2/B_seed0/uci_emg.npz
+187080 ./p2/B_seed1.json
+292659636 ./p2/B_seed1/epn612.npz
+23450 ./p2/B_seed1/provenance.json
+2045492 ./p2/B_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_downstream_0910.source.dirs (116 bytes, 11 lines)
+.
+./p1
+./p1/A_seed0
+./p1/A_seed1
+./p1/B_seed0
+./p1/B_seed1
+./p2
+./p2/A_seed0
+./p2/A_seed1
+./p2/B_seed0
+./p2/B_seed1
+## wearusfm_runs_results_passo6_step1_downstream_0910.source.sha256 (3380 bytes, 37 lines)
+7c93c1b700b7462ce46eeb27a3de65abd38d95caef38b6dc03c76520957527c1  ./comparison.json
+9ce5ce267b748ca768a03d49a4b796f61db3c6ac15fd1c83e72de9e703ce6823  ./p1/A_seed0.json
+8a009ddf49876e4c05733e644a08abb5866d616d12f1decb2194e69aed66dd67  ./p1/A_seed0/ninapro_db2.npz
+c7a81c379978539a267d8fb647d3c431b1eb0d97743c447ba62e9a859d56c296  ./p1/A_seed0/ninapro_db3.npz
+cac9462a18cba48cd1cf4e8f590c72d86b013630edfcc4dafbca28183aeb7063  ./p1/A_seed0/ninapro_db6.npz
+6d90190b6468a8da3e39de0f7f78c3f64847ce31144cb8a1eb77d21dc1a6b7ee  ./p1/A_seed0/provenance.json
+fc3c1ca69d88c7aa48dc10d2b75ce05213757f187d26076d8e88e7baab7c9181  ./p1/A_seed1.json
+68588c47ab63b0ec27d22c1b40d6b21567745f75c37d3b5ca2ff44f4f292d843  ./p1/A_seed1/ninapro_db2.npz
+9fbf55705590f9a3be38d69b3e4f3be01e7c54d98a07775fbc36d9ab135fc9be  ./p1/A_seed1/ninapro_db3.npz
+856afee73814c9ea9b8fd77e829326053f87f4671c52ca7be4c0ed74015c9356  ./p1/A_seed1/ninapro_db6.npz
+0f7a3fbb476cad40e5e58a05385515ca412ee3db516bd7f781e5b734005e6800  ./p1/A_seed1/provenance.json
+aa2aeb7d4e005f3cb97b4f15ffc16274d1c478c837ca0930ec05128352b34fa0  ./p1/B_seed0.json
+c488e60118188acc2f3065d28bf46f6ce1e8557b7414849d6e5c4acb61dd2a9e  ./p1/B_seed0/ninapro_db2.npz
+1fcbaa016ee0087ef552080e0b1ce23ceb02fd49f74a80f710cfe9a67754dea9  ./p1/B_seed0/ninapro_db3.npz
+254a5f37822860184944d3586599a76bb82076147d5cd511750f3f595e10cc96  ./p1/B_seed0/ninapro_db6.npz
+1c6cd8df78860f6d951f1186e4a291867224473a62e65a57d03199b8d20d11ee  ./p1/B_seed0/provenance.json
+e27f4404b40cafde5996e4985938fd14a722e993ef6453d06efa799f887b71c2  ./p1/B_seed1.json
+74fa89d4d42d121233930bb5fe9d1494c99d08a3a1ce0ca00c6a9ad003c2a7c0  ./p1/B_seed1/ninapro_db2.npz
+af860886e56a99d8698775b9d65bdff45940774cbaecf3836b6116daee7cdb2d  ./p1/B_seed1/ninapro_db3.npz
+ea473b7837e387389f38f1a029c146c7c2b3dc64d55dc0260e0ad717a26f7df7  ./p1/B_seed1/ninapro_db6.npz
+8719b3bf8fc325dc2d4d9ec39aa4ae32078777f59e126eece99e8edb82c196fe  ./p1/B_seed1/provenance.json
+5ffd172e21848ce9b8ad8876ffeb7ffe2c3da0a842ada1b441c16126fbab9c8b  ./p2/A_seed0.json
+b3d93fdeee1381fd80bbcc46483186ce89bec767f868875df0a871419decdbbf  ./p2/A_seed0/epn612.npz
+6af4f8a12c5e03610bb362b2ae337acde8775c4f373799dcdcf8b325c5039018  ./p2/A_seed0/provenance.json
+fd2ad566487d4c49d7a85669c333b889a43e0434e915a037d094d3fe4bb10d10  ./p2/A_seed0/uci_emg.npz
+e9b51873c7788959dfbd86e9e701fab8a7c03d098f35284d3b9c9ea95d5766f0  ./p2/A_seed1.json
+b67a88e8c719f223daa7485e2f36c68331f29e04d4258380f3fbcc359f40ad9a  ./p2/A_seed1/epn612.npz
+d5bb55a144b2ca650d576e5d4e0b656e501cb90bbcb2dfef52775f488c616301  ./p2/A_seed1/provenance.json
+5f139c961c697e87349a8f792f92955421169a523441cffc1d0f1fcece043a1b  ./p2/A_seed1/uci_emg.npz
+354952fa23bcc2244cd97064e3c336470c99b114a2faa101e6fdca2c0afa76a0  ./p2/B_seed0.json
+2bab9d03d54ea7c498bb135b87c2f3e9c2fc1b23fc25b6b785c633435e547f8c  ./p2/B_seed0/epn612.npz
+4d19ef8a9338657889f618d8201461d2f0a402f46945bf8dbf2dfd1c6179668f  ./p2/B_seed0/provenance.json
+a53fcbf0aa7656443db2080b56460edcf4258844129c4074e91db96a0b50682c  ./p2/B_seed0/uci_emg.npz
+3ae6258c7d16bce70587a5e90ea26cf3e46b271cb2007555172aa410235cd7bc  ./p2/B_seed1.json
+58e655482f7e6a5d268934bc4c6a9bd11eb36826960f1e67760872ee5e058e7b  ./p2/B_seed1/epn612.npz
+0720d7ab71d1a0f9503b156ea7465c2521e375d6fd07f87887747c1908219046  ./p2/B_seed1/provenance.json
+2cb8628f0298e09135a5c09e8c8c72d6cab0c90560df77c244105fc4de3647fc  ./p2/B_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_downstream_0910.source.sizes (1227 bytes, 37 lines)
+7460 ./comparison.json
+29870 ./p1/A_seed0.json
+143632314 ./p1/A_seed0/ninapro_db2.npz
+42304382 ./p1/A_seed0/ninapro_db3.npz
+130002778 ./p1/A_seed0/ninapro_db6.npz
+4027 ./p1/A_seed0/provenance.json
+29875 ./p1/A_seed1.json
+143632314 ./p1/A_seed1/ninapro_db2.npz
+42304382 ./p1/A_seed1/ninapro_db3.npz
+130002778 ./p1/A_seed1/ninapro_db6.npz
+4027 ./p1/A_seed1/provenance.json
+29862 ./p1/B_seed0.json
+143632314 ./p1/B_seed0/ninapro_db2.npz
+42304382 ./p1/B_seed0/ninapro_db3.npz
+130002778 ./p1/B_seed0/ninapro_db6.npz
+4027 ./p1/B_seed0/provenance.json
+29870 ./p1/B_seed1.json
+143632314 ./p1/B_seed1/ninapro_db2.npz
+42304382 ./p1/B_seed1/ninapro_db3.npz
+130002778 ./p1/B_seed1/ninapro_db6.npz
+4027 ./p1/B_seed1/provenance.json
+187078 ./p2/A_seed0.json
+292659636 ./p2/A_seed0/epn612.npz
+23450 ./p2/A_seed0/provenance.json
+2045492 ./p2/A_seed0/uci_emg.npz
+187072 ./p2/A_seed1.json
+292659636 ./p2/A_seed1/epn612.npz
+23450 ./p2/A_seed1/provenance.json
+2045492 ./p2/A_seed1/uci_emg.npz
+187089 ./p2/B_seed0.json
+292659636 ./p2/B_seed0/epn612.npz
+23450 ./p2/B_seed0/provenance.json
+2045492 ./p2/B_seed0/uci_emg.npz
+187080 ./p2/B_seed1.json
+292659636 ./p2/B_seed1/epn612.npz
+23450 ./p2/B_seed1/provenance.json
+2045492 ./p2/B_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.dirs (84 bytes, 7 lines)
+.
+./p1
+./p1/Random_seed0
+./p1/Random_seed1
+./p2
+./p2/Random_seed0
+./p2/Random_seed1
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.sha256 (2234 bytes, 23 lines)
+dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119  ./comparison.json
+d3bf635d2f7ba6feb3e5a583311da1e1ef7ac0b7cf6c5f0c4fe994960aa87704  ./p1/Random_seed0.json
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p1/Random_seed0/initial_teacher.pt
+9567c59eb7ebe46d287b96d36eb1e85fbe26363b8c70a049855c790278e2fcdf  ./p1/Random_seed0/ninapro_db2.npz
+81312315198b3bec207aa9b409bc1b9527307e1cc9f920a65e5041e0b72b971d  ./p1/Random_seed0/ninapro_db3.npz
+8fb7672f358fec9d06a740738a3d6ea09b5672b351aaab25e77f24ba8a36ef51  ./p1/Random_seed0/ninapro_db6.npz
+9cb8adac696004eba0705ea753f0195c7ed062292d2d85d56f9552f4d57299c4  ./p1/Random_seed0/provenance.json
+7a60b3cbe825c9e8b4210c96add9b0257d6cd404ed4c6b8a4cce0ca269e79461  ./p1/Random_seed1.json
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p1/Random_seed1/initial_teacher.pt
+912e81d3c860c63e0c5213c96eff070655097b5107e43b977fd6c7091348f18c  ./p1/Random_seed1/ninapro_db2.npz
+e1b43bbf18c846572fe85636db1cde1a8879f6fdacbae2c20823d157e9b4dc6d  ./p1/Random_seed1/ninapro_db3.npz
+86d89ff582f4af4202bc0239987a45bb98056a0c14d5f5ab0b173c6c7ee6aa14  ./p1/Random_seed1/ninapro_db6.npz
+05252eeef26f984fad541912443e53328d99cb59cf0af0109548667b6149cee3  ./p1/Random_seed1/provenance.json
+867449f037901526b328d72ab28842c660fe478c2cd72c1c99e56e664b6e61cb  ./p2/Random_seed0.json
+dee0ceeea830a330fe9b0ba874e5b0de9fb49f191bf17bbdf7edb789c3e0ef4a  ./p2/Random_seed0/epn612.npz
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p2/Random_seed0/initial_teacher.pt
+76dbe233dde82bb2387d2206f94b0962416589494977e44127c7bac6537a5803  ./p2/Random_seed0/provenance.json
+ec3711076f48ccde768d2736887d60553a3b8b3271515005c0ea63b8324a3633  ./p2/Random_seed0/uci_emg.npz
+92bcefca0763dd5518b4cd9a03226529e0b4368fd969cc24b0c76ac4cc182600  ./p2/Random_seed1.json
+b06a2075c23eba0d388adac61ceb3d9ea8e4936f4869622ff961ae80a7cba506  ./p2/Random_seed1/epn612.npz
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p2/Random_seed1/initial_teacher.pt
+21ee0b92882148fc8eef0c45ef7113122b4b6b2e866d084c4336b2d861d513cd  ./p2/Random_seed1/provenance.json
+4dd31a34a56850c9b6d0b098bf2021d5e4fef58f46375f1f1f1c5cb5ee4d23b2  ./p2/Random_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.sizes (904 bytes, 23 lines)
+15336 ./comparison.json
+30269 ./p1/Random_seed0.json
+113602476 ./p1/Random_seed0/initial_teacher.pt
+143632314 ./p1/Random_seed0/ninapro_db2.npz
+42304382 ./p1/Random_seed0/ninapro_db3.npz
+130002778 ./p1/Random_seed0/ninapro_db6.npz
+4379 ./p1/Random_seed0/provenance.json
+30268 ./p1/Random_seed1.json
+113602476 ./p1/Random_seed1/initial_teacher.pt
+143632314 ./p1/Random_seed1/ninapro_db2.npz
+42304382 ./p1/Random_seed1/ninapro_db3.npz
+130002778 ./p1/Random_seed1/ninapro_db6.npz
+4379 ./p1/Random_seed1/provenance.json
+187298 ./p2/Random_seed0.json
+292659636 ./p2/Random_seed0/epn612.npz
+113602476 ./p2/Random_seed0/initial_teacher.pt
+23802 ./p2/Random_seed0/provenance.json
+2045492 ./p2/Random_seed0/uci_emg.npz
+187321 ./p2/Random_seed1.json
+292659636 ./p2/Random_seed1/epn612.npz
+113602476 ./p2/Random_seed1/initial_teacher.pt
+23802 ./p2/Random_seed1/provenance.json
+2045492 ./p2/Random_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.link.sizes (904 bytes, 23 lines)
+15336 ./comparison.json
+30269 ./p1/Random_seed0.json
+113602476 ./p1/Random_seed0/initial_teacher.pt
+143632314 ./p1/Random_seed0/ninapro_db2.npz
+42304382 ./p1/Random_seed0/ninapro_db3.npz
+130002778 ./p1/Random_seed0/ninapro_db6.npz
+4379 ./p1/Random_seed0/provenance.json
+30268 ./p1/Random_seed1.json
+113602476 ./p1/Random_seed1/initial_teacher.pt
+143632314 ./p1/Random_seed1/ninapro_db2.npz
+42304382 ./p1/Random_seed1/ninapro_db3.npz
+130002778 ./p1/Random_seed1/ninapro_db6.npz
+4379 ./p1/Random_seed1/provenance.json
+187298 ./p2/Random_seed0.json
+292659636 ./p2/Random_seed0/epn612.npz
+113602476 ./p2/Random_seed0/initial_teacher.pt
+23802 ./p2/Random_seed0/provenance.json
+2045492 ./p2/Random_seed0/uci_emg.npz
+187321 ./p2/Random_seed1.json
+292659636 ./p2/Random_seed1/epn612.npz
+113602476 ./p2/Random_seed1/initial_teacher.pt
+23802 ./p2/Random_seed1/provenance.json
+2045492 ./p2/Random_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.source.dirs (84 bytes, 7 lines)
+.
+./p1
+./p1/Random_seed0
+./p1/Random_seed1
+./p2
+./p2/Random_seed0
+./p2/Random_seed1
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.source.sha256 (2234 bytes, 23 lines)
+dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119  ./comparison.json
+d3bf635d2f7ba6feb3e5a583311da1e1ef7ac0b7cf6c5f0c4fe994960aa87704  ./p1/Random_seed0.json
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p1/Random_seed0/initial_teacher.pt
+9567c59eb7ebe46d287b96d36eb1e85fbe26363b8c70a049855c790278e2fcdf  ./p1/Random_seed0/ninapro_db2.npz
+81312315198b3bec207aa9b409bc1b9527307e1cc9f920a65e5041e0b72b971d  ./p1/Random_seed0/ninapro_db3.npz
+8fb7672f358fec9d06a740738a3d6ea09b5672b351aaab25e77f24ba8a36ef51  ./p1/Random_seed0/ninapro_db6.npz
+9cb8adac696004eba0705ea753f0195c7ed062292d2d85d56f9552f4d57299c4  ./p1/Random_seed0/provenance.json
+7a60b3cbe825c9e8b4210c96add9b0257d6cd404ed4c6b8a4cce0ca269e79461  ./p1/Random_seed1.json
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p1/Random_seed1/initial_teacher.pt
+912e81d3c860c63e0c5213c96eff070655097b5107e43b977fd6c7091348f18c  ./p1/Random_seed1/ninapro_db2.npz
+e1b43bbf18c846572fe85636db1cde1a8879f6fdacbae2c20823d157e9b4dc6d  ./p1/Random_seed1/ninapro_db3.npz
+86d89ff582f4af4202bc0239987a45bb98056a0c14d5f5ab0b173c6c7ee6aa14  ./p1/Random_seed1/ninapro_db6.npz
+05252eeef26f984fad541912443e53328d99cb59cf0af0109548667b6149cee3  ./p1/Random_seed1/provenance.json
+867449f037901526b328d72ab28842c660fe478c2cd72c1c99e56e664b6e61cb  ./p2/Random_seed0.json
+dee0ceeea830a330fe9b0ba874e5b0de9fb49f191bf17bbdf7edb789c3e0ef4a  ./p2/Random_seed0/epn612.npz
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p2/Random_seed0/initial_teacher.pt
+76dbe233dde82bb2387d2206f94b0962416589494977e44127c7bac6537a5803  ./p2/Random_seed0/provenance.json
+ec3711076f48ccde768d2736887d60553a3b8b3271515005c0ea63b8324a3633  ./p2/Random_seed0/uci_emg.npz
+92bcefca0763dd5518b4cd9a03226529e0b4368fd969cc24b0c76ac4cc182600  ./p2/Random_seed1.json
+b06a2075c23eba0d388adac61ceb3d9ea8e4936f4869622ff961ae80a7cba506  ./p2/Random_seed1/epn612.npz
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p2/Random_seed1/initial_teacher.pt
+21ee0b92882148fc8eef0c45ef7113122b4b6b2e866d084c4336b2d861d513cd  ./p2/Random_seed1/provenance.json
+4dd31a34a56850c9b6d0b098bf2021d5e4fef58f46375f1f1f1c5cb5ee4d23b2  ./p2/Random_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step1_random_20261014_r3.source.sizes (904 bytes, 23 lines)
+15336 ./comparison.json
+30269 ./p1/Random_seed0.json
+113602476 ./p1/Random_seed0/initial_teacher.pt
+143632314 ./p1/Random_seed0/ninapro_db2.npz
+42304382 ./p1/Random_seed0/ninapro_db3.npz
+130002778 ./p1/Random_seed0/ninapro_db6.npz
+4379 ./p1/Random_seed0/provenance.json
+30268 ./p1/Random_seed1.json
+113602476 ./p1/Random_seed1/initial_teacher.pt
+143632314 ./p1/Random_seed1/ninapro_db2.npz
+42304382 ./p1/Random_seed1/ninapro_db3.npz
+130002778 ./p1/Random_seed1/ninapro_db6.npz
+4379 ./p1/Random_seed1/provenance.json
+187298 ./p2/Random_seed0.json
+292659636 ./p2/Random_seed0/epn612.npz
+113602476 ./p2/Random_seed0/initial_teacher.pt
+23802 ./p2/Random_seed0/provenance.json
+2045492 ./p2/Random_seed0/uci_emg.npz
+187321 ./p2/Random_seed1.json
+292659636 ./p2/Random_seed1/epn612.npz
+113602476 ./p2/Random_seed1/initial_teacher.pt
+23802 ./p2/Random_seed1/provenance.json
+2045492 ./p2/Random_seed1/uci_emg.npz
+## wearusfm_runs_results_passo6_step2a_20261014.copy.dirs (156 bytes, 15 lines)
+.
+./p1
+./p1/B_seed0
+./p1/B_seed0/MS
+./p1/B_seed1
+./p1/B_seed1/MS
+./p1/K
+./p1/S
+./p2
+./p2/B_seed0
+./p2/B_seed0/MS
+./p2/B_seed1
+./p2/B_seed1/MS
+./p2/K
+./p2/S
+## wearusfm_runs_results_passo6_step2a_20261014.copy.sha256 (3670 bytes, 41 lines)
+1d5f0787d98a6f4d5636ab489fc32655c808bf3ade92c656e12403cf30260252  ./comparison.json
+5064ec8b7ac9a64aa4ede5b5ccfd1af0c33ba175179591b6ad00cd6361125afc  ./p1/B_seed0/M.json
+cce30e5ed443092f7bd2d85075a933a8dfd6baff7b9893d881fef85fe8c3b0f9  ./p1/B_seed0/MS.json
+f1a66a6ab409eb753909aa0b5e781423f0402fcc5b0ce1371f829ca9d593f2f5  ./p1/B_seed0/MS/ninapro_db2.npz
+b8e5d9813abf5826e86bdead61bcb263c3ace6dd6ef93f157357c0f969dfea83  ./p1/B_seed0/MS/ninapro_db3.npz
+4cf498864b4851c42072713cb30f7f28187c5b0f5d5b0ff15490c577da0480c8  ./p1/B_seed0/MS/ninapro_db6.npz
+07fd2b655d1f2b38afecfc1cc0e26d06f0c38fa52ae4552f5b29c4b65025e6d0  ./p1/B_seed0/MS/provenance.json
+c5e13ab239af6a622e3e6acadbddb74ed31bd3e0166624028dd6460b8804db2f  ./p1/B_seed1/M.json
+18bd554925bc6cd141908090c539663d3254d3dfe8d0d8b63c4200fbeced48bc  ./p1/B_seed1/MS.json
+083b92605f36e9b8718154cd82c1bd7bd8c16e56b593aae0fc4c392d63ba5a97  ./p1/B_seed1/MS/ninapro_db2.npz
+43e1baf88a1b72ba60d7c7f8da39184251330c910bb98efd1ac0a1c0f32e2cda  ./p1/B_seed1/MS/ninapro_db3.npz
+b0bcb2b95c2eb9ae0b48993e42fd2b36038d575dade751f7123c67e5f6430133  ./p1/B_seed1/MS/ninapro_db6.npz
+5de5838fa5d4cfc3ff30b04087c9aca18cc9afb5f44de7d8672a5b07c9812ca9  ./p1/B_seed1/MS/provenance.json
+f4bb242a2f41248a553d8386df5b1dea755fcfc34942350492f023d8c0a0b4b6  ./p1/K.json
+c5a915c4560f005d909a02def484ef7521e738afc847ac135a942666bc5186ff  ./p1/K/ninapro_db2.npz
+46bac05c2f1b092361d6562c62bdb6217d518b5dab2bc2f1d7915c0f925ca964  ./p1/K/ninapro_db3.npz
+22490d6ddc97d14cab120ee369476180d42367148ce1700c584e89bc2d91213e  ./p1/K/ninapro_db6.npz
+123ff6e04661d88fdd802d84684855bb879bc305de80b5f647fdef89c8b8d7e5  ./p1/K/provenance.json
+a27041e9e69e70f11434eadb83f52e381c0929e9df8b478de73214bbe897daf1  ./p1/S.json
+ce9a76c389ee4744047931788bc6a3d01d984a1a6950a3f60cc0ae0c3bfe7003  ./p1/S/ninapro_db2.npz
+778148c81f675e4aa1705348886ba5ddff30c1bba0ab7bef2fe9f9d598fa16fd  ./p1/S/ninapro_db3.npz
+790a5a5dbd6df1b6b03f03e1c9c5a35078bf67dcc2b49da6af820c6c022aa4fd  ./p1/S/ninapro_db6.npz
+5221a2c623dbfc787da6b79ceb8c09c432056f94f024602cc56c05a00455ad01  ./p1/S/provenance.json
+018702def78647d36d9782f02a83acb5121dca6d99321ca926290966b6507775  ./p2/B_seed0/M.json
+ad89d93c6ac8f51a198ec20082660fd48ebedd79464f952288c3c8537ae6a6a7  ./p2/B_seed0/MS.json
+549636e82598a44c2e912ebc80aeff45a5cf62b5569787890b6d42a8029ce88a  ./p2/B_seed0/MS/epn612.npz
+7c70f1de4332a00812070dfc5c9302228f7f51852a000aea8568847860a240d5  ./p2/B_seed0/MS/provenance.json
+c21dd049eb9ab276992e37b046ff0c68aaa28c8a67e3a846c1a88178318192ca  ./p2/B_seed0/MS/uci_emg.npz
+2d5538c5cf8f4f90f01de5260e0f110a5c9503197dd4af9505e921176f4bc3f9  ./p2/B_seed1/M.json
+95f939ab931ff3194c7234ecdb3d5daf73458b28b795ef0324457028a08b5f4c  ./p2/B_seed1/MS.json
+12de623f4cebd407ec09479f94b889520be49b2065dc794a1b4e62f392d19da5  ./p2/B_seed1/MS/epn612.npz
+6d7df361b0fc5c8bf7298674bf2df903a7014e4b34d0725e6ab1797ba1bb5555  ./p2/B_seed1/MS/provenance.json
+b0510fa3fe42e7c29ae97052085d2b682aa9789fcee518a52d79625ecbb8dad4  ./p2/B_seed1/MS/uci_emg.npz
+1d48cf5f3f9d5d54e6696e41ef258571b11ec03ac37a19a3bd38197ff97c795a  ./p2/K.json
+a7908892dc0ee9ee5ff001f407e160cfd840e8354761239fb187539261d82bfe  ./p2/K/epn612.npz
+02ab5f65f6467ca21652fcd9231fb442b09b77931eba2d38e51f2dcf19451456  ./p2/K/provenance.json
+c5c82f8939573df447bc4ce2ea81cbbbf8e3fe8cc4c30e3046b2a03e400e0708  ./p2/K/uci_emg.npz
+b7e09297822a140602b1f41613d3114ec3d6ae3e84461eef4385c62a44227119  ./p2/S.json
+373866402710c1cc4bec57f01a9825966a26fdc04429e402c304aa6e395a1c8f  ./p2/S/epn612.npz
+a9eb97fc7ba8cd5e8596ee41a7685102f687e1ae74cb6b2eb110bbfa45cad00a  ./p2/S/provenance.json
+4d35abd4e7bed80b26a0c60caeb36a0630c2698117ad7c49a6c9b169c77fc681  ./p2/S/uci_emg.npz
+## wearusfm_runs_results_passo6_step2a_20261014.copy.sizes (1268 bytes, 41 lines)
+9616 ./comparison.json
+34498 ./p1/B_seed0/M.json
+38707 ./p1/B_seed0/MS.json
+155524582 ./p1/B_seed0/MS/ninapro_db2.npz
+45807274 ./p1/B_seed0/MS/ninapro_db3.npz
+140766598 ./p1/B_seed0/MS/ninapro_db6.npz
+12216 ./p1/B_seed0/MS/provenance.json
+34508 ./p1/B_seed1/M.json
+38701 ./p1/B_seed1/MS.json
+155524582 ./p1/B_seed1/MS/ninapro_db2.npz
+45807274 ./p1/B_seed1/MS/ninapro_db3.npz
+140766598 ./p1/B_seed1/MS/ninapro_db6.npz
+12216 ./p1/B_seed1/MS/provenance.json
+33933 ./p1/K.json
+6878154 ./p1/K/ninapro_db2.npz
+2028046 ./p1/K/ninapro_db3.npz
+6225770 ./p1/K/ninapro_db6.npz
+7845 ./p1/K/provenance.json
+30102 ./p1/S.json
+12824014 ./p1/S/ninapro_db2.npz
+3779218 ./p1/S/ninapro_db3.npz
+11607406 ./p1/S/ninapro_db6.npz
+4219 ./p1/S/provenance.json
+213279 ./p2/B_seed0/M.json
+237876 ./p2/B_seed0/MS.json
+316160992 ./p2/B_seed0/MS/epn612.npz
+71451 ./p2/B_seed0/MS/provenance.json
+2215520 ./p2/B_seed0/MS/uci_emg.npz
+213270 ./p2/B_seed1/M.json
+237860 ./p2/B_seed1/MS.json
+316160992 ./p2/B_seed1/MS/epn612.npz
+71451 ./p2/B_seed1/MS/provenance.json
+2215520 ./p2/B_seed1/MS/uci_emg.npz
+209997 ./p2/K.json
+22400964 ./p2/K/epn612.npz
+46588 ./p2/K/provenance.json
+97092 ./p2/K/uci_emg.npz
+186417 ./p2/S.json
+34151368 ./p2/S/epn612.npz
+23559 ./p2/S/provenance.json
+181832 ./p2/S/uci_emg.npz
+## wearusfm_runs_results_passo6_step2a_20261014.link.sizes (1268 bytes, 41 lines)
+9616 ./comparison.json
+34498 ./p1/B_seed0/M.json
+38707 ./p1/B_seed0/MS.json
+155524582 ./p1/B_seed0/MS/ninapro_db2.npz
+45807274 ./p1/B_seed0/MS/ninapro_db3.npz
+140766598 ./p1/B_seed0/MS/ninapro_db6.npz
+12216 ./p1/B_seed0/MS/provenance.json
+34508 ./p1/B_seed1/M.json
+38701 ./p1/B_seed1/MS.json
+155524582 ./p1/B_seed1/MS/ninapro_db2.npz
+45807274 ./p1/B_seed1/MS/ninapro_db3.npz
+140766598 ./p1/B_seed1/MS/ninapro_db6.npz
+12216 ./p1/B_seed1/MS/provenance.json
+33933 ./p1/K.json
+6878154 ./p1/K/ninapro_db2.npz
+2028046 ./p1/K/ninapro_db3.npz
+6225770 ./p1/K/ninapro_db6.npz
+7845 ./p1/K/provenance.json
+30102 ./p1/S.json
+12824014 ./p1/S/ninapro_db2.npz
+3779218 ./p1/S/ninapro_db3.npz
+11607406 ./p1/S/ninapro_db6.npz
+4219 ./p1/S/provenance.json
+213279 ./p2/B_seed0/M.json
+237876 ./p2/B_seed0/MS.json
+316160992 ./p2/B_seed0/MS/epn612.npz
+71451 ./p2/B_seed0/MS/provenance.json
+2215520 ./p2/B_seed0/MS/uci_emg.npz
+213270 ./p2/B_seed1/M.json
+237860 ./p2/B_seed1/MS.json
+316160992 ./p2/B_seed1/MS/epn612.npz
+71451 ./p2/B_seed1/MS/provenance.json
+2215520 ./p2/B_seed1/MS/uci_emg.npz
+209997 ./p2/K.json
+22400964 ./p2/K/epn612.npz
+46588 ./p2/K/provenance.json
+97092 ./p2/K/uci_emg.npz
+186417 ./p2/S.json
+34151368 ./p2/S/epn612.npz
+23559 ./p2/S/provenance.json
+181832 ./p2/S/uci_emg.npz
+## wearusfm_runs_results_passo6_step2a_20261014.source.dirs (156 bytes, 15 lines)
+.
+./p1
+./p1/B_seed0
+./p1/B_seed0/MS
+./p1/B_seed1
+./p1/B_seed1/MS
+./p1/K
+./p1/S
+./p2
+./p2/B_seed0
+./p2/B_seed0/MS
+./p2/B_seed1
+./p2/B_seed1/MS
+./p2/K
+./p2/S
+## wearusfm_runs_results_passo6_step2a_20261014.source.sha256 (3670 bytes, 41 lines)
+1d5f0787d98a6f4d5636ab489fc32655c808bf3ade92c656e12403cf30260252  ./comparison.json
+5064ec8b7ac9a64aa4ede5b5ccfd1af0c33ba175179591b6ad00cd6361125afc  ./p1/B_seed0/M.json
+cce30e5ed443092f7bd2d85075a933a8dfd6baff7b9893d881fef85fe8c3b0f9  ./p1/B_seed0/MS.json
+f1a66a6ab409eb753909aa0b5e781423f0402fcc5b0ce1371f829ca9d593f2f5  ./p1/B_seed0/MS/ninapro_db2.npz
+b8e5d9813abf5826e86bdead61bcb263c3ace6dd6ef93f157357c0f969dfea83  ./p1/B_seed0/MS/ninapro_db3.npz
+4cf498864b4851c42072713cb30f7f28187c5b0f5d5b0ff15490c577da0480c8  ./p1/B_seed0/MS/ninapro_db6.npz
+07fd2b655d1f2b38afecfc1cc0e26d06f0c38fa52ae4552f5b29c4b65025e6d0  ./p1/B_seed0/MS/provenance.json
+c5e13ab239af6a622e3e6acadbddb74ed31bd3e0166624028dd6460b8804db2f  ./p1/B_seed1/M.json
+18bd554925bc6cd141908090c539663d3254d3dfe8d0d8b63c4200fbeced48bc  ./p1/B_seed1/MS.json
+083b92605f36e9b8718154cd82c1bd7bd8c16e56b593aae0fc4c392d63ba5a97  ./p1/B_seed1/MS/ninapro_db2.npz
+43e1baf88a1b72ba60d7c7f8da39184251330c910bb98efd1ac0a1c0f32e2cda  ./p1/B_seed1/MS/ninapro_db3.npz
+b0bcb2b95c2eb9ae0b48993e42fd2b36038d575dade751f7123c67e5f6430133  ./p1/B_seed1/MS/ninapro_db6.npz
+5de5838fa5d4cfc3ff30b04087c9aca18cc9afb5f44de7d8672a5b07c9812ca9  ./p1/B_seed1/MS/provenance.json
+f4bb242a2f41248a553d8386df5b1dea755fcfc34942350492f023d8c0a0b4b6  ./p1/K.json
+c5a915c4560f005d909a02def484ef7521e738afc847ac135a942666bc5186ff  ./p1/K/ninapro_db2.npz
+46bac05c2f1b092361d6562c62bdb6217d518b5dab2bc2f1d7915c0f925ca964  ./p1/K/ninapro_db3.npz
+22490d6ddc97d14cab120ee369476180d42367148ce1700c584e89bc2d91213e  ./p1/K/ninapro_db6.npz
+123ff6e04661d88fdd802d84684855bb879bc305de80b5f647fdef89c8b8d7e5  ./p1/K/provenance.json
+a27041e9e69e70f11434eadb83f52e381c0929e9df8b478de73214bbe897daf1  ./p1/S.json
+ce9a76c389ee4744047931788bc6a3d01d984a1a6950a3f60cc0ae0c3bfe7003  ./p1/S/ninapro_db2.npz
+778148c81f675e4aa1705348886ba5ddff30c1bba0ab7bef2fe9f9d598fa16fd  ./p1/S/ninapro_db3.npz
+790a5a5dbd6df1b6b03f03e1c9c5a35078bf67dcc2b49da6af820c6c022aa4fd  ./p1/S/ninapro_db6.npz
+5221a2c623dbfc787da6b79ceb8c09c432056f94f024602cc56c05a00455ad01  ./p1/S/provenance.json
+018702def78647d36d9782f02a83acb5121dca6d99321ca926290966b6507775  ./p2/B_seed0/M.json
+ad89d93c6ac8f51a198ec20082660fd48ebedd79464f952288c3c8537ae6a6a7  ./p2/B_seed0/MS.json
+549636e82598a44c2e912ebc80aeff45a5cf62b5569787890b6d42a8029ce88a  ./p2/B_seed0/MS/epn612.npz
+7c70f1de4332a00812070dfc5c9302228f7f51852a000aea8568847860a240d5  ./p2/B_seed0/MS/provenance.json
+c21dd049eb9ab276992e37b046ff0c68aaa28c8a67e3a846c1a88178318192ca  ./p2/B_seed0/MS/uci_emg.npz
+2d5538c5cf8f4f90f01de5260e0f110a5c9503197dd4af9505e921176f4bc3f9  ./p2/B_seed1/M.json
+95f939ab931ff3194c7234ecdb3d5daf73458b28b795ef0324457028a08b5f4c  ./p2/B_seed1/MS.json
+12de623f4cebd407ec09479f94b889520be49b2065dc794a1b4e62f392d19da5  ./p2/B_seed1/MS/epn612.npz
+6d7df361b0fc5c8bf7298674bf2df903a7014e4b34d0725e6ab1797ba1bb5555  ./p2/B_seed1/MS/provenance.json
+b0510fa3fe42e7c29ae97052085d2b682aa9789fcee518a52d79625ecbb8dad4  ./p2/B_seed1/MS/uci_emg.npz
+1d48cf5f3f9d5d54e6696e41ef258571b11ec03ac37a19a3bd38197ff97c795a  ./p2/K.json
+a7908892dc0ee9ee5ff001f407e160cfd840e8354761239fb187539261d82bfe  ./p2/K/epn612.npz
+02ab5f65f6467ca21652fcd9231fb442b09b77931eba2d38e51f2dcf19451456  ./p2/K/provenance.json
+c5c82f8939573df447bc4ce2ea81cbbbf8e3fe8cc4c30e3046b2a03e400e0708  ./p2/K/uci_emg.npz
+b7e09297822a140602b1f41613d3114ec3d6ae3e84461eef4385c62a44227119  ./p2/S.json
+373866402710c1cc4bec57f01a9825966a26fdc04429e402c304aa6e395a1c8f  ./p2/S/epn612.npz
+a9eb97fc7ba8cd5e8596ee41a7685102f687e1ae74cb6b2eb110bbfa45cad00a  ./p2/S/provenance.json
+4d35abd4e7bed80b26a0c60caeb36a0630c2698117ad7c49a6c9b169c77fc681  ./p2/S/uci_emg.npz
+## wearusfm_runs_results_passo6_step2a_20261014.source.sizes (1268 bytes, 41 lines)
+9616 ./comparison.json
+34498 ./p1/B_seed0/M.json
+38707 ./p1/B_seed0/MS.json
+155524582 ./p1/B_seed0/MS/ninapro_db2.npz
+45807274 ./p1/B_seed0/MS/ninapro_db3.npz
+140766598 ./p1/B_seed0/MS/ninapro_db6.npz
+12216 ./p1/B_seed0/MS/provenance.json
+34508 ./p1/B_seed1/M.json
+38701 ./p1/B_seed1/MS.json
+155524582 ./p1/B_seed1/MS/ninapro_db2.npz
+45807274 ./p1/B_seed1/MS/ninapro_db3.npz
+140766598 ./p1/B_seed1/MS/ninapro_db6.npz
+12216 ./p1/B_seed1/MS/provenance.json
+33933 ./p1/K.json
+6878154 ./p1/K/ninapro_db2.npz
+2028046 ./p1/K/ninapro_db3.npz
+6225770 ./p1/K/ninapro_db6.npz
+7845 ./p1/K/provenance.json
+30102 ./p1/S.json
+12824014 ./p1/S/ninapro_db2.npz
+3779218 ./p1/S/ninapro_db3.npz
+11607406 ./p1/S/ninapro_db6.npz
+4219 ./p1/S/provenance.json
+213279 ./p2/B_seed0/M.json
+237876 ./p2/B_seed0/MS.json
+316160992 ./p2/B_seed0/MS/epn612.npz
+71451 ./p2/B_seed0/MS/provenance.json
+2215520 ./p2/B_seed0/MS/uci_emg.npz
+213270 ./p2/B_seed1/M.json
+237860 ./p2/B_seed1/MS.json
+316160992 ./p2/B_seed1/MS/epn612.npz
+71451 ./p2/B_seed1/MS/provenance.json
+2215520 ./p2/B_seed1/MS/uci_emg.npz
+209997 ./p2/K.json
+22400964 ./p2/K/epn612.npz
+46588 ./p2/K/provenance.json
+97092 ./p2/K/uci_emg.npz
+186417 ./p2/S.json
+34151368 ./p2/S/epn612.npz
+23559 ./p2/S/provenance.json
+181832 ./p2/S/uci_emg.npz
+## wearusfm_runs_results_passo6_step2c_1410.copy.dirs (1108 bytes, 59 lines)
+.
+./p1
+./p1/A_seed0
+./p1/A_seed0/RP
+./p1/A_seed0/RPW
+./p1/A_seed0/RPW0
+./p1/A_seed0/RW
+./p1/A_seed0/branches_init
+./p1/A_seed0/branches_trained
+./p1/A_seed1
+./p1/A_seed1/RP
+./p1/A_seed1/RPW
+./p1/A_seed1/RPW0
+./p1/A_seed1/RW
+./p1/A_seed1/branches_init
+./p1/A_seed1/branches_trained
+./p1/B_seed0
+./p1/B_seed0/RP
+./p1/B_seed0/RPW
+./p1/B_seed0/RPW0
+./p1/B_seed0/RW
+./p1/B_seed0/branches_init
+./p1/B_seed0/branches_trained
+./p1/B_seed1
+./p1/B_seed1/RP
+./p1/B_seed1/RPW
+./p1/B_seed1/RPW0
+./p1/B_seed1/RW
+./p1/B_seed1/branches_init
+./p1/B_seed1/branches_trained
+./p2
+./p2/A_seed0
+./p2/A_seed0/RP
+./p2/A_seed0/RPW
+./p2/A_seed0/RPW0
+./p2/A_seed0/RW
+./p2/A_seed0/branches_init
+./p2/A_seed0/branches_trained
+./p2/A_seed1
+./p2/A_seed1/RP
+./p2/A_seed1/RPW
+./p2/A_seed1/RPW0
+./p2/A_seed1/RW
+./p2/A_seed1/branches_init
+./p2/A_seed1/branches_trained
+./p2/B_seed0
+./p2/B_seed0/RP
+./p2/B_seed0/RPW
+./p2/B_seed0/RPW0
+./p2/B_seed0/RW
+./p2/B_seed0/branches_init
+./p2/B_seed0/branches_trained
+./p2/B_seed1
+./p2/B_seed1/RP
+./p2/B_seed1/RPW
+./p2/B_seed1/RPW0
+./p2/B_seed1/RW
+./p2/B_seed1/branches_init
+./p2/B_seed1/branches_trained
+## wearusfm_runs_results_passo6_step2c_1410.copy.sha256 (19924 bytes, 201 lines)
+e25721caacf5f3e6ae652f5450795f0771b5551e985764b8153497d7511f5373  ./comparison.json
+96e9f47df50fe036adf514ad715d1be30d73b44f26970ea51eb732f02c2bc1d4  ./p1/A_seed0/RP.json
+bab0ac4aeafb68be51f71062dc9beb2f6e5ae431cd5b4be5c1fe65f9e7efe4e6  ./p1/A_seed0/RP/ninapro_db2.npz
+9b03675ffd1ff1c11ad5f4f52580df48a5a965a20138119dab58cea7a19e0381  ./p1/A_seed0/RP/ninapro_db3.npz
+111cd9c43ee5a757c27696d8b0926a9b9c62a0d8be7f46b89184b45d4b99ac2c  ./p1/A_seed0/RP/ninapro_db6.npz
+2fa711c421c3a692585560379a4614ceaabdb1abf5bfee85b20644db488772d5  ./p1/A_seed0/RP/provenance.json
+e8fd6378596fb43b219bdb89d42953c84587e91322b6086aca217af920ba2aea  ./p1/A_seed0/RPW.json
+0c50eb2d823838c4429acbbb3c1dd08f96ac721f393843460fc7a23a813a1af7  ./p1/A_seed0/RPW/ninapro_db2.npz
+c46fd654949f6ad3cf8ade7fd21c03d89b6e83b42687735365b435a1fc15cd9f  ./p1/A_seed0/RPW/ninapro_db3.npz
+4742ada93ec4048ec2bf528cc72b56b88a30cde1486b685935bb92a2cbd05b69  ./p1/A_seed0/RPW/ninapro_db6.npz
+49d5a2c69d9ff817f5ed42adae725fede529249abe99ac4a26c7062a8ce43743  ./p1/A_seed0/RPW/provenance.json
+bbfd8277527c495a49b7c11122fb2ceabe2ac29f34a046e94f9a56e14edbf32c  ./p1/A_seed0/RPW0.json
+4f36ea60ea2fcb011f3e57e200786c55c91ecafd193e2bb0ffacfad524984f27  ./p1/A_seed0/RPW0/ninapro_db2.npz
+1cba6e172064cce049ee410ed5d17bd15b490c9f60ad19ad793e9d66e326dd98  ./p1/A_seed0/RPW0/ninapro_db3.npz
+2701f16d671b208e1e8642773b5c060a3286c7f409355f4d46b7775c2f259a09  ./p1/A_seed0/RPW0/ninapro_db6.npz
+04c45e775a6f541c7d37425f1f722448e1a086bcb7faef94300cc2fcb65fe8b7  ./p1/A_seed0/RPW0/provenance.json
+29facf3cb441d1a77aa61623adc27c01235a7d2c455970cacb78b75dfbece6f9  ./p1/A_seed0/RW.json
+25a00e648b2252863ec7186ac4436038279a24f05c38d200ef01f07376af96fb  ./p1/A_seed0/RW/ninapro_db2.npz
+b76d0ac73ba3fbcf160ed4689bcfaada346e2c9d37a78459387458ca60284a62  ./p1/A_seed0/RW/ninapro_db3.npz
+052883cfaea05358aa6674f7dae1626d3f122b5a4788cecd2b2a545f40c876d5  ./p1/A_seed0/RW/ninapro_db6.npz
+b14f1bd2337175b56ca1deb023de6353afd4385be98ec51a10916ac0e6a9c544  ./p1/A_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/A_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/A_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/A_seed0/branches_init/ninapro_db6.npz
+d0f3814a9e51bcbc1f79f7db5e4983d54d532b84233e2b33bfa757e4419eaf1b  ./p1/A_seed0/branches_init/provenance.json
+65e237e093f99fdb4cb0f2634c08bcfd26db87f644ba4532284338c3452a0941  ./p1/A_seed0/branches_trained/ninapro_db2.npz
+a5ca2e594755ba311fcd988d6d0e84371049a6389768165d7141025ed13580f6  ./p1/A_seed0/branches_trained/ninapro_db3.npz
+50a2ef3ff2bcaf99669fc6b6a55ff03a5621f890b8786534005c38f5f8c3e6ff  ./p1/A_seed0/branches_trained/ninapro_db6.npz
+affd0308671bc6f1e0f83c4b1a38f96a95e0b0d8b73285198a5e21a97b591730  ./p1/A_seed0/branches_trained/provenance.json
+32a826b45ad370ab12d7ea6f633aee843b5342483dffe27b8afecd1a84393f0e  ./p1/A_seed1/RP.json
+8af468fdfb1f870b57490ffc44d9a07c9eb0222b20d90a8e92308c82ec3ba9dc  ./p1/A_seed1/RP/ninapro_db2.npz
+352cdbe2a587a5557f5f504fa0d48f0bcf7f9b40820a3c432ac3d4fc1abe4233  ./p1/A_seed1/RP/ninapro_db3.npz
+af97d3a9dedcd9b8ab0a38b4a0ce67fb9854ccd51e4f0446ed007c46cc67e570  ./p1/A_seed1/RP/ninapro_db6.npz
+e6e1d6e1ee1329427f29ff08da41f04bf2ec0233057770442c33b1b2991fd267  ./p1/A_seed1/RP/provenance.json
+cadfeed250c717637bb62e9e15000af699aa97ddea191180153727c99571a81b  ./p1/A_seed1/RPW.json
+2a17343bfd72d7c0e45fdb7e70bae3315b2c2ea2410f10cde867efe7b75c48f6  ./p1/A_seed1/RPW/ninapro_db2.npz
+fa540b96df83921f91fe9a497c3fe1c2cb7ebe929112fbe148c0d76cb8e9b8b6  ./p1/A_seed1/RPW/ninapro_db3.npz
+2c3871a3e79d802dd660feebcf34abaa53ac57362038761249d94e848221bec7  ./p1/A_seed1/RPW/ninapro_db6.npz
+360257137df36389b599ab359ee6eeddefff3ccfdc954a36d392fe6728bd661c  ./p1/A_seed1/RPW/provenance.json
+cb4f3c9f2e9aa848ad26f88454ef55d7fa69ea3201acc56871772497b5455d29  ./p1/A_seed1/RPW0.json
+f2c92678d431317e6c7406a247ee82866ac75b6123057bc33cd47ea3a81aa63c  ./p1/A_seed1/RPW0/ninapro_db2.npz
+de9735b34f9797d13cbdb42304fd6070bab050e863da3d34283ec85599afcd00  ./p1/A_seed1/RPW0/ninapro_db3.npz
+a7a0d070d62e3fef624728d685192a6a521e6434250e8bb62b8645878f730019  ./p1/A_seed1/RPW0/ninapro_db6.npz
+10cc070a4330f7a97c3a12a06afef78d8e920a7234811d59b795b4d460ab1d60  ./p1/A_seed1/RPW0/provenance.json
+20af924568d847b716f2514219e521fd39899801d4589f0d0a1db4abdabdd148  ./p1/A_seed1/RW.json
+6f8580725f5097a6eb747e28473a24be6f7be403cab932b657186cc73257ddbd  ./p1/A_seed1/RW/ninapro_db2.npz
+66a3124f9f35f72b9f93fd6795ba5059870b971bcc2ceb612b8c5ea080e3a03d  ./p1/A_seed1/RW/ninapro_db3.npz
+23a6b6de5c412b56c6950f607557d18ea522e267cc0235ced3fc57269ced9e21  ./p1/A_seed1/RW/ninapro_db6.npz
+af4db76a79559a550a43283b889a370d2cec6eccaec4fa307cb06839ea7a64a8  ./p1/A_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/A_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/A_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/A_seed1/branches_init/ninapro_db6.npz
+e685d8041c602e4832bc20cda804ace23fb65e2c13c8577b7598f3926be24fc0  ./p1/A_seed1/branches_init/provenance.json
+26e8fd817a9c76dd26a012b2f46e59fd9361ce1db67dc73b0ccc2cbb6f5dbc0e  ./p1/A_seed1/branches_trained/ninapro_db2.npz
+3cd580819d6a6baa8c43b3bfd159d071bd29f0eb0f6923a3ec343890af5307b8  ./p1/A_seed1/branches_trained/ninapro_db3.npz
+c263f93a07caca3e61e7e212dbf863764ee99b5fb62f4a2afac926f6aac0d1f0  ./p1/A_seed1/branches_trained/ninapro_db6.npz
+e7e1e38d07a805c489843137fd57e0088f1edc9d81017250b6bcebf0103234de  ./p1/A_seed1/branches_trained/provenance.json
+f9f65ef42e019b1671575bb09d5dd9e9ec1221f7bcb6910e1ca517e8ebca6303  ./p1/B_seed0/RP.json
+3d209193765d7768656bc9825fd9a39b48a5dcb54f8bc4f5750e9e1966b83b4b  ./p1/B_seed0/RP/ninapro_db2.npz
+4f69c17ae5c973dccad192d16de77192c83d177717d22e6fd58cc125102c996d  ./p1/B_seed0/RP/ninapro_db3.npz
+d43728373df4f946ac9408f73a6a2e72a8279920cf46510d9f6dd1308e55f559  ./p1/B_seed0/RP/ninapro_db6.npz
+fc0432b6eecdca4521257efbf71352e5b19024be2663e0d68d9bd65c6d906c68  ./p1/B_seed0/RP/provenance.json
+85f2d8e6921f0561ae2161d44422b3f2fb4afd89d9012c072dccbd9d152f6891  ./p1/B_seed0/RPW.json
+b081627e7971cbfc5789d9499d531b446453ca6aa47285dee13622a5fba05b10  ./p1/B_seed0/RPW/ninapro_db2.npz
+d36ae5f0d3be0bfc762af4799d1a2c699a5514dbbb9c67095fadaffcf05b1709  ./p1/B_seed0/RPW/ninapro_db3.npz
+073e41a104e221afbb660f0257bd3e37ab7fd5600b5fee41a5d698400f67410b  ./p1/B_seed0/RPW/ninapro_db6.npz
+c10692a3748555a36bd5faadb85a32c954228363fc677271fe87921ec7fb3574  ./p1/B_seed0/RPW/provenance.json
+c4c47c1c6be127869962ce0ffc2131ff6c6f5a34226e8c41791cd69f06bd7270  ./p1/B_seed0/RPW0.json
+2bbe742a9d934845b81ceae12e8c9db505f5a387d327657c19ddfc61dd6ba771  ./p1/B_seed0/RPW0/ninapro_db2.npz
+9d0936ff26ea0665e819b387de3684e34b894190a24b640df6f4c1aae08f7aa5  ./p1/B_seed0/RPW0/ninapro_db3.npz
+4e9c20c7c23b3e6799813d680f394bdd8eb3243d96873a0e6141cb1f7fdf9e7f  ./p1/B_seed0/RPW0/ninapro_db6.npz
+1a599288dd47f96a48cdc4a48653e716280579a520066b3bbade5921f87ca71d  ./p1/B_seed0/RPW0/provenance.json
+a291d3e5bb3b4e8f53b5240f5963ddc03fbf58fce24ec9031bb0d1347d6fd266  ./p1/B_seed0/RW.json
+e105d24972e8063bfb7d410aa7c1514c8687301b3764e2d81873c0520e19ee9b  ./p1/B_seed0/RW/ninapro_db2.npz
+966d3240fae040a7e4c51730bcb9e929e8aab854a32d9aacf67e8d4e1163b77e  ./p1/B_seed0/RW/ninapro_db3.npz
+b60e88baeee11c2dcf2e6ceaf54ce565627de1910019ae6a8ce3e9e5e726e104  ./p1/B_seed0/RW/ninapro_db6.npz
+0d3447c4ab9ce7ba8894ad0004000302f2d4720ab7ef6e7d313ada91eece7d7d  ./p1/B_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/B_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/B_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/B_seed0/branches_init/ninapro_db6.npz
+064b28ac001ffc0287a588c4664ee12d67a94b65634d6dcf53c81fe2ea929fb6  ./p1/B_seed0/branches_init/provenance.json
+85d8e3b3c2396f1d1b40b4ce2378466f6d034da33d13f5dcb8a90d6aebd635c2  ./p1/B_seed0/branches_trained/ninapro_db2.npz
+08d279f2df211ba6e0f537ec4453676baf6f1dc62ecf93630a9599a30f41eaf8  ./p1/B_seed0/branches_trained/ninapro_db3.npz
+0ed83db2912092e46b091c0b27fa6165d3ffc95bbe0a64d05783e9e1f2851ad1  ./p1/B_seed0/branches_trained/ninapro_db6.npz
+aace57b4e37b8264cc860f215c636ea9c644178f71cf6bcc96f69482eb01eec8  ./p1/B_seed0/branches_trained/provenance.json
+3a930ebf5b117a7e2468575b0564192cad738472b3f7445af4b09e0cfa7ce968  ./p1/B_seed1/RP.json
+7295f7b617b02c7ee030d2c6510505b79af6d84d502af434ce475edf3ffae97d  ./p1/B_seed1/RP/ninapro_db2.npz
+dcb6eef31c299153482192568ebb684e7eb284b7c2acef1081414a7e6ccdab56  ./p1/B_seed1/RP/ninapro_db3.npz
+17e52e6706c6cd5443368ad5c6e46e95b2a8781c154a73ece54d1d6d04db01cb  ./p1/B_seed1/RP/ninapro_db6.npz
+dfb4b32622b731693e045362865334afbb8a37795ec51c1412862f42e9684e46  ./p1/B_seed1/RP/provenance.json
+05ba7573cd6630bb9bb8ef01b08f534f96f84dd3603ad1fb0712b7c0fd277f4d  ./p1/B_seed1/RPW.json
+b0441aba390b8aef76f0eec12b674a131e0fada66e919efd8bc0a7271da3e48f  ./p1/B_seed1/RPW/ninapro_db2.npz
+077a713a2781edc4c2e86812a0866be36d3abc690c3414f908046e0566767cbf  ./p1/B_seed1/RPW/ninapro_db3.npz
+9da57e9ceb2c03b33182fb32ae0bbe5e9b003e2167743eb971fad06325966075  ./p1/B_seed1/RPW/ninapro_db6.npz
+12b50e6f5a77b20b654e7a26a80fe3467b046cfb8ca66e4823f2b32a7d4a0e2f  ./p1/B_seed1/RPW/provenance.json
+ae9747774750572cee0274b50b54650eec05af6755dd44d8b310de1d4af74273  ./p1/B_seed1/RPW0.json
+dd169eb0e0351978c83f1dd393e304fbb87bb9d8c04e627cbc4a66c1b209454d  ./p1/B_seed1/RPW0/ninapro_db2.npz
+cd13a6fa178b0773e102f079ea9957123f900fd8ac57d220ac5a0c6f14eab309  ./p1/B_seed1/RPW0/ninapro_db3.npz
+802ce34d76b51c097245e14d3012034d44d1ade602ab716139583445850d1881  ./p1/B_seed1/RPW0/ninapro_db6.npz
+636d2df30c7153c65d15e23f7c5d2bc42d3b96478a9259331fbfecec1a1b8257  ./p1/B_seed1/RPW0/provenance.json
+786c416b4cb6bf6bea9ef72d06b12953d575a6853a4726ec5501fc7b5469ef08  ./p1/B_seed1/RW.json
+aeef7b41228a322ad584586f5b1fb421b9499ff9855ff39f860270815625cd6c  ./p1/B_seed1/RW/ninapro_db2.npz
+6379d008889faec8dbab4d931941eb01f282f2886d16d66ffdbf4cfdcd138f69  ./p1/B_seed1/RW/ninapro_db3.npz
+bab78ff669d3b17cdf89b266d5ce0004be12ed12deb5b34c04914609a791933f  ./p1/B_seed1/RW/ninapro_db6.npz
+2cff805bb49b4391746ce7db36fa3dd97a64285b48615a676ad37d9f6c4ba234  ./p1/B_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/B_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/B_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/B_seed1/branches_init/ninapro_db6.npz
+5ab601855e4be63a618bac649ed1b44428086cff940fceb719887ffa2af0897d  ./p1/B_seed1/branches_init/provenance.json
+ec1b04027afe65fa885def93d84a1d4fb4d57a55091538ec047caa1c9d6858a5  ./p1/B_seed1/branches_trained/ninapro_db2.npz
+53536640530ab953b614af6cb72655fef247832022e822f77d735c3232b0c7de  ./p1/B_seed1/branches_trained/ninapro_db3.npz
+9c75292da1d8e9d2e5f64eb9d7c5a861c5bf2dc3fd9ccde95baf10a82f0d1bdc  ./p1/B_seed1/branches_trained/ninapro_db6.npz
+2b0713e7cd791699b6642d8a80f7c503f70639b39d29ce3e48889c1819aad487  ./p1/B_seed1/branches_trained/provenance.json
+ca44c1a2d16d04fdb98f8f55f5fe0e9c4faf72f9de633ea12ca69bf591b8e071  ./p2/A_seed0/RP.json
+5d769737af9c25d305f5a408da3de000756e54294c27adcc249442e2aaba2dab  ./p2/A_seed0/RP/epn612.npz
+0411fd02c1de12affb6ede2eb826e5f827c0011b7773db4dfd8ae6821fc0d733  ./p2/A_seed0/RP/provenance.json
+0e7c80728296d6fcb44b3117d6e288a033ca0d71cef56a695f85d2a65efb4645  ./p2/A_seed0/RP/uci_emg.npz
+dca909163d27d1c84ee680f93857a2155ad55754a5026c8509b4ac189dfa141b  ./p2/A_seed0/RPW.json
+7ab53461b247a7f52e7d31ca70cac9b34b50bc6f7313ea06f8beb9e3378d362f  ./p2/A_seed0/RPW/epn612.npz
+6046e4e69133550d70671561b3ea1f37a2fb2bcccd82f056c3fa3046a7a73884  ./p2/A_seed0/RPW/provenance.json
+8e3a4d979d364e78528e63f35f099fd09d96c5825e5347bb298be02384bb87d3  ./p2/A_seed0/RPW/uci_emg.npz
+872dfc5be5da55bc415b1b8ebf0063db0263e67244136dd90b7097fdf49ed908  ./p2/A_seed0/RPW0.json
+34900c57378764da7872059eb7ed64ec133ee5d9e78247d99dd615352c7588e6  ./p2/A_seed0/RPW0/epn612.npz
+6d74291b56a40ad4693166a9cf8934616be51e62e4681fcab612d85dbee09f93  ./p2/A_seed0/RPW0/provenance.json
+d3d2af73a9364253a541f0253c0c392d56f23a51773e62650a6841b39d9ee36c  ./p2/A_seed0/RPW0/uci_emg.npz
+33e52c35b687169809b399b42d83f3a6272baaebfd1d819d8c3550a685eb87ad  ./p2/A_seed0/RW.json
+168856441ee9006f968fa9b6f5b125f5c36f0669deff3832d899a5c889097997  ./p2/A_seed0/RW/epn612.npz
+b9eca24a9c5d9dcc6d4f71744b9fba3b84402bc9f49c93041b1230f93f7ca703  ./p2/A_seed0/RW/provenance.json
+461960775c262abd0f6d29d94bd0db7566c81fdec5c92fe7716de70d64fc1622  ./p2/A_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/A_seed0/branches_init/epn612.npz
+82e75f981bad74108cd865beaab482892b331011aafba49035c950ab07995a20  ./p2/A_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/A_seed0/branches_init/uci_emg.npz
+d5a99747b5d0008fc03d9ac066cccdaa3b246fe44861ea8dab3ab3fcfa9844b0  ./p2/A_seed0/branches_trained/epn612.npz
+3e9d8882daa4f579a50d0c014b34246b7f3f6f2a5a51a90c5238220d5ba3e8bf  ./p2/A_seed0/branches_trained/provenance.json
+49b39d7cf5dcf493216b8f260fbc1af6fa44abd0bcdeab64aa75ea35b4add4df  ./p2/A_seed0/branches_trained/uci_emg.npz
+e3c3f51ecc754985754b6d20ce393dfb695b20b558bfadf8fe69ed5f179c8ea2  ./p2/A_seed1/RP.json
+beac6fc1c587e85f327c6e9c19434de6c934fad1ce4404e4ec3a3e80cf97f6ce  ./p2/A_seed1/RP/epn612.npz
+9e1809455734b61988de3923698567533012a3c73eec01b2d8cc5e326d4c5ee3  ./p2/A_seed1/RP/provenance.json
+9139dabbc8daee1dc919bcceea29e460e7546f2a976a9e640dbc6c904cd6dd10  ./p2/A_seed1/RP/uci_emg.npz
+bbf4aa732923eb154e4d016d0cc741427cfcda80593b386aa91e9f743ee5d374  ./p2/A_seed1/RPW.json
+8943c0959de5a5a20e6dc3e7ba429529e651403076ecc92ec993515129ddd6f4  ./p2/A_seed1/RPW/epn612.npz
+1781bbfc15d658dce5a3b67cadcd8317bc391eb45f5ff65b356b1ddae2ef4655  ./p2/A_seed1/RPW/provenance.json
+99e2518a0bccd5c16022aba0102851472470da0b28d07c292eb0cd699ac124de  ./p2/A_seed1/RPW/uci_emg.npz
+af62fd88be5c5e6c1bdb392e05bb05a1ba55d59c55bd58f5b28fd988e6aeeb73  ./p2/A_seed1/RPW0.json
+d3110c68cd70e12fcdb12f571007cb1b85db5ae1841111718e8496538ed394dd  ./p2/A_seed1/RPW0/epn612.npz
+ba225e122e447e733b0057c7d79d229b0465fab49d39eee928b98eb2c64f2a79  ./p2/A_seed1/RPW0/provenance.json
+29c7639efdf76e95241528d7a5ecf329118e200498d056c817057bd5f3f6c973  ./p2/A_seed1/RPW0/uci_emg.npz
+12280007b26ec534ed36dfe40c611df4f5a2dbfc0d382b585f3e7df16d141def  ./p2/A_seed1/RW.json
+8251b9446c87c0fc8a99db2f57703e51fd9de5b7483dfc72b1e3efe300d6c875  ./p2/A_seed1/RW/epn612.npz
+7d6f87edde7724c8953f7939276a352c5d509779362561c25b1fbcb1525c9c47  ./p2/A_seed1/RW/provenance.json
+d3ad89c36a1b518b6fa5ae8596eccfb1d0e9a9f8bb9981256ef069737d52ed8b  ./p2/A_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/A_seed1/branches_init/epn612.npz
+facee708fadec054efb4d7ec94d934202b60ec764c4ed7e47bd5ccf8624c1c8d  ./p2/A_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/A_seed1/branches_init/uci_emg.npz
+26f77cc83261c3149bf9da2e132677d0162e867551b5b5cfef4e4e3479bc418e  ./p2/A_seed1/branches_trained/epn612.npz
+c895e7efbaba9b7417926108bbf806945c2a1b97bd54d71e6d7456e9b797ffef  ./p2/A_seed1/branches_trained/provenance.json
+99513460f8690ec392b84728d22f564b53adc4061b694585d577f0fae318af50  ./p2/A_seed1/branches_trained/uci_emg.npz
+11ad79ed58505659f75ab62a6f5e406bcf9df712756ee2bcf2c1153137de298a  ./p2/B_seed0/RP.json
+87a38f601c787d993fb52dab883d57a8aa094d9ca250ca713494245f96453876  ./p2/B_seed0/RP/epn612.npz
+ecea1793b8f7e8cbc8323fa788ae9fcd6ed63cd87c246e7dcc77dafa3d51394f  ./p2/B_seed0/RP/provenance.json
+19afb7b190dd7f3c7ea470b0eefbf17a15672bec847c9034ed00b328b330964f  ./p2/B_seed0/RP/uci_emg.npz
+8f9e6d250adf6efb886c2a34a8d8be5a0cedf393a531496d2e0bcd255bc516fe  ./p2/B_seed0/RPW.json
+3d71b7b2ef1a034ddb119ff7c532de511061b7c0e779717b31660f229a804304  ./p2/B_seed0/RPW/epn612.npz
+8f5cfb3d3f2284052461c5ebe967a9442cc865e87c544306fa5c32ab4fb5ae3c  ./p2/B_seed0/RPW/provenance.json
+4817de7e08e0e02cff19f9a46321d1fe24bfddae14d48819c70ee9c2fd7e43be  ./p2/B_seed0/RPW/uci_emg.npz
+eee4b84bf36bcc12dc21d06f89e2a3a954d0efc156155c2923b242312514a804  ./p2/B_seed0/RPW0.json
+035e4831cf674a47f45a56621930af70a82237893b80fcc224d2bfc0bfe4b9aa  ./p2/B_seed0/RPW0/epn612.npz
+76a709754f9449839f0110c43b45d2ec29f62c53d1b0498b2cfa977608cb311b  ./p2/B_seed0/RPW0/provenance.json
+7adf5db53cb0616e2e70f7f104349ead0a144b607fc6e8de99365867ebecab9c  ./p2/B_seed0/RPW0/uci_emg.npz
+cfd0e4dd5555cf9b02d332cd6b546e7d1168e14460efa9d60fd63311d3c709fa  ./p2/B_seed0/RW.json
+4bb9e41fbf56d8ed46ee0e7986f506c9aea27f1525c7aeb16f827183b3409f31  ./p2/B_seed0/RW/epn612.npz
+a145382a9220aee07a4f3846d33503262c07f291460b448e5136c98333bf89d2  ./p2/B_seed0/RW/provenance.json
+3a32cea55907755eb4b5390d2c1662648cee8656742b18b5c7733deb38849888  ./p2/B_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/B_seed0/branches_init/epn612.npz
+faac749599d06372e67e4549e7c01d79237c3b8acced48f9ae072de3d88919e5  ./p2/B_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/B_seed0/branches_init/uci_emg.npz
+254166f4d80a802a4482bfa86e1cd8c2356e2bdf5c20bc8696a77f2bddeca074  ./p2/B_seed0/branches_trained/epn612.npz
+f574f71223cd2b52947a4d4421287b0f35c58ea41d96667b6d568e4108477ad4  ./p2/B_seed0/branches_trained/provenance.json
+03d51797755edf2c6647bfd9011930f03ec9ce941d6d32236ecde8595f8d57f0  ./p2/B_seed0/branches_trained/uci_emg.npz
+d82bcea86ef5ea23e0b81e38cf81bc169a182213fdcdaecb2281a7d07ffac2a4  ./p2/B_seed1/RP.json
+f0c0c77c1bbf48675624dd717296b236f5ca562c1e945e9d52f22561d76c46bc  ./p2/B_seed1/RP/epn612.npz
+f823a3928f95cd07fd7a36c18aa3a921fc478b3990059f5798eb60a36d478af3  ./p2/B_seed1/RP/provenance.json
+7bd4ab5a96fded9aa1d1cdd2de47f6bf2508eb9dbaa53ddb56aedacc47ba4b6e  ./p2/B_seed1/RP/uci_emg.npz
+3a55d1b097e6e6e2cc7c2f1b9cbb714d118f5387386f55f79e0ba5fb9dee24c0  ./p2/B_seed1/RPW.json
+d9f729736e5f74caf5fd629f084c9f09ed31f0113a59ea51c09550546f09d840  ./p2/B_seed1/RPW/epn612.npz
+e630f6857763403e0fd79f251a1058789adf59f6db25d801ad5bef0ecdef8c5f  ./p2/B_seed1/RPW/provenance.json
+c7767e7a00ed75ce91621f12f565f6a76b4953b480675a74f20e4278b0457043  ./p2/B_seed1/RPW/uci_emg.npz
+521cc864074e9eee496d501a08efca520544f26d66ab12c1fd33b5f7c14d8574  ./p2/B_seed1/RPW0.json
+fb34b585f13969012146e818b75bd919bb422e65d5f67d470f9a818e2fdcdf20  ./p2/B_seed1/RPW0/epn612.npz
+732fb49cae662c1195553aab2dfb955852b787cc6649423a8c0de9807eb69a74  ./p2/B_seed1/RPW0/provenance.json
+32dff0ba5fb715cd45052b266b093503844825136364ff71f563b29b17395daf  ./p2/B_seed1/RPW0/uci_emg.npz
+0507bc158dcdd9ed364af4ad3a2b1999928d9b7b9a4b4cff617a99ea00b665c6  ./p2/B_seed1/RW.json
+76f7b8a184f47572cc9009fd986522a1b96d59d168adfa8ff7e959d3f14d80e5  ./p2/B_seed1/RW/epn612.npz
+f7ad522b0014e4f84a6550ced0f954b357dd0a57094d70dbc53c690aa7760f72  ./p2/B_seed1/RW/provenance.json
+ebde801fc33f99eaef3cc1282442c8203d33c27c9c6997aeb5b98861b9fc6ac9  ./p2/B_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/B_seed1/branches_init/epn612.npz
+e914565ecaec81de15d5d498f438338411fe9edd464ba0b252e60e4812507993  ./p2/B_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/B_seed1/branches_init/uci_emg.npz
+5fdb10b7b9f1d87ec37b011757a1764d71a66af5d29092acbb55407be12590e5  ./p2/B_seed1/branches_trained/epn612.npz
+c24aa4e9427e3a64b9b588cbf965d5ee3fcb17257b85afa60504ff0a54c33312  ./p2/B_seed1/branches_trained/provenance.json
+95629a8a7dbe7c0ff83ddbed775d15c1b3f3ddb74840ceaa4209f666eac5f97a  ./p2/B_seed1/branches_trained/uci_emg.npz
+## wearusfm_runs_results_passo6_step2c_1410.copy.sizes (8257 bytes, 201 lines)
+102030 ./comparison.json
+40346 ./p1/A_seed0/RP.json
+167416270 ./p1/A_seed0/RP/ninapro_db2.npz
+49309586 ./p1/A_seed0/RP/ninapro_db3.npz
+151529838 ./p1/A_seed0/RP/ninapro_db6.npz
+13790 ./p1/A_seed0/RP/provenance.json
+40366 ./p1/A_seed0/RPW.json
+191199694 ./p1/A_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW/ninapro_db6.npz
+13811 ./p1/A_seed0/RPW/provenance.json
+40375 ./p1/A_seed0/RPW0.json
+191199694 ./p1/A_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed0/RPW0/provenance.json
+40357 ./p1/A_seed0/RW.json
+167416270 ./p1/A_seed0/RW/ninapro_db2.npz
+49309586 ./p1/A_seed0/RW/ninapro_db3.npz
+151529838 ./p1/A_seed0/RW/ninapro_db6.npz
+13794 ./p1/A_seed0/RW/provenance.json
+48499162 ./p1/A_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed0/branches_init/provenance.json
+48499162 ./p1/A_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed0/branches_trained/provenance.json
+40345 ./p1/A_seed1/RP.json
+167416270 ./p1/A_seed1/RP/ninapro_db2.npz
+49309586 ./p1/A_seed1/RP/ninapro_db3.npz
+151529838 ./p1/A_seed1/RP/ninapro_db6.npz
+13790 ./p1/A_seed1/RP/provenance.json
+40368 ./p1/A_seed1/RPW.json
+191199694 ./p1/A_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW/ninapro_db6.npz
+13811 ./p1/A_seed1/RPW/provenance.json
+40368 ./p1/A_seed1/RPW0.json
+191199694 ./p1/A_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed1/RPW0/provenance.json
+40343 ./p1/A_seed1/RW.json
+167416270 ./p1/A_seed1/RW/ninapro_db2.npz
+49309586 ./p1/A_seed1/RW/ninapro_db3.npz
+151529838 ./p1/A_seed1/RW/ninapro_db6.npz
+13794 ./p1/A_seed1/RW/provenance.json
+48499162 ./p1/A_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed1/branches_init/provenance.json
+48499162 ./p1/A_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed1/branches_trained/provenance.json
+40352 ./p1/B_seed0/RP.json
+167416270 ./p1/B_seed0/RP/ninapro_db2.npz
+49309586 ./p1/B_seed0/RP/ninapro_db3.npz
+151529838 ./p1/B_seed0/RP/ninapro_db6.npz
+13790 ./p1/B_seed0/RP/provenance.json
+40375 ./p1/B_seed0/RPW.json
+191199694 ./p1/B_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW/ninapro_db6.npz
+13811 ./p1/B_seed0/RPW/provenance.json
+40368 ./p1/B_seed0/RPW0.json
+191199694 ./p1/B_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed0/RPW0/provenance.json
+40350 ./p1/B_seed0/RW.json
+167416270 ./p1/B_seed0/RW/ninapro_db2.npz
+49309586 ./p1/B_seed0/RW/ninapro_db3.npz
+151529838 ./p1/B_seed0/RW/ninapro_db6.npz
+13794 ./p1/B_seed0/RW/provenance.json
+48499162 ./p1/B_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed0/branches_init/provenance.json
+48499162 ./p1/B_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed0/branches_trained/provenance.json
+40343 ./p1/B_seed1/RP.json
+167416270 ./p1/B_seed1/RP/ninapro_db2.npz
+49309586 ./p1/B_seed1/RP/ninapro_db3.npz
+151529838 ./p1/B_seed1/RP/ninapro_db6.npz
+13790 ./p1/B_seed1/RP/provenance.json
+40367 ./p1/B_seed1/RPW.json
+191199694 ./p1/B_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW/ninapro_db6.npz
+13811 ./p1/B_seed1/RPW/provenance.json
+40366 ./p1/B_seed1/RPW0.json
+191199694 ./p1/B_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed1/RPW0/provenance.json
+40347 ./p1/B_seed1/RW.json
+167416270 ./p1/B_seed1/RW/ninapro_db2.npz
+49309586 ./p1/B_seed1/RW/ninapro_db3.npz
+151529838 ./p1/B_seed1/RW/ninapro_db6.npz
+13794 ./p1/B_seed1/RW/provenance.json
+48499162 ./p1/B_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed1/branches_init/provenance.json
+48499162 ./p1/B_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed1/branches_trained/provenance.json
+239516 ./p2/A_seed0/RP.json
+339661768 ./p2/A_seed0/RP/epn612.npz
+73026 ./p2/A_seed0/RP/provenance.json
+2384968 ./p2/A_seed0/RP/uci_emg.npz
+239541 ./p2/A_seed0/RPW.json
+386663368 ./p2/A_seed0/RPW/epn612.npz
+73046 ./p2/A_seed0/RPW/provenance.json
+2723912 ./p2/A_seed0/RPW/uci_emg.npz
+239573 ./p2/A_seed0/RPW0.json
+386663368 ./p2/A_seed0/RPW0/epn612.npz
+73044 ./p2/A_seed0/RPW0/provenance.json
+2723912 ./p2/A_seed0/RPW0/uci_emg.npz
+239510 ./p2/A_seed0/RW.json
+339661768 ./p2/A_seed0/RW/epn612.npz
+73030 ./p2/A_seed0/RW/provenance.json
+2384968 ./p2/A_seed0/RW/uci_emg.npz
+104653780 ./p2/A_seed0/branches_init/epn612.npz
+24997 ./p2/A_seed0/branches_init/provenance.json
+690260 ./p2/A_seed0/branches_init/uci_emg.npz
+104653780 ./p2/A_seed0/branches_trained/epn612.npz
+25000 ./p2/A_seed0/branches_trained/provenance.json
+690260 ./p2/A_seed0/branches_trained/uci_emg.npz
+239510 ./p2/A_seed1/RP.json
+339661768 ./p2/A_seed1/RP/epn612.npz
+73026 ./p2/A_seed1/RP/provenance.json
+2384968 ./p2/A_seed1/RP/uci_emg.npz
+239526 ./p2/A_seed1/RPW.json
+386663368 ./p2/A_seed1/RPW/epn612.npz
+73046 ./p2/A_seed1/RPW/provenance.json
+2723912 ./p2/A_seed1/RPW/uci_emg.npz
+239557 ./p2/A_seed1/RPW0.json
+386663368 ./p2/A_seed1/RPW0/epn612.npz
+73044 ./p2/A_seed1/RPW0/provenance.json
+2723912 ./p2/A_seed1/RPW0/uci_emg.npz
+239507 ./p2/A_seed1/RW.json
+339661768 ./p2/A_seed1/RW/epn612.npz
+73030 ./p2/A_seed1/RW/provenance.json
+2384968 ./p2/A_seed1/RW/uci_emg.npz
+104653780 ./p2/A_seed1/branches_init/epn612.npz
+24997 ./p2/A_seed1/branches_init/provenance.json
+690260 ./p2/A_seed1/branches_init/uci_emg.npz
+104653780 ./p2/A_seed1/branches_trained/epn612.npz
+25000 ./p2/A_seed1/branches_trained/provenance.json
+690260 ./p2/A_seed1/branches_trained/uci_emg.npz
+239533 ./p2/B_seed0/RP.json
+339661768 ./p2/B_seed0/RP/epn612.npz
+73026 ./p2/B_seed0/RP/provenance.json
+2384968 ./p2/B_seed0/RP/uci_emg.npz
+239571 ./p2/B_seed0/RPW.json
+386663368 ./p2/B_seed0/RPW/epn612.npz
+73046 ./p2/B_seed0/RPW/provenance.json
+2723912 ./p2/B_seed0/RPW/uci_emg.npz
+239589 ./p2/B_seed0/RPW0.json
+386663368 ./p2/B_seed0/RPW0/epn612.npz
+73044 ./p2/B_seed0/RPW0/provenance.json
+2723912 ./p2/B_seed0/RPW0/uci_emg.npz
+239533 ./p2/B_seed0/RW.json
+339661768 ./p2/B_seed0/RW/epn612.npz
+73030 ./p2/B_seed0/RW/provenance.json
+2384968 ./p2/B_seed0/RW/uci_emg.npz
+104653780 ./p2/B_seed0/branches_init/epn612.npz
+24997 ./p2/B_seed0/branches_init/provenance.json
+690260 ./p2/B_seed0/branches_init/uci_emg.npz
+104653780 ./p2/B_seed0/branches_trained/epn612.npz
+25000 ./p2/B_seed0/branches_trained/provenance.json
+690260 ./p2/B_seed0/branches_trained/uci_emg.npz
+239517 ./p2/B_seed1/RP.json
+339661768 ./p2/B_seed1/RP/epn612.npz
+73026 ./p2/B_seed1/RP/provenance.json
+2384968 ./p2/B_seed1/RP/uci_emg.npz
+239538 ./p2/B_seed1/RPW.json
+386663368 ./p2/B_seed1/RPW/epn612.npz
+73046 ./p2/B_seed1/RPW/provenance.json
+2723912 ./p2/B_seed1/RPW/uci_emg.npz
+239571 ./p2/B_seed1/RPW0.json
+386663368 ./p2/B_seed1/RPW0/epn612.npz
+73044 ./p2/B_seed1/RPW0/provenance.json
+2723912 ./p2/B_seed1/RPW0/uci_emg.npz
+239509 ./p2/B_seed1/RW.json
+339661768 ./p2/B_seed1/RW/epn612.npz
+73030 ./p2/B_seed1/RW/provenance.json
+2384968 ./p2/B_seed1/RW/uci_emg.npz
+104653780 ./p2/B_seed1/branches_init/epn612.npz
+24997 ./p2/B_seed1/branches_init/provenance.json
+690260 ./p2/B_seed1/branches_init/uci_emg.npz
+104653780 ./p2/B_seed1/branches_trained/epn612.npz
+25000 ./p2/B_seed1/branches_trained/provenance.json
+690260 ./p2/B_seed1/branches_trained/uci_emg.npz
+## wearusfm_runs_results_passo6_step2c_1410.link.sizes (8257 bytes, 201 lines)
+102030 ./comparison.json
+40346 ./p1/A_seed0/RP.json
+167416270 ./p1/A_seed0/RP/ninapro_db2.npz
+49309586 ./p1/A_seed0/RP/ninapro_db3.npz
+151529838 ./p1/A_seed0/RP/ninapro_db6.npz
+13790 ./p1/A_seed0/RP/provenance.json
+40366 ./p1/A_seed0/RPW.json
+191199694 ./p1/A_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW/ninapro_db6.npz
+13811 ./p1/A_seed0/RPW/provenance.json
+40375 ./p1/A_seed0/RPW0.json
+191199694 ./p1/A_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed0/RPW0/provenance.json
+40357 ./p1/A_seed0/RW.json
+167416270 ./p1/A_seed0/RW/ninapro_db2.npz
+49309586 ./p1/A_seed0/RW/ninapro_db3.npz
+151529838 ./p1/A_seed0/RW/ninapro_db6.npz
+13794 ./p1/A_seed0/RW/provenance.json
+48499162 ./p1/A_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed0/branches_init/provenance.json
+48499162 ./p1/A_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed0/branches_trained/provenance.json
+40345 ./p1/A_seed1/RP.json
+167416270 ./p1/A_seed1/RP/ninapro_db2.npz
+49309586 ./p1/A_seed1/RP/ninapro_db3.npz
+151529838 ./p1/A_seed1/RP/ninapro_db6.npz
+13790 ./p1/A_seed1/RP/provenance.json
+40368 ./p1/A_seed1/RPW.json
+191199694 ./p1/A_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW/ninapro_db6.npz
+13811 ./p1/A_seed1/RPW/provenance.json
+40368 ./p1/A_seed1/RPW0.json
+191199694 ./p1/A_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed1/RPW0/provenance.json
+40343 ./p1/A_seed1/RW.json
+167416270 ./p1/A_seed1/RW/ninapro_db2.npz
+49309586 ./p1/A_seed1/RW/ninapro_db3.npz
+151529838 ./p1/A_seed1/RW/ninapro_db6.npz
+13794 ./p1/A_seed1/RW/provenance.json
+48499162 ./p1/A_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed1/branches_init/provenance.json
+48499162 ./p1/A_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed1/branches_trained/provenance.json
+40352 ./p1/B_seed0/RP.json
+167416270 ./p1/B_seed0/RP/ninapro_db2.npz
+49309586 ./p1/B_seed0/RP/ninapro_db3.npz
+151529838 ./p1/B_seed0/RP/ninapro_db6.npz
+13790 ./p1/B_seed0/RP/provenance.json
+40375 ./p1/B_seed0/RPW.json
+191199694 ./p1/B_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW/ninapro_db6.npz
+13811 ./p1/B_seed0/RPW/provenance.json
+40368 ./p1/B_seed0/RPW0.json
+191199694 ./p1/B_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed0/RPW0/provenance.json
+40350 ./p1/B_seed0/RW.json
+167416270 ./p1/B_seed0/RW/ninapro_db2.npz
+49309586 ./p1/B_seed0/RW/ninapro_db3.npz
+151529838 ./p1/B_seed0/RW/ninapro_db6.npz
+13794 ./p1/B_seed0/RW/provenance.json
+48499162 ./p1/B_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed0/branches_init/provenance.json
+48499162 ./p1/B_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed0/branches_trained/provenance.json
+40343 ./p1/B_seed1/RP.json
+167416270 ./p1/B_seed1/RP/ninapro_db2.npz
+49309586 ./p1/B_seed1/RP/ninapro_db3.npz
+151529838 ./p1/B_seed1/RP/ninapro_db6.npz
+13790 ./p1/B_seed1/RP/provenance.json
+40367 ./p1/B_seed1/RPW.json
+191199694 ./p1/B_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW/ninapro_db6.npz
+13811 ./p1/B_seed1/RPW/provenance.json
+40366 ./p1/B_seed1/RPW0.json
+191199694 ./p1/B_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed1/RPW0/provenance.json
+40347 ./p1/B_seed1/RW.json
+167416270 ./p1/B_seed1/RW/ninapro_db2.npz
+49309586 ./p1/B_seed1/RW/ninapro_db3.npz
+151529838 ./p1/B_seed1/RW/ninapro_db6.npz
+13794 ./p1/B_seed1/RW/provenance.json
+48499162 ./p1/B_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed1/branches_init/provenance.json
+48499162 ./p1/B_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed1/branches_trained/provenance.json
+239516 ./p2/A_seed0/RP.json
+339661768 ./p2/A_seed0/RP/epn612.npz
+73026 ./p2/A_seed0/RP/provenance.json
+2384968 ./p2/A_seed0/RP/uci_emg.npz
+239541 ./p2/A_seed0/RPW.json
+386663368 ./p2/A_seed0/RPW/epn612.npz
+73046 ./p2/A_seed0/RPW/provenance.json
+2723912 ./p2/A_seed0/RPW/uci_emg.npz
+239573 ./p2/A_seed0/RPW0.json
+386663368 ./p2/A_seed0/RPW0/epn612.npz
+73044 ./p2/A_seed0/RPW0/provenance.json
+2723912 ./p2/A_seed0/RPW0/uci_emg.npz
+239510 ./p2/A_seed0/RW.json
+339661768 ./p2/A_seed0/RW/epn612.npz
+73030 ./p2/A_seed0/RW/provenance.json
+2384968 ./p2/A_seed0/RW/uci_emg.npz
+104653780 ./p2/A_seed0/branches_init/epn612.npz
+24997 ./p2/A_seed0/branches_init/provenance.json
+690260 ./p2/A_seed0/branches_init/uci_emg.npz
+104653780 ./p2/A_seed0/branches_trained/epn612.npz
+25000 ./p2/A_seed0/branches_trained/provenance.json
+690260 ./p2/A_seed0/branches_trained/uci_emg.npz
+239510 ./p2/A_seed1/RP.json
+339661768 ./p2/A_seed1/RP/epn612.npz
+73026 ./p2/A_seed1/RP/provenance.json
+2384968 ./p2/A_seed1/RP/uci_emg.npz
+239526 ./p2/A_seed1/RPW.json
+386663368 ./p2/A_seed1/RPW/epn612.npz
+73046 ./p2/A_seed1/RPW/provenance.json
+2723912 ./p2/A_seed1/RPW/uci_emg.npz
+239557 ./p2/A_seed1/RPW0.json
+386663368 ./p2/A_seed1/RPW0/epn612.npz
+73044 ./p2/A_seed1/RPW0/provenance.json
+2723912 ./p2/A_seed1/RPW0/uci_emg.npz
+239507 ./p2/A_seed1/RW.json
+339661768 ./p2/A_seed1/RW/epn612.npz
+73030 ./p2/A_seed1/RW/provenance.json
+2384968 ./p2/A_seed1/RW/uci_emg.npz
+104653780 ./p2/A_seed1/branches_init/epn612.npz
+24997 ./p2/A_seed1/branches_init/provenance.json
+690260 ./p2/A_seed1/branches_init/uci_emg.npz
+104653780 ./p2/A_seed1/branches_trained/epn612.npz
+25000 ./p2/A_seed1/branches_trained/provenance.json
+690260 ./p2/A_seed1/branches_trained/uci_emg.npz
+239533 ./p2/B_seed0/RP.json
+339661768 ./p2/B_seed0/RP/epn612.npz
+73026 ./p2/B_seed0/RP/provenance.json
+2384968 ./p2/B_seed0/RP/uci_emg.npz
+239571 ./p2/B_seed0/RPW.json
+386663368 ./p2/B_seed0/RPW/epn612.npz
+73046 ./p2/B_seed0/RPW/provenance.json
+2723912 ./p2/B_seed0/RPW/uci_emg.npz
+239589 ./p2/B_seed0/RPW0.json
+386663368 ./p2/B_seed0/RPW0/epn612.npz
+73044 ./p2/B_seed0/RPW0/provenance.json
+2723912 ./p2/B_seed0/RPW0/uci_emg.npz
+239533 ./p2/B_seed0/RW.json
+339661768 ./p2/B_seed0/RW/epn612.npz
+73030 ./p2/B_seed0/RW/provenance.json
+2384968 ./p2/B_seed0/RW/uci_emg.npz
+104653780 ./p2/B_seed0/branches_init/epn612.npz
+24997 ./p2/B_seed0/branches_init/provenance.json
+690260 ./p2/B_seed0/branches_init/uci_emg.npz
+104653780 ./p2/B_seed0/branches_trained/epn612.npz
+25000 ./p2/B_seed0/branches_trained/provenance.json
+690260 ./p2/B_seed0/branches_trained/uci_emg.npz
+239517 ./p2/B_seed1/RP.json
+339661768 ./p2/B_seed1/RP/epn612.npz
+73026 ./p2/B_seed1/RP/provenance.json
+2384968 ./p2/B_seed1/RP/uci_emg.npz
+239538 ./p2/B_seed1/RPW.json
+386663368 ./p2/B_seed1/RPW/epn612.npz
+73046 ./p2/B_seed1/RPW/provenance.json
+2723912 ./p2/B_seed1/RPW/uci_emg.npz
+239571 ./p2/B_seed1/RPW0.json
+386663368 ./p2/B_seed1/RPW0/epn612.npz
+73044 ./p2/B_seed1/RPW0/provenance.json
+2723912 ./p2/B_seed1/RPW0/uci_emg.npz
+239509 ./p2/B_seed1/RW.json
+339661768 ./p2/B_seed1/RW/epn612.npz
+73030 ./p2/B_seed1/RW/provenance.json
+2384968 ./p2/B_seed1/RW/uci_emg.npz
+104653780 ./p2/B_seed1/branches_init/epn612.npz
+24997 ./p2/B_seed1/branches_init/provenance.json
+690260 ./p2/B_seed1/branches_init/uci_emg.npz
+104653780 ./p2/B_seed1/branches_trained/epn612.npz
+25000 ./p2/B_seed1/branches_trained/provenance.json
+690260 ./p2/B_seed1/branches_trained/uci_emg.npz
+## wearusfm_runs_results_passo6_step2c_1410.source.dirs (1108 bytes, 59 lines)
+.
+./p1
+./p1/A_seed0
+./p1/A_seed0/RP
+./p1/A_seed0/RPW
+./p1/A_seed0/RPW0
+./p1/A_seed0/RW
+./p1/A_seed0/branches_init
+./p1/A_seed0/branches_trained
+./p1/A_seed1
+./p1/A_seed1/RP
+./p1/A_seed1/RPW
+./p1/A_seed1/RPW0
+./p1/A_seed1/RW
+./p1/A_seed1/branches_init
+./p1/A_seed1/branches_trained
+./p1/B_seed0
+./p1/B_seed0/RP
+./p1/B_seed0/RPW
+./p1/B_seed0/RPW0
+./p1/B_seed0/RW
+./p1/B_seed0/branches_init
+./p1/B_seed0/branches_trained
+./p1/B_seed1
+./p1/B_seed1/RP
+./p1/B_seed1/RPW
+./p1/B_seed1/RPW0
+./p1/B_seed1/RW
+./p1/B_seed1/branches_init
+./p1/B_seed1/branches_trained
+./p2
+./p2/A_seed0
+./p2/A_seed0/RP
+./p2/A_seed0/RPW
+./p2/A_seed0/RPW0
+./p2/A_seed0/RW
+./p2/A_seed0/branches_init
+./p2/A_seed0/branches_trained
+./p2/A_seed1
+./p2/A_seed1/RP
+./p2/A_seed1/RPW
+./p2/A_seed1/RPW0
+./p2/A_seed1/RW
+./p2/A_seed1/branches_init
+./p2/A_seed1/branches_trained
+./p2/B_seed0
+./p2/B_seed0/RP
+./p2/B_seed0/RPW
+./p2/B_seed0/RPW0
+./p2/B_seed0/RW
+./p2/B_seed0/branches_init
+./p2/B_seed0/branches_trained
+./p2/B_seed1
+./p2/B_seed1/RP
+./p2/B_seed1/RPW
+./p2/B_seed1/RPW0
+./p2/B_seed1/RW
+./p2/B_seed1/branches_init
+./p2/B_seed1/branches_trained
+## wearusfm_runs_results_passo6_step2c_1410.source.sha256 (19924 bytes, 201 lines)
+e25721caacf5f3e6ae652f5450795f0771b5551e985764b8153497d7511f5373  ./comparison.json
+96e9f47df50fe036adf514ad715d1be30d73b44f26970ea51eb732f02c2bc1d4  ./p1/A_seed0/RP.json
+bab0ac4aeafb68be51f71062dc9beb2f6e5ae431cd5b4be5c1fe65f9e7efe4e6  ./p1/A_seed0/RP/ninapro_db2.npz
+9b03675ffd1ff1c11ad5f4f52580df48a5a965a20138119dab58cea7a19e0381  ./p1/A_seed0/RP/ninapro_db3.npz
+111cd9c43ee5a757c27696d8b0926a9b9c62a0d8be7f46b89184b45d4b99ac2c  ./p1/A_seed0/RP/ninapro_db6.npz
+2fa711c421c3a692585560379a4614ceaabdb1abf5bfee85b20644db488772d5  ./p1/A_seed0/RP/provenance.json
+e8fd6378596fb43b219bdb89d42953c84587e91322b6086aca217af920ba2aea  ./p1/A_seed0/RPW.json
+0c50eb2d823838c4429acbbb3c1dd08f96ac721f393843460fc7a23a813a1af7  ./p1/A_seed0/RPW/ninapro_db2.npz
+c46fd654949f6ad3cf8ade7fd21c03d89b6e83b42687735365b435a1fc15cd9f  ./p1/A_seed0/RPW/ninapro_db3.npz
+4742ada93ec4048ec2bf528cc72b56b88a30cde1486b685935bb92a2cbd05b69  ./p1/A_seed0/RPW/ninapro_db6.npz
+49d5a2c69d9ff817f5ed42adae725fede529249abe99ac4a26c7062a8ce43743  ./p1/A_seed0/RPW/provenance.json
+bbfd8277527c495a49b7c11122fb2ceabe2ac29f34a046e94f9a56e14edbf32c  ./p1/A_seed0/RPW0.json
+4f36ea60ea2fcb011f3e57e200786c55c91ecafd193e2bb0ffacfad524984f27  ./p1/A_seed0/RPW0/ninapro_db2.npz
+1cba6e172064cce049ee410ed5d17bd15b490c9f60ad19ad793e9d66e326dd98  ./p1/A_seed0/RPW0/ninapro_db3.npz
+2701f16d671b208e1e8642773b5c060a3286c7f409355f4d46b7775c2f259a09  ./p1/A_seed0/RPW0/ninapro_db6.npz
+04c45e775a6f541c7d37425f1f722448e1a086bcb7faef94300cc2fcb65fe8b7  ./p1/A_seed0/RPW0/provenance.json
+29facf3cb441d1a77aa61623adc27c01235a7d2c455970cacb78b75dfbece6f9  ./p1/A_seed0/RW.json
+25a00e648b2252863ec7186ac4436038279a24f05c38d200ef01f07376af96fb  ./p1/A_seed0/RW/ninapro_db2.npz
+b76d0ac73ba3fbcf160ed4689bcfaada346e2c9d37a78459387458ca60284a62  ./p1/A_seed0/RW/ninapro_db3.npz
+052883cfaea05358aa6674f7dae1626d3f122b5a4788cecd2b2a545f40c876d5  ./p1/A_seed0/RW/ninapro_db6.npz
+b14f1bd2337175b56ca1deb023de6353afd4385be98ec51a10916ac0e6a9c544  ./p1/A_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/A_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/A_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/A_seed0/branches_init/ninapro_db6.npz
+d0f3814a9e51bcbc1f79f7db5e4983d54d532b84233e2b33bfa757e4419eaf1b  ./p1/A_seed0/branches_init/provenance.json
+65e237e093f99fdb4cb0f2634c08bcfd26db87f644ba4532284338c3452a0941  ./p1/A_seed0/branches_trained/ninapro_db2.npz
+a5ca2e594755ba311fcd988d6d0e84371049a6389768165d7141025ed13580f6  ./p1/A_seed0/branches_trained/ninapro_db3.npz
+50a2ef3ff2bcaf99669fc6b6a55ff03a5621f890b8786534005c38f5f8c3e6ff  ./p1/A_seed0/branches_trained/ninapro_db6.npz
+affd0308671bc6f1e0f83c4b1a38f96a95e0b0d8b73285198a5e21a97b591730  ./p1/A_seed0/branches_trained/provenance.json
+32a826b45ad370ab12d7ea6f633aee843b5342483dffe27b8afecd1a84393f0e  ./p1/A_seed1/RP.json
+8af468fdfb1f870b57490ffc44d9a07c9eb0222b20d90a8e92308c82ec3ba9dc  ./p1/A_seed1/RP/ninapro_db2.npz
+352cdbe2a587a5557f5f504fa0d48f0bcf7f9b40820a3c432ac3d4fc1abe4233  ./p1/A_seed1/RP/ninapro_db3.npz
+af97d3a9dedcd9b8ab0a38b4a0ce67fb9854ccd51e4f0446ed007c46cc67e570  ./p1/A_seed1/RP/ninapro_db6.npz
+e6e1d6e1ee1329427f29ff08da41f04bf2ec0233057770442c33b1b2991fd267  ./p1/A_seed1/RP/provenance.json
+cadfeed250c717637bb62e9e15000af699aa97ddea191180153727c99571a81b  ./p1/A_seed1/RPW.json
+2a17343bfd72d7c0e45fdb7e70bae3315b2c2ea2410f10cde867efe7b75c48f6  ./p1/A_seed1/RPW/ninapro_db2.npz
+fa540b96df83921f91fe9a497c3fe1c2cb7ebe929112fbe148c0d76cb8e9b8b6  ./p1/A_seed1/RPW/ninapro_db3.npz
+2c3871a3e79d802dd660feebcf34abaa53ac57362038761249d94e848221bec7  ./p1/A_seed1/RPW/ninapro_db6.npz
+360257137df36389b599ab359ee6eeddefff3ccfdc954a36d392fe6728bd661c  ./p1/A_seed1/RPW/provenance.json
+cb4f3c9f2e9aa848ad26f88454ef55d7fa69ea3201acc56871772497b5455d29  ./p1/A_seed1/RPW0.json
+f2c92678d431317e6c7406a247ee82866ac75b6123057bc33cd47ea3a81aa63c  ./p1/A_seed1/RPW0/ninapro_db2.npz
+de9735b34f9797d13cbdb42304fd6070bab050e863da3d34283ec85599afcd00  ./p1/A_seed1/RPW0/ninapro_db3.npz
+a7a0d070d62e3fef624728d685192a6a521e6434250e8bb62b8645878f730019  ./p1/A_seed1/RPW0/ninapro_db6.npz
+10cc070a4330f7a97c3a12a06afef78d8e920a7234811d59b795b4d460ab1d60  ./p1/A_seed1/RPW0/provenance.json
+20af924568d847b716f2514219e521fd39899801d4589f0d0a1db4abdabdd148  ./p1/A_seed1/RW.json
+6f8580725f5097a6eb747e28473a24be6f7be403cab932b657186cc73257ddbd  ./p1/A_seed1/RW/ninapro_db2.npz
+66a3124f9f35f72b9f93fd6795ba5059870b971bcc2ceb612b8c5ea080e3a03d  ./p1/A_seed1/RW/ninapro_db3.npz
+23a6b6de5c412b56c6950f607557d18ea522e267cc0235ced3fc57269ced9e21  ./p1/A_seed1/RW/ninapro_db6.npz
+af4db76a79559a550a43283b889a370d2cec6eccaec4fa307cb06839ea7a64a8  ./p1/A_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/A_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/A_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/A_seed1/branches_init/ninapro_db6.npz
+e685d8041c602e4832bc20cda804ace23fb65e2c13c8577b7598f3926be24fc0  ./p1/A_seed1/branches_init/provenance.json
+26e8fd817a9c76dd26a012b2f46e59fd9361ce1db67dc73b0ccc2cbb6f5dbc0e  ./p1/A_seed1/branches_trained/ninapro_db2.npz
+3cd580819d6a6baa8c43b3bfd159d071bd29f0eb0f6923a3ec343890af5307b8  ./p1/A_seed1/branches_trained/ninapro_db3.npz
+c263f93a07caca3e61e7e212dbf863764ee99b5fb62f4a2afac926f6aac0d1f0  ./p1/A_seed1/branches_trained/ninapro_db6.npz
+e7e1e38d07a805c489843137fd57e0088f1edc9d81017250b6bcebf0103234de  ./p1/A_seed1/branches_trained/provenance.json
+f9f65ef42e019b1671575bb09d5dd9e9ec1221f7bcb6910e1ca517e8ebca6303  ./p1/B_seed0/RP.json
+3d209193765d7768656bc9825fd9a39b48a5dcb54f8bc4f5750e9e1966b83b4b  ./p1/B_seed0/RP/ninapro_db2.npz
+4f69c17ae5c973dccad192d16de77192c83d177717d22e6fd58cc125102c996d  ./p1/B_seed0/RP/ninapro_db3.npz
+d43728373df4f946ac9408f73a6a2e72a8279920cf46510d9f6dd1308e55f559  ./p1/B_seed0/RP/ninapro_db6.npz
+fc0432b6eecdca4521257efbf71352e5b19024be2663e0d68d9bd65c6d906c68  ./p1/B_seed0/RP/provenance.json
+85f2d8e6921f0561ae2161d44422b3f2fb4afd89d9012c072dccbd9d152f6891  ./p1/B_seed0/RPW.json
+b081627e7971cbfc5789d9499d531b446453ca6aa47285dee13622a5fba05b10  ./p1/B_seed0/RPW/ninapro_db2.npz
+d36ae5f0d3be0bfc762af4799d1a2c699a5514dbbb9c67095fadaffcf05b1709  ./p1/B_seed0/RPW/ninapro_db3.npz
+073e41a104e221afbb660f0257bd3e37ab7fd5600b5fee41a5d698400f67410b  ./p1/B_seed0/RPW/ninapro_db6.npz
+c10692a3748555a36bd5faadb85a32c954228363fc677271fe87921ec7fb3574  ./p1/B_seed0/RPW/provenance.json
+c4c47c1c6be127869962ce0ffc2131ff6c6f5a34226e8c41791cd69f06bd7270  ./p1/B_seed0/RPW0.json
+2bbe742a9d934845b81ceae12e8c9db505f5a387d327657c19ddfc61dd6ba771  ./p1/B_seed0/RPW0/ninapro_db2.npz
+9d0936ff26ea0665e819b387de3684e34b894190a24b640df6f4c1aae08f7aa5  ./p1/B_seed0/RPW0/ninapro_db3.npz
+4e9c20c7c23b3e6799813d680f394bdd8eb3243d96873a0e6141cb1f7fdf9e7f  ./p1/B_seed0/RPW0/ninapro_db6.npz
+1a599288dd47f96a48cdc4a48653e716280579a520066b3bbade5921f87ca71d  ./p1/B_seed0/RPW0/provenance.json
+a291d3e5bb3b4e8f53b5240f5963ddc03fbf58fce24ec9031bb0d1347d6fd266  ./p1/B_seed0/RW.json
+e105d24972e8063bfb7d410aa7c1514c8687301b3764e2d81873c0520e19ee9b  ./p1/B_seed0/RW/ninapro_db2.npz
+966d3240fae040a7e4c51730bcb9e929e8aab854a32d9aacf67e8d4e1163b77e  ./p1/B_seed0/RW/ninapro_db3.npz
+b60e88baeee11c2dcf2e6ceaf54ce565627de1910019ae6a8ce3e9e5e726e104  ./p1/B_seed0/RW/ninapro_db6.npz
+0d3447c4ab9ce7ba8894ad0004000302f2d4720ab7ef6e7d313ada91eece7d7d  ./p1/B_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/B_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/B_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/B_seed0/branches_init/ninapro_db6.npz
+064b28ac001ffc0287a588c4664ee12d67a94b65634d6dcf53c81fe2ea929fb6  ./p1/B_seed0/branches_init/provenance.json
+85d8e3b3c2396f1d1b40b4ce2378466f6d034da33d13f5dcb8a90d6aebd635c2  ./p1/B_seed0/branches_trained/ninapro_db2.npz
+08d279f2df211ba6e0f537ec4453676baf6f1dc62ecf93630a9599a30f41eaf8  ./p1/B_seed0/branches_trained/ninapro_db3.npz
+0ed83db2912092e46b091c0b27fa6165d3ffc95bbe0a64d05783e9e1f2851ad1  ./p1/B_seed0/branches_trained/ninapro_db6.npz
+aace57b4e37b8264cc860f215c636ea9c644178f71cf6bcc96f69482eb01eec8  ./p1/B_seed0/branches_trained/provenance.json
+3a930ebf5b117a7e2468575b0564192cad738472b3f7445af4b09e0cfa7ce968  ./p1/B_seed1/RP.json
+7295f7b617b02c7ee030d2c6510505b79af6d84d502af434ce475edf3ffae97d  ./p1/B_seed1/RP/ninapro_db2.npz
+dcb6eef31c299153482192568ebb684e7eb284b7c2acef1081414a7e6ccdab56  ./p1/B_seed1/RP/ninapro_db3.npz
+17e52e6706c6cd5443368ad5c6e46e95b2a8781c154a73ece54d1d6d04db01cb  ./p1/B_seed1/RP/ninapro_db6.npz
+dfb4b32622b731693e045362865334afbb8a37795ec51c1412862f42e9684e46  ./p1/B_seed1/RP/provenance.json
+05ba7573cd6630bb9bb8ef01b08f534f96f84dd3603ad1fb0712b7c0fd277f4d  ./p1/B_seed1/RPW.json
+b0441aba390b8aef76f0eec12b674a131e0fada66e919efd8bc0a7271da3e48f  ./p1/B_seed1/RPW/ninapro_db2.npz
+077a713a2781edc4c2e86812a0866be36d3abc690c3414f908046e0566767cbf  ./p1/B_seed1/RPW/ninapro_db3.npz
+9da57e9ceb2c03b33182fb32ae0bbe5e9b003e2167743eb971fad06325966075  ./p1/B_seed1/RPW/ninapro_db6.npz
+12b50e6f5a77b20b654e7a26a80fe3467b046cfb8ca66e4823f2b32a7d4a0e2f  ./p1/B_seed1/RPW/provenance.json
+ae9747774750572cee0274b50b54650eec05af6755dd44d8b310de1d4af74273  ./p1/B_seed1/RPW0.json
+dd169eb0e0351978c83f1dd393e304fbb87bb9d8c04e627cbc4a66c1b209454d  ./p1/B_seed1/RPW0/ninapro_db2.npz
+cd13a6fa178b0773e102f079ea9957123f900fd8ac57d220ac5a0c6f14eab309  ./p1/B_seed1/RPW0/ninapro_db3.npz
+802ce34d76b51c097245e14d3012034d44d1ade602ab716139583445850d1881  ./p1/B_seed1/RPW0/ninapro_db6.npz
+636d2df30c7153c65d15e23f7c5d2bc42d3b96478a9259331fbfecec1a1b8257  ./p1/B_seed1/RPW0/provenance.json
+786c416b4cb6bf6bea9ef72d06b12953d575a6853a4726ec5501fc7b5469ef08  ./p1/B_seed1/RW.json
+aeef7b41228a322ad584586f5b1fb421b9499ff9855ff39f860270815625cd6c  ./p1/B_seed1/RW/ninapro_db2.npz
+6379d008889faec8dbab4d931941eb01f282f2886d16d66ffdbf4cfdcd138f69  ./p1/B_seed1/RW/ninapro_db3.npz
+bab78ff669d3b17cdf89b266d5ce0004be12ed12deb5b34c04914609a791933f  ./p1/B_seed1/RW/ninapro_db6.npz
+2cff805bb49b4391746ce7db36fa3dd97a64285b48615a676ad37d9f6c4ba234  ./p1/B_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/B_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/B_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/B_seed1/branches_init/ninapro_db6.npz
+5ab601855e4be63a618bac649ed1b44428086cff940fceb719887ffa2af0897d  ./p1/B_seed1/branches_init/provenance.json
+ec1b04027afe65fa885def93d84a1d4fb4d57a55091538ec047caa1c9d6858a5  ./p1/B_seed1/branches_trained/ninapro_db2.npz
+53536640530ab953b614af6cb72655fef247832022e822f77d735c3232b0c7de  ./p1/B_seed1/branches_trained/ninapro_db3.npz
+9c75292da1d8e9d2e5f64eb9d7c5a861c5bf2dc3fd9ccde95baf10a82f0d1bdc  ./p1/B_seed1/branches_trained/ninapro_db6.npz
+2b0713e7cd791699b6642d8a80f7c503f70639b39d29ce3e48889c1819aad487  ./p1/B_seed1/branches_trained/provenance.json
+ca44c1a2d16d04fdb98f8f55f5fe0e9c4faf72f9de633ea12ca69bf591b8e071  ./p2/A_seed0/RP.json
+5d769737af9c25d305f5a408da3de000756e54294c27adcc249442e2aaba2dab  ./p2/A_seed0/RP/epn612.npz
+0411fd02c1de12affb6ede2eb826e5f827c0011b7773db4dfd8ae6821fc0d733  ./p2/A_seed0/RP/provenance.json
+0e7c80728296d6fcb44b3117d6e288a033ca0d71cef56a695f85d2a65efb4645  ./p2/A_seed0/RP/uci_emg.npz
+dca909163d27d1c84ee680f93857a2155ad55754a5026c8509b4ac189dfa141b  ./p2/A_seed0/RPW.json
+7ab53461b247a7f52e7d31ca70cac9b34b50bc6f7313ea06f8beb9e3378d362f  ./p2/A_seed0/RPW/epn612.npz
+6046e4e69133550d70671561b3ea1f37a2fb2bcccd82f056c3fa3046a7a73884  ./p2/A_seed0/RPW/provenance.json
+8e3a4d979d364e78528e63f35f099fd09d96c5825e5347bb298be02384bb87d3  ./p2/A_seed0/RPW/uci_emg.npz
+872dfc5be5da55bc415b1b8ebf0063db0263e67244136dd90b7097fdf49ed908  ./p2/A_seed0/RPW0.json
+34900c57378764da7872059eb7ed64ec133ee5d9e78247d99dd615352c7588e6  ./p2/A_seed0/RPW0/epn612.npz
+6d74291b56a40ad4693166a9cf8934616be51e62e4681fcab612d85dbee09f93  ./p2/A_seed0/RPW0/provenance.json
+d3d2af73a9364253a541f0253c0c392d56f23a51773e62650a6841b39d9ee36c  ./p2/A_seed0/RPW0/uci_emg.npz
+33e52c35b687169809b399b42d83f3a6272baaebfd1d819d8c3550a685eb87ad  ./p2/A_seed0/RW.json
+168856441ee9006f968fa9b6f5b125f5c36f0669deff3832d899a5c889097997  ./p2/A_seed0/RW/epn612.npz
+b9eca24a9c5d9dcc6d4f71744b9fba3b84402bc9f49c93041b1230f93f7ca703  ./p2/A_seed0/RW/provenance.json
+461960775c262abd0f6d29d94bd0db7566c81fdec5c92fe7716de70d64fc1622  ./p2/A_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/A_seed0/branches_init/epn612.npz
+82e75f981bad74108cd865beaab482892b331011aafba49035c950ab07995a20  ./p2/A_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/A_seed0/branches_init/uci_emg.npz
+d5a99747b5d0008fc03d9ac066cccdaa3b246fe44861ea8dab3ab3fcfa9844b0  ./p2/A_seed0/branches_trained/epn612.npz
+3e9d8882daa4f579a50d0c014b34246b7f3f6f2a5a51a90c5238220d5ba3e8bf  ./p2/A_seed0/branches_trained/provenance.json
+49b39d7cf5dcf493216b8f260fbc1af6fa44abd0bcdeab64aa75ea35b4add4df  ./p2/A_seed0/branches_trained/uci_emg.npz
+e3c3f51ecc754985754b6d20ce393dfb695b20b558bfadf8fe69ed5f179c8ea2  ./p2/A_seed1/RP.json
+beac6fc1c587e85f327c6e9c19434de6c934fad1ce4404e4ec3a3e80cf97f6ce  ./p2/A_seed1/RP/epn612.npz
+9e1809455734b61988de3923698567533012a3c73eec01b2d8cc5e326d4c5ee3  ./p2/A_seed1/RP/provenance.json
+9139dabbc8daee1dc919bcceea29e460e7546f2a976a9e640dbc6c904cd6dd10  ./p2/A_seed1/RP/uci_emg.npz
+bbf4aa732923eb154e4d016d0cc741427cfcda80593b386aa91e9f743ee5d374  ./p2/A_seed1/RPW.json
+8943c0959de5a5a20e6dc3e7ba429529e651403076ecc92ec993515129ddd6f4  ./p2/A_seed1/RPW/epn612.npz
+1781bbfc15d658dce5a3b67cadcd8317bc391eb45f5ff65b356b1ddae2ef4655  ./p2/A_seed1/RPW/provenance.json
+99e2518a0bccd5c16022aba0102851472470da0b28d07c292eb0cd699ac124de  ./p2/A_seed1/RPW/uci_emg.npz
+af62fd88be5c5e6c1bdb392e05bb05a1ba55d59c55bd58f5b28fd988e6aeeb73  ./p2/A_seed1/RPW0.json
+d3110c68cd70e12fcdb12f571007cb1b85db5ae1841111718e8496538ed394dd  ./p2/A_seed1/RPW0/epn612.npz
+ba225e122e447e733b0057c7d79d229b0465fab49d39eee928b98eb2c64f2a79  ./p2/A_seed1/RPW0/provenance.json
+29c7639efdf76e95241528d7a5ecf329118e200498d056c817057bd5f3f6c973  ./p2/A_seed1/RPW0/uci_emg.npz
+12280007b26ec534ed36dfe40c611df4f5a2dbfc0d382b585f3e7df16d141def  ./p2/A_seed1/RW.json
+8251b9446c87c0fc8a99db2f57703e51fd9de5b7483dfc72b1e3efe300d6c875  ./p2/A_seed1/RW/epn612.npz
+7d6f87edde7724c8953f7939276a352c5d509779362561c25b1fbcb1525c9c47  ./p2/A_seed1/RW/provenance.json
+d3ad89c36a1b518b6fa5ae8596eccfb1d0e9a9f8bb9981256ef069737d52ed8b  ./p2/A_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/A_seed1/branches_init/epn612.npz
+facee708fadec054efb4d7ec94d934202b60ec764c4ed7e47bd5ccf8624c1c8d  ./p2/A_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/A_seed1/branches_init/uci_emg.npz
+26f77cc83261c3149bf9da2e132677d0162e867551b5b5cfef4e4e3479bc418e  ./p2/A_seed1/branches_trained/epn612.npz
+c895e7efbaba9b7417926108bbf806945c2a1b97bd54d71e6d7456e9b797ffef  ./p2/A_seed1/branches_trained/provenance.json
+99513460f8690ec392b84728d22f564b53adc4061b694585d577f0fae318af50  ./p2/A_seed1/branches_trained/uci_emg.npz
+11ad79ed58505659f75ab62a6f5e406bcf9df712756ee2bcf2c1153137de298a  ./p2/B_seed0/RP.json
+87a38f601c787d993fb52dab883d57a8aa094d9ca250ca713494245f96453876  ./p2/B_seed0/RP/epn612.npz
+ecea1793b8f7e8cbc8323fa788ae9fcd6ed63cd87c246e7dcc77dafa3d51394f  ./p2/B_seed0/RP/provenance.json
+19afb7b190dd7f3c7ea470b0eefbf17a15672bec847c9034ed00b328b330964f  ./p2/B_seed0/RP/uci_emg.npz
+8f9e6d250adf6efb886c2a34a8d8be5a0cedf393a531496d2e0bcd255bc516fe  ./p2/B_seed0/RPW.json
+3d71b7b2ef1a034ddb119ff7c532de511061b7c0e779717b31660f229a804304  ./p2/B_seed0/RPW/epn612.npz
+8f5cfb3d3f2284052461c5ebe967a9442cc865e87c544306fa5c32ab4fb5ae3c  ./p2/B_seed0/RPW/provenance.json
+4817de7e08e0e02cff19f9a46321d1fe24bfddae14d48819c70ee9c2fd7e43be  ./p2/B_seed0/RPW/uci_emg.npz
+eee4b84bf36bcc12dc21d06f89e2a3a954d0efc156155c2923b242312514a804  ./p2/B_seed0/RPW0.json
+035e4831cf674a47f45a56621930af70a82237893b80fcc224d2bfc0bfe4b9aa  ./p2/B_seed0/RPW0/epn612.npz
+76a709754f9449839f0110c43b45d2ec29f62c53d1b0498b2cfa977608cb311b  ./p2/B_seed0/RPW0/provenance.json
+7adf5db53cb0616e2e70f7f104349ead0a144b607fc6e8de99365867ebecab9c  ./p2/B_seed0/RPW0/uci_emg.npz
+cfd0e4dd5555cf9b02d332cd6b546e7d1168e14460efa9d60fd63311d3c709fa  ./p2/B_seed0/RW.json
+4bb9e41fbf56d8ed46ee0e7986f506c9aea27f1525c7aeb16f827183b3409f31  ./p2/B_seed0/RW/epn612.npz
+a145382a9220aee07a4f3846d33503262c07f291460b448e5136c98333bf89d2  ./p2/B_seed0/RW/provenance.json
+3a32cea55907755eb4b5390d2c1662648cee8656742b18b5c7733deb38849888  ./p2/B_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/B_seed0/branches_init/epn612.npz
+faac749599d06372e67e4549e7c01d79237c3b8acced48f9ae072de3d88919e5  ./p2/B_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/B_seed0/branches_init/uci_emg.npz
+254166f4d80a802a4482bfa86e1cd8c2356e2bdf5c20bc8696a77f2bddeca074  ./p2/B_seed0/branches_trained/epn612.npz
+f574f71223cd2b52947a4d4421287b0f35c58ea41d96667b6d568e4108477ad4  ./p2/B_seed0/branches_trained/provenance.json
+03d51797755edf2c6647bfd9011930f03ec9ce941d6d32236ecde8595f8d57f0  ./p2/B_seed0/branches_trained/uci_emg.npz
+d82bcea86ef5ea23e0b81e38cf81bc169a182213fdcdaecb2281a7d07ffac2a4  ./p2/B_seed1/RP.json
+f0c0c77c1bbf48675624dd717296b236f5ca562c1e945e9d52f22561d76c46bc  ./p2/B_seed1/RP/epn612.npz
+f823a3928f95cd07fd7a36c18aa3a921fc478b3990059f5798eb60a36d478af3  ./p2/B_seed1/RP/provenance.json
+7bd4ab5a96fded9aa1d1cdd2de47f6bf2508eb9dbaa53ddb56aedacc47ba4b6e  ./p2/B_seed1/RP/uci_emg.npz
+3a55d1b097e6e6e2cc7c2f1b9cbb714d118f5387386f55f79e0ba5fb9dee24c0  ./p2/B_seed1/RPW.json
+d9f729736e5f74caf5fd629f084c9f09ed31f0113a59ea51c09550546f09d840  ./p2/B_seed1/RPW/epn612.npz
+e630f6857763403e0fd79f251a1058789adf59f6db25d801ad5bef0ecdef8c5f  ./p2/B_seed1/RPW/provenance.json
+c7767e7a00ed75ce91621f12f565f6a76b4953b480675a74f20e4278b0457043  ./p2/B_seed1/RPW/uci_emg.npz
+521cc864074e9eee496d501a08efca520544f26d66ab12c1fd33b5f7c14d8574  ./p2/B_seed1/RPW0.json
+fb34b585f13969012146e818b75bd919bb422e65d5f67d470f9a818e2fdcdf20  ./p2/B_seed1/RPW0/epn612.npz
+732fb49cae662c1195553aab2dfb955852b787cc6649423a8c0de9807eb69a74  ./p2/B_seed1/RPW0/provenance.json
+32dff0ba5fb715cd45052b266b093503844825136364ff71f563b29b17395daf  ./p2/B_seed1/RPW0/uci_emg.npz
+0507bc158dcdd9ed364af4ad3a2b1999928d9b7b9a4b4cff617a99ea00b665c6  ./p2/B_seed1/RW.json
+76f7b8a184f47572cc9009fd986522a1b96d59d168adfa8ff7e959d3f14d80e5  ./p2/B_seed1/RW/epn612.npz
+f7ad522b0014e4f84a6550ced0f954b357dd0a57094d70dbc53c690aa7760f72  ./p2/B_seed1/RW/provenance.json
+ebde801fc33f99eaef3cc1282442c8203d33c27c9c6997aeb5b98861b9fc6ac9  ./p2/B_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/B_seed1/branches_init/epn612.npz
+e914565ecaec81de15d5d498f438338411fe9edd464ba0b252e60e4812507993  ./p2/B_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/B_seed1/branches_init/uci_emg.npz
+5fdb10b7b9f1d87ec37b011757a1764d71a66af5d29092acbb55407be12590e5  ./p2/B_seed1/branches_trained/epn612.npz
+c24aa4e9427e3a64b9b588cbf965d5ee3fcb17257b85afa60504ff0a54c33312  ./p2/B_seed1/branches_trained/provenance.json
+95629a8a7dbe7c0ff83ddbed775d15c1b3f3ddb74840ceaa4209f666eac5f97a  ./p2/B_seed1/branches_trained/uci_emg.npz
+## wearusfm_runs_results_passo6_step2c_1410.source.sizes (8257 bytes, 201 lines)
+102030 ./comparison.json
+40346 ./p1/A_seed0/RP.json
+167416270 ./p1/A_seed0/RP/ninapro_db2.npz
+49309586 ./p1/A_seed0/RP/ninapro_db3.npz
+151529838 ./p1/A_seed0/RP/ninapro_db6.npz
+13790 ./p1/A_seed0/RP/provenance.json
+40366 ./p1/A_seed0/RPW.json
+191199694 ./p1/A_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW/ninapro_db6.npz
+13811 ./p1/A_seed0/RPW/provenance.json
+40375 ./p1/A_seed0/RPW0.json
+191199694 ./p1/A_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed0/RPW0/provenance.json
+40357 ./p1/A_seed0/RW.json
+167416270 ./p1/A_seed0/RW/ninapro_db2.npz
+49309586 ./p1/A_seed0/RW/ninapro_db3.npz
+151529838 ./p1/A_seed0/RW/ninapro_db6.npz
+13794 ./p1/A_seed0/RW/provenance.json
+48499162 ./p1/A_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed0/branches_init/provenance.json
+48499162 ./p1/A_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed0/branches_trained/provenance.json
+40345 ./p1/A_seed1/RP.json
+167416270 ./p1/A_seed1/RP/ninapro_db2.npz
+49309586 ./p1/A_seed1/RP/ninapro_db3.npz
+151529838 ./p1/A_seed1/RP/ninapro_db6.npz
+13790 ./p1/A_seed1/RP/provenance.json
+40368 ./p1/A_seed1/RPW.json
+191199694 ./p1/A_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW/ninapro_db6.npz
+13811 ./p1/A_seed1/RPW/provenance.json
+40368 ./p1/A_seed1/RPW0.json
+191199694 ./p1/A_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/A_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/A_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/A_seed1/RPW0/provenance.json
+40343 ./p1/A_seed1/RW.json
+167416270 ./p1/A_seed1/RW/ninapro_db2.npz
+49309586 ./p1/A_seed1/RW/ninapro_db3.npz
+151529838 ./p1/A_seed1/RW/ninapro_db6.npz
+13794 ./p1/A_seed1/RW/provenance.json
+48499162 ./p1/A_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/A_seed1/branches_init/provenance.json
+48499162 ./p1/A_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/A_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/A_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/A_seed1/branches_trained/provenance.json
+40352 ./p1/B_seed0/RP.json
+167416270 ./p1/B_seed0/RP/ninapro_db2.npz
+49309586 ./p1/B_seed0/RP/ninapro_db3.npz
+151529838 ./p1/B_seed0/RP/ninapro_db6.npz
+13790 ./p1/B_seed0/RP/provenance.json
+40375 ./p1/B_seed0/RPW.json
+191199694 ./p1/B_seed0/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW/ninapro_db6.npz
+13811 ./p1/B_seed0/RPW/provenance.json
+40368 ./p1/B_seed0/RPW0.json
+191199694 ./p1/B_seed0/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed0/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed0/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed0/RPW0/provenance.json
+40350 ./p1/B_seed0/RW.json
+167416270 ./p1/B_seed0/RW/ninapro_db2.npz
+49309586 ./p1/B_seed0/RW/ninapro_db3.npz
+151529838 ./p1/B_seed0/RW/ninapro_db6.npz
+13794 ./p1/B_seed0/RW/provenance.json
+48499162 ./p1/B_seed0/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed0/branches_init/provenance.json
+48499162 ./p1/B_seed0/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed0/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed0/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed0/branches_trained/provenance.json
+40343 ./p1/B_seed1/RP.json
+167416270 ./p1/B_seed1/RP/ninapro_db2.npz
+49309586 ./p1/B_seed1/RP/ninapro_db3.npz
+151529838 ./p1/B_seed1/RP/ninapro_db6.npz
+13790 ./p1/B_seed1/RP/provenance.json
+40367 ./p1/B_seed1/RPW.json
+191199694 ./p1/B_seed1/RPW/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW/ninapro_db6.npz
+13811 ./p1/B_seed1/RPW/provenance.json
+40366 ./p1/B_seed1/RPW0.json
+191199694 ./p1/B_seed1/RPW0/ninapro_db2.npz
+56314258 ./p1/B_seed1/RPW0/ninapro_db3.npz
+173056366 ./p1/B_seed1/RPW0/ninapro_db6.npz
+13809 ./p1/B_seed1/RPW0/provenance.json
+40347 ./p1/B_seed1/RW.json
+167416270 ./p1/B_seed1/RW/ninapro_db2.npz
+49309586 ./p1/B_seed1/RW/ninapro_db3.npz
+151529838 ./p1/B_seed1/RW/ninapro_db6.npz
+13794 ./p1/B_seed1/RW/provenance.json
+48499162 ./p1/B_seed1/branches_init/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_init/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_init/ninapro_db6.npz
+5631 ./p1/B_seed1/branches_init/provenance.json
+48499162 ./p1/B_seed1/branches_trained/ninapro_db2.npz
+14286238 ./p1/B_seed1/branches_trained/ninapro_db3.npz
+43897210 ./p1/B_seed1/branches_trained/ninapro_db6.npz
+5634 ./p1/B_seed1/branches_trained/provenance.json
+239516 ./p2/A_seed0/RP.json
+339661768 ./p2/A_seed0/RP/epn612.npz
+73026 ./p2/A_seed0/RP/provenance.json
+2384968 ./p2/A_seed0/RP/uci_emg.npz
+239541 ./p2/A_seed0/RPW.json
+386663368 ./p2/A_seed0/RPW/epn612.npz
+73046 ./p2/A_seed0/RPW/provenance.json
+2723912 ./p2/A_seed0/RPW/uci_emg.npz
+239573 ./p2/A_seed0/RPW0.json
+386663368 ./p2/A_seed0/RPW0/epn612.npz
+73044 ./p2/A_seed0/RPW0/provenance.json
+2723912 ./p2/A_seed0/RPW0/uci_emg.npz
+239510 ./p2/A_seed0/RW.json
+339661768 ./p2/A_seed0/RW/epn612.npz
+73030 ./p2/A_seed0/RW/provenance.json
+2384968 ./p2/A_seed0/RW/uci_emg.npz
+104653780 ./p2/A_seed0/branches_init/epn612.npz
+24997 ./p2/A_seed0/branches_init/provenance.json
+690260 ./p2/A_seed0/branches_init/uci_emg.npz
+104653780 ./p2/A_seed0/branches_trained/epn612.npz
+25000 ./p2/A_seed0/branches_trained/provenance.json
+690260 ./p2/A_seed0/branches_trained/uci_emg.npz
+239510 ./p2/A_seed1/RP.json
+339661768 ./p2/A_seed1/RP/epn612.npz
+73026 ./p2/A_seed1/RP/provenance.json
+2384968 ./p2/A_seed1/RP/uci_emg.npz
+239526 ./p2/A_seed1/RPW.json
+386663368 ./p2/A_seed1/RPW/epn612.npz
+73046 ./p2/A_seed1/RPW/provenance.json
+2723912 ./p2/A_seed1/RPW/uci_emg.npz
+239557 ./p2/A_seed1/RPW0.json
+386663368 ./p2/A_seed1/RPW0/epn612.npz
+73044 ./p2/A_seed1/RPW0/provenance.json
+2723912 ./p2/A_seed1/RPW0/uci_emg.npz
+239507 ./p2/A_seed1/RW.json
+339661768 ./p2/A_seed1/RW/epn612.npz
+73030 ./p2/A_seed1/RW/provenance.json
+2384968 ./p2/A_seed1/RW/uci_emg.npz
+104653780 ./p2/A_seed1/branches_init/epn612.npz
+24997 ./p2/A_seed1/branches_init/provenance.json
+690260 ./p2/A_seed1/branches_init/uci_emg.npz
+104653780 ./p2/A_seed1/branches_trained/epn612.npz
+25000 ./p2/A_seed1/branches_trained/provenance.json
+690260 ./p2/A_seed1/branches_trained/uci_emg.npz
+239533 ./p2/B_seed0/RP.json
+339661768 ./p2/B_seed0/RP/epn612.npz
+73026 ./p2/B_seed0/RP/provenance.json
+2384968 ./p2/B_seed0/RP/uci_emg.npz
+239571 ./p2/B_seed0/RPW.json
+386663368 ./p2/B_seed0/RPW/epn612.npz
+73046 ./p2/B_seed0/RPW/provenance.json
+2723912 ./p2/B_seed0/RPW/uci_emg.npz
+239589 ./p2/B_seed0/RPW0.json
+386663368 ./p2/B_seed0/RPW0/epn612.npz
+73044 ./p2/B_seed0/RPW0/provenance.json
+2723912 ./p2/B_seed0/RPW0/uci_emg.npz
+239533 ./p2/B_seed0/RW.json
+339661768 ./p2/B_seed0/RW/epn612.npz
+73030 ./p2/B_seed0/RW/provenance.json
+2384968 ./p2/B_seed0/RW/uci_emg.npz
+104653780 ./p2/B_seed0/branches_init/epn612.npz
+24997 ./p2/B_seed0/branches_init/provenance.json
+690260 ./p2/B_seed0/branches_init/uci_emg.npz
+104653780 ./p2/B_seed0/branches_trained/epn612.npz
+25000 ./p2/B_seed0/branches_trained/provenance.json
+690260 ./p2/B_seed0/branches_trained/uci_emg.npz
+239517 ./p2/B_seed1/RP.json
+339661768 ./p2/B_seed1/RP/epn612.npz
+73026 ./p2/B_seed1/RP/provenance.json
+2384968 ./p2/B_seed1/RP/uci_emg.npz
+239538 ./p2/B_seed1/RPW.json
+386663368 ./p2/B_seed1/RPW/epn612.npz
+73046 ./p2/B_seed1/RPW/provenance.json
+2723912 ./p2/B_seed1/RPW/uci_emg.npz
+239571 ./p2/B_seed1/RPW0.json
+386663368 ./p2/B_seed1/RPW0/epn612.npz
+73044 ./p2/B_seed1/RPW0/provenance.json
+2723912 ./p2/B_seed1/RPW0/uci_emg.npz
+239509 ./p2/B_seed1/RW.json
+339661768 ./p2/B_seed1/RW/epn612.npz
+73030 ./p2/B_seed1/RW/provenance.json
+2384968 ./p2/B_seed1/RW/uci_emg.npz
+104653780 ./p2/B_seed1/branches_init/epn612.npz
+24997 ./p2/B_seed1/branches_init/provenance.json
+690260 ./p2/B_seed1/branches_init/uci_emg.npz
+104653780 ./p2/B_seed1/branches_trained/epn612.npz
+25000 ./p2/B_seed1/branches_trained/provenance.json
+690260 ./p2/B_seed1/branches_trained/uci_emg.npz
+@@AFTER
+=== step2c_1410
+old path: lrwxrwxrwx. 1 sbenatti interactive 86 Nov  6 20:28 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410
+readlink: /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410
+copy: drwxr-xr-x. 4 sbenatti interactive 4096 Nov  6 20:25 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410
+through the link: files 201 dirs 59 bytes 13864508239
+copy: files 201 dirs 59 bytes 13864508239 old-dated files 0 links-or-special 0
+=== step1_downstream_0910
+old path: lrwxrwxrwx. 1 sbenatti interactive 96 Nov  6 20:28 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910
+readlink: /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910
+copy: drwxr-xr-x. 4 sbenatti interactive 4096 Nov  6 20:28 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910
+through the link: files 37 dirs 11 bytes 2443563572
+copy: files 37 dirs 11 bytes 2443563572 old-dated files 0 links-or-special 0
+=== step1_random_20261014_r3
+old path: lrwxrwxrwx. 1 sbenatti interactive 99 Nov  6 20:28 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3
+readlink: /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3
+copy: drwxr-xr-x. 4 sbenatti interactive 4096 Nov  6 20:28 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3
+through the link: files 23 dirs 7 bytes 1676205962
+copy: files 23 dirs 7 bytes 1676205962 old-dated files 0 links-or-special 0
+=== step2a_20261014
+old path: lrwxrwxrwx. 1 sbenatti interactive 90 Nov  6 20:28 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014
+readlink: /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014
+copy: drwxr-xr-x. 4 sbenatti interactive 4096 Nov  6 20:28 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014
+through the link: files 41 dirs 15 bytes 1422892105
+copy: files 41 dirs 15 bytes 1422892105 old-dated files 0 links-or-special 0
+leftovers aside: 0
+--- passo6 top level in WORK
+total 2192
+drwxr-xr-x. 17 sbenatti interactive    4096 Nov  6 20:28 .
+drwxr-xr-x. 30 sbenatti interactive    4096 Nov  6 18:47 ..
+drwxr-xr-x.  3 sbenatti interactive    4096 Oct  7 15:21 capgmyo_grid_fix
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct 15 19:29 derived_v1_1
+drwxr-xr-x.  3 sbenatti interactive    4096 Oct 14 23:16 diag_initial_20261014
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  3 12:27 loader_59254061
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  3 15:26 loader_59264303
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  3 21:16 loader_59276700
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  5 16:39 loader_59412542
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  7 15:21 loader_59623700
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct 12 12:21 loader_60150682
+drwxr-xr-x.  3 sbenatti interactive    4096 Oct  4 12:09 rvq_codes
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  7 19:57 step1_0710
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  9 08:44 step1_ab_0810
+lrwxrwxrwx.  1 sbenatti interactive      96 Nov  6 20:28 step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_downstream_0910
+drwxr-xr-x.  2 sbenatti interactive    4096 Oct  8 12:44 step1_probe_sanity_0410_0810
+drwxr-xr-x.  4 sbenatti interactive    4096 Oct 14 15:24 step1_random_20261014
+drwxr-xr-x.  4 sbenatti interactive    4096 Oct 14 16:07 step1_random_20261014_r2
+lrwxrwxrwx.  1 sbenatti interactive      99 Nov  6 20:28 step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step1_random_20261014_r3
+lrwxrwxrwx.  1 sbenatti interactive      90 Nov  6 20:28 step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2a_20261014
+lrwxrwxrwx.  1 sbenatti interactive      86 Nov  6 20:28 step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6/step2c_1410
+-rw-r--r--.  1 sbenatti interactive 2156652 Oct  5 18:56 window_seconds_59425316.json
+--- passo6 on SCRATCH
+total 24
+drwxr-xr-x.  6 sbenatti interactive 4096 Nov  6 20:28 .
+drwxr-xr-x. 11 sbenatti interactive 4096 Nov  6 20:24 ..
+drwxr-xr-x.  4 sbenatti interactive 4096 Nov  6 20:28 step1_downstream_0910
+drwxr-xr-x.  4 sbenatti interactive 4096 Nov  6 20:28 step1_random_20261014_r3
+drwxr-xr-x.  4 sbenatti interactive 4096 Nov  6 20:28 step2a_20261014
+drwxr-xr-x.  4 sbenatti interactive 4096 Nov  6 20:25 step2c_1410
+--- quota (project, user)
+/leonardo_work/IscrB_WearUsFM
+                1030020668  1073741824       0       - 1514706       0       0       -
+ /leonardo_work 184313064       0       0       -  245536       0       0       -
+@@REHASH
+## step2c_1410
+e25721caacf5f3e6ae652f5450795f0771b5551e985764b8153497d7511f5373  ./comparison.json
+96e9f47df50fe036adf514ad715d1be30d73b44f26970ea51eb732f02c2bc1d4  ./p1/A_seed0/RP.json
+bab0ac4aeafb68be51f71062dc9beb2f6e5ae431cd5b4be5c1fe65f9e7efe4e6  ./p1/A_seed0/RP/ninapro_db2.npz
+9b03675ffd1ff1c11ad5f4f52580df48a5a965a20138119dab58cea7a19e0381  ./p1/A_seed0/RP/ninapro_db3.npz
+111cd9c43ee5a757c27696d8b0926a9b9c62a0d8be7f46b89184b45d4b99ac2c  ./p1/A_seed0/RP/ninapro_db6.npz
+2fa711c421c3a692585560379a4614ceaabdb1abf5bfee85b20644db488772d5  ./p1/A_seed0/RP/provenance.json
+e8fd6378596fb43b219bdb89d42953c84587e91322b6086aca217af920ba2aea  ./p1/A_seed0/RPW.json
+0c50eb2d823838c4429acbbb3c1dd08f96ac721f393843460fc7a23a813a1af7  ./p1/A_seed0/RPW/ninapro_db2.npz
+c46fd654949f6ad3cf8ade7fd21c03d89b6e83b42687735365b435a1fc15cd9f  ./p1/A_seed0/RPW/ninapro_db3.npz
+4742ada93ec4048ec2bf528cc72b56b88a30cde1486b685935bb92a2cbd05b69  ./p1/A_seed0/RPW/ninapro_db6.npz
+49d5a2c69d9ff817f5ed42adae725fede529249abe99ac4a26c7062a8ce43743  ./p1/A_seed0/RPW/provenance.json
+bbfd8277527c495a49b7c11122fb2ceabe2ac29f34a046e94f9a56e14edbf32c  ./p1/A_seed0/RPW0.json
+4f36ea60ea2fcb011f3e57e200786c55c91ecafd193e2bb0ffacfad524984f27  ./p1/A_seed0/RPW0/ninapro_db2.npz
+1cba6e172064cce049ee410ed5d17bd15b490c9f60ad19ad793e9d66e326dd98  ./p1/A_seed0/RPW0/ninapro_db3.npz
+2701f16d671b208e1e8642773b5c060a3286c7f409355f4d46b7775c2f259a09  ./p1/A_seed0/RPW0/ninapro_db6.npz
+04c45e775a6f541c7d37425f1f722448e1a086bcb7faef94300cc2fcb65fe8b7  ./p1/A_seed0/RPW0/provenance.json
+29facf3cb441d1a77aa61623adc27c01235a7d2c455970cacb78b75dfbece6f9  ./p1/A_seed0/RW.json
+25a00e648b2252863ec7186ac4436038279a24f05c38d200ef01f07376af96fb  ./p1/A_seed0/RW/ninapro_db2.npz
+b76d0ac73ba3fbcf160ed4689bcfaada346e2c9d37a78459387458ca60284a62  ./p1/A_seed0/RW/ninapro_db3.npz
+052883cfaea05358aa6674f7dae1626d3f122b5a4788cecd2b2a545f40c876d5  ./p1/A_seed0/RW/ninapro_db6.npz
+b14f1bd2337175b56ca1deb023de6353afd4385be98ec51a10916ac0e6a9c544  ./p1/A_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/A_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/A_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/A_seed0/branches_init/ninapro_db6.npz
+d0f3814a9e51bcbc1f79f7db5e4983d54d532b84233e2b33bfa757e4419eaf1b  ./p1/A_seed0/branches_init/provenance.json
+65e237e093f99fdb4cb0f2634c08bcfd26db87f644ba4532284338c3452a0941  ./p1/A_seed0/branches_trained/ninapro_db2.npz
+a5ca2e594755ba311fcd988d6d0e84371049a6389768165d7141025ed13580f6  ./p1/A_seed0/branches_trained/ninapro_db3.npz
+50a2ef3ff2bcaf99669fc6b6a55ff03a5621f890b8786534005c38f5f8c3e6ff  ./p1/A_seed0/branches_trained/ninapro_db6.npz
+affd0308671bc6f1e0f83c4b1a38f96a95e0b0d8b73285198a5e21a97b591730  ./p1/A_seed0/branches_trained/provenance.json
+32a826b45ad370ab12d7ea6f633aee843b5342483dffe27b8afecd1a84393f0e  ./p1/A_seed1/RP.json
+8af468fdfb1f870b57490ffc44d9a07c9eb0222b20d90a8e92308c82ec3ba9dc  ./p1/A_seed1/RP/ninapro_db2.npz
+352cdbe2a587a5557f5f504fa0d48f0bcf7f9b40820a3c432ac3d4fc1abe4233  ./p1/A_seed1/RP/ninapro_db3.npz
+af97d3a9dedcd9b8ab0a38b4a0ce67fb9854ccd51e4f0446ed007c46cc67e570  ./p1/A_seed1/RP/ninapro_db6.npz
+e6e1d6e1ee1329427f29ff08da41f04bf2ec0233057770442c33b1b2991fd267  ./p1/A_seed1/RP/provenance.json
+cadfeed250c717637bb62e9e15000af699aa97ddea191180153727c99571a81b  ./p1/A_seed1/RPW.json
+2a17343bfd72d7c0e45fdb7e70bae3315b2c2ea2410f10cde867efe7b75c48f6  ./p1/A_seed1/RPW/ninapro_db2.npz
+fa540b96df83921f91fe9a497c3fe1c2cb7ebe929112fbe148c0d76cb8e9b8b6  ./p1/A_seed1/RPW/ninapro_db3.npz
+2c3871a3e79d802dd660feebcf34abaa53ac57362038761249d94e848221bec7  ./p1/A_seed1/RPW/ninapro_db6.npz
+360257137df36389b599ab359ee6eeddefff3ccfdc954a36d392fe6728bd661c  ./p1/A_seed1/RPW/provenance.json
+cb4f3c9f2e9aa848ad26f88454ef55d7fa69ea3201acc56871772497b5455d29  ./p1/A_seed1/RPW0.json
+f2c92678d431317e6c7406a247ee82866ac75b6123057bc33cd47ea3a81aa63c  ./p1/A_seed1/RPW0/ninapro_db2.npz
+de9735b34f9797d13cbdb42304fd6070bab050e863da3d34283ec85599afcd00  ./p1/A_seed1/RPW0/ninapro_db3.npz
+a7a0d070d62e3fef624728d685192a6a521e6434250e8bb62b8645878f730019  ./p1/A_seed1/RPW0/ninapro_db6.npz
+10cc070a4330f7a97c3a12a06afef78d8e920a7234811d59b795b4d460ab1d60  ./p1/A_seed1/RPW0/provenance.json
+20af924568d847b716f2514219e521fd39899801d4589f0d0a1db4abdabdd148  ./p1/A_seed1/RW.json
+6f8580725f5097a6eb747e28473a24be6f7be403cab932b657186cc73257ddbd  ./p1/A_seed1/RW/ninapro_db2.npz
+66a3124f9f35f72b9f93fd6795ba5059870b971bcc2ceb612b8c5ea080e3a03d  ./p1/A_seed1/RW/ninapro_db3.npz
+23a6b6de5c412b56c6950f607557d18ea522e267cc0235ced3fc57269ced9e21  ./p1/A_seed1/RW/ninapro_db6.npz
+af4db76a79559a550a43283b889a370d2cec6eccaec4fa307cb06839ea7a64a8  ./p1/A_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/A_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/A_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/A_seed1/branches_init/ninapro_db6.npz
+e685d8041c602e4832bc20cda804ace23fb65e2c13c8577b7598f3926be24fc0  ./p1/A_seed1/branches_init/provenance.json
+26e8fd817a9c76dd26a012b2f46e59fd9361ce1db67dc73b0ccc2cbb6f5dbc0e  ./p1/A_seed1/branches_trained/ninapro_db2.npz
+3cd580819d6a6baa8c43b3bfd159d071bd29f0eb0f6923a3ec343890af5307b8  ./p1/A_seed1/branches_trained/ninapro_db3.npz
+c263f93a07caca3e61e7e212dbf863764ee99b5fb62f4a2afac926f6aac0d1f0  ./p1/A_seed1/branches_trained/ninapro_db6.npz
+e7e1e38d07a805c489843137fd57e0088f1edc9d81017250b6bcebf0103234de  ./p1/A_seed1/branches_trained/provenance.json
+f9f65ef42e019b1671575bb09d5dd9e9ec1221f7bcb6910e1ca517e8ebca6303  ./p1/B_seed0/RP.json
+3d209193765d7768656bc9825fd9a39b48a5dcb54f8bc4f5750e9e1966b83b4b  ./p1/B_seed0/RP/ninapro_db2.npz
+4f69c17ae5c973dccad192d16de77192c83d177717d22e6fd58cc125102c996d  ./p1/B_seed0/RP/ninapro_db3.npz
+d43728373df4f946ac9408f73a6a2e72a8279920cf46510d9f6dd1308e55f559  ./p1/B_seed0/RP/ninapro_db6.npz
+fc0432b6eecdca4521257efbf71352e5b19024be2663e0d68d9bd65c6d906c68  ./p1/B_seed0/RP/provenance.json
+85f2d8e6921f0561ae2161d44422b3f2fb4afd89d9012c072dccbd9d152f6891  ./p1/B_seed0/RPW.json
+b081627e7971cbfc5789d9499d531b446453ca6aa47285dee13622a5fba05b10  ./p1/B_seed0/RPW/ninapro_db2.npz
+d36ae5f0d3be0bfc762af4799d1a2c699a5514dbbb9c67095fadaffcf05b1709  ./p1/B_seed0/RPW/ninapro_db3.npz
+073e41a104e221afbb660f0257bd3e37ab7fd5600b5fee41a5d698400f67410b  ./p1/B_seed0/RPW/ninapro_db6.npz
+c10692a3748555a36bd5faadb85a32c954228363fc677271fe87921ec7fb3574  ./p1/B_seed0/RPW/provenance.json
+c4c47c1c6be127869962ce0ffc2131ff6c6f5a34226e8c41791cd69f06bd7270  ./p1/B_seed0/RPW0.json
+2bbe742a9d934845b81ceae12e8c9db505f5a387d327657c19ddfc61dd6ba771  ./p1/B_seed0/RPW0/ninapro_db2.npz
+9d0936ff26ea0665e819b387de3684e34b894190a24b640df6f4c1aae08f7aa5  ./p1/B_seed0/RPW0/ninapro_db3.npz
+4e9c20c7c23b3e6799813d680f394bdd8eb3243d96873a0e6141cb1f7fdf9e7f  ./p1/B_seed0/RPW0/ninapro_db6.npz
+1a599288dd47f96a48cdc4a48653e716280579a520066b3bbade5921f87ca71d  ./p1/B_seed0/RPW0/provenance.json
+a291d3e5bb3b4e8f53b5240f5963ddc03fbf58fce24ec9031bb0d1347d6fd266  ./p1/B_seed0/RW.json
+e105d24972e8063bfb7d410aa7c1514c8687301b3764e2d81873c0520e19ee9b  ./p1/B_seed0/RW/ninapro_db2.npz
+966d3240fae040a7e4c51730bcb9e929e8aab854a32d9aacf67e8d4e1163b77e  ./p1/B_seed0/RW/ninapro_db3.npz
+b60e88baeee11c2dcf2e6ceaf54ce565627de1910019ae6a8ce3e9e5e726e104  ./p1/B_seed0/RW/ninapro_db6.npz
+0d3447c4ab9ce7ba8894ad0004000302f2d4720ab7ef6e7d313ada91eece7d7d  ./p1/B_seed0/RW/provenance.json
+071c9fb1c0e2709f36d2d77314b1c619452caf3570ff4e71b942254212c7ab56  ./p1/B_seed0/branches_init/ninapro_db2.npz
+0d8a8553ac748e1dea012cb9e73e753bea3b297d62819a39326a4bdb2dc0f331  ./p1/B_seed0/branches_init/ninapro_db3.npz
+7d1c93317e9300e0bf20df1f78fcd6226990c8dbb56765fec16f354768975347  ./p1/B_seed0/branches_init/ninapro_db6.npz
+064b28ac001ffc0287a588c4664ee12d67a94b65634d6dcf53c81fe2ea929fb6  ./p1/B_seed0/branches_init/provenance.json
+85d8e3b3c2396f1d1b40b4ce2378466f6d034da33d13f5dcb8a90d6aebd635c2  ./p1/B_seed0/branches_trained/ninapro_db2.npz
+08d279f2df211ba6e0f537ec4453676baf6f1dc62ecf93630a9599a30f41eaf8  ./p1/B_seed0/branches_trained/ninapro_db3.npz
+0ed83db2912092e46b091c0b27fa6165d3ffc95bbe0a64d05783e9e1f2851ad1  ./p1/B_seed0/branches_trained/ninapro_db6.npz
+aace57b4e37b8264cc860f215c636ea9c644178f71cf6bcc96f69482eb01eec8  ./p1/B_seed0/branches_trained/provenance.json
+3a930ebf5b117a7e2468575b0564192cad738472b3f7445af4b09e0cfa7ce968  ./p1/B_seed1/RP.json
+7295f7b617b02c7ee030d2c6510505b79af6d84d502af434ce475edf3ffae97d  ./p1/B_seed1/RP/ninapro_db2.npz
+dcb6eef31c299153482192568ebb684e7eb284b7c2acef1081414a7e6ccdab56  ./p1/B_seed1/RP/ninapro_db3.npz
+17e52e6706c6cd5443368ad5c6e46e95b2a8781c154a73ece54d1d6d04db01cb  ./p1/B_seed1/RP/ninapro_db6.npz
+dfb4b32622b731693e045362865334afbb8a37795ec51c1412862f42e9684e46  ./p1/B_seed1/RP/provenance.json
+05ba7573cd6630bb9bb8ef01b08f534f96f84dd3603ad1fb0712b7c0fd277f4d  ./p1/B_seed1/RPW.json
+b0441aba390b8aef76f0eec12b674a131e0fada66e919efd8bc0a7271da3e48f  ./p1/B_seed1/RPW/ninapro_db2.npz
+077a713a2781edc4c2e86812a0866be36d3abc690c3414f908046e0566767cbf  ./p1/B_seed1/RPW/ninapro_db3.npz
+9da57e9ceb2c03b33182fb32ae0bbe5e9b003e2167743eb971fad06325966075  ./p1/B_seed1/RPW/ninapro_db6.npz
+12b50e6f5a77b20b654e7a26a80fe3467b046cfb8ca66e4823f2b32a7d4a0e2f  ./p1/B_seed1/RPW/provenance.json
+ae9747774750572cee0274b50b54650eec05af6755dd44d8b310de1d4af74273  ./p1/B_seed1/RPW0.json
+dd169eb0e0351978c83f1dd393e304fbb87bb9d8c04e627cbc4a66c1b209454d  ./p1/B_seed1/RPW0/ninapro_db2.npz
+cd13a6fa178b0773e102f079ea9957123f900fd8ac57d220ac5a0c6f14eab309  ./p1/B_seed1/RPW0/ninapro_db3.npz
+802ce34d76b51c097245e14d3012034d44d1ade602ab716139583445850d1881  ./p1/B_seed1/RPW0/ninapro_db6.npz
+636d2df30c7153c65d15e23f7c5d2bc42d3b96478a9259331fbfecec1a1b8257  ./p1/B_seed1/RPW0/provenance.json
+786c416b4cb6bf6bea9ef72d06b12953d575a6853a4726ec5501fc7b5469ef08  ./p1/B_seed1/RW.json
+aeef7b41228a322ad584586f5b1fb421b9499ff9855ff39f860270815625cd6c  ./p1/B_seed1/RW/ninapro_db2.npz
+6379d008889faec8dbab4d931941eb01f282f2886d16d66ffdbf4cfdcd138f69  ./p1/B_seed1/RW/ninapro_db3.npz
+bab78ff669d3b17cdf89b266d5ce0004be12ed12deb5b34c04914609a791933f  ./p1/B_seed1/RW/ninapro_db6.npz
+2cff805bb49b4391746ce7db36fa3dd97a64285b48615a676ad37d9f6c4ba234  ./p1/B_seed1/RW/provenance.json
+f87cda66a8b48ba5b65f1c5f88bdb5a014186ffc9d6e2abf10bff1f9cb81472f  ./p1/B_seed1/branches_init/ninapro_db2.npz
+72621a0383ce98040706c223bacfddfc7325398ebf6769dfabf4a77cf3d74cd1  ./p1/B_seed1/branches_init/ninapro_db3.npz
+9bebf7f6aadd49f44fa6227d7aabc9fdbdde62e6926bea9e8c82fe8429521329  ./p1/B_seed1/branches_init/ninapro_db6.npz
+5ab601855e4be63a618bac649ed1b44428086cff940fceb719887ffa2af0897d  ./p1/B_seed1/branches_init/provenance.json
+ec1b04027afe65fa885def93d84a1d4fb4d57a55091538ec047caa1c9d6858a5  ./p1/B_seed1/branches_trained/ninapro_db2.npz
+53536640530ab953b614af6cb72655fef247832022e822f77d735c3232b0c7de  ./p1/B_seed1/branches_trained/ninapro_db3.npz
+9c75292da1d8e9d2e5f64eb9d7c5a861c5bf2dc3fd9ccde95baf10a82f0d1bdc  ./p1/B_seed1/branches_trained/ninapro_db6.npz
+2b0713e7cd791699b6642d8a80f7c503f70639b39d29ce3e48889c1819aad487  ./p1/B_seed1/branches_trained/provenance.json
+ca44c1a2d16d04fdb98f8f55f5fe0e9c4faf72f9de633ea12ca69bf591b8e071  ./p2/A_seed0/RP.json
+5d769737af9c25d305f5a408da3de000756e54294c27adcc249442e2aaba2dab  ./p2/A_seed0/RP/epn612.npz
+0411fd02c1de12affb6ede2eb826e5f827c0011b7773db4dfd8ae6821fc0d733  ./p2/A_seed0/RP/provenance.json
+0e7c80728296d6fcb44b3117d6e288a033ca0d71cef56a695f85d2a65efb4645  ./p2/A_seed0/RP/uci_emg.npz
+dca909163d27d1c84ee680f93857a2155ad55754a5026c8509b4ac189dfa141b  ./p2/A_seed0/RPW.json
+7ab53461b247a7f52e7d31ca70cac9b34b50bc6f7313ea06f8beb9e3378d362f  ./p2/A_seed0/RPW/epn612.npz
+6046e4e69133550d70671561b3ea1f37a2fb2bcccd82f056c3fa3046a7a73884  ./p2/A_seed0/RPW/provenance.json
+8e3a4d979d364e78528e63f35f099fd09d96c5825e5347bb298be02384bb87d3  ./p2/A_seed0/RPW/uci_emg.npz
+872dfc5be5da55bc415b1b8ebf0063db0263e67244136dd90b7097fdf49ed908  ./p2/A_seed0/RPW0.json
+34900c57378764da7872059eb7ed64ec133ee5d9e78247d99dd615352c7588e6  ./p2/A_seed0/RPW0/epn612.npz
+6d74291b56a40ad4693166a9cf8934616be51e62e4681fcab612d85dbee09f93  ./p2/A_seed0/RPW0/provenance.json
+d3d2af73a9364253a541f0253c0c392d56f23a51773e62650a6841b39d9ee36c  ./p2/A_seed0/RPW0/uci_emg.npz
+33e52c35b687169809b399b42d83f3a6272baaebfd1d819d8c3550a685eb87ad  ./p2/A_seed0/RW.json
+168856441ee9006f968fa9b6f5b125f5c36f0669deff3832d899a5c889097997  ./p2/A_seed0/RW/epn612.npz
+b9eca24a9c5d9dcc6d4f71744b9fba3b84402bc9f49c93041b1230f93f7ca703  ./p2/A_seed0/RW/provenance.json
+461960775c262abd0f6d29d94bd0db7566c81fdec5c92fe7716de70d64fc1622  ./p2/A_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/A_seed0/branches_init/epn612.npz
+82e75f981bad74108cd865beaab482892b331011aafba49035c950ab07995a20  ./p2/A_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/A_seed0/branches_init/uci_emg.npz
+d5a99747b5d0008fc03d9ac066cccdaa3b246fe44861ea8dab3ab3fcfa9844b0  ./p2/A_seed0/branches_trained/epn612.npz
+3e9d8882daa4f579a50d0c014b34246b7f3f6f2a5a51a90c5238220d5ba3e8bf  ./p2/A_seed0/branches_trained/provenance.json
+49b39d7cf5dcf493216b8f260fbc1af6fa44abd0bcdeab64aa75ea35b4add4df  ./p2/A_seed0/branches_trained/uci_emg.npz
+e3c3f51ecc754985754b6d20ce393dfb695b20b558bfadf8fe69ed5f179c8ea2  ./p2/A_seed1/RP.json
+beac6fc1c587e85f327c6e9c19434de6c934fad1ce4404e4ec3a3e80cf97f6ce  ./p2/A_seed1/RP/epn612.npz
+9e1809455734b61988de3923698567533012a3c73eec01b2d8cc5e326d4c5ee3  ./p2/A_seed1/RP/provenance.json
+9139dabbc8daee1dc919bcceea29e460e7546f2a976a9e640dbc6c904cd6dd10  ./p2/A_seed1/RP/uci_emg.npz
+bbf4aa732923eb154e4d016d0cc741427cfcda80593b386aa91e9f743ee5d374  ./p2/A_seed1/RPW.json
+8943c0959de5a5a20e6dc3e7ba429529e651403076ecc92ec993515129ddd6f4  ./p2/A_seed1/RPW/epn612.npz
+1781bbfc15d658dce5a3b67cadcd8317bc391eb45f5ff65b356b1ddae2ef4655  ./p2/A_seed1/RPW/provenance.json
+99e2518a0bccd5c16022aba0102851472470da0b28d07c292eb0cd699ac124de  ./p2/A_seed1/RPW/uci_emg.npz
+af62fd88be5c5e6c1bdb392e05bb05a1ba55d59c55bd58f5b28fd988e6aeeb73  ./p2/A_seed1/RPW0.json
+d3110c68cd70e12fcdb12f571007cb1b85db5ae1841111718e8496538ed394dd  ./p2/A_seed1/RPW0/epn612.npz
+ba225e122e447e733b0057c7d79d229b0465fab49d39eee928b98eb2c64f2a79  ./p2/A_seed1/RPW0/provenance.json
+29c7639efdf76e95241528d7a5ecf329118e200498d056c817057bd5f3f6c973  ./p2/A_seed1/RPW0/uci_emg.npz
+12280007b26ec534ed36dfe40c611df4f5a2dbfc0d382b585f3e7df16d141def  ./p2/A_seed1/RW.json
+8251b9446c87c0fc8a99db2f57703e51fd9de5b7483dfc72b1e3efe300d6c875  ./p2/A_seed1/RW/epn612.npz
+7d6f87edde7724c8953f7939276a352c5d509779362561c25b1fbcb1525c9c47  ./p2/A_seed1/RW/provenance.json
+d3ad89c36a1b518b6fa5ae8596eccfb1d0e9a9f8bb9981256ef069737d52ed8b  ./p2/A_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/A_seed1/branches_init/epn612.npz
+facee708fadec054efb4d7ec94d934202b60ec764c4ed7e47bd5ccf8624c1c8d  ./p2/A_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/A_seed1/branches_init/uci_emg.npz
+26f77cc83261c3149bf9da2e132677d0162e867551b5b5cfef4e4e3479bc418e  ./p2/A_seed1/branches_trained/epn612.npz
+c895e7efbaba9b7417926108bbf806945c2a1b97bd54d71e6d7456e9b797ffef  ./p2/A_seed1/branches_trained/provenance.json
+99513460f8690ec392b84728d22f564b53adc4061b694585d577f0fae318af50  ./p2/A_seed1/branches_trained/uci_emg.npz
+11ad79ed58505659f75ab62a6f5e406bcf9df712756ee2bcf2c1153137de298a  ./p2/B_seed0/RP.json
+87a38f601c787d993fb52dab883d57a8aa094d9ca250ca713494245f96453876  ./p2/B_seed0/RP/epn612.npz
+ecea1793b8f7e8cbc8323fa788ae9fcd6ed63cd87c246e7dcc77dafa3d51394f  ./p2/B_seed0/RP/provenance.json
+19afb7b190dd7f3c7ea470b0eefbf17a15672bec847c9034ed00b328b330964f  ./p2/B_seed0/RP/uci_emg.npz
+8f9e6d250adf6efb886c2a34a8d8be5a0cedf393a531496d2e0bcd255bc516fe  ./p2/B_seed0/RPW.json
+3d71b7b2ef1a034ddb119ff7c532de511061b7c0e779717b31660f229a804304  ./p2/B_seed0/RPW/epn612.npz
+8f5cfb3d3f2284052461c5ebe967a9442cc865e87c544306fa5c32ab4fb5ae3c  ./p2/B_seed0/RPW/provenance.json
+4817de7e08e0e02cff19f9a46321d1fe24bfddae14d48819c70ee9c2fd7e43be  ./p2/B_seed0/RPW/uci_emg.npz
+eee4b84bf36bcc12dc21d06f89e2a3a954d0efc156155c2923b242312514a804  ./p2/B_seed0/RPW0.json
+035e4831cf674a47f45a56621930af70a82237893b80fcc224d2bfc0bfe4b9aa  ./p2/B_seed0/RPW0/epn612.npz
+76a709754f9449839f0110c43b45d2ec29f62c53d1b0498b2cfa977608cb311b  ./p2/B_seed0/RPW0/provenance.json
+7adf5db53cb0616e2e70f7f104349ead0a144b607fc6e8de99365867ebecab9c  ./p2/B_seed0/RPW0/uci_emg.npz
+cfd0e4dd5555cf9b02d332cd6b546e7d1168e14460efa9d60fd63311d3c709fa  ./p2/B_seed0/RW.json
+4bb9e41fbf56d8ed46ee0e7986f506c9aea27f1525c7aeb16f827183b3409f31  ./p2/B_seed0/RW/epn612.npz
+a145382a9220aee07a4f3846d33503262c07f291460b448e5136c98333bf89d2  ./p2/B_seed0/RW/provenance.json
+3a32cea55907755eb4b5390d2c1662648cee8656742b18b5c7733deb38849888  ./p2/B_seed0/RW/uci_emg.npz
+62896d9721bd1746c0d7dc55be3d3997684a95bd661121de00f1c83e8518cb96  ./p2/B_seed0/branches_init/epn612.npz
+faac749599d06372e67e4549e7c01d79237c3b8acced48f9ae072de3d88919e5  ./p2/B_seed0/branches_init/provenance.json
+9a9c047626122c5dbe0f349813af504f644e141c0aaa89acb265c68246314c11  ./p2/B_seed0/branches_init/uci_emg.npz
+254166f4d80a802a4482bfa86e1cd8c2356e2bdf5c20bc8696a77f2bddeca074  ./p2/B_seed0/branches_trained/epn612.npz
+f574f71223cd2b52947a4d4421287b0f35c58ea41d96667b6d568e4108477ad4  ./p2/B_seed0/branches_trained/provenance.json
+03d51797755edf2c6647bfd9011930f03ec9ce941d6d32236ecde8595f8d57f0  ./p2/B_seed0/branches_trained/uci_emg.npz
+d82bcea86ef5ea23e0b81e38cf81bc169a182213fdcdaecb2281a7d07ffac2a4  ./p2/B_seed1/RP.json
+f0c0c77c1bbf48675624dd717296b236f5ca562c1e945e9d52f22561d76c46bc  ./p2/B_seed1/RP/epn612.npz
+f823a3928f95cd07fd7a36c18aa3a921fc478b3990059f5798eb60a36d478af3  ./p2/B_seed1/RP/provenance.json
+7bd4ab5a96fded9aa1d1cdd2de47f6bf2508eb9dbaa53ddb56aedacc47ba4b6e  ./p2/B_seed1/RP/uci_emg.npz
+3a55d1b097e6e6e2cc7c2f1b9cbb714d118f5387386f55f79e0ba5fb9dee24c0  ./p2/B_seed1/RPW.json
+d9f729736e5f74caf5fd629f084c9f09ed31f0113a59ea51c09550546f09d840  ./p2/B_seed1/RPW/epn612.npz
+e630f6857763403e0fd79f251a1058789adf59f6db25d801ad5bef0ecdef8c5f  ./p2/B_seed1/RPW/provenance.json
+c7767e7a00ed75ce91621f12f565f6a76b4953b480675a74f20e4278b0457043  ./p2/B_seed1/RPW/uci_emg.npz
+521cc864074e9eee496d501a08efca520544f26d66ab12c1fd33b5f7c14d8574  ./p2/B_seed1/RPW0.json
+fb34b585f13969012146e818b75bd919bb422e65d5f67d470f9a818e2fdcdf20  ./p2/B_seed1/RPW0/epn612.npz
+732fb49cae662c1195553aab2dfb955852b787cc6649423a8c0de9807eb69a74  ./p2/B_seed1/RPW0/provenance.json
+32dff0ba5fb715cd45052b266b093503844825136364ff71f563b29b17395daf  ./p2/B_seed1/RPW0/uci_emg.npz
+0507bc158dcdd9ed364af4ad3a2b1999928d9b7b9a4b4cff617a99ea00b665c6  ./p2/B_seed1/RW.json
+76f7b8a184f47572cc9009fd986522a1b96d59d168adfa8ff7e959d3f14d80e5  ./p2/B_seed1/RW/epn612.npz
+f7ad522b0014e4f84a6550ced0f954b357dd0a57094d70dbc53c690aa7760f72  ./p2/B_seed1/RW/provenance.json
+ebde801fc33f99eaef3cc1282442c8203d33c27c9c6997aeb5b98861b9fc6ac9  ./p2/B_seed1/RW/uci_emg.npz
+4dde9f3b855a779cc7d4cbcc896bb3fc78b5b9d7a5ba34302c96b5f48bdab80e  ./p2/B_seed1/branches_init/epn612.npz
+e914565ecaec81de15d5d498f438338411fe9edd464ba0b252e60e4812507993  ./p2/B_seed1/branches_init/provenance.json
+e8b354fb99040b358ec7f0a5d274360024edd176e06981a47da150c937874361  ./p2/B_seed1/branches_init/uci_emg.npz
+5fdb10b7b9f1d87ec37b011757a1764d71a66af5d29092acbb55407be12590e5  ./p2/B_seed1/branches_trained/epn612.npz
+c24aa4e9427e3a64b9b588cbf965d5ee3fcb17257b85afa60504ff0a54c33312  ./p2/B_seed1/branches_trained/provenance.json
+95629a8a7dbe7c0ff83ddbed775d15c1b3f3ddb74840ceaa4209f666eac5f97a  ./p2/B_seed1/branches_trained/uci_emg.npz
+## step1_downstream_0910
+7c93c1b700b7462ce46eeb27a3de65abd38d95caef38b6dc03c76520957527c1  ./comparison.json
+9ce5ce267b748ca768a03d49a4b796f61db3c6ac15fd1c83e72de9e703ce6823  ./p1/A_seed0.json
+8a009ddf49876e4c05733e644a08abb5866d616d12f1decb2194e69aed66dd67  ./p1/A_seed0/ninapro_db2.npz
+c7a81c379978539a267d8fb647d3c431b1eb0d97743c447ba62e9a859d56c296  ./p1/A_seed0/ninapro_db3.npz
+cac9462a18cba48cd1cf4e8f590c72d86b013630edfcc4dafbca28183aeb7063  ./p1/A_seed0/ninapro_db6.npz
+6d90190b6468a8da3e39de0f7f78c3f64847ce31144cb8a1eb77d21dc1a6b7ee  ./p1/A_seed0/provenance.json
+fc3c1ca69d88c7aa48dc10d2b75ce05213757f187d26076d8e88e7baab7c9181  ./p1/A_seed1.json
+68588c47ab63b0ec27d22c1b40d6b21567745f75c37d3b5ca2ff44f4f292d843  ./p1/A_seed1/ninapro_db2.npz
+9fbf55705590f9a3be38d69b3e4f3be01e7c54d98a07775fbc36d9ab135fc9be  ./p1/A_seed1/ninapro_db3.npz
+856afee73814c9ea9b8fd77e829326053f87f4671c52ca7be4c0ed74015c9356  ./p1/A_seed1/ninapro_db6.npz
+0f7a3fbb476cad40e5e58a05385515ca412ee3db516bd7f781e5b734005e6800  ./p1/A_seed1/provenance.json
+aa2aeb7d4e005f3cb97b4f15ffc16274d1c478c837ca0930ec05128352b34fa0  ./p1/B_seed0.json
+c488e60118188acc2f3065d28bf46f6ce1e8557b7414849d6e5c4acb61dd2a9e  ./p1/B_seed0/ninapro_db2.npz
+1fcbaa016ee0087ef552080e0b1ce23ceb02fd49f74a80f710cfe9a67754dea9  ./p1/B_seed0/ninapro_db3.npz
+254a5f37822860184944d3586599a76bb82076147d5cd511750f3f595e10cc96  ./p1/B_seed0/ninapro_db6.npz
+1c6cd8df78860f6d951f1186e4a291867224473a62e65a57d03199b8d20d11ee  ./p1/B_seed0/provenance.json
+e27f4404b40cafde5996e4985938fd14a722e993ef6453d06efa799f887b71c2  ./p1/B_seed1.json
+74fa89d4d42d121233930bb5fe9d1494c99d08a3a1ce0ca00c6a9ad003c2a7c0  ./p1/B_seed1/ninapro_db2.npz
+af860886e56a99d8698775b9d65bdff45940774cbaecf3836b6116daee7cdb2d  ./p1/B_seed1/ninapro_db3.npz
+ea473b7837e387389f38f1a029c146c7c2b3dc64d55dc0260e0ad717a26f7df7  ./p1/B_seed1/ninapro_db6.npz
+8719b3bf8fc325dc2d4d9ec39aa4ae32078777f59e126eece99e8edb82c196fe  ./p1/B_seed1/provenance.json
+5ffd172e21848ce9b8ad8876ffeb7ffe2c3da0a842ada1b441c16126fbab9c8b  ./p2/A_seed0.json
+b3d93fdeee1381fd80bbcc46483186ce89bec767f868875df0a871419decdbbf  ./p2/A_seed0/epn612.npz
+6af4f8a12c5e03610bb362b2ae337acde8775c4f373799dcdcf8b325c5039018  ./p2/A_seed0/provenance.json
+fd2ad566487d4c49d7a85669c333b889a43e0434e915a037d094d3fe4bb10d10  ./p2/A_seed0/uci_emg.npz
+e9b51873c7788959dfbd86e9e701fab8a7c03d098f35284d3b9c9ea95d5766f0  ./p2/A_seed1.json
+b67a88e8c719f223daa7485e2f36c68331f29e04d4258380f3fbcc359f40ad9a  ./p2/A_seed1/epn612.npz
+d5bb55a144b2ca650d576e5d4e0b656e501cb90bbcb2dfef52775f488c616301  ./p2/A_seed1/provenance.json
+5f139c961c697e87349a8f792f92955421169a523441cffc1d0f1fcece043a1b  ./p2/A_seed1/uci_emg.npz
+354952fa23bcc2244cd97064e3c336470c99b114a2faa101e6fdca2c0afa76a0  ./p2/B_seed0.json
+2bab9d03d54ea7c498bb135b87c2f3e9c2fc1b23fc25b6b785c633435e547f8c  ./p2/B_seed0/epn612.npz
+4d19ef8a9338657889f618d8201461d2f0a402f46945bf8dbf2dfd1c6179668f  ./p2/B_seed0/provenance.json
+a53fcbf0aa7656443db2080b56460edcf4258844129c4074e91db96a0b50682c  ./p2/B_seed0/uci_emg.npz
+3ae6258c7d16bce70587a5e90ea26cf3e46b271cb2007555172aa410235cd7bc  ./p2/B_seed1.json
+58e655482f7e6a5d268934bc4c6a9bd11eb36826960f1e67760872ee5e058e7b  ./p2/B_seed1/epn612.npz
+0720d7ab71d1a0f9503b156ea7465c2521e375d6fd07f87887747c1908219046  ./p2/B_seed1/provenance.json
+2cb8628f0298e09135a5c09e8c8c72d6cab0c90560df77c244105fc4de3647fc  ./p2/B_seed1/uci_emg.npz
+## step1_random_20261014_r3
+dd1f83ef474a24ea4f01bee844071d219e046ae840b106f721b49584183bb119  ./comparison.json
+d3bf635d2f7ba6feb3e5a583311da1e1ef7ac0b7cf6c5f0c4fe994960aa87704  ./p1/Random_seed0.json
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p1/Random_seed0/initial_teacher.pt
+9567c59eb7ebe46d287b96d36eb1e85fbe26363b8c70a049855c790278e2fcdf  ./p1/Random_seed0/ninapro_db2.npz
+81312315198b3bec207aa9b409bc1b9527307e1cc9f920a65e5041e0b72b971d  ./p1/Random_seed0/ninapro_db3.npz
+8fb7672f358fec9d06a740738a3d6ea09b5672b351aaab25e77f24ba8a36ef51  ./p1/Random_seed0/ninapro_db6.npz
+9cb8adac696004eba0705ea753f0195c7ed062292d2d85d56f9552f4d57299c4  ./p1/Random_seed0/provenance.json
+7a60b3cbe825c9e8b4210c96add9b0257d6cd404ed4c6b8a4cce0ca269e79461  ./p1/Random_seed1.json
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p1/Random_seed1/initial_teacher.pt
+912e81d3c860c63e0c5213c96eff070655097b5107e43b977fd6c7091348f18c  ./p1/Random_seed1/ninapro_db2.npz
+e1b43bbf18c846572fe85636db1cde1a8879f6fdacbae2c20823d157e9b4dc6d  ./p1/Random_seed1/ninapro_db3.npz
+86d89ff582f4af4202bc0239987a45bb98056a0c14d5f5ab0b173c6c7ee6aa14  ./p1/Random_seed1/ninapro_db6.npz
+05252eeef26f984fad541912443e53328d99cb59cf0af0109548667b6149cee3  ./p1/Random_seed1/provenance.json
+867449f037901526b328d72ab28842c660fe478c2cd72c1c99e56e664b6e61cb  ./p2/Random_seed0.json
+dee0ceeea830a330fe9b0ba874e5b0de9fb49f191bf17bbdf7edb789c3e0ef4a  ./p2/Random_seed0/epn612.npz
+f020302d5786ca150a72a9f804d6d1ebf58cf636941278588483f7cca4a31c8e  ./p2/Random_seed0/initial_teacher.pt
+76dbe233dde82bb2387d2206f94b0962416589494977e44127c7bac6537a5803  ./p2/Random_seed0/provenance.json
+ec3711076f48ccde768d2736887d60553a3b8b3271515005c0ea63b8324a3633  ./p2/Random_seed0/uci_emg.npz
+92bcefca0763dd5518b4cd9a03226529e0b4368fd969cc24b0c76ac4cc182600  ./p2/Random_seed1.json
+b06a2075c23eba0d388adac61ceb3d9ea8e4936f4869622ff961ae80a7cba506  ./p2/Random_seed1/epn612.npz
+ac721b91665cbd025b0dec784ae7c348cae41a4db3c49ac9b32252b1e4366b2c  ./p2/Random_seed1/initial_teacher.pt
+21ee0b92882148fc8eef0c45ef7113122b4b6b2e866d084c4336b2d861d513cd  ./p2/Random_seed1/provenance.json
+4dd31a34a56850c9b6d0b098bf2021d5e4fef58f46375f1f1f1c5cb5ee4d23b2  ./p2/Random_seed1/uci_emg.npz
+## step2a_20261014
+1d5f0787d98a6f4d5636ab489fc32655c808bf3ade92c656e12403cf30260252  ./comparison.json
+5064ec8b7ac9a64aa4ede5b5ccfd1af0c33ba175179591b6ad00cd6361125afc  ./p1/B_seed0/M.json
+cce30e5ed443092f7bd2d85075a933a8dfd6baff7b9893d881fef85fe8c3b0f9  ./p1/B_seed0/MS.json
+f1a66a6ab409eb753909aa0b5e781423f0402fcc5b0ce1371f829ca9d593f2f5  ./p1/B_seed0/MS/ninapro_db2.npz
+b8e5d9813abf5826e86bdead61bcb263c3ace6dd6ef93f157357c0f969dfea83  ./p1/B_seed0/MS/ninapro_db3.npz
+4cf498864b4851c42072713cb30f7f28187c5b0f5d5b0ff15490c577da0480c8  ./p1/B_seed0/MS/ninapro_db6.npz
+07fd2b655d1f2b38afecfc1cc0e26d06f0c38fa52ae4552f5b29c4b65025e6d0  ./p1/B_seed0/MS/provenance.json
+c5e13ab239af6a622e3e6acadbddb74ed31bd3e0166624028dd6460b8804db2f  ./p1/B_seed1/M.json
+18bd554925bc6cd141908090c539663d3254d3dfe8d0d8b63c4200fbeced48bc  ./p1/B_seed1/MS.json
+083b92605f36e9b8718154cd82c1bd7bd8c16e56b593aae0fc4c392d63ba5a97  ./p1/B_seed1/MS/ninapro_db2.npz
+43e1baf88a1b72ba60d7c7f8da39184251330c910bb98efd1ac0a1c0f32e2cda  ./p1/B_seed1/MS/ninapro_db3.npz
+b0bcb2b95c2eb9ae0b48993e42fd2b36038d575dade751f7123c67e5f6430133  ./p1/B_seed1/MS/ninapro_db6.npz
+5de5838fa5d4cfc3ff30b04087c9aca18cc9afb5f44de7d8672a5b07c9812ca9  ./p1/B_seed1/MS/provenance.json
+f4bb242a2f41248a553d8386df5b1dea755fcfc34942350492f023d8c0a0b4b6  ./p1/K.json
+c5a915c4560f005d909a02def484ef7521e738afc847ac135a942666bc5186ff  ./p1/K/ninapro_db2.npz
+46bac05c2f1b092361d6562c62bdb6217d518b5dab2bc2f1d7915c0f925ca964  ./p1/K/ninapro_db3.npz
+22490d6ddc97d14cab120ee369476180d42367148ce1700c584e89bc2d91213e  ./p1/K/ninapro_db6.npz
+123ff6e04661d88fdd802d84684855bb879bc305de80b5f647fdef89c8b8d7e5  ./p1/K/provenance.json
+a27041e9e69e70f11434eadb83f52e381c0929e9df8b478de73214bbe897daf1  ./p1/S.json
+ce9a76c389ee4744047931788bc6a3d01d984a1a6950a3f60cc0ae0c3bfe7003  ./p1/S/ninapro_db2.npz
+778148c81f675e4aa1705348886ba5ddff30c1bba0ab7bef2fe9f9d598fa16fd  ./p1/S/ninapro_db3.npz
+790a5a5dbd6df1b6b03f03e1c9c5a35078bf67dcc2b49da6af820c6c022aa4fd  ./p1/S/ninapro_db6.npz
+5221a2c623dbfc787da6b79ceb8c09c432056f94f024602cc56c05a00455ad01  ./p1/S/provenance.json
+018702def78647d36d9782f02a83acb5121dca6d99321ca926290966b6507775  ./p2/B_seed0/M.json
+ad89d93c6ac8f51a198ec20082660fd48ebedd79464f952288c3c8537ae6a6a7  ./p2/B_seed0/MS.json
+549636e82598a44c2e912ebc80aeff45a5cf62b5569787890b6d42a8029ce88a  ./p2/B_seed0/MS/epn612.npz
+7c70f1de4332a00812070dfc5c9302228f7f51852a000aea8568847860a240d5  ./p2/B_seed0/MS/provenance.json
+c21dd049eb9ab276992e37b046ff0c68aaa28c8a67e3a846c1a88178318192ca  ./p2/B_seed0/MS/uci_emg.npz
+2d5538c5cf8f4f90f01de5260e0f110a5c9503197dd4af9505e921176f4bc3f9  ./p2/B_seed1/M.json
+95f939ab931ff3194c7234ecdb3d5daf73458b28b795ef0324457028a08b5f4c  ./p2/B_seed1/MS.json
+12de623f4cebd407ec09479f94b889520be49b2065dc794a1b4e62f392d19da5  ./p2/B_seed1/MS/epn612.npz
+6d7df361b0fc5c8bf7298674bf2df903a7014e4b34d0725e6ab1797ba1bb5555  ./p2/B_seed1/MS/provenance.json
+b0510fa3fe42e7c29ae97052085d2b682aa9789fcee518a52d79625ecbb8dad4  ./p2/B_seed1/MS/uci_emg.npz
+1d48cf5f3f9d5d54e6696e41ef258571b11ec03ac37a19a3bd38197ff97c795a  ./p2/K.json
+a7908892dc0ee9ee5ff001f407e160cfd840e8354761239fb187539261d82bfe  ./p2/K/epn612.npz
+02ab5f65f6467ca21652fcd9231fb442b09b77931eba2d38e51f2dcf19451456  ./p2/K/provenance.json
+c5c82f8939573df447bc4ce2ea81cbbbf8e3fe8cc4c30e3046b2a03e400e0708  ./p2/K/uci_emg.npz
+b7e09297822a140602b1f41613d3114ec3d6ae3e84461eef4385c62a44227119  ./p2/S.json
+373866402710c1cc4bec57f01a9825966a26fdc04429e402c304aa6e395a1c8f  ./p2/S/epn612.npz
+a9eb97fc7ba8cd5e8596ee41a7685102f687e1ae74cb6b2eb110bbfa45cad00a  ./p2/S/provenance.json
+4d35abd4e7bed80b26a0c60caeb36a0630c2698117ad7c49a6c9b169c77fc681  ./p2/S/uci_emg.npz
+@@END
+20:31:20
