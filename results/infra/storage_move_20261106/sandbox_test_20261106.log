@@ -1,0 +1,65 @@
+sandbox: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819 on login05.leonardo.local at 2026-11-06 18:28:19 CET
+script sha256: 9fae1a3d5ef73099438c82e50f7cf19be981095b6ace99983a09074a4273ff65
+syntax ok (bash 4.4.20(1)-release)
+PASS t1 dry-run exit
+PASS t1 work unchanged
+PASS t1 scratch unchanged
+PASS t1 no manifests folder
+PASS t1 default mode is dry-run
+PASS t2 altered content: exit
+PASS t2 work unchanged
+PASS t2 both stopped at sha256
+PASS t2 nothing moved
+PASS t3 altered size: exit
+PASS t3 work unchanged
+PASS t3 both stopped at sizes
+PASS t4 move: exit
+PASS t4 folder source gone
+PASS t4 zip source gone
+PASS t4 folder copy identical
+PASS t4 zip copy identical
+PASS t4 extracted folder untouched
+PASS t4 models untouched
+PASS t4 copies have today's date
+PASS t4 eight manifests
+PASS t4 parents kept
+--- t4 log
+modo: move; da /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/work a /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/scratch; 2026-11-06 18:28:21 CET su login05.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+=== data/raw/neurorvq_checkpoint
+sorgente (cartella): 2 file, 22815 byte
+VERIFICATO: 2 file, 22815 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/work/data/raw/neurorvq_checkpoint -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/scratch/data/raw/neurorvq_checkpoint
+=== data/raw/epn612/EMG-EPN612_Dataset.zip
+sorgente (file): 1 file, 23906 byte
+VERIFICATO: 1 file, 23906 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/work/data/raw/epn612/EMG-EPN612_Dataset.zip -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_182819/t4/scratch/data/raw/epn612/EMG-EPN612_Dataset.zip
+--- quota di progetto dopo
+=== riepilogo (move): riuscite=2 problemi=0 su 2 voci; 18:28:22 ===
+--- t4 manifests
+ 
+91 data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sha256
+31 data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sizes
+91 data_raw_epn612_EMG-EPN612_Dataset.zip.source.sha256
+31 data_raw_epn612_EMG-EPN612_Dataset.zip.source.sizes
+201 data_raw_neurorvq_checkpoint.copy.sha256
+80 data_raw_neurorvq_checkpoint.copy.sizes
+201 data_raw_neurorvq_checkpoint.source.sha256
+80 data_raw_neurorvq_checkpoint.source.sizes
+PASS t5 second run: exit
+PASS t5 says missing twice
+PASS t5 nothing changed
+PASS t6 link inside folder: exit
+PASS t6 folder refused
+PASS t6 folder untouched
+PASS t6 no partial copy of the folder
+PASS t7 destination exists: exit
+PASS t7 refused
+PASS t7 folder untouched
+PASS t8 source is a link: exit
+PASS t8 refused
+PASS t8 target of the link untouched
+PASS t8 link still there
+PASS t9 test root outside the sandbox refused
+PASS t9 invalid mode refused
+FAILS=0

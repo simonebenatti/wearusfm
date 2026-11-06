@@ -1,0 +1,50 @@
+2026-11-06 18:22:58 CET
+--- candidate 1: duplicate NeuroRVQ
+drwxr-xr-x. 2 sbenatti interactive 4096 Sep 21 19:30 /leonardo_work/IscrB_WearUsFM/data/raw/neurorvq_checkpoint
+drwxr-xr-x. 2 sbenatti interactive 4096 Sep 21 19:30 /leonardo_work/IscrB_WearUsFM/models
+1019674624	/leonardo_work/IscrB_WearUsFM/data/raw/neurorvq_checkpoint
+1019674624	/leonardo_work/IscrB_WearUsFM/models
+files: 2 vs models: 2; links: 0
+445073272 ./NeuroRVQ_EMG_foundation_model_v1.pt
+574583162 ./NeuroRVQ_EMG_tokenizer_v1.pt
+--- same relative paths and sizes in models/?
+IDENTICAL listing
+--- candidate 2: EPN612 zip
+total 5354880
+drwxr-xr-x. 4 sbenatti interactive       4096 Jan  6  2021 EMG-EPN612 Dataset
+-rw-r--r--. 1 sbenatti interactive 5483385161 Sep 21 13:56 EMG-EPN612_Dataset.zip
+extracted files (excluding the zip): 1224
+--- destinations on SCRATCH
+ls: cannot access '/leonardo_scratch/large/userexternal/sbenatti/data/raw/epn612': No such file or directory
+ls: cannot access '/leonardo_scratch/large/userexternal/sbenatti/data/raw/neurorvq_checkpoint': No such file or directory
+ls: cannot access '/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/passo6': No such file or directory
+drwxr-xr-x. 12 sbenatti interactive 4096 Oct 15 15:20 /leonardo_scratch/large/userexternal/sbenatti/data/raw
+drwxr-xr-x. 10 sbenatti interactive 4096 Nov  5 22:26 /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results
+camargo2021 camargo2021_emg_only capgmyo emg2pose emg2qwerty grabmyo hyser kaifosh_discrete_gestures ninapro putemg 
+--- passo6: first level, apparent size in bytes and file counts
+13865390080	201	step2c_1410/
+2443714560	37	step1_downstream_0910/
+1676292096	23	step1_random_20261014_r3/
+1423052800	41	step2a_20261014/
+369250304	1036	rvq_codes/
+119984128	9	step1_ab_0810/
+6352896	21	capgmyo_grid_fix/
+4214784	6	derived_v1_1/
+2244608	2	loader_60150682/
+2240512	1	loader_59623700/
+2240512	1	loader_59412542/
+2191360	2	loader_59254061/
+2187264	2	loader_59276700/
+2187264	2	loader_59264303/
+2156652	1	window_seconds_59425316.json
+905216	2	step1_0710/
+688128	11	diag_initial_20261014/
+151552	1	step1_probe_sanity_0410_0810/
+12288	0	step1_random_20261014_r2/
+12288	0	step1_random_20261014/
+--- passo6 total
+19925475328	/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6
+--- quota now
+/leonardo_work/IscrB_WearUsFM
+                1054444488  1073741824       0       - 1512400       0       0       -
+18:23:03
