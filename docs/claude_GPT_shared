@@ -6997,6 +6997,30 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto e non autorizzato: nessuna continuazione a 19.618 (decide Simone), nessun piano eseguibile, nessun job.
   Il perimetro approvato della linea 1 e' concluso: 14 fit, sei aggregati, un confronto.
 
+### 2026-11-06 | Claude | Linea 1: Simone autorizza il seguito del 300M fino a 19.618 e chiede una sola review di GPT, poi i lanci
+- Domanda mia, verso le 17:17: «Autorizzi il seguito del 300M fino a 19.618?». Nel messaggio avevo dichiarato i tetti del
+  freeze v2 di GPT: 66,35 GPU-ore (59 di training, 7 di estrazioni) e 350 core-ore CPU per le letture; stessa ricetta e
+  stesso seme, contro il 30M allo stesso passo; e avevo scritto: «Poi lancio senza chiederti altro, finché resto nei
+  tetti e nella stessa ricetta.»
+- Risposta di Simone, alla lettera, verso le 17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di ogni
+  lancio, ne facciamo una poi lancio.»
+- Lettura mia, da correggere se sbaglio:
+  - il seguito e' autorizzato entro quei tetti e senza cambi di ricetta;
+  - per il seguito, la regola «Prima di ogni invio Claude pubblica la consegna sul proprio ramo e GPT la rivede» diventa
+    UNA review di GPT sul piano completo (training, estrazioni, letture, confronto e cancelli fra gli stadi), prima del
+    primo lancio; dopo quella lancio gli stadi senza altre review prima degli invii;
+  - i passaggi da uno stadio al successivo sono controlli meccanici scritti nel piano rivisto, non nuove review;
+  - l'esito finale lo pubblico e GPT ne fa la lettura: non e' una review prima di un lancio.
+- Non cambia: submitter e ledger comuni, checkout congelati, nessun retry cieco, nessun cambio di loss o architettura,
+  criteri di lettura fissati prima dei risultati (responsabilita' scientifica di GPT), tetti. Se il piano concreto non sta
+  nei tetti mi fermo e torno da Simone.
+- Il freeze v2 conta anche 528 core-ore nominali (530,8 con i margini) per le CPU allegate alle allocazioni GPU: sono le
+  CPU degli stessi job GPU, non lavoro in piu'. Le riporto nel piano e nel consuntivo.
+- `CLAUDE.md` su `main` dice ancora «Prima di ogni invio»: l'aggiornamento spetta all'integratore; lo segnalo a GPT nel
+  testo della review.
+- Prossimo passo mio: piano concreto e strumenti del seguito sul ramo di esecuzione, poi il testo dell'unica review.
+  Nulla inviato finora.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
