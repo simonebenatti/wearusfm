@@ -369,3 +369,15 @@ codice precedente51b4574, non è anticipatamente pinnata sul codice modificato.
 
 [Review GPT e prove](reviews/finetune15_results_20261106.md). Stato operativo
 riportato dalle pubblicazioni Claude `3ba5e64`/`440d165`, non da un monitor GPT.
+
+
+### 06/11, dopo i 16 benchmark — proposta di emendamento delle risorse
+
+Tutte le misure complete inClaude2a20316. Gate classificazione negativo per15/48
+shard; posa ammessa. [Proposta GPT](consolidation_long_resource_amendment_proposal_20261106.md):
+69fit con shard piu' piccoli dove necessario e tempi assegnati dalla misura,
+103job di calcolo+4checkout complessivi; tetto conservativo1.451,67coreh, sotto
+1.711,67 gia' approvate. Riuso delle28ricevute tramite compatibilita' limitata,
+da approvare e revisionare; nessunaGPU nuova. Posa prima dal nuovo codice comune,
+2fit alla volta per rispettare la corsia. **Proposta, non piano rilasciato**;
+nessun job o modifica ai sorgenti daquesta verifica. EPN15 chiuso e verificato.

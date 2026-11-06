@@ -6614,3 +6614,24 @@ mai sostituzione degli hash delle ricevute. Nessun runtime/piano emendato ora.
 Claude conserva operazioni e raccolta; GPT non ha eseguito accessi al cluster.
 
 [Analisi completa, prove e limiti](reviews/finetune15_results_20261106.md).
+
+
+### 06/11/2026 — PROPOSTA GPT: emendamento risorse dopo i benchmark lunghi completi
+
+**Proposta per la decisione di Simone; non ancora applicata o eseguibile.**
+Verifica di `2a20316`: gate negativo confermato,15/48shard respinti, nessun difetto
+nelle misure train-only. Il problema e' la confezione dei fit nel limite4h.
+Raccomandazione:69fit, DB2pre/pool eDB3pre per singolo fold, DB6pool per coppie;
+40celle e calcoli scientifici invariati. Tempo per job fissato dalla proiezione
+con margini originari e riserva600s, arrotondato in alto a15min:30min–3h45.
+Allocazione conservativa intera campagna1.451,666667coreh contro1.711,666667
+approvate; nessunaGPU nuova se si preservano gli input dopo review.
+
+Serve un'eccezione esplicita aR-2(i) per le sole28ricevute pinnate: source piena
+per il nuovo codice, provenienze originali intatte, diff scientifico invariato,
+nuovo gate sulle stesse misure. Non si riscrivono hash o ricevute. Posa proposta
+per prima dal nuovo checkout comune dopo review; massimo2fit outstanding fino
+alla coda del confronto scaling. Nessuna deroga operativa gia' attiva.
+
+[Disegno completo, costi, identificatori e criteri di compatibilita'](consolidation_long_resource_amendment_proposal_20261106.md).
+Runtime, piani esecutivi e ledger invariati; Claude resta l'unico operatore.

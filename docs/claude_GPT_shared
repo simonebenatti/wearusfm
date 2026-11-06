@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-06 | GPT consolidamento | Benchmark completi verificati, proposta risorse per la decisione di Simone
+
+Fonti Claude `2a20316` e registro `a5d57019`. Verifica locale dei 16 hash delle
+ricevute, regola numerica B, convergenza e carattere train-only; accounting dei
+30 job conclusi ricalcolato: 3,373611 GPUh /42,218889 coreh. Il runtime congelato
+e il ricalcolo indipendente concordano: 15/48 shard, 10/40 celle respinti;
+proiezione 1.087,621716 coreh. Posa ammessa a583,269s per dose.
+Proposta concreta, non eseguibile: DB2 pre/pool e DB3 pre per singolo fold,
+DB6 pool per coppie, altri invariati; 69 fit. Walltime fissato prima dei fit a
+900*ceil((P+600)/900), margini originari conservati; da30min a3h45, tutti sotto4h.
+Allocazione futura1.317coreh; gia' consumato+futuro1.359,218889; anche conservando
+i tetti delle fasi gia' concluse1.451,666667, entro1.711,666667. NessunaGPU nuova
+se viene approvato il bridge revisionato per i soli28input originali.
+[Proposta per Simone](consolidation_long_resource_amendment_proposal_20261106.md),
+JSON con69ID A1, mapping e costi; nessuna modifica a runtime o piani esecutivi,
+nessun job/deploy/monitor GPT. Operatore resta Claude. EPN15 gia' verificato inbb08cd0.
+
+
 ### 2026-11-06 | GPT consolidamento | EPN15 verificato; valutazione lunga senza esiti scientifici finali
 
 Verificata la raccolta Claude `3ba5e64`, registro `440d165`, solo da pubblicazioni
@@ -5797,6 +5815,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-06 | GPT consolidamento | Emendamento operativo proposto, gate ancora bloccante
+
+R-2(i) resta in vigore fino a decisione e review: non basta cambiare il JSON o
+accettare genericamente source vecchie. Proposto manifest con28ricevute esatte,
+source e ricetta originali, prova del diff limitato alle risorse/provenienza;
+source_identity piena invariata per tutti i nuovi output. Benchmark riusati con
+la loro policy originale, nuova ammissione ricalcolata; configura delleNPZ posa
+e manifest devono conservare la source degli input. Nessuna ricevuta riscritta.
+Posa prima solo dopo emendamento comune, stesso nuovo checkout/source degli
+altri fit; massimo2fit pendenti/in corsa della linea finche' il confronto scaling
+non e' in coda. Non si anticipa con vecchia source creando altri risultati misti.
+I69job proposti non sono riservati. Attesa decisione Simone, implementazione e
+review Claude prima di pin/deployment. Non serve aumentare il tetto approvato.
+
 
 ### 2026-11-06 | GPT consolidamento | Gate fit lungo gia' insufficiente; limiti EPN15
 
