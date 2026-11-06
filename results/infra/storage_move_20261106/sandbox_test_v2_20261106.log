@@ -1,0 +1,234 @@
+sandbox: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056 on login05.leonardo.local at 2026-11-06 20:10:56 CET
+script sha256: 8dc45689f0efbbbfe0d216b749d1d443900fb1e1121986fe82f25967b93a73db
+syntax ok (bash 4.4.20(1)-release)
+=== elenco duplicates (predefinito)
+PASS t1 dry-run exit
+PASS t1 work unchanged
+PASS t1 scratch unchanged
+PASS t1 no manifests folder
+PASS t1 default mode is dry-run
+PASS t2 altered content: exit
+PASS t2 work unchanged
+PASS t2 both stopped at sha256
+PASS t2 nothing moved
+PASS t3 altered size: exit
+PASS t3 work unchanged
+PASS t3 both stopped at sizes
+PASS t4 move: exit
+PASS t4 folder source gone
+PASS t4 zip source gone
+PASS t4 folder copy identical
+PASS t4 zip copy identical
+PASS t4 extracted folder untouched
+PASS t4 models untouched
+PASS t4 copies have today's date
+PASS t4 ten manifests
+PASS t4 parents kept, no link left
+--- t4 log
+modo: move; elenco: duplicates; da /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/work a /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/scratch; 2026-11-06 20:10:58 CET su login05.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+=== data/raw/neurorvq_checkpoint
+sorgente (cartella): 2 file, 22815 byte
+VERIFICATO: 2 file, 22815 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/work/data/raw/neurorvq_checkpoint -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/scratch/data/raw/neurorvq_checkpoint
+=== data/raw/epn612/EMG-EPN612_Dataset.zip
+sorgente (file): 1 file, 23906 byte
+VERIFICATO: 1 file, 23906 byte, sha256 identici, copia con la data di oggi
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/work/data/raw/epn612/EMG-EPN612_Dataset.zip -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/t4/scratch/data/raw/epn612/EMG-EPN612_Dataset.zip
+--- quota di progetto dopo
+=== riepilogo (move, duplicates): riuscite=2 problemi=0 su 2 voci; 20:10:59 ===
+--- t4 manifests
+ 
+91 data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sha256
+31 data_raw_epn612_EMG-EPN612_Dataset.zip.copy.sizes
+91 data_raw_epn612_EMG-EPN612_Dataset.zip.source.sha256
+31 data_raw_epn612_EMG-EPN612_Dataset.zip.source.sizes
+2 data_raw_neurorvq_checkpoint.copy.dirs
+201 data_raw_neurorvq_checkpoint.copy.sha256
+80 data_raw_neurorvq_checkpoint.copy.sizes
+2 data_raw_neurorvq_checkpoint.source.dirs
+201 data_raw_neurorvq_checkpoint.source.sha256
+80 data_raw_neurorvq_checkpoint.source.sizes
+PASS t5 second run: exit
+PASS t5 says missing twice
+PASS t5 nothing changed
+PASS t6 link inside folder: exit
+PASS t6 folder refused
+PASS t6 folder untouched
+PASS t6 no partial copy of the folder
+PASS t7 destination exists: exit
+PASS t7 refused
+PASS t7 folder untouched
+PASS t8 source is a link: exit
+PASS t8 refused
+PASS t8 target of the link untouched
+PASS t8 link still there
+PASS t9 test root outside the sandbox refused
+PASS t9 invalid mode refused
+PASS t9 invalid list refused
+=== elenco october-features: quattro cartelle con copie uniche, link al vecchio percorso
+PASS u1 dry-run exit
+PASS u1 work unchanged
+PASS u1 scratch unchanged
+PASS u1 no manifests folder
+PASS u1 four dry-run lines
+--- u1 log
+modo: dry-run; elenco: october-features; da /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/work a /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/scratch; 2026-11-06 20:11:00 CET su login05.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+=== wearusfm_runs/results/passo6/step2c_1410
+sorgente (cartella): 3 file, 30313 byte
+DRY-RUN: copierei in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/scratch/wearusfm_runs/results/passo6/step2c_1410, confronterei elenco, dimensioni, cartelle e sha256, metterei un link al vecchio percorso e solo dopo toglierei l'originale
+=== wearusfm_runs/results/passo6/step1_downstream_0910
+sorgente (cartella): 2 file, 13910 byte
+DRY-RUN: copierei in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/scratch/wearusfm_runs/results/passo6/step1_downstream_0910, confronterei elenco, dimensioni, cartelle e sha256, metterei un link al vecchio percorso e solo dopo toglierei l'originale
+=== wearusfm_runs/results/passo6/step1_random_20261014_r3
+sorgente (cartella): 2 file, 6413 byte
+DRY-RUN: copierei in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/scratch/wearusfm_runs/results/passo6/step1_random_20261014_r3, confronterei elenco, dimensioni, cartelle e sha256, metterei un link al vecchio percorso e solo dopo toglierei l'originale
+=== wearusfm_runs/results/passo6/step2a_20261014
+sorgente (cartella): 2 file, 4910 byte
+DRY-RUN: copierei in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u1/scratch/wearusfm_runs/results/passo6/step2a_20261014, confronterei elenco, dimensioni, cartelle e sha256, metterei un link al vecchio percorso e solo dopo toglierei l'originale
+--- quota di progetto dopo
+=== riepilogo (dry-run, october-features): riuscite=4 problemi=0 su 4 voci; 20:11:01 ===
+PASS u2 altered content: exit
+PASS u2 work unchanged
+PASS u2 four stopped at sha256
+PASS u2 nothing moved, no link, nothing aside
+PASS u3 altered size: exit
+PASS u3 work unchanged
+PASS u3 four stopped at sizes
+PASS u3 nothing moved, no link, nothing aside
+PASS u4 altered link: exit
+PASS u4 four invalid links detected
+PASS u4 four originals put back
+PASS u4 work as before, no link, nothing aside
+PASS u4 nothing moved
+--- u4 log
+modo: move; elenco: october-features; da /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work a /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/scratch; 2026-11-06 20:11:05 CET su login05.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+=== wearusfm_runs/results/passo6/step2c_1410
+sorgente (cartella): 3 file, 30313 byte
+VERIFICATO: 3 file, 30313 byte, sha256 identici, copia con la data di oggi
+PROVA: link alterato in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2c_1410
+LINK NON VALIDO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2c_1410
+originale rimesso al suo posto: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2c_1410
+=== wearusfm_runs/results/passo6/step1_downstream_0910
+sorgente (cartella): 2 file, 13910 byte
+VERIFICATO: 2 file, 13910 byte, sha256 identici, copia con la data di oggi
+PROVA: link alterato in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_downstream_0910
+LINK NON VALIDO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_downstream_0910
+originale rimesso al suo posto: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_downstream_0910
+=== wearusfm_runs/results/passo6/step1_random_20261014_r3
+sorgente (cartella): 2 file, 6413 byte
+VERIFICATO: 2 file, 6413 byte, sha256 identici, copia con la data di oggi
+PROVA: link alterato in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_random_20261014_r3
+LINK NON VALIDO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_random_20261014_r3
+originale rimesso al suo posto: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step1_random_20261014_r3
+=== wearusfm_runs/results/passo6/step2a_20261014
+sorgente (cartella): 2 file, 4910 byte
+VERIFICATO: 2 file, 4910 byte, sha256 identici, copia con la data di oggi
+PROVA: link alterato in /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2a_20261014
+LINK NON VALIDO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2a_20261014
+originale rimesso al suo posto: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u4/work/wearusfm_runs/results/passo6/step2a_20261014
+--- quota di progetto dopo
+=== riepilogo (move, october-features): riuscite=0 problemi=4 su 4 voci; 20:11:07 ===
+PASS u5 move: exit
+PASS u5 step2c_1410: old path is a link to the copy
+PASS u5 step2c_1410: same content and tree through the link
+PASS u5 step2c_1410: the copy is a real folder
+PASS u5 step1_downstream_0910: old path is a link to the copy
+PASS u5 step1_downstream_0910: same content and tree through the link
+PASS u5 step1_downstream_0910: the copy is a real folder
+PASS u5 step1_random_20261014_r3: old path is a link to the copy
+PASS u5 step1_random_20261014_r3: same content and tree through the link
+PASS u5 step1_random_20261014_r3: the copy is a real folder
+PASS u5 step2a_20261014: old path is a link to the copy
+PASS u5 step2a_20261014: same content and tree through the link
+PASS u5 step2a_20261014: the copy is a real folder
+PASS u5 empty folder kept in the copy
+PASS u5 neighbours untouched
+PASS u5 exactly four links, nothing aside
+PASS u5 copies have today's date
+PASS u5 28 manifests
+PASS u5 four moved, four links verified
+--- u5 log
+modo: move; elenco: october-features; da /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work a /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch; 2026-11-06 20:11:08 CET su login05.leonardo.local
+--- quota di progetto prima (kB usati, limite)
+=== wearusfm_runs/results/passo6/step2c_1410
+sorgente (cartella): 3 file, 30313 byte
+VERIFICATO: 3 file, 30313 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2c_1410, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2c_1410 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step1_downstream_0910
+sorgente (cartella): 2 file, 13910 byte
+VERIFICATO: 2 file, 13910 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_downstream_0910, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_downstream_0910 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step1_random_20261014_r3
+sorgente (cartella): 2 file, 6413 byte
+VERIFICATO: 2 file, 6413 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_random_20261014_r3, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_random_20261014_r3 (al vecchio percorso resta un link)
+=== wearusfm_runs/results/passo6/step2a_20261014
+sorgente (cartella): 2 file, 4910 byte
+VERIFICATO: 2 file, 4910 byte, sha256 identici, copia con la data di oggi
+LINK VERIFICATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2a_20261014, stesso elenco di file attraverso il link
+SPOSTATO: /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/work/wearusfm_runs/results/passo6/step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2a_20261014 (al vecchio percorso resta un link)
+--- quota di progetto dopo
+=== riepilogo (move, october-features): riuscite=4 problemi=0 su 4 voci; 20:11:10 ===
+--- u5 manifests
+ 
+20 wearusfm_runs_results_passo6_step1_downstream_0910.copy.dirs
+179 wearusfm_runs_results_passo6_step1_downstream_0910.copy.sha256
+56 wearusfm_runs_results_passo6_step1_downstream_0910.copy.sizes
+56 wearusfm_runs_results_passo6_step1_downstream_0910.link.sizes
+20 wearusfm_runs_results_passo6_step1_downstream_0910.source.dirs
+179 wearusfm_runs_results_passo6_step1_downstream_0910.source.sha256
+56 wearusfm_runs_results_passo6_step1_downstream_0910.source.sizes
+25 wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.dirs
+187 wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.sha256
+63 wearusfm_runs_results_passo6_step1_random_20261014_r3.copy.sizes
+63 wearusfm_runs_results_passo6_step1_random_20261014_r3.link.sizes
+25 wearusfm_runs_results_passo6_step1_random_20261014_r3.source.dirs
+187 wearusfm_runs_results_passo6_step1_random_20261014_r3.source.sha256
+63 wearusfm_runs_results_passo6_step1_random_20261014_r3.source.sizes
+14 wearusfm_runs_results_passo6_step2a_20261014.copy.dirs
+173 wearusfm_runs_results_passo6_step2a_20261014.copy.sha256
+49 wearusfm_runs_results_passo6_step2a_20261014.copy.sizes
+49 wearusfm_runs_results_passo6_step2a_20261014.link.sizes
+14 wearusfm_runs_results_passo6_step2a_20261014.source.dirs
+173 wearusfm_runs_results_passo6_step2a_20261014.source.sha256
+49 wearusfm_runs_results_passo6_step2a_20261014.source.sizes
+79 wearusfm_runs_results_passo6_step2c_1410.copy.dirs
+291 wearusfm_runs_results_passo6_step2c_1410.copy.sha256
+108 wearusfm_runs_results_passo6_step2c_1410.copy.sizes
+108 wearusfm_runs_results_passo6_step2c_1410.link.sizes
+79 wearusfm_runs_results_passo6_step2c_1410.source.dirs
+291 wearusfm_runs_results_passo6_step2c_1410.source.sha256
+108 wearusfm_runs_results_passo6_step2c_1410.source.sizes
+--- u5 passo6 in work
+total   
+drwxr-xr-x. derived_v1_1  
+drwxr-xr-x. rvq_codes  
+lrwxrwxrwx. step1_downstream_0910 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_downstream_0910
+drwxr-xr-x. step1_random_20261014  
+drwxr-xr-x. step1_random_20261014_r2  
+lrwxrwxrwx. step1_random_20261014_r3 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step1_random_20261014_r3
+lrwxrwxrwx. step2a_20261014 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2a_20261014
+lrwxrwxrwx. step2c_1410 -> /leonardo_scratch/large/userexternal/sbenatti/tmp/move_test_20261106_201056/u5/scratch/wearusfm_runs/results/passo6/step2c_1410
+-rw-r--r--. window_seconds_59425316.json  
+PASS u6 second run: exit
+PASS u6 four refused as links
+PASS u6 nothing changed
+PASS u7 link inside one folder: exit
+PASS u7 that folder refused
+PASS u7 that folder untouched, no copy of it
+PASS u7 the other three moved
+PASS u8 destination exists: exit
+PASS u8 refused
+PASS u8 folder untouched, not a link
+PASS u9 name aside already taken: exit
+PASS u9 refused before copying
+PASS u9 folder untouched
+PASS u10 a file where a folder is expected: exit
+PASS u10 refused, file untouched, no copy
+FAILS=0
