@@ -1,0 +1,653 @@
+{
+ "protocol": "scaling5000-aggregates-release-20261106-v1",
+ "status": "PREPARED_NOT_SUBMITTED",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1",
+ "probe_plan": {
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+  "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+  "bytes": 42708
+ },
+ "dispatcher": {
+  "path": "scripts/slurm/scaling_readers_recovery.sbatch",
+  "sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+  "bytes": 17688
+ },
+ "submitter": {
+  "path": "scripts/submit_job.py",
+  "sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "bytes": 20050
+ },
+ "fit_layout": {
+  "path": "results/infra/scaling_300m_20261104/cpu_fit_release_20261105/submission_plan.json",
+  "sha256": "0370cdf8a819d5e6e6c39731725b8754d1c884f3054f24875010f895bf35d505"
+ },
+ "live_state": {
+  "path": "results/infra/scaling_300m_20261104/final_stages_20261106/live_state_20261106_fits_complete.json",
+  "sha256": "b75506fd9fbb806886f490d67c22e57d60ae09f559500e6811d41bb600aa5e2c",
+  "read_at": "2026-11-06T10:28:22+0100"
+ },
+ "integrity_checks": [
+  {
+   "check": "piano delle sonde: hash e percorso canonico",
+   "passed": true
+  },
+  {
+   "check": "codice congelato: HEAD atteso, pulito, percorso canonico",
+   "passed": true
+  },
+  {
+   "check": "quattordici shard, quelli del piano dei fit",
+   "passed": true
+  },
+  {
+   "check": "file di ogni shard: i quattro attesi, nessun failed.json",
+   "passed": true
+  },
+  {
+   "check": "percorsi canonici di shard, OOF e audit",
+   "passed": true
+  },
+  {
+   "check": "report completi, stesso codice, piano e passo",
+   "passed": true
+  },
+  {
+   "check": "cella, compito, dataset e fold uguali al piano dei fit",
+   "passed": true
+  },
+  {
+   "check": "hash interni dei report uguali ai file",
+   "passed": true
+  },
+  {
+   "check": "una sola firma numerica",
+   "passed": true
+  },
+  {
+   "check": "copertura: ogni cella, dataset e fold una volta sola (60)",
+   "passed": true
+  },
+  {
+   "check": "fit per shard: sette per dataset e fold; 420 in tutto",
+   "passed": true
+  },
+  {
+   "check": "contabilita': validate, ridge e quattordici fit COMPLETED 0:0",
+   "passed": true
+  },
+  {
+   "check": "uscite degli aggregati assenti",
+   "passed": true
+  },
+  {
+   "check": "dispatcher e submitter locali con gli hash del rilascio dei fit",
+   "passed": true
+  },
+  {
+   "check": "ID logici degli aggregati mai usati nel ledger",
+   "passed": true
+  }
+ ],
+ "recorded_facts": {
+  "fits": 420,
+  "convergence_warnings": 0,
+  "reached_limit": 0,
+  "unresolved_fits": 0,
+  "all_converged_by_criterion": true,
+  "numeric_sha256": [
+   "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c"
+  ],
+  "fit_core_hours": 95.97777777777777,
+  "serial_queue_jobs": 9
+ },
+ "resources": {
+  "partition": "lrd_all_serial",
+  "node": "login08",
+  "cpus": 2,
+  "memory_gib": 30,
+  "walltime_seconds": 600
+ },
+ "requested_core_hours": 1.9999999999999998,
+ "maximum_charged_core_hours": 2.6,
+ "order": "Cells in reader order, p1 then p2. One afterok chain: a refusal, failure or TIMEOUT stops the following jobs.",
+ "submission_rule": "Submit only after the operator handover is confirmed and this plan is reviewed. Before the first job: rerun `state` and `check` (pins unchanged, outputs absent, code clean, logical IDs unused, six free places in lrd_all_serial without taking places from jobs already waiting). Common submitter and ledger, one line at a time, stop at the first outcome other than `sottomesso`. No retry, no background resubmission.",
+ "after_aggregates": "Collect and validate the six reports against the pins above before the comparison manifest exists. No afterok between aggregates and comparison.",
+ "comparison_not_submitted": true,
+ "jobs": [
+  {
+   "id": "SCALING-probe-aggregate-01-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-30M-natural",
+   "task": "p1",
+   "shards": [
+    {
+     "name": "T100-G-30M-natural-p1-01",
+     "fit_id": "SCALING-probe-fit-12-20261105",
+     "datasets": [
+      "ninapro_db2"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.json",
+     "sha256": "a96562fb4a6baa7b55272419128ac2f30ef545627cb6563754ffc2481c0a1322",
+     "bytes": 11549
+    },
+    {
+     "name": "T100-G-30M-natural-p1-02",
+     "fit_id": "SCALING-probe-fit-02-20261105",
+     "datasets": [
+      "ninapro_db3",
+      "ninapro_db6"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-02/shard.json",
+     "sha256": "0d4b5fa4972c1e5e9a93a8d7161a2a0578ff508148dac9f4a3b2ef0a803c177c",
+     "bytes": 14437
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": null,
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-01-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+    "--cell",
+    "T100-G-30M-natural",
+    "--task",
+    "p1",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p1-02/shard.json"
+   ]
+  },
+  {
+   "id": "SCALING-probe-aggregate-02-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-30M-natural",
+   "task": "p2",
+   "shards": [
+    {
+     "name": "T100-G-30M-natural-p2-01",
+     "fit_id": "SCALING-probe-fit-04-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p2-01/shard.json",
+     "sha256": "5eecf3b5d8e5000e89fb2f565f4c035e052fe36836f953d8106c7c726f025731",
+     "bytes": 58609
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": "SCALING-probe-aggregate-01-20261106",
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-02-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--dopo",
+    "SCALING-probe-aggregate-01-20261106",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-30M-natural-p2/aggregate.json",
+    "--cell",
+    "T100-G-30M-natural",
+    "--task",
+    "p2",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-30M-natural-p2-01/shard.json"
+   ]
+  },
+  {
+   "id": "SCALING-probe-aggregate-03-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-300M-natural",
+   "task": "p1",
+   "shards": [
+    {
+     "name": "T100-G-300M-natural-p1-01",
+     "fit_id": "SCALING-probe-fit-01-20261105",
+     "datasets": [
+      "ninapro_db2"
+     ],
+     "folds": [
+      0
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-01/shard.json",
+     "sha256": "4cdd9e2a98cae6ccbb7d3fb9630b5fde5d14f3b46bacec2a19b9d659e0ca40a0",
+     "bytes": 6674
+    },
+    {
+     "name": "T100-G-300M-natural-p1-02",
+     "fit_id": "SCALING-probe-fit-14-20261105",
+     "datasets": [
+      "ninapro_db2"
+     ],
+     "folds": [
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-02/shard.json",
+     "sha256": "9887484ff2b1ac051cca6721bc280975284d60f8b4752af70b5f515f6bcdf5b7",
+     "bytes": 9932
+    },
+    {
+     "name": "T100-G-300M-natural-p1-03",
+     "fit_id": "SCALING-probe-fit-10-20261105",
+     "datasets": [
+      "ninapro_db3",
+      "ninapro_db6"
+     ],
+     "folds": [
+      0,
+      1
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-03/shard.json",
+     "sha256": "f1ce8c6d1956d57ad00bff726846a519d48092326524c85db5153259a1118208",
+     "bytes": 9786
+    },
+    {
+     "name": "T100-G-300M-natural-p1-04",
+     "fit_id": "SCALING-probe-fit-11-20261105",
+     "datasets": [
+      "ninapro_db3",
+      "ninapro_db6"
+     ],
+     "folds": [
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-04/shard.json",
+     "sha256": "77ba081458f978eb3a5969be6fa1940c1ea765459d636c5e7dd595cee8af889f",
+     "bytes": 9780
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": "SCALING-probe-aggregate-02-20261106",
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-03-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--dopo",
+    "SCALING-probe-aggregate-02-20261106",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p1/aggregate.json",
+    "--cell",
+    "T100-G-300M-natural",
+    "--task",
+    "p1",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-01/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-02/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-03/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-04/shard.json"
+   ]
+  },
+  {
+   "id": "SCALING-probe-aggregate-04-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-300M-natural",
+   "task": "p2",
+   "shards": [
+    {
+     "name": "T100-G-300M-natural-p2-01",
+     "fit_id": "SCALING-probe-fit-06-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      0
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-01/shard.json",
+     "sha256": "b4726e1f66d035e5b5ecffcb1e14b60d28cf6a83057fa49aaffd715cb7ce8956",
+     "bytes": 18461
+    },
+    {
+     "name": "T100-G-300M-natural-p2-02",
+     "fit_id": "SCALING-probe-fit-07-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      1
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-02/shard.json",
+     "sha256": "bdc995cfff1d252706e64cb7fad9f9f5bb1ea19ee6dbbcfe62940c21cdae4e33",
+     "bytes": 18493
+    },
+    {
+     "name": "T100-G-300M-natural-p2-03",
+     "fit_id": "SCALING-probe-fit-08-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      2
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-03/shard.json",
+     "sha256": "6a288a1376f6ae4f67a96af642f5e6985cba34d627621893be10aca4b7d47b10",
+     "bytes": 18475
+    },
+    {
+     "name": "T100-G-300M-natural-p2-04",
+     "fit_id": "SCALING-probe-fit-09-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-04/shard.json",
+     "sha256": "81fb2707ce0cd9f8c2a4bf334ea59a582809328b14a359d1a69013c97debebd9",
+     "bytes": 18480
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": "SCALING-probe-aggregate-03-20261106",
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-04-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--dopo",
+    "SCALING-probe-aggregate-03-20261106",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-natural-p2/aggregate.json",
+    "--cell",
+    "T100-G-300M-natural",
+    "--task",
+    "p2",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-01/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-02/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-03/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p2-04/shard.json"
+   ]
+  },
+  {
+   "id": "SCALING-probe-aggregate-05-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-300M-matched",
+   "task": "p1",
+   "shards": [
+    {
+     "name": "T100-G-300M-matched-p1-01",
+     "fit_id": "SCALING-probe-fit-13-20261105",
+     "datasets": [
+      "ninapro_db2"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p1-01/shard.json",
+     "sha256": "b9dc0d8b9484ab847d5d009886708abc8caf51d642b34b2a7c7fe7c9c359dac3",
+     "bytes": 11555
+    },
+    {
+     "name": "T100-G-300M-matched-p1-02",
+     "fit_id": "SCALING-probe-fit-05-20261105",
+     "datasets": [
+      "ninapro_db3",
+      "ninapro_db6"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p1-02/shard.json",
+     "sha256": "508bd22c7f19097ab4bbe6568e7e866e6baf05f15c3fe197e484fc062eb9303b",
+     "bytes": 14443
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": "SCALING-probe-aggregate-04-20261106",
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-05-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--dopo",
+    "SCALING-probe-aggregate-04-20261106",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p1/aggregate.json",
+    "--cell",
+    "T100-G-300M-matched",
+    "--task",
+    "p1",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p1-01/shard.json",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p1-02/shard.json"
+   ]
+  },
+  {
+   "id": "SCALING-probe-aggregate-06-20261106",
+   "stage": "probe-aggregate",
+   "cell": "T100-G-300M-matched",
+   "task": "p2",
+   "shards": [
+    {
+     "name": "T100-G-300M-matched-p2-01",
+     "fit_id": "SCALING-probe-fit-03-20261105",
+     "datasets": [
+      "epn612",
+      "uci_emg"
+     ],
+     "folds": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p2-01/shard.json",
+     "sha256": "e6b991d96c2f55b0875df9bd4ff8076a0a1f208f5cf5fd215ed737f33c8085a2",
+     "bytes": 58557
+    }
+   ],
+   "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.json",
+   "sidecars": [
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.oof.npz",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.audit.jsonl"
+   ],
+   "cpus": 2,
+   "memory_gib": 30,
+   "walltime_seconds": 600,
+   "requested_core_hours": 0.3333333333333333,
+   "depends_on": "SCALING-probe-aggregate-05-20261106",
+   "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py",
+    "--agente",
+    "claude",
+    "--campagna",
+    "scaling-300m-20261104",
+    "--timeout",
+    "120",
+    "--id",
+    "SCALING-probe-aggregate-06-20261106",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/scaling_readers_recovery.sbatch",
+    "--dopo",
+    "SCALING-probe-aggregate-05-20261106",
+    "--",
+    "--cpus-per-task=2",
+    "--mem=30G",
+    "--time=00:10:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-aggregate",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/T100-G-300M-matched-p2/aggregate.json",
+    "--cell",
+    "T100-G-300M-matched",
+    "--task",
+    "p2",
+    "--shards",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-matched-p2-01/shard.json"
+   ]
+  }
+ ]
+}

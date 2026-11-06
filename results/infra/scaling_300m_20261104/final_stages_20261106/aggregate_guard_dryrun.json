@@ -1,0 +1,93 @@
+{
+ "python": "3.6.8",
+ "is_relative_to_shim": true,
+ "host": "login05.leonardo.local",
+ "results": [
+  {
+   "name": "SCALING-probe-aggregate-01-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "SCALING-probe-aggregate-02-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "SCALING-probe-aggregate-03-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "SCALING-probe-aggregate-04-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "SCALING-probe-aggregate-05-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "SCALING-probe-aggregate-06-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: hash del piano alterato",
+   "expect": "input hash/size differs",
+   "got": "REFUSED: input hash/size differs ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: uscita gia' esistente",
+   "expect": "canonical new absolute output required",
+   "got": "REFUSED: canonical new absolute output required ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: uscita dentro i checkout di campagna",
+   "expect": "output inside code",
+   "got": "REFUSED: output inside code ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: shard ripetuto",
+   "expect": "duplicate shard paths",
+   "got": "REFUSED: duplicate shard paths ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: shard inesistente",
+   "expect": "No such file",
+   "got": "ERROR: FileNotFoundError: [Errno 2] No such file or directory: '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-04/shard.json.assente'",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: opzione non ammessa per lo stadio",
+   "expect": "stage requires exactly its whitelisted flags",
+   "got": "REFUSED: stage requires exactly its whitelisted flags ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: cella inesistente",
+   "expect": "invalid choice",
+   "got": "REFUSED: 2 ,probe-aggregate,compare}\n         plan plan_sha256 out\n-: error: argument --cell: invalid choice: 'T100-G-30M-matched' (choose from 'T100-G-30M-natural', 'T100-G-300M-natural', 'T100-G-300M-matched')",
+   "ok": true
+  }
+ ],
+ "dispatcher_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+ "guard_lines": [
+  37,
+  115
+ ],
+ "remote_script_sha256": "d680e0363e7c6aed456b42e2272ebf5431c1b5392d2ae81b1f3f4841d4456f9b",
+ "plan_sha256": "a117f7b60fc3e79151f1d8dbb085943150c4c636b4e93b3884e24f1691d7c430",
+ "scope": "Argument, pin, output and shard-path guards of the real dispatcher, executed read-only on the login node. Scheduler allocation guards (CPUs, memory, TimeLimit, node) run only inside the job."
+}
