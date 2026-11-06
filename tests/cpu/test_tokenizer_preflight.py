@@ -202,7 +202,8 @@ def test_one_real_loader_batch_runs_complete_audit_and_writes_no_checkpoint(tmp_
     assert sorted(p.name for p in out.iterdir()) == ["rank0.json", "rank0.jsonl", "report.json"]
 
 
-def test_production_config_binding_reconstructs_all_three_full_cli_configs(tmp_path):
+@pytest.mark.parametrize("missing_old_field", [None, "tokenizer_activation", "keep_readout"])
+def test_production_config_binding_reconstructs_all_three_full_cli_configs(tmp_path, missing_old_field):
     spec = importlib.util.spec_from_file_location("preflight_cli_fixture", REPO / "scripts/train_jepa.py")
     cli = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cli)
@@ -233,13 +234,23 @@ def test_production_config_binding_reconstructs_all_three_full_cli_configs(tmp_p
         entry["validated_trainer_argv"] = rewritten
         cfg = cli.build_config(cli.build_parser().parse_args(rewritten[1:]))
         path = tmp_path / f"{name}.json"
-        path.write_text(json.dumps(R.config_to_dict(cfg)))
+        stored = R.config_to_dict(cfg)
+        # Legacy configs may omit only the two fields introduced by LQ.
+        stored["model"].pop("tokenizer_logsquare")
+        stored["model"].pop("tokenizer_logsquare_eps")
+        if missing_old_field is not None and name == "T100-L":
+            stored["model"].pop(missing_old_field)
+        path.write_text(json.dumps(stored))
         entry.update(config=str(path), sha256=R.sha256_file(path))
     path = tmp_path / "comparison.json"
     path.write_text(json.dumps(comparison))
     plan["comparison"] = {"path": str(path), "sha256": R.sha256_file(path)}
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan))
+    if missing_old_field is not None:
+        with pytest.raises(ValueError, match="CLI/config mismatch"):
+            P.load_plan(plan_path)
+        return
     _, cfgs, states = P.load_plan(plan_path)
     assert set(cfgs) == set(P.ARMS) and cfgs["T100-G"].model.tokenizer_activation == "gelu"
     assert cfgs["T100-G"].jepa.masked_loss_radius == 0

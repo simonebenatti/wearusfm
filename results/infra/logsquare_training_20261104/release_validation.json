@@ -1,0 +1,26 @@
+{
+  "dedicated_release_commit": "79546926886e566a14fab62abd3fd8272d857cb4",
+  "training_plan": {
+    "path": "results/infra/logsquare_training_20261104/training_plan.json",
+    "sha256": "07a7531fdd4ab3f4a9be2b6900c4c3464fe61329ab5e75e890637a936dcd804c",
+    "bytes": 19803
+  },
+  "training_release": {
+    "path": "results/infra/logsquare_training_20261104/training_release.json",
+    "sha256": "7ded8919e7e21e915c41fdf3c2dd25bf8af9b58046151161c85fcb17964d611b"
+  },
+  "validate_release_passed": true,
+  "validate_preflight_passed": true,
+  "validate_allocations_passed": true,
+  "scientific_sources_unchanged": 102,
+  "evaluation_sources_unchanged": 110,
+  "controller_unchanged_since": "6d5b353",
+  "rho_update": 0.9855573780611151,
+  "A4_pin_order": [
+    "extraction_plan.training_plan",
+    "inference_plan.extraction_plan"
+  ],
+  "A1_passed": true,
+  "new_training_jobs_submitted": false,
+  "validation": "31 controller tests passed4.04s before minimalrelease; runtime release/preflight/allocation/pin audit after release"
+}

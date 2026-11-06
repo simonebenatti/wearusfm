@@ -1,0 +1,44 @@
+{
+ "id": "LOGSQ-preflight-20261104",
+ "creato": "2026-11-04T18:25:56+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-20261104",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "43cad1f760fbac2f10d8c16bc6f5d4eedc957b61",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-preflight-20261104",
+  "--comment=wearusfm:LOGSQ-preflight-20261104",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-preflight-20261104,EXPECTED_SHA=43cad1f760fbac2f10d8c16bc6f5d4eedc957b61",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-preflight-20261104/scripts/slurm/logsquare_preflight.sbatch",
+  "results/infra/logsquare_review_20261104/preflight_plan.json",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_20261104"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T18:25:56+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T18:25:56+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T18:25:57+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63525730,
+   "uscita": 0,
+   "stdout": "63525730\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63525730,
+ "uscita": 0,
+ "stdout": "63525730\n",
+ "stderr": ""
+}

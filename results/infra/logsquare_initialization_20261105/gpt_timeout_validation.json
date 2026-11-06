@@ -1,0 +1,21 @@
+{
+  "reviewed_code_sha": "ff08483fd04aa5668d97ba54d6b4153a14ff33fe",
+  "targeted_tests_total": 178,
+  "sandbox": {
+    "passed": 156,
+    "failed": 22,
+    "seconds": 25.24,
+    "failures": "sandbox denied localhost socket bind and /bin/ps"
+  },
+  "unsandboxed_targeted_rerun": {
+    "passed": 23,
+    "deselected": 76,
+    "seconds": 57.3,
+    "coverage": "all 22 blocked cases plus one previously passing case"
+  },
+  "overall": "178/178 verified passing",
+  "science_source_count": 102,
+  "production_code_changed_by_gpt": false,
+  "review_verdict": "APPROVED_FOR_DIAGNOSTIC",
+  "training_approved": false
+}

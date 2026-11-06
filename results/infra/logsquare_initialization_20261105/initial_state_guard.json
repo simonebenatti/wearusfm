@@ -1,0 +1,59 @@
+{
+  "protocol": "tokenizer-logsquare-initial-state-guard-20261105-v1",
+  "arm": "T100-LQ",
+  "gain_buffer": "tokenizer.fe_gain",
+  "new_parameter": {
+    "name": "tokenizer.logsquare_weight",
+    "shape": [
+      384,
+      64
+    ]
+  },
+  "reference": {
+    "shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+    "fe_gain": 548.6939187567023,
+    "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+    "source": {
+      "path": "results/infra/logsquare_execution_20261104/report.json.gz",
+      "sha256": "792e11161b2c820ac905ba521ca020fb0342555f066109b4d4247556b96cfdcb",
+      "bytes": 593778
+    },
+    "meaning": "State without the new weight built by the T100-LQ preflight (NumPy imported before Torch). Unchanged reviewed hash; it remains the exact reference for every tensor except the calibrated gain."
+  },
+  "training_gain": {
+    "fe_gain": 548.6939187567021,
+    "fe_gain_hex": "0x1.1258d2546f0efp+9",
+    "arm": "T100-L",
+    "sources": [
+      {
+        "path": "results/infra/tokenizer_evaluation_20261103/completed_5000/T100-L/receipt_summary.json",
+        "sha256": "3656519da71ffac9223bc19e93044e79d4520e3f3e740173c706f1d303ce844f",
+        "bytes": 9845,
+        "checkpoint_step": 5000,
+        "checkpoint_sha256": "0ec89584fafb8319708f3a8a035ce8124d91cebc8d05ec4e40db4def5ee0b10e",
+        "training_code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb"
+      },
+      {
+        "path": "results/infra/tokenizer_evaluation_20261103/completed_19618/pose/T100-L/receipt_summary.json",
+        "sha256": "fe5795475b9183741845143ec9ff95ac731643f3c09d8af9f052840dba7c5373",
+        "bytes": 9999,
+        "checkpoint_step": 19618,
+        "checkpoint_sha256": "c6a55d1b1fdcd226e6f31ad6ecb4bb118e0ed6e6567da66dc2a0ddeaaa11d7ee",
+        "training_code_sha": "afb644ea10ecc2a716160b4d8a4904e805c366fb"
+      }
+    ],
+    "meaning": "Never-trained calibrated gain buffer saved in the historical T100-L checkpoints at both endpoints (trainer: Torch imported before NumPy). The gain the control arm was actually trained with."
+  },
+  "group_references": {
+    "source": {
+      "path": "results/infra/tokenizer_execution_20261103/tokenizer_preflight_20261103/report.json",
+      "sha256": "ce0c631de18e26b0b4b6a78b3d0a1de1cd70bafd07782eed4f6b4c98b003a986",
+      "bytes": 2279572
+    },
+    "arm": "T100-L",
+    "outside_frontend_and_gain_sha256": "b510e2f8acc0b7044fc7c01a5849e4c7f3cb33677ef4fa3511667a3cde6985fd",
+    "frontend_and_gain_sha256": "5819ee305ee7498a22fa819ffe070a4704804e2f1b9b24ad9fa8dafb1207c12a",
+    "meaning": "Localization of a failure only; never an acceptance criterion."
+  },
+  "rule": "Pass only if (1) the observed state without the new weight, hashed with ONLY the gain replaced by the reference gain on a copy, equals the reference SHA-256; (2) the observed gain is bit-equal to the historical T100-L training gain; (3) the new weight is exactly zero. No tolerance, no restored buffer, no new hash."
+}

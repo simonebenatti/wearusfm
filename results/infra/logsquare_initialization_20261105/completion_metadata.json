@@ -1,0 +1,126 @@
+{
+  "utc": "2026-11-05T14:02:09.863537+00:00",
+  "files": {
+    "rank_entry_torchrun.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "trainer_rank0.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "preflight.json": {
+      "sha256": "cfab9878ed8f4c7510a009a15421f3b8f80ac995cf4713b8feb47cde86f678cd",
+      "bytes": 267138
+    },
+    "report.json": {
+      "sha256": "270ef5135d2e0d9baeddcba03ef2e60f6345c3e4fdbe11e103c9c6df6355eddf",
+      "bytes": 1514559
+    },
+    "preflight.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "rank_entry_torchrun.torchrun.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "rank_entry_torchrun.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "trainer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "controller.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "preflight.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "controller.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "controller.json": {
+      "sha256": "e846cf96efd949c1451185e5a1feae0d711f290c4eeec935afd32f3c463d3bd6",
+      "bytes": 267231
+    },
+    "rank_entry_torchrun.torchrun.stdout": {
+      "sha256": "1fe9cb98f807725abd7f9c01f34aa0d9982a825c7c028de430a32d54a56e4438",
+      "bytes": 238
+    },
+    "rank_entry_torchrun.json": {
+      "sha256": "cf9c1b7dad70946846a1e93fe4309206757fa3ef0c466ccb6680214e26148652",
+      "bytes": 11471
+    },
+    "trainer.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "trainer_rank0.json": {
+      "sha256": "fbbe2f1c258871d7b605513929a34038dfafd677ccd132119201153f47a06892",
+      "bytes": 267336
+    },
+    "controller_threads1.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "trainer_rank0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "trainer.json": {
+      "sha256": "f38eaf85f3cf6ffb9d935435c63d4dcadd5813c82e168e8948a57a8066d561c8",
+      "bytes": 267282
+    },
+    "controller_threads1.json": {
+      "sha256": "ce87709994c42605f006126b677ba9621d1baf5e68cd7a88b4f5b61349933f21",
+      "bytes": 267238
+    },
+    "controller_threads1.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "rank_entry_torchrun_initial_state/rank1.json": {
+      "sha256": "7da225480c8f27cad6e7fd810096691434be0302588a140ed21b5c998a503614",
+      "bytes": 1256
+    },
+    "rank_entry_torchrun_initial_state/rank3.json": {
+      "sha256": "25cd6d185f2137e091d7a0a5fad5e9c8536d77a5cc1e684ba67dd642cdf9183f",
+      "bytes": 1256
+    },
+    "rank_entry_torchrun_initial_state/rank0.json": {
+      "sha256": "dd13200081b7862e3b18820bbe5a146a0e61938c39c468a437055e3d0affbe2b",
+      "bytes": 1405
+    },
+    "rank_entry_torchrun_initial_state/rank2.json": {
+      "sha256": "6846c99d6f03c74438506af878bae2766493cfef1de35ea0cf3bf679fba67a83",
+      "bytes": 1256
+    }
+  },
+  "sacct": {
+    "returncode": 0,
+    "stdout": "63590929|COMPLETED|0:0|46|2|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1||2026-11-05T14:52:39|2026-11-05T14:53:25\n63590929.batch|COMPLETED|0:0|46|2|cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|138256K|2026-11-05T14:52:39|2026-11-05T14:53:25\n63590929.extern|COMPLETED|0:0|46|2|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1||2026-11-05T14:52:39|2026-11-05T14:53:25\n63591184|COMPLETED|0:0|56|32|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1||2026-11-05T14:56:56|2026-11-05T14:57:52\n63591184.batch|COMPLETED|0:0|56|32|cpu=32,gres/gpu=4,mem=240G,node=1|2372328K|2026-11-05T14:56:56|2026-11-05T14:57:52\n63591184.extern|COMPLETED|0:0|56|32|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1||2026-11-05T14:56:56|2026-11-05T14:57:52\n",
+    "stderr": ""
+  },
+  "slurm_log": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_initialization_diagnostic_63591184.out",
+    "sha256": "5fbf220f5e27f04c25e8716aae9dbb34fc1a51545fc1b8bab8ec40835277cbb3",
+    "bytes": 798,
+    "text": "codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-initdiag-20261105 @ 1dc6ded8eee8a788277994687ff3b4b162453616\nLoading cineca-ai/4.3.0\n  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1\n    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41\n    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q\n    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea\n    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s\n    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp\n    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif\n    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2\n    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7\n    openjdk/11.0.20.1_1\n"
+  },
+  "head": {
+    "returncode": 0,
+    "stdout": "1dc6ded8eee8a788277994687ff3b4b162453616\n",
+    "stderr": ""
+  },
+  "git_status": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "observed_date": "2026-11-04",
+  "source": "Read-only SSH outputs collected in this conversation; parent accounting rows copied without transformation to sacct_completed.txt.",
+  "accounting_command": "sacct -j 63525639,63525730 --units=G --parsable2 -o JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS,Start,End,AllocTRES,MaxRSS",
+  "batch_max_rss_GiB": {"63525639.batch": 0.15, "63525730.batch": 19.96},
+  "remote_report_sha256": "311ac329731c84f91e9199c78c92e4890cc43d2de598361f11f4e3f7465e5b08",
+  "remote_report_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_20261104/report.json",
+  "partition_command": "scontrol show partition boost_usr_prod",
+  "partition_excerpt": {"PartitionName": "boost_usr_prod", "MaxTime": "1-00:00:00", "State": "UP"},
+  "qos_command": "sacctmgr -n -P show qos boost_qos_bprod,boost_qos_dbg format=Name,MaxWall,MaxTRES",
+  "qos_stdout": "boost_qos_bprod|1-00:00:00|node=256\nboost_qos_dbg|00:30:00|cpu=256,gres/gpu=32,mem=3952000M,node=8\n",
+  "log_tail_observed_steps": [53,54,55,56,57,58,59,60,61,62,63,64],
+  "last_log_record": {"step":64,"paired":true,"normal_update_s":{"T100-L":0.6091455519199371,"T100-LQ":0.6074575679376721}},
+  "full_stdout_log_archived_locally": false,
+  "retained_step_logs": "All four per-rank JSONL journals are archived compressed with original hashes in analysis.json. Remote SLURM stdout remains in wearusfm_runs/logs/logsquare_preflight_63525730.out. No raw signals or checkpoints are stored in Git.",
+  "collection_limitation": "A subsequent full-stdout bundling attempt failed before reading logs because the login-node Python 3.6 rejects subprocess text=True; no remote state was changed. Previously collected accounting, report SHA and journal artifacts remain valid. No further remote command was needed for the offline audit."
+}

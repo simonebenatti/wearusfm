@@ -1,0 +1,29 @@
+{
+  "protocol": "logsquare-component-review-20261104-v1",
+  "review_commit": "1d6f96a1ded55c3594d091c4f078e54ad39f9ed4",
+  "review": {
+    "path": "docs/reviews/claude_review_tokenizer_logsquare_preflight_results_20261104.md",
+    "sha256": "2baf4431876d5f70e26479baad4e38401a8bcda410517c292e4a90a34ef710b7"
+  },
+  "reviewed_gpt_commit": "6d5b353eed1dd0b76a05510b701f1bbe78ade3c9",
+  "epsilon": 0.001,
+  "R1_approved": true,
+  "R2_approved": true,
+  "training_controller_approved": true,
+  "evaluation_design_approved": true,
+  "training_chain_released": false,
+  "adapters_review": {
+    "review_commit": "6c0ce6500b88341bb86de62733e6a315c6282271",
+    "reviewed_gpt_commit": "c8f5c124da0e4cfc93ee9c1d561b576f5454dc8a",
+    "review": {
+      "path": "docs/reviews/claude_review_tokenizer_logsquare_adapters_20261104.md",
+      "sha256": "097bc5b1bc23b6d8bbc27fd3783919f69abe87b40f5c73986346d89c09d8cbed"
+    },
+    "adapters_approved": true,
+    "resource_gates_approved": true,
+    "training_release_prerequisites_satisfied": true
+  },
+  "epsilon_change_after_training_results": "new candidate, not amendment",
+  "operational_authorization_already_granted": true,
+  "snapshot_stage": "component approvals before dedicated training release; executable state in training_plan.json"
+}

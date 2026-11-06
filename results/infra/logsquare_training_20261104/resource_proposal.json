@@ -1,0 +1,56 @@
+{
+  "status": "CLAUDE_CHAIN_APPROVED_RELEASE_PENDING",
+  "authorization": {
+    "date": "2026-11-04",
+    "user_text": "si ma dovra fare altro immagino, lo autorizzo gia a desso",
+    "scope": "Operational follow-on training and evaluations within the discussed LQ plan, after gates and Claude review; no repeated consent.",
+    "read_archive_commit_push_already_authorized": true
+  },
+  "rho_update": 0.9855573780611151,
+  "preflight_report_uncompressed_sha256": "311ac329731c84f91e9199c78c92e4890cc43d2de598361f11f4e3f7465e5b08",
+  "source_accounting": "results/infra/tokenizer_execution_20261103/19618/sacct_completed.txt",
+  "historical_jobs": {
+    "5000": 63386190,
+    "19618": 63386337
+  },
+  "training_phases": {
+    "5000": {
+      "historical_wall_seconds": 3926,
+      "estimated_wall_seconds": 3869.298266267938,
+      "walltime_cap_seconds": 5400,
+      "estimated_gpu_hours": 4.299220295853265,
+      "cap_gpu_hours": 6.0,
+      "cap_allocated_core_hours": 48.0
+    },
+    "19618": {
+      "historical_wall_seconds": 11329,
+      "estimated_wall_seconds": 11165.379536054374,
+      "walltime_cap_seconds": 14400,
+      "estimated_gpu_hours": 12.405977262282637,
+      "cap_gpu_hours": 16.0,
+      "cap_allocated_core_hours": 128.0
+    }
+  },
+  "training_total_gpu_hours_estimate": 16.7051975581359,
+  "training_total_gpu_hours_cap": 22.0,
+  "training_total_allocated_core_hours_cap": 176.0,
+  "checkout": {
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "cpu_only_core_hours_cap": 0.3333333333333333
+  },
+  "partition_evidence": {
+    "observed_date": "2026-11-04",
+    "boost_usr_prod_MaxTime_seconds": 86400,
+    "boost_qos_bprod_MaxWall_seconds": 86400,
+    "source": "SSH scontrol/sacctmgr read after completed preflight; see hpc_evidence.json"
+  },
+  "rho_infer": null,
+  "extraction_budget_finalized": false,
+  "training_approved_by_claude": true,
+  "note": "Update excludes loader and diagnostics; historical time includes I/O. Ratio below one is not demonstrated speedup; caps use max(1,rho).",
+  "R2_approved_by_claude": true,
+  "component_review_commit": "1d6f96a1ded55c3594d091c4f078e54ad39f9ed4",
+  "adapters_review_commit": "6c0ce6500b88341bb86de62733e6a315c6282271"
+}

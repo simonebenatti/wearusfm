@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-05T13:54:16.420787+00:00",
+  "sacct": {
+    "returncode": 0,
+    "stdout": "63590929|COMPLETED|0:0|46|2|2026-11-05T14:52:39|2026-11-05T14:53:25",
+    "stderr": ""
+  },
+  "head": {
+    "returncode": 0,
+    "stdout": "1dc6ded8eee8a788277994687ff3b4b162453616",
+    "stderr": ""
+  },
+  "status": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "files": {
+    "scripts/logsquare_initialization_diagnostic.py": {
+      "sha256": "ad3781e49f26db7ba7e840de59625e19ed1d9690eb460089e8f4debb20d000db",
+      "bytes": 42649,
+      "write_bits": 0
+    },
+    "scripts/slurm/logsquare_initialization_diagnostic.sbatch": {
+      "sha256": "bd71355673f398cdd817ce35cdf3ca0dd2db260b911c5899e5a9c23151d974d0",
+      "bytes": 3642,
+      "write_bits": 0
+    },
+    "results/infra/logsquare_initialization_20261105/plan.json": {
+      "sha256": "f7f0fc3e9f463f16ed70a4814f70550408564dcd983d390033cc982a7b33cad0",
+      "bytes": 7632,
+      "write_bits": 0
+    },
+    "results/infra/logsquare_initialization_20261105/initial_state_guard.json": {
+      "sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+      "bytes": 2967,
+      "write_bits": 0
+    }
+  },
+  "log": "Preparing worktree (detached HEAD 1dc6ded)\nUpdating files:   2% (48/1721)\nUpdating files:   3% (52/1721)\nUpdating files:   4% (69/1721)\nUpdating files:   4% (70/1721)\nUpdating files:   5% (87/1721)\nUpdating files:   6% (104/1721)\nUpdating files:   7% (121/1721)\nUpdating files:   8% (138/1721)\nUpdating files:   9% (155/1721)\nUpdating files:  10% (173/1721)\nUpdating files:  10% (188/1721)\nUpdating files:  11% (190/1721)\nUpdating files:  12% (207/1721)\nUpdating files:  13% (224/1721)\nUpdating files:  14% (241/1721)\nUpdating files:  14% (250/1721)\nUpdating files:  15% (259/1721)\nUpdating files:  16% (276/1721)\nUpdating files:  17% (293/1721)\nUpdating files:  18% (310/1721)\nUpdating files:  19% (327/1721)\nUpdating files:  20% (345/1721)\nUpdating files:  21% (362/1721)\nUpdating files:  22% (379/1721)\nUpdating files:  23% (396/1721)\nUpdating files:  24% (414/1721)\nUpdating files:  25% (431/1721)\nUpdating files:  26% (448/1721)\nUpdating files:  27% (465/1721)\nUpdating files:  28% (482/1721)\nUpdating files:  29% (500/1721)\nUpdating files:  30% (517/1721)\nUpdating files:  31% (534/1721)\nUpdating files:  32% (551/1721)\nUpdating files:  32% (560/1721)\nUpdating files:  33% (568/1721)\nUpdating files:  34% (586/1721)\nUpdating files:  35% (603/1721)\nUpdating files:  36% (620/1721)\nUpdating files:  36% (635/1721)\nUpdating files:  37% (637/1721)\nUpdating files:  37% (653/1721)\nUpdating files:  38% (654/1721)\nUpdating files:  39% (672/1721)\nUpdating files:  40% (689/1721)\nUpdating files:  40% (705/1721)\nUpdating files:  41% (706/1721)\nUpdating files:  42% (723/1721)\nUpdating files:  43% (741/1721)\nUpdating files:  44% (758/1721)\nUpdating files:  45% (775/1721)\nUpdating files:  46% (792/1721)\nUpdating files:  47% (809/1721)\nUpdating files:  48% (827/1721)\nUpdating files:  49% (844/1721)\nUpdating files:  50% (861/1721)\nUpdating files:  51% (878/1721)\nUpdating files:  51% (890/1721)\nUpdating files:  52% (895/1721)\nUpdating files:  53% (913/1721)\nUpdating files:  53% (920/1721)\nUpdating files:  54% (930/1721)\nUpdating files:  55% (947/1721)\nUpdating files:  56% (964/1721)\nUpdating files:  56% (971/1721)\nUpdating files:  57% (981/1721)\nUpdating files:  58% (999/1721)\nUpdating files:  59% (1016/1721)\nUpdating files:  60% (1033/1721)\nUpdating files:  60% (1047/1721)\nUpdating files:  60% (1049/1721)\nUpdating files:  61% (1050/1721)\nUpdating files:  62% (1068/1721)\nUpdating files:  62% (1083/1721)\nUpdating files:  63% (1085/1721)\nUpdating files:  64% (1102/1721)\nUpdating files:  64% (1103/1721)\nUpdating files:  65% (1119/1721)\nUpdating files:  66% (1136/1721)\nUpdating files:  67% (1154/1721)\nUpdating files:  68% (1171/1721)\nUpdating files:  68% (1173/1721)\nUpdating files:  69% (1188/1721)\nUpdating files:  69% (1189/1721)\nUpdating files:  70% (1205/1721)\nUpdating files:  70% (1210/1721)\nUpdating files:  71% (1222/1721)\nUpdating files:  72% (1240/1721)\nUpdating files:  73% (1257/1721)\nUpdating files:  73% (1265/1721)\nUpdating files:  74% (1274/1721)\nUpdating files:  75% (1291/1721)\nUpdating files:  76% (1308/1721)\nUpdating files:  77% (1326/1721)\nUpdating files:  78% (1343/1721)\nUpdating files:  79% (1360/1721)\nUpdating files:  80% (1377/1721)\nUpdating files:  80% (1379/1721)\nUpdating files:  81% (1395/1721)\nUpdating files:  82% (1412/1721)\nUpdating files:  82% (1417/1721)\nUpdating files:  82% (1420/1721)\nUpdating files:  83% (1429/1721)\nUpdating files:  83% (1437/1721)\nUpdating files:  84% (1446/1721)\nUpdating files:  85% (1463/1721)\nUpdating files:  85% (1478/1721)\nUpdating files:  86% (1481/1721)\nUpdating files:  87% (1498/1721)\nUpdating files:  88% (1515/1721)\nUpdating files:  88% (1530/1721)\nUpdating files:  89% (1532/1721)\nUpdating files:  89% (1540/1721)\nUpdating files:  89% (1547/1721)\nUpdating files:  90% (1549/1721)\nUpdating files:  90% (1564/1721)\nUpdating files:  91% (1567/1721)\nUpdating files:  92% (1584/1721)\nUpdating files:  93% (1601/1721)\nUpdating files:  94% (1618/1721)\nUpdating files:  95% (1635/1721)\nUpdating files:  96% (1653/1721)\nUpdating files:  96% (1661/1721)\nUpdating files:  97% (1670/1721)\nUpdating files:  98% (1687/1721)\nUpdating files:  99% (1704/1721)\nUpdating files:  99% (1719/1721)\nUpdating files: 100% (1721/1721)\nUpdating files: 100% (1721/1721), done.\nHEAD is now at 1dc6ded Approve LQ initialization diagnostic after timeout review\ncheckout di campagna pronto: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-initdiag-20261105 @ 1dc6ded8eee8a788277994687ff3b4b162453616\nfiles: 1721; dimensione: 88M\n"
+}

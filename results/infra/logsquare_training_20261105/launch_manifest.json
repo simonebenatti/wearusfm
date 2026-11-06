@@ -1,0 +1,43 @@
+{
+  "release_commit": "2293b94ffb5f2bad2639d30a297c14eea034d233",
+  "execution_code_sha": "26cf367364f39778e019a53fba3529847c740b5e",
+  "diagnostic_code_sha": "1dc6ded8eee8a788277994687ff3b4b162453616",
+  "diagnostic_job": 63591184,
+  "diagnostic_reading_all_three_true": true,
+  "campaign": "logsquare-training-20261105",
+  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105",
+  "training_plan": "results/infra/logsquare_training_20261105/training_plan.json",
+  "checkout_job": 63592939,
+  "checkout_state": "COMPLETED 0:0",
+  "checkout_elapsed_seconds": 24,
+  "checkout_actual_core_hours": 0.013333333333333334,
+  "checkout_verified": true,
+  "training_jobs": {
+    "5000": 63593091,
+    "19618": 63593128
+  },
+  "initial_states": {
+    "63593091": "PENDING Priority",
+    "63593128": "PENDING Dependency"
+  },
+  "status_observed_cet": "2026-11-05 18:44",
+  "continuation_afterok_job": 63593091,
+  "estimated_training_gpu_hours": 16.7051975581359,
+  "max_training_gpu_hours": 22,
+  "max_training_core_hours": 176,
+  "checkout_core_hours_cap": 0.3333333333333333,
+  "background_monitoring": false,
+  "benchmark_submitted": true,
+  "extractions_submitted": true,
+  "training_not_yet_running_at_snapshot": false,
+  "old_failed_jobs_reused": false,
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "submitter": "common scripts/submit_job.py via byte-identical science worktree copy; common ledger",
+  "latest_states": {
+    "63593091": "COMPLETED 0:0",
+    "63593128": "PENDING Priority"
+  },
+  "phase5000_validation": "results/infra/logsquare_training_20261105/phase5000_validation.json",
+  "benchmark_job": 63614514,
+  "pose5000_extraction_job": 63615952
+}

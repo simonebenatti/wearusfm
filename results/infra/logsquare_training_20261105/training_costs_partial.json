@@ -1,0 +1,36 @@
+{
+  "status": "CONTINUATION_PENDING",
+  "training_gpu_hours_cap_including_failed_attempt": 22,
+  "training_core_hours_cap_including_failed_attempt": 176,
+  "completed_training_attempts": [
+    {
+      "job": 63532335,
+      "state": "FAILED",
+      "elapsed_seconds": 21,
+      "gpus": 4,
+      "cpus": 32,
+      "updates": 0
+    },
+    {
+      "job": 63593091,
+      "state": "COMPLETED 0:0",
+      "elapsed_seconds": 3970,
+      "gpus": 4,
+      "cpus": 32,
+      "endpoint": 5000
+    }
+  ],
+  "continuation": {
+    "job": 63593128,
+    "state_at_last_snapshot": "PENDING Priority",
+    "gpus": 4,
+    "cpus": 32,
+    "walltime_seconds_cap": 14400
+  },
+  "training_gpu_hours_consumed": 4.434444444444445,
+  "training_core_hours_consumed": 35.47555555555556,
+  "maximum_training_gpu_hours_now": 20.434444444444445,
+  "maximum_training_core_hours_now": 163.47555555555556,
+  "diagnostic_benchmark_checkout_and_evaluation_have_separate_budgets": true,
+  "final_accounting_rule": "Replace continuation cap with actual sacct elapsed and sum failed attempt + 5000 + 19618; compare with 22 GPUh / 176 coreh."
+}

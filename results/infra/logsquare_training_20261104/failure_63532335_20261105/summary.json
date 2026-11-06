@@ -1,0 +1,37 @@
+{
+  "collected_date": "2026-11-05",
+  "source": "read-only sacct, remote log/hash, frozen checkout and output path inspection",
+  "execution_code_sha": "b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
+  "checkout_clean": true,
+  "log_sha256": "bf8f591f52f89c530870fadf0d9127cc914b1901b5b62835ee88bdc5eff6ce2a",
+  "jobs": {
+    "63532335": {
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 21,
+      "allocated_gpus": 4,
+      "allocated_cpus": 32,
+      "allocated_gpu_hours": 0.023333333333333334,
+      "allocated_core_hours": 0.18666666666666668,
+      "max_rss_batch_kib": 774928,
+      "total_cpu_seconds": 5.596
+    },
+    "63532370": {
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "allocated_gpu_hours": 0,
+      "allocated_core_hours": 0
+    }
+  },
+  "training_started": false,
+  "checkpoints_created": false,
+  "run_and_receipt_directories_exist": false,
+  "failure_location": "scripts/logsquare_train.py:124 verify_initialization, before output creation and torchrun",
+  "error": "fresh shared initialization differs from historical T100-L",
+  "root_cause_status": "UNCONFIRMED: actual hash and gain not emitted by failed gate",
+  "hypothesis": "CPU calibration fe_gain sensitivity to import order, precedent diagnostic60561493 from20261014; needs this-runtime construction comparison",
+  "blind_retry": false,
+  "new_submissions": [],
+  "background_monitoring": false
+}

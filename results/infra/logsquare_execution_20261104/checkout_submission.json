@@ -1,0 +1,44 @@
+{
+ "id": "LOGSQ-checkout-20261104",
+ "creato": "2026-11-04T18:24:05+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "43cad1f760fbac2f10d8c16bc6f5d4eedc957b61",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-checkout-20261104",
+  "--comment=wearusfm:LOGSQ-checkout-20261104",
+  "--cpus-per-task=2",
+  "--mem=4G",
+  "--time=00:10:00",
+  "--export=ALL,CAMPAIGN=logsquare-preflight-20261104,CAMPAIGN_SHA=43cad1f760fbac2f10d8c16bc6f5d4eedc957b61,EXPECTED_SHA=43cad1f760fbac2f10d8c16bc6f5d4eedc957b61"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T18:24:05+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T18:24:05+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T18:24:06+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63525639,
+   "uscita": 0,
+   "stdout": "63525639\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63525639,
+ "uscita": 0,
+ "stdout": "63525639\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

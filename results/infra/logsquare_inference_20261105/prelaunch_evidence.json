@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-05T17:54:33.027000+00:00",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+    "bytes": 454776554,
+    "sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+    "stop_present": false,
+    "matches_receipt": true
+  },
+  "A1": {
+    "reference_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+    "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+    "expected_sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+    "recording_counts": {
+      "0": {
+        "windows": 10,
+        "identity_matches_frozen_selection": true
+      },
+      "1": {
+        "windows": 10,
+        "identity_matches_frozen_selection": true
+      }
+    },
+    "rows": 1907,
+    "n_selected_recordings": 200,
+    "passed": true
+  },
+  "paths": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-infer-5000-20261105": false,
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_inference_20261105/5000": false
+  }
+}

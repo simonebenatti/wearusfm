@@ -1,0 +1,56 @@
+{
+  "review_date": "2026-11-05",
+  "reviewed_code_sha": "fd874d75dcc5252076399c3c8d2d5ae97584570c",
+  "base_sha_short": "4d5a3ef",
+  "verdict": {
+    "initial_state_guard": "APPROVED",
+    "rank_entry": "APPROVED_PENDING_CLUSTER_DIAGNOSTIC",
+    "diagnostic_reading_and_resources": "APPROVED",
+    "diagnostic_execution": "CHANGES_REQUIRED_TIMEOUT_CLEANUP",
+    "training_release": "NOT_RELEASED"
+  },
+  "targeted_tests": {
+    "files": [
+      "tests/cpu/test_logsquare_initial_state.py",
+      "tests/cpu/test_logsquare_train_rank.py",
+      "tests/cpu/test_logsquare_train.py",
+      "tests/cpu/test_logsquare_initialization_diagnostic.py"
+    ],
+    "initial_sandbox_result": "153 passed, 1 failed in 27.62s",
+    "sandbox_failure": "PermissionError at localhost socket.bind; no DDP initialization attempted by that test",
+    "isolated_unsandboxed_test": "tests/cpu/test_logsquare_train_rank.py::test_four_real_ranks_train_the_verified_state_and_the_dry_run_trains_nothing",
+    "isolated_result": "1 passed in 13.58s",
+    "coverage_result": "All 154 original targeted tests verified passing across the initial run and isolated rerun",
+    "full_cpu_suite": "Not rerun by GPT; Claude reports 2446/2447 with one baseline failure"
+  },
+  "additional_regressions": {
+    "file": "docs/reviews/test_logsquare_detached_timeout_20261105.py",
+    "result": "2 expected failures in 2.49s",
+    "evidence": "results/infra/logsquare_initialization_20261105/gpt_review_timeout_reproduction.json",
+    "own_process_cleanup_verified": true
+  },
+  "cluster_read_only_source_check": {
+    "environment": "cineca-ai/4.3.0",
+    "torch_version": "2.2.0a0+git6c8c5ad",
+    "path": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/api.py",
+    "observations": [
+      "SubprocessHandler._popen sets start_new_session=True at lines 563-566",
+      "SubprocessHandler.close calls os.killpg(self.proc.pid, death_sig) at line 584"
+    ],
+    "no_models_or_jobs_run": true
+  },
+  "invariants": {
+    "production_files_edited_by_gpt": false,
+    "scientific_src_unchanged": true,
+    "preflights_and_train_jepa_unchanged": true,
+    "published_diagnostic_plan_status": "REVIEW_REQUIRED",
+    "pin_validation": "Passed on temporary copy with status changed; published plan untouched",
+    "jobs_submitted": [],
+    "training_updates": 0
+  },
+  "approved_diagnostic_resource_caps": {
+    "gpu_hours": 1,
+    "cpu_core_hours": 8,
+    "checkout_cpu_core_hours": 0.3333333333333333
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "protocol": "logsquare-pose-resources-20261104-v1",
+  "status": "REVIEW_REQUIRED",
+  "gpu_hours_cap": 0,
+  "per_endpoint": {
+    "validate": {
+      "cpus": 2,
+      "memory_mib": 30720,
+      "seconds": 1800
+    },
+    "benchmark": {
+      "cpus": 8,
+      "memory_mib": 30720,
+      "seconds": 900
+    },
+    "ridge": {
+      "cpus": 8,
+      "memory_mib": 30720,
+      "seconds": 1800
+    },
+    "compare": {
+      "cpus": 2,
+      "memory_mib": 30720,
+      "seconds": 1800
+    }
+  },
+  "core_hours_cap_per_endpoint": 8,
+  "total_core_hours_cap_two_endpoints": 16,
+  "checkout_core_hours_cap_additional": 0.3333333333333333,
+  "checkout_note": "2 CPUs / 600 s / 4 GiB; share one campaign checkout and count once",
+  "fit_gate": {
+    "definition": "ceil_60s(1.5*(2*V+(1+R)*S+13*E)+120)",
+    "R": 10,
+    "V": "validate job ElapsedRaw seconds",
+    "S": "candidate train-only benchmark statistics_seconds",
+    "E": "candidate train-only benchmark three_eigensystems_seconds",
+    "max_seconds": 1800,
+    "candidate_count": 1,
+    "interpretation": "Historical conservative empirical proxy adapted from three fits to one; 13E allows alpha scoring, not thirteen eigensystem decompositions. Not a guaranteed runtime bound.",
+    "requirements": [
+      "validate and benchmark COMPLETED 0:0 with pinned receipts and unchanged evaluation identity",
+      "train-only benchmark same 8-thread historical numerical environment",
+      "published required_seconds <= fixed cap; otherwise stop, no blind retry, no cap increase",
+      "benchmark and scientific reports are immutable; release changes require published plan and fresh checkout"
+    ]
+  },
+  "comparison": "Separate 2 CPU / 1800 s job per endpoint explicitly included. Verifies original historical coefficients and predictions and rebuilds all four summaries and paired CI. No control fit/extraction.",
+  "policy_origins": [
+    "results/infra/tokenizer_evaluation_20261103/pose_readout_resource_policy_5000.json",
+    "results/infra/tokenizer_evaluation_20261103/pose_readout_resource_policy_19618.json"
+  ]
+}

@@ -1,6 +1,7 @@
 """Token di patch per il modello (passo 6; v10 §4.1-4.2): il front-end a kernel continui (`frontend.py`, quello misurato dal gate D8) applicato a
 ogni campione alla SUA frequenza nativa, poi una proiezione lineare alla dimensione del modello. L'opzione `tokenizer_activation="gelu"`
 applica GELU dopo il guadagno fisso e prima della proiezione; il default `identity` conserva il percorso storico.
+Il ramo opzionale `tokenizer_logsquare` affianca log(epsilon + x²) alle risposte lineari, con proiezione aggiuntiva inizializzata a zero.
 
 Ingresso: una lista di campioni, ciascuno (C_s, T_s) con la sua fs (gia' normalizzato dal dataloader: scala di sessione condivisa fra canali,
 v10 §4.3). Uscita impacchettata sull'asse dei canali: token (C_tot, P_max, dim), con `patch_valid` (C_tot, P_max) e `time_valid` (S, P_max) per le
@@ -26,13 +27,22 @@ from wearusfm.model.frontend import ContinuousKernelFrontEnd
 
 class PatchTokenizer(nn.Module):
     def __init__(self, dim: int, frontend: ContinuousKernelFrontEnd | None = None, *,
-                 tokenizer_activation: str = "identity", **frontend_kwargs):
+                 tokenizer_activation: str = "identity", tokenizer_logsquare: bool = False,
+                 tokenizer_logsquare_eps: float = 1e-3, **frontend_kwargs):
         super().__init__()
         if not isinstance(tokenizer_activation, str) or tokenizer_activation not in ("identity", "gelu"):
             raise ValueError("tokenizer_activation deve essere identity o gelu")
+        validate_logsquare(tokenizer_logsquare, tokenizer_logsquare_eps, tokenizer_activation)
         self.tokenizer_activation = tokenizer_activation
+        self.tokenizer_logsquare = tokenizer_logsquare
+        self.tokenizer_logsquare_eps = float(tokenizer_logsquare_eps)
         self.frontend = frontend if frontend is not None else ContinuousKernelFrontEnd(**frontend_kwargs)
         self.proj = nn.Linear(self.frontend.d_out, dim)
+        # Equivalent to [W_linear,W_log] @ [x,log(eps+x²)] + bias. Separate
+        # products preserve the exact legacy GEMM and shared RNG at initialization.
+        # zeros_like consumes no RNG; disabled models retain exactly their old keys.
+        self.register_parameter("logsquare_weight", nn.Parameter(torch.zeros_like(self.proj.weight))
+                                if tokenizer_logsquare else None)
         self.register_buffer("fe_gain", torch.tensor(self._calibrate_gain(), dtype=torch.float64))
 
     def _calibrate_gain(self, fs: float = 2000.0, seconds: float = 4.0, n_ch: int = 4) -> float:
@@ -68,6 +78,9 @@ class PatchTokenizer(nn.Module):
             if self.tokenizer_activation == "gelu":
                 projected_input = torch.nn.functional.gelu(projected_input)
             t = self.proj(projected_input)
+            if self.logsquare_weight is not None:
+                log_features = self.logsquare_features(projected_input)
+                t = t + torch.nn.functional.linear(log_features, self.logsquare_weight)
             tokens.append(torch.cat([t, t.new_zeros(c, p_max - p, dim)], dim=1))
             pv = torch.zeros(c, p_max, dtype=torch.bool, device=t.device)
             pv[:, :p] = True
@@ -77,10 +90,28 @@ class PatchTokenizer(nn.Module):
             time_valid.append(tv)
         return torch.cat(tokens, dim=0), torch.cat(patch_valid, dim=0), torch.stack(time_valid)
 
+    def logsquare_features(self, scaled_features: torch.Tensor) -> torch.Tensor:
+        """Natural log of squared integrated responses, not a band-energy estimator.
+
+        Compute square/log in FP32 even under BF16 autocast; projection may use AMP.
+        Epsilon is in the units of the existing fixed-gain responses squared.
+        """
+        x = scaled_features.float()
+        return torch.log(x.square() + self.tokenizer_logsquare_eps)
+
     def flops(self, n_channels: int, n_patches: int, fs: float) -> int:
         """Moltiplicazioni-addizioni x 2 per un campione: la somma pesata sul supporto di ogni patch (patch piu' contesto per lato,
         `frontend.context_s`) per ogni kernel, piu' la proiezione. Il calcolo dei kernel sulla griglia (una volta per sfasamento) e' trascurabile.
-        Questa stima delle moltiplicazioni-addizioni non include le operazioni elementwise dell'eventuale GELU."""
+        Questa stima delle moltiplicazioni-addizioni non include le operazioni elementwise di GELU o log-quadrato."""
         support = math.ceil(self.frontend.patch_s * fs + 1e-9) + 2 * math.ceil((self.frontend.context_s + self.frontend.lead_s) * fs - 1e-9)
         d_fe, dim = self.frontend.d_out, self.proj.out_features
-        return 2 * n_channels * n_patches * (support * d_fe + d_fe * dim)
+        return 2 * n_channels * n_patches * (support * d_fe + d_fe * dim * (1 + self.tokenizer_logsquare))
+
+
+def validate_logsquare(enabled, epsilon, activation):
+    if type(enabled) is not bool:
+        raise ValueError("tokenizer_logsquare deve essere bool")
+    if type(epsilon) not in (int, float) or not math.isfinite(epsilon) or epsilon <= 0:
+        raise ValueError("tokenizer_logsquare_eps deve essere finito e positivo")
+    if enabled and activation != "identity":
+        raise ValueError("tokenizer_logsquare richiede la base identity, non GELU")

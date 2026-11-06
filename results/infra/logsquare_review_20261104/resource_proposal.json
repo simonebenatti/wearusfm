@@ -1,0 +1,80 @@
+{
+  "status": "PREPARATORY_PREFLIGHT_APPROVED_TRAINING_NOT_APPROVED",
+  "preflight": {
+    "logical_id": "LOGSQ-preflight-20261104",
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "240G",
+    "walltime_seconds": 1800,
+    "gpu_hours_cap": 2,
+    "allocated_core_hours_cap": 16
+  },
+  "checkout": {
+    "logical_id": "LOGSQ-checkout-20261104",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "cpu_only_core_hours_cap": 0.3333333333333333
+  },
+  "training_reference": {
+    "observed_T100_L_gpu_hours_approx": 17,
+    "phases": {
+      "5000": {
+        "gpus": 4,
+        "cpus": 32,
+        "seconds": 5400
+      },
+      "19618_continuation": {
+        "gpus": 4,
+        "cpus": 32,
+        "seconds": 14400
+      }
+    },
+    "allocated_core_hours_cap": 176,
+    "must_recompute_after_preflight": true,
+    "historical_gpu_hours_cap": 22,
+    "candidate_gpu_hours_cap": null,
+    "ratio": "update_mean_after8_s(T100-LQ)/update_mean_after8_s(T100-L)",
+    "candidate_walltime_rule": "ceil_to_900s(historical_phase_walltime_cap * max(1, measured_ratio))",
+    "point_estimate_rule": "historical_phase_elapsed_seconds * measured_ratio"
+  },
+  "extractions_reference": {
+    "allocated_core_hours_cap": 22,
+    "pose_5000_19618": {
+      "count": 2,
+      "gpus": 1,
+      "seconds": 2700
+    },
+    "P1_19618": {
+      "count": 1,
+      "gpus": 1,
+      "seconds": 1800
+    },
+    "P2_19618": {
+      "count": 1,
+      "gpus": 1,
+      "seconds": 2700
+    },
+    "historical_gpu_hours_cap": 2.75,
+    "candidate_gpu_hours_cap": null,
+    "ratio": "separate measured inference ratio, not the update ratio",
+    "candidate_walltime_rule": "ceil_to_300s(historical_extraction_walltime_cap * max(1, measured_inference_ratio))",
+    "inference_benchmark_prepared": false
+  },
+  "cpu_readers_reference": {
+    "probes_core_hours_cap": 32,
+    "aggregates_core_hours_cap": 1.3333333333333333,
+    "paired_comparison_core_hours_cap": 1,
+    "pose_ridge_core_hours_cap": 8,
+    "pose_benchmark_core_hours_cap": 2,
+    "pose_validation_core_hours_cap": 2,
+    "total_core_hours_cap": 46.333333333333336,
+    "must_benchmark_before_fit": true
+  },
+  "provisional_total_cpu_only_core_hours": 46.666666666666664,
+  "note": "Claude b0fac8f approves only preparatory preflight at d48cad5. Scientific code unchanged. S1/S3 prospective protocol clarification before checkout/readout. Historical training/extraction references remain unapproved; no retry or scientific extension.",
+  "reference_total_gpu_hours": 26.75,
+  "candidate_total_gpu_hours_cap": null,
+  "reference_gpu_job_allocated_core_hours": 214
+}

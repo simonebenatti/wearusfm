@@ -1,0 +1,36 @@
+{
+  "claude_review_commit": "49f9438",
+  "R1_status": "CLOSED",
+  "changed_test": "tests/cpu/test_logsquare_infer_benchmark.py",
+  "changed_test_sha256": "86e2b5103b8c9f498d4172f7633fc54f0f8eba29c1c9d1e30dee7f0e64092d00",
+  "test_files": [
+    "tests/cpu/test_logsquare_evaluation.py",
+    "tests/cpu/test_logsquare_infer_benchmark.py",
+    "tests/cpu/test_logsquare_initial_state.py",
+    "tests/cpu/test_logsquare_initialization_diagnostic.py",
+    "tests/cpu/test_logsquare_pose_readout.py",
+    "tests/cpu/test_logsquare_preflight.py",
+    "tests/cpu/test_logsquare_preflight_analysis.py",
+    "tests/cpu/test_logsquare_probe.py",
+    "tests/cpu/test_logsquare_review_corrections.py",
+    "tests/cpu/test_logsquare_train.py",
+    "tests/cpu/test_logsquare_train_rank.py",
+    "tests/cpu/test_tokenizer_logsquare.py"
+  ],
+  "tests_passed": 363,
+  "elapsed_seconds": 113.37,
+  "outside_sandbox": true,
+  "reason_for_unsandboxed_rerun": "Sandbox denies local DDP socket bind and /bin/ps needed by subprocess supervision regressions",
+  "initial_sandbox_attempt": {
+    "passed": 343,
+    "failed": 20,
+    "elapsed_seconds": 54.48
+  },
+  "historical_launcher_test": {
+    "commit": "99efdef",
+    "passed": 15,
+    "elapsed_seconds": 3.86
+  },
+  "scientific_source_hashes_unchanged": 110,
+  "no_job_stopped_or_relaunched": true
+}

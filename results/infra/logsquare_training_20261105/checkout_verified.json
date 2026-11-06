@@ -1,0 +1,50 @@
+{
+  "utc": "2026-11-05T14:17:11.452406+00:00",
+  "sacct": {
+    "returncode": 0,
+    "stdout": "63592939|COMPLETED|0:0|24|2|2026-11-05T15:15:43|2026-11-05T15:16:07",
+    "stderr": ""
+  },
+  "head": {
+    "returncode": 0,
+    "stdout": "26cf367364f39778e019a53fba3529847c740b5e",
+    "stderr": ""
+  },
+  "status": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "files": {
+    "scripts/logsquare_train.py": {
+      "sha256": "136c424dcbb369b75ecfbc4690752681233089b63c7e609c7655a98b6301b5f2",
+      "bytes": 20690,
+      "write_bits": 0
+    },
+    "scripts/slurm/logsquare_train.sbatch": {
+      "sha256": "bb005017df622353d5059e9d189718ec4f02b7afafe6970a619b476e66f4ae04",
+      "bytes": 2295,
+      "write_bits": 0
+    },
+    "scripts/logsquare_train_rank.py": {
+      "sha256": "202b3f182c664d229b8585453a80afb81a20c505199e5c5d3f61894959e9682a",
+      "bytes": 7198,
+      "write_bits": 0
+    },
+    "scripts/logsquare_initial_state.py": {
+      "sha256": "8c5fae5c95b2b085227a0bf811f7f658ffdd913dd135c4e10d1d170013eaeefd",
+      "bytes": 12877,
+      "write_bits": 0
+    },
+    "results/infra/logsquare_training_20261105/training_plan.json": {
+      "sha256": "d90b55ee5ca645ced5b75293edc7e614bc1c8d71dd1d5dbce411f94ca2cc3d79",
+      "bytes": 21827,
+      "write_bits": 0
+    },
+    "results/infra/logsquare_training_20261105/training_release.json": {
+      "sha256": "ee08185d8bded517c77b652b22bb468d395727fd78fcea040780ebc359b2be00",
+      "bytes": 2771,
+      "write_bits": 0
+    }
+  }
+}

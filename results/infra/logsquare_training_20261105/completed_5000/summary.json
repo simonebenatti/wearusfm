@@ -1,0 +1,45 @@
+{
+  "stopped": "max_steps",
+  "steps": 5000,
+  "elapsed_s": 3930.702612400055,
+  "parameters": 28386589,
+  "device": "cuda:0",
+  "gpu_max_memory_gib": 15.523401260375977,
+  "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105",
+    "sha": "26cf367364f39778e019a53fba3529847c740b5e"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "pip_freeze_file": null,
+    "pip_freeze_sha256": null,
+    "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+  },
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "world_size": 4,
+  "batch_per_process": 8,
+  "prefetch": true,
+  "prefetch_audit_steps": null,
+  "accum_steps": 1,
+  "micro_batch": 8,
+  "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+  "pose_panel_timing": {
+    "prepare_s": 21.423709847033024,
+    "evaluations_s": [
+      3.488529434427619,
+      3.468017028644681,
+      3.4678541999310255,
+      3.4809036944061518,
+      3.47147155739367,
+      3.4786762800067663,
+      3.4785826541483402,
+      3.495505951344967,
+      3.477732814848423,
+      3.480397082865238,
+      3.4667210821062326
+    ],
+    "total_s": 59.67810162715614
+  }
+}

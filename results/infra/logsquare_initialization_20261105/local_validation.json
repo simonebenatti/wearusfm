@@ -1,0 +1,135 @@
+{
+  "replaces": "the record GPT wrote at 4d5a3ef (56 tests on two files, five-context diagnostic); that record stays in git history",
+  "code_sha": "b8689e18ba793bd2136e893b55155c2e8c4975c0",
+  "environment": "~/.venvs/wearusfm-tok, OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1, local Mac CPU",
+  "logsquare_files": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_logsquare_initialization_diagnostic.py tests/cpu/test_logsquare_train.py tests/cpu/test_logsquare_initial_state.py tests/cpu/test_logsquare_train_rank.py",
+    "passed": 154,
+    "per_file": {
+      "test_logsquare_initialization_diagnostic.py": 66,
+      "test_logsquare_train.py": 52,
+      "test_logsquare_initial_state.py": 27,
+      "test_logsquare_train_rank.py": 9
+    },
+    "at_4d5a3ef": {
+      "test_logsquare_initialization_diagnostic.py": 25,
+      "test_logsquare_train.py": 31
+    }
+  },
+  "full_suite": {
+    "how": "tests/cpu in four parallel processes, test files dealt in alphabetical order, same interpreter invocation as CLAUDE.md",
+    "collected": 2447,
+    "passed": 2446,
+    "failed": 1,
+    "failure": "tests/cpu/test_pose_b19618_launcher.py::test_exact_B_recipe_only_maxsteps_changes_schedule_identical",
+    "failure_error": "ValueError: continuation recipe differs beyond max_steps (scripts/slurm/pose_b19618_continue.sbatch:27)",
+    "failure_preexisting_at_4d5a3ef": true,
+    "failure_files_untouched_by_this_branch": true,
+    "collected_at_4d5a3ef": 2349,
+    "new_tests": 98
+  },
+  "regression_before_and_after": {
+    "test": "tests/cpu/test_logsquare_train.py::test_training_context_gain_passes_the_exact_initialization_check",
+    "before": {
+      "controller": "scripts/logsquare_train.py at 4d5a3ef, SHA-256 cb3ff445...",
+      "result": "FAILED",
+      "error": "ValueError: fresh shared initialization differs from historical T100-L"
+    },
+    "after": {
+      "controller": "scripts/logsquare_train.py at b8689e1",
+      "result": "passed"
+    },
+    "real_parameter_change": "tests/cpu/test_logsquare_train.py::test_one_ulp_of_one_real_parameter_is_still_rejected: passed before and after"
+  },
+  "trained_model": "four real ranks in one process group on CPU: two steps behind the guarded entry give student, teacher, optimizer and generators bit-identical to the plain trainer; four attestations; checkpoint gain equal to the verified gain; a rejected student stops every rank before any update",
+  "scientific_sources_102_unchanged": true,
+  "src_unchanged_since_4d5a3ef": true,
+  "original_training_plan_release_and_failure_artifacts_unchanged": true,
+  "launcher_bash_n": "passed",
+  "cuda_tested": false,
+  "torchrun_tested_locally": false,
+  "diagnostic_status": "REVIEW_REQUIRED",
+  "review": "GPT reviewed fd874d7 at 92fa557: accepted state and rank entry approved, reading and resources approved, R-TIMEOUT blocking. Corrected in timeout_correction_after_review; pending: GPT closes the review",
+  "timeout_correction_after_review": {
+    "review": "docs/reviews/gpt_review_logsquare_initialization_fix_20261105.md (92fa557), finding R-TIMEOUT",
+    "code_sha": "0d264f71cf359c9a0a6cdbfde8da88cde95eeb10",
+    "commits": [
+      "88fce4c447ced4114ffa25d306d396b7ed6d5a0b",
+      "8bbc3e19e165232b3f18d8fb0304add6d1934f11",
+      "0d264f71cf359c9a0a6cdbfde8da88cde95eeb10"
+    ],
+    "unchanged": "guard, rank entry, training controller, scientific criterion, epsilon, recipe, 102 scientific sources, release and plan of 04/11, failure artifacts; diagnostic plan still REVIEW_REQUIRED",
+    "defect_reproduced_on_reviewed_code": {
+      "tests": "docs/reviews/test_logsquare_detached_timeout_20261105.py (GPT, unchanged, SHA-256 41bc6b76...)",
+      "at_fd874d7": "2 failed",
+      "after": "2 passed"
+    },
+    "time_limits_seconds": {
+      "construction_context": {
+        "waiting": 75,
+        "cleanup": 15,
+        "declared_limit": 90
+      },
+      "torchrun_dry_run": {
+        "waiting": 285,
+        "cleanup": 15,
+        "declared_limit": 300
+      },
+      "six_contexts": 750,
+      "margin": 150,
+      "allocation": 900,
+      "cleanup_steps": {
+        "settle_if_the_command_returned": 2,
+        "launcher_alone_sigterm": 5,
+        "everyone_sigterm": 3,
+        "sigkill_then_wait": 5,
+        "absolute_deadline": 15
+      },
+      "caps_unchanged": {
+        "gpu_hours": 1.0,
+        "core_hours": 8.0,
+        "checkout_core_hours": 0.333
+      }
+    },
+    "tests": {
+      "command_per_file": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider <file>",
+      "per_file": {
+        "test_logsquare_initial_state.py": 27,
+        "test_logsquare_train_rank.py": 9,
+        "test_logsquare_train.py": 52,
+        "test_logsquare_initialization_diagnostic.py": 88,
+        "test_logsquare_detached_timeout_20261105.py": 2
+      },
+      "four_logsquare_files_passed": 176,
+      "gpt_timeout_tests_passed": 2,
+      "launcher_bash_n": "passed",
+      "processes_left_by_the_tests": 0,
+      "real_torch_elastic_context": "tests/cpu/test_logsquare_initialization_diagnostic.py::test_supervision_lets_the_elastic_launcher_of_the_installed_torch_close_its_workers: passed with the local torch 2.14; skipped when start_processes has another signature",
+      "full_suite": "not rerun after this correction: the changed files are read only by test_logsquare_initialization_diagnostic.py, test_logsquare_initial_state.py and test_logsquare_train.py, all rerun"
+    },
+    "mutations_on_the_script_alone": {
+      "selected_tests": 18,
+      "failed": {
+        "M1": 17,
+        "M2": 5,
+        "M3": 3,
+        "M4": 2,
+        "M5": 2
+      },
+      "script_restored_and_hash_verified_after_each": true
+    },
+    "leonardo_read_only": {
+      "ps": "/bin/ps is procps-ng 3.3.15 on the login node and prints pid, ppid, pgid, stat, comm as used",
+      "torch": "2.2.0a0 in cineca-ai/4.3.0, torch/distributed/elastic: multiprocessing/api.py installs the SIGTERM handler (224-230), starts workers in sessions of their own (566), signals their groups (584), _close waits up to 30 s then SIGKILL (691-718); agent/server/api.py (732-734) and agent/server/local_elastic_agent.py (306-311) close the workers with the signal received",
+      "nothing_written_or_submitted": true
+    },
+    "local_smoke": "local_smoke.json, at code_sha",
+    "not_demonstrated_locally": [
+      "real torchrun with four ranks and NCCL",
+      "the supervision on Linux (same code path)",
+      "/bin/ps on a compute node (read on the login node only)",
+      "the elastic context of torch 2.2 (read in the source, not run)"
+    ],
+    "residual_limit": "a descendant that moves to a session of its own and loses its parent before a process table shows it as the child of a member is not tracked: at most 0.5 s while waiting, 0.1 s during the cleanup; torchrun workers stay children of the agent for their whole life; SLURM walltime and cgroup remain the outer protection"
+  }
+}

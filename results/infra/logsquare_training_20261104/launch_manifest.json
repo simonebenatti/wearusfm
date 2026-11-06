@@ -1,0 +1,42 @@
+{
+  "release_commit": "79546926886e566a14fab62abd3fd8272d857cb4",
+  "execution_code_sha": "b2934b07f296778eefe97d4bdb8ca08f2b4e29be",
+  "claude_review_commit": "6c0ce6500b88341bb86de62733e6a315c6282271",
+  "campaign": "logsquare-training-20261104",
+  "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261104",
+  "checkout_job": 63531256,
+  "training_jobs": {
+    "5000": 63532335,
+    "19618": 63532370
+  },
+  "max_training_gpu_hours": 22,
+  "max_training_core_hours": 176,
+  "checkout_core_hours_cap": 0.3333333333333333,
+  "source_changes_since_review": false,
+  "A1_passed": true,
+  "submitter": "shared submit_job.py; single operator GPT under existing operational authorization",
+  "background_monitoring": false,
+  "benchmark_waits_for_5000": true,
+  "continuation_waits_for_benchmark": false,
+  "phase": "failed_before_training_diagnostic_review_pending",
+  "checkout_state": "COMPLETED 0:0",
+  "checkout_elapsed_seconds": 22,
+  "checkout_actual_core_hours": 0.012222222222222223,
+  "checkout_verified": true,
+  "initial_states": {
+    "63532335": "PENDING Priority",
+    "63532370": "PENDING Dependency"
+  },
+  "continuation_afterok_job": 63532335,
+  "training_not_yet_running": true,
+  "benchmark_submitted": false,
+  "extractions_submitted": false,
+  "training_started": false,
+  "latest_states": {
+    "63532335": "FAILED 1:0",
+    "63532370": "CANCELLED 0:0; never started"
+  },
+  "failure_evidence": "results/infra/logsquare_training_20261104/failure_63532335_20261105/summary.json",
+  "training_actual_gpu_hours": 0.023333333333333334,
+  "training_actual_core_hours": 0.18666666666666668
+}

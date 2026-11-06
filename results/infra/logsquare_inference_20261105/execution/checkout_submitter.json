@@ -1,0 +1,44 @@
+{
+ "id": "LOGSQ-infer-checkout-20261105",
+ "creato": "2026-11-05T19:02:38+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-infer-5000-20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "cc814303e52d8e4067cf12fb1a291459a402c78c",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-infer-checkout-20261105",
+  "--comment=wearusfm:LOGSQ-infer-checkout-20261105",
+  "--cpus-per-task=2",
+  "--mem=4G",
+  "--time=00:10:00",
+  "--export=ALL,CAMPAIGN=logsquare-infer-5000-20261105,CAMPAIGN_SHA=cc814303e52d8e4067cf12fb1a291459a402c78c,EXPECTED_SHA=cc814303e52d8e4067cf12fb1a291459a402c78c"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-05T19:02:38+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-05T19:02:38+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-05T19:02:40+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63614193,
+   "uscita": 0,
+   "stdout": "63614193\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63614193,
+ "uscita": 0,
+ "stdout": "63614193\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

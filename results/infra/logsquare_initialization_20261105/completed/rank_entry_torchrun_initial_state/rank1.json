@@ -1,0 +1,35 @@
+{
+  "rank": 1,
+  "world_size": 4,
+  "guard_sha256": "9cc3c37efc6ee9443b366799d5e8da4d78036f2dc2f81229b63deaf15fafea9c",
+  "passed": true,
+  "verify_only": true,
+  "trainer_returned": false,
+  "constructions": [
+    {
+      "role": "student",
+      "context": "training rank 1 of 4, model construction 1, the student",
+      "shared_sha256": "0b6abc835db60b8974219b4e0b160309ba3661896cdd1a6c667bf616382e8654",
+      "reference_gain_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+      "expected_shared_sha256": "38cb4cce85f9ba01cfd9ceceaff10ff202136089e8f6757562f684efab5345ea",
+      "fe_gain": 548.6939187567021,
+      "fe_gain_hex": "0x1.1258d2546f0efp+9",
+      "reference_gain": {
+        "fe_gain": 548.6939187567023,
+        "fe_gain_hex": "0x1.1258d2546f0f0p+9",
+        "observed_minus_registered_ulps": -1
+      },
+      "historical_training_gain": {
+        "fe_gain": 548.6939187567021,
+        "fe_gain_hex": "0x1.1258d2546f0efp+9",
+        "observed_minus_registered_ulps": 0
+      },
+      "new_parameters": 24576,
+      "logsquare_weight_zero": true,
+      "tensors": 269,
+      "other_tensors_match_reference": true,
+      "classification": "historical_training_state",
+      "passed": true
+    }
+  ]
+}

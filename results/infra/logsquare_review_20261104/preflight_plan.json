@@ -1,0 +1,29 @@
+{
+  "protocol": "tokenizer-logsquare-preflight-20261104-v1",
+  "status": "CORRECTED_PENDING_CLAUDE_DIFF_REVIEW",
+  "epsilon": 0.001,
+  "batches": 64,
+  "reference_plan": {
+    "path": "results/infra/tokenizer_execution_20261103/preflight_plan.json",
+    "sha256": "13ed48b6c88acc5fd6a9bc13e02d79287fc7d3225ec54b040bb8d5442dfa90e4"
+  },
+  "historical_report": {
+    "path": "results/infra/tokenizer_execution_20261103/tokenizer_preflight_20261103/report.json",
+    "sha256": "ce0c631de18e26b0b4b6a78b3d0a1de1cd70bafd07782eed4f6b4c98b003a986"
+  },
+  "candidate_config": {
+    "path": "results/infra/logsquare_review_20261104/config_T100-LQ.json",
+    "sha256": "76152dcd966b5e49578dd95de57f0a3637dc854c6470a6dce4fc72485b2be3a2"
+  },
+  "epsilon_reading_policy": {
+    "scope": "each kernel/dataset/fs/phase; masked and unmasked on common visible/QC support",
+    "unmasked_floor_fraction_trigger_gte": 0.5,
+    "normalized_derivative_rms_trigger_gte": 0.5,
+    "mask_floor_threshold_crossing": 0.5,
+    "mask_log_mean_shift_unmasked_std_trigger_gte": 1.0,
+    "action": "hold training for documented review; no automatic epsilon change",
+    "default_epsilon_without_amendment": 0.001,
+    "trigger_arm": "T100-LQ",
+    "control_arm_context_only": "T100-L"
+  }
+}
