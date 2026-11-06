@@ -5,7 +5,7 @@ nomi delle 3 sottochat e lo stato». Coordinatore: la chat principale di Claude 
 `docs/coordinamento_linee_20261104.md` e, dal 05/11, l'audit `docs/reviews/allineamento_gpt_claude_20261105.md` (c77d133, ramo
 `codex/coordination-20261104`). Audit di allineamento di Claude: `docs/coordinamento_allineamento_claude_gpt_20261105.md`.
 
-Aggiornato il 06/11/2026 alle 08:35. Numerazione nuova dopo la rinomina delle sottochat fatta da Simone alle 17:30 circa («fatto cambiati i nomi, rimettimi
+Aggiornato il 06/11/2026 alle 09:01. Numerazione nuova dopo la rinomina delle sottochat fatta da Simone alle 17:30 circa («fatto cambiati i nomi, rimettimi
 qua la tabella agiornata»): oggi 1 = scaling, 2 = consolidamento, 3 = log-quadratico e contrastiva. Le voci del registro scritte prima
 delle 17:40 e la versione delle 17:35 di questo file usavano la numerazione vecchia (1 = consolidamento, 2 = log-quadratico, 3 = scaling).
 
@@ -162,6 +162,10 @@ e girano dopo i benchmark gia' in attesa.
   «richiedono i propri piani concreti con pin dei risultati finali» (97125bd, 08:27), quindi non si accodano prima della fine dei fit e la coda
   resterebbe vuota. Lettura delle 08:28: fit 13 RUNNING da 1 h 07, fit 14 in catena, nessun job `LONG` in coda. Il coordinatore GPT
   ha diagnosticato su richiesta di Simone l'attesa della continuazione LQ (012f8e7): job sano e invariato, nessuna stima d'avvio.
+- Tracciabilita': Simone, verso le 08:50, alla domanda del coordinatore «Metto nei commit anche le letture dei job e una copia del ledger?»:
+  «Sì, aggiungili». Da questo commit le letture di Leonardo del coordinamento e una copia del ledger comune stanno in
+  `results/infra/coordinamento_claude/`: 33 letture e ledger di 1.247 righe, senza le righe dell'altro progetto e senza quelle del
+  client ssh. Il coordinatore esegue `raccogli_prove.py` prima di ogni commit di coordinamento. Il ledger che vale resta quello sul Mac.
 
 ## Regole comunicate alle sottochat (17:30)
 

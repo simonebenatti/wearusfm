@@ -1,0 +1,35 @@
+2026-11-05 22:13:02
+== squeue seriale
+63628160|LONG-checkout-extract-20261105|PENDING|0:00|10:00|141902|QOSMaxCpuPerUserLimit|2026-11-05T22:01:52|N/A|1
+63626956|SCALING-probe-fit-02-20261105|PENDING|0:00|1:04:00|141713|Dependency|2026-11-05T21:48:05|N/A|8
+63626966|SCALING-probe-fit-03-20261105|PENDING|0:00|1:09:00|141710|Dependency|2026-11-05T21:48:09|N/A|8
+63626971|SCALING-probe-fit-04-20261105|PENDING|0:00|1:19:00|141707|Dependency|2026-11-05T21:48:12|N/A|8
+63626975|SCALING-probe-fit-05-20261105|PENDING|0:00|1:23:00|141706|Dependency|2026-11-05T21:48:15|N/A|8
+63627052|SCALING-probe-fit-09-20261105|PENDING|0:00|1:43:00|141701|Dependency|2026-11-05T21:48:36|N/A|8
+63627047|SCALING-probe-fit-08-20261105|PENDING|0:00|1:43:00|141701|Dependency|2026-11-05T21:48:29|N/A|8
+63627028|SCALING-probe-fit-07-20261105|PENDING|0:00|1:42:00|141701|Dependency|2026-11-05T21:48:26|N/A|8
+63626978|SCALING-probe-fit-06-20261105|PENDING|0:00|1:42:00|141701|Dependency|2026-11-05T21:48:20|N/A|8
+63626931|SCALING-probe-fit-01-20261105|RUNNING|20:32|59:00|141737|None|2026-11-05T21:47:56|2026-11-05T21:52:31|8
+== sprio
+sprio: error: Invalid job id: 63628160
+== scontrol checkout
+   Priority=141902 Nice=0 Account=iscrb_wearusfm QOS=normal
+   JobState=PENDING Reason=QOSMaxCpuPerUserLimit Dependency=(null)
+   SubmitTime=2026-11-05T22:01:52 EligibleTime=2026-11-05T22:01:52
+   AccrueTime=2026-11-05T22:01:52
+== scontrol fit02
+   Priority=141713 Nice=0 Account=iscrb_wearusfm QOS=normal
+   JobState=PENDING Reason=Dependency Dependency=afterok:63626931(unfulfilled)
+   SubmitTime=2026-11-05T21:48:05 EligibleTime=Unknown
+   AccrueTime=Unknown
+== priority flags
+AccountingStorageEnforce = associations,limits,qos,safe
+PriorityFlags           = SMALL_RELATIVE_TO_TIME,DEPTH_OBLIVIOUS,NO_FAIR_TREE,MAX_TRES
+== qos seriale
+lrd_all_serial|cpu=8,mem=30800M,node=1|10|2|DenyOnLimit
+normal||||
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=YES QoS=lrd_all_serial
+   MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=login[08,13]
+   State=UP TotalCPUs=256 TotalNodes=2 SelectTypeParameters=NONE

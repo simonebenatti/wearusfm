@@ -6541,6 +6541,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   catena, nessun job `LONG` in coda. Punte: scaling 97125bd, coordinamento 012f8e7 (diagnosi dell'attesa LQ, non riletta). Nessun
   job mio.
 
+### 2026-11-06 | Claude | Coordinamento: letture dei job e copia del ledger nei commit (decisione di Simone); cosa e' tracciato e cosa no
+- Domanda di Simone, 06/11 verso le 08:40: «stiamo tenedo traccia di tutto coi commit?». Mia lettura delle 08:40, senza scrivere nulla:
+  i 12 worktree locali (il `main` canonico, cinque di Claude, sei di GPT) sono puliti e senza commit non pubblicati; il lavoro delle
+  chat e' nei commit dei rami su origin. Restavano fuori da ogni ramo due cose, presenti solo sul Mac in `~/wearusfm_local`: il ledger
+  comune delle sottomissioni (`jobs/ledger.tsv`) e le mie letture di Leonardo (`logs/leonardo_*`). Resta aperta l'integrazione su
+  `main` (D-1 e D-2 dell'audit, compito di GPT integratore): a `main` fe66e2d mancano 127 commit del ramo comune di Claude e 111, 97,
+  102 e 76 commit dei rami di GPT scaling, consolidamento, logcontrast e coordinamento.
+- Decisione di Simone, verso le 08:50, alla mia domanda «Metto nei commit anche le letture dei job e una copia del ledger?»:
+  «Sì, aggiungili».
+- Fatto in questo commit, cartella `results/infra/coordinamento_claude/` (il README dentro spiega tutto):
+  - `letture_leonardo/`: 33 letture del coordinamento, dal 04/11 alle 19:30 al 06/11 alle 08:28, 120 kB. Tolte 550 righe di un altro
+    progetto in 16 file (D-6, Simone: «che c'entrano, sono di un a ltro progetto») e 67 righe scritte dal client ssh del Mac. In 5
+    letture una di queste righe portava il certificato ssh e l'indirizzo di posta di Simone: non entrano nel repo.
+  - `ledger_copia.tsv`: copia intera del ledger comune, 1.247 righe con l'intestazione, 1,04 MB, sha256 `969e583d5f22cb09…`:
+    656 righe di Claude e 590 di GPT, nessuna dell'altro progetto. Il ledger che vale resta quello sul Mac: `scripts/submit_job.py`
+    non legge la copia.
+  - `MANIFEST.tsv`: sha256 di originali e copie e righe tolte, file per file. `raccogli_prove.py`: lo script della raccolta. Legge
+    soltanto, non cancella, si ferma se trova segreti, chiavi, indirizzi di posta o righe dell'altro progetto nel ledger.
+- Restano solo sul Mac, per scelta mia: la coda intera della partizione letta alle 21:42 del 05/11 (1,0 MB, job di altri utenti), due
+  letture sull'altro progetto, sei letture dell'inventario di `$WORK`, tre letture senza contenuto. A Simone avevo scritto «circa 2,3 MB
+  a oggi»: il conto comprendeva la coda degli altri utenti. Nel repo entrano circa 1,2 MB.
+- Regola da ora: prima di ogni commit di coordinamento eseguo la raccolta e metto nel commit le letture nuove e la copia del ledger.
+  Vale per il coordinamento di Claude. Non cambia submitter, ledger, ricevute e report delle linee, che restano ai loro operatori.
+- Verifiche: nelle copie nessun nome o account dell'altro progetto, nessuno dei 91 ID dei suoi job, nessuna chiave, nessun indirizzo
+  di posta; i job rimasti sono delle famiglie FT15, FT, SCALING, LOGSQ, CONSOL, LONG, PILOT e TOKENIZER; copia del ledger identica al
+  sorgente; seconda passata dello script senza differenze. Nessun dato da wearable. Nessun job lanciato, nessuna scrittura su Leonardo.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
