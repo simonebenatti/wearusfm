@@ -7540,6 +7540,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Risposta di Simone alle 21:23 al bottone «La porto a GPT come ipotesi per il punto 6c?»: «Dopo la lunga». L'ipotesi del
   lettore temporale resta ferma: va a GPT solo dopo gli esiti della valutazione lunga della linea 2. Nulla comunicato a GPT ora.
 
+### 2026-11-06 | Claude | Linea 2, fase fit A1: ondata 6 conclusa, ondata 7 inviata (righe 15-16 di 72)
+- Ondata 6, entrambi `COMPLETED 0:0`: `63699141` LONG-FIT-G49046-pre-ninapro_db2-F2 (21:10:50-21:30:15, 00:19:25 su 03:15:00,
+  partito per primo col limite piu' corto) e `63699138` LONG-FIT-G49046-pre-ninapro_db2-F1 (21:30:17-21:58:48, 00:28:31 su
+  03:30:00, in attesa per `QOSMaxCpuPerUserLimit`). Report letti solo nei campi di provenienza (sha256 `889c9f07d125…` e
+  `c1361084b0d4…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto.
+  Consumo: 8 CPU x 47:56 = 6,39 core-ore; fase fit 33,61 core-ore (27,22 + 6,39), 0 GPU-ore.
+- C-1 alle 22:01: primo esito `PRECHECK_READ_FIRST` perche' il ramo comune era avanzato a `ff8305a` (due voci del
+  coordinamento: parere sulle teste e decisione di Simone «Dopo la lunga»; nessun effetto sulla catena); letto, riscontrato
+  con `--ack-ref`, ripetuto: `PRECHECK_OK` (log in `execution/audit/precheck_fit_wave7_20261106.log`). `$WORK` 41,67 GiB
+  liberi (soglia 10,724; utente sbenatti 175,8 GiB), scratch scrivibile, ledger riletto, seriale vuota, certificato ssh
+  valido fino alle 05:50:43 del 07/11. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e `63696864`
+  SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 7 inviata alle 22:01:44-50 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`): `63703054` LONG-FIT-G49046-pre-ninapro_db2-F3 (limite 03:15:00) e `63703055`
+  LONG-FIT-G19618-post-ninapro_db2-F01 (limite 02:30:00, prima riga della vista `post` di DB2, a coppia di fold come da
+  tabella congelata), 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`). Sorvegliante in
+  sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`: commit
+  `15da104` (ID nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`,
+  `pin_phase fit --dry-run` OK; 342 test superati). Stato: 14 fit su 72 conclusi; prossima ondata la 8 (righe 17-18).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
