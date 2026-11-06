@@ -6743,6 +6743,43 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Sorveglianza di sola lettura sui sedici ID (`~/wearusfm_local/logs/watch_long_bench_16_20261106.txt`): mi richiama a fine fase
   o al primo esito diverso da `COMPLETED 0:0`; in quel caso la fase si ferma, senza rilanci.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: benchmark chiusi 16 su 16; cancello globale delle risorse NEGATIVO, fase fit ferma, nulla inviato
+- Stato: i sedici benchmark sono `COMPLETED 0:0` al primo tentativo, l'ultimo alle 11:55:03 (sorveglianza chiusa alle 11:58:33,
+  corsia seriale vuota). Durate in secondi, ordine pre, post, pool: ninapro_db2 1.422, 595, 1.194; ninapro_db3 921, 465, 480;
+  ninapro_db6 169, 76, 615; epn612 218, 116, 477; uci_emg 12, 16, 11; posa 53. Consuntivo della fase col checkout 63636967: 0
+  GPU-ore e 15,217222 core-ore. Cumulato della campagna: 3,373611 GPU-ore e 42,218889 core-ore su 9 e 1.711,666667.
+- Raccolta (prontuario, sezione 3): 16 ricevute e 17 log copiati sul Mac con sha256 e dimensioni uguali a quelli remoti; `sacct`
+  archiviato.
+- Controlli del responsabile, senza aprire punteggi (`execution/audit/owner_checks_benchmark.json`). Le 15 celle di classificazione
+  sono misure di tempo sul solo train del fold 0, con codice `166fb86` e piano `22975a40...`: sei fit ciascuna sulla griglia di C,
+  tutti convergenti per criterio, senza avvisi, lontani dal limite di iterazioni (massimo 5.739 su 12.000); una sola firma numerica
+  nuova (`1ac8481e...`), compatibile con quella storica (`07b776ba...`) secondo la regola B; ricevute di estrazione e cache uguali
+  al manifest pinnato; RSS di picco al massimo 1,36 GiB. Posa: solo train, held mai aperto, politica e ambiente coerenti (8
+  thread), proiezione ricalcolata uguale a quella della ricevuta: 583,3 secondi per dose contro 3.300 e 12,53 GiB contro 25,5,
+  ammessa. Sul cluster alle 12:04:40: i sei artefatti di tempo della posa hanno gli hash delle ricevute; nessun link simbolico,
+  nessuno STOP; sotto la radice ci sono solo `19618`, `39237`, `49046` e `benchmarks`. `$WORK`: 27,92 GiB liberi.
+- **Cancello globale della classificazione: negativo.** `resource_gate` sulle 15 ricevute da' `all_passed` falso: 15 shard su 48
+  (10 celle su 40) proiettano oltre il limite congelato di 13.800 secondi. La memoria e' ammessa ovunque (al massimo 4,08 GiB
+  contro 25,5). Shard oltre il limite:
+  - ninapro_db3 pre, fold 0-1-2-3, dosi 19618, 39237, 49046: 26.523,0 secondi;
+  - ninapro_db2 pre, fold 0-1, tre dosi: 21.515,6; fold 2-3, tre dosi: 20.454,2;
+  - ninapro_db6 pool, fold 0-1-2-3, dosi 39237 e 49046: 16.858,7;
+  - ninapro_db2 pool, fold 0-1, dosi 39237 e 49046: 16.166,2; fold 2-3, due dosi: 15.376,3.
+  Gli altri 33 shard passano; i piu' vicini al limite: ninapro_db3 post 12.680,0, epn612 pool 12.386,4, ninapro_db3 pool 11.940,9.
+  Proiezione totale dei 48 shard: 489.430 secondi, cioe' 1.087,62 core-ore, contro le 114,24 attese dallo storico nel piano.
+- Il passo di pin del prontuario per la fase fit (`LONG_PIN_PHASE=fit`), eseguito sul Mac, si ferma sull'asserzione del cancello
+  (`AssertionError`): `plan.json` invariato, nessun manifest scritto.
+- **Fase fit ferma**, come da prontuario (sezione 2: «Gate negativo=stop, non shard o tempi cambiati dopo la misura»; sezione 6):
+  nessun commit di fase, nessun ref `deploy/consolidation-long-fit-20261105` su leonardo (verificato vuoto), nessun checkout,
+  nessun fit inviato, nessun ID `LONG-FIT` o `LONG-checkout-fit` nel ledger. Log, ricevute e uscite conservati; nessun rilancio;
+  nessuno shard, tempo o criterio cambiato. Anche i tre fit della posa restano fermi: la posa e' ammessa, ma il rilascio rivisto
+  della fase fit e' unico e il suo passo di pin controlla prima la classificazione.
+- Ramo di esecuzione: commit `2a20316a0bf77c93e354d4ce3f5acee94db459df`, SHA remoto verificato: 37 file di sole prove (16
+  ricevute, 17 log, `sacct`, tre file di audit). Nessun file di codice, piano, matrice o protocollo toccato. Stessi dieci file di
+  test: 251 superati e 1 fallito, lo stesso di prima.
+- Corsia seriale: non ho job in coda ne' in corsa. La regola «Due fit per volta» non entra in gioco finche' la fase fit non viene
+  rilasciata; la linea 1 trova la corsia libera.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9376,3 +9413,29 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   corsia puo' restare vuota dopo i due fit in coda; in nessun caso ne tengo piu' di due.
 - Margini dei benchmark, per GPT consolidamento: dopo ninapro_db2 pre (1.422 secondi su 1.800) le altre cinque celle sono rimaste
   fra 465 e 1.194 secondi. Le celle di epn612 devono ancora girare. Regola invariata: un TIMEOUT ferma la fase, senza rilanci.
+
+### 2026-11-06 | Claude | Linea 2: cancello delle risorse negativo, serve un emendamento rivisto prima di qualunque fit (per GPT consolidamento e per Simone)
+- Blocco: lo dichiara il codice stesso («classification matrix resource gate failed; reviewed resource amendment required»). Con
+  la politica attuale nessun fit di classificazione puo' girare, nemmeno i 33 shard ammessi: ogni job ricalcola il cancello globale
+  e si ferma. Servono la decisione di Simone e una consegna di GPT consolidamento, da rileggere prima di pin e deployment; io non
+  cambio nulla.
+- Dove nasce (formula di `resource_gate`): costo di un fold = massimo fra il lavoro misurato (somma dei sei fit piu' il piu'
+  lento, riscalato per righe e classi) e il tempo storico del pool riscalato, moltiplicato per 3 (sicurezza) e per 1,5 (dati e
+  predizioni); shard = somma dei suoi fold + 600 secondi + letture. La vista pre e' la piu' lenta: sei fit in 1.399 secondi per
+  ninapro_db2 e 906 per ninapro_db3 (il fit piu' lungo arriva a 3.113 e 3.085 iterazioni), contro 568 e 447 della vista post.
+- Dati per la decisione, non una proposta di protocollo. Costi proiettati per fold delle celle fallite, fattori compresi, in
+  secondi: ninapro_db2 pre 10.031, 10.884, 9.829, 10.025; ninapro_db2 pool 7.465, 8.100, 7.315, 7.460; ninapro_db3 pre 6.447,
+  6.342, 7.218, 5.916; ninapro_db6 pool 4.099, 4.111, 3.970, 4.077. `lrd_all_serial` non concede piu' di 4 ore per job.
+- Punto da risolvere nell'emendamento (lettura mia): `fixed_folds_by_dataset`, limiti e fattori stanno in `BENCHMARK_POLICY`,
+  dentro `scripts/consolidation_long_classification_runtime.py`, coperto da `source_identity()`. Cambiarlo cambia `source_sha256`,
+  mentre le 12 ricevute di estrazione e le 16 dei benchmark portano `1ca7aead...` (R-2(i): un cambio coperto invalida le
+  estrazioni e non autorizza una ripetizione automatica). L'emendamento deve dire come restano valide le ricevute esistenti, o
+  che cosa si ripete e con quale costo.
+- Budget: il tetto di 1.711,67 core-ore non e' il vincolo. Consumate 42,22; la proiezione dei 48 shard e' 1.087,62 con i fattori.
+  Il vincolo e' il limite di tempo per job.
+- Posa: ammessa. Per rilasciarla separatamente dalla classificazione serve una consegna di GPT: il passo di pin attuale non lo
+  consente.
+- Errore mio corretto durante i controlli: il mio script pretendeva RSS uguale fra la misura del benchmark e quella di chiusura.
+  Per uci_emg post differiscono di 270 kB (368.701.440 e 368.971.776 byte), perche' la seconda e' presa dopo. Ora chiedo solo che
+  la seconda non sia minore. Nessun effetto sul cancello.
+- Per la sottochat 1 e il coordinamento: corsia seriale libera dalle 11:55; la linea 2 non invia nulla fino all'emendamento.
