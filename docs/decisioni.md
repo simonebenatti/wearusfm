@@ -6082,3 +6082,11 @@ ConsegnaGPTconsolidamento9d195e7 verificata suorigin: prontuario operativo compl
 ownerclaude, N-4 neltest, 82job+4checkout e tetti invariati. Plan e launch_plan restano awaiting_claude_rereview,
 review.commit nullo. La quarta review copre il diff da51b4574; Claude prepara successivamente pin e deployment.
 Registrato nello specchietto; nessun nuovo controllo di coda, job o deploy da coordinamento.
+
+### 2026-11-06 — Verifica della coda LQ19618 senza modifica del job
+
+Su domanda di Simone controllati scheduler, partizione, associazione eQoS.63593128 attende perPriority un nodo intero
+per4h, eleggibile dal05/11ore16:38; nessun hold o dipendenza residua. NessunaQoS piu' prioritaria applicabile alla
+richiesta corrente, nessuna partenza stimata. Cap ridotto incompatibile con il piano/guard congelato senza emendamento.
+Diagnosi e prove pubblicate in reviews/lq_queue_diagnosis_20261106.md e relativoJSON. Informata la chat3;
+nessun cambioQoS, walltime, cancellazione, duplicato, nuovo invio o modifica ai checkpoint da questa consegna.

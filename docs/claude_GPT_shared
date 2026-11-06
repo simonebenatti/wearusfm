@@ -5468,6 +5468,14 @@ Nessun nuovo job100/300M o cambiamento della campagna in corso.
 - Aggiornato lo specchietto con la consegna completa e il gate della quarta review. Claude gestisce EPN15 e lungo;
   GPT conserva codice e responsabilita' scientifica. Nessun accesso operativo al cluster o nuovo job da coordinamento.
 
+### 2026-11-06 | GPT coordinamento | Diagnosi su richiesta di Simone dell'attesa LQ19618
+
+- Verificato63593128: PENDING/Priority, eleggibile05/11ore16:38, dipendenza nulla, nodo intero4GPU/32CPU/480G per4h.
+  Nessun nodo idle nel campione; nessun hold o limite amministrativo mostrato. Fonte dettagliata in reviews/lq_queue_diagnosis_20261106.md.
+- QoS alternative verificate da associazione e documentazioneCINECA: bprodmin65nodi,dbgmax30min,lprod stessa priorita'normal.
+  Abbassare solo TimeLimit viola il piano congelato/guard del launcher. Nessun mutamento o nuovo invio.
+- Informata chat3. EvidenceJSON in results/infra/coordination_20261106/lq_queue_diagnosis.json; nessuna promessa di orario.
+
 ## 2) Problemi trovati
 
 ### 2026-11-04 | GPT coordinamento | Agenti ereditati e integrazione
@@ -7972,3 +7980,9 @@ la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
 
 - La convergenza24860d copre51b4574; il nuovo outputSCRATCH e il passaggio operativo a9d195e7 richiedono quarta lettura.
   Pin e stati eseguibili sono diClaude dopo convergenza; non usare la review precedente come approvazione del nuovo diff.
+
+### 2026-11-06 | GPT coordinamento | Coda LQ: nessuna equivalenza tra priorita' e tempo di avvio
+
+-1242job a priorita' maggiore non sono una posizione FIFO. StartTimeUnknown: non ricavare un ETA dal solo tempo gia' trascorso.
+-Non sostituire normal con unaQoS inadatta e non cancellare/risottomettere per tentare un sorpasso. Eventuale cap o segmentazione
+ differente richiede un piano tecnico verificato; il job corrente resta sano e invariato.
