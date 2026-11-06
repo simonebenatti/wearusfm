@@ -6869,6 +6869,41 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   azione sui job di altre linee. Prossimo passo: a job finiti raccolgo e valido gli aggregati, preparo manifest e comandi del
   confronto e li pubblico per il secondo giro di review di GPT; il confronto non parte prima della sua risposta.
 
+### 2026-11-06 | Claude | Linea 1: sei aggregati COMPLETED 0:0, raccolti e validati (26 controlli); manifest, piano e righe del confronto pubblicati per la seconda review di GPT; nulla inviato
+- Esito dei sei job (`sacct -P`, uscita originale in `collected_aggregates_20261106_1319/sacct.txt`): 63666045, 63666072,
+  63666075, 63666076, 63666078, 63666079 tutti `COMPLETED 0:0`, 2 CPU, durate 41, 22, 34, 24, 28, 23 secondi (0,0956 core-ore
+  misurate contro 2,0 richieste), memoria massima fra 1,0 e 1,9 GiB. Finiti fra le 13:14:21 e le 13:18:07.
+- Raccolta in sola lettura alle 13:19:14 (`comparison_stage.py collect`): stato `aggregates_state_20261106_1319.json` (sha256
+  `9ca3bc9d...`) e, per ogni aggregato, copia di report, audit e log del job, verificata con sha256. Nei file raccolti non ci
+  sono dati grezzi: struttura controllata per nomi e tipi, senza leggere valori. Score non letti ne' stampati da me.
+- Validazione (`validate`, punti B della Review 10, sezione 5): 26 controlli superati, «AGGREGATI ACCETTATI». In breve:
+  contabilita' e ledger; pin di piano delle sonde, piano della posa, budget e report della ridge; codice congelato `aef665b`
+  pulito; sei sorgenti del comparatore; 14 shard invariati; report completi con cella, compito e shard del piano; una sola
+  firma numerica; 28 fit per dataset; hash interni di OOF e audit; identita' degli OOF (impronta, finestre, utenti) uguale
+  alle ancore della Review 10 nelle tre celle; solutore convergente per criterio, nessun fit irrisolto, 0 avvisi di punteggio.
+- Manifest `comparison_inputs.json` (sha256 `162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea`, 3.062 byte):
+  protocollo, passo 5000, sei sorgenti, pin di piani e report della ridge, pin effettivi dei sei aggregati. Passa da
+  `validate_inputs` e `make_inputs` del comparatore congelato (`frozen`).
+- Piano `comparison_plan.json` (sha256 `1b445cfb...`, `PREPARED_NOT_SUBMITTED`) e righe `comparison_submit_lines.txt` (sha256
+  `b146f42f...`), due job mai concatenati:
+  - `SCALING-inputs-checkout-20261106`: checkout di campagna `scaling_300m_comparison_inputs_20261106_v1` dal commit del
+    manifest `2b7b4551c6059d5456e6e12d171ef687eb0818f4`; 2 CPU, 4G, 5 minuti.
+  - `SCALING-compare-20261106`: dispatcher congelato, stadio `compare`, manifest nel checkout con lo sha256 sopra, uscita nuova
+    `cpu/comparison/report.json`; 8 CPU, 30G, 30 minuti.
+  - Prova col submitter reale e ssh finto superata (`comparison_submitter_dryrun.json`); ledger comune non toccato.
+- Budget: consumate 125,089 core-ore (124,994 + 0,096 misurate); caso peggiore con checkout e confronto 129,756 su 310.
+- Prova in sola lettura del cancello che precede il push del riferimento di deploy (`pre-deploy`, 13:22:49): 12 controlli
+  superati; riferimento di deploy assente, cartella del checkout assente, nessun hook nel canonico, i nove file del manifest
+  invariati, 0 job in corsia. Configurazione letta: `receive.denycurrentbranch updateInstead`; il riferimento di deploy non e'
+  un ramo estratto, quindi il push non aggiorna alcun working tree. Il cancello vero lo rifaccio subito prima del push.
+- Pubblicato sul ramo di esecuzione, punta `cf6983ca3a52e7037a440333a1776bdfe61021d4` (SHA remoto verificato): `2b7b455`
+  (raccolta, validazione, manifest, piano), `b12a86e` (righe e prova col submitter), `cf6983c` (prova del cancello).
+- Limiti dichiarati: `comparison_stage.py` non e' ancora rivisto da GPT; `gate-checkout` e `gate-compare` non sono mai stati
+  eseguiti sul reale (servono riferimento di deploy e checkout); il controllo del runtime dello stadio `compare` gira solo
+  dentro il job (riletto a mano nel dispatcher: 8 thread, come la ridge).
+- Non fatto: nessun riferimento di deploy, nessun checkout, nessun confronto, nessuna scrittura su Leonardo oltre ai sei job.
+  Aspetto la seconda review di GPT; la regola «Due fit per volta» resta in vigore.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
