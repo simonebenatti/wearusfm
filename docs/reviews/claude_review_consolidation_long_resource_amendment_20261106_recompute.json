@@ -1,0 +1,820 @@
+{
+ "amended": {
+  "jobs": 69,
+  "jobs_by_case": {
+   "epn612/pool": 2,
+   "epn612/post": 3,
+   "epn612/pre": 3,
+   "ninapro_db2/pool": 8,
+   "ninapro_db2/post": 6,
+   "ninapro_db2/pre": 12,
+   "ninapro_db3/pool": 2,
+   "ninapro_db3/post": 3,
+   "ninapro_db3/pre": 12,
+   "ninapro_db6/pool": 4,
+   "ninapro_db6/post": 3,
+   "ninapro_db6/pre": 3,
+   "uci_emg/pool": 2,
+   "uci_emg/post": 3,
+   "uci_emg/pre": 3
+  },
+  "max_abs_difference_from_gpt_seconds": 0.0,
+  "max_projected_memory_gib": 4.077873229980469,
+  "max_projection_seconds": 12680.02794689637,
+  "min_margin_to_gate_seconds": 40.47999114367258,
+  "unchanged_shards": 33,
+  "walltime_histogram_minutes": {
+   "120": 6,
+   "135": 6,
+   "150": 15,
+   "165": 6,
+   "195": 9,
+   "210": 5,
+   "225": 5,
+   "30": 8,
+   "45": 3,
+   "75": 3,
+   "90": 3
+  },
+  "walltime_minutes_min_max": [
+   30.0,
+   225.0
+  ]
+ },
+ "budget": {
+  "allocations_left": 77,
+  "allocations_with_checkouts": 107,
+  "cap_core_hours": 1711.6666666666665,
+  "completed_allocations": 30,
+  "compute_jobs": 103,
+  "concluded_phase_caps_core_hours": 134.66666666666666,
+  "conservative_total_core_hours": 1451.6666666666667,
+  "db3_pairs_fit_allocation_core_hours": 1252.0,
+  "db3_pairs_jobs": 63,
+  "db3_pairs_min_margin_to_13800": 65.9,
+  "fit_allocation_core_hours": 1276.0,
+  "fit_projection_core_hours": 1115.6588737004697,
+  "future_max_core_hours": 1317.0,
+  "margin_conservative_core_hours": 259.9999999999998,
+  "original_fit_cap_core_hours": 1536.0,
+  "original_total_core_hours": 1711.6666666666667,
+  "other_future_core_hours": 41.0,
+  "spent_core_hours": 42.21888888888888,
+  "spent_gpu_hours": 3.373611111111111,
+  "spent_plus_future_core_hours": 1359.2188888888888,
+  "uniform_4h_total_core_hours": 2383.6666666666665
+ },
+ "frozen_gate": {
+  "failed_cells": 10,
+  "failed_shards": 15,
+  "projected_core_hours": 1087.6217158067095
+ },
+ "inputs": {
+  "cache_payloads": 21,
+  "code_shas": {
+   "166fb8653b53439507183d76e3e36a79dd28d166": 16,
+   "7d276c98fc54d66dab1226226eb6c5e447422c69": 12
+  },
+  "kinds": {
+   "benchmark-classification": 15,
+   "benchmark-pose": 1,
+   "extract-classification": 6,
+   "extract-pose-train": 3,
+   "extract-pose-val": 3
+  },
+  "plan_sha256": {
+   "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f": 16,
+   "e24d3fae8642695dcf0dd1ff45347d985eed0c8e47f7e85c1c1e138db11d058a": 12
+  },
+  "receipts": 28,
+  "recipes": [
+   "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422"
+  ],
+  "sources": [
+   "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1"
+  ]
+ },
+ "notes": [
+  "recipe identity covers only: protocol, doses, views, teacher, classification_recipe, pose_recipe, reading_rule, classification_baseline_policy, extraction_batch; resources and benchmark policy are outside it"
+ ],
+ "pose": {
+  "admitted": true,
+  "projected_gib": 12.53016595385371,
+  "seconds_per_dose": 583.2689406151289
+ },
+ "problems": [],
+ "table": [
+  {
+   "P": 10631.8,
+   "W": 11700,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1",
+   "margin": 468.2
+  },
+  {
+   "P": 11484.9,
+   "W": 12600,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db2-F1-20261105-A1",
+   "margin": 515.1
+  },
+  {
+   "P": 10429.6,
+   "W": 11700,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db2-F2-20261105-A1",
+   "margin": 670.4
+  },
+  {
+   "P": 10625.6,
+   "W": 11700,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db2-F3-20261105-A1",
+   "margin": 474.4
+  },
+  {
+   "P": 7047.2,
+   "W": 8100,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db3-F0-20261105-A1",
+   "margin": 452.8
+  },
+  {
+   "P": 6942.3,
+   "W": 8100,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db3-F1-20261105-A1",
+   "margin": 557.7
+  },
+  {
+   "P": 7818.0,
+   "W": 9000,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db3-F2-20261105-A1",
+   "margin": 582.0
+  },
+  {
+   "P": 6516.4,
+   "W": 7200,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db3-F3-20261105-A1",
+   "margin": 83.6
+  },
+  {
+   "P": 4706.3,
+   "W": 5400,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-pre-ninapro_db6-F0123-20261105-A1",
+   "margin": 93.7
+  },
+  {
+   "P": 6087.0,
+   "W": 7200,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-pre-epn612-F0123-20261105-A1",
+   "margin": 513.0
+  },
+  {
+   "P": 608.1,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1",
+   "margin": 591.9
+  },
+  {
+   "P": 8191.6,
+   "W": 9000,
+   "folds": [
+    0,
+    1
+   ],
+   "id": "LONG-FIT-G19618-post-ninapro_db2-F01-20261105-A1",
+   "margin": 208.4
+  },
+  {
+   "P": 7806.3,
+   "W": 9000,
+   "folds": [
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-post-ninapro_db2-F23-20261105-A1",
+   "margin": 593.7
+  },
+  {
+   "P": 12680.0,
+   "W": 13500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-post-ninapro_db3-F0123-20261105-A1",
+   "margin": 220.0
+  },
+  {
+   "P": 2059.5,
+   "W": 2700,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-post-ninapro_db6-F0123-20261105-A1",
+   "margin": 40.5
+  },
+  {
+   "P": 3012.2,
+   "W": 4500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-post-epn612-F0123-20261105-A1",
+   "margin": 887.8
+  },
+  {
+   "P": 604.2,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G19618-post-uci_emg-F0123-20261105-A1",
+   "margin": 595.8
+  },
+  {
+   "P": 10631.8,
+   "W": 11700,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db2-F0-20261105-A1",
+   "margin": 468.2
+  },
+  {
+   "P": 11484.9,
+   "W": 12600,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db2-F1-20261105-A1",
+   "margin": 515.1
+  },
+  {
+   "P": 10429.6,
+   "W": 11700,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db2-F2-20261105-A1",
+   "margin": 670.4
+  },
+  {
+   "P": 10625.6,
+   "W": 11700,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db2-F3-20261105-A1",
+   "margin": 474.4
+  },
+  {
+   "P": 7047.2,
+   "W": 8100,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db3-F0-20261105-A1",
+   "margin": 452.8
+  },
+  {
+   "P": 6942.3,
+   "W": 8100,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db3-F1-20261105-A1",
+   "margin": 557.7
+  },
+  {
+   "P": 7818.0,
+   "W": 9000,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db3-F2-20261105-A1",
+   "margin": 582.0
+  },
+  {
+   "P": 6516.4,
+   "W": 7200,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db3-F3-20261105-A1",
+   "margin": 83.6
+  },
+  {
+   "P": 4706.3,
+   "W": 5400,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pre-ninapro_db6-F0123-20261105-A1",
+   "margin": 93.7
+  },
+  {
+   "P": 6087.0,
+   "W": 7200,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pre-epn612-F0123-20261105-A1",
+   "margin": 513.0
+  },
+  {
+   "P": 608.1,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pre-uci_emg-F0123-20261105-A1",
+   "margin": 591.9
+  },
+  {
+   "P": 8191.6,
+   "W": 9000,
+   "folds": [
+    0,
+    1
+   ],
+   "id": "LONG-FIT-G39237-post-ninapro_db2-F01-20261105-A1",
+   "margin": 208.4
+  },
+  {
+   "P": 7806.3,
+   "W": 9000,
+   "folds": [
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-post-ninapro_db2-F23-20261105-A1",
+   "margin": 593.7
+  },
+  {
+   "P": 12680.0,
+   "W": 13500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-post-ninapro_db3-F0123-20261105-A1",
+   "margin": 220.0
+  },
+  {
+   "P": 2059.5,
+   "W": 2700,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-post-ninapro_db6-F0123-20261105-A1",
+   "margin": 40.5
+  },
+  {
+   "P": 3012.2,
+   "W": 4500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-post-epn612-F0123-20261105-A1",
+   "margin": 887.8
+  },
+  {
+   "P": 604.2,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-post-uci_emg-F0123-20261105-A1",
+   "margin": 595.8
+  },
+  {
+   "P": 8066.4,
+   "W": 9000,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db2-F0-20261105-A1",
+   "margin": 333.6
+  },
+  {
+   "P": 8701.3,
+   "W": 9900,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db2-F1-20261105-A1",
+   "margin": 598.7
+  },
+  {
+   "P": 7915.9,
+   "W": 9000,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db2-F2-20261105-A1",
+   "margin": 484.1
+  },
+  {
+   "P": 8061.8,
+   "W": 9000,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db2-F3-20261105-A1",
+   "margin": 338.2
+  },
+  {
+   "P": 11940.9,
+   "W": 12600,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105-A1",
+   "margin": 59.1
+  },
+  {
+   "P": 8811.9,
+   "W": 9900,
+   "folds": [
+    0,
+    1
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db6-F01-20261105-A1",
+   "margin": 488.1
+  },
+  {
+   "P": 8648.0,
+   "W": 9900,
+   "folds": [
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pool-ninapro_db6-F23-20261105-A1",
+   "margin": 652.0
+  },
+  {
+   "P": 12386.4,
+   "W": 13500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pool-epn612-F0123-20261105-A1",
+   "margin": 513.6
+  },
+  {
+   "P": 614.3,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1",
+   "margin": 585.7
+  },
+  {
+   "P": 10631.8,
+   "W": 11700,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db2-F0-20261105-A1",
+   "margin": 468.2
+  },
+  {
+   "P": 11484.9,
+   "W": 12600,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db2-F1-20261105-A1",
+   "margin": 515.1
+  },
+  {
+   "P": 10429.6,
+   "W": 11700,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db2-F2-20261105-A1",
+   "margin": 670.4
+  },
+  {
+   "P": 10625.6,
+   "W": 11700,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db2-F3-20261105-A1",
+   "margin": 474.4
+  },
+  {
+   "P": 7047.2,
+   "W": 8100,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db3-F0-20261105-A1",
+   "margin": 452.8
+  },
+  {
+   "P": 6942.3,
+   "W": 8100,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db3-F1-20261105-A1",
+   "margin": 557.7
+  },
+  {
+   "P": 7818.0,
+   "W": 9000,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db3-F2-20261105-A1",
+   "margin": 582.0
+  },
+  {
+   "P": 6516.4,
+   "W": 7200,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db3-F3-20261105-A1",
+   "margin": 83.6
+  },
+  {
+   "P": 4706.3,
+   "W": 5400,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pre-ninapro_db6-F0123-20261105-A1",
+   "margin": 93.7
+  },
+  {
+   "P": 6087.0,
+   "W": 7200,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pre-epn612-F0123-20261105-A1",
+   "margin": 513.0
+  },
+  {
+   "P": 608.1,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pre-uci_emg-F0123-20261105-A1",
+   "margin": 591.9
+  },
+  {
+   "P": 8191.6,
+   "W": 9000,
+   "folds": [
+    0,
+    1
+   ],
+   "id": "LONG-FIT-G49046-post-ninapro_db2-F01-20261105-A1",
+   "margin": 208.4
+  },
+  {
+   "P": 7806.3,
+   "W": 9000,
+   "folds": [
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-post-ninapro_db2-F23-20261105-A1",
+   "margin": 593.7
+  },
+  {
+   "P": 12680.0,
+   "W": 13500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-post-ninapro_db3-F0123-20261105-A1",
+   "margin": 220.0
+  },
+  {
+   "P": 2059.5,
+   "W": 2700,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-post-ninapro_db6-F0123-20261105-A1",
+   "margin": 40.5
+  },
+  {
+   "P": 3012.2,
+   "W": 4500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-post-epn612-F0123-20261105-A1",
+   "margin": 887.8
+  },
+  {
+   "P": 604.2,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-post-uci_emg-F0123-20261105-A1",
+   "margin": 595.8
+  },
+  {
+   "P": 8066.4,
+   "W": 9000,
+   "folds": [
+    0
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db2-F0-20261105-A1",
+   "margin": 333.6
+  },
+  {
+   "P": 8701.3,
+   "W": 9900,
+   "folds": [
+    1
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db2-F1-20261105-A1",
+   "margin": 598.7
+  },
+  {
+   "P": 7915.9,
+   "W": 9000,
+   "folds": [
+    2
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db2-F2-20261105-A1",
+   "margin": 484.1
+  },
+  {
+   "P": 8061.8,
+   "W": 9000,
+   "folds": [
+    3
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db2-F3-20261105-A1",
+   "margin": 338.2
+  },
+  {
+   "P": 11940.9,
+   "W": 12600,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105-A1",
+   "margin": 59.1
+  },
+  {
+   "P": 8811.9,
+   "W": 9900,
+   "folds": [
+    0,
+    1
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db6-F01-20261105-A1",
+   "margin": 488.1
+  },
+  {
+   "P": 8648.0,
+   "W": 9900,
+   "folds": [
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pool-ninapro_db6-F23-20261105-A1",
+   "margin": 652.0
+  },
+  {
+   "P": 12386.4,
+   "W": 13500,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pool-epn612-F0123-20261105-A1",
+   "margin": 513.6
+  },
+  {
+   "P": 614.3,
+   "W": 1800,
+   "folds": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "id": "LONG-FIT-G49046-pool-uci_emg-F0123-20261105-A1",
+   "margin": 585.7
+  }
+ ]
+}

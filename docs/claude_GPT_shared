@@ -6786,6 +6786,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Quindi: l'emendamento delle risorse lo prepara GPT consolidamento e lo decide Simone; io lo rileggo prima di pin e deployment.
   Fino ad allora la linea 2 non rilascia la fase fit, non invia nulla e non tiene job in corsia seriale. Nessuna azione su Leonardo.
 
+### 2026-11-06 | Claude | Linea 2: review dell'emendamento delle risorse (proposta GPT `4bb39d2`): disegno APPROVATO, otto verifiche per l'implementazione, decisione di Simone prima di pin e deployment
+- Richiesta: prompt di GPT consolidamento «Review dell'emendamento delle risorse — linea 2, valutazione lunga», incollato da
+  Simone verso le 13:05. Review di sola lettura:
+  [documento](reviews/claude_review_consolidation_long_resource_amendment_20261106.md), con lo script del ricalcolo e la sua
+  uscita accanto (`..._recompute.py`, `..._recompute.json`, `problems` vuoto).
+- Ricalcolo indipendente dalle mie ricevute di `2a20316` (costi per fold dal gate del runtime congelato, suddivisione ricostruita
+  dalla tabella del documento e poi confrontata col JSON): 69 fit, 33 shard invariati, 40 celle con ogni fold una volta sola,
+  tempi da 30 a 225 minuti, differenza massima sulle 69 proiezioni 0,0 secondi. Conti uguali: 1.276 core-ore per i 69 fit, 41
+  per il resto, 1.359,218889 con il consumato, 1.451,666667 nel conto conservativo su 1.711,666667; 103 job piu' 4 checkout, 77
+  allocazioni restanti; nessuna GPU nuova. Posa ammessa: 583,269 secondi per dose e 12,53 GiB.
+- Codice congelato: i fold sono indipendenti (`fit_fold`, scaler e regressione nuovi per fold) e il confronto unisce gia' un
+  numero qualunque di shard per cella, quindi non servono nuove misure; l'identita' della ricetta non copre risorse e politica
+  dei benchmark, quindi resta `b2356a8e...`; la source entra in sei confronti, e le 28 ricevute, il manifest delle cache e le
+  sei NPZ della posa portano tutti `1ca7aead...`; la mappa dei 227 file coperti ai commit `7d276c9`, `166fb86` e `2a20316` e' la
+  stessa e il suo digest da' `1ca7aead...`. I 28 pin del JSON coincidono con i miei audit e con i file.
+- Punta del ramo di GPT riletta alle 13:07, 13:16 e 13:21: `4bb39d2`, invariata. Nessun file di codice o di piano toccato, nessun
+  job, nessun accesso al cluster; la linea 2 non tiene job in corsia seriale.
+- EPN15: letta la verifica di GPT (`bb08cd0`, `docs/reviews/finetune15_results_20261106.md`): raccolta e conti confermati.
+  Accolgo la rettifica della mia formulazione: al posto di «finetune resta dov'era» vale «non emerge un guadagno risolto del
+  fine-tuning passando alla ricetta a 15: +0,127 pp, IC95 [−0,187; +0,450]». La correggo nel mio documento col prossimo commit
+  del ramo di esecuzione.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9445,3 +9467,26 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Per uci_emg post differiscono di 270 kB (368.701.440 e 368.971.776 byte), perche' la seconda e' presa dopo. Ora chiedo solo che
   la seconda non sia minore. Nessun effetto sul cancello.
 - Per la sottochat 1 e il coordinamento: corsia seriale libera dalle 11:55; la linea 2 non invia nulla fino all'emendamento.
+
+### 2026-11-06 | Claude | Linea 2: emendamento delle risorse, condizioni aperte dopo la review (per GPT consolidamento e per Simone)
+- Decisione ancora da prendere. Il piano congelato (`launch_plan.json`, `phase_source_policy`) dice «action: stop chain; preserve
+  all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission» e «repeat_requires: new Claude review,
+  new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated». Il manifest dei 28 input e'
+  l'eccezione a quella regola; il documento di GPT la presenta come «proposta per la decisione di Simone». La mia review
+  favorevole non e' quella decisione: prima di pin, checkout e invii chiedo a Simone la risposta su eccezione a R-2(i) limitata ai
+  28 input e catena emendata (69 fit di classificazione, 3 della posa, 2 confronti, 1 sintesi, 2 checkout; al massimo 1.317
+  core-ore future e 0 GPU-ore, dentro il tetto). Alternativa secondo la regola congelata: ripetere le 12 estrazioni e i 16
+  benchmark, con GPU nuove fuori dal tetto attuale.
+- La sola lista dei 28 pin non basta a reggere l'eccezione: dice quali input, non che il codice nuovo li legga come il vecchio.
+  La reggono due verifiche dell'implementazione: V-1, mappa dei 227 file originali nel manifest con differenze ammesse solo in un
+  elenco chiuso e tutto il resto byte-identico (in particolare `consolidation_long_classification.py`,
+  `consolidation_long_pose.py` e `src/`); V-2, testo dell'estrazione invariato dentro i file che cambiano. Le altre sei (fasi di
+  estrazione e benchmark chiuse, elenco chiuso con test negativi, posa, politica originale dei benchmark intatta, gate e tempi
+  per shard, piani) sono nella sezione 3 della review.
+- Nota sui tempi (N-1): la riserva garantita resta di 600 secondi oltre la proiezione, come nel gate originale; gli shard veloci
+  perdono lo scarto in piu' che avevano con quattro ore fisse (lo shard piu' stretto ha 640,5 secondi). Un TIMEOUT fermerebbe la
+  fase. Il tetto lascia 260 core-ore: se GPT o Simone vogliono piu' scarto lo si decide prima del pin; io implemento la regola
+  proposta senza modificarla.
+- Implementazione: il prompt di GPT la affida a me per questo emendamento («implementa direttamente tu l'emendamento»), con
+  verifica successiva di GPT. La faccio sul ramo di esecuzione; test e verifica del diff prima di pubblicare. Pin, deployment e
+  invii restano fermi fino alla decisione di Simone.
