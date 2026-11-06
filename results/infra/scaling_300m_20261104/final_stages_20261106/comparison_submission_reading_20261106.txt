@@ -1,0 +1,107 @@
+# Linea 1 (scaling), 06/11/2026: riferimento di deploy, checkout del manifest e invio del confronto.
+# File generato dai log locali e da letture di sola lettura su Leonardo; nessuno score.
+
+## Seconda review di GPT
+origin/codex/scaling-300m-20261104 @ 01308218d1271802a55886c7b13fcca5ff30e17d (14:22:37):
+docs/reviews/gpt_review_scaling_comparison_release_20261106.md, «APPROVATO, nessun blocco.» sulla consegna cf6983ca3a52e7037a440333a1776bdfe61021d4.
+
+## Cancello prima del riferimento di deploy (comparison_stage.py pre-deploy)
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_gate_20261106_1426_predeploy.json 603f5f254775ebd0aff57c1a05fbe09713fdac485d04523b3999afb7d960a804
+configurazione di ricezione del canonico: receive.denycurrentbranch updateInstead
+PASSA  lettura di squeue riuscita (exit 0)
+PASSA  commit del manifest pubblicato su origin, nel ramo di esecuzione
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi; manifest uguale al piano
+PASSA  i nove file fissati nel manifest: presenti, canonici, hash e dimensioni invariati
+PASSA  uscita del confronto assente
+PASSA  ID logico del confronto mai usato nel ledger
+PASSA  cartella del checkout di campagna assente
+PASSA  repository canonico: nessun hook attivo
+PASSA  il riferimento di deploy non e' estratto in alcun worktree (un push non aggiorna checkout)
+PASSA  ID logico del checkout mai usato nel ledger
+PASSA  riferimento di deploy non ancora presente su Leonardo
+PASSA  posti liberi in lrd_all_serial: almeno 1 su 10
+job dell'utente in coda seriale: 0 | letto alle 2026-11-06T14:26:36+0100
+CANCELLO SUPERATO
+push ammesso: git push leonardo 2b7b4551c6059d5456e6e12d171ef687eb0818f4:refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1
+
+## Riferimento di deploy (14:29:02 - 14:29:40)
+git push leonardo 2b7b4551c6059d5456e6e12d171ef687eb0818f4:refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1
+To leonardo:/leonardo_work/IscrB_WearUsFM/wearusfm
+ * [new branch]      2b7b4551c6059d5456e6e12d171ef687eb0818f4 -> deploy/scaling_300m_comparison_inputs_20261106_v1
+exit push: 0
+git ls-remote leonardo refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1 ->
+2b7b4551c6059d5456e6e12d171ef687eb0818f4	refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1
+
+## Cancello prima del checkout (comparison_stage.py gate-checkout)
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_gate_20261106_1429_gate_checkout.json d610ba5a6816091267135d49f2212c1dd80889acffa486127c9f8ef8b2a921f6
+PASSA  lettura di squeue riuscita (exit 0)
+PASSA  commit del manifest pubblicato su origin, nel ramo di esecuzione
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi; manifest uguale al piano
+PASSA  i nove file fissati nel manifest: presenti, canonici, hash e dimensioni invariati
+PASSA  uscita del confronto assente
+PASSA  ID logico del confronto mai usato nel ledger
+PASSA  cartella del checkout di campagna assente
+PASSA  repository canonico: nessun hook attivo
+PASSA  il riferimento di deploy non e' estratto in alcun worktree (un push non aggiorna checkout)
+PASSA  ID logico del checkout mai usato nel ledger
+PASSA  riferimento di deploy su Leonardo uguale al commit del manifest
+PASSA  commit presente nel repository canonico di Leonardo
+PASSA  posti liberi in lrd_all_serial: almeno 1 su 10
+job dell'utente in coda seriale: 0 | letto alle 2026-11-06T14:29:48+0100
+CANCELLO SUPERATO
+
+## Invio del checkout (scripts/submit_job.py, prima riga di comparison_submit_lines.txt)
+14:30:13 invio di SCALING-inputs-checkout-20261106
+SCALING-inputs-checkout-20261106: sottomesso, job 63671405
+14:30:14 exit: 0
+
+## Attesa del checkout (sacct, sola lettura)
+14:30:27 finali 0/1 (righe lette 1), non riusciti 0
+14:31:31 finali 1/1 (righe lette 1), non riusciti 0
+63671405|SCALING-inputs-checkout-20261106|COMPLETED|0:0|00:00:40|2026-11-06T14:30:43|2026-11-06T14:31:23
+14:31:31 TUTTI I JOB IN STATO FINALE
+
+## Cancello prima del confronto (comparison_stage.py gate-compare)
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_gate_20261106_1434_gate_compare.json 3378fada0bb3c0191803cf6a0304664be2b6027b3c5015dd5408a7a3fb77998e
+PASSA  SCALING-compare-20261106 -> PASS
+PASSA  controllo negativo: hash del manifest alterato -> REFUSED: input hash/size differs 
+PASSA  controllo negativo: uscita dentro i checkout di campagna -> REFUSED: output inside code 
+PASSA  controllo negativo: opzione non ammessa per lo stadio -> REFUSED: stage requires exactly its whitelisted flags 
+scritto results/infra/scaling_300m_20261104/final_stages_20261106/comparison_guard_dryrun_20261106_1434_gate_compare.json cb8d2d92f7ccc77fc494a51f51e5bd27491b7876067f0eb58005de33b243b959
+PASSA  lettura di squeue riuscita (exit 0)
+PASSA  commit del manifest pubblicato su origin, nel ramo di esecuzione
+PASSA  dispatcher, submitter e script di checkout locali con gli hash attesi; manifest uguale al piano
+PASSA  i nove file fissati nel manifest: presenti, canonici, hash e dimensioni invariati
+PASSA  uscita del confronto assente
+PASSA  ID logico del confronto mai usato nel ledger
+PASSA  checkout sottomesso da claude per il commit del manifest e COMPLETED 0:0
+PASSA  checkout di campagna: presente, canonico, HEAD uguale al commit, pulito
+PASSA  manifest nel checkout: percorso, hash e dimensione del piano, percorso canonico
+PASSA  controlli sugli argomenti del dispatcher reale: confronto accettato, tre alterazioni rifiutate
+PASSA  posti liberi in lrd_all_serial: almeno 1 su 10
+job dell'utente in coda seriale: 0 | letto alle 2026-11-06T14:35:02+0100
+CANCELLO SUPERATO
+
+## Invio del confronto (scripts/submit_job.py, seconda riga di comparison_submit_lines.txt)
+14:36:11 invio di SCALING-compare-20261106
+SCALING-compare-20261106: sottomesso, job 63671773
+14:36:12 exit: 0
+
+## Coda e contabilita' dopo l'invio
+letto alle 2026-11-06T14:36:32+0100 su login05.leonardo.local
+--- squeue -u sbenatti -p lrd_all_serial -h -o %i|%j|%T|%M|%l|%C|%m|%r
+63671773|SCALING-compare-20261106|CONFIGURING|0:03|30:00|8|30G|None
+exit squeue: 0
+--- sacct -P -j 63671405,63671773 -o JobIDRaw,JobName%40,State,ExitCode,ElapsedRaw,AllocCPUS,ReqMem,MaxRSS,Start,End,Timelimit
+JobIDRaw|JobName|State|ExitCode|ElapsedRaw|AllocCPUS|ReqMem|MaxRSS|Start|End|Timelimit
+63671405|SCALING-inputs-checkout-20261106|COMPLETED|0:0|40|2|4G||2026-11-06T14:30:43|2026-11-06T14:31:23|00:05:00
+63671405.batch|batch|COMPLETED|0:0|40|2||176312K|2026-11-06T14:30:43|2026-11-06T14:31:23|
+63671405.extern|extern|COMPLETED|0:0|40|2|||2026-11-06T14:30:43|2026-11-06T14:31:23|
+63671773|SCALING-compare-20261106|RUNNING|0:0|4|8|30G||2026-11-06T14:36:30|Unknown|00:30:00
+63671773.batch|batch|RUNNING|0:0|4|8|||2026-11-06T14:36:30|Unknown|
+63671773.extern|extern|RUNNING|0:0|4|8|||2026-11-06T14:36:30|Unknown|
+exit sacct: 0
+--- ultime righe del log del checkout (campaign_checkout_63671405.out; il log intero si raccoglie con l'esito)
+HEAD is now at 2b7b455 Line 1 scaling: six aggregates collected and validated; comparison manifest and plan prepared, nothing submitted
+checkout di campagna pronto: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1 @ 2b7b4551c6059d5456e6e12d171ef687eb0818f4
+files: 2040; dimensione: 4.3M

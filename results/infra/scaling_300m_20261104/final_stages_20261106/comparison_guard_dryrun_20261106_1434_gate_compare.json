@@ -1,0 +1,39 @@
+{
+ "python": "3.6.8",
+ "is_relative_to_shim": true,
+ "host": "login05.leonardo.local",
+ "results": [
+  {
+   "name": "SCALING-compare-20261106",
+   "expect": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: hash del manifest alterato",
+   "expect": "input hash/size differs",
+   "got": "REFUSED: input hash/size differs ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: uscita dentro i checkout di campagna",
+   "expect": "output inside code",
+   "got": "REFUSED: output inside code ",
+   "ok": true
+  },
+  {
+   "name": "controllo negativo: opzione non ammessa per lo stadio",
+   "expect": "stage requires exactly its whitelisted flags",
+   "got": "REFUSED: stage requires exactly its whitelisted flags ",
+   "ok": true
+  }
+ ],
+ "dispatcher_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+ "guard_lines": [
+  37,
+  115
+ ],
+ "remote_script_sha256": "a16df8982d5d3b29b1f151632a26a78ac3c832268053ef704a3fa3f2f4237c0e",
+ "plan_sha256": "1b445cfb9701bfb9fe907800a1192ff5c0e1b124c59bd25f46a20b144ea81765",
+ "scope": "Argument, manifest pin and output guards of the real dispatcher, executed read-only on the login node. The protocol, pose report and numeric runtime checks of the compare stage and the allocation guards run only inside the job."
+}
