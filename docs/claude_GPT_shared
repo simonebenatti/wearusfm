@@ -6838,6 +6838,37 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. I sei aggregati partono
   dopo la risposta scritta di GPT.
 
+### 2026-11-06 | Claude | Linea 1: verifica di GPT ricevuta (098d2b0, APPROVATO); sei aggregati inviati alle 13:13 e accettati; nessun rilancio
+- Risposta scritta di GPT sul suo ramo: `098d2b08fe54af2416797eed2e53f18b3881693b` (13:08:26),
+  `docs/reviews/gpt_review_scaling_queue_gate_fix_20261106.md`: «APPROVATO, nessun blocco residuo nella correzione»; i sei
+  aggregati rilasciabili dopo `state` e `check` freschi, sei posti liberi, una riga alla volta, stop al primo esito diverso da
+  `sottomesso`. GPT dichiara fuori da questa review `comparison_stage.py`, il suo selftest, manifest, checkout e confronto:
+  restano il secondo giro. Punta del ramo di GPT riletta alle 13:10:38 in un passo separato: invariata.
+- Autorizzazione: consegna di GPT girata da Simone verso le 11:52 («Dopo la verifica tecnica procedi direttamente, senza
+  chiedere un altro via a Simone») e `CLAUDE.md` su `main`, linea 1. Nessun messaggio nuovo di Simone fra il testo ridato alle
+  13:00 e l'invio: della risposta di GPT mi sono accorto dall'attesa di sola lettura sul suo ramo.
+- Prima dell'invio: prova del trasporto del submitter (`ssh leonardo` semplice, sola lettura, 13:12:20, login05); ledger comune
+  riletto, i sei ID liberi; cancello fresco letto alle 13:12:40: `squeue` exit 0 con uscita vuota (0 job dell'utente in
+  `lrd_all_serial`), `sacct` exit 0 con 49 righe, 19 controlli superati, «CANCELLO SUPERATO» con sei posti. Stato in
+  `live_state_20261106_1312_presubmit.json` (sha256 `aa5c51c1...`). Linea 2: nessun job in corsia, fase dei fit ferma.
+- Invii con submitter e ledger comuni, le sei righe riviste (`aggregate_submit_lines.txt`, sha256 `bf9823e9...` verificato
+  prima dell'uso), una alla volta, ognuna `sottomesso` con exit 0:
+  - `SCALING-probe-aggregate-01-20261106` job 63666045 (13:13:05), `-02-` 63666072 (13:13:20), `-03-` 63666075 (13:13:21),
+    `-04-` 63666076 (13:13:22), `-05-` 63666078 (13:13:23), `-06-` 63666079 (13:13:24).
+  - Ogni job: 2 CPU, 30G, 10 minuti, codice congelato `aef665b`, dispatcher `c2bd7979...` su `/dev/stdin`, uscite distinte.
+    L'argv inviato e' uguale al campo `argv` del piano rivisto `abc48961...` (controllo fatto sulle ricevute).
+- Lettura delle 13:14:59 (`squeue` e `sacct` exit 0): job 01 `COMPLETED 0:0` in 41 secondi (13:13:40-13:14:21), job 02 in
+  esecuzione, quattro in attesa per `QOSMaxMemoryPerUser`: ognuno chiede tutta la memoria dell'utente in corsia, quindi girano
+  uno alla volta, come previsto.
+- Pubblicato sul ramo di esecuzione, commit `3f0867784e237b1dd6fa3e82427b53846352f05d` (SHA remoto verificato): le sei
+  ricevute in `final_stages_20261106/submissions/` (copie byte per byte dello `state.json` del ledger), lo stato del cancello e
+  `aggregate_submission_reading_20261106.txt` (cancello, invii, prima lettura).
+- Budget: 2,0 core-ore richieste per i sei aggregati (massimo 2,6); cumulato massimo 127,59 su 310 prima di checkout e confronto.
+- Corsia: la regola «Due fit per volta» resta in vigore; cade solo quando nel ledger compare sottomesso `SCALING-compare-`.
+- Non fatto: nessun rilancio dei fit (l'ultimo resta 63635524), nessun retry, nessun job oltre i sei, score non aperti, nessuna
+  azione sui job di altre linee. Prossimo passo: a job finiti raccolgo e valido gli aggregati, preparo manifest e comandi del
+  confronto e li pubblico per il secondo giro di review di GPT; il confronto non parte prima della sua risposta.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
