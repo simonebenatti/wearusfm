@@ -6707,6 +6707,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Le provenienze LQ hanno gli stessi tre hash dei target di T100-L a 5.000: stesse 1.907 finestre train e 18.548 val.
 - Consumo delle due fasi: 0,548889 GPU-ore e 4,423333 core-ore. Continuazione 63593128 ancora PENDING Priority alle 11:07 del 06/11.
 - Test non rieseguiti: `src/`, `scripts/` e `tests/` identici per albero git a 5b03e0c, dove il 05/11 erano 365 passati.
+### 2026-11-06 | Claude | Decisione di Simone confermata: le letture scientifiche di T100-LQ si fanno tutte alla fine
+- Simone, 06/11 mattina, alla domanda di Claude «Confermi le letture tutte alla fine, come riporta GPT?»: «Sì, alla fine».
+- Conferma quanto registrato da GPT il 05/11 («possiamo anche fare tutte le letture alla fine») e chiude il punto «non verificato»
+  della review f040086. Nessun lettore CPU della posa a 5.000 adesso; criteri, cache e job restano invariati.
+- Stato riletto alle 11:21: continuazione 63593128 PENDING Priority da 20 ore, senza stima dello scheduler; ramo di GPT fermo a
+  63eba9a. Restano, in ordine: training a 19.618, pin del checkpoint finale, tre estrazioni GPU, letture CPU, lettura e review.
+- Nessun job e nessuna modifica di codice o piani; su Leonardo solo letture.
 
 ## 2) Problemi trovati
 
